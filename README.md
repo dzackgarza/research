@@ -16,8 +16,8 @@ notes live under `.agents/`.
 - `notes/computations/`: notes about imported computational artifacts and extraction work.
 - `projects/`: live research projects tracked as submodules.
 - `references/`: PDFs, generated indexes, upstream references, and local dependency notes.
-- `archives/provenance/`: source-context files retained to explain where imported material came from.
-- `.agents/`: agent-facing instructions, implementation references, and operator guidance.
+- `archives/provenance/`: non-agent source-context files retained to explain where imported material came from.
+- `.agents/`: agent-facing instructions, implementation references, operator guidance, and agent provenance.
 
 ## Live Projects
 

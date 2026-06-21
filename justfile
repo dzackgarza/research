@@ -15,6 +15,7 @@ test:
         Path("notes/papers"),
         Path("notes/topics"),
         Path(".agents"),
+        Path(".agents/provenance"),
         Path(".agents/references/sage-integral-lattice"),
         Path("projects"),
         Path("references"),
@@ -40,6 +41,10 @@ test:
             raise SystemExit(f"cache/dependency directory should not be tracked here: {path}")
         if path.suffix == ".lock":
             raise SystemExit(f"transient lock file should not be tracked here: {path}")
+        if ".agents" not in path.parts:
+            upper_name = path.name.upper()
+            if upper_name == "AGENTS.MD" or "CLAUDE" in upper_name or ".claude" in path.parts:
+                raise SystemExit(f"agent-directed artifact belongs under .agents: {path}")
 
     suspicious_patterns = [
         re.compile(r"gh" + r"o_[A-Za-z0-9_]{20,}"),
