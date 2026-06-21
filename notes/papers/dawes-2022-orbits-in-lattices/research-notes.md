@@ -97,14 +97,14 @@ This paper presents computational algorithms for determining orbit equivalence o
 ## Files Structure
 
 ```
-src/
+computations/lattice-orbits/src/
 ├── isotropic_orbits_proper.sage      # Main proper implementation
 ├── isotropic_vector_orbits_fixed.sage # Working examples from paper
 ├── isotropic_vector_orbits.sage       # Original framework
 └── test_isotropic_orbits.sage         # Additional tests
 
-docs/arxiv-2205.10601/
-└── research_notes.md                  # This file
+notes/papers/dawes-2022-orbits-in-lattices/
+└── research-notes.md                  # This file
 ```
 
 ## Future Work

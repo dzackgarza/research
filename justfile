@@ -9,7 +9,13 @@ test:
 
     required_dirs = [
         Path("computations"),
+        Path("computations/enriques-moduli"),
+        Path("computations/lattice-orbits"),
         Path("notes"),
+        Path("notes/papers"),
+        Path("notes/topics"),
+        Path(".agents"),
+        Path(".agents/references/sage-integral-lattice"),
         Path("projects"),
         Path("references"),
         Path("projects/lattice-research"),
@@ -17,6 +23,8 @@ test:
     for path in required_dirs:
         if not path.exists():
             raise SystemExit(f"missing required path: {path}")
+    if Path("notes/research-legacy").exists():
+        raise SystemExit("legacy notes bucket still exists; classify notes under notes/papers, notes/topics, or .agents")
 
     submodule_root = Path("projects/lattice-research")
     def owned_by_umbrella(path):
