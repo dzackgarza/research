@@ -6,10 +6,13 @@ Notes for Matthew Dawes, "Orbits in Lattices" (`arXiv:2205.10601`).
 
 - `research-notes.md`: extracted algorithm notes, examples, implementation status, and
   mathematical caveats.
-- `computational-techniques-survey.md`: survey-style prose imported from the old
-  research tree; treat as secondary notes, not as a substitute for the paper.
 
 ## Related Computations
 
 The Sage implementations and Dawes examples live in
 `computations/lattice-orbits/src/`.
+
+## Agent Provenance
+
+The imported AI-authored survey was moved to
+`.agents/provenance/agent-generated-notes/dawes-2022-orbits-in-lattices/`.
