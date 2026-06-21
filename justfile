@@ -9,11 +9,7 @@ test:
 
     required_dirs = [
         Path("computations"),
-        Path("computations/enriques-moduli"),
-        Path("computations/lattice-orbits"),
         Path("notes"),
-        Path("notes/papers"),
-        Path("notes/topics"),
         Path(".agents"),
         Path(".agents/provenance"),
         Path(".agents/references/sage-integral-lattice"),
@@ -37,6 +33,8 @@ test:
         parts = set(path.parts)
         if ".git" in parts:
             continue
+        if path.is_dir() and not any(path.iterdir()):
+            raise SystemExit(f"empty placeholder directory should not exist: {path}")
         if path.name in {"node_modules", "__pycache__", ".pytest_cache"}:
             raise SystemExit(f"cache/dependency directory should not be tracked here: {path}")
         if path.suffix == ".lock":

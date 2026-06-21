@@ -3,18 +3,20 @@
 Canonical workspace for research notes, computational scratch work, and live project
 references.
 
-This repository is the umbrella. Live projects with their own development history stay
-as submodules under `projects/`; reusable or archival computational material lives under
-`computations/`; prose and mathematical notes live under `notes/`; agent-only operating
-notes live under `.agents/`.
+This repository is the umbrella for active mathematical research work. The layout
+follows the research pipeline, not a taxonomy of mathematical objects.
+
+Raw scratch work can start messy. When a calculation becomes recognizable, give it a
+named computation thread. When code from a thread becomes generally useful inside this
+repo, promote it into a component. When a component becomes a project with its own
+history, split it into `projects/` as a submodule.
 
 ## Layout
 
-- `computations/`: Sage, Singular, Python, notebook, diagram, and generated computational artifacts.
-- `notes/papers/`: paper-specific summaries, extraction notes, and reading notes.
-- `notes/topics/`: cross-paper mathematical findings and speculative research threads.
-- `notes/computations/`: notes about imported computational artifacts and extraction work.
-- `projects/`: live research projects tracked as submodules.
+- `computations/`: scratchpad code, notebooks, named computation threads, generated artifacts, and reusable components.
+- `computations/components/`: code factored out of computations for reuse inside this repo.
+- `notes/`: human mathematical notes, paper notes, findings, extraction plans, and computation notes.
+- `projects/`: live research projects tracked as submodules once they deserve their own history.
 - `references/`: PDFs, generated indexes, upstream references, and local dependency notes.
 - `archives/provenance/`: non-agent source-context files retained to explain where imported material came from.
 - `.agents/`: agent-facing instructions, implementation references, operator guidance, and agent provenance.
@@ -26,8 +28,14 @@ notes live under `.agents/`.
 ## Import Policy
 
 Imported scratchpad material is preserved before cleanup. Do not rewrite mathematical
-algorithms as part of organization-only work. Promote stable code into cleaner component
-packages with separate verification commits.
+algorithms as part of organization-only work. Do not create empty directories as a plan
+for future classification. Let actual files and actual workflows justify directories.
+
+Use named computation threads for work that cuts across curves, surfaces, lattices,
+periods, and implementation details. Mathematical research rarely belongs to one clean
+object class.
+
+Promote stable code into cleaner components with separate verification commits.
 
 Do not commit machine-local dependency symlinks, transient index lock files,
 `node_modules`, `__pycache__`, or credential-bearing notebooks.
