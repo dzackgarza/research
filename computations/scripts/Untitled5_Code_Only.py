@@ -1,0 +1,49 @@
+"""
+Code extracted from: Untitled5.ipynb
+This file contains only the code cells from the notebook.
+"""
+
+# === Code Cell 1 ===
+
+import pickle
+
+with open ('past_responses', 'rb') as fp:
+    past_responses = pickle.load(fp)
+
+for x in past_responses:
+    #print("CONTENT")
+    print( x[0] )
+    print('-----------------------------------------')
+    print('-----------------------------------------')
+    print("CODE")
+    print( x[1] )
+    print('-----------------------------------------')
+    print('-----------------------------------------')
+    print('-----------------------------------------')
+    print('-----------------------------------------')
+
+
+# === Code Cell 2 ===
+
+with open('past_errors', 'rb') as fp:
+    past_errors = pickle.load(fp)
+
+for er in past_errors:
+    print(er)
+    print("-----------------")
+
+
+# === Code Cell 3 ===
+
+past_errors = [
+"cannot access submodule 'rational_field' of module 'sage.rings' (most likely due to a circular import)",
+"name 'AbelianGroup' is not defined",
+"name 'groups' is not defined",
+"Error encountered: name 'CyclicGroup' is not defined",
+]
+
+with open('past_errors', 'wb') as fp:
+    pickle.dump(past_errors, fp)
+
+past_errors
+

@@ -1,0 +1,421 @@
+# Notebook: Untitled3.ipynb
+============================================================
+
+## Code Cell 3
+
+```python
+from sage.groups.perm_gps.permgroup_named import CyclicPermutationGroup, DihedralGroup, QuaternionGroup, SymmetricGroup
+from sage.groups.affine_gps.affine_group import AffineGroup
+from sage.all import *
+
+def automorphism_group(G):
+    G_original = G[0] if isinstance(G, tuple) and len(G) >= 1 and hasattr(G[0], '_gap_') else G
+
+    gap_G = G_original.gap()
+    
+    if isinstance(G_original, sage.groups.finitely_presented.FinitelyPresentedGroup):
+        print(f"Handling FinitelyPresentedGroup with specific GAP sequence.")
+        
+        aa = gap_G.AutomorphismGroup()
+        iso_gap = aa.IsomorphismFpGroup()
+        fp_grp = iso_gap.Range()
+        
+        fp_grp_as_perm = fp_grp.IsomorphismPermGroup().Range()
+        
+        gap_cmd = f"aut_gens := SmallGeneratingSet({fp_grp_as_perm})"
+        gap.eval(gap_cmd)
+        aut_gens_gap_list = gap.new("aut_gens")
+
+    else:
+        gap_cmd = f"aut_gens := SmallGeneratingSet(NiceObject(AutomorphismGroup({gap_G})))"
+        gap.eval(gap_cmd)
+        aut_gens_gap_list = gap.new("aut_gens")
+    
+    if G_original.order() == 1 and not aut_gens_gap_list:
+        return PermutationGroup([])
+    
+    automorphism_group_sage = PermutationGroup(aut_gens_gap_list)
+    
+    return automorphism_group_sage
+
+COLOR_GREEN = "\033[92m"
+COLOR_RED = "\033[91m"
+COLOR_RESET = "\033[0m"
+
+def get_affine_matrix_group(G_affine):
+    mats = list(G_affine._GL) # Iterate over the GL(1,F) group to get its elements
+    vecs = list(G_affine.vector_space()) # Iterate over the vector space to get its elements
+
+    elements_as_matrices = []
+    for A_gl in mats:
+        for b_vec in vecs:
+            # Construct an AffineGroupElement using its element_class
+            # Then get its matrix representation.
+            affine_element = G_affine.element_class(G_affine, A_gl, b_vec, check=False, convert=False)
+            elements_as_matrices.append(affine_element.matrix())
+    
+    return MatrixGroup(elements_as_matrices)
+
+test_cases = [
+    {
+        'name': 'Symmetric Group S3',
+        'group': SymmetricGroup(3),
+        'expected_aut': SymmetricGroup(3),
+        'citation': 'Aut(S_n) is S_n for n >= 3, n != 6. [https://en.wikipedia.org/wiki/Automorphism_group_of_a_symmetric_group]'
+    },
+    {
+        'name': 'Trivial Group',
+        'group': PermutationGroup([]),
+        'expected_aut': PermutationGroup([]),
+        'citation': 'Aut(G) is trivial if G is trivial.'
+    },
+    {
+        'name': 'Finitely Presented Group (Z2 x Z2)',
+        'group': FreeGroup(['a', 'b']) / [FreeGroup(['a', 'b']).gen(0)^2, FreeGroup(['a', 'b']).gen(1)^2, FreeGroup(['a', 'b']).gen(0)*FreeGroup(['a', 'b']).gen(1)*FreeGroup(['a', 'b']).gen(0)^-1*FreeGroup(['a', 'b']).gen(1)^-1],
+        'expected_aut': SymmetricGroup(3),
+        'citation': 'Aut(C_2 x C_2) is isomorphic to S_3. [https://groupprops.subwiki.org/wiki/Automorphism_group_of_Klein_four-group]'
+    },
+    {
+        'name': 'Matrix Group GL(2,2)',
+        'group': MatrixGroup([MatrixSpace(GF(2), 2)([[1, 1], [0, 1]]), MatrixSpace(GF(2), 2)([[1, 0], [1, 1]])]),
+        'expected_aut': SymmetricGroup(3),
+        'citation': 'GL(2,2) is isomorphic to S_3. [https://en.wikipedia.org/wiki/General_linear_group_over_finite_fields#GL(2,2)]'
+    },
+    {
+        'name': 'Cyclic Group C8',
+        'group': CyclicPermutationGroup(8),
+        'expected_aut': direct_product_permgroups([CyclicPermutationGroup(2), CyclicPermutationGroup(2)]),
+        'citation': 'Aut(C_n) is isomorphic to U(n), the group of units modulo n. U(8) is C_2 x C_2. [https://en.wikipedia.org/wiki/Automorphism_group_of_a_cyclic_group]'
+    },
+    {
+        'name': 'Dihedral Group D5',
+        'group': DihedralGroup(5),
+        'expected_aut': get_affine_matrix_group(AffineGroup(1, GF(5))).as_permutation_group(),
+        'citation': 'Aut(D_n) for odd n is isomorphic to Aff(Z_n). [https://en.wikipedia.org/wiki/Automorphism_group_of_a_dihedral_group]'
+    },
+    {
+        'name': 'Quaternion Group Q8',
+        'group': QuaternionGroup(),
+        'expected_aut': SymmetricGroup(4),
+        'citation': 'Aut(Q_8) is isomorphic to S_4. [https://en.wikipedia.org/wiki/Quaternion_group]'
+    },
+]
+
+print("--- Running Automorphism Group Tests ---")
+
+for test_case in test_cases:
+    name = test_case['name']
+    group = test_case['group']
+    expected_aut = test_case['expected_aut']
+    citation = test_case['citation']
+
+    print(f"\n--- Testing: {name} ---")
+    print(f"Input Group: {group}")
+    print(f"Input Group Type: {type(group)}")
+
+    try:
+        computed_aut = automorphism_group(group)
+        print(f"Computed Automorphism Group: {computed_aut}")
+        print(f"Computed Order: {computed_aut.order()}")
+        print(f"Expected Order: {expected_aut.order()}")
+
+        assert computed_aut.order() == expected_aut.order(), f"Order mismatch for {name}: Expected {expected_aut.order()}, Got {computed_aut.order()}"
+        assert computed_aut.is_isomorphic(expected_aut), f"Isomorphism mismatch for {name}: Computed Aut(G) not isomorphic to expected {expected_aut.name()}"
+        print(f"{COLOR_GREEN}Test Passed for {name}.{COLOR_RESET}")
+        print(f"Isomorphism Reference: {citation}")
+
+    except Exception as e:
+        print(f"{COLOR_RED}Test Failed for {name}: {type(e).__name__}: {e}{COLOR_RESET}")
+    print("-" * 30)
+```
+
+----------------------------------------
+
+## Code Cell 4
+
+```python
+F = FreeGroup(['a', 'b'])
+G_fp_test = F / [F.gen(0)^2, F.gen(1)^2, F.gen(0)*F.gen(1)*F.gen(0)^-1*F.gen(1)^-1]
+
+aa = gap_G.AutomorphismGroup()
+iso_gap = aa.IsomorphismFpGroup()
+fp_grp = iso_gap.Range()
+
+fp_grp_as_perm = fp_grp.IsomorphismPermGroup().Range()
+
+gap_cmd = "aut_gens := SmallGeneratingSet(NiceObject(AutomorphismGroup({})))".format(fp_grp_as_perm)
+gap.eval(gap_cmd)
+aut_gens_gap_list = gap.new("aut_gens")
+aut_gens_gap_list
+```
+
+----------------------------------------
+
+## Code Cell 5
+
+```python
+Write a Sagemath function that takes a set of points in the plane, forms a polyhedron P from their convex hull, and computes the automorphism group of P. Include a variety of test cases, where the polyhedron spanned has a well-known automorphism group. Include citations in comments to how and why these automorphism groups are known. Use assertions to give evidence that this function is rigorously correct.
+```
+
+----------------------------------------
+
+## Code Cell 6
+
+```python
+def automorphism_group_of_convex_hull(points):
+    """
+    Computes the automorphism group of the convex hull of a set of points in the plane.
+
+    Args:
+        points: A set of points in the plane, represented as a list of tuples (x, y).
+
+    Returns:
+        The automorphism group of the convex hull of the points, as a permutation group.  Returns None if the input is invalid.
+    """
+    if not points or not all(isinstance(p, tuple) and len(p) == 2 for p in points):
+        return None
+
+    try:
+        polyhedron = Polyhedron(vertices=points)
+        return polyhedron.automorphism_group()
+    except ValueError:
+        return None
+
+def test_automorphism_group_of_convex_hull():
+    # Test cases with well-known automorphism groups
+
+    # Equilateral triangle: Dihedral group of order 6 (D3)
+    # https://en.wikipedia.org/wiki/Dihedral_group
+    points = [(0, 0), (1, 0), (1/2, sqrt(3)/2)]
+    G = automorphism_group_of_convex_hull(points)
+    assert G.order() == 6
+    assert G.is_isomorphic(DihedralGroup(3))
+
+
+    # Square: Dihedral group of order 8 (D4)
+    # https://en.wikipedia.org/wiki/Dihedral_group
+    points = [(0, 0), (1, 0), (1, 1), (0, 1)]
+    G = automorphism_group_of_convex_hull(points)
+    assert G.order() == 8
+    assert G.is_isomorphic(DihedralGroup(4))
+
+
+    # Regular pentagon: Dihedral group of order 10 (D5)
+    # https://en.wikipedia.org/wiki/Dihedral_group
+    points = [(cos(2*pi*i/5), sin(2*pi*i/5)) for i in range(5)]
+    G = automorphism_group_of_convex_hull(points)
+    assert G.order() == 10
+    assert G.is_isomorphic(DihedralGroup(5))
+
+
+    # Regular hexagon: Dihedral group of order 12 (D6)
+    # https://en.wikipedia.org/wiki/Dihedral_group
+    points = [(cos(2*pi*i/6), sin(2*pi*i/6)) for i in range(6)]
+    G = automorphism_group_of_convex_hull(points)
+    assert G.order() == 12
+    assert G.is_isomorphic(DihedralGroup(6))
+
+    #Rectangle that is not a square: Dihedral group of order 4 (D2)
+    points = [(0,0),(2,0),(2,1),(0,1)]
+    G = automorphism_group_of_convex_hull(points)
+    assert G.order() == 4
+    assert G.is_isomorphic(DihedralGroup(2))
+
+    # Test with collinear points (should return None or handle gracefully)
+    points = [(0,0), (1,0), (2,0)]
+    G = automorphism_group_of_convex_hull(points)
+    assert G is None or G.order() == 2 #Depending on how Sage handles this case.
+
+
+    # Test with a non-convex set of points
+    points = [(0,0), (1,1), (0,1), (1,0), (0.5, 0.5)]
+    G = automorphism_group_of_convex_hull(points)
+    assert G is not None #Should still return a group for the convex hull.
+
+    #Test with empty set of points
+    points = []
+    G = automorphism_group_of_convex_hull(points)
+    assert G is None
+
+test_automorphism_group_of_convex_hull()
+```
+
+----------------------------------------
+
+## Code Cell 7
+
+```python
+def automorphism_group_of_convex_hull(points):
+    """
+    Computes the automorphism group of the convex hull of a set of points in the plane.
+
+    Args:
+        points: A set of points in the plane, represented as a list of tuples (x, y).
+
+    Returns:
+        The automorphism group of the convex hull of the points, as a permutation group.  Returns None if the input is invalid.
+    """
+    if not points or not all(isinstance(p, tuple) and len(p) == 2 for p in points):
+        return None
+
+    try:
+        polyhedron = Polyhedron(vertices=points)
+        return polyhedron.automorphism_group()
+    except ValueError:
+        return None
+```
+
+----------------------------------------
+
+## Code Cell 8
+
+```python
+def plot_triangulated_square_with_centroids(grid_size=4, center_at_origin=True):
+    """
+    Constructs a triangulated integral square grid, places nodes at triangle
+    centroids, and plots the result. The grid is defined by a Polyhedron,
+    and the triangulation includes both integral points and unit square centers.
+
+    Input:
+        grid_size (int): The side length of the integral square (e.g., 4 for a 4x4 grid).
+                         The grid will span from -grid_size/2 to grid_size/2 if centered.
+        center_at_origin (bool): If True, the grid spans from -grid_size/2 to grid_size/2.
+                                 If False, it spans from 0 to grid_size.
+
+    Output:
+        A SageMath Graphics object.
+    """
+    import numpy as np
+    from scipy.spatial import Delaunay
+
+    offset_val = 0
+    if center_at_origin:
+        offset_val = -grid_size / 2
+
+    # Define the vertices of the outer square for the Polyhedron
+    poly_vertices = [
+        vector([0 + offset_val, 0 + offset_val]),
+        vector([grid_size + offset_val, 0 + offset_val]),
+        vector([grid_size + offset_val, grid_size + offset_val]),
+        vector([0 + offset_val, grid_size + offset_val]),
+    ]
+
+    square_poly = Polyhedron(vertices=poly_vertices)
+    all_triangulation_points = square_poly.integral_points()
+
+    # Convert to NumPy array for Delaunay triangulation
+    numpy_points = np.array([[p[0], p[1]] for p in all_triangulation_points])
+    triangulation = Delaunay(numpy_points)
+
+    plot_elements = []
+    centroids = []
+
+    plot_elements.append(square_poly.plot(color='gray', alpha=0.2, aspect_ratio=1))
+
+    for simplex_indices in triangulation.simplices:
+        p1 = all_triangulation_points[simplex_indices[0]]
+        p2 = all_triangulation_points[simplex_indices[1]]
+        p3 = all_triangulation_points[simplex_indices[2]]
+
+        plot_elements.append(line([p1, p2], color='black', thickness=1.5))
+        plot_elements.append(line([p2, p3], color='black', thickness=1.5))
+        plot_elements.append(line([p3, p1], color='black', thickness=1.5))
+
+        centroid = (p1 + p2 + p3) / 3
+        centroids.append(centroid)
+        plot_elements.append(point(centroid, color='yellow', size=20, zorder=2))
+
+    for i, simplex_indices in enumerate(triangulation.simplices):
+        current_centroid = centroids[i]
+        for neighbor_idx in triangulation.neighbors[i]:
+            if neighbor_idx != -1 and neighbor_idx > i:
+                neighbor_centroid = centroids[neighbor_idx]
+                plot_elements.append(line([current_centroid, neighbor_centroid], color='blue', thickness=1, linestyle='--'))
+
+
+    grid_center_x = grid_size/2 + offset_val
+    grid_center_y = grid_size/2 + offset_val
+
+    top_centroids = []
+    bottom_centroids = []
+    left_centroids = []
+    right_centroids = []
+    tolerance = 1e-9
+
+    for c in centroids:
+        cx_rel = c[0] - grid_center_x
+        cy_rel = c[1] - grid_center_y
+        if cy_rel > tolerance and cy_rel >= abs(cx_rel):
+            top_centroids.append(c)
+        elif cy_rel < -tolerance and -cy_rel >= abs(cx_rel):
+            bottom_centroids.append(c)
+        elif cx_rel < -tolerance and -cx_rel >= abs(cy_rel):
+            left_centroids.append(c)
+        elif cx_rel > tolerance and cx_rel >= abs(cy_rel):
+            right_centroids.append(c)
+
+    top_centroids = sorted(top_centroids, key=lambda p: p[0])
+    bottom_centroids = sorted(bottom_centroids, key=lambda p: p[0])
+    left_centroids = sorted(left_centroids, key=lambda p: p[1])
+    right_centroids = sorted(right_centroids, key=lambda p: p[1])
+
+
+    arc_connections = []
+    def add_arc(p_start, p_end, dx, dy):
+        cp1 = p_start + vector([dx, dy])
+        cp2 = p_end + vector([-dx, dy])
+        arc_connections.append([p_start, cp1, cp2, p_end])
+
+    if len(top_centroids) >= 2:
+        add_arc(top_centroids[0], top_centroids[-1], -0.5, 1.0)
+    if len(bottom_centroids) >= 2:
+        add_arc(bottom_centroids[0], bottom_centroids[-1], -0.5, -1.0)
+    if len(left_centroids) >= 2:
+        add_arc(left_centroids[0], left_centroids[-1], -1.0, -0.5)
+    if len(right_centroids) >= 2:
+        add_arc(right_centroids[0], right_centroids[-1], 1.0, -0.5)
+
+
+    for path in arc_connections:
+        plot_elements.append(bezier_path(path))
+
+
+    for i in range(grid_size + 1):
+        for j in range(grid_size + 1):
+            plot_elements.append(point((i + offset_val, j + offset_val), color='black', size=10, zorder=3))
+
+    for i in range(grid_size):
+        for j in range(grid_size):
+            plot_elements.append(line([(i + offset_val, j + offset_val), (i + 1 + offset_val, j + 1 + offset_val)], color='gray', linestyle=':', alpha=0.5))
+            plot_elements.append(line([(i + 1 + offset_val, j + offset_val), (i + offset_val, j + 1 + offset_val)], color='gray', linestyle=':', alpha=0.5))
+
+    return sum(plot_elements)
+
+plot_triangulated_square_with_centroids()
+```
+
+----------------------------------------
+
+## Code Cell 9
+
+```python
+bezier_path( [(-5/3, 5/3), (-2.16666666666667, 2.66666666666667), (2.16666666666667, 2.66666666666667), (5/3, 5/3)] )
+```
+
+----------------------------------------
+
+## Code Cell 10
+
+```python
+bezier_path([
+    [(-5/3, 5/3), (-2.16666666666667, 2.66666666666667), (2.16666666666667, 2.66666666666667), (5/3, 5/3)],
+    [(.5,1),(0,0), (1,1), (2,4)]
+], linestyle='dashed')
+```
+
+----------------------------------------
+
+# Summary
+- Total cells: 13
+- Code cells: 10
+- Markdown cells: 0

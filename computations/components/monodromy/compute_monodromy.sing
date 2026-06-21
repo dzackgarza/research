@@ -1,0 +1,309 @@
+/*
+ * Hodge-theoretic monodromy data from the Picard-Fuchs operator.
+ */
+LIB "foliation.lib";
+
+proc print_section(string title)
+{
+    "";
+    "=========================================================";
+    title;
+    "=========================================================";
+}
+
+proc print_labelled_matrix(string label, matrix M)
+{
+    label;
+    print(M);
+}
+
+proc print_picard_fuchs_operator(matrix PF, string p_name)
+{
+    int op_order = ncols(PF) - 1;
+    int idx;
+    string deriv = "D" + p_name;
+    string operator_string = "";
+    string term;
+
+    for (idx = op_order; idx >= 0; idx--)
+    {
+        term = "(" + string(PF[1, idx + 1]) + ")";
+        if (idx >= 1) { term = term + "*" + deriv; }
+        if (idx >= 2) { term = term + "^" + string(idx); }
+        if (operator_string != "") { operator_string = operator_string + " + "; }
+        operator_string = operator_string + term;
+    }
+
+    "Picard-Fuchs operator L:";
+    print("   L = " + operator_string);
+    print("   L * Pi(" + p_name + ") = 0");
+}
+
+proc matrix_rows(matrix M)
+{
+    int row_idx, col_idx;
+    int row_count = nrows(M);
+    int col_count = ncols(M);
+    list rows;
+    string row_string;
+    for (row_idx = 1; row_idx <= row_count; row_idx++)
+    {
+        row_string = "[";
+        for (col_idx = 1; col_idx <= col_count; col_idx++)
+        {
+            row_string = row_string + string(M[row_idx, col_idx]);
+            if (col_idx < col_count) { row_string = row_string + ", "; }
+        }
+        row_string = row_string + "]";
+        rows[row_idx] = row_string;
+    }
+    return(rows);
+}
+
+proc print_matrix_identity(string label, list left_rows, string middle_op, list right1_rows, list right2_rows)
+{
+    int idx;
+    int center = (size(left_rows) + 2) div 2;
+    string eq_sign;
+    string op_sign;
+    label;
+    for (idx = 1; idx <= size(left_rows); idx++)
+    {
+        eq_sign = " ";
+        op_sign = " ";
+        if (idx == center)
+        {
+            eq_sign = "=";
+            op_sign = middle_op;
+        }
+        print("   " + left_rows[idx] + " " + eq_sign + " " + right1_rows[idx] + " " + op_sign + " " + right2_rows[idx]);
+    }
+}
+
+proc solve_hodge_monodromy(poly f, string p_name)
+{
+    int ii, jj, kk, ll, mm, block_idx, dist;
+    int p_idx = 0;
+    int n_vars = nvars(basering);
+    int cur_r_idx = 1;
+    int S = 1000;
+
+    ideal J;
+    ideal B_base;
+    int mu;
+
+    poly gen_p;
+    poly dy_c;
+    poly P_form;
+    poly ck;
+    poly dt;
+    poly lead_term;
+
+    matrix PF;
+    list j_info;
+    list leads;
+    list shifts;
+    list block_data;
+    list R_rows;
+    list R_s_rows;
+    list R_n_rows;
+    list N_rows;
+    list T_rows;
+    list I_rows;
+
+    def r_caller = basering;
+    execute("vector ve;");
+    string v_s = "[";
+    string row_string;
+    string entry;
+    string eig_str;
+    string block_summary = "";
+
+    for (ii = 1; ii <= npars(basering); ii++)
+    {
+        if (parstr(ii) == p_name) { p_idx = ii; }
+        if (ii == p_idx) { v_s = v_s + "1"; }
+        else { v_s = v_s + "0"; }
+        if (ii < npars(basering)) { v_s = v_s + ","; }
+    }
+    v_s = v_s + "]";
+    execute("ve = " + v_s + ";");
+
+    if (p_idx == 0)
+    {
+        "ERROR: parameter not found in the base ring.";
+        return();
+    }
+
+    J = jacob(f);
+    B_base = kbase(std(J));
+    mu = size(B_base);
+
+    gen_p = 0;
+    for (ii = 1; ii <= mu; ii++) { gen_p = gen_p + B_base[ii]; }
+    dy_c = diff(f, var(n_vars));
+    P_form = (-1)^(n_vars - 1) * (dy_c / var(n_vars)) * gen_p;
+    PF = PFequ(f, P_form, ve);
+
+    for (kk = 0; kk <= mu; kk++)
+    {
+        ck = PF[1, kk + 1];
+        if (ck != 0)
+        {
+            dt = ck;
+            shifts[kk + 1] = 0;
+            while (dt != 0 && subst(dt, t, 0) == 0)
+            {
+                dt = dt / t;
+                shifts[kk + 1] = shifts[kk + 1] + 1;
+            }
+            lead_term = subst(dt, t, 0);
+            leads[kk + 1] = string(lead_term);
+            shifts[kk + 1] = shifts[kk + 1] - kk;
+        }
+        else
+        {
+            leads[kk + 1] = "0";
+            shifts[kk + 1] = 1000;
+        }
+    }
+
+    for (kk = 0; kk <= mu; kk++)
+    {
+        if (shifts[kk + 1] < S) { S = shifts[kk + 1]; }
+    }
+
+    print_section("HODGE-THEORETIC MONODROMY DATA");
+    "f =";
+    print(f);
+    "Parameter:";
+    print(p_name);
+    "Milnor number mu:";
+    print(mu);
+
+    print_section("PICARD-FUCHS DATA");
+    print_picard_fuchs_operator(PF, p_name);
+
+    ring r_rho = (0, t, i, pi), (rho), dp;
+    execute("poly P_ind = 0;");
+    execute("poly ff = 0;");
+    execute("poly tmp_p = 0;");
+    execute("number cur_c = 0;");
+    execute("number c_mu = 0;");
+    execute("number ci = 0;");
+    for (kk = 0; kk <= mu; kk++)
+    {
+        if (shifts[kk + 1] == S)
+        {
+            ff = 1;
+            for (jj = 0; jj < kk; jj++) { ff = ff * (rho - jj); }
+            execute("cur_c = " + leads[kk + 1] + ";");
+            P_ind = P_ind + cur_c * ff;
+        }
+    }
+    "Indicial polynomial I(rho):";
+    print(P_ind);
+
+    execute("matrix R[" + string(mu) + "][" + string(mu) + "];");
+    execute("matrix R_s[" + string(mu) + "][" + string(mu) + "];");
+    execute("matrix R_n[" + string(mu) + "][" + string(mu) + "];");
+    execute("matrix JNF_R[" + string(mu) + "][" + string(mu) + "];");
+    execute("matrix N[" + string(mu) + "][" + string(mu) + "];");
+    execute("matrix T_u[" + string(mu) + "][" + string(mu) + "];");
+    execute("matrix Iden[" + string(mu) + "][" + string(mu) + "];");
+
+    c_mu = leadcoef(P_ind);
+    for (ii = 1; ii <= mu; ii++)
+    {
+        tmp_p = P_ind;
+        for (ll = 0; ll < (ii - 1); ll++) { tmp_p = diff(tmp_p, rho); }
+        ci = number(subst(tmp_p, rho, 0)) / factorial(ii - 1);
+        R[mu, ii] = -ci / c_mu;
+    }
+    for (ii = 1; ii < mu; ii++) { R[ii, ii + 1] = 1; }
+
+    j_info = jordan(R);
+    def eig_R = j_info[1];
+    def b_sizes = j_info[2];
+    def m_counts = j_info[3];
+
+    for (ii = 1; ii <= ncols(eig_R); ii++)
+    {
+        eig_str = string(eig_R[ii]);
+        for (mm = 1; mm <= m_counts[ii]; mm++)
+        {
+            block_summary = eig_str + " (size " + string(b_sizes[ii]) + ")";
+            block_data[size(block_data) + 1] = block_summary;
+            for (block_idx = 0; block_idx < b_sizes[ii]; block_idx++)
+            {
+                JNF_R[cur_r_idx + block_idx, cur_r_idx + block_idx] = eig_R[ii];
+                R_s[cur_r_idx + block_idx, cur_r_idx + block_idx] = eig_R[ii];
+                if (block_idx < b_sizes[ii] - 1)
+                {
+                    JNF_R[cur_r_idx + block_idx, cur_r_idx + block_idx + 1] = 1;
+                    R_n[cur_r_idx + block_idx, cur_r_idx + block_idx + 1] = 1;
+                }
+            }
+            for (dist = 0; dist < b_sizes[ii]; dist++)
+            {
+                T_u[cur_r_idx + dist, cur_r_idx + dist] = 1;
+            }
+            for (dist = 1; dist < b_sizes[ii]; dist++)
+            {
+                for (block_idx = 0; block_idx + dist < b_sizes[ii]; block_idx++)
+                {
+                    T_u[cur_r_idx + block_idx, cur_r_idx + block_idx + dist] = (2 * pi * i)^dist / factorial(dist);
+                }
+            }
+            cur_r_idx = cur_r_idx + b_sizes[ii];
+        }
+    }
+
+    for (ii = 1; ii <= mu; ii++)
+    {
+        Iden[ii, ii] = 1;
+        for (jj = 1; jj <= mu; jj++)
+        {
+            N[ii, jj] = (2 * pi * i) * R_n[ii, jj];
+        }
+    }
+
+    for (ii = 1; ii <= mu; ii++)
+    {
+        for (jj = 1; jj <= mu; jj++)
+        {
+            if (R_s[ii, jj] != 0)
+            {
+                "ERROR: expected unipotent monodromy, but the computed semisimple part R_s is nonzero.";
+                print_labelled_matrix("Computed R_s:", R_s);
+                return();
+            }
+        }
+    }
+
+    R_rows = matrix_rows(JNF_R);
+    R_s_rows = matrix_rows(R_s);
+    R_n_rows = matrix_rows(R_n);
+    N_rows = matrix_rows(N);
+    T_rows = matrix_rows(T_u);
+    I_rows = matrix_rows(Iden);
+
+    print_section("JORDAN DATA");
+    "Jordan blocks for R = (2*pi*i)^(-1) log(T):";
+    for (ii = 1; ii <= size(block_data); ii++)
+    {
+        print("   " + string(ii) + ". " + block_data[ii]);
+    }
+
+    print_section("MONODROMY INVARIANTS");
+    "Assertion: T_s = I, so the local monodromy is unipotent and N = log(T).";
+    print_matrix_identity("R = R_s + R_n", R_rows, "+", R_s_rows, R_n_rows);
+    print_matrix_identity("T = T_s T_u with T_s = I", T_rows, "*", I_rows, T_rows);
+    print_labelled_matrix("N = log(T):", N);
+    print_labelled_matrix("T = exp(N):", T_u);
+}
+
+ring r = (0, t), (x, y), wp(2, 3);
+poly f = y^2 - x * (x - 1) * (x - t);
+solve_hodge_monodromy(f, "t");
+quit;

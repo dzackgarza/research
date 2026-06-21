@@ -1,0 +1,3 @@
+[submodule "projects/lattice-research"]
+	path = projects/lattice-research
+	url = git@github.com:dzackgarza/lattice-research.git
