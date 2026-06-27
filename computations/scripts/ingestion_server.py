@@ -9,10 +9,9 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
-# Globals to track managed server
-managed_process = None
-managed_port = None
-managed_url = None
+# Systemd-managed server info
+SYSTEMD_JUPYTER_PORT = 8888
+SYSTEMD_JUPYTER_TOKEN = "JUPYTER_MCP_TOKEN_1"
 
 class IngestionHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
@@ -64,7 +63,6 @@ class IngestionHandler(BaseHTTPRequestHandler):
             self.send_error(404, "File not found")
 
     def do_POST(self):
-        global managed_process, managed_port, managed_url
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
         
@@ -124,70 +122,8 @@ class IngestionHandler(BaseHTTPRequestHandler):
             except Exception as e:
                 self.send_error_response(500, str(e))
 
-        elif self.path == '/api/start_jupyter':
-            try:
-                data = json.loads(post_data.decode('utf-8'))
-                port = int(data.get('port', 8888))
-                
-                # Check if running
-                if managed_process and managed_process.poll() is None:
-                    self.send_error_response(400, "A managed server is already running")
-                    return
-                
-                # Launch Jupyter subprocess via uvx
-                log_dir = REPO_ROOT / '.agents' / 'logs'
-                log_dir.mkdir(parents=True, exist_ok=True)
-                log_file_path = log_dir / 'jupyter.log'
-                
-                # Truncate old log
-                with open(log_file_path, 'w') as lf:
-                    lf.write(f"--- Jupyter Server Launching at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n")
-                
-                cmd = [
-                    'uvx', '--from', 'jupyter-core', '--with', 'notebook', '--with', 'jupyter-client',
-                    'jupyter', 'notebook', '--no-browser', f'--port={port}', f'--notebook-dir={REPO_ROOT}'
-                ]
-                
-                log_file = open(log_file_path, 'a')
-                managed_process = subprocess.Popen(cmd, stdout=log_file, stderr=log_file, cwd=str(REPO_ROOT))
-                managed_port = port
-                
-                # Wait for token in log
-                token_url = None
-                for _ in range(30):  # Wait up to 6 seconds
-                    time.sleep(0.2)
-                    if log_file_path.exists():
-                        with open(log_file_path, 'r') as lf:
-                            log_content = lf.read()
-                            urls = re.findall(r'http://(?:localhost|127\.0\.0\.1):\d+/\?token=\w+', log_content)
-                            if urls:
-                                token_url = urls[0]
-                                break
-                                
-                if token_url:
-                    # Clean up bahamut/127.0.0.1 to localhost
-                    token_url = re.sub(r'http://(?:127\.0\.0\.1|[^:]+):', 'http://localhost:', token_url)
-                    managed_url = token_url
-                    
-                    self.send_response(200)
-                    self.send_header('Content-Type', 'application/json')
-                    self.end_headers()
-                    self.wfile.write(json.dumps({"status": "success", "url": managed_url}).encode('utf-8'))
-                else:
-                    self.send_error_response(500, "Jupyter server started but token URL could not be parsed from logs.")
-            except Exception as e:
-                self.send_error_response(500, str(e))
-
-        elif self.path == '/api/stop_jupyter':
-            if managed_process and managed_process.poll() is None:
-                managed_process.terminate()
-                managed_process.wait(timeout=3)
-                managed_process = None
-                self.send_response(200)
-                self.end_headers()
-                self.wfile.write(b"Stopped")
-            else:
-                self.send_error_response(400, "No managed server running")
+        elif self.path == '/api/start_jupyter' or self.path == '/api/stop_jupyter':
+            self.send_error_response(400, "Jupyter lifecycle is managed by systemd (jupyter-sagemath.service). Use systemctl to start/stop.")
 
         elif self.path == '/api/delete_notebook':
             try:
@@ -225,49 +161,24 @@ class IngestionHandler(BaseHTTPRequestHandler):
 
 
 # Helper functions
-def discover_running_servers():
-    try:
-        res = subprocess.run([
-            'uvx', '--from', 'jupyter-core', '--with', 'notebook', '--with', 'jupyter-client',
-            'jupyter', 'notebook', 'list'
-        ], capture_output=True, text=True, timeout=4)
-        
-        servers = []
-        for line in res.stdout.splitlines():
-            if ' :: ' in line:
-                url, directory = line.split(' :: ', 1)
-                servers.append({
-                    "url": url.strip(),
-                    "directory": Path(directory.strip()).resolve()
-                })
-        return servers
-    except Exception:
-        return []
+import socket
+
+def is_port_open(port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.settimeout(0.5)
+        try:
+            s.connect(('127.0.0.1', port))
+            return True
+        except OSError:
+            return False
 
 def get_active_server():
-    global managed_process, managed_port, managed_url
-    # 1. First prioritize our own subprocess if active
-    if managed_process and managed_process.poll() is None:
+    if is_port_open(SYSTEMD_JUPYTER_PORT):
         return {
-            "url": managed_url,
-            "port": managed_port,
-            "directory": REPO_ROOT.resolve()
+            "url": f"http://localhost:{SYSTEMD_JUPYTER_PORT}/?token={SYSTEMD_JUPYTER_TOKEN}",
+            "port": SYSTEMD_JUPYTER_PORT,
+            "directory": Path("/home/dzack").resolve()
         }
-    
-    # 2. Query environment
-    servers = discover_running_servers()
-    for s in servers:
-        try:
-            if REPO_ROOT.resolve().is_relative_to(s["directory"]):
-                port_match = re.search(r':(\d+)/', s["url"])
-                port = int(port_match.group(1)) if port_match else 8888
-                return {
-                    "url": s["url"],
-                    "port": port,
-                    "directory": s["directory"]
-                }
-        except ValueError:
-            pass
     return None
 
 def make_launch_url(notebook_rel_path, server):
