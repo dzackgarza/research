@@ -11,7 +11,6 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 # Systemd-managed server info
 SYSTEMD_JUPYTER_PORT = 8888
-SYSTEMD_JUPYTER_TOKEN = "JUPYTER_MCP_TOKEN_1"
 
 class IngestionHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
@@ -175,7 +174,7 @@ def is_port_open(port):
 def get_active_server():
     if is_port_open(SYSTEMD_JUPYTER_PORT):
         return {
-            "url": f"http://localhost:{SYSTEMD_JUPYTER_PORT}/?token={SYSTEMD_JUPYTER_TOKEN}",
+            "url": f"http://localhost:{SYSTEMD_JUPYTER_PORT}",
             "port": SYSTEMD_JUPYTER_PORT,
             "directory": Path("/home/dzack").resolve()
         }
@@ -190,22 +189,10 @@ def make_launch_url(notebook_rel_path, server):
     except ValueError:
         rel_to_server = notebook_rel_path
         
-    base_url = server["url"]
-    
-    if "/?token=" in base_url:
-        host_part, token_part = base_url.split("/?token=", 1)
-        token_str = f"?token={token_part}"
-    elif "?" in base_url:
-        host_part, query_part = base_url.split("?", 1)
-        token_str = f"?{query_part}"
-    else:
-        host_part = base_url.rstrip('/')
-        token_str = ""
-        
-    # Standardize hostname to localhost
+    host_part = server["url"].rstrip('/')
     host_part = re.sub(r'http://(?:127\.0\.0\.1|[^:]+):', 'http://localhost:', host_part)
     
-    return f"{host_part}/notebooks/{rel_to_server.as_posix()}{token_str}"
+    return f"{host_part}/lab/tree/{rel_to_server.as_posix()}"
 
 def get_notebooks_list():
     notebooks = []
