@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from itertools import product
+
 import pytest
 
-from sage.all import Matrix, QQ, ZZ, identity_matrix, matrix
+from sage.all import Matrix, Polyhedron, QQ, ZZ, identity_matrix, matrix
 from sage.categories.modules import Modules
 
 from sage_lattice_category_spike.lattice_categories import (
@@ -67,22 +69,63 @@ def test_category_dispatch_uses_form_axioms_not_constructor_factories():
 def test_positive_definite_algorithms_are_axiom_gated():
     A2 = Lattice("A2", label="A2")
     U = Lattice("U", label="U")
+    rank_one = Lattice(matrix(ZZ, 1, 1, [2]), label="<2>")
+    rank_three = Lattice(matrix.diagonal(ZZ, [2, 4, 6]), label="<2,4,6>")
 
     reduced = A2.LLL()
     assert isinstance(reduced, SyntheticLattice)
     change_of_basis = matrix(ZZ, A2.gram_matrix()).LLL_gram()
     assert_matrix_equal(reduced.gram_matrix(), change_of_basis * A2.gram_matrix() * change_of_basis.transpose())
+    assert reduced.determinant() == A2.determinant()
+    assert reduced.discriminant() == A2.discriminant()
     G = matrix(ZZ, 3, 3, [4, 1, 1, 1, 3, 1, 1, 1, 2])
-    bkz_lattice = Lattice(G, label="G").BKZ(block_size=2)
+    G_lattice = Lattice(G, label="G")
+    bkz_lattice = G_lattice.BKZ(block_size=2)
     assert_matrix_equal(bkz_lattice.gram_matrix(), matrix(ZZ, 3, 3, [2, 1, 1, 1, 3, 1, 1, 1, 4]))
+    assert bkz_lattice.determinant() == G_lattice.determinant()
+    assert bkz_lattice.discriminant() == G_lattice.discriminant()
+    assert [[tuple(vector.coordinates()) for vector in vectors] for vectors in rank_one.short_vectors(5)] == [
+        [(0,)],
+        [],
+        [(1,), (-1,)],
+        [],
+        [],
+    ]
     short = A2.short_vectors(3)
     assert [[tuple(vector.coordinates()) for vector in vectors] for vectors in short] == [
         [(0, 0)],
         [],
         [(1, 1), (-1, -1), (0, 1), (0, -1), (1, 0), (-1, 0)],
     ]
+    assert [[tuple(vector.coordinates()) for vector in vectors] for vectors in rank_three.short_vectors(7)] == [
+        [(0, 0, 0)],
+        [],
+        [(1, 0, 0), (-1, 0, 0)],
+        [],
+        [(0, 1, 0), (0, -1, 0)],
+        [],
+        [(0, 0, 1), (0, 0, -1), (1, 1, 0), (-1, -1, 0), (1, -1, 0), (-1, 1, 0)],
+    ]
     assert A2.shortest_vector().q() == 2
-    assert A2.closest_vector([QQ(2) / 3, QQ(2) / 3]) == A2([1, 1])
+    target = [QQ(2) / 3, QQ(2) / 3]
+    brute_force = min(
+        (A2(coordinates) for coordinates in product(range(-2, 3), repeat=2)),
+        key=lambda vector: (
+            (matrix(QQ, 1, 2, [vector.coordinates()[i] - target[i] for i in range(2)])
+             * A2.gram_matrix()
+             * matrix(QQ, 2, 1, [vector.coordinates()[i] - target[i] for i in range(2)]))[0, 0],
+            tuple(vector.coordinates()),
+        ),
+    )
+    assert A2.closest_vector(target) == brute_force == A2([1, 1])
+    expected_ieqs = []
+    for vectors in A2.short_vectors(3):
+        for lattice_vector in vectors:
+            if lattice_vector != A2.zero():
+                column = matrix(QQ, 2, 1, list(lattice_vector.coordinates()))
+                gram_vector = A2.gram_matrix() * column
+                expected_ieqs.append([QQ(lattice_vector.q()) / 2] + [-gram_vector[i, 0] for i in range(2)])
+    assert A2.voronoi_cell(radius=3) == Polyhedron(ieqs=expected_ieqs, base_ring=QQ)
     assert len(A2.voronoi_cell().vertices()) == 6
 
     for name in ("LLL", "BKZ", "short_vectors", "shortest_vector", "closest_vector", "voronoi_cell"):
