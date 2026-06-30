@@ -19,11 +19,13 @@ def named_gram(name):
 
 def as_square_qq_matrix(matrix_data):
     gram = named_gram(matrix_data) if _is_named_gram_data(matrix_data) else matrix(QQ, matrix_data)
-    assert gram.is_square(), (
-        "lattice Gram matrix must be square; "
-        f"found dimensions={gram.nrows()}x{gram.ncols()}"
-    )
-    assert gram == gram.transpose(), f"lattice Gram matrix must be symmetric; found={gram}"
+    if not gram.is_square():
+        raise ValueError(
+            "lattice Gram matrix must be square; "
+            f"found dimensions={gram.nrows()}x{gram.ncols()}"
+        )
+    if not gram == gram.transpose():
+        raise ValueError(f"lattice Gram matrix must be symmetric; found={gram}")
     gram.set_immutable()
     return gram
 
@@ -64,11 +66,13 @@ def block_diagonal_matrix(left, right):
 
 
 def _symmetric_diagonal_entries(gram):
-    assert gram.is_square(), (
-        "signature requires a square Gram matrix; "
-        f"found dimensions={gram.nrows()}x{gram.ncols()}"
-    )
-    assert gram == gram.transpose(), f"signature requires a symmetric Gram matrix; found={gram}"
+    if not gram.is_square():
+        raise ValueError(
+            "signature requires a square Gram matrix; "
+            f"found dimensions={gram.nrows()}x{gram.ncols()}"
+        )
+    if not gram == gram.transpose():
+        raise ValueError(f"signature requires a symmetric Gram matrix; found={gram}")
     if gram.nrows() == 0:
         return ()
 
@@ -79,10 +83,11 @@ def _symmetric_diagonal_entries(gram):
     transform = _basis_with_first_vector(pivot_vector)
     diagonalized = transform * gram * transform.transpose()
     pivot = diagonalized[0, 0]
-    assert pivot != 0, (
-        "signature pivot vector must have nonzero square; "
-        f"vector={pivot_vector}, gram={gram}"
-    )
+    if pivot == 0:
+        raise ValueError(
+            "signature pivot vector must have nonzero square; "
+            f"vector={pivot_vector}, gram={gram}"
+        )
     if gram.nrows() == 1:
         return (pivot,)
 

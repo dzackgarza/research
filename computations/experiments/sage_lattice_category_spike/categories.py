@@ -248,8 +248,10 @@ class PositiveDefiniteRationalLattices(CategoryWithAxiom_over_base_ring):
             from sage.matrix.constructor import matrix
             from sage.rings.integer_ring import ZZ
 
-            assert self.base_ring() is ZZ, "LLL is implemented only for ZZ-lattices in this spike"
-            assert self.is_integral(), f"LLL requires an integral Gram matrix; gram={self.gram_matrix()}"
+            if not (self.base_ring() is ZZ):
+                raise ValueError("LLL is implemented only for ZZ-lattices in this spike")
+            if not (self.is_integral()):
+                raise ValueError(f"LLL requires an integral Gram matrix; gram={self.gram_matrix()}")
             change_of_basis = matrix(ZZ, self.gram_matrix()).LLL_gram()
             return self.sublattice(change_of_basis, label="LLL")
 
@@ -257,8 +259,10 @@ class PositiveDefiniteRationalLattices(CategoryWithAxiom_over_base_ring):
             from sage.matrix.constructor import matrix
             from sage.rings.integer_ring import ZZ
 
-            assert self.base_ring() is ZZ, "BKZ is implemented only for ZZ-lattices in this spike"
-            assert self.is_integral(), f"BKZ requires an integral Gram matrix; gram={self.gram_matrix()}"
+            if not (self.base_ring() is ZZ):
+                raise ValueError("BKZ is implemented only for ZZ-lattices in this spike")
+            if not (self.is_integral()):
+                raise ValueError(f"BKZ requires an integral Gram matrix; gram={self.gram_matrix()}")
             import fpylll
 
             gram = matrix(ZZ, self.gram_matrix())
@@ -281,8 +285,10 @@ class PositiveDefiniteRationalLattices(CategoryWithAxiom_over_base_ring):
             from sage.quadratic_forms.quadratic_form import QuadraticForm
             from sage.rings.integer_ring import ZZ
 
-            assert self.base_ring() is ZZ, "short vector enumeration is implemented only for ZZ-lattices in this spike"
-            assert self.is_integral(), f"short vector enumeration requires an integral Gram matrix; gram={self.gram_matrix()}"
+            if not (self.base_ring() is ZZ):
+                raise ValueError("short vector enumeration is implemented only for ZZ-lattices in this spike")
+            if not (self.is_integral()):
+                raise ValueError(f"short vector enumeration requires an integral Gram matrix; gram={self.gram_matrix()}")
             q = QuadraticForm(2 * self.gram_matrix().change_ring(ZZ))
             return [[self(vector) for vector in vectors] for vectors in q.short_vector_list_up_to_length(n, **kwargs)]
 
@@ -306,10 +312,9 @@ class PositiveDefiniteRationalLattices(CategoryWithAxiom_over_base_ring):
             from sage.rings.rational_field import QQ
 
             target = vector(QQ, target.coordinates() if hasattr(target, "coordinates") and target.parent() is self else target)
-            assert len(target) == self.rank(), (
-                "closest vector target must have one coordinate per lattice basis vector; "
-                f"rank={self.rank()}, target={target}"
-            )
+            if not (len(target) == self.rank()):
+                raise ValueError("closest vector target must have one coordinate per lattice basis vector; "
+                f"rank={self.rank()}, target={target}")
             if self.rank() == 0:
                 return self.zero()
             gram = matrix(QQ, self.gram_matrix())

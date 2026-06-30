@@ -9,9 +9,9 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.parent import Parent
 
-from arithmetic import block_diagonal_matrix, signature_pair
-from categories import RationalLattices
-from elements import SyntheticLatticeElement
+from .arithmetic import block_diagonal_matrix, signature_pair
+from .categories import RationalLattices
+from .elements import SyntheticLatticeElement
 
 
 def category_for(base_ring, gram):
@@ -50,20 +50,19 @@ class SyntheticLattice(Parent):
         gram = matrix(QQ, gram_matrix)
         basis_matrix = matrix(QQ, basis_matrix_over_rational_span)
         rational_gram = matrix(QQ, rational_gram_matrix)
-        assert base_ring in (ZZ, QQ), f"lattice base ring must be ZZ or QQ; found={base_ring}"
-        assert gram.is_square(), f"Gram matrix must be square; found={gram}"
-        assert basis_matrix.nrows() == gram.nrows(), (
-            "basis matrix row count must equal lattice rank; "
-            f"rank={gram.nrows()}, rows={basis_matrix.nrows()}"
-        )
-        assert basis_matrix.ncols() == rational_gram.nrows(), (
-            "basis matrix columns must match rationalization rank; "
-            f"basis columns={basis_matrix.ncols()}, rational rank={rational_gram.nrows()}"
-        )
-        assert gram == basis_matrix * rational_gram * basis_matrix.transpose(), (
-            "Gram matrix must be induced from the rationalization coordinates; "
-            f"gram={gram}, basis={basis_matrix}, rational_gram={rational_gram}"
-        )
+        if not (base_ring in (ZZ, QQ)):
+            raise ValueError(f"lattice base ring must be ZZ or QQ; found={base_ring}")
+        if not (gram.is_square()):
+            raise ValueError(f"Gram matrix must be square; found={gram}")
+        if not (basis_matrix.nrows() == gram.nrows()):
+            raise ValueError("basis matrix row count must equal lattice rank; "
+            f"rank={gram.nrows()}, rows={basis_matrix.nrows()}")
+        if not (basis_matrix.ncols() == rational_gram.nrows()):
+            raise ValueError("basis matrix columns must match rationalization rank; "
+            f"basis columns={basis_matrix.ncols()}, rational rank={rational_gram.nrows()}")
+        if not (gram == basis_matrix * rational_gram * basis_matrix.transpose()):
+            raise ValueError("Gram matrix must be induced from the rationalization coordinates; "
+            f"gram={gram}, basis={basis_matrix}, rational_gram={rational_gram}")
         gram.set_immutable()
         basis_matrix.set_immutable()
         rational_gram.set_immutable()
@@ -98,7 +97,8 @@ class SyntheticLattice(Parent):
         return self.rank()
 
     def basis_matrix(self, kind="user"):
-        assert kind in ("user", "echelon"), f"basis kind must be 'user' or 'echelon'; found={kind}"
+        if not (kind in ("user", "echelon")):
+            raise ValueError(f"basis kind must be 'user' or 'echelon'; found={kind}")
         if kind == "echelon":
             return self.echelonized_basis_matrix()
         return self._basis_matrix
@@ -120,7 +120,8 @@ class SyntheticLattice(Parent):
         return self.user_to_echelon_matrix().inverse()
 
     def gram_matrix(self, basis="user"):
-        assert basis in ("user", "echelon"), f"Gram matrix basis must be 'user' or 'echelon'; found={basis}"
+        if not (basis in ("user", "echelon")):
+            raise ValueError(f"Gram matrix basis must be 'user' or 'echelon'; found={basis}")
         if basis == "user":
             return self._gram_matrix
         basis_matrix = self.basis_matrix(kind="echelon")
@@ -176,7 +177,8 @@ class SyntheticLattice(Parent):
         return tuple(self.echelon_coordinate_vector(element))
 
     def coordinates(self, element, basis="user"):
-        assert basis in ("user", "echelon"), f"coordinate basis must be 'user' or 'echelon'; found={basis}"
+        if not (basis in ("user", "echelon")):
+            raise ValueError(f"coordinate basis must be 'user' or 'echelon'; found={basis}")
         if basis == "echelon":
             return self.echelon_coordinates(element)
         element = self(element) if not (isinstance(element, SyntheticLatticeElement) and element.parent() is self) else element
@@ -217,7 +219,8 @@ class SyntheticLattice(Parent):
         )
 
     def change_ring(self, base_ring):
-        assert base_ring in (ZZ, QQ), f"lattice base ring must be ZZ or QQ; found={base_ring}"
+        if not (base_ring in (ZZ, QQ)):
+            raise ValueError(f"lattice base ring must be ZZ or QQ; found={base_ring}")
         return SyntheticLattice(
             self.gram_matrix(),
             base_ring,
@@ -229,15 +232,18 @@ class SyntheticLattice(Parent):
     change_base_ring = change_ring
 
     def dual_lattice(self):
-        assert self.base_ring() is ZZ, "metric dual is a ZZ-lattice construction"
-        assert self.determinant() != 0, f"metric dual requires a nondegenerate form; gram={self.gram_matrix()}"
+        if not (self.base_ring() is ZZ):
+            raise ValueError("metric dual is a ZZ-lattice construction")
+        if not (self.determinant() != 0):
+            raise ValueError(f"metric dual requires a nondegenerate form; gram={self.gram_matrix()}")
         dual_basis = self.gram_matrix().inverse() * self.basis_matrix()
         return self._from_module(self.rationalization_module().span(dual_basis.rows(), ZZ), f"{self._label}#")
 
     dual = dual_lattice
 
     def codual(self, value_ring=ZZ):
-        assert value_ring is ZZ, f"only ZZ-valued coduals are implemented in this spike; found={value_ring}"
+        if not (value_ring is ZZ):
+            raise ValueError(f"only ZZ-valued coduals are implemented in this spike; found={value_ring}")
         return self.dual_lattice()
 
     def dual_pairing_lattice(self):
@@ -284,26 +290,26 @@ class SyntheticLattice(Parent):
         return self.sublattice(kernel_basis, label=label)
 
     def is_submodule(self, other):
-        assert isinstance(other, SyntheticLattice), f"expected SyntheticLattice; found={type(other)}"
-        assert self._rational_gram_matrix == other._rational_gram_matrix, (
-            "submodule comparison requires the same rationalization form; "
-            f"left={self._rational_gram_matrix}, right={other._rational_gram_matrix}"
-        )
+        if not (isinstance(other, SyntheticLattice)):
+            raise TypeError(f"expected SyntheticLattice; found={type(other)}")
+        if not (self._rational_gram_matrix == other._rational_gram_matrix):
+            raise ValueError("submodule comparison requires the same rationalization form; "
+            f"left={self._rational_gram_matrix}, right={other._rational_gram_matrix}")
         return all(row in other.underlying_module() for row in self.basis_matrix().rows())
 
     def sublattice(self, generators, label="sublattice", check_integral=False):
         generator_matrix = matrix(QQ, generators)
-        assert generator_matrix.ncols() == self.rank(), (
-            "sublattice generators must be rows in the parent basis; "
-            f"parent_rank={self.rank()}, generators={generator_matrix}"
-        )
+        if not (generator_matrix.ncols() == self.rank()):
+            raise ValueError("sublattice generators must be rows in the parent basis; "
+            f"parent_rank={self.rank()}, generators={generator_matrix}")
         if generator_matrix.rank() == generator_matrix.nrows():
             basis_matrix = generator_matrix * self.basis_matrix()
         else:
             generator_module = (QQ**self.rank()).span(generator_matrix.rows(), self.base_ring())
             basis_matrix = matrix(QQ, generator_module.basis_matrix()) * self.basis_matrix()
         lattice = self._from_rational_basis(basis_matrix, self.base_ring(), label)
-        assert not check_integral or lattice.is_integral(), f"sublattice is not integral; gram={lattice.gram_matrix()}"
+        if not (not check_integral or lattice.is_integral()):
+            raise ValueError(f"sublattice is not integral; gram={lattice.gram_matrix()}")
         return lattice
 
     submodule = sublattice
@@ -314,19 +320,20 @@ class SyntheticLattice(Parent):
 
     def span(self, generators, base_ring=None, label="span"):
         base_ring = self.base_ring() if base_ring is None else base_ring
-        assert base_ring in (ZZ, QQ), f"lattice span base ring must be ZZ or QQ; found={base_ring}"
+        if not (base_ring in (ZZ, QQ)):
+            raise ValueError(f"lattice span base ring must be ZZ or QQ; found={base_ring}")
         generator_matrix = matrix(QQ, generators)
-        assert generator_matrix.ncols() == self._rational_gram_matrix.nrows(), (
-            "span generators must be rows in rationalization coordinates; "
-            f"rational_rank={self._rational_gram_matrix.nrows()}, generators={generator_matrix}"
-        )
+        if not (generator_matrix.ncols() == self._rational_gram_matrix.nrows()):
+            raise ValueError("span generators must be rows in rationalization coordinates; "
+            f"rational_rank={self._rational_gram_matrix.nrows()}, generators={generator_matrix}")
         module = self.rationalization_module().span(generator_matrix.rows(), base_ring)
         return self._from_module(module, label)
 
     def span_of_basis(self, basis, base_ring=None, label="span"):
         base_ring = self.base_ring() if base_ring is None else base_ring
         basis_matrix = matrix(QQ, basis)
-        assert basis_matrix.rank() == basis_matrix.nrows(), f"basis rows must be independent; basis={basis_matrix}"
+        if not (basis_matrix.rank() == basis_matrix.nrows()):
+            raise ValueError(f"basis rows must be independent; basis={basis_matrix}")
         return self._from_rational_basis(basis_matrix, base_ring, label)
 
     def vector_space_span(self, generators, label="vector_space_span"):
@@ -342,14 +349,15 @@ class SyntheticLattice(Parent):
 
     def overlattice(self, generators, check_integral=False, label="overlattice"):
         generator_matrix = matrix(QQ, generators)
-        assert generator_matrix.ncols() == self._rational_gram_matrix.nrows(), (
-            "overlattice generators must be rows in rationalization coordinates; "
-            f"rational_rank={self._rational_gram_matrix.nrows()}, generators={generator_matrix}"
-        )
+        if not (generator_matrix.ncols() == self._rational_gram_matrix.nrows()):
+            raise ValueError("overlattice generators must be rows in rationalization coordinates; "
+            f"rational_rank={self._rational_gram_matrix.nrows()}, generators={generator_matrix}")
         combined = self.basis_matrix().stack(generator_matrix)
         lattice = self.span(combined, base_ring=self.base_ring(), label=label)
-        assert self.is_submodule(lattice), "overlattice must contain the source lattice"
-        assert not check_integral or lattice.is_integral(), f"overlattice is not integral; gram={lattice.gram_matrix()}"
+        if not (self.is_submodule(lattice)):
+            raise ValueError("overlattice must contain the source lattice")
+        if not (not check_integral or lattice.is_integral()):
+            raise ValueError(f"overlattice is not integral; gram={lattice.gram_matrix()}")
         return lattice
 
     def sum(self, other, label="sum"):
@@ -368,7 +376,8 @@ class SyntheticLattice(Parent):
 
     def integral_saturation(self, label="integral_saturation"):
         lattice = self.saturation(label=label)
-        assert lattice.is_integral(), f"integral saturation is not integral; gram={lattice.gram_matrix()}"
+        if not (lattice.is_integral()):
+            raise ValueError(f"integral saturation is not integral; gram={lattice.gram_matrix()}")
         return lattice
 
     def primitive_closure(self, ambient=None, label="primitive_closure"):
@@ -403,7 +412,7 @@ class SyntheticLattice(Parent):
         raise NotImplementedError("lattices are not quotient modules; use finite_quotient or discriminant_group for quotients")
 
     def quotient_by_sublattice(self, sublattice):
-        from discriminant import SyntheticLatticeFiniteQuotient
+        from .discriminant import SyntheticLatticeFiniteQuotient
 
         return SyntheticLatticeFiniteQuotient(self, sublattice)
 
@@ -448,8 +457,10 @@ class SyntheticLattice(Parent):
         )
 
     def is_primitive(self, sublattice):
-        assert isinstance(sublattice, SyntheticLattice), f"expected SyntheticLattice; found={type(sublattice)}"
-        assert sublattice.is_submodule(self), "primitive test requires a sublattice of self"
+        if not (isinstance(sublattice, SyntheticLattice)):
+            raise TypeError(f"expected SyntheticLattice; found={type(sublattice)}")
+        if not (sublattice.is_submodule(self)):
+            raise ValueError("primitive test requires a sublattice of self")
         return sublattice.primitive_closure(self).basis_matrix() == sublattice.basis_matrix()
 
     def glue(self, isotropic_subgroup_or_gens, label="glue"):
@@ -457,7 +468,8 @@ class SyntheticLattice(Parent):
 
     def maximal_overlattice(self, p=None, label="maximal_overlattice"):
         if p is None or ZZ(p) == 2:
-            assert self.is_even(), "this lattice must be even to admit an even overlattice"
+            if not (self.is_even()):
+                raise ValueError("this lattice must be even to admit an even overlattice")
         lattice = self
         while True:
             discriminant_group = lattice.discriminant_group(primary=0 if p is None else ZZ(p))
@@ -472,17 +484,17 @@ class SyntheticLattice(Parent):
             if isotropic_element is None:
                 return lattice
             subgroup = discriminant_group.submodule_with_gens([isotropic_element])
-            assert subgroup.is_quadratic_isotropic(), f"isotropic element generated a non-isotropic subgroup: {isotropic_element}"
+            if not (subgroup.is_quadratic_isotropic()):
+                raise ValueError(f"isotropic element generated a non-isotropic subgroup: {isotropic_element}")
             lattice = discriminant_group.overlattice_from_isotropic_subgroup(subgroup, label=label)
 
     def local_modification(self, subgroup_or_gens, p, label="local_modification"):
         if hasattr(subgroup_or_gens, "is_square"):
             gram = matrix(QQ, subgroup_or_gens)
-            assert gram.is_square() and gram.nrows() == self.rank(), (
-                "local modification Gram matrix must be square of lattice rank; "
-                f"rank={self.rank()}, gram={gram}"
-            )
-            from constructors import Lattice
+            if not (gram.is_square() and gram.nrows() == self.rank()):
+                raise ValueError("local modification Gram matrix must be square of lattice rank; "
+                f"rank={self.rank()}, gram={gram}")
+            from .lattice_categories import Lattice
 
             return Lattice(gram, base_ring=self.base_ring(), label=label)
         primary_discriminant_group = self.discriminant_group(primary=p)
@@ -497,7 +509,8 @@ class SyntheticLattice(Parent):
         morphisms = tuple(self.Hom(self).from_matrix(g) for g in gens)
         if check:
             for morphism in morphisms:
-                assert morphism.matrix().det() in (1, -1), f"isometry generator must be invertible; matrix={morphism.matrix()}"
+                if not (morphism.matrix().det() in (1, -1)):
+                    raise ValueError(f"isometry generator must be invertible; matrix={morphism.matrix()}")
         return morphisms
 
     automorphisms = isometry_group
@@ -536,7 +549,7 @@ class SyntheticLattice(Parent):
         )
 
     def Hom(self, codomain):
-        from homsets import LatticeHomset
+        from .homsets import LatticeHomset
 
         return LatticeHomset(self, codomain)
 
@@ -549,12 +562,13 @@ class SyntheticLattice(Parent):
     embedding = hom
 
     def similarity(self, matrix_data, codomain, scalar):
-        from homsets import LatticeSimilarity
+        from .homsets import LatticeSimilarity
 
         return LatticeSimilarity(self, codomain, matrix_data, scalar)
 
     def restriction_to_sublattice(self, morphism, sublattice):
-        assert sublattice.is_submodule(self), "restriction domain must be a sublattice"
+        if not (sublattice.is_submodule(self)):
+            raise ValueError("restriction domain must be a sublattice")
         return sublattice.Hom(morphism.codomain()).from_matrix(morphism.matrix())
 
     def induced_map_on_discriminant_group(self, isometry):
@@ -564,10 +578,13 @@ class SyntheticLattice(Parent):
         return quotient.hom([quotient.projection(morphism(quotient.lift(generator))) for generator in quotient.gens()])
 
     def discriminant_group(self, primary=0):
-        assert self.base_ring() is ZZ, "discriminant group requires a ZZ-lattice"
-        assert self.determinant() != 0, f"discriminant group requires a nondegenerate lattice; gram={self.gram_matrix()}"
-        assert self.is_integral(), f"discriminant group requires an integral lattice; gram={self.gram_matrix()}"
-        from discriminant import SyntheticDiscriminantGroup
+        if not (self.base_ring() is ZZ):
+            raise ValueError("discriminant group requires a ZZ-lattice")
+        if not (self.determinant() != 0):
+            raise ValueError(f"discriminant group requires a nondegenerate lattice; gram={self.gram_matrix()}")
+        if not (self.is_integral()):
+            raise ValueError(f"discriminant group requires an integral lattice; gram={self.gram_matrix()}")
+        from .discriminant import SyntheticDiscriminantGroup
 
         return SyntheticDiscriminantGroup(self, primary)
 
@@ -585,8 +602,8 @@ class SyntheticLattice(Parent):
         )
 
     def _assert_same_rationalization(self, other):
-        assert isinstance(other, SyntheticLattice), f"expected SyntheticLattice; found={type(other)}"
-        assert self._rational_gram_matrix == other._rational_gram_matrix, (
-            "operation requires the same rationalization form; "
-            f"left={self._rational_gram_matrix}, right={other._rational_gram_matrix}"
-        )
+        if not (isinstance(other, SyntheticLattice)):
+            raise TypeError(f"expected SyntheticLattice; found={type(other)}")
+        if not (self._rational_gram_matrix == other._rational_gram_matrix):
+            raise ValueError("operation requires the same rationalization form; "
+            f"left={self._rational_gram_matrix}, right={other._rational_gram_matrix}")

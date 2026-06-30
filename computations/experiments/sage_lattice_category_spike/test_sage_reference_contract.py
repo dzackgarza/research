@@ -4,7 +4,7 @@ import pytest
 
 from sage.all import CartanMatrix, Matrix, QQ, ZZ, identity_matrix, matrix
 
-import lattice_categories as lc
+import sage_lattice_category_spike.lattice_categories as lc
 
 
 def assert_matrix_equal(left, right):
@@ -47,7 +47,7 @@ def test_nonintegral_sublattice_is_owned_fractional_lattice_not_rejected_by_defa
     assert fractional.base_ring() is ZZ
     assert not fractional.is_integral()
     assert_matrix_equal(fractional.gram_matrix(), matrix(QQ, 1, 1, [-QQ(1) / 2]))
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         U.sublattice([[QQ(1) / 2, -QQ(1) / 2]], check_integral=True)
 
 

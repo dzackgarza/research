@@ -6,8 +6,8 @@ from sage.matrix.constructor import identity_matrix, matrix
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
-from arithmetic import as_square_qq_matrix
-from parents import SyntheticLattice
+from .arithmetic import as_square_qq_matrix
+from .parents import SyntheticLattice
 
 
 def SyntheticLatticeFromGram(gram_matrix, base_ring=ZZ, label="L"):
@@ -25,7 +25,8 @@ def Lattice(gram_matrix, base_ring=ZZ, label="L"):
 
 def IntegralLatticeGluing(lattices, glue, return_embeddings=False, label="gluing"):
     r"""Construct the owned overlattice determined by discriminant glue vectors."""
-    assert lattices, "gluing requires at least one lattice"
+    if not lattices:
+        raise ValueError("gluing requires at least one lattice")
     ambient = lattices[0]
     for lattice in lattices[1:]:
         ambient = ambient.direct_sum(lattice, label=label)
@@ -38,10 +39,11 @@ def IntegralLatticeGluing(lattices, glue, return_embeddings=False, label="gluing
         offset += lattice.rank()
 
     for glue_vector in glue:
-        assert len(glue_vector) == len(lattices), (
-            "each glue vector must provide one discriminant element per lattice; "
-            f"lattices={len(lattices)}, glue_vector={glue_vector}"
-        )
+        if len(glue_vector) != len(lattices):
+            raise ValueError(
+                "each glue vector must provide one discriminant element per lattice; "
+                f"lattices={len(lattices)}, glue_vector={glue_vector}"
+            )
         row = [QQ.zero()] * ambient.rank()
         for lattice, start, discriminant_element in zip(lattices, offsets, glue_vector):
             lift = lattice.discriminant_group().lift(discriminant_element).rational_coordinates()

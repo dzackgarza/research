@@ -5,7 +5,7 @@ import pytest
 from sage.all import Matrix, QQ, ZZ, identity_matrix, matrix
 from sage.categories.modules import Modules
 
-from lattice_categories import (
+from sage_lattice_category_spike.lattice_categories import (
     DiscriminantGroups,
     Lattice,
     Lattices,
