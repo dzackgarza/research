@@ -331,8 +331,14 @@ def test_integral_lattice_inclusion_into_dual_is_a_synthetic_morphism():
     A2 = Lattice("A2", label="A2")
     A2_dual = A2.dual_lattice()
     inclusion = A2.Hom(A2_dual).from_matrix(Matrix(ZZ, 2, 2, [3, 0, -2, 1]))
+    quotient = A2_dual.finite_quotient(A2)
+    negation = A2_dual.Hom(A2_dual).from_matrix(-identity_matrix(ZZ, 2))
+    induced = A2_dual.induced_map_on_quotient(negation, quotient)
+    generator = quotient.gen(0)
 
     assert inclusion(A2.gen(0)).q() == A2.gen(0).q()
+    assert quotient.projection(quotient.lift(generator)) == generator
+    assert induced(generator) == quotient.projection(negation(quotient.lift(generator)))
 
 
 def test_explicit_isometries_act_on_discriminant_groups():
