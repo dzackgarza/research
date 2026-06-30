@@ -5,6 +5,7 @@ import pytest
 from sage.all import CartanMatrix, Matrix, QQ, ZZ, identity_matrix, matrix
 
 import sage_lattice_category_spike.lattice_categories as lc
+import sage_lattice_category_spike.reference_manifest as manifest
 
 
 def assert_matrix_equal(left, right):
@@ -509,3 +510,61 @@ def test_pushforward_and_pullback_forms_compute_transported_pairings():
     assert not scaling.preserves_form()
     assert_matrix_equal(D.pullback_form(scaling), matrix(QQ, 1, 1, [QQ(4) / 5]))
     assert_matrix_equal(D.pushforward_form(scaling), matrix(QQ, 1, 1, [QQ(9) / 5]))
+
+
+def test_explicit_isometry_generators_act_on_lattices_without_full_group_generation():
+    # Reference: accepted lattice API audit requires acts_on with explicit generators only.
+    A2 = lc.Lattice("A2")
+    swap = matrix(ZZ, 2, 2, [0, 1, 1, 0])
+    preserved = A2.sublattice([[1, 1], [1, -1]], label="swap_preserved")
+    not_preserved = A2.sublattice([[2, 0], [0, 1]], label="not_swap_preserved")
+
+    assert A2.acts_on(A2, gens=[identity_matrix(ZZ, 2)])
+    assert A2.acts_on(preserved, gens=[swap])
+    assert not A2.acts_on(not_preserved, gens=[swap])
+    with pytest.raises(NotImplementedError):
+        A2.acts_on(A2)
+    with pytest.raises(ValueError):
+        A2.acts_on(lc.Lattice("U"), gens=[identity_matrix(ZZ, 2)])
+
+
+def test_odd_discriminant_form_remains_usable_while_odd_genus_is_unsupported():
+    # Reference: Sage does not implement odd genus classification; the bilinear form still exists.
+    D = lc.Lattice(matrix(ZZ, 1, 1, [3])).discriminant_group()
+
+    assert D.value_module() == (QQ, ZZ)
+    assert D.value_module_qf() == (QQ, ZZ)
+    assert D.gen(0).b(D.gen(0)) == QQ(1) / 3
+    assert D.inner_product(D.gen(0), D.gen(0)) == QQ(1) / 3
+    assert D.primary_part(3).invariants() == (3,)
+    assert D.subgroup([D.gen(0)]).cardinality() == 3
+    with pytest.raises(NotImplementedError):
+        D.is_genus((1, 0), even=False)
+    with pytest.raises(NotImplementedError):
+        D.genus((1, 0), even=False)
+
+
+def test_reference_coverage_manifest_has_no_unresolved_or_hidden_accepted_contracts():
+    rows = manifest.REFERENCE_COVERAGE
+    accepted = set(manifest.ACCEPTED_SYNTHETIC_API)
+    covered = set()
+
+    assert {row["sage_locus"] for row in rows} == {
+        "free_quadratic_module_integer_symmetric.py",
+        "free_quadratic_module.py",
+        "torsion_quadratic_module.py",
+        "fgp_module.py",
+        "free_module.py",
+        "free_module_integer.py",
+    }
+    for row in rows:
+        assert row["classification"] in manifest.ALLOWED_CLASSIFICATIONS
+        assert row["classification"] != "pending-gap"
+        covered.update(row["accepted_symbols"])
+        if row["classification"] == "adapted":
+            assert row["local_tests"]
+            for test_name in row["local_tests"]:
+                assert callable(globals()[test_name])
+        if row["classification"] == "rejected-parity":
+            assert not (accepted & set(row["rejected_symbols"]))
+    assert accepted <= covered

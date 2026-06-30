@@ -515,6 +515,28 @@ class SyntheticLattice(Parent):
 
     automorphisms = isometry_group
 
+    def acts_on(self, other, gens=None, check=True):
+        if gens is None:
+            raise NotImplementedError("full isometry generator computation is not implemented for the synthetic spike")
+        self._assert_same_rationalization(other)
+        if self.basis_matrix().nrows() != self.basis_matrix().ncols() or self.basis_matrix().rank() != self.rank():
+            raise ValueError("acts_on requires the acting lattice to span the rationalization")
+        morphisms = self.isometry_group(gens=gens, check=check)
+        acting_basis = matrix(QQ, self.basis_matrix())
+        other_module = other.underlying_module()
+        for morphism in morphisms:
+            action_matrix = matrix(QQ, morphism.matrix())
+            for row in other.basis_matrix().rows():
+                coordinates = acting_basis.solve_left(matrix(QQ, 1, acting_basis.ncols(), list(row)))
+                image_coordinates = action_matrix * coordinates.transpose()
+                image_row = vector(QQ, [
+                    sum(image_coordinates[j, 0] * acting_basis[j, i] for j in range(self.rank()))
+                    for i in range(acting_basis.ncols())
+                ])
+                if image_row not in other_module:
+                    return False
+        return True
+
     def action_on_discriminant_group(self, gens=None):
         discriminant_group = self.discriminant_group()
         return tuple(discriminant_group.action_of_isometry(g) for g in self.isometry_group(gens=gens))
