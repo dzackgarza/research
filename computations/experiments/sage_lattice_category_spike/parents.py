@@ -222,14 +222,31 @@ class SyntheticLattice(Parent):
     change_base_ring = change_ring
 
     def dual_lattice(self):
-        r"""The metric dual ``L^* = Hom_ZZ(L, ZZ)``: a based lattice with Gram ``G^{-1}``."""
+        r"""The dual lattice, a based lattice with Gram ``G^{-1}``.
+
+        Two conceptually distinct duals coincide here and resolve to this one
+        object, as research usage expects:
+
+        - the *metric dual* ``L^# = {x in L (x) QQ : b(x, L) subset ZZ}``, and
+        - the *module dual* ``L^* = Hom_ZZ(L, ZZ)``,
+
+        canonically identified through the nondegenerate form ``b``.  In the basis
+        dual to ``L``'s own, the Gram matrix is ``G^{-1}``.  (This ``G^{-1}``
+        convention is the correct one: e.g. it is exactly the change from the
+        ``E_8`` root basis to its fundamental-weight basis in Bourbaki
+        coordinates, where the weights are read off ``G^{-1}``.)
+        """
         if not (self.base_ring() is ZZ):
-            raise ValueError("metric dual is a ZZ-lattice construction")
+            raise ValueError("dual lattice is a ZZ-lattice construction")
         if not (self.determinant() != 0):
-            raise ValueError(f"metric dual requires a nondegenerate form; gram={self.gram_matrix()}")
+            raise ValueError(f"dual lattice requires a nondegenerate form; gram={self.gram_matrix()}")
         return SyntheticLattice(self.gram_matrix().inverse(), ZZ, f"{self._label}#")
 
     dual = dual_lattice
+    # L^# (metric dual) and L^* (module dual = Hom_ZZ(L, ZZ)) resolve to the same
+    # based lattice under the nondegenerate form; expose both names for research use.
+    metric_dual = dual_lattice
+    module_dual = dual_lattice
 
     def dual_inclusion(self):
         r"""The natural injection ``L -> L^*``, ``v |-> b(v, -)``, with matrix ``G``."""
