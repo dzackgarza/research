@@ -469,11 +469,18 @@ def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
     assert L.minimum() == IntegralLattice(G).minimum()
     assert L.maximum() == Infinity
 
-    # HKZ and reduced_basis produce a reduced basis of the SAME lattice (det preserved).
-    assert L.HKZ().determinant() == L.determinant()
-    reduced = L.reduced_basis()
-    reduced_gram = matrix(QQ, [[a.b(c) for c in reduced] for a in reduced])
-    assert reduced_gram.determinant() == G.determinant()
+    # HKZ: reference-agree the canonical HKZ-reduced Gram with Sage, and check the
+    # defining property that the first basis vector is a shortest vector.
+    sage_hkz = IntegerLattice(B).HKZ()
+    assert L.HKZ().gram_matrix() == sage_hkz * sage_hkz.transpose()
+    assert L.HKZ().gram_matrix()[0, 0] == L.minimum()
+
+    # reduced_basis: the returned basis is genuinely LLL-reduced -- verified by Sage's
+    # independent is_LLL_reduced on the embedded basis (embed by W*B). Determinant alone
+    # would not distinguish this from the unreduced basis, which fails the verifier.
+    W = matrix(ZZ, [list(e.coordinates()) for e in L.reduced_basis()])
+    assert (W * B).is_LLL_reduced()
+    assert not B.is_LLL_reduced()  # teeth: the unreduced basis is not LLL-reduced
 
     # Babai CVP reference-agrees under the ambient <-> coordinate translation (x_ambient = x_coords * B).
     target = [1, 1, 1]
@@ -481,17 +488,29 @@ def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
     assert tuple(vector(ZZ, mine.coordinates()) * B) == tuple(reference.approximate_closest_vector(vector(ZZ, target) * B))
     assert L.babai(target) == mine  # babai is the alias
 
-    # Voronoi relevant vectors: same count as Sage, all genuine lattice vectors.
-    assert len(L.voronoi_relevant_vectors()) == len(reference.voronoi_relevant_vectors())
+    # Voronoi relevant vectors: the exact SET (not merely the count) agrees with Sage
+    # under the ambient map.
+    assert {tuple(vector(ZZ, v.coordinates()) * B) for v in L.voronoi_relevant_vectors()} == {
+        tuple(v) for v in reference.voronoi_relevant_vectors()
+    }
 
-    # [NEW] enumerations (no Sage reference): property-checked.
-    shorts = list(L.enumerate_short_vectors(4))
-    assert shorts and all(0 < v.q() <= 4 for v in shorts)
-    close = L.enumerate_close_vectors(target, 6)
+    # [NEW] enumerations (no Sage reference): certified COMPLETE against an independent
+    # brute-force box search over Z^3, so a truncated enumeration fails.
     gram = matrix(QQ, G)
-    for v in close:
-        delta = matrix(QQ, 1, 3, [QQ(v.coordinates()[i]) - target[i] for i in range(3)])
-        assert (delta * gram * delta.transpose())[0, 0] <= 6
+
+    def squared_norm(coordinates, center=(0, 0, 0)):
+        delta = matrix(QQ, 1, 3, [QQ(coordinates[i]) - center[i] for i in range(3)])
+        return (delta * gram * delta.transpose())[0, 0]
+
+    def brute_force(predicate, lo, hi):
+        return {c for c in product(range(lo, hi), repeat=3) if predicate(c)}
+
+    assert {tuple(v.coordinates()) for v in L.enumerate_short_vectors(4)} == brute_force(
+        lambda c: 0 < squared_norm(c) <= 4, -4, 5
+    )
+    assert {tuple(v.coordinates()) for v in L.enumerate_close_vectors(target, 6)} == brute_force(
+        lambda c: squared_norm(c, target) <= 6, -3, 6
+    )
 
     # update_reduced_basis: immutable functional analog; injecting an in-lattice vector keeps the lattice.
     assert L.update_reduced_basis(L.gen(0)).determinant() == L.determinant()
@@ -528,7 +547,10 @@ def test_nikulin_overlattice_and_metabolizer_identities_hold():
         checked += 1
     assert checked > 0
 
-    # metabolizer: a metabolic form has |H|^2 = |A| for a lagrangian metabolizer H.
+    # metabolizer: a metabolizer is a Lagrangian, i.e. a self-orthogonal isotropic
+    # subgroup H = H^perp. Verify that DEFINING content directly -- q|_H = 0 and
+    # H = H^perp computed independently -- not the |H|^2 = |A| identity, which the
+    # lagrangian filter already guarantees by construction (so it proves nothing).
     for gram in (
         matrix(ZZ, 2, 2, [0, 2, 2, 0]),                                        # U(2)
         matrix(ZZ, 4, 4, [0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0]),    # U(2) + U(2)
@@ -536,8 +558,10 @@ def test_nikulin_overlattice_and_metabolizer_identities_hold():
         A = Lattice(gram).discriminant_group()
         assert A.is_metabolic()
         H = A.metabolizer()
-        assert A.is_lagrangian(H)
-        assert H.cardinality() ** 2 == A.cardinality()
+        # H is isotropic: the quadratic form vanishes on it (values in QQ/2ZZ).
+        assert all(A.q(h) == 0 for h in H.elements())
+        # H equals its own orthogonal complement (the Lagrangian property).
+        assert set(A.orthogonal(H).elements()) == set(H.elements())
 
 
 def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indefinite():
