@@ -680,7 +680,11 @@ class SyntheticDiscriminantGroup(Parent):
         return self.source_lattice().overlattice(lift_rows, check_integral=True, label=label)
 
     def preimage_lattice(self, subgroup_or_gens, label="preimage_lattice"):
-        return self.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label)
+        subgroup = self._subgroup(subgroup_or_gens)
+        lift_rows = [self.lift(generator).rational_coordinates() for generator in subgroup.gens()]
+        if not lift_rows:
+            return self.source_lattice()
+        return self.source_lattice().overlattice(lift_rows, check_integral=False, label=label)
 
     def discriminant_form_of_overlattice(self, subgroup_or_gens):
         return self.overlattice_from_isotropic_subgroup(subgroup_or_gens).discriminant_group()
@@ -2029,6 +2033,8 @@ class SyntheticLatticeFiniteQuotient(Parent):
         cover_coordinates = smith_row * self._smith_right_inverse
         return self.cover_lattice()([ZZ(cover_coordinates[0, i]) for i in range(self.cover_lattice().rank())])
 
+    coset_representative = lift
+
     def projection(self, element):
         cover = self.cover_lattice()
         if isinstance(element, SyntheticLatticeElement):
@@ -2046,6 +2052,13 @@ class SyntheticLatticeFiniteQuotient(Parent):
             return self.projection
         quotient = self.quotient_group(subgroup_or_gens)
         return lambda element: quotient.projection(element)
+
+    def preimage_lattice(self, subgroup_or_gens, label="preimage_lattice"):
+        subgroup = self._subgroup(subgroup_or_gens)
+        lift_rows = [self.lift(generator).rational_coordinates() for generator in subgroup.gens()]
+        if not lift_rows:
+            return self.relation_lattice()
+        return self.relation_lattice().overlattice(lift_rows, check_integral=False, label=label)
 
     def hom(self, images):
         return SyntheticDiscriminantAction.from_images(self, images)

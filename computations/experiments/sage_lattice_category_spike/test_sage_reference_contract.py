@@ -91,6 +91,19 @@ def test_discriminant_group_cover_relations_and_primary_forms_match_doctests():
     assert A.random_element() in A.elements()
 
 
+def test_discriminant_preimage_lattice_allows_nonintegral_source_preimages():
+    # Reference: A_L = L^vee / L source metadata; preimages exist before isotropic gluing.
+    L = lc.Lattice("A2")
+    A = L.discriminant_group()
+    full_preimage = A.preimage_lattice(A.subgroup([A.gen(0)]))
+
+    assert full_preimage == L.dual_lattice()
+    assert not full_preimage.is_integral()
+    assert A.coset_representative(A.gen(0)) == A.lift_to_dual(A.gen(0))
+    with pytest.raises(ValueError):
+        A.overlattice_from_isotropic_subgroup([A.gen(0)])
+
+
 def test_gluing_accepts_sage_integral_lattice_glue_shape():
     # Reference: IntegralLatticeGluing single-lattice doctest.
     L1 = lc.Lattice(matrix(ZZ, 1, 1, [4]))
@@ -370,6 +383,9 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     assert quotient.torsion_subgroup() is quotient
     assert quotient.projection(quotient.lift(quotient.gen(0))) == quotient.gen(0)
     assert quotient.quotient_map()(quotient.lift(quotient.gen(0))) == quotient.gen(0)
+    assert quotient.coset_representative(quotient.gen(0)) == quotient.lift(quotient.gen(0))
+    assert quotient.preimage_lattice(quotient.subgroup([quotient.gen(0)])) == A2_dual
+    assert quotient.preimage_lattice([]) == A2
     assert A2_dual.finite_quotient(A2).invariants() == (3,)
     assert A2_dual.quotient_map_to(A2)(quotient.lift(quotient.gen(0))) == quotient.gen(0)
     assert quotient.is_finite()
