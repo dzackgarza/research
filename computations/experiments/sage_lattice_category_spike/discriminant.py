@@ -70,6 +70,10 @@ def _finite_coordinates(group, element):
     return tuple(group.coordinates(element))
 
 
+def _native_quotient_module_from_lattices(cover_lattice, relation_lattice):
+    return cover_lattice.underlying_module() / relation_lattice.underlying_module()
+
+
 def _all_group_automorphisms(group):
     if group.ngens() == 0:
         return (SyntheticDiscriminantAction(group, identity_matrix(ZZ, 0)),)
@@ -291,7 +295,7 @@ class SyntheticDiscriminantGroup(Parent):
         return self
 
     def underlying_quotient_module(self):
-        return self
+        return _native_quotient_module_from_lattices(self.cover(), self.relations())
 
     def cardinality(self):
         if not self.invariants():
@@ -1807,7 +1811,7 @@ class SyntheticLatticeFiniteQuotient(Parent):
         return self
 
     def underlying_quotient_module(self):
-        return self
+        return _native_quotient_module_from_lattices(self.cover_lattice(), self.relation_lattice())
 
     def invariants(self):
         return self._invariants

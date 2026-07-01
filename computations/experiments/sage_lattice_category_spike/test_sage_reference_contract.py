@@ -249,6 +249,11 @@ def test_discriminant_group_additive_abelian_group_api_matches_fgp_surface():
 
     assert A.as_additive_abelian_group() is A
     assert A.underlying_abelian_group() is A
+    native_quotient = A.underlying_quotient_module()
+    assert native_quotient is not A
+    assert native_quotient.invariants() == A.invariants()
+    assert_matrix_equal(native_quotient.V().basis_matrix(), A.cover().underlying_module().basis_matrix())
+    assert_matrix_equal(native_quotient.W().basis_matrix(), A.relations().underlying_module().basis_matrix())
     assert A.order() == A.cardinality() == 20
     assert A.exponent() == 10
     assert not A.is_cyclic()
@@ -338,7 +343,11 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     assert quotient.cardinality() == A2.discriminant_group().cardinality()
     assert quotient.as_additive_abelian_group() is quotient
     assert quotient.underlying_abelian_group() is quotient
-    assert quotient.underlying_quotient_module() is quotient
+    native_quotient = quotient.underlying_quotient_module()
+    assert native_quotient is not quotient
+    assert native_quotient.invariants() == quotient.invariants()
+    assert_matrix_equal(native_quotient.V().basis_matrix(), quotient.cover_lattice().underlying_module().basis_matrix())
+    assert_matrix_equal(native_quotient.W().basis_matrix(), quotient.relation_lattice().underlying_module().basis_matrix())
     assert quotient.exponent() == 3
     assert quotient.is_cyclic()
     assert quotient.short_name() == "Z/3"
