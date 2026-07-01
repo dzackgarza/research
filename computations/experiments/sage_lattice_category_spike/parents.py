@@ -211,6 +211,9 @@ class SyntheticLattice(Parent):
             ambient=self._ambient, inclusion=self._inclusion,
         )
 
+    # rationalization functor L |-> L (x) QQ (same form, base ring QQ)
+    rationalization = rational_span
+
     def change_ring(self, base_ring):
         if not (base_ring in (ZZ, QQ)):
             raise ValueError(f"lattice base ring must be ZZ or QQ; found={base_ring}")
@@ -220,6 +223,7 @@ class SyntheticLattice(Parent):
         )
 
     change_base_ring = change_ring
+    base_extend = change_ring
 
     def dual_lattice(self):
         r"""The dual lattice, a based lattice with Gram ``G^{-1}``.

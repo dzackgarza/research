@@ -4,7 +4,7 @@ from itertools import product
 
 import pytest
 
-from sage.all import Matrix, Polyhedron, QQ, ZZ, identity_matrix, matrix
+from sage.all import Matrix, Polyhedron, QQ, ZZ, block_diagonal_matrix, identity_matrix, matrix
 from sage.categories.modules import Modules
 from sage.groups.additive_abelian.qmodnz import QmodnZ
 
@@ -412,3 +412,41 @@ def test_explicit_isometries_act_on_discriminant_groups():
     assert isometry(U.gen(0)) == U.gen(1)
     assert U.action_on_discriminant_group(gens=[swap])[0].is_identity()
     assert U.kernel_on_discriminant_group(gens=[swap]) == (isometry,)
+
+
+def test_functor_layer_realizes_the_categorical_identities():
+    U = Lattice("U", label="U")
+    A2 = Lattice("A2", label="A2")
+
+    # discriminant_group LEAVES Lattices for DiscriminantForms; value ring is QQ/ZZ.
+    assert A2 in Lattices(ZZ)
+    A = A2.discriminant_group()
+    assert A in DiscriminantForms(ZZ)
+    assert A not in Lattices(ZZ)
+    assert A.value_module() == QmodnZ(QQ(1))  # QQ/ZZ
+
+    # radical_quotient STAYS in Lattices and lands in the nondegenerate subcategory.
+    UU = U.direct_sum(U, label="U+U")
+    e_perp = UU.orthogonal_complement(UU.sublattice([[1, 0, 0, 0]], label="e"))
+    assert e_perp.is_degenerate()
+    quotient = e_perp.radical_quotient()
+    assert quotient in Lattices(ZZ).Nondegenerate()
+
+    # rationalization L |-> L (x) QQ: base ring QQ, same Gram; base_extend agrees.
+    rat = A2.rationalization()
+    assert rat.base_ring() is QQ
+    assert_matrix_equal(rat.gram_matrix(), A2.gram_matrix())
+    assert A2.base_extend(QQ) == rat
+
+    # dual is an involution on nondegenerate ZZ-lattices.
+    assert A2.dual().dual() == A2
+
+    # orthogonal direct sum: Gram is block-diagonal, cross-pairings vanish, ranks add.
+    S = A2.direct_sum(U)
+    assert S.rank() == A2.rank() + U.rank()
+    assert_matrix_equal(S.gram_matrix(), block_diagonal_matrix(A2.gram_matrix(), U.gram_matrix()))
+    assert S.b(S.gen(0), S.gen(A2.rank())) == 0  # summands are orthogonal
+
+    # tensor product: Gram is the Kronecker product of the Grams.
+    T = A2.tensor_product(U)
+    assert_matrix_equal(T.gram_matrix(), A2.gram_matrix().tensor_product(U.gram_matrix()))
