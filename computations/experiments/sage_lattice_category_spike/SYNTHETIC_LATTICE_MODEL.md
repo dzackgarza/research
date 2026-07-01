@@ -4,21 +4,21 @@
 
 - Synthetic lattice parent/element/homset: owned Sage parents with distinguished bases, exact `QQ`-valued symmetric forms, and explicit morphisms.
 - Finite discriminant group/form: finite Smith quotient objects carrying bilinear and quadratic pairings valued in `QQ/ZZ` or `QQ/2ZZ`.
-- Sage reference coverage accounting: a manifest that records which Sage reference loci are adapted, superseded, rejected, generic, or still pending.
 - Positive-definite algorithm adapter surface: exact lattice algorithms exposed only where the synthetic category contract owns them.
 
 ## Vocabulary
 
 - `accepted reference contract`: Sage behavior intentionally adapted into this spike and proved by local tests.
-- `rejected parity`: Sage-native behavior intentionally excluded from this synthetic spike.
-- `synthetic supersession`: local synthetic behavior that replaces a Sage surface because the owned model is not Sage's ambient module model.
+- `lattice-aware wrapper`: Sage-native module, quotient, Smith-coordinate, or morphism behavior promoted to a lattice-category method with a lattice, quadratic-space, quotient, discriminant-form, or morphism return type.
+- `raw-accessor-only`: Sage-native behavior reachable through an explicit underlying-object accessor, not promoted as a public lattice-category method.
+- `native-integration-required`: Sage-native lattice/module behavior that is meaningful for the original lattice-category prompt but not completed by this synthetic spike.
 - `adapted doctest/reference surface`: a Sage doctest or API locus translated into a local exact algebraic test.
-- `explicit limitation`: unsupported behavior that raises a precise exception and is recorded in the manifest.
+- `explicit limitation`: unsupported behavior that raises a precise exception at the API boundary.
 
 ## Invariants
 
 - Lattices are synthetic modules with distinguished bases and `QQ`-valued symmetric bilinear forms.
-- No public ambient-vector-space API is introduced.
+- Raw ambient-module and ambient-vector-space APIs are not exposed as public lattice methods in this spike; the promoted public surface is `ambient_quadratic_space()`, which preserves the rational ambient form.
 - Explicit isometry generators are accepted; full generator computation is not promised.
 - Odd lattices retain `QQ/ZZ` bilinear discriminant forms even when genus classification is unsupported.
 

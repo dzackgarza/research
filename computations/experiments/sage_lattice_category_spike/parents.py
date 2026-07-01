@@ -135,6 +135,16 @@ class SyntheticLattice(Parent):
     def ambient_gram_matrix(self):
         return self._rational_gram_matrix
 
+    def ambient_quadratic_space(self):
+        ambient_rank = self._rational_gram_matrix.nrows()
+        return SyntheticLattice(
+            self._rational_gram_matrix,
+            QQ,
+            matrix.identity(QQ, ambient_rank),
+            self._rational_gram_matrix,
+            f"{self._label}_ambient_QQ",
+        )
+
     def bilinear_form(self):
         return self.b
 
@@ -297,18 +307,25 @@ class SyntheticLattice(Parent):
             f"left={self._rational_gram_matrix}, right={other._rational_gram_matrix}")
         return all(row in other.underlying_module() for row in self.basis_matrix().rows())
 
-    def sublattice(self, generators, label="sublattice", check_integral=False):
+    def sublattice(self, generators, label="sublattice", require_subset=True, require_integral=True):
         generator_matrix = matrix(QQ, generators)
         if not (generator_matrix.ncols() == self.rank()):
             raise ValueError("sublattice generators must be rows in the parent basis; "
             f"parent_rank={self.rank()}, generators={generator_matrix}")
+        if require_subset:
+            parent_module = self.underlying_module()
+            rational_generators = generator_matrix * self.basis_matrix()
+            for row in rational_generators.rows():
+                if row not in parent_module:
+                    raise ValueError("sublattice generators must lie in the parent lattice; "
+                    f"generator={row}, parent={self}")
         if generator_matrix.rank() == generator_matrix.nrows():
             basis_matrix = generator_matrix * self.basis_matrix()
         else:
             generator_module = (QQ**self.rank()).span(generator_matrix.rows(), self.base_ring())
             basis_matrix = matrix(QQ, generator_module.basis_matrix()) * self.basis_matrix()
         lattice = self._from_rational_basis(basis_matrix, self.base_ring(), label)
-        if not (not check_integral or lattice.is_integral()):
+        if require_integral and not lattice.is_integral():
             raise ValueError(f"sublattice is not integral; gram={lattice.gram_matrix()}")
         return lattice
 
@@ -316,9 +333,9 @@ class SyntheticLattice(Parent):
     submodule_with_basis = sublattice
 
     def fractional_sublattice(self, generators, label="fractional_sublattice"):
-        return self.sublattice(generators, label=label, check_integral=False)
+        return self.sublattice(generators, label=label, require_subset=False, require_integral=False)
 
-    def span(self, generators, base_ring=None, label="span"):
+    def span(self, generators, base_ring=None, check_integral=None, check_even=None, label="span"):
         base_ring = self.base_ring() if base_ring is None else base_ring
         if not (base_ring in (ZZ, QQ)):
             raise ValueError(f"lattice span base ring must be ZZ or QQ; found={base_ring}")
@@ -327,7 +344,12 @@ class SyntheticLattice(Parent):
             raise ValueError("span generators must be rows in rationalization coordinates; "
             f"rational_rank={self._rational_gram_matrix.nrows()}, generators={generator_matrix}")
         module = self.rationalization_module().span(generator_matrix.rows(), base_ring)
-        return self._from_module(module, label)
+        lattice = self._from_module(module, label)
+        if check_integral is True and not lattice.is_integral():
+            raise ValueError(f"span is not integral; gram={lattice.gram_matrix()}")
+        if check_even is True and not lattice.is_even():
+            raise ValueError(f"span is not even; gram={lattice.gram_matrix()}")
+        return lattice
 
     def span_of_basis(self, basis, base_ring=None, label="span"):
         base_ring = self.base_ring() if base_ring is None else base_ring
@@ -575,13 +597,20 @@ class SyntheticLattice(Parent):
 
         return LatticeHomset(self, codomain)
 
-    def hom(self, matrix_data, codomain):
+    def hom(self, matrix_data, codomain=None):
+        codomain = self if codomain is None else codomain
         return self.Hom(codomain).from_matrix(matrix_data)
 
     module_hom = hom
     lattice_hom = hom
     isometry = hom
-    embedding = hom
+
+    def embedding(self, matrix_data, codomain=None, primitive=False):
+        codomain = self if codomain is None else codomain
+        morphism = self.hom(matrix_data, codomain=codomain)
+        if primitive and not codomain.is_primitive(morphism.image()):
+            raise ValueError("primitive embedding requires a primitive image sublattice")
+        return morphism
 
     def similarity(self, matrix_data, codomain, scalar):
         from .homsets import LatticeSimilarity
@@ -597,6 +626,14 @@ class SyntheticLattice(Parent):
         return self.discriminant_group().action_of_isometry(isometry)
 
     def induced_map_on_quotient(self, morphism, quotient):
+        if not (morphism.domain() == quotient.cover_lattice() and morphism.codomain() == quotient.cover_lattice()):
+            raise ValueError("induced quotient endomorphism requires a morphism of the quotient cover lattice")
+        relation_lattice = quotient.relation_lattice()
+        for row in relation_lattice.basis_matrix().rows():
+            relation_coordinates = morphism.domain().coordinate_vector(vector(QQ, row))
+            image = morphism(morphism.domain()(relation_coordinates))
+            if vector(QQ, image.rational_coordinates()) not in relation_lattice.underlying_module():
+                raise ValueError("morphism does not preserve the quotient relation lattice")
         return quotient.hom([quotient.projection(morphism(quotient.lift(generator))) for generator in quotient.gens()])
 
     def discriminant_group(self, primary=0):

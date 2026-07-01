@@ -5,7 +5,6 @@ import pytest
 from sage.all import CartanMatrix, Matrix, QQ, ZZ, identity_matrix, matrix
 
 import sage_lattice_category_spike.lattice_categories as lc
-import sage_lattice_category_spike.reference_manifest as manifest
 
 
 def assert_matrix_equal(left, right):
@@ -28,8 +27,9 @@ def test_rational_span_and_fractional_dual_follow_free_quadratic_module_doctests
 
     assert not hasattr(L, "ambient_module")
     assert not hasattr(L, "ambient_space")
-    assert not hasattr(L, "ambient_quadratic_space")
     assert not hasattr(L, "ambient_vector_space")
+    assert L.ambient_quadratic_space().base_ring() is QQ
+    assert_matrix_equal(L.ambient_quadratic_space().gram_matrix(), L.ambient_gram_matrix())
     assert L.rational_span().base_ring() is QQ
     assert L.rationalization_module().dimension() == 2
     assert L.is_submodule(L_dual)
@@ -40,16 +40,16 @@ def test_rational_span_and_fractional_dual_follow_free_quadratic_module_doctests
     assert_matrix_equal(W.basis_matrix(), matrix(QQ, 2, 2, [QQ(1) / 5, QQ(2) / 5, QQ(1) / 7, QQ(1) / 7]))
 
 
-def test_nonintegral_sublattice_is_owned_fractional_lattice_not_rejected_by_default():
-    # Reference: IntegralLattice.sublattice rejects this, but the consolidated spec broadens it.
+def test_nonintegral_rational_generators_use_fractional_sublattice_contract():
+    # Reference: IntegralLattice.sublattice rejects this; the consolidated category broadens it through fractional_sublattice.
     U = lc.Lattice("U")
-    fractional = U.sublattice([[QQ(1) / 2, -QQ(1) / 2]], label="fractional_line")
+    fractional = U.fractional_sublattice([[QQ(1) / 2, -QQ(1) / 2]], label="fractional_line")
 
     assert fractional.base_ring() is ZZ
     assert not fractional.is_integral()
     assert_matrix_equal(fractional.gram_matrix(), matrix(QQ, 1, 1, [-QQ(1) / 2]))
     with pytest.raises(ValueError):
-        U.sublattice([[QQ(1) / 2, -QQ(1) / 2]], check_integral=True)
+        U.sublattice([[QQ(1) / 2, -QQ(1) / 2]])
 
 
 def test_overlattice_and_maximal_overlattice_follow_integral_lattice_doctests():
@@ -146,6 +146,22 @@ def test_finite_discriminant_form_orthogonal_group_matches_torsion_doctest():
     assert D.exponent() == 2
     assert D.zero() == D.identity()
     assert D.invariant_factors() == (2, 2, 2)
+    assert D.underlying_quotient_module() is D
+    assert D.cover() is D
+    assert D.relations().cardinality() == 1
+    assert D.smith_form_gens() == D.gens()
+    assert D.smith_form_gen(2) == D.gen(2)
+    assert D.linear_combination_of_smith_form_gens((1, 0, 1)) == D.gen(0) + D.gen(2)
+    assert D.gens_to_smith() == identity_matrix(ZZ, 3)
+    assert D.smith_to_gens() == identity_matrix(ZZ, 3)
+    assert tuple(D.gens_vector(D.gen(0) + D.gen(2))) == (1, 0, 1)
+    assert tuple(D.coordinate_vector(D.gen(0) + D.gen(2))) == (1, 0, 1)
+    assert D.coordinates_in_smith_basis(D.gen(1)) == (0, 1, 0)
+    assert D.coordinates_in_generators(D.gen(1)) == (0, 1, 0)
+    assert D.generator_relations() == matrix.diagonal(ZZ, D.invariants())
+    assert D.projection(D.lift(D.gen(1))) == D.gen(1)
+    assert D.basis_from_generators(D.gens()) == D.gens()
+    assert D.p_torsion(2).cardinality() == 8
     assert D.coordinates(D.gen(0) + D.gen(2)) == (1, 0, 1)
     swap = D.hom([D.gen(1), D.gen(0), D.gen(2)])
     assert_matrix_equal(OD(swap), matrix(ZZ, 3, 3, [0, 1, 0, 1, 0, 0, 0, 0, 1]))
@@ -168,7 +184,9 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
     A2_dual = A2.dual()
     A2_QQ = A2.change_base_ring(QQ)
 
-    assert not any(hasattr(A2, name) for name in ("ambient_module", "ambient_space", "ambient_quadratic_space"))
+    assert not any(hasattr(A2, name) for name in ("ambient_module", "ambient_space", "ambient_vector_space"))
+    assert A2.ambient_quadratic_space().base_ring() is QQ
+    assert_matrix_equal(A2.ambient_quadratic_space().gram_matrix(), A2.ambient_gram_matrix())
     assert A2_QQ == A2.rational_span()
     assert A2_QQ.base_ring() is QQ
     assert_matrix_equal(A2.basis_matrix(kind="user"), A2.basis_matrix())
@@ -202,6 +220,9 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
     assert A2.zero_submodule().rank() == 0
     assert A2.vector_space_span([[1, 0]]).base_ring() is QQ
     assert A2.vector_space_span_of_basis([[1, 0]]).base_ring() is QQ
+    assert A2.span([[1, 0], [0, 1]], check_integral=True, check_even=True).is_even()
+    with pytest.raises(ValueError):
+        A2.span([[QQ(1) / 3, 0]], check_integral=True)
     assert A2.index_in_saturation() == A2.index_in(A2.saturation())
     nonprimitive_line = lc.Lattice("U").sublattice([[2, 0]], label="2e")
     assert nonprimitive_line.saturation(in_ambient=lc.Lattice("U")).basis_matrix() == matrix(QQ, 1, 2, [1, 0])
@@ -281,6 +302,8 @@ def test_discriminant_form_subgroup_source_and_action_api_is_bound():
     assert D.orthogonal(H).cardinality() == 2
     assert D.orthogonal_complement(H) == D.orthogonal(H)
     assert D.orthogonal_quotient(Z).invariants() == D.invariants()
+    with pytest.raises(ValueError):
+        D.orthogonal_quotient(H)
 
     M = D.preimage_lattice(H, label="<1>")
     assert_matrix_equal(M.gram_matrix(), matrix(QQ, 1, 1, [1]))
@@ -306,6 +329,16 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     assert quotient.relations() == quotient.W()
     assert quotient.invariants() == A2.discriminant_group().invariants()
     assert quotient.cardinality() == A2.discriminant_group().cardinality()
+    assert quotient.as_additive_abelian_group() is quotient
+    assert quotient.underlying_abelian_group() is quotient
+    assert quotient.underlying_quotient_module() is quotient
+    assert quotient.exponent() == 3
+    assert quotient.is_cyclic()
+    assert quotient.short_name() == "Z/3"
+    assert quotient.generator_orders() == (3,)
+    assert quotient.rank_p(3) == 1
+    assert quotient.length_p(3) == 1
+    assert quotient.torsion_subgroup() is quotient
     assert quotient.projection(quotient.lift(quotient.gen(0))) == quotient.gen(0)
     assert quotient.quotient_map()(quotient.lift(quotient.gen(0))) == quotient.gen(0)
     assert A2_dual.finite_quotient(A2).invariants() == (3,)
@@ -326,6 +359,18 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     assert quotient.generator_relations() == matrix(ZZ, 1, 1, [3])
     assert quotient.invariant_factors() == (3,)
     assert quotient.elementary_divisors() == (3,)
+    full_subgroup = quotient.subgroup([quotient.gen(0)])
+    assert full_subgroup.cardinality() == 3
+    assert quotient.contains_subgroup(full_subgroup)
+    assert quotient.quotient_group(full_subgroup).invariants() == ()
+    assert quotient.primary_part(3).cardinality() == 3
+    assert quotient.p_torsion(3).cardinality() == 3
+    assert quotient.primary_parts()[0].cardinality() == 3
+    assert len(quotient.all_subgroups()) == 2
+    assert quotient.basis_from_generators(quotient.gens()) == quotient.gens()
+    assert len(quotient.cosets(full_subgroup)) == 1
+    with pytest.raises(ValueError):
+        quotient.discrete_exp(())
 
     cover_mod_four = lc.Lattice(matrix(QQ, 1, 1, [QQ(1) / 4]))
     quotient_mod_four = cover_mod_four.finite_quotient(cover_mod_four.sublattice([[4]], label="4L"))
@@ -336,6 +381,8 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     assert doubling.lift(2 * quotient_mod_four.gen(0)) in quotient_mod_four.elements()
     with pytest.raises(ValueError):
         doubling.lift(quotient_mod_four.gen(0))
+    with pytest.raises(ValueError):
+        quotient_mod_four.discrete_exp((1, 0))
 
 
 def test_lattice_morphism_lift_and_image_generators_are_bound():
@@ -344,6 +391,13 @@ def test_lattice_morphism_lift_and_image_generators_are_bound():
 
     assert identity.lift(A2.gen(1)) == A2.gen(1)
     assert identity.im_gens() == A2.gens()
+    assert A2.isometry(identity_matrix(ZZ, 2))(A2.gen(0)) == A2.gen(0)
+    norm_eight = lc.Lattice(matrix(ZZ, 1, 1, [8]))
+    norm_two = lc.Lattice(matrix(ZZ, 1, 1, [2]))
+    nonprimitive_embedding = norm_eight.embedding(matrix(ZZ, 1, 1, [2]), codomain=norm_two)
+    assert_matrix_equal(nonprimitive_embedding.image().gram_matrix(), norm_eight.gram_matrix())
+    with pytest.raises(ValueError):
+        norm_eight.embedding(matrix(ZZ, 1, 1, [2]), codomain=norm_two, primitive=True)
     assert A2.discriminant_group().smith_generators() == A2.discriminant_group().gens()
 
 
@@ -368,9 +422,37 @@ def test_discriminant_quotient_is_not_orthogonal_quotient_alias():
 
     assert H.cardinality() == 5
     assert quotient.relations() == H
+    assert quotient.as_additive_abelian_group() is quotient
+    assert quotient.underlying_abelian_group() is quotient
+    assert quotient.underlying_quotient_module() is quotient
     assert quotient.cardinality() == 4
     assert quotient.invariants() == (2, 2)
+    assert quotient.exponent() == 2
+    assert not quotient.is_cyclic()
+    assert quotient.short_name() == "Z/2 + Z/2"
+    assert quotient.generator_orders() == (2, 2)
+    assert quotient.rank_p(2) == 2
+    assert quotient.length_p(2) == 2
+    assert quotient.smith_form_gens() == quotient.gens()
+    assert quotient.smith_form_gen(1) == quotient.gen(1)
+    assert quotient.linear_combination_of_smith_form_gens((1, 1)) == quotient.gen(0) + quotient.gen(1)
+    assert quotient.gens_to_smith() == identity_matrix(ZZ, 2)
+    assert quotient.smith_to_gens() == identity_matrix(ZZ, 2)
+    assert tuple(quotient.gens_vector(quotient.gen(0) + quotient.gen(1))) == (1, 1)
+    assert tuple(quotient.coordinate_vector(quotient.gen(0) + quotient.gen(1))) == (1, 1)
+    assert quotient.coordinates_in_smith_basis(quotient.gen(1)) == (0, 1)
+    assert quotient.coordinates_in_generators(quotient.gen(1)) == (0, 1)
+    assert quotient.generator_relations() == matrix.diagonal(ZZ, quotient.invariants())
     assert quotient.projection(quotient.lift(quotient.gen(0))) == quotient.gen(0)
+    quotient_line = quotient.subgroup([quotient.gen(0)])
+    assert quotient.contains_subgroup(quotient_line)
+    assert quotient.quotient_group(quotient_line).invariants() == (2,)
+    assert len(quotient.cosets(quotient_line)) == 2
+    assert quotient.primary_part(2).cardinality() == 4
+    assert quotient.p_torsion(2).cardinality() == 4
+    assert len(quotient.all_subgroups()) == 5
+    assert quotient.basis_from_generators(quotient.gens()) == quotient.gens()
+    assert quotient.torsion_subgroup() is quotient
     assert A.orthogonal_quotient(A.subgroup([])).invariants() == A.invariants()
 
 
@@ -447,6 +529,8 @@ def test_finite_quadratic_form_promotes_torsion_quadratic_module_operations():
     assert D.normal_form() == D.normal_form(partial=True)
     assert D.is_isomorphic_to(lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 3, QQ(1) / 2])))
     assert D.twist(2).gram_matrix_bilinear() == matrix(QQ, 1, 1, [QQ(2) / 3])
+    with pytest.raises(ValueError):
+        D.discrete_exp((1,))
 
 
 def test_finite_quadratic_form_normal_form_uses_generator_changes_not_only_permutations():
@@ -485,10 +569,57 @@ def test_orthogonal_quotient_keeps_smith_invariants_not_only_cardinality():
     A = L.discriminant_group()
     H = A.subgroup([A.discrete_exp((1, 1, 1, 1))])
     quotient = A.orthogonal_quotient(H)
+    first, second = quotient.gens()
 
     assert H.is_quadratic_isotropic()
     assert quotient.cardinality() == 4
     assert quotient.invariants() == (2, 2)
+    assert quotient.as_additive_abelian_group() is quotient
+    assert quotient.underlying_abelian_group() is quotient
+    assert quotient.underlying_quotient_module() is quotient
+    assert not quotient.is_cyclic()
+    assert quotient.short_name() == "Z/2 + Z/2"
+    assert quotient.generator_orders() == (2, 2)
+    assert quotient.elementary_divisors() == (2, 2)
+    assert quotient.rank_p(2) == 2
+    assert quotient.length_p(2) == 2
+    assert quotient.is_finite()
+    assert quotient.projection(quotient.lift(first)) == first
+    assert quotient.discrete_exp((1, 0)) == first
+    assert quotient.linear_combination_of_smith_form_gens((0, 1)) == second
+    assert quotient.gens_to_smith() == identity_matrix(ZZ, 2)
+    assert quotient.smith_to_gens() == identity_matrix(ZZ, 2)
+    assert tuple(quotient.gens_vector(first)) == (1, 0)
+    assert tuple(quotient.coordinate_vector(second)) == (0, 1)
+    assert quotient.coordinates_in_smith_basis(first) == (1, 0)
+    assert quotient.coordinates_in_generators(second) == (0, 1)
+    assert quotient.generator_relations() == matrix.diagonal(ZZ, quotient.invariants())
+    assert quotient.coordinates(second) == (0, 1)
+    line = quotient.subgroup([first])
+    assert quotient.contains_subgroup(line)
+    assert quotient.quotient_group(line).invariants() == (2,)
+    assert len(quotient.cosets(line)) == 2
+    assert quotient.primary_part(2).cardinality() == 4
+    assert quotient.p_torsion(2).cardinality() == 4
+    assert len(quotient.all_subgroups()) == 5
+    assert quotient.basis_from_generators(quotient.gens()) == quotient.gens()
+    assert quotient.torsion_subgroup() is quotient
+    assert quotient.q(first) == 1
+    assert quotient.q(second) == 1
+    assert quotient.b(first, second) == QQ(1) / 2
+    assert_matrix_equal(
+        quotient.gram_matrix_quadratic(),
+        matrix(QQ, 2, 2, [1, QQ(1) / 2, QQ(1) / 2, 1]),
+    )
+    assert A.subquotient_form(H, H).cardinality() == 1
+    assert_matrix_equal(
+        A.subquotient_form(H, A.orthogonal(H)).gram_matrix_quadratic(),
+        quotient.gram_matrix_quadratic(),
+    )
+    with pytest.raises(ValueError):
+        A.orthogonal_quotient(A.subgroup([A.gen(0)]))
+    with pytest.raises(ValueError):
+        A.subquotient_form(H, A.subgroup([]))
 
 
 def test_discriminant_group_enumerates_all_finite_subgroups():
@@ -542,29 +673,3 @@ def test_odd_discriminant_form_remains_usable_while_odd_genus_is_unsupported():
         D.is_genus((1, 0), even=False)
     with pytest.raises(NotImplementedError):
         D.genus((1, 0), even=False)
-
-
-def test_reference_coverage_manifest_has_no_unresolved_or_hidden_accepted_contracts():
-    rows = manifest.REFERENCE_COVERAGE
-    accepted = set(manifest.ACCEPTED_SYNTHETIC_API)
-    covered = set()
-
-    assert {row["sage_locus"] for row in rows} == {
-        "free_quadratic_module_integer_symmetric.py",
-        "free_quadratic_module.py",
-        "torsion_quadratic_module.py",
-        "fgp_module.py",
-        "free_module.py",
-        "free_module_integer.py",
-    }
-    for row in rows:
-        assert row["classification"] in manifest.ALLOWED_CLASSIFICATIONS
-        assert row["classification"] != "pending-gap"
-        covered.update(row["accepted_symbols"])
-        if row["classification"] == "adapted":
-            assert row["local_tests"]
-            for test_name in row["local_tests"]:
-                assert callable(globals()[test_name])
-        if row["classification"] == "rejected-parity":
-            assert not (accepted & set(row["rejected_symbols"]))
-    assert accepted <= covered

@@ -75,6 +75,55 @@ def _all_group_automorphisms(group):
     return tuple(automorphisms)
 
 
+def _finite_all_subgroups(parent):
+    seen = {}
+    zero = parent.subgroup(())
+    seen[zero._key()] = zero
+    frontier = [zero]
+    while frontier:
+        subgroup = frontier.pop()
+        for element in parent.elements():
+            generated = parent.subgroup(tuple(subgroup.gens()) + (element,))
+            key = generated._key()
+            if key not in seen:
+                seen[key] = generated
+                frontier.append(generated)
+    return tuple(seen[key] for key in sorted(seen, key=lambda item: sorted(item)))
+
+
+def _finite_relations_among(parent, gens):
+    gens = tuple(parent(gen) for gen in gens)
+    ranges = tuple(range(parent.order(generator)) for generator in gens)
+    return tuple(
+        tuple(ZZ(coefficient) for coefficient in coefficients)
+        for coefficients in product(*ranges)
+        if parent.discrete_exp(coefficients, gens=gens) == parent.zero()
+    )
+
+
+def _finite_basis_from_generators(parent, gens):
+    subgroup = parent.subgroup(gens)
+    if not (subgroup.cardinality() == parent.cardinality()):
+        raise ValueError("generators do not span the whole group")
+    return tuple(parent(gen) for gen in gens)
+
+
+def _finite_scalar_multiply(parent, scalar, element):
+    if hasattr(parent, "_scalar_multiply_element"):
+        return parent._scalar_multiply_element(scalar, element)
+    return ZZ(scalar) * element
+
+
+def _finite_p_torsion(parent, p, k=1):
+    p = ZZ(p)
+    k = ZZ(k)
+    if not p.is_prime():
+        raise ValueError(f"p-torsion requires a prime; found={p}")
+    if not k >= 1:
+        raise ValueError(f"p-torsion exponent must be positive; found={k}")
+    return parent.subgroup(element for element in parent.elements() if _finite_scalar_multiply(parent, p ** k, element) == parent.zero())
+
+
 def _form_matrix_on_images(group, images):
     images = tuple(group(image) for image in images)
     form = matrix(QQ, len(images), len(images))
@@ -232,6 +281,9 @@ class SyntheticDiscriminantGroup(Parent):
         return self
 
     def underlying_abelian_group(self):
+        return self
+
+    def underlying_quotient_module(self):
         return self
 
     def cardinality(self):
@@ -564,6 +616,8 @@ class SyntheticDiscriminantGroup(Parent):
 
     def orthogonal_quotient(self, subgroup_or_gens):
         subgroup = self._subgroup(subgroup_or_gens)
+        if not self.is_isotropic_subgroup(subgroup):
+            raise ValueError("orthogonal quotient requires a quadratic-isotropic relation subgroup")
         if subgroup.cardinality() == 1:
             return self
         orthogonal = self.orthogonal(subgroup)
@@ -799,7 +853,15 @@ class SyntheticDiscriminantGroup(Parent):
         return _form_matrix_on_images(self, [phi(generator) for generator in self.gens()])
 
     def subquotient_form(self, subgroup_or_gens, quotient_subgroup_or_gens):
-        return self.orthogonal_quotient(subgroup_or_gens)
+        subgroup = self._subgroup(subgroup_or_gens)
+        quotient_subgroup = self._subgroup(quotient_subgroup_or_gens)
+        if not subgroup._key() <= quotient_subgroup._key():
+            raise ValueError("subquotient form requires H contained in K")
+        if not self.is_isotropic_subgroup(subgroup):
+            raise ValueError("subquotient form requires a quadratic-isotropic relation subgroup")
+        if not quotient_subgroup._key() <= self.orthogonal(subgroup)._key():
+            raise ValueError("subquotient form requires K contained in the orthogonal complement of H")
+        return SyntheticDiscriminantSubquotient(self, subgroup, quotient_subgroup)
 
     def character_group(self):
         return self
@@ -954,8 +1016,8 @@ class SyntheticDiscriminantSubgroup:
         if not (all(hasattr(ambient, name) for name in ("ngens", "order", "zero", "elements"))):
             raise ValueError(f"expected finite additive parent; found={type(ambient)}")
         self._ambient = ambient
-        self._gens = tuple(ambient(gen) for gen in gens)
-        self._elements = tuple(sorted(self._closure(), key=lambda element: tuple(element.coordinates())))
+        self._gens = tuple(self._coerce(gen) for gen in gens)
+        self._elements = tuple(sorted(self._closure(), key=self._element_key))
 
     def ambient(self):
         return self._ambient
@@ -970,7 +1032,7 @@ class SyntheticDiscriminantSubgroup:
         return ZZ(len(self.elements()))
 
     def __contains__(self, element):
-        return tuple(self.ambient()(element).coordinates()) in self._key()
+        return self._element_key(element) in self._key()
 
     def is_bilinear_isotropic(self):
         return all(
@@ -986,7 +1048,7 @@ class SyntheticDiscriminantSubgroup:
         return self.ambient().orthogonal_submodule_to(self)
 
     def _key(self):
-        return frozenset(tuple(element.coordinates()) for element in self.elements())
+        return frozenset(self._element_key(element) for element in self.elements())
 
     def __eq__(self, other):
         return isinstance(other, SyntheticDiscriminantSubgroup) and self.ambient() is other.ambient() and self._key() == other._key()
@@ -1002,9 +1064,25 @@ class SyntheticDiscriminantSubgroup:
         for coefficients in product(*ranges):
             element = self.ambient().zero()
             for coefficient, generator in zip(coefficients, self._gens):
-                element += ZZ(coefficient) * generator
+                element = self._add_elements(element, self._scalar_multiply(ZZ(coefficient), generator))
             elements.add(element)
         return elements
+
+    def _coerce(self, element):
+        return self.ambient()(element)
+
+    def _element_key(self, element):
+        return tuple(self.ambient().coordinates(self._coerce(element)))
+
+    def _add_elements(self, left, right):
+        if hasattr(self.ambient(), "_add_elements"):
+            return self.ambient()._add_elements(left, right)
+        return left + right
+
+    def _scalar_multiply(self, scalar, element):
+        if hasattr(self.ambient(), "_scalar_multiply_element"):
+            return self.ambient()._scalar_multiply_element(scalar, element)
+        return scalar * element
 
 
 class SyntheticDiscriminantGroupQuotient(Parent):
@@ -1023,7 +1101,7 @@ class SyntheticDiscriminantGroupQuotient(Parent):
             row = [ZZ.zero()] * ambient_group.ngens()
             row[i] = ZZ(invariant)
             relation_rows.append(row)
-        relation_rows.extend([list(generator.coordinates()) for generator in relation_subgroup.gens()])
+        relation_rows.extend([list(ambient_group.coordinates(generator)) for generator in relation_subgroup.gens()])
         relation_matrix = matrix(ZZ, relation_rows) if relation_rows else matrix(ZZ, 0, 0)
         smith, _smith_left, smith_right = relation_matrix.smith_form()
         self._smith_right = smith_right
@@ -1061,6 +1139,15 @@ class SyntheticDiscriminantGroupQuotient(Parent):
     def ambient_group(self):
         return self._ambient_group
 
+    def as_additive_abelian_group(self):
+        return self
+
+    def underlying_abelian_group(self):
+        return self
+
+    def underlying_quotient_module(self):
+        return self
+
     def cover(self):
         return self._ambient_group
 
@@ -1083,6 +1170,30 @@ class SyntheticDiscriminantGroupQuotient(Parent):
                 divisors.append(ZZ(prime) ** ZZ(exponent))
         return tuple(sorted(divisors))
 
+    def annihilator(self):
+        return lcm(self.invariants() or (ZZ.one(),))
+
+    exponent = annihilator
+
+    def is_cyclic(self):
+        return len(self.invariants()) <= 1
+
+    def short_name(self):
+        if not self.invariants():
+            return "0"
+        return " + ".join(f"Z/{invariant}" for invariant in self.invariants())
+
+    def generator_orders(self):
+        return self.invariants()
+
+    def rank_p(self, p):
+        p = ZZ(p)
+        if not p.is_prime():
+            raise ValueError(f"p-rank requires a prime; found={p}")
+        return ZZ(sum(1 for invariant in self.invariants() if ZZ(invariant) % p == 0))
+
+    length_p = rank_p
+
     def ngens(self):
         return len(self.invariants())
 
@@ -1100,11 +1211,14 @@ class SyntheticDiscriminantGroupQuotient(Parent):
         return tuple(self.gen(i) for i in range(self.ngens()))
 
     smith_generators = gens
+    smith_form_gens = gens
 
     def gen(self, i):
         row = [ZZ.zero()] * self.ngens()
         row[i] = ZZ.one()
         return self(row)
+
+    smith_form_gen = gen
 
     def zero(self):
         return self([ZZ.zero()] * self.ngens())
@@ -1122,9 +1236,132 @@ class SyntheticDiscriminantGroupQuotient(Parent):
     def random_element(self):
         return choice(self.elements())
 
+    def order(self, element=None):
+        if element is None:
+            return self.cardinality()
+        element = self(element)
+        orders = []
+        for coordinate, invariant in zip(element.coordinates(), self.invariants()):
+            orders.append(ZZ.one() if coordinate == 0 else invariant // ZZ(coordinate).gcd(invariant))
+        return lcm(orders) if orders else ZZ.one()
+
+    def coordinates(self, element, gens=None, reduce=True):
+        if gens is None:
+            return tuple(self(element).coordinates())
+        return self.discrete_log(element, gens=gens)
+
+    def discrete_exp(self, coefficients, gens=None):
+        coefficients = tuple(coefficients)
+        gens = self.gens() if gens is None else tuple(self(gen) for gen in gens)
+        if not (len(coefficients) == len(gens)):
+            raise ValueError("coefficient vector length must match generator count; "
+            f"coefficients={coefficients}, gens={gens}")
+        value = self.zero()
+        for coefficient, generator in zip(coefficients, gens):
+            value += ZZ(coefficient) * generator
+        return value
+
+    def discrete_log(self, element, gens=None):
+        element = self(element)
+        if gens is None:
+            return tuple(element.coordinates())
+        gens = tuple(self(gen) for gen in gens)
+        for coefficients in product(*[range(self.order(generator)) for generator in gens]):
+            if self.discrete_exp(coefficients, gens=gens) == element:
+                return tuple(ZZ(coefficient) for coefficient in coefficients)
+        raise ValueError(f"element is not generated by the supplied generators: {element}")
+
+    def linear_combination_of_smith_form_gens(self, coefficients):
+        return self.discrete_exp(coefficients, gens=self.smith_form_gens())
+
+    def gens_to_smith(self):
+        return identity_matrix(ZZ, self.ngens())
+
+    def smith_to_gens(self):
+        return identity_matrix(ZZ, self.ngens())
+
+    def gens_vector(self, element, reduce=True):
+        return vector(ZZ, self.coordinates(element))
+
+    coordinate_vector = gens_vector
+    coordinates_in_smith_basis = coordinates
+    coordinates_in_generators = coordinates
+
+    def generator_relations(self):
+        return matrix.diagonal(ZZ, self.invariants())
+
+    def subgroup_generated_by(self, gens):
+        return SyntheticDiscriminantSubgroup(self, gens)
+
+    submodule_with_gens = subgroup_generated_by
+    submodule = subgroup_generated_by
+    subgroup = subgroup_generated_by
+    from_generators = subgroup_generated_by
+
+    def _subgroup(self, subgroup_or_gens):
+        if isinstance(subgroup_or_gens, SyntheticDiscriminantSubgroup):
+            if not (subgroup_or_gens.ambient() is self):
+                raise ValueError("subgroup belongs to a different finite quotient")
+            return subgroup_or_gens
+        return self.subgroup(subgroup_or_gens)
+
+    def contains_subgroup(self, subgroup_or_gens):
+        return self._subgroup(subgroup_or_gens).ambient() is self
+
+    def quotient_group(self, subgroup_or_gens):
+        return SyntheticDiscriminantGroupQuotient(self, self._subgroup(subgroup_or_gens))
+
+    quotient = quotient_group
+
+    def quotient_map(self, subgroup_or_gens):
+        quotient = self.quotient_group(subgroup_or_gens)
+        return lambda element: quotient.projection(element)
+
+    def cosets(self, subgroup_or_gens):
+        subgroup = self._subgroup(subgroup_or_gens)
+        unseen = set(self.elements())
+        cosets = []
+        while unseen:
+            representative = min(unseen, key=lambda element: tuple(element.coordinates()))
+            coset = frozenset(representative + element for element in subgroup.elements())
+            cosets.append(coset)
+            unseen.difference_update(coset)
+        return tuple(cosets)
+
+    def primary_part(self, p):
+        p = ZZ(p)
+        if not p.is_prime():
+            raise ValueError(f"primary part requires a prime; found={p}")
+        return self.subgroup(element for element in self.elements() if (p ** ZZ(element.parent().annihilator().valuation(p))) * element == self.zero())
+
+    p_primary_part = primary_part
+
+    def primary_decomposition(self):
+        return tuple(self.primary_part(p) for p in ZZ(self.annihilator()).prime_divisors())
+
+    primary_parts = primary_decomposition
+
+    def torsion_subgroup(self):
+        return self
+
+    def all_submodules(self):
+        return _finite_all_subgroups(self)
+
+    all_subgroups = all_submodules
+    subgroups = all_submodules
+
+    def p_torsion(self, p, k=1):
+        return _finite_p_torsion(self, p, k=k)
+
+    def relations_among(self, gens):
+        return _finite_relations_among(self, gens)
+
+    def basis_from_generators(self, gens):
+        return _finite_basis_from_generators(self, gens)
+
     def projection(self, element):
         element = self.ambient_group()(element)
-        ambient_row = matrix(ZZ, 1, self.ambient_group().ngens(), list(element.coordinates()))
+        ambient_row = matrix(ZZ, 1, self.ambient_group().ngens(), list(self.ambient_group().coordinates(element)))
         smith_row = ambient_row * self._smith_right
         return self([ZZ(smith_row[0, position]) % invariant for position, invariant in zip(self._invariant_positions, self.invariants())])
 
@@ -1153,12 +1390,64 @@ class SyntheticDiscriminantSubquotient:
 
     order = cardinality
 
+    def __call__(self, element):
+        if isinstance(element, frozenset):
+            return self._coerce_coset(element)
+        if hasattr(element, "parent") and element.parent() is self._ambient_group:
+            return self._coerce_coset(element)
+        if element == 0:
+            return self.zero()
+        coordinates = tuple(element)
+        if len(coordinates) == self.ngens():
+            return self.discrete_exp(coordinates)
+        return self._coerce_coset(element)
+
+    def as_additive_abelian_group(self):
+        return self
+
+    def underlying_abelian_group(self):
+        return self
+
+    def underlying_quotient_module(self):
+        return self
+
+    def is_finite(self):
+        return True
+
     def invariants(self):
         return _finite_group_invariant_factors(
             self.elements(),
             self.zero(),
             self._scalar_multiply_coset,
         )
+
+    invariant_factors = invariants
+
+    def elementary_divisors(self):
+        divisors = []
+        for invariant in self.invariants():
+            for prime, exponent in ZZ(invariant).factor():
+                divisors.append(ZZ(prime) ** ZZ(exponent))
+        return tuple(sorted(divisors))
+
+    def is_cyclic(self):
+        return len(self.invariants()) <= 1
+
+    def short_name(self):
+        if not self.invariants():
+            return "0"
+        return " + ".join(f"Z/{invariant}" for invariant in self.invariants())
+
+    def rank_p(self, p):
+        p = ZZ(p)
+        if not p.is_prime():
+            raise ValueError(f"p-rank requires a prime; found={p}")
+        return ZZ(sum(1 for invariant in self.invariants() if ZZ(invariant) % p == 0))
+
+    length_p = rank_p
+
+    def ngens(self):
+        return len(self.gens())
 
     def cover(self):
         return self._cover_subgroup
@@ -1170,21 +1459,222 @@ class SyntheticDiscriminantSubquotient:
 
     W = relations
 
+    def ambient_group(self):
+        return self._ambient_group
+
     def _compute_cosets(self):
         unseen = set(self._cover_subgroup.elements())
         cosets = []
         while unseen:
-            representative = next(iter(unseen))
+            representative = min(unseen, key=lambda element: tuple(element.coordinates()))
             coset = frozenset(representative + element for element in self._relation_subgroup.elements())
             cosets.append(coset)
             unseen.difference_update(coset)
-        return tuple(cosets)
+        return tuple(sorted(cosets, key=lambda coset: tuple(self._coset_representative(coset).coordinates())))
 
     def elements(self):
         return self._cosets
 
+    def list(self):
+        return self.elements()
+
+    def random_element(self):
+        return choice(self.elements())
+
     def zero(self):
         return self._coset_containing(self._ambient_group.zero())
+
+    identity = zero
+
+    def gens(self):
+        generators = []
+        generated = {self.zero()}
+        for coset in self.elements():
+            if coset in generated:
+                continue
+            generators.append(coset)
+            generated = self._closure(generators)
+            if len(generated) == self.cardinality():
+                break
+        return tuple(generators)
+
+    smith_generators = gens
+    smith_form_gens = gens
+
+    def gen(self, i):
+        return self.gens()[i]
+
+    smith_form_gen = gen
+
+    def generator_orders(self):
+        return tuple(self.order(generator) for generator in self.gens())
+
+    def annihilator(self):
+        return lcm(self.generator_orders() or (ZZ.one(),))
+
+    exponent = annihilator
+
+    def order(self, element=None):
+        if element is None:
+            return self.cardinality()
+        element = self._coerce_coset(element)
+        value = self.zero()
+        for order in range(1, self.cardinality() + 1):
+            value = self._add_cosets(value, element)
+            if value == self.zero():
+                return ZZ(order)
+        raise ArithmeticError(f"finite subquotient element has no finite order: {element}")
+
+    def discrete_exp(self, coefficients, gens=None):
+        coefficients = tuple(coefficients)
+        gens = self.gens() if gens is None else tuple(self._coerce_coset(gen) for gen in gens)
+        if not (len(coefficients) == len(gens)):
+            raise ValueError("coefficient vector length must match generator count; "
+            f"coefficients={coefficients}, gens={gens}")
+        value = self.zero()
+        for coefficient, generator in zip(coefficients, gens):
+            value = self._add_cosets(value, self._scalar_multiply_coset(ZZ(coefficient), generator))
+        return value
+
+    def discrete_log(self, element, gens=None):
+        element = self._coerce_coset(element)
+        gens = self.gens() if gens is None else tuple(self._coerce_coset(gen) for gen in gens)
+        ranges = tuple(range(self.order(generator)) for generator in gens)
+        for coefficients in product(*ranges):
+            if self.discrete_exp(coefficients, gens=gens) == element:
+                return tuple(ZZ(coefficient) for coefficient in coefficients)
+        raise ValueError(f"element is not generated by the supplied generators: {element}")
+
+    def coordinates(self, element, gens=None, reduce=True):
+        return self.discrete_log(element, gens=gens)
+
+    def linear_combination_of_smith_form_gens(self, coefficients):
+        return self.discrete_exp(coefficients, gens=self.smith_form_gens())
+
+    def gens_to_smith(self):
+        return identity_matrix(ZZ, self.ngens())
+
+    def smith_to_gens(self):
+        return identity_matrix(ZZ, self.ngens())
+
+    def gens_vector(self, element, reduce=True):
+        return vector(ZZ, self.coordinates(element))
+
+    coordinate_vector = gens_vector
+    coordinates_in_smith_basis = coordinates
+    coordinates_in_generators = coordinates
+
+    def generator_relations(self):
+        return matrix.diagonal(ZZ, self.invariants())
+
+    def subgroup_generated_by(self, gens):
+        return SyntheticDiscriminantSubgroup(self, gens)
+
+    submodule_with_gens = subgroup_generated_by
+    submodule = subgroup_generated_by
+    subgroup = subgroup_generated_by
+    from_generators = subgroup_generated_by
+
+    def _subgroup(self, subgroup_or_gens):
+        if isinstance(subgroup_or_gens, SyntheticDiscriminantSubgroup):
+            if not (subgroup_or_gens.ambient() is self):
+                raise ValueError("subgroup belongs to a different finite subquotient")
+            return subgroup_or_gens
+        return self.subgroup(subgroup_or_gens)
+
+    def contains_subgroup(self, subgroup_or_gens):
+        return self._subgroup(subgroup_or_gens).ambient() is self
+
+    def quotient_group(self, subgroup_or_gens):
+        return SyntheticDiscriminantGroupQuotient(self, self._subgroup(subgroup_or_gens))
+
+    quotient = quotient_group
+
+    def cosets(self, subgroup_or_gens):
+        subgroup = self._subgroup(subgroup_or_gens)
+        unseen = set(self.elements())
+        cosets = []
+        while unseen:
+            representative = min(unseen, key=lambda coset: self.coordinates(coset))
+            coset = frozenset(self._add_cosets(representative, element) for element in subgroup.elements())
+            cosets.append(coset)
+            unseen.difference_update(coset)
+        return tuple(cosets)
+
+    def primary_part(self, p):
+        p = ZZ(p)
+        if not p.is_prime():
+            raise ValueError(f"primary part requires a prime; found={p}")
+        exponent = ZZ(self.annihilator()).valuation(p)
+        return self.subgroup(element for element in self.elements() if self._scalar_multiply_coset(p ** exponent, element) == self.zero())
+
+    p_primary_part = primary_part
+
+    def primary_decomposition(self):
+        return tuple(self.primary_part(p) for p in ZZ(self.annihilator()).prime_divisors())
+
+    primary_parts = primary_decomposition
+
+    def torsion_subgroup(self):
+        return self
+
+    def all_submodules(self):
+        return _finite_all_subgroups(self)
+
+    all_subgroups = all_submodules
+    subgroups = all_submodules
+
+    def p_torsion(self, p, k=1):
+        return _finite_p_torsion(self, p, k=k)
+
+    def relations_among(self, gens):
+        return _finite_relations_among(self, gens)
+
+    def basis_from_generators(self, gens):
+        return _finite_basis_from_generators(self, gens)
+
+    def projection(self, element):
+        element = self._ambient_group(element)
+        return self._coset_containing(element)
+
+    def quotient_map(self, subgroup_or_gens=None):
+        if subgroup_or_gens is None:
+            return self.projection
+        quotient = self.quotient_group(subgroup_or_gens)
+        return lambda element: quotient.projection(element)
+
+    def lift(self, element):
+        return self._coset_representative(self._coerce_coset(element))
+
+    def gram_matrix_bilinear(self):
+        return matrix(QQ, [[self.b(left, right) for right in self.gens()] for left in self.gens()])
+
+    def gram_matrix_quadratic(self):
+        return matrix(QQ, [[self.q(left) if i == j else self.b(left, right) for j, right in enumerate(self.gens())] for i, left in enumerate(self.gens())])
+
+    def b(self, left, right):
+        return self._ambient_group.b(self.lift(left), self.lift(right))
+
+    inner_product = b
+
+    def q(self, element):
+        return self._ambient_group.q(self.lift(element))
+
+    quadratic_product = q
+
+    def value_module(self):
+        return self._ambient_group.value_module()
+
+    def value_module_qf(self):
+        return self._ambient_group.value_module_qf()
+
+    def _coerce_coset(self, element):
+        if isinstance(element, frozenset):
+            for coset in self._cosets:
+                if element == coset:
+                    return coset
+            raise ValueError(f"coset is not an element of this subquotient: {element}")
+        return self._coset_containing(element)
 
     def _coset_representative(self, coset):
         return min(coset, key=lambda element: tuple(element.coordinates()))
@@ -1196,15 +1686,31 @@ class SyntheticDiscriminantSubquotient:
                 return coset
         raise ValueError(f"element is outside the subquotient cover subgroup: {element}")
 
+    def _closure(self, gens):
+        if not gens:
+            return {self.zero()}
+        ranges = tuple(range(self.order(generator)) for generator in gens)
+        return {self.discrete_exp(coefficients, gens=gens) for coefficients in product(*ranges)}
+
     def _add_cosets(self, left, right):
+        left = self._coerce_coset(left)
+        right = self._coerce_coset(right)
         return self._coset_containing(self._coset_representative(left) + self._coset_representative(right))
 
     def _scalar_multiply_coset(self, scalar, coset):
         scalar = ZZ(scalar)
+        coset = self._coerce_coset(coset)
+        scalar = scalar % self.order(coset)
         value = self.zero()
         for _ in range(scalar):
             value = self._add_cosets(value, coset)
         return value
+
+    def _add_elements(self, left, right):
+        return self._add_cosets(left, right)
+
+    def _scalar_multiply_element(self, scalar, element):
+        return self._scalar_multiply_coset(scalar, element)
 
 
 class SyntheticLatticeFiniteQuotient(Parent):
@@ -1281,6 +1787,15 @@ class SyntheticLatticeFiniteQuotient(Parent):
     relations = relation_lattice
     W = relation_lattice
 
+    def as_additive_abelian_group(self):
+        return self
+
+    def underlying_abelian_group(self):
+        return self
+
+    def underlying_quotient_module(self):
+        return self
+
     def invariants(self):
         return self._invariants
 
@@ -1303,6 +1818,25 @@ class SyntheticLatticeFiniteQuotient(Parent):
 
     def is_finite(self):
         return True
+
+    def is_cyclic(self):
+        return len(self.invariants()) <= 1
+
+    def short_name(self):
+        if not self.invariants():
+            return "0"
+        return " + ".join(f"Z/{invariant}" for invariant in self.invariants())
+
+    def generator_orders(self):
+        return self.invariants()
+
+    def rank_p(self, p):
+        p = ZZ(p)
+        if not p.is_prime():
+            raise ValueError(f"p-rank requires a prime; found={p}")
+        return ZZ(sum(1 for invariant in self.invariants() if ZZ(invariant) % p == 0))
+
+    length_p = rank_p
 
     def annihilator(self):
         if not self.invariants():
@@ -1355,7 +1889,11 @@ class SyntheticLatticeFiniteQuotient(Parent):
         return self.discrete_log(element, gens=gens)
 
     def discrete_exp(self, coefficients, gens=None):
+        coefficients = tuple(coefficients)
         gens = self.gens() if gens is None else tuple(self(gen) for gen in gens)
+        if not (len(coefficients) == len(gens)):
+            raise ValueError("coefficient vector length must match generator count; "
+            f"coefficients={coefficients}, gens={gens}")
         value = self.zero()
         for coefficient, generator in zip(coefficients, gens):
             value += ZZ(coefficient) * generator
@@ -1370,6 +1908,72 @@ class SyntheticLatticeFiniteQuotient(Parent):
             if self.discrete_exp(coefficients, gens=gens) == element:
                 return tuple(ZZ(coefficient) for coefficient in coefficients)
         raise ValueError(f"element is not generated by the supplied generators: {element}")
+
+    def subgroup_generated_by(self, gens):
+        return SyntheticDiscriminantSubgroup(self, gens)
+
+    submodule_with_gens = subgroup_generated_by
+    submodule = subgroup_generated_by
+    subgroup = subgroup_generated_by
+    from_generators = subgroup_generated_by
+
+    def _subgroup(self, subgroup_or_gens):
+        if isinstance(subgroup_or_gens, SyntheticDiscriminantSubgroup):
+            if not (subgroup_or_gens.ambient() is self):
+                raise ValueError("subgroup belongs to a different finite lattice quotient")
+            return subgroup_or_gens
+        return self.subgroup(subgroup_or_gens)
+
+    def contains_subgroup(self, subgroup_or_gens):
+        return self._subgroup(subgroup_or_gens).ambient() is self
+
+    def quotient_group(self, subgroup_or_gens):
+        return SyntheticDiscriminantGroupQuotient(self, self._subgroup(subgroup_or_gens))
+
+    quotient = quotient_group
+
+    def cosets(self, subgroup_or_gens):
+        subgroup = self._subgroup(subgroup_or_gens)
+        unseen = set(self.elements())
+        cosets = []
+        while unseen:
+            representative = min(unseen, key=lambda element: tuple(element.coordinates()))
+            coset = frozenset(representative + element for element in subgroup.elements())
+            cosets.append(coset)
+            unseen.difference_update(coset)
+        return tuple(cosets)
+
+    def primary_part(self, p):
+        p = ZZ(p)
+        if not p.is_prime():
+            raise ValueError(f"primary part requires a prime; found={p}")
+        exponent = ZZ(self.annihilator()).valuation(p)
+        return self.subgroup(element for element in self.elements() if (p ** exponent) * element == self.zero())
+
+    p_primary_part = primary_part
+
+    def primary_decomposition(self):
+        return tuple(self.primary_part(p) for p in ZZ(self.annihilator()).prime_divisors())
+
+    primary_parts = primary_decomposition
+
+    def torsion_subgroup(self):
+        return self
+
+    def all_submodules(self):
+        return _finite_all_subgroups(self)
+
+    all_subgroups = all_submodules
+    subgroups = all_submodules
+
+    def p_torsion(self, p, k=1):
+        return _finite_p_torsion(self, p, k=k)
+
+    def relations_among(self, gens):
+        return _finite_relations_among(self, gens)
+
+    def basis_from_generators(self, gens):
+        return _finite_basis_from_generators(self, gens)
 
     def linear_combination_of_smith_form_gens(self, coefficients):
         return self.discrete_exp(coefficients, gens=self.smith_form_gens())
@@ -1410,8 +2014,11 @@ class SyntheticLatticeFiniteQuotient(Parent):
         smith_row = cover_row * self._smith_right
         return self([ZZ(smith_row[0, position]) % invariant for position, invariant in zip(self._invariant_positions, self.invariants())])
 
-    def quotient_map(self):
-        return self.projection
+    def quotient_map(self, subgroup_or_gens=None):
+        if subgroup_or_gens is None:
+            return self.projection
+        quotient = self.quotient_group(subgroup_or_gens)
+        return lambda element: quotient.projection(element)
 
     def hom(self, images):
         return SyntheticDiscriminantAction.from_images(self, images)
@@ -1636,6 +2243,19 @@ class SyntheticFiniteQuadraticForm(Parent):
     def underlying_abelian_group(self):
         return self
 
+    def underlying_quotient_module(self):
+        return self
+
+    def cover(self):
+        return self
+
+    V = cover
+
+    def relations(self):
+        return self.subgroup(())
+
+    W = relations
+
     def annihilator(self):
         if not self.invariants():
             return ZZ.one()
@@ -1679,11 +2299,14 @@ class SyntheticFiniteQuadraticForm(Parent):
         return tuple(self.gen(i) for i in range(self.ngens()))
 
     smith_generators = gens
+    smith_form_gens = gens
 
     def gen(self, i):
         row = [ZZ.zero()] * self.ngens()
         row[i] = ZZ.one()
         return self(row)
+
+    smith_form_gen = gen
 
     def zero(self):
         return self([ZZ.zero()] * self.ngens())
@@ -1716,7 +2339,11 @@ class SyntheticFiniteQuadraticForm(Parent):
         return self.discrete_log(element, gens=gens)
 
     def discrete_exp(self, coefficients, gens=None):
+        coefficients = tuple(coefficients)
         gens = self.gens() if gens is None else tuple(self(gen) for gen in gens)
+        if not (len(coefficients) == len(gens)):
+            raise ValueError("coefficient vector length must match generator count; "
+            f"coefficients={coefficients}, gens={gens}")
         value = self.zero()
         for coefficient, generator in zip(coefficients, gens):
             value += ZZ(coefficient) * generator
@@ -1731,6 +2358,31 @@ class SyntheticFiniteQuadraticForm(Parent):
             if self.discrete_exp(coefficients, gens=gens) == element:
                 return tuple(ZZ(coefficient) for coefficient in coefficients)
         raise ValueError(f"element is not generated by the supplied generators: {element}")
+
+    def linear_combination_of_smith_form_gens(self, coefficients):
+        return self.discrete_exp(coefficients, gens=self.smith_form_gens())
+
+    def gens_to_smith(self):
+        return identity_matrix(ZZ, self.ngens())
+
+    def smith_to_gens(self):
+        return identity_matrix(ZZ, self.ngens())
+
+    def gens_vector(self, element, reduce=True):
+        return vector(ZZ, self.coordinates(element))
+
+    coordinate_vector = gens_vector
+    coordinates_in_smith_basis = coordinates
+    coordinates_in_generators = coordinates
+
+    def generator_relations(self):
+        return matrix.diagonal(ZZ, self.invariants())
+
+    def lift(self, element):
+        return self(element)
+
+    def projection(self, element):
+        return self(element)
 
     def subgroup_generated_by(self, gens):
         return SyntheticDiscriminantSubgroup(self, gens)
@@ -1792,6 +2444,15 @@ class SyntheticFiniteQuadraticForm(Parent):
 
     primary_parts = primary_decomposition
 
+    def p_torsion(self, p, k=1):
+        return _finite_p_torsion(self, p, k=k)
+
+    def relations_among(self, gens):
+        return _finite_relations_among(self, gens)
+
+    def basis_from_generators(self, gens):
+        return _finite_basis_from_generators(self, gens)
+
     def orthogonal_submodule_to(self, subgroup_or_gens):
         subgroup = self._subgroup(subgroup_or_gens)
         return self.subgroup(
@@ -1821,6 +2482,33 @@ class SyntheticFiniteQuadraticForm(Parent):
 
     isotropic_submodules = isotropic_subgroups
 
+    def is_lagrangian(self, subgroup_or_gens):
+        subgroup = self._subgroup(subgroup_or_gens)
+        return self.is_isotropic_subgroup(subgroup) and subgroup.cardinality() ** 2 == self.cardinality()
+
+    def lagrangian_subgroups(self):
+        return tuple(subgroup for subgroup in self.isotropic_subgroups() if self.is_lagrangian(subgroup))
+
+    metabolizers = lagrangian_subgroups
+
+    def is_metabolic(self):
+        return bool(self.lagrangian_subgroups())
+
+    def is_anisotropic(self):
+        return all(element == self.zero() for element in self.isotropic_elements())
+
+    def is_maximal_isotropic(self, subgroup_or_gens):
+        subgroup = self._subgroup(subgroup_or_gens)
+        if not self.is_isotropic_subgroup(subgroup):
+            return False
+        return all(
+            not (subgroup._key() < candidate._key())
+            for candidate in self.isotropic_subgroups()
+        )
+
+    def maximal_isotropic_subgroups(self):
+        return tuple(subgroup for subgroup in self.isotropic_subgroups() if self.is_maximal_isotropic(subgroup))
+
     def quotient_group(self, subgroup_or_gens):
         return SyntheticDiscriminantGroupQuotient(self, self._subgroup(subgroup_or_gens))
 
@@ -1847,7 +2535,20 @@ class SyntheticFiniteQuadraticForm(Parent):
 
     def orthogonal_quotient(self, subgroup_or_gens):
         subgroup = self._subgroup(subgroup_or_gens)
+        if not self.is_isotropic_subgroup(subgroup):
+            raise ValueError("orthogonal quotient requires a quadratic-isotropic relation subgroup")
         return SyntheticDiscriminantSubquotient(self, subgroup, self.orthogonal(subgroup))
+
+    def subquotient_form(self, subgroup_or_gens, quotient_subgroup_or_gens):
+        subgroup = self._subgroup(subgroup_or_gens)
+        quotient_subgroup = self._subgroup(quotient_subgroup_or_gens)
+        if not subgroup._key() <= quotient_subgroup._key():
+            raise ValueError("subquotient form requires H contained in K")
+        if not self.is_isotropic_subgroup(subgroup):
+            raise ValueError("subquotient form requires a quadratic-isotropic relation subgroup")
+        if not quotient_subgroup._key() <= self.orthogonal(subgroup)._key():
+            raise ValueError("subquotient form requires K contained in the orthogonal complement of H")
+        return SyntheticDiscriminantSubquotient(self, subgroup, quotient_subgroup)
 
     def _quadratic_modulus(self):
         return ZZ(2)

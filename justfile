@@ -1,6 +1,7 @@
 test:
     #!/usr/bin/env bash
     set -euo pipefail
+    export PYTHONDONTWRITEBYTECODE=1
     python3 - <<'PY'
     import json
     import os
@@ -81,5 +82,6 @@ test:
     if "projects/lattice-research" not in gitmodules.read_text():
         raise SystemExit("lattice-research submodule missing from .gitmodules")
     PY
+    sage -python -m pytest -p no:cacheprovider computations/experiments/sage_lattice_category_spike
 
 test-ci: test
