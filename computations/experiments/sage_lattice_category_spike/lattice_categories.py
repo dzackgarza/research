@@ -9,7 +9,7 @@ The implementation is organized by concept:
 - ``constructors``: thin public construction helpers.
 """
 
-from .categories import DiscriminantGroups, Lattices, QuadraticModules, RationalLattices
+from .categories import DiscriminantForms, Lattices
 from .constructors import IntegralLatticeGluing, Lattice, SyntheticLatticeFromGram
 from .discriminant import (
     SyntheticDiscriminantAction,
@@ -26,15 +26,13 @@ from .homsets import LatticeHomset, LatticeMorphism, LatticeSimilarity
 from .parents import SyntheticLattice
 
 __all__ = [
-    "DiscriminantGroups",
+    "DiscriminantForms",
     "IntegralLatticeGluing",
     "Lattice",
     "LatticeHomset",
     "LatticeMorphism",
     "LatticeSimilarity",
     "Lattices",
-    "QuadraticModules",
-    "RationalLattices",
     "SyntheticDiscriminantAction",
     "SyntheticFiniteQuadraticForm",
     "SyntheticGenus",

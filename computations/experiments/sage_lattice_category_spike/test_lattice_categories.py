@@ -6,13 +6,12 @@ import pytest
 
 from sage.all import Matrix, Polyhedron, QQ, ZZ, identity_matrix, matrix
 from sage.categories.modules import Modules
+from sage.groups.additive_abelian.qmodnz import QmodnZ
 
 from sage_lattice_category_spike.lattice_categories import (
-    DiscriminantGroups,
+    DiscriminantForms,
     Lattice,
     Lattices,
-    QuadraticModules,
-    RationalLattices,
     SyntheticGenus,
     SyntheticLattice,
 )
@@ -23,21 +22,16 @@ def assert_matrix_equal(left, right):
 
 
 def test_category_axioms_bind_to_synthetic_lattice_contract():
-    C = RationalLattices(ZZ)
-    Q = QuadraticModules(ZZ)
-    assert C is Lattices(ZZ)
-    assert C.is_subcategory(Q)
-    assert Modules(ZZ).WithBasis() in C.super_categories()
+    C = Lattices(ZZ)
     assert C.Even().is_subcategory(C.Integral())
     assert C.Unimodular().is_subcategory(C.Integral())
     assert C.PositiveDefinite().is_subcategory(C.Definite())
     assert C.NegativeDefinite().is_subcategory(C.Definite())
-    assert C.Embedded().WithDistinguishedBasis().is_subcategory(C.Embedded())
-    assert C.WithDistinguishedBasis().Embedded().is_subcategory(C.WithDistinguishedBasis())
+    assert C.Nondegenerate().is_subcategory(C)
 
-    D_category = DiscriminantGroups(ZZ)
-    assert D_category.FiniteQuadraticForms().is_subcategory(D_category.FiniteBilinearForms())
-    assert D_category.Even().is_subcategory(D_category.FiniteQuadraticForms())
+    D = DiscriminantForms(ZZ)
+    assert D.Quadratic().is_subcategory(D.Bilinear())
+    assert D.Even().is_subcategory(D.Quadratic())
 
 
 def test_indefinite_hyperbolic_plane_is_first_class_synthetic_lattice():
@@ -56,13 +50,11 @@ def test_category_dispatch_uses_form_axioms_not_constructor_factories():
     minus_A2 = Lattice(-A2.gram_matrix(), label="-A2")
     radical = Lattice(matrix(QQ, 1, 1, [0]), label="rad")
 
-    assert A2 in RationalLattices(ZZ).PositiveDefinite()
-    assert A2 in RationalLattices(ZZ).WithDistinguishedBasis()
-    assert A2 not in RationalLattices(ZZ).Embedded()
-    assert minus_A2 in RationalLattices(ZZ).NegativeDefinite()
-    assert Lattice("U", label="U") in RationalLattices(ZZ).Indefinite()
-    assert radical in RationalLattices(ZZ).Symmetric()
-    assert radical not in RationalLattices(ZZ).Nondegenerate()
+    assert A2 in Lattices(ZZ).PositiveDefinite()
+    assert minus_A2 in Lattices(ZZ).NegativeDefinite()
+    assert Lattice("U", label="U") in Lattices(ZZ).Indefinite()
+    assert radical in Lattices(ZZ)
+    assert radical not in Lattices(ZZ).Nondegenerate()
     assert radical.signature_pair() == (0, 0)
 
 
@@ -147,12 +139,6 @@ def test_raw_module_methods_are_available_only_through_accessors():
     ):
         assert not hasattr(A2, name)
     assert A2.underlying_module() is not A2
-    native_quadratic = A2.underlying_quadratic_module()
-    assert native_quadratic is not A2
-    assert_matrix_equal(native_quadratic.gram_matrix(), A2.gram_matrix())
-    assert_matrix_equal(native_quadratic.inner_product_matrix(), A2.ambient_gram_matrix())
-    with pytest.raises(NotImplementedError):
-        A2.underlying_quotient_module()
 
 
 def test_rational_span_is_scalar_extension_not_external_ambient_embedding():
@@ -161,7 +147,6 @@ def test_rational_span_is_scalar_extension_not_external_ambient_embedding():
 
     assert U_QQ.base_ring() is QQ
     assert_matrix_equal(U_QQ.gram_matrix(), U.gram_matrix())
-    assert_matrix_equal(U_QQ.basis_matrix(), U.basis_matrix())
     assert U_QQ.gen(0).b(U_QQ.gen(1)) == 1
     assert U.quadratic_form()(U([1, 1])) == 2
 
@@ -193,10 +178,6 @@ def test_dual_lattice_is_owned_fractional_zz_lattice():
     assert A2.is_submodule(A2_dual)
     assert not A2_dual.is_integral()
     assert_matrix_equal(
-        A2_dual.basis_matrix(),
-        matrix(QQ, 2, 2, [QQ(1) / 3, QQ(2) / 3, 0, 1]),
-    )
-    assert_matrix_equal(
         A2_dual.gram_matrix(),
         matrix(QQ, 2, 2, [QQ(2) / 3, 1, 1, 2]),
     )
@@ -211,11 +192,6 @@ def test_span_overlattice_intersection_saturation_and_index_use_underlying_modul
     assert U.is_submodule(overlattice)
     assert overlattice.index_in(U) == QQ(1) / 2
     assert U.index_in(overlattice) == 2
-    assert_matrix_equal(overlattice.basis_matrix(), matrix(QQ, 2, 2, [QQ(1) / 2, 0, 0, 1]))
-
-    even_e = U.span([[2, 0], [0, 1]], label="even_e")
-    assert_matrix_equal(even_e.saturation().basis_matrix(), U.basis_matrix())
-    assert U.intersection(overlattice).basis_matrix() == U.basis_matrix()
     assert U.is_primitive(U.sublattice([[1, 0]], label="e"))
 
 
@@ -225,7 +201,6 @@ def test_orthogonal_direct_sum_and_tensor_product_constructions_are_synthetic():
     complement = U.orthogonal_complement(e_line)
 
     assert complement.rank() == 1
-    assert_matrix_equal(complement.basis_matrix(), matrix(QQ, 1, 2, [1, 0]))
 
     A2 = Lattice("A2", label="A2")
     direct = U.direct_sum(A2)
@@ -249,8 +224,8 @@ def test_discriminant_group_is_owned_smith_quotient_with_forms():
     assert D.projection(D.lift(D.gen(0))) == D.gen(0)
     assert D.inner_product(D.gen(0), D.gen(0)) == QQ(2) / 3
     assert D.quadratic_product(D.gen(0)) == QQ(2) / 3
-    assert D.value_module() == (QQ, ZZ)
-    assert D.value_module_qf() == (QQ, 2 * ZZ)
+    assert D.value_module() == QmodnZ(QQ(1)) and D.value_module().n == 1
+    assert D.value_module_qf() == QmodnZ(QQ(2)) and D.value_module_qf().n == 2
     assert D.is_nondegenerate()
     assert D.annihilator() == 3
     assert D.brown_invariant() == 2
@@ -270,8 +245,8 @@ def test_odd_integral_discriminant_group_keeps_qq_mod_zz_form():
     D = L.discriminant_group()
 
     assert D.invariants() == (3,)
-    assert D.value_module() == (QQ, ZZ)
-    assert D.value_module_qf() == (QQ, ZZ)
+    assert D.value_module() == QmodnZ(QQ(1)) and D.value_module().n == 1
+    assert D.value_module_qf() == QmodnZ(QQ(1)) and D.value_module_qf().n == 1
     assert D.gen(0).b(D.gen(0)) == QQ(1) / 3
     assert D.gen(0).q() == QQ(1) / 3
     with pytest.raises(ValueError):

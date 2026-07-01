@@ -9,7 +9,6 @@ from sage.matrix.constructor import identity_matrix, matrix
 from sage.misc.cachefunc import cached_method
 from sage.misc.prandom import choice
 from sage.modules.free_module_element import vector
-from sage.modules.torsion_quadratic_module import TorsionQuadraticForm as SageTorsionQuadraticForm
 from sage.rings.complex_mpfr import ComplexField
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -17,7 +16,8 @@ from sage.structure.element import Element
 from sage.structure.parent import Parent
 
 from .arithmetic import rational_mod
-from .categories import DiscriminantGroups
+from .categories import DiscriminantForms
+from .value_objects import value_module
 from .elements import SyntheticLatticeElement
 from .parents import SyntheticLattice
 
@@ -26,9 +26,9 @@ def _lattice_key(lattice):
     return (
         repr(lattice.base_ring()),
         lattice.rank(),
-        tuple(lattice.basis_matrix().list()),
+        tuple(lattice._basis_matrix.list()),
         tuple(lattice.gram_matrix().list()),
-        tuple(lattice.ambient_gram_matrix().list()),
+        tuple(lattice._rational_gram_matrix.list()),
     )
 
 
@@ -69,21 +69,6 @@ def _finite_coordinates(group, element):
     if hasattr(element, "coordinates"):
         return tuple(element.coordinates())
     return tuple(group.coordinates(element))
-
-
-def _native_quotient_module_from_lattices(cover_lattice, relation_lattice):
-    return cover_lattice.underlying_module() / relation_lattice.underlying_module()
-
-
-def _native_quotient_module_from_invariants(invariants):
-    invariants = tuple(ZZ(invariant) for invariant in invariants)
-    ambient = ZZ ** len(invariants)
-    relation_rows = matrix.diagonal(ZZ, invariants).rows() if invariants else []
-    return ambient / ambient.span(relation_rows, ZZ)
-
-
-def _native_torsion_quadratic_module(parent):
-    return SageTorsionQuadraticForm(parent.gram_matrix_quadratic())
 
 
 def _all_group_automorphisms(group):
@@ -248,9 +233,9 @@ class SyntheticDiscriminantGroup(Parent):
         if self._primary:
             invariants = tuple(invariants)
         self._invariants = tuple(invariants)
-        category = DiscriminantGroups(ZZ).FiniteBilinearForms().WithSourceLattice()
+        category = DiscriminantForms(ZZ).Bilinear().WithSourceLattice()
         if source_lattice.is_even():
-            category = DiscriminantGroups(ZZ).FiniteQuadraticForms().Even().WithSourceLattice()
+            category = DiscriminantForms(ZZ).Quadratic().Even().WithSourceLattice()
         Parent.__init__(self, base=ZZ, category=category)
 
     def _repr_(self):
@@ -300,17 +285,8 @@ class SyntheticDiscriminantGroup(Parent):
 
     invariant_factors = invariants
 
-    def as_additive_abelian_group(self):
-        return self
-
     def underlying_abelian_group(self):
         return self
-
-    def underlying_quotient_module(self):
-        return _native_quotient_module_from_lattices(self.cover(), self.relations())
-
-    def underlying_torsion_quadratic_module(self):
-        return _native_torsion_quadratic_module(self)
 
     def cardinality(self):
         if not self.invariants():
@@ -354,11 +330,10 @@ class SyntheticDiscriminantGroup(Parent):
     length_p = rank_p
 
     def value_module(self):
-        return (QQ, ZZ)
+        return value_module(ZZ, ZZ.one())
 
     def value_module_qf(self):
-        modulus = self._quadratic_modulus()
-        return (QQ, ZZ if modulus == 1 else modulus * ZZ)
+        return value_module(ZZ, self._quadratic_modulus() * ZZ.one())
 
     @cached_method
     def gram_matrix_bilinear(self):
@@ -406,15 +381,20 @@ class SyntheticDiscriminantGroup(Parent):
     def gens(self):
         return tuple(self.gen(i) for i in range(self.ngens()))
 
-    smith_generators = gens
-    smith_form_gens = gens
+    def smith_form_gens(self):
+        transform = self.smith_to_gens()
+        raw = self.gens()
+        return tuple(self.discrete_exp(transform.column(j), gens=raw) for j in range(transform.ncols()))
+
+    smith_generators = smith_form_gens
 
     def gen(self, i):
         row = [ZZ.zero()] * self.ngens()
         row[i] = ZZ.one()
         return self(row)
 
-    smith_form_gen = gen
+    def smith_form_gen(self, i):
+        return self.smith_form_gens()[i]
 
     def zero(self):
         return self([ZZ.zero()] * self.ngens())
@@ -448,7 +428,7 @@ class SyntheticDiscriminantGroup(Parent):
     def lift(self, element):
         z_coordinates = self._old_dual_coordinates(self(element))
         source_coordinates = self.source_lattice().gram_matrix().inverse() * z_coordinates
-        rational_coordinates = vector(QQ, source_coordinates.column(0)) * self.source_lattice().basis_matrix()
+        rational_coordinates = vector(QQ, source_coordinates.column(0)) * self.source_lattice()._basis_matrix
         cover = self.cover()
         cover_coordinates = cover.underlying_module().coordinate_vector(vector(QQ, rational_coordinates))
         return cover(cover_coordinates)
@@ -462,7 +442,7 @@ class SyntheticDiscriminantGroup(Parent):
         else:
             element = cover(element)
         rational_coordinates = vector(QQ, element.rational_coordinates())
-        source_rational_module = self.source_lattice().rationalization_module().span(self.source_lattice().basis_matrix().rows(), QQ)
+        source_rational_module = self.source_lattice().rationalization_module().span(self.source_lattice()._basis_matrix.rows(), QQ)
         source_coordinates = matrix(QQ, self.rank(), 1, list(source_rational_module.coordinate_vector(rational_coordinates)))
         z_coordinates = self.source_lattice().gram_matrix() * source_coordinates
         smith_coordinates = self._smith_right_transpose * matrix(ZZ, z_coordinates)
@@ -707,7 +687,7 @@ class SyntheticDiscriminantGroup(Parent):
             old_coordinates = self._old_dual_coordinates(generator)
             new_coordinates = gram * isometry_matrix * gram.inverse() * old_coordinates
             source_coordinates = gram.inverse() * new_coordinates
-            rational_coordinates = vector(QQ, source_coordinates.column(0)) * self.source_lattice().basis_matrix()
+            rational_coordinates = vector(QQ, source_coordinates.column(0)) * self.source_lattice()._basis_matrix
             cover = self.cover()
             cover_coordinates = cover.underlying_module().coordinate_vector(vector(QQ, rational_coordinates))
             induced_images.append(self.projection(cover(cover_coordinates)))
@@ -896,7 +876,10 @@ class SyntheticDiscriminantGroup(Parent):
     def character_group(self):
         return self
 
-    pontryagin_dual = character_group
+    def pontryagin_dual(self):
+        if not self.is_nondegenerate():
+            raise ValueError("Pontryagin dual identification requires a nondegenerate form; found degenerate")
+        return self.pairing_isomorphism_to_dual()
 
     def pairing_character(self, element):
         element = self(element)
@@ -1145,7 +1128,7 @@ class SyntheticDiscriminantGroupQuotient(Parent):
                 invariants.append(ZZ(invariant))
         self._invariant_positions = tuple(positions)
         self._invariants = tuple(invariants)
-        Parent.__init__(self, base=ZZ, category=DiscriminantGroups(ZZ))
+        Parent.__init__(self, base=ZZ, category=DiscriminantForms(ZZ))
 
     def _repr_(self):
         return f"Synthetic finite discriminant quotient with invariants {self.invariants()}"
@@ -1169,14 +1152,8 @@ class SyntheticDiscriminantGroupQuotient(Parent):
     def ambient_group(self):
         return self._ambient_group
 
-    def as_additive_abelian_group(self):
-        return self
-
     def underlying_abelian_group(self):
         return self
-
-    def underlying_quotient_module(self):
-        return _native_quotient_module_from_invariants(self.invariants())
 
     def cover(self):
         return self._ambient_group
@@ -1240,15 +1217,20 @@ class SyntheticDiscriminantGroupQuotient(Parent):
     def gens(self):
         return tuple(self.gen(i) for i in range(self.ngens()))
 
-    smith_generators = gens
-    smith_form_gens = gens
+    def smith_form_gens(self):
+        transform = self.smith_to_gens()
+        raw = self.gens()
+        return tuple(self.discrete_exp(transform.column(j), gens=raw) for j in range(transform.ncols()))
+
+    smith_generators = smith_form_gens
 
     def gen(self, i):
         row = [ZZ.zero()] * self.ngens()
         row[i] = ZZ.one()
         return self(row)
 
-    smith_form_gen = gen
+    def smith_form_gen(self, i):
+        return self.smith_form_gens()[i]
 
     def zero(self):
         return self([ZZ.zero()] * self.ngens())
@@ -1435,14 +1417,8 @@ class SyntheticDiscriminantSubquotient:
             return self.discrete_exp(coordinates)
         return self._coerce_coset(element)
 
-    def as_additive_abelian_group(self):
-        return self
-
     def underlying_abelian_group(self):
         return self
-
-    def underlying_quotient_module(self):
-        return _native_quotient_module_from_invariants(self.invariants())
 
     def is_finite(self):
         return True
@@ -1531,13 +1507,18 @@ class SyntheticDiscriminantSubquotient:
                 break
         return tuple(generators)
 
-    smith_generators = gens
-    smith_form_gens = gens
+    def smith_form_gens(self):
+        transform = self.smith_to_gens()
+        raw = self.gens()
+        return tuple(self.discrete_exp(transform.column(j), gens=raw) for j in range(transform.ncols()))
+
+    smith_generators = smith_form_gens
 
     def gen(self, i):
         return self.gens()[i]
 
-    smith_form_gen = gen
+    def smith_form_gen(self, i):
+        return self.smith_form_gens()[i]
 
     def generator_orders(self):
         return tuple(self.order(generator) for generator in self.gens())
@@ -1773,7 +1754,7 @@ class SyntheticLatticeFiniteQuotient(Parent):
             ZZ,
             [
                 cover_lattice.underlying_module().coordinate_vector(vector(QQ, row))
-                for row in relation_lattice.basis_matrix().rows()
+                for row in relation_lattice._basis_matrix.rows()
             ],
         )
         if cover_lattice.rank() == 0:
@@ -1790,7 +1771,7 @@ class SyntheticLatticeFiniteQuotient(Parent):
                 invariants.append(ZZ(invariant))
         self._invariant_positions = tuple(positions)
         self._invariants = tuple(invariants)
-        Parent.__init__(self, base=ZZ, category=DiscriminantGroups(ZZ))
+        Parent.__init__(self, base=ZZ, category=DiscriminantForms(ZZ))
 
     def _repr_(self):
         return f"Synthetic finite lattice quotient with invariants {self.invariants()}"
@@ -1823,14 +1804,8 @@ class SyntheticLatticeFiniteQuotient(Parent):
     relations = relation_lattice
     W = relation_lattice
 
-    def as_additive_abelian_group(self):
-        return self
-
     def underlying_abelian_group(self):
         return self
-
-    def underlying_quotient_module(self):
-        return _native_quotient_module_from_lattices(self.cover_lattice(), self.relation_lattice())
 
     def invariants(self):
         return self._invariants
@@ -1884,15 +1859,20 @@ class SyntheticLatticeFiniteQuotient(Parent):
     def gens(self):
         return tuple(self.gen(i) for i in range(self.ngens()))
 
-    smith_generators = gens
-    smith_form_gens = gens
+    def smith_form_gens(self):
+        transform = self.smith_to_gens()
+        raw = self.gens()
+        return tuple(self.discrete_exp(transform.column(j), gens=raw) for j in range(transform.ncols()))
+
+    smith_generators = smith_form_gens
 
     def gen(self, i):
         row = [ZZ.zero()] * self.ngens()
         row[i] = ZZ.one()
         return self(row)
 
-    smith_form_gen = gen
+    def smith_form_gen(self, i):
+        return self.smith_form_gens()[i]
 
     def zero(self):
         return self([ZZ.zero()] * self.ngens())
@@ -2260,7 +2240,7 @@ class SyntheticFiniteQuadraticForm(Parent):
         gram.set_immutable()
         self._gram_matrix = gram
         self._invariants = tuple(invariants)
-        Parent.__init__(self, base=ZZ, category=DiscriminantGroups(ZZ).FiniteQuadraticForms())
+        Parent.__init__(self, base=ZZ, category=DiscriminantForms(ZZ).Quadratic())
 
     def _repr_(self):
         return f"Synthetic finite quadratic form with invariants {self.invariants()}"
@@ -2286,17 +2266,8 @@ class SyntheticFiniteQuadraticForm(Parent):
     def is_finite(self):
         return True
 
-    def as_additive_abelian_group(self):
-        return self
-
     def underlying_abelian_group(self):
         return self
-
-    def underlying_quotient_module(self):
-        return _native_quotient_module_from_invariants(self.invariants())
-
-    def underlying_torsion_quadratic_module(self):
-        return _native_torsion_quadratic_module(self)
 
     def cover(self):
         return self
@@ -2342,23 +2313,28 @@ class SyntheticFiniteQuadraticForm(Parent):
     length_p = rank_p
 
     def value_module(self):
-        return (QQ, ZZ)
+        return value_module(ZZ, ZZ.one())
 
     def value_module_qf(self):
-        return (QQ, 2 * ZZ)
+        return value_module(ZZ, 2 * ZZ.one())
 
     def gens(self):
         return tuple(self.gen(i) for i in range(self.ngens()))
 
-    smith_generators = gens
-    smith_form_gens = gens
+    def smith_form_gens(self):
+        transform = self.smith_to_gens()
+        raw = self.gens()
+        return tuple(self.discrete_exp(transform.column(j), gens=raw) for j in range(transform.ncols()))
+
+    smith_generators = smith_form_gens
 
     def gen(self, i):
         row = [ZZ.zero()] * self.ngens()
         row[i] = ZZ.one()
         return self(row)
 
-    smith_form_gen = gen
+    def smith_form_gen(self, i):
+        return self.smith_form_gens()[i]
 
     def zero(self):
         return self([ZZ.zero()] * self.ngens())
@@ -2738,7 +2714,10 @@ class SyntheticFiniteQuadraticForm(Parent):
     def character_group(self):
         return self
 
-    pontryagin_dual = character_group
+    def pontryagin_dual(self):
+        if not self.is_nondegenerate():
+            raise ValueError("Pontryagin dual identification requires a nondegenerate form; found degenerate")
+        return self.pairing_isomorphism_to_dual()
 
     def pairing_character(self, element):
         element = self(element)

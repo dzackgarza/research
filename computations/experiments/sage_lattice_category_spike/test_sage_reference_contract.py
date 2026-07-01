@@ -5,28 +5,11 @@ import pytest
 from sage.all import CartanMatrix, Matrix, QQ, ZZ, identity_matrix, matrix
 
 import sage_lattice_category_spike.lattice_categories as lc
+from sage.groups.additive_abelian.qmodnz import QmodnZ
 
 
 def assert_matrix_equal(left, right):
     assert matrix(QQ, left) == matrix(QQ, right)
-
-
-def assert_native_invariant_quotient(parent):
-    native_quotient = parent.underlying_quotient_module()
-    assert native_quotient is not parent
-    assert native_quotient.invariants() == parent.invariants()
-    assert native_quotient.ngens() == parent.ngens()
-    assert_matrix_equal(native_quotient.W().basis_matrix(), matrix.diagonal(ZZ, parent.invariants()))
-    return native_quotient
-
-
-def assert_native_torsion_quadratic_module(parent):
-    native_module = parent.underlying_torsion_quadratic_module()
-    assert native_module is not parent
-    assert native_module.invariants() == parent.invariants()
-    assert native_module.ngens() == parent.ngens()
-    assert_matrix_equal(native_module.gram_matrix_quadratic(), parent.gram_matrix_quadratic())
-    return native_module
 
 
 def test_cartan_and_hyperbolic_constructors_match_integral_lattice_doctests():
@@ -46,16 +29,10 @@ def test_rational_span_and_fractional_dual_follow_free_quadratic_module_doctests
     assert not hasattr(L, "ambient_module")
     assert not hasattr(L, "ambient_space")
     assert not hasattr(L, "ambient_vector_space")
-    assert L.ambient_quadratic_space().base_ring() is QQ
-    assert_matrix_equal(L.ambient_quadratic_space().gram_matrix(), L.ambient_gram_matrix())
     assert L.rational_span().base_ring() is QQ
     assert L.rationalization_module().dimension() == 2
     assert L.is_submodule(L_dual)
-    assert_matrix_equal(L_dual.basis_matrix(), matrix(QQ, 2, 2, [QQ(1) / 3, QQ(2) / 3, 0, 1]))
     assert L_dual.dual_lattice() == L
-
-    W = L.span_of_basis([[QQ(1) / 5, QQ(2) / 5], [QQ(1) / 7, QQ(1) / 7]], base_ring=ZZ)
-    assert_matrix_equal(W.basis_matrix(), matrix(QQ, 2, 2, [QQ(1) / 5, QQ(2) / 5, QQ(1) / 7, QQ(1) / 7]))
 
 
 def test_nonintegral_rational_generators_use_fractional_sublattice_contract():
@@ -87,7 +64,6 @@ def test_discriminant_group_cover_relations_and_primary_forms_match_doctests():
 
     assert A.invariants() == (2, 10)
     assert_matrix_equal(A.gram_matrix_quadratic(), matrix(QQ, 2, 2, [1, QQ(1) / 2, QQ(1) / 2, QQ(1) / 5]))
-    assert_native_torsion_quadratic_module(A)
     assert A.dual_cover() == L.dual_lattice()
     assert A.relation_lattice() == L
     assert A.cover() == A.V()
@@ -120,7 +96,6 @@ def test_gluing_accepts_sage_integral_lattice_glue_shape():
     g1 = L1.discriminant_group().gens()[0]
     M = lc.IntegralLatticeGluing([L1], [[2 * g1]])
 
-    assert_matrix_equal(M.basis_matrix(), matrix(QQ, 1, 1, [QQ(1) / 2]))
     assert_matrix_equal(M.gram_matrix(), matrix(QQ, 1, 1, [1]))
 
 
@@ -178,8 +153,6 @@ def test_finite_discriminant_form_orthogonal_group_matches_torsion_doctest():
     assert D.exponent() == 2
     assert D.zero() == D.identity()
     assert D.invariant_factors() == (2, 2, 2)
-    assert_native_invariant_quotient(D)
-    assert_native_torsion_quadratic_module(D).orthogonal_group().order() == OD.order()
     assert D.cover() is D
     assert D.relations().cardinality() == 1
     assert D.smith_form_gens() == D.gens()
@@ -218,22 +191,8 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
     A2_QQ = A2.change_base_ring(QQ)
 
     assert not any(hasattr(A2, name) for name in ("ambient_module", "ambient_space", "ambient_vector_space"))
-    assert A2.ambient_quadratic_space().base_ring() is QQ
-    assert_matrix_equal(A2.ambient_quadratic_space().gram_matrix(), A2.ambient_gram_matrix())
     assert A2_QQ == A2.rational_span()
     assert A2_QQ.base_ring() is QQ
-    assert_matrix_equal(A2.basis_matrix(kind="user"), A2.basis_matrix())
-    skew_basis = lc.Lattice("U").span_of_basis([[1, 1], [1, 0]], label="skew")
-    expected_echelon_gram = (
-        skew_basis.basis_matrix(kind="echelon")
-        * skew_basis.ambient_gram_matrix()
-        * skew_basis.basis_matrix(kind="echelon").transpose()
-    )
-    assert_matrix_equal(skew_basis.gram_matrix(basis="user"), skew_basis.gram_matrix())
-    assert_matrix_equal(skew_basis.gram_matrix(basis="echelon"), expected_echelon_gram)
-    assert_matrix_equal(skew_basis.inner_product_matrix(basis="echelon"), expected_echelon_gram)
-    assert A2.coordinates(A2.gen(1)) == (0, 1)
-    assert A2.ambient_coordinates(A2.gen(1)) == (0, 1)
     assert A2.dual_lattice() == A2_dual
     assert not A2.is_self_dual()
     assert lc.Lattice("U").is_self_dual()
@@ -258,20 +217,9 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
         A2.span([[QQ(1) / 3, 0]], check_integral=True)
     assert A2.index_in_saturation() == A2.index_in(A2.saturation())
     nonprimitive_line = lc.Lattice("U").sublattice([[2, 0]], label="2e")
-    assert nonprimitive_line.saturation(in_ambient=lc.Lattice("U")).basis_matrix() == matrix(QQ, 1, 2, [1, 0])
     assert nonprimitive_line.saturation(in_ambient=lc.Lattice("U")) == nonprimitive_line.primitive_closure(lc.Lattice("U"))
     assert_matrix_equal(A2.scale(2).gram_matrix(), 4 * A2.gram_matrix())
     assert A2.integral_saturation().is_integral()
-    A2_quadratic_module = A2.underlying_quadratic_module()
-    fractional_quadratic_module = fractional.underlying_quadratic_module()
-    assert A2_quadratic_module is not A2
-    assert_matrix_equal(A2_quadratic_module.gram_matrix(), A2.gram_matrix())
-    assert_matrix_equal(A2_quadratic_module.inner_product_matrix(), A2.ambient_gram_matrix())
-    assert fractional_quadratic_module.base_ring() is ZZ
-    assert_matrix_equal(fractional_quadratic_module.basis_matrix(), fractional.basis_matrix())
-    assert_matrix_equal(fractional_quadratic_module.gram_matrix(), fractional.gram_matrix())
-    with pytest.raises(NotImplementedError):
-        A2.underlying_quotient_module()
 
 
 def test_discriminant_group_additive_abelian_group_api_matches_fgp_surface():
@@ -280,13 +228,7 @@ def test_discriminant_group_additive_abelian_group_api_matches_fgp_surface():
     A = L.discriminant_group()
     x = A.gen(0) + 3 * A.gen(1)
 
-    assert A.as_additive_abelian_group() is A
     assert A.underlying_abelian_group() is A
-    native_quotient = A.underlying_quotient_module()
-    assert native_quotient is not A
-    assert native_quotient.invariants() == A.invariants()
-    assert_matrix_equal(native_quotient.V().basis_matrix(), A.cover().underlying_module().basis_matrix())
-    assert_matrix_equal(native_quotient.W().basis_matrix(), A.relations().underlying_module().basis_matrix())
     assert A.order() == A.cardinality() == 20
     assert A.exponent() == 10
     assert not A.is_cyclic()
@@ -374,13 +316,7 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     assert quotient.relations() == quotient.W()
     assert quotient.invariants() == A2.discriminant_group().invariants()
     assert quotient.cardinality() == A2.discriminant_group().cardinality()
-    assert quotient.as_additive_abelian_group() is quotient
     assert quotient.underlying_abelian_group() is quotient
-    native_quotient = quotient.underlying_quotient_module()
-    assert native_quotient is not quotient
-    assert native_quotient.invariants() == quotient.invariants()
-    assert_matrix_equal(native_quotient.V().basis_matrix(), quotient.cover_lattice().underlying_module().basis_matrix())
-    assert_matrix_equal(native_quotient.W().basis_matrix(), quotient.relation_lattice().underlying_module().basis_matrix())
     assert quotient.exponent() == 3
     assert quotient.is_cyclic()
     assert quotient.short_name() == "Z/3"
@@ -478,9 +414,7 @@ def test_discriminant_quotient_is_not_orthogonal_quotient_alias():
 
     assert H.cardinality() == 5
     assert quotient.relations() == H
-    assert quotient.as_additive_abelian_group() is quotient
     assert quotient.underlying_abelian_group() is quotient
-    assert_native_invariant_quotient(quotient)
     assert quotient.cardinality() == 4
     assert quotient.invariants() == (2, 2)
     assert quotient.exponent() == 2
@@ -566,7 +500,9 @@ def test_finite_quadratic_form_drops_trivial_presentation_factors():
     assert D.is_nondegenerate()
     assert D.radical().cardinality() == 1
     assert D.character_group() is D
-    assert D.pontryagin_dual() is D
+    dual_pairing = D.pontryagin_dual()
+    assert all(dual_pairing[x](y) == D.b(x, y) for x in D.elements() for y in D.elements())
+    assert D.pontryagin_dual()[D.gen(0)](D.gen(0)) == QQ(1) / 2
     assert D.pairing_character(D.gen(0))(D.gen(0)) == QQ(1) / 2
     assert D.pairing_isomorphism_to_dual()[D.gen(0)](D.gen(0)) == QQ(1) / 2
 
@@ -576,8 +512,8 @@ def test_finite_quadratic_form_promotes_torsion_quadratic_module_operations():
     D = lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 2, QQ(1) / 3]))
     H = D.subgroup([D.gen(0)])
 
-    assert D.value_module() == (QQ, ZZ)
-    assert D.value_module_qf() == (QQ, 2 * ZZ)
+    assert D.value_module() == QmodnZ(QQ(1)) and D.value_module().n == 1
+    assert D.value_module_qf() == QmodnZ(QQ(2)) and D.value_module_qf().n == 2
     assert D.primary_part(2).invariants() == (2,)
     assert D.p_primary_part(3).invariants() == (3,)
     assert sorted(part.invariants() for part in D.primary_parts()) == [(2,), (3,)]
@@ -635,9 +571,7 @@ def test_orthogonal_quotient_keeps_smith_invariants_not_only_cardinality():
     assert H.is_quadratic_isotropic()
     assert quotient.cardinality() == 4
     assert quotient.invariants() == (2, 2)
-    assert quotient.as_additive_abelian_group() is quotient
     assert quotient.underlying_abelian_group() is quotient
-    assert_native_invariant_quotient(quotient)
     assert not quotient.is_cyclic()
     assert quotient.short_name() == "Z/2 + Z/2"
     quotient_automorphisms = quotient.automorphism_group()
@@ -729,8 +663,8 @@ def test_odd_discriminant_form_remains_usable_while_odd_genus_is_unsupported():
     # Reference: Sage does not implement odd genus classification; the bilinear form still exists.
     D = lc.Lattice(matrix(ZZ, 1, 1, [3])).discriminant_group()
 
-    assert D.value_module() == (QQ, ZZ)
-    assert D.value_module_qf() == (QQ, ZZ)
+    assert D.value_module() == QmodnZ(QQ(1)) and D.value_module().n == 1
+    assert D.value_module_qf() == QmodnZ(QQ(1)) and D.value_module_qf().n == 1
     assert D.gen(0).b(D.gen(0)) == QQ(1) / 3
     assert D.inner_product(D.gen(0), D.gen(0)) == QQ(1) / 3
     assert D.primary_part(3).invariants() == (3,)

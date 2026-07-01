@@ -1,4 +1,18 @@
-r"""Sage category surfaces for the owned synthetic lattice spike."""
+r"""Sage category surfaces for the owned synthetic lattice spike.
+
+Ratified organization (M-RATIFY): two SEPARATE categories, no shared root.
+
+- ``Lattices(R)`` -- based free ``R``-modules with a symmetric ``K``-valued form,
+  on ``Modules(R).WithBasis().FiniteDimensional()``. Possibly-degenerate base;
+  ``Nondegenerate`` is an axiom attached by the constructor iff ``det(G) != 0``.
+- ``DiscriminantForms(R)`` -- finite abelian groups (NOT "modules over ZZ")
+  carrying a finite bilinear/quadratic form valued in a quotient module.
+
+``K`` (the form value ring) is per-object via ``value_module()``; the categories
+are parameterized by the module base ring ``R`` only. Shared form predicates live
+in Python mixins keyed on abstract, fail-loud ``value_module()``/``gram_matrix``
+hooks -- there is deliberately no mixin-level default for those hooks.
+"""
 
 from __future__ import annotations
 
@@ -8,6 +22,7 @@ from sage.categories.category_with_axiom import (
     all_axioms,
     axiom,
 )
+from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 from sage.categories.homsets import HomsetsCategory
 from sage.categories.modules import Modules
 from sage.categories.sets_cat import Sets
@@ -15,8 +30,7 @@ from sage.misc.abstract_method import abstract_method
 from sage.rings.integer_ring import ZZ
 
 
-_LATTICE_AXIOMS = (
-    "Symmetric",
+_FORM_AXIOMS = (
     "Nondegenerate",
     "Integral",
     "Even",
@@ -25,58 +39,32 @@ _LATTICE_AXIOMS = (
     "PositiveDefinite",
     "NegativeDefinite",
     "Indefinite",
-    "Embedded",
-    "WithDistinguishedBasis",
-    "FiniteBilinearForms",
-    "FiniteQuadraticForms",
+    "Bilinear",
+    "Quadratic",
     "WithSourceLattice",
 )
 
-for _axiom_name in _LATTICE_AXIOMS:
+for _axiom_name in _FORM_AXIOMS:
     if _axiom_name not in all_axioms:
         all_axioms.add(_axiom_name)
 
 
-class QuadraticModules(Category_over_base_ring):
-    r"""Finite-rank modules carrying a bilinear/quadratic form."""
+class Lattices(Category_over_base_ring):
+    r"""Based free ``R``-modules with a symmetric ``K``-valued form.
+
+    Base is possibly-degenerate; ``Nondegenerate`` is an axiom subcategory.
+    """
 
     def _repr_object_names(self):
-        return f"synthetic quadratic modules over {self.base_ring()}"
+        return f"synthetic lattices over {self.base_ring()}"
 
     def super_categories(self):
-        return [Modules(self.base_ring()).WithBasis()]
-
-    def additional_structure(self):
-        return self
-
-    class ParentMethods:
-        @abstract_method
-        def value_ring(self):
-            r"""Return the value ring of the form."""
-
-        @abstract_method
-        def gram_matrix(self):
-            r"""Return the Gram matrix in the distinguished basis."""
-
-        @abstract_method
-        def bilinear_form(self):
-            r"""Return the bilinear form carried by this module."""
-
-
-class RationalLattices(Category_over_base_ring):
-    r"""Synthetic finite-rank modules with symmetric form valued in ``QQ``."""
-
-    def _repr_object_names(self):
-        return f"synthetic rational lattices over {self.base_ring()}"
-
-    def super_categories(self):
-        return [QuadraticModules(self.base_ring()), Modules(self.base_ring()).WithBasis()]
+        return [Modules(self.base_ring()).WithBasis().FiniteDimensional()]
 
     def additional_structure(self):
         return self
 
     class SubcategoryMethods:
-        Symmetric = axiom("Symmetric")
         Nondegenerate = axiom("Nondegenerate")
         Integral = axiom("Integral")
         Even = axiom("Even")
@@ -85,8 +73,6 @@ class RationalLattices(Category_over_base_ring):
         PositiveDefinite = axiom("PositiveDefinite")
         NegativeDefinite = axiom("NegativeDefinite")
         Indefinite = axiom("Indefinite")
-        Embedded = axiom("Embedded")
-        WithDistinguishedBasis = axiom("WithDistinguishedBasis")
 
     class ParentMethods:
         @abstract_method
@@ -96,14 +82,6 @@ class RationalLattices(Category_over_base_ring):
         @abstract_method
         def rational_span(self):
             r"""Return ``self tensor_ZZ QQ`` with its induced bilinear form."""
-
-        @abstract_method
-        def basis_matrix(self):
-            r"""Return basis coordinates in this lattice's rationalization."""
-
-        @abstract_method
-        def gram_matrix(self):
-            r"""Return the Gram matrix in the distinguished module basis."""
 
         @abstract_method
         def bilinear_form(self):
@@ -143,9 +121,7 @@ class RationalLattices(Category_over_base_ring):
             return self.b(self)
 
     class MorphismMethods:
-        @abstract_method
-        def matrix(self):
-            r"""Return the matrix of this lattice morphism."""
+        pass
 
     class Homsets(HomsetsCategory):
         r"""Homsets of form-preserving lattice morphisms."""
@@ -168,21 +144,26 @@ class RationalLattices(Category_over_base_ring):
                 r"""Return the image lattice of this morphism."""
 
 
-class DiscriminantGroups(Category_over_base_ring):
-    r"""Finite quotient modules with discriminant bilinear/quadratic forms."""
+class DiscriminantForms(Category_over_base_ring):
+    r"""Finite abelian groups with a discriminant bilinear/quadratic form.
+
+    Typed as a finite abelian group (fixing Sage's "modules over ZZ" mis-typing);
+    the form is extra structure layered on the group.
+    """
 
     def _repr_object_names(self):
-        return f"synthetic discriminant groups over {self.base_ring()}"
+        return f"synthetic discriminant forms over {self.base_ring()}"
 
     def super_categories(self):
-        return [Modules(self.base_ring())]
+        return [CommutativeAdditiveGroups().Finite()]
 
     def additional_structure(self):
         return self
 
     class SubcategoryMethods:
-        FiniteBilinearForms = axiom("FiniteBilinearForms")
-        FiniteQuadraticForms = axiom("FiniteQuadraticForms")
+        Bilinear = axiom("Bilinear")
+        Quadratic = axiom("Quadratic")
+        Nondegenerate = axiom("Nondegenerate")
         Even = axiom("Even")
         WithSourceLattice = axiom("WithSourceLattice")
 
@@ -203,42 +184,41 @@ class DiscriminantGroups(Category_over_base_ring):
         def primary_part(self, p):
             r"""Return the ``p``-primary discriminant form."""
 
-
-class SymmetricRationalLattices(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (RationalLattices, "Symmetric")
-
-
-class NondegenerateRationalLattices(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (RationalLattices, "Nondegenerate")
+    class MorphismMethods:
+        pass
 
 
-class IntegralRationalLattices(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (RationalLattices, "Integral")
+class NondegenerateLattices(CategoryWithAxiom_over_base_ring):
+    _base_category_class_and_axiom = (Lattices, "Nondegenerate")
 
 
-class EvenRationalLattices(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (RationalLattices, "Even")
-
-    def extra_super_categories(self):
-        return (RationalLattices(self.base_ring()).Integral(),)
+class IntegralLattices(CategoryWithAxiom_over_base_ring):
+    _base_category_class_and_axiom = (Lattices, "Integral")
 
 
-class UnimodularRationalLattices(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (RationalLattices, "Unimodular")
+class EvenLattices(CategoryWithAxiom_over_base_ring):
+    _base_category_class_and_axiom = (Lattices, "Even")
 
     def extra_super_categories(self):
-        return (RationalLattices(self.base_ring()).Integral(),)
+        return (Lattices(self.base_ring()).Integral(),)
 
 
-class DefiniteRationalLattices(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (RationalLattices, "Definite")
-
-
-class PositiveDefiniteRationalLattices(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (RationalLattices, "PositiveDefinite")
+class UnimodularLattices(CategoryWithAxiom_over_base_ring):
+    _base_category_class_and_axiom = (Lattices, "Unimodular")
 
     def extra_super_categories(self):
-        return (RationalLattices(self.base_ring()).Definite(),)
+        return (Lattices(self.base_ring()).Integral(),)
+
+
+class DefiniteLattices(CategoryWithAxiom_over_base_ring):
+    _base_category_class_and_axiom = (Lattices, "Definite")
+
+
+class PositiveDefiniteLattices(CategoryWithAxiom_over_base_ring):
+    _base_category_class_and_axiom = (Lattices, "PositiveDefinite")
+
+    def extra_super_categories(self):
+        return (Lattices(self.base_ring()).Definite(),)
 
     class ParentMethods:
         def _positive_definite_algorithm_not_implemented(self, name):
@@ -376,65 +356,54 @@ class PositiveDefiniteRationalLattices(CategoryWithAxiom_over_base_ring):
             raise ArithmeticError("failed to find a compact Voronoi cell from enumerated short vectors")
 
 
-class NegativeDefiniteRationalLattices(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (RationalLattices, "NegativeDefinite")
+class NegativeDefiniteLattices(CategoryWithAxiom_over_base_ring):
+    _base_category_class_and_axiom = (Lattices, "NegativeDefinite")
 
     def extra_super_categories(self):
-        return (RationalLattices(self.base_ring()).Definite(),)
+        return (Lattices(self.base_ring()).Definite(),)
 
 
-class IndefiniteRationalLattices(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (RationalLattices, "Indefinite")
+class IndefiniteLattices(CategoryWithAxiom_over_base_ring):
+    _base_category_class_and_axiom = (Lattices, "Indefinite")
 
 
-class EmbeddedRationalLattices(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (RationalLattices, "Embedded")
+class BilinearDiscriminantForms(CategoryWithAxiom_over_base_ring):
+    _base_category_class_and_axiom = (DiscriminantForms, "Bilinear")
 
 
-class WithDistinguishedBasisRationalLattices(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (RationalLattices, "WithDistinguishedBasis")
-
-
-class FiniteBilinearDiscriminantGroups(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (DiscriminantGroups, "FiniteBilinearForms")
-
-
-class FiniteQuadraticDiscriminantGroups(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (DiscriminantGroups, "FiniteQuadraticForms")
+class QuadraticDiscriminantForms(CategoryWithAxiom_over_base_ring):
+    _base_category_class_and_axiom = (DiscriminantForms, "Quadratic")
 
     def extra_super_categories(self):
-        return (DiscriminantGroups(self.base_ring()).FiniteBilinearForms(),)
+        return (DiscriminantForms(self.base_ring()).Bilinear(),)
 
 
-class EvenDiscriminantGroups(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (DiscriminantGroups, "Even")
+class NondegenerateDiscriminantForms(CategoryWithAxiom_over_base_ring):
+    _base_category_class_and_axiom = (DiscriminantForms, "Nondegenerate")
+
+
+class EvenDiscriminantForms(CategoryWithAxiom_over_base_ring):
+    _base_category_class_and_axiom = (DiscriminantForms, "Even")
 
     def extra_super_categories(self):
-        return (DiscriminantGroups(self.base_ring()).FiniteQuadraticForms(),)
+        return (DiscriminantForms(self.base_ring()).Quadratic(),)
 
 
-class WithSourceLatticeDiscriminantGroups(CategoryWithAxiom_over_base_ring):
-    _base_category_class_and_axiom = (DiscriminantGroups, "WithSourceLattice")
+class WithSourceLatticeDiscriminantForms(CategoryWithAxiom_over_base_ring):
+    _base_category_class_and_axiom = (DiscriminantForms, "WithSourceLattice")
 
 
-RationalLattices.Symmetric = SymmetricRationalLattices
-RationalLattices.Nondegenerate = NondegenerateRationalLattices
-RationalLattices.Integral = IntegralRationalLattices
-RationalLattices.Even = EvenRationalLattices
-RationalLattices.Unimodular = UnimodularRationalLattices
-RationalLattices.Definite = DefiniteRationalLattices
-RationalLattices.PositiveDefinite = PositiveDefiniteRationalLattices
-RationalLattices.NegativeDefinite = NegativeDefiniteRationalLattices
-RationalLattices.Indefinite = IndefiniteRationalLattices
-RationalLattices.Embedded = EmbeddedRationalLattices
-RationalLattices.WithDistinguishedBasis = WithDistinguishedBasisRationalLattices
+Lattices.Nondegenerate = NondegenerateLattices
+Lattices.Integral = IntegralLattices
+Lattices.Even = EvenLattices
+Lattices.Unimodular = UnimodularLattices
+Lattices.Definite = DefiniteLattices
+Lattices.PositiveDefinite = PositiveDefiniteLattices
+Lattices.NegativeDefinite = NegativeDefiniteLattices
+Lattices.Indefinite = IndefiniteLattices
 
-DiscriminantGroups.FiniteBilinearForms = FiniteBilinearDiscriminantGroups
-DiscriminantGroups.FiniteQuadraticForms = FiniteQuadraticDiscriminantGroups
-DiscriminantGroups.Even = EvenDiscriminantGroups
-DiscriminantGroups.WithSourceLattice = WithSourceLatticeDiscriminantGroups
-
-
-def Lattices(base_ring=ZZ):
-    r"""Return the synthetic lattice category over ``base_ring``."""
-    return RationalLattices(base_ring)
+DiscriminantForms.Bilinear = BilinearDiscriminantForms
+DiscriminantForms.Quadratic = QuadraticDiscriminantForms
+DiscriminantForms.Nondegenerate = NondegenerateDiscriminantForms
+DiscriminantForms.Even = EvenDiscriminantForms
+DiscriminantForms.WithSourceLattice = WithSourceLatticeDiscriminantForms

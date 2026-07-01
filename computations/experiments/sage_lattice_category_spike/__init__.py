@@ -1,13 +1,11 @@
 from .lattice_categories import (
-    DiscriminantGroups,
+    DiscriminantForms,
     IntegralLatticeGluing,
     Lattice,
     LatticeHomset,
     LatticeMorphism,
     LatticeSimilarity,
     Lattices,
-    QuadraticModules,
-    RationalLattices,
     SyntheticDiscriminantAction,
     SyntheticFiniteQuadraticForm,
     SyntheticGenus,
@@ -22,15 +20,13 @@ from .lattice_categories import (
 )
 
 __all__ = [
-    "DiscriminantGroups",
+    "DiscriminantForms",
     "IntegralLatticeGluing",
     "Lattice",
     "LatticeHomset",
     "LatticeMorphism",
     "LatticeSimilarity",
     "Lattices",
-    "QuadraticModules",
-    "RationalLattices",
     "SyntheticDiscriminantAction",
     "SyntheticFiniteQuadraticForm",
     "SyntheticGenus",
