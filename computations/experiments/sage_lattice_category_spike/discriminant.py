@@ -74,6 +74,13 @@ def _native_quotient_module_from_lattices(cover_lattice, relation_lattice):
     return cover_lattice.underlying_module() / relation_lattice.underlying_module()
 
 
+def _native_quotient_module_from_invariants(invariants):
+    invariants = tuple(ZZ(invariant) for invariant in invariants)
+    ambient = ZZ ** len(invariants)
+    relation_rows = matrix.diagonal(ZZ, invariants).rows() if invariants else []
+    return ambient / ambient.span(relation_rows, ZZ)
+
+
 def _all_group_automorphisms(group):
     if group.ngens() == 0:
         return (SyntheticDiscriminantAction(group, identity_matrix(ZZ, 0)),)
@@ -1157,7 +1164,7 @@ class SyntheticDiscriminantGroupQuotient(Parent):
         return self
 
     def underlying_quotient_module(self):
-        return self
+        return _native_quotient_module_from_invariants(self.invariants())
 
     def cover(self):
         return self._ambient_group
@@ -1423,7 +1430,7 @@ class SyntheticDiscriminantSubquotient:
         return self
 
     def underlying_quotient_module(self):
-        return self
+        return _native_quotient_module_from_invariants(self.invariants())
 
     def is_finite(self):
         return True
@@ -2265,7 +2272,7 @@ class SyntheticFiniteQuadraticForm(Parent):
         return self
 
     def underlying_quotient_module(self):
-        return self
+        return _native_quotient_module_from_invariants(self.invariants())
 
     def cover(self):
         return self

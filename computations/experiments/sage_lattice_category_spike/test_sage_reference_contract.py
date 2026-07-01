@@ -11,6 +11,15 @@ def assert_matrix_equal(left, right):
     assert matrix(QQ, left) == matrix(QQ, right)
 
 
+def assert_native_invariant_quotient(parent):
+    native_quotient = parent.underlying_quotient_module()
+    assert native_quotient is not parent
+    assert native_quotient.invariants() == parent.invariants()
+    assert native_quotient.ngens() == parent.ngens()
+    assert_matrix_equal(native_quotient.W().basis_matrix(), matrix.diagonal(ZZ, parent.invariants()))
+    return native_quotient
+
+
 def test_cartan_and_hyperbolic_constructors_match_integral_lattice_doctests():
     # Reference: free_quadratic_module_integer_symmetric.py IntegralLattice constructor doctests.
     assert lc.Lattice("U").signature_pair() == (1, 1)
@@ -146,7 +155,7 @@ def test_finite_discriminant_form_orthogonal_group_matches_torsion_doctest():
     assert D.exponent() == 2
     assert D.zero() == D.identity()
     assert D.invariant_factors() == (2, 2, 2)
-    assert D.underlying_quotient_module() is D
+    assert_native_invariant_quotient(D)
     assert D.cover() is D
     assert D.relations().cardinality() == 1
     assert D.smith_form_gens() == D.gens()
@@ -444,7 +453,7 @@ def test_discriminant_quotient_is_not_orthogonal_quotient_alias():
     assert quotient.relations() == H
     assert quotient.as_additive_abelian_group() is quotient
     assert quotient.underlying_abelian_group() is quotient
-    assert quotient.underlying_quotient_module() is quotient
+    assert_native_invariant_quotient(quotient)
     assert quotient.cardinality() == 4
     assert quotient.invariants() == (2, 2)
     assert quotient.exponent() == 2
@@ -601,7 +610,7 @@ def test_orthogonal_quotient_keeps_smith_invariants_not_only_cardinality():
     assert quotient.invariants() == (2, 2)
     assert quotient.as_additive_abelian_group() is quotient
     assert quotient.underlying_abelian_group() is quotient
-    assert quotient.underlying_quotient_module() is quotient
+    assert_native_invariant_quotient(quotient)
     assert not quotient.is_cyclic()
     assert quotient.short_name() == "Z/2 + Z/2"
     quotient_automorphisms = quotient.automorphism_group()
