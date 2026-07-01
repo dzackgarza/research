@@ -504,3 +504,37 @@ def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
         "enumerate_short_vectors", "enumerate_close_vectors", "update_reduced_basis",
     ):
         assert not hasattr(U, name)
+
+
+def test_nikulin_overlattice_and_metabolizer_identities_hold():
+    # Nikulin: for an even lattice L with discriminant form A and an isotropic
+    # subgroup H, the overlattice's discriminant form A_{L'} is isometric to the
+    # subquotient form H^perp / H (same invariants and same quadratic fingerprint).
+    L = Lattice(matrix(ZZ, 3, 3, [0, 2, 0, 2, 0, 0, 0, 0, 2]), label="U2+A1")  # U(2) + <2>
+    D = L.discriminant_group()
+    assert D.invariants() == (2, 2, 2)
+
+    def quadratic_fingerprint(form):
+        return sorted(form.q(x) for x in form.elements())
+
+    checked = 0
+    for H in D.isotropic_subgroups():
+        if H.cardinality() == 1:
+            continue
+        overlattice_form = D.discriminant_form_of_overlattice(H)
+        quotient_form = D.orthogonal_quotient(H)  # H^perp / H
+        assert overlattice_form.invariants() == quotient_form.invariants()
+        assert quadratic_fingerprint(overlattice_form) == quadratic_fingerprint(quotient_form)
+        checked += 1
+    assert checked > 0
+
+    # metabolizer: a metabolic form has |H|^2 = |A| for a lagrangian metabolizer H.
+    for gram in (
+        matrix(ZZ, 2, 2, [0, 2, 2, 0]),                                        # U(2)
+        matrix(ZZ, 4, 4, [0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0]),    # U(2) + U(2)
+    ):
+        A = Lattice(gram).discriminant_group()
+        assert A.is_metabolic()
+        H = A.metabolizer()
+        assert A.is_lagrangian(H)
+        assert H.cardinality() ** 2 == A.cardinality()

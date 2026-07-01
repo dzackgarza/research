@@ -649,6 +649,12 @@ class SyntheticDiscriminantGroup(Parent):
 
     metabolizers = lagrangian_subgroups
 
+    def metabolizer(self):
+        subgroups = self.lagrangian_subgroups()
+        if not subgroups:
+            raise ValueError("form is anisotropic; it admits no metabolizer (lagrangian)")
+        return subgroups[0]
+
     def is_metabolic(self):
         return bool(self.lagrangian_subgroups())
 
@@ -2588,6 +2594,12 @@ class SyntheticFiniteQuadraticForm(Parent):
         return tuple(subgroup for subgroup in self.isotropic_subgroups() if self.is_lagrangian(subgroup))
 
     metabolizers = lagrangian_subgroups
+
+    def metabolizer(self):
+        subgroups = self.lagrangian_subgroups()
+        if not subgroups:
+            raise ValueError("form is anisotropic; it admits no metabolizer (lagrangian)")
+        return subgroups[0]
 
     def is_metabolic(self):
         return bool(self.lagrangian_subgroups())
