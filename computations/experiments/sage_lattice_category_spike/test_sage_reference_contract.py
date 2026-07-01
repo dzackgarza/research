@@ -29,9 +29,11 @@ def test_rational_span_and_fractional_dual_follow_free_quadratic_module_doctests
     assert not hasattr(L, "ambient_module")
     assert not hasattr(L, "ambient_space")
     assert not hasattr(L, "ambient_vector_space")
+    assert not hasattr(L, "rationalization_module")
     assert L.rational_span().base_ring() is QQ
-    assert L.rationalization_module().dimension() == 2
-    assert L.is_submodule(L_dual)
+    assert L.rational_span().rank() == 2
+    # The based dual is (ZZ, G^{-1}); L embeds in L# via the metric inclusion (matrix G).
+    assert L.dual_inclusion().image().is_submodule(L_dual)
     assert L_dual.dual_lattice() == L
 
 
@@ -201,7 +203,10 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
     assert not A2.is_degenerate()
     assert A2.radical().rank() == 0
     assert A2_dual.denominator() == 3
-    assert A2.relative_index(A2_dual) == A2.index_in(A2_dual)
+    # relative_index is the wrapper alias of index_in; exercise it on a genuine
+    # finite-index subobject (the based model has no shared ambient between A2 and A2#).
+    finite_index_sub = A2.sublattice([[2, 0], [0, 2]], label="2A2")
+    assert finite_index_sub.relative_index(A2) == finite_index_sub.index_in(A2)
 
     fractional = A2.fractional_sublattice([[QQ(1) / 3, 0]])
     assert fractional.base_ring() is ZZ

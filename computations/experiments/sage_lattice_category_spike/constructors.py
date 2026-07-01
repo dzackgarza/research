@@ -2,7 +2,7 @@ r"""Thin public constructors for synthetic lattices."""
 
 from __future__ import annotations
 
-from sage.matrix.constructor import identity_matrix, matrix
+from sage.matrix.constructor import matrix
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
@@ -11,11 +11,9 @@ from .parents import SyntheticLattice
 
 
 def SyntheticLatticeFromGram(gram_matrix, base_ring=ZZ, label="L"):
-    r"""Construct a synthetic lattice from a distinguished-basis Gram matrix."""
+    r"""Construct a synthetic based lattice ``(base_ring, G)`` from its Gram matrix."""
     gram = as_square_qq_matrix(gram_matrix)
-    basis_matrix = identity_matrix(QQ, gram.nrows())
-    basis_matrix.set_immutable()
-    return SyntheticLattice(gram, base_ring, basis_matrix, gram, label)
+    return SyntheticLattice(gram, base_ring, label)
 
 
 def Lattice(gram_matrix, base_ring=ZZ, label="L"):
@@ -46,7 +44,7 @@ def IntegralLatticeGluing(lattices, glue, return_embeddings=False, label="gluing
             )
         row = [QQ.zero()] * ambient.rank()
         for lattice, start, discriminant_element in zip(lattices, offsets, glue_vector):
-            lift = lattice.discriminant_group().lift(discriminant_element).rational_coordinates()
+            lift = lattice.discriminant_group()._coset_representative_in_source(discriminant_element)
             for i, value in enumerate(lift):
                 row[start + i] = value
         lift_rows.append(row)

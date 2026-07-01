@@ -136,9 +136,13 @@ def test_raw_module_methods_are_available_only_through_accessors():
         "dense_module",
         "subspaces",
         "quotient_abstract",
+        "underlying_module",
+        "underlying_quadratic_module",
+        "underlying_quotient_module",
+        "rationalization_module",
+        "basis_matrix",
     ):
         assert not hasattr(A2, name)
-    assert A2.underlying_module() is not A2
 
 
 def test_rational_span_is_scalar_extension_not_external_ambient_embedding():
@@ -175,11 +179,15 @@ def test_dual_lattice_is_owned_fractional_zz_lattice():
     A2 = Lattice("A2", label="A2")
     A2_dual = A2.dual_lattice()
 
-    assert A2.is_submodule(A2_dual)
+    # The based dual is (ZZ, G^{-1}); the inclusion L -> L# is the metric morphism
+    # v |-> b(v, -), a form-preserving injection into the dual (matrix G).
+    inclusion = A2.dual_inclusion()
+    assert inclusion.codomain() == A2_dual
+    assert inclusion.image().is_submodule(A2_dual)
     assert not A2_dual.is_integral()
     assert_matrix_equal(
         A2_dual.gram_matrix(),
-        matrix(QQ, 2, 2, [QQ(2) / 3, 1, 1, 2]),
+        A2.gram_matrix().inverse(),
     )
     assert A2_dual.dual_lattice() == A2
 
@@ -294,7 +302,7 @@ def test_homs_are_form_preserving_by_construction():
 def test_hom_image_and_kernel_are_synthetic_lattices():
     A2 = Lattice("A2", label="A2")
     A2_dual = A2.dual_lattice()
-    inclusion = A2.Hom(A2_dual).from_matrix(Matrix(ZZ, 2, 2, [3, 0, -2, 1]))
+    inclusion = A2.Hom(A2_dual).from_matrix(Matrix(ZZ, 2, 2, [2, -1, -1, 2]))
 
     image = inclusion.image()
     kernel = inclusion.kernel()
@@ -308,7 +316,7 @@ def test_hom_image_and_kernel_are_synthetic_lattices():
 def test_integral_lattice_inclusion_into_dual_is_a_synthetic_morphism():
     A2 = Lattice("A2", label="A2")
     A2_dual = A2.dual_lattice()
-    inclusion = A2.Hom(A2_dual).from_matrix(Matrix(ZZ, 2, 2, [3, 0, -2, 1]))
+    inclusion = A2.Hom(A2_dual).from_matrix(Matrix(ZZ, 2, 2, [2, -1, -1, 2]))
     quotient = A2_dual.finite_quotient(A2)
     negation = A2_dual.Hom(A2_dual).from_matrix(-identity_matrix(ZZ, 2))
     induced = A2_dual.induced_map_on_quotient(negation, quotient)
@@ -324,6 +332,55 @@ def test_integral_lattice_inclusion_into_dual_is_a_synthetic_morphism():
     swap = U.isometry(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
     with pytest.raises(ValueError):
         U.induced_map_on_quotient(swap, quotient)
+
+
+def test_definiteness_and_nondegeneracy_predicates_derive_from_signature():
+    A2 = Lattice("A2", label="A2")
+    minus_A2 = Lattice(-A2.gram_matrix(), label="-A2")
+    U = Lattice("U", label="U")
+    degenerate = Lattice(matrix(QQ, 1, 1, [0]), label="rad")
+
+    assert A2.is_nondegenerate() and A2.is_definite() and A2.is_positive_definite()
+    assert not A2.is_negative_definite() and not A2.is_indefinite()
+    assert minus_A2.is_negative_definite() and not minus_A2.is_positive_definite()
+    assert U.is_nondegenerate() and U.is_indefinite() and not U.is_definite()
+    assert not degenerate.is_nondegenerate()
+    assert not degenerate.is_definite() and not degenerate.is_indefinite()
+
+
+def test_radical_quotient_kills_the_radical_and_realizes_eperp_mod_e():
+    U = Lattice("U", label="U")
+    assert U.radical_quotient() is U  # nondegenerate: nothing to quotient
+
+    UU = U.direct_sum(U, label="U+U")
+    e_line = UU.sublattice([[1, 0, 0, 0]], label="e")
+    e_perp = UU.orthogonal_complement(e_line)
+    assert e_perp.is_degenerate()
+
+    quotient = e_perp.radical_quotient()
+    assert quotient.is_nondegenerate()
+    assert_matrix_equal(quotient.gram_matrix(), U.gram_matrix())  # e^perp / e = U
+
+    diagonal = Lattice(matrix(ZZ, 2, 2, [2, 0, 0, 0]), label="<2>+<0>")
+    assert_matrix_equal(diagonal.radical_quotient().gram_matrix(), matrix(QQ, 1, 1, [2]))
+
+    fully_degenerate = Lattice(matrix(ZZ, 2, 2, [0, 0, 0, 0]), label="0^2")
+    assert fully_degenerate.radical_quotient().rank() == 0  # rad(L) = L, so L/rad(L) is rank 0
+
+
+def test_lattice_element_pairs_through_the_form_not_a_generic_vector_product():
+    U = Lattice("U", label="U")
+    e, f = U.gens()
+
+    for name in ("inner_product", "dot_product", "norm", "hermitian_inner_product"):
+        assert not hasattr(e, name)
+
+    assert 2 * e == U([2, 0]) and e * 2 == U([2, 0])  # __mul__ is scalar action only
+    with pytest.raises(TypeError):
+        e * f  # form pairing must go through b, never *
+    with pytest.raises(TypeError):
+        e ** 2  # __pow__ is meaningless on a lattice element
+    assert e.b(f) == 1 and (e + f).q() == 2
 
 
 def test_explicit_isometries_act_on_discriminant_groups():

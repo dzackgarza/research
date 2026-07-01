@@ -28,7 +28,8 @@ class SyntheticLatticeElement(Element):
         return self._coordinates
 
     def rational_coordinates(self):
-        return vector(QQ, self._coordinates) * self.parent()._basis_matrix
+        r"""This element's coordinates in the root parent's intrinsic basis."""
+        return vector(QQ, self._coordinates) * self.parent()._inclusion_rows()
 
     def b(self, other):
         return self.parent().b(self, other)

@@ -26,9 +26,40 @@ def _lattice_key(lattice):
     return (
         repr(lattice.base_ring()),
         lattice.rank(),
-        tuple(lattice._basis_matrix.list()),
         tuple(lattice.gram_matrix().list()),
-        tuple(lattice._rational_gram_matrix.list()),
+        tuple(lattice._inclusion_rows().list()),
+        tuple(lattice._ambient_gram().list()),
+    )
+
+
+def _relation_inclusion_matrix(cover_lattice, relation_lattice):
+    r"""Integer inclusion of ``relation_lattice`` into ``cover_lattice`` (rows in cover coordinates).
+
+    A finite quotient ``cover / relation`` needs the relation expressed as a genuine
+    sublattice of the cover.  Two based-model routes carry that inclusion:
+
+    - the relation is a subobject sharing the cover's coordinate system (a common root);
+    - the cover is the metric dual ``relation#``, so the inclusion is the natural map
+      ``relation -> relation#`` with matrix ``G`` (the relation's Gram).
+    """
+    if cover_lattice.rank() == 0:
+        return matrix(ZZ, 0, 0)
+    if relation_lattice._ambient_gram() == cover_lattice._ambient_gram():
+        if not (relation_lattice.is_submodule(cover_lattice)):
+            raise ValueError("relations must be a sublattice of the cover")
+        return matrix(
+            ZZ,
+            [
+                cover_lattice._underlying_module().coordinate_vector(vector(QQ, row))
+                for row in relation_lattice._inclusion_rows().rows()
+            ],
+        )
+    if relation_lattice.base_ring() is ZZ and relation_lattice.determinant() != 0 \
+            and relation_lattice.dual_lattice() == cover_lattice:
+        return matrix(ZZ, relation_lattice.gram_matrix())
+    raise ValueError(
+        "relation lattice is not a recognized sublattice of the cover; provide the "
+        "relation as a subobject of the cover or as its metric dual"
     )
 
 
@@ -426,12 +457,23 @@ class SyntheticDiscriminantGroup(Parent):
         return lcm(orders) if orders else ZZ.one()
 
     def lift(self, element):
+        # cover = L# is a based lattice whose intrinsic basis IS the dual basis of L,
+        # so the dual-coordinate column produced by the Smith machinery is already the
+        # lift's coordinate vector in the cover -- no ambient round-trip.
+        z_coordinates = self._old_dual_coordinates(self(element))
+        return self.cover()(z_coordinates.column(0))
+
+    def _coset_representative_in_source(self, element):
+        r"""Coset representative of ``element`` in the source lattice's rational hull.
+
+        A lift lives in ``L# ⊇ L``; its dual-basis column ``z`` has source-basis
+        coordinates ``G^{-1} z``.  The source lattice's ``overlattice`` / ``span``
+        builders consume rows in the *root* (hull) frame, so map through the source's
+        own inclusion into its root.
+        """
         z_coordinates = self._old_dual_coordinates(self(element))
         source_coordinates = self.source_lattice().gram_matrix().inverse() * z_coordinates
-        rational_coordinates = vector(QQ, source_coordinates.column(0)) * self.source_lattice()._basis_matrix
-        cover = self.cover()
-        cover_coordinates = cover.underlying_module().coordinate_vector(vector(QQ, rational_coordinates))
-        return cover(cover_coordinates)
+        return vector(QQ, source_coordinates.column(0)) * self.source_lattice()._inclusion_rows()
 
     def projection(self, element):
         cover = self.cover()
@@ -441,11 +483,10 @@ class SyntheticDiscriminantGroup(Parent):
                 f"expected={cover}, found={element.parent()}")
         else:
             element = cover(element)
-        rational_coordinates = vector(QQ, element.rational_coordinates())
-        source_rational_module = self.source_lattice().rationalization_module().span(self.source_lattice()._basis_matrix.rows(), QQ)
-        source_coordinates = matrix(QQ, self.rank(), 1, list(source_rational_module.coordinate_vector(rational_coordinates)))
-        z_coordinates = self.source_lattice().gram_matrix() * source_coordinates
-        smith_coordinates = self._smith_right_transpose * matrix(ZZ, z_coordinates)
+        # cover's intrinsic coordinates are already the dual-basis coordinates the
+        # Smith machinery consumes (see lift).
+        z_coordinates = matrix(ZZ, self.rank(), 1, list(element.coordinates()))
+        smith_coordinates = self._smith_right_transpose * z_coordinates
         projected = []
         for position, invariant, multiplier in zip(
             self._invariant_positions,
@@ -662,14 +703,18 @@ class SyntheticDiscriminantGroup(Parent):
         subgroup = self._subgroup(subgroup_or_gens)
         if not (subgroup.is_bilinear_isotropic()):
             raise ValueError("overlattice construction requires a bilinear-isotropic subgroup")
-        lift_rows = [self.lift(generator).rational_coordinates() for generator in subgroup.gens()]
+        lift_rows = [self._coset_representative_in_source(generator) for generator in subgroup.gens()]
         if not lift_rows:
             return self.source_lattice()
         return self.source_lattice().overlattice(lift_rows, check_integral=True, label=label)
 
     def preimage_lattice(self, subgroup_or_gens, label="preimage_lattice"):
         subgroup = self._subgroup(subgroup_or_gens)
-        lift_rows = [self.lift(generator).rational_coordinates() for generator in subgroup.gens()]
+        # pi^{-1}(A_L) = L# exactly; return the canonical dual cover rather than an
+        # isometric HNF overlattice representative.
+        if subgroup.cardinality() == self.cardinality():
+            return self.cover()
+        lift_rows = [self._coset_representative_in_source(generator) for generator in subgroup.gens()]
         if not lift_rows:
             return self.source_lattice()
         return self.source_lattice().overlattice(lift_rows, check_integral=False, label=label)
@@ -685,12 +730,9 @@ class SyntheticDiscriminantGroup(Parent):
         induced_images = []
         for generator in self.gens():
             old_coordinates = self._old_dual_coordinates(generator)
+            # dual action on L# in its intrinsic (dual) basis: G U G^{-1}.
             new_coordinates = gram * isometry_matrix * gram.inverse() * old_coordinates
-            source_coordinates = gram.inverse() * new_coordinates
-            rational_coordinates = vector(QQ, source_coordinates.column(0)) * self.source_lattice()._basis_matrix
-            cover = self.cover()
-            cover_coordinates = cover.underlying_module().coordinate_vector(vector(QQ, rational_coordinates))
-            induced_images.append(self.projection(cover(cover_coordinates)))
+            induced_images.append(self.projection(self.cover()(new_coordinates.column(0))))
         return SyntheticDiscriminantAction.from_images(self, induced_images)
 
     action_of_lattice_isometry = action_of_isometry
@@ -1744,21 +1786,12 @@ class SyntheticLatticeFiniteQuotient(Parent):
             raise ValueError("finite lattice quotient cover must be a ZZ-lattice")
         if not (relation_lattice.base_ring() is ZZ):
             raise ValueError("finite lattice quotient relations must be a ZZ-lattice")
-        if not (relation_lattice.is_submodule(cover_lattice)):
-            raise ValueError("relations must be a sublattice of the cover")
         if not (relation_lattice.rank() == cover_lattice.rank()):
             raise ValueError("finite quotients require same-rank lattices")
         self._cover_lattice = cover_lattice
         self._relation_lattice = relation_lattice
-        inclusion = matrix(
-            ZZ,
-            [
-                cover_lattice.underlying_module().coordinate_vector(vector(QQ, row))
-                for row in relation_lattice._basis_matrix.rows()
-            ],
-        )
-        if cover_lattice.rank() == 0:
-            inclusion = matrix(ZZ, 0, 0)
+        inclusion = _relation_inclusion_matrix(cover_lattice, relation_lattice)
+        self._inclusion = inclusion
         smith, _smith_left, smith_right = inclusion.smith_form()
         self._smith_right = smith_right
         self._smith_right_inverse = smith_right.inverse()
@@ -2043,7 +2076,20 @@ class SyntheticLatticeFiniteQuotient(Parent):
 
     def preimage_lattice(self, subgroup_or_gens, label="preimage_lattice"):
         subgroup = self._subgroup(subgroup_or_gens)
-        lift_rows = [self.lift(generator).rational_coordinates() for generator in subgroup.gens()]
+        # pi^{-1}(cover/relation) = cover exactly; return the given cover lattice
+        # rather than an isometric HNF overlattice representative.
+        if subgroup.cardinality() == self.cardinality():
+            return self.cover_lattice()
+        if self.cover_lattice().rank() == 0:
+            return self.relation_lattice()
+        # lift lands in the cover's basis; the relation lattice's overlattice builder
+        # consumes rows in the relation's basis, so re-express through the inclusion M
+        # (relation-coords = cover-coords . M^{-1}).
+        inclusion_inverse = self._inclusion.inverse()
+        lift_rows = [
+            vector(QQ, self.lift(generator).coordinates()) * inclusion_inverse
+            for generator in subgroup.gens()
+        ]
         if not lift_rows:
             return self.relation_lattice()
         return self.relation_lattice().overlattice(lift_rows, check_integral=False, label=label)
