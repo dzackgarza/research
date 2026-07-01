@@ -147,7 +147,10 @@ def test_raw_module_methods_are_available_only_through_accessors():
     ):
         assert not hasattr(A2, name)
     assert A2.underlying_module() is not A2
-    assert A2.underlying_quadratic_module() is A2
+    native_quadratic = A2.underlying_quadratic_module()
+    assert native_quadratic is not A2
+    assert_matrix_equal(native_quadratic.gram_matrix(), A2.gram_matrix())
+    assert_matrix_equal(native_quadratic.inner_product_matrix(), A2.ambient_gram_matrix())
     with pytest.raises(NotImplementedError):
         A2.underlying_quotient_module()
 

@@ -229,7 +229,14 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
     assert nonprimitive_line.saturation(in_ambient=lc.Lattice("U")) == nonprimitive_line.primitive_closure(lc.Lattice("U"))
     assert_matrix_equal(A2.scale(2).gram_matrix(), 4 * A2.gram_matrix())
     assert A2.integral_saturation().is_integral()
-    assert A2.underlying_quadratic_module() is A2
+    A2_quadratic_module = A2.underlying_quadratic_module()
+    fractional_quadratic_module = fractional.underlying_quadratic_module()
+    assert A2_quadratic_module is not A2
+    assert_matrix_equal(A2_quadratic_module.gram_matrix(), A2.gram_matrix())
+    assert_matrix_equal(A2_quadratic_module.inner_product_matrix(), A2.ambient_gram_matrix())
+    assert fractional_quadratic_module.base_ring() is ZZ
+    assert_matrix_equal(fractional_quadratic_module.basis_matrix(), fractional.basis_matrix())
+    assert_matrix_equal(fractional_quadratic_module.gram_matrix(), fractional.gram_matrix())
     with pytest.raises(NotImplementedError):
         A2.underlying_quotient_module()
 

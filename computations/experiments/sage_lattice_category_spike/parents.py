@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from sage.arith.functions import lcm
 from sage.matrix.constructor import matrix
+from sage.modules.free_module import FreeModule
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -428,7 +429,12 @@ class SyntheticLattice(Parent):
         return self.scale_basis(scalar, label=label)
 
     def underlying_quadratic_module(self):
-        return self
+        ambient = FreeModule(
+            self.base_ring(),
+            self._rational_gram_matrix.nrows(),
+            inner_product_matrix=self._rational_gram_matrix,
+        )
+        return ambient.span(self.basis_matrix().rows(), self.base_ring())
 
     def underlying_quotient_module(self):
         raise NotImplementedError("lattices are not quotient modules; use finite_quotient or discriminant_group for quotients")
