@@ -20,6 +20,15 @@ def assert_native_invariant_quotient(parent):
     return native_quotient
 
 
+def assert_native_torsion_quadratic_module(parent):
+    native_module = parent.underlying_torsion_quadratic_module()
+    assert native_module is not parent
+    assert native_module.invariants() == parent.invariants()
+    assert native_module.ngens() == parent.ngens()
+    assert_matrix_equal(native_module.gram_matrix_quadratic(), parent.gram_matrix_quadratic())
+    return native_module
+
+
 def test_cartan_and_hyperbolic_constructors_match_integral_lattice_doctests():
     # Reference: free_quadratic_module_integer_symmetric.py IntegralLattice constructor doctests.
     assert lc.Lattice("U").signature_pair() == (1, 1)
@@ -78,6 +87,7 @@ def test_discriminant_group_cover_relations_and_primary_forms_match_doctests():
 
     assert A.invariants() == (2, 10)
     assert_matrix_equal(A.gram_matrix_quadratic(), matrix(QQ, 2, 2, [1, QQ(1) / 2, QQ(1) / 2, QQ(1) / 5]))
+    assert_native_torsion_quadratic_module(A)
     assert A.dual_cover() == L.dual_lattice()
     assert A.relation_lattice() == L
     assert A.cover() == A.V()
@@ -169,6 +179,7 @@ def test_finite_discriminant_form_orthogonal_group_matches_torsion_doctest():
     assert D.zero() == D.identity()
     assert D.invariant_factors() == (2, 2, 2)
     assert_native_invariant_quotient(D)
+    assert_native_torsion_quadratic_module(D).orthogonal_group().order() == OD.order()
     assert D.cover() is D
     assert D.relations().cardinality() == 1
     assert D.smith_form_gens() == D.gens()

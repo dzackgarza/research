@@ -9,6 +9,7 @@ from sage.matrix.constructor import identity_matrix, matrix
 from sage.misc.cachefunc import cached_method
 from sage.misc.prandom import choice
 from sage.modules.free_module_element import vector
+from sage.modules.torsion_quadratic_module import TorsionQuadraticForm as SageTorsionQuadraticForm
 from sage.rings.complex_mpfr import ComplexField
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -79,6 +80,10 @@ def _native_quotient_module_from_invariants(invariants):
     ambient = ZZ ** len(invariants)
     relation_rows = matrix.diagonal(ZZ, invariants).rows() if invariants else []
     return ambient / ambient.span(relation_rows, ZZ)
+
+
+def _native_torsion_quadratic_module(parent):
+    return SageTorsionQuadraticForm(parent.gram_matrix_quadratic())
 
 
 def _all_group_automorphisms(group):
@@ -303,6 +308,9 @@ class SyntheticDiscriminantGroup(Parent):
 
     def underlying_quotient_module(self):
         return _native_quotient_module_from_lattices(self.cover(), self.relations())
+
+    def underlying_torsion_quadratic_module(self):
+        return _native_torsion_quadratic_module(self)
 
     def cardinality(self):
         if not self.invariants():
@@ -2286,6 +2294,9 @@ class SyntheticFiniteQuadraticForm(Parent):
 
     def underlying_quotient_module(self):
         return _native_quotient_module_from_invariants(self.invariants())
+
+    def underlying_torsion_quadratic_module(self):
+        return _native_torsion_quadratic_module(self)
 
     def cover(self):
         return self
