@@ -12,6 +12,19 @@ def assert_matrix_equal(left, right):
     assert matrix(QQ, left) == matrix(QQ, right)
 
 
+def as_finite_quadratic_form(form):
+    # Present any finite quadratic form (discriminant group or subquotient) as the
+    # canonical SyntheticFiniteQuadraticForm TYPE via its quadratic Gram (q on the
+    # diagonal, b off it), so two forms can be compared as forms, not by group invariants.
+    generators = form.gens()
+    gram = matrix(
+        QQ, len(generators), len(generators),
+        [form.q(generators[i]) if i == j else form.b(generators[i], generators[j])
+         for i in range(len(generators)) for j in range(len(generators))],
+    )
+    return lc.SyntheticFiniteQuadraticForm(gram)
+
+
 def test_cartan_and_hyperbolic_constructors_match_integral_lattice_doctests():
     # Reference: free_quadratic_module_integer_symmetric.py IntegralLattice constructor doctests.
     assert lc.Lattice("U").signature_pair() == (1, 1)
@@ -293,7 +306,11 @@ def test_discriminant_form_subgroup_source_and_action_api_is_bound():
     assert D.is_anisotropic()
     assert D.orthogonal(H).cardinality() == 2
     assert D.orthogonal_complement(H) == D.orthogonal(H)
-    assert D.orthogonal_quotient(Z).invariants() == D.invariants()
+    # orthogonal quotient by the trivial subgroup is A itself -- as a FORM, not merely
+    # a group of the same invariants.
+    assert as_finite_quadratic_form(D.orthogonal_quotient(Z)).is_isomorphic(
+        as_finite_quadratic_form(D), kind="quadratic"
+    )
     with pytest.raises(ValueError):
         D.orthogonal_quotient(H)
 
@@ -453,7 +470,9 @@ def test_discriminant_quotient_is_not_orthogonal_quotient_alias():
     assert len(quotient.all_subgroups()) == 5
     assert quotient.basis_from_generators(quotient.gens()) == quotient.gens()
     assert quotient.torsion_subgroup() is quotient
-    assert A.orthogonal_quotient(A.subgroup([])).invariants() == A.invariants()
+    assert as_finite_quadratic_form(A.orthogonal_quotient(A.subgroup([]))).is_isomorphic(
+        as_finite_quadratic_form(A), kind="quadratic"
+    )
 
 
 def test_discriminant_normal_form_can_return_change_of_generators():

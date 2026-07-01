@@ -12,6 +12,7 @@ from sage_lattice_category_spike.lattice_categories import (
     DiscriminantForms,
     Lattice,
     Lattices,
+    SyntheticFiniteQuadraticForm,
     SyntheticGenus,
     SyntheticLattice,
 )
@@ -526,24 +527,37 @@ def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
 
 
 def test_nikulin_overlattice_and_metabolizer_identities_hold():
-    # Nikulin: for an even lattice L with discriminant form A and an isotropic
-    # subgroup H, the overlattice's discriminant form A_{L'} is isometric to the
-    # subquotient form H^perp / H (same invariants and same quadratic fingerprint).
+    # Nikulin (1980, "Integral symmetric bilinear forms...", Math. USSR Izv. 14, sec.
+    # 1.4-1.9): for an even lattice L with discriminant form A and an isotropic subgroup
+    # H, the overlattice's discriminant form A_{L'} is ISOMETRIC to the subquotient form
+    # H^perp / H. We certify true form isometry, not matching invariants.
     L = Lattice(matrix(ZZ, 3, 3, [0, 2, 0, 2, 0, 0, 0, 0, 2]), label="U2+A1")  # U(2) + <2>
     D = L.discriminant_group()
     assert D.invariants() == (2, 2, 2)
 
-    def quadratic_fingerprint(form):
-        return sorted(form.q(x) for x in form.elements())
+    def as_finite_quadratic_form(form):
+        # The quadratic Gram of a finite quadratic form (q on the diagonal, b off it,
+        # over a generating set) presents it as the canonical SyntheticFiniteQuadraticForm
+        # TYPE, so both Nikulin sides are the SAME type and comparable as forms.
+        generators = form.gens()
+        gram = matrix(
+            QQ, len(generators), len(generators),
+            [form.q(generators[i]) if i == j else form.b(generators[i], generators[j])
+             for i in range(len(generators)) for j in range(len(generators))],
+        )
+        return SyntheticFiniteQuadraticForm(gram)
 
     checked = 0
     for H in D.isotropic_subgroups():
         if H.cardinality() == 1:
             continue
-        overlattice_form = D.discriminant_form_of_overlattice(H)
-        quotient_form = D.orthogonal_quotient(H)  # H^perp / H
-        assert overlattice_form.invariants() == quotient_form.invariants()
-        assert quadratic_fingerprint(overlattice_form) == quadratic_fingerprint(quotient_form)
+        overlattice_form = as_finite_quadratic_form(D.discriminant_form_of_overlattice(H))
+        quotient_form = as_finite_quadratic_form(D.orthogonal_quotient(H))  # H^perp / H
+        # A form-preserving group isomorphism exists (explicit search), AND the complete
+        # genus normal form (Nikulin-Conway-Sloane-Miranda-Morrison) agrees -- either
+        # certifies the isometry; together they cross-check.
+        assert overlattice_form.is_isomorphic(quotient_form, kind="quadratic")
+        assert overlattice_form.normal_form() == quotient_form.normal_form()
         checked += 1
     assert checked > 0
 
