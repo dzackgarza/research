@@ -345,6 +345,18 @@ class SyntheticDiscriminantGroup(Parent):
     def generator_orders(self):
         return self.invariants()
 
+    def permutation_group(self):
+        r"""A permutation-group presentation of the underlying finite abelian group.
+
+        Ephemeral reuse: the group structure is ``prod Z/d_i`` for the Smith
+        invariants ``d_i``; build Sage's abelian group from those invariants and
+        return its permutation group.  This is a derived group presentation of the
+        discriminant form's abelian structure, not the discriminant-form object.
+        """
+        from sage.groups.additive_abelian.additive_abelian_group import AdditiveAbelianGroup
+
+        return AdditiveAbelianGroup(list(self.invariants())).permutation_group()
+
     def elementary_divisors(self):
         divisors = []
         for invariant in self.invariants():
@@ -2342,6 +2354,18 @@ class SyntheticFiniteQuadraticForm(Parent):
 
     def generator_orders(self):
         return self.invariants()
+
+    def permutation_group(self):
+        r"""A permutation-group presentation of the underlying finite abelian group.
+
+        Ephemeral reuse: the group structure is ``prod Z/d_i`` for the Smith
+        invariants ``d_i``; build Sage's abelian group from those invariants and
+        return its permutation group.  This is a derived group presentation of the
+        discriminant form's abelian structure, not the discriminant-form object.
+        """
+        from sage.groups.additive_abelian.additive_abelian_group import AdditiveAbelianGroup
+
+        return AdditiveAbelianGroup(list(self.invariants())).permutation_group()
 
     def elementary_divisors(self):
         divisors = []

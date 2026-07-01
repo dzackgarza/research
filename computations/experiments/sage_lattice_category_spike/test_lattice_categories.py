@@ -261,6 +261,27 @@ def test_odd_integral_discriminant_group_keeps_qq_mod_zz_form():
         D.brown_invariant()
 
 
+def test_discriminant_group_is_typed_as_a_finite_abelian_group_not_a_zz_module():
+    D = Lattice("A2", label="A2").discriminant_group()
+
+    # finite-abelian-group surface (order/exponent/is_cyclic/short_name/permutation_group),
+    # not a "module over ZZ".
+    assert D.order() == 3
+    assert D.exponent() == 3
+    assert D.is_cyclic()
+    assert D.short_name() == "Z/3"
+    permutation_group = D.permutation_group()
+    assert permutation_group.order() == D.cardinality()
+
+    # element operators: scalar multiplication IS the group action; exponentiation
+    # is meaningless on an additive-group element and must fail loud.
+    g = D.gen(0)
+    assert 2 * g == g + g
+    assert 3 * g == D.zero()
+    with pytest.raises(TypeError):
+        g ** 2
+
+
 def test_discriminant_subgroups_actions_and_overlattice_construction_are_owned():
     L = Lattice(matrix(ZZ, 1, 1, [4]), label="<4>")
     D = L.discriminant_group()
