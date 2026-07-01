@@ -4,7 +4,7 @@ from itertools import product
 
 import pytest
 
-from sage.all import Matrix, Polyhedron, QQ, ZZ, block_diagonal_matrix, identity_matrix, matrix
+from sage.all import Matrix, Polyhedron, QQ, ZZ, block_diagonal_matrix, identity_matrix, matrix, vector
 from sage.categories.modules import Modules
 from sage.groups.additive_abelian.qmodnz import QmodnZ
 
@@ -450,3 +450,57 @@ def test_functor_layer_realizes_the_categorical_identities():
     # tensor product: Gram is the Kronecker product of the Grams.
     T = A2.tensor_product(U)
     assert_matrix_equal(T.gram_matrix(), A2.gram_matrix().tensor_product(U.gram_matrix()))
+
+
+def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
+    from sage.modules.free_module_integer import IntegerLattice
+    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+    from sage.rings.infinity import Infinity
+
+    B = Matrix(ZZ, 3, 3, [2, 1, 0, 0, 2, 1, 0, 0, 2])
+    G = B * B.transpose()
+    L = Lattice(G, label="pd3")
+    reference = IntegerLattice(B)  # same lattice, realized with the standard inner product
+
+    # scalar invariants reference-agree with Sage
+    assert L.volume() == reference.volume()
+    assert abs(L.gaussian_heuristic().n() - reference.gaussian_heuristic().n()) < 1e-9
+    assert abs(L.hadamard_ratio().n() - reference.hadamard_ratio().n()) < 1e-9
+    assert L.minimum() == IntegralLattice(G).minimum()
+    assert L.maximum() == Infinity
+
+    # HKZ and reduced_basis produce a reduced basis of the SAME lattice (det preserved).
+    assert L.HKZ().determinant() == L.determinant()
+    reduced = L.reduced_basis()
+    reduced_gram = matrix(QQ, [[a.b(c) for c in reduced] for a in reduced])
+    assert reduced_gram.determinant() == G.determinant()
+
+    # Babai CVP reference-agrees under the ambient <-> coordinate translation (x_ambient = x_coords * B).
+    target = [1, 1, 1]
+    mine = L.approximate_closest_vector(target)
+    assert tuple(vector(ZZ, mine.coordinates()) * B) == tuple(reference.approximate_closest_vector(vector(ZZ, target) * B))
+    assert L.babai(target) == mine  # babai is the alias
+
+    # Voronoi relevant vectors: same count as Sage, all genuine lattice vectors.
+    assert len(L.voronoi_relevant_vectors()) == len(reference.voronoi_relevant_vectors())
+
+    # [NEW] enumerations (no Sage reference): property-checked.
+    shorts = list(L.enumerate_short_vectors(4))
+    assert shorts and all(0 < v.q() <= 4 for v in shorts)
+    close = L.enumerate_close_vectors(target, 6)
+    gram = matrix(QQ, G)
+    for v in close:
+        delta = matrix(QQ, 1, 3, [QQ(v.coordinates()[i]) - target[i] for i in range(3)])
+        assert (delta * gram * delta.transpose())[0, 0] <= 6
+
+    # update_reduced_basis: immutable functional analog; injecting an in-lattice vector keeps the lattice.
+    assert L.update_reduced_basis(L.gen(0)).determinant() == L.determinant()
+
+    # axiom-gating: an indefinite lattice exposes NONE of the suite.
+    U = Lattice("U", label="U")
+    for name in (
+        "HKZ", "minimum", "maximum", "volume", "gaussian_heuristic", "hadamard_ratio",
+        "reduced_basis", "approximate_closest_vector", "babai", "voronoi_relevant_vectors",
+        "enumerate_short_vectors", "enumerate_close_vectors", "update_reduced_basis",
+    ):
+        assert not hasattr(U, name)

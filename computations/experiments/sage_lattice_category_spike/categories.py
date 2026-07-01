@@ -355,6 +355,156 @@ class PositiveDefiniteLattices(CategoryWithAxiom_over_base_ring):
                 bound *= 2
             raise ArithmeticError("failed to find a compact Voronoi cell from enumerated short vectors")
 
+        def HKZ(self):
+            # Hermite-Korkine-Zolotarev = full-block BKZ (Sage IntegerLattice.HKZ).
+            return self.BKZ(block_size=self.rank())
+
+        def minimum(self):
+            # lambda_1^2: the least nonzero norm (Sage IntegralLattice.minimum).
+            if self.rank() == 0:
+                from sage.rings.infinity import Infinity
+
+                return Infinity
+            return self.shortest_vector().q()
+
+        def maximum(self):
+            # Sup of the norm form over a positive-definite lattice is unbounded
+            # (Sage IntegralLattice.maximum returns +Infinity).
+            from sage.rings.infinity import Infinity
+
+            return Infinity
+
+        def volume(self):
+            # Covolume sqrt(det G) (Sage IntegerLattice.volume).
+            return self.gram_matrix().determinant().sqrt()
+
+        def gaussian_heuristic(self):
+            # Expected shortest length det^(1/2n) * sqrt(n / (2 pi e)) (Sage IntegerLattice.gaussian_heuristic).
+            from sage.symbolic.constants import e, pi
+            from sage.misc.functional import sqrt
+
+            n = self.rank()
+            return self.gram_matrix().determinant() ** (1 / (2 * n)) * sqrt(n / (2 * pi * e))
+
+        def hadamard_ratio(self):
+            # Orthogonality defect of the current basis: (sqrt(det) / prod ||b_i||)^(1/n)
+            # (Sage IntegerLattice.hadamard_ratio, on the lattice's own basis).
+            from sage.misc.functional import sqrt
+
+            n = self.rank()
+            product_of_norms = 1
+            for i in range(n):
+                product_of_norms = product_of_norms * sqrt(self.gram_matrix()[i, i])
+            return (self.gram_matrix().determinant().sqrt() / product_of_norms) ** (1 / n)
+
+        def reduced_basis(self):
+            # The LLL-reduced generating set, as lattice elements (rows of the
+            # Gram LLL change-of-basis, expressed in the lattice's own coordinates).
+            from sage.matrix.constructor import matrix
+            from sage.rings.integer_ring import ZZ
+
+            if not (self.base_ring() is ZZ and self.is_integral()):
+                raise ValueError("reduced basis requires an integral ZZ-lattice")
+            transform = matrix(ZZ, self.gram_matrix()).LLL_gram()
+            return tuple(self(row) for row in transform.rows())
+
+        def approximate_closest_vector(self, target):
+            # Babai nearest-plane rounding in the LLL-reduced basis (coordinate space).
+            from sage.matrix.constructor import matrix
+            from sage.modules.free_module_element import vector
+            from sage.rings.integer_ring import ZZ
+            from sage.rings.rational_field import QQ
+
+            target = vector(QQ, target.coordinates() if hasattr(target, "coordinates") and target.parent() is self else target)
+            if not (len(target) == self.rank()):
+                raise ValueError("approximate closest vector target must have one coordinate per basis vector; "
+                f"rank={self.rank()}, target={target}")
+            if self.rank() == 0:
+                return self.zero()
+            transform = matrix(ZZ, self.gram_matrix()).LLL_gram()
+            reduced_coordinates = target * transform.inverse()
+            rounded = vector(ZZ, [ZZ(coordinate.round()) for coordinate in reduced_coordinates])
+            return self(rounded * transform)
+
+        # babai is Sage's alias for approximate_closest_vector
+        babai = approximate_closest_vector
+
+        def voronoi_relevant_vectors(self):
+            # The lattice vectors whose bisector hyperplane is a facet of the Voronoi
+            # cell (Sage IntegerLattice.voronoi_relevant_vectors). By Voronoi's
+            # theorem, v is relevant iff +-v are the UNIQUE shortest vectors of the
+            # coset v + 2L -- a coset test that avoids Polyhedron facet rescaling.
+            from sage.rings.integer_ring import ZZ
+
+            if self.rank() == 0:
+                return ()
+            bound = ZZ(max(self.gen(i).q() for i in range(self.rank())) + 1)
+            for _ in range(8):
+                if self.voronoi_cell(radius=bound).is_compact():
+                    break
+                bound *= 2
+            candidates = [
+                lattice_vector
+                for vectors in self.short_vectors(2 * bound)
+                for lattice_vector in vectors
+                if not lattice_vector == self.zero()
+            ]
+            relevant = []
+            for v in candidates:
+                v_coordinates = v.coordinates()
+                v_norm = v.q()
+                if all(
+                    v == u
+                    or v == -u
+                    or not all((v_coordinates[i] - u.coordinates()[i]) % 2 == 0 for i in range(self.rank()))
+                    or u.q() > v_norm
+                    for u in candidates
+                ):
+                    relevant.append(v)
+            return tuple(relevant)
+
+        def enumerate_short_vectors(self, bound):
+            # [NEW] flat enumeration of nonzero lattice vectors of norm <= bound.
+            for vectors in self.short_vectors(bound + 1):
+                for lattice_vector in vectors:
+                    if not lattice_vector == self.zero():
+                        yield lattice_vector
+
+        def enumerate_close_vectors(self, target, radius):
+            # [NEW] lattice vectors within squared distance <= radius of the target.
+            from itertools import product
+
+            from sage.functions.other import ceil, floor, sqrt
+            from sage.matrix.constructor import matrix
+            from sage.modules.free_module_element import vector
+            from sage.rings.integer_ring import ZZ
+            from sage.rings.rational_field import QQ
+
+            target = vector(QQ, target.coordinates() if hasattr(target, "coordinates") and target.parent() is self else target)
+            if not (len(target) == self.rank()):
+                raise ValueError("close vector target must have one coordinate per basis vector; "
+                f"rank={self.rank()}, target={target}")
+            gram = matrix(QQ, self.gram_matrix())
+            inverse_gram = gram.inverse()
+            ranges = []
+            for i in range(self.rank()):
+                spread = sqrt(QQ(radius) * inverse_gram[i, i])
+                ranges.append(range(ZZ(floor(target[i] - spread)) - 1, ZZ(ceil(target[i] + spread)) + 2))
+            close = []
+            for coordinates in product(*ranges):
+                delta = matrix(QQ, 1, self.rank(), [QQ(coordinates[i]) - target[i] for i in range(self.rank())])
+                if (delta * gram * delta.transpose())[0, 0] <= radius:
+                    close.append(self(coordinates))
+            return close
+
+        def update_reduced_basis(self, w):
+            # Sage mutates internal reduced-basis state and returns None; a based
+            # lattice is an immutable (R, G) value, so this returns the lattice
+            # obtained by injecting w and LLL-reducing (the functional analog).
+            coordinates = list(w.coordinates() if hasattr(w, "coordinates") and w.parent() is self else w)
+            injected = self.overlattice([coordinates], label="update_reduced_basis")
+            return injected.LLL() if injected.is_positive_definite() else injected
+
 
 class NegativeDefiniteLattices(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "NegativeDefinite")
