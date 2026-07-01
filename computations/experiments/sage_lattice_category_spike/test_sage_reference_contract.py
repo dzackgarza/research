@@ -335,6 +335,10 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     assert quotient.exponent() == 3
     assert quotient.is_cyclic()
     assert quotient.short_name() == "Z/3"
+    quotient_automorphisms = quotient.automorphism_group()
+    assert quotient_automorphisms.order() == 2
+    assert {action(quotient.gen(0)) for action in quotient_automorphisms} == {quotient.gen(0), -quotient.gen(0)}
+    assert all(action.is_automorphism() for action in quotient_automorphisms)
     assert quotient.generator_orders() == (3,)
     assert quotient.rank_p(3) == 1
     assert quotient.length_p(3) == 1
@@ -430,6 +434,11 @@ def test_discriminant_quotient_is_not_orthogonal_quotient_alias():
     assert quotient.exponent() == 2
     assert not quotient.is_cyclic()
     assert quotient.short_name() == "Z/2 + Z/2"
+    quotient_automorphisms = quotient.automorphism_group()
+    quotient_nonzero_elements = set(quotient.elements()) - {quotient.zero()}
+    assert quotient_automorphisms.order() == 6
+    assert {action(quotient.gen(0)) for action in quotient_automorphisms} == quotient_nonzero_elements
+    assert all(action.is_automorphism() for action in quotient_automorphisms)
     assert quotient.generator_orders() == (2, 2)
     assert quotient.rank_p(2) == 2
     assert quotient.length_p(2) == 2
@@ -579,6 +588,11 @@ def test_orthogonal_quotient_keeps_smith_invariants_not_only_cardinality():
     assert quotient.underlying_quotient_module() is quotient
     assert not quotient.is_cyclic()
     assert quotient.short_name() == "Z/2 + Z/2"
+    quotient_automorphisms = quotient.automorphism_group()
+    quotient_nonzero_elements = set(quotient.elements()) - {quotient.zero()}
+    assert quotient_automorphisms.order() == 6
+    assert {action(first) for action in quotient_automorphisms} == quotient_nonzero_elements
+    assert all(action.is_automorphism() for action in quotient_automorphisms)
     assert quotient.generator_orders() == (2, 2)
     assert quotient.elementary_divisors() == (2, 2)
     assert quotient.rank_p(2) == 2

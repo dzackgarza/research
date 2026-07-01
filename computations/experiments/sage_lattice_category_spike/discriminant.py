@@ -63,6 +63,13 @@ def _finite_group_invariant_factors(elements, zero, scalar_multiply):
     return tuple(invariant for invariant in invariant_factors if invariant != 1)
 
 
+def _finite_coordinates(group, element):
+    element = group(element)
+    if hasattr(element, "coordinates"):
+        return tuple(element.coordinates())
+    return tuple(group.coordinates(element))
+
+
 def _all_group_automorphisms(group):
     if group.ngens() == 0:
         return (SyntheticDiscriminantAction(group, identity_matrix(ZZ, 0)),)
@@ -1359,6 +1366,9 @@ class SyntheticDiscriminantGroupQuotient(Parent):
     def basis_from_generators(self, gens):
         return _finite_basis_from_generators(self, gens)
 
+    def automorphism_group(self):
+        return SyntheticOrthogonalGroup(self, _all_group_automorphisms(self))
+
     def projection(self, element):
         element = self.ambient_group()(element)
         ambient_row = matrix(ZZ, 1, self.ambient_group().ngens(), list(self.ambient_group().coordinates(element)))
@@ -1632,6 +1642,9 @@ class SyntheticDiscriminantSubquotient:
 
     def basis_from_generators(self, gens):
         return _finite_basis_from_generators(self, gens)
+
+    def automorphism_group(self):
+        return SyntheticOrthogonalGroup(self, _all_group_automorphisms(self))
 
     def projection(self, element):
         element = self._ambient_group(element)
@@ -1994,6 +2007,9 @@ class SyntheticLatticeFiniteQuotient(Parent):
     def generator_relations(self):
         return matrix.diagonal(ZZ, self.invariants())
 
+    def automorphism_group(self):
+        return SyntheticOrthogonalGroup(self, _all_group_automorphisms(self))
+
     def lift(self, element):
         element = self(element)
         smith_row = matrix(ZZ, 1, self.cover_lattice().rank())
@@ -2049,7 +2065,7 @@ class SyntheticDiscriminantAction:
     def from_images(cls, discriminant_group, images):
         columns = []
         for image in images:
-            columns.extend(discriminant_group(image).coordinates())
+            columns.extend(_finite_coordinates(discriminant_group, image))
         return cls(discriminant_group, matrix(ZZ, discriminant_group.ngens(), discriminant_group.ngens(), columns).transpose())
 
     def discriminant_group(self):
@@ -2059,16 +2075,17 @@ class SyntheticDiscriminantAction:
         return self._matrix
 
     def __call__(self, element):
-        element = self.discriminant_group()(element)
-        column = self.matrix() * matrix(ZZ, self.discriminant_group().ngens(), 1, list(element.coordinates()))
-        return self.discriminant_group()([column[i, 0] for i in range(self.discriminant_group().ngens())])
+        group = self.discriminant_group()
+        column = self.matrix() * matrix(ZZ, group.ngens(), 1, _finite_coordinates(group, element))
+        return group([column[i, 0] for i in range(group.ngens())])
 
     def is_identity(self):
         return all(self(element) == element for element in self.discriminant_group().elements())
 
     def is_automorphism(self):
-        images = {tuple(self(element).coordinates()) for element in self.discriminant_group().elements()}
-        return len(images) == self.discriminant_group().cardinality()
+        group = self.discriminant_group()
+        images = {_finite_coordinates(group, self(element)) for element in group.elements()}
+        return len(images) == group.cardinality()
 
     def kernel(self):
         group = self.discriminant_group()
@@ -2092,7 +2109,7 @@ class SyntheticDiscriminantAction:
         preimages = tuple(candidate for candidate in group.elements() if self(candidate) == element)
         if not preimages:
             raise ValueError(f"element is not in the image of this finite homomorphism: {element}")
-        return min(preimages, key=lambda candidate: tuple(candidate.coordinates()))
+        return min(preimages, key=lambda candidate: _finite_coordinates(group, candidate))
 
     def inverse(self):
         if not (self.is_automorphism()):
