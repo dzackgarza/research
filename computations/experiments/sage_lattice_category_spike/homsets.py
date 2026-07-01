@@ -74,6 +74,12 @@ class LatticeMorphism(Element):
     def codomain(self):
         return self.parent().codomain()
 
+    def is_isometry(self):
+        # Every lattice morphism is form-preserving by construction; it is an
+        # isometry exactly when it is additionally an isomorphism (invertible),
+        # e.g. U -> U^2 on the hyperbolic plane is form-preserving but not one.
+        return self.matrix().is_square() and self.matrix().is_invertible()
+
     def __call__(self, element):
         return self._call_(element)
 

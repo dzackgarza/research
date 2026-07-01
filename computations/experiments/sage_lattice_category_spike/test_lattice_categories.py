@@ -538,3 +538,39 @@ def test_nikulin_overlattice_and_metabolizer_identities_hold():
         H = A.metabolizer()
         assert A.is_lagrangian(H)
         assert H.cardinality() ** 2 == A.cardinality()
+
+
+def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indefinite():
+    from sage.all import MatrixGroup
+
+    A2 = Lattice("A2", label="A2")
+
+    # O(L) generators are computed lazily for a definite lattice and actually
+    # generate O(A2) (the dihedral group of order 12).
+    gens = A2.isometry_group()
+    assert all(g.is_isometry() for g in gens)
+    for g in gens:
+        U = g.matrix()
+        assert U.transpose() * A2.gram_matrix() * U == A2.gram_matrix()  # form-preserving
+        assert U.det() in (1, -1)
+    assert MatrixGroup([g.matrix() for g in gens]).order() == 12
+
+    # is_isometry separates isomorphisms from mere form-preservation: the metric
+    # inclusion A2 -> A2# is form-preserving (matrix G) but not an isometry (det 3).
+    A2_dual = A2.dual_lattice()
+    assert not A2.Hom(A2_dual).from_matrix(A2.gram_matrix()).is_isometry()
+    assert A2.Hom(A2).from_matrix(identity_matrix(ZZ, 2)).is_isometry()
+
+    # indefinite O(L) is infinite -> explicit generators required (fails loud otherwise).
+    U = Lattice("U", label="U")
+    with pytest.raises(NotImplementedError):
+        U.isometry_group()
+    swap = U.isometry_group(gens=[matrix(ZZ, 2, 2, [0, 1, 1, 0])])
+    assert swap[0].is_isometry()
+
+    # is_isometric: definite decided via Sage; different class / rank -> False; indefinite fails loud.
+    assert A2.is_isometric(Lattice("A2", label="other"))
+    assert not A2.is_isometric(Lattice(matrix(ZZ, 2, 2, [2, 0, 0, 2])))
+    assert not A2.is_isometric(Lattice(matrix(ZZ, 3, 3, [2, 0, 0, 0, 2, 0, 0, 0, 2])))
+    with pytest.raises(NotImplementedError):
+        U.is_isometric(U)

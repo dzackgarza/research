@@ -564,8 +564,13 @@ class SyntheticLattice(Parent):
         return self.discriminant_group().genus(self.signature_pair(), even=self.is_even())
 
     def isometry_group(self, gens=None, check=True, is_finite=None):
+        # O(L) as its generating isometries. Generators are computed lazily and only
+        # on request: a definite lattice reuses Sage's finite automorphism group
+        # (ephemeral -- the Sage object is discarded, only the matrices survive),
+        # while an indefinite lattice has an infinite O(L) and requires explicit
+        # generators (fails loud otherwise), matching Sage's own restriction.
         if gens is None:
-            raise NotImplementedError("full isometry generator computation is not implemented for the synthetic spike")
+            gens = self._computed_isometry_generators()
         morphisms = tuple(self.Hom(self).from_matrix(g) for g in gens)
         if check:
             for morphism in morphisms:
@@ -574,6 +579,40 @@ class SyntheticLattice(Parent):
         return morphisms
 
     automorphisms = isometry_group
+
+    def _computed_isometry_generators(self):
+        if not (self.base_ring() is ZZ and self.is_integral() and self.determinant() != 0):
+            raise NotImplementedError("O(L) generators are computed only for nondegenerate integral ZZ-lattices")
+        if not self.is_definite():
+            raise NotImplementedError(
+                "indefinite O(L) is infinite; supply explicit generators via isometry_group(gens=...)"
+            )
+        from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+
+        # Sage's generators V satisfy V G V^T = G; the synthetic convention U^T G U = G
+        # is met by U = V^T.
+        orthogonal_group = IntegralLattice(matrix(ZZ, self.gram_matrix())).orthogonal_group()
+        return tuple(matrix(ZZ, generator.matrix()).transpose() for generator in orthogonal_group.gens())
+
+    def is_isometric(self, other):
+        if not (isinstance(other, SyntheticLattice)):
+            raise TypeError(f"expected SyntheticLattice; found={type(other)}")
+        if self.rank() != other.rank() or self.signature_pair() != other.signature_pair():
+            return False
+        if not (self.base_ring() is ZZ and other.base_ring() is ZZ and self.is_integral() and other.is_integral()):
+            raise NotImplementedError("isometry testing is implemented for integral ZZ-lattices")
+        if not (self.is_definite() and other.is_definite()):
+            raise NotImplementedError(
+                "indefinite isometry testing is not implemented; compare genus/discriminant form explicitly"
+            )
+        from sage.quadratic_forms.quadratic_form import QuadraticForm
+
+        # QuadraticForm(matrix) reads the matrix as the Hessian (2 x Gram); sign-normalize
+        # to positive definite so is_globally_equivalent_to applies.
+        sign = 1 if self.is_positive_definite() else -1
+        return QuadraticForm(2 * sign * matrix(ZZ, self.gram_matrix())).is_globally_equivalent_to(
+            QuadraticForm(2 * sign * matrix(ZZ, other.gram_matrix()))
+        )
 
     def acts_on(self, other, gens=None, check=True):
         if gens is None:
