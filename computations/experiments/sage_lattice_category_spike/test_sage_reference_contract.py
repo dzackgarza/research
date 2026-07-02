@@ -81,8 +81,6 @@ def test_discriminant_group_cover_relations_and_primary_forms_match_doctests():
     assert_matrix_equal(A.gram_matrix_quadratic(), matrix(QQ, 2, 2, [1, QQ(1) / 2, QQ(1) / 2, QQ(1) / 5]))
     assert A.cover() == L.dual()
     assert A.relation_lattice() == L
-    assert A.cover() == A.V()
-    assert A.relations() == A.W()
     assert A.primary_part(2).invariants() == (2, 2)
     assert_matrix_equal(A.primary_part(2).gram_matrix_quadratic(), matrix(QQ, 2, 2, [1, QQ(1) / 2, QQ(1) / 2, 1]))
     assert A.primary_part(5).invariants() == (5,)
@@ -96,11 +94,11 @@ def test_discriminant_preimage_lattice_allows_nonintegral_source_preimages():
     # Reference: A_L = L^vee / L source metadata; preimages exist before isotropic gluing.
     L = lc.Lattice("A2")
     A = L.discriminant_group()
-    full_preimage = A.preimage_lattice(A.subgroup([A.gen(0)]))
+    full_preimage = A.preimage_lattice(A.subgroup_generated_by([A.gen(0)]))
 
     assert full_preimage == L.dual()
     assert not full_preimage.is_integral()
-    assert A.coset_representative(A.gen(0)) == A.lift_to_dual(A.gen(0))
+    assert A.coset_representative(A.gen(0)) == A.lift(A.gen(0))
     with pytest.raises(ValueError):
         A.overlattice_from_isotropic_subgroup([A.gen(0)])
 
@@ -160,14 +158,13 @@ def test_finite_discriminant_form_orthogonal_group_matches_torsion_doctest():
     OD = D.orthogonal_group()
 
     assert OD.order() == 6
-    assert D.isometry_group(kind="quadratic").order() == 6
+    assert D.orthogonal_group(kind="quadratic").order() == 6
     assert D.order() == 8
     assert D.is_finite()
     assert D.list() == D.elements()
     assert D.random_element() in D.elements()
     assert D.exponent() == 2
-    assert D.zero() == D.identity()
-    assert D.invariant_factors() == (2, 2, 2)
+    assert D.invariants() == (2, 2, 2)
     assert D.cover() is D
     assert D.relations().cardinality() == 1
     assert D.smith_form_gens() == D.gens()
@@ -176,9 +173,9 @@ def test_finite_discriminant_form_orthogonal_group_matches_torsion_doctest():
     assert D.gens_to_smith() == identity_matrix(ZZ, 3)
     assert D.smith_to_gens() == identity_matrix(ZZ, 3)
     assert tuple(D.gens_vector(D.gen(0) + D.gen(2))) == (1, 0, 1)
-    assert tuple(D.coordinate_vector(D.gen(0) + D.gen(2))) == (1, 0, 1)
-    assert D.coordinates_in_smith_basis(D.gen(1)) == (0, 1, 0)
-    assert D.coordinates_in_generators(D.gen(1)) == (0, 1, 0)
+    assert tuple(D.gens_vector(D.gen(0) + D.gen(2))) == (1, 0, 1)
+    assert D.coordinates(D.gen(1)) == (0, 1, 0)
+    assert D.coordinates(D.gen(1)) == (0, 1, 0)
     assert D.generator_relations() == matrix.diagonal(ZZ, D.invariants())
     assert D.projection(D.lift(D.gen(1))) == D.gen(1)
     assert D.basis_from_generators(D.gens()) == D.gens()
@@ -248,21 +245,20 @@ def test_discriminant_group_additive_abelian_group_api_matches_fgp_surface():
     assert A.order() == A.cardinality() == 20
     assert A.exponent() == 10
     assert not A.is_cyclic()
-    assert A.zero() == A.identity()
     assert A.generator_orders() == (2, 10)
-    assert A.invariant_factors() == (2, 10)
+    assert A.invariants() == (2, 10)
     assert A.elementary_divisors() == (2, 2, 5)
     assert A.rank_p(2) == 2
-    assert A.length_p(5) == 1
-    assert sorted(part.invariants() for part in A.primary_parts()) == [(2, 2), (5,)]
-    assert A.p_primary_part(5).invariants() == (5,)
+    assert A.rank_p(5) == 1
+    assert sorted(part.invariants() for part in A.primary_decomposition()) == [(2, 2), (5,)]
+    assert A.primary_part(5).invariants() == (5,)
     assert A.coordinates(x) == (1, 3)
     assert A.discrete_log(x) == (1, 3)
     assert A.discrete_exp((1, 3)) == x
     assert A.subgroup_generated_by([2 * A.gen(1)]).cardinality() == 5
-    assert A.from_generators([2 * A.gen(1)]).cardinality() == 5
-    assert A.subgroup([2 * A.gen(1)]).cardinality() == 5
-    assert A.contains_subgroup(A.subgroup([2 * A.gen(1)]))
+    assert A.subgroup_generated_by([2 * A.gen(1)]).cardinality() == 5
+    assert A.subgroup_generated_by([2 * A.gen(1)]).cardinality() == 5
+    assert A.contains_subgroup(A.subgroup_generated_by([2 * A.gen(1)]))
     assert A.torsion_subgroup() is A
 
 
@@ -271,7 +267,7 @@ def test_discriminant_action_inverse_image_matches_fgp_morphism_doctest():
     D = lc.TorsionQuadraticForm(matrix(QQ, 1, 1, [QQ(1) / 4]))
     g = D.gen(0)
     doubling = D.hom([2 * g])
-    image = D.subgroup([2 * g])
+    image = D.subgroup_generated_by([2 * g])
 
     assert doubling.kernel().cardinality() == 2
     assert doubling.image() == image
@@ -279,7 +275,7 @@ def test_discriminant_action_inverse_image_matches_fgp_morphism_doctest():
     assert doubling.lift(2 * g) == g
     with pytest.raises(ValueError):
         doubling.lift(g)
-    assert doubling.inverse_image(D.subgroup([])).cardinality() == 2
+    assert doubling.inverse_image(D.subgroup_generated_by([])).cardinality() == 2
     assert doubling.inverse_image(image).cardinality() == 4
 
 
@@ -288,14 +284,13 @@ def test_discriminant_form_subgroup_source_and_action_api_is_bound():
     L = lc.Lattice(matrix(ZZ, 1, 1, [4]))
     D = L.discriminant_group()
     g = D.gen(0)
-    H = D.subgroup([2 * g])
-    Z = D.subgroup([])
+    H = D.subgroup_generated_by([2 * g])
+    Z = D.subgroup_generated_by([])
 
     assert D.cover_lattice() == L.dual()
     assert D.cover() == L.dual()
     assert D.relation_lattice() == L
-    assert D.lift_to_dual(g) == D.lift(g)
-    assert D.project_from_dual(D.lift_to_dual(g)) == g
+    assert D.projection(D.lift(g)) == g
     assert D.coset_representative(g) == D.lift(g)
     assert D.is_isotropic_element(D.zero())
     assert not D.is_isotropic_element(2 * g)
@@ -303,7 +298,6 @@ def test_discriminant_form_subgroup_source_and_action_api_is_bound():
     assert not D.is_isotropic_subgroup(H)
     assert D.is_anisotropic()
     assert D.orthogonal(H).cardinality() == 2
-    assert D.orthogonal_complement(H) == D.orthogonal(H)
     # orthogonal quotient by the trivial subgroup is A itself -- as a FORM, not merely
     # a group of the same invariants.
     assert as_finite_quadratic_form(D.orthogonal_quotient(Z)).is_isomorphic(
@@ -317,9 +311,9 @@ def test_discriminant_form_subgroup_source_and_action_api_is_bound():
     assert D.discriminant_form_of_overlattice(H).invariants() == ()
 
     negation = L.isometry_group(gens=[matrix(ZZ, 1, 1, [-1])])[0]
-    action = D.action_of_lattice_isometry(negation)
+    action = D.action_of_isometry(negation)
     assert action(g) == -g
-    image = D.image_of_lattice_group([negation])
+    image = D.action_of_lattice_group([negation])
     assert image.order() == 2
     assert D.orbit(g, group=image) == frozenset({g, -g})
 
@@ -332,8 +326,6 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
 
     assert quotient.cover_lattice() == A2_dual
     assert quotient.relation_lattice() == A2
-    assert quotient.cover() == quotient.V()
-    assert quotient.relations() == quotient.W()
     assert quotient.invariants() == A2.discriminant_group().invariants()
     assert quotient.cardinality() == A2.discriminant_group().cardinality()
     assert quotient.underlying_abelian_group() is quotient
@@ -346,12 +338,12 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     assert all(action.is_automorphism() for action in quotient_automorphisms)
     assert quotient.generator_orders() == (3,)
     assert quotient.rank_p(3) == 1
-    assert quotient.length_p(3) == 1
+    assert quotient.rank_p(3) == 1
     assert quotient.torsion_subgroup() is quotient
     assert quotient.projection(quotient.lift(quotient.gen(0))) == quotient.gen(0)
     assert quotient.quotient_map()(quotient.lift(quotient.gen(0))) == quotient.gen(0)
     assert quotient.coset_representative(quotient.gen(0)) == quotient.lift(quotient.gen(0))
-    assert quotient.preimage_lattice(quotient.subgroup([quotient.gen(0)])) == A2_dual
+    assert quotient.preimage_lattice(quotient.subgroup_generated_by([quotient.gen(0)])) == A2_dual
     assert quotient.preimage_lattice([]) == A2
     assert A2_dual.finite_quotient(A2).invariants() == (3,)
     assert A2_dual.quotient_map_to(A2)(quotient.lift(quotient.gen(0))) == quotient.gen(0)
@@ -360,25 +352,25 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     assert quotient.random_element() in quotient.elements()
     assert quotient.smith_form_gens() == quotient.gens()
     assert quotient.smith_form_gen(0) == quotient.gen(0)
-    assert quotient.smith_generators() == quotient.gens()
+    assert quotient.smith_form_gens() == quotient.gens()
     assert quotient.linear_combination_of_smith_form_gens([1]) == quotient.gen(0)
     assert quotient.gens_to_smith() == identity_matrix(ZZ, 1)
     assert quotient.smith_to_gens() == identity_matrix(ZZ, 1)
     assert tuple(quotient.gens_vector(quotient.gen(0))) == (1,)
-    assert tuple(quotient.coordinate_vector(quotient.gen(0))) == (1,)
-    assert quotient.coordinates_in_smith_basis(quotient.gen(0)) == (1,)
-    assert quotient.coordinates_in_generators(quotient.gen(0)) == (1,)
+    assert tuple(quotient.gens_vector(quotient.gen(0))) == (1,)
+    assert quotient.coordinates(quotient.gen(0)) == (1,)
+    assert quotient.coordinates(quotient.gen(0)) == (1,)
     assert quotient.generator_relations() == matrix(ZZ, 1, 1, [3])
-    assert quotient.invariant_factors() == (3,)
+    assert quotient.invariants() == (3,)
     assert quotient.elementary_divisors() == (3,)
-    full_subgroup = quotient.subgroup([quotient.gen(0)])
+    full_subgroup = quotient.subgroup_generated_by([quotient.gen(0)])
     assert full_subgroup.cardinality() == 3
     assert quotient.contains_subgroup(full_subgroup)
     assert quotient.quotient_group(full_subgroup).invariants() == ()
     assert quotient.primary_part(3).cardinality() == 3
     assert quotient.p_torsion(3).cardinality() == 3
-    assert quotient.primary_parts()[0].cardinality() == 3
-    assert len(quotient.all_subgroups()) == 2
+    assert quotient.primary_decomposition()[0].cardinality() == 3
+    assert len(quotient.all_submodules()) == 2
     assert quotient.basis_from_generators(quotient.gens()) == quotient.gens()
     assert len(quotient.cosets(full_subgroup)) == 1
     with pytest.raises(ValueError):
@@ -410,7 +402,7 @@ def test_lattice_morphism_lift_and_image_generators_are_bound():
     assert_matrix_equal(nonprimitive_embedding.image().gram_matrix(), norm_eight.gram_matrix())
     with pytest.raises(ValueError):
         norm_eight.embedding(matrix(ZZ, 1, 1, [2]), codomain=norm_two, primitive=True)
-    assert A2.discriminant_group().smith_generators() == A2.discriminant_group().gens()
+    assert A2.discriminant_group().smith_form_gens() == A2.discriminant_group().gens()
 
 
 def test_lattice_similarity_is_scalar_form_preserving_not_an_isometry():
@@ -429,8 +421,8 @@ def test_discriminant_quotient_is_not_orthogonal_quotient_alias():
     # Reference: FGP quotient API is ordinary finite-group quotient; orthogonal quotient is separate.
     L = lc.Lattice(Matrix(ZZ, 2, 2, [4, 2, 2, -4]))
     A = L.discriminant_group()
-    H = A.subgroup([2 * A.gen(1)])
-    quotient = A.quotient(H)
+    H = A.subgroup_generated_by([2 * A.gen(1)])
+    quotient = A.quotient_group(H)
 
     assert H.cardinality() == 5
     assert quotient.relations() == H
@@ -447,28 +439,28 @@ def test_discriminant_quotient_is_not_orthogonal_quotient_alias():
     assert all(action.is_automorphism() for action in quotient_automorphisms)
     assert quotient.generator_orders() == (2, 2)
     assert quotient.rank_p(2) == 2
-    assert quotient.length_p(2) == 2
+    assert quotient.rank_p(2) == 2
     assert quotient.smith_form_gens() == quotient.gens()
     assert quotient.smith_form_gen(1) == quotient.gen(1)
     assert quotient.linear_combination_of_smith_form_gens((1, 1)) == quotient.gen(0) + quotient.gen(1)
     assert quotient.gens_to_smith() == identity_matrix(ZZ, 2)
     assert quotient.smith_to_gens() == identity_matrix(ZZ, 2)
     assert tuple(quotient.gens_vector(quotient.gen(0) + quotient.gen(1))) == (1, 1)
-    assert tuple(quotient.coordinate_vector(quotient.gen(0) + quotient.gen(1))) == (1, 1)
-    assert quotient.coordinates_in_smith_basis(quotient.gen(1)) == (0, 1)
-    assert quotient.coordinates_in_generators(quotient.gen(1)) == (0, 1)
+    assert tuple(quotient.gens_vector(quotient.gen(0) + quotient.gen(1))) == (1, 1)
+    assert quotient.coordinates(quotient.gen(1)) == (0, 1)
+    assert quotient.coordinates(quotient.gen(1)) == (0, 1)
     assert quotient.generator_relations() == matrix.diagonal(ZZ, quotient.invariants())
     assert quotient.projection(quotient.lift(quotient.gen(0))) == quotient.gen(0)
-    quotient_line = quotient.subgroup([quotient.gen(0)])
+    quotient_line = quotient.subgroup_generated_by([quotient.gen(0)])
     assert quotient.contains_subgroup(quotient_line)
     assert quotient.quotient_group(quotient_line).invariants() == (2,)
     assert len(quotient.cosets(quotient_line)) == 2
     assert quotient.primary_part(2).cardinality() == 4
     assert quotient.p_torsion(2).cardinality() == 4
-    assert len(quotient.all_subgroups()) == 5
+    assert len(quotient.all_submodules()) == 5
     assert quotient.basis_from_generators(quotient.gens()) == quotient.gens()
     assert quotient.torsion_subgroup() is quotient
-    assert as_finite_quadratic_form(A.orthogonal_quotient(A.subgroup([]))).is_isomorphic(
+    assert as_finite_quadratic_form(A.orthogonal_quotient(A.subgroup_generated_by([]))).is_isomorphic(
         as_finite_quadratic_form(A), kind="quadratic"
     )
 
@@ -488,9 +480,9 @@ def test_discriminant_group_isomorphism_kind_distinguishes_group_bilinear_and_qu
     positive = lc.Lattice(matrix(ZZ, 1, 1, [2])).discriminant_group()
     negative = lc.Lattice(matrix(ZZ, 1, 1, [-2])).discriminant_group()
 
-    assert positive.is_isomorphic_to(negative, kind="group")
-    assert positive.is_isomorphic_to(negative, kind="bilinear")
-    assert not positive.is_isomorphic_to(negative, kind="quadratic")
+    assert positive.is_isomorphic(negative, kind="group")
+    assert positive.is_isomorphic(negative, kind="bilinear")
+    assert not positive.is_isomorphic(negative, kind="quadratic")
     assert positive.isometry_to(positive, kind="quadratic").is_identity()
 
 
@@ -506,8 +498,8 @@ def test_finite_quadratic_form_has_additive_group_generation_aliases():
     # Reference: additive abelian wrapper exposes from_generators and torsion subgroup helpers.
     D = lc.TorsionQuadraticForm(matrix(QQ, 1, 1, [QQ(1) / 5]))
 
-    assert D.from_generators([D.gen(0)]).cardinality() == D.cardinality()
-    assert D.from_generators([2 * D.gen(0)]).cardinality() == D.cardinality()
+    assert D.subgroup_generated_by([D.gen(0)]).cardinality() == D.cardinality()
+    assert D.subgroup_generated_by([2 * D.gen(0)]).cardinality() == D.cardinality()
     assert D.torsion_subgroup() is D
 
 
@@ -521,7 +513,6 @@ def test_finite_quadratic_form_drops_trivial_presentation_factors():
     assert D.gram_matrix_quadratic() == expected.gram_matrix_quadratic()
     assert D.is_nondegenerate()
     assert D.radical().cardinality() == 1
-    assert D.character_group() is D
     dual_pairing = D.pontryagin_dual()
     assert all(dual_pairing[x](y) == D.b(x, y) for x in D.elements() for y in D.elements())
     assert D.pontryagin_dual()[D.gen(0)](D.gen(0)) == QQ(1) / 2
@@ -532,21 +523,20 @@ def test_finite_quadratic_form_drops_trivial_presentation_factors():
 def test_finite_quadratic_form_promotes_torsion_quadratic_module_operations():
     # Reference: TorsionQuadraticModule finite form methods without source-lattice metadata.
     D = lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 2, QQ(1) / 3]))
-    H = D.subgroup([D.gen(0)])
+    H = D.subgroup_generated_by([D.gen(0)])
 
     assert D.value_module() == QmodnZ(QQ(1)) and D.value_module().n == 1
     assert D.value_module_qf() == QmodnZ(QQ(2)) and D.value_module_qf().n == 2
     assert D.primary_part(2).invariants() == (2,)
-    assert D.p_primary_part(3).invariants() == (3,)
-    assert sorted(part.invariants() for part in D.primary_parts()) == [(2,), (3,)]
-    assert D.all_subgroups() == D.all_submodules()
+    assert D.primary_part(3).invariants() == (3,)
+    assert sorted(part.invariants() for part in D.primary_decomposition()) == [(2,), (3,)]
     assert D.contains_subgroup(H)
     assert D.quotient_group(H).invariants() == (3,)
     assert len(D.cosets(H)) == 3
-    assert D.orthogonal_complement(H).cardinality() == 3
+    assert D.orthogonal(H).cardinality() == 3
     assert D.restricted_form(H) == matrix(QQ, 1, 1, [QQ(1) / 2])
     assert D.normal_form() == D.normal_form(partial=True)
-    assert D.is_isomorphic_to(lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 3, QQ(1) / 2])))
+    assert D.is_isomorphic(lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 3, QQ(1) / 2])))
     assert D.twist(2).gram_matrix_bilinear() == matrix(QQ, 1, 1, [QQ(2) / 3])
     with pytest.raises(ValueError):
         D.discrete_exp((1,))
@@ -557,7 +547,7 @@ def test_finite_quadratic_form_normal_form_uses_generator_changes_not_only_permu
     D = lc.TorsionQuadraticForm(matrix(QQ, 1, 1, [QQ(1) / 5]))
     D_changed_generator = lc.TorsionQuadraticForm(matrix(QQ, 1, 1, [QQ(9) / 5]))
 
-    assert D.is_isomorphic_to(D_changed_generator)
+    assert D.is_isomorphic(D_changed_generator)
     assert D.normal_form() == D_changed_generator.normal_form()
     normal_form, change = D_changed_generator.normal_form(return_isometry=True)
     assert normal_form == D.normal_form()
@@ -569,9 +559,9 @@ def test_finite_quadratic_form_bilinear_isomorphism_uses_generator_changes():
     D = lc.TorsionQuadraticForm(matrix(QQ, 1, 1, [QQ(1) / 5]))
     bilinear_change = lc.TorsionQuadraticForm(matrix(QQ, 1, 1, [QQ(4) / 5]))
 
-    assert D.is_isomorphic_to(bilinear_change, kind="group")
-    assert D.is_isomorphic_to(bilinear_change, kind="bilinear")
-    assert not D.is_isomorphic_to(bilinear_change, kind="quadratic")
+    assert D.is_isomorphic(bilinear_change, kind="group")
+    assert D.is_isomorphic(bilinear_change, kind="bilinear")
+    assert not D.is_isomorphic(bilinear_change, kind="quadratic")
 
 
 def test_discriminant_group_bilinear_orthogonal_group_can_be_larger_than_quadratic():
@@ -586,7 +576,7 @@ def test_orthogonal_quotient_keeps_smith_invariants_not_only_cardinality():
     # Reference: gluing uses the finite quadratic module H^perp/H, with Smith data.
     L = lc.Lattice(matrix.diagonal(ZZ, [2, 2, 2, 2]))
     A = L.discriminant_group()
-    H = A.subgroup([A.discrete_exp((1, 1, 1, 1))])
+    H = A.subgroup_generated_by([A.discrete_exp((1, 1, 1, 1))])
     quotient = A.orthogonal_quotient(H)
     first, second = quotient.gens()
 
@@ -604,7 +594,7 @@ def test_orthogonal_quotient_keeps_smith_invariants_not_only_cardinality():
     assert quotient.generator_orders() == (2, 2)
     assert quotient.elementary_divisors() == (2, 2)
     assert quotient.rank_p(2) == 2
-    assert quotient.length_p(2) == 2
+    assert quotient.rank_p(2) == 2
     assert quotient.is_finite()
     assert quotient.projection(quotient.lift(first)) == first
     assert quotient.discrete_exp((1, 0)) == first
@@ -612,18 +602,18 @@ def test_orthogonal_quotient_keeps_smith_invariants_not_only_cardinality():
     assert quotient.gens_to_smith() == identity_matrix(ZZ, 2)
     assert quotient.smith_to_gens() == identity_matrix(ZZ, 2)
     assert tuple(quotient.gens_vector(first)) == (1, 0)
-    assert tuple(quotient.coordinate_vector(second)) == (0, 1)
-    assert quotient.coordinates_in_smith_basis(first) == (1, 0)
-    assert quotient.coordinates_in_generators(second) == (0, 1)
+    assert tuple(quotient.gens_vector(second)) == (0, 1)
+    assert quotient.coordinates(first) == (1, 0)
+    assert quotient.coordinates(second) == (0, 1)
     assert quotient.generator_relations() == matrix.diagonal(ZZ, quotient.invariants())
     assert quotient.coordinates(second) == (0, 1)
-    line = quotient.subgroup([first])
+    line = quotient.subgroup_generated_by([first])
     assert quotient.contains_subgroup(line)
     assert quotient.quotient_group(line).invariants() == (2,)
     assert len(quotient.cosets(line)) == 2
     assert quotient.primary_part(2).cardinality() == 4
     assert quotient.p_torsion(2).cardinality() == 4
-    assert len(quotient.all_subgroups()) == 5
+    assert len(quotient.all_submodules()) == 5
     assert quotient.basis_from_generators(quotient.gens()) == quotient.gens()
     assert quotient.torsion_subgroup() is quotient
     assert quotient.q(first) == 1
@@ -639,19 +629,18 @@ def test_orthogonal_quotient_keeps_smith_invariants_not_only_cardinality():
         quotient.gram_matrix_quadratic(),
     )
     with pytest.raises(ValueError):
-        A.orthogonal_quotient(A.subgroup([A.gen(0)]))
+        A.orthogonal_quotient(A.subgroup_generated_by([A.gen(0)]))
     with pytest.raises(ValueError):
-        A.subquotient_form(H, A.subgroup([]))
+        A.subquotient_form(H, A.subgroup_generated_by([]))
 
 
 def test_discriminant_group_enumerates_all_finite_subgroups():
     # Reference: subgroup/all_subgroups should surface the finite abelian group API.
     A = lc.Lattice(matrix.diagonal(ZZ, [2, 2, 2])).discriminant_group()
 
-    subgroup_orders = sorted(subgroup.cardinality() for subgroup in A.all_subgroups())
+    subgroup_orders = sorted(subgroup.cardinality() for subgroup in A.all_submodules())
 
     assert subgroup_orders == [1] + [2] * 7 + [4] * 7 + [8]
-    assert A.subgroups() == A.all_subgroups()
 
 
 def test_pushforward_and_pullback_forms_compute_transported_pairings():
@@ -688,9 +677,9 @@ def test_odd_discriminant_form_remains_usable_while_odd_genus_is_unsupported():
     assert D.value_module() == QmodnZ(QQ(1)) and D.value_module().n == 1
     assert D.value_module_qf() == QmodnZ(QQ(1)) and D.value_module_qf().n == 1
     assert D.gen(0).b(D.gen(0)) == QQ(1) / 3
-    assert D.inner_product(D.gen(0), D.gen(0)) == QQ(1) / 3
+    assert D.b(D.gen(0), D.gen(0)) == QQ(1) / 3
     assert D.primary_part(3).invariants() == (3,)
-    assert D.subgroup([D.gen(0)]).cardinality() == 3
+    assert D.subgroup_generated_by([D.gen(0)]).cardinality() == 3
     with pytest.raises(NotImplementedError):
         D.is_genus((1, 0), even=False)
     with pytest.raises(NotImplementedError):

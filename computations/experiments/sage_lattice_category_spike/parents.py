@@ -489,7 +489,7 @@ class SyntheticLattice(Parent):
             )
             if isotropic_element is None:
                 return lattice
-            subgroup = discriminant_group.submodule_with_gens([isotropic_element])
+            subgroup = discriminant_group.subgroup_generated_by([isotropic_element])
             if not (subgroup.is_quadratic_isotropic()):
                 raise ValueError(f"isotropic element generated a non-isotropic subgroup: {isotropic_element}")
             lattice = discriminant_group.overlattice_from_isotropic_subgroup(subgroup, label=label)

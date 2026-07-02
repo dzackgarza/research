@@ -231,8 +231,8 @@ def test_discriminant_group_is_owned_smith_quotient_with_forms():
     assert D.gen(0) + 2 * D.gen(0) == D([0])
     assert D.lift(D.gen(0)).q() == QQ(2) / 3
     assert D.projection(D.lift(D.gen(0))) == D.gen(0)
-    assert D.inner_product(D.gen(0), D.gen(0)) == QQ(2) / 3
-    assert D.quadratic_product(D.gen(0)) == QQ(2) / 3
+    assert D.b(D.gen(0), D.gen(0)) == QQ(2) / 3
+    assert D.q(D.gen(0)) == QQ(2) / 3
     assert D.value_module() == QmodnZ(QQ(1)) and D.value_module().n == 1
     assert D.value_module_qf() == QmodnZ(QQ(2)) and D.value_module_qf().n == 2
     assert D.is_nondegenerate()
@@ -287,7 +287,7 @@ def test_discriminant_subgroups_actions_and_overlattice_construction_are_owned()
     L = Lattice(matrix(ZZ, 1, 1, [4]), label="<4>")
     D = L.discriminant_group()
     g = D.gen(0)
-    H = D.submodule_with_gens([2 * g])
+    H = D.subgroup_generated_by([2 * g])
 
     assert H.cardinality() == 2
     assert H.is_bilinear_isotropic()
