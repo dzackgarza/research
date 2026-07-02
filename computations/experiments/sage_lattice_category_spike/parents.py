@@ -46,6 +46,10 @@ def category_for(base_ring, gram):
         category = category.Definite().NegativeDefinite()
     elif pos and neg:
         category = category.Indefinite()
+        # Hyperbolic: signature (1, rank-1), rank >= 2 (section 1.3). Such a form
+        # is nondegenerate (pos + neg == rank), so Nondegenerate is already set.
+        if pos == 1 and neg == gram.nrows() - 1 and gram.nrows() >= 2:
+            category = category.Hyperbolic()
     return category
 
 
