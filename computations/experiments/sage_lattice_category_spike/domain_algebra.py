@@ -1,10 +1,21 @@
 r"""Domain algebra for the synthetic lattice category (V2 declaration layer).
 
 This module IS the typed language of the spike: vocabulary (the nouns, as
-structural ``Protocol`` contracts), grammar (the constructor family — the only
-entry into the language), transitions (each operation declared on the narrowest
-protocol where the mathematics defines it), and boundary codecs (the opaque
-aliases below, the only places raw Sage data crosses a domain signature).
+real typed classes), grammar (the constructor family — the only entry into the
+language), transitions (each operation declared on the narrowest class where
+the mathematics defines it), and boundary codecs (the parsed primitives below,
+the only places raw Sage data crosses a domain signature).
+
+SINGLE-SOURCE DESIGN (probe-verified 2026-07-02): the lattice-side classes are
+CARRIERS — at T1 each is installed as the ``ParentMethods`` of its category or
+axiom class, so the runtime-injected surface and this typed language are ONE
+artifact (no parallel mirror to drift). Sage copies (does not inherit) carrier
+attributes into the dynamic parent class, hence narrowing below stays
+assertion-shaped rather than isinstance. The morphism/group/discriminant/genus
+classes are ordinary ABC-style bases the implementations INHERIT nominally.
+Carrier inheritance in this file is static structure only; at runtime each
+category injects exactly its own delta. Every body fails loud — a silent
+``...`` body would inject as a None-returning method, a catastrophic fail-open.
 
 Rules of the language (authoritative source: the declaration-layer plan record
 ``lattice-category-mathematical-vocabulary-and-subcategory-tree-declaration-layer``
@@ -21,8 +32,11 @@ in the agent-memory vault):
   The ONLY sanctioned static downcasts are the ``in_*`` narrowing functions at
   the bottom of this module, each assertion-shaped.
 - No Sage import appears in this module; Sage types cross domain signatures
-  only through the opaque boundary aliases, and at runtime only at declared
-  seams and ephemeral-engine sites.
+  only through the parsed primitives and raw boundary aliases, and at runtime
+  only at declared seams and ephemeral-engine sites.
+- ``ValueModule`` stays a Protocol deliberately: it types an EXTERNAL object
+  (Sage's QmodnZ) that we neither own nor subclass — the one legitimate
+  structural-typing use.
 
 This module contains no logic. Grammar functions raise ``NotImplementedError``
 until the parity plan's T1 realizes them.
@@ -126,630 +140,874 @@ CartanType: TypeAlias = tuple[Literal["A", "D", "E"], int]
 class ValueModule(Protocol):
     """The form-value object K/(level*R): QQ/ZZ (bilinear) or QQ/2ZZ (even quadratic)."""
 
-    def level(self) -> ExactScalar: ...
+    def level(self) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def __call__(self, value: ExactScalar) -> ExactScalar: ...
+    def __call__(self, value: ExactScalar) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
 # ---------------------------------------------------------------------------
 # Elements
 # ---------------------------------------------------------------------------
 
-class LatticeElement(Protocol):
-    def parent(self) -> "Lattice": ...
+class LatticeElement:
+    def parent(self) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def coefficient_vector(self) -> Sequence[ExactScalar]: ...
+    def coefficient_vector(self) -> Sequence[ExactScalar]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def b(self, other: "LatticeElement") -> ExactScalar: ...
+    def b(self, other: "LatticeElement") -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def q(self) -> ExactScalar: ...
+    def q(self) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
-class DiscriminantFormElement(Protocol):
-    def parent(self) -> "DiscriminantForm": ...
+class DiscriminantFormElement:
+    def parent(self) -> "DiscriminantForm":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def coefficient_vector(self) -> Sequence[ExactScalar]: ...
+    def coefficient_vector(self) -> Sequence[ExactScalar]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def order(self) -> int: ...
+    def order(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
 # ---------------------------------------------------------------------------
 # Lattices: the base vocabulary (defined for EVERY lattice, degenerate included)
 # ---------------------------------------------------------------------------
 
-class Lattice(Protocol):
+class Lattice:
     """A based free R-module (R, G) with symmetric bilinear form; possibly degenerate."""
 
     # structural
-    def rank(self) -> int: ...
+    def rank(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def gram_matrix(self) -> GramMatrix: ...
+    def gram_matrix(self) -> GramMatrix:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def base_ring(self) -> BaseRing: ...
+    def base_ring(self) -> BaseRing:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def b(self, left: LatticeElement, right: LatticeElement) -> ExactScalar: ...
+    def b(self, left: LatticeElement, right: LatticeElement) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def q(self, element: LatticeElement) -> ExactScalar: ...
+    def q(self, element: LatticeElement) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def basis(self) -> tuple[LatticeElement, ...]: ...
+    def basis(self) -> tuple[LatticeElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def gens(self) -> tuple[LatticeElement, ...]: ...
+    def gens(self) -> tuple[LatticeElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def gen(self, i: int) -> LatticeElement: ...
+    def gen(self, i: int) -> LatticeElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def ngens(self) -> int: ...
+    def ngens(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def zero(self) -> LatticeElement: ...
+    def zero(self) -> LatticeElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def determinant(self) -> ExactScalar: ...
+    def determinant(self) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def discriminant(self) -> ExactScalar: ...
+    def discriminant(self) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def absolute_discriminant(self) -> ExactScalar: ...
+    def absolute_discriminant(self) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def signature_pair(self) -> SignaturePair: ...
+    def signature_pair(self) -> SignaturePair:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def signature(self) -> int: ...
+    def signature(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def denominator(self) -> ExactScalar: ...
+    def denominator(self) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def clear_denominators(self) -> "Lattice": ...
+    def clear_denominators(self) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     # predicates (total; used by the narrowing functions below)
-    def is_integral(self) -> bool: ...
+    def is_integral(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_even(self) -> bool: ...
+    def is_even(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_unimodular(self) -> bool: ...
+    def is_unimodular(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_self_dual(self) -> bool: ...
+    def is_self_dual(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_degenerate(self) -> bool: ...
+    def is_degenerate(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_nondegenerate(self) -> bool: ...
+    def is_nondegenerate(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_definite(self) -> bool: ...
+    def is_definite(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_positive_definite(self) -> bool: ...
+    def is_positive_definite(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_negative_definite(self) -> bool: ...
+    def is_negative_definite(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_indefinite(self) -> bool: ...
+    def is_indefinite(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_hyperbolic(self) -> bool: ...
+    def is_hyperbolic(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     # radical theory (the functor that STAYS a lattice)
-    def radical(self) -> "Lattice": ...
+    def radical(self) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def radical_quotient(self) -> "NondegenerateLattice": ...
+    def radical_quotient(self) -> "NondegenerateLattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     # constructions
-    def twist(self, scalar: ExactScalar) -> "Lattice": ...
+    def twist(self, scalar: ExactScalar) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def scale(self, scalar: ExactScalar) -> "Lattice": ...
+    def scale(self, scalar: ExactScalar) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def direct_sum(self, other: "Lattice") -> "Lattice": ...
+    def direct_sum(self, other: "Lattice") -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def tensor_product(self, other: "Lattice") -> "Lattice": ...
+    def tensor_product(self, other: "Lattice") -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def rationalization(self) -> "Lattice": ...
+    def rationalization(self) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def base_extend(self, ring: BaseRing) -> "Lattice": ...
+    def base_extend(self, ring: BaseRing) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     # subobject algebra
-    def sublattice(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice": ...
+    def sublattice(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def fractional_sublattice(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice": ...
+    def fractional_sublattice(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def span(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice": ...
+    def span(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def span_of_basis(self, basis: Sequence[Sequence[ExactScalar]]) -> "Lattice": ...
+    def span_of_basis(self, basis: Sequence[Sequence[ExactScalar]]) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def sum(self, other: "Lattice") -> "Lattice": ...
+    def sum(self, other: "Lattice") -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def intersection(self, other: "Lattice") -> "Lattice": ...
+    def intersection(self, other: "Lattice") -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def saturation(self) -> "Lattice": ...
+    def saturation(self) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def primitive_closure(self, ambient: "Lattice") -> "Lattice": ...
+    def primitive_closure(self, ambient: "Lattice") -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def index_in(self, other: "Lattice") -> ExactScalar: ...
+    def index_in(self, other: "Lattice") -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def index_in_saturation(self) -> ExactScalar: ...
+    def index_in_saturation(self) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_submodule(self, other: "Lattice") -> bool: ...
+    def is_submodule(self, other: "Lattice") -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_primitive(self, sublattice: "Lattice") -> bool: ...
+    def is_primitive(self, sublattice: "Lattice") -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def overlattice(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice": ...
+    def overlattice(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def orthogonal_complement(self, other: "Lattice") -> "Lattice": ...
+    def orthogonal_complement(self, other: "Lattice") -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def zero_lattice(self) -> "Lattice": ...
+    def zero_lattice(self) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     # quotients (the functor that LEAVES: plain finite abelian quotient, no form axioms)
-    def finite_quotient(self, sublattice: "Lattice") -> "DiscriminantForm": ...
+    def finite_quotient(self, sublattice: "Lattice") -> "DiscriminantForm":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     # morphisms
-    def Hom(self, codomain: "Lattice") -> "LatticeHomset": ...
+    def Hom(self, codomain: "Lattice") -> "LatticeHomset":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def hom(self, matrix: RawMorphismMatrix, codomain: "Lattice") -> "LatticeMorphism": ...
+    def hom(self, matrix: RawMorphismMatrix, codomain: "Lattice") -> "LatticeMorphism":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def embedding(
         self, matrix: RawMorphismMatrix, codomain: "Lattice", primitive: bool = False
-    ) -> "LatticeMorphism": ...
+    ) -> "LatticeMorphism":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def similarity(
         self, matrix: RawMorphismMatrix, codomain: "Lattice", scalar: ExactScalar
-    ) -> "LatticeSimilarity": ...
+    ) -> "LatticeSimilarity":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def reflection(self, vector: LatticeElement) -> "LatticeMorphism": ...
+    def reflection(self, vector: LatticeElement) -> "LatticeMorphism":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     # groups and isometry
-    def isometry_group(self) -> "IsometryGroup": ...
+    def isometry_group(self) -> "IsometryGroup":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_isometric(self, other: "Lattice") -> bool: ...
+    def is_isometric(self, other: "Lattice") -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
 # ---------------------------------------------------------------------------
 # Subcategory vocabularies (axis 1: definedness -> placement, as types)
 # ---------------------------------------------------------------------------
 
-class NondegenerateLattice(Lattice, Protocol):
-    def dual(self) -> "Lattice": ...
+class NondegenerateLattice(Lattice):
+    def dual(self) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def dual_inclusion(self) -> "LatticeMorphism": ...
+    def dual_inclusion(self) -> "LatticeMorphism":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
-class IntegralNondegenerateLattice(NondegenerateLattice, Protocol):
-    def discriminant_group(self, primary: int = 0) -> "SourcedDiscriminantForm": ...
+class IntegralNondegenerateLattice(NondegenerateLattice):
+    def discriminant_group(self, primary: int = 0) -> "SourcedDiscriminantForm":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def genus(self) -> "Genus": ...
+    def genus(self) -> "Genus":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def same_genus(self, other: "IntegralNondegenerateLattice") -> bool: ...
+    def same_genus(self, other: "IntegralNondegenerateLattice") -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def glue(self, isotropic_subgroup: "DiscriminantSubgroup") -> "Lattice": ...
+    def glue(self, isotropic_subgroup: "DiscriminantSubgroup") -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def maximal_overlattice(self, p: int | None = None) -> "Lattice": ...
+    def maximal_overlattice(self, p: int | None = None) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def local_modification(self, data: object, p: int) -> "Lattice": ...
+    def local_modification(self, data: object, p: int) -> "Lattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def embeds_primitively_in_unimodular(
         self, signature_pair: SignaturePair, even: bool = True
-    ) -> bool: ...
+    ) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def primitive_embedding_into_unimodular(
         self, signature_pair: SignaturePair, even: bool = True
-    ) -> "LatticeMorphism": ...
+    ) -> "LatticeMorphism":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
-class DefiniteLattice(Lattice, Protocol):
+class DefiniteLattice(Lattice):
     """Finite-enumeration vocabulary. Semantics for the negative-definite case
     are gap-ledger item 4 (ratified interactively), not fixed by this stub."""
 
-    def minimum(self) -> ExactScalar: ...
+    def minimum(self) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def maximum(self) -> ExactScalar: ...
+    def maximum(self) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def shortest_vector(self) -> LatticeElement: ...
+    def shortest_vector(self) -> LatticeElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def short_vectors(self, bound: int) -> Sequence[Sequence[LatticeElement]]: ...
+    def short_vectors(self, bound: int) -> Sequence[Sequence[LatticeElement]]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def enumerate_short_vectors(self, bound: int) -> Iterator[LatticeElement]: ...
+    def enumerate_short_vectors(self, bound: int) -> Iterator[LatticeElement]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def vectors_of_square(self, square: ExactScalar) -> tuple[LatticeElement, ...]: ...
+    def vectors_of_square(self, square: ExactScalar) -> tuple[LatticeElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def roots(self) -> tuple[LatticeElement, ...]: ...
+    def roots(self) -> tuple[LatticeElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def volume(self) -> ExactScalar: ...
-
-
-class PositiveDefiniteLattice(DefiniteLattice, Protocol):
-    def LLL(self) -> "PositiveDefiniteLattice": ...
-
-    def reduced_basis(self) -> tuple[LatticeElement, ...]: ...
-
-    def cryptographic(self) -> "CryptographicLattice": ...
+    def volume(self) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
-class CryptographicLattice(PositiveDefiniteLattice, Protocol):
+class PositiveDefiniteLattice(DefiniteLattice):
+    def LLL(self) -> "PositiveDefiniteLattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def reduced_basis(self) -> tuple[LatticeElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def cryptographic(self) -> "CryptographicLattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+
+class CryptographicLattice(PositiveDefiniteLattice):
     """Opt-in axiom (decision D1); never auto-attached."""
 
-    def BKZ(self, block_size: int = 10) -> "CryptographicLattice": ...
+    def BKZ(self, block_size: int = 10) -> "CryptographicLattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def HKZ(self) -> "CryptographicLattice": ...
+    def HKZ(self) -> "CryptographicLattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def babai(self, target: Sequence[ExactScalar]) -> LatticeElement: ...
+    def babai(self, target: Sequence[ExactScalar]) -> LatticeElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def approximate_closest_vector(self, target: Sequence[ExactScalar]) -> LatticeElement: ...
+    def approximate_closest_vector(self, target: Sequence[ExactScalar]) -> LatticeElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def closest_vector(self, target: Sequence[ExactScalar]) -> LatticeElement: ...
+    def closest_vector(self, target: Sequence[ExactScalar]) -> LatticeElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def enumerate_close_vectors(
         self, target: Sequence[ExactScalar], radius: ExactScalar
-    ) -> Sequence[LatticeElement]: ...
+    ) -> Sequence[LatticeElement]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def voronoi_cell(self, radius: int | None = None) -> object: ...
+    def voronoi_cell(self, radius: int | None = None) -> object:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def voronoi_relevant_vectors(self) -> tuple[LatticeElement, ...]: ...
+    def voronoi_relevant_vectors(self) -> tuple[LatticeElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def gaussian_heuristic(self) -> object: ...
+    def gaussian_heuristic(self) -> object:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def hadamard_ratio(self) -> object: ...
+    def hadamard_ratio(self) -> object:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def update_reduced_basis(self, vector: LatticeElement) -> "CryptographicLattice": ...
-
-
-class IndefiniteLattice(Lattice, Protocol):
-    def has_isotropic_vector(self) -> bool: ...
-
-    def isotropic_vectors(self, bound: int) -> tuple[LatticeElement, ...]: ...
-
-    def primitive_isotropic_vectors(self, bound: int) -> tuple[LatticeElement, ...]: ...
+    def update_reduced_basis(self, vector: LatticeElement) -> "CryptographicLattice":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
-class HyperbolicLattice(IndefiniteLattice, Protocol):
+class IndefiniteLattice(Lattice):
+    def has_isotropic_vector(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def isotropic_vectors(self, bound: int) -> tuple[LatticeElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def primitive_isotropic_vectors(self, bound: int) -> tuple[LatticeElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+
+class HyperbolicLattice(IndefiniteLattice):
     """Signature (1, rank-1). Names fixed now; engines are the Vinberg workstream."""
 
-    def weyl_group(self) -> "IsometrySubgroup": ...
+    def weyl_group(self) -> "IsometrySubgroup":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def fundamental_chamber(self) -> object: ...
+    def fundamental_chamber(self) -> object:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_reflective(self) -> bool: ...
+    def is_reflective(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def roots_up_to_height(self, height: ExactScalar) -> tuple[LatticeElement, ...]: ...
+    def roots_up_to_height(self, height: ExactScalar) -> tuple[LatticeElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def isotropic_rays(self) -> tuple[LatticeElement, ...]: ...
+    def isotropic_rays(self) -> tuple[LatticeElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
-class RootGeneratedLattice(Lattice, Protocol):
+class RootGeneratedLattice(Lattice):
     """Attached ONLY by construction provenance (the certificate), never detected."""
 
-    def cartan_type(self) -> CartanType: ...
+    def cartan_type(self) -> CartanType:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def irreducible_root_components(self) -> tuple["RootGeneratedLattice", ...]: ...
+    def irreducible_root_components(self) -> tuple["RootGeneratedLattice", ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
 # ---------------------------------------------------------------------------
 # Morphisms
 # ---------------------------------------------------------------------------
 
-class LatticeMorphism(Protocol):
+class LatticeMorphism:
     """Form-preserving by construction: A^T G_M A = G_L, enforced at creation."""
 
-    def domain(self) -> Lattice: ...
+    def domain(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def codomain(self) -> Lattice: ...
+    def codomain(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def matrix(self) -> MorphismMatrix: ...  # the matrix-space seam
+    def matrix(self) -> MorphismMatrix:  # the matrix-space seam
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def __call__(self, element: LatticeElement) -> LatticeElement: ...
+    def __call__(self, element: LatticeElement) -> LatticeElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_isometry(self) -> bool: ...
+    def is_isometry(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_injective(self) -> bool: ...
+    def is_injective(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_surjective(self) -> bool: ...
+    def is_surjective(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def kernel(self) -> Lattice: ...
+    def kernel(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def image(self) -> Lattice: ...
+    def image(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def cokernel(self) -> "DiscriminantForm": ...
-    """Finite-cokernel case only; the general case is a gap-ledger contract."""
+    def cokernel(self) -> "DiscriminantForm":
+        """Finite-cokernel case only; the general case is a gap-ledger contract."""
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def induced_map_on_discriminant_group(self) -> "DiscriminantAction": ...
+    def induced_map_on_discriminant_group(self) -> "DiscriminantAction":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
     """Per-element functor; defined when domain == codomain is integral nondegenerate."""
 
 
-class LatticeSimilarity(Protocol):
-    def domain(self) -> Lattice: ...
+class LatticeSimilarity:
+    def domain(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def codomain(self) -> Lattice: ...
+    def codomain(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def matrix(self) -> MorphismMatrix: ...
+    def matrix(self) -> MorphismMatrix:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def scalar(self) -> ExactScalar: ...
+    def scalar(self) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def __call__(self, element: LatticeElement) -> LatticeElement: ...
+    def __call__(self, element: LatticeElement) -> LatticeElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
-class LatticeHomset(Protocol):
-    def domain(self) -> Lattice: ...
+class LatticeHomset:
+    def domain(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def codomain(self) -> Lattice: ...
+    def codomain(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism: ...
+    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
 # ---------------------------------------------------------------------------
 # Isometry groups (O(L) exists for EVERY lattice; enumeration is per-leaf)
 # ---------------------------------------------------------------------------
 
-class IsometryGroup(Protocol):
+class IsometryGroup:
     """O(L). Membership/construction/is_finite are total; gens/order/iteration
     are contracts implemented exactly where the group is finite."""
 
-    def lattice(self) -> Lattice: ...
+    def lattice(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def __contains__(self, candidate: object) -> bool: ...
+    def __contains__(self, candidate: object) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism: ...
+    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def one(self) -> LatticeMorphism: ...
+    def one(self) -> LatticeMorphism:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_finite(self) -> bool: ...
+    def is_finite(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def gens(self) -> tuple[LatticeMorphism, ...]: ...
+    def gens(self) -> tuple[LatticeMorphism, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def order(self) -> int: ...
+    def order(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def __iter__(self) -> Iterator[LatticeMorphism]: ...
+    def __iter__(self) -> Iterator[LatticeMorphism]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def subgroup(self, generators: Sequence[LatticeMorphism]) -> "IsometrySubgroup": ...
+    def subgroup(self, generators: Sequence[LatticeMorphism]) -> "IsometrySubgroup":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def discriminant_action(self, isometry: LatticeMorphism) -> "DiscriminantAction": ...
+    def discriminant_action(self, isometry: LatticeMorphism) -> "DiscriminantAction":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def discriminant_representation(self) -> "DiscriminantOrthogonalGroup": ...
+    def discriminant_representation(self) -> "DiscriminantOrthogonalGroup":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def stable_kernel(self) -> "IsometrySubgroup": ...
+    def stable_kernel(self) -> "IsometrySubgroup":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     # seams (implemented exactly where finite with computed generators)
-    def as_matrix_group(self) -> object: ...
+    def as_matrix_group(self) -> object:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def as_permutation_group(self) -> object: ...
+    def as_permutation_group(self) -> object:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
-class IsometrySubgroup(Protocol):
+class IsometrySubgroup:
     """<gens> <= O(L): the ONLY home for caller-supplied generators. Answers
     subgroup questions only — no membership test, no O(L)-level claims."""
 
-    def lattice(self) -> Lattice: ...
+    def lattice(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def ambient(self) -> IsometryGroup: ...
+    def ambient(self) -> IsometryGroup:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def gens(self) -> tuple[LatticeMorphism, ...]: ...
+    def gens(self) -> tuple[LatticeMorphism, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def preserves(self, sublattice: Lattice) -> bool: ...
+    def preserves(self, sublattice: Lattice) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def discriminant_image(self) -> "DiscriminantOrthogonalGroup": ...
+    def discriminant_image(self) -> "DiscriminantOrthogonalGroup":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def order(self) -> int: ...  # implemented only when the ambient is finite
+    def order(self) -> int:  # implemented only when the ambient is finite
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def __iter__(self) -> Iterator[LatticeMorphism]: ...
+    def __iter__(self) -> Iterator[LatticeMorphism]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def as_matrix_group(self) -> object: ...
+    def as_matrix_group(self) -> object:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def as_permutation_group(self) -> object: ...
+    def as_permutation_group(self) -> object:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
-class DiscriminantOrthogonalGroup(Protocol):
+class DiscriminantOrthogonalGroup:
     """O(q) (or a subgroup of it): FINITE for every discriminant form, so the
     full group surface is total on this side."""
 
-    def discriminant_form(self) -> "DiscriminantForm": ...
+    def discriminant_form(self) -> "DiscriminantForm":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def gens(self) -> tuple["DiscriminantAction", ...]: ...
+    def gens(self) -> tuple["DiscriminantAction", ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def order(self) -> int: ...
+    def order(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def __contains__(self, candidate: object) -> bool: ...
+    def __contains__(self, candidate: object) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def __iter__(self) -> Iterator["DiscriminantAction"]: ...
+    def __iter__(self) -> Iterator["DiscriminantAction"]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def as_matrix_group(self) -> object: ...
+    def as_matrix_group(self) -> object:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def as_permutation_group(self) -> object: ...
+    def as_permutation_group(self) -> object:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
-class DiscriminantAction(Protocol):
-    def discriminant_form(self) -> "DiscriminantForm": ...
+class DiscriminantAction:
+    def discriminant_form(self) -> "DiscriminantForm":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def matrix(self) -> MorphismMatrix: ...
+    def matrix(self) -> MorphismMatrix:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def __call__(self, element: DiscriminantFormElement) -> DiscriminantFormElement: ...
+    def __call__(self, element: DiscriminantFormElement) -> DiscriminantFormElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_identity(self) -> bool: ...
+    def is_identity(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def inverse(self) -> "DiscriminantAction": ...
+    def inverse(self) -> "DiscriminantAction":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def preserves_bilinear_form(self) -> bool: ...
+    def preserves_bilinear_form(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def preserves_quadratic_form(self) -> bool: ...
+    def preserves_quadratic_form(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
 # ---------------------------------------------------------------------------
 # Discriminant forms (one consolidated parent; axioms select the vocabulary)
 # ---------------------------------------------------------------------------
 
-class DiscriminantForm(Protocol):
+class DiscriminantForm:
     """The finite-abelian-group surface (every finite quotient, form or not)."""
 
-    def invariants(self) -> tuple[int, ...]: ...
+    def invariants(self) -> tuple[int, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def elementary_divisors(self) -> tuple[int, ...]: ...
+    def elementary_divisors(self) -> tuple[int, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def cardinality(self) -> int: ...
+    def cardinality(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def order(self, element: DiscriminantFormElement | None = None) -> int: ...
+    def order(self, element: DiscriminantFormElement | None = None) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def exponent(self) -> int: ...
+    def exponent(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_cyclic(self) -> bool: ...
+    def is_cyclic(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def short_name(self) -> str: ...
+    def short_name(self) -> str:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def generator_orders(self) -> tuple[int, ...]: ...
+    def generator_orders(self) -> tuple[int, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def annihilator(self) -> ExactScalar: ...
+    def annihilator(self) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def gens(self) -> tuple[DiscriminantFormElement, ...]: ...
+    def gens(self) -> tuple[DiscriminantFormElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def gen(self, i: int) -> DiscriminantFormElement: ...
+    def gen(self, i: int) -> DiscriminantFormElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def ngens(self) -> int: ...
+    def ngens(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def smith_form_gens(self) -> tuple[DiscriminantFormElement, ...]: ...
+    def smith_form_gens(self) -> tuple[DiscriminantFormElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def zero(self) -> DiscriminantFormElement: ...
+    def zero(self) -> DiscriminantFormElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def elements(self) -> tuple[DiscriminantFormElement, ...]: ...
+    def elements(self) -> tuple[DiscriminantFormElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def discrete_exp(self, coefficients: Sequence[int]) -> DiscriminantFormElement: ...
+    def discrete_exp(self, coefficients: Sequence[int]) -> DiscriminantFormElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def discrete_log(self, element: DiscriminantFormElement) -> tuple[int, ...]: ...
+    def discrete_log(self, element: DiscriminantFormElement) -> tuple[int, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def subgroup_generated_by(
         self, generators: Sequence[DiscriminantFormElement]
-    ) -> "DiscriminantSubgroup": ...
+    ) -> "DiscriminantSubgroup":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def quotient_group(self, subgroup: "DiscriminantSubgroup") -> "DiscriminantForm": ...
+    def quotient_group(self, subgroup: "DiscriminantSubgroup") -> "DiscriminantForm":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def primary_part(self, p: int) -> "DiscriminantForm": ...
+    def primary_part(self, p: int) -> "DiscriminantForm":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def primary_decomposition(self) -> tuple["DiscriminantForm", ...]: ...
+    def primary_decomposition(self) -> tuple["DiscriminantForm", ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def all_submodules(self) -> tuple["DiscriminantSubgroup", ...]: ...
+    def all_submodules(self) -> tuple["DiscriminantSubgroup", ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def automorphism_group(self) -> DiscriminantOrthogonalGroup: ...
+    def automorphism_group(self) -> DiscriminantOrthogonalGroup:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def permutation_group(self) -> object: ...  # the GAP-backed group-theoretic seam
+    def permutation_group(self) -> object:  # the GAP-backed group-theoretic seam
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_isomorphic(self, other: "DiscriminantForm", kind: FormKind = "quadratic") -> bool: ...
+    def is_isomorphic(self, other: "DiscriminantForm", kind: FormKind = "quadratic") -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
-class BilinearDiscriminantForm(DiscriminantForm, Protocol):
+class BilinearDiscriminantForm(DiscriminantForm):
     def b(
         self, left: DiscriminantFormElement, right: DiscriminantFormElement
-    ) -> ExactScalar: ...
+    ) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def gram_matrix_bilinear(self) -> GramMatrix: ...
+    def gram_matrix_bilinear(self) -> GramMatrix:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def value_module(self) -> ValueModule: ...
+    def value_module(self) -> ValueModule:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def radical(self) -> "DiscriminantSubgroup": ...
+    def radical(self) -> "DiscriminantSubgroup":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_nondegenerate(self) -> bool: ...
+    def is_nondegenerate(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def orthogonal(self, subgroup: "DiscriminantSubgroup") -> "DiscriminantSubgroup": ...
+    def orthogonal(self, subgroup: "DiscriminantSubgroup") -> "DiscriminantSubgroup":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_isotropic_subgroup(self, subgroup: "DiscriminantSubgroup") -> bool: ...
+    def is_isotropic_subgroup(self, subgroup: "DiscriminantSubgroup") -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def isotropic_subgroups(self) -> tuple["DiscriminantSubgroup", ...]: ...
+    def isotropic_subgroups(self) -> tuple["DiscriminantSubgroup", ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_lagrangian(self, subgroup: "DiscriminantSubgroup") -> bool: ...
+    def is_lagrangian(self, subgroup: "DiscriminantSubgroup") -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def lagrangian_subgroups(self) -> tuple["DiscriminantSubgroup", ...]: ...
+    def lagrangian_subgroups(self) -> tuple["DiscriminantSubgroup", ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def metabolizer(self) -> "DiscriminantSubgroup": ...
+    def metabolizer(self) -> "DiscriminantSubgroup":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_metabolic(self) -> bool: ...
+    def is_metabolic(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_anisotropic(self) -> bool: ...
+    def is_anisotropic(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def maximal_isotropic_subgroups(self) -> tuple["DiscriminantSubgroup", ...]: ...
+    def maximal_isotropic_subgroups(self) -> tuple["DiscriminantSubgroup", ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def orthogonal_quotient(self, subgroup: "DiscriminantSubgroup") -> "DiscriminantForm": ...
+    def orthogonal_quotient(self, subgroup: "DiscriminantSubgroup") -> "DiscriminantForm":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def orthogonal_group(self) -> DiscriminantOrthogonalGroup: ...
-
-
-class QuadraticDiscriminantForm(BilinearDiscriminantForm, Protocol):
-    def q(self, element: DiscriminantFormElement) -> ExactScalar: ...
-
-    def gram_matrix_quadratic(self) -> GramMatrix: ...
-
-    def value_module_qf(self) -> ValueModule: ...
-
-    def brown_invariant(self) -> int: ...
-
-    def normal_form(self) -> tuple[tuple[int, ...], GramMatrix]: ...
-
-    def is_genus(self, signature_pair: SignaturePair, even: bool = True) -> bool: ...
-
-    def genus(self, signature_pair: SignaturePair, even: bool = True) -> "Genus": ...
-
-    def twist(self, scalar: ExactScalar) -> "QuadraticDiscriminantForm": ...
+    def orthogonal_group(self) -> DiscriminantOrthogonalGroup:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
-class SourcedDiscriminantForm(QuadraticDiscriminantForm, Protocol):
+class QuadraticDiscriminantForm(BilinearDiscriminantForm):
+    def q(self, element: DiscriminantFormElement) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def gram_matrix_quadratic(self) -> GramMatrix:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def value_module_qf(self) -> ValueModule:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def brown_invariant(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def normal_form(self) -> tuple[tuple[int, ...], GramMatrix]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def is_genus(self, signature_pair: SignaturePair, even: bool = True) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def genus(self, signature_pair: SignaturePair, even: bool = True) -> "Genus":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def twist(self, scalar: ExactScalar) -> "QuadraticDiscriminantForm":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+
+class SourcedDiscriminantForm(QuadraticDiscriminantForm):
     """WithSourceLattice: carries L^*/L provenance."""
 
-    def source_lattice(self) -> IntegralNondegenerateLattice: ...
+    def source_lattice(self) -> IntegralNondegenerateLattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def cover_lattice(self) -> Lattice: ...
+    def cover_lattice(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def relation_lattice(self) -> Lattice: ...
+    def relation_lattice(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def lift(self, element: DiscriminantFormElement) -> LatticeElement: ...
+    def lift(self, element: DiscriminantFormElement) -> LatticeElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def projection(self, element: LatticeElement) -> DiscriminantFormElement: ...
+    def projection(self, element: LatticeElement) -> DiscriminantFormElement:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def preimage_lattice(self, subgroup: "DiscriminantSubgroup") -> Lattice: ...
+    def preimage_lattice(self, subgroup: "DiscriminantSubgroup") -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def overlattice_from_isotropic_subgroup(
         self, subgroup: "DiscriminantSubgroup"
-    ) -> Lattice: ...
+    ) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def discriminant_form_of_overlattice(
         self, subgroup: "DiscriminantSubgroup"
-    ) -> "DiscriminantForm": ...
+    ) -> "DiscriminantForm":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def action_of_isometry(self, isometry: LatticeMorphism) -> DiscriminantAction: ...
+    def action_of_isometry(self, isometry: LatticeMorphism) -> DiscriminantAction:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def orbit(
         self, element: DiscriminantFormElement, group: DiscriminantOrthogonalGroup
-    ) -> tuple[DiscriminantFormElement, ...]: ...
+    ) -> tuple[DiscriminantFormElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def orbits(
         self, group: DiscriminantOrthogonalGroup
-    ) -> tuple[tuple[DiscriminantFormElement, ...], ...]: ...
+    ) -> tuple[tuple[DiscriminantFormElement, ...], ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def orbits_on_isotropic_subgroups(
         self, group: DiscriminantOrthogonalGroup
-    ) -> tuple[tuple["DiscriminantSubgroup", ...], ...]: ...
+    ) -> tuple[tuple["DiscriminantSubgroup", ...], ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
-class DiscriminantSubgroup(Protocol):
-    def ambient(self) -> DiscriminantForm: ...
+class DiscriminantSubgroup:
+    def ambient(self) -> DiscriminantForm:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def gens(self) -> tuple[DiscriminantFormElement, ...]: ...
+    def gens(self) -> tuple[DiscriminantFormElement, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def cardinality(self) -> int: ...
+    def cardinality(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def __contains__(self, element: object) -> bool: ...
+    def __contains__(self, element: object) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
 # ---------------------------------------------------------------------------
 # Genus objects
 # ---------------------------------------------------------------------------
 
-class Genus(Protocol):
-    def signature_pair(self) -> SignaturePair: ...
+class Genus:
+    def signature_pair(self) -> SignaturePair:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def signature(self) -> int: ...
+    def signature(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def det(self) -> ExactScalar: ...
+    def det(self) -> ExactScalar:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def dim(self) -> int: ...
+    def dim(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_even(self) -> bool: ...
+    def is_even(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def discriminant_form(self) -> QuadraticDiscriminantForm: ...
+    def discriminant_form(self) -> QuadraticDiscriminantForm:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def local_symbol(self, p: int) -> object: ...
+    def local_symbol(self, p: int) -> object:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def local_symbols(self) -> tuple[object, ...]: ...  # the genus-machinery data seam
+    def local_symbols(self) -> tuple[object, ...]:  # the genus-machinery data seam
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def brown_invariant(self) -> int: ...
+    def brown_invariant(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def representative(self) -> Lattice: ...
+    def representative(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def representatives(self) -> tuple[Lattice, ...]: ...
+    def representatives(self) -> tuple[Lattice, ...]:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def class_number(self) -> int: ...
+    def class_number(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def is_unique_class(self) -> bool: ...
+    def is_unique_class(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 
 # ---------------------------------------------------------------------------
