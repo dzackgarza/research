@@ -31,6 +31,7 @@ from .domain_algebra import (
     Lattice as LatticeCarrier,
     NondegenerateLattice as NondegenerateCarrier,
     PositiveDefiniteLattice as PositiveDefiniteCarrier,
+    RootGeneratedLattice as RootGeneratedCarrier,
 )
 from .elements import SyntheticLatticeElement
 
@@ -64,7 +65,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
 
     Element = SyntheticLatticeElement
 
-    def __init__(self, gram_matrix, base_ring, label, ambient=None, inclusion=None):
+    def __init__(self, gram_matrix, base_ring, label, ambient=None, inclusion=None, cartan_type=None):
         gram = matrix(QQ, gram_matrix)
         if not (base_ring in (ZZ, QQ)):
             raise ValueError(f"lattice base ring must be ZZ or QQ; found={base_ring}")
@@ -92,7 +93,13 @@ class SyntheticLattice(LatticeCarrier, Parent):
         self._inclusion = inclusion
         self._label = label
         self._base_ring = base_ring
-        Parent.__init__(self, base=base_ring, category=category_for(base_ring, gram))
+        self._cartan_type = cartan_type
+        category = category_for(base_ring, gram)
+        if cartan_type is not None:
+            # provenance axiom: attached only by the section-6 constructors
+            # (and direct sums thereof), never detected from the Gram
+            category = category.RootGenerated()
+        Parent.__init__(self, base=base_ring, category=category)
 
     def _repr_(self):
         return f"Synthetic lattice {self._label} of rank {self.rank()} over {self.base_ring()}"
@@ -461,10 +468,17 @@ class SyntheticLattice(LatticeCarrier, Parent):
 
     def direct_sum(self, other, label="direct_sum"):
         base_ring = QQ if QQ in (self.base_ring(), other.base_ring()) else ZZ
+        cartan_type = None
+        if isinstance(self, _RootGeneratedMixin) and isinstance(other, _RootGeneratedMixin):
+            # direct sums of root-generated lattices keep the provenance axiom;
+            # the composite has no single Cartan type (irreducible_root_components
+            # is the composite vocabulary)
+            cartan_type = "composite"
         return synthetic_lattice(
             block_diagonal_matrix(self.gram_matrix(), other.gram_matrix()),
             base_ring,
             label,
+            cartan_type=cartan_type,
         )
 
     def tensor_product(self, other, label="tensor_product"):
@@ -996,7 +1010,28 @@ class SyntheticIntegralPositiveDefiniteLattice(_PositiveDefiniteKernel, Syntheti
     r"""Integral positive-definite stratum: full discriminant + enumeration kernel."""
 
 
-def synthetic_lattice(gram_matrix, base_ring, label, ambient=None, inclusion=None):
+class _RootGeneratedMixin(RootGeneratedCarrier):
+    r"""Provenance-attached vocabulary (spec 1.3/6): the axiom is a certificate
+    carried from the named constructors, never detected from the Gram."""
+
+    def cartan_type(self):
+        if self._cartan_type == "composite":
+            raise ValueError(
+                "a direct sum of root lattices has no single Cartan type; "
+                "use irreducible_root_components()"
+            )
+        return self._cartan_type
+
+
+class SyntheticRootGeneratedPositiveDefiniteLattice(_RootGeneratedMixin, SyntheticIntegralPositiveDefiniteLattice):
+    r"""Root lattices in the standard (positive definite) convention."""
+
+
+class SyntheticRootGeneratedNondegenerateLattice(_RootGeneratedMixin, SyntheticIntegralNondegenerateLattice):
+    r"""Root lattices twisted by -1 (the K3 convention): negative definite."""
+
+
+def synthetic_lattice(gram_matrix, base_ring, label, ambient=None, inclusion=None, cartan_type=None):
     r"""Private stratum router: one classification (mirroring ``category_for``),
     one concrete class per stratum, so axiom vocabulary is reachable exactly
     where the mathematics defines it."""
@@ -1005,6 +1040,17 @@ def synthetic_lattice(gram_matrix, base_ring, label, ambient=None, inclusion=Non
     integral = base_ring is ZZ and all(entry in ZZ for entry in gram.list())
     pos, neg = signature_pair(gram)
     positive_definite = nondegenerate and pos == gram.nrows()
+    if cartan_type is not None:
+        even = integral and all(entry % 2 == 0 for entry in gram.diagonal())
+        assert integral and nondegenerate and even, (
+            "root-lattice provenance requires an integral nondegenerate EVEN Gram "
+            "(the RootGenerated axiom lives over Even, and a bare .RootGenerated() "
+            "call is a silent Sage no-op without it); "
+            f"gram={gram}, cartan_type={cartan_type}; fix the named constructor"
+        )
+        concrete = (SyntheticRootGeneratedPositiveDefiniteLattice if positive_definite
+                    else SyntheticRootGeneratedNondegenerateLattice)
+        return concrete(gram_matrix, base_ring, label, ambient=ambient, inclusion=inclusion, cartan_type=cartan_type)
     if integral and positive_definite:
         concrete = SyntheticIntegralPositiveDefiniteLattice
     elif positive_definite:

@@ -647,3 +647,33 @@ def test_two_signal_placement_gates_dual_and_discriminant_vocabulary_by_stratum(
         A2.embeds_primitively_in_unimodular((8, 0))
     with pytest.raises(NotImplementedError):
         A2.primitive_embedding_into_unimodular((8, 0))
+
+def test_named_constructors_route_through_the_category_entry_with_provenance():
+    # Spec 1.4/6: Lattices(R).from_gram_matrix is the only door; RootGenerated
+    # is a provenance certificate carried by RootLattice, never Gram-detected.
+    from sage_lattice_category_spike.lattice_categories import RootLattice, U
+
+    U2 = U(2)
+    assert U2.gram_matrix() == matrix(QQ, [[0, 2], [2, 0]])
+    assert U2 in Lattices(ZZ).Hyperbolic()
+
+    A2_root = RootLattice("A2")
+    assert A2_root.gram_matrix() == Lattice("A2").gram_matrix()
+    assert A2_root in Lattices(ZZ).Even().RootGenerated()
+    assert A2_root.cartan_type() == ("A", 2)
+    # the same Gram WITHOUT the certificate does not carry the axiom
+    assert Lattice("A2") not in Lattices(ZZ).Even().RootGenerated()
+
+    E8_neg = RootLattice("E", 8, negative=True)
+    assert E8_neg.signature_pair() == (0, 8)
+    assert E8_neg in Lattices(ZZ).Even().RootGenerated()
+
+    composite = A2_root.direct_sum(RootLattice("E8"))
+    assert composite in Lattices(ZZ).Even().RootGenerated()
+    with pytest.raises(ValueError):
+        composite.cartan_type()  # no single type; irreducible_root_components vocabulary
+    with pytest.raises(NotImplementedError):
+        composite.irreducible_root_components()  # declared contract
+
+    with pytest.raises(AssertionError):
+        Lattice([[0, 1], [2, 0]])  # non-symmetric: caller-contract bug (ADDD)

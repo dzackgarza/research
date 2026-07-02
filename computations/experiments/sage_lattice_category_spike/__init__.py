@@ -36,6 +36,8 @@ __all__ = [
     "SyntheticOrthogonalGroup",
     "SyntheticLattice",
     "SyntheticLatticeElement",
+    "RootLattice",
     "SyntheticLatticeFromGram",
+    "U",
     "TorsionQuadraticForm",
 ]

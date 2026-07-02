@@ -10,7 +10,7 @@ The implementation is organized by concept:
 """
 
 from .categories import DiscriminantForms, Lattices
-from .constructors import IntegralLatticeGluing, Lattice, SyntheticLatticeFromGram
+from .constructors import IntegralLatticeGluing, Lattice, RootLattice, SyntheticLatticeFromGram, U
 from .discriminant import (
     SyntheticDiscriminantAction,
     SyntheticFiniteQuadraticForm,
@@ -42,6 +42,8 @@ __all__ = [
     "SyntheticOrthogonalGroup",
     "SyntheticLattice",
     "SyntheticLatticeElement",
+    "RootLattice",
     "SyntheticLatticeFromGram",
+    "U",
     "TorsionQuadraticForm",
 ]

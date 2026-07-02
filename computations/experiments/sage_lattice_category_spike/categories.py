@@ -26,6 +26,8 @@ from sage.categories.commutative_additive_groups import CommutativeAdditiveGroup
 from sage.categories.homsets import HomsetsCategory
 from sage.categories.modules import Modules
 from sage.categories.sets_cat import Sets
+from sage.rings.integer_ring import ZZ
+from sage.rings.rational_field import QQ
 from sage.misc.abstract_method import abstract_method
 
 from .domain_algebra import (
@@ -110,6 +112,27 @@ class Lattices(Category_over_base_ring):
     ParentMethods = LatticeCarrier
 
     ElementMethods = LatticeElementCarrier
+
+    def from_gram_matrix(self, gram_matrix, label="L", cartan_type=None):
+        r"""Section 1.4: the functor from square symmetric matrices over the
+        base ring into this category — the ONLY public entry into the language.
+
+        Asserts its domain contract (ADDD: a violation is a caller-contract
+        bug) and routes the object into its mathematical stratum; provenance
+        axioms (RootGenerated) ride the ``cartan_type`` flag, attached by the
+        section-6 named constructors and never detected from the Gram.
+        """
+        from .arithmetic import as_square_qq_matrix
+        from .parents import synthetic_lattice
+
+        base_ring = self.base_ring()
+        assert base_ring in (ZZ, QQ), (
+            f"lattice base ring must be ZZ or QQ; found={base_ring}; "
+            "enter through Lattices(ZZ) or Lattices(QQ)"
+        )
+        gram = as_square_qq_matrix(gram_matrix)
+        return synthetic_lattice(gram, base_ring, label, cartan_type=cartan_type)
+
 
     class MorphismMethods:
         pass

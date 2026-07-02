@@ -19,13 +19,14 @@ def named_gram(name):
 
 def as_square_qq_matrix(matrix_data):
     gram = named_gram(matrix_data) if _is_named_gram_data(matrix_data) else matrix(QQ, matrix_data)
-    if not gram.is_square():
-        raise ValueError(
-            "lattice Gram matrix must be square; "
-            f"found dimensions={gram.nrows()}x{gram.ncols()}"
-        )
-    if not gram == gram.transpose():
-        raise ValueError(f"lattice Gram matrix must be symmetric; found={gram}")
+    assert gram.is_square(), (
+        "lattice Gram matrix must be square; "
+        f"found dimensions={gram.nrows()}x{gram.ncols()}; fix the caller's Gram data"
+    )
+    assert gram == gram.transpose(), (
+        f"lattice Gram matrix must be symmetric (definitional for every object of "
+        f"the tree); found={gram}; fix the caller's Gram data"
+    )
     gram.set_immutable()
     return gram
 

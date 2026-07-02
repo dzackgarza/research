@@ -1,4 +1,8 @@
-r"""Thin public constructors for synthetic lattices."""
+r"""Thin public constructors for synthetic lattices (spec section 6).
+
+Every path routes through the section-1.4 category-namespace entry
+``Lattices(R).from_gram_matrix`` — the only door into the language.
+"""
 
 from __future__ import annotations
 
@@ -6,19 +10,55 @@ from sage.matrix.constructor import matrix
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
-from .arithmetic import as_square_qq_matrix
-from .parents import synthetic_lattice
+from .categories import Lattices
 
 
 def SyntheticLatticeFromGram(gram_matrix, base_ring=ZZ, label="L"):
     r"""Construct a synthetic based lattice ``(base_ring, G)`` from its Gram matrix."""
-    gram = as_square_qq_matrix(gram_matrix)
-    return synthetic_lattice(gram, base_ring, label)
+    return Lattices(base_ring).from_gram_matrix(gram_matrix, label=label)
 
 
 def Lattice(gram_matrix, base_ring=ZZ, label="L"):
     r"""Public constructor for the owned synthetic lattice spike."""
     return SyntheticLatticeFromGram(gram_matrix, base_ring=base_ring, label=label)
+
+
+def U(n=1, label=None):
+    r"""The hyperbolic plane ``U(n)`` with Gram ``[[0, n], [n, 0]]``."""
+    n = ZZ(n)
+    assert n != 0, "U(n) requires a nonzero scale; U(0) is the degenerate rank-2 zero form, not a hyperbolic plane"
+    if label is None:
+        label = "U" if n == 1 else f"U({n})"
+    return Lattices(ZZ).from_gram_matrix([[0, n], [n, 0]], label=label)
+
+
+def RootLattice(type_, n=None, negative=False, label=None):
+    r"""The A/D/E root lattice with its standard Cartan Gram.
+
+    ``negative=True`` twists by ``-1`` (the K3 convention). Attaches the
+    RootGenerated provenance axiom with the stored Cartan type — the ONLY
+    path that attaches it (spec 1.3: the axiom is a certificate, never
+    detected from the Gram).
+    """
+    from sage.combinat.root_system.cartan_matrix import CartanMatrix
+
+    if n is None:
+        assert isinstance(type_, str) and len(type_) >= 2 and type_[0].isalpha() and type_[1:].isdigit(), (
+            f"RootLattice needs a type like 'E8' or ('E', 8); found type_={type_!r}, n=None"
+        )
+        letter, n = type_[0].upper(), int(type_[1:])
+    else:
+        letter, n = str(type_).upper(), int(n)
+    assert letter in ("A", "D", "E"), (
+        f"RootLattice supports the simply-laced types A/D/E; found {letter!r} "
+        "(B/C/F/G Cartan matrices are not symmetric, hence not Gram matrices)"
+    )
+    gram = matrix(QQ, CartanMatrix([letter, n]))
+    if negative:
+        gram = -gram
+    if label is None:
+        label = f"{letter}{n}" + ("(-1)" if negative else "")
+    return Lattices(ZZ).from_gram_matrix(gram, label=label, cartan_type=(letter, n))
 
 
 def IntegralLatticeGluing(lattices, glue, return_embeddings=False, label="gluing"):
