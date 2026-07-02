@@ -601,11 +601,14 @@ def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indef
     assert not A2.Hom(A2_dual).from_matrix(A2.gram_matrix()).is_isometry()
     assert A2.Hom(A2).from_matrix(identity_matrix(ZZ, 2)).is_isometry()
 
-    # indefinite O(L) is infinite -> explicit generators required (fails loud otherwise).
+    # Outside the engine-grounded domain (definite integral ZZ), finiteness and
+    # generators gate by assertion — the withdrawn "indefinite => infinite"
+    # claim is FALSE for U, whose integral isometry group is Klein-four.
     U = Lattice("U", label="U")
     O_U = U.isometry_group()
-    assert not O_U.is_finite()
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(AssertionError):
+        O_U.is_finite()
+    with pytest.raises(AssertionError):
         O_U.gens()
     swap_isometry = O_U.from_matrix(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
     assert swap_isometry.is_isometry() and swap_isometry in O_U
@@ -614,7 +617,7 @@ def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indef
     assert A2.is_isometric(Lattice("A2", label="other"))
     assert not A2.is_isometric(Lattice(matrix(ZZ, 2, 2, [2, 0, 0, 2])))
     assert not A2.is_isometric(Lattice(matrix(ZZ, 3, 3, [2, 0, 0, 0, 2, 0, 0, 0, 2])))
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(AssertionError):
         U.is_isometric(U)
 
 def test_reflection_is_an_order_two_isometry_defined_only_for_anisotropic_vectors():
@@ -709,9 +712,14 @@ def test_isometry_group_object_algebra_and_negative_definite_delegation():
     # O(L) = O(L(-1)): negative-definite delegation sign-twists internally.
     assert RootLattice("A", 2, negative=True).isometry_group().order() == 12
 
-    # degenerate rank >= 2 is infinite (unipotent shears); rank <= 1 is finite.
-    assert not Lattice(matrix(QQ, [[0, 0], [0, 0]])).isometry_group().is_finite()
-    assert Lattice(matrix(QQ, [[0]])).isometry_group().is_finite()
+    # outside the engine-grounded domain the finiteness predicate gates.
+    with pytest.raises(AssertionError):
+        Lattice(matrix(QQ, [[0, 0], [0, 0]])).isometry_group().is_finite()
+    with pytest.raises(AssertionError):
+        Lattice(matrix(QQ, [[0]])).isometry_group().is_finite()
+    # the trivial rank-0 group is grounded by construction.
+    zero_rank = Lattice(matrix(QQ, 0, 0, []))
+    assert zero_rank.isometry_group().is_finite() and zero_rank.isometry_group().order() == 1
 
 def test_endomorphisms_form_a_monoid_with_ring_like_predicates():
     # V0d amendment: End_Lat(L) = Hom(L, L) is the form-preserving composition

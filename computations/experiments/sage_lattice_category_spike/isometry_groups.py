@@ -37,15 +37,29 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
 
     @staticmethod
     def _finiteness(lattice):
-        # Fixed rationale (spec 3.2): degenerate rank >= 2 has infinite
-        # unipotent shears; rational forms of rank >= 2 have infinite
-        # rational isometries.
-        if lattice.rank() <= 1:
+        # Engine-grounded domain (user ruling 2026-07-03): finiteness is a
+        # property of the computed group, never a remembered classification
+        # (which can simply be wrong: O(U) over ZZ is finite of order 4
+        # despite U being indefinite). The delegated engine computes O(L)
+        # exactly for definite integral nondegenerate ZZ-lattices (plus the
+        # trivial rank-0 group); everywhere else no finiteness answer exists
+        # yet, and the gating assertion in each consumer says so.
+        if lattice.rank() == 0:
             return True
         return (
             lattice.base_ring() is ZZ
+            and lattice.is_integral()
             and lattice.determinant() != 0
             and lattice.is_definite()
+        )
+
+    def _assert_engine_grounded(self):
+        assert self._finiteness(self._lattice), (
+            "O(L) finiteness/enumeration is engine-grounded only for definite "
+            "integral nondegenerate ZZ-lattices (and the trivial rank-0 group); "
+            f"base_ring={self._lattice.base_ring()}, "
+            f"gram={self._lattice.gram_matrix()}; for other strata no computation "
+            "grounds an answer yet — extend the engine, do not special-case"
         )
 
     def _repr_(self):
@@ -88,25 +102,21 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
         return self._lattice.hom(identity_matrix(self._lattice.base_ring(), self._lattice.rank()))
 
     def is_finite(self):
-        return self._finiteness(self._lattice)
+        r"""Finiteness of the ACTUAL computed group (engine-grounded); the
+        gating assertion rejects strata where no computation grounds an
+        answer."""
+        self._assert_engine_grounded()
+        return True
 
     def gens(self):
-        r"""Generators, implemented exactly where the group is finite
-        (ephemeral Sage engine; Sage's generators V satisfy V G V^T = G,
-        the synthetic convention U^T G U = G is met by U = V^T)."""
-        if not self.is_finite():
-            raise NotImplementedError(
-                "generator computation for an infinite isometry group "
-                "(indefinite, degenerate of rank >= 2, or rational of rank >= 2) "
-                "is a declared gap; the group object itself remains total"
-            )
+        r"""Generators from the ephemeral Sage engine (Sage's generators V
+        satisfy V G V^T = G; the synthetic convention U^T G U = G is met by
+        U = V^T), on the engine-grounded domain."""
+        self._assert_engine_grounded()
         return tuple(self.from_matrix(g) for g in self._delegated_generator_matrices())
 
     def order(self):
-        if not self.is_finite():
-            from sage.rings.infinity import Infinity
-
-            return Infinity
+        self._assert_engine_grounded()
         if self._lattice.rank() == 0:
             return ZZ.one()
         return self._delegated_engine().order()
@@ -122,35 +132,18 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
     def _delegated_generator_matrices(self):
         if self._lattice.rank() == 0:
             return ()
-        assert self._lattice.base_ring() is ZZ and self._lattice.is_integral(), (
-            "finite O(L) generator delegation needs an integral ZZ-lattice; "
-            f"base_ring={self._lattice.base_ring()}, gram={self._lattice.gram_matrix()}"
-        )
+        # integrality/definiteness proven by _assert_engine_grounded upstream
         return tuple(
             matrix(ZZ, generator.matrix()).transpose()
             for generator in self._delegated_engine().gens()
         )
 
     def __iter__(self):
-        r"""Element enumeration, implemented exactly where the group is finite
-        (ephemeral engine). Rank <= 1 is enumerated directly."""
-        if not self.is_finite():
-            raise NotImplementedError(
-                "iteration over an infinite isometry group is a declared gap; "
-                "the group object itself remains total"
-            )
+        r"""Element enumeration from the ephemeral engine, on the
+        engine-grounded domain."""
+        self._assert_engine_grounded()
         if self._lattice.rank() == 0:
             yield self.one()
-            return
-        if self._lattice.rank() == 1:
-            if self._lattice.base_ring() is QQ and self._lattice.determinant() == 0:
-                raise NotImplementedError(
-                    "rank-1 degenerate rational form: O(L) is the full unit group "
-                    "QQ^x (infinite); flagged as an erratum against the spec's "
-                    "is_finite rationale, pending ratification"
-                )
-            yield self.one()
-            yield self.from_matrix(-identity_matrix(self._lattice.base_ring(), 1))
             return
         for element in self._delegated_engine():
             yield self.from_matrix(matrix(ZZ, element.matrix()).transpose())

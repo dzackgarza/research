@@ -496,12 +496,16 @@ class SyntheticLattice(LatticeCarrier, Parent):
         assert isinstance(other, SyntheticLattice), (f"expected SyntheticLattice; found={type(other)}")
         if self.rank() != other.rank() or self.signature_pair() != other.signature_pair():
             return False
-        if not (self.base_ring() is ZZ and other.base_ring() is ZZ and self.is_integral() and other.is_integral()):
-            raise NotImplementedError("isometry testing is implemented for integral ZZ-lattices")
-        if not (self.is_definite() and other.is_definite()):
-            raise NotImplementedError(
-                "indefinite isometry testing is not implemented; compare genus/discriminant form explicitly"
-            )
+        assert self.base_ring() is ZZ and other.base_ring() is ZZ and self.is_integral() and other.is_integral(), (
+            "the is_isometric engine is grounded only for integral ZZ-lattices; "
+            f"left_base={self.base_ring()}, right_base={other.base_ring()}, "
+            f"left_gram={self.gram_matrix()}, right_gram={other.gram_matrix()}"
+        )
+        assert self.is_definite() and other.is_definite(), (
+            "the is_isometric engine is grounded only for definite lattices "
+            "(indefinite decision is gap-ledger item 1); "
+            f"left_signature={self.signature_pair()}, right_signature={other.signature_pair()}"
+        )
         from sage.quadratic_forms.quadratic_form import QuadraticForm
 
         # QuadraticForm(matrix) reads the matrix as the Hessian (2 x Gram); sign-normalize
