@@ -232,6 +232,11 @@ class Lattice:
     def denominator(self) -> ExactScalar:
         raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
+    def random_element(self) -> LatticeElement:
+        """Contracted into the owned surface (user ruling): sensible utility;
+        the leaner super-category no longer inherits it, so we own it."""
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
     def clear_denominators(self) -> "Lattice":
         raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
