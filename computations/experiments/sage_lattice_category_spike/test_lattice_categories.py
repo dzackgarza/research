@@ -351,7 +351,7 @@ def test_integral_lattice_inclusion_into_dual_is_a_synthetic_morphism():
     U = Lattice("U", label="U")
     relation = U.sublattice([[2, 0], [0, 1]], label="2e_plus_f")
     quotient = U.finite_quotient(relation)
-    swap = U.isometry(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
+    swap = U.hom(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
     with pytest.raises(ValueError):
         U.induced_map_on_quotient(swap, quotient)
 

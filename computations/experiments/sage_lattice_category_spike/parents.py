@@ -153,20 +153,11 @@ class SyntheticLattice(Parent):
 
     # -- Port: intrinsic invariants read straight off (base_ring, G) --------------
 
-    def value_ring(self):
-        return QQ
-
     def rank(self):
         return self._gram_matrix.nrows()
 
-    def degree(self):
-        return self.rank()
-
     def gram_matrix(self):
         return self._gram_matrix
-
-    def inner_product_matrix(self):
-        return self.gram_matrix()
 
     def bilinear_form(self):
         return self.b
@@ -251,8 +242,6 @@ class SyntheticLattice(Parent):
     def discriminant(self):
         rank_half = self.rank() // 2
         return (-1) ** rank_half * self.determinant()
-
-    signed_discriminant = discriminant
 
     def absolute_discriminant(self):
         return abs(self.determinant())
@@ -360,9 +349,6 @@ class SyntheticLattice(Parent):
             raise ValueError(f"sublattice is not integral; gram={lattice.gram_matrix()}")
         return lattice
 
-    submodule = sublattice
-    submodule_with_basis = sublattice
-
     def fractional_sublattice(self, generators, label="fractional_sublattice"):
         return self.sublattice(generators, label=label, require_subset=False, require_integral=False)
 
@@ -389,16 +375,8 @@ class SyntheticLattice(Parent):
             raise ValueError(f"basis rows must be independent; basis={basis_matrix}")
         return self._from_ambient_basis(basis_matrix, base_ring, label)
 
-    def vector_space_span(self, generators, label="vector_space_span"):
-        return self.span(generators, base_ring=QQ, label=label)
-
-    def vector_space_span_of_basis(self, basis, label="vector_space_span"):
-        return self.span_of_basis(basis, base_ring=QQ, label=label)
-
     def zero_lattice(self, label="zero_lattice"):
         return self._from_ambient_basis(matrix(QQ, 0, self._ambient_rank()), self.base_ring(), label)
-
-    zero_submodule = zero_lattice
 
     def overlattice(self, generators, check_integral=False, label="overlattice"):
         generator_matrix = matrix(QQ, generators)
@@ -427,12 +405,6 @@ class SyntheticLattice(Parent):
             return self.primitive_closure(in_ambient, label=label)
         return self._from_module(self._underlying_module().saturation(), label)
 
-    def integral_saturation(self, label="integral_saturation"):
-        lattice = self.saturation(label=label)
-        if not (lattice.is_integral()):
-            raise ValueError(f"integral saturation is not integral; gram={lattice.gram_matrix()}")
-        return lattice
-
     def primitive_closure(self, ambient=None, label="primitive_closure"):
         if ambient is None:
             return self.saturation(label=label)
@@ -444,8 +416,6 @@ class SyntheticLattice(Parent):
         self._assert_same_ambient(other)
         return self._underlying_module().index_in(other._underlying_module())
 
-    relative_index = index_in
-
     def index_in_saturation(self):
         return self.index_in(self.saturation())
 
@@ -455,15 +425,13 @@ class SyntheticLattice(Parent):
     def clear_denominators(self, label="clear_denominators"):
         return self.scale(self.denominator(), label=label)
 
-    def quotient_by_sublattice(self, sublattice):
+    def finite_quotient(self, sublattice):
         from .discriminant import SyntheticLatticeFiniteQuotient
 
         return SyntheticLatticeFiniteQuotient(self, sublattice)
 
-    finite_quotient = quotient_by_sublattice
-
     def quotient_map_to(self, sublattice):
-        quotient = self.quotient_by_sublattice(sublattice)
+        quotient = self.finite_quotient(sublattice)
         return quotient.projection
 
     def cover_lattice(self):
@@ -556,8 +524,6 @@ class SyntheticLattice(Parent):
                     raise ValueError(f"isometry generator must be invertible; matrix={morphism.matrix()}")
         return morphisms
 
-    automorphisms = isometry_group
-
     def _computed_isometry_generators(self):
         if not (self.base_ring() is ZZ and self.is_integral() and self.determinant() != 0):
             raise NotImplementedError("O(L) generators are computed only for nondegenerate integral ZZ-lattices")
@@ -642,10 +608,6 @@ class SyntheticLattice(Parent):
     def hom(self, matrix_data, codomain=None):
         codomain = self if codomain is None else codomain
         return self.Hom(codomain).from_matrix(matrix_data)
-
-    module_hom = hom
-    lattice_hom = hom
-    isometry = hom
 
     def embedding(self, matrix_data, codomain=None, primitive=False):
         codomain = self if codomain is None else codomain

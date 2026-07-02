@@ -87,10 +87,6 @@ class Lattices(Category_over_base_ring):
 
     class ParentMethods:
         @abstract_method
-        def value_ring(self):
-            r"""Return the value ring of the bilinear form."""
-
-        @abstract_method
         def rationalization(self):
             r"""Return ``self tensor_ZZ QQ`` with its induced bilinear form."""
 

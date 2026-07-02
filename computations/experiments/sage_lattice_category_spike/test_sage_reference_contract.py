@@ -212,24 +212,22 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
     assert not A2.is_self_dual()
     assert lc.Lattice("U").is_self_dual()
     assert A2.absolute_discriminant() == 3
-    assert A2.signed_discriminant() == -3
+    assert A2.discriminant() == -3
     assert not A2.is_degenerate()
     assert A2.radical().rank() == 0
     assert A2_dual.denominator() == 3
-    # relative_index is the wrapper alias of index_in; exercise it on a genuine
-    # finite-index subobject (the based model has no shared ambient between A2 and A2#).
     finite_index_sub = A2.sublattice([[2, 0], [0, 2]], label="2A2")
-    assert finite_index_sub.relative_index(A2) == finite_index_sub.index_in(A2)
+    assert finite_index_sub.index_in(A2) == 4
 
     fractional = A2.fractional_sublattice([[QQ(1) / 3, 0]])
     assert fractional.base_ring() is ZZ
     assert not fractional.is_integral()
     assert fractional.clear_denominators().is_integral()
-    assert A2.submodule([[1, 0]]).rank() == 1
-    assert A2.submodule_with_basis([[1, 0]]).rank() == 1
-    assert A2.zero_submodule().rank() == 0
-    assert A2.vector_space_span([[1, 0]]).base_ring() is QQ
-    assert A2.vector_space_span_of_basis([[1, 0]]).base_ring() is QQ
+    assert A2.sublattice([[1, 0]]).rank() == 1
+    assert A2.sublattice([[1, 0]], label="A1_in_A2").rank() == 1
+    assert A2.zero_lattice().rank() == 0
+    assert A2.span([[1, 0]], base_ring=QQ).base_ring() is QQ
+    assert A2.span_of_basis([[1, 0]], base_ring=QQ).base_ring() is QQ
     assert A2.span([[1, 0], [0, 1]], check_integral=True, check_even=True).is_even()
     with pytest.raises(ValueError):
         A2.span([[QQ(1) / 3, 0]], check_integral=True)
@@ -237,7 +235,7 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
     nonprimitive_line = lc.Lattice("U").sublattice([[2, 0]], label="2e")
     assert nonprimitive_line.saturation(in_ambient=lc.Lattice("U")) == nonprimitive_line.primitive_closure(lc.Lattice("U"))
     assert_matrix_equal(A2.scale(2).gram_matrix(), 4 * A2.gram_matrix())
-    assert A2.integral_saturation().is_integral()
+    assert A2.saturation().is_integral()
 
 
 def test_discriminant_group_additive_abelian_group_api_matches_fgp_surface():
@@ -330,7 +328,7 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     # Reference: FGP quotient cover/relation/lift/projection contract promoted to lattices.
     A2 = lc.Lattice("A2")
     A2_dual = A2.dual()
-    quotient = A2_dual.quotient_by_sublattice(A2)
+    quotient = A2_dual.finite_quotient(A2)
 
     assert quotient.cover_lattice() == A2_dual
     assert quotient.relation_lattice() == A2
@@ -405,7 +403,7 @@ def test_lattice_morphism_lift_and_image_generators_are_bound():
 
     assert identity.lift(A2.gen(1)) == A2.gen(1)
     assert identity.im_gens() == A2.gens()
-    assert A2.isometry(identity_matrix(ZZ, 2))(A2.gen(0)) == A2.gen(0)
+    assert A2.hom(identity_matrix(ZZ, 2))(A2.gen(0)) == A2.gen(0)
     norm_eight = lc.Lattice(matrix(ZZ, 1, 1, [8]))
     norm_two = lc.Lattice(matrix(ZZ, 1, 1, [2]))
     nonprimitive_embedding = norm_eight.embedding(matrix(ZZ, 1, 1, [2]), codomain=norm_two)
