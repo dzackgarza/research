@@ -14,7 +14,7 @@ def named_gram(name):
         return matrix(QQ, CartanMatrix([name[0], int(name[1:])]))
     if isinstance(name, (list, tuple)) and len(name) == 2:
         return matrix(QQ, CartanMatrix(list(name)))
-    raise ValueError(f"unknown named synthetic lattice: {name!r}")
+    assert False, f"unknown named synthetic lattice: {name!r}; fix the caller's lattice name"
 
 
 def as_square_qq_matrix(matrix_data):
@@ -67,13 +67,11 @@ def block_diagonal_matrix(left, right):
 
 
 def _symmetric_diagonal_entries(gram):
-    if not gram.is_square():
-        raise ValueError(
-            "signature requires a square Gram matrix; "
-            f"found dimensions={gram.nrows()}x{gram.ncols()}"
-        )
-    if not gram == gram.transpose():
-        raise ValueError(f"signature requires a symmetric Gram matrix; found={gram}")
+    assert gram.is_square(), (
+        "signature requires a square Gram matrix; "
+        f"found dimensions={gram.nrows()}x{gram.ncols()}"
+    )
+    assert gram == gram.transpose(), (f"signature requires a symmetric Gram matrix; found={gram}")
     if gram.nrows() == 0:
         return ()
 
@@ -84,11 +82,10 @@ def _symmetric_diagonal_entries(gram):
     transform = _basis_with_first_vector(pivot_vector)
     diagonalized = transform * gram * transform.transpose()
     pivot = diagonalized[0, 0]
-    if pivot == 0:
-        raise ValueError(
-            "signature pivot vector must have nonzero square; "
-            f"vector={pivot_vector}, gram={gram}"
-        )
+    assert pivot != 0, (
+        "signature pivot vector must have nonzero square; "
+        f"vector={pivot_vector}, gram={gram}"
+    )
     if gram.nrows() == 1:
         return (pivot,)
 

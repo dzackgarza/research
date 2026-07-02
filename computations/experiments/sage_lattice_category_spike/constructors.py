@@ -63,8 +63,7 @@ def RootLattice(type_, n=None, negative=False, label=None):
 
 def IntegralLatticeGluing(lattices, glue, return_embeddings=False, label="gluing"):
     r"""Construct the owned overlattice determined by discriminant glue vectors."""
-    if not lattices:
-        raise ValueError("gluing requires at least one lattice")
+    assert lattices, "gluing requires at least one lattice; fix the caller's lattice list"
     ambient = lattices[0]
     for lattice in lattices[1:]:
         ambient = ambient.direct_sum(lattice, label=label)
@@ -77,11 +76,10 @@ def IntegralLatticeGluing(lattices, glue, return_embeddings=False, label="gluing
         offset += lattice.rank()
 
     for glue_vector in glue:
-        if len(glue_vector) != len(lattices):
-            raise ValueError(
-                "each glue vector must provide one discriminant element per lattice; "
-                f"lattices={len(lattices)}, glue_vector={glue_vector}"
-            )
+        assert len(glue_vector) == len(lattices), (
+            "each glue vector must provide one discriminant element per lattice; "
+            f"lattices={len(lattices)}, glue_vector={glue_vector}; fix the caller's glue data"
+        )
         row = [QQ.zero()] * ambient.rank()
         for lattice, start, discriminant_element in zip(lattices, offsets, glue_vector):
             lift = lattice.discriminant_group()._coset_representative_in_source(discriminant_element)

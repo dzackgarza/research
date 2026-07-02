@@ -15,11 +15,10 @@ class SyntheticLatticeElement(ElementCarrier, Element):
     def __init__(self, parent, coordinates):
         Element.__init__(self, parent)
         coords = vector(parent.base_ring(), coordinates)
-        if len(coords) != parent.rank():
-            raise ValueError(
-                "coordinate length must equal lattice rank; "
-                f"rank={parent.rank()}, coordinates={coordinates}"
-            )
+        assert len(coords) == parent.rank(), (
+            "coordinate length must equal lattice rank; "
+            f"rank={parent.rank()}, coordinates={coordinates}; fix the caller's coordinates"
+        )
         coords.set_immutable()
         self._coordinates = coords
 

@@ -17,10 +17,8 @@ class LatticeHomset(Parent):
     Element = None
 
     def __init__(self, domain, codomain):
-        if not isinstance(domain, SyntheticLattice):
-            raise TypeError(f"expected SyntheticLattice domain; found={type(domain)}")
-        if not isinstance(codomain, SyntheticLattice):
-            raise TypeError(f"expected SyntheticLattice codomain; found={type(codomain)}")
+        assert isinstance(domain, SyntheticLattice), (f"expected SyntheticLattice domain; found={type(domain)}")
+        assert isinstance(codomain, SyntheticLattice), (f"expected SyntheticLattice codomain; found={type(codomain)}")
         self._domain = domain
         self._codomain = codomain
         Parent.__init__(self, category=Sets())
@@ -46,19 +44,19 @@ class LatticeMorphism(Element):
         domain = parent.domain()
         codomain = parent.codomain()
         matrix_data = matrix(codomain.base_ring(), matrix_data)
-        if matrix_data.nrows() != codomain.rank():
-            raise ValueError(
-                "morphism matrix rows must equal codomain rank; "
-                f"rows={matrix_data.nrows()}, codomain_rank={codomain.rank()}"
-            )
-        if matrix_data.ncols() != domain.rank():
-            raise ValueError(
-                "morphism matrix columns must equal domain rank; "
-                f"columns={matrix_data.ncols()}, domain_rank={domain.rank()}"
-            )
+        assert matrix_data.nrows() == codomain.rank(), (
+            "morphism matrix rows must equal codomain rank; "
+            f"rows={matrix_data.nrows()}, codomain_rank={codomain.rank()}"
+        )
+        assert matrix_data.ncols() == domain.rank(), (
+            "morphism matrix columns must equal domain rank; "
+            f"columns={matrix_data.ncols()}, domain_rank={domain.rank()}"
+        )
         pulled_form = matrix(QQ, matrix_data).transpose() * codomain.gram_matrix() * matrix(QQ, matrix_data)
-        if pulled_form != domain.gram_matrix():
-            raise ValueError("lattice morphisms are form-preserving by definition")
+        assert pulled_form == domain.gram_matrix(), (
+            "lattice morphisms are form-preserving by definition; "
+            f"pulled_form={pulled_form}, domain_gram={domain.gram_matrix()}; fix the caller's matrix"
+        )
         matrix_data.set_immutable()
         self._matrix = matrix_data
 
@@ -131,19 +129,19 @@ class LatticeSimilarity(Element):
         Element.__init__(self, LatticeHomset(domain, codomain))
         matrix_data = matrix(codomain.base_ring(), matrix_data)
         scalar = QQ(scalar)
-        if matrix_data.nrows() != codomain.rank():
-            raise ValueError(
-                "similarity matrix rows must equal codomain rank; "
-                f"rows={matrix_data.nrows()}, codomain_rank={codomain.rank()}"
-            )
-        if matrix_data.ncols() != domain.rank():
-            raise ValueError(
-                "similarity matrix columns must equal domain rank; "
-                f"columns={matrix_data.ncols()}, domain_rank={domain.rank()}"
-            )
+        assert matrix_data.nrows() == codomain.rank(), (
+            "similarity matrix rows must equal codomain rank; "
+            f"rows={matrix_data.nrows()}, codomain_rank={codomain.rank()}"
+        )
+        assert matrix_data.ncols() == domain.rank(), (
+            "similarity matrix columns must equal domain rank; "
+            f"columns={matrix_data.ncols()}, domain_rank={domain.rank()}"
+        )
         pulled_form = matrix(QQ, matrix_data).transpose() * codomain.gram_matrix() * matrix(QQ, matrix_data)
-        if pulled_form != scalar * domain.gram_matrix():
-            raise ValueError("lattice similarities preserve the form by the declared scalar")
+        assert pulled_form == scalar * domain.gram_matrix(), (
+            "lattice similarities preserve the form by the declared scalar; "
+            f"pulled_form={pulled_form}, scalar={scalar}, domain_gram={domain.gram_matrix()}; fix the caller's matrix or scalar"
+        )
         matrix_data.set_immutable()
         self._matrix = matrix_data
         self._scalar = scalar

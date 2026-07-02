@@ -317,7 +317,7 @@ def test_homs_are_form_preserving_by_construction():
     assert swap(U.gen(0)) == U.gen(1)
     assert swap(U.gen(1)) == U.gen(0)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         U.Hom(U).from_matrix(matrix(ZZ, 2, 2, [2, 0, 0, 1]))
 
 

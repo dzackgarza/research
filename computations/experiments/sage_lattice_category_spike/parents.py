@@ -22,6 +22,7 @@ from sage.matrix.constructor import identity_matrix, matrix
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
+from sage.structure.element import Matrix
 from sage.structure.parent import Parent
 
 from .arithmetic import block_diagonal_matrix, signature_pair
@@ -67,25 +68,21 @@ class SyntheticLattice(LatticeCarrier, Parent):
 
     def __init__(self, gram_matrix, base_ring, label, ambient=None, inclusion=None, cartan_type=None):
         gram = matrix(QQ, gram_matrix)
-        if not (base_ring in (ZZ, QQ)):
-            raise ValueError(f"lattice base ring must be ZZ or QQ; found={base_ring}")
-        if not (gram.is_square()):
-            raise ValueError(f"Gram matrix must be square; found={gram}")
+        assert base_ring in (ZZ, QQ), (f"lattice base ring must be ZZ or QQ; found={base_ring}")
+        assert gram.is_square(), (f"Gram matrix must be square; found={gram}")
         if ambient is not None:
-            if not isinstance(ambient, SyntheticLattice):
-                raise TypeError(f"ambient parent must be a SyntheticLattice; found={type(ambient)}")
-            if ambient._ambient is not None:
-                raise ValueError("ambient parent must itself be a root lattice (no nested ambients)")
+            assert isinstance(ambient, SyntheticLattice), (f"ambient parent must be a SyntheticLattice; found={type(ambient)}")
+            assert ambient._ambient is None, (
+                "ambient parent must itself be a root lattice (no nested ambients); "
+                f"ambient={ambient}, ambient._ambient={ambient._ambient}"
+            )
             inclusion = matrix(QQ, inclusion)
-            if not (inclusion.nrows() == gram.nrows()):
-                raise ValueError("inclusion row count must equal lattice rank; "
-                f"rank={gram.nrows()}, rows={inclusion.nrows()}")
-            if not (inclusion.ncols() == ambient.rank()):
-                raise ValueError("inclusion column count must equal ambient rank; "
-                f"ambient_rank={ambient.rank()}, columns={inclusion.ncols()}")
-            if not (gram == inclusion * ambient.gram_matrix() * inclusion.transpose()):
-                raise ValueError("Gram matrix must be induced by the inclusion into the ambient; "
-                f"gram={gram}, inclusion={inclusion}, ambient_gram={ambient.gram_matrix()}")
+            assert inclusion.nrows() == gram.nrows(), ("inclusion row count must equal lattice rank; "
+            f"rank={gram.nrows()}, rows={inclusion.nrows()}")
+            assert inclusion.ncols() == ambient.rank(), ("inclusion column count must equal ambient rank; "
+            f"ambient_rank={ambient.rank()}, columns={inclusion.ncols()}")
+            assert gram == inclusion * ambient.gram_matrix() * inclusion.transpose(), ("Gram matrix must be induced by the inclusion into the ambient; "
+            f"gram={gram}, inclusion={inclusion}, ambient_gram={ambient.gram_matrix()}")
             inclusion.set_immutable()
         gram.set_immutable()
         self._gram_matrix = gram
@@ -149,9 +146,8 @@ class SyntheticLattice(LatticeCarrier, Parent):
         r"""Build a subobject of this lattice's root from ``inclusion_rows`` (root coordinates)."""
         root = self._root()
         rows = matrix(QQ, inclusion_rows)
-        if not (rows.ncols() == root.rank()):
-            raise ValueError("inclusion rows must be given in the root's coordinates; "
-            f"root_rank={root.rank()}, rows={rows}")
+        assert rows.ncols() == root.rank(), ("inclusion rows must be given in the root's coordinates; "
+        f"root_rank={root.rank()}, rows={rows}")
         gram = rows * root.gram_matrix() * rows.transpose()
         return synthetic_lattice(gram, base_ring, label, ambient=root, inclusion=rows)
 
@@ -159,11 +155,9 @@ class SyntheticLattice(LatticeCarrier, Parent):
         return self._from_ambient_basis(matrix(QQ, module.basis_matrix()), module.base_ring(), label)
 
     def _assert_same_ambient(self, other):
-        if not (isinstance(other, SyntheticLattice)):
-            raise TypeError(f"expected SyntheticLattice; found={type(other)}")
-        if not (self._ambient_gram() == other._ambient_gram()):
-            raise ValueError("operation requires a common parent lattice; "
-            f"left_ambient_gram={self._ambient_gram()}, right_ambient_gram={other._ambient_gram()}")
+        assert isinstance(other, SyntheticLattice), (f"expected SyntheticLattice; found={type(other)}")
+        assert self._ambient_gram() == other._ambient_gram(), ("operation requires a common parent lattice; "
+        f"left_ambient_gram={self._ambient_gram()}, right_ambient_gram={other._ambient_gram()}")
 
     # -- Port: intrinsic invariants read straight off (base_ring, G) --------------
 
@@ -249,8 +243,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
         )
 
     def base_extend(self, base_ring):
-        if not (base_ring in (ZZ, QQ)):
-            raise ValueError(f"lattice base ring must be ZZ or QQ; found={base_ring}")
+        assert base_ring in (ZZ, QQ), (f"lattice base ring must be ZZ or QQ; found={base_ring}")
         return synthetic_lattice(
             self.gram_matrix(), base_ring, f"{self._label}_over_{base_ring}",
             ambient=self._ambient, inclusion=self._inclusion,
@@ -334,11 +327,10 @@ class SyntheticLattice(LatticeCarrier, Parent):
             complement = matrix(ZZ, [gen.lift() for gen in quotient.gens()])
         quotient_gram = complement * gram * complement.transpose()
         quotient_lattice = synthetic_lattice(quotient_gram, self.base_ring(), label)
-        if not quotient_lattice.is_nondegenerate():
-            raise ValueError(
-                "radical quotient must be nondegenerate; "
-                f"gram={quotient_lattice.gram_matrix()}"
-            )
+        assert quotient_lattice.is_nondegenerate(), (
+            "radical quotient must be nondegenerate; "
+            f"gram={quotient_lattice.gram_matrix()}"
+        )
         return quotient_lattice
 
     # -- Subobject algebra: operations between sublattices of a common parent -----
@@ -349,16 +341,16 @@ class SyntheticLattice(LatticeCarrier, Parent):
 
     def sublattice(self, generators, label="sublattice", require_subset=True, require_integral=True):
         generator_matrix = matrix(QQ, generators)
-        if not (generator_matrix.ncols() == self.rank()):
-            raise ValueError("sublattice generators must be rows in the parent basis; "
-            f"parent_rank={self.rank()}, generators={generator_matrix}")
+        assert generator_matrix.ncols() == self.rank(), ("sublattice generators must be rows in the parent basis; "
+        f"parent_rank={self.rank()}, generators={generator_matrix}")
         if require_subset:
             parent_module = self._underlying_module()
             rational_generators = generator_matrix * self._inclusion_rows()
             for row in rational_generators.rows():
-                if row not in parent_module:
-                    raise ValueError("sublattice generators must lie in the parent lattice; "
-                    f"generator={row}, parent={self}")
+                assert row in parent_module, (
+                    "sublattice generators must lie in the parent lattice; "
+                    f"generator={row}, parent={self}; fix the caller's generators"
+                )
         if generator_matrix.rank() == generator_matrix.nrows():
             basis_matrix = generator_matrix * self._inclusion_rows()
         else:
@@ -374,12 +366,10 @@ class SyntheticLattice(LatticeCarrier, Parent):
 
     def span(self, generators, base_ring=None, check_integral=None, check_even=None, label="span"):
         base_ring = self.base_ring() if base_ring is None else base_ring
-        if not (base_ring in (ZZ, QQ)):
-            raise ValueError(f"lattice span base ring must be ZZ or QQ; found={base_ring}")
+        assert base_ring in (ZZ, QQ), (f"lattice span base ring must be ZZ or QQ; found={base_ring}")
         generator_matrix = matrix(QQ, generators)
-        if not (generator_matrix.ncols() == self._ambient_rank()):
-            raise ValueError("span generators must be rows in the parent's coordinates; "
-            f"parent_rank={self._ambient_rank()}, generators={generator_matrix}")
+        assert generator_matrix.ncols() == self._ambient_rank(), ("span generators must be rows in the parent's coordinates; "
+        f"parent_rank={self._ambient_rank()}, generators={generator_matrix}")
         module = self._rationalization_module().span(generator_matrix.rows(), base_ring)
         lattice = self._from_module(module, label)
         if check_integral is True and not lattice.is_integral():
@@ -391,8 +381,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
     def span_of_basis(self, basis, base_ring=None, label="span"):
         base_ring = self.base_ring() if base_ring is None else base_ring
         basis_matrix = matrix(QQ, basis)
-        if not (basis_matrix.rank() == basis_matrix.nrows()):
-            raise ValueError(f"basis rows must be independent; basis={basis_matrix}")
+        assert basis_matrix.rank() == basis_matrix.nrows(), (f"basis rows must be independent; basis={basis_matrix}")
         return self._from_ambient_basis(basis_matrix, base_ring, label)
 
     def zero_lattice(self, label="zero_lattice"):
@@ -400,13 +389,11 @@ class SyntheticLattice(LatticeCarrier, Parent):
 
     def overlattice(self, generators, check_integral=False, label="overlattice"):
         generator_matrix = matrix(QQ, generators)
-        if not (generator_matrix.ncols() == self._ambient_rank()):
-            raise ValueError("overlattice generators must be rows in the parent's coordinates; "
-            f"parent_rank={self._ambient_rank()}, generators={generator_matrix}")
+        assert generator_matrix.ncols() == self._ambient_rank(), ("overlattice generators must be rows in the parent's coordinates; "
+        f"parent_rank={self._ambient_rank()}, generators={generator_matrix}")
         combined = self._inclusion_rows().stack(generator_matrix)
         lattice = self.span(combined, base_ring=self.base_ring(), label=label)
-        if not (self.is_submodule(lattice)):
-            raise ValueError("overlattice must contain the source lattice")
+        assert self.is_submodule(lattice), ("overlattice must contain the source lattice")
         if not (not check_integral or lattice.is_integral()):
             raise ValueError(f"overlattice is not integral; gram={lattice.gram_matrix()}")
         return lattice
@@ -490,10 +477,8 @@ class SyntheticLattice(LatticeCarrier, Parent):
         )
 
     def is_primitive(self, sublattice):
-        if not (isinstance(sublattice, SyntheticLattice)):
-            raise TypeError(f"expected SyntheticLattice; found={type(sublattice)}")
-        if not (sublattice.is_submodule(self)):
-            raise ValueError("primitive test requires a sublattice of self")
+        assert isinstance(sublattice, SyntheticLattice), (f"expected SyntheticLattice; found={type(sublattice)}")
+        assert sublattice.is_submodule(self), ("primitive test requires a sublattice of self")
         return sublattice.primitive_closure(self)._inclusion_rows() == sublattice._inclusion_rows()
 
     def isometry_group(self, gens=None, check=True, is_finite=None):
@@ -507,8 +492,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
         morphisms = tuple(self.Hom(self).from_matrix(g) for g in gens)
         if check:
             for morphism in morphisms:
-                if not (morphism.matrix().det() in (1, -1)):
-                    raise ValueError(f"isometry generator must be invertible; matrix={morphism.matrix()}")
+                assert morphism.matrix().det() in (1, -1), (f"isometry generator must be invertible; matrix={morphism.matrix()}")
         return morphisms
 
     def _computed_isometry_generators(self):
@@ -526,8 +510,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
         return tuple(matrix(ZZ, generator.matrix()).transpose() for generator in orthogonal_group.gens())
 
     def is_isometric(self, other):
-        if not (isinstance(other, SyntheticLattice)):
-            raise TypeError(f"expected SyntheticLattice; found={type(other)}")
+        assert isinstance(other, SyntheticLattice), (f"expected SyntheticLattice; found={type(other)}")
         if self.rank() != other.rank() or self.signature_pair() != other.signature_pair():
             return False
         if not (self.base_ring() is ZZ and other.base_ring() is ZZ and self.is_integral() and other.is_integral()):
@@ -609,16 +592,14 @@ class SyntheticLattice(LatticeCarrier, Parent):
         return LatticeSimilarity(self, codomain, matrix_data, scalar)
 
     def restriction_to_sublattice(self, morphism, sublattice):
-        if not (sublattice.is_submodule(self)):
-            raise ValueError("restriction domain must be a sublattice")
+        assert sublattice.is_submodule(self), ("restriction domain must be a sublattice")
         return sublattice.Hom(morphism.codomain()).from_matrix(morphism.matrix())
 
     def induced_map_on_discriminant_group(self, isometry):
         return self.discriminant_group().action_of_isometry(isometry)
 
     def induced_map_on_quotient(self, morphism, quotient):
-        if not (morphism.domain() == quotient.cover_lattice() and morphism.codomain() == quotient.cover_lattice()):
-            raise ValueError("induced quotient endomorphism requires a morphism of the quotient cover lattice")
+        assert morphism.domain() == quotient.cover_lattice() and morphism.codomain() == quotient.cover_lattice(), ("induced quotient endomorphism requires a morphism of the quotient cover lattice")
         relation_lattice = quotient.relation_lattice()
         for row in relation_lattice._inclusion_rows().rows():
             relation_coordinates = morphism.domain()._underlying_module().coordinate_vector(vector(QQ, row))
@@ -684,16 +665,14 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateCarrier, Synthe
             if isotropic_element is None:
                 return lattice
             subgroup = discriminant_group.subgroup_generated_by([isotropic_element])
-            if not (subgroup.is_quadratic_isotropic()):
-                raise ValueError(f"isotropic element generated a non-isotropic subgroup: {isotropic_element}")
+            assert subgroup.is_quadratic_isotropic(), (f"isotropic element generated a non-isotropic subgroup: {isotropic_element}")
             lattice = discriminant_group.overlattice_from_isotropic_subgroup(subgroup, label=label)
 
     def local_modification(self, subgroup_or_gens, p, label="local_modification"):
-        if hasattr(subgroup_or_gens, "is_square"):
+        if isinstance(subgroup_or_gens, Matrix):
             gram = matrix(QQ, subgroup_or_gens)
-            if not (gram.is_square() and gram.nrows() == self.rank()):
-                raise ValueError("local modification Gram matrix must be square of lattice rank; "
-                f"rank={self.rank()}, gram={gram}")
+            assert gram.is_square() and gram.nrows() == self.rank(), ("local modification Gram matrix must be square of lattice rank; "
+            f"rank={self.rank()}, gram={gram}")
             from .lattice_categories import Lattice
 
             return Lattice(gram, base_ring=self.base_ring(), label=label)
@@ -784,9 +763,8 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
         from sage.rings.rational_field import QQ
 
         target = vector(QQ, target.coefficient_vector() if hasattr(target, "coefficient_vector") and target.parent() is self else target)
-        if not (len(target) == self.rank()):
-            raise ValueError("closest vector target must have one coordinate per lattice basis vector; "
-            f"rank={self.rank()}, target={target}")
+        assert len(target) == self.rank(), ("closest vector target must have one coordinate per lattice basis vector; "
+        f"rank={self.rank()}, target={target}")
         if self.rank() == 0:
             return self.zero()
         gram = matrix(QQ, self.gram_matrix())
@@ -908,9 +886,8 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
         from sage.rings.rational_field import QQ
 
         target = vector(QQ, target.coefficient_vector() if hasattr(target, "coefficient_vector") and target.parent() is self else target)
-        if not (len(target) == self.rank()):
-            raise ValueError("approximate closest vector target must have one coordinate per basis vector; "
-            f"rank={self.rank()}, target={target}")
+        assert len(target) == self.rank(), ("approximate closest vector target must have one coordinate per basis vector; "
+        f"rank={self.rank()}, target={target}")
         if self.rank() == 0:
             return self.zero()
         transform = matrix(ZZ, self.gram_matrix()).LLL_gram()
@@ -973,9 +950,8 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
         from sage.rings.rational_field import QQ
 
         target = vector(QQ, target.coefficient_vector() if hasattr(target, "coefficient_vector") and target.parent() is self else target)
-        if not (len(target) == self.rank()):
-            raise ValueError("close vector target must have one coordinate per basis vector; "
-            f"rank={self.rank()}, target={target}")
+        assert len(target) == self.rank(), ("close vector target must have one coordinate per basis vector; "
+        f"rank={self.rank()}, target={target}")
         gram = matrix(QQ, self.gram_matrix())
         inverse_gram = gram.inverse()
         ranges = []

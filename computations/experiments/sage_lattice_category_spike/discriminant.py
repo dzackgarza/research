@@ -156,10 +156,8 @@ def _finite_scalar_multiply(parent, scalar, element):
 def _finite_p_torsion(parent, p, k=1):
     p = ZZ(p)
     k = ZZ(k)
-    if not p.is_prime():
-        raise ValueError(f"p-torsion requires a prime; found={p}")
-    if not k >= 1:
-        raise ValueError(f"p-torsion exponent must be positive; found={k}")
+    assert p.is_prime(), (f"p-torsion requires a prime; found={p}")
+    assert k >= 1, (f"p-torsion exponent must be positive; found={k}")
     return parent.subgroup_generated_by(element for element in parent.elements() if _finite_scalar_multiply(parent, p ** k, element) == parent.zero())
 
 
@@ -183,9 +181,8 @@ class SyntheticDiscriminantGroupElement(Element):
         if coordinates == 0:
             coordinates = [ZZ.zero()] * parent.ngens()
         coords = vector(ZZ, coordinates)
-        if not (len(coords) == parent.ngens()):
-            raise ValueError("discriminant coordinates must match Smith invariant count; "
-            f"invariants={parent.invariants()}, coordinates={coordinates}")
+        assert len(coords) == parent.ngens(), ("discriminant coordinates must match Smith invariant count; "
+        f"invariants={parent.invariants()}, coordinates={coordinates}")
         coords = vector(ZZ, [coords[i] % parent.invariants()[i] for i in range(parent.ngens())])
         coords.set_immutable()
         self._coordinates = coords
@@ -231,10 +228,8 @@ class SyntheticDiscriminantGroup(Parent):
     Element = SyntheticDiscriminantGroupElement
 
     def __init__(self, source_lattice, primary):
-        if not (isinstance(source_lattice, SyntheticLattice)):
-            raise TypeError(f"expected SyntheticLattice source; found={type(source_lattice)}")
-        if not (primary == 0 or ZZ(primary).is_prime()):
-            raise ValueError(f"primary must be 0 or prime; found={primary}")
+        assert isinstance(source_lattice, SyntheticLattice), (f"expected SyntheticLattice source; found={type(source_lattice)}")
+        assert primary == 0 or ZZ(primary).is_prime(), (f"primary must be 0 or prime; found={primary}")
         self._source_lattice = source_lattice
         self._primary = ZZ(primary)
         smith, _smith_left, smith_right = matrix(ZZ, source_lattice.gram_matrix()).smith_form()
@@ -364,8 +359,7 @@ class SyntheticDiscriminantGroup(Parent):
 
     def rank_p(self, p):
         p = ZZ(p)
-        if not (p.is_prime()):
-            raise ValueError(f"p-rank requires a prime; found={p}")
+        assert p.is_prime(), (f"p-rank requires a prime; found={p}")
         return ZZ(sum(1 for invariant in self.invariants() if ZZ(invariant) % p == 0))
 
 
@@ -483,9 +477,8 @@ class SyntheticDiscriminantGroup(Parent):
     def projection(self, element):
         cover = self.cover()
         if isinstance(element, SyntheticLatticeElement):
-            if not (element.parent() == cover):
-                raise ValueError("projection expects an element of the dual cover; "
-                f"expected={cover}, found={element.parent()}")
+            assert element.parent() == cover, ("projection expects an element of the dual cover; "
+            f"expected={cover}, found={element.parent()}")
         else:
             element = cover(element)
         # cover's intrinsic coordinates are already the dual-basis coordinates the
@@ -530,9 +523,8 @@ class SyntheticDiscriminantGroup(Parent):
 
     def discrete_exp(self, coefficients, gens=None):
         gens = self.gens() if gens is None else tuple(self(gen) for gen in gens)
-        if not (len(coefficients) == len(gens)):
-            raise ValueError("coefficient vector length must match generator count; "
-            f"coefficients={coefficients}, gens={gens}")
+        assert len(coefficients) == len(gens), ("coefficient vector length must match generator count; "
+        f"coefficients={coefficients}, gens={gens}")
         value = self.zero()
         for coefficient, generator in zip(coefficients, gens):
             value += ZZ(coefficient) * generator
@@ -689,8 +681,7 @@ class SyntheticDiscriminantGroup(Parent):
     def p_torsion(self, p, k=1):
         p = ZZ(p)
         k = ZZ(k)
-        if not (p.is_prime()):
-            raise ValueError(f"p-torsion requires a prime; found={p}")
+        assert p.is_prime(), (f"p-torsion requires a prime; found={p}")
         return self.subgroup_generated_by(element for element in self.elements() if (p ** k) * element == self.zero())
 
     def overlattice_from_isotropic_subgroup(self, subgroup_or_gens, label="overlattice"):
@@ -775,15 +766,13 @@ class SyntheticDiscriminantGroup(Parent):
         return SyntheticDiscriminantAction.from_images(self, images)
 
     def orthogonal_group(self, gens=None, check=False, kind="quadratic"):
-        if not (kind in ("quadratic", "bilinear")):
-            raise ValueError(f"orthogonal group kind must be quadratic or bilinear; found={kind}")
+        assert kind in ("quadratic", "bilinear"), (f"orthogonal group kind must be quadratic or bilinear; found={kind}")
         if gens is None:
             return SyntheticOrthogonalGroup(self, self._brute_force_orthogonal_group(kind=kind))
         actions = tuple(SyntheticDiscriminantAction(self, matrix(ZZ, gen)) for gen in gens)
         if check:
             for action in actions:
-                if not (action.preserves_form(kind=kind)):
-                    raise ValueError(f"discriminant action does not preserve the form; matrix={action.matrix()}")
+                assert action.preserves_form(kind=kind), (f"discriminant action does not preserve the form; matrix={action.matrix()}")
         return SyntheticOrthogonalGroup(self, actions, close=True)
 
 
@@ -818,9 +807,8 @@ class SyntheticDiscriminantGroup(Parent):
                 best_key = key
                 best_matrix = gram
                 best_images = images
-        if not (best_matrix is not None):
-            raise ValueError("finite invariant-basis enumeration produced no presentation; "
-            f"invariants={self.invariants()}")
+        assert best_matrix is not None, ("finite invariant-basis enumeration produced no presentation; "
+        f"invariants={self.invariants()}")
         best_matrix.set_immutable()
         normal_form = self.invariants(), best_matrix
         if return_isometry:
@@ -828,10 +816,8 @@ class SyntheticDiscriminantGroup(Parent):
         return normal_form
 
     def is_isomorphic(self, other, kind="quadratic"):
-        if not (isinstance(other, SyntheticDiscriminantGroup)):
-            raise TypeError(f"expected SyntheticDiscriminantGroup; found={type(other)}")
-        if not (kind in ("group", "bilinear", "quadratic")):
-            raise ValueError(f"isomorphism kind must be group, bilinear, or quadratic; found={kind}")
+        assert isinstance(other, SyntheticDiscriminantGroup), (f"expected SyntheticDiscriminantGroup; found={type(other)}")
+        assert kind in ("group", "bilinear", "quadratic"), (f"isomorphism kind must be group, bilinear, or quadratic; found={kind}")
         if self.invariants() != other.invariants():
             return False
         if kind == "group":
@@ -840,16 +826,17 @@ class SyntheticDiscriminantGroup(Parent):
 
 
     def isometry_to(self, other, kind="quadratic"):
-        if not (kind in ("quadratic", "bilinear")):
-            raise ValueError(f"isometry kind must be quadratic or bilinear; found={kind}")
-        if not (isinstance(other, SyntheticDiscriminantGroup)):
-            raise TypeError(f"expected SyntheticDiscriminantGroup; found={type(other)}")
+        assert kind in ("quadratic", "bilinear"), (f"isometry kind must be quadratic or bilinear; found={kind}")
+        assert isinstance(other, SyntheticDiscriminantGroup), (f"expected SyntheticDiscriminantGroup; found={type(other)}")
         if not self.is_isomorphic(other, kind=kind):
             raise ValueError("discriminant forms are not isomorphic")
         for images in self._isomorphism_images_to(other):
             if self._images_preserve_structure(other, images, kind):
                 return SyntheticDiscriminantAction.from_images(self, (self(image.coefficient_vector()) for image in images))
-        raise ValueError("no isometry found")
+        assert False, (
+            "no isometry found despite is_isomorphic; internal invariant broken between "
+            f"is_isomorphic and _images_preserve_structure for kind={kind}"
+        )
 
     def _isomorphism_images_to(self, other):
         candidates_by_generator = tuple(
@@ -881,14 +868,12 @@ class SyntheticDiscriminantGroup(Parent):
         return matrix(QQ, [[self.q(element) if i == j else self.b(element, other) for j, other in enumerate(subgroup.gens())] for i, element in enumerate(subgroup.gens())])
 
     def pushforward_form(self, phi):
-        if not (phi.discriminant_group() is self):
-            raise ValueError("pushforward requires an endomorphism of this discriminant group")
+        assert phi.discriminant_group() is self, ("pushforward requires an endomorphism of this discriminant group")
         inverse = phi.inverse()
         return _form_matrix_on_images(self, [inverse(generator) for generator in self.gens()])
 
     def pullback_form(self, phi):
-        if not (phi.discriminant_group() is self):
-            raise ValueError("pullback requires an endomorphism of this discriminant group")
+        assert phi.discriminant_group() is self, ("pullback requires an endomorphism of this discriminant group")
         return _form_matrix_on_images(self, [phi(generator) for generator in self.gens()])
 
     def subquotient_form(self, subgroup_or_gens, quotient_subgroup_or_gens):
@@ -937,8 +922,10 @@ class SyntheticDiscriminantGroup(Parent):
         r"""Return whether this discriminant form passes Sage's even-genus tests."""
         s_plus = ZZ(signature_pair[0])
         s_minus = ZZ(signature_pair[1])
-        if s_plus < 0 or s_minus < 0:
-            raise ValueError("signature invariants must be nonnegative")
+        assert s_plus >= 0 and s_minus >= 0, (
+            f"signature invariants must be nonnegative; found s_plus={s_plus}, s_minus={s_minus}; "
+            "fix the caller's signature pair"
+        )
         if not even:
             raise NotImplementedError("odd genus classification is not implemented in this spike")
         if self._quadratic_modulus() != 2:
@@ -979,8 +966,7 @@ class SyntheticDiscriminantGroup(Parent):
 
     def _subgroup(self, subgroup_or_gens):
         if isinstance(subgroup_or_gens, SyntheticDiscriminantSubgroup):
-            if not (subgroup_or_gens.ambient() is self):
-                raise ValueError("subgroup belongs to a different discriminant group")
+            assert subgroup_or_gens.ambient() is self, ("subgroup belongs to a different discriminant group")
             return subgroup_or_gens
         return self.subgroup_generated_by(subgroup_or_gens)
 
@@ -1031,8 +1017,7 @@ class SyntheticDiscriminantGroup(Parent):
         return normalized
 
     def _brute_force_orthogonal_group(self, kind="quadratic"):
-        if not (kind in ("quadratic", "bilinear")):
-            raise ValueError(f"orthogonal group kind must be quadratic or bilinear; found={kind}")
+        assert kind in ("quadratic", "bilinear"), (f"orthogonal group kind must be quadratic or bilinear; found={kind}")
         if self.ngens() == 0:
             return (SyntheticDiscriminantAction(self, identity_matrix(ZZ, 0)),)
         automorphisms = []
@@ -1052,8 +1037,7 @@ class SyntheticDiscriminantSubgroup:
     r"""Finite subgroup of a synthetic discriminant group."""
 
     def __init__(self, ambient, gens):
-        if not (all(hasattr(ambient, name) for name in ("ngens", "order", "zero", "elements"))):
-            raise ValueError(f"expected finite additive parent; found={type(ambient)}")
+        assert all(hasattr(ambient, name) for name in ("ngens", "order", "zero", "elements")), (f"expected finite additive parent; found={type(ambient)}")
         self._ambient = ambient
         self._gens = tuple(self._coerce(gen) for gen in gens)
         self._elements = tuple(sorted(self._closure(), key=self._element_key))
@@ -1130,8 +1114,7 @@ class SyntheticDiscriminantGroupQuotient(Parent):
     Element = SyntheticDiscriminantGroupElement
 
     def __init__(self, ambient_group, relation_subgroup):
-        if not (all(hasattr(ambient_group, name) for name in ("ngens", "invariants", "gens", "order"))):
-            raise ValueError(f"expected finite additive parent; found={type(ambient_group)}")
+        assert all(hasattr(ambient_group, name) for name in ("ngens", "invariants", "gens", "order")), (f"expected finite additive parent; found={type(ambient_group)}")
         relation_subgroup = ambient_group._subgroup(relation_subgroup)
         self._ambient_group = ambient_group
         self._relation_subgroup = relation_subgroup
@@ -1219,8 +1202,7 @@ class SyntheticDiscriminantGroupQuotient(Parent):
 
     def rank_p(self, p):
         p = ZZ(p)
-        if not p.is_prime():
-            raise ValueError(f"p-rank requires a prime; found={p}")
+        assert p.is_prime(), (f"p-rank requires a prime; found={p}")
         return ZZ(sum(1 for invariant in self.invariants() if ZZ(invariant) % p == 0))
 
 
@@ -1285,9 +1267,8 @@ class SyntheticDiscriminantGroupQuotient(Parent):
     def discrete_exp(self, coefficients, gens=None):
         coefficients = tuple(coefficients)
         gens = self.gens() if gens is None else tuple(self(gen) for gen in gens)
-        if not (len(coefficients) == len(gens)):
-            raise ValueError("coefficient vector length must match generator count; "
-            f"coefficients={coefficients}, gens={gens}")
+        assert len(coefficients) == len(gens), ("coefficient vector length must match generator count; "
+        f"coefficients={coefficients}, gens={gens}")
         value = self.zero()
         for coefficient, generator in zip(coefficients, gens):
             value += ZZ(coefficient) * generator
@@ -1325,8 +1306,7 @@ class SyntheticDiscriminantGroupQuotient(Parent):
 
     def _subgroup(self, subgroup_or_gens):
         if isinstance(subgroup_or_gens, SyntheticDiscriminantSubgroup):
-            if not (subgroup_or_gens.ambient() is self):
-                raise ValueError("subgroup belongs to a different finite quotient")
+            assert subgroup_or_gens.ambient() is self, ("subgroup belongs to a different finite quotient")
             return subgroup_or_gens
         return self.subgroup_generated_by(subgroup_or_gens)
 
@@ -1354,8 +1334,7 @@ class SyntheticDiscriminantGroupQuotient(Parent):
 
     def primary_part(self, p):
         p = ZZ(p)
-        if not p.is_prime():
-            raise ValueError(f"primary part requires a prime; found={p}")
+        assert p.is_prime(), (f"primary part requires a prime; found={p}")
         return self.subgroup_generated_by(element for element in self.elements() if (p ** ZZ(element.parent().annihilator().valuation(p))) * element == self.zero())
 
 
@@ -1455,8 +1434,7 @@ class SyntheticDiscriminantSubquotient:
 
     def rank_p(self, p):
         p = ZZ(p)
-        if not p.is_prime():
-            raise ValueError(f"p-rank requires a prime; found={p}")
+        assert p.is_prime(), (f"p-rank requires a prime; found={p}")
         return ZZ(sum(1 for invariant in self.invariants() if ZZ(invariant) % p == 0))
 
 
@@ -1544,9 +1522,8 @@ class SyntheticDiscriminantSubquotient:
     def discrete_exp(self, coefficients, gens=None):
         coefficients = tuple(coefficients)
         gens = self.gens() if gens is None else tuple(self._coerce_coset(gen) for gen in gens)
-        if not (len(coefficients) == len(gens)):
-            raise ValueError("coefficient vector length must match generator count; "
-            f"coefficients={coefficients}, gens={gens}")
+        assert len(coefficients) == len(gens), ("coefficient vector length must match generator count; "
+        f"coefficients={coefficients}, gens={gens}")
         value = self.zero()
         for coefficient, generator in zip(coefficients, gens):
             value = self._add_cosets(value, self._scalar_multiply_coset(ZZ(coefficient), generator))
@@ -1586,8 +1563,7 @@ class SyntheticDiscriminantSubquotient:
 
     def _subgroup(self, subgroup_or_gens):
         if isinstance(subgroup_or_gens, SyntheticDiscriminantSubgroup):
-            if not (subgroup_or_gens.ambient() is self):
-                raise ValueError("subgroup belongs to a different finite subquotient")
+            assert subgroup_or_gens.ambient() is self, ("subgroup belongs to a different finite subquotient")
             return subgroup_or_gens
         return self.subgroup_generated_by(subgroup_or_gens)
 
@@ -1611,8 +1587,7 @@ class SyntheticDiscriminantSubquotient:
 
     def primary_part(self, p):
         p = ZZ(p)
-        if not p.is_prime():
-            raise ValueError(f"primary part requires a prime; found={p}")
+        assert p.is_prime(), (f"primary part requires a prime; found={p}")
         exponent = ZZ(self.annihilator()).valuation(p)
         return self.subgroup_generated_by(element for element in self.elements() if self._scalar_multiply_coset(p ** exponent, element) == self.zero())
 
@@ -1678,7 +1653,7 @@ class SyntheticDiscriminantSubquotient:
             for coset in self._cosets:
                 if element == coset:
                     return coset
-            raise ValueError(f"coset is not an element of this subquotient: {element}")
+            assert False, f"coset is not an element of this subquotient: {element}; fix the caller's coset"
         return self._coset_containing(element)
 
     def _coset_representative(self, coset):
@@ -1689,7 +1664,7 @@ class SyntheticDiscriminantSubquotient:
         for coset in self._cosets:
             if element in coset:
                 return coset
-        raise ValueError(f"element is outside the subquotient cover subgroup: {element}")
+        assert False, f"element is outside the subquotient cover subgroup: {element}; fix the caller's element"
 
     def _closure(self, gens):
         if not gens:
@@ -1724,16 +1699,13 @@ class SyntheticLatticeFiniteQuotient(Parent):
     Element = SyntheticDiscriminantGroupElement
 
     def __init__(self, cover_lattice, relation_lattice):
-        if not (isinstance(cover_lattice, SyntheticLattice)):
-            raise TypeError(f"expected SyntheticLattice cover; found={type(cover_lattice)}")
-        if not (isinstance(relation_lattice, SyntheticLattice)):
-            raise TypeError(f"expected SyntheticLattice relation lattice; found={type(relation_lattice)}")
+        assert isinstance(cover_lattice, SyntheticLattice), (f"expected SyntheticLattice cover; found={type(cover_lattice)}")
+        assert isinstance(relation_lattice, SyntheticLattice), (f"expected SyntheticLattice relation lattice; found={type(relation_lattice)}")
         if not (cover_lattice.base_ring() is ZZ):
             raise ValueError("finite lattice quotient cover must be a ZZ-lattice")
         if not (relation_lattice.base_ring() is ZZ):
             raise ValueError("finite lattice quotient relations must be a ZZ-lattice")
-        if not (relation_lattice.rank() == cover_lattice.rank()):
-            raise ValueError("finite quotients require same-rank lattices")
+        assert relation_lattice.rank() == cover_lattice.rank(), ("finite quotients require same-rank lattices")
         self._cover_lattice = cover_lattice
         self._relation_lattice = relation_lattice
         inclusion = _relation_inclusion_matrix(cover_lattice, relation_lattice)
@@ -1821,8 +1793,7 @@ class SyntheticLatticeFiniteQuotient(Parent):
 
     def rank_p(self, p):
         p = ZZ(p)
-        if not p.is_prime():
-            raise ValueError(f"p-rank requires a prime; found={p}")
+        assert p.is_prime(), (f"p-rank requires a prime; found={p}")
         return ZZ(sum(1 for invariant in self.invariants() if ZZ(invariant) % p == 0))
 
 
@@ -1883,9 +1854,8 @@ class SyntheticLatticeFiniteQuotient(Parent):
     def discrete_exp(self, coefficients, gens=None):
         coefficients = tuple(coefficients)
         gens = self.gens() if gens is None else tuple(self(gen) for gen in gens)
-        if not (len(coefficients) == len(gens)):
-            raise ValueError("coefficient vector length must match generator count; "
-            f"coefficients={coefficients}, gens={gens}")
+        assert len(coefficients) == len(gens), ("coefficient vector length must match generator count; "
+        f"coefficients={coefficients}, gens={gens}")
         value = self.zero()
         for coefficient, generator in zip(coefficients, gens):
             value += ZZ(coefficient) * generator
@@ -1907,8 +1877,7 @@ class SyntheticLatticeFiniteQuotient(Parent):
 
     def _subgroup(self, subgroup_or_gens):
         if isinstance(subgroup_or_gens, SyntheticDiscriminantSubgroup):
-            if not (subgroup_or_gens.ambient() is self):
-                raise ValueError("subgroup belongs to a different finite lattice quotient")
+            assert subgroup_or_gens.ambient() is self, ("subgroup belongs to a different finite lattice quotient")
             return subgroup_or_gens
         return self.subgroup_generated_by(subgroup_or_gens)
 
@@ -1932,8 +1901,7 @@ class SyntheticLatticeFiniteQuotient(Parent):
 
     def primary_part(self, p):
         p = ZZ(p)
-        if not p.is_prime():
-            raise ValueError(f"primary part requires a prime; found={p}")
+        assert p.is_prime(), (f"primary part requires a prime; found={p}")
         exponent = ZZ(self.annihilator()).valuation(p)
         return self.subgroup_generated_by(element for element in self.elements() if (p ** exponent) * element == self.zero())
 
@@ -1991,9 +1959,8 @@ class SyntheticLatticeFiniteQuotient(Parent):
     def projection(self, element):
         cover = self.cover_lattice()
         if isinstance(element, SyntheticLatticeElement):
-            if not (element.parent() == cover):
-                raise ValueError("projection expects an element of the quotient cover; "
-                f"expected={cover}, found={element.parent()}")
+            assert element.parent() == cover, ("projection expects an element of the quotient cover; "
+            f"expected={cover}, found={element.parent()}")
         else:
             element = cover(element)
         cover_row = matrix(ZZ, 1, cover.rank(), list(element.coefficient_vector()))
@@ -2034,15 +2001,12 @@ class SyntheticDiscriminantAction:
     r"""Endomorphism of a synthetic discriminant group in invariant coordinates."""
 
     def __init__(self, discriminant_group, matrix_data):
-        if not (hasattr(discriminant_group, "ngens") and hasattr(discriminant_group, "invariants")):
-            raise ValueError(f"expected finite discriminant parent; found={type(discriminant_group)}")
+        assert hasattr(discriminant_group, "ngens") and hasattr(discriminant_group, "invariants"), (f"expected finite discriminant parent; found={type(discriminant_group)}")
         matrix_data = matrix(ZZ, matrix_data)
-        if not (matrix_data.nrows() == discriminant_group.ngens()):
-            raise ValueError("action matrix rows must match invariant count; "
-            f"rows={matrix_data.nrows()}, invariants={discriminant_group.invariants()}")
-        if not (matrix_data.ncols() == discriminant_group.ngens()):
-            raise ValueError("action matrix columns must match invariant count; "
-            f"columns={matrix_data.ncols()}, invariants={discriminant_group.invariants()}")
+        assert matrix_data.nrows() == discriminant_group.ngens(), ("action matrix rows must match invariant count; "
+        f"rows={matrix_data.nrows()}, invariants={discriminant_group.invariants()}")
+        assert matrix_data.ncols() == discriminant_group.ngens(), ("action matrix columns must match invariant count; "
+        f"columns={matrix_data.ncols()}, invariants={discriminant_group.invariants()}")
         reduced = matrix(ZZ, matrix_data.nrows(), matrix_data.ncols())
         for i, invariant in enumerate(discriminant_group.invariants()):
             for j in range(matrix_data.ncols()):
@@ -2111,9 +2075,8 @@ class SyntheticDiscriminantAction:
                 for element in self.discriminant_group().elements()
                 if self(element) == generator
             )
-            if not (len(preimages) == 1):
-                raise ValueError("automorphism inverse must have a unique preimage for each generator; "
-                f"generator={generator}, preimages={preimages}")
+            assert len(preimages) == 1, ("automorphism inverse must have a unique preimage for each generator; "
+            f"generator={generator}, preimages={preimages}")
             inverse_images.append(preimages[0])
         return SyntheticDiscriminantAction.from_images(self.discriminant_group(), inverse_images)
 
@@ -2130,8 +2093,7 @@ class SyntheticDiscriminantAction:
         return all(group.q(self(element)) == group.q(element) for element in group.elements())
 
     def preserves_form(self, kind="quadratic"):
-        if not (kind in ("quadratic", "bilinear")):
-            raise ValueError(f"form kind must be quadratic or bilinear; found={kind}")
+        assert kind in ("quadratic", "bilinear"), (f"form kind must be quadratic or bilinear; found={kind}")
         if kind == "bilinear":
             return self.preserves_bilinear_form()
         return self.preserves_bilinear_form() and self.preserves_quadratic_form()
@@ -2175,8 +2137,7 @@ class SyntheticOrthogonalGroup:
 
     def __call__(self, action):
         action = action if isinstance(action, SyntheticDiscriminantAction) else SyntheticDiscriminantAction(self.discriminant_group(), action)
-        if not (any(action == group_action for group_action in self._actions)):
-            raise ValueError(f"action is not in this orthogonal group: {action.matrix()}")
+        assert any(action == group_action for group_action in self._actions), (f"action is not in this orthogonal group: {action.matrix()}")
         return action.matrix()
 
     def _closure(self, generators):
@@ -2201,10 +2162,8 @@ class SyntheticFiniteQuadraticForm(Parent):
 
     def __init__(self, gram_matrix):
         raw_gram = matrix(QQ, gram_matrix)
-        if not (raw_gram.is_square()):
-            raise ValueError(f"finite quadratic form Gram matrix must be square; found={raw_gram}")
-        if not (raw_gram == raw_gram.transpose()):
-            raise ValueError(f"finite quadratic form Gram matrix must be symmetric; found={raw_gram}")
+        assert raw_gram.is_square(), (f"finite quadratic form Gram matrix must be square; found={raw_gram}")
+        assert raw_gram == raw_gram.transpose(), (f"finite quadratic form Gram matrix must be symmetric; found={raw_gram}")
         invariants = []
         active_indices = []
         for i in range(raw_gram.nrows()):
@@ -2294,8 +2253,7 @@ class SyntheticFiniteQuadraticForm(Parent):
 
     def rank_p(self, p):
         p = ZZ(p)
-        if not (p.is_prime()):
-            raise ValueError(f"p-rank requires a prime; found={p}")
+        assert p.is_prime(), (f"p-rank requires a prime; found={p}")
         return ZZ(sum(1 for invariant in self.invariants() if ZZ(invariant) % p == 0))
 
 
@@ -2354,9 +2312,8 @@ class SyntheticFiniteQuadraticForm(Parent):
     def discrete_exp(self, coefficients, gens=None):
         coefficients = tuple(coefficients)
         gens = self.gens() if gens is None else tuple(self(gen) for gen in gens)
-        if not (len(coefficients) == len(gens)):
-            raise ValueError("coefficient vector length must match generator count; "
-            f"coefficients={coefficients}, gens={gens}")
+        assert len(coefficients) == len(gens), ("coefficient vector length must match generator count; "
+        f"coefficients={coefficients}, gens={gens}")
         value = self.zero()
         for coefficient, generator in zip(coefficients, gens):
             value += ZZ(coefficient) * generator
@@ -2407,8 +2364,7 @@ class SyntheticFiniteQuadraticForm(Parent):
 
     def _subgroup(self, subgroup_or_gens):
         if isinstance(subgroup_or_gens, SyntheticDiscriminantSubgroup):
-            if not (subgroup_or_gens.ambient() is self):
-                raise ValueError("subgroup belongs to a different finite quadratic form")
+            assert subgroup_or_gens.ambient() is self, ("subgroup belongs to a different finite quadratic form")
             return subgroup_or_gens
         return self.subgroup_generated_by(subgroup_or_gens)
 
@@ -2430,8 +2386,7 @@ class SyntheticFiniteQuadraticForm(Parent):
 
     def primary_part(self, p):
         p = ZZ(p)
-        if not (p.is_prime()):
-            raise ValueError(f"primary part requires a prime; found={p}")
+        assert p.is_prime(), (f"primary part requires a prime; found={p}")
         images = []
         for invariant, generator in zip(self.invariants(), self.gens()):
             valuation = ZZ(invariant).valuation(p)
@@ -2586,14 +2541,12 @@ class SyntheticFiniteQuadraticForm(Parent):
         return SyntheticDiscriminantAction.from_images(self, images)
 
     def pushforward_form(self, phi):
-        if not (phi.discriminant_group() is self):
-            raise ValueError("pushforward requires an endomorphism of this finite quadratic form")
+        assert phi.discriminant_group() is self, ("pushforward requires an endomorphism of this finite quadratic form")
         inverse = phi.inverse()
         return _form_matrix_on_images(self, [inverse(generator) for generator in self.gens()])
 
     def pullback_form(self, phi):
-        if not (phi.discriminant_group() is self):
-            raise ValueError("pullback requires an endomorphism of this finite quadratic form")
+        assert phi.discriminant_group() is self, ("pullback requires an endomorphism of this finite quadratic form")
         return _form_matrix_on_images(self, [phi(generator) for generator in self.gens()])
 
     def normal_form(self, partial=False, return_isometry=False):
@@ -2613,9 +2566,8 @@ class SyntheticFiniteQuadraticForm(Parent):
                 best_key = key
                 best_normal_form = (invariants, form)
                 best_images = images
-        if not (best_normal_form is not None):
-            raise ValueError("finite invariant-basis enumeration produced no presentation; "
-            f"invariants={self.invariants()}")
+        assert best_normal_form is not None, ("finite invariant-basis enumeration produced no presentation; "
+        f"invariants={self.invariants()}")
         if return_isometry:
             return best_normal_form, SyntheticDiscriminantAction.from_images(self, best_images)
         return best_normal_form
@@ -2660,10 +2612,8 @@ class SyntheticFiniteQuadraticForm(Parent):
         return True
 
     def is_isomorphic(self, other, kind="quadratic"):
-        if not (kind in ("group", "bilinear", "quadratic")):
-            raise ValueError(f"isomorphism kind must be group, bilinear, or quadratic; found={kind}")
-        if not (isinstance(other, SyntheticFiniteQuadraticForm)):
-            raise TypeError(f"expected SyntheticFiniteQuadraticForm; found={type(other)}")
+        assert kind in ("group", "bilinear", "quadratic"), (f"isomorphism kind must be group, bilinear, or quadratic; found={kind}")
+        assert isinstance(other, SyntheticFiniteQuadraticForm), (f"expected SyntheticFiniteQuadraticForm; found={type(other)}")
         if self.cardinality() != other.cardinality():
             return False
         if kind == "group":
@@ -2707,8 +2657,7 @@ class SyntheticFiniteQuadraticForm(Parent):
         return SyntheticFiniteQuadraticForm(self.gram_matrix_quadratic() * QQ(scalar))
 
     def orthogonal_group(self, gens=None, check=False, kind="quadratic"):
-        if not (kind in ("quadratic", "bilinear")):
-            raise ValueError(f"orthogonal group kind must be quadratic or bilinear; found={kind}")
+        assert kind in ("quadratic", "bilinear"), (f"orthogonal group kind must be quadratic or bilinear; found={kind}")
         if gens is None:
             actions = []
             candidates = tuple(self.elements())
@@ -2720,8 +2669,7 @@ class SyntheticFiniteQuadraticForm(Parent):
         actions = tuple(SyntheticDiscriminantAction(self, matrix(ZZ, gen)) for gen in gens)
         if check:
             for action in actions:
-                if not (action.preserves_form(kind=kind)):
-                    raise ValueError(f"finite quadratic form action does not preserve the form; matrix={action.matrix()}")
+                assert action.preserves_form(kind=kind), (f"finite quadratic form action does not preserve the form; matrix={action.matrix()}")
         return SyntheticOrthogonalGroup(self, actions, close=True)
 
 
@@ -2787,8 +2735,7 @@ class TwistedSyntheticDiscriminantGroup(Parent):
     Element = SyntheticDiscriminantGroupElement
 
     def __init__(self, discriminant_group, scalar):
-        if not (isinstance(discriminant_group, SyntheticDiscriminantGroup)):
-            raise TypeError(f"expected SyntheticDiscriminantGroup; found={type(discriminant_group)}")
+        assert isinstance(discriminant_group, SyntheticDiscriminantGroup), (f"expected SyntheticDiscriminantGroup; found={type(discriminant_group)}")
         self._discriminant_group = discriminant_group
         self._scalar = QQ(scalar)
         Parent.__init__(self, base=ZZ, category=discriminant_group.category())
