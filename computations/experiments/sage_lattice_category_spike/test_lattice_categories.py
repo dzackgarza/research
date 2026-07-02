@@ -626,3 +626,24 @@ def test_reflection_is_an_order_two_isometry_defined_only_for_anisotropic_vector
     U = Lattice("U", label="U")
     with pytest.raises(ValueError):
         U.reflection(U.gen(0))  # isotropic: q(e) = 0
+
+def test_two_signal_placement_gates_dual_and_discriminant_vocabulary_by_stratum():
+    # Axis 1 (definedness -> placement/absence): dual needs nondegeneracy;
+    # discriminant/genus vocabulary needs integral + nondegenerate.
+    # Axis 2 (computability -> abstract signal): declared contracts raise.
+    A2 = Lattice("A2", label="A2")
+    degenerate = Lattice(matrix(QQ, [[0, 0], [0, 0]]), label="deg")
+    rational = Lattice(matrix(QQ, [[QQ(1) / 2]]), base_ring=QQ, label="half")
+
+    for name in ("dual", "dual_inclusion", "discriminant_group", "genus", "same_genus",
+                 "glue", "maximal_overlattice", "local_modification"):
+        assert not hasattr(degenerate, name)
+    for name in ("discriminant_group", "genus", "same_genus", "glue"):
+        assert not hasattr(rational, name)
+    assert hasattr(rational, "dual")
+
+    assert A2.same_genus(A2) and A2.genus() == A2.genus()
+    with pytest.raises(NotImplementedError):
+        A2.embeds_primitively_in_unimodular((8, 0))
+    with pytest.raises(NotImplementedError):
+        A2.primitive_embedding_into_unimodular((8, 0))

@@ -29,8 +29,10 @@ from sage.categories.sets_cat import Sets
 from sage.misc.abstract_method import abstract_method
 
 from .domain_algebra import (
+    IntegralNondegenerateLattice as IntegralNondegenerateCarrier,
     Lattice as LatticeCarrier,
     LatticeElement as LatticeElementCarrier,
+    NondegenerateLattice as NondegenerateCarrier,
 )
 from sage.rings.integer_ring import ZZ
 
@@ -56,6 +58,17 @@ for _axiom_name in _FORM_AXIOMS:
     if _axiom_name not in all_axioms:
         all_axioms.add(_axiom_name)
 
+
+
+def _carrier_delta(carrier):
+    r"""Sage's category framework injects only a ParentMethods class's OWN
+    attributes and warns when the class has a superclass (inherited names are
+    never copied). Axiom carriers subclass their base carrier for the static
+    type hierarchy, so hand Sage a derived view holding exactly the carrier's
+    own delta — projected mechanically, never written by hand."""
+    delta = {name: value for name, value in vars(carrier).items() if not name.startswith("__")}
+    delta["__doc__"] = carrier.__doc__
+    return type("ParentMethods", (), delta)
 
 class Lattices(Category_over_base_ring):
     r"""Based free ``R``-modules with a symmetric ``K``-valued form.
@@ -165,6 +178,8 @@ class DiscriminantForms(Category_over_base_ring):
 class NondegenerateLattices(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Nondegenerate")
 
+    ParentMethods = _carrier_delta(NondegenerateCarrier)
+
 
 class IntegralLattices(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Integral")
@@ -175,6 +190,8 @@ class IntegralNondegenerateLattices(CategoryWithAxiom_over_base_ring):
     # vocabulary is installed here in T1c; the class is declared now so the tree
     # and its routing exist.
     _base_category_class_and_axiom = (IntegralLattices, "Nondegenerate")
+
+    ParentMethods = _carrier_delta(IntegralNondegenerateCarrier)
 
 
 class EvenLattices(CategoryWithAxiom_over_base_ring):

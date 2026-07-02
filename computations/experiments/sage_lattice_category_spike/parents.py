@@ -26,7 +26,11 @@ from sage.structure.parent import Parent
 
 from .arithmetic import block_diagonal_matrix, signature_pair
 from .categories import Lattices
-from .domain_algebra import Lattice as LatticeCarrier
+from .domain_algebra import (
+    IntegralNondegenerateLattice as IntegralNondegenerateCarrier,
+    Lattice as LatticeCarrier,
+    NondegenerateLattice as NondegenerateCarrier,
+)
 from .elements import SyntheticLatticeElement
 
 
@@ -141,7 +145,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
             raise ValueError("inclusion rows must be given in the root's coordinates; "
             f"root_rank={root.rank()}, rows={rows}")
         gram = rows * root.gram_matrix() * rows.transpose()
-        return SyntheticLattice(gram, base_ring, label, ambient=root, inclusion=rows)
+        return synthetic_lattice(gram, base_ring, label, ambient=root, inclusion=rows)
 
     def _from_module(self, module, label):
         return self._from_ambient_basis(matrix(QQ, module.basis_matrix()), module.base_ring(), label)
@@ -231,7 +235,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
         return self.b(element, element)
 
     def rationalization(self):
-        return SyntheticLattice(
+        return synthetic_lattice(
             self.gram_matrix(), QQ, f"{self._label}_QQ",
             ambient=self._ambient, inclusion=self._inclusion,
         )
@@ -239,35 +243,10 @@ class SyntheticLattice(LatticeCarrier, Parent):
     def base_extend(self, base_ring):
         if not (base_ring in (ZZ, QQ)):
             raise ValueError(f"lattice base ring must be ZZ or QQ; found={base_ring}")
-        return SyntheticLattice(
+        return synthetic_lattice(
             self.gram_matrix(), base_ring, f"{self._label}_over_{base_ring}",
             ambient=self._ambient, inclusion=self._inclusion,
         )
-
-    def dual(self):
-        r"""The dual lattice, a based lattice with Gram ``G^{-1}``.
-
-        Two conceptually distinct duals coincide here and resolve to this one
-        object, as research usage expects:
-
-        - the *metric dual* ``L^# = {x in L (x) QQ : b(x, L) subset ZZ}``, and
-        - the *module dual* ``L^* = Hom_ZZ(L, ZZ)``,
-
-        canonically identified through the nondegenerate form ``b``.  In the basis
-        dual to ``L``'s own, the Gram matrix is ``G^{-1}``.  (This ``G^{-1}``
-        convention is the correct one: e.g. it is exactly the change from the
-        ``E_8`` root basis to its fundamental-weight basis in Bourbaki
-        coordinates, where the weights are read off ``G^{-1}``.)
-        """
-        if not (self.base_ring() is ZZ):
-            raise ValueError("dual lattice is a ZZ-lattice construction")
-        if not (self.determinant() != 0):
-            raise ValueError(f"dual lattice requires a nondegenerate form; gram={self.gram_matrix()}")
-        return SyntheticLattice(self.gram_matrix().inverse(), ZZ, f"{self._label}#")
-
-    def dual_inclusion(self):
-        r"""The natural injection ``L -> L^*``, ``v |-> b(v, -)``, with matrix ``G``."""
-        return self.Hom(self.dual()).from_matrix(self.gram_matrix())
 
     def determinant(self):
         return self.gram_matrix().determinant()
@@ -334,7 +313,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
         rank = self.rank()
         if kernel.dimension() == rank:
             # Fully degenerate: rad(L) = L, so L/rad(L) is the rank-0 lattice.
-            return SyntheticLattice(matrix(QQ, 0, 0), self.base_ring(), label)
+            return synthetic_lattice(matrix(QQ, 0, 0), self.base_ring(), label)
         if self.base_ring() is QQ:
             complement = matrix(QQ, kernel.complement().basis_matrix())
         else:
@@ -346,7 +325,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
             quotient = ambient.quotient(radical_module)
             complement = matrix(ZZ, [gen.lift() for gen in quotient.gens()])
         quotient_gram = complement * gram * complement.transpose()
-        quotient_lattice = SyntheticLattice(quotient_gram, self.base_ring(), label)
+        quotient_lattice = synthetic_lattice(quotient_gram, self.base_ring(), label)
         if not quotient_lattice.is_nondegenerate():
             raise ValueError(
                 "radical quotient must be nondegenerate; "
@@ -481,7 +460,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
 
     def direct_sum(self, other, label="direct_sum"):
         base_ring = QQ if QQ in (self.base_ring(), other.base_ring()) else ZZ
-        return SyntheticLattice(
+        return synthetic_lattice(
             block_diagonal_matrix(self.gram_matrix(), other.gram_matrix()),
             base_ring,
             label,
@@ -489,7 +468,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
 
     def tensor_product(self, other, label="tensor_product"):
         base_ring = QQ if QQ in (self.base_ring(), other.base_ring()) else ZZ
-        return SyntheticLattice(
+        return synthetic_lattice(
             self.gram_matrix().tensor_product(other.gram_matrix()),
             base_ring,
             label,
@@ -501,46 +480,6 @@ class SyntheticLattice(LatticeCarrier, Parent):
         if not (sublattice.is_submodule(self)):
             raise ValueError("primitive test requires a sublattice of self")
         return sublattice.primitive_closure(self)._inclusion_rows() == sublattice._inclusion_rows()
-
-    def glue(self, isotropic_subgroup_or_gens, label="glue"):
-        return self.discriminant_group().overlattice_from_isotropic_subgroup(isotropic_subgroup_or_gens, label=label)
-
-    def maximal_overlattice(self, p=None, label="maximal_overlattice"):
-        if p is None or ZZ(p) == 2:
-            if not (self.is_even()):
-                raise ValueError("this lattice must be even to admit an even overlattice")
-        lattice = self
-        while True:
-            discriminant_group = lattice.discriminant_group(primary=0 if p is None else ZZ(p))
-            isotropic_element = next(
-                (
-                    element
-                    for element in discriminant_group.elements()
-                    if any(coordinate != 0 for coordinate in element.coefficient_vector()) and discriminant_group.q(element) == 0
-                ),
-                None,
-            )
-            if isotropic_element is None:
-                return lattice
-            subgroup = discriminant_group.subgroup_generated_by([isotropic_element])
-            if not (subgroup.is_quadratic_isotropic()):
-                raise ValueError(f"isotropic element generated a non-isotropic subgroup: {isotropic_element}")
-            lattice = discriminant_group.overlattice_from_isotropic_subgroup(subgroup, label=label)
-
-    def local_modification(self, subgroup_or_gens, p, label="local_modification"):
-        if hasattr(subgroup_or_gens, "is_square"):
-            gram = matrix(QQ, subgroup_or_gens)
-            if not (gram.is_square() and gram.nrows() == self.rank()):
-                raise ValueError("local modification Gram matrix must be square of lattice rank; "
-                f"rank={self.rank()}, gram={gram}")
-            from .lattice_categories import Lattice
-
-            return Lattice(gram, base_ring=self.base_ring(), label=label)
-        primary_discriminant_group = self.discriminant_group(primary=p)
-        return primary_discriminant_group.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label)
-
-    def genus(self):
-        return self.discriminant_group().genus(self.signature_pair(), even=self.is_even())
 
     def isometry_group(self, gens=None, check=True, is_finite=None):
         # O(L) as its generating isometries. Generators are computed lazily and only
@@ -627,11 +566,11 @@ class SyntheticLattice(LatticeCarrier, Parent):
 
     def scale(self, scalar, label="scale"):
         scalar = QQ(scalar)
-        return SyntheticLattice(scalar ** 2 * self.gram_matrix(), self.base_ring(), label)
+        return synthetic_lattice(scalar ** 2 * self.gram_matrix(), self.base_ring(), label)
 
     def twist(self, scalar, label="twist"):
         scalar = QQ(scalar)
-        return SyntheticLattice(scalar * self.gram_matrix(), self.base_ring(), label)
+        return synthetic_lattice(scalar * self.gram_matrix(), self.base_ring(), label)
 
     def Hom(self, codomain):
         from .homsets import LatticeHomset
@@ -673,13 +612,97 @@ class SyntheticLattice(LatticeCarrier, Parent):
                 raise ValueError("morphism does not preserve the quotient relation lattice")
         return quotient.hom([quotient.projection(morphism(quotient.lift(generator))) for generator in quotient.gens()])
 
-    def discriminant_group(self, primary=0):
+
+class SyntheticNondegenerateLattice(NondegenerateCarrier, SyntheticLattice):
+    r"""Stratum with an invertible Gram matrix: the dual vocabulary is defined."""
+
+    def dual(self):
+        r"""The dual lattice, a based lattice with Gram ``G^{-1}``.
+
+        Two conceptually distinct duals coincide here and resolve to this one
+        object, as research usage expects:
+
+        - the *metric dual* ``L^# = {x in L (x) QQ : b(x, L) subset ZZ}``, and
+        - the *module dual* ``L^* = Hom_ZZ(L, ZZ)``,
+
+        canonically identified through the nondegenerate form ``b``.  In the basis
+        dual to ``L``'s own, the Gram matrix is ``G^{-1}``.  (This ``G^{-1}``
+        convention is the correct one: e.g. it is exactly the change from the
+        ``E_8`` root basis to its fundamental-weight basis in Bourbaki
+        coordinates, where the weights are read off ``G^{-1}``.)
+        """
         if not (self.base_ring() is ZZ):
-            raise ValueError("discriminant group requires a ZZ-lattice")
-        if not (self.determinant() != 0):
-            raise ValueError(f"discriminant group requires a nondegenerate lattice; gram={self.gram_matrix()}")
-        if not (self.is_integral()):
-            raise ValueError(f"discriminant group requires an integral lattice; gram={self.gram_matrix()}")
+            raise ValueError("dual lattice is a ZZ-lattice construction")
+        return synthetic_lattice(self.gram_matrix().inverse(), ZZ, f"{self._label}#")
+
+    def dual_inclusion(self):
+        r"""The natural injection ``L -> L^*``, ``v |-> b(v, -)``, with matrix ``G``."""
+        return self.Hom(self.dual()).from_matrix(self.gram_matrix())
+
+
+class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateCarrier, SyntheticNondegenerateLattice):
+    r"""Integral nondegenerate stratum: discriminant/genus vocabulary (spec 2.4)."""
+
+    def discriminant_group(self, primary=0):
         from .discriminant import SyntheticDiscriminantGroup
 
         return SyntheticDiscriminantGroup(self, primary)
+
+    def glue(self, isotropic_subgroup_or_gens, label="glue"):
+        return self.discriminant_group().overlattice_from_isotropic_subgroup(isotropic_subgroup_or_gens, label=label)
+
+    def maximal_overlattice(self, p=None, label="maximal_overlattice"):
+        if p is None or ZZ(p) == 2:
+            if not (self.is_even()):
+                raise ValueError("this lattice must be even to admit an even overlattice")
+        lattice = self
+        while True:
+            discriminant_group = lattice.discriminant_group(primary=0 if p is None else ZZ(p))
+            isotropic_element = next(
+                (
+                    element
+                    for element in discriminant_group.elements()
+                    if any(coordinate != 0 for coordinate in element.coefficient_vector()) and discriminant_group.q(element) == 0
+                ),
+                None,
+            )
+            if isotropic_element is None:
+                return lattice
+            subgroup = discriminant_group.subgroup_generated_by([isotropic_element])
+            if not (subgroup.is_quadratic_isotropic()):
+                raise ValueError(f"isotropic element generated a non-isotropic subgroup: {isotropic_element}")
+            lattice = discriminant_group.overlattice_from_isotropic_subgroup(subgroup, label=label)
+
+    def local_modification(self, subgroup_or_gens, p, label="local_modification"):
+        if hasattr(subgroup_or_gens, "is_square"):
+            gram = matrix(QQ, subgroup_or_gens)
+            if not (gram.is_square() and gram.nrows() == self.rank()):
+                raise ValueError("local modification Gram matrix must be square of lattice rank; "
+                f"rank={self.rank()}, gram={gram}")
+            from .lattice_categories import Lattice
+
+            return Lattice(gram, base_ring=self.base_ring(), label=label)
+        primary_discriminant_group = self.discriminant_group(primary=p)
+        return primary_discriminant_group.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label)
+
+    def genus(self):
+        return self.discriminant_group().genus(self.signature_pair(), even=self.is_even())
+
+    def same_genus(self, other):
+        return self.genus() == other.genus()
+
+
+def synthetic_lattice(gram_matrix, base_ring, label, ambient=None, inclusion=None):
+    r"""Private stratum router: one classification (mirroring ``category_for``),
+    one concrete class per stratum, so axiom vocabulary is reachable exactly
+    where the mathematics defines it."""
+    gram = matrix(QQ, gram_matrix)
+    nondegenerate = gram.det() != 0
+    integral = base_ring is ZZ and all(entry in ZZ for entry in gram.list())
+    if integral and nondegenerate:
+        concrete = SyntheticIntegralNondegenerateLattice
+    elif nondegenerate:
+        concrete = SyntheticNondegenerateLattice
+    else:
+        concrete = SyntheticLattice
+    return concrete(gram_matrix, base_ring, label, ambient=ambient, inclusion=inclusion)

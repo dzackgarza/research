@@ -7,13 +7,13 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
 from .arithmetic import as_square_qq_matrix
-from .parents import SyntheticLattice
+from .parents import synthetic_lattice
 
 
 def SyntheticLatticeFromGram(gram_matrix, base_ring=ZZ, label="L"):
     r"""Construct a synthetic based lattice ``(base_ring, G)`` from its Gram matrix."""
     gram = as_square_qq_matrix(gram_matrix)
-    return SyntheticLattice(gram, base_ring, label)
+    return synthetic_lattice(gram, base_ring, label)
 
 
 def Lattice(gram_matrix, base_ring=ZZ, label="L"):
