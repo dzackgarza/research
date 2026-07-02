@@ -30,14 +30,18 @@ until the parity plan's T1 realizes them.
 
 from __future__ import annotations
 
-from typing import Iterator, Literal, Protocol, Sequence, TypeAlias
+from typing import Iterator, Literal, NewType, Protocol, Sequence, TypeAlias
 
 __all__ = [
     # boundary codecs
     "RawGramMatrix",
     "RawMorphismMatrix",
+    "GramMatrix",
+    "MorphismMatrix",
     "ExactScalar",
     "BaseRing",
+    "parse_base_ring",
+    "parse_gram_matrix",
     "SignaturePair",
     "FormKind",
     "CartanType",
@@ -93,17 +97,23 @@ __all__ = [
 # ---------------------------------------------------------------------------
 
 RawGramMatrix: TypeAlias = object
-"""A matrix-like accepted by ``from_gram_matrix``; squareness/symmetry are the
-constructor's assertions, not this alias's promise."""
+"""Untrusted matrix-like input to the grammar; parsed once, never circulated."""
 
 RawMorphismMatrix: TypeAlias = object
-"""A matrix-like accepted by homset/element constructors."""
+"""Untrusted matrix-like input to homset/element constructors."""
 
-ExactScalar: TypeAlias = object
+GramMatrix = NewType("GramMatrix", object)
+"""PARSED symmetric square exact matrix — produced only by parse_gram_matrix.
+Distinct from RawGramMatrix and from MorphismMatrix by type."""
+
+MorphismMatrix = NewType("MorphismMatrix", object)
+"""PARSED exact matrix of a validated morphism — produced only by the homset."""
+
+ExactScalar = NewType("ExactScalar", object)
 """An exact Sage scalar (Integer/Rational). Never a float."""
 
-BaseRing: TypeAlias = object
-"""ZZ or QQ (the constructor asserts membership)."""
+BaseRing = NewType("BaseRing", object)
+"""ZZ or QQ, parsed by parse_base_ring."""
 
 SignaturePair: TypeAlias = tuple[int, int]
 """Sylvester pair (p, n); p + n < rank exactly for degenerate lattices."""
@@ -153,7 +163,7 @@ class Lattice(Protocol):
     # structural
     def rank(self) -> int: ...
 
-    def gram_matrix(self) -> RawGramMatrix: ...
+    def gram_matrix(self) -> GramMatrix: ...
 
     def base_ring(self) -> BaseRing: ...
 
@@ -411,7 +421,7 @@ class LatticeMorphism(Protocol):
 
     def codomain(self) -> Lattice: ...
 
-    def matrix(self) -> RawMorphismMatrix: ...  # the matrix-space seam
+    def matrix(self) -> MorphismMatrix: ...  # the matrix-space seam
 
     def __call__(self, element: LatticeElement) -> LatticeElement: ...
 
@@ -437,7 +447,7 @@ class LatticeSimilarity(Protocol):
 
     def codomain(self) -> Lattice: ...
 
-    def matrix(self) -> RawMorphismMatrix: ...
+    def matrix(self) -> MorphismMatrix: ...
 
     def scalar(self) -> ExactScalar: ...
 
@@ -535,7 +545,7 @@ class DiscriminantOrthogonalGroup(Protocol):
 class DiscriminantAction(Protocol):
     def discriminant_form(self) -> "DiscriminantForm": ...
 
-    def matrix(self) -> RawMorphismMatrix: ...
+    def matrix(self) -> MorphismMatrix: ...
 
     def __call__(self, element: DiscriminantFormElement) -> DiscriminantFormElement: ...
 
@@ -613,7 +623,7 @@ class BilinearDiscriminantForm(DiscriminantForm, Protocol):
         self, left: DiscriminantFormElement, right: DiscriminantFormElement
     ) -> ExactScalar: ...
 
-    def gram_matrix_bilinear(self) -> RawGramMatrix: ...
+    def gram_matrix_bilinear(self) -> GramMatrix: ...
 
     def value_module(self) -> ValueModule: ...
 
@@ -647,13 +657,13 @@ class BilinearDiscriminantForm(DiscriminantForm, Protocol):
 class QuadraticDiscriminantForm(BilinearDiscriminantForm, Protocol):
     def q(self, element: DiscriminantFormElement) -> ExactScalar: ...
 
-    def gram_matrix_quadratic(self) -> RawGramMatrix: ...
+    def gram_matrix_quadratic(self) -> GramMatrix: ...
 
     def value_module_qf(self) -> ValueModule: ...
 
     def brown_invariant(self) -> int: ...
 
-    def normal_form(self) -> tuple[tuple[int, ...], RawGramMatrix]: ...
+    def normal_form(self) -> tuple[tuple[int, ...], GramMatrix]: ...
 
     def is_genus(self, signature_pair: SignaturePair, even: bool = True) -> bool: ...
 
@@ -746,6 +756,17 @@ class Genus(Protocol):
 # Grammar: the constructor family (the ONLY entry into the language).
 # Conceptually functors on the category namespace; realized at T1.
 # ---------------------------------------------------------------------------
+
+def parse_base_ring(raw: object) -> BaseRing:
+    """Codec: asserts raw is ZZ or QQ."""
+    raise NotImplementedError("realized at parity-plan T1")
+
+
+def parse_gram_matrix(raw: RawGramMatrix, ring: BaseRing) -> GramMatrix:
+    """Codec: asserts square, symmetric, exact entries over Frac(ring); the
+    single place raw matrix data becomes a domain value (ADDD assertions)."""
+    raise NotImplementedError("realized at parity-plan T1")
+
 
 def from_gram_matrix(
     gram: RawGramMatrix, base_ring: BaseRing | None = None, label: str = "L"
