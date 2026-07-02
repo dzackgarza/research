@@ -86,7 +86,11 @@ class Lattices(Category_over_base_ring):
         return f"synthetic lattices over {self.base_ring()}"
 
     def super_categories(self):
-        return [Modules(self.base_ring()).WithBasis().FiniteDimensional()]
+        # V0a-ratified leaner tree: no WithBasis — a based lattice owns its basis
+        # vocabulary; the CombinatorialFreeModule element idiom must not reach
+        # lattice elements. Every name the leaner tree stops inheriting is owned
+        # on the concrete classes (basis/gens/gen/rank/random_element/...).
+        return [Modules(self.base_ring()).FiniteDimensional()]
 
     def additional_structure(self):
         return self
