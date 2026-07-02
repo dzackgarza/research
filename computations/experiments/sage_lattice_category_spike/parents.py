@@ -26,6 +26,7 @@ from sage.structure.parent import Parent
 
 from .arithmetic import block_diagonal_matrix, signature_pair
 from .categories import Lattices
+from .domain_algebra import Lattice as LatticeCarrier
 from .elements import SyntheticLatticeElement
 
 
@@ -53,7 +54,7 @@ def category_for(base_ring, gram):
     return category
 
 
-class SyntheticLattice(Parent):
+class SyntheticLattice(LatticeCarrier, Parent):
     r"""Synthetic based lattice ``(base_ring, G)`` with owned elements and homsets."""
 
     Element = SyntheticLatticeElement
@@ -85,6 +86,7 @@ class SyntheticLattice(Parent):
         self._ambient = ambient
         self._inclusion = inclusion
         self._label = label
+        self._base_ring = base_ring
         Parent.__init__(self, base=base_ring, category=category_for(base_ring, gram))
 
     def _repr_(self):
@@ -155,6 +157,37 @@ class SyntheticLattice(Parent):
 
     def rank(self):
         return self._gram_matrix.nrows()
+
+    def base_ring(self):
+        return self._base_ring
+
+    def ngens(self):
+        return self.rank()
+
+    def is_hyperbolic(self):
+        pos, neg = self.signature_pair()
+        return pos == 1 and neg == self.rank() - 1 and self.rank() >= 2
+
+    def random_element(self):
+        return self([self.base_ring().random_element() for _ in range(self.rank())])
+
+    def reflection(self, v):
+        r"""The reflection ``sigma_v(x) = x - (2 b(x,v)/q(v)) v`` in ``End(L)``."""
+        v = self(v) if not (isinstance(v, SyntheticLatticeElement) and v.parent() is self) else v
+        norm = self.q(v)
+        if norm == 0:
+            raise ValueError(f"reflection requires an anisotropic vector; q(v)=0 for v={v}")
+        v_column = matrix(QQ, self.rank(), 1, list(v.coefficient_vector()))
+        gram_v = self.gram_matrix() * v_column
+        images = identity_matrix(QQ, self.rank()) - (2 / norm) * v_column * gram_v.transpose()
+        for j in range(self.rank()):
+            if not all(images[i, j] in self.base_ring() for i in range(self.rank())):
+                raise ValueError(
+                    "reflection does not map the lattice into itself over "
+                    f"{self.base_ring()}; failing basis vector index={j}, "
+                    f"image column={images.column(j)}, v={v}"
+                )
+        return self.hom(images.change_ring(self.base_ring()))
 
     def gram_matrix(self):
         return self._gram_matrix

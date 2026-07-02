@@ -612,3 +612,17 @@ def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indef
     assert not A2.is_isometric(Lattice(matrix(ZZ, 3, 3, [2, 0, 0, 0, 2, 0, 0, 0, 2])))
     with pytest.raises(NotImplementedError):
         U.is_isometric(U)
+
+def test_reflection_is_an_order_two_isometry_defined_only_for_anisotropic_vectors():
+    # Spec: sigma_v(x) = x - (2 b(x,v)/q(v)) v, a member of End(L); q(v) = 0 is
+    # a mathematical-hypothesis rejection (ValueError), not a missing feature.
+    A2 = Lattice("A2", label="A2")
+    e0, e1 = A2.gen(0), A2.gen(1)
+    sigma = A2.reflection(e0)
+    assert sigma(e0) == -e0
+    assert A2.q(sigma(e1)) == A2.q(e1) and A2.b(sigma(e0), sigma(e1)) == A2.b(e0, e1)
+    assert sigma(sigma(e0)) == e0 and sigma(sigma(e1)) == e1
+
+    U = Lattice("U", label="U")
+    with pytest.raises(ValueError):
+        U.reflection(U.gen(0))  # isotropic: q(e) = 0

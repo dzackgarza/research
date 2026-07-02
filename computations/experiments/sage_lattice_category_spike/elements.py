@@ -6,8 +6,10 @@ from sage.modules.free_module_element import vector
 from sage.rings.rational_field import QQ
 from sage.structure.element import Element
 
+from .domain_algebra import LatticeElement as ElementCarrier
 
-class SyntheticLatticeElement(Element):
+
+class SyntheticLatticeElement(ElementCarrier, Element):
     r"""Element of an owned synthetic lattice parent."""
 
     def __init__(self, parent, coordinates):
@@ -20,6 +22,9 @@ class SyntheticLatticeElement(Element):
             )
         coords.set_immutable()
         self._coordinates = coords
+
+    def parent(self):
+        return Element.parent(self)
 
     def _repr_(self):
         return repr(self._coordinates)

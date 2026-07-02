@@ -27,6 +27,11 @@ from sage.categories.homsets import HomsetsCategory
 from sage.categories.modules import Modules
 from sage.categories.sets_cat import Sets
 from sage.misc.abstract_method import abstract_method
+
+from .domain_algebra import (
+    Lattice as LatticeCarrier,
+    LatticeElement as LatticeElementCarrier,
+)
 from sage.rings.integer_ring import ZZ
 
 
@@ -85,47 +90,9 @@ class Lattices(Category_over_base_ring):
         # only by L.cryptographic(), never by category_for (section 1.3)
         Cryptographic = axiom("Cryptographic")
 
-    class ParentMethods:
-        @abstract_method
-        def rationalization(self):
-            r"""Return ``self tensor_ZZ QQ`` with its induced bilinear form."""
+    ParentMethods = LatticeCarrier
 
-        @abstract_method
-        def bilinear_form(self):
-            r"""Return the bilinear form carried by this lattice."""
-
-        @abstract_method
-        def dual(self):
-            r"""Return the metric dual lattice in ``self.rationalization()``."""
-
-        @abstract_method
-        def discriminant_group(self):
-            r"""Return the finite quotient ``L# / L`` when defined."""
-
-        @abstract_method
-        def signature_pair(self):
-            r"""Return ``(positive, negative)`` for the rational form."""
-
-        @abstract_method
-        def is_integral(self):
-            r"""Return whether the Gram matrix has integral entries."""
-
-        @abstract_method
-        def is_even(self):
-            r"""Return whether every diagonal value lies in ``2 ZZ``."""
-
-        @abstract_method
-        def is_unimodular(self):
-            r"""Return whether the integral lattice has determinant ``+-1``."""
-
-    class ElementMethods:
-        def b(self, other):
-            r"""Evaluate the parent bilinear form on ``self`` and ``other``."""
-            return self.parent().b(self, other)
-
-        def q(self):
-            r"""Evaluate the diagonal value ``b(self, self)``."""
-            return self.b(self)
+    ElementMethods = LatticeElementCarrier
 
     class MorphismMethods:
         pass
