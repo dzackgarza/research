@@ -23,6 +23,7 @@ from .discriminant import (
 )
 from .elements import SyntheticLatticeElement
 from .homsets import LatticeHomset, LatticeMorphism, LatticeSimilarity
+from .isometry_groups import SyntheticIsometryGroup, SyntheticIsometrySubgroup
 from .parents import SyntheticLattice
 
 __all__ = [
@@ -40,6 +41,8 @@ __all__ = [
     "SyntheticDiscriminantGroupElement",
     "SyntheticDiscriminantSubgroup",
     "SyntheticOrthogonalGroup",
+    "SyntheticIsometryGroup",
+    "SyntheticIsometrySubgroup",
     "SyntheticLattice",
     "SyntheticLatticeElement",
     "RootLattice",

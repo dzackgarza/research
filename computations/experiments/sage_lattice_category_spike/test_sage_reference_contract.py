@@ -193,7 +193,7 @@ def test_explicit_lattice_isometries_induce_discriminant_actions_without_full_in
     induced = D.orthogonal_group_from_lattice_gens([reflection])
 
     assert induced.order() == 2
-    assert D.action_of_isometry(L.isometry_group(gens=[reflection])[0])(D.gen(0)) == -D.gen(0)
+    assert D.action_of_isometry(L.isometry_group().from_matrix(reflection))(D.gen(0)) == -D.gen(0)
 
 
 def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
@@ -310,7 +310,7 @@ def test_discriminant_form_subgroup_source_and_action_api_is_bound():
     assert_matrix_equal(M.gram_matrix(), matrix(QQ, 1, 1, [1]))
     assert D.discriminant_form_of_overlattice(H).invariants() == ()
 
-    negation = L.isometry_group(gens=[matrix(ZZ, 1, 1, [-1])])[0]
+    negation = L.isometry_group().from_matrix(matrix(ZZ, 1, 1, [-1]))
     action = D.action_of_isometry(negation)
     assert action(g) == -g
     image = D.action_of_lattice_group([negation])
@@ -654,20 +654,23 @@ def test_pushforward_and_pullback_forms_compute_transported_pairings():
     assert_matrix_equal(D.pushforward_form(scaling), matrix(QQ, 1, 1, [QQ(9) / 5]))
 
 
-def test_explicit_isometry_generators_act_on_lattices_without_full_group_generation():
-    # Reference: accepted lattice API audit requires acts_on with explicit generators only.
+def test_supplied_generators_live_only_in_typed_subgroups_of_the_isometry_group():
+    # Spec 3.3: O(L).subgroup(gens) is the ONLY home for caller-supplied
+    # generators; it answers subgroup questions (preserves), never O(L)-level ones.
     A2 = lc.Lattice("A2")
     swap = matrix(ZZ, 2, 2, [0, 1, 1, 0])
     preserved = A2.sublattice([[1, 1], [1, -1]], label="swap_preserved")
     not_preserved = A2.sublattice([[2, 0], [0, 1]], label="not_swap_preserved")
 
-    assert A2.acts_on(A2, gens=[identity_matrix(ZZ, 2)])
-    assert A2.acts_on(preserved, gens=[swap])
-    assert not A2.acts_on(not_preserved, gens=[swap])
-    with pytest.raises(NotImplementedError):
-        A2.acts_on(A2)
+    O_A2 = A2.isometry_group()
+    assert O_A2.subgroup([identity_matrix(ZZ, 2)]).preserves(A2)
+    assert O_A2.subgroup([swap]).preserves(preserved)
+    assert not O_A2.subgroup([swap]).preserves(not_preserved)
     with pytest.raises(AssertionError):
-        A2.acts_on(lc.Lattice("U"), gens=[identity_matrix(ZZ, 2)])
+        O_A2.subgroup([swap]).preserves(lc.Lattice("U"))  # incompatible ambient
+    with pytest.raises(ValueError):
+        O_A2.subgroup([matrix(ZZ, 2, 2, [2, 0, 0, 1])])  # not an isometry
+    assert not hasattr(A2, "acts_on")  # deleted with no successor spelling
 
 
 def test_odd_discriminant_form_remains_usable_while_odd_genus_is_unsupported():

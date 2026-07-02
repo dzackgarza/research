@@ -110,6 +110,56 @@ class LatticeMorphism(Element):
             )
         return self.domain()(coordinates)
 
+    # -- algebra available under form-preservation (composition monoid; the
+    # -- full End(L) RING with sums/nilpotents lives on module endomorphisms,
+    # -- V0d ratification 2026-07-03) --------------------------------------
+
+    def __mul__(self, other):
+        r"""Composition: ``(f * g)(x) = f(g(x))``."""
+        assert isinstance(other, LatticeMorphism), (
+            f"morphism composition needs a LatticeMorphism; found={type(other)}"
+        )
+        assert other.codomain() == self.domain(), (
+            "morphisms compose only when the inner codomain matches the outer "
+            f"domain; inner_codomain={other.codomain()}, outer_domain={self.domain()}"
+        )
+        return other.domain().Hom(self.codomain()).from_matrix(self.matrix() * other.matrix())
+
+    def __pow__(self, n):
+        assert self.domain() == self.codomain(), (
+            f"powers need an endomorphism; domain={self.domain()}, codomain={self.codomain()}"
+        )
+        n = int(n)
+        if n < 0:
+            return self.inverse() ** (-n)
+        power = self.matrix() ** n if n > 0 else self.matrix().parent().identity_matrix()
+        return self.parent().from_matrix(power)
+
+    def inverse(self):
+        if not self.is_isometry():
+            raise ValueError(
+                "only isometries are invertible in the lattice category; "
+                f"matrix={self.matrix()}"
+            )
+        return self.codomain().Hom(self.domain()).from_matrix(self.matrix().inverse())
+
+    def is_identity(self):
+        return self.domain() == self.codomain() and self.matrix().is_one()
+
+    def order(self):
+        r"""Multiplicative order (delegated); ``+Infinity`` for infinite order."""
+        assert self.domain() == self.codomain(), (
+            f"order needs an endomorphism; domain={self.domain()}, codomain={self.codomain()}"
+        )
+        return self.matrix().multiplicative_order()
+
+    def is_unipotent(self):
+        r"""Whether ``f - id`` is nilpotent (parabolic-type isometries)."""
+        assert self.domain() == self.codomain(), (
+            f"unipotence needs an endomorphism; domain={self.domain()}, codomain={self.codomain()}"
+        )
+        return ((self.matrix() - self.matrix().parent().identity_matrix()) ** self.domain().rank()).is_zero()
+
     def __eq__(self, other):
         return (
             isinstance(other, LatticeMorphism)

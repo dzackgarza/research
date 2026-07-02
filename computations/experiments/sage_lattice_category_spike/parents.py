@@ -91,6 +91,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
         self._label = label
         self._base_ring = base_ring
         self._cartan_type = cartan_type
+        self._isometry_group_object = None
         category = category_for(base_ring, gram)
         if cartan_type is not None:
             # provenance axiom: attached only by the section-6 constructors
@@ -481,33 +482,15 @@ class SyntheticLattice(LatticeCarrier, Parent):
         assert sublattice.is_submodule(self), ("primitive test requires a sublattice of self")
         return sublattice.primitive_closure(self)._inclusion_rows() == sublattice._inclusion_rows()
 
-    def isometry_group(self, gens=None, check=True, is_finite=None):
-        # O(L) as its generating isometries. Generators are computed lazily and only
-        # on request: a definite lattice reuses Sage's finite automorphism group
-        # (ephemeral -- the Sage object is discarded, only the matrices survive),
-        # while an indefinite lattice has an infinite O(L) and requires explicit
-        # generators (fails loud otherwise), matching Sage's own restriction.
-        if gens is None:
-            gens = self._computed_isometry_generators()
-        morphisms = tuple(self.Hom(self).from_matrix(g) for g in gens)
-        if check:
-            for morphism in morphisms:
-                assert morphism.matrix().det() in (1, -1), (f"isometry generator must be invertible; matrix={morphism.matrix()}")
-        return morphisms
+    def isometry_group(self):
+        r"""O(L), the isometry group object — total for EVERY lattice (spec
+        section 3); unique per lattice. Generators/order are the object's own
+        contracts, implemented exactly where it is finite."""
+        if self._isometry_group_object is None:
+            from .isometry_groups import SyntheticIsometryGroup
 
-    def _computed_isometry_generators(self):
-        if not (self.base_ring() is ZZ and self.is_integral() and self.determinant() != 0):
-            raise NotImplementedError("O(L) generators are computed only for nondegenerate integral ZZ-lattices")
-        if not self.is_definite():
-            raise NotImplementedError(
-                "indefinite O(L) is infinite; supply explicit generators via isometry_group(gens=...)"
-            )
-        from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
-
-        # Sage's generators V satisfy V G V^T = G; the synthetic convention U^T G U = G
-        # is met by U = V^T.
-        orthogonal_group = IntegralLattice(matrix(ZZ, self.gram_matrix())).orthogonal_group()
-        return tuple(matrix(ZZ, generator.matrix()).transpose() for generator in orthogonal_group.gens())
+            self._isometry_group_object = SyntheticIsometryGroup(self)
+        return self._isometry_group_object
 
     def is_isometric(self, other):
         assert isinstance(other, SyntheticLattice), (f"expected SyntheticLattice; found={type(other)}")
@@ -526,40 +509,6 @@ class SyntheticLattice(LatticeCarrier, Parent):
         sign = 1 if self.is_positive_definite() else -1
         return QuadraticForm(2 * sign * matrix(ZZ, self.gram_matrix())).is_globally_equivalent_to(
             QuadraticForm(2 * sign * matrix(ZZ, other.gram_matrix()))
-        )
-
-    def acts_on(self, other, gens=None, check=True):
-        if gens is None:
-            raise NotImplementedError("full isometry generator computation is not implemented for the synthetic spike")
-        self._assert_same_ambient(other)
-        acting_basis = self._inclusion_rows()
-        if acting_basis.nrows() != acting_basis.ncols() or acting_basis.rank() != self.rank():
-            raise ValueError("acts_on requires the acting lattice to span the ambient")
-        morphisms = self.isometry_group(gens=gens, check=check)
-        other_module = other._underlying_module()
-        for morphism in morphisms:
-            action_matrix = matrix(QQ, morphism.matrix())
-            for row in other._inclusion_rows().rows():
-                coordinates = acting_basis.solve_left(matrix(QQ, 1, acting_basis.ncols(), list(row)))
-                image_coordinates = action_matrix * coordinates.transpose()
-                image_row = vector(QQ, [
-                    sum(image_coordinates[j, 0] * acting_basis[j, i] for j in range(self.rank()))
-                    for i in range(acting_basis.ncols())
-                ])
-                if image_row not in other_module:
-                    return False
-        return True
-
-    def action_on_discriminant_group(self, gens=None):
-        discriminant_group = self.discriminant_group()
-        return tuple(discriminant_group.action_of_isometry(g) for g in self.isometry_group(gens=gens))
-
-    def kernel_on_discriminant_group(self, gens):
-        actions = self.action_on_discriminant_group(gens)
-        return tuple(
-            generator
-            for generator, action in zip(self.isometry_group(gens=gens), actions)
-            if action.is_identity()
         )
 
     def scale(self, scalar, label="scale"):

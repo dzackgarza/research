@@ -34,6 +34,8 @@ __all__ = [
     "SyntheticDiscriminantGroupElement",
     "SyntheticDiscriminantSubgroup",
     "SyntheticOrthogonalGroup",
+    "SyntheticIsometryGroup",
+    "SyntheticIsometrySubgroup",
     "SyntheticLattice",
     "SyntheticLatticeElement",
     "RootLattice",

@@ -791,7 +791,7 @@ class SyntheticDiscriminantGroup(Parent):
             if hasattr(gen, "matrix"):
                 isometries.append(gen)
             else:
-                isometries.append(self.source_lattice().isometry_group(gens=[gen])[0])
+                isometries.append(self.source_lattice().isometry_group().from_matrix(gen))
         return SyntheticOrthogonalGroup(self, (self.action_of_isometry(gen) for gen in isometries), close=True)
 
     @cached_method

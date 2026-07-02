@@ -409,10 +409,10 @@ def test_explicit_isometries_act_on_discriminant_groups():
     U = Lattice("U", label="U")
     swap = matrix(ZZ, 2, 2, [0, 1, 1, 0])
 
-    isometry = U.isometry_group(gens=[swap])[0]
+    isometry = U.isometry_group().from_matrix(swap)
     assert isometry(U.gen(0)) == U.gen(1)
-    assert U.action_on_discriminant_group(gens=[swap])[0].is_identity()
-    assert U.kernel_on_discriminant_group(gens=[swap]) == (isometry,)
+    assert U.isometry_group().discriminant_action(isometry).is_identity()
+    assert U.isometry_group().subgroup([swap]).discriminant_image()[0].is_identity()
 
 
 def test_functor_layer_realizes_the_categorical_identities():
@@ -585,13 +585,15 @@ def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indef
 
     # O(L) generators are computed lazily for a definite lattice and actually
     # generate O(A2) (the dihedral group of order 12).
-    gens = A2.isometry_group()
+    O_A2 = A2.isometry_group()
+    gens = O_A2.gens()
     assert all(g.is_isometry() for g in gens)
     for g in gens:
         U = g.matrix()
         assert U.transpose() * A2.gram_matrix() * U == A2.gram_matrix()  # form-preserving
         assert U.det() in (1, -1)
     assert MatrixGroup([g.matrix() for g in gens]).order() == 12
+    assert O_A2.order() == 12 and O_A2.is_finite()
 
     # is_isometry separates isomorphisms from mere form-preservation: the metric
     # inclusion A2 -> A2# is form-preserving (matrix G) but not an isometry (det 3).
@@ -601,10 +603,12 @@ def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indef
 
     # indefinite O(L) is infinite -> explicit generators required (fails loud otherwise).
     U = Lattice("U", label="U")
+    O_U = U.isometry_group()
+    assert not O_U.is_finite()
     with pytest.raises(NotImplementedError):
-        U.isometry_group()
-    swap = U.isometry_group(gens=[matrix(ZZ, 2, 2, [0, 1, 1, 0])])
-    assert swap[0].is_isometry()
+        O_U.gens()
+    swap_isometry = O_U.from_matrix(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
+    assert swap_isometry.is_isometry() and swap_isometry in O_U
 
     # is_isometric: definite decided via Sage; different class / rank -> False; indefinite fails loud.
     assert A2.is_isometric(Lattice("A2", label="other"))
@@ -686,3 +690,25 @@ def test_rational_dual_is_the_canonical_self_identification():
     V = A2.rationalization()
     assert V.dual() is V
     assert A2.dual().dual() == A2
+
+def test_isometry_group_object_algebra_and_negative_definite_delegation():
+    # Spec 3.2: O(L) is total, unique per lattice; elements are the End(L)
+    # isometries with composition/inversion/power/order algebra.
+    from sage_lattice_category_spike.lattice_categories import RootLattice
+
+    A2 = Lattice("A2", label="A2")
+    O = A2.isometry_group()
+    assert O is A2.isometry_group()  # unique per lattice
+    s = A2.reflection(A2.gen(0))
+    t = A2.reflection(A2.gen(1))
+    assert s in O and t in O and (s * t) in O
+    assert (s * t).order() == 3  # Coxeter element of W(A2) = S3, order h = 3
+    assert s * s == O.one() and s ** -1 == s and s.inverse() == s
+    assert not s.is_unipotent() and O.one().is_unipotent()
+
+    # O(L) = O(L(-1)): negative-definite delegation sign-twists internally.
+    assert RootLattice("A", 2, negative=True).isometry_group().order() == 12
+
+    # degenerate rank >= 2 is infinite (unipotent shears); rank <= 1 is finite.
+    assert not Lattice(matrix(QQ, [[0, 0], [0, 0]])).isometry_group().is_finite()
+    assert Lattice(matrix(QQ, [[0]])).isometry_group().is_finite()
