@@ -57,14 +57,8 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
     def __contains__(self, f):
         r"""THE definitional membership test (once in the codebase): square,
         invertible over R, and ``A^T G A = G``."""
-        from .endomorphism_rings import ModuleEndomorphism
-
         if isinstance(f, LatticeMorphism):
             if not (f.domain() == self._lattice and f.codomain() == self._lattice):
-                return False
-            A = f.matrix()
-        elif isinstance(f, ModuleEndomorphism):
-            if f.parent().lattice() != self._lattice:
                 return False
             A = f.matrix()
         else:

@@ -26,7 +26,6 @@ from .discriminant_forms import (
 )
 from .elements import SyntheticLatticeElement
 from .homsets import LatticeHomset, LatticeMorphism, LatticeSimilarity
-from .endomorphism_rings import ModuleEndomorphism, SyntheticEndomorphismRing
 from .isometry_groups import SyntheticIsometryGroup, SyntheticIsometrySubgroup
 from .parents import SyntheticLattice
 
@@ -46,8 +45,6 @@ __all__ = [
     "SyntheticDiscriminantGroupElement",
     "SyntheticDiscriminantSubgroup",
     "SyntheticOrthogonalGroup",
-    "ModuleEndomorphism",
-    "SyntheticEndomorphismRing",
     "SyntheticIsometryGroup",
     "SyntheticIsometrySubgroup",
     "SyntheticLattice",

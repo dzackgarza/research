@@ -153,6 +153,18 @@ class LatticeMorphism(Element):
         )
         return self.matrix().multiplicative_order()
 
+    def is_nilpotent(self):
+        assert self.domain() == self.codomain(), (
+            f"nilpotence needs an endomorphism; domain={self.domain()}, codomain={self.codomain()}"
+        )
+        return (self.matrix() ** self.domain().rank()).is_zero()
+
+    def is_idempotent(self):
+        assert self.domain() == self.codomain(), (
+            f"idempotence needs an endomorphism; domain={self.domain()}, codomain={self.codomain()}"
+        )
+        return self.matrix() * self.matrix() == self.matrix()
+
     def is_unipotent(self):
         r"""Whether ``f - id`` is nilpotent (parabolic-type isometries)."""
         assert self.domain() == self.codomain(), (

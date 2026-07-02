@@ -77,7 +77,6 @@ __all__ = [
     "LatticeHomset",
     "LatticeSimilarity",
     # groups
-    "EndomorphismRing",
     "IsometryGroup",
     "IsometrySubgroup",
     "DiscriminantOrthogonalGroup",
@@ -391,10 +390,6 @@ class Lattice:
     def isometry_group(self) -> "IsometryGroup":
         raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
-    def endomorphism_ring(self) -> "EndomorphismRing":
-        """End(L) as a RING (V0d ratification 2026-07-03): multiplication is
-        composition, and O(L) = Aut(L) is canonically its group of units."""
-        raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def is_isometric(self, other: "Lattice") -> bool:
         raise NotImplementedError("declared contract; engine per the parity-plan triage")
@@ -583,6 +578,26 @@ class LatticeMorphism:
     def is_isometry(self) -> bool:
         raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
+    # ring-LIKE predicates (V0d amendment 2026-07-03): End_Lat(L) = Hom(L, L) is the
+    # form-preserving composition MONOID (operations escaping into End_{ZZ-Mod}(L) are
+    # not vocabulary), but the monoid sits inside a ring, so ring-like QUERIES remain
+    # well-defined on endomorphisms and are shimmed in here, curated against what
+    # module-endomorphism and ring-element implementations actually expose.
+    def is_identity(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def is_nilpotent(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def is_idempotent(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def is_unipotent(self) -> bool:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def order(self) -> int:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
     def is_injective(self) -> bool:
         raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
@@ -629,27 +644,6 @@ class LatticeHomset:
         raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism:
-        raise NotImplementedError("declared contract; engine per the parity-plan triage")
-
-
-class EndomorphismRing:
-    """End(L) as a ring on the owned substrate (V0d ratification 2026-07-03):
-    multiplication = composition, addition pointwise; O(L) = Aut(L) is
-    canonically the unit group. The user's ratified philosophy wants
-    ring-theoretic operations on endomorphisms (f*g, f+g, f-g, f^2, f^(-1)
-    for units, f.order(), f.is_nilpotent(), f.is_unipotent()); T2 designs the
-    exact element surface on LatticeMorphism."""
-
-    def lattice(self) -> Lattice:
-        raise NotImplementedError("declared contract; engine per the parity-plan triage")
-
-    def one(self) -> "LatticeMorphism":
-        raise NotImplementedError("declared contract; engine per the parity-plan triage")
-
-    def zero(self) -> "LatticeMorphism":
-        raise NotImplementedError("declared contract; engine per the parity-plan triage")
-
-    def unit_group(self) -> "IsometryGroup":
         raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 

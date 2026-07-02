@@ -92,7 +92,6 @@ class SyntheticLattice(LatticeCarrier, Parent):
         self._base_ring = base_ring
         self._cartan_type = cartan_type
         self._isometry_group_object = None
-        self._endomorphism_ring_object = None
         category = category_for(base_ring, gram)
         if cartan_type is not None:
             # provenance axiom: attached only by the section-6 constructors
@@ -492,15 +491,6 @@ class SyntheticLattice(LatticeCarrier, Parent):
 
             self._isometry_group_object = SyntheticIsometryGroup(self)
         return self._isometry_group_object
-
-    def endomorphism_ring(self):
-        r"""End(L), the module-endomorphism ring (V0d ratification): a genuine
-        ring whose form-preserving units are O(L) = unit_group()."""
-        if self._endomorphism_ring_object is None:
-            from .endomorphism_rings import SyntheticEndomorphismRing
-
-            self._endomorphism_ring_object = SyntheticEndomorphismRing(self)
-        return self._endomorphism_ring_object
 
     def is_isometric(self, other):
         assert isinstance(other, SyntheticLattice), (f"expected SyntheticLattice; found={type(other)}")
