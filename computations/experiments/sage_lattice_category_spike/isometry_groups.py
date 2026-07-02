@@ -57,8 +57,14 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
     def __contains__(self, f):
         r"""THE definitional membership test (once in the codebase): square,
         invertible over R, and ``A^T G A = G``."""
+        from .endomorphism_rings import ModuleEndomorphism
+
         if isinstance(f, LatticeMorphism):
             if not (f.domain() == self._lattice and f.codomain() == self._lattice):
+                return False
+            A = f.matrix()
+        elif isinstance(f, ModuleEndomorphism):
+            if f.parent().lattice() != self._lattice:
                 return False
             A = f.matrix()
         else:
@@ -130,6 +136,30 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
             matrix(ZZ, generator.matrix()).transpose()
             for generator in self._delegated_engine().gens()
         )
+
+    def __iter__(self):
+        r"""Element enumeration, implemented exactly where the group is finite
+        (ephemeral engine). Rank <= 1 is enumerated directly."""
+        if not self.is_finite():
+            raise NotImplementedError(
+                "iteration over an infinite isometry group is a declared gap; "
+                "the group object itself remains total"
+            )
+        if self._lattice.rank() == 0:
+            yield self.one()
+            return
+        if self._lattice.rank() == 1:
+            if self._lattice.base_ring() is QQ and self._lattice.determinant() == 0:
+                raise NotImplementedError(
+                    "rank-1 degenerate rational form: O(L) is the full unit group "
+                    "QQ^x (infinite); flagged as an erratum against the spec's "
+                    "is_finite rationale, pending ratification"
+                )
+            yield self.one()
+            yield self.from_matrix(-identity_matrix(self._lattice.base_ring(), 1))
+            return
+        for element in self._delegated_engine():
+            yield self.from_matrix(matrix(ZZ, element.matrix()).transpose())
 
     def discriminant_action(self, f):
         r"""The induced action of the single verified isometry ``f`` on A_L.

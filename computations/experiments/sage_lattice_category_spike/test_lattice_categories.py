@@ -712,3 +712,30 @@ def test_isometry_group_object_algebra_and_negative_definite_delegation():
     # degenerate rank >= 2 is infinite (unipotent shears); rank <= 1 is finite.
     assert not Lattice(matrix(QQ, [[0, 0], [0, 0]])).isometry_group().is_finite()
     assert Lattice(matrix(QQ, [[0]])).isometry_group().is_finite()
+
+def test_endomorphism_ring_is_a_genuine_ring_with_isometries_as_form_preserving_units():
+    # V0d ratification: End(L) has sums and nilpotents (so its elements are
+    # module endomorphisms, not form-preserving morphisms); unit_group() is
+    # the lattice-categorical Aut(L) = O(L).
+    A2 = Lattice("A2", label="A2")
+    End = A2.endomorphism_ring()
+    assert End is A2.endomorphism_ring()
+    assert End.unit_group() is A2.isometry_group()
+
+    f = End.from_matrix(matrix(ZZ, 2, 2, [0, 1, 0, 0]))
+    assert f.is_nilpotent() and not f.is_unit() and (f * f) == End.zero()
+    u = End.from_matrix(matrix(ZZ, 2, 2, [1, 1, 0, 1]))
+    assert u.is_unipotent() and u.is_unit() and not u.preserves_form()
+    assert u.inverse() * u == End.one() and u ** -1 == u.inverse()
+    assert (End.one() + f) == u  # ring addition: 1 + nilpotent = unipotent
+    assert (u - End.one()) == f
+    with pytest.raises(ValueError):
+        f.inverse()
+    with pytest.raises(ValueError):
+        f.order()
+
+    # an isometry embeds as a form-preserving unit of finite order
+    s = A2.reflection(A2.gen(0))
+    fs = End(s)
+    assert fs.is_unit() and fs.preserves_form() and fs.order() == 2
+    assert fs in A2.isometry_group()  # the definitional test accepts its matrix

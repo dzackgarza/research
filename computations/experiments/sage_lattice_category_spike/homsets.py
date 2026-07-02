@@ -14,14 +14,14 @@ from .parents import SyntheticLattice
 class LatticeHomset(Parent):
     r"""Homset of form-preserving synthetic lattice morphisms."""
 
-    Element = None
-
     def __init__(self, domain, codomain):
         assert isinstance(domain, SyntheticLattice), (f"expected SyntheticLattice domain; found={type(domain)}")
         assert isinstance(codomain, SyntheticLattice), (f"expected SyntheticLattice codomain; found={type(codomain)}")
         self._domain = domain
         self._codomain = codomain
-        Parent.__init__(self, category=Sets())
+        from .categories import Lattices
+
+        Parent.__init__(self, category=Lattices(domain.base_ring()).Homsets())
 
     def _repr_(self):
         return f"Synthetic lattice homset from {self.domain()} to {self.codomain()}"
@@ -215,3 +215,6 @@ class LatticeSimilarity(Element):
         element = self.domain()(element) if element.parent() is not self.domain() else element
         image = self.matrix() * matrix(self.domain().base_ring(), self.domain().rank(), 1, list(element.coefficient_vector()))
         return self.codomain()([image[i, 0] for i in range(self.codomain().rank())])
+
+
+LatticeHomset.Element = LatticeMorphism
