@@ -85,7 +85,7 @@ class LatticeMorphism(Element):
 
     def _call_(self, element):
         element = self.domain()(element) if element.parent() is not self.domain() else element
-        image = self.matrix() * matrix(self.domain().base_ring(), self.domain().rank(), 1, list(element.coordinates()))
+        image = self.matrix() * matrix(self.domain().base_ring(), self.domain().rank(), 1, list(element.coefficient_vector()))
         return self.codomain()([image[i, 0] for i in range(self.codomain().rank())])
 
     def kernel(self):
@@ -102,7 +102,7 @@ class LatticeMorphism(Element):
 
     def lift(self, element):
         element = self.codomain()(element) if element.parent() is not self.codomain() else element
-        rhs = matrix(QQ, self.codomain().rank(), 1, list(element.coordinates()))
+        rhs = matrix(QQ, self.codomain().rank(), 1, list(element.coefficient_vector()))
         solution = matrix(QQ, self.matrix()).solve_right(rhs)
         coordinates = [solution[i, 0] for i in range(self.domain().rank())]
         if not all(coordinate in self.domain().base_ring() for coordinate in coordinates):
@@ -165,5 +165,5 @@ class LatticeSimilarity(Element):
 
     def __call__(self, element):
         element = self.domain()(element) if element.parent() is not self.domain() else element
-        image = self.matrix() * matrix(self.domain().base_ring(), self.domain().rank(), 1, list(element.coordinates()))
+        image = self.matrix() * matrix(self.domain().base_ring(), self.domain().rank(), 1, list(element.coefficient_vector()))
         return self.codomain()([image[i, 0] for i in range(self.codomain().rank())])

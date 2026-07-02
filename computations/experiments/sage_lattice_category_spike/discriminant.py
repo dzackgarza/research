@@ -55,7 +55,7 @@ def _relation_inclusion_matrix(cover_lattice, relation_lattice):
             ],
         )
     if relation_lattice.base_ring() is ZZ and relation_lattice.determinant() != 0 \
-            and relation_lattice.dual_lattice() == cover_lattice:
+            and relation_lattice.dual() == cover_lattice:
         return matrix(ZZ, relation_lattice.gram_matrix())
     raise ValueError(
         "relation lattice is not a recognized sublattice of the cover; provide the "
@@ -98,7 +98,7 @@ def _finite_group_invariant_factors(elements, zero, scalar_multiply):
 def _finite_coordinates(group, element):
     element = group(element)
     if hasattr(element, "coordinates"):
-        return tuple(element.coordinates())
+        return tuple(element.coefficient_vector())
     return tuple(group.coordinates(element))
 
 
@@ -179,7 +179,7 @@ class SyntheticDiscriminantGroupElement(Element):
     def __init__(self, parent, coordinates):
         Element.__init__(self, parent)
         if isinstance(coordinates, SyntheticDiscriminantGroupElement):
-            coordinates = coordinates.coordinates()
+            coordinates = coordinates.coefficient_vector()
         if coordinates == 0:
             coordinates = [ZZ.zero()] * parent.ngens()
         coords = vector(ZZ, coordinates)
@@ -193,7 +193,7 @@ class SyntheticDiscriminantGroupElement(Element):
     def _repr_(self):
         return repr(self._coordinates)
 
-    def coordinates(self):
+    def coefficient_vector(self):
         return self._coordinates
 
     def b(self, other):
@@ -203,26 +203,26 @@ class SyntheticDiscriminantGroupElement(Element):
         return self.parent().q(self)
 
     def _add_(self, other):
-        return self.parent()(self.coordinates() + other.coordinates())
+        return self.parent()(self.coefficient_vector() + other.coefficient_vector())
 
     def _sub_(self, other):
-        return self.parent()(self.coordinates() - other.coordinates())
+        return self.parent()(self.coefficient_vector() - other.coefficient_vector())
 
     def _neg_(self):
-        return self.parent()(-self.coordinates())
+        return self.parent()(-self.coefficient_vector())
 
     def _lmul_(self, scalar):
-        return self.parent()(ZZ(scalar) * self.coordinates())
+        return self.parent()(ZZ(scalar) * self.coefficient_vector())
 
     def __eq__(self, other):
         return (
             isinstance(other, SyntheticDiscriminantGroupElement)
             and self.parent() == other.parent()
-            and self.coordinates() == other.coordinates()
+            and self.coefficient_vector() == other.coefficient_vector()
         )
 
     def __hash__(self):
-        return hash((self.parent(), tuple(self.coordinates())))
+        return hash((self.parent(), tuple(self.coefficient_vector())))
 
 
 class SyntheticDiscriminantGroup(Parent):
@@ -298,11 +298,9 @@ class SyntheticDiscriminantGroup(Parent):
         return self._source_lattice
 
     def cover(self):
-        return self._source_lattice.dual_lattice()
+        return self._source_lattice.dual()
 
     V = cover
-    dual_cover = cover
-    dual_lattice = cover
     cover_lattice = cover
 
     def relations(self):
@@ -404,16 +402,16 @@ class SyntheticDiscriminantGroup(Parent):
     def b(self, left, right):
         left = self(left) if left.parent() is not self else left
         right = self(right) if right.parent() is not self else right
-        row = matrix(QQ, 1, self.ngens(), list(left.coordinates()))
-        col = matrix(QQ, self.ngens(), 1, list(right.coordinates()))
+        row = matrix(QQ, 1, self.ngens(), list(left.coefficient_vector()))
+        col = matrix(QQ, self.ngens(), 1, list(right.coefficient_vector()))
         return rational_mod((row * self.gram_matrix_bilinear() * col)[0, 0], 1)
 
     inner_product = b
 
     def q(self, element):
         element = self(element) if element.parent() is not self else element
-        row = matrix(QQ, 1, self.ngens(), list(element.coordinates()))
-        col = matrix(QQ, self.ngens(), 1, list(element.coordinates()))
+        row = matrix(QQ, 1, self.ngens(), list(element.coefficient_vector()))
+        col = matrix(QQ, self.ngens(), 1, list(element.coefficient_vector()))
         return rational_mod((row * self.gram_matrix_quadratic() * col)[0, 0], self._quadratic_modulus())
 
     quadratic_product = q
@@ -461,7 +459,7 @@ class SyntheticDiscriminantGroup(Parent):
             return self.cardinality()
         element = self(element) if element.parent() is not self else element
         orders = []
-        for coordinate, invariant in zip(element.coordinates(), self.invariants()):
+        for coordinate, invariant in zip(element.coefficient_vector(), self.invariants()):
             if coordinate == 0:
                 orders.append(ZZ.one())
             else:
@@ -497,7 +495,7 @@ class SyntheticDiscriminantGroup(Parent):
             element = cover(element)
         # cover's intrinsic coordinates are already the dual-basis coordinates the
         # Smith machinery consumes (see lift).
-        z_coordinates = matrix(ZZ, self.rank(), 1, list(element.coordinates()))
+        z_coordinates = matrix(ZZ, self.rank(), 1, list(element.coefficient_vector()))
         smith_coordinates = self._smith_right_transpose * z_coordinates
         projected = []
         for position, invariant, multiplier in zip(
@@ -539,7 +537,7 @@ class SyntheticDiscriminantGroup(Parent):
 
     def coordinates(self, element, gens=None, reduce=True):
         if gens is None:
-            return tuple(self(element).coordinates())
+            return tuple(self(element).coefficient_vector())
         return self.discrete_log(element, gens=gens)
 
     def discrete_exp(self, coefficients, gens=None):
@@ -555,7 +553,7 @@ class SyntheticDiscriminantGroup(Parent):
     def discrete_log(self, element, gens=None):
         element = self(element)
         if gens is None:
-            return tuple(element.coordinates())
+            return tuple(element.coefficient_vector())
         gens = tuple(self(gen) for gen in gens)
         ranges = tuple(range(self.order(generator)) for generator in gens)
         for coefficients in product(*ranges):
@@ -704,7 +702,7 @@ class SyntheticDiscriminantGroup(Parent):
         unseen = set(self.elements())
         cosets = []
         while unseen:
-            representative = min(unseen, key=lambda element: tuple(element.coordinates()))
+            representative = min(unseen, key=lambda element: tuple(element.coefficient_vector()))
             coset = frozenset(representative + element for element in subgroup.elements())
             cosets.append(coset)
             unseen.difference_update(coset)
@@ -876,7 +874,7 @@ class SyntheticDiscriminantGroup(Parent):
             raise ValueError("discriminant forms are not isomorphic")
         for images in self._isomorphism_images_to(other):
             if self._images_preserve_structure(other, images, kind):
-                return SyntheticDiscriminantAction.from_images(self, (self(image.coordinates()) for image in images))
+                return SyntheticDiscriminantAction.from_images(self, (self(image.coefficient_vector()) for image in images))
         raise ValueError("no isometry found")
 
     def _isomorphism_images_to(self, other):
@@ -994,7 +992,7 @@ class SyntheticDiscriminantGroup(Parent):
     def _old_dual_coordinates(self, element):
         full_coordinates = matrix(ZZ, self.rank(), 1)
         for coordinate, position, multiplier in zip(
-            element.coordinates(),
+            element.coefficient_vector(),
             self._invariant_positions,
             self._coordinate_multipliers,
         ):
@@ -1043,7 +1041,7 @@ class SyntheticDiscriminantGroup(Parent):
             coordinates = zero
             for coefficient, image in zip(coefficients, images):
                 coordinates = tuple(
-                    (coordinates[i] + ZZ(coefficient) * image.coordinates()[i]) % self.invariants()[i]
+                    (coordinates[i] + ZZ(coefficient) * image.coefficient_vector()[i]) % self.invariants()[i]
                     for i in range(self.ngens())
                 )
             generated.add(coordinates)
@@ -1054,7 +1052,7 @@ class SyntheticDiscriminantGroup(Parent):
             QQ,
             self.ngens(),
             self.ngens(),
-            [images[column].coordinates()[row] for row in range(self.ngens()) for column in range(self.ngens())],
+            [images[column].coefficient_vector()[row] for row in range(self.ngens()) for column in range(self.ngens())],
         )
         raw = transform.transpose() * self.gram_matrix_quadratic() * transform
         normalized = matrix(QQ, raw.nrows(), raw.ncols())
@@ -1313,13 +1311,13 @@ class SyntheticDiscriminantGroupQuotient(Parent):
             return self.cardinality()
         element = self(element)
         orders = []
-        for coordinate, invariant in zip(element.coordinates(), self.invariants()):
+        for coordinate, invariant in zip(element.coefficient_vector(), self.invariants()):
             orders.append(ZZ.one() if coordinate == 0 else invariant // ZZ(coordinate).gcd(invariant))
         return lcm(orders) if orders else ZZ.one()
 
     def coordinates(self, element, gens=None, reduce=True):
         if gens is None:
-            return tuple(self(element).coordinates())
+            return tuple(self(element).coefficient_vector())
         return self.discrete_log(element, gens=gens)
 
     def discrete_exp(self, coefficients, gens=None):
@@ -1336,7 +1334,7 @@ class SyntheticDiscriminantGroupQuotient(Parent):
     def discrete_log(self, element, gens=None):
         element = self(element)
         if gens is None:
-            return tuple(element.coordinates())
+            return tuple(element.coefficient_vector())
         gens = tuple(self(gen) for gen in gens)
         for coefficients in product(*[range(self.order(generator)) for generator in gens]):
             if self.discrete_exp(coefficients, gens=gens) == element:
@@ -1394,7 +1392,7 @@ class SyntheticDiscriminantGroupQuotient(Parent):
         unseen = set(self.elements())
         cosets = []
         while unseen:
-            representative = min(unseen, key=lambda element: tuple(element.coordinates()))
+            representative = min(unseen, key=lambda element: tuple(element.coefficient_vector()))
             coset = frozenset(representative + element for element in subgroup.elements())
             cosets.append(coset)
             unseen.difference_update(coset)
@@ -1443,7 +1441,7 @@ class SyntheticDiscriminantGroupQuotient(Parent):
     def lift(self, element):
         element = self(element)
         smith_row = matrix(ZZ, 1, self.ambient_group().ngens())
-        for coordinate, position in zip(element.coordinates(), self._invariant_positions):
+        for coordinate, position in zip(element.coefficient_vector(), self._invariant_positions):
             smith_row[0, position] = ZZ(coordinate)
         ambient_coordinates = smith_row * self._smith_right_inverse
         return self.ambient_group()([ZZ(ambient_coordinates[0, i]) for i in range(self.ambient_group().ngens())])
@@ -1535,11 +1533,11 @@ class SyntheticDiscriminantSubquotient:
         unseen = set(self._cover_subgroup.elements())
         cosets = []
         while unseen:
-            representative = min(unseen, key=lambda element: tuple(element.coordinates()))
+            representative = min(unseen, key=lambda element: tuple(element.coefficient_vector()))
             coset = frozenset(representative + element for element in self._relation_subgroup.elements())
             cosets.append(coset)
             unseen.difference_update(coset)
-        return tuple(sorted(cosets, key=lambda coset: tuple(self._coset_representative(coset).coordinates())))
+        return tuple(sorted(cosets, key=lambda coset: tuple(self._coset_representative(coset).coefficient_vector())))
 
     def elements(self):
         return self._cosets
@@ -1754,7 +1752,7 @@ class SyntheticDiscriminantSubquotient:
         return self._coset_containing(element)
 
     def _coset_representative(self, coset):
-        return min(coset, key=lambda element: tuple(element.coordinates()))
+        return min(coset, key=lambda element: tuple(element.coefficient_vector()))
 
     def _coset_containing(self, element):
         element = self._ambient_group(element)
@@ -1946,13 +1944,13 @@ class SyntheticLatticeFiniteQuotient(Parent):
             return self.cardinality()
         element = self(element) if element.parent() is not self else element
         orders = []
-        for coordinate, invariant in zip(element.coordinates(), self.invariants()):
+        for coordinate, invariant in zip(element.coefficient_vector(), self.invariants()):
             orders.append(ZZ.one() if coordinate == 0 else invariant // ZZ(coordinate).gcd(invariant))
         return lcm(orders) if orders else ZZ.one()
 
     def coordinates(self, element, gens=None, reduce=True):
         if gens is None:
-            return tuple(self(element).coordinates())
+            return tuple(self(element).coefficient_vector())
         return self.discrete_log(element, gens=gens)
 
     def discrete_exp(self, coefficients, gens=None):
@@ -1969,7 +1967,7 @@ class SyntheticLatticeFiniteQuotient(Parent):
     def discrete_log(self, element, gens=None):
         element = self(element)
         if gens is None:
-            return tuple(element.coordinates())
+            return tuple(element.coefficient_vector())
         gens = tuple(self(gen) for gen in gens)
         for coefficients in product(*[range(self.order(generator)) for generator in gens]):
             if self.discrete_exp(coefficients, gens=gens) == element:
@@ -2004,7 +2002,7 @@ class SyntheticLatticeFiniteQuotient(Parent):
         unseen = set(self.elements())
         cosets = []
         while unseen:
-            representative = min(unseen, key=lambda element: tuple(element.coordinates()))
+            representative = min(unseen, key=lambda element: tuple(element.coefficient_vector()))
             coset = frozenset(representative + element for element in subgroup.elements())
             cosets.append(coset)
             unseen.difference_update(coset)
@@ -2067,7 +2065,7 @@ class SyntheticLatticeFiniteQuotient(Parent):
     def lift(self, element):
         element = self(element)
         smith_row = matrix(ZZ, 1, self.cover_lattice().rank())
-        for coordinate, position in zip(element.coordinates(), self._invariant_positions):
+        for coordinate, position in zip(element.coefficient_vector(), self._invariant_positions):
             smith_row[0, position] = ZZ(coordinate)
         cover_coordinates = smith_row * self._smith_right_inverse
         return self.cover_lattice()([ZZ(cover_coordinates[0, i]) for i in range(self.cover_lattice().rank())])
@@ -2082,7 +2080,7 @@ class SyntheticLatticeFiniteQuotient(Parent):
                 f"expected={cover}, found={element.parent()}")
         else:
             element = cover(element)
-        cover_row = matrix(ZZ, 1, cover.rank(), list(element.coordinates()))
+        cover_row = matrix(ZZ, 1, cover.rank(), list(element.coefficient_vector()))
         smith_row = cover_row * self._smith_right
         return self([ZZ(smith_row[0, position]) % invariant for position, invariant in zip(self._invariant_positions, self.invariants())])
 
@@ -2105,7 +2103,7 @@ class SyntheticLatticeFiniteQuotient(Parent):
         # (relation-coords = cover-coords . M^{-1}).
         inclusion_inverse = self._inclusion.inverse()
         lift_rows = [
-            vector(QQ, self.lift(generator).coordinates()) * inclusion_inverse
+            vector(QQ, self.lift(generator).coefficient_vector()) * inclusion_inverse
             for generator in subgroup.gens()
         ]
         if not lift_rows:
@@ -2433,13 +2431,13 @@ class SyntheticFiniteQuadraticForm(Parent):
             return self.cardinality()
         element = self(element) if element.parent() is not self else element
         orders = []
-        for coordinate, invariant in zip(element.coordinates(), self.invariants()):
+        for coordinate, invariant in zip(element.coefficient_vector(), self.invariants()):
             orders.append(ZZ.one() if coordinate == 0 else invariant // ZZ(coordinate).gcd(invariant))
         return lcm(orders) if orders else ZZ.one()
 
     def coordinates(self, element, gens=None, reduce=True):
         if gens is None:
-            return tuple(self(element).coordinates())
+            return tuple(self(element).coefficient_vector())
         return self.discrete_log(element, gens=gens)
 
     def discrete_exp(self, coefficients, gens=None):
@@ -2456,7 +2454,7 @@ class SyntheticFiniteQuadraticForm(Parent):
     def discrete_log(self, element, gens=None):
         element = self(element)
         if gens is None:
-            return tuple(element.coordinates())
+            return tuple(element.coefficient_vector())
         gens = tuple(self(gen) for gen in gens)
         for coefficients in product(*[range(self.order(generator)) for generator in gens]):
             if self.discrete_exp(coefficients, gens=gens) == element:
@@ -2633,7 +2631,7 @@ class SyntheticFiniteQuadraticForm(Parent):
         unseen = set(self.elements())
         cosets = []
         while unseen:
-            representative = min(unseen, key=lambda element: tuple(element.coordinates()))
+            representative = min(unseen, key=lambda element: tuple(element.coefficient_vector()))
             coset = frozenset(representative + element for element in subgroup.elements())
             cosets.append(coset)
             unseen.difference_update(coset)
@@ -2677,16 +2675,16 @@ class SyntheticFiniteQuadraticForm(Parent):
     def b(self, left, right):
         left = self(left) if left.parent() is not self else left
         right = self(right) if right.parent() is not self else right
-        row = matrix(QQ, 1, self.ngens(), list(left.coordinates()))
-        col = matrix(QQ, self.ngens(), 1, list(right.coordinates()))
+        row = matrix(QQ, 1, self.ngens(), list(left.coefficient_vector()))
+        col = matrix(QQ, self.ngens(), 1, list(right.coefficient_vector()))
         return rational_mod((row * self.gram_matrix_bilinear() * col)[0, 0], 1)
 
     inner_product = b
 
     def q(self, element):
         element = self(element) if element.parent() is not self else element
-        row = matrix(QQ, 1, self.ngens(), list(element.coordinates()))
-        col = matrix(QQ, self.ngens(), 1, list(element.coordinates()))
+        row = matrix(QQ, 1, self.ngens(), list(element.coefficient_vector()))
+        col = matrix(QQ, self.ngens(), 1, list(element.coefficient_vector()))
         return rational_mod((row * self.gram_matrix_quadratic() * col)[0, 0], 2)
 
     quadratic_product = q
@@ -2744,7 +2742,7 @@ class SyntheticFiniteQuadraticForm(Parent):
         generated = set()
         coefficient_ranges = tuple(range(self.order(image)) for image in images)
         for coefficients in product(*coefficient_ranges):
-            generated.add(tuple(self.discrete_exp(coefficients, gens=images).coordinates()))
+            generated.add(tuple(self.discrete_exp(coefficients, gens=images).coefficient_vector()))
         return ZZ(len(generated)) == self.cardinality()
 
     def _isomorphism_images_to(self, other):
@@ -2945,7 +2943,7 @@ class TwistedSyntheticDiscriminantGroup(Parent):
         return tuple(self(coordinates) for coordinates in product(*[range(invariant) for invariant in self.invariants()]))
 
     def order(self, element):
-        return self._discriminant_group.order(self._discriminant_group(element.coordinates()))
+        return self._discriminant_group.order(self._discriminant_group(element.coefficient_vector()))
 
     def value_module(self):
         return self._discriminant_group.value_module()
@@ -2965,8 +2963,8 @@ class TwistedSyntheticDiscriminantGroup(Parent):
         return rational_mod(
             self._scalar
             * self._discriminant_group.b(
-                self._discriminant_group(left.coordinates()),
-                self._discriminant_group(right.coordinates()),
+                self._discriminant_group(left.coefficient_vector()),
+                self._discriminant_group(right.coefficient_vector()),
             ),
             1,
         )
@@ -2976,7 +2974,7 @@ class TwistedSyntheticDiscriminantGroup(Parent):
     def q(self, element):
         element = self(element) if element.parent() is not self else element
         return rational_mod(
-            self._scalar * self._discriminant_group.q(self._discriminant_group(element.coordinates())),
+            self._scalar * self._discriminant_group.q(self._discriminant_group(element.coefficient_vector())),
             self._quadratic_modulus(),
         )
 

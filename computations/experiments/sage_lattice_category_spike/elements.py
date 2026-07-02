@@ -24,7 +24,7 @@ class SyntheticLatticeElement(Element):
     def _repr_(self):
         return repr(self._coordinates)
 
-    def coordinates(self):
+    def coefficient_vector(self):
         return self._coordinates
 
     def rational_coordinates(self):
@@ -38,20 +38,20 @@ class SyntheticLatticeElement(Element):
         return self.b(self)
 
     def _add_(self, other):
-        return self.parent()(self.coordinates() + other.coordinates())
+        return self.parent()(self.coefficient_vector() + other.coefficient_vector())
 
     def _sub_(self, other):
-        return self.parent()(self.coordinates() - other.coordinates())
+        return self.parent()(self.coefficient_vector() - other.coefficient_vector())
 
     def _neg_(self):
-        return self.parent()(-self.coordinates())
+        return self.parent()(-self.coefficient_vector())
 
     def _lmul_(self, scalar):
-        return self.parent()(scalar * self.coordinates())
+        return self.parent()(scalar * self.coefficient_vector())
 
     def __eq__(self, other):
         return (
             isinstance(other, SyntheticLatticeElement)
             and self.parent() == other.parent()
-            and self.coordinates() == other.coordinates()
+            and self.coefficient_vector() == other.coefficient_vector()
         )

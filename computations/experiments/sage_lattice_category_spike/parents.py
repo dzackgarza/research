@@ -188,9 +188,6 @@ class SyntheticLattice(Parent):
     def zero(self):
         return self([self.base_ring().zero()] * self.rank())
 
-    def linear_combination_of_basis(self, coefficients):
-        return self(coefficients)
-
     def lift(self, element):
         element = self(element) if not (isinstance(element, SyntheticLatticeElement) and element.parent() is self) else element
         return element.rational_coordinates()
@@ -201,24 +198,21 @@ class SyntheticLattice(Parent):
     def b(self, left, right):
         left = self(left) if left.parent() is not self else left
         right = self(right) if right.parent() is not self else right
-        row = matrix(QQ, 1, self.rank(), list(left.coordinates()))
-        col = matrix(QQ, self.rank(), 1, list(right.coordinates()))
+        row = matrix(QQ, 1, self.rank(), list(left.coefficient_vector()))
+        col = matrix(QQ, self.rank(), 1, list(right.coefficient_vector()))
         return (row * self.gram_matrix() * col)[0, 0]
 
     def q(self, element):
         element = self(element) if element.parent() is not self else element
         return self.b(element, element)
 
-    def rational_span(self):
+    def rationalization(self):
         return SyntheticLattice(
             self.gram_matrix(), QQ, f"{self._label}_QQ",
             ambient=self._ambient, inclusion=self._inclusion,
         )
 
-    # rationalization functor L |-> L (x) QQ (same form, base ring QQ)
-    rationalization = rational_span
-
-    def change_ring(self, base_ring):
+    def base_extend(self, base_ring):
         if not (base_ring in (ZZ, QQ)):
             raise ValueError(f"lattice base ring must be ZZ or QQ; found={base_ring}")
         return SyntheticLattice(
@@ -226,10 +220,7 @@ class SyntheticLattice(Parent):
             ambient=self._ambient, inclusion=self._inclusion,
         )
 
-    change_base_ring = change_ring
-    base_extend = change_ring
-
-    def dual_lattice(self):
+    def dual(self):
         r"""The dual lattice, a based lattice with Gram ``G^{-1}``.
 
         Two conceptually distinct duals coincide here and resolve to this one
@@ -250,23 +241,9 @@ class SyntheticLattice(Parent):
             raise ValueError(f"dual lattice requires a nondegenerate form; gram={self.gram_matrix()}")
         return SyntheticLattice(self.gram_matrix().inverse(), ZZ, f"{self._label}#")
 
-    dual = dual_lattice
-    # L^# (metric dual) and L^* (module dual = Hom_ZZ(L, ZZ)) resolve to the same
-    # based lattice under the nondegenerate form; expose both names for research use.
-    metric_dual = dual_lattice
-    module_dual = dual_lattice
-
     def dual_inclusion(self):
         r"""The natural injection ``L -> L^*``, ``v |-> b(v, -)``, with matrix ``G``."""
-        return self.Hom(self.dual_lattice()).from_matrix(self.gram_matrix())
-
-    def codual(self, value_ring=ZZ):
-        if not (value_ring is ZZ):
-            raise ValueError(f"only ZZ-valued coduals are implemented in this spike; found={value_ring}")
-        return self.dual_lattice()
-
-    def dual_pairing_lattice(self):
-        return self.dual_lattice()
+        return self.Hom(self.dual()).from_matrix(self.gram_matrix())
 
     def determinant(self):
         return self.gram_matrix().determinant()
@@ -297,7 +274,7 @@ class SyntheticLattice(Parent):
         return self.base_ring() is ZZ and self.is_integral() and self.determinant() in (1, -1)
 
     def is_self_dual(self):
-        return self.base_ring() is ZZ and self == self.dual_lattice()
+        return self.base_ring() is ZZ and self == self.dual()
 
     def is_degenerate(self):
         return self.determinant() == 0
@@ -460,8 +437,8 @@ class SyntheticLattice(Parent):
         if ambient is None:
             return self.saturation(label=label)
         self._assert_same_ambient(ambient)
-        rational_span = self._rationalization_module().span(self._inclusion_rows().rows(), QQ)
-        return self._from_module(ambient._underlying_module().intersection(rational_span), label)
+        rationalization = self._rationalization_module().span(self._inclusion_rows().rows(), QQ)
+        return self._from_module(ambient._underlying_module().intersection(rationalization), label)
 
     def index_in(self, other):
         self._assert_same_ambient(other)
@@ -477,9 +454,6 @@ class SyntheticLattice(Parent):
 
     def clear_denominators(self, label="clear_denominators"):
         return self.scale(self.denominator(), label=label)
-
-    def scale(self, scalar, label="scale"):
-        return self.scale_basis(scalar, label=label)
 
     def quotient_by_sublattice(self, sublattice):
         from .discriminant import SyntheticLatticeFiniteQuotient
@@ -541,7 +515,7 @@ class SyntheticLattice(Parent):
                 (
                     element
                     for element in discriminant_group.elements()
-                    if any(coordinate != 0 for coordinate in element.coordinates()) and discriminant_group.q(element) == 0
+                    if any(coordinate != 0 for coordinate in element.coefficient_vector()) and discriminant_group.q(element) == 0
                 ),
                 None,
             )
@@ -652,7 +626,7 @@ class SyntheticLattice(Parent):
             if action.is_identity()
         )
 
-    def scale_basis(self, scalar, label="scaled_basis"):
+    def scale(self, scalar, label="scale"):
         scalar = QQ(scalar)
         return SyntheticLattice(scalar ** 2 * self.gram_matrix(), self.base_ring(), label)
 

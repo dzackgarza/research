@@ -34,20 +34,20 @@ def test_cartan_and_hyperbolic_constructors_match_integral_lattice_doctests():
     assert_matrix_equal(lc.Lattice("D4").gram_matrix(), CartanMatrix(["D", 4]))
 
 
-def test_rational_span_and_fractional_dual_follow_free_quadratic_module_doctests():
-    # References: dual_lattice doctest and free_quadratic_module span/span_of_basis doctests.
+def test_rationalization_and_fractional_dual_follow_free_quadratic_module_doctests():
+    # References: dual doctest and free_quadratic_module span/span_of_basis doctests.
     L = lc.Lattice("A2")
-    L_dual = L.dual_lattice()
+    L_dual = L.dual()
 
     assert not hasattr(L, "ambient_module")
     assert not hasattr(L, "ambient_space")
     assert not hasattr(L, "ambient_vector_space")
     assert not hasattr(L, "rationalization_module")
-    assert L.rational_span().base_ring() is QQ
-    assert L.rational_span().rank() == 2
+    assert L.rationalization().base_ring() is QQ
+    assert L.rationalization().rank() == 2
     # The based dual is (ZZ, G^{-1}); L embeds in L# via the metric inclusion (matrix G).
     assert L.dual_inclusion().image().is_submodule(L_dual)
-    assert L_dual.dual_lattice() == L
+    assert L_dual.dual() == L
 
 
 def test_nonintegral_rational_generators_use_fractional_sublattice_contract():
@@ -79,7 +79,7 @@ def test_discriminant_group_cover_relations_and_primary_forms_match_doctests():
 
     assert A.invariants() == (2, 10)
     assert_matrix_equal(A.gram_matrix_quadratic(), matrix(QQ, 2, 2, [1, QQ(1) / 2, QQ(1) / 2, QQ(1) / 5]))
-    assert A.dual_cover() == L.dual_lattice()
+    assert A.cover() == L.dual()
     assert A.relation_lattice() == L
     assert A.cover() == A.V()
     assert A.relations() == A.W()
@@ -98,7 +98,7 @@ def test_discriminant_preimage_lattice_allows_nonintegral_source_preimages():
     A = L.discriminant_group()
     full_preimage = A.preimage_lattice(A.subgroup([A.gen(0)]))
 
-    assert full_preimage == L.dual_lattice()
+    assert full_preimage == L.dual()
     assert not full_preimage.is_integral()
     assert A.coset_representative(A.gen(0)) == A.lift_to_dual(A.gen(0))
     with pytest.raises(ValueError):
@@ -203,12 +203,12 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
     # Reference: free_module/free_quadratic_module methods promoted by the consolidated category spec.
     A2 = lc.Lattice("A2")
     A2_dual = A2.dual()
-    A2_QQ = A2.change_base_ring(QQ)
+    A2_QQ = A2.base_extend(QQ)
 
     assert not any(hasattr(A2, name) for name in ("ambient_module", "ambient_space", "ambient_vector_space"))
-    assert A2_QQ == A2.rational_span()
+    assert A2_QQ == A2.rationalization()
     assert A2_QQ.base_ring() is QQ
-    assert A2.dual_lattice() == A2_dual
+    assert A2.dual() == A2_dual
     assert not A2.is_self_dual()
     assert lc.Lattice("U").is_self_dual()
     assert A2.absolute_discriminant() == 3
@@ -293,8 +293,8 @@ def test_discriminant_form_subgroup_source_and_action_api_is_bound():
     H = D.subgroup([2 * g])
     Z = D.subgroup([])
 
-    assert D.cover_lattice() == L.dual_lattice()
-    assert D.dual_lattice() == L.dual_lattice()
+    assert D.cover_lattice() == L.dual()
+    assert D.cover() == L.dual()
     assert D.relation_lattice() == L
     assert D.lift_to_dual(g) == D.lift(g)
     assert D.project_from_dual(D.lift_to_dual(g)) == g
@@ -329,7 +329,7 @@ def test_discriminant_form_subgroup_source_and_action_api_is_bound():
 def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     # Reference: FGP quotient cover/relation/lift/projection contract promoted to lattices.
     A2 = lc.Lattice("A2")
-    A2_dual = A2.dual_lattice()
+    A2_dual = A2.dual()
     quotient = A2_dual.quotient_by_sublattice(A2)
 
     assert quotient.cover_lattice() == A2_dual

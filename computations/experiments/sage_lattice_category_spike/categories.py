@@ -91,7 +91,7 @@ class Lattices(Category_over_base_ring):
             r"""Return the value ring of the bilinear form."""
 
         @abstract_method
-        def rational_span(self):
+        def rationalization(self):
             r"""Return ``self tensor_ZZ QQ`` with its induced bilinear form."""
 
         @abstract_method
@@ -99,8 +99,8 @@ class Lattices(Category_over_base_ring):
             r"""Return the bilinear form carried by this lattice."""
 
         @abstract_method
-        def dual_lattice(self):
-            r"""Return the metric dual lattice in ``self.rational_span()``."""
+        def dual(self):
+            r"""Return the metric dual lattice in ``self.rationalization()``."""
 
         @abstract_method
         def discriminant_group(self):
@@ -314,7 +314,7 @@ class PositiveDefiniteLattices(CategoryWithAxiom_over_base_ring):
             from sage.rings.integer_ring import ZZ
             from sage.rings.rational_field import QQ
 
-            target = vector(QQ, target.coordinates() if hasattr(target, "coordinates") and target.parent() is self else target)
+            target = vector(QQ, target.coefficient_vector() if hasattr(target, "coefficient_vector") and target.parent() is self else target)
             if not (len(target) == self.rank()):
                 raise ValueError("closest vector target must have one coordinate per lattice basis vector; "
                 f"rank={self.rank()}, target={target}")
@@ -359,7 +359,7 @@ class PositiveDefiniteLattices(CategoryWithAxiom_over_base_ring):
                     for lattice_vector in vectors:
                         if lattice_vector == self.zero():
                             continue
-                        coordinates = list(lattice_vector.coordinates())
+                        coordinates = list(lattice_vector.coefficient_vector())
                         column = matrix(QQ, self.rank(), 1, coordinates)
                         gram_vector = gram * column
                         inequalities.append(
@@ -438,7 +438,7 @@ class PositiveDefiniteLattices(CategoryWithAxiom_over_base_ring):
             from sage.rings.integer_ring import ZZ
             from sage.rings.rational_field import QQ
 
-            target = vector(QQ, target.coordinates() if hasattr(target, "coordinates") and target.parent() is self else target)
+            target = vector(QQ, target.coefficient_vector() if hasattr(target, "coefficient_vector") and target.parent() is self else target)
             if not (len(target) == self.rank()):
                 raise ValueError("approximate closest vector target must have one coordinate per basis vector; "
                 f"rank={self.rank()}, target={target}")
@@ -474,12 +474,12 @@ class PositiveDefiniteLattices(CategoryWithAxiom_over_base_ring):
             ]
             relevant = []
             for v in candidates:
-                v_coordinates = v.coordinates()
+                v_coordinates = v.coefficient_vector()
                 v_norm = v.q()
                 if all(
                     v == u
                     or v == -u
-                    or not all((v_coordinates[i] - u.coordinates()[i]) % 2 == 0 for i in range(self.rank()))
+                    or not all((v_coordinates[i] - u.coefficient_vector()[i]) % 2 == 0 for i in range(self.rank()))
                     or u.q() > v_norm
                     for u in candidates
                 ):
@@ -503,7 +503,7 @@ class PositiveDefiniteLattices(CategoryWithAxiom_over_base_ring):
             from sage.rings.integer_ring import ZZ
             from sage.rings.rational_field import QQ
 
-            target = vector(QQ, target.coordinates() if hasattr(target, "coordinates") and target.parent() is self else target)
+            target = vector(QQ, target.coefficient_vector() if hasattr(target, "coefficient_vector") and target.parent() is self else target)
             if not (len(target) == self.rank()):
                 raise ValueError("close vector target must have one coordinate per basis vector; "
                 f"rank={self.rank()}, target={target}")
@@ -524,7 +524,7 @@ class PositiveDefiniteLattices(CategoryWithAxiom_over_base_ring):
             # Sage mutates internal reduced-basis state and returns None; a based
             # lattice is an immutable (R, G) value, so this returns the lattice
             # obtained by injecting w and LLL-reducing (the functional analog).
-            coordinates = list(w.coordinates() if hasattr(w, "coordinates") and w.parent() is self else w)
+            coordinates = list(w.coefficient_vector() if hasattr(w, "coefficient_vector") and w.parent() is self else w)
             injected = self.overlattice([coordinates], label="update_reduced_basis")
             return injected.LLL() if injected.is_positive_definite() else injected
 

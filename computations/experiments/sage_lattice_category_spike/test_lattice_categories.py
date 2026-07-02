@@ -77,7 +77,7 @@ def test_positive_definite_algorithms_are_axiom_gated():
     assert_matrix_equal(bkz_lattice.gram_matrix(), matrix(ZZ, 3, 3, [2, 1, 1, 1, 3, 1, 1, 1, 4]))
     assert bkz_lattice.determinant() == G_lattice.determinant()
     assert bkz_lattice.discriminant() == G_lattice.discriminant()
-    assert [[tuple(vector.coordinates()) for vector in vectors] for vectors in rank_one.short_vectors(5)] == [
+    assert [[tuple(vector.coefficient_vector()) for vector in vectors] for vectors in rank_one.short_vectors(5)] == [
         [(0,)],
         [],
         [(1,), (-1,)],
@@ -85,12 +85,12 @@ def test_positive_definite_algorithms_are_axiom_gated():
         [],
     ]
     short = A2.short_vectors(3)
-    assert [[tuple(vector.coordinates()) for vector in vectors] for vectors in short] == [
+    assert [[tuple(vector.coefficient_vector()) for vector in vectors] for vectors in short] == [
         [(0, 0)],
         [],
         [(1, 1), (-1, -1), (0, 1), (0, -1), (1, 0), (-1, 0)],
     ]
-    assert [[tuple(vector.coordinates()) for vector in vectors] for vectors in rank_three.short_vectors(7)] == [
+    assert [[tuple(vector.coefficient_vector()) for vector in vectors] for vectors in rank_three.short_vectors(7)] == [
         [(0, 0, 0)],
         [],
         [(1, 0, 0), (-1, 0, 0)],
@@ -104,10 +104,10 @@ def test_positive_definite_algorithms_are_axiom_gated():
     brute_force = min(
         (A2(coordinates) for coordinates in product(range(-2, 3), repeat=2)),
         key=lambda vector: (
-            (matrix(QQ, 1, 2, [vector.coordinates()[i] - target[i] for i in range(2)])
+            (matrix(QQ, 1, 2, [vector.coefficient_vector()[i] - target[i] for i in range(2)])
              * A2.gram_matrix()
-             * matrix(QQ, 2, 1, [vector.coordinates()[i] - target[i] for i in range(2)]))[0, 0],
-            tuple(vector.coordinates()),
+             * matrix(QQ, 2, 1, [vector.coefficient_vector()[i] - target[i] for i in range(2)]))[0, 0],
+            tuple(vector.coefficient_vector()),
         ),
     )
     assert A2.closest_vector(target) == brute_force == A2([1, 1])
@@ -115,7 +115,7 @@ def test_positive_definite_algorithms_are_axiom_gated():
     for vectors in A2.short_vectors(3):
         for lattice_vector in vectors:
             if lattice_vector != A2.zero():
-                column = matrix(QQ, 2, 1, list(lattice_vector.coordinates()))
+                column = matrix(QQ, 2, 1, list(lattice_vector.coefficient_vector()))
                 gram_vector = A2.gram_matrix() * column
                 expected_ieqs.append([QQ(lattice_vector.q()) / 2] + [-gram_vector[i, 0] for i in range(2)])
     assert A2.voronoi_cell(radius=3) == Polyhedron(ieqs=expected_ieqs, base_ring=QQ)
@@ -146,9 +146,9 @@ def test_raw_module_methods_are_available_only_through_accessors():
         assert not hasattr(A2, name)
 
 
-def test_rational_span_is_scalar_extension_not_external_ambient_embedding():
+def test_rationalization_is_scalar_extension_not_external_ambient_embedding():
     U = Lattice("U", label="U")
-    U_QQ = U.rational_span()
+    U_QQ = U.rationalization()
 
     assert U_QQ.base_ring() is QQ
     assert_matrix_equal(U_QQ.gram_matrix(), U.gram_matrix())
@@ -176,9 +176,9 @@ def test_rank_one_sublattice_uses_coordinate_membership_not_ambient_embedding():
     assert not U.is_submodule(diagonal)
 
 
-def test_dual_lattice_is_owned_fractional_zz_lattice():
+def test_dual_is_owned_fractional_zz_lattice():
     A2 = Lattice("A2", label="A2")
-    A2_dual = A2.dual_lattice()
+    A2_dual = A2.dual()
 
     # The based dual is (ZZ, G^{-1}); the inclusion L -> L# is the metric morphism
     # v |-> b(v, -), a form-preserving injection into the dual (matrix G).
@@ -190,7 +190,7 @@ def test_dual_lattice_is_owned_fractional_zz_lattice():
         A2_dual.gram_matrix(),
         A2.gram_matrix().inverse(),
     )
-    assert A2_dual.dual_lattice() == A2
+    assert A2_dual.dual() == A2
 
 
 def test_span_overlattice_intersection_saturation_and_index_use_underlying_modules():
@@ -323,7 +323,7 @@ def test_homs_are_form_preserving_by_construction():
 
 def test_hom_image_and_kernel_are_synthetic_lattices():
     A2 = Lattice("A2", label="A2")
-    A2_dual = A2.dual_lattice()
+    A2_dual = A2.dual()
     inclusion = A2.Hom(A2_dual).from_matrix(Matrix(ZZ, 2, 2, [2, -1, -1, 2]))
 
     image = inclusion.image()
@@ -337,7 +337,7 @@ def test_hom_image_and_kernel_are_synthetic_lattices():
 
 def test_integral_lattice_inclusion_into_dual_is_a_synthetic_morphism():
     A2 = Lattice("A2", label="A2")
-    A2_dual = A2.dual_lattice()
+    A2_dual = A2.dual()
     inclusion = A2.Hom(A2_dual).from_matrix(Matrix(ZZ, 2, 2, [2, -1, -1, 2]))
     quotient = A2_dual.finite_quotient(A2)
     negation = A2_dual.Hom(A2_dual).from_matrix(-identity_matrix(ZZ, 2))
@@ -479,19 +479,19 @@ def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
     # reduced_basis: the returned basis is genuinely LLL-reduced -- verified by Sage's
     # independent is_LLL_reduced on the embedded basis (embed by W*B). Determinant alone
     # would not distinguish this from the unreduced basis, which fails the verifier.
-    W = matrix(ZZ, [list(e.coordinates()) for e in L.reduced_basis()])
+    W = matrix(ZZ, [list(e.coefficient_vector()) for e in L.reduced_basis()])
     assert (W * B).is_LLL_reduced()
     assert not B.is_LLL_reduced()  # teeth: the unreduced basis is not LLL-reduced
 
     # Babai CVP reference-agrees under the ambient <-> coordinate translation (x_ambient = x_coords * B).
     target = [1, 1, 1]
     mine = L.approximate_closest_vector(target)
-    assert tuple(vector(ZZ, mine.coordinates()) * B) == tuple(reference.approximate_closest_vector(vector(ZZ, target) * B))
+    assert tuple(vector(ZZ, mine.coefficient_vector()) * B) == tuple(reference.approximate_closest_vector(vector(ZZ, target) * B))
     assert L.babai(target) == mine  # babai is the alias
 
     # Voronoi relevant vectors: the exact SET (not merely the count) agrees with Sage
     # under the ambient map.
-    assert {tuple(vector(ZZ, v.coordinates()) * B) for v in L.voronoi_relevant_vectors()} == {
+    assert {tuple(vector(ZZ, v.coefficient_vector()) * B) for v in L.voronoi_relevant_vectors()} == {
         tuple(v) for v in reference.voronoi_relevant_vectors()
     }
 
@@ -506,10 +506,10 @@ def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
     def brute_force(predicate, lo, hi):
         return {c for c in product(range(lo, hi), repeat=3) if predicate(c)}
 
-    assert {tuple(v.coordinates()) for v in L.enumerate_short_vectors(4)} == brute_force(
+    assert {tuple(v.coefficient_vector()) for v in L.enumerate_short_vectors(4)} == brute_force(
         lambda c: 0 < squared_norm(c) <= 4, -4, 5
     )
-    assert {tuple(v.coordinates()) for v in L.enumerate_close_vectors(target, 6)} == brute_force(
+    assert {tuple(v.coefficient_vector()) for v in L.enumerate_close_vectors(target, 6)} == brute_force(
         lambda c: squared_norm(c, target) <= 6, -3, 6
     )
 
@@ -595,7 +595,7 @@ def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indef
 
     # is_isometry separates isomorphisms from mere form-preservation: the metric
     # inclusion A2 -> A2# is form-preserving (matrix G) but not an isometry (det 3).
-    A2_dual = A2.dual_lattice()
+    A2_dual = A2.dual()
     assert not A2.Hom(A2_dual).from_matrix(A2.gram_matrix()).is_isometry()
     assert A2.Hom(A2).from_matrix(identity_matrix(ZZ, 2)).is_isometry()
 
