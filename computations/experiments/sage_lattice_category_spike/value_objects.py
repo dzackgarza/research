@@ -28,11 +28,10 @@ def value_module(base_ring=ZZ, level=ZZ.one()):
 
     Only R = ZZ is in v1 scope; any other base ring fails loud.
     """
-    if base_ring is not ZZ:
-        raise NotImplementedError(
-            "K/R value objects are implemented only for R=ZZ in this spike "
-            f"(general Dedekind K/R is out of v1 scope); found R={base_ring}"
-        )
+    assert base_ring is ZZ, (
+        "K/R value objects are grounded only for R=ZZ in this spike "
+        f"(general Dedekind K/R is out of v1 scope); found R={base_ring}"
+    )
     return QmodnZ(QQ(level))
 
 
@@ -57,7 +56,7 @@ if __name__ == "__main__":
     assert value_module(ZZ, 1) == QmodnZ(QQ(1))
     try:
         value_module(QQ)
-    except NotImplementedError:
+    except AssertionError:
         pass
     else:
         raise AssertionError("non-ZZ base ring must fail loud")

@@ -650,9 +650,6 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
     (vectors_of_square, roots) stay carrier stubs (gap-ledger item 4); the
     crypto suite moves to the Cryptographic stratum at T6."""
 
-    def _positive_definite_algorithm_not_implemented(self, name):
-        raise NotImplementedError(f"{name} is gated to positive-definite lattices but is not implemented in this spike")
-
     def LLL(self):
         from sage.matrix.constructor import matrix
         from sage.rings.integer_ring import ZZ

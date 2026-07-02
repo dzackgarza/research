@@ -683,7 +683,7 @@ def test_odd_discriminant_form_remains_usable_while_odd_genus_is_unsupported():
     assert D.b(D.gen(0), D.gen(0)) == QQ(1) / 3
     assert D.primary_part(3).invariants() == (3,)
     assert D.subgroup_generated_by([D.gen(0)]).cardinality() == 3
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(AssertionError):
         D.is_genus((1, 0), even=False)
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(AssertionError):
         D.genus((1, 0), even=False)

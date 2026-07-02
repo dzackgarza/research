@@ -931,8 +931,12 @@ class SyntheticDiscriminantGroup(Parent):
             f"signature invariants must be nonnegative; found s_plus={s_plus}, s_minus={s_minus}; "
             "fix the caller's signature pair"
         )
-        if not even:
-            raise NotImplementedError("odd genus classification is not implemented in this spike")
+        assert even, (
+            "genus classification through the discriminant-form correspondence is "
+            "grounded only for the even case in this spike (the correspondence "
+            "itself is parity-agnostic; the odd engine is unbuilt); "
+            f"signature_pair={(s_plus, s_minus)}, invariants={self.invariants()}"
+        )
         if self._quadratic_modulus() != 2:
             raise ValueError("the discriminant form of an even lattice has values modulo 2")
         rank = s_plus + s_minus

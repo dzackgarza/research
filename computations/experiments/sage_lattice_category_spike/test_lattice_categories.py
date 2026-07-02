@@ -650,9 +650,9 @@ def test_two_signal_placement_gates_dual_and_discriminant_vocabulary_by_stratum(
     assert hasattr(rational, "dual")
 
     assert A2.same_genus(A2) and A2.genus() == A2.genus()
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(AssertionError):
         A2.embeds_primitively_in_unimodular((8, 0))
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(AssertionError):
         A2.primitive_embedding_into_unimodular((8, 0))
 
 def test_named_constructors_route_through_the_category_entry_with_provenance():
@@ -679,7 +679,7 @@ def test_named_constructors_route_through_the_category_entry_with_provenance():
     assert composite in Lattices(ZZ).Even().RootGenerated()
     with pytest.raises(ValueError):
         composite.cartan_type()  # no single type; irreducible_root_components vocabulary
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(AssertionError):
         composite.irreducible_root_components()  # declared contract
 
     with pytest.raises(AssertionError):
