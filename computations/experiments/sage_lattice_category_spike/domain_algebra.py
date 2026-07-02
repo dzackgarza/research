@@ -77,6 +77,7 @@ __all__ = [
     "LatticeHomset",
     "LatticeSimilarity",
     # groups
+    "EndomorphismRing",
     "IsometryGroup",
     "IsometrySubgroup",
     "DiscriminantOrthogonalGroup",
@@ -390,6 +391,11 @@ class Lattice:
     def isometry_group(self) -> "IsometryGroup":
         raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
+    def endomorphism_ring(self) -> "EndomorphismRing":
+        """End(L) as a RING (V0d ratification 2026-07-03): multiplication is
+        composition, and O(L) = Aut(L) is canonically its group of units."""
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
     def is_isometric(self, other: "Lattice") -> bool:
         raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
@@ -623,6 +629,27 @@ class LatticeHomset:
         raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
     def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+
+class EndomorphismRing:
+    """End(L) as a ring on the owned substrate (V0d ratification 2026-07-03):
+    multiplication = composition, addition pointwise; O(L) = Aut(L) is
+    canonically the unit group. The user's ratified philosophy wants
+    ring-theoretic operations on endomorphisms (f*g, f+g, f-g, f^2, f^(-1)
+    for units, f.order(), f.is_nilpotent(), f.is_unipotent()); T2 designs the
+    exact element surface on LatticeMorphism."""
+
+    def lattice(self) -> Lattice:
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def one(self) -> "LatticeMorphism":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def zero(self) -> "LatticeMorphism":
+        raise NotImplementedError("declared contract; engine per the parity-plan triage")
+
+    def unit_group(self) -> "IsometryGroup":
         raise NotImplementedError("declared contract; engine per the parity-plan triage")
 
 

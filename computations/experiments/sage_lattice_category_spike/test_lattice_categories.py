@@ -677,3 +677,12 @@ def test_named_constructors_route_through_the_category_entry_with_provenance():
 
     with pytest.raises(AssertionError):
         Lattice([[0, 1], [2, 0]])  # non-symmetric: caller-contract bug (ADDD)
+
+def test_rational_dual_is_the_canonical_self_identification():
+    # Ratified 2026-07-03: over QQ the metric dual identifies with the space
+    # itself along the nondegenerate form; dual is total on nondegenerate
+    # lattices and involutive across both base rings.
+    A2 = Lattice("A2", label="A2")
+    V = A2.rationalization()
+    assert V.dual() is V
+    assert A2.dual().dual() == A2

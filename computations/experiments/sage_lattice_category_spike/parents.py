@@ -626,9 +626,14 @@ class SyntheticNondegenerateLattice(NondegenerateCarrier, SyntheticLattice):
         convention is the correct one: e.g. it is exactly the change from the
         ``E_8`` root basis to its fundamental-weight basis in Bourbaki
         coordinates, where the weights are read off ``G^{-1}``.)
+
+        Over ``QQ`` the canonical identification collapses: ``dual = self``
+        (ratified 2026-07-03). The module-dual disambiguation for rational
+        lattices (``Hom_ZZ`` vs ``Hom_QQ``, functionals as elements) is
+        deferred design — gap-ledger entry 7.
         """
-        if not (self.base_ring() is ZZ):
-            raise ValueError("dual lattice is a ZZ-lattice construction")
+        if self.base_ring() is QQ:
+            return self
         return synthetic_lattice(self.gram_matrix().inverse(), ZZ, f"{self._label}#")
 
     def dual_inclusion(self):
