@@ -31,6 +31,7 @@ from sage.rings.rational_field import QQ
 from sage.misc.abstract_method import abstract_method
 
 from .domain_algebra import (
+    BilinearDiscriminantForm as BilinearDiscriminantFormCarrier,
     DefiniteLattice as DefiniteCarrier,
     DiscriminantForm as DiscriminantFormCarrier,
     HyperbolicLattice as HyperbolicCarrier,
@@ -40,6 +41,7 @@ from .domain_algebra import (
     LatticeElement as LatticeElementCarrier,
     NondegenerateLattice as NondegenerateCarrier,
     PositiveDefiniteLattice as PositiveDefiniteCarrier,
+    QuadraticDiscriminantForm as QuadraticDiscriminantFormCarrier,
     RootGeneratedLattice as RootGeneratedCarrier,
 )
 
@@ -284,9 +286,13 @@ class HyperbolicLattices(CategoryWithAxiom_over_base_ring):
 class BilinearDiscriminantForms(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "Bilinear")
 
+    ParentMethods = _carrier_delta(BilinearDiscriminantFormCarrier)
+
 
 class QuadraticDiscriminantForms(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "Quadratic")
+
+    ParentMethods = _carrier_delta(QuadraticDiscriminantFormCarrier)
 
     def extra_super_categories(self):
         return (DiscriminantForms(self.base_ring()).Bilinear(),)

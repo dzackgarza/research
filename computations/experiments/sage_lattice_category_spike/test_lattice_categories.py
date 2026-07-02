@@ -12,9 +12,9 @@ from sage_lattice_category_spike.lattice_categories import (
     DiscriminantForms,
     Lattice,
     Lattices,
-    SyntheticFiniteQuadraticForm,
     SyntheticGenus,
     SyntheticLattice,
+    TorsionQuadraticForm,
 )
 
 
@@ -537,7 +537,7 @@ def test_nikulin_overlattice_and_metabolizer_identities_hold():
 
     def as_finite_quadratic_form(form):
         # The quadratic Gram of a finite quadratic form (q on the diagonal, b off it,
-        # over a generating set) presents it as the canonical SyntheticFiniteQuadraticForm
+        # over a generating set) presents it as the canonical quadratic-discriminant-form
         # TYPE, so both Nikulin sides are the SAME type and comparable as forms.
         generators = form.gens()
         gram = matrix(
@@ -545,7 +545,7 @@ def test_nikulin_overlattice_and_metabolizer_identities_hold():
             [form.q(generators[i]) if i == j else form.b(generators[i], generators[j])
              for i in range(len(generators)) for j in range(len(generators))],
         )
-        return SyntheticFiniteQuadraticForm(gram)
+        return TorsionQuadraticForm(gram)
 
     checked = 0
     for H in D.isotropic_subgroups():

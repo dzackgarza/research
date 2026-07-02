@@ -11,7 +11,7 @@ hooks; everything else is shared here. The lattice-quotient case is the
 
 from __future__ import annotations
 
-from itertools import product
+from itertools import permutations, product
 
 from sage.arith.functions import lcm
 from sage.matrix.constructor import identity_matrix, matrix
@@ -20,21 +20,30 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.parent import Parent
 
+from .arithmetic import rational_mod
 from .categories import DiscriminantForms
-from .domain_algebra import DiscriminantForm as DiscriminantFormCarrier
+from .domain_algebra import (
+    BilinearDiscriminantForm as BilinearDiscriminantFormCarrier,
+    DiscriminantForm as DiscriminantFormCarrier,
+    QuadraticDiscriminantForm as QuadraticDiscriminantFormCarrier,
+)
 from .discriminant import (
     SyntheticDiscriminantAction,
+    SyntheticDiscriminantGroup,
     SyntheticDiscriminantGroupElement,
     SyntheticDiscriminantSubgroup,
+    SyntheticDiscriminantSubquotient,
     SyntheticOrthogonalGroup,
     _all_group_automorphisms,
     _finite_all_subgroups,
     _finite_basis_from_generators,
     _finite_p_torsion,
     _finite_relations_among,
+    _form_matrix_on_images,
     _relation_inclusion_matrix,
 )
 from .elements import SyntheticLatticeElement
+from .value_objects import value_module
 
 
 class SyntheticDiscriminantForm(DiscriminantFormCarrier, Parent):
@@ -397,3 +406,351 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
 
     def hom(self, images):
         return SyntheticDiscriminantAction.from_images(self, images)
+
+
+class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, SyntheticDiscriminantForm):
+    r"""Finite bilinear discriminant form presented by a generator Gram matrix.
+
+    The Bilinear stratum: it owns the finite-abelian-group surface (inherited from
+    :class:`SyntheticDiscriminantForm`) plus the bilinear form ``b`` and its
+    derived vocabulary (radical, orthogonal complements, isotropy, lagrangians,
+    metabolizers, transported forms). The quotient here is Gram-presented, so
+    ``cover`` is the form itself, ``relations`` the trivial subgroup, and
+    ``lift``/``projection`` are the identity. Internal state: the bilinear Gram
+    data on the Smith generators, carried as ``_gram_matrix`` on the active
+    (nontrivial-order) generators.
+    """
+
+    Element = SyntheticDiscriminantGroupElement
+
+    def __init__(self, gram_matrix, category=None):
+        raw_gram = matrix(QQ, gram_matrix)
+        assert raw_gram.is_square(), (f"finite discriminant form Gram matrix must be square; found={raw_gram}")
+        assert raw_gram == raw_gram.transpose(), (f"finite discriminant form Gram matrix must be symmetric; found={raw_gram}")
+        invariants = []
+        active_indices = []
+        for i in range(raw_gram.nrows()):
+            denominators = [raw_gram[i, j].denominator() for j in range(raw_gram.ncols())]
+            denominators.extend(raw_gram[j, i].denominator() for j in range(raw_gram.nrows()))
+            invariant = ZZ(lcm(denominators))
+            if invariant != 1:
+                active_indices.append(i)
+                invariants.append(invariant)
+        gram = raw_gram.matrix_from_rows_and_columns(active_indices, active_indices) if active_indices else matrix(QQ, 0, 0)
+        gram.set_immutable()
+        self._gram_matrix = gram
+        self._invariants = tuple(invariants)
+        if category is None:
+            category = DiscriminantForms(ZZ).Bilinear()
+        Parent.__init__(self, base=ZZ, category=category)
+
+    def _repr_(self):
+        return f"Synthetic finite bilinear discriminant form with invariants {self.invariants()}"
+
+    # Gram-presented forms are identified by object identity (the covering seam
+    # the base parent keys equality on is trivial here, so it cannot separate them).
+    def __eq__(self, other):
+        return self is other
+
+    def __hash__(self):
+        return id(self)
+
+    # -- Gram-presented cover/relations seam: the form is its own cover, with no
+    # relations, so lift/projection are the identity (no Smith transport). --
+    def cover(self):
+        return self
+
+    def relations(self):
+        return self.subgroup_generated_by(())
+
+    def lift(self, element):
+        return self(element)
+
+    def projection(self, element):
+        return self(element)
+
+    def permutation_group(self):
+        from sage.groups.additive_abelian.additive_abelian_group import AdditiveAbelianGroup
+
+        return AdditiveAbelianGroup(list(self.invariants())).permutation_group()
+
+    def value_module(self):
+        return value_module(ZZ, ZZ.one())
+
+    def gram_matrix_bilinear(self):
+        form = matrix(QQ, self._gram_matrix.nrows(), self._gram_matrix.ncols())
+        for i in range(self._gram_matrix.nrows()):
+            for j in range(self._gram_matrix.ncols()):
+                form[i, j] = rational_mod(self._gram_matrix[i, j], 1)
+        form.set_immutable()
+        return form
+
+    def b(self, left, right):
+        left = self(left) if left.parent() is not self else left
+        right = self(right) if right.parent() is not self else right
+        row = matrix(QQ, 1, self.ngens(), list(left.coefficient_vector()))
+        col = matrix(QQ, self.ngens(), 1, list(right.coefficient_vector()))
+        return rational_mod((row * self.gram_matrix_bilinear() * col)[0, 0], 1)
+
+    def radical(self):
+        return self.subgroup_generated_by(element for element in self.elements() if all(self.b(element, other) == 0 for other in self.elements()))
+
+    def is_nondegenerate(self):
+        return self.radical().cardinality() == 1
+
+    def orthogonal_submodule_to(self, subgroup_or_gens):
+        subgroup = self._subgroup(subgroup_or_gens)
+        return self.subgroup_generated_by(
+            element
+            for element in self.elements()
+            if all(self.b(element, subgroup_element) == 0 for subgroup_element in subgroup.elements())
+        )
+
+    def orthogonal(self, subgroup_or_gens):
+        return self.orthogonal_submodule_to(subgroup_or_gens)
+
+    def is_isotropic_element(self, element):
+        return self.q(element) == 0
+
+    def isotropic_elements(self):
+        return tuple(element for element in self.elements() if self.is_isotropic_element(element))
+
+    def is_isotropic_subgroup(self, subgroup_or_gens):
+        return self._subgroup(subgroup_or_gens).is_quadratic_isotropic()
+
+    def isotropic_subgroups(self):
+        return tuple(subgroup for subgroup in self.all_submodules() if self.is_isotropic_subgroup(subgroup))
+
+    def is_lagrangian(self, subgroup_or_gens):
+        subgroup = self._subgroup(subgroup_or_gens)
+        return self.is_isotropic_subgroup(subgroup) and subgroup.cardinality() ** 2 == self.cardinality()
+
+    def lagrangian_subgroups(self):
+        return tuple(subgroup for subgroup in self.isotropic_subgroups() if self.is_lagrangian(subgroup))
+
+    def metabolizer(self):
+        subgroups = self.lagrangian_subgroups()
+        if not subgroups:
+            raise ValueError("form is anisotropic; it admits no metabolizer (lagrangian)")
+        return subgroups[0]
+
+    def is_metabolic(self):
+        return bool(self.lagrangian_subgroups())
+
+    def is_anisotropic(self):
+        return all(element == self.zero() for element in self.isotropic_elements())
+
+    def is_maximal_isotropic(self, subgroup_or_gens):
+        subgroup = self._subgroup(subgroup_or_gens)
+        if not self.is_isotropic_subgroup(subgroup):
+            return False
+        return all(
+            not (subgroup._key() < candidate._key())
+            for candidate in self.isotropic_subgroups()
+        )
+
+    def maximal_isotropic_subgroups(self):
+        return tuple(subgroup for subgroup in self.isotropic_subgroups() if self.is_maximal_isotropic(subgroup))
+
+    def restricted_form(self, subgroup_or_gens):
+        subgroup = self._subgroup(subgroup_or_gens)
+        return _form_matrix_on_images(self, subgroup.gens())
+
+    def orthogonal_quotient(self, subgroup_or_gens):
+        subgroup = self._subgroup(subgroup_or_gens)
+        if not self.is_isotropic_subgroup(subgroup):
+            raise ValueError("orthogonal quotient requires a quadratic-isotropic relation subgroup")
+        return SyntheticDiscriminantSubquotient(self, subgroup, self.orthogonal(subgroup))
+
+    def subquotient_form(self, subgroup_or_gens, quotient_subgroup_or_gens):
+        subgroup = self._subgroup(subgroup_or_gens)
+        quotient_subgroup = self._subgroup(quotient_subgroup_or_gens)
+        if not subgroup._key() <= quotient_subgroup._key():
+            raise ValueError("subquotient form requires H contained in K")
+        if not self.is_isotropic_subgroup(subgroup):
+            raise ValueError("subquotient form requires a quadratic-isotropic relation subgroup")
+        if not quotient_subgroup._key() <= self.orthogonal(subgroup)._key():
+            raise ValueError("subquotient form requires K contained in the orthogonal complement of H")
+        return SyntheticDiscriminantSubquotient(self, subgroup, quotient_subgroup)
+
+    def hom(self, images):
+        return SyntheticDiscriminantAction.from_images(self, images)
+
+    def pushforward_form(self, phi):
+        assert phi.discriminant_group() is self, ("pushforward requires an endomorphism of this finite quadratic form")
+        inverse = phi.inverse()
+        return _form_matrix_on_images(self, [inverse(generator) for generator in self.gens()])
+
+    def pullback_form(self, phi):
+        assert phi.discriminant_group() is self, ("pullback requires an endomorphism of this finite quadratic form")
+        return _form_matrix_on_images(self, [phi(generator) for generator in self.gens()])
+
+    def pairing_character(self, element):
+        element = self(element)
+        return lambda other: self.b(element, other)
+
+    def pairing_isomorphism_to_dual(self):
+        if not (self.is_nondegenerate()):
+            raise ValueError("pairing identification with the dual requires a nondegenerate bilinear form")
+        return {element: self.pairing_character(element) for element in self.elements()}
+
+    def pontryagin_dual(self):
+        if not self.is_nondegenerate():
+            raise ValueError("Pontryagin dual identification requires a nondegenerate form; found degenerate")
+        return self.pairing_isomorphism_to_dual()
+
+    def is_isomorphic(self, other, kind="quadratic"):
+        assert kind in ("group", "bilinear", "quadratic"), (f"isomorphism kind must be group, bilinear, or quadratic; found={kind}")
+        assert isinstance(other, SyntheticBilinearDiscriminantForm), (f"expected SyntheticBilinearDiscriminantForm; found={type(other)}")
+        if self.cardinality() != other.cardinality():
+            return False
+        if kind == "group":
+            return any(True for _images in self._isomorphism_images_to(other))
+        if kind == "bilinear":
+            return any(self._images_preserve_structure(other, images, kind) for images in self._isomorphism_images_to(other))
+        return self.normal_form() == other.normal_form()
+
+    def _isomorphism_images_to(self, other):
+        candidates_by_generator = tuple(
+            tuple(element for element in other.elements() if other.order(element) == invariant)
+            for invariant in self.invariants()
+        )
+        return (images for images in product(*candidates_by_generator) if other._generates_full_group(images))
+
+    def _mapped_to(self, other, element, images):
+        return other.discrete_exp(self.coordinates(element), gens=images)
+
+    def _images_preserve_structure(self, other, images, kind):
+        for left in self.elements():
+            mapped_left = self._mapped_to(other, left, images)
+            if kind == "quadratic" and self.q(left) != other.q(mapped_left):
+                return False
+            for right in self.elements():
+                mapped_right = self._mapped_to(other, right, images)
+                if self.b(left, right) != other.b(mapped_left, mapped_right):
+                    return False
+        return True
+
+    def _generates_full_group(self, images):
+        generated = set()
+        coefficient_ranges = tuple(range(self.order(image)) for image in images)
+        for coefficients in product(*coefficient_ranges):
+            generated.add(tuple(self.discrete_exp(coefficients, gens=images).coefficient_vector()))
+        return ZZ(len(generated)) == self.cardinality()
+
+    def orthogonal_group(self, gens=None, check=False, kind="quadratic"):
+        assert kind in ("quadratic", "bilinear"), (f"orthogonal group kind must be quadratic or bilinear; found={kind}")
+        if gens is None:
+            actions = []
+            candidates = tuple(self.elements())
+            for images in product(candidates, repeat=self.ngens()):
+                action = SyntheticDiscriminantAction.from_images(self, images)
+                if action.is_automorphism() and action.preserves_form(kind=kind):
+                    actions.append(action)
+            return SyntheticOrthogonalGroup(self, actions)
+        actions = tuple(SyntheticDiscriminantAction(self, matrix(ZZ, gen)) for gen in gens)
+        if check:
+            for action in actions:
+                assert action.preserves_form(kind=kind), (f"finite quadratic form action does not preserve the form; matrix={action.matrix()}")
+        return SyntheticOrthogonalGroup(self, actions, close=True)
+
+    def bilinear_orthogonal_group(self, gens=None, check=False):
+        return self.orthogonal_group(gens=gens, check=check, kind="bilinear")
+
+
+class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, SyntheticBilinearDiscriminantForm):
+    r"""Finite quadratic discriminant form presented by a generator Gram matrix.
+
+    The Quadratic stratum refines the bilinear one with the quadratic form ``q``
+    and its genus vocabulary. ``q`` routes through a stored quadratic modulus
+    (``2`` for even forms, ``1`` for odd), never a literal in the value path, so
+    an odd form is representable; the module-level ``TorsionQuadraticForm``
+    factory presents even forms with modulus ``2``.
+    """
+
+    def __init__(self, gram_matrix, quadratic_modulus=2):
+        self._quadratic_modulus_value = ZZ(quadratic_modulus)
+        category = DiscriminantForms(ZZ).Quadratic()
+        if self._quadratic_modulus_value == 2:
+            category = category.Even()
+        SyntheticBilinearDiscriminantForm.__init__(self, gram_matrix, category=category)
+
+    def _repr_(self):
+        return f"Synthetic finite quadratic discriminant form with invariants {self.invariants()}"
+
+    def _quadratic_modulus(self):
+        return self._quadratic_modulus_value
+
+    def value_module_qf(self):
+        return value_module(ZZ, self._quadratic_modulus() * ZZ.one())
+
+    def gram_matrix_quadratic(self):
+        return self._gram_matrix
+
+    def q(self, element):
+        element = self(element) if element.parent() is not self else element
+        row = matrix(QQ, 1, self.ngens(), list(element.coefficient_vector()))
+        col = matrix(QQ, self.ngens(), 1, list(element.coefficient_vector()))
+        return rational_mod((row * self.gram_matrix_quadratic() * col)[0, 0], self._quadratic_modulus())
+
+    def primary_part(self, p):
+        p = ZZ(p)
+        assert p.is_prime(), (f"primary part requires a prime; found={p}")
+        images = []
+        for invariant, generator in zip(self.invariants(), self.gens()):
+            valuation = ZZ(invariant).valuation(p)
+            if valuation:
+                images.append((ZZ(invariant) // (p ** valuation)) * generator)
+        modulus = self._quadratic_modulus()
+        if not images:
+            return SyntheticQuadraticDiscriminantForm(matrix(QQ, 0, 0), quadratic_modulus=modulus)
+        return SyntheticQuadraticDiscriminantForm(_form_matrix_on_images(self, images), quadratic_modulus=modulus)
+
+    def normal_form(self, partial=False, return_isometry=False):
+        if self.ngens() == 0:
+            normal = ((), matrix(QQ, 0, 0))
+            if return_isometry:
+                return normal, SyntheticDiscriminantAction(self, identity_matrix(ZZ, 0))
+            return normal
+        best_key = None
+        best_normal_form = None
+        best_images = None
+        for images in self._invariant_basis_candidates():
+            invariants = tuple(self.order(image) for image in images)
+            form = _form_matrix_on_images(self, images)
+            key = (invariants, tuple(form.list()))
+            if best_key is None or key < best_key:
+                best_key = key
+                best_normal_form = (invariants, form)
+                best_images = images
+        assert best_normal_form is not None, ("finite invariant-basis enumeration produced no presentation; "
+        f"invariants={self.invariants()}")
+        if return_isometry:
+            return best_normal_form, SyntheticDiscriminantAction.from_images(self, best_images)
+        return best_normal_form
+
+    def _invariant_basis_candidates(self):
+        elements = tuple(self.elements())
+        for invariants in sorted(set(permutations(self.invariants()))):
+            candidates_by_generator = tuple(
+                tuple(element for element in elements if self.order(element) == invariant)
+                for invariant in invariants
+            )
+            for images in product(*candidates_by_generator):
+                if self._generates_full_group(images):
+                    yield images
+
+    def brown_invariant(self):
+        return SyntheticDiscriminantGroup.brown_invariant(self)
+
+    def is_genus(self, signature_pair, even=True):
+        return SyntheticDiscriminantGroup.is_genus(self, signature_pair, even=even)
+
+    def genus(self, signature_pair, even=True):
+        return SyntheticDiscriminantGroup.genus(self, signature_pair, even=even)
+
+    def twist(self, scalar):
+        return SyntheticQuadraticDiscriminantForm(self.gram_matrix_quadratic() * QQ(scalar), quadratic_modulus=self._quadratic_modulus())
+
+    def quadratic_orthogonal_group(self, gens=None, check=False):
+        return self.orthogonal_group(gens=gens, check=check, kind="quadratic")

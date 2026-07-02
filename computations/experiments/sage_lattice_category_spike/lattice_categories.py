@@ -13,13 +13,16 @@ from .categories import DiscriminantForms, Lattices
 from .constructors import IntegralLatticeGluing, Lattice, RootLattice, SyntheticLatticeFromGram, U
 from .discriminant import (
     SyntheticDiscriminantAction,
-    SyntheticFiniteQuadraticForm,
     SyntheticGenus,
     SyntheticDiscriminantGroup,
     SyntheticDiscriminantGroupElement,
     SyntheticDiscriminantSubgroup,
     SyntheticOrthogonalGroup,
     TorsionQuadraticForm,
+)
+from .discriminant_forms import (
+    SyntheticBilinearDiscriminantForm,
+    SyntheticQuadraticDiscriminantForm,
 )
 from .elements import SyntheticLatticeElement
 from .homsets import LatticeHomset, LatticeMorphism, LatticeSimilarity
@@ -36,7 +39,8 @@ __all__ = [
     "LatticeSimilarity",
     "Lattices",
     "SyntheticDiscriminantAction",
-    "SyntheticFiniteQuadraticForm",
+    "SyntheticBilinearDiscriminantForm",
+    "SyntheticQuadraticDiscriminantForm",
     "SyntheticGenus",
     "SyntheticDiscriminantGroup",
     "SyntheticDiscriminantGroupElement",

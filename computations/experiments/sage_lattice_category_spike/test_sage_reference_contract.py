@@ -14,7 +14,7 @@ def assert_matrix_equal(left, right):
 
 def as_finite_quadratic_form(form):
     # Present any finite quadratic form (discriminant group or subquotient) as the
-    # canonical SyntheticFiniteQuadraticForm TYPE via its quadratic Gram (q on the
+    # canonical quadratic-discriminant-form TYPE via its quadratic Gram (q on the
     # diagonal, b off it), so two forms can be compared as forms, not by group invariants.
     generators = form.gens()
     gram = matrix(
@@ -22,7 +22,7 @@ def as_finite_quadratic_form(form):
         [form.q(generators[i]) if i == j else form.b(generators[i], generators[j])
          for i in range(len(generators)) for j in range(len(generators))],
     )
-    return lc.SyntheticFiniteQuadraticForm(gram)
+    return lc.TorsionQuadraticForm(gram)
 
 
 def test_cartan_and_hyperbolic_constructors_match_integral_lattice_doctests():
