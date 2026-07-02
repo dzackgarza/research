@@ -1,1 +1,0 @@
-NOTE: do not get confused by the lattice-research subrepo -- this is an independent project that is merely tracked here, and does not necessarily inform and is not necessarily related to other (e.g. spike) work.
