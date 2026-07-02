@@ -32,6 +32,7 @@ from sage.misc.abstract_method import abstract_method
 
 from .domain_algebra import (
     DefiniteLattice as DefiniteCarrier,
+    DiscriminantForm as DiscriminantFormCarrier,
     HyperbolicLattice as HyperbolicCarrier,
     IndefiniteLattice as IndefiniteCarrier,
     IntegralNondegenerateLattice as IntegralNondegenerateCarrier,
@@ -185,22 +186,11 @@ class DiscriminantForms(Category_over_base_ring):
         Even = axiom("Even")
         WithSourceLattice = axiom("WithSourceLattice")
 
-    class ParentMethods:
-        @abstract_method
-        def cover(self):
-            r"""Return the covering lattice/module ``L#``."""
-
-        @abstract_method
-        def relations(self):
-            r"""Return the relation lattice/module ``L``."""
-
-        @abstract_method
-        def invariants(self):
-            r"""Return Smith invariants of the finite quotient."""
-
-        @abstract_method
-        def primary_part(self, p):
-            r"""Return the ``p``-primary discriminant form."""
+    # The domain-algebra carrier IS this base node's parent surface (direct
+    # assignment; the finite-quotient parent subsumes the former four abstract
+    # stubs). Concrete parents inherit the carrier and shadow its declared
+    # methods with real implementations.
+    ParentMethods = DiscriminantFormCarrier
 
     class MorphismMethods:
         pass

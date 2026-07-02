@@ -435,9 +435,9 @@ class SyntheticLattice(LatticeCarrier, Parent):
         return self.scale(self.denominator(), label=label)
 
     def finite_quotient(self, sublattice):
-        from .discriminant import SyntheticLatticeFiniteQuotient
+        from .discriminant_forms import SyntheticLatticeQuotient
 
-        return SyntheticLatticeFiniteQuotient(self, sublattice)
+        return SyntheticLatticeQuotient(self, sublattice)
 
     def quotient_map_to(self, sublattice):
         quotient = self.finite_quotient(sublattice)
