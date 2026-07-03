@@ -470,6 +470,20 @@ class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroupCarrier):
         assert any(action == group_action for group_action in self._actions), (f"action is not in this orthogonal group: {action.matrix()}")
         return action.matrix()
 
+    def as_permutation_group(self):
+        r"""GAP-backed permutation seam (spec 3.5): the faithful action on the
+        underlying finite group's elements. (The matrix-group seam has no
+        faithful substrate here — action matrices compose modulo per-row
+        invariants — so GAP machinery composes through this door.)"""
+        from sage.groups.perm_gps.permgroup import PermutationGroup
+
+        elements = self.discriminant_form().elements()
+        positions = {element: index + 1 for index, element in enumerate(elements)}
+        permutations = [[positions[action(element)] for element in elements] for action in self.gens()]
+        if not permutations:
+            permutations = [list(range(1, len(elements) + 1))]
+        return PermutationGroup(permutations)
+
     def _closure(self, generators):
         identity = SyntheticDiscriminantAction(self.discriminant_form(), identity_matrix(ZZ, self.discriminant_form().ngens()))
         seen = {identity}
@@ -486,10 +500,11 @@ class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroupCarrier):
 
 
 def TorsionQuadraticForm(gram_matrix):
-    r"""Public Sage-compatible constructor for an owned finite quadratic form."""
+    r"""Public Sage-compatible constructor for an owned finite quadratic form;
+    routes through the section-1.4 category door."""
     # lazy import: discriminant_forms imports this module at load time
-    from .discriminant_forms import SyntheticQuadraticDiscriminantForm
-    return SyntheticQuadraticDiscriminantForm(gram_matrix)
+    from .categories import DiscriminantForms
+    return DiscriminantForms(ZZ).from_form_data(gram_matrix)
 
 
 class SyntheticGenus(GenusCarrier):

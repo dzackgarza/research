@@ -148,6 +148,29 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
         for element in self._delegated_engine():
             yield self.from_matrix(matrix(ZZ, element.matrix()).transpose())
 
+    def as_matrix_group(self):
+        r"""GAP-backed matrix-group seam (spec 3.5); implemented exactly where
+        the group is finite and generators are computed (the engine-grounded
+        domain)."""
+        self._assert_engine_grounded()
+        assert self._lattice.rank() > 0, (
+            "the matrix-group substrate needs degree >= 1 (Sage MatrixGroup "
+            "bound); the rank-0 O(L) is the trivial group — compose through "
+            f"as_permutation_group instead; lattice={self._lattice}"
+        )
+        from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+
+        return MatrixGroup([matrix(ZZ, generator.matrix()) for generator in self.gens()])
+
+    def as_permutation_group(self):
+        r"""GAP-backed permutation seam (spec 3.5), on the engine-grounded domain."""
+        self._assert_engine_grounded()
+        from sage.groups.perm_gps.permgroup import PermutationGroup
+
+        if self._lattice.rank() == 0:
+            return PermutationGroup([[1]])
+        return self.as_matrix_group().as_permutation_group()
+
     def discriminant_action(self, f):
         r"""The induced action of the single verified isometry ``f`` on A_L.
         Per-element functor; NO group-level claim."""
@@ -240,6 +263,49 @@ class SyntheticIsometrySubgroup(IsometrySubgroupCarrier):
         if not self._gens:
             return ZZ.one()
         return MatrixGroup([g.matrix() for g in self._gens]).order()
+
+    def as_matrix_group(self):
+        r"""GAP-backed matrix-group seam (spec 3.5); same finiteness condition
+        as ``order``/``__iter__`` (ambient O(L) finite)."""
+        assert self._ambient.is_finite(), (
+            "subgroup seams are computed only when the ambient O(L) is finite "
+            f"(closure computable); ambient={self._ambient}"
+        )
+        assert self.lattice().rank() > 0, (
+            "the matrix-group substrate needs degree >= 1 (Sage MatrixGroup "
+            "bound); the rank-0 subgroup is trivial — compose through "
+            f"as_permutation_group instead; lattice={self.lattice()}"
+        )
+        from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+
+        if not self._gens:
+            return MatrixGroup([identity_matrix(ZZ, self.lattice().rank())])
+        return MatrixGroup([matrix(ZZ, generator.matrix()) for generator in self._gens])
+
+    def as_permutation_group(self):
+        r"""GAP-backed permutation seam (spec 3.5), same finiteness condition."""
+        assert self._ambient.is_finite(), (
+            "subgroup seams are computed only when the ambient O(L) is finite "
+            f"(closure computable); ambient={self._ambient}"
+        )
+        from sage.groups.perm_gps.permgroup import PermutationGroup
+
+        if self.lattice().rank() == 0:
+            return PermutationGroup([[1]])
+        return self.as_matrix_group().as_permutation_group()
+
+    def __iter__(self):
+        r"""Closure enumeration through the matrix-group engine; implemented
+        under the same finiteness condition as ``order`` (spec 3.3)."""
+        assert self._ambient.is_finite(), (
+            "subgroup enumeration is computed only when the ambient O(L) is finite "
+            f"(closure computable); ambient={self._ambient}"
+        )
+        if not self._gens:
+            yield self._ambient.one()
+            return
+        for element in self.as_matrix_group():
+            yield self._ambient.from_matrix(matrix(QQ, element.matrix()))
 
     def __eq__(self, other):
         return (

@@ -152,6 +152,27 @@ def test_brown_invariant_and_genus_follow_torsion_quadratic_module_doctests():
     assert D.genus(L.signature_pair()) == L.genus()
 
 
+def test_group_seams_compose_into_gap_backed_machinery():
+    # Reference: spec 3.5 seams; expected orders from the Sage matrix- and
+    # permutation-group oracles built from the same generators.
+    A2 = lc.Lattice("A2")
+    O = A2.isometry_group()
+    assert O.as_matrix_group().order() == O.order() == 12
+    assert O.as_permutation_group().order() == 12
+
+    H = O.subgroup([A2.reflection(A2.gen(0))])
+    assert H.as_matrix_group().order() == H.order() == 2
+    assert sorted(g.order() for g in H) == [1, 2]
+
+    D = lc.TorsionQuadraticForm(identity_matrix(QQ, 3) / 2)
+    assert D.orthogonal_group().as_permutation_group().order() == D.orthogonal_group().order() == 6
+
+    # constructor door: from_form_data is the category entry the factory routes through
+    direct = lc.DiscriminantForms(ZZ).from_form_data(identity_matrix(QQ, 3) / 2)
+    assert direct.invariants() == D.invariants()
+    assert direct.gram_matrix_quadratic() == D.gram_matrix_quadratic()
+
+
 def test_genus_totals_delegate_to_the_sage_genus_symbol():
     # Reference: spec section 5 totals; expected values from the Sage genus of
     # the same lattice (ephemeral reference object built from the same data).

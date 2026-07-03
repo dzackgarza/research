@@ -177,6 +177,16 @@ class DiscriminantForms(Category_over_base_ring):
     def _repr_object_names(self):
         return f"synthetic discriminant forms over {self.base_ring()}"
 
+    def from_form_data(self, gram_matrix, quadratic_modulus=2, invariants=None):
+        r"""Section 1.4: the finite-side functor — the ONLY constructor door
+        from form data (a quadratic generator Gram, its value modulus, and
+        optionally an explicit group presentation) into this category. The
+        lattice-side functor ``discriminant_group`` lands in its image, and
+        the Sage-compatible ``TorsionQuadraticForm`` factory routes here."""
+        from .discriminant_forms import SyntheticQuadraticDiscriminantForm
+
+        return SyntheticQuadraticDiscriminantForm(gram_matrix, quadratic_modulus=quadratic_modulus, invariants=invariants)
+
     def super_categories(self):
         return [CommutativeAdditiveGroups().Finite()]
 
