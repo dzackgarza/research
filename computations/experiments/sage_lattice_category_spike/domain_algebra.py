@@ -919,6 +919,14 @@ class DiscriminantForm:
 
 
 class BilinearDiscriminantForm(DiscriminantForm):
+    def q(self, element: DiscriminantFormElement) -> ExactScalar:
+        """The induced diagonal quadratic form q(x) := b(x, x) (placement
+        ruling 2026-07-03): every bilinear form induces a quadratic form along
+        the diagonal — only polarization needs 2 invertible — so q is DEFINED
+        on the Bilinear node (values in the bilinear value module); the
+        Quadratic node refines it (finer value module)."""
+        assert False, "declared contract; engine per the parity-plan triage"
+
     def b(
         self, left: DiscriminantFormElement, right: DiscriminantFormElement
     ) -> ExactScalar:

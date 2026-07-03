@@ -732,3 +732,23 @@ def test_endomorphisms_form_a_monoid_with_ring_like_predicates():
     assert not s.is_nilpotent()  # no nonzero form-preserving endo of a nondegenerate lattice is
     assert not s.is_idempotent() and s.order() == 2
     assert not hasattr(A2, "endomorphism_ring")  # the ring object is not vocabulary
+
+def test_bilinear_forms_carry_the_induced_diagonal_quadratic_form():
+    # Placement ruling 2026-07-03: Bil(M) -> Quad(M) by b -> (x -> b(x, x)) is
+    # always defined; only polarization needs 2 invertible. A standalone
+    # bilinear form therefore answers q and the isotropy suite directly.
+    from sage_lattice_category_spike.lattice_categories import (
+        SyntheticBilinearDiscriminantForm,
+        TorsionQuadraticForm,
+    )
+
+    B = SyntheticBilinearDiscriminantForm(matrix.diagonal(QQ, [QQ(1) / 2, QQ(1) / 3]))
+    x, y = B.gen(0), B.gen(1)
+    assert B.q(x) == B.b(x, x) and B.q(x + y) == B.b(x + y, x + y)
+    assert not B.is_isotropic_element(x)
+    assert B.is_isotropic_element(B.zero())
+
+    # on the quadratic stratum, q refines the diagonal: q(x) == b(x, x) mod ZZ
+    D = TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 2]))
+    z = D.gen(0)
+    assert (D.q(z) - D.b(z, z)) in ZZ

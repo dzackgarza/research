@@ -666,6 +666,14 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
     def bilinear_orthogonal_group(self, gens=None, check=False):
         return self.orthogonal_group(gens=gens, check=check, kind="bilinear")
 
+    def q(self, element):
+        r"""The induced diagonal quadratic form ``q(x) := b(x, x)`` — defined
+        for EVERY bilinear form (placement ruling 2026-07-03: only
+        polarization needs 2 invertible), valued in the bilinear value module.
+        The Quadratic stratum overrides with its refined stored-modulus form.
+        """
+        return self.b(element, element)
+
 
 class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, SyntheticBilinearDiscriminantForm):
     r"""Finite quadratic discriminant form presented by a generator Gram matrix.
