@@ -777,3 +777,66 @@ def test_torsion_quadratic_module_doctest_parity_ledger_rows():
     left, right = lc.TorsionQuadraticForm(q_half), lc.TorsionQuadraticForm(q_half)
     assert left.invariants() == right.invariants()
     assert_matrix_equal(left.gram_matrix_quadratic(), right.gram_matrix_quadratic())
+
+
+def test_torsion_quadratic_module_doctest_parity_value_pins():
+    # T5 phase-2 pins for the torsion ledger's mapped-but-unpinned rows; every
+    # fixture is deliberately tiny (ruling 2026-07-03: correctness evidence uses
+    # very small lattices). Expected values verbatim from the source doctests.
+
+    # TorsionQuadraticForm factory doctest: [[1,1/2],[1/2,1]] -> (2,2) in Q/2Z
+    q1 = lc.TorsionQuadraticForm(Matrix(QQ, 2, [1, QQ(1) / 2, QQ(1) / 2, 1]))
+    assert q1.invariants() == (2, 2)
+    assert q1.value_module_qf() == QmodnZ(QQ(2))
+    assert_matrix_equal(q1.gram_matrix_quadratic(), Matrix(QQ, 2, [1, QQ(1) / 2, QQ(1) / 2, 1]))
+
+    # factory row diag(1/4,1/3) REROUTED: Sage's constructor Smith-collapses to
+    # invariants (12,) / Gram [7/12] (that Gram is a repr of the mod-1 form, not
+    # a valid reconstruction input — fed back in, both Sage and the spike read
+    # [7/12] at modulus 2, a different form); the spike keeps the per-generator
+    # presentation, so the surviving content is the group order, the Smith
+    # invariants, and normal-form agreement with the oracle on the same data
+    from sage.modules.torsion_quadratic_module import TorsionQuadraticForm as SageTorsionForm
+
+    q2 = lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 4, QQ(1) / 3]))
+    oracle = SageTorsionForm(matrix.diagonal(QQ, [QQ(1) / 4, QQ(1) / 3])).normal_form()
+    assert q2.cardinality() == 12
+    assert q2.normal_form()[0] == tuple(oracle.invariants()) == (12,)
+    assert_matrix_equal(q2.normal_form()[1], oracle.gram_matrix_quadratic())
+
+    # factory doctest: diag(3/4, 3/8, 3/8) -> invariants (4, 8, 8)
+    q3 = lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(3) / 4, QQ(3) / 8, QQ(3) / 8]))
+    assert q3.invariants() == (4, 8, 8)
+    assert_matrix_equal(q3.gram_matrix_quadratic(), matrix.diagonal(QQ, [QQ(3) / 4, QQ(3) / 8, QQ(3) / 8]))
+
+    # twist doctest Gram rows (the ledger test pins the invariants; these pin
+    # the quadratic Grams: q = diag(3/9, 1/9))
+    q = lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(3) / 9, QQ(1) / 9]))
+    assert_matrix_equal(q.twist(-1).gram_matrix_quadratic(), matrix.diagonal(QQ, [QQ(2) / 3, QQ(8) / 9]))
+    assert_matrix_equal(q.twist(3).gram_matrix_quadratic(), matrix.diagonal(QQ, [1, QQ(1) / 3]))
+    assert_matrix_equal(q.twist(4).gram_matrix_quadratic(), matrix.diagonal(QQ, [QQ(4) / 3, QQ(4) / 9]))
+
+    # orthogonal_group(gens=[f]) doctest: the swap on identity/2 generates order 2
+    D2 = lc.TorsionQuadraticForm(identity_matrix(QQ, 2) / 2)
+    assert D2.orthogonal_group(gens=[matrix(ZZ, 2, [0, 1, 1, 0])]).order() == 2
+
+    # brown_invariant doctest error branch: an odd form propagates the oracle's
+    # rejection (values must lie in QQ/2ZZ)
+    with pytest.raises(ValueError):
+        lc.TorsionQuadraticForm(matrix(QQ, [[QQ(1) / 3]])).brown_invariant()
+
+
+def test_maximal_overlattice_p_local_reference_agrees_with_sage_on_small_fixture():
+    # Reference: IntegralLattice.maximal_overlattice doctests. The source fixture
+    # A4.twist(25*89) has a discriminant group of order 5^9 * 89^4 — rerouted to a
+    # small fixture (ruling 2026-07-03: correctness evidence uses very small
+    # lattices); the p-local maximization content is pinned by direct oracle
+    # agreement on A2.twist(9) (discriminant group order 3^5 = 243).
+    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+
+    gram = matrix(ZZ, 2, [2, -1, -1, 2])
+    L = lc.Lattice("A2").twist(9)
+    oracle = IntegralLattice(gram).twist(9)
+    assert L.maximal_overlattice().is_even()
+    assert L.maximal_overlattice().determinant() == oracle.maximal_overlattice().determinant()
+    assert L.maximal_overlattice(3).determinant() == oracle.maximal_overlattice(3).determinant()
