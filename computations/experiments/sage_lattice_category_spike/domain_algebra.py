@@ -320,7 +320,7 @@ class Lattice:
     def sublattice(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice":
         assert False, "declared contract; engine per the parity-plan triage"
 
-    def fractional_sublattice(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice":
+    def lattice_in_rationalization(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice":
         assert False, "declared contract; engine per the parity-plan triage"
 
     def span(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice":

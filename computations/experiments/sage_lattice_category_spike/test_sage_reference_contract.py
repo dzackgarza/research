@@ -34,7 +34,7 @@ def test_cartan_and_hyperbolic_constructors_match_integral_lattice_doctests():
     assert_matrix_equal(lc.Lattice("D4").gram_matrix(), CartanMatrix(["D", 4]))
 
 
-def test_rationalization_and_fractional_dual_follow_free_quadratic_module_doctests():
+def test_rationalization_and_nonintegral_dual_follow_free_quadratic_module_doctests():
     # References: dual doctest and free_quadratic_module span/span_of_basis doctests.
     L = lc.Lattice("A2")
     L_dual = L.dual()
@@ -50,14 +50,15 @@ def test_rationalization_and_fractional_dual_follow_free_quadratic_module_doctes
     assert L_dual.dual() == L
 
 
-def test_nonintegral_rational_generators_use_fractional_sublattice_contract():
-    # Reference: IntegralLattice.sublattice rejects this; the consolidated category broadens it through fractional_sublattice.
+def test_nonintegral_rational_generators_span_a_lattice_in_the_rationalization():
+    # Reference: IntegralLattice.sublattice rejects this; the consolidated category
+    # broadens it through lattice_in_rationalization (a ZZ-lattice in L_QQ, never a sublattice of L).
     U = lc.Lattice("U")
-    fractional = U.fractional_sublattice([[QQ(1) / 2, -QQ(1) / 2]], label="fractional_line")
+    half_diagonal = U.lattice_in_rationalization([[QQ(1) / 2, -QQ(1) / 2]], label="half_diagonal_in_U_QQ")
 
-    assert fractional.base_ring() is ZZ
-    assert not fractional.is_integral()
-    assert_matrix_equal(fractional.gram_matrix(), matrix(QQ, 1, 1, [-QQ(1) / 2]))
+    assert half_diagonal.base_ring() is ZZ
+    assert not half_diagonal.is_integral()
+    assert_matrix_equal(half_diagonal.gram_matrix(), matrix(QQ, 1, 1, [-QQ(1) / 2]))
     with pytest.raises(AssertionError):
         U.sublattice([[QQ(1) / 2, -QQ(1) / 2]])
 
@@ -262,10 +263,10 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
     finite_index_sub = A2.sublattice([[2, 0], [0, 2]], label="2A2")
     assert finite_index_sub.index_in(A2) == 4
 
-    fractional = A2.fractional_sublattice([[QQ(1) / 3, 0]])
-    assert fractional.base_ring() is ZZ
-    assert not fractional.is_integral()
-    assert fractional.clear_denominators().is_integral()
+    third_line = A2.lattice_in_rationalization([[QQ(1) / 3, 0]])
+    assert third_line.base_ring() is ZZ
+    assert not third_line.is_integral()
+    assert third_line.clear_denominators().is_integral()
     assert A2.sublattice([[1, 0]]).rank() == 1
     assert A2.sublattice([[1, 0]], label="A1_in_A2").rank() == 1
     assert A2.zero_lattice().rank() == 0
@@ -993,7 +994,7 @@ def test_integer_lattice_invariant_pins_and_free_module_intersection_rows():
     assert_matrix_equal(meet3.gram_matrix(), matrix(ZZ, 1, 1, [12]))
 
     # Sage's scale(c) scales the module (basis rows), not the form: the scaled
-    # spans reroute to fractional spans of the same rows; [1/3 2/3] -> Gram [5/9]
+    # spans reroute to non-integral spans of the same rows; [1/3 2/3] -> Gram [5/9]
     frac = Z2.span([[QQ(1) / 6, QQ(1) / 3]]).intersection(Z2.span([[QQ(1) / 15, QQ(2) / 15]]))
     assert_matrix_equal(frac.gram_matrix(), matrix(QQ, 1, 1, [QQ(5) / 9]))
 
@@ -1032,7 +1033,7 @@ def test_torsion_bilinear_gram_fquad_ordering_and_fgp_coordinate_doctest_rows():
     # W = span(2V.0+4V.1, 9V.0+12V.1, 4V.2) — relation rows in cover coordinates
     Q3Q = lc.Lattice(identity_matrix(QQ, 3), base_ring=QQ, label="Q3fgp")
     cover = Q3Q.span([[QQ(1) / 2, 0, 0], [QQ(3) / 2, 2, 1], [0, 0, 1]], base_ring=ZZ)
-    quotient = cover.finite_quotient(cover.fractional_sublattice([[2, 4, 0], [9, 12, 0], [0, 0, 4]]))
+    quotient = cover.finite_quotient(cover.lattice_in_rationalization([[2, 4, 0], [9, 12, 0], [0, 0, 4]]))
     assert quotient.invariants() == (4, 12)
     x = quotient.gen(0) + 3 * quotient.gen(1)
     # x = (1, 3): __getitem__/vector() reroute to the coefficient vector
@@ -1040,5 +1041,5 @@ def test_torsion_bilinear_gram_fquad_ordering_and_fgp_coordinate_doctest_rows():
 
     # annihilator doctest (same cover, W = span(V.0+2V.1, 9V.0+2V.1, 4V.2)):
     # Sage returns the ideal (16); the spike answers with the integer generator
-    quotient16 = cover.finite_quotient(cover.fractional_sublattice([[1, 2, 0], [9, 2, 0], [0, 0, 4]]))
+    quotient16 = cover.finite_quotient(cover.lattice_in_rationalization([[1, 2, 0], [9, 2, 0], [0, 0, 4]]))
     assert ZZ(quotient16.annihilator()) == 16

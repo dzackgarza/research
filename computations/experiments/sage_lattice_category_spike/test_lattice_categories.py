@@ -180,7 +180,7 @@ def test_rank_one_sublattice_uses_coordinate_membership_not_ambient_embedding():
     assert not U.is_submodule(diagonal)
 
 
-def test_dual_is_owned_fractional_zz_lattice():
+def test_dual_is_owned_zz_lattice_in_the_rationalization():
     A2 = Lattice("A2", label="A2")
     A2_dual = A2.dual()
 
@@ -699,7 +699,7 @@ def test_placement_matrix_both_directions_over_the_spec_fixture_set():
         Lattice("U", label="U"),                                  # hyperbolic
         U_constructor(2),                                         # hyperbolic non-unimodular
         Lattice(matrix(QQ, [[0, 0], [0, 2]]), label="deg"),       # degenerate
-        Lattice(matrix(QQ, [[QQ(1) / 2]]), base_ring=QQ, label="half"),  # fractional rank-1
+        Lattice(matrix(QQ, [[QQ(1) / 2]]), base_ring=QQ, label="half"),  # rank-1 over QQ, non-integral form
         Lattice(matrix(QQ, 0, 0), label="zero"),                  # rank 0
     )
     for fixture in fixtures:

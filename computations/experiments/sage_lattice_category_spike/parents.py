@@ -357,7 +357,11 @@ class SyntheticLattice(LatticeCarrier, Parent):
         )
         return lattice
 
-    def fractional_sublattice(self, generators, label="fractional_sublattice"):
+    def lattice_in_rationalization(self, generators, label="lattice_in_rationalization"):
+        r"""The ZZ-lattice in ``L_QQ = L (x) QQ`` spanned by the given rational
+        generators (commensurable with ``L`` when full-rank). Rational generators
+        span no ZZ-submodule of ``L`` itself; the object lives in the rational
+        quadratic space, so the ambient is always ``L_QQ`` (Nik80 section 1)."""
         return self.sublattice(generators, label=label, require_subset=False, require_integral=False)
 
     def span(self, generators, base_ring=None, check_integral=None, check_even=None, label="span"):
