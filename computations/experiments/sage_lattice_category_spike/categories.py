@@ -297,7 +297,9 @@ class _CryptographicKernel(CryptographicCarrier):
         from sage.rings.integer_ring import ZZ
         from sage.rings.rational_field import QQ
 
-        target = vector(QQ, target.coefficient_vector() if hasattr(target, "coefficient_vector") and target.parent() is self else target)
+        from .elements import SyntheticLatticeElement
+
+        target = vector(QQ, target.coefficient_vector() if isinstance(target, SyntheticLatticeElement) and target.parent() is self else target)
         assert len(target) == self.rank(), ("closest vector target must have one coordinate per lattice basis vector; "
         f"rank={self.rank()}, target={target}")
         if self.rank() == 0:
@@ -390,7 +392,9 @@ class _CryptographicKernel(CryptographicCarrier):
         from sage.rings.integer_ring import ZZ
         from sage.rings.rational_field import QQ
 
-        target = vector(QQ, target.coefficient_vector() if hasattr(target, "coefficient_vector") and target.parent() is self else target)
+        from .elements import SyntheticLatticeElement
+
+        target = vector(QQ, target.coefficient_vector() if isinstance(target, SyntheticLatticeElement) and target.parent() is self else target)
         assert len(target) == self.rank(), ("approximate closest vector target must have one coordinate per basis vector; "
         f"rank={self.rank()}, target={target}")
         if self.rank() == 0:
@@ -447,7 +451,9 @@ class _CryptographicKernel(CryptographicCarrier):
         from sage.rings.integer_ring import ZZ
         from sage.rings.rational_field import QQ
 
-        target = vector(QQ, target.coefficient_vector() if hasattr(target, "coefficient_vector") and target.parent() is self else target)
+        from .elements import SyntheticLatticeElement
+
+        target = vector(QQ, target.coefficient_vector() if isinstance(target, SyntheticLatticeElement) and target.parent() is self else target)
         assert len(target) == self.rank(), ("close vector target must have one coordinate per basis vector; "
         f"rank={self.rank()}, target={target}")
         gram = matrix(QQ, self.gram_matrix())
@@ -467,7 +473,9 @@ class _CryptographicKernel(CryptographicCarrier):
         # Sage mutates internal reduced-basis state and returns None; a based
         # lattice is an immutable (R, G) value, so this returns the lattice
         # obtained by injecting w and LLL-reducing (the functional analog).
-        coordinates = list(w.coefficient_vector() if hasattr(w, "coefficient_vector") and w.parent() is self else w)
+        from .elements import SyntheticLatticeElement
+
+        coordinates = list(w.coefficient_vector() if isinstance(w, SyntheticLatticeElement) and w.parent() is self else w)
         injected = self.overlattice([coordinates], label="update_reduced_basis")
         # an overlattice lives in the same rational quadratic space, so it stays
         # positive-definite; the assertion documents the invariant (spec 2.6
