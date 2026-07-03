@@ -60,7 +60,7 @@ class SyntheticDiscriminantForm(DiscriminantFormCarrier, Parent):
     Element = SyntheticDiscriminantGroupElement
 
     def __init__(self, ambient_group, relation_subgroup):
-        assert all(hasattr(ambient_group, name) for name in ("ngens", "invariants", "gens", "order")), (f"expected finite additive parent; found={type(ambient_group)}")
+        assert isinstance(ambient_group, SyntheticDiscriminantForm), (f"expected a synthetic finite discriminant parent as the quotient cover; found={type(ambient_group)}")
         relation_subgroup = ambient_group._subgroup(relation_subgroup)
         relation_rows = []
         for i, invariant in enumerate(ambient_group.invariants()):
