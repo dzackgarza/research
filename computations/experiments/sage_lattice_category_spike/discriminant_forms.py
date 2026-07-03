@@ -662,12 +662,12 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
         return SyntheticDiscriminantAction.from_images(self, images)
 
     def pushforward_form(self, phi):
-        assert phi.discriminant_group() is self, ("pushforward requires an endomorphism of this finite quadratic form")
+        assert phi.discriminant_form() is self, ("pushforward requires an endomorphism of this finite quadratic form")
         inverse = phi.inverse()
         return _form_matrix_on_images(self, [inverse(generator) for generator in self.gens()])
 
     def pullback_form(self, phi):
-        assert phi.discriminant_group() is self, ("pullback requires an endomorphism of this finite quadratic form")
+        assert phi.discriminant_form() is self, ("pullback requires an endomorphism of this finite quadratic form")
         return _form_matrix_on_images(self, [phi(generator) for generator in self.gens()])
 
     def pontryagin_dual(self):

@@ -8,6 +8,7 @@ from sage.rings.rational_field import QQ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
+from .domain_algebra import LatticeMorphism as LatticeMorphismCarrier
 from .parents import SyntheticLattice
 
 
@@ -36,7 +37,7 @@ class LatticeHomset(Parent):
         return LatticeMorphism(self, matrix_data)
 
 
-class LatticeMorphism(Element):
+class LatticeMorphism(LatticeMorphismCarrier, Element):
     r"""Form-preserving morphism of synthetic lattices."""
 
     def __init__(self, parent, matrix_data):
@@ -94,6 +95,14 @@ class LatticeMorphism(Element):
 
     def image(self):
         return self.codomain().sublattice(self.matrix().columns(), "im")
+
+    def is_injective(self):
+        r"""[total] — full column rank (spec 3.5; free modules carry no torsion)."""
+        return self.matrix().rank() == self.domain().rank()
+
+    def is_surjective(self):
+        r"""[total] — the image is the whole codomain (spec 3.5)."""
+        return self.image() == self.codomain()
 
     def im_gens(self):
         return tuple(self(self.domain().gen(i)) for i in range(self.domain().rank()))

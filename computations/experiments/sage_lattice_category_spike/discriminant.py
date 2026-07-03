@@ -10,6 +10,12 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.element import Element
 
+from .domain_algebra import (
+    DiscriminantAction as DiscriminantActionCarrier,
+    DiscriminantOrthogonalGroup as DiscriminantOrthogonalGroupCarrier,
+    Genus as GenusCarrier,
+)
+
 
 def _lattice_key(lattice):
     return (
@@ -317,7 +323,7 @@ class SyntheticDiscriminantSubgroup:
         return tuple(self.ambient().coordinates(self._coerce(element)))
 
 
-class SyntheticDiscriminantAction:
+class SyntheticDiscriminantAction(DiscriminantActionCarrier):
     r"""Endomorphism of a synthetic discriminant group in invariant coordinates."""
 
     def __init__(self, discriminant_group, matrix_data):
@@ -346,43 +352,43 @@ class SyntheticDiscriminantAction:
             columns.extend(_finite_coordinates(discriminant_group, image))
         return cls(discriminant_group, matrix(ZZ, discriminant_group.ngens(), discriminant_group.ngens(), columns).transpose())
 
-    def discriminant_group(self):
+    def discriminant_form(self):
         return self._discriminant_group
 
     def matrix(self):
         return self._matrix
 
     def __call__(self, element):
-        group = self.discriminant_group()
+        group = self.discriminant_form()
         column = self.matrix() * matrix(ZZ, group.ngens(), 1, _finite_coordinates(group, element))
         return group([column[i, 0] for i in range(group.ngens())])
 
     def is_identity(self):
-        return all(self(element) == element for element in self.discriminant_group().elements())
+        return all(self(element) == element for element in self.discriminant_form().elements())
 
     def is_automorphism(self):
-        group = self.discriminant_group()
+        group = self.discriminant_form()
         images = {_finite_coordinates(group, self(element)) for element in group.elements()}
         return len(images) == group.cardinality()
 
     def kernel(self):
-        group = self.discriminant_group()
+        group = self.discriminant_form()
         return SyntheticDiscriminantSubgroup(group, (element for element in group.elements() if self(element) == group.zero()))
 
     def inverse_image(self, subgroup_or_gens):
-        group = self.discriminant_group()
+        group = self.discriminant_form()
         subgroup = group._subgroup(subgroup_or_gens)
         return SyntheticDiscriminantSubgroup(group, (element for element in group.elements() if self(element) in subgroup))
 
     def image(self):
-        group = self.discriminant_group()
+        group = self.discriminant_form()
         return SyntheticDiscriminantSubgroup(group, (self(generator) for generator in group.gens()))
 
     def im_gens(self):
         return self.image().gens()
 
     def lift(self, element):
-        group = self.discriminant_group()
+        group = self.discriminant_form()
         element = group(element)
         preimages = tuple(candidate for candidate in group.elements() if self(candidate) == element)
         if not preimages:
@@ -393,19 +399,19 @@ class SyntheticDiscriminantAction:
         if not (self.is_automorphism()):
             raise ValueError(f"only automorphisms have inverses; matrix={self.matrix()}")
         inverse_images = []
-        for generator in self.discriminant_group().gens():
+        for generator in self.discriminant_form().gens():
             preimages = tuple(
                 element
-                for element in self.discriminant_group().elements()
+                for element in self.discriminant_form().elements()
                 if self(element) == generator
             )
             assert len(preimages) == 1, ("automorphism inverse must have a unique preimage for each generator; "
             f"generator={generator}, preimages={preimages}")
             inverse_images.append(preimages[0])
-        return SyntheticDiscriminantAction.from_images(self.discriminant_group(), inverse_images)
+        return SyntheticDiscriminantAction.from_images(self.discriminant_form(), inverse_images)
 
     def preserves_bilinear_form(self):
-        group = self.discriminant_group()
+        group = self.discriminant_form()
         return all(
             group.b(self(left), self(right)) == group.b(left, right)
             for left in group.elements()
@@ -413,7 +419,7 @@ class SyntheticDiscriminantAction:
         )
 
     def preserves_quadratic_form(self):
-        group = self.discriminant_group()
+        group = self.discriminant_form()
         return all(group.q(self(element)) == group.q(element) for element in group.elements())
 
     def preserves_form(self, kind="quadratic"):
@@ -425,15 +431,15 @@ class SyntheticDiscriminantAction:
     def __eq__(self, other):
         return (
             isinstance(other, SyntheticDiscriminantAction)
-            and self.discriminant_group() is other.discriminant_group()
+            and self.discriminant_form() is other.discriminant_form()
             and self.matrix() == other.matrix()
         )
 
     def __hash__(self):
-        return hash((id(self.discriminant_group()), self.matrix()))
+        return hash((id(self.discriminant_form()), self.matrix()))
 
 
-class SyntheticOrthogonalGroup:
+class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroupCarrier):
     r"""Finite group wrapper for owned discriminant-form automorphisms."""
 
     def __init__(self, discriminant_group, actions, close=False):
@@ -441,7 +447,7 @@ class SyntheticOrthogonalGroup:
         self._generators = tuple(actions)
         self._actions = self._closure(self._generators) if close else self._generators
 
-    def discriminant_group(self):
+    def discriminant_form(self):
         return self._discriminant_group
 
     def gens(self):
@@ -460,19 +466,19 @@ class SyntheticOrthogonalGroup:
         return self._generators[index]
 
     def __call__(self, action):
-        action = action if isinstance(action, SyntheticDiscriminantAction) else SyntheticDiscriminantAction(self.discriminant_group(), action)
+        action = action if isinstance(action, SyntheticDiscriminantAction) else SyntheticDiscriminantAction(self.discriminant_form(), action)
         assert any(action == group_action for group_action in self._actions), (f"action is not in this orthogonal group: {action.matrix()}")
         return action.matrix()
 
     def _closure(self, generators):
-        identity = SyntheticDiscriminantAction(self.discriminant_group(), identity_matrix(ZZ, self.discriminant_group().ngens()))
+        identity = SyntheticDiscriminantAction(self.discriminant_form(), identity_matrix(ZZ, self.discriminant_form().ngens()))
         seen = {identity}
         frontier = [identity]
         generators = tuple(generators)
         while frontier:
             current = frontier.pop()
             for generator in generators:
-                product_action = SyntheticDiscriminantAction(self.discriminant_group(), generator.matrix() * current.matrix())
+                product_action = SyntheticDiscriminantAction(self.discriminant_form(), generator.matrix() * current.matrix())
                 if product_action not in seen:
                     seen.add(product_action)
                     frontier.append(product_action)
@@ -486,7 +492,7 @@ def TorsionQuadraticForm(gram_matrix):
     return SyntheticQuadraticDiscriminantForm(gram_matrix)
 
 
-class SyntheticGenus:
+class SyntheticGenus(GenusCarrier):
     r"""Minimal owned genus datum determined by a signature and discriminant form."""
 
     def __init__(self, discriminant_group, signature_pair, even=True):
@@ -494,7 +500,7 @@ class SyntheticGenus:
         self._signature_pair = (ZZ(signature_pair[0]), ZZ(signature_pair[1]))
         self._even = bool(even)
 
-    def discriminant_group(self):
+    def discriminant_form(self):
         return self._discriminant_group
 
     def signature_pair(self):
@@ -507,15 +513,15 @@ class SyntheticGenus:
         return self._even
 
     def brown_invariant(self):
-        return self.discriminant_group().brown_invariant()
+        return self.discriminant_form().brown_invariant()
 
     def __eq__(self, other):
         if not isinstance(other, SyntheticGenus):
             return False
         if self.signature_pair() != other.signature_pair() or self.is_even() != other.is_even():
             return False
-        left = self.discriminant_group()
-        right = other.discriminant_group()
+        left = self.discriminant_form()
+        right = other.discriminant_form()
         if left.source_lattice().gram_matrix() == right.source_lattice().gram_matrix():
             return True
         return left.normal_form() == right.normal_form()
@@ -523,6 +529,6 @@ class SyntheticGenus:
     def __repr__(self):
         return (
             "Synthetic genus with signature "
-            f"{self.signature_pair()} and discriminant invariants {self.discriminant_group().invariants()}"
+            f"{self.signature_pair()} and discriminant invariants {self.discriminant_form().invariants()}"
         )
 
