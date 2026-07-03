@@ -66,10 +66,12 @@ Two signals, always distinct:
   rationale is rejected as cargo cult by the runtime-control-flow policy).
 - Typed exceptions are NOT owned vocabulary: the ratified policy is
   assert-only (the earlier "boundary-validator" `ValueError` carve-out was
-  confabulated and is rescinded). The surviving `raise ValueError/TypeError/
-  ArithmeticError` sites are tracked Tier C drift in the
-  terminology-drift-cleanup plan, to be converted together with their
-  `pytest.raises` pins. Engine rejections propagate as-is.
+  confabulated and is rescinded). The implementation modules carry zero
+  manually-raised typed exceptions (Tier C of the terminology-drift-cleanup
+  plan, converted 2026-07-04 with their `pytest.raises` pins in lockstep).
+  Engine rejections propagate as-is; the only typed-error pins are Sage
+  engine rejections and Python operator-protocol TypeErrors, both parity
+  surface.
 - No runtime fallbacks, no legacy paths, no `try/except` in owned runtime code.
 
 ## Testing
