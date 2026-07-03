@@ -1,29 +1,65 @@
 # Synthetic Lattice Model
 
-## Bounded Contexts
+A standalone abstract lattice category that replaces Sage's lattice surface —
+not a wrapper over it. A lattice is a based projective `R`-module of finite
+rank with an exact symmetric bilinear form; no ambient space, no echelon
+coordinate frame, no basis-matrix vocabulary survives on the public surface.
 
-- Synthetic lattice parent/element/homset: owned Sage parents with distinguished bases, exact `QQ`-valued symmetric forms, and explicit morphisms.
-- Finite discriminant group/form: finite Smith quotient objects carrying bilinear and quadratic pairings valued in `QQ/ZZ` or `QQ/2ZZ`.
-- Positive-definite algorithm adapter surface: exact lattice algorithms exposed only where the synthetic category contract owns them.
+## Bounded contexts
 
-## Vocabulary
+- **Category tree** (`categories.py`): `Lattices(R)` with axiom subcategories
+  (Nondegenerate, Integral, Even, Unimodular, Definite, PositiveDefinite,
+  NegativeDefinite, Indefinite, Hyperbolic, RootGenerated, Cryptographic) and
+  `DiscriminantForms(ZZ)` with its strata (Bilinear, Quadratic, Even,
+  WithSourceLattice). Carriers from the typed domain algebra install as
+  `ParentMethods` deltas.
+- **Lattice parents/elements/morphisms** (`parents.py`, `elements.py`,
+  `homsets.py`): one concrete hierarchy per stratum; typed elements carrying
+  `b`/`q`; form-preserving homsets; `O(L)` with typed subgroups as the only
+  supplied-generators home.
+- **Discriminant forms** (`discriminant_forms.py`, `discriminant.py`): ONE
+  stratified finite-quotient parent carrying the TorsionQuadraticModule + FGP
+  + AdditiveAbelianGroup parity surface once; the sibling notions (discriminant
+  group, plain finite quotient, torsion quadratic form, twist, subquotient) are
+  constructions returning it. A plain finite quotient answers no form question.
+- **Cryptographic quarantine**: the spec-2.6 suite is installed as
+  `CryptographicLattices.ParentMethods` and exists only after the opt-in
+  `cryptographic()` refinement of a positive-definite lattice. The general
+  namespace is free of crypto vocabulary.
 
-- `accepted reference contract`: Sage behavior intentionally adapted into this spike and proved by local tests.
-- `lattice-aware wrapper`: Sage-native module, quotient, Smith-coordinate, or morphism behavior promoted to a lattice-category method with a lattice, quadratic-space, quotient, discriminant-form, or morphism return type.
-- `raw-accessor-only`: Sage-native behavior reachable through an explicit underlying-object accessor, not promoted as a public lattice-category method.
-- `native-integration-required`: Sage-native lattice/module behavior that is meaningful for the original lattice-category prompt but not completed by this synthetic spike.
-- `adapted doctest/reference surface`: a Sage doctest or API locus translated into a local exact algebraic test.
-- `explicit limitation`: unsupported behavior that raises a precise exception at the API boundary.
+## Construction and computation
 
-## Invariants
+- The category-namespace constructors (`Lattices(R).from_gram_matrix`, the
+  named section-6 constructors, `DiscriminantForms(ZZ)` factories) are the only
+  public entry; constructors prove invariants once and downstream code never
+  re-checks them (parse-don't-validate).
+- Every computational result is obtained by building an ephemeral Sage engine
+  from the object's own data and asking it — never by reimplementing the
+  algorithm and never from remembered theorems. Owned code is the ontology
+  layer; Sage as-is is the oracle; suspected oracle bugs are filed issues plus
+  gap-ledger rows, never patched around.
+- Dispatch is by category membership and declared types; no `hasattr`/
+  `getattr` probing selects behavior in implementation code.
 
-- Lattices are synthetic modules with distinguished bases and `QQ`-valued symmetric bilinear forms.
-- Raw ambient-module and ambient-vector-space APIs are not exposed as public lattice methods in this spike; the promoted public surface is `ambient_quadratic_space()`, which preserves the rational ambient form.
-- Explicit isometry generators are accepted; full generator computation is not promised.
-- Odd lattices retain `QQ/ZZ` bilinear discriminant forms even when genus classification is unsupported.
+## Signals (spec section 1.4)
 
-## Error Policy
+Two signals, always distinct:
 
-- External invalid input raises `TypeError`, `ValueError`, or `ArithmeticError`.
-- Internal impossible states use explicit `raise AssertionError(...)`.
-- Owned runtime and tests do not use `try/except`.
+- **Absence**: where an operation is mathematically undefined, the name does
+  not resolve (category gating), it does not raise.
+- **Assertion (ADDD)**: internal invariants and domain contracts are plain
+  `assert` statements whose messages dump the offending data and name the fix
+  surface. `raise AssertionError(...)` branch forms and raise-for-invariant
+  `if` guards are banned (POLICY.PREFER_ASSERTION; the `python -O` stripping
+  rationale is rejected as cargo cult by the runtime-control-flow policy).
+- Mathematical-hypothesis rejections in public operations remain structured
+  typed errors (`ValueError`, `TypeError`, `ArithmeticError`) — the sanctioned
+  boundary-validator case. Engine rejections propagate as-is.
+- No runtime fallbacks, no legacy paths, no `try/except` in owned runtime code.
+
+## Testing
+
+Correctness evidence uses very small lattices; expected values come from the
+Sage oracle (reference agreement) or the mapped doctest corpus, never from
+agent memory. When a small fixture is slow here, the slowness is a defect
+finding (a brute-force body where a delegation belongs), not a cost to absorb.

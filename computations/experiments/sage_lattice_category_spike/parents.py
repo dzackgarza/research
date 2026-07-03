@@ -219,13 +219,6 @@ class SyntheticLattice(LatticeCarrier, Parent):
     def zero(self):
         return self([self.base_ring().zero()] * self.rank())
 
-    def lift(self, element):
-        element = self(element) if not (isinstance(element, SyntheticLatticeElement) and element.parent() is self) else element
-        return element.rational_coordinates()
-
-    def retract(self, element):
-        return self(self._underlying_module().coordinate_vector(vector(QQ, element)))
-
     def b(self, left, right):
         left = self(left) if left.parent() is not self else left
         right = self(right) if right.parent() is not self else right
