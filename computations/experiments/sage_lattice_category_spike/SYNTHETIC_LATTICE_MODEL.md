@@ -40,6 +40,12 @@ coordinate frame, no basis-matrix vocabulary survives on the public surface.
   gap-ledger rows, never patched around.
 - Dispatch is by category membership and declared types; no `hasattr`/
   `getattr` probing selects behavior in implementation code.
+- Sage upstream defects are never corrected inline: the isolated
+  `sage_patches/` subtree holds one module per defect (a monkey-patch applied
+  at package import, or — where cython immutability forbids patching — a
+  corrected re-export owned code calls instead of the defective method). The
+  package `__init__` and the test conftest both import it, so every consumer
+  and every test run carries all patches.
 
 ## Signals (spec section 1.4)
 
@@ -52,9 +58,12 @@ Two signals, always distinct:
   surface. `raise AssertionError(...)` branch forms and raise-for-invariant
   `if` guards are banned (POLICY.PREFER_ASSERTION; the `python -O` stripping
   rationale is rejected as cargo cult by the runtime-control-flow policy).
-- Mathematical-hypothesis rejections in public operations remain structured
-  typed errors (`ValueError`, `TypeError`, `ArithmeticError`) — the sanctioned
-  boundary-validator case. Engine rejections propagate as-is.
+- Typed exceptions are NOT owned vocabulary: the ratified policy is
+  assert-only (the earlier "boundary-validator" `ValueError` carve-out was
+  confabulated and is rescinded). The surviving `raise ValueError/TypeError/
+  ArithmeticError` sites are tracked Tier C drift in the
+  terminology-drift-cleanup plan, to be converted together with their
+  `pytest.raises` pins. Engine rejections propagate as-is.
 - No runtime fallbacks, no legacy paths, no `try/except` in owned runtime code.
 
 ## Testing
