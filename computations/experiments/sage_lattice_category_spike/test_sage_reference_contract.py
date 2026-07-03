@@ -840,3 +840,72 @@ def test_maximal_overlattice_p_local_reference_agrees_with_sage_on_small_fixture
     assert L.maximal_overlattice().is_even()
     assert L.maximal_overlattice().determinant() == oracle.maximal_overlattice().determinant()
     assert L.maximal_overlattice(3).determinant() == oracle.maximal_overlattice(3).determinant()
+
+
+def test_free_quadratic_module_determinant_discriminant_and_gram_doctest_rows():
+    # Reference: free_quadratic_module.py determinant/discriminant/gram_matrix
+    # doctests. Sage's span-in-ambient builds become spans of the identity-Gram
+    # parent in its own coordinates (the operation maps; the builder reroutes).
+    M = lc.Lattice(identity_matrix(ZZ, 3), label="I3")
+    assert M.determinant() == 1
+    assert M.span([[1, 2, 3]]).determinant() == 14
+    assert M.span([[1, 2, 3], [1, 1, 1]]).determinant() == 6
+
+    # discriminant TESTS rows: FreeQuadraticModule's signed (-1)^(rank//2) * det
+    # convention is exactly the spike's discriminant()
+    assert lc.Lattice(identity_matrix(ZZ, 2), label="I2").discriminant() == -1
+    assert lc.Lattice(identity_matrix(QQ, 3), base_ring=QQ, label="I3Q").discriminant() == -1
+
+    # gram_matrix doctest: span_of_basis([u, v, w]) over the QQ^4 dot product
+    V4 = lc.Lattice(identity_matrix(QQ, 4), base_ring=QQ, label="Q4")
+    u = [QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2]
+    v = [0, 1, 1, 0]
+    w = [0, 0, 1, 1]
+    L = V4.span_of_basis([u, v, w], base_ring=ZZ)
+    assert_matrix_equal(L.gram_matrix(), Matrix(QQ, 3, [1, 1, 1, 1, 2, 1, 1, 1, 2]))
+
+    # integer_symmetric residue pin: IntegralLattice("U").signature() == 0
+    assert lc.Lattice("U").signature() == 0
+
+
+def test_free_module_index_and_saturation_doctest_rows():
+    # Reference: free_module.py index_in / index_in_saturation / saturation /
+    # denominator doctests, rerouted from ambient spans to spans of an
+    # identity-Gram parent in its own coordinates.
+    Z2 = lc.Lattice(identity_matrix(ZZ, 2), label="Z2")
+    assert Z2.span([[3, 6]]).index_in(Z2.span([[1, 2]])) == 3
+
+    L1 = Z2.span([[QQ(1) / 2, QQ(1) / 3], [4, 5]])
+    L2 = Z2.span([[1, 2], [3, 4]])
+    assert L2.index_in(L1) == QQ(12) / 7
+    assert L1.index_in(L2) == QQ(7) / 12
+    # discriminant ratio row: signs cancel at equal rank, so the spike's signed
+    # convention reproduces the doctest's 49/144
+    assert L1.discriminant() / L2.discriminant() == QQ(49) / 144
+    from sage.rings.infinity import Infinity
+
+    assert Z2.span([[1, 2]]).index_in(Z2) == Infinity
+
+    # index_in_saturation doctest rows
+    Z3 = lc.Lattice(identity_matrix(ZZ, 3), label="Z3")
+    assert Z3.span([[2, 4, 6]]).index_in_saturation() == 2
+    assert Z2.span([[QQ(1) / 2, QQ(1) / 3]]).index_in_saturation() == QQ(1) / 6
+
+    # saturation doctests: the pinned echelon bases [3,3,2] and
+    # [[1,0,-1],[0,1,2]] are ambient artifacts; their intrinsic content is the
+    # Gram/determinant data those bases generate
+    W = Z3.span([[9, 9, 6]])
+    assert_matrix_equal(W.saturation().gram_matrix(), matrix(ZZ, 1, 1, [22]))
+    assert W.index_in_saturation() == 3
+    L = Z3.span([[1, 2, 3], [4, 5, 6]])
+    assert L.determinant() == 54
+    assert L.saturation().determinant() == 6
+
+    # denominator doctest REROUTED: Sage's value 30 is the denominator of the
+    # echelon basis matrix — an ambient-coordinate artifact the based model
+    # drops. The intrinsic denominator clears the Gram; pin it by direct oracle
+    # agreement on the same span data.
+    Q3 = lc.Lattice(identity_matrix(QQ, 3), base_ring=QQ, label="Q3")
+    spike_span = Q3.span([[1, QQ(1) / 2, QQ(1) / 3], [-QQ(1) / 5, QQ(2) / 3, 3]], base_ring=ZZ)
+    oracle_span = (QQ ** 3).span([[1, QQ(1) / 2, QQ(1) / 3], [-QQ(1) / 5, QQ(2) / 3, 3]], ZZ)
+    assert spike_span.denominator() == oracle_span.gram_matrix().denominator()
