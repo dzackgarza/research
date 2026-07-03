@@ -73,10 +73,11 @@ def test_positive_definite_algorithms_are_axiom_gated():
     assert reduced.discriminant() == A2.discriminant()
     G = matrix(ZZ, 3, 3, [4, 1, 1, 1, 3, 1, 1, 1, 2])
     G_lattice = Lattice(G, label="G")
-    # crypto suite is category-installed: absent until cryptographic() refines
+    # the reduction/CVP suite is positive-definite vocabulary (D1 revision):
+    # present on any PD lattice, no refinement step
     for name in ("BKZ", "closest_vector", "voronoi_cell"):
-        assert not hasattr(G_lattice, name)
-    bkz_lattice = G_lattice.cryptographic().BKZ(block_size=2)
+        assert hasattr(G_lattice, name)
+    bkz_lattice = G_lattice.BKZ(block_size=2)
     assert_matrix_equal(bkz_lattice.gram_matrix(), matrix(ZZ, 3, 3, [2, 1, 1, 1, 3, 1, 1, 1, 4]))
     assert bkz_lattice.determinant() == G_lattice.determinant()
     assert bkz_lattice.discriminant() == G_lattice.discriminant()
@@ -113,7 +114,7 @@ def test_positive_definite_algorithms_are_axiom_gated():
             tuple(vector.coefficient_vector()),
         ),
     )
-    assert A2.cryptographic().closest_vector(target) == brute_force == A2([1, 1])
+    assert A2.closest_vector(target) == brute_force == A2([1, 1])
     expected_ieqs = []
     for vectors in A2.short_vectors(3):
         for lattice_vector in vectors:
@@ -466,15 +467,14 @@ def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
     L = Lattice(G, label="pd3")
     reference = IntegerLattice(B)  # same lattice, realized with the standard inner product
 
-    # the crypto suite is category-installed: absent on the plain
-    # positive-definite lattice until cryptographic() refines it in place
+    # the reduction/CVP/Voronoi suite is positive-definite vocabulary (D1
+    # revision): present on the PD lattice itself, no refinement step
     for name in (
         "HKZ", "BKZ", "gaussian_heuristic", "hadamard_ratio", "closest_vector",
         "approximate_closest_vector", "babai", "voronoi_cell",
         "voronoi_relevant_vectors", "enumerate_close_vectors", "update_reduced_basis",
     ):
-        assert not hasattr(L, name)
-    L.cryptographic()
+        assert hasattr(L, name)
 
     # scalar invariants reference-agree with Sage
     assert L.volume() == reference.volume()
@@ -675,14 +675,13 @@ def test_placement_matrix_both_directions_over_the_spec_fixture_set():
     # declaration layer's own per-node delta, projected mechanically —
     # the same projection the category installs ride on.
     from sage_lattice_category_spike import domain_algebra as da
-    from sage_lattice_category_spike.categories import _CryptographicKernel
     from sage_lattice_category_spike.lattice_categories import U as U_constructor
 
     def vocabulary(carrier):
         return tuple(sorted(name for name in vars(carrier) if not name.startswith("_")))
 
-    # Hyperbolic/RootGenerated/Cryptographic are axioms OF a subcategory; the
-    # bare C.Hyperbolic() is a silent no-op returning C (the trap the old
+    # Hyperbolic/RootGenerated are axioms OF a subcategory; the bare
+    # C.Hyperbolic() is a silent no-op returning C (the trap the old
     # spelling of the U(2) constructor test hit), so every path is scoped.
     # Membership is evaluated over each fixture's OWN base ring.
     bundles = (
@@ -693,7 +692,6 @@ def test_placement_matrix_both_directions_over_the_spec_fixture_set():
         (lambda C: C.Indefinite(), da.IndefiniteLattice),
         (lambda C: C.Indefinite().Hyperbolic(), da.HyperbolicLattice),
         (lambda C: C.Even().RootGenerated(), da.RootGeneratedLattice),
-        (lambda C: C.PositiveDefinite().Cryptographic(), _CryptographicKernel),
     )
     fixtures = (
         Lattice("A2", label="A2"),                                # PD even

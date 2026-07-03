@@ -68,7 +68,6 @@ __all__ = [
     "IntegralNondegenerateLattice",
     "DefiniteLattice",
     "PositiveDefiniteLattice",
-    "CryptographicLattice",
     "IndefiniteLattice",
     "HyperbolicLattice",
     "RootGeneratedLattice",
@@ -468,23 +467,20 @@ class DefiniteLattice(Lattice):
 
 
 class PositiveDefiniteLattice(DefiniteLattice):
+    """Home of the reduction/CVP/Voronoi suite (decision D1 revised 2026-07-04):
+    Sage's own crypto lattice implementations presuppose exactly positive
+    definiteness, so the suite is ordinary vocabulary here, never opt-in."""
+
     def LLL(self) -> "PositiveDefiniteLattice":
         assert False, "declared contract; engine per the parity-plan triage"
 
     def reduced_basis(self) -> tuple[LatticeElement, ...]:
         assert False, "declared contract; engine per the parity-plan triage"
 
-    def cryptographic(self) -> "CryptographicLattice":
+    def BKZ(self, block_size: int = 10) -> "PositiveDefiniteLattice":
         assert False, "declared contract; engine per the parity-plan triage"
 
-
-class CryptographicLattice(PositiveDefiniteLattice):
-    """Opt-in axiom (decision D1); never auto-attached."""
-
-    def BKZ(self, block_size: int = 10) -> "CryptographicLattice":
-        assert False, "declared contract; engine per the parity-plan triage"
-
-    def HKZ(self) -> "CryptographicLattice":
+    def HKZ(self) -> "PositiveDefiniteLattice":
         assert False, "declared contract; engine per the parity-plan triage"
 
     def babai(self, target: Sequence[ExactScalar]) -> LatticeElement:
@@ -513,7 +509,7 @@ class CryptographicLattice(PositiveDefiniteLattice):
     def hadamard_ratio(self) -> object:
         assert False, "declared contract; engine per the parity-plan triage"
 
-    def update_reduced_basis(self, vector: LatticeElement) -> "CryptographicLattice":
+    def update_reduced_basis(self, vector: LatticeElement) -> "PositiveDefiniteLattice":
         assert False, "declared contract; engine per the parity-plan triage"
 
 

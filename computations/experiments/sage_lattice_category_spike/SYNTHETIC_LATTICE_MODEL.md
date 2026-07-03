@@ -9,7 +9,7 @@ coordinate frame, no basis-matrix vocabulary survives on the public surface.
 
 - **Category tree** (`categories.py`): `Lattices(R)` with axiom subcategories
   (Nondegenerate, Integral, Even, Unimodular, Definite, PositiveDefinite,
-  NegativeDefinite, Indefinite, Hyperbolic, RootGenerated, Cryptographic) and
+  NegativeDefinite, Indefinite, Hyperbolic, RootGenerated) and
   `DiscriminantForms(ZZ)` with its strata (Bilinear, Quadratic, Even,
   WithSourceLattice). Carriers from the typed domain algebra install as
   `ParentMethods` deltas.
@@ -22,10 +22,16 @@ coordinate frame, no basis-matrix vocabulary survives on the public surface.
   + AdditiveAbelianGroup parity surface once; the sibling notions (discriminant
   group, plain finite quotient, torsion quadratic form, twist, subquotient) are
   constructions returning it. A plain finite quotient answers no form question.
-- **Cryptographic quarantine**: the spec-2.6 suite is installed as
-  `CryptographicLattices.ParentMethods` and exists only after the opt-in
-  `cryptographic()` refinement of a positive-definite lattice. The general
-  namespace is free of crypto vocabulary.
+- **Reduction/CVP/Voronoi suite** (decision D1 revised 2026-07-04): the
+  spec-2.6 suite (BKZ, HKZ, closest/approximate-closest vector, Voronoi cell
+  and relevant vectors, Gaussian heuristic, Hadamard ratio) lives on the
+  positive-definite kernel — the subcategory Sage's own crypto lattice
+  implementations presuppose (`IntegerLattice` is `ZZ^n` under the dot
+  product; Gram positive definite, unimodularity never assumed). There is no
+  `Cryptographic` axiom and no opt-in refinement; the suite is absent off the
+  positive-definite stratum by ordinary category gating. Crypto-style lattice
+  generators (q-ary, LWE/NTRU, random unimodular), when built, are widely
+  exposed constructors, never axiom-gated methods.
 
 ## Construction and computation
 

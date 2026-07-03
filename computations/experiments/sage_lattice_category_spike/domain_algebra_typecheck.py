@@ -18,8 +18,9 @@ Notable coherence facts the types already enforce, on purpose:
   an explicit assertion-shaped narrowing — exactly the two-axis discipline.
 - ``Genus.representative()`` returns a base ``Lattice``; comparing it back
   against its source forces the same narrowing.
-- Only ``in_positive_definite(...)`` exposes ``cryptographic()``, and only its
-  result exposes the crypto suite (decision D1 as a type fact).
+- ``in_positive_definite(...)`` exposes the reduction/CVP/Voronoi suite
+  directly (decision D1 revised 2026-07-04 as a type fact: the suite is
+  positive-definite vocabulary, not an opt-in refinement).
 """
 
 from __future__ import annotations
@@ -106,11 +107,11 @@ def genus_roundtrip() -> bool:
     return lattice.same_genus(representative)
 
 
-def crypto_is_opt_in() -> None:
-    """The crypto suite is reachable only through the refinement entry point."""
+def reduction_suite_is_positive_definite_vocabulary() -> None:
+    """BKZ/CVP live on the positive-definite narrowing itself (D1 revision)."""
     pd = in_positive_definite(RootLattice("A", 2))
-    crypto = pd.cryptographic()
-    crypto.BKZ(block_size=10)
+    reduced = pd.BKZ(block_size=10)
+    reduced.closest_vector([ExactScalar(0), ExactScalar(1)])
 
 
 def orbit_vocabulary() -> tuple[tuple[DiscriminantFormElement, ...], ...]:
