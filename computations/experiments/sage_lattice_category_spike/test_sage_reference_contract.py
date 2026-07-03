@@ -726,3 +726,54 @@ def test_enriques_discriminant_form_reference_agrees_with_sage_at_research_scale
     assert D.normal_form()[0] == tuple(oracle.invariants())
     assert_matrix_equal(D.normal_form()[1], oracle.normal_form().gram_matrix_quadratic())
     assert D.brown_invariant() == oracle.brown_invariant()
+
+def test_torsion_quadratic_module_doctest_parity_ledger_rows():
+    # T5 mapped rows from sage/modules/torsion_quadratic_module.py doctests;
+    # every expected value is copied verbatim from the source doctest output.
+    D4 = lc.Lattice("D4")
+    D = D4.discriminant_group()
+
+    # brown_invariant doctest: IntegralLattice("D4").discriminant_group().brown_invariant() == 4
+    assert D.brown_invariant() == 4
+
+    # is_genus doctest: L = D4 + 3*A2-form; signatures (6,0) True, (4,2) False, (16,2) True
+    L3 = lc.Lattice(3 * matrix(ZZ, 2, [2, 1, 1, 2]), label="3A2")
+    L = D4.direct_sum(L3)
+    DL = L.discriminant_group()
+    assert DL.is_genus((6, 0))
+    assert not DL.is_genus((4, 2))
+    assert DL.is_genus((16, 2))
+
+    # genus doctest: D.genus(L.signature_pair()) == L.genus() for D4 + A2
+    LA = D4.direct_sum(lc.Lattice("A2"))
+    assert LA.discriminant_group().genus(LA.signature_pair()) == LA.genus()
+
+    # primary_part doctest: T = (Z/6)^3 has primary_part(2) = (Z/2)^3, and
+    # primary_part at the full annihilator is the whole form
+    T6 = lc.Lattice(matrix.diagonal(ZZ, [6, 6, 6])).discriminant_group()
+    assert T6.invariants() == (6, 6, 6)
+    assert T6.primary_part(2).invariants() == (2, 2, 2)
+    # (the doctest's composite-annihilator idiom reroutes: the spike's
+    # primary_part takes a prime, and the content is prime recombination)
+    assert T6.primary_part(2).cardinality() * T6.primary_part(3).cardinality() == T6.cardinality()
+
+    # twist doctest: q = diag(3/9, 1/9); invariants stable under unit/square twists
+    q = lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(3) / 9, QQ(1) / 9]))
+    assert q.twist(-1).invariants() == (3, 9)
+    assert q.twist(3).invariants() == (3, 9)
+    assert q.twist(4).invariants() == (3, 9)
+
+    # orthogonal_submodule_to doctest: T = (Z/3)^10, S = first five generators;
+    # the orthogonal complement has invariants (3, 3, 3, 3, 3)
+    T3 = lc.Lattice(matrix.diagonal(ZZ, [3] * 10)).discriminant_group()
+    S = T3.subgroup_generated_by(list(T3.gens())[:5])
+    assert T3.orthogonal_submodule_to(S).invariants() == (3, 3, 3, 3, 3)
+
+    # __classcall__ doctest rerouted (identity -> presentation equality: Sage's
+    # `D1 is D2` pins a UniqueRepresentation caching artifact, and the spike's
+    # Gram-presented stratum deliberately keys parent equality on identity, so
+    # the surviving mathematical content is equality of the presented form data)
+    q_half = matrix(QQ, [[QQ(1) / 2]])
+    left, right = lc.TorsionQuadraticForm(q_half), lc.TorsionQuadraticForm(q_half)
+    assert left.invariants() == right.invariants()
+    assert_matrix_equal(left.gram_matrix_quadratic(), right.gram_matrix_quadratic())

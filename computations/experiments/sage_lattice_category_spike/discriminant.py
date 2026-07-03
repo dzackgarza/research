@@ -261,6 +261,18 @@ class SyntheticDiscriminantSubgroup:
     def cardinality(self):
         return ZZ(len(self.elements()))
 
+    def invariants(self):
+        r"""Smith invariants of this subgroup as an abstract group, from an
+        ephemeral Sage FGP quotient (generator span over the ambient relations)."""
+        from sage.modules.free_module import FreeModule
+
+        ambient_module = FreeModule(ZZ, self.ambient().ngens())
+        relations = ambient_module.span(matrix.diagonal(ZZ, self.ambient().invariants()).rows())
+        span = ambient_module.span(
+            [vector(ZZ, generator.coefficient_vector()) for generator in self.gens()] + list(relations.gens())
+        )
+        return tuple(span.quotient(relations).invariants())
+
     def __contains__(self, element):
         return self._element_key(element) in self._key()
 

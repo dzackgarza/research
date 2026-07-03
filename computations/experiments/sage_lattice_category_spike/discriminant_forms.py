@@ -459,10 +459,24 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
 
     Element = SyntheticDiscriminantGroupElement
 
-    def __init__(self, gram_matrix, category=None):
+    def __init__(self, gram_matrix, category=None, invariants=None):
         raw_gram = matrix(QQ, gram_matrix)
         assert raw_gram.is_square(), (f"finite discriminant form Gram matrix must be square; found={raw_gram}")
         assert raw_gram == raw_gram.transpose(), (f"finite discriminant form Gram matrix must be symmetric; found={raw_gram}")
+        if invariants is not None:
+            # explicit group presentation: a twist by a non-unit can make the
+            # form integral on a generator WITHOUT killing the group element,
+            # which denominator inference cannot represent
+            invariants = [ZZ(invariant) for invariant in invariants]
+            assert len(invariants) == raw_gram.nrows() and all(invariant > 1 for invariant in invariants), (
+                f"explicit invariants must give one nontrivial order per generator; invariants={invariants}, gram={raw_gram}"
+            )
+            assert all(
+                invariants[i] * raw_gram[i, j] in ZZ
+                for i in range(raw_gram.nrows()) for j in range(raw_gram.ncols())
+            ), (f"generator orders must clear the form's denominators; invariants={invariants}, gram={raw_gram}")
+            self._install_bilinear(raw_gram, list(range(raw_gram.nrows())), invariants, category)
+            return
         invariants = []
         active_indices = []
         for i in range(raw_gram.nrows()):
@@ -472,6 +486,9 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
             if invariant != 1:
                 active_indices.append(i)
                 invariants.append(invariant)
+        self._install_bilinear(raw_gram, active_indices, invariants, category)
+
+    def _install_bilinear(self, raw_gram, active_indices, invariants, category):
         gram = raw_gram.matrix_from_rows_and_columns(active_indices, active_indices) if active_indices else matrix(QQ, 0, 0)
         gram.set_immutable()
         self._gram_matrix = gram
@@ -535,11 +552,38 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
         return self.radical().cardinality() == 1
 
     def orthogonal_submodule_to(self, subgroup_or_gens):
+        r"""The subgroup orthogonal to ``subgroup_or_gens`` under ``b``, from an
+        ephemeral Sage engine (module arithmetic — element enumeration is
+        infeasible at research scale, and handing every orthogonal element to
+        the subgroup constructor as a generator makes its closure product
+        astronomically large)."""
         subgroup = self._subgroup(subgroup_or_gens)
+        if self.ngens() == 0 or subgroup.cardinality() == 1:
+            # complement of the trivial subgroup is the whole group; the
+            # engine's linear algebra needs at least one nonzero generator
+            return self.subgroup_generated_by(self.gens())
+        engine = self._sage_engine()
+        # the engine's cover basis corresponds 1:1 to the presented generators
+        # (TorsionQuadraticForm builds V = (1/d)*ZZ^n with inner product q), so
+        # coordinates transfer through V, NOT through the engine's Smith gens —
+        # the presentation need not be Smith-normal (e.g. invariants (2, 3))
+        cover = engine.V()
+        basis = cover.basis()
+        assert engine.cardinality() == self.cardinality() and all(
+            engine(basis[i]).order() == invariant for i, invariant in enumerate(self.invariants())
+        ), (
+            "ephemeral Sage engine must reproduce the presented generator orders to "
+            "transfer subgroup coordinates; "
+            f"synthetic invariants={self.invariants()}, engine invariants={tuple(engine.invariants())}"
+        )
+        images = [
+            engine(cover.linear_combination_of_basis(list(generator.coefficient_vector())))
+            for generator in subgroup.gens()
+        ]
+        oracle = engine.orthogonal_submodule_to(images)
         return self.subgroup_generated_by(
-            element
-            for element in self.elements()
-            if all(self.b(element, subgroup_element) == 0 for subgroup_element in subgroup.elements())
+            self([ZZ(coordinate) for coordinate in cover.coordinates(generator.lift())])
+            for generator in oracle.gens()
         )
 
     def orthogonal(self, subgroup_or_gens):
@@ -726,12 +770,12 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
     factory presents even forms with modulus ``2``.
     """
 
-    def __init__(self, gram_matrix, quadratic_modulus=2):
+    def __init__(self, gram_matrix, quadratic_modulus=2, invariants=None):
         self._quadratic_modulus_value = ZZ(quadratic_modulus)
         category = DiscriminantForms(ZZ).Quadratic()
         if self._quadratic_modulus_value == 2:
             category = category.Even()
-        SyntheticBilinearDiscriminantForm.__init__(self, gram_matrix, category=category)
+        SyntheticBilinearDiscriminantForm.__init__(self, gram_matrix, category=category, invariants=invariants)
 
     def _repr_(self):
         return f"Synthetic finite quadratic discriminant form with invariants {self.invariants()}"
@@ -822,7 +866,18 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
         return SyntheticGenus(self, signature_pair, even=even)
 
     def twist(self, scalar):
-        return SyntheticQuadraticDiscriminantForm(self.gram_matrix_quadratic() * QQ(scalar), quadratic_modulus=self._quadratic_modulus())
+        r"""The form scaled by ``scalar`` on the SAME group (oracle
+        round-trip: a non-unit twist can make the form integral on a
+        generator without killing the group element, so the result carries
+        its group explicitly)."""
+        from sage.modules.torsion_quadratic_module import TorsionQuadraticForm as _SageTorsionForm
+
+        engine = _SageTorsionForm(self.gram_matrix_quadratic()).twist(ZZ(scalar))
+        return SyntheticQuadraticDiscriminantForm(
+            engine.gram_matrix_quadratic(),
+            quadratic_modulus=self._quadratic_modulus(),
+            invariants=tuple(ZZ(i) for i in engine.invariants()),
+        )
 
     def quadratic_orthogonal_group(self, gens=None, check=False):
         return self.orthogonal_group(gens=gens, check=check, kind="quadratic")

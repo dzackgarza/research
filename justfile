@@ -34,16 +34,19 @@ test:
         parts = set(path.parts)
         if ".git" in parts:
             continue
+        if path.parts and path.parts[0] == ".claude":
+            # Harness runtime state (gitignored permission store), not an
+            # agent-directed artifact; Claude Code requires it at repo root.
+            # Skipped BEFORE the lock/cache checks: the harness flaps a
+            # transient scheduled_tasks.lock here while background agents
+            # run, racing this sweep.
+            continue
         if path.is_dir() and not any(path.iterdir()):
             raise SystemExit(f"empty placeholder directory should not exist: {path}")
         if path.name in {"node_modules", "__pycache__", ".pytest_cache"}:
             raise SystemExit(f"cache/dependency directory should not be tracked here: {path}")
         if path.suffix == ".lock":
             raise SystemExit(f"transient lock file should not be tracked here: {path}")
-        if path.parts and path.parts[0] == ".claude":
-            # Harness runtime state (gitignored permission store), not an
-            # agent-directed artifact; Claude Code requires it at repo root.
-            continue
         if ".agents" not in path.parts:
             upper_name = path.name.upper()
             if upper_name == "AGENTS.MD" or "CLAUDE" in upper_name or ".claude" in path.parts:
