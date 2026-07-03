@@ -681,13 +681,43 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
     def is_isomorphic(self, other, kind="quadratic"):
         assert kind in ("group", "bilinear", "quadratic"), (f"isomorphism kind must be group, bilinear, or quadratic; found={kind}")
         assert isinstance(other, SyntheticBilinearDiscriminantForm), (f"expected SyntheticBilinearDiscriminantForm; found={type(other)}")
-        if self.cardinality() != other.cardinality():
+        # finite abelian groups are classified by their Smith invariant factors
+        if self._smith_invariants() != other._smith_invariants():
             return False
-        if kind == "group":
-            return any(True for _images in self._isomorphism_images_to(other))
+        if kind == "group" or self.ngens() == 0:
+            return True
         if kind == "bilinear":
-            return any(self._images_preserve_structure(other, images, kind) for images in self._isomorphism_images_to(other))
+            return self._bilinear_normal_presentation() == other._bilinear_normal_presentation()
         return self.normal_form() == other.normal_form()
+
+    def _smith_invariants(self):
+        r"""Canonical Smith invariant factors of the underlying group, from Sage's
+        group normalization (presented generator orders need not be Smith-normal:
+        ``diag(1/2, 1/3)`` presents ``(2, 3)``; the group is ``(6,)``)."""
+        from sage.groups.additive_abelian.additive_abelian_group import AdditiveAbelianGroup
+
+        return tuple(AdditiveAbelianGroup(list(self.invariants())).invariants())
+
+    def _bilinear_normal_presentation(self):
+        r"""The complete bilinear-isomorphism invariant from the oracle: re-present
+        the ephemeral engine at the bilinear modulus (``modulus_qf = modulus``, the
+        same presentation ``_delegated_orthogonal_group`` uses for ``O(b)``) and take
+        its normal form. Sage's stated contract: two torsion quadratic modules are
+        isomorphic iff they have the same value modules and the same normal form."""
+        from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
+
+        engine = self._sage_engine()
+        assert engine.cardinality() == self.cardinality(), (
+            "ephemeral Sage engine must carry the whole group to decide bilinear "
+            "isomorphism (an explicit-invariants presentation can hold a generator "
+            "the engine's denominator inference drops); "
+            f"synthetic cardinality={self.cardinality()}, engine cardinality={engine.cardinality()}"
+        )
+        presented = TorsionQuadraticModule(engine.V(), engine.W(), modulus=engine._modulus, modulus_qf=engine._modulus)
+        normal = presented.normal_form()
+        gram = matrix(QQ, normal.gram_matrix_quadratic())
+        gram.set_immutable()
+        return (QQ(engine._modulus), tuple(normal.invariants()), gram)
 
     def _isomorphism_images_to(self, other):
         candidates_by_generator = tuple(
@@ -1167,15 +1197,6 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
         if self._primary:
             engine = engine.primary_part(self._primary)
         return engine
-
-    def is_isomorphic(self, other, kind="quadratic"):
-        assert isinstance(other, SyntheticSourcedDiscriminantForm), (f"expected SyntheticSourcedDiscriminantForm; found={type(other)}")
-        assert kind in ("group", "bilinear", "quadratic"), (f"isomorphism kind must be group, bilinear, or quadratic; found={kind}")
-        if self.invariants() != other.invariants():
-            return False
-        if kind == "group":
-            return True
-        return any(self._images_preserve_structure(other, images, kind) for images in self._isomorphism_images_to(other))
 
     def isometry_to(self, other, kind="quadratic"):
         assert kind in ("quadratic", "bilinear"), (f"isometry kind must be quadratic or bilinear; found={kind}")
