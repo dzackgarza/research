@@ -88,14 +88,13 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
         return invertible_over_R and A.transpose() * gram * A == gram
 
     def from_matrix(self, matrix_data):
-        r"""Construct the isometry element; ValueError if not an isometry."""
+        r"""Construct the isometry element; asserts the isometry contract."""
         A = matrix(QQ, matrix_data)
-        if A not in self:
-            raise ValueError(
-                "matrix is not an isometry of this lattice "
-                f"(needs A^T G A = G with A invertible over {self._lattice.base_ring()}); "
-                f"matrix={A}, gram={self._lattice.gram_matrix()}"
-            )
+        assert A in self, (
+            "matrix is not an isometry of this lattice "
+            f"(needs A^T G A = G with A invertible over {self._lattice.base_ring()}); "
+            f"matrix={A}, gram={self._lattice.gram_matrix()}"
+        )
         return self._lattice.hom(matrix(self._lattice.base_ring(), A))
 
     def one(self):

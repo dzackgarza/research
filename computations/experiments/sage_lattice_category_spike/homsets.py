@@ -135,11 +135,10 @@ class LatticeMorphism(LatticeMorphismCarrier, Element):
         rhs = matrix(QQ, self.codomain().rank(), 1, list(element.coefficient_vector()))
         solution = matrix(QQ, self.matrix()).solve_right(rhs)
         coordinates = [solution[i, 0] for i in range(self.domain().rank())]
-        if not all(coordinate in self.domain().base_ring() for coordinate in coordinates):
-            raise ValueError(
-                "lift has coordinates outside the domain base ring; "
-                f"coordinates={coordinates}, base_ring={self.domain().base_ring()}"
-            )
+        assert all(coordinate in self.domain().base_ring() for coordinate in coordinates), (
+            "lift has coordinates outside the domain base ring; "
+            f"coordinates={coordinates}, base_ring={self.domain().base_ring()}"
+        )
         return self.domain()(coordinates)
 
     # -- algebra available under form-preservation (composition monoid; the
@@ -168,11 +167,10 @@ class LatticeMorphism(LatticeMorphismCarrier, Element):
         return self.parent().from_matrix(power)
 
     def inverse(self):
-        if not self.is_isometry():
-            raise ValueError(
-                "only isometries are invertible in the lattice category; "
-                f"matrix={self.matrix()}"
-            )
+        assert self.is_isometry(), (
+            "only isometries are invertible in the lattice category; "
+            f"matrix={self.matrix()}"
+        )
         return self.codomain().Hom(self.domain()).from_matrix(self.matrix().inverse())
 
     def is_identity(self):

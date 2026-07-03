@@ -40,8 +40,7 @@ def _relation_inclusion_matrix(cover_lattice, relation_lattice):
     if cover_lattice.rank() == 0:
         return matrix(ZZ, 0, 0)
     if relation_lattice._ambient_gram() == cover_lattice._ambient_gram():
-        if not (relation_lattice.is_submodule(cover_lattice)):
-            raise ValueError("relations must be a sublattice of the cover")
+        assert relation_lattice.is_submodule(cover_lattice), "relations must be a sublattice of the cover"
         return matrix(
             ZZ,
             [
@@ -52,7 +51,7 @@ def _relation_inclusion_matrix(cover_lattice, relation_lattice):
     if relation_lattice.base_ring() is ZZ and relation_lattice.determinant() != 0 \
             and relation_lattice.dual() == cover_lattice:
         return matrix(ZZ, relation_lattice.gram_matrix())
-    raise ValueError(
+    assert False, (
         "relation lattice is not a recognized sublattice of the cover; provide the "
         "relation as a subobject of the cover or as its metric dual"
     )
@@ -102,8 +101,7 @@ def _finite_relations_among(parent, gens):
 
 def _finite_basis_from_generators(parent, gens):
     subgroup = parent.subgroup_generated_by(gens)
-    if not (subgroup.cardinality() == parent.cardinality()):
-        raise ValueError("generators do not span the whole group")
+    assert subgroup.cardinality() == parent.cardinality(), "generators do not span the whole group"
     return tuple(parent(gen) for gen in gens)
 
 
@@ -391,13 +389,11 @@ class SyntheticDiscriminantAction(DiscriminantActionCarrier):
         group = self.discriminant_form()
         element = group(element)
         preimages = tuple(candidate for candidate in group.elements() if self(candidate) == element)
-        if not preimages:
-            raise ValueError(f"element is not in the image of this finite homomorphism: {element}")
+        assert preimages, f"element is not in the image of this finite homomorphism: {element}"
         return min(preimages, key=lambda candidate: _finite_coordinates(group, candidate))
 
     def inverse(self):
-        if not (self.is_automorphism()):
-            raise ValueError(f"only automorphisms have inverses; matrix={self.matrix()}")
+        assert self.is_automorphism(), f"only automorphisms have inverses; matrix={self.matrix()}"
         inverse_images = []
         for generator in self.discriminant_form().gens():
             preimages = tuple(

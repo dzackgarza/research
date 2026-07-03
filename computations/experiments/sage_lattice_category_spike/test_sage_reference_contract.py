@@ -319,7 +319,7 @@ def test_discriminant_action_inverse_image_matches_fgp_morphism_doctest():
     assert doubling.image() == image
     assert doubling.im_gens() == image.gens()
     assert doubling.lift(2 * g) == g
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         doubling.lift(g)
     assert doubling.inverse_image(D.subgroup_generated_by([])).cardinality() == 2
     assert doubling.inverse_image(image).cardinality() == 4
@@ -429,7 +429,7 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     assert doubling.image().cardinality() == 2
     assert doubling.im_gens() == doubling.image().gens()
     assert doubling.lift(2 * quotient_mod_four.gen(0)) in quotient_mod_four.elements()
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         doubling.lift(quotient_mod_four.gen(0))
     with pytest.raises(AssertionError):
         quotient_mod_four.discrete_exp((1, 0))
@@ -715,7 +715,7 @@ def test_supplied_generators_live_only_in_typed_subgroups_of_the_isometry_group(
     assert not O_A2.subgroup([swap]).preserves(not_preserved)
     with pytest.raises(AssertionError):
         O_A2.subgroup([swap]).preserves(lc.Lattice("U"))  # incompatible ambient
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         O_A2.subgroup([matrix(ZZ, 2, 2, [2, 0, 0, 1])])  # not an isometry
     assert not hasattr(A2, "acts_on")  # deleted with no successor spelling
 
