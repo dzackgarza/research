@@ -267,7 +267,7 @@ class SyntheticDiscriminantSubgroup:
 
     def invariants(self):
         r"""Invariant factors of this subgroup as an abstract group, from an
-        ephemeral Sage FGP quotient (generator span over the ambient relations)."""
+        ephemeral Sage finitely-generated-module quotient (generator span over the ambient relations)."""
         from sage.modules.free_module import FreeModule
 
         ambient_module = FreeModule(ZZ, self.ambient().ngens())
@@ -467,10 +467,10 @@ class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroupCarrier):
         return action.matrix()
 
     def as_permutation_group(self):
-        r"""GAP-backed permutation seam (spec 3.5): the faithful action on the
-        underlying finite group's elements. (The matrix-group seam has no
-        faithful substrate here — action matrices compose modulo per-row
-        invariants — so GAP machinery composes through this door.)"""
+        r"""GAP-backed permutation representation (spec 3.5): the faithful action on the
+        underlying finite group's elements. (The matrix-group representation has no
+        faithful backing here — action matrices compose modulo per-row
+        invariants — so GAP machinery composes through this constructor.)"""
         from sage.groups.perm_gps.permgroup import PermutationGroup
 
         elements = self.discriminant_form().elements()
@@ -497,7 +497,7 @@ class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroupCarrier):
 
 def TorsionQuadraticForm(gram_matrix):
     r"""Public Sage-compatible constructor for an owned finite quadratic form;
-    routes through the section-1.4 category door."""
+    routes through the section-1.4 category entry point."""
     # lazy import: discriminant_forms imports this module at load time
     from .categories import DiscriminantForms
     return DiscriminantForms(ZZ).from_form_data(gram_matrix)
@@ -528,17 +528,17 @@ class SyntheticGenus(GenusCarrier):
 
     def _sage_engine(self):
         r"""Ephemeral Sage genus symbol built from this genus's own data
-        (discriminant-form Gram + signature) through the torsion-module door."""
+        (discriminant-form Gram + signature) through the torsion-module constructor."""
         from sage.modules.torsion_quadratic_module import TorsionQuadraticForm
 
         form = self.discriminant_form()
-        engine_form = TorsionQuadraticForm(form.gram_matrix_quadratic())
-        assert engine_form.cardinality() == form.cardinality(), (
-            "ephemeral Sage engine must carry the whole discriminant group to "
+        sage_form = TorsionQuadraticForm(form.gram_matrix_quadratic())
+        assert sage_form.cardinality() == form.cardinality(), (
+            "the ephemeral Sage TorsionQuadraticModule must carry the whole discriminant group to "
             "present the genus; "
-            f"synthetic cardinality={form.cardinality()}, engine cardinality={engine_form.cardinality()}"
+            f"synthetic cardinality={form.cardinality()}, Sage cardinality={sage_form.cardinality()}"
         )
-        return engine_form.genus(self.signature_pair())
+        return sage_form.genus(self.signature_pair())
 
     def det(self):
         return ZZ(self._sage_engine().determinant())
@@ -547,17 +547,17 @@ class SyntheticGenus(GenusCarrier):
         return ZZ(self._sage_engine().dimension())
 
     def local_symbol(self, p):
-        r"""The p-adic symbol at ``p`` — a boundary-codec seam (spec 3.5): the
+        r"""The p-adic symbol at ``p`` (spec 3.5): the
         returned object is Sage's local genus symbol."""
         return self._sage_engine().local_symbol(ZZ(p))
 
     def local_symbols(self):
-        r"""All local symbols — the genus-machinery data seam (spec 3.5)."""
+        r"""All local symbols from Sage's genus machinery (spec 3.5)."""
         return tuple(self._sage_engine().local_symbols())
 
     def __eq__(self, other):
-        # spec section 5: genus equality IS local-symbol equality (delegated:
-        # Sage genus symbols compare by signature + local symbols)
+        # spec section 5: genus equality IS local-symbol equality (computed by
+        # Sage: genus symbols compare by signature + local symbols)
         if not isinstance(other, SyntheticGenus):
             return False
         if self.signature_pair() != other.signature_pair() or self.is_even() != other.is_even():

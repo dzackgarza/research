@@ -1,4 +1,4 @@
-r"""Typed composition checks for the domain algebra (V2 type fixture).
+r"""Typed composition checks for the category's operations (V2 type fixture).
 
 These functions are NEVER executed — every grammar stub raises — and this
 module is not runtime code (it is not imported by the package). It exists so
@@ -53,7 +53,7 @@ def enriques_discriminant_pipeline() -> tuple[tuple[int, ...], GramMatrix]:
 
 
 def sterk_comparison(left: Lattice, right: Lattice) -> bool:
-    """is_isometric is total vocabulary on the base (engines are per-leaf)."""
+    """is_isometric is total vocabulary on the base (the Sage-backed implementations are per-leaf)."""
     return left.is_isometric(right)
 
 
@@ -93,7 +93,7 @@ def morphism_algebra(lattice: Lattice, vector: LatticeElement) -> LatticeMorphis
 
 def subgroup_and_seams(lattice: Lattice, isometry: LatticeMorphism) -> object:
     """Caller-supplied generators live ONLY in the typed subgroup; GAP arrives
-    through the declared seams by composition."""
+    through the declared points where it is called, by composition."""
     subgroup = lattice.isometry_group().subgroup([isometry])
     image: DiscriminantOrthogonalGroup = subgroup.discriminant_image()
     return image.as_permutation_group()

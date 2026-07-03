@@ -154,8 +154,9 @@ def test_brown_invariant_and_genus_follow_torsion_quadratic_module_doctests():
 
 
 def test_group_seams_compose_into_gap_backed_machinery():
-    # Reference: spec 3.5 seams; expected orders from the Sage matrix- and
-    # permutation-group oracles built from the same generators.
+    # Reference: spec 3.5 group constructions where Sage is called; expected orders
+    # from the Sage matrix- and permutation-group reference objects built from the
+    # same generators.
     A2 = lc.Lattice("A2")
     O = A2.isometry_group()
     assert O.as_matrix_group().order() == O.order() == 12
@@ -168,7 +169,7 @@ def test_group_seams_compose_into_gap_backed_machinery():
     D = lc.TorsionQuadraticForm(identity_matrix(QQ, 3) / 2)
     assert D.orthogonal_group().as_permutation_group().order() == D.orthogonal_group().order() == 6
 
-    # constructor door: from_form_data is the category entry the factory routes through
+    # constructor entry point: from_form_data is the category entry the factory routes through
     direct = lc.DiscriminantForms(ZZ).from_form_data(identity_matrix(QQ, 3) / 2)
     assert direct.invariants() == D.invariants()
     assert direct.gram_matrix_quadratic() == D.gram_matrix_quadratic()
@@ -189,12 +190,12 @@ def test_genus_totals_delegate_to_the_sage_genus_symbol():
 
     A2 = lc.Lattice("A2")
     genus = A2.genus()
-    oracle = IntegralLattice(matrix(ZZ, A2.gram_matrix())).genus()
+    sage_reference = IntegralLattice(matrix(ZZ, A2.gram_matrix())).genus()
 
-    assert genus.det() == oracle.determinant() == 3
-    assert genus.dim() == oracle.dimension() == 2
-    assert [str(symbol) for symbol in genus.local_symbols()] == [str(symbol) for symbol in oracle.local_symbols()]
-    assert str(genus.local_symbol(3)) == str(oracle.local_symbol(3))
+    assert genus.det() == sage_reference.determinant() == 3
+    assert genus.dim() == sage_reference.dimension() == 2
+    assert [str(symbol) for symbol in genus.local_symbols()] == [str(symbol) for symbol in sage_reference.local_symbols()]
+    assert str(genus.local_symbol(3)) == str(sage_reference.local_symbol(3))
     assert genus == lc.Lattice("A2").genus()
     assert genus != lc.Lattice("D4").genus()
 
@@ -283,7 +284,7 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
 
 
 def test_discriminant_group_additive_abelian_group_api_matches_fgp_surface():
-    # Reference: FGP quotient/module invariant-factor-coordinate methods surfaced on discriminant groups.
+    # Reference: finitely-generated-module-over-a-PID quotient/module invariant-factor-coordinate methods exposed on discriminant groups.
     L = lc.Lattice(Matrix(ZZ, 2, 2, [4, 2, 2, -4]))
     A = L.discriminant_group()
     x = A.gen(0) + 3 * A.gen(1)
@@ -310,7 +311,7 @@ def test_discriminant_group_additive_abelian_group_api_matches_fgp_surface():
 
 
 def test_discriminant_action_inverse_image_matches_fgp_morphism_doctest():
-    # Reference: FGP morphism doctests expose kernel, image, lift, and inverse_image.
+    # Reference: finitely-generated-module-over-a-PID morphism doctests expose kernel, image, lift, and inverse_image.
     D = lc.TorsionQuadraticForm(matrix(QQ, 1, 1, [QQ(1) / 4]))
     g = D.gen(0)
     doubling = D.hom([2 * g])
@@ -366,7 +367,7 @@ def test_discriminant_form_subgroup_source_and_action_api_is_bound():
 
 
 def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
-    # Reference: FGP quotient cover/relation/lift/projection contract promoted to lattices.
+    # Reference: finitely-generated-module-over-a-PID quotient cover/relation/lift/projection contract promoted to lattices.
     A2 = lc.Lattice("A2")
     A2_dual = A2.dual()
     quotient = A2_dual.finite_quotient(A2)
@@ -465,7 +466,7 @@ def test_lattice_similarity_is_scalar_form_preserving_not_an_isometry():
 
 
 def test_discriminant_quotient_is_not_orthogonal_quotient_alias():
-    # Reference: FGP quotient API is ordinary finite-group quotient; orthogonal quotient is separate.
+    # Reference: finitely-generated-module-over-a-PID quotient API is ordinary finite-group quotient; orthogonal quotient is separate.
     L = lc.Lattice(Matrix(ZZ, 2, 2, [4, 2, 2, -4]))
     A = L.discriminant_group()
     H = A.subgroup_generated_by([2 * A.gen(1)])
@@ -530,8 +531,8 @@ def test_discriminant_group_isomorphism_kind_distinguishes_group_bilinear_and_qu
     assert positive.is_isomorphic(negative, kind="group")
     assert positive.is_isomorphic(negative, kind="bilinear")
     assert not positive.is_isomorphic(negative, kind="quadratic")
-    # witness production is gap-ledger entry 3; the delegated normal-form
-    # change of generators is the sanctioned witness door
+    # witness production is gap-ledger entry 3; the Sage-computed normal-form
+    # change of generators is the sanctioned witness
     _normal, change = positive.miranda_morrison_normal_form(return_isometry=True)
     assert change.is_automorphism()
 
@@ -683,7 +684,7 @@ def test_orthogonal_quotient_keeps_invariant_factors_not_only_cardinality():
 
 
 def test_discriminant_group_enumerates_all_finite_subgroups():
-    # Reference: subgroup/all_subgroups should surface the finite abelian group API.
+    # Reference: subgroup/all_subgroups should expose the finite abelian group API.
     A = lc.Lattice(matrix.diagonal(ZZ, [2, 2, 2])).discriminant_group()
 
     subgroup_orders = sorted(subgroup.cardinality() for subgroup in A.all_submodules())
@@ -741,7 +742,7 @@ def test_enriques_discriminant_form_reference_agrees_with_sage_at_research_scale
     # Scale honesty: the Enriques lattice U(2) + E8(2) -- Gram = block_diagonal of
     # 2*U and 2*E8, i.e. every entry of U + E8 doubled -- has discriminant form
     # (Z/2)^10. The synthetic pipeline (lattice -> sourced discriminant form ->
-    # delegated engine) must reference-agree with the direct Sage torsion module on
+    # Sage computation) must reference-agree with the direct Sage torsion module on
     # the same data. Sage's own O(q) of (Z/2)^10 does not complete, so parity is
     # asserted on the invariants Sage does complete: normal form, Brown, genus.
     from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
@@ -753,9 +754,9 @@ def test_enriques_discriminant_form_reference_agrees_with_sage_at_research_scale
     ))
     L = lc.Lattice(enriques_gram)
     D = L.discriminant_group()
-    oracle = IntegralLattice(enriques_gram).discriminant_group()
+    sage_reference = IntegralLattice(enriques_gram).discriminant_group()
 
-    # Oracle constants, from IntegralLattice(enriques_gram).discriminant_group():
+    # Sage reference constants, from IntegralLattice(enriques_gram).discriminant_group():
     #   .invariants() == (2,)*10
     #   .brown_invariant() == 0
     #   .miranda_morrison_normal_form() Gram == block_diagonal of five hyperbolic planes [[0,1/2],[1/2,0]]
@@ -773,9 +774,9 @@ def test_enriques_discriminant_form_reference_agrees_with_sage_at_research_scale
     assert D.genus(L.signature_pair()) == L.genus()
 
     # reference-agreement with the direct Sage computation on the same data
-    assert D.miranda_morrison_normal_form()[0] == tuple(oracle.invariants())
-    assert_matrix_equal(D.miranda_morrison_normal_form()[1], oracle.normal_form().gram_matrix_quadratic())
-    assert D.brown_invariant() == oracle.brown_invariant()
+    assert D.miranda_morrison_normal_form()[0] == tuple(sage_reference.invariants())
+    assert_matrix_equal(D.miranda_morrison_normal_form()[1], sage_reference.normal_form().gram_matrix_quadratic())
+    assert D.brown_invariant() == sage_reference.brown_invariant()
 
 def test_torsion_quadratic_module_doctest_parity_ledger_rows():
     # T5 mapped rows from sage/modules/torsion_quadratic_module.py doctests;
@@ -819,10 +820,10 @@ def test_torsion_quadratic_module_doctest_parity_ledger_rows():
     S = T3.subgroup_generated_by(list(T3.gens())[:5])
     assert T3.orthogonal_submodule_to(S).invariants() == (3, 3, 3, 3, 3)
 
-    # __classcall__ doctest rerouted (identity -> presentation equality: Sage's
-    # `D1 is D2` pins a UniqueRepresentation caching artifact, and the spike's
-    # Gram-presented stratum deliberately keys parent equality on identity, so
-    # the surviving mathematical content is equality of the presented form data)
+    # The Sage doctest here checked object identity (D1 is D2); rerouted to
+    # equality of the presented form data. The spike keys parent equality on
+    # identity for its Gram-presented subcategory, so the surviving mathematical
+    # content is that two forms built from the same Gram data are equal.
     q_half = matrix(QQ, [[QQ(1) / 2]])
     left, right = lc.TorsionQuadraticForm(q_half), lc.TorsionQuadraticForm(q_half)
     assert left.invariants() == right.invariants()
@@ -845,14 +846,14 @@ def test_torsion_quadratic_module_doctest_parity_value_pins():
     # a valid reconstruction input — fed back in, both Sage and the spike read
     # [7/12] at modulus 2, a different form); the spike keeps the per-generator
     # presentation, so the surviving content is the group order, the
-    # invariants, and normal-form agreement with the oracle on the same data
+    # invariants, and normal-form agreement with Sage on the same data
     from sage.modules.torsion_quadratic_module import TorsionQuadraticForm as SageTorsionForm
 
     q2 = lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 4, QQ(1) / 3]))
-    oracle = SageTorsionForm(matrix.diagonal(QQ, [QQ(1) / 4, QQ(1) / 3])).normal_form()
+    sage_reference = SageTorsionForm(matrix.diagonal(QQ, [QQ(1) / 4, QQ(1) / 3])).normal_form()
     assert q2.cardinality() == 12
-    assert q2.miranda_morrison_normal_form()[0] == tuple(oracle.invariants()) == (12,)
-    assert_matrix_equal(q2.miranda_morrison_normal_form()[1], oracle.gram_matrix_quadratic())
+    assert q2.miranda_morrison_normal_form()[0] == tuple(sage_reference.invariants()) == (12,)
+    assert_matrix_equal(q2.miranda_morrison_normal_form()[1], sage_reference.gram_matrix_quadratic())
 
     # factory doctest: diag(3/4, 3/8, 3/8) -> invariants (4, 8, 8)
     q3 = lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(3) / 4, QQ(3) / 8, QQ(3) / 8]))
@@ -870,7 +871,7 @@ def test_torsion_quadratic_module_doctest_parity_value_pins():
     D2 = lc.TorsionQuadraticForm(identity_matrix(QQ, 2) / 2)
     assert D2.orthogonal_group(gens=[matrix(ZZ, 2, [0, 1, 1, 0])]).order() == 2
 
-    # brown_invariant doctest error branch: an odd form propagates the oracle's
+    # brown_invariant doctest error branch: an odd form propagates Sage's
     # rejection (values must lie in QQ/2ZZ)
     with pytest.raises(ValueError):
         lc.TorsionQuadraticForm(matrix(QQ, [[QQ(1) / 3]])).brown_invariant()
@@ -880,16 +881,16 @@ def test_maximal_overlattice_p_local_reference_agrees_with_sage_on_small_fixture
     # Reference: IntegralLattice.maximal_overlattice doctests. The source fixture
     # A4.twist(25*89) has a discriminant group of order 5^9 * 89^4 — rerouted to a
     # small fixture (ruling 2026-07-03: correctness evidence uses very small
-    # lattices); the p-local maximization content is pinned by direct oracle
-    # agreement on A2.twist(9) (discriminant group order 3^5 = 243).
+    # lattices); the p-local maximization content is pinned by direct agreement
+    # with Sage on A2.twist(9) (discriminant group order 3^5 = 243).
     from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 
     gram = matrix(ZZ, 2, [2, -1, -1, 2])
     L = lc.Lattice("A2").twist(9)
-    oracle = IntegralLattice(gram).twist(9)
+    sage_reference = IntegralLattice(gram).twist(9)
     assert L.maximal_overlattice().is_even()
-    assert L.maximal_overlattice().determinant() == oracle.maximal_overlattice().determinant()
-    assert L.maximal_overlattice(3).determinant() == oracle.maximal_overlattice(3).determinant()
+    assert L.maximal_overlattice().determinant() == sage_reference.maximal_overlattice().determinant()
+    assert L.maximal_overlattice(3).determinant() == sage_reference.maximal_overlattice(3).determinant()
 
 
 def test_free_quadratic_module_determinant_discriminant_and_gram_doctest_rows():
@@ -953,18 +954,18 @@ def test_free_module_index_and_saturation_doctest_rows():
 
     # denominator doctest REROUTED: Sage's value 30 is the denominator of the
     # echelon basis matrix — an ambient-coordinate artifact the based model
-    # drops. The intrinsic denominator clears the Gram; pin it by direct oracle
-    # agreement on the same span data.
+    # drops. The intrinsic denominator clears the Gram; pin it by direct agreement
+    # with Sage on the same span data.
     Q3 = lc.Lattice(identity_matrix(QQ, 3), base_ring=QQ, label="Q3")
     spike_span = Q3.span([[1, QQ(1) / 2, QQ(1) / 3], [-QQ(1) / 5, QQ(2) / 3, 3]], base_ring=ZZ)
-    oracle_span = (QQ ** 3).span([[1, QQ(1) / 2, QQ(1) / 3], [-QQ(1) / 5, QQ(2) / 3, 3]], ZZ)
-    assert spike_span.denominator() == oracle_span.gram_matrix().denominator()
+    sage_reference_span = (QQ ** 3).span([[1, QQ(1) / 2, QQ(1) / 3], [-QQ(1) / 5, QQ(2) / 3, 3]], ZZ)
+    assert spike_span.denominator() == sage_reference_span.gram_matrix().denominator()
 
 
 def test_integer_lattice_invariant_pins_and_free_module_intersection_rows():
     # References: free_module_integer.py volume/discriminant/is_unimodular
     # doctests (their gen_lattice fixture is crypto rank-10 — rerouted to a
-    # tiny fixture by oracle agreement per the small-lattices ruling) and
+    # tiny fixture by agreement with Sage per the small-lattices ruling) and
     # free_module.py intersection doctests (pinned echelon bases rerouted to
     # their intrinsic Gram/index content).
     from sage.modules.free_module_integer import IntegerLattice
@@ -972,12 +973,12 @@ def test_integer_lattice_invariant_pins_and_free_module_intersection_rows():
     # IntegerLattice([[2,0],[0,3]]) is basis rows in the ambient dot product,
     # i.e. Gram diag(4, 9)
     small = lc.Lattice(matrix.diagonal(ZZ, [4, 9]), label="diag49")
-    oracle = IntegerLattice([[2, 0], [0, 3]])
-    assert small.volume() == oracle.volume() == 6
+    sage_reference = IntegerLattice([[2, 0], [0, 3]])
+    assert small.volume() == sage_reference.volume() == 6
     # naming-collision guard (ledger): Sage IntegerLattice.discriminant() is
     # |det| = the spike's absolute_discriminant(); the spike's discriminant()
     # is the signed Nikulin convention
-    assert small.absolute_discriminant() == oracle.discriminant() == 36
+    assert small.absolute_discriminant() == sage_reference.discriminant() == 36
     assert small.discriminant() == -36
     assert lc.Lattice(identity_matrix(ZZ, 2)).is_unimodular()
     assert not small.is_unimodular()
@@ -1028,7 +1029,7 @@ def test_torsion_bilinear_gram_fquad_ordering_and_fgp_coordinate_doctest_rows():
     # the inner product is part of the comparison; issue-23915 row
     assert lc.Lattice(matrix(ZZ, [[1]]), label="one") != lc.Lattice(matrix(ZZ, [[2]]), label="two")
 
-    # fgp element/coordinate rows on the finite invariants-(4,12) doctest
+    # finitely-generated-module-over-a-PID element/coordinate rows on the finite invariants-(4,12) doctest
     # fixture: V = span([[1/2,0,0],[3/2,2,1],[0,0,1]], ZZ),
     # W = span(2V.0+4V.1, 9V.0+12V.1, 4V.2) — relation rows in cover coordinates
     Q3Q = lc.Lattice(identity_matrix(QQ, 3), base_ring=QQ, label="Q3fgp")

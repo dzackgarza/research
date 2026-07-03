@@ -1,4 +1,4 @@
-r"""Public compatibility surface for the owned synthetic lattice spike.
+r"""Public compatibility API for the owned synthetic lattice spike.
 
 The implementation is organized by concept:
 

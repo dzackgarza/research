@@ -1,5 +1,5 @@
 # Sage-defect corrections load first: monkey-patches (when any exist) must be
-# live before any engine is built; re-exports resolve from this namespace.
+# live before any lattice object is built; re-exports resolve from this namespace.
 from . import sage_patches  # noqa: F401
 
 from .lattice_categories import (

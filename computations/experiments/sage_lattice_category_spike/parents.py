@@ -120,7 +120,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
     # These are private.  They exist only so the subobject algebra can compute in
     # a common coefficient module; they are never part of the object's identity
     # and are never exposed as public methods (no basis_matrix / coordinates /
-    # ambient_* / rationalization / underlying_module on the public surface).
+    # ambient_* / rationalization / underlying_module on the public API).
 
     def _root(self):
         return self if self._ambient is None else self._ambient
@@ -328,7 +328,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
     # -- Subobject algebra: operations between sublattices of a common parent -----
 
     def is_submodule(self, other):
-        r"""Containment of the underlying modules, decided by the Sage engine
+        r"""Containment of the underlying modules, decided by Sage
         (a generator-row membership test is wrong across base rings: a QQ-span's
         generators can be integral while the span is not contained)."""
         self._assert_same_ambient(other)
@@ -509,7 +509,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
                 QuadraticForm(matrix(QQ, 2 * other.gram_matrix()))
             )
         assert self.is_definite() and other.is_definite(), (
-            "the is_isometric engine is grounded only for definite lattices "
+            "the is_isometric decision (computed by Sage) is grounded only for definite lattices "
             "(indefinite decision is gap-ledger item 1); "
             f"left_signature={self.signature_pair()}, right_signature={other.signature_pair()}"
         )
@@ -566,7 +566,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
 
 
 class SyntheticNondegenerateLattice(NondegenerateCarrier, SyntheticLattice):
-    r"""Stratum with an invertible Gram matrix: the dual vocabulary is defined."""
+    r"""Subcategory with an invertible Gram matrix: the dual vocabulary is defined."""
 
     def dual(self):
         r"""The dual lattice, a based lattice with Gram ``G^{-1}``.
@@ -598,7 +598,7 @@ class SyntheticNondegenerateLattice(NondegenerateCarrier, SyntheticLattice):
 
 
 class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateCarrier, SyntheticNondegenerateLattice):
-    r"""Integral nondegenerate stratum: discriminant/genus vocabulary (spec 2.4)."""
+    r"""Integral nondegenerate subcategory: discriminant/genus vocabulary (spec 2.4)."""
 
     def discriminant_group(self, primary=0):
         from .discriminant_forms import SyntheticSourcedDiscriminantForm
@@ -648,8 +648,8 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateCarrier, Synthe
 
 class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
     r"""Spec 2.5 enumeration-kernel implementations, shared by the two
-    positive-definite strata. Definite-level names the spec leaves [contract]
-    (vectors_of_square, roots) stay carrier stubs (gap-ledger item 4). The
+    positive-definite subcategories. Definite-level names the spec leaves [contract]
+    (vectors_of_square, roots) stay stubs in the domain-algebra class (gap-ledger item 4). The
     spec-2.6 reduction/CVP/Voronoi suite lives here too (decision D1 revised
     2026-07-04): Sage's own crypto lattice implementations presuppose exactly
     positive definiteness, so those methods are ordinary positive-definite
@@ -942,11 +942,11 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
 
 
 class SyntheticPositiveDefiniteLattice(_PositiveDefiniteKernel, SyntheticNondegenerateLattice):
-    r"""Positive-definite stratum over QQ or with a non-integral form."""
+    r"""Positive-definite subcategory over QQ or with a non-integral form."""
 
 
 class SyntheticIntegralPositiveDefiniteLattice(_PositiveDefiniteKernel, SyntheticIntegralNondegenerateLattice):
-    r"""Integral positive-definite stratum: full discriminant + enumeration kernel."""
+    r"""Integral positive-definite subcategory: full discriminant + enumeration kernel."""
 
 
 class _RootGeneratedMixin(RootGeneratedCarrier):
@@ -970,8 +970,8 @@ class SyntheticRootGeneratedNondegenerateLattice(_RootGeneratedMixin, SyntheticI
 
 
 def synthetic_lattice(gram_matrix, base_ring, label, ambient=None, inclusion=None, cartan_type=None):
-    r"""Private stratum router: one classification (mirroring ``category_for``),
-    one concrete class per stratum, so axiom vocabulary is reachable exactly
+    r"""Private subcategory dispatch: one classification (mirroring ``category_for``),
+    one concrete class per subcategory, so axiom vocabulary is reachable exactly
     where the mathematics defines it."""
     gram = matrix(QQ, gram_matrix)
     nondegenerate = gram.det() != 0

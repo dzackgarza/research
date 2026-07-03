@@ -1,12 +1,12 @@
 r"""The one consolidated finite-quotient discriminant-form parent (form-free layer).
 
-A single invariant-factor ``A / H`` quotient surface, implemented once. The two legacy
+A single invariant-factor ``A / H`` quotient class, implemented once. The two legacy
 duplicates (an ordinary finite quotient of a discriminant group, and a same-rank
-``ZZ``-lattice quotient) differed only in a construction-provenance seam: how the
+``ZZ``-lattice quotient) differed only in one construction detail: how the
 covering object's coordinates are read (``ngens``/``coordinates`` vs
-``rank``/``coefficient_vector``) and what ``lift`` returns. That seam is three tiny
+``rank``/``coefficient_vector``) and what ``lift`` returns. That difference is three tiny
 hooks; everything else is shared here. The lattice-quotient case is the
-:class:`SyntheticLatticeQuotient` subclass, not a second surface.
+:class:`SyntheticLatticeQuotient` subclass, not a second class.
 """
 
 from __future__ import annotations
@@ -52,7 +52,7 @@ from .value_objects import value_module
 def _presentation_radical_order(gram, invariants):
     r"""``|radical(b)|`` decided from presentation data alone — needed BEFORE the
     parent exists, to attach the ``Nondegenerate`` axiom at construction.
-    Delegated: with ``e = lcm(invariants)``, the radical is the kernel of
+    Computed by Sage: with ``e = lcm(invariants)``, the radical is the kernel of
     ``x -> x.G`` into ``(1/e)ZZ^n / ZZ^n``, so its order is ``|A| / |image|``
     with the image index read off Sage's module quotient."""
     if not invariants:
@@ -115,7 +115,7 @@ class SyntheticDiscriminantForm(DiscriminantFormCarrier, Parent):
         self._invariants = tuple(invariants)
         Parent.__init__(self, base=ZZ, category=DiscriminantForms(ZZ))
 
-    # -- construction-provenance seam: how the cover's coordinates are read --
+    # -- construction detail: how the cover's coordinates are read --
     # The subclass overrides these three for the lattice-quotient case; every
     # other method is shared verbatim.
     def _cover_dim(self):
@@ -295,7 +295,7 @@ class SyntheticDiscriminantForm(DiscriminantFormCarrier, Parent):
         return SyntheticDiscriminantForm(self, self._subgroup(subgroup_or_gens))
 
     def permutation_group(self):
-        r"""The GAP-backed group-theoretic seam (spec 3.5/4: every finite quotient)."""
+        r"""The GAP-backed permutation representation (spec 3.5/4: every finite quotient)."""
         from sage.groups.additive_abelian.additive_abelian_group import AdditiveAbelianGroup
 
         return AdditiveAbelianGroup(list(self.invariants())).permutation_group()
@@ -472,7 +472,7 @@ class PontryaginDualIdentification:
 class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, SyntheticDiscriminantForm):
     r"""Finite bilinear discriminant form presented by a generator Gram matrix.
 
-    The Bilinear stratum: it owns the finite-abelian-group surface (inherited from
+    The Bilinear subcategory: it owns the finite-abelian-group operations (inherited from
     :class:`SyntheticDiscriminantForm`) plus the bilinear form ``b`` and its
     derived vocabulary (radical, orthogonal complements, isotropy, lagrangians,
     metabolizers, transported forms). The quotient here is Gram-presented, so
@@ -530,7 +530,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
     def _repr_(self):
         return f"Synthetic finite bilinear discriminant form with invariants {self.invariants()}"
 
-    # Gram-presented forms are identified by object identity (the covering seam
+    # Gram-presented forms are identified by object identity (the covering data
     # the base parent keys equality on is trivial here, so it cannot separate them).
     def __eq__(self, other):
         return self is other
@@ -538,7 +538,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
     def __hash__(self):
         return id(self)
 
-    # -- Gram-presented cover/relations seam: the form is its own cover, with no
+    # -- Gram-presented cover/relations: the form is its own cover, with no
     # relations, so lift/projection are the identity (no change-of-basis transport). --
     def cover(self):
         return self
@@ -577,39 +577,39 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
         return self in DiscriminantForms(ZZ).Nondegenerate()
 
     def orthogonal_submodule_to(self, subgroup_or_gens):
-        r"""The subgroup orthogonal to ``subgroup_or_gens`` under ``b``, from an
-        ephemeral Sage engine (module arithmetic — element enumeration is
+        r"""The subgroup orthogonal to ``subgroup_or_gens`` under ``b``, from the
+        ephemeral Sage TorsionQuadraticModule (module arithmetic — element enumeration is
         infeasible at research scale, and handing every orthogonal element to
         the subgroup constructor as a generator makes its closure product
         astronomically large)."""
         subgroup = self._subgroup(subgroup_or_gens)
         if self.ngens() == 0 or subgroup.cardinality() == 1:
-            # complement of the trivial subgroup is the whole group; the
-            # engine's linear algebra needs at least one nonzero generator
+            # complement of the trivial subgroup is the whole group; Sage's
+            # linear algebra needs at least one nonzero generator
             return self.subgroup_generated_by(self.gens())
-        engine = self._sage_engine()
-        # the engine's cover basis corresponds 1:1 to the presented generators
+        sage_form = self._sage_engine()
+        # the Sage module's cover basis corresponds 1:1 to the presented generators
         # (TorsionQuadraticForm builds V = (1/d)*ZZ^n with inner product q), so
-        # coordinates transfer through V, NOT through the engine's invariant-factor
+        # coordinates transfer through V, NOT through Sage's invariant-factor
         # gens — the presented generator orders need not be invariant factors
         # (e.g. invariants (2, 3))
-        cover = engine.V()
+        cover = sage_form.V()
         basis = cover.basis()
-        assert engine.cardinality() == self.cardinality() and all(
-            engine(basis[i]).order() == invariant for i, invariant in enumerate(self.invariants())
+        assert sage_form.cardinality() == self.cardinality() and all(
+            sage_form(basis[i]).order() == invariant for i, invariant in enumerate(self.invariants())
         ), (
-            "ephemeral Sage engine must reproduce the presented generator orders to "
+            "the ephemeral Sage TorsionQuadraticModule must reproduce the presented generator orders to "
             "transfer subgroup coordinates; "
-            f"synthetic invariants={self.invariants()}, engine invariants={tuple(engine.invariants())}"
+            f"synthetic invariants={self.invariants()}, Sage invariants={tuple(sage_form.invariants())}"
         )
         images = [
-            engine(cover.linear_combination_of_basis(list(generator.coefficient_vector())))
+            sage_form(cover.linear_combination_of_basis(list(generator.coefficient_vector())))
             for generator in subgroup.gens()
         ]
-        oracle = engine.orthogonal_submodule_to(images)
+        complement = sage_form.orthogonal_submodule_to(images)
         return self.subgroup_generated_by(
             self([ZZ(coordinate) for coordinate in cover.coordinates(generator.lift())])
-            for generator in oracle.gens()
+            for generator in complement.gens()
         )
 
     def orthogonal(self, subgroup_or_gens):
@@ -715,25 +715,25 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
         return tuple(AdditiveAbelianGroup(list(self.invariants())).invariants())
 
     def _bilinear_normal_presentation(self):
-        r"""The complete bilinear-isomorphism invariant from the oracle: re-present
-        the ephemeral engine at the bilinear modulus (``modulus_qf = modulus``, the
+        r"""The complete bilinear-isomorphism invariant computed by Sage: re-present
+        the ephemeral Sage module at the bilinear modulus (``modulus_qf = modulus``, the
         same presentation ``_delegated_orthogonal_group`` uses for ``O(b)``) and take
         its normal form. Sage's stated contract: two torsion quadratic modules are
         isomorphic iff they have the same value modules and the same normal form."""
         from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
 
-        engine = self._sage_engine()
-        assert engine.cardinality() == self.cardinality(), (
-            "ephemeral Sage engine must carry the whole group to decide bilinear "
+        sage_form = self._sage_engine()
+        assert sage_form.cardinality() == self.cardinality(), (
+            "the ephemeral Sage TorsionQuadraticModule must carry the whole group to decide bilinear "
             "isomorphism (an explicit-invariants presentation can hold a generator "
-            "the engine's denominator inference drops); "
-            f"synthetic cardinality={self.cardinality()}, engine cardinality={engine.cardinality()}"
+            "Sage's denominator inference drops); "
+            f"synthetic cardinality={self.cardinality()}, Sage cardinality={sage_form.cardinality()}"
         )
-        presented = TorsionQuadraticModule(engine.V(), engine.W(), modulus=engine._modulus, modulus_qf=engine._modulus)
+        presented = TorsionQuadraticModule(sage_form.V(), sage_form.W(), modulus=sage_form._modulus, modulus_qf=sage_form._modulus)
         normal = presented.normal_form()
         gram = matrix(QQ, normal.gram_matrix_quadratic())
         gram.set_immutable()
-        return (QQ(engine._modulus), tuple(normal.invariants()), gram)
+        return (QQ(sage_form._modulus), tuple(normal.invariants()), gram)
 
     def orthogonal_group(self, gens=None, check=False, kind="quadratic"):
         assert kind in ("quadratic", "bilinear"), (f"orthogonal group kind must be quadratic or bilinear; found={kind}")
@@ -748,29 +748,29 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
     def _delegated_orthogonal_group(self, kind):
         r"""O(q) (or the larger O(b)) from an ephemeral Sage torsion quadratic module
         built from this form's own Gram, translated back onto the owned generators.
-        The engine's invariant-factor presentation reproduces those generators, so an oracle
+        Sage's invariant-factor presentation reproduces those generators, so a Sage
         action matrix (rows = images) becomes an owned action by transposition."""
-        engine = self._sage_engine()
-        assert tuple(engine.invariants()) == self.invariants() and engine.gram_matrix_quadratic() == self.gram_matrix_quadratic(), (
-            "ephemeral Sage engine must reproduce the synthetic invariant-factor presentation to "
+        sage_form = self._sage_engine()
+        assert tuple(sage_form.invariants()) == self.invariants() and sage_form.gram_matrix_quadratic() == self.gram_matrix_quadratic(), (
+            "the ephemeral Sage TorsionQuadraticModule must reproduce the synthetic invariant-factor presentation to "
             "translate orthogonal-group actions onto the owned generators; "
-            f"synthetic invariants={self.invariants()}, engine invariants={tuple(engine.invariants())}"
+            f"synthetic invariants={self.invariants()}, Sage invariants={tuple(sage_form.invariants())}"
         )
         if kind == "bilinear":
             from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
 
-            # O(b): present the quadratic refinement at the bilinear modulus, so the
-            # oracle's O(q) of this presentation is the bilinear orthogonal group.
-            engine = TorsionQuadraticModule(engine.V(), engine.W(), modulus=engine._modulus, modulus_qf=engine._modulus)
-        oracle = engine.orthogonal_group()
-        actions = [SyntheticDiscriminantAction(self, matrix(ZZ, generator.matrix()).transpose()) for generator in oracle.gens()]
+            # O(b): present the quadratic refinement at the bilinear modulus, so
+            # Sage's O(q) of this presentation is the bilinear orthogonal group.
+            sage_form = TorsionQuadraticModule(sage_form.V(), sage_form.W(), modulus=sage_form._modulus, modulus_qf=sage_form._modulus)
+        sage_group = sage_form.orthogonal_group()
+        actions = [SyntheticDiscriminantAction(self, matrix(ZZ, generator.matrix()).transpose()) for generator in sage_group.gens()]
         return SyntheticOrthogonalGroup(self, actions, close=True)
 
     def q(self, element):
         r"""The induced diagonal quadratic form ``q(x) := b(x, x)`` — defined
         for EVERY bilinear form (placement ruling 2026-07-03: only
         polarization needs 2 invertible), valued in the bilinear value module.
-        The Quadratic stratum overrides with its refined stored-modulus form.
+        The Quadratic subcategory overrides with its refined stored-modulus form.
         """
         return self.b(element, element)
 
@@ -778,7 +778,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
 class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, SyntheticBilinearDiscriminantForm):
     r"""Finite quadratic discriminant form presented by a generator Gram matrix.
 
-    The Quadratic stratum refines the bilinear one with the quadratic form ``q``
+    The Quadratic subcategory refines the bilinear one with the quadratic form ``q``
     and its genus vocabulary. ``q`` routes through a stored quadratic modulus
     (``2`` for even forms, ``1`` for odd), never a literal in the value path, so
     an odd form is representable; the module-level ``TorsionQuadraticForm``
@@ -826,7 +826,7 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
     def _sage_engine(self):
         r"""An ephemeral Sage torsion quadratic module built from this form's own
         quadratic Gram. Its invariant-factor presentation reproduces the owned generators, so
-        the oracle's per-generator results transfer back without a coordinate map."""
+        Sage's per-generator results transfer back without a coordinate map."""
         from sage.modules.torsion_quadratic_module import TorsionQuadraticForm
 
         return TorsionQuadraticForm(self.gram_matrix_quadratic())
@@ -834,20 +834,20 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
     def _delegated_normal_form(self, return_isometry):
         r"""Sage's torsion-module normal form, returned as the owned ``(invariants,
         Gram)`` pair. The change of generators (when asked) reads Sage's normal-form
-        generators back in the engine's invariant-factor coordinates, which are the owned ones."""
+        generators back in Sage's invariant-factor coordinates, which are the owned ones."""
         if self.ngens() == 0:
             normal = ((), matrix(QQ, 0, 0))
             if return_isometry:
                 return normal, SyntheticDiscriminantAction(self, identity_matrix(ZZ, 0))
             return normal
-        engine = self._sage_engine()
-        oracle = engine.normal_form()
-        gram = matrix(QQ, oracle.gram_matrix_quadratic())
+        sage_form = self._sage_engine()
+        sage_normal = sage_form.normal_form()
+        gram = matrix(QQ, sage_normal.gram_matrix_quadratic())
         gram.set_immutable()
-        normal = (tuple(oracle.invariants()), gram)
+        normal = (tuple(sage_normal.invariants()), gram)
         if not return_isometry:
             return normal
-        images = [self(list(engine(generator.lift()).vector())) for generator in oracle.gens()]
+        images = [self(list(sage_form(generator.lift()).vector())) for generator in sage_normal.gens()]
         return normal, SyntheticDiscriminantAction.from_images(self, images)
 
     def miranda_morrison_normal_form(self, partial=False, return_isometry=False):
@@ -858,12 +858,12 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
         return self._delegated_normal_form(return_isometry)
 
     def brown_invariant(self):
-        r"""Return the Brown invariant in ``ZZ/8`` from the ephemeral Sage engine."""
+        r"""Return the Brown invariant in ``ZZ/8`` from the ephemeral Sage TorsionQuadraticModule."""
         return ZZ(self._sage_engine().brown_invariant())
 
     def is_genus(self, signature_pair, even=True):
         r"""Return whether this discriminant form and signature define an even genus,
-        decided by the ephemeral Sage engine."""
+        decided by the ephemeral Sage TorsionQuadraticModule."""
         s_plus = ZZ(signature_pair[0])
         s_minus = ZZ(signature_pair[1])
         assert s_plus >= 0 and s_minus >= 0, (
@@ -873,7 +873,7 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
         assert even, (
             "genus classification through the discriminant-form correspondence is "
             "grounded only for the even case in this spike (the correspondence "
-            "itself is parity-agnostic; the odd engine is unbuilt); "
+            "itself is parity-agnostic; the odd-form implementation is unbuilt); "
             f"signature_pair={(s_plus, s_minus)}, invariants={self.invariants()}"
         )
         return self._sage_engine().is_genus((s_plus, s_minus), even=even)
@@ -886,22 +886,22 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
         return SyntheticGenus(self, signature_pair, even=even)
 
     def twist(self, scalar):
-        r"""The form scaled by ``scalar`` on the SAME group (oracle
+        r"""The form scaled by ``scalar`` on the SAME group (Sage
         round-trip: a non-unit twist can make the form integral on a
         generator without killing the group element, so the result carries
         its group explicitly)."""
         from sage.modules.torsion_quadratic_module import TorsionQuadraticForm as _SageTorsionForm
 
-        engine = _SageTorsionForm(self.gram_matrix_quadratic()).twist(ZZ(scalar))
+        sage_form = _SageTorsionForm(self.gram_matrix_quadratic()).twist(ZZ(scalar))
         return SyntheticQuadraticDiscriminantForm(
-            engine.gram_matrix_quadratic(),
+            sage_form.gram_matrix_quadratic(),
             quadratic_modulus=self._quadratic_modulus(),
-            invariants=tuple(ZZ(i) for i in engine.invariants()),
+            invariants=tuple(ZZ(i) for i in sage_form.invariants()),
         )
 
 
 class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, SyntheticQuadraticDiscriminantForm):
-    r"""The sourced stratum ``L# / L`` of a nondegenerate integral lattice ``L``.
+    r"""The sourced subcategory ``L# / L`` of a nondegenerate integral lattice ``L``.
 
     The consolidated quadratic discriminant form refined with source-lattice
     provenance (category axiom ``WithSourceLattice``). Its state and form
@@ -910,9 +910,9 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
     metric dual and ``relations = L``, and the bilinear/quadratic Gram on the
     invariant generators is read off ``G^{-1}`` through the dual coordinates. The
     parity modulus follows the source lattice (``2`` even, ``1`` odd). Everything
-    the quadratic stratum owns generically -- the group surface, ``b``/``q`` on
+    the quadratic subcategory owns generically -- the group operations, ``b``/``q`` on
     the recorded Gram, the isotropic/orthogonal/isomorphism/genus vocabulary --
-    is inherited; this class adds only the source-aware seam: the dual cover, the
+    is inherited; this class adds only the source-aware part: the dual cover, the
     change-of-basis-transported lift/projection, coset representatives in the source hull,
     overlattices, the induced action of a lattice isometry, and the orbit
     vocabulary of that action.
@@ -972,7 +972,7 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
     def __hash__(self):
         return hash((_lattice_key(self.source_lattice()), self._primary, self.invariants()))
 
-    # -- source-aware seam: cover = L#, relations = L --
+    # -- source-aware part: cover = L#, relations = L --
     def rank(self):
         return self._source_lattice.rank()
 
@@ -1157,16 +1157,16 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
         isotropic = set(self.isotropic_subgroups())
         return tuple(orbit for orbit in self.orbits_on_subgroups(group=group) if orbit & isotropic)
 
-    # -- source-based oracle: the ephemeral engine is the source lattice's own
+    # -- source-based Sage object: the ephemeral Sage object is the source lattice's own
     # discriminant group (its invariant-factor presentation reproduces the owned generators);
-    # normal_form is inherited from the Gram stratum's delegation through it. --
+    # normal_form is inherited from the Gram subcategory's Sage call through it. --
     def _sage_engine(self):
         from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 
-        engine = IntegralLattice(matrix(ZZ, self.source_lattice().gram_matrix())).discriminant_group()
+        sage_disc = IntegralLattice(matrix(ZZ, self.source_lattice().gram_matrix())).discriminant_group()
         if self._primary:
-            engine = engine.primary_part(self._primary)
-        return engine
+            sage_disc = sage_disc.primary_part(self._primary)
+        return sage_disc
 
     @classmethod
     def trivial(cls, source_lattice):

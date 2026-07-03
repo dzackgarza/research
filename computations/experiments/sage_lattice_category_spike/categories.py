@@ -1,4 +1,4 @@
-r"""Sage category surfaces for the owned synthetic lattice spike.
+r"""Sage category classes for the owned synthetic lattice spike.
 
 Ratified organization (M-RATIFY): two SEPARATE categories, no shared root.
 
@@ -72,9 +72,9 @@ for _axiom_name in _FORM_AXIOMS:
 def _carrier_delta(carrier):
     r"""Sage's category framework injects only a ParentMethods class's OWN
     attributes and warns when the class has a superclass (inherited names are
-    never copied). Axiom carriers subclass their base carrier for the static
-    type hierarchy, so hand Sage a derived view holding exactly the carrier's
-    own delta — projected mechanically, never written by hand."""
+    never copied). The domain-algebra classes subclass their base class for the
+    static type hierarchy, so hand Sage a derived view holding exactly that
+    class's own delta — projected mechanically, never written by hand."""
     delta = {name: value for name, value in vars(carrier).items() if not name.startswith("__")}
     delta["__doc__"] = carrier.__doc__
     return type("ParentMethods", (), delta)
@@ -122,7 +122,7 @@ class Lattices(Category_over_base_ring):
         base ring into this category — the ONLY public entry into the language.
 
         Asserts its domain contract (ADDD: a violation is a caller-contract
-        bug) and routes the object into its mathematical stratum; provenance
+        bug) and routes the object into its mathematical subcategory; provenance
         axioms (RootGenerated) ride the ``cartan_type`` flag, attached by the
         section-6 named constructors and never detected from the Gram.
         """
@@ -173,7 +173,7 @@ class DiscriminantForms(Category_over_base_ring):
         return f"synthetic discriminant forms over {self.base_ring()}"
 
     def from_form_data(self, gram_matrix, quadratic_modulus=2, invariants=None):
-        r"""Section 1.4: the finite-side functor — the ONLY constructor door
+        r"""Section 1.4: the finite-side functor — the ONLY constructor
         from form data (a quadratic generator Gram, its value modulus, and
         optionally an explicit group presentation) into this category. The
         lattice-side functor ``discriminant_group`` lands in its image, and
@@ -195,9 +195,9 @@ class DiscriminantForms(Category_over_base_ring):
         Even = axiom("Even")
         WithSourceLattice = axiom("WithSourceLattice")
 
-    # The domain-algebra carrier IS this base node's parent surface (direct
+    # The domain-algebra class IS this base category's ParentMethods (direct
     # assignment; the finite-quotient parent subsumes the former four abstract
-    # stubs). Concrete parents inherit the carrier and shadow its declared
+    # stubs). Concrete parents inherit the class and shadow its declared
     # methods with real implementations.
     ParentMethods = DiscriminantFormCarrier
 
@@ -306,7 +306,7 @@ class NondegenerateDiscriminantForms(CategoryWithAxiom_over_base_ring):
         def pontryagin_dual(self):
             r"""The canonical identification ``A ~ Hom(A, QQ/ZZ)`` as a typed
             object: index by an element to get its character. Placed on the
-            Nondegenerate node (spec section 4) — the identification along
+            Nondegenerate subcategory (spec section 4) — the identification along
             ``b`` exists exactly there, so definedness is placement, not a
             runtime guard."""
             from .discriminant_forms import PontryaginDualIdentification

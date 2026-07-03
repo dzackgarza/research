@@ -1,4 +1,4 @@
-r"""O(L) — the isometry group object (spec section 3; owned substrate, V0c).
+r"""O(L) — the isometry group object (spec section 3; owned implementation, V0c).
 
 O(L) is well-defined for EVERY lattice and ``L.isometry_group()`` returns it,
 unique per lattice, in ``Groups()`` (refined ``Groups().Finite()`` iff
@@ -37,10 +37,10 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
 
     @staticmethod
     def _finiteness(lattice):
-        # Engine-grounded domain (user ruling 2026-07-03): finiteness is a
-        # property of the computed group, never a remembered classification
-        # (which can simply be wrong: O(U) over ZZ is finite of order 4
-        # despite U being indefinite). The delegated engine computes O(L)
+        # Domain where Sage's computation applies (user ruling 2026-07-03):
+        # finiteness is a property of the computed group, never a remembered
+        # classification (which can simply be wrong: O(U) over ZZ is finite of
+        # order 4 despite U being indefinite). Sage computes O(L)
         # exactly for definite integral nondegenerate ZZ-lattices (plus the
         # trivial rank-0 group); everywhere else no finiteness answer exists
         # yet, and the gating assertion in each consumer says so.
@@ -55,11 +55,11 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
 
     def _assert_engine_grounded(self):
         assert self._finiteness(self._lattice), (
-            "O(L) finiteness/enumeration is engine-grounded only for definite "
+            "O(L) finiteness/enumeration is grounded by Sage's computation only for definite "
             "integral nondegenerate ZZ-lattices (and the trivial rank-0 group); "
             f"base_ring={self._lattice.base_ring()}, "
-            f"gram={self._lattice.gram_matrix()}; for other strata no computation "
-            "grounds an answer yet — extend the engine, do not special-case"
+            f"gram={self._lattice.gram_matrix()}; for other subcategories no computation "
+            "grounds an answer yet — extend the computation, do not special-case"
         )
 
     def _repr_(self):
@@ -101,16 +101,16 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
         return self._lattice.hom(identity_matrix(self._lattice.base_ring(), self._lattice.rank()))
 
     def is_finite(self):
-        r"""Finiteness of the ACTUAL computed group (engine-grounded); the
-        gating assertion rejects strata where no computation grounds an
-        answer."""
+        r"""Finiteness of the ACTUAL computed group (grounded by Sage's
+        computation); the gating assertion rejects subcategories where no
+        computation grounds an answer."""
         self._assert_engine_grounded()
         return True
 
     def gens(self):
-        r"""Generators from the ephemeral Sage engine (Sage's generators V
+        r"""Generators from the ephemeral Sage orthogonal group (Sage's generators V
         satisfy V G V^T = G; the synthetic convention U^T G U = G is met by
-        U = V^T), on the engine-grounded domain."""
+        U = V^T), on the domain where Sage's computation applies."""
         self._assert_engine_grounded()
         return tuple(self.from_matrix(g) for g in self._delegated_generator_matrices())
 
@@ -124,7 +124,7 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
         from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 
         # Sign-normalize: Sage's orthogonal_group needs a definite lattice and
-        # O(L) = O(L(-1)), so the negative-definite case delegates the twist.
+        # O(L) = O(L(-1)), so the negative-definite case twists the Gram before calling Sage.
         sign = -1 if self._lattice.is_negative_definite() else 1
         return IntegralLattice(sign * matrix(ZZ, self._lattice.gram_matrix())).orthogonal_group()
 
@@ -138,8 +138,8 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
         )
 
     def __iter__(self):
-        r"""Element enumeration from the ephemeral engine, on the
-        engine-grounded domain."""
+        r"""Element enumeration from the ephemeral Sage orthogonal group, on the
+        domain where Sage's computation applies."""
         self._assert_engine_grounded()
         if self._lattice.rank() == 0:
             yield self.one()
@@ -148,12 +148,12 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
             yield self.from_matrix(matrix(ZZ, element.matrix()).transpose())
 
     def as_matrix_group(self):
-        r"""GAP-backed matrix-group seam (spec 3.5); implemented exactly where
-        the group is finite and generators are computed (the engine-grounded
-        domain)."""
+        r"""GAP-backed matrix group — the point where Sage's MatrixGroup is
+        called (spec 3.5); implemented exactly where the group is finite and
+        generators are computed (the domain where Sage's computation applies)."""
         self._assert_engine_grounded()
         assert self._lattice.rank() > 0, (
-            "the matrix-group substrate needs degree >= 1 (Sage MatrixGroup "
+            "Sage's MatrixGroup needs degree >= 1 (Sage MatrixGroup "
             "bound); the rank-0 O(L) is the trivial group — compose through "
             f"as_permutation_group instead; lattice={self._lattice}"
         )
@@ -162,7 +162,7 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
         return MatrixGroup([matrix(ZZ, generator.matrix()) for generator in self.gens()])
 
     def as_permutation_group(self):
-        r"""GAP-backed permutation seam (spec 3.5), on the engine-grounded domain."""
+        r"""GAP-backed permutation group (spec 3.5), on the domain where Sage's computation applies."""
         self._assert_engine_grounded()
         from sage.groups.perm_gps.permgroup import PermutationGroup
 
@@ -245,7 +245,7 @@ class SyntheticIsometrySubgroup(IsometrySubgroupCarrier):
     def discriminant_image(self):
         r"""The subgroup of the finite O(q_L) generated by the generators'
         actions (spec 3.3, the typed group object — the successor of the
-        deleted lattice-gens surfaces); defined when L is integral
+        deleted lattice-gens methods); defined when L is integral
         nondegenerate."""
         from .discriminant import SyntheticOrthogonalGroup
 
@@ -264,14 +264,14 @@ class SyntheticIsometrySubgroup(IsometrySubgroupCarrier):
         return MatrixGroup([g.matrix() for g in self._gens]).order()
 
     def as_matrix_group(self):
-        r"""GAP-backed matrix-group seam (spec 3.5); same finiteness condition
+        r"""GAP-backed matrix group (spec 3.5); same finiteness condition
         as ``order``/``__iter__`` (ambient O(L) finite)."""
         assert self._ambient.is_finite(), (
-            "subgroup seams are computed only when the ambient O(L) is finite "
+            "subgroup matrix and permutation groups are computed only when the ambient O(L) is finite "
             f"(closure computable); ambient={self._ambient}"
         )
         assert self.lattice().rank() > 0, (
-            "the matrix-group substrate needs degree >= 1 (Sage MatrixGroup "
+            "Sage's MatrixGroup needs degree >= 1 (Sage MatrixGroup "
             "bound); the rank-0 subgroup is trivial — compose through "
             f"as_permutation_group instead; lattice={self.lattice()}"
         )
@@ -282,9 +282,9 @@ class SyntheticIsometrySubgroup(IsometrySubgroupCarrier):
         return MatrixGroup([matrix(ZZ, generator.matrix()) for generator in self._gens])
 
     def as_permutation_group(self):
-        r"""GAP-backed permutation seam (spec 3.5), same finiteness condition."""
+        r"""GAP-backed permutation group (spec 3.5), same finiteness condition."""
         assert self._ambient.is_finite(), (
-            "subgroup seams are computed only when the ambient O(L) is finite "
+            "subgroup matrix and permutation groups are computed only when the ambient O(L) is finite "
             f"(closure computable); ambient={self._ambient}"
         )
         from sage.groups.perm_gps.permgroup import PermutationGroup
@@ -294,7 +294,7 @@ class SyntheticIsometrySubgroup(IsometrySubgroupCarrier):
         return self.as_matrix_group().as_permutation_group()
 
     def __iter__(self):
-        r"""Closure enumeration through the matrix-group engine; implemented
+        r"""Closure enumeration through the Sage matrix group; implemented
         under the same finiteness condition as ``order`` (spec 3.3)."""
         assert self._ambient.is_finite(), (
             "subgroup enumeration is computed only when the ambient O(L) is finite "

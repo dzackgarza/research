@@ -1,7 +1,7 @@
 r"""Thin public constructors for synthetic lattices (spec section 6).
 
 Every path routes through the section-1.4 category-namespace entry
-``Lattices(R).from_gram_matrix`` — the only door into the language.
+``Lattices(R).from_gram_matrix`` — the only entry point into the language.
 """
 
 from __future__ import annotations

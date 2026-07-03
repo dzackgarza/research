@@ -177,7 +177,7 @@ class LatticeMorphism(LatticeMorphismCarrier, Element):
         return self.domain() == self.codomain() and self.matrix().is_one()
 
     def order(self):
-        r"""Multiplicative order (delegated); ``+Infinity`` for infinite order."""
+        r"""Multiplicative order (computed by Sage); ``+Infinity`` for infinite order."""
         assert self.domain() == self.codomain(), (
             f"order needs an endomorphism; domain={self.domain()}, codomain={self.codomain()}"
         )

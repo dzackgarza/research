@@ -269,7 +269,7 @@ def test_odd_integral_discriminant_group_keeps_qq_mod_zz_form():
 def test_discriminant_group_is_typed_as_a_finite_abelian_group_not_a_zz_module():
     D = Lattice("A2", label="A2").discriminant_group()
 
-    # finite-abelian-group surface (order/exponent/is_cyclic/short_name/permutation_group),
+    # finite-abelian-group API (order/exponent/is_cyclic/short_name/permutation_group),
     # not a "module over ZZ".
     assert D.order() == 3
     assert D.exponent() == 3
@@ -614,7 +614,7 @@ def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indef
     assert not A2.Hom(A2_dual).from_matrix(A2.gram_matrix()).is_isometry()
     assert A2.Hom(A2).from_matrix(identity_matrix(ZZ, 2)).is_isometry()
 
-    # Outside the engine-grounded domain (definite integral ZZ), finiteness and
+    # Outside the domain Sage can compute (definite integral ZZ), finiteness and
     # generators gate by assertion — the withdrawn "indefinite => infinite"
     # claim is FALSE for U, whose integral isometry group is Klein-four.
     U = Lattice("U", label="U")
@@ -672,19 +672,19 @@ def test_placement_matrix_both_directions_over_the_spec_fixture_set():
     # Spec section 8: for each fixture, exactly the vocabulary of its
     # categories resolves (hasattr, both directions). Expected side:
     # constructor-proven category membership. Vocabulary side: the
-    # declaration layer's own per-node delta, projected mechanically —
+    # declaration layer's own per-subcategory delta, projected mechanically —
     # the same projection the category installs ride on.
     from sage_lattice_category_spike import domain_algebra as da
     from sage_lattice_category_spike.lattice_categories import U as U_constructor
 
-    def vocabulary(carrier):
-        return tuple(sorted(name for name in vars(carrier) if not name.startswith("_")))
+    def vocabulary(domain_class):
+        return tuple(sorted(name for name in vars(domain_class) if not name.startswith("_")))
 
     # Hyperbolic/RootGenerated are axioms OF a subcategory; the bare
     # C.Hyperbolic() is a silent no-op returning C (the trap the old
     # spelling of the U(2) constructor test hit), so every path is scoped.
     # Membership is evaluated over each fixture's OWN base ring.
-    bundles = (
+    refinements = (
         (lambda C: C.Nondegenerate(), da.NondegenerateLattice),
         (lambda C: C.Integral().Nondegenerate(), da.IntegralNondegenerateLattice),
         (lambda C: C.Definite(), da.DefiniteLattice),
@@ -704,10 +704,10 @@ def test_placement_matrix_both_directions_over_the_spec_fixture_set():
     )
     for fixture in fixtures:
         base_category = Lattices(fixture.base_ring())
-        for refine, carrier in bundles:
+        for refine, domain_class in refinements:
             category = refine(base_category)
             expected = fixture in category
-            for name in vocabulary(carrier):
+            for name in vocabulary(domain_class):
                 assert hasattr(fixture, name) == expected, (
                     f"placement violation: {name!r} on {fixture} "
                     f"(member of {category}: {expected}, resolves: {hasattr(fixture, name)})"
@@ -724,7 +724,7 @@ def test_placement_matrix_both_directions_over_the_spec_fixture_set():
 
 
 def test_named_constructors_route_through_the_category_entry_with_provenance():
-    # Spec 1.4/6: Lattices(R).from_gram_matrix is the only door; RootGenerated
+    # Spec 1.4/6: Lattices(R).from_gram_matrix is the only entry point; RootGenerated
     # is a provenance certificate carried by RootLattice, never Gram-detected.
     from sage_lattice_category_spike.lattice_categories import RootLattice, U
 
@@ -780,10 +780,10 @@ def test_isometry_group_object_algebra_and_negative_definite_delegation():
     assert s * s == O.one() and s ** -1 == s and s.inverse() == s
     assert not s.is_unipotent() and O.one().is_unipotent()
 
-    # O(L) = O(L(-1)): negative-definite delegation sign-twists internally.
+    # O(L) = O(L(-1)): the negative-definite case sign-twists internally.
     assert RootLattice("A", 2, negative=True).isometry_group().order() == 12
 
-    # outside the engine-grounded domain the finiteness predicate gates.
+    # outside the domain Sage can compute the finiteness predicate gates.
     with pytest.raises(AssertionError):
         Lattice(matrix(QQ, [[0, 0], [0, 0]])).isometry_group().is_finite()
     with pytest.raises(AssertionError):
@@ -819,7 +819,7 @@ def test_bilinear_forms_carry_the_induced_diagonal_quadratic_form():
     assert not B.is_isotropic_element(x)
     assert B.is_isotropic_element(B.zero())
 
-    # on the quadratic stratum, q refines the diagonal: q(x) == b(x, x) mod ZZ
+    # on the quadratic subcategory, q refines the diagonal: q(x) == b(x, x) mod ZZ
     D = TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 2]))
     z = D.gen(0)
     assert (D.q(z) - D.b(z, z)) in ZZ
@@ -827,7 +827,7 @@ def test_bilinear_forms_carry_the_induced_diagonal_quadratic_form():
 def test_rational_isometry_decides_by_square_class_via_the_oracle():
     # Rank-1 rational quadratic forms are isometric iff their discriminants
     # agree up to squares (Serre, A Course in Arithmetic, Ch. IV); the
-    # decision is delegated to Sage's rational-equivalence oracle.
+    # decision is computed by Sage's rational-equivalence test.
     half = Lattice(matrix(QQ, [[QQ(1) / 2]]), base_ring=QQ, label="half")
     two = Lattice(matrix(QQ, [[2]]), base_ring=QQ, label="two")
     three_half = Lattice(matrix(QQ, [[QQ(3) / 2]]), base_ring=QQ, label="3/2")
