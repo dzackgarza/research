@@ -44,6 +44,7 @@ replacements, where the target is not a specialized term, are marked "plain".)
 | **"Smith form of a module" / "Smith quotient" / "Smith-based `A/H`" / "Smith presentation / generators / coordinates"** | the **invariant factor decomposition** `M ≅ R/(d₁)⊕…⊕R/(dᵣ)⊕Rᶠ` and its generators/coordinates. *Smith normal form is the algorithm on a matrix that produces this — legitimate only when it names the operation on an actual matrix (`matrix.smith_form()`), never the module or its decomposition.* | `DF04` Ch. 12 |
 | **"FGP quotient / module / surface / morphism"** (leaks Sage's `FGP_Module` class) | a **finitely generated module over a PID** (here a finite abelian group) and its invariant-factor decomposition | `DF04` Ch. 12 |
 | **`normal_form()` / bare "normal form"** of a discriminant form | *Not well-defined as stated — name the object.* The literature objects are the **Jordan decomposition (Jordan splitting)** and the **genus symbol** (with per-prime **p-adic symbols**), the complete isometry invariant. Sage's `normal_form()` returns a canonical Gram representative following Miranda–Morrison; describe it as such, do not coin a name. Comparing them decides **isometry of finite quadratic forms**. | Jordan splitting: `Cas08` Ch. 8, `CS10` Ch. 15 · genus symbol: `CS10` Ch. 15, `Nik80` §1 · canonical rep: `MM09` |
+| **"fractional sublattice"** (a lattice from non-integral / rational generators) | *Non-mathematical as stated.* `L` is a ℤ-module with no ℚ-action, so `(1/2)e ∉ L` and rational generators span **no** ℤ-submodule of `L`. The object lives in the rational quadratic space **`L_ℚ := L ⊗_ℤ ℚ`**: name it a **ℚ-subspace of `L_ℚ`**, or (for overlattices / duals) a **ℤ-lattice in `L_ℚ`** commensurable with `L` — e.g. the dual `L* = {x ∈ L_ℚ : b(x, L) ⊆ ℤ}`. Always state the ambient `L_ℚ`; never call it a "sublattice of `L`". | `Nik80` §1 (`L* ⊂ L⊗ℚ`, overlattices); `DF04` Ch. 10–12 (extension of scalars `L⊗ℚ`) |
 
 ---
 
@@ -73,6 +74,27 @@ replacements, where the target is not a specialized term, are marked "plain".)
 | **"wrapper"** | a **promoted/renamed method** exposing a Sage operation | plain |
 | **"adapter"** | (SWE pattern) — name the **operation** it exposes | plain |
 | **"spike"** (as a noun for this code) | the **exploratory implementation** | plain |
+
+---
+
+## Tier C — typing & idiom discipline (raw numbers are constructor inputs, never objects)
+
+Raw numerical data — coordinate vectors and matrices — are **constructor inputs only**.
+They are not lattice elements or morphisms and must not propagate, cross object
+boundaries, or be compared as if typed. Letting raw numbers stand in for typed objects is
+what lets untyped data poison the DSL; the fix is to force everything through the
+element/morphism language so the code must reconcile with the mathematical definition.
+Idiom: inject named generators **once** — `U.<e, f> = …` — then work with `e + 2*f`
+(elements) and hom objects (morphisms), never `[1, 2]` or bare matrices.
+
+| Loose usage | Why it's wrong | Idiomatic replacement | Source |
+|---|---|---|---|
+| a lattice "contains vectors" / "`[1,2]` is an element of `L`" / lists of numbers as elements | A lattice element is a typed object of the ℤ-module `L`, not a coordinate tuple. `[1,2]` is coordinates relative to a chosen basis; the *same* tuple names *different* elements in *different* lattices. Footgun: with `L = U`, `Lp = U(2)`, "`[1,2] ∈ L` **and** `∈ Lp`" is a type error — equal coordinates, distinct objects and forms. | Construct once (`L.<e,f> = …`, or `L(coords)` at a boundary); then work symbolically: `e + 2*f`. A bare coordinate vector must never stand for, escape, or be compared as an element. (Cf. `x + y ∈ k[x,y]/(x²,y²)`, never `[1,1]`.) | `DF04` Ch. 12 (free-module element vs coordinates rel. a basis) |
+| a raw **matrix** used or compared **as** a morphism outside a constructor | A morphism is a typed arrow (a hom object) with a domain and codomain, not its matrix. A matrix is a representation relative to chosen bases; using it directly bypasses domain/codomain typing and the morphism machinery. | Construct via the hom constructor (`Hom(L, M)(…)` / the lattice-morphism constructor); then compose and apply as morphisms. A raw matrix outside a constructor is a red flag. | `Mac98` §I.1 (morphisms as arrows); `DF04` Ch. 11 (matrix of a map rel. bases) |
+
+**Rule:** raw integer vectors and matrices appear **only** as arguments inside
+constructors. Everywhere else the code speaks elements (`e + 2*f`) and morphisms — never
+raw coordinate vectors or bare matrices.
 
 ---
 
