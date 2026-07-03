@@ -172,6 +172,14 @@ def test_group_seams_compose_into_gap_backed_machinery():
     assert direct.invariants() == D.invariants()
     assert direct.gram_matrix_quadratic() == D.gram_matrix_quadratic()
 
+    # morphism totals (spec 3.5): the inclusion of an index-3 sublattice is
+    # injective, not surjective, with finite cokernel Z/3 (Smith oracle)
+    sub = A2.sublattice([[1, 0], [0, 3]], "index3")
+    inclusion = sub.Hom(A2).from_matrix([[1, 0], [0, 3]])
+    assert inclusion.is_injective() and not inclusion.is_surjective()
+    assert inclusion.cokernel().invariants() == (3,)
+    assert A2.isometry_group().one().is_surjective()
+
 
 def test_genus_totals_delegate_to_the_sage_genus_symbol():
     # Reference: spec section 5 totals; expected values from the Sage genus of

@@ -101,6 +101,18 @@ class LatticeMorphism(LatticeMorphismCarrier, Element):
         r"""[total] — full column rank (spec 3.5; free modules carry no torsion)."""
         return self.matrix().rank() == self.domain().rank()
 
+    def cokernel(self):
+        r"""``codomain / image`` (spec 3.5: [total] exactly when the cokernel
+        is finite, i.e. the image has full rank in the codomain; the
+        infinite-cokernel case is a gap-ledger contract)."""
+        image = self.image()
+        assert image.rank() == self.codomain().rank(), (
+            "cokernel is computed exactly when it is finite (full-rank image); "
+            f"image rank={image.rank()}, codomain rank={self.codomain().rank()}; "
+            "the infinite-cokernel case is gap-ledger work"
+        )
+        return self.codomain().finite_quotient(image)
+
     def induced_map_on_discriminant_group(self):
         r"""The per-morphism functor to O(q_L) (spec 3.3); defined for
         endomorphisms of an integral nondegenerate lattice — the lattice-side
