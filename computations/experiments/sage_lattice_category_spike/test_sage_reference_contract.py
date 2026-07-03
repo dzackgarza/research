@@ -152,6 +152,23 @@ def test_brown_invariant_and_genus_follow_torsion_quadratic_module_doctests():
     assert D.genus(L.signature_pair()) == L.genus()
 
 
+def test_genus_totals_delegate_to_the_sage_genus_symbol():
+    # Reference: spec section 5 totals; expected values from the Sage genus of
+    # the same lattice (ephemeral reference object built from the same data).
+    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+
+    A2 = lc.Lattice("A2")
+    genus = A2.genus()
+    oracle = IntegralLattice(matrix(ZZ, A2.gram_matrix())).genus()
+
+    assert genus.det() == oracle.determinant() == 3
+    assert genus.dim() == oracle.dimension() == 2
+    assert [str(symbol) for symbol in genus.local_symbols()] == [str(symbol) for symbol in oracle.local_symbols()]
+    assert str(genus.local_symbol(3)) == str(oracle.local_symbol(3))
+    assert genus == lc.Lattice("A2").genus()
+    assert genus != lc.Lattice("D4").genus()
+
+
 def test_finite_discriminant_form_orthogonal_group_matches_torsion_doctest():
     # Reference: TorsionQuadraticForm(matrix.identity(3)/2).orthogonal_group().order() == 6.
     D = lc.TorsionQuadraticForm(identity_matrix(QQ, 3) / 2)

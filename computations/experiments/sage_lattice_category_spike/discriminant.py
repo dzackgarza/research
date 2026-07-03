@@ -515,16 +515,43 @@ class SyntheticGenus(GenusCarrier):
     def brown_invariant(self):
         return self.discriminant_form().brown_invariant()
 
+    def _sage_engine(self):
+        r"""Ephemeral Sage genus symbol built from this genus's own data
+        (discriminant-form Gram + signature) through the torsion-module door."""
+        from sage.modules.torsion_quadratic_module import TorsionQuadraticForm
+
+        form = self.discriminant_form()
+        engine_form = TorsionQuadraticForm(form.gram_matrix_quadratic())
+        assert engine_form.cardinality() == form.cardinality(), (
+            "ephemeral Sage engine must carry the whole discriminant group to "
+            "present the genus; "
+            f"synthetic cardinality={form.cardinality()}, engine cardinality={engine_form.cardinality()}"
+        )
+        return engine_form.genus(self.signature_pair())
+
+    def det(self):
+        return ZZ(self._sage_engine().determinant())
+
+    def dim(self):
+        return ZZ(self._sage_engine().dimension())
+
+    def local_symbol(self, p):
+        r"""The p-adic symbol at ``p`` — a boundary-codec seam (spec 3.5): the
+        returned object is Sage's local genus symbol."""
+        return self._sage_engine().local_symbol(ZZ(p))
+
+    def local_symbols(self):
+        r"""All local symbols — the genus-machinery data seam (spec 3.5)."""
+        return tuple(self._sage_engine().local_symbols())
+
     def __eq__(self, other):
+        # spec section 5: genus equality IS local-symbol equality (delegated:
+        # Sage genus symbols compare by signature + local symbols)
         if not isinstance(other, SyntheticGenus):
             return False
         if self.signature_pair() != other.signature_pair() or self.is_even() != other.is_even():
             return False
-        left = self.discriminant_form()
-        right = other.discriminant_form()
-        if left.source_lattice().gram_matrix() == right.source_lattice().gram_matrix():
-            return True
-        return left.normal_form() == right.normal_form()
+        return self._sage_engine() == other._sage_engine()
 
     def __repr__(self):
         return (
