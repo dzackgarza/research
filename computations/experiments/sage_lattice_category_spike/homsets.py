@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from sage.categories.sets_cat import Sets
 from sage.matrix.constructor import matrix
-from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
 from .domain_algebra import LatticeMorphism as LatticeMorphismCarrier
 from .parents import SyntheticLattice
+from .sage_patches import multiplicative_order
 
 
 class LatticeHomset(Parent):
@@ -183,11 +183,7 @@ class LatticeMorphism(LatticeMorphismCarrier, Element):
         assert self.domain() == self.codomain(), (
             f"order needs an endomorphism; domain={self.domain()}, codomain={self.codomain()}"
         )
-        if self.is_identity():
-            # Sage's multiplicative_order IndexErrors on the identity matrix
-            # (upstream bug; gap-ledger row records it)
-            return ZZ.one()
-        return self.matrix().multiplicative_order()
+        return multiplicative_order(self.matrix())
 
     def is_nilpotent(self):
         assert self.domain() == self.codomain(), (
