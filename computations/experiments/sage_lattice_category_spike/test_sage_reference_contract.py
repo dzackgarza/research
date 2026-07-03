@@ -909,3 +909,47 @@ def test_free_module_index_and_saturation_doctest_rows():
     spike_span = Q3.span([[1, QQ(1) / 2, QQ(1) / 3], [-QQ(1) / 5, QQ(2) / 3, 3]], base_ring=ZZ)
     oracle_span = (QQ ** 3).span([[1, QQ(1) / 2, QQ(1) / 3], [-QQ(1) / 5, QQ(2) / 3, 3]], ZZ)
     assert spike_span.denominator() == oracle_span.gram_matrix().denominator()
+
+
+def test_integer_lattice_invariant_pins_and_free_module_intersection_rows():
+    # References: free_module_integer.py volume/discriminant/is_unimodular
+    # doctests (their gen_lattice fixture is crypto rank-10 — rerouted to a
+    # tiny fixture by oracle agreement per the small-lattices ruling) and
+    # free_module.py intersection doctests (pinned echelon bases rerouted to
+    # their intrinsic Gram/index content).
+    from sage.modules.free_module_integer import IntegerLattice
+
+    # IntegerLattice([[2,0],[0,3]]) is basis rows in the ambient dot product,
+    # i.e. Gram diag(4, 9)
+    small = lc.Lattice(matrix.diagonal(ZZ, [4, 9]), label="diag49")
+    oracle = IntegerLattice([[2, 0], [0, 3]])
+    assert small.volume() == oracle.volume() == 6
+    # naming-collision guard (ledger): Sage IntegerLattice.discriminant() is
+    # |det| = the spike's absolute_discriminant(); the spike's discriminant()
+    # is the signed Nikulin convention
+    assert small.absolute_discriminant() == oracle.discriminant() == 36
+    assert small.discriminant() == -36
+    assert lc.Lattice(identity_matrix(ZZ, 2)).is_unimodular()
+    assert not small.is_unimodular()
+
+    # intersection doctest rows: [3 3] -> Gram [18], index 1 in the smaller span
+    Z2 = lc.Lattice(identity_matrix(ZZ, 2), label="Z2")
+    meet = Z2.span([[1, 1]]).intersection(Z2.span([[3, 3]]))
+    assert_matrix_equal(meet.gram_matrix(), matrix(ZZ, 1, 1, [18]))
+    assert meet.index_in(Z2.span([[3, 3]])) == 1
+
+    # [2 2 2] -> Gram [12]
+    Z3 = lc.Lattice(identity_matrix(ZZ, 3), label="Z3")
+    meet3 = Z3.span([[1, 1, 1], [1, 2, 3]]).intersection(Z3.span([[2, 2, 2], [1, 0, 0]]))
+    assert_matrix_equal(meet3.gram_matrix(), matrix(ZZ, 1, 1, [12]))
+
+    # Sage's scale(c) scales the module (basis rows), not the form: the scaled
+    # spans reroute to fractional spans of the same rows; [1/3 2/3] -> Gram [5/9]
+    frac = Z2.span([[QQ(1) / 6, QQ(1) / 3]]).intersection(Z2.span([[QQ(1) / 15, QQ(2) / 15]]))
+    assert_matrix_equal(frac.gram_matrix(), matrix(QQ, 1, 1, [QQ(5) / 9]))
+
+    # mixed ZZ/QQ intersection is symmetric (issue-23703 row): [1/2 0 1/2] -> Gram [1/2]
+    W = Z3.span([[QQ(1) / 2, 0, QQ(1) / 2]])
+    K = Z3.span([[1, 0, 1], [0, 0, 1]], base_ring=QQ)
+    assert_matrix_equal(W.intersection(K).gram_matrix(), matrix(QQ, 1, 1, [QQ(1) / 2]))
+    assert_matrix_equal(K.intersection(W).gram_matrix(), matrix(QQ, 1, 1, [QQ(1) / 2]))
