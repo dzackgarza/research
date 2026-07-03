@@ -704,7 +704,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
             return True
         if kind == "bilinear":
             return self._bilinear_normal_presentation() == other._bilinear_normal_presentation()
-        return self.normal_form() == other.normal_form()
+        return self.miranda_morrison_normal_form() == other.miranda_morrison_normal_form()
 
     def _invariant_factors(self):
         r"""Canonical invariant factors of the underlying group, from Sage's
@@ -850,7 +850,11 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
         images = [self(list(engine(generator.lift()).vector())) for generator in oracle.gens()]
         return normal, SyntheticDiscriminantAction.from_images(self, images)
 
-    def normal_form(self, partial=False, return_isometry=False):
+    def miranda_morrison_normal_form(self, partial=False, return_isometry=False):
+        r"""The Miranda-Morrison normal form of the finite quadratic form, as the
+        owned ``(invariants, Gram)`` pair (MM09 IV Def. 2.2 for p odd; IV section 4
+        for 2-groups, whose Def. 4.1 "partial normal form" the ``partial`` flag names).
+        Comparing normal forms decides isometry of finite quadratic forms."""
         return self._delegated_normal_form(return_isometry)
 
     def brown_invariant(self):

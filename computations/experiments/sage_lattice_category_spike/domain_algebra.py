@@ -990,7 +990,7 @@ class QuadraticDiscriminantForm(BilinearDiscriminantForm):
     def brown_invariant(self) -> int:
         assert False, "declared contract; engine per the parity-plan triage"
 
-    def normal_form(self) -> tuple[tuple[int, ...], GramMatrix]:
+    def miranda_morrison_normal_form(self) -> tuple[tuple[int, ...], GramMatrix]:
         assert False, "declared contract; engine per the parity-plan triage"
 
     def is_genus(self, signature_pair: SignaturePair, even: bool = True) -> bool:

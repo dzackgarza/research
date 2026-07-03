@@ -122,7 +122,7 @@ def test_local_modification_uses_sage_gram_matrix_contract_not_discriminant_gens
     assert M.genus() == L.genus()
 
 
-def test_discriminant_normal_form_identifies_reference_isomorphic_forms():
+def test_discriminant_miranda_morrison_normal_form_identifies_reference_isomorphic_forms():
     # Reference: torsion_quadratic_module.normal_form issue-24864 doctest.
     L1 = lc.Lattice(matrix(ZZ, 3, 3, [-4, 0, 0, 0, 4, 0, 0, 0, -2]))
     L2 = lc.Lattice(matrix(ZZ, 3, 3, [-4, 0, 0, 0, -4, 0, 0, 0, 2]))
@@ -130,11 +130,11 @@ def test_discriminant_normal_form_identifies_reference_isomorphic_forms():
     AL1 = L1.discriminant_group()
     AL2 = L2.discriminant_group()
 
-    assert AL1.normal_form() == AL2.normal_form()
+    assert AL1.miranda_morrison_normal_form() == AL2.miranda_morrison_normal_form()
     assert AL1.is_isomorphic(AL2)
-    assert AL1.normal_form()[0] == (2, 4, 4)
+    assert AL1.miranda_morrison_normal_form()[0] == (2, 4, 4)
     assert_matrix_equal(
-        AL1.normal_form()[1],
+        AL1.miranda_morrison_normal_form()[1],
         matrix(QQ, 3, 3, [QQ(1) / 2, 0, 0, 0, QQ(1) / 4, 0, 0, 0, QQ(5) / 4]),
     )
 
@@ -512,13 +512,13 @@ def test_discriminant_quotient_is_not_orthogonal_quotient_alias():
     )
 
 
-def test_discriminant_normal_form_can_return_change_of_generators():
+def test_discriminant_miranda_morrison_normal_form_can_return_change_of_generators():
     # Reference: torsion quadratic module normal_form has an isometry/change-of-generators option.
     L = lc.Lattice(matrix(ZZ, 3, 3, [-4, 0, 0, 0, 4, 0, 0, 0, -2]))
     A = L.discriminant_group()
 
-    normal_form, change = A.normal_form(return_isometry=True)
-    assert normal_form == A.normal_form()
+    normal_form, change = A.miranda_morrison_normal_form(return_isometry=True)
+    assert normal_form == A.miranda_morrison_normal_form()
     assert change.is_automorphism()
 
 
@@ -532,7 +532,7 @@ def test_discriminant_group_isomorphism_kind_distinguishes_group_bilinear_and_qu
     assert not positive.is_isomorphic(negative, kind="quadratic")
     # witness production is gap-ledger entry 3; the delegated normal-form
     # change of generators is the sanctioned witness door
-    _normal, change = positive.normal_form(return_isometry=True)
+    _normal, change = positive.miranda_morrison_normal_form(return_isometry=True)
     assert change.is_automorphism()
 
 
@@ -583,22 +583,22 @@ def test_finite_quadratic_form_promotes_torsion_quadratic_module_operations():
     assert len(D.cosets(H)) == 3
     assert D.orthogonal(H).cardinality() == 3
     assert D.restricted_form(H) == matrix(QQ, 1, 1, [QQ(1) / 2])
-    assert D.normal_form() == D.normal_form(partial=True)
+    assert D.miranda_morrison_normal_form() == D.miranda_morrison_normal_form(partial=True)
     assert D.is_isomorphic(lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 3, QQ(1) / 2])))
     assert D.twist(2).gram_matrix_bilinear() == matrix(QQ, 1, 1, [QQ(2) / 3])
     with pytest.raises(AssertionError):
         D.discrete_exp((1,))
 
 
-def test_finite_quadratic_form_normal_form_uses_generator_changes_not_only_permutations():
+def test_finite_quadratic_form_miranda_morrison_normal_form_uses_generator_changes_not_only_permutations():
     # Reference: torsion quadratic module normal forms classify forms up to generator changes.
     D = lc.TorsionQuadraticForm(matrix(QQ, 1, 1, [QQ(1) / 5]))
     D_changed_generator = lc.TorsionQuadraticForm(matrix(QQ, 1, 1, [QQ(9) / 5]))
 
     assert D.is_isomorphic(D_changed_generator)
-    assert D.normal_form() == D_changed_generator.normal_form()
-    normal_form, change = D_changed_generator.normal_form(return_isometry=True)
-    assert normal_form == D.normal_form()
+    assert D.miranda_morrison_normal_form() == D_changed_generator.miranda_morrison_normal_form()
+    normal_form, change = D_changed_generator.miranda_morrison_normal_form(return_isometry=True)
+    assert normal_form == D.miranda_morrison_normal_form()
     assert change.is_automorphism()
 
 
@@ -758,7 +758,7 @@ def test_enriques_discriminant_form_reference_agrees_with_sage_at_research_scale
     # Oracle constants, from IntegralLattice(enriques_gram).discriminant_group():
     #   .invariants() == (2,)*10
     #   .brown_invariant() == 0
-    #   .normal_form() Gram == block_diagonal of five hyperbolic planes [[0,1/2],[1/2,0]]
+    #   .miranda_morrison_normal_form() Gram == block_diagonal of five hyperbolic planes [[0,1/2],[1/2,0]]
     #   .signature_pair of the lattice == (9, 1)
     expected_normal_form_gram = matrix(QQ, block_diagonal_matrix(
         [matrix(QQ, 2, 2, [0, QQ(1) / 2, QQ(1) / 2, 0])] * 5
@@ -766,15 +766,15 @@ def test_enriques_discriminant_form_reference_agrees_with_sage_at_research_scale
 
     assert D.invariants() == (2,) * 10
     assert D.brown_invariant() == 0
-    assert D.normal_form()[0] == (2,) * 10
-    assert_matrix_equal(D.normal_form()[1], expected_normal_form_gram)
+    assert D.miranda_morrison_normal_form()[0] == (2,) * 10
+    assert_matrix_equal(D.miranda_morrison_normal_form()[1], expected_normal_form_gram)
     assert L.signature_pair() == (9, 1)
     assert D.is_genus(L.signature_pair())
     assert D.genus(L.signature_pair()) == L.genus()
 
     # reference-agreement with the direct Sage computation on the same data
-    assert D.normal_form()[0] == tuple(oracle.invariants())
-    assert_matrix_equal(D.normal_form()[1], oracle.normal_form().gram_matrix_quadratic())
+    assert D.miranda_morrison_normal_form()[0] == tuple(oracle.invariants())
+    assert_matrix_equal(D.miranda_morrison_normal_form()[1], oracle.normal_form().gram_matrix_quadratic())
     assert D.brown_invariant() == oracle.brown_invariant()
 
 def test_torsion_quadratic_module_doctest_parity_ledger_rows():
@@ -851,8 +851,8 @@ def test_torsion_quadratic_module_doctest_parity_value_pins():
     q2 = lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 4, QQ(1) / 3]))
     oracle = SageTorsionForm(matrix.diagonal(QQ, [QQ(1) / 4, QQ(1) / 3])).normal_form()
     assert q2.cardinality() == 12
-    assert q2.normal_form()[0] == tuple(oracle.invariants()) == (12,)
-    assert_matrix_equal(q2.normal_form()[1], oracle.gram_matrix_quadratic())
+    assert q2.miranda_morrison_normal_form()[0] == tuple(oracle.invariants()) == (12,)
+    assert_matrix_equal(q2.miranda_morrison_normal_form()[1], oracle.gram_matrix_quadratic())
 
     # factory doctest: diag(3/4, 3/8, 3/8) -> invariants (4, 8, 8)
     q3 = lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(3) / 4, QQ(3) / 8, QQ(3) / 8]))

@@ -570,7 +570,7 @@ def test_nikulin_overlattice_and_metabolizer_identities_hold():
         # genus normal form (Nikulin-Conway-Sloane-Miranda-Morrison) agrees -- either
         # certifies the isometry; together they cross-check.
         assert overlattice_form.is_isomorphic(quotient_form, kind="quadratic")
-        assert overlattice_form.normal_form() == quotient_form.normal_form()
+        assert overlattice_form.miranda_morrison_normal_form() == quotient_form.miranda_morrison_normal_form()
         checked += 1
     assert checked > 0
 

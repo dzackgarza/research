@@ -49,7 +49,7 @@ def enriques_discriminant_pipeline() -> tuple[tuple[int, ...], GramMatrix]:
     disc = lattice.discriminant_group()
     invariants: tuple[int, ...] = disc.invariants()
     assert invariants == disc.invariants()
-    return disc.normal_form()
+    return disc.miranda_morrison_normal_form()
 
 
 def sterk_comparison(left: Lattice, right: Lattice) -> bool:
