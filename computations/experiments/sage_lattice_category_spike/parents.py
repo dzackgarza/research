@@ -182,18 +182,16 @@ class SyntheticLattice(LatticeCarrier, Parent):
         r"""The reflection ``sigma_v(x) = x - (2 b(x,v)/q(v)) v`` in ``End(L)``."""
         v = self(v) if not (isinstance(v, SyntheticLatticeElement) and v.parent() is self) else v
         norm = self.q(v)
-        if norm == 0:
-            raise ValueError(f"reflection requires an anisotropic vector; q(v)=0 for v={v}")
+        assert norm != 0, f"reflection requires an anisotropic vector; q(v)=0 for v={v}"
         v_column = matrix(QQ, self.rank(), 1, list(v.coefficient_vector()))
         gram_v = self.gram_matrix() * v_column
         images = identity_matrix(QQ, self.rank()) - (2 / norm) * v_column * gram_v.transpose()
         for j in range(self.rank()):
-            if not all(images[i, j] in self.base_ring() for i in range(self.rank())):
-                raise ValueError(
-                    "reflection does not map the lattice into itself over "
-                    f"{self.base_ring()}; failing basis vector index={j}, "
-                    f"image column={images.column(j)}, v={v}"
-                )
+            assert all(images[i, j] in self.base_ring() for i in range(self.rank())), (
+                "reflection does not map the lattice into itself over "
+                f"{self.base_ring()}; failing basis vector index={j}, "
+                f"image column={images.column(j)}, v={v}"
+            )
         return self.hom(images.change_ring(self.base_ring()))
 
     def gram_matrix(self):
@@ -354,8 +352,9 @@ class SyntheticLattice(LatticeCarrier, Parent):
             generator_module = (QQ**self.rank()).span(generator_matrix.rows(), self.base_ring())
             basis_matrix = matrix(QQ, generator_module.basis_matrix()) * self._inclusion_rows()
         lattice = self._from_ambient_basis(basis_matrix, self.base_ring(), label)
-        if require_integral and not lattice.is_integral():
-            raise ValueError(f"sublattice is not integral; gram={lattice.gram_matrix()}")
+        assert not require_integral or lattice.is_integral(), (
+            f"sublattice is not integral; gram={lattice.gram_matrix()}"
+        )
         return lattice
 
     def fractional_sublattice(self, generators, label="fractional_sublattice"):
@@ -369,10 +368,12 @@ class SyntheticLattice(LatticeCarrier, Parent):
         f"parent_rank={self._ambient_rank()}, generators={generator_matrix}")
         module = self._rationalization_module().span(generator_matrix.rows(), base_ring)
         lattice = self._from_module(module, label)
-        if check_integral is True and not lattice.is_integral():
-            raise ValueError(f"span is not integral; gram={lattice.gram_matrix()}")
-        if check_even is True and not lattice.is_even():
-            raise ValueError(f"span is not even; gram={lattice.gram_matrix()}")
+        assert check_integral is not True or lattice.is_integral(), (
+            f"span is not integral; gram={lattice.gram_matrix()}"
+        )
+        assert check_even is not True or lattice.is_even(), (
+            f"span is not even; gram={lattice.gram_matrix()}"
+        )
         return lattice
 
     def span_of_basis(self, basis, base_ring=None, label="span"):
@@ -391,8 +392,9 @@ class SyntheticLattice(LatticeCarrier, Parent):
         combined = self._inclusion_rows().stack(generator_matrix)
         lattice = self.span(combined, base_ring=self.base_ring(), label=label)
         assert self.is_submodule(lattice), ("overlattice must contain the source lattice")
-        if not (not check_integral or lattice.is_integral()):
-            raise ValueError(f"overlattice is not integral; gram={lattice.gram_matrix()}")
+        assert not check_integral or lattice.is_integral(), (
+            f"overlattice is not integral; gram={lattice.gram_matrix()}"
+        )
         return lattice
 
     def sum(self, other, label="sum"):
@@ -533,8 +535,9 @@ class SyntheticLattice(LatticeCarrier, Parent):
     def embedding(self, matrix_data, codomain=None, primitive=False):
         codomain = self if codomain is None else codomain
         morphism = self.hom(matrix_data, codomain=codomain)
-        if primitive and not codomain.is_primitive(morphism.image()):
-            raise ValueError("primitive embedding requires a primitive image sublattice")
+        assert not primitive or codomain.is_primitive(morphism.image()), (
+            "primitive embedding requires a primitive image sublattice"
+        )
         return morphism
 
     def similarity(self, matrix_data, codomain, scalar):
@@ -552,8 +555,9 @@ class SyntheticLattice(LatticeCarrier, Parent):
         for row in relation_lattice._inclusion_rows().rows():
             relation_coordinates = morphism.domain()._underlying_module().coordinate_vector(vector(QQ, row))
             image = morphism(morphism.domain()(relation_coordinates))
-            if vector(QQ, image.rational_coordinates()) not in relation_lattice._underlying_module():
-                raise ValueError("morphism does not preserve the quotient relation lattice")
+            assert vector(QQ, image.rational_coordinates()) in relation_lattice._underlying_module(), (
+                "morphism does not preserve the quotient relation lattice"
+            )
         return quotient.hom([quotient.projection(morphism(quotient.lift(generator))) for generator in quotient.gens()])
 
 
@@ -602,8 +606,7 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateCarrier, Synthe
 
     def maximal_overlattice(self, p=None, label="maximal_overlattice"):
         if p is None or ZZ(p) == 2:
-            if not (self.is_even()):
-                raise ValueError("this lattice must be even to admit an even overlattice")
+            assert self.is_even(), "this lattice must be even to admit an even overlattice"
         lattice = self
         while True:
             discriminant_group = lattice.discriminant_group(primary=0 if p is None else ZZ(p))
@@ -652,10 +655,8 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
         from sage.matrix.constructor import matrix
         from sage.rings.integer_ring import ZZ
 
-        if not (self.base_ring() is ZZ):
-            raise ValueError("LLL is implemented only for ZZ-lattices in this spike")
-        if not (self.is_integral()):
-            raise ValueError(f"LLL requires an integral Gram matrix; gram={self.gram_matrix()}")
+        assert self.base_ring() is ZZ, "LLL is implemented only for ZZ-lattices in this spike"
+        assert self.is_integral(), f"LLL requires an integral Gram matrix; gram={self.gram_matrix()}"
         change_of_basis = matrix(ZZ, self.gram_matrix()).LLL_gram()
         return self.sublattice(change_of_basis, label="LLL")
 
@@ -663,10 +664,8 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
         from sage.quadratic_forms.quadratic_form import QuadraticForm
         from sage.rings.integer_ring import ZZ
 
-        if not (self.base_ring() is ZZ):
-            raise ValueError("short vector enumeration is implemented only for ZZ-lattices in this spike")
-        if not (self.is_integral()):
-            raise ValueError(f"short vector enumeration requires an integral Gram matrix; gram={self.gram_matrix()}")
+        assert self.base_ring() is ZZ, "short vector enumeration is implemented only for ZZ-lattices in this spike"
+        assert self.is_integral(), f"short vector enumeration requires an integral Gram matrix; gram={self.gram_matrix()}"
         q = QuadraticForm(2 * self.gram_matrix().change_ring(ZZ))
         return [[self(vector) for vector in vectors] for vectors in q.short_vector_list_up_to_length(n, **kwargs)]
 
@@ -678,7 +677,7 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
             for vector in vectors:
                 if not vector == self.zero():
                     return vector
-        raise ArithmeticError("positive-definite short-vector enumeration returned no nonzero vector")
+        assert False, "positive-definite short-vector enumeration returned no nonzero vector"
 
     def minimum(self):
         # lambda_1^2: the least nonzero norm (Sage IntegralLattice.minimum).
@@ -705,8 +704,7 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
         from sage.matrix.constructor import matrix
         from sage.rings.integer_ring import ZZ
 
-        if not (self.base_ring() is ZZ and self.is_integral()):
-            raise ValueError("reduced basis requires an integral ZZ-lattice")
+        assert self.base_ring() is ZZ and self.is_integral(), "reduced basis requires an integral ZZ-lattice"
         transform = matrix(ZZ, self.gram_matrix()).LLL_gram()
         return tuple(self(row) for row in transform.rows())
 
@@ -721,10 +719,8 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
         from sage.matrix.constructor import matrix
         from sage.rings.integer_ring import ZZ
 
-        if not (self.base_ring() is ZZ):
-            raise ValueError("BKZ is implemented only for ZZ-lattices in this spike")
-        if not (self.is_integral()):
-            raise ValueError(f"BKZ requires an integral Gram matrix; gram={self.gram_matrix()}")
+        assert self.base_ring() is ZZ, "BKZ is implemented only for ZZ-lattices in this spike"
+        assert self.is_integral(), f"BKZ requires an integral Gram matrix; gram={self.gram_matrix()}"
         import fpylll
 
         gram = matrix(ZZ, self.gram_matrix())
@@ -815,7 +811,7 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
             if cell.is_compact():
                 return cell
             bound *= 2
-        raise ArithmeticError("failed to find a compact Voronoi cell from enumerated short vectors")
+        assert False, "failed to find a compact Voronoi cell from enumerated short vectors"
 
     def HKZ(self):
         # Hermite-Korkine-Zolotarev = full-block BKZ (Sage IntegerLattice.HKZ).
@@ -954,11 +950,10 @@ class _RootGeneratedMixin(RootGeneratedCarrier):
     carried from the named constructors, never detected from the Gram."""
 
     def cartan_type(self):
-        if self._cartan_type == "composite":
-            raise ValueError(
-                "a direct sum of root lattices has no single Cartan type; "
-                "use irreducible_root_components()"
-            )
+        assert self._cartan_type != "composite", (
+            "a direct sum of root lattices has no single Cartan type; "
+            "use irreducible_root_components()"
+        )
         return self._cartan_type
 
 

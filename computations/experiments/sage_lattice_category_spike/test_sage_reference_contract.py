@@ -272,7 +272,7 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
     assert A2.span([[1, 0]], base_ring=QQ).base_ring() is QQ
     assert A2.span_of_basis([[1, 0]], base_ring=QQ).base_ring() is QQ
     assert A2.span([[1, 0], [0, 1]], check_integral=True, check_even=True).is_even()
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         A2.span([[QQ(1) / 3, 0]], check_integral=True)
     assert A2.index_in_saturation() == A2.index_in(A2.saturation())
     nonprimitive_line = lc.Lattice("U").sublattice([[2, 0]], label="2e")
@@ -446,7 +446,7 @@ def test_lattice_morphism_lift_and_image_generators_are_bound():
     norm_two = lc.Lattice(matrix(ZZ, 1, 1, [2]))
     nonprimitive_embedding = norm_eight.embedding(matrix(ZZ, 1, 1, [2]), codomain=norm_two)
     assert_matrix_equal(nonprimitive_embedding.image().gram_matrix(), norm_eight.gram_matrix())
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         norm_eight.embedding(matrix(ZZ, 1, 1, [2]), codomain=norm_two, primitive=True)
     assert A2.discriminant_group().smith_form_gens() == A2.discriminant_group().gens()
 

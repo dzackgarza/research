@@ -356,7 +356,7 @@ def test_integral_lattice_inclusion_into_dual_is_a_synthetic_morphism():
     relation = U.sublattice([[2, 0], [0, 1]], label="2e_plus_f")
     quotient = U.finite_quotient(relation)
     swap = U.hom(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         U.induced_map_on_quotient(swap, quotient)
 
 
@@ -644,7 +644,7 @@ def test_reflection_is_an_order_two_isometry_defined_only_for_anisotropic_vector
     assert sigma(sigma(e0)) == e0 and sigma(sigma(e1)) == e1
 
     U = Lattice("U", label="U")
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         U.reflection(U.gen(0))  # isotropic: q(e) = 0
 
 def test_two_signal_placement_gates_dual_and_discriminant_vocabulary_by_stratum():
@@ -748,7 +748,7 @@ def test_named_constructors_route_through_the_category_entry_with_provenance():
 
     composite = A2_root.direct_sum(RootLattice("E8"))
     assert composite in Lattices(ZZ).Even().RootGenerated()
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         composite.cartan_type()  # no single type; irreducible_root_components vocabulary
     with pytest.raises(AssertionError):
         composite.irreducible_root_components()  # declared contract
