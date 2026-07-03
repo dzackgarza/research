@@ -668,6 +668,63 @@ def test_two_signal_placement_gates_dual_and_discriminant_vocabulary_by_stratum(
     with pytest.raises(AssertionError):
         A2.primitive_embedding_into_unimodular((8, 0))
 
+def test_placement_matrix_both_directions_over_the_spec_fixture_set():
+    # Spec section 8: for each fixture, exactly the vocabulary of its
+    # categories resolves (hasattr, both directions). Expected side:
+    # constructor-proven category membership. Vocabulary side: the
+    # declaration layer's own per-node delta, projected mechanically —
+    # the same projection the category installs ride on.
+    from sage_lattice_category_spike import domain_algebra as da
+    from sage_lattice_category_spike.categories import _CryptographicKernel
+    from sage_lattice_category_spike.lattice_categories import U as U_constructor
+
+    def vocabulary(carrier):
+        return tuple(sorted(name for name in vars(carrier) if not name.startswith("_")))
+
+    # Hyperbolic/RootGenerated/Cryptographic are axioms OF a subcategory; the
+    # bare C.Hyperbolic() is a silent no-op returning C (the trap the old
+    # spelling of the U(2) constructor test hit), so every path is scoped.
+    # Membership is evaluated over each fixture's OWN base ring.
+    bundles = (
+        (lambda C: C.Nondegenerate(), da.NondegenerateLattice),
+        (lambda C: C.Integral().Nondegenerate(), da.IntegralNondegenerateLattice),
+        (lambda C: C.Definite(), da.DefiniteLattice),
+        (lambda C: C.PositiveDefinite(), da.PositiveDefiniteLattice),
+        (lambda C: C.Indefinite(), da.IndefiniteLattice),
+        (lambda C: C.Indefinite().Hyperbolic(), da.HyperbolicLattice),
+        (lambda C: C.Even().RootGenerated(), da.RootGeneratedLattice),
+        (lambda C: C.PositiveDefinite().Cryptographic(), _CryptographicKernel),
+    )
+    fixtures = (
+        Lattice("A2", label="A2"),                                # PD even
+        Lattice("A2").twist(-1),                                  # ND even
+        Lattice("U", label="U"),                                  # hyperbolic
+        U_constructor(2),                                         # hyperbolic non-unimodular
+        Lattice(matrix(QQ, [[0, 0], [0, 2]]), label="deg"),       # degenerate
+        Lattice(matrix(QQ, [[QQ(1) / 2]]), base_ring=QQ, label="half"),  # fractional rank-1
+        Lattice(matrix(QQ, 0, 0), label="zero"),                  # rank 0
+    )
+    for fixture in fixtures:
+        base_category = Lattices(fixture.base_ring())
+        for refine, carrier in bundles:
+            category = refine(base_category)
+            expected = fixture in category
+            for name in vocabulary(carrier):
+                assert hasattr(fixture, name) == expected, (
+                    f"placement violation: {name!r} on {fixture} "
+                    f"(member of {category}: {expected}, resolves: {hasattr(fixture, name)})"
+                )
+
+    # spec section 8 signal test: the two signals are DISTINCT — on U the
+    # declared contract resolves and raises; on the degenerate fixture the
+    # nondegenerate vocabulary does not resolve at all.
+    U_fixture = fixtures[2]
+    assert hasattr(U_fixture, "weyl_group")
+    with pytest.raises(AssertionError):
+        U_fixture.weyl_group()
+    assert not hasattr(fixtures[4], "dual")
+
+
 def test_named_constructors_route_through_the_category_entry_with_provenance():
     # Spec 1.4/6: Lattices(R).from_gram_matrix is the only door; RootGenerated
     # is a provenance certificate carried by RootLattice, never Gram-detected.
@@ -675,7 +732,10 @@ def test_named_constructors_route_through_the_category_entry_with_provenance():
 
     U2 = U(2)
     assert U2.gram_matrix() == matrix(QQ, [[0, 2], [2, 0]])
-    assert U2 in Lattices(ZZ).Hyperbolic()
+    # scoped spelling: Hyperbolic is an axiom of Indefinite; the bare
+    # Lattices(ZZ).Hyperbolic() is a silent no-op returning the base category
+    assert U2 in Lattices(ZZ).Indefinite().Hyperbolic()
+    assert Lattice("A2") not in Lattices(ZZ).Indefinite().Hyperbolic()
 
     A2_root = RootLattice("A2")
     assert A2_root.gram_matrix() == Lattice("A2").gram_matrix()
