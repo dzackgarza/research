@@ -99,7 +99,7 @@ def test_discriminant_preimage_lattice_allows_nonintegral_source_preimages():
     assert full_preimage == L.dual()
     assert not full_preimage.is_integral()
     assert A.coset_representative(A.gen(0)) == A.lift(A.gen(0))
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         A.overlattice_from_isotropic_subgroup([A.gen(0)])
 
 
@@ -349,7 +349,7 @@ def test_discriminant_form_subgroup_source_and_action_api_is_bound():
     assert as_finite_quadratic_form(D.orthogonal_quotient(Z)).is_isomorphic(
         as_finite_quadratic_form(D), kind="quadratic"
     )
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         D.orthogonal_quotient(H)
 
     M = D.preimage_lattice(H, label="<1>")
@@ -675,9 +675,9 @@ def test_orthogonal_quotient_keeps_smith_invariants_not_only_cardinality():
         A.subquotient_form(H, A.orthogonal(H)).gram_matrix_quadratic(),
         quotient.gram_matrix_quadratic(),
     )
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         A.orthogonal_quotient(A.subgroup_generated_by([A.gen(0)]))
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         A.subquotient_form(H, A.subgroup_generated_by([]))
 
 
