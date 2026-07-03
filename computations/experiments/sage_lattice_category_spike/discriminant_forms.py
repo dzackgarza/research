@@ -412,6 +412,39 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
         return SyntheticDiscriminantAction.from_images(self, images)
 
 
+
+class DiscriminantCharacter:
+    r"""The character ``b(x, -) : A -> QQ/ZZ`` attached to an element of a
+    nondegenerate bilinear discriminant form."""
+
+    def __init__(self, form, element):
+        self._form = form
+        self._element = form(element)
+
+    def __call__(self, other):
+        return self._form.b(self._element, other)
+
+    def __repr__(self):
+        return f"Character b({self._element}, -) on {self._form}"
+
+
+class PontryaginDualIdentification:
+    r"""The canonical identification ``A ~ Hom(A, QQ/ZZ)`` of a nondegenerate
+    bilinear discriminant form (typed, dict-free)."""
+
+    def __init__(self, form):
+        self._form = form
+
+    def domain(self):
+        return self._form
+
+    def __getitem__(self, element):
+        return DiscriminantCharacter(self._form, element)
+
+    def __repr__(self):
+        return f"Pontryagin identification of {self._form} with its character group"
+
+
 class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, SyntheticDiscriminantForm):
     r"""Finite bilinear discriminant form presented by a generator Gram matrix.
 
@@ -594,19 +627,13 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
         assert phi.discriminant_group() is self, ("pullback requires an endomorphism of this finite quadratic form")
         return _form_matrix_on_images(self, [phi(generator) for generator in self.gens()])
 
-    def pairing_character(self, element):
-        element = self(element)
-        return lambda other: self.b(element, other)
-
-    def pairing_isomorphism_to_dual(self):
-        if not (self.is_nondegenerate()):
-            raise ValueError("pairing identification with the dual requires a nondegenerate bilinear form")
-        return {element: self.pairing_character(element) for element in self.elements()}
-
     def pontryagin_dual(self):
+        r"""The canonical identification ``A ~ Hom(A, QQ/ZZ)`` as a typed
+        object (spec: not a dict of lambdas): index by an element to get its
+        character."""
         if not self.is_nondegenerate():
             raise ValueError("Pontryagin dual identification requires a nondegenerate form; found degenerate")
-        return self.pairing_isomorphism_to_dual()
+        return PontryaginDualIdentification(self)
 
     def is_isomorphic(self, other, kind="quadratic"):
         assert kind in ("group", "bilinear", "quadratic"), (f"isomorphism kind must be group, bilinear, or quadratic; found={kind}")

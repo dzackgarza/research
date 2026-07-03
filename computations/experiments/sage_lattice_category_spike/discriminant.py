@@ -11,11 +11,6 @@ from sage.rings.rational_field import QQ
 from sage.structure.element import Element
 
 
-def _finite_quotient_form(ambient_group, relation_subgroup):
-    # lazy import: discriminant_forms imports this module at load time
-    from .discriminant_forms import SyntheticDiscriminantForm
-    return SyntheticDiscriminantForm(ambient_group, relation_subgroup)
-
 def _lattice_key(lattice):
     return (
         repr(lattice.base_ring()),
@@ -245,7 +240,11 @@ class SyntheticDiscriminantSubgroup:
     r"""Finite subgroup of a synthetic discriminant group."""
 
     def __init__(self, ambient, gens):
-        assert all(hasattr(ambient, name) for name in ("ngens", "order", "zero", "elements")), (f"expected finite additive parent; found={type(ambient)}")
+        from .discriminant_forms import SyntheticDiscriminantForm
+
+        assert isinstance(ambient, SyntheticDiscriminantForm), (
+            f"discriminant subgroups live in a consolidated finite quotient parent; found={type(ambient)}"
+        )
         self._ambient = ambient
         self._gens = tuple(self._coerce(gen) for gen in gens)
         self._elements = tuple(sorted(self._closure(), key=self._element_key))
@@ -310,7 +309,11 @@ class SyntheticDiscriminantAction:
     r"""Endomorphism of a synthetic discriminant group in invariant coordinates."""
 
     def __init__(self, discriminant_group, matrix_data):
-        assert hasattr(discriminant_group, "ngens") and hasattr(discriminant_group, "invariants"), (f"expected finite discriminant parent; found={type(discriminant_group)}")
+        from .discriminant_forms import SyntheticDiscriminantForm
+
+        assert isinstance(discriminant_group, SyntheticDiscriminantForm), (
+            f"discriminant actions act on a consolidated finite quotient parent; found={type(discriminant_group)}"
+        )
         matrix_data = matrix(ZZ, matrix_data)
         assert matrix_data.nrows() == discriminant_group.ngens(), ("action matrix rows must match invariant count; "
         f"rows={matrix_data.nrows()}, invariants={discriminant_group.invariants()}")

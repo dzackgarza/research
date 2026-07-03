@@ -516,8 +516,6 @@ def test_finite_quadratic_form_drops_trivial_presentation_factors():
     dual_pairing = D.pontryagin_dual()
     assert all(dual_pairing[x](y) == D.b(x, y) for x in D.elements() for y in D.elements())
     assert D.pontryagin_dual()[D.gen(0)](D.gen(0)) == QQ(1) / 2
-    assert D.pairing_character(D.gen(0))(D.gen(0)) == QQ(1) / 2
-    assert D.pairing_isomorphism_to_dual()[D.gen(0)](D.gen(0)) == QQ(1) / 2
 
 
 def test_finite_quadratic_form_promotes_torsion_quadratic_module_operations():
