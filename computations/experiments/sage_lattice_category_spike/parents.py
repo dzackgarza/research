@@ -650,10 +650,13 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateCarrier, Synthe
 
 
 class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
-    r"""Spec 2.5/2.6 enumeration-kernel implementations, shared by the two
+    r"""Spec 2.5 enumeration-kernel implementations, shared by the two
     positive-definite strata. Definite-level names the spec leaves [contract]
-    (vectors_of_square, roots) stay carrier stubs (gap-ledger item 4); the
-    crypto suite moves to the Cryptographic stratum at T6."""
+    (vectors_of_square, roots) stay carrier stubs (gap-ledger item 4). The
+    spec-2.6 crypto suite lives on CryptographicLattices.ParentMethods
+    (categories.py) so it is reachable ONLY after ``cryptographic()``
+    refines the category — a method here would be visible on every
+    positive-definite lattice."""
 
     def LLL(self):
         from sage.matrix.constructor import matrix
@@ -665,32 +668,6 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
             raise ValueError(f"LLL requires an integral Gram matrix; gram={self.gram_matrix()}")
         change_of_basis = matrix(ZZ, self.gram_matrix()).LLL_gram()
         return self.sublattice(change_of_basis, label="LLL")
-
-    def BKZ(self, block_size=10, **kwargs):
-        from sage.matrix.constructor import matrix
-        from sage.rings.integer_ring import ZZ
-
-        if not (self.base_ring() is ZZ):
-            raise ValueError("BKZ is implemented only for ZZ-lattices in this spike")
-        if not (self.is_integral()):
-            raise ValueError(f"BKZ requires an integral Gram matrix; gram={self.gram_matrix()}")
-        import fpylll
-
-        gram = matrix(ZZ, self.gram_matrix())
-        gram_matrix = fpylll.IntegerMatrix.from_matrix(gram)
-        transform = fpylll.IntegerMatrix.identity(gram.nrows())
-        gso = fpylll.GSO.Mat(gram_matrix, U=transform, gram=True)
-        lll = fpylll.LLL.Reduction(gso)
-        params = fpylll.BKZ.Param(block_size=block_size, **kwargs)
-        reduction = fpylll.BKZ.Reduction(gso, lll, params)
-        reduction()
-        change_of_basis = matrix(
-            ZZ,
-            transform.nrows,
-            transform.ncols,
-            [transform[i, j] for i in range(transform.nrows) for j in range(transform.ncols)],
-        )
-        return self.sublattice(change_of_basis, label="BKZ")
 
     def short_vectors(self, n, **kwargs):
         from sage.quadratic_forms.quadratic_form import QuadraticForm
@@ -713,82 +690,6 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
                     return vector
         raise ArithmeticError("positive-definite short-vector enumeration returned no nonzero vector")
 
-    def closest_vector(self, target):
-        from itertools import product
-
-        from sage.functions.other import ceil, floor, sqrt
-        from sage.matrix.constructor import matrix
-        from sage.modules.free_module_element import vector
-        from sage.rings.integer_ring import ZZ
-        from sage.rings.rational_field import QQ
-
-        target = vector(QQ, target.coefficient_vector() if hasattr(target, "coefficient_vector") and target.parent() is self else target)
-        assert len(target) == self.rank(), ("closest vector target must have one coordinate per lattice basis vector; "
-        f"rank={self.rank()}, target={target}")
-        if self.rank() == 0:
-            return self.zero()
-        gram = matrix(QQ, self.gram_matrix())
-
-        def distance_squared(coordinates):
-            delta = matrix(QQ, 1, self.rank(), [QQ(coordinates[i]) - target[i] for i in range(self.rank())])
-            return (delta * gram * delta.transpose())[0, 0]
-
-        center = [ZZ(round(target[i])) for i in range(self.rank())]
-        best_coordinates = tuple(center)
-        best_distance = distance_squared(best_coordinates)
-        inverse_gram = gram.inverse()
-        ranges = []
-        for i in range(self.rank()):
-            radius = sqrt(best_distance * inverse_gram[i, i])
-            lower = ZZ(floor(target[i] - radius)) - 1
-            upper = ZZ(ceil(target[i] + radius)) + 1
-            ranges.append(range(lower, upper + 1))
-        for coordinates in product(*ranges):
-            distance = distance_squared(coordinates)
-            if distance < best_distance or (distance == best_distance and tuple(coordinates) < best_coordinates):
-                best_distance = distance
-                best_coordinates = tuple(ZZ(coordinate) for coordinate in coordinates)
-        return self(best_coordinates)
-
-    def voronoi_cell(self, radius=None):
-        from sage.geometry.polyhedron.constructor import Polyhedron
-        from sage.matrix.constructor import matrix
-        from sage.rings.integer_ring import ZZ
-        from sage.rings.rational_field import QQ
-
-        if self.rank() == 0:
-            return Polyhedron(vertices=[[]], base_ring=QQ)
-        gram = matrix(QQ, self.gram_matrix())
-
-        def cell_from_bound(bound):
-            inequalities = []
-            for vectors in self.short_vectors(bound):
-                for lattice_vector in vectors:
-                    if lattice_vector == self.zero():
-                        continue
-                    coordinates = list(lattice_vector.coefficient_vector())
-                    column = matrix(QQ, self.rank(), 1, coordinates)
-                    gram_vector = gram * column
-                    inequalities.append(
-                        [QQ(lattice_vector.q()) / 2]
-                        + [-gram_vector[i, 0] for i in range(self.rank())]
-                    )
-            return Polyhedron(ieqs=inequalities, base_ring=QQ)
-
-        if radius is not None:
-            return cell_from_bound(ZZ(radius))
-        bound = ZZ(max(self.gen(i).q() for i in range(self.rank())) + 1)
-        for _ in range(8):
-            cell = cell_from_bound(bound)
-            if cell.is_compact():
-                return cell
-            bound *= 2
-        raise ArithmeticError("failed to find a compact Voronoi cell from enumerated short vectors")
-
-    def HKZ(self):
-        # Hermite-Korkine-Zolotarev = full-block BKZ (Sage IntegerLattice.HKZ).
-        return self.BKZ(block_size=self.rank())
-
     def minimum(self):
         # lambda_1^2: the least nonzero norm (Sage IntegralLattice.minimum).
         if self.rank() == 0:
@@ -808,25 +709,6 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
         # Covolume sqrt(det G) (Sage IntegerLattice.volume).
         return self.gram_matrix().determinant().sqrt()
 
-    def gaussian_heuristic(self):
-        # Expected shortest length det^(1/2n) * sqrt(n / (2 pi e)) (Sage IntegerLattice.gaussian_heuristic).
-        from sage.symbolic.constants import e, pi
-        from sage.misc.functional import sqrt
-
-        n = self.rank()
-        return self.gram_matrix().determinant() ** (1 / (2 * n)) * sqrt(n / (2 * pi * e))
-
-    def hadamard_ratio(self):
-        # Orthogonality defect of the current basis: (sqrt(det) / prod ||b_i||)^(1/n)
-        # (Sage IntegerLattice.hadamard_ratio, on the lattice's own basis).
-        from sage.misc.functional import sqrt
-
-        n = self.rank()
-        product_of_norms = 1
-        for i in range(n):
-            product_of_norms = product_of_norms * sqrt(self.gram_matrix()[i, i])
-        return (self.gram_matrix().determinant().sqrt() / product_of_norms) ** (1 / n)
-
     def reduced_basis(self):
         # The LLL-reduced generating set, as lattice elements (rows of the
         # Gram LLL change-of-basis, expressed in the lattice's own coordinates).
@@ -838,100 +720,12 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
         transform = matrix(ZZ, self.gram_matrix()).LLL_gram()
         return tuple(self(row) for row in transform.rows())
 
-    def approximate_closest_vector(self, target):
-        # Babai nearest-plane rounding in the LLL-reduced basis (coordinate space).
-        from sage.matrix.constructor import matrix
-        from sage.modules.free_module_element import vector
-        from sage.rings.integer_ring import ZZ
-        from sage.rings.rational_field import QQ
-
-        target = vector(QQ, target.coefficient_vector() if hasattr(target, "coefficient_vector") and target.parent() is self else target)
-        assert len(target) == self.rank(), ("approximate closest vector target must have one coordinate per basis vector; "
-        f"rank={self.rank()}, target={target}")
-        if self.rank() == 0:
-            return self.zero()
-        transform = matrix(ZZ, self.gram_matrix()).LLL_gram()
-        reduced_coordinates = target * transform.inverse()
-        rounded = vector(ZZ, [ZZ(coordinate.round()) for coordinate in reduced_coordinates])
-        return self(rounded * transform)
-
-    # babai is Sage's alias for approximate_closest_vector
-    babai = approximate_closest_vector
-
-    def voronoi_relevant_vectors(self):
-        # The lattice vectors whose bisector hyperplane is a facet of the Voronoi
-        # cell (Sage IntegerLattice.voronoi_relevant_vectors). By Voronoi's
-        # theorem, v is relevant iff +-v are the UNIQUE shortest vectors of the
-        # coset v + 2L -- a coset test that avoids Polyhedron facet rescaling.
-        from sage.rings.integer_ring import ZZ
-
-        if self.rank() == 0:
-            return ()
-        bound = ZZ(max(self.gen(i).q() for i in range(self.rank())) + 1)
-        for _ in range(8):
-            if self.voronoi_cell(radius=bound).is_compact():
-                break
-            bound *= 2
-        candidates = [
-            lattice_vector
-            for vectors in self.short_vectors(2 * bound)
-            for lattice_vector in vectors
-            if not lattice_vector == self.zero()
-        ]
-        relevant = []
-        for v in candidates:
-            v_coordinates = v.coefficient_vector()
-            v_norm = v.q()
-            if all(
-                v == u
-                or v == -u
-                or not all((v_coordinates[i] - u.coefficient_vector()[i]) % 2 == 0 for i in range(self.rank()))
-                or u.q() > v_norm
-                for u in candidates
-            ):
-                relevant.append(v)
-        return tuple(relevant)
-
     def enumerate_short_vectors(self, bound):
         # [NEW] flat enumeration of nonzero lattice vectors of norm <= bound.
         for vectors in self.short_vectors(bound + 1):
             for lattice_vector in vectors:
                 if not lattice_vector == self.zero():
                     yield lattice_vector
-
-    def enumerate_close_vectors(self, target, radius):
-        # [NEW] lattice vectors within squared distance <= radius of the target.
-        from itertools import product
-
-        from sage.functions.other import ceil, floor, sqrt
-        from sage.matrix.constructor import matrix
-        from sage.modules.free_module_element import vector
-        from sage.rings.integer_ring import ZZ
-        from sage.rings.rational_field import QQ
-
-        target = vector(QQ, target.coefficient_vector() if hasattr(target, "coefficient_vector") and target.parent() is self else target)
-        assert len(target) == self.rank(), ("close vector target must have one coordinate per basis vector; "
-        f"rank={self.rank()}, target={target}")
-        gram = matrix(QQ, self.gram_matrix())
-        inverse_gram = gram.inverse()
-        ranges = []
-        for i in range(self.rank()):
-            spread = sqrt(QQ(radius) * inverse_gram[i, i])
-            ranges.append(range(ZZ(floor(target[i] - spread)) - 1, ZZ(ceil(target[i] + spread)) + 2))
-        close = []
-        for coordinates in product(*ranges):
-            delta = matrix(QQ, 1, self.rank(), [QQ(coordinates[i]) - target[i] for i in range(self.rank())])
-            if (delta * gram * delta.transpose())[0, 0] <= radius:
-                close.append(self(coordinates))
-        return close
-
-    def update_reduced_basis(self, w):
-        # Sage mutates internal reduced-basis state and returns None; a based
-        # lattice is an immutable (R, G) value, so this returns the lattice
-        # obtained by injecting w and LLL-reducing (the functional analog).
-        coordinates = list(w.coefficient_vector() if hasattr(w, "coefficient_vector") and w.parent() is self else w)
-        injected = self.overlattice([coordinates], label="update_reduced_basis")
-        return injected.LLL() if injected.is_positive_definite() else injected
 
     def cryptographic(self):
         self._refine_category_(self.category().Cryptographic())

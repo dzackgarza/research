@@ -73,7 +73,10 @@ def test_positive_definite_algorithms_are_axiom_gated():
     assert reduced.discriminant() == A2.discriminant()
     G = matrix(ZZ, 3, 3, [4, 1, 1, 1, 3, 1, 1, 1, 2])
     G_lattice = Lattice(G, label="G")
-    bkz_lattice = G_lattice.BKZ(block_size=2)
+    # crypto suite is category-installed: absent until cryptographic() refines
+    for name in ("BKZ", "closest_vector", "voronoi_cell"):
+        assert not hasattr(G_lattice, name)
+    bkz_lattice = G_lattice.cryptographic().BKZ(block_size=2)
     assert_matrix_equal(bkz_lattice.gram_matrix(), matrix(ZZ, 3, 3, [2, 1, 1, 1, 3, 1, 1, 1, 4]))
     assert bkz_lattice.determinant() == G_lattice.determinant()
     assert bkz_lattice.discriminant() == G_lattice.discriminant()
@@ -110,7 +113,7 @@ def test_positive_definite_algorithms_are_axiom_gated():
             tuple(vector.coefficient_vector()),
         ),
     )
-    assert A2.closest_vector(target) == brute_force == A2([1, 1])
+    assert A2.cryptographic().closest_vector(target) == brute_force == A2([1, 1])
     expected_ieqs = []
     for vectors in A2.short_vectors(3):
         for lattice_vector in vectors:
@@ -462,6 +465,16 @@ def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
     G = B * B.transpose()
     L = Lattice(G, label="pd3")
     reference = IntegerLattice(B)  # same lattice, realized with the standard inner product
+
+    # the crypto suite is category-installed: absent on the plain
+    # positive-definite lattice until cryptographic() refines it in place
+    for name in (
+        "HKZ", "BKZ", "gaussian_heuristic", "hadamard_ratio", "closest_vector",
+        "approximate_closest_vector", "babai", "voronoi_cell",
+        "voronoi_relevant_vectors", "enumerate_close_vectors", "update_reduced_basis",
+    ):
+        assert not hasattr(L, name)
+    L.cryptographic()
 
     # scalar invariants reference-agree with Sage
     assert L.volume() == reference.volume()
