@@ -685,3 +685,44 @@ def test_odd_discriminant_form_remains_usable_while_odd_genus_is_unsupported():
         D.is_genus((1, 0), even=False)
     with pytest.raises(AssertionError):
         D.genus((1, 0), even=False)
+
+
+def test_enriques_discriminant_form_reference_agrees_with_sage_at_research_scale():
+    # Scale honesty: the Enriques lattice U(2) + E8(2) -- Gram = block_diagonal of
+    # 2*U and 2*E8, i.e. every entry of U + E8 doubled -- has discriminant form
+    # (Z/2)^10. The synthetic pipeline (lattice -> sourced discriminant form ->
+    # delegated engine) must reference-agree with the direct Sage torsion module on
+    # the same data. Sage's own O(q) of (Z/2)^10 does not complete, so parity is
+    # asserted on the invariants Sage does complete: normal form, Brown, genus.
+    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+    from sage.matrix.special import block_diagonal_matrix
+
+    enriques_gram = matrix(ZZ, block_diagonal_matrix(
+        2 * IntegralLattice("U").gram_matrix(),
+        2 * IntegralLattice("E8").gram_matrix(),
+    ))
+    L = lc.Lattice(enriques_gram)
+    D = L.discriminant_group()
+    oracle = IntegralLattice(enriques_gram).discriminant_group()
+
+    # Oracle constants, from IntegralLattice(enriques_gram).discriminant_group():
+    #   .invariants() == (2,)*10
+    #   .brown_invariant() == 0
+    #   .normal_form() Gram == block_diagonal of five hyperbolic planes [[0,1/2],[1/2,0]]
+    #   .signature_pair of the lattice == (9, 1)
+    expected_normal_form_gram = matrix(QQ, block_diagonal_matrix(
+        [matrix(QQ, 2, 2, [0, QQ(1) / 2, QQ(1) / 2, 0])] * 5
+    ))
+
+    assert D.invariants() == (2,) * 10
+    assert D.brown_invariant() == 0
+    assert D.normal_form()[0] == (2,) * 10
+    assert_matrix_equal(D.normal_form()[1], expected_normal_form_gram)
+    assert L.signature_pair() == (9, 1)
+    assert D.is_genus(L.signature_pair())
+    assert D.genus(L.signature_pair()) == L.genus()
+
+    # reference-agreement with the direct Sage computation on the same data
+    assert D.normal_form()[0] == tuple(oracle.invariants())
+    assert_matrix_equal(D.normal_form()[1], oracle.normal_form().gram_matrix_quadratic())
+    assert D.brown_invariant() == oracle.brown_invariant()

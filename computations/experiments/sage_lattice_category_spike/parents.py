@@ -496,20 +496,22 @@ class SyntheticLattice(LatticeCarrier, Parent):
         assert isinstance(other, SyntheticLattice), (f"expected SyntheticLattice; found={type(other)}")
         if self.rank() != other.rank() or self.signature_pair() != other.signature_pair():
             return False
-        assert self.base_ring() is ZZ and other.base_ring() is ZZ and self.is_integral() and other.is_integral(), (
-            "the is_isometric engine is grounded only for integral ZZ-lattices; "
-            f"left_base={self.base_ring()}, right_base={other.base_ring()}, "
-            f"left_gram={self.gram_matrix()}, right_gram={other.gram_matrix()}"
-        )
+        from sage.quadratic_forms.quadratic_form import QuadraticForm
+
+        # QuadraticForm(matrix) reads the matrix as the Hessian (2 x Gram).
+        integral = self.base_ring() is ZZ and other.base_ring() is ZZ and self.is_integral() and other.is_integral()
+        if not integral:
+            # Rational lattices: the grounded relation is rational equivalence of
+            # quadratic forms over QQ (the 2x Hessian scaling is applied to both).
+            return QuadraticForm(matrix(QQ, 2 * self.gram_matrix())).is_rationally_isometric(
+                QuadraticForm(matrix(QQ, 2 * other.gram_matrix()))
+            )
         assert self.is_definite() and other.is_definite(), (
             "the is_isometric engine is grounded only for definite lattices "
             "(indefinite decision is gap-ledger item 1); "
             f"left_signature={self.signature_pair()}, right_signature={other.signature_pair()}"
         )
-        from sage.quadratic_forms.quadratic_form import QuadraticForm
-
-        # QuadraticForm(matrix) reads the matrix as the Hessian (2 x Gram); sign-normalize
-        # to positive definite so is_globally_equivalent_to applies.
+        # sign-normalize to positive definite so is_globally_equivalent_to applies.
         sign = 1 if self.is_positive_definite() else -1
         return QuadraticForm(2 * sign * matrix(ZZ, self.gram_matrix())).is_globally_equivalent_to(
             QuadraticForm(2 * sign * matrix(ZZ, other.gram_matrix()))

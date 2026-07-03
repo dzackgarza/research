@@ -11,13 +11,12 @@ hooks; everything else is shared here. The lattice-quotient case is the
 
 from __future__ import annotations
 
-from itertools import permutations, product
+from itertools import product
 
 from sage.arith.functions import lcm
 from sage.matrix.constructor import identity_matrix, matrix
 from sage.misc.cachefunc import cached_method
 from sage.modules.free_module_element import vector
-from sage.rings.complex_mpfr import ComplexField
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.parent import Parent
@@ -677,17 +676,32 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
     def orthogonal_group(self, gens=None, check=False, kind="quadratic"):
         assert kind in ("quadratic", "bilinear"), (f"orthogonal group kind must be quadratic or bilinear; found={kind}")
         if gens is None:
-            actions = []
-            candidates = tuple(self.elements())
-            for images in product(candidates, repeat=self.ngens()):
-                action = SyntheticDiscriminantAction.from_images(self, images)
-                if action.is_automorphism() and action.preserves_form(kind=kind):
-                    actions.append(action)
-            return SyntheticOrthogonalGroup(self, actions)
+            return self._delegated_orthogonal_group(kind)
         actions = tuple(SyntheticDiscriminantAction(self, matrix(ZZ, gen)) for gen in gens)
         if check:
             for action in actions:
                 assert action.preserves_form(kind=kind), (f"finite quadratic form action does not preserve the form; matrix={action.matrix()}")
+        return SyntheticOrthogonalGroup(self, actions, close=True)
+
+    def _delegated_orthogonal_group(self, kind):
+        r"""O(q) (or the larger O(b)) from an ephemeral Sage torsion quadratic module
+        built from this form's own Gram, translated back onto the owned generators.
+        The engine's Smith presentation reproduces those generators, so an oracle
+        action matrix (rows = images) becomes an owned action by transposition."""
+        engine = self._sage_engine()
+        assert tuple(engine.invariants()) == self.invariants() and engine.gram_matrix_quadratic() == self.gram_matrix_quadratic(), (
+            "ephemeral Sage engine must reproduce the synthetic Smith presentation to "
+            "translate orthogonal-group actions onto the owned generators; "
+            f"synthetic invariants={self.invariants()}, engine invariants={tuple(engine.invariants())}"
+        )
+        if kind == "bilinear":
+            from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
+
+            # O(b): present the quadratic refinement at the bilinear modulus, so the
+            # oracle's O(q) of this presentation is the bilinear orthogonal group.
+            engine = TorsionQuadraticModule(engine.V(), engine.W(), modulus=engine._modulus, modulus_qf=engine._modulus)
+        oracle = engine.orthogonal_group()
+        actions = [SyntheticDiscriminantAction(self, matrix(ZZ, generator.matrix()).transpose()) for generator in oracle.gens()]
         return SyntheticOrthogonalGroup(self, actions, close=True)
 
     def bilinear_orthogonal_group(self, gens=None, check=False):
@@ -750,61 +764,43 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
             return SyntheticQuadraticDiscriminantForm(matrix(QQ, 0, 0), quadratic_modulus=modulus)
         return SyntheticQuadraticDiscriminantForm(_form_matrix_on_images(self, images), quadratic_modulus=modulus)
 
-    def normal_form(self, partial=False, return_isometry=False):
+    def _sage_engine(self):
+        r"""An ephemeral Sage torsion quadratic module built from this form's own
+        quadratic Gram. Its Smith presentation reproduces the owned generators, so
+        the oracle's per-generator results transfer back without a coordinate map."""
+        from sage.modules.torsion_quadratic_module import TorsionQuadraticForm
+
+        return TorsionQuadraticForm(self.gram_matrix_quadratic())
+
+    def _delegated_normal_form(self, return_isometry):
+        r"""Sage's torsion-module normal form, returned as the owned ``(invariants,
+        Gram)`` pair. The change of generators (when asked) reads Sage's normal-form
+        generators back in the engine's Smith coordinates, which are the owned ones."""
         if self.ngens() == 0:
             normal = ((), matrix(QQ, 0, 0))
             if return_isometry:
                 return normal, SyntheticDiscriminantAction(self, identity_matrix(ZZ, 0))
             return normal
-        best_key = None
-        best_normal_form = None
-        best_images = None
-        for images in self._invariant_basis_candidates():
-            invariants = tuple(self.order(image) for image in images)
-            form = _form_matrix_on_images(self, images)
-            key = (invariants, tuple(form.list()))
-            if best_key is None or key < best_key:
-                best_key = key
-                best_normal_form = (invariants, form)
-                best_images = images
-        assert best_normal_form is not None, ("finite invariant-basis enumeration produced no presentation; "
-        f"invariants={self.invariants()}")
-        if return_isometry:
-            return best_normal_form, SyntheticDiscriminantAction.from_images(self, best_images)
-        return best_normal_form
+        engine = self._sage_engine()
+        oracle = engine.normal_form()
+        gram = matrix(QQ, oracle.gram_matrix_quadratic())
+        gram.set_immutable()
+        normal = (tuple(oracle.invariants()), gram)
+        if not return_isometry:
+            return normal
+        images = [self(list(engine(generator.lift()).vector())) for generator in oracle.gens()]
+        return normal, SyntheticDiscriminantAction.from_images(self, images)
 
-    def _invariant_basis_candidates(self):
-        elements = tuple(self.elements())
-        for invariants in sorted(set(permutations(self.invariants()))):
-            candidates_by_generator = tuple(
-                tuple(element for element in elements if self.order(element) == invariant)
-                for invariant in invariants
-            )
-            for images in product(*candidates_by_generator):
-                if self._generates_full_group(images):
-                    yield images
+    def normal_form(self, partial=False, return_isometry=False):
+        return self._delegated_normal_form(return_isometry)
 
     def brown_invariant(self):
-        r"""Return the Brown invariant in ``ZZ/8`` for finite quadratic forms."""
-        if self._quadratic_modulus() != 2:
-            raise ValueError("Brown invariant requires a quadratic form with values in QQ / 2 ZZ")
-        if self.cardinality() == 1:
-            return ZZ.zero()
-        values = [QQ(self.q(element)) / 2 for element in self.elements()]
-        root_order = lcm([value.denominator() for value in values] or [ZZ.one()])
-        CC = ComplexField(200)
-        zeta = CC.zeta(root_order)
-        gauss_sum = sum(zeta ** ZZ(value * root_order) for value in values)
-        normalized = gauss_sum / CC(self.cardinality()).sqrt()
-        zeta8 = CC.zeta(8)
-        tolerance = CC(2) ** (-120)
-        for residue in range(8):
-            if abs(normalized - zeta8 ** residue) < tolerance:
-                return ZZ(residue)
-        raise ArithmeticError(f"Gauss sum is not an eighth root of unity: {normalized}")
+        r"""Return the Brown invariant in ``ZZ/8`` from the ephemeral Sage engine."""
+        return ZZ(self._sage_engine().brown_invariant())
 
     def is_genus(self, signature_pair, even=True):
-        r"""Return whether this discriminant form passes Sage's even-genus tests."""
+        r"""Return whether this discriminant form and signature define an even genus,
+        decided by the ephemeral Sage engine."""
         s_plus = ZZ(signature_pair[0])
         s_minus = ZZ(signature_pair[1])
         assert s_plus >= 0 and s_minus >= 0, (
@@ -817,12 +813,7 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
             "itself is parity-agnostic; the odd engine is unbuilt); "
             f"signature_pair={(s_plus, s_minus)}, invariants={self.invariants()}"
         )
-        if self._quadratic_modulus() != 2:
-            raise ValueError("the discriminant form of an even lattice has values modulo 2")
-        rank = s_plus + s_minus
-        if rank < len(self.invariants()):
-            return False
-        return ZZ((s_plus - s_minus) - self.brown_invariant()) % 8 == 0
+        return self._sage_engine().is_genus((s_plus, s_minus), even=even)
 
     def genus(self, signature_pair, even=True):
         r"""Return the synthetic genus datum determined by signature and discriminant form."""
@@ -1111,29 +1102,16 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
         isotropic = set(self.isotropic_subgroups())
         return tuple(orbit for orbit in self.orbits_on_subgroups(group=group) if orbit & isotropic)
 
-    # -- source-based normal form and isomorphism (invariant-basis enumeration
-    # against the source-derived quadratic Gram, not the generic permutation
-    # enumeration of the Gram-presented stratum). --
-    @cached_method
-    def normal_form(self, partial=False, return_isometry=False):
-        r"""Return a canonical generator-presentation Gram matrix."""
-        best_key = None
-        best_matrix = None
-        best_images = None
-        for images in self._invariant_basis_candidates():
-            gram = self._transformed_quadratic_gram(images)
-            key = tuple(gram.list())
-            if best_key is None or key < best_key:
-                best_key = key
-                best_matrix = gram
-                best_images = images
-        assert best_matrix is not None, ("finite invariant-basis enumeration produced no presentation; "
-        f"invariants={self.invariants()}")
-        best_matrix.set_immutable()
-        normal_form = self.invariants(), best_matrix
-        if return_isometry:
-            return normal_form, SyntheticDiscriminantAction.from_images(self, best_images)
-        return normal_form
+    # -- source-based oracle: the ephemeral engine is the source lattice's own
+    # discriminant group (its Smith presentation reproduces the owned generators);
+    # normal_form is inherited from the Gram stratum's delegation through it. --
+    def _sage_engine(self):
+        from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+
+        engine = IntegralLattice(matrix(ZZ, self.source_lattice().gram_matrix())).discriminant_group()
+        if self._primary:
+            engine = engine.primary_part(self._primary)
+        return engine
 
     def is_isomorphic(self, other, kind="quadratic"):
         assert isinstance(other, SyntheticSourcedDiscriminantForm), (f"expected SyntheticSourcedDiscriminantForm; found={type(other)}")
@@ -1157,20 +1135,6 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
             f"is_isomorphic and _images_preserve_structure for kind={kind}"
         )
 
-    def _invariant_basis_candidates(self):
-        if self.ngens() == 0:
-            return ((),)
-        elements = tuple(self.elements())
-        candidates_by_generator = tuple(
-            tuple(element for element in elements if self.order(element) == invariant)
-            for invariant in self.invariants()
-        )
-        return (
-            images
-            for images in product(*candidates_by_generator)
-            if self._generates_full_group(images)
-        )
-
     def _generates_full_group(self, images):
         zero = tuple(ZZ.zero() for _ in self.invariants())
         generated = set()
@@ -1184,21 +1148,6 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
                 )
             generated.add(coordinates)
         return ZZ(len(generated)) == self.cardinality()
-
-    def _transformed_quadratic_gram(self, images):
-        transform = matrix(
-            QQ,
-            self.ngens(),
-            self.ngens(),
-            [images[column].coefficient_vector()[row] for row in range(self.ngens()) for column in range(self.ngens())],
-        )
-        raw = transform.transpose() * self.gram_matrix_quadratic() * transform
-        normalized = matrix(QQ, raw.nrows(), raw.ncols())
-        for i in range(raw.nrows()):
-            for j in range(raw.ncols()):
-                modulus = self._quadratic_modulus() if i == j else ZZ.one()
-                normalized[i, j] = rational_mod(raw[i, j], modulus)
-        return normalized
 
     @classmethod
     def trivial(cls, source_lattice):

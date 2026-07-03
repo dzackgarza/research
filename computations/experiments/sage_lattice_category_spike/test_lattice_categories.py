@@ -752,3 +752,13 @@ def test_bilinear_forms_carry_the_induced_diagonal_quadratic_form():
     D = TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 2]))
     z = D.gen(0)
     assert (D.q(z) - D.b(z, z)) in ZZ
+
+def test_rational_isometry_decides_by_square_class_via_the_oracle():
+    # Rank-1 rational quadratic forms are isometric iff their discriminants
+    # agree up to squares (Serre, A Course in Arithmetic, Ch. IV); the
+    # decision is delegated to Sage's rational-equivalence oracle.
+    half = Lattice(matrix(QQ, [[QQ(1) / 2]]), base_ring=QQ, label="half")
+    two = Lattice(matrix(QQ, [[2]]), base_ring=QQ, label="two")
+    three_half = Lattice(matrix(QQ, [[QQ(3) / 2]]), base_ring=QQ, label="3/2")
+    assert half.is_isometric(two)  # 2 / (1/2) = 4, a square
+    assert not half.is_isometric(three_half)  # ratio 3, not a square
