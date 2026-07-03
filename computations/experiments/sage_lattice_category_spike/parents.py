@@ -598,9 +598,9 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateCarrier, Synthe
     r"""Integral nondegenerate stratum: discriminant/genus vocabulary (spec 2.4)."""
 
     def discriminant_group(self, primary=0):
-        from .discriminant import SyntheticDiscriminantGroup
+        from .discriminant_forms import SyntheticSourcedDiscriminantForm
 
-        return SyntheticDiscriminantGroup(self, primary)
+        return SyntheticSourcedDiscriminantForm(self, primary)
 
     def glue(self, isotropic_subgroup_or_gens, label="glue"):
         return self.discriminant_group().overlattice_from_isotropic_subgroup(isotropic_subgroup_or_gens, label=label)

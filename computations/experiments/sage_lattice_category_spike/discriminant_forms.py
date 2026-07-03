@@ -15,7 +15,9 @@ from itertools import permutations, product
 
 from sage.arith.functions import lcm
 from sage.matrix.constructor import identity_matrix, matrix
+from sage.misc.cachefunc import cached_method
 from sage.modules.free_module_element import vector
+from sage.rings.complex_mpfr import ComplexField
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.parent import Parent
@@ -26,13 +28,13 @@ from .domain_algebra import (
     BilinearDiscriminantForm as BilinearDiscriminantFormCarrier,
     DiscriminantForm as DiscriminantFormCarrier,
     QuadraticDiscriminantForm as QuadraticDiscriminantFormCarrier,
+    SourcedDiscriminantForm as SourcedDiscriminantFormCarrier,
 )
 from .discriminant import (
     SyntheticDiscriminantAction,
-    SyntheticDiscriminantGroup,
     SyntheticDiscriminantGroupElement,
     SyntheticDiscriminantSubgroup,
-    SyntheticDiscriminantSubquotient,
+    SyntheticGenus,
     SyntheticOrthogonalGroup,
     _all_group_automorphisms,
     _finite_all_subgroups,
@@ -40,6 +42,8 @@ from .discriminant import (
     _finite_p_torsion,
     _finite_relations_among,
     _form_matrix_on_images,
+    _induced_subquotient_form,
+    _lattice_key,
     _relation_inclusion_matrix,
 )
 from .elements import SyntheticLatticeElement
@@ -560,7 +564,12 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
         subgroup = self._subgroup(subgroup_or_gens)
         if not self.is_isotropic_subgroup(subgroup):
             raise ValueError("orthogonal quotient requires a quadratic-isotropic relation subgroup")
-        return SyntheticDiscriminantSubquotient(self, subgroup, self.orthogonal(subgroup))
+        # H trivial => H-perp/H is the whole form; return it directly rather than
+        # materialize orthogonal(H) (the whole group as an all-element subgroup,
+        # whose closure enumerates a product over every generator order).
+        if subgroup.cardinality() == 1:
+            return self
+        return _induced_subquotient_form(self, subgroup, self.orthogonal(subgroup))
 
     def subquotient_form(self, subgroup_or_gens, quotient_subgroup_or_gens):
         subgroup = self._subgroup(subgroup_or_gens)
@@ -571,7 +580,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
             raise ValueError("subquotient form requires a quadratic-isotropic relation subgroup")
         if not quotient_subgroup._key() <= self.orthogonal(subgroup)._key():
             raise ValueError("subquotient form requires K contained in the orthogonal complement of H")
-        return SyntheticDiscriminantSubquotient(self, subgroup, quotient_subgroup)
+        return _induced_subquotient_form(self, subgroup, quotient_subgroup)
 
     def hom(self, images):
         return SyntheticDiscriminantAction.from_images(self, images)
@@ -741,16 +750,421 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
                     yield images
 
     def brown_invariant(self):
-        return SyntheticDiscriminantGroup.brown_invariant(self)
+        r"""Return the Brown invariant in ``ZZ/8`` for finite quadratic forms."""
+        if self._quadratic_modulus() != 2:
+            raise ValueError("Brown invariant requires a quadratic form with values in QQ / 2 ZZ")
+        if self.cardinality() == 1:
+            return ZZ.zero()
+        values = [QQ(self.q(element)) / 2 for element in self.elements()]
+        root_order = lcm([value.denominator() for value in values] or [ZZ.one()])
+        CC = ComplexField(200)
+        zeta = CC.zeta(root_order)
+        gauss_sum = sum(zeta ** ZZ(value * root_order) for value in values)
+        normalized = gauss_sum / CC(self.cardinality()).sqrt()
+        zeta8 = CC.zeta(8)
+        tolerance = CC(2) ** (-120)
+        for residue in range(8):
+            if abs(normalized - zeta8 ** residue) < tolerance:
+                return ZZ(residue)
+        raise ArithmeticError(f"Gauss sum is not an eighth root of unity: {normalized}")
 
     def is_genus(self, signature_pair, even=True):
-        return SyntheticDiscriminantGroup.is_genus(self, signature_pair, even=even)
+        r"""Return whether this discriminant form passes Sage's even-genus tests."""
+        s_plus = ZZ(signature_pair[0])
+        s_minus = ZZ(signature_pair[1])
+        assert s_plus >= 0 and s_minus >= 0, (
+            f"signature invariants must be nonnegative; found s_plus={s_plus}, s_minus={s_minus}; "
+            "fix the caller's signature pair"
+        )
+        assert even, (
+            "genus classification through the discriminant-form correspondence is "
+            "grounded only for the even case in this spike (the correspondence "
+            "itself is parity-agnostic; the odd engine is unbuilt); "
+            f"signature_pair={(s_plus, s_minus)}, invariants={self.invariants()}"
+        )
+        if self._quadratic_modulus() != 2:
+            raise ValueError("the discriminant form of an even lattice has values modulo 2")
+        rank = s_plus + s_minus
+        if rank < len(self.invariants()):
+            return False
+        return ZZ((s_plus - s_minus) - self.brown_invariant()) % 8 == 0
 
     def genus(self, signature_pair, even=True):
-        return SyntheticDiscriminantGroup.genus(self, signature_pair, even=even)
+        r"""Return the synthetic genus datum determined by signature and discriminant form."""
+        if not self.is_genus(signature_pair, even=even):
+            raise ValueError("this discriminant form and signature do not define a genus in this spike")
+        return SyntheticGenus(self, signature_pair, even=even)
 
     def twist(self, scalar):
         return SyntheticQuadraticDiscriminantForm(self.gram_matrix_quadratic() * QQ(scalar), quadratic_modulus=self._quadratic_modulus())
 
     def quadratic_orthogonal_group(self, gens=None, check=False):
         return self.orthogonal_group(gens=gens, check=check, kind="quadratic")
+
+
+class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, SyntheticQuadraticDiscriminantForm):
+    r"""The sourced stratum ``L# / L`` of a nondegenerate integral lattice ``L``.
+
+    The consolidated quadratic discriminant form refined with source-lattice
+    provenance (category axiom ``WithSourceLattice``). Its state and form
+    computation are source-based, not Gram-presented: the Smith normal form of
+    the source Gram fixes the invariant coordinate system, ``cover = L#`` is the
+    metric dual and ``relations = L``, and the bilinear/quadratic Gram on the
+    invariant generators is read off ``G^{-1}`` through the dual coordinates. The
+    parity modulus follows the source lattice (``2`` even, ``1`` odd). Everything
+    the quadratic stratum owns generically -- the group surface, ``b``/``q`` on
+    the recorded Gram, the isotropic/orthogonal/isomorphism/genus vocabulary --
+    is inherited; this class adds only the source-aware seam: the dual cover, the
+    Smith-transported lift/projection, coset representatives in the source hull,
+    overlattices, the induced action of a lattice isometry, and the orbit
+    vocabulary of that action.
+    """
+
+    Element = SyntheticDiscriminantGroupElement
+
+    def __init__(self, source_lattice, primary):
+        from .parents import SyntheticLattice
+        assert isinstance(source_lattice, SyntheticLattice), (f"expected SyntheticLattice source; found={type(source_lattice)}")
+        assert primary == 0 or ZZ(primary).is_prime(), (f"primary must be 0 or prime; found={primary}")
+        self._source_lattice = source_lattice
+        self._primary = ZZ(primary)
+        smith, _smith_left, smith_right = matrix(ZZ, source_lattice.gram_matrix()).smith_form()
+        self._smith_right_transpose = smith_right.transpose()
+        self._smith_right_inverse_transpose = smith_right.inverse().transpose()
+        positions = []
+        invariants = []
+        multipliers = []
+        for i in range(smith.nrows()):
+            invariant = abs(smith[i, i])
+            if invariant == 1:
+                continue
+            if self._primary:
+                valuation = ZZ(invariant).valuation(self._primary)
+                if valuation == 0:
+                    continue
+                primary_invariant = self._primary ** valuation
+                positions.append(i)
+                invariants.append(primary_invariant)
+                multipliers.append(invariant // primary_invariant)
+            else:
+                positions.append(i)
+                invariants.append(invariant)
+                multipliers.append(ZZ.one())
+        self._invariant_positions = tuple(positions)
+        self._coordinate_multipliers = tuple(multipliers)
+        self._invariants = tuple(invariants)
+        category = DiscriminantForms(ZZ).Bilinear().WithSourceLattice()
+        if source_lattice.is_even():
+            category = DiscriminantForms(ZZ).Quadratic().Even().WithSourceLattice()
+        Parent.__init__(self, base=ZZ, category=category)
+
+    def _repr_(self):
+        return f"Synthetic discriminant group with invariants {self.invariants()}"
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, SyntheticSourcedDiscriminantForm)
+            and _lattice_key(self.source_lattice()) == _lattice_key(other.source_lattice())
+            and self._primary == other._primary
+            and self.invariants() == other.invariants()
+        )
+
+    def __hash__(self):
+        return hash((_lattice_key(self.source_lattice()), self._primary, self.invariants()))
+
+    # -- source-aware seam: cover = L#, relations = L --
+    def rank(self):
+        return self._source_lattice.rank()
+
+    def source_lattice(self):
+        return self._source_lattice
+
+    def cover(self):
+        return self._source_lattice.dual()
+
+    def cover_lattice(self):
+        return self.cover()
+
+    def relations(self):
+        return self._source_lattice
+
+    def relation_lattice(self):
+        return self.relations()
+
+    def is_nondegenerate(self):
+        return self.cardinality() == abs(self.source_lattice().determinant())
+
+    def _quadratic_modulus(self):
+        return ZZ(2) if self.source_lattice().is_even() else ZZ.one()
+
+    # -- source-based form data: read the Gram on the invariant generators off
+    # G^{-1} through the dual coordinates, never a stored Gram presentation. --
+    @cached_method
+    def _raw_form_matrix(self):
+        if self.ngens() == 0:
+            return matrix(QQ, 0, 0)
+        columns = [self._old_dual_coordinates(self.gen(i)) for i in range(self.ngens())]
+        transform = matrix(QQ, self.rank(), self.ngens(), [columns[j][i, 0] for i in range(self.rank()) for j in range(self.ngens())])
+        form = transform.transpose() * self.source_lattice().gram_matrix().inverse() * transform
+        form.set_immutable()
+        return form
+
+    @cached_method
+    def gram_matrix_bilinear(self):
+        raw_form = self._raw_form_matrix()
+        form = matrix(QQ, raw_form.nrows(), raw_form.ncols())
+        for i in range(raw_form.nrows()):
+            for j in range(raw_form.ncols()):
+                form[i, j] = rational_mod(raw_form[i, j], 1)
+        form.set_immutable()
+        return form
+
+    @cached_method
+    def gram_matrix_quadratic(self):
+        raw_form = self._raw_form_matrix()
+        form = matrix(QQ, raw_form.nrows(), raw_form.ncols())
+        bilinear_form = self.gram_matrix_bilinear()
+        for i in range(raw_form.nrows()):
+            for j in range(raw_form.ncols()):
+                form[i, j] = bilinear_form[i, j]
+        for i in range(raw_form.nrows()):
+            form[i, i] = rational_mod(raw_form[i, i], self._quadratic_modulus())
+        form.set_immutable()
+        return form
+
+    def _old_dual_coordinates(self, element):
+        full_coordinates = matrix(ZZ, self.rank(), 1)
+        for coordinate, position, multiplier in zip(
+            element.coefficient_vector(),
+            self._invariant_positions,
+            self._coordinate_multipliers,
+        ):
+            full_coordinates[position, 0] = ZZ(coordinate) * ZZ(multiplier)
+        return self._smith_right_inverse_transpose * full_coordinates
+
+    # -- Smith-transported lift/projection between L# and the invariant coords --
+    def lift(self, element):
+        # cover = L# is a based lattice whose intrinsic basis IS the dual basis of L,
+        # so the dual-coordinate column produced by the Smith machinery is already the
+        # lift's coordinate vector in the cover -- no ambient round-trip.
+        z_coordinates = self._old_dual_coordinates(self(element))
+        return self.cover()(z_coordinates.column(0))
+
+    def projection(self, element):
+        cover = self.cover()
+        if isinstance(element, SyntheticLatticeElement):
+            assert element.parent() == cover, ("projection expects an element of the dual cover; "
+            f"expected={cover}, found={element.parent()}")
+        else:
+            element = cover(element)
+        # cover's intrinsic coordinates are already the dual-basis coordinates the
+        # Smith machinery consumes (see lift).
+        z_coordinates = matrix(ZZ, self.rank(), 1, list(element.coefficient_vector()))
+        smith_coordinates = self._smith_right_transpose * z_coordinates
+        projected = []
+        for position, invariant, multiplier in zip(
+            self._invariant_positions,
+            self.invariants(),
+            self._coordinate_multipliers,
+        ):
+            projected.append((ZZ(smith_coordinates[position, 0]) * ZZ(multiplier).inverse_mod(invariant)) % invariant)
+        return self(projected)
+
+    def coset_representative(self, element):
+        return self.lift(element)
+
+    def _coset_representative_in_source(self, element):
+        r"""Coset representative of ``element`` in the source lattice's rational hull.
+
+        A lift lives in ``L# ⊇ L``; its dual-basis column ``z`` has source-basis
+        coordinates ``G^{-1} z``.  The source lattice's ``overlattice`` / ``span``
+        builders consume rows in the *root* (hull) frame, so map through the source's
+        own inclusion into its root.
+        """
+        z_coordinates = self._old_dual_coordinates(self(element))
+        source_coordinates = self.source_lattice().gram_matrix().inverse() * z_coordinates
+        return vector(QQ, source_coordinates.column(0)) * self.source_lattice()._inclusion_rows()
+
+    def primary_part(self, p):
+        return SyntheticSourcedDiscriminantForm(self.source_lattice(), p)
+
+    # -- overlattices and preimages in the source hull --
+    def overlattice_from_isotropic_subgroup(self, subgroup_or_gens, label="overlattice"):
+        subgroup = self._subgroup(subgroup_or_gens)
+        if not (subgroup.is_bilinear_isotropic()):
+            raise ValueError("overlattice construction requires a bilinear-isotropic subgroup")
+        lift_rows = [self._coset_representative_in_source(generator) for generator in subgroup.gens()]
+        if not lift_rows:
+            return self.source_lattice()
+        return self.source_lattice().overlattice(lift_rows, check_integral=True, label=label)
+
+    def preimage_lattice(self, subgroup_or_gens, label="preimage_lattice"):
+        subgroup = self._subgroup(subgroup_or_gens)
+        # pi^{-1}(A_L) = L# exactly; return the canonical dual cover rather than an
+        # isometric HNF overlattice representative.
+        if subgroup.cardinality() == self.cardinality():
+            return self.cover()
+        lift_rows = [self._coset_representative_in_source(generator) for generator in subgroup.gens()]
+        if not lift_rows:
+            return self.source_lattice()
+        return self.source_lattice().overlattice(lift_rows, check_integral=False, label=label)
+
+    def discriminant_form_of_overlattice(self, subgroup_or_gens):
+        return self.overlattice_from_isotropic_subgroup(subgroup_or_gens).discriminant_group()
+
+    # -- the induced action of a lattice isometry, and its orbit vocabulary --
+    def action_of_isometry(self, isometry):
+        if self.ngens() == 0:
+            return SyntheticDiscriminantAction(self, identity_matrix(ZZ, 0))
+        gram = matrix(QQ, self.source_lattice().gram_matrix())
+        isometry_matrix = matrix(QQ, isometry.matrix())
+        induced_images = []
+        for generator in self.gens():
+            old_coordinates = self._old_dual_coordinates(generator)
+            # dual action on L# in its intrinsic (dual) basis: G U G^{-1}.
+            new_coordinates = gram * isometry_matrix * gram.inverse() * old_coordinates
+            induced_images.append(self.projection(self.cover()(new_coordinates.column(0))))
+        return SyntheticDiscriminantAction.from_images(self, induced_images)
+
+    def action_of_lattice_group(self, gens):
+        return self.orthogonal_group_from_lattice_gens(gens)
+
+    def kernel_of_lattice_group_action(self, gens):
+        return tuple(
+            gen
+            for gen in gens
+            if self.action_of_isometry(gen).is_identity()
+        )
+
+    def orthogonal_group_from_lattice_gens(self, gens):
+        from .homsets import LatticeMorphism
+
+        isometries = [
+            gen if isinstance(gen, LatticeMorphism)
+            else self.source_lattice().isometry_group().from_matrix(gen)
+            for gen in gens
+        ]
+        return SyntheticOrthogonalGroup(self, (self.action_of_isometry(gen) for gen in isometries), close=True)
+
+    def orbit(self, element, group=None):
+        element = self(element)
+        group = self.orthogonal_group() if group is None else group
+        return frozenset(action(element) for action in group)
+
+    def orbits(self, group=None):
+        unseen = set(self.elements())
+        orbits = []
+        while unseen:
+            representative = next(iter(unseen))
+            orbit = self.orbit(representative, group=group)
+            orbits.append(orbit)
+            unseen.difference_update(orbit)
+        return tuple(orbits)
+
+    def orbits_on_subgroups(self, group=None):
+        group = self.orthogonal_group() if group is None else group
+        subgroups = set(self.all_submodules())
+        orbits = []
+        while subgroups:
+            representative = next(iter(subgroups))
+            orbit = frozenset(self.subgroup_generated_by(action(element) for element in representative.elements()) for action in group)
+            orbits.append(orbit)
+            subgroups.difference_update(orbit)
+        return tuple(orbits)
+
+    def orbits_on_isotropic_subgroups(self, group=None):
+        isotropic = set(self.isotropic_subgroups())
+        return tuple(orbit for orbit in self.orbits_on_subgroups(group=group) if orbit & isotropic)
+
+    # -- source-based normal form and isomorphism (invariant-basis enumeration
+    # against the source-derived quadratic Gram, not the generic permutation
+    # enumeration of the Gram-presented stratum). --
+    @cached_method
+    def normal_form(self, partial=False, return_isometry=False):
+        r"""Return a canonical generator-presentation Gram matrix."""
+        best_key = None
+        best_matrix = None
+        best_images = None
+        for images in self._invariant_basis_candidates():
+            gram = self._transformed_quadratic_gram(images)
+            key = tuple(gram.list())
+            if best_key is None or key < best_key:
+                best_key = key
+                best_matrix = gram
+                best_images = images
+        assert best_matrix is not None, ("finite invariant-basis enumeration produced no presentation; "
+        f"invariants={self.invariants()}")
+        best_matrix.set_immutable()
+        normal_form = self.invariants(), best_matrix
+        if return_isometry:
+            return normal_form, SyntheticDiscriminantAction.from_images(self, best_images)
+        return normal_form
+
+    def is_isomorphic(self, other, kind="quadratic"):
+        assert isinstance(other, SyntheticSourcedDiscriminantForm), (f"expected SyntheticSourcedDiscriminantForm; found={type(other)}")
+        assert kind in ("group", "bilinear", "quadratic"), (f"isomorphism kind must be group, bilinear, or quadratic; found={kind}")
+        if self.invariants() != other.invariants():
+            return False
+        if kind == "group":
+            return True
+        return any(self._images_preserve_structure(other, images, kind) for images in self._isomorphism_images_to(other))
+
+    def isometry_to(self, other, kind="quadratic"):
+        assert kind in ("quadratic", "bilinear"), (f"isometry kind must be quadratic or bilinear; found={kind}")
+        assert isinstance(other, SyntheticSourcedDiscriminantForm), (f"expected SyntheticSourcedDiscriminantForm; found={type(other)}")
+        if not self.is_isomorphic(other, kind=kind):
+            raise ValueError("discriminant forms are not isomorphic")
+        for images in self._isomorphism_images_to(other):
+            if self._images_preserve_structure(other, images, kind):
+                return SyntheticDiscriminantAction.from_images(self, (self(image.coefficient_vector()) for image in images))
+        assert False, (
+            "no isometry found despite is_isomorphic; internal invariant broken between "
+            f"is_isomorphic and _images_preserve_structure for kind={kind}"
+        )
+
+    def _invariant_basis_candidates(self):
+        if self.ngens() == 0:
+            return ((),)
+        elements = tuple(self.elements())
+        candidates_by_generator = tuple(
+            tuple(element for element in elements if self.order(element) == invariant)
+            for invariant in self.invariants()
+        )
+        return (
+            images
+            for images in product(*candidates_by_generator)
+            if self._generates_full_group(images)
+        )
+
+    def _generates_full_group(self, images):
+        zero = tuple(ZZ.zero() for _ in self.invariants())
+        generated = set()
+        coefficient_ranges = tuple(range(invariant) for invariant in self.invariants())
+        for coefficients in product(*coefficient_ranges):
+            coordinates = zero
+            for coefficient, image in zip(coefficients, images):
+                coordinates = tuple(
+                    (coordinates[i] + ZZ(coefficient) * image.coefficient_vector()[i]) % self.invariants()[i]
+                    for i in range(self.ngens())
+                )
+            generated.add(coordinates)
+        return ZZ(len(generated)) == self.cardinality()
+
+    def _transformed_quadratic_gram(self, images):
+        transform = matrix(
+            QQ,
+            self.ngens(),
+            self.ngens(),
+            [images[column].coefficient_vector()[row] for row in range(self.ngens()) for column in range(self.ngens())],
+        )
+        raw = transform.transpose() * self.gram_matrix_quadratic() * transform
+        normalized = matrix(QQ, raw.nrows(), raw.ncols())
+        for i in range(raw.nrows()):
+            for j in range(raw.ncols()):
+                modulus = self._quadratic_modulus() if i == j else ZZ.one()
+                normalized[i, j] = rational_mod(raw[i, j], modulus)
+        return normalized
+
+    @classmethod
+    def trivial(cls, source_lattice):
+        return cls(source_lattice, 0)

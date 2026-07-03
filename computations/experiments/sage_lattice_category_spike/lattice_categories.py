@@ -14,7 +14,6 @@ from .constructors import IntegralLatticeGluing, Lattice, RootLattice, Synthetic
 from .discriminant import (
     SyntheticDiscriminantAction,
     SyntheticGenus,
-    SyntheticDiscriminantGroup,
     SyntheticDiscriminantGroupElement,
     SyntheticDiscriminantSubgroup,
     SyntheticOrthogonalGroup,
@@ -23,6 +22,7 @@ from .discriminant import (
 from .discriminant_forms import (
     SyntheticBilinearDiscriminantForm,
     SyntheticQuadraticDiscriminantForm,
+    SyntheticSourcedDiscriminantForm,
 )
 from .elements import SyntheticLatticeElement
 from .homsets import LatticeHomset, LatticeMorphism, LatticeSimilarity
@@ -40,8 +40,8 @@ __all__ = [
     "SyntheticDiscriminantAction",
     "SyntheticBilinearDiscriminantForm",
     "SyntheticQuadraticDiscriminantForm",
+    "SyntheticSourcedDiscriminantForm",
     "SyntheticGenus",
-    "SyntheticDiscriminantGroup",
     "SyntheticDiscriminantGroupElement",
     "SyntheticDiscriminantSubgroup",
     "SyntheticOrthogonalGroup",

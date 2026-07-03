@@ -43,6 +43,7 @@ from .domain_algebra import (
     PositiveDefiniteLattice as PositiveDefiniteCarrier,
     QuadraticDiscriminantForm as QuadraticDiscriminantFormCarrier,
     RootGeneratedLattice as RootGeneratedCarrier,
+    SourcedDiscriminantForm as SourcedDiscriminantFormCarrier,
 )
 
 
@@ -311,6 +312,8 @@ class EvenDiscriminantForms(CategoryWithAxiom_over_base_ring):
 
 class WithSourceLatticeDiscriminantForms(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "WithSourceLattice")
+
+    ParentMethods = _carrier_delta(SourcedDiscriminantFormCarrier)
 
 
 Lattices.Nondegenerate = NondegenerateLattices
