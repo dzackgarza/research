@@ -733,34 +733,6 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
         gram.set_immutable()
         return (QQ(engine._modulus), tuple(normal.invariants()), gram)
 
-    def _isomorphism_images_to(self, other):
-        candidates_by_generator = tuple(
-            tuple(element for element in other.elements() if other.order(element) == invariant)
-            for invariant in self.invariants()
-        )
-        return (images for images in product(*candidates_by_generator) if other._generates_full_group(images))
-
-    def _mapped_to(self, other, element, images):
-        return other.discrete_exp(self.coordinates(element), gens=images)
-
-    def _images_preserve_structure(self, other, images, kind):
-        for left in self.elements():
-            mapped_left = self._mapped_to(other, left, images)
-            if kind == "quadratic" and self.q(left) != other.q(mapped_left):
-                return False
-            for right in self.elements():
-                mapped_right = self._mapped_to(other, right, images)
-                if self.b(left, right) != other.b(mapped_left, mapped_right):
-                    return False
-        return True
-
-    def _generates_full_group(self, images):
-        generated = set()
-        coefficient_ranges = tuple(range(self.order(image)) for image in images)
-        for coefficients in product(*coefficient_ranges):
-            generated.add(tuple(self.discrete_exp(coefficients, gens=images).coefficient_vector()))
-        return ZZ(len(generated)) == self.cardinality()
-
     def orthogonal_group(self, gens=None, check=False, kind="quadratic"):
         assert kind in ("quadratic", "bilinear"), (f"orthogonal group kind must be quadratic or bilinear; found={kind}")
         if gens is None:
@@ -791,9 +763,6 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
         oracle = engine.orthogonal_group()
         actions = [SyntheticDiscriminantAction(self, matrix(ZZ, generator.matrix()).transpose()) for generator in oracle.gens()]
         return SyntheticOrthogonalGroup(self, actions, close=True)
-
-    def bilinear_orthogonal_group(self, gens=None, check=False):
-        return self.orthogonal_group(gens=gens, check=check, kind="bilinear")
 
     def q(self, element):
         r"""The induced diagonal quadratic form ``q(x) := b(x, x)`` — defined
@@ -922,9 +891,6 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
             quadratic_modulus=self._quadratic_modulus(),
             invariants=tuple(ZZ(i) for i in engine.invariants()),
         )
-
-    def quadratic_orthogonal_group(self, gens=None, check=False):
-        return self.orthogonal_group(gens=gens, check=check, kind="quadratic")
 
 
 class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, SyntheticQuadraticDiscriminantForm):
@@ -1153,26 +1119,6 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
             induced_images.append(self.projection(self.cover()(new_coordinates.column(0))))
         return SyntheticDiscriminantAction.from_images(self, induced_images)
 
-    def action_of_lattice_group(self, gens):
-        return self.orthogonal_group_from_lattice_gens(gens)
-
-    def kernel_of_lattice_group_action(self, gens):
-        return tuple(
-            gen
-            for gen in gens
-            if self.action_of_isometry(gen).is_identity()
-        )
-
-    def orthogonal_group_from_lattice_gens(self, gens):
-        from .homsets import LatticeMorphism
-
-        isometries = [
-            gen if isinstance(gen, LatticeMorphism)
-            else self.source_lattice().isometry_group().from_matrix(gen)
-            for gen in gens
-        ]
-        return SyntheticOrthogonalGroup(self, (self.action_of_isometry(gen) for gen in isometries), close=True)
-
     def orbit(self, element, group=None):
         element = self(element)
         group = self.orthogonal_group() if group is None else group
@@ -1213,33 +1159,6 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
         if self._primary:
             engine = engine.primary_part(self._primary)
         return engine
-
-    def isometry_to(self, other, kind="quadratic"):
-        assert kind in ("quadratic", "bilinear"), (f"isometry kind must be quadratic or bilinear; found={kind}")
-        assert isinstance(other, SyntheticSourcedDiscriminantForm), (f"expected SyntheticSourcedDiscriminantForm; found={type(other)}")
-        if not self.is_isomorphic(other, kind=kind):
-            raise ValueError("discriminant forms are not isomorphic")
-        for images in self._isomorphism_images_to(other):
-            if self._images_preserve_structure(other, images, kind):
-                return SyntheticDiscriminantAction.from_images(self, (self(image.coefficient_vector()) for image in images))
-        assert False, (
-            "no isometry found despite is_isomorphic; internal invariant broken between "
-            f"is_isomorphic and _images_preserve_structure for kind={kind}"
-        )
-
-    def _generates_full_group(self, images):
-        zero = tuple(ZZ.zero() for _ in self.invariants())
-        generated = set()
-        coefficient_ranges = tuple(range(invariant) for invariant in self.invariants())
-        for coefficients in product(*coefficient_ranges):
-            coordinates = zero
-            for coefficient, image in zip(coefficients, images):
-                coordinates = tuple(
-                    (coordinates[i] + ZZ(coefficient) * image.coefficient_vector()[i]) % self.invariants()[i]
-                    for i in range(self.ngens())
-                )
-            generated.add(coordinates)
-        return ZZ(len(generated)) == self.cardinality()
 
     @classmethod
     def trivial(cls, source_lattice):

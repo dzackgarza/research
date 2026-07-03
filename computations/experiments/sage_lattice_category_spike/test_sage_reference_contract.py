@@ -207,7 +207,7 @@ def test_explicit_lattice_isometries_induce_discriminant_actions_without_full_in
     L = lc.Lattice("A4")
     reflection = -identity_matrix(ZZ, 4)
     D = L.discriminant_group()
-    induced = D.orthogonal_group_from_lattice_gens([reflection])
+    induced = L.isometry_group().subgroup([reflection]).discriminant_image()
 
     assert induced.order() == 2
     assert D.action_of_isometry(L.isometry_group().from_matrix(reflection))(D.gen(0)) == -D.gen(0)
@@ -330,7 +330,7 @@ def test_discriminant_form_subgroup_source_and_action_api_is_bound():
     negation = L.isometry_group().from_matrix(matrix(ZZ, 1, 1, [-1]))
     action = D.action_of_isometry(negation)
     assert action(g) == -g
-    image = D.action_of_lattice_group([negation])
+    image = L.isometry_group().subgroup([negation]).discriminant_image()
     assert image.order() == 2
     assert D.orbit(g, group=image) == frozenset({g, -g})
 
@@ -500,14 +500,17 @@ def test_discriminant_group_isomorphism_kind_distinguishes_group_bilinear_and_qu
     assert positive.is_isomorphic(negative, kind="group")
     assert positive.is_isomorphic(negative, kind="bilinear")
     assert not positive.is_isomorphic(negative, kind="quadratic")
-    assert positive.isometry_to(positive, kind="quadratic").is_identity()
+    # witness production is gap-ledger entry 3; the delegated normal-form
+    # change of generators is the sanctioned witness door
+    _normal, change = positive.normal_form(return_isometry=True)
+    assert change.is_automorphism()
 
 
 def test_underlying_abelian_automorphism_group_is_not_the_form_orthogonal_group():
     # Reference: discriminant groups need Aut(A) separately from O(q_A).
     D = lc.TorsionQuadraticForm(identity_matrix(QQ, 3) / 2)
 
-    assert D.quadratic_orthogonal_group().order() == 6
+    assert D.orthogonal_group().order() == 6
     assert D.automorphism_group().order() == 168
 
 
@@ -583,8 +586,8 @@ def test_discriminant_group_bilinear_orthogonal_group_can_be_larger_than_quadrat
     # Reference: finite bilinear forms and finite quadratic forms are separate categories.
     D = lc.Lattice(matrix(ZZ, 1, 1, [8])).discriminant_group()
 
-    assert D.quadratic_orthogonal_group().order() == 2
-    assert D.bilinear_orthogonal_group().order() == 4
+    assert D.orthogonal_group().order() == 2
+    assert D.orthogonal_group(kind="bilinear").order() == 4
 
 
 def test_orthogonal_quotient_keeps_smith_invariants_not_only_cardinality():
