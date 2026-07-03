@@ -820,7 +820,7 @@ class DiscriminantForm:
     def ngens(self) -> int:
         assert False, "declared contract; engine per the parity-plan triage"
 
-    def smith_form_gens(self) -> tuple[DiscriminantFormElement, ...]:
+    def invariant_factor_gens(self) -> tuple[DiscriminantFormElement, ...]:
         assert False, "declared contract; engine per the parity-plan triage"
 
     def zero(self) -> DiscriminantFormElement:
@@ -873,16 +873,16 @@ class DiscriminantForm:
     def gens_vector(self, element: DiscriminantFormElement) -> tuple[int, ...]:
         assert False, "declared contract; engine per the parity-plan triage"
 
-    def smith_form_gen(self, i: int) -> DiscriminantFormElement:
+    def invariant_factor_gen(self, i: int) -> DiscriminantFormElement:
         assert False, "declared contract; engine per the parity-plan triage"
 
-    def gens_to_smith(self) -> MorphismMatrix:
+    def gens_to_invariant_factor_gens(self) -> MorphismMatrix:
         assert False, "declared contract; engine per the parity-plan triage"
 
-    def smith_to_gens(self) -> MorphismMatrix:
+    def invariant_factor_gens_to_gens(self) -> MorphismMatrix:
         assert False, "declared contract; engine per the parity-plan triage"
 
-    def linear_combination_of_smith_form_gens(self, coefficients: Sequence[int]) -> DiscriminantFormElement:
+    def linear_combination_of_invariant_factor_gens(self, coefficients: Sequence[int]) -> DiscriminantFormElement:
         assert False, "declared contract; engine per the parity-plan triage"
 
     def torsion_subgroup(self) -> "DiscriminantSubgroup":

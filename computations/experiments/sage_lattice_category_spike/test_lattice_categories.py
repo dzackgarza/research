@@ -225,7 +225,7 @@ def test_orthogonal_direct_sum_and_tensor_product_constructions_are_synthetic():
     assert_matrix_equal(tensor.gram_matrix(), matrix(QQ, 2, 2, [0, 0, 0, 0]))
 
 
-def test_discriminant_group_is_owned_smith_quotient_with_forms():
+def test_discriminant_group_is_owned_invariant_factor_quotient_with_forms():
     A2 = Lattice("A2", label="A2")
     D = A2.discriminant_group()
 

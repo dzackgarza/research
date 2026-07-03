@@ -173,7 +173,7 @@ def test_group_seams_compose_into_gap_backed_machinery():
     assert direct.gram_matrix_quadratic() == D.gram_matrix_quadratic()
 
     # morphism totals (spec 3.5): the inclusion of an index-3 sublattice is
-    # injective, not surjective, with finite cokernel Z/3 (Smith oracle)
+    # injective, not surjective, with finite cokernel Z/3 (invariant factors by Sage)
     sub = A2.sublattice([[1, 0], [0, 3]], "index3")
     inclusion = sub.Hom(A2).from_matrix([[1, 0], [0, 3]])
     assert inclusion.is_injective() and not inclusion.is_surjective()
@@ -213,11 +213,11 @@ def test_finite_discriminant_form_orthogonal_group_matches_torsion_doctest():
     assert D.invariants() == (2, 2, 2)
     assert D.cover() is D
     assert D.relations().cardinality() == 1
-    assert D.smith_form_gens() == D.gens()
-    assert D.smith_form_gen(2) == D.gen(2)
-    assert D.linear_combination_of_smith_form_gens((1, 0, 1)) == D.gen(0) + D.gen(2)
-    assert D.gens_to_smith() == identity_matrix(ZZ, 3)
-    assert D.smith_to_gens() == identity_matrix(ZZ, 3)
+    assert D.invariant_factor_gens() == D.gens()
+    assert D.invariant_factor_gen(2) == D.gen(2)
+    assert D.linear_combination_of_invariant_factor_gens((1, 0, 1)) == D.gen(0) + D.gen(2)
+    assert D.gens_to_invariant_factor_gens() == identity_matrix(ZZ, 3)
+    assert D.invariant_factor_gens_to_gens() == identity_matrix(ZZ, 3)
     assert tuple(D.gens_vector(D.gen(0) + D.gen(2))) == (1, 0, 1)
     assert tuple(D.gens_vector(D.gen(0) + D.gen(2))) == (1, 0, 1)
     assert D.coordinates(D.gen(1)) == (0, 1, 0)
@@ -282,7 +282,7 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
 
 
 def test_discriminant_group_additive_abelian_group_api_matches_fgp_surface():
-    # Reference: FGP quotient/module Smith-coordinate methods surfaced on discriminant groups.
+    # Reference: FGP quotient/module invariant-factor-coordinate methods surfaced on discriminant groups.
     L = lc.Lattice(Matrix(ZZ, 2, 2, [4, 2, 2, -4]))
     A = L.discriminant_group()
     x = A.gen(0) + 3 * A.gen(1)
@@ -396,12 +396,12 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     assert quotient.is_finite()
     assert quotient.list() == quotient.elements()
     assert quotient.random_element() in quotient.elements()
-    assert quotient.smith_form_gens() == quotient.gens()
-    assert quotient.smith_form_gen(0) == quotient.gen(0)
-    assert quotient.smith_form_gens() == quotient.gens()
-    assert quotient.linear_combination_of_smith_form_gens([1]) == quotient.gen(0)
-    assert quotient.gens_to_smith() == identity_matrix(ZZ, 1)
-    assert quotient.smith_to_gens() == identity_matrix(ZZ, 1)
+    assert quotient.invariant_factor_gens() == quotient.gens()
+    assert quotient.invariant_factor_gen(0) == quotient.gen(0)
+    assert quotient.invariant_factor_gens() == quotient.gens()
+    assert quotient.linear_combination_of_invariant_factor_gens([1]) == quotient.gen(0)
+    assert quotient.gens_to_invariant_factor_gens() == identity_matrix(ZZ, 1)
+    assert quotient.invariant_factor_gens_to_gens() == identity_matrix(ZZ, 1)
     assert tuple(quotient.gens_vector(quotient.gen(0))) == (1,)
     assert tuple(quotient.gens_vector(quotient.gen(0))) == (1,)
     assert quotient.coordinates(quotient.gen(0)) == (1,)
@@ -448,7 +448,7 @@ def test_lattice_morphism_lift_and_image_generators_are_bound():
     assert_matrix_equal(nonprimitive_embedding.image().gram_matrix(), norm_eight.gram_matrix())
     with pytest.raises(AssertionError):
         norm_eight.embedding(matrix(ZZ, 1, 1, [2]), codomain=norm_two, primitive=True)
-    assert A2.discriminant_group().smith_form_gens() == A2.discriminant_group().gens()
+    assert A2.discriminant_group().invariant_factor_gens() == A2.discriminant_group().gens()
 
 
 def test_lattice_similarity_is_scalar_form_preserving_not_an_isometry():
@@ -486,11 +486,11 @@ def test_discriminant_quotient_is_not_orthogonal_quotient_alias():
     assert quotient.generator_orders() == (2, 2)
     assert quotient.rank_p(2) == 2
     assert quotient.rank_p(2) == 2
-    assert quotient.smith_form_gens() == quotient.gens()
-    assert quotient.smith_form_gen(1) == quotient.gen(1)
-    assert quotient.linear_combination_of_smith_form_gens((1, 1)) == quotient.gen(0) + quotient.gen(1)
-    assert quotient.gens_to_smith() == identity_matrix(ZZ, 2)
-    assert quotient.smith_to_gens() == identity_matrix(ZZ, 2)
+    assert quotient.invariant_factor_gens() == quotient.gens()
+    assert quotient.invariant_factor_gen(1) == quotient.gen(1)
+    assert quotient.linear_combination_of_invariant_factor_gens((1, 1)) == quotient.gen(0) + quotient.gen(1)
+    assert quotient.gens_to_invariant_factor_gens() == identity_matrix(ZZ, 2)
+    assert quotient.invariant_factor_gens_to_gens() == identity_matrix(ZZ, 2)
     assert tuple(quotient.gens_vector(quotient.gen(0) + quotient.gen(1))) == (1, 1)
     assert tuple(quotient.gens_vector(quotient.gen(0) + quotient.gen(1))) == (1, 1)
     assert quotient.coordinates(quotient.gen(1)) == (0, 1)
@@ -619,8 +619,8 @@ def test_discriminant_group_bilinear_orthogonal_group_can_be_larger_than_quadrat
     assert D.orthogonal_group(kind="bilinear").order() == 4
 
 
-def test_orthogonal_quotient_keeps_smith_invariants_not_only_cardinality():
-    # Reference: gluing uses the finite quadratic module H^perp/H, with Smith data.
+def test_orthogonal_quotient_keeps_invariant_factors_not_only_cardinality():
+    # Reference: gluing uses the finite quadratic module H^perp/H, with invariant-factor data.
     L = lc.Lattice(matrix.diagonal(ZZ, [2, 2, 2, 2]))
     A = L.discriminant_group()
     H = A.subgroup_generated_by([A.discrete_exp((1, 1, 1, 1))])
@@ -645,9 +645,9 @@ def test_orthogonal_quotient_keeps_smith_invariants_not_only_cardinality():
     assert quotient.is_finite()
     assert quotient.projection(quotient.lift(first)) == first
     assert quotient.discrete_exp((1, 0)) == first
-    assert quotient.linear_combination_of_smith_form_gens((0, 1)) == second
-    assert quotient.gens_to_smith() == identity_matrix(ZZ, 2)
-    assert quotient.smith_to_gens() == identity_matrix(ZZ, 2)
+    assert quotient.linear_combination_of_invariant_factor_gens((0, 1)) == second
+    assert quotient.gens_to_invariant_factor_gens() == identity_matrix(ZZ, 2)
+    assert quotient.invariant_factor_gens_to_gens() == identity_matrix(ZZ, 2)
     assert tuple(quotient.gens_vector(first)) == (1, 0)
     assert tuple(quotient.gens_vector(second)) == (0, 1)
     assert quotient.coordinates(first) == (1, 0)
@@ -839,11 +839,11 @@ def test_torsion_quadratic_module_doctest_parity_value_pins():
     assert q1.value_module_qf() == QmodnZ(QQ(2))
     assert_matrix_equal(q1.gram_matrix_quadratic(), Matrix(QQ, 2, [1, QQ(1) / 2, QQ(1) / 2, 1]))
 
-    # factory row diag(1/4,1/3) REROUTED: Sage's constructor Smith-collapses to
+    # factory row diag(1/4,1/3) REROUTED: Sage's constructor collapses to
     # invariants (12,) / Gram [7/12] (that Gram is a repr of the mod-1 form, not
     # a valid reconstruction input — fed back in, both Sage and the spike read
     # [7/12] at modulus 2, a different form); the spike keeps the per-generator
-    # presentation, so the surviving content is the group order, the Smith
+    # presentation, so the surviving content is the group order, the
     # invariants, and normal-form agreement with the oracle on the same data
     from sage.modules.torsion_quadratic_module import TorsionQuadraticForm as SageTorsionForm
 
@@ -1009,7 +1009,7 @@ def test_torsion_bilinear_gram_fquad_ordering_and_fgp_coordinate_doctest_rows():
     # discriminant group of diag(5, 5, 5)
     D5 = lc.Lattice(matrix.diagonal(ZZ, [5, 5, 5])).discriminant_group()
     assert_matrix_equal(D5.gram_matrix_bilinear(), matrix.diagonal(QQ, [QQ(1) / 5] * 3))
-    # gens doctest: the Smith generators are the identity coefficient rows
+    # gens doctest: the invariant-factor generators are the identity coefficient rows
     assert tuple(tuple(g.coefficient_vector()) for g in D5.gens()) == ((1, 0, 0), (0, 1, 0), (0, 0, 1))
 
     # free_quadratic_module inclusion-chain TESTS rows (the CC rows drop with the

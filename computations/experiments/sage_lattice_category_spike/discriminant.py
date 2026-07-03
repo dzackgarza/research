@@ -190,7 +190,7 @@ def _induced_subquotient_form(ambient, relation_subgroup, cover_subgroup):
 
 
 class SyntheticDiscriminantGroupElement(Element):
-    r"""Element of ``L# / L`` in Smith invariant coordinates."""
+    r"""Element of ``L# / L`` in invariant-factor coordinates."""
 
     def __init__(self, parent, coordinates):
         Element.__init__(self, parent)
@@ -199,7 +199,7 @@ class SyntheticDiscriminantGroupElement(Element):
         if coordinates == 0:
             coordinates = [ZZ.zero()] * parent.ngens()
         coords = vector(ZZ, coordinates)
-        assert len(coords) == parent.ngens(), ("discriminant coordinates must match Smith invariant count; "
+        assert len(coords) == parent.ngens(), ("discriminant coordinates must match the invariant-factor count; "
         f"invariants={parent.invariants()}, coordinates={coordinates}")
         coords = vector(ZZ, [coords[i] % parent.invariants()[i] for i in range(parent.ngens())])
         coords.set_immutable()
@@ -266,7 +266,7 @@ class SyntheticDiscriminantSubgroup:
         return ZZ(len(self.elements()))
 
     def invariants(self):
-        r"""Smith invariants of this subgroup as an abstract group, from an
+        r"""Invariant factors of this subgroup as an abstract group, from an
         ephemeral Sage FGP quotient (generator span over the ambient relations)."""
         from sage.modules.free_module import FreeModule
 
