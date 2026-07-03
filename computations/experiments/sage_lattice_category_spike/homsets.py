@@ -100,6 +100,16 @@ class LatticeMorphism(LatticeMorphismCarrier, Element):
         r"""[total] — full column rank (spec 3.5; free modules carry no torsion)."""
         return self.matrix().rank() == self.domain().rank()
 
+    def induced_map_on_discriminant_group(self):
+        r"""The per-morphism functor to O(q_L) (spec 3.3); defined for
+        endomorphisms of an integral nondegenerate lattice — the lattice-side
+        discriminant vocabulary gates the rest."""
+        assert self.domain() == self.codomain(), (
+            "the induced discriminant action needs an endomorphism; "
+            f"domain={self.domain()}, codomain={self.codomain()}"
+        )
+        return self.domain().discriminant_group().action_of_isometry(self)
+
     def is_surjective(self):
         r"""[total] — the image is the whole codomain (spec 3.5)."""
         return self.image() == self.codomain()

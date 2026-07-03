@@ -49,6 +49,25 @@ from .elements import SyntheticLatticeElement
 from .value_objects import value_module
 
 
+def _presentation_radical_order(gram, invariants):
+    r"""``|radical(b)|`` decided from presentation data alone — needed BEFORE the
+    parent exists, to attach the ``Nondegenerate`` axiom at construction.
+    Delegated: with ``e = lcm(invariants)``, the radical is the kernel of
+    ``x -> x.G`` into ``(1/e)ZZ^n / ZZ^n``, so its order is ``|A| / |image|``
+    with the image index read off Sage's module quotient."""
+    if not invariants:
+        return ZZ.one()
+    exponent = ZZ(lcm(invariants))
+    scaled_gram = matrix(ZZ, exponent * matrix(QQ, gram))
+    from sage.modules.free_module import FreeModule
+
+    cover = FreeModule(ZZ, len(invariants))
+    scaled = cover.span([exponent * basis_vector for basis_vector in cover.basis()])
+    image_cover = cover.span(scaled_gram.rows()) + scaled
+    image_order = ZZ(image_cover.quotient(scaled).cardinality())
+    return ZZ.prod(ZZ(invariant) for invariant in invariants) // image_order
+
+
 class SyntheticDiscriminantForm(DiscriminantFormCarrier, Parent):
     r"""Ordinary finite quotient ``A / H`` of a synthetic discriminant group.
 
@@ -273,6 +292,15 @@ class SyntheticDiscriminantForm(DiscriminantFormCarrier, Parent):
     def quotient_group(self, subgroup_or_gens):
         return SyntheticDiscriminantForm(self, self._subgroup(subgroup_or_gens))
 
+    def permutation_group(self):
+        r"""The GAP-backed group-theoretic seam (spec 3.5/4: every finite quotient)."""
+        from sage.groups.additive_abelian.additive_abelian_group import AdditiveAbelianGroup
+
+        return AdditiveAbelianGroup(list(self.invariants())).permutation_group()
+
+    def hom(self, images):
+        return SyntheticDiscriminantAction.from_images(self, images)
+
     def quotient_map(self, subgroup_or_gens=None):
         if subgroup_or_gens is None:
             return self.projection
@@ -407,9 +435,6 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
             return self.relation_lattice()
         return self.relation_lattice().overlattice(lift_rows, check_integral=False, label=label)
 
-    def hom(self, images):
-        return SyntheticDiscriminantAction.from_images(self, images)
-
 
 
 class DiscriminantCharacter:
@@ -495,6 +520,11 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
         self._invariants = tuple(invariants)
         if category is None:
             category = DiscriminantForms(ZZ).Bilinear()
+        # constructor-proven axiom (two-signal design): Nondegenerate attaches
+        # here iff the radical is trivial, so the Nondegenerate vocabulary
+        # (pontryagin_dual) is placement-gated, never runtime-guarded
+        if _presentation_radical_order(gram, self._invariants) == ZZ.one():
+            category = category.Nondegenerate()
         Parent.__init__(self, base=ZZ, category=category)
 
     def _repr_(self):
@@ -522,11 +552,6 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
     def projection(self, element):
         return self(element)
 
-    def permutation_group(self):
-        from sage.groups.additive_abelian.additive_abelian_group import AdditiveAbelianGroup
-
-        return AdditiveAbelianGroup(list(self.invariants())).permutation_group()
-
     def value_module(self):
         return value_module(ZZ, ZZ.one())
 
@@ -549,7 +574,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
         return self.subgroup_generated_by(element for element in self.elements() if all(self.b(element, other) == 0 for other in self.elements()))
 
     def is_nondegenerate(self):
-        return self.radical().cardinality() == 1
+        return self in DiscriminantForms(ZZ).Nondegenerate()
 
     def orthogonal_submodule_to(self, subgroup_or_gens):
         r"""The subgroup orthogonal to ``subgroup_or_gens`` under ``b``, from an
@@ -658,9 +683,6 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
             raise ValueError("subquotient form requires K contained in the orthogonal complement of H")
         return _induced_subquotient_form(self, subgroup, quotient_subgroup)
 
-    def hom(self, images):
-        return SyntheticDiscriminantAction.from_images(self, images)
-
     def pushforward_form(self, phi):
         assert phi.discriminant_form() is self, ("pushforward requires an endomorphism of this finite quadratic form")
         inverse = phi.inverse()
@@ -669,14 +691,6 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
     def pullback_form(self, phi):
         assert phi.discriminant_form() is self, ("pullback requires an endomorphism of this finite quadratic form")
         return _form_matrix_on_images(self, [phi(generator) for generator in self.gens()])
-
-    def pontryagin_dual(self):
-        r"""The canonical identification ``A ~ Hom(A, QQ/ZZ)`` as a typed
-        object (spec: not a dict of lambdas): index by an element to get its
-        character."""
-        if not self.is_nondegenerate():
-            raise ValueError("Pontryagin dual identification requires a nondegenerate form; found degenerate")
-        return PontryaginDualIdentification(self)
 
     def is_isomorphic(self, other, kind="quadratic"):
         assert kind in ("group", "bilinear", "quadratic"), (f"isomorphism kind must be group, bilinear, or quadratic; found={kind}")
@@ -967,7 +981,9 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
         category = DiscriminantForms(ZZ).Bilinear().WithSourceLattice()
         if source_lattice.is_even():
             category = DiscriminantForms(ZZ).Quadratic().Even().WithSourceLattice()
-        Parent.__init__(self, base=ZZ, category=category)
+        # provenance axiom: L#/L of an integral nondegenerate lattice (and any
+        # primary part of it) is nondegenerate
+        Parent.__init__(self, base=ZZ, category=category.Nondegenerate())
 
     def _repr_(self):
         return f"Synthetic discriminant group with invariants {self.invariants()}"

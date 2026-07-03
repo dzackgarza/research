@@ -537,6 +537,17 @@ class QuadraticDiscriminantForms(CategoryWithAxiom_over_base_ring):
 class NondegenerateDiscriminantForms(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "Nondegenerate")
 
+    class ParentMethods:
+        def pontryagin_dual(self):
+            r"""The canonical identification ``A ~ Hom(A, QQ/ZZ)`` as a typed
+            object: index by an element to get its character. Placed on the
+            Nondegenerate node (spec section 4) — the identification along
+            ``b`` exists exactly there, so definedness is placement, not a
+            runtime guard."""
+            from .discriminant_forms import PontryaginDualIdentification
+
+            return PontryaginDualIdentification(self)
+
 
 class EvenDiscriminantForms(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "Even")
