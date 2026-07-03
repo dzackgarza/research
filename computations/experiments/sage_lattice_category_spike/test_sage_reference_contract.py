@@ -953,3 +953,43 @@ def test_integer_lattice_invariant_pins_and_free_module_intersection_rows():
     K = Z3.span([[1, 0, 1], [0, 0, 1]], base_ring=QQ)
     assert_matrix_equal(W.intersection(K).gram_matrix(), matrix(QQ, 1, 1, [QQ(1) / 2]))
     assert_matrix_equal(K.intersection(W).gram_matrix(), matrix(QQ, 1, 1, [QQ(1) / 2]))
+
+
+def test_torsion_bilinear_gram_fquad_ordering_and_fgp_coordinate_doctest_rows():
+    # torsion gram_matrix_bilinear doctest: T = ((1/5)V, V) over 5*id(3) is the
+    # discriminant group of diag(5, 5, 5)
+    D5 = lc.Lattice(matrix.diagonal(ZZ, [5, 5, 5])).discriminant_group()
+    assert_matrix_equal(D5.gram_matrix_bilinear(), matrix.diagonal(QQ, [QQ(1) / 5] * 3))
+    # gens doctest: the Smith generators are the identity coefficient rows
+    assert tuple(tuple(g.coefficient_vector()) for g in D5.gens()) == ((1, 0, 0), (0, 1, 0), (0, 0, 1))
+
+    # free_quadratic_module inclusion-chain TESTS rows (the CC rows drop with the
+    # recorded base-ring gap; Sage's inclusion partial order on modules reroutes
+    # to is_submodule, and == compares the (base_ring, form) data)
+    Z3 = lc.Lattice(identity_matrix(ZZ, 3), label="Z3chain")
+    Q3 = Z3.rationalization()
+    assert Z3.is_submodule(Q3)
+    assert not Q3.is_submodule(Z3)
+    assert Q3 != Z3
+    assert Q3 == Q3
+    V = Q3.span([[1, 2, 3], [5, 6, 7], [8, 9, 10]])
+    assert V.is_submodule(Q3)
+    assert not Q3.is_submodule(V)
+    # the inner product is part of the comparison; issue-23915 row
+    assert lc.Lattice(matrix(ZZ, [[1]]), label="one") != lc.Lattice(matrix(ZZ, [[2]]), label="two")
+
+    # fgp element/coordinate rows on the finite invariants-(4,12) doctest
+    # fixture: V = span([[1/2,0,0],[3/2,2,1],[0,0,1]], ZZ),
+    # W = span(2V.0+4V.1, 9V.0+12V.1, 4V.2) — relation rows in cover coordinates
+    Q3Q = lc.Lattice(identity_matrix(QQ, 3), base_ring=QQ, label="Q3fgp")
+    cover = Q3Q.span([[QQ(1) / 2, 0, 0], [QQ(3) / 2, 2, 1], [0, 0, 1]], base_ring=ZZ)
+    quotient = cover.finite_quotient(cover.fractional_sublattice([[2, 4, 0], [9, 12, 0], [0, 0, 4]]))
+    assert quotient.invariants() == (4, 12)
+    x = quotient.gen(0) + 3 * quotient.gen(1)
+    # x = (1, 3): __getitem__/vector() reroute to the coefficient vector
+    assert tuple(x.coefficient_vector()) == (1, 3)
+
+    # annihilator doctest (same cover, W = span(V.0+2V.1, 9V.0+2V.1, 4V.2)):
+    # Sage returns the ideal (16); the spike answers with the integer generator
+    quotient16 = cover.finite_quotient(cover.fractional_sublattice([[1, 2, 0], [9, 2, 0], [0, 0, 4]]))
+    assert ZZ(quotient16.annihilator()) == 16

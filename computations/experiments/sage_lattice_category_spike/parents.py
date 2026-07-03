@@ -337,8 +337,11 @@ class SyntheticLattice(LatticeCarrier, Parent):
     # -- Subobject algebra: operations between sublattices of a common parent -----
 
     def is_submodule(self, other):
+        r"""Containment of the underlying modules, decided by the Sage engine
+        (a generator-row membership test is wrong across base rings: a QQ-span's
+        generators can be integral while the span is not contained)."""
         self._assert_same_ambient(other)
-        return all(row in other._underlying_module() for row in self._inclusion_rows().rows())
+        return self._underlying_module().is_submodule(other._underlying_module())
 
     def sublattice(self, generators, label="sublattice", require_subset=True, require_integral=True):
         generator_matrix = matrix(QQ, generators)
