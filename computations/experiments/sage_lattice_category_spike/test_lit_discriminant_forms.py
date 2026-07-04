@@ -106,6 +106,36 @@ def test_conway_sloane_d8_isotropic_self_glue_reconstructs_e8():
         assert glued.is_isometric(e8)
 
 
+def test_conway_sloane_d8_maximal_overlattice_is_the_d8_plus_e8_glue():
+    """The public maximal-overlattice search should find CS99's D8+ = E8 glue.
+
+    Conway-Sloane Ch. 4 lists D8+ as the even unimodular E8 lattice obtained by
+    adjoining isotropic D8 glue. Nikulin Prop. 1.4.1 identifies that operation
+    with passing to an even overlattice from an isotropic subgroup.
+    """
+    d8 = lc.Lattice("D8")
+    e8 = lc.Lattice("E8")
+
+    full_maximal = d8.maximal_overlattice()
+    two_primary_maximal = d8.maximal_overlattice(2)
+    three_primary_maximal = d8.maximal_overlattice(3)
+
+    for maximal in (full_maximal, two_primary_maximal):
+        assert maximal.is_even()
+        assert maximal.is_unimodular()
+        assert maximal.determinant() == 1
+        assert maximal.minimum() == 2
+        assert len(maximal.roots()) == 240
+        assert maximal.discriminant_group().invariants() == ()
+        assert maximal.is_isometric(e8)
+        assert abs(ZZ(d8.determinant() / maximal.determinant())) == 4
+
+    assert three_primary_maximal.determinant() == d8.determinant()
+    assert three_primary_maximal.discriminant_group().invariants() == (2, 2)
+    assert len(three_primary_maximal.roots()) == 112
+    assert three_primary_maximal.is_isometric(d8)
+
+
 def test_conway_sloane_a2_discriminant_form_is_anisotropic_and_nonmetabolic():
     """A2 has glue group C3; in Cartan normalization its exact finite q is 2/3.
 
@@ -143,3 +173,54 @@ def test_conway_sloane_a2_discriminant_form_is_anisotropic_and_nonmetabolic():
     assert form.is_anisotropic()
     assert not form.is_metabolic()
     assert form.lagrangian_subgroups() == ()
+
+
+def test_nikulin_non_lagrangian_u2_a2_glue_leaves_a2_discriminant_form():
+    r"""Nikulin Prop. 1.4.1 gives q_{S'} = H^\perp/H for overlattice glue.
+
+    For S = U(2) (+) A2, gluing along one U(2) order-two isotropic subgroup is
+    not Lagrangian; the remaining quotient is the A2 discriminant form C3 with
+    q([1]) = q([2]) = 2/3 from the Conway-Sloane A2 glue table.
+    """
+    lattice = lc.Lattice("U").twist(2).direct_sum(lc.Lattice("A2"))
+    form = lattice.discriminant_group()
+    glue_vector = next(
+        element
+        for element in form.isotropic_elements()
+        if _coordinates(form, element) == (1, 0)
+    )
+    subgroup = form.subgroup_generated_by([glue_vector])
+
+    assert lattice.is_even()
+    assert lattice.signature_pair() == (3, 1)
+    assert lattice.determinant() == -12
+    assert form.invariants() == (2, 6)
+    assert form.is_isotropic_subgroup(subgroup)
+    assert not form.is_lagrangian(subgroup)
+    assert sorted(_coordinates(form, element) for element in form.isotropic_elements()) == [
+        (0, 0),
+        (1, 0),
+        (1, 3),
+    ]
+
+    assert sorted(
+        _coordinates(form, element)
+        for element in form.orthogonal(subgroup).elements()
+    ) == [(0, 0), (0, 2), (0, 4), (1, 0), (1, 2), (1, 4)]
+    quotient = form.orthogonal_quotient(subgroup)
+    overlattice = form.overlattice_from_isotropic_subgroup(subgroup)
+    overlattice_form = form.discriminant_form_of_overlattice(subgroup)
+
+    assert quotient.invariants() == (3,)
+    assert overlattice_form.is_isomorphic(quotient, kind="quadratic")
+    assert overlattice.determinant() == -3
+    assert overlattice.signature_pair() == lattice.signature_pair()
+    assert overlattice.discriminant_group().invariants() == (3,)
+    assert abs(ZZ(lattice.determinant() / overlattice.determinant())) == 4
+
+    elements = _cyclic_elements_by_coefficient(overlattice_form)
+    assert {coeff: overlattice_form.q(element) for coeff, element in elements.items()} == {
+        (0,): 0,
+        (1,): QQ(2) / 3,
+        (2,): QQ(2) / 3,
+    }
