@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from itertools import product
 
-from sage.matrix.constructor import identity_matrix, matrix
+from sage.matrix.constructor import column_matrix, identity_matrix, matrix
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -345,10 +345,8 @@ class SyntheticDiscriminantAction(DiscriminantActionCarrier):
 
     @classmethod
     def from_images(cls, discriminant_group, images):
-        columns = []
-        for image in images:
-            columns.extend(_finite_coordinates(discriminant_group, image))
-        return cls(discriminant_group, matrix(ZZ, discriminant_group.ngens(), discriminant_group.ngens(), columns).transpose())
+        columns = [vector(ZZ, _finite_coordinates(discriminant_group, image)) for image in images]
+        return cls(discriminant_group, column_matrix(ZZ, columns))
 
     def discriminant_form(self):
         return self._discriminant_group
@@ -358,8 +356,7 @@ class SyntheticDiscriminantAction(DiscriminantActionCarrier):
 
     def __call__(self, element):
         group = self.discriminant_form()
-        column = self.matrix() * matrix(ZZ, group.ngens(), 1, _finite_coordinates(group, element))
-        return group([column[i, 0] for i in range(group.ngens())])
+        return group(self.matrix() * vector(ZZ, _finite_coordinates(group, element)))
 
     def is_identity(self):
         return all(self(element) == element for element in self.discriminant_form().elements())
@@ -610,4 +607,3 @@ class SyntheticGenus(GenusCarrier):
             "Synthetic genus with signature "
             f"{self.signature_pair()} and discriminant invariants {self.discriminant_form().invariants()}"
         )
-

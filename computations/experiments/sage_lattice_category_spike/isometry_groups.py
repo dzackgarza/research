@@ -251,12 +251,9 @@ class SyntheticIsometrySubgroup(IsometrySubgroupCarrier):
         for morphism in self._gens:
             action_matrix = matrix(QQ, morphism.matrix())
             for row in sublattice._inclusion_rows().rows():
-                coordinates = acting_basis.solve_left(matrix(QQ, 1, acting_basis.ncols(), list(row)))
-                image_coordinates = action_matrix * coordinates.transpose()
-                image_row = vector(QQ, [
-                    sum(image_coordinates[j, 0] * acting_basis[j, i] for j in range(acting.rank()))
-                    for i in range(acting_basis.ncols())
-                ])
+                coordinates = acting_basis.solve_left(vector(QQ, row))
+                image_coordinates = action_matrix * coordinates
+                image_row = image_coordinates * acting_basis
                 if image_row not in other_module:
                     return False
         return True

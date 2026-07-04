@@ -14,7 +14,7 @@ from __future__ import annotations
 from itertools import product
 
 from sage.arith.functions import lcm
-from sage.matrix.constructor import identity_matrix, matrix
+from sage.matrix.constructor import column_matrix, identity_matrix, matrix
 from sage.misc.cachefunc import cached_method
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
@@ -81,11 +81,7 @@ class SyntheticDiscriminantForm(DiscriminantFormCarrier, Parent):
     def __init__(self, ambient_group, relation_subgroup):
         assert isinstance(ambient_group, SyntheticDiscriminantForm), (f"expected a synthetic finite discriminant parent as the quotient cover; found={type(ambient_group)}")
         relation_subgroup = ambient_group._subgroup(relation_subgroup)
-        relation_rows = []
-        for i, invariant in enumerate(ambient_group.invariants()):
-            row = [ZZ.zero()] * ambient_group.ngens()
-            row[i] = ZZ(invariant)
-            relation_rows.append(row)
+        relation_rows = [list(row) for row in matrix.diagonal(ZZ, ambient_group.invariants()).rows()]
         relation_rows.extend([list(ambient_group.coordinates(generator)) for generator in relation_subgroup.gens()])
         presentation = matrix(ZZ, relation_rows) if relation_rows else matrix(ZZ, 0, 0)
         self._install(ambient_group, relation_subgroup, presentation)
@@ -208,9 +204,7 @@ class SyntheticDiscriminantForm(DiscriminantFormCarrier, Parent):
         return tuple(self.discrete_exp(transform.column(j), gens=raw) for j in range(transform.ncols()))
 
     def gen(self, i):
-        row = [ZZ.zero()] * self.ngens()
-        row[i] = ZZ.one()
-        return self(row)
+        return self((ZZ ** self.ngens()).gen(i))
 
     def invariant_factor_gen(self, i):
         return self.invariant_factor_gens()[i]
@@ -556,19 +550,19 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
         return value_module(ZZ, ZZ.one())
 
     def gram_matrix_bilinear(self):
-        form = matrix(QQ, self._gram_matrix.nrows(), self._gram_matrix.ncols())
-        for i in range(self._gram_matrix.nrows()):
-            for j in range(self._gram_matrix.ncols()):
-                form[i, j] = rational_mod(self._gram_matrix[i, j], 1)
+        form = self._gram_matrix.apply_map(lambda entry: rational_mod(entry, 1))
         form.set_immutable()
         return form
 
     def b(self, left, right):
         left = self(left) if left.parent() is not self else left
         right = self(right) if right.parent() is not self else right
-        row = matrix(QQ, 1, self.ngens(), list(left.coefficient_vector()))
-        col = matrix(QQ, self.ngens(), 1, list(right.coefficient_vector()))
-        return rational_mod((row * self.gram_matrix_bilinear() * col)[0, 0], 1)
+        return rational_mod(
+            vector(QQ, left.coefficient_vector())
+            * self.gram_matrix_bilinear()
+            * vector(QQ, right.coefficient_vector()),
+            1,
+        )
 
     def radical(self):
         return self.subgroup_generated_by(element for element in self.elements() if all(self.b(element, other) == 0 for other in self.elements()))
@@ -830,9 +824,11 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
 
     def q(self, element):
         element = self(element) if element.parent() is not self else element
-        row = matrix(QQ, 1, self.ngens(), list(element.coefficient_vector()))
-        col = matrix(QQ, self.ngens(), 1, list(element.coefficient_vector()))
-        return rational_mod((row * self.gram_matrix_quadratic() * col)[0, 0], self._quadratic_modulus())
+        coordinates = vector(QQ, element.coefficient_vector())
+        return rational_mod(
+            coordinates * self.gram_matrix_quadratic() * coordinates,
+            self._quadratic_modulus(),
+        )
 
     def primary_part(self, p):
         p = ZZ(p)
@@ -1055,7 +1051,7 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
         if self.ngens() == 0:
             return matrix(QQ, 0, 0)
         columns = [self._old_dual_coordinates(self.gen(i)) for i in range(self.ngens())]
-        transform = matrix(QQ, self.rank(), self.ngens(), [columns[j][i, 0] for i in range(self.rank()) for j in range(self.ngens())])
+        transform = column_matrix(QQ, columns)
         form = transform.transpose() * self.source_lattice().gram_matrix().inverse() * transform
         form.set_immutable()
         return form
@@ -1063,34 +1059,32 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
     @cached_method
     def gram_matrix_bilinear(self):
         raw_form = self._raw_form_matrix()
-        form = matrix(QQ, raw_form.nrows(), raw_form.ncols())
-        for i in range(raw_form.nrows()):
-            for j in range(raw_form.ncols()):
-                form[i, j] = rational_mod(raw_form[i, j], 1)
+        form = raw_form.apply_map(lambda entry: rational_mod(entry, 1))
         form.set_immutable()
         return form
 
     @cached_method
     def gram_matrix_quadratic(self):
         raw_form = self._raw_form_matrix()
-        form = matrix(QQ, raw_form.nrows(), raw_form.ncols())
         bilinear_form = self.gram_matrix_bilinear()
-        for i in range(raw_form.nrows()):
-            for j in range(raw_form.ncols()):
-                form[i, j] = bilinear_form[i, j]
-        for i in range(raw_form.nrows()):
-            form[i, i] = rational_mod(raw_form[i, i], self._quadratic_modulus())
+        form = bilinear_form + matrix.diagonal(
+            QQ,
+            [
+                rational_mod(raw_form[i, i], self._quadratic_modulus()) - bilinear_form[i, i]
+                for i in range(raw_form.nrows())
+            ],
+        )
         form.set_immutable()
         return form
 
     def _old_dual_coordinates(self, element):
-        full_coordinates = matrix(ZZ, self.rank(), 1)
+        full_coordinates = vector(ZZ, [ZZ.zero()] * self.rank())
         for coordinate, position, multiplier in zip(
             element.coefficient_vector(),
             self._invariant_positions,
             self._coordinate_multipliers,
         ):
-            full_coordinates[position, 0] = ZZ(coordinate) * ZZ(multiplier)
+            full_coordinates[position] = ZZ(coordinate) * ZZ(multiplier)
         return self._smith_right_inverse_transpose * full_coordinates
 
     # -- change-of-basis lift/projection between L# and the invariant-factor coords --
@@ -1099,7 +1093,7 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
         # so the dual-coordinate column produced by the change-of-basis machinery is already the
         # lift's coordinate vector in the cover -- no ambient round-trip.
         z_coordinates = self._old_dual_coordinates(self(element))
-        return self.cover()(z_coordinates.column(0))
+        return self.cover()(z_coordinates)
 
     def projection(self, element):
         cover = self.cover()
@@ -1110,7 +1104,7 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
             element = cover(element)
         # cover's intrinsic coordinates are already the dual-basis coordinates the
         # change-of-basis machinery consumes (see lift).
-        z_coordinates = matrix(ZZ, self.rank(), 1, list(element.coefficient_vector()))
+        z_coordinates = vector(ZZ, element.coefficient_vector())
         smith_coordinates = self._smith_right_transpose * z_coordinates
         projected = []
         for position, invariant, multiplier in zip(
@@ -1118,7 +1112,7 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
             self.invariants(),
             self._coordinate_multipliers,
         ):
-            projected.append((ZZ(smith_coordinates[position, 0]) * ZZ(multiplier).inverse_mod(invariant)) % invariant)
+            projected.append((ZZ(smith_coordinates[position]) * ZZ(multiplier).inverse_mod(invariant)) % invariant)
         return self(projected)
 
     def coset_representative(self, element):
@@ -1134,7 +1128,7 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
         """
         z_coordinates = self._old_dual_coordinates(self(element))
         source_coordinates = self.source_lattice().gram_matrix().inverse() * z_coordinates
-        return vector(QQ, source_coordinates.column(0)) * self.source_lattice()._inclusion_rows()
+        return source_coordinates * self.source_lattice()._inclusion_rows()
 
     def primary_part(self, p):
         return SyntheticSourcedDiscriminantForm(self.source_lattice(), p)
@@ -1175,7 +1169,7 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
             old_coordinates = self._old_dual_coordinates(generator)
             # dual action on L# in its intrinsic (dual) basis: G U G^{-1}.
             new_coordinates = gram * isometry_matrix * gram.inverse() * old_coordinates
-            induced_images.append(self.projection(self.cover()(new_coordinates.column(0))))
+            induced_images.append(self.projection(self.cover()(new_coordinates)))
         return SyntheticDiscriminantAction.from_images(self, induced_images)
 
     def orbit(self, element, group=None):

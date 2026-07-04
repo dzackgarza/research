@@ -1,0 +1,15 @@
+# No bytecode litter: the root `just test` hygiene sweep rejects __pycache__.
+export PYTHONDONTWRITEBYTECODE := "1"
+
+# Feature-spike test harness. Mirrors the base spike's invocation
+# (root justfile: `sage -python -m pytest ... sage_lattice_category_spike`).
+# `sage -python` puts Sage on the path; pytest walks real parents from the
+# tests/ subpackage, so `computations/experiments/` lands on sys.path and both
+# `sage_lattice_feature_spike` and its imported base resolve as top-level packages.
+
+# Run the feature-spike test suite.
+test:
+    sage -python -m pytest -p no:cacheprovider {{justfile_directory()}}/tests
+
+# CI alias, matching the base spike's `test-ci`.
+test-ci: test

@@ -107,11 +107,11 @@ def test_positive_definite_algorithms_are_axiom_gated():
     target = [QQ(2) / 3, QQ(2) / 3]
     brute_force = min(
         (A2(coordinates) for coordinates in product(range(-2, 3), repeat=2)),
-        key=lambda vector: (
-            (matrix(QQ, 1, 2, [vector.coefficient_vector()[i] - target[i] for i in range(2)])
+        key=lambda candidate: (
+            (vector(QQ, [candidate.coefficient_vector()[i] - target[i] for i in range(2)])
              * A2.gram_matrix()
-             * matrix(QQ, 2, 1, [vector.coefficient_vector()[i] - target[i] for i in range(2)]))[0, 0],
-            tuple(vector.coefficient_vector()),
+             * vector(QQ, [candidate.coefficient_vector()[i] - target[i] for i in range(2)])),
+            tuple(candidate.coefficient_vector()),
         ),
     )
     assert A2.closest_vector(target) == brute_force == A2([1, 1])
@@ -119,9 +119,9 @@ def test_positive_definite_algorithms_are_axiom_gated():
     for vectors in A2.short_vectors(3):
         for lattice_vector in vectors:
             if lattice_vector != A2.zero():
-                column = matrix(QQ, 2, 1, list(lattice_vector.coefficient_vector()))
-                gram_vector = A2.gram_matrix() * column
-                expected_ieqs.append([QQ(lattice_vector.q()) / 2] + [-gram_vector[i, 0] for i in range(2)])
+                coordinates = vector(QQ, lattice_vector.coefficient_vector())
+                gram_vector = coordinates * A2.gram_matrix()
+                expected_ieqs.append([QQ(lattice_vector.q()) / 2] + [-gram_vector[i] for i in range(2)])
     assert A2.voronoi_cell(radius=3) == Polyhedron(ieqs=expected_ieqs, base_ring=QQ)
     assert len(A2.voronoi_cell().vertices()) == 6
 
@@ -516,8 +516,8 @@ def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
     gram = matrix(QQ, G)
 
     def squared_norm(coordinates, center=(0, 0, 0)):
-        delta = matrix(QQ, 1, 3, [QQ(coordinates[i]) - center[i] for i in range(3)])
-        return (delta * gram * delta.transpose())[0, 0]
+        delta = vector(QQ, [QQ(coordinates[i]) - center[i] for i in range(3)])
+        return delta * gram * delta
 
     def brute_force(predicate, lo, hi):
         return {c for c in product(range(lo, hi), repeat=3) if predicate(c)}
@@ -598,9 +598,10 @@ def test_nikulin_overlattice_and_metabolizer_identities_hold():
         # TYPE, so both Nikulin sides are the SAME type and comparable as forms.
         generators = form.gens()
         gram = matrix(
-            QQ, len(generators), len(generators),
-            [form.q(generators[i]) if i == j else form.b(generators[i], generators[j])
-             for i in range(len(generators)) for j in range(len(generators))],
+            QQ,
+            len(generators),
+            len(generators),
+            lambda i, j: form.q(generators[i]) if i == j else form.b(generators[i], generators[j]),
         )
         return TorsionQuadraticForm(gram)
 
