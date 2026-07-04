@@ -101,6 +101,27 @@ and category membership; it never manually raises `ValueError`/`NotImplementedEr
 
 ---
 
+## Tier D — test assertion drift: ad-hoc construction → source concept
+
+Tests should state the mathematical concept they witness. A low-level computation is
+admissible only as the implementation of the assertion, not as the assertion's vocabulary.
+When a test says "determinant ratio", "coordinate vector", "Gram pin", or "subgroup
+orders", first ask which standard object or relation that calculation is trying to name.
+
+| Ad-hoc assertion shape | Replace with / name as | Source · locus |
+|---|---|---|
+| **quotient of determinants/discriminants** used to test an overlattice | the **index** of the sublattice/overlattice. For an even overlattice from an isotropic subgroup `H ⊂ A_L`, assert `[L':L] = \|H\|` and, when applicable, the resulting discriminant form `q_{L'} ≅ H^⊥/H`; do not make the determinant quotient the primary concept. | `Nik80` §1.4 |
+| **"p-local determinant factorization"**, square determinant ratios, prime-divisor filters, or unchanged valuations | **p-local saturation / p-maximal overlattice** and its **p-primary index**. State which prime-local component changes and which primary components are fixed. | `Nik80` §1.4–1.9; `CS10` Ch. 15 |
+| **Gram/determinant pins for `saturation()`** after rejecting echelon-basis rows | **saturation / primitive closure**. Assert equality to the primitive closure in the ambient lattice and the `index_in_saturation`; Gram/determinant values are secondary witnesses. | `DF04` Ch. 12; `Nik80` §1 |
+| **Gram pins for intersections** of spans or lattices | the **meet / intersection sublattice**. Assert membership in both parents, maximality among common sublattices when expressible, and symmetry `L ∩ M = M ∩ L`; Gram data is a presentation witness. | `DF04` Ch. 10–12 |
+| **coordinate-vector pins**, invariant-factor generator matrices, identity change-of-generator matrices, or duplicated `coordinates()` rows | the **invariant-factor decomposition** and the **finite quotient exact sequence**. Assert cyclicity/noncyclicity, generator orders, projection/lift identities, kernel/image/cokernel, and quotient maps; coordinates are basis-dependent presentation data. | `DF04` Ch. 12 |
+| **multiset of subgroup cardinalities** for a finite 2-torsion fixture | the **subspace lattice** of `F_2^n` / finite elementary abelian group. Name dimensions: 0-plane, lines, planes, whole space, etc.; cardinalities alone hide the vector-space concept. | `DF04` Ch. 11–12 |
+| **rank addition plus pairwise bilinear-form equations** for direct-sum embeddings | **orthogonal primitive isometric summand embeddings** whose images span the direct sum. Assert isometry of each embedding, orthogonality of images, primitivity, and spanning. | `Nik80` §1; `Mac98` §I.1 |
+| **determinant preservation** after a basis-update or reduction method | **same lattice / same isometry class with the intended reduced basis property**. Determinant equality alone is too weak; assert equality/isometry/submodule equality plus the reduction condition. | `DF04` Ch. 12; `CS10` Ch. 1 |
+| **root counts expressed as `len(roots())` with no named invariant** | **kissing number / number of roots** when the source theorem states that invariant. Counts are legitimate when they are the citable invariant, not when they stand in for structure. | `CS10` Ch. 4 |
+
+---
+
 ## Legitimate terms — do NOT flag
 
 Correct where used: **Smith normal form** (of a *matrix*), **discriminant form / discriminant
