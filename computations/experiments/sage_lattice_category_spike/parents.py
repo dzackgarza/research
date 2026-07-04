@@ -495,6 +495,19 @@ class SyntheticLattice(LatticeCarrier, Parent):
         return self._isometry_group_object
 
     def is_isometric(self, other):
+        r"""Isometry decision over Sage's own engines (gap-ledger G1, Rulings
+        round 3): the whole case analysis is the single match table below;
+        mathematics Sage's stack cannot decide asserts out by name.
+
+        Indefinite rank >= 3 is decided by genus + spinor-genus theory
+        (Eichler; SPLAG Ch. 15 Theorem 14 and section 9 [CS99, Zotero
+        T2WVLTDB]): when the genus carries a single improper spinor genus,
+        genus equality IS the isometry decision. Sage exposes spinor-genus
+        ENUMERATION (spinor_generators / representatives) but no PLACEMENT of
+        a given form into its spinor genus, so a split genus asserts out per
+        the round-2 ruling (assert-gated sufficient condition; full spinor
+        comparison is follow-up work confined to the spike per the 2026-07-04
+        directive — Dutour Sikirić INDEF_FORM_TestEquivalence adapter)."""
         assert isinstance(other, SyntheticLattice), (f"expected SyntheticLattice; found={type(other)}")
         if self.rank() != other.rank() or self.signature_pair() != other.signature_pair():
             return False
@@ -502,22 +515,59 @@ class SyntheticLattice(LatticeCarrier, Parent):
 
         # QuadraticForm(matrix) reads the matrix as the Hessian (2 x Gram).
         integral = self.base_ring() is ZZ and other.base_ring() is ZZ and self.is_integral() and other.is_integral()
-        if not integral:
-            # Rational lattices: the grounded relation is rational equivalence of
-            # quadratic forms over QQ (the 2x Hessian scaling is applied to both).
-            return QuadraticForm(matrix(QQ, 2 * self.gram_matrix())).is_rationally_isometric(
-                QuadraticForm(matrix(QQ, 2 * other.gram_matrix()))
-            )
-        assert self.is_definite() and other.is_definite(), (
-            "the is_isometric decision (computed by Sage) is grounded only for definite lattices "
-            "(indefinite decision is gap-ledger item 1); "
-            f"left_signature={self.signature_pair()}, right_signature={other.signature_pair()}"
-        )
-        # sign-normalize to positive definite so is_globally_equivalent_to applies.
-        sign = 1 if self.is_positive_definite() else -1
-        return QuadraticForm(2 * sign * matrix(ZZ, self.gram_matrix())).is_globally_equivalent_to(
-            QuadraticForm(2 * sign * matrix(ZZ, other.gram_matrix()))
-        )
+        pos, neg = self.signature_pair()
+        radical_rank = self.rank() - pos - neg
+        match (radical_rank, integral, self.rank()):
+            case (r, _, _) if r > 0:
+                # Degenerate: rad(L) is a saturated summand pairing to zero, so
+                # L ~ 0^r  (+)  L/rad(L); equal signature pairs force equal
+                # radical ranks, and the nondegenerate quotients recurse.
+                return self.radical_quotient().is_isometric(other.radical_quotient())
+            case (_, False, _):
+                # Rational lattices: the grounded relation is rational equivalence of
+                # quadratic forms over QQ (the 2x Hessian scaling is applied to both).
+                return QuadraticForm(matrix(QQ, 2 * self.gram_matrix())).is_rationally_isometric(
+                    QuadraticForm(matrix(QQ, 2 * other.gram_matrix()))
+                )
+            case (_, True, rank) if rank <= 1:
+                # Trivial: rank 0 is unique; rank 1 has diag(a) ~ diag(b) iff
+                # a == b (the units of ZZ are +-1, acting by squares).
+                return self.gram_matrix() == other.gram_matrix()
+            case (_, True, _) if self.is_definite():
+                # Definite: Sage's global equivalence (PARI qfisom),
+                # sign-normalized to positive definite.
+                sign = 1 if self.is_positive_definite() else -1
+                return QuadraticForm(2 * sign * matrix(ZZ, self.gram_matrix())).is_globally_equivalent_to(
+                    QuadraticForm(2 * sign * matrix(ZZ, other.gram_matrix()))
+                )
+            case (_, True, 2):
+                assert False, (
+                    "binary indefinite isometry is outside the spinor-genus theorem "
+                    "(SPLAG Ch. 15 section 9 assumes dimension >= 3; the binary theory is "
+                    "Gauss composition / real quadratic class groups — gap-ledger entry 1); "
+                    f"left_gram={self.gram_matrix()}, right_gram={other.gram_matrix()}"
+                )
+            case (_, True, _):
+                # Indefinite rank >= 3: class = improper spinor genus (Eichler,
+                # SPLAG Thm 14); genus equality decides iff the genus carries a
+                # single improper spinor genus (empty spinor-generator set).
+                from sage.quadratic_forms.genera.genus import Genus
+
+                genus_left = Genus(matrix(ZZ, self.gram_matrix()))
+                if genus_left != Genus(matrix(ZZ, other.gram_matrix())):
+                    return False
+                if not genus_left.spinor_generators(proper=False):
+                    return True
+                assert False, (
+                    "this genus splits into more than one improper spinor genus; Sage's "
+                    "spinor stack enumerates spinor genera (representatives) but cannot PLACE "
+                    "a given form into one, so the decision is assert-gated per the G1 round-2 "
+                    "ruling (follow-up engine: Dutour Sikirić INDEF_FORM_TestEquivalence "
+                    "adapter, spike-bound per the 2026-07-04 directive); "
+                    f"spinor_generators={genus_left.spinor_generators(proper=False)}, "
+                    f"left_gram={self.gram_matrix()}, right_gram={other.gram_matrix()}"
+                )
+        assert False, f"unreachable: the G1 routing table is total; gram={self.gram_matrix()}"
 
     def scale(self, scalar, label="scale"):
         scalar = QQ(scalar)

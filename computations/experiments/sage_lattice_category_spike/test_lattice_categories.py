@@ -626,12 +626,74 @@ def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indef
     swap_isometry = O_U.from_matrix(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
     assert swap_isometry.is_isometry() and swap_isometry in O_U
 
-    # is_isometric: definite decided via Sage; different class / rank -> False; indefinite fails loud.
+    # is_isometric: definite decided via Sage; different class / rank -> False;
+    # rank-2 indefinite is the excluded binary case of the G1 routing table.
     assert A2.is_isometric(Lattice("A2", label="other"))
     assert not A2.is_isometric(Lattice(matrix(ZZ, 2, 2, [2, 0, 0, 2])))
     assert not A2.is_isometric(Lattice(matrix(ZZ, 3, 3, [2, 0, 0, 0, 2, 0, 0, 0, 2])))
     with pytest.raises(AssertionError):
         U.is_isometric(U)
+
+def test_g1_indefinite_is_isometric_decides_via_sage_spinor_stack():
+    # G1 engine (gap-ledger entry 1, Rulings round 3). Mathematical basis:
+    # SPLAG Ch. 15 [CS99, Zotero T2WVLTDB] — Theorem 14 (Eichler: indefinite
+    # rank >= 3 class = spinor genus) and section 9 (spinor kernel). Expected
+    # values below come from the cited extraction or the Sage oracle only.
+    from sage.quadratic_forms.genera.genus import Genus
+    from sage.matrix.constructor import diagonal_matrix
+
+    # (i) witness-based positive controls: T unimodular => T G T^t is the same
+    # class, and the engine must say so through the genus/spinor route.
+    G = diagonal_matrix(ZZ, [1, 1, -3, -5])
+    L = Lattice(G, label="L")
+    T = matrix(ZZ, 4, 4, [1, 1, 0, 0, 0, 1, 0, 0, 2, 0, 1, 1, 1, 0, 0, 1])
+    assert T.det() in (1, -1)
+    M = Lattice(T * G * T.transpose(), label="M")
+    assert L.is_isometric(M) and M.is_isometric(L)
+
+    # (iii) single-spinor fixture: the Sage oracle confirms the genus of G
+    # carries a single improper spinor genus, so genus equality decides.
+    assert Genus(G).spinor_generators(proper=False) == []
+
+    # same signature pair, different genus (determinant 21 vs 15) -> False.
+    assert not L.is_isometric(Lattice(diagonal_matrix(ZZ, [1, 1, -3, -7])))
+
+    # rank-3 control through the same route.
+    H = diagonal_matrix(ZZ, [1, -1, 3])
+    S = matrix(ZZ, 3, 3, [1, 0, 1, 0, 1, 0, 1, 1, 2])
+    assert S.det() in (1, -1)
+    assert Genus(H).spinor_generators(proper=False) == []
+    assert Lattice(H).is_isometric(Lattice(S * H * S.transpose()))
+
+    # (ii) the SPLAG 2-spinor-genus fixture: forms (51a)/(51b) (SPLAG Ch. 15
+    # section 11, det -128) lie in one genus that splits into two spinor
+    # genera — two distinct classes (f and f*Delta(3)), hence NOT isometric.
+    # Sage's stack cannot PLACE a form in its spinor genus, so the engine
+    # refuses this decision by assertion instead of answering (round-2 ruling).
+    splag_a = matrix(ZZ, 3, 3, [-1, 1, 0, 1, 63, 0, 0, 0, 2])
+    splag_b = matrix(ZZ, 3, 3, [-9, 1, 0, 1, 7, 0, 0, 0, 2])
+    genus_a, genus_b = Genus(splag_a), Genus(splag_b)
+    # (iv) representatives() self-consistency oracle cross-check: one genus,
+    # a nonempty improper spinor-generator set, exactly two class representatives.
+    assert genus_a == genus_b
+    assert genus_a.spinor_generators(proper=False) != []
+    assert len(genus_a.representatives()) == 2
+    # (v) assert-gate naming the excluded mathematical case.
+    with pytest.raises(AssertionError, match="improper spinor genus"):
+        Lattice(splag_a).is_isometric(Lattice(splag_b))
+    with pytest.raises(AssertionError, match="binary indefinite"):
+        Lattice(matrix(ZZ, 2, 2, [0, 1, 1, 0])).is_isometric(Lattice(matrix(ZZ, 2, 2, [0, 1, 1, 0])))
+
+    # degenerate pairs recurse through the radical quotient: rad rank 1 with
+    # quotient <2> in two different presentations is one isometry class ...
+    assert Lattice(matrix(ZZ, 2, 2, [0, 0, 0, 2])).is_isometric(Lattice(matrix(ZZ, 2, 2, [2, 2, 2, 2])))
+    # ... and distinct rank-1 quotients (<2> vs <4>) separate.
+    assert not Lattice(matrix(ZZ, 2, 2, [0, 0, 0, 2])).is_isometric(Lattice(matrix(ZZ, 2, 2, [0, 0, 0, 4])))
+    # rank <= 1 is decided by Gram equality.
+    assert Lattice(matrix(ZZ, 1, 1, [5])).is_isometric(Lattice(matrix(ZZ, 1, 1, [5])))
+    assert not Lattice(matrix(ZZ, 1, 1, [5])).is_isometric(Lattice(matrix(ZZ, 1, 1, [7])))
+    assert Lattice(matrix(ZZ, 0, 0, [])).is_isometric(Lattice(matrix(ZZ, 0, 0, [])))
+
 
 def test_reflection_is_an_order_two_isometry_defined_only_for_anisotropic_vectors():
     # Spec: sigma_v(x) = x - (2 b(x,v)/q(v)) v, a member of End(L); q(v) = 0 is
