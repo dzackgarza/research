@@ -522,7 +522,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
         mathematics Sage's stack cannot decide asserts out by name.
 
         Indefinite rank >= 3 is decided by genus + spinor-genus theory
-        (Eichler; SPLAG Ch. 15 Theorem 14 and section 9 [CS99, Zotero
+        (Eichler; SPLAG Ch. 15 Theorem 14 and section 9 [CS10, Zotero
         T2WVLTDB]): when the genus carries a single improper spinor genus,
         genus equality IS the isometry decision. Sage exposes spinor-genus
         ENUMERATION (spinor_generators / representatives) but no PLACEMENT of

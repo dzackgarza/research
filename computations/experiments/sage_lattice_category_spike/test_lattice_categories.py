@@ -680,7 +680,7 @@ def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indef
 
 def test_g1_indefinite_is_isometric_decides_via_sage_spinor_stack():
     # G1 engine (gap-ledger entry 1, Rulings round 3). Mathematical basis:
-    # SPLAG Ch. 15 [CS99, Zotero T2WVLTDB] — Theorem 14 (Eichler: indefinite
+    # SPLAG Ch. 15 [CS10, Zotero T2WVLTDB] — Theorem 14 (Eichler: indefinite
     # rank >= 3 class = spinor genus) and section 9 (spinor kernel). Expected
     # values below come from the cited extraction or the Sage oracle only.
     from sage.quadratic_forms.genera.genus import Genus
