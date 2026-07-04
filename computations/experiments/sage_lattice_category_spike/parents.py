@@ -28,6 +28,7 @@ from sage.structure.parent import Parent
 from .arithmetic import block_diagonal_matrix, signature_pair
 from .categories import Lattices
 from .domain_algebra import (
+    DefiniteLattice as DefiniteCarrier,
     IntegralNondegenerateLattice as IntegralNondegenerateCarrier,
     Lattice as LatticeCarrier,
     NondegenerateLattice as NondegenerateCarrier,
@@ -715,12 +716,32 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateCarrier, Synthe
 
 class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
     r"""Spec 2.5 enumeration-kernel implementations, shared by the two
-    positive-definite subcategories. Definite-level names the spec leaves [contract]
-    (vectors_of_square, roots) stay stubs in the domain-algebra class (gap-ledger item 4). The
+    positive-definite subcategories. The definite-level unification names
+    (vectors_of_square, roots) are implemented here under the G4-ratified
+    convention (positive definite is the natural regime; negative-definite
+    lattices transport through L(-1) in their own kernel). The
     spec-2.6 reduction/CVP/Voronoi suite lives here too (decision D1 revised
     2026-07-04): Sage's own crypto lattice implementations presuppose exactly
     positive definiteness, so those methods are ordinary positive-definite
     vocabulary, not an opt-in refinement."""
+
+    def vectors_of_square(self, square):
+        r"""All lattice vectors of the given (nonnegative) norm, by the
+        positive-definite enumeration engine (G4 ratified semantics)."""
+        square = ZZ(square)
+        assert square >= 0, (
+            "a positive-definite form takes no negative values; "
+            f"square={square}, gram={self.gram_matrix()}"
+        )
+        if square == 0:
+            return (self.zero(),)
+        return tuple(self.short_vectors(square + 1)[square])
+
+    def roots(self):
+        r"""The norm-2 vectors (root convention in the positive-definite
+        regime; the AG regime on negative-definite lattices is the L(-1)
+        transport of this convention)."""
+        return self.vectors_of_square(2)
 
     def LLL(self):
         from sage.matrix.constructor import matrix
@@ -1016,12 +1037,73 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
         return injected.LLL()
 
 
+class _NegativeDefiniteKernel(DefiniteCarrier):
+    r"""G4 + row 9c (ratified 2026-07-04): negative-definite enumeration is BY
+    DEFINITION the natural convention on L(-1) — short vectors of a
+    negative-definite L ARE short vectors of L(-1). Every engine here
+    transports through the sign twist and pulls elements back along the
+    identity on coefficient vectors."""
+
+    def _sign_twist(self):
+        return self.twist(-1, label="sign_twist")
+
+    def _pull_element(self, element):
+        return self(list(element.coefficient_vector()))
+
+    def minimum(self):
+        # min{x^2} = -max over L(-1) (= -Infinity for positive rank).
+        return -self._sign_twist().maximum()
+
+    def maximum(self):
+        # max{x^2 | x != 0} = -min over L(-1).
+        return -self._sign_twist().minimum()
+
+    def shortest_vector(self):
+        return self._pull_element(self._sign_twist().shortest_vector())
+
+    def short_vectors(self, n, **kwargs):
+        return [
+            [self._pull_element(vector) for vector in vectors]
+            for vectors in self._sign_twist().short_vectors(n, **kwargs)
+        ]
+
+    def enumerate_short_vectors(self, bound):
+        for vector in self._sign_twist().enumerate_short_vectors(bound):
+            yield self._pull_element(vector)
+
+    def volume(self):
+        return self._sign_twist().volume()
+
+    def vectors_of_square(self, square):
+        square = ZZ(square)
+        assert square <= 0, (
+            "a negative-definite form takes no positive values; "
+            f"square={square}, gram={self.gram_matrix()}"
+        )
+        return tuple(self._pull_element(vector) for vector in self._sign_twist().vectors_of_square(-square))
+
+    def roots(self):
+        r"""The (-2)-vectors: the AG root convention on negative-definite
+        lattices (G4 round-2 refinement), i.e. the L(-1) transport of the
+        positive-definite norm-2 convention."""
+        return self.vectors_of_square(-2)
+
+
 class SyntheticPositiveDefiniteLattice(_PositiveDefiniteKernel, SyntheticNondegenerateLattice):
     r"""Positive-definite subcategory over QQ or with a non-integral form."""
 
 
 class SyntheticIntegralPositiveDefiniteLattice(_PositiveDefiniteKernel, SyntheticIntegralNondegenerateLattice):
     r"""Integral positive-definite subcategory: full discriminant + enumeration kernel."""
+
+
+class SyntheticNegativeDefiniteLattice(_NegativeDefiniteKernel, SyntheticNondegenerateLattice):
+    r"""Negative-definite subcategory over QQ or with a non-integral form."""
+
+
+class SyntheticIntegralNegativeDefiniteLattice(_NegativeDefiniteKernel, SyntheticIntegralNondegenerateLattice):
+    r"""Integral negative-definite subcategory: discriminant vocabulary plus the
+    L(-1)-transported enumeration kernel (G4 + row 9c)."""
 
 
 class _RootGeneratedMixin(RootGeneratedCarrier):
@@ -1040,8 +1122,13 @@ class SyntheticRootGeneratedPositiveDefiniteLattice(_RootGeneratedMixin, Synthet
     r"""Root lattices in the standard (positive definite) convention."""
 
 
+class SyntheticRootGeneratedNegativeDefiniteLattice(_RootGeneratedMixin, SyntheticIntegralNegativeDefiniteLattice):
+    r"""Root lattices twisted by -1 (the K3/AG convention): the (-2)-vector
+    root regime through the L(-1) transport kernel."""
+
+
 class SyntheticRootGeneratedNondegenerateLattice(_RootGeneratedMixin, SyntheticIntegralNondegenerateLattice):
-    r"""Root lattices twisted by -1 (the K3 convention): negative definite."""
+    r"""Root-generated lattices of mixed signature (composite direct sums)."""
 
 
 def synthetic_lattice(gram_matrix, base_ring, label, ambient=None, inclusion=None, cartan_type=None):
@@ -1061,13 +1148,22 @@ def synthetic_lattice(gram_matrix, base_ring, label, ambient=None, inclusion=Non
             "call is a silent Sage no-op without it); "
             f"gram={gram}, cartan_type={cartan_type}; fix the named constructor"
         )
-        concrete = (SyntheticRootGeneratedPositiveDefiniteLattice if positive_definite
-                    else SyntheticRootGeneratedNondegenerateLattice)
+        if positive_definite:
+            concrete = SyntheticRootGeneratedPositiveDefiniteLattice
+        elif neg == gram.nrows() and gram.nrows() > 0:
+            concrete = SyntheticRootGeneratedNegativeDefiniteLattice
+        else:
+            concrete = SyntheticRootGeneratedNondegenerateLattice
         return concrete(gram_matrix, base_ring, label, ambient=ambient, inclusion=inclusion, cartan_type=cartan_type)
+    negative_definite = nondegenerate and gram.nrows() > 0 and neg == gram.nrows()
     if integral and positive_definite:
         concrete = SyntheticIntegralPositiveDefiniteLattice
     elif positive_definite:
         concrete = SyntheticPositiveDefiniteLattice
+    elif integral and negative_definite:
+        concrete = SyntheticIntegralNegativeDefiniteLattice
+    elif negative_definite:
+        concrete = SyntheticNegativeDefiniteLattice
     elif integral and nondegenerate:
         concrete = SyntheticIntegralNondegenerateLattice
     elif nondegenerate:

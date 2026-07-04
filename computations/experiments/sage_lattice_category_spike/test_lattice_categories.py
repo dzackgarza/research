@@ -542,6 +542,47 @@ def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
         assert not hasattr(U, name)
 
 
+def test_negative_definite_enumeration_transports_through_the_sign_twist():
+    # G4 + row 9c (ratified): negative-definite conventions ARE the natural
+    # conventions on L(-1). Reference values: Sage IntegralLattice doctests
+    # (A2.twist(-1).minimum() == -Infinity, .maximum() == -2) and the Sage
+    # short-vector oracle for counts.
+    from sage.rings.infinity import Infinity
+    from sage.quadratic_forms.quadratic_form import QuadraticForm
+
+    A2 = Lattice("A2", label="A2")
+    A2_negative = A2.twist(-1)
+    assert A2_negative.is_negative_definite()
+    assert A2_negative.minimum() == -Infinity
+    assert A2_negative.maximum() == -2
+    assert A2_negative.shortest_vector().q() == -2
+    assert A2_negative.volume() == A2.volume()
+
+    # AG root regime: roots of the negative-definite lattice are its (-2)-vectors,
+    # in bijection (same coefficient vectors) with the norm-2 vectors of L(-1);
+    # the count agrees with the Sage enumeration oracle.
+    oracle_count = len(QuadraticForm(2 * matrix(ZZ, A2.gram_matrix())).short_vector_list_up_to_length(3)[2])
+    negative_roots = A2_negative.roots()
+    assert len(negative_roots) == oracle_count
+    assert all(root.q() == -2 for root in negative_roots)
+
+    # PD side of the same ratified convention.
+    positive_roots = A2.roots()
+    assert len(positive_roots) == oracle_count
+    assert all(root.q() == 2 for root in positive_roots)
+    assert A2.vectors_of_square(0) == (A2.zero(),)
+    assert A2_negative.vectors_of_square(0) == (A2_negative.zero(),)
+    with pytest.raises(AssertionError):
+        A2.vectors_of_square(-2)
+    with pytest.raises(AssertionError):
+        A2_negative.vectors_of_square(2)
+
+    # short-vector transport: identical coefficient vectors, negated norms.
+    for length, vectors in enumerate(A2_negative.short_vectors(3)):
+        for vector in vectors:
+            assert vector.q() == -length
+
+
 def test_nikulin_overlattice_and_metabolizer_identities_hold():
     # Nikulin (1980, "Integral symmetric bilinear forms...", Math. USSR Izv. 14, sec.
     # 1.4-1.9): for an even lattice L with discriminant form A and an isotropic subgroup
