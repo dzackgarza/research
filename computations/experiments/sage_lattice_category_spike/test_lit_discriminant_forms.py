@@ -224,3 +224,40 @@ def test_nikulin_non_lagrangian_u2_a2_glue_leaves_a2_discriminant_form():
         (1,): QQ(2) / 3,
         (2,): QQ(2) / 3,
     }
+
+
+def test_nikulin_local_modification_accepts_public_primary_subgroup_objects():
+    r"""Nikulin Prop. 1.4.1 is p-local on primary discriminant parts.
+
+    For S = A2 (+) A2(-1) (+) U(2), the 2-primary and 3-primary parts each
+    contain nontrivial isotropic subgroups. The public local_modification API
+    should accept the subgroup objects returned by the public p-primary
+    discriminant form, not only a copied generator list.
+    """
+    lattice = lc.Lattice("A2").direct_sum(lc.Lattice("A2").twist(-1)).direct_sum(
+        lc.Lattice("U").twist(2)
+    )
+
+    assert lattice.is_even()
+    assert lattice.signature_pair() == (3, 3)
+    assert lattice.determinant() == -36
+    assert lattice.discriminant_group().invariants() == (6, 6)
+
+    expected = {
+        2: {"determinant": -9, "invariants": (3, 3), "determinant_ratio": 4},
+        3: {"determinant": -4, "invariants": (2, 2), "determinant_ratio": 9},
+    }
+    for p, row in expected.items():
+        primary_form = lattice.discriminant_group(primary=p)
+        subgroup = next(
+            subgroup
+            for subgroup in primary_form.isotropic_subgroups()
+            if subgroup.cardinality() == p
+        )
+        modified = lattice.local_modification(subgroup, p)
+
+        assert modified.is_even()
+        assert modified.signature_pair() == lattice.signature_pair()
+        assert modified.determinant() == row["determinant"]
+        assert modified.discriminant_group().invariants() == row["invariants"]
+        assert abs(ZZ(lattice.determinant() / modified.determinant())) == row["determinant_ratio"]

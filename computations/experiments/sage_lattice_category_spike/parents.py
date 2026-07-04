@@ -709,6 +709,15 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateCarrier, Synthe
 
             return Lattice(gram, base_ring=self.base_ring(), label=label)
         primary_discriminant_group = self.discriminant_group(primary=p)
+        from .discriminant import SyntheticDiscriminantSubgroup
+
+        if isinstance(subgroup_or_gens, SyntheticDiscriminantSubgroup):
+            subgroup_ambient = subgroup_or_gens.ambient()
+            assert subgroup_ambient == primary_discriminant_group, (
+                "local modification subgroup must belong to this lattice's requested p-primary discriminant form; "
+                f"requested_p={p}, subgroup_ambient={subgroup_ambient}, expected={primary_discriminant_group}"
+            )
+            return subgroup_ambient.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label)
         return primary_discriminant_group.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label)
 
     def genus(self):
