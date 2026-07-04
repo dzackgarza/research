@@ -27,7 +27,7 @@ replacements, where the target is not a specialized term, are marked "plain".)
 |--------|-----------|----------|
 | `DF04` | Dummit & Foote, *Abstract Algebra*, 3rd ed. | invariant factors, elementary divisors, Smith normal form, modules over a PID, endomorphism ring, kernel |
 | `Nik80` | Nikulin, *Integral symmetric bilinear forms and some of their applications* (1979/80) | discriminant group, discriminant (bilinear/quadratic) form, signature invariants, genus of even lattices |
-| `CS10` | Conway & Sloane, *Sphere Packings, Lattices and Groups*, 3rd ed. | root-lattice invariants and kissing numbers; genus symbol, p-adic symbols, Jordan decomposition of forms |
+| `CS10` | Conway & Sloane, *Sphere Packings, Lattices and Groups*, 3rd ed. | root-lattice invariants, kissing numbers, theta series, shell cardinalities; genus symbol, p-adic symbols, Jordan decomposition of forms |
 | `Cas08` | Cassels, *Rational Quadratic Forms* — Ch. 8 | Jordan splitting of a form over ℤ_p |
 | `MM09` | Miranda & Morrison, *Embeddings of integral quadratic forms* | finite quadratic forms; the canonical form Sage's `normal_form()` computes |
 | `Mac98` | Mac Lane, *Categories for the Working Mathematician* | category, object/morphism, axioms, underlying object, endomorphism monoid |
@@ -117,6 +117,7 @@ Each row below is a self-contained bad→good replacement pattern, not an occurr
 | Bad: `assert sorted(H.cardinality() for H in A.all_submodules()) == [1] + [2]*7 + [4]*7 + [8]` with no named object. | Good: "For `A ≅ (F_2)^3`, the subgroup lattice is the subspace lattice: one 0-plane, seven lines, seven planes, and one whole 3-space." | `DF04` Ch. 11–12 |
 | Bad: direct-sum embeddings checked only by rank addition and pairwise equations `b(i(x), j(y)) = 0`. | Good: "The summand maps are orthogonal primitive isometric embeddings whose images span the orthogonal direct sum." Assert isometry of each embedding, orthogonality of images, primitivity, and spanning. | `Nik80` §1; `Mac98` §I.1 |
 | Bad: `assert update_reduced_basis(v).determinant() == L.determinant()` as the claimed content of a basis-update/reduction test. | Good: "The basis update presents the same lattice / same isometry class and satisfies the intended reduced-basis property." Determinant equality alone is too weak. | `DF04` Ch. 12; `CS10` Ch. 1 |
+| Bad: `[len(L.vectors_of_square(k)) for k in K] == [...]` or `[len(shell) for shell in L.short_vectors(B)] == [...]` with no named invariant. | Good: "These are shell cardinalities / representation numbers `r_L(m)`, equivalently initial coefficients of the theta series `θ_L(q) = Σ_m r_L(m)q^m`." State which shells are being computed; the list of lengths is only presentation data. | `CS10` Ch. 4, Ch. 7 |
 | Bad: `assert len(L.roots()) == 240` with no named invariant. | Good: "The root lattice has kissing number / number of roots `240`." Counts are legitimate when they are the citable invariant (e.g. Conway-Sloane root-lattice tables), not when they stand in for hidden structure. | `CS10` Ch. 4 |
 
 ---
