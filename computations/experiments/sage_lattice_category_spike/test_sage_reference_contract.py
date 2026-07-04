@@ -954,6 +954,20 @@ def test_maximal_overlattice_p_local_reference_agrees_with_sage_on_small_fixture
     assert L.maximal_overlattice().determinant() == sage_reference.maximal_overlattice().determinant()
     assert L.maximal_overlattice(3).determinant() == sage_reference.maximal_overlattice(3).determinant()
 
+    # Row 9d: the p-local determinant factorization is pinned, not just the
+    # aggregate value — on a two-prime fixture, maximizing at p=3 divides the
+    # determinant by an even power of 3 ONLY (the 2-adic part is untouched),
+    # and Sage's own p-local determinant agrees.
+    mixed = lc.Lattice("A2").twist(6)  # det = 3 * 6^2 = 2^2 * 3^3
+    sage_mixed = IntegralLattice(gram).twist(6)
+    maximized = mixed.maximal_overlattice(3)
+    assert maximized.determinant() == sage_mixed.maximal_overlattice(3).determinant()
+    ratio = ZZ(mixed.determinant() / maximized.determinant())
+    assert ratio.is_square() and ZZ(ratio).prime_divisors() in ([], [3]), (
+        f"3-local maximization must change the determinant by an even power of 3 only; ratio={ratio}"
+    )
+    assert ZZ(maximized.determinant()).valuation(2) == ZZ(mixed.determinant()).valuation(2)
+
 
 def test_free_quadratic_module_determinant_discriminant_and_gram_doctest_rows():
     # Reference: free_quadratic_module.py determinant/discriminant/gram_matrix
