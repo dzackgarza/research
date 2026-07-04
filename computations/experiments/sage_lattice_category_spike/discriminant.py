@@ -555,6 +555,47 @@ class SyntheticGenus(GenusCarrier):
         r"""All local symbols from Sage's genus machinery (spec 3.5)."""
         return tuple(self._sage_engine().local_symbols())
 
+    # ---- per-prime symbol extraction (gap-ledger G2, round-2 ruling) --------
+    # Convenience access over Genus_Symbol_p_adic_ring, sufficient to state
+    # Nikulin-type local conditions per prime: the Conway-Sloane Jordan-
+    # constituent tuples, and the local determinant/rank/excess/level data.
+    # At p = 2 the constituent tuples carry five entries
+    # [scale-valuation, rank, det-class, type II/I, oddity] — the p = 2
+    # complication Nik80 section 1.8 tracks; at odd p they carry three.
+
+    def local_symbol_tuples(self, p):
+        r"""The CANONICAL Conway-Sloane symbol tuples of the Jordan
+        constituents at ``p`` (Sage's ``canonical_symbol``), as a tuple of
+        integer tuples. Canonical, not raw: the raw 2-adic constituent data is
+        presentation-dependent (equal genera can print different det classes
+        and oddities pre-canonicalization), so only the canonical form is
+        usable per-prime data."""
+        return tuple(
+            tuple(ZZ(entry) for entry in constituent)
+            for constituent in self.local_symbol(p).canonical_symbol()
+        )
+
+    def local_determinant(self, p):
+        r"""Determinant datum of the ``p``-adic symbol (Sage's local ``determinant``)."""
+        return ZZ(self.local_symbol(p).determinant())
+
+    def local_rank(self, p):
+        r"""Dimension of the ``p``-adic symbol."""
+        return ZZ(self.local_symbol(p).dimension())
+
+    def local_excess(self, p):
+        r"""The p-excess (Conway-Sloane Ch. 15 section 7.5; at ``p = 2`` this is
+        the oddity), from Sage's local symbol."""
+        return self.local_symbol(p).excess()
+
+    def local_level(self, p):
+        r"""Level of the ``p``-adic symbol."""
+        return ZZ(self.local_symbol(p).level())
+
+    def is_locally_even(self, p):
+        r"""Whether the ``p``-adic symbol is of even type (Sage ``is_even``)."""
+        return bool(self.local_symbol(p).is_even())
+
     def __eq__(self, other):
         # spec section 5: genus equality IS local-symbol equality (computed by
         # Sage: genus symbols compare by signature + local symbols)

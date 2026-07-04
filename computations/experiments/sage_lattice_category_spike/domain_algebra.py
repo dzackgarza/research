@@ -1109,6 +1109,26 @@ class Genus:
     def local_symbols(self) -> tuple[object, ...]:  # the data handed to Sage genus machinery
         assert False, "declared contract; Sage computes this per the parity-plan triage"
 
+    # per-prime symbol extraction (gap-ledger G2): Conway-Sloane constituent
+    # tuples and the local scalar data, enough to state Nikulin local conditions
+    def local_symbol_tuples(self, p: int) -> tuple[tuple[int, ...], ...]:
+        assert False, "declared contract; Sage computes this per the parity-plan triage"
+
+    def local_determinant(self, p: int) -> ExactScalar:
+        assert False, "declared contract; Sage computes this per the parity-plan triage"
+
+    def local_rank(self, p: int) -> int:
+        assert False, "declared contract; Sage computes this per the parity-plan triage"
+
+    def local_excess(self, p: int) -> int:
+        assert False, "declared contract; Sage computes this per the parity-plan triage"
+
+    def local_level(self, p: int) -> int:
+        assert False, "declared contract; Sage computes this per the parity-plan triage"
+
+    def is_locally_even(self, p: int) -> bool:
+        assert False, "declared contract; Sage computes this per the parity-plan triage"
+
     def brown_invariant(self) -> int:
         assert False, "declared contract; Sage computes this per the parity-plan triage"
 

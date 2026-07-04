@@ -153,6 +153,34 @@ def test_brown_invariant_and_genus_follow_torsion_quadratic_module_doctests():
     assert D.genus(L.signature_pair()) == L.genus()
 
 
+def test_per_prime_genus_symbol_extraction_matches_the_sage_oracle():
+    # Gap-ledger G2: per-prime convenience extraction over
+    # Genus_Symbol_p_adic_ring. Expected values from the Sage oracle's
+    # CANONICAL symbols (canonical_symbol(), run 2026-07-04) — the method
+    # returns canonical, not raw, tuples on purpose (the raw det class is
+    # presentation-dependent at p=2: A2 prints raw [[0,2,3,0,0]] but
+    # canonicalizes to [[0,2,-1,0,0]]). A2 at p=3 has constituents
+    # [[0,1,-1],[1,1,-1]] (already canonical), det 3, dim 2, excess 6, level 3.
+    genus = lc.Lattice("A2").genus()
+    assert genus.local_symbol_tuples(3) == ((0, 1, -1), (1, 1, -1))
+    assert genus.local_determinant(3) == 3
+    assert genus.local_rank(3) == 2
+    assert genus.local_excess(3) == 6
+    assert genus.local_level(3) == 3
+    assert genus.is_locally_even(3)
+    assert genus.local_symbol_tuples(2) == ((0, 2, -1, 0, 0),)
+    assert genus.is_locally_even(2)
+
+    # p=2 complication (Nik80 sec. 1.8): a nontrivial 2-adic constituent
+    # carries type and oddity entries. U + <2> canonicalizes at p=2 to
+    # [[0,2,1,0,0],[1,1,1,1,1]] (raw det class 7 -> canonical 1).
+    mixed = lc.Lattice(matrix(ZZ, 3, [0, 1, 0, 1, 0, 0, 0, 0, 2])).genus()
+    assert mixed.local_symbol_tuples(2) == ((0, 2, 1, 0, 0), (1, 1, 1, 1, 1))
+    assert mixed.local_determinant(2) == 2
+    assert mixed.local_excess(2) == 1
+    assert mixed.local_level(2) == 2
+
+
 def test_direct_sum_summand_embeddings_are_orthogonal_primitive_isometric_images():
     # Gap-ledger row 9a: parity with IntegralLatticeDirectSum(return_embeddings=True).
     # Reference values: the sum Gram agrees with Sage's block sum; the embeddings
