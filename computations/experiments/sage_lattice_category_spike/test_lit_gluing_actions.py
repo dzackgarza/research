@@ -32,6 +32,22 @@ def _orbit_rows(orbits):
     return sorted(tuple(_coefficient_rows(orbit)) for orbit in orbits)
 
 
+def _matrix_rows(matrix_):
+    return tuple(tuple(row) for row in matrix_.rows())
+
+
+def _subgroup_orbit_rows(orbits):
+    return sorted(
+        tuple(
+            sorted(
+                tuple(_coefficient_rows(subgroup.elements()))
+                for subgroup in orbit
+            )
+        )
+        for orbit in orbits
+    )
+
+
 def test_a4_a4_order_five_glue_reconstructs_e8_through_public_gluing_surfaces():
     r"""A_4 has glue group C_5 [CS99, Ch. 4 sec. 6.1].  The order-five
     isotropic glue between two A_4 components is a Ch. 4 sec. 3 overlattice;
@@ -152,4 +168,30 @@ def test_d4_reflections_generate_weyl_subgroup_and_full_isometries_act_by_triali
 
     assert weyl_group.discriminant_image().order() == 1
     assert full_discriminant_image.order() == factorial(3)
+    assert discriminant_form.orthogonal_group().order() == factorial(3)
+    assert discriminant_form.orthogonal_group(kind="bilinear").order() == factorial(3)
+    assert sorted(
+        _matrix_rows(isometry.induced_map_on_discriminant_group().matrix())
+        for isometry in isometry_group.gens()
+    ) == [
+        ((0, 1), (1, 0)),
+        ((1, 0), (0, 1)),
+        ((1, 0), (1, 1)),
+    ]
+    assert sorted(_matrix_rows(action.matrix()) for action in full_discriminant_image) == [
+        ((0, 1), (1, 0)),
+        ((0, 1), (1, 1)),
+        ((1, 0), (0, 1)),
+        ((1, 0), (1, 1)),
+        ((1, 1), (0, 1)),
+        ((1, 1), (1, 0)),
+    ]
+    for action in full_discriminant_image:
+        assert action.preserves_bilinear_form()
+        assert action.preserves_quadratic_form()
     assert discriminant_form.orbit(discriminant_form.gen(0), group=full_discriminant_image) == frozenset(nonzero_glue_cosets)
+    assert _subgroup_orbit_rows(discriminant_form.orbits_on_subgroups(group=full_discriminant_image)) == [
+        (((0, 0),),),
+        (((0, 0), (0, 1)), ((0, 0), (1, 0)), ((0, 0), (1, 1))),
+        (((0, 0), (0, 1), (1, 0), (1, 1)),),
+    ]
