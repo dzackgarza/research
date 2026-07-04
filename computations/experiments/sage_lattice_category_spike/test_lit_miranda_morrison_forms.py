@@ -102,15 +102,17 @@ def test_elementary_2adic_forms_u_and_v_gauss_milgram_signature():
     assert q.brown_invariant() % 8 == D4.signature() % 8   # Milgram, Thm 1.3.3*
 
 
-def test_signature_mod8_is_a_homomorphism_over_primary_parts():
+def test_brown_invariant_is_additive_over_primary_parts_and_matches_milgram():
     r"""q = (+)_p q_p and Br is additive over the primary parts.
 
     Nik80 D7BP5F7Z .md:156 Prop 1.2.2: q = (+)_p q_p is an orthogonal splitting of
-    the finite form over the p-primary parts A_p of A_L. Nik80 .md:204-208 Thm
-    1.3.3* makes "signature (mod 8)" a homomorphism on the semigroup qu(Z), so it
-    is additive over that splitting; the same 2-adic component is the *oddity* in
-    Conway-Sloane's language (CS10 TCJKXU3D .md:11902: "The 2-signature ... is also
-    called the oddity", a p-adic invariant defined mod 8).
+    the finite form over the p-primary parts A_p of A_L. The Brown invariant is the
+    Gauss-sum invariant of the finite form, so the test checks its additivity over
+    the primary splitting. Nik80 .md:204-208 Thm 1.3.3* is then checked separately
+    as Milgram's theorem, identifying Br(q_L) with the lattice signature mod 8.
+    The same 2-adic component is the *oddity* in Conway-Sloane's language
+    (CS10 TCJKXU3D .md:11902: "The 2-signature ... is also called the oddity", a
+    p-adic invariant defined mod 8).
 
     A_5 has A_L = Z/6 = Z/2 (+) Z/3, so the split, the per-block Brown invariants,
     and the additive congruence Br(q) == Br(q_2) + Br(q_3) (mod 8) are all
@@ -139,9 +141,9 @@ def test_signature_mod8_is_a_homomorphism_over_primary_parts():
     per_block = {p: br for (p, _gram, br) in q.brown_invariant_per_block()}
     assert per_block == {2: 7, 3: 6}
 
-    # signature (mod 8) is additive over the primary parts (Thm 1.3.3* homomorphism)
+    # Brown/Gauss-sum invariant is additive over the primary parts.
     assert q.brown_invariant() % 8 == (br2 + br3) % 8
-    # ... and equals the lattice signature mod 8 (Milgram, Thm 1.3.3*)
+    # Milgram then identifies Br(q_L) with the lattice signature mod 8.
     assert q.brown_invariant() % 8 == A5.signature() % 8
 
 

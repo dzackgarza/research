@@ -42,8 +42,9 @@ def test_d4_theta_shell_counts_match_conway_sloane_chapter_4():
 def test_a2_direct_sum_theta_shell_convolution_matches_conway_sloane():
     r"""For an orthogonal direct sum, theta series multiply. Combining the
     Conway-Sloane Ch. 4 A_2 shell data gives 12 roots in A_2 + A_2 and
-    36 vectors of norm 4: 6+6 roots, and the norm-4 shell from
-    ``(root, root)`` pairs plus the two summand norm-4 shells.
+    36 vectors of norm 4: the 6 * 6 cross-summand ``(root, root)`` pairs.
+    There is no single-summand contribution because A_2 has no norm-4 shell,
+    equivalently no two orthogonal roots.
     """
     a2_sum = lc.Lattice("A2").direct_sum(lc.Lattice("A2"))
     negative_sum = a2_sum.twist(-1)

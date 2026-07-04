@@ -30,10 +30,8 @@ Sources (Zotero item key | markdown-extraction attachment | cited location):
       * Ch. 8 (action on the transcendental lattice): for a projective K3 with
         rank(NS) = r, sig(NS) = (1, r-1) and sig(T) = (2, 20-r); r = 1 gives the
         general degree-2d transcendental lattice of signature (2, 19).
-      * Introduction: an Enriques surface has Picard number 10, and a K3 surface
-        is its universal double cover; the Enriques period theory fixes a
-        rank-10 sublattice of H^2(K3, Z) (vs. the rank-1 ZH of the polarized
-        case).
+      * Introduction: an Enriques surface has Picard number 10; its numerical
+        Picard lattice is the hyperbolic even unimodular lattice E10.
   - V. V. Nikulin, *Integral symmetric bilinear forms and some of their
     applications* (1980). TTY9FFJS / D7BP5F7Z.
       * 6 (orthogonality of lattices): S _|_ K means S embeds primitively into
@@ -238,9 +236,8 @@ def test_enriques_lattice_e10_is_a_unimodular_summand_of_the_k3_lattice():
     lattice [Kon20 Cor 1.26, Thm 1.27, introduction; Dol24 E10; Nik80 Cor 1.6.2].
 
     E10 is the even unimodular lattice of signature (1, 9): rank 10 = the Picard
-    number of an Enriques surface, whose universal double cover is a K3 surface.
-    The Enriques period theory fixes a rank-10 sublattice of H^2(K3, Z), and
-    since E10 is unimodular it splits off as an orthogonal summand:
+    number of an Enriques surface. By the classification of indefinite even
+    unimodular lattices, an abstract copy of E10 splits off from the K3 lattice:
     L_K3 = U^3 (+) E8(-1)^2 ~ E10 (+) (U^2 (+) E8(-1)). The isometry
     L_K3 ~ E10 (+) E10^perp is decided over the whole genus (not just matching
     signatures), and the anti-isometry q_{E10} ~ -q_{E10^perp} is the unimodular
@@ -263,7 +260,7 @@ def test_enriques_lattice_e10_is_a_unimodular_summand_of_the_k3_lattice():
     assert e10_perp.rank() == 12 and e10_perp.signature_pair() == (2, 10)
     assert e10_perp.is_even() and e10_perp.is_unimodular()
 
-    # E10 is a primitive unimodular rank-10 summand of the K3 lattice
+    # An abstract copy of E10 is a primitive unimodular rank-10 summand of L_K3
     assert e10.direct_sum(e10_perp).is_isometric(k3)
     # unimodular case of Nikulin Cor 1.6.2: both discriminant forms trivial
     assert tuple(e10.discriminant_group().invariants()) == ()

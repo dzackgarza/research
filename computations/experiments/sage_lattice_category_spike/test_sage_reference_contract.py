@@ -822,9 +822,10 @@ def test_odd_discriminant_form_remains_usable_while_odd_genus_is_unsupported():
 
 
 def test_enriques_discriminant_form_reference_agrees_with_sage_at_research_scale():
-    # Scale honesty: the Enriques lattice U(2) + E8(2) -- Gram = block_diagonal of
-    # 2*U and 2*E8, i.e. every entry of U + E8 doubled -- has discriminant form
-    # (Z/2)^10. The synthetic pipeline (lattice -> sourced discriminant form ->
+    # Scale honesty: the Enriques algebraic lattice is hyperbolic of signature
+    # (1, 9). In this spike's Sage-facing convention, that means U(2) plus the
+    # negative E8 block scaled by 2; it has discriminant form (Z/2)^10.
+    # The synthetic pipeline (lattice -> sourced discriminant form ->
     # Sage computation) must reference-agree with the direct Sage torsion module on
     # the same data. Sage's own O(q) of (Z/2)^10 does not complete, so parity is
     # asserted on the invariants Sage does complete: normal form, Brown, genus.
@@ -833,7 +834,7 @@ def test_enriques_discriminant_form_reference_agrees_with_sage_at_research_scale
 
     enriques_gram = matrix(ZZ, block_diagonal_matrix(
         2 * IntegralLattice("U").gram_matrix(),
-        2 * IntegralLattice("E8").gram_matrix(),
+        -2 * IntegralLattice("E8").gram_matrix(),
     ))
     L = lc.Lattice(enriques_gram)
     D = L.discriminant_group()
@@ -843,7 +844,7 @@ def test_enriques_discriminant_form_reference_agrees_with_sage_at_research_scale
     #   .invariants() == (2,)*10
     #   .brown_invariant() == 0
     #   .miranda_morrison_normal_form() Gram == block_diagonal of five hyperbolic planes [[0,1/2],[1/2,0]]
-    #   .signature_pair of the lattice == (9, 1)
+    #   .signature_pair of the lattice == (1, 9)
     expected_normal_form_gram = matrix(QQ, block_diagonal_matrix(
         [matrix(QQ, 2, 2, [0, QQ(1) / 2, QQ(1) / 2, 0])] * 5
     ))
@@ -852,7 +853,7 @@ def test_enriques_discriminant_form_reference_agrees_with_sage_at_research_scale
     assert D.brown_invariant() == 0
     assert D.miranda_morrison_normal_form()[0] == (2,) * 10
     assert_matrix_equal(D.miranda_morrison_normal_form()[1], expected_normal_form_gram)
-    assert L.signature_pair() == (9, 1)
+    assert L.signature_pair() == (1, 9)
     assert D.is_genus(L.signature_pair())
     assert D.genus(L.signature_pair()) == L.genus()
 

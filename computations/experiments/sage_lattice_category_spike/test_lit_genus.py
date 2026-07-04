@@ -292,7 +292,7 @@ def test_is_genus_respects_gauss_milgram_signature_congruence_nikulin_1_3_3():
         (0, 2): False,  # -2 ≡ 6  -- congruence fails
         (3, 1): True,   # 2 ≡ 2   -- witnessed by A_2 (+) U
         (1, 3): False,  # -2 ≡ 6  -- congruence fails
-        (6, 0): False,  # 6 ≡ 6   -- congruence fails
+        (6, 0): False,  # 6 != 2 mod 8 -- congruence fails
         (4, 2): True,   # 2 ≡ 2   -- witnessed by A_2 (+) U^2
     }
     for signature, exists in existence.items():
