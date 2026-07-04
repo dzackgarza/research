@@ -33,13 +33,31 @@ invariants, is_isomorphic, and brown_invariant.
 from __future__ import annotations
 
 from functools import reduce
-from math import prod
+from math import factorial, prod
 
+from sage.all import QQ, ZZ, identity_matrix, matrix
 import sage_lattice_category_spike.lattice_categories as lc
 
 
 def _direct_sum(*lattices):
     return reduce(lambda a, b: a.direct_sum(b), lattices)
+
+
+def _coefficient_rows(elements):
+    return sorted(tuple(element.coefficient_vector()) for element in elements)
+
+
+def _local_symbol_rows(genus):
+    return {
+        ZZ(symbol.prime()): {
+            "canonical_symbol": tuple(tuple(row) for row in symbol.canonical_symbol()),
+            "determinant": ZZ(symbol.determinant()),
+            "excess": ZZ(symbol.excess()),
+            "level": ZZ(symbol.level()),
+            "rank": ZZ(symbol.rank()),
+        }
+        for symbol in genus.local_symbols()
+    }
 
 
 def test_irreducible_root_lattice_invariants_match_conway_sloane_chapter_4():
@@ -93,6 +111,194 @@ def test_root_lattice_discriminant_groups_are_the_conway_sloane_glue_groups():
         assert tuple(discriminant_group.invariants()) == invariant_factors, name
         order = prod(invariant_factors)   # prod(()) == 1 for E8
         assert order == lattice.determinant(), name          # |L^*/L| = det L
+
+
+def test_small_root_lattice_automorphism_orders_match_conway_sloane_chapter_4():
+    r"""Conway-Sloane Ch. 4 describes root-lattice automorphism groups via the
+    Weyl group G_0 and diagram automorphisms G_1, with |G(L)| = g_0 g_1
+    [CS99 Ch. 4 sec. 2 and the summary lines in secs. 6.1, 7.1].
+
+      - A_n: G_0 = S_{n+1}; G_1 has order 2 except for A_1.
+      - D_4: g_0 = 2^3 * 4! and g_1 = 3! (triality).
+
+    This pins the spike's GAP/Sage-backed isometry_group().order() against a
+    published group order, not just against the existence of form-preserving
+    matrices. E_8 is intentionally excluded here: its order is citable but slow
+    enough to belong in a later CI/slow tranche.
+    """
+    expected_orders = {
+        "A1": 2,
+        "A2": 2 * factorial(3),
+        "A3": 2 * factorial(4),
+        "D4": (2**3) * factorial(4) * factorial(3),
+    }
+    for name, order in expected_orders.items():
+        lattice = lc.Lattice(name)
+        assert lattice.is_even()            # root-lattice setup guard
+        assert lattice.minimum() == 2       # roots are the minimal vectors
+        group = lattice.isometry_group()
+        assert group.is_finite()
+        assert group.order() == order
+        assert all(generator.is_isometry() for generator in group.gens())
+
+
+def test_nikulin_primary_decomposition_of_finite_quadratic_forms():
+    r"""Nikulin Prop. 1.2.2 [Nik80]: a finite quadratic form decomposes as the
+    orthogonal direct sum of its p-primary restrictions q_p. The fixture is a
+    deliberately small mixed-primary form with 2-, 3-, and 5-primary factors, so
+    the test exercises the finite-form vocabulary directly rather than a lattice
+    determinant read.
+    """
+    form = lc.TorsionQuadraticForm(
+        matrix.diagonal(QQ, [QQ(1) / 2, QQ(2) / 3, QQ(4) / 5])
+    )
+
+    assert form.invariants() == (2, 3, 5)
+    assert form.cardinality() == 30
+    primary_parts = form.primary_decomposition()
+    assert tuple(part.invariants() for part in primary_parts) == ((2,), (3,), (5,))
+    assert prod(part.cardinality() for part in primary_parts) == form.cardinality()
+    for prime, primary_part in zip((2, 3, 5), primary_parts):
+        assert ZZ(primary_part.annihilator()).prime_divisors() == [prime]
+        assert primary_part.primary_decomposition()[0].is_isomorphic(
+            primary_part,
+            kind="quadratic",
+        )
+
+
+def test_nikulin_rank_obstruction_for_genus_of_finite_quadratic_form():
+    r"""Nikulin Thm. 1.10.1 [Nik80] gives the rank and local-generator
+    obstructions for realizing a finite quadratic form as the discriminant form
+    of an even lattice with prescribed signature. The 2-elementary form
+    ``diag(1/2, 1/2, 1/2)`` has Brown invariant 3 and needs enough lattice rank:
+    it is realized by a positive rank-3 lattice, but not by the listed too-small
+    or parity-incompatible signatures.
+    """
+    form = lc.TorsionQuadraticForm(identity_matrix(QQ, 3) / 2)
+
+    assert form.invariants() == (2, 2, 2)
+    assert form.cardinality() == 8
+    assert form.rank_p(2) == 3
+    assert form.brown_invariant() == 3
+    assert form.is_genus((3, 0))
+    for signature in ((1, 1), (4, 0), (5, 0), (3, 1)):
+        assert not form.is_genus(signature)
+
+
+def test_watson_split_genus_local_symbols_match_conway_sloane_chapter_15():
+    r"""Conway-Sloane Ch. 15 sec. 9 [CS99] gives Watson's split genus example:
+    the ternary positive-definite lattices with Gram matrices
+    ``[[2,1,0],[1,2,0],[0,0,18]]`` and
+    ``[[6,3,0],[3,6,0],[0,0,2]]`` have the same genus but are not isometric.
+    The citable content is the p-adic genus-symbol data at 2 and 3, not just a
+    determinant/signature guard.
+    """
+    first = lc.Lattice(matrix(ZZ, [[2, 1, 0], [1, 2, 0], [0, 0, 18]]))
+    second = lc.Lattice(matrix(ZZ, [[6, 3, 0], [3, 6, 0], [0, 0, 2]]))
+
+    for lattice in (first, second):
+        assert lattice.rank() == 3
+        assert lattice.is_even()
+        assert lattice.signature_pair() == (3, 0)
+        assert lattice.determinant() == 54
+
+    first_genus = first.genus()
+    second_genus = second.genus()
+    assert first_genus == second_genus
+    assert first.same_genus(second)
+    assert not first.is_isometric(second)
+    assert _local_symbol_rows(first_genus) == {
+        ZZ(2): {
+            "canonical_symbol": ((0, 2, -1, 0, 0), (1, 1, 1, 1, 1)),
+            "determinant": 2,
+            "excess": 1,
+            "level": 2,
+            "rank": 3,
+        },
+        ZZ(3): {
+            "canonical_symbol": ((0, 1, -1), (1, 1, -1), (2, 1, -1)),
+            "determinant": 27,
+            "excess": 6,
+            "level": 9,
+            "rank": 3,
+        },
+    }
+    assert _local_symbol_rows(second_genus) == _local_symbol_rows(first_genus)
+
+
+def test_nikulin_even_overlattices_of_U2_are_isotropic_subgroups():
+    r"""Nikulin Prop. 1.4.1 [Nik80]: even overlattices S' of an even lattice S
+    correspond to isotropic subgroups H of A_S, and the discriminant form of S'
+    is q_{S'} = (q_S | H^perp) / H. For S = U(2), A_S = (Z/2)^2 has exactly two
+    nonzero isotropic elements; each generated subgroup is Lagrangian, and the
+    corresponding even overlattice is unimodular with trivial discriminant form.
+    """
+    lattice = lc.Lattice("U").twist(2)
+    discriminant_form = lattice.discriminant_group()
+
+    assert lattice.is_even()                 # Nikulin Prop. 1.4.1 hypothesis
+    assert lattice.signature_pair() == (1, 1)
+    assert lattice.determinant() == -4       # setup guard for |A_S| = 4
+    assert discriminant_form.invariants() == (2, 2)
+    assert _coefficient_rows(discriminant_form.isotropic_elements()) == [
+        (0, 0),
+        (0, 1),
+        (1, 0),
+    ]
+
+    nontrivial_isotropic_subgroups = [
+        subgroup
+        for subgroup in discriminant_form.isotropic_subgroups()
+        if subgroup.cardinality() == 2
+    ]
+    assert [
+        _coefficient_rows(subgroup.elements())
+        for subgroup in nontrivial_isotropic_subgroups
+    ] == [[(0, 0), (0, 1)], [(0, 0), (1, 0)]]
+
+    for subgroup in nontrivial_isotropic_subgroups:
+        orthogonal = discriminant_form.orthogonal(subgroup)
+        quotient_form = discriminant_form.orthogonal_quotient(subgroup)
+        overlattice = discriminant_form.overlattice_from_isotropic_subgroup(subgroup)
+        overlattice_form = discriminant_form.discriminant_form_of_overlattice(subgroup)
+
+        assert _coefficient_rows(orthogonal.elements()) == _coefficient_rows(
+            subgroup.elements()
+        )
+        assert quotient_form.invariants() == ()
+        assert overlattice_form.is_isomorphic(quotient_form, kind="quadratic")
+        assert overlattice.discriminant_group().invariants() == ()
+        assert overlattice.is_even() and overlattice.is_unimodular()
+        assert overlattice.signature_pair() == lattice.signature_pair()
+        assert abs(ZZ(lattice.determinant() / overlattice.determinant())) == 4
+
+
+def test_a2_e6_isotropic_glue_reconstructs_the_e8_root_lattice():
+    r"""Conway-Sloane Ch. 4 describes E_6 as the complement of an A_2 sublattice
+    in E_8, and Nikulin Prop. 1.4.1 identifies even overlattices with isotropic
+    subgroups of the discriminant form. The anti-isometry q_{A_2} = -q_{E_6}
+    therefore gives a Lagrangian order-3 subgroup in A_{A_2} + A_{E_6}; gluing
+    along it reconstructs the even unimodular root lattice E_8.
+    """
+    ambient = lc.Lattice("A2").direct_sum(lc.Lattice("E6"))
+    discriminant_form = ambient.discriminant_group()
+
+    assert ambient.is_even()
+    assert ambient.determinant() == 9
+    assert discriminant_form.invariants() == (3, 3)
+    subgroup = discriminant_form.subgroup_generated_by(
+        [discriminant_form.gen(0) + 2 * discriminant_form.gen(1)]
+    )
+    assert subgroup.cardinality() == 3
+    assert discriminant_form.is_isotropic_subgroup(subgroup)
+    assert discriminant_form.orthogonal_quotient(subgroup).invariants() == ()
+
+    glued = discriminant_form.overlattice_from_isotropic_subgroup(subgroup)
+    assert glued.is_even() and glued.is_unimodular()
+    assert glued.minimum() == 2
+    assert len(glued.roots()) == 240
+    assert glued.discriminant_group().invariants() == ()
+    assert glued.is_isometric(lc.Lattice("E8"))
 
 
 def test_nikulin_orthogonal_complement_anti_isometry_corollary_1_6_2():

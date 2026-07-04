@@ -588,27 +588,51 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantFormCarrier, Synthet
             # linear algebra needs at least one nonzero generator
             return self.subgroup_generated_by(self.gens())
         sage_form = self._sage_engine()
-        # the Sage module's cover basis corresponds 1:1 to the presented generators
-        # (TorsionQuadraticForm builds V = (1/d)*ZZ^n with inner product q), so
-        # coordinates transfer through V, NOT through Sage's invariant-factor
-        # gens — the presented generator orders need not be invariant factors
-        # (e.g. invariants (2, 3))
-        cover = sage_form.V()
-        basis = cover.basis()
-        assert sage_form.cardinality() == self.cardinality() and all(
-            sage_form(basis[i]).order() == invariant for i, invariant in enumerate(self.invariants())
-        ), (
-            "the ephemeral Sage TorsionQuadraticModule must reproduce the presented generator orders to "
-            "transfer subgroup coordinates; "
-            f"synthetic invariants={self.invariants()}, Sage invariants={tuple(sage_form.invariants())}"
+        assert sage_form.cardinality() == self.cardinality(), (
+            "the ephemeral Sage TorsionQuadraticModule must carry the whole group to transfer "
+            "orthogonal complements; "
+            f"synthetic cardinality={self.cardinality()}, Sage cardinality={sage_form.cardinality()}"
         )
+        cover = sage_form.V()
+        cover_basis = tuple(cover.basis())
+        if len(cover_basis) == self.ngens() and all(
+            sage_form(cover_basis[i]).order() == invariant
+            for i, invariant in enumerate(self.invariants())
+        ):
+            def to_sage_element(element):
+                return sage_form(cover.linear_combination_of_basis(list(element.coefficient_vector())))
+
+            def from_sage_element(element):
+                return self([ZZ(coordinate) for coordinate in cover.coordinates(element.lift())])
+        else:
+            # Sourced lattice discriminant groups use an ambient-lattice cover in
+            # Sage; that cover can include trivial source directions, so the
+            # invariant-factor generators are the coordinate bridge.
+            sage_generators = tuple(sage_form.gens())
+            assert len(sage_generators) == self.ngens() and all(
+                sage_generators[i].order() == invariant for i, invariant in enumerate(self.invariants())
+            ), (
+                "the ephemeral Sage TorsionQuadraticModule must reproduce either the owned presented "
+                "basis or the owned invariant generators to transfer subgroup coordinates; "
+                f"synthetic invariants={self.invariants()}, Sage invariants={tuple(sage_form.invariants())}"
+            )
+
+            def to_sage_element(element):
+                return sum(
+                    (ZZ(coordinate) * sage_generators[i] for i, coordinate in enumerate(element.coefficient_vector())),
+                    sage_form.zero(),
+                )
+
+            def from_sage_element(element):
+                return self([ZZ(coordinate) for coordinate in sage_form(element.lift()).vector()])
+
         images = [
-            sage_form(cover.linear_combination_of_basis(list(generator.coefficient_vector())))
+            to_sage_element(generator)
             for generator in subgroup.gens()
         ]
         complement = sage_form.orthogonal_submodule_to(images)
         return self.subgroup_generated_by(
-            self([ZZ(coordinate) for coordinate in cover.coordinates(generator.lift())])
+            from_sage_element(generator)
             for generator in complement.gens()
         )
 
