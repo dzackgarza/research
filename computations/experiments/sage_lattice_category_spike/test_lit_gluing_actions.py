@@ -71,6 +71,38 @@ def test_a4_a4_order_five_glue_reconstructs_e8_through_public_gluing_surfaces():
     assert via_constructor.is_isometric(via_lattice_glue)
 
 
+def test_a2_e6_gluing_returns_primitive_complementary_embeddings_in_e8():
+    r"""CS99 Ch. 4 sec. 8 identifies E_6 as the orthogonal complement of
+    A_2 in E_8. The public gluing constructor should therefore return actual
+    primitive isometric summand embeddings when asked, not just the glued
+    overlattice.
+    """
+    a2 = lc.Lattice("A2")
+    e6 = lc.Lattice("E6")
+
+    glued, (a2_embedding, e6_embedding) = lc.IntegralLatticeGluing(
+        [a2, e6],
+        [[a2.discriminant_group().gen(0), 2 * e6.discriminant_group().gen(0)]],
+        return_embeddings=True,
+        label="A2_E6_order_three_glue",
+    )
+
+    assert glued.is_even() and glued.is_unimodular()
+    assert glued.minimum() == 2 and len(glued.roots()) == 240
+    assert glued.is_isometric(lc.Lattice("E8"))
+    assert a2_embedding.is_injective()
+    assert e6_embedding.is_injective()
+
+    a2_image = a2_embedding.image()
+    e6_image = e6_embedding.image()
+    assert glued.is_primitive(a2_image)
+    assert glued.is_primitive(e6_image)
+    assert a2_image.is_isometric(a2)
+    assert e6_image.is_isometric(e6)
+    assert glued.orthogonal_complement(a2_image).is_isometric(e6)
+    assert glued.orthogonal_complement(e6_image).is_isometric(a2)
+
+
 def test_a4_full_isometry_action_negates_cyclic_glue_group_and_has_cs99_orbits():
     r"""CS99 Ch. 4 sec. 6.1 identifies the A_n glue group as C_{n+1} and
     says the order-two automorphism sends [i] to [n+1-i].  For A_4, this is

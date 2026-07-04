@@ -6,7 +6,7 @@ Every path routes through the section-1.4 category-namespace entry
 
 from __future__ import annotations
 
-from sage.matrix.constructor import matrix
+from sage.matrix.constructor import column_matrix, matrix
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
@@ -95,10 +95,11 @@ def IntegralLatticeGluing(lattices, glue, return_embeddings=False, label="gluing
 
 
 def _embedding_matrix(domain, codomain, start):
-    rows = []
-    for i in range(codomain.rank()):
-        row = []
-        for j in range(domain.rank()):
-            row.append(ZZ.one() if i == start + j else ZZ.zero())
-        rows.extend(row)
-    return matrix(ZZ, codomain.rank(), domain.rank(), rows)
+    ambient_basis = codomain._rationalization_module().basis()
+    return column_matrix(
+        ZZ,
+        [
+            codomain._underlying_module().coordinate_vector(ambient_basis[start + j])
+            for j in range(domain.rank())
+        ],
+    )
