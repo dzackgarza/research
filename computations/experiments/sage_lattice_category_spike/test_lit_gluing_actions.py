@@ -21,6 +21,8 @@ from __future__ import annotations
 
 from math import factorial
 
+from sage.rings.rational_field import QQ
+
 import sage_lattice_category_spike.lattice_categories as lc
 
 
@@ -142,6 +144,47 @@ def test_a4_full_isometry_action_negates_cyclic_glue_group_and_has_cs99_orbits()
     ]
 
 
+def test_a4_group_automorphisms_separate_from_form_isometries_and_transport_forms():
+    r"""The A_4 glue group is cyclic of order five [CS99, Ch. 4 sec. 6.1],
+    while the diagram automorphism only realizes negation on that group.  Thus
+    the finite group automorphism surface has four units, but the discriminant
+    form isometry surface has only the two units preserving q([1]) = 4/5.
+    """
+    lattice = lc.Lattice("A4")
+    discriminant_form = lattice.discriminant_group()
+    generator = discriminant_form.gen(0)
+    doubling = discriminant_form.hom([2 * generator])
+
+    assert discriminant_form.invariants() == (5,)
+    assert discriminant_form.q(generator) == QQ(4) / 5
+    assert discriminant_form.q(2 * generator) == QQ(6) / 5
+    assert discriminant_form.relations_among((generator, 2 * generator)) == (
+        (0, 0),
+        (1, 2),
+        (2, 4),
+        (3, 1),
+        (4, 3),
+    )
+
+    assert doubling.is_automorphism()
+    assert not doubling.preserves_bilinear_form()
+    assert not doubling.preserves_quadratic_form()
+    assert _matrix_rows(discriminant_form.pushforward_form(doubling)) == ((QQ(6) / 5,),)
+    assert _matrix_rows(discriminant_form.pullback_form(doubling)) == ((QQ(6) / 5,),)
+
+    assert discriminant_form.automorphism_group().order() == 4
+    assert sorted(
+        tuple(action(generator).coefficient_vector())
+        for action in discriminant_form.automorphism_group()
+    ) == [(1,), (2,), (3,), (4,)]
+    assert discriminant_form.orthogonal_group().order() == 2
+    assert discriminant_form.orthogonal_group(kind="bilinear").order() == 2
+    assert sorted(
+        tuple(action(generator).coefficient_vector())
+        for action in discriminant_form.orthogonal_group()
+    ) == [(1,), (4,)]
+
+
 def test_d4_reflections_generate_weyl_subgroup_and_full_isometries_act_by_triality():
     r"""CS99 Ch. 4 sec. 7.1 gives the D_4 Weyl subgroup order
     2^3 * 4! = 192 and the full automorphism order multiplied by the
@@ -165,6 +208,17 @@ def test_d4_reflections_generate_weyl_subgroup_and_full_isometries_act_by_triali
     discriminant_form = lattice.discriminant_group()
     full_discriminant_image = isometry_group.subgroup(isometry_group.gens()).discriminant_image()
     nonzero_glue_cosets = set(discriminant_form.elements()) - {discriminant_form.zero()}
+    first_glue, second_glue = discriminant_form.gens()
+    third_glue = first_glue + second_glue
+
+    assert [
+        discriminant_form.q(glue_vector)
+        for glue_vector in (discriminant_form.zero(), first_glue, second_glue, third_glue)
+    ] == [0, 1, 1, 1]
+    assert discriminant_form.relations_among((first_glue, second_glue, third_glue)) == (
+        (0, 0, 0),
+        (1, 1, 1),
+    )
 
     assert weyl_group.discriminant_image().order() == 1
     assert full_discriminant_image.order() == factorial(3)
