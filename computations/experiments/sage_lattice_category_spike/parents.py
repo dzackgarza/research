@@ -618,7 +618,8 @@ class SyntheticLattice(LatticeCarrier, Parent):
 
     def restriction_to_sublattice(self, morphism, sublattice):
         assert sublattice.is_submodule(self), ("restriction domain must be a sublattice")
-        return sublattice.Hom(morphism.codomain()).from_matrix(morphism.matrix())
+        restricted_matrix = morphism.matrix() * sublattice._inclusion_rows().transpose()
+        return sublattice.Hom(morphism.codomain()).from_matrix(restricted_matrix)
 
     def induced_map_on_quotient(self, morphism, quotient):
         assert morphism.domain() == quotient.cover_lattice() and morphism.codomain() == quotient.cover_lattice(), ("induced quotient endomorphism requires a morphism of the quotient cover lattice")

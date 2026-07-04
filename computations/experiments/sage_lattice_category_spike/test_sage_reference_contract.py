@@ -546,6 +546,24 @@ def test_lattice_morphism_lift_and_image_generators_are_bound():
     assert A2.discriminant_group().invariant_factor_gens() == A2.discriminant_group().gens()
 
 
+def test_restriction_to_sublattice_recomputes_the_domain_columns():
+    # Reference: restriction of a form-preserving morphism along a sublattice
+    # inclusion is the categorical precomposition f|_S = f o i_S, not reuse of
+    # the ambient-domain matrix.
+    A2 = lc.Lattice("A2")
+    diagram_automorphism = A2.Hom(A2).from_matrix(matrix(ZZ, [[0, 1], [1, 0]]))
+    diagonal_line = A2.sublattice([[1, 1]], label="diagonal_root")
+
+    restricted = A2.restriction_to_sublattice(diagram_automorphism, diagonal_line)
+
+    assert restricted.domain() == diagonal_line
+    assert restricted.codomain() == A2
+    assert_matrix_equal(restricted.matrix(), matrix(ZZ, 2, 1, [1, 1]))
+    ambient_generator = A2(diagonal_line.gen(0).rational_coordinates())
+    assert restricted(diagonal_line.gen(0)) == diagram_automorphism(ambient_generator)
+    assert restricted.is_primitive_embedding()
+
+
 def test_lattice_similarity_is_scalar_form_preserving_not_an_isometry():
     # Reference: similarity maps preserve the bilinear form up to an explicit scalar.
     A2 = lc.Lattice("A2")

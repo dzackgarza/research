@@ -292,3 +292,6 @@ def test_d4_reflections_generate_weyl_subgroup_and_full_isometries_act_by_triali
         (((0, 0), (0, 1)), ((0, 0), (1, 0)), ((0, 0), (1, 1))),
         (((0, 0), (0, 1), (1, 0), (1, 1)),),
     ]
+    assert _subgroup_orbit_rows(discriminant_form.orbits_on_isotropic_subgroups(group=full_discriminant_image)) == [
+        (((0, 0),),),
+    ]
