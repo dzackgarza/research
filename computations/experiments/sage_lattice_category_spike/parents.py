@@ -19,13 +19,14 @@ from __future__ import annotations
 
 from sage.arith.functions import lcm
 from sage.matrix.constructor import identity_matrix, matrix
+from sage.matrix.special import block_diagonal_matrix
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.element import Matrix
 from sage.structure.parent import Parent
 
-from .arithmetic import block_diagonal_matrix, signature_pair
+from .arithmetic import signature_pair
 from .categories import Lattices
 from .domain_algebra import (
     DefiniteLattice as DefiniteCarrier,
@@ -211,9 +212,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
         return self.basis()
 
     def gen(self, i):
-        row = [self.base_ring().zero()] * self.rank()
-        row[i] = self.base_ring().one()
-        return self(row)
+        return self((self.base_ring() ** self.rank()).gen(i))
 
     def zero(self):
         return self([self.base_ring().zero()] * self.rank())
@@ -221,9 +220,11 @@ class SyntheticLattice(LatticeCarrier, Parent):
     def b(self, left, right):
         left = self(left) if left.parent() is not self else left
         right = self(right) if right.parent() is not self else right
-        row = matrix(QQ, 1, self.rank(), list(left.coefficient_vector()))
-        col = matrix(QQ, self.rank(), 1, list(right.coefficient_vector()))
-        return (row * self.gram_matrix() * col)[0, 0]
+        return (
+            vector(QQ, left.coefficient_vector())
+            * self.gram_matrix()
+            * vector(QQ, right.coefficient_vector())
+        )
 
     def q(self, element):
         element = self(element) if element.parent() is not self else element
@@ -483,14 +484,12 @@ class SyntheticLattice(LatticeCarrier, Parent):
         ``(S, left, right)`` with ``left: self -> S`` and ``right: other -> S``
         the primitive orthogonal-summand embeddings."""
         total = self.direct_sum(other, label=label)
-        left_matrix = matrix(ZZ, total.rank(), self.rank())
-        right_matrix = matrix(ZZ, total.rank(), other.rank())
-        for i in range(self.rank()):
-            left_matrix[i, i] = 1
-        for j in range(other.rank()):
-            right_matrix[self.rank() + j, j] = 1
-        left = self.embedding(left_matrix, codomain=total, primitive=True)
-        right = other.embedding(right_matrix, codomain=total, primitive=True)
+        left_matrix = identity_matrix(ZZ, self.rank()).stack(matrix(ZZ, other.rank(), self.rank()))
+        right_matrix = matrix(ZZ, self.rank(), other.rank()).stack(identity_matrix(ZZ, other.rank()))
+        left = self.embedding(left_matrix, codomain=total)
+        right = other.embedding(right_matrix, codomain=total)
+        assert left.is_primitive_embedding()
+        assert right.is_primitive_embedding()
         return total, left, right
 
     def tensor_product(self, other, label="tensor_product"):
@@ -608,13 +607,9 @@ class SyntheticLattice(LatticeCarrier, Parent):
         codomain = self if codomain is None else codomain
         return self.Hom(codomain).from_matrix(matrix_data)
 
-    def embedding(self, matrix_data, codomain=None, primitive=False):
+    def embedding(self, matrix_data, codomain=None):
         codomain = self if codomain is None else codomain
-        morphism = self.hom(matrix_data, codomain=codomain)
-        assert not primitive or codomain.is_primitive(morphism.image()), (
-            "primitive embedding requires a primitive image sublattice"
-        )
-        return morphism
+        return self.hom(matrix_data, codomain=codomain)
 
     def similarity(self, matrix_data, codomain, scalar):
         from .homsets import LatticeSimilarity
@@ -836,12 +831,7 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
         params = fpylll.BKZ.Param(block_size=block_size, **kwargs)
         reduction = fpylll.BKZ.Reduction(gso, lll, params)
         reduction()
-        change_of_basis = matrix(
-            ZZ,
-            transform.nrows,
-            transform.ncols,
-            [transform[i, j] for i in range(transform.nrows) for j in range(transform.ncols)],
-        )
+        change_of_basis = matrix(ZZ, transform)
         return self.sublattice(change_of_basis, label="BKZ")
 
     def closest_vector(self, target):
@@ -863,8 +853,8 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
         gram = matrix(QQ, self.gram_matrix())
 
         def distance_squared(coordinates):
-            delta = matrix(QQ, 1, self.rank(), [QQ(coordinates[i]) - target[i] for i in range(self.rank())])
-            return (delta * gram * delta.transpose())[0, 0]
+            delta = vector(QQ, [QQ(coordinates[i]) - target[i] for i in range(self.rank())])
+            return delta * gram * delta
 
         center = [ZZ(round(target[i])) for i in range(self.rank())]
         best_coordinates = tuple(center)
@@ -899,12 +889,11 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
                 for lattice_vector in vectors:
                     if lattice_vector == self.zero():
                         continue
-                    coordinates = list(lattice_vector.coefficient_vector())
-                    column = matrix(QQ, self.rank(), 1, coordinates)
-                    gram_vector = gram * column
+                    coordinates = vector(QQ, lattice_vector.coefficient_vector())
+                    gram_vector = coordinates * gram
                     inequalities.append(
                         [QQ(lattice_vector.q()) / 2]
-                        + [-gram_vector[i, 0] for i in range(self.rank())]
+                        + [-gram_vector[i] for i in range(self.rank())]
                     )
             return Polyhedron(ieqs=inequalities, base_ring=QQ)
 
@@ -1028,8 +1017,8 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
             ranges.append(range(ZZ(floor(target[i] - spread)) - 1, ZZ(ceil(target[i] + spread)) + 2))
         close = []
         for coordinates in product(*ranges):
-            delta = matrix(QQ, 1, self.rank(), [QQ(coordinates[i]) - target[i] for i in range(self.rank())])
-            if (delta * gram * delta.transpose())[0, 0] <= radius:
+            delta = vector(QQ, [QQ(coordinates[i]) - target[i] for i in range(self.rank())])
+            if delta * gram * delta <= radius:
                 close.append(self(coordinates))
         return close
 

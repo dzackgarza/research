@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from sage.categories.sets_cat import Sets
 from sage.matrix.constructor import matrix
+from sage.modules.free_module_element import vector
 from sage.rings.rational_field import QQ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -85,8 +86,7 @@ class LatticeMorphism(LatticeMorphismCarrier, Element):
 
     def _call_(self, element):
         element = self.domain()(element) if element.parent() is not self.domain() else element
-        image = self.matrix() * matrix(self.domain().base_ring(), self.domain().rank(), 1, list(element.coefficient_vector()))
-        return self.codomain()([image[i, 0] for i in range(self.codomain().rank())])
+        return self.codomain()(self.matrix() * vector(self.domain().base_ring(), element.coefficient_vector()))
 
     def kernel(self):
         basis = self.matrix().right_kernel().basis_matrix()
@@ -100,6 +100,15 @@ class LatticeMorphism(LatticeMorphismCarrier, Element):
     def is_injective(self):
         r"""[total] — full column rank (spec 3.5; free modules carry no torsion)."""
         return self.matrix().rank() == self.domain().rank()
+
+    def is_primitive_embedding(self):
+        r"""Whether this injective morphism has primitive image in its codomain.
+
+        Equivalently, the module cokernel is torsion-free.  The spike's
+        general infinite-cokernel object is not implemented, so the owned
+        computation goes through the codomain's primitive-submodule predicate.
+        """
+        return self.is_injective() and self.codomain().is_primitive(self.image())
 
     def cokernel(self):
         r"""``codomain / image`` (spec 3.5: [total] exactly when the cokernel
@@ -132,9 +141,9 @@ class LatticeMorphism(LatticeMorphismCarrier, Element):
 
     def lift(self, element):
         element = self.codomain()(element) if element.parent() is not self.codomain() else element
-        rhs = matrix(QQ, self.codomain().rank(), 1, list(element.coefficient_vector()))
+        rhs = vector(QQ, element.coefficient_vector())
         solution = matrix(QQ, self.matrix()).solve_right(rhs)
-        coordinates = [solution[i, 0] for i in range(self.domain().rank())]
+        coordinates = [solution[i] for i in range(self.domain().rank())]
         assert all(coordinate in self.domain().base_ring() for coordinate in coordinates), (
             "lift has coordinates outside the domain base ring; "
             f"coordinates={coordinates}, base_ring={self.domain().base_ring()}"

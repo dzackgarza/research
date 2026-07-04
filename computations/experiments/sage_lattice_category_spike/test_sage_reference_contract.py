@@ -18,9 +18,10 @@ def as_finite_quadratic_form(form):
     # diagonal, b off it), so two forms can be compared as forms, not by group invariants.
     generators = form.gens()
     gram = matrix(
-        QQ, len(generators), len(generators),
-        [form.q(generators[i]) if i == j else form.b(generators[i], generators[j])
-         for i in range(len(generators)) for j in range(len(generators))],
+        QQ,
+        len(generators),
+        len(generators),
+        lambda i, j: form.q(generators[i]) if i == j else form.b(generators[i], generators[j]),
     )
     return lc.TorsionQuadraticForm(gram)
 
@@ -538,7 +539,9 @@ def test_lattice_morphism_lift_and_image_generators_are_bound():
     norm_two = lc.Lattice(matrix(ZZ, 1, 1, [2]))
     nonprimitive_embedding = norm_eight.embedding(matrix(ZZ, 1, 1, [2]), codomain=norm_two)
     assert_matrix_equal(nonprimitive_embedding.image().gram_matrix(), norm_eight.gram_matrix())
-    with pytest.raises(AssertionError):
+    assert nonprimitive_embedding.cokernel().invariants() == (2,)
+    assert not nonprimitive_embedding.is_primitive_embedding()
+    with pytest.raises(TypeError):
         norm_eight.embedding(matrix(ZZ, 1, 1, [2]), codomain=norm_two, primitive=True)
     assert A2.discriminant_group().invariant_factor_gens() == A2.discriminant_group().gens()
 

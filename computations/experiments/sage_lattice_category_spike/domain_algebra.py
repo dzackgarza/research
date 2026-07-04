@@ -373,9 +373,7 @@ class Lattice:
     def hom(self, matrix: RawMorphismMatrix, codomain: "Lattice") -> "LatticeMorphism":
         assert False, "declared contract; Sage computes this per the parity-plan triage"
 
-    def embedding(
-        self, matrix: RawMorphismMatrix, codomain: "Lattice", primitive: bool = False
-    ) -> "LatticeMorphism":
+    def embedding(self, matrix: RawMorphismMatrix, codomain: "Lattice") -> "LatticeMorphism":
         assert False, "declared contract; Sage computes this per the parity-plan triage"
 
     def similarity(
