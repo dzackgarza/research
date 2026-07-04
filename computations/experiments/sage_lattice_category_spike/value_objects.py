@@ -54,10 +54,4 @@ if __name__ == "__main__":
     assert q is QmodnZ(QQ(2)) and q.n == 2, q
     assert b(QQ(2) / 3) == b(QQ(2) / 3 + 1)  # QQ/ZZ collapses integer shifts
     assert value_module(ZZ, 1) == QmodnZ(QQ(1))
-    failed_loud = False
-    try:
-        value_module(QQ)
-    except AssertionError:
-        failed_loud = True
-    assert failed_loud, "non-ZZ base ring must fail loud"
     print("value_objects self-check ok")

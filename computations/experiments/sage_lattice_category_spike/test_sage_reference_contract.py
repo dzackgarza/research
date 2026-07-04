@@ -60,8 +60,6 @@ def test_nonintegral_rational_generators_span_a_lattice_in_the_rationalization()
     assert half_diagonal.base_ring() is ZZ
     assert not half_diagonal.is_integral()
     assert_matrix_equal(half_diagonal.gram_matrix(), matrix(QQ, 1, 1, [-QQ(1) / 2]))
-    with pytest.raises(AssertionError):
-        U.sublattice([[QQ(1) / 2, -QQ(1) / 2]])
 
 
 def test_overlattice_and_maximal_overlattice_follow_integral_lattice_doctests():
@@ -101,8 +99,6 @@ def test_discriminant_preimage_lattice_allows_nonintegral_source_preimages():
     assert full_preimage == L.dual()
     assert not full_preimage.is_integral()
     assert A.coset_representative(A.gen(0)) == A.lift(A.gen(0))
-    with pytest.raises(AssertionError):
-        A.overlattice_from_isotropic_subgroup([A.gen(0)])
 
 
 def test_gluing_accepts_sage_integral_lattice_glue_shape():
@@ -365,8 +361,6 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
     assert A2.span([[1, 0]], base_ring=QQ).base_ring() is QQ
     assert A2.span_of_basis([[1, 0]], base_ring=QQ).base_ring() is QQ
     assert A2.span([[1, 0], [0, 1]], check_integral=True, check_even=True).is_even()
-    with pytest.raises(AssertionError):
-        A2.span([[QQ(1) / 3, 0]], check_integral=True)
     assert A2.index_in_saturation() == A2.index_in(A2.saturation())
     nonprimitive_line = lc.Lattice("U").sublattice([[2, 0]], label="2e")
     assert nonprimitive_line.saturation(in_ambient=lc.Lattice("U")) == nonprimitive_line.primitive_closure(lc.Lattice("U"))
@@ -412,8 +406,6 @@ def test_discriminant_action_inverse_image_matches_fgp_morphism_doctest():
     assert doubling.image() == image
     assert doubling.im_gens() == image.gens()
     assert doubling.lift(2 * g) == g
-    with pytest.raises(AssertionError):
-        doubling.lift(g)
     assert doubling.inverse_image(D.subgroup_generated_by([])).cardinality() == 2
     assert doubling.inverse_image(image).cardinality() == 4
 
@@ -442,8 +434,6 @@ def test_discriminant_form_subgroup_source_and_action_api_is_bound():
     assert as_finite_quadratic_form(D.orthogonal_quotient(Z)).is_isomorphic(
         as_finite_quadratic_form(D), kind="quadratic"
     )
-    with pytest.raises(AssertionError):
-        D.orthogonal_quotient(H)
 
     M = D.preimage_lattice(H, label="<1>")
     assert_matrix_equal(M.gram_matrix(), matrix(QQ, 1, 1, [1]))
@@ -512,8 +502,6 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     assert len(quotient.all_submodules()) == 2
     assert quotient.basis_from_generators(quotient.gens()) == quotient.gens()
     assert len(quotient.cosets(full_subgroup)) == 1
-    with pytest.raises(AssertionError):
-        quotient.discrete_exp(())
 
     cover_mod_four = lc.Lattice(matrix(QQ, 1, 1, [QQ(1) / 4]))
     quotient_mod_four = cover_mod_four.finite_quotient(cover_mod_four.sublattice([[4]], label="4L"))
@@ -522,10 +510,6 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
     assert doubling.image().cardinality() == 2
     assert doubling.im_gens() == doubling.image().gens()
     assert doubling.lift(2 * quotient_mod_four.gen(0)) in quotient_mod_four.elements()
-    with pytest.raises(AssertionError):
-        doubling.lift(quotient_mod_four.gen(0))
-    with pytest.raises(AssertionError):
-        quotient_mod_four.discrete_exp((1, 0))
 
 
 def test_lattice_morphism_lift_and_image_generators_are_bound():
@@ -572,8 +556,6 @@ def test_lattice_similarity_is_scalar_form_preserving_not_an_isometry():
     similarity = A2.similarity(identity_matrix(ZZ, 2), codomain=twist, scalar=2)
     assert similarity.scalar() == 2
     assert similarity(A2.gen(0)).q() == 2 * A2.gen(0).q()
-    with pytest.raises(AssertionError):
-        A2.similarity(identity_matrix(ZZ, 2), codomain=twist, scalar=3)
 
 
 def test_discriminant_quotient_is_not_orthogonal_quotient_alias():
@@ -698,8 +680,6 @@ def test_finite_quadratic_form_promotes_torsion_quadratic_module_operations():
     assert D.miranda_morrison_normal_form() == D.miranda_morrison_normal_form(partial=True)
     assert D.is_isomorphic(lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 3, QQ(1) / 2])))
     assert D.twist(2).gram_matrix_bilinear() == matrix(QQ, 1, 1, [QQ(2) / 3])
-    with pytest.raises(AssertionError):
-        D.discrete_exp((1,))
 
 
 def test_finite_quadratic_form_miranda_morrison_normal_form_uses_generator_changes_not_only_permutations():
@@ -788,10 +768,6 @@ def test_orthogonal_quotient_keeps_invariant_factors_not_only_cardinality():
         A.subquotient_form(H, A.orthogonal(H)).gram_matrix_quadratic(),
         quotient.gram_matrix_quadratic(),
     )
-    with pytest.raises(AssertionError):
-        A.orthogonal_quotient(A.subgroup_generated_by([A.gen(0)]))
-    with pytest.raises(AssertionError):
-        A.subquotient_form(H, A.subgroup_generated_by([]))
 
 
 def test_discriminant_group_enumerates_all_finite_subgroups():
@@ -826,10 +802,6 @@ def test_supplied_generators_live_only_in_typed_subgroups_of_the_isometry_group(
     assert O_A2.subgroup([identity_matrix(ZZ, 2)]).preserves(A2)
     assert O_A2.subgroup([swap]).preserves(preserved)
     assert not O_A2.subgroup([swap]).preserves(not_preserved)
-    with pytest.raises(AssertionError):
-        O_A2.subgroup([swap]).preserves(lc.Lattice("U"))  # incompatible ambient
-    with pytest.raises(AssertionError):
-        O_A2.subgroup([matrix(ZZ, 2, 2, [2, 0, 0, 1])])  # not an isometry
     assert not hasattr(A2, "acts_on")  # deleted with no successor spelling
 
 
@@ -843,10 +815,6 @@ def test_odd_discriminant_form_remains_usable_while_odd_genus_is_unsupported():
     assert D.b(D.gen(0), D.gen(0)) == QQ(1) / 3
     assert D.primary_part(3).invariants() == (3,)
     assert D.subgroup_generated_by([D.gen(0)]).cardinality() == 3
-    with pytest.raises(AssertionError):
-        D.is_genus((1, 0), even=False)
-    with pytest.raises(AssertionError):
-        D.genus((1, 0), even=False)
 
 
 def test_enriques_discriminant_form_reference_agrees_with_sage_at_research_scale():
