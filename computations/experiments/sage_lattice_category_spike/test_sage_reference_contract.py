@@ -513,6 +513,9 @@ def test_lattice_exact_sequence_wrappers_use_owned_finite_quotients():
 
 
 def test_lattice_morphism_lift_and_image_generators_are_bound():
+    # Reference: finitely-generated-module-over-a-PID morphism API (DF04 Ch. 10-12)
+    # plus the Sage FGP morphism doctests: identity lifts, image generators, and
+    # cokernel invariant factors are the owned exact-sequence surface.
     A2 = lc.Lattice("A2")
     identity = A2.Hom(A2).from_matrix(identity_matrix(ZZ, 2))
 
@@ -791,7 +794,8 @@ def test_pushforward_and_pullback_forms_compute_transported_pairings():
 
 
 def test_supplied_generators_live_only_in_typed_subgroups_of_the_isometry_group():
-    # Spec 3.3: O(L).subgroup(gens) is the ONLY home for caller-supplied
+    # Reference: Spec 3.3 and Mac Lane/Riehl category vocabulary: O(L).subgroup(gens)
+    # is the ONLY home for caller-supplied
     # generators; it answers subgroup questions (preserves), never O(L)-level ones.
     A2 = lc.Lattice("A2")
     swap = matrix(ZZ, 2, 2, [0, 1, 1, 0])
