@@ -109,7 +109,7 @@ def test_signature_mod8_is_a_homomorphism_over_primary_parts():
     the finite form over the p-primary parts A_p of A_L. Nik80 .md:204-208 Thm
     1.3.3* makes "signature (mod 8)" a homomorphism on the semigroup qu(Z), so it
     is additive over that splitting; the same 2-adic component is the *oddity* in
-    Conway-Sloane's language (CS99 TCJKXU3D .md:11902: "The 2-signature ... is also
+    Conway-Sloane's language (CS10 TCJKXU3D .md:11902: "The 2-signature ... is also
     called the oddity", a p-adic invariant defined mod 8).
 
     A_5 has A_L = Z/6 = Z/2 (+) Z/3, so the split, the per-block Brown invariants,

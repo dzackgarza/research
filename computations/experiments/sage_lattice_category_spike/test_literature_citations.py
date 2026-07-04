@@ -12,7 +12,7 @@ number.
 Sources (Zotero item key | Better-BibTeX key | markdown-extraction attachment):
 
   - Conway & Sloane, *Sphere Packings, Lattices and Groups*, 3rd ed. (1999).
-    T2WVLTDB | CS99 | TCJKXU3D. Ch. 4 tabulates the root lattices A_n, D_n, E_6,
+    T2WVLTDB | CS10 | TCJKXU3D. Ch. 4 tabulates the root lattices A_n, D_n, E_6,
     E_7, E_8 (determinant, minimal norm, kissing number, glue group); Ch. 2
     sec 2.4: the glue group L^*/L has order det L.
   - V. V. Nikulin, *Integral symmetric bilinear forms and some of their
@@ -62,7 +62,7 @@ def _local_symbol_rows(genus):
 
 def test_irreducible_root_lattice_invariants_match_conway_sloane_chapter_4():
     r"""Determinant, minimal norm, and number of roots of every irreducible root
-    lattice, pinned to Conway & Sloane, *SPLAG* Chapter 4 [CS99]. For a root
+    lattice, pinned to Conway & Sloane, *SPLAG* Chapter 4 [CS10]. For a root
     lattice the minimal vectors ARE the roots (minimal norm 2), so the kissing
     number tau equals the number of roots:
 
@@ -72,7 +72,7 @@ def test_irreducible_root_lattice_invariants_match_conway_sloane_chapter_4():
       - E_7 (sec 8.2): det = 2,   min norm 2, tau = 126;
       - E_8 (sec 8.1): det = 1,   min norm 2, tau = 240.
     """
-    # (spike name, CS99 determinant, CS99 kissing number = number of roots)
+    # (spike name, CS10 determinant, CS10 kissing number = number of roots)
     cs99 = {}
     for n in range(1, 9):
         cs99[f"A{n}"] = (n + 1, n * (n + 1))            # sec 6.1
@@ -90,8 +90,8 @@ def test_irreducible_root_lattice_invariants_match_conway_sloane_chapter_4():
 
 def test_root_lattice_discriminant_groups_are_the_conway_sloane_glue_groups():
     r"""The discriminant group L^*/L of a root lattice is the Conway-Sloane glue
-    group: order = det L [CS99 sec 2.4], with invariant-factor structure from
-    [CS99 Ch. 4]:
+    group: order = det L [CS10 sec 2.4], with invariant-factor structure from
+    [CS10 Ch. 4]:
 
       - A_n: cyclic C_{n+1}                       (sec 6.1);
       - D_n: Klein four V_4 = (C_2)^2 if n even,
@@ -116,7 +116,7 @@ def test_root_lattice_discriminant_groups_are_the_conway_sloane_glue_groups():
 def test_small_root_lattice_automorphism_orders_match_conway_sloane_chapter_4():
     r"""Conway-Sloane Ch. 4 describes root-lattice automorphism groups via the
     Weyl group G_0 and diagram automorphisms G_1, with |G(L)| = g_0 g_1
-    [CS99 Ch. 4 sec. 2 and the summary lines in secs. 6.1, 7.1].
+    [CS10 Ch. 4 sec. 2 and the summary lines in secs. 6.1, 7.1].
 
       - A_n: G_0 = S_{n+1}; G_1 has order 2 except for A_1.
       - D_4: g_0 = 2^3 * 4! and g_1 = 3! (triality).
@@ -186,7 +186,7 @@ def test_nikulin_rank_obstruction_for_genus_of_finite_quadratic_form():
 
 
 def test_watson_split_genus_local_symbols_match_conway_sloane_chapter_15():
-    r"""Conway-Sloane Ch. 15 sec. 9 [CS99] gives Watson's split genus example:
+    r"""Conway-Sloane Ch. 15 sec. 9 [CS10] gives Watson's split genus example:
     the ternary positive-definite lattices with Gram matrices
     ``[[2,1,0],[1,2,0],[0,0,18]]`` and
     ``[[6,3,0],[3,6,0],[0,0,2]]`` have the same genus but are not isometric.
@@ -328,7 +328,7 @@ def test_nikulin_orthogonal_complement_anti_isometry_corollary_1_6_2():
 
 
 def test_gauss_milgram_signature_congruence_nikulin_theorem_1_3_3():
-    r"""Gauss-Milgram / Milgram's formula (Milnor-Husemoller App. 4; CS99 Ch. 15;
+    r"""Gauss-Milgram / Milgram's formula (Milnor-Husemoller App. 4; CS10 Ch. 15;
     exactly Nikulin Thm 1.3.3* [Nik80]).
 
     The Brown invariant Br(q) of a finite quadratic form q on a group D is DEFINED
@@ -400,7 +400,7 @@ def test_even_unimodular_lattices_and_the_k3_lattice_match_kondo():
 
 
 def test_e8_is_the_even_unimodular_root_lattice_of_rank_8():
-    r"""E_8 [CS99 sec 8.1]: the unique even unimodular lattice of rank 8 -- det 1,
+    r"""E_8 [CS10 sec 8.1]: the unique even unimodular lattice of rank 8 -- det 1,
     minimal norm 2, kissing number 240, and self-dual (E_8^* = E_8), so its
     discriminant group L^*/L is trivial. It is the rank-8 case of the even
     unimodular signature condition (Kon20 Cor 1.26: 8 - 0 = 8).

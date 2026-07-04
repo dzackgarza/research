@@ -11,7 +11,7 @@ cited source held in the project Zotero library. Nothing is from memory.
 Sources (Zotero item key | Better-BibTeX key | markdown-extraction attachment):
 
   - J. H. Conway & N. J. A. Sloane, *Sphere Packings, Lattices and Groups*,
-    3rd ed. (1999). T2WVLTDB | CS99 | TCJKXU3D. Chapter 15 is the genus /
+    3rd ed. (1999). T2WVLTDB | CS10 | TCJKXU3D. Chapter 15 is the genus /
     p-adic-symbol chapter used throughout:
       * sec 5.1  -- the p-signature, the *oddity* (= 2-signature), the
                     p-excess = (p-signature - dimension) for p>=3 and
@@ -69,17 +69,17 @@ def _u_plus_2():
 def _cs99_local_excess(tuples, p):
     r"""The p-excess (p>=3) / oddity (p=2) computed *independently from the
     canonical Jordan symbol* via the Conway-Sloane existence formulae
-    [CS99 Ch.15 sec 7.7]:
+    [CS10 Ch.15 sec 7.7]:
 
         p-excess ≡ sum_q n_q (q - 1) + 4 k_p   (mod 8)   for p >= 3,
         oddity   ≡ sum_q t_q         + 4 k_2   (mod 8)   for p  = 2,
 
     where a canonical constituent tuple is ``(v, n, eps)`` at odd p and
-    ``(v, n, eps, type, t)`` at p=2, the scale is q = p**v [CS99 sec 7.1],
-    and k_p counts the p-adic *antisquare* constituents [CS99 sec 5.1]: those
+    ``(v, n, eps, type, t)`` at p=2, the scale is q = p**v [CS10 sec 7.1],
+    and k_p counts the p-adic *antisquare* constituents [CS10 sec 5.1]: those
     with q not a square (v odd) and sign eps = -1.
 
-    This is the non-circular core: the value is derived from CS99's formula and
+    This is the non-circular core: the value is derived from CS10's formula and
     checked against the spike's ``local_excess``.
     """
     running_total = 0
@@ -98,7 +98,7 @@ def _cs99_local_excess(tuples, p):
 
 # One row per (nontrivial lattice, prime): the canonical Conway-Sloane symbol
 # tuples and every scalar invariant, ALL oracle-verified against the spike and
-# reconstructable from CS99 Ch.15. Cheap lattice basics (rank / signature_pair
+# reconstructable from CS10 Ch.15. Cheap lattice basics (rank / signature_pair
 # / determinant / even / unimodular) are pinned alongside the genus content.
 #
 # columns: name, lattice, p, canonical tuples,
@@ -140,7 +140,7 @@ _ROWS = [
 
 def test_local_genus_symbols_and_p_adic_invariants_match_conway_sloane_ch15():
     r"""Per-prime local genus symbols and p-adic invariants against
-    Conway-Sloane, *SPLAG* Ch.15 [CS99], across positive-definite root
+    Conway-Sloane, *SPLAG* Ch.15 [CS10], across positive-definite root
     lattices, an even unimodular lattice (E_8, E_8^2), the hyperbolic plane U,
     and the indefinite U (+) <2>.
 
@@ -154,7 +154,7 @@ def test_local_genus_symbols_and_p_adic_invariants_match_conway_sloane_ch15():
       * determinant condition (sec 7.7, p>=3): product of the signs eps_q
         equals the Legendre symbol of the prime-to-p part of the determinant;
       * local level = p^(max scale exponent) (highest Jordan scale);
-      * p-excess / oddity re-derived from CS99's sec-7.7 excess formula
+      * p-excess / oddity re-derived from CS10's sec-7.7 excess formula
         (``_cs99_local_excess``) and matched against the spike, so the
         agreement is not merely the spike checked against itself.
 
@@ -193,7 +193,7 @@ def test_local_genus_symbols_and_p_adic_invariants_match_conway_sloane_ch15():
             unit_part = local_det // p ** ZZ(local_det).valuation(p)
             assert sign_product == kronecker(unit_part, p), tag
 
-        # (5) p-excess / oddity: CS99 sec-7.7 formula == spike == pinned value
+        # (5) p-excess / oddity: CS10 sec-7.7 formula == spike == pinned value
         assert _cs99_local_excess(tuples, p) == genus.local_excess(p) % 8 == excess, tag
 
         # (6) even type: an even lattice is 2-adically even (type II unimodular

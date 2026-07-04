@@ -32,7 +32,7 @@ Sources (Zotero item key | Better-BibTeX key | markdown-extraction attachment):
         in an even unimodular lattice (so S (+) S(-1) has an even unimodular
         overlattice).
   - Conway & Sloane, *Sphere Packings, Lattices and Groups*, 3rd ed. (1999).
-    T2WVLTDB | CS99 | TCJKXU3D. Ch. 4 sec 3 (gluing theory):
+    T2WVLTDB | CS10 | TCJKXU3D. Ch. 4 sec 3 (gluing theory):
       * md line 4333: the glue group L*/L has order det L.
       * Theorem 1 (md lines 4339-4347): if a unimodular lattice is glued from
         L_1 and L_2 with no self-glue, their glue groups are anti-isomorphic
@@ -71,10 +71,10 @@ def test_orthogonal_complements_in_e8_recover_root_lattices_and_the_nikulin_anti
 
     Significant content, per source:
       - the computed complement is isometric to the named root lattice and
-        reproduces its CS99 Ch. 4 invariants (E_7: det 2, 126 roots; E_6: det 3,
+        reproduces its CS10 Ch. 4 invariants (E_7: det 2, 126 roots; E_6: det 3,
         72 roots);
       - both S and its complement K = S^perp are primitive in E_8, and their
-        glue groups have equal order, det S = det K (CS99 Ch. 4 sec 3, Thm 1 /
+        glue groups have equal order, det S = det K (CS10 Ch. 4 sec 3, Thm 1 /
         md lines 4333, 4339);
       - the anti-isometry q_S ~ -q_K holds on the genuinely computed pair
         (Nikulin Cor 1.6.2, md line 274);
@@ -87,13 +87,13 @@ def test_orthogonal_complements_in_e8_recover_root_lattices_and_the_nikulin_anti
     tautology satisfied by every lattice.
     """
     e8 = lc.Lattice("E8")
-    # cheap characterization of the ambient (Kondo/CS99 sec 8.1: even unimodular rank 8)
+    # cheap characterization of the ambient (Kondo/CS10 sec 8.1: even unimodular rank 8)
     assert e8.rank() == 8
     assert e8.signature_pair() == (8, 0)
     assert e8.determinant() == 1
     assert e8.is_even() and e8.is_unimodular()
 
-    # (sublattice generators, complement name, CS99 determinant, CS99 root count,
+    # (sublattice generators, complement name, CS10 determinant, CS10 root count,
     #  complement signature pair, complement discriminant invariants)
     cases = [
         ([_unit(0)], "E7", 2, 126, (7, 0), (2,)),
@@ -110,12 +110,12 @@ def test_orthogonal_complements_in_e8_recover_root_lattices_and_the_nikulin_anti
         assert k.is_even()
         assert not k.is_unimodular()               # a proper root lattice, not E_8
 
-        # significant: K is exactly the named root lattice, with CS99 invariants
+        # significant: K is exactly the named root lattice, with CS10 invariants
         assert k.is_isometric(lc.Lattice(complement_name))
         assert len(k.roots()) == root_count
         assert tuple(k.discriminant_group().invariants()) == disc
 
-        # both sides primitively embedded; equal glue-group order (CS99 Thm 1)
+        # both sides primitively embedded; equal glue-group order (CS10 Thm 1)
         assert e8.is_primitive(s) and e8.is_primitive(k)
         assert s.determinant() == k.determinant()
 
