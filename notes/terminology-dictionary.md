@@ -27,7 +27,7 @@ replacements, where the target is not a specialized term, are marked "plain".)
 |--------|-----------|----------|
 | `DF04` | Dummit & Foote, *Abstract Algebra*, 3rd ed. | invariant factors, elementary divisors, Smith normal form, modules over a PID, endomorphism ring, kernel |
 | `Nik80` | Nikulin, *Integral symmetric bilinear forms and some of their applications* (1979/80) | discriminant group, discriminant (bilinear/quadratic) form, signature invariants, genus of even lattices |
-| `CS10` | Conway & Sloane, *Sphere Packings, Lattices and Groups*, 3rd ed. — Ch. 15 | genus symbol, p-adic symbols, Jordan decomposition of forms |
+| `CS10` | Conway & Sloane, *Sphere Packings, Lattices and Groups*, 3rd ed. | root-lattice invariants and kissing numbers; genus symbol, p-adic symbols, Jordan decomposition of forms |
 | `Cas08` | Cassels, *Rational Quadratic Forms* — Ch. 8 | Jordan splitting of a form over ℤ_p |
 | `MM09` | Miranda & Morrison, *Embeddings of integral quadratic forms* | finite quadratic forms; the canonical form Sage's `normal_form()` computes |
 | `Mac98` | Mac Lane, *Categories for the Working Mathematician* | category, object/morphism, axioms, underlying object, endomorphism monoid |
@@ -105,20 +105,19 @@ and category membership; it never manually raises `ValueError`/`NotImplementedEr
 
 Tests should state the mathematical concept they witness. A low-level computation is
 admissible only as the implementation of the assertion, not as the assertion's vocabulary.
-When a test says "determinant ratio", "coordinate vector", "Gram pin", or "subgroup
-orders", first ask which standard object or relation that calculation is trying to name.
+Each row below is a self-contained bad→good replacement pattern, not an occurrence list.
 
-| Ad-hoc assertion shape | Replace with / name as | Source · locus |
+| Drifted assertion / phrasing | Idiomatic mathematical replacement | Source · locus |
 |---|---|---|
-| **quotient of determinants/discriminants** used to test an overlattice | the **index** of the sublattice/overlattice. For an even overlattice from an isotropic subgroup `H ⊂ A_L`, assert `[L':L] = \|H\|` and, when applicable, the resulting discriminant form `q_{L'} ≅ H^⊥/H`; do not make the determinant quotient the primary concept. | `Nik80` §1.4 |
-| **"p-local determinant factorization"**, square determinant ratios, prime-divisor filters, or unchanged valuations | **p-local saturation / p-maximal overlattice** and its **p-primary index**. State which prime-local component changes and which primary components are fixed. | `Nik80` §1.4–1.9; `CS10` Ch. 15 |
-| **Gram/determinant pins for `saturation()`** after rejecting echelon-basis rows | **saturation / primitive closure**. Assert equality to the primitive closure in the ambient lattice and the `index_in_saturation`; Gram/determinant values are secondary witnesses. | `DF04` Ch. 12; `Nik80` §1 |
-| **Gram pins for intersections** of spans or lattices | the **meet / intersection sublattice**. Assert membership in both parents, maximality among common sublattices when expressible, and symmetry `L ∩ M = M ∩ L`; Gram data is a presentation witness. | `DF04` Ch. 10–12 |
-| **coordinate-vector pins**, invariant-factor generator matrices, identity change-of-generator matrices, or duplicated `coordinates()` rows | the **invariant-factor decomposition** and the **finite quotient exact sequence**. Assert cyclicity/noncyclicity, generator orders, projection/lift identities, kernel/image/cokernel, and quotient maps; coordinates are basis-dependent presentation data. | `DF04` Ch. 12 |
-| **multiset of subgroup cardinalities** for a finite 2-torsion fixture | the **subspace lattice** of `F_2^n` / finite elementary abelian group. Name dimensions: 0-plane, lines, planes, whole space, etc.; cardinalities alone hide the vector-space concept. | `DF04` Ch. 11–12 |
-| **rank addition plus pairwise bilinear-form equations** for direct-sum embeddings | **orthogonal primitive isometric summand embeddings** whose images span the direct sum. Assert isometry of each embedding, orthogonality of images, primitivity, and spanning. | `Nik80` §1; `Mac98` §I.1 |
-| **determinant preservation** after a basis-update or reduction method | **same lattice / same isometry class with the intended reduced basis property**. Determinant equality alone is too weak; assert equality/isometry/submodule equality plus the reduction condition. | `DF04` Ch. 12; `CS10` Ch. 1 |
-| **root counts expressed as `len(roots())` with no named invariant** | **kissing number / number of roots** when the source theorem states that invariant. Counts are legitimate when they are the citable invariant, not when they stand in for structure. | `CS10` Ch. 4 |
+| Bad: `assert abs(det(L) / det(Lprime)) == 4` as the claimed content of an overlattice test. | Good: "The overlattice `L ⊂ L'` has index `[L':L] = 2` (or `[L':L] = \|H\|` for the isotropic subgroup `H ⊂ A_L`), and `q_{L'} ≅ H^⊥/H`." The determinant quotient is only the numerical shadow of the index formula. | `Nik80` §1.4 |
+| Bad: "the p-local determinant factorization is pinned" by `ratio.is_square()`, `prime_divisors() == [p]`, or unchanged off-prime valuations. | Good: "`M = L.maximal_overlattice(p)` is the p-local saturation / p-maximal overlattice; the extension index is p-primary and the off-p primary discriminant data is unchanged." | `Nik80` §1.4–1.9; `CS10` Ch. 15 |
+| Bad: replacing a rejected echelon-basis assertion by `assert saturation(L).gram_matrix() == G` or `assert det(saturation(L)) == d`. | Good: "`S.saturation(in_ambient=L)` is the primitive closure of `S` in `L`; assert `S.saturation(in_ambient=L) == S.primitive_closure(L)` and assert `S.index_in_saturation()` when the index is the mathematical invariant." | `DF04` Ch. 12; `Nik80` §1 |
+| Bad: "intersection row" followed only by `assert (L.intersection(M)).gram_matrix() == G`. | Good: "`L ∩ M` is the meet/intersection sublattice: it is a sublattice of both `L` and `M`, contains exactly the common elements in the ambient rational space, and satisfies `L ∩ M = M ∩ L`." Gram data is a presentation witness. | `DF04` Ch. 10–12 |
+| Bad: `assert coordinates(x) == (1, 3)`, identity invariant-factor generator matrices, or duplicated coordinate rows as the content of a quotient test. | Good: "The quotient is `A/B ≅ Z/4 ⊕ Z/12`; its generators have the stated orders, the projection/lift identities hold, and the kernel/image/cokernel exact-sequence data is correct." Coordinates are basis-dependent presentation data. | `DF04` Ch. 12 |
+| Bad: `assert sorted(H.cardinality() for H in A.all_submodules()) == [1] + [2]*7 + [4]*7 + [8]` with no named object. | Good: "For `A ≅ (F_2)^3`, the subgroup lattice is the subspace lattice: one 0-plane, seven lines, seven planes, and one whole 3-space." | `DF04` Ch. 11–12 |
+| Bad: direct-sum embeddings checked only by rank addition and pairwise equations `b(i(x), j(y)) = 0`. | Good: "The summand maps are orthogonal primitive isometric embeddings whose images span the orthogonal direct sum." Assert isometry of each embedding, orthogonality of images, primitivity, and spanning. | `Nik80` §1; `Mac98` §I.1 |
+| Bad: `assert update_reduced_basis(v).determinant() == L.determinant()` as the claimed content of a basis-update/reduction test. | Good: "The basis update presents the same lattice / same isometry class and satisfies the intended reduced-basis property." Determinant equality alone is too weak. | `DF04` Ch. 12; `CS10` Ch. 1 |
+| Bad: `assert len(L.roots()) == 240` with no named invariant. | Good: "The root lattice has kissing number / number of roots `240`." Counts are legitimate when they are the citable invariant (e.g. Conway-Sloane root-lattice tables), not when they stand in for hidden structure. | `CS10` Ch. 4 |
 
 ---
 
