@@ -153,6 +153,35 @@ def test_brown_invariant_and_genus_follow_torsion_quadratic_module_doctests():
     assert D.genus(L.signature_pair()) == L.genus()
 
 
+def test_direct_sum_summand_embeddings_are_orthogonal_primitive_isometric_images():
+    # Gap-ledger row 9a: parity with IntegralLatticeDirectSum(return_embeddings=True).
+    # Reference values: the sum Gram agrees with Sage's block sum; the embeddings
+    # are form-preserving with orthogonal primitive images spanning the sum.
+    A2 = lc.Lattice("A2")
+    U = lc.Lattice("U")
+    total, left, right = A2.direct_sum_with_embeddings(U)
+    from sage.modules.free_quadratic_module_integer_symmetric import (
+        IntegralLattice,
+        IntegralLatticeDirectSum,
+    )
+    sage_sum, _sage_embeddings = IntegralLatticeDirectSum(
+        [IntegralLattice(A2.gram_matrix()), IntegralLattice(U.gram_matrix())],
+        return_embeddings=True,
+    )
+    assert total.gram_matrix() == sage_sum.gram_matrix()
+    for i in range(A2.rank()):
+        for j in range(A2.rank()):
+            assert total.b(left(A2.gen(i)), left(A2.gen(j))) == A2.b(A2.gen(i), A2.gen(j))
+    for i in range(U.rank()):
+        for j in range(U.rank()):
+            assert total.b(right(U.gen(i)), right(U.gen(j))) == U.b(U.gen(i), U.gen(j))
+    for i in range(A2.rank()):
+        for j in range(U.rank()):
+            assert total.b(left(A2.gen(i)), right(U.gen(j))) == 0
+    assert left.is_injective() and right.is_injective()
+    assert left.image().rank() + right.image().rank() == total.rank()
+
+
 def test_brown_invariant_per_block_sums_to_the_aggregate_engine_value():
     # Gap-ledger row 8: per-indecomposable-block Brown extraction over Sage's
     # own block machinery. Expected block values from Sage's

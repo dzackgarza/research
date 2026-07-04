@@ -471,6 +471,23 @@ class SyntheticLattice(LatticeCarrier, Parent):
             cartan_type=cartan_type,
         )
 
+    def direct_sum_with_embeddings(self, other, label="direct_sum"):
+        r"""The direct sum together with its two summand embedding morphisms
+        (gap-ledger row 9a; parity with Sage's
+        ``IntegralLatticeDirectSum(return_embeddings=True)``): returns
+        ``(S, left, right)`` with ``left: self -> S`` and ``right: other -> S``
+        the primitive orthogonal-summand embeddings."""
+        total = self.direct_sum(other, label=label)
+        left_matrix = matrix(ZZ, total.rank(), self.rank())
+        right_matrix = matrix(ZZ, total.rank(), other.rank())
+        for i in range(self.rank()):
+            left_matrix[i, i] = 1
+        for j in range(other.rank()):
+            right_matrix[self.rank() + j, j] = 1
+        left = self.embedding(left_matrix, codomain=total, primitive=True)
+        right = other.embedding(right_matrix, codomain=total, primitive=True)
+        return total, left, right
+
     def tensor_product(self, other, label="tensor_product"):
         base_ring = QQ if QQ in (self.base_ring(), other.base_ring()) else ZZ
         return synthetic_lattice(
