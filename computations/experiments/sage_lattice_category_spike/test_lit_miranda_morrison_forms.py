@@ -174,6 +174,45 @@ def test_quadratic_isomorphism_refines_bilinear_and_group_isomorphism():
     assert (qu.brown_invariant(), qv.brown_invariant()) == (0, 4)
 
 
+def test_rank_one_2adic_form_separates_bilinear_and_quadratic_orthogonal_groups():
+    r"""For the rank-one even lattice <8>, A_L is cyclic of order eight.
+
+    Nikulin's 2-adic rank-one forms distinguish the bilinear pairing from the
+    quadratic refinement: every unit u with u^2 = 1 mod 8 preserves the bilinear
+    form, while preserving q narrows the unit action to u = +-1.  This pins the
+    public kind="bilinear" and kind="quadratic" orthogonal-group surfaces on a
+    nontrivial cyclic 2-primary form.
+    """
+    lattice = lc.Lattice(matrix(ZZ, 1, 1, [8]))
+    q = lattice.discriminant_group()
+    generator = q.gen(0)
+
+    assert lattice.rank() == 1
+    assert lattice.is_even()
+    assert lattice.signature_pair() == (1, 0)
+    assert lattice.determinant() == 8
+    assert tuple(q.invariants()) == (8,)
+    assert q.cardinality() == 8
+    assert q.brown_invariant() == 1
+    assert q.brown_invariant() % 8 == lattice.signature() % 8
+
+    assert q.automorphism_group().order() == 4
+    assert sorted(
+        tuple(action(generator).coefficient_vector())
+        for action in q.automorphism_group()
+    ) == [(1,), (3,), (5,), (7,)]
+    assert q.orthogonal_group(kind="bilinear").order() == 4
+    assert sorted(
+        tuple(action(generator).coefficient_vector())
+        for action in q.orthogonal_group(kind="bilinear")
+    ) == [(1,), (3,), (5,), (7,)]
+    assert q.orthogonal_group(kind="quadratic").order() == 2
+    assert sorted(
+        tuple(action(generator).coefficient_vector())
+        for action in q.orthogonal_group(kind="quadratic")
+    ) == [(1,), (7,)]
+
+
 def test_form_negation_via_twist_matches_miranda_morrison_negation_rules():
     r"""-q_L = q_{L(-1)}, and MM09's negation rules classify when q ~= -q.
 
