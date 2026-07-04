@@ -455,7 +455,11 @@ class SyntheticLattice(LatticeCarrier, Parent):
         self._assert_same_ambient(other)
         pairing = self._inclusion_rows() * self._ambient_gram() * other._inclusion_rows().transpose()
         kernel_basis = pairing.transpose().right_kernel().basis_matrix()
-        return self.sublattice(kernel_basis, label=label)
+        if kernel_basis.nrows() == 0:
+            return self.zero_lattice(label=label)
+        kernel_in_root = kernel_basis * self._inclusion_rows()
+        kernel_space = self._rationalization_module().span(kernel_in_root.rows(), QQ)
+        return self._from_module(self._underlying_module().intersection(kernel_space), label)
 
     def direct_sum(self, other, label="direct_sum"):
         base_ring = QQ if QQ in (self.base_ring(), other.base_ring()) else ZZ

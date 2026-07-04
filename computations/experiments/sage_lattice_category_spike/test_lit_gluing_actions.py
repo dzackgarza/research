@@ -1,0 +1,123 @@
+r"""Literature-cited public gluing and discriminant-action tests.
+
+These tests pin behavior to Conway and Sloane, *Sphere Packings, Lattices and
+Groups*, 3rd ed. (1999) [CS99], using the spike's public lattice APIs rather
+than implementation helpers.
+
+CS99 Chapter 4 is the independent oracle:
+
+  - sec. 3: glue vectors live in the dual quotient L^*/L, and integral
+    overlattices are obtained by adjoining compatible glue vectors;
+  - sec. 6.1: A_n has cyclic glue group C_{n+1}, and the order-two diagram
+    automorphism sends [i] to [n+1-i];
+  - sec. 7.1 and 7.2: D_4 has glue group V_4, Weyl subgroup order
+    2^3 * 4!, full automorphism order (2^3 * 4!) * 3!, and the three nonzero
+    glue cosets are equivalent;
+  - sec. 8.1: E_8 is even unimodular with minimal norm 2 and 240 minimal
+    vectors.
+"""
+
+from __future__ import annotations
+
+from math import factorial
+
+import sage_lattice_category_spike.lattice_categories as lc
+
+
+def _coefficient_rows(elements):
+    return sorted(tuple(element.coefficient_vector()) for element in elements)
+
+
+def _orbit_rows(orbits):
+    return sorted(tuple(_coefficient_rows(orbit)) for orbit in orbits)
+
+
+def test_a4_a4_order_five_glue_reconstructs_e8_through_public_gluing_surfaces():
+    r"""A_4 has glue group C_5 [CS99, Ch. 4 sec. 6.1].  The order-five
+    isotropic glue between two A_4 components is a Ch. 4 sec. 3 overlattice;
+    the resulting even unimodular rank-eight root lattice has the E_8 root
+    count from Ch. 4 sec. 8.1.
+    """
+    left = lc.Lattice("A4")
+    right = lc.Lattice("A4")
+    left_generator = left.discriminant_group().gen(0)
+    right_generator = right.discriminant_group().gen(0)
+
+    via_constructor = lc.IntegralLatticeGluing(
+        [left, right],
+        [[left_generator, 2 * right_generator]],
+        label="A4_A4_order_five_glue",
+    )
+
+    ambient = left.direct_sum(right)
+    discriminant_form = ambient.discriminant_group()
+    glue_generator = discriminant_form.gen(0) + discriminant_form.gen(1)
+    glue_subgroup = discriminant_form.subgroup_generated_by([glue_generator])
+    via_lattice_glue = ambient.glue([glue_generator], label="A4_A4_order_five_glue")
+
+    assert glue_subgroup.cardinality() == 5
+    assert discriminant_form.is_isotropic_subgroup(glue_subgroup)
+    assert discriminant_form.orthogonal_quotient(glue_subgroup).invariants() == ()
+
+    e8 = lc.Lattice("E8")
+    for glued in (via_constructor, via_lattice_glue):
+        assert glued.is_even()
+        assert glued.is_unimodular()
+        assert glued.minimum() == 2
+        assert len(glued.roots()) == 240
+        assert glued.discriminant_group().invariants() == ()
+        assert glued.is_isometric(e8)
+
+    assert via_constructor.is_isometric(via_lattice_glue)
+
+
+def test_a4_full_isometry_action_negates_cyclic_glue_group_and_has_cs99_orbits():
+    r"""CS99 Ch. 4 sec. 6.1 identifies the A_n glue group as C_{n+1} and
+    says the order-two automorphism sends [i] to [n+1-i].  For A_4, this is
+    negation on C_5, with orbits {0}, {+-[1]}, and {+-[2]}.
+    """
+    lattice = lc.Lattice("A4")
+    discriminant_form = lattice.discriminant_group()
+    generator = discriminant_form.gen(0)
+
+    isometry_group = lattice.isometry_group()
+    discriminant_image = isometry_group.subgroup(isometry_group.gens()).discriminant_image()
+    generator_images = {action(generator) for action in discriminant_image}
+
+    assert isometry_group.order() == 2 * factorial(5)
+    assert discriminant_image.order() == 2
+    assert generator_images == {generator, -generator}
+    assert _orbit_rows(discriminant_form.orbits(group=discriminant_image)) == [
+        ((0,),),
+        ((1,), (4,)),
+        ((2,), (3,)),
+    ]
+
+
+def test_d4_reflections_generate_weyl_subgroup_and_full_isometries_act_by_triality():
+    r"""CS99 Ch. 4 sec. 7.1 gives the D_4 Weyl subgroup order
+    2^3 * 4! = 192 and the full automorphism order multiplied by the
+    order-six triality group.  The simple-root reflections also satisfy the
+    simply-laced D_4 Coxeter relations read from the diagram in Fig. 4.6.
+    """
+    lattice = lc.Lattice("D4")
+    simple_reflections = tuple(lattice.reflection(simple_root) for simple_root in lattice.gens())
+    isometry_group = lattice.isometry_group()
+    weyl_group = isometry_group.subgroup(simple_reflections)
+
+    assert weyl_group.order() == 2**3 * factorial(4)
+    assert isometry_group.order() == (2**3 * factorial(4)) * factorial(3)
+    assert tuple(tuple((left * right).order() for right in simple_reflections) for left in simple_reflections) == (
+        (1, 3, 2, 2),
+        (3, 1, 3, 3),
+        (2, 3, 1, 2),
+        (2, 3, 2, 1),
+    )
+
+    discriminant_form = lattice.discriminant_group()
+    full_discriminant_image = isometry_group.subgroup(isometry_group.gens()).discriminant_image()
+    nonzero_glue_cosets = set(discriminant_form.elements()) - {discriminant_form.zero()}
+
+    assert weyl_group.discriminant_image().order() == 1
+    assert full_discriminant_image.order() == factorial(3)
+    assert discriminant_form.orbit(discriminant_form.gen(0), group=full_discriminant_image) == frozenset(nonzero_glue_cosets)
