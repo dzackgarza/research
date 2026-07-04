@@ -153,6 +153,26 @@ def test_brown_invariant_and_genus_follow_torsion_quadratic_module_doctests():
     assert D.genus(L.signature_pair()) == L.genus()
 
 
+def test_brown_invariant_per_block_sums_to_the_aggregate_engine_value():
+    # Gap-ledger row 8: per-indecomposable-block Brown extraction over Sage's
+    # own block machinery. Expected block values from Sage's
+    # _brown_indecomposable doctests ([1/3] -> 6); the composite fixture pins
+    # additivity: the extracted blocks sum to the aggregate engine value.
+    q3 = lc.Lattice("A2").discriminant_group()
+    blocks = q3.brown_invariant_per_block()
+    assert len(blocks) == 1
+    prime, _, value = blocks[0]
+    assert prime == 3 and value == 2
+    assert q3.brown_invariant() == 2
+
+    D4 = lc.Lattice("D4")
+    D = D4.direct_sum(lc.Lattice(3 * Matrix(ZZ, 2, 2, [2, 1, 1, 2]))).discriminant_group()
+    per_block = D.brown_invariant_per_block()
+    assert {prime for prime, _, _ in per_block} == {2, 3}
+    assert len(per_block) >= 2
+    assert sum(value for _, _, value in per_block) == D.brown_invariant()
+
+
 def test_group_seams_compose_into_gap_backed_machinery():
     # Reference: spec 3.5 group constructions where Sage is called; expected orders
     # from the Sage matrix- and permutation-group reference objects built from the

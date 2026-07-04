@@ -861,6 +861,33 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantFormCarrier, Synth
         r"""Return the Brown invariant in ``ZZ/8`` from the ephemeral Sage TorsionQuadraticModule."""
         return ZZ(self._sage_engine().brown_invariant())
 
+    def brown_invariant_per_block(self):
+        r"""Per-indecomposable-block Brown values (gap-ledger row 8): the
+        summands of ``brown_invariant`` over the indecomposable blocks of the
+        p-primary normal forms (Shimada Table 2.1 values, computed by Sage's
+        own block machinery — a convenience extraction over the aggregate
+        engine, ruled in despite ``_brown_indecomposable`` being private).
+
+        OUTPUT: a tuple of ``(p, block_gram, value)`` triples with ``value``
+        in ZZ/8; the values sum to ``brown_invariant()``."""
+        from sage.quadratic_forms.genera.normal_form import collect_small_blocks
+        from sage.modules.torsion_quadratic_module import _brown_indecomposable
+        from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
+
+        assert self._quadratic_modulus() == 2, (
+            "the Brown invariant is defined for quadratic values in QQ/2ZZ only; "
+            f"quadratic modulus={self._quadratic_modulus()}, invariants={self.invariants()}"
+        )
+        ring = IntegerModRing(8)
+        engine = self._sage_engine()
+        blocks = []
+        for p in engine.annihilator().gen().prime_divisors():
+            primary_gram = engine.primary_part(p).normal_form().gram_matrix_quadratic()
+            for block in collect_small_blocks(primary_gram):
+                block.set_immutable()
+                blocks.append((ZZ(p), block, ring(_brown_indecomposable(block, ZZ(p)))))
+        return tuple(blocks)
+
     def is_genus(self, signature_pair, even=True):
         r"""Return whether this discriminant form and signature define an even genus,
         decided by the ephemeral Sage TorsionQuadraticModule."""
