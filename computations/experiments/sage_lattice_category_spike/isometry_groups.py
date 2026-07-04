@@ -170,6 +170,25 @@ class SyntheticIsometryGroup(IsometryGroupCarrier, Parent):
             return PermutationGroup([[1]])
         return self.as_matrix_group().as_permutation_group()
 
+    def structure_description(self):
+        r"""GAP's structure description of O(L) (gap-ledger row 9e), through
+        the permutation-group seam, on the domain where Sage's computation
+        applies."""
+        self._assert_engine_grounded()
+        return str(self.as_permutation_group().structure_description())
+
+    def conjugacy_classes_representatives(self):
+        r"""One O(L) element per conjugacy class (gap-ledger row 9e), computed
+        by GAP through the matrix-group seam and returned as verified
+        isometries; on the domain where Sage's computation applies."""
+        self._assert_engine_grounded()
+        if self._lattice.rank() == 0:
+            return (self.one(),)
+        return tuple(
+            self.from_matrix(matrix(ZZ, representative.matrix()))
+            for representative in self.as_matrix_group().conjugacy_classes_representatives()
+        )
+
     def discriminant_action(self, f):
         r"""The induced action of the single verified isometry ``f`` on A_L.
         Per-element functor; NO group-level claim."""

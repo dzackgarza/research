@@ -215,6 +215,19 @@ def test_group_seams_compose_into_gap_backed_machinery():
     assert H.as_matrix_group().order() == H.order() == 2
     assert sorted(g.order() for g in H) == [1, 2]
 
+    # row 9e: structure vocabulary through the same seams. Reference: GAP's
+    # description/class count of the independently built Sage reference group.
+    from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+
+    sage_O = IntegralLattice(A2.gram_matrix()).orthogonal_group()
+    reference_permutation_group = MatrixGroup([g.matrix() for g in sage_O.gens()]).as_permutation_group()
+    assert O.structure_description() == str(reference_permutation_group.structure_description())
+    representatives = O.conjugacy_classes_representatives()
+    assert len(representatives) == len(reference_permutation_group.conjugacy_classes())
+    assert all(representative in O for representative in representatives)
+    assert any(representative == O.one() for representative in representatives)
+
     D = lc.TorsionQuadraticForm(identity_matrix(QQ, 3) / 2)
     assert D.orthogonal_group().as_permutation_group().order() == D.orthogonal_group().order() == 6
 

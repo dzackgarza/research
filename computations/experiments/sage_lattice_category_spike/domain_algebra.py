@@ -688,6 +688,13 @@ class IsometryGroup:
     def stable_kernel(self) -> "IsometrySubgroup":
         assert False, "declared contract; Sage computes this per the parity-plan triage"
 
+    # structure vocabulary through the GAP seams (gap-ledger row 9e)
+    def structure_description(self) -> str:
+        assert False, "declared contract; Sage computes this per the parity-plan triage"
+
+    def conjugacy_classes_representatives(self) -> tuple[LatticeMorphism, ...]:
+        assert False, "declared contract; Sage computes this per the parity-plan triage"
+
     # points where Sage is called (implemented exactly where finite with computed generators)
     def as_matrix_group(self) -> object:
         assert False, "declared contract; Sage computes this per the parity-plan triage"
