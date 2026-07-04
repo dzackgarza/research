@@ -479,6 +479,9 @@ def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
     # scalar invariants reference-agree with Sage
     assert L.volume() == reference.volume()
     assert abs(L.gaussian_heuristic().n() - reference.gaussian_heuristic().n()) < 1e-9
+    # row 12: the exact Gamma form reference-agrees too (both exact symbolic values).
+    assert abs(L.gaussian_heuristic(exact_form=True).n() - reference.gaussian_heuristic(exact_form=True).n()) < 1e-9
+    assert L.gaussian_heuristic(exact_form=True) != L.gaussian_heuristic()
     assert abs(L.hadamard_ratio().n() - reference.hadamard_ratio().n()) < 1e-9
     assert L.minimum() == IntegralLattice(G).minimum()
     assert L.maximum() == Infinity

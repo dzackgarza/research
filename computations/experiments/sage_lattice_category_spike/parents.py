@@ -888,13 +888,21 @@ class _PositiveDefiniteKernel(PositiveDefiniteCarrier):
         # Hermite-Korkine-Zolotarev = full-block BKZ (Sage IntegerLattice.HKZ).
         return self.BKZ(block_size=self.rank())
 
-    def gaussian_heuristic(self):
-        # Expected shortest length det^(1/2n) * sqrt(n / (2 pi e)) (Sage IntegerLattice.gaussian_heuristic).
+    def gaussian_heuristic(self, exact_form=False):
+        # Expected shortest length (Sage IntegerLattice.gaussian_heuristic;
+        # both forms are exact symbolic expressions — gap-ledger row 12):
+        # Stirling form det^(1/2n) * sqrt(n / (2 pi e)); exact Gamma form
+        # (sqrt(det) * Gamma(1 + n/2))^(1/n) / sqrt(pi).
         from sage.symbolic.constants import e, pi
         from sage.misc.functional import sqrt
+        from sage.functions.gamma import gamma
+        from sage.rings.rational_field import QQ as rationals
 
         n = self.rank()
-        return self.gram_matrix().determinant() ** (1 / (2 * n)) * sqrt(n / (2 * pi * e))
+        determinant_sqrt = sqrt(self.gram_matrix().determinant())
+        if exact_form:
+            return (determinant_sqrt * gamma(1 + rationals(n) / 2)) ** (1 / n) / sqrt(pi)
+        return determinant_sqrt ** (1 / n) * sqrt(n / (2 * pi * e))
 
     def hadamard_ratio(self):
         # Orthogonality defect of the current basis: (sqrt(det) / prod ||b_i||)^(1/n)
