@@ -10,7 +10,7 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.element import Element
 
-from .domain_algebra import (
+from ..algebra.domain_algebra import (
     DiscriminantAction as DiscriminantActionCarrier,
     DiscriminantOrthogonalGroup as DiscriminantOrthogonalGroupCarrier,
     Genus as GenusCarrier,
@@ -496,7 +496,7 @@ def TorsionQuadraticForm(gram_matrix):
     r"""Public Sage-compatible constructor for an owned finite quadratic form;
     routes through the section-1.4 category entry point."""
     # lazy import: discriminant_forms imports this module at load time
-    from .categories import DiscriminantForms
+    from ..objects.categories import DiscriminantForms
     return DiscriminantForms(ZZ).from_form_data(gram_matrix)
 
 

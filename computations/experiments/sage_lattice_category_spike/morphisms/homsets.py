@@ -9,9 +9,9 @@ from sage.rings.rational_field import QQ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-from .domain_algebra import LatticeMorphism as LatticeMorphismCarrier
-from .parents import SyntheticLattice
-from .sage_patches import multiplicative_order
+from ..algebra.domain_algebra import LatticeMorphism as LatticeMorphismCarrier
+from ..objects.parents import SyntheticLattice
+from ..sage_patches import multiplicative_order
 
 
 class LatticeHomset(Parent):
@@ -22,7 +22,7 @@ class LatticeHomset(Parent):
         assert isinstance(codomain, SyntheticLattice), (f"expected SyntheticLattice codomain; found={type(codomain)}")
         self._domain = domain
         self._codomain = codomain
-        from .categories import Lattices
+        from ..objects.categories import Lattices
 
         Parent.__init__(self, category=Lattices(domain.base_ring()).Homsets())
 

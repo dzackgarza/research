@@ -20,7 +20,7 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.parent import Parent
 
-from .domain_algebra import (
+from ..algebra.domain_algebra import (
     IsometryGroup as IsometryGroupCarrier,
     IsometrySubgroup as IsometrySubgroupCarrier,
 )
@@ -263,7 +263,7 @@ class SyntheticIsometrySubgroup(IsometrySubgroupCarrier):
         actions (spec 3.3, the typed group object — the successor of the
         deleted lattice-gens methods); defined when L is integral
         nondegenerate."""
-        from .discriminant import SyntheticOrthogonalGroup
+        from ..forms.discriminant import SyntheticOrthogonalGroup
 
         form = self.lattice().discriminant_group()
         return SyntheticOrthogonalGroup(form, (self._ambient.discriminant_action(gen) for gen in self._gens), close=True)

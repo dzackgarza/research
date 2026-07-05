@@ -26,9 +26,9 @@ from sage.rings.rational_field import QQ
 from sage.structure.element import Matrix
 from sage.structure.parent import Parent
 
-from .arithmetic import signature_pair
+from ..algebra.arithmetic import signature_pair
 from .categories import Lattices
-from .domain_algebra import (
+from ..algebra.domain_algebra import (
     DefiniteLattice as DefiniteCarrier,
     IntegralNondegenerateLattice as IntegralNondegenerateCarrier,
     Lattice as LatticeCarrier,
@@ -438,7 +438,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
         return self.scale(self.denominator(), label=label)
 
     def finite_quotient(self, sublattice):
-        from .discriminant_forms import SyntheticLatticeQuotient
+        from ..forms.discriminant_forms import SyntheticLatticeQuotient
 
         return SyntheticLatticeQuotient(self, sublattice)
 
@@ -510,7 +510,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
         section 3); unique per lattice. Generators/order are the object's own
         contracts, implemented exactly where it is finite."""
         if self._isometry_group_object is None:
-            from .isometry_groups import SyntheticIsometryGroup
+            from ..morphisms.isometry_groups import SyntheticIsometryGroup
 
             self._isometry_group_object = SyntheticIsometryGroup(self)
         return self._isometry_group_object
@@ -599,7 +599,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
         return synthetic_lattice(scalar * self.gram_matrix(), self.base_ring(), label)
 
     def Hom(self, codomain):
-        from .homsets import LatticeHomset
+        from ..morphisms.homsets import LatticeHomset
 
         return LatticeHomset(self, codomain)
 
@@ -612,7 +612,7 @@ class SyntheticLattice(LatticeCarrier, Parent):
         return self.hom(matrix_data, codomain=codomain)
 
     def similarity(self, matrix_data, codomain, scalar):
-        from .homsets import LatticeSimilarity
+        from ..morphisms.homsets import LatticeSimilarity
 
         return LatticeSimilarity(self, codomain, matrix_data, scalar)
 
@@ -669,7 +669,7 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateCarrier, Synthe
     r"""Integral nondegenerate subcategory: discriminant/genus vocabulary (spec 2.4)."""
 
     def discriminant_group(self, primary=0):
-        from .discriminant_forms import SyntheticSourcedDiscriminantForm
+        from ..forms.discriminant_forms import SyntheticSourcedDiscriminantForm
 
         return SyntheticSourcedDiscriminantForm(self, primary)
 
@@ -701,11 +701,11 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateCarrier, Synthe
             gram = matrix(QQ, subgroup_or_gens)
             assert gram.is_square() and gram.nrows() == self.rank(), ("local modification Gram matrix must be square of lattice rank; "
             f"rank={self.rank()}, gram={gram}")
-            from .lattice_categories import Lattice
+            from ..lattice_categories import Lattice
 
             return Lattice(gram, base_ring=self.base_ring(), label=label)
         primary_discriminant_group = self.discriminant_group(primary=p)
-        from .discriminant import SyntheticDiscriminantSubgroup
+        from ..forms.discriminant import SyntheticDiscriminantSubgroup
 
         if isinstance(subgroup_or_gens, SyntheticDiscriminantSubgroup):
             subgroup_ambient = subgroup_or_gens.ambient()

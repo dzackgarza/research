@@ -9,9 +9,9 @@ The implementation is organized by concept:
 - ``constructors``: thin public construction helpers.
 """
 
-from .categories import DiscriminantForms, Lattices
-from .constructors import IntegralLatticeGluing, Lattice, RootLattice, SyntheticLatticeFromGram, U
-from .discriminant import (
+from .objects.categories import DiscriminantForms, Lattices
+from .objects.constructors import IntegralLatticeGluing, Lattice, RootLattice, SyntheticLatticeFromGram, U
+from .forms.discriminant import (
     SyntheticDiscriminantAction,
     SyntheticGenus,
     SyntheticDiscriminantGroupElement,
@@ -19,15 +19,15 @@ from .discriminant import (
     SyntheticOrthogonalGroup,
     TorsionQuadraticForm,
 )
-from .discriminant_forms import (
+from .forms.discriminant_forms import (
     SyntheticBilinearDiscriminantForm,
     SyntheticQuadraticDiscriminantForm,
     SyntheticSourcedDiscriminantForm,
 )
-from .elements import SyntheticLatticeElement
-from .homsets import LatticeHomset, LatticeMorphism, LatticeSimilarity
-from .isometry_groups import SyntheticIsometryGroup, SyntheticIsometrySubgroup
-from .parents import SyntheticLattice
+from .objects.elements import SyntheticLatticeElement
+from .morphisms.homsets import LatticeHomset, LatticeMorphism, LatticeSimilarity
+from .morphisms.isometry_groups import SyntheticIsometryGroup, SyntheticIsometrySubgroup
+from .objects.parents import SyntheticLattice
 
 __all__ = [
     "DiscriminantForms",

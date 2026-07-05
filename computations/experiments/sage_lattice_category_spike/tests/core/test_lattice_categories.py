@@ -750,7 +750,7 @@ def test_placement_matrix_both_directions_over_the_spec_fixture_set():
     # constructor-proven category membership. Vocabulary side: the
     # declaration layer's own per-subcategory delta, projected mechanically —
     # the same projection the category installs ride on.
-    from sage_lattice_category_spike import domain_algebra as da
+    from sage_lattice_category_spike.algebra import domain_algebra as da
     from sage_lattice_category_spike.lattice_categories import U as U_constructor
 
     def vocabulary(domain_class):

@@ -8,8 +8,8 @@ not compose, a missing narrowing, a wrong return type) surfaces as a mypy
 error before any implementation exists. Check with:
 
     cd computations/experiments && uvx mypy --strict --ignore-missing-imports \
-        --follow-imports=silent sage_lattice_category_spike/domain_algebra.py \
-        sage_lattice_category_spike/domain_algebra_typecheck.py
+        --follow-imports=silent sage_lattice_category_spike/algebra/domain_algebra.py \
+        sage_lattice_category_spike/algebra/domain_algebra_typecheck.py
 
 Notable coherence facts the types already enforce, on purpose:
 

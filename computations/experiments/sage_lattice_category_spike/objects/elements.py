@@ -6,7 +6,7 @@ from sage.modules.free_module_element import vector
 from sage.rings.rational_field import QQ
 from sage.structure.element import Element
 
-from .domain_algebra import LatticeElement as ElementCarrier
+from ..algebra.domain_algebra import LatticeElement as ElementCarrier
 
 
 class SyntheticLatticeElement(ElementCarrier, Element):

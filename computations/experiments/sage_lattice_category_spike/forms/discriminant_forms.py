@@ -21,9 +21,9 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.parent import Parent
 
-from .arithmetic import rational_mod
-from .categories import DiscriminantForms
-from .domain_algebra import (
+from ..algebra.arithmetic import rational_mod
+from ..objects.categories import DiscriminantForms
+from ..algebra.domain_algebra import (
     BilinearDiscriminantForm as BilinearDiscriminantFormCarrier,
     DiscriminantForm as DiscriminantFormCarrier,
     QuadraticDiscriminantForm as QuadraticDiscriminantFormCarrier,
@@ -45,8 +45,8 @@ from .discriminant import (
     _lattice_key,
     _relation_inclusion_matrix,
 )
-from .elements import SyntheticLatticeElement
-from .value_objects import value_module
+from ..objects.elements import SyntheticLatticeElement
+from ..algebra.value_objects import value_module
 
 
 def _presentation_radical_order(gram, invariants):
@@ -364,7 +364,7 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
     """
 
     def __init__(self, cover_lattice, relation_lattice):
-        from .parents import SyntheticLattice
+        from ..objects.parents import SyntheticLattice
         assert isinstance(cover_lattice, SyntheticLattice), (f"expected SyntheticLattice cover; found={type(cover_lattice)}")
         assert isinstance(relation_lattice, SyntheticLattice), (f"expected SyntheticLattice relation lattice; found={type(relation_lattice)}")
         assert cover_lattice.base_ring() is ZZ, "finite lattice quotient cover must be a ZZ-lattice"
@@ -968,7 +968,7 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantFormCarrier, Synthetic
     Element = SyntheticDiscriminantGroupElement
 
     def __init__(self, source_lattice, primary):
-        from .parents import SyntheticLattice
+        from ..objects.parents import SyntheticLattice
         assert isinstance(source_lattice, SyntheticLattice), (f"expected SyntheticLattice source; found={type(source_lattice)}")
         assert primary == 0 or ZZ(primary).is_prime(), (f"primary must be 0 or prime; found={primary}")
         self._source_lattice = source_lattice

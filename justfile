@@ -89,6 +89,6 @@ test:
     if "projects/lattice-research" not in gitmodules.read_text():
         raise SystemExit("lattice-research submodule missing from .gitmodules")
     PY
-    sage -python -m pytest -p no:cacheprovider computations/experiments/sage_lattice_category_spike
+    just -f computations/experiments/sage_lattice_category_spike/justfile test
 
 test-ci: test

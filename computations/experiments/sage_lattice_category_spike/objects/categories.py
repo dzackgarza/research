@@ -30,7 +30,7 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.misc.abstract_method import abstract_method
 
-from .domain_algebra import (
+from ..algebra.domain_algebra import (
     BilinearDiscriminantForm as BilinearDiscriminantFormCarrier,
     DefiniteLattice as DefiniteCarrier,
     DiscriminantForm as DiscriminantFormCarrier,
@@ -126,7 +126,7 @@ class Lattices(Category_over_base_ring):
         axioms (RootGenerated) ride the ``cartan_type`` flag, attached by the
         section-6 named constructors and never detected from the Gram.
         """
-        from .arithmetic import as_square_qq_matrix
+        from ..algebra.arithmetic import as_square_qq_matrix
         from .parents import synthetic_lattice
 
         base_ring = self.base_ring()
@@ -178,7 +178,7 @@ class DiscriminantForms(Category_over_base_ring):
         optionally an explicit group presentation) into this category. The
         lattice-side functor ``discriminant_group`` lands in its image, and
         the Sage-compatible ``TorsionQuadraticForm`` factory routes here."""
-        from .discriminant_forms import SyntheticQuadraticDiscriminantForm
+        from ..forms.discriminant_forms import SyntheticQuadraticDiscriminantForm
 
         return SyntheticQuadraticDiscriminantForm(gram_matrix, quadratic_modulus=quadratic_modulus, invariants=invariants)
 
@@ -309,7 +309,7 @@ class NondegenerateDiscriminantForms(CategoryWithAxiom_over_base_ring):
             Nondegenerate subcategory (spec section 4) — the identification along
             ``b`` exists exactly there, so definedness is placement, not a
             runtime guard."""
-            from .discriminant_forms import PontryaginDualIdentification
+            from ..forms.discriminant_forms import PontryaginDualIdentification
 
             return PontryaginDualIdentification(self)
 
