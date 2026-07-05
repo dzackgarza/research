@@ -6,20 +6,17 @@ project references.
 ## Lattice Spikes
 
 The maintained Sage lattice-category experiments live under
-`/home/dzack/research/computations/experiments`. They are not installed as
-site packages. From any Sage script or notebook, add that experiment root to
-`sys.path`, then import the spike package.
+`computations/experiments`. The repo-local `.envrc` puts that experiment root
+on `PYTHONPATH`, so Sage scripts and notebooks opened from this repo can import
+the spikes directly. After checkout or after `.envrc` changes, run:
+
+```bash
+direnv allow
+```
 
 Use the base spike for Sage-parity lattice work:
 
 ```sage
-from pathlib import Path
-import sys
-
-SPIKE_ROOT = Path("/home/dzack/research/computations/experiments")
-if str(SPIKE_ROOT) not in sys.path:
-    sys.path.insert(0, str(SPIKE_ROOT))
-
 from sage.all import ZZ
 import sage_lattice_category_spike.lattice_categories as lc
 
@@ -33,13 +30,6 @@ imports the base spike as `base`; no ungated feature engines are assumed to
 exist there.
 
 ```sage
-from pathlib import Path
-import sys
-
-SPIKE_ROOT = Path("/home/dzack/research/computations/experiments")
-if str(SPIKE_ROOT) not in sys.path:
-    sys.path.insert(0, str(SPIKE_ROOT))
-
 from sage.all import ZZ
 import sage_lattice_feature_spike as feature
 
