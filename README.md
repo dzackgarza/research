@@ -25,6 +25,61 @@ history, split it into `projects/` as a submodule.
 
 - `projects/lattice-research`: submodule for the live Coble/lattice research project.
 
+## Lattice Spikes
+
+The Sage lattice spikes live under `computations/experiments` and import as top-level
+Python packages when Sage runs from that directory.
+
+Use the base spike for Sage-parity lattice work:
+
+```bash
+cd computations/experiments
+sage -python - <<'PY'
+from sage.all import ZZ
+import sage_lattice_category_spike.lattice_categories as lc
+
+L = lc.Lattices(ZZ).from_gram_matrix([[2]], label="<2>")
+v = L.gen(0)
+print(v.b(v))
+PY
+```
+
+Expected output:
+
+```text
+2
+```
+
+Use the feature spike only as the fork point for work beyond Sage parity. It imports
+the base spike as `base`; no ungated feature engines are assumed to exist there.
+
+```bash
+cd computations/experiments
+sage -python - <<'PY'
+from sage.all import ZZ
+import sage_lattice_feature_spike as feature
+
+L = feature.base.Lattices(ZZ).from_gram_matrix([[2]], label="<2>")
+print(L.gen(0).q())
+PY
+```
+
+Expected output:
+
+```text
+2
+```
+
+Run the spike test gates from the repository root:
+
+```bash
+just -f computations/experiments/sage_lattice_category_spike/justfile test
+just -f computations/experiments/sage_lattice_feature_spike/justfile test
+```
+
+`just test` runs the repository hygiene sweep and then delegates to the base-spike
+test gate.
+
 ## Import Policy
 
 Imported scratchpad material is preserved before cleanup. Do not rewrite mathematical
