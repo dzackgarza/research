@@ -10,6 +10,7 @@ from .lattice_categories import (
     LatticeMorphism,
     LatticeSimilarity,
     Lattices,
+    RootLattice,
     SyntheticDiscriminantAction,
     SyntheticBilinearDiscriminantForm,
     SyntheticQuadraticDiscriminantForm,
@@ -17,11 +18,14 @@ from .lattice_categories import (
     SyntheticGenus,
     SyntheticDiscriminantGroupElement,
     SyntheticDiscriminantSubgroup,
+    SyntheticIsometryGroup,
+    SyntheticIsometrySubgroup,
     SyntheticOrthogonalGroup,
     SyntheticLattice,
     SyntheticLatticeElement,
     SyntheticLatticeFromGram,
     TorsionQuadraticForm,
+    U,
 )
 
 __all__ = [
