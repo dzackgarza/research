@@ -17,24 +17,24 @@ direnv allow
 Use the base spike for Sage-parity lattice work:
 
 ```sage
-from sage.all import ZZ
-import sage_lattice_category_spike.lattice_categories as lc
+from sage_lattice_category_spike import *
 
-L = lc.Lattices(ZZ).from_gram_matrix([[2]], label="<2>")
-v = L.gen(0)
-v.b(v)  # 2
+L.<v> = Lattice([[2]], label="<2>")
+v * v   # 2  (quadratic form via *)
 ```
+
+See `.agents/references/spike-style-guide.md` for the full style guide
+governing spike code, notebooks, and documentation.
 
 Use the feature spike only as the fork point for work beyond Sage parity. It
 imports the base spike as `base`; no ungated feature engines are assumed to
 exist there.
 
 ```sage
-from sage.all import ZZ
-import sage_lattice_feature_spike as feature
+from sage_lattice_feature_spike import *
 
-L = feature.base.Lattices(ZZ).from_gram_matrix([[2]], label="<2>")
-L.gen(0).q()  # 2
+L.<v> = feature.base.Lattice([[2]], label="<2>")
+v * v   # 2
 ```
 
 Run the spike test gates from the repository root:
