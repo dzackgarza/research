@@ -40,7 +40,9 @@ def _relation_inclusion_matrix(cover_lattice, relation_lattice):
     if cover_lattice.rank() == 0:
         return matrix(ZZ, 0, 0)
     if relation_lattice._ambient_gram() == cover_lattice._ambient_gram():
-        assert relation_lattice.is_submodule(cover_lattice), "relations must be a sublattice of the cover"
+        assert relation_lattice.is_submodule(cover_lattice), (
+            "relations must be a sublattice of the cover"
+        )
         return matrix(
             ZZ,
             [
@@ -48,8 +50,11 @@ def _relation_inclusion_matrix(cover_lattice, relation_lattice):
                 for row in relation_lattice._inclusion_rows().rows()
             ],
         )
-    if relation_lattice.base_ring() is ZZ and relation_lattice.determinant() != 0 \
-            and relation_lattice.dual() == cover_lattice:
+    if (
+        relation_lattice.base_ring() is ZZ
+        and relation_lattice.determinant() != 0
+        and relation_lattice.dual() == cover_lattice
+    ):
         return matrix(ZZ, relation_lattice.gram_matrix())
     assert False, (
         "relation lattice is not a recognized sublattice of the cover; provide the "
@@ -81,7 +86,9 @@ def _finite_all_subgroups(parent):
     while frontier:
         subgroup = frontier.pop()
         for element in parent.elements():
-            generated = parent.subgroup_generated_by(tuple(subgroup.gens()) + (element,))
+            generated = parent.subgroup_generated_by(
+                tuple(subgroup.gens()) + (element,)
+            )
             key = generated._key()
             if key not in seen:
                 seen[key] = generated
@@ -101,7 +108,9 @@ def _finite_relations_among(parent, gens):
 
 def _finite_basis_from_generators(parent, gens):
     subgroup = parent.subgroup_generated_by(gens)
-    assert subgroup.cardinality() == parent.cardinality(), "generators do not span the whole group"
+    assert subgroup.cardinality() == parent.cardinality(), (
+        "generators do not span the whole group"
+    )
     return tuple(parent(gen) for gen in gens)
 
 
@@ -112,9 +121,13 @@ def _finite_scalar_multiply(parent, scalar, element):
 def _finite_p_torsion(parent, p, k=1):
     p = ZZ(p)
     k = ZZ(k)
-    assert p.is_prime(), (f"p-torsion requires a prime; found={p}")
-    assert k >= 1, (f"p-torsion exponent must be positive; found={k}")
-    return parent.subgroup_generated_by(element for element in parent.elements() if _finite_scalar_multiply(parent, p ** k, element) == parent.zero())
+    assert p.is_prime(), f"p-torsion requires a prime; found={p}"
+    assert k >= 1, f"p-torsion exponent must be positive; found={k}"
+    return parent.subgroup_generated_by(
+        element
+        for element in parent.elements()
+        if _finite_scalar_multiply(parent, p**k, element) == parent.zero()
+    )
 
 
 def _form_matrix_on_images(group, images):
@@ -179,7 +192,10 @@ def _induced_subquotient_form(ambient, relation_subgroup, cover_subgroup):
     form = _form_matrix_on_images(ambient, generators)
     # lazy import: discriminant_forms imports this module at load time
     from .discriminant_forms import SyntheticQuadraticDiscriminantForm
-    result = SyntheticQuadraticDiscriminantForm(form, quadratic_modulus=ambient._quadratic_modulus())
+
+    result = SyntheticQuadraticDiscriminantForm(
+        form, quadratic_modulus=ambient._quadratic_modulus()
+    )
     expected_order = cover_subgroup.cardinality() // relation_subgroup.cardinality()
     assert result.cardinality() == expected_order, (
         "subquotient K/H is degenerate; its group order is not recoverable from the induced "
@@ -199,9 +215,13 @@ class SyntheticDiscriminantGroupElement(Element):
         if coordinates == 0:
             coordinates = [ZZ.zero()] * parent.ngens()
         coords = vector(ZZ, coordinates)
-        assert len(coords) == parent.ngens(), ("discriminant coordinates must match the invariant-factor count; "
-        f"invariants={parent.invariants()}, coordinates={coordinates}")
-        coords = vector(ZZ, [coords[i] % parent.invariants()[i] for i in range(parent.ngens())])
+        assert len(coords) == parent.ngens(), (
+            "discriminant coordinates must match the invariant-factor count; "
+            f"invariants={parent.invariants()}, coordinates={coordinates}"
+        )
+        coords = vector(
+            ZZ, [coords[i] % parent.invariants()[i] for i in range(parent.ngens())]
+        )
         coords.set_immutable()
         self._coordinates = coords
 
@@ -235,6 +255,15 @@ class SyntheticDiscriminantGroupElement(Element):
             and self.parent() == other.parent()
             and self.coefficient_vector() == other.coefficient_vector()
         )
+
+    def __mul__(self, other):
+        match other:
+            case SyntheticDiscriminantGroupElement() if self.parent() is other.parent():
+                return self.parent().b(self, other)
+            case SyntheticDiscriminantGroupElement():
+                raise ValueError("Elements must belong to the same discriminant form")
+            case _:
+                return self._lmul_(other)
 
     def __hash__(self):
         return hash((self.parent(), tuple(self.coefficient_vector())))
@@ -271,9 +300,12 @@ class SyntheticDiscriminantSubgroup:
         from sage.modules.free_module import FreeModule
 
         ambient_module = FreeModule(ZZ, self.ambient().ngens())
-        relations = ambient_module.span(matrix.diagonal(ZZ, self.ambient().invariants()).rows())
+        relations = ambient_module.span(
+            matrix.diagonal(ZZ, self.ambient().invariants()).rows()
+        )
         span = ambient_module.span(
-            [vector(ZZ, generator.coefficient_vector()) for generator in self.gens()] + list(relations.gens())
+            [vector(ZZ, generator.coefficient_vector()) for generator in self.gens()]
+            + list(relations.gens())
         )
         return tuple(span.quotient(relations).invariants())
 
@@ -297,7 +329,11 @@ class SyntheticDiscriminantSubgroup:
         return frozenset(self._element_key(element) for element in self.elements())
 
     def __eq__(self, other):
-        return isinstance(other, SyntheticDiscriminantSubgroup) and self.ambient() is other.ambient() and self._key() == other._key()
+        return (
+            isinstance(other, SyntheticDiscriminantSubgroup)
+            and self.ambient() is other.ambient()
+            and self._key() == other._key()
+        )
 
     def __hash__(self):
         return hash((id(self.ambient()), self._key()))
@@ -331,10 +367,14 @@ class SyntheticDiscriminantAction(DiscriminantActionCarrier):
             f"discriminant actions act on a consolidated finite quotient parent; found={type(discriminant_group)}"
         )
         matrix_data = matrix(ZZ, matrix_data)
-        assert matrix_data.nrows() == discriminant_group.ngens(), ("action matrix rows must match invariant count; "
-        f"rows={matrix_data.nrows()}, invariants={discriminant_group.invariants()}")
-        assert matrix_data.ncols() == discriminant_group.ngens(), ("action matrix columns must match invariant count; "
-        f"columns={matrix_data.ncols()}, invariants={discriminant_group.invariants()}")
+        assert matrix_data.nrows() == discriminant_group.ngens(), (
+            "action matrix rows must match invariant count; "
+            f"rows={matrix_data.nrows()}, invariants={discriminant_group.invariants()}"
+        )
+        assert matrix_data.ncols() == discriminant_group.ngens(), (
+            "action matrix columns must match invariant count; "
+            f"columns={matrix_data.ncols()}, invariants={discriminant_group.invariants()}"
+        )
         reduced = matrix(ZZ, matrix_data.nrows(), matrix_data.ncols())
         for i, invariant in enumerate(discriminant_group.invariants()):
             for j in range(matrix_data.ncols()):
@@ -345,7 +385,10 @@ class SyntheticDiscriminantAction(DiscriminantActionCarrier):
 
     @classmethod
     def from_images(cls, discriminant_group, images):
-        columns = [vector(ZZ, _finite_coordinates(discriminant_group, image)) for image in images]
+        columns = [
+            vector(ZZ, _finite_coordinates(discriminant_group, image))
+            for image in images
+        ]
         return cls(discriminant_group, column_matrix(ZZ, columns))
 
     def discriminant_form(self):
@@ -359,25 +402,37 @@ class SyntheticDiscriminantAction(DiscriminantActionCarrier):
         return group(self.matrix() * vector(ZZ, _finite_coordinates(group, element)))
 
     def is_identity(self):
-        return all(self(element) == element for element in self.discriminant_form().elements())
+        return all(
+            self(element) == element for element in self.discriminant_form().elements()
+        )
 
     def is_automorphism(self):
         group = self.discriminant_form()
-        images = {_finite_coordinates(group, self(element)) for element in group.elements()}
+        images = {
+            _finite_coordinates(group, self(element)) for element in group.elements()
+        }
         return len(images) == group.cardinality()
 
     def kernel(self):
         group = self.discriminant_form()
-        return SyntheticDiscriminantSubgroup(group, (element for element in group.elements() if self(element) == group.zero()))
+        return SyntheticDiscriminantSubgroup(
+            group,
+            (element for element in group.elements() if self(element) == group.zero()),
+        )
 
     def inverse_image(self, subgroup_or_gens):
         group = self.discriminant_form()
         subgroup = group._subgroup(subgroup_or_gens)
-        return SyntheticDiscriminantSubgroup(group, (element for element in group.elements() if self(element) in subgroup))
+        return SyntheticDiscriminantSubgroup(
+            group,
+            (element for element in group.elements() if self(element) in subgroup),
+        )
 
     def image(self):
         group = self.discriminant_form()
-        return SyntheticDiscriminantSubgroup(group, (self(generator) for generator in group.gens()))
+        return SyntheticDiscriminantSubgroup(
+            group, (self(generator) for generator in group.gens())
+        )
 
     def im_gens(self):
         return self.image().gens()
@@ -385,12 +440,20 @@ class SyntheticDiscriminantAction(DiscriminantActionCarrier):
     def lift(self, element):
         group = self.discriminant_form()
         element = group(element)
-        preimages = tuple(candidate for candidate in group.elements() if self(candidate) == element)
-        assert preimages, f"element is not in the image of this finite homomorphism: {element}"
-        return min(preimages, key=lambda candidate: _finite_coordinates(group, candidate))
+        preimages = tuple(
+            candidate for candidate in group.elements() if self(candidate) == element
+        )
+        assert preimages, (
+            f"element is not in the image of this finite homomorphism: {element}"
+        )
+        return min(
+            preimages, key=lambda candidate: _finite_coordinates(group, candidate)
+        )
 
     def inverse(self):
-        assert self.is_automorphism(), f"only automorphisms have inverses; matrix={self.matrix()}"
+        assert self.is_automorphism(), (
+            f"only automorphisms have inverses; matrix={self.matrix()}"
+        )
         inverse_images = []
         for generator in self.discriminant_form().gens():
             preimages = tuple(
@@ -398,10 +461,14 @@ class SyntheticDiscriminantAction(DiscriminantActionCarrier):
                 for element in self.discriminant_form().elements()
                 if self(element) == generator
             )
-            assert len(preimages) == 1, ("automorphism inverse must have a unique preimage for each generator; "
-            f"generator={generator}, preimages={preimages}")
+            assert len(preimages) == 1, (
+                "automorphism inverse must have a unique preimage for each generator; "
+                f"generator={generator}, preimages={preimages}"
+            )
             inverse_images.append(preimages[0])
-        return SyntheticDiscriminantAction.from_images(self.discriminant_form(), inverse_images)
+        return SyntheticDiscriminantAction.from_images(
+            self.discriminant_form(), inverse_images
+        )
 
     def preserves_bilinear_form(self):
         group = self.discriminant_form()
@@ -413,10 +480,14 @@ class SyntheticDiscriminantAction(DiscriminantActionCarrier):
 
     def preserves_quadratic_form(self):
         group = self.discriminant_form()
-        return all(group.q(self(element)) == group.q(element) for element in group.elements())
+        return all(
+            group.q(self(element)) == group.q(element) for element in group.elements()
+        )
 
     def preserves_form(self, kind="quadratic"):
-        assert kind in ("quadratic", "bilinear"), (f"form kind must be quadratic or bilinear; found={kind}")
+        assert kind in ("quadratic", "bilinear"), (
+            f"form kind must be quadratic or bilinear; found={kind}"
+        )
         if kind == "bilinear":
             return self.preserves_bilinear_form()
         return self.preserves_bilinear_form() and self.preserves_quadratic_form()
@@ -459,8 +530,14 @@ class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroupCarrier):
         return self._generators[index]
 
     def __call__(self, action):
-        action = action if isinstance(action, SyntheticDiscriminantAction) else SyntheticDiscriminantAction(self.discriminant_form(), action)
-        assert any(action == group_action for group_action in self._actions), (f"action is not in this orthogonal group: {action.matrix()}")
+        action = (
+            action
+            if isinstance(action, SyntheticDiscriminantAction)
+            else SyntheticDiscriminantAction(self.discriminant_form(), action)
+        )
+        assert any(action == group_action for group_action in self._actions), (
+            f"action is not in this orthogonal group: {action.matrix()}"
+        )
         return action.matrix()
 
     def as_permutation_group(self):
@@ -472,20 +549,28 @@ class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroupCarrier):
 
         elements = self.discriminant_form().elements()
         positions = {element: index + 1 for index, element in enumerate(elements)}
-        permutations = [[positions[action(element)] for element in elements] for action in self.gens()]
+        permutations = [
+            [positions[action(element)] for element in elements]
+            for action in self.gens()
+        ]
         if not permutations:
             permutations = [list(range(1, len(elements) + 1))]
         return PermutationGroup(permutations)
 
     def _closure(self, generators):
-        identity = SyntheticDiscriminantAction(self.discriminant_form(), identity_matrix(ZZ, self.discriminant_form().ngens()))
+        identity = SyntheticDiscriminantAction(
+            self.discriminant_form(),
+            identity_matrix(ZZ, self.discriminant_form().ngens()),
+        )
         seen = {identity}
         frontier = [identity]
         generators = tuple(generators)
         while frontier:
             current = frontier.pop()
             for generator in generators:
-                product_action = SyntheticDiscriminantAction(self.discriminant_form(), generator.matrix() * current.matrix())
+                product_action = SyntheticDiscriminantAction(
+                    self.discriminant_form(), generator.matrix() * current.matrix()
+                )
                 if product_action not in seen:
                     seen.add(product_action)
                     frontier.append(product_action)
@@ -497,6 +582,7 @@ def TorsionQuadraticForm(gram_matrix):
     routes through the section-1.4 category entry point."""
     # lazy import: discriminant_forms imports this module at load time
     from ..objects.categories import DiscriminantForms
+
     return DiscriminantForms(ZZ).from_form_data(gram_matrix)
 
 
@@ -598,7 +684,10 @@ class SyntheticGenus(GenusCarrier):
         # Sage: genus symbols compare by signature + local symbols)
         if not isinstance(other, SyntheticGenus):
             return False
-        if self.signature_pair() != other.signature_pair() or self.is_even() != other.is_even():
+        if (
+            self.signature_pair() != other.signature_pair()
+            or self.is_even() != other.is_even()
+        ):
             return False
         return self._sage_engine() == other._sage_engine()
 

@@ -59,3 +59,12 @@ class SyntheticLatticeElement(ElementCarrier, Element):
             and self.parent() == other.parent()
             and self.coefficient_vector() == other.coefficient_vector()
         )
+
+    def __mul__(self, other):
+        match other:
+            case SyntheticLatticeElement() if self.parent() is other.parent():
+                return self.parent().b(self, other)
+            case SyntheticLatticeElement():
+                raise ValueError("Elements must belong to the same lattice")
+            case _:
+                return self._lmul_(other)
