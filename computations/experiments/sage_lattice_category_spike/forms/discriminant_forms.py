@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from itertools import product
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sage.arith.functions import lcm
 from sage.matrix.constructor import column_matrix, identity_matrix, matrix
@@ -140,6 +140,12 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, Parent):
             return coordinates
         return self.element_class(self, coordinates)
 
+    if TYPE_CHECKING:
+        # Element construction: Parent.__call__ routes through
+        # _element_constructor_; refined to this parent's own element class
+        # (declaration only — a runtime __call__ would shadow Parent.__call__).
+        def __call__(self, coordinates: object = ..., /, *args: object, **kwds: object) -> SyntheticDiscriminantGroupElement: ...
+
     def cover(self) -> Any:
         return self._cover
 
@@ -218,7 +224,7 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, Parent):
         """
         R = self.base_ring()
         assert base_ring.coerce_map_from(R) is not None, f"base_extend requires a natural map {R} → {base_ring}"
-        if all(ZZ(n).is_unit() in base_ring for n in self.invariants()) or not self.invariants():
+        if all(base_ring(ZZ(n)).is_unit() for n in self.invariants()) or not self.invariants():
             # All torsion killed by localization → zero module
             if isinstance(self, SyntheticQuadraticDiscriminantForm):
                 return SyntheticQuadraticDiscriminantForm(
@@ -358,6 +364,23 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, Parent):
 
     def automorphism_group(self) -> Any:
         return SyntheticOrthogonalGroup(self, _all_group_automorphisms(self))
+
+    def _invariant_factors(self) -> tuple[Any, ...]:
+        r"""Canonical invariant factors of the underlying group, from Sage's
+        group normalization (presented generator orders need not be invariant
+        factors: ``diag(1/2, 1/3)`` presents ``(2, 3)``; the group is ``(6,)``)."""
+        from sage.groups.additive_abelian.additive_abelian_group import (
+            AdditiveAbelianGroup,
+        )
+
+        return tuple(AdditiveAbelianGroup(list(self.invariants())).invariants())
+
+    def is_isomorphic(self, other: Any) -> bool:
+        r"""Group isomorphism: finite abelian groups are classified by their
+        invariant factors (the form kinds live on the form-carrying
+        subcategories, which override with the ``kind`` selector)."""
+        assert isinstance(other, SyntheticDiscriminantForm), f"expected a synthetic finite quotient; found={type(other)}"
+        return self._invariant_factors() == other._invariant_factors()
 
     def projection(self, element: Any) -> Any:
         row = matrix(ZZ, 1, self._cover_dim(), self._cover_coordinates(element))
@@ -711,6 +734,14 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
         assert phi.discriminant_form() is self, "pullback requires an endomorphism of this finite quadratic form"
         return _form_matrix_on_images(self, [phi(generator) for generator in self.gens()])
 
+    def _sage_engine(self) -> Any:
+        r"""Ephemeral Sage torsion module carrying this form. The quadratic
+        subcategory builds it from its quadratic Gram; a bilinear-only
+        presented form has no implemented engine yet (every bilinear form
+        constructed in the spike today is a quadratic form's polar), so the
+        computational precondition is asserted with data (ADDD)."""
+        assert False, f"no Sage engine is implemented for a bilinear-only presented form; invariants={self.invariants()}; construct through the quadratic subcategory"
+
     def is_isomorphic(self, other: Any, kind: str = "quadratic") -> bool:
         assert kind in ("group", "bilinear", "quadratic"), f"isomorphism kind must be group, bilinear, or quadratic; found={kind}"
         assert isinstance(other, SyntheticBilinearDiscriminantForm), f"expected SyntheticBilinearDiscriminantForm; found={type(other)}"
@@ -721,17 +752,12 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
             return True
         if kind == "bilinear":
             return bool(self._bilinear_normal_presentation() == other._bilinear_normal_presentation())
-        return bool(self.miranda_morrison_normal_form() == other.miranda_morrison_normal_form())
-
-    def _invariant_factors(self) -> tuple[Any, ...]:
-        r"""Canonical invariant factors of the underlying group, from Sage's
-        group normalization (presented generator orders need not be invariant
-        factors: ``diag(1/2, 1/3)`` presents ``(2, 3)``; the group is ``(6,)``)."""
-        from sage.groups.additive_abelian.additive_abelian_group import (
-            AdditiveAbelianGroup,
+        # deciding isomorphism of pairs (G, q) requires the quadratic data on
+        # both sides (the theories are distinct over ZZ)
+        assert isinstance(self, SyntheticQuadraticDiscriminantForm) and isinstance(other, SyntheticQuadraticDiscriminantForm), (
+            f"quadratic isomorphism is decided between quadratic forms; found {type(self).__name__} vs {type(other).__name__}; compare with kind='bilinear' or kind='group'"
         )
-
-        return tuple(AdditiveAbelianGroup(list(self.invariants())).invariants())
+        return bool(self.miranda_morrison_normal_form() == other.miranda_morrison_normal_form())
 
     def _bilinear_normal_presentation(self) -> Any:
         r"""The complete bilinear-isomorphism invariant computed by Sage: re-present
@@ -774,6 +800,9 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
         built from this form's own Gram, translated back onto the owned generators.
         Sage's invariant-factor presentation reproduces those generators, so a Sage
         action matrix (rows = images) becomes an owned action by transposition."""
+        assert isinstance(self, SyntheticQuadraticDiscriminantForm), (
+            f"the delegated orthogonal group runs through the quadratic Sage engine; a bilinear-only presented form has none yet; found={type(self).__name__}"
+        )
         sage_form = self._sage_engine()
         assert tuple(sage_form.invariants()) == self.invariants() and sage_form.gram_matrix_quadratic() == self.gram_matrix_quadratic(), (
             "the ephemeral Sage TorsionQuadraticModule must reproduce the synthetic invariant-factor presentation to "
@@ -975,11 +1004,13 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
     Element = SyntheticDiscriminantGroupElement
 
     def __init__(self, source_lattice: Any, primary: Any) -> None:
-        from ..objects.parents import SyntheticLattice
+        from ..objects.parents import SyntheticIntegralNondegenerateLattice
 
-        assert isinstance(source_lattice, SyntheticLattice), f"expected SyntheticLattice source; found={type(source_lattice)}"
+        assert isinstance(source_lattice, SyntheticIntegralNondegenerateLattice), (
+            f"a discriminant group L#/L is defined for an integral nondegenerate source lattice; found={type(source_lattice)}"
+        )
         assert primary == 0 or ZZ(primary).is_prime(), f"primary must be 0 or prime; found={primary}"
-        self._source_lattice = source_lattice
+        self._source_lattice: SyntheticIntegralNondegenerateLattice = source_lattice
         self._primary = ZZ(primary)
         smith, _smith_left, smith_right = matrix(ZZ, source_lattice.gram_matrix()).smith_form()
         self._smith_right_transpose = smith_right.transpose()
@@ -1054,7 +1085,7 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
 
     # -- source-based form data: read the Gram on the invariant generators off
     # G^{-1} through the dual coordinates, never a stored Gram presentation. --
-    @cached_method  # type: ignore[untyped-decorator]  # Sage's cached_method ships no stubs
+    @cached_method
     def _raw_form_matrix(self) -> Any:
         if self.ngens() == 0:
             return matrix(QQ, 0, 0)
@@ -1064,14 +1095,14 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
         form.set_immutable()
         return form
 
-    @cached_method  # type: ignore[untyped-decorator]  # Sage's cached_method ships no stubs
+    @cached_method
     def gram_matrix_bilinear(self) -> Any:
         raw_form = self._raw_form_matrix()
         form = raw_form.apply_map(lambda entry: rational_mod(entry, 1))
         form.set_immutable()
         return form
 
-    @cached_method  # type: ignore[untyped-decorator]  # Sage's cached_method ships no stubs
+    @cached_method
     def gram_matrix_quadratic(self) -> Any:
         raw_form = self._raw_form_matrix()
         bilinear_form = self.gram_matrix_bilinear()

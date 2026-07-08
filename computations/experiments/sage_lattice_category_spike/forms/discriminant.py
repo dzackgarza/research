@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterator
 from itertools import product
-from typing import Any, assert_never
+from typing import TYPE_CHECKING, Any
 
 from sage.matrix.constructor import column_matrix, identity_matrix, matrix
 from sage.modules.free_module_element import vector
@@ -13,6 +13,9 @@ from sage.rings.rational_field import QQ
 from sage.structure.element import Element, RingElement
 
 from ..lexicon import DiscriminantAction, DiscriminantOrthogonalGroup, Genus
+
+if TYPE_CHECKING:
+    from .discriminant_forms import SyntheticDiscriminantForm
 
 
 def _lattice_key(lattice: Any) -> tuple[Any, ...]:
@@ -180,6 +183,10 @@ def _induced_subquotient_form(ambient: Any, relation_subgroup: Any, cover_subgro
 class SyntheticDiscriminantGroupElement(Element):
     r"""Element of ``L# / L`` in invariant-factor coordinates."""
 
+    if TYPE_CHECKING:
+        # The parent is always a consolidated synthetic finite quotient.
+        def parent(self) -> SyntheticDiscriminantForm: ...
+
     def __init__(self, parent: Any, coordinates: Any) -> None:
         Element.__init__(self, parent)
         if isinstance(coordinates, SyntheticDiscriminantGroupElement):
@@ -199,10 +206,18 @@ class SyntheticDiscriminantGroupElement(Element):
         return self._coordinates
 
     def b(self, other: Any) -> Any:
-        return self.parent().b(self, other)
+        from .discriminant_forms import SyntheticBilinearDiscriminantForm
+
+        parent = self.parent()
+        assert isinstance(parent, SyntheticBilinearDiscriminantForm), f"the pairing b lives on form-carrying parents (a bare finite quotient has no form); found={type(parent)}"
+        return parent.b(self, other)
 
     def q(self) -> Any:
-        return self.parent().q(self)
+        from .discriminant_forms import SyntheticBilinearDiscriminantForm
+
+        parent = self.parent()
+        assert isinstance(parent, SyntheticBilinearDiscriminantForm), f"the form q lives on form-carrying parents (a bare finite quotient has no form); found={type(parent)}"
+        return parent.q(self)
 
     def _add_(self, other: Any) -> Any:
         return self.parent()(self.coefficient_vector() + other.coefficient_vector())
@@ -232,7 +247,7 @@ class SyntheticDiscriminantGroupElement(Element):
         R = self.parent().base_ring()
         match other:
             case SyntheticDiscriminantGroupElement() if self.parent() is other.parent():
-                return self.parent().b(self, other)
+                return self.b(other)
             case SyntheticDiscriminantGroupElement():
                 assert False, "different-parent discriminant element; use the isometry/hom API"
             case RingElement() if other in R:
@@ -244,7 +259,7 @@ class SyntheticDiscriminantGroupElement(Element):
                     return base_changed.zero()
                 return base_changed(s * self.coefficient_vector())
             case _:
-                assert_never(other)
+                assert False, f"scalar has no coercion from the base ring; scalar={other}, scalar_ring={other.parent()}, base_ring={R}"
 
     def __hash__(self) -> int:
         return hash((self.parent(), tuple(self.coefficient_vector())))
@@ -455,8 +470,25 @@ class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroup):
 
     def __call__(self, action: Any) -> Any:
         action = action if isinstance(action, SyntheticDiscriminantAction) else SyntheticDiscriminantAction(self.discriminant_form(), action)
-        assert any(action == group_action for group_action in self._actions), f"action is not in this orthogonal group: {action.matrix()}"
+        assert action in self, f"action is not in this orthogonal group: {action.matrix()}"
         return action.matrix()
+
+    def __contains__(self, candidate: Any) -> bool:
+        r"""Membership in the (finite, closure-enumerated) group."""
+        action = candidate if isinstance(candidate, SyntheticDiscriminantAction) else SyntheticDiscriminantAction(self.discriminant_form(), candidate)
+        return any(action == group_action for group_action in self._actions)
+
+    def as_matrix_group(self) -> Any:
+        r"""Contracted GAP matrix-group seam. The action matrices here compose
+        modulo per-row invariants, so they carry NO faithful integer
+        matrix-group structure to hand to Sage — the faithful GAP
+        representation is the permutation one (ADDD: the precondition is
+        structural, so it is asserted with data)."""
+        assert False, (
+            "the owned discriminant orthogonal group has no faithful integer matrix representation "
+            "(action matrices compose modulo the generator invariants); use as_permutation_group() "
+            f"for the GAP seam; invariants={self.discriminant_form().invariants()}"
+        )
 
     def as_permutation_group(self) -> Any:
         r"""GAP-backed permutation representation (spec 3.5): the faithful action on the
@@ -541,6 +573,30 @@ class SyntheticGenus(Genus):
 
     def dim(self) -> Any:
         return ZZ(self._sage_engine().dimension())
+
+    def representative(self) -> Any:
+        r"""A lattice in this genus: Sage's genus machinery returns an integer
+        Gram matrix, converted into an owned synthetic lattice."""
+        from ..objects.parents import synthetic_lattice
+
+        return synthetic_lattice(self._sage_engine().representative(), ZZ, "genus_representative")
+
+    def representatives(self) -> tuple[Any, ...]:
+        r"""One lattice per isometry class in this genus, from Sage's genus
+        enumeration (computed exactly where Sage's engines compute it)."""
+        from ..objects.parents import synthetic_lattice
+
+        return tuple(synthetic_lattice(gram, ZZ, f"genus_class_{index}") for index, gram in enumerate(self._sage_engine().representatives()))
+
+    def class_number(self) -> Any:
+        r"""``h(genus)`` = the number of isometry classes, counted from the
+        enumerated representatives."""
+        return ZZ(len(self._sage_engine().representatives()))
+
+    def is_unique_class(self) -> bool:
+        r"""Whether the genus contains a single isometry class (the regime
+        where genus equality decides isometry)."""
+        return bool(self.class_number() == 1)
 
     def local_symbol(self, p: Any) -> Any:
         r"""The p-adic symbol at ``p`` (spec 3.5): the

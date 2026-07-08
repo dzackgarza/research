@@ -8,11 +8,12 @@ from sage.combinat.root_system.cartan_matrix import CartanMatrix
 from sage.matrix.constructor import matrix
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.rational_field import QQ
+from sage.structure.element import Matrix
 
-from ..lexicon.foundations import SignaturePair
+from ..lexicon.foundations import GramMatrix, SignaturePair
 
 
-def named_gram(name: object) -> Any:
+def named_gram(name: object) -> Matrix:
     if name == "U" or name == "H":
         return matrix(QQ, 2, 2, [0, 1, 1, 0])
     if isinstance(name, str) and len(name) >= 2 and name[0].isalpha() and name[1:].isdigit():
@@ -22,12 +23,14 @@ def named_gram(name: object) -> Any:
     assert False, f"unknown named synthetic lattice: {name!r}; fix the caller's lattice name"
 
 
-def as_square_qq_matrix(matrix_data: object) -> Any:
+def as_square_qq_matrix(matrix_data: object) -> GramMatrix:
+    """The one Gram codec: parse, assert square + symmetric (definitional for
+    every object of the tree), immutabilize, and return the witness."""
     gram = named_gram(matrix_data) if _is_named_gram_data(matrix_data) else matrix(QQ, matrix_data)
     assert gram.is_square(), f"lattice Gram matrix must be square; found dimensions={gram.nrows()}x{gram.ncols()}; fix the caller's Gram data"
     assert gram == gram.transpose(), f"lattice Gram matrix must be symmetric (definitional for every object of the tree); found={gram}; fix the caller's Gram data"
     gram.set_immutable()
-    return gram
+    return GramMatrix(gram)
 
 
 def _is_named_gram_data(matrix_data: object) -> bool:

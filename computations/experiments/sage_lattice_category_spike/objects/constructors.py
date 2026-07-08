@@ -15,6 +15,7 @@ from sage.rings.rational_field import QQ
 from sage.structure.element import Matrix
 
 from .categories import Lattices
+from .parents import SyntheticIntegralNondegenerateLattice
 
 if TYPE_CHECKING:
     from .. import lexicon
@@ -113,7 +114,14 @@ def IntegralLatticeGluing(
         )
         row = [QQ.zero()] * ambient.rank()
         for lattice, start, discriminant_element in zip(lattices, offsets, glue_vector):
-            lift = lattice.discriminant_group()._coset_representative_in_source(discriminant_element)
+            # glue vectors live in discriminant groups, so each glued summand
+            # must carry that vocabulary (integral nondegenerate)
+            assert isinstance(lattice, SyntheticIntegralNondegenerateLattice), f"gluing requires integral nondegenerate summands; found={type(lattice)}"
+            from ..forms.discriminant_forms import SyntheticSourcedDiscriminantForm
+
+            discriminant_group = lattice.discriminant_group()
+            assert isinstance(discriminant_group, SyntheticSourcedDiscriminantForm), f"expected a sourced discriminant group; found={type(discriminant_group)}"
+            lift = discriminant_group._coset_representative_in_source(discriminant_element)
             for i, value in enumerate(lift):
                 row[start + i] = value
         lift_rows.append(row)

@@ -138,7 +138,7 @@ Finite forms: `DiscriminantForm`, `BilinearDiscriminantForm`, `QuadraticDiscrimi
 
 Genus: `Genus`.
 
-Boundary codecs: `RawGramMatrix`, `RawMorphismMatrix` (raw input payloads), `GramMatrix` (in `foundations`), `FormKind`, `ValueModule`, narrowing functions `in_*`. (`MorphismMatrix` is retired — see I.4; `.matrix()` of a morphism is an ordinary `Matrix`.)
+Boundary codecs: `RawGramMatrix`, `RawMorphismMatrix` (raw matrix payloads: `Matrix | Sequence[Sequence[ExactScalar]]`), `RawVectors` (raw family of vectors in given coordinates — the subobject-algebra input: matrix rows, nested sequences, or actual `Vector`s), `GramMatrix` (in `foundations`), `FormKind`, `ValueModule`, narrowing functions `in_*`. (`MorphismMatrix` is retired — see I.4; `.matrix()` of a morphism is an ordinary `Matrix`. The `MatrixLike` protocol is retired 2026-07-09: it shadowed the real `Matrix` class — defect class I.2.)
 
 Missing-but-named (declared contracts whose types the audit shows are wrong or placeholder): `HyperbolicLattice.fundamental_chamber` returns `FundamentalChamberLike` (a placeholder) — the lexicon type is `geometry.Polyhedron`; `Genus.local_symbol` likewise returns the placeholder — the honest type is the Conway–Sloane local symbol object (`interop.SageLocalGenusSymbol`).
 
@@ -179,7 +179,7 @@ A `Sage*` name is introduced only at the moment the repo gives the bare name a d
 
 Nouns the research program will need, catalogued now so their future homes are fixed; each is one alias/union away using the same policy — they are *not* declared until first use (a lexicon entry with no consumer is untestable):
 
-`Cone`, `Fan` (toric/chamber geometry, Vinberg workstream — `geometry.py`); `WeylGroup`, `CoxeterGroup` (→ `algebra.py`, GAP/Sage-backed); `NumberField`, `PadicRing`, `PadicNumber` (local theory — `foundations.py`); `QuadraticSpace` (ℚ-form without integral structure — owned tower, next to `Lattice`); `ModularForm` (theta series); `EllipticCurve`/`K3Surface` (AG side, likely owned protocols over external data).
+`Cone`, `Fan` (toric/chamber geometry, Vinberg workstream — `geometry.py`); `WeylGroup`, `CoxeterGroup` (→ `algebra.py`, GAP/Sage-backed); `NumberField`, `PadicRing`, `PadicNumber` (local theory — `foundations.py`); `QuadraticSpace` (ℚ-form without integral structure — owned tower, next to `Lattice`); `ModularForm` (theta series); `EllipticCurve`/`K3Surface` (AG side, likely owned protocols over external data); `AbelianGroupMorphism` (the quotient projection `L → L/M` is an abelian-group hom, not a `LatticeMorphism`; until declared, such maps are typed as callables).
 
 * * *
 

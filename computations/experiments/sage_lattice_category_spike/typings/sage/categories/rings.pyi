@@ -12,12 +12,17 @@ from sage.categories.category import Category
 from sage.modules.free_module import FreeModule_generic
 from sage.rings.integer import Integer
 from sage.structure.element import RingElement
+from sage.structure.parent import Parent
 
 class Rings(Category):
     def __init__(self) -> None: ...
 
-    class ParentMethods:
-        def __call__(self, x: object = ...) -> RingElement: ...
+    # A ring parent IS a Sage Parent: the holder class declares the
+    # mathematically true edge (realized at runtime by method copying, so the
+    # verifier checks it extensionally through representative parents, never
+    # by issubclass).
+    class ParentMethods(Parent):
+        def __call__(self, x: object = ..., *args: object, **kwds: object) -> RingElement: ...
         def __contains__(self, x: object) -> bool: ...
         def __pow__(self, n: int | Integer) -> FreeModule_generic[Any]: ...
         def zero(self) -> RingElement: ...

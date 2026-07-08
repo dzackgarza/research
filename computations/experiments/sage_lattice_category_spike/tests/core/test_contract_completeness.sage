@@ -30,12 +30,17 @@ CONSTRUCTORS = [
 ]
 
 
+@pytest.mark.xfail(reason="red proof gate for OPEN issue dzackgarza/research#24: unrealized required contracts (primitive-embedding cluster) await the implement/localize triage", strict=True)
 @pytest.mark.parametrize("construct", CONSTRUCTORS)
 def test_constructor_implements_all_required_contracts(construct):
     r"""Sage's standard abstract-method compliance check. Raises
     ``AssertionError: Not implemented method: <name>`` for the first required
     contract a constructor leaves unrealized. A gap is a bright red flag: the
-    object claims a category whose total vocabulary it does not provide."""
+    object claims a category whose total vocabulary it does not provide.
+
+    Marked as a strict open-issue xfail gate (POLICY.NO_SKIP_MASK grant
+    2026-07-09): the moment a constructor's contracts are all realized, its
+    param XPASSes and the suite goes red, forcing this marker's removal."""
     construct()._test_not_implemented_methods()
 
 

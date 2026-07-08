@@ -72,34 +72,28 @@ if TYPE_CHECKING:
         Matrix,
         MatrixGroup,
         PermutationGroup,
+        Vector,
     )
     from ..lexicon.foundations import (
         CartanType,
         ExactScalar,
         GramMatrix,
+        Integer,
         SignaturePair,
+        SymbolicExpression,
     )
     from ..lexicon.geometry import Polyhedron
-    from ..lexicon.interop import SageLocalGenusSymbol
+    from ..lexicon.interop import SageInfinity, SageLocalGenusSymbol
 else:
     from sage.misc.abstract_method import abstract_method
     from sage.structure.richcmp import richcmp
-
-
-class MatrixRowLike(Protocol):
-    def __iter__(self) -> Iterator[ExactScalar]: ...
-
-
-class MatrixLike(Protocol):
-    """Matrix-shaped domain payload accepted by grammar entrypoints."""
-
-    def __iter__(self) -> Iterator[MatrixRowLike]: ...
 
 
 __all__ = [
     # boundary codecs (scalar/matrix nouns and witnesses live in the lexicon)
     "RawGramMatrix",
     "RawMorphismMatrix",
+    "RawVectors",
     "parse_base_ring",
     "parse_gram_matrix",
     "FormKind",
@@ -154,14 +148,20 @@ __all__ = [
 # through the grammar, and leaves it only at declared Sage-call points)
 # ---------------------------------------------------------------------------
 
-type RawGramMatrix = MatrixLike | MatrixData
-"""Untrusted matrix-like input to the grammar; parsed once, never circulated."""
+type RawGramMatrix = Matrix | MatrixData
+"""Untrusted matrix-shaped input to the grammar; parsed once, never circulated."""
 
-type RawMorphismMatrix = MatrixLike | MatrixData
-"""Untrusted matrix-like input to homset/element constructors."""
+type RawMorphismMatrix = Matrix | MatrixData
+"""Untrusted matrix-shaped input to homset/element constructors."""
 
-type MatrixData = Sequence[Sequence[ExactScalar]]
-"""Structured matrix-shaped input accepted by overloads that route through `Matrix`."""
+type RawVectors = Matrix | MatrixData | Sequence[Vector]
+"""Untrusted family of vectors in given coordinates (rows of a matrix, nested
+sequences, or actual vectors) — the input payload of the subobject algebra
+(sublattice/span/overlattice generators)."""
+
+type MatrixData = Sequence[Sequence[ExactScalar | int]]
+"""Structured matrix-shaped input accepted by overloads that route through
+`Matrix` (Python int literals are exact integers and enter freely)."""
 
 
 type FormKind = Literal["group", "bilinear", "quadratic"]
@@ -187,7 +187,10 @@ class LatticeElement:
     def parent(self) -> Lattice: ...
 
     @abstract_method
-    def coefficient_vector(self) -> Sequence[ExactScalar]: ...
+    def coefficient_vector(self) -> Vector:
+        """The element's coordinates in the parent's distinguished basis — a
+        genuine vector of the coefficient module (arithmetic flows through the
+        module structure), never a bare sequence."""
 
     @abstract_method
     def b(self, other: LatticeElement) -> ExactScalar: ...
@@ -247,7 +250,9 @@ class DiscriminantFormElement:
         """Coset lift to the dual lattice; meaningful for sourced forms."""
 
     @abstract_method
-    def coefficient_vector(self) -> Sequence[ExactScalar]: ...
+    def coefficient_vector(self) -> Vector:
+        """Coordinates with respect to the group's distinguished generators
+        (integer residues, exactly represented)."""
 
     @abstract_method
     def order(self) -> int: ...
@@ -335,9 +340,6 @@ class Lattice:
     def is_unimodular(self) -> bool: ...
 
     @abstract_method
-    def is_self_dual(self) -> bool: ...
-
-    @abstract_method
     def is_degenerate(self) -> bool: ...
 
     @abstract_method
@@ -384,18 +386,18 @@ class Lattice:
     @abstract_method
     def base_extend(self, ring: BaseRing) -> Lattice: ...
 
-    # subobject algebra
+    # subobject algebra (generator families enter as RawVectors payloads)
     @abstract_method
-    def sublattice(self, generators: Sequence[Sequence[ExactScalar]]) -> Lattice: ...
+    def sublattice(self, generators: RawVectors) -> Lattice: ...
 
     @abstract_method
-    def lattice_in_rationalization(self, generators: Sequence[Sequence[ExactScalar]]) -> Lattice: ...
+    def lattice_in_rationalization(self, generators: RawVectors) -> Lattice: ...
 
     @abstract_method
-    def span(self, generators: Sequence[Sequence[ExactScalar]]) -> Lattice: ...
+    def span(self, generators: RawVectors) -> Lattice: ...
 
     @abstract_method
-    def span_of_basis(self, basis: Sequence[Sequence[ExactScalar]]) -> Lattice: ...
+    def span_of_basis(self, basis: RawVectors) -> Lattice: ...
 
     @abstract_method
     def sum(self, other: Lattice) -> Lattice: ...
@@ -424,7 +426,7 @@ class Lattice:
     @abstract_method
     def overlattice(
         self,
-        generators: Sequence[Sequence[ExactScalar]],
+        generators: RawVectors,
         check_integral: bool = False,
         label: str = "overlattice",
     ) -> Lattice: ...
@@ -437,7 +439,7 @@ class Lattice:
 
     # quotients (the functor that LEAVES: plain finite abelian quotient, no form axioms)
     @abstract_method
-    def finite_quotient(self, sublattice: Lattice) -> DiscriminantForm: ...
+    def finite_quotient(self, sublattice: Lattice) -> FiniteAbelianGroup: ...
 
     @abstract_method
     def _rationalization_module(self) -> FreeModule: ...
@@ -476,15 +478,22 @@ class Lattice:
 
 class NondegenerateLattice(Lattice):
     @abstract_method
-    def dual(self) -> Lattice: ...
+    def dual(self) -> NondegenerateLattice:
+        """The dual lattice (Gram ``G^{-1}`` in the dual basis) — itself
+        nondegenerate, so the dual vocabulary is closed on this tier."""
 
     @abstract_method
     def dual_inclusion(self) -> LatticeMorphism: ...
 
+    @abstract_method
+    def is_self_dual(self) -> bool:
+        """Defined through ``dual()``, so placed exactly where the dual exists
+        (a degenerate lattice has no dual, hence no self-duality question)."""
+
 
 class IntegralNondegenerateLattice(NondegenerateLattice):
     @abstract_method
-    def discriminant_group(self, primary: int = 0) -> SourcedDiscriminantForm: ...
+    def discriminant_group(self, primary: int | Integer = 0) -> SourcedDiscriminantForm: ...
 
     @abstract_method
     def genus(self) -> Genus: ...
@@ -499,7 +508,7 @@ class IntegralNondegenerateLattice(NondegenerateLattice):
     def maximal_overlattice(self, p: int | None = None) -> Lattice: ...
 
     @abstract_method
-    def local_modification(self, data: MatrixData | DiscriminantSubgroup | Sequence[DiscriminantFormElement], p: int) -> Lattice: ...
+    def local_modification(self, data: Matrix | DiscriminantSubgroup | Sequence[DiscriminantFormElement], p: int) -> Lattice: ...
 
     @abstract_method
     def embeds_primitively_in_unimodular(self, signature_pair: SignaturePair, even: bool = True) -> bool: ...
@@ -513,28 +522,34 @@ class DefiniteLattice(Lattice):
     are gap-ledger item 4 (ratified interactively), not fixed by this stub."""
 
     @abstract_method
-    def minimum(self) -> ExactScalar: ...
+    def minimum(self) -> ExactScalar | SageInfinity:
+        """Least nonzero norm; ``+Infinity`` on the rank-0 lattice (an infimum
+        over the empty set), so the codomain honestly includes infinity."""
 
     @abstract_method
-    def maximum(self) -> ExactScalar: ...
+    def maximum(self) -> ExactScalar | SageInfinity:
+        """Supremum of the norm form over nonzero vectors — ``+-Infinity`` for
+        every positive-rank definite lattice."""
 
     @abstract_method
     def shortest_vector(self) -> LatticeElement: ...
 
     @abstract_method
-    def short_vectors(self, bound: int) -> Sequence[Sequence[LatticeElement]]: ...
+    def short_vectors(self, bound: int | Integer) -> Sequence[Sequence[LatticeElement]]: ...
 
     @abstract_method
-    def enumerate_short_vectors(self, bound: int) -> Iterator[LatticeElement]: ...
+    def enumerate_short_vectors(self, bound: int | Integer) -> Iterator[LatticeElement]: ...
 
     @abstract_method
-    def vectors_of_square(self, square: ExactScalar) -> tuple[LatticeElement, ...]: ...
+    def vectors_of_square(self, square: ExactScalar | int) -> tuple[LatticeElement, ...]: ...
 
     @abstract_method
     def roots(self) -> tuple[LatticeElement, ...]: ...
 
     @abstract_method
-    def volume(self) -> ExactScalar: ...
+    def volume(self) -> ExactScalar | SymbolicExpression:
+        """Covolume ``sqrt(det G)`` — exact, but not rational in general, so the
+        codomain includes exact symbolic values (never a float)."""
 
 
 class PositiveDefiniteLattice(DefiniteLattice):
@@ -555,28 +570,31 @@ class PositiveDefiniteLattice(DefiniteLattice):
     def HKZ(self) -> PositiveDefiniteLattice: ...
 
     @abstract_method
-    def babai(self, target: Sequence[ExactScalar]) -> LatticeElement: ...
+    def babai(self, target: Sequence[ExactScalar] | Vector | LatticeElement) -> LatticeElement: ...
 
     @abstract_method
-    def approximate_closest_vector(self, target: Sequence[ExactScalar]) -> LatticeElement: ...
+    def approximate_closest_vector(self, target: Sequence[ExactScalar] | Vector | LatticeElement) -> LatticeElement: ...
 
     @abstract_method
-    def closest_vector(self, target: Sequence[ExactScalar]) -> LatticeElement: ...
+    def closest_vector(self, target: Sequence[ExactScalar] | Vector | LatticeElement) -> LatticeElement: ...
 
     @abstract_method
-    def enumerate_close_vectors(self, target: Sequence[ExactScalar], radius: ExactScalar) -> Sequence[LatticeElement]: ...
+    def enumerate_close_vectors(self, target: Sequence[ExactScalar] | Vector | LatticeElement, radius: ExactScalar) -> Sequence[LatticeElement]: ...
 
     @abstract_method
-    def voronoi_cell(self, radius: int | None = None) -> Polyhedron: ...
+    def voronoi_cell(self, radius: int | Integer | None = None) -> Polyhedron: ...
 
     @abstract_method
     def voronoi_relevant_vectors(self) -> tuple[LatticeElement, ...]: ...
 
     @abstract_method
-    def gaussian_heuristic(self) -> ExactScalar: ...
+    def gaussian_heuristic(self) -> SymbolicExpression:
+        """Exact symbolic expected-shortest-length (Gamma/pi/e expressions);
+        gap-ledger row 12 — the value is symbolic, never a float."""
 
     @abstract_method
-    def hadamard_ratio(self) -> ExactScalar: ...
+    def hadamard_ratio(self) -> SymbolicExpression:
+        """Exact symbolic ratio (n-th roots of square roots); never a float."""
 
     @abstract_method
     def update_reduced_basis(self, vector: LatticeElement) -> PositiveDefiniteLattice: ...
@@ -664,13 +682,19 @@ class LatticeMorphism:
     def is_unipotent(self) -> bool: ...
 
     @abstract_method
-    def order(self) -> int: ...
+    def order(self) -> int | SageInfinity:
+        """Multiplicative order in N ∪ {+Infinity} (endomorphisms only)."""
 
     @abstract_method
     def is_injective(self) -> bool: ...
 
     @abstract_method
     def is_surjective(self) -> bool: ...
+
+    @abstract_method
+    def is_primitive_embedding(self) -> bool:
+        """Injective with primitive (saturated) image in the codomain —
+        equivalently, torsion-free module cokernel."""
 
     @abstract_method
     def kernel(self) -> Lattice: ...
@@ -1003,7 +1027,11 @@ class FiniteAbelianGroup:
         """Endomorphism from generator images; cross-form homs typed at V1."""
 
     @abstract_method
-    def is_isomorphic(self, other: DiscriminantForm, kind: FormKind = "quadratic") -> bool: ...
+    def is_isomorphic(self, other: FiniteAbelianGroup) -> bool:
+        """Group isomorphism — finite abelian groups are classified by their
+        invariant factors, so this tier decides isomorphism in the category of
+        torsion ZZ-modules. The form-carrying subcategories override with the
+        finer ``kind`` selector (their objects live in categories of pairs)."""
 
 
 DiscriminantForm = FiniteAbelianGroup
@@ -1078,6 +1106,12 @@ class BilinearDiscriminantForm(FiniteAbelianGroup):
     @abstract_method
     def orthogonal_group(self) -> DiscriminantOrthogonalGroup: ...
 
+    @abstract_method
+    def is_isomorphic(self, other: FiniteAbelianGroup, kind: FormKind = "quadratic") -> bool:
+        """Isomorphism in the selected category: the underlying group
+        (``kind="group"``), the pair (G, b) (``"bilinear"``), or the pair
+        (G, q) (``"quadratic"``); the theories are distinct over ZZ."""
+
 
 class QuadraticDiscriminantForm(BilinearDiscriminantForm):
     @abstract_method
@@ -1136,7 +1170,14 @@ class SourcedDiscriminantForm(QuadraticDiscriminantForm):
     def preimage_lattice(self, subgroup: DiscriminantSubgroup) -> Lattice: ...
 
     @abstract_method
-    def overlattice_from_isotropic_subgroup(self, subgroup: DiscriminantSubgroup) -> Lattice: ...
+    def overlattice_from_isotropic_subgroup(
+        self,
+        subgroup: DiscriminantSubgroup | Sequence[DiscriminantFormElement],
+        label: str = "overlattice",
+    ) -> IntegralNondegenerateLattice:
+        """Gluing along an isotropic subgroup preserves rank and integrality
+        and scales the determinant by the square of the index, so the result
+        is again integral nondegenerate."""
 
     @abstract_method
     def discriminant_form_of_overlattice(self, subgroup: DiscriminantSubgroup) -> DiscriminantForm: ...
@@ -1166,6 +1207,15 @@ class DiscriminantSubgroup:
 
     @abstract_method
     def __contains__(self, element: Any) -> bool: ...
+
+    @abstract_method
+    def is_bilinear_isotropic(self) -> bool:
+        """b restricts to zero on the subgroup."""
+
+    @abstract_method
+    def is_quadratic_isotropic(self) -> bool:
+        """q restricts to zero on the subgroup (strictly stronger than
+        bilinear isotropy over ZZ)."""
 
 
 # ---------------------------------------------------------------------------

@@ -19,6 +19,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, cast
 
+from sage.categories.category import Category
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.category_with_axiom import (
     CategoryWithAxiom_over_base_ring,
@@ -103,7 +104,7 @@ class Lattices(Category_over_base_ring):
     def _repr_object_names(self) -> str:
         return f"synthetic lattices over {self.base_ring()}"
 
-    def super_categories(self) -> list[Category_over_base_ring]:
+    def super_categories(self) -> list[Category]:
         # V0a-ratified leaner tree: no WithBasis — a based lattice owns its basis
         # vocabulary; the CombinatorialFreeModule element idiom must not reach
         # lattice elements. Every name the leaner tree stops inheriting is owned
@@ -112,6 +113,25 @@ class Lattices(Category_over_base_ring):
 
     def additional_structure(self) -> Lattices:
         return self
+
+    if TYPE_CHECKING:
+        # Typed axiom navigation: applying an axiom to a subcategory of
+        # Lattices yields a subcategory of Lattices — the axiom tree is closed
+        # under its own axioms, so every chain
+        # ``Lattices(R).Nondegenerate().Integral()...`` stays in this type. At
+        # runtime Sage synthesizes these methods from SubcategoryMethods; the
+        # class-attribute wiring at the bottom of this module is Sage's
+        # class-resolution shortcut and is runtime-only.
+        def Nondegenerate(self) -> Lattices: ...
+        def Integral(self) -> Lattices: ...
+        def Even(self) -> Lattices: ...
+        def Unimodular(self) -> Lattices: ...
+        def Definite(self) -> Lattices: ...
+        def PositiveDefinite(self) -> Lattices: ...
+        def NegativeDefinite(self) -> Lattices: ...
+        def Indefinite(self) -> Lattices: ...
+        def Hyperbolic(self) -> Lattices: ...
+        def RootGenerated(self) -> Lattices: ...
 
     class SubcategoryMethods:
         Nondegenerate = axiom("Nondegenerate")
@@ -163,7 +183,7 @@ class Lattices(Category_over_base_ring):
     class Homsets(HomsetsCategory):
         r"""Homsets of form-preserving lattice morphisms."""
 
-        def extra_super_categories(self) -> list[Category_over_base_ring]:
+        def extra_super_categories(self) -> list[Category]:
             return [Sets()]
 
         class ParentMethods:
@@ -206,11 +226,19 @@ class DiscriminantForms(Category_over_base_ring):
 
         return SyntheticQuadraticDiscriminantForm(gram_matrix, quadratic_modulus=quadratic_modulus, invariants=invariants)
 
-    def super_categories(self) -> list[Category_over_base_ring]:
+    def super_categories(self) -> list[Category]:
         return [CommutativeAdditiveGroups().Finite()]
 
     def additional_structure(self) -> DiscriminantForms:
         return self
+
+    if TYPE_CHECKING:
+        # Typed axiom navigation; see the Lattices declaration above.
+        def Bilinear(self) -> DiscriminantForms: ...
+        def Quadratic(self) -> DiscriminantForms: ...
+        def Nondegenerate(self) -> DiscriminantForms: ...
+        def Even(self) -> DiscriminantForms: ...
+        def WithSourceLattice(self) -> DiscriminantForms: ...
 
     class SubcategoryMethods:
         Bilinear = axiom("Bilinear")
@@ -351,21 +379,26 @@ class WithSourceLatticeDiscriminantForms(CategoryWithAxiom_over_base_ring):
     ParentMethods = _own_methods(SourcedDiscriminantForm)
 
 
-Lattices.Nondegenerate = NondegenerateLattices
-Lattices.Integral = IntegralLattices
-Lattices.Even = EvenLattices
-Lattices.Unimodular = UnimodularLattices
-Lattices.Definite = DefiniteLattices
-Lattices.PositiveDefinite = PositiveDefiniteLattices
-Lattices.NegativeDefinite = NegativeDefiniteLattices
-Lattices.Indefinite = IndefiniteLattices
+if not TYPE_CHECKING:
+    # Sage's class-resolution shortcut: the axiom category class must be
+    # reachable as `<BaseCategory>.<Axiom>` for `_base_category_class_and_axiom`
+    # to resolve. Runtime-only wiring; the typed surface of these names is the
+    # axiom-navigation method declarations on the category classes above.
+    Lattices.Nondegenerate = NondegenerateLattices
+    Lattices.Integral = IntegralLattices
+    Lattices.Even = EvenLattices
+    Lattices.Unimodular = UnimodularLattices
+    Lattices.Definite = DefiniteLattices
+    Lattices.PositiveDefinite = PositiveDefiniteLattices
+    Lattices.NegativeDefinite = NegativeDefiniteLattices
+    Lattices.Indefinite = IndefiniteLattices
 
-IntegralLattices.Nondegenerate = IntegralNondegenerateLattices
-EvenLattices.RootGenerated = RootGeneratedLattices
-IndefiniteLattices.Hyperbolic = HyperbolicLattices
+    IntegralLattices.Nondegenerate = IntegralNondegenerateLattices
+    EvenLattices.RootGenerated = RootGeneratedLattices
+    IndefiniteLattices.Hyperbolic = HyperbolicLattices
 
-DiscriminantForms.Bilinear = BilinearDiscriminantForms
-DiscriminantForms.Quadratic = QuadraticDiscriminantForms
-DiscriminantForms.Nondegenerate = NondegenerateDiscriminantForms
-DiscriminantForms.Even = EvenDiscriminantForms
-DiscriminantForms.WithSourceLattice = WithSourceLatticeDiscriminantForms
+    DiscriminantForms.Bilinear = BilinearDiscriminantForms
+    DiscriminantForms.Quadratic = QuadraticDiscriminantForms
+    DiscriminantForms.Nondegenerate = NondegenerateDiscriminantForms
+    DiscriminantForms.Even = EvenDiscriminantForms
+    DiscriminantForms.WithSourceLattice = WithSourceLatticeDiscriminantForms

@@ -1,12 +1,23 @@
-# Repo-scoped stubs; see lexicon/README.md. The matrix constructors are
-# heavily overloaded dispatch factories in Sage; the stub keeps the argument
-# surface permissive and the return type exact.
+# Repo-scoped stubs; see lexicon/README.md. `matrix` is Sage's dispatch
+# factory: callable, and carrying the named constructors (matrix.diagonal,
+# matrix.identity, ...) that the repo's idiom policy prefers over index-loop
+# assembly. The factory's class has no importable runtime name (a cython
+# function with attached attributes), so the stub names its shape locally
+# (STUB_ONLY in lexicon/verify_against_sage.py).
 from typing import Any
 
 from sage.rings.integer import Integer
 from sage.structure.element import Matrix
 from sage.structure.parent import Parent
 
-def matrix(*args: Any, **kwds: Any) -> Matrix: ...
+class _MatrixConstructor:
+    def __call__(self, *args: Any, **kwds: Any) -> Matrix: ...
+    def diagonal(self, *args: Any, **kwds: Any) -> Matrix: ...
+    def identity(self, *args: Any, **kwds: Any) -> Matrix: ...
+    def zero(self, *args: Any, **kwds: Any) -> Matrix: ...
+    def block(self, *args: Any, **kwds: Any) -> Matrix: ...
+
+matrix: _MatrixConstructor
+
 def identity_matrix(ring: Parent | int | Integer, n: int | Integer = ...) -> Matrix: ...
 def column_matrix(*args: Any, **kwds: Any) -> Matrix: ...

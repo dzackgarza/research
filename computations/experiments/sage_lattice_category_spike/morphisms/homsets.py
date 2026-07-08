@@ -2,7 +2,7 @@ r"""Homsets and morphisms for synthetic lattices."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from sage.matrix.constructor import matrix
 from sage.modules.free_module_element import vector
@@ -16,8 +16,12 @@ from ..objects.parents import SyntheticLattice
 from ..sage_patches import multiplicative_order
 
 
-class LatticeHomset(Parent):
+class LatticeHomset(lexicon.LatticeHomset, Parent):
     r"""Homset of form-preserving synthetic lattice morphisms."""
+
+    # Sage's parent convention: the homset's element class (assigned after
+    # LatticeMorphism is defined below).
+    Element: ClassVar[type]
 
     def __init__(self, domain: Lattice | SyntheticLattice, codomain: Lattice | SyntheticLattice) -> None:
         assert isinstance(domain, SyntheticLattice), f"expected SyntheticLattice domain; found={type(domain)}"
@@ -43,6 +47,10 @@ class LatticeHomset(Parent):
 
 class LatticeMorphism(lexicon.LatticeMorphism, Element):
     r"""Form-preserving morphism of synthetic lattices."""
+
+    if TYPE_CHECKING:
+        # The parent is always a synthetic lattice homset.
+        def parent(self) -> LatticeHomset: ...
 
     def __init__(self, parent: LatticeHomset, matrix_data: Any) -> None:
         Element.__init__(self, parent)
@@ -193,8 +201,12 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         return hash((self.domain(), self.codomain(), self.matrix()))
 
 
-class LatticeSimilarity(Element):
+class LatticeSimilarity(lexicon.LatticeSimilarity, Element):
     r"""Similarity of synthetic lattices preserving the form up to a scalar."""
+
+    if TYPE_CHECKING:
+        # The parent is the homset of the underlying domain/codomain pair.
+        def parent(self) -> LatticeHomset: ...
 
     def __init__(
         self,

@@ -18,10 +18,10 @@ identity: equality is by ``(base_ring, G)`` alone.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterator, Sequence
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, ClassVar
 
 if TYPE_CHECKING:
-    from sage.geometry.polyhedron.constructor import Polyhedron
+    from ..lexicon.geometry import Polyhedron
 
 from sage.arith.functions import lcm
 from sage.matrix.constructor import identity_matrix, matrix
@@ -32,16 +32,20 @@ from sage.rings.rational_field import QQ
 from sage.structure.element import Matrix
 from sage.structure.parent import Parent
 
-from ..algebra.arithmetic import signature_pair
+from ..algebra.arithmetic import as_square_qq_matrix, signature_pair
 from ..lexicon import (
     BaseRing,
     CartanType,
     DefiniteLattice,
+    DiscriminantAction,
     DiscriminantFormElement,
     DiscriminantSubgroup,
     ExactScalar,
+    FiniteAbelianGroup,
     FreeModule,
     Genus,
+    GramMatrix,
+    Integer,
     IntegralNondegenerateLattice,
     IsometryGroup,
     Lattice,
@@ -53,9 +57,13 @@ from ..lexicon import (
     PositiveDefiniteLattice,
     RawGramMatrix,
     RawMorphismMatrix,
+    RawVectors,
     RootGeneratedLattice,
+    SageInfinity,
     SignaturePair,
     SourcedDiscriminantForm,
+    SymbolicExpression,
+    Vector,
 )
 from .categories import Lattices
 from .elements import SyntheticLatticeElement
@@ -92,6 +100,11 @@ class SyntheticLattice(Lattice, Parent):
 
     Element = SyntheticLatticeElement
 
+    if TYPE_CHECKING:
+        # Sage's category framework injects element_class at construction;
+        # for this tower it is the class assigned to Element above.
+        element_class: ClassVar[type[SyntheticLatticeElement]]
+
     def __init__(
         self,
         gram_matrix: RawGramMatrix,
@@ -101,9 +114,10 @@ class SyntheticLattice(Lattice, Parent):
         inclusion: Matrix | None = None,
         cartan_type: CartanType | str | None = None,
     ) -> None:
-        gram = matrix(QQ, gram_matrix)
+        # The one Gram codec (asserts square + symmetric, immutabilizes,
+        # returns the GramMatrix witness); construction is the only producer.
+        gram = as_square_qq_matrix(gram_matrix)
         assert base_ring in (ZZ, QQ), f"lattice base ring must be ZZ or QQ; found={base_ring}"
-        assert gram.is_square(), f"Gram matrix must be square; found={gram}"
         if ambient is not None:
             assert isinstance(ambient, SyntheticLattice), f"ambient parent must be a SyntheticLattice; found={type(ambient)}"
             assert ambient._ambient is None, f"ambient parent must itself be a root lattice (no nested ambients); ambient={ambient}, ambient._ambient={ambient._ambient}"
@@ -114,7 +128,6 @@ class SyntheticLattice(Lattice, Parent):
                 f"Gram matrix must be induced by the inclusion into the ambient; gram={gram}, inclusion={inclusion}, ambient_gram={ambient.gram_matrix()}"
             )
             inclusion.set_immutable()
-        gram.set_immutable()
         self._gram_matrix = gram
         self._ambient: SyntheticLattice | None = ambient
         self._inclusion = inclusion
@@ -134,6 +147,13 @@ class SyntheticLattice(Lattice, Parent):
 
     def _element_constructor_(self, coordinates: Sequence[ExactScalar] | SyntheticLatticeElement) -> SyntheticLatticeElement:
         return self.element_class(self, coordinates)
+
+    if TYPE_CHECKING:
+        # Element construction: Parent.__call__ routes through
+        # _element_constructor_; refined to this parent's own element class.
+        # Declaration only — a runtime __call__ here would shadow
+        # Parent.__call__ in the MRO (vault trap record).
+        def __call__(self, coordinates: object = ..., /, *args: object, **kwds: object) -> SyntheticLatticeElement: ...
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, SyntheticLattice) and self.base_ring() == other.base_ring() and self.gram_matrix() == other.gram_matrix()
@@ -206,19 +226,19 @@ class SyntheticLattice(Lattice, Parent):
 
     def reflection(self, v: LatticeElement) -> LatticeMorphism:
         r"""The reflection ``sigma_v(x) = x - (2 b(x,v)/q(v)) v`` in ``End(L)``."""
-        v = self(v) if not (isinstance(v, SyntheticLatticeElement) and v.parent() is self) else v
-        norm = self.q(v)
-        assert norm != 0, f"reflection requires an anisotropic vector; q(v)=0 for v={v}"
-        v_column = matrix(QQ, self.rank(), 1, list(v.coefficient_vector()))
+        element = v if isinstance(v, SyntheticLatticeElement) and v.parent() is self else self(v)
+        norm = self.q(element)
+        assert norm != 0, f"reflection requires an anisotropic vector; q(v)=0 for v={element}"
+        v_column = matrix(QQ, self.rank(), 1, list(element.coefficient_vector()))
         gram_v = self.gram_matrix() * v_column
         images = identity_matrix(QQ, self.rank()) - (2 / norm) * v_column * gram_v.transpose()
         for j in range(self.rank()):
             assert all(images[i, j] in self.base_ring() for i in range(self.rank())), (
-                f"reflection does not map the lattice into itself over {self.base_ring()}; failing basis vector index={j}, image column={images.column(j)}, v={v}"
+                f"reflection does not map the lattice into itself over {self.base_ring()}; failing basis vector index={j}, image column={images.column(j)}, v={element}"
             )
         return self.hom(images.change_ring(self.base_ring()))
 
-    def gram_matrix(self) -> Matrix:
+    def gram_matrix(self) -> GramMatrix:
         return self._gram_matrix
 
     def bilinear_form(self) -> Callable[[LatticeElement, LatticeElement], ExactScalar]:
@@ -272,11 +292,12 @@ class SyntheticLattice(Lattice, Parent):
         return self.gram_matrix().determinant()
 
     def discriminant(self) -> ExactScalar:
+        # (-1)^(r/2) det(G), written by parity so the arithmetic stays exact.
         rank_half = self.rank() // 2
-        return (-1) ** rank_half * self.determinant()
+        return self.determinant() if rank_half % 2 == 0 else -self.determinant()
 
     def absolute_discriminant(self) -> ExactScalar:
-        return abs(self.determinant())
+        return self.determinant().abs()
 
     def signature_pair(self) -> SignaturePair:
         return signature_pair(self.gram_matrix())
@@ -293,9 +314,6 @@ class SyntheticLattice(Lattice, Parent):
 
     def is_unimodular(self) -> bool:
         return self.base_ring() is ZZ and self.is_integral() and self.determinant() in (1, -1)
-
-    def is_self_dual(self) -> bool:
-        return self.base_ring() is ZZ and self == self.dual()
 
     def is_degenerate(self) -> bool:
         return self.determinant() == 0
@@ -324,16 +342,21 @@ class SyntheticLattice(Lattice, Parent):
             return self.sublattice(matrix(QQ, 0, self.rank()), label=label)
         return self.sublattice(kernel_basis, label=label)
 
-    def radical_quotient(self, label: str = "radical_quotient") -> SyntheticLattice:
+    def radical_quotient(self, label: str = "radical_quotient") -> SyntheticNondegenerateLattice:
         r"""``L / rad(L)``, a nondegenerate based lattice (functor stays in Lattices)."""
         gram = self.gram_matrix()
         kernel = gram.right_kernel()
         if kernel.dimension() == 0:
+            assert isinstance(self, SyntheticNondegenerateLattice), (
+                f"a lattice with trivial radical must have been routed into the nondegenerate subcategory; found={type(self)}"
+            )
             return self
         rank = self.rank()
         if kernel.dimension() == rank:
             # Fully degenerate: rad(L) = L, so L/rad(L) is the rank-0 lattice.
-            return synthetic_lattice(matrix(QQ, 0, 0), self.base_ring(), label)
+            zero_quotient = synthetic_lattice(matrix(QQ, 0, 0), self.base_ring(), label)
+            assert isinstance(zero_quotient, SyntheticNondegenerateLattice), f"the rank-0 lattice is (vacuously) nondegenerate; dispatch returned {type(zero_quotient)}"
+            return zero_quotient
         if self.base_ring() is QQ:
             complement = matrix(QQ, kernel.complement().basis_matrix())
         else:
@@ -343,7 +366,7 @@ class SyntheticLattice(Lattice, Parent):
             complement = matrix(ZZ, [gen.lift() for gen in quotient.gens()])
         quotient_gram = complement * gram * complement.transpose()
         quotient_lattice = synthetic_lattice(quotient_gram, self.base_ring(), label)
-        assert quotient_lattice.is_nondegenerate(), f"radical quotient must be nondegenerate; gram={quotient_lattice.gram_matrix()}"
+        assert isinstance(quotient_lattice, SyntheticNondegenerateLattice), f"radical quotient must be nondegenerate; gram={quotient_lattice.gram_matrix()}"
         return quotient_lattice
 
     # -- Subobject algebra: operations between sublattices of a common parent -----
@@ -358,7 +381,7 @@ class SyntheticLattice(Lattice, Parent):
 
     def sublattice(
         self,
-        generators: Sequence[Sequence[ExactScalar]],
+        generators: RawVectors,
         label: str = "sublattice",
         require_subset: bool = True,
         require_integral: bool = True,
@@ -381,7 +404,7 @@ class SyntheticLattice(Lattice, Parent):
 
     def lattice_in_rationalization(
         self,
-        generators: Sequence[Sequence[ExactScalar]],
+        generators: RawVectors,
         label: str = "lattice_in_rationalization",
     ) -> SyntheticLattice:
         r"""The ZZ-lattice in ``L_QQ = L (x) QQ`` spanned by the given rational
@@ -392,7 +415,7 @@ class SyntheticLattice(Lattice, Parent):
 
     def span(
         self,
-        generators: Sequence[Sequence[ExactScalar]],
+        generators: RawVectors,
         base_ring: BaseRing | None = None,
         check_integral: bool | None = None,
         check_even: bool | None = None,
@@ -412,7 +435,7 @@ class SyntheticLattice(Lattice, Parent):
 
     def span_of_basis(
         self,
-        basis: Sequence[Sequence[ExactScalar]],
+        basis: RawVectors,
         base_ring: BaseRing | None = None,
         label: str = "span",
     ) -> SyntheticLattice:
@@ -426,7 +449,7 @@ class SyntheticLattice(Lattice, Parent):
 
     def overlattice(
         self,
-        generators: Sequence[Sequence[ExactScalar]],
+        generators: RawVectors,
         check_integral: bool = False,
         label: str = "overlattice",
     ) -> SyntheticLattice:
@@ -482,13 +505,19 @@ class SyntheticLattice(Lattice, Parent):
     def clear_denominators(self, label: str = "clear_denominators") -> SyntheticLattice:
         return self.scale(self.denominator(), label=label)
 
-    def finite_quotient(self, sublattice: Lattice) -> Lattice:
+    def finite_quotient(self, sublattice: Lattice) -> FiniteAbelianGroup:
         from ..forms.discriminant_forms import SyntheticLatticeQuotient
 
         return SyntheticLatticeQuotient(self, sublattice)
 
-    def quotient_map_to(self, sublattice: Lattice) -> LatticeMorphism:
+    def quotient_map_to(self, sublattice: Lattice) -> Callable[[LatticeElement], DiscriminantFormElement]:
+        r"""The canonical projection ``L -> L/M`` — an abelian-group
+        homomorphism out of the lattice category (typed as a map; the
+        ``AbelianGroupMorphism`` noun is catalogued deferred vocabulary)."""
+        from ..forms.discriminant_forms import SyntheticLatticeQuotient
+
         quotient = self.finite_quotient(sublattice)
+        assert isinstance(quotient, SyntheticLatticeQuotient), f"finite_quotient must produce a lattice quotient; found={type(quotient)}"
         return quotient.projection
 
     def cover_lattice(self) -> SyntheticLattice:
@@ -680,14 +709,21 @@ class SyntheticLattice(Lattice, Parent):
         restricted_matrix = morphism.matrix() * sublattice._inclusion_rows().transpose()
         return sublattice.Hom(morphism.codomain()).from_matrix(restricted_matrix)
 
-    def induced_map_on_quotient(self, morphism: LatticeMorphism, quotient: SourcedDiscriminantForm) -> LatticeMorphism:
-        assert morphism.domain() == quotient.cover_lattice() and morphism.codomain() == quotient.cover_lattice(), (
+    def induced_map_on_quotient(self, morphism: LatticeMorphism, quotient: SourcedDiscriminantForm) -> DiscriminantAction:
+        r"""The endomorphism of ``cover/relations`` induced by a morphism of the
+        cover — an action on the finite quotient (a ``DiscriminantAction``),
+        not a lattice morphism (its parent left the lattice category)."""
+        domain = morphism.domain()
+        assert domain == quotient.cover_lattice() and morphism.codomain() == quotient.cover_lattice(), (
             "induced quotient endomorphism requires a morphism of the quotient cover lattice"
         )
+        assert isinstance(domain, SyntheticLattice), f"expected a synthetic cover lattice; found={type(domain)}"
         relation_lattice = quotient.relation_lattice()
+        assert isinstance(relation_lattice, SyntheticLattice), f"expected a synthetic relation lattice; found={type(relation_lattice)}"
         for row in relation_lattice._inclusion_rows().rows():
-            relation_coordinates = morphism.domain()._underlying_module().coordinate_vector(vector(QQ, row))
-            image = morphism(morphism.domain()(relation_coordinates))
+            relation_coordinates = domain._underlying_module().coordinate_vector(vector(QQ, row))
+            image = morphism(domain(relation_coordinates))
+            assert isinstance(image, SyntheticLatticeElement), f"expected a synthetic image element; found={type(image)}"
             assert vector(QQ, image.rational_coordinates()) in relation_lattice._underlying_module(), "morphism does not preserve the quotient relation lattice"
         return quotient.hom([quotient.projection(morphism(quotient.lift(generator))) for generator in quotient.gens()])
 
@@ -695,7 +731,7 @@ class SyntheticLattice(Lattice, Parent):
 class SyntheticNondegenerateLattice(NondegenerateLattice, SyntheticLattice):
     r"""Subcategory with an invertible Gram matrix: the dual vocabulary is defined."""
 
-    def dual(self) -> SyntheticLattice:
+    def dual(self) -> SyntheticNondegenerateLattice:
         r"""The dual lattice, a based lattice with Gram ``G^{-1}``.
 
         Two conceptually distinct duals coincide here and resolve to this one
@@ -717,7 +753,14 @@ class SyntheticNondegenerateLattice(NondegenerateLattice, SyntheticLattice):
         """
         if self.base_ring() is QQ:
             return self
-        return synthetic_lattice(self.gram_matrix().inverse(), ZZ, f"{self._label}#")
+        dual_lattice = synthetic_lattice(self.gram_matrix().inverse(), ZZ, f"{self._label}#")
+        assert isinstance(dual_lattice, SyntheticNondegenerateLattice), (
+            f"the dual of a nondegenerate lattice is nondegenerate (Gram G^-1 is invertible); dispatch returned {type(dual_lattice)}"
+        )
+        return dual_lattice
+
+    def is_self_dual(self) -> bool:
+        return self.base_ring() is ZZ and self == self.dual()
 
     def dual_inclusion(self) -> LatticeMorphism:
         r"""The natural injection ``L -> L^*``, ``v |-> b(v, -)``, with matrix ``G``."""
@@ -727,18 +770,18 @@ class SyntheticNondegenerateLattice(NondegenerateLattice, SyntheticLattice):
 class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateLattice, SyntheticNondegenerateLattice):
     r"""Integral nondegenerate subcategory: discriminant/genus vocabulary (spec 2.4)."""
 
-    def discriminant_group(self, primary: int = 0) -> SourcedDiscriminantForm:
+    def discriminant_group(self, primary: int | Integer = 0) -> SourcedDiscriminantForm:
         from ..forms.discriminant_forms import SyntheticSourcedDiscriminantForm
 
         return SyntheticSourcedDiscriminantForm(self, primary)
 
-    def glue(self, isotropic_subgroup_or_gens: DiscriminantSubgroup, label: str = "glue") -> Lattice:
+    def glue(self, isotropic_subgroup_or_gens: DiscriminantSubgroup | Sequence[DiscriminantFormElement], label: str = "glue") -> Lattice:
         return self.discriminant_group().overlattice_from_isotropic_subgroup(isotropic_subgroup_or_gens, label=label)
 
     def maximal_overlattice(self, p: int | None = None, label: str = "maximal_overlattice") -> Lattice:
         if p is None or ZZ(p) == 2:
             assert self.is_even(), "this lattice must be even to admit an even overlattice"
-        lattice = self
+        lattice: IntegralNondegenerateLattice = self
         while True:
             discriminant_group = lattice.discriminant_group(primary=0 if p is None else ZZ(p))
             isotropic_element = next(
@@ -785,6 +828,14 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateLattice, Synthe
     def same_genus(self, other: IntegralNondegenerateLattice) -> bool:
         return self.genus() == other.genus()
 
+    if TYPE_CHECKING:
+        # Declared contracts whose engines are open work (issue #24: Nikulin
+        # primitive-embedding theory). The runtime keeps the Sage
+        # abstract_method markers so TestSuite's completeness sweep still
+        # enumerates the gap; these declarations state the contract statically.
+        def embeds_primitively_in_unimodular(self, signature_pair: SignaturePair, even: bool = True) -> bool: ...
+        def primitive_embedding_into_unimodular(self, signature_pair: SignaturePair, even: bool = True) -> LatticeMorphism: ...
+
 
 if TYPE_CHECKING:
     # The enumeration/reduction kernels and the root-provenance mixin are never
@@ -812,7 +863,7 @@ class _PositiveDefiniteEnumeration(_PositiveDefiniteSelf):
     positive definiteness, so those methods are ordinary positive-definite
     vocabulary, not an opt-in refinement."""
 
-    def vectors_of_square(self, square: ExactScalar) -> tuple[SyntheticLatticeElement, ...]:
+    def vectors_of_square(self, square: ExactScalar | int) -> tuple[SyntheticLatticeElement, ...]:
         r"""All lattice vectors of the given (nonnegative) norm, by the
         positive-definite enumeration engine (G4 ratified semantics)."""
         square = ZZ(square)
@@ -833,45 +884,47 @@ class _PositiveDefiniteEnumeration(_PositiveDefiniteSelf):
 
         assert self.base_ring() is ZZ, "LLL is implemented only for ZZ-lattices in this spike"
         assert self.is_integral(), f"LLL requires an integral Gram matrix; gram={self.gram_matrix()}"
-        change_of_basis = matrix(ZZ, self.gram_matrix()).LLL_gram()
+        change_of_basis = matrix(QQ, matrix(ZZ, self.gram_matrix()).LLL_gram())
         return self.sublattice(change_of_basis, label="LLL")
 
-    def short_vectors(self, n: int, **kwargs: EnumerationKwargValue) -> list[list[SyntheticLatticeElement]]:
+    def short_vectors(self, n: int | Integer, up_to_sign_flag: bool = False) -> list[list[SyntheticLatticeElement]]:
         from sage.quadratic_forms.quadratic_form import QuadraticForm
         from sage.rings.integer_ring import ZZ
 
         assert self.base_ring() is ZZ, "short vector enumeration is implemented only for ZZ-lattices in this spike"
         assert self.is_integral(), f"short vector enumeration requires an integral Gram matrix; gram={self.gram_matrix()}"
         q = QuadraticForm(2 * self.gram_matrix().change_ring(ZZ))
-        return [[self(vector) for vector in vectors] for vectors in q.short_vector_list_up_to_length(n, **kwargs)]
+        return [[self(vector) for vector in vectors] for vectors in q.short_vector_list_up_to_length(n, up_to_sign_flag)]
 
     def shortest_vector(self) -> SyntheticLatticeElement:
         if self.rank() == 0:
             return self.zero()
-        bound = min(self.gen(i).q() for i in range(self.rank())) + 1
+        bound = ZZ(min(self.gen(i).q() for i in range(self.rank()))) + 1
         for vectors in self.short_vectors(bound):
             for candidate in vectors:
                 if not candidate == self.zero():
                     return candidate
         assert False, "positive-definite short-vector enumeration returned no nonzero vector"
 
-    def minimum(self) -> ExactScalar:
-        # lambda_1^2: the least nonzero norm (Sage IntegralLattice.minimum).
+    def minimum(self) -> ExactScalar | SageInfinity:
+        # lambda_1^2: the least nonzero norm (Sage IntegralLattice.minimum);
+        # +Infinity on rank 0 (infimum over the empty set).
         if self.rank() == 0:
             from sage.rings.infinity import Infinity
 
-            return cast(ExactScalar, Infinity)
+            return Infinity
         return self.shortest_vector().q()
 
-    def maximum(self) -> ExactScalar:
+    def maximum(self) -> ExactScalar | SageInfinity:
         # Sup of the norm form over a positive-definite lattice is unbounded
         # (Sage IntegralLattice.maximum returns +Infinity).
         from sage.rings.infinity import Infinity
 
-        return cast(ExactScalar, Infinity)
+        return Infinity
 
-    def volume(self) -> ExactScalar:
-        # Covolume sqrt(det G) (Sage IntegerLattice.volume).
+    def volume(self) -> ExactScalar | SymbolicExpression:
+        # Covolume sqrt(det G) (Sage IntegerLattice.volume) — exact, possibly
+        # irrational, so the codomain includes exact symbolic values.
         return self.gram_matrix().determinant().sqrt()
 
     def reduced_basis(self) -> tuple[SyntheticLatticeElement, ...]:
@@ -882,7 +935,7 @@ class _PositiveDefiniteEnumeration(_PositiveDefiniteSelf):
         transform = matrix(ZZ, self.gram_matrix()).LLL_gram()
         return tuple(self(row) for row in transform.rows())
 
-    def enumerate_short_vectors(self, bound: int) -> Iterator[SyntheticLatticeElement]:
+    def enumerate_short_vectors(self, bound: int | Integer) -> Iterator[SyntheticLatticeElement]:
         for vectors in self.short_vectors(bound + 1):
             for lattice_vector in vectors:
                 if not lattice_vector == self.zero():
@@ -907,7 +960,7 @@ class _PositiveDefiniteEnumeration(_PositiveDefiniteSelf):
         change_of_basis = matrix(ZZ, transform)
         return self.sublattice(change_of_basis, label="BKZ")
 
-    def closest_vector(self, target: Sequence[ExactScalar]) -> SyntheticLatticeElement:
+    def closest_vector(self, target: Sequence[ExactScalar] | Vector | LatticeElement) -> SyntheticLatticeElement:
         from itertools import product
 
         from sage.functions.other import ceil, floor, sqrt
@@ -918,56 +971,58 @@ class _PositiveDefiniteEnumeration(_PositiveDefiniteSelf):
 
         from .elements import SyntheticLatticeElement
 
-        target = vector(
+        point: Vector = vector(
             QQ,
             target.coefficient_vector() if isinstance(target, SyntheticLatticeElement) and target.parent() is self else target,
         )
-        assert len(target) == self.rank(), f"closest vector target must have one coordinate per lattice basis vector; rank={self.rank()}, target={target}"
+        assert len(point) == self.rank(), f"closest vector target must have one coordinate per lattice basis vector; rank={self.rank()}, target={point}"
         if self.rank() == 0:
             return self.zero()
         gram = matrix(QQ, self.gram_matrix())
 
-        def distance_squared(coordinates: Sequence[ExactScalar]) -> ExactScalar:
-            delta = vector(QQ, [QQ(coordinates[i]) - target[i] for i in range(self.rank())])
+        def distance_squared(coordinates: Sequence[ExactScalar | int]) -> ExactScalar:
+            delta = vector(QQ, [QQ(coordinates[i]) - point[i] for i in range(self.rank())])
             return delta * gram * delta
 
-        center = [ZZ(round(target[i])) for i in range(self.rank())]
-        best_coordinates = tuple(center)
+        best_coordinates = tuple(ZZ(point[i].round()) for i in range(self.rank()))
         best_distance = distance_squared(best_coordinates)
         inverse_gram = gram.inverse()
         ranges = []
         for i in range(self.rank()):
             radius = sqrt(best_distance * inverse_gram[i, i])
-            lower = ZZ(floor(target[i] - radius)) - 1
-            upper = ZZ(ceil(target[i] + radius)) + 1
+            lower = ZZ(floor(point[i] - radius)) - 1
+            upper = ZZ(ceil(point[i] + radius)) + 1
             ranges.append(range(lower, upper + 1))
-        for coordinates in product(*ranges):
-            distance = distance_squared(coordinates)
-            if distance < best_distance or (distance == best_distance and tuple(coordinates) < best_coordinates):
+        for raw_coordinates in product(*ranges):
+            candidate = tuple(ZZ(coordinate) for coordinate in raw_coordinates)
+            distance = distance_squared(candidate)
+            if distance < best_distance or (distance == best_distance and candidate < best_coordinates):
                 best_distance = distance
-                best_coordinates = tuple(ZZ(coordinate) for coordinate in coordinates)
+                best_coordinates = candidate
         return self(best_coordinates)
 
-    def voronoi_cell(self, radius: int | None = None) -> Polyhedron:
-        from sage.geometry.polyhedron.constructor import Polyhedron
+    def voronoi_cell(self, radius: int | Integer | None = None) -> Polyhedron:
+        from sage.geometry.polyhedron.constructor import Polyhedron as polyhedron
         from sage.matrix.constructor import matrix
         from sage.rings.integer_ring import ZZ
         from sage.rings.rational_field import QQ
 
         if self.rank() == 0:
-            return Polyhedron(vertices=[[]], base_ring=QQ)
+            return polyhedron(vertices=[[]], base_ring=QQ)
         gram = matrix(QQ, self.gram_matrix())
 
-        def cell_from_bound(bound: int) -> Polyhedron:
-            inequalities = []
+        def cell_from_bound(bound: int | Integer) -> Polyhedron:
+            inequalities: list[list[ExactScalar]] = []
             for vectors in self.short_vectors(bound):
                 for lattice_vector in vectors:
                     if lattice_vector == self.zero():
                         continue
                     coordinates = vector(QQ, lattice_vector.coefficient_vector())
                     gram_vector = coordinates * gram
-                    inequalities.append([QQ(lattice_vector.q()) / 2] + [-gram_vector[i] for i in range(self.rank())])
-            return Polyhedron(ieqs=inequalities, base_ring=QQ)
+                    row: list[ExactScalar] = [QQ(lattice_vector.q()) / 2]
+                    row.extend(-gram_vector[i] for i in range(self.rank()))
+                    inequalities.append(row)
+            return polyhedron(ieqs=inequalities, base_ring=QQ)
 
         if radius is not None:
             return cell_from_bound(ZZ(radius))
@@ -983,32 +1038,39 @@ class _PositiveDefiniteEnumeration(_PositiveDefiniteSelf):
         # Hermite-Korkine-Zolotarev = full-block BKZ (Sage IntegerLattice.HKZ).
         return self.BKZ(block_size=self.rank())
 
-    def gaussian_heuristic(self, exact_form: bool = False) -> ExactScalar:
+    def gaussian_heuristic(self, exact_form: bool = False) -> SymbolicExpression:
         # Expected shortest length (Sage IntegerLattice.gaussian_heuristic;
         # both forms are exact symbolic expressions — gap-ledger row 12):
         # Stirling form det^(1/2n) * sqrt(n / (2 pi e)); exact Gamma form
-        # (sqrt(det) * Gamma(1 + n/2))^(1/n) / sqrt(pi).
+        # (sqrt(det) * Gamma(1 + n/2))^(1/n) / sqrt(pi). Computed in SR with a
+        # RATIONAL exponent QQ(1)/n — a Python ``1 / n`` is a float and
+        # silently destroys exactness (the gap-ledger row 12 defect).
         from sage.functions.gamma import gamma
-        from sage.misc.functional import sqrt
         from sage.rings.rational_field import QQ as rationals
         from sage.symbolic.constants import e, pi
+        from sage.symbolic.ring import SR
 
         n = self.rank()
-        determinant_sqrt = sqrt(self.gram_matrix().determinant())
+        exponent = rationals(1) / n
+        determinant_sqrt = SR(self.gram_matrix().determinant()).sqrt()
         if exact_form:
-            return (determinant_sqrt * gamma(1 + rationals(n) / 2)) ** (1 / n) / sqrt(pi)
-        return determinant_sqrt ** (1 / n) * sqrt(n / (2 * pi * e))
+            return (determinant_sqrt * gamma(1 + rationals(n) / 2)) ** exponent / pi.sqrt()
+        return determinant_sqrt**exponent * (n / (2 * pi * e)).sqrt()
 
-    def hadamard_ratio(self) -> ExactScalar:
-        from sage.misc.functional import sqrt
+    def hadamard_ratio(self) -> SymbolicExpression:
+        # Exact symbolic value; the n-th root uses a RATIONAL exponent (see
+        # gaussian_heuristic on why ``1 / n`` is banned here).
+        from sage.rings.rational_field import QQ as rationals
+        from sage.symbolic.ring import SR
 
         n = self.rank()
-        product_of_norms = 1
+        gram = self.gram_matrix()
+        product_of_norms = SR(1)
         for i in range(n):
-            product_of_norms = product_of_norms * sqrt(self.gram_matrix()[i, i])
-        return (self.gram_matrix().determinant().sqrt() / product_of_norms) ** (1 / n)
+            product_of_norms = product_of_norms * SR(gram[i, i]).sqrt()
+        return (SR(gram.determinant()).sqrt() / product_of_norms) ** (rationals(1) / n)
 
-    def approximate_closest_vector(self, target: Sequence[ExactScalar]) -> SyntheticLatticeElement:
+    def approximate_closest_vector(self, target: Sequence[ExactScalar] | Vector | LatticeElement) -> SyntheticLatticeElement:
         from sage.matrix.constructor import matrix
         from sage.modules.free_module_element import vector
         from sage.rings.integer_ring import ZZ
@@ -1016,15 +1078,15 @@ class _PositiveDefiniteEnumeration(_PositiveDefiniteSelf):
 
         from .elements import SyntheticLatticeElement
 
-        target = vector(
+        point: Vector = vector(
             QQ,
             target.coefficient_vector() if isinstance(target, SyntheticLatticeElement) and target.parent() is self else target,
         )
-        assert len(target) == self.rank(), f"approximate closest vector target must have one coordinate per basis vector; rank={self.rank()}, target={target}"
+        assert len(point) == self.rank(), f"approximate closest vector target must have one coordinate per basis vector; rank={self.rank()}, target={point}"
         if self.rank() == 0:
             return self.zero()
-        transform = matrix(ZZ, self.gram_matrix()).LLL_gram()
-        reduced_coordinates = target * transform.inverse()
+        transform = matrix(QQ, matrix(ZZ, self.gram_matrix()).LLL_gram())
+        reduced_coordinates = point * transform.inverse()
         rounded = vector(ZZ, [ZZ(coordinate.round()) for coordinate in reduced_coordinates])
         return self(rounded * transform)
 
@@ -1050,7 +1112,7 @@ class _PositiveDefiniteEnumeration(_PositiveDefiniteSelf):
                 relevant.append(v)
         return tuple(relevant)
 
-    def enumerate_close_vectors(self, target: Sequence[ExactScalar], radius: ExactScalar) -> list[SyntheticLatticeElement]:
+    def enumerate_close_vectors(self, target: Sequence[ExactScalar] | Vector | LatticeElement, radius: ExactScalar) -> list[SyntheticLatticeElement]:
         from itertools import product
 
         from sage.functions.other import ceil, floor, sqrt
@@ -1061,20 +1123,20 @@ class _PositiveDefiniteEnumeration(_PositiveDefiniteSelf):
 
         from .elements import SyntheticLatticeElement
 
-        target = vector(
+        point: Vector = vector(
             QQ,
             target.coefficient_vector() if isinstance(target, SyntheticLatticeElement) and target.parent() is self else target,
         )
-        assert len(target) == self.rank(), f"close vector target must have one coordinate per basis vector; rank={self.rank()}, target={target}"
+        assert len(point) == self.rank(), f"close vector target must have one coordinate per basis vector; rank={self.rank()}, target={point}"
         gram = matrix(QQ, self.gram_matrix())
         inverse_gram = gram.inverse()
         ranges = []
         for i in range(self.rank()):
             spread = sqrt(QQ(radius) * inverse_gram[i, i])
-            ranges.append(range(ZZ(floor(target[i] - spread)) - 1, ZZ(ceil(target[i] + spread)) + 2))
+            ranges.append(range(ZZ(floor(point[i] - spread)) - 1, ZZ(ceil(point[i] + spread)) + 2))
         close = []
         for coordinates in product(*ranges):
-            delta = vector(QQ, [QQ(coordinates[i]) - target[i] for i in range(self.rank())])
+            delta = vector(QQ, [QQ(coordinates[i]) - point[i] for i in range(self.rank())])
             if delta * gram * delta <= radius:
                 close.append(self(coordinates))
         return close
@@ -1082,12 +1144,16 @@ class _PositiveDefiniteEnumeration(_PositiveDefiniteSelf):
     def update_reduced_basis(self, w: Sequence[ExactScalar] | SyntheticLatticeElement) -> SyntheticLattice:
         from .elements import SyntheticLatticeElement
 
-        coordinates = list(w.coefficient_vector() if isinstance(w, SyntheticLatticeElement) and w.parent() is self else w)
+        if isinstance(w, SyntheticLatticeElement) and w.parent() is self:
+            coordinates = list(w.coefficient_vector())
+        else:
+            assert not isinstance(w, SyntheticLatticeElement), f"update_reduced_basis expects coordinates or an element of this lattice; found an element of {w.parent()}"
+            coordinates = list(w)
         injected = self.overlattice([coordinates], label="update_reduced_basis")
         # an overlattice lives in the same rational quadratic space, so it stays
-        # positive-definite; the assertion documents the invariant (spec 2.6
-        # deleted the dead non-PD fallback here)
-        assert injected.is_positive_definite(), f"update_reduced_basis overlattice must stay positive-definite; gram={injected.gram_matrix()}"
+        # positive-definite (spec 2.6 deleted the dead non-PD fallback here);
+        # the dispatch witness is the enumeration class itself
+        assert isinstance(injected, _PositiveDefiniteEnumeration), f"update_reduced_basis overlattice must stay positive-definite; gram={injected.gram_matrix()}"
         reduced = injected.LLL()
         assert isinstance(reduced, SyntheticLattice)
         return reduced
@@ -1100,34 +1166,36 @@ class _NegativeDefiniteEnumeration(_DefiniteSelf):
     transports through the sign twist and pulls elements back along the
     identity on coefficient vectors."""
 
-    def _sign_twist(self) -> SyntheticLattice:
-        return self.twist(-1, label="sign_twist")
+    def _sign_twist(self) -> _PositiveDefiniteEnumeration:
+        twisted = self.twist(-1, label="sign_twist")
+        assert isinstance(twisted, _PositiveDefiniteEnumeration), f"the (-1)-twist of a negative-definite lattice is positive definite; dispatch returned {type(twisted)}"
+        return twisted
 
     def _pull_element(self, element: LatticeElement) -> SyntheticLatticeElement:
         return self(list(element.coefficient_vector()))
 
-    def minimum(self) -> ExactScalar:
+    def minimum(self) -> ExactScalar | SageInfinity:
         # min{x^2} = -max over L(-1) (= -Infinity for positive rank).
         return -self._sign_twist().maximum()
 
-    def maximum(self) -> ExactScalar:
+    def maximum(self) -> ExactScalar | SageInfinity:
         # max{x^2 | x != 0} = -min over L(-1).
         return -self._sign_twist().minimum()
 
     def shortest_vector(self) -> SyntheticLatticeElement:
         return self._pull_element(self._sign_twist().shortest_vector())
 
-    def short_vectors(self, n: int, **kwargs: EnumerationKwargValue) -> list[list[SyntheticLatticeElement]]:
-        return [[self._pull_element(vector) for vector in vectors] for vectors in self._sign_twist().short_vectors(n, **kwargs)]
+    def short_vectors(self, n: int | Integer, up_to_sign_flag: bool = False) -> list[list[SyntheticLatticeElement]]:
+        return [[self._pull_element(vector) for vector in vectors] for vectors in self._sign_twist().short_vectors(n, up_to_sign_flag)]
 
-    def enumerate_short_vectors(self, bound: int) -> Iterator[SyntheticLatticeElement]:
+    def enumerate_short_vectors(self, bound: int | Integer) -> Iterator[SyntheticLatticeElement]:
         for twisted in self._sign_twist().enumerate_short_vectors(bound):
             yield self._pull_element(twisted)
 
-    def volume(self) -> ExactScalar:
+    def volume(self) -> ExactScalar | SymbolicExpression:
         return self._sign_twist().volume()
 
-    def vectors_of_square(self, square: ExactScalar) -> tuple[SyntheticLatticeElement, ...]:
+    def vectors_of_square(self, square: ExactScalar | int) -> tuple[SyntheticLatticeElement, ...]:
         square = ZZ(square)
         assert square <= 0, f"a negative-definite form takes no positive values; square={square}, gram={self.gram_matrix()}"
         return tuple(self._pull_element(vector) for vector in self._sign_twist().vectors_of_square(-square))
@@ -1162,6 +1230,7 @@ class _RootGeneratedProvenance(_RootGeneratedSelf):
 
     def cartan_type(self) -> CartanType:
         assert self._cartan_type != "composite", "a direct sum of root lattices has no single Cartan type; use irreducible_root_components()"
+        assert self._cartan_type is not None and not isinstance(self._cartan_type, str), f"the root-provenance certificate must be a Cartan datum; found={self._cartan_type!r}"
         return self._cartan_type
 
 
@@ -1193,6 +1262,7 @@ def synthetic_lattice(
     nondegenerate = gram.det() != 0
     integral = base_ring is ZZ and all(entry in ZZ for entry in gram.list())
     pos, neg = signature_pair(gram)
+    concrete: type[SyntheticLattice]
     positive_definite = nondegenerate and pos == gram.nrows()
     if cartan_type is not None:
         even = integral and all(entry % 2 == 0 for entry in gram.diagonal())

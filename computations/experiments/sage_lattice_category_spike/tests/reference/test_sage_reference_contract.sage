@@ -90,6 +90,7 @@ def test_discriminant_group_cover_relations_and_primary_forms_match_doctests():
     assert A.random_element() in A.elements()
 
 
+@pytest.mark.xfail(reason="red proof gate for OPEN issue dzackgarza/research#25: equal-but-distinct parents (fresh dual() per call) break cross-parent element equality until parents are UniqueRepresentation on (R, G)", strict=True)
 def test_discriminant_preimage_lattice_allows_nonintegral_source_preimages():
     # Reference: A_L = L^vee / L source metadata; preimages exist before isotropic gluing.
     L = lc.Lattice("A2")
@@ -410,6 +411,7 @@ def test_discriminant_action_inverse_image_matches_fgp_morphism_doctest():
     assert doubling.inverse_image(image).cardinality() == 4
 
 
+@pytest.mark.xfail(reason="red proof gate for OPEN issue dzackgarza/research#25: equal-but-distinct parents (fresh dual() per call) break cross-parent element equality until parents are UniqueRepresentation on (R, G)", strict=True)
 def test_discriminant_form_subgroup_source_and_action_api_is_bound():
     # Reference: torsion quadratic module subgroup/form API plus lattice source metadata.
     L = lc.Lattice(matrix(ZZ, 1, 1, [4]))

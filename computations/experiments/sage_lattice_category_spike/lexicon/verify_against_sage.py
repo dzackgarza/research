@@ -26,6 +26,9 @@ STUB_ONLY = {
     # categories/category_with_axiom.pyi: `all_axioms` is a dynamic
     # AxiomContainer; the stub names its shape locally.
     ("sage.categories.category_with_axiom", "_AxiomSet"),
+    # matrix/constructor.pyi: `matrix` is a cython function carrying the named
+    # constructors (matrix.diagonal, ...); its class has no importable name.
+    ("sage.matrix.constructor", "_MatrixConstructor"),
 }
 
 
@@ -52,6 +55,8 @@ def _representatives() -> dict[str, list[object]]:
         # parents of the category rather than on the holder class itself.
         "sage.categories.rings.Rings.ParentMethods": [ZZ, QQ],
         "sage.categories.fields.Fields.ParentMethods": [QQ],
+        "sage.rings.integer_ring.IntegerRing_class": [ZZ],
+        "sage.structure.factorization.Factorization": [ZZ(12).factor()],
         "sage.structure.element.Vector": [vector(QQ, [1, 2]), vector(ZZ, [1, 2])],
         "sage.categories.category.Category": [Sets()],
         "sage.categories.modules.Modules": [Modules(ZZ)],
@@ -132,6 +137,12 @@ def _verify_class(
         base_name = ast.unparse(base)
         if base_name.endswith(("ParentMethods", "ElementMethods")):
             continue
+        if node.name in ("ParentMethods", "ElementMethods"):
+            # A holder class's own stub bases (e.g. Rings.ParentMethods
+            # subsuming Parent) are the mathematically true edge, realized by
+            # method copying; they are verified extensionally through the
+            # representative parents below, never by issubclass.
+            continue
         base_obj = _resolve(base_name, tree, module)
         if isinstance(real, type) and isinstance(base_obj, type) and not issubclass(real, base_obj):
             _fail(problems, f"{qualname}: not a subclass of stub base {base_name}")
@@ -140,10 +151,15 @@ def _verify_class(
         carriers += representatives[qualname]
     for item in node.body:
         if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            if not any((item.name in dir(carrier)) for carrier in carriers):
-                _fail(problems, f"{qualname}.{item.name}: method missing")
-            else:
+            if any((item.name in dir(carrier)) for carrier in carriers):
                 checked += 1
+            elif item.name == "__iter__" and any(_legacy_iterable(carrier) for carrier in carriers if not isinstance(carrier, type)):
+                # Sage vectors iterate through the legacy __getitem__/__len__
+                # protocol; the claim is verified by actually iterating a
+                # representative instance.
+                checked += 1
+            else:
+                _fail(problems, f"{qualname}.{item.name}: method missing")
         elif isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
             # Instance attributes (e.g. QmodnZ.n) are not on the class object
             # for cdef classes; probed only when exposed statically.
@@ -156,6 +172,14 @@ def _verify_class(
             checked += 1
             checked += _verify_class(item, nested_real, f"{qualname}.{item.name}", tree, module, representatives, problems)
     return checked
+
+
+def _legacy_iterable(value: object) -> bool:
+    try:
+        iter(value)  # type: ignore[call-overload]
+    except TypeError:
+        return False
+    return True
 
 
 def _resolve(name: str, tree: ast.Module, module: object) -> object | None:
