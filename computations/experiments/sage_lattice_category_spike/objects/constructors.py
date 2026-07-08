@@ -6,24 +6,39 @@ Every path routes through the section-1.4 category-namespace entry
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
+
 from sage.matrix.constructor import column_matrix, matrix
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
+from sage.structure.element import Matrix
 
 from .categories import Lattices
 
+if TYPE_CHECKING:
+    from .. import lexicon
+    from ..lexicon import (
+        BaseRing,
+        CartanType,
+        DiscriminantFormElement,
+        ExactScalar,
+        LatticeMorphism,
+        RawGramMatrix,
+    )
 
-def SyntheticLatticeFromGram(gram_matrix, base_ring=ZZ, label="L"):
+
+def SyntheticLatticeFromGram(gram_matrix: RawGramMatrix, base_ring: BaseRing = ZZ, label: str = "L") -> lexicon.Lattice:
     r"""Construct a synthetic based lattice ``(base_ring, G)`` from its Gram matrix."""
     return Lattices(base_ring).from_gram_matrix(gram_matrix, label=label)
 
 
-def Lattice(gram_matrix, base_ring=ZZ, label="L"):
+def Lattice(gram_matrix: RawGramMatrix, base_ring: BaseRing = ZZ, label: str = "L") -> lexicon.Lattice:
     r"""Public constructor for the owned synthetic lattice spike."""
     return SyntheticLatticeFromGram(gram_matrix, base_ring=base_ring, label=label)
 
 
-def U(n=1, label=None):
+def U(n: int | ExactScalar = 1, label: str | None = None) -> lexicon.Lattice:
     r"""The hyperbolic plane ``U(n)`` with Gram ``[[0, n], [n, 0]]``."""
     n = ZZ(n)
     assert n != 0, "U(n) requires a nonzero scale; U(0) is the degenerate rank-2 zero form, not a hyperbolic plane"
@@ -32,7 +47,12 @@ def U(n=1, label=None):
     return Lattices(ZZ).from_gram_matrix([[0, n], [n, 0]], label=label)
 
 
-def RootLattice(type_, n=None, negative=False, label=None):
+def RootLattice(
+    type_: str | CartanType,
+    n: int | None = None,
+    negative: bool = False,
+    label: str | None = None,
+) -> lexicon.Lattice:
     r"""The A/D/E root lattice with its standard Cartan Gram.
 
     ``negative=True`` twists by ``-1`` (the K3 convention). Attaches the
@@ -46,22 +66,34 @@ def RootLattice(type_, n=None, negative=False, label=None):
         assert isinstance(type_, str) and len(type_) >= 2 and type_[0].isalpha() and type_[1:].isdigit(), (
             f"RootLattice needs a type like 'E8' or ('E', 8); found type_={type_!r}, n=None"
         )
-        letter, n = type_[0].upper(), int(type_[1:])
+        letter, rank = type_[0].upper(), int(type_[1:])
     else:
-        letter, n = str(type_).upper(), int(n)
-    assert letter in ("A", "D", "E"), (
-        f"RootLattice supports the simply-laced types A/D/E; found {letter!r} "
-        "(B/C/F/G Cartan matrices are not symmetric, hence not Gram matrices)"
-    )
-    gram = matrix(QQ, CartanMatrix([letter, n]))
+        assert not isinstance(type_, tuple), "RootLattice tuple type_ requires n=None"
+        letter, rank = str(type_).upper(), int(n)
+
+    if letter == "A":
+        cartan_type: CartanType = ("A", rank)
+    elif letter == "D":
+        cartan_type = ("D", rank)
+    elif letter == "E":
+        cartan_type = ("E", rank)
+    else:
+        raise AssertionError(f"RootLattice supports the simply-laced types A/D/E; found {letter!r} (B/C/F/G Cartan matrices are not symmetric, hence not Gram matrices)")
+
+    gram = matrix(QQ, CartanMatrix([letter, rank]))
     if negative:
         gram = -gram
     if label is None:
-        label = f"{letter}{n}" + ("(-1)" if negative else "")
-    return Lattices(ZZ).from_gram_matrix(gram, label=label, cartan_type=(letter, n))
+        label = f"{letter}{rank}" + ("(-1)" if negative else "")
+    return Lattices(ZZ).from_gram_matrix(gram, label=label, cartan_type=cartan_type)
 
 
-def IntegralLatticeGluing(lattices, glue, return_embeddings=False, label="gluing"):
+def IntegralLatticeGluing(
+    lattices: Sequence[lexicon.Lattice],
+    glue: Sequence[Sequence[DiscriminantFormElement]],
+    return_embeddings: bool = False,
+    label: str = "gluing",
+) -> lexicon.Lattice | tuple[lexicon.Lattice, tuple[LatticeMorphism, ...]]:
     r"""Construct the owned overlattice determined by discriminant glue vectors."""
     assert lattices, "gluing requires at least one lattice; fix the caller's lattice list"
     ambient = lattices[0]
@@ -77,8 +109,7 @@ def IntegralLatticeGluing(lattices, glue, return_embeddings=False, label="gluing
 
     for glue_vector in glue:
         assert len(glue_vector) == len(lattices), (
-            "each glue vector must provide one discriminant element per lattice; "
-            f"lattices={len(lattices)}, glue_vector={glue_vector}; fix the caller's glue data"
+            f"each glue vector must provide one discriminant element per lattice; lattices={len(lattices)}, glue_vector={glue_vector}; fix the caller's glue data"
         )
         row = [QQ.zero()] * ambient.rank()
         for lattice, start, discriminant_element in zip(lattices, offsets, glue_vector):
@@ -94,12 +125,9 @@ def IntegralLatticeGluing(lattices, glue, return_embeddings=False, label="gluing
     return glued, embeddings
 
 
-def _embedding_matrix(domain, codomain, start):
+def _embedding_matrix(domain: lexicon.Lattice, codomain: lexicon.Lattice, start: int) -> Matrix:
     ambient_basis = codomain._rationalization_module().basis()
     return column_matrix(
         ZZ,
-        [
-            codomain._underlying_module().coordinate_vector(ambient_basis[start + j])
-            for j in range(domain.rank())
-        ],
+        [codomain._underlying_module().coordinate_vector(ambient_basis[start + j]) for j in range(domain.rank())],
     )

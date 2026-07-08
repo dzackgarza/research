@@ -2,69 +2,76 @@ r"""Elements of owned synthetic lattices."""
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, assert_never, cast
+
 from sage.modules.free_module_element import vector
 from sage.rings.rational_field import QQ
-from sage.structure.element import Element
+from sage.structure.element import Element, RingElement
 
-from ..algebra.domain_algebra import LatticeElement as ElementCarrier
+from ..lexicon import ExactScalar, LatticeElement
+
+if TYPE_CHECKING:
+    from .parents import SyntheticLattice
 
 
-class SyntheticLatticeElement(ElementCarrier, Element):
+class SyntheticLatticeElement(LatticeElement, Element):
     r"""Element of an owned synthetic lattice parent."""
 
-    def __init__(self, parent, coordinates):
+    def __init__(self, parent: SyntheticLattice, coordinates: Sequence[ExactScalar]) -> None:
         Element.__init__(self, parent)
         coords = vector(parent.base_ring(), coordinates)
-        assert len(coords) == parent.rank(), (
-            "coordinate length must equal lattice rank; "
-            f"rank={parent.rank()}, coordinates={coordinates}; fix the caller's coordinates"
-        )
+        assert len(coords) == parent.rank(), f"coordinate length must equal lattice rank; rank={parent.rank()}, coordinates={coordinates}; fix the caller's coordinates"
         coords.set_immutable()
         self._coordinates = coords
 
-    def parent(self):
-        return Element.parent(self)
+    def parent(self) -> SyntheticLattice:
+        return cast("SyntheticLattice", Element.parent(self))
 
-    def _repr_(self):
-        return repr(self._coordinates)
-
-    def coefficient_vector(self):
+    def coefficient_vector(self) -> Sequence[ExactScalar]:
         return self._coordinates
 
-    def rational_coordinates(self):
+    def rational_coordinates(self) -> Sequence[ExactScalar]:
         r"""This element's coordinates in the root parent's intrinsic basis."""
         return vector(QQ, self._coordinates) * self.parent()._inclusion_rows()
 
-    def b(self, other):
+    def b(self, other: LatticeElement) -> ExactScalar:
         return self.parent().b(self, other)
 
-    def q(self):
+    def q(self) -> ExactScalar:
         return self.b(self)
 
-    def _add_(self, other):
+    def _add_(self, other: SyntheticLatticeElement) -> SyntheticLatticeElement:
         return self.parent()(self.coefficient_vector() + other.coefficient_vector())
 
-    def _sub_(self, other):
+    def _sub_(self, other: SyntheticLatticeElement) -> SyntheticLatticeElement:
         return self.parent()(self.coefficient_vector() - other.coefficient_vector())
 
-    def _neg_(self):
+    def _neg_(self) -> SyntheticLatticeElement:
         return self.parent()(-self.coefficient_vector())
 
-    def _lmul_(self, scalar):
+    def _lmul_(self, scalar: ExactScalar | int) -> SyntheticLatticeElement:
         return self.parent()(scalar * self.coefficient_vector())
 
-    def __eq__(self, other):
-        return (
-            isinstance(other, SyntheticLatticeElement)
-            and self.parent() == other.parent()
-            and self.coefficient_vector() == other.coefficient_vector()
-        )
+    def __mul__(self, other: SyntheticLatticeElement | RingElement) -> SyntheticLatticeElement | ExactScalar:
+        r"""``v * w`` = bilinear pairing (same parent); ``s * v`` = scalar action.
 
-    def __mul__(self, other):
+        For ``s ∈ R``: the R-module action, result in M.
+        For ``s ∈ S`` with ``R → S``: base change to ``M ⊗_R S``, then S-action.
+        """
+        assert isinstance(other, (SyntheticLatticeElement, RingElement)), (
+            f"unsupported operand for *: expected SyntheticLatticeElement or RingElement, got {type(other).__name__}"
+        )
+        R = self.parent().base_ring()
         match other:
             case SyntheticLatticeElement() if self.parent() is other.parent():
                 return self.parent().b(self, other)
             case SyntheticLatticeElement():
-                raise ValueError("Elements must belong to the same lattice")
-            case _:
+                assert False, "different-parent lattice element; use the isometry/hom API"
+            case RingElement() if other in R:
                 return self._lmul_(other)
+            case RingElement() as s if s.parent().coerce_map_from(R) is not None:
+                base_changed = self.parent().base_extend(s.parent())
+                return base_changed(s * self.coefficient_vector())
+            case _:
+                assert_never(other)

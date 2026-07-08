@@ -40,10 +40,10 @@ def test_rationalization_and_nonintegral_dual_follow_free_quadratic_module_docte
     L = lc.Lattice("A2")
     L_dual = L.dual()
 
-    assert not hasattr(L, "ambient_module")
-    assert not hasattr(L, "ambient_space")
-    assert not hasattr(L, "ambient_vector_space")
-    assert not hasattr(L, "rationalization_module")
+    assert not ("ambient_module" in dir(L))
+    assert not ("ambient_space" in dir(L))
+    assert not ("ambient_vector_space" in dir(L))
+    assert not ("rationalization_module" in dir(L))
     assert L.rationalization().base_ring() is QQ
     assert L.rationalization().rank() == 2
     # The based dual is (ZZ, G^{-1}); L embeds in L# via the metric inclusion (matrix G).
@@ -337,7 +337,7 @@ def test_lattice_module_wrapper_names_preserve_owned_lattice_contract():
     A2_dual = A2.dual()
     A2_QQ = A2.base_extend(QQ)
 
-    assert not any(hasattr(A2, name) for name in ("ambient_module", "ambient_space", "ambient_vector_space"))
+    assert not any((name in dir(A2)) for name in ("ambient_module", "ambient_space", "ambient_vector_space"))
     assert A2_QQ == A2.rationalization()
     assert A2_QQ.base_ring() is QQ
     assert A2.dual() == A2_dual
@@ -806,7 +806,7 @@ def test_supplied_generators_live_only_in_typed_subgroups_of_the_isometry_group(
     assert O_A2.subgroup([identity_matrix(ZZ, 2)]).preserves(A2)
     assert O_A2.subgroup([swap]).preserves(preserved)
     assert not O_A2.subgroup([swap]).preserves(not_preserved)
-    assert not hasattr(A2, "acts_on")  # deleted with no successor spelling
+    assert not ("acts_on" in dir(A2))  # deleted with no successor spelling
 
 
 def test_odd_discriminant_form_remains_usable_while_odd_genus_is_unsupported():

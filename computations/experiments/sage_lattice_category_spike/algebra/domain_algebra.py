@@ -1,10 +1,13 @@
 r"""Operations for the synthetic lattice category (V2 declaration layer).
 
-This module IS the typed language of the spike: vocabulary (the nouns, as
-real typed classes), grammar (the constructor family — the only entry into the
-language), transitions (each operation declared on the narrowest class where
-the mathematics defines it), and boundary codecs (the parsed primitives below,
-the only places raw Sage data crosses a domain signature).
+This module owns the LATTICE-THEORY layer of the spike's typed language:
+vocabulary (the nouns, as real typed classes), grammar (the constructor
+family — the only entry into the language), transitions (each operation
+declared on the narrowest class where the mathematics defines it), and raw
+boundary payloads. The full type surface — general mathematical nouns,
+scalar/matrix codecs, Sage interop — is the ``lexicon`` package
+(``lexicon/INVENTORY.md`` is normative); this module's classes are
+re-exported there, and downstream code imports from the lexicon.
 
 SINGLE-SOURCE DESIGN (probe-verified 2026-07-02): the lattice-side classes are
 the method-carrying base classes — at T1 each is installed as the ``ParentMethods`` of its category or
@@ -14,8 +17,11 @@ attributes into the dynamic parent class, hence narrowing below stays
 assertion-shaped rather than isinstance. The morphism/group/discriminant/genus
 classes are ordinary ABC-style bases the implementations INHERIT nominally.
 Base-class inheritance in this file is static structure only; at runtime each
-category injects exactly its own delta. Every body fails loud — a silent
-``...`` body would inject as a None-returning method, a catastrophic fail-open.
+category injects exactly its own delta. Every contract is a Sage
+``abstract_method``: accessing an unimplemented one on a realized parent raises
+the standard abstract-method error, so a leaf that fails to shadow a contract is
+caught by ``TestSuite(L).run()`` (``_test_not_implemented_methods``) — never
+injected as a silent None-returning method.
 
 Rules of the language (authoritative source: the declaration-layer plan record
 ``lattice-category-mathematical-vocabulary-and-subcategory-tree-declaration-layer``
@@ -31,35 +37,72 @@ in the agent-memory vault):
 - Dispatch is by declared type / category membership, never hasattr probing.
   The ONLY sanctioned static downcasts are the ``in_*`` narrowing functions at
   the bottom of this module, each assertion-shaped.
-- No Sage import appears in this module; Sage types cross domain signatures
-  only through the parsed primitives and raw boundary aliases, and at runtime
-  only at declared Sage-call points and ephemeral Sage-object sites.
+- No Sage *type* crosses a domain signature except through the parsed primitives
+  and raw boundary aliases; the sole Sage runtime import is ``abstract_method``,
+  the contract-declaration decorator (aliased to ``abc.abstractmethod`` under
+  TYPE_CHECKING), exactly as in ``objects/categories.py``.
 - ``ValueModule`` stays a Protocol deliberately: it types an EXTERNAL object
   (Sage's QmodnZ) that we neither own nor subclass — the one legitimate
   structural-typing use.
 
-This module contains no logic. Every stub body is a fail-loud assertion (the
-ratified error policy uses assertions, never NotImplementedError); the runtime
-realizations live in the concrete modules.
+This module contains no logic. Contracts are declared with the framework
+``abstract_method`` decorator (required — ``TestSuite`` sweeps any leaf that fails
+to implement one); all hand-written checks (the ``in_*`` narrowing, constructor
+domain contracts) stay ADDD ``assert``s, never a hand-rolled ``raise``. The
+runtime realizations live in the concrete modules.
 """
 
 from __future__ import annotations
 
-from typing import Callable, Iterator, Literal, NewType, Protocol, Sequence, TypeAlias
+from collections.abc import Callable, Iterator, Sequence
+from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
+
+if TYPE_CHECKING:
+    # abstract_method ships untyped; use abc.abstractmethod for type-checking
+    from abc import abstractmethod as abstract_method
+
+    from sage.structure.richcmp import richcmp
+
+    # Type-level nouns are drawn from the lexicon (the single type surface;
+    # lexicon/INVENTORY.md). TYPE_CHECKING-only, so this module keeps its
+    # no-runtime-Sage-import rule.
+    from ..lexicon.algebra import (
+        BaseRing,
+        FreeModule,
+        Matrix,
+        MatrixGroup,
+        PermutationGroup,
+    )
+    from ..lexicon.foundations import (
+        CartanType,
+        ExactScalar,
+        GramMatrix,
+        SignaturePair,
+    )
+    from ..lexicon.geometry import Polyhedron
+    from ..lexicon.interop import SageLocalGenusSymbol
+else:
+    from sage.misc.abstract_method import abstract_method
+    from sage.structure.richcmp import richcmp
+
+
+class MatrixRowLike(Protocol):
+    def __iter__(self) -> Iterator[ExactScalar]: ...
+
+
+class MatrixLike(Protocol):
+    """Matrix-shaped domain payload accepted by grammar entrypoints."""
+
+    def __iter__(self) -> Iterator[MatrixRowLike]: ...
+
 
 __all__ = [
-    # boundary codecs
+    # boundary codecs (scalar/matrix nouns and witnesses live in the lexicon)
     "RawGramMatrix",
     "RawMorphismMatrix",
-    "GramMatrix",
-    "MorphismMatrix",
-    "ExactScalar",
-    "BaseRing",
     "parse_base_ring",
     "parse_gram_matrix",
-    "SignaturePair",
     "FormKind",
-    "CartanType",
     # value objects
     "ValueModule",
     # lattice vocabulary
@@ -81,6 +124,7 @@ __all__ = [
     "IsometrySubgroup",
     "DiscriminantOrthogonalGroup",
     # discriminant vocabulary
+    "FiniteAbelianGroup",
     "DiscriminantForm",
     "BilinearDiscriminantForm",
     "QuadraticDiscriminantForm",
@@ -110,358 +154,387 @@ __all__ = [
 # through the grammar, and leaves it only at declared Sage-call points)
 # ---------------------------------------------------------------------------
 
-RawGramMatrix: TypeAlias = object
+type RawGramMatrix = MatrixLike | MatrixData
 """Untrusted matrix-like input to the grammar; parsed once, never circulated."""
 
-RawMorphismMatrix: TypeAlias = object
+type RawMorphismMatrix = MatrixLike | MatrixData
 """Untrusted matrix-like input to homset/element constructors."""
 
-GramMatrix = NewType("GramMatrix", object)
-"""PARSED symmetric square exact matrix — produced only by parse_gram_matrix.
-Distinct from RawGramMatrix and from MorphismMatrix by type."""
+type MatrixData = Sequence[Sequence[ExactScalar]]
+"""Structured matrix-shaped input accepted by overloads that route through `Matrix`."""
 
-MorphismMatrix = NewType("MorphismMatrix", object)
-"""PARSED exact matrix of a validated morphism — produced only by the homset."""
 
-ExactScalar = NewType("ExactScalar", object)
-"""An exact Sage scalar (Integer/Rational). Never a float."""
-
-BaseRing = NewType("BaseRing", object)
-"""ZZ or QQ, parsed by parse_base_ring."""
-
-SignaturePair: TypeAlias = tuple[int, int]
-"""Sylvester pair (p, n); p + n < rank exactly for degenerate lattices."""
-
-FormKind: TypeAlias = Literal["group", "bilinear", "quadratic"]
-
-CartanType: TypeAlias = tuple[Literal["A", "D", "E"], int]
+type FormKind = Literal["group", "bilinear", "quadratic"]
 
 
 class ValueModule(Protocol):
     """The form-value object K/(level*R): QQ/ZZ (bilinear) or QQ/2ZZ (even quadratic)."""
 
-    def level(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def level(self) -> ExactScalar: ...
 
-    def __call__(self, value: ExactScalar) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def __call__(self, value: ExactScalar) -> ExactScalar: ...
 
 
 # ---------------------------------------------------------------------------
 # Elements
 # ---------------------------------------------------------------------------
 
+
 class LatticeElement:
-    def parent(self) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def parent(self) -> Lattice: ...
 
-    def coefficient_vector(self) -> Sequence[ExactScalar]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def coefficient_vector(self) -> Sequence[ExactScalar]: ...
 
-    def b(self, other: "LatticeElement") -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def b(self, other: LatticeElement) -> ExactScalar: ...
 
-    def q(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def q(self) -> ExactScalar: ...
+
+    def _richcmp_(self, other: LatticeElement, op: int) -> bool:
+        r"""Compare as linear combinations of the generators: two elements agree
+        iff they have equal coefficient tuples in the shared generating set.
+
+        This is the sole comparison primitive lattice elements own. ``is_zero``
+        and ``__bool__`` are inherited from the additive-group chain
+        (``AdditiveMagmas.AdditiveUnital`` up through ``Element``) and delegate
+        here, so zero-ness follows from the module's group structure rather than
+        being hand-written. Sage calls ``_richcmp_`` only after coercing both
+        operands into a common parent, so the parent match is the coercion
+        framework's responsibility, not ours."""
+        return richcmp(self.coefficient_vector(), other.coefficient_vector(), op)
+
+    def __hash__(self) -> int:
+        r"""Hash by generator coefficients (a hashable immutable vector).
+
+        Sage's ``Element`` sets ``__hash__ = None`` -- rich comparison is defined
+        at the C level and every element subclass must opt into hashing -- so
+        without this, lattice elements are unusable in sets/dicts/caches. Keyed on
+        the same coefficients ``_richcmp_`` compares, so equal elements hash
+        equally."""
+        return hash(self.coefficient_vector())
+
+    def _repr_(self) -> str:
+        r"""Render as the formal R-combination ``sum_i c_i e_i`` over the NONZERO
+        coefficients, using the intrinsic generator symbols ``e_0, ..., e_{n-1}``
+        -- the ordered symbol set ``S`` with ``L = R[S]`` -- never the raw
+        coordinate vector.
+
+        Each coefficient is rendered by the ring's OWN repr: ``-3`` in ``ZZ``
+        renders as ``-3``. An arbitrary ring ``R`` has no absolute value and no
+        sign to strip, so a term is just ``repr(c_i)`` next to ``repr(e_i)``. The
+        empty combination (every coefficient zero) is ``0``."""
+        terms = [f"{coefficient} e_{index}" for index, coefficient in enumerate(self.coefficient_vector()) if coefficient != 0]
+        return " + ".join(terms) if terms else "0"
 
 
 class DiscriminantFormElement:
-    def parent(self) -> "DiscriminantForm":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def parent(self) -> DiscriminantForm: ...
 
-    def b(self, other: "DiscriminantFormElement") -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def b(self, other: DiscriminantFormElement) -> ExactScalar: ...
 
-    def q(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def q(self) -> ExactScalar: ...
 
-    def lift(self) -> "LatticeElement":
+    @abstract_method
+    def lift(self) -> LatticeElement:
         """Coset lift to the dual lattice; meaningful for sourced forms."""
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
 
-    def coefficient_vector(self) -> Sequence[ExactScalar]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def coefficient_vector(self) -> Sequence[ExactScalar]: ...
 
-    def order(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def order(self) -> int: ...
 
 
 # ---------------------------------------------------------------------------
 # Lattices: the base vocabulary (defined for EVERY lattice, degenerate included)
 # ---------------------------------------------------------------------------
 
+
 class Lattice:
     """A based free R-module (R, G) with symmetric bilinear form; possibly degenerate."""
 
     # structural
-    def rank(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def rank(self) -> int: ...
 
-    def gram_matrix(self) -> GramMatrix:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gram_matrix(self) -> GramMatrix: ...
 
-    def base_ring(self) -> BaseRing:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def base_ring(self) -> BaseRing: ...
 
-    def b(self, left: LatticeElement, right: LatticeElement) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def b(self, left: LatticeElement, right: LatticeElement) -> ExactScalar: ...
 
-    def q(self, element: LatticeElement) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def q(self, element: LatticeElement) -> ExactScalar: ...
 
-    def bilinear_form(self) -> Callable[[LatticeElement, LatticeElement], ExactScalar]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def bilinear_form(self) -> Callable[[LatticeElement, LatticeElement], ExactScalar]: ...
 
-    def quadratic_form(self) -> Callable[[LatticeElement], ExactScalar]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def quadratic_form(self) -> Callable[[LatticeElement], ExactScalar]: ...
 
-    def basis(self) -> tuple[LatticeElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def basis(self) -> tuple[LatticeElement, ...]: ...
 
-    def gens(self) -> tuple[LatticeElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gens(self) -> tuple[LatticeElement, ...]: ...
 
-    def gen(self, i: int) -> LatticeElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gen(self, i: int) -> LatticeElement: ...
 
-    def ngens(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def ngens(self) -> int: ...
 
-    def zero(self) -> LatticeElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def zero(self) -> LatticeElement: ...
 
-    def determinant(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def determinant(self) -> ExactScalar: ...
 
-    def discriminant(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def discriminant(self) -> ExactScalar: ...
 
-    def absolute_discriminant(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def absolute_discriminant(self) -> ExactScalar: ...
 
-    def signature_pair(self) -> SignaturePair:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def signature_pair(self) -> SignaturePair: ...
 
-    def signature(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def signature(self) -> int: ...
 
-    def denominator(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def denominator(self) -> ExactScalar: ...
 
+    @abstract_method
     def random_element(self) -> LatticeElement:
         """Contracted into the owned public API (user ruling): sensible utility;
         the leaner super-category no longer inherits it, so we own it."""
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
 
-    def clear_denominators(self) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def clear_denominators(self) -> Lattice: ...
 
     # predicates (total; used by the narrowing functions below)
-    def is_integral(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_integral(self) -> bool: ...
 
-    def is_even(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_even(self) -> bool: ...
 
-    def is_unimodular(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_unimodular(self) -> bool: ...
 
-    def is_self_dual(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_self_dual(self) -> bool: ...
 
-    def is_degenerate(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_degenerate(self) -> bool: ...
 
-    def is_nondegenerate(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_nondegenerate(self) -> bool: ...
 
-    def is_definite(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_definite(self) -> bool: ...
 
-    def is_positive_definite(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_positive_definite(self) -> bool: ...
 
-    def is_negative_definite(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_negative_definite(self) -> bool: ...
 
-    def is_indefinite(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_indefinite(self) -> bool: ...
 
-    def is_hyperbolic(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_hyperbolic(self) -> bool: ...
 
     # radical theory (the functor that STAYS a lattice)
-    def radical(self) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def radical(self) -> Lattice: ...
 
-    def radical_quotient(self) -> "NondegenerateLattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def radical_quotient(self) -> NondegenerateLattice: ...
 
     # constructions
-    def twist(self, scalar: ExactScalar) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def twist(self, scalar: ExactScalar | int, label: str = "twist") -> Lattice: ...
 
-    def scale(self, scalar: ExactScalar) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def scale(self, scalar: ExactScalar | int, label: str = "scale") -> Lattice: ...
 
-    def direct_sum(self, other: "Lattice") -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def direct_sum(self, other: Lattice, label: str = "direct_sum") -> Lattice: ...
 
-    def tensor_product(self, other: "Lattice") -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def tensor_product(self, other: Lattice) -> Lattice: ...
 
-    def rationalization(self) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def rationalization(self) -> Lattice: ...
 
-    def base_extend(self, ring: BaseRing) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def base_extend(self, ring: BaseRing) -> Lattice: ...
 
     # subobject algebra
-    def sublattice(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def sublattice(self, generators: Sequence[Sequence[ExactScalar]]) -> Lattice: ...
 
-    def lattice_in_rationalization(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def lattice_in_rationalization(self, generators: Sequence[Sequence[ExactScalar]]) -> Lattice: ...
 
-    def span(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def span(self, generators: Sequence[Sequence[ExactScalar]]) -> Lattice: ...
 
-    def span_of_basis(self, basis: Sequence[Sequence[ExactScalar]]) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def span_of_basis(self, basis: Sequence[Sequence[ExactScalar]]) -> Lattice: ...
 
-    def sum(self, other: "Lattice") -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def sum(self, other: Lattice) -> Lattice: ...
 
-    def intersection(self, other: "Lattice") -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def intersection(self, other: Lattice) -> Lattice: ...
 
-    def saturation(self) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def saturation(self) -> Lattice: ...
 
-    def primitive_closure(self, ambient: "Lattice") -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def primitive_closure(self, ambient: Lattice) -> Lattice: ...
 
-    def index_in(self, other: "Lattice") -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def index_in(self, other: Lattice) -> ExactScalar: ...
 
-    def index_in_saturation(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def index_in_saturation(self) -> ExactScalar: ...
 
-    def is_submodule(self, other: "Lattice") -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_submodule(self, other: Lattice) -> bool: ...
 
-    def is_primitive(self, sublattice: "Lattice") -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_primitive(self, sublattice: Lattice) -> bool: ...
 
-    def overlattice(self, generators: Sequence[Sequence[ExactScalar]]) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def overlattice(
+        self,
+        generators: Sequence[Sequence[ExactScalar]],
+        check_integral: bool = False,
+        label: str = "overlattice",
+    ) -> Lattice: ...
 
-    def orthogonal_complement(self, other: "Lattice") -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def orthogonal_complement(self, other: Lattice) -> Lattice: ...
 
-    def zero_lattice(self) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def zero_lattice(self) -> Lattice: ...
 
     # quotients (the functor that LEAVES: plain finite abelian quotient, no form axioms)
-    def finite_quotient(self, sublattice: "Lattice") -> "DiscriminantForm":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def finite_quotient(self, sublattice: Lattice) -> DiscriminantForm: ...
+
+    @abstract_method
+    def _rationalization_module(self) -> FreeModule: ...
+
+    @abstract_method
+    def _underlying_module(self) -> FreeModule: ...
 
     # morphisms
-    def Hom(self, codomain: "Lattice") -> "LatticeHomset":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def Hom(self, codomain: Lattice) -> LatticeHomset: ...
 
-    def hom(self, matrix: RawMorphismMatrix, codomain: "Lattice") -> "LatticeMorphism":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def hom(self, matrix: RawMorphismMatrix, codomain: Lattice) -> LatticeMorphism: ...
 
-    def embedding(self, matrix: RawMorphismMatrix, codomain: "Lattice") -> "LatticeMorphism":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def embedding(self, matrix: RawMorphismMatrix, codomain: Lattice) -> LatticeMorphism: ...
 
-    def similarity(
-        self, matrix: RawMorphismMatrix, codomain: "Lattice", scalar: ExactScalar
-    ) -> "LatticeSimilarity":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def similarity(self, matrix: RawMorphismMatrix, codomain: Lattice, scalar: ExactScalar) -> LatticeSimilarity: ...
 
-    def reflection(self, vector: LatticeElement) -> "LatticeMorphism":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def reflection(self, vector: LatticeElement) -> LatticeMorphism: ...
 
     # groups and isometry
-    def isometry_group(self) -> "IsometryGroup":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def isometry_group(self) -> IsometryGroup: ...
 
-
-    def is_isometric(self, other: "Lattice") -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_isometric(self, other: Lattice) -> bool: ...
 
 
 # ---------------------------------------------------------------------------
 # Subcategory vocabularies (axis 1: definedness -> placement, as types)
 # ---------------------------------------------------------------------------
 
-class NondegenerateLattice(Lattice):
-    def dual(self) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
 
-    def dual_inclusion(self) -> "LatticeMorphism":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+class NondegenerateLattice(Lattice):
+    @abstract_method
+    def dual(self) -> Lattice: ...
+
+    @abstract_method
+    def dual_inclusion(self) -> LatticeMorphism: ...
 
 
 class IntegralNondegenerateLattice(NondegenerateLattice):
-    def discriminant_group(self, primary: int = 0) -> "SourcedDiscriminantForm":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def discriminant_group(self, primary: int = 0) -> SourcedDiscriminantForm: ...
 
-    def genus(self) -> "Genus":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def genus(self) -> Genus: ...
 
-    def same_genus(self, other: "IntegralNondegenerateLattice") -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def same_genus(self, other: IntegralNondegenerateLattice) -> bool: ...
 
-    def glue(self, isotropic_subgroup: "DiscriminantSubgroup") -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def glue(self, isotropic_subgroup: DiscriminantSubgroup) -> Lattice: ...
 
-    def maximal_overlattice(self, p: int | None = None) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def maximal_overlattice(self, p: int | None = None) -> Lattice: ...
 
-    def local_modification(self, data: object, p: int) -> "Lattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def local_modification(self, data: MatrixData | DiscriminantSubgroup | Sequence[DiscriminantFormElement], p: int) -> Lattice: ...
 
-    def embeds_primitively_in_unimodular(
-        self, signature_pair: SignaturePair, even: bool = True
-    ) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def embeds_primitively_in_unimodular(self, signature_pair: SignaturePair, even: bool = True) -> bool: ...
 
-    def primitive_embedding_into_unimodular(
-        self, signature_pair: SignaturePair, even: bool = True
-    ) -> "LatticeMorphism":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def primitive_embedding_into_unimodular(self, signature_pair: SignaturePair, even: bool = True) -> LatticeMorphism: ...
 
 
 class DefiniteLattice(Lattice):
     """Finite-enumeration vocabulary. Semantics for the negative-definite case
     are gap-ledger item 4 (ratified interactively), not fixed by this stub."""
 
-    def minimum(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def minimum(self) -> ExactScalar: ...
 
-    def maximum(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def maximum(self) -> ExactScalar: ...
 
-    def shortest_vector(self) -> LatticeElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def shortest_vector(self) -> LatticeElement: ...
 
-    def short_vectors(self, bound: int) -> Sequence[Sequence[LatticeElement]]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def short_vectors(self, bound: int) -> Sequence[Sequence[LatticeElement]]: ...
 
-    def enumerate_short_vectors(self, bound: int) -> Iterator[LatticeElement]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def enumerate_short_vectors(self, bound: int) -> Iterator[LatticeElement]: ...
 
-    def vectors_of_square(self, square: ExactScalar) -> tuple[LatticeElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def vectors_of_square(self, square: ExactScalar) -> tuple[LatticeElement, ...]: ...
 
-    def roots(self) -> tuple[LatticeElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def roots(self) -> tuple[LatticeElement, ...]: ...
 
-    def volume(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def volume(self) -> ExactScalar: ...
 
 
 class PositiveDefiniteLattice(DefiniteLattice):
@@ -469,678 +542,699 @@ class PositiveDefiniteLattice(DefiniteLattice):
     Sage's own crypto lattice implementations presuppose exactly positive
     definiteness, so the suite is ordinary vocabulary here, never opt-in."""
 
-    def LLL(self) -> "PositiveDefiniteLattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def LLL(self) -> PositiveDefiniteLattice: ...
 
-    def reduced_basis(self) -> tuple[LatticeElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def reduced_basis(self) -> tuple[LatticeElement, ...]: ...
 
-    def BKZ(self, block_size: int = 10) -> "PositiveDefiniteLattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def BKZ(self, block_size: int = 10) -> PositiveDefiniteLattice: ...
 
-    def HKZ(self) -> "PositiveDefiniteLattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def HKZ(self) -> PositiveDefiniteLattice: ...
 
-    def babai(self, target: Sequence[ExactScalar]) -> LatticeElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def babai(self, target: Sequence[ExactScalar]) -> LatticeElement: ...
 
-    def approximate_closest_vector(self, target: Sequence[ExactScalar]) -> LatticeElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def approximate_closest_vector(self, target: Sequence[ExactScalar]) -> LatticeElement: ...
 
-    def closest_vector(self, target: Sequence[ExactScalar]) -> LatticeElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def closest_vector(self, target: Sequence[ExactScalar]) -> LatticeElement: ...
 
-    def enumerate_close_vectors(
-        self, target: Sequence[ExactScalar], radius: ExactScalar
-    ) -> Sequence[LatticeElement]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def enumerate_close_vectors(self, target: Sequence[ExactScalar], radius: ExactScalar) -> Sequence[LatticeElement]: ...
 
-    def voronoi_cell(self, radius: int | None = None) -> object:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def voronoi_cell(self, radius: int | None = None) -> Polyhedron: ...
 
-    def voronoi_relevant_vectors(self) -> tuple[LatticeElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def voronoi_relevant_vectors(self) -> tuple[LatticeElement, ...]: ...
 
-    def gaussian_heuristic(self) -> object:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gaussian_heuristic(self) -> ExactScalar: ...
 
-    def hadamard_ratio(self) -> object:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def hadamard_ratio(self) -> ExactScalar: ...
 
-    def update_reduced_basis(self, vector: LatticeElement) -> "PositiveDefiniteLattice":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def update_reduced_basis(self, vector: LatticeElement) -> PositiveDefiniteLattice: ...
 
 
 class IndefiniteLattice(Lattice):
-    def has_isotropic_vector(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def has_isotropic_vector(self) -> bool: ...
 
-    def isotropic_vectors(self, bound: int) -> tuple[LatticeElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def isotropic_vectors(self, bound: int) -> tuple[LatticeElement, ...]: ...
 
-    def primitive_isotropic_vectors(self, bound: int) -> tuple[LatticeElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def primitive_isotropic_vectors(self, bound: int) -> tuple[LatticeElement, ...]: ...
 
 
 class HyperbolicLattice(IndefiniteLattice):
     """Signature (1, rank-1). Names fixed now; the implementations are the Vinberg workstream."""
 
-    def weyl_group(self) -> "IsometrySubgroup":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def weyl_group(self) -> IsometrySubgroup: ...
 
-    def fundamental_chamber(self) -> object:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def fundamental_chamber(self) -> Polyhedron: ...
 
-    def is_reflective(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_reflective(self) -> bool: ...
 
-    def roots_up_to_height(self, height: ExactScalar) -> tuple[LatticeElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def roots_up_to_height(self, height: ExactScalar) -> tuple[LatticeElement, ...]: ...
 
-    def isotropic_rays(self) -> tuple[LatticeElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def isotropic_rays(self) -> tuple[LatticeElement, ...]: ...
 
 
 class RootGeneratedLattice(Lattice):
     """Attached ONLY by construction provenance (the certificate), never detected."""
 
-    def cartan_type(self) -> CartanType:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def cartan_type(self) -> CartanType: ...
 
-    def irreducible_root_components(self) -> tuple["RootGeneratedLattice", ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def irreducible_root_components(self) -> tuple[RootGeneratedLattice, ...]: ...
 
 
 # ---------------------------------------------------------------------------
 # Morphisms
 # ---------------------------------------------------------------------------
 
+
 class LatticeMorphism:
     """Form-preserving by construction: A^T G_M A = G_L, enforced at creation."""
 
-    def domain(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def domain(self) -> Lattice: ...
 
-    def codomain(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def codomain(self) -> Lattice: ...
 
-    def matrix(self) -> MorphismMatrix:  # where the morphism meets Sage matrix spaces
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def matrix(self) -> Matrix:  # where the morphism meets Sage matrix spaces
+        ...
 
-    def __call__(self, element: LatticeElement) -> LatticeElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def __call__(self, element: LatticeElement) -> LatticeElement: ...
 
-    def is_isometry(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_isometry(self) -> bool: ...
 
     # ring-LIKE predicates (V0d amendment 2026-07-03): End_Lat(L) = Hom(L, L) is the
     # form-preserving composition MONOID (operations escaping into End_{ZZ-Mod}(L) are
     # not vocabulary), but the monoid sits inside a ring, so ring-like QUERIES remain
     # well-defined on endomorphisms and are shimmed in here, curated against what
     # module-endomorphism and ring-element implementations actually expose.
-    def is_identity(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_identity(self) -> bool: ...
 
-    def is_nilpotent(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_nilpotent(self) -> bool: ...
 
-    def is_idempotent(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_idempotent(self) -> bool: ...
 
-    def is_unipotent(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_unipotent(self) -> bool: ...
 
-    def order(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def order(self) -> int: ...
 
-    def is_injective(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_injective(self) -> bool: ...
 
-    def is_surjective(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_surjective(self) -> bool: ...
 
-    def kernel(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def kernel(self) -> Lattice: ...
 
-    def image(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def image(self) -> Lattice: ...
 
-    def cokernel(self) -> "DiscriminantForm":
+    @abstract_method
+    def cokernel(self) -> DiscriminantForm:
         """Finite-cokernel case only; the general case is a gap-ledger contract."""
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
 
-    def induced_map_on_discriminant_group(self) -> "DiscriminantAction":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def induced_map_on_discriminant_group(self) -> DiscriminantAction: ...
+
     """Per-element functor; defined when domain == codomain is integral nondegenerate."""
 
 
 class LatticeSimilarity:
-    def domain(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    """A similitude: ``b(f x, f y) = scalar * b(x, y)`` for a fixed multiplier
+    (O'Meara, Introduction to Quadratic Forms, §42; ``scalar = 1`` recovers
+    isometry). Mostly a convenient generalization for discussing symmetric and
+    skew-symmetric forms at once (ruling 2026-07-08); distinct from a
+    homothety ``x -> scalar * x``, which multiplies the form by ``scalar**2``."""
 
-    def codomain(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def domain(self) -> Lattice: ...
 
-    def matrix(self) -> MorphismMatrix:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def codomain(self) -> Lattice: ...
 
-    def scalar(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def matrix(self) -> Matrix: ...
 
-    def __call__(self, element: LatticeElement) -> LatticeElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def scalar(self) -> ExactScalar: ...
+
+    @abstract_method
+    def __call__(self, element: LatticeElement) -> LatticeElement: ...
 
 
 class LatticeHomset:
-    def domain(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def domain(self) -> Lattice: ...
 
-    def codomain(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def codomain(self) -> Lattice: ...
 
-    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism: ...
 
 
 # ---------------------------------------------------------------------------
 # Isometry groups (O(L) exists for EVERY lattice; enumeration is per-leaf)
 # ---------------------------------------------------------------------------
 
+
 class IsometryGroup:
     """O(L). Membership/construction/is_finite are total; gens/order/iteration
     are contracts implemented exactly where the group is finite."""
 
-    def lattice(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def lattice(self) -> Lattice: ...
 
-    def __contains__(self, candidate: object) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def __contains__(self, candidate: Any) -> bool: ...
 
-    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism: ...
 
-    def one(self) -> LatticeMorphism:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def one(self) -> LatticeMorphism: ...
 
-    def is_finite(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_finite(self) -> bool: ...
 
-    def gens(self) -> tuple[LatticeMorphism, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gens(self) -> tuple[LatticeMorphism, ...]: ...
 
-    def order(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def order(self) -> int: ...
 
-    def __iter__(self) -> Iterator[LatticeMorphism]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def __iter__(self) -> Iterator[LatticeMorphism]: ...
 
-    def subgroup(self, generators: Sequence[LatticeMorphism]) -> "IsometrySubgroup":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def subgroup(self, generators: Sequence[LatticeMorphism]) -> IsometrySubgroup: ...
 
-    def discriminant_action(self, isometry: LatticeMorphism) -> "DiscriminantAction":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def discriminant_action(self, isometry: LatticeMorphism) -> DiscriminantAction: ...
 
-    def discriminant_representation(self) -> "DiscriminantOrthogonalGroup":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def discriminant_representation(self) -> DiscriminantOrthogonalGroup: ...
 
-    def stable_kernel(self) -> "IsometrySubgroup":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def stable_kernel(self) -> IsometrySubgroup: ...
 
     # structure vocabulary through the GAP seams (gap-ledger row 9e)
-    def structure_description(self) -> str:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def structure_description(self) -> str: ...
 
-    def conjugacy_classes_representatives(self) -> tuple[LatticeMorphism, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def conjugacy_classes_representatives(self) -> tuple[LatticeMorphism, ...]: ...
 
     # points where Sage is called (implemented exactly where finite with computed generators)
-    def as_matrix_group(self) -> object:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def as_matrix_group(self) -> MatrixGroup: ...
 
-    def as_permutation_group(self) -> object:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def as_permutation_group(self) -> PermutationGroup: ...
 
 
 class IsometrySubgroup:
     """<gens> <= O(L): the ONLY home for caller-supplied generators. Answers
     subgroup questions only — no membership test, no O(L)-level claims."""
 
-    def lattice(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def lattice(self) -> Lattice: ...
 
-    def ambient(self) -> IsometryGroup:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def ambient(self) -> IsometryGroup: ...
 
-    def gens(self) -> tuple[LatticeMorphism, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gens(self) -> tuple[LatticeMorphism, ...]: ...
 
-    def preserves(self, sublattice: Lattice) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def preserves(self, sublattice: Lattice) -> bool: ...
 
-    def discriminant_image(self) -> "DiscriminantOrthogonalGroup":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def discriminant_image(self) -> DiscriminantOrthogonalGroup: ...
 
+    @abstract_method
     def order(self) -> int:  # implemented only when the ambient is finite
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+        ...
 
-    def __iter__(self) -> Iterator[LatticeMorphism]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def __iter__(self) -> Iterator[LatticeMorphism]: ...
 
-    def as_matrix_group(self) -> object:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def as_matrix_group(self) -> MatrixGroup: ...
 
-    def as_permutation_group(self) -> object:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def as_permutation_group(self) -> PermutationGroup: ...
 
 
 class DiscriminantOrthogonalGroup:
     """O(q) (or a subgroup of it): FINITE for every discriminant form, so the
     full set of group operations is total on this side."""
 
-    def discriminant_form(self) -> "DiscriminantForm":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def discriminant_form(self) -> DiscriminantForm: ...
 
-    def gens(self) -> tuple["DiscriminantAction", ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gens(self) -> tuple[DiscriminantAction, ...]: ...
 
-    def order(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def order(self) -> int: ...
 
-    def __contains__(self, candidate: object) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def __contains__(self, candidate: Any) -> bool: ...
 
-    def __iter__(self) -> Iterator["DiscriminantAction"]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def __iter__(self) -> Iterator[DiscriminantAction]: ...
 
-    def as_matrix_group(self) -> object:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def as_matrix_group(self) -> MatrixGroup: ...
 
-    def as_permutation_group(self) -> object:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def as_permutation_group(self) -> PermutationGroup: ...
 
 
 class DiscriminantAction:
-    def discriminant_form(self) -> "DiscriminantForm":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def discriminant_form(self) -> DiscriminantForm: ...
 
-    def matrix(self) -> MorphismMatrix:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def matrix(self) -> Matrix: ...
 
-    def __call__(self, element: DiscriminantFormElement) -> DiscriminantFormElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def __call__(self, element: DiscriminantFormElement) -> DiscriminantFormElement: ...
 
-    def is_identity(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_identity(self) -> bool: ...
 
-    def inverse(self) -> "DiscriminantAction":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def inverse(self) -> DiscriminantAction: ...
 
-    def preserves_bilinear_form(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def preserves_bilinear_form(self) -> bool: ...
 
-    def preserves_quadratic_form(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def preserves_quadratic_form(self) -> bool: ...
 
 
 # ---------------------------------------------------------------------------
 # Discriminant forms (one consolidated parent; axioms select the vocabulary)
 # ---------------------------------------------------------------------------
 
-class DiscriminantForm:
-    """The finite-abelian-group operations (every finite quotient, form or not)."""
 
-    def invariants(self) -> tuple[int, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+class FiniteAbelianGroup:
+    """Finite abelian group with the full structure vocabulary (invariants,
+    primary decomposition, subgroup lattice) — every finite quotient, form or
+    not. This is the group layer of the discriminant tower; the form-carrying
+    vocabulary starts at ``BilinearDiscriminantForm``."""
 
-    def elementary_divisors(self) -> tuple[int, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def invariants(self) -> tuple[int, ...]: ...
 
-    def cardinality(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def elementary_divisors(self) -> tuple[int, ...]: ...
 
-    def order(self, element: DiscriminantFormElement | None = None) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def cardinality(self) -> int: ...
 
-    def exponent(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def order(self, element: DiscriminantFormElement | None = None) -> int: ...
 
-    def is_cyclic(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def exponent(self) -> int: ...
 
-    def short_name(self) -> str:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_cyclic(self) -> bool: ...
 
-    def generator_orders(self) -> tuple[int, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def short_name(self) -> str: ...
 
-    def annihilator(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def generator_orders(self) -> tuple[int, ...]: ...
 
-    def gens(self) -> tuple[DiscriminantFormElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def annihilator(self) -> ExactScalar: ...
 
-    def gen(self, i: int) -> DiscriminantFormElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gens(self) -> tuple[DiscriminantFormElement, ...]: ...
 
-    def ngens(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gen(self, i: int) -> DiscriminantFormElement: ...
 
-    def invariant_factor_gens(self) -> tuple[DiscriminantFormElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def ngens(self) -> int: ...
 
-    def zero(self) -> DiscriminantFormElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def invariant_factor_gens(self) -> tuple[DiscriminantFormElement, ...]: ...
 
-    def elements(self) -> tuple[DiscriminantFormElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def zero(self) -> DiscriminantFormElement: ...
 
-    def discrete_exp(self, coefficients: Sequence[int]) -> DiscriminantFormElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def elements(self) -> tuple[DiscriminantFormElement, ...]: ...
 
-    def discrete_log(self, element: DiscriminantFormElement) -> tuple[int, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def discrete_exp(self, coefficients: Sequence[int]) -> DiscriminantFormElement: ...
 
-    def subgroup_generated_by(
-        self, generators: Sequence[DiscriminantFormElement]
-    ) -> "DiscriminantSubgroup":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def discrete_log(self, element: DiscriminantFormElement) -> tuple[int, ...]: ...
 
-    def quotient_group(self, subgroup: "DiscriminantSubgroup") -> "DiscriminantForm":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def subgroup_generated_by(self, generators: Sequence[DiscriminantFormElement]) -> DiscriminantSubgroup: ...
 
-    def primary_part(self, p: int) -> "DiscriminantForm":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def quotient_group(self, subgroup: DiscriminantSubgroup) -> DiscriminantForm: ...
 
-    def primary_decomposition(self) -> tuple["DiscriminantForm", ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def primary_part(self, p: int) -> DiscriminantForm: ...
 
-    def all_submodules(self) -> tuple["DiscriminantSubgroup", ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def primary_decomposition(self) -> tuple[DiscriminantForm, ...]: ...
 
-    def automorphism_group(self) -> DiscriminantOrthogonalGroup:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def all_submodules(self) -> tuple[DiscriminantSubgroup, ...]: ...
 
-    def permutation_group(self) -> object:  # the GAP-backed permutation-group entry point
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def automorphism_group(self) -> DiscriminantOrthogonalGroup: ...
 
-    def is_finite(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def permutation_group(
+        self,
+    ) -> PermutationGroup:  # the GAP-backed permutation-group entry point
+        ...
 
-    def list(self) -> tuple[DiscriminantFormElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_finite(self) -> bool: ...
 
-    def random_element(self) -> DiscriminantFormElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def list(self) -> tuple[DiscriminantFormElement, ...]: ...
 
-    def coordinates(self, element: DiscriminantFormElement) -> tuple[int, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def random_element(self) -> DiscriminantFormElement: ...
 
-    def gens_vector(self, element: DiscriminantFormElement) -> tuple[int, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def coordinates(self, element: DiscriminantFormElement) -> tuple[int, ...]: ...
 
-    def invariant_factor_gen(self, i: int) -> DiscriminantFormElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gens_vector(self, element: DiscriminantFormElement) -> tuple[int, ...]: ...
 
-    def gens_to_invariant_factor_gens(self) -> MorphismMatrix:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def invariant_factor_gen(self, i: int) -> DiscriminantFormElement: ...
 
-    def invariant_factor_gens_to_gens(self) -> MorphismMatrix:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gens_to_invariant_factor_gens(self) -> Matrix: ...
 
-    def linear_combination_of_invariant_factor_gens(self, coefficients: Sequence[int]) -> DiscriminantFormElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def invariant_factor_gens_to_gens(self) -> Matrix: ...
 
-    def torsion_subgroup(self) -> "DiscriminantSubgroup":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def linear_combination_of_invariant_factor_gens(self, coefficients: Sequence[int]) -> DiscriminantFormElement: ...
 
-    def p_torsion(self, p: int, k: int = 1) -> "DiscriminantSubgroup":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def torsion_subgroup(self) -> DiscriminantSubgroup: ...
 
-    def relations_among(self, generators: Sequence[DiscriminantFormElement]) -> MorphismMatrix:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def p_torsion(self, p: int, k: int = 1) -> DiscriminantSubgroup: ...
 
-    def basis_from_generators(self, generators: Sequence[DiscriminantFormElement]) -> tuple[DiscriminantFormElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def relations_among(self, generators: Sequence[DiscriminantFormElement]) -> Matrix: ...
 
-    def cosets(self, subgroup: "DiscriminantSubgroup") -> tuple[tuple[DiscriminantFormElement, ...], ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def basis_from_generators(self, generators: Sequence[DiscriminantFormElement]) -> tuple[DiscriminantFormElement, ...]: ...
 
-    def contains_subgroup(self, subgroup: "DiscriminantSubgroup") -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def cosets(self, subgroup: DiscriminantSubgroup) -> tuple[tuple[DiscriminantFormElement, ...], ...]: ...
 
-    def quotient_map(self, subgroup: "DiscriminantSubgroup") -> Callable[[DiscriminantFormElement], DiscriminantFormElement]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def contains_subgroup(self, subgroup: DiscriminantSubgroup) -> bool: ...
 
-    def hom(self, images: Sequence[DiscriminantFormElement]) -> "DiscriminantAction":
+    @abstract_method
+    def quotient_map(self, subgroup: DiscriminantSubgroup) -> Callable[[DiscriminantFormElement], DiscriminantFormElement]: ...
+
+    @abstract_method
+    def hom(self, images: Sequence[DiscriminantFormElement]) -> DiscriminantAction:
         """Endomorphism from generator images; cross-form homs typed at V1."""
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
 
-    def is_isomorphic(self, other: "DiscriminantForm", kind: FormKind = "quadratic") -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_isomorphic(self, other: DiscriminantForm, kind: FormKind = "quadratic") -> bool: ...
 
 
-class BilinearDiscriminantForm(DiscriminantForm):
+DiscriminantForm = FiniteAbelianGroup
+"""Transitional compatibility alias (M4, 2026-07-08) — the bare noun is
+DEPRECATED in the lexicon because it conflates two ontologically different
+objects: a torsion ZZ-module ``G`` (``FiniteAbelianGroup``) and a pair
+``(G, b)`` or ``(G, q)`` (``BilinearDiscriminantForm`` /
+``QuadraticDiscriminantForm``). Each annotation site must migrate to the
+object it actually means; over ZZ the bilinear and quadratic theories are
+qualitatively different and NOT interchangeable (Sterk, symmetric forms book
+— ruling 2026-07-08), so the form-carrying sites must choose Bilinear vs
+Quadratic deliberately, never a generic "form"."""
+
+
+class BilinearDiscriminantForm(FiniteAbelianGroup):
+    @abstract_method
     def q(self, element: DiscriminantFormElement) -> ExactScalar:
         """The induced diagonal quadratic form q(x) := b(x, x) (placement
         ruling 2026-07-03): every bilinear form induces a quadratic form along
         the diagonal — only polarization needs 2 invertible — so q is DEFINED
         on the Bilinear subcategory (values in the bilinear value module); the
         Quadratic subcategory refines it (finer value module)."""
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
 
-    def b(
-        self, left: DiscriminantFormElement, right: DiscriminantFormElement
-    ) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def b(self, left: DiscriminantFormElement, right: DiscriminantFormElement) -> ExactScalar: ...
 
-    def gram_matrix_bilinear(self) -> GramMatrix:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gram_matrix_bilinear(self) -> GramMatrix: ...
 
-    def value_module(self) -> ValueModule:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def value_module(self) -> ValueModule: ...
 
-    def radical(self) -> "DiscriminantSubgroup":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def radical(self) -> DiscriminantSubgroup: ...
 
-    def is_nondegenerate(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_nondegenerate(self) -> bool: ...
 
-    def orthogonal_submodule_to(self, subgroup: "DiscriminantSubgroup") -> "DiscriminantSubgroup":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def orthogonal_submodule_to(self, subgroup: DiscriminantSubgroup) -> DiscriminantSubgroup: ...
 
-    def orthogonal(self, subgroup: "DiscriminantSubgroup") -> "DiscriminantSubgroup":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def orthogonal(self, subgroup: DiscriminantSubgroup) -> DiscriminantSubgroup: ...
 
-    def is_isotropic_subgroup(self, subgroup: "DiscriminantSubgroup") -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_isotropic_subgroup(self, subgroup: DiscriminantSubgroup) -> bool: ...
 
-    def isotropic_subgroups(self) -> tuple["DiscriminantSubgroup", ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def isotropic_subgroups(self) -> tuple[DiscriminantSubgroup, ...]: ...
 
-    def is_lagrangian(self, subgroup: "DiscriminantSubgroup") -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_lagrangian(self, subgroup: DiscriminantSubgroup) -> bool: ...
 
-    def lagrangian_subgroups(self) -> tuple["DiscriminantSubgroup", ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def lagrangian_subgroups(self) -> tuple[DiscriminantSubgroup, ...]: ...
 
-    def metabolizer(self) -> "DiscriminantSubgroup":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def metabolizer(self) -> DiscriminantSubgroup: ...
 
-    def is_metabolic(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_metabolic(self) -> bool: ...
 
-    def is_anisotropic(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_anisotropic(self) -> bool: ...
 
-    def maximal_isotropic_subgroups(self) -> tuple["DiscriminantSubgroup", ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def maximal_isotropic_subgroups(self) -> tuple[DiscriminantSubgroup, ...]: ...
 
-    def orthogonal_quotient(self, subgroup: "DiscriminantSubgroup") -> "DiscriminantForm":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def orthogonal_quotient(self, subgroup: DiscriminantSubgroup) -> DiscriminantForm: ...
 
-    def orthogonal_group(self) -> DiscriminantOrthogonalGroup:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def orthogonal_group(self) -> DiscriminantOrthogonalGroup: ...
 
 
 class QuadraticDiscriminantForm(BilinearDiscriminantForm):
-    def q(self, element: DiscriminantFormElement) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def q(self, element: DiscriminantFormElement) -> ExactScalar: ...
 
-    def gram_matrix_quadratic(self) -> GramMatrix:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gram_matrix_quadratic(self) -> GramMatrix: ...
 
-    def value_module_qf(self) -> ValueModule:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def value_module_qf(self) -> ValueModule: ...
 
-    def brown_invariant(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def brown_invariant(self) -> int: ...
 
-    def miranda_morrison_normal_form(self) -> tuple[tuple[int, ...], GramMatrix]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def miranda_morrison_normal_form(self) -> tuple[tuple[int, ...], GramMatrix]: ...
 
-    def is_genus(self, signature_pair: SignaturePair, even: bool = True) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_genus(self, signature_pair: SignaturePair, even: bool = True) -> bool: ...
 
-    def genus(self, signature_pair: SignaturePair, even: bool = True) -> "Genus":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def genus(self, signature_pair: SignaturePair, even: bool = True) -> Genus: ...
 
-    def twist(self, scalar: ExactScalar) -> "QuadraticDiscriminantForm":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def twist(self, scalar: ExactScalar) -> QuadraticDiscriminantForm: ...
 
 
 class SourcedDiscriminantForm(QuadraticDiscriminantForm):
     """WithSourceLattice: carries L^*/L provenance."""
 
-    def source_lattice(self) -> IntegralNondegenerateLattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def source_lattice(self) -> IntegralNondegenerateLattice: ...
 
-    def cover(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def cover(self) -> Lattice: ...
 
-    def relations(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def relations(self) -> Lattice: ...
 
-    def cover_lattice(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def cover_lattice(self) -> Lattice: ...
 
-    def relation_lattice(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def relation_lattice(self) -> Lattice: ...
 
-    def lift(self, element: DiscriminantFormElement) -> LatticeElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def lift(self, element: DiscriminantFormElement) -> LatticeElement: ...
 
-    def projection(self, element: LatticeElement) -> DiscriminantFormElement:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def _coset_representative_in_source(self, element: DiscriminantFormElement) -> Sequence[ExactScalar]: ...
 
-    def preimage_lattice(self, subgroup: "DiscriminantSubgroup") -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def projection(self, element: LatticeElement) -> DiscriminantFormElement: ...
 
-    def overlattice_from_isotropic_subgroup(
-        self, subgroup: "DiscriminantSubgroup"
-    ) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def preimage_lattice(self, subgroup: DiscriminantSubgroup) -> Lattice: ...
 
-    def discriminant_form_of_overlattice(
-        self, subgroup: "DiscriminantSubgroup"
-    ) -> "DiscriminantForm":
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def overlattice_from_isotropic_subgroup(self, subgroup: DiscriminantSubgroup) -> Lattice: ...
 
-    def action_of_isometry(self, isometry: LatticeMorphism) -> DiscriminantAction:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def discriminant_form_of_overlattice(self, subgroup: DiscriminantSubgroup) -> DiscriminantForm: ...
 
-    def orbit(
-        self, element: DiscriminantFormElement, group: DiscriminantOrthogonalGroup
-    ) -> tuple[DiscriminantFormElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def action_of_isometry(self, isometry: LatticeMorphism) -> DiscriminantAction: ...
 
-    def orbits(
-        self, group: DiscriminantOrthogonalGroup
-    ) -> tuple[tuple[DiscriminantFormElement, ...], ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def orbit(self, element: DiscriminantFormElement, group: DiscriminantOrthogonalGroup) -> tuple[DiscriminantFormElement, ...]: ...
 
-    def orbits_on_isotropic_subgroups(
-        self, group: DiscriminantOrthogonalGroup
-    ) -> tuple[tuple["DiscriminantSubgroup", ...], ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def orbits(self, group: DiscriminantOrthogonalGroup) -> tuple[tuple[DiscriminantFormElement, ...], ...]: ...
+
+    @abstract_method
+    def orbits_on_isotropic_subgroups(self, group: DiscriminantOrthogonalGroup) -> tuple[tuple[DiscriminantSubgroup, ...], ...]: ...
 
 
 class DiscriminantSubgroup:
-    def ambient(self) -> DiscriminantForm:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def ambient(self) -> DiscriminantForm: ...
 
-    def gens(self) -> tuple[DiscriminantFormElement, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def gens(self) -> tuple[DiscriminantFormElement, ...]: ...
 
-    def cardinality(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def cardinality(self) -> int: ...
 
-    def __contains__(self, element: object) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def __contains__(self, element: Any) -> bool: ...
 
 
 # ---------------------------------------------------------------------------
 # Genus objects
 # ---------------------------------------------------------------------------
 
+
 class Genus:
-    def signature_pair(self) -> SignaturePair:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def signature_pair(self) -> SignaturePair: ...
 
-    def signature(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def signature(self) -> int: ...
 
-    def det(self) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def det(self) -> ExactScalar: ...
 
-    def dim(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def dim(self) -> int: ...
 
-    def is_even(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_even(self) -> bool: ...
 
-    def discriminant_form(self) -> QuadraticDiscriminantForm:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def discriminant_form(self) -> QuadraticDiscriminantForm: ...
 
-    def local_symbol(self, p: int) -> object:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def local_symbol(self, p: int) -> SageLocalGenusSymbol: ...
 
-    def local_symbols(self) -> tuple[object, ...]:  # the data handed to Sage genus machinery
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def local_symbols(
+        self,
+    ) -> tuple[SageLocalGenusSymbol, ...]:  # the data handed to Sage genus machinery
+        ...
 
     # per-prime symbol extraction (gap-ledger G2): Conway-Sloane constituent
     # tuples and the local scalar data, enough to state Nikulin local conditions
-    def local_symbol_tuples(self, p: int) -> tuple[tuple[int, ...], ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def local_symbol_tuples(self, p: int) -> tuple[tuple[int, ...], ...]: ...
 
-    def local_determinant(self, p: int) -> ExactScalar:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def local_determinant(self, p: int) -> ExactScalar: ...
 
-    def local_rank(self, p: int) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def local_rank(self, p: int) -> int: ...
 
-    def local_excess(self, p: int) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def local_excess(self, p: int) -> int: ...
 
-    def local_level(self, p: int) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def local_level(self, p: int) -> int: ...
 
-    def is_locally_even(self, p: int) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_locally_even(self, p: int) -> bool: ...
 
-    def brown_invariant(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def brown_invariant(self) -> int: ...
 
-    def representative(self) -> Lattice:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def representative(self) -> Lattice: ...
 
-    def representatives(self) -> tuple[Lattice, ...]:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def representatives(self) -> tuple[Lattice, ...]: ...
 
-    def class_number(self) -> int:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def class_number(self) -> int: ...
 
-    def is_unique_class(self) -> bool:
-        assert False, "declared contract; Sage computes this per the parity-plan triage"
+    @abstract_method
+    def is_unique_class(self) -> bool: ...
 
 
 # ---------------------------------------------------------------------------
@@ -1148,7 +1242,8 @@ class Genus:
 # Conceptually functors on the category namespace; realized at T1.
 # ---------------------------------------------------------------------------
 
-def parse_base_ring(raw: object) -> BaseRing:
+
+def parse_base_ring(raw: BaseRing) -> BaseRing:
     """Codec: asserts raw is ZZ or QQ."""
     assert False, "typed declaration only; the runtime entry is Lattices(R).from_gram_matrix / constructors.py (realized at T1)"
 
@@ -1159,9 +1254,7 @@ def parse_gram_matrix(raw: RawGramMatrix, ring: BaseRing) -> GramMatrix:
     assert False, "typed declaration only; the runtime entry is Lattices(R).from_gram_matrix / constructors.py (realized at T1)"
 
 
-def from_gram_matrix(
-    gram: RawGramMatrix, base_ring: BaseRing | None = None, label: str = "L"
-) -> Lattice:
+def from_gram_matrix(gram: RawGramMatrix, base_ring: BaseRing | None = None, label: str = "L") -> Lattice:
     """Functor from square symmetric matrices over R into Lattices(R).
 
     Asserts its domain contract (square, symmetric, R in {ZZ, QQ}) ADDD-style
@@ -1188,9 +1281,7 @@ def U(n: int = 1) -> HyperbolicLattice:
     assert False, "typed declaration only; the runtime entry is Lattices(R).from_gram_matrix / constructors.py (realized at T1)"
 
 
-def RootLattice(
-    type_: Literal["A", "D", "E"], n: int, negative: bool = False
-) -> RootGeneratedLattice:
+def RootLattice(type_: Literal["A", "D", "E"], n: int, negative: bool = False) -> RootGeneratedLattice:
     """ADE root lattice with construction-provenance RootGenerated axiom;
     ``negative=True`` is the K3-convention twist by -1."""
     assert False, "typed declaration only; the runtime entry is Lattices(R).from_gram_matrix / constructors.py (realized at T1)"
@@ -1201,12 +1292,10 @@ def RootLattice(
 # Runtime truth is category membership; these lift it to the type level.
 # ---------------------------------------------------------------------------
 
+
 def in_nondegenerate(lattice: Lattice) -> NondegenerateLattice:
-    assert lattice.is_nondegenerate(), (
-        f"nondegenerate lattice required; gram={lattice.gram_matrix()!r}; "
-        "pass through radical_quotient() or fix the construction site"
-    )
-    return lattice  # type: ignore[return-value]
+    assert lattice.is_nondegenerate(), f"nondegenerate lattice required; gram={lattice.gram_matrix()!r}; pass through radical_quotient() or fix the construction site"
+    return cast(NondegenerateLattice, lattice)
 
 
 def in_integral_nondegenerate(lattice: Lattice) -> IntegralNondegenerateLattice:
@@ -1215,34 +1304,24 @@ def in_integral_nondegenerate(lattice: Lattice) -> IntegralNondegenerateLattice:
         f"integral={lattice.is_integral()}, nondegenerate={lattice.is_nondegenerate()}; "
         "fix the construction site"
     )
-    return lattice  # type: ignore[return-value]
+    return cast(IntegralNondegenerateLattice, lattice)
 
 
 def in_definite(lattice: Lattice) -> DefiniteLattice:
-    assert lattice.is_definite(), (
-        f"definite lattice required; signature_pair={lattice.signature_pair()}; "
-        "an indefinite lattice has no finite enumeration vocabulary"
-    )
-    return lattice  # type: ignore[return-value]
+    assert lattice.is_definite(), f"definite lattice required; signature_pair={lattice.signature_pair()}; an indefinite lattice has no finite enumeration vocabulary"
+    return cast(DefiniteLattice, lattice)
 
 
 def in_positive_definite(lattice: Lattice) -> PositiveDefiniteLattice:
-    assert lattice.is_positive_definite(), (
-        f"positive-definite lattice required; signature_pair={lattice.signature_pair()}"
-    )
-    return lattice  # type: ignore[return-value]
+    assert lattice.is_positive_definite(), f"positive-definite lattice required; signature_pair={lattice.signature_pair()}"
+    return cast(PositiveDefiniteLattice, lattice)
 
 
 def in_indefinite(lattice: Lattice) -> IndefiniteLattice:
-    assert lattice.is_indefinite(), (
-        f"indefinite lattice required; signature_pair={lattice.signature_pair()}"
-    )
-    return lattice  # type: ignore[return-value]
+    assert lattice.is_indefinite(), f"indefinite lattice required; signature_pair={lattice.signature_pair()}"
+    return cast(IndefiniteLattice, lattice)
 
 
 def in_hyperbolic(lattice: Lattice) -> HyperbolicLattice:
-    assert lattice.is_hyperbolic(), (
-        f"hyperbolic lattice (signature (1, n-1)) required; "
-        f"signature_pair={lattice.signature_pair()}"
-    )
-    return lattice  # type: ignore[return-value]
+    assert lattice.is_hyperbolic(), f"hyperbolic lattice (signature (1, n-1)) required; signature_pair={lattice.signature_pair()}"
+    return cast(HyperbolicLattice, lattice)

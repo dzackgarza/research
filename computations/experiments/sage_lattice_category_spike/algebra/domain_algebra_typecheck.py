@@ -7,8 +7,9 @@ composes the protocol arrows, and an incoherent signature (an arrow that does
 not compose, a missing narrowing, a wrong return type) surfaces as a mypy
 error before any implementation exists. Check with:
 
-    cd computations/experiments && uvx mypy --strict --ignore-missing-imports \
-        --follow-imports=silent sage_lattice_category_spike/algebra/domain_algebra.py \
+    cd computations/experiments && MYPYPATH=sage_lattice_category_spike/typings \
+        uvx mypy --strict --follow-imports=silent \
+        sage_lattice_category_spike/algebra/domain_algebra.py \
         sage_lattice_category_spike/algebra/domain_algebra_typecheck.py
 
 Notable coherence facts the types already enforce, on purpose:
@@ -25,25 +26,24 @@ Notable coherence facts the types already enforce, on purpose:
 
 from __future__ import annotations
 
-from .domain_algebra import (
-    DiscriminantOrthogonalGroup,
+from ..lexicon import (
     DiscriminantFormElement,
-    ExactScalar,
+    DiscriminantOrthogonalGroup,
     GramMatrix,
     Lattice,
     LatticeElement,
     LatticeMorphism,
-    RootLattice,
-    U,
+    PermutationGroup,
     in_hyperbolic,
     in_integral_nondegenerate,
     in_positive_definite,
 )
+from .domain_algebra import RootLattice, U
 
 
 def enriques_discriminant_pipeline() -> tuple[tuple[int, ...], GramMatrix]:
     """U(2) + E8(2) -> A_L -> normal form (the T7 research smoke, as types)."""
-    e8_twisted = RootLattice("E", 8).twist(ExactScalar(2))
+    e8_twisted = RootLattice("E", 8).twist(2)
     enriques: Lattice = U(2).direct_sum(e8_twisted)
     lattice = in_integral_nondegenerate(enriques)
     disc = lattice.discriminant_group()
@@ -91,7 +91,7 @@ def morphism_algebra(lattice: Lattice, vector: LatticeElement) -> LatticeMorphis
     return sigma
 
 
-def subgroup_and_seams(lattice: Lattice, isometry: LatticeMorphism) -> object:
+def subgroup_and_seams(lattice: Lattice, isometry: LatticeMorphism) -> PermutationGroup:
     """Caller-supplied generators live ONLY in the typed subgroup; GAP arrives
     through the declared points where it is called, by composition."""
     subgroup = lattice.isometry_group().subgroup([isometry])
@@ -111,7 +111,7 @@ def reduction_suite_is_positive_definite_vocabulary() -> None:
     """BKZ/CVP live on the positive-definite narrowing itself (D1 revision)."""
     pd = in_positive_definite(RootLattice("A", 2))
     reduced = pd.BKZ(block_size=10)
-    reduced.closest_vector([ExactScalar(0), ExactScalar(1)])
+    reduced.closest_vector(reduced.gen(0).coefficient_vector())
 
 
 def orbit_vocabulary() -> tuple[tuple[DiscriminantFormElement, ...], ...]:

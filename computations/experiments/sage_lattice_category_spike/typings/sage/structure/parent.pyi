@@ -1,0 +1,9 @@
+# Repo-scoped stubs; see lexicon/README.md.
+from typing import Any
+
+class Parent:
+    # The category framework injects element_class at parent construction.
+    element_class: Any
+    def __init__(self, base: object = ..., *, category: object = ...) -> None: ...
+    def category(self) -> Any: ...
+    def base_ring(self) -> Any: ...

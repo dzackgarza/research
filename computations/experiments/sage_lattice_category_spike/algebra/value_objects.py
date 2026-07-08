@@ -14,12 +14,14 @@ General Dedekind K/R is explicitly OUT of v1 scope: a non-ZZ base ring fails lou
 
 from __future__ import annotations
 
+from typing import Any
+
 from sage.groups.additive_abelian.qmodnz import QmodnZ
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
 
-def value_module(base_ring=ZZ, level=ZZ.one()):
+def value_module(base_ring: Any = ZZ, level: Any = ZZ.one()) -> Any:
     """The K/R form-value object K/(level * R), K = Frac(R).
 
     For R = ZZ this is QQ/(level * ZZ), returned as a Sage ``QmodnZ``:
@@ -28,19 +30,16 @@ def value_module(base_ring=ZZ, level=ZZ.one()):
 
     Only R = ZZ is in v1 scope; any other base ring fails loud.
     """
-    assert base_ring is ZZ, (
-        "K/R value objects are grounded only for R=ZZ in this spike "
-        f"(general Dedekind K/R is out of v1 scope); found R={base_ring}"
-    )
+    assert base_ring is ZZ, f"K/R value objects are grounded only for R=ZZ in this spike (general Dedekind K/R is out of v1 scope); found R={base_ring}"
     return QmodnZ(QQ(level))
 
 
-def bilinear_value_module(base_ring=ZZ):
+def bilinear_value_module(base_ring: Any = ZZ) -> Any:
     """The bilinear form-value object K/R (QQ/ZZ for R = ZZ)."""
     return value_module(base_ring, ZZ.one())
 
 
-def quadratic_value_module(base_ring=ZZ, level=2 * ZZ.one()):
+def quadratic_value_module(base_ring: Any = ZZ, level: Any = 2 * ZZ.one()) -> Any:
     """The quadratic form-value object K/(level * R) (QQ/2ZZ for the even case)."""
     return value_module(base_ring, level)
 
@@ -48,6 +47,7 @@ def quadratic_value_module(base_ring=ZZ, level=2 * ZZ.one()):
 if __name__ == "__main__":
     # ponytail: one self-check that fails if the K/R wiring breaks.
     import sage.all  # noqa: F401  # standalone run needs Sage lazy imports resolved
+
     b = bilinear_value_module()
     q = quadratic_value_module()
     assert b is QmodnZ(QQ(1)) and b.n == 1, b

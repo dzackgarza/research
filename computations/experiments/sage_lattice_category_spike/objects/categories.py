@@ -16,6 +16,9 @@ hooks -- there is deliberately no mixin-level default for those hooks.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, cast
+
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.category_with_axiom import (
     CategoryWithAxiom_over_base_ring,
@@ -28,24 +31,36 @@ from sage.categories.modules import Modules
 from sage.categories.sets_cat import Sets
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
-from sage.misc.abstract_method import abstract_method
 
-from ..algebra.domain_algebra import (
-    BilinearDiscriminantForm as BilinearDiscriminantFormCarrier,
-    DefiniteLattice as DefiniteCarrier,
-    DiscriminantForm as DiscriminantFormCarrier,
-    HyperbolicLattice as HyperbolicCarrier,
-    IndefiniteLattice as IndefiniteCarrier,
-    IntegralNondegenerateLattice as IntegralNondegenerateCarrier,
-    Lattice as LatticeCarrier,
-    LatticeElement as LatticeElementCarrier,
-    NondegenerateLattice as NondegenerateCarrier,
-    PositiveDefiniteLattice as PositiveDefiniteCarrier,
-    QuadraticDiscriminantForm as QuadraticDiscriminantFormCarrier,
-    RootGeneratedLattice as RootGeneratedCarrier,
-    SourcedDiscriminantForm as SourcedDiscriminantFormCarrier,
+from ..lexicon import (
+    BilinearDiscriminantForm,
+    CartanType,
+    DefiniteLattice,
+    DiscriminantForm,
+    FiniteAbelianGroup,
+    HyperbolicLattice,
+    IndefiniteLattice,
+    IntegralNondegenerateLattice,
+    Lattice,
+    LatticeElement,
+    LatticeMorphism,
+    NondegenerateLattice,
+    PositiveDefiniteLattice,
+    QuadraticDiscriminantForm,
+    RawGramMatrix,
+    RawMorphismMatrix,
+    RootGeneratedLattice,
+    SourcedDiscriminantForm,
 )
 
+if TYPE_CHECKING:
+    # Sage's abstract_method ships untyped; for type-checking use abc.abstractmethod
+    # (typed, and permits the empty abstract bodies below). Runtime uses Sage's.
+    from abc import abstractmethod as abstract_method
+
+    from ..forms.discriminant_forms import PontryaginDualIdentification
+else:
+    from sage.misc.abstract_method import abstract_method
 
 _FORM_AXIOMS = (
     "Nondegenerate",
@@ -68,8 +83,7 @@ for _axiom_name in _FORM_AXIOMS:
         all_axioms.add(_axiom_name)
 
 
-
-def _carrier_delta(carrier):
+def _own_methods(carrier: type) -> type:
     r"""Sage's category framework injects only a ParentMethods class's OWN
     attributes and warns when the class has a superclass (inherited names are
     never copied). The domain-algebra classes subclass their base class for the
@@ -79,23 +93,24 @@ def _carrier_delta(carrier):
     delta["__doc__"] = carrier.__doc__
     return type("ParentMethods", (), delta)
 
+
 class Lattices(Category_over_base_ring):
     r"""Based free ``R``-modules with a symmetric ``K``-valued form.
 
     Base is possibly-degenerate; ``Nondegenerate`` is an axiom subcategory.
     """
 
-    def _repr_object_names(self):
+    def _repr_object_names(self) -> str:
         return f"synthetic lattices over {self.base_ring()}"
 
-    def super_categories(self):
+    def super_categories(self) -> list[Category_over_base_ring]:
         # V0a-ratified leaner tree: no WithBasis — a based lattice owns its basis
         # vocabulary; the CombinatorialFreeModule element idiom must not reach
         # lattice elements. Every name the leaner tree stops inheriting is owned
         # on the concrete classes (basis/gens/gen/rank/random_element/...).
         return [Modules(self.base_ring()).FiniteDimensional()]
 
-    def additional_structure(self):
+    def additional_structure(self) -> Lattices:
         return self
 
     class SubcategoryMethods:
@@ -113,11 +128,16 @@ class Lattices(Category_over_base_ring):
         # construction provenance (section 1.3), never detected from the Gram
         RootGenerated = axiom("RootGenerated")
 
-    ParentMethods = LatticeCarrier
+    ParentMethods = Lattice
 
-    ElementMethods = LatticeElementCarrier
+    ElementMethods = LatticeElement
 
-    def from_gram_matrix(self, gram_matrix, label="L", cartan_type=None):
+    def from_gram_matrix(
+        self,
+        gram_matrix: RawGramMatrix,
+        label: str = "L",
+        cartan_type: CartanType | None = None,
+    ) -> Lattice:
         r"""Section 1.4: the functor from square symmetric matrices over the
         base ring into this category — the ONLY public entry into the language.
 
@@ -130,13 +150,12 @@ class Lattices(Category_over_base_ring):
         from .parents import synthetic_lattice
 
         base_ring = self.base_ring()
-        assert base_ring in (ZZ, QQ), (
-            f"lattice base ring must be ZZ or QQ; found={base_ring}; "
-            "enter through Lattices(ZZ) or Lattices(QQ)"
-        )
+        assert base_ring in (ZZ, QQ), f"lattice base ring must be ZZ or QQ; found={base_ring}; enter through Lattices(ZZ) or Lattices(QQ)"
         gram = as_square_qq_matrix(gram_matrix)
-        return synthetic_lattice(gram, base_ring, label, cartan_type=cartan_type)
-
+        return cast(
+            "Lattice",
+            synthetic_lattice(gram, base_ring, label, cartan_type=cartan_type),
+        )
 
     class MorphismMethods:
         pass
@@ -144,21 +163,21 @@ class Lattices(Category_over_base_ring):
     class Homsets(HomsetsCategory):
         r"""Homsets of form-preserving lattice morphisms."""
 
-        def extra_super_categories(self):
+        def extra_super_categories(self) -> list[Category_over_base_ring]:
             return [Sets()]
 
         class ParentMethods:
             @abstract_method
-            def from_matrix(self, matrix_data):
+            def from_matrix(self, matrix_data: RawMorphismMatrix) -> LatticeMorphism:
                 r"""Construct the lattice morphism represented by ``matrix_data``."""
 
         class ElementMethods:
             @abstract_method
-            def kernel(self):
+            def kernel(self) -> Lattice:
                 r"""Return the kernel lattice of this morphism."""
 
             @abstract_method
-            def image(self):
+            def image(self) -> Lattice:
                 r"""Return the image lattice of this morphism."""
 
 
@@ -169,10 +188,15 @@ class DiscriminantForms(Category_over_base_ring):
     the form is extra structure layered on the group.
     """
 
-    def _repr_object_names(self):
+    def _repr_object_names(self) -> str:
         return f"synthetic discriminant forms over {self.base_ring()}"
 
-    def from_form_data(self, gram_matrix, quadratic_modulus=2, invariants=None):
+    def from_form_data(
+        self,
+        gram_matrix: RawGramMatrix,
+        quadratic_modulus: int = 2,
+        invariants: Sequence[int] | None = None,
+    ) -> DiscriminantForm:
         r"""Section 1.4: the finite-side functor — the ONLY constructor
         from form data (a quadratic generator Gram, its value modulus, and
         optionally an explicit group presentation) into this category. The
@@ -182,10 +206,10 @@ class DiscriminantForms(Category_over_base_ring):
 
         return SyntheticQuadraticDiscriminantForm(gram_matrix, quadratic_modulus=quadratic_modulus, invariants=invariants)
 
-    def super_categories(self):
+    def super_categories(self) -> list[Category_over_base_ring]:
         return [CommutativeAdditiveGroups().Finite()]
 
-    def additional_structure(self):
+    def additional_structure(self) -> DiscriminantForms:
         return self
 
     class SubcategoryMethods:
@@ -199,7 +223,7 @@ class DiscriminantForms(Category_over_base_ring):
     # assignment; the finite-quotient parent subsumes the former four abstract
     # stubs). Concrete parents inherit the class and shadow its declared
     # methods with real implementations.
-    ParentMethods = DiscriminantFormCarrier
+    ParentMethods = FiniteAbelianGroup
 
     class MorphismMethods:
         pass
@@ -208,7 +232,7 @@ class DiscriminantForms(Category_over_base_ring):
 class NondegenerateLattices(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Nondegenerate")
 
-    ParentMethods = _carrier_delta(NondegenerateCarrier)
+    ParentMethods = _own_methods(NondegenerateLattice)
 
 
 class IntegralLattices(CategoryWithAxiom_over_base_ring):
@@ -221,13 +245,13 @@ class IntegralNondegenerateLattices(CategoryWithAxiom_over_base_ring):
     # and its routing exist.
     _base_category_class_and_axiom = (IntegralLattices, "Nondegenerate")
 
-    ParentMethods = _carrier_delta(IntegralNondegenerateCarrier)
+    ParentMethods = _own_methods(IntegralNondegenerateLattice)
 
 
 class EvenLattices(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Even")
 
-    def extra_super_categories(self):
+    def extra_super_categories(self) -> tuple[Category_over_base_ring, ...]:
         return (Lattices(self.base_ring()).Integral(),)
 
 
@@ -235,42 +259,42 @@ class RootGeneratedLattices(CategoryWithAxiom_over_base_ring):
     # Section 1.2: even integral lattice generated by its roots {v : q(v) = +-2}.
     _base_category_class_and_axiom = (EvenLattices, "RootGenerated")
 
-    ParentMethods = _carrier_delta(RootGeneratedCarrier)
+    ParentMethods = _own_methods(RootGeneratedLattice)
 
 
 class UnimodularLattices(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Unimodular")
 
-    def extra_super_categories(self):
+    def extra_super_categories(self) -> tuple[Category_over_base_ring, ...]:
         return (Lattices(self.base_ring()).Integral(),)
 
 
 class DefiniteLattices(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Definite")
 
-    ParentMethods = _carrier_delta(DefiniteCarrier)
+    ParentMethods = _own_methods(DefiniteLattice)
 
 
 class PositiveDefiniteLattices(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "PositiveDefinite")
 
-    def extra_super_categories(self):
+    def extra_super_categories(self) -> tuple[Category_over_base_ring, ...]:
         return (Lattices(self.base_ring()).Definite(),)
 
-    ParentMethods = _carrier_delta(PositiveDefiniteCarrier)
+    ParentMethods = _own_methods(PositiveDefiniteLattice)
 
 
 class NegativeDefiniteLattices(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "NegativeDefinite")
 
-    def extra_super_categories(self):
+    def extra_super_categories(self) -> tuple[Category_over_base_ring, ...]:
         return (Lattices(self.base_ring()).Definite(),)
 
 
 class IndefiniteLattices(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Indefinite")
 
-    ParentMethods = _carrier_delta(IndefiniteCarrier)
+    ParentMethods = _own_methods(IndefiniteLattice)
 
 
 class HyperbolicLattices(CategoryWithAxiom_over_base_ring):
@@ -278,24 +302,24 @@ class HyperbolicLattices(CategoryWithAxiom_over_base_ring):
     # one positive square). Refines indefinite nondegenerate lattices.
     _base_category_class_and_axiom = (IndefiniteLattices, "Hyperbolic")
 
-    ParentMethods = _carrier_delta(HyperbolicCarrier)
+    ParentMethods = _own_methods(HyperbolicLattice)
 
-    def extra_super_categories(self):
+    def extra_super_categories(self) -> tuple[Category_over_base_ring, ...]:
         return (Lattices(self.base_ring()).Indefinite().Nondegenerate(),)
 
 
 class BilinearDiscriminantForms(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "Bilinear")
 
-    ParentMethods = _carrier_delta(BilinearDiscriminantFormCarrier)
+    ParentMethods = _own_methods(BilinearDiscriminantForm)
 
 
 class QuadraticDiscriminantForms(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "Quadratic")
 
-    ParentMethods = _carrier_delta(QuadraticDiscriminantFormCarrier)
+    ParentMethods = _own_methods(QuadraticDiscriminantForm)
 
-    def extra_super_categories(self):
+    def extra_super_categories(self) -> tuple[Category_over_base_ring, ...]:
         return (DiscriminantForms(self.base_ring()).Bilinear(),)
 
 
@@ -303,7 +327,7 @@ class NondegenerateDiscriminantForms(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "Nondegenerate")
 
     class ParentMethods:
-        def pontryagin_dual(self):
+        def pontryagin_dual(self) -> PontryaginDualIdentification:
             r"""The canonical identification ``A ~ Hom(A, QQ/ZZ)`` as a typed
             object: index by an element to get its character. Placed on the
             Nondegenerate subcategory (spec section 4) — the identification along
@@ -317,14 +341,14 @@ class NondegenerateDiscriminantForms(CategoryWithAxiom_over_base_ring):
 class EvenDiscriminantForms(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "Even")
 
-    def extra_super_categories(self):
+    def extra_super_categories(self) -> tuple[Category_over_base_ring, ...]:
         return (DiscriminantForms(self.base_ring()).Quadratic(),)
 
 
 class WithSourceLatticeDiscriminantForms(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "WithSourceLattice")
 
-    ParentMethods = _carrier_delta(SourcedDiscriminantFormCarrier)
+    ParentMethods = _own_methods(SourcedDiscriminantForm)
 
 
 Lattices.Nondegenerate = NondegenerateLattices

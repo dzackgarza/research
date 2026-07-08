@@ -87,7 +87,7 @@ def test_positive_definite_algorithms_are_axiom_gated():
     # the reduction/CVP suite is positive-definite vocabulary (D1 revision):
     # present on any PD lattice, no refinement step
     for name in ("BKZ", "closest_vector", "voronoi_cell"):
-        assert hasattr(G_lattice, name)
+        assert (name in dir(G_lattice))
     bkz_lattice = G_lattice.BKZ(block_size=2)
     assert_matrix_equal(
         bkz_lattice.gram_matrix(), matrix(ZZ, 3, 3, [2, 1, 1, 1, 3, 1, 1, 1, 4])
@@ -164,7 +164,7 @@ def test_positive_definite_algorithms_are_axiom_gated():
         "closest_vector",
         "voronoi_cell",
     ):
-        assert not hasattr(U, name)
+        assert not (name in dir(U))
 
 
 def test_raw_module_methods_are_available_only_through_accessors():
@@ -185,7 +185,7 @@ def test_raw_module_methods_are_available_only_through_accessors():
         "rationalization_module",
         "basis_matrix",
     ):
-        assert not hasattr(A2, name)
+        assert not (name in dir(A2))
 
 
 def test_rationalization_is_scalar_extension_not_external_ambient_embedding():
@@ -435,16 +435,24 @@ def test_lattice_element_pairs_through_the_star_operator():
     r"""
     Issue #2: ``v * w`` computes the bilinear pairing ``b(v, w)``;
     ``v * v`` computes the quadratic form ``q(v) = b(v, v)``.
-    Scalar multiplication still works in both directions.
+    Scalar multiplication works for R-scalars (ZZ) and S-scalars (QQ)
+    via base change to ``M ⊗_R S``.
     """
     U = Lattice("U", label="U")
     e, f = U.gens()
 
     for name in ("inner_product", "dot_product", "norm", "hermitian_inner_product"):
-        assert not hasattr(e, name)
+        assert not (name in dir(e))
 
-    # scalar multiplication: both directions
+    # R-scalar action (n ∈ ZZ): result stays in L
     assert 2 * e == U([2, 0]) and e * 2 == U([2, 0])
+
+    # S-scalar action (q ∈ QQ \ ZZ): base change to L_QQ
+    s = QQ(1) / 3
+    result = e * s
+    assert result.parent().base_ring() is QQ
+    assert result.parent().rank() == U.rank()
+    assert tuple(result.coefficient_vector()) == (QQ(1) / 3, 0)
 
     # pairing via * (issue #2)
     assert e * f == 1 and f * e == 1
@@ -454,16 +462,24 @@ def test_lattice_element_pairs_through_the_star_operator():
     # b() and q() still work and agree with *
     assert e.b(f) == e * f and (e + f).q() == (e + f) * (e + f)
 
-    # cross-lattice pairing raises
+    # different-parent lattice element: assertion error (not ValueError)
     A2 = Lattice("A2", label="A2")
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         e * A2.gen(0)
+
+    # unsupported operand types hit assert_never
+    with pytest.raises(AssertionError):
+        e * "not a scalar"
+    with pytest.raises(AssertionError):
+        e * [1, 2]
 
 
 def test_discriminant_group_element_pairs_through_the_star_operator():
     r"""
     Issue #2 (discriminant side): ``x * y`` computes ``b(x, y)``
     on ``SyntheticDiscriminantGroupElement`` with strict same-parent identity.
+    R-scalar action (ZZ) stays in D; S-scalar (QQ) base-changes to
+    ``D ⊗_ZZ QQ = 0`` (torsion killed by localization).
     """
     L = Lattice(matrix(ZZ, 1, 1, [3]), label="<3>")
     D = L.discriminant_group()
@@ -473,13 +489,22 @@ def test_discriminant_group_element_pairs_through_the_star_operator():
     assert g.q() == g * g  # q() agrees with *
     assert D.b(g, g) == g * g  # parent b() agrees with *
 
-    # scalar multiplication still works
+    # R-scalar action (n ∈ ZZ): result stays in D
     assert 2 * g == D([2]) and g * 2 == D([2])
 
-    # cross-parent pairing raises
+    # S-scalar action (q ∈ QQ \ ZZ): D ⊗_ZZ QQ = 0, result is zero
+    result = g * (QQ(1) / 3)
+    assert result.parent().invariants() == ()
+    assert result.parent().cardinality() == 1
+
+    # different-parent discriminant element: assertion error
     D2 = Lattice(matrix(ZZ, 1, 1, [5]), label="<5>").discriminant_group()
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         g * D2.gen(0)
+
+    # unsupported operand types hit assert_never
+    with pytest.raises(AssertionError):
+        g * "not a scalar"
 
 
 def test_explicit_isometries_act_on_discriminant_groups():
@@ -561,7 +586,7 @@ def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
         "enumerate_close_vectors",
         "update_reduced_basis",
     ):
-        assert hasattr(L, name)
+        assert (name in dir(L))
 
     # scalar invariants reference-agree with Sage
     assert L.volume() == reference.volume()
@@ -645,7 +670,7 @@ def test_positive_definite_enumeration_suite_matches_sage_and_is_axiom_gated():
         "enumerate_close_vectors",
         "update_reduced_basis",
     ):
-        assert not hasattr(U, name)
+        assert not (name in dir(U))
 
 
 def test_negative_definite_enumeration_transports_through_the_sign_twist():
@@ -883,17 +908,17 @@ def test_two_signal_placement_gates_dual_and_discriminant_vocabulary_by_stratum(
         "maximal_overlattice",
         "local_modification",
     ):
-        assert not hasattr(degenerate, name)
+        assert not (name in dir(degenerate))
     for name in ("discriminant_group", "genus", "same_genus", "glue"):
-        assert not hasattr(rational, name)
-    assert hasattr(rational, "dual")
+        assert not (name in dir(rational))
+    assert ("dual" in dir(rational))
 
     assert A2.same_genus(A2) and A2.genus() == A2.genus()
 
 
 def test_placement_matrix_both_directions_over_the_spec_fixture_set():
     # Spec section 8: for each fixture, exactly the vocabulary of its
-    # categories resolves (hasattr, both directions). Expected side:
+    # categories resolves (declared-surface membership, both directions). Expected side:
     # constructor-proven category membership. Vocabulary side: the
     # declaration layer's own per-subcategory delta, projected mechanically —
     # the same projection the category installs ride on.
@@ -935,14 +960,14 @@ def test_placement_matrix_both_directions_over_the_spec_fixture_set():
             category = refine(base_category)
             expected = fixture in category
             for name in vocabulary(domain_class):
-                assert hasattr(fixture, name) == expected, (
+                assert (name in dir(fixture)) == expected, (
                     f"placement violation: {name!r} on {fixture} "
-                    f"(member of {category}: {expected}, resolves: {hasattr(fixture, name)})"
+                    f"(member of {category}: {expected}, resolves: {(name in dir(fixture))})"
                 )
 
     # Spec section 8 signal test: nondegenerate vocabulary does not resolve on
     # the degenerate fixture at all.
-    assert not hasattr(fixtures[4], "dual")
+    assert not ("dual" in dir(fixtures[4]))
 
 
 def test_named_constructors_route_through_the_category_entry_with_provenance():
@@ -1022,7 +1047,7 @@ def test_endomorphisms_form_a_monoid_with_ring_like_predicates():
         not s.is_nilpotent()
     )  # no nonzero form-preserving endo of a nondegenerate lattice is
     assert not s.is_idempotent() and s.order() == 2
-    assert not hasattr(A2, "endomorphism_ring")  # the ring object is not vocabulary
+    assert not ("endomorphism_ring" in dir(A2))  # the ring object is not vocabulary
 
 
 def test_bilinear_forms_carry_the_induced_diagonal_quadratic_form():
