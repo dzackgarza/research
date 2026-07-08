@@ -29,6 +29,7 @@ from sage.matrix.special import block_diagonal_matrix
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
+from sage.structure.category_object import normalize_names
 from sage.structure.element import Matrix
 from sage.structure.parent import Parent
 
@@ -113,6 +114,7 @@ class SyntheticLattice(Lattice, Parent):
         ambient: SyntheticLattice | None = None,
         inclusion: Matrix | None = None,
         cartan_type: CartanType | str | None = None,
+        names: Sequence[str] | str | None = None,
     ) -> None:
         # The one Gram codec (asserts square + symmetric, immutabilizes,
         # returns the GramMatrix witness); construction is the only producer.
@@ -140,7 +142,13 @@ class SyntheticLattice(Lattice, Parent):
             # provenance axiom: attached only by the section-6 constructors
             # (and direct sums thereof), never detected from the Gram
             category = category.RootGenerated()
-        Parent.__init__(self, base=base_ring, category=category)
+        # Generator symbols: Sage's own naming protocol (normalize_names +
+        # CategoryObject storage), so `L.<e,f> = ...` preparser binding and
+        # variable_names()/inject_variables() work exactly as for polynomial
+        # rings. Default symbols are the indexed e_0, ..., e_{n-1}.
+        if names is None:
+            names = tuple(f"e_{i}" for i in range(gram.nrows()))
+        Parent.__init__(self, base=base_ring, category=category, names=normalize_names(gram.nrows(), names))
 
     def _repr_(self) -> str:
         return f"Synthetic lattice {self._label} of rank {self.rank()} over {self.base_ring()}"
@@ -1254,6 +1262,7 @@ def synthetic_lattice(
     ambient: SyntheticLattice | None = None,
     inclusion: Matrix | None = None,
     cartan_type: CartanType | str | None = None,
+    names: Sequence[str] | str | None = None,
 ) -> SyntheticLattice:
     r"""Private subcategory dispatch: one classification (mirroring ``category_for``),
     one concrete class per subcategory, so axiom vocabulary is reachable exactly
@@ -1285,6 +1294,7 @@ def synthetic_lattice(
             ambient=ambient,
             inclusion=inclusion,
             cartan_type=cartan_type,
+            names=names,
         )
     negative_definite = nondegenerate and gram.nrows() > 0 and neg == gram.nrows()
     if integral and positive_definite:
@@ -1301,4 +1311,4 @@ def synthetic_lattice(
         concrete = SyntheticNondegenerateLattice
     else:
         concrete = SyntheticLattice
-    return concrete(gram_matrix, base_ring, label, ambient=ambient, inclusion=inclusion)
+    return concrete(gram_matrix, base_ring, label, ambient=ambient, inclusion=inclusion, names=names)

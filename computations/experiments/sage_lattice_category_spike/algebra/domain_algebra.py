@@ -61,6 +61,7 @@ if TYPE_CHECKING:
     # abstract_method ships untyped; use abc.abstractmethod for type-checking
     from abc import abstractmethod as abstract_method
 
+    from sage.misc.repr import repr_lincomb
     from sage.structure.richcmp import richcmp
 
     # Type-level nouns are drawn from the lexicon (the single type surface;
@@ -86,6 +87,7 @@ if TYPE_CHECKING:
     from ..lexicon.interop import SageInfinity, SageLocalGenusSymbol
 else:
     from sage.misc.abstract_method import abstract_method
+    from sage.misc.repr import repr_lincomb
     from sage.structure.richcmp import richcmp
 
 
@@ -222,17 +224,14 @@ class LatticeElement:
         return hash(self.coefficient_vector())
 
     def _repr_(self) -> str:
-        r"""Render as the formal R-combination ``sum_i c_i e_i`` over the NONZERO
-        coefficients, using the intrinsic generator symbols ``e_0, ..., e_{n-1}``
-        -- the ordered symbol set ``S`` with ``L = R[S]`` -- never the raw
-        coordinate vector.
+        r"""Render as the formal R-combination over the parent's generator
+        symbols -- the ordered symbol set ``S`` with ``L = R[S]`` -- never the
+        raw coordinate vector: ``2*e - f``, not ``(2, -1)``.
 
-        Each coefficient is rendered by the ring's OWN repr: ``-3`` in ``ZZ``
-        renders as ``-3``. An arbitrary ring ``R`` has no absolute value and no
-        sign to strip, so a term is just ``repr(c_i)`` next to ``repr(e_i)``. The
-        empty combination (every coefficient zero) is ``0``."""
-        terms = [f"{coefficient} e_{index}" for index, coefficient in enumerate(self.coefficient_vector()) if coefficient != 0]
-        return " + ".join(terms) if terms else "0"
+        Delegates to Sage's own linear-combination renderer
+        (``sage.misc.repr.repr_lincomb``), which owns sign handling, unit
+        coefficients, and the empty combination (``0``)."""
+        return repr_lincomb(zip(self.parent().variable_names(), self.coefficient_vector(), strict=True))
 
 
 class DiscriminantFormElement:
@@ -299,6 +298,14 @@ class Lattice:
 
     @abstract_method
     def ngens(self) -> int: ...
+
+    if TYPE_CHECKING:
+        # Generator symbols (the ordered symbol set S with L = R[S]).
+        # Declaration only: at runtime Sage's CategoryObject provides this,
+        # and a def here would shadow it in the synthetic parents' MRO
+        # (these classes precede Parent), exactly like __call__ in
+        # objects/parents.py.
+        def variable_names(self) -> tuple[str, ...]: ...
 
     @abstract_method
     def zero(self) -> LatticeElement: ...

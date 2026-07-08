@@ -175,6 +175,16 @@ Dev-facing; never in researcher-facing signatures unless the sentence is genuine
 Semantic nouns that *coincide* with Sage's implementation (Matrix, Vector, Integer, …) do **not** get a `Sage*` doppelgänger; the semantic spelling in II.1/II.2 is the only spelling.
 A `Sage*` name is introduced only at the moment the repo gives the bare name a different meaning.
 
+### II.5a Sage idioms (typed functions, not nouns)
+
+Sage-owned procedures the DSL delegates to; they live only in `typings/sage/` (no lexicon re-export — the catalogue is nouns) and are verified by the same claim sweep:
+
+| Idiom | Purpose | Sage realization |
+| --- | --- | --- |
+| `repr_lincomb` | render a formal linear combination (`2*e - f`) — the only element printer; hand-rolled joins are Tier-E drift | `sage.misc.repr.repr_lincomb` |
+| `normalize_names` | validate/normalize generator symbol tuples at parent construction | `sage.structure.category_object.normalize_names` |
+| `variable_names` / `_first_ngens` / `inject_variables` | the `CategoryObject` naming surface behind the `L.<e,f> = ...` preparser protocol | stubbed on `sage.structure.parent.Parent` |
+
 ### II.6 Named-but-deferred vocabulary
 
 Nouns the research program will need, catalogued now so their future homes are fixed; each is one alias/union away using the same policy — they are *not* declared until first use (a lexicon entry with no consumer is untestable):

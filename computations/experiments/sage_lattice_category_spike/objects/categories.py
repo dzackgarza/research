@@ -157,6 +157,7 @@ class Lattices(Category_over_base_ring):
         gram_matrix: RawGramMatrix,
         label: str = "L",
         cartan_type: CartanType | None = None,
+        names: Sequence[str] | str | None = None,
     ) -> Lattice:
         r"""Section 1.4: the functor from square symmetric matrices over the
         base ring into this category — the ONLY public entry into the language.
@@ -174,7 +175,7 @@ class Lattices(Category_over_base_ring):
         gram = as_square_qq_matrix(gram_matrix)
         return cast(
             "Lattice",
-            synthetic_lattice(gram, base_ring, label, cartan_type=cartan_type),
+            synthetic_lattice(gram, base_ring, label, cartan_type=cartan_type, names=names),
         )
 
     class MorphismMethods:

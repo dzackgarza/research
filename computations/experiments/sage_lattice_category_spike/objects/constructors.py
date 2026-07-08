@@ -29,23 +29,23 @@ if TYPE_CHECKING:
     )
 
 
-def SyntheticLatticeFromGram(gram_matrix: RawGramMatrix, base_ring: BaseRing = ZZ, label: str = "L") -> lexicon.Lattice:
+def SyntheticLatticeFromGram(gram_matrix: RawGramMatrix, base_ring: BaseRing = ZZ, label: str = "L", names: Sequence[str] | str | None = None) -> lexicon.Lattice:
     r"""Construct a synthetic based lattice ``(base_ring, G)`` from its Gram matrix."""
-    return Lattices(base_ring).from_gram_matrix(gram_matrix, label=label)
+    return Lattices(base_ring).from_gram_matrix(gram_matrix, label=label, names=names)
 
 
-def Lattice(gram_matrix: RawGramMatrix, base_ring: BaseRing = ZZ, label: str = "L") -> lexicon.Lattice:
+def Lattice(gram_matrix: RawGramMatrix, base_ring: BaseRing = ZZ, label: str = "L", names: Sequence[str] | str | None = None) -> lexicon.Lattice:
     r"""Public constructor for the owned synthetic lattice spike."""
-    return SyntheticLatticeFromGram(gram_matrix, base_ring=base_ring, label=label)
+    return SyntheticLatticeFromGram(gram_matrix, base_ring=base_ring, label=label, names=names)
 
 
-def U(n: int | ExactScalar = 1, label: str | None = None) -> lexicon.Lattice:
+def U(n: int | ExactScalar = 1, label: str | None = None, names: Sequence[str] | str | None = None) -> lexicon.Lattice:
     r"""The hyperbolic plane ``U(n)`` with Gram ``[[0, n], [n, 0]]``."""
     n = ZZ(n)
     assert n != 0, "U(n) requires a nonzero scale; U(0) is the degenerate rank-2 zero form, not a hyperbolic plane"
     if label is None:
         label = "U" if n == 1 else f"U({n})"
-    return Lattices(ZZ).from_gram_matrix([[0, n], [n, 0]], label=label)
+    return Lattices(ZZ).from_gram_matrix([[0, n], [n, 0]], label=label, names=names)
 
 
 def RootLattice(
@@ -53,6 +53,7 @@ def RootLattice(
     n: int | None = None,
     negative: bool = False,
     label: str | None = None,
+    names: Sequence[str] | str | None = None,
 ) -> lexicon.Lattice:
     r"""The A/D/E root lattice with its standard Cartan Gram.
 
@@ -86,7 +87,7 @@ def RootLattice(
         gram = -gram
     if label is None:
         label = f"{letter}{rank}" + ("(-1)" if negative else "")
-    return Lattices(ZZ).from_gram_matrix(gram, label=label, cartan_type=cartan_type)
+    return Lattices(ZZ).from_gram_matrix(gram, label=label, cartan_type=cartan_type, names=names)
 
 
 def IntegralLatticeGluing(
