@@ -17,12 +17,12 @@ import pytest
 
 from sage.all import ZZ, matrix, vector
 
-from sage_lattice_category_spike.lattice_categories import Lattices, RootLattice, U
+from sage_lattice_category_spike.lattice_categories import Lattice, Lattices, U
 
 
 CONSTRUCTORS = [
-    pytest.param(lambda: RootLattice("A", 2), id="RootLattice_A2_posdef"),
-    pytest.param(lambda: RootLattice("D", 4), id="RootLattice_D4_posdef"),
+    pytest.param(lambda: Lattice("A2"), id="Lattice_A2_posdef"),
+    pytest.param(lambda: Lattice("D4"), id="Lattice_D4_posdef"),
     pytest.param(lambda: Lattices(ZZ).from_gram_matrix(matrix(ZZ, [[2, 0], [0, 2]])), id="from_gram_definite_rank2"),
     pytest.param(lambda: Lattices(ZZ).from_gram_matrix(matrix(ZZ, [[2]])), id="from_gram_definite_rank1"),
     pytest.param(lambda: U(), id="U_hyperbolic_plane"),

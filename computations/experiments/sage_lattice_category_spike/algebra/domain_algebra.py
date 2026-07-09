@@ -93,6 +93,7 @@ else:
 
 __all__ = [
     # boundary codecs (scalar/matrix nouns and witnesses live in the lexicon)
+    "LatticeName",
     "RawGramMatrix",
     "RawMorphismMatrix",
     "RawVectors",
@@ -134,7 +135,6 @@ __all__ = [
     "from_gram_matrix",
     "from_form_data",
     "U",
-    "RootLattice",
     # narrowing
     "in_nondegenerate",
     "in_integral_nondegenerate",
@@ -152,6 +152,12 @@ __all__ = [
 
 type RawGramMatrix = Matrix | MatrixData
 """Untrusted matrix-shaped input to the grammar; parsed once, never circulated."""
+
+type LatticeName = str | CartanType
+"""A lattice designated by name ("U"/"H", "E8", ("A", 2)). The name is
+construction data: resolving it yields both the Gram matrix and, for A/D/E
+names, the Cartan provenance certificate — so named construction routes to
+the RootGenerated subcategory while a raw Gram never does."""
 
 type RawMorphismMatrix = Matrix | MatrixData
 """Untrusted matrix-shaped input to homset/element constructors."""
@@ -1311,7 +1317,7 @@ def parse_gram_matrix(raw: RawGramMatrix, ring: BaseRing) -> GramMatrix:
     assert False, "typed declaration only; the runtime entry is Lattices(R).from_gram_matrix / constructors.py (realized at T1)"
 
 
-def from_gram_matrix(gram: RawGramMatrix, base_ring: BaseRing | None = None, label: str = "L") -> Lattice:
+def from_gram_matrix(gram: RawGramMatrix | LatticeName, base_ring: BaseRing | None = None, label: str = "L") -> Lattice:
     """Functor from square symmetric matrices over R into Lattices(R).
 
     Asserts its domain contract (square, symmetric, R in {ZZ, QQ}) ADDD-style
@@ -1335,12 +1341,6 @@ def from_form_data(
 
 def U(n: int = 1) -> HyperbolicLattice:
     """The hyperbolic plane U(n): Gram [[0, n], [n, 0]]."""
-    assert False, "typed declaration only; the runtime entry is Lattices(R).from_gram_matrix / constructors.py (realized at T1)"
-
-
-def RootLattice(type_: Literal["A", "D", "E"], n: int, negative: bool = False) -> RootGeneratedLattice:
-    """ADE root lattice with construction-provenance RootGenerated axiom;
-    ``negative=True`` is the K3-convention twist by -1."""
     assert False, "typed declaration only; the runtime entry is Lattices(R).from_gram_matrix / constructors.py (realized at T1)"
 
 

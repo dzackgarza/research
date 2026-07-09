@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
-from sage.matrix.constructor import column_matrix, matrix
+from sage.matrix.constructor import column_matrix
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.element import Matrix
@@ -21,22 +21,45 @@ if TYPE_CHECKING:
     from .. import lexicon
     from ..lexicon import (
         BaseRing,
-        CartanType,
         DiscriminantFormElement,
         ExactScalar,
         LatticeMorphism,
+        LatticeName,
         RawGramMatrix,
     )
 
 
-def SyntheticLatticeFromGram(gram_matrix: RawGramMatrix, base_ring: BaseRing = ZZ, label: str = "L", names: Sequence[str] | str | None = None) -> lexicon.Lattice:
+def SyntheticLatticeFromGram(gram_matrix: RawGramMatrix | LatticeName, base_ring: BaseRing = ZZ, label: str = "L", names: Sequence[str] | str | None = None) -> lexicon.Lattice:
     r"""Construct a synthetic based lattice ``(base_ring, G)`` from its Gram matrix."""
     return Lattices(base_ring).from_gram_matrix(gram_matrix, label=label, names=names)
 
 
-def Lattice(gram_matrix: RawGramMatrix, base_ring: BaseRing = ZZ, label: str = "L", names: Sequence[str] | str | None = None) -> lexicon.Lattice:
-    r"""Public constructor for the owned synthetic lattice spike."""
-    return SyntheticLatticeFromGram(gram_matrix, base_ring=base_ring, label=label, names=names)
+def Lattice(
+    gram_matrix: RawGramMatrix | LatticeName,
+    base_ring: BaseRing = ZZ,
+    label: str | None = None,
+    names: Sequence[str] | str | None = None,
+    negative: bool = False,
+) -> lexicon.Lattice:
+    r"""THE constructor: minimal routing on ``Lattice`` itself — subcategory
+    membership is output, never input (vault decision 2026-07-09).
+
+    Accepts a Gram matrix, or a lattice NAME — ``"U"``/``"H"``, an A/D/E
+    string like ``"E8"``, or a Cartan datum ``("A", 2)``. A name is
+    construction data, so ``Lattice("E8")`` yields a root-generated lattice
+    (the Cartan certificate rides the name); the same Gram passed as a raw
+    matrix never acquires the axiom. ``negative=True`` twists a named Gram
+    by ``-1`` (the K3 convention)."""
+    from ..algebra.arithmetic import _is_named_gram_data, named_cartan_type, named_gram
+
+    if _is_named_gram_data(gram_matrix):
+        name = gram_matrix
+        gram = -named_gram(name) if negative else named_gram(name)
+        if label is None:
+            label = (name if isinstance(name, str) else f"{name[0]}{name[1]}") + ("(-1)" if negative else "")
+        return Lattices(base_ring).from_gram_matrix(gram, label=label, cartan_type=named_cartan_type(name), names=names)
+    assert not negative, "negative= twists a NAMED lattice by -1; for a raw Gram matrix, negate the matrix"
+    return SyntheticLatticeFromGram(gram_matrix, base_ring=base_ring, label=label if label is not None else "L", names=names)
 
 
 def U(n: int | ExactScalar = 1, label: str | None = None, names: Sequence[str] | str | None = None) -> lexicon.Lattice:
@@ -46,48 +69,6 @@ def U(n: int | ExactScalar = 1, label: str | None = None, names: Sequence[str] |
     if label is None:
         label = "U" if n == 1 else f"U({n})"
     return Lattices(ZZ).from_gram_matrix([[0, n], [n, 0]], label=label, names=names)
-
-
-def RootLattice(
-    type_: str | CartanType,
-    n: int | None = None,
-    negative: bool = False,
-    label: str | None = None,
-    names: Sequence[str] | str | None = None,
-) -> lexicon.Lattice:
-    r"""The A/D/E root lattice with its standard Cartan Gram.
-
-    ``negative=True`` twists by ``-1`` (the K3 convention). Attaches the
-    RootGenerated provenance axiom with the stored Cartan type — the ONLY
-    path that attaches it (spec 1.3: the axiom is a certificate, never
-    detected from the Gram).
-    """
-    from sage.combinat.root_system.cartan_matrix import CartanMatrix
-
-    if n is None:
-        assert isinstance(type_, str) and len(type_) >= 2 and type_[0].isalpha() and type_[1:].isdigit(), (
-            f"RootLattice needs a type like 'E8' or ('E', 8); found type_={type_!r}, n=None"
-        )
-        letter, rank = type_[0].upper(), int(type_[1:])
-    else:
-        assert not isinstance(type_, tuple), "RootLattice tuple type_ requires n=None"
-        letter, rank = str(type_).upper(), int(n)
-
-    if letter == "A":
-        cartan_type: CartanType = ("A", rank)
-    elif letter == "D":
-        cartan_type = ("D", rank)
-    elif letter == "E":
-        cartan_type = ("E", rank)
-    else:
-        raise AssertionError(f"RootLattice supports the simply-laced types A/D/E; found {letter!r} (B/C/F/G Cartan matrices are not symmetric, hence not Gram matrices)")
-
-    gram = matrix(QQ, CartanMatrix([letter, rank]))
-    if negative:
-        gram = -gram
-    if label is None:
-        label = f"{letter}{rank}" + ("(-1)" if negative else "")
-    return Lattices(ZZ).from_gram_matrix(gram, label=label, cartan_type=cartan_type, names=names)
 
 
 def IntegralLatticeGluing(

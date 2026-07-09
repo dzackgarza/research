@@ -14,7 +14,7 @@ import pytest
 
 from sage.all import ZZ, matrix
 
-from sage_lattice_category_spike.lattice_categories import Lattice, Lattices, RootLattice, U
+from sage_lattice_category_spike.lattice_categories import Lattice, Lattices, U
 
 
 def test_preparser_generator_binding_hyperbolic_plane():
@@ -34,7 +34,7 @@ def test_preparser_generator_binding_gram_constructor():
 
 
 def test_named_generators_on_root_lattice():
-    R.<r1, r2> = RootLattice("A", 2)
+    R.<r1, r2> = Lattice("A2")
     assert repr(r1 + r2) == "r1 + r2"
 
 

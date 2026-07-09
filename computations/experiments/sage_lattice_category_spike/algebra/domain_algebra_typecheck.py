@@ -38,12 +38,12 @@ from ..lexicon import (
     in_integral_nondegenerate,
     in_positive_definite,
 )
-from .domain_algebra import RootLattice, U
+from .domain_algebra import U, from_gram_matrix
 
 
 def enriques_discriminant_pipeline() -> tuple[tuple[int, ...], GramMatrix]:
     """U(2) + E8(2) -> A_L -> normal form (the T7 research smoke, as types)."""
-    e8_twisted = RootLattice("E", 8).twist(2)
+    e8_twisted = from_gram_matrix("E8").twist(2)
     enriques: Lattice = U(2).direct_sum(e8_twisted)
     lattice = in_integral_nondegenerate(enriques)
     disc = lattice.discriminant_group()
@@ -59,13 +59,13 @@ def sterk_comparison(left: Lattice, right: Lattice) -> bool:
 
 def k3_primitive_embedding_check() -> bool:
     """A2(-1) embeds primitively in the K3 lattice signature (3, 19)?"""
-    a2_negative = in_integral_nondegenerate(RootLattice("A", 2, negative=True))
+    a2_negative = in_integral_nondegenerate(from_gram_matrix("A2").twist(-1))
     return a2_negative.embeds_primitively_in_unimodular((3, 19), even=True)
 
 
 def definite_enumeration_and_group() -> tuple[int, int]:
     """E8: root count and |O(E8)| — finite vocabulary via PD narrowing only."""
-    e8 = in_positive_definite(RootLattice("E", 8))
+    e8 = in_positive_definite(from_gram_matrix("E8"))
     roots: tuple[LatticeElement, ...] = e8.roots()
     group = e8.isometry_group()
     assert group.is_finite()
@@ -101,7 +101,7 @@ def subgroup_and_seams(lattice: Lattice, isometry: LatticeMorphism) -> Permutati
 
 def genus_roundtrip() -> bool:
     """genus -> representative -> same_genus, with the forced narrowing."""
-    lattice = in_integral_nondegenerate(U().direct_sum(RootLattice("E", 8)))
+    lattice = in_integral_nondegenerate(U().direct_sum(from_gram_matrix("E8")))
     genus = lattice.genus()
     representative = in_integral_nondegenerate(genus.representative())
     return lattice.same_genus(representative)
@@ -109,19 +109,19 @@ def genus_roundtrip() -> bool:
 
 def reduction_suite_is_positive_definite_vocabulary() -> None:
     """BKZ/CVP live on the positive-definite narrowing itself (D1 revision)."""
-    pd = in_positive_definite(RootLattice("A", 2))
+    pd = in_positive_definite(from_gram_matrix("A2"))
     reduced = pd.BKZ(block_size=10)
     reduced.closest_vector(reduced.gen(0).coefficient_vector())
 
 
 def orbit_vocabulary() -> tuple[tuple[DiscriminantFormElement, ...], ...]:
     """Orbits take a GROUP OBJECT, never a raw generator list."""
-    lattice = in_integral_nondegenerate(RootLattice("A", 2))
+    lattice = in_integral_nondegenerate(from_gram_matrix("A2"))
     disc = lattice.discriminant_group()
     return disc.orbits(disc.orthogonal_group())
 
 
 def hyperbolic_narrowing_of_composite() -> bool:
     """A composite that happens to be hyperbolic still needs the assertion."""
-    composite = in_hyperbolic(U(2).direct_sum(RootLattice("E", 8, negative=True)))
+    composite = in_hyperbolic(U(2).direct_sum(from_gram_matrix("E8").twist(-1)))
     return composite.has_isotropic_vector()

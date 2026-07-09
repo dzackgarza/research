@@ -45,6 +45,7 @@ from ..lexicon import (
     Lattice,
     LatticeElement,
     LatticeMorphism,
+    LatticeName,
     NondegenerateLattice,
     PositiveDefiniteLattice,
     QuadraticDiscriminantForm,
@@ -154,7 +155,7 @@ class Lattices(Category_over_base_ring):
 
     def from_gram_matrix(
         self,
-        gram_matrix: RawGramMatrix,
+        gram_matrix: RawGramMatrix | LatticeName,
         label: str = "L",
         cartan_type: CartanType | None = None,
         names: Sequence[str] | str | None = None,
@@ -164,14 +165,19 @@ class Lattices(Category_over_base_ring):
 
         Asserts its domain contract (ADDD: a violation is a caller-contract
         bug) and routes the object into its mathematical subcategory; provenance
-        axioms (RootGenerated) ride the ``cartan_type`` flag, attached by the
-        section-6 named constructors and never detected from the Gram.
+        axioms (RootGenerated) ride the ``cartan_type`` certificate, which is
+        construction data — resolved here from a lattice NAME ("E8", ("A", 2)),
+        never detected from a raw Gram matrix. Subcategory membership is
+        output, not input: you construct E8 as a lattice and GET a
+        root-generated lattice.
         """
-        from ..algebra.arithmetic import as_square_qq_matrix
+        from ..algebra.arithmetic import _is_named_gram_data, as_square_qq_matrix, named_cartan_type
         from .parents import synthetic_lattice
 
         base_ring = self.base_ring()
         assert base_ring in (ZZ, QQ), f"lattice base ring must be ZZ or QQ; found={base_ring}; enter through Lattices(ZZ) or Lattices(QQ)"
+        if cartan_type is None and _is_named_gram_data(gram_matrix):
+            cartan_type = named_cartan_type(gram_matrix)
         gram = as_square_qq_matrix(gram_matrix)
         return cast(
             "Lattice",

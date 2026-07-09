@@ -971,9 +971,13 @@ def test_placement_matrix_both_directions_over_the_spec_fixture_set():
 
 
 def test_named_constructors_route_through_the_category_entry_with_provenance():
-    # Spec 1.4/6: Lattices(R).from_gram_matrix is the only entry point; RootGenerated
-    # is a provenance certificate carried by RootLattice, never Gram-detected.
-    from sage_lattice_category_spike.lattice_categories import RootLattice, U
+    # Spec 1.4/6 + design ruling 2026-07-09: Lattices(R).from_gram_matrix is the
+    # only entry point, and constructors live on Lattice itself — a lattice NAME
+    # is construction data carrying the RootGenerated certificate, while a raw
+    # Gram matrix never acquires it (provenance is never Gram-detected).
+    from sage.combinat.root_system.cartan_matrix import CartanMatrix
+
+    from sage_lattice_category_spike.lattice_categories import U
 
     U2 = U(2)
     assert U2.gram_matrix() == matrix(QQ, [[0, 2], [2, 0]])
@@ -982,18 +986,17 @@ def test_named_constructors_route_through_the_category_entry_with_provenance():
     assert U2 in Lattices(ZZ).Indefinite().Hyperbolic()
     assert Lattice("A2") not in Lattices(ZZ).Indefinite().Hyperbolic()
 
-    A2_root = RootLattice("A2")
-    assert A2_root.gram_matrix() == Lattice("A2").gram_matrix()
+    A2_root = Lattice("A2")
     assert A2_root in Lattices(ZZ).Even().RootGenerated()
     assert A2_root.cartan_type() == ("A", 2)
-    # the same Gram WITHOUT the certificate does not carry the axiom
-    assert Lattice("A2") not in Lattices(ZZ).Even().RootGenerated()
+    # the same Gram WITHOUT the name does not carry the certificate
+    assert Lattice(matrix(QQ, CartanMatrix(["A", 2]))) not in Lattices(ZZ).Even().RootGenerated()
 
-    E8_neg = RootLattice("E", 8, negative=True)
+    E8_neg = Lattice("E8", negative=True)
     assert E8_neg.signature_pair() == (0, 8)
     assert E8_neg in Lattices(ZZ).Even().RootGenerated()
 
-    composite = A2_root.direct_sum(RootLattice("E8"))
+    composite = A2_root.direct_sum(Lattice("E8"))
     assert composite in Lattices(ZZ).Even().RootGenerated()
 
 
@@ -1010,8 +1013,6 @@ def test_rational_dual_is_the_canonical_self_identification():
 def test_isometry_group_object_algebra_and_negative_definite_delegation():
     # Spec 3.2: O(L) is total, unique per lattice; elements are the End(L)
     # isometries with composition/inversion/power/order algebra.
-    from sage_lattice_category_spike.lattice_categories import RootLattice
-
     A2 = Lattice("A2", label="A2")
     O = A2.isometry_group()
     assert O is A2.isometry_group()  # unique per lattice
@@ -1023,7 +1024,7 @@ def test_isometry_group_object_algebra_and_negative_definite_delegation():
     assert not s.is_unipotent() and O.one().is_unipotent()
 
     # O(L) = O(L(-1)): the negative-definite case sign-twists internally.
-    assert RootLattice("A", 2, negative=True).isometry_group().order() == 12
+    assert Lattice("A2", negative=True).isometry_group().order() == 12
 
     # the trivial rank-0 group is grounded by construction.
     zero_rank = Lattice(matrix(QQ, 0, 0, []))
