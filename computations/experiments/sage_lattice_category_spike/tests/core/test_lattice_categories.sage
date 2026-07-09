@@ -923,7 +923,6 @@ def test_placement_matrix_both_directions_over_the_spec_fixture_set():
     # declaration layer's own per-subcategory delta, projected mechanically —
     # the same projection the category installs ride on.
     from sage_lattice_category_spike.algebra import domain_algebra as da
-    from sage_lattice_category_spike.lattice_categories import U as U_constructor
 
     def vocabulary(domain_class):
         return tuple(
@@ -947,7 +946,7 @@ def test_placement_matrix_both_directions_over_the_spec_fixture_set():
         Lattice("A2", label="A2"),  # PD even
         Lattice("A2").twist(-1),  # ND even
         Lattice("U", label="U"),  # hyperbolic
-        U_constructor(2),  # hyperbolic non-unimodular
+        Lattice("U").twist(2),  # hyperbolic non-unimodular
         Lattice(matrix(QQ, [[0, 0], [0, 2]]), label="deg"),  # degenerate
         Lattice(
             matrix(QQ, [[QQ(1) / 2]]), base_ring=QQ, label="half"
@@ -977,9 +976,7 @@ def test_named_constructors_route_through_the_category_entry_with_provenance():
     # Gram matrix never acquires it (provenance is never Gram-detected).
     from sage.combinat.root_system.cartan_matrix import CartanMatrix
 
-    from sage_lattice_category_spike.lattice_categories import U
-
-    U2 = U(2)
+    U2 = Lattice("U").twist(2)
     assert U2.gram_matrix() == matrix(QQ, [[0, 2], [2, 0]])
     # scoped spelling: Hyperbolic is an axiom of Indefinite; the bare
     # Lattices(ZZ).Hyperbolic() is a silent no-op returning the base category

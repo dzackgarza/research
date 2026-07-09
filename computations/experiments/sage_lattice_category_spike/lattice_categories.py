@@ -25,7 +25,7 @@ from .forms.discriminant_forms import (
 from .morphisms.homsets import LatticeHomset, LatticeMorphism, LatticeSimilarity
 from .morphisms.isometry_groups import SyntheticIsometryGroup, SyntheticIsometrySubgroup
 from .objects.categories import DiscriminantForms, Lattices
-from .objects.constructors import IntegralLatticeGluing, Lattice, SyntheticLatticeFromGram, U
+from .objects.constructors import IntegralLatticeGluing, Lattice, SyntheticLatticeFromGram
 from .objects.elements import SyntheticLatticeElement
 from .objects.parents import SyntheticLattice
 
@@ -50,6 +50,5 @@ __all__ = [
     "SyntheticLattice",
     "SyntheticLatticeElement",
     "SyntheticLatticeFromGram",
-    "U",
     "TorsionQuadraticForm",
 ]

@@ -23,7 +23,6 @@ from .lattice_categories import (
     SyntheticQuadraticDiscriminantForm,
     SyntheticSourcedDiscriminantForm,
     TorsionQuadraticForm,
-    U,
 )
 
 __all__ = [
@@ -47,6 +46,5 @@ __all__ = [
     "SyntheticLattice",
     "SyntheticLatticeElement",
     "SyntheticLatticeFromGram",
-    "U",
     "TorsionQuadraticForm",
 ]

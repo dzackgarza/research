@@ -14,11 +14,11 @@ import pytest
 
 from sage.all import ZZ, matrix
 
-from sage_lattice_category_spike.lattice_categories import Lattice, Lattices, U
+from sage_lattice_category_spike.lattice_categories import Lattice, Lattices
 
 
 def test_preparser_generator_binding_hyperbolic_plane():
-    L.<e, f> = U()
+    L.<e, f> = Lattice("U")
     assert repr(e) == "e"
     assert repr(f) == "f"
     assert repr(e + f) == "e + f"
@@ -39,7 +39,7 @@ def test_named_generators_on_root_lattice():
 
 
 def test_names_keyword_without_preparser():
-    L = U(names=("e", "f"))
+    L = Lattice("U", names=("e", "f"))
     e, f = L.gens()
     assert repr(2 * e - f) == "2*e - f"
     assert L.variable_names() == ("e", "f")
@@ -51,24 +51,24 @@ def test_category_entry_point_accepts_names():
 
 
 def test_zero_element_prints_as_zero():
-    L.<e, f> = U()
+    L.<e, f> = Lattice("U")
     assert repr(e - e) == "0"
     assert repr(L.zero()) == "0"
 
 
 def test_default_names_are_indexed_generator_symbols():
-    L = U()
+    L = Lattice("U")
     e0, e1 = L.gens()
     assert repr(2 * e0 - e1) == "2*e_0 - e_1"
 
 
 def test_name_count_mismatch_is_a_caller_contract_bug():
     with pytest.raises((AssertionError, ValueError, IndexError)):
-        U(names=("e", "f", "g"))
+        Lattice("U", names=("e", "f", "g"))
 
 
 def test_generators_survive_arithmetic_round_trip():
-    L.<e, f> = U()
+    L.<e, f> = Lattice("U")
     x = 2 * e - f
     assert x == L((2, -1))
     assert repr(x) != repr((2, -1))

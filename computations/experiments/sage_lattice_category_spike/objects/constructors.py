@@ -22,7 +22,6 @@ if TYPE_CHECKING:
     from ..lexicon import (
         BaseRing,
         DiscriminantFormElement,
-        ExactScalar,
         LatticeMorphism,
         LatticeName,
         RawGramMatrix,
@@ -60,15 +59,6 @@ def Lattice(
         return Lattices(base_ring).from_gram_matrix(gram, label=label, cartan_type=named_cartan_type(name), names=names)
     assert not negative, "negative= twists a NAMED lattice by -1; for a raw Gram matrix, negate the matrix"
     return SyntheticLatticeFromGram(gram_matrix, base_ring=base_ring, label=label if label is not None else "L", names=names)
-
-
-def U(n: int | ExactScalar = 1, label: str | None = None, names: Sequence[str] | str | None = None) -> lexicon.Lattice:
-    r"""The hyperbolic plane ``U(n)`` with Gram ``[[0, n], [n, 0]]``."""
-    n = ZZ(n)
-    assert n != 0, "U(n) requires a nonzero scale; U(0) is the degenerate rank-2 zero form, not a hyperbolic plane"
-    if label is None:
-        label = "U" if n == 1 else f"U({n})"
-    return Lattices(ZZ).from_gram_matrix([[0, n], [n, 0]], label=label, names=names)
 
 
 def IntegralLatticeGluing(

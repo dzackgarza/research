@@ -38,13 +38,13 @@ from ..lexicon import (
     in_integral_nondegenerate,
     in_positive_definite,
 )
-from .domain_algebra import U, from_gram_matrix
+from .domain_algebra import from_gram_matrix
 
 
 def enriques_discriminant_pipeline() -> tuple[tuple[int, ...], GramMatrix]:
     """U(2) + E8(2) -> A_L -> normal form (the T7 research smoke, as types)."""
     e8_twisted = from_gram_matrix("E8").twist(2)
-    enriques: Lattice = U(2).direct_sum(e8_twisted)
+    enriques: Lattice = from_gram_matrix("U").twist(2).direct_sum(e8_twisted)
     lattice = in_integral_nondegenerate(enriques)
     disc = lattice.discriminant_group()
     invariants: tuple[int, ...] = disc.invariants()
@@ -74,7 +74,7 @@ def definite_enumeration_and_group() -> tuple[int, int]:
 
 def hyperbolic_vocabulary() -> bool:
     """U carries the Weyl/chamber vocabulary as declared contracts."""
-    u = U()
+    u = in_hyperbolic(from_gram_matrix("U"))
     weyl = u.weyl_group()
     preserved: bool = weyl.preserves(u.radical())
     return u.is_reflective() and preserved
@@ -101,7 +101,7 @@ def subgroup_and_seams(lattice: Lattice, isometry: LatticeMorphism) -> Permutati
 
 def genus_roundtrip() -> bool:
     """genus -> representative -> same_genus, with the forced narrowing."""
-    lattice = in_integral_nondegenerate(U().direct_sum(from_gram_matrix("E8")))
+    lattice = in_integral_nondegenerate(from_gram_matrix("U").direct_sum(from_gram_matrix("E8")))
     genus = lattice.genus()
     representative = in_integral_nondegenerate(genus.representative())
     return lattice.same_genus(representative)
@@ -123,5 +123,5 @@ def orbit_vocabulary() -> tuple[tuple[DiscriminantFormElement, ...], ...]:
 
 def hyperbolic_narrowing_of_composite() -> bool:
     """A composite that happens to be hyperbolic still needs the assertion."""
-    composite = in_hyperbolic(U(2).direct_sum(from_gram_matrix("E8").twist(-1)))
+    composite = in_hyperbolic(from_gram_matrix("U").twist(2).direct_sum(from_gram_matrix("E8").twist(-1)))
     return composite.has_isotropic_vector()

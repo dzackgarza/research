@@ -134,7 +134,6 @@ __all__ = [
     # grammar
     "from_gram_matrix",
     "from_form_data",
-    "U",
     # narrowing
     "in_nondegenerate",
     "in_integral_nondegenerate",
@@ -1337,11 +1336,6 @@ def from_form_data(
 ) -> DiscriminantForm:
     """Entry into DiscriminantForms; axioms assigned from the data (T3 model)."""
     assert False, "typed declaration only; the runtime entry is the discriminant_forms constructions (realized at T3)"
-
-
-def U(n: int = 1) -> HyperbolicLattice:
-    """The hyperbolic plane U(n): Gram [[0, n], [n, 0]]."""
-    assert False, "typed declaration only; the runtime entry is Lattices(R).from_gram_matrix / constructors.py (realized at T1)"
 
 
 # ---------------------------------------------------------------------------

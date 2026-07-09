@@ -18,7 +18,7 @@ import pytest
 
 from sage.all import ZZ, TestSuite, matrix
 
-from sage_lattice_category_spike.lattice_categories import Lattice, Lattices, U
+from sage_lattice_category_spike.lattice_categories import Lattice, Lattices
 
 
 CONSTRUCTORS = [
@@ -26,7 +26,7 @@ CONSTRUCTORS = [
     pytest.param(lambda: Lattice("D4"), id="Lattice_D4_posdef"),
     pytest.param(lambda: Lattices(ZZ).from_gram_matrix(matrix(ZZ, [[2, 0], [0, 2]])), id="from_gram_definite_rank2"),
     pytest.param(lambda: Lattices(ZZ).from_gram_matrix(matrix(ZZ, [[2]])), id="from_gram_definite_rank1"),
-    pytest.param(lambda: U(), id="U_hyperbolic_plane"),
+    pytest.param(lambda: Lattice("U"), id="U_hyperbolic_plane"),
 ]
 
 
