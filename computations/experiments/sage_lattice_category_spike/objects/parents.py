@@ -96,7 +96,16 @@ def category_for(base_ring: BaseRing, gram: Matrix) -> Lattices:
     return category
 
 
-class SyntheticLattice(Lattice, Parent):
+if TYPE_CHECKING:
+    # Binds the stub's element-type parameter (typings/sage/structure/parent.pyi):
+    # Parent.__call__ then returns SyntheticLatticeElement everywhere. Runtime
+    # Sage's Parent is a cython extension type and cannot be subscripted.
+    SyntheticElementParent = Parent[SyntheticLatticeElement]
+else:
+    SyntheticElementParent = Parent
+
+
+class SyntheticLattice(Lattice, SyntheticElementParent):
     r"""Synthetic based lattice ``(base_ring, G)`` with owned elements and homsets."""
 
     Element = SyntheticLatticeElement
@@ -155,13 +164,6 @@ class SyntheticLattice(Lattice, Parent):
 
     def _element_constructor_(self, coordinates: Sequence[ExactScalar] | SyntheticLatticeElement) -> SyntheticLatticeElement:
         return self.element_class(self, coordinates)
-
-    if TYPE_CHECKING:
-        # Element construction: Parent.__call__ routes through
-        # _element_constructor_; refined to this parent's own element class.
-        # Declaration only — a runtime __call__ here would shadow
-        # Parent.__call__ in the MRO (vault trap record).
-        def __call__(self, coordinates: object = ..., /, *args: object, **kwds: object) -> SyntheticLatticeElement: ...
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, SyntheticLattice) and self.base_ring() == other.base_ring() and self.gram_matrix() == other.gram_matrix()
@@ -836,14 +838,6 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateLattice, Synthe
     def same_genus(self, other: IntegralNondegenerateLattice) -> bool:
         return self.genus() == other.genus()
 
-    if TYPE_CHECKING:
-        # Declared contracts whose engines are open work (issue #24: Nikulin
-        # primitive-embedding theory). The runtime keeps the Sage
-        # abstract_method markers so TestSuite's completeness sweep still
-        # enumerates the gap; these declarations state the contract statically.
-        def embeds_primitively_in_unimodular(self, signature_pair: SignaturePair, even: bool = True) -> bool: ...
-        def primitive_embedding_into_unimodular(self, signature_pair: SignaturePair, even: bool = True) -> LatticeMorphism: ...
-
 
 if TYPE_CHECKING:
     # The enumeration/reduction kernels and the root-provenance mixin are never
@@ -1287,7 +1281,10 @@ def synthetic_lattice(
             concrete = SyntheticRootGeneratedNegativeDefiniteLattice
         else:
             concrete = SyntheticRootGeneratedNondegenerateLattice
-        return concrete(
+        # Instantiation with open @abstract_method contracts is the framework
+        # design (TestSuite._test_not_implemented_methods enumerates the gap);
+        # the two Nikulin embedding contracts are issue #24's open engines.
+        return concrete(  # type: ignore[abstract]
             gram_matrix,
             base_ring,
             label,

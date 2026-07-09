@@ -70,7 +70,16 @@ def _presentation_radical_order(gram: Any, invariants: Any) -> Any:
     return ZZ.prod(ZZ(invariant) for invariant in invariants) // image_order
 
 
-class SyntheticDiscriminantForm(FiniteAbelianGroup, Parent):
+if TYPE_CHECKING:
+    # Binds the stub's element-type parameter (typings/sage/structure/parent.pyi):
+    # Parent.__call__ then returns SyntheticDiscriminantGroupElement. Runtime
+    # Sage's Parent is a cython extension type and cannot be subscripted.
+    DiscriminantElementParent = Parent[SyntheticDiscriminantGroupElement]
+else:
+    DiscriminantElementParent = Parent
+
+
+class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
     r"""Ordinary finite quotient ``A / H`` of a synthetic discriminant group.
 
     The single invariant-factor finite-quotient parent; ``lift`` returns an element of
@@ -139,12 +148,6 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, Parent):
         if isinstance(coordinates, SyntheticDiscriminantGroupElement) and coordinates.parent() is self:
             return coordinates
         return self.element_class(self, coordinates)
-
-    if TYPE_CHECKING:
-        # Element construction: Parent.__call__ routes through
-        # _element_constructor_; refined to this parent's own element class
-        # (declaration only — a runtime __call__ would shadow Parent.__call__).
-        def __call__(self, coordinates: object = ..., /, *args: object, **kwds: object) -> SyntheticDiscriminantGroupElement: ...
 
     def cover(self) -> Any:
         return self._cover
@@ -1245,7 +1248,3 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
         if self._primary:
             sage_disc = sage_disc.primary_part(self._primary)
         return sage_disc
-
-    @classmethod
-    def trivial(cls, source_lattice: Any) -> SyntheticSourcedDiscriminantForm:
-        return cls(source_lattice, 0)

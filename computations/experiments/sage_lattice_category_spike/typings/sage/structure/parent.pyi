@@ -1,9 +1,17 @@
 # Repo-scoped stubs; see lexicon/README.md.
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Generic, TypeVar
 
 from sage.structure.element import Element
 
-class Parent:
+_E = TypeVar("_E", bound=Element, default=Element, covariant=True)
+
+class Parent(Generic[_E]):
+    # Generic over the element type: Parent.__call__ (conversion into the
+    # parent) returns the parent's own element class, so subclasses bind the
+    # parameter instead of re-declaring __call__ at the use site. The runtime
+    # class is a cython extension type (not subscriptable), so binding uses a
+    # TYPE_CHECKING-conditional base alias.
+    #
     # The category framework injects element_class at parent construction
     # (a class-level attribute on the dynamic parent class).
     element_class: ClassVar[Any]
@@ -22,9 +30,7 @@ class Parent:
     def variable_names(self) -> tuple[str, ...]: ...
     def _first_ngens(self, n: int) -> tuple[Any, ...]: ...
     def inject_variables(self, scope: object = ..., verbose: bool = ...) -> None: ...
-    # Element construction: the conversion map into this parent. Owned parents
-    # refine the return type to their own element class (TYPE_CHECKING-only —
-    # a runtime __call__ on a declaration class would shadow this method).
-    def __call__(self, x: object = ..., *args: object, **kwds: object) -> Element: ...
+    # Element construction: the conversion map into this parent.
+    def __call__(self, x: object = ..., *args: object, **kwds: object) -> _E: ...
     def coerce_map_from(self, S: object) -> Any: ...
     def has_coerce_map_from(self, S: object) -> bool: ...
