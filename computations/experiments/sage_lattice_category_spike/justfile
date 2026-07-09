@@ -4,9 +4,6 @@
 # This local recipe owns the spike's test layout so maintenance work does not
 # need to know the root justfile internals.
 
-# No bytecode litter: the root `just test` hygiene sweep rejects __pycache__.
-export PYTHONDONTWRITEBYTECODE := "1"
-
 # Run the full base-spike test suite via global Sage QC.
 # Test files are .sage so the Sage preparser converts integer literals to
 # Sage Integer/Rational before pytest collects them.
