@@ -1,0 +1,26 @@
+# Base Sage lattice-category spike.
+#
+# The root repository `just test` runs umbrella hygiene and then delegates here.
+# This local recipe owns the spike's test layout so maintenance work does not
+# need to know the root justfile internals.
+
+# Run the full base-spike test suite via global Sage QC.
+# Test files are .sage so the Sage preparser converts integer literals to
+# Sage Integer/Rational before pytest collects them.
+test:
+    @just -f ~/ai-review-ci/justfiles/sage.just -d . test
+
+# CI alias for the same proof surface.
+test-ci:
+    @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
+
+# Prove the lexicon stub subtree (lexicon/ + typings/): the catalogue must
+# type-check strictly as a collection of stubs, and every claim the stubs make
+# about Sage must hold on the running Sage (INVENTORY.md Part V).
+lexicon-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd ..
+    export MYPYPATH=sage_lattice_category_spike/typings
+    uvx mypy --strict --follow-imports=silent -p sage_lattice_category_spike.lexicon
+    sage -python -m sage_lattice_category_spike.lexicon.verify_against_sage

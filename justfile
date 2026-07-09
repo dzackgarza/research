@@ -1,6 +1,7 @@
 test:
     #!/usr/bin/env bash
     set -euo pipefail
+    export PYTHONDONTWRITEBYTECODE=1
     python3 - <<'PY'
     import json
     import os
@@ -32,6 +33,13 @@ test:
             continue
         parts = set(path.parts)
         if ".git" in parts:
+            continue
+        if path.parts and path.parts[0] == ".claude":
+            # Harness runtime state (gitignored permission store), not an
+            # agent-directed artifact; Claude Code requires it at repo root.
+            # Skipped BEFORE the lock/cache checks: the harness flaps a
+            # transient scheduled_tasks.lock here while background agents
+            # run, racing this sweep.
             continue
         if path.is_dir() and not any(path.iterdir()):
             raise SystemExit(f"empty placeholder directory should not exist: {path}")
@@ -81,5 +89,6 @@ test:
     if "projects/lattice-research" not in gitmodules.read_text():
         raise SystemExit("lattice-research submodule missing from .gitmodules")
     PY
+    just -f computations/experiments/sage_lattice_category_spike/justfile test
 
 test-ci: test

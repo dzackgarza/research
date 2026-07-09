@@ -1,0 +1,3 @@
+# Repo-scoped stubs; see lexicon/README.md.
+
+def normalize_names(ngens: int, names: object) -> tuple[str, ...]: ...

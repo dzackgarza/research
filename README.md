@@ -1,46 +1,66 @@
 # Research
 
-Canonical workspace for research notes, computational scratch work, and live project
-references.
+Workspace for mathematical notes, computation experiments, and live research
+project references.
 
-This repository is the umbrella for active mathematical research work. The layout
-follows the research pipeline, not a taxonomy of mathematical objects.
+## Lattice Spikes
 
-Raw scratch work can start messy. When a calculation becomes recognizable, give it a
-named computation thread. When code from a thread becomes generally useful inside this
-repo, promote it into a component. When a component becomes a project with its own
-history, split it into `projects/` as a submodule.
+The maintained Sage lattice-category experiments live under
+`computations/experiments`. The repo-local `.envrc` puts that experiment root
+on `PYTHONPATH`, so Sage scripts and notebooks opened from this repo can import
+the spikes directly. After checkout or after `.envrc` changes, run:
 
-## Layout
+```bash
+direnv allow
+```
 
-- `computations/`: scratchpad code, notebooks, named computation threads, generated artifacts, and reusable components.
-- `computations/components/`: code factored out of computations for reuse inside this repo.
-- `notes/`: human mathematical notes, paper notes, findings, extraction plans, and computation notes.
-- `projects/`: live research projects tracked as submodules once they deserve their own history.
-- `references/`: PDFs, generated indexes, upstream references, and local dependency notes.
-- `archives/provenance/`: non-agent source-context files retained to explain where imported material came from.
-- `.agents/`: agent-facing instructions, implementation references, operator guidance, and agent provenance.
+Use the base spike for Sage-parity lattice work:
+
+```sage
+from sage_lattice_category_spike import *
+
+L.<v> = Lattice([[2]], label="<2>")
+v * v   # 2  (quadratic form via *)
+```
+
+See `.agents/references/spike-style-guide.md` for the full style guide
+governing spike code, notebooks, and documentation.
+
+Use the feature spike only as the fork point for work beyond Sage parity. It
+imports the base spike as `base`; no ungated feature engines are assumed to
+exist there.
+
+```sage
+from sage_lattice_feature_spike import *
+
+L.<v> = feature.base.Lattice([[2]], label="<2>")
+v * v   # 2
+```
+
+Run the spike test gates from the repository root:
+
+```bash
+just -f computations/experiments/sage_lattice_category_spike/justfile test
+just -f computations/experiments/sage_lattice_feature_spike/justfile test
+```
+
+`just test` runs the repository hygiene sweep and then delegates to the
+base-spike test gate.
+
+## Repository Layout
+
+- `computations/`: scratchpad code, notebooks, named computation threads,
+  generated artifacts, and reusable components.
+- `computations/components/`: code factored out of computations for reuse inside
+  this repo.
+- `notes/`: human mathematical notes, paper notes, findings, extraction plans,
+  and computation notes.
+- `projects/`: live research projects tracked as submodules once they deserve
+  their own history.
+- `references/`: PDFs, generated indexes, upstream references, and local
+  dependency notes.
 
 ## Live Projects
 
-- `projects/lattice-research`: submodule for the live Coble/lattice research project.
-
-## Import Policy
-
-Imported scratchpad material is preserved before cleanup. Do not rewrite mathematical
-algorithms as part of organization-only work. Do not create empty directories as a plan
-for future classification. Let actual files and actual workflows justify directories.
-
-Use named computation threads for work that cuts across curves, surfaces, lattices,
-periods, and implementation details. Mathematical research rarely belongs to one clean
-object class.
-
-Promote stable code into cleaner components with separate verification commits.
-
-Do not commit machine-local dependency symlinks, transient index lock files,
-`node_modules`, `__pycache__`, or credential-bearing notebooks.
-
-Human mathematical material and agent/operator material have different homes. Paper
-summaries, research findings, and mathematical discussions belong under `notes/`.
-Instructions for running tools, navigating Sage internals, or avoiding agent workflow
-mistakes belong under `.agents/`.
+- `projects/lattice-research`: submodule for the live Coble/lattice research
+  project.

@@ -1,0 +1,22 @@
+[project]
+name = "sage-lattice-category-spike"
+version = "0.0.1"
+requires-python = ">=3.14"
+
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+# The package root IS this directory (imported as sage_lattice_category_spike
+# via computations/experiments on PYTHONPATH), so map the package name to ".".
+[tool.setuptools]
+package-dir = { "sage_lattice_category_spike" = "." }
+packages = [
+    "sage_lattice_category_spike",
+    "sage_lattice_category_spike.algebra",
+    "sage_lattice_category_spike.forms",
+    "sage_lattice_category_spike.lexicon",
+    "sage_lattice_category_spike.morphisms",
+    "sage_lattice_category_spike.objects",
+    "sage_lattice_category_spike.sage_patches",
+]
