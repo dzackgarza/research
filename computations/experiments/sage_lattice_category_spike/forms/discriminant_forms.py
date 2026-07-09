@@ -910,11 +910,11 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
         images = [self(list(sage_form(generator.lift()).vector())) for generator in sage_normal.gens()]
         return normal, SyntheticDiscriminantAction.from_images(self, images)
 
-    def miranda_morrison_normal_form(self, partial: bool = False, return_isometry: bool = False) -> Any:
+    def miranda_morrison_normal_form(self, return_isometry: bool = False) -> Any:
         r"""The Miranda-Morrison normal form of the finite quadratic form, as the
         owned ``(invariants, Gram)`` pair (MM09 IV Def. 2.2 for p odd; IV section 4
-        for 2-groups, whose Def. 4.1 "partial normal form" the ``partial`` flag names).
-        Comparing normal forms decides isometry of finite quadratic forms."""
+        for 2-groups). The normal form is a complete invariant: comparing normal
+        forms decides isometry of finite quadratic forms."""
         return self._delegated_normal_form(return_isometry)
 
     def brown_invariant(self) -> Any:

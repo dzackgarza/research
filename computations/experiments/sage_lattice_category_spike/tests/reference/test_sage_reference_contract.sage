@@ -682,7 +682,7 @@ def test_finite_quadratic_form_promotes_torsion_quadratic_module_operations():
     assert len(D.cosets(H)) == 3
     assert D.orthogonal(H).cardinality() == 3
     assert D.restricted_form(H) == matrix(QQ, 1, 1, [QQ(1) / 2])
-    assert D.miranda_morrison_normal_form() == D.miranda_morrison_normal_form(partial=True)
+    assert D.miranda_morrison_normal_form() == ((6,), matrix(QQ, 2, 2, [QQ(1) / 2, 0, 0, QQ(1) / 3]))
     assert D.is_isomorphic(lc.TorsionQuadraticForm(matrix.diagonal(QQ, [QQ(1) / 3, QQ(1) / 2])))
     assert D.twist(2).gram_matrix_bilinear() == matrix(QQ, 1, 1, [QQ(2) / 3])
 
