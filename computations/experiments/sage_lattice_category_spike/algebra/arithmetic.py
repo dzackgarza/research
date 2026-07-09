@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
 from sage.combinat.root_system.cartan_matrix import CartanMatrix
 from sage.matrix.constructor import diagonal_matrix, matrix, random_matrix
-from sage.misc.randstate import set_random_seed
+from sage.misc.randstate import seed as random_seed
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -61,10 +61,13 @@ def _is_named_gram_data(matrix_data: object) -> TypeGuard[LatticeName]:
 
 
 def _random_unimodular_congruence(seed_gram: Matrix) -> Matrix:
-    r"""Conjugate ``seed_gram`` by a random ``SL(n, ZZ)`` matrix ``A`` drawn from
-    Sage's already-seeded random state: ``A^T G A`` keeps the signature and
-    determinant of ``G`` (``det(A) = +-1``) while randomizing the basis. The
-    caller seeds the random state and chooses the diagonal seed's invariants.
+    r"""Conjugate ``seed_gram`` by a random ``SL(n, ZZ)`` matrix ``A``: the
+    ``algorithm="unimodular"`` draw has determinant exactly ``+1``. The
+    congruence ``A^T G A`` keeps the SIGNATURE of ``G`` by Sylvester's law of
+    inertia (true for any real invertible ``A``, independent of ``det(A)``), and
+    keeps the DETERMINANT because ``det(A^T G A) = det(A)^2 det(G) = det(G)``
+    using ``det(A)^2 = 1``. The caller scopes the random state (via ``seed``)
+    and chooses the diagonal seed's invariants.
     """
     basis_change = random_matrix(ZZ, seed_gram.nrows(), algorithm="unimodular")
     return basis_change.transpose() * seed_gram * basis_change
@@ -79,9 +82,9 @@ def random_gram_of_signature(pos: int, neg: int, *, seed: int) -> Matrix:
     lattice" object -- randomness is a property of this generator.
     """
     assert pos >= 0 and neg >= 0 and pos + neg > 0, f"signature must be nonnegative with positive rank; got ({pos}, {neg})"
-    set_random_seed(seed)
-    diagonal = [ZZ.random_element(1, 4) for _ in range(pos)] + [-ZZ.random_element(1, 4) for _ in range(neg)]
-    return _random_unimodular_congruence(diagonal_matrix(ZZ, diagonal))
+    with random_seed(seed):
+        diagonal = [ZZ.random_element(1, 4) for _ in range(pos)] + [-ZZ.random_element(1, 4) for _ in range(neg)]
+        return _random_unimodular_congruence(diagonal_matrix(ZZ, diagonal))
 
 
 def random_unimodular_gram_of_signature(pos: int, neg: int, *, seed: int) -> Matrix:
@@ -89,8 +92,8 @@ def random_unimodular_gram_of_signature(pos: int, neg: int, *, seed: int) -> Mat
     unit-diagonal seed ``diag(1^pos, (-1)^neg)`` has determinant ``+-1``,
     preserved by the congruence."""
     assert pos >= 0 and neg >= 0 and pos + neg > 0, f"signature must be nonnegative with positive rank; got ({pos}, {neg})"
-    set_random_seed(seed)
-    return _random_unimodular_congruence(diagonal_matrix(ZZ, [1] * pos + [-1] * neg))
+    with random_seed(seed):
+        return _random_unimodular_congruence(diagonal_matrix(ZZ, [1] * pos + [-1] * neg))
 
 
 def random_gram_of_determinant(determinant: int, rank: int, *, seed: int) -> Matrix:
@@ -98,8 +101,8 @@ def random_gram_of_determinant(determinant: int, rank: int, *, seed: int) -> Mat
     ``diag(determinant, 1, ..., 1)`` has that determinant, preserved by the
     congruence."""
     assert determinant != 0 and rank > 0, f"determinant must be nonzero and rank positive; got determinant={determinant}, rank={rank}"
-    set_random_seed(seed)
-    return _random_unimodular_congruence(diagonal_matrix(ZZ, [determinant] + [1] * (rank - 1)))
+    with random_seed(seed):
+        return _random_unimodular_congruence(diagonal_matrix(ZZ, [determinant] + [1] * (rank - 1)))
 
 
 def random_gram_of_rank(rank: int, *, seed: int) -> Matrix:
@@ -107,9 +110,9 @@ def random_gram_of_rank(rank: int, *, seed: int) -> Matrix:
     constraint on signature or determinant: a random nonzero-diagonal seed under
     the congruence."""
     assert rank > 0, f"rank must be positive; got {rank}"
-    set_random_seed(seed)
-    diagonal = [ZZ.random_element(1, 4) if ZZ.random_element(0, 2) == 0 else -ZZ.random_element(1, 4) for _ in range(rank)]
-    return _random_unimodular_congruence(diagonal_matrix(ZZ, diagonal))
+    with random_seed(seed):
+        diagonal = [ZZ.random_element(1, 4) if ZZ.random_element(0, 2) == 0 else -ZZ.random_element(1, 4) for _ in range(rank)]
+        return _random_unimodular_congruence(diagonal_matrix(ZZ, diagonal))
 
 
 def signature_pair(gram_matrix: object) -> SignaturePair:
