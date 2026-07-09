@@ -77,3 +77,16 @@ def test_there_is_no_public_root_lattice_constructor():
     # Membership is output, not input: no subcategory-named constructor surface.
     with pytest.raises(ImportError):
         from sage_lattice_category_spike.lattice_categories import RootLattice  # noqa: F401
+
+
+def test_there_is_no_public_u_constructor():
+    # U(n) is composable from existing primitives; a dedicated constructor
+    # (let alone string vocabulary like "U(2)") duplicates the algebra.
+    with pytest.raises(ImportError):
+        from sage_lattice_category_spike.lattice_categories import U  # noqa: F401
+
+
+def test_scaled_hyperbolic_plane_is_composed_not_dispatched():
+    U2 = Lattice("U").twist(2)
+    assert U2.gram_matrix() == matrix(QQ, [[0, 2], [2, 0]])
+    assert U2 in Lattices(ZZ).Indefinite().Hyperbolic()
