@@ -139,7 +139,9 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
         return f"Synthetic finite discriminant quotient with invariants {self.invariants()}"
 
     def __eq__(self, other: object) -> bool:
-        return type(self) is type(other) and self.cover() is other.cover() and self.relations() == other.relations() and self.invariants() == other.invariants()
+        # isinstance, not type identity: Sage wraps parents in dynamic
+        # ``_with_category`` subclasses, so equal quotients need not share a class.
+        return isinstance(other, SyntheticDiscriminantForm) and self.cover() is other.cover() and self.relations() == other.relations() and self.invariants() == other.invariants()
 
     def __hash__(self) -> int:
         return hash((id(self.cover()), self.relations(), self.invariants()))
@@ -433,8 +435,10 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
         return f"Synthetic finite lattice quotient with invariants {self.invariants()}"
 
     def __eq__(self, other: object) -> bool:
+        # isinstance, not type identity: Sage wraps parents in dynamic
+        # ``_with_category`` subclasses, so equal quotients need not share a class.
         return (
-            type(self) is type(other)
+            isinstance(other, SyntheticLatticeQuotient)
             and self.cover_lattice() == other.cover_lattice()
             and self.relation_lattice() == other.relation_lattice()
             and self.invariants() == other.invariants()
