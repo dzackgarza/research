@@ -18,6 +18,7 @@ from typing import TYPE_CHECKING, Any
 from sage.arith.functions import lcm
 from sage.matrix.constructor import column_matrix, identity_matrix, matrix
 from sage.misc.cachefunc import cached_method
+from sage.misc.randstate import seed as random_seed
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -141,7 +142,9 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
     def __eq__(self, other: object) -> bool:
         # isinstance, not type identity: Sage wraps parents in dynamic
         # ``_with_category`` subclasses, so equal quotients need not share a class.
-        return isinstance(other, SyntheticDiscriminantForm) and self.cover() is other.cover() and self.relations() == other.relations() and self.invariants() == other.invariants()
+        return (
+            isinstance(other, SyntheticDiscriminantForm) and self.cover() is other.cover() and self.relations() == other.relations() and self.invariants() == other.invariants()
+        )
 
     def __hash__(self) -> int:
         return hash((id(self.cover()), self.relations(), self.invariants()))
@@ -682,6 +685,22 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
 
     def isotropic_subgroups(self) -> tuple[Any, ...]:
         return tuple(subgroup for subgroup in self.all_submodules() if self.is_isotropic_subgroup(subgroup))
+
+    def random_isotropic_subgroup(self, *, seed: int) -> Any:
+        r"""A uniformly random NONTRIVIAL isotropic subgroup of this form.
+
+        This is glue DATA: pass its generators to ``lattice.glue`` to build a
+        random proper overlattice of the lattice this form came from. ``seed``
+        scopes Sage's random state (via the ``seed`` context manager), so the
+        choice is reproducible AND the caller's outer random stream is left
+        untouched. Fails loud if the form has no nontrivial isotropic subgroup --
+        the lattice then admits no proper isotropic gluing, which is a
+        caller-contract error to surface.
+        """
+        candidates = [subgroup for subgroup in self.isotropic_subgroups() if subgroup.cardinality() > 1]
+        assert candidates, "discriminant form has no nontrivial isotropic subgroup; this lattice admits no proper isotropic gluing"
+        with random_seed(seed):
+            return candidates[ZZ.random_element(0, len(candidates))]
 
     def is_lagrangian(self, subgroup_or_gens: Any) -> bool:
         subgroup = self._subgroup(subgroup_or_gens)
