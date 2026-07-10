@@ -833,7 +833,7 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateLattice, Synthe
         return primary_discriminant_group.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label)
 
     def genus(self) -> Genus:
-        return self.discriminant_group().genus(self.signature_pair(), even=self.is_even())
+        return self.discriminant_group().genus(self.signature_pair())
 
     def same_genus(self, other: IntegralNondegenerateLattice) -> bool:
         return self.genus() == other.genus()

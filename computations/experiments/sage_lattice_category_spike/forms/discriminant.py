@@ -539,12 +539,14 @@ class SyntheticGenus(Genus, Parent):
     representative lattice per class. Parity is the ``Even`` axiom, acquired as
     output from the discriminant form."""
 
-    def __init__(self, discriminant_group: Any, signature_pair: Any, even: bool = True) -> None:
+    def __init__(self, discriminant_group: Any, signature_pair: Any) -> None:
         from ..objects.categories import Genera
 
         self._discriminant_group = discriminant_group
         self._signature_pair = (ZZ(signature_pair[0]), ZZ(signature_pair[1]))
-        self._even = bool(even)
+        # Parity is a property of the discriminant form (output), never an input:
+        # an even genus has a discriminant quadratic form of value modulus 2.
+        self._even = bool(discriminant_group._quadratic_modulus() == 2)
         category = Genera(ZZ).Even() if self._even else Genera(ZZ)
         Parent.__init__(self, base=ZZ, category=category)
 

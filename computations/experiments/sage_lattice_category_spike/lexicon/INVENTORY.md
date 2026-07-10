@@ -136,11 +136,11 @@ Isometry: `IsometryGroup`, `IsometrySubgroup`, `DiscriminantOrthogonalGroup`, `D
 
 Finite forms: `DiscriminantForm`, `BilinearDiscriminantForm`, `QuadraticDiscriminantForm`, `SourcedDiscriminantForm`, `DiscriminantFormElement`, `DiscriminantSubgroup`.
 
-Genus: `Genus`.
+Genus: `Genus` — a category-backed parent in the `Genera` category: the finite set of isometry classes sharing a signature and discriminant form (Nikulin 1.10.1), so its cardinality is the class number. Parity is the `Even` axiom, acquired as output from the discriminant form, never a constructor input.
 
 Boundary codecs: `RawGramMatrix`, `RawMorphismMatrix` (raw matrix payloads: `Matrix | Sequence[Sequence[ExactScalar]]`), `RawVectors` (raw family of vectors in given coordinates — the subobject-algebra input: matrix rows, nested sequences, or actual `Vector`s), `LatticeName` (`str | CartanType` — a lattice designated by name; construction data, so an A/D/E name carries the RootGenerated provenance certificate while a raw Gram never does; ruling 2026-07-09: constructors live on `Lattice` itself, subcategory membership is output, never input), `GramMatrix` (in `foundations`), `FormKind`, `ValueModule`, narrowing functions `in_*`. (`MorphismMatrix` is retired — see I.4; `.matrix()` of a morphism is an ordinary `Matrix`. The `MatrixLike` protocol is retired 2026-07-09: it shadowed the real `Matrix` class — defect class I.2.)
 
-Missing-but-named (declared contracts whose types the audit shows are wrong or placeholder): `HyperbolicLattice.fundamental_chamber` returns `FundamentalChamberLike` (a placeholder) — the lexicon type is `geometry.Polyhedron`; `Genus.local_symbol` likewise returns the placeholder — the honest type is the Conway–Sloane local symbol object (`interop.SageLocalGenusSymbol`).
+Missing-but-named (declared contracts whose types the audit shows are wrong or placeholder): `HyperbolicLattice.fundamental_chamber` returns `FundamentalChamberLike` (a placeholder) — the lexicon type is `geometry.Polyhedron`. (`Genus.local_symbol` now returns the honest Conway–Sloane local symbol object `interop.SageLocalGenusSymbol`.)
 
 ### II.4 Geometry and combinatorics (`geometry.py`)
 

@@ -60,7 +60,7 @@ def sterk_comparison(left: Lattice, right: Lattice) -> bool:
 def k3_primitive_embedding_check() -> bool:
     """A2(-1) embeds primitively in the K3 lattice signature (3, 19)?"""
     a2_negative = in_integral_nondegenerate(from_gram_matrix("A2").twist(-1))
-    return a2_negative.embeds_primitively_in_unimodular((3, 19), even=True)
+    return a2_negative.embeds_primitively_in_even_unimodular((3, 19))
 
 
 def definite_enumeration_and_group() -> tuple[int, int]:

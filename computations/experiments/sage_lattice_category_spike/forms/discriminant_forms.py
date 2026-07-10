@@ -956,24 +956,26 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
                 blocks.append((ZZ(p), block, ring(_brown_indecomposable(block, ZZ(p)))))
         return tuple(blocks)
 
-    def is_genus(self, signature_pair: Any, even: bool = True) -> Any:
+    def is_genus(self, signature_pair: Any) -> Any:
         r"""Return whether this discriminant form and signature define an even genus,
-        decided by the ephemeral Sage TorsionQuadraticModule."""
+        decided by the ephemeral Sage TorsionQuadraticModule. Parity is read from the
+        form (an even genus has a quadratic form of value modulus 2), never passed in."""
         s_plus = ZZ(signature_pair[0])
         s_minus = ZZ(signature_pair[1])
         assert s_plus >= 0 and s_minus >= 0, f"signature invariants must be nonnegative; found s_plus={s_plus}, s_minus={s_minus}; fix the caller's signature pair"
+        even = self._quadratic_modulus() == 2
         assert even, (
             "genus classification through the discriminant-form correspondence is "
             "grounded only for the even case in this spike (the correspondence "
-            "itself is parity-agnostic; the odd-form implementation is unbuilt); "
+            "itself is parity-agnostic; the odd-form implementation is Phase B, #57); "
             f"signature_pair={(s_plus, s_minus)}, invariants={self.invariants()}"
         )
         return self._sage_engine().is_genus((s_plus, s_minus), even=even)
 
-    def genus(self, signature_pair: Any, even: bool = True) -> Any:
-        r"""Return the synthetic genus datum determined by signature and discriminant form."""
-        assert self.is_genus(signature_pair, even=even), "this discriminant form and signature do not define a genus in this spike"
-        return SyntheticGenus(self, signature_pair, even=even)
+    def genus(self, signature_pair: Any) -> Any:
+        r"""Return the synthetic genus determined by signature and discriminant form."""
+        assert self.is_genus(signature_pair), "this discriminant form and signature do not define a genus in this spike"
+        return SyntheticGenus(self, signature_pair)
 
     def twist(self, scalar: Any) -> Any:
         r"""The form scaled by ``scalar`` on the SAME group (Sage
