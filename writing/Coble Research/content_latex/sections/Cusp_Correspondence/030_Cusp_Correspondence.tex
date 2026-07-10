@@ -1,0 +1,251 @@
+\documentclass[../../main.tex]{subfiles}
+
+\begin{document}
+
+
+\subsection{Cusp Diagrams}
+
+\subsubsection{Mirror moves}\label{sec:mirror-moves}
+Having identified the 2-elementary lattice $S_\Co = (11, 11, 1)_1$, one can apply the mirror move algorithm of \cite[Thm. 5.10]{AE22} to determine the 0-cusps and 1-cusps of $F_\Co$.
+The outcome of the algorithm is summarized by the following tree:
+
+\begin{figure}[H]
+    \centering
+    \input{figures/tikzcd/fig_030_Cusp_Correspondence_3.tex}
+    \caption{Blue (resp. red) indicate lattices which are valid (resp. invalid) targets of mirror moves.}
+    \label{fig:enter-label}
+\end{figure}
+
+Thus $F_\Co$ has one 0-cusp corresponding to an isotropic vector $v_0$ with \[
+v_0^\perp/v_0 \cong (9,9,1)_1 \cong \gens{2} \oplus E_{8}(2)
+.\] 
+Moreover, this 0-cusp $v_0$ is incident to one 1-cusp $C_0$ corresponding to an isotropic plane $J$ with 
+\[
+J^\perp/J \cong (7,7,1)_0 \cong A_1^{\oplus 7}
+.\]
+Note that $v_0$ corresponds to a Type $\rm{III}$ boundary, while $C_0$ corresponds to a type $\rm{II}$ boundary. It is easily verified that the Coxeter diagram $G_{(9,9,1)_1}$ at $v_0$ has precisely one maximal parabolic subdiagram, corresponding to a finite-index root lattice of type $B_7$. 
+
+
+By \cite[Prop. 5.46]{CD12}, there is an open embedding $F_{(11, 11, 1)} \injects F_{(10,10,0)}$, i.e. $F_\Co \injects F_\En$, realizing $F_\Co$ as the coarse space of marked Coble surfaces with $n=1$, where $n$ is the number of boundary components in $C = C_1 + \cdots + C_n$. The image is an open subset of a closed irreducible subset of $\cH_{-2}/\Gamma_\En$. By \cite[Thm. 5.8.2]{CD12}, the coarse space of $F_\Co$ is a rational variety, and since $F_\En$ is quasiprojective, so too is $F_\Co$. Moreover, $\partial \overline{F_{\En}}^{\mathrm{BB}}$ consists of $F_{\Co}$ and two modular curves $X$ and $X_0(2)$ by \cite[Rem.5.9.12]{CD12}, and the closure of $\cH_{-2}$ contains the modular curve $X$.
+
+\subsection{Enriques cusps}
+
+
+
+We recall from \cite{AEGS23} the cusp diagram for $F_\En$, the moduli space of unpolarized Enriques surfaces, in \cref{fig:enriques-cusps} and the corresponding Coxeter diagrams in \cref{fig:enriques-coxeter-diagrams}.
+
+% Cusp diagram F_En
+\begin{figure}[H]
+    \centering
+    \input{figures/tikz/fig_030_Cusp_Correspondence_2.tex}
+    \caption{Cusp diagram for $F_\En = F_{(10, 10, 0)}$ corresponding to $T_\En = U \oplus E_{10}(2)$.}
+    \label{fig:enriques-cusps}
+\end{figure}
+
+% Coxeter diagram 10,10,0 and 10,8,0
+\begin{figure}[H]
+  \centering
+  \input{figures/tikz/fig_030_Cusp_Correspondence_3.tex}
+  \caption{Coxeter diagrams $G_{(10,10,0)_1} = G_{E_{10}(2)}$ and $G_{(10,8,0)_1} = G_{U \oplus E_8(2)}$.}
+  \label{fig:enriques-coxeter-diagrams}
+\end{figure}
+
+The maximal parabolic subdiagrams for $(10, 10, 0)$ and $(10, 8, 0)$ are shown in \cref{fig:enriques-maximal-parabolics-10-10-0} and \cref{fig:enriques-maximal-parabolics-10-8-0} respectively.
+
+\begin{figure}[H]
+    \centering
+\input{figures/tikz/fig_030_Cusp_Correspondence_4.tex}
+    \caption{The unique maximal parabolic $\tilde E_8(2)$ in $(10, 10, 0)_1$, corresponding to the one-cusp $(8, 8, 0)_0$ in $F_\En$.}
+    \label{fig:enriques-maximal-parabolics-10-10-0}
+\end{figure}
+
+
+
+\begin{figure}[H]
+    \centering
+    \input{figures/tikz/fig_030_Cusp_Correspondence_5.tex}
+    \caption{The two maximal parabolics $\tilde E_8, \tilde B_8$ in $(10, 8, 0)_1$ corresponding to the 1-cusps $(8,8,0)_0$ and $(8,6,0)_0$ respectively.}
+    \label{fig:enriques-maximal-parabolics-10-8-0}
+\end{figure}
+
+\subsection{Coble cusps}
+
+Applying the mirror moves from \cref{sec:mirror-moves}, we obtain the cusp diagram for $F_\Co$, the moduli space of unpolarized Coble surfaces, shown in \cref{fig:coble-cusps}.
+
+% Cusp diagram F_Co
+\begin{figure}[H]
+    \centering
+    \input{figures/tikz/fig_030_Cusp_Correspondence_6.tex}
+    \caption{Cusp diagram for $F_\Co = F_{(11, 11, 1)}$ where $T_\Co = \gens{2} \oplus E_{10}(2)$.}
+    \label{fig:coble-cusps}
+\end{figure}
+
+The corresponding Coxeter diagrams are computed in \cite{AN06} and \cite{AEGS23}, and shown in \cref{fig:coble-coxeter-diagrams}. Only the maximal parabolic subdiagrams of $(9, 9, 1)$ are relevant when determining 1-cusps, and these are shown in \cref{fig:coble-cusp-9-9-1-parabolics}.
+
+% Coxeter diagram 7,7,1 and 9,9,1
+\begin{figure}[H]
+\centering
+\input{figures/tikz/fig_030_Cusp_Correspondence_7.tex}
+    \caption{The Coxeter diagram $G_{(9,9,1)_1} = G_{\gens{2} \oplus E_8(2)}$.}
+    \label{fig:coble-coxeter-diagrams}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \input{figures/tikz/fig_030_Cusp_Correspondence_8.tex}
+    \caption{The unique maximal parabolic subdiagram $\tilde B_7(2)$ of $(9,9,1)_1$, corresponding to single one-cusp $(7,7,1)_0$ in $F_\Co$.}
+    \label{fig:coble-cusp-9-9-1-parabolics}
+\end{figure}
+
+We note that $G_{(9, 9, 1)_1}$ has precisely one maximal parabolic subdiagram of the form $\tilde B_7(2)$, verifying that there is only one adjacent 1-cusp to the unique 0-cusp in $F_\Co$. 
+We also note the correspondence between the maximal parabolic $\tilde B_8(2)$ in $F_\En$, and $\tilde B_7(2)$ in $F_\Co$, and furthermore that $G_{(10, 8, 0)_1}$ can be obtained from $G_{(9, 9, 1)_1}$ by inserting one new node. This correspondingly transforms the $\tilde B_7(2)$ subdiagram of $G_{(9, 9, 1)_1}$ into the $\tilde B_8(2)$ subdiagram of $G_{(10, 8, 0)_1}$.
+
+\subsection{Enriques to Coble correspondence}
+
+\begin{theorem}\label{thm:cusp_correspondence}
+The embedding $F_\Co\to F_\En$ induces the correspondence on boundary cusps of the Baily-Borel compactifications shown in \cref{fig:enriques-coble-correspondence}.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/tikz/fig_030_Cusp_Correspondence_9.tex}
+    \caption{Cusp correspondence $F_\Co \to F_\En$.}
+    \label{fig:enriques-coble-correspondence}
+\end{figure}
+
+\end{theorem}
+
+We prove the cusp correspondence by comparing divisibilities of isotropic vectors at 0-cusps.
+
+\begin{lemma}\label{lem:divisibility_always_two_Tco}
+Any $v\in T_\Co$ satisfies $\mathrm{div}_{T_\Co}(v) = 2$ if there exists any $v'\in T_\Co$ for which $v\cdot v' \neq 0$. 
+\end{lemma}
+\begin{proof}
+Let $M_{T_\Co}$ be the Gram matrix for $T_\Co$, and note that since 
+\[
+T_\Co = \gens{2} \oplus E_{10}(2) = \qty{\gens{1} \oplus E_{10}}(2)
+,\]
+every entry in $M_{T_\Co}$ is 2-divisible. Thus one can write $M_{T_\Co} = 2A$ for some integral matrix $A$. Letting $v' \in T_\Co$ be any other vector not orthogonal to $v$, we have
+    \begin{align*}
+        v\cdot v' = \langle v, M_{T_\Co}v' \rangle = \langle v, 2 Av' \rangle 
+        = 2\langle v, Av' \rangle \neq 0
+    ,\end{align*}
+    where $\langle \cdot, \cdot\rangle$ is the standard Euclidean inner product. Thus 2 divides $v\cdot v'$, and since $\mathrm{div}_{T_\Co}(v) \in \ts{1, 2}$ for any $v \in T_\Co$, the result follows.
+\end{proof}
+
+\begin{lemma}\label{lem:divisibility_Tco_one}
+Fixing notation,
+\begin{align*}
+    v_1 &\da e' & w_1 &\da \eta(v_1) = \tilde e' \\
+    v_2 &\da 2h + \alpha_1 + \alpha_2 & w_2 &\da \eta(v_2) = 2\tilde e + 2\tilde f + \tilde\alpha_1 + \tilde\alpha_2 \\
+    J &\da \gens{v_1, v_2} & \tilde J &\da \gens{w_1, w_2}
+\end{align*}
+We then have $\mathrm{div}_{T_\En}(w_1) = 2$.
+\end{lemma}
+
+\begin{proof}
+By \cref{lem:divisibility_always_two_Tco}, we have in particular that $v_1$ has divisibility 2 in $T_\Co$; moreover it is isotropic. Since there is a unique $\Gamma_\Co$-orbit of isotropic vectors in $T_\Co$, one can associate $v_1$ to the unique 0-cusp of $F_\Co$, so that 
+\[
+(v_1)^{\perp T_\Co}/v_1 \cong (9,9,1) \cong \gens{2} \oplus E_8(2)
+.\]
+
+
+Since $\tilde e' \tilde f' = 2$, and $\tilde e'$ is orthogonal to the remaining generators of $T_\En$, we have 
+\[
+\mathrm{div}_{T_\En}(w_1) \da \mathrm{div}_{T_\En}(\eta(e'))  
+ = \mathrm{div}_{T_\En}(\tilde e') = 2
+.\]
+\end{proof}
+
+\begin{lemma}\label{lem:w1_perp_calculation}
+Cusp $(9,9,1)$ maps to cusp $(10, 8, 0)$.
+\end{lemma}
+
+\begin{proof}
+The cusp correspondence follows from computing the lattice $w_1^{\perp T_{\En}}/w_1$ under the primitive embedding $\eta$:
+\[
+{(\tilde e')^{\perp T_\En} \over \gens{\tilde e'}} =
+{ 
+\langle\tilde{e}, \tilde{f}\rangle
+\oplus
+\left\langle\tilde{e}^{\prime}\right\rangle
+\oplus
+\left\langle\tilde{\alpha}_{1}, \cdots, \tilde{\alpha}_{8} \right\rangle
+\over 
+\gens{ \tilde{e}^{\prime} }}\cong\langle\tilde{e}, \tilde{f}\rangle \oplus\left\langle
+\tilde{\alpha}_{1},\cdots, \tilde{\alpha}_{8}
+\right\rangle \cong U \oplus E_{8}(2) \cong (10,8,0)
+.\]
+
+Alternatively, by \cite[Prop. 5.5]{AE22}, the isomorphism type of $w_1^{\perp T_{\En}}/w_1$ is determined by $\mathrm{div}_{T_\En}(w_1)$; by \cref{lem:divisibility_Tco_one} $\mathrm{div}_{T_\En}(w_1) = 2$. Since the divisibility of the isotropic vector at the Enriques 0-cusp $(10, 8, 0)$ is also 2, the correspondence follows.
+\end{proof}
+
+\begin{lemma}\label{lem:1_cusp_correspondence}
+Cusp $(7,7,1)$ maps to cusp $(8, 6, 0)$.
+\end{lemma}
+
+\begin{proof}
+
+The results follows from verifying that the unique orbit $J$ of a primitive isotropic plane in $T_\Co$ satisfies $J^{\perp T_\Co}/J \cong (7,7,1)$, and identifying the isomorphism type of its image $\tilde J^{\perp T_\En}/\tilde J$ in $T_\En$.
+One checks that both $v_2$ and $w_2$ are isotropic, and $v_2 \in v_1^{\perp T_\Co}/v_1$, and so $J$ and $\tilde J$ define isotropic planes in $T_\Co$ and $T_\En$ respectively. By \cite[Prop. 5.5, Lem. 5.9]{AE22}, it suffices to show
+\[
+\mathrm{div}_{w_1^{\perp T_\En} /w_1}(w_2)  \da \mathrm{div}_{U \oplus E_8(2)}(2\tilde e + 2\tilde f + \tilde \alpha_1 + \tilde \alpha_2)= 2
+,\]
+since the isomorphism type of $\tilde J^\perp/\tilde J$ is uniquely determined by the isomorphism type of $w_2^{\perp T_\En}/w_2$ in $w_1^{\perp T_\En}/w_1$, which is in turn uniquely determined by the characterization of $w_2$ as odd, even ordinary, or even characteristic in $w_1^{\perp T_\En}/w_1$, which by \cref{lem:w1_perp_calculation} is isomorphic to $U \oplus E_8(2)$. One checks directly in coordinates: let $x+y\in U \oplus E_8(2)$ and consider its pairing with $w_2$:
+\begin{align*}
+(x+y)\cdot w_2 
+= (x+y)\cdot (2\tilde e + 2\tilde f + \tilde \alpha_1 + \tilde \alpha_2 )
+= 2x\cdot (\tilde e + \tilde f) + y\cdot (\tilde \alpha_1 + \tilde \alpha_2)
+,\end{align*}
+where we've used orthogonality relations. We note that the first term is evidently even, while the second term is even because all pairings are either zero or divisible by two in the $E_8(2)$ summand of $U \oplus E_8(2)$.
+\end{proof}
+
+\begin{remark}
+This can also be proved by considering the divisorial presentation of $F_{\Co}$ as $\cH_{-2}/\Orth(T_\En)$. If $J'$ is an isotropic plane in $T_\En$ generated by $x_1, x_2$ where both $x_i$ are orthogonal to a $(-2)$-vector in $T_\En$, then the 1-cusp corresponding to $J'$ will be contained in the closure of $\cH_{-2}$. One checks that cusp $(8, 6, 0)_0$ is associated to the isotropic plane 
+$$
+J' = \gens{e', 2e + 2f + 2\bar\alpha_1} \subset T_\En
+$$ 
+where both $e'$ and $2e + 2f + 2\bar\alpha_1$ are orthogonal to the $(-2)$-vector $e-f\in T_{\En}$. On the other hand, cusp $(8,8,0)$ does not satisfy this property -- the vector $e\in T_\En$ is not orthogonal to any $(-2)$-vectors in $T_\En$, and the isotropic plane at this cusp must include $e$ as a generator.
+\end{remark}
+
+\begin{remark}
+The two 1-cusps $(8,8,0)$ and $(8,6,0)$ in $F_\En$ are isomorphic to the modular curves $X_0(2)$ and $X \da \overline{\bH / \SL_2(\bZ)}$ respectively, and by \cite[Cor. 5.9.10]{CD12} the 1-cusp $(7,7,1)$ in $F_\Co$ is isomorphic to $X$. This can additionally be verified by \cite[Prop. 5.13]{AE22}: the 1-cusp $(7,7,1)$ in $T_\Co$ is incident to exactly one 0-cusp, as is the 1-cusp $(8,6,0)$ in $T_\En$, and thus the corresponding modular curves are both isomorphic to $X$.
+We conjecture that general correspondences on 1-cusps must preserve the isomorphism types of the corresponding modular curves, yielding an alternative proof of \cref{lem:1_cusp_correspondence}.
+\end{remark}
+
+
+\begin{lemma}\label{lem:cusp_map_dP}
+Let $\tilde w_i$ be the images of $v_i$ in $T_\dP$ under the embedding described in \cref{lem:sequence_of_embeddings}. Then
+\begin{align*}
+    \tilde w_1^{\perp T_\dP}/\tilde w_1 &\cong (18, 0, 0)_1 \cong U \oplus E_8^2 \\
+    \tilde w_2^{\perp T_\dP}/\tilde w_2 &\cong (16, 0, 0)_0 \cong_? E_8^2 \ 
+\end{align*}
+Thus the embedding $F_\Co \injects F_{(2,2,0)}$ induces the following maps on cusps:
+\begin{align*}
+    (9, 9, 1)_1 &\mapsto (18, 0, 0)_1 \\
+    (7, 7, 1)_0 &\mapsto (16, 0, 0)_0
+\end{align*}
+\end{lemma}
+
+\begin{proof}
+    The map on 0-cusps follows from identifying $\tilde w_1 = e' \in T_{\dP} = \gens{e,f} \oplus \gens{e', f'}\oplus \gens{\alpha_1,\cdots,\alpha_8}\oplus \gens{\tilde \alpha_1,\cdots, \tilde \alpha_8}$ and noting
+    \begin{align*}
+    { (e')^{\perp T_\dP} \over e'} &\cong
+    {\gens{e,f} \oplus \gens{e'}\oplus \gens{\alpha_1,\cdots,\alpha_8}\oplus \gens{\tilde \alpha_1,\cdots, \tilde \alpha_8} \over e'} \\
+    &\cong 
+    \gens{e,f} \oplus \gens{\alpha_1,\cdots,\alpha_8}\oplus \gens{\tilde \alpha_1,\cdots, \tilde \alpha_8} 
+    \\ &\cong U \oplus E_8^2.
+    \end{align*}
+    To determine the map on 1-cusps, it suffices to determine
+    \[
+    \mathrm{div}_{U\oplus E_8^2}(\tilde w_2), \qquad \tilde w_2 = 2e + 2f + \alpha_1 + \alpha_2 + \tilde \alpha_1 + \tilde \alpha_2
+    \]
+    However, observing that $\tilde w_2\cdot \alpha_3 = 1$, we immediately obtain that the divisibility is one. Thus $\tilde w_2$ is odd, and we apply case (a) of \cite[Thm. 5.10]{AE22}.
+\end{proof}
+
+\begin{remark}
+    By the cusp correspondence in \cite{AEGS23}, this matches cusp $(9,9,1)_1$ in $T_\Co$ with Sterk cusp 2 as the folding of $(18,0,0)_1$ by the horizontal symmetry of its Coxeter diagram. This means that the corresponding IAS and Kulikov models will be disc type, and correspond to the folding involution of Sterk 2.
+\end{remark}
+
+
+
+\end{document}

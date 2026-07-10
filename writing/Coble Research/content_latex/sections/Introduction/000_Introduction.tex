@@ -1,0 +1,123 @@
+\documentclass[../../main.tex]{subfiles}
+
+\begin{document}
+
+\subsection{Basics of Coble surfaces}
+
+\begin{remark}[On defining Cobles]
+Following \cite[\S 5.1]{DM19}, a \textbf{Coble surface} is a smooth projective rational surface with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S} \neq \emptyset$. Such surfaces were first studied in \cite{Cob19}, \cite{Cob29}, and were ultimately classified in \cite{DZ99}. We say $S$ is \textbf{terminal of K3 type} if $\abs{-2K_S}$ contains a smooth\footnote{More generally, by \cite{DK24}, this can be relaxed to a reduced simple normal crossings divisor.} divisor $C = C_1 + \cdots + C_{n}$, the disjoint union of $n$ reduced smooth rational curves $C_i$ satisfying $C_i^2 = -4$\footnote{This follows from an application of the genus formula: $$p_{a}(C)=1+\frac{1}{2}\left(C^{2}+C \cdot K_{S}\right)=1+K_{S}^{2}=0,$$ and so $C$ is a smooth rational curve satisfying $C^2 = 4K_S^2 = -4$ since $K_S^2 = -1$. This is \cite[\S. 3.1]{CD12}.}, and thus $C_i C_j = -4\delta_{ij}$. The $C_i$ are referred to as the \textit{boundary components} of $S$. One can show $n = -K_S^2$ and $n\leq 10$.
+\end{remark}
+
+\begin{remark}[Cobles as blowups]
+Such a Coble surface $S$ can be shown to be a \textit{basic rational surface}, i.e. it admits a birational morphism to $\pi: S\to \bP^2$ which decomposes as blowups of $N$ points.\footnote{By the proof of \cite[Prop 9.13]{DK24}.} The number of points $N$ depends on $n$; more precisely, one can show $N = 9+n$. The image of $C$ is a divisor in $\abs{-2K_{\PP^2}} = \abs{\cO_{\bP^2}(6)}$ and is thus always a sextic curve. We primarily restrict to the case $n=1$, whence $K_S^2=-1$ and $S$ is obtained as the blowup of a special set of ten points in $\ts{p_1,\cdots, p_{10}} \subset \bP^2$. 
+
+In this case, $\tilde C \da \pi(C)$ is an irreducible rational sextic plane curve, and the ten points $p_i$ are precisely its 10 $A_1$ singularities, some of which may be infinitely near. This is the classical example studied in \cite{Cob19} and \cite{Cob29} -- the blowup $S$ of $\PP^2$ at the ten $A_1$ singularities of an irreducible plane sextic curve with at worst $A_1$ singularities,  corresponding to the $n=1, N=10$ case above. \cite{Cob19} shows, among other things, that there are finitely many $\Aut(S)$-orbits of smooth rational curves of negative self-intersection.
+
+Note that conversely, starting with such a plane sextic $\tilde C$, one can show that the proper transform $C$ of $\tilde C$ is in $\abs{-2K_S}$. Blowing up the singularities of $C$ yields a Coble surface with \textit{smooth} anti-bicanonical divisor; such Coble surfaces are not the image of any birational but not biregular morphism from another Coble surface and are said to be \textbf{terminal}. We say $S$ is \textbf{minimal} if the blowdown of any $(-1)$-curve on $S$ is no longer a Coble surface, or equivalently if $S$ does not admit a birational but not biregular morphism onto another Coble surface.
+\end{remark}
+
+\begin{remark}[On the importance of Cobles]
+Following \cite[\S 1.4]{CD12}, a point set $\mathcal{P}=\left\{p_{1}, \ldots, p_{n}\right\}$ of $\mathbb{P}^{2}$ is called \textbf{Cremona special} if $n \geq 9$ and if the surface $S$ obtained by blowing up $\mathcal{P}$ is such that $\Aut^*(S)$, the image of $\Aut(S)$ in $\Orth(\Pic(S))$, has finite index in the infinite Weyl group $W_{S}$. The surface $S$ is then also called Cremona special. This condition of finiteness roughly expresses that $\Aut^*(X)$ is as large as possible. A point set is called \textit{unnodal} if its blowup does not contain any $(-2)$-curves. In \cite{CD12}, it is proved that a Cremona special complex rational surface is either an unnodal Halphen surface (with $n=9$) or an unnodal Coble surface (with $n=10$), that unnodal point sets define a Zariski open subset in the moduli space of point sets defining Halphen and Coble surfaces, and that Cremona special Halphen and Coble surfaces are precisely the unnodal ones.
+\end{remark}
+
+\subsection{K3 covers}
+
+\begin{remark}[On relation to K3s]
+Let $\cL \da \OO_S(-K_S) \in \Pic(S)$; By \cite[Prop. 9.1.1]{DK24}, taking a section $s\in H^0(\cL ^{\otimes 2})$ with $Z(s) = C$ yields a branched double cover $f: X\to S$ where $X$ is a smooth K3 surface. Let $\sigma$ be the involution generating the deck transformations of this cover. Then the fixed locus $\mathrm{Fix}(\sigma)$ is a union of $n$ smooth rational curves which are precisely $f^{-1}(C_i)$ where $C_i$ are the irreducible components of $C$ in $S$. By \cite[Def. 5.4.3]{CD12}, the preimages $f^{-1}(C_i)$ are disjoint $(-2)$-curves and $\Pic(X)$ is a 2-elementary lattice with invariants of the form $(10+n, 12-n, \delta)$. By \cite[Def. 5.4.3, Eqn. 5.3.1]{CD12}, the ramification divisor $R$ is explicitly of one of the following forms:
+
+\begin{enumerate}
+    \item $R=\emptyset$ if $(r,a,\delta) = (10, 10, 0)$,
+    \item $R$ is a sum of two elliptic curves if $(r,a,\delta) = (10, 8, 0)$,
+    \item $R$ is the sum of a single rational curve and $n-1$ other disjoint $(-2)$-curves otherwise.
+\end{enumerate}
+\end{remark}
+
+\subsection{Moduli}
+
+\begin{remark}[Coble moduli as a divisor in Enriques moduli]
+For each $1\leq n \leq 10$, there is a moduli space of Coble surfaces with $n$ boundary components. As noted, we will primarily be interested in the $n=1$ case. In this case, we have two distinct constructions of a moduli space of such Coble surfaces. Coble surfaces appear as degenerations of Enriques surfaces, and in fact they form a boundary divisor $\cH_{-2}$ in the 10-dimensional moduli space $F_{\En}$ of Enriques surfaces. Thus they form a 9-dimensional moduli space.  These are realized by allowing the K3 cover of an Enriques surface to acquire an $A_1$ singularity fixed by the Enriques involution; the resulting quotient has a quartic singularity whose resolution is an irreducible smooth rational curve $C$ satisfying $C^2 = -4$, and by \cite[p.\, 8]{Nue15} is thus a Coble surface $S$. 
+\end{remark}
+
+\begin{remark}[Hodge/lattice theoretic moduli]
+Separately, one can construct a Hodge-theoretic period domain directly using lattice theory.\footnote{
+The following can be found in an unpublished note at \href{https://homepage.mi-ras.ru/~prokhoro/conf/isk20/Dolgachev.pdf}{https://homepage.mi-ras.ru/~prokhoro/conf/isk20/Dolgachev.pdf}.
+}
+Write $\abs{-2K_S} = \ts{C}$ where $C = C_1 + \cdots + C_n$ has $n$ irreducible components. By adjunction and the genus formula, $C_i\cong \PP^1$ and $C_i^2 = -4$, so $K_S^2 = -n$. Let $\Sigma$ be a sufficiently general Coble point set in $\PP^2$. There are 10 irreducible families of K3s obtained as the double cover of $S$ branched over $C$, where the fixed locus of the deck transformation is comprised of $n$ smooth rational curves. Generally the rank of $\Pic(X)$ is $r=10+n$ and $\ell = 12-n$, and $K_S^2 = 9-\abs\Sigma$.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline$n$ & $\abs\Sigma$ & $K_{\mathrm{V}}^{2}$ & $M = (r, l, \delta)$ & 2-elementary lattice $M$ & $N=M^{\perp}$ \\
+\hline 1 & 10 & -1 & $(11,11,1)$ & $\mathrm{E}_{10}(2) \oplus \mathrm{A}_{1}$ & $\mathrm{I}^{2,9}(2)$ \\
+2 & 11 & -2 & $(12,10,1)$ & $\mathrm{E}_{8}(2) \oplus \mathrm{U} \oplus \mathrm{A}_1^{\oplus 2}$ & $\mathrm{I}^{2,8}(2)$ \\
+3 & 12 & -3 & $(13,9,1)$ & $\mathrm{D}_{4}^{\oplus 2} \oplus \mathrm{A}_{1}^{\oplus 3} \oplus \mathrm{U}(2)$ & $\mathrm{I}^{2,7}(2)$ \\
+4 & 13 & -4 & $(14,8,1)$ & $\mathrm{D}_{4}^{\oplus 2} \oplus \mathrm{A}_{1}^{\oplus 4} \oplus \mathrm{U}(2)$ & $\mathrm{I}^{2,6}(2)$ \\
+5 & 14 & -5 & $(15,7,1)$ & $\mathrm{E}_{8} \oplus \mathrm{A}_{1}^{\oplus 5} \oplus \mathrm{U}$ & $\mathrm{I}^{2,5}(2)$ \\
+6 & 15 & -6 & $(16,6,1)$ & $\mathrm{E}_{10} \oplus \mathrm{A}_{1}^{\oplus 6}$ & $\mathrm{I}^{2,4}(2)$ \\
+7 & 16 & -7 & $(17,5,1)$ & $\mathrm{E}_{8} \oplus \mathrm{D}_{6} \oplus \mathrm{A}_{1} \oplus \mathrm{U}(2)$ & $\mathrm{I}^{2,3}(2)$ \\
+8 & 17 & -8 & $(18,4,0)$ & $\mathrm{E}_{8} \oplus \mathrm{D}_{8} \oplus \mathrm{U}(2)$ & $\mathrm{U}(2)^{\oplus 2}$ \\
+8 & 17 & -8 & $(18,4,1)$ & $\mathrm{E}_{10} \oplus \mathrm{D}_{6} \oplus \mathrm{A}_{1}^{\oplus 2}$ & $\mathrm{I}^{2,2}(2)$ \\
+9 & 18 & -9 & $(19,3,1)$ & $\mathrm{E}_{10} \oplus \mathrm{D}_{8} \oplus \mathrm{A}_{1}$ & $\mathrm{I}^{2,1}(2)$ \\
+10 & 19 & -10 & $(20,2,1)$ & $\mathrm{E}_{10} \oplus \mathrm{D}_{10}$ & $(2\rangle^{\oplus 2}$ \\
+\hline
+\end{tabular}
+\label{table:coble-lattices}
+\caption{Lattices $M$ and $N$ associated to moduli of Coble surfaces with $n$ boundary components.}
+\end{table}
+
+The case of interest to us is $n=1$, and thus the lattice $M = (11, 11, 1) = A_1 \oplus E_{10}(2)$ and its complement $N$ in the K3 lattice will be used to construct a period domain quotiented by an appropriate arithmetic subgroup, producing the coarse moduli space of interest.
+\end{remark}
+
+
+\begin{remark}[On nonsymplectic involutions]
+As described in \cite{DZ99}, the double cover $\pi: X\to S$ realizes $X$ as a degeneration of a K3 cover of an Enriques surface, which thus describes a family of K3s equipped with a nonsymplectic involution as studied in \cite{AE22} and a corresponding family of Enriques surfaces as studied in \cite{AEGS23}.
+It seems that these degenerations correspond to the (weakly projective) \textbf{flowerpot} degenerations of \cite{Mor81}, and I conjecture that the corresponding Kulikov models correspond to integral-affine discs (as opposed to spheres or real projective spaces).
+\end{remark}
+
+\todo{For introduction, need to say more about the nonsymplectic involution machinery is being used in this particular case?}
+
+\subsection{Morrison's degenerations}
+
+\todo{These two subsections are probably too much for the introduction, and may not end up being relevant anyway?}
+
+\begin{remark}[On Morrison's degenerations]
+As explained in \cite{Mor81} and the appendix of \cite{Sha81}, a \textbf{flower} is a pair $(\PP^2, C)$ where $C^2 = 4$ is a conic, while a \textbf{pot} is a pair $(V, D)$ where $V$ is a rational surface and $D = \sum C_i$ is a sum of rational curves satisfying $C_i\cdot C_j = -4\delta_{ij}$. A \textbf{stalk} is a pair $(\Sigma_4, s_0 + s_\infty)$ where $\Sigma_4$ is a rational ruled surface with sections $s_0, s_\infty$ satisfying $s_0^2 = 4$ and $s_\infty^2 = -4$.\todo{Check that this is the Hirzebruch surface $F_4$ with only part of its toric boundary.} A \textbf{stalk assembly} is a flower glued to some number of stalks along boundary double curves, and a \textbf{flower pot} is a pot glued to stalk assemblies along double curves.
+
+By \cite[Lem. 7.1, 7.2]{Mor81}, some degenerations of Coble surfaces correspond to flower pot degenerations $\mathcal{X}$, since the period of central fiber $\mathcal{X}_0$ of such a degeneration is contained in the Coble divisor $\mathcal{H}_{-2} \subseteq D_\En/\Gamma_{\En}$ and $2K_{\mathcal{X}}\neq 0$. By \cite{AEGS23}, flowers are the semistable resolutions of the $S_2$-quotients of the ADE singularities in the total space of the smoothing. The pots are components of the dlt models of \cite{AEGS23} along which flowers and stalks are attached. Flower pots correspond to type $\mathrm{(i.b)}$ in the classification \cite[Cor. 6.2]{Mor81}, which by \cite[Rmk. 4.12]{AEGS23} are Type $\mathrm{I}$ semistable degenerations of Enriques surfaces with a klt singularity.
+\end{remark}
+
+\subsection{Halphen Surfaces}
+
+\begin{remark}
+It is well-known (e.g. as in \cite{DZ99} and \cite[Ch.5 \S 6]{CD12}) that a Halphen surface of index $n$ is a relative minimal elliptic surface $S$ with $F_1$ the divisor class of a fibre satisfying $F_1 = -n K_S$. By \cite[\S 2.4]{DZ99}, an index 1 Halphen surface admits a section and has no multiple fibres, and an index 2 Halphen surface has a unique double fibre $2F_1$.
+By \cite[Prop. 9.1.4]{DK24}, any terminal Coble surface of K3 type is isomorphic to one of the following:
+
+\begin{itemize}
+    \item A blowup of a Halphen surface of index 1 at two singular points of two simple reduced fibres of types $\tilde A_k, \tilde A_m$ where $k+m\leq 8$, or
+    \item A blowup of a Halphen surface of index 2 at one singular point of a single simple reduced fibre of type $\tilde A_n$ where $n\geq 8$
+\end{itemize}
+This is used in \cite[Prop. 9.1.5]{DK24} to show that $K_S^2 \geq -10$, and since $K_S^2 = -n$, this shows that such Coble surfaces have at most ten boundary components.
+
+Of most immediate relevance to us is the case considered in \cite{Cob19} where $n=1$. Following \cite[Ex. 9.1.7]{DK24}, the image $W \da V(f_6) \da \eta(C)$ is an irreducible plane sextic with 10 $A_1$ singularities\footnote{$A_1$ or $A_2$ singularities.}. One can find a cubic $V(f_3)$ passing through nine of them and form a pencil $V(\lambda f_6 + \mu f_3^2)$ such that the minimal resolution of its basepoints is a Halphen surface of index 2. The proof of \cite[Prop. 9.1.8]{DK24} indicates that the moduli space of general Halphen surfaces of index 2 has dimension 9.
+\end{remark}
+
+
+The following is \cite[Prop. \, 3.1]{CD12}:
+
+\begin{lemma}\label{lem:coble_halphen_blowdown}
+Let $X$ be a Coble surface and $\pi_{E}: X \rightarrow Y$ be the blowing down of a (-1)-curve E. Then
+
+\begin{itemize}
+    \item $Y$ is a Halphen surface of index 2;
+    \item $C$ is the proper transform of the fiber $F$ containing $y_{0}=\pi_{E}(E)$;
+    \item the fiber $F$ is irreducible, and $y_{0}$ is its unique singular point.
+\end{itemize}
+Conversely, the blow-up of a singular point of an irreducible non-multiple fiber of a Halphen surface of index 2 is a Coble surface.
+\end{lemma}
+
+\begin{remark}
+Why introduce Halphen surfaces? I conjecture that the geometric construction(s) above yield some kind of correspondence between moduli spaces of Coble surfaces with $n$ boundary components and the various moduli spaces of index 2 Halphen pencils on the $g=0$ line of Nikulin's triangle diagram of 2-elementary lattices. Regarding the coarse spaces as period domains attached to lattices, the lattices match up precisely; see \cref{table:coble-lattices}. Applications of mirror moves indicate that the cusp diagrams would correspondingly coincide as well.
+\end{remark}
+
+
+\end{document}

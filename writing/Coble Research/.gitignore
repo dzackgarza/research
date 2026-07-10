@@ -1,0 +1,21 @@
+# Pandoc/LaTeX build outputs
+.build_pandoc/
+.build_tex/
+tmp/
+output-*.pdf
+output_*.pdf
+paper-*.pdf
+paper_*.pdf
+
+# Local scratch compiles
+scratch/
+
+# Common LaTeX intermediates
+*.aux
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.run.xml
+*.toc

@@ -1,0 +1,35 @@
+\expandafter\ifx\csname doTocEntry\endcsname\relax \expandafter\endinput\fi
+\doTocEntry\toclikesection{}{\csname a:TocLink\endcsname{1}{x1-1000}{QQ2-1-1}{Contents}}{3}\relax 
+\doTocEntry\tocsection{}{\csname a:TocLink\endcsname{1}{x1-2000}{QQ2-1-2}{Introduction}}{5}\relax 
+\doTocEntry\tocsection{}{\csname a:TocLink\endcsname{1}{x1-3000}{QQ2-1-3}{ADE Sextic Curves and K3 Surfaces}}{7}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-4000}{QQ2-1-4}{Plane Curves with Simple Singularities}}{7}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-5000}{QQ2-1-5}{Resolution of ADE Singularities}}{9}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-6000}{QQ2-1-6}{K3 Surfaces Associated with ADE Sextic Curves}}{9}\relax 
+\doTocEntry\tocsection{}{\csname a:TocLink\endcsname{1}{x1-7000}{QQ2-1-7}{Occult Period Map and Global Torelli}}{10}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-8000}{QQ2-1-8}{Period Domain, Monodromy Group and Occult Period Map}}{10}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-9000}{QQ2-1-9}{Global Torelli}}{12}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-10000}{QQ2-1-10}{Image of the Period Map \textbackslash mathscr\{P\}\_T}}{12}\relax 
+\doTocEntry\tocsection{}{\csname a:TocLink\endcsname{1}{x1-11000}{QQ2-1-11}{GIT Compactifications and Arithmetic Compactifications}}{15}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-12000}{QQ2-1-12}{K3 Surfaces of Degree 2}}{15}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-13000}{QQ2-1-13}{Identification of GIT Compactification and Looijenga Compactification}}{16}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{1}{x1-14000}{QQ2-1-14}{\textbackslash Gamma\_T\textbackslash backslash\textbackslash mathbb\{D\}\_T and \textbackslash Gamma\_1\textbackslash backslash\textbackslash mathbb\{D\}\_1}}{16}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{1}{x1-15000}{QQ2-1-15}{Identification between Compactifications}}{18}\relax 
+\doTocEntry\tocsection{}{\csname a:TocLink\endcsname{1}{x1-16000}{QQ2-1-16}{More Explicit Characterization of Lattices}}{19}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-17000}{QQ2-1-17}{A Topological Lemma}}{19}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-18000}{QQ2-1-18}{Involution of Root Lattice}}{20}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-19000}{QQ2-1-19}{Comparison of Lattices}}{21}\relax 
+\doTocEntry\toclot{2}{\csname a:TocLink\endcsname{1}{x1-19002r2}{}{\ignorespaces \emph  {}}}{}\relax 
+\doTocEntry\toclof{1}{\csname a:TocLink\endcsname{1}{x1-190031}{}{\ignorespaces Resolution graph of \(A_{2n-1}\)-type}}{figure}\relax 
+\doTocEntry\toclof{2}{\csname a:TocLink\endcsname{1}{x1-190042}{}{\ignorespaces Resolution graph of \(D_{2n-1}\)-type}}{figure}\relax 
+\doTocEntry\toclof{3}{\csname a:TocLink\endcsname{1}{x1-190053}{}{\ignorespaces Resolution graph of \(D_{2n}\)-type}}{figure}\relax 
+\doTocEntry\toclof{4}{\csname a:TocLink\endcsname{1}{x1-190064}{}{\ignorespaces Resolution graph of \(E_7\)-type}}{figure}\relax 
+\doTocEntry\tocsection{}{\csname a:TocLink\endcsname{1}{x1-20000}{QQ2-1-25}{Orbifold Structures}}{37}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-21000}{QQ2-1-26}{A Lattice-theoretic Criterion}}{37}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-22000}{QQ2-1-27}{Nodal Singular Types}}{39}\relax 
+\doTocEntry\tocsection{}{\csname a:TocLink\endcsname{1}{x1-23000}{QQ2-1-28}{Examples and Applications}}{41}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-24000}{QQ2-1-29}{A Quintic Curve with a Line}}{41}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{1}{x1-25000}{QQ2-1-30}{Five Nodes}}{41}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{1}{x1-26000}{QQ2-1-31}{One Tacnode and Three Nodes}}{42}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{1}{x1-27000}{QQ2-1-32}{Two Tacnodes and One Node}}{43}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-28000}{QQ2-1-33}{A Quartic Curve with Two Bitangents}}{44}\relax 
+\doTocEntry\tocsubsection{}{\csname a:TocLink\endcsname{1}{x1-29000}{QQ2-1-34}{Zariski Pairs}}{45}\relax 

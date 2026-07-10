@@ -1,0 +1,29 @@
+{
+    "python-envs.pythonProjects": [
+        {
+            "path": "/home/dzack/gitclones/sage",
+            "venvPath": "/home/dzack/gitclones/sage/.venv"
+        },
+        {
+            "path": "/home/dzack/gitclones/integral_lattice",
+            "venvPath": "/home/dzack/gitclones/sage/.venv"
+        },
+        {
+            "path": "",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ],
+    "files.exclude": {
+        "**/.*": false,
+        "**/._*": false,
+        "**/.git": false,
+        "**/.vscode": false,
+        "**/.serena": false,
+        "**/.envrc": false,
+        "**/.build_pandoc": false,
+        "**/.agents": false,
+        "**/.playwright-cli": false
+    },
+    "explorer.excludeGitIgnore": false
+}

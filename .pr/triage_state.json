@@ -1,0 +1,140 @@
+{
+ "repo": "dzackgarza/research",
+ "pr": 52,
+ "counts": {
+  "CLOSED": 12
+ },
+ "converged": true,
+ "records": [
+  {
+   "key": "ct:35d61811aa7031c0",
+   "thread_id": "PRRT_kwDOTBB78M6PsZVw",
+   "path": "computations/experiments/sage_lattice_category_spike/algebra/arithmetic.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:b47f6caccd2cacbc",
+   "thread_id": "PRRT_kwDOTBB78M6PsZV7",
+   "path": "computations/experiments/sage_lattice_category_spike/algebra/arithmetic.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:b47f6caccd2cacbc",
+   "thread_id": "PRRT_kwDOTBB78M6PsZWA",
+   "path": "computations/experiments/sage_lattice_category_spike/algebra/arithmetic.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:b47f6caccd2cacbc",
+   "thread_id": "PRRT_kwDOTBB78M6PsZWF",
+   "path": "computations/experiments/sage_lattice_category_spike/algebra/arithmetic.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:b47f6caccd2cacbc",
+   "thread_id": "PRRT_kwDOTBB78M6PsZWJ",
+   "path": "computations/experiments/sage_lattice_category_spike/algebra/arithmetic.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:a5f09dd4041e58c5",
+   "thread_id": "PRRT_kwDOTBB78M6PsZWT",
+   "path": "computations/experiments/sage_lattice_category_spike/forms/discriminant_forms.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:d300736ed9105ff1",
+   "thread_id": "PRRT_kwDOTBB78M6PsZWY",
+   "path": "computations/experiments/sage_lattice_category_spike/forms/discriminant_forms.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:6e00297ac7c2caca",
+   "thread_id": "PRRT_kwDOTBB78M6Psag5",
+   "path": "computations/experiments/sage_lattice_category_spike/algebra/arithmetic.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:037082cf2e9c3e19",
+   "thread_id": "PRRT_kwDOTBB78M6Psag9",
+   "path": "computations/experiments/sage_lattice_category_spike/algebra/arithmetic.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:5417109155fc3a1b",
+   "thread_id": "PRRT_kwDOTBB78M6Psfmn",
+   "path": "computations/experiments/sage_lattice_category_spike/forms/discriminant_forms.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:e60ba80eef5ead77",
+   "thread_id": "PRRT_kwDOTBB78M6Psfms",
+   "path": "computations/experiments/sage_lattice_category_spike/algebra/arithmetic.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": {
+    "verdict": "accepted as written",
+    "has_verification": false,
+    "commit": null,
+    "by": "dzackgarza"
+   }
+  },
+  {
+   "key": "ct:c56a51e6772627e0",
+   "thread_id": "PRRT_kwDOTBB78M6Psfmw",
+   "path": "computations/experiments/sage_lattice_category_spike/algebra/arithmetic.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": {
+    "verdict": "accepted with modified remediation",
+    "has_verification": false,
+    "commit": null,
+    "by": "dzackgarza"
+   }
+  }
+ ]
+}

@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="Complete moduli spaces of Coble surfaces" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="https://dzackgarza.com/assets/dist.js" data-external="1">
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config( window.mjconfig );
+</script>
+
+<script type="text/javascript" src="data:application/javascript;base64,KGZ1bmN0aW9uICgpIHsKICB2YXIgbmV3TWF0aEpheCA9ICdodHRwczovL2NkbmpzLmNsb3VkZmxhcmUuY29tL2FqYXgvbGlicy9tYXRoamF4LzIuNy4xL01hdGhKYXguanMnOwogIHZhciBvbGRNYXRoSmF4ID0gJ2Nkbi5tYXRoamF4Lm9yZy9tYXRoamF4L2xhdGVzdC9NYXRoSmF4LmpzJzsKCiAgdmFyIHJlcGxhY2VTY3JpcHQgPSBmdW5jdGlvbiAoc2NyaXB0LCBzcmMpIHsKICAgIC8vCiAgICAvLyAgTWFrZSByZWRpcmVjdGVkIHNjcmlwdAogICAgLy8KICAgIHZhciBuZXdTY3JpcHQgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdzY3JpcHQnKTsKICAgIG5ld1NjcmlwdC5zcmMgPSBuZXdNYXRoSmF4ICsgc3JjLnJlcGxhY2UoLy4qPyhcP3wkKS8sICckMScpOwogICAgLy8KICAgIC8vICBNb3ZlIG9ubG9hZCBhbmQgb25lcnJvciBoYW5kbGVycyB0byBuZXcgc2NyaXB0CiAgICAvLwogICAgbmV3U2NyaXB0Lm9ubG9hZCA9IHNjcmlwdC5vbmxvYWQ7IAogICAgbmV3U2NyaXB0Lm9uZXJyb3IgPSBzY3JpcHQub25lcnJvcjsKICAgIHNjcmlwdC5vbmxvYWQgPSBzY3JpcHQub25lcnJvciA9IG51bGw7CiAgICAvLwogICAgLy8gIE1vdmUgYW55IGNvbnRlbnQgKG9sZC1zdHlsZSBjb25maWd1cmF0aW9uIHNjcmlwdHMpCiAgICAvLwogICAgd2hpbGUgKHNjcmlwdC5maXJzdENoaWxkKSBuZXdTY3JpcHQuYXBwZW5kQ2hpbGQoc2NyaXB0LmZpcnN0Q2hpbGQpOwogICAgLy8KICAgIC8vICBDb3B5IHNjcmlwdCBpZAogICAgLy8KICAgIGlmIChzY3JpcHQuaWQgIT0gbnVsbCkgbmV3U2NyaXB0LmlkID0gc2NyaXB0LmlkOwogICAgLy8KICAgIC8vICBSZXBsYWNlIG9yaWdpbmFsIHNjcmlwdCB3aXRoIG5ldyBvbmUKICAgIC8vCiAgICBzY3JpcHQucGFyZW50Tm9kZS5yZXBsYWNlQ2hpbGQobmV3U2NyaXB0LCBzY3JpcHQpOwogICAgLy8KICAgIC8vICBJc3N1ZSBhIGNvbnNvbGUgd2FybmluZwogICAgLy8KICAgIGNvbnNvbGUud2FybignV0FSTklORzogY2RuLm1hdGhqYXgub3JnIGhhcyBiZWVuIHJldGlyZWQuIENoZWNrIGh0dHBzOi8vd3d3Lm1hdGhqYXgub3JnL2Nkbi1zaHV0dGluZy1kb3duLyBmb3IgbWlncmF0aW9uIHRpcHMuJykKICB9CgogIGlmIChkb2N1bWVudC5jdXJyZW50U2NyaXB0KSB7CiAgICB2YXIgc2NyaXB0ID0gZG9jdW1lbnQuY3VycmVudFNjcmlwdDsKICAgIHJlcGxhY2VTY3JpcHQoc2NyaXB0LCBzY3JpcHQuc3JjKTsKICB9IGVsc2UgewogICAgLy8KICAgIC8vIExvb2sgZm9yIGN1cnJlbnQgc2NyaXB0IGJ5IHNlYXJjaGluZyBmb3Igb25lIHdpdGggdGhlIHJpZ2h0IHNvdXJjZQogICAgLy8KICAgIHZhciBuID0gb2xkTWF0aEpheC5sZW5ndGg7CiAgICB2YXIgc2NyaXB0cyA9IGRvY3VtZW50LmdldEVsZW1lbnRzQnlUYWdOYW1lKCdzY3JpcHQnKTsKICAgIGZvciAodmFyIGkgPSAwOyBpIDwgc2NyaXB0cy5sZW5ndGg7IGkrKykgewogICAgICB2YXIgc2NyaXB0ID0gc2NyaXB0c1tpXTsKICAgICAgdmFyIHNyYyA9IChzY3JpcHQuc3JjIHx8ICcnKS5yZXBsYWNlKC8uKj86XC9cLy8sJycpOwogICAgICBpZiAoc3JjLnN1YnN0cigwLCBuKSA9PT0gb2xkTWF0aEpheCkgewogICAgICAgIHJlcGxhY2VTY3JpcHQoc2NyaXB0LCBzcmMpOwogICAgICAgIGJyZWFrOwogICAgICB9CiAgICB9CiAgfQp9KSgpOw==">
+</script>
+
+<meta name="description" content="Complete moduli spaces of Coble surfaces">
+
+<title>Complete moduli spaces of Coble surfaces</title>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous" data-external="1"></script>
+
+<!--<script src="https://dzackgarza.com/assets/pushy.min.js" crossorigin="anonymous" data-external="1"></script>-->
+<script>!function(a){function b(){g.hasClass(j)?h.toggleClass(k):h.toggleClass(l),n&&g.one("transitionend",function(){n.trigger("focus")})}function c(){g.hasClass(j)?h.removeClass(k):h.removeClass(l)}function d(){g.hasClass(j)?(h.addClass(k),g.animate({left:"0px"},o),x.animate({left:p},o),i.animate({left:p},o)):(h.addClass(l),g.animate({right:"0px"},o),x.animate({right:p},o),i.animate({right:p},o)),n&&n.trigger("focus")}function e(){g.hasClass(j)?(h.removeClass(k),g.animate({left:"-"+p},o),x.animate({left:"0px"},o),i.animate({left:"0px"},o)):(h.removeClass(l),g.animate({right:"-"+p},o),x.animate({right:"0px"},o),i.animate({right:"0px"},o))}function f(){a(q).addClass(s),a(q).on("click",function(b){var c=a(this);c.hasClass(s)?(c.siblings(q).addClass(s).removeClass(r),c.removeClass(s).addClass(r)):c.addClass(s).removeClass(r),b.stopPropagation()})}var g=a(".pushy"),h=a("body"),i=a(".push"),j="pushy-left",k="pushy-open-left",l="pushy-open-right",m=a(".site-overlay"),n=a(g.data("focus")),o=200,p=g.width()+"px",q=".pushy-submenu",r="pushy-submenu-open",s="pushy-submenu-closed";if("undefined"!=typeof g.data("menu-btn-selector"))var t=g.data("menu-btn-selector");else var t=".menu-btn";var u=a(t+", .pushy-link"),v=a(t),w="#container";"undefined"!=typeof g.data("container-selector")&&(w=g.data("container-selector"));var x=a(w);a(document).on("keyup",function(a){27==a.keyCode&&(h.hasClass(k)||h.hasClass(l))&&(y?c():(e(),z=!1),v&&v.trigger("focus"))});var y=function(){var a=document.createElement("p"),b=!1,c={webkitTransform:"-webkit-transform",OTransform:"-o-transform",msTransform:"-ms-transform",MozTransform:"-moz-transform",transform:"transform"};if(null!==document.body){document.body.insertBefore(a,null);for(var d in c)void 0!==a.style[d]&&(a.style[d]="translate3d(1px,1px,1px)",b=window.getComputedStyle(a).getPropertyValue(c[d]));return document.body.removeChild(a),void 0!==b&&b.length>0&&"none"!==b}return!1}();if(y)f(),u.on("click",function(){b()}),m.on("click",function(){b()});else{h.addClass("no-csstransforms3d"),g.hasClass(j)?g.css({left:"-"+p}):g.css({right:"-"+p}),x.css({"overflow-x":"hidden"});var z=!1;f(),u.on("click",function(){z?(e(),z=!1):(d(),z=!0)}),m.on("click",function(){z?(e(),z=!1):(d(),z=!0)})}}(jQuery);</script>
+<!--<link rel="stylesheet" href="https://dzackgarza.com/assets/pushy.min.css" crossorigin="anonymous" data-external="1"/>-->
+<style type="text/css">.pushy{position:fixed;width:200px;height:100%;top:0;z-index:9999;background:#191918;overflow:auto;-webkit-overflow-scrolling:touch}.pushy a{display:block;color:#b3b3b1;padding:15px 30px;text-decoration:none}.pushy a:hover{color:#fff}.pushy ul:first-child{margin-top:10px}.pushy.pushy-left{left:0}.pushy.pushy-right{right:0}.pushy-content{visibility:hidden}.pushy-left{-webkit-transform:translate3d(-200px,0,0);-ms-transform:translate3d(-200px,0,0);transform:translate3d(-200px,0,0)}.pushy-open-left #container,.pushy-open-left .push{-webkit-transform:translate3d(200px,0,0);-ms-transform:translate3d(200px,0,0);transform:translate3d(200px,0,0)}.pushy-right{-webkit-transform:translate3d(200px,0,0);-ms-transform:translate3d(200px,0,0);transform:translate3d(200px,0,0)}.pushy-open-right #container,.pushy-open-right .push{-webkit-transform:translate3d(-200px,0,0);-ms-transform:translate3d(-200px,0,0);transform:translate3d(-200px,0,0)}.pushy-open-left .pushy,.pushy-open-right .pushy{-webkit-transform:translate3d(0,0,0);-ms-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}.pushy-open-left .pushy-content,.pushy-open-right .pushy-content{visibility:visible}#container,.push,.pushy{transition:transform .2s cubic-bezier(.16,.68,.43,.99)}.pushy-content{transition:visibility .2s cubic-bezier(.16,.68,.43,.99)}.site-overlay{display:none}.pushy-open-left .site-overlay,.pushy-open-right .site-overlay{display:block;position:fixed;top:0;right:0;bottom:0;left:0;z-index:9998;background-color:rgba(0,0,0,.5);-webkit-animation:fade .5s;animation:fade .5s}@keyframes fade{0%{opacity:0}100%{opacity:1}}@-webkit-keyframes fade{0%{opacity:0}100%{opacity:1}}.pushy-submenu>ul{padding-left:15px;transition:max-height .2s ease-in-out,visibility .2s ease-in-out}.pushy-submenu>ul .pushy-link{transition:opacity .2s ease-in-out}.pushy-submenu button{width:100%;color:#b3b3b1;padding:15px 30px;text-align:left;background:0 0;border:0}.pushy-submenu button:hover{color:#fff}.pushy-submenu>a,.pushy-submenu>button{position:relative}.pushy-submenu>a::after,.pushy-submenu>button::after{content:'';display:block;height:11px;width:8px;position:absolute;top:50%;right:15px;background:url(data:image/svg+xml; charset=utf-8;base64,PHN2ZyBpZD0iYXJyb3ciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjcuOSIgaGVpZ2h0PSIxMC45IiB2aWV3Qm94PSIwIDAgNy45IDEwLjkiPjx0aXRsZT5hcnJvdzwvdGl0bGU+PHBhdGggaWQ9ImFycm93IiBkYXRhLW5hbWU9ImFycm93IiBkPSJNOCw1LjVMMS45LDExLDAuMSw5LjQsNC40LDUuNiwwLjEsMS44LDIsMC4xLDgsNS41IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMC4xIC0wLjEpIiBmaWxsPSIjYjNiM2IxIi8+PC9zdmc+) no-repeat;-webkit-transform:translateY(-50%);-ms-transform:translateY(-50%);transform:translateY(-50%);transition:transform .2s}.pushy-submenu-closed>ul{max-height:0;overflow:hidden;visibility:hidden}.pushy-submenu-closed .pushy-link{opacity:0}.pushy-submenu-open>ul{max-height:1000px;visibility:visible}.pushy-submenu-open .pushy-link{opacity:1}.pushy-submenu-open>a::after,.pushy-submenu-open>button::after{-webkit-transform:translateY(-50%) rotate(90deg);-ms-transform:translateY(-50%) rotate(90deg);transform:translateY(-50%) rotate(90deg)}</style>
+
+<style type="text/css">
+p.abstract{
+text-align: center;
+font-weight: bold;
+}
+div.abstract{
+margin: auto;
+width: 90%;
+}
+</style>
+
+<style type="text/css">
+div.sticky {
+position: -webkit-sticky; 
+position: sticky;
+top: 0;
+z-index: 99;
+}
+html {
+font-size: 100%;
+}
+html, button, input, select, textarea {
+font-family: sans-serif;
+}
+html, body, button, input, select, textarea {
+color: #57534A;
+font-family: "PT Serif","Calluna","Arno Pro",serif;
+font-size: 18px;
+font-weight: 300;
+}
+body{
+margin: 0 auto;
+background-color: ##fffff8;
+font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+}
+body, textarea {
+line-height: 1.4;
+}
+body:after {
+clear: both;
+content: "";
+display: table;
+}
+body {
+padding-left: 4rem;
+padding-right: 4rem;
+margin-left: auto;
+margin-right: auto;
+max-width: 44rem;
+display: block;
+}
+@media screen and (max-width:1024px) {
+body {
+padding-left: 0.5rem;
+padding-right: 0.5rem;
+margin-left: 0;
+margin-right: 0;
+max-width: 44rem;
+display: block;
+}
+}
+h1, h2, h3, dt {
+color: #423F37;
+font-weight: 700;
+text-align: center;
+}
+h1 {
+font-size: 2em;
+margin: 0.67em 0;
+}
+h1::before,
+h1::after {
+display: inline-block;
+content: "";
+border-top: .3rem solid black;
+width: 4rem;
+margin: 0 1rem;
+transform: translateY(0rem);
+}
+h2, .article-list .article-title {
+padding-top: 1em;
+padding-bottom: 0em;
+border-bottom: none;
+font-size: 1.5em;
+margin: 0.83em 0;
+}
+h3, dt {
+padding-top: 1em;
+font-size: 1.17em;
+font-style: italic;
+margin: 1em 0;
+}
+h4 {
+font-size: 1em;
+margin: 1.33em 0;
+}
+h5 {
+font-size: 0.83em;
+margin: 1.67em 0;
+}
+h6 {
+font-size: 0.75em;
+margin: 2.33em 0;
+}
+a {
+color: #8DB359;
+cursor: pointer;
+outline: 0 none;
+text-decoration: underline;
+}
+a:hover {
+outline: 0 none;
+color: #739544;
+}
+p, pre {
+margin: 1em 0;
+}
+code, kbd, pre, samp {
+font-family: monospace,serif;
+font-size: 1em;
+margin: 0;
+padding: 0;
+}
+pre {
+white-space: pre-wrap;
+word-wrap: break-word;
+}
+pre {
+background-color: #F8F5F0;
+font-size: 0.7rem;
+overflow-x: auto;
+padding: 1.3rem;
+position: relative;
+white-space: pre;
+word-wrap: normal;
+}
+pre, code, kbd, samp {
+margin: 0;
+}
+code, kbd, pre, samp {
+font-family: monospace,serif;
+}
+code {
+color: #423F37;
+}
+aside {
+display: block;
+float: right;
+width: 390px;
+}
+b, strong {
+font-weight: bold;
+color: #423F37;
+font-weight: 700;
+}
+blockquote {
+color: #423F37;
+margin: 1em 40px;
+margin-bottom: 2em;
+margin-top: 2em;
+background-color: whitesmoke;
+margin-left: 0;
+margin-right: 0;
+}
+figure {
+margin-bottom: 2em;
+margin-top: 2em;
+}
+hr {
+-moz-border-bottom-colors: none;
+-moz-border-left-colors: none;
+-moz-border-right-colors: none;
+-moz-border-top-colors: none;
+border-color: -moz-use-text-color -moz-use-text-color #ECE6DA;
+border-image: none;
+border-style: none none solid;
+border-width: medium medium 1px;
+margin: 3em 6em;
+}
+img {
+max-width: 100%;
+display: block;
+border: 0 none;
+margin-left: auto;
+margin-right: auto;
+width: 80%;
+}
+ol > li:before {
+color: #423F37;
+content: counter(ol, decimal) ".";
+counter-increment: ol;
+font-weight: 700;
+margin-right: 0.333em;
+position: absolute;
+right: 100%;
+}
+ul > li:before {
+background-color: #423F37;
+border-radius: 14px 14px 14px 14px;
+content: "";
+height: 6px;
+margin-right: 0.333em;
+margin-top: 0.55em;
+position: absolute;
+right: 100%;
+width: 6px;
+}
+ol, ul, dl {
+margin-left: 2rem;
+padding: 0;
+}
+ol {
+counter-reset: ol;
+}
+li + li, dd + dt {
+margin-top: 0.5em;
+}
+ul > li {
+position: relative;
+}
+ol > li {
+position: relative;
+}
+li {
+list-style: none outside none;
+}
+figure > figcaption {
+margin-top: 0.5em;
+}
+small, dd, figcaption {
+color: #A19C91;
+display: block;
+font-size: 0.8rem;
+font-style: italic;
+line-height: 1.2;
+}
+tbody{display:table-row-group}
+tfoot{display:table-footer-group}
+table{margin-bottom:2em;font-size: 0.8em;padding:0;border-collapse:collapse;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.35);width:80%;margin:0 auto 2em auto}
+table th,table td{padding:10px 10px 9px;line-height:18px;text-align:left}
+table th{
+padding-top:9px;!important;text-transform:uppercase;vertical-align:middle}
+table td{vertical-align:top;border-top:1px solid #ddd;}
+table tbody th{border-top:1px solid #ddd;vertical-align:top}
+table{border:1px solid #ddd;border-collapse:separate;*border-collapse:collapse;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px}
+table th+th,table td+td,table th+td{border-left:1px solid #ddd}
+table thead tr:first-child th:first-child,table tbody tr:first-child td:first-child{-webkit-border-radius:4px 0 0 0;-moz-border-radius:4px 0 0 0;border-radius:4px 0 0 0}
+table thead tr:first-child th:last-child,table tbody tr:first-child td:last-child{-webkit-border-radius:0 4px 0 0;-moz-border-radius:0 4px 0 0;border-radius:0 4px 0 0}
+table tbody tr:last-child td:first-child{-webkit-border-radius:0 0 0 4px;-moz-border-radius:0 0 0 4px;border-radius:0 0 0 4px}
+table tbody tr:last-child td:last-child{-webkit-border-radius:0 0 4px 0;-moz-border-radius:0 0 4px 0;border-radius:0 0 4px 0}
+tbody tr:nth-child(odd){background-color:rgba(0,0,0,0.03)}
+caption{display:table-caption;font-weight:300;font-size:1.3em;text-transform:uppercase;letter-spacing:2px;word-spacing:.2em;background:rgba(0,0,0,.75);color:#EEE;padding:4px;-webkit-border-radius:4px;margin:4px 0;-webkit-box-shadow:2px 2px 2px rgba(0,0,0,.35)}
+
+:-moz-placeholder {
+color: #bfbfbf;
+}
+::-webkit-input-placeholder {
+color: #bfbfbf;
+}
+.article-date {
+color: #C7C2B8;
+display: block;
+font-size: 0.8rem;
+}
+.title{
+padding-bottom: 1em;
+}
+.author{
+padding-top: 0.5em;
+font-size:1.24em;
+line-height:0.5em;
+text-align: left;
+}
+.date {
+color: #C7C2B8;
+display: block;
+font-size: 0.8rem;
+}
+.caption {
+display: block;
+font-size: 0.8rem;
+font-style: italic;
+}
+.small{
+font-size:0.8em;
+}
+.affiliation{
+margin-top: 0;
+padding-top: 0;
+font-size:0.9em;
+font-style: italic;
+}
+.theorem, .lemma, .proposition, .corollary {
+border: 1px solid black;
+border-left: 5px solid ##955670 !important;
+background-color: ##95567075;
+padding-left: 5px;
+margin-left: 1%;
+padding-left: 1%;
+}
+.theorem > .proofenv-header,
+.lemma > .proofenv-header,
+.proposition > .proofenv-header,
+.definition > .proofenv-header,
+.corollary > .proofenv-header {
+font-style: normal !important;
+font-weight: bold;
+border-bottom: 2px solid black;
+display: block;
+}
+.theorem {
+border: 2px solid #95567050 !important;
+background-color: #95567050;
+border-left: 5px solid #955670 !important;
+margin-left: 1%;
+padding-left: 1%;
+}
+.strategy, .concept {
+border: 2px solid black !important;
+background-color: aliceblue;
+margin-left: 1%;
+padding-left: 1%;
+}
+.slogan {
+background-color: wheat;
+}
+.proof {
+border: 1px dotted;
+border-color: #000;
+background-color: #F3E1C075;
+margin-left: 1%;
+}
+.proof:after {
+content: "\25FC";
+float:right;
+margin-top: -25px;
+margin-right: 5px;
+}
+.warnings {
+background-color: #f8d7da;
+border-color: #f5c6cb;
+}
+.warnings > .proofenv-header {
+color: #721c24;
+font-weight: bold !important;
+}
+.warnings:before{
+content: "⚠️";
+margin-top: -25px;
+margin-right: 5px;
+}
+.definition {
+border: 1px solid;
+border-color: #000;
+background-color: #27507054;
+border-left: 5px solid #275070 !important;
+margin-left: 1%;
+padding-left: 1%;
+}
+.exercise {
+border: 2px solid #A0C4FF !important;
+background-color: #A0C4FF30;
+border-left: 5px solid #A0C4FF !important;
+margin-left: 1%;
+padding-left: 1%;
+}
+.problem {
+border 2px solid black;
+background: aliceblue;
+padding-left: 1%;
+}
+.solution {
+border: outset;
+padding-left: 1%;
+padding-right: 2%;
+background-image: linear-gradient(#b75ea82e, #b75ea82e)
+}
+.proofenv {
+display: block;
+margin: 12px 0;
+font-style: normal;
+border-right: 1px dotted black;
+
+margin-right: 1%;
+}
+details {
+border: 1px solid black;
+}
+.proofenv-header {
+text-transform: capitalize;
+font-style: italic;
+}
+.remark > p, .fact > p {
+margin-top: 0em;
+}
+blockquote {
+text-align: right;
+font-style: italic;
+background-color: #a2929554;
+font-size: small;
+}
+.pushy{
+width: 400px; 
+}
+.pushy-left{
+transform: translate3d(-400px,0,0); 
+
+}
+.pushy-open-left #container,
+.pushy-open-left .push {
+transform: translate3d(400px, 0, 0); 
+}
+.pushy-right {
+transform: translate3d(400px, 0, 0); 
+
+}
+.pushy-open-right #container,
+.pushy-open-right .push {
+transform: translate3d(-400px, 0, 0); 
+
+}
+button.menu-btn {
+width: 250px;
+padding: 10px;
+margin-bottom: 30px;
+background: #000;
+color: #FFF;
+text-align: center;
+border: 0;
+}
+.introquote {
+width: 30%;
+}
+img.tikzcd {
+max-width: 70%;
+max-height: 600px;
+}
+img.tikzpic {
+min-width: 80%;
+max-width: 90%;
+max-height: 800px;
+}
+</style>
+
+
+</head>
+
+<body>
+<!-- Site Overlay -->
+<div class="site-overlay"></div>
+
+<!-- Your Content -->
+<div id="container" class="sticky">
+    <!-- Menu Button -->
+    <button class="menu-btn">☰ Table of Contents</button>
+</div>
+
+
+
+
+<!--bookdown:title:start-->
+<div id="header">
+    
+  
+    <h1 class="title">Complete moduli spaces of Coble surfaces</h1>
+    </div>
+<div class="abstract">
+  <p class="abstract">Abstract</p>
+  We describe a modular KSBA stable pair compactification of the moduli
+  space of Coble surfaces and compare it to a semitoroidal
+  compactification of the corresponding period domain. We further
+  describe KSBA stable limits in terms of integral affine structures.
+</div>
+
+
+
+<hr>
+
+<nav class="pushy pushy-left" id="TOC">
+<ul>
+<li><a href="#introduction" id="toc-introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#coble-surfaces" id="toc-coble-surfaces"><span class="toc-section-number">2</span> Coble surfaces</a>
+<ul>
+<li><a href="#the-geometry-of-coble-surfaces" id="toc-the-geometry-of-coble-surfaces"><span class="toc-section-number">2.1</span> The geometry of Coble
+surfaces</a></li>
+</ul></li>
+<li><a href="#lattice-theory" id="toc-lattice-theory"><span class="toc-section-number">3</span> Lattice Theory</a>
+<ul>
+<li><a href="#basic-theory" id="toc-basic-theory"><span class="toc-section-number">3.1</span> Basic Theory</a></li>
+<li><a href="#summary" id="toc-summary"><span class="toc-section-number">3.2</span> Summary</a></li>
+<li><a href="#moduli-of-coble-surfaces" id="toc-moduli-of-coble-surfaces"><span class="toc-section-number">3.3</span> Moduli of Coble Surfaces</a></li>
+</ul></li>
+<li><a href="#cusp-correspondence" id="toc-cusp-correspondence"><span class="toc-section-number">4</span> Cusp Correspondence</a>
+<ul>
+<li><a href="#coble-cusps" id="toc-coble-cusps"><span class="toc-section-number">4.1</span> Coble Cusps</a></li>
+<li><a href="#enriques-cusps" id="toc-enriques-cusps"><span class="toc-section-number">4.2</span> Enriques Cusps</a></li>
+<li><a href="#sterk-cusps" id="toc-sterk-cusps"><span class="toc-section-number">4.3</span> Sterk Cusps</a></li>
+<li><a href="#k3-cusps" id="toc-k3-cusps"><span class="toc-section-number">4.4</span> K3 Cusps</a></li>
+<li><a href="#coble-to-enriques-cusp-correspondence" id="toc-coble-to-enriques-cusp-correspondence"><span class="toc-section-number">4.5</span> Coble to Enriques Cusp
+Correspondence</a></li>
+</ul></li>
+<li><a href="#degenerations-of-stable-coble-surfaces" id="toc-degenerations-of-stable-coble-surfaces"><span class="toc-section-number">5</span> Degenerations of stable Coble
+surfaces</a></li>
+<li><a href="#appendix" id="toc-appendix"><span class="toc-section-number">6</span> Appendix</a></li>
+<li><a href="#bibliography" id="toc-bibliography"><span class="toc-section-number">7</span> Bibliography</a></li>
+</ul>
+</nav>
+
+
+
+
+<h1 data-number="1" id="introduction"><span class="header-section-number">1</span> Introduction</h1>
+<div class="remark proofenv">
+<p>A Coble surface is a smooth projective rational surface <span class="math inline">\(S\)</span> with <span class="math inline">\({\left\lvert {-K_S} \right\rvert} =
+\emptyset\)</span> but <span class="math inline">\({\left\lvert {-2K_S}
+\right\rvert}\neq \emptyset\)</span>. Such surfaces arise from the work
+of and on Cremona transformations of <span class="math inline">\({\mathbf{P}}^2\)</span> preserving an irreducible
+rational sextic <span class="math inline">\(C\)</span> with ten nodes –
+the blowup <span class="math inline">\(S\)</span> along these nodes
+yields a Coble surface. shows that the Cremona class of such a curve
+<span class="math inline">\(C\)</span> can be written as a union of
+finitely many projective equivalence classes, and that if <span class="math inline">\(C\)</span> is sufficiently general then <span class="math inline">\(\mathop{\mathrm{Aut}}(S) \cong W(E_{10})\)</span>,
+the Weyl group of an infinite root system of type <span class="math inline">\(E_{10}\)</span>. Moreover, he shows that that
+modulo <span class="math inline">\(\mathop{\mathrm{Aut}}(S)\)</span>,
+there are only finitely many smooth rational negative curves on <span class="math inline">\(S\)</span>.</p>
+<p>Coble surfaces occur as degenerations of Enriques surfaces and were
+ultimately classified in . As such, they are intimately tied to the
+theory of algebraic K3 surfaces equipped with a nonsymplectic
+involution, which were classified by . For a reduced plane sextic <span class="math inline">\(C\)</span>, the double cover of <span class="math inline">\(S\)</span> branched along the proper transform of
+<span class="math inline">\(C\)</span> is a K3 surface <span class="math inline">\(X\)</span> which can be realized as a degeneration
+of the universal double cover of an Enriques surface, where <span class="math inline">\(X\)</span> acquires an <span class="math inline">\(A_1\)</span> singularity fixed by the Enriques
+involution. The resulting quotient has a quartic singularity whose
+resolution is an irreducible smooth rational curve <span class="math inline">\(\tilde C\)</span> satisfying <span class="math inline">\(\tilde C^2 = -4\)</span>, and thus by is a Coble
+surface.</p>
+<p>We will be interested in Coble surfaces in the strong sense, where
+<span class="math inline">\({\left\lvert {-2K_S} \right\rvert} =
+\left\{{C_1 + \cdots + C_n}\right\}\)</span> is a single reduced divisor
+comprised of <span class="math inline">\(n\)</span> disjoint smooth
+rational curves referred to as <em>boundary components</em> of <span class="math inline">\(S\)</span>. It is known that <span class="math inline">\(1\leq n\leq 10\)</span>, and for each such <span class="math inline">\(n\)</span>, there is a moduli space <span class="math inline">\(F_{\Co, n}\)</span> of Coble surfaces with <span class="math inline">\(n\)</span> boundary components. When <span class="math inline">\(n=1\)</span>, the moduli space <span class="math inline">\(F_{\Co} \mathrel{\vcenter{:}}= F_{\Co, 1}\)</span>
+of Coble surfaces can be described as a boundary divisor <span class="math inline">\(\cH_{-2}\)</span> in the 10-dimensional moduli
+space <span class="math inline">\(F_{\operatorname{En}}\)</span> of
+unpolarized Enriques surfaces, and thus <span class="math inline">\(F_{\Co}\)</span> is 9-dimensional. Moreover, <span class="math inline">\(F_{\Co}\)</span> was shown to be rational in via a
+comparison to a moduli space of cuspidal plane quintics. A natural
+question is whether or not <span class="math inline">\(F_{\Co}\)</span>
+admits a geometrically meaningful, modular compactification <span class="math inline">\(\overline{F_{\Co}}\)</span>, and if so, if the
+boundary <span class="math inline">\(\partial
+\overline{F_{\Co}}\)</span> can be described and classified. Toward this
+end, we turn to the stable pair compactifications of Kollár,
+Shepherd-Barron, and Alexeev .</p>
+</div>
+<div class="remark proofenv">
+<p>The search for modular compactifications of moduli spaces is a
+central problem in algebraic geometry. The prototypical example stems
+from the work of on the Deligne-Mumford-Knudsen compactification <span class="math inline">\(\overline{{ \mathcal{M}_{g, n} }}\)</span> of the
+moduli space of stable pointed curves <span class="math inline">\({
+\mathcal{M}_{g, n} }\)</span>. By , a similarly modular compactification
+<span class="math inline">\(\overline{{\mathcal{A}_g}}\)</span> of the
+moduli space <span class="math inline">\({\mathcal{A}_g}\)</span> of
+principally polarized abelian varieties via stable pairs exists, the
+normalization of which coincides with a particular choice of toroidal
+compactification by the work of and . By , the coarse moduli space <span class="math inline">\(F_{2d}\)</span> of primitively polarized K3
+surfaces of degree <span class="math inline">\(2d\)</span> is isomorphic
+to an arithmetic quotient <span class="math inline">\(D_{L_{2d}}/\Gamma_{L_{2d}}\)</span> of a Type IV
+Hermitian symmetric domain associated to a lattice <span class="math inline">\(L_{2d}\)</span>, where <span class="math inline">\(D_{L_{2d}}\)</span> is a period domain classifying
+Hodge structures of K3 type and <span class="math inline">\(\Gamma_{L_{2d}}\)</span> is an arithmetic subgroup
+of the orthogonal group <span class="math inline">\({\operatorname{O}}(L_{2d})\)</span>. By , such
+domains admit a Baily-Borel compactification which is a projective
+variety. For <span class="math inline">\(F_{2d}\)</span> and related
+lattice-polarized moduli spaces <span class="math inline">\(F_S\)</span>
+of K3 surfaces, the boundary of the compactification consists of a
+configuration of 0-cusps (points) and 1-cusps (curves), see . By , there
+additionally exist infinitely many toroidal compactifications described
+by a choice of fans at each cuspidal point of the Baily-Borel
+compactification. The work of on semitoroidal compactifications
+simultaneously generalizes the Baily-Borel and toroidal
+compactifications, retaining the advantage that the boundary can be
+understood in terms of semifans and studied using toric geometry.</p>
+<p>Semitoroidal compactifications are advantageous due to their explicit
+and combinatorial nature, but do not a priori carry a clear modular
+interpretation along the boundary strata. Alternatively, letting <span class="math inline">\((S, R)\)</span> be a pair consisting of a surface
+and a suitably chosen divisor, the work of yields a compactification
+obtained by taking the closure of pairs <span class="math inline">\((S,
+\varepsilon R)\)</span> in the space of KSBA stable pairs. Although KSBA
+compactifications admit strong modular interpretations, their boundary
+strata are generally quite difficult to describe. A recent strategy
+employed in is to simultaneously leverage the advantages of both
+semitoric and KSBA compactifications by finding comparison morphisms
+between them. This allows the modular boundary of the KSBA
+compactification to be studied and classified using the combinatorics of
+toric geometry, lattice theory, and critically, advances in integral
+affine geometry and mirror symmetry.</p>
+<p>The moduli space <span class="math inline">\(F_\Co\)</span> of Coble
+surfaces with <span class="math inline">\(n=1\)</span> boundary
+components admits a Hodge-theoretic period domain description of the
+form <span class="math inline">\(D(T_\Co)/\Gamma_\Co\)</span> where
+<span class="math inline">\(T_\Co\)</span> is a fixed lattice and <span class="math inline">\(\Gamma_\Co
+\mathrel{\vcenter{:}}={\operatorname{O}}(T_\Co)\)</span> is its
+orthogonal group. Its Baily-Borel compactification <span class="math inline">\(\overline{F_{\Co}}^{\operatorname{BB}}\)</span>
+contains only one 0-cusp <span class="math inline">\(p_0\)</span>, and
+thus the combinatorial data of a semitoroidal compactification is
+determined by a single <span class="math inline">\(\Gamma_\Co{\hbox{-}}\)</span>invariant semifan
+associated to a lattice at <span class="math inline">\(p_0\)</span>. A
+canonical choice one can take is the Coxeter fan, formed by a
+fundamental domain of the action of the lattice’s Weyl group, along with
+its reflections. Perhaps more naturally, one can also search for a
+semifan <span class="math inline">\({\mathcal{F}}\)</span> such that the
+resulting compactification <span class="math inline">\(\overline{F_\Co}^{{\mathcal{F}}}\)</span> is
+isomorphic to the KSBA compactification <span class="math inline">\(\overline{F_\Co}\)</span> for a suitably chosen
+divisor, and indeed this is what we do in this paper. To this end, we
+prove the following:</p>
+</div>
+<div class="theorem proofenv">
+<p>There is a semifan <span class="math inline">\({\mathcal{F}}\)</span>
+such that there exists a morphism
+<span class="math display">
+\begin{align*}
+\Psi: (\overline{F_\Co})^{\nu} \to \overline{F_\Co}^{{\mathcal{F}}}
+\end{align*}
+<span> from the normalization of the KSBA compactification to the
+semitoroidal compactification associated with <span class="math inline">\({\mathcal{F}}\)</span>. The Coxeter fan of <span class="math inline">\(T_{\Co}\)</span> is a refinement of <span class="math inline">\({\mathcal{F}}\)</span>, and stable Coble surfaces
+in the boundary of <span class="math inline">\(\overline{F_\Co}\)</span>
+admit explicit descriptions in terms of surfaces associated to
+sub-Dynkin diagrams of Coxeter diagrams.</p>
+</div>
+<div class="remark proofenv">
+<p>This result is made possible by recent advances in on
+compactifications of K3 surfaces with nonsymplectic automorphisms, along
+with the theory of recognizable divisors developed in . We also
+critically leverage the related stable pair compactification of the
+moduli spaces of Enriques surfaces studied in . In particular, we use
+the folding theory of Coxeter diagrams, their associated integral affine
+structures, and the theory of <span class="math inline">\(ADE+BC\)</span> surfaces in order to explicitly
+describe stable degenerations of Coble surfaces.</p>
+</div>
+<p><strong>Acknowledgements</strong>. I would like to thank my advisor
+Valery Alexeev for his guidance and support throughout this project. I
+thank Luca Schaffler and Philip Engel for many useful discussions. I
+would also like to gratefully acknowledge financial support from the
+Office of the Graduate School of the University of Georgia and the
+Research and Training Group in Algebra, Algebraic Geometry, and Number
+Theory at the University of Georgia.</p>
+<h1 data-number="2" id="coble-surfaces"><span class="header-section-number">2</span> Coble surfaces</h1>
+<h2 data-number="2.1" id="the-geometry-of-coble-surfaces"><span class="header-section-number">2.1</span> The geometry of Coble
+surfaces</h2>
+<div class="remark proofenv">
+<p>For the general theory of Coble surfaces, we refer to , along with .
+Following , a is a smooth projective rational surface <span class="math inline">\(S\)</span> with <span class="math inline">\({\left\lvert {-K_S} \right\rvert} =
+\emptyset\)</span> but <span class="math inline">\({\left\lvert {-2K_S}
+\right\rvert} \neq \emptyset\)</span>. We say <span class="math inline">\(S\)</span> is of <strong>K3 type</strong> if <span class="math inline">\({\left\lvert {-2K_S} \right\rvert}\)</span>
+consists of a single smooth divisor <span class="math inline">\(C = C_1
++ \cdots + C_n\)</span>, the union of <span class="math inline">\(n\)</span> disjoint smooth rational curves
+satisfying <span class="math inline">\(C_i\cdot C_j =
+-4\delta_{ij}\)</span>. For Coble surfaces obtained as the blowup along
+ten nodes of a nodal plane sextic, this calculation follows from
+adjunction and the genus formula. We refer to <span class="math inline">\(C\)</span> as the <em>anti-bicanonical curve</em>
+of <span class="math inline">\(S\)</span>, and note that <span class="math inline">\(K_S\cdot C_i = -2\)</span>. The <span class="math inline">\(C_i\)</span> are referred to as the
+<strong>boundary components</strong> of <span class="math inline">\(S\)</span>.</p>
+<p>By , such a Coble surface is known to be a <em>basic rational
+surface</em>, i.e. there is a birational morphism <span class="math inline">\(\pi: S\to {\mathbf{P}}^2\)</span>. Writing <span class="math inline">\(-K_S^2 = n\)</span>, one can decompose <span class="math inline">\(\pi\)</span> as a blowup of <span class="math inline">\(N = 9+n\)</span> points in <span class="math inline">\({\mathbf{P}}^2\)</span>. It is known that <span class="math inline">\(n\leq 10\)</span>, c.f. . The image of <span class="math inline">\(C\)</span> is contained in <span class="math inline">\({\left\lvert {-2K_{{\mathbf{P}}^2}} \right\rvert}
+= {\left\lvert {{\mathcal{O}}_{{\mathbf{P}}^2}(6)}
+\right\rvert}\)</span> and is thus generically a nodal plane sextic
+where the images of <span class="math inline">\(C_i\)</span> are its
+irreducible components.</p>
+<p>We will primarily be interested in the case <span class="math inline">\(n=1\)</span>, whence <span class="math inline">\(S\)</span> is obtained as the blowup of a plane
+sextic along <span class="math inline">\(N=10\)</span> ordinary double
+points, some of which may be infinitely near to each other. Such Coble
+surfaces are not the image of any birational but not biregular morphism
+from another Coble surface and are said to be . We say <span class="math inline">\(S\)</span> is if the blowdown of any <span class="math inline">\((-1)\)</span>-curve on <span class="math inline">\(S\)</span> is no longer a Coble surface, or
+equivalently if <span class="math inline">\(S\)</span> does not admit a
+birational but not biregular morphism onto another Coble surface.</p>
+</div>
+<div class="remark proofenv">
+<p>Let <span class="math inline">\(\cL
+\mathrel{\vcenter{:}}={\mathcal{O}}_S(-K_S) \in
+\operatorname{Pic}(S)\)</span>; By , taking a section <span class="math inline">\(s\in H^0(\cL ^{\otimes 2})\)</span> with <span class="math inline">\(Z(s) = C\)</span> yields a double branched double
+cover <span class="math inline">\(f: X\to S\)</span> where <span class="math inline">\(X\)</span> is a smooth K3 surface. By , the
+preimages <span class="math inline">\(f^{-1}(C_i)\)</span> are disjoint
+<span class="math inline">\((-2)\)</span>-curves and <span class="math inline">\(\operatorname{Pic}(X)\)</span> is a 2-elementary
+lattice with invariants of the form
+<span class="math display">
+\begin{align*}
+(r,a,\delta)_1 = (10+n, 12-n, \delta)_1
+.\end{align*}
+<span> By , the ramification divisor <span class="math inline">\(R\)</span> is explicitly of one of the following
+forms:</p>
+<ul>
+<li><span class="math inline">\(R=\emptyset\)</span> if <span class="math inline">\((r,a,\delta) = (10, 10, 0)\)</span>,</li>
+<li><span class="math inline">\(R\)</span> is a sum of two elliptic
+curves if <span class="math inline">\((r,a,\delta) = (10, 8,
+0)\)</span>,</li>
+<li><span class="math inline">\(R\)</span> is the sum of a single
+rational curve and <span class="math inline">\(n-1\)</span> other
+disjoint <span class="math inline">\((-2)\)</span>-curves
+otherwise.</li>
+</ul>
+<p>It is also known that <span class="math inline">\(\delta=1\)</span>
+unless <span class="math inline">\(n=8\)</span>, c.f. . Thus if <span class="math inline">\(S\)</span> is a terminal Coble surface of K3 type
+with <span class="math inline">\(n=1\)</span>, the ramification locus of
+the K3 cover is a single smooth rational curve, and we obtain a lattice
+with invariants
+<span class="math display">
+\begin{align*}
+S_{\Co} \mathrel{\vcenter{:}}=(11, 11, 1)_1 \cong \left\langle{-2}\right\rangle \oplus E_{10}(2)
+\end{align*}
+<span> with orthogonal complement
+<span class="math display">
+\begin{align*}
+T_{\Co} \mathrel{\vcenter{:}}= S_{\Co}^{\perp \lkthree} = (11, 11, 1)_2 \cong \rm{I}_{2, 9}(2) \cong \left\langle{2}\right\rangle \oplus E_{10}(2)
+.\end{align*}
+<span></p>
+<p>Explicitly, <span class="math inline">\(S_{\Co}\)</span> is generated
+by the preimages <span class="math inline">\(E_i\)</span> for <span class="math inline">\(1\leq i \leq 10\)</span> under <span class="math inline">\(f\)</span> of the ten exceptional divisors of the
+blowup, along with the preimage <span class="math inline">\(E_0\)</span>
+under <span class="math inline">\(f\)</span> of the pullback of a
+hyperplane class of <span class="math inline">\({\mathbf{P}}^2\)</span>
+under <span class="math inline">\(\pi\)</span>. One can show that <span class="math inline">\(E_0^2=2\)</span> and <span class="math inline">\(E_i^2 = -2\)</span> for <span class="math inline">\(i\geq 1\)</span>, and thus these divisors form a
+lattice of the form
+<span class="math display">
+\begin{align*}
+S_{\Co} \cong \left\langle{2}\right\rangle \oplus \left\langle{-2}\right\rangle^{\oplus 10} \cong \rm{I}_{1, 10}(2) \cong (11, 11, 1)_1
+,\end{align*}
+<span> and the identification <span class="math inline">\(S_{\Co} \cong
+\left\langle{-2}\right\rangle \oplus E_{10}(2)\)</span> follows from the
+fact that both definitions of <span class="math inline">\(S_{\Co}\)</span> are 2-elementary lattices of
+signature <span class="math inline">\((1, 10)\)</span> with discriminant
+group <span class="math inline">\((\bZ/2\bZ)^{11}\)</span>, which are
+classified uniquely up to isometry by their invariants <span class="math inline">\((r,a,\delta)_{n_+}\)</span>. Similarly, the
+identification of <span class="math inline">\(T_{\Co}\)</span> follows
+from the fact that it is again a 2-elementary lattice of signature <span class="math inline">\((2, 9)\)</span> satisfying <span class="math inline">\(q_{T_{\Co}} \cong -q_{S_{\Co}}\)</span>, and the
+isomorphism class of <span class="math inline">\(q_{T_{\Co}}\)</span>
+determines <span class="math inline">\(T_{\Co}\)</span> up to isometry.
+Alternatively, this can be seen directly using the mirror move <span class="math inline">\(S\leadsto T\)</span> of applied to <span class="math inline">\(S_\Co =(11, 11, 1)_1\)</span> in , immediately
+yielding <span class="math inline">\(T_{\Co} = (11, 11,
+1)_2\)</span>.</p>
+<p>The lattices <span class="math inline">\(S_{\Co}\)</span> and <span class="math inline">\(T_{\Co}\)</span> will be of fundamental importance
+in constructing the Hodge-theoretic period domain for Coble surfaces,
+yielding a coarse space for the corresponding moduli space.</p>
+</div>
+<div class="remark proofenv">
+<p>Following , we note that this computation is a special case of a
+general construction. Let <span class="math inline">\(S\)</span> be any
+basic rational surface and write <span class="math inline">\(S\)</span>
+as the blowup of <span class="math inline">\({\mathbf{P}}^2\)</span> at
+<span class="math inline">\(N\)</span> points <span class="math inline">\(p_1,\cdots, p_N\)</span> with <span class="math inline">\(N\geq 9\)</span>. It is a fact that <span class="math inline">\(\operatorname{Pic}(S) \cong \rm{I}_{1,
+N}\)</span>, since one can construct a <strong>geometric basis</strong>
+in the following way: let <span class="math inline">\(e_0\)</span> be
+the class of the total transform of a hyperplane class in <span class="math inline">\({\mathbf{P}}^2\)</span> and for <span class="math inline">\(1\leq i\leq N\)</span>, let <span class="math inline">\(e_i\)</span> be the class of the total transform
+of the exceptional divisor over <span class="math inline">\(p_i\)</span>. Then <span class="math inline">\(\operatorname{Pic}(S) =
+\left\langle{e_0,e_1,\cdots, e_N}\right\rangle\)</span> and <span class="math inline">\(\rho(X) = N+1\)</span>; one verifies that <span class="math inline">\(e_0^2 = 1\)</span>, and for <span class="math inline">\(i\geq 1\)</span>, that <span class="math inline">\(e_i^2 = -1\)</span>. Moreover <span class="math inline">\(e_ie_j = 0\)</span> for <span class="math inline">\(i\neq j\)</span>, making this an orthogonal basis
+with respect to the intersection pairing, yielding <span class="math inline">\(\rm{I}_{1, N}\)</span>. In the case of Coble
+surfaces, the effect of taking the K3 double cover is to twist this
+lattice by 2, yielding <span class="math inline">\(\operatorname{Pic}(X)
+= \rm{I}_{1, N}(2)\)</span>, generated by preimages of the <span class="math inline">\(e_i\)</span>. We remark that
+<span class="math display">
+\begin{align*}
+K_S = -3e_0 + e_1 + \cdots + e_N
+.\end{align*}
+<span></p>
+</div>
+<h1 data-number="3" id="lattice-theory"><span class="header-section-number">3</span> Lattice Theory</h1>
+<div class="remark proofenv">
+<p>We refer to:</p>
+<ul>
+<li></li>
+<li></li>
+</ul>
+</div>
+<h2 data-number="3.1" id="basic-theory"><span class="header-section-number">3.1</span> Basic Theory</h2>
+<div class="remark proofenv">
+<p>The study of semitoroidal compactifications of moduli spaces of Coble
+surfaces largely reduces to lattice theory, of which we will now recall
+the essential notions.</p>
+</div>
+<div class="remark proofenv" title="Basic invariants">
+<p>By a <strong>lattice</strong>, we mean a free <span class="math inline">\({\mathbf{Z}}\)</span>-module <span class="math inline">\(L\)</span> of finite rank equipped with a
+nondegenerate<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> symmetric integral bilinear form
+<span class="math inline">\(\beta_L: L \otimes_{\mathbf{Z}}L \to
+{\mathbf{Z}}\)</span>. We abbreviate <span class="math inline">\(vw
+\mathrel{\vcenter{:}}=\beta_L(v, w)\)</span> and <span class="math inline">\(v^2 \mathrel{\vcenter{:}}=\beta_L(v, v)\)</span>
+and refer to the latter as the of <span class="math inline">\(v\)</span>. We write <span class="math inline">\(L_R \mathrel{\vcenter{:}}= L\otimes_{{\mathbf{Z}}}
+R\)</span> and <span class="math inline">\(\beta_{L_R}\)</span> for
+<span class="math inline">\(R = {\mathbf{Q}}, {\mathbf{R}},
+{\mathbf{C}}\)</span> for the <span class="math inline">\({\mathbf{Z}}\)</span>-linear extensions of <span class="math inline">\((L, \beta_L)\)</span> to the rational, real, and
+complex numbers respectively.</p>
+<p>A submodule <span class="math inline">\(M\subseteq L\)</span> is a
+<strong>sublattice</strong> if the restricted bilinear form <span class="math inline">\({ \left.{{\beta_L}} \right|_{{M}} }\)</span>
+endows <span class="math inline">\(M\)</span> with the structure of a
+lattice. A vector <span class="math inline">\(v\in L\)</span> is
+<strong>isotropic</strong> if <span class="math inline">\(v^2 =
+0\)</span>, i.e. it is norm zero, and more generally a sublattice <span class="math inline">\(M \subseteq L\)</span> is isotropic if <span class="math inline">\({ \left.{{\beta_L}} \right|_{{M}} } \equiv
+0\)</span>. A lattice is said to be <strong>even</strong> if <span class="math inline">\(x^2\in 2{\mathbf{Z}}\)</span> for all <span class="math inline">\(x\in L\)</span>, and otherwise. A nondegenerate
+symmetric bilinear form can be linearly extended to <span class="math inline">\(L_{\mathbf{R}}\)</span> and by Sylvester’s
+theorem, diagonalized with only <span class="math inline">\(1\)</span>
+or <span class="math inline">\(-1\)</span> on the diagonal. We write
+<span class="math inline">\(n_+\)</span> and <span class="math inline">\(n_-\)</span> respectively for the number of <span class="math inline">\(\pm 1\)</span> entries on the diagonal. The
+<strong>signature</strong> of <span class="math inline">\(L\)</span> is
+the pair <span class="math inline">\((n_+, n_-)\)</span>, and the
+<strong>index</strong> is <span class="math inline">\(n_+ -
+n_-\)</span>. We say <span class="math inline">\(L\)</span> is
+<strong>definite</strong> if either <span class="math inline">\(n_+\)</span> or <span class="math inline">\(n_-\)</span> is zero, and
+<strong>indefinite</strong> otherwise. More precisely, if <span class="math inline">\(n_- = 0\)</span> we say <span class="math inline">\(L\)</span> is <strong>positive definite</strong>,
+and similarly if <span class="math inline">\(n_+ = 0\)</span>, we say
+<span class="math inline">\(L\)</span> is <strong>negative
+definite</strong>. A negative definite lattice generated by elements of
+norm <span class="math inline">\(-2\)</span> is said to be a
+<strong>root lattice</strong>, and such elements are referred to as
+<strong>roots</strong>.</p>
+<p>The <strong>rank</strong> <span class="math inline">\(r\)</span> of a
+lattice is its rank as a free <span class="math inline">\({\mathbf{Z}}\)</span>-module and is given by <span class="math inline">\(r=n_+ + n_- =
+\dim_{\mathbf{Q}}L_{\mathbf{Q}}\)</span>. An indefinite lattice of
+signature <span class="math inline">\((1, r-1)\)</span> is said to be
+<strong>hyperbolic</strong>. Fixing a generating set <span class="math inline">\(e_i\)</span> of <span class="math inline">\(L\)</span>, we define the <strong>Gram
+matrix</strong> of <span class="math inline">\(L\)</span> as the matrix
+<span class="math inline">\(G_L \mathrel{\vcenter{:}}=(\beta_L(e_i,
+e_j))_{ij}\)</span>, and the <strong>discriminant</strong> as <span class="math inline">\(\operatorname{disc} L
+\mathrel{\vcenter{:}}=\operatorname{det}G_L\)</span>. The discriminant
+is independent of the choice of generating set.</p>
+</div>
+<div class="remark proofenv" title="Discriminant forms">
+<p>The <strong>dual lattice</strong> to <span class="math inline">\(L\)</span> is denoted <span class="math inline">\(L {}^{ \vee }\mathrel{\vcenter{:}}={
+\operatorname{Hom} }_{\mathbf{Z}}(L, {\mathbf{Z}})\)</span>, and there
+is an morphism
+<span class="math display">
+\begin{align*}\begin{aligned}
+\iota: L &amp;\hookrightarrow L {}^{ \vee }\\
+x &amp;\mapsto \beta_L(x, \cdot)
+\end{aligned}\end{align*}
+<span> which, if <span class="math inline">\(L\)</span> is
+nondegenerate, is an injection with finite index image. The
+<strong>discriminant group</strong> is <span class="math inline">\(A_L
+\mathrel{\vcenter{:}}=\operatorname{coker}\iota \cong L {}^{ \vee
+}/L\)</span>; this is a finite order group of order <span class="math inline">\({\left\lvert {\operatorname{disc} L}
+\right\rvert}\)</span>. We say <span class="math inline">\(L\)</span> is
+<strong>unimodular</strong> if any of the following equivalent
+conditions hold:</p>
+<ol type="1">
+<li><p><span class="math inline">\(A_L\)</span> is the trivial
+group,</p></li>
+<li><p><span class="math inline">\(\iota\)</span> is an isomorphism and
+<span class="math inline">\(L\cong L {}^{ \vee }\)</span>,</p></li>
+<li><p><span class="math inline">\({\left\lvert { \operatorname{disc} L}
+\right\rvert} = 1\)</span>.</p></li>
+</ol>
+<p>If <span class="math inline">\(A_L \cong
+({\mathbf{Z}}/p{\mathbf{Z}})^a\)</span> for some <span class="math inline">\(a\)</span>, we say <span class="math inline">\(L\)</span> is <strong><span class="math inline">\(p\)</span>-elementary</strong>; in our
+applications we will often have <span class="math inline">\(p=2\)</span>. For even lattices, the form <span class="math inline">\(\beta_L\)</span> descends to a well-defined
+quadratic form
+<span class="math display">
+\begin{align*}\begin{aligned}
+q_L: A_L &amp;\to {\mathbf{Q}}/2{\mathbf{Z}}\\
+x + L &amp;\mapsto \beta_{L_{\mathbf{Q}}}(x, x) \operatorname{mod}2{\mathbf{Z}}
+\end{aligned}\end{align*}
+<span> We call the pair <span class="math inline">\((A_L, q_L)\)</span>
+the <strong>discriminant quadratic form</strong> of <span class="math inline">\(L\)</span>. A <strong>morphism</strong> between
+two lattices is a morphism of <span class="math inline">\({\mathbf{Z}}\)</span>-modules <span class="math inline">\(\eta: L\to L&#39;\)</span> respecting the bilinear
+forms in the sense that <span class="math inline">\(\beta_L(x, y) =
+\beta_{L&#39;}(\eta(x), \eta(y))\)</span>, and is a <strong>primitive
+embedding</strong> if <span class="math inline">\(\eta\)</span> is
+injective and <span class="math inline">\(\operatorname{coker}\eta\)</span> is torsionfree.
+An <strong>isometry</strong> of lattices is an isomorphism, defined in
+the obvious way. We write <span class="math inline">\({\operatorname{O}}(L)\)</span> for the group of
+lattice automorphisms of <span class="math inline">\(L\)</span>, denoted
+the <strong>orthogonal group</strong> of <span class="math inline">\(L\)</span>, and similarly <span class="math inline">\({\operatorname{O}}(q_L)\)</span> for the <span class="math inline">\({\mathbf{Z}}\)</span>-module automorphisms of of
+the discriminant form <span class="math inline">\(A_L\)</span> which
+preserve the quadratic form. There is a natural group homomorphism <span class="math inline">\({\operatorname{O}}(L)\to{\operatorname{O}}(q_L)\)</span>,
+the kernel is denoted <span class="math inline">\(\tilde
+{\operatorname{O}}(L)\)</span>.</p>
+</div>
+<div class="remark proofenv" title="Orthogonal complements">
+<p>Given two lattices <span class="math inline">\(L_1, L_2\)</span> we
+write <span class="math inline">\(L_1\oplus L_2\)</span> for the
+<strong>orthogonal direct sum</strong>, which is the direct sum of the
+underlying modules with bilinear form defined by
+<span class="math display">
+\begin{align*}\beta_{L_1\oplus L_2}(v_1 + v_2, w_1 + w_2)\mathrel{\vcenter{:}}=\beta_{L_1}(v_1, w_1) + \beta_{L_2}(v_2, w_2) 
+.\end{align*}
+<span> We write <span class="math inline">\(L^{\oplus n}\)</span> for
+the direct sum of <span class="math inline">\(n\)</span> copies of <span class="math inline">\(L\)</span>. Let <span class="math inline">\(\eta:
+M \hookrightarrow L\)</span> be a primitive embedding of lattices, for
+example the inclusion of a sublattice. We write
+<span class="math display">
+\begin{align*}M^{\perp L} \mathrel{\vcenter{:}}=\left\{{x\in L \mathrel{\Big|}\beta_L(x, M) = 0}\right\}
+.\end{align*}
+<span> If the ambient lattice <span class="math inline">\(L\)</span> is
+understood, we often abuse notation and simply write <span class="math inline">\(M^{\perp}\)</span> without reference to <span class="math inline">\(L\)</span>. Note that <span class="math inline">\(M^{\perp L}\oplus M \subseteq L\)</span> may not
+be saturated, and is generally a finite index sublattice of <span class="math inline">\(L\)</span>. We note that <span class="math inline">\(M^{\perp L}\cap M \neq \left\{{0}\right\}\)</span>
+in general.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> We also note that for any lattices
+<span class="math inline">\(L_i\)</span>,
+<span class="math display">
+\begin{align*}
+A_{L_1 \oplus \cdots \oplus L_n} = A_{L_1} \oplus \cdots \oplus A_{L_n}
+\end{align*}
+<span></p>
+</div>
+<div class="remark proofenv" title="2-elementary lattices">
+<p>Let <span class="math inline">\(L\)</span> be a 2-elementary lattice.
+The <strong>divisibility</strong> of a vector <span class="math inline">\(v\in L\)</span>, denoted <span class="math inline">\(\operatorname{div}_L(v)\)</span>, is defined by
+<span class="math inline">\(\beta_L(v, L) =
+\operatorname{div}_L(v){\mathbf{Z}}\)</span>, i.e. the positive integral
+generator of the image of the map <span class="math inline">\(\beta_L(v,
+\cdot): L\to {\mathbf{Z}}\)</span>. For 2-elementary lattices, one
+always has <span class="math inline">\(\operatorname{div}_L(v) \in
+\left\{{1, 2}\right\}\)</span>. We set <span class="math inline">\(v^*
+\mathrel{\vcenter{:}}= v/\operatorname{div}_L(v)\in A_L\)</span>.
+Letting <span class="math inline">\(q_L:A_L \to {1\over
+2}{\mathbf{Z}}/{\mathbf{Z}}\)</span> be the induced quadratic form on
+<span class="math inline">\(A_L\)</span>, we say <span class="math inline">\(v^*\)</span> is <strong>characteristic</strong> if
+<span class="math inline">\(q_L(x) = \beta_L(v^*,
+x)\operatorname{mod}{\mathbf{Z}}\)</span> for all <span class="math inline">\(x\in A_L\)</span>, and is
+<strong>ordinary</strong> otherwise. We say that a primitive isotropic
+vector <span class="math inline">\(e\in L\)</span> is</p>
+<ol type="1">
+<li><p><strong>odd</strong> if <span class="math inline">\(\operatorname{div}_L(e) = 1\)</span>,</p></li>
+<li><p><strong>even ordinary</strong> if <span class="math inline">\(\operatorname{div}_L(e) = 2\)</span> and <span class="math inline">\(e^*\)</span> is ordinary, or</p></li>
+<li><p><strong>even characteristic</strong> if <span class="math inline">\(\operatorname{div}_L(e) = 2\)</span> and <span class="math inline">\(e^*\)</span> is characteristic.</p></li>
+</ol>
+<p>The 2-elementary hyperbolic lattices admitting a primitive embedding
+into <span class="math inline">\(\Lambda_{\mathrm{K3}}\)</span> were
+classified by Nikulin in . An indefinite 2-elementary lattice is
+determined up to isometry by a triple of invariants <span class="math inline">\((r,a,\delta)\)</span>. Here, <span class="math inline">\(r\mathrel{\vcenter{:}}=\operatorname{rank}_{\mathbf{Z}}(L)\)</span>
+is the rank, <span class="math inline">\(a =
+\operatorname{rank}_{\bF_2}A_L\)</span> is the exponent appearing in
+<span class="math inline">\(A_L =
+({\mathbf{Z}}/2{\mathbf{Z}})^a\)</span>, and <span class="math inline">\(\delta \in \left\{{0, 1}\right\}\)</span> is the
+<strong>coparity</strong>: we set <span class="math inline">\(\delta =
+0\)</span> if <span class="math inline">\(q_L(A_L) \subseteq
+{\mathbf{Z}}\)</span>, so <span class="math inline">\(q_L(x) \equiv 0
+\operatorname{mod}{\mathbf{Z}}\)</span> for all <span class="math inline">\(x\in A_L\)</span>, and <span class="math inline">\(\delta=1\)</span> otherwise. We accordingly
+specify such lattices using the notation <span class="math inline">\((r,a,\delta)_{n_+}\)</span>.</p>
+</div>
+<div class="remark proofenv" title="Twists of a lattice">
+<p>If <span class="math inline">\(L\)</span> is a lattice with bilinear
+for <span class="math inline">\(\beta_L\)</span>, define <span class="math inline">\(L(n)\)</span> to be the twist of <span class="math inline">\(L\)</span> by <span class="math inline">\(n\)</span>, which has the same underlying <span class="math inline">\({\mathbf{Z}}\)</span>-module but is equipped with
+the scaled bilinear form
+<span class="math display">
+\begin{align*}\beta_{L(n)}(v,w) \mathrel{\vcenter{:}}= n\cdot \beta_L(v, w).\end{align*}
+<span></p>
+</div>
+<div class="remark proofenv" title="The lattice $\gens{n}$">
+<p>The lattice <span class="math inline">\(\left\langle{n}\right\rangle\)</span> is defined
+as the rank 1 lattice <span class="math inline">\({\mathbf{Z}}\)</span>
+with one generator <span class="math inline">\(v\)</span> satisfying
+<span class="math inline">\(\beta_{\left\langle{n}\right\rangle}(v,v) =
+n\)</span>. The Gram matrix is the <span class="math inline">\(1\times
+1\)</span> matrix <span class="math inline">\(G_{\left\langle{n}\right\rangle} = [n]\)</span>,
+and the associated quadratic form is <span class="math inline">\(q_{\left\langle{n}\right\rangle}(x) =
+nx^2\)</span>.</p>
+</div>
+<div class="remark proofenv" title="The hyperbolic lattice">
+<p>In rank 2, there are two unimodular hyperbolic lattices: the odd
+<span class="math inline">\(\rm{I}_{1, 1}
+\mathrel{\vcenter{:}}=\left\langle{1}\right\rangle \oplus
+\left\langle{-1}\right\rangle\)</span>, and the even <span class="math inline">\(U\mathrel{\vcenter{:}}=\rm{II}_{1, 1}\)</span>. We
+refer to the latter as the , which can be realized as <span class="math inline">\(U \mathrel{\vcenter{:}}={\mathbf{Z}}e \oplus
+{\mathbf{Z}}f\)</span> with <span class="math inline">\(e^2=f^2 =
+0\)</span> and <span class="math inline">\(ef = 1\)</span>, and thus the
+following Gram matrix:
+<span class="math display">
+\begin{align*} 
+G_U = \begin{bmatrix}0&amp;1\\1&amp;0\end{bmatrix}
+.\end{align*}
+<span></p>
+</div>
+<div class="remark proofenv" title="ADE lattices">
+<p>Any Dynkin diagram of type <span class="math inline">\(A_n, D_n, E_6,
+E_7, E_8\)</span> corresponds to a root lattice of the respective type.
+By convention, we take the negative definite twists of these lattices.
+Of particular importance to us is the <span class="math inline">\(E_8\)</span> lattice associated to the following
+Dynkin diagram:</p>
+<!--![](figures/2024-07-24_12-12-27.png)-->
+</div>
+<div class="remark proofenv" title="The lattice ${{\rm{I} }_{p, q}}$.">
+<p>For any pair of non-negative integers <span class="math inline">\((p,
+q)\)</span>, there exists an odd indefinite unimodular lattice
+determined up to isomorphism by its rank and signature:
+<span class="math display">
+\begin{align*}
+\mathrm{I}_{p, q} \mathrel{\vcenter{:}}=\left\langle{1}\right\rangle^{\oplus p}\oplus \left\langle{-1}\right\rangle^{\oplus q}
+.\end{align*}
+<span></p>
+</div>
+<div class="remark proofenv" title="The lattice ${\rm{II}}_{p, q}$">
+<p>Let <span class="math inline">\(L\)</span> be an even indefinite
+unimodular lattice of signature <span class="math inline">\((p,
+q)\)</span>. Then <span class="math inline">\(p-q\equiv 0 \pmod
+8\)</span>, and <span class="math inline">\(L\)</span> is uniquely
+determined up to isomorphism by its rank and signature:
+<span class="math display">
+\begin{align*} 
+{\rm{II}}_{p, q} \mathrel{\vcenter{:}}=
+\begin{cases}
+    U ^{\oplus p}\oplus E_8^{\oplus {q-p\over 8}}, &amp; p &lt; q \\
+    U^{\oplus q} \oplus E_8(-1)^{\oplus {p-q\over 8}}, &amp; p &gt; q
+.\end{cases}
+\end{align*}
+<span></p>
+</div>
+<h2 data-number="3.2" id="summary"><span class="header-section-number">3.2</span> Summary</h2>
+<div class="remark proofenv">
+<p>We summarize the lattices that will be relevant to our
+discussion:</p>
+<p>
+<span class="math display">
+\begin{align*}\begin{aligned}
+    \lkthree &amp;= (22, 0, 0)_3 = U^3 \oplus E_8^2 = \rm{II}_{3, 19} &amp;
+    E_{10} &amp;= (10, 0, 0)_1 = U \oplus E_8 = \mathrm{I}_{1, 9} \\
+    S_{\operatorname{En}} &amp;= (10, 10, 0)_1    = E_{10}(2) &amp; 
+    T_{\operatorname{En}} &amp;= (12, 10, 0)_2    = U \oplus E_{10}(2) \\
+    S_{\Co} &amp;= (11, 11, 1)_1    = \left\langle{-2}\right\rangle \oplus E_{10}(2) &amp; 
+    T_{\Co} &amp;= (11,11,1)_2      = \left\langle{2}\right\rangle \oplus E_{10}(2) \\
+    S_{\dP} &amp;= (2,2,0)_1        = U(2) &amp;
+    T_{\dP} &amp;= (20, 2, 0)_2     = U \oplus U(2) \oplus E_8^2
+\end{aligned}\end{align*}
+<span></p>
+</div>
+<div class="lemma proofenv">
+<p> Writing <span class="math display">\[\begin{align*} T_{\Co} =
+\left\langle{2}\right\rangle \oplus E_{10}(2) &amp;= \langle h, e&#39;,
+f&#39;,\alpha_1,\cdots, \alpha_8 \rangle \\ T_{\operatorname{En}} = U
+\oplus E_{10}(2) &amp;= \langle \tilde e,\tilde f,\tilde e&#39;,\tilde
+f&#39;,\tilde \alpha_1,\cdots,\tilde \alpha_8\rangle,
+\end{align*}\]</span> there is an embedding of lattices <span class="math inline">\(T_{\Co} \hookrightarrow
+T_{\operatorname{En}}\)</span>: <span class="math display">\[\begin{align*}     \eta:
+\left\langle{2}\right\rangle \oplus E_{10}(2) &amp;\to U \oplus
+E_{10}(2) \\     (h, x) &amp;\mapsto (\tilde e + \tilde f, x)
+\end{align*}\]</span> which sends the generator <span class="math inline">\(h\)</span> of <span class="math inline">\(\left\langle{2}\right\rangle\)</span> to <span class="math inline">\(\tilde e+\tilde f\in U\)</span> and is the
+identity on the <span class="math inline">\(E_{10}(2)\)</span> summand.
+Since <span class="math inline">\(\operatorname{coker}\eta\)</span> is
+torsionfree, <span class="math inline">\(\eta\)</span> is a primitive
+embedding.</p>
+</div>
+<div class="lemma proofenv">
+<p>There is a sequence of primitive embeddings
+<span class="math display">
+\begin{align*}
+T_{\Co} \hookrightarrow T_{\operatorname{En}} \hookrightarrow T_{\dP} \hookrightarrow\lkthree
+\end{align*}
+<span><br />
+which is unique up to <span class="math inline">\({\operatorname{O}}(\lkthree)\)</span>. In
+particular, this yields an embedding <span class="math inline">\(T_{\Co}\hookrightarrow T_{\dP}\)</span> given by
+<span class="math display">\[\begin{align*}     \left\langle{2}\right\rangle
+\oplus U(2) \oplus E_8(2) &amp;\hookrightarrow U \oplus U(2) \oplus
+E_8^2 \\     (h,x,y) &amp; \mapsto (\tilde e + \tilde f, x, y, y)
+\end{align*}\]</span> and thus an embedding <span class="math inline">\(F_{\Co} \hookrightarrow F_{(2,2,0)}\)</span>.</p>
+</div>
+<div class="proof proofenv">
+<p>By , it suffices to show uniqueness of <span class="math inline">\(S_{\operatorname{En}} \hookrightarrow
+S_{\Co}\)</span>, i.e.
+<span class="math display">
+\begin{align*}
+E_{10}(2) \hookrightarrow\left\langle{-2}\right\rangle\oplus E_{10}(2)
+,\end{align*}
+<span> or equivalently by untwisting,
+<span class="math display">
+\begin{align*}
+E_{10} \hookrightarrow\left\langle{-1}\right\rangle\oplus E_{10}
+.\end{align*}
+<span> This embedding is unique since one can write the codomain as
+<span class="math inline">\(E_{10}^\perp \oplus E_{10}\)</span>.
+Similarly, by , the homomorphism <span class="math inline">\({\operatorname{O}}(L)\to
+{\operatorname{O}}(T_{\Co})\)</span> is surjective.</p>
+</div>
+<div class="lemma proofenv">
+<p> The embeddings of lattices <span class="math inline">\(\eta:
+T_{\Co}\hookrightarrow T_{\operatorname{En}}\)</span> (resp. <span class="math inline">\(T_{\Co} \hookrightarrow T_{\dP}\)</span>) induce
+locally closed embedding <span class="math inline">\(F_{\Co}
+\hookrightarrow F_{\operatorname{En}}\)</span> (resp. <span class="math inline">\(F_{\Co} \hookrightarrow F_{(2,2,0)}\)</span>)
+which extend to morphisms on the Baily-Borel compactifications.</p>
+</div>
+<div class="proof proofenv">
+<p>This follows from .</p>
+</div>
+<div class="theorem proofenv">
+<p><span class="math inline">\(F_{\Co}\)</span> is the normalization of
+a closed subvariety of <span class="math inline">\(F_{\operatorname{En}}\)</span>.</p>
+</div>
+<div class="proof proofenv">
+<p>It suffices to show that <span class="math inline">\(D(T_{\Co})/{\operatorname{O}}(T_{\Co}) \to
+D(T_{\operatorname{En}})/{\operatorname{O}}(T_{\operatorname{En}})\)</span>
+is a finite morphism which is generically injective. The lattice
+embedding <span class="math inline">\(T_{\Co}\hookrightarrow
+T_{\operatorname{En}}\)</span> induces an injective morphism <span class="math inline">\(D(T_{\Co}) \hookrightarrow
+D(T_{\operatorname{En}})\)</span>. It remains to show that the
+stabilizer of <span class="math inline">\(T_{\Co}\)</span> in <span class="math inline">\({\operatorname{O}}(T_{\operatorname{En}})\)</span>
+is precisely <span class="math inline">\({\operatorname{O}}(T_{\Co})\)</span> and the
+morphism is finite.</p>
+<p>This morphism is finite because…</p>
+<p>The stabilizer statement follows from…</p>
+</div>
+<h2 data-number="3.3" id="moduli-of-coble-surfaces"><span class="header-section-number">3.3</span> Moduli of Coble Surfaces</h2>
+<div class="remark proofenv">
+<p>We begin with a naive parameter space for Coble surfaces. Following ,
+by varying the coefficients of <span class="math inline">\(p_i\)</span>
+in the planar blowup construction, one can construct <span class="math inline">\(F_\Co\)</span> as a locally closed subvariety of
+<span class="math inline">\(({\mathbf{P}}^2)^{10}/\operatorname{PGL}_3\)</span>,
+which is of dimension
+<span class="math display">
+\begin{align*}
+\dim ({\mathbf{P}}^2)^{10}/\operatorname{PGL}_3 = \dim ({\mathbf{P}}^2)^{10} - \dim \operatorname{PGL}_3 = 2\cdot 10 - (3^2-1) = 12
+.\end{align*}
+<span> A posteriori, the number of moduli for a Coble surface is 9,
+which means that there should be 3 conditions imposed upon the
+configuration of 10 points. These 3 conditions are precisely the
+<em>discriminant conditions</em> described in . Letting <span class="math inline">\(D\)</span> be the corresponding discriminant
+locus, we can identify <span class="math inline">\(F_{\Co}\)</span> as
+an open subset of <span class="math inline">\(\qty{
+({\mathbf{P}}^2)^{10} \setminus D }/\operatorname{PGL}_3\)</span> at the
+level of coarse moduli spaces. We note that shows that <span class="math inline">\(F_\Co\)</span> is rational by relating it to a
+codimension one subvariety of a moduli space of certain cuspidal
+quintics in <span class="math inline">\({\mathbf{P}}^2\)</span>.</p>
+</div>
+<div class="remark proofenv">
+<p>Alternatively, Horikawa and more recently consider the following: let
+<span class="math inline">\(Y\mathrel{\vcenter{:}}={\mathbf{P}}^1\times
+{\mathbf{P}}^1\)</span> and define an involution <span class="math inline">\(\tau(x,y) \mathrel{\vcenter{:}}=(-x,-y)\)</span>.
+Let <span class="math inline">\(B\in{\left\lvert {-2K_{Y}}
+\right\rvert}^\tau\)</span> be a <span class="math inline">\(\tau\)</span>-invariant anti-bicanonical curve in
+<span class="math inline">\(Y\)</span>. If <span class="math inline">\(B\)</span> passes through a <span class="math inline">\(\tau\)</span>-fixed point <span class="math inline">\(x,y\in \left\{{0, \pm \infty}\right\}\)</span>,
+then the corresponding double branched cover branched over <span class="math inline">\(B\)</span> is a nodal K3 surface <span class="math inline">\(X\)</span> with covering involution <span class="math inline">\(\iota_{\dP}\)</span> such that <span class="math inline">\(Y =
+X/\left\langle{\iota_{\dP}}\right\rangle\)</span>. Letting <span class="math inline">\(\iota_{\operatorname{En}}\)</span> be a lift of
+<span class="math inline">\(\tau\)</span>, the quotient <span class="math inline">\(Z\mathrel{\vcenter{:}}=
+X/\left\langle{\iota_{\operatorname{En}}}\right\rangle\)</span> is a
+Coble surface. The case in which <span class="math inline">\(B\)</span>
+does not pass through a <span class="math inline">\(\tau\)</span>-invariant point yields an Enriques
+surface <span class="math inline">\(Z\)</span>, and an analysis of the
+corresponding moduli space is carried out in . In this way, one realizes
+the moduli space <span class="math inline">\(F_{\Co}\)</span> of
+unpolarized Coble surfaces as a boundary divisor in <span class="math inline">\(F_{\operatorname{En}}\)</span>, the 10-dimensional
+moduli space of unpolarized Enriques surfaces.</p>
+</div>
+<div class="remark proofenv">
+<p>By passing to the K3 cover, one can embed <span class="math inline">\(F_\Co\)</span> into an arithmetic quotient of a
+9-dimensional Hermitian symmetric domain of type <span class="math inline">\(\rm{IV}\)</span>. Let <span class="math inline">\(\Lambda_{\mathrm{K3}}= U^3 \oplus E_8^2\)</span>
+be the canonical K3 lattice. We recall that for any primitively embedded
+lattice <span class="math inline">\(S\hookrightarrow\Lambda_{\mathrm{K3}}\)</span>,
+letting <span class="math inline">\(T \mathrel{\vcenter{:}}= S^{\perp
+\Lambda_{\mathrm{K3}}}\)</span>, there is a Hodge-theoretic description
+of the coarse moduli space <span class="math inline">\(F_S\)</span> of
+<span class="math inline">\(S\)</span>-polarized K3 surfaces given by
+<span class="math display">
+\begin{align*}
+F_S \mathrel{\vcenter{:}}= D_T/\tilde{\operatorname{O}}(T)
+\end{align*}
+<span> where <span class="math inline">\(\tilde {\operatorname{O}}(T)
+\mathrel{\vcenter{:}}=\ker\qty{{\operatorname{O}}(T) \to
+{\operatorname{O}}(q_T)}\)</span> and <span class="math inline">\(D_T\)</span> is a connected component of
+<span class="math display">
+\begin{align*}
+\Omega_T \mathrel{\vcenter{:}}=\left\{{[v]\in {\mathbf{P}}(T_{\mathbf{C}}) {~\mathrel{\Big\vert}~}v^2=0,\, v\overline{v} &gt; 0}\right\}
+.\end{align*}
+<span> Letting <span class="math inline">\(E_{10} \mathrel{\vcenter{:}}=
+U \oplus E_8\)</span>, one can consider the Enriques lattices <span class="math inline">\(S_{\operatorname{En}} := E_{10}(2)\)</span> with
+<span class="math inline">\(T_{\operatorname{En}} \mathrel{\vcenter{:}}=
+U \oplus E_{10}(2)\)</span>. Letting
+<span class="math display">
+\begin{align*}
+\cH_{-2d} = \bigcup_{\delta^2 = -2d} \delta^{\perp D_T}
+.\end{align*}
+<span> We note, as in , that <span class="math inline">\(T_{\Co} \cong
+v^{\perp T_{\operatorname{En}}}\)</span> for some <span class="math inline">\(v^2=-2\)</span>, which implies that there is a
+birational isomorphism <span class="math inline">\(F_{\Co}
+\overset{\sim}{\dashrightarrow}\cH_{-2}/{\operatorname{O}}(T_{\operatorname{En}})\)</span>.
+Thus up to birational isomorphism, one can present <span class="math display">\[\begin{align*} F_{\operatorname{En}} &amp;=
+\qty{D_{T_{\operatorname{En}}} \setminus \cH_{-2}} / \tilde
+{\operatorname{O}}(T_{\operatorname{En}}) \\ F_{\Co} &amp;= \cH_{-2} /
+\tilde {\operatorname{O}}(T_{\operatorname{En}}) \\
+\end{align*}\]</span> where surfaces along the divisor <span class="math inline">\(\cH_{-2}\)</span> in <span class="math inline">\(F_{\operatorname{En}}\)</span> correspond
+precisely to Coble surfaces. We note that surfaces along <span class="math inline">\(\cH_{-4}\setminus \cH_{-2}\)</span> correspond to
+nodal Enriques surfaces, an interesting divisor in its own right.</p>
+</div>
+<div class="remark proofenv">
+<p>We summarize the relevant moduli spaces: <span class="math display">\[\begin{align*} F_{\operatorname{En}} &amp;=
+D_{T_{\operatorname{En}}}/\tilde
+{\operatorname{O}}(T_{\operatorname{En}}) &amp;  F_{\operatorname{En},
+2} &amp;= D_{T_{\operatorname{En}}}/\Gamma_{\operatorname{En}, 2} \\
+F_\Co &amp;= D_{T_{\Co}} / \tilde {\operatorname{O}}(T_{\Co})
+&amp;  F_{\Co, 2} &amp;= D_{T_{\Co}}/\Gamma_{\Co,
+2}  \end{align*}\]</span> where <span class="math display">\[\begin{align*} \Gamma_{\operatorname{En}, 2}
+&amp;= {\operatorname{O}}(T_{\operatorname{En}})
+\cap{\operatorname{O}}(T_\dP) \subseteq
+{\operatorname{O}}(\Lambda_{\mathrm{K3}}) \\ \Gamma_{\Co, 2} &amp;=
+\mathrm{Stab}_{{\operatorname{O}}(T_{\operatorname{En}})}(T_{\Co})
+\subseteq {\operatorname{O}}(T_{\operatorname{En}})
+\end{align*}\]</span> where <span class="math inline">\(T_{\dP}\)</span>
+is described in . Note that we implicitly use the embedding <span class="math inline">\(\eta: T_{\Co} \hookrightarrow
+T_{\operatorname{En}}\)</span> of .</p>
+</div>
+<div class="remark proofenv">
+<p>By , there are morphisms <span class="math inline">\(\overline{F_{\Co}}^{\operatorname{BB}} \to
+\overline{F_{\operatorname{En}}}^{\operatorname{BB}}\)</span> and <span class="math inline">\(\overline{F_{\Co}}^{\operatorname{BB}} \to
+\overline{F_{(2,2,0)}}^{\operatorname{BB}}\)</span> which induce
+correspondences between the boundary cusps.</p>
+</div>
+<div class="remark proofenv">
+<p>We set up the moduli space of KSBA stable pairs for Coble surfaces,
+possibly using the ramification divisor of the K3 involution (which is
+in this case not fixed-point free). The above embeddings should allow us
+to take closures of stable pairs in already existing moduli spaces.</p>
+</div>
+<h1 data-number="4" id="cusp-correspondence"><span class="header-section-number">4</span> Cusp Correspondence</h1>
+<h2 data-number="4.1" id="coble-cusps"><span class="header-section-number">4.1</span> Coble Cusps</h2>
+<div class="remark proofenv">
+<p>We recall the mirror move algorithm from . We have Nikulin’s
+2-elementary diagram:</p>
+</div>
+<div class="remark proofenv">
+<p>Having identified the 2-elementary lattice <span class="math inline">\(S_\Co = (11, 11, 0)_1\)</span>, one can apply the
+mirror move algorithm of to determine the 0-cusps and 1-cusps of <span class="math inline">\(F_\Co\)</span>. The outcome of the algorithm is
+summarized by the following tree:</p>
+<p>Thus <span class="math inline">\(F_{\Co}\)</span> has one 0-cusp
+corresponding to an isotropic vector <span class="math inline">\(v\)</span> with
+<span class="math display">
+\begin{align*}
+v_0^{\perp T_{\Co}}/\left\langle{v_0}\right\rangle \cong (9,9,1)_1 \cong \left\langle{2}\right\rangle \oplus E_{8}(2)
+.\end{align*}
+<span> Moreover, this 0-cusp <span class="math inline">\(v_0\)</span> is
+incident to one 1-cusp <span class="math inline">\(C_0\)</span>
+corresponding to an isotropic plane <span class="math inline">\(J =
+\left\langle{v_0, v_1}\right\rangle\)</span> with
+<span class="math display">
+\begin{align*}
+J^{\perp T_{\Co}}/\left\langle{J}\right\rangle \cong (7,7,1)_0 \cong A_1^{\oplus 7}
+.\end{align*}
+<span> where <span class="math inline">\(v_1 \in v_0^{\perp
+T_{\Co}}/\left\langle{v_0}\right\rangle\)</span>. In the diagrammatic
+language of , this corresponds to a <span class="math inline">\(U^2\)</span> move and can be summarized in the
+following mirror move diagram as a composition of two even ordinary
+<span class="math inline">\(U(2)\)</span>-type moves:</p>
+<p>Note that <span class="math inline">\(v_0\)</span> corresponds to a
+Type <span class="math inline">\(\rm{III}\)</span> boundary, while <span class="math inline">\(C_0\)</span> corresponds to a type <span class="math inline">\(\rm{II}\)</span> boundary. It is easily verified
+that the Coxeter diagram <span class="math inline">\(G_{(9,9,1)_1}\)</span> at <span class="math inline">\(v_0\)</span> has precisely one maximal parabolic
+subdiagram, corresponding to a finite-index root lattice of type <span class="math inline">\(A_7\)</span>. We note that by , such isotropic
+vectors are unique up to <span class="math inline">\({\operatorname{O}}(T_\Co)\)</span>, and so we can
+choose representatives:</p>
+<ul>
+<li><span class="math inline">\(v_0 = e&#39;\)</span>,</li>
+<li><span class="math inline">\(v_1 = 2h + \alpha_1 +
+\alpha_2\)</span>.</li>
+</ul>
+<p>Calculations verify that <span class="math inline">\(v_0^2 = v_1^2 =
+0\)</span>, that <span class="math inline">\(v_1 \in
+v_0^{T_{\Co}}/\left\langle{v_0}\right\rangle\)</span>, and that <span class="math inline">\(v_0v_1 = 0\)</span>, and thus <span class="math inline">\(J \mathrel{\vcenter{:}}=\left\langle{v_0,
+v_1}\right\rangle\)</span> is an admissible choice of an isotropic
+plane. We further note that <span class="math inline">\(\operatorname{div}_{T_{\Co}}(v_0) =
+\operatorname{div}_{T_{\Co}}(v_1) = 2\)</span>, which will be an
+important invariant for establishing a correspondence to cusps of other
+moduli spaces. For an isotropic plane <span class="math inline">\(J\)</span>, we denote the divisibilities of the
+constituent generating vectors as a tuple <span class="math inline">\((d_1, d_2)\)</span>, and in this convention we
+have <span class="math inline">\(\operatorname{div}_{T_{\Co}}(v_0, v_1)
+= (2, 2)\)</span>. We summarize this in the following boundary cusp
+diagram:</p>
+</div>
+<div class="remark proofenv">
+<p>As further proof that this cusp diagram is correct, we can use the
+theory of Coxeter diagrams. Given an isotropic vector <span class="math inline">\(e\in L\)</span> a lattice of signature <span class="math inline">\((2, n)\)</span>, the lattice <span class="math inline">\(e^{\perp L}/\left\langle{e}\right\rangle\)</span>
+is a hyperbolic lattice equipped with a root system <span class="math inline">\(R_e\)</span> with a Coxeter diagram <span class="math inline">\(G_e\)</span>. Generally, when <span class="math inline">\(e\)</span> corresponds to a 0-cusp in a
+Baily-Borel compactification, the adjacent 1-cusps correspond precisely
+to maximal parabolic subdiagrams of <span class="math inline">\(G_e\)</span>. The cusp diagram above suggests that
+the 0-cusp <span class="math inline">\(v_0\)</span> should have a
+Coxeter diagram <span class="math inline">\(G_{v_0}\)</span> with
+precisely one maximal parabolic subdiagram. One can run Vinberg’s
+algorithm to determine the Coxeter diagram for <span class="math inline">\(v_0\)</span>, and it is a straightforward check to
+determine that there is indeed a unique maximal parabolic subdiagram of
+the form <span class="math inline">\(\tilde B_7(2)\)</span>:</p>
+</div>
+<div class="remark proofenv">
+<p><span class="math display">\[\begin{align*}
+\operatorname{div}_{T_{\dP}}(v_0) = 2 &amp;&amp;
+\operatorname{div}_{T_{\dP}}(v_1) = 1  .\end{align*}\]</span></p>
+<p>The former is clear, since the image of <span class="math inline">\(v_0\)</span> in <span class="math inline">\(T_{\dP}\)</span> is <span class="math inline">\(e&#39;\in U(2)\)</span> and <span class="math inline">\(e&#39;f&#39; = 2\)</span>. The latter follows from
+the fact that <span class="math inline">\(v_1\alpha_3 = 1\)</span>.</p>
+</div>
+<div class="remark proofenv">
+<p>We note the divisibilities of <span class="math inline">\(v_i\)</span> under various lattice embeddings:</p>
+<p>More concisely:</p>
+</div>
+<h2 data-number="4.2" id="enriques-cusps"><span class="header-section-number">4.2</span> Enriques Cusps</h2>
+<div class="remark proofenv">
+<p>We recall the cusp diagram of <span class="math inline">\(F_{\operatorname{En}}\)</span>:</p>
+<p>This can be recovered using the mirror move algorithm:</p>
+</div>
+<div class="remark proofenv">
+<p>We recall the Coxeter diagrams and their maximal parabolic
+subdiagrams at the 0-cusps of <span class="math inline">\(F_{\operatorname{En}}\)</span>:</p>
+</div>
+<h2 data-number="4.3" id="sterk-cusps"><span class="header-section-number">4.3</span> Sterk Cusps</h2>
+<div class="remark proofenv">
+<p>We recall Sterk’s cusp diagram for <span class="math inline">\(F_{\operatorname{En}, 2}\)</span>:</p>
+<p>We have the following divisibilities in various lattices:</p>
+</div>
+<h2 data-number="4.4" id="k3-cusps"><span class="header-section-number">4.4</span> K3 Cusps</h2>
+<div class="remark proofenv">
+<p>We recall the cusp diagram for <span class="math inline">\(F_{(2,2,0)}\)</span>:</p>
+</div>
+<h2 data-number="4.5" id="coble-to-enriques-cusp-correspondence"><span class="header-section-number">4.5</span> Coble to Enriques Cusp
+Correspondence</h2>
+<div class="theorem proofenv">
+<p>The embedding <span class="math inline">\(\eta: F_{\Co}\to
+F_{\operatorname{En}}\)</span> induces the correspondence on boundary
+cusps of the Baily-Borel compactifications shown in .</p>
+</div>
+<div class="remark proofenv">
+<p>We prove this correspondence by considering divisibilities at the
+corresponding 0-cusps and 1-cusps in both moduli spaces. We first note
+that since <span class="math inline">\(T_{\Co}\)</span> can be written
+as <span class="math inline">\(L(2)\)</span> where <span class="math inline">\(L = \left\langle{1}\right\rangle \oplus
+E_8\)</span>, every <span class="math inline">\(v\in T_{\Co}\)</span>
+satisfies <span class="math inline">\(\operatorname{div}_{T_{\Co}}(v) =
+2\)</span>.</p>
+</div>
+<div class="lemma proofenv">
+<p> Fixing notation, <span class="math display">\[\begin{align*}     v_1
+&amp;\coloneqq e&#39; &amp; w_1 &amp;\coloneqq\eta(v_1) = \tilde e&#39;
+\\     v_2 &amp;\coloneqq 2h + \alpha_1 + \alpha_2 &amp; w_2
+&amp;\coloneqq\eta(v_2) = 2\tilde e + 2\tilde f + \tilde\alpha_1 +
+\tilde\alpha_2 \\     J &amp;\coloneqq\left\langle{v_1,
+v_2}\right\rangle &amp; \tilde J &amp;\coloneqq\left\langle{w_1,
+w_2}\right\rangle \end{align*}\]</span> We then have <span class="math inline">\(\mathrm{div}_{T_{\operatorname{En}} }(w_1) =
+2\)</span>.</p>
+</div>
+<div class="proof proofenv">
+<p>This follows from the fact that <span class="math inline">\(\tilde
+e\in U(2)\)</span> where <span class="math inline">\(T_{\operatorname{En}} = U \oplus U(2) \oplus
+E_8(2)\)</span> Noting that <span class="math inline">\(\tilde e&#39;
+\tilde f&#39; = 2\)</span>, and <span class="math inline">\(\tilde
+e&#39;\)</span> is orthogonal to the remaining generators of in the
+<span class="math inline">\(U\)</span> and <span class="math inline">\(E_8(2)\)</span> summands, we thus have
+<span class="math display">
+\begin{align*}
+\mathrm{div}_{T_{\operatorname{En}} }(w_1) \mathrel{\vcenter{:}}=\mathrm{div}_{T_{\operatorname{En}} }(\eta(e&#39;))  
+ = \mathrm{div}_{T_{\operatorname{En}} }(\tilde e&#39;) = 2
+.\end{align*}
+<span> Explicitly, one can check the pairing of <span class="math inline">\(\tilde e&#39;\)</span> against an arbitrary
+vector. Write <span class="math inline">\(x+y+z\in U \oplus U(2)\oplus
+E_8(2)\)</span>, then
+<span class="math display">
+\begin{align*}
+\tilde e&#39;\cdot(x+y+z) = \tilde e&#39;\cdot y\in \left\{{0, 2}\right\}
+\end{align*}
+<span> since <span class="math inline">\(y\in U(2)\)</span> and <span class="math inline">\(\tilde e&#39;\in (U\oplus E_8(2))^{\perp
+T_{\operatorname{En}}}\)</span>. Thus <span class="math inline">\(\beta_{T_{\operatorname{En}}}(\tilde e&#39;,
+T_{\operatorname{En}}) = \beta_{T_{\operatorname{En}}}(\tilde e&#39;,
+U(2)) = 2\bZ\)</span> since <span class="math inline">\(\tilde
+e&#39;\cdot\tilde f&#39; = 2\)</span>.</p>
+</div>
+<div class="lemma proofenv">
+<p> The 0-cusp <span class="math inline">\((9,9,1)_1\)</span> in <span class="math inline">\(F_{\Co}\)</span> maps to the zero-cusp <span class="math inline">\((10, 8, 0)_1\)</span> in <span class="math inline">\(F_{\operatorname{En}}\)</span>.</p>
+</div>
+<div class="proof proofenv">
+<p>The cusp correspondence follows from computing the lattice <span class="math inline">\(w_1^{\perp
+T_{\operatorname{En}}}/\left\langle{w_1}\right\rangle\)</span> under the
+primitive embedding <span class="math inline">\(\eta\)</span>, since
+<span class="math inline">\(\eta(v_1) = w_1\)</span> and <span class="math inline">\(v_1\)</span> is the isotropic vector corresponding
+to <span class="math inline">\((9,9,1)_1\)</span> in <span class="math inline">\(F_{\Co}\)</span>. This particular case follows
+from a direct computation: <span class="math display">\[\begin{align*} {
+(\tilde e&#39;)^{\perp T_{\operatorname{En}}} \over \left\langle{\tilde
+e&#39;}\right\rangle } &amp;= { \left\langle{\tilde e,\tilde
+f}\right\rangle \oplus \left\langle{\tilde e&#39;}\right\rangle \oplus
+\left\langle{\tilde \alpha_1, \cdots, \tilde \alpha_8}\right\rangle
+\over \left\langle{\tilde e&#39;}\right\rangle } \\ &amp;\cong
+\left\langle{\tilde e, \tilde f}\right\rangle \oplus \left\langle{\tilde
+\alpha_1, \cdots, \tilde \alpha_8}\right\rangle \\ &amp;\cong U \oplus
+E_{8}(2)  \cong (10,8,0)_1 .\end{align*}\]</span></p>
+<p>Alternatively, by , the isomorphism type of <span class="math inline">\(w_1^{\perp T_{\operatorname{En}}}/w_1\)</span> is
+determined by <span class="math inline">\(\mathrm{div}_{T_{\operatorname{En}}}(w_1)\)</span>;
+by <span class="math inline">\(\mathrm{div}_{T_{\operatorname{En}}}(w_1)
+= 2\)</span>. Since the divisibility of the isotropic vector at the
+Enriques 0-cusp <span class="math inline">\((10, 8, 0)_1\)</span> is
+also 2 and the two Enriques 0-cusps are distinguished by divisibility,
+the correspondence follows.</p>
+</div>
+<div class="lemma proofenv">
+<p> Cusp <span class="math inline">\((7,7,1)_0\)</span> in <span class="math inline">\(F_{\Co}\)</span> maps to cusp <span class="math inline">\((8, 6, 0)_0\)</span> in <span class="math inline">\(F_{\operatorname{En}}\)</span>.</p>
+</div>
+<div class="proof proofenv">
+<p>The results follows from verifying that the unique orbit <span class="math inline">\(J\)</span> of a primitive isotropic plane in <span class="math inline">\(T_{\Co}\)</span> satisfies <span class="math inline">\(J^{\perp T_{\Co}}/J \cong (7,7,1)\)</span>, and
+identifying the isomorphism type of its image <span class="math inline">\(\tilde J^{\perp T_{\operatorname{En}}}/\tilde
+J\)</span> in <span class="math inline">\(T_{\operatorname{En}}\)</span>. One checks that
+both <span class="math inline">\(v_2\)</span> and <span class="math inline">\(w_2\)</span> are isotropic, and <span class="math inline">\(v_2 \in v_1^{\perp T_{\Co}}/v_1\)</span>, and so
+<span class="math inline">\(J\)</span> and <span class="math inline">\(\tilde J\)</span> define isotropic planes in <span class="math inline">\(T_{\Co}\)</span> and <span class="math inline">\(T_{\operatorname{En}}\)</span> respectively. By ,
+it suffices to show
+<span class="math display">
+\begin{align*}
+\mathrm{div}_{w_1^{\perp T_{\operatorname{En}}} /w_1}(w_2)  \mathrel{\vcenter{:}}=\mathrm{div}_{U \oplus E_8(2)}(2\tilde e + 2\tilde f + \tilde \alpha_1 + \tilde \alpha_2)= 2
+,\end{align*}
+<span> since the isomorphism type of <span class="math inline">\(\tilde
+J^\perp/\tilde J\)</span> is uniquely determined by the isomorphism type
+of <span class="math inline">\(w_2^{\perp
+T_{\operatorname{En}}}/w_2\)</span> in <span class="math inline">\(w_1^{\perp T_{\operatorname{En}}}/w_1\)</span>,
+which is in turn uniquely determined by the characterization of <span class="math inline">\(w_2\)</span> as odd, even ordinary, or even
+characteristic in <span class="math inline">\(w_1^{\perp
+T_{\operatorname{En}}}/w_1\)</span>, which by is isomorphic to <span class="math inline">\(U \oplus E_8(2)\)</span>. One checks directly in
+coordinates: let <span class="math inline">\(x+y\in U \oplus
+E_8(2)\)</span> and consider its pairing with <span class="math inline">\(w_2\)</span>: <span class="math display">\[\begin{align*} (x+y)\cdot w_2  = (x+y)\cdot
+(2\tilde e + 2\tilde f + \tilde \alpha_1 + \tilde \alpha_2 ) = 2x\cdot
+(\tilde e + \tilde f) + y\cdot (\tilde \alpha_1 + \tilde \alpha_2)
+,\end{align*}\]</span> where we’ve used orthogonality relations. We note
+that the first term is evidently even, while the second term is even
+because all pairings are either zero or divisible by two in the <span class="math inline">\(E_8(2)\)</span> summand of <span class="math inline">\(U \oplus E_8(2)\)</span>.</p>
+</div>
+<h1 data-number="5" id="degenerations-of-stable-coble-surfaces"><span class="header-section-number">5</span> Degenerations of stable Coble
+surfaces</h1>
+<div class="remark proofenv">
+<p>We describe the KSBA stable limits of Coble surfaces.</p>
+</div>
+<div class="remark proofenv">
+<p>We give an example of an integral affine structure for a degeneration
+of Coble surfaces.</p>
+</div>
+<h1 data-number="6" id="appendix"><span class="header-section-number">6</span> Appendix</h1>
+<div class="remark proofenv">
+<p>Following , a <strong>Kulikov model</strong> is a <span class="math inline">\(K\)</span>-trivial semistable model <span class="math inline">\({\mathcal{X}}\to (C, 0)\)</span> of a degeneration
+of K3 surfaces over a pointed curve <span class="math inline">\(C\)</span>. For each such degeneration, one can
+define the dual complex of the central fiber <span class="math inline">\(\Gamma({\mathcal{X}}_0)\)</span>. For Type II
+degenerations of K3 surfaces, this yields an integral affine <span class="math inline">\(S^2\)</span> with singularities of total charge
+<span class="math inline">\(24\)</span>, and for Type III the dual
+complex is an interval <span class="math inline">\(\bD^1\)</span>. The
+additional data of an integral affine polarization <span class="math inline">\(R_{\IA} \subset \Gamma({\mathcal{X}}_0)\)</span>
+describes the KSBA stable limit of a degeneration <span class="math inline">\(({\mathcal{X}}^*, \varepsilon \cR^*)\)</span>. For
+Enriques (and hence Coble) surfaces, we take the corresponding dlt
+models <span class="math inline">\(\cZ
+\mathrel{\vcenter{:}}={\mathcal{X}}/\iota_{\operatorname{En}}\)</span>
+and half-divisor models <span class="math inline">\((\cZ, \cR_{\cZ})
+\mathrel{\vcenter{:}}=({\mathcal{X}},
+\cR)/\iota_{\operatorname{En}}\)</span> where <span class="math inline">\({\mathcal{X}}\to (C, 0)\)</span> and <span class="math inline">\(({\mathcal{X}}, \cR)\)</span> are Kulikov and
+divisor models of their K3 covers.</p>
+</div>
+<div class="remark proofenv">
+<p>The following is a representation of a Type II degeneration – it is a
+chain of surfaces whose dual complex is an interval <span class="math inline">\(\bD^1\)</span>, where the ends <span class="math inline">\(V_1\)</span> and <span class="math inline">\(V_n\)</span> are rational and the remaining <span class="math inline">\(V_i\)</span> are isomorphic to <span class="math inline">\(E\times {\mathbf{P}}^1\)</span> for a fixed
+elliptic curve <span class="math inline">\(E\)</span>. The intersections
+<span class="math inline">\(V_i \cap V_{i+1}\)</span> are double curves
+isomorphic to <span class="math inline">\(E\)</span>.</p>
+<p>A Type III degeneration can be represented by a triangulation of
+<span class="math inline">\(S^2\)</span> with singularities, depicted as
+follows:</p>
+</div>
+<div class="remark proofenv">
+<p>The following is a combinatorial representation of a Kulikov model
+for Sterk 2.</p>
+</div>
+<h1 data-number="7" id="bibliography"><span class="header-section-number">7</span> Bibliography</h1>
+<div id="refs" class="proofenv" role="list">
+
+</div>
+<aside id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>A bilinear form is <em>nondegenerate</em> if for any
+<span class="math inline">\(x\)</span>, <span class="math inline">\(\beta_L(x, L) = 0\)</span> implies <span class="math inline">\(x=0\)</span>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>For example, let <span class="math inline">\(L = U =
+\left\langle{e,f}\right\rangle\)</span> and <span class="math inline">\(M = \left\langle{e}\right\rangle\)</span>. Then
+<span class="math inline">\(M^{\perp L} = M\)</span>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</aside>
+<!--bookdown:body:end-->
+
+
+
+<script>!function(a){function b(){g.hasClass(k)?h.toggleClass(l):h.toggleClass(m),o&&g.one("transitionend",function(){o.focus()})}function c(){g.hasClass(k)?h.removeClass(l):h.removeClass(m)}function d(){g.hasClass(k)?(h.addClass(l),g.animate({left:"0px"},p),i.animate({left:q},p),j.animate({left:q},p)):(h.addClass(m),g.animate({right:"0px"},p),i.animate({right:q},p),j.animate({right:q},p)),o&&o.focus()}function e(){g.hasClass(k)?(h.removeClass(l),g.animate({left:"-"+q},p),i.animate({left:"0px"},p),j.animate({left:"0px"},p)):(h.removeClass(m),g.animate({right:"-"+q},p),i.animate({right:"0px"},p),j.animate({right:"0px"},p))}function f(){a(r).addClass(t),a(r).on("click",function(b){var c=a(this);c.hasClass(t)?(c.siblings(r).addClass(t).removeClass(s),c.removeClass(t).addClass(s)):c.addClass(t).removeClass(s),b.stopPropagation()})}var g=a(".pushy"),h=a("body"),i=a("#container"),j=a(".push"),k="pushy-left",l="pushy-open-left",m="pushy-open-right",n=a(".site-overlay"),o=a(g.data("focus")),p=200,q=g.width()+"px",r=".pushy-submenu",s="pushy-submenu-open",t="pushy-submenu-closed";a(r);if(void 0!==g.data("menu-btn-class"))var u=g.data("menu-btn-class");else var u=".menu-btn";var v=a(u+", .pushy-link"),w=a(u);a(document).keyup(function(a){27==a.keyCode&&(h.hasClass(l)||h.hasClass(m))&&(x?c():(e(),y=!1),w&&w.focus())});var x=function(){var a=document.createElement("p"),b=!1,c={webkitTransform:"-webkit-transform",OTransform:"-o-transform",msTransform:"-ms-transform",MozTransform:"-moz-transform",transform:"transform"};if(null!==document.body){document.body.insertBefore(a,null);for(var d in c)void 0!==a.style[d]&&(a.style[d]="translate3d(1px,1px,1px)",b=window.getComputedStyle(a).getPropertyValue(c[d]));return document.body.removeChild(a),void 0!==b&&b.length>0&&"none"!==b}return!1}();if(x)f(),v.on("click",function(){b()}),n.on("click",function(){b()});else{h.addClass("no-csstransforms3d"),g.hasClass(k)?g.css({left:"-"+q}):g.css({right:"-"+q}),i.css({"overflow-x":"hidden"});var y=!1;f(),v.on("click",function(){y?(e(),y=!1):(d(),y=!0)}),n.on("click",function(){y?(e(),y=!1):(d(),y=!0)})}}(jQuery);</script>
+
+<script>
+$(document).ready(function() {
+  $('.proofenv').each(function() {
+    t = $(this)[0];
+    if (t.classList[0] != "proofenv") {
+      tot_str = t.classList[0] + (t.title.length > 0 ? ` (${t.title})` : "") + ":";
+      sp = $('<span class="proofenv-header">').text(tot_str)
+      $(this).prepend( sp );
+    }
+  });
+  details = document.querySelectorAll(".foldopen > details");
+  details.forEach( (detail) => { detail.setAttribute("open", "" ); } )
+});
+</script>
+
+</body>
+</html>

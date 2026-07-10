@@ -1,0 +1,137 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{ynt/global//global/global}
+    \entry{DK13}{article}{}
+      \name{author}{2}{}{%
+        {{hash=508393cb3a9b62cbfe42f33fc795e328}{%
+           family={Dolgachev},
+           familyi={D\bibinitperiod},
+           given={Igor},
+           giveni={I\bibinitperiod}}}%
+        {{hash=a5a507b97708b683739276cba69b8f63}{%
+           family={Kondo},
+           familyi={K\bibinitperiod},
+           given={Shigeyuki},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{09b585ce157087670de7c01a6f0a7a86}
+      \strng{fullhash}{09b585ce157087670de7c01a6f0a7a86}
+      \strng{bibnamehash}{09b585ce157087670de7c01a6f0a7a86}
+      \strng{authorbibnamehash}{09b585ce157087670de7c01a6f0a7a86}
+      \strng{authornamehash}{09b585ce157087670de7c01a6f0a7a86}
+      \strng{authorfullhash}{09b585ce157087670de7c01a6f0a7a86}
+      \field{labelalpha}{DK13}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We prove the rationality of the coarse moduli spaces of Coble surfaces and of nodal Enriques surfaces over the field of complex numbers.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arxiv}
+      \field{issn}{1064-5632, 1468-4810}
+      \field{journaltitle}{Izvestiya: Mathematics}
+      \field{month}{6}
+      \field{number}{3}
+      \field{title}{The Rationality of the Moduli Spaces of {{Coble}} Surfaces and of Nodal {{Enriques}} Surfaces}
+      \field{urlday}{6}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{volume}{77}
+      \field{year}{2013}
+      \field{urldateera}{ce}
+      \field{pages}{509\bibrangedash 524}
+      \range{pages}{16}
+      \verb{doi}
+      \verb 10.1070/IM2013v077n03ABEH002646
+      \endverb
+      \verb{eprint}
+      \verb 1201.6093
+      \endverb
+      \verb{file}
+      \verb /home/zack/Zotero/storage/BQNZIVYH/Dolgachev and Kondo - 2013 - The rationality of the moduli spaces of Coble surf.pdf
+      \endverb
+      \verb{urlraw}
+      \verb http://arxiv.org/abs/1201.6093
+      \endverb
+      \verb{url}
+      \verb http://arxiv.org/abs/1201.6093
+      \endverb
+      \keyw{Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{AE22}{misc}{}
+      \name{author}{2}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=e297924340ea082ae262174c1bb62cd5}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={Philip},
+           giveni={P\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{fullhash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{bibnamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorbibnamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authornamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorfullhash}{32cfe260637db5b5f2138917e55c1ffa}
+      \field{labelalpha}{AE23}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{There are \$75\$ moduli spaces \$F\_S\$ of K3 surfaces with a nonsymplectic involution. We give detailed descriptions of Kulikov models for one-parameter degenerations in \$F\_S\$. In the \$50\$ cases where the fixed locus of the involution has a component \$C\_g\$ of genus \$g{\textbackslash}ge2\$, we identify normalizations of the KSBA compactifications of \$F\_S\$ via stable pairs \$(X,{\textbackslash}epsilon C\_g)\$, with explicit semitoroidal compactifications of \$F\_S\$.}
+      \field{eprintclass}{math-ph}
+      \field{eprinttype}{arxiv}
+      \field{month}{5}
+      \field{number}{arXiv:2208.10383}
+      \field{title}{Compactifications of Moduli Spaces of {{K3}} Surfaces with a Nonsymplectic Involution}
+      \field{urlday}{28}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2208.10383
+      \endverb
+      \verb{eprint}
+      \verb 2208.10383
+      \endverb
+      \verb{file}
+      \verb /home/zack/Zotero/storage/Y669J2S6/Alexeev and Engel - 2023 - Compactifications of moduli spaces of K3 surfaces .pdf
+      \endverb
+      \verb{urlraw}
+      \verb http://arxiv.org/abs/2208.10383
+      \endverb
+      \verb{url}
+      \verb http://arxiv.org/abs/2208.10383
+      \endverb
+      \keyw{{14J28,14D22},Mathematical Physics,Mathematics - Algebraic Geometry}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

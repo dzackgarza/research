@@ -1,0 +1,307 @@
+\documentclass{amsart}
+\usepackage{graphicx}
+\usepackage{tikzit}
+\usepackage{dynkin-diagrams}
+
+\newif\ifshort
+%\shorttrue
+\shortfalse
+
+\ifshort
+%\usepackage[top=1.1in, bottom=1.1in, left=1.3in, right=1.3in]{geometry}
+\usepackage[top=3.7cm, bottom=3.7cm, left=3.7cm, right=3.7cm]{geometry}
+\pagestyle{plain}
+\fi
+
+% \usepackage{sty-en} 
+
+\usepackage[pdftex]{hyperref}
+\hypersetup{colorlinks,citecolor=blue,linktocpage,hyperindex=true,backref=true}
+
+\usepackage{tikz-cd, bm}
+
+\newcommand\va[1]{\todo[color=green!40]{#1}} %valery
+\newcommand\vainline[1]{\todo[inline,color=green!40]{#1}} %valery inline
+\newcommand\ls[1]{\todo[color=orange!40]{#1}} %luca
+\newcommand\lsinline[1]{\todo[inline,color=orange!40]{#1}} %luca inline
+\newcommand\phil[1]{\todo[color=red!40]{#1}} %valery
+\newcommand\philinline[1]{\todo[inline,color=red!40]{#1}} %valery inline
+
+
+
+\title{Complete moduli spaces of Coble surfaces}
+\date{June 14th, 2024}
+
+\author{D. Zack Garza}
+\address{Department of Mathematics, University of Georgia, Athens GA 30602, USA}
+\email{zack@uga.edu}
+%\subclass{14J10, 14J28, 14D06}
+%\keywords{Enriques surface, degeneration, moduli space, compactification, stable pair}
+
+\usepackage{etex}
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts, amsmath, amssymb, amsthm, mathtools}
+\usepackage[nameinlink]{cleveref}
+\usepackage{mathrsfs, stmaryrd}
+\usepackage{color}
+\usepackage[english]{babel}
+\usepackage{fontenc}
+\usepackage{url}
+\usepackage{bookmark}
+\usepackage{caption}
+\usepackage{subcaption}
+\newdimen\figrasterwd
+\figrasterwd\textwidth
+\usepackage{epstopdf}
+\usepackage{hyphenat}
+\usepackage{float}
+\usepackage{indentfirst}
+\usepackage[export]{adjustbox}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{color}
+\usepackage[all]{xy}\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage[textsize=tiny]{todonotes}
+\usepackage{booktabs}
+\usepackage{subfiles}
+\usepackage{etoolbox}
+\usepackage{dynkin-diagrams}
+\usepackage{quiver}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, cd, fadings, patterns, calc, matrix, positioning, decorations, decorations.pathreplacing, decorations.markings, shapes, backgrounds, fit, shapes.geometric, intersections, hobby, matrix,arrows,decorations.pathmorphing}
+\tikzfading[name=fade out, inner color=transparent!0, outer color=transparent!100]
+
+% \bibliographystyle{amsalpha}
+% \bibliography{references}
+% \usepackage[
+% style=alphabetic,
+% sorting=ynt
+% ]{biblatex}
+% \addbibresource{references.bib}
+
+
+\renewcommand{\hat}{\widehat}
+% \renewcommand{\bar}{\overline}
+\renewcommand{\tilde}{\widetilde}
+
+\usepackage{DZG}
+\usepackage{cleveref}
+\usepackage{booktabs}
+
+
+\begin{document}
+
+\begin{abstract}
+    We describe a modular KSBA stable pair compactification of the moduli space of Coble surfaces, and compare it to semitoroidal compactifications of the corresponding period domain. We describe the KSBA stable limits in terms of integral affine structures.
+    
+\end{abstract}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\todo{Rewrite abstract and intro later.}
+\section{Introduction}
+\subfile{000_Introduction}
+
+\section{Lattice Theoretic Preliminaries}
+\subfile{010_Lattices}
+
+\section{Moduli Spaces}
+\subfile{020_Moduli_Construction}
+
+\section{Cusp Correspondence}
+\subfile{030_Cusp_Correspondence}
+
+\section{Geometric Considerations}
+\subfile{040_Geometric}
+
+\section{Integral Affine Structures (Todo)}
+\subfile{050_IAS}
+
+\section{KSBA Stable Limits (Todo)}
+\subfile{060_KSBA}
+
+% \section{Appendix}
+% \subfile{sections/999_Appendix}
+
+
+\bibliographystyle{amsalpha}
+\bibliography{references}
+
+\def\cprime{$'$}
+\providecommand{\bysame}{\leavevmode\hbox to3em{\hrulefill}\thinspace}
+\providecommand{\MR}{\relax\ifhmode\unskip\space\fi MR }
+% \MRhref is called by the amsart/book/proc definition of \MR.
+\providecommand{\MRhref}[2]{%
+  \href{http://www.ams.org/mathscinet-getitem?mr=#1}{#2}
+}
+
+\begin{thebibliography}{GHK15b}
+
+\bibitem[AB2122]{alexeev2022compactifications-moduli}
+Valery Alexeev, Adrian Brunyate, and Philip Engel, \emph{Compactifications of
+  moduli of elliptic {K}3 surfaces: {S}table pair and toroidal}, Geom. Topol.
+  \textbf{26} (2022), no.~8, 3525--3588. \MR{4562567}
+
+\bibitem[AD19]{AD19}
+Daniel Allcock and Igor Dolgachev,
+\emph{The tetrahedron and automorphisms of Enriques and Coble surfaces of Hessian type},
+arXiv:1809.07819 (2018).
+
+\bibitem[AE22]{AE22}
+Valery Alexeev and Philip Engel, \emph{Compactifications of moduli spaces of     
+  {K3} surfaces with a nonsymplectic involution}, arXiv:2208.10383 (2022).
+
+\bibitem[AE23]{alexeev2023compact}
+\bysame, \emph{Compact moduli of {K}3 surfaces}, Ann. of Math. (2) \textbf{198}
+  (2023), no.~2, 727--789. \MR{4635303}
+
+  
+\bibitem[AEGS23]{AEGS23}
+Valery Alexeev, Philip Engel, D. Zack Garza, Luca Schaffler,
+\emph{Compact moduli of Enriques surfaces with a numerical polarization of degree 2}, arXiv:2312.03638 (2024).
+
+\bibitem[AEH21]{alexeev2021nonsymplectic}
+Valery Alexeev, Philip Engel, and Changho Han, \emph{Complete moduli of {K}3
+  surfaces with a nonsymplectic automorphism}, Trans. Amer. Math. Soc., to
+  appear (2021), arXiv:2110.13834.
+
+\bibitem[AET2323]{alexeev2023stable-pair}
+Valery Alexeev, Philip Engel, and Alan Thompson, \emph{Stable pair
+  compactification of moduli of {K}3 surfaces of degree 2}, J. Reine Angew.
+  Math. \textbf{799} (2023), 1--56. \MR{4595306}
+
+\bibitem[AT21]{alexeev17ade-surfaces}
+Valery Alexeev and Alan Thompson, \emph{{ADE} surfaces and their moduli}, J.
+  Algebraic Geometry \textbf{30} (2021), 331--405, arXiv:1712.07932.
+
+\bibitem[BB66]{baily1966compactification-of-arithmetic}
+W.~L. Baily, Jr. and A.~Borel, \emph{Compactification of arithmetic quotients
+  of bounded symmetric domains}, Ann. of Math. (2) \textbf{84} (1966),
+  442--528. \MR{0216035 (35 \#6870)}
+
+\bibitem[CD12]{CD12}
+Serge Cantat and Igor Dolgachev,
+\emph{Rational surfaces with a large group of automorphisms},
+arXiv:1106.0930 (2012).
+
+\bibitem[CDL24]{CD12}
+Fran\c{c}ois Cossec, Igor Dolgachev, and Christian Liedtke, \emph{Enriques
+  surfaces {I}}, with an appendix by Shigeyuki Kond\={o}, draft available on
+  \url{www.math.lsa.umich.edu/~idolga/CD12.pdf}, 2024.
+
+\bibitem[Cob19]{Cob19}
+Arthur B. Coble,
+\emph{The ten nodes of the rational sextic and of the Cayley Symmetroid},
+Amer. J. Math \textbf{41} (1919), no.~4, 243--265. \MR{1506391}
+
+\bibitem[Cob29]{Cob29}
+\bysame,
+\emph{Algebraic geometry and theta functions.},
+Revised printing,
+Amer. Math. Soc. Colloq. Publ., Vol. X
+American Mathematical Society, Providence, RI, 1961. vii+282 pp. \MR{123958}
+
+\bibitem[DK13]{DK13}
+Igor Dolgachev and Shigeyuki Kond\=o,
+\emph{The rationality of the moduli spaces of Coble surfaces and of nodal Enriques surfaces},
+Izv. Math. \textbf{77}, no.~3, 509--524.
+
+\bibitem[DK24]{DK24}
+Igor Dolgachev and Shigeyuki Kond\=o, \emph{Enriques surfaces {II}}, draft
+available on \url{www.math.lsa.umich.edu/~idolga/DK24.pdf}, 2024.
+
+\bibitem[DM19]{DM19}
+Igor Dolgachev and Dimitri Markushevich,
+\emph{Lagrangian tens of planes, Enriques surfaces and holomorphic symplectic fourfolds},
+arXiv:1906.01445 (2020)
+
+\bibitem[Dol17]{Dol17}
+Igor Dolgachev,
+\emph{Salem numbers and Enriques surfaces},
+arXiv:1601.04222 (2017)
+
+\bibitem[DZ99]{DZ99}
+Igor Dolgachev and D. Zhang,
+\emph{Coble Rational Surfaces},
+arXiv:9909135v1 (1999).
+
+\bibitem[EF21]{engel2021smoothings}
+Philip Engel and Robert Friedman, \emph{Smoothings and rational double point
+  adjacencies for cusp singularities}, J. Differential Geom. \textbf{118}
+  (2021), no.~1, 23--100. \MR{4255071}
+
+\bibitem[Eng18]{engel2018looijenga}
+Philip Engel, \emph{Looijenga's conjecture via integral-affine geometry}, J.
+  Differential Geom. \textbf{109} (2018), no.~3, 467--495. \MR{3825608}
+
+\bibitem[Hor78]{Hor78}
+Eiji Horikawa,
+\emph{On the periods of Enriques surfaces. II},
+Math. Ann. \textbf{235} (1978), no.~3, 217--246.
+
+\bibitem[KK72]{KK72}
+Peter Kiernan, Shoshichi Kobayashi,
+\emph{Satake compactification and extension of holomorphic mappings},
+Invent. Math. \textbf{16} (1972), 237--248.
+
+\bibitem[Kol23]{kollar2023families-of-varieties}
+J\'{a}nos Koll\'{a}r, \emph{Families of varieties of general type}, Cambridge
+  Tracts in Mathematics, vol. 231, Cambridge University Press, Cambridge, 2023.
+  \MR{4566297}
+
+\bibitem[Kul77]{kulikov1977degenerations-of-k3-surfaces}
+Vik.~S. Kulikov, \emph{Degenerations of {$K3$} surfaces and {E}nriques
+  surfaces}, Izv. Akad. Nauk SSSR Ser. Mat. \textbf{41} (1977), no.~5,
+  1008--1042, 1199. \MR{0506296}
+
+\bibitem[Mor81]{Mor81}
+David R. Morrison,
+\emph{Semistable degenerations of Enriques’ and hyperelliptic surfaces},
+Duke Math. J. \textbf{48} (1981), no.~1, 197--249.
+
+\bibitem[Nik79]{Nik79}
+V.~V. Nikulin, \emph{Integer symmetric bilinear forms and some of their
+  geometric applications}, Izv. Akad. Nauk SSSR Ser. Mat. \textbf{43} (1979),
+  no.~1, 111--177, 238. \MR{525944 (80j:10031)}
+
+\bibitem[Nue15]{Nue15}
+Howard Nuer,
+\emph{Unirationality of moduli spaces of special cubic fourfolds and K3 surfaces},
+arXiv:1503.05256 (2016).
+
+\bibitem[PS71]{PS71}
+Pjateckii-Šapiro and I.R. Shafarevich,
+\emph{A torelli theorem for algebraic surfaces of type K3},
+Izv. Math. \textbf{5}, no.~3, 547--588.
+
+\bibitem[Sha81]{Sha81}
+Jayant Shah.
+\emph{Projective degenerations of Enriques' surfaces}
+Mathematische Annalen \textbf{256}, no.~4, 475--495.
+
+\bibitem[Ste91]{sterk1991compactifications-enriques1}
+Hans Sterk, \emph{Compactifications of the period space of {E}nriques surfaces.
+  {I}}, Math. Z. \textbf{207} (1991), no.~1, 1--36. \MR{1106810}
+
+\bibitem[Sym03]{symington2003four-dimensions}
+Margaret Symington, \emph{Four dimensions from two in symplectic topology},
+  Topology and geometry of manifolds ({A}thens, {GA}, 2001), Proc. Sympos. Pure
+  Math., vol.~71, Amer. Math. Soc., Providence, RI, 2003, pp.~153--208.
+  \MR{2024634}
+
+\bibitem[YZZ25]{YZZ25}
+Chenglong Yu, Zhiwei Zheng, and Yiming Zhong,
+\emph{Moduli spaces of sextic curves with simple singularities and their compactifications},
+arXiv:2505.16727 (2025).
+
+\end{thebibliography}
+
+\end{document}
+
+
+

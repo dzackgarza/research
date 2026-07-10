@@ -1,0 +1,19 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.nav
+*.snm
+*.out
+*.toc
+*.pdf
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.dvi
+*.bbl
+*.blg
+
+# Editor swap files
+*.swp
+*~
+.SCU

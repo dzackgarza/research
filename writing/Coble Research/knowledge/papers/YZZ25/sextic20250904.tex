@@ -1,0 +1,2304 @@
+\documentclass[12pt,reqno,a4paper]{amsart}
+\usepackage{extsizes}
+\usepackage{blindtext}
+\usepackage{fullpage}
+\usepackage{mathtools}
+\usepackage{longtable}
+%\usepackage{ctex}
+%\usepackage[top=18.4mm, bottom=18.4mm, left=11.7mm, right=12.2mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{amscd}
+\usepackage{bm}
+\usepackage{color}
+%\usepackage[colorlinks, bookmarks=true]{hyperref}
+\usepackage{hyperref}
+\usepackage{dsfont}
+\usepackage{enumerate}
+\usepackage{epsfig}
+\usepackage{float, graphicx}
+\usepackage{booktabs}
+\usepackage{latexsym, amsxtra}
+\usepackage{mathrsfs}
+\usepackage{multicol}
+\usepackage[normalem]{ulem}
+\usepackage{psfrag}
+\usepackage[parfill]{parskip}
+\usepackage{stmaryrd}
+\usepackage{tikz}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\usepackage{verbatim}
+%\usepackage{xypic}
+\usepackage{indentfirst}
+\usepackage{tikz-cd}
+\usepackage{svg}
+
+
+\usepackage{mathtools}
+
+\usepackage{comment}
+
+\special{papersize=8.5in,11in}
+\flushbottom
+
+\makeatletter
+\def\thm@space@setup{%
+	\thm@preskip=2ex \thm@postskip=1.5ex
+}
+\makeatother
+
+\newcommand{\sidenote}[1]{\marginpar{\color{red}\footnotesize #1}}
+\oddsidemargin=0in
+\evensidemargin=0in
+\textwidth=6.5in
+\setlength{\unitlength}{1cm}
+\setlength{\parindent}{0.6cm}
+
+\hypersetup{hidelinks}
+
+
+
+\newtheorem{thm}{Theorem~}[section]
+\newtheorem{lem}[thm]{Lemma~}
+\newtheorem{pro}[thm]{Property~}
+\newtheorem{fact}[thm]{Fact}
+\newtheorem{prop}[thm]{Proposition~}
+\newtheorem{ques}[thm]{Question~}
+\newtheorem{cor}[thm]{Corollary~}
+\newtheorem{exer}[thm]{Exercise~}
+\newtheorem{conj}[thm]{Conjecture~}
+
+\theoremstyle{remark}
+\newtheorem{rmk}[thm]{Remark~}
+\newtheorem{ex}[thm]{Example~}
+
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition~}
+\newtheorem{notation}[thm]{Notation~}
+\newtheorem{conv}[thm]{Convention~}
+\newtheorem{cond}[thm]{Condition~}
+
+\newcommand{\p}{p}
+
+\newcommand{\A}{\mathbb{A}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\LL}{\mathbb{L}}
+\newcommand{\TT}{\mathbb{T}}
+
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\XX}{\mathbb{X}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\DD}{\mathbb{D}}
+\newcommand{\HH}{\mathbb{H}}
+\newcommand{\BB}{\mathbb{B}}
+
+\newcommand{\Prd}{\mathscr{P}}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\X}{\mathscr{X}}
+\newcommand{\Y}{\mathscr{Y}}
+\newcommand{\La}{\mathscr{L}}
+\newcommand{\sU}{\mathscr{U}}
+\newcommand{\Gal}{\mathscr{Gal}}
+
+\newcommand{\calB}{\mathcal{B}}
+\newcommand{\calH}{\mathcal{H}}
+\newcommand{\calC}{\mathcal{C}}
+\newcommand{\calD}{\mathcal{D}}
+\newcommand{\calM}{\mathcal{M}}
+\newcommand{\calV}{\mathcal{V}}
+\newcommand{\calO}{\mathcal{O}}
+\newcommand{\calS}{\mathcal{S}}
+\newcommand{\calI}{\mathcal{I}}
+\newcommand{\calT}{\mathcal{T}}
+\newcommand{\calE}{\mathcal{E}}
+\newcommand{\calF}{\mathcal{F}}
+\newcommand{\calN}{\mathcal{N}}
+\newcommand{\calL}{\mathcal{L}}
+\newcommand{\calU}{\mathcal{U}}
+\newcommand{\calX}{\mathcal{X}}
+\newcommand{\calZ}{\mathcal{Z}}
+
+
+\newcommand\Ric{\mathrm{Ric}}
+\newcommand\Aut{\mathrm{Aut}}
+\newcommand\Out{\mathrm{Out}}
+\newcommand\ADE{\mathrm{ADE}}
+\newcommand\Bl{\mathrm{Bl}}
+\newcommand\GIT{\mathrm{GIT}}
+\newcommand\SU{\mathrm{SU}}
+\newcommand\SO{\mathrm{SO}}
+\newcommand\PU{\mathrm{PU}}
+\newcommand\PO{\mathrm{PO}}
+\newcommand\Proj{\mathrm{Proj}}
+\newcommand\Sym{\mathrm{Sym}}
+\newcommand\SL{\mathrm{SL}}
+\newcommand\Res{\mathrm{Res}}
+\newcommand\Image{\mathrm{Im}}
+\newcommand\Ker{\mathrm{Ker}}
+\newcommand\IV{\mathrm{IV}}
+\newcommand\id{\mathrm{id}}
+\newcommand\Id{\mathrm{Id}}
+\newcommand\PSL{\mathrm{PSL}}
+\newcommand\U{\mathrm{U}}
+\newcommand\Or{\mathrm{O}}
+\newcommand\MCG{\mathrm{Mapp}}
+\newcommand\Stab{\mathrm{Stab}}
+\newcommand{\Diff}{\mathrm{Diff}}
+\newcommand{\edim}{\mathrm{edim}}
+
+\newcommand\Spec{\mathrm{Spec}}
+\newcommand{\Tor}{\mathrm{Tor}}
+\newcommand{\rank}{\mathrm{rank}}
+\newcommand{\Pic}{\mathrm{Pic}}
+\newcommand{\MW}{\mathrm{MW}}
+\newcommand{\diag}{\mathrm{diag}}
+\newcommand{\Gr}{\mathrm{Gr}}
+\newcommand{\GL}{\mathrm{GL}}
+\newcommand{\PGL}{\mathrm{PGL}}
+\newcommand{\I}{\mathrm{I}}
+\newcommand{\CM}{\mathrm{CM}}
+\newcommand{\Hom}{\mathrm{Hom}}
+\newcommand{\IH}{\mathrm{IH}}
+\newcommand{\IC}{\mathrm{IC}}
+\newcommand{\Conf}{\mathrm{Conf}}
+\newcommand{\codim}{\mathrm{codim}}
+\newcommand{\Fix}{\mathrm{Fix}}
+\newcommand{\mult}{\mathrm{mult}}
+
+
+\newcommand{\tx}{{\widetilde{x}}}
+\newcommand{\tY}{{\widetilde{Y}}}
+\newcommand{\ty}{{\widetilde{y}}}
+\newcommand{\tD}{\widetilde{D}}
+
+
+\newcommand{\fg}{\mathfrak{g}}
+\newcommand{\fp}{\mathfrak{p}}
+\newcommand{\ft}{\mathfrak{t}}
+\newcommand{\fh}{\mathfrak{h}}
+\newcommand{\fb}{\mathfrak{b}}
+\newcommand{\fj}{\mathfrak{j}}
+\newcommand{\fa}{\mathfrak{a}}
+\newcommand{\fk}{\mathfrak{k}}
+\newcommand{\fc}{\mathfrak{c}}
+
+\newcommand{\bs}{\backslash}
+\newcommand{\dbs}{\bs\!\! \bs}
+
+\newcommand{\hookuparrow}{\mathrel{\rotatebox[origin=c]{90}{$\hookrightarrow$}}}
+\newcommand{\hookdownarrow}{\mathrel{\rotatebox[origin=c]{-90}{$\hookrightarrow$}}}
+
+%\newcommand{\V}{H^1(E-S, \LL)}
+
+\newcommand{\bd}{\textbf{d}}
+
+\newcommand{\red}{\textcolor{red}}
+\newcommand{\blue}{\textcolor{blue}}
+
+\newcommand{\marg}[1]{\normalsize{{\color{red}\footnote{#1}}}{\marginpar[\vskip -.3cm {\color{red}\hfill\tiny{\thefootnote}\normalsize$\implies$}]{\vskip -.3cm{ \color{red}$\impliedby$\tiny\thefootnote}}}}
+
+\newcommand{\Zhong}[1]{\marg{\color{blue}(Zhong): #1}}
+\newcommand{\Yu}[1]{\marg{\color{magenta}(Yu): #1}}
+
+
+\title{Moduli spaces of sextic curves with simple singularities and their compactifications}
+\vspace{1cm}
+\author{Chenglong Yu, Zhiwei Zheng, Yiming Zhong}
+\address{}
+\email{}
+\date{}
+
+\newcommand{\Addresses}{{% additional braces for segregating \footnotesize
+		\bigskip
+		\footnotesize
+		
+		C.~Yu, \textsc{Center for Mathematics and Interdisciplinary Sciences, Fudan University and
+Shanghai Institute for Mathematics and Interdisciplinary Sciences (SIMIS), Shanghai, China}\par\nopagebreak
+		\textit{E-mail address}: \texttt{yuchenglong@simis.cn}
+		
+		\medskip
+		
+		Z.~Zheng, \textsc{Tsinghua University, Beijing, China}\par\nopagebreak
+		\textit{E-mail address}: \texttt{zhengzhiwei@mail.tsinghua.edu.cn}
+
+        \medskip
+		
+		Y.~Zhong, \textsc{Beijing International Center for Mathematical Research, Peking University, Beijing, China}\par\nopagebreak
+		\textit{E-mail address}: \texttt{ymzhong@bicmr.pku.edu.cn}
+}}
+
+
+\begin{document}
+\begin{abstract}
+In this paper, we study moduli spaces of sextic curves with simple singularities. Through period maps of K3 surfaces with ADE singularities, we prove that such moduli spaces admit algebraic open embeddings into arithmetic quotients of type IV domains. For all cases, we prove the identifications of GIT compactifications and Looijenga compactifications. We also describe Picard lattices in an explicit way for many cases. For nodal cases, we prove that the orbifold structures on the two sides of the period map are isomorphic.
+\end{abstract}
+	
+\maketitle
+\setcounter{tocdepth}{1}
+\tableofcontents
+
+
+
+\section{Introduction}
+\label{sec: intro}
+The study of moduli spaces of singular plane curves has a long history dating back to Severi \cite{severi1921vorlesungen}, where he proved that families of nodal plane curves of fixed degree form smooth varieties of the expected dimension. 
+In this paper, we focus on sextic curves. A double cover of $\PP^2$ branched along a smooth sextic curve is a K3 surface of degree two. Thanks to the global Torelli theorem for K3 surfaces \cite{pjateckii-sapiro1971torelli}\cite{burns1975torelli}\cite{looijenga1980torelli}, one can identify the moduli of smooth sextic curves with the complement of two irreducible Heegner divisors in an arithmetic quotient of a type IV domain. In his seminal work \cite{shah1980complete}, Shah described the stable and semistable sextic curves. Based on this, the GIT compactification can be identified with the Looijenga compactification \cite[Theorem 8.6]{looijenga2003compactificationsII} of the moduli of smooth sextic curves.
+
+
+In this paper, we study moduli of sextic curves with simple singularities. Previously, the first two authors \cite{yu2023moduli} investigated the moduli spaces of nodal sextic curves. 
+Their main result identifies the GIT and Looijenga compactifications of these moduli spaces. Additionally, the Picard lattices of the K3 surfaces associated to generic nodal sextic curves with a fixed singular type were determined.
+In the present work, we generalize the main results in \cite{yu2023moduli} to sextic curves with arbitrary prescribed simple singularities. 
+
+For a root lattice $R=\oplus_{i=1}^l R_i$ with each $R_i$ irreducible of type ADE, we consider sextic curves with exactly $l$ simple singularities of type $R_1, \cdots, R_l$. These sextic curves form a subvariety of $\PP^{27}=\PP\mathrm{Sym}^6(\CC^3)^\vee$, see \cite[Prop 2.1]{greuel1996equianalytic}. For each irreducible component of this subvariety, we say that the sextic curves in that component have the same singular type, say $T$. We write this component as $\PP\calV_T$, where $\calV_T$ denotes the space of corresponding sextic polynomials.
+By results of \cite[Corollary 5.1(b)]{greuel1996equianalytic} and \cite[Theorem 2.5.1]{greuel2021plane}, each $\PP\calV_T$ is smooth of the expected dimension, see \S \ref{subsection: ADE sextic} for the definition of the expected dimension and the precise formula.
+% Here I delete "of expected dim", because I think the expected dim does not play a necessary role in our paper. For defining a GIT quotient, smoothness (even normality) is enough.
+For any given singular type $T$, we define the moduli space $\calM_T\coloneqq\SL(3, \CC)\dbs\PP\calV_T$, see \S \ref{subsection: ADE sextic}.
+%\Zhong{we want to emphasize that there are many examples; but it looks a bit strange that we mention those results right after the moduli $\calM_T$?}
+
+%Moduli of simple sextic curves have been studied in a lot of cases. Laza \cite{laza2009deformations} studied moduli of pairs consisting of a quintic curve and a line, and use this moduli space to study the deformation of the minimal-elliptic surface singularity $N_{16}$. Gallardo--Pearlstein--Zhang \cite{gallardo2018compactifications} studied moduli space of tuples consisting of a quartic curve and two lines.
+%The moduli of six lines is studied by \cite{hosono2020k3i,hosono2021k3ii} with focus on hypergeometric system for corresponding family of K3 surfaces. This paper, together with the previous work \cite{yu2023moduli}, provides a uniform framework for such examples.
+
+Next, we formulate our main theorem. Fix any singular type $T$ with associated root lattice $R$ and let $Z$ be a sextic curve of type $T$. Let $X$ be the minimal resolution of the double cover of $\PP^2$ branched along $Z$. Then $X$ is a K3 surface. Its Picard lattice $\Pic(X)$ naturally contains a degree two class $H$ (which is the pullback of the hyperplane class of $\PP^2$) and a root lattice $L$ of type $R$. Let $P$ be the primitive hull of $\langle H\rangle\oplus L$ in $\Pic(X)$.
+%The singular type naturally determines a lattice $P$, which is a primitive sublattice of $\Pic(X)$ for all $X$ associated with this singular type.
+%Later we will show that $P$ is actually the generic Picard lattice.  
+The orthogonal complement $Q$ of $P$ in $\Lambda_X\coloneqq H^2(X,\ZZ)$ is a lattice with signature $(2,20-\rank (P))$, thus defines a type IV bounded symmetric domain $\DD_T\coloneqq\DD(Q)$, where $\DD(Q)$ denotes the type IV domain associated to $Q$ (see Definition \ref{defn: period domain}).
+The period of K3 surfaces gives rise to an analytic morphism
+\[
+\Prd_T\colon \calM_T\to \Gamma_T\bs\DD_T.
+\]
+Here the monodromy group $\Gamma_T$ is defined in \S\ref{subsection: define period map}. We call $\Prd_T$ an occult period map, following Kudla--Rapoport \cite{kudla2012occult}, to distinguish with the usual period map.
+
+Let $\calH_T$ be the union of reflective hyperplanes for roots $\{ r\in H^\perp \,|\, r^2=-2, r\notin L \}$.
+Let $\calH_T^*$ be the sub-arrangement of $\calH_T$ defined by roots with divisibility two. Here a vector $v\in H^\perp$ is called of divisibility $k\in \ZZ^+$ if $(r, H^\perp)=k\ZZ$.  Both $\calH_T$ and $\calH_T^*$ are  $\Gamma_T$-invariant. 
+One of the main results of this paper is the following, see Theorem \ref{theorem: global torelli}, Theorem \ref{thm: open}, Theorem \ref{thm: comm diag, compact to compact} and Proposition \ref{prop: orbi str of nodal types}.
+%which is mainly discussed in \S \ref{section: period map} and \S \ref{section: compactification}.
+\begin{thm}
+\label{thm: main in intro}
+Given any singular type $T$ of sextic curves with simple singularities. The occult period map $\Prd_T\colon \calM_T \to \Gamma_{T}\bs \DD_T$ is an open embedding whose image is $\Gamma_T\bs(\DD_T-\calH_T)$.
+It extends to an isomorphism  
+    \[  
+    \widehat{\calM}_T \cong \overline{\Gamma_T \bs \DD_T}^{\calH_T^*},  
+    \]  
+    where $\widehat{\calM}_T$ is the GIT compactification of $\calM_T$ (see \S \ref{subsection: ADE sextic}), and $\overline{\Gamma_T \bs \DD_T}^{\calH_T^*}$ denotes the Looijenga compactification of $\Gamma_T \bs (\DD_T - \calH_T^*)$. 
+    Moreover, when $T$ is a nodal singular type, $\Prd_T$ induces an isomorphism of $\calM_T$ and $P\Gamma_T\bs(\DD_T-\calH_T)$ as orbifolds.
+\end{thm}
+\begin{rmk}
+    All root lattices $R$ that arise from some singular type $T$ have been classified by Urabe \cite{urabe1988combinations} and Yang \cite{yang1996sextic}. The maximal rank is $19$.
+    By Yang \cite[Thm 2.1]{yang1996sextic}, the number of $R$ with rank $19$ (respectively, $18$, $17$, $16$) is $519$ (respectively, $987$, $975$, $782$).
+    These classifications show that there are many singular types to which Theorem~\ref{thm: main in intro} applies.
+\end{rmk}
+
+%We briefly explain the proof.
+%There are two main ingredients in the proof for the injectivity of $\Prd_T$. 
+We explain the key ingredients of Theorem \ref{thm: main in intro} and its proof. The first central issue in formulating the theorem is to determine the appropriate subgroup $\Gamma_T \subset \Or(Q)$. It turns out that $\Gamma_T$ should be defined as the group of automorphisms of $Q$ that extend to automorphisms of the K3 lattice preserving $H$ and a chosen base of $L$, see \S\ref{subsection: define period map}. With this definition, the group $\Gamma_T$ is large enough to ensure that the period map $\Prd_T$ well-defined, while still being small enough to allow us to establish the injectivity of $\Prd_T$. 
+Next, for each $F\in\calV_T$, we construct an ample class on the K3 surface $X_F$ in a uniform way. 
+Combining this construction with our characterization of $\Gamma_T$, the injectivity then follows from the global Torelli theorem for K3 surfaces.
+%Since $\calM_T$ is of the expected dimension, the period map is an open embedding.
+%A corollary is that $\Pic(X)$ associated with a generic $Z\in\calM_T$ is $P$.
+
+Next, we explain the characterization for the image of the period map, see \S\ref{subsec: image of period map} for more details. Some of the arguments here originate from Urabe \cite{urabe1988combinations} and Degtyarev \cite{degtyarev2008deformations}.
+%For any $F_0\in\calV_T$, we fix a marking $\phi_0\colon H^2(X_{F_0},\ZZ)\to\Lambda$, where $\Lambda=U^{\oplus 3}\oplus E_8^{\oplus 2}$ denotes the K3 lattice.
+%We fix an embedding of $\phi\colon \DD_T\hookrightarrow\DD_1$.
+For any $\omega\in \DD_T-\calH_T$, there exists a K3 surface $X_\omega$ by the surjectivity of the period map for K3 surfaces.
+We show that $X_\omega$ arises from a sextic curve $Z_\omega$ of singular type $T$, with $\Prd_T(Z_\omega)=[\omega]$ in $\Gamma_T\bs(\DD_T-\calH_T)$.
+The proof proceeds in the following two steps. 
+First, we construct a nef class $H_\omega$ on $X_\omega$ and show that its complete linear system induces a surjective morphism $\pi_\omega\colon X_\omega\to\PP^2$ of degree two. This morphism contracts exactly the rational curves orthogonal to $H_\omega$ and therefore factors through a finite morphism $p_\omega\colon\widehat{X}_\omega\to\PP^2$, which is a double cover branched along a sextic curve $Z_\omega$. Moreover, the automatic semiregularity of curves on K3 surfaces allows us to construct $\pi_\omega$ in families, from which it follows that $Z_\omega$ has the singular type $T$. 
+%Then we show the compatibility of $\Prd_T$ and the period map for K3 surfaces, namely $\Prd_T(Z_\omega)=[\phi^{-1}\omega]$ in $\Gamma_T\bs(\DD_T-\calH_T)$.
+
+For the identification between the GIT and Looijenga compactifications, we follow the approach developed in \cite{yu2020fourfolds, yu2023moduli}. The proof can be visualized in Diagram \eqref{diagram: compactifications}.
+\begin{equation}
+\label{diagram: compactifications}
+    \begin{tikzcd}
+      \calM_T  \arrow[r,"\Prd_T","\cong"'] \arrow[d,hook] & \Gamma_T\bs(\DD_T-\calH_T) \arrow[d,hook] \\
+      \widehat{\calM}_T \arrow[d,"j_T"] & \overline{\Gamma_T\bs\DD_T}^{\calH_T^*} \arrow[d,"\pi_T"] \\
+      \overline{\calM} \arrow[r,"\Prd","\cong"'] & \overline{\Gamma_1\bs\DD_1}^{\calH_\infty}
+    \end{tikzcd}
+\end{equation}
+Here $\DD_1$ and $\Gamma_1$ are the type IV domain and monodromy group associated with smooth sextic curves (i.e. $T$ is the smooth type), and $\calH_\infty$ is the Heegner divisor defined by roots of divisibility two, see \S\ref{subsection: Shah, Looijenga}. We have already shown that $\Prd_T$ is an isomorphism between $\calM_T$ and $\Gamma\bs(\DD_T-\calH_T)$. There is a natural map $\pi_T\colon \Gamma_T\bs (\DD_T-\calH_T^*) \to \Gamma_1\bs (\DD_1-\calH_\infty)$. We claim that $\pi_T$ extends to a finite morphism between Looijenga compactifications. 
+The key point is the functorial property of Looijenga compactifications $\overline{\Gamma_T\bs\DD_T}^{\calH_T^*}$ and $\overline{\Gamma_1\bs\DD_1}^{\calH_\infty}$, see \cite{looijenga2003compactificationsII} and \cite[Theorem A.13]{yu2020fourfolds}. To verify the hypotheses in \cite[Theorem A.13]{yu2020fourfolds}, we need to check two facts. Firstly, the stabilizer of a generic point of $\DD_T$ in $\Or(\Lambda_X,H)$ is generated by the Weyl group $W(R)$ and $-\Id$. Secondly, we show that $\Gamma_T$ is the normalizer of $W(R)$ in $\Gamma_1$. Then we conclude that $\Prd_T$ extends to an isomorphism between $\widehat{\calM}_T$ and $\overline{\Gamma_T\bs\DD_T}^{\calH_T^*}$, by showing that both vertical maps $j_T$ and $\pi_T$ (see \S \ref{subsec: identification of compactifications}) are normalizations onto their images.
+The last assertion of Theorem \ref{thm: main in intro} concerning the orbifold structures is proved based on a lattice-theoretic argument, see Proposition \ref{prop: orbi str of nodal types}
+
+%\Zhong{Shall we add some description for \S 6 (orbifold)?}. 
+ 
+
+%Here $\overline{\calM}$ denotes the GIT compactification of the moduli space of smooth sextic curves, and $\overline{\Gamma_1\bs\DD_1}^{\calH_\infty}$ is the Looijenga compactification of the corresponding arithmetic quotient, see \S \ref{subsection: Shah, Looijenga}.
+%By definition, $\overline{\calM}_T$ is the normalization of the GIT compactification of $\calM_T$, which is the Zariski closure of the image of $\calM_T$ in $\overline{\calM}$.
+%We also observe that $\overline{\Gamma_T\bs\DD_T}^{\calH_T^*}$ is the normalization of the Zariski closure of the image of $\Gamma_T\bs(\DD_T-\calH_T)$ in $\overline{\Gamma_1\bs\DD_1}^{\calH_\infty}$.
+%Hence $\overline{\calM}_T$ and $\overline{\Gamma_T\bs\DD_T}^{\calH_T^*}$ are identified by the unique lifting of $\Prd_T$.
+%This naturally makes the completed diagram commutative.
+
+In \S \ref{section: explicit description of lattices}, we further analyze the generic Picard lattice $P$. 
+We first consider the lattice $M$ generated by $H$, $L$ and the strict transforms of irreducible components of the sextic curve under $X\to \PP^2$. By the openness of the image of the period map $\Prd_T$, the generic Picard lattice $P$ is the primitive hull of the lattice generated by $H$ and $L$ in $\Lambda_X$, hence it is also the primitive hull of $M$. We prove that $P^\iota=M^\iota$ for the natural involution $\iota$ on $\Lambda_X$, see Proposition \ref{prop: saturation of M_F}.
+In \S \ref{sec: orbifold structures}, we give a criterion for when the period map preserves the orbifold structures verify it for all nodal singular types $T$.
+In \S \ref{sec: examples and applications}, we apply our results to several interesting examples, including a quintic curve with a line, a quartic curve with two lines, and the classical Zariski pairs. For the singular type given by a quartic curve with two bitangents, we observe an unexpected relationship among three arithmetic quotients of different types (ball type, type IV, and Siegel type).
+
+%\textbf{Structure of the paper.}
+%In \S \ref{section: K3}, we use GIT to define the moduli space of sextic curves for a given singular type. 
+%In \S \ref{section: period map}, we construct the period map $\Prd_T$ for the moduli space of sextic curves of a given singular type $T$, prove the injectivity of $\Prd_T$, and characterize the image of $\Prd_T$, thereby concluding that $\Prd_T$ is an open embedding.
+%In \S \ref{section: compactification}, we identify the GIT compactification of the with the corresponding Looijenga compactification and show that the compactifications have a natural functorial property.
+%In \S \ref{section: explicit description of lattices}, we analyze the generic Picard lattice $P$ and completely determine the invariant part $P^\iota$.
+%In \S \ref{sec: orbifold structures}, we give a criterion for when the period map preserves the orbifold structures verify it for all nodal singular types $T$.
+%Finally in \S \ref{sec: examples and applications}, we illustrate our results through several examples.
+
+\textbf{Acknowledgement.}
+The first author is supported by the national key research and development program of China (No. 2022YFA1007100) and NSFC 12201337. The second author is partially supported by NSFC 12301058. We thank Samuel Boissi\`{e}re, Bong Lian, Michel Raibaut, Fei Si, Zhiyu Tian and Zheng Zhang for their interest and helpful discussions. 
+%We also thank Samuel Boissi\`{e}re and Michel Raibaut for their interest and   
+%We thank Bong Lian, Fei Si, Zhiyu Tian and Zheng Zhang for some helpful discussion.
+%Yau Mathematical Sciences Center. 
+%Zhong is supported by Beijing International Center for Mathematical Research.
+
+
+\section{ADE Sextic Curves and K3 Surfaces}
+\label{section: K3}
+
+\subsection{Plane Curves with Simple Singularities}
+\label{subsection: ADE sextic}
+%We say that a singularity on a plane curve has certain ADE type if the associated double plane (ramified over this curve) singularity has the prescribed ADE type.
+We always use $Z$ to represent a reduced complex plane curve of positive even degree. We denote by $\widehat{X}$ the double cover of $\PP^2$ branched along $Z$ and let $X$ be the smooth minimal model of $\widehat{X}$. Let $R$ be an irreducible root lattice of ADE type. Suppose $p\in Z$ is a singular point and the corresponding singularity in $\widehat{X}$ is an ADE singularity of type $R$, then one call $p\in Z$ a simple curve singularity of type $R$. 
+
+Suppose $Z$ has only simple singularities.
+A plane curve $Z'$ is said to have the same \emph{singular type} as $Z$ if they are equisingular deformation equivalent.
+For a general discussion of equisingularity, see \cite{zariski1965equisingularityI,zariski1965equisingularityII,zariski1968equisingularityIII} and \cite{greuel2007singularities}.
+%Precisely, there exists a flat(??) family $D\times\PP^2 \supset\calZ\to D$ of sextic curves such that every fiber shares the same topological type, and $Z'$ and $Z$ are two fibers in this family. 
+We have introduced an alternative definition of singular type in \S \ref{sec: intro}.
+The two definitions are equivalent due to \cite[Proposition 2.1]{greuel1996equianalytic}.
+Denote by $T$ the singular type of $Z$.
+Let $\PP\calV_T$ be the space for curves of a fixed singular type $T$, where $\calV_T$ denotes the cone of polynomials over $\PP\calV_T$. By \cite[Prop 2.1]{greuel1996equianalytic}, $\PP\calV$ is an irreducible quasi-projective variety.
+
+
+We define the \emph{expected dimension} of $\PP\calV_T$. Let $d=\deg(Z)$. 
+Let $x_1,\cdots,x_n$ be the set of singularities of $Z$.
+Denote by $R_i$ the corresponding ADE type of $x_i$. The number $\rank(R_i)$ is also called the Milnor number or the Tjurina number for the corresponding surface singularity in other contexts. 
+All the ADE singularities are quasi-homogeneous, and for such singularities the corresponding Milnor numbers and Tjurina numbers coincide, see \cite{saito1971quasihomogene}.
+The expected dimension of $\PP\calV_T$ is defined to be $\edim(\PP\calV_T)=\binom{d+2}{2}-1-\sum\limits_{i=1}^n \rank(R_i)$. 
+%By ///, one always has $\dim(\PP\calV_T)\ge \edim(\PP\calV_T)$. 
+When equality holds, we simply say that $\PP\calV_T$ is of the expected dimension.
+
+
+When $d=6$, the space $\PP\calV_T$ is a smooth irreducible quasi-projective variety of the expected dimension, see \cite[Corollary 5.1(b)]{greuel1996equianalytic}. 
+
+Given a singular type $T$ for ADE sextic curves, let $\overline{\calV}_T$ be the Zariski closure of $\calV_T$ in $\calV=H^0(\PP^2, \calO(6))$. Let $\widehat{\PP\calV}_T$ be the normalization of $\PP\overline{\calV}_T$. Let $\calL$ be the pullback of $\calO_{\PP\calV}(1)$ to $\widehat{\PP\calV}_T$. There is an induced action of $\SL(3, \CC)$ on $(\widehat{\PP\calV}_T, \calL)$, and we consider the GIT quotient
+\[
+\widehat{\calM}_T=\SL(3, \CC) \dbs (\widehat{\PP\calV}_T, \calL).
+\]
+Since $\PP\calV_T$ is smooth, it can be naturally identified with its preimage in $\widehat{\PP\calV}_T$. By Shah \cite{shah1980complete}, the points of $\PP\calV_T$ are stable with respect to the action of $\SL(3, \CC)$ on $(\PP\calV, \calO(1))$, hence also stable with respect to the action of $\SL(3, \CC)$ on $(\widehat{\PP\calV}_T, \calL)$.
+
+Let $\calM_T$ be the open subset of $\widehat{\calM}_T$ given by $\PSL(3, \CC)\bs \PP\calV_T$. We call $\calM_T$ the moduli space of sextic curves of type $T$, and call $\widehat{\calM}_T$ the GIT compactification of $\calM_T$. 
+
+Denote by $\overline{\calM}_T$ the closure of $\calM_T$ in $\overline{\calM}$. Let $\pi$ be the GIT quotient $\PP\calV^{ss} \to \overline{\calM}$. An element of $\overline{\calM}$ is a closed semistable $\SL(3, \CC)$-orbit. We claim that $\overline{\calM}_T$ consists of all closed semistable $\SL(3,\CC)$-orbits contained in $\PP\overline{\calV}_T$. 
+
+First, $\PP\overline{\calV}_T \cap \PP\calV^{ss}$ is a closed $\SL(3,\CC)$-invariant subset of $\PP\calV^{ss}$. Since $\pi$ is a GIT quotient, we know $\pi(\PP\overline{\calV}_T \cap \PP\calV^{ss})$ is a closed subset of $\overline{\calM}$. Thus $\pi(\PP\overline{\calV}_T \cap \PP\calV^{ss})\supset\overline{\calM}_T$. One the other hand, $\pi^{-1}(\overline{\calM}_T)$ is a closed subset of $\PP\calV^{ss}$ containing $\PP\calV_T$, hence contains $\PP\overline{\calV}_T \cap \PP\calV^{ss}$. We conclude that $\pi(\PP\overline{\calV}_T \cap \PP\calV^{ss})=\overline{\calM}_T$ and the claim follows.
+
+%First, we note that the $\SL(3)$-action on $\PP\calV$ preserves $\PP\calV_T$, and hence its closure $\PP\overline{\calV}_T$.
+%Denote by $\pi$ the GIT quotient $\PP\calV^{ss} \to \overline{\calM}$.
+%Since $\PP\calV^{ss}\cap\PP\overline{\calV}_T$ is an $\SL(3)$-invariant closed subset of $\PP\calV^{ss}$, by the property of GIT quotients, its image under $\pi$ is closed in $\overline{\calM}$.
+%On the other hand, $\pi^{-1}(\overline{\calM}_T)$ contains the closure of $\pi^{-1}(\calM_T)$ in $\PP\calV^{ss}$, which is nothing but $\PP\calV^{ss}\cap\PP\overline{\calV}_T$. Thus the image of $\PP\calV^{ss}\cap\PP\overline{\calV}_T$ under $\pi$ is $\overline{\calM}_T$.
+%Hence the semistable locus $\PP\calV_T^{ss}$ in $\PP\overline{\calV}_T$ is nothing but $\PP\calV^{ss}\cap\PP\overline{\calV}_T$. Therefore, $\overline{\calM}_T$ is the closure of $\calM_T$ in $\overline{\calM}$.
+
+
+\begin{prop}
+\label{prop: M_T M^bar normalization}
+The normalization map $\widehat{\PP\calV}_T \to \PP\overline{\calV}_T$ induces a surjective morphism $j_T\colon \widehat{\calM}_T\to \overline{\calM}_T$, which is also the normalization map.
+\end{prop}
+\begin{proof}
+%Same as \cite[\S3.1]{yu2023moduli}.
+%A semistable point of $\overline{\calM}$ corresponds to a closed $\SL(3, \CC)$-orbit of semistable points in $\PP\calV$.
+By \cite[Theorem 1.19]{mumford1994geometric}, $\widehat{\PP\calV}_T^{ss}$ is the preimage of $\PP\calV^{ss}$ in $\widehat{\PP\calV}_T$. Taking the GIT quotients, the normalization map $\widehat{\PP\calV}_T \to \PP\overline{\calV}_T$ canonically induces a generically injective finite surjective morphism $j_T\colon\widehat{\calM}_T \to \overline{\calM}_T$. 
+%Since $\calM_T$ is a Zariski open subset of $\widehat{\calM}_T$, so the morphism $j_T\colon \widehat{\calM}_T\to \overline{\calM}$ is generically injective. 
+Moreover, $\widehat{\calM}_T$ is normal, hence the morphism $j_T$ is the normalization map.
+\end{proof}
+
+\begin{rmk}
+In \cite[\S4.2]{yu2023moduli}, the first two authors gave an alternative description for the GIT model in the case when the sextic curves are unions of smooth curves.
+We describe some further examples in \S \ref{sec: examples and applications}.
+\end{rmk}
+
+
+\subsection{Resolution of ADE Singularities}
+\label{subsection: resolution of ADE}
+
+% In this section, we review the resolution of surface singularities of ADE types.
+% %We first consider the local model of each ADE-type singularity.
+% Each such singularity can be realized as $o=(0,0,0)$ in the affine surface
+% \begin{equation}
+% \label{eqn: ADE singularity}
+%     Y: z^2+f(x,y)=0
+% \end{equation} 
+% in $\A^3$ with coordinate $(x,y,z)$. The polynomial $f$ defines a plane curve $Z(f) \subset \A^2_{x,y}$ with simple singular point $(0,0)$ of multiplicity two or three. Recall that the multiplicity of the point $(0,0)\in Z(f)$ is the lowest degree of the monomials of $f$, denoted by $\mu_{(0,0)}(f)$. Notice that in this case, $(0,0,0)$ is the only singularity of $Y$ and $(0,0)$ is the only singularity of $Z(f)$.
+% The expression of $f$ for type $A_n, D_n, E_6, E_7, E_8$ can be:
+% \begin{equation*}
+% x^2+y^{n+1}, y(x^2+y^{n-2}), x^3+y^4, x(x^2+y^3), x^3+y^5 
+% \end{equation*}
+% respectively.
+
+
+% Consider the blowup $p\colon \Bl_o(\A^3) \to \A^3$.
+% Let $\iota$ be the involution of $\A^3$ sending $(x,y,z)$ to $(x,y,-z)$, which naturally extends to $\Bl_o(\A^3)$. For simplicity, all restrictions and extensions of $\iota$ are still denoted by $\iota$.
+% Clearly $\iota$ preserves the strict transform $Y_1\subset \Bl_o(\A^3)$ of $Y$ and the exceptional plane.
+% Hence $\iota$ also preserves the union of exceptional curve(s) in $Y_1$.
+% The involution $\iota\colon Y\to Y$ is a deck transformation of the double cover $Y\to\A^2_{x,y}$.
+% The (possibly singular) surface $Y_1$ also admits a double covering map to $Y_1/\iota$.
+
+
+% The following proposition characterizes the number of exceptional curve(s) arising from $p\colon Y_1\to Y$ and involution on the exceptional curve(s).
+% \begin{prop}
+% \label{prop: involution on irred root lattice}
+%     The number of exceptional curve(s) is one except for $A_n (n\ge 2)$.
+%     In the case of $A_n (n\ge 2)$, the two exceptional curves are exchanged by $\iota$.
+%     Otherwise, if $\mu_{(0,0)}f=3$ ($D_n (n\ge 4)$, $E_6,E_7,E_8$), then the exceptional curve is pointwisely fixed by $\iota$; if $\mu_{(0,0)}f=2$ ($A_1$), then $\iota$ acts on the exceptional curve as an involution.
+% \end{prop}
+% % \begin{proof}
+% %     This is elementary and can be seen by a case-by-case calculation.
+% % \end{proof}
+
+% %The next proposition describes the descent of $f\colon X_1\to X$.
+% \begin{prop}
+% \label{prop: one step descendent of blowup}
+%     The blowup $p\colon Y_1\to Y$ is compatible with the two involutions on $Y_1$ and $Y$, hence descends to a map $Y_1/\iota\to \A^2$ which is the blowup of $\A^2$ at $(0,0)$.
+% \end{prop}
+
+% The above two propositions are direct from computation with affine coordinates. 
+
+% % They imply the following: 
+% % \begin{cor}
+% %     If $\mu_{(0,0)}f=3$, the exceptional curve of $Y_1\to Y$ is pointwisely fixed by $\iota$.
+% % \end{cor}
+
+% The following lemma is known to experts, and we present it here for readers' convenience.
+% The variety $Y$ and $Y_1$ are normal, and we denote by $K_Y, K_{Y_1}$ their canonical classes.
+% %It also satisfies the adjunction formula.
+% \begin{lem}
+% \label{lem: local crepant}
+%     The blowup $p\colon Y_1\to Y$ induces $K_{Y_1}=p^*K_Y$.
+% \end{lem}
+% \begin{proof}
+%     Denote by $A\coloneqq\Bl_o(\A^3)$ and by $E$ the exceptional plane. 
+%     By the adjunction formula (see \cite[Proposition 5.73]{kollar1998birational}), we have
+%     \begin{align*}
+%         K_{Y_1} & = (K_A + Y_1)|_{Y_1} \\
+%         & = (p^*K_{\A^3}+2E+p^* Y-2E)|_{Y_1} = p^*(K_{\A^3}+Y)|_{Y_1} = p^*K_Y.
+%     \end{align*}
+%     Thus the lemma follows.
+% \end{proof}
+
+Consider a smooth projective surface $\widehat{S}$ and a reduced curve $Z\subset \widehat{S}$ with only simple curve singularities.
+We assume that there exists a double cover $\widehat{X}$ of $\widehat{S}$ branched along $Z$. Then $\widehat{X}$ has only ADE singularities.
+Denote the double cover involution of $\widehat{X}$ by $\iota$. 
+Let $p\colon X \to \widehat{X}$ be the minimal resolution of $\widehat{X}$.
+The involution $\iota$ naturally extends to $X$.
+Denote by $S\coloneqq X/\iota$.
+The resolution $p$ is a crepant resolution and is compatible with the involutions on $X$ and $\widehat{X}$. Hence $p$ descends to $S\to \widehat{S}$, which is the minimal blowup such that the strict transform of $Z$ is smooth.
+
+% \begin{prop}
+% \label{prop: crepant and descendent}
+% The resolution $p$ is a crepant resolution and is compatible with the involutions on $X$ and $\widehat{X}$. Hence $p$ descends to $S\to \widehat{S}$.
+% \end{prop}
+% \begin{proof}
+% The resolution $p\colon X\to \widehat{X}$ is a composition of finitely many blowups of ADE singularities. It follows from Lemma \ref{lem: local crepant} that $p$ is a crepant resolution.
+% By Proposition \ref{prop: one step descendent of blowup}, $p$ is compatible with the two involutions.
+% \end{proof}
+
+Assume that $Z$ has a singular point $q$ of ADE type $R$, which is necessarily irreducible.
+The preimage of $q$ in $X$ is a union of exceptional curves, which we call the resolution graph of $q$. 
+%The graph is a ADE graph of the same type $R$.
+%The following is a corollary of Proposition \ref{prop: involution on irred root lattice}.
+The following proposition characterizes the induced $\iota$-action on such a resolution graph. It follows from some direct computations with affine coordinates. For these and other basic facts on ADE singularities, one can see for instance \cite[III, \S 7]{barth2004compact}.
+\begin{prop}
+\label{prop: iota-action on resolution graph/base}
+  The dual graph of the resolution graph of $q$ is the Dynkin diagram of type $R$. 
+  The involution $\iota$ naturally acts on the Dynkin diagram of $R$.
+  If $R=A_1, D_{2n}, E_7, E_8$, the $\iota$-action on the Dynkin diagram is identity. 
+  In other cases, the $\iota$-action on the Dynkin diagram is the unique nontrivial involution of the corresponding Dynkin diagram.
+\end{prop}
+\begin{rmk}
+\label{rmk: iota-action on L(R)}
+    We denote by $L(R)$ the associated root lattice of type $R$.
+    The resolution of $q$ induces a natural embedding $L(R)\hookrightarrow H^2(X,\ZZ)$.
+    Since the exceptional curves define a base of $L(R)$, the induced $\iota$-action on $L(R)$ is given by Propsition \ref{prop: iota-action on resolution graph/base}.
+\end{rmk}
+
+
+
+% We also recall an alternative construction of the resolution.
+% This can also be found in \cite[III, \S 7]{barth2004compact}.
+% Denote by $p\colon S_1\to \widehat{S}$ the blowup of $\widehat{S}$ at a singularity $q$ and by $E$ the exceptional curve.
+% Let $\widetilde{Z}$ be the strict transform of $Z$.
+% \begin{lem}
+% \label{lem: p^* preserves 2K+C}
+%     %Assume that $2K_S+C=0$.
+%     If $\mu_q(Z)=2$, then $2K_{S_1}+\widetilde{Z}=p^*(2K_{\widehat{S}}+Z)$. 
+%     If $\mu_q(Z)=3$, then $2K_{S_1}+(\widetilde{Z}+E)=p^*(2K_{\widehat{S}}+Z)$.
+% \end{lem}
+% \begin{proof}
+%     %Denote by $\pi$ the blowup $\widehat{S}\to S$.
+%     We have $p^*Z=\widetilde{Z}+\mu_q(Z) E$ and $K_{S_1}=p^*K_{\widehat{S}}+E$.
+%     Then it is direct to check $2K_{S_1}+(\widetilde{Z}+(\mu_q(Z)-2)E)=2 p^*K_{\widehat{S}}+p^*Z$.
+%     % Thus we have 
+%     % \begin{align*}
+%     %     & 2K_{\widehat{S}}+(\widehat{C}+(\mu_q(C)-2)E)\\
+%     %     = & 2(p^*K_S+E)+(p^*C-\mu_q(C) E)+(\mu_q(C)-2)E \\
+%     %     = & 2 p^*K_S+p^*C.
+%     % \end{align*}
+%     % Then we conclude the lemma.
+% \end{proof}
+% % By the lemma we can do a series of iterated operations.
+% % Namely, we test that whether $\widehat{C}$ or $\widehat{C}\cup E$ is already smooth.
+% % If it is still singular, then we consider the following: if $mult_p(C)=2$, then we consider $(\widehat{S},\widehat{C})$ next step; if $mult_p(C)=3$, then we consider $(\widehat{S},\widehat{C}\cup E)$ next step.
+% % Namely, if $mult_p(C)=3$, then we consider the curve $\widehat{C}\cup E$ in $\widehat{S}$ in the next step.
+% % Note that from the property of ADE-singularities, after blowing up, the resulting singularity (singularities) from $p$ is (are) as following: if $mult_p(C)=2$, then there is only one resulting singularity in $\widehat{C}$ and its multiplicity is two; if $mult_p(C)=3$, then there could be more than one resulting singularity in $\widehat{C}\cup E$, and each of them has multiplicity less or equal than three.
+% % This make our iterated operations well-defined.
+% % Once it is smooth, then we stop the process.
+% % The process will end in finite steps. (\red{simplified?})
+% \begin{lem}
+% \label{lem: 2-divisible}
+%     Assume that $Z$ is $2$-divisible, namely, there exists a line bundle $\calL$ such that $\calL^{\otimes 2}=\calO_{\widehat{S}}(Z)$.
+%     If $\mu_q(Z)=2$ (respectively, $3$), then $\widetilde{Z}$ (respectively, $\widetilde{Z}+E$) is $2$-divisible.
+% \end{lem}
+% \begin{proof}
+%     It is direct to check $\calO_{S_1}(\widetilde{Z}+(\mu_q(Z)-2)E)=(p^*\calL\otimes p^*\omega_{\widehat{S}}\otimes\omega_{S_1}^{-1})^{\otimes 2}$.
+% \end{proof}
+% Under the assumption of Lemma \ref{lem: 2-divisible}, there exist double covers $\widehat{\pi}\colon \widehat{X}\to \widehat{S}$ (respectively $\pi_1\colon X_1\to S_1$) branched along $Z$ (respectively $\widetilde{Z}+(\mu_q(Z)-2)E$). We denote by $Z_1=\widetilde{Z}+(\mu_q(Z)-2)E$.
+% \begin{prop}
+% \label{prop: 1-step blowup}
+%     There exists a natural birational morphism $\widetilde{p}\colon X_1\to \widehat{X}$ such that $\widehat{\pi}\circ\widetilde{p}=p\circ\pi_1$ and $\widetilde{p}^*K_{\widehat{X}}\cong K_{X_1}$.
+% \end{prop}
+% \begin{proof}
+%     Since $p\colon S_1-p^{-1}(q)\to \widehat{S}-q$ is an isomorphism, it naturally lifts to an isomorphism $\widetilde{p}\colon X_1-\pi_1^{-1}(E)\cong \widehat{X}-\pi^{-1}(q)$ satisfying $\widehat{\pi}\circ\widetilde{p}=p\circ\pi_1$.
+%     Moreover, $\widetilde{p}$ extends to a morphism $X_1\to \widehat{X}$.
+%     Notice $2K_{X_1}=\pi_1^*(2K_{S_1}+Z_1)$ and $2K_{\widehat{X}}=\widehat{\pi}^*(2K_{\widehat{S}}+Z)$.
+%     By Lemma \ref{lem: p^* preserves 2K+C}, $\widetilde{p}^*K_{\widehat{X}}\cong K_{X_1}$.
+% \end{proof}
+
+% The blowup gives a new pair $(S_1,Z_1)$ from $(\widehat{S},Z)$.
+% We iterate this step until we get a smooth $Z_n$ (the iteration must end in finite steps).
+% Denote by $(\overline{S},\overline{Z})\coloneqq (S_n,Z_n)$.
+% The smooth curve $\overline{Z}$ is a disjoint union of irreducible smooth curves.
+% \begin{prop}
+% \label{prop: canonical resolution is minimal}
+%     The rational surface $\overline{S}$ admits a smooth double cover $\overline{X}$ branched along $\overline{Z}$.
+%     We have $\overline{X}\cong X$.
+% \end{prop}
+% \begin{proof}
+%     By Proposition \ref{prop: 1-step blowup}, $\overline{X}$ admits a birational morphism $\overline{p}\colon\overline{X}\to \widehat{X}$ such that $\overline{p}^*K_{\widehat{X}}\cong K_{\overline{X}}$.
+%     Since $X$ is minimal, $\overline{p}$ factors through $\rho\colon\overline{X}\to X$, and $\rho^*K_{X}\cong K_{\overline{X}}$.
+%     This implies $\overline{X}\cong X$.
+% \end{proof}
+
+
+
+
+
+
+\subsection{K3 Surfaces Associated with ADE Sextic Curves}
+\label{subsection: ADE K3}
+Let $F$ be a homogeneous sextic polynomial of three variables, and $Z(F)$ be the associated sextic curve in $\PP^2$.
+We assume that $Z(F)$ has only simple singularities.
+Let $\widehat{X}_F$ be the double cover of $\PP^2$ branched along $Z(F)$. Then $K_{\widehat{X}_F}$ is trivial and we call $\widehat{X}_F$ an ADE K3 surface.
+% By the construction in \S \ref{subsection: resolution of ADE}, we have a pair $(S_F,Z_F)$ from $(\PP^2,Z(F))$.
+% Denote by $X_F$ the double cover of $S_F$ branched over $Z_F$. 
+% %By Proposition \ref{prop: canonical resolution is minimal}, 
+% The surface $X_F$ is the minimal resolution of $\widehat{X}_F$.
+% % \begin{prop}
+% %     The surface $X_F$ is the minimal resolution of $\widehat{X}$. Moreover, $X_F$ is a smooth K3 surface.
+% % \end{prop}
+The minimal resolution of $\widehat{X}_F$, denoted by $X_F$, is a smooth K3 surface. The quotient surface $S_F\coloneqq X_F/\iota$ admits a canonical birational morphism onto $\PP^2$. The branched locus of $X_F\to S_F$ is the disjoint union of the strict transform of $Z(F)$ and possibly certain exceptional curves.%\Zhong{can we only claim it without details?}
+
+Fix a $F\in \calV_{T}$ for a given singular type $T$. 
+Denote by $p=p_F\colon X_F\to S_F$ the branched double covering.
+Let $\iota=\iota_F$ be the involution on $X_F$ induced by the double covering.
+Denote by $\Lambda_F$ the lattice $H^2(X_F, \ZZ)$. 
+Let $H_F\in H^2(X_F, \ZZ)$ be the pullback of the hyperplane class in $\PP^2$.
+Let $l_{T}(R)$ be the number of singularities of type $R$ that appear in the singular K3 surface associated with an element in $\calV_{T}$.
+Denote by $L_F=\oplus_R L(R)^{l_{T}(R)}$, where $R$ runs through all irreducible root lattices of ADE type. Let $P_F$ be the primitive hull of $L_F\oplus \langle H_F\rangle$ in $H^2(X_F,\ZZ)$. 
+Notice that $P_F$ is a primitive sublattice of the Picard lattice $\Pic(X_F)$. The induced action of $\iota$ on $\Lambda_F$ is still denoted by $\iota$. This action naturally preserves $\Pic(X_F)$, $L_F$ and $P_F$.
+For a lattice $M$ equipped with an involution $\iota$, we write $M^{\iota}$ for the $\iota$-invariant sublattice.
+%Describe the induced action of $\iota_F$ on $\Lambda_F$.///
+%Denote by $\Lambda_F^{\iota}$, $L_F^{\iota}$ the invariant part. 
+By Proposition \ref{prop: iota-action on resolution graph/base} and Remark \ref{rmk: iota-action on L(R)}, we conclude the following:
+\begin{prop}
+\label{prop: finite index H^2(S) to H oplus L^iota}
+    The pullback $p^*\colon H^2(S_F,\ZZ)\to H^2(X_F,\ZZ)$ induces a finite-index extension $H^2(S_F,\ZZ)\hookrightarrow \langle H_F \rangle\oplus L_F^{\iota}$. 
+    %where $L_F^\iota$ denotes the $\iota$-invariant sublattice.
+\end{prop}
+\begin{cor}
+\label{cor: Lambda_F^iota = P_F^iota}
+    We have $\Lambda_F^\iota = P_F^\iota$.
+    In particular, $\iota$ acts as $-1$ on $P_F^\perp$, where $P_F^\perp$ denotes the orthogonal complement of $P_F$ in $\Lambda_F$. 
+\end{cor}
+\begin{proof}
+    By Lemma \ref{lemma: double cover manifold} (a general topological result, whose proof does not depend on the rest of the paper), $p^*$ induces a finite-index extension $H^2(S,\ZZ)\hookrightarrow \Lambda_F^\iota$.
+    Since $\Lambda_F^\iota$ is primitive in $\Lambda_F$, by Proposition \ref{prop: finite index H^2(S) to H oplus L^iota}, $\langle H_F \rangle\oplus L_F^{\iota}$ is a finite-index sublattice in $\Lambda_F^\iota$.
+    Since $P_F$ is the primitive hull of $\langle H_F \rangle\oplus L_F$ in $\Lambda_F$, we have $\Lambda_F^\iota\subset P_F$.
+    Thus $\Lambda_F^\iota = P_F^\iota$.
+\end{proof}
+
+\begin{rmk}
+For a nontrivial singular type $T$, the associated K3 surfaces $X_F$ always admit natural elliptic fibration structures.
+Explicitly, consider the pencil of lines on $\PP^2$ through any singularity of $Z(F)$. The preimage of a generic such line in $X_F$ is an elliptic curve. Therefore, the K3 surface $X_F$ admits an elliptic fibration. Note that this elliptic fibration may not admit any section (but always admit a multi-section).
+\end{rmk}
+
+
+\section{Occult Period Map and Global Torelli}
+\label{section: period map}
+In this section, we study the Hodge structures of the associated K3 surfaces $X_F$ for $F\in\calV_T$, and construct the corresponding period map.
+
+\subsection{Period Domain, Monodromy Group and Occult Period Map}
+\label{subsection: define period map}
+We first define the period domain and monodromy group for a fixed singular type $T$.
+
+%We continue with the notation in \S\ref{section: K3}.  
+
+Denote by $Q_F=P_F^\perp$ the orthogonal complement of $P_F$ in $\Lambda_F$. Then $P_F$ and $Q_F$ are sublattices of $H^2(X_F,\ZZ)$ with signatures $(1,\sum_R l_{T}(R)\rank(R))$ and $(2,19-\sum_R l_{T}(R)\rank(R))$ respectively. 
+
+\begin{defn}[Period Domain]
+\label{defn: period domain}
+The space $\PP\{x\in (Q_F)_\CC \big{|} x\cdot x=0, x\cdot \overline{x}>0 \}$ has two connected components that are interchanged by complex conjugation. Denote by $\DD(Q_F)$ the connected component that contains $H^{2,0}(X_F)$. This is the period domain for surfaces $X_F$.
+%Denote $\DD(Q_F)=\PP\{x\in (Q_F)_\CC \big{|} x\cdot x=0, x\cdot \overline{x}>0 \}$ the Type IV domain associated with $Q_F$. This is the period domain for surfaces $X_F$. Notice that $\DD(Q_F)$ has two connected components.
+\end{defn}
+
+
+Let $\Delta_{F}$ be the set of exceptional curves arising from the resolution of singularities, which is a base of $L_F$, see \S \ref{subsection: ADE K3}.
+%see \S\ref{section: K3}.
+Denote by $\Or(\Lambda_F, \Delta_F, H_F)$ the group of automorphisms $f\in \Or(\Lambda_F)$ such that $f(\Delta_F)=\Delta_F$ and $f(H_F)=H_F$.
+An automorphism of $\Lambda_{F}$ which preserves $\Delta_{F}$ and $H_{F}$ necessarily preserves $P_{F}$ and, consequently, induces an automorphism of $Q_{F}$. 
+Define $\widetilde\Gamma_{F}$ to be the image of the homomorphism 
+\begin{equation*}
+    \Or(\Lambda_{F}, \Delta_{F},H_{F})\to \Or(Q_{F}).
+\end{equation*}
+Let $\Gamma_F$ be the subgroup of $\widetilde\Gamma_{F}$ that preserves $\DD(Q_F)$.
+Then $[\widetilde{\Gamma}_F : \Gamma_F] \leq 2$, with equality holds if and only if there exists an element in $\widetilde{\Gamma}_F$ interchanging the two components.
+By Corollary \ref{cor: Lambda_F^iota = P_F^iota}, the $\iota_F$ acts as $-1$ on $Q_F$. Thus $-1\in\Gamma_F$ holds for all singular types. 
+%The following proposition is direct from lattice theory.
+
+\begin{prop}
+Any element $g\in\Or(Q_{F})$ that acts trivially on the discriminant group $A_{Q_{F}}$ belongs to $\widetilde{\Gamma}_{F}$. In particular, $\Gamma_{F}$ is of finite index in $\Or(Q_{F})$, hence an arithmetic group acting on $\DD(Q_{F})$.
+\end{prop}
+\begin{proof}
+    Let $g\in\Or(Q_{F})$ be an element as in the proposition. By \cite[Corollary 1.5.2]{nikulin1979integer}, there exists an element $\widetilde{g}\in \Or(\Lambda_F)$ such that $\widetilde{g}|_{P_F}=\Id_{P_F}$ and $\widetilde{g}|_{Q_F}=g$. Hence $g$ belongs to $\widetilde{\Gamma}_F$ by definition.
+\end{proof}
+
+
+%\begin{ques}
+%Not sure whether the action of $\Gamma_F$ on period domain is always faithful.
+%\end{ques}
+
+From now on, we choose a base point $F_0\in \calV_T$, and denote by $\Gamma_T=\Gamma_{F_0}$, $\widetilde{\Gamma}_T=\widetilde{\Gamma}_{F_0}$ and $\DD_T=\DD(Q_{F_0})$. 
+
+For $F\in \calV_T$, choose a path $\gamma$ connecting $F$ and $F_0$. 
+The path $\gamma$ induces a diffeomorphism from $X_F$ to $X_{F_0}$ together with an isomorphism 
+\[
+\gamma^*\colon (\Lambda_F, \Delta_F, H_F, P_F, Q_F)\cong (\Lambda_{F_0}, \Delta_{F_0}, H_{F_0}, P_{F_0}, Q_{F_0}).
+\]
+The line $\gamma^*(H^{2,0}(X_F))$ represents a point in $\DD_T=\DD(Q_{F_0})$.
+
+
+
+Next we define the period map for $X_F$. Choose any two paths $\gamma$, $\gamma'$ in $\calV_T$ connecting $F$ and $F_0$.
+Then $\gamma'^*\circ (\gamma^*)^{-1}$ is an automorphism of $(\Lambda_{F_0}, \Delta_{F_0}, H_{F_0}, P_{F_0}, Q_{F_0})$, which induces an element in $\Gamma_T$. Therefore, we have an analytic map
+\[
+\Prd_T\colon \calV_T\to \Gamma_T\bs \DD_T,
+\]
+which descends to 
+\[
+\Prd_T\colon \calM_T\to \Gamma_T\bs \DD_T.
+\]
+The analytic map $\Prd_T$ is acturally algebraic. This can be deduced from its extension to certain compactifications on both sides, see Theorem \ref{thm: comm diag, compact to compact}. An alternative argument follows the proof of Proposition 2.2.2 in \cite{hassett2000special} using Baily–Borel compactification and the Borel extension theorem.
+Following \cite{kudla2012occult}, we call $\Prd_T$ the \emph{occult period map} for sextic curves of type $T$.
+
+
+\subsection{Global Torelli}
+%In this section, we prove the global Torelli theorem.
+We continue with the notation in \S\ref{subsection: define period map}. Based on the global Torelli theorem for K3 surfaces \cite{burns1975torelli}, we prove the following global Torelli theorem for occult period maps of singular sextic curves.
+\begin{thm}
+\label{theorem: global torelli}
+For any type $T$, the period map $\Prd_T\colon \calM_T \to \Gamma_{T}\bs \DD_T$ is injective.
+\end{thm}
+\begin{proof}
+ Taking $F$, $F'\in \calV_T$ such that $\Prd_T(F)=\Prd_T(F')$, we aim to show that $Z(F)$ is linearly isomorphic to $Z(F')$. We first show that the K3 surfaces $X_F$ and $X_{F'}$ are isomorphic.
+Choose two paths $\gamma_F$ and $\gamma_{F'}$ connecting $F$ and $F'$ to $F_0$.
+There exists an element $g\in \Gamma_{T}$ such that $g\cdot\gamma_F^*(H^{2,0}(X_F))=\gamma_{F'}^*(H^{2,0}(X_{F'}))$.
+By the definition of $\Gamma_{T}$, there exists $\widetilde{g}\in \Or(\Lambda_{F_0}, \Delta_{F_0},H_{F_0})$ whose restriction to $Q_{F_0}$ is $g$.
+Then the isomorphism 
+\[
+\phi=(\gamma_{F'}^*)^{-1}\circ \widetilde{g}\circ \gamma_F^* \colon (\Lambda_F, \Delta_F, H_F)\cong (\Lambda_{F'}, \Delta_{F'}, H_{F'})
+\]  
+maps $H^{2,0}(X_F)$ to $H^{2,0}(X_{F'})$.
+
+Choose an element $\beta_F$ in the Weyl chamber of $L_F$ relative to $\Delta_F$ and let $\beta_{F'}=\phi(\beta_F)$. For a smooth rational curve $D$ in $X_F$, we have either $[D]\cdot H_F$ a positive integer or $[D]\in \Delta_F$. The latter case implies $[D]\cdot \beta_F>0$. Thus there exists a positive integer $c$ such that $\alpha_F=\beta_F+cH_F$ has a positive intersection with any such $[D]$. By Nakai--Moishezon criterion for K3 surfaces, $\alpha_F$ is ample. If $c$ is large enough, we may ask $\alpha_{F'}=\beta_{F'}+cH_{F'}$ also ample. 
+Then the isomorphism $\phi\colon \Lambda_F\to \Lambda_{F'}$ is a Hodge isometry that identifies the two ample classes $\alpha_F$ and $\alpha_{F'}$. By the global Torelli theorem for K3 surfaces \cite{burns1975torelli}, there exists a unique isomorphism $\Phi\colon X_F\to X_{F'}$ induces $\phi$. 
+
+We finally aim to construct an isomorphism of $Z(F)$ to $Z(F')$.
+Notice that $\phi$ is compatible with the deck transformations $\iota_F$ and $\iota_{F'}$. By the faithfulness of the induced action of automorphisms of K3 surfaces on the middle cohomology \cite{looijenga1980torelli}, $\Phi$ is compatible with $\iota_F$ and $\iota_{F'}$.
+Hence $\Phi$ induces isomorphisms $\Fix(\iota_F)\cong \Fix(\iota_{F'})$ and $S_F\cong S_{F'}$. Furthermore, $\Phi$ induces isomorphism between linear systems of $H_F$ and $H_{F'}$. Therefore, $\Phi$ descends to a linear isomorphism $(\PP^2, Z(F))\cong (\PP^2, Z(F'))$. The injectivity of $\Prd_T\colon\calM_T\to \Gamma_T\bs \DD_T$ follows.
+\end{proof}
+
+
+\subsection{Image of the Period Map $\Prd_T$}
+\label{subsec: image of period map}
+Next we characterize the image of the period map $\Prd_T$. Many of the results in this section are essentially a reinterpretation of \cite[Theorem 1.16]{urabe1988combinations} and \cite[Theorem 3.4.1]{degtyarev2008deformations}. Our description focuses on the level of moduli spaces and arithmetic quotients.
+%The main result in this section is essentially observed by Urabe \cite[Theorem 1.16]{urabe1988combinations} and Degtyarev \cite[Theorem 3.4.1]{degtyarev2008deformations}.\footnote{\red{How to give credit to Urabe and Degtyarev properly?}} 
+%Here we give an alternative approach for these results.
+
+%This make it convenient for studying orbifold structures and compactifications of two sides.
+%We reformulate the proof for reader's convenience.
+
+Since we fix the base point $F_0$, we omit the subscript $F_0$ for $\Lambda_{F_0},H_{F_0},\Delta_{F_0},L_{F_0},P_{F_0},Q_{F_0}$ throughout this section.
+Let $\calH_T$ be the union of $r^{\perp}\subset \DD_T$ with $r$ running through all roots $r$ such that $r\perp H$ and $r\notin L$.
+
+%\red{Add a Proposition: $\Gamma_T\bs\calH_T$ has finitely many irreducible components.}
+%Let $\calH'_T$ be the hyperplane arrangement in $\DD_T$ given by union of hyperplanes with normal vectors $u$ such that $u^2=0$ and $u\cdot H_{F_0}=1$.
+
+\begin{thm}
+\label{thm: open}
+For any type $T$, the period map $\Prd_T\colon\calM_T\to\Gamma_T\bs\DD_T$ induces an isomorphism $\calM_T \cong \Gamma_T\bs (\DD_T-\calH_T)$.
+\end{thm}
+
+% There exists a polarization of K3 surface $X_{F_0}$, $\phi_0\colon H^2(X_{F_0},\ZZ)\to \Lambda$, mapping the base $\Delta_{F_0}$ of $L_{F_0}$ to $\Delta\subset \Lambda$.
+% Denote by $L$ the root lattice associated with $\Delta$, where $\Delta$ is also a base of $L$.
+% Let $H\coloneqq \phi_0(H_{F_0})$ and $P\coloneqq \phi_0(P_{F_0})$.
+% The isometry $\phi_0$ induces an embedding $\DD_T\hookrightarrow \DD(\Lambda)$.
+% We also denote the embedding by $\phi_0$ for simplicity.
+% We fix the isometry $\phi_0$ throughout the proof. 
+%The cohomology $\Lambda=H^2(X_{F_0},\ZZ)$ has signature $(3,19)$ and defines a $20$-dimensional period domain $\DD(\Lambda)$.
+The orthogonal complement $H^\perp$ of $H$ in $\Lambda$ has signature $(2,19)$ and defines a $19$-dimensional type IV domain $\DD(H^\perp)$.
+There is a natural inclusion $\DD_T \subset \DD(H^\perp)$.
+
+\begin{lem}
+\label{lem: no calH'_T}
+    For any $\omega\in \DD_T-\calH_T$, there does not exist $u\in \Lambda$ such that $u\cdot\omega=0$, $u^2=0$ and $u\cdot H=1$.
+\end{lem}
+\begin{proof}
+Suppose there exists an element $u$ satisfying the requirement.
+We observe that $(2u-H)^2=-2$ and $(2u-H)\cdot H=0$, thus $2u-H$ is a root in $\langle H,\omega \rangle^\perp_{\Lambda}$.
+    By the choice of $\omega$, we have $2u-H\in L$, then $u\in P \subset \Pic(X_{F_0})$.
+Hence $\Pic(X_{F_0})$ contains $u$ such that $u^2=0$ and $u\cdot H=1$.
+    By \cite[Proposition 1.7]{urabe1988combinations}, this contradicts the fact that a line bundle on $X_{F_0}$ representing $H$ defines a surjective morphism $X_{F_0}\to \PP^2$ of degree two.
+\end{proof}
+
+Denote by $\omega_0\coloneqq H^{2,0}(X_{F_0})$.
+Take any $\omega\in\DD_T-\calH_T$.
+By surjectivity of the period map for marked complex K3 surfaces, there exists a K3 surface $X_\omega$ with a marking $\phi_\omega\colon H^2(X_\omega,\ZZ)\to \Lambda$ such that $\phi_\omega(H^{2,0}(X_\omega))=\omega$.
+From now on, we fix $\omega$ throughout the proof.
+The following lemma is essentially proved by Urabe \cite[Theorem 1.16]{urabe1988combinations}:
+\begin{lem}
+\label{lem: X_omega determines Z(F)}
+    The K3 surface $X_\omega$ is the minimal resolution of the double cover of $\PP^2$ branched along a singular sextic curve $Z_\omega$.
+    The singular sets of $Z_\omega$ is determined by $\Delta$.
+\end{lem}
+\begin{proof}
+    By \cite[Chapter 8, \S 2, Corollary 2.9]{huybrechts2016lectures}, there exist rational curves $C_1,\cdots,C_n$ on $X_\omega$ such that 
+    \begin{equation*}
+        s_{[C_1]}\circ\cdots\circ s_{[C_n]}(\phi_\omega^{-1}H)
+    \end{equation*}
+    is a nef class with self-intersection number $2$, where $[C_i]$ is a root in $\Pic(X_\omega)$ and $s_{[C_i]}$ denotes the refleciton with respect to the root $[C_i]$.
+    Since $s_{[C_i]}$ acts trivially on $A_{\Pic(X_\omega)}$, it naturally extends to an isometry $\widetilde{s_{[C_i]}}$ of $H^2(X_\omega,\ZZ)$ that acts trivally on $\Pic(X_\omega)^\perp$. 
+    Denote by 
+    \begin{equation*}
+        \phi'_\omega\coloneqq \phi_\omega\circ \widetilde{s_{[C_n]}}\circ\cdots\circ \widetilde{s_{[C_1]}}.
+    \end{equation*}
+    The new marking $\phi'_\omega$ of $X_\omega$ satisfies that $\phi'^{-1}_\omega H$ is nef and $\phi'_\omega(H^{2,0}(X_\omega))=\omega$.
+    By \cite[Proposition 1.7]{urabe1988combinations} and Lemma \ref{lem: no calH'_T}, the complete linear system of $\phi'^{-1}_\omega H$ defines a surjective morphism $\pi_\omega\colon X_\omega\to \PP^2$ of degree $2$.
+
+    By the choice of $\omega$, the root lattice of $\{x\in H^\perp \big{|} x \perp \omega \}$ equals to $L$.  
+    (Note that $\omega$ not only determines the root lattice $L$ up to isomorphism, but also determines an embedding of $L$ into $H^\perp\subset\Lambda$.)
+    We first show that all rational curves contracted by $\pi_\omega$ form a base of $\phi'^{-1}_\omega L$.
+    Let $C$ be a connected curve in $X$ that is contracted by $\pi_\omega$.
+    This is equivalent to say that $C\cdot \phi'^{-1}_\omega H = 0$.
+    By Hodge index theorem, $C^2<0$, hence $C^2=-2$. This implies $[C]\in \phi'^{-1}_\omega L$.
+    Moreover, $C$ is a connected $\PP^1$-graph whose dual graph is a Dynkin diagram of certain ADE type.
+    Conversely, any rational curve in $X$ that defines a root in $L$ is contracted by $\pi_\omega$, since it is orthogonal to $\phi'^{-1}_\omega H$.
+    The cohomology classes of all these rational curves generate the root lattice $\phi'^{-1}_\omega L$.
+    Hence they form a base of $\phi'^{-1}_\omega L$.
+
+    This concludes that $\pi_\omega$ factor through a birational morphism $X_\omega \to \widehat{X}_\omega$ that contracts all rational curves orthogonal to $\phi'^{-1}_\omega H$, where these rational curves form the unique effective base of $\phi'^{-1}_\omega L$. Thus the base is exactly $\phi'^{-1}_\omega \Delta$.
+    The normal surface $\widehat{X}_\omega$ is a singular K3 surface with ADE singularities, where the singularities are the image of rational curves in $\phi'^{-1}_\omega \Delta$.
+    Since $\pi_\omega$ is surjective, the induced map $p_\omega\colon \widehat{X}_\omega \to \PP^2$ is also surjective.
+    %If not, then the image of $\pi$ has dimension lower than two.
+    %Note that a divisor in $|\phi^{-1}H|$ is mapped to a line in $\PP H^0(X,\phi^{-1}H)^\vee$, hence $\dim\mathrm{\Image}(\pi)=1$.
+    Hence $p_\omega$ is a branched double covering.
+    By \cite[III, \S 7, Theorem 7.2]{barth2004compact}, the branched locus of $p_\omega$ is a sextic curve $Z_\omega$ on $\PP^2$.
+    Therefore, the map $\pi_\omega$ is a double cover branched along a sextic curve composed of the contraction of $(-2)$-curves on $X_\omega$, and the singularities of the sextic curve $Z_\omega$ are the images of $(-2)$-curves in $\phi'^{-1}_\omega \Delta$.
+\end{proof}
+
+The following lemma is essentially proved by Degtyarev \cite[Theorem 3.4.1]{degtyarev2008deformations}. We provide an alternative proof for the reader's convenience.
+\begin{lem}
+\label{lem: Z_omega has type T}
+    The singular sextic curve $Z_\omega$ is equisingular deformation equivalent to $Z(F_0)$, namely, $Z_\omega\in \PP\calV_T$.
+\end{lem}
+\begin{proof}
+    We choose arbitrarily a path $\gamma_\omega$ in $\DD_T-\calH_T$ connecting $\omega$ and $\omega_0$.
+    For any $\omega'\in\gamma_\omega$, by the proof of Lemma \ref{lem: X_omega determines Z(F)}, there exists a marking $\phi_{\omega'}$ of $X_{\omega'}$ such that $\phi_{\omega'}^{-1} H$ is nef.
+    By \cite[Proposition 1.7]{urabe1988combinations} and \cite[Chapter 2, \S 3, Corollary 3.14]{huybrechts2016lectures}, any line bundle $\calO(C_{\omega'})$ representing the cohomology class $\phi_{\omega'}^{-1} H$ is base point free, where $C_{\omega'}$ is a nef divisor in $X_{\omega'}$.
+    By Bertini's theorem, a generic member in the complete linear system $|C_{\omega'}|$ is a smooth genus two curve.
+    We may assume that $C_{\omega'}$ is a smooth genus two curve.
+    Denote by $\calE_{\omega'}\coloneqq\{E_r \,|\, r\in \phi_{\omega'}^{-1} \Delta\}$ be the set of exceptional curves in $X_{\omega'}$ representing $\phi_{\omega'}^{-1} \Delta$.
+
+    The universal deformation of $X_{\omega'}$ in the moduli space of complex K3 surfaces induces a family of K3 surfaces over a contractible complex neighborhood $D$ of $\omega'$ in $\DD_T-\calH_T$, by the local Torelli theorem.
+    The marking $\phi_{\omega'}$ of $X_{\omega'}$ canonically induces markings for all fibers $H^2(X_\eta,\ZZ)\cong H^2(X_{\omega'},\ZZ)\cong\Lambda$, $\eta\in D$.
+    Since $\eta^\perp_\Lambda$ contains $H$ and $\Delta$, $\phi_{\omega'}^{-1} H$ and $\phi_{\omega'}^{-1} \Delta$ lifts to algebraic classes over $D$.
+    Due to \cite[Page 363]{nishinou2024deformation}, any curve on a K3 surface is semiregular.
+    By \cite[Theorem 7.1]{bloch1972semi-regularity} and \cite[Theorem 1.5(i)]{artin1968solutions}, there exists a complex neighborhood $D_{\omega'}\subset D$ of $\omega'$ in $\DD_T-\calH_T$ such that for any $\eta\in D_{\omega'}$, $C_{\omega'}$ and $\calE_{\omega'}$ deform to smooth algebraic curves $C_{\eta}$ and $\calE_{\eta}$ on $X_\eta$, where $[C_{\eta}]=\phi_\eta^{-1} H$.
+
+    Denote by $\calX$ the family of K3 surfaces over $D_{\omega'}$. 
+    For any $\eta\in D_{\omega'}$, the complete linear system of $\calO(C_\eta)$ defines a morphism $X_\eta\to \PP H^0(\calO(C_\eta))^\vee\cong\PP^2$ of degree two.
+    There exists a line bundle $\calL$ on $\calX$ such that $\calL_\eta=\calO(C_\eta)$ for any $\eta\in D_{\omega'}$.
+    Denote by $\lambda\colon \calL\to\calX$ the natural projection.
+    We have a relative projective morphism $\calX\to \PP R^0\lambda_*\calL^\vee$ over $D_{\omega'}$ defined by the relative linear system $|\calL|$.
+    Note that $\PP R^0\lambda_*\calL^\vee$ is a trivial family of $\PP^2$ over $D_{\omega'}$.
+    We can go through the process of Lemma \ref{lem: X_omega determines Z(F)} relatively over $D_{\omega'}$, then obtain a family of singular sextic curves $\calZ\subset \PP R^0\lambda_*\calL^\vee$ sharing the same type of singularities.
+    Then any two sextic curves in this family are equisingular deformaiton equivalent.
+
+    The path $\gamma_\omega$ is covered by finite complex neighborhoods in $\DD_T-\calH_T$, and this concludes that $(Z_\omega,\PP^2)$ is equisingular deformation equivalent to $(Z(F_0),\PP^2)$.
+\end{proof}
+Then the sextic curve $Z_\omega$ can be written as $Z(F)$ for some sextic polynomial $F\in\calV_T$.
+The associated K3 surface $X_\omega$ is the same as $X_F$, which we construct in \S \ref{subsection: ADE K3}.
+
+\begin{lem}
+\label{lem: Prd_T coincides with global period map}
+    The occult period map $\Prd_T$ maps $Z(F)$ to $[\omega]$ in $\Gamma_T\bs (\DD_T-\calH_T)$.
+\end{lem}
+\begin{proof}
+    We choose arbitrarily a path $\gamma_F$ connecting $Z(F)$ and $Z(F_0)$ in $\PP\calV_T$. 
+    The path $\gamma_F$ canonically induces a marking $\gamma_F^*\colon H^2(X_F,\ZZ)\to\Lambda$.
+    The induced cohomology class $H_F\coloneqq (\gamma_F^*)^{-1} H\in H^2(X_F,\ZZ)$ is independent of the choice of the path $\gamma_F$, which is equal to the pullback of the hyperplane class in $\PP^2$.
+    By the proof of Lemma \ref{lem: X_omega determines Z(F)}, there exists a marking $\phi_\omega$ of $X_\omega=X_F$ such that $\phi_\omega^{-1} H = H_F$ and $\phi_\omega^{-1} \Delta = \Delta_F$.
+    Consider $g\coloneqq \gamma_F^*\circ \phi_\omega^{-1}\in \Or(\Lambda)$, it preserves $H$ and $\Delta$. Thus the restriction $g|_Q$ belongs to $\widetilde{\Gamma}_T$.
+    %Hence the restriction of $\phi_0^{-1}\circ g\circ\phi_0$ to $Q_{F_0}$ belongs to $\Gamma_T$.
+    %Then $g_0\coloneqq \phi_0^{-1}\circ g\circ\phi_0$ lies in $\Or(\Lambda_{F_0},H_{F_0},\Delta_{F_0})$.
+    It is direct $g\cdot\omega = \gamma_F^* H^{2,0}(X_F)$. 
+    Both $\omega$ and $\gamma_F^* H^{2,0}(X_F)$ lies in $\DD_T$, hence $g$ sends $\DD_T$ to $\DD_T$. It follows that $g|_Q\in \Gamma_T$. We conclude that $\Prd_T$ maps $Z(F)$ to $[g\cdot\omega]=[\omega]$ in $\Gamma_T\bs (\DD_T-\calH_T)$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem \ref{thm: open}] 
+    For any $F\in\calV_T$, the natural degree two morphism $X_F\to\PP^2$ is induced by the complete linear system of $H_F$.
+    The set of curves contracted by $|H_F|$ is exactly $\Delta_F$.
+    Thus the root lattice of $\langle H_F,H^{2,0}(X_F) \rangle^\perp_{\Lambda_F}$ is generated by $\Delta_F$, hence equals $L_F$.
+    This implies that $\Prd(\calM_T)$ lies in $\Gamma_T\bs(\DD_T-\calH_T)$.
+    The opposite direction follows directly from Lemma \ref{lem: X_omega determines Z(F)}, Lemma \ref{lem: Z_omega has type T} and Lemma \ref{lem: Prd_T coincides with global period map}.
+\end{proof}
+
+% \begin{rmk}
+% The space $\Gamma_T\bs\DD_T$ have at most two connected components. The image $\Prd_T(\calM_T)$ always lies in one connected component of $\Gamma_T\bs\DD_T$.
+% \end{rmk}
+
+\begin{cor}
+\label{cor: generic Picard}
+For any generic $F\in\calV_T$ we have $\Pic(X_F)=P_F$.
+\end{cor}
+\begin{proof}
+By Theorem \ref{thm: open}, the period map $\Prd_T \colon\calM_T\to \Gamma_T\bs \DD_T$ is open. For a generic $F\in \calV_T$, the period of $F$ is a general point in $\DD_T$. Thus the Picard lattice of $X_F$ is $P_F$.
+\end{proof}
+
+\begin{rmk}
+    The hyperplane arrangement $\calH_T$ usually has infinite irreducible components, but the quotient $\Gamma_T\bs\calH_T$ is, in fact, a divisor of $\Gamma_T\bs\DD_T$.
+    This can be concluded from \cite{baily1966compactification}, \cite{borel1972metric} and Theorem \ref{thm: open}.
+\end{rmk}
+
+\begin{rmk}
+Many moduli spaces of sextic curves with specified singularities and group actions are closely related to Deligne--Mostow theory \cite{deligne1986monodromy}. For example, Dolgachev, van Geemen and Kond\=o \cite{dolgachev2005complex} studied moduli space of pairs consisting of a smooth cubic surface and a line on it. Such pairs are naturally related to pairs consisting of a smooth quintic curve and a line that admits a $\mu_3$-symmetry. The moduli space corresponds to
+the case $({1\over 6}, {1\over 6}, {1\over 3}, {1\over 3}, {1\over 3}, {1\over 3}, {1\over 3})$ in \cite{mostow1988discontinuous}. In general, the cases of nodal sextic curves with symmetries have been studied in \cite[\S 5]{yu2023moduli}. In \cite{zheng2024complex} the last two authors studied irreducible sextic curves with a $D_4$-singularity and $\mu_3$-symmetry and the moduli is related to case $({1\over 6}, {1\over 6}, {1\over 6}, {1\over 6}, {1\over 6}, {1\over 6}, {1\over 3}, {1\over 3}, {1\over 3})$ in \cite{mostow1988discontinuous}. 
+\end{rmk}
+%The Wiman--Edge pencil is studied by \cite{dolgachev2018wiman} and \cite{farb2020wiman}.
+%It is a special pencil of genus $6$ plane sextic curves, having $4$ nodal points plus $20$ simple points as base locus, and such that for the general curve the automorphism group is the alternating group $\mathfrak{A}_5$.
+
+    %\cite{deligne1986monodromy} and Thurston's list \cite{thurston1998shapes}.
+    %build a complex ball uniformization of the moduli space of a certian type of irreducible sextic curves with a $\mu_3$-symmetry, which also appears in Deligne--Mostow's and Thurston's lists.
+    %Each of them is irreducible with an ordinary triple point and has a cyclic action of order three.
+
+
+
+
+
+
+
+\section{GIT Compactifications and Arithmetic Compactifications}
+\label{section: compactification}
+%(\textcolor{red}{may be very hard})
+
+\subsection{K3 Surfaces of Degree $2$}
+\label{subsection: Shah, Looijenga}
+We first review the classical results of moduli space of sextic curves via Hodge theory and compactifications. 
+See \cite{shah1980complete} and Looijenga.
+
+Let $V$ be a $3$-dimensional complex vector space.
+A (plane) sextic curve is the zero locus of an element of $\Sym^6 V^\vee$ in $\PP V$.
+By definition, $\PP\Sym^6 V^\vee$ is the space of sextic curves. 
+Let $\PP(\Sym^6 V^\vee)^{\mathrm{sm}}$ be the subset of $\PP\Sym^6 V^\vee$ consisting of smooth sextic curves.
+We define $\calM$ as the GIT quotient $\SL(V)\dbs\PP(\Sym^6 V^\vee)^{\mathrm{sm}}$.
+Denote by $\overline{\calM}$ the GIT compactification of $\calM$, and $\calM^{\mathrm{ADE}}\subset \overline{\calM}$ the subspace consisting of sextic curves with at worst simple singularities.
+%For a $Z\in \PP(\Sym^6 V^\vee)^{\mathrm{ADE}}$, the double cover of $\PP V$ branched along $Z$ is a (possibly singular) K3 surface with at worst ADE singularities.
+
+%We now focus on the arithmetic quotient side.
+We briefly recall the definition of period domain and arithmetic group of the moduli space of polarized K3 surfaces of degree $2d$.
+Let $\Lambda\coloneqq U^3\oplus E_8^2$ be the K3 lattice.
+Let $l\coloneqq e_1+df_1$, where $e_1,f_1$ is the standard basis of the first copy of $U$, and $l^2=2d$.
+Denote by $\Lambda_d$ for $l^{\perp}$ in $\Lambda_{K3}$.
+The subset of $\PP(\Lambda_{d,\CC})$ defined by $z\cdot z=0$ and $z\cdot\bar{z}>0$ has two connected components that are interchanged by complex conjugation. Denote by $\DD_d$ and $\overline{\DD}_d$ the two components.
+% Let 
+% \begin{equation*}
+%     \DD_d \sqcup \overline{\DD}_d \subset \PP(\Lambda_{d,\CC}) \subset \PP(\Lambda_{K3,\CC})
+% \end{equation*}
+% be the type IV domain associated with $\Lambda_d$, which is the period domain of K3 surfaces of degree $2d$.
+% The two connected components $\DD_d$ and $\overline{\DD}_d$ can be interchanged by complex conjugation.
+Define a subgroup of $\Or(\Lambda)$
+\begin{equation*}
+    \widetilde\Gamma_d\coloneqq \{ g|_{\Lambda_d} \,\big|\, g\in \Or(\Lambda),\, g(e_1+df_1)=e_1+df_1 \}.
+\end{equation*}
+Equivalently, $\widetilde\Gamma_d$ is isomorphic to the subgroup of $\Or(\Lambda_d)$ which consists of elements that act trivially on $A_{\Lambda_d}$.
+Moreover, $\widetilde\Gamma_d$ is an arithmetic subgroup of $\Or(\Lambda_d)$.
+Let $\Gamma_d$ denote the index two subgroup of $\widetilde\Gamma_d$ that preserves $\DD_d$.
+By Baily-Borel, the arithmetic quotient $\Gamma_d\bs\DD_d$ is a normal quasi-projective variety.
+
+%Note that the period domain and arithmetic group can also be constructed in the same way by choosing a base point $X$ in the moduli space.
+%In the case of double plane sextics, the associated K3 surfaces are of degree two (i.e. $d=1$).
+
+For a $Z\in \PP(\Sym^6 V^\vee)^{\mathrm{sm}}$, the double cover of $\PP V$ branched along $Z$ is a smooth K3 surface $X$.
+Denote by $H\in H^2(X,\ZZ)$ the pullback of the hyperplane class of $\PP V$, which is a degree $2$ polarization of $X$.
+Then the period map for \iffalse the Hilbert scheme of \fi polarized K3 surfaces of degree $2$ (for example, see \cite[Chapter 6, \S 4.1]{huybrechts2016lectures}) induces a period map $\Prd\colon \PP(\Sym^6 V^\vee)^{\mathrm{sm}}\to \Gamma_1\bs\DD_1$.
+The period map $\Prd$ is $\SL(V)$-equivariant, hence descends to 
+\begin{equation*}
+    \Prd\colon \calM\to \Gamma_1\bs\DD_1.
+\end{equation*}
+
+We have two $\Gamma_1$-invariant hyperplane arrangements $\calH_\Delta$ and $\calH_\infty$ in $\DD_1$, which correspond to two $\Gamma_1$-orbits of roots in $\Lambda_1$.
+The roots defining $\calH_\Delta$ (respectively, $\calH_\infty$) has divisibility $1$ (respectively, $2$).
+We have the Looijenga compactification of $\Gamma_1\bs(\DD_1-\calH_\infty)$, denoted by $\overline{\Gamma_1\bs\DD_1}^{\calH_\infty}$, see \cite{looijenga2003compactificationsII}.
+From \cite{shah1980complete} and \cite{looijenga2003compactificationsII}, we have
+\begin{thm}[Shah, Looijenga]
+\label{thm: Shah--Looijenga}
+    The period map $\Prd$ is an algebraic open embedding whose image is $\Gamma_1\bs(\DD_1-\calH_\Delta-\calH_\infty)$.
+    Moreover, $\Prd$ extends to an isomorphism $\calM^{\mathrm{ADE}}\cong\Gamma_1\bs(\DD_1-\calH_\infty)$, and further to $\overline{\calM}\cong\overline{\Gamma_1\bs\DD_1}^{\calH_\infty}$.
+\end{thm}
+
+
+\subsection{Identification of GIT Compactification and Looijenga Compactification}
+\label{subsec: identification of compactifications}
+
+In this section, we describe the relationship between GIT compactifications and Looijenga compactifications.
+We fix a singular type $T$.
+
+% \subsubsection{$\calM_T$ and $\overline{\calM}$}
+% We first describe the relation between $\calM_T$ and $\overline{\calM}$.
+
+% By definition, we have $\calM_T\subset\overline{\calM}$.
+% Recall that $\overline{\calM}_T$ is the closure of $\calM_T$ in $\overline{\calM}$, see \S \ref{section: K3}.
+% Define $\widetilde{\PP\calV}_T^{\mathrm{ss}}$ be the normalization of $\PP\calV_T^{\mathrm{ss}}$.
+% Then the corresponding GIT quotient $\overline{\calM}_T\coloneqq \SL(3)\dbs\widetilde{\PP\calV}_T^{\mathrm{ss}}$ is the normalization of $\calM_T^{\mathrm{ss}}$.
+%In conclusion, we have
+% \begin{prop}
+% \label{prop: calM_T to calM^bar}
+%     The natural inclusion $\calM_T\subset\overline{\calM}$ induces a generically injective finite morphism $j_T\colon\overline{\calM}_T\to \overline{\calM}$, which is the normalization onto its image.
+% \end{prop}
+
+\subsubsection{$\Gamma_T\bs\DD_T$ and $\Gamma_1\bs\DD_1$}
+We next describe the relation between $\Gamma_T\bs\DD_T$ and $\Gamma_1\bs\DD_1$.
+
+Let $X$ be a K3 surface associated with a sextic curve of type $T$. 
+There is the tuple $(H^2(X,\ZZ),H,\Delta)$ associated with $X$.
+Denote by $\Lambda_X\coloneqq H^2(X,\ZZ)$.
+We fix a marking $\phi\colon \Lambda_X\to\Lambda$ such that $\phi(H)=l\coloneqq e_1+f_1$.
+Then the type IV domain $\DD_H$ associated with $H^\perp\subset \Lambda_X$ is identified with $\DD_1$ by $\phi$.
+%The associated period domain $\DD_T$ and arithmetic group $\Gamma_T$ are defined in \S \ref{subsection: define period map}.
+
+%We give an alternative description of the period domain $\DD_T$.
+Let $W$ be the Weyl group of the root lattice $L=\oplus_{i=1}^k R_i$. Then $W$ acts trivially on $A_L$.
+Thus the action of $W$ on $L$ extends to $\Lambda_X$ such that the action on $L^\perp$ is identity.
+It defines a natural inclusion $W\subset\Or(\Lambda_X,H)$.
+The $W$-action on $\Lambda_X$ induces an action on $\Lambda$ by the conjugation of $\phi$, which is by definition $\phi$-equivariant.
+The group $\Or(\Lambda_X,H)$ is also identified with $\widetilde\Gamma_1$ via $\Or(\Lambda_X,H) = \phi^{-1}\widetilde\Gamma_1\phi$.
+%Moreover, $W$ is naturally isomorphic to a finite subgroup of $\Gamma_1$.
+
+%If we choose $X$ to be the base point in the moduli space, then the period domain of degree two K3 surfaces can be the type IV domain associated with $H^{\perp} \subset H^2(X,\ZZ)$. 
+
+% Since $W$ preserves $H$, it preserves $H^{\perp}$.
+The period domain $\DD_T$ is defined to be the type IV domain associated with $P^\perp$, where $P^\perp$ is the $W$-invariant part of $H^{\perp}$.
+Namely, $\DD_T$ is the type IV domain associated with the character subspace of $H^\perp\otimes\CC$ with respect to the trivial character of $W$.
+
+Define $\widetilde\Gamma_{P^\perp}\coloneqq\{ g\in\Or(\Lambda_X,H) \,\big|\, g(P^\perp)=P^\perp \}$ and $\Gamma_{P^\perp}\coloneqq\{ g\in\Or(\Lambda_X,H) \,\big|\, g(\DD_T)=\DD_T \}$.
+Note that $[\widetilde{\Gamma}_T:\Gamma_T]\le 2$.
+%For any subgroup $G$ of an orthogonal group $\Or(V)$, we denote by $PG$ the image of $G$ under the natural projection $\Or(V)\to\PO(V)$, where $\PO(V)=\Or(V)/\{\pm I\}$ denotes the associated projective orthogonal group.
+Let $\widetilde{W}\subset\Or(\Lambda_X,H)$ be the group generated by $W$ and $-\Id$.
+\begin{lem}
+\label{lem: Stab(x) = W}
+    The group $\widetilde{W}$ is the stabilizer of a generic point of $\DD_T$ in $\Or(\Lambda_X,H)$.
+\end{lem}
+\begin{proof}
+    Let $x\in\DD_T$ be a point such that $x^\perp\cap\Lambda_X=P$.
+    The stabilizer of $x$ in $\Or(\Lambda_X,H)$, denoted by $\Stab(x)$, is contained in $\Gamma_{P^\perp}$.
+    Consider the map $\Gamma_{P^\perp}\to\Or(P^\perp)$ defined by restriction.
+    Denote by $K$ its kernel, and let $\widetilde{K}\subset\Gamma_{P^\perp}$ be the group generated by $K$ and $-\Id$.
+    We claim that $\Stab(x)=\widetilde{K}$. 
+    It is clear that $\widetilde{K}\subset\Stab(x)$.
+    For any $g\in\Or(\Lambda_X,H)$ such that $g v_x=\lambda v_x$ for some $\lambda\in\CC^*$, where $v_x\in P^\perp\otimes\CC$ satisfies $[v_x]=x\in\DD_T$.
+    For any $v\in P^\perp$, we have
+    \begin{equation*}
+        v\cdot v_x = g v\cdot g v_x = g v\cdot \lambda v_x = \lambda g v\cdot v_x,
+    \end{equation*}
+    then by $v_x^\perp\cap\Lambda_X=P$, $g v=\lambda^{-1}v$.
+    Since $\lambda=\pm1$, we have $\Stab(x)=\widetilde{K}$.
+    
+    The Weyl group $W$ extends on $P^\perp$ by trivial action, hence $W\subset K$.
+    For any $g\in K$, $g$ acts on $A_P$ trivially.
+    Thus $g$ acts on $A_L$ trivially.
+    From \cite[PLATE I--X]{bourbaki2002lie4-6}, $\Aut(R)/W(R)$ acts faithfully on $A_R$ for any irreducible finitely generated positive definite root lattice $R$.
+    Hence $g|_L\in\Or(L)$ lies in $W$.
+    Thus $K\subset W$. It follows that $\widetilde{K}=\widetilde{W}$.
+\end{proof}
+
+Let $\widetilde\Gamma_W$ (respectively, $\Gamma_W$) be the normalizer of $W$ in $\Or(\Lambda_X,H)$ (respectively, $\phi^{-1}\Gamma_1\phi$). 
+Notice that $\widetilde\Gamma_W$ (respectively, $\Gamma_W$) is also the normalizer of $\widetilde{W}$ in $\Or(\Lambda_X,H)$ (respectively, $\phi^{-1}\Gamma_1\phi$). 
+% namely
+% \begin{equation*}
+%     \Gamma_W\coloneqq \{ g|_{H^\perp} \,\big|\, g\in \Or(\Lambda_X),\,g(H)=H,\,g^{-1}Wg=W \}.
+% \end{equation*}
+Note that $[\widetilde{\Gamma}_W:\Gamma_W]\le 2$.
+By definition, $\widetilde\Gamma_W$ preserves the $W$-invariant part of $\Lambda_X$, which is $P^\perp$.
+
+\begin{lem}
+\label{lem: Gamma_P^perp = Gamma_W}
+    We have $\Gamma_{P^\perp}=\Gamma_W$.
+\end{lem}
+\begin{proof}
+    We first show that $\widetilde\Gamma_{P^\perp}=\widetilde\Gamma_W$.
+    It is clear that $\widetilde\Gamma_{P^\perp} \supset \widetilde\Gamma_W$.
+    For any $g\in\Or(\Lambda_X,H)$ such that $g(P^\perp)=P^\perp$, we have $g(L)=L$, namely $g|_L\in\Or(L)$.
+    Since $W$ is a normal subgroup of $\Or(L)$, we have $g^{-1}Wg=W$.
+    Thus $\widetilde\Gamma_{P^\perp} \subset \widetilde\Gamma_W$.
+    For any $g\in\widetilde\Gamma_W$, $\phi g\phi^{-1}$ preserves $\DD_1$ is equivalent to that $g$ preserves $\DD_T$.
+    It follows $\Gamma_{P^\perp}=\Gamma_W$.
+\end{proof}
+
+\begin{rmk}
+    Due to \cite[Lemma A.4]{yu2020fourfolds}, Lemma \ref{lem: Gamma_P^perp = Gamma_W} is a corollary of Lemma \ref{lem: Stab(x) = W}.
+\end{rmk}
+
+%We are interested in the induced $\Gamma_W$-action on $P^\perp$.
+
+% Consider the image of the natural restriction map $\Gamma_W \to \Or(P^\perp)$, namely
+% \begin{equation*}
+%     \Gamma_W|_{P^\perp} = \{ g|_{P^\perp} \,\big|\, g\in \Or(\Lambda_X,H),\,g^{-1}Wg=W \}.
+% \end{equation*}
+
+Recall that $\widetilde{\Gamma}_T$ denotes the image of $\Or(\Lambda_X,\Delta,H) \to \Or(P^\perp)$, and $\Gamma_T$ is the subgroup of $\widetilde{\Gamma}_T$ that preserves $\DD_T$ (thus $[\widetilde{\Gamma}_T:\Gamma_T]\le 2$).
+The following result gives an alternative description of the arithmetic group $\Gamma_T$.
+\begin{lem}
+\label{lem: Gamma_W|_P^perp = Gamma_T}
+    The arithmetic group $\Gamma_W|_{P^\perp}$ coincides with $\Gamma_T$.
+\end{lem}
+\begin{proof}
+    We only need to verify $\widetilde{\Gamma}_W|_{P^\perp}=\widetilde{\Gamma}_T$, namely
+    \begin{equation*}
+        \Image( \{ g\in \Or(\Lambda_X,H) \big| g^{-1}Wg=W \} \to \Or(P^\perp) ) = \Image ( \Or(\Lambda_X,\Delta,H) \to \Or(P^\perp) ).
+    \end{equation*}
+    We first verify $\widetilde\Gamma_W|_{P^\perp} \supset \widetilde\Gamma_T$.
+    An element in $\widetilde\Gamma_T$ can be expressed as $g|_{P^\perp}$ for some $g\in \Or(\Lambda_X,\Delta,H)$.
+    The Weyl group $W$ is generated by the set of reflections $\{ s_\alpha \,|\, \alpha\in \Delta \}$.
+    For each $\alpha\in \Delta$, we have $g^{-1} s_\alpha g = s_{g^{-1}\alpha}$.
+    By definition of $g$, $g^{-1}\alpha$ is also an element in $\Delta$, hence $g^{-1} s_\alpha g \in W$.
+    Thus we have $\widetilde\Gamma_W|_{P^\perp} \supset \widetilde\Gamma_T$.
+
+    We next verify $\widetilde\Gamma_W|_{P^\perp} \subset \widetilde\Gamma_T$.
+    An element $g$ in $\Or(\Lambda_X,H)$ satisfying $g^{-1}Wg=W$ preserves $P$ and $P^\perp$.
+    Since $g$ preserves $H$, $g$ also preserves $L$, namely, $g|_{L}\in \Or(L)$.
+    Then $g(\Delta)$ is also a base of $L$.
+    The Weyl group $W$ acts on the set of bases of $L$ transitively.
+    Hence there exists a $\sigma\in W$ such that $\sigma (g(\Delta)) = \Delta$, i.e. $(\sigma g) (\Delta) = \Delta$.
+    By definition, $\sigma g\in \Or(\Lambda_X,\Delta,H)$. 
+    Since $W$ acts trivially on $P^\perp$, we have $g|_{P^\perp} = (\sigma g)|_{P^\perp}$.
+    This shows $\widetilde\Gamma_W|_{P^\perp} \subset \widetilde\Gamma_T$.
+\end{proof}
+
+By \cite[Proposition A.5]{yu2020fourfolds}, we have:
+\begin{prop}
+    The natural map $\pi_T\colon \Gamma_T\bs \DD_T \to \Gamma_1\bs \DD_1$ is a normalization of its image.
+\end{prop}
+
+Define $\calH_T^*\coloneqq\calH_\infty\cap\DD_T$.
+We will show that $\calH_T^*$ is a $\Gamma_T$-invariant hyperplane arrangement in $\DD_T$, then describe the Looijenga compactification of $\Gamma_T\bs(\DD_T-\calH_T^*)$.
+\begin{prop}
+\label{prop: calH_* subset calH_T}
+    We have $\calH_T^*\subset\calH_T$.
+    In particular, $\DD_T\not\subset\calH_\infty$.
+\end{prop}
+\begin{lem}
+\label{lem: div(root in L)=1}
+    Any root in $L$ has divisibility $1$ in $H^\perp$.
+\end{lem}
+\begin{proof}
+    Assume that there exists a root $r\in L$ with divisibility $2$ in $H^\perp$.
+    We will show that $u\coloneqq {1\over2}(H+r)\in P$.
+    Since $u^2=0$, $u\cdot H=1$, this contradicts the fact that $(\Lambda_X,H,\Delta)$ is an abstract singular type.
+
+    We have $H^\perp\cong A_1\oplus U^{\oplus 2}\oplus E_8^{\oplus 3}$ via $\phi$.
+    Let $x\coloneqq\phi^{-1}(e_1-f_1)\in\Lambda_X$, then ${1\over2}(H+x)=\phi^{-1}(e_1)\in\Lambda_X$.
+    The set of roots in $A_1\oplus U^{\oplus 2}\oplus E_8^{\oplus 3}$ forms two $\Or(H^\perp)$-orbits, which exactly corresponds to divisibility $1$ and $2$.
+    Since the divisibility of $x$ is $2$, there exists $g\in\Or(H^\perp)$ such that $g x=r$.
+    Since $A_{H^\perp}\cong \ZZ/2$, $g$ acts trivially on $A_{H^\perp}$.
+    Thus $g$ extends to an element in $\Or(\Lambda_X,H)$, still denoted by $g$.
+    Hence $u=g({1\over2}(H+x))$ lies in $\Lambda_X$, then in $P$.
+\end{proof}
+\begin{proof}[Proof of Proposition \ref{prop: calH_* subset calH_T}]
+    For any $\omega\in\calH_T^*$, by the definition of $\calH_\infty$, there exists a root with divisibility $2$ in $\langle \omega,H \rangle^\perp$.
+    By Lemma \ref{lem: div(root in L)=1}, the root does not lie in $L$.
+    Hence $\calH_T^*\subset\calH_T$.
+\end{proof}
+
+By Lemma \ref{lem: Gamma_W|_P^perp = Gamma_T}, $\pi_T$ have a natural restriction $\pi_T\colon\Gamma_T\bs(\DD_T-\calH_T^*)\to\Gamma_1\bs(\DD_1-\calH_\infty)$.
+By \cite[Theorem A.13]{yu2020fourfolds} and Lemma \ref{lem: Stab(x) = W}, we have 
+\begin{prop}
+\label{prop: Loo comp: type T to total}
+    There is a natural extension of $\pi_T$ to Looijenga compactifications
+    \begin{equation*}
+        \pi_T\colon \overline{\Gamma_T\bs\DD_T}^{\calH_T^*}\to \overline{\Gamma_1\bs\DD_1}^{\calH_\infty},
+    \end{equation*}
+    which is the normalization of its image.
+\end{prop}
+
+\subsubsection{Identification between Compactifications}
+\begin{prop}
+\label{prop: comm diag, open to compact}
+    The map $\pi_T\colon\Gamma_T\bs(\DD_T-\calH_T)\to\Gamma_1\bs(\DD_1-\calH_\infty)$ is injective.
+    We have the following commutative diagram:
+    \begin{equation*}
+    \begin{tikzcd}
+      \calM_T  \arrow[r,"\Prd_T","\cong"'] \arrow[d,hook,"j_T"] & \Gamma_T\bs(\DD_T-\calH_T) \arrow[d,hook,"\pi_T"] \\
+      \overline{\calM} \arrow[r,"\Prd","\cong"'] & \overline{\Gamma_1\bs\DD_1}^{\calH_\infty},
+    \end{tikzcd}
+% \quad
+% \begin{tikzcd}
+%   \calM_T  \arrow[r, "\Prd_T"] \arrow[d] & \Gamma_T\bs(\DD_T-\calH_T) \arrow[d] \\
+%   \overline{\calM}_T \arrow[r, "\Prd_T"] & \overline{\Gamma_T\bs\DD_T}^{\calH_T}.
+% \end{tikzcd}
+    \end{equation*}
+    where the horizontal maps are both isomorphism and the vertical maps are both injective.
+\end{prop}
+\begin{proof}
+    By Lemma \ref{lem: Gamma_P^perp = Gamma_W} and Lemma \ref{lem: Gamma_W|_P^perp = Gamma_T}, we have $\Gamma_T = \{ g|_{P^\perp} \,|\, g\in\Gamma_1, g(P^\perp)=P^\perp \}$.
+    Namely, for any $\omega,\omega'\in\DD_T\subset\DD_1$, if there exists a $g\in\Gamma_1$ such that $g\cdot\omega=\omega'$, then $g|_{P^\perp}\in\Gamma_T$.
+    Hence $\pi_T\colon\Gamma_T\bs(\DD_T-\calH_T)\to\Gamma_1\bs(\DD_1-\calH_\infty)$ is injective.
+    
+    The period map $\Prd\colon\calM^{\mathrm{ADE}}\xrightarrow[]{\cong}\Gamma_1\bs(\DD_1-\calH_\infty)$ is compatible with the period map of marked complex K3 surfaces.
+    By Lemma \ref{lem: Prd_T coincides with global period map}, $\Prd_T\colon\calM_T\xrightarrow[]{\cong}\Gamma_T\bs(\DD_T-\calH_T)$ is also compatible with the period map of marked complex K3 surfaces.
+    By Theorem \ref{thm: open}, Theorem \ref{thm: Shah--Looijenga}, together with $j_T\colon \calM_T\hookrightarrow\calM^{\mathrm{ADE}}\hookrightarrow\overline{\calM}$ and $\pi_T\colon \Gamma_T\bs(\DD_T-\calH_T)\hookrightarrow\Gamma_1\bs(\DD_1-\calH_\infty)\hookrightarrow\overline{\Gamma_1\bs\DD_1}^{\calH_\infty}$, we have the claimed commutative diagram.
+\end{proof}
+
+In the end of this section, we establish an identification between the GIT compactification $\widehat{\calM}_T$ of $\calM_T$ and the corresponding Looijenga comapactification.
+For the construction and properties of $\widehat{\calM}_T$, see \S \ref{subsection: ADE sextic}.
+\begin{thm}
+\label{thm: comm diag, compact to compact}
+    The period map $\Prd_T\colon\calM_T\xrightarrow[]{\cong}\Gamma_T\bs(\DD_T-\calH_T)$ extends to an isomorphism between the GIT compactification and the Looijenga compactification $\Prd_T\colon \widehat{\calM}_T\to\overline{\Gamma_T\bs\DD_T}^{\calH_T^*}$.
+    We have the following commutative diagram:
+    \begin{equation*}
+    \begin{tikzcd}
+      \widehat{\calM}_T \arrow[r,"\Prd_T","\cong"'] \arrow[d,"j_T"] & \overline{\Gamma_T\bs\DD_T}^{\calH_T^*} \arrow[d,"\pi_T"] \\
+      \overline{\calM} \arrow[r,"\Prd","\cong"'] & \overline{\Gamma_1\bs\DD_1}^{\calH_\infty},
+    \end{tikzcd}
+    \end{equation*}
+    where the two vertical maps are normalizatons of their images.
+\end{thm}
+\begin{proof}
+    By Proposition \ref{prop: comm diag, open to compact}, $j_T(\calM_T)$ and $\pi_T(\Gamma_T\bs(\DD_T-\calH_T))$ are isomorphic via $\Prd$.
+    Then their (Zariski) closures in $\overline{\calM}$ and $\overline{\Gamma_1\bs\DD_1}^{\calH_\infty}$ are isomorphic via $\Prd$.
+    Thus the normalizations of the two closures, namely $\widehat{\calM}_T$ and $\overline{\Gamma_T\bs\DD_T}^{\calH_T^*}$, are isomorphic via a unique extension of $\Prd_T\colon\calM_T\xrightarrow[]{\cong}\Gamma_T\bs(\DD_T-\calH_T)$, which is still denoted by $\Prd_T$.
+    
+    By Proposition \ref{prop: M_T M^bar normalization} and Proposition \ref{prop: Loo comp: type T to total}, $j_T$ and $\pi_T$ extend to the compactifications $\widehat{\calM}_T$ and $\overline{\Gamma_T\bs\DD_T}^{\calH_T}$.
+    By Proposition \ref{prop: comm diag, open to compact}, the compactified diagram is also commutative.
+\end{proof}
+ 
+
+
+
+
+\section{More Explicit Characterization of Lattices}
+\label{section: explicit description of lattices}
+In this section, we consider a plane curve of even degree.
+For a singular type $T$, let $F$ be an element in $\calV_T$. 
+%(a homogeneous polynomial of three variables and has even degree).
+We omit the index $F$ of all relevant symbols in this section for simplicity. 
+Our main goal is to give an explicit description of the lattice $P=P_F$.
+
+\subsection{A Topological Lemma}
+We begin with a general lemma for branched double covers of smooth real $4$-manifolds.
+Let $p\colon X\to S$ be a double cover with branched locus given by the disjoint union of smooth submanifolds $C_1,\cdots,C_l \subset S$ of real codimension two.
+%Then $X$ and $S$ are smooth.
+Denote by $\iota$ the deck transformation of $p$. 
+Let $H^2(X,\ZZ)^\iota$ be the fixed sublattice of the induced action of $\iota$ on $H^2(X,\ZZ)$.
+Assume that both $H_1(X,\ZZ)$ and $H_1(S,\ZZ)$ are torsion free.
+In particular, any simply connected closed $4$-manifold satisfies the condition.
+
+\begin{lem}
+\label{lemma: double cover manifold}
+    The double cover $p$ induces a finite-index extension $H^2(S,\ZZ)(2)\hookrightarrow H^2(X,\ZZ)^\iota$ such that
+    \begin{equation*}
+        \frac{H^2(X,\ZZ)^\iota}{H^2(S,\ZZ)(2)}\cong (\ZZ/2)^{l-1}.
+    \end{equation*}
+\end{lem}
+\begin{proof}
+This lemma is a slight generalization of \cite[Prop $3.4$]{yu2023moduli} and the proof is similar. We provide the proof here for completeness.
+
+The universal coefficient theorem implies that the torsion part of $H^k(S,\ZZ)$ is isomorphic to the torsion part of $H_{k-1}(S,\ZZ)$. Thus $H^2(S,\ZZ)$ is torsion free. So does $H^2(X,\ZZ)$.
+Let $M$ be the lattice generated by $H^2(S,\ZZ)(2)$ and $[\pi^{-1}C_1],\cdots,[\pi^{-1}C_l]$.
+    By \cite[Lemma $3.3$]{yu2023moduli}, we have $M\subset H^2(X,\ZZ)^\iota$ with the same rank, denoted by $r$.
+    Note that the rank of $H^2(S,\ZZ)$ also equals $r$.
+    We have $A_{H^2(S,\ZZ)(2)}\cong (\ZZ/2)^{r}$ because $H^2(S,\ZZ)$ is unimodular.
+    By the consecutive inclusions $H^2(S,\ZZ)(2)\subset M\subset H^2(X,\ZZ)^\iota\subset (H^2(S,\ZZ)(2))^{\vee}$, the quotients $H^2(X,\ZZ)^\iota/H^2(S,\ZZ)(2)$ and $M/H^2(S,\ZZ)(2)$ are isomorphic to certain powers of $\ZZ/2$.
+
+    By Poincar\'e duality, $H_1(S,\ZZ)$ being torsion free implies that $H^3(S,\ZZ)$ is as well. 
+    By the universal coefficient theorem, $H^2(S,\ZZ/2)$ is isomorphic to the direct sum of $H^2(S,\ZZ)\otimes\ZZ/2$ and the $2$-torsion part of $H^3(S,\ZZ)$. 
+    The same results also hold for $X$.
+    Tensoring the short exact sequence 
+    \begin{equation*}
+        0\to H^2(S,\ZZ)\to H^2(X,\ZZ)\to H^2(X,\ZZ)/H^2(S,\ZZ)(2)\to 0
+    \end{equation*}
+    with $\ZZ/2$, we obtain a long exact sequence 
+    \begin{align*}
+        0 & \to \Tor(H^2(X,\ZZ)/H^2(S,\ZZ)(2),\ZZ/2)\to H^2(S,\ZZ/2)\to H^2(X,\ZZ/2) \\
+        & \to (H^2(X,\ZZ)/H^2(S,\ZZ)(2))\otimes \ZZ/2\to 0.
+    \end{align*}
+    The $\ZZ/2$-rank of the kernel of $H^2(S,\ZZ/2)\to H^2(X,\ZZ/2)$ equals to the $\ZZ/2$-rank of the $2$-torsion part (in this case also the whole torsion part) $(H^2(X,\ZZ)/H^2(S,\ZZ)(2))_{tor}$ of \\$H^2(X,\ZZ)/H^2(S,\ZZ)(2)$.
+    By \cite[Theorem 1]{lee1995homology}, we have the exact sequence 
+    \begin{equation*}
+        0\to H^1(S,\bigcup_{i=1}^{l}C_l,\ZZ/2)\to H^2(S,\ZZ/2)\to H^2(X,\ZZ/2).
+    \end{equation*}
+    There is a long exact sequence for the relative cohomology groups
+    \begin{equation*}
+        0\to H^0(S,\ZZ/2)\to H^0(\bigcup_{i=1}^{l}C_i,\ZZ/2)\to H^1(S,\bigcup_{i=1}^l C_i,\ZZ/2)\to 0.
+    \end{equation*}
+    It follows that the $\ZZ/2$-rank of $H^1(S,\bigcup_{i=1}^l C_i,\ZZ/2)$ is $l-1$.
+    From the above exact sequences we conclude that the $\ZZ/2$-rank of $(H^2(X,\ZZ)/H^2(S,\ZZ)(2))_{tor}$ is $l-1$.
+    Since $H^2(X,\ZZ)^{\iota}$ is the primitive hull of $H^2(S,\ZZ)$ in $H^2(X,\ZZ)$, we have $H^2(X,\ZZ)^{\iota}/H^2(S,\ZZ)(2)\cong (\ZZ/2)^{l-1}$.
+\end{proof}
+
+% \begin{ques}
+% Whether $[C_1],\cdots,[C_{l-1}]$ are $\ZZ/2$-independent?\footnote{Think about it?}
+% \end{ques}
+
+\subsection{Involution of Root Lattice}
+Let $Z=Z(F)$ be a plane curve of even degree. Suppose $Z$ has only simple singularities. 
+Let $\widehat{X}$ denote the double cover of $\PP^2$ branched along $Z$, and $X$ denote the minimal resolution of $\widehat{X}$.
+Similarly to the sextic case, there is a regular involution $\iota$ of $X$, with quotient $S=X/\iota$. Denote by $f\colon S\to \PP^2$ the minimal blowup such that the strict transform $\widetilde{Z}\subset S$ of $Z$ is smooth. The double cover $X\to S$ is branched along the disjoint union of $\widetilde{Z}$ and possibly certain exceptional curves. We have $H^2(S,\ZZ)\cong \left\langle f^* h\right\rangle\oplus T$, where $T$ arises from the blowup $S\to \PP^2$.
+
+For a root lattice of type $R$, we denote by $w_0(R)$ the longest element of the Weyl group $W(R)$ with respect to a given base.
+Recall that the root lattice $L=L_F$ is the direct sum of all $L(R)$, where $R$ runs through all singularity types (with multiplicities) appearing in $\widehat{X}$. 
+The longest element $w_0(L)\in W(L)$ is equal to the product of all $w_0(R)$. We have $-w_0(L)\in \Or(L)$. For simplicity, the induced $\iota$-action on $H^2(X,\ZZ)$ (and its restrictions on subspaces) is still denoted by $\iota$. Denote by $L^\iota$ the sublattice fixed by $\iota$. %Then
+\begin{prop}
+We have $\iota=-w_0(L)$ as automorphisms of $L$.
+\end{prop}
+\begin{proof}
+It suffices to check this for every irreducible root lattice $L$. %There should be a reference. 
+Notice that $-w_0(L)$ is an involution preserving the base $\Delta$. The graph automorphisms induced by $w_0(L)$ are listed in \cite[PLATE I--X]{bourbaki2002lie4-6}.
+\end{proof}
+
+\subsection{Comparison of Lattices}
+The double cover $p\colon X\to S$ induces an injective morphism $p^*\colon H^2(S,\ZZ)(2)\to H^2(X,\ZZ)$ of lattices, which maps $f^* h$ to $H$. By Propsition \ref{prop: finite index H^2(S) to H oplus L^iota}, it induces a finite-index extension $T(2)\hookrightarrow L^{\iota}$. 
+\begin{lem}
+\label{lem: T_F and L_F}
+We have $L^{\iota}/T(2)\cong (\ZZ/2)^m$, where $m$ is the number of exceptional curves in $S$ lying in the branch locus of $X\to S$.
+\end{lem}
+\begin{proof}
+It suffices to check this for every irreducible root lattice $L$. Suppose $D$ is a branch exceptional curve in $S$, then the Chern class of $\pi^{-1}(D)$ lies in $L^\iota$, while twice of it lies in $T(2)$. This implies the required isomorphism.
+\end{proof}
+
+Table \ref{table: m_R} provides the values of $m$ for root lattices of ADE types.
+
+\begin{table}[htbp]  % 尝试将表格放置在合适的位置
+  \centering  % 使表格居中
+  \caption{}  % 表格标题
+  \begin{tabular}{cccccc}
+  \toprule
+  Root Type $R$ & $A_n$ & $D_n$ & $E_6$ & $E_7$ & $E_8$ \\  % Table header
+  \midrule
+  $m_R$ & $0$ & $[\frac{n-2}{2}]$ & $1$ & $3$ & $4$ \\  %第一行数据
+  \bottomrule
+  \end{tabular}
+  \label{table: m_R}  % 表格标签，用于引用
+\end{table}
+
+\begin{cor}
+\label{cor: if only A_1,D_2n,E_7,E_8}
+    If the plane sextic curve $Z$ has only singularities of type $A_1,D_{2n}(n\ge 2),E_7,E_8$, then $L^\iota=L$. If only type $A_1$ appears, then $T(2)\cong L$ as lattices.
+\end{cor}
+
+%Now we aim to give the lattice $P$ a more precise description.
+
+For a root lattice $R$ of ADE type, we give a description of $R^{w_0(R)}$, which is the anti-invariant part of the $-w_0(R)$-action.
+Denote by $r_R^-$ the rank of $R^{w_0(R)}$.
+\begin{lem}
+\label{lem: anti-inv}
+    The discriminant group of $R^{w_0(R)}$ for each ADE-type $R$ is listed in Table \ref{tab: r_R^-}.
+\begin{table}[htbp]  % 尝试将表格放置在合适的位置
+  \centering  % 使表格居中
+  \caption{}  % 表格标题
+  \begin{tabular}{ccccc}
+  \toprule
+  Root Type $R$ & $A_{2n-1}$ & $A_{2n}$ & $D_{n}$ (odd) & $E_6$  \\  % Table header
+  \midrule
+  $r_R^-$ & $n-1$ & $n$ & $1$ & $2$ \\ % first line of data
+  $A_{R^{w_0(R)}}$ & $(\ZZ/2)^{n-2}\times \ZZ/2n$ & $(\ZZ/2)^n\times \ZZ/(2n+1)$ & $\ZZ/4$ & $\ZZ/3\times(\ZZ/2)^2$ \\  % second line of data
+  \bottomrule
+  \end{tabular}
+  \label{tab: r_R^-}  % 表格标签，用于引用
+\end{table}
+For the type $A_1$, $D_n$ ($n$ even), $E_7$ and $E_8$, $R^{w_0(R)}$ is trivial.
+\end{lem}
+
+Denote by $D_1,\cdots,D_{l'}$ the irreducible components of $Z\subset \PP^2$.
+Let $\widetilde{D}_1,\cdots,\widetilde{D}_{l'}$ be the connected components of $\widetilde{Z}\subset S$.
+Denote by $E_1,\cdots,E_{m}$ the exceptional curves of $S\to \PP^2$ lying in the branched locus of $\pi\colon X\to S$.
+The double cover $\pi$ is branched along the disjoint union of $\widetilde{D}_1,\cdots,\widetilde{D}_{l'}$ and $E_1,\cdots,E_{m}$.
+Let $l\coloneqq l'+m$.
+
+Recall $P=P_F$ is the primitive hull of $\left\langle H\right\rangle \oplus L$ in $H^2(X,\ZZ)$.
+%For a curve $C\subset S$, let $[C]$ be the first Chern class of $\calO_{X}(\pi^{-1}(C))$.
+Let $M$ be the sublattice of $H^2(X,\ZZ)$ generated by $H$, $L$ and Chern classes of curves $\pi^{-1}(\widetilde{D}_1),\cdots, \pi^{-1}(\widetilde{D}_{l'}) \subset X$.
+Denote by $\beta_i$ the Chern class of $\pi^{-1}(\widetilde{D}_i)\subset X$. 
+
+
+    %Let $F$ be a homogeneous polynomial of three variables of even degree.
+    %Similar to sextics, let $L_F$ be the direct sum of all root lattices corresponding to all simple singularities, which is naturally a sublattice of $H^2(X_F,\ZZ)$.
+
+\begin{lem}
+\label{lem: saturation of inv part of P}
+    We have
+    \begin{equation*}
+        \frac{P^{\iota}}{(\left\langle H \right\rangle\oplus L)^{\iota}} \cong (\ZZ/2)^{l'-1}.
+    \end{equation*}
+\end{lem}
+\begin{proof}
+By definition $\beta_i\in H^2(X, \ZZ)^\iota$ for $1\le i\le l'$. 
+Denote by $N$ the lattice $H^2(S,\ZZ)(2)=(\left\langle f^*h \right\rangle \oplus T)(2)$, which is a sublattice of $H^2(X, \ZZ)$.
+By Lemma \ref{lemma: double cover manifold}, $H^2(X,\ZZ)^{\iota}$ is the primitive hull of $N$ in $H^2(X, \ZZ)$.
+Since $N\subset \left\langle H\right\rangle \oplus L$, we have $H^2(X,\ZZ)^{\iota}\subset P$. It follows $H^2(X,\ZZ)^{\iota}=P^\iota$.
+Consequently, we have $M\subset P$.
+Then there are successive finite-index extensions
+\begin{equation}
+\label{eqn: iota-invariant successive saturations}
+    N \hookrightarrow (\left\langle H \right\rangle\oplus L)^{\iota} \hookrightarrow M^{\iota} \hookrightarrow P^{\iota}.
+\end{equation}
+By Lemma \ref{lemma: double cover manifold}, we have $P^{\iota} / N\cong (\ZZ/2)^{l-1}$.
+By Lemma \ref{lem: T_F and L_F}, we have $(\left\langle H \right\rangle\oplus L)^{\iota}/N \cong (\ZZ/2)^{m}$. 
+Thus the lemma follows.
+% \begin{equation*}
+%     \frac{P^{\iota}}{(\left\langle H \right\rangle\oplus L)^{\iota}} \cong (\ZZ/2)^{l'-1}.
+% \end{equation*}
+\end{proof}
+
+\begin{lem}
+\label{lem: Z/2-independence}
+    Any $l'-1$ elements among $\beta_1, \cdots, \beta_{l'}$ are $\ZZ/2$-independent in $\frac{M^{\iota}}{(\left\langle H \right\rangle\oplus L)^{\iota}}$.
+\end{lem}
+\begin{proof}
+The nodal case is proved in \cite[Proposition 3.4]{yu2023moduli}. 
+Without loss of generality, we consider the first $l'-1$ elements $\beta_1,\cdots,\beta_{l'-1}$.
+Consider the set $A=(\mathop\bigcup\limits_{i=1}^{l'-1}D_i)\cap D_{l'}$. The singularities in $A$ must be of type $A_{2n-1}, D_n, E_7$. It follows from the condition that each singularity in $A$ has at least two local components.
+
+It suffices to show that any nontrivial linear combination of $\beta_1, \cdots, \beta_{l'-1}$ with coefficients $0$ or $1$ does not belong to $\langle H\rangle \oplus L$. 
+It is enough to consider $\Sigma=\beta_1+\cdots+\beta_k$, where $k$ is an integer satisfying $1\le k\le l'-1$. Suppose there is a singularity of type $A_{2n-1}$ on $(\mathop\bigcup\limits_{i=1}^{k} D_i)\cap D_{l'}$. 
+The singularity lies on exactly two irreducible components of the divisor, which we denote by $D_i$ and $D_{l'}$.
+The graph of exceptional curves and strict transforms of $D_i$, $D_{l'}$ is drawn in Figure \ref{figure: A_2n-1} (also see \cite[Chapter III, \S 7, Table 1]{barth2004compact}). 
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=13cm]{A_2n_1.jpg}
+  \caption{Resolution graph of $A_{2n-1}$-type}
+  \label{figure: A_2n-1}
+ \end{figure}
+Both $\beta_i$ and $\beta_{l'}$ intersect only the middle curve.
+Hence the projection of $\beta_i$ (also $\beta_{l'}$) to the root lattice of type $A_{2n-1}$ is the fundamental weight $\lambda_n$. The weight $\lambda_n$ can be expressed as
+\begin{equation*}
+    \lambda_n = -{1\over 2}x_1 - {2\over 2}x_2 - {3\over 2}x_3 - \cdots - {n\over 2}x_n - {n-1\over 2}x_{n+1} - \cdots - {1\over 2}x_{2n-1},
+\end{equation*}
+where the coefficients of both $x_i$ and $x_{2n-i}$ $(1\le i\le n)$ are $-{i\over 2}$.
+(A general calculation of fundamental weights can be found in \cite[PLATE I--X]{bourbaki2002lie4-6}.)
+%\cite[Chapter III, \S 13, Table 1]{humphreys1972lie}
+This is exactly the projection of $\Sigma$ to the associated $A_{2n-1}$-root lattice. Thus $\Sigma\notin \langle H\rangle\oplus L$.
+
+The cases of types $D_n$ and $E_7$ are similar, but a bit more involved.
+We call the exceptional curve corresponding to $m$-node the $m$-line.
+See Figure \ref{figure: D_2n-1}, \ref{figure: D_2n}, \ref{figure: E_7} for the numbering of each node.
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=8cm]{D_2n_1.jpg}
+  \caption{Resolution graph of $D_{2n-1}$-type}
+  \label{figure: D_2n-1}
+\end{figure}
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=9cm]{D_2n.jpg}
+  \caption{Resolution graph of $D_{2n}$-type}
+  \label{figure: D_2n}
+\end{figure} 
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=7cm]{E_7.jpg}
+  \caption{Resolution graph of $E_7$-type}
+  \label{figure: E_7}
+\end{figure}
+ 
+A singularity of type $D_{2n-1}$ or $E_7$ lies on exactly two irreducible components, which we denote by $D_j$ and $D_{l'}$.
+In $D_{2n-1}$ case, the strict transform of the locally cuspidal component intersects only the $(2n-3)$-line. 
+%The $(2n-3)$-line is the only line intersects with three other lines.
+The strict transform of the locally smooth component intersects only the $1$-line. 
+%The $1$-line is the end of the "long tail".
+The projection of $\beta_i$ to the root lattice of type $D_{2n-1}$ is the fundamental weight $\lambda_1$ or $\lambda_{2n-3}$. The weights $\lambda_1$ and $\lambda_{2n-3}$ have the following expressions
+\begin{align*}
+    \lambda_{2n-3} &= -x_1-2x_2-3x_3-\cdots-(2n-3)x_{2n-3}-{2n-3\over 2}(x_{2n-2}+x_{2n-1}), \\
+    \lambda_{1} &= -(x_1+x_2+\cdots+x_{2n-3})-{1\over 2}(x_{2n-2}+x_{2n-1}).
+\end{align*}
+In $E_7$ case, the strict transform of the locally cuspidal component intersects only the $2$-line. 
+%The $2$-line is attached to the shortest edge of the graph.
+The strict transform of the locally smooth component intersects only the $7$-line. 
+%The $7$-line is attached to the longest edge of the graph.
+The weights $\lambda_2$ and $\lambda_7$ have the following expressions 
+\begin{align*}
+    \lambda_{2} &= -{1\over 2}(4x_1+7x_2+8x_3+12x_4+9x_5+8x_6+3x_7), \\
+    \lambda_{7} &= -{1\over 2}(2x_1+3x_2+4x_3+6x_4+5x_5+4x_6+3x_7).
+\end{align*}
+These are exactly the projections of $\Sigma$ to the associated $D_{2n-1}$ and $E_7$. Thus $\Sigma\notin \langle H\rangle\oplus L$.
+
+A singularity of type $D_{2n}$ lies on exactly three irreducible components, which we denote by $D_k$, $D_l$ and $D_{l'}$.
+The strict transform of two components intersect only with the $2n$-line and the $(2n-1)$-line respectively. 
+%The $2n$-line and the $(2n-1)$-line correspond to the two nodes in the "fork".
+The strict transform of the rest component intersects only the $1$-line.
+The corresponding fundamental weights can be expressed as
+\begin{align*}
+    \lambda_1 &= -(x_1+x_2+\cdots+x_{2n-2})-{1\over 2}(x_{2n-1}+x_{2n}), \\
+    \lambda_{2n-1} &= -{1\over 2}x_1 - {2\over 2}x_2 - {3\over 2}x_3 - \cdots - {2n-2\over 2}x_{2n-2} - {n\over 2}x_{2n-1} - {n-1\over 2}x_{2n}, \\
+    \lambda_{2n} &= -{1\over 2}x_1 - {2\over 2}x_2 - {3\over 2}x_3 - \cdots - {2n-2\over 2}x_{2n-2} - {n-1\over 2}x_{2n-1} - {n\over 2}x_{2n}. \\
+\end{align*}
+The strict transform of $D_{l'}$ may give one or two components in the resolution graph of the singularity.
+Every linear combination of the rest components with coefficients $0$ or $1$ has non-integer coefficients.
+These are exactly the projections of $\Sigma$ to the associated $D_{2n}$. Thus $\Sigma\notin \langle H\rangle\oplus L$.
+
+    %We analyze the coefficients of $\beta_i$ on the exceptional curves in the associated resolution graphs.
+
+    %For a singularity of the above types, it has two or three local components.
+
+    By the above calculation, any nontrivial $\ZZ/2$-combination of $\beta_1,\cdots\beta_{l'-1}$ does not lie in $\langle H\rangle\oplus L$.
+    Hence $\beta_1,\cdots\beta_{l'-1}$ is $\ZZ/2$-independent in $\frac{M^{\iota}}{(\left\langle H \right\rangle\oplus L)^{\iota}}$.
+\end{proof}
+\begin{rmk}
+    The above calculation in the case of sextic curves can also be found in \cite[\S 3, Tabel 1]{yang1996sextic}.
+\end{rmk}
+
+\begin{prop}
+\label{prop: saturation of M_F}  
+We have 
+    \begin{equation*}
+        \frac{M}{\left\langle H\right\rangle \oplus L}\cong (\ZZ/2)^{l'-1}.
+    \end{equation*}
+    This finite group is generated by equivalence classes of $\beta_1,\cdots, \beta_{l'-1}$.
+    Moreover, $M^{\iota} = P^{\iota}$.
+\end{prop}
+\begin{proof}
+%\red{Local analysis of ADE singularities only implies that each element in the quotient has order two and the $\ZZ/2$-rank of the quotient is at least $l-1$. Need to show that $[C_1],\cdots,[C_l]$ is $\ZZ/2$-dependent (Lemma \ref{lem: double cover cohomology} is probably helpful! Show that $[C_1],\cdots,[C_l]$ is $\ZZ/2$-dependent in some sub-quotient).} 
+Since $\beta_i \in M^{\iota}$ for $1\le i\le l'$, the finite-index extensions in (\ref{eqn: iota-invariant successive saturations}) induces injective maps of the following finite abelian groups
+\begin{equation*}
+    \frac{M^{\iota}}{(\left\langle H \right\rangle\oplus L)^{\iota}} \hookrightarrow \frac{P^{\iota}}{(\left\langle H \right\rangle\oplus L)^{\iota}} \hookrightarrow \frac{P}{\left\langle H \right\rangle\oplus L}.
+\end{equation*}
+%By local analysis of ADE singularities (\red{TBA! Need very explicit calculation, also mention Yu-Zheng}), 
+By Lemma \ref{lem: saturation of inv part of P}, we have 
+\begin{equation*}
+    \frac{M^{\iota}}{(\left\langle H \right\rangle\oplus L)^{\iota}} = \frac{P^{\iota}}{(\left\langle H \right\rangle\oplus L)^{\iota}} \cong (\ZZ/2)^{l'-1}.
+\end{equation*}
+By Lemma \ref{lem: Z/2-independence}, there is only one nontrivial relation among $\beta_1, \cdots, \beta_{l'}$. 
+This isomorphism implies that $M^{\iota} = P^{\iota}$.
+Moreover, the inclusion 
+\begin{equation*}
+    \frac{M^{\iota}}{(\left\langle H \right\rangle\oplus L)^{\iota}} \hookrightarrow \frac{M}{\left\langle H \right\rangle\oplus L}
+\end{equation*}
+is surjective (hence an isomorphism) because $\beta_1, \cdots, \beta_{l'}$ lies in $M^\iota$. We have done.
+% We conclude that
+% \begin{equation*}
+%     \frac{M}{\left\langle H \right\rangle\oplus L} \cong (\ZZ/2)^{l'-1},
+% \end{equation*}
+% and the proposition follows.
+\end{proof}
+%From now on, let $F\in \calV_\bd$ as before.
+%We only apply previous lemma in the case of ADE-type sextics.
+
+\begin{lem}
+\label{lem: saturation induced by involution, inequality and ADE case}
+    Let $L$ be an even lattice and $\iota\in \Or(L)$ be an involution.
+    Then $\frac{L}{L^\iota \oplus L^{-\iota}}$ is $2$-elementary, and its cardinality satisfies
+    \begin{equation*}
+        \bigg|\frac{L}{L^\iota \oplus L^{-\iota}}\bigg| \le 2^{min\{\rank (L^\iota), \rank (L^{-\iota})\}}.
+    \end{equation*}
+    In particular, for every root lattice $L$ of ADE type, the equality is achieved, i.e. 
+    \begin{equation*}
+        \frac{L}{L^{\iota} \oplus L^{-\iota}} \cong (\ZZ/2)^{\rank (L^{-\iota})}.
+    \end{equation*}
+\end{lem}
+\begin{proof}
+    For any $v\in L$, we have $2v = (v+\iota(v))+(v-\iota(v))$, hence $2v\in L^{\iota} \oplus L^{-\iota}$.
+    Thus $\frac{L}{L^\iota \oplus L^{-\iota}}$ is $2$-elementary.
+    Denote by $r\coloneqq min\{\rank (L^\iota), \rank (L^{-\iota})\}$.
+    For any $n>r$, we assume that there exist $\frac{v_1+w_1}{2},\cdots,\frac{v_n+w_n}{2}$ in $L\bs(L^{\iota} \oplus L^{-\iota})$.
+    Without loss of generality, we assume that $\rank (L^\iota) \ge \rank (L^{-\iota})$.
+    Since $n > r=\rank (L^{-\iota})$, there exist $a_1,\cdots,a_n$ ($\exists a_i\neq 0$) such that $\sum\limits_{i=1}^n a_i w_i = 0$.
+    Then $\sum\limits_{i=1}^n a_i \frac{v_i+w_i}{2} = \sum\limits_{i=1}^n a_i \frac{v_i}{2}$ lies in $L^\iota$.
+    Hence $\sum\limits_{i=1}^n a_i \frac{v_i+w_i}{2}$ vanishes in $\frac{L}{L^{\iota} \oplus L^{-\iota}}$, namely, there exists a nontrivial relation among $\frac{v_1+w_1}{2},\cdots,\frac{v_n+w_n}{2}$.
+    Thus $\dim_{\ZZ/2}(\frac{L}{L^\iota \oplus L^{-\iota}}) \le \rank (L^{-\iota})$ (view $\frac{L}{L^\iota \oplus L^{-\iota}}$ as a $\ZZ/2$-vector space).
+
+    For root lattices of ADE types, the equality arises from a case-by-case check.
+    Notice that 
+    \begin{equation*}
+        \bigg|\frac{L}{L^\iota \oplus L^{-\iota}}\bigg|^2 = \frac{|A_{L^\iota} \oplus A_{L^{-\iota}}|}{|A_L|}.
+    \end{equation*}
+    For each ADE type, $A_{L^{-\iota}}$ is listed in Table \ref{tab: r_R^-}.
+    We list $A_{L^\iota}$ in Table \ref{tab: r_R^+}.
+    \begin{table}[htbp]  % 尝试将表格放置在合适的位置
+    \centering  % 使表格居中
+    \caption{}  % 表格标题
+    \begin{tabular}{ccccc}
+    \toprule
+    Root Type $R$ & $A_{2n-1}$ & $A_{2n}$ & $D_{n}$ (odd) & $E_6$  \\  % Table header
+    \midrule
+    $r_R^+$ & $n$ & $n$ & $n-1$ & $4$ \\ % first line of data
+    $A_{R^{-w_0(R)}}$ & $(\ZZ/2)^{n}$ & $(\ZZ/2)^n$ & $(\ZZ/2)^2$ & $(\ZZ/2)^2$ \\  % second line of data
+    \bottomrule
+    \end{tabular}
+    \label{tab: r_R^+}  % 表格标签，用于引用
+    \end{table}
+\end{proof}
+
+\begin{prop}
+\label{prop: M_F = Z_2-saturation}
+    %The lattice $M$ is the biggest $\ZZ/2$-saturation of $\left\langle H \right\rangle \oplus L$ in $H^2(X,\ZZ)$.
+    The lattice $M$ is the biggest finite-index extension of $P^\iota \oplus L^{-\iota}$ in $H^2(X,\ZZ)$ such that $M\over{P^{\iota}\oplus L^{-\iota}}$ is $2$-elementary. Moreover, $\frac{M}{P^{\iota}\oplus L^{-\iota}}\cong (\ZZ/2)^{r^-}$.
+    %The primitive sublattice $P$ of $\Lambda$ is generated by $H$, $L$ and $[D_1]$, $\cdots$, $[D_{l'}]$, namely, $P=M$.
+    % The discrimiannt group of $P$ is isomorphic to (\ZZ/2)^{l-1}.
+    % Moreover, we have 
+    % \begin{equation*}
+    %     \frac{P}{\left\langle H\right\rangle \oplus L(F)}\cong \textcolor{red}{???}
+    % \end{equation*}
+\end{prop}
+\begin{proof}
+    Since $P^{\iota}$ is a finite-index extension of $\left\langle H\right\rangle\oplus L^{\iota}$, $L^{-\iota}$ is orthogonal to $P^{\iota}$ in $P$.
+    Consider the finite-index extension
+    \begin{equation*}
+        P^{\iota}\oplus L^{-\iota}\hookrightarrow P.
+    \end{equation*}
+    By Proposition \ref{prop: saturation of M_F}, we have $M^{\iota} = P^{\iota}$.
+    Thus there is a natural finite-index extension 
+    % of $P^{\iota}\oplus L^{-\iota}$ into $M$, arising from each direct summand (a root lattice of ADE-type)
+    \begin{equation*}
+        P^{\iota}\oplus L^{-\iota} \hookrightarrow M.
+    \end{equation*}
+    %where $M$ is a priori a sublattice of $P$.
+    % We aim to show that $M=P$.
+    We have the following successive finite-index extensions
+    \begin{equation*}
+        \left\langle H \right\rangle \oplus L^{\iota} \oplus L^{-\iota} \hookrightarrow \left\langle H \right\rangle \oplus L \hookrightarrow M.
+    \end{equation*}
+    By Lemma \ref{lem: saturation induced by involution, inequality and ADE case}, we have $\frac{L}{L^{\iota} \oplus L^{-\iota}} \cong (\ZZ/2)^{r^-}$.
+    By Proposition \ref{prop: saturation of M_F}, we have $\frac{M}{\left\langle H\right\rangle \oplus L}\cong (\ZZ/2)^{l'-1}$.
+    Moreover, we have another successive finite-index extensions 
+    \begin{equation*}
+        \left\langle H \right\rangle \oplus L^{\iota} \oplus L^{-\iota} \hookrightarrow P^{\iota}\oplus L^{-\iota} \hookrightarrow M.
+    \end{equation*}
+    By Lemma \ref{lem: saturation of inv part of P} and Proposition \ref{prop: saturation of M_F}, we have $\frac{P^{\iota}}{\left\langle H \right\rangle \oplus L^{\iota}} = \frac{M}{\left\langle H \right\rangle \oplus L} \cong (\ZZ/2)^{l'-1}$.
+    It is direct to verify that $(\left\langle H \right\rangle \oplus L)\cap (P^{\iota}\oplus L^{-\iota}) = \left\langle H \right\rangle \oplus L^\iota \oplus L^{-\iota}$.
+    Thus $\frac{M}{\left\langle H \right\rangle \oplus L^\iota \oplus L^{-\iota}} \cong (\ZZ/2)^{l'+r^--1}$.
+    Therefore we conclude
+    \begin{equation*}
+    \label{eqn: saturation of M over P^iota oplus L^-iota}
+        \frac{M}{P^{\iota}\oplus L^{-\iota}}\cong (\ZZ/2)^{r^-},
+    \end{equation*}
+    where $r^-$ is the sum of all $r_R^-$ with $R$ that appear in $L$ (with multiplicities).
+
+    Since $P^{\iota}$ is primitive in $P$, by lattice theory, the quotient $\frac{P}{P^{\iota}\oplus L^{-\iota}}$ is isomorphic to certain subgroup of $A_{L^{-\iota}}$. 
+    %\red{Moreover, it must be isomorphic to certain power of $\ZZ/2$. (WHY?)}
+    By Lemma \ref{lem: anti-inv}, the biggest subgroup of each $A_{R^{w_0(R)}}$ of the form $(\ZZ/2)^k$ is isomorphic to $(\ZZ/2)^{r_R^-}$.
+    Notice that $(\ZZ/2)^{r^-}$ can be naturally decomposed into the product $\prod\limits_{R}(\ZZ/2)^{l_T(R)r_R^-}$.
+    Therefore $M$ is the biggest finite-index extension of $P^{\iota}\oplus L^{-\iota}$ such that $M\over{P^{\iota}\oplus L^{-\iota}}$ is $2$-elementary.
+    %Then $M$ is also the biggest $\ZZ/2$-saturation of $\left\langle H \right\rangle \oplus L$ (\red{the last sentence may be wrong!!}).
+\end{proof}
+
+\begin{rmk}
+   Since $H$ is primitive in $H^2(X,\ZZ)$, $\frac{P}{\left\langle H \right\rangle \oplus L}$ is a subgroup of $A_L$. 
+\end{rmk}
+
+\begin{rmk}
+    There exist examples such that $M$ is a proper sublattice of $P$, for example, see \S \ref{subsec: Zariski pair} and Propostion \ref{proposition: picard zariski pair}.
+    By \cite[Proposition 3.4]{yu2023moduli}, $M=P$ holds for all nodal singular types.
+    We will give more examples with $M=P$ in \S \ref{sec: examples and applications}.
+\end{rmk}
+
+
+% From above lemmas, the main theorem in this section follows directly:
+% \begin{thm}
+%     The saturation $\left\langle H\right\rangle \oplus L \hookrightarrow P$ can be characterized as follows
+%     \begin{equation*}
+%         \frac{P}{\left\langle H\right\rangle \oplus L}\cong (\ZZ/2)^{l'-1},
+%     \end{equation*}
+%     where the quotient abelian group is generated by $\overline{[D_1]},\cdots,\overline{[D_{l'-1}]}$.
+% \end{thm}
+
+
+%We next calculate the Picard group for some examples. 
+
+% \subsection{Sextics: smooth Irreducible Components}
+
+% \red{Does $M=P$ hold for sextics consisting of smooth irreducible components (for a given type)? Only allows singularities of type $A_{2n-1}$ and $D_{2n}$.}
+
+% \red{A weaker version: does $M=P$ hold for sextics consisting of smooth irreducible components with only nodes, tacnodes, ordinary triple points?}
+
+
+
+
+
+
+
+
+\section{Orbifold Structures}
+\label{sec: orbifold structures}
+Given a singular type $T$, both the moduli space $\calM_T$ and the associated arithmetic quotient $\Gamma_T\bs(\DD_T-\calH_T)$ admit natural orbifold structures induced by their nontrivial automorphism groups. It is natural to study the relationship of these two orbifold structures. See \cite{kudla2012occult} and \cite{zheng2021orbifold} for some well-known cases. In this section, we compare the orbifold structures of the two sides of the period map $\Prd_T\colon \calM_T\to \Gamma_T\bs(\DD_T-\calH_T)$.
+We follow the setup in \S \ref{section: period map}.
+For a general introduction to orbifolds, one can see for instance \cite[Chapter 13]{thurston2022geometry}.
+
+\subsection{A Lattice-theoretic Criterion}
+For $Z(F)\in \PP\calV_T$, let $(X_F,H_F,\iota_F)$ be defined as in \S \ref{subsection: ADE K3}, and $\Delta_F$ be defined as in \S \ref{subsection: define period map}.
+
+% \begin{lem}
+% \label{lem: involution acts on Q as -I}
+%     We have $\iota_{F_0}|_{Q_{F_0}} = -I$.
+% \end{lem}
+% \begin{proof}
+%     Choose a contractible neighborhoood $D$ of $[H^{2,0}(X_{F_0})]\in\DD_T-\calH_T$.
+%     By Lemma \ref{lem: X_omega determines Z(F)} and Lemma \ref{lem: Z_omega has type T}, there exists a family of K3 surfaces associated with sextic curves of the singular type $T$.
+%     For any $\omega\in D$, the corresponding K3 surface $X_\omega$ admits an involution $\iota_\omega$, which is canonically induced by $\iota_{F_0}$.
+    
+%     Clearly $\iota_\omega$ acts on $H^{2,0}(X_\omega)$ as $-1$.
+%     Denote by $l_\omega\subset Q_{F_0}\otimes\CC$ the complex line corresponding to $\omega\in\DD_T$.
+%     Hence $\iota_{F_0}$ acts on $l_\omega$ as $-1$. 
+%     Clearly $Q_{F_0}\otimes\CC$ is generated by $l_\omega, \omega\in D$.
+%     Thus $\iota_{F_0}$ acts on $Q_{F_0}\otimes\CC$ as $-I$, then so does $Q_{F_0}$.
+% \end{proof}
+
+
+
+%recall that $X_F$ denotes the associated K3 surface that admits the surjective map $\pi_F\colon X_F\to\PP^2$ induced by a line bundle representing $H_F$, which is the composition of the double cover map $\p_F\colon X_F\to S_F$ and the birational morphism $S_F\to\PP^2$. 
+%And $\iota_F$ denotes the deck transformation of the double cover $p_F$. 
+\begin{prop}
+\label{prop: describe Stab_Z(F)}
+    We have a natural isomorphism
+    \begin{align*}
+        \Stab_{Z(F)} &\cong \Aut(X_F,H_F)/\{\Id,\iota_F\} \\
+        &\cong \Or(\Lambda_F,H_F,\Delta_F,H^{2,0}(X_F))/\{\Id,\iota_F^*\},
+    \end{align*}
+    where $\Stab_{Z(F)}$ is the stabilizer of $Z(F)$ in $\PGL(3)$. 
+\end{prop}
+
+\begin{lem}
+\label{lem: describe Aut(X_F,H_F,Delta_F)}
+    We have
+    \begin{align*}
+        \Aut(X_F,H_F,\Delta_F) &= \Aut(X_F,H_F) \\
+        %\{ f\in \Aut(X_F,H_F) \,\big|\, f\circ\iota_F=\iota_F\circ f \} \\
+        &\cong \Or(\Lambda_F,H_F,\Delta_F,H^{2,0}(X_F)).
+    \end{align*}
+    %and $\{\Id,\iota_F\}\cong\ZZ/2$ is a normal subgroup of $\Aut(X_F,H_F,\Delta_F)$.
+\end{lem}
+\begin{proof}
+    Let $f\in \Aut(X_F)$ satisfy $f^*H_F=H_F$. Then $f^*L_F=L_F$, as $L_F$ is the root lattice of $\langle H_F,H^{2,0}(X_F)\rangle^\perp_{\Lambda_F}$.
+    Since $f^*$ maps effective classes to effective classes, it follows that $f^*\Delta_F=\Delta_F$.
+    Consequently, we conclude $\Aut(X_F,H_F,\Delta_F) = \Aut(X_F,H_F)$.
+
+    Moreover, by the proof of Theorem \ref{theorem: global torelli}, we can construct an ample class $\alpha_F$ of $X_F$ lying in $\langle H_F\rangle\oplus L_F$.
+    Since $\Aut(X_F,\alpha_F)\cong\Or(\Lambda_F,\alpha_F,H^{2,0}(X_F))$ (given by $f\mapsto f^*$) and $\Aut(X_F,H_F,\Delta_F) \subset \Aut(X_F,\alpha_F)$, it follows that $f\mapsto f^*$ gives $\Aut(X_F,H_F,\Delta_F) \cong \\ \Or(\Lambda_F,H_F,\Delta_F,H^{2,0}(X_F))$.
+\end{proof}
+
+\begin{lem}%\footnote{\red{need to check the writing!}}
+\label{lem: Aut(Lambda_F,H_F,Delta_F) commutes with iota_F}
+Each element $f\in \Or(\Lambda_{F}, \Delta_{F},H_{F})$ commutes with the involution $\iota_{F}$.
+\end{lem}
+\begin{proof}
+Consider a singularity of type $R$ on $Z(F)$. The lattices $L(R)$ and $f(L(R))$, both of type $R$, satisfy $f(L(R)\cap \Delta_{F}) = f(L(R))\cap \Delta_{F}$. 
+By Proposition \ref{prop: iota-action on resolution graph/base} and Remark \ref{rmk: iota-action on L(R)}, we can identify the generators of $L(R)^{\iota_{F}}$ and $f(L(R))^{\iota_{F}}$. 
+This implies $f(L(R)^{\iota_{F}}) = f(L(R))^{\iota_{F}}$. 
+Since $f(H_{F})=H_{F}$, we conclude $f(\Lambda_{F}^{\iota_{F}})=\Lambda_{F}^{\iota_{F}}$. 
+Consequently, $f$ commutes with $\iota_{F}$.
+\end{proof}
+
+\begin{lem}
+\label{lem: Aut(X_F,H_F) to Stab_Z(F)}
+    Every automorphism $f\in \Aut(X_F,H_F)$ naturally induces an automorphism of $Z(F)\subset\PP^2$.
+    The only automorphisms of $X_F$ inducing the identity map on $Z(F)$ are the involution $\iota_F$ and the identity map.
+\end{lem}
+\begin{proof}
+    By Lemma \ref{lem: describe Aut(X_F,H_F,Delta_F)}, every $f\in \Aut(X_F,H_F)$ induces a $f^*\in\Or(\Lambda_F)$ that preserves $H_F$ and $\Delta_F$. 
+    % hence also preserves $P_F$ and $Q_F=P_F^\perp$. 
+    % Since $f^*$ is an isometry that preserves $\Delta_F$, the action of $f^*$ on $\Delta_F$ is generated by automorphisms of irreducible root lattices and permutations of isomorphic factors.
+    % Thus the $f^*$-action commutes with the $\iota_F^*$-action on $\Delta_F$.
+    % Since $f^*$ preserves $H_F$, the $f^*$-action commutes with the $\iota_F^*$-action on $P_F$.
+    % Since $\iota_F^*$ acts on $Q_F$ as $-1$, it automatically commutes with the $f^*$-action on $Q_F$.
+    Lemma \ref{lem: Aut(Lambda_F,H_F,Delta_F) commutes with iota_F} ensures that $f^*$ commutes with $\iota_F^*$ on $\Lambda_F$. %$f^*\circ\iota_F^*=\iota_F^*\circ f^*$
+    By the injectivity of $\Aut(X_F)\hookrightarrow\Or(\Lambda_F)$, it follows that $f$ commutes with $\iota_F$.
+    Hence $f$ induces an automorphism of $S_F$ that preserves the strict transform of $Z(F)$, which lies in the branched locus of $p_F\colon X_F\to S_F$.
+    %This shows that $\Aut(X_F,H_F,\Delta_F) \subset \{ f\in \Aut(X_F,H_F) \,\big|\, f\circ\iota_F=\iota_F\circ f \}$.
+    Moreover, since $f^*H_F=H_F$, $f$ descends to an automorphism $\overline{f}$ of $\PP^2$ that preserves $Z(F)$.
+
+    Let $f\in\Aut(X_F)$ be an automorphism such that the induced map $\overline{f}$ restricts to the identity map on $Z(F)$.
+    Then $\overline{f}$ is the identity map on $\PP^2$.
+    The identity map lifts trivially to $S_F$, and thus $f$ must coincide with either the identity map on $X_F$ or the involution $\iota_F$.
+\end{proof}
+\begin{proof}[Proof of Proposition \ref{prop: describe Stab_Z(F)}]
+    There exists a natural map 
+    \begin{equation*}
+        \Aut(X_F,H_F) \to \Stab_{Z(F)}, \quad f\mapsto\overline{f}.
+    \end{equation*} 
+    By Lemma \ref{lem: Aut(X_F,H_F) to Stab_Z(F)}, the kernel of this map is $\{\Id,\iota_F\}$. Moreover, every automorphism of $\PP^2$ preserving $Z(F)$ lifts to an automorphism of the double cover branched along $Z(F)$, and subsequently to an automorphism of $X_F$. Thus we obtain $\Stab_{Z(F)} \cong \Aut(X_F,H_F)/\{\Id,\iota_F\}$.
+
+    By Lemma \ref{lem: describe Aut(X_F,H_F,Delta_F)}, there is a natural isomorphism
+    \begin{equation*}
+        \Aut(X_F,H_F)/\{\Id,\iota_F\} \cong \Or(\Lambda_F,H_F,\Delta_F,H^{2,0}(X_F))/\{\Id,\iota_F^*\}.
+    \end{equation*}
+    Combining these results, the proposition follows.
+\end{proof}
+
+Let $Z(F_0)\in\PP\calV_T$ be a base point.
+By Corollary \ref{cor: Lambda_F^iota = P_F^iota}, the involution $\iota_{F_0}$ induces an action on $\Lambda_{F_0}$ preserving $H_{F_0}$ and $\Delta_{F_0}$, and acts as $-\Id$ on $Q_{F_0}$.
+We denote by $P\Gamma_T$ the quotient group $\Gamma_T/\{\pm \Id\}$. The natural map $\Gamma_T \to \Aut(\DD_T)$ descends to $P\Gamma_T \hookrightarrow \Aut(\DD_T)$.  
+%is isomorphic to $\ZZ^\times=\{1,-1\}$\footnote{\red{Is it always true ($-1\in\Gamma_T$)?}}, which is generated by $-\Id$.
+We consider the orbifold $P\Gamma_T\bs(\DD_T-\calH_T)$ instead of $\Gamma_T\bs(\DD_T-\calH_T)$.
+%Note that the orbifold $P\Gamma_T\bs(\DD_T-\calH_T)$ is different from $\Gamma_T\bs(\DD_T-\calH_T)$.
+For $\omega\in \DD_T-\calH_T$, the stabilizer of $\omega$ in $P\Gamma_T$ is given by
+\begin{equation*}
+    \Stab_\omega = \{ g|_{Q_{F_0}} \,\big|\, g\in \Or(\Lambda_{F_0},H_{F_0},\Delta_{F_0}),\, g\cdot\omega=\omega \}/\{\pm \Id\},
+\end{equation*}
+where $\omega$ represents a positive complex line in $Q_{F_0}\otimes\CC$.
+There exists a $Z(F)\in \PP\calV_T$ satisfying $\Prd_T(Z(F))=[\omega]$.
+By definition of $\Prd_T$, there exists a path $\gamma_F\subset\PP\calV_T$ connecting $Z(F)$ and $Z(F_0)$ such that $\gamma_F^*H^{2,0}(X_F)=\omega$.
+%We choose arbitrarily a path $\gamma$ in $\PP\calV_T$ connecting $Z(F)$ and $Z(F_0)$.
+Let $\varphi$ denote $\gamma_F^*\colon H^2(X_F,\ZZ)\to H^2(X_{F_0},\ZZ)$.
+The homomorphism $\varphi$ satisfies $\varphi(H_F)=H_{F_0}$, $\varphi(\Delta_F)=\Delta_{F_0}$.
+Then we can define a group homomorphism
+\begin{equation*}
+    \Aut(X_F,H_F) \to \{ g|_{Q_{F_0}} \,\big|\, g\in \Or(\Lambda_{F_0},H_{F_0},\Delta_{F_0},\omega) \},\quad f \mapsto (\varphi\circ f^*\circ\varphi^{-1})|_{Q_{F_0}},
+\end{equation*}
+which is surjective.
+It induces a surjective homomorphism $\Stab_{Z(F)}\to\Stab_\omega$.
+\begin{prop}
+\label{prop: orbifold criterion}
+    The following statements are equivalent to each other.
+    \begin{enumerate}[(i)]
+        \item The period map $\Prd_T\colon \calM_T\to P\Gamma_T\bs(\DD_T-\calH_T)$ preserves the orbifold structures of the GIT quotient and the arithmetic quotient.
+        \item %Denote by $\Or_{T}\coloneqq \Aut(\Lambda_{F_0},H_{F_0},\Delta_{F_0})$. 
+        The natural restriction map $\Or(\Lambda_{F_0},H_{F_0},\Delta_{F_0})\to \Gamma_T$ is an isomorphism.
+        \item The group $\Or(P_{F_0},H_{F_0},\Delta_{F_0})$ acts faithfully on $A_{P_{F_0}}$.
+    \end{enumerate}
+\end{prop}
+\begin{proof}
+The period map $\Prd_T$ preserves the orbifold sturctures if and only if for any $\omega\in \DD_T-\calH_T$ and an associated $Z(F)\in \PP\calV_T$, $\Stab_{Z(F)} \cong \Stab_\omega$.
+By Corollary \ref{cor: Lambda_F^iota = P_F^iota}, $\iota_{F_0}$ acts as $-1$ on $Q_{F_0}$, this is equivalent to say that the map
+\begin{equation*}
+    \Aut(X_F,H_F)\cong \Or(\Lambda_F,H_F,\Delta_F,H^{2,0}(X_F)) \to \{ g|_{Q_{F_0}} \,\big|\, g\in \Or(\Lambda_{F_0},H_{F_0},\Delta_{F_0},\omega) \}
+\end{equation*}
+is an isomorphism.
+Denote by $G_{Z(F)}\coloneqq \Or(\Lambda_F,H_F,\Delta_F,H^{2,0}(X_F))$ and $G_\omega\coloneqq \{ g|_{Q_{F_0}} \,\big|\, g\in \Or(\Lambda_{F_0},H_{F_0},\Delta_{F_0},\omega) \}$.
+
+By definition, there is a surjective group homomorphism $p\colon \Or(\Lambda_{F_0},H_{F_0},\Delta_{F_0})\to \Gamma_T$ defined by restriction.
+The stabilizer $G_{Z(F)}$ can be naturally embedded into $\Or(\Lambda_{F_0},H_{F_0},\Delta_{F_0})$ by the conjugation of $\varphi$.
+Via this embedding, $G_{Z(F)}$ is isomorphic to $p^{-1}(G_\omega)$.
+Hence $G_{Z(F)} \cong G_\omega$ is equivalent to $\Or(\Lambda_{F_0},H_{F_0},\Delta_{F_0}) \cong \Gamma_T$.
+The isomorphism $\Or(\Lambda_{F_0},H_{F_0},\Delta_{F_0}) \cong \Gamma_T$ is equivalent to the condition that the identity element (hence every element) in $\Gamma_T$ admits a unique lift in $\Or(\Lambda_{F_0},H_{F_0},\Delta_{F_0})$, which means that $\Or(P_{F_0},H_{F_0},\Delta_{F_0})$ acts faithfully on $A_{P_{F_0}}$.
+\end{proof}
+
+
+\subsection{Nodal Singular Types}
+As an application, we study the nodal singular types, i.e. the singular types with only nodes.
+\begin{prop}
+\label{prop: orbi str of nodal types}
+    The orbifold structures are preserved in all nodal singular types.
+\end{prop}
+The proposition will be concluded from the following Lemma \ref{lem: orbi str of irred nodal types} and Lemma \ref{lem: orbi str of reducible types}.
+\begin{lem}
+\label{lem: orbi str of irred nodal types}
+    For every irreducible nodal singular type, the orbifold structure is preserved.
+\end{lem}
+\begin{proof}
+    Let $r_1,\cdots,r_m$ be the base of $L=A_1^{\oplus m}$.
+    We have $\Or(P,H,\Delta)\cong\Aut(\Delta)\cong\mathfrak{S}_m$ and $A_P\cong\ZZ/2\times(\ZZ/2)^m$.
+    Moreover, $\Or(P,H,\Delta)$ acts on $A_P$ by permuting the $m$ generators of the later $m$ $\ZZ/2$-factors.
+    This action is faithful.
+\end{proof}
+
+\begin{lem}
+\label{lem: 0 or >=5}
+    Fix an arbitrarily nodal singular type.
+    Let $r_1,\cdots,r_m$ be the base of $L=A_1^{\oplus m}$.
+    For any $v\in P$ such that $v=\mu H+\sum\limits_i \lambda_i r_i$, either all $\lambda_i$ are integers, or there exist at least five of $\lambda_i$ belonging to ${1\over2}\ZZ\bs\ZZ$.  
+\end{lem}
+\begin{proof}
+    For any irreducible nodal singular type, the statement is followed by $P=\langle H\rangle\oplus L$.
+    
+    Consider a reducible nodal singular type. 
+    Denote by $C_1,\cdots,C_l$ the irreducible components of a sextic curve of the given singular type.
+    In reducible cases, the statement is equivalent to saying that for any $C_{i_1},\cdots,C_{i_k}$ with $1\le k<l$, $C_{i_1}+\cdots+C_{i_k}$ has at least five coefficients relative to $r_1,\cdots,r_m$ belonging to ${1\over2}\ZZ\bs\ZZ$. 
+
+    Each $C_i$ can be expressed as 
+    \begin{equation*}
+        C_i = {1\over2}(d_i H + \sum_{j\in I_i}r_j),
+    \end{equation*}
+    where $d_i=\deg C_i$, $I_i$ corresponds to the set of nodes arising from the intersection of $C_i$ with the union of other irreducible components.
+    It follows that $C_{i_1}+\cdots+C_{i_k}$ satisfies 
+    \begin{equation*}
+        C_{i_1}+\cdots+C_{i_k} \equiv {1\over2}(\sum_{n=1}^k d_{i_n})H + {1\over2}\sum_{j\in I_{i_1,\cdots,i_k}} r_j \mod \langle H\rangle\oplus L,
+    \end{equation*}
+    where $I_{i_1,\cdots,i_k}$ corresponds to the set of nodes arising from the intersection of $C_{i_1}\cup\cdots\cup C_{i_k}$ with the union of other irreducible components.
+    By B\'ezout theorem, the cardinality of $I_{i_1,\cdots,i_k}$ is at least five, thus the lemma follows.
+\end{proof}
+
+\begin{lem}
+\label{lem: orbi str of reducible types}
+    For every reducible nodal singular type, the orbifold structure is preserved.
+\end{lem}
+\begin{proof}
+    Let $g\in\Or(P,H,\Delta)$ such that $g^*$ acts on $A_P$ trivially.
+    By Proposition \ref{prop: orbifold criterion}, it is enough to show $g=\Id$, namely, $g$ preserves all $r_i, 1\le i\le m$. 
+    For each $r_i$ arising from a self-intersection node of an irreducible component, $r_i$ is preserved for the same reason as in Lemma \ref{lem: orbi str of irred nodal types}.
+    Thus it is enough to show that each $r_i$ arising from an intersection of two irreducible components is preserved.
+    Let $C,C'$ be two different irreducible components.
+    Denote by $J\coloneqq C\cap C'$.
+    
+    If $|J|=1$, then both of $C$ and $C'$ must be two lines.
+    Denote by $r$ the associated exceptional curve.
+    Consider ${1\over2}(H+r)\in P\otimes\QQ$, which is actually an element in $P^\vee$.
+    Since $g^*=\Id$ on $A_P$, we have $g^*[{1\over2}(H+r)]=[{1\over2}(H+r)]=[{1\over2}(H+g r)]$ in $A_P$, then $[{1\over2}(r-g r)]=0$ in $A_P$.
+    If $g^*r\ne r$, then ${1\over2}(r-g r)\ne 0$ lies in $P$, which contradicts to Lemma \ref{lem: 0 or >=5}.
+
+    Consider the case $|J|\ge 2$.
+    We first assume that for any $p_i,p_j\in J$, the associated exceptional curves $r_i, r_j$ not form a $g$-orbit in $P$.
+    Consider ${1\over2}(r_i+r_j)\in P^\vee$.
+    We have $g^*[{1\over2}(r_j+r_j)]=[{1\over2}(r_j+r_j)]=[{1\over2}(g r_i+g r_j)]$ in $A_P$.
+    If $g r_i\ne r_i$, then ${1\over2}(r_i+r_j-g r_i-g r_j)\ne 0$ belongs to $P$, which contradicts to Lemma \ref{lem: 0 or >=5}.
+
+    Otherwise, there exist $p_i,p_j\in J$ such that $g r_i=r_j, g r_j=r_i$.
+    If $|J|\ge 3$, then there exists a $p_k\in J\bs\{p_i,p_j\}$.
+    Consider ${1\over2}(r_i+r_k)\in P^\vee$.
+    Similarly, we have ${1\over2}(r_i-r_j+r_k-g r_k)\ne 0$ belonging to $P$. Contradiction.
+
+    Otherwise, $|J|=2$, then $C,C'$ must be a line and a conic.
+    Then there exist only three possible cases: one conic plus four lines, two conics plus two lines and one cubic plus one conic plus one line.
+    Note that the third case actually contains more than one singular types, since the cubic could be smooth or nodal. 
+    But this is irrelevant to our discussion.
+
+    We can assume that $C$ is a line and $C'$ is a conic.
+    Let $C\cap C'=\{p_i,p_j\}$ and let $p_k$ be a node arising from the intersection of $C'$ with an irreducible component of odd degree (which always exists).
+    It is direct to verify that ${1\over2}(H+r_i+r_k)\in P^\vee$.
+    Then we conclude that ${1\over2}(r_i-r_j+r_k-g^*r_k)\ne 0$ belongs to $P$.
+    Contradiction.
+\end{proof}
+
+\begin{rmk}
+    It is interesting to know whether the orbifold structures are preserved for other singular types. This question is still open.
+\end{rmk}
+
+
+
+
+
+
+
+%\section{Period Domain and Period Map: Quintic plus A Line}
+
+
+
+
+\section{Examples and Applications}
+\label{sec: examples and applications}
+The moduli and period map for nodal singular types have been well studied, see \cite{yu2023moduli}. 
+In this section, we describe some further examples as applications. 
+
+\subsection{A Quintic Curve with a Line}
+We consider sextic curves that split into a smooth quintic curve and a line.
+Let $V$ denote a complex vector space of dimension $3$.
+
+\subsubsection{Five Nodes}
+Suppose there is no tangent point. Denote the singular type by $T_0$. This case is first studied by Laza \cite{laza2009deformations}, and is related to the study of the minimal-elliptic surface singularity $N_{16}$.
+This case is also included in \cite{yu2023moduli}.
+
+In this case, $\calV_{T_0}$ consists of pairs $(F_5,F_1)\in \Sym^5 V^*\times V^*$ such that $Z(F_5)$ and $Z(F_1)$ have five different intersection points.
+It is direct $\dim \calM_{T_0}=14$, which coincides with the expected dimension. The normalization $\widehat{\PP\calV}_{T_0}$ of $\PP\overline{\calV}_{T_0}$ is given by $\PP(\Sym^5 V^*) \times \PP(V^*)$, see \cite[\S 4.2]{yu2023moduli}.
+
+For any fixed $F\in\calV_{T_0}$, we have $L_F\cong A_1^{\oplus 5}$.
+Denote $\Delta_F$ by $\{ e_1,\cdots,e_5 \}$.
+Corollary \ref{cor: if only A_1,D_2n,E_7,E_8} implies $P_F=P_F^{\iota}$. By Proposition \ref{prop: saturation of M_F}, we have:
+\begin{prop}
+    The lattice $P_F$ is generated by $\langle H\rangle\oplus L_F$ and ${H-e_1-\cdots-e_5\over2}$.
+\end{prop}
+\begin{rmk}
+    For a generic $F\in\calM_{T_0}$, the K3 surface $X_F$ admits an elliptic fibration without sections (it admits a bi-section). This fibration has $1$ type $I_0^*$ fiber and $18$ nodal fibers. 
+    The lattice $P_F$ is isomorphic to $U(2)\oplus D_4$. 
+    %This example appears in Belcastro's thesis \cite[Table 1.1, No. 6]{belcastro2002picard}.
+    The Picard lattice of the associated Jacobian elliptic K3 surface is $U\oplus D_4$, and the Mordell--Weil group is trivial. This example also appears in \cite[Table 1.1, No. 6]{belcastro2002picard} and \cite[Table 2]{clingher2024neron-severi}.
+\end{rmk}
+Recall that $Q_F\coloneqq P_F^\perp$, and $Q_F\cong U(2)\oplus U\oplus D_4\oplus E_8$.
+The associated period domain is $\DD_{T_0}\coloneqq\DD(Q_F)$, which is a type IV domain of dimension $14$. 
+The associated arithmetic group $\Gamma_{T_0}$ has the following expression
+\begin{equation*}
+    \Gamma_{T_0} = \{ g\in\Or(Q_F) \,|\, g \textup{ acts on } A_{Q_F} \textup{ through the } \mathfrak{S}_5\textup{-action on } A_{P_F}  \},
+\end{equation*}
+where $\mathfrak{S}_5$-action permutes $e_1,\cdots,e_5$.
+%The hyperplane arrangement $\calH_{T_0}$ is given by ///
+
+% \begin{equation*}  
+%     \Gamma_{T_0} = \left\{ g \in \Or(Q_F) \, \big| \, g \textup{ acts on } A_{Q_F} \textup{ through the } \mathfrak{S}_5\textup{-action permuting } \{e_1, \ldots, e_5\} \right\},  
+% \end{equation*}
+
+%The period map $\Prd_{T_0}$ induces an isomorphism $\calM_{T_0}\cong \Gamma_{T_0}\bs(\DD_{T_0}-\calH_{T_0})$.
+The hyperplane arrangement $\calH_{T_0}^*$ is empty. Thus $\Prd_{T_0}$ extends to an isomorphism $\calM_{T_0}^{\mathrm{ADE}}\cong \Gamma_{T_0}\bs\DD_{T_0}$, see \cite[Theorem 4.1]{laza2009deformations} and \cite[Proposition 3.7]{yu2023moduli}\footnote{There is a small typo in \cite[Proposition 3.7]{yu2023moduli}: "$\Sigma_T$" should be revised as "$\overline{\Sigma}_T$", the closure of $\Sigma_T$ in the GIT compactification. This criterion holds for all ADE singular types.}.
+The Looijenga compactification with respect to the empty hyperplane arrangement is exactly the Baily--Borel compactification.
+Hence the period map $\Prd_{T_0}$ extends to an isomorphism $\overline{\calM}_{T_0}\cong \overline{\Gamma_{T_0}\bs\DD_{T_0}}^{\mathrm{bb}}$, also see \cite[Theorem 4.2]{laza2009deformations} and \cite[Proposition 4.3]{yu2023moduli}.
+%In this case, the GIT compactification is normal, i.e. $\calM_{T_0}^{\mathrm{ss}}=\overline{\calM}_{T_0}$.\Zhong{Is this true? Check it}
+
+By Proposition \ref{prop: orbi str of nodal types}, the period map $\Prd_{T_0}$ induces an isomorphism of $\calM_{T_0}$ and $P\Gamma_{T_0}\bs(\DD_{T_0}-\calH_{T_0})$ as orbifolds. 
+
+
+\subsubsection{One Tacnode and Three Nodes}
+Suppose that there is one tacnode and three nodes. Denote the singular type by $T_1$.
+%The K3 surface $\widehat{X}_F$ for $F\in \calV_T$ has one tacnode and $3$ nodes. 
+Let $\calV_{5}$ consist of $F_5\in\Sym^5 V^*$ such that $Z(F_5)$ is a smooth quintic curve.
+%Denote by $\calU_{5,1}\to\PP\calV_5$ the universal family.
+In this case, $\PP\calV_{T_1}$ is a Zariski open subset of the universal family over $\calU_{5,1}$.
+
+We construct $\widehat{\PP\calV}_{T_1}$ as follows. Define $G_1$ as $\{ 
+(L,x)\in\PP(V^*)\times\PP(V) \,|\, x\in Z(L) \}$, which is a smooth $\PP^1$-bundle on $\PP(V^*)$. Define $G_{T_1}$ as 
+\begin{equation*}
+    \{ (L,x,F)\in G_1\times\PP(\Sym^5 V^*) \,|\, x\in Z(F),\, \mult_x(Z(F)\cdot Z(L))\ge 2 \}.
+\end{equation*}
+%where $T_x Z(F)$ denotes the projective tangent line of the quintic curve $Z(F)\subset\PP(V)$ at $x\in Z(F)$. 
+The space $G_{T_1}$ is a smooth $\PP^{18}$-bundle on $G_1$.
+\begin{prop}
+\label{prop: normalization for quintic plus 1 tangent}
+    The normalization space $\widehat{\PP\calV}_{T_1}$ is isomorphic to $G_{T_1}$.
+\end{prop}
+\begin{proof}
+    Let $\calU$ be the subspace of $\PP(V^*)\times\PP(V)\times\PP(\Sym^5 V^*)$ defined by 
+    \begin{equation*}
+        \{ (L,x,F) \,|\, x\in Z(L)\cap Z(F) \}.
+    \end{equation*}
+    The natural morphism $G_{T_1}\to \PP(\Sym^6 V^*)$ factors through the following morphisms
+    \begin{equation*}
+        G_{T_1} \to \calU \to \PP(V^*)\times\PP(\Sym^5 V^*) \to \PP(\Sym^6 V^*).
+    \end{equation*}
+    The first map is a natural inclusion, the second map is finite surjective and of degree $5$, and the last map is finite and generically injective. Notice that $G_{T_1}\to \PP(\Sym^6 V^*)$ is generically injective. Therefore, $G_{T_1}\to \PP(\Sym^6 V^*)$ is finite and generically injective.
+    Its image contains $\PP\calV_{T_1}$ as a Zariski open subset, and thus equals $\PP\overline{\calV}_{T_1}$. Therefore, $G_{T_1}$ is the normalization of $\PP\overline{\calV}_{T_1}$.
+\end{proof}
+
+For any fixed $F\in\calV_{T_1}$, we have $L_F\cong A_3\oplus A_1^{\oplus 3}$.
+Denote by $\{\epsilon_1,\epsilon_2,\epsilon_3\}$ the effective base of $A_3$ and by $e_1,e_2,e_3$ the effective bases of the three copies of $A_1$.
+Then $\Delta_F$ is given by $\{ \epsilon_1,\epsilon_2,\epsilon_3;e_1;e_2;e_3 \}$.
+\begin{lem}
+\label{lem: 1 A_3 + 3 A_1: L_F^-iota = P_F^-iota}
+    We have $L_F^{-\iota} = P_F^{-\iota}$.
+\end{lem}
+\begin{proof}
+    By definition, $L_F^{-\iota}$ is generated by $\epsilon_1-\epsilon_3$, where $(\epsilon_1-\epsilon_3)^2=-4$.
+    Since $({\epsilon_1-\epsilon_3\over2})^2=-1$ and $P_F$ is even, $L_F^{-\iota}$ does not admit any further finite-index extension in $P_F$, namely $L_F^{-\iota} = P_F^{-\iota}$.
+\end{proof}
+Recall that $M_F$ denotes the lattice generated by $\langle H_F\rangle\oplus L_F$ and $u\coloneqq{H-(2\epsilon_2+\epsilon_1+\epsilon_3)-e_1-e_2-e_3\over2}$.
+\begin{prop}
+\label{prop: 1 A_3 + 3 A_1: P=M}
+    We have $P_F=M_F$. 
+\end{prop}
+\begin{proof} 
+    %Since $A_{\langle H_F\rangle\oplus L_F}\cong \ZZ/2\times\ZZ/4\times(\ZZ/2)^3$, 
+    It is direct to check that there exists a decomposition of $M_F$ as following
+    \begin{equation*}
+        M_F = \langle H_F-e_2,H_F-e_3 \rangle \oplus \langle e_1,u,\epsilon_2,\epsilon_1,\epsilon_3 \rangle \cong U(2)\oplus D_5.
+    \end{equation*}
+    %where $\langle H_F-e_2,H_F-e_3 \rangle\cong U(2)$ and $\langle e_1,u,\epsilon_2,\epsilon_1,\epsilon_3 \rangle\cong D_5$.
+    Thus we have $A_{M_F}\cong (\ZZ/2)^2\times\ZZ/4$.
+    By Lemma \ref{lem: 1 A_3 + 3 A_1: L_F^-iota = P_F^-iota} and Proposition \ref{prop: saturation of M_F}, the quotient $P_F\over{M_F^\iota\oplus M_F^{-\iota}}$ is isomorphic to a subgroup of $A_{M_F^\iota}$ and also a subgroup of $A_{M_F^{-\iota}}$.
+    Since $A_{M_F^\iota}\cong(\ZZ/2)^4$ and $A_{M_F^{-\iota}}\cong\ZZ/4$, $P_F\over{M_F^\iota\oplus M_F^{-\iota}}$ is a subgroup of $\ZZ/2$.
+    Moreover, we have ${M_F\over{M_F^\iota\oplus M_F^{-\iota}}}\cong\ZZ/2$.
+    By definition, $M_F\subset P_F$, thus $M_F=P_F$.
+\end{proof}
+
+%Denote by $h$ the hyperplane class of $\PP^2$.
+%Then $A_3\oplus A_1^{\oplus 3}\oplus \left\langle H_F\right\rangle$ is a sublattice of $\Pic(X_F)$.
+%Denote by $x_{F,i},\, y_F$ the preimage of $E_i,\, E'$, by $z_F$ the strict transform of $\pi_F^*L$, and by $s_{F,i}$ the two connected components of $\pi_F^*E$.
+
+%The lattice $P_F$ is generated by $s_{F,i}\,(1\le i\le 2),\, x_{F,j}\,(1\le j\le 3),\, y_F,\, z_F$.
+
+% \begin{rmk}
+%     By Shioda's theorem ///, the quotient of $\Pic(X_F)$ by the sublattice generated by $s_{F,1},\, x_{F,i}\,(1\le i\le 3),\, y_F,\, z_F$ is isomorphic to the Mordell-Weil group $\MW(X_F)$.
+% \end{rmk}
+
+\begin{rmk}
+    For a generic $F\in\calM_{T_1}$, the K3 surface $X_F$ admits an elliptic fibration $\pi_1$ with sections. This fibration has a type $I_0^*$ fiber and $18$ nodal fibers.
+    The Mordell--Weil group of $\pi_1$ is of rank $1$ and torsion-free.
+\end{rmk}
+\begin{rmk}
+    For a generic $F\in\calM_{T_1}$, $X_F$ also admits an elliptic fibration $\pi_2$ without sections (it admits a bi-section). This fibration has a type $I_1^*$ fiber and $17$ nodal fibers.
+    %We have $P_F\cong U(2)\oplus D_5$. 
+    The Jacobian elliptic surface of $\pi_2$ has Picard lattice isomorphic to $U\oplus D_5$. The Mordell--Weil group is trivial.
+\end{rmk}
+
+We have $Q_F\cong U\oplus U(2)\oplus A_3\oplus E_8$.
+The period domain $\DD_{T_1}$ is a type IV domain of dimension $13$.
+The arithmetic group $\Gamma_{T_1}$ can be expressed as
+\begin{equation*}
+    \Gamma_{T_1} = \{ g\in\Or(Q_F) \,|\, g \textup{ acts on } A_{Q_F} \textup{ through the } \mathfrak{S}_2\times\mathfrak{S}_3\textup{-action on } A_{P_F} \},
+\end{equation*}
+where $\mathfrak{S}_2$-action (respectively, $\mathfrak{S}_3$-action) permutes $\epsilon_1,\epsilon_3$ (respectively, $e_1,e_2,e_3$).
+%The hyperplane arrangement $\calH_{T_1}$ is given by ///.
+%The period map $\Prd_{T_1}$ induces an isomorphism $\calM_{T_1}\cong \Gamma_{T_1}\bs(\DD_{T_1}-\calH_{T_1})$.
+By \cite[Proposition 3.7]{yu2023moduli}, the hyperplane arrangement $\calH_{T_1}^*$ is empty.
+The period map $\Prd_{T_1}$ extends to an isomorphism $\calM_{T_1}^{\mathrm{ADE}}\cong\Gamma_{T_1}\bs\DD_{T_1}$ and further an isomorphism $\overline{\calM}_{T_1}\cong \overline{\Gamma_{T_1}\bs\DD_{T_1}}^{\mathrm{bb}}$.
+%Then we have $\calM_{T_0}^{\mathrm{ss}}=\overline{\calM}_{T_0}$.
+
+%By Theorem ///, the period map /// extends to ///, and the orbifold structures are preserved.
+
+%viewpoint: universal family of $\calM_5$, $\calM_{5,1}$
+
+
+\subsubsection{Two Tacnodes and One Node}
+
+Suppose there are two tangent points. Denote the singular type by $T=T_2$.
+%\cite{caporaso2003recovering}: the number of bitangent lines of a degree $d$ plane curves. 
+Due to a classical result by Schubert \cite{schubert1879kalkul}, a generic smooth degree $d$ plane curve has $d(d-2)(d^2-9)\over2$ bitangents.
+Thus a generic smooth plane quintic curve has $120$ bitangents.
+Denote by $\calM_5$ the moduli space of smooth quintic curves.
+The natural projection $\calM_{T_2}\to \calM_5$ is a finite morphism of degree $120$.
+%\footnote{\red{Problem: behavior of this finite morphism under compactification.}}
+
+We construct $\widehat{\PP\calV}_{T_2}$ as follows.
+Define $\widetilde{G}_1$ as $\{ (L,x,y)\in\PP(V^*)\times\PP(V)\times\PP(V) \,|\, x,y\in Z(L) \}$, which is a smooth $\PP^1\times\PP^1$-bundle on $\PP(V^*)$.
+The total space $\widetilde{G}_1$ admits an (fiberwise) involution $\tau$ defined by switching $x$ and $y$.
+Define $G_1\coloneqq \widetilde{G}_1/\tau$. Since the fixed locus of $\tau$ has codimension $1$ in $\widetilde{G}_1$, $G_1$ is smooth. In fact, it is a $\PP^2$-bundle on $\PP(V^*)$. Denote by $[L,x,y]$ the image of $(L,x,y)\in\widetilde{G}_1$ in $G_1$.
+Define $G_{T_2}$ as 
+\begin{equation*}
+    \{ ([L,x,y],F)\in G_1\times\PP(\Sym^5 V^*) \,|\, x,y\in Z(F),\, Z(F)\textup{ satisfies }(\star) \},
+\end{equation*}
+where the condition $(\star)$ means: when $x\ne y$, $\mult_x (Z(F)\cdot Z(L))\ge 2$ and $\mult_y (Z(F)\cdot Z(L))\ge 2$; when $x=y$, $\mult_x(Z(F)\cdot Z(L))\ge 4$. 
+%i.e. the line defined by $L$ is a bitangent of the quintic curve defined by $F$ at the points $x$ and $y$. 
+It is a smooth $\PP^{16}$-bundle on $G_1$. Similarly to Proposition \ref{prop: normalization for quintic plus 1 tangent}, we can describe the normalization of $\PP\overline{\calV}_{T_2}$ as follows.
+\begin{prop}
+    The normalization space $\widehat{\PP\calV}_{T_2}$ is isomorphic to $G_{T_2}$.
+\end{prop}
+
+For any fixed $F\in\calM_{T_2}$, we have $L_F\cong A_3^{\oplus 2}\oplus A_1$.
+Denote by $(\epsilon_i)_i$ and $(\delta_i)_i$ the effective bases of two copies of $A_3$ respectively, and by $e$ the effective base of $A_1$.
+Then $\Delta_F$ is given by $\{ \epsilon_1,\epsilon_2,\epsilon_3;\delta_1,\delta_2,\delta_3;e \}$.
+%In this case, $M_F$ is ///
+\begin{lem}
+\label{lem: 2 A_3 + 1 A_1: L^-iota = P^-iota}
+    We have $L_F^{-\iota}=P_F^{-\iota}$.
+\end{lem}
+\begin{proof}
+    By definition, $L_F^{-\iota}$ is generated by $\epsilon_1-\epsilon_3$ and $\delta_1-\delta_3$.
+    The only possible value for $(a,b)$ $(0\le a,b\le 3)$ that results in $a(\epsilon_1-\epsilon_3)+b(\delta_1-\delta_3)\over4$ having an even self-intersection number is $(a,b)=(2,2)$.
+    However, $(\epsilon_1-\epsilon_3)+(\delta_1-\delta_3)\over2$ is a root that is orthogonal to $H_F$, so it does not belong to $P_F$. 
+    Thus $L_F^{-\iota}$ does not admit any further finite-index extension in $P_F$, namely $L_F^{-\iota} = P_F^{-\iota}$.
+\end{proof}
+In this case, $M_F$ is generated by $\langle H_F\rangle\oplus L_F$ and $u\coloneqq {H_F-(2\epsilon_2+\epsilon_1+\epsilon_3)-(2\delta_2+\delta_1+\delta_3)-e\over2}$.
+\begin{prop}
+    We have $M_F \cong \langle -4 \rangle\oplus U\oplus D_5$.
+\end{prop}
+\begin{proof}
+    It is easy to check $A_{M_F}\cong(\ZZ/4)^2$, which is generated by ${H\over2}+{3\epsilon_1+2\epsilon_2+\epsilon_3\over4}$ and ${e\over2}+{3\delta_1+2\delta_2+\delta_3\over4}$.
+    By \cite[Chapter 15, \S 7.4]{conway1999sphere}, we have $A_{M_F}\cong 4^{-2}_{2}$ (Conway--Sloane symbol).
+    By \cite[Cor 1.13.3]{nikulin1979integer}, there exists a unique $N$ (up to isomorphism) of signature $(1,7)$ such that $A_N\cong 4^{-2}_{2}$.
+    It is direct to verify that the discriminant form of $\langle -4 \rangle\oplus U\oplus D_5$ is isomorphic to $A_N\cong 4^{-2}_{2}$.
+\end{proof}
+\begin{prop}
+    We have $P_F=M_F$. 
+\end{prop}
+\begin{proof}
+    %Since $A_{\langle H_F\rangle\oplus L_F}\cong \ZZ/2\times(\ZZ/4)^2\times\ZZ/2$, we have $A_{M_F}\cong$
+    It is clear that $A_{M_F^\iota}\cong(\ZZ/2)^4$. 
+    By Lemma \ref{lem: 2 A_3 + 1 A_1: L^-iota = P^-iota}, $A_{M_F^{-\iota}}\cong(\ZZ/4)^2$.
+    By a parallel argument in the proof of Proposition \ref{prop: 1 A_3 + 3 A_1: P=M}, we can conclude $P_F=M_F$.
+\end{proof}
+
+\begin{rmk}
+    For a generic $F\in\calV_T$, the K3 surface $X_F$ admits an elliptic fibration $\pi_1$ with sections.
+    There exists a type $I_1^*$ fiber and $17$ nodal fibers.
+    The Mordell--Weil group is of rank one and torsion-free.
+\end{rmk}
+%\begin{rmk}
+    %For a generic $F\in\calV_T$, $X_F$ admits an elliptic fibration $\pi_2$ without sections (it admits a bi-section).
+    %There exists a type $I_2^*$ fiber and $16$ nodal fibers.
+    %The Jacobian elliptic surface of $\pi_2$ has Picard lattice ///, and its Mordell--Weil group is ///
+%\end{rmk}
+
+We have $Q_F\cong \langle 4\rangle\oplus A_3\oplus U\oplus E_8$.
+The arithmetic group $\Gamma_{T_2}$ can be described as
+\begin{equation*}
+    \Gamma_{T_2} = \{ g\in\Or(Q_F) \,|\, g \textup{ acts on } A_{Q_F} \textup{ through the } (\mathfrak{S}_2)^2\times\mathfrak{S}_2\textup{-action on } A_{P_F} \},
+\end{equation*}
+where the first two $\mathfrak{S}_2$-actions permute $\epsilon_1,\epsilon_3$ and $\delta_1,\delta_3$ respectively, and the last $\mathfrak{S}_2$-action permutes the two sets $\{\epsilon_i\}$ and $\{\delta_i\}$. 
+Analogously to the previous cases, the period map $\Prd_{T_2}$ extends first to an isomorphism $\calM_{T_2}^{\mathrm{ADE}} \cong \Gamma_{T_2} \bs \DD_{T_2}$ and then further to $\overline{\calM}_{T_2} \cong \overline{\Gamma_{T_2} \bs \DD_{T_2}}^{\mathrm{bb}}$. 
+%thereby lifting from the ADE locus to the semi-stable compactification.  
+% the period map $\Prd_{T_2}$ extends to isomorphisms  
+% \[  
+% \calM_{T_2}^{\mathrm{ADE}} \cong \Gamma_{T_2} \bs \DD_{T_2}  
+% \quad \text{and} \quad  
+% \calM_{T_2}^{\mathrm{ss}} \cong \overline{\Gamma_{T_2} \bs \DD_{T_2}}^{\mathrm{bb}},  
+% \]  
+% successively lifting from the ADE locus to the semi-stable compactification.  %% deepseek's advice 1
+%the period map $\Prd_{T_2}$ extends to an isomorphism $\calM_{T_2}^{\mathrm{ADE}}\cong\Gamma_{T_2}\bs\DD_{T_2}$ and further an isomorphism $\calM_{T_2}^{\mathrm{ss}}\cong \overline{\Gamma_{T_2}\bs\DD_{T_2}}^{\mathrm{bb}}$. %% original
+
+
+%A related symmetric case: five points on $\PP^1$ (Kond\=o), in other paper
+
+
+
+
+
+
+
+
+
+\subsection{A Quartic Curve with Two Bitangents}
+The nodal case of quartic curves with two lines is discussed in \cite{gallardo2018compactifications}.
+We consider the singular type $T$ when the two lines are both bitangents.
+Each smooth quartic curve admits $28$ bitangents.
+Let $\calM_4$ denote the moduli space of quartic curves.
+The natural projection $\calM_T\to \calM_4$ is a finite morphism of degree $\binom{28}{2}$.
+
+% We construct the normalization $\widehat{\PP\calV}_T$ as follows. Define $G_1$ as $\{ (L,L',x,y,x',y')\in \PP(V^*)^2\times\PP(V)^2\times\PP(V)^2 \,|\, x,y\in Z(L),\, x',y'\in Z(L') \}$, which is a $(\PP^1\times\PP^1)^2$-bundle on $\PP(V^*)^2$. It admits a natural $(\mathfrak{S}_2)^3$-action, which switches $(L,L')$, $(x,y)$ and $(x',y')$ respectively. Let $G_1$ be the quotient $\widetilde{G}_1/(\mathfrak{S}_2)^3$, which is a $\PP^2\times\PP^2$-bundle on $\Sym^2 \PP(V^*)$. Note that the base $\Sym^2 \PP(V^*)$ and $G_1$ are normal but not smooth. 
+% Define $G_T$ as the subset of $G_1\times\PP(\Sym^4 V^*)$ that consists of $(L,L',x,y,x',y')$ and $F$ such that $Z(L)$ and $Z(L')$ are two bitangents of $Z(F)$ at the points $x,y$ and $x',y'$ respectively.
+% Similarly to previous cases, we have the following description of the nomalization of $\PP\overline{\calV}_T$.
+% \begin{prop}
+%     The normalization space $\widehat{\PP\calV}_{T}$ is isomorphic to $G_{T}$.
+% \end{prop}
+
+For any fixed $F\in\calV_{T}$, we have $L_F\cong A_1\oplus A_3^{\oplus 4}$.
+Denote by $\Delta\coloneqq \{ e;\alpha_1,\alpha_2,\alpha_3;\beta_1,\beta_2,\beta_3;\\ \epsilon_1,\epsilon_2,\epsilon_3;\delta_1,\delta_2,\delta_3 \}$.
+In this case, $M_F$ is generated by $\langle H\rangle \oplus L$, $u\coloneqq{H-e-(2\alpha_2+\alpha_1+\alpha_3)-(2\beta_2+\beta_1+\beta_3)\over2}$ and $v\coloneqq{H-e-(2\epsilon_2+\epsilon_1+\epsilon_3)-(2\delta_2+\delta_1+\delta_3)\over2}$. 
+\begin{lem}
+    We have $M_F^{-\iota}=P_F^{-\iota}$.
+\end{lem}
+\begin{proof}
+    Let $w\coloneqq{a(\alpha_1-\alpha_3)+b(\beta_1-\beta_3)+c(\epsilon_1-\epsilon_3)+d(\delta_1-\delta_3)\over4}$ be an element in $(A_3^{\oplus4})^\vee$, where $0\le a,b,c,d\le 3$.
+    If $[w]$ is an isotropic element in $A_{A_3^{\oplus4}}$, then we have $8\,|\,a^2+b^2+c^2+d^2$. 
+    %Then there are two elements in $(a,b,c,d)$ that are equal to $2$ and the other two are equal to $0$, or $(a,b,c,d)=(2,2,2,2)$.
+    %Except in the last case, these elements are all roots that are perpendicular to $H_F$, which cannot lie in $P_F$.
+    Then either $(a,b,c,d)$ has two entries equal to $2$ and two to $0$, or $(a,b,c,d)$ is equal to $(2,2,2,2)$. 
+    In the former case, all the entries correspond to roots orthogonal to $H_F$, none of which lies in $P_F$.
+    The element corresponding to $(2,2,2,2)$ is contained in $M_F^{-\iota}$. 
+\end{proof}
+% \begin{prop}
+%     We have $P_F=M_F$ (???) 
+% \end{prop}
+% \begin{proof}
+%     $A_{M_F}\cong \ZZ/4\times(\ZZ/2)^4$; $A_{M_F^{\iota}}\cong(\ZZ/2)^6$; $A_{M_F^{-\iota}}\cong(\ZZ/4)^2\times(\ZZ/2)^2$
+% \end{proof}
+\begin{ques}
+    Do we have $P_F=M_F$?
+\end{ques}
+%$A_{M_F}\cong \ZZ/4\times(\ZZ/2)^4$; 
+\begin{rmk}
+    Since $A_{M_F^{\iota}}\cong(\ZZ/2)^6$ and $A_{M_F^{-\iota}}\cong(\ZZ/4)^2\times(\ZZ/2)^2$, there may exist a finite-index extension $M_F^{\iota}\oplus M_F^{-\iota}\hookrightarrow P$ such that ${P\over M_F^{\iota}\oplus M_F^{-\iota}}\cong(\ZZ/2)^4$.
+    Notice that ${M_F\over M_F^{\iota}\oplus M_F^{-\iota}}\cong(\ZZ/2)^3$.
+    There may not be an easy way to decide whether $P_F=M_F$.
+\end{rmk}
+
+
+\begin{rmk}
+    For a generic $F\in\calM_T$, $X_F$ admits an elliptic fibration $\pi_1$ with sections.
+    There exists a type $I_1^*$ fiber, $2$ type $I_4$ fibers and $15$ nodal fibers.
+    %The Mordell--Weil group is of rank $1$ and torsion free.
+\end{rmk}
+\begin{rmk}
+    For a generic $F\in\calM_T$, $X_F$ admits another elliptic fibration without sections (it admits a bi-section).
+    There exist $2$ type $I_2^*$ fibers and $10$ nodal fibers.
+\end{rmk}
+
+%We have $Q_F\cong ///$
+The arithmetic group $\Gamma_{T}$ can be characterized as
+\begin{equation*}
+    \Gamma_{T} = \{ g\in\Or(Q_F) \,|\, g \textup{ acts on } A_{Q_F} \textup{ through the } (\mathfrak{S}_2)^4\times\mathfrak{S}_4\textup{-action on } A_{P_F} \},
+\end{equation*}
+where the four $\mathfrak{S}_2$-actions permutes $\alpha_1,\alpha_3$; $\beta_1,\beta_3$; $\epsilon_1,\epsilon_3$ and $\delta_1,\delta_3$ respectively, and the $\mathfrak{S}_4$-action permutes the four sets $\{\alpha_i\}$, $\{\beta_i\}$, $\{\epsilon_i\}$ and $\{\delta_i\}$.
+Following the same argument, $\Prd_{T}$ extends to an isomorphism $\calM_{T}^{\mathrm{ADE}} \cong \Gamma_{T} \bs \DD_{T}$ and further to $\overline{\calM}_{T} \cong \overline{\Gamma_{T} \bs \DD_{T}}^{\mathrm{bb}}$.
+
+The moduli space of quartic curves admits an occult period map to an arithmetic ball quotient dimension $6$, see \cite{kondo2011moduli}.
+    A smooth quartic curve is a Riemann surface of genus three.
+    Its Jacobian is a principal polarized abelian variety of dimension three. This leads to a birational equivalence between the moduli space of quartic curves and an arithmetic quotient of the Siegel upper half-space $\mathcal{S}_3$ of degree $3$.
+    It would be interesting to study more relations among the three arithmetic quotients of different types and their compactifications.
+
+%\textcolor{red}{describe the differences of the corresponding type IV domain quotients and ball quotients?}
+
+%strange correspondence of Shimura varieties of different types
+
+
+
+
+
+%\subsection{Three Conics with Six tacnodes}
+%\cite{megyesi2000configurations}
+
+\subsection{Zariski Pairs}
+\label{subsec: Zariski pair}
+These examples had been discussed in \cite[\S 3]{yang2012discriminantal}.
+We present a construction of them from a more geometric viewpoint.
+
+%Let us recall a bit history of Zariski pair.
+
+% Zariski \cite{Zariski1929problem} constructed a pair of irreducible six cuspidal sextics but are not equisingular deformation equivalent. %(also contained in Galati's paper \red{add citation?}).
+% Tokunaga [///], Artal [///--///] also constructed further examples of sextics.
+% These pairs, which have the same combinatorial type of singularities but are not equisingular deformation equivalent, are usually called \emph{Zariski pairs}.
+% For some other degrees, Oka [///], Shimada [///,///] constructed some infinite series of examples of Zariski pairs.
+
+A pair of reduced plane curves of the same degree, which have the same combinatorial type of singularities but are not equisingular deformation equivalent, is usually called \emph{Zariski pairs}.
+Zariski showed that the space of irreducible sextic curves with six cusps as the only singularities form at least two irreducible components, which provided the first example, see \cite{zariski1931irregularity}. 
+Degtyarev showed that they actually form exactly two irreducible components, see \cite[Theorem 5.3.2]{degtyarev2008deformations}.
+Both of the two irreducible components are smooth of the same expected dimension. 
+
+Denote by $T_1,T_2$ the two corresponding singular types, where $T_2$ corresponds to sextic curves whose six cusps lie on a conic.
+
+Let $C$ be a sextic of $T_2$-type.
+Denote by $D$ for the conic containing the six cusps $p_1,\cdots,p_6$ of $C$.
+By B\'ezout theorem, $D\cap C = \{ p_1,\cdots,p_6 \}$ and the intersection multiplicity of each $p_i$ is two.
+Let $f\colon S\to \PP^2$ be the blowup of $\{ p_1,\cdots,p_6 \}$ on $\PP^2$, and denote by $E_1,\cdots,E_6$ the exceptional curves.
+We still denote by $C$ (respectively, $D$) the strict transform of $C$ (respectively, $D$).
+Then $C$ and $D$ are disjoint in $S$.
+For each $1\le i\le 6$, we have $E_i^2=-1$ and $E_i\cdot D=1$.
+
+Let $\pi\colon X\to S$ be the double cover branched over $C$.
+Then $\pi^{-1}(D)$ is a disjoint union of $D_1$ and $D_2$, where $D_1,D_2$ are both isomorphic to $D$.
+Moreover, we have $\pi^* E_i = \widetilde{E}_i + \widetilde{F}_i$ and $\pi^* C = 2 \widetilde{C}$, where each $(\widetilde{E}_i,\widetilde{F}_i)$ forms a $A_2$-type Dynkin diagram, $\widetilde{C}$ is reduced and $\widetilde{E}_i\cdot \widetilde{C} = \widetilde{F}_i\cdot \widetilde{C} = 1$.
+Let $H$ be the pullback of the hyperplane class on $\PP^2$.
+We have $H^2=2$ and $H\cdot D_i=2$.
+It is direct to verify that 
+\begin{equation*}
+    D_1 = H - \frac{1}{3}\sum_{i=1}^6 (2 \widetilde{E}_i + \widetilde{F}_i),\quad D_2 = H - \frac{1}{3}\sum_{i=1}^6 (\widetilde{E}_i + 2 \widetilde{F}_i).
+\end{equation*}
+It is clear that neither $D_1$ nor $D_2$ lies in $\left\langle H\right\rangle \oplus L$.
+
+Due to the classification by Zariski and Degtyarev, we have the following:
+\begin{prop}
+\label{proposition: picard zariski pair}
+\begin{enumerate}[(i)]
+    \item For the $T_1$-type, the generic Picard group $P_{T_1}$ of the associated K3 surfaces is generated by $H$ and $L$.
+    \item For the $T_2$-type, the generic Picard group $P_{T_2}$ of the associated K3 surfaces is generated by $H$, $L$ and $D_1$.
+\end{enumerate}
+\end{prop}
+The singular type $T_2$ provides an example for $P\ne M$.
+
+We have $Q_{T_1}=P_{T_1}^\perp\cong \langle -2\rangle\oplus U(3)^{\oplus 2}\oplus A_2^{\oplus 2}$, $Q_{T_2}=P_{T_2}^\perp\cong \langle -2\rangle\oplus U\oplus U(3)\oplus A_2^{\oplus 2}$.
+Both of the period domains $\DD_{T_1}$ and $\DD_{T_2}$ are type IV domains of dimension $7$.
+The arithmetic group $\Gamma_{T_1}$ can be written in the form of
+\begin{equation*}
+    \Gamma_{T_1} = \{ g\in\Or(Q_{T_1}) \,|\, g \textup{ acts on } A_{Q_{T_1}} \textup{ through the } (\mathfrak{S}_2)^6\times\mathfrak{S}_6\textup{-action on } A_{P_{T_1}} \}.
+\end{equation*}
+Similar for the arithmetic group $\Gamma_{T_2}$,
+\begin{equation*}
+    \Gamma_{T_2} = \{ g\in\Or(Q_{T_2}) \,|\, g \textup{ acts on } A_{Q_{T_2}} \textup{ through the } (\mathfrak{S}_2)^4\times\mathfrak{S}_4\textup{-action on } A_{P_{T_2}} \}.
+\end{equation*}
+For $i=1,2$, the period map $\Prd_{T_i}$ extends to an isomorphism $\calM_{T_i}^{\mathrm{ADE}} \cong \Gamma_{T_i} \bs \DD_{T_i}$ and further to $\overline{\calM}_{T_i} \cong \overline{\Gamma_{T_i} \bs \DD_{T_i}}^{\mathrm{bb}}$.
+
+
+
+\bibliography{ref}
+\bibliographystyle{alpha}
+\Addresses
+
+\end{document}

@@ -1,0 +1,859 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{ynt/global//global/global/global}
+    \entry{Cob19}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=739ed4f894a486744e462e3fee4b4db1}{%
+           family={Coble},
+           familyi={C\bibinitperiod},
+           given={Arthur\bibnamedelima B.},
+           giveni={A\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Johns Hopkins University Press}%
+      }
+      \strng{namehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{fullhash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{fullhashraw}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{bibnamehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authorbibnamehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authornamehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authorfullhash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authorfullhashraw}{739ed4f894a486744e462e3fee4b4db1}
+      \field{extraname}{1}
+      \field{labelalpha}{Cob19}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprinttype}{jstor}
+      \field{issn}{0002-9327}
+      \field{journaltitle}{American Journal of Mathematics}
+      \field{number}{4}
+      \field{title}{The {{Ten Nodes}} of the {{Rational Sextic}} and of the {{Cayley Symmetroid}}}
+      \field{urlday}{15}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{volume}{41}
+      \field{year}{1919}
+      \field{urldateera}{ce}
+      \field{pages}{243\bibrangedash 265}
+      \range{pages}{23}
+      \verb{doi}
+      \verb 10.2307/2370285
+      \endverb
+      \verb{eprint}
+      \verb 2370285
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/RY6EIZUX/Coble - 1919 - The Ten Nodes of the Rational Sextic and of the Ca.pdf
+      \endverb
+    \endentry
+    \entry{Cob29}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=739ed4f894a486744e462e3fee4b4db1}{%
+           family={Coble},
+           familyi={C\bibinitperiod},
+           given={Arthur\bibnamedelima B.},
+           giveni={A\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {American Mathematical Soc.}%
+      }
+      \strng{namehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{fullhash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{fullhashraw}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{bibnamehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authorbibnamehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authornamehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authorfullhash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authorfullhashraw}{739ed4f894a486744e462e3fee4b4db1}
+      \field{extraname}{2}
+      \field{labelalpha}{Cob29}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{This book is the result of extending and deepening all questions from algebraic geometry that are connected to the central problem of this book: the determination of the tritangent planes of a space curve of order six and genus four, which the author treated in his Colloquium Lecture in 1928 at Amherst. The first two chapters recall fundamental ideas of algebraic geometry and theta functions in such fashion as will be most helpful in later applications. In order to clearly present the state of the central problem, the author first presents the better-known cases of genus two (Chapter III) and genus three (Chapter IV). The case of genus four is discussed in the last chapter. The exposition is concise with a rich variety of details and references.}
+      \field{isbn}{978-0-8218-4602-5}
+      \field{langid}{english}
+      \field{month}{12}
+      \field{title}{Algebraic {{Geometry}} and {{Theta Functions}}}
+      \field{year}{1929}
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/6INIJ8NK/Coble - 1929 - Algebraic Geometry and Theta Functions.pdf
+      \endverb
+      \keyw{Mathematics / Geometry / Algebraic}
+    \endentry
+    \entry{PSS71}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=9042fe6db632f0976b5f5794954d42b3}{%
+           family={{Pjateckii-Šapiro}},
+           familyi={P\bibinitperiod},
+           given={I.\bibnamedelimi I.},
+           giveni={I\bibinitperiod\bibinitdelim I\bibinitperiod}}}%
+        {{hash=33be33c131fc910ffd05587507594de2}{%
+           family={Shafarevich},
+           familyi={S\bibinitperiod},
+           given={I.\bibnamedelimi R.},
+           giveni={I\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+      }
+      \strng{namehash}{aff581b05a74955d80802369e7fb6004}
+      \strng{fullhash}{aff581b05a74955d80802369e7fb6004}
+      \strng{fullhashraw}{aff581b05a74955d80802369e7fb6004}
+      \strng{bibnamehash}{aff581b05a74955d80802369e7fb6004}
+      \strng{authorbibnamehash}{aff581b05a74955d80802369e7fb6004}
+      \strng{authornamehash}{aff581b05a74955d80802369e7fb6004}
+      \strng{authorfullhash}{aff581b05a74955d80802369e7fb6004}
+      \strng{authorfullhashraw}{aff581b05a74955d80802369e7fb6004}
+      \field{labelalpha}{PS71}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Izvestiya: Mathematics}
+      \field{month}{6}
+      \field{number}{3}
+      \field{title}{A Torelli Theorem for Algebraic Surfaces of Type {{K3}}}
+      \field{volume}{5}
+      \field{year}{1971}
+      \field{pages}{547\bibrangedash 588}
+      \range{pages}{42}
+      \verb{doi}
+      \verb 10.1070/IM1971v005n03ABEH001075
+      \endverb
+    \endentry
+    \entry{KK72}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=8dcc65c20e1d043780bde3e023bec8b2}{%
+           family={Kiernan},
+           familyi={K\bibinitperiod},
+           given={Peter},
+           giveni={P\bibinitperiod}}}%
+        {{hash=6a80d28fcb3df1ce1c4b1226430560ba}{%
+           family={Kobayashi},
+           familyi={K\bibinitperiod},
+           given={Shoshichi},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{2cd98aea8f729414a58417e52c962d9e}
+      \strng{fullhash}{2cd98aea8f729414a58417e52c962d9e}
+      \strng{fullhashraw}{2cd98aea8f729414a58417e52c962d9e}
+      \strng{bibnamehash}{2cd98aea8f729414a58417e52c962d9e}
+      \strng{authorbibnamehash}{2cd98aea8f729414a58417e52c962d9e}
+      \strng{authornamehash}{2cd98aea8f729414a58417e52c962d9e}
+      \strng{authorfullhash}{2cd98aea8f729414a58417e52c962d9e}
+      \strng{authorfullhashraw}{2cd98aea8f729414a58417e52c962d9e}
+      \field{labelalpha}{KK72}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0020-9910,1432-1297}
+      \field{journaltitle}{Inventiones Mathematicae}
+      \field{title}{Satake Compactification and Extension of Holomorphic Mappings}
+      \field{volume}{16}
+      \field{year}{1972}
+      \field{pages}{237\bibrangedash 248}
+      \range{pages}{12}
+      \verb{doi}
+      \verb 10.1007/BF01425496
+      \endverb
+    \endentry
+    \entry{Hor78b}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=e6330efb2f29a49a3d8029864682d803}{%
+           family={Horikawa},
+           familyi={H\bibinitperiod},
+           given={Eiji},
+           giveni={E\bibinitperiod}}}%
+      }
+      \strng{namehash}{e6330efb2f29a49a3d8029864682d803}
+      \strng{fullhash}{e6330efb2f29a49a3d8029864682d803}
+      \strng{fullhashraw}{e6330efb2f29a49a3d8029864682d803}
+      \strng{bibnamehash}{e6330efb2f29a49a3d8029864682d803}
+      \strng{authorbibnamehash}{e6330efb2f29a49a3d8029864682d803}
+      \strng{authornamehash}{e6330efb2f29a49a3d8029864682d803}
+      \strng{authorfullhash}{e6330efb2f29a49a3d8029864682d803}
+      \strng{authorfullhashraw}{e6330efb2f29a49a3d8029864682d803}
+      \field{labelalpha}{Hor78}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0025-5831,1432-1807}
+      \field{journaltitle}{Mathematische Annalen}
+      \field{number}{3}
+      \field{title}{On the Periods of {{Enriques}} Surfaces. {{II}}}
+      \field{volume}{235}
+      \field{year}{1978}
+      \field{pages}{217\bibrangedash 246}
+      \range{pages}{30}
+      \verb{doi}
+      \verb 10.1007/BF01420123
+      \endverb
+      \verb{file}
+      \verb /home/zack/Downloads/Zotero_Source/Mathematische Annalen/1978/Horikawa - 1978 - On the periods of Enriques surfaces. II.pdf
+      \endverb
+    \endentry
+    \entry{Nik79}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=affca1e0337cc7f8f5aa0ab450d1d558}{%
+           family={Nikulin},
+           familyi={N\bibinitperiod},
+           given={V.\bibnamedelimi V.},
+           giveni={V\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {IOP Publishing}%
+      }
+      \strng{namehash}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \strng{fullhash}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \strng{fullhashraw}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \strng{bibnamehash}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \strng{authorbibnamehash}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \strng{authornamehash}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \strng{authorfullhash}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \strng{authorfullhashraw}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \field{labelalpha}{Nik80}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0025-5726}
+      \field{journaltitle}{Mathematics of the USSR-Izvestiya}
+      \field{langid}{english}
+      \field{month}{2}
+      \field{number}{1}
+      \field{title}{{{INTEGRAL SYMMETRIC BILINEAR FORMS AND SOME OF THEIR APPLICATIONS}}}
+      \field{urlday}{29}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{volume}{14}
+      \field{year}{1980}
+      \field{urldateera}{ce}
+      \field{pages}{103}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1070/IM1980v014n01ABEH001060
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/MSTMKYH7/Nikulin - 1980 - INTEGRAL SYMMETRIC BILINEAR FORMS AND SOME OF THEI.pdf
+      \endverb
+    \endentry
+    \entry{Mor81}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=c68e15e8e0be16d793449aae3d582084}{%
+           family={Morrison},
+           familyi={M\bibinitperiod},
+           given={David\bibnamedelima R.},
+           giveni={D\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Duke University Press}%
+      }
+      \strng{namehash}{c68e15e8e0be16d793449aae3d582084}
+      \strng{fullhash}{c68e15e8e0be16d793449aae3d582084}
+      \strng{fullhashraw}{c68e15e8e0be16d793449aae3d582084}
+      \strng{bibnamehash}{c68e15e8e0be16d793449aae3d582084}
+      \strng{authorbibnamehash}{c68e15e8e0be16d793449aae3d582084}
+      \strng{authornamehash}{c68e15e8e0be16d793449aae3d582084}
+      \strng{authorfullhash}{c68e15e8e0be16d793449aae3d582084}
+      \strng{authorfullhashraw}{c68e15e8e0be16d793449aae3d582084}
+      \field{labelalpha}{Mor81}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Duke Mathematical Journal}
+      \field{issn}{0012-7094, 1547-7398}
+      \field{journaltitle}{Duke Mathematical Journal}
+      \field{month}{3}
+      \field{number}{1}
+      \field{title}{Semistable Degenerations of {{Enriques}}' and Hyperelliptic Surfaces}
+      \field{urlday}{29}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{volume}{48}
+      \field{year}{1981}
+      \field{urldateera}{ce}
+      \field{pages}{197\bibrangedash 249}
+      \range{pages}{53}
+      \verb{doi}
+      \verb 10.1215/S0012-7094-81-04813-4
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/HYSCN9BK/Morrison - 1981 - Semistable degenerations of Enriques’ and hyperell.pdf
+      \endverb
+      \keyw{14E30,14J15}
+    \endentry
+    \entry{Sha81}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=c1487a86a7e858092d2bf415bf3add13}{%
+           family={Shah},
+           familyi={S\bibinitperiod},
+           given={Jayant},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer Science and Business Media LLC}%
+      }
+      \strng{namehash}{c1487a86a7e858092d2bf415bf3add13}
+      \strng{fullhash}{c1487a86a7e858092d2bf415bf3add13}
+      \strng{fullhashraw}{c1487a86a7e858092d2bf415bf3add13}
+      \strng{bibnamehash}{c1487a86a7e858092d2bf415bf3add13}
+      \strng{authorbibnamehash}{c1487a86a7e858092d2bf415bf3add13}
+      \strng{authornamehash}{c1487a86a7e858092d2bf415bf3add13}
+      \strng{authorfullhash}{c1487a86a7e858092d2bf415bf3add13}
+      \strng{authorfullhashraw}{c1487a86a7e858092d2bf415bf3add13}
+      \field{labelalpha}{Sha81}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Mathematische Annalen}
+      \field{langid}{english}
+      \field{month}{8}
+      \field{number}{4}
+      \field{title}{Projective Degenerations of Enriques' Surfaces}
+      \field{volume}{256}
+      \field{year}{1981}
+      \field{pages}{475\bibrangedash 495}
+      \range{pages}{21}
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/EKAWPJHJ/Shah - 1981 - Projective degenerations of enriques' surfaces.pdf
+      \endverb
+    \endentry
+    \entry{DZ99}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=81de5176d529ca917f02c152ed35afa4}{%
+           family={Dolgachev},
+           familyi={D\bibinitperiod},
+           given={I.},
+           giveni={I\bibinitperiod}}}%
+        {{hash=b7ae412dcdc0f3120d90313a03412aae}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={D.-Q.},
+           giveni={D\bibinithyphendelim Q\bibinitperiod}}}%
+      }
+      \strng{namehash}{8c47377655cb1a787057a9bcf1fcd47a}
+      \strng{fullhash}{8c47377655cb1a787057a9bcf1fcd47a}
+      \strng{fullhashraw}{8c47377655cb1a787057a9bcf1fcd47a}
+      \strng{bibnamehash}{8c47377655cb1a787057a9bcf1fcd47a}
+      \strng{authorbibnamehash}{8c47377655cb1a787057a9bcf1fcd47a}
+      \strng{authornamehash}{8c47377655cb1a787057a9bcf1fcd47a}
+      \strng{authorfullhash}{8c47377655cb1a787057a9bcf1fcd47a}
+      \strng{authorfullhashraw}{8c47377655cb1a787057a9bcf1fcd47a}
+      \field{labelalpha}{DZ99}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{A smooth rational surface X is a Coble surface if the anti-canonical linear system is empty while the anti-bicanonical linear system is non-empty. In this note we shall classify these X and consider the finiteness problem of the number of negative curves on X modulo automorphisms.}
+      \field{howpublished}{https://arxiv.org/abs/math/9909135v1}
+      \field{journaltitle}{arXiv.org}
+      \field{langid}{english}
+      \field{month}{9}
+      \field{title}{Coble {{Rational Surfaces}}}
+      \field{urlday}{2}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{year}{1999}
+      \field{urldateera}{ce}
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/PLNXTVAC/Dolgachev and Zhang - 1999 - Coble Rational Surfaces.pdf
+      \endverb
+    \endentry
+    \entry{AN06}{book}{}{}
+      \name{author}{2}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=0a461aad65e9ed7ba880c3347dc93bb1}{%
+           family={Nikulin},
+           familyi={N\bibinitperiod},
+           given={Viacheslav\bibnamedelima V},
+           giveni={V\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+      }
+      \strng{namehash}{79752864cb1ab6350bbc8048642eba9d}
+      \strng{fullhash}{79752864cb1ab6350bbc8048642eba9d}
+      \strng{fullhashraw}{79752864cb1ab6350bbc8048642eba9d}
+      \strng{bibnamehash}{79752864cb1ab6350bbc8048642eba9d}
+      \strng{authorbibnamehash}{79752864cb1ab6350bbc8048642eba9d}
+      \strng{authornamehash}{79752864cb1ab6350bbc8048642eba9d}
+      \strng{authorfullhash}{79752864cb1ab6350bbc8048642eba9d}
+      \strng{authorfullhashraw}{79752864cb1ab6350bbc8048642eba9d}
+      \field{labelalpha}{AN06}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{{$<$}a Href="{{https://www.worldscientific.com/doi/abs/10.1142/e002"$>$}}{{Del Pezzo and K3 Surfaces}}{$<$}/A{$>$}}
+      \field{year}{2006}
+      \verb{doi}
+      \verb 10.1142/e002
+      \endverb
+      \verb{eprint}
+      \verb https://www.worldscientific.com/doi/pdf/10.1142/e002
+      \endverb
+    \endentry
+    \entry{ABE}{misc}{}{}
+      \name{author}{3}{}{%
+        {{hash=cfd6e7a3e8288e04e95ffaf34f538444}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={V.},
+           giveni={V\bibinitperiod}}}%
+        {{hash=b193a140cbaaf4bd03aa5a8e30a1a394}{%
+           family={Brunyate},
+           familyi={B\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=51e55b4935ebb6a66932a3ae92a9763a}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{894c0ad169d9cf1aa1de1c22bd34da4a}
+      \strng{fullhash}{894c0ad169d9cf1aa1de1c22bd34da4a}
+      \strng{fullhashraw}{894c0ad169d9cf1aa1de1c22bd34da4a}
+      \strng{bibnamehash}{894c0ad169d9cf1aa1de1c22bd34da4a}
+      \strng{authorbibnamehash}{894c0ad169d9cf1aa1de1c22bd34da4a}
+      \strng{authornamehash}{894c0ad169d9cf1aa1de1c22bd34da4a}
+      \strng{authorfullhash}{894c0ad169d9cf1aa1de1c22bd34da4a}
+      \strng{authorfullhashraw}{894c0ad169d9cf1aa1de1c22bd34da4a}
+      \field{labelalpha}{ABE22}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Compactifications of Moduli of Elliptic K3 Surfaces: Stable Pair and Toroidal}
+      \field{year}{2022}
+    \endentry
+    \entry{AE22nonsympinv}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=e297924340ea082ae262174c1bb62cd5}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={Philip},
+           giveni={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{fullhash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{fullhashraw}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{bibnamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorbibnamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authornamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorfullhash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorfullhashraw}{32cfe260637db5b5f2138917e55c1ffa}
+      \field{extraname}{1}
+      \field{labelalpha}{AE22}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Mirror Symmetric Compactifications of Moduli Spaces of {{K3}} Surfaces with a Nonsymplectic Involution}
+      \field{year}{2022}
+    \endentry
+    \entry{Ale23}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=cfd6e7a3e8288e04e95ffaf34f538444}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={V.},
+           giveni={V\bibinitperiod}}}%
+      }
+      \strng{namehash}{cfd6e7a3e8288e04e95ffaf34f538444}
+      \strng{fullhash}{cfd6e7a3e8288e04e95ffaf34f538444}
+      \strng{fullhashraw}{cfd6e7a3e8288e04e95ffaf34f538444}
+      \strng{bibnamehash}{cfd6e7a3e8288e04e95ffaf34f538444}
+      \strng{authorbibnamehash}{cfd6e7a3e8288e04e95ffaf34f538444}
+      \strng{authornamehash}{cfd6e7a3e8288e04e95ffaf34f538444}
+      \strng{authorfullhash}{cfd6e7a3e8288e04e95ffaf34f538444}
+      \strng{authorfullhashraw}{cfd6e7a3e8288e04e95ffaf34f538444}
+      \field{labelalpha}{Ale23}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Moduli of Surfaces of General Type}
+      \field{year}{2023}
+    \endentry
+    \entry{AE23}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=cfd6e7a3e8288e04e95ffaf34f538444}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={V.},
+           giveni={V\bibinitperiod}}}%
+        {{hash=51e55b4935ebb6a66932a3ae92a9763a}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{cf1b5082c7bb0279ee9a41859faf365f}
+      \strng{fullhash}{cf1b5082c7bb0279ee9a41859faf365f}
+      \strng{fullhashraw}{cf1b5082c7bb0279ee9a41859faf365f}
+      \strng{bibnamehash}{cf1b5082c7bb0279ee9a41859faf365f}
+      \strng{authorbibnamehash}{cf1b5082c7bb0279ee9a41859faf365f}
+      \strng{authornamehash}{cf1b5082c7bb0279ee9a41859faf365f}
+      \strng{authorfullhash}{cf1b5082c7bb0279ee9a41859faf365f}
+      \strng{authorfullhashraw}{cf1b5082c7bb0279ee9a41859faf365f}
+      \field{extraname}{2}
+      \field{labelalpha}{AE23}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{extraalpha}{1}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Compactifications of Moduli Spaces of K3 Surfaces with a Nonsymplectic Involution}
+      \field{year}{2023}
+    \endentry
+    \entry{AET}{misc}{}{}
+      \name{author}{3}{}{%
+        {{hash=cfd6e7a3e8288e04e95ffaf34f538444}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={V.},
+           giveni={V\bibinitperiod}}}%
+        {{hash=51e55b4935ebb6a66932a3ae92a9763a}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod}}}%
+        {{hash=d428707fb7fa12c120582433caed8f0c}{%
+           family={Thompson},
+           familyi={T\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{9310c5ae12d8398c74f64d0805c30e58}
+      \strng{fullhash}{9310c5ae12d8398c74f64d0805c30e58}
+      \strng{fullhashraw}{9310c5ae12d8398c74f64d0805c30e58}
+      \strng{bibnamehash}{9310c5ae12d8398c74f64d0805c30e58}
+      \strng{authorbibnamehash}{9310c5ae12d8398c74f64d0805c30e58}
+      \strng{authornamehash}{9310c5ae12d8398c74f64d0805c30e58}
+      \strng{authorfullhash}{9310c5ae12d8398c74f64d0805c30e58}
+      \strng{authorfullhashraw}{9310c5ae12d8398c74f64d0805c30e58}
+      \field{labelalpha}{AET23}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Stable Pair Compactification of Moduli of K3 Surfaces of Degree 2}
+      \field{year}{2023}
+    \endentry
+    \entry{AE22}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=e297924340ea082ae262174c1bb62cd5}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={Philip},
+           giveni={P\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{fullhash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{fullhashraw}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{bibnamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorbibnamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authornamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorfullhash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorfullhashraw}{32cfe260637db5b5f2138917e55c1ffa}
+      \field{extraname}{3}
+      \field{labelalpha}{AE23}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{extraalpha}{2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{There are \$75\$ moduli spaces \$F\_S\$ of K3 surfaces with a nonsymplectic involution. We give detailed descriptions of Kulikov models for one-parameter degenerations in \$F\_S\$. In the \$50\$ cases where the fixed locus of the involution has a component \$C\_g\$ of genus \$g{\textbackslash}ge2\$, we identify normalizations of the KSBA compactifications of \$F\_S\$ via stable pairs \$(X,{\textbackslash}epsilon C\_g)\$, with explicit semitoroidal compactifications of \$F\_S\$.}
+      \field{eprintclass}{math-ph}
+      \field{eprinttype}{arxiv}
+      \field{month}{5}
+      \field{number}{arXiv:2208.10383}
+      \field{title}{Compactifications of Moduli Spaces of {{K3}} Surfaces with a Nonsymplectic Involution}
+      \field{urlday}{28}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2208.10383
+      \endverb
+      \verb{eprint}
+      \verb 2208.10383
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/Y669J2S6/Alexeev and Engel - 2023 - Compactifications of moduli spaces of K3 surfaces .pdf
+      \endverb
+      \keyw{14J28 14D22,Mathematical Physics,Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{AEGS23}{misc}{}{}
+      \name{author}{4}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=e297924340ea082ae262174c1bb62cd5}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={Philip},
+           giveni={P\bibinitperiod}}}%
+        {{hash=97a02a9aa14a6001ced5de3553444d70}{%
+           family={Garza},
+           familyi={G\bibinitperiod},
+           given={D.\bibnamedelimi Zack},
+           giveni={D\bibinitperiod\bibinitdelim Z\bibinitperiod}}}%
+        {{hash=f7d286694e9b3825763a9ab95655dad0}{%
+           family={Schaffler},
+           familyi={S\bibinitperiod},
+           given={Luca},
+           giveni={L\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{5a922f2a824c15a2692518d3a0a1cd10}
+      \strng{fullhash}{7e14029f73c18af2346fe4d410987786}
+      \strng{fullhashraw}{7e14029f73c18af2346fe4d410987786}
+      \strng{bibnamehash}{5a922f2a824c15a2692518d3a0a1cd10}
+      \strng{authorbibnamehash}{5a922f2a824c15a2692518d3a0a1cd10}
+      \strng{authornamehash}{5a922f2a824c15a2692518d3a0a1cd10}
+      \strng{authorfullhash}{7e14029f73c18af2346fe4d410987786}
+      \strng{authorfullhashraw}{7e14029f73c18af2346fe4d410987786}
+      \field{labelalpha}{Ale+23}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We describe a geometric, stable pair compactification of the moduli space of Enriques surfaces with a numerical polarization of degree 2, and identify it with a semitoroidal compactification of the period space.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arxiv}
+      \field{month}{12}
+      \field{number}{arXiv:2312.03638}
+      \field{title}{Compact Moduli of {{Enriques}} Surfaces with a Numerical Polarization of Degree 2}
+      \field{urlday}{26}
+      \field{urlmonth}{4}
+      \field{urlyear}{2024}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2312.03638
+      \endverb
+      \verb{eprint}
+      \verb 2312.03638
+      \endverb
+      \verb{file}
+      \verb /home/zack/Downloads/Zotero_Source/arXiv/2023/Alexeev et al. - 2023 - Compact moduli of Enriques surfaces with a numeric2.pdf
+      \endverb
+      \keyw{14J28 14D22,Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{AE22-nonsymplectic}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=0c1e5d8e6026158a70c12e46ea4752e8}{%
+           family={AE22},
+           familyi={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{0c1e5d8e6026158a70c12e46ea4752e8}
+      \strng{fullhash}{0c1e5d8e6026158a70c12e46ea4752e8}
+      \strng{fullhashraw}{0c1e5d8e6026158a70c12e46ea4752e8}
+      \strng{bibnamehash}{0c1e5d8e6026158a70c12e46ea4752e8}
+      \strng{authorbibnamehash}{0c1e5d8e6026158a70c12e46ea4752e8}
+      \strng{authornamehash}{0c1e5d8e6026158a70c12e46ea4752e8}
+      \strng{authorfullhash}{0c1e5d8e6026158a70c12e46ea4752e8}
+      \strng{authorfullhashraw}{0c1e5d8e6026158a70c12e46ea4752e8}
+      \field{labelalpha}{AE2}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{AE22-nonsymplectic}
+    \endentry
+    \entry{CD12}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=22cf63ce2945419084a496a6ede3b8a8}{%
+           family={CD12},
+           familyi={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{22cf63ce2945419084a496a6ede3b8a8}
+      \strng{fullhash}{22cf63ce2945419084a496a6ede3b8a8}
+      \strng{fullhashraw}{22cf63ce2945419084a496a6ede3b8a8}
+      \strng{bibnamehash}{22cf63ce2945419084a496a6ede3b8a8}
+      \strng{authorbibnamehash}{22cf63ce2945419084a496a6ede3b8a8}
+      \strng{authornamehash}{22cf63ce2945419084a496a6ede3b8a8}
+      \strng{authorfullhash}{22cf63ce2945419084a496a6ede3b8a8}
+      \strng{authorfullhashraw}{22cf63ce2945419084a496a6ede3b8a8}
+      \field{labelalpha}{CD1}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{CD12}
+    \endentry
+    \entry{EnriquesOne}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=bcb880a7cd49e149edce8bc8bed5a012}{%
+           family={CDL24},
+           familyi={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{bcb880a7cd49e149edce8bc8bed5a012}
+      \strng{fullhash}{bcb880a7cd49e149edce8bc8bed5a012}
+      \strng{fullhashraw}{bcb880a7cd49e149edce8bc8bed5a012}
+      \strng{bibnamehash}{bcb880a7cd49e149edce8bc8bed5a012}
+      \strng{authorbibnamehash}{bcb880a7cd49e149edce8bc8bed5a012}
+      \strng{authornamehash}{bcb880a7cd49e149edce8bc8bed5a012}
+      \strng{authorfullhash}{bcb880a7cd49e149edce8bc8bed5a012}
+      \strng{authorfullhashraw}{bcb880a7cd49e149edce8bc8bed5a012}
+      \field{labelalpha}{CDL}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{EnriquesOne}
+    \endentry
+    \entry{DK13}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=f4e49b6ccb5d171db4a313129ab08886}{%
+           family={DK13},
+           familyi={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{f4e49b6ccb5d171db4a313129ab08886}
+      \strng{fullhash}{f4e49b6ccb5d171db4a313129ab08886}
+      \strng{fullhashraw}{f4e49b6ccb5d171db4a313129ab08886}
+      \strng{bibnamehash}{f4e49b6ccb5d171db4a313129ab08886}
+      \strng{authorbibnamehash}{f4e49b6ccb5d171db4a313129ab08886}
+      \strng{authornamehash}{f4e49b6ccb5d171db4a313129ab08886}
+      \strng{authorfullhash}{f4e49b6ccb5d171db4a313129ab08886}
+      \strng{authorfullhashraw}{f4e49b6ccb5d171db4a313129ab08886}
+      \field{labelalpha}{DK1}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{DK13}
+    \endentry
+    \entry{EnriquesTwo}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=b5c404fb49c1d48412fa05e82493a2a6}{%
+           family={DK24},
+           familyi={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{b5c404fb49c1d48412fa05e82493a2a6}
+      \strng{fullhash}{b5c404fb49c1d48412fa05e82493a2a6}
+      \strng{fullhashraw}{b5c404fb49c1d48412fa05e82493a2a6}
+      \strng{bibnamehash}{b5c404fb49c1d48412fa05e82493a2a6}
+      \strng{authorbibnamehash}{b5c404fb49c1d48412fa05e82493a2a6}
+      \strng{authornamehash}{b5c404fb49c1d48412fa05e82493a2a6}
+      \strng{authorfullhash}{b5c404fb49c1d48412fa05e82493a2a6}
+      \strng{authorfullhashraw}{b5c404fb49c1d48412fa05e82493a2a6}
+      \field{labelalpha}{DK2}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{EnriquesTwo}
+    \endentry
+    \entry{DM19}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=c4d7acbe5280f6a32b019d784b32e1f6}{%
+           family={DM19},
+           familyi={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{c4d7acbe5280f6a32b019d784b32e1f6}
+      \strng{fullhash}{c4d7acbe5280f6a32b019d784b32e1f6}
+      \strng{fullhashraw}{c4d7acbe5280f6a32b019d784b32e1f6}
+      \strng{bibnamehash}{c4d7acbe5280f6a32b019d784b32e1f6}
+      \strng{authorbibnamehash}{c4d7acbe5280f6a32b019d784b32e1f6}
+      \strng{authornamehash}{c4d7acbe5280f6a32b019d784b32e1f6}
+      \strng{authorfullhash}{c4d7acbe5280f6a32b019d784b32e1f6}
+      \strng{authorfullhashraw}{c4d7acbe5280f6a32b019d784b32e1f6}
+      \field{labelalpha}{DM1}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{DM19}
+    \endentry
+    \entry{Dol17}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=3dcc6c12b03ae8c8abbab8a6f052dcb2}{%
+           family={Dol17},
+           familyi={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{3dcc6c12b03ae8c8abbab8a6f052dcb2}
+      \strng{fullhash}{3dcc6c12b03ae8c8abbab8a6f052dcb2}
+      \strng{fullhashraw}{3dcc6c12b03ae8c8abbab8a6f052dcb2}
+      \strng{bibnamehash}{3dcc6c12b03ae8c8abbab8a6f052dcb2}
+      \strng{authorbibnamehash}{3dcc6c12b03ae8c8abbab8a6f052dcb2}
+      \strng{authornamehash}{3dcc6c12b03ae8c8abbab8a6f052dcb2}
+      \strng{authorfullhash}{3dcc6c12b03ae8c8abbab8a6f052dcb2}
+      \strng{authorfullhashraw}{3dcc6c12b03ae8c8abbab8a6f052dcb2}
+      \field{labelalpha}{Dol}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Dol17}
+    \endentry
+    \entry{Nue16}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=b67dcda111d61ae85a4219075989ee6a}{%
+           family={Nue16},
+           familyi={N\bibinitperiod}}}%
+      }
+      \strng{namehash}{b67dcda111d61ae85a4219075989ee6a}
+      \strng{fullhash}{b67dcda111d61ae85a4219075989ee6a}
+      \strng{fullhashraw}{b67dcda111d61ae85a4219075989ee6a}
+      \strng{bibnamehash}{b67dcda111d61ae85a4219075989ee6a}
+      \strng{authorbibnamehash}{b67dcda111d61ae85a4219075989ee6a}
+      \strng{authornamehash}{b67dcda111d61ae85a4219075989ee6a}
+      \strng{authorfullhash}{b67dcda111d61ae85a4219075989ee6a}
+      \strng{authorfullhashraw}{b67dcda111d61ae85a4219075989ee6a}
+      \field{labelalpha}{Nue}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Nue16}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

@@ -1,0 +1,190 @@
+\newcommand\coeff{\operatorname{coeff}}
+
+\newcommand\slcram{\oF^{\ram}}
+\newcommand\torram{\oF^{\cF_\ram}}
+\newcommand\slcrc{\oF^{\rc}}
+\newcommand\torrc{\oF^{\cF_\rc}}
+
+\newcommand\iE{E'}
+\newcommand\iX{X'}
+\newcommand\iY{Y'}
+% \newcommand\ibE{\bE'}
+% \newcommand\ibD{\bD'}
+\newcommand\ibE{E'}
+\newcommand\ibD{D'}
+
+\newcommand\wbA{\wt\bA}
+\newcommand\wbD{\wt\bD}
+\newcommand\wbE{\wt\bE}
+
+\newcommand\pt{{\rm pt}}
+\newcommand\LR{{\rm LR}}
+\newcommand\oLambda{\Lambda^{\rm sat}}
+\newcommand\Tsat{T^{\rm sat}}
+\newcommand\IIell{\II_{1,17}}
+
+%\renewcommand{\thesubsection}{\S\thesection.\arabic{subsection}}
+% \makeatletter
+% \def\subsection{\@startsection{subsection}{2}%
+%   \z@{.5\linespacing\@plus.7\linespacing}{-.5em}%
+%   {\boldmath\normalfont\bfseries}}
+% \makeatother
+
+%%% Phil's macros
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Jac}{\mathrm{Jac}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\Qbar}{\overline{\mathbb{Q}}}
+\newcommand{\Hbar}{\overline{\mathbb{H}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\ch}[1]{ \mathrm{Char}( #1 ) }
+\newcommand{\Gal}[2]{ \mathrm{Gal}(#1 / #2) }
+\newcommand{\G}[2]{ \mathrm{G}(#1 / #2) }
+%\renewcommand{\rad}[1]{\mathrm{rad} \, #1}
+\newcommand{\Jrad}[1]{\mathrm{Jrad} \, #1}
+%\newcommand{\res}[2]{#1 \vert_{#2}}
+\newcommand{\ord}{\mathrm{ord}}
+\newcommand{\proj}{\mathbb{P}}
+\newcommand{\Frob}{\textrm{Frob}}
+\newcommand{\Alb}{\textrm{Alb}}
+\newcommand{\twopartdef}[4]
+{
+	\left\{
+		\begin{array}{ll}
+			#1 & \mbox{if } #2 \\
+			#3 & \mbox{if } #4
+		\end{array}
+	\right.
+}
+
+\newcommand{\threepartdef}[6]
+{
+	\left\{
+		\begin{array}{lll}
+			#1 & \mbox{if } #2 \\
+			#3 & \mbox{if } #4 \\
+			#5 & \mbox{if } #6
+		\end{array}
+	\right.
+}
+\newcommand{\dbar}{\overline{\partial}}
+\newcommand{\zbar}{\overline{z}}
+\newcommand{\ind}{\textrm{ind}}
+\newcommand{\supp}{\textrm{supp}}
+
+
+%%% Additional Valery's macros
+
+% Definitions for the primed cases
+\newcommand\p{\prime}
+\newcommand\pp{{\prime\prime}}
+\newcommand\ph{\protect\kern -3pt\protect\phantom{.}}
+\newcommand\ke{\protect\kern -2pt}
+\newcommand\kee{\protect\kern -3pt}
+\newcommand\php{\ph^\p\ke}
+\newcommand\phpp{\ph^\pp\ke}
+\newcommand\phmi{\raise.68pt\hbox{$\ph^-$}\ke}
+\newcommand\phpl{\ph^+\ke}
+\newcommand\pA{\ph^\p\protect\kern -3pt A}
+%\newcommand\mA{\ph^-\protect\kern -3pt A}
+\newcommand\mA{\raise.6pt\hbox{$\ph^-$}\protect\kern -3pt A}
+
+\newcommand\otherbar{\prime}
+\newcommand\exo{*}
+
+% \newcommand\pC{\cC_+}
+% \newcommand\opC{{\overline{\cC}_+}}
+\newcommand\pC{\cC}
+\newcommand\opC{{\overline{\cC}}}
+\newcommand\ocC{\overline{\cC}}
+
+\newcommand\ocP{{\overline{\cP}}}
+\newcommand\ocX{{\overline{\cX}}}
+\newcommand\ocD{{\overline{\cD}}}
+\newcommand\ocL{{\overline{\cL}}}
+
+\newcommand\lm{\Lambda_{-}}
+\newcommand\oa{\overrightarrow}
+\newcommand\id{\operatorname{id}}
+\newcommand\hchi{\wh{\chi}}
+\newcommand\hc{\wh{c}}
+\newcommand\rmel{{\rm ell}}
+\newcommand\ov[1]{\overline{#1}}
+\newcommand\ocF{\overline{\cF}}
+\newcommand\ocM{\overline{\cM}}
+\newcommand\heps{\frac{1+\epsilon}{2}}
+\newcommand\Xheps{\big(X, \heps B\big)}
+\newcommand\Pheps{\big(\bP^2, \heps B\big)}
+
+% \newcommand\Quad{{\operatorname{Quad}}}
+\newcommand\Quad{\pC}
+%\newcommand\Pos{\overline{\Quad}}
+\newcommand\Pos{\opC}
+
+\newcommand\cox{{\rm cox}}
+\newcommand\bru{{\rm bru}}
+\newcommand\spsf{{\rm spsf}}
+\newcommand\bb{{\rm BB}}
+\newcommand\Del{\operatorname{Del}}
+\newcommand\el{{\operatorname{ell}}}
+\newcommand\ia{{\rm IA}}
+\newcommand\irr{{\rm irr}}
+\newcommand\ram{{\rm ram}}
+\newcommand\rc{{\rm rc}}
+\newcommand\refl{{\rm cox}}
+\newcommand\rel{{\rm rel}}
+\newcommand\sat{{\rm sat}}
+\newcommand\slc{{\rm slc}}
+\newcommand\op{{\rm op}}
+\newcommand\semi{{\rm semi}}
+\newcommand\tor{{\rm tor}}
+\newcommand\trop{{\rm trop}}
+\newcommand\ubb{^{\rm BB}}
+\newcommand\vin{{\rm cox}}
+\newcommand\vor{{\rm vor}}
+\newcommand\Vor{\operatorname{Vor}}
+
+% Choose one
+%\newcommand\vpi{w}
+%\newcommand\vpi{\omega}
+\newcommand\vpi{\varpi}
+\newcommand\wpi{\vpi}
+\newcommand\ade{$ADE$ }
+\newcommand\ADE{\ade}
+\newcommand\wade{$\wA\wD\wE$ } 
+
+\newcommand\ocY{{\overline{\cY}}}
+\newcommand\Str{\operatorname{Str}}
+\newcommand\Ram{\operatorname{Ram}}
+\newcommand\Discr{\operatorname{Discr}}
+\newcommand\Dynkin{\operatorname{Dynkin}}
+
+\newcommand\gvin{G_\vin}
+%\newcommand\gvin{G_\vin}
+\newcommand\ias{\operatorname{IAS}^2}
+
+\newcommand\oomega{\overline{\omega}}
+\newcommand\oeta{\overline{\eta}}
+\newcommand\ob{\bar b}
+
+%\newcommand\fund{\operatorname{FC}}
+\newcommand\fund{\operatorname{\fK}}
+\newcommand\FC{\fund}
+%\newcommand\Ch{\operatorname{Ch}}
+%\newcommand\Ch{\operatorname{\widehat{\fK}}}
+\newcommand\Ch{\operatorname{\fL}}
+\newcommand\Star{\operatorname{Star}}
+\newcommand\ev{\operatorname{ev}}
+\newcommand\area{\operatorname{Area}}
+\newcommand\Nor{\operatorname{NFan}}
+%\newcommand\Nor{\operatorname{Fan}^\perp}
+
+% Extra vertical space in the tables:
+\newcommand\Tstrut{\rule{0pt}{2.6ex}} % = `top' strut
+\newcommand\Bstrut{\rule[-0.9ex]{0pt}{0pt}} % = `bottom' strut
+

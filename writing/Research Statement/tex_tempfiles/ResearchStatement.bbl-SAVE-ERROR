@@ -1,0 +1,2065 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global}
+    \entry{alexeev1996moduli-spaces}{incollection}{}
+      \name{author}{1}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Berlin}%
+      }
+      \list{publisher}{1}{%
+        {de Gruyter}%
+      }
+      \strng{namehash}{6ade5b9a401fe4157f4b2ebca496e8ad}
+      \strng{fullhash}{6ade5b9a401fe4157f4b2ebca496e8ad}
+      \strng{bibnamehash}{6ade5b9a401fe4157f4b2ebca496e8ad}
+      \strng{authorbibnamehash}{6ade5b9a401fe4157f4b2ebca496e8ad}
+      \strng{authornamehash}{6ade5b9a401fe4157f4b2ebca496e8ad}
+      \strng{authorfullhash}{6ade5b9a401fe4157f4b2ebca496e8ad}
+      \field{extraname}{1}
+      \field{labelalpha}{Ale96}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Higher-Dimensional Complex Varieties ({{Trento}}, 1994)}
+      \field{title}{Moduli Spaces {{M}}{\textsubscript{g,n}}({{W}}) for Surfaces}
+      \field{year}{1996}
+      \field{pages}{1\bibrangedash 22}
+      \range{pages}{22}
+    \endentry
+    \entry{alexeev2002complete-moduli}{article}{}
+      \name{author}{1}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+      }
+      \strng{namehash}{6ade5b9a401fe4157f4b2ebca496e8ad}
+      \strng{fullhash}{6ade5b9a401fe4157f4b2ebca496e8ad}
+      \strng{bibnamehash}{6ade5b9a401fe4157f4b2ebca496e8ad}
+      \strng{authorbibnamehash}{6ade5b9a401fe4157f4b2ebca496e8ad}
+      \strng{authornamehash}{6ade5b9a401fe4157f4b2ebca496e8ad}
+      \strng{authorfullhash}{6ade5b9a401fe4157f4b2ebca496e8ad}
+      \field{extraname}{2}
+      \field{labelalpha}{Ale02}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0003-486X}
+      \field{journaltitle}{Annals of Mathematics}
+      \field{number}{3}
+      \field{title}{Complete Moduli in the Presence of Semiabelian Group Action}
+      \field{volume}{155}
+      \field{year}{2002}
+      \field{pages}{611\bibrangedash 708}
+      \range{pages}{98}
+    \endentry
+    \entry{ABE22}{article}{}
+      \name{author}{3}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=db0d1c17406016ea7510c10eed872de0}{%
+           family={Brunyate},
+           familyi={B\bibinitperiod},
+           given={Adrian},
+           giveni={A\bibinitperiod}}}%
+        {{hash=e297924340ea082ae262174c1bb62cd5}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={Philip},
+           giveni={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{096794570632aca3d7cc884f946d2275}
+      \strng{fullhash}{096794570632aca3d7cc884f946d2275}
+      \strng{bibnamehash}{096794570632aca3d7cc884f946d2275}
+      \strng{authorbibnamehash}{096794570632aca3d7cc884f946d2275}
+      \strng{authornamehash}{096794570632aca3d7cc884f946d2275}
+      \strng{authorfullhash}{096794570632aca3d7cc884f946d2275}
+      \field{labelalpha}{ABE23}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{We describe two geometrically meaningful compactifications of the moduli space of elliptic K3 surfaces via stable slc pairs, for two different choices of a polarizing divisor, and show that their normalizations are two different toroidal compactifications of the moduli space, one for the ramification divisor and another for the rational curve divisor. In the course of the proof, we further develop the theory of integral affine spheres with 24 singularities. We also construct moduli of rational (generalized) elliptic stable slc surfaces of types \$\{{\textbackslash}bf A\_n\}\$ (\$n{\textbackslash}ge1\$), \$\{{\textbackslash}bf C\_n\}\$ (\$n{\textbackslash}ge0\$) and \$\{{\textbackslash}bf E\_n\}\$ (\$n{\textbackslash}ge0\$).}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{issn}{1364-0380, 1465-3060}
+      \field{journaltitle}{Geometry \& Topology}
+      \field{month}{3}
+      \field{number}{8}
+      \field{shorttitle}{Compactifications of Moduli of Elliptic {{K3}} Surfaces}
+      \field{title}{Compactifications of Moduli of Elliptic {{K3}} Surfaces: Stable Pair and Toroidal}
+      \field{urlday}{28}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{volume}{26}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \field{pages}{3525\bibrangedash 3588}
+      \range{pages}{64}
+      \verb{doi}
+      \verb 10.2140/gt.2022.26.3525
+      \endverb
+      \verb{eprint}
+      \verb 2002.07127
+      \endverb
+      \verb{file}
+      \verb /home/zack/Downloads/Zotero_Source/Geometry & Topology/2023/Alexeev et al. - 2023 - Compactifications of moduli of elliptic K3 surface.pdf
+      \endverb
+      \keyw{Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{AE22nonsympinv}{article}{}
+      \name{author}{2}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=e297924340ea082ae262174c1bb62cd5}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={Philip},
+           giveni={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{fullhash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{bibnamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorbibnamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authornamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorfullhash}{32cfe260637db5b5f2138917e55c1ffa}
+      \field{extraname}{1}
+      \field{labelalpha}{AE22}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Mirror Symmetric Compactifications of Moduli Spaces of {{K3}} Surfaces with a Nonsymplectic Involution}
+      \field{year}{2022}
+    \endentry
+    \entry{alexeevCompactModuliK32023}{misc}{}
+      \name{author}{2}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=e297924340ea082ae262174c1bb62cd5}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={Philip},
+           giveni={P\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{fullhash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{bibnamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorbibnamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authornamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorfullhash}{32cfe260637db5b5f2138917e55c1ffa}
+      \field{extraname}{2}
+      \field{labelalpha}{AE23}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extraalpha}{1}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We construct geometric compactifications of the moduli space \$F\_\{2d\}\$ of polarized K3 surfaces, in any degree \$2d\$. Our construction is via KSBA theory, by considering canonical choices of divisor \$R{\textbackslash}in {|}nL{|}\$ on each polarized K3 surface \$(X,L){\textbackslash}in F\_\{2d\}\$. The main new notion is that of a recognizable divisor \$R\$, a choice which can be consistently extended to all central fibers of Kulikov models. We prove that any choice of recognizable divisor leads to a semitoroidal compactification of the period space, at least up to normalization. Finally, we prove that the rational curve divisor is recognizable for all degrees.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{month}{4}
+      \field{number}{arXiv:2101.12186}
+      \field{title}{Compact Moduli of {{K3}} Surfaces}
+      \field{urlday}{28}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2101.12186
+      \endverb
+      \verb{eprint}
+      \verb 2101.12186
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/CYBREPWZ/Alexeev and Engel - 2023 - Compact moduli of K3 surfaces.pdf
+      \endverb
+      \keyw{14D22 14J28,Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{AE22}{misc}{}
+      \name{author}{2}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=e297924340ea082ae262174c1bb62cd5}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={Philip},
+           giveni={P\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{fullhash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{bibnamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorbibnamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authornamehash}{32cfe260637db5b5f2138917e55c1ffa}
+      \strng{authorfullhash}{32cfe260637db5b5f2138917e55c1ffa}
+      \field{extraname}{3}
+      \field{labelalpha}{AE23}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extraalpha}{2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{There are \$75\$ moduli spaces \$F\_S\$ of K3 surfaces with a nonsymplectic involution. We give detailed descriptions of Kulikov models for one-parameter degenerations in \$F\_S\$. In the \$50\$ cases where the fixed locus of the involution has a component \$C\_g\$ of genus \$g{\textbackslash}ge2\$, we identify normalizations of the KSBA compactifications of \$F\_S\$ via stable pairs \$(X,{\textbackslash}epsilon C\_g)\$, with explicit semitoroidal compactifications of \$F\_S\$.}
+      \field{eprintclass}{math-ph}
+      \field{eprinttype}{arXiv}
+      \field{month}{5}
+      \field{number}{arXiv:2208.10383}
+      \field{title}{Compactifications of Moduli Spaces of {{K3}} Surfaces with a Nonsymplectic Involution}
+      \field{urlday}{28}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2208.10383
+      \endverb
+      \verb{eprint}
+      \verb 2208.10383
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/Y669J2S6/Alexeev and Engel - 2023 - Compactifications of moduli spaces of K3 surfaces .pdf
+      \endverb
+      \keyw{14J28 14D22,Mathematical Physics,Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{AEH21}{misc}{}
+      \name{author}{3}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=e297924340ea082ae262174c1bb62cd5}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={Philip},
+           giveni={P\bibinitperiod}}}%
+        {{hash=33a47f1b52b2f62489a6422a4ad05220}{%
+           family={Han},
+           familyi={H\bibinitperiod},
+           given={Changho},
+           giveni={C\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{6327f8d6bad13f123b4f20e2e3a24aea}
+      \strng{fullhash}{6327f8d6bad13f123b4f20e2e3a24aea}
+      \strng{bibnamehash}{6327f8d6bad13f123b4f20e2e3a24aea}
+      \strng{authorbibnamehash}{6327f8d6bad13f123b4f20e2e3a24aea}
+      \strng{authornamehash}{6327f8d6bad13f123b4f20e2e3a24aea}
+      \strng{authorfullhash}{6327f8d6bad13f123b4f20e2e3a24aea}
+      \field{labelalpha}{AEH22}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We construct a modular compactification via stable slc pairs for the moduli spaces of K3 surfaces with a nonsymplectic group of automorphisms under the assumption that some combination of the fixed loci of automorphisms defines an effective big divisor, and prove that it is semitoroidal.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{month}{2}
+      \field{number}{arXiv:2110.13834}
+      \field{title}{Compact Moduli of {{K3}} Surfaces with a Nonsymplectic Automorphism}
+      \field{urlday}{28}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{year}{2022}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2110.13834
+      \endverb
+      \verb{eprint}
+      \verb 2110.13834
+      \endverb
+      \verb{file}
+      \verb /home/dzack/nonsymp automor.pdf
+      \endverb
+      \keyw{14D22 14J28,Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{alexeev2023stable-pair}{article}{}
+      \name{author}{3}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=e297924340ea082ae262174c1bb62cd5}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={Philip},
+           giveni={P\bibinitperiod}}}%
+        {{hash=4051c81e9230b0d4819cbd235a1daeb8}{%
+           family={Thompson},
+           familyi={T\bibinitperiod},
+           given={Alan},
+           giveni={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{12efe23631cd8374026ee02a21a83522}
+      \strng{fullhash}{12efe23631cd8374026ee02a21a83522}
+      \strng{bibnamehash}{12efe23631cd8374026ee02a21a83522}
+      \strng{authorbibnamehash}{12efe23631cd8374026ee02a21a83522}
+      \strng{authornamehash}{12efe23631cd8374026ee02a21a83522}
+      \strng{authorfullhash}{12efe23631cd8374026ee02a21a83522}
+      \field{labelalpha}{AET23}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0075-4102,1435-5345}
+      \field{journaltitle}{Journal Fur Die Reine Und Angewandte Mathematik}
+      \field{title}{Stable Pair Compactification of Moduli of {{K3}} Surfaces of Degree 2}
+      \field{volume}{799}
+      \field{year}{2023}
+      \field{pages}{1\bibrangedash 56}
+      \range{pages}{56}
+      \verb{doi}
+      \verb 10.1515/crelle-2023-0011
+      \endverb
+    \endentry
+    \entry{alexeev1999on-mumfords-construction}{article}{}
+      \name{author}{2}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=8c590a876c69958f929992fc56f54a82}{%
+           family={Nakamura},
+           familyi={N\bibinitperiod},
+           given={Iku},
+           giveni={I\bibinitperiod}}}%
+      }
+      \strng{namehash}{052aa1468f4b39fb6c2bf85224cddaa0}
+      \strng{fullhash}{052aa1468f4b39fb6c2bf85224cddaa0}
+      \strng{bibnamehash}{052aa1468f4b39fb6c2bf85224cddaa0}
+      \strng{authorbibnamehash}{052aa1468f4b39fb6c2bf85224cddaa0}
+      \strng{authornamehash}{052aa1468f4b39fb6c2bf85224cddaa0}
+      \strng{authorfullhash}{052aa1468f4b39fb6c2bf85224cddaa0}
+      \field{labelalpha}{AN99}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0040-8735}
+      \field{journaltitle}{The Tohoku Mathematical Journal. Second Series}
+      \field{number}{3}
+      \field{title}{On {{Mumford}}'s Construction of Degenerating Abelian Varieties}
+      \field{volume}{51}
+      \field{year}{1999}
+      \field{pages}{399\bibrangedash 420}
+      \range{pages}{22}
+    \endentry
+    \entry{AT21}{misc}{}
+      \name{author}{2}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=4051c81e9230b0d4819cbd235a1daeb8}{%
+           family={Thompson},
+           familyi={T\bibinitperiod},
+           given={Alan},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{16e8906dba8ec0ea08fdd348edcba3e2}
+      \strng{fullhash}{16e8906dba8ec0ea08fdd348edcba3e2}
+      \strng{bibnamehash}{16e8906dba8ec0ea08fdd348edcba3e2}
+      \strng{authorbibnamehash}{16e8906dba8ec0ea08fdd348edcba3e2}
+      \strng{authornamehash}{16e8906dba8ec0ea08fdd348edcba3e2}
+      \strng{authorfullhash}{16e8906dba8ec0ea08fdd348edcba3e2}
+      \field{labelalpha}{AT19}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We define a class of surfaces corresponding to the ADE root lattices and construct compactifications of their moduli spaces as quotients of projective varieties for Coxeter fans, generalizing Losev-Manin spaces of curves. We exhibit modular families over these moduli spaces, which extend to families of stable pairs over the compactifications. One simple application is a geometric compactification of the moduli of rational elliptic surfaces that is a finite quotient of a projective toric variety.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{month}{10}
+      \field{number}{arXiv:1712.07932}
+      \field{title}{{{ADE}} Surfaces and Their Moduli}
+      \field{urlday}{28}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{year}{2019}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.1712.07932
+      \endverb
+      \verb{eprint}
+      \verb 1712.07932
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/7NE96F7T/Alexeev and Thompson - 2019 - ADE surfaces and their moduli.pdf
+      \endverb
+      \keyw{14H10,Mathematics - Algebraic Geometry,Mathematics - Representation Theory}
+    \endentry
+    \entry{AEGS23}{misc}{}
+      \name{author}{4}{}{%
+        {{hash=6ade5b9a401fe4157f4b2ebca496e8ad}{%
+           family={Alexeev},
+           familyi={A\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=e297924340ea082ae262174c1bb62cd5}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={Philip},
+           giveni={P\bibinitperiod}}}%
+        {{hash=97a02a9aa14a6001ced5de3553444d70}{%
+           family={Garza},
+           familyi={G\bibinitperiod},
+           given={D.\bibnamedelimi Zack},
+           giveni={D\bibinitperiod\bibinitdelim Z\bibinitperiod}}}%
+        {{hash=f7d286694e9b3825763a9ab95655dad0}{%
+           family={Schaffler},
+           familyi={S\bibinitperiod},
+           given={Luca},
+           giveni={L\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{5a922f2a824c15a2692518d3a0a1cd10}
+      \strng{fullhash}{7e14029f73c18af2346fe4d410987786}
+      \strng{bibnamehash}{5a922f2a824c15a2692518d3a0a1cd10}
+      \strng{authorbibnamehash}{5a922f2a824c15a2692518d3a0a1cd10}
+      \strng{authornamehash}{5a922f2a824c15a2692518d3a0a1cd10}
+      \strng{authorfullhash}{7e14029f73c18af2346fe4d410987786}
+      \field{labelalpha}{Ale+23}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We describe a geometric, stable pair compactification of the moduli space of Enriques surfaces with a numerical polarization of degree 2, and identify it with a semitoroidal compactification of the period space.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{month}{12}
+      \field{number}{arXiv:2312.03638}
+      \field{title}{Compact Moduli of {{Enriques}} Surfaces with a Numerical Polarization of Degree 2}
+      \field{urlday}{8}
+      \field{urlmonth}{6}
+      \field{urlyear}{2024}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2312.03638
+      \endverb
+      \verb{eprint}
+      \verb 2312.03638
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/HULQX3H2/Alexeev et al. - 2023 - Compact moduli of Enriques surfaces with a numeric.pdf;/home/dzack/Zotero/storage/3VKLVMAC/2312.html
+      \endverb
+      \keyw{14J28 14D22,Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{AMRT75}{book}{}
+      \name{author}{4}{}{%
+        {{hash=3f50ba790d4f7e0ad7da1df50067d970}{%
+           family={Ash},
+           familyi={A\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=8358ffd2badbf6c56ce6b5778611cb50}{%
+           family={Mumford},
+           familyi={M\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod}}}%
+        {{hash=f7a04ab40fa533cf3ecf71e74deb3f58}{%
+           family={Rapoport},
+           familyi={R\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+        {{hash=8fc1f6f7571d91ff96d9a41fbf464ec2}{%
+           family={Tai},
+           familyi={T\bibinitperiod},
+           given={Y.},
+           giveni={Y\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Math Sci Press, Brookline, Mass.}%
+      }
+      \strng{namehash}{ddfbb92b6c2c8acacbe3a3510d657c9b}
+      \strng{fullhash}{89d029dbbbe295554cd3e3dea7856ec2}
+      \strng{bibnamehash}{ddfbb92b6c2c8acacbe3a3510d657c9b}
+      \strng{authorbibnamehash}{ddfbb92b6c2c8acacbe3a3510d657c9b}
+      \strng{authornamehash}{ddfbb92b6c2c8acacbe3a3510d657c9b}
+      \strng{authorfullhash}{89d029dbbbe295554cd3e3dea7856ec2}
+      \field{labelalpha}{Ash+75}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{series}{Lie Groups: {{History}}, Frontiers and Applications, Vol. {{IV}}}
+      \field{title}{Smooth Compactification of Locally Symmetric Varieties}
+      \field{year}{1975}
+      \field{pages}{iv+335}
+      \range{pages}{-1}
+    \endentry
+    \entry{BB66}{article}{}
+      \name{author}{2}{}{%
+        {{hash=d9799a19b83bb4bcc012fa89919b1492}{%
+           family={Baily},
+           familyi={B\bibinitperiod},
+           given={W.\bibnamedelimi L.},
+           giveni={W\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=f160faeef24b45b29598f96864ca33be}{%
+           family={Borel},
+           familyi={B\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Annals of Mathematics}%
+      }
+      \strng{namehash}{cd35139f988cd86eb147166ca29889a5}
+      \strng{fullhash}{cd35139f988cd86eb147166ca29889a5}
+      \strng{bibnamehash}{cd35139f988cd86eb147166ca29889a5}
+      \strng{authorbibnamehash}{cd35139f988cd86eb147166ca29889a5}
+      \strng{authornamehash}{cd35139f988cd86eb147166ca29889a5}
+      \strng{authorfullhash}{cd35139f988cd86eb147166ca29889a5}
+      \field{labelalpha}{BB66}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprinttype}{jstor}
+      \field{issn}{0003-486X}
+      \field{journaltitle}{Annals of Mathematics}
+      \field{number}{3}
+      \field{title}{Compactification of {{Arithmetic Quotients}} of {{Bounded Symmetric Domains}}}
+      \field{urlday}{28}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{volume}{84}
+      \field{year}{1966}
+      \field{urldateera}{ce}
+      \field{pages}{442\bibrangedash 528}
+      \range{pages}{87}
+      \verb{doi}
+      \verb 10.2307/1970457
+      \endverb
+      \verb{eprint}
+      \verb 1970457
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/N9MWUSMY/Baily and Borel - 1966 - Compactification of Arithmetic Quotients of Bounde.pdf
+      \endverb
+    \endentry
+    \entry{barthAutomorphismsEnriquesSurfaces1983}{article}{}
+      \name{author}{2}{}{%
+        {{hash=01a5af85b9bec8aa8ed3cf2b17d0ae90}{%
+           family={Barth},
+           familyi={B\bibinitperiod},
+           given={W.},
+           giveni={W\bibinitperiod}}}%
+        {{hash=b0803d07493ce774cc0d4f59016970b7}{%
+           family={Peters},
+           familyi={P\bibinitperiod},
+           given={C.},
+           giveni={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{5f07a4d6380fad483e3c729348a111b6}
+      \strng{fullhash}{5f07a4d6380fad483e3c729348a111b6}
+      \strng{bibnamehash}{5f07a4d6380fad483e3c729348a111b6}
+      \strng{authorbibnamehash}{5f07a4d6380fad483e3c729348a111b6}
+      \strng{authornamehash}{5f07a4d6380fad483e3c729348a111b6}
+      \strng{authorfullhash}{5f07a4d6380fad483e3c729348a111b6}
+      \field{labelalpha}{BP83}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0020-9910; 1432-1297/e}
+      \field{journaltitle}{Inventiones mathematicae}
+      \field{langid}{und}
+      \field{title}{{Automorphisms of Enriques Surfaces.}}
+      \field{urlday}{2}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{volume}{73}
+      \field{year}{1983}
+      \field{urldateera}{ce}
+      \field{pages}{383\bibrangedash 412}
+      \range{pages}{30}
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/R376DTH8/Barth and Peters - 1983 - Automorphisms of Enriques Surfaces..pdf
+      \endverb
+    \endentry
+    \entry{BHPV04}{book}{}
+      \name{author}{4}{}{%
+        {{hash=c3677da137323e7f5bcbc273a128c298}{%
+           family={Barth},
+           familyi={B\bibinitperiod},
+           given={Wolf\bibnamedelima P.},
+           giveni={W\bibinitperiod\bibinitdelim P\bibinitperiod}}}%
+        {{hash=89f6212eb4050d2c0ae6f54172d55b29}{%
+           family={Hulek},
+           familyi={H\bibinitperiod},
+           given={Klaus},
+           giveni={K\bibinitperiod}}}%
+        {{hash=8a6ad56a410f178f92798fa4781a6064}{%
+           family={Peters},
+           familyi={P\bibinitperiod},
+           given={Chris\bibnamedelimb A.\bibnamedelimi M.},
+           giveni={C\bibinitperiod\bibinitdelim A\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+        {{hash=d5d3528bb7a8138a3e569eaf3b5437bd}{%
+           family={Ven},
+           familyi={V\bibinitperiod},
+           given={Antonius},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer Berlin Heidelberg}%
+      }
+      \strng{namehash}{65f42b6566ff34305fd21b4d6c1b6957}
+      \strng{fullhash}{d109bf068d4a9d61353a84d86a36607d}
+      \strng{bibnamehash}{65f42b6566ff34305fd21b4d6c1b6957}
+      \strng{authorbibnamehash}{65f42b6566ff34305fd21b4d6c1b6957}
+      \strng{authornamehash}{65f42b6566ff34305fd21b4d6c1b6957}
+      \strng{authorfullhash}{d109bf068d4a9d61353a84d86a36607d}
+      \field{labelalpha}{Bar+04}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Compact Complex Surfaces}
+      \field{year}{2004}
+      \verb{doi}
+      \verb 10.1007/978-3-642-57739-0
+      \endverb
+      \verb{file}
+      \verb /home/zack/Downloads/Zotero_Source/Springer Berlin Heidelberg/2004/Barth et al. - 2004 - Compact complex surfaces.pdf
+      \endverb
+    \endentry
+    \entry{CD12}{misc}{}
+      \name{author}{2}{}{%
+        {{hash=fc2950fc9c4a0fd4d9fcb05931f2d01f}{%
+           family={Cantat},
+           familyi={C\bibinitperiod},
+           given={Serge},
+           giveni={S\bibinitperiod}}}%
+        {{hash=508393cb3a9b62cbfe42f33fc795e328}{%
+           family={Dolgachev},
+           familyi={D\bibinitperiod},
+           given={Igor},
+           giveni={I\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{33c03c2cd2fb93050023f75b6e10886f}
+      \strng{fullhash}{33c03c2cd2fb93050023f75b6e10886f}
+      \strng{bibnamehash}{33c03c2cd2fb93050023f75b6e10886f}
+      \strng{authorbibnamehash}{33c03c2cd2fb93050023f75b6e10886f}
+      \strng{authornamehash}{33c03c2cd2fb93050023f75b6e10886f}
+      \strng{authorfullhash}{33c03c2cd2fb93050023f75b6e10886f}
+      \field{labelalpha}{CD12}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We classify rational surfaces for which the image of the automorphisms group in the group of linear transformations of the Picard group is the largest possible. This answers a question raised by Arthur Coble in 1928, and can be rephrased in terms of periodic orbits of a birational action of an infinite Coxeter group on ordered point sets in the projective plane modulo projective equivalence. We also outline the classification of non-rational surfaces with large automorphism groups.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{month}{1}
+      \field{number}{arXiv:1106.0930}
+      \field{title}{Rational Surfaces with a Large Group of Automorphisms}
+      \field{urlday}{26}
+      \field{urlmonth}{5}
+      \field{urlyear}{2024}
+      \field{year}{2012}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.1106.0930
+      \endverb
+      \verb{eprint}
+      \verb 1106.0930
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/6J7V4MNZ/Cantat and Dolgachev - 2012 - Rational surfaces with a large group of automorphi.pdf;/home/dzack/Zotero/storage/SKI9WEW4/1106.html
+      \endverb
+      \keyw{14J26,Mathematics - Algebraic Geometry,Mathematics - Dynamical Systems,Mathematics - Group Theory}
+    \endentry
+    \entry{CDGK18}{misc}{}
+      \name{author}{4}{}{%
+        {{hash=bcfc83a635be485d00c356a5c14450e2}{%
+           family={Ciliberto},
+           familyi={C\bibinitperiod},
+           given={Ciro},
+           giveni={C\bibinitperiod}}}%
+        {{hash=2583d82bb5c7b2163a14b3c7ada2341f}{%
+           family={Dedieu},
+           familyi={D\bibinitperiod},
+           given={Thomas},
+           giveni={T\bibinitperiod}}}%
+        {{hash=4be3e41fa10b9497d22aa407ebc1edf8}{%
+           family={Galati},
+           familyi={G\bibinitperiod},
+           given={Concettina},
+           giveni={C\bibinitperiod}}}%
+        {{hash=08dfac2029f41e161719732f3b5a27d1}{%
+           family={Knutsen},
+           familyi={K\bibinitperiod},
+           given={Andreas\bibnamedelima Leopold},
+           giveni={A\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+      }
+      \strng{namehash}{b0a1b915d96dd920055fffa9271bf34e}
+      \strng{fullhash}{2ca5d861f4a8027ce0c09270fb54f27e}
+      \strng{bibnamehash}{b0a1b915d96dd920055fffa9271bf34e}
+      \strng{authorbibnamehash}{b0a1b915d96dd920055fffa9271bf34e}
+      \strng{authornamehash}{b0a1b915d96dd920055fffa9271bf34e}
+      \strng{authorfullhash}{2ca5d861f4a8027ce0c09270fb54f27e}
+      \field{labelalpha}{Cil+23}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{math.AG}
+      \field{eprinttype}{arXiv}
+      \field{title}{Irreducible Unirational and Uniruled Components of Moduli Spaces of Polarized {{Enriques}} Surfaces}
+      \field{year}{2023}
+      \verb{eprint}
+      \verb 1809.10569
+      \endverb
+      \verb{file}
+      \verb /home/zack/Downloads/Zotero_Source/undefined/2023/Ciliberto et al. - 2023 - Irreducible unirational and uniruled components of.pdf
+      \endverb
+    \endentry
+    \entry{Cob19}{article}{}
+      \name{author}{1}{}{%
+        {{hash=739ed4f894a486744e462e3fee4b4db1}{%
+           family={Coble},
+           familyi={C\bibinitperiod},
+           given={Arthur\bibnamedelima B.},
+           giveni={A\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Johns Hopkins University Press}%
+      }
+      \strng{namehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{fullhash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{bibnamehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authorbibnamehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authornamehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authorfullhash}{739ed4f894a486744e462e3fee4b4db1}
+      \field{extraname}{1}
+      \field{labelalpha}{Cob19}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprinttype}{jstor}
+      \field{issn}{0002-9327}
+      \field{journaltitle}{American Journal of Mathematics}
+      \field{number}{4}
+      \field{title}{The {{Ten Nodes}} of the {{Rational Sextic}} and of the {{Cayley Symmetroid}}}
+      \field{urlday}{15}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{volume}{41}
+      \field{year}{1919}
+      \field{urldateera}{ce}
+      \field{pages}{243\bibrangedash 265}
+      \range{pages}{23}
+      \verb{doi}
+      \verb 10.2307/2370285
+      \endverb
+      \verb{eprint}
+      \verb 2370285
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/RY6EIZUX/Coble - 1919 - The Ten Nodes of the Rational Sextic and of the Ca.pdf
+      \endverb
+    \endentry
+    \entry{Cob29}{book}{}
+      \name{author}{1}{}{%
+        {{hash=739ed4f894a486744e462e3fee4b4db1}{%
+           family={Coble},
+           familyi={C\bibinitperiod},
+           given={Arthur\bibnamedelima B.},
+           giveni={A\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {American Mathematical Soc.}%
+      }
+      \strng{namehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{fullhash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{bibnamehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authorbibnamehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authornamehash}{739ed4f894a486744e462e3fee4b4db1}
+      \strng{authorfullhash}{739ed4f894a486744e462e3fee4b4db1}
+      \field{extraname}{2}
+      \field{labelalpha}{Cob29}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{This book is the result of extending and deepening all questions from algebraic geometry that are connected to the central problem of this book: the determination of the tritangent planes of a space curve of order six and genus four, which the author treated in his Colloquium Lecture in 1928 at Amherst. The first two chapters recall fundamental ideas of algebraic geometry and theta functions in such fashion as will be most helpful in later applications. In order to clearly present the state of the central problem, the author first presents the better-known cases of genus two (Chapter III) and genus three (Chapter IV). The case of genus four is discussed in the last chapter. The exposition is concise with a rich variety of details and references.}
+      \field{isbn}{978-0-8218-4602-5}
+      \field{langid}{english}
+      \field{month}{12}
+      \field{title}{Algebraic {{Geometry}} and {{Theta Functions}}}
+      \field{year}{1929}
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/6INIJ8NK/Coble - 1929 - Algebraic Geometry and Theta Functions.pdf
+      \endverb
+      \keyw{Mathematics / Geometry / Algebraic}
+    \endentry
+    \entry{EnriquesOne}{article}{}
+      \name{author}{3}{}{%
+        {{hash=165105ebe5f6505ffe63688b277b855a}{%
+           family={Cossec},
+           familyi={C\bibinitperiod},
+           given={Cdl20]cdl20\bibnamedelima F.},
+           giveni={C\bibinitperiod\bibinitdelim F\bibinitperiod}}}%
+        {{hash=81de5176d529ca917f02c152ed35afa4}{%
+           family={Dolgachev},
+           familyi={D\bibinitperiod},
+           given={I.},
+           giveni={I\bibinitperiod}}}%
+        {{hash=3db608408aa497ada5e8f094befb9add}{%
+           family={Liedtke},
+           familyi={L\bibinitperiod},
+           given={C.},
+           giveni={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{0d7ede24fa18d2b0459ac294089cb20e}
+      \strng{fullhash}{0d7ede24fa18d2b0459ac294089cb20e}
+      \strng{bibnamehash}{0d7ede24fa18d2b0459ac294089cb20e}
+      \strng{authorbibnamehash}{0d7ede24fa18d2b0459ac294089cb20e}
+      \strng{authornamehash}{0d7ede24fa18d2b0459ac294089cb20e}
+      \strng{authorfullhash}{0d7ede24fa18d2b0459ac294089cb20e}
+      \field{labelalpha}{CDL24}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Enriques Surfaces {{I}}}
+      \field{year}{2024}
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/8QKERMC7/EnriquesOne.pdf
+      \endverb
+    \endentry
+    \entry{cossecAutomorphismsNodalEnriques1985}{article}{}
+      \name{author}{2}{}{%
+        {{hash=5591d2d3ca6dd4b1c24dc0c6d741dca2}{%
+           family={Cossec},
+           familyi={C\bibinitperiod},
+           given={F.},
+           giveni={F\bibinitperiod}}}%
+        {{hash=81de5176d529ca917f02c152ed35afa4}{%
+           family={Dolgachev},
+           familyi={D\bibinitperiod},
+           given={I.},
+           giveni={I\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {American Mathematical Society}%
+      }
+      \strng{namehash}{a2a578847677c14029e8e8fb5db4a069}
+      \strng{fullhash}{a2a578847677c14029e8e8fb5db4a069}
+      \strng{bibnamehash}{a2a578847677c14029e8e8fb5db4a069}
+      \strng{authorbibnamehash}{a2a578847677c14029e8e8fb5db4a069}
+      \strng{authornamehash}{a2a578847677c14029e8e8fb5db4a069}
+      \strng{authorfullhash}{a2a578847677c14029e8e8fb5db4a069}
+      \field{labelalpha}{CD85}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Bulletin (New Series) of the American Mathematical Society}
+      \field{issn}{0273-0979, 1088-9485}
+      \field{journaltitle}{Bulletin (New Series) of the American Mathematical Society}
+      \field{month}{4}
+      \field{number}{2}
+      \field{title}{On Automorphisms of Nodal {{Enriques}} Surfaces}
+      \field{urlday}{7}
+      \field{urlmonth}{8}
+      \field{urlyear}{2024}
+      \field{volume}{12}
+      \field{year}{1985}
+      \field{urldateera}{ce}
+      \field{pages}{247\bibrangedash 249}
+      \range{pages}{3}
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/PSB45LE9/Cossec and Dolgachev - 1985 - On automorphisms of nodal Enriques surfaces.pdf
+      \endverb
+      \keyw{14J25}
+    \endentry
+    \entry{deligne1969the-irreducibility-of-the-space}{article}{}
+      \name{author}{2}{}{%
+        {{hash=5d311c14ef367848946f83a2e2312934}{%
+           family={Deligne},
+           familyi={D\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod}}}%
+        {{hash=8358ffd2badbf6c56ce6b5778611cb50}{%
+           family={Mumford},
+           familyi={M\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{85f02a2601315b029e3ec00e36602a4c}
+      \strng{fullhash}{85f02a2601315b029e3ec00e36602a4c}
+      \strng{bibnamehash}{85f02a2601315b029e3ec00e36602a4c}
+      \strng{authorbibnamehash}{85f02a2601315b029e3ec00e36602a4c}
+      \strng{authornamehash}{85f02a2601315b029e3ec00e36602a4c}
+      \strng{authorfullhash}{85f02a2601315b029e3ec00e36602a4c}
+      \field{labelalpha}{DM69}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0073-8301}
+      \field{journaltitle}{Inst. Hautes Études Sci. Publ. Math.}
+      \field{number}{36}
+      \field{title}{The Irreducibility of the Space of Curves of given Genus}
+      \field{year}{1969}
+      \field{pages}{75\bibrangedash 109}
+      \range{pages}{35}
+    \endentry
+    \entry{DZ99}{misc}{}
+      \name{author}{2}{}{%
+        {{hash=81de5176d529ca917f02c152ed35afa4}{%
+           family={Dolgachev},
+           familyi={D\bibinitperiod},
+           given={I.},
+           giveni={I\bibinitperiod}}}%
+        {{hash=b7ae412dcdc0f3120d90313a03412aae}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={D.-Q.},
+           giveni={D\bibinithyphendelim Q\bibinitperiod}}}%
+      }
+      \strng{namehash}{8c47377655cb1a787057a9bcf1fcd47a}
+      \strng{fullhash}{8c47377655cb1a787057a9bcf1fcd47a}
+      \strng{bibnamehash}{8c47377655cb1a787057a9bcf1fcd47a}
+      \strng{authorbibnamehash}{8c47377655cb1a787057a9bcf1fcd47a}
+      \strng{authornamehash}{8c47377655cb1a787057a9bcf1fcd47a}
+      \strng{authorfullhash}{8c47377655cb1a787057a9bcf1fcd47a}
+      \field{labelalpha}{DZ99}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{A smooth rational surface X is a Coble surface if the anti-canonical linear system is empty while the anti-bicanonical linear system is non-empty. In this note we shall classify these X and consider the finiteness problem of the number of negative curves on X modulo automorphisms.}
+      \field{howpublished}{https://arxiv.org/abs/math/9909135v1}
+      \field{journaltitle}{arXiv.org}
+      \field{langid}{english}
+      \field{month}{9}
+      \field{title}{Coble {{Rational Surfaces}}}
+      \field{urlday}{2}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{year}{1999}
+      \field{urldateera}{ce}
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/RCG94W99/Dolgachev and Zhang - 1999 - Coble Rational Surfaces.pdf
+      \endverb
+    \endentry
+    \entry{DK13}{article}{}
+      \name{author}{2}{}{%
+        {{hash=508393cb3a9b62cbfe42f33fc795e328}{%
+           family={Dolgachev},
+           familyi={D\bibinitperiod},
+           given={Igor},
+           giveni={I\bibinitperiod}}}%
+        {{hash=a5a507b97708b683739276cba69b8f63}{%
+           family={Kondo},
+           familyi={K\bibinitperiod},
+           given={Shigeyuki},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{09b585ce157087670de7c01a6f0a7a86}
+      \strng{fullhash}{09b585ce157087670de7c01a6f0a7a86}
+      \strng{bibnamehash}{09b585ce157087670de7c01a6f0a7a86}
+      \strng{authorbibnamehash}{09b585ce157087670de7c01a6f0a7a86}
+      \strng{authornamehash}{09b585ce157087670de7c01a6f0a7a86}
+      \strng{authorfullhash}{09b585ce157087670de7c01a6f0a7a86}
+      \field{labelalpha}{DK13}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We prove the rationality of the coarse moduli spaces of Coble surfaces and of nodal Enriques surfaces over the field of complex numbers.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{issn}{1064-5632, 1468-4810}
+      \field{journaltitle}{Izvestiya: Mathematics}
+      \field{month}{6}
+      \field{number}{3}
+      \field{title}{The Rationality of the Moduli Spaces of {{Coble}} Surfaces and of Nodal {{Enriques}} Surfaces}
+      \field{urlday}{6}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{volume}{77}
+      \field{year}{2013}
+      \field{urldateera}{ce}
+      \field{pages}{509\bibrangedash 524}
+      \range{pages}{16}
+      \verb{doi}
+      \verb 10.1070/IM2013v077n03ABEH002646
+      \endverb
+      \verb{eprint}
+      \verb 1201.6093
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/BQNZIVYH/Dolgachev and Kondo - 2013 - The rationality of the moduli spaces of Coble surf.pdf
+      \endverb
+      \keyw{Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{EnriquesTwo}{book}{}
+      \name{author}{2}{}{%
+        {{hash=508393cb3a9b62cbfe42f33fc795e328}{%
+           family={Dolgachev},
+           familyi={D\bibinitperiod},
+           given={Igor},
+           giveni={I\bibinitperiod}}}%
+        {{hash=e59bca7757abe03f2611d85ab19a50fb}{%
+           family={Kondō},
+           familyi={K\bibinitperiod},
+           given={Shigeyuki},
+           giveni={S\bibinitperiod},
+           suffix={Shigeyuki},
+           suffixi={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{ac83ea2ee763ca307957d25fec57c4a9}
+      \strng{fullhash}{ac83ea2ee763ca307957d25fec57c4a9}
+      \strng{bibnamehash}{ac83ea2ee763ca307957d25fec57c4a9}
+      \strng{authorbibnamehash}{ac83ea2ee763ca307957d25fec57c4a9}
+      \strng{authornamehash}{ac83ea2ee763ca307957d25fec57c4a9}
+      \strng{authorfullhash}{ac83ea2ee763ca307957d25fec57c4a9}
+      \field{labelalpha}{DK24}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Enriques {{Surfaces II}}}
+      \field{year}{2024}
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/XRWKZH53/Dolgachev and Kondō, Shigeyuki - Enriques Surfaces II.pdf
+      \endverb
+    \endentry
+    \entry{DM19}{misc}{}
+      \name{author}{2}{}{%
+        {{hash=508393cb3a9b62cbfe42f33fc795e328}{%
+           family={Dolgachev},
+           familyi={D\bibinitperiod},
+           given={Igor},
+           giveni={I\bibinitperiod}}}%
+        {{hash=1ef9cd347b5021bcd731125fe1c4ec23}{%
+           family={Markushevich},
+           familyi={M\bibinitperiod},
+           given={Dimitri},
+           giveni={D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{33cca3d9bf5e48b72cbed7f87585d5c0}
+      \strng{fullhash}{33cca3d9bf5e48b72cbed7f87585d5c0}
+      \strng{bibnamehash}{33cca3d9bf5e48b72cbed7f87585d5c0}
+      \strng{authorbibnamehash}{33cca3d9bf5e48b72cbed7f87585d5c0}
+      \strng{authornamehash}{33cca3d9bf5e48b72cbed7f87585d5c0}
+      \strng{authorfullhash}{33cca3d9bf5e48b72cbed7f87585d5c0}
+      \field{labelalpha}{DM20}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The Fano models of Enriques surfaces produce a family of tens of mutually intersecting planes in \${\textbackslash}mathbf P{\textasciicircum}5\$ with a \$10\$-dimensional moduli space. The latter is linked to several 10-dimensional moduli spaces parametrizing other types of objects: a) cubic fourfolds containing the tens of planes, b) Beauville--Donagi holomorphically symplectic fourfolds, and c) double EPW sextics. The varieties in b) parametrize lines on cubic fourfolds from a). The double EPW sextics are associated, via O'Grady's construction, to Lagrangian subspaces of the Pl{\textbackslash}"ucker space of the Grassmannian \$Gr(2,{\textbackslash}mathbf P{\textasciicircum}5)\$ spanned by 10 mutually intersecting planes in \${\textbackslash}mathbf P{\textasciicircum}5\$. These links imply the irreducibility of the moduli space of supermarked Enriques surfaces, where a supermarking is a choice of a minimal generating system of the Picard group of the surface. Also some results are obtained on the variety of tens of mutually intersecting planes, not necessarily associated to Fano models of Enriques surfaces.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{month}{1}
+      \field{number}{arXiv:1906.01445}
+      \field{title}{Lagrangian Tens of Planes, {{Enriques}} Surfaces and Holomorphic Symplectic Fourfolds}
+      \field{urlday}{14}
+      \field{urlmonth}{6}
+      \field{urlyear}{2024}
+      \field{year}{2020}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.1906.01445
+      \endverb
+      \verb{eprint}
+      \verb 1906.01445
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/EF79DX4I/Dolgachev and Markushevich - 2020 - Lagrangian tens of planes, Enriques surfaces and h.pdf;/home/dzack/Zotero/storage/D79GKRCV/1906.html
+      \endverb
+      \keyw{14J28 14J35 14J10 14N20,Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{dolgachevChileanConfigurationConics2020}{misc}{}
+      \name{author}{4}{}{%
+        {{hash=508393cb3a9b62cbfe42f33fc795e328}{%
+           family={Dolgachev},
+           familyi={D\bibinitperiod},
+           given={Igor},
+           giveni={I\bibinitperiod}}}%
+        {{hash=f1e14f64144dadb3ef806f78f6fda503}{%
+           family={Laface},
+           familyi={L\bibinitperiod},
+           given={Antonio},
+           giveni={A\bibinitperiod}}}%
+        {{hash=536e033a187db62d834cb1eb567a4cd4}{%
+           family={Persson},
+           familyi={P\bibinitperiod},
+           given={Ulf},
+           giveni={U\bibinitperiod}}}%
+        {{hash=513ffb19b707c0c7eebf8ee6cbd80e1a}{%
+           family={Urzúa},
+           familyi={U\bibinitperiod},
+           given={Giancarlo},
+           giveni={G\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{d34db9b6bb8d66726d2507738def0ded}
+      \strng{fullhash}{9f3eba03a660a91e34d29b80f07b7cde}
+      \strng{bibnamehash}{d34db9b6bb8d66726d2507738def0ded}
+      \strng{authorbibnamehash}{d34db9b6bb8d66726d2507738def0ded}
+      \strng{authornamehash}{d34db9b6bb8d66726d2507738def0ded}
+      \strng{authorfullhash}{9f3eba03a660a91e34d29b80f07b7cde}
+      \field{labelalpha}{Dol+20}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Using the theory of rational elliptic fibrations, we construct and discuss a one parameter family of configurations of \$12\$ conics and \$9\$ points in the projective plane that realizes an abstract configuration \$(12\_6,9\_8)\$. This is analogous to the famous Hesse configuration of \$12\$ lines and \$9\$ points forming an abstract configuration \$(12\_3,9\_4)\$. We also show that any Halphen elliptic fibration of index \$2\$ with four triangular singular fibers arises from such configuration of conics.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{month}{8}
+      \field{number}{arXiv:2008.09627}
+      \field{title}{Chilean Configuration of Conics, Lines and Points}
+      \field{urlday}{8}
+      \field{urlmonth}{8}
+      \field{urlyear}{2024}
+      \field{year}{2020}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2008.09627
+      \endverb
+      \verb{eprint}
+      \verb 2008.09627
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/24UJ254Q/Dolgachev et al. - 2020 - Chilean configuration of conics, lines and points.pdf;/home/dzack/Zotero/storage/GZWGT6M2/2008.html
+      \endverb
+      \keyw{Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{Enr06}{book}{}
+      \name{author}{1}{}{%
+        {{hash=ef6a94e992c48e4cf361950e1d8833bf}{%
+           family={Enriques},
+           familyi={E\bibinitperiod},
+           given={Federigo},
+           giveni={F\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Roma}%
+      }
+      \list{publisher}{1}{%
+        {Salviucci}%
+      }
+      \strng{namehash}{ef6a94e992c48e4cf361950e1d8833bf}
+      \strng{fullhash}{ef6a94e992c48e4cf361950e1d8833bf}
+      \strng{bibnamehash}{ef6a94e992c48e4cf361950e1d8833bf}
+      \strng{authorbibnamehash}{ef6a94e992c48e4cf361950e1d8833bf}
+      \strng{authornamehash}{ef6a94e992c48e4cf361950e1d8833bf}
+      \strng{authorfullhash}{ef6a94e992c48e4cf361950e1d8833bf}
+      \field{labelalpha}{Enr06}
+      \field{sortinit}{E}
+      \field{sortinithash}{8da8a182d344d5b9047633dfc0cc9131}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Sopra Le Superficie Algebriche Di Bigenere Uno Memoria}
+      \field{year}{1906}
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/H4772ZFH/Enriques - 1906 - Sopra le superficie algebriche di bigenere uno mem.pdf
+      \endverb
+    \endentry
+    \entry{fortuna2020cohomology}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=c9334c51d171f849a569f4dff57c9a7f}{%
+           family={Fortuna},
+           familyi={F\bibinitperiod},
+           given={Mauro},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{c9334c51d171f849a569f4dff57c9a7f}
+      \strng{fullhash}{c9334c51d171f849a569f4dff57c9a7f}
+      \strng{bibnamehash}{c9334c51d171f849a569f4dff57c9a7f}
+      \strng{authorbibnamehash}{c9334c51d171f849a569f4dff57c9a7f}
+      \strng{authornamehash}{c9334c51d171f849a569f4dff57c9a7f}
+      \strng{authorfullhash}{c9334c51d171f849a569f4dff57c9a7f}
+      \field{labelalpha}{For20}
+      \field{sortinit}{F}
+      \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{math.AG}
+      \field{eprinttype}{arXiv}
+      \field{title}{Cohomology of the Moduli Space of Degree Two {{Enriques}} Surfaces}
+      \field{year}{2020}
+      \verb{eprint}
+      \verb 2008.06934
+      \endverb
+    \endentry
+    \entry{GH16}{misc}{}
+      \name{author}{2}{}{%
+        {{hash=da95a285e74335c3c63319c8e4d9df8d}{%
+           family={Gritsenko},
+           familyi={G\bibinitperiod},
+           given={Valery},
+           giveni={V\bibinitperiod}}}%
+        {{hash=89f6212eb4050d2c0ae6f54172d55b29}{%
+           family={Hulek},
+           familyi={H\bibinitperiod},
+           given={Klaus},
+           giveni={K\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{d8d61ed683299ac1f5bea8447c01b88c}
+      \strng{fullhash}{d8d61ed683299ac1f5bea8447c01b88c}
+      \strng{bibnamehash}{d8d61ed683299ac1f5bea8447c01b88c}
+      \strng{authorbibnamehash}{d8d61ed683299ac1f5bea8447c01b88c}
+      \strng{authornamehash}{d8d61ed683299ac1f5bea8447c01b88c}
+      \strng{authorfullhash}{d8d61ed683299ac1f5bea8447c01b88c}
+      \field{labelalpha}{GH15}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{In this paper we consider moduli spaces of polarized and numerically polarized Enriques surfaces. The moduli spaces of numerically polarized Enriques surfaces can be described as open subsets of orthogonal modular varieties of dimension 10. One of the consequences of our description is that there are only finitely many isomorphism classes of moduli spaces of polarized and numerically polarized Enriques surfaces. We use modular forms to prove for a number of small degrees that the Kodaira dimension of the moduli space of numerically polarized Enriques surfaces is negative. Finally we prove that there are infinitely many polarizatons for which the moduli space of numerically polarized Enriques surfaces is birational to the moduli space of unpolarized Enriques surfaces with a level 2 structure.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{month}{3}
+      \field{number}{arXiv:1502.02723}
+      \field{title}{Moduli of Polarized {{Enriques}} Surfaces}
+      \field{urlday}{28}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{year}{2015}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.1502.02723
+      \endverb
+      \verb{eprint}
+      \verb 1502.02723
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/ZTDGG9IV/Gritsenko and Hulek - 2015 - Moduli of polarized Enriques surfaces.pdf
+      \endverb
+      \keyw{14J28 14D20 14G35 11F23,Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{grivauxInfinitesimalDeformationsRational2018}{article}{}
+      \name{author}{1}{}{%
+        {{hash=80f17dca2bebfeb7b1286bdab864ad5a}{%
+           family={Grivaux},
+           familyi={G\bibinitperiod},
+           given={Julien},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{80f17dca2bebfeb7b1286bdab864ad5a}
+      \strng{fullhash}{80f17dca2bebfeb7b1286bdab864ad5a}
+      \strng{bibnamehash}{80f17dca2bebfeb7b1286bdab864ad5a}
+      \strng{authorbibnamehash}{80f17dca2bebfeb7b1286bdab864ad5a}
+      \strng{authornamehash}{80f17dca2bebfeb7b1286bdab864ad5a}
+      \strng{authorfullhash}{80f17dca2bebfeb7b1286bdab864ad5a}
+      \field{labelalpha}{Gri18}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{If \$X\$ is a rational surface without nonzero holomorphic vector field and \$f\$ is an automorphism of \$X\$, we study in several examples the Zariski tangent space of the local deformation space of the pair \$(X, f)\$.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{issn}{0025-5874, 1432-1823}
+      \field{journaltitle}{Mathematische Zeitschrift}
+      \field{month}{4}
+      \field{number}{3-4}
+      \field{title}{Infinitesimal Deformations of Rational Surface Automorphisms}
+      \field{urlday}{8}
+      \field{urlmonth}{8}
+      \field{urlyear}{2024}
+      \field{volume}{288}
+      \field{year}{2018}
+      \field{urldateera}{ce}
+      \field{pages}{1195\bibrangedash 1253}
+      \range{pages}{59}
+      \verb{doi}
+      \verb 10.1007/s00209-017-1932-x
+      \endverb
+      \verb{eprint}
+      \verb 1210.7163
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/95PMK6EU/Grivaux - 2018 - Infinitesimal deformations of rational surface aut.pdf;/home/dzack/Zotero/storage/ZVRLE5ME/1210.html
+      \endverb
+      \keyw{37F10 14E07 32G05,Mathematics - Algebraic Geometry,Mathematics - Dynamical Systems}
+    \endentry
+    \entry{Il79}{article}{}
+      \name{author}{1}{}{%
+        {{hash=f560424c5d8b060f8a187618b42603ef}{%
+           family={Illusie},
+           familyi={I\bibinitperiod},
+           given={Luc},
+           giveni={L\bibinitperiod}}}%
+      }
+      \strng{namehash}{f560424c5d8b060f8a187618b42603ef}
+      \strng{fullhash}{f560424c5d8b060f8a187618b42603ef}
+      \strng{bibnamehash}{f560424c5d8b060f8a187618b42603ef}
+      \strng{authorbibnamehash}{f560424c5d8b060f8a187618b42603ef}
+      \strng{authornamehash}{f560424c5d8b060f8a187618b42603ef}
+      \strng{authorfullhash}{f560424c5d8b060f8a187618b42603ef}
+      \field{labelalpha}{Ill79}
+      \field{sortinit}{I}
+      \field{sortinithash}{8d291c51ee89b6cd86bf5379f0b151d8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Annales scientifiques de l'École normale supérieure}
+      \field{number}{4}
+      \field{title}{Complexe de {{deRham-Witt}} et Cohomologie Cristalline}
+      \field{volume}{12}
+      \field{year}{1979}
+      \field{pages}{501\bibrangedash 661}
+      \range{pages}{161}
+      \verb{doi}
+      \verb 10.24033/asens.1374
+      \endverb
+    \endentry
+    \entry{ingallsNodalEnriquesSurfaces2015}{article}{}
+      \name{author}{2}{}{%
+        {{hash=fab14f30be66d47faa14abd926e46bd8}{%
+           family={Ingalls},
+           familyi={I\bibinitperiod},
+           given={Colin},
+           giveni={C\bibinitperiod}}}%
+        {{hash=3e1f2bcd8c8ceaf1cd2e6c88b6e90b0d}{%
+           family={Kuznetsov},
+           familyi={K\bibinitperiod},
+           given={Alexander},
+           giveni={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{36efa08ce942bbc85b049f96e2946571}
+      \strng{fullhash}{36efa08ce942bbc85b049f96e2946571}
+      \strng{bibnamehash}{36efa08ce942bbc85b049f96e2946571}
+      \strng{authorbibnamehash}{36efa08ce942bbc85b049f96e2946571}
+      \strng{authornamehash}{36efa08ce942bbc85b049f96e2946571}
+      \strng{authorfullhash}{36efa08ce942bbc85b049f96e2946571}
+      \field{labelalpha}{IK15}
+      \field{sortinit}{I}
+      \field{sortinithash}{8d291c51ee89b6cd86bf5379f0b151d8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We consider the class of singular double coverings \$X {\textbackslash}to {\textbackslash}PP{\textasciicircum}3\$ ramified in the degeneration locus \$D\$ of a family of 2-dimensional quadrics. These are precisely the quartic double solids constructed by Artin and Mumford as examples of unirational but nonrational conic bundles. With such quartic surface \$D\$ one can associate an Enriques surface \$S\$ which is the factor of the blowup of \$D\$ by a natural involution acting without fixed points (such Enriques surfaces are known as nodal Enriques surfaces or Reye congruences). We show that the nontrivial part of the derived category of coherent sheaves on this Enriques surface \$S\$ is equivalent to the nontrivial part of the derived category of a minimal resolution of singularities of \$X\$.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{issn}{0025-5831, 1432-1807}
+      \field{journaltitle}{Mathematische Annalen}
+      \field{month}{2}
+      \field{number}{1-2}
+      \field{title}{On Nodal {{Enriques}} Surfaces and Quartic Double Solids}
+      \field{urlday}{7}
+      \field{urlmonth}{8}
+      \field{urlyear}{2024}
+      \field{volume}{361}
+      \field{year}{2015}
+      \field{urldateera}{ce}
+      \field{pages}{107\bibrangedash 133}
+      \range{pages}{27}
+      \verb{doi}
+      \verb 10.1007/s00208-014-1066-y
+      \endverb
+      \verb{eprint}
+      \verb 1012.3530
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/TN2B8LJA/Ingalls and Kuznetsov - 2015 - On nodal Enriques surfaces and quartic double soli.pdf;/home/dzack/Zotero/storage/TBGCZ8SL/1012.html
+      \endverb
+      \keyw{Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{kimura2018k3-surfaces}{article}{}
+      \name{author}{1}{}{%
+        {{hash=0a6177e8c4e10ab36c4e25778b2e19fc}{%
+           family={Kimura},
+           familyi={K\bibinitperiod},
+           given={Yusuke},
+           giveni={Y\bibinitperiod}}}%
+      }
+      \strng{namehash}{0a6177e8c4e10ab36c4e25778b2e19fc}
+      \strng{fullhash}{0a6177e8c4e10ab36c4e25778b2e19fc}
+      \strng{bibnamehash}{0a6177e8c4e10ab36c4e25778b2e19fc}
+      \strng{authorbibnamehash}{0a6177e8c4e10ab36c4e25778b2e19fc}
+      \strng{authornamehash}{0a6177e8c4e10ab36c4e25778b2e19fc}
+      \strng{authorfullhash}{0a6177e8c4e10ab36c4e25778b2e19fc}
+      \field{labelalpha}{Kim18}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{PTEP. Progress of Theoretical and Experimental Physics}
+      \field{number}{4}
+      \field{title}{K3 Surfaces without Section as Double Covers of {{Halphen}} Surfaces, and {{F-theory}} Compactifications}
+      \field{year}{2018}
+      \field{pages}{043B06\bibrangessep 13}
+      \range{pages}{-1}
+      \verb{doi}
+      \verb 10.1093/ptep/pty039
+      \endverb
+    \endentry
+    \entry{knutsen2020moduli}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=08dfac2029f41e161719732f3b5a27d1}{%
+           family={Knutsen},
+           familyi={K\bibinitperiod},
+           given={Andreas\bibnamedelima Leopold},
+           giveni={A\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+      }
+      \strng{namehash}{08dfac2029f41e161719732f3b5a27d1}
+      \strng{fullhash}{08dfac2029f41e161719732f3b5a27d1}
+      \strng{bibnamehash}{08dfac2029f41e161719732f3b5a27d1}
+      \strng{authorbibnamehash}{08dfac2029f41e161719732f3b5a27d1}
+      \strng{authornamehash}{08dfac2029f41e161719732f3b5a27d1}
+      \strng{authorfullhash}{08dfac2029f41e161719732f3b5a27d1}
+      \field{labelalpha}{Knu20}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{math.AG}
+      \field{eprinttype}{arXiv}
+      \field{title}{On Moduli Spaces of Polarized {{Enriques}} Surfaces}
+      \field{year}{2020}
+      \verb{eprint}
+      \verb 2001.10769
+      \endverb
+    \endentry
+    \entry{kollar1988threefolds-and-deformations}{article}{}
+      \name{author}{2}{}{%
+        {{hash=9a5550d17d8dd12f393e326bb9a2e70a}{%
+           family={Kollár},
+           familyi={K\bibinitperiod},
+           given={J.},
+           giveni={J\bibinitperiod}}}%
+        {{hash=e68a6b69cf08ed1a7f5dc7c5620317a8}{%
+           family={{Shepherd-Barron}},
+           familyi={S\bibinitperiod},
+           given={N.\bibnamedelimi I.},
+           giveni={N\bibinitperiod\bibinitdelim I\bibinitperiod}}}%
+      }
+      \strng{namehash}{7f9b929c17edca229d0426d56d5b5060}
+      \strng{fullhash}{7f9b929c17edca229d0426d56d5b5060}
+      \strng{bibnamehash}{7f9b929c17edca229d0426d56d5b5060}
+      \strng{authorbibnamehash}{7f9b929c17edca229d0426d56d5b5060}
+      \strng{authornamehash}{7f9b929c17edca229d0426d56d5b5060}
+      \strng{authorfullhash}{7f9b929c17edca229d0426d56d5b5060}
+      \field{labelalpha}{KS88}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0020-9910}
+      \field{journaltitle}{Inventiones Mathematicae}
+      \field{number}{2}
+      \field{title}{Threefolds and Deformations of Surface Singularities}
+      \field{volume}{91}
+      \field{year}{1988}
+      \field{pages}{299\bibrangedash 338}
+      \range{pages}{40}
+    \endentry
+    \entry{Kol23}{book}{}
+      \name{author}{1}{}{%
+        {{hash=43fd239813bce49520fe61f6a161a3ed}{%
+           family={Kollár},
+           familyi={K\bibinitperiod},
+           given={János},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Cambridge}%
+      }
+      \list{publisher}{1}{%
+        {Cambridge University Press}%
+      }
+      \strng{namehash}{43fd239813bce49520fe61f6a161a3ed}
+      \strng{fullhash}{43fd239813bce49520fe61f6a161a3ed}
+      \strng{bibnamehash}{43fd239813bce49520fe61f6a161a3ed}
+      \strng{authorbibnamehash}{43fd239813bce49520fe61f6a161a3ed}
+      \strng{authornamehash}{43fd239813bce49520fe61f6a161a3ed}
+      \strng{authorfullhash}{43fd239813bce49520fe61f6a161a3ed}
+      \field{labelalpha}{Kol23}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{This book establishes the moduli theory of stable varieties, giving the optimal approach to understanding families of varieties of general type. Starting from the Deligne--Mumford theory of the moduli of curves and using Mori's program as a main tool, the book develops the techniques necessary for a theory in all dimensions. The main results give all the expected general properties, including a projective coarse moduli space. A wealth of previously unpublished material is also featured, including Chapter 5 on numerical flatness criteria, Chapter 7 on K-flatness, and Chapter 9 on hulls and husks.}
+      \field{isbn}{978-1-00-934610-8}
+      \field{series}{Cambridge {{Tracts}} in {{Mathematics}}}
+      \field{title}{Families of {{Varieties}} of {{General Type}}}
+      \field{urlday}{28}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.1017/9781009346115
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/NWCACJKM/Kollár - 2023 - Families of Varieties of General Type.pdf
+      \endverb
+    \endentry
+    \entry{kondo1994the-rationality}{article}{}
+      \name{author}{1}{}{%
+        {{hash=a5a507b97708b683739276cba69b8f63}{%
+           family={Kondo},
+           familyi={K\bibinitperiod},
+           given={Shigeyuki},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{a5a507b97708b683739276cba69b8f63}
+      \strng{fullhash}{a5a507b97708b683739276cba69b8f63}
+      \strng{bibnamehash}{a5a507b97708b683739276cba69b8f63}
+      \strng{authorbibnamehash}{a5a507b97708b683739276cba69b8f63}
+      \strng{authornamehash}{a5a507b97708b683739276cba69b8f63}
+      \strng{authorfullhash}{a5a507b97708b683739276cba69b8f63}
+      \field{labelalpha}{Kon94}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0010-437X,1570-5846}
+      \field{journaltitle}{Compositio Mathematica}
+      \field{number}{2}
+      \field{title}{The Rationality of the Moduli Space of {{Enriques}} Surfaces}
+      \field{volume}{91}
+      \field{year}{1994}
+      \field{pages}{159\bibrangedash 173}
+      \range{pages}{15}
+    \endentry
+    \entry{La83}{article}{}
+      \name{author}{1}{}{%
+        {{hash=fe9414d36534c7b705800be204b8726a}{%
+           family={Lang},
+           familyi={L\bibinitperiod},
+           given={William\bibnamedelima E.},
+           giveni={W\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
+      }
+      \strng{namehash}{fe9414d36534c7b705800be204b8726a}
+      \strng{fullhash}{fe9414d36534c7b705800be204b8726a}
+      \strng{bibnamehash}{fe9414d36534c7b705800be204b8726a}
+      \strng{authorbibnamehash}{fe9414d36534c7b705800be204b8726a}
+      \strng{authornamehash}{fe9414d36534c7b705800be204b8726a}
+      \strng{authorfullhash}{fe9414d36534c7b705800be204b8726a}
+      \field{labelalpha}{Lan83}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Mathematische Annalen}
+      \field{number}{1}
+      \field{title}{On {{Enriques}} Surfaces in Characteristic p. {{I}}}
+      \field{volume}{265}
+      \field{year}{1983}
+      \field{pages}{45\bibrangedash 65}
+      \range{pages}{21}
+      \verb{doi}
+      \verb 10.1007/bf01456935
+      \endverb
+    \endentry
+    \entry{Lie13}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=7d27b7d15b6c8e44dc692e8081252a6e}{%
+           family={Liedtke},
+           familyi={L\bibinitperiod},
+           given={Christian},
+           giveni={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{7d27b7d15b6c8e44dc692e8081252a6e}
+      \strng{fullhash}{7d27b7d15b6c8e44dc692e8081252a6e}
+      \strng{bibnamehash}{7d27b7d15b6c8e44dc692e8081252a6e}
+      \strng{authorbibnamehash}{7d27b7d15b6c8e44dc692e8081252a6e}
+      \strng{authornamehash}{7d27b7d15b6c8e44dc692e8081252a6e}
+      \strng{authorfullhash}{7d27b7d15b6c8e44dc692e8081252a6e}
+      \field{labelalpha}{Lie13}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{math.AG}
+      \field{eprinttype}{arXiv}
+      \field{title}{Arithmetic Moduli and Lifting of Enriques Surfaces}
+      \field{year}{2013}
+      \verb{eprint}
+      \verb 1007.0787
+      \endverb
+    \endentry
+    \entry{Loo86}{inproceedings}{}
+      \name{author}{1}{}{%
+        {{hash=77d2902d5243c126c03571bcd457ed53}{%
+           family={Looijenga},
+           familyi={L\bibinitperiod},
+           given={Eduard},
+           giveni={E\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Amer. Math. Soc., Providence, RI}%
+      }
+      \strng{namehash}{77d2902d5243c126c03571bcd457ed53}
+      \strng{fullhash}{77d2902d5243c126c03571bcd457ed53}
+      \strng{bibnamehash}{77d2902d5243c126c03571bcd457ed53}
+      \strng{authorbibnamehash}{77d2902d5243c126c03571bcd457ed53}
+      \strng{authornamehash}{77d2902d5243c126c03571bcd457ed53}
+      \strng{authorfullhash}{77d2902d5243c126c03571bcd457ed53}
+      \field{extraname}{1}
+      \field{labelalpha}{Loo86}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 1984 {{Vancouver}} Conference in Algebraic Geometry}
+      \field{series}{{{CMS}} Conf. {{Proc}}.}
+      \field{title}{New Compactifications of Locally Symmetric Varieties}
+      \field{volume}{6}
+      \field{year}{1986}
+      \field{pages}{341\bibrangedash 364}
+      \range{pages}{24}
+    \endentry
+    \entry{Loo03}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=77d2902d5243c126c03571bcd457ed53}{%
+           family={Looijenga},
+           familyi={L\bibinitperiod},
+           given={Eduard},
+           giveni={E\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{77d2902d5243c126c03571bcd457ed53}
+      \strng{fullhash}{77d2902d5243c126c03571bcd457ed53}
+      \strng{bibnamehash}{77d2902d5243c126c03571bcd457ed53}
+      \strng{authorbibnamehash}{77d2902d5243c126c03571bcd457ed53}
+      \strng{authornamehash}{77d2902d5243c126c03571bcd457ed53}
+      \strng{authorfullhash}{77d2902d5243c126c03571bcd457ed53}
+      \field{extraname}{2}
+      \field{labelalpha}{Loo02}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{We define a new class of completions of locally symmetric varieties of type IV which interpolates between the Baily-Borel compactification and Mumford's toric compactifications. An arithmetic arrangement in a locally symmetric variety of type IV determines such a completion canonically. This completion admits a natural contraction that leaves the complement of the arrangement untouched. The resulting completion of the arrangement complement is very much like a Baily-Borel compactification: it is the proj of an algebra of meromorphic automorphic forms. When that complement has a moduli space interpretation, then what we get is often a compactification obtained by means of geometric invariant theory. We illustrate this with several examples: moduli spaces of polarized \$K3\$ and Enriques surfaces and the semi-universal deformation of a triangle singularity. We also discuss the question when a type IV arrangement is definable by an automorphic form.}
+      \field{eprinttype}{arXiv}
+      \field{month}{4}
+      \field{number}{arXiv:math/0201218}
+      \field{shorttitle}{Compactifications Defined by Arrangements {{II}}}
+      \field{title}{Compactifications Defined by Arrangements {{II}}: Locally Symmetric Varieties of Type {{IV}}}
+      \field{urlday}{29}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{year}{2002}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.math/0201218
+      \endverb
+      \verb{eprint}
+      \verb math/0201218
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/44XD5NUR/Looijenga - 2002 - Compactifications defined by arrangements II loca.pdf
+      \endverb
+      \keyw{14J15,32N15,Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{martinNodalEnriquesSurfaces2024}{article}{}
+      \name{author}{3}{}{%
+        {{hash=cd0ad3d55cc27e838d1fd9eb2777cc0c}{%
+           family={Martin},
+           familyi={M\bibinitperiod},
+           given={Gebhard},
+           giveni={G\bibinitperiod}}}%
+        {{hash=afdb20fe4c9e6ac9b1a27404d2f1b39f}{%
+           family={Mezzedimi},
+           familyi={M\bibinitperiod},
+           given={Giacomo},
+           giveni={G\bibinitperiod}}}%
+        {{hash=5930baa8af14491583e509e929c0a07d}{%
+           family={Veniani},
+           familyi={V\bibinitperiod},
+           given={Davide\bibnamedelima Cesare},
+           giveni={D\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+      }
+      \strng{namehash}{fecb2f7bd58fc687a359513153c517a8}
+      \strng{fullhash}{fecb2f7bd58fc687a359513153c517a8}
+      \strng{bibnamehash}{fecb2f7bd58fc687a359513153c517a8}
+      \strng{authorbibnamehash}{fecb2f7bd58fc687a359513153c517a8}
+      \strng{authornamehash}{fecb2f7bd58fc687a359513153c517a8}
+      \strng{authorfullhash}{fecb2f7bd58fc687a359513153c517a8}
+      \field{labelalpha}{MMV24}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We show that every classical Enriques surface containing a smooth rational curve is a Reye congruence.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{issn}{0075-4102, 1435-5345}
+      \field{journaltitle}{Journal für die reine und angewandte Mathematik (Crelles Journal)}
+      \field{month}{1}
+      \field{number}{0}
+      \field{title}{Nodal {{Enriques}} Surfaces Are {{Reye}} Congruences}
+      \field{urlday}{7}
+      \field{urlmonth}{8}
+      \field{urlyear}{2024}
+      \field{volume}{0}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.1515/crelle-2023-0092
+      \endverb
+      \verb{eprint}
+      \verb 2306.11661
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/BS3XJWB6/Martin et al. - 2024 - Nodal Enriques surfaces are Reye congruences.pdf;/home/dzack/Zotero/storage/UB226Q8D/2306.html
+      \endverb
+      \keyw{14J28 (14J10),Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{mirandaModuliWeierstrassFibrations1981}{article}{}
+      \name{author}{1}{}{%
+        {{hash=759ab07af39c6d4b330f2bb6f07ba395}{%
+           family={Miranda},
+           familyi={M\bibinitperiod},
+           given={Rick},
+           giveni={R\bibinitperiod}}}%
+      }
+      \strng{namehash}{759ab07af39c6d4b330f2bb6f07ba395}
+      \strng{fullhash}{759ab07af39c6d4b330f2bb6f07ba395}
+      \strng{bibnamehash}{759ab07af39c6d4b330f2bb6f07ba395}
+      \strng{authorbibnamehash}{759ab07af39c6d4b330f2bb6f07ba395}
+      \strng{authornamehash}{759ab07af39c6d4b330f2bb6f07ba395}
+      \strng{authorfullhash}{759ab07af39c6d4b330f2bb6f07ba395}
+      \field{labelalpha}{Mir81}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{1432-1807}
+      \field{journaltitle}{Mathematische Annalen}
+      \field{langid}{english}
+      \field{month}{9}
+      \field{number}{3}
+      \field{title}{The Moduli of {{Weierstrass}} Fibrations over {{$\mathbb{P}$1}}}
+      \field{urlday}{8}
+      \field{urlmonth}{8}
+      \field{urlyear}{2024}
+      \field{volume}{255}
+      \field{year}{1981}
+      \field{urldateera}{ce}
+      \field{pages}{379\bibrangedash 394}
+      \range{pages}{16}
+      \verb{doi}
+      \verb 10.1007/BF01450711
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/HXDRDW7A/Miranda - 1981 - The moduli of Weierstrass fibrations over ℙ1.pdf
+      \endverb
+    \endentry
+    \entry{mirandaModuliSpaceRational2021}{misc}{}
+      \name{author}{2}{}{%
+        {{hash=759ab07af39c6d4b330f2bb6f07ba395}{%
+           family={Miranda},
+           familyi={M\bibinitperiod},
+           given={Rick},
+           giveni={R\bibinitperiod}}}%
+        {{hash=72c5838068c4b7a397446e599874c42c}{%
+           family={Zanardini},
+           familyi={Z\bibinitperiod},
+           given={Aline},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{9255f3bbfcc7a063953864a5538c3f66}
+      \strng{fullhash}{9255f3bbfcc7a063953864a5538c3f66}
+      \strng{bibnamehash}{9255f3bbfcc7a063953864a5538c3f66}
+      \strng{authorbibnamehash}{9255f3bbfcc7a063953864a5538c3f66}
+      \strng{authornamehash}{9255f3bbfcc7a063953864a5538c3f66}
+      \strng{authorfullhash}{9255f3bbfcc7a063953864a5538c3f66}
+      \field{labelalpha}{MZ21}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{In this paper we construct a moduli space for marked rational elliptic surfaces of index two as a non-complete toric variety of dimension nine. We also construct compactifications of this moduli space, which are obtained as quotients of \${\textbackslash}mathbb\{A\}{\textasciicircum}\{12\}\$ by an action of \${\textbackslash}mathbb\{G\}\_m{\textasciicircum}3\$.}
+      \field{eprintclass}{math}
+      \field{eprinttype}{arXiv}
+      \field{month}{11}
+      \field{number}{arXiv:2111.07294}
+      \field{title}{The Moduli Space of Rational Elliptic Surfaces of Index Two}
+      \field{urlday}{8}
+      \field{urlmonth}{8}
+      \field{urlyear}{2024}
+      \field{year}{2021}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2111.07294
+      \endverb
+      \verb{eprint}
+      \verb 2111.07294
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/SLXVRMWB/Miranda and Zanardini - 2021 - The moduli space of rational elliptic surfaces of .pdf;/home/dzack/Zotero/storage/9ZE7YIYI/2111.html
+      \endverb
+      \keyw{14L24 14J27 (Primary) 14M25 (Secondary),Mathematics - Algebraic Geometry}
+    \endentry
+    \entry{mumford1965git}{book}{}
+      \name{author}{1}{}{%
+        {{hash=275b714ea594482428d9b55ee81df320}{%
+           family={Mumford},
+           familyi={M\bibinitperiod},
+           given={David},
+           giveni={D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer-Verlag, Berlin-New York,}%
+      }
+      \strng{namehash}{275b714ea594482428d9b55ee81df320}
+      \strng{fullhash}{275b714ea594482428d9b55ee81df320}
+      \strng{bibnamehash}{275b714ea594482428d9b55ee81df320}
+      \strng{authorbibnamehash}{275b714ea594482428d9b55ee81df320}
+      \strng{authornamehash}{275b714ea594482428d9b55ee81df320}
+      \strng{authorfullhash}{275b714ea594482428d9b55ee81df320}
+      \field{labelalpha}{Mum65}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Geometric Invariant Theory.}
+      \field{year}{1965}
+      \field{pages}{vi+145}
+      \range{pages}{-1}
+    \endentry
+    \entry{namikawa1976a-new-compactification-of-the-siegel1}{article}{}
+      \name{author}{1}{}{%
+        {{hash=ce3ca74d70e1d779611c705b9121d364}{%
+           family={Namikawa},
+           familyi={N\bibinitperiod},
+           given={Yukihiko},
+           giveni={Y\bibinitperiod}}}%
+      }
+      \strng{namehash}{ce3ca74d70e1d779611c705b9121d364}
+      \strng{fullhash}{ce3ca74d70e1d779611c705b9121d364}
+      \strng{bibnamehash}{ce3ca74d70e1d779611c705b9121d364}
+      \strng{authorbibnamehash}{ce3ca74d70e1d779611c705b9121d364}
+      \strng{authornamehash}{ce3ca74d70e1d779611c705b9121d364}
+      \strng{authorfullhash}{ce3ca74d70e1d779611c705b9121d364}
+      \field{labelalpha}{Nam76}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0025-5831}
+      \field{journaltitle}{Mathematische Annalen}
+      \field{number}{2}
+      \field{title}{A New Compactification of the {{Siegel}} Space and Degeneration of {{Abelian}} Varieties. {{I}}}
+      \field{volume}{221}
+      \field{year}{1976}
+      \field{pages}{97\bibrangedash 141}
+      \range{pages}{45}
+    \endentry
+    \entry{nikulin1979quotient-groups}{article}{}
+      \name{author}{1}{}{%
+        {{hash=affca1e0337cc7f8f5aa0ab450d1d558}{%
+           family={Nikulin},
+           familyi={N\bibinitperiod},
+           given={V.\bibnamedelimi V.},
+           giveni={V\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+      }
+      \strng{namehash}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \strng{fullhash}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \strng{bibnamehash}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \strng{authorbibnamehash}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \strng{authornamehash}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \strng{authorfullhash}{affca1e0337cc7f8f5aa0ab450d1d558}
+      \field{labelalpha}{Nik79}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0002-3264}
+      \field{journaltitle}{Doklady Akademii Nauk SSSR}
+      \field{number}{6}
+      \field{title}{Quotient-Groups of Groups of Automorphisms of Hyperbolic Forms of Subgroups Generated by 2-Reflections}
+      \field{volume}{248}
+      \field{year}{1979}
+      \field{pages}{1307\bibrangedash 1309}
+      \range{pages}{3}
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/IBD8ECV6/Nikulin - 1979 - Quotient-groups of groups of automorphisms of hype.pdf
+      \endverb
+    \endentry
+    \entry{piateski-shapiro1971torelli}{article}{}
+      \name{author}{2}{}{%
+        {{hash=0d16527e8fb785e4f1ed230c53a54785}{%
+           family={{Piatetski-Shapiro}},
+           familyi={P\bibinitperiod},
+           given={I.\bibnamedelimi I.},
+           giveni={I\bibinitperiod\bibinitdelim I\bibinitperiod}}}%
+        {{hash=33be33c131fc910ffd05587507594de2}{%
+           family={Shafarevich},
+           familyi={S\bibinitperiod},
+           given={I.\bibnamedelimi R.},
+           giveni={I\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+      }
+      \strng{namehash}{b1e3353fae448ee70a84bfd4dcc4b71a}
+      \strng{fullhash}{b1e3353fae448ee70a84bfd4dcc4b71a}
+      \strng{bibnamehash}{b1e3353fae448ee70a84bfd4dcc4b71a}
+      \strng{authorbibnamehash}{b1e3353fae448ee70a84bfd4dcc4b71a}
+      \strng{authornamehash}{b1e3353fae448ee70a84bfd4dcc4b71a}
+      \strng{authorfullhash}{b1e3353fae448ee70a84bfd4dcc4b71a}
+      \field{labelalpha}{PS71}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0373-2436}
+      \field{journaltitle}{Izv. Akad. Nauk SSSR Ser. Mat.}
+      \field{title}{Torelli's Theorem for Algebraic Surfaces of Type {{K3}}}
+      \field{volume}{35}
+      \field{year}{1971}
+      \field{pages}{530\bibrangedash 572}
+      \range{pages}{43}
+    \endentry
+    \entry{viehweg1995quasi-projective-moduli}{book}{}
+      \name{author}{1}{}{%
+        {{hash=136ee40989b70a0afcc4d574bca94e8f}{%
+           family={Viehweg},
+           familyi={V\bibinitperiod},
+           given={Eckart},
+           giveni={E\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Berlin}%
+      }
+      \list{publisher}{1}{%
+        {Springer-Verlag}%
+      }
+      \strng{namehash}{136ee40989b70a0afcc4d574bca94e8f}
+      \strng{fullhash}{136ee40989b70a0afcc4d574bca94e8f}
+      \strng{bibnamehash}{136ee40989b70a0afcc4d574bca94e8f}
+      \strng{authorbibnamehash}{136ee40989b70a0afcc4d574bca94e8f}
+      \strng{authornamehash}{136ee40989b70a0afcc4d574bca94e8f}
+      \strng{authorfullhash}{136ee40989b70a0afcc4d574bca94e8f}
+      \field{labelalpha}{Vie95}
+      \field{sortinit}{V}
+      \field{sortinithash}{afb52128e5b4dc4b843768c0113d673b}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{3-540-59255-5}
+      \field{series}{Ergebnisse Der Mathematik Und Ihrer Grenzgebiete (3) [{{Results}} in Mathematics and Related Areas (3)]}
+      \field{title}{Quasi-Projective Moduli for Polarized Manifolds}
+      \field{volume}{30}
+      \field{year}{1995}
+      \field{pages}{viii+320}
+      \range{pages}{-1}
+    \endentry
+    \entry{zanardiniStabilityPencilsPlane2023}{article}{}
+      \name{author}{1}{}{%
+        {{hash=72c5838068c4b7a397446e599874c42c}{%
+           family={Zanardini},
+           familyi={Z\bibinitperiod},
+           given={Aline},
+           giveni={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{72c5838068c4b7a397446e599874c42c}
+      \strng{fullhash}{72c5838068c4b7a397446e599874c42c}
+      \strng{bibnamehash}{72c5838068c4b7a397446e599874c42c}
+      \strng{authorbibnamehash}{72c5838068c4b7a397446e599874c42c}
+      \strng{authornamehash}{72c5838068c4b7a397446e599874c42c}
+      \strng{authorfullhash}{72c5838068c4b7a397446e599874c42c}
+      \field{labelalpha}{Zan23}
+      \field{sortinit}{Z}
+      \field{sortinithash}{96892c0b0a36bb8557c40c49813d48b3}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We study the problem of classifying pencils of plane sextics up to projective equivalence via geometric invariant theory (GIT). In particular, we provide a complete description of the GIT stability of certain pencils of plane sextics called Halphen pencils of index two-classical geometric objects which were first introduced by G. Halphen in 1882. Inspired by the work of Miranda on pencils of plane cubics, we obtain explicit stability criteria in terms of the types of singular fibers appearing in their associated rational elliptic surfaces.}
+      \field{issn}{1432-1785}
+      \field{journaltitle}{manuscripta mathematica}
+      \field{langid}{english}
+      \field{month}{9}
+      \field{number}{1}
+      \field{title}{Stability of Pencils of Plane Sextics and {{Halphen}} Pencils of Index Two}
+      \field{urlday}{8}
+      \field{urlmonth}{8}
+      \field{urlyear}{2024}
+      \field{volume}{172}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \field{pages}{353\bibrangedash 374}
+      \range{pages}{22}
+      \verb{doi}
+      \verb 10.1007/s00229-022-01423-w
+      \endverb
+      \verb{file}
+      \verb /home/dzack/Zotero/storage/JJUMDK8A/Zanardini - 2023 - Stability of pencils of plane sextics and Halphen .pdf
+      \endverb
+      \keyw{14J27,14L24}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

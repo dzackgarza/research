@@ -1,0 +1,132 @@
+mod pandoc '~/.pandoc/justfile'
+
+# --- Main Targets ---
+
+# Format all markdown files
+format-md:
+  just pandoc::format-md content_pandoc
+
+# Compile LaTeX source
+compile-tex: (pandoc::compile-tex "content_latex/main.tex" "paper")
+
+# Compile Pandoc source to PDF
+compile-pandoc: format-md render-figures (pandoc::compile-pandoc "content_pandoc/main.md" "output" "research_draft.tex")
+
+# --- Figure Rendering ---
+
+# Render TikZ figures to SVG
+render-figures: (pandoc::render-figures)
+
+# --- Bibliography & References ---
+
+# Sync all known references from their original arXiv source
+sync-refs:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  just pandoc::download-arxiv 2002.07127 AE22
+  just pandoc::download-arxiv 2109.14603 AE23
+  just pandoc::download-arxiv 1902.10686 AET19
+  just pandoc::download-arxiv 2208.10383 AKSZ23
+  just pandoc::download-arxiv 1806.01727v2 Zan20
+
+# Compile a reference LaTeX file to Markdown
+compile-reference dir file="main": (pandoc::extract-ref dir file)
+
+# --- Utilities ---
+
+# Live preview a markdown file (format: pdf or html)
+preview file format="pdf" template="research_draft.tex":
+  just pandoc::preview {{file}} {{format}} {{template}}
+
+
+# Surface current fake/placeholder cards without modifying them
+flag-fake-cards:
+  #!/usr/bin/env python3
+  from pathlib import Path
+  import re
+  import sys
+  
+  repo = Path.cwd()
+  knowledge = repo / "knowledge"
+  excluded_dirs = {"papers", "Talks"}
+  max_substantive_words = 20
+  
+  def strip_frontmatter(text):
+      lines = text.splitlines()
+      if lines and lines[0].strip() == "---":
+          for i in range(1, len(lines)):
+              if lines[i].strip() == "---":
+                  return "\n".join(lines[i + 1 :])
+      return text
+  
+  def note_stats(path):
+      text = strip_frontmatter(path.read_text())
+      total_nonblank = 0
+      substantive_lines = 0
+      substantive_words = 0
+      math_lines = 0
+  
+      for raw in text.splitlines():
+          line = raw.strip()
+          if not line:
+              continue
+          total_nonblank += 1
+          if "$" in line or "\\[" in line or "\\(" in line:
+              math_lines += 1
+  
+          if re.match(r"^#+\\s", line):
+              continue
+          if re.match(r"^>\\s*\\[![^\\]]+\\]\\s*$", line):
+              continue
+          if re.match(r"^[-*]\\s*\\[\\[[^\\]]+\\]\\]\\s*$", line):
+              continue
+  
+          cleaned = re.sub(r"\\[\\[[^\\]]+\\]\\]", " ", line)
+          cleaned = re.sub(r"`[^`]*`", " ", cleaned)
+          cleaned = re.sub(r"[@#*_>|-]", " ", cleaned)
+          words = re.findall(r"[A-Za-z0-9][A-Za-z0-9_{}^\\\\-]*", cleaned)
+          if words:
+              substantive_lines += 1
+              substantive_words += len(words)
+  
+      return {
+          "path": path,
+          "rel": str(path.relative_to(repo)),
+          "total_nonblank": total_nonblank,
+          "substantive_lines": substantive_lines,
+          "substantive_words": substantive_words,
+          "math_lines": math_lines,
+      }
+  
+  flagged = []
+  for path in sorted(knowledge.rglob("*.md")):
+      if any(part in excluded_dirs for part in path.parts):
+          continue
+      note = note_stats(path)
+      if note["substantive_lines"] == 0 or note["substantive_words"] <= max_substantive_words:
+          flagged.append(note)
+  
+  print("Low-content notes")
+  print("=================")
+  print("This audit flags notes with almost no real content using note-substance only.")
+  print(f"Threshold: substantive_lines == 0 or substantive_words <= {max_substantive_words}\n")
+  print(f"{'nonblank':>8} {'sub-lines':>9} {'sub-words':>9} {'math':>6}  path")
+  print(f"{'-' * 8} {'-' * 9} {'-' * 9} {'-' * 6}  {'-' * 60}")
+  
+  for note in flagged:
+      print(
+          f"{note['total_nonblank']:>8} {note['substantive_lines']:>9} {note['substantive_words']:>9} {note['math_lines']:>6}  {note['rel']}"
+      )
+  
+  print(f"\nTotal flagged notes: {len(flagged)}")
+  sys.exit(1 if flagged else 0)
+
+# Clean build artifacts
+clean: pandoc::clean
+  #!/usr/bin/env bash
+  set -euo pipefail
+  rm -f paper-*.pdf paper_*.pdf
+  rm -f output-*.pdf output_*.pdf
+
+# Clean reference artifacts
+clean-refs: pandoc::clean-refs

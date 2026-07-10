@@ -1,0 +1,61 @@
+\documentclass[tikz,border=5pt]{standalone}
+\usepackage{tikz-3dplot}
+\usetikzlibrary{calc, arrows.meta}
+
+\begin{document}
+
+% Figure 12b: Stable Model Dual Complex Sphere
+\tdplotsetmaincoords{70}{110}
+\begin{tikzpicture}[tdplot_main_coords, scale=3]
+    % Draw the sphere base shading for 3D effect
+    \fill[ball color=gray!10, opacity=0.2] (0,0,0) circle (1);
+    
+    % Draw the equator (Blue) - visible part and hidden part
+    \draw[blue!20, thin, dashed] (1,0,0) arc (0:180:1); % Back part
+    \draw[blue, ultra thick] (1,0,0) arc (0:-180:1); % Front part
+    
+    % Draw the upper hemisphere grid (Longitudinal arcs)
+    \foreach \ang in {0, 20, ..., 340} {
+        \tdplotsetthetaplanecoords{\ang}
+        \draw[tdplot_rotated_coords, gray!40, thin] (1,0,0) arc (0:90:1);
+    }
+    
+    % Draw the upper hemisphere grid (Latitudinal arcs)
+    \foreach \lat in {15, 30, 45, 60, 75} {
+        \draw[gray!40, thin] ({cos(\lat)},0,{sin(\lat)}) arc (0:360:{cos(\lat)});
+    }
+    
+    % North Pole
+    \fill[black] (0,0,1) circle (0.4pt);
+    
+    % Triangular grid vertices (black dots)
+    \foreach \lat in {0, 15, ..., 75} {
+        \foreach \ang in {0, 20, ..., 340} {
+            \fill ({cos(\lat)*cos(\ang)}, {cos(\lat)*sin(\ang)}, {sin(\lat)}) circle (0.3pt);
+        }
+    }
+
+    % Special Labeled Nodes (Red crosshairs + numbers)
+    % Projected onto the sphere
+    
+    % Node "2" at (45 lat, 60 lon)
+    \tdplotsetcoord{N2a}{1}{45}{60}
+    \draw[red, thick] ($(N2a)-(0.02,0.02,0)$) -- ($(N2a)+(0.02,0.02,0)$);
+    \draw[red, thick] ($(N2a)-(0.02,-0.02,0)$) -- ($(N2a)+(0.02,-0.02,0)$);
+    \node[red, font=\scriptsize\bfseries, right=1pt] at (N2a) {2};
+
+    % Node "2" at (45 lat, 120 lon)
+    \tdplotsetcoord{N2b}{1}{45}{120}
+    \draw[red, thick] ($(N2b)-(0.02,0.02,0)$) -- ($(N2b)+(0.02,0.02,0)$);
+    \draw[red, thick] ($(N2b)-(0.02,-0.02,0)$) -- ($(N2b)+(0.02,-0.02,0)$);
+    \node[red, font=\scriptsize\bfseries, right=1pt] at (N2b) {2};
+
+    % Node "16" at (0 lat, 100 lon) - near equator
+    \tdplotsetcoord{N16}{1}{90}{100}
+    \draw[red, thick] ($(N16)-(0.02,0.02,0)$) -- ($(N16)+(0.02,0.02,0)$);
+    \draw[red, thick] ($(N16)-(0.02,-0.02,0)$) -- ($(N16)+(0.02,-0.02,0)$);
+    \node[red, font=\scriptsize\bfseries, right=1pt] at (N16) {16};
+
+\end{tikzpicture}
+
+\end{document}

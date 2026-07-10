@@ -1,0 +1,265 @@
+\begin{thebibliography}{BHPVdV04}
+
+\bibitem[Art68]{artin1968solutions}
+M.~Artin.
+\newblock On the solutions of analytic equations.
+\newblock {\em Invent. Math.}, 5:277--291, 1968.
+
+\bibitem[BB66]{baily1966compactification}
+W.~L. Baily, Jr. and A.~Borel.
+\newblock Compactification of arithmetic quotients of bounded symmetric
+  domains.
+\newblock {\em Ann. of Math. (2)}, 84:442--528, 1966.
+
+\bibitem[Bel97]{belcastro2002picard}
+S.-M. Belcastro.
+\newblock Picard lattices of families of k3 surfaces.
+\newblock {\em University of Michigan Ph.D. dissertation}, 1997.
+
+\bibitem[BHPVdV04]{barth2004compact}
+W.~P. Barth, K.~Hulek, C.~A.~M. Peters, and A.~Van~de Ven.
+\newblock {\em Compact complex surfaces}, volume~4 of {\em Ergebnisse der
+  Mathematik und ihrer Grenzgebiete. 3. Folge. A Series of Modern Surveys in
+  Mathematics [Results in Mathematics and Related Areas. 3rd Series. A Series
+  of Modern Surveys in Mathematics]}.
+\newblock Springer-Verlag, Berlin, second edition, 2004.
+
+\bibitem[Blo72]{bloch1972semi-regularity}
+S.~Bloch.
+\newblock Semi-regularity and de{R}ham cohomology.
+\newblock {\em Invent. Math.}, 17:51--66, 1972.
+
+\bibitem[Bor72]{borel1972metric}
+A.~Borel.
+\newblock Some metric properties of arithmetic quotients of symmetric spaces
+  and an extension theorem.
+\newblock {\em J. Differential Geometry}, 6:543--560, 1972.
+
+\bibitem[Bou02]{bourbaki2002lie4-6}
+N.~Bourbaki.
+\newblock {\em Lie groups and {L}ie algebras. {C}hapters 4--6}.
+\newblock Elements of Mathematics (Berlin). Springer-Verlag, Berlin, 2002.
+\newblock Translated from the 1968 French original by Andrew Pressley.
+
+\bibitem[BR75]{burns1975torelli}
+D.~Burns, Jr. and M.~Rapoport.
+\newblock On the {T}orelli problem for k\"ahlerian {$K-3$} surfaces.
+\newblock {\em Ann. Sci. \'Ecole Norm. Sup. (4)}, 8(2):235--273, 1975.
+
+\bibitem[CM24]{clingher2024neron-severi}
+A.~Clingher and A.~Malmendier.
+\newblock On {N}\'eron-{S}everi lattices of {J}acobian elliptic {K}3 surfaces.
+\newblock {\em Manuscripta Math.}, 173(3-4):847--866, 2024.
+
+\bibitem[CS99]{conway1999sphere}
+J.~H. Conway and N.~J.~A. Sloane.
+\newblock {\em Sphere packings, lattices and groups}, volume 290 of {\em
+  Grundlehren der mathematischen Wissenschaften [Fundamental Principles of
+  Mathematical Sciences]}.
+\newblock Springer-Verlag, New York, third edition, 1999.
+\newblock With additional contributions by E. Bannai, R. E. Borcherds, J.
+  Leech, S. P. Norton, A. M. Odlyzko, R. A. Parker, L. Queen and B. B. Venkov.
+
+\bibitem[Deg08]{degtyarev2008deformations}
+A.~Degtyarev.
+\newblock On deformations of singular plane sextics.
+\newblock {\em J. Algebraic Geom.}, 17(1):101--135, 2008.
+
+\bibitem[DM86]{deligne1986monodromy}
+P.~Deligne and G.~D. Mostow.
+\newblock Monodromy of hypergeometric functions and nonlattice integral
+  monodromy.
+\newblock {\em Inst. Hautes \'Etudes Sci. Publ. Math.}, (63):5--89, 1986.
+
+\bibitem[DvGK05]{dolgachev2005complex}
+I.~Dolgachev, B.~van Geemen, and S.~Kond\=o.
+\newblock A complex ball uniformization of the moduli space of cubic surfaces
+  via periods of {$K3$} surfaces.
+\newblock {\em J. Reine Angew. Math.}, 588:99--148, 2005.
+
+\bibitem[GL96]{greuel1996equianalytic}
+G.-M. Greuel and C.~Lossen.
+\newblock Equianalytic and equisingular families of curves on surfaces.
+\newblock {\em Manuscripta Math.}, 91(3):323--342, 1996.
+
+\bibitem[GLS07]{greuel2007singularities}
+G.-M. Greuel, C.~Lossen, and E.~Shustin.
+\newblock {\em Introduction to singularities and deformations}.
+\newblock Springer Monographs in Mathematics. Springer, Berlin, 2007.
+
+\bibitem[GMGZ18]{gallardo2018compactifications}
+P.~Gallardo, J.~Martinez-Garcia, and Z.~Zhang.
+\newblock Compactifications of the moduli space of plane quartics and two
+  lines.
+\newblock {\em Eur. J. Math.}, 4(3):1000--1034, 2018.
+
+\bibitem[GS21]{greuel2021plane}
+G.-M. Greuel and E.~Shustin.
+\newblock Plane algebraic curves with prescribed singularities.
+\newblock In {\em Handbook of geometry and topology of singularities {II}},
+  pages 67--122. Springer, Cham, [2021] \copyright 2021.
+
+\bibitem[Has00]{hassett2000special}
+B.~Hassett.
+\newblock Special cubic fourfolds.
+\newblock {\em Compositio Math.}, 120(1):1--23, 2000.
+
+\bibitem[Huy16]{huybrechts2016lectures}
+D.~Huybrechts.
+\newblock {\em Lectures on {K}3 surfaces}, volume 158 of {\em Cambridge Studies
+  in Advanced Mathematics}.
+\newblock Cambridge University Press, Cambridge, 2016.
+
+\bibitem[Kon11]{kondo2011moduli}
+S.~Kond\=o.
+\newblock Moduli of plane quartics, {G}\"opel invariants and {B}orcherds
+  products.
+\newblock {\em Int. Math. Res. Not. IMRN}, (12):2825--2860, 2011.
+
+\bibitem[KR12]{kudla2012occult}
+S.~Kudla and M.~Rapoport.
+\newblock On occult period maps.
+\newblock {\em Pacific J. Math.}, 260(2):565--581, 2012.
+
+\bibitem[Laz09]{laza2009deformations}
+R.~Laza.
+\newblock Deformations of singularities and variation of {GIT} quotients.
+\newblock {\em Trans. Amer. Math. Soc.}, 361(4):2109--2161, 2009.
+
+\bibitem[Loo03]{looijenga2003compactificationsII}
+E.~Looijenga.
+\newblock Compactifications defined by arrangements. {II}. {L}ocally symmetric
+  varieties of type {IV}.
+\newblock {\em Duke Math. J.}, 119(3):527--588, 2003.
+
+\bibitem[LP81]{looijenga1980torelli}
+E.~Looijenga and C.~Peters.
+\newblock Torelli theorems for {K}\"ahler {$K3$}\ surfaces.
+\newblock {\em Compositio Math.}, 42(2):145--186, 1980/81.
+
+\bibitem[LW95]{lee1995homology}
+R.~Lee and S.~H. Weintraub.
+\newblock On the homology of double branched covers.
+\newblock {\em Proc. Amer. Math. Soc.}, 123(4):1263--1266, 1995.
+
+\bibitem[MFK94]{mumford1994geometric}
+D.~Mumford, J.~Fogarty, and F.~Kirwan.
+\newblock {\em Geometric invariant theory}, volume~34 of {\em Ergebnisse der
+  Mathematik und ihrer Grenzgebiete (2) [Results in Mathematics and Related
+  Areas (2)]}.
+\newblock Springer-Verlag, Berlin, third edition, 1994.
+
+\bibitem[Mos88]{mostow1988discontinuous}
+G.~D. Mostow.
+\newblock On discontinuous action of monodromy groups on the complex
+  {$n$}-ball.
+\newblock {\em J. Amer. Math. Soc.}, 1(3):555--586, 1988.
+
+\bibitem[Nik79]{nikulin1979integer}
+V.~V. Nikulin.
+\newblock Integer symmetric bilinear forms and some of their geometric
+  applications.
+\newblock {\em Izv. Akad. Nauk SSSR Ser. Mat.}, 43(1):111--177, 238, 1979.
+
+\bibitem[Nis24]{nishinou2024deformation}
+T.~Nishinou.
+\newblock Deformation of pairs and semiregularity.
+\newblock {\em Pacific J. Math.}, 328(2):361--380, 2024.
+
+\bibitem[P{\v S}{\v S}71]{pjateckii-sapiro1971torelli}
+I.~I. Pjatecki{\u i}-{\v S}apiro and I.~R. {\v S}afarevi{\v c}.
+\newblock Torelli's theorem for algebraic surfaces of type {${\rm K}3$}.
+\newblock {\em Izv. Akad. Nauk SSSR Ser. Mat.}, 35:530--572, 1971.
+
+\bibitem[Sai71]{saito1971quasihomogene}
+K.~Saito.
+\newblock Quasihomogene isolierte {S}ingularit\"aten von {H}yperfl\"achen.
+\newblock {\em Invent. Math.}, 14:123--142, 1971.
+
+\bibitem[Sch79]{schubert1879kalkul}
+H.~Schubert.
+\newblock {\em Kalk{\"u}l der abz{\"a}hlenden Geometrie}.
+\newblock BG Teubner, 1879.
+
+\bibitem[Sev21]{severi1921vorlesungen}
+F.~Severi.
+\newblock {\em Vorlesungen {\"u}ber algebraische Geometrie (Ubersetzung von E.
+  L{\"o}ffler.)}.
+\newblock BG Teubner, Leipzig u. Berlin, 1921.
+
+\bibitem[Sha80]{shah1980complete}
+J.~Shah.
+\newblock A complete moduli space for {$K3$}\ surfaces of degree {$2$}.
+\newblock {\em Ann. of Math. (2)}, 112(3):485--510, 1980.
+
+\bibitem[Thu22]{thurston2022geometry}
+W.~P. Thurston.
+\newblock {\em The geometry and topology of three-manifolds. {V}ol. {IV}}.
+\newblock American Mathematical Society, Providence, RI, [2022] \copyright
+  2022.
+\newblock Edited and with a preface by Steven P. Kerckhoff and a chapter by J.
+  W. Milnor.
+
+\bibitem[Ura88]{urabe1988combinations}
+T.~Urabe.
+\newblock Combinations of rational singularities on plane sextic curves with
+  the sum of {M}ilnor numbers less than sixteen.
+\newblock In {\em Singularities ({W}arsaw, 1985)}, volume~20 of {\em Banach
+  Center Publ.}, pages 429--456. PWN, Warsaw, 1988.
+
+\bibitem[Yan96]{yang1996sextic}
+J.-G. Yang.
+\newblock Sextic curves with simple singularities.
+\newblock {\em Tohoku Math. J. (2)}, 48(2):203--227, 1996.
+
+\bibitem[YX12]{yang2012discriminantal}
+J.-G. Yang and J.~Xie.
+\newblock Discrminantal groups and {Z}ariski pairs of sextic curves.
+\newblock {\em Geom. Dedicata}, 158:235--259, 2012.
+
+\bibitem[YZ20]{yu2020fourfolds}
+C.~Yu and Z.~Zheng.
+\newblock Moduli spaces of symmetric cubic fourfolds and locally symmetric
+  varieties.
+\newblock {\em Algebra Number Theory}, 14(10):2647--2683, 2020.
+
+\bibitem[YZ23]{yu2023moduli}
+C.~Yu and Z.~Zheng.
+\newblock Moduli of nodal sextic curves via periods of {$K3$} surfaces.
+\newblock {\em Adv. Math.}, 430:Paper No. 109219, 20, 2023.
+
+\bibitem[Zar31]{zariski1931irregularity}
+O.~Zariski.
+\newblock On the irregularity of cyclic multiple planes.
+\newblock {\em Ann. of Math. (2)}, 32(3):485--511, 1931.
+
+\bibitem[Zar65a]{zariski1965equisingularityI}
+O.~Zariski.
+\newblock Studies in equisingularity. {I}. {E}quivalent singularities of plane
+  algebroid curves.
+\newblock {\em Amer. J. Math.}, 87:507--536, 1965.
+
+\bibitem[Zar65b]{zariski1965equisingularityII}
+O.~Zariski.
+\newblock Studies in equisingularity. {II}. {E}quisingularity in codimension
+  {$1$}\ (and characteristic zero).
+\newblock {\em Amer. J. Math.}, 87:972--1006, 1965.
+
+\bibitem[Zar68]{zariski1968equisingularityIII}
+O.~Zariski.
+\newblock Studies in equisingularity. {III}. {S}aturation of local rings and
+  equisingularity.
+\newblock {\em Amer. J. Math.}, 90:961--1023, 1968.
+
+\bibitem[Zhe21]{zheng2021orbifold}
+Z.~Zheng.
+\newblock Orbifold aspects of certain occult period maps.
+\newblock {\em Nagoya Math. J.}, 243:137--156, 2021.
+
+\bibitem[ZZ24]{zheng2024complex}
+Z.~Zheng and Y.~Zhong.
+\newblock The complex ball-quotient structure of the moduli space of certain
+  sextic curves.
+\newblock {\em J. Math. Soc. Japan}, 76(1):23--50, 2024.
+
+\end{thebibliography}

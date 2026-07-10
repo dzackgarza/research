@@ -1,0 +1,14 @@
+default:
+    @just --list
+
+# Compile LaTeX documents using xelatex and latexmk
+build:
+    latexmk -xelatex -shell-escape -bibtex -interaction=nonstopmode -halt-on-error -file-line-error pcrm_pres.tex
+
+# Clean LaTeX build artifacts (excluding PDFs)
+clean:
+    latexmk -c
+
+# Clean all LaTeX generated files (including PDFs)
+clean-all:
+    latexmk -C
