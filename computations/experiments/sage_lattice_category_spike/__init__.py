@@ -3,6 +3,7 @@
 from . import sage_patches  # noqa: F401
 from .lattice_categories import (
     DiscriminantForms,
+    Genera,
     IntegralLatticeGluing,
     Lattice,
     LatticeHomset,
@@ -27,6 +28,7 @@ from .lattice_categories import (
 
 __all__ = [
     "DiscriminantForms",
+    "Genera",
     "IntegralLatticeGluing",
     "Lattice",
     "LatticeHomset",

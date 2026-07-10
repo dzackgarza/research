@@ -963,12 +963,16 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
         s_plus = ZZ(signature_pair[0])
         s_minus = ZZ(signature_pair[1])
         assert s_plus >= 0 and s_minus >= 0, f"signature invariants must be nonnegative; found s_plus={s_plus}, s_minus={s_minus}; fix the caller's signature pair"
+        # The current engine presents the genus through TorsionQuadraticForm, a
+        # QQ/2ZZ quadratic form, so it decides the even case. An odd lattice's
+        # discriminant form is bilinear (QQ/ZZ) with no quadratic refinement;
+        # routing its genus through the bilinear-torsion path is #57.
         even = self._quadratic_modulus() == 2
         assert even, (
-            "genus classification through the discriminant-form correspondence is "
-            "grounded only for the even case in this spike (the correspondence "
-            "itself is parity-agnostic; the odd-form implementation is Phase B, #57); "
-            f"signature_pair={(s_plus, s_minus)}, invariants={self.invariants()}"
+            "this genus engine presents the discriminant form as a QQ/2ZZ quadratic form "
+            "(the even case); an odd lattice's QQ/ZZ bilinear discriminant form routes "
+            "through the bilinear-torsion genus path, #57; "
+            f"signature_pair={(s_plus, s_minus)}, quadratic_modulus={self._quadratic_modulus()}, invariants={self.invariants()}"
         )
         return self._sage_engine().is_genus((s_plus, s_minus), even=even)
 

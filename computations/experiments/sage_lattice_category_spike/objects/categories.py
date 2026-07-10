@@ -27,6 +27,7 @@ from sage.categories.category_with_axiom import (
     axiom,
 )
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
+from sage.categories.enumerated_sets import EnumeratedSets
 from sage.categories.homsets import HomsetsCategory
 from sage.categories.modules import Modules
 from sage.categories.sets_cat import Sets
@@ -278,8 +279,10 @@ class Genera(Category_over_base_ring):
         return f"synthetic genera over {self.base_ring()}"
 
     def super_categories(self) -> list[Category]:
-        # A genus IS the finite set of its isometry classes.
-        return [Sets().Finite()]
+        # A genus IS the finite set of its isometry classes: the finite-set API
+        # (cardinality, iteration) is INHERITED from this super-category, never
+        # re-declared on the genus contract or a concrete parent.
+        return [EnumeratedSets().Finite()]
 
     def additional_structure(self) -> Genera:
         return self
