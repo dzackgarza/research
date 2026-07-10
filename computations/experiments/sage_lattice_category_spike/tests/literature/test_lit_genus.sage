@@ -296,11 +296,11 @@ def test_is_genus_respects_gauss_milgram_signature_congruence_nikulin_1_3_3():
         (4, 2): True,   # 2 ≡ 2   -- witnessed by A_2 (+) U^2
     }
     for signature, exists in existence.items():
-        assert q.is_genus(signature, even=True) == exists, signature
+        assert q.is_genus(signature) == exists, signature
         congruent = (signature[0] - signature[1]) % 8 == brown % 8
         # Nik80 Thm 1.3.3* (contrapositive): congruence-failure forbids a genus
         if not congruent:
             assert not exists, signature
-            assert not q.is_genus(signature, even=True), signature
+            assert not q.is_genus(signature), signature
         else:
             assert exists, signature  # here congruence is also sufficient

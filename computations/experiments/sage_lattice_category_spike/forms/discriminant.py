@@ -11,6 +11,7 @@ from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.element import Element, RingElement
+from sage.structure.parent import Parent
 
 from ..lexicon import DiscriminantAction, DiscriminantOrthogonalGroup, Genus
 
@@ -531,13 +532,32 @@ def TorsionQuadraticForm(gram_matrix: Any) -> Any:
     return DiscriminantForms(ZZ).from_form_data(gram_matrix)
 
 
-class SyntheticGenus(Genus):
-    r"""Minimal owned genus datum determined by a signature and discriminant form."""
+class SyntheticGenus(Genus, Parent):
+    r"""The genus of a nondegenerate integral lattice, as a category-backed parent:
+    the finite set of isometry classes sharing this signature and discriminant form
+    (Nikulin 1.10.1). Its cardinality is the class number; iterating yields one
+    representative lattice per class. Parity is the ``Even`` axiom, acquired as
+    output from the discriminant form."""
 
-    def __init__(self, discriminant_group: Any, signature_pair: Any, even: bool = True) -> None:
+    def __init__(self, discriminant_group: Any, signature_pair: Any) -> None:
+        from ..objects.categories import Genera
+
         self._discriminant_group = discriminant_group
         self._signature_pair = (ZZ(signature_pair[0]), ZZ(signature_pair[1]))
-        self._even = bool(even)
+        # Parity is a property of the discriminant form (output), never an input:
+        # an even genus has a discriminant quadratic form of value modulus 2.
+        self._even = bool(discriminant_group._quadratic_modulus() == 2)
+        category = Genera(ZZ).Even() if self._even else Genera(ZZ)
+        Parent.__init__(self, base=ZZ, category=category)
+
+    def cardinality(self) -> Any:
+        r"""The genus IS the finite set of its isometry classes; its cardinality
+        is the class number."""
+        return self.class_number()
+
+    def __iter__(self) -> Any:
+        r"""One representative lattice per isometry class in this genus."""
+        return iter(self.representatives())
 
     def discriminant_form(self) -> Any:
         return self._discriminant_group
@@ -653,6 +673,11 @@ class SyntheticGenus(Genus):
         if self.signature_pair() != other.signature_pair() or self.is_even() != other.is_even():
             return False
         return bool(self._sage_engine() == other._sage_engine())
+
+    def __hash__(self) -> int:
+        # Consistent with __eq__: a genus is fixed by its signature, parity, and
+        # discriminant form (Nikulin 1.10.1), so equal genera share these.
+        return hash((self._signature_pair, self._even, tuple(self.discriminant_form().invariants())))
 
     def __repr__(self) -> str:
         return f"Synthetic genus with signature {self.signature_pair()} and discriminant invariants {self.discriminant_form().invariants()}"
