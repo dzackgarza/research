@@ -39,6 +39,7 @@ from ..lexicon import (
     DefiniteLattice,
     DiscriminantForm,
     FiniteAbelianGroup,
+    Genus,
     HyperbolicLattice,
     IndefiniteLattice,
     IntegralNondegenerateLattice,
@@ -264,6 +265,37 @@ class DiscriminantForms(Category_over_base_ring):
         pass
 
 
+class Genera(Category_over_base_ring):
+    r"""Genera of nondegenerate integral lattices: an object is the finite set of
+    isometry classes sharing a signature and discriminant quadratic form
+    (Nikulin 1.10.1). Its cardinality is the class number.
+
+    Parity is the ``Even`` axiom, acquired as OUTPUT from the discriminant form
+    (a quadratic form of value modulus 2 is even), never a construction input.
+    """
+
+    def _repr_object_names(self) -> str:
+        return f"synthetic genera over {self.base_ring()}"
+
+    def super_categories(self) -> list[Category]:
+        # A genus IS the finite set of its isometry classes.
+        return [Sets().Finite()]
+
+    def additional_structure(self) -> Genera:
+        return self
+
+    if TYPE_CHECKING:
+        # Typed axiom navigation; see the Lattices declaration above.
+        def Even(self) -> Genera: ...
+
+    class SubcategoryMethods:
+        Even = axiom("Even")
+
+    # The genus noun IS this base category's ParentMethods; the concrete
+    # SyntheticGenus parent inherits it and shadows the abstract methods.
+    ParentMethods = Genus
+
+
 class NondegenerateLattices(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Nondegenerate")
 
@@ -386,6 +418,12 @@ class WithSourceLatticeDiscriminantForms(CategoryWithAxiom_over_base_ring):
     ParentMethods = _own_methods(SourcedDiscriminantForm)
 
 
+class EvenGenera(CategoryWithAxiom_over_base_ring):
+    # Genera of even lattices: parity acquired as output (Phase B adds the odd
+    # branch; until then a non-even genus fails loud at construction).
+    _base_category_class_and_axiom = (Genera, "Even")
+
+
 if not TYPE_CHECKING:
     # Sage's class-resolution shortcut: the axiom category class must be
     # reachable as `<BaseCategory>.<Axiom>` for `_base_category_class_and_axiom`
@@ -409,3 +447,5 @@ if not TYPE_CHECKING:
     DiscriminantForms.Nondegenerate = NondegenerateDiscriminantForms
     DiscriminantForms.Even = EvenDiscriminantForms
     DiscriminantForms.WithSourceLattice = WithSourceLatticeDiscriminantForms
+
+    Genera.Even = EvenGenera
