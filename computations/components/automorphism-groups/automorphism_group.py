@@ -26,7 +26,7 @@ def analyze_automorphism_group(G, group_name=""):
         aut_group = G.automorphism_group()
         print("✓ Automorphism group computation: SUCCESS")
     except Exception as e:
-        print(f"✗ Automorphism group computation: FAILED")
+        print("✗ Automorphism group computation: FAILED")
         print(f"  Error: {e}")
         return None
     
@@ -96,7 +96,7 @@ def find_inner_automorphisms(G):
     Parameters:
     G: A SageMath group object
     """
-    print(f"=== Inner vs Full Automorphisms ===")
+    print("=== Inner vs Full Automorphisms ===")
     print(f"Group order: {G.order()}")
     
     # Full automorphism group
@@ -226,5 +226,5 @@ if __name__ == "__main__":
     print("⚠ LIKELY: PermutationGroup, CoxeterGroup, BraidGroup (finite cases)")
     print("⚡ LIMITED: FreeGroup, finitely presented groups (infinite cases)")
     print("✗ NO GUARANTEE: Custom groups, very large groups, arbitrary rings")
-    print(f"\nRun full test suite: sage test_automorphism_groups.py")
-    print(f"Check guarantees: sage automorphism_guarantees.py")
+    print("\nRun full test suite: sage test_automorphism_groups.py")
+    print("Check guarantees: sage automorphism_guarantees.py")

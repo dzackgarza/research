@@ -12,6 +12,7 @@ Convention verification: 2U means 2 * U (scaling), not U ⊕ U (direct sum)
 
 from sage.all import *
 
+
 def classical_lattice(name):
     """
     Build classical lattices matching the GAP convention from common.g
@@ -283,17 +284,17 @@ def demonstrate_basic_usage():
     print("-" * 35)
     
     U = classical_lattice("U")
-    print(f"U (hyperbolic plane):")
+    print("U (hyperbolic plane):")
     print(f"  Gram matrix: {U.gram_matrix()}")
     print(f"  Signature: {verify_lattice_properties(U)['signature']}")
     
     E8 = classical_lattice("E8")
-    print(f"\nE8 root lattice:")
+    print("\nE8 root lattice:")
     print(f"  Dimension: {E8.dimension()}")
     print(f"  Signature: {verify_lattice_properties(E8)['signature']}")
     
     A2 = classical_lattice("A2")
-    print(f"\nA2 root lattice:")
+    print("\nA2 root lattice:")
     print(f"  Gram matrix: {A2.gram_matrix()}")
     print(f"  Signature: {verify_lattice_properties(A2)['signature']}")
     
@@ -302,11 +303,11 @@ def demonstrate_basic_usage():
     print("-" * 20)
     
     U2 = parse_lattice_spec("2U")
-    print(f"2U (scaled hyperbolic plane):")
+    print("2U (scaled hyperbolic plane):")
     print(f"  Gram matrix: {U2.gram_matrix()}")
     
     E8_scaled = parse_lattice_spec("2E8")
-    print(f"\n2E8 (scaled E8):")
+    print("\n2E8 (scaled E8):")
     print(f"  Dimension: {E8_scaled.dimension()}")
     print(f"  First diagonal entry: {E8_scaled.gram_matrix()[0,0]}")
     
@@ -316,7 +317,7 @@ def demonstrate_basic_usage():
     
     simple_case = build_lattice_from_spec(["U", "A2"])
     verification = verify_lattice_properties(simple_case)
-    print(f"U ⊕ A2:")
+    print("U ⊕ A2:")
     print(f"  Dimension: {verification['dimension']}")
     print(f"  Signature: {verification['signature']}")
     
@@ -326,7 +327,7 @@ def demonstrate_basic_usage():
     
     enriques = build_lattice_from_spec(["U", "2U", "2E8"])
     enriques_verification = verify_lattice_properties(enriques, expected_signature=(2, 18))
-    print(f"U ⊕ 2U ⊕ 2E8:")
+    print("U ⊕ 2U ⊕ 2E8:")
     print(f"  Dimension: {enriques_verification['dimension']}")
     print(f"  Signature: {enriques_verification['signature']}")
     print(f"  Expected signature (2,18): {enriques_verification.get('signature_matches', 'Not checked')}")
@@ -359,4 +360,4 @@ if __name__ == "__main__":
             if 'error' in result:
                 print(f"  {' ⊕ '.join(spec)}: {result['error']}")
     
-    print(f"\nAll test case lattices ready for orbit computation!")
+    print("\nAll test case lattices ready for orbit computation!")

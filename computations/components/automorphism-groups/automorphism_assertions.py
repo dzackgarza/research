@@ -1,17 +1,10 @@
 #!/usr/bin/env sage
 
 from sage.all import *
-from sage.groups.perm_gps.permgroup_named import (
-    CyclicPermutationGroup as CyclicGroup,
-    SymmetricGroup, 
-    AlternatingGroup,
-    DihedralGroup,
-    QuaternionGroup,
-    KleinFourGroup,
-    AbelianGroup
-)
 from sage.groups.matrix_gps.all import GL, SL
-from sage.groups.perm_gps.permgroup_named import PSL, PGL
+from sage.groups.perm_gps.permgroup_named import PSL, AbelianGroup, AlternatingGroup, DihedralGroup, KleinFourGroup, QuaternionGroup, SymmetricGroup
+from sage.groups.perm_gps.permgroup_named import CyclicPermutationGroup as CyclicGroup
+
 
 def compute_automorphism_group_with_proofs(G, group_name=""):
     """
@@ -53,7 +46,7 @@ def compute_automorphism_group_with_proofs(G, group_name=""):
     for gen in generators:
         inverse = gen^(-1)
         assert inverse in aut_group, f"Generator {gen} must have inverse in automorphism group"
-        assert gen * inverse == identity, f"Generator times inverse must equal identity"
+        assert gen * inverse == identity, "Generator times inverse must equal identity"
     
     # PROOF 5: Fundamental bound |Aut(G)| ≤ |G|!
     if group_order < float('inf'):

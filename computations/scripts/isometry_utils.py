@@ -1,9 +1,7 @@
+from functools import reduce
+
 from sage.all import *
 from sage.graphs.graph import Graph
-from collections import defaultdict, Counter
-from functools import reduce
-import math
-from coxeter_graph import CoxeterGraph
 
 # --- Extracted functions from Isometry Searching.ipynb ---
 
@@ -1274,18 +1272,18 @@ def get_all_rank_n_types(n):
         ]
         if n == 6:
             Ms.extend([
-                (f"E_6",    matrix_E_6() ),
-                (f"E_6(2)", matrix_E_6_2() )
+                ("E_6",    matrix_E_6() ),
+                ("E_6(2)", matrix_E_6_2() )
             ])
         elif n == 7:
             Ms.extend([
-                (f"E_7",    matrix_E_7() ),
-                (f"E_7(2)", matrix_E_7_2() )
+                ("E_7",    matrix_E_7() ),
+                ("E_7(2)", matrix_E_7_2() )
             ])
         elif n == 8:
             Ms.extend([
-                (f"E_8", matrix_E_8() ),
-                (f"E_8(2)", matrix_E_8_2() )
+                ("E_8", matrix_E_8() ),
+                ("E_8(2)", matrix_E_8_2() )
             ])
         return Ms
 

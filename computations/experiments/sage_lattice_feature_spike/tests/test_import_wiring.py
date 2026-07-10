@@ -8,9 +8,9 @@ behavior of the imported base.
 
 from __future__ import annotations
 
+import sage_lattice_category_spike
 from sage.all import ZZ
 
-import sage_lattice_category_spike
 import sage_lattice_feature_spike
 
 

@@ -7,7 +7,6 @@ This file contains only the code cells from the notebook.
 
 from collections import defaultdict
 
-
 # === Code Cell 2 ===
 
 def is_valid_line(line):
@@ -46,7 +45,7 @@ class CoxeterDiagram:
         filename = self.coxiter_file_path
         valid_lines = []
         try:
-            with open(filename, 'r') as file:
+            with open(filename) as file:
                 for line in file:
                     if is_valid_line(line):
                         vertex_edge_tuple = tuple(map(int, line.strip().split()))
@@ -489,7 +488,7 @@ class CoxeterGraph(Graph):
             '#FFFFFF': [], 
             '#AAAAAA': []
         }
-        super(CoxeterGraph, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         Graph.allow_loops(self, True)
     def plot(self):
         return Graph.plot(

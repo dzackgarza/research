@@ -3,9 +3,8 @@
 Test script to verify SageMath documentation indexing.
 """
 
-import os
-from pathlib import Path
 from dotenv import load_dotenv
+
 
 def test_sagemath_files():
     """Test that we can find and process SageMath files."""
@@ -13,7 +12,7 @@ def test_sagemath_files():
     load_dotenv()
     
     # Import utility functions
-    from sagemath_utils import get_sage_path, get_sagemath_patterns, extract_python_docstrings
+    from sagemath_utils import extract_python_docstrings, get_sage_path, get_sagemath_patterns
     
     SAGE_PATH = get_sage_path()
     

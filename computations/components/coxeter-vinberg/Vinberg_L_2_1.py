@@ -1,8 +1,5 @@
-from sage.all import *
 
-import matplotlib.pyplot as plt
-import networkx as nx
-from math import acos, pi, isclose
+from sage.all import *
 
 
 def plot_coxeter_diagram_detailed(simple_roots, Q=diagonal_matrix([-1,1,1])):

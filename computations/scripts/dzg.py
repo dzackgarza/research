@@ -1,21 +1,11 @@
-from sage.all import *
-import traceback
-from sage.groups.perm_gps.permgroup import PermutationGroup
-from sage.groups.matrix_gps.linear import GL
-from sage.groups.abelian_gps.abelian_group_gap import AbelianGroupGap
-from sage.groups.perm_gps.permgroup_named import SymmetricGroup, AlternatingGroup, DihedralGroup, QuaternionGroup
-from sage.groups.abelian_gps.abelian_group import AbelianGroup
-from sage.groups.free_group import FreeGroup
-from sage.libs.gap.libgap import libgap
-from sage.all import CoxeterGroup, PermutationGroup
-from sage.groups.group_semidirect_product import GroupSemidirectProduct
-from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
-from sage.groups.group_exp import GroupExp
-from sage.groups.finitely_presented import FinitelyPresentedGroup
-from sage.rings.integer import Integer
 import random
-from sage.all import prime_range
-from sage.all import randint
+
+from sage.all import *
+from sage.all import PermutationGroup, prime_range
+from sage.groups.perm_gps.permgroup import PermutationGroup
+from sage.groups.perm_gps.permgroup_named import DihedralGroup, SymmetricGroup
+from sage.libs.gap.libgap import libgap
+from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
 
 # Terminal color codes
 COLOR_GREEN = "\033[92m"

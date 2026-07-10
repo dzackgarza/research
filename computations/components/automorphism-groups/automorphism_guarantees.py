@@ -199,5 +199,5 @@ if __name__ == "__main__":
     print("  • For custom groups, implement automorphism_group() method")
     print("  • Use GAP directly for specialized needs: G._gap_().AutomorphismGroup()")
     
-    print(f"\nRun the full test suite with:")
-    print(f"  sage test_automorphism_groups.py")
+    print("\nRun the full test suite with:")
+    print("  sage test_automorphism_groups.py")

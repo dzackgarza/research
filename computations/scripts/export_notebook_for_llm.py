@@ -5,10 +5,11 @@ Export Jupyter notebook to LLM-friendly formats.
 This script creates clean, structured exports that are optimized for LLM processing.
 """
 
-import json
 import argparse
+import json
 import re
 from pathlib import Path
+
 
 def clean_code_cell(source):
     """Clean and format code cell content."""
@@ -34,7 +35,7 @@ def clean_markdown_cell(source):
 def export_notebook_clean_text(notebook_path, output_path):
     """Export notebook as clean text optimized for LLMs."""
     
-    with open(notebook_path, 'r', encoding='utf-8') as f:
+    with open(notebook_path, encoding='utf-8') as f:
         notebook = json.load(f)
     
     output_lines = []
@@ -93,14 +94,14 @@ def export_notebook_clean_text(notebook_path, output_path):
 def export_notebook_code_only(notebook_path, output_path):
     """Export only code cells as a clean Python/Sage file."""
     
-    with open(notebook_path, 'r', encoding='utf-8') as f:
+    with open(notebook_path, encoding='utf-8') as f:
         notebook = json.load(f)
     
     output_lines = []
-    output_lines.append(f'"""')
+    output_lines.append('"""')
     output_lines.append(f'Code extracted from: {notebook_path.name}')
-    output_lines.append(f'This file contains only the code cells from the notebook.')
-    output_lines.append(f'"""')
+    output_lines.append('This file contains only the code cells from the notebook.')
+    output_lines.append('"""')
     output_lines.append("")
     
     code_cell_count = 0

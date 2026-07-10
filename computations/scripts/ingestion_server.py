@@ -1,11 +1,9 @@
 import json
 import os
 import re
-import subprocess
 import sys
-import time
-from pathlib import Path
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -161,6 +159,7 @@ class IngestionHandler(BaseHTTPRequestHandler):
 
 # Helper functions
 import socket
+
 
 def is_port_open(port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

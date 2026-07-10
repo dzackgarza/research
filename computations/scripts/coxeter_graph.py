@@ -1,9 +1,8 @@
+from collections import Counter
+from copy import copy
+
 from sage.all import *
 from sage.graphs.graph import Graph
-from collections import defaultdict, Counter
-from functools import reduce
-import math
-from copy import copy
 from sage.modules.free_quadratic_module_integer_symmetric import *
 
 

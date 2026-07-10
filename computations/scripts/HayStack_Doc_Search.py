@@ -1,18 +1,14 @@
-import subprocess
-from pathlib import Path
-from typing import List, Tuple
-import os
-import re
-import ast
-import pickle
 import hashlib
+import os
+import pickle
+import subprocess
 import time
 from datetime import datetime
+from pathlib import Path
 
 import streamlit as st
 from dotenv import load_dotenv
 from haystack.components.builders import AnswerBuilder, PromptBuilder
-from haystack.components.converters import TextFileToDocument
 from haystack.components.generators.openai import OpenAIGenerator
 from haystack.components.preprocessors import (
     DocumentCleaner,
@@ -21,7 +17,7 @@ from haystack.components.preprocessors import (
 from haystack.components.retrievers.in_memory import InMemoryBM25Retriever
 from haystack.components.writers import DocumentWriter
 from haystack.core.pipeline import Pipeline
-from haystack.dataclasses import GeneratedAnswer, Document
+from haystack.dataclasses import Document, GeneratedAnswer
 from haystack.document_stores.in_memory import InMemoryDocumentStore
 from haystack.document_stores.types import DuplicatePolicy
 
@@ -138,7 +134,7 @@ def load_document_store_cache(cache_key: str):
         metadata = None
         if metadata_file.exists():
             import json
-            with open(metadata_file, 'r') as f:
+            with open(metadata_file) as f:
                 metadata = json.load(f)
         
         return doc_store, metadata
@@ -155,7 +151,7 @@ def get_cache_info():
     for metadata_file in cache_files:
         try:
             import json
-            with open(metadata_file, 'r') as f:
+            with open(metadata_file) as f:
                 metadata = json.load(f)
                 caches.append(metadata)
         except:
@@ -223,7 +219,7 @@ def fetch_sagemath_files():
     return files
 
 @st.cache_data(show_spinner=False)
-def fetch(documentations: List[Tuple[str, str, str]], include_sagemath: bool = True):
+def fetch(documentations: list[tuple[str, str, str]], include_sagemath: bool = True):
     files = []
     # Create the docs path if it doesn't exist
     DOCS_PATH.mkdir(parents=True, exist_ok=True)
@@ -292,7 +288,7 @@ def index_files(files, doc_store: InMemoryDocumentStore, cache_key: str):
                 content = extract_python_docstrings(file_path)
             else:
                 # Regular text file handling
-                with open(file_path, 'r', encoding='utf-8') as file:
+                with open(file_path, encoding='utf-8') as file:
                     content = file.read().strip()
             
             # Skip empty content to avoid warnings

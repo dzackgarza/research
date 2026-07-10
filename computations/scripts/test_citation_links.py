@@ -3,8 +3,9 @@
 Test script to verify that citation links now go directly to source files.
 """
 
-from inline_citation_enhancer import InlineCitationEnhancer
 from haystack.dataclasses import Document
+from inline_citation_enhancer import InlineCitationEnhancer
+
 
 def test_direct_citation_links():
     """Test that citations link directly to source files."""
