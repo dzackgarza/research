@@ -339,9 +339,11 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
     def signature_pair(self) -> SignaturePair:
         return signature_pair(self.gram_matrix())
 
-    def signature(self) -> int:
-        pos, neg = self.signature_pair()
-        return pos - neg
+    def signature(self) -> SignaturePair:
+        r"""The signature ``(p, q)`` -- positive index ``p``, negative index
+        ``q``. The classical integer ``p - q`` (Milgram/Sylvester) is derived
+        from this, not the name of the method (#9)."""
+        return self.signature_pair()
 
     def is_integral(self) -> bool:
         return all(entry in ZZ for entry in self.gram_matrix().list())

@@ -85,7 +85,8 @@ def test_elementary_2adic_forms_u_and_v_gauss_milgram_signature():
         assert q.cardinality() == 4 ** k
         assert q.brown_invariant() == 0              # gamma_{u_k}=1 => Br 0
         assert q.is_anisotropic() is False           # MM09 (7.7.1): U_k has isotropic vector
-        assert q.brown_invariant() % 8 == L.signature() % 8   # Milgram, Thm 1.3.3*
+        pos, neg = L.signature()
+        assert q.brown_invariant() % 8 == (pos - neg) % 8   # Milgram, Thm 1.3.3*
 
     # v_1 = q_{D4} : Br == 4, anisotropic True.
     D4 = lc.Lattice("D4")
@@ -99,7 +100,8 @@ def test_elementary_2adic_forms_u_and_v_gauss_milgram_signature():
     assert q.cardinality() == 4
     assert q.brown_invariant() == 4                  # gamma_{v_1}=(-1)^1 => Br 4
     assert q.is_anisotropic() is True                # MM09 (7.7.2): V_k anisotropic
-    assert q.brown_invariant() % 8 == D4.signature() % 8   # Milgram, Thm 1.3.3*
+    pos, neg = D4.signature()
+    assert q.brown_invariant() % 8 == (pos - neg) % 8   # Milgram, Thm 1.3.3*
 
 
 def test_brown_invariant_is_additive_over_primary_parts_and_matches_milgram():
@@ -143,8 +145,9 @@ def test_brown_invariant_is_additive_over_primary_parts_and_matches_milgram():
 
     # Brown/Gauss-sum invariant is additive over the primary parts.
     assert q.brown_invariant() % 8 == (br2 + br3) % 8
-    # Milgram then identifies Br(q_L) with the lattice signature mod 8.
-    assert q.brown_invariant() % 8 == A5.signature() % 8
+    # Milgram then identifies Br(q_L) with the lattice signature p - q mod 8.
+    pos, neg = A5.signature()
+    assert q.brown_invariant() % 8 == (pos - neg) % 8
 
 
 def test_quadratic_isomorphism_refines_bilinear_and_group_isomorphism():
@@ -196,7 +199,8 @@ def test_rank_one_2adic_form_separates_bilinear_and_quadratic_orthogonal_groups(
     assert tuple(q.invariants()) == (8,)
     assert q.cardinality() == 8
     assert q.brown_invariant() == 1
-    assert q.brown_invariant() % 8 == lattice.signature() % 8
+    pos, neg = lattice.signature()
+    assert q.brown_invariant() % 8 == (pos - neg) % 8
 
     assert q.automorphism_group().order() == 4
     assert sorted(

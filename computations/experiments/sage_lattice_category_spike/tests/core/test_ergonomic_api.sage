@@ -36,6 +36,17 @@ def test_direct_sum_is_variadic_and_agrees_with_operators():
     assert reduced.gram_matrix() == variadic.gram_matrix()
 
 
+def test_signature_returns_the_pair_p_q_not_the_integer():
+    r"""#9: ``signature()`` is the pair ``(p, q)`` (positive index, negative
+    index), not the integer ``p - q`` it inherited from Sage. The classical
+    integer ``p - q`` is derived, never the name of the method."""
+    A2 = lc.Lattice("A2")
+    sig = A2.signature()
+    assert isinstance(sig, tuple) and len(sig) == 2
+    assert sig == A2.signature_pair()
+    assert sig != sig[0] - sig[1]   # a pair, not the old integer p - q
+
+
 def test_repr_shows_mathematical_invariants_not_just_rank_and_ring():
     E8 = lc.Lattice("E8")
     text = repr(E8)

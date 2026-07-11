@@ -359,7 +359,8 @@ def test_gauss_milgram_signature_congruence_nikulin_theorem_1_3_3():
     for lattice in even_lattices:
         assert lattice.is_even()  # hypothesis of Milgram's theorem
         gauss_sum_invariant = lattice.discriminant_group().brown_invariant()
-        assert gauss_sum_invariant % 8 == lattice.signature() % 8
+        pos, neg = lattice.signature()
+        assert gauss_sum_invariant % 8 == (pos - neg) % 8
 
 
 def test_even_unimodular_lattices_and_the_k3_lattice_match_kondo():
