@@ -1,0 +1,18 @@
+[project]
+name = "dm-moduli-spike"
+version = "0.0.1"
+requires-python = ">=3.14"
+
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+# The package root IS this directory (imported as dm_moduli_spike via
+# computations/experiments on PYTHONPATH), so map the package name to ".".
+[tool.setuptools]
+package-dir = { "dm_moduli_spike" = "." }
+packages = [
+    "dm_moduli_spike",
+    "dm_moduli_spike.objects",
+    "dm_moduli_spike.backends",
+]
