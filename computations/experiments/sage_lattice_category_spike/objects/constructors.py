@@ -162,7 +162,7 @@ def IntegralLatticeGluing(
     combined = identity_matrix(QQ, ambient.rank()).stack(glue_matrix)
     overlattice_basis = matrix(QQ, (QQ ** ambient.rank()).span(combined.rows(), ZZ).basis_matrix())
     assert isinstance(ambient, SyntheticLattice), f"gluing builds the overlattice on the direct-sum ambient; found={type(ambient)}"
-    glued = ambient._from_ambient_basis(overlattice_basis, ZZ, label)
+    glued = ambient._from_rows(overlattice_basis, ZZ, label)
     assert glued.is_integral(), f"glued overlattice is not integral; gram={glued.gram_matrix()}"
     if not return_embeddings:
         return glued

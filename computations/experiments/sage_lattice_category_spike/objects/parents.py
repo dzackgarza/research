@@ -169,36 +169,19 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
     def __hash__(self) -> int:
         return hash((self.base_ring(), self.gram_matrix()))
 
-    # -- based-model internals: the shared parent and the inclusion into it ------
+    # -- the one private presentation crossing ------------------------------------
     #
-    # These are private.  They exist only so the subobject algebra can compute in
-    # a common coefficient module; they are never part of the object's identity
-    # and are never exposed as public methods (no basis_matrix / coordinates /
-    # ambient_* / rationalization / underlying_module on the public API).
-
-    # A lattice is (R, G): its module is R^rank on the standard basis. These
-    # coordinate helpers are therefore trivial -- they exist only so the
-    # subobject-construction and discriminant paths can name the standard module
-    # / identity basis without special-casing.
-    def _underlying_module(self) -> FreeModule:
-        return self.base_ring() ** self.rank()
-
-    def _rationalization_module(self) -> FreeModule:
-        return QQ ** self.rank()
-
-    def _inclusion_rows(self) -> Matrix:
-        return identity_matrix(QQ, self.rank())
-
-    def _from_ambient_basis(self, basis_rows: Matrix, base_ring: BaseRing, label: str) -> SyntheticLattice:
-        r"""The plain sublattice spanned by ``basis_rows`` (rows in this lattice's
-        coordinates): Gram ``= B G B^T``. The lattice stores no ambient; its
-        relationship to ``self`` is the inclusion morphism (a ``Subobject``)."""
+    # A lattice is (R, G) on its own standard basis. The single sanctioned
+    # crossing from row data in THIS lattice's coordinates to a new plain
+    # lattice lives here; everything relating the new lattice back to this one
+    # is a morphism (a ``Subobject``), never stored coordinate state.
+    def _from_rows(self, basis_rows: Matrix, base_ring: BaseRing, label: str) -> SyntheticLattice:
+        r"""The plain sublattice presented by ``basis_rows`` (rows in this
+        lattice's coordinates): Gram ``= B G B^T``. The result stores nothing
+        relating it to ``self``; that relationship is an inclusion morphism."""
         rows = matrix(QQ, basis_rows)
         assert rows.ncols() == self.rank(), f"basis rows must be given in this lattice's coordinates; rank={self.rank()}, rows={rows}"
         return synthetic_lattice(rows * self.gram_matrix() * rows.transpose(), base_ring, label)
-
-    def _from_module(self, module: FreeModule, label: str) -> SyntheticLattice:
-        return self._from_ambient_basis(matrix(QQ, module.basis_matrix()), module.base_ring(), label)
 
     # -- Port: intrinsic invariants read straight off (base_ring, G) --------------
 
@@ -383,13 +366,6 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
 
     # -- Subobject algebra: operations between sublattices of a common parent -----
 
-    def is_submodule(self, other: Lattice) -> bool:
-        r"""Containment of the underlying modules, decided by Sage
-        (a generator-row membership test is wrong across base rings: a QQ-span's
-        generators can be integral while the span is not contained)."""
-        assert isinstance(other, SyntheticLattice)
-        return self._underlying_module().is_submodule(other._underlying_module())
-
     def sublattice(
         self,
         generators: RawVectors,
@@ -400,16 +376,15 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         generator_matrix = matrix(QQ, generators)
         assert generator_matrix.ncols() == self.rank(), f"sublattice generators must be rows in the parent basis; parent_rank={self.rank()}, generators={generator_matrix}"
         if require_subset:
-            parent_module = self._underlying_module()
-            rational_generators = generator_matrix * self._inclusion_rows()
-            for row in rational_generators.rows():
+            parent_module = self.base_ring() ** self.rank()
+            for row in generator_matrix.rows():
                 assert row in parent_module, f"sublattice generators must lie in the parent lattice; generator={row}, parent={self}; fix the caller's generators"
         if generator_matrix.rank() == generator_matrix.nrows():
-            basis_matrix = generator_matrix * self._inclusion_rows()
+            basis_matrix = generator_matrix
         else:
             generator_module = (QQ ** self.rank()).span(generator_matrix.rows(), self.base_ring())
-            basis_matrix = matrix(QQ, generator_module.basis_matrix()) * self._inclusion_rows()
-        lattice = self._from_ambient_basis(basis_matrix, self.base_ring(), label)
+            basis_matrix = matrix(QQ, generator_module.basis_matrix())
+        lattice = self._from_rows(basis_matrix, self.base_ring(), label)
         assert not require_integral or lattice.is_integral(), f"sublattice is not integral; gram={lattice.gram_matrix()}"
         return lattice
 
@@ -432,13 +407,13 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
             span_basis = generator_matrix
         else:
             span_basis = (self.base_ring() ** self.rank()).span(generator_matrix.rows()).basis_matrix()
-        return self._subobject_from_ambient_rows(span_basis, label)
+        return self._subobject_from_rows(span_basis, label)
 
-    def _subobject_from_ambient_rows(self, rows: Matrix, label: str) -> Subobject:
+    def _subobject_from_rows(self, rows: Matrix, label: str) -> Subobject:
         r"""A ``Subobject`` of this lattice from basis rows given in this
         lattice's coordinates: the plain sublattice ``(R, G_L)`` plus its
-        inclusion morphism. The sublattice stores no ambient; the embedding is
-        the morphism."""
+        inclusion morphism. The sublattice stores nothing relating it to
+        ``self``; the embedding is the morphism."""
         from ..morphisms.homsets import Subobject
 
         rows = matrix(QQ, rows)
@@ -470,8 +445,8 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         assert base_ring in (ZZ, QQ), f"lattice span base ring must be ZZ or QQ; found={base_ring}"
         generator_matrix = matrix(QQ, generators)
         assert generator_matrix.ncols() == self.rank(), f"span generators must be rows in the parent's coordinates; parent_rank={self.rank()}, generators={generator_matrix}"
-        module = self._rationalization_module().span(generator_matrix.rows(), base_ring)
-        lattice = self._from_module(module, label)
+        module = (QQ ** self.rank()).span(generator_matrix.rows(), base_ring)
+        lattice = self._from_rows(matrix(QQ, module.basis_matrix()), module.base_ring(), label)
         assert check_integral is not True or lattice.is_integral(), f"span is not integral; gram={lattice.gram_matrix()}"
         assert check_even is not True or lattice.is_even(), f"span is not even; gram={lattice.gram_matrix()}"
         return lattice
@@ -485,10 +460,10 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         base_ring = self.base_ring() if base_ring is None else base_ring
         basis_matrix = matrix(QQ, basis)
         assert basis_matrix.rank() == basis_matrix.nrows(), f"basis rows must be independent; basis={basis_matrix}"
-        return self._from_ambient_basis(basis_matrix, base_ring, label)
+        return self._from_rows(basis_matrix, base_ring, label)
 
     def zero_lattice(self, label: str = "zero_lattice") -> SyntheticLattice:
-        return self._from_ambient_basis(matrix(QQ, 0, self.rank()), self.base_ring(), label)
+        return self._from_rows(matrix(QQ, 0, self.rank()), self.base_ring(), label)
 
     def overlattice(
         self,
@@ -516,30 +491,14 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         assert not check_integral or overlattice.is_integral(), f"overlattice is not integral; gram={overlattice.gram_matrix()}"
         return self.embedding(basis_rows.inverse().transpose(), codomain=overlattice)
 
-    def sum(self, other: Lattice, label: str = "sum") -> SyntheticLattice:
-        assert isinstance(other, SyntheticLattice)
-        base_ring = QQ if QQ in (self.base_ring(), other.base_ring()) else ZZ
-        return self.span(
-            self._inclusion_rows().stack(other._inclusion_rows()),
-            base_ring=base_ring,
-            label=label,
-        )
-
-    def intersection(self, other: Lattice, label: str = "intersection") -> SyntheticLattice:
-        assert isinstance(other, SyntheticLattice)
-        return self._from_module(self._underlying_module().intersection(other._underlying_module()), label)
-
-    def saturation(self, in_ambient: Lattice | None = None, label: str = "saturation") -> SyntheticLattice:
-        if in_ambient is not None:
-            return self.primitive_closure(in_ambient, label=label)
-        return self._from_module(self._underlying_module().saturation(), label)
-
-    def primitive_closure(self, ambient: Lattice | None = None, label: str = "primitive_closure") -> SyntheticLattice:
-        if ambient is None:
-            return self.saturation(label=label)
-        assert isinstance(ambient, SyntheticLattice)
-        rationalization = self._rationalization_module().span(self._inclusion_rows().rows(), QQ)
-        return self._from_module(ambient._underlying_module().intersection(rationalization), label)
+    # sum / intersection / saturation / primitive_closure are NOT defined on a
+    # bare lattice: they relate a subobject to the codomain of its inclusion,
+    # so they live on ``Subobject`` (saturation, saturation_factorization) and
+    # on the subobject algebra the child architecture plan sites there. The
+    # witness-compensating object spellings (``in_ambient=``/``ambient=``
+    # parameters) were degenerate after the substrate deletion -- saturation
+    # was a no-op and sum/intersection ignored their argument -- and are
+    # rejected per the P6 siting gate (#100).
 
     def denominator(self) -> ExactScalar:
         return lcm([entry.denominator() for entry in self.gram_matrix().list()] or [ZZ.one()])
@@ -773,16 +732,11 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         codomain = self if codomain is None else codomain
         return self.hom(matrix_data, codomain=codomain)
 
-    def inclusion_of(self, sublattice: Lattice) -> LatticeMorphism:
-        r"""The inclusion monomorphism ``sublattice -> self`` for a sublattice
-        sharing this lattice's ambient rational span. A subobject IS this
-        morphism; operations relating a sublattice to its parent compose it. The
-        one coordinate solve (expressing the sublattice's generators in this
-        lattice's basis) lives here, inside the morphism's construction -- not in
-        the callers, which then work purely with the morphism."""
-        assert isinstance(sublattice, SyntheticLattice), f"expected SyntheticLattice; found={type(sublattice)}"
-        generators_in_self = self._inclusion_rows().solve_left(sublattice._inclusion_rows())
-        return sublattice.embedding(generators_in_self.transpose(), codomain=self)
+    # There is no ``inclusion_of(bare_lattice)``: two independently constructed
+    # lattices are related only by a witnessing morphism, and fabricating one
+    # from presentations is the drift #100 abolishes. Inclusions are minted
+    # where they are created: ``subobject()`` / ``embedding()`` / kernels /
+    # images / the overlattice constructors.
 
     def similarity(
         self,
@@ -794,14 +748,10 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
 
         return LatticeSimilarity(self, codomain, matrix_data, scalar)
 
-    def restriction_to_sublattice(
-        self,
-        morphism: LatticeMorphism,
-        sublattice: SyntheticLattice,
-    ) -> LatticeMorphism:
-        assert sublattice.is_submodule(self), "restriction domain must be a sublattice"
-        restricted_matrix = morphism.matrix() * sublattice._inclusion_rows().transpose()
-        return sublattice.Hom(morphism.codomain()).from_matrix(restricted_matrix)
+    # Restriction to a sublattice is composition with the carried inclusion --
+    # ``morphism * subobject.inclusion()`` -- and needs no method of its own;
+    # the deleted spelling took a bare lattice and guarded on the degenerate
+    # bare is_submodule.
 
     def induced_map_on_quotient(self, morphism: LatticeMorphism, quotient: FiniteAbelianGroup) -> DiscriminantAction:
         r"""The endomorphism of ``cover/relations`` induced by a morphism of the

@@ -1184,13 +1184,11 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
         r"""Coset representative of ``element`` in the source lattice's rational hull.
 
         A lift lives in ``L# ⊇ L``; its dual-basis column ``z`` has source-basis
-        coordinates ``G^{-1} z``.  The source lattice's ``overlattice`` / ``span``
-        builders consume rows in the *root* (hull) frame, so map through the source's
-        own inclusion into its root.
+        coordinates ``G^{-1} z`` -- exactly the rows the source lattice's
+        ``overlattice`` / ``span`` builders consume.
         """
         z_coordinates = self._old_dual_coordinates(self(element))
-        source_coordinates = self.source_lattice().gram_matrix().inverse() * z_coordinates
-        return source_coordinates * self.source_lattice()._inclusion_rows()
+        return self.source_lattice().gram_matrix().inverse() * z_coordinates
 
     def primary_part(self, p: Any) -> Any:
         return SyntheticSourcedDiscriminantForm(self.source_lattice(), p)

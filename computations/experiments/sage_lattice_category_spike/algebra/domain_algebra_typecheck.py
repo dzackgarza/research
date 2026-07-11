@@ -73,10 +73,12 @@ def definite_enumeration_and_group() -> tuple[int, int]:
 
 
 def hyperbolic_vocabulary() -> bool:
-    """U carries the Weyl/chamber vocabulary as declared contracts."""
+    """U carries the Weyl/chamber vocabulary as declared contracts; a subgroup
+    preservation question consumes a subobject (the carried inclusion), never
+    a bare lattice."""
     u = in_hyperbolic(from_gram_matrix("U"))
     weyl = u.weyl_group()
-    preserved: bool = weyl.preserves(u.radical())
+    preserved: bool = weyl.preserves(u.subobject([u.gen(0)]))
     return u.is_reflective() and preserved
 
 

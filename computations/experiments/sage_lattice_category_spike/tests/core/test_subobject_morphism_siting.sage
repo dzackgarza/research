@@ -66,6 +66,20 @@ def test_induced_map_rejects_isometry_not_preserving_the_relation():
         M.induced_map_on_quotient(swap, quotient)
 
 
+def test_isometry_subgroup_preserves_is_a_factorization_query_on_the_subobject():
+    r"""``preserves`` asks whether each generator composed with the inclusion
+    factors through the inclusion -- sited on the carried witness. The bare
+    spelling was degenerate (membership in the full standard module, true for
+    every endomorphism)."""
+    M = Lattice(matrix(ZZ, [[-1, 0], [0, -1]]), label="M")
+    S = M.subobject([M([3, 0]), M([0, 1])], label="S")
+    O_M = M.isometry_group()
+    reflect = M.hom(matrix(ZZ, [[-1, 0], [0, 1]]))  # maps S into S
+    swap = M.hom(matrix(ZZ, [[0, 1], [1, 0]]))  # maps e2 to e1, outside S
+    assert O_M.subgroup([reflect]).preserves(S)
+    assert not O_M.subgroup([swap]).preserves(S)
+
+
 def test_index_is_the_cokernel_cardinality_of_the_inclusion():
     r"""The index ``[M : L]`` is BY DEFINITION the cardinality of the
     inclusion's cokernel -- asked on the morphism, total for every morphism

@@ -102,7 +102,7 @@ class Subobject:
         ambient = self.ambient()
         pairing = ambient.gram_matrix() * self._inclusion.matrix()  # M_rank x L_rank; columns = b(., f(e_i))
         kernel_rows = matrix(ZZ, pairing).transpose().right_kernel().basis_matrix()
-        return cast(Subobject, ambient._subobject_from_ambient_rows(kernel_rows, label))
+        return cast(Subobject, ambient._subobject_from_rows(kernel_rows, label))
 
     def saturation(self, label: str = "saturation") -> Subobject:
         r"""The primitive closure of ``L`` in ``M`` (its saturation), as a
@@ -110,7 +110,7 @@ class Subobject:
         ambient = self.ambient()
         rational_span = (QQ ** ambient.rank()).span(self._inclusion.matrix().transpose().rows(), QQ)
         saturated_rows = (ZZ ** ambient.rank()).intersection(rational_span).basis_matrix()
-        return cast(Subobject, ambient._subobject_from_ambient_rows(saturated_rows, label))
+        return cast(Subobject, ambient._subobject_from_rows(saturated_rows, label))
 
     def saturation_factorization(self) -> lexicon.LatticeMorphism:
         r"""The mono factorization ``L -> L^sat`` of the carried inclusion
