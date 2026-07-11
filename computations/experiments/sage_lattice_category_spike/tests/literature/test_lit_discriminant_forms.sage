@@ -82,8 +82,8 @@ def test_nikulin_lagrangian_glue_of_rank_one_sign_pair_has_trivial_quotient():
 def test_conway_sloane_d8_isotropic_self_glue_reconstructs_e8():
     """Conway-Sloane's D8+ glue uses an isotropic D8 glue class to obtain E8."""
 
-    d8 = lc.Lattice("D8")
-    e8 = lc.Lattice("E8")
+    d8 = lc.Lattice("D8(-1)")
+    e8 = lc.Lattice("E8(-1)")
     form = d8.discriminant_group()
     nonzero_isotropic = [
         element
@@ -113,8 +113,8 @@ def test_conway_sloane_d8_maximal_overlattice_is_the_d8_plus_e8_glue():
     adjoining isotropic D8 glue. Nikulin Prop. 1.4.1 identifies that operation
     with passing to an even overlattice from an isotropic subgroup.
     """
-    d8 = lc.Lattice("D8")
-    e8 = lc.Lattice("E8")
+    d8 = lc.Lattice("D8(-1)")
+    e8 = lc.Lattice("E8(-1)")
 
     full_maximal = d8.maximal_overlattice()
     two_primary_maximal = d8.maximal_overlattice(2)
@@ -144,7 +144,7 @@ def test_conway_sloane_a2_discriminant_form_is_anisotropic_and_nonmetabolic():
     tables below for the Cartan-normalized root lattice.
     """
 
-    form = lc.Lattice("A2").discriminant_group()
+    form = lc.Lattice("A2(-1)").discriminant_group()
     elements = _cyclic_elements_by_coefficient(form)
 
     assert form.invariants() == (3,)
@@ -182,7 +182,7 @@ def test_nikulin_non_lagrangian_u2_a2_glue_leaves_a2_discriminant_form():
     not Lagrangian; the remaining quotient is the A2 discriminant form C3 with
     q([1]) = q([2]) = 2/3 from the Conway-Sloane A2 glue table.
     """
-    lattice = lc.Lattice("U").twist(2).direct_sum(lc.Lattice("A2"))
+    lattice = lc.Lattice("U").twist(2).direct_sum(lc.Lattice("A2(-1)"))
     form = lattice.discriminant_group()
     glue_vector = next(
         element
@@ -234,7 +234,7 @@ def test_nikulin_local_modification_accepts_public_primary_subgroup_objects():
     should accept the subgroup objects returned by the public p-primary
     discriminant form, not only a copied generator list.
     """
-    lattice = lc.Lattice("A2").direct_sum(lc.Lattice("A2").twist(-1)).direct_sum(
+    lattice = lc.Lattice("A2(-1)").direct_sum(lc.Lattice("A2(-1)").twist(-1)).direct_sum(
         lc.Lattice("U").twist(2)
     )
 

@@ -89,7 +89,7 @@ def test_elementary_2adic_forms_u_and_v_gauss_milgram_signature():
         assert q.brown_invariant() % 8 == (pos - neg) % 8   # Milgram, Thm 1.3.3*
 
     # v_1 = q_{D4} : Br == 4, anisotropic True.
-    D4 = lc.Lattice("D4")
+    D4 = lc.Lattice("D4(-1)")
     q = D4.discriminant_group()
     assert D4.rank() == 4
     assert D4.is_even()
@@ -122,7 +122,7 @@ def test_brown_invariant_is_additive_over_primary_parts_and_matches_milgram():
     2-part, 6 on the 3-part) are oracle-read; their sum-mod-8 identity and the
     Milgram identity Br(q) == sign(A_5) (mod 8) are the cited theorems.
     """
-    A5 = lc.Lattice("A5")
+    A5 = lc.Lattice("A5(-1)")
     q = A5.discriminant_group()
     # cheap basics
     assert A5.rank() == 5
@@ -166,7 +166,7 @@ def test_quadratic_isomorphism_refines_bilinear_and_group_isomorphism():
     This exercises is_isomorphic across kind="group"/"bilinear"/"quadratic",
     demonstrating that the quadratic refinement is strictly finer.
     """
-    U2, D4 = _U(2), lc.Lattice("D4")
+    U2, D4 = _U(2), lc.Lattice("D4(-1)")
     qu, qv = U2.discriminant_group(), D4.discriminant_group()
     # cheap basics of both underlying lattices
     assert U2.is_even() and not U2.is_unimodular() and U2.signature_pair() == (1, 1)
@@ -231,7 +231,7 @@ def test_form_negation_via_twist_matches_miranda_morrison_negation_rules():
     Br(-q_{E7}) = 1, and 7 != 1 (mod 8) confirms non-isomorphism (Nik80 Thm 1.11.3).
     """
     # -q_L computed at the form level equals -q_L computed on the twisted lattice
-    D4 = lc.Lattice("D4")
+    D4 = lc.Lattice("D4(-1)")
     q = D4.discriminant_group()
     assert q.twist(-1).is_isomorphic(D4.twist(-1).discriminant_group(), kind="quadratic")
 
@@ -240,7 +240,7 @@ def test_form_negation_via_twist_matches_miranda_morrison_negation_rules():
     assert q.is_isomorphic(q.twist(-1), kind="quadratic") is True
 
     # w_{2,1}^eps = q_{E7} is NOT self-negative:  -w ~= w^{-eps} != w   (MM09 .md:660)
-    E7 = lc.Lattice("E7")
+    E7 = lc.Lattice("E7(-1)")
     qe = E7.discriminant_group()
     assert E7.is_even() and E7.determinant() == 2 and tuple(qe.invariants()) == (2,)
     assert qe.is_isomorphic(qe.twist(-1), kind="quadratic") is False
@@ -280,7 +280,7 @@ def test_isotropic_subgroups_are_even_overlattices_nikulin_prop_1_4_1():
         assert M.rank() == 2 and M.is_even() and M.is_unimodular()   # Prop 1.4.1
 
     # A2: anisotropic => only the trivial isotropic subgroup, no proper overlattice
-    A2 = lc.Lattice("A2")
+    A2 = lc.Lattice("A2(-1)")
     qa = A2.discriminant_group()
     assert A2.is_even() and not A2.is_unimodular()
     assert A2.signature_pair() == (2, 0) and tuple(qa.invariants()) == (3,)

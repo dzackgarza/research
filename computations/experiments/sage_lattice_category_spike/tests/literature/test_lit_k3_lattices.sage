@@ -66,8 +66,9 @@ def _U():
 
 
 def _E8m():
-    # E_8(-1): negative definite, the K3/AG sign convention [Kon20 Thm 1.27]
-    return lc.Lattice("E8").twist(-1)
+    # E_8(-1) of the literature: the negative-definite E8, the K3/AG sign
+    # convention [Kon20 Thm 1.27] -- now the unmarked AG default (no twist).
+    return lc.Lattice("E8")
 
 
 def _rank_one(n):

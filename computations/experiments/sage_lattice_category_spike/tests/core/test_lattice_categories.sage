@@ -55,7 +55,7 @@ def test_indefinite_hyperbolic_plane_is_first_class_synthetic_lattice():
 
 
 def test_category_dispatch_uses_form_axioms_not_constructor_factories():
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     minus_A2 = Lattice(-A2.gram_matrix(), label="-A2")
     radical = Lattice(matrix(QQ, 1, 1, [0]), label="rad")
 
@@ -68,7 +68,7 @@ def test_category_dispatch_uses_form_axioms_not_constructor_factories():
 
 
 def test_positive_definite_algorithms_are_axiom_gated():
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     U = Lattice("U", label="U")
     rank_one = Lattice(matrix(ZZ, 1, 1, [2]), label="<2>")
     rank_three = Lattice(matrix.diagonal(ZZ, [2, 4, 6]), label="<2,4,6>")
@@ -168,7 +168,7 @@ def test_positive_definite_algorithms_are_axiom_gated():
 
 
 def test_raw_module_methods_are_available_only_through_accessors():
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
 
     for name in (
         "free_resolution",
@@ -219,7 +219,7 @@ def test_rank_one_sublattice_uses_coordinate_membership_not_ambient_embedding():
 
 
 def test_dual_is_owned_zz_lattice_in_the_rationalization():
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     A2_dual = A2.dual()
 
     # The based dual is (ZZ, G^{-1}); the inclusion L -> L# is the metric morphism
@@ -253,7 +253,7 @@ def test_orthogonal_direct_sum_and_tensor_product_constructions_are_synthetic():
 
     assert complement.rank() == 1
 
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     direct = U.direct_sum(A2)
     assert direct.rank() == 4
     assert direct.signature_pair() == (3, 1)
@@ -264,7 +264,7 @@ def test_orthogonal_direct_sum_and_tensor_product_constructions_are_synthetic():
 
 
 def test_discriminant_group_is_owned_invariant_factor_quotient_with_forms():
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     D = A2.discriminant_group()
 
     assert D.invariants() == (3,)
@@ -305,7 +305,7 @@ def test_odd_integral_discriminant_group_keeps_qq_mod_zz_form():
 
 
 def test_discriminant_group_is_typed_as_a_finite_abelian_group_not_a_zz_module():
-    D = Lattice("A2", label="A2").discriminant_group()
+    D = Lattice("A2(-1)", label="A2").discriminant_group()
 
     # finite-abelian-group API (order/exponent/is_cyclic/short_name/permutation_group),
     # not a "module over ZZ".
@@ -361,7 +361,7 @@ def test_homs_are_form_preserving_by_construction():
 
 
 def test_hom_image_and_kernel_are_synthetic_lattices():
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     A2_dual = A2.dual()
     inclusion = A2.Hom(A2_dual).from_matrix(Matrix(ZZ, 2, 2, [2, -1, -1, 2]))
 
@@ -375,7 +375,7 @@ def test_hom_image_and_kernel_are_synthetic_lattices():
 
 
 def test_integral_lattice_inclusion_into_dual_is_a_synthetic_morphism():
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     A2_dual = A2.dual()
     inclusion = A2.Hom(A2_dual).from_matrix(Matrix(ZZ, 2, 2, [2, -1, -1, 2]))
     quotient = A2_dual.finite_quotient(A2)
@@ -394,7 +394,7 @@ def test_integral_lattice_inclusion_into_dual_is_a_synthetic_morphism():
 
 
 def test_definiteness_and_nondegeneracy_predicates_derive_from_signature():
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     minus_A2 = Lattice(-A2.gram_matrix(), label="-A2")
     U = Lattice("U", label="U")
     degenerate = Lattice(matrix(QQ, 1, 1, [0]), label="rad")
@@ -463,7 +463,7 @@ def test_lattice_element_pairs_through_the_star_operator():
     assert e.b(f) == e * f and (e + f).q() == (e + f) * (e + f)
 
     # different-parent lattice element: assertion error (not ValueError)
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     with pytest.raises(AssertionError):
         e * A2.gen(0)
 
@@ -519,7 +519,7 @@ def test_explicit_isometries_act_on_discriminant_groups():
 
 def test_functor_layer_realizes_the_categorical_identities():
     U = Lattice("U", label="U")
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
 
     # discriminant_group LEAVES Lattices for DiscriminantForms; value ring is QQ/ZZ.
     assert A2 in Lattices(ZZ)
@@ -681,7 +681,7 @@ def test_negative_definite_enumeration_transports_through_the_sign_twist():
     from sage.rings.infinity import Infinity
     from sage.quadratic_forms.quadratic_form import QuadraticForm
 
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     A2_negative = A2.twist(-1)
     assert A2_negative.is_negative_definite()
     assert A2_negative.minimum() == -Infinity
@@ -783,7 +783,7 @@ def test_nikulin_overlattice_and_metabolizer_identities_hold():
 def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indefinite():
     from sage.all import MatrixGroup
 
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
 
     # O(L) generators are computed lazily for a definite lattice and actually
     # generate O(A2) (the dihedral group of order 12).
@@ -812,7 +812,7 @@ def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indef
 
     # is_isometric: definite decided via Sage; different class / rank -> False;
     # rank-2 indefinite is the excluded binary case of the G1 routing table.
-    assert A2.is_isometric(Lattice("A2", label="other"))
+    assert A2.is_isometric(Lattice("A2(-1)", label="other"))
     assert not A2.is_isometric(Lattice(matrix(ZZ, 2, 2, [2, 0, 0, 2])))
     assert not A2.is_isometric(Lattice(matrix(ZZ, 3, 3, [2, 0, 0, 0, 2, 0, 0, 0, 2])))
 
@@ -882,7 +882,7 @@ def test_g1_indefinite_is_isometric_decides_via_sage_spinor_stack():
 def test_reflection_is_an_order_two_isometry_defined_only_for_anisotropic_vectors():
     # Spec: sigma_v(x) = x - (2 b(x,v)/q(v)) v, a member of End(L); q(v) = 0 is
     # a mathematical-hypothesis rejection (ValueError), not a missing feature.
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     e0, e1 = A2.gen(0), A2.gen(1)
     sigma = A2.reflection(e0)
     assert sigma(e0) == -e0
@@ -894,7 +894,7 @@ def test_two_signal_placement_gates_dual_and_discriminant_vocabulary_by_stratum(
     # Axis 1 (definedness -> placement/absence): dual needs nondegeneracy;
     # discriminant/genus vocabulary needs integral + nondegenerate.
     # Axis 2 (computability -> abstract signal): declared contracts raise.
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     degenerate = Lattice(matrix(QQ, [[0, 0], [0, 0]]), label="deg")
     rational = Lattice(matrix(QQ, [[QQ(1) / 2]]), base_ring=QQ, label="half")
 
@@ -943,8 +943,8 @@ def test_placement_matrix_both_directions_over_the_spec_fixture_set():
         (lambda C: C.Even().RootGenerated(), da.RootGeneratedLattice),
     )
     fixtures = (
-        Lattice("A2", label="A2"),  # PD even
-        Lattice("A2").twist(-1),  # ND even
+        Lattice("A2(-1)", label="A2"),  # PD even
+        Lattice("A2"),  # ND even (AG default)
         Lattice("U", label="U"),  # hyperbolic
         Lattice("U").twist(2),  # hyperbolic non-unimodular
         Lattice(matrix(QQ, [[0, 0], [0, 2]]), label="deg"),  # degenerate
@@ -989,7 +989,7 @@ def test_named_constructors_route_through_the_category_entry_with_provenance():
     # the same Gram WITHOUT the name does not carry the certificate
     assert Lattice(matrix(QQ, CartanMatrix(["A", 2]))) not in Lattices(ZZ).Even().RootGenerated()
 
-    E8_neg = Lattice("E8", negative=True)
+    E8_neg = Lattice("E8")
     assert E8_neg.signature_pair() == (0, 8)
     assert E8_neg in Lattices(ZZ).Even().RootGenerated()
 
@@ -1001,7 +1001,7 @@ def test_rational_dual_is_the_canonical_self_identification():
     # Ratified 2026-07-03: over QQ the metric dual identifies with the space
     # itself along the nondegenerate form; dual is total on nondegenerate
     # lattices and involutive across both base rings.
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     V = A2.rationalization()
     assert V.dual() is V
     assert A2.dual().dual() == A2
@@ -1010,7 +1010,7 @@ def test_rational_dual_is_the_canonical_self_identification():
 def test_isometry_group_object_algebra_and_negative_definite_delegation():
     # Spec 3.2: O(L) is total, unique per lattice; elements are the End(L)
     # isometries with composition/inversion/power/order algebra.
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     O = A2.isometry_group()
     assert O is A2.isometry_group()  # unique per lattice
     s = A2.reflection(A2.gen(0))
@@ -1021,7 +1021,7 @@ def test_isometry_group_object_algebra_and_negative_definite_delegation():
     assert not s.is_unipotent() and O.one().is_unipotent()
 
     # O(L) = O(L(-1)): the negative-definite case sign-twists internally.
-    assert Lattice("A2", negative=True).isometry_group().order() == 12
+    assert Lattice("A2").isometry_group().order() == 12
 
     # the trivial rank-0 group is grounded by construction.
     zero_rank = Lattice(matrix(QQ, 0, 0, []))
@@ -1035,7 +1035,7 @@ def test_endomorphisms_form_a_monoid_with_ring_like_predicates():
     # V0d amendment: End_Lat(L) = Hom(L, L) is the form-preserving composition
     # monoid; operations escaping into End_ZZ-Mod(L) are not exposed, but
     # ring-like predicates remain well-defined queries on endomorphisms.
-    A2 = Lattice("A2", label="A2")
+    A2 = Lattice("A2(-1)", label="A2")
     s = A2.reflection(A2.gen(0))
     identity = A2.hom(identity_matrix(ZZ, 2))
     assert (

@@ -10,7 +10,7 @@ def test_d4_theta_shell_counts_match_conway_sloane_chapter_4():
     kissing number/root count and checks that the negative-definite convention
     transports the same shells by sign.
     """
-    d4 = lc.Lattice("D4")
+    d4 = lc.Lattice("D4(-1)")   # Conway-Sloane D4 is positive definite; the AG default is negative
     negative_d4 = d4.twist(-1)
 
     assert d4.is_even() and d4.minimum() == 2
@@ -46,7 +46,7 @@ def test_a2_direct_sum_theta_shell_convolution_matches_conway_sloane():
     There is no single-summand contribution because A_2 has no norm-4 shell,
     equivalently no two orthogonal roots.
     """
-    a2_sum = lc.Lattice("A2").direct_sum(lc.Lattice("A2"))
+    a2_sum = lc.Lattice("A2(-1)").direct_sum(lc.Lattice("A2(-1)"))   # CS A2 is positive definite
     negative_sum = a2_sum.twist(-1)
 
     assert a2_sum.is_even()

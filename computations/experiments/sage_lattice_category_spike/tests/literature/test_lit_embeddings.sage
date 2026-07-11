@@ -86,7 +86,7 @@ def test_orthogonal_complements_in_e8_recover_root_lattices_and_the_nikulin_anti
     isomorphic to -q_S -- so the criterion genuinely discriminates and is not a
     tautology satisfied by every lattice.
     """
-    e8 = lc.Lattice("E8")
+    e8 = lc.Lattice("E8(-1)")
     # cheap characterization of the ambient (Kondo/CS10 sec 8.1: even unimodular rank 8)
     assert e8.rank() == 8
     assert e8.signature_pair() == (8, 0)
@@ -111,7 +111,7 @@ def test_orthogonal_complements_in_e8_recover_root_lattices_and_the_nikulin_anti
         assert not k.is_unimodular()               # a proper root lattice, not E_8
 
         # significant: K is exactly the named root lattice, with CS10 invariants
-        assert k.is_isometric(lc.Lattice(complement_name))
+        assert k.is_isometric(lc.Lattice(f"{complement_name}(-1)"))
         assert len(k.roots()) == root_count
         assert tuple(k.discriminant_group().invariants()) == disc
 
@@ -153,7 +153,7 @@ def test_even_overlattice_index_realizes_the_isotropic_glue_of_S_plus_S_minus_on
     maximal overlattice is A_2 itself with the determinant unchanged. This shows
     the index-3 drop above is real gluing, not an artifact of the maximizer.
     """
-    a2 = lc.Lattice("A2")
+    a2 = lc.Lattice("A2(-1)")
     g = a2.direct_sum(a2.twist(-1))          # S (+) S(-1) with S = A_2 (Cor 1.6.3)
 
     # cheap basics on G (characterization)

@@ -8,7 +8,42 @@ green under the pre-#5 norm-based, positive-default kernel.
 """
 from __future__ import annotations
 
+import pytest
+
 import sage_lattice_category_spike.lattice_categories as lc
+
+
+def test_named_root_lattices_are_negative_definite_by_default():
+    r"""The AG convention: unmarked named root lattices are negative definite,
+    roots of square -2. E8 has signature (0, 8)."""
+    E8 = lc.Lattice("E8")
+    assert E8.signature() == (0, 8)
+    assert E8.is_negative_definite()
+    assert len(E8.roots()) == 240
+    assert all(root.q() == -2 for root in E8.roots())
+    assert E8.cartan_type() == ("E", 8)
+    A2 = lc.Lattice("A2")
+    assert A2.signature() == (0, 2)
+    assert A2.is_negative_definite()
+
+
+def test_minus_one_spelling_is_the_positive_twist_with_provenance():
+    r"""E8(-1) MEANS positive definite: it is the -1 twist of the negative
+    default, equal to Lattice("E8").twist(-1), and it keeps its Cartan
+    provenance (the twist(-1) provenance-drop defect is fixed)."""
+    e8_positive = lc.Lattice("E8(-1)")
+    assert e8_positive == lc.Lattice("E8").twist(-1)
+    assert e8_positive.signature() == (8, 0)
+    assert e8_positive.is_positive_definite()
+    assert all(root.q() == 2 for root in e8_positive.roots())
+    assert e8_positive.cartan_type() == ("E", 8)
+    assert lc.Lattice("E8").twist(-1).cartan_type() == ("E", 8)
+
+
+def test_there_is_no_boolean_sign_flag():
+    r"""The sign is carried by the twist, never a boolean mode flag (policy)."""
+    with pytest.raises(TypeError):
+        lc.Lattice("E8", negative=True)
 
 
 def test_is_root_is_reflection_integrality_not_norm_pm2():
