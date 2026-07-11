@@ -54,17 +54,10 @@ def test_induced_action_on_a_genuine_subobject_relation_quotient():
     assert induced(generator) != generator  # negation is nontrivial on Z/3
 
 
-@pytest.mark.xfail(
-    reason=(
-        "red proof gate for OPEN issue dzackgarza/research#100: the relation-preservation "
-        "guard in induced_map_on_quotient went vacuous when the coordinate substrate was "
-        "trivialized (it now checks that the isometry preserves the standard module, which "
-        "every endomorphism does); a cover isometry that does NOT preserve the relation "
-        "subobject must be rejected, not silently define a garbage action"
-    ),
-    strict=True,
-)
 def test_induced_map_rejects_isometry_not_preserving_the_relation():
+    r"""A morphism descends to the quotient exactly when the composite
+    ``relation -> cover -> cover -> cover/relation`` is zero; an isometry of
+    the cover that does not preserve the relation subobject is rejected."""
     M = Lattice(matrix(ZZ, [[-1, 0], [0, -1]]), label="M")
     S = M.subobject([M([3, 0]), M([0, 1])], label="S")
     quotient = M.finite_quotient(S)

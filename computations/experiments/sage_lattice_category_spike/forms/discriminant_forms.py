@@ -469,6 +469,12 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
     def relation_lattice(self) -> Any:
         return self._relations
 
+    def relation_inclusion(self) -> Any:
+        r"""The carried witness: the inclusion morphism ``relation -> cover``
+        this quotient is the cokernel of (the stored rows are the relation's
+        generators in the cover's coordinates)."""
+        return self._relations.embedding(matrix(ZZ, self._inclusion).transpose(), codomain=self._cover)
+
     def coset_representative(self, element: Any) -> Any:
         return self.lift(element)
 

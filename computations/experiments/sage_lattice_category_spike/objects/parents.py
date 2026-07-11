@@ -18,7 +18,7 @@ identity: equality is by ``(base_ring, G)`` alone.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterator, Sequence
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 if TYPE_CHECKING:
     from ..lexicon.geometry import Polyhedron
@@ -803,23 +803,28 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         restricted_matrix = morphism.matrix() * sublattice._inclusion_rows().transpose()
         return sublattice.Hom(morphism.codomain()).from_matrix(restricted_matrix)
 
-    def induced_map_on_quotient(self, morphism: LatticeMorphism, quotient: SourcedDiscriminantForm) -> DiscriminantAction:
+    def induced_map_on_quotient(self, morphism: LatticeMorphism, quotient: FiniteAbelianGroup) -> DiscriminantAction:
         r"""The endomorphism of ``cover/relations`` induced by a morphism of the
         cover — an action on the finite quotient (a ``DiscriminantAction``),
-        not a lattice morphism (its parent left the lattice category)."""
-        domain = morphism.domain()
-        assert domain == quotient.cover_lattice() and morphism.codomain() == quotient.cover_lattice(), (
+        not a lattice morphism (its parent left the lattice category).
+
+        The morphism descends exactly when it preserves the relation
+        subobject: the composite ``relation -> cover -> cover -> cover/relation``
+        is zero (``pi . phi . iota = 0``), asked through the quotient's carried
+        inclusion morphism and its own projection — never by reconstructing
+        coordinates."""
+        from ..forms.discriminant_forms import SyntheticLatticeQuotient
+
+        assert isinstance(quotient, SyntheticLatticeQuotient), f"the induced action lives on a finite lattice quotient carrying its inclusion; found={type(quotient)}"
+        assert morphism.domain() == quotient.cover_lattice() and morphism.codomain() == quotient.cover_lattice(), (
             "induced quotient endomorphism requires a morphism of the quotient cover lattice"
         )
-        assert isinstance(domain, SyntheticLattice), f"expected a synthetic cover lattice; found={type(domain)}"
-        relation_lattice = quotient.relation_lattice()
-        assert isinstance(relation_lattice, SyntheticLattice), f"expected a synthetic relation lattice; found={type(relation_lattice)}"
-        for row in relation_lattice._inclusion_rows().rows():
-            relation_coordinates = domain._underlying_module().coordinate_vector(vector(QQ, row))
-            image = morphism(domain(relation_coordinates))
-            assert isinstance(image, SyntheticLatticeElement), f"expected a synthetic image element; found={type(image)}"
-            assert vector(QQ, image.rational_coordinates()) in relation_lattice._underlying_module(), "morphism does not preserve the quotient relation lattice"
-        return quotient.hom([quotient.projection(morphism(quotient.lift(generator))) for generator in quotient.gens()])
+        inclusion = quotient.relation_inclusion()
+        relation = inclusion.domain()
+        for index in range(relation.rank()):
+            descends = quotient.projection(morphism(inclusion(relation.gen(index)))) == quotient.zero()
+            assert descends, f"morphism does not preserve the quotient relation lattice; relation generator index={index}"
+        return cast(DiscriminantAction, quotient.hom([quotient.projection(morphism(quotient.lift(generator))) for generator in quotient.gens()]))
 
 
 class SyntheticNondegenerateLattice(NondegenerateLattice, SyntheticLattice):
