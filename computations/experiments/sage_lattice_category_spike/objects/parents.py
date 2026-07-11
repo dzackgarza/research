@@ -160,7 +160,14 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         Parent.__init__(self, base=base_ring, category=category, names=normalize_names(gram.nrows(), names))
 
     def _repr_(self) -> str:
-        return f"Synthetic lattice {self._label} of rank {self.rank()} over {self.base_ring()}"
+        pos, neg = self.signature_pair()
+        summary = f"Synthetic lattice {self._label}: rank {self.rank()}, sig ({pos}, {neg}), det {self.determinant()}"
+        if self.base_ring() is ZZ and self.is_integral() and self.is_nondegenerate():
+            parity = "even" if self.is_even() else "odd"
+            divisors = tuple(d for d in self.gram_matrix().change_ring(ZZ).elementary_divisors() if d != 1)
+            structure = "unimodular" if self.is_unimodular() else f"disc {divisors}"
+            return f"{summary}, {parity}, {structure}"
+        return summary
 
     def _element_constructor_(self, coordinates: Sequence[ExactScalar] | SyntheticLatticeElement) -> SyntheticLatticeElement:
         return self.element_class(self, coordinates)
@@ -234,19 +241,39 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
     def random_element(self) -> SyntheticLatticeElement:
         return self([self.base_ring().random_element() for _ in range(self.rank())])
 
-    def reflection(self, v: LatticeElement) -> LatticeMorphism:
-        r"""The reflection ``sigma_v(x) = x - (2 b(x,v)/q(v)) v`` in ``End(L)``."""
-        element = v if isinstance(v, SyntheticLatticeElement) and v.parent() is self else self(v)
+    def _reflection_image_matrix(self, element: SyntheticLatticeElement) -> Matrix:
+        r"""The rational matrix of ``sigma_v(x) = x - (2 b(x,v)/q(v)) v`` in the
+        basis. Integral over ``base_ring`` exactly when ``v`` is a root, so this
+        is the single source shared by ``reflection`` and ``is_root``."""
         norm = self.q(element)
         assert norm != 0, f"reflection requires an anisotropic vector; q(v)=0 for v={element}"
         v_column = matrix(QQ, self.rank(), 1, list(element.coefficient_vector()))
         gram_v = self.gram_matrix() * v_column
-        images = identity_matrix(QQ, self.rank()) - (2 / norm) * v_column * gram_v.transpose()
+        return identity_matrix(QQ, self.rank()) - (2 / norm) * v_column * gram_v.transpose()
+
+    def reflection(self, v: LatticeElement) -> LatticeMorphism:
+        r"""The reflection ``sigma_v(x) = x - (2 b(x,v)/q(v)) v`` in ``End(L)``."""
+        element = v if isinstance(v, SyntheticLatticeElement) and v.parent() is self else self(v)
+        images = self._reflection_image_matrix(element)
         for j in range(self.rank()):
             assert all(images[i, j] in self.base_ring() for i in range(self.rank())), (
                 f"reflection does not map the lattice into itself over {self.base_ring()}; failing basis vector index={j}, image column={images.column(j)}, v={element}"
             )
         return self.hom(images.change_ring(self.base_ring()))
+
+    def is_root(self, v: LatticeElement) -> bool:
+        r"""``v`` is a root iff its reflection ``sigma_v`` is integral, i.e. lies
+        in ``O(L)``. This is the reflective definition; the norm-``\pm 2``
+        vectors are the special case, while the AG lattices of interest also
+        admit e.g. square-``(-4)`` roots of divisor 2 (Nikulin)."""
+        element = v if isinstance(v, SyntheticLatticeElement) and v.parent() is self else self(v)
+        if self.q(element) == 0:
+            return False
+        return all(entry in self.base_ring() for entry in self._reflection_image_matrix(element).list())
+
+    def identity_morphism(self) -> LatticeMorphism:
+        r"""The identity isometry ``L -> L``."""
+        return self.hom(identity_matrix(self.base_ring(), self.rank()))
 
     def gram_matrix(self) -> GramMatrix:
         return self._gram_matrix
@@ -547,7 +574,16 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         kernel_space = self._rationalization_module().span(kernel_in_root.rows(), QQ)
         return self._from_module(self._underlying_module().intersection(kernel_space), label)
 
-    def direct_sum(self, other: Lattice, label: str = "direct_sum") -> SyntheticLattice:
+    def direct_sum(self, *others: Lattice, label: str = "direct_sum") -> SyntheticLattice:
+        r"""The orthogonal direct sum. Associative and variadic:
+        ``U.direct_sum(V, W)``, ``U + V + W``, and ``sum([U, V, W])`` all agree."""
+        assert others, "direct_sum needs at least one other summand; fix the caller"
+        result: SyntheticLattice = self
+        for other in others:
+            result = result._direct_sum_pair(other, label)
+        return result
+
+    def _direct_sum_pair(self, other: Lattice, label: str) -> SyntheticLattice:
         base_ring = QQ if QQ in (self.base_ring(), other.base_ring()) else ZZ
         cartan_type: str | None = None
         if isinstance(self, _RootGeneratedProvenance) and isinstance(other, _RootGeneratedProvenance):
@@ -561,6 +597,14 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
             label,
             cartan_type=cartan_type,
         )
+
+    def __add__(self, other: Lattice) -> SyntheticLattice:
+        return self.direct_sum(other)
+
+    def __radd__(self, other: object) -> SyntheticLattice:
+        # enables sum([U, V, W]), whose implicit start value is the integer 0
+        assert other == 0, f"a lattice sums only with lattices or the sum() identity 0; got {other!r}"
+        return self
 
     def direct_sum_with_embeddings(self, other: SyntheticLattice, label: str = "direct_sum") -> tuple[SyntheticLattice, LatticeMorphism, LatticeMorphism]:
         r"""The direct sum together with its two summand embedding morphisms

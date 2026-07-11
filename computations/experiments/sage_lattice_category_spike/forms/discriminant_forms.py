@@ -165,6 +165,12 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
     def invariants(self) -> tuple[Any, ...]:
         return self._invariants
 
+    def invariant_factors(self) -> tuple[Any, ...]:
+        r"""The invariant factors of the finite abelian group (the standard
+        name for ``invariants``): e.g. ``(2, 2)`` for the ``D4`` discriminant
+        group."""
+        return self.invariants()
+
     def elementary_divisors(self) -> tuple[Any, ...]:
         divisors = []
         for invariant in self.invariants():
