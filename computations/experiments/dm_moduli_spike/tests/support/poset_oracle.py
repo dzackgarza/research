@@ -66,16 +66,6 @@ def expected_M0n_specialization_poset(n: int) -> Poset:
     return augmented_face_poset(compatibility_graph.clique_complex())
 
 
-def southeast_young_diagram_poset(shape: list[int]) -> Poset:
-    """Southeast order on cells of a Young diagram of the given row lengths."""
-    cells = [
-        (row, column)
-        for row, width in enumerate(shape)
-        for column in range(width)
-    ]
-    return Poset((cells, lambda left, right: left[0] <= right[0] and left[1] <= right[1]), facade=True)
-
-
 def specialization_poset(g: int, n: int) -> StratificationPoset:
     """Convenience wrapper used throughout the regression suite."""
     from dm_moduli_spike import DMCompactificationModel

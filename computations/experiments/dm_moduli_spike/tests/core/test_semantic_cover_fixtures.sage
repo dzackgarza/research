@@ -8,7 +8,7 @@ from sage.all import posets
 
 from dm_moduli_spike import DMCompactificationModel
 from tests.support.fixtures import m11_types, m12_types, m20_types
-from tests.support.poset_oracle import southeast_young_diagram_poset, specialization_poset
+from tests.support.poset_oracle import specialization_poset
 
 
 def contraction_target_multiplicities(gamma):
@@ -36,7 +36,7 @@ def test_M11_unique_cover_is_loop_contraction():
 
 def test_M12_is_young_diagram_poset_3_2():
     actual = specialization_poset(1, 2)
-    expected = southeast_young_diagram_poset([3, 2])
+    expected = posets.YoungDiagramPoset([3, 2])
     assert actual.is_isomorphic(expected)
 
 
@@ -58,7 +58,7 @@ def test_M12_exact_semantic_cover_relations():
 
 def test_M20_is_young_diagram_poset_4_3():
     actual = specialization_poset(2, 0)
-    expected = southeast_young_diagram_poset([4, 3])
+    expected = posets.YoungDiagramPoset([4, 3])
     assert actual.is_isomorphic(expected)
 
 
