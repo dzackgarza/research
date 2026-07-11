@@ -1,11 +1,12 @@
 # Repo-owned configuration: edit triggers (cron, branches) and `with:` values
 # directly. All review behavior lives upstream in the referenced workflow.
 #
-# Advisory only: findings are uploaded to the code-scanning ledger (Security
-# tab, tool `ai-review/general`) and never fail the run. Triage happens on
-# the alerts — dismiss with a reason or fix; dispositions feed later reviewer
-# context as do-not-re-raise instructions. Review context comes from
-# review-packet.tar, assembled by `just review-packet`.
+# Advisory only: findings are published as fingerprint-tracked issues
+# (labels `ai-review`, `ai-review/general`, sub-issues of the grouping issue
+# below) and never fail the run. Triage happens on the issues — fix, or
+# close with a reason; closed findings become do-not-re-raise context for
+# later reviewers and automation never re-creates or closes them. Review
+# context comes from review-packet.tar, assembled by `just review-packet`.
 name: General Review
 
 on:
@@ -23,8 +24,11 @@ jobs:
       security-events: write
       actions: read
       pull-requests: write
+      issues: write
     with:
       report_type: general
       scope: repo
       advisory: true
       context_archive: review-packet.tar
+      delivery: issues
+      parent_issue: 103
