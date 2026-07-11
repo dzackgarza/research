@@ -46,8 +46,7 @@ def _relation_inclusion_matrix(cover_lattice: Any, relation_lattice: Any) -> Any
     if relation_lattice.base_ring() is ZZ and relation_lattice.determinant() != 0 and relation_lattice.dual() == cover_lattice:
         return matrix(ZZ, relation_lattice.gram_matrix())
     assert relation_lattice.gram_matrix() == cover_lattice.gram_matrix(), (
-        "finite_quotient of plain lattices supports the metric dual (L#/L) or an identical cover; "
-        "for a general subobject quotient use the inclusion morphism's cokernel"
+        "finite_quotient of plain lattices supports the metric dual (L#/L) or an identical cover; for a general subobject quotient use the inclusion morphism's cokernel"
     )
     return identity_matrix(ZZ, relation_lattice.rank())
 
