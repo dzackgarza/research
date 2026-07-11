@@ -40,9 +40,9 @@ from ..algebra.domain_algebra import (
     DiscriminantAction,
     DiscriminantOrthogonalGroup,
     FiniteAbelianGroup,
-    LatticeCokernel,
     IsometryGroup,
     IsometrySubgroup,
+    LatticeCokernel,
     LatticeMorphism,
 )
 

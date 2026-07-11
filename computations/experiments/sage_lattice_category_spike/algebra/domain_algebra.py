@@ -84,8 +84,8 @@ if TYPE_CHECKING:
         SymbolicExpression,
     )
     from ..lexicon.geometry import Polyhedron
-    from ..morphisms.homsets import Subobject
     from ..lexicon.interop import SageInfinity, SageLocalGenusSymbol
+    from ..morphisms.homsets import Subobject
 else:
     from sage.misc.abstract_method import abstract_method
     from sage.misc.repr import repr_lincomb
