@@ -62,6 +62,11 @@ class Subobject:
         r"""Primitive iff the inclusion's cokernel is torsion-free."""
         return self._inclusion.cokernel().is_torsion_free()
 
+    def index(self) -> Any:
+        r"""The index ``[M : L]`` of the subobject in its ambient -- the order of
+        the cokernel (infinite when ``L`` is not full rank in ``M``)."""
+        return self._inclusion.index()
+
     def __getattr__(self, name: str) -> Any:
         # A subobject exposes its lattice's intrinsic vocabulary (determinant,
         # signature_pair, roots, twist, discriminant_group, is_even, ...); the
@@ -247,6 +252,10 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
     def is_surjective(self) -> bool:
         r"""[total] — the cokernel is trivial (spec 3.5)."""
         return bool(self.cokernel().cardinality() == 1)
+
+    def index(self) -> Any:
+        r"""The index ``[codomain : image]`` -- the order of the cokernel."""
+        return self.cokernel().cardinality()
 
     def im_gens(self) -> tuple[Any, ...]:
         return tuple(self(self.domain().gen(i)) for i in range(self.domain().rank()))
