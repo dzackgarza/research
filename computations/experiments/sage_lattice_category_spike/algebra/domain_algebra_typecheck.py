@@ -85,7 +85,7 @@ def morphism_algebra(lattice: Lattice, vector: LatticeElement) -> LatticeMorphis
     sigma = lattice.reflection(vector)
     action = sigma.induced_map_on_discriminant_group()
     assert not action.is_identity() or sigma.is_isometry()
-    kernel: Lattice = sigma.kernel()
+    kernel: Lattice = sigma.kernel().lattice()
     cokernel_order: int = sigma.cokernel().cardinality()
     assert kernel.rank() >= 0 and cokernel_order >= 1
     return sigma

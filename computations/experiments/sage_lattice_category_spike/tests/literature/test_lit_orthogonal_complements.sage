@@ -23,22 +23,12 @@ def test_a2_e6_glued_e8_orthogonal_complements_match_conway_sloane():
     assert glued.is_even() and glued.is_unimodular()
     assert glued.is_isometric(lc.Lattice("E8"))
 
-    a2_in_e8 = glued.sublattice(
-        [
-            [1, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0],
-        ],
+    a2_in_e8 = glued.subobject(
+        [glued([1, 0, 0, 0, 0, 0, 0, 0]), glued([0, 1, 0, 0, 0, 0, 0, 0])],
         label="A2_in_E8",
     )
-    e6_in_e8 = glued.sublattice(
-        [
-            [0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0],
-            [0, 0, 0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1],
-        ],
+    e6_in_e8 = glued.subobject(
+        [glued(row) for row in ([0]*i + [1] + [0]*(7-i) for i in range(2, 8))],
         label="E6_in_E8",
     )
 

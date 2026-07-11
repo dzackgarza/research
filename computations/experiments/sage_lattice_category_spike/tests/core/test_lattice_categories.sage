@@ -243,12 +243,12 @@ def test_span_overlattice_intersection_saturation_and_index_use_underlying_modul
     assert U.is_submodule(overlattice)
     assert overlattice.index_in(U) == QQ(1) / 2
     assert U.index_in(overlattice) == 2
-    assert U.is_primitive(U.sublattice([[1, 0]], label="e"))
+    assert U.is_primitive(U.subobject([U([1, 0])], label="e"))
 
 
 def test_orthogonal_direct_sum_and_tensor_product_constructions_are_synthetic():
     U = Lattice("U", label="U")
-    e_line = U.sublattice([[1, 0]], label="e")
+    e_line = U.subobject([U([1, 0])], label="e")
     complement = U.orthogonal_complement(e_line)
 
     assert complement.rank() == 1
@@ -412,7 +412,7 @@ def test_radical_quotient_kills_the_radical_and_realizes_eperp_mod_e():
     assert U.radical_quotient() is U  # nondegenerate: nothing to quotient
 
     UU = U.direct_sum(U, label="U+U")
-    e_line = UU.sublattice([[1, 0, 0, 0]], label="e")
+    e_line = UU.subobject([UU([1, 0, 0, 0])], label="e")
     e_perp = UU.orthogonal_complement(e_line)
     assert e_perp.is_degenerate()
 
@@ -530,7 +530,7 @@ def test_functor_layer_realizes_the_categorical_identities():
 
     # radical_quotient STAYS in Lattices and lands in the nondegenerate subcategory.
     UU = U.direct_sum(U, label="U+U")
-    e_perp = UU.orthogonal_complement(UU.sublattice([[1, 0, 0, 0]], label="e"))
+    e_perp = UU.orthogonal_complement(UU.subobject([UU([1, 0, 0, 0])], label="e"))
     assert e_perp.is_degenerate()
     quotient = e_perp.radical_quotient()
     assert quotient in Lattices(ZZ).Nondegenerate()

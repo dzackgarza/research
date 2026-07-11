@@ -452,8 +452,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         rows = []
         for element in elements:
             assert isinstance(element, SyntheticLatticeElement) and element.parent() is self, (
-                f"subobject generators must be elements of this lattice (span them, or take a kernel/image); "
-                f"raw coordinates are not accepted. Got {element!r}"
+                f"subobject generators must be elements of this lattice (span them, or take a kernel/image); raw coordinates are not accepted. Got {element!r}"
             )
             rows.append(list(element.coefficient_vector()))
         generator_matrix = matrix(QQ, rows) if rows else matrix(QQ, 0, self.rank())
@@ -602,16 +601,15 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
     def relation_lattice(self) -> SyntheticLattice:
         return self
 
-    def orthogonal_complement(self, other: Lattice, label: str = "orthogonal_complement") -> SyntheticLattice:
-        self._assert_same_ambient(other)
-        assert isinstance(other, SyntheticLattice)
-        pairing = self._inclusion_rows() * self._ambient_gram() * other._inclusion_rows().transpose()
-        kernel_basis = pairing.transpose().right_kernel().basis_matrix()
-        if kernel_basis.nrows() == 0:
-            return self.zero_lattice(label=label)
-        kernel_in_root = kernel_basis * self._inclusion_rows()
-        kernel_space = self._rationalization_module().span(kernel_in_root.rows(), QQ)
-        return self._from_module(self._underlying_module().intersection(kernel_space), label)
+    def orthogonal_complement(self, subobject: Subobject, label: str = "orthogonal_complement") -> Subobject:
+        r"""The orthogonal complement of a subobject inside this lattice, as a
+        subobject. Delegates to the subobject, which composes its inclusion with
+        this lattice's form -- no stored ambient."""
+        from ..morphisms.homsets import Subobject as _Subobject
+
+        assert isinstance(subobject, _Subobject), "orthogonal_complement takes a subobject (M.subobject(...)/an image/kernel), not a bare lattice"
+        assert subobject.ambient() == self, f"the subobject must live in this lattice; ambient={subobject.ambient()}, self={self}"
+        return subobject.orthogonal_complement(label=label)
 
     def direct_sum(self, *others: Lattice, label: str = "direct_sum") -> SyntheticLattice:
         r"""The orthogonal direct sum. Associative and variadic:
@@ -668,15 +666,16 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
             label,
         )
 
-    def is_primitive(self, sublattice: Lattice) -> bool:
-        r"""Whether ``sublattice`` is primitive in ``self`` -- by DEFINITION,
+    def is_primitive(self, subobject: Subobject) -> bool:
+        r"""Whether a subobject is primitive in this lattice -- by DEFINITION,
         whether the cokernel of its inclusion is torsion-free. (That this equals
         being saturated is a theorem, not the definition, and saturation carries
-        no computability contract over general rings.) The inclusion is a
-        morphism and its cokernel is an abelian-category object, so the whole
-        test is: take the inclusion, take its cokernel, ask if it is torsion
-        free."""
-        return self.inclusion_of(sublattice).cokernel().is_torsion_free()
+        no computability contract over general rings.)"""
+        from ..morphisms.homsets import Subobject as _Subobject
+
+        assert isinstance(subobject, _Subobject), "is_primitive takes a subobject (M.subobject(...)/an image/kernel), not a bare lattice"
+        assert subobject.ambient() == self, f"the subobject must live in this lattice; ambient={subobject.ambient()}, self={self}"
+        return subobject.is_primitive()
 
     def isometry_group(self) -> IsometryGroup:
         r"""O(L), the isometry group object — total for EVERY lattice (spec

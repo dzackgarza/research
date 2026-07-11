@@ -100,7 +100,7 @@ def test_orthogonal_complements_in_e8_recover_root_lattices_and_the_nikulin_anti
         ([_unit(3), _unit(4)], "E6", 3, 72, (6, 0), (3,)),
     ]
     for generators, complement_name, determinant, root_count, sig_pair, disc in cases:
-        s = e8.sublattice(generators, label="S")
+        s = e8.subobject([e8(g) for g in generators], label="S")
         k = e8.orthogonal_complement(s)
 
         # cheap basics on the computed complement K (characterization)

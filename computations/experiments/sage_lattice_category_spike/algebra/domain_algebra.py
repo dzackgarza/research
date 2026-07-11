@@ -84,6 +84,7 @@ if TYPE_CHECKING:
         SymbolicExpression,
     )
     from ..lexicon.geometry import Polyhedron
+    from ..morphisms.homsets import Subobject
     from ..lexicon.interop import SageInfinity, SageLocalGenusSymbol
 else:
     from sage.misc.abstract_method import abstract_method
@@ -434,7 +435,7 @@ class Lattice:
     def is_submodule(self, other: Lattice) -> bool: ...
 
     @abstract_method
-    def is_primitive(self, sublattice: Lattice) -> bool: ...
+    def is_primitive(self, subobject: Subobject) -> bool: ...
 
     @abstract_method
     def overlattice(
@@ -445,7 +446,7 @@ class Lattice:
     ) -> Lattice: ...
 
     @abstract_method
-    def orthogonal_complement(self, other: Lattice) -> Lattice: ...
+    def orthogonal_complement(self, subobject: Subobject) -> Subobject: ...
 
     @abstract_method
     def zero_lattice(self) -> Lattice: ...
@@ -710,10 +711,10 @@ class LatticeMorphism:
         equivalently, torsion-free module cokernel."""
 
     @abstract_method
-    def kernel(self) -> Lattice: ...
+    def kernel(self) -> Subobject: ...
 
     @abstract_method
-    def image(self) -> Lattice: ...
+    def image(self) -> Subobject: ...
 
     @abstract_method
     def cokernel(self) -> LatticeCokernel:

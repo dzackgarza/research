@@ -62,6 +62,33 @@ class Subobject:
         r"""Primitive iff the inclusion's cokernel is torsion-free."""
         return self._inclusion.cokernel().is_torsion_free()
 
+    def __getattr__(self, name: str) -> Any:
+        # A subobject exposes its lattice's intrinsic vocabulary (determinant,
+        # signature_pair, roots, twist, discriminant_group, is_even, ...); the
+        # subobject-specific operations (inclusion, orthogonal_complement,
+        # is_primitive, is_isometric/is_submodule against another subobject) are
+        # defined explicitly above and take precedence.
+        if name.startswith("_"):
+            raise AttributeError(name)
+        return getattr(self.lattice(), name)
+
+    def direct_sum(self, *others: Any, label: str = "direct_sum") -> Any:
+        lattices = [other.lattice() if isinstance(other, Subobject) else other for other in others]
+        return self.lattice().direct_sum(*lattices, label=label)
+
+    def is_isometric(self, other: Any) -> bool:
+        other_lattice = other.lattice() if isinstance(other, Subobject) else other
+        return bool(self.lattice().is_isometric(other_lattice))
+
+    def is_submodule(self, other: Any) -> bool:
+        r"""A subobject is a submodule of its own ambient; against another
+        subobject of the same ambient, compose the inclusions."""
+        if isinstance(other, Subobject):
+            assert self.ambient() == other.ambient(), "submodule test needs a common ambient"
+            module = self.ambient().base_ring() ** self.ambient().rank()
+            return bool(module.span(self._inclusion.matrix().columns()).is_submodule(module.span(other.inclusion().matrix().columns())))
+        return bool(self.ambient() == other)
+
     def orthogonal_complement(self, label: str = "orthogonal_complement") -> Subobject:
         r"""The orthogonal complement of ``L`` inside ``M``, as a subobject
         ``K -> M`` -- ``K`` is the integral points of ``M`` pairing to zero with
@@ -179,14 +206,17 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         element = self.domain()(element) if element.parent() is not self.domain() else element
         return self.codomain()(self.matrix() * vector(self.domain().base_ring(), element.coefficient_vector()))
 
-    def kernel(self) -> Any:
+    def kernel(self) -> Subobject:
+        r"""The kernel as a subobject of the domain."""
+        domain = self.domain()
         basis = self.matrix().right_kernel().basis_matrix()
-        if basis.nrows() == 0:
-            return self.domain().sublattice(matrix(QQ, 0, self.domain().rank()), "ker")
-        return self.domain().sublattice(basis, "ker")
+        return cast(Subobject, domain.subobject([domain(list(row)) for row in basis.rows()], "ker"))
 
-    def image(self) -> Any:
-        return self.codomain().sublattice(self.matrix().columns(), "im")
+    def image(self) -> Subobject:
+        r"""The image as a subobject of the codomain: the sublattice spanned by
+        the images of the domain generators, together with its inclusion."""
+        codomain = self.codomain()
+        return cast(Subobject, codomain.subobject([codomain(list(column)) for column in self.matrix().columns()], "im"))
 
     def is_injective(self) -> bool:
         r"""[total] — full column rank (spec 3.5; free modules carry no torsion)."""
@@ -202,9 +232,10 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         category, so the cokernel exists and is computable by contract for EVERY
         morphism -- the finite (full-rank image) case is the special one, not the
         only one."""
-        codomain: SyntheticLattice = self.codomain()
-        image: SyntheticLattice = self.image()
-        return SyntheticLatticeCokernel(codomain._underlying_module().quotient(image._underlying_module()))
+        codomain = self.codomain()
+        codomain_module = codomain.base_ring() ** codomain.rank()
+        image_span = codomain_module.span(self.matrix().columns())
+        return SyntheticLatticeCokernel(codomain_module.quotient(image_span))
 
     def induced_map_on_discriminant_group(self) -> Any:
         r"""The per-morphism functor to O(q_L) (spec 3.3); defined for
@@ -214,8 +245,8 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         return self.domain().discriminant_group().action_of_isometry(self)
 
     def is_surjective(self) -> bool:
-        r"""[total] — the image is the whole codomain (spec 3.5)."""
-        return bool(self.image() == self.codomain())
+        r"""[total] — the cokernel is trivial (spec 3.5)."""
+        return bool(self.cokernel().cardinality() == 1)
 
     def im_gens(self) -> tuple[Any, ...]:
         return tuple(self(self.domain().gen(i)) for i in range(self.domain().rank()))
