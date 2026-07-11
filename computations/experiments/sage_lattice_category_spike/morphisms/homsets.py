@@ -2,10 +2,11 @@ r"""Homsets and morphisms for synthetic lattices."""
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from sage.matrix.constructor import matrix
 from sage.modules.free_module_element import vector
+from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -14,6 +15,70 @@ from .. import lexicon
 from ..lexicon import Lattice, LatticeElement
 from ..objects.parents import SyntheticLattice
 from ..sage_patches import multiplicative_order
+
+
+class Subobject:
+    r"""A subobject of a lattice: a plain lattice ``L`` together with its
+    monomorphism (inclusion) ``f: L -> M`` into an ambient ``M``. A subobject
+    IS the pair ``(L, f)`` -- no lattice ever stores its own ambient, and every
+    operation relating ``L`` to ``M`` composes ``f`` rather than reindexing
+    coordinates.
+
+    Constructed from an injective form-preserving morphism (``M.subobject(...)``,
+    an image, a kernel, a complement); ``lattice()`` is the plain ``(R, G)``
+    domain and ``inclusion()`` is the embedding.
+    """
+
+    def __init__(self, inclusion: lexicon.LatticeMorphism) -> None:
+        assert isinstance(inclusion, LatticeMorphism), f"a subobject is built from a lattice morphism; found={type(inclusion)}"
+        assert inclusion.is_injective(), f"a subobject's inclusion must be a monomorphism; matrix={inclusion.matrix()}"
+        self._inclusion = inclusion
+
+    def _repr_(self) -> str:
+        return f"Subobject {self.lattice()!r} of {self.ambient()!r}"
+
+    __repr__ = _repr_
+
+    def lattice(self) -> Any:
+        return self._inclusion.domain()
+
+    def inclusion(self) -> lexicon.LatticeMorphism:
+        return self._inclusion
+
+    def ambient(self) -> Any:
+        return self._inclusion.codomain()
+
+    def rank(self) -> Any:
+        return self.lattice().rank()
+
+    def gram_matrix(self) -> Any:
+        return self.lattice().gram_matrix()
+
+    def cokernel(self) -> SyntheticLatticeCokernel:
+        r"""The cokernel ``M / L`` of the inclusion."""
+        return self._inclusion.cokernel()
+
+    def is_primitive(self) -> bool:
+        r"""Primitive iff the inclusion's cokernel is torsion-free."""
+        return self._inclusion.cokernel().is_torsion_free()
+
+    def orthogonal_complement(self, label: str = "orthogonal_complement") -> Subobject:
+        r"""The orthogonal complement of ``L`` inside ``M``, as a subobject
+        ``K -> M`` -- ``K`` is the integral points of ``M`` pairing to zero with
+        every image of ``L``. Composed from the inclusion matrix and ``M``'s form,
+        never from a stored ambient."""
+        ambient = self.ambient()
+        pairing = ambient.gram_matrix() * self._inclusion.matrix()  # M_rank x L_rank; columns = b(., f(e_i))
+        kernel_rows = matrix(ZZ, pairing).transpose().right_kernel().basis_matrix()
+        return cast(Subobject, ambient._subobject_from_ambient_rows(kernel_rows, label))
+
+    def saturation(self, label: str = "saturation") -> Subobject:
+        r"""The primitive closure of ``L`` in ``M`` (its saturation), as a
+        subobject ``K -> M`` with ``L <= K`` and torsion-free cokernel."""
+        ambient = self.ambient()
+        rational_span = (QQ ** ambient.rank()).span(self._inclusion.matrix().transpose().rows(), QQ)
+        saturated_rows = (ZZ ** ambient.rank()).intersection(rational_span).basis_matrix()
+        return cast(Subobject, ambient._subobject_from_ambient_rows(saturated_rows, label))
 
 
 class SyntheticLatticeCokernel(lexicon.LatticeCokernel):
