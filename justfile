@@ -97,3 +97,75 @@ test:
     done
 
 test-ci: test
+
+# Assemble the LLM-review context packet (review-packet.tar).
+#
+# The packet is the extensible context surface for the advisory review
+# workflows (.github/workflows/review-*.yml): a PROMPT.md plus whatever
+# reference documents the reviews should be sensitive to, organized below.
+# Only the tar is tracked — the exploded tree exists solely for the CI
+# reviewer, which unpacks it into .review-context/ and inlines PROMPT.md
+# and every packet *.md into the reviewer prompt.
+#
+# Sources may be untracked in this repo (e.g. vault memory files reached
+# through the .agents symlink); assembling locally is what makes them
+# available to CI. To change review context: edit the declaration below,
+# run `just review-packet`, and commit the tar. The archive is
+# byte-deterministic, so git sees a change only when content changed.
+review-packet:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    staging="$(mktemp -d)"
+    trap 'rm -rf "$staging"' EXIT
+
+    # --- Review packet declaration (edit here) -------------------------
+    cat > "$staging/PROMPT.md" <<'PROMPT'
+    # Review focus: mathematical research repository
+
+    This repository is a mathematical research monorepo. The active code
+    surface is the lattice spike under
+    `computations/experiments/sage_lattice_category_spike/` (plus its
+    feature-spike fork). Reviews here are advisory: they feed a triage
+    ledger and never block work. An empty report is always preferable to
+    a stretched finding.
+
+    Prioritize, in order:
+
+    1. **Mathematical correctness.** Claims in code, tests, and notebooks
+       must be consistent with the synthetic lattice model specification
+       (`spec/SYNTHETIC_LATTICE_MODEL.md` in this packet). Expected values
+       must come from the Sage reference or the mapped doctest corpus,
+       never from memory. Flag any test asserting a mathematically wrong
+       value, any invariant checked in the wrong category, and any
+       conflation of near-synonym lattice terms (see the vault traps in
+       this packet, e.g. saturation / discriminant triple / dual pair).
+    2. **Ratified-decision violations.** The `vault/` documents in this
+       packet are durable decisions, traps, and advice for this repo.
+       Treat them as authoritative: code that contradicts a ratified
+       decision is a finding; code that follows one is not, even if it
+       looks unusual. Do not re-raise what a decision document already
+       settles.
+    3. **Style-guide conformance.** `policies/STYLE.md` governs code,
+       notebooks, and documentation written against the spike (host-
+       language idioms, symbolic API boundary, assertion discipline).
+
+    Do not raise generic software-engineering nitpicks that these
+    documents do not support; the deterministic QC stack already owns
+    lint/type/coverage concerns.
+    PROMPT
+
+    mkdir -p "$staging/policies" "$staging/spec"
+    cp STYLE.md "$staging/policies/STYLE.md"
+    cp computations/experiments/sage_lattice_category_spike/SYNTHETIC_LATTICE_MODEL.md "$staging/spec/"
+
+    # Vault memory (untracked here; reached through the .agents symlink).
+    for section in decisions traps advice context; do
+        mkdir -p "$staging/vault/$section"
+        cp .agents/"$section"/*.md "$staging/vault/$section/"
+    done
+    # --------------------------------------------------------------------
+
+    tar --sort=name --owner=0 --group=0 --numeric-owner \
+        --mtime='UTC 2020-01-01' --format=gnu \
+        -cf review-packet.tar -C "$staging" .
+    echo "review-packet.tar: $(tar -tf review-packet.tar | grep -c -v '/$') files"

@@ -1,0 +1,30 @@
+# Repo-owned configuration: edit triggers (cron, branches) and `with:` values
+# directly. All review behavior lives upstream in the referenced workflow.
+#
+# Advisory only: findings are uploaded to the code-scanning ledger (Security
+# tab, tool `ai-review/general`) and never fail the run. Triage happens on
+# the alerts — dismiss with a reason or fix; dispositions feed later reviewer
+# context as do-not-re-raise instructions. Review context comes from
+# review-packet.tar, assembled by `just review-packet`.
+name: General Review
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * 1'
+  push:
+    branches: [main]
+
+jobs:
+  general:
+    uses: dzackgarza/ai-review-ci/.github/workflows/_review.yml@main
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+      pull-requests: write
+    with:
+      report_type: general
+      scope: repo
+      advisory: true
+      context_archive: review-packet.tar
