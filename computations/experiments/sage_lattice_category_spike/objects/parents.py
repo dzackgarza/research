@@ -632,9 +632,14 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         )
 
     def is_primitive(self, sublattice: Lattice) -> bool:
-        assert isinstance(sublattice, SyntheticLattice), f"expected SyntheticLattice; found={type(sublattice)}"
-        assert sublattice.is_submodule(self), "primitive test requires a sublattice of self"
-        return sublattice.primitive_closure(self)._inclusion_rows() == sublattice._inclusion_rows()
+        r"""Whether ``sublattice`` is primitive in ``self`` -- by DEFINITION,
+        whether the cokernel of its inclusion is torsion-free. (That this equals
+        being saturated is a theorem, not the definition, and saturation carries
+        no computability contract over general rings.) The inclusion is a
+        morphism and its cokernel is an abelian-category object, so the whole
+        test is: take the inclusion, take its cokernel, ask if it is torsion
+        free."""
+        return self.inclusion_of(sublattice).cokernel().is_torsion_free()
 
     def isometry_group(self) -> IsometryGroup:
         r"""O(L), the isometry group object — total for EVERY lattice (spec
@@ -759,6 +764,18 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
     ) -> LatticeMorphism:
         codomain = self if codomain is None else codomain
         return self.hom(matrix_data, codomain=codomain)
+
+    def inclusion_of(self, sublattice: Lattice) -> LatticeMorphism:
+        r"""The inclusion monomorphism ``sublattice -> self`` for a sublattice
+        sharing this lattice's ambient rational span. A subobject IS this
+        morphism; operations relating a sublattice to its parent compose it. The
+        one coordinate solve (expressing the sublattice's generators in this
+        lattice's basis) lives here, inside the morphism's construction -- not in
+        the callers, which then work purely with the morphism."""
+        assert isinstance(sublattice, SyntheticLattice), f"expected SyntheticLattice; found={type(sublattice)}"
+        self._assert_same_ambient(sublattice)
+        generators_in_self = self._inclusion_rows().solve_left(sublattice._inclusion_rows())
+        return sublattice.embedding(generators_in_self.transpose(), codomain=self)
 
     def similarity(
         self,
@@ -1294,6 +1311,27 @@ class _RootGeneratedProvenance(_RootGeneratedSelf):
         assert self._cartan_type != "composite", "a direct sum of root lattices has no single Cartan type; use irreducible_root_components()"
         assert self._cartan_type is not None and not isinstance(self._cartan_type, str), f"the root-provenance certificate must be a Cartan datum; found={self._cartan_type!r}"
         return self._cartan_type
+
+    def bourbaki_embedding(self) -> LatticeMorphism:
+        r"""The canonical embedding into the unimodular lattice ``I_{0,m}`` (or
+        ``I_{m,0}`` for the positive twist) that realizes this root lattice as a
+        genuine sublattice: the generators map to the Bourbaki simple roots,
+        ``e_i |-> r_i``, and the images are the actual root vectors of the
+        ambient. ``m`` is the ambient dimension of the root system; for A_n / E_6
+        / E_7 it exceeds the rank, and for E-types the roots are half-integral,
+        so the embedding is through the ambient's rational span."""
+        from sage.combinat.root_system.root_system import RootSystem
+
+        letter, rank = self.cartan_type()
+        ambient_space = RootSystem([letter, rank]).ambient_space()
+        dimension = ambient_space.dimension()
+        roots = matrix(QQ, [ambient_space.simple_root(i).to_vector() for i in ambient_space.index_set()])
+        sign = -1 if self.is_negative_definite() else 1
+        label = f"I_{{{0 if sign < 0 else dimension},{dimension if sign < 0 else 0}}}"
+        ambient: SyntheticLattice = synthetic_lattice(sign * identity_matrix(QQ, dimension), ZZ, label)
+        if any(entry not in ZZ for entry in roots.list()):
+            ambient = ambient.rationalization()
+        return self.embedding(roots.transpose(), codomain=ambient)
 
 
 class SyntheticRootGeneratedPositiveDefiniteLattice(_RootGeneratedProvenance, SyntheticIntegralPositiveDefiniteLattice):

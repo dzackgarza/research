@@ -16,6 +16,29 @@ from ..objects.parents import SyntheticLattice
 from ..sage_patches import multiplicative_order
 
 
+class SyntheticLatticeCokernel(lexicon.LatticeCokernel):
+    r"""The cokernel ``M / im(f)`` of a lattice morphism, as a finitely generated
+    R-module (free plus torsion). A first-class object in the abelian category
+    ``R-Mod``: it exists and is computable by contract for any morphism, so its
+    predicates (torsion-freeness, order) are asked of the object, never
+    reconstructed by the caller from matrix internals."""
+
+    def __init__(self, module_quotient: Any) -> None:
+        self._quotient = module_quotient
+
+    def is_torsion_free(self) -> bool:
+        r"""No torsion: every invariant factor of the module is a free (``ZZ``)
+        summand. This is exactly the primitivity condition on the inclusion."""
+        return all(invariant == 0 for invariant in self._quotient.invariants())
+
+    def cardinality(self) -> Any:
+        r"""The order of the cokernel (infinite when the image is not full rank)."""
+        return self._quotient.cardinality()
+
+    def invariants(self) -> tuple[Any, ...]:
+        return tuple(self._quotient.invariants())
+
+
 class LatticeHomset(lexicon.LatticeHomset, Parent):
     r"""Homset of form-preserving synthetic lattice morphisms."""
 
@@ -105,25 +128,18 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         return bool(self.matrix().rank() == self.domain().rank())
 
     def is_primitive_embedding(self) -> bool:
-        r"""Whether this injective morphism has primitive image in its codomain.
+        r"""An injective morphism whose cokernel is torsion-free -- i.e. it has
+        primitive image. Nothing more than "the cokernel is torsion-free"."""
+        return self.is_injective() and self.cokernel().is_torsion_free()
 
-        Equivalently, the module cokernel is torsion-free.  The spike's
-        general infinite-cokernel object is not implemented, so the owned
-        computation goes through the codomain's primitive-submodule predicate.
-        """
-        return bool(self.is_injective() and self.codomain().is_primitive(self.image()))
-
-    def cokernel(self) -> Any:
-        r"""``codomain / image`` (spec 3.5: [total] exactly when the cokernel
-        is finite, i.e. the image has full rank in the codomain; the
-        infinite-cokernel case is a gap-ledger contract)."""
-        image = self.image()
-        assert image.rank() == self.codomain().rank(), (
-            "cokernel is computed exactly when it is finite (full-rank image); "
-            f"image rank={image.rank()}, codomain rank={self.codomain().rank()}; "
-            "the infinite-cokernel case is gap-ledger work"
-        )
-        return self.codomain().finite_quotient(image)
+    def cokernel(self) -> SyntheticLatticeCokernel:
+        r"""The cokernel ``codomain / image`` (spec 3.5). ``R-Mod`` is an abelian
+        category, so the cokernel exists and is computable by contract for EVERY
+        morphism -- the finite (full-rank image) case is the special one, not the
+        only one."""
+        codomain: SyntheticLattice = self.codomain()
+        image: SyntheticLattice = self.image()
+        return SyntheticLatticeCokernel(codomain._underlying_module().quotient(image._underlying_module()))
 
     def induced_map_on_discriminant_group(self) -> Any:
         r"""The per-morphism functor to O(q_L) (spec 3.3); defined for

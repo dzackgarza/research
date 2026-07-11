@@ -46,6 +46,36 @@ def test_there_is_no_boolean_sign_flag():
         lc.Lattice("E8", negative=True)
 
 
+def test_root_lattice_is_a_sublattice_of_a_unimodular_lattice_via_embedding():
+    r"""Issue #5's required realization: a root lattice is a genuine sublattice
+    of the unimodular lattice I_{0,m} (m the Bourbaki ambient dimension),
+    witnessed by an explicit embedding morphism e_i |-> r_i sending the
+    generators to the simple-root vectors. The identity of the lattice is still
+    (base_ring, Gram); the embedding is a first-class form-preserving morphism."""
+    A2 = lc.Lattice("A2")
+    emb = A2.bourbaki_embedding()
+    ambient = emb.codomain()
+    assert emb.domain() is A2
+    assert ambient.is_unimodular()
+    assert ambient.signature_pair() == (0, 3)                 # I_{0,3}, negative definite
+    # the generators map to roots of square -2, form preserved
+    assert emb(A2.gen(0)).q() == A2.gen(0).q() == -2
+    assert emb.is_primitive_embedding()                       # A_n is primitive in I_{0,n+1}
+    # the positive twist embeds into the positive unimodular lattice I_{3,0}
+    assert lc.Lattice("A2(-1)").bourbaki_embedding().codomain().signature_pair() == (3, 0)
+
+
+def test_e8_bourbaki_embedding_realizes_the_half_integral_roots():
+    r"""E8's simple roots live in (1/2)ZZ^8, so the embedding into I_{0,8} is
+    through its rational span (E8 is even unimodular, not a ZZ-sublattice of the
+    odd I_{0,8}); the morphism is still form-preserving with root images of
+    square -2."""
+    E8 = lc.Lattice("E8")
+    emb = E8.bourbaki_embedding()
+    assert emb.codomain().rank() == 8
+    assert all(emb(E8.gen(i)).q() == -2 for i in range(8))
+
+
 def test_is_root_is_reflection_integrality_not_norm_pm2():
     r"""``<-4>`` has a generator that is a root (its reflection ``-1`` is
     integral) yet has square ``-4``, so the norm-``\pm 2`` enumeration misses

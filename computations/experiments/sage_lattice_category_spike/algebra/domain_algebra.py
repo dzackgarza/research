@@ -122,6 +122,7 @@ __all__ = [
     "DiscriminantOrthogonalGroup",
     # discriminant vocabulary
     "FiniteAbelianGroup",
+    "LatticeCokernel",
     "DiscriminantForm",
     "BilinearDiscriminantForm",
     "QuadraticDiscriminantForm",
@@ -715,8 +716,9 @@ class LatticeMorphism:
     def image(self) -> Lattice: ...
 
     @abstract_method
-    def cokernel(self) -> DiscriminantForm:
-        """Finite-cokernel case only; the general case is a gap-ledger contract."""
+    def cokernel(self) -> LatticeCokernel:
+        """The cokernel ``codomain / image`` as a finitely generated abelian
+        group — total for every morphism by the abelian-category contract."""
 
     @abstract_method
     def induced_map_on_discriminant_group(self) -> DiscriminantAction: ...
@@ -903,6 +905,24 @@ class DiscriminantAction:
 # ---------------------------------------------------------------------------
 # Discriminant forms (one consolidated parent; axioms select the vocabulary)
 # ---------------------------------------------------------------------------
+
+
+class LatticeCokernel:
+    """The cokernel ``M / im(f)`` of a lattice morphism: a finitely generated
+    abelian group (free plus torsion). ``R-Mod`` is abelian, so it exists and is
+    computable by contract for EVERY morphism — the finite (full-rank image) case
+    is the special one. Its predicates are asked of the object, never
+    reconstructed from matrix internals by the caller."""
+
+    @abstract_method
+    def is_torsion_free(self) -> bool:
+        """No torsion — exactly the primitivity condition on the inclusion."""
+
+    @abstract_method
+    def cardinality(self) -> int: ...
+
+    @abstract_method
+    def invariants(self) -> tuple[int, ...]: ...
 
 
 class FiniteAbelianGroup:
