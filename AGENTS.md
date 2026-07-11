@@ -36,6 +36,26 @@ agent-memory maintain move <key> --to global/advice
 ```
 <!-- agent-memory:end -->
 
+# Banned-language replacement index (always-on)
+
+The terms below have demonstrated **strong priors**: they re-emitted even after being
+catalogued in the terminology dictionary — in one case inside the anti-drift doctrine
+itself, as its self-chosen name. A reference-file row is an on-demand signal; a term
+that survives its row needs this always-loaded one. Never write these terms in code,
+issues, docs, comments, memories, or doctrine; write the replacement.
+
+| banned | documented emissions | replacement |
+|---|---|---|
+| **"carrier"** (carrier module/set, "carrier of a structure", "carrier siting") | 3+ — P1's first draft; the P6 enforcement clause's own name (corrected 2026-07-12); Tier B row 1 predates both | the **underlying set/module** (image of the forgetful functor); in doctrine prose name the entity: the **object, morphism, homset, or functor** |
+| **"ambient"** as free-standing data ("the ambient", "shared ambient", "shared span/coordinates", `ambient=`/`in_ambient=` parameters, stored `_ambient` state) | pervasive — Sage back-porting; issue #100's own original body; re-emitted in doctrine prose 2026-07-11 | a subobject is the pair `(A, f: A ↪ B)`: its ambient **is** `f.codomain()`; rational/real constructions live in the **base-changed parent** `L ⊗ R'`, named by its functor |
+
+**Graduation rule:** when a drift term already carrying a dictionary row is emitted a
+*second* time, it graduates to this index — the repetition is the evidence of a strong
+prior. Diagnose new drift by principle first (generative failure model P1–P6); this
+index is only for proven repeat offenders. Full catalogue:
+`.agents/references/terminology-dictionary.md`; code-shape patterns:
+`.agents/references/slop-pattern-index.md`.
+
 # Repository layout
 
 Top-level directories (this is a navigational map; each tree owns its own README/AGENTS.md):
