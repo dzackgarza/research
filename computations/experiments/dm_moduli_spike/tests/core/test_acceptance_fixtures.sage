@@ -1,7 +1,7 @@
 r"""Acceptance fixtures: exact rank vectors of the stratification poset.
 
-After re-bucketing by ``num_edges()``, the number of strata by codimension must
-match these documented values (they agree with the ``admcycles`` strata counts).
+Rank vectors and total cardinalities are secondary diagnostics.  The primary
+correctness claims live in the whole-poset oracle and Hasse-diagram tests.
 """
 
 from __future__ import annotations

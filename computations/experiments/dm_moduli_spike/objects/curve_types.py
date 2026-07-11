@@ -130,6 +130,48 @@ class StableCurveType(Element):
 
         return contract_edge(self, edge)
 
+    def elementary_contractions(self) -> tuple[StableGraphContraction, ...]:
+        r"""One contraction witness per internal edge."""
+        return tuple(self.contract(edge)[1] for edge in self.internal_edges())
+
+    def admits_contraction_to(self, other: StableCurveType) -> bool:
+        r"""Whether ``other`` is reachable from ``self`` by a sequence of edge
+        contractions (equivalently ``self`` is below ``other`` in the
+        specialization order when both are strata of the same ``(g, n)``)."""
+        if other.num_edges() > self.num_edges():
+            return False
+        target = other.canonical_key()
+        if self.canonical_key() == target:
+            return True
+        visited: set[object] = {self.canonical_key()}
+        queue: list[StableCurveType] = [self]
+        while queue:
+            gamma = queue.pop(0)
+            for edge in gamma.internal_edges():
+                image, _ = gamma.contract(edge)
+                key = image.canonical_key()
+                if key == target:
+                    return True
+                if key not in visited:
+                    visited.add(key)
+                    queue.append(image)
+        return False
+
+    def split_system(self, anchor_marking: int = 1) -> frozenset[frozenset[int]]:
+        r"""Stable splits induced by internal edges (genus zero only)."""
+        from .splits import split_system
+
+        return split_system(self, anchor_marking=anchor_marking)
+
+    def vertices(self) -> tuple[int, ...]:
+        return tuple(range(self._record.num_vertices()))
+
+    def vertex_genus(self, vertex: int) -> int:
+        return self._record.vertex_genera[vertex]
+
+    def number_of_flags_at(self, vertex: int) -> int:
+        return self._record.valence(vertex)
+
     # -- views / serialization ---------------------------------------------------
 
     def sage_multigraph(self) -> Graph:
@@ -247,7 +289,6 @@ class StableCurveTypes(UniqueRepresentation, Parent):
             flag_u = len(flag_vertex)
             flag_vertex.append(u)
             flag_involution.append(flag_u + 1)
-            flag_v = len(flag_vertex)
             flag_vertex.append(v)
             flag_involution.append(flag_u)
 

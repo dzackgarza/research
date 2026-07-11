@@ -19,6 +19,7 @@ Two order conventions are exposed explicitly and never conflated:
 
 from __future__ import annotations
 
+from collections.abc import Iterator, Sequence
 from typing import TYPE_CHECKING
 
 from .contractions import StableGraphContraction
@@ -185,6 +186,39 @@ class DMStratification:
     def contraction_witnesses(self) -> tuple[StableGraphContraction, ...]:
         return self._contractions
 
+    def find_unique_type(
+        self,
+        *,
+        vertex_genera: Sequence[int],
+        marking_blocks: Sequence[Sequence[int]],
+        loops: Sequence[int] | None = None,
+        edge_multiset: Sequence[tuple[int, int, int]] | None = None,
+    ) -> DMStratum:
+        r"""Locate the unique stratum matching a vertex-indexed construction.
+
+        The lookup is semantic: vertices are numbered ``0, ..., |V|-1`` in the
+        order given by ``vertex_genera``; the resulting type is matched by
+        canonical key, not by internal vertex numbering in the stratification.
+        """
+        genera = tuple(int(g) for g in vertex_genera)
+        markings = tuple(tuple(int(m) for m in block) for block in marking_blocks)
+        edges: list[tuple[int, int]] = []
+        if loops is not None:
+            for vertex, count in enumerate(loops):
+                for _ in range(int(count)):
+                    edges.append((vertex, vertex))
+        if edge_multiset is not None:
+            for u, v, multiplicity in edge_multiset:
+                for _ in range(int(multiplicity)):
+                    edges.append((int(u), int(v)))
+        candidate = self._curve_types.from_vertices(genera=genera, markings=markings, edges=tuple(edges))
+        matches = [self._stratum(gamma) for level in self._levels for gamma in level.values() if gamma == candidate]
+        assert len(matches) == 1, (
+            f"expected exactly one stratum matching {genera}, markings={markings}, edges={edges}; "
+            f"found {len(matches)}"
+        )
+        return matches[0]
+
     # -- completeness metadata ---------------------------------------------------
 
     def is_complete(self) -> bool:
@@ -256,6 +290,32 @@ class StratificationPoset:
 
     def maximal_elements(self) -> list[DMStratum]:
         return list(self._poset.maximal_elements())
+
+    def __iter__(self) -> Iterator[DMStratum]:
+        return iter(self._poset)
+
+    def __contains__(self, element: object) -> bool:
+        return element in self._poset
+
+    def is_lequal(self, left: DMStratum, right: DMStratum) -> bool:
+        return bool(self._poset.le(left, right))
+
+    def cover_relations(self) -> list[list[DMStratum]]:
+        return list(self._poset.cover_relations())
+
+    def rank(self, element: DMStratum) -> int:
+        return int(self._poset.rank(element))
+
+    def subposet(self, elements: Sequence[DMStratum]) -> StratificationPoset:
+        return StratificationPoset(self._poset.subposet(list(elements)), self._convention)
+
+    def order_complex(self) -> object:
+        return self._poset.order_complex()
+
+    def is_isomorphic(self, other: object) -> bool:
+        if isinstance(other, StratificationPoset):
+            return bool(self._poset.is_isomorphic(other._poset))
+        return bool(self._poset.is_isomorphic(other))
 
     def __repr__(self) -> str:
         return f"Stratification poset ({self._convention} order) on {self.cardinality()} strata"

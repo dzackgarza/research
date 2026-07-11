@@ -20,6 +20,7 @@ A :class:`DMStratum` is the stratum itself, kept distinct from the
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -175,6 +176,26 @@ class DMStratum:
 
     def clutching_morphism(self) -> ClutchingMorphism:
         return ClutchingMorphism(self._factors(compact=True), ModuliFactor(self._g, self._n, compact=True), self._curve_type.automorphism_number())
+
+    def relabel_markings(self, sigma: Callable[[int], int]) -> DMStratum:
+        r"""Apply a permutation of ``{1, ..., n}`` to the marking labels."""
+        record = self._curve_type.record()
+        genera = record.vertex_genera
+        markings = tuple(record.markings_at(vertex) for vertex in range(record.num_vertices()))
+        relabeled_markings = tuple(
+            tuple(int(sigma(marking)) for marking in vertex_markings)
+            for vertex_markings in markings
+        )
+        edges = tuple(
+            (record.flag_vertex[flag], record.flag_vertex[partner])
+            for flag, partner in record.internal_edges()
+        )
+        relabeled = self._curve_type.parent().from_vertices(
+            genera=genera,
+            markings=relabeled_markings,
+            edges=edges,
+        )
+        return DMStratum(relabeled, self._g, self._n)
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, DMStratum) and self._curve_type == other._curve_type and (self._g, self._n) == (other._g, other._n)
