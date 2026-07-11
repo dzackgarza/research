@@ -495,15 +495,26 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         generators: RawVectors,
         check_integral: bool = False,
         label: str = "overlattice",
-    ) -> SyntheticLattice:
+    ) -> LatticeMorphism:
+        r"""The overlattice ``M >= L`` spanned by this lattice and the given
+        rational generators (rows in this lattice's coordinates), returned as
+        the inclusion morphism ``L -> M``. The constructor is the once-only
+        place the presentation crosses the boundary, so it is the only place
+        the witness can be minted; callers wanting the object alone take
+        ``.codomain()``, and index questions belong to the morphism
+        (``.index()`` = cokernel cardinality)."""
         generator_matrix = matrix(QQ, generators)
         assert generator_matrix.ncols() == self.rank(), (
             f"overlattice generators must be rows in the parent's coordinates; parent_rank={self.rank()}, generators={generator_matrix}"
         )
-        combined = self._inclusion_rows().stack(generator_matrix)
-        lattice = self.span(combined, base_ring=self.base_ring(), label=label)
-        assert not check_integral or lattice.is_integral(), f"overlattice is not integral; gram={lattice.gram_matrix()}"
-        return lattice
+        combined = identity_matrix(QQ, self.rank()).stack(generator_matrix)
+        module = (QQ ** self.rank()).span(combined.rows(), self.base_ring())
+        basis_rows = matrix(QQ, module.basis_matrix())
+        assert basis_rows.nrows() == self.rank(), f"an overlattice spans the same rational space; rank={self.rank()}, basis={basis_rows}"
+        gram = basis_rows * self.gram_matrix() * basis_rows.transpose()
+        overlattice = synthetic_lattice(gram, self.base_ring(), label)
+        assert not check_integral or overlattice.is_integral(), f"overlattice is not integral; gram={overlattice.gram_matrix()}"
+        return self.embedding(basis_rows.inverse().transpose(), codomain=overlattice)
 
     def sum(self, other: Lattice, label: str = "sum") -> SyntheticLattice:
         assert isinstance(other, SyntheticLattice)
@@ -529,19 +540,6 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         assert isinstance(ambient, SyntheticLattice)
         rationalization = self._rationalization_module().span(self._inclusion_rows().rows(), QQ)
         return self._from_module(ambient._underlying_module().intersection(rationalization), label)
-
-    def index_in(self, other: Lattice) -> ExactScalar:
-        r"""The index ``[other : self]`` of commensurable same-rank lattices, via
-        the identity ``[M : L]^2 = |det L| / |det M|`` -- no shared coordinate
-        embedding required."""
-        assert isinstance(other, SyntheticLattice)
-        assert self.rank() == other.rank(), f"index is defined for commensurable same-rank lattices; ranks {self.rank()} and {other.rank()}"
-        index = (QQ(abs(self.determinant())) / QQ(abs(other.determinant()))).sqrt()
-        assert index in QQ, "lattices are not commensurable by a rational index; determinant ratio has no rational square root"
-        return QQ(index)
-
-    def index_in_saturation(self) -> ExactScalar:
-        return self.index_in(self.saturation())
 
     def denominator(self) -> ExactScalar:
         return lcm([entry.denominator() for entry in self.gram_matrix().list()] or [ZZ.one()])
@@ -871,14 +869,25 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateLattice, Synthe
 
         return SyntheticSourcedDiscriminantForm(self, primary)
 
-    def glue(self, isotropic_subgroup_or_gens: DiscriminantSubgroup | Sequence[DiscriminantFormElement], label: str = "glue") -> Lattice:
+    def glue(self, isotropic_subgroup_or_gens: DiscriminantSubgroup | Sequence[DiscriminantFormElement], label: str = "glue") -> LatticeMorphism:
+        r"""The overlattice glued along an isotropic subgroup of the
+        discriminant form, as the inclusion morphism ``L -> L_glued``; its
+        ``.index()`` is the subgroup's order."""
         return self.discriminant_group().overlattice_from_isotropic_subgroup(isotropic_subgroup_or_gens, label=label)
 
-    def maximal_overlattice(self, p: int | None = None, label: str = "maximal_overlattice") -> Lattice:
+    def maximal_overlattice(self, p: int | None = None, label: str = "maximal_overlattice") -> LatticeMorphism:
+        r"""A maximal (``p``-maximal when ``p`` is given) even overlattice, as
+        the inclusion morphism ``L -> L^max`` composed from the successive
+        isotropic glue steps -- the identity when this lattice is already
+        maximal."""
         if p is None or ZZ(p) == 2:
             assert self.is_even(), "this lattice must be even to admit an even overlattice"
-        lattice: IntegralNondegenerateLattice = self
+        embedding: LatticeMorphism = self.identity_morphism()
         while True:
+            lattice = embedding.codomain()
+            assert isinstance(lattice, SyntheticIntegralNondegenerateLattice), (
+                f"an even overlattice of an integral nondegenerate lattice stays integral nondegenerate; found={type(lattice)}"
+            )
             discriminant_group = lattice.discriminant_group(primary=0 if p is None else ZZ(p))
             isotropic_element = next(
                 (
@@ -889,10 +898,10 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateLattice, Synthe
                 None,
             )
             if isotropic_element is None:
-                return lattice
+                return embedding
             subgroup = discriminant_group.subgroup_generated_by([isotropic_element])
             assert subgroup.is_quadratic_isotropic(), f"isotropic element generated a non-isotropic subgroup: {isotropic_element}"
-            lattice = discriminant_group.overlattice_from_isotropic_subgroup(subgroup, label=label)
+            embedding = discriminant_group.overlattice_from_isotropic_subgroup(subgroup, label=label) * embedding
 
     def local_modification(
         self,
@@ -915,8 +924,8 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateLattice, Synthe
                 "local modification subgroup must belong to this lattice's requested p-primary discriminant form; "
                 f"requested_p={p}, subgroup_ambient={subgroup_ambient}, expected={primary_discriminant_group}"
             )
-            return subgroup_ambient.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label)
-        return primary_discriminant_group.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label)
+            return subgroup_ambient.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label).codomain()
+        return primary_discriminant_group.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label).codomain()
 
     def genus(self) -> Genus:
         return self.discriminant_group().genus(self.signature_pair())
@@ -1237,7 +1246,7 @@ class _PositiveDefiniteEnumeration(_PositiveDefiniteSelf):
         else:
             assert not isinstance(w, SyntheticLatticeElement), f"update_reduced_basis expects coordinates or an element of this lattice; found an element of {w.parent()}"
             coordinates = list(w)
-        injected = self.overlattice([coordinates], label="update_reduced_basis")
+        injected = self.overlattice([coordinates], label="update_reduced_basis").codomain()
         # an overlattice lives in the same rational quadratic space, so it stays
         # positive-definite (spec 2.6 deleted the dead non-PD fallback here);
         # the dispatch witness is the enumeration class itself

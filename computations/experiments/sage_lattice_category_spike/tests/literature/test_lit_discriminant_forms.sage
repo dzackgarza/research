@@ -69,8 +69,10 @@ def test_nikulin_lagrangian_glue_of_rank_one_sign_pair_has_trivial_quotient():
     assert set(form.orthogonal(subgroup).elements()) == set(subgroup)
 
     quotient = form.orthogonal_quotient(subgroup)
-    glued = form.overlattice_from_isotropic_subgroup(subgroup)
+    gluing = form.overlattice_from_isotropic_subgroup(subgroup)
+    glued = gluing.codomain()
 
+    assert gluing.index() == 2
     assert quotient.invariants() == ()
     assert quotient.order() == 1
     assert glued.is_even()
@@ -96,7 +98,7 @@ def test_conway_sloane_d8_isotropic_self_glue_reconstructs_e8():
 
     for glue_vector in nonzero_isotropic:
         subgroup = [form.zero(), glue_vector]
-        glued = form.overlattice_from_isotropic_subgroup(subgroup)
+        glued = form.overlattice_from_isotropic_subgroup(subgroup).codomain()
 
         assert form.q(glue_vector) == 0
         assert form.is_lagrangian(subgroup)
@@ -116,11 +118,13 @@ def test_conway_sloane_d8_maximal_overlattice_is_the_d8_plus_e8_glue():
     d8 = lc.Lattice("D8(-1)")
     e8 = lc.Lattice("E8(-1)")
 
-    full_maximal = d8.maximal_overlattice()
-    two_primary_maximal = d8.maximal_overlattice(2)
-    three_primary_maximal = d8.maximal_overlattice(3)
+    full_embedding = d8.maximal_overlattice()
+    two_primary_embedding = d8.maximal_overlattice(2)
+    three_primary_embedding = d8.maximal_overlattice(3)
 
-    for maximal in (full_maximal, two_primary_maximal):
+    for embedding in (full_embedding, two_primary_embedding):
+        maximal = embedding.codomain()
+        assert embedding.index() == 2                      # [E8 : D8] = 2
         assert maximal.is_even()
         assert maximal.is_unimodular()
         assert maximal.determinant() == 1
@@ -128,8 +132,12 @@ def test_conway_sloane_d8_maximal_overlattice_is_the_d8_plus_e8_glue():
         assert len(maximal.roots()) == 240
         assert maximal.discriminant_group().invariants() == ()
         assert maximal.is_isometric(e8)
-        assert abs(ZZ(d8.determinant() / maximal.determinant())) == 4
+        assert abs(ZZ(d8.determinant() / maximal.determinant())) == embedding.index() ** 2
 
+    # no 3-primary glue exists: the maximal 3-overlattice is D8 itself, and
+    # the witness says so -- the composed embedding is the identity
+    assert three_primary_embedding.is_identity()
+    three_primary_maximal = three_primary_embedding.codomain()
     assert three_primary_maximal.determinant() == d8.determinant()
     assert three_primary_maximal.discriminant_group().invariants() == (2, 2)
     assert len(three_primary_maximal.roots()) == 112
@@ -208,7 +216,7 @@ def test_nikulin_non_lagrangian_u2_a2_glue_leaves_a2_discriminant_form():
         for element in form.orthogonal(subgroup).elements()
     ) == [(0, 0), (0, 2), (0, 4), (1, 0), (1, 2), (1, 4)]
     quotient = form.orthogonal_quotient(subgroup)
-    overlattice = form.overlattice_from_isotropic_subgroup(subgroup)
+    overlattice = form.overlattice_from_isotropic_subgroup(subgroup).codomain()
     overlattice_form = form.discriminant_form_of_overlattice(subgroup)
 
     assert quotient.invariants() == (3,)

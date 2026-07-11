@@ -487,7 +487,7 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
         lift_rows = [vector(QQ, self.lift(generator).coefficient_vector()) * inclusion_inverse for generator in subgroup.gens()]
         if not lift_rows:
             return self.relation_lattice()
-        return self.relation_lattice().overlattice(lift_rows, check_integral=False, label=label)
+        return self.relation_lattice().overlattice(lift_rows, check_integral=False, label=label).codomain()
 
 
 class DiscriminantCharacter:
@@ -1191,11 +1191,14 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
 
     # -- overlattices and preimages in the source hull --
     def overlattice_from_isotropic_subgroup(self, subgroup_or_gens: Any, label: str = "overlattice") -> Any:
+        r"""The overlattice glued along a bilinear-isotropic subgroup, as the
+        inclusion morphism ``L -> L_glued`` minted by the overlattice
+        constructor (the identity for the trivial subgroup)."""
         subgroup = self._subgroup(subgroup_or_gens)
         assert subgroup.is_bilinear_isotropic(), "overlattice construction requires a bilinear-isotropic subgroup"
         lift_rows = [self._coset_representative_in_source(generator) for generator in subgroup.gens()]
         if not lift_rows:
-            return self.source_lattice()
+            return self.source_lattice().identity_morphism()
         return self.source_lattice().overlattice(lift_rows, check_integral=True, label=label)
 
     def preimage_lattice(self, subgroup_or_gens: Any, label: str = "preimage_lattice") -> Any:
@@ -1207,10 +1210,10 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
         lift_rows = [self._coset_representative_in_source(generator) for generator in subgroup.gens()]
         if not lift_rows:
             return self.source_lattice()
-        return self.source_lattice().overlattice(lift_rows, check_integral=False, label=label)
+        return self.source_lattice().overlattice(lift_rows, check_integral=False, label=label).codomain()
 
     def discriminant_form_of_overlattice(self, subgroup_or_gens: Any) -> Any:
-        return self.overlattice_from_isotropic_subgroup(subgroup_or_gens).discriminant_group()
+        return self.overlattice_from_isotropic_subgroup(subgroup_or_gens).codomain().discriminant_group()
 
     # -- the induced action of a lattice isometry, and its orbit vocabulary --
     def action_of_isometry(self, isometry: Any) -> Any:

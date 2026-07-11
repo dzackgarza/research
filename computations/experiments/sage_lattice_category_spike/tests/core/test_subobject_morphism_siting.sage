@@ -87,23 +87,17 @@ def test_index_is_the_cokernel_cardinality_of_the_inclusion():
     assert thin.index() == oo  # rank 1 in rank 2: the cokernel is infinite
 
 
-@pytest.mark.xfail(
-    reason=(
-        "red proof gate for OPEN issue dzackgarza/research#100: index-in-saturation is "
-        "sited on the subobject -- the cokernel cardinality of the mono factorization "
-        "L -> L^sat of the carried inclusion -- and is not defined on a bare lattice; "
-        "the object-level spelling is identically 1 after the substrate trivialization "
-        "and currently swallows this call through attribute delegation"
-    ),
-    strict=True,
-)
 def test_index_in_saturation_is_the_factorization_index_on_the_subobject():
+    r"""``[L^sat : L]`` is the cokernel cardinality of the mono factorization
+    ``L -> L^sat`` of the carried inclusion -- sited on the subobject, not on
+    a bare lattice (which carries no witness to saturate against)."""
     M = Lattice(matrix(ZZ, [[-1, 0], [0, -1]]), label="M")
     full_rank = M.subobject([M([2, 0]), M([0, 1])], label="S")
     assert full_rank.index_in_saturation() == 2  # saturation is all of M
 
     thin = M.subobject([M([2, 0])], label="S1")  # rank 1, codomain rank 2
     assert thin.index_in_saturation() == 2  # saturation is spanned by e1
+    assert thin.saturation_factorization().codomain() == thin.saturation().lattice()
 
     primitive = M.subobject([M([1, 0])], label="P")
     assert primitive.index_in_saturation() == 1

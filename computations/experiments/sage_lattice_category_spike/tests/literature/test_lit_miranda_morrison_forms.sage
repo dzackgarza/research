@@ -276,7 +276,7 @@ def test_isotropic_subgroups_are_even_overlattices_nikulin_prop_1_4_1():
         assert q.is_maximal_isotropic(H) is True
         assert q.is_lagrangian(H) is True
         assert H.cardinality() ** 2 == q.cardinality()      # Lagrangian: Nik80 .md:230
-        M = q.overlattice_from_isotropic_subgroup(H)
+        M = q.overlattice_from_isotropic_subgroup(H).codomain()
         assert M.rank() == 2 and M.is_even() and M.is_unimodular()   # Prop 1.4.1
 
     # A2: anisotropic => only the trivial isotropic subgroup, no proper overlattice
@@ -288,4 +288,6 @@ def test_isotropic_subgroups_are_even_overlattices_nikulin_prop_1_4_1():
     assert [H.cardinality() for H in qa.isotropic_subgroups()] == [1]
     only = qa.maximal_isotropic_subgroups()
     assert len(only) == 1 and only[0].cardinality() == 1
-    assert qa.overlattice_from_isotropic_subgroup(only[0]).determinant() == 3   # = A2 itself
+    trivial_gluing = qa.overlattice_from_isotropic_subgroup(only[0])
+    assert trivial_gluing.is_identity()                              # = A2 itself
+    assert trivial_gluing.codomain().determinant() == 3

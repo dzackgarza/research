@@ -426,12 +426,6 @@ class Lattice:
     def primitive_closure(self, ambient: Lattice) -> Lattice: ...
 
     @abstract_method
-    def index_in(self, other: Lattice) -> ExactScalar: ...
-
-    @abstract_method
-    def index_in_saturation(self) -> ExactScalar: ...
-
-    @abstract_method
     def is_submodule(self, other: Lattice) -> bool: ...
 
     @abstract_method
@@ -443,7 +437,10 @@ class Lattice:
         generators: RawVectors,
         check_integral: bool = False,
         label: str = "overlattice",
-    ) -> Lattice: ...
+    ) -> LatticeMorphism:
+        """The overlattice as the inclusion morphism ``L -> M``: the
+        constructor is the once-only presentation crossing, so it mints the
+        witness; the object alone is its codomain."""
 
     @abstract_method
     def orthogonal_complement(self, subobject: Subobject) -> Subobject: ...
@@ -516,10 +513,10 @@ class IntegralNondegenerateLattice(NondegenerateLattice):
     def same_genus(self, other: IntegralNondegenerateLattice) -> bool: ...
 
     @abstract_method
-    def glue(self, isotropic_subgroup: DiscriminantSubgroup) -> Lattice: ...
+    def glue(self, isotropic_subgroup: DiscriminantSubgroup) -> LatticeMorphism: ...
 
     @abstract_method
-    def maximal_overlattice(self, p: int | None = None) -> Lattice: ...
+    def maximal_overlattice(self, p: int | None = None) -> LatticeMorphism: ...
 
     @abstract_method
     def local_modification(self, data: Matrix | DiscriminantSubgroup | Sequence[DiscriminantFormElement], p: int) -> Lattice: ...
@@ -676,6 +673,11 @@ class LatticeMorphism:
     def __call__(self, element: LatticeElement) -> LatticeElement: ...
 
     @abstract_method
+    def __mul__(self, other: LatticeMorphism) -> LatticeMorphism:
+        """Composition ``(f * g)(x) = f(g(x))``; defined when the inner
+        codomain equals the outer domain."""
+
+    @abstract_method
     def is_isometry(self) -> bool: ...
 
     # ring-LIKE predicates (V0d amendment 2026-07-03): End_Lat(L) = Hom(L, L) is the
@@ -720,6 +722,11 @@ class LatticeMorphism:
     def cokernel(self) -> LatticeCokernel:
         """The cokernel ``codomain / image`` as a finitely generated abelian
         group — total for every morphism by the abelian-category contract."""
+
+    @abstract_method
+    def index(self) -> ExactScalar | SageInfinity:
+        """The index ``[codomain : image]`` — the cokernel's cardinality,
+        infinite when the image is not full rank."""
 
     @abstract_method
     def induced_map_on_discriminant_group(self) -> DiscriminantAction: ...
@@ -1207,10 +1214,11 @@ class SourcedDiscriminantForm(QuadraticDiscriminantForm):
         self,
         subgroup: DiscriminantSubgroup | Sequence[DiscriminantFormElement],
         label: str = "overlattice",
-    ) -> IntegralNondegenerateLattice:
+    ) -> LatticeMorphism:
         """Gluing along an isotropic subgroup preserves rank and integrality
-        and scales the determinant by the square of the index, so the result
-        is again integral nondegenerate."""
+        and scales the determinant by the square of the index, so the codomain
+        is again integral nondegenerate; the return value is the inclusion
+        morphism minted by the overlattice constructor."""
 
     @abstract_method
     def discriminant_form_of_overlattice(self, subgroup: DiscriminantSubgroup) -> DiscriminantForm: ...

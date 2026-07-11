@@ -73,8 +73,10 @@ def test_a4_a4_order_five_glue_reconstructs_e8_through_public_gluing_surfaces():
     discriminant_form = ambient.discriminant_group()
     glue_generator = discriminant_form.gen(0) + discriminant_form.gen(1)
     glue_subgroup = discriminant_form.subgroup_generated_by([glue_generator])
-    via_lattice_glue = ambient.glue([glue_generator], label="A4_A4_order_five_glue")
+    lattice_gluing = ambient.glue([glue_generator], label="A4_A4_order_five_glue")
+    via_lattice_glue = lattice_gluing.codomain()
 
+    assert lattice_gluing.index() == 5               # [glued : A4 + A4] = |glue group|
     assert glue_subgroup.cardinality() == 5
     assert discriminant_form.is_isotropic_subgroup(glue_subgroup)
     assert discriminant_form.orthogonal_quotient(glue_subgroup).invariants() == ()

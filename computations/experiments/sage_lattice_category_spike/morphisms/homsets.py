@@ -112,6 +112,21 @@ class Subobject:
         saturated_rows = (ZZ ** ambient.rank()).intersection(rational_span).basis_matrix()
         return cast(Subobject, ambient._subobject_from_ambient_rows(saturated_rows, label))
 
+    def saturation_factorization(self) -> lexicon.LatticeMorphism:
+        r"""The mono factorization ``L -> L^sat`` of the carried inclusion
+        through its saturation: the unique morphism satisfying
+        ``saturation().inclusion() * factorization == inclusion()``. The one
+        coordinate solve lives here, inside the morphism's construction."""
+        saturated = self.saturation()
+        factor = saturated.inclusion().matrix().solve_right(self._inclusion.matrix())
+        return cast(lexicon.LatticeMorphism, self.lattice().embedding(factor, codomain=saturated.lattice()))
+
+    def index_in_saturation(self) -> Any:
+        r"""The index ``[L^sat : L]`` -- the cokernel cardinality of the
+        saturation factorization; ``1`` exactly when the subobject is
+        primitive."""
+        return self.saturation_factorization().index()
+
 
 class SyntheticLatticeCokernel(lexicon.LatticeCokernel):
     r"""The cokernel ``M / im(f)`` of a lattice morphism, as a finitely generated

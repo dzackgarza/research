@@ -17,7 +17,7 @@ def test_a2_e6_glued_e8_orthogonal_complements_match_conway_sloane():
     glue = discriminant_form.subgroup_generated_by(
         [discriminant_form.gen(0) + 2 * discriminant_form.gen(1)]
     )
-    glued = discriminant_form.overlattice_from_isotropic_subgroup(glue)
+    glued = discriminant_form.overlattice_from_isotropic_subgroup(glue).codomain()
 
     assert discriminant_form.is_isotropic_subgroup(glue)
     assert glued.is_even() and glued.is_unimodular()

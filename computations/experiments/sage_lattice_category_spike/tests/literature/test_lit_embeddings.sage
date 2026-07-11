@@ -164,20 +164,26 @@ def test_even_overlattice_index_realizes_the_isotropic_glue_of_S_plus_S_minus_on
     assert not g.is_unimodular()
     assert tuple(g.discriminant_group().invariants()) == (3, 3)   # glue group order 9
 
-    maximal = g.maximal_overlattice()
+    maximal_embedding = g.maximal_overlattice()
+    maximal = maximal_embedding.codomain()
 
     # significant: the isotropic glue reaches an even unimodular overlattice ...
     assert maximal.is_even() and maximal.is_unimodular()
     assert maximal.determinant() == 1
     assert maximal.signature_pair() == (2, 2)                     # signature preserved
 
-    # ... and the Prop 1.4.1 / det-index law holds exactly (md line 230)
-    index = g.index_in(maximal)
+    # ... and the Prop 1.4.1 / det-index law holds exactly (md line 230): the
+    # index is the embedding's own (cokernel cardinality), so the determinant
+    # identity is a genuine cross-check of the law, not a restatement of the
+    # index's definition
+    index = maximal_embedding.index()
     assert index == 3
     assert index ** 2 == g.determinant() / maximal.determinant()  # [G':G]^2 = detG/detG'
 
     # DISCRIMINATING CONTROL: A_2 alone has no proper even overlattice (its Z/3
-    # discriminant form has no nonzero isotropic vector, Prop 1.4.1)
+    # discriminant form has no nonzero isotropic vector, Prop 1.4.1) -- the
+    # maximizer's witness is the identity
     assert a2.determinant() == 3
-    assert a2.maximal_overlattice().determinant() == a2.determinant()
-    assert a2.maximal_overlattice().is_even()
+    assert a2.maximal_overlattice().is_identity()
+    assert a2.maximal_overlattice().codomain().determinant() == a2.determinant()
+    assert a2.maximal_overlattice().codomain().is_even()

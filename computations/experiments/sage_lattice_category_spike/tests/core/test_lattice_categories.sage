@@ -237,15 +237,19 @@ def test_dual_is_owned_zz_lattice_in_the_rationalization():
     assert A2_dual.dual() == A2
 
 
-def test_overlattice_is_a_plain_lattice_containing_the_source():
+def test_overlattice_is_the_inclusion_morphism_into_a_plain_lattice():
     U = Lattice("U", label="U")
     half_e = matrix(QQ, 1, 2, [QQ(1) / 2, 0])
-    overlattice = U.overlattice(half_e, label="U_half_e")
+    inclusion = U.overlattice(half_e, label="U_half_e")
+    overlattice = inclusion.codomain()
 
-    # The overlattice L' >= U is a plain lattice; [L' : U] = 2 is the index of
-    # the metric inclusion U -> L' -- asked semantically, not via a stored ambient.
+    # The overlattice constructor mints the witness U -> L'; the index is the
+    # morphism's own (cokernel cardinality), and the det-index law
+    # [L':U]^2 = det U / det L' is a genuine cross-check, not the definition.
+    assert inclusion.domain() == U
     assert overlattice.rank() == 2
-    assert abs(U.determinant()) == abs(overlattice.determinant()) * 4   # [L':U]^2 = det U / det L'
+    assert inclusion.index() == 2
+    assert abs(U.determinant()) == abs(overlattice.determinant()) * inclusion.index() ** 2
     assert U.is_primitive(U.subobject([U([1, 0])], label="e"))
 
 
@@ -339,8 +343,9 @@ def test_discriminant_subgroups_actions_and_overlattice_construction_are_owned()
     assert not H.is_quadratic_isotropic()
     assert D.orthogonal_submodule_to(H).cardinality() == 2
 
-    M = D.overlattice_from_isotropic_subgroup(H, label="<1>")
-    assert_matrix_equal(M.gram_matrix(), matrix(QQ, 1, 1, [1]))
+    gluing = D.overlattice_from_isotropic_subgroup(H, label="<1>")
+    assert gluing.index() == H.cardinality()
+    assert_matrix_equal(gluing.codomain().gram_matrix(), matrix(QQ, 1, 1, [1]))
 
     primary = L.discriminant_group(primary=2)
     local = L.local_modification([2 * primary.gen(0)], 2, label="<1>_local")

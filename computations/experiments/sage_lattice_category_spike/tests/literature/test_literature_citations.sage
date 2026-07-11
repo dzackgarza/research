@@ -259,7 +259,7 @@ def test_nikulin_even_overlattices_of_U2_are_isotropic_subgroups():
     for subgroup in nontrivial_isotropic_subgroups:
         orthogonal = discriminant_form.orthogonal(subgroup)
         quotient_form = discriminant_form.orthogonal_quotient(subgroup)
-        overlattice = discriminant_form.overlattice_from_isotropic_subgroup(subgroup)
+        overlattice = discriminant_form.overlattice_from_isotropic_subgroup(subgroup).codomain()
         overlattice_form = discriminant_form.discriminant_form_of_overlattice(subgroup)
 
         assert _coefficient_rows(orthogonal.elements()) == _coefficient_rows(
@@ -293,7 +293,9 @@ def test_a2_e6_isotropic_glue_reconstructs_the_e8_root_lattice():
     assert discriminant_form.is_isotropic_subgroup(subgroup)
     assert discriminant_form.orthogonal_quotient(subgroup).invariants() == ()
 
-    glued = discriminant_form.overlattice_from_isotropic_subgroup(subgroup)
+    gluing = discriminant_form.overlattice_from_isotropic_subgroup(subgroup)
+    assert gluing.index() == 3                       # [E8 : A2 + E6] = |glue group|
+    glued = gluing.codomain()
     assert glued.is_even() and glued.is_unimodular()
     assert glued.minimum() == 2
     assert len(glued.roots()) == 240
