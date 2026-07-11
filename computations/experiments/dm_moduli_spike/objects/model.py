@@ -46,8 +46,14 @@ class DMCompactificationModel(UniqueRepresentation):
         return StableCurveTypes(self._g, self._n)
 
     def stratum(self, curve_type: StableCurveType) -> DMStratum:
-        assert isinstance(curve_type, StableCurveType), f"expected a StableCurveType; found {type(curve_type)}"
-        assert curve_type.parent() is self.curve_types() or curve_type.parent() == self.curve_types(), f"curve type belongs to {curve_type.parent()}, not to this model's {self.curve_types()}"
+        if not isinstance(curve_type, StableCurveType):
+            raise TypeError(f"expected a StableCurveType; found {type(curve_type)}")
+        expected = self.curve_types()
+        parent = curve_type.parent()
+        if parent is not expected and parent != expected:
+            raise ValueError(
+                f"curve type belongs to {parent}, not to this model's {expected}"
+            )
         return DMStratum(curve_type, self._g, self._n)
 
     def stratification(

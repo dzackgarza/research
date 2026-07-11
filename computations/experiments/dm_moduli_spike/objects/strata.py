@@ -21,10 +21,15 @@ A :class:`DMStratum` is the stratum itself, kept distinct from the
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from .curve_types import StableCurveType
+from .curve_types import StableCurveType
+
+
+def _validate_group_order(group_order: int) -> int:
+    order = int(group_order)
+    if order <= 0:
+        raise ValueError(f"automorphism group order must be positive; found {group_order!r}")
+    return order
 
 
 class ModuliFactor:
@@ -65,12 +70,19 @@ class QuotientStackPresentation:
     r"""The symbolic quotient presentation
     :math:`[\prod_v \mathcal M_{w(v), n_v} / \operatorname{Aut}(\Gamma)]`."""
 
-    __slots__ = ("_product", "_group_order", "_compact")
+    __slots__ = ("_product", "_group_order", "_compact", "_curve_type")
 
-    def __init__(self, product: tuple[ModuliFactor, ...], group_order: int, compact: bool) -> None:
+    def __init__(
+        self,
+        product: tuple[ModuliFactor, ...],
+        group_order: int,
+        compact: bool,
+        curve_type: StableCurveType,
+    ) -> None:
         self._product = product
-        self._group_order = int(group_order)
+        self._group_order = _validate_group_order(group_order)
         self._compact = bool(compact)
+        self._curve_type = curve_type
 
     def product(self) -> tuple[ModuliFactor, ...]:
         return self._product
@@ -82,16 +94,26 @@ class QuotientStackPresentation:
     def is_compact(self) -> bool:
         return self._compact
 
+    def curve_type(self) -> StableCurveType:
+        r"""The indexing stable dual graph, including its gluing labels."""
+        return self._curve_type
+
     def dimension(self) -> int:
         r"""The dimension of the (open or compact) product; the finite group
         action does not change dimension."""
         return sum(factor.dimension() for factor in self._product)
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, QuotientStackPresentation) and (self._product, self._group_order, self._compact) == (other._product, other._group_order, other._compact)
+        return (
+            isinstance(other, QuotientStackPresentation)
+            and self._product == other._product
+            and self._group_order == other._group_order
+            and self._compact == other._compact
+            and self._curve_type == other._curve_type
+        )
 
     def __hash__(self) -> int:
-        return hash((self._product, self._group_order, self._compact))
+        return hash((self._product, self._group_order, self._compact, self._curve_type))
 
     def __repr__(self) -> str:
         factors = " x ".join(repr(factor) for factor in self._product) or "point"
@@ -106,16 +128,23 @@ class ClutchingMorphism:
         \prod_v \overline{\mathcal M}_{w(v), n_v} \longrightarrow \overline{\mathcal M}_{g,n},
 
     which factors through the normalisation of the closed stratum.  It records
-    the boundary factors, the target ambient, and the acting automorphism order;
-    it is not evaluated algebraically.
+    the boundary factors, the target ambient, the acting automorphism order, and
+    the indexing dual graph that determines the gluing assignment.
     """
 
-    __slots__ = ("_source_factors", "_target", "_group_order")
+    __slots__ = ("_source_factors", "_target", "_group_order", "_curve_type")
 
-    def __init__(self, source_factors: tuple[ModuliFactor, ...], target: ModuliFactor, group_order: int) -> None:
+    def __init__(
+        self,
+        source_factors: tuple[ModuliFactor, ...],
+        target: ModuliFactor,
+        group_order: int,
+        curve_type: StableCurveType,
+    ) -> None:
         self._source_factors = source_factors
         self._target = target
-        self._group_order = int(group_order)
+        self._group_order = _validate_group_order(group_order)
+        self._curve_type = curve_type
 
     def source_factors(self) -> tuple[ModuliFactor, ...]:
         return self._source_factors
@@ -126,11 +155,21 @@ class ClutchingMorphism:
     def group_order(self) -> int:
         return self._group_order
 
+    def curve_type(self) -> StableCurveType:
+        r"""The indexing stable dual graph, including its gluing labels."""
+        return self._curve_type
+
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, ClutchingMorphism) and (self._source_factors, self._target, self._group_order) == (other._source_factors, other._target, other._group_order)
+        return (
+            isinstance(other, ClutchingMorphism)
+            and self._source_factors == other._source_factors
+            and self._target == other._target
+            and self._group_order == other._group_order
+            and self._curve_type == other._curve_type
+        )
 
     def __hash__(self) -> int:
-        return hash((self._source_factors, self._target, self._group_order))
+        return hash((self._source_factors, self._target, self._group_order, self._curve_type))
 
     def __repr__(self) -> str:
         factors = " x ".join(repr(factor) for factor in self._source_factors) or "point"
@@ -145,9 +184,17 @@ class DMStratum:
     __slots__ = ("_curve_type", "_g", "_n")
 
     def __init__(self, curve_type: StableCurveType, g: int, n: int) -> None:
+        parent = curve_type.parent()
+        g = int(g)
+        n = int(n)
+        if parent.genus() != g or parent.number_of_markings() != n:
+            raise ValueError(
+                f"curve type belongs to Mbar({parent.genus()}, {parent.number_of_markings()}), "
+                f"not Mbar({g}, {n})"
+            )
         self._curve_type = curve_type
-        self._g = int(g)
-        self._n = int(n)
+        self._g = g
+        self._n = n
 
     def curve_type(self) -> StableCurveType:
         return self._curve_type
@@ -167,15 +214,30 @@ class DMStratum:
 
     def open_stack_presentation(self) -> QuotientStackPresentation:
         r""":math:`[\prod_v \mathcal M_{w(v), n_v} / \operatorname{Aut}(\Gamma)]`."""
-        return QuotientStackPresentation(self._factors(compact=False), self._curve_type.automorphism_number(), compact=False)
+        return QuotientStackPresentation(
+            self._factors(compact=False),
+            self._curve_type.automorphism_number(),
+            compact=False,
+            curve_type=self._curve_type,
+        )
 
     def closure_normalization_presentation(self) -> QuotientStackPresentation:
         r""":math:`[\prod_v \overline{\mathcal M}_{w(v), n_v} / \operatorname{Aut}(\Gamma)]`,
         the normalisation of the closure of the stratum."""
-        return QuotientStackPresentation(self._factors(compact=True), self._curve_type.automorphism_number(), compact=True)
+        return QuotientStackPresentation(
+            self._factors(compact=True),
+            self._curve_type.automorphism_number(),
+            compact=True,
+            curve_type=self._curve_type,
+        )
 
     def clutching_morphism(self) -> ClutchingMorphism:
-        return ClutchingMorphism(self._factors(compact=True), ModuliFactor(self._g, self._n, compact=True), self._curve_type.automorphism_number())
+        return ClutchingMorphism(
+            self._factors(compact=True),
+            ModuliFactor(self._g, self._n, compact=True),
+            self._curve_type.automorphism_number(),
+            curve_type=self._curve_type,
+        )
 
     def relabel_markings(self, sigma: Callable[[int], int]) -> DMStratum:
         r"""Apply a permutation of ``{1, ..., n}`` to the marking labels."""

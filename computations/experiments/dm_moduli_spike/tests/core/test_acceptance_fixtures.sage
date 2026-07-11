@@ -69,3 +69,12 @@ def test_truncated_stratification_is_marked_incomplete():
     assert truncated.rank_sizes() == (1, 2, 5)
     # The full object, by contrast, is complete.
     assert model.stratification().is_complete()
+
+
+def test_empty_external_enumeration_is_not_marked_complete():
+    from dm_moduli_spike.objects.stratification import build_stratification_from_types
+
+    curve_types = DMCompactificationModel(2, 1).curve_types()
+    incomplete = build_stratification_from_types(curve_types, ())
+    assert not incomplete.is_complete()
+    assert incomplete.rank_sizes() == (1,)

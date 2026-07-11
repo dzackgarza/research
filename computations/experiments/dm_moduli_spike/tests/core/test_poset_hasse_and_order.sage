@@ -71,6 +71,22 @@ def test_rank_codimension_and_dimension_on_every_stratum(g, n):
         assert stratum.dimension() == local_dimension
 
 
+def test_poset_covers_reference_level_representatives():
+    stratification = DMCompactificationModel(1, 2).stratification()
+    poset = stratification.specialization_poset()
+    by_curve_type = {stratum.curve_type(): stratum for stratum in poset}
+    level_representatives = {
+        gamma.canonical_key(): gamma
+        for level in stratification.curve_type_levels()
+        for gamma in level
+    }
+    for generic, special in stratification.covers():
+        generic_type = generic.curve_type()
+        special_type = special.curve_type()
+        assert generic_type is level_representatives[generic_type.canonical_key()]
+        assert [by_curve_type[generic_type], by_curve_type[special_type]] in poset.cover_relations()
+
+
 def test_closure_and_specialization_orders_are_identity_dual():
     stratification = DMCompactificationModel(1, 2).stratification()
 

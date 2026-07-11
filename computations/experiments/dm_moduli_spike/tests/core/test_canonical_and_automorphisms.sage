@@ -61,3 +61,11 @@ def test_automorphism_numbers_agree_with_admcycles():
         for level in model.stratification().curve_type_levels():
             for gamma in level:
                 assert gamma.automorphism_number() == backend.admcycles_automorphism_number(types, gamma)
+
+
+def test_high_genus_vertex_labels_do_not_break_canonical_keys():
+    types = StableCurveTypes(12, 0)
+    left = types.from_vertices(genera=(10, 2), markings=((), ()), edges=((0, 1),))
+    right = types.from_vertices(genera=(2, 10), markings=((), ()), edges=((0, 1),))
+    assert left.canonical_key() == right.canonical_key()
+    assert left == right

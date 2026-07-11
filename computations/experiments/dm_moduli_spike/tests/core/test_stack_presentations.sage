@@ -37,6 +37,29 @@ def test_clutching_morphism_targets_the_ambient_compactification():
     assert clutching.source_factors() == (ModuliFactor(0, 3, compact=True),)
     assert clutching.target() == ModuliFactor(1, 1, compact=True)
     assert clutching.group_order() == 2
+    assert clutching.curve_type() == loop
+
+
+def test_m04_boundary_clutching_maps_are_pairwise_distinct():
+    model = DMCompactificationModel(0, 4)
+    boundary = model.stratification().boundary_strata()
+    clutchings = [stratum.clutching_morphism() for stratum in boundary]
+    presentations = [stratum.open_stack_presentation() for stratum in boundary]
+    assert len({clutching.curve_type().canonical_key() for clutching in clutchings}) == 3
+    assert len(set(clutchings)) == 3
+    assert len(set(presentations)) == 3
+    assert len({presentation.curve_type().canonical_key() for presentation in presentations}) == 3
+
+
+def test_stratum_rejects_mismatched_ambient():
+    model = DMCompactificationModel(0, 4)
+    wrong = DMCompactificationModel(2, 1).curve_types().smooth()
+    try:
+        model.stratum(wrong)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("expected ValueError for mismatched ambient (g, n)")
 
 
 def test_stratum_is_distinct_from_its_indexing_curve_type():

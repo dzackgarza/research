@@ -35,6 +35,20 @@ _ColorTag = tuple[object, ...]
 CanonicalKey = tuple[tuple[tuple[int, int], ...], tuple[tuple[int, _ColorTag], ...]]
 
 
+def _partition_sort_key(tag: _ColorTag) -> tuple[int, int]:
+    r"""Sort colour tags in a partition-stable, numerically correct order."""
+    kind = tag[0]
+    if kind == "V":
+        return (0, int(tag[1]))
+    if kind == "M":
+        return (1, int(tag[1]))
+    if kind == "E":
+        return (2, 0)
+    if kind == "F":
+        return (3, 0)
+    return (4, hash(tag))
+
+
 def _incidence_graph(record: StableGraphRecord) -> tuple[Graph, list[list[object]], dict[object, _ColorTag]]:
     r"""Return the coloured incidence graph, its colour partition (a list of
     node classes for Sage's ``partition`` argument), and the node -> colour-tag
@@ -72,7 +86,7 @@ def _incidence_graph(record: StableGraphRecord) -> tuple[Graph, list[list[object
     partition_map: dict[_ColorTag, list[object]] = {}
     for node, tag in color_of.items():
         partition_map.setdefault(tag, []).append(node)
-    partition = [partition_map[tag] for tag in sorted(partition_map, key=repr)]
+    partition = [partition_map[tag] for tag in sorted(partition_map, key=_partition_sort_key)]
     return graph, partition, color_of
 
 
@@ -84,7 +98,7 @@ def canonical_key(record: StableGraphRecord) -> CanonicalKey:
     isomorphic (respecting vertex genera and every marking label individually).
     """
     graph, partition, color_of = _incidence_graph(record)
-    canonical, relabelling = graph.canonical_label(partition=partition, certificate=True)
+    _, relabelling = graph.canonical_label(partition=partition, certificate=True)
     edges = tuple(sorted((min(relabelling[u], relabelling[v]), max(relabelling[u], relabelling[v])) for u, v, _ in graph.edges()))
     colors = tuple(sorted((relabelling[node], tag) for node, tag in color_of.items()))
     return edges, colors
