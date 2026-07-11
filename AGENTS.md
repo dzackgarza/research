@@ -62,6 +62,8 @@ When a task says "the repo owns X" or "X is a gap," resolve it against the **act
 
 This is a research repository with a much longer work horizon, more detailed planning, and more human check-ins than a typical software project. Naive software-geared structural rules (e.g. itree's W040 native-milestone mirror) are less applicable here: treat such findings as a flag to investigate whether *some* consolidation is warranted, never as a mandate — and never collapse the tree or milestones by an order of magnitude to satisfy one. The itree issue tree is authoritative; native GitHub milestones are capability-level human-review checkpoints created just-in-time (user ruling 2026-07-11; W040 = 46 is accepted as-is).
 
+The `needs-research` label is the parking state — work parked pending investigation or upstream capability — not a register of decisions awaiting the user. Do not enumerate labeled issues as "open human decisions"; genuine decisions are extracted through decision-register sweeps (see #97) and recorded as rulings on the issues, the gap ledger, and plan cards.
+
 # QC integration for spikes
 
 This repo delegates all test/QC to the global QC in `~/ai-review-ci`
