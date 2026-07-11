@@ -122,28 +122,17 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         gram_matrix: RawGramMatrix,
         base_ring: BaseRing,
         label: str,
-        ambient: SyntheticLattice | None = None,
-        inclusion: Matrix | None = None,
         cartan_type: CartanType | str | None = None,
         names: Sequence[str] | str | None = None,
     ) -> None:
-        # The one Gram codec (asserts square + symmetric, immutabilizes,
-        # returns the GramMatrix witness); construction is the only producer.
+        # A lattice IS the pair (base_ring, Gram) -- nothing else. It never
+        # stores an ambient; a subobject is a lattice together with its
+        # inclusion morphism (the Subobject value), not a lattice that remembers
+        # a parent. The one Gram codec asserts square + symmetric and
+        # immutabilizes; construction is the only producer.
         gram = as_square_qq_matrix(gram_matrix)
         assert base_ring in (ZZ, QQ), f"lattice base ring must be ZZ or QQ; found={base_ring}"
-        if ambient is not None:
-            assert isinstance(ambient, SyntheticLattice), f"ambient parent must be a SyntheticLattice; found={type(ambient)}"
-            assert ambient._ambient is None, f"ambient parent must itself be a root lattice (no nested ambients); ambient={ambient}, ambient._ambient={ambient._ambient}"
-            inclusion = matrix(QQ, inclusion)
-            assert inclusion.nrows() == gram.nrows(), f"inclusion row count must equal lattice rank; rank={gram.nrows()}, rows={inclusion.nrows()}"
-            assert inclusion.ncols() == ambient.rank(), f"inclusion column count must equal ambient rank; ambient_rank={ambient.rank()}, columns={inclusion.ncols()}"
-            assert gram == inclusion * ambient.gram_matrix() * inclusion.transpose(), (
-                f"Gram matrix must be induced by the inclusion into the ambient; gram={gram}, inclusion={inclusion}, ambient_gram={ambient.gram_matrix()}"
-            )
-            inclusion.set_immutable()
         self._gram_matrix = gram
-        self._ambient: SyntheticLattice | None = ambient
-        self._inclusion = inclusion
         self._label = label
         self._base_ring = base_ring
         self._cartan_type = cartan_type
@@ -187,43 +176,29 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
     # and are never exposed as public methods (no basis_matrix / coordinates /
     # ambient_* / rationalization / underlying_module on the public API).
 
-    def _root(self) -> SyntheticLattice:
-        return self if self._ambient is None else self._ambient
-
-    def _ambient_rank(self) -> int:
-        return self.rank() if self._ambient is None else self._ambient.rank()
-
-    def _ambient_gram(self) -> Matrix:
-        return self.gram_matrix() if self._ambient is None else self._ambient.gram_matrix()
-
-    def _inclusion_rows(self) -> Matrix:
-        r"""This lattice's basis, as rows, in the root parent's intrinsic coordinates."""
-        if self._ambient is None:
-            return identity_matrix(QQ, self.rank())
-        return matrix(QQ, self._inclusion)
+    # A lattice is (R, G): its module is R^rank on the standard basis. These
+    # coordinate helpers are therefore trivial -- they exist only so the
+    # subobject-construction and discriminant paths can name the standard module
+    # / identity basis without special-casing.
+    def _underlying_module(self) -> FreeModule:
+        return self.base_ring() ** self.rank()
 
     def _rationalization_module(self) -> FreeModule:
-        return QQ ** self._ambient_rank()
+        return QQ ** self.rank()
 
-    def _underlying_module(self) -> FreeModule:
-        return self._rationalization_module().span(self._inclusion_rows().rows(), self.base_ring())
+    def _inclusion_rows(self) -> Matrix:
+        return identity_matrix(QQ, self.rank())
 
-    def _from_ambient_basis(self, inclusion_rows: Matrix, base_ring: BaseRing, label: str) -> SyntheticLattice:
-        r"""Build a subobject of this lattice's root from ``inclusion_rows`` (root coordinates)."""
-        root = self._root()
-        rows = matrix(QQ, inclusion_rows)
-        assert rows.ncols() == root.rank(), f"inclusion rows must be given in the root's coordinates; root_rank={root.rank()}, rows={rows}"
-        gram = rows * root.gram_matrix() * rows.transpose()
-        return synthetic_lattice(gram, base_ring, label, ambient=root, inclusion=rows)
+    def _from_ambient_basis(self, basis_rows: Matrix, base_ring: BaseRing, label: str) -> SyntheticLattice:
+        r"""The plain sublattice spanned by ``basis_rows`` (rows in this lattice's
+        coordinates): Gram ``= B G B^T``. The lattice stores no ambient; its
+        relationship to ``self`` is the inclusion morphism (a ``Subobject``)."""
+        rows = matrix(QQ, basis_rows)
+        assert rows.ncols() == self.rank(), f"basis rows must be given in this lattice's coordinates; rank={self.rank()}, rows={rows}"
+        return synthetic_lattice(rows * self.gram_matrix() * rows.transpose(), base_ring, label)
 
     def _from_module(self, module: FreeModule, label: str) -> SyntheticLattice:
         return self._from_ambient_basis(matrix(QQ, module.basis_matrix()), module.base_ring(), label)
-
-    def _assert_same_ambient(self, other: Lattice) -> None:
-        assert isinstance(other, SyntheticLattice), f"expected SyntheticLattice; found={type(other)}"
-        assert self._ambient_gram() == other._ambient_gram(), (
-            f"operation requires a common parent lattice; left_ambient_gram={self._ambient_gram()}, right_ambient_gram={other._ambient_gram()}"
-        )
 
     # -- Port: intrinsic invariants read straight off (base_ring, G) --------------
 
@@ -313,8 +288,6 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
             self.gram_matrix(),
             QQ,
             f"{self._label}_QQ",
-            ambient=self._ambient,
-            inclusion=self._inclusion,
         )
 
     def base_extend(self, base_ring: BaseRing) -> SyntheticLattice:
@@ -323,8 +296,6 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
             self.gram_matrix(),
             base_ring,
             f"{self._label}_over_{base_ring}",
-            ambient=self._ambient,
-            inclusion=self._inclusion,
         )
 
     def determinant(self) -> ExactScalar:
@@ -416,7 +387,6 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         r"""Containment of the underlying modules, decided by Sage
         (a generator-row membership test is wrong across base rings: a QQ-span's
         generators can be integral while the span is not contained)."""
-        self._assert_same_ambient(other)
         assert isinstance(other, SyntheticLattice)
         return self._underlying_module().is_submodule(other._underlying_module())
 
@@ -499,9 +469,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         base_ring = self.base_ring() if base_ring is None else base_ring
         assert base_ring in (ZZ, QQ), f"lattice span base ring must be ZZ or QQ; found={base_ring}"
         generator_matrix = matrix(QQ, generators)
-        assert generator_matrix.ncols() == self._ambient_rank(), (
-            f"span generators must be rows in the parent's coordinates; parent_rank={self._ambient_rank()}, generators={generator_matrix}"
-        )
+        assert generator_matrix.ncols() == self.rank(), f"span generators must be rows in the parent's coordinates; parent_rank={self.rank()}, generators={generator_matrix}"
         module = self._rationalization_module().span(generator_matrix.rows(), base_ring)
         lattice = self._from_module(module, label)
         assert check_integral is not True or lattice.is_integral(), f"span is not integral; gram={lattice.gram_matrix()}"
@@ -520,7 +488,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         return self._from_ambient_basis(basis_matrix, base_ring, label)
 
     def zero_lattice(self, label: str = "zero_lattice") -> SyntheticLattice:
-        return self._from_ambient_basis(matrix(QQ, 0, self._ambient_rank()), self.base_ring(), label)
+        return self._from_ambient_basis(matrix(QQ, 0, self.rank()), self.base_ring(), label)
 
     def overlattice(
         self,
@@ -529,17 +497,15 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         label: str = "overlattice",
     ) -> SyntheticLattice:
         generator_matrix = matrix(QQ, generators)
-        assert generator_matrix.ncols() == self._ambient_rank(), (
-            f"overlattice generators must be rows in the parent's coordinates; parent_rank={self._ambient_rank()}, generators={generator_matrix}"
+        assert generator_matrix.ncols() == self.rank(), (
+            f"overlattice generators must be rows in the parent's coordinates; parent_rank={self.rank()}, generators={generator_matrix}"
         )
         combined = self._inclusion_rows().stack(generator_matrix)
         lattice = self.span(combined, base_ring=self.base_ring(), label=label)
-        assert self.is_submodule(lattice), "overlattice must contain the source lattice"
         assert not check_integral or lattice.is_integral(), f"overlattice is not integral; gram={lattice.gram_matrix()}"
         return lattice
 
     def sum(self, other: Lattice, label: str = "sum") -> SyntheticLattice:
-        self._assert_same_ambient(other)
         assert isinstance(other, SyntheticLattice)
         base_ring = QQ if QQ in (self.base_ring(), other.base_ring()) else ZZ
         return self.span(
@@ -549,7 +515,6 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         )
 
     def intersection(self, other: Lattice, label: str = "intersection") -> SyntheticLattice:
-        self._assert_same_ambient(other)
         assert isinstance(other, SyntheticLattice)
         return self._from_module(self._underlying_module().intersection(other._underlying_module()), label)
 
@@ -561,15 +526,19 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
     def primitive_closure(self, ambient: Lattice | None = None, label: str = "primitive_closure") -> SyntheticLattice:
         if ambient is None:
             return self.saturation(label=label)
-        self._assert_same_ambient(ambient)
         assert isinstance(ambient, SyntheticLattice)
         rationalization = self._rationalization_module().span(self._inclusion_rows().rows(), QQ)
         return self._from_module(ambient._underlying_module().intersection(rationalization), label)
 
     def index_in(self, other: Lattice) -> ExactScalar:
-        self._assert_same_ambient(other)
+        r"""The index ``[other : self]`` of commensurable same-rank lattices, via
+        the identity ``[M : L]^2 = |det L| / |det M|`` -- no shared coordinate
+        embedding required."""
         assert isinstance(other, SyntheticLattice)
-        return self._underlying_module().index_in(other._underlying_module())
+        assert self.rank() == other.rank(), f"index is defined for commensurable same-rank lattices; ranks {self.rank()} and {other.rank()}"
+        index = (QQ(abs(self.determinant())) / QQ(abs(other.determinant()))).sqrt()
+        assert index in QQ, "lattices are not commensurable by a rational index; determinant ratio has no rational square root"
+        return QQ(index)
 
     def index_in_saturation(self) -> ExactScalar:
         return self.index_in(self.saturation())
@@ -580,10 +549,18 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
     def clear_denominators(self, label: str = "clear_denominators") -> SyntheticLattice:
         return self.scale(self.denominator(), label=label)
 
-    def finite_quotient(self, sublattice: Lattice) -> FiniteAbelianGroup:
+    def finite_quotient(self, relation: Lattice | Subobject) -> FiniteAbelianGroup:
+        r"""The finite quotient ``self / relation``. ``relation`` is a subobject
+        of this lattice (carrying its inclusion), or -- for the metric dual
+        ``L#/L`` -- the plain relation lattice."""
         from ..forms.discriminant_forms import SyntheticLatticeQuotient
+        from ..morphisms.homsets import Subobject
 
-        return SyntheticLatticeQuotient(self, sublattice)
+        if isinstance(relation, Subobject):
+            assert relation.ambient() == self, f"the relation subobject must live in this lattice; ambient={relation.ambient()}, self={self}"
+            inclusion = matrix(ZZ, relation.inclusion().matrix().transpose())
+            return SyntheticLatticeQuotient(self, relation.lattice(), inclusion)
+        return SyntheticLatticeQuotient(self, relation)
 
     def quotient_map_to(self, sublattice: Lattice) -> Callable[[LatticeElement], DiscriminantFormElement]:
         r"""The canonical projection ``L -> L/M`` — an abelian-group
@@ -769,14 +746,11 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         and keeps its Cartan provenance, while a general scale does not (the
         result is no longer generated by its roots)."""
         scalar = QQ(scalar)
-        twisted_ambient = None if self._ambient is None else self._ambient.twist(scalar, label=f"{self._ambient._label}_twist")
         keeps_provenance = scalar == -1 and isinstance(self, _RootGeneratedProvenance)
         return synthetic_lattice(
             scalar * self.gram_matrix(),
             self.base_ring(),
             label,
-            ambient=twisted_ambient,
-            inclusion=self._inclusion,
             cartan_type=self._cartan_type if keeps_provenance else None,
         )
 
@@ -809,7 +783,6 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         lattice's basis) lives here, inside the morphism's construction -- not in
         the callers, which then work purely with the morphism."""
         assert isinstance(sublattice, SyntheticLattice), f"expected SyntheticLattice; found={type(sublattice)}"
-        self._assert_same_ambient(sublattice)
         generators_in_self = self._inclusion_rows().solve_left(sublattice._inclusion_rows())
         return sublattice.embedding(generators_in_self.transpose(), codomain=self)
 
@@ -1387,8 +1360,6 @@ def synthetic_lattice(
     gram_matrix: RawGramMatrix,
     base_ring: BaseRing,
     label: str,
-    ambient: SyntheticLattice | None = None,
-    inclusion: Matrix | None = None,
     cartan_type: CartanType | str | None = None,
     names: Sequence[str] | str | None = None,
 ) -> SyntheticLattice:
@@ -1422,8 +1393,6 @@ def synthetic_lattice(
             gram_matrix,
             base_ring,
             label,
-            ambient=ambient,
-            inclusion=inclusion,
             cartan_type=cartan_type,
             names=names,
         )
@@ -1442,4 +1411,4 @@ def synthetic_lattice(
         concrete = SyntheticNondegenerateLattice
     else:
         concrete = SyntheticLattice
-    return concrete(gram_matrix, base_ring, label, ambient=ambient, inclusion=inclusion, names=names)
+    return concrete(gram_matrix, base_ring, label, names=names)

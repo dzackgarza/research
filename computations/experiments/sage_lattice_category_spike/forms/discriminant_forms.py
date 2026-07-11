@@ -417,7 +417,7 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
     ``coset_representative``/``hom``) that the group case does not.
     """
 
-    def __init__(self, cover_lattice: Any, relation_lattice: Any) -> None:
+    def __init__(self, cover_lattice: Any, relation_lattice: Any, inclusion: Any = None) -> None:
         from ..objects.parents import SyntheticLattice
 
         assert isinstance(cover_lattice, SyntheticLattice), f"expected SyntheticLattice cover; found={type(cover_lattice)}"
@@ -425,7 +425,7 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
         assert cover_lattice.base_ring() is ZZ, "finite lattice quotient cover must be a ZZ-lattice"
         assert relation_lattice.base_ring() is ZZ, "finite lattice quotient relations must be a ZZ-lattice"
         assert relation_lattice.rank() == cover_lattice.rank(), "finite quotients require same-rank lattices"
-        self._inclusion = _relation_inclusion_matrix(cover_lattice, relation_lattice)
+        self._inclusion = inclusion if inclusion is not None else _relation_inclusion_matrix(cover_lattice, relation_lattice)
         self._install(cover_lattice, relation_lattice, self._inclusion)
 
     def _cover_dim(self) -> Any:

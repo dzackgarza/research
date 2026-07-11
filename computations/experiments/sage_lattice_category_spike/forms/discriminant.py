@@ -24,8 +24,6 @@ def _lattice_key(lattice: Any) -> tuple[Any, ...]:
         repr(lattice.base_ring()),
         lattice.rank(),
         tuple(lattice.gram_matrix().list()),
-        tuple(lattice._inclusion_rows().list()),
-        tuple(lattice._ambient_gram().list()),
     )
 
 
@@ -41,15 +39,17 @@ def _relation_inclusion_matrix(cover_lattice: Any, relation_lattice: Any) -> Any
     """
     if cover_lattice.rank() == 0:
         return matrix(ZZ, 0, 0)
-    if relation_lattice._ambient_gram() == cover_lattice._ambient_gram():
-        assert relation_lattice.is_submodule(cover_lattice), "relations must be a sublattice of the cover"
-        return matrix(
-            ZZ,
-            [cover_lattice._underlying_module().coordinate_vector(vector(QQ, row)) for row in relation_lattice._inclusion_rows().rows()],
-        )
+    # A lattice is (R, G); the finite quotient cover/relation is defined when the
+    # relation embeds in the cover with a known inclusion. The two cases the disc
+    # machinery uses: the cover is the metric dual (relation -> relation# has
+    # matrix G), or cover == relation (identity, trivial quotient).
     if relation_lattice.base_ring() is ZZ and relation_lattice.determinant() != 0 and relation_lattice.dual() == cover_lattice:
         return matrix(ZZ, relation_lattice.gram_matrix())
-    assert False, "relation lattice is not a recognized sublattice of the cover; provide the relation as a subobject of the cover or as its metric dual"
+    assert relation_lattice.gram_matrix() == cover_lattice.gram_matrix(), (
+        "finite_quotient of plain lattices supports the metric dual (L#/L) or an identical cover; "
+        "for a general subobject quotient use the inclusion morphism's cokernel"
+    )
+    return identity_matrix(ZZ, relation_lattice.rank())
 
 
 def _finite_coordinates(group: Any, element: Any) -> tuple[Any, ...]:

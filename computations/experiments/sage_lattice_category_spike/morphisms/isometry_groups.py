@@ -252,7 +252,6 @@ class SyntheticIsometrySubgroup(IsometrySubgroup):
     def preserves(self, sublattice: Any) -> bool:
         r"""Whether every generator maps ``sublattice`` into itself."""
         acting = self.lattice()
-        acting._assert_same_ambient(sublattice)
         acting_basis = acting._inclusion_rows()
         assert acting_basis.nrows() == acting_basis.ncols() and acting_basis.rank() == acting.rank(), (
             f"preserves() requires the acting lattice to span the ambient; inclusion={acting_basis}"

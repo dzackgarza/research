@@ -9,13 +9,12 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
-from sage.matrix.constructor import column_matrix
+from sage.matrix.constructor import column_matrix, identity_matrix, matrix
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
-from sage.structure.element import Matrix
 
 from .categories import Lattices
-from .parents import SyntheticIntegralNondegenerateLattice
+from .parents import SyntheticIntegralNondegenerateLattice, SyntheticLattice
 
 if TYPE_CHECKING:
     from .. import lexicon
@@ -156,16 +155,19 @@ def IntegralLatticeGluing(
                 row[start + i] = value
         lift_rows.append(row)
 
-    glued = ambient.overlattice(lift_rows, check_integral=True, label=label)
+    # The overlattice basis B, in the direct-sum ambient's coordinates. glued is
+    # the plain lattice on that basis; each summand embeds by expressing its
+    # generators (block units of the ambient) in B -- computed once, here.
+    glue_matrix = matrix(QQ, lift_rows) if lift_rows else matrix(QQ, 0, ambient.rank())
+    combined = identity_matrix(QQ, ambient.rank()).stack(glue_matrix)
+    overlattice_basis = matrix(QQ, (QQ ** ambient.rank()).span(combined.rows(), ZZ).basis_matrix())
+    assert isinstance(ambient, SyntheticLattice), f"gluing builds the overlattice on the direct-sum ambient; found={type(ambient)}"
+    glued = ambient._from_ambient_basis(overlattice_basis, ZZ, label)
+    assert glued.is_integral(), f"glued overlattice is not integral; gram={glued.gram_matrix()}"
     if not return_embeddings:
         return glued
-    embeddings = tuple(lattice.Hom(glued).from_matrix(_embedding_matrix(lattice, glued, start)) for lattice, start in zip(lattices, offsets))
-    return glued, embeddings
-
-
-def _embedding_matrix(domain: lexicon.Lattice, codomain: lexicon.Lattice, start: int) -> Matrix:
-    ambient_basis = codomain._rationalization_module().basis()
-    return column_matrix(
-        ZZ,
-        [codomain._underlying_module().coordinate_vector(ambient_basis[start + j]) for j in range(domain.rank())],
+    embeddings = tuple(
+        lattice.Hom(glued).from_matrix(column_matrix(ZZ, [overlattice_basis.solve_left(identity_matrix(QQ, ambient.rank()).row(start + j)) for j in range(lattice.rank())]))
+        for lattice, start in zip(lattices, offsets)
     )
+    return glued, embeddings
