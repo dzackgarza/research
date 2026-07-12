@@ -16,11 +16,15 @@ from __future__ import annotations
 
 import pytest
 
-from sage.all import ZZ, TestSuite, matrix
-from sage.categories.homset import Hom
+from sage.all import QQ, ZZ, TestSuite, matrix
 from sage.categories.sets_cat import Sets
 
-from sage_lattice_category_spike.lattice_categories import Lattice, Lattices
+from sage_lattice_category_spike.lattice_categories import (
+    Hom,
+    Lattice,
+    LatticeBaseChangeFunctor,
+    Lattices,
+)
 
 
 CONSTRUCTORS = [
@@ -141,7 +145,7 @@ def test_plain_lattice_and_subobject_compare_false_with_warning():
 
 
 def test_lattice_hom_factory_accepts_the_explicit_category():
-    r"""The Sage ``Hom`` factory and the parent spelling both construct the
+    r"""The category-root ``Hom`` factory and parent spelling construct the
     form-preserving homset in the requested lattice category."""
     lattice = Lattice("A2")
     category = lattice.category()
@@ -152,14 +156,45 @@ def test_lattice_hom_factory_accepts_the_explicit_category():
     assert factory_homset(identity_matrix) == lattice.identity_morphism()
 
 
-def test_public_hom_falls_back_outside_the_lattice_category():
-    r"""A set-morphism category cannot be represented by a form-preserving
-    lattice-morphism homset, so the public Sage factory must retain its generic
-    constructor behavior."""
+def test_public_hom_uses_the_canonical_forgetful_functor_to_sets():
+    r"""A request in ``Sets()`` follows the canonical forgetful functor and
+    then asks Sage for the resulting generic set homset."""
     lattice = Lattice("A2")
+    forgetful = Lattices(ZZ).canonical_functor(Sets())
+    assert forgetful(lattice) is lattice
     set_homset = Hom(lattice, lattice, category=Sets())
     set_morphism = set_homset(lattice.identity_morphism().matrix())
     assert set_morphism != lattice.identity_morphism()
+
+
+def test_base_change_functor_refines_the_target_category_and_maps_morphisms():
+    r"""Base change is a first-class functor from ``Lattices(ZZ)`` to
+    ``Lattices(QQ)``. Its object value is rebuilt by the target category, and
+    its morphism value belongs to the transported homset."""
+    lattice = Lattice("A2")
+    functor = Lattices(ZZ).base_change(QQ)
+    assert isinstance(functor, LatticeBaseChangeFunctor)
+    target = functor(lattice)
+    assert target.base_ring() is QQ
+    assert target in Lattices(QQ).Nondegenerate().Definite().NegativeDefinite()
+    mapped_identity = functor(lattice.identity_morphism())
+    assert mapped_identity.domain() == target
+    assert mapped_identity.codomain() == target
+    assert mapped_identity.is_identity()
+
+
+def test_cross_base_hom_uses_base_change_before_the_category_meet():
+    r"""The lattice Hom resolver transports the ``ZZ`` source to ``QQ``
+    before computing the lattice-category meet. An explicit target category is
+    the same canonical request, not a membership assertion on the source."""
+    lattice = Lattice("A2")
+    target = Lattices(ZZ).base_change(QQ)(lattice)
+    default_homset = Hom(lattice, target)
+    explicit_homset = Hom(lattice, target, category=Lattices(QQ))
+    for homset in (default_homset, explicit_homset):
+        assert homset.domain().base_ring() is QQ
+        assert homset.codomain() == target
+        assert homset(homset.domain().identity_morphism().matrix()).is_identity()
 
 
 # Axes skipped by the full-battery runner because they fail for separately-tracked
