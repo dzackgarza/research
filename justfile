@@ -98,6 +98,20 @@ test:
 
 test-ci: test
 
+# Review calibration (submodule) — delegate to review-calibration/justfile.
+# Requires the submodule: git submodule update --init review-calibration
+review-calibration-packet:
+    just -f review-calibration/justfile review-packet
+
+review-calibration-score artifact:
+    just -f review-calibration/justfile score "{{artifact}}"
+
+review-calibration-general:
+    gh workflow run "General Review" --repo dzackgarza/research-review-calibration
+
+review-calibration-slop:
+    gh workflow run "Slop Review" --repo dzackgarza/research-review-calibration
+
 # Assemble the LLM-review context packet (review-packet.tar).
 #
 # The packet is the extensible context surface for the advisory review

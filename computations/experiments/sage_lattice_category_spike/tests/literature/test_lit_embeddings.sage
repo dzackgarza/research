@@ -86,7 +86,7 @@ def test_orthogonal_complements_in_e8_recover_root_lattices_and_the_nikulin_anti
     isomorphic to -q_S -- so the criterion genuinely discriminates and is not a
     tautology satisfied by every lattice.
     """
-    e8 = lc.Lattice("E8")
+    e8 = lc.Lattice("E8(-1)")
     # cheap characterization of the ambient (Kondo/CS10 sec 8.1: even unimodular rank 8)
     assert e8.rank() == 8
     assert e8.signature_pair() == (8, 0)
@@ -100,7 +100,7 @@ def test_orthogonal_complements_in_e8_recover_root_lattices_and_the_nikulin_anti
         ([_unit(3), _unit(4)], "E6", 3, 72, (6, 0), (3,)),
     ]
     for generators, complement_name, determinant, root_count, sig_pair, disc in cases:
-        s = e8.sublattice(generators, label="S")
+        s = e8.subobject([e8(g) for g in generators], label="S")
         k = e8.orthogonal_complement(s)
 
         # cheap basics on the computed complement K (characterization)
@@ -111,7 +111,7 @@ def test_orthogonal_complements_in_e8_recover_root_lattices_and_the_nikulin_anti
         assert not k.is_unimodular()               # a proper root lattice, not E_8
 
         # significant: K is exactly the named root lattice, with CS10 invariants
-        assert k.is_isometric(lc.Lattice(complement_name))
+        assert k.is_isometric(lc.Lattice(f"{complement_name}(-1)"))
         assert len(k.roots()) == root_count
         assert tuple(k.discriminant_group().invariants()) == disc
 
@@ -153,7 +153,7 @@ def test_even_overlattice_index_realizes_the_isotropic_glue_of_S_plus_S_minus_on
     maximal overlattice is A_2 itself with the determinant unchanged. This shows
     the index-3 drop above is real gluing, not an artifact of the maximizer.
     """
-    a2 = lc.Lattice("A2")
+    a2 = lc.Lattice("A2(-1)")
     g = a2.direct_sum(a2.twist(-1))          # S (+) S(-1) with S = A_2 (Cor 1.6.3)
 
     # cheap basics on G (characterization)
@@ -164,20 +164,26 @@ def test_even_overlattice_index_realizes_the_isotropic_glue_of_S_plus_S_minus_on
     assert not g.is_unimodular()
     assert tuple(g.discriminant_group().invariants()) == (3, 3)   # glue group order 9
 
-    maximal = g.maximal_overlattice()
+    maximal_embedding = g.maximal_overlattice()
+    maximal = maximal_embedding.codomain()
 
     # significant: the isotropic glue reaches an even unimodular overlattice ...
     assert maximal.is_even() and maximal.is_unimodular()
     assert maximal.determinant() == 1
     assert maximal.signature_pair() == (2, 2)                     # signature preserved
 
-    # ... and the Prop 1.4.1 / det-index law holds exactly (md line 230)
-    index = g.index_in(maximal)
+    # ... and the Prop 1.4.1 / det-index law holds exactly (md line 230): the
+    # index is the embedding's own (cokernel cardinality), so the determinant
+    # identity is a genuine cross-check of the law, not a restatement of the
+    # index's definition
+    index = maximal_embedding.index()
     assert index == 3
     assert index ** 2 == g.determinant() / maximal.determinant()  # [G':G]^2 = detG/detG'
 
     # DISCRIMINATING CONTROL: A_2 alone has no proper even overlattice (its Z/3
-    # discriminant form has no nonzero isotropic vector, Prop 1.4.1)
+    # discriminant form has no nonzero isotropic vector, Prop 1.4.1) -- the
+    # maximizer's witness is the identity
     assert a2.determinant() == 3
-    assert a2.maximal_overlattice().determinant() == a2.determinant()
-    assert a2.maximal_overlattice().is_even()
+    assert a2.maximal_overlattice().is_identity()
+    assert a2.maximal_overlattice().codomain().determinant() == a2.determinant()
+    assert a2.maximal_overlattice().codomain().is_even()

@@ -165,6 +165,12 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
     def invariants(self) -> tuple[Any, ...]:
         return self._invariants
 
+    def invariant_factors(self) -> tuple[Any, ...]:
+        r"""The invariant factors of the finite abelian group (the standard
+        name for ``invariants``): e.g. ``(2, 2)`` for the ``D4`` discriminant
+        group."""
+        return self.invariants()
+
     def elementary_divisors(self) -> tuple[Any, ...]:
         divisors = []
         for invariant in self.invariants():
@@ -411,7 +417,7 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
     ``coset_representative``/``hom``) that the group case does not.
     """
 
-    def __init__(self, cover_lattice: Any, relation_lattice: Any) -> None:
+    def __init__(self, cover_lattice: Any, relation_lattice: Any, inclusion: Any = None) -> None:
         from ..objects.parents import SyntheticLattice
 
         assert isinstance(cover_lattice, SyntheticLattice), f"expected SyntheticLattice cover; found={type(cover_lattice)}"
@@ -419,7 +425,7 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
         assert cover_lattice.base_ring() is ZZ, "finite lattice quotient cover must be a ZZ-lattice"
         assert relation_lattice.base_ring() is ZZ, "finite lattice quotient relations must be a ZZ-lattice"
         assert relation_lattice.rank() == cover_lattice.rank(), "finite quotients require same-rank lattices"
-        self._inclusion = _relation_inclusion_matrix(cover_lattice, relation_lattice)
+        self._inclusion = inclusion if inclusion is not None else _relation_inclusion_matrix(cover_lattice, relation_lattice)
         self._install(cover_lattice, relation_lattice, self._inclusion)
 
     def _cover_dim(self) -> Any:
@@ -463,6 +469,12 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
     def relation_lattice(self) -> Any:
         return self._relations
 
+    def relation_inclusion(self) -> Any:
+        r"""The carried witness: the inclusion morphism ``relation -> cover``
+        this quotient is the cokernel of (the stored rows are the relation's
+        generators in the cover's coordinates)."""
+        return self._relations.embedding(matrix(ZZ, self._inclusion).transpose(), codomain=self._cover)
+
     def coset_representative(self, element: Any) -> Any:
         return self.lift(element)
 
@@ -481,7 +493,7 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
         lift_rows = [vector(QQ, self.lift(generator).coefficient_vector()) * inclusion_inverse for generator in subgroup.gens()]
         if not lift_rows:
             return self.relation_lattice()
-        return self.relation_lattice().overlattice(lift_rows, check_integral=False, label=label)
+        return self.relation_lattice().overlattice(lift_rows, check_integral=False, label=label).codomain()
 
 
 class DiscriminantCharacter:
@@ -1172,24 +1184,25 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
         r"""Coset representative of ``element`` in the source lattice's rational hull.
 
         A lift lives in ``L# ⊇ L``; its dual-basis column ``z`` has source-basis
-        coordinates ``G^{-1} z``.  The source lattice's ``overlattice`` / ``span``
-        builders consume rows in the *root* (hull) frame, so map through the source's
-        own inclusion into its root.
+        coordinates ``G^{-1} z`` -- exactly the rows the source lattice's
+        ``overlattice`` / ``span`` builders consume.
         """
         z_coordinates = self._old_dual_coordinates(self(element))
-        source_coordinates = self.source_lattice().gram_matrix().inverse() * z_coordinates
-        return source_coordinates * self.source_lattice()._inclusion_rows()
+        return self.source_lattice().gram_matrix().inverse() * z_coordinates
 
     def primary_part(self, p: Any) -> Any:
         return SyntheticSourcedDiscriminantForm(self.source_lattice(), p)
 
     # -- overlattices and preimages in the source hull --
     def overlattice_from_isotropic_subgroup(self, subgroup_or_gens: Any, label: str = "overlattice") -> Any:
+        r"""The overlattice glued along a bilinear-isotropic subgroup, as the
+        inclusion morphism ``L -> L_glued`` minted by the overlattice
+        constructor (the identity for the trivial subgroup)."""
         subgroup = self._subgroup(subgroup_or_gens)
         assert subgroup.is_bilinear_isotropic(), "overlattice construction requires a bilinear-isotropic subgroup"
         lift_rows = [self._coset_representative_in_source(generator) for generator in subgroup.gens()]
         if not lift_rows:
-            return self.source_lattice()
+            return self.source_lattice().identity_morphism()
         return self.source_lattice().overlattice(lift_rows, check_integral=True, label=label)
 
     def preimage_lattice(self, subgroup_or_gens: Any, label: str = "preimage_lattice") -> Any:
@@ -1201,10 +1214,10 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
         lift_rows = [self._coset_representative_in_source(generator) for generator in subgroup.gens()]
         if not lift_rows:
             return self.source_lattice()
-        return self.source_lattice().overlattice(lift_rows, check_integral=False, label=label)
+        return self.source_lattice().overlattice(lift_rows, check_integral=False, label=label).codomain()
 
     def discriminant_form_of_overlattice(self, subgroup_or_gens: Any) -> Any:
-        return self.overlattice_from_isotropic_subgroup(subgroup_or_gens).discriminant_group()
+        return self.overlattice_from_isotropic_subgroup(subgroup_or_gens).codomain().discriminant_group()
 
     # -- the induced action of a lattice isometry, and its orbit vocabulary --
     def action_of_isometry(self, isometry: Any) -> Any:

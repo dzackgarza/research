@@ -66,7 +66,7 @@ def test_theta_series_low_shells_match_conway_sloane(name, rank, det, unimodular
     vectors_of_square(m) reports one shell, short_vectors(k) reports shells for
     norms 0..k-1, and minimum/maximum bound the census.
     """
-    L = lc.Lattice(name)
+    L = lc.Lattice(f"{name}(-1)")   # Conway-Sloane root lattices are positive definite; the AG default is negative
 
     # cheap basics: the lattice's characterization
     assert L.rank() == rank
@@ -116,7 +116,7 @@ def test_dual_lattice_determinants_match_conway_sloane(name, rank, det, dual_det
     identity against the published dual determinants. E_8 is self-dual, so its
     dual is again integral with minimal norm 2 (E_8^* = E_8).
     """
-    L = lc.Lattice(name)
+    L = lc.Lattice(f"{name}(-1)")   # Conway-Sloane root lattices are positive definite; the AG default is negative
 
     # cheap basics
     assert L.rank() == rank
@@ -157,7 +157,7 @@ def test_lll_reduction_preserves_conway_sloane_invariants(name, rank, det, glue,
     equal L's own (the reduction is invariant-preserving). reduced_basis returns
     exactly rank vectors.
     """
-    L = lc.Lattice(name)
+    L = lc.Lattice(f"{name}(-1)")   # Conway-Sloane root lattices are positive definite; the AG default is negative
 
     # cheap basics on the input lattice
     assert L.rank() == rank

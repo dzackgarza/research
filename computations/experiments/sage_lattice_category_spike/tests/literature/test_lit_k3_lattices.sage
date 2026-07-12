@@ -66,8 +66,9 @@ def _U():
 
 
 def _E8m():
-    # E_8(-1): negative definite, the K3/AG sign convention [Kon20 Thm 1.27]
-    return lc.Lattice("E8").twist(-1)
+    # E_8(-1) of the literature: the negative-definite E8, the K3/AG sign
+    # convention [Kon20 Thm 1.27] -- now the unmarked AG default (no twist).
+    return lc.Lattice("E8")
 
 
 def _rank_one(n):
@@ -157,7 +158,7 @@ def test_degree_two_polarization_neron_severi_transcendental_anti_isometry():
     assert _anti_isometric(transcendental, ns)
 
     # genuine primitive embedding of <2> in L_K3: v = e + f in the first U, v^2 = 2
-    embedded = k3.sublattice([[1, 1] + [0] * 20], label="NS<2>")
+    embedded = k3.subobject([k3([1, 1] + [0] * 20)], label="NS<2>")
     assert embedded.gram_matrix().list() == [2] and k3.is_primitive(embedded)
     complement = k3.orthogonal_complement(embedded)
     assert complement.rank() == 21 and complement.signature_pair() == (2, 19)
@@ -191,7 +192,7 @@ def test_degree_four_polarization_transcendental_has_order_four_discriminant():
     assert (ns4.rank(), ns4.signature_pair(), ns4.determinant()) == (1, (1, 0), 4)
     assert tuple(ns4.discriminant_group().invariants()) == (4,)
 
-    embedded = k3.sublattice([[2, 1] + [0] * 20], label="NS<4>")
+    embedded = k3.subobject([k3([2, 1] + [0] * 20)], label="NS<4>")
     assert embedded.gram_matrix().list() == [4] and k3.is_primitive(embedded)
     t4 = k3.orthogonal_complement(embedded)
     assert t4.rank() == 21 and t4.signature_pair() == (2, 19)
@@ -200,7 +201,7 @@ def test_degree_four_polarization_transcendental_has_order_four_discriminant():
     assert _anti_isometric(t4, ns4)                             # q_{T_4} ~ -q_{<4>}
 
     # degree-4 transcendental disc form (Z/4) differs from degree-2 (Z/2)
-    t2 = k3.orthogonal_complement(k3.sublattice([[1, 1] + [0] * 20]))
+    t2 = k3.orthogonal_complement(k3.subobject([k3([1, 1] + [0] * 20)]))
     assert not t4.discriminant_group().is_isomorphic(
         t2.discriminant_group(), kind="quadratic"
     )
@@ -219,7 +220,7 @@ def test_minus_two_root_class_primitively_embedded_in_k3_and_its_complement():
     E8-internal complements pinned elsewhere.
     """
     k3 = _k3_lattice()
-    root = k3.sublattice([[1, -1] + [0] * 20], label="root<-2>")
+    root = k3.subobject([k3([1, -1] + [0] * 20)], label="root<-2>")
     assert root.gram_matrix().list() == [-2]                    # A_1(-1)
     assert root.signature_pair() == (0, 1) and k3.is_primitive(root)
 

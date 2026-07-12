@@ -58,8 +58,8 @@ def test_a4_a4_order_five_glue_reconstructs_e8_through_public_gluing_surfaces():
     the resulting even unimodular rank-eight root lattice has the E_8 root
     count from Ch. 4 sec. 8.1.
     """
-    left = lc.Lattice("A4")
-    right = lc.Lattice("A4")
+    left = lc.Lattice("A4(-1)")
+    right = lc.Lattice("A4(-1)")
     left_generator = left.discriminant_group().gen(0)
     right_generator = right.discriminant_group().gen(0)
 
@@ -73,13 +73,15 @@ def test_a4_a4_order_five_glue_reconstructs_e8_through_public_gluing_surfaces():
     discriminant_form = ambient.discriminant_group()
     glue_generator = discriminant_form.gen(0) + discriminant_form.gen(1)
     glue_subgroup = discriminant_form.subgroup_generated_by([glue_generator])
-    via_lattice_glue = ambient.glue([glue_generator], label="A4_A4_order_five_glue")
+    lattice_gluing = ambient.glue([glue_generator], label="A4_A4_order_five_glue")
+    via_lattice_glue = lattice_gluing.codomain()
 
+    assert lattice_gluing.index() == 5               # [glued : A4 + A4] = |glue group|
     assert glue_subgroup.cardinality() == 5
     assert discriminant_form.is_isotropic_subgroup(glue_subgroup)
     assert discriminant_form.orthogonal_quotient(glue_subgroup).invariants() == ()
 
-    e8 = lc.Lattice("E8")
+    e8 = lc.Lattice("E8(-1)")
     for glued in (via_constructor, via_lattice_glue):
         assert glued.is_even()
         assert glued.is_unimodular()
@@ -97,8 +99,8 @@ def test_a2_e6_gluing_returns_primitive_complementary_embeddings_in_e8():
     primitive isometric summand embeddings when asked, not just the glued
     overlattice.
     """
-    a2 = lc.Lattice("A2")
-    e6 = lc.Lattice("E6")
+    a2 = lc.Lattice("A2(-1)")
+    e6 = lc.Lattice("E6(-1)")
 
     glued, (a2_embedding, e6_embedding) = lc.IntegralLatticeGluing(
         [a2, e6],
@@ -109,7 +111,7 @@ def test_a2_e6_gluing_returns_primitive_complementary_embeddings_in_e8():
 
     assert glued.is_even() and glued.is_unimodular()
     assert glued.minimum() == 2 and len(glued.roots()) == 240
-    assert glued.is_isometric(lc.Lattice("E8"))
+    assert glued.is_isometric(lc.Lattice("E8(-1)"))
     assert a2_embedding.is_injective()
     assert e6_embedding.is_injective()
 
@@ -131,7 +133,7 @@ def test_a2_diagram_automorphism_induces_inversion_on_dual_quotient():
     [i] to [n+1-i]. For A_2 this makes the nontrivial diagram automorphism
     the inversion action on C_3.
     """
-    lattice = lc.Lattice("A2")
+    lattice = lc.Lattice("A2(-1)")
     dual = lattice.dual()
     quotient = dual.finite_quotient(lattice)
     quotient_map = dual.quotient_map_to(lattice)
@@ -169,7 +171,7 @@ def test_a4_full_isometry_action_negates_cyclic_glue_group_and_has_cs99_orbits()
     says the order-two automorphism sends [i] to [n+1-i].  For A_4, this is
     negation on C_5, with orbits {0}, {+-[1]}, and {+-[2]}.
     """
-    lattice = lc.Lattice("A4")
+    lattice = lc.Lattice("A4(-1)")
     discriminant_form = lattice.discriminant_group()
     generator = discriminant_form.gen(0)
 
@@ -193,7 +195,7 @@ def test_a4_group_automorphisms_separate_from_form_isometries_and_transport_form
     the finite group automorphism surface has four units, but the discriminant
     form isometry surface has only the two units preserving q([1]) = 4/5.
     """
-    lattice = lc.Lattice("A4")
+    lattice = lc.Lattice("A4(-1)")
     discriminant_form = lattice.discriminant_group()
     generator = discriminant_form.gen(0)
     doubling = discriminant_form.hom([2 * generator])
@@ -234,7 +236,7 @@ def test_d4_reflections_generate_weyl_subgroup_and_full_isometries_act_by_triali
     order-six triality group.  The simple-root reflections also satisfy the
     simply-laced D_4 Coxeter relations read from the diagram in Fig. 4.6.
     """
-    lattice = lc.Lattice("D4")
+    lattice = lc.Lattice("D4(-1)")
     simple_reflections = tuple(lattice.reflection(simple_root) for simple_root in lattice.gens())
     isometry_group = lattice.isometry_group()
     weyl_group = isometry_group.subgroup(simple_reflections)

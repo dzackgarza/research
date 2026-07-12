@@ -82,7 +82,7 @@ def test_irreducible_root_lattice_invariants_match_conway_sloane_chapter_4():
     cs99["E7"] = (2, 126)                               # sec 8.2
     cs99["E8"] = (1, 240)                               # sec 8.1
     for name, (determinant, tau) in cs99.items():
-        lattice = lc.Lattice(name)
+        lattice = lc.Lattice(f"{name}(-1)")   # Conway-Sloane root lattices are positive definite
         assert lattice.determinant() == determinant, name
         assert lattice.minimum() == 2, name
         assert len(lattice.roots()) == tau, name
@@ -106,7 +106,7 @@ def test_root_lattice_discriminant_groups_are_the_conway_sloane_glue_groups():
         expected[f"D{n}"] = (2, 2) if n % 2 == 0 else (4,)    # V_4 (even) / C_4 (odd)
     expected["E6"], expected["E7"], expected["E8"] = (3,), (2,), ()
     for name, invariant_factors in expected.items():
-        lattice = lc.Lattice(name)
+        lattice = lc.Lattice(f"{name}(-1)")   # Conway-Sloane root lattices are positive definite
         discriminant_group = lattice.discriminant_group()
         assert tuple(discriminant_group.invariants()) == invariant_factors, name
         order = prod(invariant_factors)   # prod(()) == 1 for E8
@@ -133,7 +133,7 @@ def test_small_root_lattice_automorphism_orders_match_conway_sloane_chapter_4():
         "D4": (2**3) * factorial(4) * factorial(3),
     }
     for name, order in expected_orders.items():
-        lattice = lc.Lattice(name)
+        lattice = lc.Lattice(f"{name}(-1)")   # Conway-Sloane root lattices are positive definite
         assert lattice.is_even()            # root-lattice setup guard
         assert lattice.minimum() == 2       # roots are the minimal vectors
         group = lattice.isometry_group()
@@ -259,7 +259,7 @@ def test_nikulin_even_overlattices_of_U2_are_isotropic_subgroups():
     for subgroup in nontrivial_isotropic_subgroups:
         orthogonal = discriminant_form.orthogonal(subgroup)
         quotient_form = discriminant_form.orthogonal_quotient(subgroup)
-        overlattice = discriminant_form.overlattice_from_isotropic_subgroup(subgroup)
+        overlattice = discriminant_form.overlattice_from_isotropic_subgroup(subgroup).codomain()
         overlattice_form = discriminant_form.discriminant_form_of_overlattice(subgroup)
 
         assert _coefficient_rows(orthogonal.elements()) == _coefficient_rows(
@@ -280,7 +280,7 @@ def test_a2_e6_isotropic_glue_reconstructs_the_e8_root_lattice():
     therefore gives a Lagrangian order-3 subgroup in A_{A_2} + A_{E_6}; gluing
     along it reconstructs the even unimodular root lattice E_8.
     """
-    ambient = lc.Lattice("A2").direct_sum(lc.Lattice("E6"))
+    ambient = lc.Lattice("A2(-1)").direct_sum(lc.Lattice("E6(-1)"))   # CS positive-definite convention
     discriminant_form = ambient.discriminant_group()
 
     assert ambient.is_even()
@@ -293,12 +293,14 @@ def test_a2_e6_isotropic_glue_reconstructs_the_e8_root_lattice():
     assert discriminant_form.is_isotropic_subgroup(subgroup)
     assert discriminant_form.orthogonal_quotient(subgroup).invariants() == ()
 
-    glued = discriminant_form.overlattice_from_isotropic_subgroup(subgroup)
+    gluing = discriminant_form.overlattice_from_isotropic_subgroup(subgroup)
+    assert gluing.index() == 3                       # [E8 : A2 + E6] = |glue group|
+    glued = gluing.codomain()
     assert glued.is_even() and glued.is_unimodular()
     assert glued.minimum() == 2
     assert len(glued.roots()) == 240
     assert glued.discriminant_group().invariants() == ()
-    assert glued.is_isometric(lc.Lattice("E8"))
+    assert glued.is_isometric(lc.Lattice("E8(-1)"))
 
 
 def test_nikulin_orthogonal_complement_anti_isometry_corollary_1_6_2():
@@ -347,19 +349,20 @@ def test_gauss_milgram_signature_congruence_nikulin_theorem_1_3_3():
     U = lc.Lattice("U")
     E8 = lc.Lattice("E8")
     even_lattices = [
-        lc.Lattice("A2"),                 # (2, 0)
-        lc.Lattice("E7"),                 # (7, 0)
-        E8,                               # (8, 0), q trivial
+        lc.Lattice("A2"),                 # (0, 2), AG default
+        lc.Lattice("E7"),                 # (0, 7), AG default
+        E8,                               # (0, 8), q trivial
         U,                                # (1, 1), q trivial
-        lc.Lattice("A2").twist(-1),       # (0, 2)
-        E8.twist(-1),                     # (0, 8)
-        lc.Lattice("A2").direct_sum(U),   # (3, 1)
-        _direct_sum(U, U, E8.twist(-1)),  # (2, 10)
+        lc.Lattice("A2").twist(-1),       # (2, 0), positive twist
+        E8.twist(-1),                     # (8, 0), positive twist
+        lc.Lattice("A2").direct_sum(U),   # (1, 3)
+        _direct_sum(U, U, E8.twist(-1)),  # (10, 2)
     ]
     for lattice in even_lattices:
         assert lattice.is_even()  # hypothesis of Milgram's theorem
         gauss_sum_invariant = lattice.discriminant_group().brown_invariant()
-        assert gauss_sum_invariant % 8 == lattice.signature() % 8
+        pos, neg = lattice.signature()
+        assert gauss_sum_invariant % 8 == (pos - neg) % 8
 
 
 def test_even_unimodular_lattices_and_the_k3_lattice_match_kondo():
@@ -375,7 +378,7 @@ def test_even_unimodular_lattices_and_the_k3_lattice_match_kondo():
         is the even unimodular lattice of signature (1, 9).
     """
     U = lc.Lattice("U")
-    E8m = lc.Lattice("E8").twist(-1)   # E_8(-1), negative definite (AG convention)
+    E8m = lc.Lattice("E8")   # E_8(-1) of the literature = the negative-definite E8 = the unmarked AG default
 
     # U: even unimodular of signature (1, 1)  [Kon20 Example 1.4]
     assert U.is_even() and U.is_unimodular()
@@ -384,7 +387,7 @@ def test_even_unimodular_lattices_and_the_k3_lattice_match_kondo():
     # named even unimodular lattices, all satisfying p - q == 0 (mod 8)  [Kon20 Cor 1.26]
     e10 = U.direct_sum(E8m)                                   # signature (1, 9)
     k3 = _direct_sum(U, U, U, E8m, E8m)                       # signature (3, 19)
-    e8_squared = lc.Lattice("E8").direct_sum(lc.Lattice("E8"))  # signature (16, 0)
+    e8_squared = lc.Lattice("E8").direct_sum(lc.Lattice("E8"))  # signature (0, 16), AG default
     for L in [U, lc.Lattice("E8"), e10, k3, e8_squared]:
         assert L.is_even() and L.is_unimodular()
         p, q = L.signature_pair()
@@ -405,7 +408,7 @@ def test_e8_is_the_even_unimodular_root_lattice_of_rank_8():
     discriminant group L^*/L is trivial. It is the rank-8 case of the even
     unimodular signature condition (Kon20 Cor 1.26: 8 - 0 = 8).
     """
-    e8 = lc.Lattice("E8")
+    e8 = lc.Lattice("E8(-1)")   # CS sec 8.1 E8 is positive definite (minimum norm 2)
     assert e8.rank() == 8
     assert e8.determinant() == 1
     assert e8.is_even() and e8.is_unimodular()

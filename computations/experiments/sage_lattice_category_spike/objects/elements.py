@@ -6,7 +6,6 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, cast
 
 from sage.modules.free_module_element import vector
-from sage.rings.rational_field import QQ
 from sage.structure.element import Element, RingElement
 
 from ..lexicon import ExactScalar, LatticeElement, Vector
@@ -32,10 +31,6 @@ class SyntheticLatticeElement(LatticeElement, Element):
 
     def coefficient_vector(self) -> Vector:
         return self._coordinates
-
-    def rational_coordinates(self) -> Vector:
-        r"""This element's coordinates in the root parent's intrinsic basis."""
-        return vector(QQ, self._coordinates) * self.parent()._inclusion_rows()
 
     def b(self, other: LatticeElement) -> ExactScalar:
         return self.parent().b(self, other)
