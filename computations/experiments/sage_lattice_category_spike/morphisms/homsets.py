@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from sage.matrix.constructor import column_matrix, matrix
 from sage.modules.free_module_element import vector
-from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.element import Element
@@ -495,7 +494,8 @@ class IsometryHomset(lexicon.IsometryHomset, Parent):
     isometries ``L -> M``. Emptiness owns the isometry decision (the G1
     routing table); ``Lattice.is_isometric`` is this homset's emptiness
     router. When nonempty, the homset is a torsor under ``O(M)``, which
-    powers iteration and cardinality exactly where that group is finite."""
+    powers iteration and cardinality exactly where that group carries a
+    grounded finiteness answer."""
 
     def __init__(self, domain: Lattice | SyntheticLattice, codomain: Lattice | SyntheticLattice) -> None:
         assert isinstance(domain, SyntheticLattice), f"expected SyntheticLattice domain; found={type(domain)}"
@@ -621,13 +621,24 @@ class IsometryHomset(lexicon.IsometryHomset, Parent):
         return cast(LatticeMorphism, left.hom(matrix(ZZ, transformation), codomain=right))
 
     def cardinality(self) -> Any:
-        r"""``0`` when empty; ``|O(M)|`` otherwise (the homset is an
-        ``O(M)``-torsor), ``+Infinity`` when that group is infinite."""
+        r"""``0`` when empty; ``|O(M)|`` otherwise (the nonempty homset is an
+        ``O(M)``-torsor). Computed exactly where ``O(M)`` carries a grounded
+        finiteness answer — the ``Groups().Finite()`` category refinement
+        stamped on the group at construction; elsewhere no computation
+        grounds any answer (finite or infinite) yet, and the assertion below
+        says so under this contract's own name."""
         if self.is_empty():
             return ZZ(0)
+        from sage.categories.groups import Groups
+
         group = self._codomain.isometry_group()
-        if not group.is_finite():
-            return Infinity
+        assert group in Groups().Finite(), (
+            f"Isom({self._domain.label()}, {self._codomain.label()}).cardinality() is "
+            "|O(M)| (the nonempty homset is an O(M)-torsor), computed exactly where "
+            f"O(M) carries a grounded finiteness answer; O({self._codomain.label()}) "
+            "carries none — extend the group engine, do not special-case; "
+            f"codomain_gram={self._codomain.gram_matrix()}"
+        )
         return group.order()
 
     def __iter__(self) -> Any:

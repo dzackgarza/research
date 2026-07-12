@@ -848,7 +848,11 @@ class IsometryHomset:
         nonempty (asserted)."""
 
     @abstract_method
-    def cardinality(self) -> int | SageInfinity: ...
+    def cardinality(self) -> int:
+        """``0`` when empty; ``|O(M)|`` otherwise (the nonempty homset is an
+        ``O(M)``-torsor). Answers exactly where ``O(M)`` carries a grounded
+        finiteness answer; elsewhere no computation grounds any answer
+        (finite or infinite) yet, and the contract asserts out by name."""
 
     @abstract_method
     def __iter__(self) -> Iterator[LatticeMorphism]: ...

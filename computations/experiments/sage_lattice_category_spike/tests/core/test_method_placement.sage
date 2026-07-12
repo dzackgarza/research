@@ -137,6 +137,23 @@ def test_empty_isometry_homset_and_the_router_agree():
         isometries.an_element()
 
 
+def test_isometry_homset_cardinality_fails_under_its_own_name_when_ungrounded():
+    r"""``Isom(L, M).cardinality()`` on a NONEMPTY homset whose ``O(M)``
+    carries no grounded finiteness answer (indefinite rank 3: the odd
+    unimodular diag(1, 1, -1), a single-spinor-genus genus so emptiness IS
+    decided) must fail under the cardinality contract's own name -- not deep
+    inside the group engine's grounding assert -- and must never invent an
+    answer (no computation grounds ``+Infinity`` any more than it grounds a
+    finite order)."""
+    gram = matrix(ZZ, [[1, 0, 0], [0, 1, 0], [0, 0, -1]])
+    left = Lattice(gram, label="odd-2-1-left")
+    right = Lattice(gram, label="odd-2-1-right")
+    isometries = left.Isom(right)
+    assert not isometries.is_empty()  # existence IS decided (Eichler)
+    with pytest.raises(AssertionError, match=r"cardinality\(\) is \|O\(M\)\|"):
+        isometries.cardinality()
+
+
 def test_embedding_homset_enumerates_by_generator_patterns():
     r"""``Emb(L, M)`` on definite codomains: A1(-1) = diag(-2) has exactly
     six embeddings into A2 (one per root -- rank 1 < codomain rank 2), and
