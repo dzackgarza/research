@@ -5,6 +5,7 @@ from __future__ import annotations
 import warnings
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
+from sage.categories.homset import Homset
 from sage.matrix.constructor import column_matrix, matrix
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
@@ -45,8 +46,7 @@ class Subobject:
             return self.inclusion() == other.inclusion()
         if isinstance(other, SyntheticLattice):
             warnings.warn(
-                "a subobject and a plain lattice are categorically distinct; "
-                "compare a subobject through its inclusion",
+                "a subobject and a plain lattice are categorically distinct; compare a subobject through its inclusion",
                 UserWarning,
                 stacklevel=2,
             )
@@ -193,7 +193,7 @@ class SyntheticLatticeCokernel(lexicon.LatticeCokernel):
         return tuple(self._quotient.invariants())
 
 
-class LatticeHomset(lexicon.LatticeHomset, Parent):
+class LatticeHomset(lexicon.LatticeHomset, Homset):
     r"""Homset of form-preserving synthetic lattice morphisms."""
 
     # Sage's parent convention: the homset's element class (assigned after
@@ -208,21 +208,22 @@ class LatticeHomset(lexicon.LatticeHomset, Parent):
     ) -> None:
         assert isinstance(domain, SyntheticLattice), f"expected SyntheticLattice domain; found={type(domain)}"
         assert isinstance(codomain, SyntheticLattice), f"expected SyntheticLattice codomain; found={type(codomain)}"
-        self._domain = domain
-        self._codomain = codomain
         from ..objects.categories import Lattices
 
         hom_category = Lattices(domain.base_ring()) if category is None else category
-        Parent.__init__(self, category=hom_category.Homsets())
+        Homset.__init__(self, domain, codomain, category=hom_category)
 
     def _repr_(self) -> str:
         return f"Synthetic lattice homset from {self.domain()} to {self.codomain()}"
 
     def domain(self) -> SyntheticLattice:
-        return self._domain
+        return cast(SyntheticLattice, self._domain)
 
     def codomain(self) -> SyntheticLattice:
-        return self._codomain
+        return cast(SyntheticLattice, self._codomain)
+
+    def _element_constructor_(self, matrix_data: Any) -> LatticeMorphism:
+        return LatticeMorphism(self, matrix_data)
 
     # There is no from_matrix: morphisms are built by the public named
     # constructors on lattices (hom/embedding/reflection/similarity) or by

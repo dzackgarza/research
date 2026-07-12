@@ -168,8 +168,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
 
         if isinstance(other, Subobject):
             warnings.warn(
-                "a plain lattice and a subobject are categorically distinct; "
-                "compare a subobject through its inclusion",
+                "a plain lattice and a subobject are categorically distinct; compare a subobject through its inclusion",
                 UserWarning,
                 stacklevel=2,
             )
@@ -685,6 +684,9 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
     ) -> LatticeHomset:
         from ..morphisms.homsets import LatticeHomset
 
+        lattice_category = Lattices(self.base_ring())
+        if category is not None and not category.is_subcategory(lattice_category):
+            raise TypeError(f"cannot construct a form-preserving lattice homset in {category}")
         return LatticeHomset(self, codomain, category=category)
 
     def Isom(self, codomain: Lattice) -> IsometryHomset:
