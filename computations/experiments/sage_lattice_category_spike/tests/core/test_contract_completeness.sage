@@ -16,8 +16,9 @@ from __future__ import annotations
 
 import pytest
 
-from sage.all import ZZ, TestSuite, matrix
+from sage.all import QQ, ZZ, TestSuite, matrix
 from sage.categories.homset import Hom
+from sage.categories.sets_cat import Sets
 
 from sage_lattice_category_spike.lattice_categories import Lattice, Lattices
 
@@ -149,6 +150,25 @@ def test_lattice_hom_factory_accepts_the_explicit_category():
     identity_matrix = lattice.identity_morphism().matrix()
     assert direct_homset(identity_matrix) == lattice.identity_morphism()
     assert factory_homset(identity_matrix) == lattice.identity_morphism()
+
+
+def test_lattice_homsets_require_a_common_base_ring():
+    r"""Form-preserving lattice maps are sited over one base ring; a caller
+    must explicitly base-change before asking for a cross-ring homset."""
+    integral = Lattice("A2")
+    rational = integral.base_extend(QQ)
+    with pytest.raises(AssertionError):
+        integral.Hom(rational)
+
+
+def test_public_hom_falls_back_outside_the_lattice_category():
+    r"""A set-morphism category cannot be represented by a form-preserving
+    lattice-morphism homset, so the public Sage factory must retain its generic
+    constructor behavior."""
+    lattice = Lattice("A2")
+    set_homset = Hom(lattice, lattice, category=Sets())
+    with pytest.raises(TypeError):
+        set_homset(lattice.identity_morphism().matrix())
 
 
 # Axes skipped by the full-battery runner because they fail for separately-tracked
