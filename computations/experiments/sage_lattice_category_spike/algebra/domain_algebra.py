@@ -866,8 +866,9 @@ class EmbeddingHomset:
     first-class parent — the honest home of the Nikulin-class existence and
     classification machinery. Emptiness is the existence question; iteration
     is a contract implemented exactly where enumeration by generator
-    patterns is computable (e.g. definite codomain via vectors of the right
-    squares)."""
+    patterns is computable (e.g. integral definite codomain via vectors of
+    the right squares); an implementation names its supported regime at its
+    own boundary and asserts out everything else."""
 
     @abstract_method
     def domain(self) -> Lattice: ...

@@ -657,10 +657,12 @@ class IsometryHomset(lexicon.IsometryHomset, Parent):
 class EmbeddingHomset(lexicon.EmbeddingHomset, Parent):
     r"""``Emb(L, M)`` as a first-class parent: the form-preserving
     monomorphisms ``L -> M``. Enumeration is by generator patterns where the
-    codomain is definite (each generator has finitely many candidate images,
-    the vectors of its square); emptiness and the distinguished element ride
-    on the enumeration. Other regimes assert out by name (the Nikulin
-    existence engines are issue #24)."""
+    codomain is INTEGRAL definite (each generator has finitely many candidate
+    images, the vectors of its square, delivered by the ZZ short-vector
+    engine); emptiness and the distinguished element ride on the enumeration.
+    Other regimes assert out by name at this homset's own boundary:
+    non-integral definite codomains have no enumeration engine, and
+    indefinite existence is issue #24's Nikulin engine."""
 
     def __init__(self, domain: Lattice | SyntheticLattice, codomain: Lattice | SyntheticLattice) -> None:
         assert isinstance(domain, SyntheticLattice), f"expected SyntheticLattice domain; found={type(domain)}"
@@ -684,30 +686,31 @@ class EmbeddingHomset(lexicon.EmbeddingHomset, Parent):
         r"""Depth-first assignment of generator images: candidate images of
         the ``i``-th generator are the codomain vectors of its square, pruned
         by the pairing constraints against the already-placed generators.
-        Finite and total for a definite codomain."""
+        Finite and total for an integral definite codomain (the supported
+        regime, asserted by name below)."""
         domain, codomain = self._domain, self._codomain
         from ..objects.parents import (
             SyntheticIntegralNegativeDefiniteLattice,
             SyntheticIntegralPositiveDefiniteLattice,
-            SyntheticNegativeDefiniteLattice,
-            SyntheticPositiveDefiniteLattice,
         )
 
-        definite_leaves = (
+        integral_definite_leaves = (
             SyntheticIntegralNegativeDefiniteLattice,
             SyntheticIntegralPositiveDefiniteLattice,
-            SyntheticNegativeDefiniteLattice,
-            SyntheticPositiveDefiniteLattice,
         )
-        assert isinstance(codomain, definite_leaves) and codomain.rank() > 0, (
-            "embedding enumeration is implemented for definite codomains (finitely many "
-            "vectors per square); indefinite existence is issue #24's Nikulin engine; "
+        assert isinstance(codomain, integral_definite_leaves) and codomain.rank() > 0, (
+            "embedding enumeration is implemented for INTEGRAL definite codomains: "
+            "finiteness/totality of the generator-pattern engine is proven only for the "
+            "ZZ short-vector enumeration; non-integral definite codomains are outside the "
+            "engine, and indefinite existence is issue #24's Nikulin engine; "
             f"codomain_gram={codomain.gram_matrix()}"
         )
         gram = domain.gram_matrix()
         wrong_sign = 1 if codomain.is_negative_definite() else -1
         if any(wrong_sign * gram[i, i] > 0 for i in range(domain.rank())):
             return  # a definite form takes values of one sign only: Emb is empty
+        if any(gram[i, i] not in ZZ for i in range(domain.rank())):
+            return  # an integral form represents only integers: Emb is empty
         candidate_pools = [codomain.vectors_of_square(gram[i, i]) for i in range(domain.rank())]
 
         def assign(placed: list[Any]) -> Any:

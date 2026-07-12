@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from sage.all import ZZ, matrix, oo
+from sage.all import QQ, ZZ, matrix, oo
 
 from sage_lattice_category_spike.lattice_categories import Lattice
 
@@ -189,6 +189,28 @@ def test_embedding_homset_finds_the_index_two_sublattice():
     assert embeddings  # nonempty
     assert any(embedding.index() == 2 for embedding in embeddings)
     assert all(not embedding.is_primitive_embedding() for embedding in embeddings)
+
+
+def test_embedding_homset_owns_its_integral_definite_regime():
+    r"""``Emb(L, M)`` names its supported regime at its own boundary. A
+    NON-integral definite codomain (gram diag(1/2, 1/2)) is refused by the
+    homset's own gating assert -- not by an incidental assert deep in the
+    short-vector engine -- so a future engine widening cannot silently turn
+    the iterator into an incomplete enumeration presented as the full
+    homset. A non-integral domain square into an integral codomain is
+    honest emptiness (an integral form represents only integers), not a
+    crash."""
+    half = Lattice(matrix(QQ, [[1 / 2, 0], [0, 1 / 2]]), label="half")
+    gen2 = Lattice(matrix(ZZ, [[2]]), label="gen2")
+    embeddings = gen2.Emb(half)
+    with pytest.raises(AssertionError, match="INTEGRAL definite codomains"):
+        tuple(embeddings)
+    with pytest.raises(AssertionError, match="INTEGRAL definite codomains"):
+        embeddings.is_empty()
+
+    A2 = Lattice("A2")
+    half_line = Lattice(matrix(QQ, [[-1 / 2]]), label="half-line")
+    assert half_line.Emb(A2).is_empty()  # -1/2 is not an integral value
 
 
 def test_subobject_sum_and_intersection_carry_their_inclusions():
