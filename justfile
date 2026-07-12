@@ -153,24 +153,54 @@ review-packet:
        value, any invariant checked in the wrong category, and any
        conflation of near-synonym lattice terms (see the vault traps in
        this packet, e.g. saturation / discriminant triple / dual pair).
-    2. **Ratified-decision violations.** The `vault/` documents in this
+
+    2. **Categorical substrate violations (#100, #101).** The deepest
+       current slop drivers are architectural, not cosmetic:
+       - **#100 — morphism-centric predicates:** subobjects are `(L, f:
+         L ↪ M)`; no `from_ambient_basis`, `ambient=`, stored `_ambient`,
+         or coordinate/matrix bypasses (`coordinate_vector`, echelon
+         comparison, `solve_left`) where kernel/cokernel/morphism definitions
+         exist. Flag latent sites in dual→quotient chains and any predicate
+         that demands a shared coordinate frame.
+       - **#101 — method placement:** witness-consuming predicates
+         (`is_primitive`, `is_isometric`, containment) belong on
+         Hom/Emb/Subobjects, not on bare `Lattice` parents. Flag public
+         presentation constructors (`_from_module`, `_from_ambient_basis`)
+         that should be private.
+
+    3. **Terminology drift.** Public API names, docstrings, and findings
+       must use categorical/lexicon vocabulary, not invented engineering
+       terms. Consult `references/terminology-dictionary.md` and
+       `references/slop-pattern-index.md` in this packet. The always-banned
+       terms **carrier** and free-standing **ambient** are hard failures.
+       A finding written in drift vocabulary is itself slop.
+
+    4. **Ratified-decision violations.** The `vault/` documents in this
        packet are durable decisions, traps, and advice for this repo.
        Treat them as authoritative: code that contradicts a ratified
        decision is a finding; code that follows one is not, even if it
        looks unusual. Do not re-raise what a decision document already
        settles.
-    3. **Style-guide conformance.** `policies/STYLE.md` governs code,
+
+    5. **Style-guide conformance.** `policies/STYLE.md` governs code,
        notebooks, and documentation written against the spike (host-
        language idioms, symbolic API boundary, assertion discipline).
+
+    **Ledger hygiene:** strict `pytest.mark.xfail` markers that cite an
+    open GitHub issue in `reason=` are *owned gaps*, not new findings.
+    Do not re-file them. Notebook traps already in `vault/traps/` are
+    valid only if the artifact was never remediated.
 
     Do not raise generic software-engineering nitpicks that these
     documents do not support; the deterministic QC stack already owns
     lint/type/coverage concerns.
     PROMPT
 
-    mkdir -p "$staging/policies" "$staging/spec"
+    mkdir -p "$staging/policies" "$staging/spec" "$staging/references"
     cp STYLE.md "$staging/policies/STYLE.md"
     cp computations/experiments/sage_lattice_category_spike/SYNTHETIC_LATTICE_MODEL.md "$staging/spec/"
+    cp .agents/references/terminology-dictionary.md "$staging/references/"
+    cp .agents/references/slop-pattern-index.md "$staging/references/"
 
     # Vault memory (untracked here; reached through the .agents symlink).
     for section in decisions traps advice context; do
