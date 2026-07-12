@@ -68,20 +68,41 @@ class StableGraphContraction:
     def is_identity(self) -> bool:
         return len(self._contracted_flags) == 0
 
-    def with_endpoints(self, domain: StableGraph, codomain: StableGraph) -> StableGraphContraction:
-        return StableGraphContraction(
-            domain=domain,
-            codomain=codomain,
-            target_type=self._target_type,
-            contracted_flags=self._contracted_flags,
-            vertex_fibres=self._vertex_fibres,
-            domain_flag_of_codomain_flag=self._domain_flag_of_codomain_flag,
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, StableGraphContraction):
+            return NotImplemented
+        return (
+            self._domain == other._domain
+            and self._codomain == other._codomain
+            and self._target_type == other._target_type
+            and self._contracted_flags == other._contracted_flags
+            and self._vertex_fibres == other._vertex_fibres
+            and self._domain_flag_of_codomain_flag == other._domain_flag_of_codomain_flag
         )
+
+    def __hash__(self) -> int:
+        return hash(
+            (
+                self._domain,
+                self._codomain,
+                self._target_type,
+                self._contracted_flags,
+                self._vertex_fibres,
+                self._domain_flag_of_codomain_flag,
+            )
+        )
+
+    def with_endpoints(self, domain: StableGraph, codomain: StableGraph) -> StableGraphContraction:
+        r"""Transport this contraction to new labeled endpoints via graph isomorphisms."""
+        if domain is self._domain and codomain is self._codomain:
+            return self
+        from .isomorphisms import transport_contraction
+
+        return transport_contraction(self, domain=domain, codomain=codomain)
 
     def compose(self, other: StableGraphContraction) -> StableGraphContraction:
         assert self._codomain == other._domain, (
-            "composition requires the codomain graph of the first contraction to be "
-            "the same labeled representative as the domain graph of the second"
+            "composition requires the codomain graph of the first contraction to be the same labeled representative as the domain graph of the second"
         )
         pullback = dict(self._domain_flag_of_codomain_flag)
         pulled_back = {pullback[flag] for flag in other._contracted_flags}
@@ -124,7 +145,7 @@ def _edge_signature(record: StableGraph, edge: tuple[int, int]) -> tuple[object,
 
 
 def flag_map(source: StableGraph, target: StableGraph) -> dict[int, int]:
-    r"""Map flag indices from ``source`` to ``target`` for matching graphs."""
+    r"""Deprecated heuristic flag alignment; use :func:`~dm_moduli_spike.objects.isomorphisms.isomorphism_between`."""
     assert canonical_key(source) == canonical_key(target)
     mapping: dict[int, int] = {}
     for marking in range(1, source.num_markings() + 1):
@@ -210,9 +231,7 @@ def _contract_flag_set(domain: StableGraph, contracted_flags: frozenset[int]) ->
 
     parent_types = StableGraphTypes(record.genus(), record.num_markings())
     target_type = parent_types(codomain)
-    domain_flag_of_codomain_flag = tuple(
-        sorted((raw_to_canonical[new_flag], old_flag) for old_flag, new_flag in new_flag_of_old.items())
-    )
+    domain_flag_of_codomain_flag = tuple(sorted((raw_to_canonical[new_flag], old_flag) for old_flag, new_flag in new_flag_of_old.items()))
     raw_vertex_fibres = tuple(frozenset(fibre_sets[component]) for component in range(num_new_vertices))
     identity_domain = tuple(range(record.num_vertices()))
     vertex_fibres = remap_vertex_fibres(raw_vertex_fibres, cert.vertex_map, identity_domain)

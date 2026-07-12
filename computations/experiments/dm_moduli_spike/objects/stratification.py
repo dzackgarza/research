@@ -34,13 +34,20 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True, slots=True)
 class EnumerationResult:
-    r"""Certificate metadata for a stratification enumeration."""
+    r"""Certificate metadata for a stratification enumeration.
+
+    ``construction_mode`` is one of:
+
+    * ``enumerated`` — full or truncated rank-by-rank enumeration;
+    * ``induced_subposet`` — Hasse diagram of a supplied type family.
+    """
 
     levels: tuple[tuple[StableGraphType, ...], ...]
     complete_through_codim: int
     globally_complete: bool
     has_full_rank_support: bool
     backend: str | None = None
+    construction_mode: str = "enumerated"
 
 
 def _normalize_codim_cap(max_codim: int | None, dimension: int) -> tuple[int, bool]:
@@ -141,13 +148,7 @@ def _induced_cover_pairs(types: tuple[StableGraphType, ...]) -> list[tuple[Stabl
         for gamma in types:
             if gamma == delta or not delta.contracts_to(gamma):
                 continue
-            if any(
-                theta != gamma
-                and theta != delta
-                and delta.contracts_to(theta)
-                and theta.contracts_to(gamma)
-                for theta in types
-            ):
+            if any(theta != gamma and theta != delta and delta.contracts_to(theta) and theta.contracts_to(gamma) for theta in types):
                 continue
             covers.append((gamma, delta))
     return covers
@@ -205,12 +206,7 @@ def _finish_stratification(
 
     _, is_effective_full = _normalize_codim_cap(max_codim, dimension)
     smooth_present = bool(levels) and curve_types.smooth().canonical_key() in levels[0]
-    has_full_rank_support = (
-        is_effective_full
-        and smooth_present
-        and _levels_are_contiguous(levels)
-        and len(levels) == codim_cap + 1
-    )
+    has_full_rank_support = is_effective_full and smooth_present and _levels_are_contiguous(levels) and len(levels) == codim_cap + 1
     return DMStratification(
         g=curve_types.genus(),
         n=curve_types.number_of_markings(),
@@ -331,10 +327,7 @@ class DMStratification:
                     edges.append((int(u), int(v)))
         candidate = self._curve_types.from_vertices(genera=genera, markings=markings, edges=tuple(edges))
         matches = [self._stratum(gamma) for level in self._levels for gamma in level.values() if gamma == candidate]
-        assert len(matches) == 1, (
-            f"expected exactly one stratum matching {genera}, markings={markings}, edges={edges}; "
-            f"found {len(matches)}"
-        )
+        assert len(matches) == 1, f"expected exactly one stratum matching {genera}, markings={markings}, edges={edges}; found {len(matches)}"
         return matches[0]
 
     # -- completeness metadata ---------------------------------------------------
@@ -369,6 +362,7 @@ class DMStratification:
             globally_complete=self.is_exhaustive(),
             has_full_rank_support=self.has_full_rank_support(),
             backend=self._backend,
+            construction_mode=self._construction_mode,
         )
 
     def backend(self) -> str | None:

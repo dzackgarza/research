@@ -22,11 +22,7 @@ def stable_splits(n: int) -> tuple[frozenset[int], tuple[frozenset[int], ...]]:
         raise ValueError("Mbar_{0,n} is stable only for n >= 3")
 
     ground = frozenset(range(1, n + 1))
-    splits = tuple(
-        frozenset((1, *tail))
-        for size in range(2, n - 1)
-        for tail in combinations(range(2, n + 1), size - 1)
-    )
+    splits = tuple(frozenset((1, *tail)) for size in range(2, n - 1) for tail in combinations(range(2, n + 1), size - 1))
     return ground, splits
 
 
@@ -57,11 +53,7 @@ def expected_M0n_specialization_poset(n: int) -> Poset:
 
     compatibility_graph = Graph()
     compatibility_graph.add_vertices(splits)
-    compatibility_graph.add_edges(
-        (left, right)
-        for left, right in combinations(splits, 2)
-        if compatible_splits(left, right, ground)
-    )
+    compatibility_graph.add_edges((left, right) for left, right in combinations(splits, 2) if compatible_splits(left, right, ground))
 
     return augmented_face_poset(compatibility_graph.clique_complex())
 

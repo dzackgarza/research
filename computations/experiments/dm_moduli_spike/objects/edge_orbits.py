@@ -26,19 +26,13 @@ def _edge_orbit_groups(action: AutomorphismAction, num_edges: int) -> tuple[tupl
     from sage.combinat.permutation import Permutation
     from sage.groups.perm_gps.permgroup import PermutationGroup
 
-    generators = [
-        Permutation([value + 1 for value in image])
-        for image in action.on_edges()
-        if not _is_identity_permutation(image)
-    ]
+    generators = [Permutation([value + 1 for value in image]) for image in action.on_edges() if not _is_identity_permutation(image)]
     if not generators:
         return tuple((index,) for index in range(num_edges))
     group = PermutationGroup(generators)
     orbits = group.orbits()
     edge_orbits = tuple(
-        tuple(sorted(int(index) - 1 for index in orbit if 1 <= int(index) <= num_edges))
-        for orbit in orbits
-        if any(1 <= int(index) <= num_edges for index in orbit)
+        tuple(sorted(int(index) - 1 for index in orbit if 1 <= int(index) <= num_edges)) for orbit in orbits if any(1 <= int(index) <= num_edges for index in orbit)
     )
     covered = {index for orbit in edge_orbits for index in orbit}
     singletons = tuple((index,) for index in range(num_edges) if index not in covered)

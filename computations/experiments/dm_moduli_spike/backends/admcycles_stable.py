@@ -23,10 +23,7 @@ def _require_admcycles() -> object:
     try:
         import admcycles  # type: ignore[import-not-found]
     except ImportError as error:  # pragma: no cover - environment dependent
-        raise ImportError(
-            "the admcycles-stable backend requires the optional 'admcycles' package; "
-            "install it into Sage's Python with `sage -pip install admcycles`"
-        ) from error
+        raise ImportError("the admcycles-stable backend requires the optional 'admcycles' package; install it into Sage's Python with `sage -pip install admcycles`") from error
     return admcycles
 
 

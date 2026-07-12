@@ -31,21 +31,12 @@ def factor_slots(record: StableGraph) -> tuple[tuple[FactorSlot, ...], ...]:
             key=lambda flag: record.marking_to_flag.index(flag),
         )
         branch_flags = sorted(
-            (
-                flag
-                for flag in record.flags_at(vertex)
-                if record.flag_involution[flag] != flag
-            ),
+            (flag for flag in record.flags_at(vertex) if record.flag_involution[flag] != flag),
             key=lambda flag: _branch_sort_key(record, flag),
         )
         ordered_flags = leg_flags + branch_flags
-        assert len(ordered_flags) == record.valence(vertex), (
-            f"vertex {vertex} valence {record.valence(vertex)} != {len(ordered_flags)} incident flags"
-        )
-        by_vertex[vertex] = [
-            FactorSlot(vertex=vertex, local_index=slot, flag=flag)
-            for slot, flag in enumerate(ordered_flags)
-        ]
+        assert len(ordered_flags) == record.valence(vertex), f"vertex {vertex} valence {record.valence(vertex)} != {len(ordered_flags)} incident flags"
+        by_vertex[vertex] = [FactorSlot(vertex=vertex, local_index=slot, flag=flag) for slot, flag in enumerate(ordered_flags)]
     return tuple(tuple(slots) for slots in by_vertex)
 
 
@@ -64,11 +55,7 @@ def external_marking_slot_map(record: StableGraph) -> tuple[FactorSlot, ...]:
 
 def node_pairings(record: StableGraph) -> tuple[tuple[FactorSlot, FactorSlot], ...]:
     r"""Each internal edge as a pair of :class:`FactorSlot` branch coordinates."""
-    slot_by_flag = {
-        slot.flag: slot
-        for vertex_slots in factor_slots(record)
-        for slot in vertex_slots
-    }
+    slot_by_flag = {slot.flag: slot for vertex_slots in factor_slots(record) for slot in vertex_slots}
     pairings: list[tuple[FactorSlot, FactorSlot]] = []
     for flag, partner in record.internal_edges():
         pairings.append((slot_by_flag[flag], slot_by_flag[partner]))

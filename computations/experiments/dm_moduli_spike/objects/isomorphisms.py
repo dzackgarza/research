@@ -102,9 +102,7 @@ def apply_isomorphism(graph: StableGraph, iso: StableGraphIsomorphism) -> Stable
     return StableGraph(
         vertex_genera=tuple(graph.vertex_genera[inverse_vertices[vertex]] for vertex in range(iso.target.num_vertices())),
         flag_vertex=tuple(iso.vertex_map[graph.flag_vertex[inverse_flags[flag]]] for flag in range(iso.target.num_flags())),
-        flag_involution=tuple(
-            iso.flag_map[graph.flag_involution[inverse_flags[flag]]] for flag in range(iso.target.num_flags())
-        ),
+        flag_involution=tuple(iso.flag_map[graph.flag_involution[inverse_flags[flag]]] for flag in range(iso.target.num_flags())),
         marking_to_flag=tuple(iso.flag_map[graph.marking_to_flag[label - 1]] for label in range(1, graph.num_markings() + 1)),
     )
 
@@ -138,23 +136,12 @@ def transport_contraction(
     if domain is contraction.domain() and codomain is contraction.codomain():
         return contraction
 
-    alpha = (
-        isomorphism_between(contraction.domain(), domain)
-        if domain is not contraction.domain()
-        else identity_isomorphism(domain)
-    )
-    beta = (
-        isomorphism_between(contraction.codomain(), codomain)
-        if codomain is not contraction.codomain()
-        else identity_isomorphism(codomain)
-    )
+    alpha = isomorphism_between(contraction.domain(), domain) if domain is not contraction.domain() else identity_isomorphism(domain)
+    beta = isomorphism_between(contraction.codomain(), codomain) if codomain is not contraction.codomain() else identity_isomorphism(codomain)
 
     contracted_flags = frozenset(alpha.flag_map[flag] for flag in contraction.contracted_flags())
     domain_flag_of_codomain_flag = tuple(
-        sorted(
-            (beta.flag_map[codomain_flag], alpha.flag_map[domain_flag])
-            for codomain_flag, domain_flag in contraction.domain_flag_of_codomain_flag().items()
-        )
+        sorted((beta.flag_map[codomain_flag], alpha.flag_map[domain_flag]) for codomain_flag, domain_flag in contraction.domain_flag_of_codomain_flag().items())
     )
     vertex_fibres = remap_vertex_fibres(
         contraction.vertex_fibres(),

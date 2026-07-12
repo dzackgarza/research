@@ -26,13 +26,17 @@ def test_stratification_has_one_witness_per_cover():
 
 
 def test_max_codim_at_least_dimension_is_exhaustive():
-    model = DMCompactificationModel(0, 4)
-    assert model.dimension() == 1
-    capped = model.stratification(max_codim=10)
-    assert capped.is_exhaustive()
-    assert capped.is_full_stratification()
-    assert capped.maximum_codim() == 1
-    assert capped.enumeration_result().complete_through_codim == 1
+    for g, n in [(0, 4), (1, 2), (2, 0)]:
+        model = DMCompactificationModel(g, n)
+        dimension = model.dimension()
+        full = model.stratification()
+        capped = model.stratification(max_codim=dimension)
+        overshot = model.stratification(max_codim=dimension + 10)
+        for stratification in (full, capped, overshot):
+            assert stratification.is_exhaustive()
+            assert stratification.is_full_stratification()
+            assert stratification.enumeration_result().complete_through_codim == stratification.maximum_codim()
+        assert full.rank_sizes() == capped.rank_sizes() == overshot.rank_sizes()
 
 
 def test_truncated_enumeration_reports_incomplete_codim():

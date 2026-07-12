@@ -8,7 +8,6 @@ from .objects.automorphism_action import AutomorphismAction
 from .objects.contraction_orbits import ContractionOrbit
 from .objects.contractions import StableGraphContraction
 from .objects.curve_types import StableCurveType, StableCurveTypes, StableGraphType, StableGraphTypes
-from .objects.graph_types import StableGraphType as _StableGraphType
 from .objects.model import DMCompactificationModel
 from .objects.records import StableGraph, StableGraphRecord
 from .objects.strata import (
@@ -23,8 +22,8 @@ from .objects.stratification import DMStratification, EnumerationResult, Stratif
 
 __all__ = [
     "AutomorphismAction",
-    "ClutchingDatum",
     "ClutchingMorphism",
+    "ClutchingDatum",
     "ContractionOrbit",
     "DMCompactificationModel",
     "DMStratification",

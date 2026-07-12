@@ -62,3 +62,20 @@ def test_transport_composes_with_native_contraction():
     edge_alt = transported.contracted_edges()[0]
     image, native = contract_edge(domain_alt, edge_alt)
     assert image.canonical_representative() == transported.codomain()
+
+
+def test_with_endpoints_delegates_to_transport():
+    types = StableCurveTypes(1, 2)
+    gamma = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
+    domain = gamma.canonical_representative()
+    loop_edge = next(
+        edge
+        for edge in domain.internal_edges()
+        if domain.flag_vertex[edge[0]] == domain.flag_vertex[edge[1]]
+    )
+    _, contraction = contract_edge(domain, loop_edge)
+    domain_alt = _swap_vertices(domain)
+    codomain_alt = _swap_vertices(contraction.codomain())
+    via_endpoints = contraction.with_endpoints(domain_alt, codomain_alt)
+    via_transport = transport_contraction(contraction, domain=domain_alt, codomain=codomain_alt)
+    assert via_endpoints == via_transport

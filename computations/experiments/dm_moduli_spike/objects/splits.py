@@ -64,11 +64,7 @@ def split_system(gamma: StableGraphType, anchor_marking: int = 1) -> frozenset[f
                 component.add(vertex)
                 seen.add(vertex)
                 stack.extend(adjacency[vertex] - component)
-            side = frozenset(
-                marking
-                for vertex in component
-                for marking in record.markings_at(vertex)
-            )
+            side = frozenset(marking for vertex in component for marking in record.markings_at(vertex))
             if 2 <= len(side) <= n - 2:
                 splits.add(canonicalize_split(side, n=n, anchor_marking=anchor_marking))
 

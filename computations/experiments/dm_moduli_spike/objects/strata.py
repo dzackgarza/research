@@ -35,21 +35,40 @@ def _validate_group_order(group_order: int) -> int:
 
 
 class ModuliFactor:
-    r"""A symbolic moduli factor :math:`\mathcal M_{g,n}` (open) or
-    :math:`\overline{\mathcal M}_{g,n}` (compact)."""
+    r"""A symbolic moduli factor :math:`\overline{\mathcal M}_{g(v),H(v)}`.
 
-    __slots__ = ("_g", "_n", "_compact")
+    The finite set ``flags`` records the half-edges :math:`H(v)=\partial^{-1}(v)`
+    on the indexing stable graph; marking sections are the leg flags among them.
+    """
 
-    def __init__(self, g: int, n: int, compact: bool = False) -> None:
+    __slots__ = ("_g", "_n", "_compact", "_flags")
+
+    def __init__(
+        self,
+        g: int,
+        n: int,
+        compact: bool = False,
+        *,
+        flags: tuple[int, ...] | None = None,
+    ) -> None:
         self._g = int(g)
         self._n = int(n)
         self._compact = bool(compact)
+        if flags is None:
+            self._flags = tuple(range(self._n))
+        else:
+            self._flags = tuple(int(flag) for flag in flags)
+            assert len(self._flags) == self._n, f"|flags|={len(self._flags)} must equal valence {self._n}"
 
     def genus(self) -> int:
         return self._g
 
     def number_of_markings(self) -> int:
         return self._n
+
+    def flags(self) -> tuple[int, ...]:
+        r"""Half-edges :math:`H(v)` on this factor."""
+        return self._flags
 
     def is_compact(self) -> bool:
         return self._compact
@@ -58,17 +77,19 @@ class ModuliFactor:
         return 3 * self._g - 3 + self._n
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, ModuliFactor) and (self._g, self._n, self._compact) == (other._g, other._n, other._compact)
+        return isinstance(other, ModuliFactor) and (self._g, self._n, self._compact, self._flags) == (other._g, other._n, other._compact, other._flags)
 
     def __hash__(self) -> int:
-        return hash((self._g, self._n, self._compact))
+        return hash((self._g, self._n, self._compact, self._flags))
 
     def __repr__(self) -> str:
         bar = "Mbar" if self._compact else "M"
-        return f"{bar}({self._g}, {self._n})"
+        if self._flags == tuple(range(self._n)):
+            return f"{bar}({self._g}, {self._n})"
+        return f"{bar}({self._g}, H={self._flags})"
 
 
-class QuotientStackSignature:
+class QuotientStackPresentation:
     r"""Symbolic signature of
     :math:`[\prod_v \mathcal M_{w(v), n_v} / \operatorname{Aut}(\Gamma)]`."""
 
@@ -111,7 +132,7 @@ class QuotientStackSignature:
 
     def __eq__(self, other: object) -> bool:
         return (
-            isinstance(other, QuotientStackSignature)
+            isinstance(other, QuotientStackPresentation)
             and self._product == other._product
             and self._group_order == other._group_order
             and self._compact == other._compact
@@ -123,21 +144,18 @@ class QuotientStackSignature:
 
     def __repr__(self) -> str:
         factors = " x ".join(repr(factor) for factor in self._product) or "point"
-        return f"QuotientStackSignature(product=({factors}), |Aut|={self._group_order})"
+        return f"QuotientStackPresentation(product=({factors}), |Aut|={self._group_order})"
 
 
-QuotientStackPresentation = QuotientStackSignature
+QuotientStackSignature = QuotientStackPresentation
 
 
-class ClutchingDatum:
-    r"""Symbolic datum for the clutching (gluing) morphism
+class ClutchingMorphism:
+    r"""Symbolic clutching (gluing) morphism
+    :math:`\xi_\Gamma:\prod_v \overline{\mathcal M}_{g(v),H(v)}\to\overline{\mathcal M}_{g,n}`.
 
-    .. math::
-
-        \prod_v \overline{\mathcal M}_{w(v), n_v} \longrightarrow \overline{\mathcal M}_{g,n},
-
-    recording boundary factors, the ambient target, the automorphism group, and
-    the indexing dual graph.
+    Half-edges on the indexing graph are the local coordinates on each factor;
+    internal edges pair the corresponding sections via ``internal_edges()``.
     """
 
     __slots__ = ("_source_factors", "_target", "_group_order", "_curve_type")
@@ -169,26 +187,27 @@ class ClutchingDatum:
     def automorphism_action(self) -> AutomorphismAction:
         return self._curve_type.automorphism_action()
 
-    def local_markings_by_factor(self) -> tuple[tuple[int, ...], ...]:
-        r"""External marking labels on each factor (legacy subset of :meth:`factor_slots`)."""
+    def markings_by_vertex(self) -> tuple[tuple[int, ...], ...]:
+        r"""External marking labels on each vertex factor: :math:`(L(v))_{v\in V}`."""
         record = self._curve_type.canonical_representative()
         return tuple(record.markings_at(vertex) for vertex in range(record.num_vertices()))
 
+    def local_markings_by_factor(self) -> tuple[tuple[int, ...], ...]:
+        r"""Deprecated alias for :meth:`markings_by_vertex`."""
+        return self.markings_by_vertex()
+
     def factor_slots(self) -> tuple[tuple[FactorSlot, ...], ...]:
-        r"""All local special points on each moduli factor, including node branches."""
+        r"""Deprecated: prefer :meth:`flags_at` on each vertex."""
         return factor_slots(self._curve_type.canonical_representative())
 
     def gluing_partition(self) -> tuple[frozenset[int], ...]:
-        r"""Partition of ``{1, ..., n}`` into the marking sets on each factor."""
-        return tuple(frozenset(block) for block in self.local_markings_by_factor())
+        r"""Deprecated: prefer :meth:`markings_by_vertex` (blocks may be empty)."""
+        return tuple(frozenset(block) for block in self.markings_by_vertex())
 
     def edge_incidence(self) -> tuple[tuple[int, int], ...]:
         r"""Vertex pairs for each internal edge (in half-edge record order)."""
         record = self._curve_type.canonical_representative()
-        return tuple(
-            (record.flag_vertex[flag], record.flag_vertex[partner])
-            for flag, partner in record.internal_edges()
-        )
+        return tuple((record.flag_vertex[flag], record.flag_vertex[partner]) for flag, partner in record.internal_edges())
 
     def marking_flags(self) -> tuple[int, ...]:
         r"""External labels ``1, ..., n`` as flag indices on the indexing graph."""
@@ -236,7 +255,7 @@ class ClutchingDatum:
 
     def __eq__(self, other: object) -> bool:
         return (
-            isinstance(other, ClutchingDatum)
+            isinstance(other, ClutchingMorphism)
             and self._source_factors == other._source_factors
             and self._target == other._target
             and self._group_order == other._group_order
@@ -248,10 +267,10 @@ class ClutchingDatum:
 
     def __repr__(self) -> str:
         factors = " x ".join(repr(factor) for factor in self._source_factors) or "point"
-        return f"ClutchingDatum({factors} -> {self._target!r}, |Aut|={self._group_order})"
+        return f"ClutchingMorphism({factors} -> {self._target!r}, |Aut|={self._group_order})"
 
 
-ClutchingMorphism = ClutchingDatum
+ClutchingDatum = ClutchingMorphism
 
 
 class DMStratum:
@@ -266,10 +285,7 @@ class DMStratum:
         g = int(g)
         n = int(n)
         if parent.genus() != g or parent.number_of_markings() != n:
-            raise ValueError(
-                f"curve type belongs to Mbar({parent.genus()}, {parent.number_of_markings()}), "
-                f"not Mbar({g}, {n})"
-            )
+            raise ValueError(f"curve type belongs to Mbar({parent.genus()}, {parent.number_of_markings()}), not Mbar({g}, {n})")
         self._curve_type = curve_type
         self._g = g
         self._n = n
@@ -286,30 +302,35 @@ class DMStratum:
     def _factors(self, compact: bool) -> tuple[ModuliFactor, ...]:
         record = self._curve_type.canonical_representative()
         return tuple(
-            ModuliFactor(record.vertex_genera[v], record.valence(v), compact=compact)
+            ModuliFactor(
+                record.vertex_genera[v],
+                record.valence(v),
+                compact=compact,
+                flags=record.flags_at(v),
+            )
             for v in range(record.num_vertices())
         )
 
-    def open_stack_presentation(self) -> QuotientStackSignature:
-        r""":math:`[\prod_v \mathcal M_{w(v), n_v} / \operatorname{Aut}(\Gamma)]`."""
-        return QuotientStackSignature(
+    def open_stack_presentation(self) -> QuotientStackPresentation:
+        r""":math:`[\prod_v \mathcal M_{g(v),H(v)} / \operatorname{Aut}(\Gamma)]`."""
+        return QuotientStackPresentation(
             self._factors(compact=False),
             self._curve_type.automorphism_number(),
             compact=False,
             curve_type=self._curve_type,
         )
 
-    def closure_normalization_presentation(self) -> QuotientStackSignature:
-        r""":math:`[\prod_v \overline{\mathcal M}_{w(v), n_v} / \operatorname{Aut}(\Gamma)]`."""
-        return QuotientStackSignature(
+    def closure_normalization_presentation(self) -> QuotientStackPresentation:
+        r""":math:`[\prod_v \overline{\mathcal M}_{g(v),H(v)} / \operatorname{Aut}(\Gamma)]`."""
+        return QuotientStackPresentation(
             self._factors(compact=True),
             self._curve_type.automorphism_number(),
             compact=True,
             curve_type=self._curve_type,
         )
 
-    def clutching_morphism(self) -> ClutchingDatum:
-        return ClutchingDatum(
+    def clutching_morphism(self) -> ClutchingMorphism:
+        return ClutchingMorphism(
             self._factors(compact=True),
             ModuliFactor(self._g, self._n, compact=True),
             self._curve_type.automorphism_number(),
@@ -321,14 +342,8 @@ class DMStratum:
         record = self._curve_type.canonical_representative()
         genera = record.vertex_genera
         markings = tuple(record.markings_at(vertex) for vertex in range(record.num_vertices()))
-        relabeled_markings = tuple(
-            tuple(int(sigma(marking)) for marking in vertex_markings)
-            for vertex_markings in markings
-        )
-        edges = tuple(
-            (record.flag_vertex[flag], record.flag_vertex[partner])
-            for flag, partner in record.internal_edges()
-        )
+        relabeled_markings = tuple(tuple(int(sigma(marking)) for marking in vertex_markings) for vertex_markings in markings)
+        edges = tuple((record.flag_vertex[flag], record.flag_vertex[partner]) for flag, partner in record.internal_edges())
         relabeled = self._curve_type.parent().from_vertices(
             genera=genera,
             markings=relabeled_markings,

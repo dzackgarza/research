@@ -29,7 +29,11 @@ def test_m04_is_a_line_with_three_boundary_points():
     # each boundary point glues two three-pointed lines with trivial automorphism
     for stratum in boundary:
         presentation = stratum.open_stack_presentation()
-        assert presentation.product() == (ModuliFactor(0, 3), ModuliFactor(0, 3))
+        clutching = stratum.clutching_morphism()
+        assert presentation.product() == tuple(
+            ModuliFactor(0, 3, flags=clutching.flags_at(vertex))
+            for vertex in range(len(clutching.source_factors()))
+        )
         assert presentation.group_order() == 1
 
 

@@ -107,7 +107,9 @@ class StableGraph:
         # (1) every index is in range.
         assert num_vertices >= 1, f"a stable curve type has at least one vertex; vertex_genera={vertex_genera}"
         assert all(g >= 0 for g in vertex_genera), f"vertex genera must be nonnegative; vertex_genera={vertex_genera}"
-        assert len(flag_involution) == num_flags, f"flag_vertex and flag_involution must be indexed by the same flag set; |flag_vertex|={num_flags}, |flag_involution|={len(flag_involution)}"
+        assert len(flag_involution) == num_flags, (
+            f"flag_vertex and flag_involution must be indexed by the same flag set; |flag_vertex|={num_flags}, |flag_involution|={len(flag_involution)}"
+        )
         assert all(0 <= v < num_vertices for v in flag_vertex), f"every flag must attach to a vertex in range; flag_vertex={flag_vertex}, num_vertices={num_vertices}"
         assert all(0 <= f < num_flags for f in flag_involution), f"the involution must land in the flag set; flag_involution={flag_involution}, num_flags={num_flags}"
 
@@ -133,7 +135,8 @@ class StableGraph:
         # (6) every vertex is stable: 2 w(v) - 2 + n_v > 0.
         for vertex in range(num_vertices):
             valence = self.valence(vertex)
-            assert 2 * vertex_genera[vertex] - 2 + valence > 0, f"vertex {vertex} is unstable: 2*{vertex_genera[vertex]} - 2 + {valence} = {2 * vertex_genera[vertex] - 2 + valence} is not > 0"
+            stability = 2 * vertex_genera[vertex] - 2 + valence
+            assert stability > 0, f"vertex {vertex} is unstable: 2*{vertex_genera[vertex]} - 2 + {valence} = {stability} is not > 0"
 
     # -- structural accessors ----------------------------------------------------
 

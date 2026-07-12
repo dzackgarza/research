@@ -255,30 +255,31 @@ def test_branch_swap_semantics_on_m11_nodal_flags():
 def test_factor_slots_on_m11_nodal_graph():
     types = StableCurveTypes(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
+    graph = loop.canonical_representative()
     clutching = DMCompactificationModel(1, 1).stratum(loop).clutching_morphism()
-    slots = clutching.factor_slots()
-    assert len(slots) == 1
-    assert len(slots[0]) == 3
-    slot_perm = clutching.automorphism_action().on_factor_slots()[0][0]
-    assert sorted(slot_perm) == [0, 1, 2]
-    assert slot_perm[0] == 0
-    assert {slot_perm[1], slot_perm[2]} == {1, 2}
-    assert slot_perm[1] != 1
+    assert clutching.flags_at(0) == (0, 1, 2)
+    assert clutching.marking_flags() == (0,)
+    loop_flags = [flag for flag in clutching.flags_at(0) if graph.flag_involution[flag] != flag]
+    assert loop_flags == [1, 2]
+    assert graph.flag_involution[1] == 2 and graph.flag_involution[2] == 1
+    flag_perm = clutching.automorphism_action().on_flags()[0]
+    assert flag_perm[0] == 0
+    assert {flag_perm[1], flag_perm[2]} == {1, 2}
+    assert flag_perm[1] != 1
 
 
 def test_factor_slots_on_m04_split_type():
     types = StableCurveTypes(0, 4)
     split = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
+    graph = split.canonical_representative()
     clutching = DMCompactificationModel(0, 4).stratum(split).clutching_morphism()
-    slots = clutching.factor_slots()
-    assert len(slots) == 2
-    assert all(len(vertex_slots) == 3 for vertex_slots in slots)
-    node_pairings = clutching.node_pairings()
-    assert len(node_pairings) == 1
-    left, right = node_pairings[0]
-    assert left.local_index == 2
-    assert right.local_index == 2
-    assert left.vertex != right.vertex
+    assert clutching.flags_at(0) == (0, 1, 4)
+    assert clutching.flags_at(1) == (2, 3, 5)
+    marking_flags, node_pairs = clutching.gluing_map()
+    assert marking_flags == graph.marking_to_flag
+    assert node_pairs == ((4, 5),)
+    branch_flags = {node_pairs[0][0], node_pairs[0][1]}
+    assert branch_flags == {4, 5}
 
 
 def test_decorated_edge_orbit_morphisms_contract_to_codimension_one():

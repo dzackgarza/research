@@ -73,11 +73,11 @@ class AutomorphismAction:
         return self._vertex_perms
 
     def on_local_markings(self) -> tuple[tuple[tuple[int, ...], ...], ...]:
-        r"""Deprecated: prefer :meth:`on_factor_slots`."""
+        r"""Deprecated: prefer :meth:`on_flags`."""
         return self._local_marking_perms
 
     def on_factor_slots(self) -> tuple[tuple[tuple[int, ...], ...], ...]:
-        r"""Generator images as per-vertex permutations of :class:`FactorSlot` indices."""
+        r"""Deprecated: prefer :meth:`on_flags`, which acts on half-edges directly."""
         return self._factor_slot_perms
 
     @staticmethod

@@ -64,10 +64,7 @@ def m20_types(stratification: DMStratification) -> dict[str, DMStratum]:
         "II": types.from_vertices(genera=(0, 0), markings=((), ()), edges=((0, 0), (0, 1), (1, 1))),
     }
     by_key = {stratum.curve_type().canonical_key(): stratum for stratum in stratification.strata()}
-    return {
-        name: by_key[curve_type.canonical_key()]
-        for name, curve_type in fixtures.items()
-    }
+    return {name: by_key[curve_type.canonical_key()] for name, curve_type in fixtures.items()}
 
 
 def genus_six_counterexample() -> StableGraphType:

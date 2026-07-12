@@ -13,11 +13,7 @@ _RESOLVED_BACKENDS = ("pure-sage", "admcycles-stable", "admcycles-decorated")
 
 
 def _curve_type_keys(stratification: DMStratification) -> frozenset[object]:
-    return frozenset(
-        gamma.canonical_key()
-        for level in stratification.curve_type_levels()
-        for gamma in level
-    )
+    return frozenset(gamma.canonical_key() for level in stratification.curve_type_levels() for gamma in level)
 
 
 def _resolve_backend(backend: str) -> str:
@@ -72,9 +68,7 @@ class DMCompactificationModel(UniqueRepresentation):
         expected = self.graph_types()
         parent = curve_type.parent()
         if parent is not expected and parent != expected:
-            raise ValueError(
-                f"curve type belongs to {parent}, not to this model's {expected}"
-            )
+            raise ValueError(f"curve type belongs to {parent}, not to this model's {expected}")
         return DMStratum(curve_type, self._g, self._n)
 
     def stratification(
@@ -119,9 +113,7 @@ class DMCompactificationModel(UniqueRepresentation):
             )
         if verify_resolved is not None:
             reference = self.stratification(backend=verify_resolved, max_codim=max_codim)
-            assert _curve_type_keys(result) == _curve_type_keys(reference), (
-                f"backend {resolved!r} disagrees with reference {verify_resolved!r} on canonical-key set"
-            )
+            assert _curve_type_keys(result) == _curve_type_keys(reference), f"backend {resolved!r} disagrees with reference {verify_resolved!r} on canonical-key set"
         return result
 
     def strata(self, codim: int | None = None) -> tuple[DMStratum, ...]:

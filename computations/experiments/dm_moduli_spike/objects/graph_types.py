@@ -87,10 +87,7 @@ class StableGraphType(Element):
         return self._graph.num_edges()
 
     def stratum_dimension(self) -> int:
-        return sum(
-            3 * self._graph.vertex_genera[v] - 3 + self._graph.valence(v)
-            for v in range(self._graph.num_vertices())
-        )
+        return sum(3 * self._graph.vertex_genera[v] - 3 + self._graph.valence(v) for v in range(self._graph.num_vertices()))
 
     def automorphism_number(self) -> int:
         return automorphism_number(self._graph)

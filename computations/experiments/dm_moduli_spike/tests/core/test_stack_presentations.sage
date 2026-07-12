@@ -11,7 +11,10 @@ def test_open_stack_presentation_factors_and_automorphism_action():
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     stratum = model.stratum(gamma)
     presentation = stratum.open_stack_presentation()
-    assert presentation.product() == (ModuliFactor(0, 3), ModuliFactor(0, 3))
+    assert presentation.product() == (
+        ModuliFactor(0, 3, flags=(0, 1, 4)),
+        ModuliFactor(0, 3, flags=(2, 3, 5)),
+    )
     assert presentation.group_order() == gamma.automorphism_number()
     assert not presentation.is_compact()
     assert presentation.dimension() == stratum.dimension()
@@ -23,7 +26,10 @@ def test_closure_normalization_uses_compact_factors():
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     stratum = model.stratum(gamma)
     presentation = stratum.closure_normalization_presentation()
-    assert presentation.product() == (ModuliFactor(0, 3, compact=True), ModuliFactor(0, 3, compact=True))
+    assert presentation.product() == (
+        ModuliFactor(0, 3, compact=True, flags=(0, 1, 4)),
+        ModuliFactor(0, 3, compact=True, flags=(2, 3, 5)),
+    )
     assert all(factor.is_compact() for factor in presentation.product())
 
 
@@ -34,7 +40,7 @@ def test_clutching_morphism_targets_the_ambient_compactification():
     stratum = model.stratum(loop)
     clutching = stratum.clutching_morphism()
     # the nodal cubic glues M(0,3) to itself with a Z/2 branch swap
-    assert clutching.source_factors() == (ModuliFactor(0, 3, compact=True),)
+    assert clutching.source_factors() == (ModuliFactor(0, 3, compact=True, flags=(0, 1, 2)),)
     assert clutching.target() == ModuliFactor(1, 1, compact=True)
     assert clutching.group_order() == 2
     assert clutching.curve_type() == loop

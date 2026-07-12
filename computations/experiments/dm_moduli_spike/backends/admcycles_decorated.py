@@ -24,15 +24,10 @@ def _require_decorated_module() -> object:
         import admcycles.decorated_graph as decorated_graph  # type: ignore[import-not-found]
     except ImportError as error:
         raise ImportError(
-            "the admcycles-decorated backend requires admcycles with the "
-            "'admcycles.decorated_graph' module (install admcycles from "
-            "https://gitlab.com/modulispaces/admcycles)"
+            "the admcycles-decorated backend requires admcycles with the 'admcycles.decorated_graph' module (install admcycles from https://gitlab.com/modulispaces/admcycles)"
         ) from error
     if not hasattr(decorated_graph, "stable_graphs"):  # pragma: no cover - version dependent
-        raise ImportError(
-            "admcycles.decorated_graph is present but lacks 'stable_graphs'; "
-            "upgrade admcycles from https://gitlab.com/modulispaces/admcycles"
-        )
+        raise ImportError("admcycles.decorated_graph is present but lacks 'stable_graphs'; upgrade admcycles from https://gitlab.com/modulispaces/admcycles")
     return decorated_graph
 
 
@@ -96,9 +91,7 @@ def _iter_decorated_graphs(decorated_graph: object, g: int, n: int, cap: int) ->
     buckets = decorated_graph.stable_graphs(g, n, cap)  # type: ignore[attr-defined]
     if not buckets:
         return
-    assert isinstance(buckets[0], list), (
-        f"expected stable_graphs({g}, {n}, {cap}) to return dimension buckets; got {type(buckets[0])}"
-    )
+    assert isinstance(buckets[0], list), f"expected stable_graphs({g}, {n}, {cap}) to return dimension buckets; got {type(buckets[0])}"
     for codim, bucket in enumerate(buckets):
         if codim > cap:
             continue
@@ -171,9 +164,7 @@ def _record_to_decorated_graph(record: StableGraph, g: int, n: int) -> object:
     converted = _record_from_decorated_graph(decorated, g, n)
     assert converted.genus() == g, f"round-trip genus {converted.genus()} != ambient {g}"
     assert converted.num_markings() == n, f"round-trip markings {converted.num_markings()} != ambient {n}"
-    assert converted.num_edges() == record.num_edges(), (
-        f"round-trip edge count {converted.num_edges()} != {record.num_edges()}"
-    )
+    assert converted.num_edges() == record.num_edges(), f"round-trip edge count {converted.num_edges()} != {record.num_edges()}"
     return decorated
 
 
@@ -197,9 +188,7 @@ class AdmcyclesDecoratedGraphBackend:
         result: dict[object, StableCurveType] = {}
         for decorated, bucket_codim in _iter_decorated_graphs(decorated_graph, g, n, cap):
             record = _record_from_decorated_graph(decorated, g, n)
-            assert record.num_edges() == bucket_codim, (
-                f"decorated_graph bucket codim {bucket_codim} disagrees with {record.num_edges()} edges"
-            )
+            assert record.num_edges() == bucket_codim, f"decorated_graph bucket codim {bucket_codim} disagrees with {record.num_edges()} edges"
             if record.num_edges() > cap:
                 continue
             curve_type = curve_types.from_record(record)
