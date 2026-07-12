@@ -46,13 +46,11 @@ from ..lexicon import (
     IntegralNondegenerateLattice,
     Lattice,
     LatticeElement,
-    LatticeMorphism,
     LatticeName,
     NondegenerateLattice,
     PositiveDefiniteLattice,
     QuadraticDiscriminantForm,
     RawGramMatrix,
-    RawMorphismMatrix,
     RootGeneratedLattice,
     SourcedDiscriminantForm,
 )
@@ -173,12 +171,12 @@ class Lattices(Category_over_base_ring):
         output, not input: you construct E8 as a lattice and GET a
         root-generated lattice.
         """
-        from ..algebra.arithmetic import _is_named_gram_data, as_square_qq_matrix, named_cartan_type
+        from ..algebra.arithmetic import as_square_qq_matrix, is_named_gram_data, named_cartan_type
         from .parents import synthetic_lattice
 
         base_ring = self.base_ring()
         assert base_ring in (ZZ, QQ), f"lattice base ring must be ZZ or QQ; found={base_ring}; enter through Lattices(ZZ) or Lattices(QQ)"
-        if cartan_type is None and _is_named_gram_data(gram_matrix):
+        if cartan_type is None and is_named_gram_data(gram_matrix):
             cartan_type = named_cartan_type(gram_matrix)
         gram = as_square_qq_matrix(gram_matrix)
         return cast(
@@ -196,9 +194,9 @@ class Lattices(Category_over_base_ring):
             return [Sets()]
 
         class ParentMethods:
-            @abstract_method
-            def from_matrix(self, matrix_data: RawMorphismMatrix) -> LatticeMorphism:
-                r"""Construct the lattice morphism represented by ``matrix_data``."""
+            # No from_matrix contract: morphism construction is the element
+            # constructor / the lattices' public named constructors (#100 T4).
+            pass
 
         class ElementMethods:
             @abstract_method

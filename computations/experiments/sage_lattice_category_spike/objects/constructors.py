@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
-from sage.matrix.constructor import column_matrix, identity_matrix, matrix
+from sage.matrix.constructor import identity_matrix, matrix
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
@@ -54,9 +54,9 @@ def Lattice(
     form is the ``-1`` twist, spelled ``Lattice("E8(-1)")`` or, equivalently,
     ``Lattice("E8").twist(-1)``. There is no sign flag: the sign is carried by
     the twist, not a boolean mode."""
-    from ..algebra.arithmetic import _is_named_gram_data
+    from ..algebra.arithmetic import is_named_gram_data
 
-    if _is_named_gram_data(gram_matrix):
+    if is_named_gram_data(gram_matrix):
         return _named_lattice(gram_matrix, base_ring, label, names)
     return SyntheticLatticeFromGram(gram_matrix, base_ring=base_ring, label=label if label is not None else "L", names=names)
 
@@ -150,24 +150,25 @@ def IntegralLatticeGluing(
 
             discriminant_group = lattice.discriminant_group()
             assert isinstance(discriminant_group, SyntheticSourcedDiscriminantForm), f"expected a sourced discriminant group; found={type(discriminant_group)}"
-            lift = discriminant_group._coset_representative_in_source(discriminant_element)
+            lift = discriminant_group.coset_representative_in_source(discriminant_element)
             for i, value in enumerate(lift):
                 row[start + i] = value
         lift_rows.append(row)
 
-    # The overlattice basis B, in the direct-sum ambient's coordinates. glued is
-    # the plain lattice on that basis; each summand embeds by expressing its
-    # generators (block units of the ambient) in B -- computed once, here.
+    # The glued lattice IS the overlattice of the direct-sum determined by the
+    # glue lifts, so the overlattice constructor mints the witnessing morphism
+    # (the once-only presentation crossing); each summand's embedding is
+    # morphism algebra -- its block inclusion into the direct sum composed
+    # with that witness.
     glue_matrix = matrix(QQ, lift_rows) if lift_rows else matrix(QQ, 0, ambient.rank())
-    combined = identity_matrix(QQ, ambient.rank()).stack(glue_matrix)
-    overlattice_basis = matrix(QQ, (QQ ** ambient.rank()).span(combined.rows(), ZZ).basis_matrix())
     assert isinstance(ambient, SyntheticLattice), f"gluing builds the overlattice on the direct-sum ambient; found={type(ambient)}"
-    glued = ambient._from_rows(overlattice_basis, ZZ, label)
+    glue_embedding = ambient.overlattice(glue_matrix, label=label)
+    glued = glue_embedding.codomain()
     assert glued.is_integral(), f"glued overlattice is not integral; gram={glued.gram_matrix()}"
     if not return_embeddings:
         return glued
+    block_units = identity_matrix(ZZ, ambient.rank())
     embeddings = tuple(
-        lattice.Hom(glued).from_matrix(column_matrix(ZZ, [overlattice_basis.solve_left(identity_matrix(QQ, ambient.rank()).row(start + j)) for j in range(lattice.rank())]))
-        for lattice, start in zip(lattices, offsets)
+        glue_embedding * lattice.embedding(block_units.matrix_from_columns(range(start, start + lattice.rank())), codomain=ambient) for lattice, start in zip(lattices, offsets)
     )
     return glued, embeddings

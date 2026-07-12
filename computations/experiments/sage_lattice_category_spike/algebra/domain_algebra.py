@@ -375,10 +375,15 @@ class Lattice:
 
     # radical theory (the functor that STAYS a lattice)
     @abstract_method
-    def radical(self) -> Lattice: ...
+    def radical(self) -> Subobject:
+        """``rad(L)`` as a subobject — the orthogonal complement of the
+        identity morphism (the object spelling delegates through the
+        canonical attached morphism; #100 ratified placement)."""
 
     @abstract_method
-    def radical_quotient(self) -> NondegenerateLattice: ...
+    def radical_quotient(self) -> NondegenerateLattice:
+        """``L / rad(L)`` — the coimage of the radical's presentation,
+        derived from ``radical()``'s carried inclusion."""
 
     # constructions
     @abstract_method
@@ -414,9 +419,10 @@ class Lattice:
 
     # sum / intersection / saturation / primitive_closure / is_submodule are
     # subobject vocabulary: they relate a carried inclusion to its codomain and
-    # are not defined on a bare lattice (P6 siting gate, #100). ``Subobject``
-    # owns saturation and saturation_factorization; the remaining subobject
-    # algebra is sited there by the method-placement architecture plan.
+    # are not defined on a bare lattice (P6 siting gate, #100). Saturation and
+    # its factorization are morphism-sited (``LatticeMorphism``); ``Subobject``
+    # spellings delegate to the carried inclusion, and the subobject algebra
+    # (sum, intersection) is sited on ``Subobject`` itself.
 
     @abstract_method
     def subobject(self, elements: Sequence[LatticeElement]) -> Subobject:
@@ -453,6 +459,22 @@ class Lattice:
     def Hom(self, codomain: Lattice) -> LatticeHomset: ...
 
     @abstract_method
+    def Isom(self, codomain: Lattice) -> IsometryHomset:
+        """``Isom(L, M)``: the isometries ``L -> M`` as a first-class parent
+        (ratified method placement, #100) — existence and classification
+        questions are asked of the homset, never of a bare boolean."""
+
+    @abstract_method
+    def Emb(self, codomain: Lattice) -> EmbeddingHomset:
+        """``Emb(L, M)``: the embeddings ``L -> M`` as a first-class parent —
+        the honest home of the Nikulin-class existence machinery."""
+
+    @abstract_method
+    def identity_morphism(self) -> LatticeMorphism:
+        """The identity of ``End(L)`` — the canonical attached morphism that
+        object spellings delegate through."""
+
+    @abstract_method
     def hom(self, matrix: RawMorphismMatrix, codomain: Lattice) -> LatticeMorphism: ...
 
     @abstract_method
@@ -469,7 +491,9 @@ class Lattice:
     def isometry_group(self) -> IsometryGroup: ...
 
     @abstract_method
-    def is_isometric(self, other: Lattice) -> bool: ...
+    def is_isometric(self, other: Lattice) -> bool:
+        """Router for ``not Isom(self, other).is_empty()`` — the homset is
+        the first-class object; this boolean is its emptiness question."""
 
 
 # ---------------------------------------------------------------------------
@@ -718,6 +742,45 @@ class LatticeMorphism:
         """The index ``[codomain : image]`` — the cokernel's cardinality,
         infinite when the image is not full rank."""
 
+    # -- morphism-sited geometry (ratified method placement, #100): the
+    # -- operations below consume the morphism itself, so they are typed here
+    # -- and nowhere else; object spellings survive only as delegations
+    # -- through a canonical attached morphism. ------------------------------
+
+    @abstract_method
+    def restrict(self, subobject: Subobject) -> LatticeMorphism:
+        """Precomposition with the subobject's inclusion — the morphism
+        ``sub -> codomain`` given by ``self * subobject.inclusion()``; defined
+        when the subobject's codomain is this morphism's domain."""
+
+    @abstract_method
+    def preserves(self, subobject: Subobject) -> bool:
+        """Factorization query: does ``self * subobject.inclusion()`` factor
+        through ``subobject.inclusion()``? For an endomorphism this is
+        stability of the subobject."""
+
+    @abstract_method
+    def saturation(self) -> Subobject:
+        """For a monomorphism: the saturation of its image in the codomain —
+        the smallest primitive subobject it factors through."""
+
+    @abstract_method
+    def saturation_factorization(self) -> LatticeMorphism:
+        """For a monomorphism ``f: A -> B``: the mono ``A -> A^sat`` with
+        ``f.saturation().inclusion() * f.saturation_factorization() == f``;
+        its index is ``[A^sat : A]``, ``1`` exactly when ``f`` is primitive."""
+
+    @abstract_method
+    def orthogonal_complement(self) -> Subobject:
+        """The subobject of the codomain pairing to zero with the image —
+        the kernel of the composed pairing."""
+
+    @abstract_method
+    def induced_map_on_quotient(self, quotient: FiniteAbelianGroup) -> DiscriminantAction:
+        """Descent to a finite quotient of the codomain: defined exactly when
+        the morphism kills the quotient's relation subobject through the
+        projection (``pi . phi . iota = 0``)."""
+
     @abstract_method
     def induced_map_on_discriminant_group(self) -> DiscriminantAction: ...
 
@@ -754,8 +817,78 @@ class LatticeHomset:
     @abstract_method
     def codomain(self) -> Lattice: ...
 
+    # No constructor row: a morphism is built by the public named
+    # constructors on lattices (hom/embedding/reflection/similarity) or by
+    # constructing the homset's element class, whose constructor asserts
+    # well-definedness (#70; from_matrix demoted per #100 T4).
+
+
+class IsometryHomset:
+    """``Isom(L, M)``: the isometries ``L -> M`` as a first-class parent,
+    an object of ``Lattices(R).Homsets()`` for a single base ring ``R`` — a
+    cross-ring premise is an incoherent construction (asserted at the homset
+    boundary), not an empty homset; base-change explicitly before asking.
+    Emptiness and membership are total contracts; ``an_element`` and
+    iteration are implemented exactly where they are computable — when
+    nonempty, ``Isom(L, M)`` is an ``O(M)``-torsor, so enumeration composes
+    one isometry with the isometry group of the codomain."""
+
     @abstract_method
-    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism: ...
+    def domain(self) -> Lattice: ...
+
+    @abstract_method
+    def codomain(self) -> Lattice: ...
+
+    @abstract_method
+    def is_empty(self) -> bool: ...
+
+    @abstract_method
+    def an_element(self) -> LatticeMorphism:
+        """A distinguished isometry; defined exactly when the homset is
+        nonempty (asserted)."""
+
+    @abstract_method
+    def cardinality(self) -> int:
+        """``0`` when empty; ``|O(M)|`` otherwise (the nonempty homset is an
+        ``O(M)``-torsor). Answers exactly where ``O(M)`` carries a grounded
+        finiteness answer; elsewhere no computation grounds any answer
+        (finite or infinite) yet, and the contract asserts out by name."""
+
+    @abstract_method
+    def __iter__(self) -> Iterator[LatticeMorphism]: ...
+
+    @abstract_method
+    def __contains__(self, candidate: Any) -> bool: ...
+
+
+class EmbeddingHomset:
+    """``Emb(L, M)``: the form-preserving monomorphisms ``L -> M`` as a
+    first-class parent — the honest home of the Nikulin-class existence and
+    classification machinery. Emptiness is the existence question; iteration
+    is a contract implemented exactly where enumeration by generator
+    patterns is computable (e.g. integral definite codomain via vectors of
+    the right squares); an implementation names its supported regime at its
+    own boundary and asserts out everything else."""
+
+    @abstract_method
+    def domain(self) -> Lattice: ...
+
+    @abstract_method
+    def codomain(self) -> Lattice: ...
+
+    @abstract_method
+    def is_empty(self) -> bool: ...
+
+    @abstract_method
+    def an_element(self) -> LatticeMorphism:
+        """A distinguished embedding; defined exactly when the homset is
+        nonempty (asserted)."""
+
+    @abstract_method
+    def __iter__(self) -> Iterator[LatticeMorphism]: ...
+
+    @abstract_method
+    def __contains__(self, candidate: Any) -> bool: ...
 
 
 # ---------------------------------------------------------------------------
@@ -774,7 +907,12 @@ class IsometryGroup:
     def __contains__(self, candidate: Any) -> bool: ...
 
     @abstract_method
-    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism: ...
+    def _from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism:
+        """Presentation-facing constructor, demoted to a private convenience
+        (#100 ratified placement): declared here so private reaches outside
+        the sanctioned crossings are flaggable, never prevented. The public
+        canonical constructors are the few named ones (``hom``,
+        ``embedding``, ``reflection``, ``similarity``)."""
 
     @abstract_method
     def one(self) -> LatticeMorphism: ...
@@ -1193,7 +1331,7 @@ class SourcedDiscriminantForm(QuadraticDiscriminantForm):
     def lift(self, element: DiscriminantFormElement) -> LatticeElement: ...
 
     @abstract_method
-    def _coset_representative_in_source(self, element: DiscriminantFormElement) -> Sequence[ExactScalar]: ...
+    def coset_representative_in_source(self, element: DiscriminantFormElement) -> Sequence[ExactScalar]: ...
 
     @abstract_method
     def projection(self, element: LatticeElement) -> DiscriminantFormElement: ...

@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from .discriminant_forms import SyntheticDiscriminantForm
 
 
-def _lattice_key(lattice: Any) -> tuple[Any, ...]:
+def lattice_key(lattice: Any) -> tuple[Any, ...]:
     return (
         repr(lattice.base_ring()),
         lattice.rank(),
@@ -27,7 +27,7 @@ def _lattice_key(lattice: Any) -> tuple[Any, ...]:
     )
 
 
-def _relation_inclusion_matrix(cover_lattice: Any, relation_lattice: Any) -> Any:
+def relation_inclusion_matrix(cover_lattice: Any, relation_lattice: Any) -> Any:
     r"""Integer inclusion of ``relation_lattice`` into ``cover_lattice`` (rows in cover coordinates).
 
     A finite quotient ``cover / relation`` is defined by an inclusion morphism.
@@ -51,7 +51,7 @@ def _finite_coordinates(group: Any, element: Any) -> tuple[Any, ...]:
     return tuple(group.coordinates(group(element)))
 
 
-def _all_group_automorphisms(group: Any) -> tuple[SyntheticDiscriminantAction, ...]:
+def all_group_automorphisms(group: Any) -> tuple[SyntheticDiscriminantAction, ...]:
     if group.ngens() == 0:
         return (SyntheticDiscriminantAction(group, identity_matrix(ZZ, 0)),)
     automorphisms = []
@@ -63,7 +63,7 @@ def _all_group_automorphisms(group: Any) -> tuple[SyntheticDiscriminantAction, .
     return tuple(automorphisms)
 
 
-def _finite_all_subgroups(parent: Any) -> tuple[Any, ...]:
+def finite_all_subgroups(parent: Any) -> tuple[Any, ...]:
     seen = {}
     zero = parent.subgroup_generated_by(())
     seen[zero._key()] = zero
@@ -79,13 +79,13 @@ def _finite_all_subgroups(parent: Any) -> tuple[Any, ...]:
     return tuple(seen[key] for key in sorted(seen, key=lambda item: sorted(item)))
 
 
-def _finite_relations_among(parent: Any, gens: Any) -> tuple[tuple[Any, ...], ...]:
+def finite_relations_among(parent: Any, gens: Any) -> tuple[tuple[Any, ...], ...]:
     gens = tuple(parent(gen) for gen in gens)
     ranges = tuple(range(parent.order(generator)) for generator in gens)
     return tuple(tuple(ZZ(coefficient) for coefficient in coefficients) for coefficients in product(*ranges) if parent.discrete_exp(coefficients, gens=gens) == parent.zero())
 
 
-def _finite_basis_from_generators(parent: Any, gens: Any) -> tuple[Any, ...]:
+def finite_basis_from_generators(parent: Any, gens: Any) -> tuple[Any, ...]:
     subgroup = parent.subgroup_generated_by(gens)
     assert subgroup.cardinality() == parent.cardinality(), "generators do not span the whole group"
     return tuple(parent(gen) for gen in gens)
@@ -95,7 +95,7 @@ def _finite_scalar_multiply(parent: Any, scalar: Any, element: Any) -> Any:
     return ZZ(scalar) * element
 
 
-def _finite_p_torsion(parent: Any, p: Any, k: Any = 1) -> Any:
+def finite_p_torsion(parent: Any, p: Any, k: Any = 1) -> Any:
     p = ZZ(p)
     k = ZZ(k)
     assert p.is_prime(), f"p-torsion requires a prime; found={p}"
@@ -103,7 +103,7 @@ def _finite_p_torsion(parent: Any, p: Any, k: Any = 1) -> Any:
     return parent.subgroup_generated_by(element for element in parent.elements() if _finite_scalar_multiply(parent, p**k, element) == parent.zero())
 
 
-def _form_matrix_on_images(group: Any, images: Any) -> Any:
+def form_matrix_on_images(group: Any, images: Any) -> Any:
     images = tuple(group(image) for image in images)
     form = matrix(QQ, len(images), len(images))
     for i, left in enumerate(images):
@@ -137,7 +137,7 @@ def _quotient_closure(reduce: Callable[[Any], Any], zero: Any, generators: Any) 
     return seen
 
 
-def _induced_subquotient_form(ambient: Any, relation_subgroup: Any, cover_subgroup: Any) -> Any:
+def induced_subquotient_form(ambient: Any, relation_subgroup: Any, cover_subgroup: Any) -> Any:
     r"""The finite quadratic form on ``K / H`` (``H ⊆ K ⊆ H``-perp, ``H`` isotropic).
 
     The ambient bilinear/quadratic form descends to ``K / H``; present it on a
@@ -162,7 +162,7 @@ def _induced_subquotient_form(ambient: Any, relation_subgroup: Any, cover_subgro
         span = set(_quotient_closure(reduce, zero, generators))
         if len(span) == len(representatives):
             break
-    form = _form_matrix_on_images(ambient, generators)
+    form = form_matrix_on_images(ambient, generators)
     # lazy import: discriminant_forms imports this module at load time
     from .discriminant_forms import SyntheticQuadraticDiscriminantForm
 

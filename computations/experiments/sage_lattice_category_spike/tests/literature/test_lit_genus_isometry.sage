@@ -25,7 +25,7 @@ def test_dickson_ross_equivalence_uses_splag_unimodular_witness():
     assert witness * first_gram * witness.transpose() == second_gram
 
     assert first.is_isometric(second)
-    isometry = second.Hom(first).from_matrix(witness.transpose())
+    isometry = second.hom(witness.transpose(), codomain=first)
     assert isometry.is_isometry()
     assert isometry.inverse().is_isometry()
     assert [isometry(v).q() for v in second.gens()] == [v.q() for v in second.gens()]

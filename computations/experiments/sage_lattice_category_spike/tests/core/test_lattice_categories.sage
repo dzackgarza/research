@@ -359,11 +359,11 @@ def test_discriminant_subgroups_actions_and_overlattice_construction_are_owned()
 def test_homs_are_form_preserving_by_construction():
     U = Lattice("U", label="U")
 
-    identity = U.Hom(U).from_matrix(identity_matrix(ZZ, 2))
+    identity = U.hom(identity_matrix(ZZ, 2))
     assert identity(U.gen(0)) == U.gen(0)
     assert identity(U.gen(0)).b(identity(U.gen(1))) == U.gen(0).b(U.gen(1))
 
-    swap = U.Hom(U).from_matrix(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
+    swap = U.hom(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
     assert swap(U.gen(0)) == U.gen(1)
     assert swap(U.gen(1)) == U.gen(0)
 
@@ -371,7 +371,7 @@ def test_homs_are_form_preserving_by_construction():
 def test_hom_image_and_kernel_are_synthetic_lattices():
     A2 = Lattice("A2(-1)", label="A2")
     A2_dual = A2.dual()
-    inclusion = A2.Hom(A2_dual).from_matrix(Matrix(ZZ, 2, 2, [2, -1, -1, 2]))
+    inclusion = A2.hom(Matrix(ZZ, 2, 2, [2, -1, -1, 2]), codomain=A2_dual)
 
     image = inclusion.image()
     kernel = inclusion.kernel()
@@ -385,10 +385,10 @@ def test_hom_image_and_kernel_are_synthetic_lattices():
 def test_integral_lattice_inclusion_into_dual_is_a_synthetic_morphism():
     A2 = Lattice("A2(-1)", label="A2")
     A2_dual = A2.dual()
-    inclusion = A2.Hom(A2_dual).from_matrix(Matrix(ZZ, 2, 2, [2, -1, -1, 2]))
+    inclusion = A2.hom(Matrix(ZZ, 2, 2, [2, -1, -1, 2]), codomain=A2_dual)
     quotient = A2_dual.finite_quotient(A2)
-    negation = A2_dual.Hom(A2_dual).from_matrix(-identity_matrix(ZZ, 2))
-    induced = A2_dual.induced_map_on_quotient(negation, quotient)
+    negation = A2_dual.hom(-identity_matrix(ZZ, 2))
+    induced = negation.induced_map_on_quotient(quotient)
     generator = quotient.gen(0)
 
     assert inclusion(A2.gen(0)).q() == A2.gen(0).q()
@@ -519,7 +519,7 @@ def test_explicit_isometries_act_on_discriminant_groups():
     U = Lattice("U", label="U")
     swap = matrix(ZZ, 2, 2, [0, 1, 1, 0])
 
-    isometry = U.isometry_group().from_matrix(swap)
+    isometry = U.hom(swap)
     assert isometry(U.gen(0)) == U.gen(1)
     assert U.isometry_group().discriminant_action(isometry).is_identity()
     assert U.isometry_group().subgroup([swap]).discriminant_image()[0].is_identity()
@@ -810,12 +810,12 @@ def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indef
     # is_isometry separates isomorphisms from mere form-preservation: the metric
     # inclusion A2 -> A2# is form-preserving (matrix G) but not an isometry (det 3).
     A2_dual = A2.dual()
-    assert not A2.Hom(A2_dual).from_matrix(A2.gram_matrix()).is_isometry()
-    assert A2.Hom(A2).from_matrix(identity_matrix(ZZ, 2)).is_isometry()
+    assert not A2.hom(A2.gram_matrix(), codomain=A2_dual).is_isometry()
+    assert A2.hom(identity_matrix(ZZ, 2)).is_isometry()
 
     U = Lattice("U", label="U")
     O_U = U.isometry_group()
-    swap_isometry = O_U.from_matrix(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
+    swap_isometry = U.hom(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
     assert swap_isometry.is_isometry() and swap_isometry in O_U
 
     # is_isometric: definite decided via Sage; different class / rank -> False;
@@ -1086,3 +1086,24 @@ def test_rational_isometry_decides_by_square_class_via_the_oracle():
     three_half = Lattice(matrix(QQ, [[QQ(3) / 2]]), base_ring=QQ, label="3/2")
     assert half.is_isometric(two)  # 2 / (1/2) = 4, a square
     assert not half.is_isometric(three_half)  # ratio 3, not a square
+
+
+def test_cross_ring_isometry_homset_is_an_incoherent_construction():
+    # Isom(L, M) is an object of Lattices(R).Homsets() for a single base ring
+    # R: a ZZ-lattice and a QQ-lattice are objects of different categories, so
+    # the homset construction itself must fail loudly. Before the boundary
+    # guard, A2 over ZZ against A2 (x) QQ routed to the rational-equivalence
+    # case and reported a nonempty homset (is_isometric True) -- a false
+    # positive across categories. The coherent cross-ring question applies the
+    # base-change functor explicitly and stays decided: A2 (x) QQ IS isometric
+    # to itself as a rational lattice.
+    A2 = Lattice("A2")
+    A2_QQ = A2.base_extend(QQ)
+    assert A2.base_ring() is ZZ and A2_QQ.base_ring() is QQ
+    with pytest.raises(AssertionError):
+        A2.Isom(A2_QQ)
+    with pytest.raises(AssertionError):
+        A2_QQ.Isom(A2)
+    with pytest.raises(AssertionError):
+        A2.is_isometric(A2_QQ)  # the emptiness router hits the same boundary
+    assert A2.base_extend(QQ).is_isometric(A2_QQ)  # the explicit functor route

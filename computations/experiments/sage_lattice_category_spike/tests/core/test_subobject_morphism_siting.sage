@@ -33,7 +33,7 @@ def test_realized_root_sublattice_dual_chain_induces_negation_action():
     quotient = L_dual.finite_quotient(L)
     assert quotient.cardinality() == 3
     negation = L_dual.hom(-identity_matrix(ZZ, 2))
-    induced = L_dual.induced_map_on_quotient(negation, quotient)
+    induced = negation.induced_map_on_quotient(quotient)
     generator = quotient.gen(0)
     assert induced(generator) == -generator
     assert induced(generator) != generator  # negation is nontrivial on Z/3
@@ -48,7 +48,7 @@ def test_induced_action_on_a_genuine_subobject_relation_quotient():
     quotient = M.finite_quotient(S)
     assert quotient.cardinality() == 3
     reflect = M.hom(matrix(ZZ, [[-1, 0], [0, 1]]))  # preserves S
-    induced = M.induced_map_on_quotient(reflect, quotient)
+    induced = reflect.induced_map_on_quotient(quotient)
     generator = quotient.gen(0)
     assert induced(generator) == -generator
     assert induced(generator) != generator  # negation is nontrivial on Z/3
@@ -63,7 +63,7 @@ def test_induced_map_rejects_isometry_not_preserving_the_relation():
     quotient = M.finite_quotient(S)
     swap = M.hom(matrix(ZZ, [[0, 1], [1, 0]]))  # isometry of M; swap does not preserve S
     with pytest.raises(AssertionError):
-        M.induced_map_on_quotient(swap, quotient)
+        swap.induced_map_on_quotient(quotient)
 
 
 def test_isometry_subgroup_preserves_is_a_factorization_query_on_the_subobject():
