@@ -10,8 +10,8 @@
 test: siting-check
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test
 
-# CI alias for the same proof surface.
-test-ci:
+# CI alias for the same proof surface: identical gate set as `test`.
+test-ci: siting-check
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
 
 # Prove the lexicon stub subtree (lexicon/ + typings/): the catalogue must
