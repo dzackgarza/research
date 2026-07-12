@@ -9,20 +9,19 @@ spike's owned :class:`~dm_moduli_spike.objects.graph_types.StableGraphType`;
 from __future__ import annotations
 
 from collections import defaultdict
+from collections.abc import Iterator
 from typing import TYPE_CHECKING
 
 from ..objects.records import StableGraph
 
 if TYPE_CHECKING:
-    from ..objects.contraction_orbits import ContractionOrbit
     from ..objects.contractions import StableGraphContraction
     from ..objects.curve_types import StableCurveType, StableCurveTypes
-    from ..objects.graph_types import StableGraphType
 
 
 def _require_decorated_module() -> object:
     try:
-        import admcycles.decorated_graph as decorated_graph
+        import admcycles.decorated_graph as decorated_graph  # type: ignore[import-not-found]
     except ImportError as error:
         raise ImportError(
             "the admcycles-decorated backend requires admcycles with the "
@@ -38,6 +37,9 @@ def _require_decorated_module() -> object:
 
 
 def _decorated_genera(decorated: object, num_vertices: int) -> tuple[int, ...]:
+    genus = getattr(decorated, "genus", None)
+    if callable(genus):
+        return tuple(int(genus(vertex)) for vertex in range(num_vertices))
     genera = getattr(decorated, "_genera", None)
     if genera is None:
         raise TypeError(f"DecoratedGraph lacks vertex genera: {decorated!r}")
@@ -89,7 +91,7 @@ def _record_from_decorated_graph(decorated: object, g: int, n: int) -> StableGra
     return record
 
 
-def _iter_decorated_graphs(decorated_graph: object, g: int, n: int, cap: int):
+def _iter_decorated_graphs(decorated_graph: object, g: int, n: int, cap: int) -> Iterator[tuple[object, int]]:
     r"""Flatten ``stable_graphs(g, n, rmax)`` buckets (list-of-lists by codimension)."""
     buckets = decorated_graph.stable_graphs(g, n, cap)  # type: ignore[attr-defined]
     if not buckets:
@@ -181,40 +183,6 @@ def edge_orbit_sizes(decorated: object) -> tuple[tuple[tuple[int, int], int], ..
         ((int(u), int(v)), int(size))
         for u, v, size in decorated.edge_orbit_representatives()  # type: ignore[attr-defined]
     )
-
-
-def elementary_contraction_orbits(
-    source: StableGraphType,
-) -> tuple[ContractionOrbit, ...]:
-    r"""Elementary contraction orbits via ``DecoratedGraph`` orbit reps and morphisms."""
-    from ..objects.contraction_orbits import ContractionOrbit
-
-    parent = source.parent()
-    g = parent.genus()
-    n = parent.number_of_markings()
-    graph = source.canonical_representative()
-    decorated = _record_to_decorated_graph(graph, g, n)
-
-    orbit_sizes: dict[object, int] = {}
-    for edge in graph.internal_edges():
-        target, _ = graph.contract(edge)
-        key = target.canonical_key()
-        orbit_sizes[key] = orbit_sizes.get(key, 0) + 1
-
-    orbits: list[ContractionOrbit] = []
-    seen_targets: set[object] = set()
-    for u, v, _size in decorated.edge_orbit_representatives():  # type: ignore[attr-defined]
-        morphism = decorated.edge_contraction_morphism([(int(u), int(v), 1)])  # type: ignore[attr-defined]
-        contraction = contraction_from_decorated_morphism(morphism, g, n, domain_graph=graph)
-        target = parent(contraction.target_type())
-        key = target.canonical_key()
-        if key in seen_targets:
-            continue
-        seen_targets.add(key)
-        gamma_graph = target.canonical_representative()
-        witness = contraction.with_endpoints(graph, gamma_graph)
-        orbits.append(ContractionOrbit(source, target, witness, orbit_sizes[key]))
-    return tuple(orbits)
 
 
 class AdmcyclesDecoratedGraphBackend:

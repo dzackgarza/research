@@ -23,7 +23,7 @@ from .contraction_orbits import ContractionOrbit
 from .records import StableGraph, intern_graph
 
 if TYPE_CHECKING:
-    from .contractions import StableGraphContraction
+    pass
 
 
 class StableGraphType(Element):
@@ -47,7 +47,7 @@ class StableGraphType(Element):
         r"""Deprecated alias for :meth:`canonical_representative`."""
         return self._graph
 
-    def automorphism_group(self):
+    def automorphism_group(self) -> object:
         return automorphism_group(self._graph)
 
     def automorphism_action(self) -> AutomorphismAction:
@@ -124,29 +124,14 @@ class StableGraphType(Element):
         return self.contracts_to(other)
 
     def elementary_contraction_orbits(self) -> tuple[ContractionOrbit, ...]:
-        try:
-            from ..backends.admcycles_decorated import elementary_contraction_orbits as decorated_orbits
+        from .edge_orbits import elementary_contraction_orbits as compute_orbits
 
-            return decorated_orbits(self)
-        except ImportError:
-            pass
-        graph = self._graph
-        grouped: dict[CanonicalKey, list[StableGraphContraction]] = {}
-        for edge in graph.internal_edges():
-            target, contraction = graph.contract(edge)
-            grouped.setdefault(target.canonical_key(), []).append(contraction)
-        return tuple(
-            ContractionOrbit(self, witnesses[0].target_type(), witnesses[0], len(witnesses))
-            for witnesses in grouped.values()
-        )
+        return compute_orbits(self)
 
     def edge_orbits(self) -> tuple[tuple[tuple[int, int], ...], ...]:
-        graph = self._graph
-        grouped: dict[CanonicalKey, list[tuple[int, int]]] = {}
-        for edge in graph.internal_edges():
-            target, _ = graph.contract(edge)
-            grouped.setdefault(target.canonical_key(), []).append(edge)
-        return tuple(tuple(edges) for edges in grouped.values())
+        from .edge_orbits import automorphism_edge_orbits
+
+        return automorphism_edge_orbits(self._graph)
 
     def cover_types(self) -> tuple[tuple[StableGraphType, StableGraphType], ...]:
         return tuple((orbit.target(), self) for orbit in self.elementary_contraction_orbits())
@@ -163,7 +148,7 @@ class StableGraphType(Element):
         from sage.structure.richcmp import richcmp
 
         assert isinstance(other, StableGraphType)
-        return richcmp(self._canonical_key, other._canonical_key, op)
+        return bool(richcmp(self._canonical_key, other._canonical_key, op))
 
     def __hash__(self) -> int:
         return hash((self.parent().genus(), self.parent().number_of_markings(), self._canonical_key))
@@ -292,7 +277,8 @@ class StableGraphTypes(UniqueRepresentation, Parent):
 
     def from_json(self, data: dict[str, object]) -> StableGraphType:
         schema = data.get("schema", 1)
-        assert int(schema) == 1, f"unsupported JSON schema version {schema!r}; only schema 1 is supported"
+        assert isinstance(schema, int), f"unsupported JSON schema version {schema!r}; only schema 1 is supported"
+        assert schema == 1, f"unsupported JSON schema version {schema!r}; only schema 1 is supported"
         ambient = data["ambient"]
         assert isinstance(ambient, dict)
         assert int(ambient["g"]) == self._g and int(ambient["n"]) == self._n, f"JSON ambient {ambient} does not match {self}"
@@ -325,9 +311,7 @@ class StableGraphTypes(UniqueRepresentation, Parent):
         yield from all_stable_curve_types(self)
 
     def cardinality(self) -> int:
-        from sage.rings.integer import Integer
-
-        return Integer(sum(1 for _ in self))
+        return int(sum(1 for _ in self))
 
 
 # Backward-compatible public names retained for the spike transition.

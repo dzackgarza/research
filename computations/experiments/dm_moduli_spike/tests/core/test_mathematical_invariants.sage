@@ -61,12 +61,14 @@ def test_external_backend_completeness_requires_full_rank_span():
     curve_types = DMCompactificationModel(2, 1).curve_types()
     partial = build_stratification_from_types(curve_types, (curve_types.smooth(),))
     assert not partial.is_complete()
+    assert not partial.has_full_rank_support()
     assert partial.rank_sizes() == (1,)
 
     full = DMCompactificationModel(2, 1).stratification(backend="admcycles-stable")
     truncated_types = tuple(gamma for level in full.curve_type_levels()[:2] for gamma in level)
     truncated = build_stratification_from_types(curve_types, truncated_types)
     assert not truncated.is_complete()
+    assert not truncated.has_full_rank_support()
     assert truncated.maximum_codim() == 1
 
 
@@ -221,15 +223,62 @@ def test_automorphism_actions_on_all_incidence_data():
         assert all(image == tuple(range(1, graph.num_markings() + 1)) for image in action.on_markings())
 
 
-def test_branch_swap_semantics_on_flags_and_edges():
-    types = StableCurveTypes(1, 2)
-    theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
-    dumbbell = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
-    theta_action = theta.automorphism_action()
-    dumbbell_action = dumbbell.automorphism_action()
-    assert theta_action.on_edges()[0] == (1, 0)
-    assert theta_action.on_flags()[0] != tuple(range(theta.num_flags()))
-    assert dumbbell_action.on_flags()[0] != tuple(range(dumbbell.num_flags()))
+def test_rank_support_without_exhaustiveness():
+    model = DMCompactificationModel(2, 1)
+    full = model.stratification()
+    all_types = [gamma for level in full.curve_type_levels() for gamma in level]
+    removed = next(gamma for level in full.curve_type_levels() if len(level) > 1 for gamma in level)
+    pruned = tuple(gamma for gamma in all_types if gamma is not removed)
+    rebuilt = build_stratification_from_types(model.curve_types(), pruned)
+    assert rebuilt.has_full_rank_support()
+    assert not rebuilt.is_complete()
+
+
+def test_branch_swap_semantics_on_m11_nodal_flags():
+    types = StableCurveTypes(1, 1)
+    loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
+    graph = loop.canonical_representative()
+    marking_flag = graph.marking_to_flag[0]
+    loop_flags = [
+        flag
+        for flag in range(graph.num_flags())
+        if graph.flag_vertex[flag] == 0 and graph.flag_involution[flag] != flag
+    ]
+    assert len(loop_flags) == 2
+    action = loop.automorphism_action()
+    flag_perm = action.on_flags()[0]
+    assert flag_perm[marking_flag] == marking_flag
+    assert {flag_perm[loop_flags[0]], flag_perm[loop_flags[1]]} == set(loop_flags)
+    assert flag_perm[loop_flags[0]] != loop_flags[0]
+
+
+def test_factor_slots_on_m11_nodal_graph():
+    types = StableCurveTypes(1, 1)
+    loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
+    clutching = DMCompactificationModel(1, 1).stratum(loop).clutching_morphism()
+    slots = clutching.factor_slots()
+    assert len(slots) == 1
+    assert len(slots[0]) == 3
+    slot_perm = clutching.automorphism_action().on_factor_slots()[0][0]
+    assert sorted(slot_perm) == [0, 1, 2]
+    assert slot_perm[0] == 0
+    assert {slot_perm[1], slot_perm[2]} == {1, 2}
+    assert slot_perm[1] != 1
+
+
+def test_factor_slots_on_m04_split_type():
+    types = StableCurveTypes(0, 4)
+    split = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
+    clutching = DMCompactificationModel(0, 4).stratum(split).clutching_morphism()
+    slots = clutching.factor_slots()
+    assert len(slots) == 2
+    assert all(len(vertex_slots) == 3 for vertex_slots in slots)
+    node_pairings = clutching.node_pairings()
+    assert len(node_pairings) == 1
+    left, right = node_pairings[0]
+    assert left.local_index == 2
+    assert right.local_index == 2
+    assert left.vertex != right.vertex
 
 
 def test_decorated_edge_orbit_morphisms_contract_to_codimension_one():
@@ -258,9 +307,15 @@ def test_clutching_gluing_map_assigns_markings_and_edge_branches():
     types = StableCurveTypes(1, 2)
     dumbbell = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
     clutching = DMCompactificationModel(1, 2).stratum(dumbbell).clutching_morphism()
-    marking_slots, edge_branches = clutching.gluing_map()
-    assert marking_slots == ((1, 0), (1, 1))
-    assert edge_branches == dumbbell.canonical_representative().internal_edges()
+    marking_slots, node_pairings = clutching.gluing_map()
+    assert len(marking_slots) == 2
+    assert marking_slots[0].vertex == 1 and marking_slots[0].local_index == 0
+    assert marking_slots[1].vertex == 1 and marking_slots[1].local_index == 1
+    assert len(node_pairings) == 2
+    loop_pair, edge_pair = node_pairings
+    assert loop_pair[0].vertex == loop_pair[1].vertex == 0
+    assert {loop_pair[0].local_index, loop_pair[1].local_index} == {0, 1}
+    assert edge_pair[0].local_index == edge_pair[1].local_index == 2
 
 
 def test_all_invariants_equal_under_vertex_relabeling():

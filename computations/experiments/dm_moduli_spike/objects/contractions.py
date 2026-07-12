@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .canonical import canonical_key, canonical_record
+from .isomorphisms import canonicalize, remap_vertex_fibres
 from .records import StableGraph, intern_graph
 
 if TYPE_CHECKING:
@@ -204,19 +205,22 @@ def _contract_flag_set(domain: StableGraph, contracted_flags: frozenset[int]) ->
         marking_to_flag=new_marking_to_flag,
     )
     codomain = intern_graph(canonical_record(image))
-    raw_to_canonical = flag_map(image, codomain) if image != codomain else {flag: flag for flag in range(image.num_flags())}
+    cert = canonicalize(image)
+    raw_to_canonical = {flag: cert.flag_map[flag] for flag in range(image.num_flags())}
 
     parent_types = StableGraphTypes(record.genus(), record.num_markings())
     target_type = parent_types(codomain)
     domain_flag_of_codomain_flag = tuple(
         sorted((raw_to_canonical[new_flag], old_flag) for old_flag, new_flag in new_flag_of_old.items())
     )
+    raw_vertex_fibres = tuple(frozenset(fibre_sets[component]) for component in range(num_new_vertices))
+    vertex_fibres = remap_vertex_fibres(raw_vertex_fibres, cert.vertex_map)
     return StableGraphContraction(
         domain=domain,
         codomain=codomain,
         target_type=target_type,
         contracted_flags=contracted_flags,
-        vertex_fibres=tuple(frozenset(fibre_sets[component]) for component in range(num_new_vertices)),
+        vertex_fibres=vertex_fibres,
         domain_flag_of_codomain_flag=domain_flag_of_codomain_flag,
     )
 

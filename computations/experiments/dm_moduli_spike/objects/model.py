@@ -98,14 +98,22 @@ class DMCompactificationModel(UniqueRepresentation):
 
             types = AdmcyclesStableGraphBackend().stable_curve_types(graph_types, max_codim=max_codim)
             result = build_stratification_from_types(
-                graph_types, types, max_codim=max_codim, backend=resolved
+                graph_types,
+                types,
+                max_codim=max_codim,
+                exhaustive=max_codim is None,
+                backend=resolved,
             )
         else:
             from ..backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
 
             types = AdmcyclesDecoratedGraphBackend().stable_curve_types(graph_types, max_codim=max_codim)
             result = build_stratification_from_types(
-                graph_types, types, max_codim=max_codim, backend=resolved
+                graph_types,
+                types,
+                max_codim=max_codim,
+                exhaustive=max_codim is None,
+                backend=resolved,
             )
         if verify_resolved is not None:
             reference = self.stratification(backend=verify_resolved, max_codim=max_codim)

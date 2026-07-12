@@ -36,6 +36,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sage.graphs.graph import Graph
 
+    from .contractions import StableGraphContraction
+    from .graph_types import StableGraphType
+
 
 _RecordKey = tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...], tuple[int, ...]]
 _GRAPH_INTERN: dict[_RecordKey, StableGraph] = {}
@@ -301,25 +304,25 @@ class StableGraph:
     def vertex_genus(self, vertex: int) -> int:
         return self._vertex_genera[vertex]
 
-    def graph_type(self):
+    def graph_type(self) -> StableGraphType:
         from .graph_types import StableGraphTypes
 
         return StableGraphTypes(self.genus(), self.num_markings())(self)
 
-    def contract(self, edge: tuple[int, int]):
+    def contract(self, edge: tuple[int, int]) -> tuple[StableGraphType, StableGraphContraction]:
         from .contractions import contract_edge
 
         return contract_edge(self, edge)
 
-    def canonical_form(self):
-        from .canonical import canonical_record
-        from .contractions import flag_map
+    def canonical_form(self) -> tuple[StableGraphType, StableGraph, dict[int, int]]:
         from .graph_types import StableGraphTypes
+        from .isomorphisms import canonicalize
 
-        canonical = intern_graph(canonical_record(self))
+        cert = canonicalize(self)
+        canonical = intern_graph(cert.target)
         parent = StableGraphTypes(self.genus(), self.num_markings())
         graph_type = parent(canonical)
-        certificate = {flag: flag for flag in range(self.num_flags())} if self == canonical else flag_map(self, canonical)
+        certificate = {flag: cert.flag_map[flag] for flag in range(self.num_flags())}
         return graph_type, canonical, certificate
 
     def to_labeled_json(self) -> dict[str, object]:

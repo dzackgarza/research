@@ -22,7 +22,7 @@ relative to a vertex partition then provides:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from .records import StableGraph
 
@@ -39,9 +39,9 @@ def _partition_sort_key(tag: _ColorTag) -> tuple[int, int]:
     r"""Sort colour tags in a partition-stable, numerically correct order."""
     kind = tag[0]
     if kind == "V":
-        return (0, int(tag[1]))
+        return (0, int(cast(int, tag[1])))
     if kind == "M":
-        return (1, int(tag[1]))
+        return (1, int(cast(int, tag[1])))
     if kind == "E":
         return (2, 0)
     if kind == "F":
@@ -49,14 +49,14 @@ def _partition_sort_key(tag: _ColorTag) -> tuple[int, int]:
     raise ValueError(f"unknown incidence-graph colour tag {tag!r}")
 
 
-def _incidence_graph(record: StableGraph) -> tuple[Graph, list[list[object]], dict[object, _ColorTag]]:
+def _incidence_graph(record: StableGraph) -> tuple[Graph, list[list[tuple[str, int]]], dict[tuple[str, int], _ColorTag]]:
     r"""Return the coloured incidence graph, its colour partition (a list of
     node classes for Sage's ``partition`` argument), and the node -> colour-tag
     map used to build a canonical, colour-aware key."""
     from sage.graphs.graph import Graph
 
     graph = Graph()
-    color_of: dict[object, _ColorTag] = {}
+    color_of: dict[tuple[str, int], _ColorTag] = {}
 
     # Component nodes, coloured by genus.
     for vertex in range(record.num_vertices()):
@@ -83,7 +83,7 @@ def _incidence_graph(record: StableGraph) -> tuple[Graph, list[list[object]], di
             graph.add_edge(("V", record.flag_vertex[branch]), flag_node)
             graph.add_edge(flag_node, edge_node)
 
-    partition_map: dict[_ColorTag, list[object]] = {}
+    partition_map: dict[_ColorTag, list[tuple[str, int]]] = {}
     for node, tag in color_of.items():
         partition_map.setdefault(tag, []).append(node)
     partition = [partition_map[tag] for tag in sorted(partition_map, key=_partition_sort_key)]
@@ -97,32 +97,31 @@ def _flag_node(record: StableGraph, flag: int) -> tuple[str, int]:
     return ("F", flag)
 
 
+def flag_to_node(record: StableGraph, flag: int) -> tuple[str, int]:
+    r"""Incidence-graph node for a half-edge flag index."""
+    return _flag_node(record, flag)
+
+
+def node_to_flag(record: StableGraph, node: object) -> int:
+    r"""Half-edge flag index for an incidence-graph ``M``/``F`` node."""
+    if not isinstance(node, tuple) or len(node) != 2:
+        raise ValueError(f"not a flag node: {node!r}")
+    kind, value = node
+    if kind == "F":
+        return int(value)
+    if kind == "M":
+        return record.marking_to_flag[int(value) - 1]
+    raise ValueError(f"not a flag node: {node!r}")
+
+
 def canonical_record(record: StableGraph) -> StableGraph:
     r"""The canonical half-edge representative for an isomorphism class.
 
     Two inputs with the same :func:`canonical_key` yield identical records.
     """
-    graph, partition, color_of = _incidence_graph(record)
-    _, relabelling = graph.canonical_label(partition=partition, certificate=True)
+    from .isomorphisms import canonicalize
 
-    v_nodes = sorted((node for node in color_of if node[0] == "V"), key=lambda node: relabelling[node])
-    old_vertices = [node[1] for node in v_nodes]
-    new_genera = tuple(record.vertex_genera[vertex] for vertex in old_vertices)
-
-    old_flags = list(range(record.num_flags()))
-    old_flags.sort(key=lambda flag: relabelling[_flag_node(record, flag)])
-    new_flag_of_old = {old: new for new, old in enumerate(old_flags)}
-
-    new_flag_vertex = tuple(old_vertices.index(record.flag_vertex[old_flag]) for old_flag in old_flags)
-    new_flag_involution = tuple(new_flag_of_old[record.flag_involution[old_flag]] for old_flag in old_flags)
-    new_marking_to_flag = tuple(new_flag_of_old[flag] for flag in record.marking_to_flag)
-
-    return StableGraph(
-        vertex_genera=new_genera,
-        flag_vertex=new_flag_vertex,
-        flag_involution=new_flag_involution,
-        marking_to_flag=new_marking_to_flag,
-    )
+    return canonicalize(record).target
 
 
 def canonical_key(record: StableGraph) -> CanonicalKey:
@@ -139,7 +138,7 @@ def canonical_key(record: StableGraph) -> CanonicalKey:
     return edges, colors
 
 
-def automorphism_group(record: StableGraph):
+def automorphism_group(record: StableGraph) -> object:
     r"""The automorphism group of the coloured incidence graph."""
     graph, partition, _ = _incidence_graph(record)
     return graph.automorphism_group(partition=partition)
@@ -150,7 +149,10 @@ def automorphism_number(record: StableGraph) -> int:
     of the coloured incidence graph.  This is the half-edge automorphism number:
     it counts branch swaps of loops and permutations of parallel edges, and fixes
     every marking."""
-    return int(automorphism_group(record).order())
+    from typing import Any, cast
+
+    group = cast(Any, automorphism_group(record))
+    return int(group.order())
 
 
 def to_labeled_json(record: StableGraph, g: int, n: int, schema: int = 1) -> dict[str, object]:

@@ -4,11 +4,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .canonical import _incidence_graph
-from .records import StableGraph
+from .canonical import _incidence_graph, flag_to_node, node_to_flag
+from .factor_slots import factor_slots
 
 if TYPE_CHECKING:
     from sage.groups.perm_gps.permgroup import PermutationGroup
+
+    from .records import StableGraph
+
+
+def _is_identity_permutation(image: tuple[int, ...]) -> bool:
+    return all(image[index] == index for index in range(len(image)))
 
 
 class AutomorphismAction:
@@ -22,6 +28,7 @@ class AutomorphismAction:
         "_edge_perms",
         "_marking_perms",
         "_local_marking_perms",
+        "_factor_slot_perms",
     )
 
     def __init__(
@@ -32,6 +39,7 @@ class AutomorphismAction:
         edge_perms: tuple[tuple[int, ...], ...],
         marking_perms: tuple[tuple[int, ...], ...],
         local_marking_perms: tuple[tuple[tuple[int, ...], ...], ...],
+        factor_slot_perms: tuple[tuple[tuple[int, ...], ...], ...],
     ) -> None:
         self._group = group
         self._vertex_perms = vertex_perms
@@ -39,6 +47,7 @@ class AutomorphismAction:
         self._edge_perms = edge_perms
         self._marking_perms = marking_perms
         self._local_marking_perms = local_marking_perms
+        self._factor_slot_perms = factor_slot_perms
 
     def group(self) -> PermutationGroup:
         return self._group
@@ -64,29 +73,27 @@ class AutomorphismAction:
         return self._vertex_perms
 
     def on_local_markings(self) -> tuple[tuple[tuple[int, ...], ...], ...]:
-        r"""Generator images as per-vertex permutations of local marking slots.
-
-        For generator ``i`` and vertex ``v``, ``on_local_markings()[i][v]`` is a
-        permutation of ``0, ..., n_v-1`` where ``n_v`` is the number of markings
-        on ``v``.  When ``on_vertices()[i]`` fixes ``v``, this records the
-        induced slot permutation; when ``v`` is moved, slots are tracked on the
-        image vertex after transport.
-        """
+        r"""Deprecated: prefer :meth:`on_factor_slots`."""
         return self._local_marking_perms
+
+    def on_factor_slots(self) -> tuple[tuple[tuple[int, ...], ...], ...]:
+        r"""Generator images as per-vertex permutations of :class:`FactorSlot` indices."""
+        return self._factor_slot_perms
 
     @staticmethod
     def from_graph(graph: StableGraph) -> AutomorphismAction:
         incidence, partition, color_of = _incidence_graph(graph)
         group = incidence.automorphism_group(partition=partition)
-        vertex_nodes = sorted(node for node in color_of if node[0] == "V")
-        vertex_index = {node: index for index, node in enumerate(vertex_nodes)}
-        edge_nodes = sorted(node for node in color_of if node[0] == "E")
-        edge_index = {node: index for index, node in enumerate(edge_nodes)}
-        flag_nodes = sorted(
-            (node for node in color_of if node[0] in ("M", "F")),
-            key=lambda node: (node[0], node[1]),
+        vertex_nodes = sorted(
+            (node for node in color_of if node[0] == "V"),
+            key=lambda node: node[1],
         )
-        flag_index = {node: index for index, node in enumerate(flag_nodes)}
+        vertex_index = {node: index for index, node in enumerate(vertex_nodes)}
+        edge_nodes = sorted(
+            (node for node in color_of if node[0] == "E"),
+            key=lambda node: node[1],
+        )
+        edge_index = {node: index for index, node in enumerate(edge_nodes)}
         marking_domain = list(range(1, graph.num_markings() + 1))
 
         vertex_perms: list[tuple[int, ...]] = []
@@ -94,11 +101,13 @@ class AutomorphismAction:
         flag_perms: list[tuple[int, ...]] = []
         marking_perms: list[tuple[int, ...]] = []
         local_marking_perms: list[tuple[tuple[int, ...], ...]] = []
+        factor_slot_perms: list[tuple[tuple[int, ...], ...]] = []
 
         vertex_domain = list(range(len(vertex_nodes)))
         edge_domain = list(range(len(edge_nodes)))
-        flag_domain = list(range(len(flag_nodes)))
+        flag_domain = list(range(graph.num_flags()))
         markings_by_vertex = tuple(graph.markings_at(vertex) for vertex in range(graph.num_vertices()))
+        slots_by_vertex = factor_slots(graph)
 
         for generator in group.gens():
             vertex_image = list(vertex_domain)
@@ -114,9 +123,9 @@ class AutomorphismAction:
             edge_perms.append(tuple(edge_image))
 
             flag_image = list(flag_domain)
-            for node in flag_nodes:
-                image_node = generator(node)
-                flag_image[flag_index[node]] = flag_index[image_node]
+            for flag in flag_domain:
+                image_node = generator(flag_to_node(graph, flag))
+                flag_image[flag] = node_to_flag(graph, image_node)
             flag_perms.append(tuple(flag_image))
 
             marking_image = list(marking_domain)
@@ -138,6 +147,17 @@ class AutomorphismAction:
                 per_vertex.append(tuple(slot_perm))
             local_marking_perms.append(tuple(per_vertex))
 
+            per_vertex_slots: list[tuple[int, ...]] = []
+            for vertex in range(graph.num_vertices()):
+                image_vertex = vertex_image[vertex]
+                image_flags = {slot.flag: slot.local_index for slot in slots_by_vertex[image_vertex]}
+                slot_perm = list(range(len(slots_by_vertex[vertex])))
+                for factor_slot in slots_by_vertex[vertex]:
+                    image_flag = flag_image[factor_slot.flag]
+                    slot_perm[factor_slot.local_index] = image_flags[image_flag]
+                per_vertex_slots.append(tuple(slot_perm))
+            factor_slot_perms.append(tuple(per_vertex_slots))
+
         return AutomorphismAction(
             group,
             tuple(vertex_perms),
@@ -145,4 +165,5 @@ class AutomorphismAction:
             tuple(edge_perms),
             tuple(marking_perms),
             tuple(local_marking_perms),
+            tuple(factor_slot_perms),
         )

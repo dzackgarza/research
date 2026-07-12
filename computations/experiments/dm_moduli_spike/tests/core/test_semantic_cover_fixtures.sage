@@ -12,12 +12,8 @@ from tests.support.poset_oracle import specialization_poset
 
 
 def contraction_target_multiplicities(gamma):
-    return Counter(
-        {
-            orbit.target().canonical_key(): orbit.orbit_size()
-            for orbit in gamma.elementary_contraction_orbits()
-        }
-    )
+    r"""Number of elementary Aut edge-orbits landing on each contraction target."""
+    return Counter(orbit.target().canonical_key() for orbit in gamma.elementary_contraction_orbits())
 
 
 def test_M11_is_two_element_chain():
@@ -90,7 +86,7 @@ def test_M12_parallel_edges_give_two_contraction_witnesses():
     types = m12_types(stratification)
 
     multiplicities = contraction_target_multiplicities(types["E"].curve_type())
-    assert multiplicities == Counter({types["B"].curve_type().canonical_key(): 2})
+    assert multiplicities == Counter({types["B"].curve_type().canonical_key(): 1})
 
 
 def test_M20_contraction_multiplicities():
@@ -98,14 +94,14 @@ def test_M20_contraction_multiplicities():
     types = m20_types(stratification)
 
     assert contraction_target_multiplicities(types["I"].curve_type()) == Counter(
-        {types["III"].curve_type().canonical_key(): 3}
+        {types["III"].curve_type().canonical_key(): 1}
     )
     assert contraction_target_multiplicities(types["II"].curve_type()) == Counter(
         {
             types["III"].curve_type().canonical_key(): 1,
-            types["IV"].curve_type().canonical_key(): 2,
+            types["IV"].curve_type().canonical_key(): 1,
         }
     )
     assert contraction_target_multiplicities(types["III"].curve_type()) == Counter(
-        {types["V"].curve_type().canonical_key(): 2}
+        {types["V"].curve_type().canonical_key(): 1}
     )

@@ -23,6 +23,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from .automorphism_action import AutomorphismAction
+from .factor_slots import FactorSlot, external_marking_slot_map, factor_slots, node_pairings
 from .graph_types import StableGraphType
 
 
@@ -95,7 +96,7 @@ class QuotientStackSignature:
     def automorphism_action(self) -> AutomorphismAction:
         return self._curve_type.automorphism_action()
 
-    def automorphism_group(self):
+    def automorphism_group(self) -> object:
         return self._curve_type.automorphism_group()
 
     def is_compact(self) -> bool:
@@ -162,16 +163,20 @@ class ClutchingDatum:
     def group_order(self) -> int:
         return self._group_order
 
-    def automorphism_group(self):
+    def automorphism_group(self) -> object:
         return self._curve_type.automorphism_group()
 
     def automorphism_action(self) -> AutomorphismAction:
         return self._curve_type.automorphism_action()
 
     def local_markings_by_factor(self) -> tuple[tuple[int, ...], ...]:
-        r"""Marking labels carried on each moduli factor (by vertex index)."""
+        r"""External marking labels on each factor (legacy subset of :meth:`factor_slots`)."""
         record = self._curve_type.canonical_representative()
         return tuple(record.markings_at(vertex) for vertex in range(record.num_vertices()))
+
+    def factor_slots(self) -> tuple[tuple[FactorSlot, ...], ...]:
+        r"""All local special points on each moduli factor, including node branches."""
+        return factor_slots(self._curve_type.canonical_representative())
 
     def gluing_partition(self) -> tuple[frozenset[int], ...]:
         r"""Partition of ``{1, ..., n}`` into the marking sets on each factor."""
@@ -185,24 +190,24 @@ class ClutchingDatum:
             for flag, partner in record.internal_edges()
         )
 
-    def external_marking_slots(self) -> tuple[tuple[int, int], ...]:
-        r"""Assignment of each external label ``1, ..., n`` to ``(vertex, slot)``."""
-        record = self._curve_type.canonical_representative()
-        slots: list[tuple[int, int] | None] = [None] * self._target.number_of_markings()
-        for vertex in range(record.num_vertices()):
-            for slot, label in enumerate(record.markings_at(vertex)):
-                slots[label - 1] = (vertex, slot)
-        assert all(entry is not None for entry in slots), "marking slot assignment is incomplete"
-        return tuple(entry for entry in slots if entry is not None)
+    def external_marking_slots(self) -> tuple[FactorSlot, ...]:
+        r"""Assignment of each external label ``1, ..., n`` to a :class:`FactorSlot`."""
+        return external_marking_slot_map(self._curve_type.canonical_representative())
 
     def edge_branch_pairs(self) -> tuple[tuple[int, int], ...]:
-        r"""Each internal edge as an ordered half-edge branch pair ``(flag, partner)``."""
+        r"""Legacy raw half-edge branch pairs; prefer :meth:`node_pairings`."""
         record = self._curve_type.canonical_representative()
         return tuple(record.internal_edges())
 
-    def gluing_map(self) -> tuple[tuple[tuple[int, int], ...], tuple[tuple[int, int], ...]]:
-        r"""Typed gluing data: external marking slots and internal edge branch pairs."""
-        return (self.external_marking_slots(), self.edge_branch_pairs())
+    def node_pairings(self) -> tuple[tuple[FactorSlot, FactorSlot], ...]:
+        r"""Each internal node as a pair of :class:`FactorSlot` branch coordinates."""
+        return node_pairings(self._curve_type.canonical_representative())
+
+    def gluing_map(
+        self,
+    ) -> tuple[tuple[FactorSlot, ...], tuple[tuple[FactorSlot, FactorSlot], ...]]:
+        r"""Typed gluing data: external marking slots and internal node pairings."""
+        return (self.external_marking_slots(), self.node_pairings())
 
     def curve_type(self) -> StableGraphType:
         return self._curve_type

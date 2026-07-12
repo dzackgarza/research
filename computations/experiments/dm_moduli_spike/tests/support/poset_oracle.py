@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from itertools import combinations
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Protocol, cast
 
 from sage.all import Graph, Poset
 
@@ -47,7 +47,7 @@ def compatible_splits(left: frozenset[int], right: frozenset[int], ground: froze
 
 def augmented_face_poset(simplicial_complex: _FaceComplex) -> Poset:
     """Face poset including the empty face."""
-    faces = tuple(frozenset(simplex) for simplex in simplicial_complex.face_iterator())
+    faces = tuple(frozenset(cast(Iterable[int], simplex)) for simplex in simplicial_complex.face_iterator())
     return Poset((faces, lambda left, right: left.issubset(right)), facade=True)
 
 

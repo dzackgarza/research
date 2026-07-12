@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 def _require_admcycles() -> object:
     try:
-        import admcycles
+        import admcycles  # type: ignore[import-not-found]
     except ImportError as error:  # pragma: no cover - environment dependent
         raise ImportError(
             "the admcycles-stable backend requires the optional 'admcycles' package; "
@@ -105,5 +105,5 @@ class AdmcyclesStableGraphBackend:
         for stable_graph in admcycles.list_strata(g, n, curve_type.num_edges()):  # type: ignore[attr-defined]
             record = _record_from_stable_graph(stable_graph, g, n)
             if curve_types.from_record(record) == curve_type:
-                return int(stable_graph.automorphism_number())  # type: ignore[attr-defined]
+                return int(stable_graph.automorphism_number())
         raise ValueError(f"no admcycles StableGraph matched {curve_type!r}")

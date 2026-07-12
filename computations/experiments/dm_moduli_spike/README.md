@@ -12,9 +12,10 @@ Combinatorial model of `\overline{\mathcal M}_{g,n}`: stable-graph stratificatio
 | `StableGraphContraction` | Morphism between labeled graphs. |
 | `ContractionOrbit` | Elementary contraction at the type level with orbit size. |
 | `DMStratum` | Geometric stratum descriptor (distinct from its graph type). |
-| `QuotientStackSignature` / `ClutchingDatum` | Symbolic metadata + `AutomorphismAction`; not full stack presentations. |
+| `QuotientStackSignature` / `ClutchingDatum` | Symbolic metadata + `AutomorphismAction`; primary clutching vocabulary. |
+| `FactorSlot` | Local special-point coordinates on each moduli factor (legs and node branches). |
 
-Representative-level work flows through `graph_type.canonical_representative()`.
+Representative-level work flows through `graph_type.canonical_representative()`. Legacy aliases `StableCurveType` and `clutching_morphism()` remain available but are not primary vocabulary.
 
 ## Quick start
 
