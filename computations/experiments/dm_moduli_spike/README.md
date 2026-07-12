@@ -44,6 +44,10 @@ sage -pip install --force-reinstall git+https://gitlab.com/modulispaces/admcycle
 
 Covers are always recovered by contraction on canonical representatives.
 
+## Notebook
+
+[`notebooks/highlights.ipynb`](notebooks/highlights.ipynb) — research-oriented walkthrough of stratification posets, contraction orbits, stack signatures, and clutching coordinates (no backend plumbing).
+
 ## Tests
 
 Whole-poset regression (genus-zero split oracle, Young diagrams, Petersen graph) plus `tests/core/test_mathematical_invariants.sage` for the type split, immutability, automorphism actions, completeness, and backend independence.
