@@ -48,7 +48,7 @@ def test_root_lattice_weyl_group_orders_rank_ge_7_match_conway_sloane_chapter_4(
     assert [case[1] for case in cases] == [725760, 10321920, 2903040, 696729600]
 
     for name, published_order, determinant, is_unimodular in cases:
-        lattice = lc.Lattice(name)
+        lattice = lc.Lattice(f"{name}(-1)")
         # cheap characterizing invariants
         assert lattice.rank() == int(name[1:])
         assert lattice.signature_pair() == (lattice.rank(), 0)     # positive definite root lattice

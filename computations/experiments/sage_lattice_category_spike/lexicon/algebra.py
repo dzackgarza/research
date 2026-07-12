@@ -42,6 +42,7 @@ from ..algebra.domain_algebra import (
     FiniteAbelianGroup,
     IsometryGroup,
     IsometrySubgroup,
+    LatticeCokernel,
     LatticeMorphism,
 )
 
@@ -50,6 +51,7 @@ __all__ = [
     "BaseRing",
     "Field",
     "FiniteAbelianGroup",
+    "LatticeCokernel",
     "FreeModule",
     "Group",
     "GroupElement",

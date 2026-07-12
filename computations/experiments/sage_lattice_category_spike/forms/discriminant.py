@@ -24,32 +24,27 @@ def _lattice_key(lattice: Any) -> tuple[Any, ...]:
         repr(lattice.base_ring()),
         lattice.rank(),
         tuple(lattice.gram_matrix().list()),
-        tuple(lattice._inclusion_rows().list()),
-        tuple(lattice._ambient_gram().list()),
     )
 
 
 def _relation_inclusion_matrix(cover_lattice: Any, relation_lattice: Any) -> Any:
     r"""Integer inclusion of ``relation_lattice`` into ``cover_lattice`` (rows in cover coordinates).
 
-    A finite quotient ``cover / relation`` needs the relation expressed as a genuine
-    sublattice of the cover.  Two based-model routes carry that inclusion:
-
-    - the relation is a subobject sharing the cover's coordinate system (a common root);
-    - the cover is the metric dual ``relation#``, so the inclusion is the natural map
-      ``relation -> relation#`` with matrix ``G`` (the relation's Gram).
+    A finite quotient ``cover / relation`` is defined by an inclusion morphism.
+    Exactly two witnesses are canonically selectable from bare objects, and
+    both are read off canonical attached morphisms: the metric dual's
+    ``relation -> relation#`` (``dual_inclusion``), and the identity morphism
+    for an identical cover. Anything else must carry its witness — pass a
+    ``Subobject`` to ``finite_quotient``.
     """
     if cover_lattice.rank() == 0:
         return matrix(ZZ, 0, 0)
-    if relation_lattice._ambient_gram() == cover_lattice._ambient_gram():
-        assert relation_lattice.is_submodule(cover_lattice), "relations must be a sublattice of the cover"
-        return matrix(
-            ZZ,
-            [cover_lattice._underlying_module().coordinate_vector(vector(QQ, row)) for row in relation_lattice._inclusion_rows().rows()],
-        )
     if relation_lattice.base_ring() is ZZ and relation_lattice.determinant() != 0 and relation_lattice.dual() == cover_lattice:
-        return matrix(ZZ, relation_lattice.gram_matrix())
-    assert False, "relation lattice is not a recognized sublattice of the cover; provide the relation as a subobject of the cover or as its metric dual"
+        return matrix(ZZ, relation_lattice.dual_inclusion().matrix()).transpose()
+    assert relation_lattice.gram_matrix() == cover_lattice.gram_matrix(), (
+        "finite_quotient of plain lattices supports the metric dual (L#/L) or an identical cover; for a general subobject quotient use the inclusion morphism's cokernel"
+    )
+    return matrix(ZZ, relation_lattice.identity_morphism().matrix())
 
 
 def _finite_coordinates(group: Any, element: Any) -> tuple[Any, ...]:

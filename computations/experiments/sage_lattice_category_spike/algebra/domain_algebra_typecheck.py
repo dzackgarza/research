@@ -73,10 +73,12 @@ def definite_enumeration_and_group() -> tuple[int, int]:
 
 
 def hyperbolic_vocabulary() -> bool:
-    """U carries the Weyl/chamber vocabulary as declared contracts."""
+    """U carries the Weyl/chamber vocabulary as declared contracts; a subgroup
+    preservation question consumes a subobject (the carried inclusion), never
+    a bare lattice."""
     u = in_hyperbolic(from_gram_matrix("U"))
     weyl = u.weyl_group()
-    preserved: bool = weyl.preserves(u.radical())
+    preserved: bool = weyl.preserves(u.subobject([u.gen(0)]))
     return u.is_reflective() and preserved
 
 
@@ -85,7 +87,7 @@ def morphism_algebra(lattice: Lattice, vector: LatticeElement) -> LatticeMorphis
     sigma = lattice.reflection(vector)
     action = sigma.induced_map_on_discriminant_group()
     assert not action.is_identity() or sigma.is_isometry()
-    kernel: Lattice = sigma.kernel()
+    kernel: Lattice = sigma.kernel().lattice()
     cokernel_order: int = sigma.cokernel().cardinality()
     assert kernel.rank() >= 0 and cokernel_order >= 1
     return sigma

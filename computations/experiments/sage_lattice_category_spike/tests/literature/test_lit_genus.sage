@@ -105,35 +105,35 @@ def _cs99_local_excess(tuples, p):
 #          det, rank, sig_pair, even, unimodular, local_det, excess, level
 _ROWS = [
     # --- p = 2 (the 2-adic symbol; canonical, sec 7.6) -----------------------
-    ("A1", lc.Lattice("A1"), 2, ((1, 1, 1, 1, 1),),
+    ("A1", lc.Lattice("A1(-1)"), 2, ((1, 1, 1, 1, 1),),
      2, 1, (1, 0), True, False, 2, 1, 2),
-    ("A2", lc.Lattice("A2"), 2, ((0, 2, -1, 0, 0),),
+    ("A2", lc.Lattice("A2(-1)"), 2, ((0, 2, -1, 0, 0),),
      3, 2, (2, 0), True, False, 1, 0, 1),          # canonical det-class -1 (raw 3)
-    ("A3", lc.Lattice("A3"), 2, ((0, 2, -1, 0, 0), (2, 1, -1, 1, 3)),
+    ("A3", lc.Lattice("A3(-1)"), 2, ((0, 2, -1, 0, 0), (2, 1, -1, 1, 3)),
      4, 3, (3, 0), True, False, 4, 3, 4),
-    ("D4", lc.Lattice("D4"), 2, ((0, 2, -1, 0, 0), (1, 2, -1, 0, 0)),
+    ("D4", lc.Lattice("D4(-1)"), 2, ((0, 2, -1, 0, 0), (1, 2, -1, 0, 0)),
      4, 4, (4, 0), True, False, 4, 4, 2),          # oddity 4 from the antisquare term
-    ("E7", lc.Lattice("E7"), 2, ((0, 6, 1, 0, 0), (1, 1, 1, 1, 7)),
+    ("E7", lc.Lattice("E7(-1)"), 2, ((0, 6, 1, 0, 0), (1, 1, 1, 1, 7)),
      2, 7, (7, 0), True, False, 2, 7, 2),
-    ("E8", lc.Lattice("E8"), 2, ((0, 8, 1, 0, 0),),
+    ("E8", lc.Lattice("E8(-1)"), 2, ((0, 8, 1, 0, 0),),
      1, 8, (8, 0), True, True, 1, 0, 1),
     ("U", lc.Lattice("U"), 2, ((0, 2, 1, 0, 0),),
      -1, 2, (1, 1), True, True, 1, 0, 1),
     ("U+<2>", _u_plus_2(), 2, ((0, 2, 1, 0, 0), (1, 1, 1, 1, 1)),
      -2, 3, (2, 1), True, False, 2, 1, 2),         # canonical det-class +1 (raw 3)
-    ("E8+E8", lc.Lattice("E8").direct_sum(lc.Lattice("E8")), 2, ((0, 16, 1, 0, 0),),
+    ("E8+E8", lc.Lattice("E8(-1)").direct_sum(lc.Lattice("E8(-1)")), 2, ((0, 16, 1, 0, 0),),
      1, 16, (16, 0), True, True, 1, 0, 1),
     # --- p = 3 (the odd-p symbol, sec 7.2) -----------------------------------
-    ("A2", lc.Lattice("A2"), 3, ((0, 1, -1), (1, 1, -1)),
+    ("A2", lc.Lattice("A2(-1)"), 3, ((0, 1, -1), (1, 1, -1)),
      3, 2, (2, 0), True, False, 3, 6, 3),
-    ("E6", lc.Lattice("E6"), 3, ((0, 5, 1), (1, 1, 1)),
+    ("E6", lc.Lattice("E6(-1)"), 3, ((0, 5, 1), (1, 1, 1)),
      3, 6, (6, 0), True, False, 3, 2, 3),
-    ("A2+A2", lc.Lattice("A2").direct_sum(lc.Lattice("A2")), 3, ((0, 2, 1), (1, 2, 1)),
+    ("A2+A2", lc.Lattice("A2(-1)").direct_sum(lc.Lattice("A2(-1)")), 3, ((0, 2, 1), (1, 2, 1)),
      9, 4, (4, 0), True, False, 9, 4, 3),
-    ("E8", lc.Lattice("E8"), 3, ((0, 8, 1),),
+    ("E8", lc.Lattice("E8(-1)"), 3, ((0, 8, 1),),
      1, 8, (8, 0), True, True, 1, 0, 1),
     # --- p = 5 (a prime not dividing the determinant: trivial symbol) --------
-    ("E8", lc.Lattice("E8"), 5, ((0, 8, 1),),
+    ("E8", lc.Lattice("E8(-1)"), 5, ((0, 8, 1),),
      1, 8, (8, 0), True, True, 1, 0, 1),
 ]
 
@@ -217,9 +217,9 @@ def test_genus_determined_by_signature_and_discriminant_form_nikulin_1_10_1():
         unimodular) across signatures (2,0), (3,1), (4,2): each lattice's genus
         is exactly ``q_{A_2}.genus(signature)``.
     """
-    A2 = lc.Lattice("A2")
+    A2 = lc.Lattice("A2(-1)")
     A2_other_basis = lc.Lattice(matrix(ZZ, 2, [2, 1, 1, 2]))  # det 3, isometric to A2
-    A1A1 = lc.Lattice("A1").direct_sum(lc.Lattice("A1"))
+    A1A1 = lc.Lattice("A1(-1)").direct_sum(lc.Lattice("A1(-1)"))
     A2m = A2.twist(-1)
     U = lc.Lattice("U")
 
@@ -275,7 +275,7 @@ def test_is_genus_respects_gauss_milgram_signature_congruence_nikulin_1_3_3():
     discriminant form q_{A_2}: (2,0) by A_2, (3,1) by A_2 (+) U, (4,2) by
     A_2 (+) U^2 (see the Nikulin 1.10.1 test).
     """
-    A2 = lc.Lattice("A2")
+    A2 = lc.Lattice("A2(-1)")
     q = A2.discriminant_group()
 
     # cheap basics of the carrier lattice
