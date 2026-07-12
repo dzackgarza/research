@@ -1086,3 +1086,24 @@ def test_rational_isometry_decides_by_square_class_via_the_oracle():
     three_half = Lattice(matrix(QQ, [[QQ(3) / 2]]), base_ring=QQ, label="3/2")
     assert half.is_isometric(two)  # 2 / (1/2) = 4, a square
     assert not half.is_isometric(three_half)  # ratio 3, not a square
+
+
+def test_cross_ring_isometry_homset_is_an_incoherent_construction():
+    # Isom(L, M) is an object of Lattices(R).Homsets() for a single base ring
+    # R: a ZZ-lattice and a QQ-lattice are objects of different categories, so
+    # the homset construction itself must fail loudly. Before the boundary
+    # guard, A2 over ZZ against A2 (x) QQ routed to the rational-equivalence
+    # case and reported a nonempty homset (is_isometric True) -- a false
+    # positive across categories. The coherent cross-ring question applies the
+    # base-change functor explicitly and stays decided: A2 (x) QQ IS isometric
+    # to itself as a rational lattice.
+    A2 = Lattice("A2")
+    A2_QQ = A2.base_extend(QQ)
+    assert A2.base_ring() is ZZ and A2_QQ.base_ring() is QQ
+    with pytest.raises(AssertionError):
+        A2.Isom(A2_QQ)
+    with pytest.raises(AssertionError):
+        A2_QQ.Isom(A2)
+    with pytest.raises(AssertionError):
+        A2.is_isometric(A2_QQ)  # the emptiness router hits the same boundary
+    assert A2.base_extend(QQ).is_isometric(A2_QQ)  # the explicit functor route

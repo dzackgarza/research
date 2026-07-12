@@ -824,7 +824,10 @@ class LatticeHomset:
 
 
 class IsometryHomset:
-    """``Isom(L, M)``: the isometries ``L -> M`` as a first-class parent.
+    """``Isom(L, M)``: the isometries ``L -> M`` as a first-class parent,
+    an object of ``Lattices(R).Homsets()`` for a single base ring ``R`` — a
+    cross-ring premise is an incoherent construction (asserted at the homset
+    boundary), not an empty homset; base-change explicitly before asking.
     Emptiness and membership are total contracts; ``an_element`` and
     iteration are implemented exactly where they are computable — when
     nonempty, ``Isom(L, M)`` is an ``O(M)``-torsor, so enumeration composes

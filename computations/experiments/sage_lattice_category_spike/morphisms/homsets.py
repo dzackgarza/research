@@ -500,6 +500,15 @@ class IsometryHomset(lexicon.IsometryHomset, Parent):
     def __init__(self, domain: Lattice | SyntheticLattice, codomain: Lattice | SyntheticLattice) -> None:
         assert isinstance(domain, SyntheticLattice), f"expected SyntheticLattice domain; found={type(domain)}"
         assert isinstance(codomain, SyntheticLattice), f"expected SyntheticLattice codomain; found={type(codomain)}"
+        # The homset is an object of Lattices(R).Homsets() for ONE base ring R:
+        # a cross-ring premise is an incoherent construction, not an empty
+        # homset -- the coherent cross-ring question is asked of the base-changed
+        # object (L.base_extend(R')), applying the functor explicitly.
+        assert domain.base_ring() is codomain.base_ring(), (
+            f"Isom(L, M) is sited in Lattices(R).Homsets() for a single base ring; "
+            f"domain is over {domain.base_ring()} but codomain is over {codomain.base_ring()}; "
+            f"base-change explicitly (base_extend) before asking for isometries"
+        )
         self._domain = domain
         self._codomain = codomain
         from ..objects.categories import Lattices
