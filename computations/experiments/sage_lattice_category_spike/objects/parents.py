@@ -2,21 +2,19 @@ r"""Synthetic lattice parents.
 
 A synthetic lattice is a *based* free module over ``R in {ZZ, QQ}`` together with
 a symmetric Gram matrix ``G`` in its own intrinsic basis.  Its identity is the
-pair ``(base_ring, G)`` -- there is no ambient vector space, no "coordinate
-frame", no ``basis_matrix``.  Elements are coefficient columns in ``R^rank`` and
+pair ``(base_ring, G)``; elements are coefficient columns in ``R^rank`` and
 ``b(v, w) = v^T G w``.
 
 A *subobject* relationship (sublattice, span, saturation, ...) is an injective
-hom ``A`` into a parent lattice ``L0``: the child is ``(R, A^T G0 A)`` and ``A``
-records the child's basis in ``L0``'s intrinsic coordinates.  That inclusion is
-carried on the child (``_ambient`` = the parent, ``_inclusion`` = ``A``) so the
-subobject algebra (intersection, index, orthogonal complement, ...) can compute
-in the parent's own coefficient module.  It is *not* part of the child's
-identity: equality is by ``(base_ring, G)`` alone.
+hom ``f: A -> L0``.  It is represented by the separate pair ``(A, f)``: ``A`` is
+the plain lattice ``(R, A^T G0 A)``, while ``f`` records its presentation in
+``L0``'s intrinsic coordinates.  Equality of subobjects includes ``f``; a plain
+lattice is never identified with a subobject.
 """
 
 from __future__ import annotations
 
+import warnings
 from collections.abc import Callable, Iterator, Sequence
 from typing import TYPE_CHECKING, Any, ClassVar
 
@@ -61,6 +59,7 @@ from ..lexicon import (
     RawMorphismMatrix,
     RawVectors,
     RootGeneratedLattice,
+    SageCategory,
     SageInfinity,
     SignaturePair,
     SourcedDiscriminantForm,
@@ -127,7 +126,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         names: Sequence[str] | str | None = None,
     ) -> None:
         # A lattice IS the pair (base_ring, Gram) -- nothing else. It never
-        # stores an ambient; a subobject is a lattice together with its
+        # stores a parent relationship; a subobject is a lattice together with its
         # inclusion morphism (the Subobject value), not a lattice that remembers
         # a parent. The one Gram codec asserts square + symmetric and
         # immutabilizes; construction is the only producer.
@@ -165,10 +164,23 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         return self.element_class(self, coordinates)
 
     def __eq__(self, other: Any) -> bool:
+        from ..morphisms.homsets import Subobject
+
+        if isinstance(other, Subobject):
+            warnings.warn(
+                "a plain lattice and a subobject are categorically distinct; "
+                "compare a subobject through its inclusion",
+                UserWarning,
+                stacklevel=2,
+            )
+            return False
         return isinstance(other, SyntheticLattice) and self.base_ring() == other.base_ring() and self.gram_matrix() == other.gram_matrix()
 
     def __hash__(self) -> int:
         return hash((self.base_ring(), self.gram_matrix()))
+
+    def _coerce_map_from_(self, other: Any) -> bool:
+        return isinstance(other, SyntheticLattice) and self == other
 
     # -- the one private presentation crossing ------------------------------------
     #
@@ -659,10 +671,21 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
             cartan_type=self._cartan_type if keeps_provenance else None,
         )
 
-    def Hom(self, codomain: Lattice) -> LatticeHomset:
+    def Hom(
+        self,
+        codomain: Lattice,
+        category: SageCategory | None = None,
+    ) -> LatticeHomset:
+        return self._Hom_(codomain, category)
+
+    def _Hom_(
+        self,
+        codomain: Lattice,
+        category: SageCategory | None = None,
+    ) -> LatticeHomset:
         from ..morphisms.homsets import LatticeHomset
 
-        return LatticeHomset(self, codomain)
+        return LatticeHomset(self, codomain, category=category)
 
     def Isom(self, codomain: Lattice) -> IsometryHomset:
         r"""``Isom(L, M)`` as a first-class parent (ratified method

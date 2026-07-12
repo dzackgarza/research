@@ -83,7 +83,7 @@ if TYPE_CHECKING:
         SymbolicExpression,
     )
     from ..lexicon.geometry import Polyhedron
-    from ..lexicon.interop import SageInfinity, SageLocalGenusSymbol
+    from ..lexicon.interop import SageCategory, SageInfinity, SageLocalGenusSymbol
     from ..morphisms.homsets import Subobject
 else:
     from sage.misc.abstract_method import abstract_method
@@ -456,7 +456,7 @@ class Lattice:
 
     # morphisms
     @abstract_method
-    def Hom(self, codomain: Lattice) -> LatticeHomset: ...
+    def Hom(self, codomain: Lattice, category: SageCategory | None = None) -> LatticeHomset: ...
 
     @abstract_method
     def Isom(self, codomain: Lattice) -> IsometryHomset:

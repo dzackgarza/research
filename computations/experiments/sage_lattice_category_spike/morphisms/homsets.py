@@ -2,6 +2,7 @@ r"""Homsets and morphisms for synthetic lattices."""
 
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from sage.matrix.constructor import column_matrix, matrix
@@ -38,6 +39,21 @@ class Subobject:
         return f"Subobject {self.lattice()!r} of {self.ambient()!r}"
 
     __repr__ = _repr_
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Subobject):
+            return self.inclusion() == other.inclusion()
+        if isinstance(other, SyntheticLattice):
+            warnings.warn(
+                "a subobject and a plain lattice are categorically distinct; "
+                "compare a subobject through its inclusion",
+                UserWarning,
+                stacklevel=2,
+            )
+        return False
+
+    def __hash__(self) -> int:
+        return hash(self.inclusion())
 
     def lattice(self) -> Any:
         return self._inclusion.domain()
@@ -184,14 +200,20 @@ class LatticeHomset(lexicon.LatticeHomset, Parent):
     # LatticeMorphism is defined below).
     Element: ClassVar[type]
 
-    def __init__(self, domain: Lattice | SyntheticLattice, codomain: Lattice | SyntheticLattice) -> None:
+    def __init__(
+        self,
+        domain: Lattice | SyntheticLattice,
+        codomain: Lattice | SyntheticLattice,
+        category: lexicon.SageCategory | None = None,
+    ) -> None:
         assert isinstance(domain, SyntheticLattice), f"expected SyntheticLattice domain; found={type(domain)}"
         assert isinstance(codomain, SyntheticLattice), f"expected SyntheticLattice codomain; found={type(codomain)}"
         self._domain = domain
         self._codomain = codomain
         from ..objects.categories import Lattices
 
-        Parent.__init__(self, category=Lattices(domain.base_ring()).Homsets())
+        hom_category = Lattices(domain.base_ring()) if category is None else category
+        Parent.__init__(self, category=hom_category.Homsets())
 
     def _repr_(self) -> str:
         return f"Synthetic lattice homset from {self.domain()} to {self.codomain()}"
