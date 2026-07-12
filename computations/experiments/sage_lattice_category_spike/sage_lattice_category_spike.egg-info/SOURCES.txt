@@ -39,6 +39,12 @@ algebra/value_objects.py
 forms/__init__.py
 forms/discriminant.py
 forms/discriminant_forms.py
+lexicon/__init__.py
+lexicon/algebra.py
+lexicon/foundations.py
+lexicon/geometry.py
+lexicon/interop.py
+lexicon/verify_against_sage.py
 morphisms/__init__.py
 morphisms/homsets.py
 morphisms/isometry_groups.py

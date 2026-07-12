@@ -127,3 +127,55 @@ def hyperbolic_narrowing_of_composite() -> bool:
     """A composite that happens to be hyperbolic still needs the assertion."""
     composite = in_hyperbolic(from_gram_matrix("U").twist(2).direct_sum(from_gram_matrix("E8").twist(-1)))
     return composite.has_isotropic_vector()
+
+
+def mono_factors_through_its_saturation(lattice: Lattice, vector: LatticeElement) -> bool:
+    """The morphism-sited saturation triangle: ``iota = (A^sat -> B) . (A -> A^sat)``
+    (#100 ratified placement) — all three arrows are morphisms, no coordinates."""
+    inclusion = lattice.subobject([vector]).inclusion()
+    factor: LatticeMorphism = inclusion.saturation_factorization()
+    recomposed: LatticeMorphism = inclusion.saturation().inclusion() * factor
+    return recomposed.is_primitive_embedding()
+
+
+def endomorphism_stability(lattice: Lattice, vector: LatticeElement) -> LatticeMorphism:
+    """``preserves`` is a factorization query on the morphism; ``restrict``
+    is precomposition with the carried inclusion."""
+    sigma = lattice.reflection(vector)
+    stable_line = lattice.subobject([vector])
+    assert sigma.preserves(stable_line)
+    return sigma.restrict(stable_line)
+
+
+def complement_consumes_the_mono(lattice: Lattice, vector: LatticeElement) -> bool:
+    """The orthogonal complement is sited on the monomorphism (kernel of the
+    composed pairing); the radical is the complement of the identity."""
+    line_complement = lattice.subobject([vector]).inclusion().orthogonal_complement()
+    radical = lattice.identity_morphism().orthogonal_complement()
+    return line_complement.is_primitive() and radical.is_primitive()
+
+
+def isometry_existence_is_a_homset_question(left: Lattice, right: Lattice) -> LatticeMorphism:
+    """``is_isometric`` is a router for ``Isom(L, M) != {}``; the homset is a
+    parent whose elements compose like any morphisms."""
+    isometries = left.Isom(right)
+    assert left.is_isometric(right) == (not isometries.is_empty())
+    for isometry in isometries:
+        assert isometry.is_isometry()
+    return isometries.an_element()
+
+
+def embedding_existence_is_a_homset_question(small: Lattice, big: Lattice) -> bool:
+    """Nikulin-class existence lives on ``Emb(L, M)``, not on a bare boolean."""
+    embeddings = small.Emb(big)
+    if embeddings.is_empty():
+        return False
+    return embeddings.an_element().is_primitive_embedding()
+
+
+def quotient_descent_is_morphism_sited(lattice: Lattice, isometry: LatticeMorphism, vector: LatticeElement) -> bool:
+    """Descent to a finite quotient is asked of the morphism, gated by the
+    relation subobject through the projection."""
+    quotient = lattice.finite_quotient(lattice.subobject([vector]))
+    action = isometry.induced_map_on_quotient(quotient)
+    return action.is_identity()

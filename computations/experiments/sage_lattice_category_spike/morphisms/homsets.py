@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
-from sage.matrix.constructor import matrix
+from sage.matrix.constructor import column_matrix, matrix
 from sage.modules.free_module_element import vector
+from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.element import Element
@@ -114,12 +115,9 @@ class Subobject:
 
     def saturation_factorization(self) -> lexicon.LatticeMorphism:
         r"""The mono factorization ``L -> L^sat`` of the carried inclusion
-        through its saturation: the unique morphism satisfying
-        ``saturation().inclusion() * factorization == inclusion()``. The one
-        coordinate solve lives here, inside the morphism's construction."""
-        saturated = self.saturation()
-        factor = saturated.inclusion().matrix().solve_right(self._inclusion.matrix())
-        return cast(lexicon.LatticeMorphism, self.lattice().embedding(factor, codomain=saturated.lattice()))
+        through its saturation -- morphism-sited (#100 ratified placement):
+        the coordinate solve lives on the inclusion itself."""
+        return cast(lexicon.LatticeMorphism, self._inclusion.saturation_factorization())
 
     def index_in_saturation(self) -> Any:
         r"""The index ``[L^sat : L]`` -- the cokernel cardinality of the
@@ -272,6 +270,73 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         r"""The index ``[codomain : image]`` -- the order of the cokernel."""
         return self.cokernel().cardinality()
 
+    # -- morphism-sited geometry (ratified method placement, #100): each
+    # -- operation below consumes this morphism's data, so it lives here;
+    # -- object spellings are delegations through a canonical attached
+    # -- morphism. ----------------------------------------------------------
+
+    def restrict(self, subobject: Subobject) -> Any:
+        r"""Precomposition with the carried inclusion:
+        ``self * subobject.inclusion()`` -- restriction IS composition."""
+        assert isinstance(subobject, Subobject), f"restrict consumes a subobject (the carried inclusion), not a bare lattice; found={type(subobject)}"
+        return self * subobject.inclusion()
+
+    def preserves(self, subobject: Subobject) -> bool:
+        r"""Factorization query for an endomorphism: does
+        ``self * subobject.inclusion()`` factor through the inclusion again --
+        i.e. does every generator image land back in the subobject's span?"""
+        assert isinstance(subobject, Subobject), f"preserves consumes a subobject (the carried inclusion), not a bare lattice; found={type(subobject)}"
+        assert self.domain() == self.codomain(), f"preservation is an endomorphism question; domain={self.domain()}, codomain={self.codomain()}"
+        restricted = self.restrict(subobject)
+        inclusion_matrix = matrix(QQ, subobject.inclusion().matrix())
+        span = (QQ ** self.codomain().rank()).span(inclusion_matrix.columns(), self.codomain().base_ring())
+        return all(vector(QQ, column) in span for column in matrix(QQ, restricted.matrix()).columns())
+
+    def saturation(self) -> Subobject:
+        r"""The saturation of the image in the codomain -- the smallest
+        primitive subobject this monomorphism factors through."""
+        assert self.is_injective(), f"saturation is monomorphism vocabulary; matrix={self.matrix()}"
+        return self.image().saturation()
+
+    def saturation_factorization(self) -> Any:
+        r"""The mono ``A -> A^sat`` through which this monomorphism factors:
+        ``f.saturation().inclusion() * f.saturation_factorization() == f``.
+        The one coordinate solve lives here, inside the morphism's
+        construction; its index is ``[A^sat : A]``, ``1`` exactly when the
+        morphism is a primitive embedding."""
+        assert self.is_injective(), f"the saturation factorization is monomorphism vocabulary; matrix={self.matrix()}"
+        saturated = self.saturation()
+        factor = saturated.inclusion().matrix().solve_right(self.matrix())
+        return self.domain().embedding(factor, codomain=saturated.lattice())
+
+    def orthogonal_complement(self) -> Subobject:
+        r"""The subobject of the codomain pairing to zero with the image --
+        the kernel of the composed pairing (asked of the image subobject,
+        which carries the inclusion)."""
+        return self.image().orthogonal_complement()
+
+    def induced_map_on_quotient(self, quotient: Any) -> Any:
+        r"""The endomorphism of ``cover/relations`` induced by this morphism
+        of the cover -- an action on the finite quotient (its parent left the
+        lattice category).
+
+        The morphism descends exactly when it preserves the relation
+        subobject: the composite ``relation -> cover -> cover ->
+        cover/relation`` is zero (``pi . phi . iota = 0``), asked through the
+        quotient's carried inclusion morphism and its own projection."""
+        from ..forms.discriminant_forms import SyntheticLatticeQuotient
+
+        assert isinstance(quotient, SyntheticLatticeQuotient), f"the induced action lives on a finite lattice quotient carrying its inclusion; found={type(quotient)}"
+        assert self.domain() == quotient.cover_lattice() and self.codomain() == quotient.cover_lattice(), (
+            "induced quotient endomorphism requires a morphism of the quotient cover lattice"
+        )
+        inclusion = quotient.relation_inclusion()
+        relation = inclusion.domain()
+        for index in range(relation.rank()):
+            descends = quotient.projection(self(inclusion(relation.gen(index)))) == quotient.zero()
+            assert descends, f"morphism does not preserve the quotient relation lattice; relation generator index={index}"
+        return cast(lexicon.DiscriminantAction, quotient.hom([quotient.projection(self(quotient.lift(generator))) for generator in quotient.gens()]))
+
     def im_gens(self) -> tuple[Any, ...]:
         return tuple(self(self.domain().gen(i)) for i in range(self.domain().rank()))
 
@@ -392,3 +457,230 @@ class LatticeSimilarity(lexicon.LatticeSimilarity, Element):
 
 
 LatticeHomset.Element = LatticeMorphism
+
+
+class IsometryHomset(lexicon.IsometryHomset, Parent):
+    r"""``Isom(L, M)`` as a first-class parent: the (possibly empty) set of
+    isometries ``L -> M``. Emptiness owns the isometry decision (the G1
+    routing table); ``Lattice.is_isometric`` is this homset's emptiness
+    router. When nonempty, the homset is a torsor under ``O(M)``, which
+    powers iteration and cardinality exactly where that group is finite."""
+
+    def __init__(self, domain: Lattice | SyntheticLattice, codomain: Lattice | SyntheticLattice) -> None:
+        assert isinstance(domain, SyntheticLattice), f"expected SyntheticLattice domain; found={type(domain)}"
+        assert isinstance(codomain, SyntheticLattice), f"expected SyntheticLattice codomain; found={type(codomain)}"
+        self._domain = domain
+        self._codomain = codomain
+        from ..objects.categories import Lattices
+
+        Parent.__init__(self, category=Lattices(domain.base_ring()).Homsets())
+
+    def _repr_(self) -> str:
+        return f"Isometries from {self.domain()} to {self.codomain()}"
+
+    def domain(self) -> SyntheticLattice:
+        return self._domain
+
+    def codomain(self) -> SyntheticLattice:
+        return self._codomain
+
+    def is_empty(self) -> bool:
+        r"""The isometry decision, over Sage's own engines (gap-ledger G1,
+        Rulings round 3): the whole case analysis is the single match table
+        below; mathematics Sage's stack cannot decide asserts out by name.
+
+        Indefinite rank >= 3 is decided by genus + spinor-genus theory
+        (Eichler; SPLAG Ch. 15 Theorem 14 and section 9 [CS10, Zotero
+        T2WVLTDB]): when the genus carries a single improper spinor genus,
+        genus equality IS the isometry decision. Sage exposes spinor-genus
+        ENUMERATION (spinor_generators / representatives) but no PLACEMENT
+        of a given form into its spinor genus, so a split genus asserts out
+        per the round-2 ruling (assert-gated sufficient condition; full
+        spinor comparison is follow-up work confined to the spike per the
+        2026-07-04 directive — Dutour Sikirić INDEF_FORM_TestEquivalence
+        adapter)."""
+        left, right = self._domain, self._codomain
+        if left.rank() != right.rank() or left.signature_pair() != right.signature_pair():
+            return True
+        from sage.quadratic_forms.quadratic_form import QuadraticForm
+
+        # QuadraticForm(matrix) reads the matrix as the Hessian (2 x Gram).
+        integral = left.base_ring() is ZZ and right.base_ring() is ZZ and left.is_integral() and right.is_integral()
+        pos, neg = left.signature_pair()
+        radical_rank = left.rank() - pos - neg
+        match (radical_rank, integral, left.rank()):
+            case (r, _, _) if r > 0:
+                # Degenerate: rad(L) is a saturated summand pairing to zero, so
+                # L ~ 0^r  (+)  L/rad(L); equal signature pairs force equal
+                # radical ranks, and the nondegenerate quotients recurse.
+                return left.radical_quotient().Isom(right.radical_quotient()).is_empty()
+            case (_, False, _):
+                # Rational lattices: the grounded relation is rational equivalence of
+                # quadratic forms over QQ (the 2x Hessian scaling is applied to both).
+                return not QuadraticForm(matrix(QQ, 2 * left.gram_matrix())).is_rationally_isometric(QuadraticForm(matrix(QQ, 2 * right.gram_matrix())))
+            case (_, True, rank) if rank <= 1:
+                # Trivial: rank 0 is unique; rank 1 has diag(a) ~ diag(b) iff
+                # a == b (the units of ZZ are +-1, acting by squares).
+                return left.gram_matrix() != right.gram_matrix()
+            case (_, True, _) if left.is_definite():
+                # Definite: Sage's global equivalence (PARI qfisom),
+                # sign-normalized to positive definite.
+                sign = 1 if left.is_positive_definite() else -1
+                return not QuadraticForm(2 * sign * matrix(ZZ, left.gram_matrix())).is_globally_equivalent_to(QuadraticForm(2 * sign * matrix(ZZ, right.gram_matrix())))
+            case (_, True, 2):
+                assert False, (
+                    "binary indefinite isometry is outside the spinor-genus theorem "
+                    "(SPLAG Ch. 15 section 9 assumes dimension >= 3; the binary theory is "
+                    "Gauss composition / real quadratic class groups — gap-ledger entry 1); "
+                    f"left_gram={left.gram_matrix()}, right_gram={right.gram_matrix()}"
+                )
+            case (_, True, _):
+                # Indefinite rank >= 3: class = improper spinor genus (Eichler,
+                # SPLAG Thm 14); genus equality decides iff the genus carries a
+                # single improper spinor genus (empty spinor-generator set).
+                from sage.quadratic_forms.genera.genus import Genus
+
+                genus_left = Genus(matrix(ZZ, left.gram_matrix()))
+                if genus_left != Genus(matrix(ZZ, right.gram_matrix())):
+                    return True
+                if not genus_left.spinor_generators(proper=False):
+                    return False
+                assert False, (
+                    "this genus splits into more than one improper spinor genus; Sage's "
+                    "spinor stack enumerates spinor genera (representatives) but cannot PLACE "
+                    "a given form into one, so the decision is assert-gated per the G1 round-2 "
+                    "ruling (follow-up engine: Dutour Sikirić INDEF_FORM_TestEquivalence "
+                    "adapter, spike-bound per the 2026-07-04 directive); "
+                    f"spinor_generators={genus_left.spinor_generators(proper=False)}, "
+                    f"left_gram={left.gram_matrix()}, right_gram={right.gram_matrix()}"
+                )
+        assert False, f"unreachable: the G1 routing table is total; gram={left.gram_matrix()}"
+
+    def an_element(self) -> LatticeMorphism:
+        r"""A distinguished isometry; defined exactly when the homset is
+        nonempty. The witness comes from Sage's global-equivalence engine
+        (PARI qfisom transformation) in the definite integral regime; the
+        identity when domain and codomain are the same object."""
+        assert not self.is_empty(), f"Isom({self._domain}, {self._codomain}) is empty; existence is the homset's emptiness question"
+        if self._domain == self._codomain:
+            return cast(LatticeMorphism, self._domain.identity_morphism())
+        left, right = self._domain, self._codomain
+        assert left.base_ring() is ZZ and left.is_integral() and right.is_integral() and left.is_definite(), (
+            "an explicit isometry witness is implemented on the definite integral regime "
+            "(PARI qfisom); other regimes have no witness engine in Sage's stack; "
+            f"left_gram={left.gram_matrix()}, right_gram={right.gram_matrix()}"
+        )
+        from sage.quadratic_forms.quadratic_form import QuadraticForm
+
+        sign = 1 if left.is_positive_definite() else -1
+        transformation = QuadraticForm(2 * sign * matrix(ZZ, right.gram_matrix())).is_globally_equivalent_to(
+            QuadraticForm(2 * sign * matrix(ZZ, left.gram_matrix())), return_matrix=True
+        )
+        # The morphism constructor asserts form-preservation, so a convention
+        # mismatch in the engine's transformation fails loudly here.
+        return cast(LatticeMorphism, left.hom(matrix(ZZ, transformation), codomain=right))
+
+    def cardinality(self) -> Any:
+        r"""``0`` when empty; ``|O(M)|`` otherwise (the homset is an
+        ``O(M)``-torsor), ``+Infinity`` when that group is infinite."""
+        if self.is_empty():
+            return ZZ(0)
+        group = self._codomain.isometry_group()
+        if not group.is_finite():
+            return Infinity
+        return group.order()
+
+    def __iter__(self) -> Any:
+        r"""Torsor enumeration: ``{g . f0 : g in O(M)}``; implemented exactly
+        where ``O(M)`` is finite."""
+        if self.is_empty():
+            return
+        base = self.an_element()
+        for isometry in self._codomain.isometry_group():
+            yield isometry * base
+
+    def __contains__(self, candidate: Any) -> bool:
+        return isinstance(candidate, LatticeMorphism) and candidate.domain() == self._domain and candidate.codomain() == self._codomain and candidate.is_isometry()
+
+
+class EmbeddingHomset(lexicon.EmbeddingHomset, Parent):
+    r"""``Emb(L, M)`` as a first-class parent: the form-preserving
+    monomorphisms ``L -> M``. Enumeration is by generator patterns where the
+    codomain is definite (each generator has finitely many candidate images,
+    the vectors of its square); emptiness and the distinguished element ride
+    on the enumeration. Other regimes assert out by name (the Nikulin
+    existence engines are issue #24)."""
+
+    def __init__(self, domain: Lattice | SyntheticLattice, codomain: Lattice | SyntheticLattice) -> None:
+        assert isinstance(domain, SyntheticLattice), f"expected SyntheticLattice domain; found={type(domain)}"
+        assert isinstance(codomain, SyntheticLattice), f"expected SyntheticLattice codomain; found={type(codomain)}"
+        self._domain = domain
+        self._codomain = codomain
+        from ..objects.categories import Lattices
+
+        Parent.__init__(self, category=Lattices(domain.base_ring()).Homsets())
+
+    def _repr_(self) -> str:
+        return f"Embeddings of {self.domain()} into {self.codomain()}"
+
+    def domain(self) -> SyntheticLattice:
+        return self._domain
+
+    def codomain(self) -> SyntheticLattice:
+        return self._codomain
+
+    def __iter__(self) -> Any:
+        r"""Depth-first assignment of generator images: candidate images of
+        the ``i``-th generator are the codomain vectors of its square, pruned
+        by the pairing constraints against the already-placed generators.
+        Finite and total for a definite codomain."""
+        domain, codomain = self._domain, self._codomain
+        from ..objects.parents import (
+            SyntheticIntegralNegativeDefiniteLattice,
+            SyntheticIntegralPositiveDefiniteLattice,
+            SyntheticNegativeDefiniteLattice,
+            SyntheticPositiveDefiniteLattice,
+        )
+
+        definite_leaves = (
+            SyntheticIntegralNegativeDefiniteLattice,
+            SyntheticIntegralPositiveDefiniteLattice,
+            SyntheticNegativeDefiniteLattice,
+            SyntheticPositiveDefiniteLattice,
+        )
+        assert isinstance(codomain, definite_leaves) and codomain.rank() > 0, (
+            "embedding enumeration is implemented for definite codomains (finitely many "
+            "vectors per square); indefinite existence is issue #24's Nikulin engine; "
+            f"codomain_gram={codomain.gram_matrix()}"
+        )
+        gram = domain.gram_matrix()
+        wrong_sign = 1 if codomain.is_negative_definite() else -1
+        if any(wrong_sign * gram[i, i] > 0 for i in range(domain.rank())):
+            return  # a definite form takes values of one sign only: Emb is empty
+        candidate_pools = [codomain.vectors_of_square(gram[i, i]) for i in range(domain.rank())]
+
+        def assign(placed: list[Any]) -> Any:
+            position = len(placed)
+            if position == domain.rank():
+                columns = column_matrix(ZZ, [image.coefficient_vector() for image in placed])
+                if columns.rank() == domain.rank():
+                    yield domain.embedding(columns, codomain=codomain)
+                return
+            for candidate in candidate_pools[position]:
+                if all(placed[j].b(candidate) == gram[j, position] for j in range(position)):
+                    yield from assign([*placed, candidate])
+
+        yield from assign([])
+
+    def is_empty(self) -> bool:
+        for _ in self:
+            return False
+        return True
+
+    def an_element(self) -> LatticeMorphism:
+        for embedding in self:
+            return cast(LatticeMorphism, embedding)
+        assert False, f"Emb({self._domain}, {self._codomain}) is empty; existence is the homset's emptiness question"
+
+    def __contains__(self, candidate: Any) -> bool:
+        return isinstance(candidate, LatticeMorphism) and candidate.domain() == self._domain and candidate.codomain() == self._codomain and candidate.is_injective()

@@ -18,7 +18,7 @@ identity: equality is by ``(base_ring, G)`` alone.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterator, Sequence
-from typing import TYPE_CHECKING, Any, ClassVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar
 
 if TYPE_CHECKING:
     from ..lexicon.geometry import Polyhedron
@@ -38,9 +38,9 @@ from ..lexicon import (
     BaseRing,
     CartanType,
     DefiniteLattice,
-    DiscriminantAction,
     DiscriminantFormElement,
     DiscriminantSubgroup,
+    EmbeddingHomset,
     ExactScalar,
     FiniteAbelianGroup,
     FreeModule,
@@ -49,6 +49,7 @@ from ..lexicon import (
     Integer,
     IntegralNondegenerateLattice,
     IsometryGroup,
+    IsometryHomset,
     Lattice,
     LatticeElement,
     LatticeHomset,
@@ -622,75 +623,10 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         return self._isometry_group_object
 
     def is_isometric(self, other: Lattice) -> bool:
-        r"""Isometry decision over Sage's own engines (gap-ledger G1, Rulings
-        round 3): the whole case analysis is the single match table below;
-        mathematics Sage's stack cannot decide asserts out by name.
-
-        Indefinite rank >= 3 is decided by genus + spinor-genus theory
-        (Eichler; SPLAG Ch. 15 Theorem 14 and section 9 [CS10, Zotero
-        T2WVLTDB]): when the genus carries a single improper spinor genus,
-        genus equality IS the isometry decision. Sage exposes spinor-genus
-        ENUMERATION (spinor_generators / representatives) but no PLACEMENT of
-        a given form into its spinor genus, so a split genus asserts out per
-        the round-2 ruling (assert-gated sufficient condition; full spinor
-        comparison is follow-up work confined to the spike per the 2026-07-04
-        directive — Dutour Sikirić INDEF_FORM_TestEquivalence adapter)."""
-        assert isinstance(other, SyntheticLattice), f"expected SyntheticLattice; found={type(other)}"
-        if self.rank() != other.rank() or self.signature_pair() != other.signature_pair():
-            return False
-        from sage.quadratic_forms.quadratic_form import QuadraticForm
-
-        # QuadraticForm(matrix) reads the matrix as the Hessian (2 x Gram).
-        integral = self.base_ring() is ZZ and other.base_ring() is ZZ and self.is_integral() and other.is_integral()
-        pos, neg = self.signature_pair()
-        radical_rank = self.rank() - pos - neg
-        match (radical_rank, integral, self.rank()):
-            case (r, _, _) if r > 0:
-                # Degenerate: rad(L) is a saturated summand pairing to zero, so
-                # L ~ 0^r  (+)  L/rad(L); equal signature pairs force equal
-                # radical ranks, and the nondegenerate quotients recurse.
-                return self.radical_quotient().is_isometric(other.radical_quotient())
-            case (_, False, _):
-                # Rational lattices: the grounded relation is rational equivalence of
-                # quadratic forms over QQ (the 2x Hessian scaling is applied to both).
-                return QuadraticForm(matrix(QQ, 2 * self.gram_matrix())).is_rationally_isometric(QuadraticForm(matrix(QQ, 2 * other.gram_matrix())))
-            case (_, True, rank) if rank <= 1:
-                # Trivial: rank 0 is unique; rank 1 has diag(a) ~ diag(b) iff
-                # a == b (the units of ZZ are +-1, acting by squares).
-                return self.gram_matrix() == other.gram_matrix()
-            case (_, True, _) if self.is_definite():
-                # Definite: Sage's global equivalence (PARI qfisom),
-                # sign-normalized to positive definite.
-                sign = 1 if self.is_positive_definite() else -1
-                return QuadraticForm(2 * sign * matrix(ZZ, self.gram_matrix())).is_globally_equivalent_to(QuadraticForm(2 * sign * matrix(ZZ, other.gram_matrix())))
-            case (_, True, 2):
-                assert False, (
-                    "binary indefinite isometry is outside the spinor-genus theorem "
-                    "(SPLAG Ch. 15 section 9 assumes dimension >= 3; the binary theory is "
-                    "Gauss composition / real quadratic class groups — gap-ledger entry 1); "
-                    f"left_gram={self.gram_matrix()}, right_gram={other.gram_matrix()}"
-                )
-            case (_, True, _):
-                # Indefinite rank >= 3: class = improper spinor genus (Eichler,
-                # SPLAG Thm 14); genus equality decides iff the genus carries a
-                # single improper spinor genus (empty spinor-generator set).
-                from sage.quadratic_forms.genera.genus import Genus
-
-                genus_left = Genus(matrix(ZZ, self.gram_matrix()))
-                if genus_left != Genus(matrix(ZZ, other.gram_matrix())):
-                    return False
-                if not genus_left.spinor_generators(proper=False):
-                    return True
-                assert False, (
-                    "this genus splits into more than one improper spinor genus; Sage's "
-                    "spinor stack enumerates spinor genera (representatives) but cannot PLACE "
-                    "a given form into one, so the decision is assert-gated per the G1 round-2 "
-                    "ruling (follow-up engine: Dutour Sikirić INDEF_FORM_TestEquivalence "
-                    "adapter, spike-bound per the 2026-07-04 directive); "
-                    f"spinor_generators={genus_left.spinor_generators(proper=False)}, "
-                    f"left_gram={self.gram_matrix()}, right_gram={other.gram_matrix()}"
-                )
-        assert False, f"unreachable: the G1 routing table is total; gram={self.gram_matrix()}"
+        r"""Router for ``Isom(self, other)`` being nonempty (ratified method
+        placement, #100): existence of an isometry is the homset's emptiness
+        question, and the G1 decision table lives on ``IsometryHomset``."""
+        return not self.Isom(other).is_empty()
 
     def scale(self, scalar: ExactScalar | int, label: str = "scale") -> SyntheticLattice:
         scalar = QQ(scalar)
@@ -715,6 +651,22 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         from ..morphisms.homsets import LatticeHomset
 
         return LatticeHomset(self, codomain)
+
+    def Isom(self, codomain: Lattice) -> IsometryHomset:
+        r"""``Isom(L, M)`` as a first-class parent (ratified method
+        placement, #100): existence, witness, and enumeration of isometries
+        are the homset's own questions."""
+        from ..morphisms.homsets import IsometryHomset
+
+        return IsometryHomset(self, codomain)
+
+    def Emb(self, codomain: Lattice) -> EmbeddingHomset:
+        r"""``Emb(L, M)`` as a first-class parent — the home of embedding
+        existence and enumeration (generator patterns in the definite
+        regime; the indefinite Nikulin engines are issue #24)."""
+        from ..morphisms.homsets import EmbeddingHomset
+
+        return EmbeddingHomset(self, codomain)
 
     def hom(
         self,
@@ -753,28 +705,10 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
     # the deleted spelling took a bare lattice and guarded on the degenerate
     # bare is_submodule.
 
-    def induced_map_on_quotient(self, morphism: LatticeMorphism, quotient: FiniteAbelianGroup) -> DiscriminantAction:
-        r"""The endomorphism of ``cover/relations`` induced by a morphism of the
-        cover — an action on the finite quotient (a ``DiscriminantAction``),
-        not a lattice morphism (its parent left the lattice category).
-
-        The morphism descends exactly when it preserves the relation
-        subobject: the composite ``relation -> cover -> cover -> cover/relation``
-        is zero (``pi . phi . iota = 0``), asked through the quotient's carried
-        inclusion morphism and its own projection — never by reconstructing
-        coordinates."""
-        from ..forms.discriminant_forms import SyntheticLatticeQuotient
-
-        assert isinstance(quotient, SyntheticLatticeQuotient), f"the induced action lives on a finite lattice quotient carrying its inclusion; found={type(quotient)}"
-        assert morphism.domain() == quotient.cover_lattice() and morphism.codomain() == quotient.cover_lattice(), (
-            "induced quotient endomorphism requires a morphism of the quotient cover lattice"
-        )
-        inclusion = quotient.relation_inclusion()
-        relation = inclusion.domain()
-        for index in range(relation.rank()):
-            descends = quotient.projection(morphism(inclusion(relation.gen(index)))) == quotient.zero()
-            assert descends, f"morphism does not preserve the quotient relation lattice; relation generator index={index}"
-        return cast(DiscriminantAction, quotient.hom([quotient.projection(morphism(quotient.lift(generator))) for generator in quotient.gens()]))
+    # There is no lattice-level ``induced_map_on_quotient(morphism, quotient)``:
+    # the body consumed only the morphism and the quotient, never the lattice
+    # it was parked on — the method-placement gate (#100) sites it on the
+    # morphism itself, ``morphism.induced_map_on_quotient(quotient)``.
 
 
 class SyntheticNondegenerateLattice(NondegenerateLattice, SyntheticLattice):
