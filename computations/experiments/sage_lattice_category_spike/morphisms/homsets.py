@@ -95,6 +95,30 @@ class Subobject:
             return bool(module.span(self._inclusion.matrix().columns()).is_submodule(module.span(other.inclusion().matrix().columns())))
         return bool(self.ambient() == other)
 
+    def _span_in_codomain(self) -> Any:
+        r"""The image of the carried inclusion as a module inside the
+        codomain's coordinate module -- the shared substrate of the subobject
+        algebra (sum, intersection)."""
+        codomain = self.ambient()
+        return (QQ ** codomain.rank()).span(matrix(QQ, self._inclusion.matrix()).columns(), codomain.base_ring())
+
+    def sum(self, other: Subobject, label: str = "sum") -> Subobject:
+        r"""The subobject sum ``L1 + L2`` inside the common codomain: the
+        span of both images, carried with its inclusion (#100 T4: the burden
+        transferred from the deleted bare-lattice spelling)."""
+        assert isinstance(other, Subobject), f"subobject sum takes a subobject of the same codomain; found={type(other)}"
+        assert self.ambient() == other.ambient(), f"subobject sum needs a common codomain; left={self.ambient()}, right={other.ambient()}"
+        module = self._span_in_codomain() + other._span_in_codomain()
+        return cast(Subobject, self.ambient()._subobject_from_rows(module.basis_matrix(), label))
+
+    def intersection(self, other: Subobject, label: str = "intersection") -> Subobject:
+        r"""The subobject intersection ``L1 ∩ L2`` inside the common
+        codomain, carried with its inclusion."""
+        assert isinstance(other, Subobject), f"subobject intersection takes a subobject of the same codomain; found={type(other)}"
+        assert self.ambient() == other.ambient(), f"subobject intersection needs a common codomain; left={self.ambient()}, right={other.ambient()}"
+        module = self._span_in_codomain().intersection(other._span_in_codomain())
+        return cast(Subobject, self.ambient()._subobject_from_rows(module.basis_matrix(), label))
+
     def orthogonal_complement(self, label: str = "orthogonal_complement") -> Subobject:
         r"""The orthogonal complement of ``L`` inside ``M``, as a subobject
         ``K -> M`` -- ``K`` is the points of ``M`` pairing to zero with every

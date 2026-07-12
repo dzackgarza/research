@@ -176,6 +176,14 @@ def embedding_existence_is_a_homset_question(small: Lattice, big: Lattice) -> bo
     return embeddings.an_element().is_primitive_embedding()
 
 
+def subobject_algebra_lives_on_subobjects(lattice: Lattice, u: LatticeElement, w: LatticeElement) -> bool:
+    """Sum and intersection are subobject algebra inside a common codomain
+    (the deleted bare-lattice spellings' burden, sited on ``Subobject``)."""
+    left = lattice.subobject([u])
+    right = lattice.subobject([w])
+    return left.sum(right).is_primitive() or left.intersection(right).is_primitive()
+
+
 def quotient_descent_is_morphism_sited(lattice: Lattice, isometry: LatticeMorphism, vector: LatticeElement) -> bool:
     """Descent to a finite quotient is asked of the morphism, gated by the
     relation subobject through the projection."""

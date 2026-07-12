@@ -421,8 +421,8 @@ class Lattice:
     # subobject vocabulary: they relate a carried inclusion to its codomain and
     # are not defined on a bare lattice (P6 siting gate, #100). Saturation and
     # its factorization are morphism-sited (``LatticeMorphism``); ``Subobject``
-    # spellings delegate to the carried inclusion. Subobject sum/intersection
-    # land on ``Subobject`` per the method-placement architecture plan.
+    # spellings delegate to the carried inclusion, and the subobject algebra
+    # (sum, intersection) is sited on ``Subobject`` itself.
 
     @abstract_method
     def subobject(self, elements: Sequence[LatticeElement]) -> Subobject:

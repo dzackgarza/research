@@ -174,6 +174,33 @@ def test_embedding_homset_finds_the_index_two_sublattice():
     assert all(not embedding.is_primitive_embedding() for embedding in embeddings)
 
 
+def test_subobject_sum_and_intersection_carry_their_inclusions():
+    r"""The subobject algebra inside a common codomain (#100 T4, burden
+    transferred from the deleted bare-lattice sum/intersection): joins and
+    meets return subobjects, whose indices and saturations are asked of
+    their carried inclusions. In M = diag(-1,-1): span(2e1) + span(3e1) =
+    span(e1) (gcd) and their meet is span(6e1) (lcm)."""
+    M = Lattice(matrix(ZZ, [[-1, 0], [0, -1]]), label="M")
+    two = M.subobject([M([2, 0])], "2e1")
+    three = M.subobject([M([3, 0])], "3e1")
+    total = two.sum(three)
+    assert total.rank() == 1
+    assert total.inclusion().saturation_factorization().index() == 1  # span(e1) is primitive
+    meet = two.intersection(three)
+    assert meet.rank() == 1
+    assert meet.inclusion().saturation_factorization().index() == 6  # span(6e1)
+
+    left = M.subobject([M([2, 0]), M([0, 1])], "left")
+    right = M.subobject([M([1, 0]), M([0, 2])], "right")
+    assert left.sum(right).index() == 1  # together they span all of M
+    assert left.intersection(right).index() == 4  # span(2e1, 2e2)
+
+    first_axis = M.subobject([M([1, 0])], "e1")
+    second_axis = M.subobject([M([0, 1])], "e2")
+    assert first_axis.sum(second_axis).index() == 1
+    assert first_axis.intersection(second_axis).rank() == 0
+
+
 def test_quotient_descent_is_asked_of_the_morphism():
     r"""The morphism-sited descent on the genuine finite-index subobject
     relation: negation descends to M/span(3e1, e2), the swap isometry (which
