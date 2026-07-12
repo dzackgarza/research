@@ -2,8 +2,8 @@
  "repo": "dzackgarza/research",
  "pr": 132,
  "counts": {
-  "OPEN-PENDING": 4,
-  "CLOSED": 7
+  "CLOSED": 11,
+  "NEW": 1
  },
  "converged": false,
  "records": [
@@ -11,10 +11,10 @@
    "key": "ct:0e92717129bde47a",
    "thread_id": "PRRT_kwDOTBB78M6QKeoS",
    "path": "computations/experiments/sage_lattice_category_spike/morphisms/homsets.py",
-   "line": 535,
-   "resolved": false,
+   "line": 544,
+   "resolved": true,
    "outdated": false,
-   "state": "OPEN-PENDING",
+   "state": "CLOSED",
    "disp": {
     "verdict": "accepted with modified remediation",
     "has_verification": false,
@@ -26,7 +26,7 @@
    "key": "ct:927091e0a66ecf14",
    "thread_id": "PRRT_kwDOTBB78M6QKeoT",
    "path": "computations/experiments/sage_lattice_category_spike/morphisms/homsets.py",
-   "line": 598,
+   "line": 607,
    "resolved": true,
    "outdated": false,
    "state": "CLOSED",
@@ -41,7 +41,7 @@
    "key": "ct:c8e6f318aca221e4",
    "thread_id": "PRRT_kwDOTBB78M6QKeoU",
    "path": "computations/experiments/sage_lattice_category_spike/morphisms/homsets.py",
-   "line": 696,
+   "line": 719,
    "resolved": true,
    "outdated": false,
    "state": "CLOSED",
@@ -56,10 +56,10 @@
    "key": "ct:b6ce18e2165cd125",
    "thread_id": "PRRT_kwDOTBB78M6QKfuW",
    "path": "computations/experiments/sage_lattice_category_spike/morphisms/homsets.py",
-   "line": 676,
-   "resolved": false,
-   "outdated": false,
-   "state": "OPEN-PENDING",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
    "disp": {
     "verdict": "accepted with modified remediation",
     "has_verification": false,
@@ -71,7 +71,7 @@
    "key": "ct:d911fc737efa1794",
    "thread_id": "PRRT_kwDOTBB78M6QKfuX",
    "path": "computations/experiments/sage_lattice_category_spike/morphisms/homsets.py",
-   "line": 551,
+   "line": 560,
    "resolved": true,
    "outdated": false,
    "state": "CLOSED",
@@ -86,10 +86,10 @@
    "key": "ct:587cc62d7bb4197f",
    "thread_id": "PRRT_kwDOTBB78M6QKfuY",
    "path": "computations/experiments/sage_lattice_category_spike/morphisms/homsets.py",
-   "line": 620,
-   "resolved": false,
-   "outdated": false,
-   "state": "OPEN-PENDING",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
    "disp": {
     "verdict": "accepted as written",
     "has_verification": false,
@@ -101,7 +101,7 @@
    "key": "ct:79e7b0f0733d376a",
    "thread_id": "PRRT_kwDOTBB78M6QKfuZ",
    "path": "computations/experiments/sage_lattice_category_spike/morphisms/homsets.py",
-   "line": 696,
+   "line": 719,
    "resolved": true,
    "outdated": false,
    "state": "CLOSED",
@@ -131,10 +131,10 @@
    "key": "ct:aefd1ce35c0e0de0",
    "thread_id": "PRRT_kwDOTBB78M6QKl5T",
    "path": "computations/experiments/sage_lattice_category_spike/pyrightconfig.json",
-   "line": 9,
-   "resolved": false,
+   "line": 14,
+   "resolved": true,
    "outdated": false,
-   "state": "OPEN-PENDING",
+   "state": "CLOSED",
    "disp": {
     "verdict": "accepted as written",
     "has_verification": false,
@@ -146,7 +146,7 @@
    "key": "ct:8fb6f8c3933e6227",
    "thread_id": "PRRT_kwDOTBB78M6QKl5U",
    "path": "computations/experiments/sage_lattice_category_spike/morphisms/homsets.py",
-   "line": 206,
+   "line": 205,
    "resolved": true,
    "outdated": false,
    "state": "CLOSED",
@@ -171,6 +171,16 @@
     "commit": null,
     "by": "dzackgarza"
    }
+  },
+  {
+   "key": "ct:78fdfc30e1645939",
+   "thread_id": "PRRT_kwDOTBB78M6QNep-",
+   "path": ".pr/REVIEW_DISPOSITIONS.md",
+   "line": 65,
+   "resolved": false,
+   "outdated": false,
+   "state": "NEW",
+   "disp": null
   }
  ]
 }
