@@ -13,8 +13,8 @@ if TYPE_CHECKING:
 
 
 @dataclass(frozen=True, slots=True)
-class StableGraphCanonicalization:
-    r"""Certificate from a labeled graph to its canonical representative."""
+class StableGraphIsomorphism:
+    r"""Isomorphism ``source -> target`` on vertices and half-edges."""
 
     source: StableGraph
     target: StableGraph
@@ -22,8 +22,11 @@ class StableGraphCanonicalization:
     flag_map: tuple[int, ...]
 
 
-def canonicalize(record: StableGraph) -> StableGraphCanonicalization:
-    r"""Canonicalize ``record`` and retain Sage's relabelling certificate."""
+StableGraphCanonicalization = StableGraphIsomorphism
+
+
+def canonicalize(record: StableGraph) -> StableGraphIsomorphism:
+    r"""Canonicalize ``record``; certificate maps ``record -> canonical representative``."""
     graph, partition, color_of = _incidence_graph(record)
     _, relabelling = graph.canonical_label(partition=partition, certificate=True)
 
@@ -46,12 +49,30 @@ def canonicalize(record: StableGraph) -> StableGraphCanonicalization:
             marking_to_flag=tuple(flag_map[flag] for flag in record.marking_to_flag),
         )
     )
-    return StableGraphCanonicalization(
+    return StableGraphIsomorphism(
         source=record,
         target=target,
         vertex_map=vertex_map,
         flag_map=flag_map,
     )
+
+
+def identity_isomorphism(record: StableGraph) -> StableGraphIsomorphism:
+    size_v = record.num_vertices()
+    size_h = record.num_flags()
+    return StableGraphIsomorphism(
+        source=record,
+        target=record,
+        vertex_map=tuple(range(size_v)),
+        flag_map=tuple(range(size_h)),
+    )
+
+
+def inverse_vertex_map(vertex_map: tuple[int, ...]) -> tuple[int, ...]:
+    inverse = [0] * len(vertex_map)
+    for source, target in enumerate(vertex_map):
+        inverse[target] = source
+    return tuple(inverse)
 
 
 def inverse_flag_map(flag_map: tuple[int, ...]) -> tuple[int, ...]:
@@ -61,28 +82,43 @@ def inverse_flag_map(flag_map: tuple[int, ...]) -> tuple[int, ...]:
     return tuple(inverse)
 
 
-def compose_flag_maps(inner: tuple[int, ...], outer: tuple[int, ...]) -> tuple[int, ...]:
-    return tuple(outer[inner[flag]] for flag in range(len(inner)))
-
-
-def vertex_transport_map(source: StableGraph, target: StableGraph) -> tuple[int, ...]:
-    r"""Map vertex indices on ``source`` to matching indices on ``target``."""
+def isomorphism_between(source: StableGraph, target: StableGraph) -> StableGraphIsomorphism:
+    r"""The unique isomorphism when ``source`` and ``target`` have the same canonical type."""
     src = canonicalize(source)
     dst = canonicalize(target)
     assert src.target == dst.target, "graphs are not isomorphic"
-    inverse_dst = [0] * len(dst.vertex_map)
-    for source_index, target_index in enumerate(dst.vertex_map):
-        inverse_dst[target_index] = source_index
-    return tuple(inverse_dst[src.vertex_map[vertex]] for vertex in range(source.num_vertices()))
+    inverse_dst_vertices = inverse_vertex_map(dst.vertex_map)
+    inverse_dst_flags = inverse_flag_map(dst.flag_map)
+    vertex_map = tuple(inverse_dst_vertices[src.vertex_map[vertex]] for vertex in range(source.num_vertices()))
+    flag_map = tuple(inverse_dst_flags[src.flag_map[flag]] for flag in range(source.num_flags()))
+    return StableGraphIsomorphism(source=source, target=target, vertex_map=vertex_map, flag_map=flag_map)
+
+
+def apply_isomorphism(graph: StableGraph, iso: StableGraphIsomorphism) -> StableGraph:
+    r"""Push ``graph`` forward along ``iso`` to its ``target`` labeling."""
+    assert iso.source == graph
+    inverse_vertices = inverse_vertex_map(iso.vertex_map)
+    inverse_flags = inverse_flag_map(iso.flag_map)
+    return StableGraph(
+        vertex_genera=tuple(graph.vertex_genera[inverse_vertices[vertex]] for vertex in range(iso.target.num_vertices())),
+        flag_vertex=tuple(iso.vertex_map[graph.flag_vertex[inverse_flags[flag]]] for flag in range(iso.target.num_flags())),
+        flag_involution=tuple(
+            iso.flag_map[graph.flag_involution[inverse_flags[flag]]] for flag in range(iso.target.num_flags())
+        ),
+        marking_to_flag=tuple(iso.flag_map[graph.marking_to_flag[label - 1]] for label in range(1, graph.num_markings() + 1)),
+    )
 
 
 def remap_vertex_fibres(
     vertex_fibres: tuple[frozenset[int], ...],
-    vertex_map: tuple[int, ...],
+    codomain_vertex_map: tuple[int, ...],
+    domain_vertex_map: tuple[int, ...],
 ) -> tuple[frozenset[int], ...]:
-    grouped: list[set[int]] = [set() for _ in range(len(vertex_map))]
-    for source_index, fibre in enumerate(vertex_fibres):
-        grouped[vertex_map[source_index]].update(fibre)
+    r"""Transport vertex fibres under ``q' = beta o q o alpha^{-1}``."""
+    grouped: list[set[int]] = [set() for _ in range(len(codomain_vertex_map))]
+    for old_codomain_vertex, fibre in enumerate(vertex_fibres):
+        new_codomain_vertex = codomain_vertex_map[old_codomain_vertex]
+        grouped[new_codomain_vertex].update(domain_vertex_map[vertex] for vertex in fibre)
     return tuple(frozenset(fibre) for fibre in grouped)
 
 
@@ -92,7 +128,7 @@ def transport_contraction(
     domain: StableGraph | None = None,
     codomain: StableGraph | None = None,
 ) -> StableGraphContraction:
-    r"""Transport a contraction to new labeled endpoint representatives."""
+    r"""Transport ``q`` along isomorphisms ``alpha: domain -> domain'``, ``beta: codomain -> codomain'``."""
     from .contractions import StableGraphContraction
 
     if domain is None:
@@ -102,31 +138,28 @@ def transport_contraction(
     if domain is contraction.domain() and codomain is contraction.codomain():
         return contraction
 
-    if domain is not contraction.domain():
-        domain_flag_map = compose_flag_maps(
-            inverse_flag_map(canonicalize(contraction.domain()).flag_map),
-            canonicalize(domain).flag_map,
-        )
-    else:
-        domain_flag_map = tuple(range(domain.num_flags()))
+    alpha = (
+        isomorphism_between(contraction.domain(), domain)
+        if domain is not contraction.domain()
+        else identity_isomorphism(domain)
+    )
+    beta = (
+        isomorphism_between(contraction.codomain(), codomain)
+        if codomain is not contraction.codomain()
+        else identity_isomorphism(codomain)
+    )
 
-    if codomain is not contraction.codomain():
-        codomain_flag_map = compose_flag_maps(
-            canonicalize(contraction.codomain()).flag_map,
-            inverse_flag_map(canonicalize(codomain).flag_map),
-        )
-        vertex_transport = vertex_transport_map(contraction.codomain(), codomain)
-        vertex_fibres = remap_vertex_fibres(contraction.vertex_fibres(), vertex_transport)
-    else:
-        codomain_flag_map = tuple(range(codomain.num_flags()))
-        vertex_fibres = contraction.vertex_fibres()
-
-    contracted_flags = frozenset(domain_flag_map[flag] for flag in contraction.contracted_flags())
+    contracted_flags = frozenset(alpha.flag_map[flag] for flag in contraction.contracted_flags())
     domain_flag_of_codomain_flag = tuple(
         sorted(
-            (domain_flag_map[domain_flag], codomain_flag_map[codomain_flag])
+            (beta.flag_map[codomain_flag], alpha.flag_map[domain_flag])
             for codomain_flag, domain_flag in contraction.domain_flag_of_codomain_flag().items()
         )
+    )
+    vertex_fibres = remap_vertex_fibres(
+        contraction.vertex_fibres(),
+        beta.vertex_map,
+        alpha.vertex_map,
     )
     return StableGraphContraction(
         domain=domain,

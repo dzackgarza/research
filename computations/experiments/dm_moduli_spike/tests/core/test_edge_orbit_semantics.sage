@@ -4,17 +4,8 @@ from __future__ import annotations
 
 from collections import Counter
 
-from dm_moduli_spike import DMCompactificationModel, StableGraphTypes
-from tests.support.fixtures import m12_types
-
-
-def genus_six_counterexample():
-    types = StableGraphTypes(6, 0)
-    return types.from_vertices(
-        genera=(1, 0, 1, 0, 1, 0),
-        markings=((), (), (), (), (), ()),
-        edges=((0, 1), (0, 4), (1, 2), (1, 5), (2, 3), (3, 4), (3, 5), (4, 5)),
-    )
+from dm_moduli_spike import DMCompactificationModel
+from tests.support.fixtures import genus_six_counterexample, m12_types
 
 
 def test_genus_six_counterexample_has_distinct_aut_orbits_same_target():

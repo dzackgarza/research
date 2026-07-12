@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from dm_moduli_spike.objects.graph_types import StableGraphType
     from dm_moduli_spike.objects.strata import DMStratum
     from dm_moduli_spike.objects.stratification import DMStratification
 
@@ -67,3 +68,15 @@ def m20_types(stratification: DMStratification) -> dict[str, DMStratum]:
         name: by_key[curve_type.canonical_key()]
         for name, curve_type in fixtures.items()
     }
+
+
+def genus_six_counterexample() -> StableGraphType:
+    """Stable genus-six graph with distinct Aut edge orbits sharing a contraction target."""
+    from dm_moduli_spike import StableGraphTypes
+
+    types = StableGraphTypes(6, 0)
+    return types.from_vertices(
+        genera=(1, 0, 1, 0, 1, 0),
+        markings=((), (), (), (), (), ()),
+        edges=((0, 1), (0, 4), (1, 2), (1, 5), (2, 3), (3, 4), (3, 5), (4, 5)),
+    )

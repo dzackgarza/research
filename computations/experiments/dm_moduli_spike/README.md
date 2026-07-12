@@ -46,7 +46,7 @@ Covers are always recovered by contraction on canonical representatives.
 
 ## Notebook
 
-[`notebooks/highlights.ipynb`](notebooks/highlights.ipynb) — research-oriented walkthrough of stratification posets, contraction orbits, stack signatures, and clutching coordinates (no backend plumbing).
+[`notebooks/highlights.ipynb`](notebooks/highlights.ipynb) — research walkthrough with **Hasse-diagram poset plots** and **weighted dual-graph drawings** for $\overline{\mathcal M}*{0,4}$ and $\overline{\mathcal M}*{1,2}$, plus contraction orbits, stack signatures, and clutching coordinates.
 
 ## Tests
 

@@ -167,7 +167,7 @@ def test_completeness_false_when_enumeration_stops_early(monkeypatch):
     assert incomplete.rank_sizes() == (1,)
     certificate = incomplete.enumeration_result()
     assert not certificate.globally_complete
-    assert certificate.complete_through_codim == 0
+    assert certificate.complete_through_codim == -1
     assert certificate.backend == "pure-sage"
 
 
@@ -307,12 +307,16 @@ def test_clutching_gluing_map_assigns_markings_and_edge_branches():
     types = StableCurveTypes(1, 2)
     dumbbell = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
     clutching = DMCompactificationModel(1, 2).stratum(dumbbell).clutching_morphism()
-    marking_slots, node_pairings = clutching.gluing_map()
+    marking_flags, node_pairs = clutching.gluing_map()
+    record = dumbbell.canonical_representative()
+    assert marking_flags == record.marking_to_flag
+    assert node_pairs == record.internal_edges()
+    marking_slots, slot_pairings = clutching.gluing_map_slots()
     assert len(marking_slots) == 2
     assert marking_slots[0].vertex == 1 and marking_slots[0].local_index == 0
     assert marking_slots[1].vertex == 1 and marking_slots[1].local_index == 1
-    assert len(node_pairings) == 2
-    loop_pair, edge_pair = node_pairings
+    assert len(slot_pairings) == 2
+    loop_pair, edge_pair = slot_pairings
     assert loop_pair[0].vertex == loop_pair[1].vertex == 0
     assert {loop_pair[0].local_index, loop_pair[1].local_index} == {0, 1}
     assert edge_pair[0].local_index == edge_pair[1].local_index == 2

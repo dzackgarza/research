@@ -190,6 +190,22 @@ class ClutchingDatum:
             for flag, partner in record.internal_edges()
         )
 
+    def marking_flags(self) -> tuple[int, ...]:
+        r"""External labels ``1, ..., n`` as flag indices on the indexing graph."""
+        return self._curve_type.canonical_representative().marking_to_flag
+
+    def flags_at(self, vertex: int) -> tuple[int, ...]:
+        r"""Half-edges (flags) incident to ``vertex``."""
+        return self._curve_type.canonical_representative().flags_at(vertex)
+
+    def internal_edges(self) -> tuple[tuple[int, int], ...]:
+        r"""Internal edges as ordered flag pairs ``(f, iota(f))`` with ``f < iota(f)``."""
+        return self._curve_type.canonical_representative().internal_edges()
+
+    def node_flag_pairs(self) -> tuple[tuple[int, int], ...]:
+        r"""Alias for :meth:`internal_edges` in clutching vocabulary."""
+        return self.internal_edges()
+
     def external_marking_slots(self) -> tuple[FactorSlot, ...]:
         r"""Assignment of each external label ``1, ..., n`` to a :class:`FactorSlot`."""
         return external_marking_slot_map(self._curve_type.canonical_representative())
@@ -205,8 +221,14 @@ class ClutchingDatum:
 
     def gluing_map(
         self,
+    ) -> tuple[tuple[int, ...], tuple[tuple[int, int], ...]]:
+        r"""Half-edge gluing data: marking flags and internal edge flag pairs."""
+        return (self.marking_flags(), self.internal_edges())
+
+    def gluing_map_slots(
+        self,
     ) -> tuple[tuple[FactorSlot, ...], tuple[tuple[FactorSlot, FactorSlot], ...]]:
-        r"""Typed gluing data: external marking slots and internal node pairings."""
+        r"""Deprecated typed gluing data using :class:`FactorSlot` coordinates."""
         return (self.external_marking_slots(), self.node_pairings())
 
     def curve_type(self) -> StableGraphType:

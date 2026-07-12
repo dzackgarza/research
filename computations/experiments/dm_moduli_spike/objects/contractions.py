@@ -214,7 +214,8 @@ def _contract_flag_set(domain: StableGraph, contracted_flags: frozenset[int]) ->
         sorted((raw_to_canonical[new_flag], old_flag) for old_flag, new_flag in new_flag_of_old.items())
     )
     raw_vertex_fibres = tuple(frozenset(fibre_sets[component]) for component in range(num_new_vertices))
-    vertex_fibres = remap_vertex_fibres(raw_vertex_fibres, cert.vertex_map)
+    identity_domain = tuple(range(record.num_vertices()))
+    vertex_fibres = remap_vertex_fibres(raw_vertex_fibres, cert.vertex_map, identity_domain)
     return StableGraphContraction(
         domain=domain,
         codomain=codomain,

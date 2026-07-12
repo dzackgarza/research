@@ -134,7 +134,16 @@ class StableGraphType(Element):
         return automorphism_edge_orbits(self._graph)
 
     def cover_types(self) -> tuple[tuple[StableGraphType, StableGraphType], ...]:
-        return tuple((orbit.target(), self) for orbit in self.elementary_contraction_orbits())
+        r"""Deprecated alias for :meth:`covers`."""
+        return self.covers()
+
+    def covers(self) -> tuple[tuple[StableGraphType, StableGraphType], ...]:
+        r"""Distinct specialization covers below this type, one per Aut edge orbit."""
+        seen: dict[object, tuple[StableGraphType, StableGraphType]] = {}
+        for orbit in self.elementary_contraction_orbits():
+            target = orbit.target()
+            seen.setdefault(target.canonical_key(), (target, self))
+        return tuple(seen.values())
 
     def split_system(self, anchor_marking: int = 1) -> frozenset[frozenset[int]]:
         from .splits import split_system

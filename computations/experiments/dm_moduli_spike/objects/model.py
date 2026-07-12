@@ -91,6 +91,8 @@ class DMCompactificationModel(UniqueRepresentation):
         else:
             verify_resolved = None
         graph_types = self.graph_types()
+        dimension = graph_types.dimension()
+        is_effective_full = max_codim is None or int(max_codim) >= dimension
         if resolved == "pure-sage":
             result = build_stratification(graph_types, max_codim=max_codim)
         elif resolved == "admcycles-stable":
@@ -101,7 +103,7 @@ class DMCompactificationModel(UniqueRepresentation):
                 graph_types,
                 types,
                 max_codim=max_codim,
-                exhaustive=max_codim is None,
+                exhaustive=is_effective_full,
                 backend=resolved,
             )
         else:
@@ -112,7 +114,7 @@ class DMCompactificationModel(UniqueRepresentation):
                 graph_types,
                 types,
                 max_codim=max_codim,
-                exhaustive=max_codim is None,
+                exhaustive=is_effective_full,
                 backend=resolved,
             )
         if verify_resolved is not None:
