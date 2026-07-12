@@ -17,6 +17,7 @@ from __future__ import annotations
 import pytest
 
 from sage.all import QQ, ZZ, TestSuite, matrix
+from sage.categories.homset import Hom as SageHom
 from sage.categories.sets_cat import Sets
 
 from sage_lattice_category_spike.lattice_categories import (
@@ -151,9 +152,11 @@ def test_lattice_hom_factory_accepts_the_explicit_category():
     category = lattice.category()
     direct_homset = lattice.Hom(lattice, category=category)
     factory_homset = Hom(lattice, lattice, category=category)
+    sage_homset = SageHom(lattice, lattice, category=category)
     identity_matrix = lattice.identity_morphism().matrix()
     assert direct_homset(identity_matrix) == lattice.identity_morphism()
     assert factory_homset(identity_matrix) == lattice.identity_morphism()
+    assert sage_homset(identity_matrix) == lattice.identity_morphism()
 
 
 def test_public_hom_uses_the_canonical_forgetful_functor_to_sets():
@@ -163,8 +166,10 @@ def test_public_hom_uses_the_canonical_forgetful_functor_to_sets():
     forgetful = Lattices(ZZ).canonical_functor(Sets())
     assert forgetful(lattice) is lattice
     set_homset = Hom(lattice, lattice, category=Sets())
+    sage_set_homset = SageHom(lattice, lattice, category=Sets())
     set_morphism = set_homset(lattice.identity_morphism().matrix())
     assert set_morphism != lattice.identity_morphism()
+    assert sage_set_homset(lattice.identity_morphism().matrix()) != lattice.identity_morphism()
 
 
 def test_base_change_functor_refines_the_target_category_and_maps_morphisms():

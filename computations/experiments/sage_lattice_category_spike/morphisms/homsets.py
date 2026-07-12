@@ -14,7 +14,7 @@ from sage.structure.element import Element
 from sage.structure.parent import Parent
 
 from .. import lexicon
-from ..lexicon import Lattice, LatticeElement
+from ..lexicon import Lattice, LatticeElement, SageMorphism
 from ..objects.parents import SyntheticLattice
 from ..sage_patches import multiplicative_order
 
@@ -211,6 +211,11 @@ class LatticeHomset(lexicon.LatticeHomset, Homset):
         from ..objects.categories import Lattices
 
         hom_category = Lattices(domain.base_ring()) if category is None else category
+        assert domain.base_ring() == codomain.base_ring(), f"a lattice homset has one scalar ring; domain={domain.base_ring()}, codomain={codomain.base_ring()}"
+        assert hom_category.is_subcategory(Lattices(domain.base_ring())), f"lattice homset category must refine Lattices({domain.base_ring()}); category={hom_category}"
+        assert domain in hom_category and codomain in hom_category, (
+            f"lattice homset arguments must belong to {hom_category}; domain={domain.category()}, codomain={codomain.category()}"
+        )
         Homset.__init__(self, domain, codomain, category=hom_category)
 
     def _repr_(self) -> str:
@@ -231,7 +236,7 @@ class LatticeHomset(lexicon.LatticeHomset, Homset):
     # asserts well-definedness (#70).
 
 
-class LatticeMorphism(lexicon.LatticeMorphism, Element):
+class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
     r"""Form-preserving morphism of synthetic lattices."""
 
     if TYPE_CHECKING:
@@ -239,7 +244,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         def parent(self) -> LatticeHomset: ...
 
     def __init__(self, parent: LatticeHomset, matrix_data: Any) -> None:
-        Element.__init__(self, parent)
+        SageMorphism.__init__(self, parent)
         domain = parent.domain()
         codomain = parent.codomain()
         matrix_data = matrix(codomain.base_ring(), matrix_data)
@@ -413,7 +418,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         assert other.codomain() == self.domain(), (
             f"morphisms compose only when the inner codomain matches the outer domain; inner_codomain={other.codomain()}, outer_domain={self.domain()}"
         )
-        return LatticeMorphism(other.domain().Hom(self.codomain()), self.matrix() * other.matrix())
+        return other.domain().hom(self.matrix() * other.matrix(), codomain=self.codomain())
 
     def __pow__(self, n: int) -> Any:
         assert self.domain() == self.codomain(), f"powers need an endomorphism; domain={self.domain()}, codomain={self.codomain()}"
@@ -421,11 +426,11 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         if n < 0:
             return self.inverse() ** (-n)
         power = self.matrix() ** n if n > 0 else self.matrix().parent().identity_matrix()
-        return LatticeMorphism(self.parent(), power)
+        return self.parent()(power)
 
     def inverse(self) -> Any:
         assert self.is_isometry(), f"only isometries are invertible in the lattice category; matrix={self.matrix()}"
-        return LatticeMorphism(self.codomain().Hom(self.domain()), self.matrix().inverse())
+        return self.codomain().hom(self.matrix().inverse(), codomain=self.domain())
 
     def is_identity(self) -> bool:
         return bool(self.domain() == self.codomain() and self.matrix().is_one())
@@ -469,7 +474,10 @@ class LatticeSimilarity(lexicon.LatticeSimilarity, Element):
         matrix_data: Any,
         scalar: Any,
     ) -> None:
-        Element.__init__(self, LatticeHomset(domain, codomain))
+        assert domain.base_ring() == codomain.base_ring(), f"a lattice similarity needs one scalar ring; domain={domain.base_ring()}, codomain={codomain.base_ring()}"
+        homset = domain.Hom(codomain)
+        assert isinstance(homset, LatticeHomset), f"a lattice similarity must belong to a lattice homset; found={type(homset)}"
+        Element.__init__(self, homset)
         matrix_data = matrix(codomain.base_ring(), matrix_data)
         scalar = QQ(scalar)
         assert matrix_data.nrows() == codomain.rank(), f"similarity matrix rows must equal codomain rank; rows={matrix_data.nrows()}, codomain_rank={codomain.rank()}"

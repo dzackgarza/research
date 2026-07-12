@@ -1,4 +1,4 @@
-r"""Public compatibility API for the owned synthetic lattice spike.
+r"""Public API for the owned synthetic lattice spike.
 
 The implementation is organized by concept:
 
@@ -9,6 +9,7 @@ The implementation is organized by concept:
 - ``constructors``: thin public construction helpers.
 """
 
+from . import lexicon
 from .forms.discriminant import (
     SyntheticDiscriminantAction,
     SyntheticDiscriminantGroupElement,
@@ -27,13 +28,31 @@ from .morphisms.isometry_groups import SyntheticIsometryGroup, SyntheticIsometry
 from .objects.categories import DiscriminantForms, Genera, Lattices
 from .objects.constructors import IntegralLatticeGluing, Lattice, SyntheticLatticeFromGram
 from .objects.elements import SyntheticLatticeElement
+from .objects.functors import LatticeBaseChangeFunctor
 from .objects.parents import SyntheticLattice
+
+
+def Hom(
+    domain: lexicon.Lattice,
+    codomain: lexicon.Lattice,
+    category: lexicon.SageCategory | None = None,
+) -> lexicon.LatticeHomset:
+    r"""Construct a lattice Hom through the source category root.
+
+    This is the category-aware public spelling for lattice arguments. It
+    performs canonical transport before asking Sage to construct the resolved
+    homset.
+    """
+    return Lattices(domain.base_ring()).Hom(domain, codomain, category=category)
+
 
 __all__ = [
     "DiscriminantForms",
     "Genera",
+    "Hom",
     "IntegralLatticeGluing",
     "Lattice",
+    "LatticeBaseChangeFunctor",
     "LatticeHomset",
     "LatticeMorphism",
     "LatticeSimilarity",

@@ -10,7 +10,9 @@ here (naming rule IV.3).
 
 from __future__ import annotations
 
-from sage.categories.category_types import Category_over_base_ring as SageCategory
+from sage.categories.category import Category as SageCategory
+from sage.categories.functor import Functor as SageFunctor
+from sage.categories.morphism import Morphism as SageMorphism
 from sage.combinat.root_system.cartan_matrix import CartanMatrix as SageCartanMatrix
 from sage.groups.additive_abelian.qmodnz import QmodnZ as SageQmodnZ
 from sage.modules.fg_pid.fgp_module import FGP_Module_class
@@ -38,10 +40,12 @@ __all__ = [
     "SageDiscriminantForm",
     "SageElement",
     "SageFreeModule",
+    "SageFunctor",
     "SageGenus",
     "SageInfinity",
     "SageLattice",
     "SageLocalGenusSymbol",
+    "SageMorphism",
     "SageParent",
     "SageQmodnZ",
     "SageQuadraticForm",
