@@ -102,7 +102,9 @@ def test_equal_parent_coercion_maps_elements_to_the_target_parent():
     target = lattice.dual()
     source = lattice.dual()
     coercion = target.coerce_map_from(source)
-    assert coercion(source.gen(0)) == target.gen(0)
+    converted = coercion(source.gen(0))
+    assert converted.parent() == target
+    assert converted == target.gen(0)
 
 
 def test_sourced_discriminant_lifts_compare_across_fresh_dual_parents():
