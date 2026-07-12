@@ -95,6 +95,16 @@ def test_fresh_dual_elements_compare_through_equal_parent_coercion():
     assert first_dual.gen(0) == second_dual.gen(0)
 
 
+def test_equal_parent_coercion_maps_elements_to_the_target_parent():
+    r"""The public coercion map transports a vector from a fresh equal parent
+    into the target parent without changing its coefficient data."""
+    lattice = Lattice("A2")
+    target = lattice.dual()
+    source = lattice.dual()
+    coercion = target.coerce_map_from(source)
+    assert coercion(source.gen(0)) == target.gen(0)
+
+
 def test_sourced_discriminant_lifts_compare_across_fresh_dual_parents():
     r"""``lift`` and ``coset_representative`` independently construct the
     dual cover, but represent the same discriminant coset."""
