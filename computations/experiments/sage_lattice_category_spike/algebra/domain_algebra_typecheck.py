@@ -149,10 +149,13 @@ def endomorphism_stability(lattice: Lattice, vector: LatticeElement) -> LatticeM
 
 def complement_consumes_the_mono(lattice: Lattice, vector: LatticeElement) -> bool:
     """The orthogonal complement is sited on the monomorphism (kernel of the
-    composed pairing); the radical is the complement of the identity."""
+    composed pairing); ``radical()`` is the object-spelling delegation of the
+    identity's complement, returning the SUBOBJECT (it carries its
+    inclusion)."""
     line_complement = lattice.subobject([vector]).inclusion().orthogonal_complement()
-    radical = lattice.identity_morphism().orthogonal_complement()
-    return line_complement.is_primitive() and radical.is_primitive()
+    radical = lattice.radical()
+    assert radical.inclusion().codomain() is not None
+    return line_complement.is_primitive() and radical.is_primitive() and lattice.radical_quotient().is_nondegenerate()
 
 
 def isometry_existence_is_a_homset_question(left: Lattice, right: Lattice) -> LatticeMorphism:

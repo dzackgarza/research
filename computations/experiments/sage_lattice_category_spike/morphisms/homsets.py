@@ -97,12 +97,17 @@ class Subobject:
 
     def orthogonal_complement(self, label: str = "orthogonal_complement") -> Subobject:
         r"""The orthogonal complement of ``L`` inside ``M``, as a subobject
-        ``K -> M`` -- ``K`` is the integral points of ``M`` pairing to zero with
-        every image of ``L``. Composed from the inclusion matrix and ``M``'s form,
-        never from a stored ambient."""
+        ``K -> M`` -- ``K`` is the points of ``M`` pairing to zero with every
+        image of ``L``. Composed from the inclusion matrix and ``M``'s form,
+        never from a stored ambient; total over both base rings (the rational
+        kernel intersected back with the integral points over ``ZZ``)."""
         ambient = self.ambient()
-        pairing = ambient.gram_matrix() * self._inclusion.matrix()  # M_rank x L_rank; columns = b(., f(e_i))
-        kernel_rows = matrix(ZZ, pairing).transpose().right_kernel().basis_matrix()
+        pairing = matrix(QQ, ambient.gram_matrix() * self._inclusion.matrix())  # M_rank x L_rank; columns = b(., f(e_i))
+        rational_kernel = pairing.transpose().right_kernel()
+        if ambient.base_ring() is QQ:
+            kernel_rows = rational_kernel.basis_matrix()
+        else:
+            kernel_rows = (ZZ ** ambient.rank()).intersection(rational_kernel).basis_matrix()
         return cast(Subobject, ambient._subobject_from_rows(kernel_rows, label))
 
     def saturation(self, label: str = "saturation") -> Subobject:

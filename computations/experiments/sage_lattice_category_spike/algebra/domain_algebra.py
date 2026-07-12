@@ -375,10 +375,15 @@ class Lattice:
 
     # radical theory (the functor that STAYS a lattice)
     @abstract_method
-    def radical(self) -> Lattice: ...
+    def radical(self) -> Subobject:
+        """``rad(L)`` as a subobject — the orthogonal complement of the
+        identity morphism (the object spelling delegates through the
+        canonical attached morphism; #100 ratified placement)."""
 
     @abstract_method
-    def radical_quotient(self) -> NondegenerateLattice: ...
+    def radical_quotient(self) -> NondegenerateLattice:
+        """``L / rad(L)`` — the coimage of the radical's presentation,
+        derived from ``radical()``'s carried inclusion."""
 
     # constructions
     @abstract_method

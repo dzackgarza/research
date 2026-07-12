@@ -80,17 +80,28 @@ def test_orthogonal_complement_is_the_kernel_of_the_composed_pairing():
 
 
 def test_radical_is_the_complement_of_the_identity():
-    r"""The radical as morphism-sited vocabulary: the orthogonal complement
-    of the identity morphism -- the subobject pairing to zero with
-    everything. Witness: diag(0, -2) has rank-1 primitive radical."""
+    r"""The radical as morphism-sited vocabulary: ``radical()`` IS the
+    orthogonal complement of the identity morphism -- the subobject pairing
+    to zero with everything. Witness: diag(0, -2) has rank-1 primitive
+    radical and negative-definite radical quotient."""
     degenerate = Lattice(matrix(ZZ, [[0, 0], [0, -2]]), label="degenerate")
-    radical = degenerate.identity_morphism().orthogonal_complement()
+    radical = degenerate.radical()
     assert radical.rank() == 1
     assert radical.is_primitive()
     assert radical.lattice().gram_matrix() == matrix(ZZ, [[0]])
+    assert radical.inclusion().matrix() == degenerate.identity_morphism().orthogonal_complement().inclusion().matrix()
+    assert degenerate.radical_quotient().gram_matrix() == matrix(ZZ, [[-2]])
 
     A2 = Lattice("A2")
-    assert A2.identity_morphism().orthogonal_complement().rank() == 0
+    assert A2.radical().rank() == 0
+    assert A2.radical_quotient() is A2
+
+    # A skew radical off the coordinate axes: diag-embedded (v, v) pairing.
+    skew = Lattice(matrix(ZZ, [[-1, -1], [-1, -1]]), label="skew")
+    skew_radical = skew.radical()
+    assert skew_radical.rank() == 1
+    assert skew.b(skew_radical.inclusion()(skew_radical.lattice().gen(0)), skew.gen(0)) == 0
+    assert skew.radical_quotient().rank() == 1
 
 
 def test_isometry_existence_is_the_homset_emptiness_question():

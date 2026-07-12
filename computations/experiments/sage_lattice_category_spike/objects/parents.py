@@ -332,33 +332,40 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         pos, neg = self.signature_pair()
         return pos > 0 and neg > 0
 
-    def radical(self, label: str = "radical") -> SyntheticLattice:
-        kernel_basis = self.gram_matrix().right_kernel().basis_matrix()
-        if kernel_basis.nrows() == 0:
-            return self.sublattice(matrix(QQ, 0, self.rank()), label=label)
-        return self.sublattice(kernel_basis, label=label)
+    def radical(self) -> Subobject:
+        r"""``rad(L)`` as a subobject: the orthogonal complement of the
+        identity morphism -- the kernel of the composed pairing, total on
+        every lattice (equal to ``ker(L -> L^dual)`` where the dual exists;
+        #100 ratified placement: the object spelling delegates through the
+        canonical attached morphism)."""
+        return self.identity_morphism().orthogonal_complement()
 
     def radical_quotient(self, label: str = "radical_quotient") -> SyntheticNondegenerateLattice:
-        r"""``L / rad(L)``, a nondegenerate based lattice (functor stays in Lattices)."""
-        gram = self.gram_matrix()
-        kernel = gram.right_kernel()
-        if kernel.dimension() == 0:
+        r"""``L / rad(L)``, a nondegenerate based lattice (functor stays in
+        Lattices) -- the coimage of the radical's presentation: derived from
+        the carried inclusion of ``radical()``, never from a re-derived
+        coordinate kernel (#100 ratified placement)."""
+        radical_inclusion = self.radical().inclusion()
+        radical_rank = radical_inclusion.domain().rank()
+        if radical_rank == 0:
             assert isinstance(self, SyntheticNondegenerateLattice), (
                 f"a lattice with trivial radical must have been routed into the nondegenerate subcategory; found={type(self)}"
             )
             return self
         rank = self.rank()
-        if kernel.dimension() == rank:
+        gram = self.gram_matrix()
+        if radical_rank == rank:
             # Fully degenerate: rad(L) = L, so L/rad(L) is the rank-0 lattice.
             zero_quotient = synthetic_lattice(matrix(QQ, 0, 0), self.base_ring(), label)
             assert isinstance(zero_quotient, SyntheticNondegenerateLattice), f"the rank-0 lattice is (vacuously) nondegenerate; dispatch returned {type(zero_quotient)}"
             return zero_quotient
+        radical_columns = matrix(QQ, radical_inclusion.matrix()).columns()
         if self.base_ring() is QQ:
-            complement = matrix(QQ, kernel.complement().basis_matrix())
+            complement = (QQ**rank).span(radical_columns).complement().basis_matrix()
         else:
-            ambient = ZZ**rank
-            radical_module = ambient.submodule([vector(ZZ, row * lcm([entry.denominator() for entry in row])) for row in kernel.basis()]).saturation()
-            quotient = ambient.quotient(radical_module)
+            module = ZZ**rank
+            radical_module = module.submodule([vector(ZZ, column) for column in radical_columns])
+            quotient = module.quotient(radical_module)
             complement = matrix(ZZ, [gen.lift() for gen in quotient.gens()])
         quotient_gram = complement * gram * complement.transpose()
         quotient_lattice = synthetic_lattice(quotient_gram, self.base_ring(), label)
