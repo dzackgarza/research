@@ -174,6 +174,8 @@ def test_base_change_functor_refines_the_target_category_and_maps_morphisms():
     lattice = Lattice("A2")
     functor = Lattices(ZZ).base_change(QQ)
     assert isinstance(functor, LatticeBaseChangeFunctor)
+    assert functor.domain() == Lattices(ZZ)
+    assert functor.codomain() == Lattices(QQ)
     target = functor(lattice)
     assert target.base_ring() is QQ
     assert target in Lattices(QQ).Nondegenerate().Definite().NegativeDefinite()
