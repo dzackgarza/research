@@ -359,11 +359,11 @@ def test_discriminant_subgroups_actions_and_overlattice_construction_are_owned()
 def test_homs_are_form_preserving_by_construction():
     U = Lattice("U", label="U")
 
-    identity = U.Hom(U).from_matrix(identity_matrix(ZZ, 2))
+    identity = U.hom(identity_matrix(ZZ, 2))
     assert identity(U.gen(0)) == U.gen(0)
     assert identity(U.gen(0)).b(identity(U.gen(1))) == U.gen(0).b(U.gen(1))
 
-    swap = U.Hom(U).from_matrix(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
+    swap = U.hom(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
     assert swap(U.gen(0)) == U.gen(1)
     assert swap(U.gen(1)) == U.gen(0)
 
@@ -371,7 +371,7 @@ def test_homs_are_form_preserving_by_construction():
 def test_hom_image_and_kernel_are_synthetic_lattices():
     A2 = Lattice("A2(-1)", label="A2")
     A2_dual = A2.dual()
-    inclusion = A2.Hom(A2_dual).from_matrix(Matrix(ZZ, 2, 2, [2, -1, -1, 2]))
+    inclusion = A2.hom(Matrix(ZZ, 2, 2, [2, -1, -1, 2]), codomain=A2_dual)
 
     image = inclusion.image()
     kernel = inclusion.kernel()
@@ -385,9 +385,9 @@ def test_hom_image_and_kernel_are_synthetic_lattices():
 def test_integral_lattice_inclusion_into_dual_is_a_synthetic_morphism():
     A2 = Lattice("A2(-1)", label="A2")
     A2_dual = A2.dual()
-    inclusion = A2.Hom(A2_dual).from_matrix(Matrix(ZZ, 2, 2, [2, -1, -1, 2]))
+    inclusion = A2.hom(Matrix(ZZ, 2, 2, [2, -1, -1, 2]), codomain=A2_dual)
     quotient = A2_dual.finite_quotient(A2)
-    negation = A2_dual.Hom(A2_dual).from_matrix(-identity_matrix(ZZ, 2))
+    negation = A2_dual.hom(-identity_matrix(ZZ, 2))
     induced = negation.induced_map_on_quotient(quotient)
     generator = quotient.gen(0)
 
@@ -519,7 +519,7 @@ def test_explicit_isometries_act_on_discriminant_groups():
     U = Lattice("U", label="U")
     swap = matrix(ZZ, 2, 2, [0, 1, 1, 0])
 
-    isometry = U.isometry_group().from_matrix(swap)
+    isometry = U.hom(swap)
     assert isometry(U.gen(0)) == U.gen(1)
     assert U.isometry_group().discriminant_action(isometry).is_identity()
     assert U.isometry_group().subgroup([swap]).discriminant_image()[0].is_identity()
@@ -810,12 +810,12 @@ def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indef
     # is_isometry separates isomorphisms from mere form-preservation: the metric
     # inclusion A2 -> A2# is form-preserving (matrix G) but not an isometry (det 3).
     A2_dual = A2.dual()
-    assert not A2.Hom(A2_dual).from_matrix(A2.gram_matrix()).is_isometry()
-    assert A2.Hom(A2).from_matrix(identity_matrix(ZZ, 2)).is_isometry()
+    assert not A2.hom(A2.gram_matrix(), codomain=A2_dual).is_isometry()
+    assert A2.hom(identity_matrix(ZZ, 2)).is_isometry()
 
     U = Lattice("U", label="U")
     O_U = U.isometry_group()
-    swap_isometry = O_U.from_matrix(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
+    swap_isometry = U.hom(matrix(ZZ, 2, 2, [0, 1, 1, 0]))
     assert swap_isometry.is_isometry() and swap_isometry in O_U
 
     # is_isometric: definite decided via Sage; different class / rank -> False;

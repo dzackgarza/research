@@ -137,7 +137,7 @@ def test_a2_diagram_automorphism_induces_inversion_on_dual_quotient():
     dual = lattice.dual()
     quotient = dual.finite_quotient(lattice)
     quotient_map = dual.quotient_map_to(lattice)
-    diagram_automorphism = dual.Hom(dual).from_matrix(matrix(ZZ, [[0, 1], [1, 0]]))
+    diagram_automorphism = dual.hom(matrix(ZZ, [[0, 1], [1, 0]]))
     induced_action = diagram_automorphism.induced_map_on_quotient(quotient)
 
     assert lattice.rank() == 2

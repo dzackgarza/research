@@ -203,8 +203,10 @@ class LatticeHomset(lexicon.LatticeHomset, Parent):
     def codomain(self) -> SyntheticLattice:
         return self._codomain
 
-    def from_matrix(self, matrix_data: object) -> LatticeMorphism:
-        return LatticeMorphism(self, matrix_data)
+    # There is no from_matrix: morphisms are built by the public named
+    # constructors on lattices (hom/embedding/reflection/similarity) or by
+    # constructing the element class on its homset; the element constructor
+    # asserts well-definedness (#70).
 
 
 class LatticeMorphism(lexicon.LatticeMorphism, Element):
@@ -389,7 +391,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         assert other.codomain() == self.domain(), (
             f"morphisms compose only when the inner codomain matches the outer domain; inner_codomain={other.codomain()}, outer_domain={self.domain()}"
         )
-        return other.domain().Hom(self.codomain()).from_matrix(self.matrix() * other.matrix())
+        return LatticeMorphism(other.domain().Hom(self.codomain()), self.matrix() * other.matrix())
 
     def __pow__(self, n: int) -> Any:
         assert self.domain() == self.codomain(), f"powers need an endomorphism; domain={self.domain()}, codomain={self.codomain()}"
@@ -397,11 +399,11 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         if n < 0:
             return self.inverse() ** (-n)
         power = self.matrix() ** n if n > 0 else self.matrix().parent().identity_matrix()
-        return self.parent().from_matrix(power)
+        return LatticeMorphism(self.parent(), power)
 
     def inverse(self) -> Any:
         assert self.is_isometry(), f"only isometries are invertible in the lattice category; matrix={self.matrix()}"
-        return self.codomain().Hom(self.domain()).from_matrix(self.matrix().inverse())
+        return LatticeMorphism(self.codomain().Hom(self.domain()), self.matrix().inverse())
 
     def is_identity(self) -> bool:
         return bool(self.domain() == self.codomain() and self.matrix().is_one())

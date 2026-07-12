@@ -817,8 +817,10 @@ class LatticeHomset:
     @abstract_method
     def codomain(self) -> Lattice: ...
 
-    @abstract_method
-    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism: ...
+    # No constructor row: a morphism is built by the public named
+    # constructors on lattices (hom/embedding/reflection/similarity) or by
+    # constructing the homset's element class, whose constructor asserts
+    # well-definedness (#70; from_matrix demoted per #100 T4).
 
 
 class IsometryHomset:
@@ -897,7 +899,12 @@ class IsometryGroup:
     def __contains__(self, candidate: Any) -> bool: ...
 
     @abstract_method
-    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism: ...
+    def _from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism:
+        """Presentation-facing constructor, demoted to a private convenience
+        (#100 ratified placement): declared here so private reaches outside
+        the sanctioned crossings are flaggable, never prevented. The public
+        canonical constructors are the few named ones (``hom``,
+        ``embedding``, ``reflection``, ``similarity``)."""
 
     @abstract_method
     def one(self) -> LatticeMorphism: ...
@@ -1316,7 +1323,7 @@ class SourcedDiscriminantForm(QuadraticDiscriminantForm):
     def lift(self, element: DiscriminantFormElement) -> LatticeElement: ...
 
     @abstract_method
-    def _coset_representative_in_source(self, element: DiscriminantFormElement) -> Sequence[ExactScalar]: ...
+    def coset_representative_in_source(self, element: DiscriminantFormElement) -> Sequence[ExactScalar]: ...
 
     @abstract_method
     def projection(self, element: LatticeElement) -> DiscriminantFormElement: ...

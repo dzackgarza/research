@@ -47,14 +47,14 @@ def named_cartan_type(name: object) -> CartanType | None:
 def as_square_qq_matrix(matrix_data: object) -> GramMatrix:
     """The one Gram codec: parse, assert square + symmetric (definitional for
     every object of the tree), immutabilize, and return the witness."""
-    gram = named_gram(matrix_data) if _is_named_gram_data(matrix_data) else matrix(QQ, matrix_data)
+    gram = named_gram(matrix_data) if is_named_gram_data(matrix_data) else matrix(QQ, matrix_data)
     assert gram.is_square(), f"lattice Gram matrix must be square; found dimensions={gram.nrows()}x{gram.ncols()}; fix the caller's Gram data"
     assert gram == gram.transpose(), f"lattice Gram matrix must be symmetric (definitional for every object of the tree); found={gram}; fix the caller's Gram data"
     gram.set_immutable()
     return GramMatrix(gram)
 
 
-def _is_named_gram_data(matrix_data: object) -> TypeGuard[LatticeName]:
+def is_named_gram_data(matrix_data: object) -> TypeGuard[LatticeName]:
     return isinstance(matrix_data, str) or (isinstance(matrix_data, (list, tuple)) and len(matrix_data) == 2 and isinstance(matrix_data[0], str))
 
 

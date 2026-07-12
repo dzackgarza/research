@@ -232,6 +232,11 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
             return False
         return all(entry in self.base_ring() for entry in self._reflection_image_matrix(element).list())
 
+    def label(self) -> str:
+        r"""The construction label (display surface for reprs across the
+        package -- the public spelling of the stored label)."""
+        return self._label
+
     def identity_morphism(self) -> LatticeMorphism:
         r"""The identity isometry ``L -> L``."""
         return self.hom(identity_matrix(self.base_ring(), self.rank()))
@@ -680,8 +685,11 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         matrix_data: RawMorphismMatrix,
         codomain: Lattice | None = None,
     ) -> LatticeMorphism:
+        from ..morphisms.homsets import LatticeHomset as SyntheticLatticeHomset
+        from ..morphisms.homsets import LatticeMorphism as SyntheticLatticeMorphism
+
         codomain = self if codomain is None else codomain
-        return self.Hom(codomain).from_matrix(matrix_data)
+        return SyntheticLatticeMorphism(SyntheticLatticeHomset(self, codomain), matrix_data)
 
     def embedding(
         self,
@@ -754,7 +762,7 @@ class SyntheticNondegenerateLattice(NondegenerateLattice, SyntheticLattice):
 
     def dual_inclusion(self) -> LatticeMorphism:
         r"""The natural injection ``L -> L^*``, ``v |-> b(v, -)``, with matrix ``G``."""
-        return self.Hom(self.dual()).from_matrix(self.gram_matrix())
+        return self.hom(self.gram_matrix(), codomain=self.dual())
 
 
 class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateLattice, SyntheticNondegenerateLattice):

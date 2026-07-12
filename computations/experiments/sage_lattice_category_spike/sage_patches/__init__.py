@@ -21,6 +21,9 @@ upstream-defect correction inline; it routes through this namespace.
 """
 
 from . import laurent_polynomial_ring_coercion_import  # noqa: F401  (eager load; side effect only)
+from .brown_indecomposable import brown_indecomposable
 from .multiplicative_order import multiplicative_order
+
+__all__ = ["brown_indecomposable", "multiplicative_order"]
 
 __all__ = ["multiplicative_order"]
