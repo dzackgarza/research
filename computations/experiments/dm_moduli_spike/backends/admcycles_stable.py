@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..objects.records import StableGraphRecord
+from ..objects.records import StableGraph
 
 if TYPE_CHECKING:
     from ..objects.curve_types import StableCurveType, StableCurveTypes
@@ -30,7 +30,7 @@ def _require_admcycles() -> object:
     return admcycles
 
 
-def _record_from_stable_graph(stable_graph: object, g: int, n: int) -> StableGraphRecord:
+def _record_from_stable_graph(stable_graph: object, g: int, n: int) -> StableGraph:
     r"""Convert an ``admcycles`` ``StableGraph`` to a half-edge record.
 
     ``admcycles`` labels half-edges by integers; the external markings are the
@@ -60,7 +60,7 @@ def _record_from_stable_graph(stable_graph: object, g: int, n: int) -> StableGra
         involution[flag_b] = flag_a
     marking_to_flag = [flag_of_label[m] for m in range(1, n + 1)]
 
-    record = StableGraphRecord(
+    record = StableGraph(
         vertex_genera=tuple(genera),
         flag_vertex=tuple(flag_vertex),
         flag_involution=tuple(involution),

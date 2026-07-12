@@ -2,8 +2,6 @@ r"""Backend adapters: no third-party class leaks into the public API."""
 
 from __future__ import annotations
 
-import pytest
-
 from dm_moduli_spike import DMCompactificationModel, StableCurveType
 from dm_moduli_spike.backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
 from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
@@ -11,22 +9,118 @@ from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBacken
 
 def test_stable_backend_returns_owned_curve_types_only():
     backend = AdmcyclesStableGraphBackend()
-    assert backend.is_available()
     types = DMCompactificationModel(1, 2).curve_types()
     produced = backend.stable_curve_types(types)
     assert all(isinstance(gamma, StableCurveType) for gamma in produced)
     assert all(gamma.parent() == types for gamma in produced)
 
 
-def test_decorated_backend_is_behind_an_adapter_and_fails_loudly_when_absent():
-    backend = AdmcyclesDecoratedGraphBackend()
-    # The experimental decorated_graph module is absent in current admcycles
-    # releases; the adapter must not silently degrade -- it either works or
-    # raises a clear ImportError.
-    if backend.is_available():
-        types = DMCompactificationModel(1, 1).curve_types()
-        produced = backend.stable_curve_types(types)
-        assert all(isinstance(gamma, StableCurveType) for gamma in produced)
-    else:
-        with pytest.raises(ImportError):
-            DMCompactificationModel(1, 1).stratification(backend="admcycles-decorated")
+def test_decorated_backend_matches_pure_sage_canonical_keys():
+    for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
+        model = DMCompactificationModel(g, n)
+        pure = model.stratification(backend="pure-sage")
+        decorated = model.stratification(backend="admcycles-decorated")
+        assert decorated.is_complete()
+        assert decorated.backend() == "admcycles-decorated"
+        pure_keys = {
+            gamma.canonical_key()
+            for level in pure.curve_type_levels()
+            for gamma in level
+        }
+        decorated_keys = {
+            gamma.canonical_key()
+            for level in decorated.curve_type_levels()
+            for gamma in level
+        }
+        assert pure_keys == decorated_keys
+        produced = AdmcyclesDecoratedGraphBackend().stable_curve_types(model.curve_types())
+        assert produced
+        assert all(
+            isinstance(gamma, StableCurveType) and gamma.parent() == model.curve_types()
+            for gamma in produced
+        )
+
+
+def test_decorated_backend_rank_buckets_match_edge_counts():
+    model = DMCompactificationModel(1, 2)
+    stratification = model.stratification(backend="admcycles-decorated")
+    for codim, level in enumerate(stratification.curve_type_levels()):
+        assert all(gamma.num_edges() == codim for gamma in level)
+
+
+def test_decorated_morphism_adapter_matches_native_contraction():
+    from admcycles.decorated_graph import DecoratedGraph
+
+    from dm_moduli_spike.backends.admcycles_decorated import contraction_from_decorated_morphism
+
+    loop = DecoratedGraph([0], [[1]], [(0, 0, 1)])
+    loop_morphism = loop.edge_contraction_morphism([(0, 0, 1)])
+    loop_contraction = contraction_from_decorated_morphism(loop_morphism, 1, 1)
+    assert loop_contraction.target_type().is_smooth()
+
+    parallel = DecoratedGraph([0, 0], [[1], [2]], [(0, 1, 2)])
+    parallel_morphism = parallel.edge_contraction_morphism([(0, 1, 1)])
+    adapted = contraction_from_decorated_morphism(parallel_morphism, 1, 2)
+    types = DMCompactificationModel(1, 2).curve_types()
+    theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
+    graph = theta.canonical_representative()
+    _, native = graph.contract(graph.internal_edges()[0])
+    assert adapted.target_type() == native.target_type()
+
+
+def test_decorated_converter_expands_loops_and_parallel_multiplicities():
+    from admcycles.decorated_graph import DecoratedGraph
+
+    from dm_moduli_spike.backends.admcycles_decorated import _record_from_decorated_graph
+
+    loop = DecoratedGraph([0], [[1]], [(0, 0, 1)])
+    loop_record = _record_from_decorated_graph(loop, 1, 1)
+    assert loop_record.num_edges() == 1
+
+    parallel = DecoratedGraph([0, 0], [[1], [2]], [(0, 1, 2)])
+    parallel_record = _record_from_decorated_graph(parallel, 1, 2)
+    assert parallel_record.num_edges() == 2
+
+
+def test_auto_backend_prefers_decorated_when_available():
+    model = DMCompactificationModel(0, 4)
+    auto = model.stratification(backend="auto")
+    decorated = model.stratification(backend="admcycles-decorated")
+    assert auto.is_complete()
+    assert auto.backend() == "admcycles-decorated"
+    assert auto.rank_sizes() == decorated.rank_sizes()
+
+
+def test_record_to_decorated_graph_roundtrip_preserves_type():
+    from dm_moduli_spike.backends.admcycles_decorated import _record_from_decorated_graph, _record_to_decorated_graph
+
+    types = DMCompactificationModel(1, 2).curve_types()
+    theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
+    graph = theta.canonical_representative()
+    decorated = _record_to_decorated_graph(graph, 1, 2)
+    roundtrip = _record_from_decorated_graph(decorated, 1, 2)
+    assert types(roundtrip) == theta
+
+
+def test_decorated_stratification_covers_have_upstream_morphisms():
+    from admcycles.decorated_graph import DecoratedGraph
+
+    from dm_moduli_spike.backends.admcycles_decorated import (
+        _record_to_decorated_graph,
+        contraction_from_decorated_morphism,
+    )
+
+    for g, n in [(1, 1), (1, 2), (2, 0)]:
+        model = DMCompactificationModel(g, n)
+        stratification = model.stratification(backend="admcycles-decorated")
+        for witness in stratification.contraction_witnesses():
+            domain = witness.domain()
+            decorated = _record_to_decorated_graph(domain, g, n)
+            matched = False
+            for u, v, _size in decorated.edge_orbit_representatives():
+                morphism = decorated.edge_contraction_morphism([(u, v, 1)])
+                adapted = contraction_from_decorated_morphism(morphism, g, n, domain_graph=domain)
+                if adapted.target_type() == witness.target_type():
+                    matched = True
+                    break
+            assert matched, f"no upstream morphism for cover in Mbar({g}, {n})"

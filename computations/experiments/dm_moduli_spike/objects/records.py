@@ -37,7 +37,31 @@ if TYPE_CHECKING:
     from sage.graphs.graph import Graph
 
 
-class StableGraphRecord:
+_RecordKey = tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...], tuple[int, ...]]
+_GRAPH_INTERN: dict[_RecordKey, StableGraph] = {}
+
+
+def intern_graph(graph: StableGraph) -> StableGraph:
+    r"""Return a shared :class:`StableGraph` instance for identical data."""
+    key = (
+        graph.vertex_genera,
+        graph.flag_vertex,
+        graph.flag_involution,
+        graph.marking_to_flag,
+    )
+    cached = _GRAPH_INTERN.get(key)
+    if cached is None:
+        _GRAPH_INTERN[key] = graph
+        return graph
+    return cached
+
+
+# Backward-compatible alias used by older imports and tests.
+def intern_record(graph: StableGraph) -> StableGraph:
+    return intern_graph(graph)
+
+
+class StableGraph:
     r"""Immutable half-edge record for a connected stable dual graph.
 
     The constructor validates the structural axioms (indices in range, ``iota``
@@ -46,7 +70,7 @@ class StableGraphRecord:
     know the ambient ``(g, n)``; the total genus is intrinsic and is exposed via
     :meth:`genus`.  Matching that intrinsic genus against an ambient
     :math:`\overline{\mathcal M}_{g,n}` is the job of the parent
-    :class:`~dm_moduli_spike.objects.curve_types.StableCurveTypes`.
+    :class:`~dm_moduli_spike.objects.graph_types.StableGraphTypes`.
     """
 
     __slots__ = (
@@ -54,7 +78,13 @@ class StableGraphRecord:
         "_flag_vertex",
         "_flag_involution",
         "_marking_to_flag",
+        "_frozen",
     )
+
+    def __setattr__(self, name: str, value: object) -> None:
+        if getattr(self, "_frozen", False):
+            raise AttributeError(f"{type(self).__name__} is immutable; cannot set {name!r}")
+        object.__setattr__(self, name, value)
 
     def __init__(
         self,
@@ -92,6 +122,7 @@ class StableGraphRecord:
         self._flag_vertex = flag_vertex
         self._flag_involution = flag_involution
         self._marking_to_flag = marking_to_flag
+        object.__setattr__(self, "_frozen", True)
 
         # (5) the internal graph is connected.
         assert self._is_connected(), f"the underlying graph must be connected; vertex_genera={vertex_genera}, flag_vertex={flag_vertex}, flag_involution={flag_involution}"
@@ -214,14 +245,12 @@ class StableGraphRecord:
         return mapping
 
     def sage_multigraph(self) -> Graph:
-        r"""A derived Sage looped multigraph view: one vertex per component
-        (carrying genus and markings as a decoration), one edge per internal
-        edge, self-loops for the loops.
+        r"""A derived Sage looped multigraph view: one bare integer vertex per
+        component, one edge per internal edge (including self-loops).
 
-        This view is convenient for plotting and ordinary connectivity, but it
-        is *not* sufficient for identity or stack automorphisms because a vertex
-        multigraph cannot expose the two distinct branches of a self-loop.  Use
-        :mod:`dm_moduli_spike.objects.canonical` for identity.
+        Genus and marking labels are *not* attached to this view; use
+        :meth:`vertex_genera`, :meth:`markings_at`, and
+        :mod:`dm_moduli_spike.objects.canonical` for decorated identity data.
         """
         from sage.graphs.graph import Graph
 
@@ -237,9 +266,66 @@ class StableGraphRecord:
 
     def __repr__(self) -> str:
         return (
-            "StableGraphRecord("
+            "StableGraph("
             f"vertex_genera={self._vertex_genera}, "
             f"flag_vertex={self._flag_vertex}, "
             f"flag_involution={self._flag_involution}, "
             f"marking_to_flag={self._marking_to_flag})"
         )
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, StableGraph):
+            return NotImplemented
+        return (
+            self._vertex_genera == other._vertex_genera
+            and self._flag_vertex == other._flag_vertex
+            and self._flag_involution == other._flag_involution
+            and self._marking_to_flag == other._marking_to_flag
+        )
+
+    def __hash__(self) -> int:
+        return hash(
+            (
+                self._vertex_genera,
+                self._flag_vertex,
+                self._flag_involution,
+                self._marking_to_flag,
+            )
+        )
+
+    # -- labeled-graph operations ------------------------------------------------
+
+    def vertices(self) -> tuple[int, ...]:
+        return tuple(range(self.num_vertices()))
+
+    def vertex_genus(self, vertex: int) -> int:
+        return self._vertex_genera[vertex]
+
+    def graph_type(self):
+        from .graph_types import StableGraphTypes
+
+        return StableGraphTypes(self.genus(), self.num_markings())(self)
+
+    def contract(self, edge: tuple[int, int]):
+        from .contractions import contract_edge
+
+        return contract_edge(self, edge)
+
+    def canonical_form(self):
+        from .canonical import canonical_record
+        from .contractions import flag_map
+        from .graph_types import StableGraphTypes
+
+        canonical = intern_graph(canonical_record(self))
+        parent = StableGraphTypes(self.genus(), self.num_markings())
+        graph_type = parent(canonical)
+        certificate = {flag: flag for flag in range(self.num_flags())} if self == canonical else flag_map(self, canonical)
+        return graph_type, canonical, certificate
+
+    def to_labeled_json(self) -> dict[str, object]:
+        from .canonical import to_labeled_json
+
+        return to_labeled_json(self, self.genus(), self.num_markings())
+
+
+StableGraphRecord = StableGraph

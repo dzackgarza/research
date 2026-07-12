@@ -20,14 +20,25 @@ Two order conventions are exposed explicitly and never conflated:
 from __future__ import annotations
 
 from collections.abc import Iterable, Iterator, Sequence
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from .contractions import StableGraphContraction
-from .curve_types import StableCurveType, StableCurveTypes
+from .graph_types import StableGraphType, StableGraphTypes
 from .strata import DMStratum
 
 if TYPE_CHECKING:
     from sage.combinat.posets.posets import FinitePoset
+
+
+@dataclass(frozen=True, slots=True)
+class EnumerationResult:
+    r"""Certificate metadata for a stratification enumeration."""
+
+    levels: tuple[tuple[StableGraphType, ...], ...]
+    complete_through_codim: int
+    globally_complete: bool
+    backend: str | None = None
 
 
 def _normalize_codim_cap(max_codim: int | None, dimension: int) -> int:
@@ -41,17 +52,13 @@ def _normalize_codim_cap(max_codim: int | None, dimension: int) -> int:
     return min(max_codim, dimension)
 
 
-def _curve_type_keys(levels: list[dict[object, StableCurveType]]) -> frozenset[object]:
-    return frozenset(key for level in levels for key in level)
-
-
-def _levels_are_contiguous(levels: list[dict[object, StableCurveType]]) -> bool:
+def _levels_are_contiguous(levels: list[dict[object, StableGraphType]]) -> bool:
     if not levels:
         return False
     return all(levels[codim] for codim in range(len(levels)))
 
 
-def build_stratification(curve_types: StableCurveTypes, max_codim: int | None = None) -> DMStratification:
+def build_stratification(curve_types: StableGraphTypes, max_codim: int | None = None) -> DMStratification:
     r"""Enumerate rank by rank and recover covers by contraction."""
     from .enumeration import one_edge_degenerations
 
@@ -59,10 +66,10 @@ def build_stratification(curve_types: StableCurveTypes, max_codim: int | None = 
     codim_cap = _normalize_codim_cap(max_codim, dimension)
 
     smooth = curve_types.smooth()
-    levels: list[dict[object, StableCurveType]] = [{smooth.canonical_key(): smooth}]
+    levels: list[dict[object, StableGraphType]] = [{smooth.canonical_key(): smooth}]
     for _ in range(codim_cap):
         current = levels[-1]
-        nxt: dict[object, StableCurveType] = {}
+        nxt: dict[object, StableGraphType] = {}
         for gamma in current.values():
             for delta in one_edge_degenerations(gamma):
                 nxt[delta.canonical_key()] = delta
@@ -76,14 +83,17 @@ def build_stratification(curve_types: StableCurveTypes, max_codim: int | None = 
         max_codim=max_codim,
         codim_cap=codim_cap,
         dimension=dimension,
-        enumeration_complete=True,
+        enumeration_complete=len(levels) == codim_cap + 1,
+        backend="pure-sage",
     )
 
 
 def build_stratification_from_types(
-    curve_types: StableCurveTypes,
-    types: Iterable[StableCurveType],
+    curve_types: StableGraphTypes,
+    types: Iterable[StableGraphType],
     max_codim: int | None = None,
+    *,
+    backend: str | None = None,
 ) -> DMStratification:
     r"""Bucket an externally enumerated collection of stable curve types by
     codimension and recover covers by contraction.  Used by non-default
@@ -91,7 +101,7 @@ def build_stratification_from_types(
     checked independently of the enumerator."""
     dimension = curve_types.dimension()
     codim_cap = _normalize_codim_cap(max_codim, dimension)
-    levels: list[dict[object, StableCurveType]] = []
+    levels: list[dict[object, StableGraphType]] = []
     enumerated = tuple(types)
     for gamma in enumerated:
         codim = gamma.num_edges()
@@ -102,9 +112,14 @@ def build_stratification_from_types(
         levels[codim][gamma.canonical_key()] = gamma
     if not levels:
         levels = [{curve_types.smooth().canonical_key(): curve_types.smooth()}]
-    reference = build_stratification(curve_types, max_codim=max_codim)
-    reference_keys = _curve_type_keys(reference._levels)
-    enumeration_complete = _curve_type_keys(levels) == reference_keys
+    smooth_present = bool(levels) and curve_types.smooth().canonical_key() in levels[0]
+    structurally_complete = max_codim is None or codim_cap >= dimension
+    enumeration_complete = (
+        structurally_complete
+        and smooth_present
+        and _levels_are_contiguous(levels)
+        and len(levels) == codim_cap + 1
+    )
     return _finish_stratification(
         curve_types,
         levels,
@@ -112,34 +127,50 @@ def build_stratification_from_types(
         codim_cap=codim_cap,
         dimension=dimension,
         enumeration_complete=enumeration_complete,
+        backend=backend,
     )
 
 
 def _finish_stratification(
-    curve_types: StableCurveTypes,
-    levels: list[dict[object, StableCurveType]],
+    curve_types: StableGraphTypes,
+    levels: list[dict[object, StableGraphType]],
     max_codim: int | None,
     codim_cap: int,
     dimension: int,
     *,
     enumeration_complete: bool,
+    backend: str | None = None,
 ) -> DMStratification:
-    by_key: dict[object, StableCurveType] = {}
+    by_key: dict[object, StableGraphType] = {}
     for level in levels:
         by_key.update(level)
 
-    covers: list[tuple[StableCurveType, StableCurveType]] = []
+    covers: list[tuple[StableGraphType, StableGraphType]] = []
     contractions: list[StableGraphContraction] = []
     included = set(by_key)
+    use_decorated_morphisms = backend == "admcycles-decorated"
     for rank in range(1, len(levels)):
-        for delta in levels[rank].values():
-            for edge in delta.internal_edges():
-                _, contraction = delta.contract(edge)
-                key = contraction.codomain().canonical_key()
-                if key in included:
-                    gamma = by_key[key]
-                    covers.append((gamma, delta))
-                    contractions.append(contraction)
+        for delta_type in levels[rank].values():
+            delta_graph = delta_type.canonical_representative()
+            if use_decorated_morphisms:
+                for orbit in delta_type.elementary_contraction_orbits():
+                    gamma_type = orbit.target()
+                    key = gamma_type.canonical_key()
+                    if key not in included:
+                        continue
+                    gamma_type = by_key[key]
+                    gamma_graph = gamma_type.canonical_representative()
+                    covers.append((gamma_type, delta_type))
+                    contractions.append(orbit.representative().with_endpoints(delta_graph, gamma_graph))
+            else:
+                for edge in delta_graph.internal_edges():
+                    gamma_type, contraction = delta_graph.contract(edge)
+                    key = gamma_type.canonical_key()
+                    if key in included:
+                        gamma_type = by_key[key]
+                        gamma_graph = gamma_type.canonical_representative()
+                        covers.append((gamma_type, delta_type))
+                        contractions.append(contraction.with_endpoints(delta_graph, gamma_graph))
 
     # Deduplicate cover pairs (a single cover may be witnessed by several edges)
     # while keeping every contraction witness.
@@ -151,6 +182,7 @@ def _finish_stratification(
         and enumeration_complete
         and smooth_present
         and _levels_are_contiguous(levels)
+        and len(levels) == codim_cap + 1
     )
     return DMStratification(
         g=curve_types.genus(),
@@ -161,6 +193,7 @@ def _finish_stratification(
         contractions=tuple(contractions),
         complete=complete,
         codim_cap=codim_cap,
+        backend=backend,
     )
 
 
@@ -172,12 +205,13 @@ class DMStratification:
         self,
         g: int,
         n: int,
-        curve_types: StableCurveTypes,
-        levels: list[dict[object, StableCurveType]],
-        covers: list[tuple[StableCurveType, StableCurveType]],
+        curve_types: StableGraphTypes,
+        levels: list[dict[object, StableGraphType]],
+        covers: list[tuple[StableGraphType, StableGraphType]],
         contractions: tuple[StableGraphContraction, ...],
         complete: bool,
         codim_cap: int,
+        backend: str | None = None,
     ) -> None:
         self._g = g
         self._n = n
@@ -187,6 +221,7 @@ class DMStratification:
         self._contractions = contractions
         self._complete = complete
         self._codim_cap = codim_cap
+        self._backend = backend
 
     def genus(self) -> int:
         return self._g
@@ -199,10 +234,10 @@ class DMStratification:
 
     # -- ranks and strata --------------------------------------------------------
 
-    def curve_type_levels(self) -> list[tuple[StableCurveType, ...]]:
+    def curve_type_levels(self) -> list[tuple[StableGraphType, ...]]:
         return [tuple(level.values()) for level in self._levels]
 
-    def _stratum(self, curve_type: StableCurveType) -> DMStratum:
+    def _stratum(self, curve_type: StableGraphType) -> DMStratum:
         return DMStratum(curve_type, self._g, self._n)
 
     def rank_buckets(self) -> tuple[tuple[DMStratum, ...], ...]:
@@ -276,6 +311,18 @@ class DMStratification:
 
     def maximum_codim(self) -> int:
         return len(self._levels) - 1
+
+    def enumeration_result(self) -> EnumerationResult:
+        r"""Structured completeness certificate for this stratification."""
+        return EnumerationResult(
+            levels=self.curve_type_levels(),
+            complete_through_codim=self.maximum_codim(),
+            globally_complete=self.is_complete(),
+            backend=self._backend,
+        )
+
+    def backend(self) -> str | None:
+        return self._backend
 
     # -- posets ------------------------------------------------------------------
 

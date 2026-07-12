@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .records import StableGraphRecord
+from .records import StableGraph
 
 if TYPE_CHECKING:
     from sage.graphs.graph import Graph
@@ -46,10 +46,10 @@ def _partition_sort_key(tag: _ColorTag) -> tuple[int, int]:
         return (2, 0)
     if kind == "F":
         return (3, 0)
-    return (4, hash(tag))
+    raise ValueError(f"unknown incidence-graph colour tag {tag!r}")
 
 
-def _incidence_graph(record: StableGraphRecord) -> tuple[Graph, list[list[object]], dict[object, _ColorTag]]:
+def _incidence_graph(record: StableGraph) -> tuple[Graph, list[list[object]], dict[object, _ColorTag]]:
     r"""Return the coloured incidence graph, its colour partition (a list of
     node classes for Sage's ``partition`` argument), and the node -> colour-tag
     map used to build a canonical, colour-aware key."""
@@ -90,7 +90,42 @@ def _incidence_graph(record: StableGraphRecord) -> tuple[Graph, list[list[object
     return graph, partition, color_of
 
 
-def canonical_key(record: StableGraphRecord) -> CanonicalKey:
+def _flag_node(record: StableGraph, flag: int) -> tuple[str, int]:
+    if record.flag_involution[flag] == flag:
+        marking = record.marking_to_flag.index(flag) + 1
+        return ("M", marking)
+    return ("F", flag)
+
+
+def canonical_record(record: StableGraph) -> StableGraph:
+    r"""The canonical half-edge representative for an isomorphism class.
+
+    Two inputs with the same :func:`canonical_key` yield identical records.
+    """
+    graph, partition, color_of = _incidence_graph(record)
+    _, relabelling = graph.canonical_label(partition=partition, certificate=True)
+
+    v_nodes = sorted((node for node in color_of if node[0] == "V"), key=lambda node: relabelling[node])
+    old_vertices = [node[1] for node in v_nodes]
+    new_genera = tuple(record.vertex_genera[vertex] for vertex in old_vertices)
+
+    old_flags = list(range(record.num_flags()))
+    old_flags.sort(key=lambda flag: relabelling[_flag_node(record, flag)])
+    new_flag_of_old = {old: new for new, old in enumerate(old_flags)}
+
+    new_flag_vertex = tuple(old_vertices.index(record.flag_vertex[old_flag]) for old_flag in old_flags)
+    new_flag_involution = tuple(new_flag_of_old[record.flag_involution[old_flag]] for old_flag in old_flags)
+    new_marking_to_flag = tuple(new_flag_of_old[flag] for flag in record.marking_to_flag)
+
+    return StableGraph(
+        vertex_genera=new_genera,
+        flag_vertex=new_flag_vertex,
+        flag_involution=new_flag_involution,
+        marking_to_flag=new_marking_to_flag,
+    )
+
+
+def canonical_key(record: StableGraph) -> CanonicalKey:
     r"""A hashable, colour-aware canonical form.
 
     Two records yield the same key iff their coloured incidence graphs are
@@ -104,16 +139,21 @@ def canonical_key(record: StableGraphRecord) -> CanonicalKey:
     return edges, colors
 
 
-def automorphism_number(record: StableGraphRecord) -> int:
+def automorphism_group(record: StableGraph):
+    r"""The automorphism group of the coloured incidence graph."""
+    graph, partition, _ = _incidence_graph(record)
+    return graph.automorphism_group(partition=partition)
+
+
+def automorphism_number(record: StableGraph) -> int:
     r""":math:`|\operatorname{Aut}(\Gamma)|`, the order of the automorphism group
     of the coloured incidence graph.  This is the half-edge automorphism number:
     it counts branch swaps of loops and permutations of parallel edges, and fixes
     every marking."""
-    graph, partition, _ = _incidence_graph(record)
-    return int(graph.automorphism_group(partition=partition).order())
+    return int(automorphism_group(record).order())
 
 
-def to_json(record: StableGraphRecord, g: int, n: int, schema: int = 1) -> dict[str, object]:
+def to_labeled_json(record: StableGraph, g: int, n: int, schema: int = 1) -> dict[str, object]:
     r"""A versioned, external JSON representation (vertex/edge oriented).
 
     This is the shape crossing a process boundary; the in-process canonical key
@@ -141,3 +181,8 @@ def to_json(record: StableGraphRecord, g: int, n: int, schema: int = 1) -> dict[
         "vertices": vertices,
         "edges": edges,
     }
+
+
+def to_json(record: StableGraph, g: int, n: int, schema: int = 1) -> dict[str, object]:
+    r"""JSON for the canonical representative (isomorphism-class invariant)."""
+    return to_labeled_json(canonical_record(record), g, n, schema=schema)

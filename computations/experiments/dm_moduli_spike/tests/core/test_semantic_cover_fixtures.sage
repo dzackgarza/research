@@ -13,8 +13,10 @@ from tests.support.poset_oracle import specialization_poset
 
 def contraction_target_multiplicities(gamma):
     return Counter(
-        contraction.codomain().canonical_key()
-        for contraction in gamma.elementary_contractions()
+        {
+            orbit.target().canonical_key(): orbit.orbit_size()
+            for orbit in gamma.elementary_contraction_orbits()
+        }
     )
 
 
@@ -29,9 +31,11 @@ def test_M11_unique_cover_is_loop_contraction():
 
     assert poset.cover_relations() == [[smooth, nodal]]
 
-    contractions = nodal.curve_type().elementary_contractions()
+    nodal_graph = nodal.curve_type().canonical_representative()
+    contractions = list(nodal_graph.internal_edges())
     assert len(contractions) == 1
-    assert contractions[0].codomain() == smooth.curve_type()
+    _, contraction = nodal_graph.contract(contractions[0])
+    assert contraction.target_type() == smooth.curve_type()
 
 
 def test_M12_is_young_diagram_poset_3_2():

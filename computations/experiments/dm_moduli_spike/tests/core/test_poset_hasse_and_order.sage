@@ -27,10 +27,10 @@ def test_hasse_diagram_equals_elementary_contraction_relation(g, n):
     expected_covers: set[tuple[object, object]] = set()
 
     for special in poset:
-        gamma = special.curve_type()
-        for contraction in gamma.elementary_contractions():
-            generic_graph = contraction.codomain().canonicalized()
-            generic = by_key[generic_graph.canonical_key()]
+        delta_graph = special.curve_type().canonical_representative()
+        for edge in delta_graph.internal_edges():
+            generic_type, _ = delta_graph.contract(edge)
+            generic = by_key[generic_type.canonical_key()]
             expected_covers.add((generic, special))
 
     actual_covers = set(map(tuple, poset.cover_relations()))
@@ -58,6 +58,7 @@ def test_rank_codimension_and_dimension_on_every_stratum(g, n):
 
     for stratum in poset:
         gamma = stratum.curve_type()
+        graph = gamma.canonical_representative()
         edge_count = gamma.num_edges()
 
         assert poset.rank(stratum) == edge_count
@@ -65,8 +66,8 @@ def test_rank_codimension_and_dimension_on_every_stratum(g, n):
         assert stratum.dimension() == 3 * g - 3 + n - edge_count
 
         local_dimension = sum(
-            3 * gamma.vertex_genus(vertex) - 3 + gamma.number_of_flags_at(vertex)
-            for vertex in gamma.vertices()
+            3 * graph.vertex_genus(vertex) - 3 + graph.valence(vertex)
+            for vertex in graph.vertices()
         )
         assert stratum.dimension() == local_dimension
 

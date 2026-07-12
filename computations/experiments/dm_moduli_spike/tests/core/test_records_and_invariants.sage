@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike import DMCompactificationModel, StableCurveTypes, StableGraphRecord
+from dm_moduli_spike import DMCompactificationModel, StableCurveTypes, StableGraph
 
 
 def test_record_rejects_a_non_involution():
     with pytest.raises(AssertionError):
-        StableGraphRecord(
+        StableGraph(
             vertex_genera=(1,),
             flag_vertex=(0, 0),
             flag_involution=(1, 0, 0),  # length mismatch / not an involution
@@ -20,7 +20,7 @@ def test_record_rejects_a_non_involution():
 def test_record_rejects_an_unstable_vertex():
     # A genus-0 vertex with a single leg is unstable: 2*0 - 2 + 1 = -1.
     with pytest.raises(AssertionError):
-        StableGraphRecord(
+        StableGraph(
             vertex_genera=(0,),
             flag_vertex=(0,),
             flag_involution=(0,),
@@ -30,7 +30,7 @@ def test_record_rejects_an_unstable_vertex():
 
 def test_record_rejects_a_disconnected_graph():
     with pytest.raises(AssertionError):
-        StableGraphRecord(
+        StableGraph(
             vertex_genera=(1, 1),
             flag_vertex=(0, 1),
             flag_involution=(0, 1),  # two isolated genus-1 vertices, each a leg
@@ -73,7 +73,7 @@ def test_every_type_is_connected_stable_correct_genus_and_marking_set():
     model = DMCompactificationModel(2, 1)
     for level in model.stratification().curve_type_levels():
         for gamma in level:
-            record = gamma.record()
+            record = gamma.canonical_representative()
             assert record.is_stable()
             assert record._is_connected()
             assert gamma.total_genus() == 2
@@ -85,7 +85,7 @@ def test_genus_matches_betti_plus_vertex_genera():
     model = DMCompactificationModel(2, 1)
     for level in model.stratification().curve_type_levels():
         for gamma in level:
-            record = gamma.record()
+            record = gamma.canonical_representative()
             assert gamma.total_genus() == record.first_betti_number() + sum(record.vertex_genera)
 
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from sage.combinat.permutation import Permutations
 
-from dm_moduli_spike import DMCompactificationModel, StableCurveTypes, StableGraphRecord
+from dm_moduli_spike import DMCompactificationModel, StableCurveTypes, StableGraph
 from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
 
 
@@ -22,7 +22,7 @@ def _relabel(record, vertex_perm, flag_perm):
         new_flag_vertex[flag_perm[flag]] = vertex_perm[record.flag_vertex[flag]]
         new_flag_involution[flag_perm[flag]] = flag_perm[record.flag_involution[flag]]
     new_marking_to_flag = tuple(flag_perm[flag] for flag in record.marking_to_flag)
-    return StableGraphRecord(
+    return StableGraph(
         vertex_genera=tuple(new_genera),
         flag_vertex=tuple(new_flag_vertex),
         flag_involution=tuple(new_flag_involution),
@@ -35,7 +35,7 @@ def test_random_relabelings_produce_the_same_canonical_key():
     model = DMCompactificationModel(2, 1)
     for level in model.stratification().curve_type_levels():
         for gamma in level:
-            record = gamma.record()
+            record = gamma.canonical_representative()
             num_vertices = record.num_vertices()
             num_flags = record.num_flags()
             for vperm in Permutations(num_vertices)[:3]:

@@ -1,21 +1,4 @@
-r"""Enumeration of stable curve types by one-edge degeneration.
-
-Starting from the unique smooth graph, every stable curve type is reached by a
-sequence of one-edge degenerations.  There are exactly two forms, the reverses
-of the two forms of a single-edge contraction:
-
-* **nonseparating** -- pick a vertex ``v`` with ``w(v) > 0``, drop its genus by
-  one and add a loop at ``v`` (reverse of contracting a loop);
-* **vertex split** -- replace ``v`` by ``v1, v2`` with ``w(v1) + w(v2) = w(v)``,
-  distribute the incident flags (including the two branches of existing loops)
-  and the markings between them, and join ``v1, v2`` by a new edge (reverse of
-  contracting a non-loop edge).
-
-Every result is canonicalised and deduplicated by canonical key.  Completeness
-follows by induction on the number of edges: contracting any edge of a graph
-with ``r + 1`` edges gives a stable ``r``-edge graph already enumerated, and the
-reverse operation is one of the two above.
-"""
+r"""Enumeration of stable graph types by one-edge degeneration."""
 
 from __future__ import annotations
 
@@ -23,14 +6,13 @@ from collections.abc import Iterator
 from itertools import combinations
 from typing import TYPE_CHECKING
 
-from .records import StableGraphRecord
+from .records import StableGraph
 
 if TYPE_CHECKING:
-    from .curve_types import StableCurveType, StableCurveTypes
+    from .graph_types import StableGraphType, StableGraphTypes
 
 
-def _loop_degenerations(record: StableGraphRecord) -> Iterator[StableGraphRecord]:
-    r"""Nonseparating degenerations: add a loop at a vertex of positive genus."""
+def _loop_degenerations(record: StableGraph) -> Iterator[StableGraph]:
     num_flags = record.num_flags()
     for vertex in range(record.num_vertices()):
         if record.vertex_genera[vertex] < 1:
@@ -39,7 +21,7 @@ def _loop_degenerations(record: StableGraphRecord) -> Iterator[StableGraphRecord
         new_genera[vertex] -= 1
         new_flag_vertex = list(record.flag_vertex) + [vertex, vertex]
         new_flag_involution = list(record.flag_involution) + [num_flags + 1, num_flags]
-        yield StableGraphRecord(
+        yield StableGraph(
             vertex_genera=tuple(new_genera),
             flag_vertex=tuple(new_flag_vertex),
             flag_involution=tuple(new_flag_involution),
@@ -47,14 +29,13 @@ def _loop_degenerations(record: StableGraphRecord) -> Iterator[StableGraphRecord
         )
 
 
-def _split_degenerations(record: StableGraphRecord) -> Iterator[StableGraphRecord]:
-    r"""Vertex-split degenerations: split a vertex into two joined by an edge."""
+def _split_degenerations(record: StableGraph) -> Iterator[StableGraph]:
     num_flags = record.num_flags()
     for vertex in range(record.num_vertices()):
         weight = record.vertex_genera[vertex]
         flags_here = record.flags_at(vertex)
         other_vertices = [u for u in range(record.num_vertices()) if u != vertex]
-        base_index = {u: i for i, u in enumerate(other_vertices)}
+        base_index = {u: index for index, u in enumerate(other_vertices)}
         v1 = len(other_vertices)
         v2 = v1 + 1
         for genus_one in range(weight + 1):
@@ -78,7 +59,7 @@ def _split_degenerations(record: StableGraphRecord) -> Iterator[StableGraphRecor
                             new_flag_vertex.append(v1 if flag in on_v1 else v2)
                     new_flag_vertex += [v1, v2]
                     new_flag_involution = list(record.flag_involution) + [num_flags + 1, num_flags]
-                    yield StableGraphRecord(
+                    yield StableGraph(
                         vertex_genera=tuple(new_genera),
                         flag_vertex=tuple(new_flag_vertex),
                         flag_involution=tuple(new_flag_involution),
@@ -86,27 +67,23 @@ def _split_degenerations(record: StableGraphRecord) -> Iterator[StableGraphRecor
                     )
 
 
-def one_edge_degenerations(gamma: StableCurveType) -> tuple[StableCurveType, ...]:
-    r"""All rank ``+1`` degenerations of ``gamma``, deduplicated by canonical key."""
+def one_edge_degenerations(gamma: StableGraphType) -> tuple[StableGraphType, ...]:
     parent = gamma.parent()
-    record = gamma.record()
-    seen: dict[object, StableCurveType] = {}
+    record = gamma.canonical_representative()
+    seen: dict[object, StableGraphType] = {}
     for degeneration in (*_loop_degenerations(record), *_split_degenerations(record)):
-        candidate = parent.from_record(degeneration)
+        candidate = parent.from_graph(degeneration)
         seen[candidate.canonical_key()] = candidate
     return tuple(seen.values())
 
 
-def stable_curve_type_levels(parent: StableCurveTypes) -> list[dict[object, StableCurveType]]:
-    r"""Rank buckets ``levels[r]`` (indexed by number of edges), each a mapping
-    ``canonical_key -> StableCurveType``, generated rank by rank from the smooth
-    graph up to codimension ``3g - 3 + n``."""
+def stable_curve_type_levels(parent: StableGraphTypes) -> list[dict[object, StableGraphType]]:
     dimension = parent.dimension()
     smooth = parent.smooth()
-    levels: list[dict[object, StableCurveType]] = [{smooth.canonical_key(): smooth}]
+    levels: list[dict[object, StableGraphType]] = [{smooth.canonical_key(): smooth}]
     for _ in range(dimension):
         current = levels[-1]
-        nxt: dict[object, StableCurveType] = {}
+        nxt: dict[object, StableGraphType] = {}
         for gamma in current.values():
             for delta in one_edge_degenerations(gamma):
                 nxt[delta.canonical_key()] = delta
@@ -116,6 +93,6 @@ def stable_curve_type_levels(parent: StableCurveTypes) -> list[dict[object, Stab
     return levels
 
 
-def all_stable_curve_types(parent: StableCurveTypes) -> Iterator[StableCurveType]:
+def all_stable_curve_types(parent: StableGraphTypes) -> Iterator[StableGraphType]:
     for level in stable_curve_type_levels(parent):
         yield from level.values()

@@ -1,25 +1,44 @@
-r"""The typed ambient model of :math:`\overline{\mathcal M}_{g,n}`.
-
-:class:`DMCompactificationModel` is a stack-aware *combinatorial* model of the
-Deligne-Mumford compactification.  It models strata, dimensions, automorphisms,
-clutching presentations and closure incidence exactly, while making no claim to
-implement the algebraic stack as a functor of points.
-"""
+r"""The typed ambient model of :math:`\overline{\mathcal M}_{g,n}`."""
 
 from __future__ import annotations
 
 from sage.structure.unique_representation import UniqueRepresentation
 
-from .curve_types import StableCurveType, StableCurveTypes
+from .curve_types import StableCurveTypes, StableGraphType, StableGraphTypes
 from .strata import DMStratum
 from .stratification import DMStratification, build_stratification, build_stratification_from_types
 
-_BACKENDS = ("pure-sage", "admcycles-stable", "admcycles-decorated")
+_BACKENDS = ("auto", "pure-sage", "admcycles-stable", "admcycles-decorated")
+_RESOLVED_BACKENDS = ("pure-sage", "admcycles-stable", "admcycles-decorated")
+
+
+def _curve_type_keys(stratification: DMStratification) -> frozenset[object]:
+    return frozenset(
+        gamma.canonical_key()
+        for level in stratification.curve_type_levels()
+        for gamma in level
+    )
+
+
+def _resolve_backend(backend: str) -> str:
+    if backend != "auto":
+        return backend
+    try:
+        from ..backends.admcycles_decorated import _require_decorated_module
+
+        _require_decorated_module()
+        return "admcycles-decorated"
+    except ImportError:
+        pass
+    from ..backends.admcycles_stable import AdmcyclesStableGraphBackend
+
+    if AdmcyclesStableGraphBackend().is_available():
+        return "admcycles-stable"
+    return "pure-sage"
 
 
 class DMCompactificationModel(UniqueRepresentation):
-    r"""The typed ambient :math:`\overline{\mathcal M}_{g,n}` model for a stable
-    pair ``(g, n)``."""
+    r"""Combinatorial model of :math:`\overline{\mathcal M}_{g,n}`."""
 
     def __init__(self, g: int, n: int) -> None:
         g = int(g)
@@ -36,19 +55,21 @@ class DMCompactificationModel(UniqueRepresentation):
         return self._n
 
     def dimension(self) -> int:
-        r""":math:`3g - 3 + n`."""
         return 3 * self._g - 3 + self._n
 
     def is_stable_range(self) -> bool:
         return 2 * self._g - 2 + self._n > 0
 
-    def curve_types(self) -> StableCurveTypes:
-        return StableCurveTypes(self._g, self._n)
+    def graph_types(self) -> StableGraphTypes:
+        return StableGraphTypes(self._g, self._n)
 
-    def stratum(self, curve_type: StableCurveType) -> DMStratum:
-        if not isinstance(curve_type, StableCurveType):
-            raise TypeError(f"expected a StableCurveType; found {type(curve_type)}")
-        expected = self.curve_types()
+    def curve_types(self) -> StableCurveTypes:
+        return self.graph_types()
+
+    def stratum(self, curve_type: StableGraphType) -> DMStratum:
+        if not isinstance(curve_type, StableGraphType):
+            raise TypeError(f"expected a StableGraphType; found {type(curve_type)}")
+        expected = self.graph_types()
         parent = curve_type.parent()
         if parent is not expected and parent != expected:
             raise ValueError(
@@ -58,22 +79,40 @@ class DMCompactificationModel(UniqueRepresentation):
 
     def stratification(
         self,
-        backend: str = "pure-sage",
+        backend: str = "auto",
         max_codim: int | None = None,
+        verify_against: str | None = None,
     ) -> DMStratification:
         assert backend in _BACKENDS, f"unknown backend {backend!r}; choose one of {_BACKENDS}"
-        curve_types = self.curve_types()
-        if backend == "pure-sage":
-            return build_stratification(curve_types, max_codim=max_codim)
-        if backend == "admcycles-stable":
+        resolved = _resolve_backend(backend)
+        if verify_against is not None:
+            assert verify_against in _BACKENDS, f"unknown verify backend {verify_against!r}; choose one of {_BACKENDS}"
+            verify_resolved = _resolve_backend(verify_against)
+        else:
+            verify_resolved = None
+        graph_types = self.graph_types()
+        if resolved == "pure-sage":
+            result = build_stratification(graph_types, max_codim=max_codim)
+        elif resolved == "admcycles-stable":
             from ..backends.admcycles_stable import AdmcyclesStableGraphBackend
 
-            types = AdmcyclesStableGraphBackend().stable_curve_types(curve_types, max_codim=max_codim)
-            return build_stratification_from_types(curve_types, types, max_codim=max_codim)
-        from ..backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
+            types = AdmcyclesStableGraphBackend().stable_curve_types(graph_types, max_codim=max_codim)
+            result = build_stratification_from_types(
+                graph_types, types, max_codim=max_codim, backend=resolved
+            )
+        else:
+            from ..backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
 
-        types = AdmcyclesDecoratedGraphBackend().stable_curve_types(curve_types, max_codim=max_codim)
-        return build_stratification_from_types(curve_types, types, max_codim=max_codim)
+            types = AdmcyclesDecoratedGraphBackend().stable_curve_types(graph_types, max_codim=max_codim)
+            result = build_stratification_from_types(
+                graph_types, types, max_codim=max_codim, backend=resolved
+            )
+        if verify_resolved is not None:
+            reference = self.stratification(backend=verify_resolved, max_codim=max_codim)
+            assert _curve_type_keys(result) == _curve_type_keys(reference), (
+                f"backend {resolved!r} disagrees with reference {verify_resolved!r} on canonical-key set"
+            )
+        return result
 
     def strata(self, codim: int | None = None) -> tuple[DMStratum, ...]:
         return self.stratification().strata(codim=codim)
