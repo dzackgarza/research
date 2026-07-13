@@ -61,7 +61,6 @@ Top-level directories (this is a navigational map; each tree owns its own README
 - **`computations/`** — the working computational corpus.
   Its `experiments/` subtree holds the **spikes** (see the lineage note below and *QC integration for spikes*). Other subdirs are task-specific: `components/` (reusable computation pieces, e.g. the `coxeter-vinberg/` prototypes), `coxiter/` (CoxIter tool integration), `lattice-orbits/`, `enriques-moduli/` + `enriques-paper-artifacts/` (Enriques-surface moduli work), `notebooks/` (Jupyter), `scripts/` (one-off scripts), `reports/` (generated output).
 - **`projects/`** — long-horizon subprojects.
-  `projects/lattice-research/` is a **git submodule** (`dzackgarza/lattice-research`) and contains `category_specs/` (see lineage note), plus `src/`, `theory/`, `lean/`, `paper/`, `tests/`, `reports/`. Because it is a submodule, edits there are commits to a *separate* repo.
 - **`review-calibration/`** — **git submodule** (`dzackgarza/research-review-calibration`) holding a frozen lattice-spike simulacrum for **LLM review calibration**. Planted violations live in `GROUND_TRUTH.md` (never in the review packet).
   Experiment issues and advisory review runs target the submodule repo, not this monorepo.
   Hill-climb prompt/context/permissions there before changing production `review-packet.tar` here.
@@ -69,13 +68,13 @@ Top-level directories (this is a navigational map; each tree owns its own README
   The user's durable authored artifacts — preserve native LaTeX/tikz source.
 - **`notes/`** — research notes (`computations/`, `papers/`, `topics/`), including the terminology-drift dictionary.
 - **`references/`** — external inputs: `pdfs/`, `generated-indexes/`, `local-system-dependencies/`.
-- **`archives/`** — retired material (`provenance/`).
+- **`archives/`** — retired material (`provenance/`) and the frozen `lattice-research/` submodule (`dzackgarza/lattice-research`).
 
 ## category_specs vs. the spikes (two attempts at the same substrate)
 
-Both implement the same goal — a mathematically-semantic, Sage-compatible substrate for exact lattice/surface computation (`projects/lattice-research/GOAL.md`) — but are **two distinct attempts**, and it matters which one a given task targets:
+Both implement the same goal — a mathematically-semantic, Sage-compatible substrate for exact lattice/surface computation (`archives/lattice-research/GOAL.md`) — but are **two distinct attempts**, and it matters which one a given task targets:
 
-- **`projects/lattice-research/category_specs/`** — the **older, more ambitious attempt**, now **stalled and frozen / on the backburner**. It aimed at the full category/refinement language up front (its `src.bak/`, `tests.bak/` are relics of that).
+- **`archives/lattice-research/src.bak/category_specs/`** — the **older, more ambitious attempt**, now **stalled and frozen / on the backburner**. It aimed at the full category/refinement language up front.
   Treat it as **frozen prior art**: read it for design intent, but it is not where active generalization happens.
   Parity-audit issues (#26/#84/#85 …) that cite `category_specs/…` paths are pointing at this frozen surface.
 - **`computations/experiments/*` (the spikes)** — the **current, active attempt**: the same work **broken up and made modular**, deliberately **starting from provably-working lattices and generalizing outward** rather than specifying the whole category tree first.

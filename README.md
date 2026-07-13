@@ -48,6 +48,6 @@ just -f computations/experiments/sage_lattice_feature_spike/justfile test
 - `projects/`: live research projects tracked as submodules once they deserve their own history.
 - `references/`: PDFs, generated indexes, upstream references, and local dependency notes.
 
-## Live Projects
+## Archived Projects
 
-- `projects/lattice-research`: submodule for the live Coble/lattice research project.
+- `archives/lattice-research`: frozen submodule containing the earlier Coble/lattice research attempt.
