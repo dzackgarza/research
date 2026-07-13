@@ -14,9 +14,13 @@ This package **implements**:
 This package **does not implement**:
 
 * The Deligne–Mumford stacks `\mathcal M_{g,n}`, `\overline{\mathcal M}_{g,n}` as
-  algebraic stacks (no universal family, no stack structure).
+  algebraic stacks (no universal family over `\mathcal M_{g,n}`, no stack structure).
 * Coarse moduli schemes `M_{g,n}`, `\overline M_{g,n}` as schemes.
-* Stable pointed curves, families `\pi:\mathcal C\to S`, or geometric specializations.
+* Geometric nodal gluing of Sage curves (nodal fibers use combinatorial dual graphs).
+
+Sage-backed **smooth** pointed curves (plane rational / elliptic / hyperelliptic) live under
+`categories/curves.py` and `_landscape/curves/`; categories declare the hierarchy, Sage
+supplies `Curve_generic` objects — not DM stacks.
 
 Notation (literature standard):
 
@@ -52,7 +56,8 @@ P = Gamma.specialization_poset()   # Sage FinitePoset
 | --- | --- |
 | `objects/gamma.py` | **Public center** — Γ_{g,n} |
 | `objects/` (records, contractions, …) | Combinatorial kernel |
-| `_landscape/` (`moduli`, `curves`, `geometry`, `stratification`) | **Private stubs** — typed placeholders, not geometry; not in `__all__` |
+| `_landscape/` (`moduli`, `curves`, `geometry`, `stratification`) | **Private** — Sage-backed curve fibers + typed stack stubs; not in `__all__` |
+| `categories/curves.py` | Curve category tower over `B` (`Curves` ⊂ … ⊂ `StablePointedCurves`) |
 | `DMCompactificationModel` | **Being demoted** — enumerator behind stratification |
 
 Literature oracle tests live in `tests/literature/` (tier 1). See evidence table below.

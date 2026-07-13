@@ -44,9 +44,10 @@ class FamilyOver:
 
         g = self._stack_over.genus()
         n = self._stack_over.number_of_markings()
+        base = self.over_scheme()
         if self._stack_over.is_proper():
-            return StablePointedCurve(g, n)
-        return SmoothPointedCurve(g, n)
+            return StablePointedCurve.from_ambient(g, n, base_scheme=base)
+        return SmoothPointedCurve.from_ambient(g, n, base_scheme=base)
 
     def specialization(self, generic: object, special: object) -> Specialization:
         return Specialization(generic, special)

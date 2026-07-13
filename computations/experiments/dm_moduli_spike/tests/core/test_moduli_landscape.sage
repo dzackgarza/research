@@ -95,6 +95,14 @@ def test_moduli_landscape_chain_M11():
 
 
 def test_moduli_problem_and_families():
+    from sage.schemes.curves.curve import Curve_generic
+
+    from dm_moduli_spike.categories import (
+        PointedCurves,
+        StablePointedCurves as StablePointedCurvesCategory,
+        pointed_curve_in_category,
+    )
+
     S = spec(ZZ)
     XS = M_gn(0, 4)
     assert XS.moduli_problem().name() == "SmoothPointedCurves"
@@ -102,9 +110,28 @@ def test_moduli_problem_and_families():
     C = family.an_element().fiber("s")
     assert C.is_smooth()
     assert C.arithmetic_genus() == 0
+    assert isinstance(C.sage_curve(), Curve_generic)
+    assert len(C.markings()) == 4
+    assert pointed_curve_in_category(C, PointedCurves(S, 0, 4))
 
     XSbar = XS.compactify(by=StablePointedCurves(0, 4))
     stable_family = XSbar.objects_over(S)
     Cs = stable_family.an_element().fiber("s")
     assert Cs.is_stable()
     assert Cs.dual_graph().genus() == 0
+    assert isinstance(Cs.sage_curve(), Curve_generic)
+    assert pointed_curve_in_category(Cs, StablePointedCurvesCategory(S, 0, 4))
+
+
+def test_sage_backed_elliptic_fiber_M11():
+    from sage.schemes.curves.curve import Curve_generic
+    from sage.schemes.elliptic_curves.ell_generic import EllipticCurve_generic
+
+    from dm_moduli_spike.categories import PointedCurves, pointed_curve_in_category
+
+    S = spec(QQ)
+    C = M_gn(1, 1).objects_over(S).an_element().fiber("s")
+    assert isinstance(C.sage_curve(), Curve_generic)
+    assert isinstance(C.sage_curve(), EllipticCurve_generic)
+    assert len(C.markings()) == 1
+    assert pointed_curve_in_category(C, PointedCurves(S, 1, 1))
