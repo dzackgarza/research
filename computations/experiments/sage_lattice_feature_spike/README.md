@@ -58,8 +58,8 @@ engines may not.
 
 ## Boundaries
 
-- **Internal-only.** Never externalized to GitHub — no milestone, issue, draft PR,
-  or branch push (`lattice-spike-is-internal-only-never-externalized-to-github`).
+- **Research package.** The root `dzack_research.feature` import exposes this fork
+  for general research use. Its engines remain subject to the gates above.
 - Nothing here migrates into the broader `projects/lattice-research` program
   implicitly.
 
@@ -68,6 +68,7 @@ engines may not.
 ```
 sage_lattice_feature_spike/
   __init__.py        imports the base spike as `base` (the defining property)
+  pyproject.toml     workspace-member package metadata
   conftest.py        brings base + its sage_patches live for every test run
   justfile           `just test` -> sage -python -m pytest over tests/ (mirrors the base spike)
   tests/             one module per FORK milestone lands here as its session ships an engine:
