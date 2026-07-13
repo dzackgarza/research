@@ -174,7 +174,6 @@ Conversely, if $S \subset L _ { \mathrm { K 3 } } = \mathrm { I I } _ { 3 , 1 9 
 An indefinite even 2-elementary lattice is uniquely determined by its signature and the triple $( r , a , \delta ) = ( \mathrm { r k _ { \mathbb { Z } } } S , \mathrm { r k _ { \mathbb { Z } _ { 2 } } } A _ { S } , \delta )$ , where $\delta \in \{ 0 , 1 \}$ is an additional invariant explained in the next section.
 The 2-elementary hyperbolic lattices admitting a primitive embedding into $L _ { \mathrm { { K 3 } } }$ were classified by Nikulin in [Nik79a, 3.6.2]. There are 75 lattices and for each of them, an embedding into $L _ { \mathrm { { K 3 } } }$ is unique up to ${ \cal O } ( L _ { \mathrm { K 3 } } )$ . The result is given in Fig.
 
-
 ![](images/b37234f61719d5c86b6151dd7b80110453fdecdad73e2f9e2fea6644ac4ba2d1.jpg)\
 Figure 1. Hyperbolic 2-elementary K3 lattices $( r , a , \delta )$
 
@@ -559,7 +558,6 @@ We don’t need them for the present paper since they don’t appear as targets 
 
 We give a brief description for the K3 surfaces $X$ and their quotients $Y$ that appear in the 75 families of Fig.
 
-
 4A. Surfaces for $S$ with $g \geq 2$ , excluding $( 1 0 , 8 , 0 )$ . For the 50 lattices with $g \geq 2$ , excluding $( 1 0 , 8 , 0 )$ , a satisfactory description for the quotients $Y$ is given in [AN06]. Indeed, all the possibilities for the exceptional curves on the surfaces $Y$ appearing in these families were found.
 From the graph of exceptional curves one can realize $Y$ as an explicit blowup of $\mathbb { P } ^ { 2 }$ or $\mathbb { F } _ { n }$ . The K3 surfaces $X$ are double covers of $Y$ branched in some divisor $B$ lying in the linear system $\mid - 2 K _ { Y } \mid$ .
 
@@ -834,7 +832,6 @@ The 0-cusps.
 Definition 5.6 (Mirror moves).
 We define three “mirror moves” from a node $( r , a , \delta )$ to a node $( \bar { r } , \bar { a } , \delta )$ of Fig.
 
-
 $$
 S = ( r , a , \delta ) _ { 1 }  S ^ { \perp } = T = ( 2 2 - r , a , \delta ) _ { 2 }  \overline { { { T } } } = ( \bar { r } , \bar { a } , \bar { \delta } ) _ { 1 } .
 $$
@@ -990,7 +987,6 @@ We apply the previous lemma to $K = L _ { \mathrm { I A S } } ^ { + }$ and check
 Indeed, in this case $S = L ( 2 )$ with a unimodular $L$ , so $S ^ { \dagger } = L$ and $A _ { S ^ { \dagger } } = 0$ has no nonzero elements.\
 (2) $( 6 , 4 , 0 )$ where all the index 2 sublattices must be characteristic.
 In this case $S = U ( 2 ) \oplus D _ { 4 }$ . So $\delta _ { S } = 0$ and $S ^ { \dagger } = U \oplus D _ { 4 }$ . Then the discriminant form is $q ( A _ { S ^ { \dagger } } ) = v$ and every nonzero element $x \in A _ { S ^ { \dagger } }$ satisfies $q ( x ) \equiv 1$ (mod $2 \mathbb { Z }$ ). So this is consistent with Fig.
-
 
 As we noted at the end of Section 2B, all lattices in Fig. 1 can be written as direct sums of the standard ones.
 Computing the doubled duals for them one checks that in the remaining, non special cases one has $A _ { S ^ { \dagger } } \neq 0$ , and if $\delta _ { S ^ { \dagger } } = 0$ then there are elements both with $q ( x ) \equiv 0$ (mod $2 \mathbb { Z }$ ) and $q ( x ) \equiv 1$ (mod $2 \mathbb { Z }$ ) corresponding to both even ordinary and even characteristic moves.

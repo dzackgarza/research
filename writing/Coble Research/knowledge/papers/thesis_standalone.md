@@ -2515,8 +2515,8 @@ I*{ {\mathrm{Nik}} }:
 \end{pmatrix}
 ,$$ or as in \Cref{three-lattice-involutions}, `\begin{align*} I_{\operatorname{dP}}: (u_1,\ u_2,\ u_3,\ \alpha_1,\ \alpha_2) &\to (-u_1,\ u_3,\ u_2,\ -\alpha_1,\ -\alpha_2) \\ I_{{\mathrm{En}}}:(u_1,\ u_2,\ u_3,\ \alpha_1,\ \alpha_2) &\to (-u_1,\ u_3,\ u_2,\ \alpha_2,\ \alpha_1) \\ I_{ {\mathrm{Nik}} }:(u_1,\ u_2,\ u_3,\ \alpha_1,\ \alpha_2) &\to (u_1,\ u_2,\ u_3,\ -\alpha_2,\ -\alpha_1) \end{align*}{=tex} By (**AEGS23?**, Lem. 3.4), the coinvariant sublattice $T_{\operatorname{dP}}^{I_{{\mathrm{En}}} = -1} { \, \xrightarrow{\sim}\, }   T_{{\mathrm{En}}}$, and so to simplify matters we write $I \mathrel{\mathop:}= - I_{{\mathrm{En}}} = I_{ {\mathrm{Nik}} }$ and thus $T_{\operatorname{dP}}^{I} \mathrel{\mathop:}= T_{\operatorname{dP}}^{I=1} = T_{{\mathrm{En}}}$. Fixing a primitive isotropic vector $\eta \in T_{{\mathrm{En}}}$, we write $ \overline{T_{{\mathrm{En}}}}_{ \eta  }  \mathrel{\mathop:}= \eta^{\perp T_{{\mathrm{En}}}}/\left\langle \eta \right\rangle_{T_{{\mathrm{En}}}}$ and $ \overline{T_{\operatorname{dP}}}_{ \eta  }  \mathrel{\mathop:}= \eta^{\perp T_{\operatorname{dP}}}/\left\langle \eta \right\rangle_{T_{\operatorname{dP}}}$, and so on. Under the primitive embedding $T_{{\mathrm{En}}}\hookrightarrow T_{\operatorname{dP}}$, we can construct two distinct boundary lattices associated to $\eta$, [ ` \overline{T*{{\mathrm{En}}}}*{ \eta } \mathrel{\mathop:}= \eta\^{\perp T*{{\mathrm{En}}}}/\left\langle \eta \right\rangle, \qquad \overline{T*{\operatorname{dP}}}*{ \eta } \mathrel{\mathop:}= \eta\^{\perp T*{\operatorname{dP}}}/\left\langle \eta \right\rangle ,] where we carefully identify $\eta$ with its image in $T_{\operatorname{dP}}$ under the embedding.
 There are two possible isometry classses possible for $ \overline{T*{\operatorname{dP}}}*{ \eta } $: $$ \overline{T*{\operatorname{dP}}}*{ \eta } :\quad (18, 2, 0)*1 = U(2) \oplus E_8^2 ,\quad \text{ or } \quad (18,0,0)\_1 = U \oplus E_8^2 ,$$ corresponding to the two 0-cusps of the Baily-Borel compactification $\overline{F*{(2,2,0)}}^{ \operatorname{BB} }$, and distinguished by the divisibility $\operatorname{div}*{T*{\operatorname{dP}}}(\eta)$ of $\eta$ in $T_{\operatorname{dP}}$.
-From a similar analysis of $\overline{F_{{\mathrm{En}}}}^{ \operatorname{BB} }$, the moduli space of *unpolarized* Enriques surfaces, one finds that there are similarly two possibilities $$ \overline{T_{{\mathrm{En}}}}_{ \eta  } : \quad (10, 10, 0)_1 = U(2) \oplus E_8(2) ,\quad \text{ or } \quad (10,8,0)_1 = U \oplus E_8(2) .$$ Both possibilities for $ \overline{T*{\operatorname{dP}}}*{ \eta } $ are hyperbolic, 2-elementary lattices with induced involutions $\overline{I}*{{\mathrm{En}}}$ and $\overline{I}*{\operatorname{dP}}$, and if we write $J\mathrel{\mathop:}= -\overline{I}_{{\mathrm{En}}}$ then we recover $ \overline{T*{\operatorname{dP}}}*{ \eta } ^J = \overline{T*{{\mathrm{En}}}}*{ \eta } $ as the invariant sublattice.
-We immediately note that the involution $J$ is highly sensitive to the choice of $\eta$, as are the isometry classes of $ \overline{T*{\operatorname{dP}}}*{ \eta } $ and thus $ \overline{T*{{\mathrm{En}}}}*{ \eta } $ -- in our situation, this highly depends on the geometry of the moduli spaces $F_{{\mathrm{En}}, 2}$ and $F_{(2,2,0)}$.
+From a similar analysis of $\overline{F_{{\mathrm{En}}}}^{ \operatorname{BB} }$, the moduli space of *unpolarized* Enriques surfaces, one finds that there are similarly two possibilities $$ \overline{T_{{\mathrm{En}}}}*{ \eta  } : \quad (10, 10, 0)*1 = U(2) \oplus E_8(2) ,\quad \text{ or } \quad (10,8,0)*1 = U \oplus E_8(2) .$$ Both possibilities for $ \overline{T*{\operatorname{dP}}}*{ \eta } $ are hyperbolic, 2-elementary lattices with induced involutions $\overline{I}*{{\mathrm{En}}}$ and $\overline{I}*{\operatorname{dP}}$, and if we write $J\mathrel{\mathop:}= -\overline{I}*{{\mathrm{En}}}$ then we recover $ \overline{T*{\operatorname{dP}}}*{ \eta } ^J = \overline{T*{{\mathrm{En}}}}*{ \eta } $ as the invariant sublattice.
+We immediately note that the involution $J$ is highly sensitive to the choice of $\eta$, as are the isometry classes of $ \overline{T*{\operatorname{dP}}}*{ \eta } $ and thus $ \overline{T*{{\mathrm{En}}}}*{ \eta } $ -- in our situation, this highly depends on the geometry of the moduli spaces $F*{{\mathrm{En}}, 2}$ and $F*{(2,2,0)}$.
 To make this dependence explicit, we define the arithmetic groups used to construct period domains for these spaces.
 We define a distinguished polarization $$ h = e + f \in S_{\operatorname{dP}}  { \, \xrightarrow{\sim}\, }   U(2) \hookrightarrow S_{{\mathrm{En}}}  { \, \xrightarrow{\sim}\, }   U(2) \oplus E_8(2) = (10, 10, 0)*1 ,$$ and writing $\Psi: \operatorname{O}( {L*{\mathrm{K3}}} ) \to \operatorname{O}(T_{{\mathrm{En}}})$ for the restriction map, $$ \Gamma_{{\mathrm{En}}, 2} \mathrel{\mathop:}= \Psi\left( {\left\{{ g\in \operatorname{O}( {L_{\mathrm{K3}}} ) {~~\mathrel{\Big\vert}~~} g\circ I_{{\mathrm{En}}} = I_{{\mathrm{En}}}\circ g, \, g(h) = h }\right\}} \right), \qquad \Gamma_{\operatorname{dP}} \mathrel{\mathop:}= \operatorname{O}(T_{\operatorname{dP}}) ,$$ where we form $\Gamma_{{\mathrm{En}}, 2}$ by taking the intersection of the commutator of $I_{{\mathrm{En}}}$ in $\operatorname{O}( {L_{\mathrm{K3}}} )$, intersecting it with the stabilizer of the polarization, and taking the image in $\operatorname{O}(T_{{\mathrm{En}}})$.
 This is the correct monodromy group for $F_{{\mathrm{En}}, 2}$; the full details can be found e.g. in (Sterk 1991). For any lattice $T$ of signature $(2, n)$, we define its period domain as $$ D_{T} \mathrel{\mathop:}=\left\{{ [v]\in {\mathbf{P}}(T_{\mathbf{C}}) {~~\mathrel{\Big\vert}~~} v^2 = 0, v\overline{v} > 0 }\right\}^\circ ,$$ where $({-})^\circ$ denotes taking one connected component.
@@ -3366,6 +3366,7 @@ Let $G(\Gamma_\eta)$ be the associated Coxeter diagram and $\Phi(\Gamma_\eta)$ b
 This section formalizes semifans and semitoroidal compactifications, describes admissibility and compatibility, and relates semitoroidal, toroidal, and Baily--Borel compactifications via a tower of birational morphisms: $$ \overline{F*\Gamma}^{ \operatorname{BB} } \longleftarrow \overline{F_\Gamma}^{  \mathcal{F} *{\bullet} } \longleftarrow  \overline{F*\Gamma}^{  \Sigma _{\bullet} } .$$ More precisely,
 
 :::{.definition
+    title="{ Semifans [@???] }
     title="{ Semifans [@???] }
     title="{ Semifans [@???] }
 
@@ -5291,12 +5292,12 @@ Half-divisor models are (possibly reducible) stable limits of Enriques pairs wit
 Ensure that all logical dependencies, object definitions, proof steps, and reference uses are explicit, detailed, and verifiable directly from your manuscript.
 Do not leave assertions or equivalences to the reader or reviewer to supply.**
 
--->
+# -->
 <!-- We now prove a crucial structural property of the classifying morphism $\phi :  {B}^{\nu}  \to \overline{F_{{\mathrm{En}}, 2}}$ constructed in previous sections: namely, that $\phi$ is finite.
 This assertion is the final step needed for modular identification of the compactified moduli of degree-2 polarized3 stable Enriques pairs via the period map and semitoroidal construction, and its proof relies on a precise analysis of the combinatorial boundary stratifications encoded by the semifans developed earlier.
-=
 
 :::{.theorem
+    title="{Finiteness of the Classifying Map}
     title="{Finiteness of the Classifying Map}
 "
     title="{Finiteness of the Classifying Map}"
@@ -5309,6 +5310,7 @@ To establish this result, we compare the semitoroidal structures on source and t
 The proof is based on the matching of boundary stratifications and the maximality of degenerations as detected in the geometry of Kulikov models.
 
 :::{.lemma
+    title="{Semifan Comparison}
     title="{Semifan Comparison}
 "
     title="{Semifan Comparison}"
@@ -5326,6 +5328,7 @@ By [@AE23, Theorem 7.18], the normalization of any KSBA compactification with re
 
 :::{.definition
     title="{Maximality of Degenerations}
+    title="{Maximality of Degenerations}
 "
     title="{Maximality of Degenerations}"
     #def:maximality-degenerations
@@ -5334,6 +5337,7 @@ A degeneration $(X_0, \epsilon R_0)$ of K3 pairs is called **maximal** if the du
 :::
 
 :::{.proposition
+    title="{The Double Curve Constraint}
     title="{The Double Curve Constraint}
 "
     title="{The Double Curve Constraint}"
@@ -5368,6 +5372,7 @@ Thus the dual complex and monodromy invariants classify the degeneration up to e
 
 :::{.theorem
     title="{No Coarsening Occurs}
+    title="{No Coarsening Occurs}
 "
     title="{No Coarsening Occurs}"
     #thm:no-coarsening
@@ -5382,6 +5387,7 @@ Consider points in $ {B}^{\nu} $ mapping to $\sigma$ via the period map: these c
 :::
 
 :::{.corollary
+    title="{Finiteness of the Classifying Map}
     title="{Finiteness of the Classifying Map}
 "
     title="{Finiteness of the Classifying Map}"

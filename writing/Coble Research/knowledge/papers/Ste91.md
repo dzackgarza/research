@@ -89,7 +89,6 @@ $$
 
 Fig.
 
-
 By $\overline { { \alpha } } _ { 1 }$ …， $\overline { { \alpha } } _ { 8 } \in E _ { 8 }$ we denote the basis of $E _ { 8 }$ such that $( \overleftrightarrow { \boldsymbol { \alpha } } _ { i } , \boldsymbol { \alpha } _ { j } ) = \delta _ { i j }$
 
 We set:
