@@ -1,4 +1,4 @@
-r"""Mathematical invariants: canonical representatives, immutability, automorphisms."""
+r"""Tier-4 internal consistency: canonical representatives, immutability, automorphisms."""
 
 from __future__ import annotations
 

@@ -85,7 +85,9 @@ def _incidence_graph(record: StableGraph) -> tuple[Graph, list[list[tuple[str, i
 
     partition_map: dict[_ColorTag, list[tuple[str, int]]] = {}
     for node, tag in color_of.items():
-        partition_map.setdefault(tag, []).append(node)
+        if tag not in partition_map:
+            partition_map[tag] = []
+        partition_map[tag].append(node)
     partition = [partition_map[tag] for tag in sorted(partition_map, key=_partition_sort_key)]
     return graph, partition, color_of
 

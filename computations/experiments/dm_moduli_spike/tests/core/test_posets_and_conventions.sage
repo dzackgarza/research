@@ -1,4 +1,4 @@
-r"""The specialization/closure posets and their explicit order conventions."""
+r"""Tier-4 internal consistency: specialization/closure posets and order conventions."""
 
 from __future__ import annotations
 

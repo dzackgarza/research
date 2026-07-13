@@ -19,15 +19,11 @@ def _curve_type_keys(stratification: DMStratification) -> frozenset[object]:
 def _resolve_backend(backend: str) -> str:
     if backend != "auto":
         return backend
-    try:
-        from ..backends.admcycles_decorated import _require_decorated_module
-
-        _require_decorated_module()
-        return "admcycles-decorated"
-    except ImportError:
-        pass
+    from ..backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
     from ..backends.admcycles_stable import AdmcyclesStableGraphBackend
 
+    if AdmcyclesDecoratedGraphBackend().is_available():
+        return "admcycles-decorated"
     if AdmcyclesStableGraphBackend().is_available():
         return "admcycles-stable"
     return "pure-sage"

@@ -8,7 +8,6 @@ spike's owned :class:`~dm_moduli_spike.objects.graph_types.StableGraphType`;
 
 from __future__ import annotations
 
-from collections import defaultdict
 from collections.abc import Iterator
 from typing import TYPE_CHECKING
 
@@ -32,13 +31,14 @@ def _require_decorated_module() -> object:
 
 
 def _decorated_genera(decorated: object, num_vertices: int) -> tuple[int, ...]:
-    genus = getattr(decorated, "genus", None)
-    if callable(genus):
-        return tuple(int(genus(vertex)) for vertex in range(num_vertices))
-    genera = getattr(decorated, "_genera", None)
-    if genera is None:
-        raise TypeError(f"DecoratedGraph lacks vertex genera: {decorated!r}")
-    return tuple(int(genera[vertex]) for vertex in range(num_vertices))
+    if hasattr(decorated, "genus"):
+        genus = decorated.genus
+        if callable(genus):
+            return tuple(int(genus(vertex)) for vertex in range(num_vertices))
+    if hasattr(decorated, "_genera"):
+        genera = decorated._genera
+        return tuple(int(genera[vertex]) for vertex in range(num_vertices))
+    raise TypeError(f"DecoratedGraph lacks vertex genera: {decorated!r}")
 
 
 def _record_from_decorated_graph(decorated: object, g: int, n: int) -> StableGraph:
@@ -107,7 +107,9 @@ def _edge_flag_pairs(record: StableGraph) -> dict[tuple[int, int], list[tuple[in
         v = record.flag_vertex[partner]
         key = (u, v) if u <= v else (v, u)
         pair = (flag, partner) if flag < partner else (partner, flag)
-        buckets.setdefault(key, []).append(pair)
+        if key not in buckets:
+            buckets[key] = []
+        buckets[key].append(pair)
     return buckets
 
 
@@ -153,12 +155,15 @@ def _record_to_decorated_graph(record: StableGraph, g: int, n: int) -> object:
     DecoratedGraph = decorated_graph.DecoratedGraph  # type: ignore[attr-defined]
     genera = list(record.vertex_genera)
     markings = [list(record.markings_at(vertex)) for vertex in range(record.num_vertices())]
-    multiplicities: dict[tuple[int, int], int] = defaultdict(int)
+    multiplicities: dict[tuple[int, int], int] = {}
     for flag, partner in record.internal_edges():
         u = record.flag_vertex[flag]
         v = record.flag_vertex[partner]
         key = (u, v) if u <= v else (v, u)
-        multiplicities[key] += 1
+        if key in multiplicities:
+            multiplicities[key] += 1
+        else:
+            multiplicities[key] = 1
     edges = [(u, v, multiplicity) for (u, v), multiplicity in sorted(multiplicities.items())]
     decorated = DecoratedGraph(genera, markings, edges)
     converted = _record_from_decorated_graph(decorated, g, n)
@@ -178,6 +183,13 @@ def edge_orbit_sizes(decorated: object) -> tuple[tuple[tuple[int, int], int], ..
 
 class AdmcyclesDecoratedGraphBackend:
     r"""Enumerator via ``admcycles.decorated_graph.stable_graphs``."""
+
+    def is_available(self) -> bool:
+        try:
+            _require_decorated_module()
+        except ImportError:  # optional admcycles.decorated_graph not installed
+            return False
+        return True
 
     def stable_curve_types(self, curve_types: StableGraphTypes, max_codim: int | None = None) -> tuple[StableGraphType, ...]:
         decorated_graph = _require_decorated_module()

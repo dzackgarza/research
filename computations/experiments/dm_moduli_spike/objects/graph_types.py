@@ -139,7 +139,9 @@ class StableGraphType(Element):
             representative = graph.internal_edges()[group[0]]
             target_type, _ = graph.contract(representative)
             target = self.parent()(target_type)
-            seen.setdefault(target.canonical_key(), (target, self))
+            key = target.canonical_key()
+            if key not in seen:
+                seen[key] = (target, self)
         return tuple(seen.values())
 
     def split_system(self, anchor_marking: int = 1) -> frozenset[frozenset[int]]:
@@ -282,7 +284,7 @@ class StableGraphTypes(UniqueRepresentation, Parent):
         return self(graph)
 
     def from_json(self, data: dict[str, object]) -> StableGraphType:
-        schema = data.get("schema", 1)
+        schema = data["schema"]
         assert isinstance(schema, int), f"unsupported JSON schema version {schema!r}; only schema 1 is supported"
         assert schema == 1, f"unsupported JSON schema version {schema!r}; only schema 1 is supported"
         ambient = data["ambient"]

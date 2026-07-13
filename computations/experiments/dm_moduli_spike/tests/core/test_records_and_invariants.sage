@@ -1,4 +1,4 @@
-r"""Half-edge record validation and the numerical invariants of curve types."""
+r"""Tier-4 internal consistency: half-edge record validation and numerical invariants."""
 
 from __future__ import annotations
 

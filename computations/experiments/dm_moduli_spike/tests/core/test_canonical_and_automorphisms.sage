@@ -1,4 +1,4 @@
-r"""Canonical labelling (isomorphism invariance) and automorphism numbers."""
+r"""Tier-4 internal consistency: canonical labelling and automorphism numbers."""
 
 from __future__ import annotations
 

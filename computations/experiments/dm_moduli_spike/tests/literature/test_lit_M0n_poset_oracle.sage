@@ -42,6 +42,7 @@ pytestmark = pytest.mark.ci
 
 @pytest.mark.parametrize("n", range(3, 8))
 def test_full_M0n_poset_is_compatible_split_poset(n):
+    r"""Giansiracusa / Buneman: whole `\overline{\mathcal M}_{0,n}` poset from compatible splits."""
     actual = specialization_poset(0, n)
     expected = expected_M0n_specialization_poset(n)
     assert actual.is_isomorphic(expected)
@@ -49,6 +50,7 @@ def test_full_M0n_poset_is_compatible_split_poset(n):
 
 @pytest.mark.parametrize("n", range(3, 8))
 def test_dual_tree_to_split_system_is_the_poset_isomorphism(n):
+    r"""Giansiracusa: dual-tree split system is an order isomorphism onto the poset."""
     poset = specialization_poset(0, n)
     expected = expected_M0n_specialization_poset(n)
 

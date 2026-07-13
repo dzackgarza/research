@@ -106,14 +106,9 @@ def _elementary_contraction_data(source: StableGraphType) -> tuple[tuple[StableG
     n = parent.number_of_markings()
     graph = source.canonical_representative()
     edges = graph.internal_edges()
-    use_decorated = False
-    try:
-        from ..backends.admcycles_decorated import _require_decorated_module
+    from ..backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
 
-        _require_decorated_module()
-        use_decorated = True
-    except ImportError:
-        pass
+    use_decorated = AdmcyclesDecoratedGraphBackend().is_available()
 
     data: list[tuple[StableGraphType, StableGraphContraction, int]] = []
     for group in automorphism_edge_orbit_indices(graph):

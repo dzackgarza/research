@@ -1,4 +1,4 @@
-r"""The user-facing API surface described in the spike plan (section 7)."""
+r"""Tier-4 internal consistency: user-facing public API surface."""
 
 from __future__ import annotations
 

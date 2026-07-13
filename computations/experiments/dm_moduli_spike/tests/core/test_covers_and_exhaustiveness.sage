@@ -1,4 +1,4 @@
-r"""Cover API deduplication and exhaustive-cap normalization."""
+r"""Tier-4 internal consistency: cover deduplication and exhaustive-cap normalization."""
 
 from __future__ import annotations
 

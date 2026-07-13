@@ -1,4 +1,4 @@
-r"""Symbolic quotient-stack and clutching presentations of strata."""
+r"""Tier-4 internal consistency: symbolic quotient-stack and clutching presentations."""
 
 from __future__ import annotations
 

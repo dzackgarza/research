@@ -1,4 +1,4 @@
-r"""Contraction morphisms and the covers they witness."""
+r"""Tier-4 internal consistency: contraction morphisms and cover witnesses."""
 
 from __future__ import annotations
 

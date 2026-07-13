@@ -73,7 +73,7 @@ class AdmcyclesStableGraphBackend:
     def is_available(self) -> bool:
         try:
             _require_admcycles()
-        except ImportError:
+        except ImportError:  # optional admcycles not installed
             return False
         return True
 

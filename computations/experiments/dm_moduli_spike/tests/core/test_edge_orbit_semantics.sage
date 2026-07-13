@@ -1,4 +1,4 @@
-r"""Aut edge-orbit semantics versus contraction-target fibers."""
+r"""Tier-4 internal consistency: Aut edge-orbit semantics vs contraction fibers."""
 
 from __future__ import annotations
 

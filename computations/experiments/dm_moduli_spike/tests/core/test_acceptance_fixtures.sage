@@ -1,7 +1,7 @@
-r"""Acceptance fixtures: exact rank vectors of the stratification poset.
+r"""Tier-5 diagnostics: exact rank vectors of the stratification poset.
 
-Rank vectors and total cardinalities are secondary diagnostics.  The primary
-correctness claims live in the whole-poset oracle and Hasse-diagram tests.
+Rank vectors and total cardinalities are never primary correctness claims.
+Tier-1 whole-poset oracles and tier-4 Hasse-diagram tests carry the evidence.
 """
 
 from __future__ import annotations

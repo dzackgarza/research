@@ -1,7 +1,8 @@
-r"""Tier-1 literature oracle: Arborello-Cornalba boundary divisors and clutching.
+r"""Tier-1 literature oracle: Arbarello-Cornalba boundary divisors and clutching.
 
-* Arbarello-Cornalba, *Geometry of Algebraic Curves II*, Ch. XII (boundary
-  strata, irreducible and separating nodes, clutching maps).
+* Arbarello-Cornalba, *Geometry of Algebraic Curves II* (2011), Ch. XII
+  (Thm. XII.2.2 boundary strata; Prop. XII.2.3 clutching maps for
+  irreducible and separating nodes).
 """
 
 from __future__ import annotations
@@ -23,6 +24,7 @@ pytestmark = pytest.mark.ci
 
 @pytest.mark.parametrize("g,n", stable_pairs())
 def test_codimension_one_boundary_labels_match_AC(g, n):
+    r"""AC Ch. XII Thm. XII.2.2: codimension-one boundary type labels."""
     model = DMCompactificationModel(g, n)
     boundary = model.stratification().strata(codim=1)
     actual = {boundary_label(stratum.curve_type(), g, n) for stratum in boundary}
@@ -32,6 +34,7 @@ def test_codimension_one_boundary_labels_match_AC(g, n):
 
 @pytest.mark.parametrize("g,n", stable_pairs())
 def test_irreducible_boundary_clutching_source_matches_AC(g, n):
+    r"""AC Ch. XII Prop. XII.2.3: irreducible node clutching source `M_{g-1,n+2}`."""
     if g < 1:
         return
     model = DMCompactificationModel(g, n)
@@ -45,6 +48,7 @@ def test_irreducible_boundary_clutching_source_matches_AC(g, n):
 
 @pytest.mark.parametrize("g,n", stable_pairs())
 def test_separating_boundary_clutching_sources_match_AC(g, n):
+    r"""AC Ch. XII Prop. XII.2.3: separating node clutching product factors."""
     model = DMCompactificationModel(g, n)
     for stratum in model.stratification().strata(codim=1):
         label = boundary_label(stratum.curve_type(), g, n)

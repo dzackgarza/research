@@ -85,7 +85,7 @@ class StableGraph:
     )
 
     def __setattr__(self, name: str, value: object) -> None:
-        if getattr(self, "_frozen", False):
+        if hasattr(self, "_frozen") and object.__getattribute__(self, "_frozen"):
             raise AttributeError(f"{type(self).__name__} is immutable; cannot set {name!r}")
         object.__setattr__(self, name, value)
 

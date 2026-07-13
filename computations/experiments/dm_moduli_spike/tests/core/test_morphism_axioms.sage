@@ -1,4 +1,4 @@
-r"""Executable validation of graph isomorphisms and contractions."""
+r"""Tier-4 internal consistency: executable graph isomorphism and contraction axioms."""
 
 from __future__ import annotations
 

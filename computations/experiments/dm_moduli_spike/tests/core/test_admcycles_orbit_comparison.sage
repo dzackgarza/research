@@ -1,4 +1,4 @@
-r"""Independent admcycles edge-orbit comparison."""
+r"""Tier-3 differential check: admcycles edge-orbit comparison (not tier-1 literature)."""
 
 from __future__ import annotations
 

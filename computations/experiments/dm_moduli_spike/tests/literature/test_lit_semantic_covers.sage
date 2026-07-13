@@ -23,10 +23,12 @@ pytestmark = pytest.mark.ci
 
 
 def test_M11_is_two_element_chain():
+    r"""Markwig Ex. 2.2 / Fig. 2: `\overline{\mathcal M}_{1,1}` is a two-element chain."""
     assert specialization_poset(1, 1).is_isomorphic(posets.ChainPoset(2))
 
 
 def test_M11_unique_cover_is_loop_contraction():
+    r"""Markwig Ex. 2.2 / Fig. 2: the unique cover contracts the loop edge."""
     stratification = DMCompactificationModel(1, 1).stratification()
     poset = stratification.specialization_poset()
     smooth, nodal = m11_types(stratification)
@@ -41,6 +43,7 @@ def test_M11_unique_cover_is_loop_contraction():
 
 
 def test_M12_exact_semantic_cover_relations():
+    r"""Markwig Ex. 2.2 / Fig. 2: primary evidence is the exact cover set for `\overline{\mathcal M}_{1,2}`."""
     stratification = DMCompactificationModel(1, 2).stratification()
     poset = stratification.specialization_poset()
     types = m12_types(stratification)
@@ -57,6 +60,7 @@ def test_M12_exact_semantic_cover_relations():
 
 
 def test_M20_exact_cover_relations_from_chan_figure():
+    r"""Chan Fig. 3: primary evidence is the exact cover set for `\overline{\mathcal M}_{2,0}`."""
     stratification = DMCompactificationModel(2, 0).stratification()
     types = m20_types(stratification)
 
@@ -71,20 +75,21 @@ def test_M20_exact_cover_relations_from_chan_figure():
 
 
 def test_M12_young_diagram_poset_checksum():
-    r"""Secondary checksum only — not the primary literature fact."""
+    r"""Tier-2 checksum only (Markwig Ex. 2.2 / Fig. 2 Young diagram `[3,2]`) — not primary literature evidence."""
     actual = specialization_poset(1, 2)
     expected = posets.YoungDiagramPoset([3, 2])
     assert actual.is_isomorphic(expected)
 
 
 def test_M20_young_diagram_poset_checksum():
-    r"""Secondary checksum only — not the primary literature fact."""
+    r"""Tier-2 checksum only (Chan Fig. 3 Young diagram `[4,3]`) — not primary literature evidence."""
     actual = specialization_poset(2, 0)
     expected = posets.YoungDiagramPoset([4, 3])
     assert actual.is_isomorphic(expected)
 
 
 def test_M12_parallel_edges_give_two_contraction_witnesses():
+    r"""Markwig Ex. 2.2 / Fig. 2: type E parallel edges contribute orbit multiplicity two."""
     stratification = DMCompactificationModel(1, 2).stratification()
     types = m12_types(stratification)
 
@@ -95,6 +100,7 @@ def test_M12_parallel_edges_give_two_contraction_witnesses():
 
 
 def test_M20_contraction_multiplicities():
+    r"""Chan Fig. 3: orbit multiplicities for types I–III contraction targets."""
     stratification = DMCompactificationModel(2, 0).stratification()
     types = m20_types(stratification)
 

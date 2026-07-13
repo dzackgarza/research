@@ -1,4 +1,4 @@
-r"""Transport of contraction morphisms along graph isomorphisms."""
+r"""Tier-4 internal consistency: transport of contractions along isomorphisms."""
 
 from __future__ import annotations
 

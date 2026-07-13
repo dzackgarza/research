@@ -1,4 +1,4 @@
-r"""Pickling and JSON round trips preserve parent and equality."""
+r"""Tier-4 internal consistency: pickling and JSON round-trip preservation."""
 
 from __future__ import annotations
 

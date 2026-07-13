@@ -2,6 +2,9 @@ r"""Tier-1 literature fixtures for small dual-graph stratifications.
 
 These tests recover published stratification facts with precise citations.
 Stronger whole-poset oracles live in sibling literature modules.
+
+References: Harris-Morrison *Moduli of Curves* Ch. 2–3; Arbarello-Cornalba
+Ch. XII; Chan Fig. 3 (`\overline{\mathcal M}_{2,0}`).
 """
 
 from __future__ import annotations

@@ -63,9 +63,9 @@ Covers are always recovered by contraction on canonical representatives.
 | --- | --- | --- |
 | 1 | Exact independent literature oracle | `tests/literature/` |
 | 2 | Independently implemented mathematical oracle (e.g. Young checksum) | literature docstrings |
-| 3 | CAS differential comparison (`admcycles`) | `tests/core/test_backends.sage`, orbit comparison |
+| 3 | CAS differential comparison (`admcycles`) | `tests/core/test_backends.sage`, `tests/core/test_admcycles_orbit_comparison.sage` |
 | 4 | Internal consistency (Hasse=contraction, serialization, relabeling) | `tests/core/` |
-| 5 | Rank vectors / cardinalities (diagnostics only) | never primary claims |
+| 5 | Rank vectors / cardinalities (diagnostics only) | `tests/core/test_acceptance_fixtures.sage` — never primary claims |
 
 Tier-1 oracles include:
 
@@ -74,6 +74,11 @@ Tier-1 oracles include:
 * Markwig/Chan complete small posets (`test_lit_semantic_covers.sage`, `test_lit_moduli_strata.sage`);
 * published automorphism edge actions and Chan's `\overline{\mathcal M}_{1,3}` example.
 
-**Do not** compare higher-genus thin-poset order complexes to published tropical homology: quotient/self-gluing data from `\operatorname{Aut}(\Gamma)` is required and is absent from the thin type poset.
+Tier-3 `admcycles` cross-checks are differential evidence only: they attest agreement with an external CAS enumerator, not independent literature facts.
+
+Tier-5 rank-vector fixtures record poset statistics for regression tracking; they must not be cited as proof of stratification correctness.
+
+**Do not** compare higher-genus (`g>0`) thin-poset order complexes to published tropical homology (lit-08): quotient/self-gluing data from `\operatorname{Aut}(\Gamma)` is required and is absent from the thin type poset.
+No such homology comparison is implemented or claimed for `g>0`.
 
 Commit gate: `just test` (fast pytest, excludes `@pytest.mark.ci`). Push gate: `just test-ci` (full oracle suite + slop/coverage stack).
