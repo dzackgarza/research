@@ -402,7 +402,7 @@ class DiscriminantForms(Category_over_base_ring):
         return SyntheticQuadraticDiscriminantForm(gram_matrix, quadratic_modulus=quadratic_modulus, invariants=invariants)
 
     def super_categories(self) -> list[Category]:
-        return [CommutativeAdditiveGroups().Finite()]
+        return [CommutativeAdditiveGroups().Finite(), Sets().Finite()]
 
     def additional_structure(self) -> DiscriminantForms:
         return self
