@@ -1,28 +1,18 @@
-
 from collections.abc import Sequence
-from typing import TYPE_CHECKING
 
 from sage.arith.misc import gcd
 from sage.functions.other import sqrt
 from sage.geometry.polyhedron.base import Polyhedron_base
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.graphs.graph import Graph
+from sage.graphs.graph_plot import GraphPlot
 from sage.matrix.constructor import diagonal_matrix
-from sage.matrix.matrix0 import Matrix as SageMatrix
 from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.plot.graphics import Graphics
+from sage.rings.integer import Integer
 from sage.rings.rational_field import QQ
-from sage.structure.element import Element
-
-if TYPE_CHECKING:
-    def _typed_element(value: object) -> Element: ...
-    def _typed_vector(value: object) -> FreeModuleElement: ...
-else:
-    def _typed_element(value: object) -> object:
-        return value
-
-    def _typed_vector(value: object) -> object:
-        return value
+from sage.rings.rational import Rational
+from sage.structure.element import Matrix as SageMatrix
 
 
 def plot_coxeter_diagram_detailed(
@@ -35,7 +25,7 @@ def plot_coxeter_diagram_detailed(
         2: -1,
         3: -QQ(1)/2,
         4: -QQ(1)/sqrt(2),
-        5: -QQ(sqrt(5)+1)/4,
+        5: -(sqrt(5) + 1) / 4,
         6: -QQ(1)/(2 * sqrt(3)),
         # etc... extend as needed
     }
@@ -66,17 +56,20 @@ def plot_coxeter_diagram_detailed(
         i: f"{i}\n({(r * Q * r)})" for i, r in enumerate(simple_roots)
     }
 
-    return G.plot(vertex_labels=vertex_labels,
-                  edge_labels=True,
-                  figsize=6)
+    graph_plot: GraphPlot = G.graphplot(
+        vertex_labels=vertex_labels,
+        edge_labels=True,
+        figsize=6,
+    )
+    return graph_plot.plot()
 
 
 
 # Lorentzian form Q with signature (2,1)
 Q: SageMatrix = diagonal_matrix([-1, 1, 1])
 
-def lorentz_inner(u: FreeModuleElement, v: FreeModuleElement) -> Element:
-    return _typed_element(u * Q * v)
+def lorentz_inner(u: FreeModuleElement, v: FreeModuleElement) -> Integer | Rational:
+    return u * Q * v
 
 def in_hyperbolic_domain(v: FreeModuleElement) -> bool:
     # Negative norm and future cone (to pick one sheet)
@@ -86,9 +79,9 @@ def in_hyperbolic_domain(v: FreeModuleElement) -> bool:
 
 def reflect(x: FreeModuleElement, r: FreeModuleElement) -> FreeModuleElement:
     rr = lorentz_inner(r, r)
-    if abs(rr) < 1e-14:
+    if rr == 0:
         raise ValueError("Reflection undefined for isotropic root vector")
-    return _typed_vector(x - 2 * lorentz_inner(x, r) / rr * r)
+    return x - 2 * lorentz_inner(x, r) / rr * r
 
 def chamber_polyhedron(roots: Sequence[FreeModuleElement]) -> Polyhedron_base:
     # Inequalities for half-spaces: (r, x) >= 0
@@ -149,9 +142,9 @@ def vinberg_algorithm(simple_roots: Sequence[FreeModuleElement]) -> list[FreeMod
                     continue
                 # Reflect r in s only if s has norm -2 (root reflection)
                 norm_s = lorentz_inner(s, s)
-                if abs(norm_s + 2) > 1e-12:
+                if norm_s != -2:
                     continue
-                if abs(norm_s) < 1e-14:
+                if norm_s == 0:
                     # Skip isotropic roots - reflections undefined
                     continue
 
@@ -159,7 +152,7 @@ def vinberg_algorithm(simple_roots: Sequence[FreeModuleElement]) -> list[FreeMod
 
                 # Check reflected is norm -2 root
                 norm_reflected = lorentz_inner(reflected, reflected)
-                if abs(norm_reflected + 2) > 1e-12:
+                if norm_reflected != -2:
                     continue
 
                 reflected = primitive_root(reflected)

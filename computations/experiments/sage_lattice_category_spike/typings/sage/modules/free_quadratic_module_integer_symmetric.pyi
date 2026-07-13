@@ -6,6 +6,9 @@ from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
 from sage.structure.element import Matrix
 
 class FreeQuadraticModule_integer_symmetric(FreeModule_generic):
+    # Sage leaves this unset until generator names are assigned.
+    _names: tuple[str, ...] | None
+
     def gram_matrix(self) -> Matrix: ...
     def discriminant_group(self, s: int = ...) -> TorsionQuadraticModule: ...
     def orthogonal_group(self, gens: Any = ..., is_finite: Any = ...) -> Any: ...
