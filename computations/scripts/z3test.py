@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from z3 import ArithRef, Int, IntVector, Or, Solver, Sum, sat
+from z3 import ArithRef, Int, IntNumRef, IntVector, Or, Solver, Sum, sat
 
 
 def find_ineq_int_soln() -> None:
@@ -41,7 +41,12 @@ def find_roots(
     roots = []
     while s.check() == sat:
         m = s.model()
-        r = [m[x[i]].as_long() for i in range(n)]
+        r = []
+        for coordinate in x:
+            value = m[coordinate]
+            if not isinstance(value, IntNumRef):
+                raise RuntimeError("Z3 model did not assign an integer to every root coordinate")
+            r.append(value.as_long())
         roots.append(r)
         s.add(Or([x[i] != r[i] for i in range(n)]))
     return roots
