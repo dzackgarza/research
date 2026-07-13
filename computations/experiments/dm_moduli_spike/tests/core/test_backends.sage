@@ -105,6 +105,30 @@ def test_auto_backend_prefers_decorated_when_available():
     assert auto.rank_sizes() == decorated.rank_sizes()
 
 
+def test_record_to_stable_graph_roundtrip_preserves_type():
+    from dm_moduli_spike.backends.admcycles_stable import _record_from_stable_graph, _record_to_stable_graph
+
+    types = DMCompactificationModel(1, 2).graph_types()
+    theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
+    graph = theta.canonical_representative()
+    stable = _record_to_stable_graph(graph, 1, 2)
+    roundtrip = _record_from_stable_graph(stable, 1, 2)
+    assert types.from_graph(roundtrip) == theta
+
+
+def test_stable_backend_aut_number_agrees_via_owned_roundtrip():
+    from dm_moduli_spike.backends.admcycles_stable import _record_from_stable_graph
+
+    backend = AdmcyclesStableGraphBackend()
+    model = DMCompactificationModel(1, 2)
+    types = model.graph_types()
+    for level in model.stratification(backend="pure-sage").curve_type_levels():
+        for gamma in level:
+            stable = backend.to_admcycles(types, gamma)
+            assert types.from_graph(_record_from_stable_graph(stable, 1, 2)) == gamma
+            assert gamma.automorphism_number() == backend.admcycles_automorphism_number(types, gamma)
+
+
 def test_record_to_decorated_graph_roundtrip_preserves_type():
     from dm_moduli_spike.backends.admcycles_decorated import _record_from_decorated_graph, _record_to_decorated_graph
 

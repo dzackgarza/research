@@ -67,6 +67,42 @@ def _record_from_stable_graph(stable_graph: object, g: int, n: int) -> StableGra
     return record
 
 
+def _record_to_stable_graph(record: StableGraph, g: int, n: int) -> object:
+    r"""Convert an owned half-edge :class:`StableGraph` to ``admcycles.StableGraph``.
+
+    Labels are assigned so markings keep labels ``1, ..., n`` and remaining
+    half-edges receive consecutive unused integers.  Round-trips through
+    :func:`_record_from_stable_graph` preserve the owned curve type.
+    """
+    admcycles = _require_admcycles()
+    StableGraphAdm = admcycles.StableGraph  # type: ignore[attr-defined]
+
+    assert record.genus() == g, f"record genus {record.genus()} != ambient {g}"
+    assert record.num_markings() == n, f"record markings {record.num_markings()} != ambient {n}"
+
+    next_label = n + 1
+    flag_label: dict[int, int] = {}
+    for marking in range(1, n + 1):
+        flag_label[record.marking_to_flag[marking - 1]] = marking
+
+    for flag in range(record.num_flags()):
+        if flag not in flag_label:
+            flag_label[flag] = next_label
+            next_label += 1
+
+    legs = [
+        [flag_label[flag] for flag in record.flags_at(vertex)]
+        for vertex in range(record.num_vertices())
+    ]
+    edges = [(flag_label[a], flag_label[b]) for a, b in record.internal_edges()]
+    stable_graph = StableGraphAdm(list(record.vertex_genera), legs, edges)
+    roundtrip = _record_from_stable_graph(stable_graph, g, n)
+    assert roundtrip.genus() == g
+    assert roundtrip.num_markings() == n
+    assert roundtrip.num_edges() == record.num_edges()
+    return stable_graph
+
+
 class AdmcyclesStableGraphBackend:
     r"""Enumeration and cross-checks via ``admcycles.list_strata``."""
 
@@ -96,11 +132,14 @@ class AdmcyclesStableGraphBackend:
     def admcycles_automorphism_number(self, curve_types: StableGraphTypes, curve_type: StableGraphType) -> int:
         r"""The ``admcycles`` automorphism number of the ``StableGraph`` matching
         ``curve_type``; used to cross-check the incidence-graph implementation."""
-        admcycles = _require_admcycles()
-        g = curve_types.genus()
-        n = curve_types.number_of_markings()
-        for stable_graph in admcycles.list_strata(g, n, curve_type.num_edges()):  # type: ignore[attr-defined]
-            record = _record_from_stable_graph(stable_graph, g, n)
-            if curve_types.from_graph(record) == curve_type:
-                return int(stable_graph.automorphism_number())
-        raise ValueError(f"no admcycles StableGraph matched {curve_type!r}")
+        record = curve_type.canonical_representative()
+        stable_graph = _record_to_stable_graph(record, curve_types.genus(), curve_types.number_of_markings())
+        return int(stable_graph.automorphism_number())  # type: ignore[attr-defined]
+
+    def to_admcycles(self, curve_types: StableGraphTypes, curve_type: StableGraphType) -> object:
+        r"""Owned Γ object → ``admcycles.StableGraph`` (adapter surface)."""
+        return _record_to_stable_graph(
+            curve_type.canonical_representative(),
+            curve_types.genus(),
+            curve_types.number_of_markings(),
+        )
