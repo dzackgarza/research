@@ -408,6 +408,16 @@ class StableGraphCategory(UniqueRepresentation):
     def closure_poset(self) -> FinitePoset:
         return self.specialization_poset().dual()
 
+    def symmetric_delta_complex(self) -> object:
+        r"""Symmetric Δ-complex / cone complex attached to this `\Gamma_{g,n}`."""
+        from .delta_complex import SymmetricDeltaComplex
+
+        return SymmetricDeltaComplex(self)
+
+    def order_complex(self) -> object:
+        r"""Thin boundary order complex (see :meth:`SymmetricDeltaComplex.order_complex`)."""
+        return self.symmetric_delta_complex().order_complex()
+
     def truncate(self, max_codim: int) -> FinitePoset:
         from sage.combinat.posets.posets import Poset
 

@@ -137,3 +137,23 @@ def test_M0n_thinification_matches_split_oracle():
     expected = expected_M0n_specialization_poset(4)
     assert P.cardinality() == expected.cardinality()
     assert P.is_isomorphic(expected)
+
+
+def test_symmetric_delta_complex_M04_and_refuses_g_positive_dm_claim():
+    from sage.rings.rational_field import QQ
+
+    from dm_moduli_spike import SymmetricDeltaComplex
+
+    Delta0 = SymmetricDeltaComplex(StableGraphCategory(0, 4))
+    assert Delta0.as_dm_boundary_complex() == Delta0.order_complex()
+    homology = Delta0.as_dm_boundary_complex().homology(base_ring=QQ)
+    nonzero = {d: g.dimension() for d, g in homology.items() if g.dimension() != 0}
+    assert nonzero == {0: 2}  # n-4=0, (n-2)! = 2 for n=4
+
+    Delta1 = StableGraphCategory(1, 1).symmetric_delta_complex()
+    assert Delta1.cone_dimension(Delta1.category().objects()[1]) == 1
+    try:
+        Delta1.as_dm_boundary_complex()
+        assert False, "expected ValueError for g>0"
+    except ValueError as err:
+        assert "g>0" in str(err)

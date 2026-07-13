@@ -12,6 +12,8 @@ Mathematical contract
    after passing to isomorphism classes — as a Sage ``FinitePoset``.
 3. Formal graph-indexed stratum formulas (clutching sources, codimension,
    automorphism actions) attached to stable graphs.
+4. The symmetric Δ-complex / cone complex of `\Gamma_{g,n}` (thin order complex;
+   for `g=0` identified with the DM boundary complex; **not** for `g>0`).
 
 **Does not implement**
 
@@ -37,6 +39,7 @@ from __future__ import annotations
 
 import sage.all  # noqa: F401
 
+from .objects.delta_complex import SymmetricDeltaComplex, symmetric_delta_complex
 from .objects.gamma import (
     Gamma_gn,
     StableGraphCategory,
@@ -58,7 +61,9 @@ __all__ = [
     "StableGraphMorphism",
     "StableGraphStratification",
     "StableGraphTypes",
+    "SymmetricDeltaComplex",
     "complex_numbers_ring",
     "spec",
     "spec_complex",
+    "symmetric_delta_complex",
 ]

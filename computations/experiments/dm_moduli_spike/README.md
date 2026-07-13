@@ -68,7 +68,8 @@ Literature oracle tests live in `tests/literature/` (tier 1). See evidence table
 | 5 | Rank vectors / cardinalities (diagnostics) | `tests/core/test_acceptance_fixtures.sage` |
 
 **Do not** compare `g>0` thin-poset order complexes to tropical homology without
-automorphism quotient data.
+automorphism quotient data. Use `SymmetricDeltaComplex.as_dm_boundary_complex()`
+only for `g=0` — it raises for `g>0`.
 
 Foundations remediation plan: agent-memory `PLAN-dm-moduli-foundations`.
 
