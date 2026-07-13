@@ -10,8 +10,8 @@ from sage.matrix.constructor import diagonal_matrix
 from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.plot.graphics import Graphics
 from sage.rings.integer import Integer
-from sage.rings.rational_field import QQ
 from sage.rings.rational import Rational
+from sage.rings.rational_field import QQ
 from sage.structure.element import Matrix as SageMatrix
 
 

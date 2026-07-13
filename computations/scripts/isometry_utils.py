@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Protocol, Self
 from sage.all import ZZ, matrix, zero_matrix
 from sage.rings.integer import Integer
 
-
 type _SageIndex = int | Integer
 type _IntegerPair = tuple[_SageIndex, _SageIndex]
 

@@ -21,6 +21,7 @@ from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
+
 class _LatticeProperties(TypedDict):
     dimension: Integer
     rank: Integer

@@ -4,6 +4,7 @@ Test script to verify that citation links now go directly to source files.
 """
 
 from haystack.dataclasses import Document
+
 from dzack_research.sagemath_doc_search import InlineCitationEnhancer
 
 

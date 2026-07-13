@@ -6,19 +6,18 @@ from copy import copy
 from typing import TYPE_CHECKING, Literal, TypedDict, overload
 
 from dot2tex import d2t, dotparsing
-from sage.all import Infinity, Poset, Set, Subsets, ZZ, matrix, sqrt, zero_matrix
+from sage.all import ZZ, Infinity, Poset, Set, Subsets, sqrt, zero_matrix
 from sage.combinat.posets.posets import FinitePoset
 from sage.graphs.graph import Graph
 from sage.graphs.graph_plot import GraphPlot
 from sage.matrix.matrix_integer_dense import Matrix_integer_dense
+from sage.misc.cachefunc import cached_method
 from sage.misc.latex_standalone import TikzPicture
 from sage.modules.free_quadratic_module import FreeQuadraticModule_generic_pid
 from sage.modules.free_quadratic_module_integer_symmetric import (
     FreeQuadraticModule_integer_symmetric,
 )
-from sage.misc.cachefunc import cached_method
 from sage.structure.element import Matrix
-
 
 type CoxeterOption = bool | int | float | str | list[str] | dict[Hashable, str]
 

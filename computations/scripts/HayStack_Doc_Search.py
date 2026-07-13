@@ -3,9 +3,10 @@ import os
 import pickle
 import subprocess
 import time
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, ParamSpec, TypedDict, TypeVar
+from typing import TYPE_CHECKING, ParamSpec, TypedDict, TypeVar
 
 import streamlit as st
 from dotenv import load_dotenv

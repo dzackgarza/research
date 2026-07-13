@@ -1,8 +1,9 @@
 #!/usr/bin/env sage
 
+from collections.abc import Callable
+
 from sage.all import graphs
 from sage.groups.group import Group
-from typing import Callable
 from sage.groups.matrix_gps.all import GL
 from sage.groups.perm_gps.permgroup_named import (
     PSL,
@@ -14,6 +15,7 @@ from sage.groups.perm_gps.permgroup_named import (
 from sage.groups.perm_gps.permgroup_named import (
     CyclicPermutationGroup as CyclicGroup,
 )
+
 
 def get_automorphism_guarantees() -> dict[str, list[str]]:
     """

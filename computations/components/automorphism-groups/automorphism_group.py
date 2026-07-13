@@ -3,13 +3,14 @@
 from sage.all import euler_phi, graphs
 from sage.groups.group import Group
 from sage.groups.perm_gps.permgroup_named import (
+    CyclicPermutationGroup as CyclicGroup,
+)
+from sage.groups.perm_gps.permgroup_named import (
     DihedralGroup,
     QuaternionGroup,
     SymmetricGroup,
 )
-from sage.groups.perm_gps.permgroup_named import (
-    CyclicPermutationGroup as CyclicGroup,
-)
+
 
 def analyze_automorphism_group(G: Group, group_name: str = "") -> Group | None:
     """
