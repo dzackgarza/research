@@ -55,7 +55,7 @@ def test_dual_tree_to_split_system_is_the_poset_isomorphism(n):
     expected = expected_M0n_specialization_poset(n)
 
     phi = {
-        stratum: stratum.curve_type().split_system(anchor_marking=1)
+        stratum: stratum.split_system(anchor_marking=1)
         for stratum in poset
     }
 
@@ -91,8 +91,8 @@ def test_M0n_marking_relabeling_is_poset_equivariant(n):
                 assert poset.is_lequal(left, right) == poset.is_lequal(relabel[left], relabel[right])
 
         for stratum in poset:
-            source_splits = stratum.curve_type().split_system()
-            target_splits = relabel[stratum].curve_type().split_system()
+            source_splits = stratum.split_system()
+            target_splits = relabel[stratum].split_system()
             expected_target = {
                 canonicalize_split({sigma(label) for label in side}, n=n, anchor_marking=1)
                 for side in source_splits

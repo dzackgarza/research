@@ -10,9 +10,10 @@ Ch. XII; Chan Fig. 3 (`\overline{\mathcal M}_{2,0}`).
 from __future__ import annotations
 
 import pytest
+from sage.rings.integer_ring import ZZ
 
-from dm_moduli_spike.objects.model import DMCompactificationModel
-from dm_moduli_spike.objects.strata import ModuliFactor
+from dm_moduli_spike import Mbar_gn, QuotientStack, spec
+from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
 from tests.support.fixtures import flag_generator_images
 from tests.support.fixtures import CHAN_M20_COVERS, m20_types
@@ -22,26 +23,25 @@ def test_M04_stratification_has_one_open_and_three_codim_one_boundary_strata():
     r"""Stratification fact for `\overline{\mathcal M}_{0,4}`.
 
     Recovers: dimension one; one smooth stratum; three codimension-one boundary
-    strata with source factors `\overline{\mathcal M}_{0,3}\times\overline{\mathcal M}_{0,3}`
+    strata with clutching source `\overline{\mathcal M}_{0,3}\times\overline{\mathcal M}_{0,3}`
     and trivial graph automorphism group.  This is strictly weaker than the
     compatible-split whole-poset oracle in ``test_lit_M0n_poset_oracle.sage``.
 
     Reference: Harris-Morrison, *Moduli of Curves*, Ch. 2 (stable pointed curves).
     """
-    model = DMCompactificationModel(0, 4)
-    assert model.dimension() == 1
-    stratification = model.stratification()
-    assert len(stratification.strata(codim=0)) == 1
-    boundary = stratification.strata(codim=1)
+    XSbar = Mbar_gn(0, 4, base=spec(ZZ))
+    assert XSbar.dimension() == 1
+    Sigma = XSbar.stratification()
+    smooth = [S for S in Sigma.strata() if S.index().num_edges() == 0]
+    boundary = [S for S in Sigma.strata() if S.index().num_edges() == 1]
+    assert len(smooth) == 1
     assert len(boundary) == 3
     for stratum in boundary:
-        presentation = stratum.open_stack_presentation()
-        clutching = stratum.clutching_morphism()
-        assert presentation.product() == tuple(
-            ModuliFactor(0, 3, flags=clutching.flags_at(vertex))
-            for vertex in range(len(clutching.source_factors()))
-        )
-        assert presentation.group_order() == 1
+        underlying = stratum.underlying_stack()
+        assert isinstance(underlying, QuotientStack)
+        assert int(underlying.group().order()) == 1
+        factors = stratum.clutching_morphism().domain().factors()
+        assert sorted((f.genus(), f.number_of_markings()) for f in factors) == [(0, 3), (0, 3)]
 
 
 def test_M11_nodal_boundary_has_published_combinatorics_and_branch_swap():
@@ -54,17 +54,17 @@ def test_M11_nodal_boundary_has_published_combinatorics_and_branch_swap():
     Reference: Harris-Morrison, *Moduli of Curves*, Ch. 3; Arbarello-Cornalba,
     *Geometry of Algebraic Curves II*, Ch. XII (irreducible node).
     """
-    model = DMCompactificationModel(1, 1)
-    boundary = model.stratification().strata(codim=1)
+    XSbar = Mbar_gn(1, 1, base=spec(ZZ))
+    boundary = [S for S in XSbar.stratification().strata() if S.index().num_edges() == 1]
     assert len(boundary) == 1
     nodal = boundary[0]
-    record = nodal.curve_type().canonical_representative()
+    record = nodal.index()
     assert record.num_vertices() == 1
     assert record.vertex_genera == (0,)
     assert record.num_edges() == 1
     assert record.num_markings() == 1
-    clutching = nodal.clutching_morphism()
-    assert clutching.source_factors() == (ModuliFactor(0, 3, compact=True),)
+    factors = nodal.clutching_morphism().domain().factors()
+    assert [(f.genus(), f.number_of_markings()) for f in factors] == [(0, 3)]
     loop_flags = [
         flag
         for flag in range(record.num_flags())
@@ -86,16 +86,16 @@ def test_M20_has_seven_chan_types_and_published_hasse_incidence():
 
     Reference: Chan, Figure 3; Arbarello-Cornalba, Ch. XII (edge contraction).
     """
-    stratification = DMCompactificationModel(2, 0).stratification()
+    stratification = StableGraphStratificationEnumerator(2, 0).stratification()
     types = m20_types(stratification)
     assert set(types) == set(CHAN_M20_COVERS) | {"I", "II", "III", "IV", "V", "VI", "VII"}
     poset = stratification.specialization_poset()
     actual_covers = {
-        (child.curve_type().canonical_key(), parent.curve_type().canonical_key())
+        (child.canonical_key(), parent.canonical_key())
         for parent, child in poset.cover_relations()
     }
     expected_covers = {
-        (types[child].curve_type().canonical_key(), types[parent].curve_type().canonical_key())
+        (types[child].canonical_key(), types[parent].canonical_key())
         for parent, children in CHAN_M20_COVERS.items()
         for child in children
     }

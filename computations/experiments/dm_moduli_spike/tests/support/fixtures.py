@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from dm_moduli_spike.objects.graph_types import StableGraphType, StableGraphTypes
     from dm_moduli_spike.objects.records import StableGraph
-    from dm_moduli_spike.objects.strata import DMStratum
     from dm_moduli_spike.objects.stratification import DMStratification
 
 BoundaryLabel = tuple[str, ...] | tuple[str, int, frozenset[int]]
@@ -90,9 +89,10 @@ def expected_clutching_signature_sep(g: int, n: int, a: int, marking_set: frozen
     )
 
 
-def clutching_signature(stratum: DMStratum) -> tuple[tuple[int, int], ...]:
-    factors = stratum.clutching_morphism().source_factors()
-    return tuple(sorted((factor.genus(), factor.number_of_markings()) for factor in factors))
+def clutching_signature(curve_type: StableGraphType) -> tuple[tuple[int, int], ...]:
+    r"""Sorted ``(g(v), valence(v))`` factors of the clutching source product."""
+    record = curve_type.canonical_representative()
+    return tuple(sorted((record.vertex_genera[v], record.valence(v)) for v in range(record.num_vertices())))
 
 
 def classify_chan_m20(record: StableGraph) -> str:
@@ -125,28 +125,28 @@ def induced_edge_permutation_group(graph: StableGraph) -> object:
 
 
 def flag_generator_images(graph: StableGraph) -> tuple[tuple[int, ...], ...]:
-    r"""0-indexed flag images of Aut generators (test helper; private Aut computation)."""
-    from dm_moduli_spike.objects._automorphism_action import AutomorphismAction
+    r"""0-indexed flag images of Aut generators (test helper)."""
+    from dm_moduli_spike.objects._automorphism_action import _GraphAutomorphismData
 
-    return AutomorphismAction.from_graph(graph).on_flags()
+    return _GraphAutomorphismData.from_graph(graph).on_flags()
 
 
 def marking_generator_images(graph: StableGraph) -> tuple[tuple[int, ...], ...]:
-    from dm_moduli_spike.objects._automorphism_action import AutomorphismAction
+    from dm_moduli_spike.objects._automorphism_action import _GraphAutomorphismData
 
-    return AutomorphismAction.from_graph(graph).on_markings()
+    return _GraphAutomorphismData.from_graph(graph).on_markings()
 
 
 def vertex_generator_images(graph: StableGraph) -> tuple[tuple[int, ...], ...]:
-    from dm_moduli_spike.objects._automorphism_action import AutomorphismAction
+    from dm_moduli_spike.objects._automorphism_action import _GraphAutomorphismData
 
-    return AutomorphismAction.from_graph(graph).on_vertices()
+    return _GraphAutomorphismData.from_graph(graph).on_vertices()
 
 
 def edge_generator_images(graph: StableGraph) -> tuple[tuple[int, ...], ...]:
-    from dm_moduli_spike.objects._automorphism_action import AutomorphismAction
+    from dm_moduli_spike.objects._automorphism_action import _GraphAutomorphismData
 
-    return AutomorphismAction.from_graph(graph).on_edges()
+    return _GraphAutomorphismData.from_graph(graph).on_edges()
 
 
 def chan_m13_curve_type(types: StableGraphTypes) -> StableGraphType:
@@ -157,14 +157,14 @@ def chan_m13_curve_type(types: StableGraphTypes) -> StableGraphType:
     )
 
 
-def m11_types(stratification: DMStratification) -> tuple[DMStratum, DMStratum]:
+def m11_types(stratification: DMStratification) -> tuple[StableGraphType, StableGraphType]:
     poset = stratification.specialization_poset()
-    smooth = next(x for x in poset if x.curve_type().num_edges() == 0)
-    nodal = next(x for x in poset if x.curve_type().num_edges() == 1)
+    smooth = next(x for x in poset if x.num_edges() == 0)
+    nodal = next(x for x in poset if x.num_edges() == 1)
     return smooth, nodal
 
 
-def m12_types(stratification: DMStratification) -> dict[str, DMStratum]:
+def m12_types(stratification: DMStratification) -> dict[str, StableGraphType]:
     return {
         "A": stratification.find_unique_type(
             vertex_genera=(1,),
@@ -194,18 +194,18 @@ def m12_types(stratification: DMStratification) -> dict[str, DMStratum]:
     }
 
 
-def m20_types(stratification: DMStratification) -> dict[str, DMStratum]:
-    by_name: dict[str, DMStratum] = {}
-    for stratum in stratification.strata():
-        name = classify_chan_m20(stratum.curve_type().canonical_representative())
+def m20_types(stratification: DMStratification) -> dict[str, StableGraphType]:
+    by_name: dict[str, StableGraphType] = {}
+    for gamma in stratification.strata():
+        name = classify_chan_m20(gamma.canonical_representative())
         assert name not in by_name, f"duplicate Chan type {name}"
-        by_name[name] = stratum
+        by_name[name] = gamma
     assert set(by_name) == set(CHAN_M20_COVERS) | {"I", "II", "III", "IV", "V", "VI", "VII"}
     return by_name
 
 
 def genus_six_counterexample() -> StableGraphType:
-    from dm_moduli_spike import StableGraphTypes
+    from dm_moduli_spike.objects.graph_types import StableGraphTypes
 
     types = StableGraphTypes(6, 0)
     return types.from_vertices(

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
 
 pytestmark = pytest.mark.ci
@@ -18,7 +18,7 @@ LARGE_RANK_VECTORS = [
 @pytest.mark.parametrize("gn,expected", LARGE_RANK_VECTORS)
 def test_rank_vectors_match_fixtures(gn, expected):
     g, n = gn
-    model = DMCompactificationModel(g, n)
+    model = StableGraphStratificationEnumerator(g, n)
     stratification = model.stratification()
     assert stratification.rank_sizes() == expected
     assert stratification.cardinality() == sum(expected)
@@ -28,17 +28,17 @@ def test_rank_vectors_match_fixtures(gn, expected):
 
 
 def test_bucketing_is_by_num_edges_not_generation_provenance():
-    model = DMCompactificationModel(2, 1)
+    model = StableGraphStratificationEnumerator(2, 1)
     stratification = model.stratification()
     for codim, bucket in enumerate(stratification.strata_by_codimension()):
         for stratum in bucket:
-            assert stratum.curve_type().num_edges() == codim
+            assert stratum.num_edges() == codim
             assert stratum.codimension() == codim
 
 
 def test_admcycles_stable_backend_matches_pure_sage_canonical_keys():
     for g, n in [(0, 5), (1, 2), (2, 0), (2, 1)]:
-        model = DMCompactificationModel(g, n)
+        model = StableGraphStratificationEnumerator(g, n)
         pure = model.stratification(backend="pure-sage")
         adm = model.stratification(backend="admcycles-stable")
         pure_keys = {
@@ -56,5 +56,5 @@ def test_admcycles_stable_backend_matches_pure_sage_canonical_keys():
 
 
 def test_full_M21_stratification_is_complete():
-    model = DMCompactificationModel(2, 1)
+    model = StableGraphStratificationEnumerator(2, 1)
     assert model.stratification().is_complete()

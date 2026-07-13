@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import json
 
-from dm_moduli_spike.objects.model import DMCompactificationModel
-from dm_moduli_spike import StableGraphTypes
+from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
+from dm_moduli_spike.objects.graph_types import StableGraphTypes
 
 
 def test_json_schema_shape():
@@ -20,7 +20,7 @@ def test_json_schema_shape():
 
 def test_parent_is_unique_representation():
     assert StableGraphTypes(2, 1) is StableGraphTypes(2, 1)
-    assert DMCompactificationModel(2, 1) is DMCompactificationModel(2, 1)
+    assert StableGraphStratificationEnumerator(2, 1) is StableGraphStratificationEnumerator(2, 1)
 
 
 def test_from_json_rejects_unsupported_schema():

@@ -1,41 +1,32 @@
-r"""Tier-4 internal consistency: user-facing public API surface."""
+r"""Tier-4: public API surface for geometric ontology + Γ."""
 
 from __future__ import annotations
 
-import pytest
-
-from dm_moduli_spike.objects.model import DMCompactificationModel
-from dm_moduli_spike import StableGraphCategory, StableGraphTypes
-
+import dm_moduli_spike as spike
+from dm_moduli_spike import M_gn, StableGraphCategory, spec
+from sage.rings.rational_field import QQ
 
 
-def test_gamma_is_public_entry_point():
+def test_public_all_includes_moduli_and_gamma():
+    for name in ["M_gn", "Mbar_gn", "StableGraphCategory", "ModuliStacks", "Stacks", "spec"]:
+        assert name in spike.__all__
+    for name in [
+        "DMCompactificationModel",
+        "ModuliFactor",
+        "DMStratum",
+        "StableGraphTypes",
+        "StableGraphStratification",
+        "StableGraphStratificationEnumerator",
+        "AutomorphismAction",
+    ]:
+        assert name not in spike.__all__
+
+
+def test_gamma_still_public():
     Gamma = StableGraphCategory(1, 1)
-    assert Gamma.genus() == 1
-    assert len(Gamma.objects()) == 2
     assert Gamma.specialization_poset().cardinality() == 2
 
 
-def test_legacy_model_still_importable():
-    model = DMCompactificationModel(2, 1)
-    assert model.genus() == 2
-    assert model.number_of_markings() == 1
-    assert model.dimension() == 4
-    assert model.is_stable_range()
-
-
-def test_direct_stable_graph_constructor_and_stratum():
-    model = DMCompactificationModel(0, 4)
-    types = model.graph_types()
-    gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
-    assert gamma.total_genus() == 0
-    assert gamma.num_edges() == 1
-    stratum = model.stratum(gamma)
-    assert stratum.codimension() == 1
-
-
-def test_stable_graph_types_parent_protocol():
-    types = StableGraphTypes(0, 4)
-    smooth = types.smooth()
-    assert smooth.num_edges() == 0
-    assert types(smooth) is smooth
+def test_m_gn_public():
+    XS = M_gn(0, 4, base=spec(QQ))
+    assert XS.dimension() == 1

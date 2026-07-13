@@ -1,5 +1,1 @@
-r"""Private forward landscape API (typed stubs). Not geometry; not in public ``__all__``."""
-
-from __future__ import annotations
-
-__all__: list[str] = []
+r"""Shim re-exports; prefer dm_moduli_spike.geometry/moduli/curves."""

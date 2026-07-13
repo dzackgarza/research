@@ -10,7 +10,6 @@ from __future__ import annotations
 from sage.structure.unique_representation import UniqueRepresentation
 
 from .graph_types import StableGraphType, StableGraphTypes
-from .strata import DMStratum
 from .stratification import DMStratification, build_stratification, build_stratification_from_types
 
 _BACKENDS = ("auto", "pure-sage", "admcycles-stable", "admcycles-decorated")
@@ -65,14 +64,14 @@ class StableGraphStratificationEnumerator(UniqueRepresentation):
     def graph_types(self) -> StableGraphTypes:
         return StableGraphTypes(self._g, self._n)
 
-    def stratum(self, curve_type: StableGraphType) -> DMStratum:
+    def validate_type(self, curve_type: StableGraphType) -> StableGraphType:
         if not isinstance(curve_type, StableGraphType):
             raise TypeError(f"expected a StableGraphType; found {type(curve_type)}")
         expected = self.graph_types()
         parent = curve_type.parent()
         if parent is not expected and parent != expected:
             raise ValueError(f"curve type belongs to {parent}, not to this model's {expected}")
-        return DMStratum(curve_type, self._g, self._n)
+        return curve_type
 
     def stratification(
         self,
@@ -119,10 +118,10 @@ class StableGraphStratificationEnumerator(UniqueRepresentation):
             assert _curve_type_keys(result) == _curve_type_keys(reference), f"backend {resolved!r} disagrees with reference {verify_resolved!r} on canonical-key set"
         return result
 
-    def strata(self, codim: int | None = None) -> tuple[DMStratum, ...]:
+    def strata(self, codim: int | None = None) -> tuple[StableGraphType, ...]:
         return self.stratification().strata(codim=codim)
 
-    def boundary_strata(self) -> tuple[DMStratum, ...]:
+    def boundary_strata(self) -> tuple[StableGraphType, ...]:
         return self.stratification().boundary_strata()
 
     def _repr_(self) -> str:
@@ -131,6 +130,3 @@ class StableGraphStratificationEnumerator(UniqueRepresentation):
     def __repr__(self) -> str:
         return self._repr_()
 
-
-# Legacy alias for oracle tests during migration.
-DMCompactificationModel = StableGraphStratificationEnumerator

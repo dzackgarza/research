@@ -30,7 +30,6 @@ from typing import TYPE_CHECKING
 from .contractions import StableGraphContraction, contract_edges
 from .graph_types import StableGraphType, StableGraphTypes
 from .isomorphisms import transport_contraction_via_canonical_relabeling
-from .strata import DMStratum
 
 if TYPE_CHECKING:
     from sage.combinat.posets.posets import FinitePoset
@@ -274,13 +273,10 @@ class DMStratification:
     def curve_type_levels(self) -> list[tuple[StableGraphType, ...]]:
         return [tuple(level.values()) for level in self._levels]
 
-    def _stratum(self, curve_type: StableGraphType) -> DMStratum:
-        return DMStratum(curve_type, self._g, self._n)
+    def strata_by_codimension(self) -> tuple[tuple[StableGraphType, ...], ...]:
+        return tuple(tuple(level.values()) for level in self._levels)
 
-    def strata_by_codimension(self) -> tuple[tuple[DMStratum, ...], ...]:
-        return tuple(tuple(self._stratum(gamma) for gamma in level.values()) for level in self._levels)
-
-    def rank_buckets(self) -> tuple[tuple[DMStratum, ...], ...]:
+    def rank_buckets(self) -> tuple[tuple[StableGraphType, ...], ...]:
         r"""Deprecated alias for :meth:`strata_by_codimension`."""
         return self.strata_by_codimension()
 
@@ -290,26 +286,26 @@ class DMStratification:
     def cardinality(self) -> int:
         return sum(len(level) for level in self._levels)
 
-    def strata(self, codim: int | None = None) -> tuple[DMStratum, ...]:
+    def strata(self, codim: int | None = None) -> tuple[StableGraphType, ...]:
         if codim is None:
-            return tuple(stratum for bucket in self.strata_by_codimension() for stratum in bucket)
+            return tuple(gamma for bucket in self.strata_by_codimension() for gamma in bucket)
         if codim < 0 or codim >= len(self._levels):
             return ()
-        return tuple(self._stratum(gamma) for gamma in self._levels[codim].values())
+        return tuple(self._levels[codim].values())
 
-    def boundary_strata(self) -> tuple[DMStratum, ...]:
+    def boundary_strata(self) -> tuple[StableGraphType, ...]:
         r"""Every stratum of positive codimension (the boundary
         :math:`\partial \overline{\mathcal M}_{g,n}`)."""
-        return tuple(stratum for codim in range(1, len(self._levels)) for stratum in self.strata(codim))
+        return tuple(gamma for codim in range(1, len(self._levels)) for gamma in self.strata(codim))
 
     # -- morphisms ---------------------------------------------------------------
 
-    def covers(self) -> tuple[tuple[DMStratum, DMStratum], ...]:
+    def covers(self) -> tuple[tuple[StableGraphType, StableGraphType], ...]:
         r"""Specialization covers ``(generic, special)``: each pair
         ``(Gamma, Delta)`` has ``Delta -> Gamma`` by contraction to a distinct
         target ``[\Gamma/e]`` (one-edge in full/truncated mode; possibly
         multi-edge in an induced subposet)."""
-        return tuple((self._stratum(gamma), self._stratum(delta)) for gamma, delta in self._covers)
+        return tuple(self._covers)
 
     def contraction_witnesses(self) -> tuple[StableGraphContraction, ...]:
         return self._contractions
@@ -321,7 +317,7 @@ class DMStratification:
         marking_blocks: Sequence[Sequence[int]],
         loops: Sequence[int] | None = None,
         edge_multiset: Sequence[tuple[int, int, int]] | None = None,
-    ) -> DMStratum:
+    ) -> StableGraphType:
         r"""Locate the unique stratum matching a vertex-indexed construction.
 
         The lookup is semantic: vertices are numbered ``0, ..., |V|-1`` in the
@@ -340,7 +336,7 @@ class DMStratification:
                 for _ in range(int(multiplicity)):
                     edges.append((int(u), int(v)))
         candidate = self._curve_types.from_vertices(genera=genera, markings=markings, edges=tuple(edges))
-        matches = [self._stratum(gamma) for level in self._levels for gamma in level.values() if gamma == candidate]
+        matches = [gamma for level in self._levels for gamma in level.values() if gamma == candidate]
         assert len(matches) == 1, f"expected exactly one stratum matching {genera}, markings={markings}, edges={edges}; found {len(matches)}"
         return matches[0]
 
@@ -387,12 +383,12 @@ class DMStratification:
     def _facade_poset(self) -> FinitePoset:
         from sage.combinat.posets.posets import Poset
 
-        strata = [self._stratum(gamma) for level in self._levels for gamma in level.values()]
-        cover_relations = [[self._stratum(gamma), self._stratum(delta)] for gamma, delta in self._covers]
+        strata = [gamma for level in self._levels for gamma in level.values()]
+        cover_relations = [[gamma, delta] for gamma, delta in self._covers]
         return Poset((strata, cover_relations), cover_relations=True, facade=True)
 
     def specialization_poset(self) -> FinitePoset:
-        r"""Generic below special; Sage ``FinitePoset`` of :class:`DMStratum`."""
+        r"""Generic below special; Sage ``FinitePoset`` of :class:`StableGraphType`."""
         return self._facade_poset()
 
     def closure_poset(self) -> FinitePoset:

@@ -14,7 +14,7 @@ from collections import Counter
 
 from sage.all import posets
 
-from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
 from dm_moduli_spike.objects.edge_orbits import contraction_target_multiset
 from tests.support.fixtures import CHAN_M20_COVERS, m11_types, m12_types, m20_types
@@ -30,22 +30,22 @@ def test_M11_is_two_element_chain():
 
 def test_M11_unique_cover_is_loop_contraction():
     r"""Markwig Ex. 2.2 / Fig. 2: the unique cover contracts the loop edge."""
-    stratification = DMCompactificationModel(1, 1).stratification()
+    stratification = StableGraphStratificationEnumerator(1, 1).stratification()
     poset = stratification.specialization_poset()
     smooth, nodal = m11_types(stratification)
 
     assert poset.cover_relations() == [[smooth, nodal]]
 
-    nodal_graph = nodal.curve_type().canonical_representative()
+    nodal_graph = nodal.canonical_representative()
     contractions = list(nodal_graph.internal_edges())
     assert len(contractions) == 1
     _, contraction = nodal_graph.contract(contractions[0])
-    assert contraction.target_type() == smooth.curve_type()
+    assert contraction.target_type() == smooth
 
 
 def test_M12_exact_semantic_cover_relations():
     r"""Markwig Ex. 2.2 / Fig. 2: primary evidence is the exact cover set for `\overline{\mathcal M}_{1,2}`."""
-    stratification = DMCompactificationModel(1, 2).stratification()
+    stratification = StableGraphStratificationEnumerator(1, 2).stratification()
     poset = stratification.specialization_poset()
     types = m12_types(stratification)
 
@@ -62,7 +62,7 @@ def test_M12_exact_semantic_cover_relations():
 
 def test_M20_exact_cover_relations_from_chan_figure():
     r"""Chan Fig. 3: primary evidence is the exact cover set for `\overline{\mathcal M}_{2,0}`."""
-    stratification = DMCompactificationModel(2, 0).stratification()
+    stratification = StableGraphStratificationEnumerator(2, 0).stratification()
     types = m20_types(stratification)
 
     expected_covers = {
@@ -91,31 +91,31 @@ def test_M20_young_diagram_poset_checksum():
 
 def test_M12_parallel_edges_give_two_contraction_witnesses():
     r"""Markwig Ex. 2.2 / Fig. 2: type E parallel edges contribute orbit multiplicity two."""
-    stratification = DMCompactificationModel(1, 2).stratification()
+    stratification = StableGraphStratificationEnumerator(1, 2).stratification()
     types = m12_types(stratification)
 
     multiplicities = Counter(
-        target.canonical_key() for target, _size in contraction_target_multiset(types["E"].curve_type())
+        target.canonical_key() for target, _size in contraction_target_multiset(types["E"])
     )
-    assert multiplicities == Counter({types["B"].curve_type().canonical_key(): 1})
+    assert multiplicities == Counter({types["B"].canonical_key(): 1})
 
 
 def test_M20_contraction_multiplicities():
     r"""Chan Fig. 3: orbit multiplicities for types I–III contraction targets."""
-    stratification = DMCompactificationModel(2, 0).stratification()
+    stratification = StableGraphStratificationEnumerator(2, 0).stratification()
     types = m20_types(stratification)
 
     assert Counter(
-        target.canonical_key() for target, _size in contraction_target_multiset(types["I"].curve_type())
-    ) == Counter({types["III"].curve_type().canonical_key(): 1})
+        target.canonical_key() for target, _size in contraction_target_multiset(types["I"])
+    ) == Counter({types["III"].canonical_key(): 1})
     assert Counter(
-        target.canonical_key() for target, _size in contraction_target_multiset(types["II"].curve_type())
+        target.canonical_key() for target, _size in contraction_target_multiset(types["II"])
     ) == Counter(
         {
-            types["III"].curve_type().canonical_key(): 1,
-            types["IV"].curve_type().canonical_key(): 1,
+            types["III"].canonical_key(): 1,
+            types["IV"].canonical_key(): 1,
         }
     )
     assert Counter(
-        target.canonical_key() for target, _size in contraction_target_multiset(types["III"].curve_type())
-    ) == Counter({types["V"].curve_type().canonical_key(): 1})
+        target.canonical_key() for target, _size in contraction_target_multiset(types["III"])
+    ) == Counter({types["V"].canonical_key(): 1})

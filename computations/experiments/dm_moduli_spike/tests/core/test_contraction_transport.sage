@@ -3,7 +3,8 @@ r"""Tier-4 internal consistency: transport of contractions along isomorphisms.""
 
 from __future__ import annotations
 
-from dm_moduli_spike import StableGraph, StableGraphTypes
+from dm_moduli_spike.objects.graph_types import StableGraphTypes
+from dm_moduli_spike.objects.records import StableGraph
 from dm_moduli_spike.objects.contractions import contract_edge
 from dm_moduli_spike.objects.isomorphisms import (
     identity_isomorphism,

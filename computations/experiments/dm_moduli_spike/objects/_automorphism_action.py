@@ -16,7 +16,7 @@ def _is_identity_permutation(image: tuple[int, ...]) -> bool:
     return all(image[index] == index for index in range(len(image)))
 
 
-class AutomorphismAction:
+class _GraphAutomorphismData:
     r"""The action of :math:`\operatorname{Aut}(\Gamma)` on vertices, flags, edges,
     and moduli-factor indices of a stable graph."""
 
@@ -66,7 +66,7 @@ class AutomorphismAction:
         return self._vertex_perms
 
     @staticmethod
-    def from_graph(graph: StableGraph) -> AutomorphismAction:
+    def from_graph(graph: StableGraph) -> _GraphAutomorphismData:
         incidence, partition, color_of = _incidence_graph(graph)
         group = incidence.automorphism_group(partition=partition)
         vertex_nodes = sorted(
@@ -116,7 +116,7 @@ class AutomorphismAction:
                 marking_image[label - 1] = image_node[1]
             marking_perms.append(tuple(marking_image))
 
-        return AutomorphismAction(
+        return _GraphAutomorphismData(
             group,
             tuple(vertex_perms),
             tuple(flag_perms),

@@ -2,7 +2,7 @@ r"""Tier-4 internal consistency: cover deduplication and exhaustive-cap normaliz
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
 from dm_moduli_spike.objects.stratification import build_stratification_from_types
@@ -33,7 +33,7 @@ def test_stratification_has_one_witness_per_cover():
 
 def test_max_codim_at_least_dimension_is_exhaustive():
     for g, n in [(0, 4), (1, 2), (2, 0)]:
-        model = DMCompactificationModel(g, n)
+        model = StableGraphStratificationEnumerator(g, n)
         dimension = model.dimension()
         full = model.stratification()
         capped = model.stratification(max_codim=dimension)

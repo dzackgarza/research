@@ -317,10 +317,10 @@ class StableGraphCategory(UniqueRepresentation):
 
     def automorphism_group(self, graph: StableGraph | StableGraphType, on: str = "vertices") -> object:
         r"""Sage permutation group of `\operatorname{Aut}(G)` acting on the requested set."""
-        from ._automorphism_action import AutomorphismAction
+        from ._automorphism_action import _GraphAutomorphismData
 
         graph = self._canonical(graph)
-        action = AutomorphismAction.from_graph(graph)
+        action = _GraphAutomorphismData.from_graph(graph)
         if on == "vertices":
             return _permutation_group_from_images(action.on_vertices(), graph.num_vertices())
         if on in ("half_edges", "flags"):
@@ -474,9 +474,9 @@ class StableGraphCategory(UniqueRepresentation):
         return tuple(morphisms)
 
     def _isomorphism_endomorphisms(self, graph: StableGraph) -> tuple[StableGraphMorphism, ...]:
-        from ._automorphism_action import AutomorphismAction
+        from ._automorphism_action import _GraphAutomorphismData
 
-        action = AutomorphismAction.from_graph(graph)
+        action = _GraphAutomorphismData.from_graph(graph)
         morphisms = [self.identity(graph)]
         # Build group elements from generator permutations on flags/vertices via Sage group
         group = action.group()
@@ -532,5 +532,3 @@ def _permutation_group_from_images(images: tuple[tuple[int, ...], ...], degree: 
 # Public alias matching mathematical notation.
 Gamma_gn = StableGraphCategory
 
-# Backward-compatible name used while demoting DMCompactificationModel.
-StableGraphStratification = StableGraphCategory

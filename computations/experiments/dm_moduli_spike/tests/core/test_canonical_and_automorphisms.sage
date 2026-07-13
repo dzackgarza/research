@@ -2,8 +2,8 @@ r"""Tier-4 internal consistency: canonical labelling and automorphism numbers.""
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.model import DMCompactificationModel
-from dm_moduli_spike import StableGraphTypes
+from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
+from dm_moduli_spike.objects.graph_types import StableGraphTypes
 from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
 
 
@@ -15,7 +15,7 @@ def test_loop_has_a_branch_swap_automorphism():
 
 def test_automorphism_numbers_agree_with_admcycles():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        model = DMCompactificationModel(g, n)
+        model = StableGraphStratificationEnumerator(g, n)
         types = model.graph_types()
         backend = AdmcyclesStableGraphBackend()
         for level in model.stratification().curve_type_levels():

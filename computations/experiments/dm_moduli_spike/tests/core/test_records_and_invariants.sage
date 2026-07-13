@@ -2,10 +2,11 @@ r"""Tier-4 internal consistency: half-edge record validation and numerical invar
 
 from __future__ import annotations
 
+from dm_moduli_spike.objects.graph_types import StableGraphTypes
+from dm_moduli_spike.objects.records import StableGraph
 import pytest
 
-from dm_moduli_spike.objects.model import DMCompactificationModel
-from dm_moduli_spike import StableGraphTypes, StableGraph
+from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
 
 def test_record_rejects_a_non_involution():
@@ -62,7 +63,7 @@ def test_smooth_type_is_edge_free_and_carries_all_markings():
 
 def test_dimension_computed_two_independent_ways():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        model = DMCompactificationModel(g, n)
+        model = StableGraphStratificationEnumerator(g, n)
         for level in model.stratification().curve_type_levels():
             for gamma in level:
                 by_vertices = gamma.stratum_dimension()

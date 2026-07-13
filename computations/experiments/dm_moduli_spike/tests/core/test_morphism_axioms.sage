@@ -2,7 +2,8 @@ r"""Tier-4 internal consistency: executable graph isomorphism and contraction ax
 
 from __future__ import annotations
 
-from dm_moduli_spike import StableGraph, StableGraphTypes
+from dm_moduli_spike.objects.graph_types import StableGraphTypes
+from dm_moduli_spike.objects.records import StableGraph
 from dm_moduli_spike.objects.contractions import contract_edge, contract_edges
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
 from dm_moduli_spike.objects.isomorphisms import StableGraphIsomorphism, canonicalize, identity_isomorphism

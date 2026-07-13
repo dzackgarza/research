@@ -6,7 +6,7 @@ from collections import Counter
 
 from admcycles.decorated_graph import DecoratedGraph
 
-from dm_moduli_spike import StableGraphTypes
+from dm_moduli_spike.objects.graph_types import StableGraphTypes
 from dm_moduli_spike.backends.admcycles_decorated import (
     _record_from_decorated_graph,
     _record_to_decorated_graph,

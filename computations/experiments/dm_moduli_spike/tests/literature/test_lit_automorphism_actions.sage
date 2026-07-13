@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
 from tests.support.fixtures import (
     flag_generator_images,
@@ -28,9 +28,9 @@ def test_M12_banana_vs_loop_bridge_aut_edge_and_flag_actions():
     parallel edges.  The loop+bridge type has the same full automorphism order but
     the induced action on edge indices is trivial; only the loop half-edges are swapped.
     """
-    stratification = DMCompactificationModel(1, 2).stratification()
-    banana = m12_types(stratification)["E"].curve_type().canonical_representative()
-    loop_bridge = m12_types(stratification)["B"].curve_type().canonical_representative()
+    stratification = StableGraphStratificationEnumerator(1, 2).stratification()
+    banana = m12_types(stratification)["E"].canonical_representative()
+    loop_bridge = m12_types(stratification)["B"].canonical_representative()
 
     assert banana.automorphism_group(on="vertices").order() == 2 or banana.automorphism_group(on="edges").order() == 2
     banana_edge_group = induced_edge_permutation_group(banana)
@@ -53,8 +53,8 @@ def test_M12_banana_vs_loop_bridge_aut_edge_and_flag_actions():
 
 def test_M12_banana_has_C2_edge_transposition():
     r"""Markwig Ex. 2.2 / Fig. 2: type E banana has `C_2` edge transposition."""
-    stratification = DMCompactificationModel(1, 2).stratification()
-    banana = m12_types(stratification)["E"].curve_type().canonical_representative()
+    stratification = StableGraphStratificationEnumerator(1, 2).stratification()
+    banana = m12_types(stratification)["E"].canonical_representative()
     group = induced_edge_permutation_group(banana)
     assert group.order() == 2
     assert group.is_transitive()
@@ -63,8 +63,8 @@ def test_M12_banana_has_C2_edge_transposition():
 
 def test_M12_loop_bridge_has_trivial_induced_edge_action():
     r"""Markwig Ex. 2.2 / Fig. 2: type B loop+bridge has trivial induced `E(\Gamma)` action."""
-    stratification = DMCompactificationModel(1, 2).stratification()
-    loop_bridge = m12_types(stratification)["B"].curve_type().canonical_representative()
+    stratification = StableGraphStratificationEnumerator(1, 2).stratification()
+    loop_bridge = m12_types(stratification)["B"].canonical_representative()
     group = induced_edge_permutation_group(loop_bridge)
     assert group.order() == 1
     loop_flags = [
@@ -79,16 +79,16 @@ def test_M12_loop_bridge_has_trivial_induced_edge_action():
 
 def test_genus_two_theta_has_S3_edge_action():
     r"""Markwig Ex. 2.7 / Fig. 5: type I theta graph has `S_3` edge action."""
-    stratification = DMCompactificationModel(2, 0).stratification()
-    theta = m20_types(stratification)["I"].curve_type().canonical_representative()
+    stratification = StableGraphStratificationEnumerator(2, 0).stratification()
+    theta = m20_types(stratification)["I"].canonical_representative()
     group = induced_edge_permutation_group(theta)
     assert group.order() == 6
 
 
 def test_genus_two_dumbbell_has_order_two_edge_action_exchanging_loops():
     r"""Markwig Ex. 2.7 / Fig. 5: type II dumbbell exchanges the two loop edges."""
-    stratification = DMCompactificationModel(2, 0).stratification()
-    dumbbell = m20_types(stratification)["II"].curve_type().canonical_representative()
+    stratification = StableGraphStratificationEnumerator(2, 0).stratification()
+    dumbbell = m20_types(stratification)["II"].canonical_representative()
     group = induced_edge_permutation_group(dumbbell)
     assert group.order() == 2
     loop_edges = [
@@ -111,7 +111,7 @@ def test_native_gamma_edge_aut_matches_literature_orders_M12_banana():
     r"""Native ``PermutationGroup`` on edges has Markwig order 2 for the banana."""
     from dm_moduli_spike import StableGraphCategory
 
-    stratification = DMCompactificationModel(1, 2).stratification()
-    banana = m12_types(stratification)["E"].curve_type().canonical_representative()
+    stratification = StableGraphStratificationEnumerator(1, 2).stratification()
+    banana = m12_types(stratification)["E"].canonical_representative()
     native = StableGraphCategory(1, 2).automorphism_group(banana, on="edges")
     assert native.order() == induced_edge_permutation_group(banana).order() == 2

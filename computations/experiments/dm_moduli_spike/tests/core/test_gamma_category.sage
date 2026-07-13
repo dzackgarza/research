@@ -6,7 +6,7 @@ import pytest
 from sage.combinat.posets.posets import FinitePoset
 
 from dm_moduli_spike import StableGraphCategory
-from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 from tests.support.poset_oracle import expected_M0n_specialization_poset
 
 
@@ -27,7 +27,7 @@ def test_gamma_specialization_poset_matches_enumerator_M11():
     Gamma = StableGraphCategory(1, 1)
     P = Gamma.specialization_poset()
     assert isinstance(P, FinitePoset)
-    legacy = DMCompactificationModel(1, 1).stratification().specialization_poset()
+    legacy = StableGraphStratificationEnumerator(1, 1).stratification().specialization_poset()
     assert P.cardinality() == legacy.cardinality()
     assert P.is_isomorphic(legacy)
 
@@ -113,7 +113,7 @@ def test_native_automorphism_group_api_M12_banana():
     from tests.support.fixtures import m12_types
 
     Gamma = StableGraphCategory(1, 2)
-    banana = m12_types(DMCompactificationModel(1, 2).stratification())["E"].curve_type().canonical_representative()
+    banana = m12_types(StableGraphStratificationEnumerator(1, 2).stratification())["E"].canonical_representative()
     edge_aut = banana.automorphism_group(on="edges")
     assert edge_aut.order() == 2
     flag_aut = Gamma.automorphism_group(banana, on="half_edges")
@@ -125,7 +125,7 @@ def test_thinification_matches_legacy_enumerator_small():
     for g, n in [(1, 1), (1, 2), (2, 0), (0, 4)]:
         Gamma = StableGraphCategory(g, n)
         P = Gamma.specialization_poset()
-        legacy = DMCompactificationModel(g, n).stratification(backend="pure-sage").specialization_poset()
+        legacy = StableGraphStratificationEnumerator(g, n).stratification(backend="pure-sage").specialization_poset()
         assert P.cardinality() == legacy.cardinality()
         assert P.is_isomorphic(legacy)
 

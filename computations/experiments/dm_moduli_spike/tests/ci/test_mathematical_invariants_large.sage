@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
 from dm_moduli_spike.objects.stratification import build_stratification_from_types
 
@@ -12,13 +12,13 @@ pytestmark = pytest.mark.ci
 
 
 def test_external_backend_completeness_requires_full_rank_span():
-    curve_types = DMCompactificationModel(2, 1).graph_types()
+    curve_types = StableGraphStratificationEnumerator(2, 1).graph_types()
     partial = build_stratification_from_types(curve_types, (curve_types.smooth(),))
     assert not partial.is_complete()
     assert not partial.has_full_rank_support()
     assert partial.rank_sizes() == (1,)
 
-    full = DMCompactificationModel(2, 1).stratification(backend="admcycles-stable")
+    full = StableGraphStratificationEnumerator(2, 1).stratification(backend="admcycles-stable")
     truncated_types = tuple(gamma for level in full.curve_type_levels()[:2] for gamma in level)
     truncated = build_stratification_from_types(curve_types, truncated_types)
     assert not truncated.is_complete()
@@ -27,7 +27,7 @@ def test_external_backend_completeness_requires_full_rank_span():
 
 
 def test_rank_support_without_exhaustiveness():
-    model = DMCompactificationModel(2, 1)
+    model = StableGraphStratificationEnumerator(2, 1)
     full = model.stratification()
     all_types = [gamma for level in full.curve_type_levels() for gamma in level]
     removed = next(gamma for level in full.curve_type_levels() if len(level) > 1 for gamma in level)
@@ -38,14 +38,14 @@ def test_rank_support_without_exhaustiveness():
 
 
 def test_complete_stratifications_span_all_ranks_M21():
-    model = DMCompactificationModel(2, 1)
+    model = StableGraphStratificationEnumerator(2, 1)
     stratification = model.stratification()
     assert stratification.is_complete()
     assert len(stratification.rank_sizes()) == model.dimension() + 1
 
 
 def test_truncated_enumeration_is_complete_through_cap():
-    model = DMCompactificationModel(2, 1)
+    model = StableGraphStratificationEnumerator(2, 1)
     truncated = model.stratification(max_codim=2)
     assert not truncated.is_exhaustive()
     assert truncated.is_codimension_truncation()
@@ -55,7 +55,7 @@ def test_truncated_enumeration_is_complete_through_cap():
 
 @pytest.mark.parametrize("g,n", [(0, 5), (2, 1)])
 def test_dimension_computed_two_independent_ways_large(g, n):
-    model = DMCompactificationModel(g, n)
+    model = StableGraphStratificationEnumerator(g, n)
     for level in model.stratification().curve_type_levels():
         for gamma in level:
             by_vertices = gamma.stratum_dimension()

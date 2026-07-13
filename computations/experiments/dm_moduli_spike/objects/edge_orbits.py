@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ._automorphism_action import AutomorphismAction
 from .records import StableGraph
 
 if TYPE_CHECKING:
@@ -12,26 +11,19 @@ if TYPE_CHECKING:
     from .graph_types import StableGraphType
 
 
-def _is_identity_permutation(image: tuple[int, ...]) -> bool:
-    return all(image[index] == index for index in range(len(image)))
-
-
-def _edge_orbit_groups(action: AutomorphismAction, num_edges: int) -> tuple[tuple[int, ...], ...]:
-    r"""Partition ``0, ..., num_edges - 1`` into orbits under ``Aut(\Gamma)``."""
+def automorphism_edge_orbit_indices(record: StableGraph) -> tuple[tuple[int, ...], ...]:
+    r"""Edge-index orbits aligned with :meth:`StableGraph.internal_edges`."""
+    num_edges = record.num_edges()
     if num_edges == 0:
         return ()
-    if int(action.group().order()) == 1:
+    group = record.automorphism_group(on="edges")
+    if int(group.order()) == 1:
         return tuple((index,) for index in range(num_edges))
-    from sage.combinat.permutation import Permutation
-    from sage.groups.perm_gps.permgroup import PermutationGroup
-
-    generators = [Permutation([value + 1 for value in image]) for image in action.on_edges() if not _is_identity_permutation(image)]
-    if not generators:
-        return tuple((index,) for index in range(num_edges))
-    group = PermutationGroup(generators)
     orbits = group.orbits()
     edge_orbits = tuple(
-        tuple(sorted(int(index) - 1 for index in orbit if 1 <= int(index) <= num_edges)) for orbit in orbits if any(1 <= int(index) <= num_edges for index in orbit)
+        tuple(sorted(int(index) - 1 for index in orbit if 1 <= int(index) <= num_edges))
+        for orbit in orbits
+        if any(1 <= int(index) <= num_edges for index in orbit)
     )
     covered = {index for orbit in edge_orbits for index in orbit}
     singletons = tuple((index,) for index in range(num_edges) if index not in covered)
@@ -43,18 +35,8 @@ def automorphism_edge_orbits(record: StableGraph) -> tuple[tuple[tuple[int, int]
     edges = record.internal_edges()
     if not edges:
         return ()
-    action = AutomorphismAction.from_graph(record)
-    groups = _edge_orbit_groups(action, len(edges))
+    groups = automorphism_edge_orbit_indices(record)
     return tuple(tuple(edges[index] for index in group) for group in groups)
-
-
-def automorphism_edge_orbit_indices(record: StableGraph) -> tuple[tuple[int, ...], ...]:
-    r"""Edge-index orbits aligned with :meth:`StableGraph.internal_edges`."""
-    edges = record.internal_edges()
-    if not edges:
-        return ()
-    action = AutomorphismAction.from_graph(record)
-    return _edge_orbit_groups(action, len(edges))
 
 
 def edges_are_in_same_orbit(record: StableGraph, edge_a: tuple[int, int], edge_b: tuple[int, int]) -> bool:

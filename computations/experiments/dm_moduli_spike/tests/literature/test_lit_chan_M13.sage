@@ -8,45 +8,47 @@ r"""Tier-1 literature oracle: Chan's explicit `\overline{\mathcal M}_{1,3}` exam
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.model import DMCompactificationModel
-from dm_moduli_spike.objects.strata import ModuliFactor
-from dm_moduli_spike import StableGraphTypes
+from sage.rings.integer_ring import ZZ
+
+from dm_moduli_spike import Mbar_gn, ProductStack, QuotientStack, spec
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
-from tests.support.fixtures import chan_m13_curve_type, edge_generator_images, flag_generator_images, induced_edge_permutation_group, marking_generator_images
+from dm_moduli_spike.objects.graph_types import StableGraphTypes
+from tests.support.fixtures import (
+    chan_m13_curve_type,
+    induced_edge_permutation_group,
+    marking_generator_images,
+)
 
 
 def test_chan_M13_open_stack_is_quotient_M04_over_C2():
-    r"""Chan Example 4.3: open stack `[M_{0,4}/C_2]` with clutching factors `(0,3)+(0,4)`.
-
-    The clutching source records `M_{0,4} \times M_{0,3}`; on the banana vertex
-    the four half-edges (two markings plus two edge branches) index `M_{0,4}`,
-    and `C_2` exchanges the parallel edge branches while fixing the markings.
-    """
+    r"""Chan Example 4.3: open stratum is a ``QuotientStack`` with factors `(0,3)+(0,4)`."""
     types = StableGraphTypes(1, 3)
     gamma = chan_m13_curve_type(types)
-    stratum = DMCompactificationModel(1, 3).stratum(gamma)
-    presentation = stratum.open_stack_presentation()
-    assert presentation.group_order() == 2
-    assert presentation.dimension() == 1
-    assert sorted((factor.genus(), factor.number_of_markings()) for factor in presentation.product()) == [(0, 3), (0, 4)]
-    assert sorted((factor.genus(), factor.number_of_markings()) for factor in stratum.clutching_morphism().source_factors()) == [(0, 3), (0, 4)]
-    banana_factor = next(factor for factor in presentation.product() if factor.number_of_markings() == 4)
-    assert banana_factor == ModuliFactor(0, 4, flags=banana_factor.flags())
-    edge_action = edge_generator_images(presentation.curve_type().canonical_representative())
-    assert any(image[0] != 0 or image[1] != 1 for image in edge_action)
+    graph = gamma.canonical_representative()
+    XSbar = Mbar_gn(1, 3, base=spec(ZZ))
+    Sigma = XSbar.stratification()
+    S = Sigma.stratum(graph)
+    underlying = S.underlying_stack()
+    assert isinstance(underlying, QuotientStack)
+    assert int(underlying.group().order()) == 2
+    assert isinstance(S.clutching_morphism().domain(), ProductStack)
+    factors = S.clutching_morphism().domain().factors()
+    assert sorted((f.genus(), f.number_of_markings()) for f in factors) == [(0, 3), (0, 4)]
+    group = induced_edge_permutation_group(graph)
+    assert group.order() == 2
 
 
 def test_chan_M13_clutching_factors():
-    r"""Chan Example 4.3: clutching source factors `M_{0,3}` and `M_{0,4}`."""
+    r"""Chan Example 4.3: clutching source is ``ProductStack`` of `Mbar_{0,3}` and `Mbar_{0,4}`."""
     types = StableGraphTypes(1, 3)
     gamma = chan_m13_curve_type(types)
-    stratum = DMCompactificationModel(1, 3).stratum(gamma)
-    factors = stratum.clutching_morphism().source_factors()
-    assert len(factors) == 2
-    assert sorted((factor.genus(), factor.number_of_markings()) for factor in factors) == [(0, 3), (0, 4)]
-    presentation = stratum.open_stack_presentation()
-    assert presentation.group_order() == 2
-    assert presentation.dimension() == 1
+    graph = gamma.canonical_representative()
+    XSbar = Mbar_gn(1, 3, base=spec(ZZ))
+    S = XSbar.stratification().stratum(graph)
+    xi = S.clutching_morphism()
+    assert xi in xi.parent()
+    assert xi.codomain() is XSbar
+    assert sorted((f.genus(), f.number_of_markings()) for f in xi.domain().factors()) == [(0, 3), (0, 4)]
 
 
 def test_chan_M13_edge_automorphism_and_contraction_targets():
@@ -68,14 +70,13 @@ def test_chan_M13_edge_automorphism_and_contraction_targets():
 
 
 def test_chan_M13_markings_fixed_and_quotient_presentation():
-    r"""Chan Example 4.3: markings fixed under `C_2`; quotient presentation dimension one."""
+    r"""Chan Example 4.3: markings fixed under `C_2`; quotient Aut order two."""
     types = StableGraphTypes(1, 3)
     gamma = chan_m13_curve_type(types)
     graph = gamma.canonical_representative()
     for marking_perm in marking_generator_images(graph):
         assert marking_perm == (1, 2, 3)
-    stratum = DMCompactificationModel(1, 3).stratum(gamma)
-    presentation = stratum.open_stack_presentation()
-    assert presentation.group_order() == 2
-    assert sorted((factor.genus(), factor.number_of_markings()) for factor in presentation.product()) == [(0, 3), (0, 4)]
-    assert presentation.dimension() == 1
+    XSbar = Mbar_gn(1, 3, base=spec(ZZ))
+    S = XSbar.stratification().stratum(graph)
+    assert isinstance(S.underlying_stack(), QuotientStack)
+    assert int(S.underlying_stack().group().order()) == 2

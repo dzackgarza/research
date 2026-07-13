@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
 
 RANK_VECTORS = [
@@ -23,7 +23,7 @@ RANK_VECTORS = [
 @pytest.mark.parametrize("gn,expected", RANK_VECTORS)
 def test_rank_vectors_match_fixtures(gn, expected):
     g, n = gn
-    model = DMCompactificationModel(g, n)
+    model = StableGraphStratificationEnumerator(g, n)
     stratification = model.stratification()
     assert stratification.rank_sizes() == expected
     assert stratification.cardinality() == sum(expected)
@@ -33,17 +33,17 @@ def test_rank_vectors_match_fixtures(gn, expected):
 
 
 def test_bucketing_is_by_num_edges_not_generation_provenance():
-    model = DMCompactificationModel(1, 2)
+    model = StableGraphStratificationEnumerator(1, 2)
     stratification = model.stratification()
     for codim, bucket in enumerate(stratification.strata_by_codimension()):
         for stratum in bucket:
-            assert stratum.curve_type().num_edges() == codim
+            assert stratum.num_edges() == codim
             assert stratum.codimension() == codim
 
 
 def test_admcycles_stable_backend_matches_pure_sage_canonical_keys():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        model = DMCompactificationModel(g, n)
+        model = StableGraphStratificationEnumerator(g, n)
         pure = model.stratification(backend="pure-sage")
         adm = model.stratification(backend="admcycles-stable")
         pure_keys = {
@@ -61,7 +61,7 @@ def test_admcycles_stable_backend_matches_pure_sage_canonical_keys():
 
 
 def test_truncated_stratification_is_marked_incomplete():
-    model = DMCompactificationModel(1, 2)
+    model = StableGraphStratificationEnumerator(1, 2)
     truncated = model.stratification(max_codim=1)
     assert not truncated.is_complete()
     assert truncated.maximum_codim() == 1
@@ -72,7 +72,7 @@ def test_truncated_stratification_is_marked_incomplete():
 def test_empty_external_enumeration_is_not_marked_complete():
     from dm_moduli_spike.objects.stratification import build_stratification_from_types
 
-    curve_types = DMCompactificationModel(2, 1).graph_types()
+    curve_types = StableGraphStratificationEnumerator(2, 1).graph_types()
     incomplete = build_stratification_from_types(curve_types, ())
     assert not incomplete.is_complete()
     assert incomplete.rank_sizes() == (1,)

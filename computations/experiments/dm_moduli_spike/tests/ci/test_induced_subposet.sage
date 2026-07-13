@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
 from dm_moduli_spike.objects.stratification import build_stratification_from_types
 
@@ -12,7 +12,7 @@ pytestmark = pytest.mark.ci
 
 
 def test_intermediate_deletion_adds_direct_cover():
-    model = DMCompactificationModel(2, 1)
+    model = StableGraphStratificationEnumerator(2, 1)
     full = model.stratification()
     smooth = model.graph_types().smooth()
     codim_two = full.curve_type_levels()[2][0]
@@ -24,15 +24,15 @@ def test_intermediate_deletion_adds_direct_cover():
     assert subset.is_induced_subposet()
     assert len(subset.covers()) == 1
     generic, special = subset.covers()[0]
-    assert generic.curve_type() == smooth
-    assert special.curve_type() == codim_two
+    assert generic == smooth
+    assert special == codim_two
     poset = subset.specialization_poset()
     assert poset.is_lequal(generic, special)
     assert poset.cover_relations() == [[generic, special]]
 
 
 def test_induced_subposet_rank_differs_from_ambient_codimension():
-    model = DMCompactificationModel(2, 1)
+    model = StableGraphStratificationEnumerator(2, 1)
     full = model.stratification()
     smooth = model.graph_types().smooth()
     codim_two = full.curve_type_levels()[2][0]
@@ -43,14 +43,14 @@ def test_induced_subposet_rank_differs_from_ambient_codimension():
     )
     poset = subset.specialization_poset()
     _, special = subset.covers()[0]
-    assert special.curve_type().codimension() == 2
+    assert special.codimension() == 2
     assert poset.rank(special) == 1
     witness = subset.contraction_witnesses()[0]
     assert witness.num_contracted_edges() == 2
 
 
 def test_adjacent_rank_mode_skips_nonconsecutive_covers():
-    model = DMCompactificationModel(2, 1)
+    model = StableGraphStratificationEnumerator(2, 1)
     full = model.stratification()
     smooth = model.graph_types().smooth()
     codim_two = full.curve_type_levels()[2][0]
