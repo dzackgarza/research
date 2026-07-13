@@ -130,7 +130,8 @@ Defined in `algebra/domain_algebra.py`, re-exported by `lexicon/__init__.py`. Th
 
 Objects: `Lattice`, `NondegenerateLattice`, `IntegralNondegenerateLattice`, `DefiniteLattice`, `PositiveDefiniteLattice`, `IndefiniteLattice`, `HyperbolicLattice`, `RootGeneratedLattice`, `LatticeElement`.
 
-Morphisms and homs: `LatticeMorphism`, `LatticeHomset`, `LatticeSimilarity`, `Subobject` (the pair `(L, ι: L ↪ M)` — runtime authority `morphisms/homsets.py`, referenced by the contracts here), `IsometryHomset` (`Isom(L, M)` as a first-class parent: existence/classification questions are homset questions; `is_isometric` is its emptiness router), `EmbeddingHomset` (`Emb(L, M)` likewise — the home of the Nikulin-class machinery).
+Morphisms and homs: `LatticeMorphism`, `LatticeHomset`, `LatticeSimilarity`, `LatticeBaseChangeFunctor`, `Subobject` (the pair `(L, ι: L ↪ M)` — runtime authority `morphisms/homsets.py`, referenced by the contracts here), `IsometryHomset` (`Isom(L, M)` as a first-class parent: existence/classification questions are homset questions; `is_isometric` is its emptiness router), `EmbeddingHomset` (`Emb(L, M)` likewise — the home of the Nikulin-class machinery).
+`LatticeBaseChangeFunctor` is the scalar-extension functor `Lattices(R) → Lattices(S)` induced by a canonical map `R → S`; it rebuilds each object through the target category root and acts on lattice morphisms through target homsets.
 Morphism-sited geometry (ratified method placement, #100): `restrict`, `preserves`, `saturation`, `saturation_factorization`, `orthogonal_complement`, `induced_map_on_quotient` are typed on `LatticeMorphism` — object spellings survive only as delegations through a canonical attached morphism (`identity_morphism`). `LatticeSimilarity` (name ratified 2026-07-08) is a *similitude*: a map with `b(f x, f y) = λ·b(x, y)` for a fixed multiplier λ (O'Meara, Introduction to Quadratic Forms, §42; λ = 1 recovers isometry; distinct from a homothety `x ↦ λx`, which multiplies the form by λ²). Its role here is mostly a convenient generalization for discussing symmetric and skew-symmetric forms at once.
 
 Isometry: `IsometryGroup`, `IsometrySubgroup`, `DiscriminantOrthogonalGroup`, `DiscriminantAction`.
@@ -169,7 +170,9 @@ Dev-facing; never in researcher-facing signatures unless the sentence is genuine
 | `SageQuadraticForm` | owned lattices carry the form intrinsically | `sage.quadratic_forms.quadratic_form.QuadraticForm` |
 | `SageFreeModule` | semantic `FreeModule`; dev union over whatever module implementation a Sage seam hands back | `FreeModule_generic \| FGP_Module_class` (extend on first use) |
 | `SageParent` / `SageElement` | owned parents/elements subclass these | `sage.structure.parent.Parent`, `sage.structure.element.Element` |
-| `SageCategory` | owned category classes subclass these | `sage.categories.category_types.Category_over_base_ring` |
+| `SageCategory` | category argument or implementation class | `sage.categories.category.Category` |
+| `SageFunctor` | external category functor base class | `sage.categories.functor.Functor` |
+| `SageMorphism` | external morphism base class | `sage.categories.morphism.Morphism` |
 | `SageCartanMatrix` | `foundations.CartanType` (the datum) vs Sage's matrix object | `sage.combinat.root_system.cartan_matrix.CartanMatrix_crystallographic` |
 | `SageQmodnZ` | `ValueModule` protocol in `domain_algebra` (kept: it types this external object structurally by ratified design) | `sage.groups.additive_abelian.qmodnz.QmodnZ` |
 | `SageInfinity` | — (return type of `minimum`/`maximum` on rank-0/indefinite regimes) | `sage.rings.infinity.PlusInfinity` / `MinusInfinity` |

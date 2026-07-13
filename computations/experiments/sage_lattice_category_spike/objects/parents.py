@@ -2,23 +2,21 @@ r"""Synthetic lattice parents.
 
 A synthetic lattice is a *based* free module over ``R in {ZZ, QQ}`` together with
 a symmetric Gram matrix ``G`` in its own intrinsic basis.  Its identity is the
-pair ``(base_ring, G)`` -- there is no ambient vector space, no "coordinate
-frame", no ``basis_matrix``.  Elements are coefficient columns in ``R^rank`` and
+pair ``(base_ring, G)``; elements are coefficient columns in ``R^rank`` and
 ``b(v, w) = v^T G w``.
 
 A *subobject* relationship (sublattice, span, saturation, ...) is an injective
-hom ``A`` into a parent lattice ``L0``: the child is ``(R, A^T G0 A)`` and ``A``
-records the child's basis in ``L0``'s intrinsic coordinates.  That inclusion is
-carried on the child (``_ambient`` = the parent, ``_inclusion`` = ``A``) so the
-subobject algebra (intersection, index, orthogonal complement, ...) can compute
-in the parent's own coefficient module.  It is *not* part of the child's
-identity: equality is by ``(base_ring, G)`` alone.
+hom ``f: A -> L0``.  It is represented by the separate pair ``(A, f)``: ``A`` is
+the plain lattice ``(R, A^T G0 A)``, while ``f`` records its presentation in
+``L0``'s intrinsic coordinates.  Equality of subobjects includes ``f``; a plain
+lattice is never identified with a subobject.
 """
 
 from __future__ import annotations
 
+import warnings
 from collections.abc import Callable, Iterator, Sequence
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, cast
 
 if TYPE_CHECKING:
     from ..lexicon.geometry import Polyhedron
@@ -61,6 +59,7 @@ from ..lexicon import (
     RawMorphismMatrix,
     RawVectors,
     RootGeneratedLattice,
+    SageCategory,
     SageInfinity,
     SignaturePair,
     SourcedDiscriminantForm,
@@ -123,11 +122,11 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         gram_matrix: RawGramMatrix,
         base_ring: BaseRing,
         label: str,
-        cartan_type: CartanType | str | None = None,
+        cartan_type: CartanType | Literal["composite"] | None = None,
         names: Sequence[str] | str | None = None,
     ) -> None:
         # A lattice IS the pair (base_ring, Gram) -- nothing else. It never
-        # stores an ambient; a subobject is a lattice together with its
+        # stores a parent relationship; a subobject is a lattice together with its
         # inclusion morphism (the Subobject value), not a lattice that remembers
         # a parent. The one Gram codec asserts square + symmetric and
         # immutabilizes; construction is the only producer.
@@ -165,10 +164,22 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         return self.element_class(self, coordinates)
 
     def __eq__(self, other: Any) -> bool:
+        from ..morphisms.homsets import Subobject
+
+        if isinstance(other, Subobject):
+            warnings.warn(
+                "a plain lattice and a subobject are categorically distinct; compare a subobject through its inclusion",
+                UserWarning,
+                stacklevel=2,
+            )
+            return False
         return isinstance(other, SyntheticLattice) and self.base_ring() == other.base_ring() and self.gram_matrix() == other.gram_matrix()
 
     def __hash__(self) -> int:
         return hash((self.base_ring(), self.gram_matrix()))
+
+    def _coerce_map_from_(self, other: Any) -> bool:
+        return isinstance(other, SyntheticLattice) and self == other
 
     # -- the one private presentation crossing ------------------------------------
     #
@@ -182,7 +193,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         relating it to ``self``; that relationship is an inclusion morphism."""
         rows = matrix(QQ, basis_rows)
         assert rows.ncols() == self.rank(), f"basis rows must be given in this lattice's coordinates; rank={self.rank()}, rows={rows}"
-        return synthetic_lattice(rows * self.gram_matrix() * rows.transpose(), base_ring, label)
+        return cast(SyntheticLattice, Lattices(base_ring).from_gram_matrix(rows * self.gram_matrix() * rows.transpose(), label=label))
 
     # -- Port: intrinsic invariants read straight off (base_ring, G) --------------
 
@@ -273,19 +284,10 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         return self.b(element, element)
 
     def rationalization(self) -> SyntheticLattice:
-        return synthetic_lattice(
-            self.gram_matrix(),
-            QQ,
-            f"{self._label}_QQ",
-        )
+        return cast(SyntheticLattice, Lattices(self.base_ring()).base_change(QQ)(self))
 
     def base_extend(self, base_ring: BaseRing) -> SyntheticLattice:
-        assert base_ring in (ZZ, QQ), f"lattice base ring must be ZZ or QQ; found={base_ring}"
-        return synthetic_lattice(
-            self.gram_matrix(),
-            base_ring,
-            f"{self._label}_over_{base_ring}",
-        )
+        return cast(SyntheticLattice, Lattices(self.base_ring()).base_change(base_ring)(self))
 
     def determinant(self) -> ExactScalar:
         return self.gram_matrix().determinant()
@@ -361,7 +363,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         gram = self.gram_matrix()
         if radical_rank == rank:
             # Fully degenerate: rad(L) = L, so L/rad(L) is the rank-0 lattice.
-            zero_quotient = synthetic_lattice(matrix(QQ, 0, 0), self.base_ring(), label)
+            zero_quotient = Lattices(self.base_ring()).from_gram_matrix(matrix(QQ, 0, 0), label=label)
             assert isinstance(zero_quotient, SyntheticNondegenerateLattice), f"the rank-0 lattice is (vacuously) nondegenerate; dispatch returned {type(zero_quotient)}"
             return zero_quotient
         radical_columns = matrix(QQ, radical_inclusion.matrix()).columns()
@@ -373,7 +375,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
             quotient = module.quotient(radical_module)
             complement = matrix(ZZ, [gen.lift() for gen in quotient.gens()])
         quotient_gram = complement * gram * complement.transpose()
-        quotient_lattice = synthetic_lattice(quotient_gram, self.base_ring(), label)
+        quotient_lattice = Lattices(self.base_ring()).from_gram_matrix(quotient_gram, label=label)
         assert isinstance(quotient_lattice, SyntheticNondegenerateLattice), f"radical quotient must be nondegenerate; gram={quotient_lattice.gram_matrix()}"
         return quotient_lattice
 
@@ -432,7 +434,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         rows = matrix(QQ, rows)
         assert rows.ncols() == self.rank(), f"subobject basis rows must be in this lattice's coordinates; rank={self.rank()}, rows={rows}"
         gram = rows * self.gram_matrix() * rows.transpose()
-        sublattice = synthetic_lattice(gram, self.base_ring(), label)
+        sublattice = Lattices(self.base_ring()).from_gram_matrix(gram, label=label)
         return Subobject(sublattice.embedding(rows.transpose(), codomain=self))
 
     def lattice_in_rationalization(
@@ -500,7 +502,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         basis_rows = matrix(QQ, module.basis_matrix())
         assert basis_rows.nrows() == self.rank(), f"an overlattice spans the same rational space; rank={self.rank()}, basis={basis_rows}"
         gram = basis_rows * self.gram_matrix() * basis_rows.transpose()
-        overlattice = synthetic_lattice(gram, self.base_ring(), label)
+        overlattice = Lattices(self.base_ring()).from_gram_matrix(gram, label=label)
         assert not check_integral or overlattice.is_integral(), f"overlattice is not integral; gram={overlattice.gram_matrix()}"
         return self.embedding(basis_rows.inverse().transpose(), codomain=overlattice)
 
@@ -569,17 +571,19 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
 
     def _direct_sum_pair(self, other: Lattice, label: str) -> SyntheticLattice:
         base_ring = QQ if QQ in (self.base_ring(), other.base_ring()) else ZZ
-        cartan_type: str | None = None
+        cartan_type: Literal["composite"] | None = None
         if isinstance(self, _RootGeneratedProvenance) and isinstance(other, _RootGeneratedProvenance):
             # direct sums of root-generated lattices keep the provenance axiom;
             # the composite has no single Cartan type (irreducible_root_components
             # is the composite vocabulary)
             cartan_type = "composite"
-        return synthetic_lattice(
-            block_diagonal_matrix(self.gram_matrix(), other.gram_matrix()),
-            base_ring,
-            label,
-            cartan_type=cartan_type,
+        return cast(
+            SyntheticLattice,
+            Lattices(base_ring).from_gram_matrix(
+                block_diagonal_matrix(self.gram_matrix(), other.gram_matrix()),
+                label=label,
+                cartan_type=cartan_type,
+            ),
         )
 
     def __add__(self, other: Lattice) -> SyntheticLattice:
@@ -607,10 +611,12 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
 
     def tensor_product(self, other: Lattice, label: str = "tensor_product") -> SyntheticLattice:
         base_ring = QQ if QQ in (self.base_ring(), other.base_ring()) else ZZ
-        return synthetic_lattice(
-            self.gram_matrix().tensor_product(other.gram_matrix()),
-            base_ring,
-            label,
+        return cast(
+            SyntheticLattice,
+            Lattices(base_ring).from_gram_matrix(
+                self.gram_matrix().tensor_product(other.gram_matrix()),
+                label=label,
+            ),
         )
 
     def is_primitive(self, subobject: Subobject) -> bool:
@@ -642,7 +648,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
 
     def scale(self, scalar: ExactScalar | int, label: str = "scale") -> SyntheticLattice:
         scalar = QQ(scalar)
-        return synthetic_lattice(scalar**2 * self.gram_matrix(), self.base_ring(), label)
+        return cast(SyntheticLattice, Lattices(self.base_ring()).from_gram_matrix(scalar**2 * self.gram_matrix(), label=label))
 
     def twist(self, scalar: ExactScalar | int, label: str = "twist") -> SyntheticLattice:
         r"""The lattice with Gram scaled by ``scalar``. On a subobject the ambient
@@ -652,17 +658,28 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         result is no longer generated by its roots)."""
         scalar = QQ(scalar)
         keeps_provenance = scalar == -1 and isinstance(self, _RootGeneratedProvenance)
-        return synthetic_lattice(
-            scalar * self.gram_matrix(),
-            self.base_ring(),
-            label,
-            cartan_type=self._cartan_type if keeps_provenance else None,
+        return cast(
+            SyntheticLattice,
+            Lattices(self.base_ring()).from_gram_matrix(
+                scalar * self.gram_matrix(),
+                label=label,
+                cartan_type=self._cartan_type if keeps_provenance else None,
+            ),
         )
 
-    def Hom(self, codomain: Lattice) -> LatticeHomset:
-        from ..morphisms.homsets import LatticeHomset
+    def Hom(
+        self,
+        codomain: Lattice,
+        category: SageCategory | None = None,
+    ) -> LatticeHomset:
+        return cast(LatticeHomset, Lattices(self.base_ring()).Hom(self, codomain, category=category))
 
-        return LatticeHomset(self, codomain)
+    def _Hom_(
+        self,
+        codomain: Lattice,
+        category: SageCategory | None = None,
+    ) -> LatticeHomset:
+        return cast(LatticeHomset, Lattices(self.base_ring()).homset_from_sage(self, codomain, category))
 
     def Isom(self, codomain: Lattice) -> IsometryHomset:
         r"""``Isom(L, M)`` as a first-class parent (ratified method
@@ -685,11 +702,8 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         matrix_data: RawMorphismMatrix,
         codomain: Lattice | None = None,
     ) -> LatticeMorphism:
-        from ..morphisms.homsets import LatticeHomset as SyntheticLatticeHomset
-        from ..morphisms.homsets import LatticeMorphism as SyntheticLatticeMorphism
-
         codomain = self if codomain is None else codomain
-        return SyntheticLatticeMorphism(SyntheticLatticeHomset(self, codomain), matrix_data)
+        return Lattices(self.base_ring()).morphism(self, matrix_data, codomain=codomain)
 
     def embedding(
         self,
@@ -711,9 +725,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         codomain: Lattice,
         scalar: ExactScalar,
     ) -> LatticeSimilarity:
-        from ..morphisms.homsets import LatticeSimilarity
-
-        return LatticeSimilarity(self, codomain, matrix_data, scalar)
+        return Lattices(self.base_ring()).similarity(self, matrix_data, codomain, scalar)
 
     # Restriction to a sublattice is composition with the carried inclusion --
     # ``morphism * subobject.inclusion()`` -- and needs no method of its own;
@@ -751,7 +763,7 @@ class SyntheticNondegenerateLattice(NondegenerateLattice, SyntheticLattice):
         """
         if self.base_ring() is QQ:
             return self
-        dual_lattice = synthetic_lattice(self.gram_matrix().inverse(), ZZ, f"{self._label}#")
+        dual_lattice = Lattices(ZZ).from_gram_matrix(self.gram_matrix().inverse(), label=f"{self._label}#")
         assert isinstance(dual_lattice, SyntheticNondegenerateLattice), (
             f"the dual of a nondegenerate lattice is nondegenerate (Gram G^-1 is invertible); dispatch returned {type(dual_lattice)}"
         )
@@ -1250,9 +1262,9 @@ class _RootGeneratedProvenance(_RootGeneratedSelf):
         roots = matrix(QQ, [ambient_space.simple_root(i).to_vector() for i in ambient_space.index_set()])
         sign = -1 if self.is_negative_definite() else 1
         label = f"I_{{{0 if sign < 0 else dimension},{dimension if sign < 0 else 0}}}"
-        ambient: SyntheticLattice = synthetic_lattice(sign * identity_matrix(QQ, dimension), ZZ, label)
+        ambient = Lattices(ZZ).from_gram_matrix(sign * identity_matrix(QQ, dimension), label=label)
         if any(entry not in ZZ for entry in roots.list()):
-            ambient = ambient.rationalization()
+            return self.base_extend(QQ).embedding(roots.transpose(), codomain=ambient.base_extend(QQ))
         return self.embedding(roots.transpose(), codomain=ambient)
 
 
@@ -1269,11 +1281,11 @@ class SyntheticRootGeneratedNondegenerateLattice(_RootGeneratedProvenance, Synth
     r"""Root-generated lattices of mixed signature (composite direct sums)."""
 
 
-def synthetic_lattice(
+def construct_synthetic_lattice(
     gram_matrix: RawGramMatrix,
     base_ring: BaseRing,
     label: str,
-    cartan_type: CartanType | str | None = None,
+    cartan_type: CartanType | Literal["composite"] | None = None,
     names: Sequence[str] | str | None = None,
 ) -> SyntheticLattice:
     r"""Private subcategory dispatch: one classification (mirroring ``category_for``),

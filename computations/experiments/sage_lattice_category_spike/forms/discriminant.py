@@ -592,16 +592,16 @@ class SyntheticGenus(Genus, Parent):
     def representative(self) -> Any:
         r"""A lattice in this genus: Sage's genus machinery returns an integer
         Gram matrix, converted into an owned synthetic lattice."""
-        from ..objects.parents import synthetic_lattice
+        from ..objects.categories import Lattices
 
-        return synthetic_lattice(self._sage_engine().representative(), ZZ, "genus_representative")
+        return Lattices(ZZ).from_gram_matrix(self._sage_engine().representative(), label="genus_representative")
 
     def representatives(self) -> tuple[Any, ...]:
         r"""One lattice per isometry class in this genus, from Sage's genus
         enumeration (computed exactly where Sage's engines compute it)."""
-        from ..objects.parents import synthetic_lattice
+        from ..objects.categories import Lattices
 
-        return tuple(synthetic_lattice(gram, ZZ, f"genus_class_{index}") for index, gram in enumerate(self._sage_engine().representatives()))
+        return tuple(Lattices(ZZ).from_gram_matrix(gram, label=f"genus_class_{index}") for index, gram in enumerate(self._sage_engine().representatives()))
 
     def class_number(self) -> Any:
         r"""``h(genus)`` = the number of isometry classes, counted from the

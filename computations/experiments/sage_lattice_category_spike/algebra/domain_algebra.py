@@ -83,7 +83,7 @@ if TYPE_CHECKING:
         SymbolicExpression,
     )
     from ..lexicon.geometry import Polyhedron
-    from ..lexicon.interop import SageInfinity, SageLocalGenusSymbol
+    from ..lexicon.interop import SageCategory, SageInfinity, SageLocalGenusSymbol
     from ..morphisms.homsets import Subobject
 else:
     from sage.misc.abstract_method import abstract_method
@@ -116,6 +116,7 @@ __all__ = [
     "LatticeMorphism",
     "LatticeHomset",
     "LatticeSimilarity",
+    "LatticeBaseChangeFunctor",
     # groups
     "IsometryGroup",
     "IsometrySubgroup",
@@ -306,6 +307,11 @@ class Lattice:
     def ngens(self) -> int: ...
 
     if TYPE_CHECKING:
+        # Sage's Parent supplies the category accessor at runtime.  Keep the
+        # declaration here type-only so the category framework remains the
+        # implementation authority.
+        def category(self) -> SageCategory: ...
+
         # Generator symbols (the ordered symbol set S with L = R[S]).
         # Declaration only: at runtime Sage's CategoryObject provides this,
         # and a def here would shadow it in the synthetic parents' MRO
@@ -456,7 +462,7 @@ class Lattice:
 
     # morphisms
     @abstract_method
-    def Hom(self, codomain: Lattice) -> LatticeHomset: ...
+    def Hom(self, codomain: Lattice, category: SageCategory | None = None) -> LatticeHomset: ...
 
     @abstract_method
     def Isom(self, codomain: Lattice) -> IsometryHomset:
@@ -811,6 +817,12 @@ class LatticeSimilarity:
 
 
 class LatticeHomset:
+    if TYPE_CHECKING:
+        # A Sage homset is callable through Parent's element constructor.  The
+        # concrete homset supplies that runtime method; this declaration keeps
+        # the mathematical return type at the lexicon boundary.
+        def __call__(self, matrix_data: RawMorphismMatrix) -> LatticeMorphism: ...
+
     @abstract_method
     def domain(self) -> Lattice: ...
 
@@ -821,6 +833,16 @@ class LatticeHomset:
     # constructors on lattices (hom/embedding/reflection/similarity) or by
     # constructing the homset's element class, whose constructor asserts
     # well-definedness (#70; from_matrix demoted per #100 T4).
+
+
+class LatticeBaseChangeFunctor:
+    r"""The canonical scalar-extension functor between two lattice roots."""
+
+    @abstract_method
+    def source_base_ring(self) -> BaseRing: ...
+
+    @abstract_method
+    def target_base_ring(self) -> BaseRing: ...
 
 
 class IsometryHomset:

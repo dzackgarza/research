@@ -2,8 +2,10 @@ r"""Homsets and morphisms for synthetic lattices."""
 
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
+from sage.categories.homset import Homset
 from sage.matrix.constructor import column_matrix, matrix
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
@@ -12,7 +14,7 @@ from sage.structure.element import Element
 from sage.structure.parent import Parent
 
 from .. import lexicon
-from ..lexicon import Lattice, LatticeElement
+from ..lexicon import Lattice, LatticeElement, SageMorphism
 from ..objects.parents import SyntheticLattice
 from ..sage_patches import multiplicative_order
 
@@ -38,6 +40,20 @@ class Subobject:
         return f"Subobject {self.lattice()!r} of {self.ambient()!r}"
 
     __repr__ = _repr_
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Subobject):
+            return self.inclusion() == other.inclusion()
+        if isinstance(other, SyntheticLattice):
+            warnings.warn(
+                "a subobject and a plain lattice are categorically distinct; compare a subobject through its inclusion",
+                UserWarning,
+                stacklevel=2,
+            )
+        return False
+
+    def __hash__(self) -> int:
+        return hash(self.inclusion())
 
     def lattice(self) -> Any:
         return self._inclusion.domain()
@@ -177,30 +193,42 @@ class SyntheticLatticeCokernel(lexicon.LatticeCokernel):
         return tuple(self._quotient.invariants())
 
 
-class LatticeHomset(lexicon.LatticeHomset, Parent):
+class LatticeHomset(lexicon.LatticeHomset, Homset):
     r"""Homset of form-preserving synthetic lattice morphisms."""
 
     # Sage's parent convention: the homset's element class (assigned after
     # LatticeMorphism is defined below).
     Element: ClassVar[type]
 
-    def __init__(self, domain: Lattice | SyntheticLattice, codomain: Lattice | SyntheticLattice) -> None:
+    def __init__(
+        self,
+        domain: Lattice | SyntheticLattice,
+        codomain: Lattice | SyntheticLattice,
+        category: lexicon.SageCategory | None = None,
+    ) -> None:
         assert isinstance(domain, SyntheticLattice), f"expected SyntheticLattice domain; found={type(domain)}"
         assert isinstance(codomain, SyntheticLattice), f"expected SyntheticLattice codomain; found={type(codomain)}"
-        self._domain = domain
-        self._codomain = codomain
         from ..objects.categories import Lattices
 
-        Parent.__init__(self, category=Lattices(domain.base_ring()).Homsets())
+        hom_category = Lattices(domain.base_ring()) if category is None else category
+        assert domain.base_ring() == codomain.base_ring(), f"a lattice homset has one scalar ring; domain={domain.base_ring()}, codomain={codomain.base_ring()}"
+        assert hom_category.is_subcategory(Lattices(domain.base_ring())), f"lattice homset category must refine Lattices({domain.base_ring()}); category={hom_category}"
+        assert domain in hom_category and codomain in hom_category, (
+            f"lattice homset arguments must belong to {hom_category}; domain={domain.category()}, codomain={codomain.category()}"
+        )
+        Homset.__init__(self, domain, codomain, category=hom_category)
 
     def _repr_(self) -> str:
         return f"Synthetic lattice homset from {self.domain()} to {self.codomain()}"
 
     def domain(self) -> SyntheticLattice:
-        return self._domain
+        return cast(SyntheticLattice, self._domain)
 
     def codomain(self) -> SyntheticLattice:
-        return self._codomain
+        return cast(SyntheticLattice, self._codomain)
+
+    def _element_constructor_(self, matrix_data: Any) -> LatticeMorphism:
+        return LatticeMorphism(self, matrix_data)
 
     # There is no from_matrix: morphisms are built by the public named
     # constructors on lattices (hom/embedding/reflection/similarity) or by
@@ -208,7 +236,7 @@ class LatticeHomset(lexicon.LatticeHomset, Parent):
     # asserts well-definedness (#70).
 
 
-class LatticeMorphism(lexicon.LatticeMorphism, Element):
+class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
     r"""Form-preserving morphism of synthetic lattices."""
 
     if TYPE_CHECKING:
@@ -216,7 +244,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         def parent(self) -> LatticeHomset: ...
 
     def __init__(self, parent: LatticeHomset, matrix_data: Any) -> None:
-        Element.__init__(self, parent)
+        SageMorphism.__init__(self, parent)
         domain = parent.domain()
         codomain = parent.codomain()
         matrix_data = matrix(codomain.base_ring(), matrix_data)
@@ -390,7 +418,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         assert other.codomain() == self.domain(), (
             f"morphisms compose only when the inner codomain matches the outer domain; inner_codomain={other.codomain()}, outer_domain={self.domain()}"
         )
-        return LatticeMorphism(other.domain().Hom(self.codomain()), self.matrix() * other.matrix())
+        return other.domain().hom(self.matrix() * other.matrix(), codomain=self.codomain())
 
     def __pow__(self, n: int) -> Any:
         assert self.domain() == self.codomain(), f"powers need an endomorphism; domain={self.domain()}, codomain={self.codomain()}"
@@ -398,11 +426,11 @@ class LatticeMorphism(lexicon.LatticeMorphism, Element):
         if n < 0:
             return self.inverse() ** (-n)
         power = self.matrix() ** n if n > 0 else self.matrix().parent().identity_matrix()
-        return LatticeMorphism(self.parent(), power)
+        return self.parent()(power)
 
     def inverse(self) -> Any:
         assert self.is_isometry(), f"only isometries are invertible in the lattice category; matrix={self.matrix()}"
-        return LatticeMorphism(self.codomain().Hom(self.domain()), self.matrix().inverse())
+        return self.codomain().hom(self.matrix().inverse(), codomain=self.domain())
 
     def is_identity(self) -> bool:
         return bool(self.domain() == self.codomain() and self.matrix().is_one())
@@ -446,7 +474,10 @@ class LatticeSimilarity(lexicon.LatticeSimilarity, Element):
         matrix_data: Any,
         scalar: Any,
     ) -> None:
-        Element.__init__(self, LatticeHomset(domain, codomain))
+        assert domain.base_ring() == codomain.base_ring(), f"a lattice similarity needs one scalar ring; domain={domain.base_ring()}, codomain={codomain.base_ring()}"
+        homset = domain.Hom(codomain)
+        assert isinstance(homset, LatticeHomset), f"a lattice similarity must belong to a lattice homset; found={type(homset)}"
+        Element.__init__(self, homset)
         matrix_data = matrix(codomain.base_ring(), matrix_data)
         scalar = QQ(scalar)
         assert matrix_data.nrows() == codomain.rank(), f"similarity matrix rows must equal codomain rank; rows={matrix_data.nrows()}, codomain_rank={codomain.rank()}"

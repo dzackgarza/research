@@ -72,8 +72,11 @@ def test_e8_bourbaki_embedding_realizes_the_half_integral_roots():
     square -2."""
     E8 = lc.Lattice("E8")
     emb = E8.bourbaki_embedding()
+    assert emb.domain() == E8.base_extend(QQ)
+    assert emb.domain().base_ring() is QQ
+    assert emb.codomain().base_ring() is QQ
     assert emb.codomain().rank() == 8
-    assert all(emb(E8.gen(i)).q() == -2 for i in range(8))
+    assert all(emb(emb.domain().gen(i)).q() == -2 for i in range(8))
 
 
 def test_is_root_is_reflection_integrality_not_norm_pm2():
