@@ -1,11 +1,69 @@
+from collections.abc import Iterator, Sequence
 from functools import reduce
+from typing import TYPE_CHECKING, Protocol, Self
 
-from sage.all import CoxeterType, IntegralLattice, ZZ, matrix, zero_matrix
-from sage.graphs.graph import Graph
+from sage.all import ZZ, matrix, zero_matrix
+from sage.rings.integer import Integer
+
+
+type _SageIndex = int | Integer
+type _IntegerPair = tuple[_SageIndex, _SageIndex]
+
+
+class _StringPieces(Protocol):
+    def __iter__(self) -> Iterator[str]: ...
+
+
+class _CoxeterGraph(Protocol):
+    def add_edge(self, u: _SageIndex, v: _SageIndex, label: _SageIndex | str) -> None: ...
+    def allow_loops(self, enabled: bool) -> None: ...
+    def vertices(self, sort: bool = True) -> list[_SageIndex]: ...
+    def edges(
+        self, sort: bool = True, labels: bool = True
+    ) -> list[tuple[_SageIndex, _SageIndex, _SageIndex | str]]: ...
+    def relabel(self, permutation: list[_SageIndex], inplace: bool) -> Self: ...
+    def num_verts(self) -> int: ...
+    def get_subgraphs(self) -> list[Self]: ...
+
+
+class _Matrix(Protocol):
+    def ncols(self) -> int: ...
+    def __getitem__(self, key: tuple[_SageIndex, _SageIndex]) -> _SageIndex: ...
+    def __setitem__(
+        self, key: tuple[_SageIndex, _SageIndex], value: _SageIndex | str
+    ) -> None: ...
+    def __rmul__(self, scalar: int) -> Self: ...
+    def __mul__(self, scalar: int) -> Self: ...
+    def is_positive_definite(self) -> bool: ...
+    def is_positive_semidefinite(self) -> bool: ...
+    def is_similar(self, other: _Matrix) -> bool: ...
+
+
+if TYPE_CHECKING:
+    def Graph(loops: bool = False) -> _CoxeterGraph: ...
+else:
+    from sage.graphs.graph import Graph
+
+
+class _IntegralLatticeWithGram(Protocol):
+    def gram_matrix(self) -> _Matrix: ...
+    def twist(self, scalar: _SageIndex) -> Self: ...
+
+
+class _CoxeterTypeWithBilinearForm(Protocol):
+    def bilinear_form(self) -> _Matrix: ...
+
+
+if TYPE_CHECKING:
+    def IntegralLattice(data: str) -> _IntegralLatticeWithGram: ...
+
+    def CoxeterType(data: list[str | int]) -> _CoxeterTypeWithBilinearForm: ...
+else:
+    from sage.all import CoxeterType, IntegralLattice
 
 # --- Extracted functions from Isometry Searching.ipynb ---
 
-def matrix_to_graph(M):
+def matrix_to_graph(M: _Matrix) -> _CoxeterGraph:
     """
     Convert a Sage matrix to a Sage Graph with loops.
 
@@ -25,7 +83,7 @@ def matrix_to_graph(M):
                 G.add_edge(i, j, str(M[i, j]) )
     return G
 
-def graph_to_matrix(G):
+def graph_to_matrix(G: _CoxeterGraph) -> _Matrix:
     """
     Convert a Sage Graph to a Sage matrix (ZZ entries).
 
@@ -40,7 +98,7 @@ def graph_to_matrix(G):
     """
     verts = G.vertices()
     n = len(verts)
-    M = zero_matrix(ZZ, n)
+    M: _Matrix = zero_matrix(ZZ, n)
     Gp = G.relabel(list(range(n)), inplace=False)
     for e in Gp.edges():
         M[ e[0], e[1] ] = e[2]
@@ -49,7 +107,7 @@ def graph_to_matrix(G):
 
 # --- Add all other function and class definitions from the notebook below, with docstrings and examples where possible ---
 
-def graph_A_n(n):
+def graph_A_n(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type A_n as a Sage Graph.
     
@@ -68,7 +126,7 @@ def graph_A_n(n):
         G.add_edge(i, i+1, 1)
     return G
 
-def matrix_A_n(n):
+def matrix_A_n(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the Dynkin diagram of type A_n.
     
@@ -82,7 +140,7 @@ def matrix_A_n(n):
     """
     return graph_to_matrix(graph_A_n(n))
 
-def graph_A_n_2(n):
+def graph_A_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type A_n as a Sage Graph.
     EXAMPLES::
@@ -99,7 +157,7 @@ def graph_A_n_2(n):
         G.add_edge(i, i+1, 2)
     return G
 
-def matrix_A_n_2(n):
+def matrix_A_n_2(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the doubled Dynkin diagram of type A_n.
     EXAMPLES::
@@ -112,7 +170,7 @@ def matrix_A_n_2(n):
     """
     return graph_to_matrix(graph_A_n_2(n))
 
-def graph_B_n(n):
+def graph_B_n(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type B_n as a Sage Graph.
     EXAMPLES::
@@ -123,15 +181,15 @@ def graph_B_n(n):
     """
     m = n-1
     G = Graph(loops=True)
-    for i in [0..m]:
+    for i in range(m + 1):
         G.add_edge(i, i, -4)
     G.add_edge(m, m, -2)
-    for i in [0..m-1]:
+    for i in range(m):
         G.add_edge(i, i+1, 2)
     G.add_edge(m-1, m, 2)
     return G
 
-def matrix_B_n(n):
+def matrix_B_n(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the Dynkin diagram of type B_n.
     EXAMPLES::
@@ -144,7 +202,7 @@ def matrix_B_n(n):
     """
     return graph_to_matrix(graph_B_n(n))
 
-def graph_B_n_2(n):
+def graph_B_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type B_n as a Sage Graph.
     EXAMPLES::
@@ -155,15 +213,15 @@ def graph_B_n_2(n):
     """
     m = n-1
     G = Graph(loops=True)
-    for i in [0..m]:
+    for i in range(m + 1):
         G.add_edge(i, i, -8)
     G.add_edge(m, m, -4)
-    for i in [0..m-1]:
+    for i in range(m):
         G.add_edge(i, i+1, 4)
     G.add_edge(m-1, m, 4)
     return G
 
-def matrix_B_n_2(n):
+def matrix_B_n_2(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the doubled Dynkin diagram of type B_n.
     EXAMPLES::
@@ -176,7 +234,7 @@ def matrix_B_n_2(n):
     """
     return graph_to_matrix(graph_B_n_2(n))
 
-def graph_C_n(n):
+def graph_C_n(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type C_n as a Sage Graph.
     EXAMPLES::
@@ -187,15 +245,15 @@ def graph_C_n(n):
     """
     m = n-1
     G = Graph(loops=True)
-    for i in [0..m]:
+    for i in range(m + 1):
         G.add_edge(i, i, -2)
     G.add_edge(m, m, -4)
-    for i in [0..m-1]:
+    for i in range(m):
         G.add_edge(i, i+1, 1)
     G.add_edge(m-1, m, 2)
     return G
 
-def graph_C_n_2(n):
+def graph_C_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type C_n as a Sage Graph.
     EXAMPLES::
@@ -206,15 +264,15 @@ def graph_C_n_2(n):
     """
     m = n-1
     G = Graph(loops=True)
-    for i in [0..m]:
+    for i in range(m + 1):
         G.add_edge(i, i, -4)
     G.add_edge(m, m, -8)
-    for i in [0..m-1]:
+    for i in range(m):
         G.add_edge(i, i+1, 4)
     G.add_edge(m-1, m, 4)
     return G
 
-def matrix_C_n_2(n):
+def matrix_C_n_2(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the doubled Dynkin diagram of type C_n.
     EXAMPLES::
@@ -227,7 +285,7 @@ def matrix_C_n_2(n):
     """
     return graph_to_matrix(graph_C_n_2(n))
 
-def graph_D_2():
+def graph_D_2() -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type D_2 as a Sage Graph.
     EXAMPLES::
@@ -241,7 +299,7 @@ def graph_D_2():
     G.add_edge(1, 1, -2)
     return G
 
-def graph_D_n(n):
+def graph_D_n(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type D_n as a Sage Graph.
     EXAMPLES::
@@ -254,15 +312,15 @@ def graph_D_n(n):
     if n == 3: return graph_A_n(2)
     m = n-1
     G = Graph(loops=True)
-    for i in [0..m]:
+    for i in range(m + 1):
         G.add_edge(i, i, -2)
     G.add_edge(0, 2, 1)
     G.add_edge(1, 2, 1)
-    for i in [2..m-1]:
+    for i in range(2, m):
         G.add_edge(i, i+1, 1)
     return G
 
-def matrix_D_n(n):
+def matrix_D_n(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the Dynkin diagram of type D_n.
     EXAMPLES::
@@ -276,7 +334,7 @@ def matrix_D_n(n):
     """
     return graph_to_matrix(graph_D_n(n))
 
-def graph_D_n_2(n):
+def graph_D_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type D_n as a Sage Graph.
     EXAMPLES::
@@ -287,15 +345,15 @@ def graph_D_n_2(n):
     """
     m = n-1
     G = Graph(loops=True)
-    for i in [0..m]:
+    for i in range(m + 1):
         G.add_edge(i, i, -4)
     G.add_edge(0, 2, 2)
     G.add_edge(1, 2, 2)
-    for i in [2..m-1]:
+    for i in range(2, m):
         G.add_edge(i, i+1, 2)
     return G
 
-def matrix_D_n_2(n):
+def matrix_D_n_2(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the doubled Dynkin diagram of type D_n.
     EXAMPLES::
@@ -309,7 +367,7 @@ def matrix_D_n_2(n):
     """
     return graph_to_matrix(graph_D_n_2(n))
 
-def graph_E_6():
+def graph_E_6() -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type E_6 as a Sage Graph.
     EXAMPLES::
@@ -320,7 +378,7 @@ def graph_E_6():
     """
     return matrix_to_graph(matrix_E_6())
 
-def matrix_E_6():
+def matrix_E_6() -> _Matrix:
     """
     Return the Gram matrix for the Dynkin diagram of type E_6.
     EXAMPLES::
@@ -331,7 +389,7 @@ def matrix_E_6():
     """
     return IntegralLattice("E6").twist(-1).gram_matrix()
 
-def graph_E_6_2():
+def graph_E_6_2() -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type E_6 as a Sage Graph.
     EXAMPLES::
@@ -342,7 +400,7 @@ def graph_E_6_2():
     """
     return matrix_to_graph(matrix_E_6_2())
 
-def matrix_E_6_2():
+def matrix_E_6_2() -> _Matrix:
     """
     Return the Gram matrix for the doubled Dynkin diagram of type E_6.
     EXAMPLES::
@@ -353,7 +411,7 @@ def matrix_E_6_2():
     """
     return IntegralLattice("E6").twist(-2).gram_matrix()
 
-def graph_E_7():
+def graph_E_7() -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type E_7 as a Sage Graph.
     EXAMPLES::
@@ -364,7 +422,7 @@ def graph_E_7():
     """
     return matrix_to_graph(matrix_E_7())
 
-def matrix_E_7():
+def matrix_E_7() -> _Matrix:
     """
     Return the Gram matrix for the Dynkin diagram of type E_7.
     EXAMPLES::
@@ -375,7 +433,7 @@ def matrix_E_7():
     """
     return IntegralLattice("E7").twist(-1).gram_matrix()
 
-def graph_E_7_2():
+def graph_E_7_2() -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type E_7 as a Sage Graph.
     EXAMPLES::
@@ -386,7 +444,7 @@ def graph_E_7_2():
     """
     return matrix_to_graph(matrix_E_7_2())
 
-def matrix_E_7_2():
+def matrix_E_7_2() -> _Matrix:
     """
     Return the Gram matrix for the doubled Dynkin diagram of type E_7.
     EXAMPLES::
@@ -397,7 +455,7 @@ def matrix_E_7_2():
     """
     return IntegralLattice("E7").twist(-2).gram_matrix()
 
-def graph_E_8():
+def graph_E_8() -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type E_8 as a Sage Graph.
     EXAMPLES::
@@ -408,7 +466,7 @@ def graph_E_8():
     """
     return matrix_to_graph(matrix_E_8())
 
-def matrix_E_8():
+def matrix_E_8() -> _Matrix:
     """
     Return the Gram matrix for the Dynkin diagram of type E_8.
     EXAMPLES::
@@ -419,7 +477,7 @@ def matrix_E_8():
     """
     return IntegralLattice("E8").twist(-1).gram_matrix()
 
-def graph_E_8_2():
+def graph_E_8_2() -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type E_8 as a Sage Graph.
     EXAMPLES::
@@ -430,7 +488,7 @@ def graph_E_8_2():
     """
     return matrix_to_graph(matrix_E_8_2())
 
-def matrix_E_8_2():
+def matrix_E_8_2() -> _Matrix:
     """
     Return the Gram matrix for the doubled Dynkin diagram of type E_8.
     EXAMPLES::
@@ -441,7 +499,7 @@ def matrix_E_8_2():
     """
     return IntegralLattice("E8").twist(-2).gram_matrix()
 
-def graph_G_2():
+def graph_G_2() -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type G_2 as a Sage Graph.
     EXAMPLES::
@@ -456,7 +514,7 @@ def graph_G_2():
     G.add_edge(0, 1, 3)
     return G
 
-def matrix_G_2():
+def matrix_G_2() -> _Matrix:
     """
     Return the Gram matrix for the Dynkin diagram of type G_2.
     EXAMPLES::
@@ -468,7 +526,7 @@ def matrix_G_2():
     """
     return graph_to_matrix(graph_G_2())
 
-def graph_G_2_2():
+def graph_G_2_2() -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type G_2 as a Sage Graph.
     EXAMPLES::
@@ -483,7 +541,7 @@ def graph_G_2_2():
     G.add_edge(0, 1, 6)
     return G
 
-def matrix_G_2_2():
+def matrix_G_2_2() -> _Matrix:
     """
     Return the Gram matrix for the doubled Dynkin diagram of type G_2.
     EXAMPLES::
@@ -495,7 +553,7 @@ def matrix_G_2_2():
     """
     return graph_to_matrix(graph_G_2_2())
 
-def graph_F_4():
+def graph_F_4() -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type F_4 as a Sage Graph.
     EXAMPLES::
@@ -515,7 +573,7 @@ def graph_F_4():
     G.add_edge(2, 3, 2)
     return G
 
-def matrix_F_4():
+def matrix_F_4() -> _Matrix:
     """
     Return the Gram matrix for the Dynkin diagram of type F_4.
     EXAMPLES::
@@ -526,7 +584,7 @@ def matrix_F_4():
     """
     return graph_to_matrix(graph_F_4())
 
-def graph_H_3():
+def graph_H_3() -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type H_3 as a Sage Graph.
     EXAMPLES::
@@ -544,7 +602,7 @@ def graph_H_3():
     G.add_edge(1, 2, 2)
     return G
 
-def matrix_H_3():
+def matrix_H_3() -> _Matrix:
     """
     Return the Gram matrix for the Dynkin diagram of type H_3.
     EXAMPLES::
@@ -557,7 +615,7 @@ def matrix_H_3():
     """
     return graph_to_matrix(graph_H_3())
 
-def graph_H_3_2():
+def graph_H_3_2() -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type H_3 as a Sage Graph.
     EXAMPLES::
@@ -575,7 +633,7 @@ def graph_H_3_2():
     G.add_edge(1, 2, 4)
     return G
 
-def matrix_H_3_2():
+def matrix_H_3_2() -> _Matrix:
     """
     Return the Gram matrix for the doubled Dynkin diagram of type H_3.
     EXAMPLES::
@@ -588,7 +646,7 @@ def matrix_H_3_2():
     """
     return graph_to_matrix(graph_H_3_2())
 
-def graph_H_4():
+def graph_H_4() -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type H_4 as a Sage Graph.
     EXAMPLES::
@@ -608,7 +666,7 @@ def graph_H_4():
     G.add_edge(2, 3, 2)
     return G
 
-def matrix_H_4():
+def matrix_H_4() -> _Matrix:
     """
     Return the Gram matrix for the Dynkin diagram of type H_4.
     EXAMPLES::
@@ -621,7 +679,7 @@ def matrix_H_4():
 
 # Parabolic types (Affine/Tilde diagrams)
 
-def graph_tilde_A_1():
+def graph_tilde_A_1() -> _CoxeterGraph:
     """
     Construct the affine Dynkin diagram of type ~A_1 as a Sage Graph.
     EXAMPLES::
@@ -636,7 +694,7 @@ def graph_tilde_A_1():
     G.add_edge(0, 1, 2)
     return G
 
-def matrix_tilde_A_1():
+def matrix_tilde_A_1() -> _Matrix:
     """
     Return the Gram matrix for the affine Dynkin diagram of type ~A_1.
     EXAMPLES::
@@ -646,9 +704,10 @@ def matrix_tilde_A_1():
         [ 2 -2]
         [-2  2]
     """
-    return matrix(ZZ, 2, [2, -2, -2, 2])
+    M: _Matrix = matrix(ZZ, 2, [2, -2, -2, 2])
+    return M
 
-def graph_tilde_A_n(n):
+def graph_tilde_A_n(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the affine Dynkin diagram of type ~A_n as a Sage Graph.
     EXAMPLES::
@@ -658,14 +717,14 @@ def graph_tilde_A_n(n):
         4
     """
     G = Graph(loops=True)
-    for i in [0..n]:
+    for i in range(n + 1):
         G.add_edge(i, i, -2)
-    for i in [0..n-1]:
+    for i in range(n):
         G.add_edge(i, i+1, 1)
     G.add_edge(n, 0, 1)
     return G
 
-def matrix_tilde_A_n(n):
+def matrix_tilde_A_n(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the affine Dynkin diagram of type ~A_n.
     EXAMPLES::
@@ -676,7 +735,7 @@ def matrix_tilde_A_n(n):
     """
     return graph_to_matrix(graph_tilde_A_n(n))
 
-def graph_tilde_B_n(n):
+def graph_tilde_B_n(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the affine Dynkin diagram of type ~B_n as a Sage Graph.
     EXAMPLES::
@@ -687,18 +746,18 @@ def graph_tilde_B_n(n):
     """
     G = Graph(loops=True)
     # Squares
-    for i in [0..n-1]:
+    for i in range(n):
         G.add_edge(i, i, -2)
     G.add_edge(n, n, -4)
     # Edges
     G.add_edge(0, 2, 1)
     G.add_edge(1, 2, 1)
-    for i in [2..n-2]:
+    for i in range(2, n - 1):
         G.add_edge(i, i+1, 1)
     G.add_edge(n-1, n, 2)
     return G
 
-def graph_tilde_B_n_2(n):
+def graph_tilde_B_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the doubled affine Dynkin diagram of type ~B_n as a Sage Graph.
     EXAMPLES::
@@ -709,18 +768,18 @@ def graph_tilde_B_n_2(n):
     """
     G = Graph(loops=True)
     # Squares
-    for i in [0..n-1]:
+    for i in range(n):
         G.add_edge(i, i, -4)
     G.add_edge(n, n, -2)
     # Edges
     G.add_edge(0, 2, 2)
     G.add_edge(1, 2, 2)
-    for i in [2..n-2]:
+    for i in range(2, n - 1):
         G.add_edge(i, i+1, 2)
     G.add_edge(n-1, n, 2)
     return G
 
-def matrix_tilde_B_n(n):
+def matrix_tilde_B_n(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the affine Dynkin diagram of type ~B_n.
     EXAMPLES::
@@ -731,7 +790,7 @@ def matrix_tilde_B_n(n):
     """
     return graph_to_matrix(graph_tilde_B_n(n))
 
-def matrix_tilde_B_n_2(n):
+def matrix_tilde_B_n_2(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the doubled affine Dynkin diagram of type ~B_n.
     EXAMPLES::
@@ -742,7 +801,7 @@ def matrix_tilde_B_n_2(n):
     """
     return graph_to_matrix(graph_tilde_B_n_2(n))
 
-def graph_tilde_C_n(n):
+def graph_tilde_C_n(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the affine Dynkin diagram of type ~C_n as a Sage Graph.
     EXAMPLES::
@@ -754,17 +813,17 @@ def graph_tilde_C_n(n):
     G = Graph(loops=True)
     # Squares
     G.add_edge(0, 0, -4)
-    for i in [1..n-1]:
+    for i in range(1, n):
         G.add_edge(i, i, -2)
     G.add_edge(n, n, -4)
     # Edges
     G.add_edge(0, 1, 2)
-    for i in [1..n-2]:
+    for i in range(1, n - 1):
         G.add_edge(i, i+1, 1)
     G.add_edge(n-1, n, 2)
     return G
 
-def graph_tilde_C_n_2(n):
+def graph_tilde_C_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the doubled affine Dynkin diagram of type ~C_n as a Sage Graph.
     EXAMPLES::
@@ -776,17 +835,17 @@ def graph_tilde_C_n_2(n):
     G = Graph(loops=True)
     # Squares
     G.add_edge(0, 0, -2)
-    for i in [1..n-1]:
+    for i in range(1, n):
         G.add_edge(i, i, -4)
     G.add_edge(n, n, -2)
     # Edges
     G.add_edge(0, 1, 2)
-    for i in [1..n-2]:
+    for i in range(1, n - 1):
         G.add_edge(i, i+1, 2)
     G.add_edge(n-1, n, 2)
     return G
 
-def matrix_tilde_C_n(n):
+def matrix_tilde_C_n(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the affine Dynkin diagram of type ~C_n.
     EXAMPLES::
@@ -797,7 +856,7 @@ def matrix_tilde_C_n(n):
     """
     return graph_to_matrix(graph_tilde_C_n(n))
 
-def matrix_tilde_C_n_2(n):
+def matrix_tilde_C_n_2(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the doubled affine Dynkin diagram of type ~C_n.
     EXAMPLES::
@@ -808,7 +867,7 @@ def matrix_tilde_C_n_2(n):
     """
     return graph_to_matrix(graph_tilde_C_n_2(n))
 
-def graph_tilde_D_n(n):
+def graph_tilde_D_n(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the affine Dynkin diagram of type ~D_n as a Sage Graph.
     EXAMPLES::
@@ -818,17 +877,17 @@ def graph_tilde_D_n(n):
         5
     """
     G = Graph(loops=True)
-    for i in [0..n]:
+    for i in range(n + 1):
         G.add_edge(i, i, -2)
     G.add_edge(0, 2, 1)
     G.add_edge(1, 2, 1)
-    for i in [2..n-3]:
+    for i in range(2, n - 2):
         G.add_edge(i, i+1, 1)
     G.add_edge(n-2, n-1, 1)
     G.add_edge(n-2, n, 1)
     return G
 
-def graph_tilde_D_n_2(n):
+def graph_tilde_D_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the doubled affine Dynkin diagram of type ~D_n as a Sage Graph.
     EXAMPLES::
@@ -838,17 +897,17 @@ def graph_tilde_D_n_2(n):
         5
     """
     G = Graph(loops=True)
-    for i in [0..n]:
+    for i in range(n + 1):
         G.add_edge(i, i, -4)
     G.add_edge(0, 2, 2)
     G.add_edge(1, 2, 2)
-    for i in [2..n-3]:
+    for i in range(2, n - 2):
         G.add_edge(i, i+1, 2)
     G.add_edge(n-2, n-1, 2)
     G.add_edge(n-2, n, 2)
     return G
 
-def matrix_tilde_D_n(n):
+def matrix_tilde_D_n(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the affine Dynkin diagram of type ~D_n.
     EXAMPLES::
@@ -859,7 +918,7 @@ def matrix_tilde_D_n(n):
     """
     return graph_to_matrix(graph_tilde_D_n(n))
 
-def matrix_tilde_D_n_2(n):
+def matrix_tilde_D_n_2(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the doubled affine Dynkin diagram of type ~D_n.
     EXAMPLES::
@@ -870,7 +929,7 @@ def matrix_tilde_D_n_2(n):
     """
     return graph_to_matrix(graph_tilde_D_n_2(n))
 
-def graph_tilde_G_2():
+def graph_tilde_G_2() -> _CoxeterGraph:
     """
     Construct the affine Dynkin diagram of type ~G_2 as a Sage Graph.
     EXAMPLES::
@@ -887,7 +946,7 @@ def graph_tilde_G_2():
     G.add_edge(1, 2, 3)
     return G
 
-def matrix_tilde_G_2():
+def matrix_tilde_G_2() -> _Matrix:
     """
     Return the Gram matrix for the affine Dynkin diagram of type ~G_2.
     EXAMPLES::
@@ -898,7 +957,7 @@ def matrix_tilde_G_2():
     """
     return graph_to_matrix(graph_tilde_G_2())
 
-def graph_tilde_G_2_2():
+def graph_tilde_G_2_2() -> _CoxeterGraph:
     """
     Construct the doubled affine Dynkin diagram of type ~G_2 as a Sage Graph.
     EXAMPLES::
@@ -915,7 +974,7 @@ def graph_tilde_G_2_2():
     G.add_edge(1, 2, 6)
     return G
 
-def matrix_tilde_G_2_2():
+def matrix_tilde_G_2_2() -> _Matrix:
     """
     Return the Gram matrix for the doubled affine Dynkin diagram of type ~G_2.
     EXAMPLES::
@@ -926,7 +985,7 @@ def matrix_tilde_G_2_2():
     """
     return graph_to_matrix(graph_tilde_G_2_2())
 
-def graph_tilde_F_4():
+def graph_tilde_F_4() -> _CoxeterGraph:
     """
     Construct the affine Dynkin diagram of type ~F_4 as a Sage Graph.
     EXAMPLES::
@@ -948,7 +1007,7 @@ def graph_tilde_F_4():
     G.add_edge(3, 4, 1)
     return G
 
-def matrix_tilde_F_4():
+def matrix_tilde_F_4() -> _Matrix:
     """
     Return the Gram matrix for the affine Dynkin diagram of type ~F_4.
     EXAMPLES::
@@ -959,7 +1018,7 @@ def matrix_tilde_F_4():
     """
     return graph_to_matrix(graph_tilde_F_4())
 
-def graph_tilde_F_4_2():
+def graph_tilde_F_4_2() -> _CoxeterGraph:
     """
     Construct the doubled affine Dynkin diagram of type ~F_4 as a Sage Graph.
     EXAMPLES::
@@ -981,7 +1040,7 @@ def graph_tilde_F_4_2():
     G.add_edge(3, 4, 2)
     return G
 
-def matrix_tilde_F_4_2():
+def matrix_tilde_F_4_2() -> _Matrix:
     """
     Return the Gram matrix for the doubled affine Dynkin diagram of type ~F_4.
     EXAMPLES::
@@ -992,7 +1051,7 @@ def matrix_tilde_F_4_2():
     """
     return graph_to_matrix(graph_tilde_F_4_2())
 
-def graph_tilde_E_6():
+def graph_tilde_E_6() -> _CoxeterGraph:
     """
     Construct the affine Dynkin diagram of type ~E_6 as a Sage Graph.
     EXAMPLES::
@@ -1003,7 +1062,7 @@ def graph_tilde_E_6():
     """
     return matrix_to_graph(matrix_tilde_E_6())
 
-def matrix_tilde_E_6():
+def matrix_tilde_E_6() -> _Matrix:
     """
     Return the Gram matrix for the affine Dynkin diagram of type ~E_6.
     EXAMPLES::
@@ -1014,7 +1073,7 @@ def matrix_tilde_E_6():
     """
     return CoxeterType(["E", 6, 1]).bilinear_form() * -2
 
-def graph_tilde_E_6_2():
+def graph_tilde_E_6_2() -> _CoxeterGraph:
     """
     Construct the doubled affine Dynkin diagram of type ~E_6 as a Sage Graph.
     EXAMPLES::
@@ -1025,7 +1084,7 @@ def graph_tilde_E_6_2():
     """
     return matrix_to_graph(matrix_tilde_E_6_2())
 
-def matrix_tilde_E_6_2():
+def matrix_tilde_E_6_2() -> _Matrix:
     """
     Return the Gram matrix for the doubled affine Dynkin diagram of type ~E_6.
     EXAMPLES::
@@ -1036,7 +1095,7 @@ def matrix_tilde_E_6_2():
     """
     return CoxeterType(["E", 6, 1]).bilinear_form() * -4
 
-def graph_tilde_E_7():
+def graph_tilde_E_7() -> _CoxeterGraph:
     """
     Construct the affine Dynkin diagram of type ~E_7 as a Sage Graph.
     EXAMPLES::
@@ -1047,7 +1106,7 @@ def graph_tilde_E_7():
     """
     return matrix_to_graph(matrix_tilde_E_7())
 
-def matrix_tilde_E_7():
+def matrix_tilde_E_7() -> _Matrix:
     """
     Return the Gram matrix for the affine Dynkin diagram of type ~E_7.
     EXAMPLES::
@@ -1058,7 +1117,7 @@ def matrix_tilde_E_7():
     """
     return CoxeterType(["E", 7, 1]).bilinear_form() * -2
 
-def graph_tilde_E_7_2():
+def graph_tilde_E_7_2() -> _CoxeterGraph:
     """
     Construct the doubled affine Dynkin diagram of type ~E_7 as a Sage Graph.
     EXAMPLES::
@@ -1069,7 +1128,7 @@ def graph_tilde_E_7_2():
     """
     return matrix_to_graph(matrix_tilde_E_7_2())
 
-def matrix_tilde_E_7_2():
+def matrix_tilde_E_7_2() -> _Matrix:
     """
     Return the Gram matrix for the doubled affine Dynkin diagram of type ~E_7.
     EXAMPLES::
@@ -1080,7 +1139,7 @@ def matrix_tilde_E_7_2():
     """
     return CoxeterType(["E", 7, 1]).bilinear_form() * -4
 
-def graph_tilde_E_8():
+def graph_tilde_E_8() -> _CoxeterGraph:
     """
     Construct the affine Dynkin diagram of type ~E_8 as a Sage Graph.
     EXAMPLES::
@@ -1091,7 +1150,7 @@ def graph_tilde_E_8():
     """
     return matrix_to_graph(matrix_tilde_E_8())
 
-def matrix_tilde_E_8():
+def matrix_tilde_E_8() -> _Matrix:
     """
     Return the Gram matrix for the affine Dynkin diagram of type ~E_8.
     EXAMPLES::
@@ -1102,7 +1161,7 @@ def matrix_tilde_E_8():
     """
     return CoxeterType(["E", 8, 1]).bilinear_form() * -2
 
-def graph_tilde_E_8_2():
+def graph_tilde_E_8_2() -> _CoxeterGraph:
     """
     Construct the doubled affine Dynkin diagram of type ~E_8 as a Sage Graph.
     EXAMPLES::
@@ -1113,7 +1172,7 @@ def graph_tilde_E_8_2():
     """
     return matrix_to_graph(matrix_tilde_E_8_2())
 
-def matrix_tilde_E_8_2():
+def matrix_tilde_E_8_2() -> _Matrix:
     """
     Return the Gram matrix for the doubled affine Dynkin diagram of type ~E_8.
     EXAMPLES::
@@ -1126,7 +1185,7 @@ def matrix_tilde_E_8_2():
 
 # Utility functions
 
-def sumset(s):
+def sumset(s: Sequence[_IntegerPair]) -> _IntegerPair:
     """
     Sum tuples in a collection element-wise.
     
@@ -1138,7 +1197,7 @@ def sumset(s):
     """
     return reduce(lambda x, y: (x[0] + y[0], x[1] + y[1]), s)
 
-def is_elliptic_matrix(M):
+def is_elliptic_matrix(M: _Matrix) -> bool:
     """
     Check if a matrix is elliptic (negative definite).
     
@@ -1150,7 +1209,7 @@ def is_elliptic_matrix(M):
     """
     return (-1 * M).is_positive_definite()
 
-def is_parabolic_matrix(M):
+def is_parabolic_matrix(M: _Matrix) -> bool:
     """
     Check if a matrix is parabolic (negative semidefinite).
     
@@ -1162,7 +1221,7 @@ def is_parabolic_matrix(M):
     """
     return (-1 * M).is_positive_semidefinite()
 
-def is_elliptic_subgraph(H):
+def is_elliptic_subgraph(H: _CoxeterGraph) -> bool:
     """
     Check if a graph corresponds to an elliptic subdiagram.
     
@@ -1174,7 +1233,7 @@ def is_elliptic_subgraph(H):
     """
     return is_elliptic_matrix(graph_to_matrix(H))
 
-def is_parabolic_subgraph(H):
+def is_parabolic_subgraph(H: _CoxeterGraph) -> bool:
     """
     Check if a graph corresponds to a parabolic subdiagram.
     
@@ -1186,7 +1245,7 @@ def is_parabolic_subgraph(H):
     """
     return is_parabolic_matrix(graph_to_matrix(H))
 
-def coxeter_str_format(s):
+def coxeter_str_format(s: _StringPieces) -> str:
     """
     Format a string for Coxeter diagram labels.
     
@@ -1197,7 +1256,7 @@ def coxeter_str_format(s):
     """
     return "".join(s)
 
-def init_coxeter_colors(G):
+def init_coxeter_colors(G: _CoxeterGraph) -> dict[str, list[_SageIndex]]:
     """
     Initialize vertex colors for a Coxeter graph based on loop weights.
     
@@ -1208,8 +1267,8 @@ def init_coxeter_colors(G):
         sage: len(colors)
         3
     """
-    v_labs = dict()
-    vertex_colors = {
+    v_labs: dict[_SageIndex, str] = {}
+    vertex_colors: dict[str, list[_SageIndex]] = {
         '#F8F9FE': [], # white
         '#BFC9CA': [], # black
         '#b3f0fb': []  # blue
@@ -1229,7 +1288,7 @@ def init_coxeter_colors(G):
         raise ValueError("Error while assigning vertex colors.")
     return vertex_colors
 
-def get_all_rank_n_types(n):
+def get_all_rank_n_types(n: _SageIndex) -> list[tuple[str, _Matrix]]:
     """
     Get all ADE type matrices of rank n.
     
@@ -1287,7 +1346,7 @@ def get_all_rank_n_types(n):
             ])
         return Ms
 
-def get_coxeter_label_connected(H):
+def get_coxeter_label_connected(H: _CoxeterGraph) -> str:
     """
     Get the Coxeter type label for a connected graph.
     
@@ -1311,7 +1370,7 @@ def get_coxeter_label_connected(H):
     assert len(this_type) == 1
     return this_type[0]
 
-def is_lanner(G):
+def is_lanner(G: _CoxeterGraph) -> bool:
     """
     Check if a Coxeter diagram is a Lanner diagram.
     
