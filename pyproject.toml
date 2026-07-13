@@ -4,6 +4,7 @@ version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
     "haystack-ai>=2.31.0",
+    "pandoc-config @ https://github.com/dzackgarza/pandoc-config/archive/b567314b56b11326fdba05041afdccd11adee5b3.tar.gz",
     "python-dotenv>=1.2.2",
     "sage-lattice-category-spike==0.0.1",
     "sage-lattice-feature-spike==0.1.0",

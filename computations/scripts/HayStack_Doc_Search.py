@@ -23,7 +23,11 @@ from haystack.document_stores.in_memory import InMemoryDocumentStore
 from haystack.document_stores.types import DuplicatePolicy
 
 # Import our SageMath utilities
-from sagemath_utils import extract_python_docstrings, get_sage_path, get_sagemath_patterns
+from dzack_research.sagemath_doc_search import (
+    extract_python_docstrings,
+    get_sage_path,
+    get_sagemath_patterns,
+)
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -62,7 +66,10 @@ _DocumentationSource = tuple[str, str, str]
 
 
 if TYPE_CHECKING:
-    def cache_data(*, show_spinner: bool = True) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
+
+    def cache_data(
+        *, show_spinner: bool = True
+    ) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
 else:
     cache_data = st.cache_data
 
@@ -76,7 +83,9 @@ OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
 
 # Documentation search configuration
 MAX_FILE_SIZE_MB = int(os.getenv("MAX_FILE_SIZE_MB", "1"))
-INCLUDE_SAGEMATH_DEFAULT = os.getenv("INCLUDE_SAGEMATH_DEFAULT", "true").lower() == "true"
+INCLUDE_SAGEMATH_DEFAULT = (
+    os.getenv("INCLUDE_SAGEMATH_DEFAULT", "true").lower() == "true"
+)
 INCLUDE_REMOTE_DEFAULT = os.getenv("INCLUDE_REMOTE_DEFAULT", "true").lower() == "true"
 
 # This is the list of documentation that we're going to fetch
@@ -106,28 +115,28 @@ CACHE_PATH.mkdir(parents=True, exist_ok=True)
 def get_cache_key(sources_config: _SourcesConfig) -> str:
     """Generate a cache key based on configuration and file timestamps."""
     key_data: dict[str, str | int | float | _SourcesConfig] = {
-        'sources': sources_config,
-        'sage_path': str(SAGE_PATH),
-        'max_file_size': MAX_FILE_SIZE_MB,
+        "sources": sources_config,
+        "sage_path": str(SAGE_PATH),
+        "max_file_size": MAX_FILE_SIZE_MB,
     }
-    
+
     # Add SageMath directory modification time if it exists
     if SAGE_PATH.exists():
         try:
             # Get a representative timestamp from SageMath source
             sage_src = SAGE_PATH / "src" / "sage"
             if sage_src.exists():
-                key_data['sage_mtime'] = sage_src.stat().st_mtime
+                key_data["sage_mtime"] = sage_src.stat().st_mtime
         except:
             pass
-    
+
     # Add timestamp for downloaded docs
     if DOCS_PATH.exists():
         try:
-            key_data['docs_mtime'] = DOCS_PATH.stat().st_mtime
+            key_data["docs_mtime"] = DOCS_PATH.stat().st_mtime
         except:
             pass
-    
+
     return hashlib.md5(str(key_data).encode()).hexdigest()
 
 
@@ -139,24 +148,25 @@ def save_document_store_cache(
     """Save document store to cache."""
     cache_file = CACHE_PATH / f"docstore_{cache_key}.pkl"
     metadata_file = CACHE_PATH / f"metadata_{cache_key}.json"
-    
+
     try:
         # Save document store
-        with open(cache_file, 'wb') as f:
+        with open(cache_file, "wb") as f:
             pickle.dump(doc_store, f)
-        
+
         # Save metadata
         import json
+
         metadata = {
-            'timestamp': time.time(),
-            'datetime': datetime.now().isoformat(),
-            'file_count': file_stats.get('total_files', 0),
-            'sources': file_stats.get('sources', {}),
-            'cache_key': cache_key
+            "timestamp": time.time(),
+            "datetime": datetime.now().isoformat(),
+            "file_count": file_stats.get("total_files", 0),
+            "sources": file_stats.get("sources", {}),
+            "cache_key": cache_key,
         }
-        with open(metadata_file, 'w') as f:
+        with open(metadata_file, "w") as f:
             json.dump(metadata, f, indent=2)
-            
+
         return True
     except Exception as e:
         st.error(f"Failed to save cache: {e}")
@@ -169,22 +179,23 @@ def load_document_store_cache(
     """Load document store from cache."""
     cache_file = CACHE_PATH / f"docstore_{cache_key}.pkl"
     metadata_file = CACHE_PATH / f"metadata_{cache_key}.json"
-    
+
     if not cache_file.exists():
         return None, None
-    
+
     try:
         # Load document store
-        with open(cache_file, 'rb') as f:
+        with open(cache_file, "rb") as f:
             doc_store = pickle.load(f)
-        
+
         # Load metadata
         metadata = None
         if metadata_file.exists():
             import json
+
             with open(metadata_file) as f:
                 metadata = json.load(f)
-        
+
         return doc_store, metadata
     except Exception as e:
         st.warning(f"Failed to load cache: {e}")
@@ -195,17 +206,18 @@ def get_cache_info() -> list[_CacheMetadata]:
     """Get information about existing caches."""
     cache_files = list(CACHE_PATH.glob("metadata_*.json"))
     caches: list[_CacheMetadata] = []
-    
+
     for metadata_file in cache_files:
         try:
             import json
+
             with open(metadata_file) as f:
                 metadata = json.load(f)
                 caches.append(metadata)
         except:
             continue
-    
-    return sorted(caches, key=lambda x: x.get('timestamp', 0), reverse=True)
+
+    return sorted(caches, key=lambda x: x.get("timestamp", 0), reverse=True)
 
 
 def clear_all_caches() -> bool:
@@ -225,46 +237,52 @@ def clear_all_caches() -> bool:
 def fetch_sagemath_files() -> list[_SourceFile]:
     """Fetch local SageMath documentation and source files."""
     files: list[_SourceFile] = []
-    
+
     if not SAGE_PATH.exists():
-        st.warning(f"SageMath path not found at {SAGE_PATH}. Skipping SageMath indexing.")
+        st.warning(
+            f"SageMath path not found at {SAGE_PATH}. Skipping SageMath indexing."
+        )
         return files
-    
+
     st.write(f"Indexing local SageMath installation at {SAGE_PATH}")
-    
+
     # Limit file size to avoid memory issues
     max_file_size = MAX_FILE_SIZE_MB * 1024 * 1024
-    
+
     for pattern in SAGEMATH_PATTERNS:
         pattern_files = list(SAGE_PATH.glob(pattern))
         st.write(f"Found {len(pattern_files)} files matching pattern {pattern}")
-        
+
         for p in pattern_files:
             try:
                 # Skip very large files to avoid memory issues
                 if p.stat().st_size > max_file_size:
                     continue
-                    
+
                 # Skip binary files and certain directories
-                if any(skip in str(p) for skip in ['.git', '__pycache__', '.pyc', 'build', 'dist']):
+                if any(
+                    skip in str(p)
+                    for skip in [".git", "__pycache__", ".pyc", "build", "dist"]
+                ):
                     continue
-                
+
                 data: _SourceFile = {
                     "path": p,
                     "meta": {
                         "url_source": f"file://{p}",
                         "suffix": p.suffix,
                         "source": "SageMath Local",
-                        "relative_path": str(p.relative_to(SAGE_PATH))
+                        "relative_path": str(p.relative_to(SAGE_PATH)),
                     },
                 }
                 files.append(data)
-            except (OSError, ValueError):
+            except OSError, ValueError:
                 # Skip files that can't be accessed
                 continue
-    
+
     st.write(f"Total SageMath files selected for indexing: {len(files)}")
     return files
+
 
 @cache_data(show_spinner=False)
 def fetch(
@@ -296,11 +314,11 @@ def fetch(
                 "meta": {
                     "url_source": f"{url}/tree/{branch}/{p.relative_to(repo)}",
                     "suffix": p.suffix,
-                    "source": name
+                    "source": name,
                 },
             }
             files.append(data)
-    
+
     # Fetch local SageMath files if requested
     if include_sagemath:
         sagemath_files = fetch_sagemath_files()
@@ -316,13 +334,17 @@ def get_or_create_document_store(
     """Get document store from cache or create new one."""
     # Try to load from cache first
     cached_store, metadata = load_document_store_cache(cache_key)
-    
+
     if cached_store is not None:
-        assert metadata is not None, f"cached document store must include cache metadata; cache_key={cache_key}"
-        st.success(f"📁 Loaded cached index from {metadata.get('datetime', 'unknown time')} "
-                  f"({metadata.get('file_count', 0)} files)")
+        assert metadata is not None, (
+            f"cached document store must include cache metadata; cache_key={cache_key}"
+        )
+        st.success(
+            f"📁 Loaded cached index from {metadata.get('datetime', 'unknown time')} "
+            f"({metadata.get('file_count', 0)} files)"
+        )
         return cached_store, True  # True indicates cache hit
-    
+
     # Create new document store if cache miss
     return InMemoryDocumentStore(index=index), False  # False indicates cache miss
 
@@ -336,45 +358,42 @@ def index_files(
     # Create documents with special handling for Python files
     documents = []
     skipped_empty = 0
-    
+
     for f in files:
         file_path = f["path"]
         meta = f["meta"]
-        
+
         try:
             # Special handling for Python/Cython files
-            if file_path.suffix in ['.py', '.pyx']:
+            if file_path.suffix in [".py", ".pyx"]:
                 content = extract_python_docstrings(file_path)
             else:
                 # Regular text file handling
-                with open(file_path, encoding='utf-8') as file:
+                with open(file_path, encoding="utf-8") as file:
                     content = file.read().strip()
-            
+
             # Skip empty content to avoid warnings
             if not content or len(content.strip()) < 10:
                 skipped_empty += 1
                 continue
-            
+
             # Create document
-            doc = Document(
-                content=content,
-                meta=meta
-            )
+            doc = Document(content=content, meta=meta)
             documents.append(doc)
-            
+
         except Exception as e:
             st.warning(f"Could not process file {file_path}: {e}")
             continue
-    
+
     if skipped_empty > 0:
         st.info(f"Skipped {skipped_empty} files with empty or minimal content")
-    
+
     if not documents:
         st.warning("No documents were successfully processed.")
         return {}
-    
+
     st.info(f"Processing {len(documents)} documents for indexing...")
-    
+
     # Create components for processing
     document_cleaner = DocumentCleaner()
     document_splitter = DocumentSplitter(split_length=500, split_overlap=50)
@@ -385,32 +404,36 @@ def index_files(
     # Process documents through the pipeline
     cleaned_docs = document_cleaner.run(documents=documents)["documents"]
     split_docs = document_splitter.run(documents=cleaned_docs)["documents"]
-    
+
     # Filter out any remaining empty documents after splitting
-    non_empty_docs = [doc for doc in split_docs if doc.content and len(doc.content.strip()) > 10]
-    
+    non_empty_docs = [
+        doc for doc in split_docs if doc.content and len(doc.content.strip()) > 10
+    ]
+
     if len(non_empty_docs) != len(split_docs):
-        st.info(f"Filtered out {len(split_docs) - len(non_empty_docs)} empty document chunks")
-    
+        st.info(
+            f"Filtered out {len(split_docs) - len(non_empty_docs)} empty document chunks"
+        )
+
     document_writer.run(documents=non_empty_docs)
-    
+
     # Collect statistics for caching
     source_counts: dict[str, int] = {}
     for f in files:
         source = f["meta"].get("source", "Unknown")
         source_counts[source] = source_counts.get(source, 0) + 1
-    
+
     file_stats: _FileStats = {
-        'total_files': len(files),
-        'processed_files': len(documents),
-        'final_chunks': len(non_empty_docs),
-        'sources': source_counts
+        "total_files": len(files),
+        "processed_files": len(documents),
+        "final_chunks": len(non_empty_docs),
+        "sources": source_counts,
     }
-    
+
     # Save to cache
     st.info("💾 Saving to cache...")
     save_document_store_cache(doc_store, cache_key, file_stats)
-    
+
     return file_stats
 
 
@@ -438,12 +461,11 @@ def search(question: str, doc_store: InMemoryDocumentStore) -> GeneratedAnswer:
     # Configure generator for local or remote OpenAI
     if USE_LOCAL_OPENAI:
         generator = OpenAIGenerator(
-            model=OPENAI_MODEL,
-            api_base_url=LOCAL_OPENAI_BASE_URL
+            model=OPENAI_MODEL, api_base_url=LOCAL_OPENAI_BASE_URL
         )
     else:
         generator = OpenAIGenerator(model=OPENAI_MODEL)
-    
+
     answer_builder = AnswerBuilder()
 
     query_pipeline = Pipeline()
@@ -459,16 +481,24 @@ def search(question: str, doc_store: InMemoryDocumentStore) -> GeneratedAnswer:
     query_pipeline.connect("llm.replies", "answer_builder.replies")
     res = query_pipeline.run({"query": question})
     answer = res["answer_builder"]["answers"][0]
-    assert isinstance(answer, GeneratedAnswer), f"expected GeneratedAnswer, found={type(answer)}"
+    assert isinstance(answer, GeneratedAnswer), (
+        f"expected GeneratedAnswer, found={type(answer)}"
+    )
     return answer
 
 
 # Configuration sidebar
 st.sidebar.header("Configuration")
-include_sagemath = st.sidebar.checkbox("Include SageMath Documentation", value=INCLUDE_SAGEMATH_DEFAULT, 
-                                      help="Include local SageMath installation in search")
-include_remote = st.sidebar.checkbox("Include Remote Documentation", value=INCLUDE_REMOTE_DEFAULT,
-                                    help="Include Pandas and NumPy documentation from GitHub")
+include_sagemath = st.sidebar.checkbox(
+    "Include SageMath Documentation",
+    value=INCLUDE_SAGEMATH_DEFAULT,
+    help="Include local SageMath installation in search",
+)
+include_remote = st.sidebar.checkbox(
+    "Include Remote Documentation",
+    value=INCLUDE_REMOTE_DEFAULT,
+    help="Include Pandas and NumPy documentation from GitHub",
+)
 
 # Cache management
 with st.sidebar.expander("🗂️ Cache Management"):
@@ -476,11 +506,11 @@ with st.sidebar.expander("🗂️ Cache Management"):
     if caches:
         st.write(f"**{len(caches)} cache(s) available:**")
         for cache in caches[:3]:  # Show last 3 caches
-            dt = datetime.fromisoformat(cache['datetime']).strftime('%m/%d %H:%M')
+            dt = datetime.fromisoformat(cache["datetime"]).strftime("%m/%d %H:%M")
             st.write(f"• {dt} - {cache.get('file_count', 0)} files")
     else:
         st.write("No caches found")
-    
+
     force_reindex = st.button("🔄 Force Re-index", help="Clear cache and rebuild index")
     if st.button("🗑️ Clear All Caches"):
         if clear_all_caches():
@@ -496,9 +526,9 @@ with st.sidebar.expander("Advanced Settings"):
 
 # Determine what to include and generate cache key
 sources_config: _SourcesConfig = {
-    'include_sagemath': include_sagemath,
-    'include_remote': include_remote,
-    'remote_docs': [d[0] for d in DOCUMENTATIONS] if include_remote else []
+    "include_sagemath": include_sagemath,
+    "include_remote": include_remote,
+    "remote_docs": [d[0] for d in DOCUMENTATIONS] if include_remote else [],
 }
 
 cache_key = get_cache_key(sources_config)
@@ -540,28 +570,27 @@ if not cache_hit:
 else:
     # Still fetch files for statistics display
     files = fetch(docs_to_include, include_sagemath=include_sagemath)
-    file_stats = {
-        'total_files': len(files),
-        'sources': {}
-    }
+    file_stats = {"total_files": len(files), "sources": {}}
     for f in files:
         source = f["meta"].get("source", "Unknown")
-        file_stats['sources'][source] = file_stats['sources'].get(source, 0) + 1
+        file_stats["sources"][source] = file_stats["sources"].get(source, 0) + 1
 
 
 st.header("🔎 Mathematical Documentation Finder", divider="rainbow")
 
 if all_sources:
-    st.caption(
-        f"Search through documentation for: {', '.join(all_sources)}"
-    )
+    st.caption(f"Search through documentation for: {', '.join(all_sources)}")
 else:
-    st.warning("No documentation sources selected. Please enable at least one source in the sidebar.")
+    st.warning(
+        "No documentation sources selected. Please enable at least one source in the sidebar."
+    )
 
-if all_sources and (question := st.text_input(
-    label="What do you need to know?", 
-    placeholder="What is a Coxeter group? How do I compute lattice invariants? What is a DataFrame?"
-)):
+if all_sources and (
+    question := st.text_input(
+        label="What do you need to know?",
+        placeholder="What is a Coxeter group? How do I compute lattice invariants? What is a DataFrame?",
+    )
+):
     with st.spinner("Searching through documentation..."):
         answer = search(question, doc_store)
 
@@ -570,18 +599,24 @@ if all_sources and (question := st.text_input(
         st.session_state["run_once"] = True
 
     st.markdown(answer.data)
-    
+
     # Show source references in a compact format
     if answer.documents:
-        with st.expander(f"📚 Source References ({len(answer.documents)} documents)", expanded=False):
+        with st.expander(
+            f"📚 Source References ({len(answer.documents)} documents)", expanded=False
+        ):
             for i, document in enumerate(answer.documents, 1):
                 source = document.meta.get("source", "Unknown")
                 relative_path = document.meta.get("relative_path", "")
                 url_source = document.meta.get("url_source", "")
-                
-                st.write(f"**Document {i}:** `{relative_path or url_source or 'Unknown'}` ({source})")
+
+                st.write(
+                    f"**Document {i}:** `{relative_path or url_source or 'Unknown'}` ({source})"
+                )
                 content = document.content
-                assert content is not None, f"expected text document, found={document.id}"
+                assert content is not None, (
+                    f"expected text document, found={document.id}"
+                )
                 if len(content) > 200:
                     st.text(content[:200] + "...")
                 else:
@@ -592,14 +627,14 @@ if all_sources and (question := st.text_input(
 # Show statistics
 if all_sources:
     st.sidebar.header("📊 Documentation Statistics")
-    if 'file_stats' in locals():
-        st.sidebar.metric("Total Files", file_stats.get('total_files', 0))
-        
+    if "file_stats" in locals():
+        st.sidebar.metric("Total Files", file_stats.get("total_files", 0))
+
         # Show cache status
         cache_status = "🟢 Cached" if cache_hit else "🔄 Fresh Index"
         st.sidebar.write(f"**Status:** {cache_status}")
-        
+
         # Count by source
-        source_counts = file_stats.get('sources', {})
+        source_counts = file_stats.get("sources", {})
         for source, count in source_counts.items():
             st.sidebar.metric(f"{source} Files", count)
