@@ -6,18 +6,15 @@ from sage.combinat.posets.posets import FinitePoset
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
-from dm_moduli_spike import (
+from dm_moduli_spike import spec, scheme_over, complex_numbers_ring, spec_complex
+from dm_moduli_spike.moduli.instances import M_gn
+from dm_moduli_spike.moduli.problems import StablePointedCurves
+from dm_moduli_spike.stratification import DualGraphType
+from dm_moduli_spike.categories import (
     DeligneMumfordStacks,
-    DualGraphType,
-    M_gn,
-    StablePointedCurves,
     StratifiedStacks,
     Varieties,
     coarse_in_category,
-    complex_numbers_ring,
-    scheme_over,
-    spec,
-    spec_complex,
     stack_in_category,
     stratified_stack_in_category,
 )
