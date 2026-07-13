@@ -366,7 +366,7 @@ def demonstrate_basic_usage() -> None:
     print("U ⊕ 2U ⊕ 2E8:")
     print(f"  Dimension: {enriques_verification['dimension']}")
     print(f"  Signature: {enriques_verification['signature']}")
-    print(f"  Expected signature (2,18): {enriques_verification.get('signature_matches', 'Not checked')}")
+    print(f"  Expected signature (2,18): {enriques_verification['signature_matches']}")
     print(f"  Is indefinite: {enriques_verification['is_indefinite']}")
 
 
