@@ -19,13 +19,14 @@ class DualGraphType:
         return StableGraphTypes(g, n)
 
     def thinification(self, g: int, n: int, order: str = "specialization", backend: str = "auto") -> FinitePoset:
-        from ..stratification.stratified import StratifiedStack
-        from ..moduli.instances import Mbar_gn
+        from ..objects.gamma import StableGraphCategory
 
-        stack = Mbar_gn(g, n)
-        boundary = stack.compactification().boundary()
-        stratified = boundary.stratify(by=self, order=order, backend=backend)
-        return stratified.stratification_poset(order=order)
+        gamma = StableGraphCategory(g, n)
+        if order == "specialization":
+            return gamma.specialization_poset()
+        if order == "closure":
+            return gamma.closure_poset()
+        raise ValueError(f"unknown order {order!r}")
 
     def __repr__(self) -> str:
         return "DualGraphType()"

@@ -1,9 +1,36 @@
-r"""Deligne--Mumford moduli spike: `\Gamma_{g,n}` and graph-indexed stratum formulas.
+r"""Deligne--Mumford moduli spike: the finite category `\Gamma_{g,n}`.
 
-**Implements:** finite category `\Gamma_{g,n}`, specialization poset, formal stratum
-descriptors. **Does not implement:** DM stacks, coarse moduli schemes, curves, families.
+Mathematical contract
+=====================
 
-See ``README.md`` for the full mathematical contract.
+**Implements**
+
+1. The finite category `\Gamma_{g,n}` of stable `n`-marked weighted dual graphs of
+   genus `g`, with finite Hom-sets, identity morphisms, and composition
+   (Chan--Galatius--Payne).
+2. The specialization poset of graph strata — the thinification of `\Gamma_{g,n}`
+   after passing to isomorphism classes — as a Sage ``FinitePoset``.
+3. Formal graph-indexed stratum formulas (clutching sources, codimension,
+   automorphism actions) attached to stable graphs.
+
+**Does not implement**
+
+* The Deligne--Mumford stacks `\mathcal M_{g,n}`, `\overline{\mathcal M}_{g,n}`
+  (no universal family, no stack structure).
+* Coarse moduli schemes `M_{g,n}`, `\overline M_{g,n}`.
+* Stable pointed curves, families `\pi:\mathcal C\to S`, or geometric specializations.
+
+**Notation**
+
+* `\mathcal M_{g,n}`, `\overline{\mathcal M}_{g,n}` — fine moduli stacks (not implemented).
+* `M_{g,n}`, `\overline M_{g,n}` — coarse moduli schemes (not implemented).
+* `\mathcal M_G` — stratum of curves with dual graph `G` (formal index only).
+* `\Gamma_{g,n}` — this package's finite graph category.
+
+Vertex weights are geometric genera of normalization components; total graph genus
+is arithmetic genus `b_1(\Gamma)+\sum_v w(v)`.
+
+See ``README.md`` for the full contract and evidence hierarchy.
 """
 
 from __future__ import annotations

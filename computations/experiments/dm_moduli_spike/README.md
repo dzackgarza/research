@@ -28,8 +28,12 @@ Notation (literature standard):
 | `\mathcal M_G` | Stratum of curves with dual graph `G` |
 | `Γ_{g,n}` | Finite category of stable dual graphs and contractions |
 
-Vertex weights are **geometric genera** of normalization components; total graph genus is
-**arithmetic genus**.
+Vertex weights `w(v)` are **geometric genera** of the normalization components of the
+corresponding irreducible pieces. The total graph genus is the **arithmetic genus**
+
+```text
+g(Γ) = b₁(Γ) + Σ_v w(v).
+```
 
 ## Public entry point (combinatorial)
 

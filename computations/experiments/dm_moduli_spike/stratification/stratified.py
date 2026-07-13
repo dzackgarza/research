@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from ..categories.membership import _object_base
 from ..categories.stratified import StratifiedSpaces, StratifiedStacks
-from ..objects.model import DMCompactificationModel
+from ..objects.gamma import StableGraphCategory
 from .indexing import DualGraphType
 
 if TYPE_CHECKING:
@@ -49,9 +49,9 @@ class BoundaryStack:
 
 
 class StratifiedStack:
-    r"""Stratified stack with dual-graph indexing category."""
+    r"""Stratified stack with dual-graph indexing via `\Gamma_{g,n}`."""
 
-    __slots__ = ("_stack", "_indexer", "_order", "_backend", "_combinatorial")
+    __slots__ = ("_stack", "_indexer", "_order", "_backend", "_gamma")
 
     def __init__(
         self,
@@ -65,9 +65,7 @@ class StratifiedStack:
         self._indexer = indexer
         self._order = order
         self._backend = backend
-        g = stack.genus()
-        n = stack.number_of_markings()
-        self._combinatorial = DMCompactificationModel(g, n).stratification(backend=backend)
+        self._gamma = StableGraphCategory(stack.genus(), stack.number_of_markings())
 
     def parent_stack(self) -> DeligneMumfordModuliStack | DeligneMumfordModuliStackOver:
         return self._stack
@@ -81,13 +79,13 @@ class StratifiedStack:
     def stratification_poset(self, order: str | None = None) -> FinitePoset:
         order = self._order if order is None else order
         if order == "specialization":
-            return self._combinatorial.specialization_poset().sage_poset()
+            return self._gamma.specialization_poset()
         if order == "closure":
-            return self._combinatorial.closure_poset().sage_poset()
+            return self._gamma.closure_poset()
         raise ValueError(f"unknown order {order!r}")
 
-    def combinatorial_stratification(self) -> object:
-        return self._combinatorial
+    def combinatorial_stratification(self) -> StableGraphCategory:
+        return self._gamma
 
 
 class StratifiedVariety:
