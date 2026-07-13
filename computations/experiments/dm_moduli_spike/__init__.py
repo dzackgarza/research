@@ -15,7 +15,7 @@ from .objects.graph_types import StableGraphType, StableGraphTypes
 from .objects.records import StableGraph
 
 # Scheme functor (for private landscape stubs).
-from .categories.base import AffineScheme, SchemeOver, complex_numbers_ring, scheme_over, spec, spec_complex
+from .categories.base import AffineScheme, complex_numbers_ring, spec, spec_complex
 
 # Legacy combinatorial API (importable; not in __all__).
 from .objects.model import DMCompactificationModel  # noqa: F401
@@ -25,7 +25,6 @@ from .stratification.indexing import DualGraphType  # noqa: F401
 __all__ = [
     "AffineScheme",
     "Gamma_gn",
-    "SchemeOver",
     "StableGraph",
     "StableGraphCategory",
     "StableGraphHomset",
@@ -33,7 +32,6 @@ __all__ = [
     "StableGraphType",
     "StableGraphTypes",
     "complex_numbers_ring",
-    "scheme_over",
     "spec",
     "spec_complex",
 ]

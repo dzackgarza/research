@@ -1,20 +1,22 @@
-r"""Schemes, the :func:`spec` functor, and objects of `\mathrm{Sch}/B`.
+r"""The :func:`spec` functor and affine schemes.
 
-* :func:`spec` is the functor from commutative rings to affine schemes.
-* :class:`SchemeOver` records an object `X \to B` of `\mathrm{Sch}/B` (here,
-  affine on both sides).
-* Base change along `S \to \mathrm{Spec}(\mathbb Z)` is recorded by pairing a
-  universal moduli object with a :class:`SchemeOver` base; `S`-points are the
-  same data.
+:func:`spec` is the functor from commutative rings to affine schemes.  Every
+affine scheme `\mathrm{Spec}(R)` is a `\mathbb Z`-scheme via the canonical
+structure morphism induced by `\mathbb Z \to R` (when `R` is a `\mathbb Z`-algebra).
+
+Base change of the universal moduli stacks along `S \to \mathrm{Spec}(\mathbb Z)`
+uses only that canonical morphism.  Users pass `S = \mathrm{Spec}(R)`; they do not
+declare base rings or package ``Sch/B`` data by hand.
 """
 
 from __future__ import annotations
 
+from sage.rings.integer_ring import ZZ
 from sage.structure.unique_representation import UniqueRepresentation
 
 
 class AffineScheme(UniqueRepresentation):
-    r"""Affine scheme `\mathrm{Spec}(R)` for a commutative ring `R`."""
+    r"""Affine scheme `\mathrm{Spec}(R)`."""
 
     __slots__ = ("_ring", "_sage")
 
@@ -30,6 +32,22 @@ class AffineScheme(UniqueRepresentation):
     def sage_scheme(self) -> object:
         return self._sage
 
+    def structure_target(self) -> AffineScheme:
+        r"""Target of the canonical structure morphism `X \to \mathrm{Spec}(\mathbb Z)`."""
+        return spec(ZZ)
+
+    def is_z_scheme(self) -> bool:
+        r"""True when the canonical `\mathbb Z \to R` algebra map exists."""
+        ring = self._ring
+        try:
+            return ring.has_coerce_map_from(ZZ)  # type: ignore[attr-defined]
+        except AttributeError:
+            try:
+                ring(ZZ.one())  # noqa: S101 — probe canonical Z embed
+                return True
+            except (TypeError, ValueError):
+                return False
+
     def _repr_(self) -> str:
         return f"Spec({self._ring})"
 
@@ -39,35 +57,12 @@ def spec(ring: object) -> AffineScheme:
     return AffineScheme(ring)
 
 
-class SchemeOver(UniqueRepresentation):
-    r"""Object `X \to B` of `\mathrm{Sch}/B` (affine `X`, affine base `B`)."""
-
-    __slots__ = ("_scheme", "_base")
-
-    def __init__(self, scheme: AffineScheme, base: AffineScheme) -> None:
-        if not isinstance(scheme, AffineScheme) or not isinstance(base, AffineScheme):
-            raise TypeError("expected AffineScheme arguments")
-        self._scheme = scheme
-        self._base = base
-
-    def scheme(self) -> AffineScheme:
-        r"""The scheme `X`."""
-        return self._scheme
-
-    def base(self) -> AffineScheme:
-        r"""The base `B` in `\mathrm{Sch}/B`."""
-        return self._base
-
-    def sage_scheme(self) -> object:
-        return self._scheme.sage_scheme()
-
-    def _repr_(self) -> str:
-        return f"{self._scheme} over {self._base}"
-
-
-def scheme_over(ring: object, *, base_ring: object) -> SchemeOver:
-    r"""\mathrm{Spec}(R) as an object of `\mathrm{Sch}/\mathrm{Spec}(R_0)` via `R_0 \to R`."""
-    return SchemeOver(spec(ring), spec(base_ring))
+def check_z_scheme(S: AffineScheme) -> None:
+    r"""Require the canonical `\mathbb Z`-algebra structure on `S = \mathrm{Spec}(R)`."""
+    if not S.is_z_scheme():
+        raise TypeError(
+            f"base change along the canonical map to Spec(ZZ) requires a Z-scheme; {S} is not"
+        )
 
 
 def complex_numbers_ring() -> object:

@@ -1,4 +1,4 @@
-r"""Category membership over a common base `B`."""
+r"""Category membership over a common base `B` in `\mathrm{Sch}/B`."""
 
 from __future__ import annotations
 
@@ -19,11 +19,11 @@ def _object_base(obj: object) -> AffineScheme:
     if isinstance(obj, DeligneMumfordModuliStack):
         return obj.base_scheme()
     if isinstance(obj, DeligneMumfordModuliStackOver):
-        return obj.base().base()
+        return obj.over_scheme()
     if isinstance(obj, CoarseModuliScheme):
         return obj.base_scheme()
     if isinstance(obj, CoarseModuliSchemeOver):
-        return obj.base().base()
+        return obj.over_scheme()
     raise TypeError(f"no base scheme for {type(obj)}")
 
 

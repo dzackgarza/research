@@ -5,7 +5,7 @@ from __future__ import annotations
 from sage.rings.integer_ring import ZZ
 from sage.structure.unique_representation import UniqueRepresentation
 
-from ..categories.base import AffineScheme, SchemeOver, spec
+from ..categories.base import AffineScheme, check_z_scheme, spec
 from ..categories.stacks import DeligneMumfordStacks
 from ..moduli.coarse import CoarseModuliMap, CoarseModuliScheme, CoarseModuliSchemeOver, coarse_moduli_map
 from ..moduli.families import FamiliesOver
@@ -67,18 +67,19 @@ class DeligneMumfordModuliStack(UniqueRepresentation):
     def moduli_problem(self) -> ModuliProblem:
         return self._problem
 
-    def base_change(self, base: SchemeOver) -> DeligneMumfordModuliStackOver:
-        r"""Pullback `\mathcal M_{g,n} \times_{\mathrm{Spec}(\mathbb Z)} S` in `\mathrm{Sch}/S`."""
-        if not isinstance(base, SchemeOver):
-            raise TypeError(f"expected SchemeOver; found {type(base)}")
-        return DeligneMumfordModuliStackOver(self, base)
+    def base_change(self, S: AffineScheme) -> DeligneMumfordModuliStackOver:
+        r"""Pullback along canonical `S \to \mathrm{Spec}(\mathbb Z)`."""
+        if not isinstance(S, AffineScheme):
+            raise TypeError(f"expected AffineScheme; found {type(S)}")
+        check_z_scheme(S)
+        return DeligneMumfordModuliStackOver(self, S)
 
-    def s_points(self, base: SchemeOver) -> DeligneMumfordModuliStackOver:
+    def s_points(self, S: AffineScheme) -> DeligneMumfordModuliStackOver:
         r"""`S`-points `\mathrm{Hom}(S, \mathcal M_{g,n})`; same data as :meth:`base_change`."""
-        return self.base_change(base)
+        return self.base_change(S)
 
-    def objects_over(self, base: SchemeOver) -> FamiliesOver:
-        return FamiliesOver(self.base_change(base))
+    def objects_over(self, S: AffineScheme) -> FamiliesOver:
+        return FamiliesOver(self.base_change(S))
 
     def coarse_scheme(self) -> CoarseModuliScheme:
         return CoarseModuliScheme(self._g, self._n, compact=self._proper)
@@ -109,24 +110,25 @@ class DeligneMumfordModuliStack(UniqueRepresentation):
 
 
 class DeligneMumfordModuliStackOver(UniqueRepresentation):
-    r"""Base change of a universal stack to `S \in \mathrm{Sch}/B`."""
+    r"""Base change of a universal stack along canonical `S \to \mathrm{Spec}(\mathbb Z)`."""
 
-    __slots__ = ("_universal", "_base")
+    __slots__ = ("_universal", "_over")
 
-    def __init__(self, universal: DeligneMumfordModuliStack, base: SchemeOver) -> None:
+    def __init__(self, universal: DeligneMumfordModuliStack, over: AffineScheme) -> None:
         if not isinstance(universal, DeligneMumfordModuliStack):
             raise TypeError(f"expected DeligneMumfordModuliStack; found {type(universal)}")
-        if not isinstance(base, SchemeOver):
-            raise TypeError(f"expected SchemeOver; found {type(base)}")
+        if not isinstance(over, AffineScheme):
+            raise TypeError(f"expected AffineScheme; found {type(over)}")
+        check_z_scheme(over)
         self._universal = universal
-        self._base = base
+        self._over = over
 
     def universal(self) -> DeligneMumfordModuliStack:
         return self._universal
 
-    def base(self) -> SchemeOver:
-        r"""The base `S \to B` in `\mathrm{Sch}/B`."""
-        return self._base
+    def over_scheme(self) -> AffineScheme:
+        r"""The base `S` of the pullback (`\mathrm{Sch}/S`)."""
+        return self._over
 
     def genus(self) -> int:
         return self._universal.genus()
@@ -150,7 +152,7 @@ class DeligneMumfordModuliStackOver(UniqueRepresentation):
         return self._universal.is_separated()
 
     def category(self) -> object:
-        return DeligneMumfordStacks(self._base.base())
+        return DeligneMumfordStacks(self._over)
 
     def moduli_problem(self) -> ModuliProblem:
         return self._universal.moduli_problem()
@@ -159,7 +161,7 @@ class DeligneMumfordModuliStackOver(UniqueRepresentation):
         return FamiliesOver(self)
 
     def coarse_scheme(self) -> CoarseModuliSchemeOver:
-        return CoarseModuliSchemeOver(self._universal.coarse_scheme(), self._base)
+        return CoarseModuliSchemeOver(self._universal.coarse_scheme(), self._over)
 
     def coarse_moduli_map(self) -> CoarseModuliMap:
         return coarse_moduli_map(self._universal)
@@ -170,7 +172,7 @@ class DeligneMumfordModuliStackOver(UniqueRepresentation):
         kind: str = "Deligne-Mumford",
     ) -> object:
         compact = self._universal.compactification(by=by, kind=kind)
-        codomain = DeligneMumfordModuliStackOver(compact.codomain(), self._base)
+        codomain = DeligneMumfordModuliStackOver(compact.codomain(), self._over)
         from ..geometry.compactification import Compactification
 
         return Compactification(self, codomain, compact.moduli_problem())
@@ -180,4 +182,4 @@ class DeligneMumfordModuliStackOver(UniqueRepresentation):
 
     def _repr_(self) -> str:
         name = "Mbar" if self.is_proper() else "M"
-        return f"DM stack {name}({self.genus()}, {self.number_of_markings()}) over {self._base}"
+        return f"DM stack {name}({self.genus()}, {self.number_of_markings()}) over {self._over}"

@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..categories.base import SchemeOver
+    from ..categories.base import AffineScheme
     from ..curves.pointed import StablePointedCurve, SmoothPointedCurve
     from .stack import DeligneMumfordModuliStackOver
 
@@ -21,8 +21,8 @@ class FamiliesOver:
     def stack(self) -> DeligneMumfordModuliStackOver:
         return self._stack_over
 
-    def base(self) -> SchemeOver:
-        return self._stack_over.base()
+    def over_scheme(self) -> AffineScheme:
+        return self._stack_over.over_scheme()
 
     def an_element(self) -> FamilyOver:
         return FamilyOver(self._stack_over)
@@ -36,8 +36,8 @@ class FamilyOver:
     def __init__(self, stack_over: DeligneMumfordModuliStackOver) -> None:
         self._stack_over = stack_over
 
-    def base(self) -> SchemeOver:
-        return self._stack_over.base()
+    def over_scheme(self) -> AffineScheme:
+        return self._stack_over.over_scheme()
 
     def fiber(self, point: object) -> SmoothPointedCurve | StablePointedCurve:
         from ..curves.pointed import SmoothPointedCurve, StablePointedCurve

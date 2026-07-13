@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from sage.rings.integer_ring import ZZ
 from sage.structure.unique_representation import UniqueRepresentation
 
-from ..categories.base import AffineScheme, SchemeOver, spec
+from ..categories.base import AffineScheme, check_z_scheme, spec
 from ..categories.schemes import Varieties
 from ..geometry.morphisms import CoarseModuliMap
 
@@ -40,10 +40,11 @@ class CoarseModuliScheme(UniqueRepresentation):
     def base_scheme(self) -> AffineScheme:
         return spec(ZZ)
 
-    def base_change(self, base: SchemeOver) -> CoarseModuliSchemeOver:
-        if not isinstance(base, SchemeOver):
-            raise TypeError(f"expected SchemeOver; found {type(base)}")
-        return CoarseModuliSchemeOver(self, base)
+    def base_change(self, S: AffineScheme) -> CoarseModuliSchemeOver:
+        if not isinstance(S, AffineScheme):
+            raise TypeError(f"expected AffineScheme; found {type(S)}")
+        check_z_scheme(S)
+        return CoarseModuliSchemeOver(self, S)
 
     def is_compact(self) -> bool:
         return self._compact
@@ -72,23 +73,24 @@ class CoarseModuliScheme(UniqueRepresentation):
 
 
 class CoarseModuliSchemeOver(UniqueRepresentation):
-    r"""Base change of a coarse moduli scheme to `S \in \mathrm{Sch}/B`."""
+    r"""Base change of a coarse moduli scheme along canonical `S \to \mathrm{Spec}(\mathbb Z)`."""
 
-    __slots__ = ("_universal", "_base")
+    __slots__ = ("_universal", "_over")
 
-    def __init__(self, universal: CoarseModuliScheme, base: SchemeOver) -> None:
+    def __init__(self, universal: CoarseModuliScheme, over: AffineScheme) -> None:
         if not isinstance(universal, CoarseModuliScheme):
             raise TypeError(f"expected CoarseModuliScheme; found {type(universal)}")
-        if not isinstance(base, SchemeOver):
-            raise TypeError(f"expected SchemeOver; found {type(base)}")
+        if not isinstance(over, AffineScheme):
+            raise TypeError(f"expected AffineScheme; found {type(over)}")
+        check_z_scheme(over)
         self._universal = universal
-        self._base = base
+        self._over = over
 
     def universal(self) -> CoarseModuliScheme:
         return self._universal
 
-    def base(self) -> SchemeOver:
-        return self._base
+    def over_scheme(self) -> AffineScheme:
+        return self._over
 
     def genus(self) -> int:
         return self._universal.genus()
@@ -97,7 +99,7 @@ class CoarseModuliSchemeOver(UniqueRepresentation):
         return self._universal.number_of_markings()
 
     def base_scheme(self) -> AffineScheme:
-        return self._base.base()
+        return self._over
 
     def is_compact(self) -> bool:
         return self._universal.is_compact()
@@ -106,7 +108,7 @@ class CoarseModuliSchemeOver(UniqueRepresentation):
         return self._universal.dimension()
 
     def category(self) -> object:
-        return Varieties(self.base_scheme())
+        return Varieties(self._over)
 
     def is_quasiprojective(self) -> bool:
         return self._universal.is_quasiprojective()
@@ -122,7 +124,7 @@ class CoarseModuliSchemeOver(UniqueRepresentation):
 
     def _repr_(self) -> str:
         prefix = "Mbar" if self.is_compact() else "M"
-        return f"{prefix}({self.genus()}, {self.number_of_markings()}) over {self._base}"
+        return f"{prefix}({self.genus()}, {self.number_of_markings()}) over {self._over}"
 
 
 class CoarseBoundary:
