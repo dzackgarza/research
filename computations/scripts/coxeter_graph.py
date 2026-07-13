@@ -380,7 +380,9 @@ class CoxeterGraph(Graph):
                 Gp.add_vertex(v)
             
             for e in [e for e in self.edges() if e[0] != e[1]]:
-                v1 = e[0]; v2 = e[1]; v1_v2 = e[2]
+                v1 = e[0]
+                v2 = e[1]
+                v1_v2 = e[2]
                 v1_2 = [e for e in self.edges_incident(v1) if e[0] == v1 and e[1] == v1][0][2]
                 v2_2 = [e for e in self.edges_incident(v2) if e[0] == v2 and e[1] == v2][0][2]
                 g12 = int(v1_v2) / sqrt(int(v1_2) * int(v2_2))
@@ -421,8 +423,6 @@ class CoxeterGraph(Graph):
         # print("Plotting, updating colors")
         self._default_options["vertex_colors"] = init_coxeter_colors(self)
         
-        opts = copy( self._default_options )
-
         updated_opts = dict( list( options.items() ) + list( self._default_options.items() ) )
 
         # updated_opts["pos"] = self._default_options["pos"]
@@ -572,7 +572,7 @@ class CoxeterGraph(Graph):
         int_orbits = set()
         for H in subgraphs:
             orb = AutG.orbit(tuple(H.vertices()), action="OnSets")
-            lp = sorted([tuple(sorted(l)) for l in orb])
+            lp = sorted([tuple(sorted(vertex_set)) for vertex_set in orb])
             int_orbits.add(tuple(lp))
 
         graph_orbits = Set([tuple(map(lambda x: self.subgraph(x), some_orbs)) for some_orbs in int_orbits])
@@ -826,7 +826,6 @@ class CoxeterGraph(Graph):
             vertex_lines.append(line)
             
         edge_lines = []
-        num_edges = Counter( graph_to_plot.edges() )
         for (u, v, label) in graph_to_plot.edges():
             if u == v:
                 # loops are done below
@@ -865,7 +864,6 @@ class CoxeterGraph(Graph):
         scale = tikz_options["scale"]
         scale_factor = tikz_options["scale_factor"]
         scale_factor_labels = tikz_options["scale_factor_labels"]
-        fontsize = tikz_options["fontsize"]
         tex_font_size = tikz_options["tex_font_size"]
         edge_width = tikz_options["edge_width"]
         node_size = tikz_options["node_size"]
@@ -879,7 +877,6 @@ class CoxeterGraph(Graph):
         parser = dotparsing.DotDataParser()
         tmpdata = d2t.create_xdot(dotdata, prog="neato", options='')
         main_graph = parser.parse_dot_data(tmpdata)
-        nodes = list( main_graph.allnodes )
         edges = list(main_graph.alledges )
 
         graph = list( main_graph.allgraphs )[0]
@@ -897,7 +894,6 @@ class CoxeterGraph(Graph):
         lines.append(r'% vertices')
         lines.append(r'\begin{pgfonlayer}{nodelayer}')
         for node in main_graph.allnodes:
-            color = "white"
             position = tuple( [float(x)/scale_factor for x in node.pos.split(",")])
             line = f'\\node [style={node.fillcolor} node] ({node.name}) at {position} {{}};'
             lines.append(line)
@@ -939,7 +935,8 @@ class CoxeterGraph(Graph):
         lines.append(r'\end{tikzpicture}')
         tikz = '\n'.join(lines)
     
-        if debug: print(tikz)
+        if debug:
+            print(tikz)
         
         t = TikzPicture(
             tikz, standalone_config=["border=4mm"], 

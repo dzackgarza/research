@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 
 from sage.arith.misc import gcd
-from sage.functions.other import sqrt
 from sage.geometry.polyhedron.base import Polyhedron_base
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.graphs.graph import Graph
@@ -19,16 +18,6 @@ def plot_coxeter_diagram_detailed(
     simple_roots: Sequence[FreeModuleElement], Q: SageMatrix = diagonal_matrix([-1, 1, 1])
 ) -> Graphics:
     G = Graph(multiedges=False, loops=False)
-
-    # Precompute exact cos(pi/m) values
-    cos_table = {
-        2: -1,
-        3: -QQ(1)/2,
-        4: -QQ(1)/sqrt(2),
-        5: -(sqrt(5) + 1) / 4,
-        6: -QQ(1)/(2 * sqrt(3)),
-        # etc... extend as needed
-    }
 
     for i in range(len(simple_roots)):
         for j in range(i + 1, len(simple_roots)):

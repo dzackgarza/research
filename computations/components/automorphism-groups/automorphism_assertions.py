@@ -84,7 +84,11 @@ def compute_automorphism_group_with_proofs(G: Group, group_name: str = "") -> Gr
                 phi_a = phi(a)
                 phi_b = phi(b)
                 phi_a_phi_b = phi_a * phi_b
-                assert phi_ab == phi_a_phi_b, f"Automorphism must preserve group operation: φ({a}*{b}) = φ({ab}) = {phi_ab}, but φ({a})*φ({b}) = {phi_a}*{phi_b} = {phi_a_phi_b}"
+                assert phi_ab == phi_a_phi_b, (
+                    "Automorphism must preserve group operation: "
+                    f"φ({a}*{b}) = φ({ab}) = {phi_ab}, but "
+                    f"φ({a})*φ({b}) = {phi_a}*{phi_b} = {phi_a_phi_b}"
+                )
     
     print(f"✓ All proofs passed for {group_name}")
     return aut_group

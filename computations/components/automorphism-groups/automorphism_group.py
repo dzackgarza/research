@@ -12,7 +12,7 @@ from sage.groups.perm_gps.permgroup_named import (
 )
 
 
-def analyze_automorphism_group(G: Group, group_name: str = "") -> Group | None:
+def analyze_automorphism_group(G: Group, group_name: str = "") -> Group:
     """
     Analyze the automorphism group of G with detailed information.
     
@@ -21,66 +21,34 @@ def analyze_automorphism_group(G: Group, group_name: str = "") -> Group | None:
     group_name: Optional name for the group
     
     Returns:
-    The automorphism group, or None if computation fails
+    The automorphism group
     """
     print(f"=== Automorphism Analysis: {group_name or 'Group'} ===")
-    
-    # Get basic group information
-    try:
-        group_order = G.order()
-        print(f"Original group order: {group_order}")
-    except:
-        print("Original group order: Unknown/Infinite")
-        group_order = None
-    
-    # Compute automorphism group with error handling
-    try:
-        aut_group = G.automorphism_group()
-        print("✓ Automorphism group computation: SUCCESS")
-    except Exception as e:
-        print("✗ Automorphism group computation: FAILED")
-        print(f"  Error: {e}")
-        return None
-    
-    # Get automorphism group order
-    try:
-        aut_order = aut_group.order()
-        print(f"Automorphism group order: {aut_order}")
-    except:
-        print("Automorphism group order: Unknown/Infinite")
-        aut_order = None
-    
-    # Structure description
-    try:
-        structure = aut_group.structure_description()
-        print(f"Structure: {structure}")
-    except:
-        print("Structure description not available")
-    
-    # Generators
-    try:
-        generators = aut_group.gens()
-        print(f"Number of generators: {len(generators)}")
-    except:
-        print("Generator information not available")
-        return aut_group
+
+    group_order = G.order()
+    print(f"Original group order: {group_order}")
+
+    aut_group = G.automorphism_group()
+    print("✓ Automorphism group computation: SUCCESS")
+
+    aut_order = aut_group.order()
+    print(f"Automorphism group order: {aut_order}")
+
+    structure = aut_group.structure_description()
+    print(f"Structure: {structure}")
+
+    generators = aut_group.gens()
+    print(f"Number of generators: {len(generators)}")
     
     # Show action on original group elements
     print("\nAutomorphism action on group elements:")
-    try:
-        elements = list(G)[:min(8, len(G))]  # Show first 8 elements
-        
-        for i, gen in enumerate(generators[:3]):  # Show first 3 generators
-            print(f"  Generator {i}:")
-            for elem in elements:
-                try:
-                    image = gen(elem)
-                    if image != elem:
-                        print(f"    {elem} → {image}")
-                except:
-                    print(f"    {elem} → (action not available)")
-    except Exception as e:
-        print(f"  Action display failed: {e}")
+    elements = list(G)[:min(8, len(G))]  # Show first 8 elements
+    for i, gen in enumerate(generators[:3]):  # Show first 3 generators
+        print(f"  Generator {i}:")
+        for elem in elements:
+            image = gen(elem)
+            if image != elem:
+                print(f"    {elem} → {image}")
     
     return aut_group
 
@@ -117,20 +85,14 @@ def find_inner_automorphisms(G: Group) -> Group:
     
     # Inner automorphisms (conjugation by group elements)
     # Inn(G) ≅ G/Z(G) where Z(G) is the center
-    try:
-        center = G.center()
-        center_order = center.order()
-        inner_aut_order = G.order() // center_order
-        
-        print(f"Center order: {center_order}")
-        print(f"Inner automorphism group order: {inner_aut_order}")
-        print(f"Outer automorphism group order: {aut_group.order() // inner_aut_order}")
-        
-        # Show center elements
-        print("Center elements:", list(center))
-        
-    except:
-        print("Center computation not available for this group type")
+    center = G.center()
+    center_order = center.order()
+    inner_aut_order = G.order() // center_order
+
+    print(f"Center order: {center_order}")
+    print(f"Inner automorphism group order: {inner_aut_order}")
+    print(f"Outer automorphism group order: {aut_group.order() // inner_aut_order}")
+    print("Center elements:", list(center))
     
     return aut_group
 

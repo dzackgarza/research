@@ -14,9 +14,9 @@ import re
 from pathlib import Path
 from typing import Any, TypedDict
 
-logger = logging.getLogger(__name__)
-
 from haystack.dataclasses import Document
+
+logger = logging.getLogger(__name__)
 
 
 class _CitationTarget(TypedDict):
@@ -181,7 +181,8 @@ class InlineCitationEnhancer:
         """
 
         # Include the exact example from ModelOutput.md as a template
-        example_template = """### 🔹 Computing Invariants of an Integral Lattice in SageMath
+        example_template = (
+            """### 🔹 Computing Invariants of an Integral Lattice in SageMath
 
 Solution: use the `IntegralLattice` method to construct at `FreeQuadraticModule_integer_symmetric` object.
 
@@ -225,7 +226,13 @@ print("Discriminant group:", L.discriminant_group())
 
 ---
 
-*IMPORTANT: Do not reference any external books or articles not present in the indexed documentation or codebase. Do not include a 'Mathematical Context' or 'Explanation of Outputs' section. Always cite the specific code or documentation source for every method or property listed.*"""
+"""
+            "*IMPORTANT: Do not reference any external books or articles not present "
+            "in the indexed documentation or codebase. Do not include a "
+            "'Mathematical Context' or 'Explanation of Outputs' section. Always cite "
+            "the specific code or documentation source for every method or property "
+            "listed.*"
+        )
 
         prompt = (
             "You are an expert mathematical assistant answering questions about advanced mathematics and SageMath.\n\n"

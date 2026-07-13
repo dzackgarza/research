@@ -41,11 +41,8 @@ def test_sagemath_files() -> bool:
 
         # Show first few files as examples
         for i, f in enumerate(files[:3]):
-            try:
-                size = f.stat().st_size / 1024  # KB
-                print(f"  Example: {f.relative_to(SAGE_PATH)} ({size:.1f} KB)")
-            except:
-                print(f"  Example: {f.relative_to(SAGE_PATH)} (size unknown)")
+            size = f.stat().st_size / 1024  # KB
+            print(f"  Example: {f.relative_to(SAGE_PATH)} ({size:.1f} KB)")
 
     print(f"\nTotal files found: {total_files}")
 

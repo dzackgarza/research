@@ -307,8 +307,10 @@ def graph_D_n(n: _SageIndex) -> _CoxeterGraph:
         sage: sorted(G.edges(labels=True))
         [(0, 0, -2), (0, 2, 1), (1, 1, -2), (1, 2, 1), (2, 2, -2), (2, 3, 1), (3, 3, -2)]
     """
-    if n == 2: return graph_D_2()
-    if n == 3: return graph_A_n(2)
+    if n == 2:
+        return graph_D_2()
+    if n == 3:
+        return graph_A_n(2)
     m = n-1
     G = Graph(loops=True)
     for i in range(m + 1):
@@ -1266,7 +1268,6 @@ def init_coxeter_colors(G: _CoxeterGraph) -> dict[str, list[_SageIndex]]:
         sage: len(colors)
         3
     """
-    v_labs: dict[_SageIndex, str] = {}
     vertex_colors: dict[str, list[_SageIndex]] = {
         '#F8F9FE': [], # white
         '#BFC9CA': [], # black
@@ -1358,7 +1359,6 @@ def get_coxeter_label_connected(H: _CoxeterGraph) -> str:
     n = len(H.vertices())
     ade_types = get_all_rank_n_types(n)
     M_H = graph_to_matrix(H)
-    s = ""
     this_type = [x[0] for x in ade_types if x[1].is_similar(M_H)]
     if len(this_type) == 0:
         this_type_negs = [x[0] for x in ade_types if x[1].is_similar(-1*M_H)]
