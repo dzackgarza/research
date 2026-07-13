@@ -3369,6 +3369,7 @@ This section formalizes semifans and semitoroidal compactifications, describes a
     title="{ Semifans [@???] }
     title="{ Semifans [@???] }
     title="{ Semifans [@???] }
+    title="{ Semifans [@???] }
 
 } let $V$ be a real finite-dimensional vector space, and let $C \subset V$ be an open, nondegenerate convex cone. A **semifan** ${\mathcal{F}}$ in $C$ is a collection of closed, convex, rational polyhedral cones $\sigma \subset  \mathfrak{C} _{{\mathbf{Q}}}$ such that:
 
@@ -5293,10 +5294,12 @@ Ensure that all logical dependencies, object definitions, proof steps, and refer
 Do not leave assertions or equivalences to the reader or reviewer to supply.**
 
 # -->
+
 <!-- We now prove a crucial structural property of the classifying morphism $\phi :  {B}^{\nu}  \to \overline{F_{{\mathrm{En}}, 2}}$ constructed in previous sections: namely, that $\phi$ is finite.
 This assertion is the final step needed for modular identification of the compactified moduli of degree-2 polarized3 stable Enriques pairs via the period map and semitoroidal construction, and its proof relies on a precise analysis of the combinatorial boundary stratifications encoded by the semifans developed earlier.
 
 :::{.theorem
+    title="{Finiteness of the Classifying Map}
     title="{Finiteness of the Classifying Map}
     title="{Finiteness of the Classifying Map}
 "
@@ -5310,6 +5313,7 @@ To establish this result, we compare the semitoroidal structures on source and t
 The proof is based on the matching of boundary stratifications and the maximality of degenerations as detected in the geometry of Kulikov models.
 
 :::{.lemma
+    title="{Semifan Comparison}
     title="{Semifan Comparison}
     title="{Semifan Comparison}
 "
@@ -5329,6 +5333,7 @@ By [@AE23, Theorem 7.18], the normalization of any KSBA compactification with re
 :::{.definition
     title="{Maximality of Degenerations}
     title="{Maximality of Degenerations}
+    title="{Maximality of Degenerations}
 "
     title="{Maximality of Degenerations}"
     #def:maximality-degenerations
@@ -5337,6 +5342,7 @@ A degeneration $(X_0, \epsilon R_0)$ of K3 pairs is called **maximal** if the du
 :::
 
 :::{.proposition
+    title="{The Double Curve Constraint}
     title="{The Double Curve Constraint}
     title="{The Double Curve Constraint}
 "
@@ -5373,6 +5379,7 @@ Thus the dual complex and monodromy invariants classify the degeneration up to e
 :::{.theorem
     title="{No Coarsening Occurs}
     title="{No Coarsening Occurs}
+    title="{No Coarsening Occurs}
 "
     title="{No Coarsening Occurs}"
     #thm:no-coarsening
@@ -5387,6 +5394,7 @@ Consider points in $ {B}^{\nu} $ mapping to $\sigma$ via the period map: these c
 :::
 
 :::{.corollary
+    title="{Finiteness of the Classifying Map}
     title="{Finiteness of the Classifying Map}
     title="{Finiteness of the Classifying Map}
 "
