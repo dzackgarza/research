@@ -1,24 +1,23 @@
-r"""Stratified spaces and stacks."""
+r"""Stratified spaces and stacks over a base scheme."""
 
 from __future__ import annotations
 
 from sage.categories.category import Category
 
-from .base import ModuliBase, default_base
 from .foundation import ModuliCategory
 from .schemes import Schemes
 from .stacks import Stacks
 
 
 class StratifiedSpaces(ModuliCategory):
-    r"""Spaces equipped with a stratification over the base."""
+    r"""Schemes with a stratification over base `S`."""
 
     def super_categories(self) -> list[Category]:
-        return [Schemes(self.moduli_base())]
+        return [Schemes(self.base_scheme())]
 
 
 class StratifiedStacks(ModuliCategory):
-    r"""Stacks equipped with a stratification over the base."""
+    r"""Stacks with a stratification over base `S`."""
 
     def super_categories(self) -> list[Category]:
-        return [Stacks(self.moduli_base()), StratifiedSpaces(self.moduli_base())]
+        return [Stacks(self.base_scheme()), StratifiedSpaces(self.base_scheme())]

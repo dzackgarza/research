@@ -2,30 +2,25 @@ r"""Deligne--Mumford moduli stacks as first-class geometric objects."""
 
 from __future__ import annotations
 
+from sage.rings.integer_ring import ZZ
 from sage.structure.unique_representation import UniqueRepresentation
 
-from ..categories.base import ModuliBase
-from ..categories import default_base
+from ..categories.base import AffineScheme, SchemeOver, spec
 from ..categories.stacks import DeligneMumfordStacks
-from ..moduli.coarse import CoarseModuliMap, CoarseModuliSpace, coarse_moduli_map
+from ..moduli.coarse import CoarseModuliMap, CoarseModuliScheme, CoarseModuliSchemeOver, coarse_moduli_map
 from ..moduli.families import FamiliesOver
 from ..moduli.problems import ModuliProblem, SmoothPointedCurves, StablePointedCurves
 
 
 class DeligneMumfordModuliStack(UniqueRepresentation):
-    r"""Deligne--Mumford stack `\mathcal M_{g,n}` or `\overline{\mathcal M}_{g,n}`.
+    r"""Universal Deligne--Mumford stack `\mathcal M_{g,n} \to \mathrm{Spec}(\mathbb Z)`."""
 
-    The open stack represents smooth pointed curves; the proper stack represents
-    stable pointed curves after Deligne--Mumford compactification.
-    """
-
-    __slots__ = ("_g", "_n", "_base", "_proper", "_problem")
+    __slots__ = ("_g", "_n", "_proper", "_problem")
 
     def __init__(
         self,
         g: int,
         n: int,
-        base: ModuliBase | None = None,
         *,
         proper: bool = False,
         problem: ModuliProblem | None = None,
@@ -36,7 +31,6 @@ class DeligneMumfordModuliStack(UniqueRepresentation):
         assert 2 * g - 2 + n > 0, f"(g, n)=({g}, {n}) is not in the stable range 2g - 2 + n > 0"
         self._g = g
         self._n = n
-        self._base = base if base is not None else default_base()
         self._proper = bool(proper)
         if problem is None:
             problem = StablePointedCurves(g, n) if self._proper else SmoothPointedCurves(g, n)
@@ -48,8 +42,9 @@ class DeligneMumfordModuliStack(UniqueRepresentation):
     def number_of_markings(self) -> int:
         return self._n
 
-    def base(self) -> ModuliBase:
-        return self._base
+    def base_scheme(self) -> AffineScheme:
+        r"""Target of the structure morphism: `\mathrm{Spec}(\mathbb Z)`."""
+        return spec(ZZ)
 
     def is_proper(self) -> bool:
         return self._proper
@@ -67,16 +62,26 @@ class DeligneMumfordModuliStack(UniqueRepresentation):
         return True
 
     def category(self) -> object:
-        return DeligneMumfordStacks(self._base)
+        return DeligneMumfordStacks(self.base_scheme())
 
     def moduli_problem(self) -> ModuliProblem:
         return self._problem
 
-    def objects_over(self, base_scheme: object) -> FamiliesOver:
-        return FamiliesOver(self, base_scheme)
+    def base_change(self, base: SchemeOver) -> DeligneMumfordModuliStackOver:
+        r"""Pullback `\mathcal M_{g,n} \times_{\mathrm{Spec}(\mathbb Z)} S` in `\mathrm{Sch}/S`."""
+        if not isinstance(base, SchemeOver):
+            raise TypeError(f"expected SchemeOver; found {type(base)}")
+        return DeligneMumfordModuliStackOver(self, base)
 
-    def coarse_space(self) -> CoarseModuliSpace:
-        return CoarseModuliSpace(self._g, self._n, self._base, compact=self._proper)
+    def s_points(self, base: SchemeOver) -> DeligneMumfordModuliStackOver:
+        r"""`S`-points `\mathrm{Hom}(S, \mathcal M_{g,n})`; same data as :meth:`base_change`."""
+        return self.base_change(base)
+
+    def objects_over(self, base: SchemeOver) -> FamiliesOver:
+        return FamiliesOver(self.base_change(base))
+
+    def coarse_scheme(self) -> CoarseModuliScheme:
+        return CoarseModuliScheme(self._g, self._n, compact=self._proper)
 
     def coarse_moduli_map(self) -> CoarseModuliMap:
         return coarse_moduli_map(self)
@@ -92,7 +97,7 @@ class DeligneMumfordModuliStack(UniqueRepresentation):
             raise ValueError("already a compactified moduli stack")
         assert kind == "Deligne-Mumford", f"unsupported compactification kind {kind!r}"
         problem = by if by is not None else StablePointedCurves(self._g, self._n)
-        codomain = DeligneMumfordModuliStack(self._g, self._n, self._base, proper=True, problem=problem)
+        codomain = DeligneMumfordModuliStack(self._g, self._n, proper=True, problem=problem)
         return Compactification(self, codomain, problem)
 
     def compactify(self, by: ModuliProblem | None = None, kind: str = "Deligne-Mumford") -> DeligneMumfordModuliStack:
@@ -100,4 +105,79 @@ class DeligneMumfordModuliStack(UniqueRepresentation):
 
     def _repr_(self) -> str:
         name = "Mbar" if self._proper else "M"
-        return f"DM stack {name}({self._g}, {self._n}) over {self._base}"
+        return f"DM stack {name}({self._g}, {self._n}) over Spec(ZZ)"
+
+
+class DeligneMumfordModuliStackOver(UniqueRepresentation):
+    r"""Base change of a universal stack to `S \in \mathrm{Sch}/B`."""
+
+    __slots__ = ("_universal", "_base")
+
+    def __init__(self, universal: DeligneMumfordModuliStack, base: SchemeOver) -> None:
+        if not isinstance(universal, DeligneMumfordModuliStack):
+            raise TypeError(f"expected DeligneMumfordModuliStack; found {type(universal)}")
+        if not isinstance(base, SchemeOver):
+            raise TypeError(f"expected SchemeOver; found {type(base)}")
+        self._universal = universal
+        self._base = base
+
+    def universal(self) -> DeligneMumfordModuliStack:
+        return self._universal
+
+    def base(self) -> SchemeOver:
+        r"""The base `S \to B` in `\mathrm{Sch}/B`."""
+        return self._base
+
+    def genus(self) -> int:
+        return self._universal.genus()
+
+    def number_of_markings(self) -> int:
+        return self._universal.number_of_markings()
+
+    def is_proper(self) -> bool:
+        return self._universal.is_proper()
+
+    def dimension(self) -> int:
+        return self._universal.dimension()
+
+    def is_smooth(self) -> bool:
+        return self._universal.is_smooth()
+
+    def is_irreducible(self) -> bool:
+        return self._universal.is_irreducible()
+
+    def is_separated(self) -> bool:
+        return self._universal.is_separated()
+
+    def category(self) -> object:
+        return DeligneMumfordStacks(self._base.base())
+
+    def moduli_problem(self) -> ModuliProblem:
+        return self._universal.moduli_problem()
+
+    def objects_over(self) -> FamiliesOver:
+        return FamiliesOver(self)
+
+    def coarse_scheme(self) -> CoarseModuliSchemeOver:
+        return CoarseModuliSchemeOver(self._universal.coarse_scheme(), self._base)
+
+    def coarse_moduli_map(self) -> CoarseModuliMap:
+        return coarse_moduli_map(self._universal)
+
+    def compactification(
+        self,
+        by: ModuliProblem | None = None,
+        kind: str = "Deligne-Mumford",
+    ) -> object:
+        compact = self._universal.compactification(by=by, kind=kind)
+        codomain = DeligneMumfordModuliStackOver(compact.codomain(), self._base)
+        from ..geometry.compactification import Compactification
+
+        return Compactification(self, codomain, compact.moduli_problem())
+
+    def compactify(self, by: ModuliProblem | None = None, kind: str = "Deligne-Mumford") -> DeligneMumfordModuliStackOver:
+        return self.compactification(by=by, kind=kind).codomain()
+
+    def _repr_(self) -> str:
+        name = "Mbar" if self.is_proper() else "M"
+        return f"DM stack {name}({self.genus()}, {self.number_of_markings()}) over {self._base}"

@@ -1,38 +1,46 @@
-r"""Category membership helpers for moduli landscape objects."""
+r"""Category membership over a common base `B`."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from .base import AffineScheme
     from .foundation import ModuliCategory
-    from ..moduli.coarse import CoarseModuliSpace
-    from ..moduli.stack import DeligneMumfordModuliStack
+    from ..moduli.coarse import CoarseModuliScheme, CoarseModuliSchemeOver
+    from ..moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
     from ..stratification.stratified import StratifiedStack
 
 
-def _same_moduli_base(category: ModuliCategory, base: object) -> bool:
-    from ..categories.base import ModuliBase
+def _object_base(obj: object) -> AffineScheme:
+    from ..moduli.coarse import CoarseModuliScheme, CoarseModuliSchemeOver
+    from ..moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
 
-    if not isinstance(base, ModuliBase):
+    if isinstance(obj, DeligneMumfordModuliStack):
+        return obj.base_scheme()
+    if isinstance(obj, DeligneMumfordModuliStackOver):
+        return obj.base().base()
+    if isinstance(obj, CoarseModuliScheme):
+        return obj.base_scheme()
+    if isinstance(obj, CoarseModuliSchemeOver):
+        return obj.base().base()
+    raise TypeError(f"no base scheme for {type(obj)}")
+
+
+def stack_in_category(stack: DeligneMumfordModuliStack | DeligneMumfordModuliStackOver, category: ModuliCategory) -> bool:
+    from ..moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
+
+    if not isinstance(stack, (DeligneMumfordModuliStack, DeligneMumfordModuliStackOver)):
         return False
-    return category.moduli_base() is base
+    return _object_base(stack) is category.base_scheme()
 
 
-def stack_in_category(stack: DeligneMumfordModuliStack, category: ModuliCategory) -> bool:
-    from ..moduli.stack import DeligneMumfordModuliStack
+def coarse_in_category(scheme: CoarseModuliScheme | CoarseModuliSchemeOver, category: ModuliCategory) -> bool:
+    from ..moduli.coarse import CoarseModuliScheme, CoarseModuliSchemeOver
 
-    if not isinstance(stack, DeligneMumfordModuliStack):
+    if not isinstance(scheme, (CoarseModuliScheme, CoarseModuliSchemeOver)):
         return False
-    return _same_moduli_base(category, stack.base())
-
-
-def coarse_in_category(space: CoarseModuliSpace, category: ModuliCategory) -> bool:
-    from ..moduli.coarse import CoarseModuliSpace
-
-    if not isinstance(space, CoarseModuliSpace):
-        return False
-    return _same_moduli_base(category, space.base())
+    return _object_base(scheme) is category.base_scheme()
 
 
 def stratified_stack_in_category(stratified: StratifiedStack, category: ModuliCategory) -> bool:
@@ -40,4 +48,4 @@ def stratified_stack_in_category(stratified: StratifiedStack, category: ModuliCa
 
     if not isinstance(stratified, StratifiedStack):
         return False
-    return _same_moduli_base(category, stratified.parent_stack().base())
+    return _object_base(stratified.parent_stack()) is category.base_scheme()

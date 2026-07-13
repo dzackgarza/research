@@ -8,7 +8,7 @@ from .morphisms import OpenImmersion
 
 if TYPE_CHECKING:
     from ..moduli.problems import ModuliProblem
-    from ..moduli.stack import DeligneMumfordModuliStack
+    from ..moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
     from ..stratification.stratified import BoundaryStack, StratifiedStack
     from ..stratification.indexing import DualGraphType
 
@@ -20,18 +20,18 @@ class Compactification:
 
     def __init__(
         self,
-        domain: DeligneMumfordModuliStack,
-        codomain: DeligneMumfordModuliStack,
+        domain: DeligneMumfordModuliStack | DeligneMumfordModuliStackOver,
+        codomain: DeligneMumfordModuliStack | DeligneMumfordModuliStackOver,
         problem: ModuliProblem,
     ) -> None:
         self._domain = domain
         self._codomain = codomain
         self._problem = problem
 
-    def domain(self) -> DeligneMumfordModuliStack:
+    def domain(self) -> DeligneMumfordModuliStack | DeligneMumfordModuliStackOver:
         return self._domain
 
-    def codomain(self) -> DeligneMumfordModuliStack:
+    def codomain(self) -> DeligneMumfordModuliStack | DeligneMumfordModuliStackOver:
         return self._codomain
 
     def moduli_problem(self) -> ModuliProblem:

@@ -1,11 +1,11 @@
-r"""Morphisms between moduli and coarse moduli objects."""
+r"""Morphisms between moduli stacks and coarse moduli schemes."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..moduli.coarse import CoarseModuliSpace
+    from ..moduli.coarse import CoarseModuliScheme
     from ..moduli.stack import DeligneMumfordModuliStack
 
 
@@ -33,13 +33,17 @@ class OpenImmersion(ModuliMorphism):
 
 
 class CoarseModuliMap(ModuliMorphism):
-    r"""Universal coarse moduli map `\mathcal M \to M`."""
+    r"""Universal coarse moduli map `\mathcal M_{g,n} \to M_{g,n}`."""
 
-    def __init__(self, stack: DeligneMumfordModuliStack, coarse: CoarseModuliSpace) -> None:
+    def __init__(self, stack: DeligneMumfordModuliStack, coarse: CoarseModuliScheme) -> None:
         super().__init__(stack, coarse)
 
-    def coarse_space(self) -> CoarseModuliSpace:
-        from ..moduli.coarse import CoarseModuliSpace
+    def coarse_scheme(self) -> CoarseModuliScheme:
+        from ..moduli.coarse import CoarseModuliScheme
 
-        assert isinstance(self._codomain, CoarseModuliSpace)
+        assert isinstance(self._codomain, CoarseModuliScheme)
         return self._codomain
+
+    def coarse_space(self) -> CoarseModuliScheme:
+        r"""Deprecated alias for :meth:`coarse_scheme`."""
+        return self.coarse_scheme()

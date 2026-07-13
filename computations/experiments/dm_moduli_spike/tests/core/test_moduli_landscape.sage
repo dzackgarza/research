@@ -3,34 +3,74 @@ r"""Tier-4 internal consistency: moduli landscape API chain."""
 from __future__ import annotations
 
 from sage.combinat.posets.posets import FinitePoset
+from sage.rings.integer_ring import ZZ
+from sage.rings.rational_field import QQ
 
 from dm_moduli_spike import (
-    ComplexNumbers,
     DeligneMumfordStacks,
     DualGraphType,
     M_gn,
-    SmoothPointedCurves,
     StablePointedCurves,
     StratifiedStacks,
     Varieties,
-    stack_in_category,
     coarse_in_category,
+    complex_numbers_ring,
+    scheme_over,
+    spec,
+    spec_complex,
+    stack_in_category,
     stratified_stack_in_category,
 )
 
 
-def test_moduli_landscape_chain_M11():
-    C = ComplexNumbers()
-    XS = M_gn(1, 1, base=C)
+def test_spec_functor_and_scheme_over():
+    Z = spec(ZZ)
+    Q = spec(QQ)
+    S = scheme_over(QQ, base_ring=ZZ)
 
-    assert stack_in_category(XS, DeligneMumfordStacks(C))
-    assert XS.is_smooth()
-    assert XS.is_irreducible()
+    assert S.scheme() is Q
+    assert S.base() is Z
+    assert spec(ZZ) is Z
+
+
+def test_universal_stack_over_spec_ZZ():
+    Z = spec(ZZ)
+    XS = M_gn(1, 1)
+
+    assert XS.base_scheme() is Z
+    assert stack_in_category(XS, DeligneMumfordStacks(Z))
     assert XS.dimension() == 1
 
+
+def test_base_change_equals_s_points():
+    Q_base = scheme_over(QQ, base_ring=ZZ)
+    XS = M_gn(1, 1)
+
+    XS_Q = XS.base_change(Q_base)
+    assert XS_Q is XS.s_points(Q_base)
+    assert XS_Q.base() is Q_base
+    assert stack_in_category(XS_Q, DeligneMumfordStacks(spec(QQ)))
+
+
+def test_symbolic_complex_numbers():
+    CC = complex_numbers_ring()
+    C = spec_complex()
+    assert C is spec(CC)
+    i = CC.gen()
+    assert i**2 == CC(-1)
+
+
+def test_moduli_landscape_chain_M11():
+    Z = spec(ZZ)
+    XS = M_gn(1, 1)
+
+    assert stack_in_category(XS, DeligneMumfordStacks(Z))
+    assert XS.is_smooth()
+    assert XS.is_irreducible()
+
     pi = XS.coarse_moduli_map()
-    X = pi.coarse_space()
-    assert coarse_in_category(X, Varieties(C))
+    X = pi.coarse_scheme()
+    assert coarse_in_category(X, Varieties(Z))
     assert X.is_quasiprojective()
 
     cXS = XS.compactification(by=StablePointedCurves(1, 1))
@@ -41,16 +81,15 @@ def test_moduli_landscape_chain_M11():
     assert j.codomain() is XSbar
     assert j.is_open_immersion()
     assert XSbar.is_proper()
-    assert stack_in_category(XSbar, DeligneMumfordStacks(C))
+    assert stack_in_category(XSbar, DeligneMumfordStacks(Z))
 
-    Xbar = XSbar.coarse_space()
-    assert coarse_in_category(Xbar, Varieties(C))
+    Xbar = XSbar.coarse_scheme()
+    assert coarse_in_category(Xbar, Varieties(Z))
 
     bXS = cXS.boundary()
     S = bXS.stratify(by=DualGraphType())
-    assert stratified_stack_in_category(S, StratifiedStacks(C))
+    assert stratified_stack_in_category(S, StratifiedStacks(Z))
 
-    Gamma_gn = S.indexing_category()
     P = S.stratification_poset(order="specialization")
     assert isinstance(P, FinitePoset)
     assert P == DualGraphType().thinification(1, 1, order="specialization")
@@ -61,16 +100,16 @@ def test_moduli_landscape_chain_M11():
 
 
 def test_moduli_problem_and_families():
+    ZZ_base = scheme_over(ZZ, base_ring=ZZ)
     XS = M_gn(0, 4)
     assert XS.moduli_problem().name() == "SmoothPointedCurves"
-    family = XS.objects_over("S")
-    C = family.fiber("s")
+    family = XS.objects_over(ZZ_base)
+    C = family.an_element().fiber("s")
     assert C.is_smooth()
     assert C.arithmetic_genus() == 0
 
     XSbar = XS.compactify(by=StablePointedCurves(0, 4))
-    stable_family = XSbar.objects_over("S")
-    Cs = stable_family.fiber("s")
+    stable_family = XSbar.objects_over(ZZ_base)
+    Cs = stable_family.an_element().fiber("s")
     assert Cs.is_stable()
-    Gamma = Cs.dual_graph()
-    assert Gamma.genus() == 0
+    assert Cs.dual_graph().genus() == 0

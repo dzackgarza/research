@@ -1,29 +1,28 @@
-r"""Lightweight Sage categories carrying a :class:`ModuliBase`."""
+r"""Lightweight Sage categories over a base `B` in `\mathrm{Sch}/B`."""
 
 from __future__ import annotations
 
 from sage.categories.category import Category
 
-from .base import ModuliBase, default_base
+from .base import AffineScheme, spec
 
 
 class ModuliCategory(Category):
-    r"""Category over an abstract moduli base (not numerical ``CC``)."""
+    r"""Category of objects over a fixed base scheme `B`."""
 
     @staticmethod
-    def __classcall_private__(cls, base: ModuliBase | None = None) -> ModuliCategory:
+    def __classcall_private__(cls, base: AffineScheme | None = None) -> ModuliCategory:
         if base is None:
-            base = default_base()
-        if not isinstance(base, ModuliBase):
-            raise TypeError(f"expected ModuliBase; found {type(base)}")
+            from sage.rings.integer_ring import ZZ
+
+            base = spec(ZZ)
+        if not isinstance(base, AffineScheme):
+            raise TypeError(f"expected AffineScheme; found {type(base)}")
         return super().__classcall__(cls, base)
 
-    def __init__(self, base: ModuliBase) -> None:
-        self._moduli_base = base
+    def __init__(self, base: AffineScheme) -> None:
+        self._base = base
         Category.__init__(self)
 
-    def moduli_base(self) -> ModuliBase:
-        return self._moduli_base
-
-    def base_ring(self) -> object:
-        return self._moduli_base.sage_ring()
+    def base_scheme(self) -> AffineScheme:
+        return self._base

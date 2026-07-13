@@ -1,15 +1,14 @@
-r"""Scheme, variety, and algebraic-space categories over a moduli base."""
+r"""Scheme, variety, and algebraic-space categories over a base scheme."""
 
 from __future__ import annotations
 
 from sage.categories.category import Category
 
-from .base import ModuliBase, default_base
 from .foundation import ModuliCategory
 
 
 class Schemes(ModuliCategory):
-    r"""Schemes over a base :class:`ModuliBase`."""
+    r"""Schemes over a base scheme `S`."""
 
     def super_categories(self) -> list[Category]:
         from sage.categories.sets_cat import Sets
@@ -18,14 +17,14 @@ class Schemes(ModuliCategory):
 
 
 class AlgebraicSpaces(Schemes):
-    r"""Algebraic spaces over the base; coarse moduli maps land here generically."""
+    r"""Algebraic spaces over `S`; coarse moduli maps land here in general."""
 
     def super_categories(self) -> list[Category]:
-        return [Schemes(self.moduli_base())]
+        return [Schemes(self.base_scheme())]
 
 
 class Varieties(AlgebraicSpaces):
-    r"""Varieties over the base; stronger than algebraic spaces."""
+    r"""Varieties over `S` (e.g. `\overline M_{g,n}` over `\mathrm{Spec}(\mathbb C)`)."""
 
     def super_categories(self) -> list[Category]:
-        return [AlgebraicSpaces(self.moduli_base())]
+        return [AlgebraicSpaces(self.base_scheme())]

@@ -5,44 +5,48 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from ..categories.base import SchemeOver
     from ..curves.pointed import StablePointedCurve, SmoothPointedCurve
-    from .stack import DeligneMumfordModuliStack
+    from .stack import DeligneMumfordModuliStackOver
 
 
 class FamiliesOver:
-    r"""Groupoid of families over a base `S` for a moduli stack."""
+    r"""Groupoid of families over `S` for a base-changed moduli stack."""
 
-    __slots__ = ("_stack", "_base_scheme")
+    __slots__ = ("_stack_over",)
 
-    def __init__(self, stack: DeligneMumfordModuliStack, base_scheme: object) -> None:
-        self._stack = stack
-        self._base_scheme = base_scheme
+    def __init__(self, stack_over: DeligneMumfordModuliStackOver) -> None:
+        self._stack_over = stack_over
 
-    def stack(self) -> DeligneMumfordModuliStack:
-        return self._stack
+    def stack(self) -> DeligneMumfordModuliStackOver:
+        return self._stack_over
 
-    def base_scheme(self) -> object:
-        return self._base_scheme
+    def base(self) -> SchemeOver:
+        return self._stack_over.base()
 
     def an_element(self) -> FamilyOver:
-        return FamilyOver(self._stack, self._base_scheme)
+        return FamilyOver(self._stack_over)
 
 
 class FamilyOver:
     r"""A single family `\pi : \mathcal C \to S` in the moduli problem."""
 
-    __slots__ = ("_stack", "_base_scheme")
+    __slots__ = ("_stack_over",)
 
-    def __init__(self, stack: DeligneMumfordModuliStack, base_scheme: object) -> None:
-        self._stack = stack
-        self._base_scheme = base_scheme
+    def __init__(self, stack_over: DeligneMumfordModuliStackOver) -> None:
+        self._stack_over = stack_over
+
+    def base(self) -> SchemeOver:
+        return self._stack_over.base()
 
     def fiber(self, point: object) -> SmoothPointedCurve | StablePointedCurve:
         from ..curves.pointed import SmoothPointedCurve, StablePointedCurve
 
-        if self._stack.is_proper():
-            return StablePointedCurve(self._stack.genus(), self._stack.number_of_markings())
-        return SmoothPointedCurve(self._stack.genus(), self._stack.number_of_markings())
+        g = self._stack_over.genus()
+        n = self._stack_over.number_of_markings()
+        if self._stack_over.is_proper():
+            return StablePointedCurve(g, n)
+        return SmoothPointedCurve(g, n)
 
     def specialization(self, generic: object, special: object) -> Specialization:
         return Specialization(generic, special)
