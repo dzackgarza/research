@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .automorphism_action import AutomorphismAction
+from ._automorphism_action import AutomorphismAction
 from .records import StableGraph
 
 if TYPE_CHECKING:

@@ -9,6 +9,12 @@ from dm_moduli_spike import StableGraphTypes, StableGraph
 from dm_moduli_spike.objects.canonical import canonical_record
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
 from dm_moduli_spike.objects.stratification import build_stratification_from_types
+from tests.support.fixtures import (
+    edge_generator_images,
+    flag_generator_images,
+    marking_generator_images,
+    vertex_generator_images,
+)
 
 
 def test_isomorphic_labeled_inputs_define_the_same_curve_type():
@@ -129,8 +135,7 @@ def test_presentation_data_is_invariant_under_vertex_relabeling():
 def test_automorphism_action_fixes_markings_and_permutes_parallel_edges():
     types = StableGraphTypes(1, 2)
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
-    action = theta.automorphism_action()
-    assert all(image == tuple(range(1, 3)) for image in action.on_markings())
+    assert all(image == tuple(range(1, 3)) for image in marking_generator_images(theta.canonical_representative()))
     assert _elementary_contraction_data(theta)[0][2] == 2
 
 
@@ -185,8 +190,7 @@ def test_dumbbell_graph_automorphism_swaps_loop_branches():
         markings=((), (1, 2)),
         edges=((0, 0), (0, 1)),
     )
-    action = dumbbell.automorphism_action()
-    assert int(action.group().order()) == 2
+    assert int(dumbbell.automorphism_number()) == 2
     assert _elementary_contraction_data(dumbbell)[0][2] == 1
 
 
@@ -198,14 +202,16 @@ def test_automorphism_actions_on_all_incidence_data():
     }
     for gamma in fixtures.values():
         graph = gamma.canonical_representative()
-        action = gamma.automorphism_action()
-        assert int(action.group().order()) == gamma.automorphism_number()
-        assert len(action.on_vertices()[0]) == graph.num_vertices()
-        assert len(action.on_flags()[0]) == graph.num_flags()
-        assert len(action.on_edges()[0]) == graph.num_edges()
-        assert len(action.on_markings()[0]) == graph.num_markings()
-        assert action.on_factors() == action.on_vertices()
-        assert all(image == tuple(range(1, graph.num_markings() + 1)) for image in action.on_markings())
+        assert int(gamma.automorphism_number()) == int(graph.automorphism_group(on="half_edges").order())
+        verts = vertex_generator_images(graph)
+        flags = flag_generator_images(graph)
+        edges = edge_generator_images(graph)
+        marks = marking_generator_images(graph)
+        assert len(verts[0]) == graph.num_vertices()
+        assert len(flags[0]) == graph.num_flags()
+        assert len(edges[0]) == graph.num_edges()
+        assert len(marks[0]) == graph.num_markings()
+        assert all(image == tuple(range(1, graph.num_markings() + 1)) for image in marks)
 
 
 def test_branch_swap_semantics_on_m11_nodal_flags():
@@ -219,8 +225,7 @@ def test_branch_swap_semantics_on_m11_nodal_flags():
         if graph.flag_vertex[flag] == 0 and graph.flag_involution[flag] != flag
     ]
     assert len(loop_flags) == 2
-    action = loop.automorphism_action()
-    flag_perm = action.on_flags()[0]
+    flag_perm = flag_generator_images(graph)[0]
     assert flag_perm[marking_flag] == marking_flag
     assert {flag_perm[loop_flags[0]], flag_perm[loop_flags[1]]} == set(loop_flags)
     assert flag_perm[loop_flags[0]] != loop_flags[0]
@@ -236,7 +241,7 @@ def test_factor_slots_on_m11_nodal_graph():
     loop_flags = [flag for flag in clutching.flags_at(0) if graph.flag_involution[flag] != flag]
     assert loop_flags == [1, 2]
     assert graph.flag_involution[1] == 2 and graph.flag_involution[2] == 1
-    flag_perm = clutching.automorphism_action().on_flags()[0]
+    flag_perm = flag_generator_images(clutching.curve_type().canonical_representative())[0]
     assert flag_perm[0] == 0
     assert {flag_perm[1], flag_perm[2]} == {1, 2}
     assert flag_perm[1] != 1
@@ -274,7 +279,7 @@ def test_clutching_morphism_exposes_half_edge_coordinates():
     clutching = DMCompactificationModel(1, 2).stratum(dumbbell).clutching_morphism()
     assert clutching.markings_by_vertex() == ((), (1, 2))
     assert clutching.edge_incidence() == ((0, 0), (0, 1))
-    assert int(clutching.automorphism_action().group().order()) == 2
+    assert int(clutching.group_order()) == 2
     assert (clutching.genus(), clutching.number_of_markings()) == (1, 2)
 
 
@@ -343,6 +348,7 @@ def test_theta_dumbbell_and_m12_type_e_orbit_sizes():
 
 
 def test_automorphism_generators_agree_with_incidence_actions():
+    from dm_moduli_spike.objects._automorphism_action import AutomorphismAction
     from dm_moduli_spike.objects.canonical import _incidence_graph
     from tests.support.fixtures import m12_types
 
@@ -354,10 +360,10 @@ def test_automorphism_generators_agree_with_incidence_actions():
     }
     for gamma in fixtures.values():
         graph = gamma.canonical_representative()
+        action = AutomorphismAction.from_graph(graph)
         incidence, _partition, color_of = _incidence_graph(graph)
         vertex_nodes = sorted(node for node in color_of if node[0] == "V")
         vertex_index = {node: index for index, node in enumerate(vertex_nodes)}
-        action = gamma.automorphism_action()
         group = action.group()
         for index, generator in enumerate(group.gens()):
             for vertex in range(gamma.num_vertices()):

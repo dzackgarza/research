@@ -17,7 +17,6 @@ from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
-from .automorphism_action import AutomorphismAction
 from .canonical import CanonicalKey, automorphism_group, automorphism_number, canonical_key, canonical_record, to_json
 from .records import StableGraph, intern_graph
 
@@ -45,8 +44,6 @@ class StableGraphType(Element):
     def automorphism_group(self) -> object:
         return automorphism_group(self._graph)
 
-    def automorphism_action(self) -> AutomorphismAction:
-        return AutomorphismAction.from_graph(self._graph)
 
     def total_genus(self) -> int:
         return self._graph.genus()

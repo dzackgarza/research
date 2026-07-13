@@ -14,6 +14,7 @@ import pytest
 from dm_moduli_spike.objects.model import DMCompactificationModel
 from dm_moduli_spike.objects.strata import ModuliFactor
 
+from tests.support.fixtures import flag_generator_images
 from tests.support.fixtures import CHAN_M20_COVERS, m20_types
 
 
@@ -64,14 +65,13 @@ def test_M11_nodal_boundary_has_published_combinatorics_and_branch_swap():
     assert record.num_markings() == 1
     clutching = nodal.clutching_morphism()
     assert clutching.source_factors() == (ModuliFactor(0, 3, compact=True),)
-    action = nodal.curve_type().automorphism_action()
     loop_flags = [
         flag
         for flag in range(record.num_flags())
         if record.flag_vertex[flag] == 0 and record.flag_involution[flag] != flag
     ]
     assert len(loop_flags) == 2
-    flag_perm = action.on_flags()[0]
+    flag_perm = flag_generator_images(record)[0]
     assert flag_perm[record.marking_to_flag[0]] == record.marking_to_flag[0]
     assert {flag_perm[loop_flags[0]], flag_perm[loop_flags[1]]} == set(loop_flags)
     assert flag_perm[loop_flags[0]] != loop_flags[0]

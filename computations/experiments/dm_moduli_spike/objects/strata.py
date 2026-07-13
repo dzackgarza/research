@@ -22,7 +22,6 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from .automorphism_action import AutomorphismAction
 from .graph_types import StableGraphType
 
 
@@ -113,8 +112,6 @@ class QuotientStackPresentation:
         r""":math:`|\operatorname{Aut}(\Gamma)|`."""
         return self._group_order
 
-    def automorphism_action(self) -> AutomorphismAction:
-        return self._curve_type.automorphism_action()
 
     def automorphism_group(self) -> object:
         return self._curve_type.automorphism_group()
@@ -187,8 +184,6 @@ class ClutchingMorphism:
     def automorphism_group(self) -> object:
         return self._curve_type.automorphism_group()
 
-    def automorphism_action(self) -> AutomorphismAction:
-        return self._curve_type.automorphism_action()
 
     def markings_by_vertex(self) -> tuple[tuple[int, ...], ...]:
         r"""External marking labels on each vertex factor: :math:`(L(v))_{v\in V}`."""

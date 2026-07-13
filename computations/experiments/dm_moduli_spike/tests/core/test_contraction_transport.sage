@@ -1,3 +1,4 @@
+from tests.support.fixtures import flag_generator_images
 r"""Tier-4 internal consistency: transport of contractions along isomorphisms."""
 
 from __future__ import annotations
@@ -83,7 +84,7 @@ def test_banana_parallel_edge_transport_swaps_contracted_edge():
     assert banana.automorphism_number() == 2
 
     _, q_edge0 = contract_edge(graph, edges[0])
-    flag_perm = banana.automorphism_action().on_flags()[0]
+    flag_perm = flag_generator_images(graph)[0]
     assert flag_perm[edges[0][0]] == edges[1][0]
     alpha = StableGraphIsomorphism(
         source=graph,

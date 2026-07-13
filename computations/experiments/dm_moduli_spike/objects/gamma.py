@@ -317,7 +317,7 @@ class StableGraphCategory(UniqueRepresentation):
 
     def automorphism_group(self, graph: StableGraph | StableGraphType, on: str = "vertices") -> object:
         r"""Sage permutation group of `\operatorname{Aut}(G)` acting on the requested set."""
-        from .automorphism_action import AutomorphismAction
+        from ._automorphism_action import AutomorphismAction
 
         graph = self._canonical(graph)
         action = AutomorphismAction.from_graph(graph)
@@ -464,7 +464,7 @@ class StableGraphCategory(UniqueRepresentation):
         return tuple(morphisms)
 
     def _isomorphism_endomorphisms(self, graph: StableGraph) -> tuple[StableGraphMorphism, ...]:
-        from .automorphism_action import AutomorphismAction
+        from ._automorphism_action import AutomorphismAction
 
         action = AutomorphismAction.from_graph(graph)
         morphisms = [self.identity(graph)]

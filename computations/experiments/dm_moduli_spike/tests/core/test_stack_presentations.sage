@@ -7,7 +7,7 @@ from dm_moduli_spike.objects.strata import ModuliFactor
 from dm_moduli_spike import StableGraphTypes
 
 
-def test_open_stack_presentation_factors_and_automorphism_action():
+def test_open_stack_presentation_factors_and_group_order():
     model = DMCompactificationModel(0, 4)
     types = model.graph_types()
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))

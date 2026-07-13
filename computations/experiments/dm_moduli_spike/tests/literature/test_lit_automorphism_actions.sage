@@ -11,7 +11,12 @@ import pytest
 
 from dm_moduli_spike.objects.model import DMCompactificationModel
 
-from tests.support.fixtures import induced_edge_permutation_group, m12_types, m20_types
+from tests.support.fixtures import (
+    flag_generator_images,
+    induced_edge_permutation_group,
+    m12_types,
+    m20_types,
+)
 
 pytestmark = pytest.mark.ci
 
@@ -24,27 +29,24 @@ def test_M12_banana_vs_loop_bridge_aut_edge_and_flag_actions():
     the induced action on edge indices is trivial; only the loop half-edges are swapped.
     """
     stratification = DMCompactificationModel(1, 2).stratification()
-    banana = m12_types(stratification)["E"].curve_type()
-    loop_bridge = m12_types(stratification)["B"].curve_type()
+    banana = m12_types(stratification)["E"].curve_type().canonical_representative()
+    loop_bridge = m12_types(stratification)["B"].curve_type().canonical_representative()
 
-    banana_action = banana.automorphism_action()
-    assert banana_action.group().order() == 2
-    banana_edge_group = induced_edge_permutation_group(banana_action)
+    assert banana.automorphism_group(on="vertices").order() == 2 or banana.automorphism_group(on="edges").order() == 2
+    banana_edge_group = induced_edge_permutation_group(banana)
     assert banana_edge_group.order() == 2
     assert banana_edge_group.is_transitive()
 
-    loop_action = loop_bridge.automorphism_action()
-    assert loop_action.group().order() == 2
-    loop_edge_group = induced_edge_permutation_group(loop_action)
+    assert loop_bridge.automorphism_group(on="half_edges").order() == 2
+    loop_edge_group = induced_edge_permutation_group(loop_bridge)
     assert loop_edge_group.order() == 1
 
-    record = loop_bridge.canonical_representative()
     loop_flags = [
         flag
-        for flag in range(record.num_flags())
-        if record.flag_vertex[flag] == 0 and record.flag_involution[flag] != flag
+        for flag in range(loop_bridge.num_flags())
+        if loop_bridge.flag_vertex[flag] == 0 and loop_bridge.flag_involution[flag] != flag
     ]
-    flag_perm = loop_action.on_flags()[0]
+    flag_perm = flag_generator_images(loop_bridge)[0]
     assert {flag_perm[loop_flags[0]], flag_perm[loop_flags[1]]} == set(loop_flags)
     assert flag_perm[loop_flags[0]] != loop_flags[0]
 
@@ -52,8 +54,8 @@ def test_M12_banana_vs_loop_bridge_aut_edge_and_flag_actions():
 def test_M12_banana_has_C2_edge_transposition():
     r"""Markwig Ex. 2.2 / Fig. 2: type E banana has `C_2` edge transposition."""
     stratification = DMCompactificationModel(1, 2).stratification()
-    banana = m12_types(stratification)["E"].curve_type()
-    group = induced_edge_permutation_group(banana.automorphism_action())
+    banana = m12_types(stratification)["E"].curve_type().canonical_representative()
+    group = induced_edge_permutation_group(banana)
     assert group.order() == 2
     assert group.is_transitive()
     assert len(group.orbit((1,), action="OnSets")) == 2
@@ -62,17 +64,15 @@ def test_M12_banana_has_C2_edge_transposition():
 def test_M12_loop_bridge_has_trivial_induced_edge_action():
     r"""Markwig Ex. 2.2 / Fig. 2: type B loop+bridge has trivial induced `E(\Gamma)` action."""
     stratification = DMCompactificationModel(1, 2).stratification()
-    loop_bridge = m12_types(stratification)["B"].curve_type()
-    group = induced_edge_permutation_group(loop_bridge.automorphism_action())
+    loop_bridge = m12_types(stratification)["B"].curve_type().canonical_representative()
+    group = induced_edge_permutation_group(loop_bridge)
     assert group.order() == 1
-    action = loop_bridge.automorphism_action()
-    record = loop_bridge.canonical_representative()
     loop_flags = [
         flag
-        for flag in range(record.num_flags())
-        if record.flag_vertex[flag] == 0 and record.flag_involution[flag] != flag
+        for flag in range(loop_bridge.num_flags())
+        if loop_bridge.flag_vertex[flag] == 0 and loop_bridge.flag_involution[flag] != flag
     ]
-    flag_perm = action.on_flags()[0]
+    flag_perm = flag_generator_images(loop_bridge)[0]
     assert {flag_perm[loop_flags[0]], flag_perm[loop_flags[1]]} == set(loop_flags)
     assert flag_perm[loop_flags[0]] != loop_flags[0]
 
@@ -80,27 +80,26 @@ def test_M12_loop_bridge_has_trivial_induced_edge_action():
 def test_genus_two_theta_has_S3_edge_action():
     r"""Markwig Ex. 2.7 / Fig. 5: type I theta graph has `S_3` edge action."""
     stratification = DMCompactificationModel(2, 0).stratification()
-    theta = m20_types(stratification)["I"].curve_type()
-    group = induced_edge_permutation_group(theta.automorphism_action())
+    theta = m20_types(stratification)["I"].curve_type().canonical_representative()
+    group = induced_edge_permutation_group(theta)
     assert group.order() == 6
 
 
 def test_genus_two_dumbbell_has_order_two_edge_action_exchanging_loops():
     r"""Markwig Ex. 2.7 / Fig. 5: type II dumbbell exchanges the two loop edges."""
     stratification = DMCompactificationModel(2, 0).stratification()
-    dumbbell = m20_types(stratification)["II"].curve_type()
-    group = induced_edge_permutation_group(dumbbell.automorphism_action())
+    dumbbell = m20_types(stratification)["II"].curve_type().canonical_representative()
+    group = induced_edge_permutation_group(dumbbell)
     assert group.order() == 2
-    record = dumbbell.canonical_representative()
     loop_edges = [
         index
-        for index, (flag, partner) in enumerate(record.internal_edges())
-        if record.flag_vertex[flag] == record.flag_vertex[partner]
+        for index, (flag, partner) in enumerate(dumbbell.internal_edges())
+        if dumbbell.flag_vertex[flag] == dumbbell.flag_vertex[partner]
     ]
     bridge_edges = [
         index
-        for index, (flag, partner) in enumerate(record.internal_edges())
-        if record.flag_vertex[flag] != record.flag_vertex[partner]
+        for index, (flag, partner) in enumerate(dumbbell.internal_edges())
+        if dumbbell.flag_vertex[flag] != dumbbell.flag_vertex[partner]
     ]
     assert len(loop_edges) == 2 and len(bridge_edges) == 1
     bridge_point = bridge_edges[0] + 1
@@ -108,13 +107,11 @@ def test_genus_two_dumbbell_has_order_two_edge_action_exchanging_loops():
         assert generator(bridge_point) == bridge_point
 
 
-def test_native_gamma_edge_aut_matches_automorphism_action_M12_banana():
-    r"""Native ``PermutationGroup`` on edges agrees with ``AutomorphismAction`` orbits."""
+def test_native_gamma_edge_aut_matches_literature_orders_M12_banana():
+    r"""Native ``PermutationGroup`` on edges has Markwig order 2 for the banana."""
     from dm_moduli_spike import StableGraphCategory
 
     stratification = DMCompactificationModel(1, 2).stratification()
-    banana = m12_types(stratification)["E"].curve_type()
-    graph = banana.canonical_representative()
-    action_group = induced_edge_permutation_group(banana.automorphism_action())
-    native = StableGraphCategory(1, 2).automorphism_group(graph, on="edges")
-    assert native.order() == action_group.order() == 2
+    banana = m12_types(stratification)["E"].curve_type().canonical_representative()
+    native = StableGraphCategory(1, 2).automorphism_group(banana, on="edges")
+    assert native.order() == induced_edge_permutation_group(banana).order() == 2

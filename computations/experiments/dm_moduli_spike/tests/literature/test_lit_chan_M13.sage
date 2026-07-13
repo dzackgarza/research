@@ -12,7 +12,7 @@ from dm_moduli_spike.objects.model import DMCompactificationModel
 from dm_moduli_spike.objects.strata import ModuliFactor
 from dm_moduli_spike import StableGraphTypes
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
-from tests.support.fixtures import chan_m13_curve_type, induced_edge_permutation_group
+from tests.support.fixtures import chan_m13_curve_type, edge_generator_images, flag_generator_images, induced_edge_permutation_group, marking_generator_images
 
 
 def test_chan_M13_open_stack_is_quotient_M04_over_C2():
@@ -32,7 +32,7 @@ def test_chan_M13_open_stack_is_quotient_M04_over_C2():
     assert sorted((factor.genus(), factor.number_of_markings()) for factor in stratum.clutching_morphism().source_factors()) == [(0, 3), (0, 4)]
     banana_factor = next(factor for factor in presentation.product() if factor.number_of_markings() == 4)
     assert banana_factor == ModuliFactor(0, 4, flags=banana_factor.flags())
-    edge_action = presentation.automorphism_action().on_edges()
+    edge_action = edge_generator_images(presentation.curve_type().canonical_representative())
     assert any(image[0] != 0 or image[1] != 1 for image in edge_action)
 
 
@@ -53,7 +53,7 @@ def test_chan_M13_edge_automorphism_and_contraction_targets():
     r"""Chan Example 4.3: `C_2` edge action collapses parallel contractions to one target."""
     types = StableGraphTypes(1, 3)
     gamma = chan_m13_curve_type(types)
-    group = induced_edge_permutation_group(gamma.automorphism_action())
+    group = induced_edge_permutation_group(gamma.canonical_representative())
     assert group.order() == 2
     data = _elementary_contraction_data(gamma)
     assert len(data) == 1
@@ -71,8 +71,8 @@ def test_chan_M13_markings_fixed_and_quotient_presentation():
     r"""Chan Example 4.3: markings fixed under `C_2`; quotient presentation dimension one."""
     types = StableGraphTypes(1, 3)
     gamma = chan_m13_curve_type(types)
-    action = gamma.automorphism_action()
-    for marking_perm in action.on_markings():
+    graph = gamma.canonical_representative()
+    for marking_perm in marking_generator_images(graph):
         assert marking_perm == (1, 2, 3)
     stratum = DMCompactificationModel(1, 3).stratum(gamma)
     presentation = stratum.open_stack_presentation()
