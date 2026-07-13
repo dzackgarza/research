@@ -1,6 +1,7 @@
 #!/usr/bin/env sage
 
 from sage.all import euler_phi, graphs
+from sage.groups.group import Group
 from sage.groups.perm_gps.permgroup_named import (
     DihedralGroup,
     QuaternionGroup,
@@ -10,7 +11,7 @@ from sage.groups.perm_gps.permgroup_named import (
     CyclicPermutationGroup as CyclicGroup,
 )
 
-def analyze_automorphism_group(G, group_name=""):
+def analyze_automorphism_group(G: Group, group_name: str = "") -> Group | None:
     """
     Analyze the automorphism group of G with detailed information.
     
@@ -82,7 +83,7 @@ def analyze_automorphism_group(G, group_name=""):
     
     return aut_group
 
-def compare_automorphism_orders(groups_dict):
+def compare_automorphism_orders(groups_dict: dict[str, Group]) -> None:
     """
     Compare automorphism group orders for multiple groups.
     
@@ -99,7 +100,7 @@ def compare_automorphism_orders(groups_dict):
         ratio = aut_order / order
         print(f"{name:<20} {order:<8} {aut_order:<12} {ratio:<8.2f}")
 
-def find_inner_automorphisms(G):
+def find_inner_automorphisms(G: Group) -> Group:
     """
     Find the inner automorphism group and compare to full automorphism group.
     
@@ -132,7 +133,7 @@ def find_inner_automorphisms(G):
     
     return aut_group
 
-def automorphism_series_analysis(n_max=12):
+def automorphism_series_analysis(n_max: int = 12) -> None:
     """
     Analyze automorphism groups for series of groups.
     

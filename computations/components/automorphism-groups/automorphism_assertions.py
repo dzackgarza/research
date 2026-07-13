@@ -1,12 +1,13 @@
 #!/usr/bin/env sage
 
 from sage.all import euler_phi, factorial, graphs
+from sage.groups.group import Group
 from sage.groups.matrix_gps.all import GL, SL
 from sage.groups.perm_gps.permgroup_named import PSL, AbelianGroup, AlternatingGroup, DihedralGroup, KleinFourGroup, QuaternionGroup, SymmetricGroup
 from sage.groups.perm_gps.permgroup_named import CyclicPermutationGroup as CyclicGroup
 
 
-def compute_automorphism_group_with_proofs(G, group_name=""):
+def compute_automorphism_group_with_proofs(G: Group, group_name: str = "") -> Group:
     """
     Compute automorphism group and prove correctness with assertions.
     If any assertion fails, the program crashes - proving the implementation is wrong.

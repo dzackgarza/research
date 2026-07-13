@@ -1,10 +1,15 @@
 from collections import Counter
+from collections.abc import Sequence
 from copy import copy
+from typing import TYPE_CHECKING
 
 import sage
-from sage.all import Infinity, Poset, Set, Subsets, ZZ, sqrt, zero_matrix
+from sage.all import Infinity, Poset, Set, Subsets, ZZ, matrix, sqrt, zero_matrix
 from sage.graphs.graph import Graph
-from sage.modules.free_quadratic_module_integer_symmetric import *
+from sage.modules.free_quadratic_module import FreeQuadraticModule_generic_pid
+from sage.modules.free_quadratic_module_integer_symmetric import (
+    FreeQuadraticModule_integer_symmetric,
+)
 from sage.misc.cachefunc import cached_method
 
 
@@ -186,8 +191,12 @@ class CoxeterGraph(Graph):
     all_subgraphs = None
     all_elliptic_subgraphs = None
     all_parabolic_subgraphs = None
-    parent_coxeter_graph = None
-    fixed_positions = None
+    if TYPE_CHECKING:
+        parent_coxeter_graph: CoxeterGraph
+        fixed_positions: dict[int, Sequence[float]]
+    else:
+        parent_coxeter_graph = None
+        fixed_positions = None
     is_subgraph = False
     tex_title = None
     tikz_options = {
@@ -409,12 +418,12 @@ class CoxeterGraph(Graph):
         
         assert len(self.all_elliptic_subgraphs) > 0
         
-        if only_connected:
-            elliptic_subgraphs = filter(lambda H: H.is_connected(), self.all_elliptic_subgraphs)
-        else:
-            elliptic_subgraphs = self.all_elliptic_subgraphs
+        elliptic_subgraphs = (
+            H for H in self.all_elliptic_subgraphs
+            if not only_connected or H.is_connected()
+        )
         
-        elliptic_subgraphs = filter(lambda H: len(H) > 0, elliptic_subgraphs)
+        elliptic_subgraphs = (H for H in elliptic_subgraphs if len(H) > 0)
         return list(reversed(sorted(elliptic_subgraphs, key=len)))
 
     def get_parabolic_subgraphs(self):
@@ -492,8 +501,8 @@ class CoxeterGraph(Graph):
 
         if as_poset:
             if fast:
-                elliptic_subgraphs = list(map(lambda H: Set(H.vertices()), elliptic_subgraphs))
-                B = Poset((elliptic_subgraphs, lambda h0, h1: h0.issubset(h1)))
+                elliptic_vertex_sets = list(map(lambda H: Set(H.vertices()), elliptic_subgraphs))
+                B = Poset((elliptic_vertex_sets, lambda h0, h1: h0.issubset(h1)))
             else:
                 B = Poset(
                     (set(elliptic_subgraphs), lambda x, y: 
@@ -524,8 +533,8 @@ class CoxeterGraph(Graph):
 
         if as_poset:
             if fast:
-                parabolic_subgraphs = list(map(lambda H: Set(H.vertices()), parabolic_subgraphs))
-                B = Poset((parabolic_subgraphs, lambda h0, h1: h0.issubset(h1)))
+                parabolic_vertex_sets = list(map(lambda H: Set(H.vertices()), parabolic_subgraphs))
+                B = Poset((parabolic_vertex_sets, lambda h0, h1: h0.issubset(h1)))
             else:
                 B = Poset(
                     (set(parabolic_subgraphs), lambda x, y: 

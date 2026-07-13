@@ -1,6 +1,6 @@
 from functools import reduce
 
-from sage.all import *
+from sage.all import CoxeterType, IntegralLattice, ZZ, matrix, zero_matrix
 from sage.graphs.graph import Graph
 
 # --- Extracted functions from Isometry Searching.ipynb ---

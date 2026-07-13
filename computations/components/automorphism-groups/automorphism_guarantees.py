@@ -1,6 +1,8 @@
 #!/usr/bin/env sage
 
 from sage.all import graphs
+from sage.groups.group import Group
+from typing import Callable
 from sage.groups.matrix_gps.all import GL
 from sage.groups.perm_gps.permgroup_named import (
     PSL,
@@ -13,7 +15,7 @@ from sage.groups.perm_gps.permgroup_named import (
     CyclicPermutationGroup as CyclicGroup,
 )
 
-def get_automorphism_guarantees():
+def get_automorphism_guarantees() -> dict[str, list[str]]:
     """
     Document the guarantees for automorphism group computation in SageMath.
     """
@@ -98,7 +100,7 @@ def verify_core_guarantees() -> bool:
     print("VERIFYING CORE GUARANTEES")
     print("=" * 60)
     
-    core_tests = [
+    core_tests: list[tuple[str, Callable[[], Group]]] = [
         ("CyclicGroup(8)", lambda: CyclicGroup(8)),
         ("SymmetricGroup(4)", lambda: SymmetricGroup(4)),
         ("DihedralGroup(5)", lambda: DihedralGroup(5)),
@@ -132,7 +134,7 @@ def verify_core_guarantees() -> bool:
     
     return passed == total
 
-def get_implementation_notes():
+def get_implementation_notes() -> dict[str, list[str]]:
     """
     Return notes about the underlying implementations.
     """
