@@ -1,5 +1,6 @@
 
 from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 from sage.arith.misc import gcd
 from sage.functions.other import sqrt
@@ -12,6 +13,16 @@ from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.plot.graphics import Graphics
 from sage.rings.rational_field import QQ
 from sage.structure.element import Element
+
+if TYPE_CHECKING:
+    def _typed_element(value: object) -> Element: ...
+    def _typed_vector(value: object) -> FreeModuleElement: ...
+else:
+    def _typed_element(value: object) -> object:
+        return value
+
+    def _typed_vector(value: object) -> object:
+        return value
 
 
 def plot_coxeter_diagram_detailed(
@@ -65,7 +76,7 @@ def plot_coxeter_diagram_detailed(
 Q: SageMatrix = diagonal_matrix([-1, 1, 1])
 
 def lorentz_inner(u: FreeModuleElement, v: FreeModuleElement) -> Element:
-    return u * Q * v
+    return _typed_element(u * Q * v)
 
 def in_hyperbolic_domain(v: FreeModuleElement) -> bool:
     # Negative norm and future cone (to pick one sheet)
@@ -77,7 +88,7 @@ def reflect(x: FreeModuleElement, r: FreeModuleElement) -> FreeModuleElement:
     rr = lorentz_inner(r, r)
     if abs(rr) < 1e-14:
         raise ValueError("Reflection undefined for isotropic root vector")
-    return x - 2 * lorentz_inner(x, r) / rr * r
+    return _typed_vector(x - 2 * lorentz_inner(x, r) / rr * r)
 
 def chamber_polyhedron(roots: Sequence[FreeModuleElement]) -> Polyhedron_base:
     # Inequalities for half-spaces: (r, x) >= 0
