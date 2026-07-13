@@ -1,11 +1,21 @@
 import random
 
-from sage.all import *
-from sage.all import PermutationGroup, prime_range
-from sage.groups.perm_gps.permgroup import PermutationGroup
-from sage.groups.perm_gps.permgroup_named import DihedralGroup, SymmetricGroup
+from sage.arith.misc import prime_range
+from sage.groups.affine_gps.affine_group import AffineGroup
+from sage.groups.group import Group
+from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+from sage.groups.matrix_gps.finitely_generated_gap import FinitelyGeneratedMatrixGroup_gap
+from sage.groups.perm_gps.permgroup import PermutationGroup, PermutationGroup_generic
+from sage.groups.perm_gps.permgroup_named import (
+    CyclicPermutationGroup,
+    DihedralGroup,
+    SymmetricGroup,
+)
+from sage.interfaces.gap import GapElement
 from sage.libs.gap.libgap import libgap
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
+from sage.rings.integer import Integer
+from sage.rings.integer_ring import ZZ
 
 # Terminal color codes
 COLOR_GREEN = "\033[92m"
@@ -13,29 +23,29 @@ COLOR_RED = "\033[91m"
 COLOR_YELLOW = "\033[93m"
 COLOR_RESET = "\033[0m"
 
-def print_pass(msg):
+def print_pass(msg: str) -> None:
     print(f"  {COLOR_GREEN}{msg}{COLOR_RESET}")
 
-def print_fail(msg):
+def print_fail(msg: str) -> None:
     print(f"  {COLOR_RED}{msg}{COLOR_RESET}")
 
-def print_info(msg):
+def print_info(msg: str) -> None:
     print(f"  {COLOR_YELLOW}{msg}{COLOR_RESET}")
 
 
-def C(n):
+def C(n: int) -> PermutationGroup_generic:
     return CyclicPermutationGroup(n)
 
-def S(n):
+def S(n: int) -> PermutationGroup_generic:
     return SymmetricGroup(n)
 
-def D(n):
+def D(n: int) -> PermutationGroup_generic:
     return DihedralGroup(n)
 
-def prod(G, H):
+def prod(G: PermutationGroup_generic, H: PermutationGroup_generic) -> PermutationGroup_generic:
     return G.direct_product(H)[0]
 
-def Ga(n):
+def Ga(n: int) -> PermutationGroup_generic:
     Zn = ZZ.quotient(n*ZZ)
     elements = list(Zn)
     perms = []
@@ -44,7 +54,7 @@ def Ga(n):
         perms.append(perm)
     return PermutationGroup(perms)
 
-def Gm(n):
+def Gm(n: int) -> PermutationGroup_generic:
     Zn = IntegerModRing(n)
     units = list(Zn.unit_group())
     # Map each unit to its permutation of the set of units
@@ -54,10 +64,10 @@ def Gm(n):
         perms.append(perm)
     return PermutationGroup(perms)
 
-def random_prime(N):
+def random_prime(N: int) -> Integer:
     return random.choice( prime_range(2, N + 1))
 
-def convert_to_permutation_group(G):
+def convert_to_permutation_group(G: Group | GapElement) -> PermutationGroup_generic | None:
     if hasattr(G, "as_AbelianGroup"):
         G = G.as_AbelianGroup()
     elif hasattr(G, "permutation_group"):
@@ -75,13 +85,13 @@ def convert_to_permutation_group(G):
         raise ValueError("Could not convert group to a permutation group.")
 
 
-def group_iso(G, H):
+def group_iso(G: Group | GapElement, H: Group | GapElement) -> bool:
     Gp = convert_to_permutation_group(G)
     Hp = convert_to_permutation_group(H)
     return Gp.is_isomorphic(Hp)
     
 
-def compute_gap_automorphism_group(G):
+def compute_gap_automorphism_group(G: GapElement) -> PermutationGroup_generic:
     """Compute the automorphism group of a GAP group G as a Sage permutation group."""
     gapAut = G.AutomorphismGroup()
     perm = gapAut.IsomorphismPermGroup().Image()
@@ -89,7 +99,7 @@ def compute_gap_automorphism_group(G):
     Aut = PermutationGroup(gens)
     return Aut
 
-def aut(G):
+def aut(G: Group | GapElement) -> PermutationGroup_generic:
     """Compute the automorphism group of a group G as a Sage permutation group if possible."""
     try:
         Gp = libgap(G)
@@ -112,7 +122,7 @@ def aut(G):
         else:
             raise ValueError("Could not convert group to a type with known automorphism computations")
 
-def get_affine_matrix_group(G_affine):
+def get_affine_matrix_group(G_affine: AffineGroup) -> FinitelyGeneratedMatrixGroup_gap:
     mats = list(G_affine._GL) # Iterate over the GL(1,F) group to get its elements
     vecs = list(G_affine.vector_space()) # Iterate over the vector space to get its elements
 

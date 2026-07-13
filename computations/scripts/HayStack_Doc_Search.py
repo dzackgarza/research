@@ -5,7 +5,7 @@ import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, ParamSpec, TypeVar
+from typing import TYPE_CHECKING, Callable, ParamSpec, TypedDict, TypeVar
 
 import streamlit as st
 from dotenv import load_dotenv
@@ -27,6 +27,40 @@ from sagemath_utils import extract_python_docstrings, get_sage_path, get_sagemat
 
 P = ParamSpec("P")
 R = TypeVar("R")
+
+
+class _SourcesConfig(TypedDict):
+    include_sagemath: bool
+    include_remote: bool
+    remote_docs: list[str]
+
+
+_SourceFileMetadata = dict[str, str]
+
+
+class _SourceFile(TypedDict):
+    path: Path
+    meta: _SourceFileMetadata
+
+
+class _FileStats(TypedDict, total=False):
+    total_files: int
+    processed_files: int
+    final_chunks: int
+    sources: dict[str, int]
+
+
+class _CacheMetadata(TypedDict):
+    timestamp: float
+    datetime: str
+    file_count: int
+    sources: dict[str, int]
+    cache_key: str
+
+
+_DocumentationSource = tuple[str, str, str]
+
+
 if TYPE_CHECKING:
     def cache_data(*, show_spinner: bool = True) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
 else:
@@ -69,9 +103,9 @@ SAGEMATH_PATTERNS = get_sagemath_patterns()
 CACHE_PATH.mkdir(parents=True, exist_ok=True)
 
 
-def get_cache_key(sources_config: dict) -> str:
+def get_cache_key(sources_config: _SourcesConfig) -> str:
     """Generate a cache key based on configuration and file timestamps."""
-    key_data = {
+    key_data: dict[str, str | int | float | _SourcesConfig] = {
         'sources': sources_config,
         'sage_path': str(SAGE_PATH),
         'max_file_size': MAX_FILE_SIZE_MB,
@@ -97,7 +131,11 @@ def get_cache_key(sources_config: dict) -> str:
     return hashlib.md5(str(key_data).encode()).hexdigest()
 
 
-def save_document_store_cache(doc_store: InMemoryDocumentStore, cache_key: str, file_stats: dict):
+def save_document_store_cache(
+    doc_store: InMemoryDocumentStore,
+    cache_key: str,
+    file_stats: _FileStats,
+) -> bool:
     """Save document store to cache."""
     cache_file = CACHE_PATH / f"docstore_{cache_key}.pkl"
     metadata_file = CACHE_PATH / f"metadata_{cache_key}.json"
@@ -125,7 +163,9 @@ def save_document_store_cache(doc_store: InMemoryDocumentStore, cache_key: str, 
         return False
 
 
-def load_document_store_cache(cache_key: str):
+def load_document_store_cache(
+    cache_key: str,
+) -> tuple[InMemoryDocumentStore | None, _CacheMetadata | None]:
     """Load document store from cache."""
     cache_file = CACHE_PATH / f"docstore_{cache_key}.pkl"
     metadata_file = CACHE_PATH / f"metadata_{cache_key}.json"
@@ -151,10 +191,10 @@ def load_document_store_cache(cache_key: str):
         return None, None
 
 
-def get_cache_info():
+def get_cache_info() -> list[_CacheMetadata]:
     """Get information about existing caches."""
     cache_files = list(CACHE_PATH.glob("metadata_*.json"))
-    caches = []
+    caches: list[_CacheMetadata] = []
     
     for metadata_file in cache_files:
         try:
@@ -168,7 +208,7 @@ def get_cache_info():
     return sorted(caches, key=lambda x: x.get('timestamp', 0), reverse=True)
 
 
-def clear_all_caches():
+def clear_all_caches() -> bool:
     """Clear all cached document stores."""
     try:
         for cache_file in CACHE_PATH.glob("docstore_*.pkl"):
@@ -181,10 +221,10 @@ def clear_all_caches():
         return False
 
 
-@st.cache_data(show_spinner=False)
-def fetch_sagemath_files():
+@cache_data(show_spinner=False)
+def fetch_sagemath_files() -> list[_SourceFile]:
     """Fetch local SageMath documentation and source files."""
-    files = []
+    files: list[_SourceFile] = []
     
     if not SAGE_PATH.exists():
         st.warning(f"SageMath path not found at {SAGE_PATH}. Skipping SageMath indexing.")
@@ -209,7 +249,7 @@ def fetch_sagemath_files():
                 if any(skip in str(p) for skip in ['.git', '__pycache__', '.pyc', 'build', 'dist']):
                     continue
                 
-                data = {
+                data: _SourceFile = {
                     "path": p,
                     "meta": {
                         "url_source": f"file://{p}",
@@ -227,8 +267,11 @@ def fetch_sagemath_files():
     return files
 
 @cache_data(show_spinner=False)
-def fetch(documentations: list[tuple[str, str, str]], include_sagemath: bool = True):
-    files = []
+def fetch(
+    documentations: list[_DocumentationSource],
+    include_sagemath: bool = True,
+) -> list[_SourceFile]:
+    files: list[_SourceFile] = []
     # Create the docs path if it doesn't exist
     DOCS_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -248,7 +291,7 @@ def fetch(documentations: list[tuple[str, str, str]], include_sagemath: bool = T
         )
         branch = res.stdout.strip()
         for p in repo.glob(pattern):
-            data = {
+            data: _SourceFile = {
                 "path": p,
                 "meta": {
                     "url_source": f"{url}/tree/{branch}/{p.relative_to(repo)}",
@@ -266,7 +309,10 @@ def fetch(documentations: list[tuple[str, str, str]], include_sagemath: bool = T
     return files
 
 
-def get_or_create_document_store(cache_key: str, index: str = "documentation"):
+def get_or_create_document_store(
+    cache_key: str,
+    index: str = "documentation",
+) -> tuple[InMemoryDocumentStore, bool]:
     """Get document store from cache or create new one."""
     # Try to load from cache first
     cached_store, metadata = load_document_store_cache(cache_key)
@@ -280,7 +326,11 @@ def get_or_create_document_store(cache_key: str, index: str = "documentation"):
     return InMemoryDocumentStore(index=index), False  # False indicates cache miss
 
 
-def index_files(files, doc_store: InMemoryDocumentStore, cache_key: str):
+def index_files(
+    files: list[_SourceFile],
+    doc_store: InMemoryDocumentStore,
+    cache_key: str,
+) -> _FileStats:
     """Index files into the document store and save to cache."""
     # Create documents with special handling for Python files
     documents = []
@@ -344,12 +394,12 @@ def index_files(files, doc_store: InMemoryDocumentStore, cache_key: str):
     document_writer.run(documents=non_empty_docs)
     
     # Collect statistics for caching
-    source_counts = {}
+    source_counts: dict[str, int] = {}
     for f in files:
         source = f["meta"].get("source", "Unknown")
         source_counts[source] = source_counts.get(source, 0) + 1
     
-    file_stats = {
+    file_stats: _FileStats = {
         'total_files': len(files),
         'processed_files': len(documents),
         'final_chunks': len(non_empty_docs),
@@ -442,7 +492,7 @@ with st.sidebar.expander("Advanced Settings"):
     st.write(f"Cache path: `{CACHE_PATH}`")
 
 # Determine what to include and generate cache key
-sources_config = {
+sources_config: _SourcesConfig = {
     'include_sagemath': include_sagemath,
     'include_remote': include_remote,
     'remote_docs': [d[0] for d in DOCUMENTATIONS] if include_remote else []

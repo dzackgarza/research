@@ -1,8 +1,9 @@
-from z3 import *
+from collections.abc import Sequence
 
-#from z3 import IntVector, Solver, sat, Sum, Or
+from z3 import ArithRef, Int, IntVector, Or, Solver, Sum, sat
 
-def find_ineq_int_soln():
+
+def find_ineq_int_soln() -> None:
     x = Int('x')
     y = Int('y')
 
@@ -15,14 +16,18 @@ def find_ineq_int_soln():
         print("No solution")
 
 
-def bilinear_form(G, x):
+def bilinear_form(G: Sequence[Sequence[int]], x: Sequence[ArithRef]) -> ArithRef:
     n = len(x)
     return Sum([
         x[i] * G[i][j] * x[j]
         for i in range(n) for j in range(n)
     ])
 
-def find_roots(G, k, bounds=None):
+def find_roots(
+    G: Sequence[Sequence[int]],
+    k: int,
+    bounds: tuple[int, int] | None = None,
+) -> list[list[int]]:
     n = len(G)
     x = IntVector("x", n)
     s = Solver()
