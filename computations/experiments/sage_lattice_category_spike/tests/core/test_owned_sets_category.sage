@@ -1,14 +1,12 @@
 r"""Owned finite-set routes for current spike parents.
 
-The finite/enumerated Sets foundation is a shared category boundary. A genus
-uses its finite enumerated tier, while a discriminant form is a finite
-abelian group and must use its finite tier. Both routes retain Sage's generic
-finite-set behavior while exposing the spike-owned root to later parents.
+The countable/finite Sets foundation is a shared category boundary. A genus
+and a discriminant form use its finite tier. Both routes retain Sage's generic
+iterator and finite-set behavior while exposing the spike-owned root to later
+parents.
 """
 
 from __future__ import annotations
-
-from sage.categories.enumerated_sets import EnumeratedSets
 
 from sage_lattice_category_spike import Lattice, Sets
 
@@ -31,13 +29,12 @@ def test_discriminant_form_uses_the_owned_finite_sets_route():
 def test_finite_sets_refine_the_owned_countable_sets_category():
     r"""Finite A2 genus data carries a countability witness.
 
-    The mathematical category is countable sets; Sage's enumerated API realizes
-    the witness. Finite sets refine it because their iteration terminates and
-    can therefore be materialized.
+    Finite sets refine it because their iteration terminates and can therefore
+    be materialized.
     """
     genus = Lattice("A2").genus()
     countable_sets = Sets().Countable()
 
     assert Sets().Finite().is_subcategory(countable_sets)
-    assert countable_sets.is_subcategory(EnumeratedSets())
     assert genus in countable_sets
+    assert genus.list() == list(genus)

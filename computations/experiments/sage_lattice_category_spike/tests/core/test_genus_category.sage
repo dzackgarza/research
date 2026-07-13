@@ -5,9 +5,9 @@ parent IS the finite set of its isometry classes, so its cardinality is the clas
 number and it enumerates one representative lattice per class.
 
 Every test here asserts what a genus can accomplish (membership, cardinality,
-enumeration). The finite-set route is a public foundation contract: an owned
-``Sets`` root supplies the finite enumerated vocabulary, while Sage supplies its
-generic implementation. The literature pins in ``tests/literature/test_lit_genus.sage``
+iteration). The finite-set route is a public foundation contract: an owned
+``Sets`` root supplies the countability witness and finite materialization
+vocabulary. The literature pins in ``tests/literature/test_lit_genus.sage``
 (Nikulin 1.10.1 reconstruction, Conway-Sloane Ch.15 local symbols, Gauss-Milgram)
 must stay green through the change.
 """
@@ -52,8 +52,8 @@ def test_iterating_a_genus_enumerates_one_lattice_per_class():
     )
 
 
-def test_genus_uses_the_owned_finite_enumerated_sets_route():
-    r"""A genus is a finite enumerated object of the spike-owned Sets root.
+def test_genus_uses_the_owned_finite_sets_route():
+    r"""A genus is a finite object of the spike-owned Sets root.
 
     This is the project-owned boundary: the concrete genus must retain both the
     finite cardinality and iteration interface and the category route that later
@@ -62,8 +62,8 @@ def test_genus_uses_the_owned_finite_enumerated_sets_route():
     from sage_lattice_category_spike import Lattice, Sets
 
     genus = Lattice("A2").genus()
-    assert genus in Sets().Finite().Enumerated(), (
-        "a genus must route through the owned finite enumerated Sets category"
+    assert genus in Sets().Finite(), (
+        "a genus must route through the owned finite Sets category"
     )
 
 

@@ -2,9 +2,9 @@ r"""Sage category classes for the owned synthetic lattice spike.
 
 Ratified organization (M-RATIFY): three separate categories, no shared root.
 
-- ``Sets()`` -- the spike-owned set-theoretic root. Its finite and enumerated
-  refinements preserve Sage's generic API while giving spike parents one owned
-  category route.
+- ``Sets()`` -- the spike-owned set-theoretic root. ``Countable`` is the
+  mathematical refinement; its witness is supplied at the Sage integration
+  boundary. ``Finite`` refines it when the witness terminates.
 - ``Lattices(R)`` -- based free ``R``-modules with a symmetric ``K``-valued form,
   on ``Modules(R).WithBasis().FiniteDimensional()``. Possibly-degenerate base;
   ``Nondegenerate`` is an axiom attached by the constructor iff ``det(G) != 0``.
@@ -25,11 +25,13 @@ from typing import TYPE_CHECKING, Literal, cast
 from sage.categories.category import Category
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.category_with_axiom import (
+    CategoryWithAxiom,
     CategoryWithAxiom_over_base_ring,
     all_axioms,
     axiom,
 )
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
+from sage.categories.enumerated_sets import EnumeratedSets
 from sage.categories.functor import ForgetfulFunctor
 from sage.categories.homset import Hom as SageHom
 from sage.categories.homset import Homset
@@ -97,6 +99,9 @@ for _axiom_name in _FORM_AXIOMS:
     if _axiom_name not in all_axioms:
         all_axioms.add(_axiom_name)
 
+if "Countable" not in all_axioms:
+    all_axioms.add("Countable")
+
 
 def _own_methods(carrier: type) -> type:
     r"""Sage's category framework injects only a ParentMethods class's OWN
@@ -112,9 +117,10 @@ def _own_methods(carrier: type) -> type:
 class Sets(Category):
     r"""The spike-owned root for set-theoretic parent categories.
 
-    ``Finite`` and ``Enumerated`` compose through Sage's category framework,
-    so ``Sets().Finite().Enumerated()`` inherits the standard cardinality and
-    iteration vocabulary while retaining this root as its category route.
+    ``Countable`` names the mathematical property. Its witness supplies the
+    standard iterator, rank, and unrank interface. ``Finite`` refines
+    ``Countable`` when that witness terminates, so its elements can be
+    materialized.
     """
 
     def _repr_object_names(self) -> str:
@@ -126,11 +132,29 @@ class Sets(Category):
     if TYPE_CHECKING:
 
         def Finite(self) -> Category: ...
-        def Enumerated(self) -> Category: ...
+        def Countable(self) -> Category: ...
 
     class SubcategoryMethods:
         Finite = axiom("Finite")
-        Enumerated = axiom("Enumerated")
+        Countable = axiom("Countable")
+
+
+class CountableSets(CategoryWithAxiom):
+    r"""Countable spike-owned sets with a computable witness."""
+
+    _base_category_class_and_axiom = (Sets, "Countable")
+
+    def extra_super_categories(self) -> tuple[Category, ...]:
+        return (EnumeratedSets(),)
+
+
+class FiniteSets(CategoryWithAxiom):
+    r"""Finite spike-owned sets, whose countability witness terminates."""
+
+    _base_category_class_and_axiom = (Sets, "Finite")
+
+    def extra_super_categories(self) -> tuple[Category, ...]:
+        return (Sets().Countable(),)
 
 
 class Lattices(Category_over_base_ring):
@@ -448,7 +472,7 @@ class Genera(Category_over_base_ring):
         # A genus IS the finite set of its isometry classes: the finite-set API
         # (cardinality, iteration) is INHERITED from this super-category, never
         # re-declared on the genus contract or a concrete parent.
-        return [Sets().Finite().Enumerated()]
+        return [Sets().Finite()]
 
     def additional_structure(self) -> Genera:
         return self
@@ -598,6 +622,9 @@ if not TYPE_CHECKING:
     # reachable as `<BaseCategory>.<Axiom>` for `_base_category_class_and_axiom`
     # to resolve. Runtime-only wiring; the typed surface of these names is the
     # axiom-navigation method declarations on the category classes above.
+    Sets.Countable = CountableSets
+    Sets.Finite = FiniteSets
+
     Lattices.Nondegenerate = NondegenerateLattices
     Lattices.Integral = IntegralLattices
     Lattices.Even = EvenLattices
