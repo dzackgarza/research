@@ -1,3 +1,12 @@
+# Build the installable Sage research distribution
+build: _lock
+    uv build
+
+[private]
+_lock:
+    uv lock
+
+# Run repository and spike quality gates
 test:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -89,6 +98,9 @@ test:
     if "projects/lattice-research" not in gitmodules.read_text():
         raise SystemExit("lattice-research submodule missing from .gitmodules")
     PY
+    # The root package has its own public Sage import surface.  Keep its test
+    # collection separate from the calibration slice and per-spike suites.
+    direnv exec . sage -python -m pytest -p no:cacheprovider tests
     # Every spike that carries a justfile is on QC rails automatically —
     # adding a spike never requires editing this file (see AGENTS.md).
     shopt -s nullglob

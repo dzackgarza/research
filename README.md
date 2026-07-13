@@ -3,35 +3,32 @@
 Workspace for mathematical notes, computation experiments, and live research
 project references.
 
-## Lattice Spikes
+## Sage research package
 
-The maintained Sage lattice-category experiments live under
-`computations/experiments`. The repo-local `.envrc` puts that experiment root
-on `PYTHONPATH`, so Sage scripts and notebooks opened from this repo can import
-the spikes directly. After checkout or after `.envrc` changes, run:
+The installable `dzack_research` package exposes the maintained lattice spikes
+as `lattice` and `feature`. After checkout or after `.envrc` changes, run:
 
 ```bash
 direnv allow
 ```
 
-Use the base spike for Sage-parity lattice work:
+Use the Sage-parity spike for lattice work:
 
 ```sage
-from sage_lattice_category_spike import *
+from dzack_research import lattice
 
-L.<v> = Lattice([[2]], label="<2>")
+L.<v> = lattice.Lattice([[2]], label="<2>")
 v * v   # 2  (quadratic form via *)
 ```
 
 See `.agents/references/spike-style-guide.md` for the full style guide
 governing spike code, notebooks, and documentation.
 
-Use the feature spike only as the fork point for work beyond Sage parity. It
-imports the base spike as `base`; no ungated feature engines are assumed to
-exist there.
+Use the feature spike as the fork point for literature-gated work beyond Sage
+parity. It imports the parity spike as `base`.
 
 ```sage
-from sage_lattice_feature_spike import *
+from dzack_research import feature
 
 L.<v> = feature.base.Lattice([[2]], label="<2>")
 v * v   # 2
