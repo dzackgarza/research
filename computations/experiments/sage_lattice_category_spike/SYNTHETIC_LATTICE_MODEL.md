@@ -5,7 +5,7 @@ A lattice is a based projective `R`-module of finite rank with an exact symmetri
 
 ## Bounded contexts
 
-- **Category tree** (`categories.py`): `Lattices(R)` with axiom subcategories (Nondegenerate, Integral, Even, Unimodular, Definite, PositiveDefinite, NegativeDefinite, Indefinite, Hyperbolic, RootGenerated) and `DiscriminantForms(ZZ)` with its subcategories (Bilinear, Quadratic, Even, WithSourceLattice).
+- **Category tree** (`categories.py`): `Sets()` is the owned set-theoretic root; its finite and enumerated refinements provide the shared finite-set route for `Genera(ZZ)` and `DiscriminantForms(ZZ)`. `Lattices(R)` has axiom subcategories (Nondegenerate, Integral, Even, Unimodular, Definite, PositiveDefinite, NegativeDefinite, Indefinite, Hyperbolic, RootGenerated), and `DiscriminantForms(ZZ)` has subcategories (Bilinear, Quadratic, Even, WithSourceLattice).
   Classes from the typed domain algebra install as `ParentMethods` deltas.
 - **Lattice parents/elements/morphisms** (`parents.py`, `elements.py`, `homsets.py`): one concrete hierarchy per subcategory; typed elements carrying `b`/`q`; form-preserving homsets; `O(L)` with typed subgroups as the only supplied-generators home.
 - **Discriminant forms** (`discriminant_forms.py`, `discriminant.py`): ONE stratified finite-quotient parent carrying the TorsionQuadraticModule + finitely-generated-module-over-a-PID + AdditiveAbelianGroup parity API once; the sibling notions (discriminant group, plain finite quotient, torsion quadratic form, twist, subquotient) are constructions returning it.
