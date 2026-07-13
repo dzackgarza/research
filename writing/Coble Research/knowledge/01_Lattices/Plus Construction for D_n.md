@@ -14,7 +14,6 @@ created: 2026-05-08
 > We define the overlattices $$ D_n^+ \mathrel{\mathop:}= D_n \cup (v_+ + D_n), \quad D_n^- \mathrel{\mathop:}= D_n \cup (v_- + D_n). $$
 > 
 > ## Properties
-
 > - If $n$ is odd, then there are isometries $D_n^+ \xrightarrow{\sim} D_n^- \xrightarrow{\sim} D_n^\vee$.
 > - If $n$ is even, then $D_n^+ \not\xrightarrow{\sim} D_n^-$, and both contain $D_n$ as an index 2 sublattice.
 > - Both $D_n^+$ and $D_n^-$ are unimodular lattices, and are even integral lattices if and only if $n \equiv 0 \pmod{8}$.
