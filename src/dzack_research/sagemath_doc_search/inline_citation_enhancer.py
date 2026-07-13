@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 class _CitationTarget(TypedDict):
     file_path: str
-    line_number: int | None
+    line_number: int
 
 
 class InlineCitationEnhancer:
@@ -56,12 +56,12 @@ class InlineCitationEnhancer:
                 enhanced_meta["citation_id"] = f"src{i + 1}"
 
                 # Extract section information for documentation files
-                if doc.meta.get("relative_path", "").endswith(".rst"):
+                if doc.meta["relative_path"].endswith(".rst"):
                     section_info = self._extract_rst_section_info(doc.content or "")
                     enhanced_meta.update(section_info)
 
                 # Extract class/function information for Python files
-                elif doc.meta.get("relative_path", "").endswith((".py", ".pyx")):
+                elif doc.meta["relative_path"].endswith((".py", ".pyx")):
                     code_info = self._extract_python_code_info(doc.content or "")
                     enhanced_meta.update(code_info)
 
@@ -155,11 +155,11 @@ class InlineCitationEnhancer:
 
     def _create_citation_display(self, meta: dict[str, Any]) -> str:
         """Create a display name for citations."""
-        rel_path = str(meta.get("relative_path", "unknown"))
+        rel_path = str(meta["relative_path"])
 
         if meta.get("content_type") == "documentation":
             filename = Path(rel_path).stem
-            section = meta.get("section", "unknown")
+            section = meta["section"]
             return f"{filename}, {section}"
 
         elif meta.get("content_type") == "source_code":
@@ -263,8 +263,8 @@ print("Discriminant group:", L.discriminant_group())
 
         # Add source information
         for doc in documents:
-            citation_id = doc.meta.get("citation_id", "src?")
-            citation_display = doc.meta.get("citation_display", "unknown")
+            citation_id = doc.meta["citation_id"]
+            citation_display = doc.meta["citation_display"]
             content = doc.content or ""
             content_preview = content[:600] + "..." if len(content) > 600 else content
             prompt += f"**{citation_id}**: {citation_display}\n```\n{content_preview}\n```\n\n"
@@ -322,7 +322,7 @@ print("Discriminant group:", L.discriminant_group())
 
         # Just add one citation to the end if the response is very short
         best_doc = documents[0]  # Use first document
-        citation_id = best_doc.meta.get("citation_id", "src1")
+        citation_id = best_doc.meta["citation_id"]
 
         if response.strip().endswith("."):
             return response.rstrip(".") + f" ({citation_id})."
@@ -338,8 +338,8 @@ print("Discriminant group:", L.discriminant_group())
         # First, process inline citations to convert (src1) to proper links
         citation_map: dict[str, _CitationTarget] = {}
         for doc in documents:
-            citation_id = str(doc.meta.get("citation_id", "src?"))
-            rel_path = str(doc.meta.get("relative_path", "unknown"))
+            citation_id = str(doc.meta["citation_id"])
+            rel_path = str(doc.meta["relative_path"])
             citation_map[citation_id] = {
                 "file_path": rel_path,
                 "line_number": self._get_line_number(doc.content or "", rel_path),
@@ -352,9 +352,9 @@ print("Discriminant group:", L.discriminant_group())
         source_lines = ["\n\n---\n\n**Sources:**\n"]
 
         for doc in documents:
-            citation_id = doc.meta.get("citation_id", "src?")
-            citation_display = doc.meta.get("citation_display", "unknown")
-            rel_path = str(doc.meta.get("relative_path", "unknown"))
+            citation_id = doc.meta["citation_id"]
+            citation_display = doc.meta["citation_display"]
+            rel_path = str(doc.meta["relative_path"])
 
             # Create appropriate link
             try:
@@ -402,12 +402,12 @@ print("Discriminant group:", L.discriminant_group())
                     if file_path.endswith(".rst"):
                         # For documentation files, prefer GitHub/docs URLs
                         file_link = create_file_link(
-                            file_path, line_number or 1, "github"
+                            file_path, line_number, "github"
                         )
                     else:
                         # For source files, use local links
                         file_link = create_file_link(
-                            file_path, line_number or 1, "local"
+                            file_path, line_number, "local"
                         )
 
                     # Extract just the href attribute for the inline citation
@@ -434,7 +434,7 @@ print("Discriminant group:", L.discriminant_group())
         pattern = r"\((src\d+)\)"
         return re.sub(pattern, replace_citation, text)
 
-    def _get_line_number(self, content: str, file_path: str) -> int | None:
+    def _get_line_number(self, content: str, file_path: str) -> int:
         """Get line number for citation purposes."""
         try:
             from dzack_research.sagemath_doc_search.citation_utils import (

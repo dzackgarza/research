@@ -122,19 +122,16 @@ def convert_to_docs_url(file_path: str) -> str | None:
     # Look for documentation structure patterns
     if "doc" in path_parts and "en" in path_parts:
         # Find the index after 'en'
-        try:
-            en_index = path_parts.index("en")
-            if en_index + 1 < len(path_parts):
-                # Get the part after 'en'
-                doc_path = "/".join(path_parts[en_index + 1 :])
-                # Remove .rst extension
-                doc_path = doc_path.replace(".rst", ".html")
+        en_index = path_parts.index("en")
+        if en_index + 1 < len(path_parts):
+            # Get the part after 'en'
+            doc_path = "/".join(path_parts[en_index + 1 :])
+            # Remove .rst extension
+            doc_path = doc_path.replace(".rst", ".html")
 
-                # Create docs URL
-                base_url = "https://doc.sagemath.org/html/en"
-                return f"{base_url}/{doc_path}"
-        except ValueError:
-            pass
+            # Create docs URL
+            base_url = "https://doc.sagemath.org/html/en"
+            return f"{base_url}/{doc_path}"
 
     return None
 
@@ -202,9 +199,9 @@ def create_sources_section(documents: list, enhanced_docs: list) -> str:
     source_lines.append("\n\n---\n\n**Sources:**\n")
 
     for doc in enhanced_docs:
-        citation_id = doc.meta.get("citation_id", "src?")
-        citation_display = doc.meta.get("citation_display", "unknown")
-        rel_path = doc.meta.get("relative_path", "unknown")
+        citation_id = doc.meta["citation_id"]
+        citation_display = doc.meta["citation_display"]
+        rel_path = doc.meta["relative_path"]
 
         if rel_path != "unknown":
             # Get line number from content

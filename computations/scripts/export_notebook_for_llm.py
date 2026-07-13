@@ -50,7 +50,7 @@ def export_notebook_clean_text(notebook_path: Path, output_path: Path) -> None:
     for cell in notebook['cells']:
         cell_count += 1
         cell_type = cell['cell_type']
-        source = cell.get('source', [])
+        source = cell['source']
         
         if not source:
             continue
@@ -108,7 +108,7 @@ def export_notebook_code_only(notebook_path: Path, output_path: Path) -> None:
     
     for cell in notebook['cells']:
         if cell['cell_type'] == 'code':
-            source = cell.get('source', [])
+            source = cell['source']
             if source:
                 code_cell_count += 1
                 content = clean_code_cell(source)

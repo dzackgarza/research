@@ -4,6 +4,7 @@ import pickle
 import subprocess
 import time
 from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, ParamSpec, TypedDict, TypeVar
@@ -48,7 +49,7 @@ class _SourceFile(TypedDict):
     meta: _SourceFileMetadata
 
 
-class _FileStats(TypedDict, total=False):
+class _FileStats(TypedDict):
     total_files: int
     processed_files: int
     final_chunks: int
@@ -66,6 +67,47 @@ class _CacheMetadata(TypedDict):
 _DocumentationSource = tuple[str, str, str]
 
 
+@dataclass(frozen=True)
+class _RuntimeConfig:
+    openai_base_url: str
+    use_local_openai: bool
+    openai_model: str
+    max_file_size_mb: int
+    include_sagemath_initially: bool
+    include_remote_initially: bool
+
+
+def _required_environment_value(name: str) -> str:
+    value = os.environ[name]
+    assert value.strip(), (
+        f"{name} must be nonempty; config source=environment; "
+        "set it in ~/.envrc before starting the documentation search"
+    )
+    return value
+
+
+def _required_environment_bool(name: str) -> bool:
+    value = _required_environment_value(name).lower()
+    assert value in {"true", "false"}, (
+        f"{name} must be true or false; observed={value!r}; "
+        "fix ~/.envrc before starting the documentation search"
+    )
+    return value == "true"
+
+
+def _load_runtime_config() -> _RuntimeConfig:
+    return _RuntimeConfig(
+        openai_base_url=_required_environment_value("OPENAI_BASE_URL"),
+        use_local_openai=_required_environment_bool("USE_LOCAL_OPENAI"),
+        openai_model=_required_environment_value("OPENAI_MODEL"),
+        max_file_size_mb=int(_required_environment_value("MAX_FILE_SIZE_MB")),
+        include_sagemath_initially=_required_environment_bool(
+            "INCLUDE_SAGEMATH_DEFAULT"
+        ),
+        include_remote_initially=_required_environment_bool("INCLUDE_REMOTE_DEFAULT"),
+    )
+
+
 if TYPE_CHECKING:
 
     def cache_data(
@@ -77,17 +119,7 @@ else:
 # Load the environment variables, we're going to need it for OpenAI
 load_dotenv()
 
-# Configuration for local vs remote OpenAI
-LOCAL_OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "http://127.0.0.1:1337/v1")
-USE_LOCAL_OPENAI = os.getenv("USE_LOCAL_OPENAI", "true").lower() == "true"
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
-
-# Documentation search configuration
-MAX_FILE_SIZE_MB = int(os.getenv("MAX_FILE_SIZE_MB", "1"))
-INCLUDE_SAGEMATH_DEFAULT = (
-    os.getenv("INCLUDE_SAGEMATH_DEFAULT", "true").lower() == "true"
-)
-INCLUDE_REMOTE_DEFAULT = os.getenv("INCLUDE_REMOTE_DEFAULT", "true").lower() == "true"
+CONFIG = _load_runtime_config()
 
 # This is the list of documentation that we're going to fetch
 DOCUMENTATIONS = [
@@ -118,25 +150,18 @@ def get_cache_key(sources_config: _SourcesConfig) -> str:
     key_data: dict[str, str | int | float | _SourcesConfig] = {
         "sources": sources_config,
         "sage_path": str(SAGE_PATH),
-        "max_file_size": MAX_FILE_SIZE_MB,
+        "max_file_size": CONFIG.max_file_size_mb,
     }
 
     # Add SageMath directory modification time if it exists
     if SAGE_PATH.exists():
-        try:
-            # Get a representative timestamp from SageMath source
-            sage_src = SAGE_PATH / "src" / "sage"
-            if sage_src.exists():
-                key_data["sage_mtime"] = sage_src.stat().st_mtime
-        except:
-            pass
+        sage_src = SAGE_PATH / "src" / "sage"
+        if sage_src.exists():
+            key_data["sage_mtime"] = sage_src.stat().st_mtime
 
     # Add timestamp for downloaded docs
     if DOCS_PATH.exists():
-        try:
-            key_data["docs_mtime"] = DOCS_PATH.stat().st_mtime
-        except:
-            pass
+        key_data["docs_mtime"] = DOCS_PATH.stat().st_mtime
 
     return hashlib.md5(str(key_data).encode()).hexdigest()
 
@@ -161,8 +186,8 @@ def save_document_store_cache(
         metadata = {
             "timestamp": time.time(),
             "datetime": datetime.now().isoformat(),
-            "file_count": file_stats.get("total_files", 0),
-            "sources": file_stats.get("sources", {}),
+            "file_count": file_stats["total_files"],
+            "sources": file_stats["sources"],
             "cache_key": cache_key,
         }
         with open(metadata_file, "w") as f:
@@ -209,16 +234,13 @@ def get_cache_info() -> list[_CacheMetadata]:
     caches: list[_CacheMetadata] = []
 
     for metadata_file in cache_files:
-        try:
-            import json
+        import json
 
-            with open(metadata_file) as f:
-                metadata = json.load(f)
-                caches.append(metadata)
-        except:
-            continue
+        with open(metadata_file) as f:
+            metadata = json.load(f)
+            caches.append(metadata)
 
-    return sorted(caches, key=lambda x: x.get("timestamp", 0), reverse=True)
+    return sorted(caches, key=lambda x: x["timestamp"], reverse=True)
 
 
 def clear_all_caches() -> bool:
@@ -248,7 +270,7 @@ def fetch_sagemath_files() -> list[_SourceFile]:
     st.write(f"Indexing local SageMath installation at {SAGE_PATH}")
 
     # Limit file size to avoid memory issues
-    max_file_size = MAX_FILE_SIZE_MB * 1024 * 1024
+    max_file_size = CONFIG.max_file_size_mb * 1024 * 1024
 
     for pattern in SAGEMATH_PATTERNS:
         pattern_files = list(SAGE_PATH.glob(pattern))
@@ -277,7 +299,7 @@ def fetch_sagemath_files() -> list[_SourceFile]:
                     },
                 }
                 files.append(data)
-            except OSError, ValueError:
+            except (OSError, ValueError):
                 # Skip files that can't be accessed
                 continue
 
@@ -316,6 +338,7 @@ def fetch(
                     "url_source": f"{url}/tree/{branch}/{p.relative_to(repo)}",
                     "suffix": p.suffix,
                     "source": name,
+                    "relative_path": str(p.relative_to(repo)),
                 },
             }
             files.append(data)
@@ -341,8 +364,8 @@ def get_or_create_document_store(
             f"cached document store must include cache metadata; cache_key={cache_key}"
         )
         st.success(
-            f"📁 Loaded cached index from {metadata.get('datetime', 'unknown time')} "
-            f"({metadata.get('file_count', 0)} files)"
+            f"📁 Loaded cached index from {metadata['datetime']} "
+            f"({metadata['file_count']} files)"
         )
         return cached_store, True  # True indicates cache hit
 
@@ -390,8 +413,7 @@ def index_files(
         st.info(f"Skipped {skipped_empty} files with empty or minimal content")
 
     if not documents:
-        st.warning("No documents were successfully processed.")
-        return {}
+        raise ValueError("No documents were successfully processed")
 
     st.info(f"Processing {len(documents)} documents for indexing...")
 
@@ -421,8 +443,8 @@ def index_files(
     # Collect statistics for caching
     source_counts: dict[str, int] = {}
     for f in files:
-        source = f["meta"].get("source", "Unknown")
-        source_counts[source] = source_counts.get(source, 0) + 1
+        source = f["meta"]["source"]
+        source_counts[source] = source_counts[source] + 1 if source in source_counts else 1
 
     file_stats: _FileStats = {
         "total_files": len(files),
@@ -460,12 +482,12 @@ def search(question: str, doc_store: InMemoryDocumentStore) -> GeneratedAnswer:
     prompt_builder = PromptBuilder(template, required_variables=["documents", "query"])
 
     # Configure generator for local or remote OpenAI
-    if USE_LOCAL_OPENAI:
+    if CONFIG.use_local_openai:
         generator = OpenAIGenerator(
-            model=OPENAI_MODEL, api_base_url=LOCAL_OPENAI_BASE_URL
+            model=CONFIG.openai_model, api_base_url=CONFIG.openai_base_url
         )
     else:
-        generator = OpenAIGenerator(model=OPENAI_MODEL)
+        generator = OpenAIGenerator(model=CONFIG.openai_model)
 
     answer_builder = AnswerBuilder()
 
@@ -492,12 +514,12 @@ def search(question: str, doc_store: InMemoryDocumentStore) -> GeneratedAnswer:
 st.sidebar.header("Configuration")
 include_sagemath = st.sidebar.checkbox(
     "Include SageMath Documentation",
-    value=INCLUDE_SAGEMATH_DEFAULT,
+    value=CONFIG.include_sagemath_initially,
     help="Include local SageMath installation in search",
 )
 include_remote = st.sidebar.checkbox(
     "Include Remote Documentation",
-    value=INCLUDE_REMOTE_DEFAULT,
+    value=CONFIG.include_remote_initially,
     help="Include Pandas and NumPy documentation from GitHub",
 )
 
@@ -508,7 +530,7 @@ with st.sidebar.expander("🗂️ Cache Management"):
         st.write(f"**{len(caches)} cache(s) available:**")
         for cache in caches[:3]:  # Show last 3 caches
             dt = datetime.fromisoformat(cache["datetime"]).strftime("%m/%d %H:%M")
-            st.write(f"• {dt} - {cache.get('file_count', 0)} files")
+            st.write(f"• {dt} - {cache['file_count']} files")
     else:
         st.write("No caches found")
 
@@ -520,9 +542,9 @@ with st.sidebar.expander("🗂️ Cache Management"):
 
 # Advanced settings
 with st.sidebar.expander("Advanced Settings"):
-    st.write(f"Max file size: {MAX_FILE_SIZE_MB} MB")
+    st.write(f"Max file size: {CONFIG.max_file_size_mb} MB")
     st.write(f"SageMath path: `{SAGE_PATH}`")
-    st.write(f"Using {'Local' if USE_LOCAL_OPENAI else 'Remote'} OpenAI")
+    st.write(f"Using {'Local' if CONFIG.use_local_openai else 'Remote'} OpenAI")
     st.write(f"Cache path: `{CACHE_PATH}`")
 
 # Determine what to include and generate cache key
@@ -554,10 +576,13 @@ if force_reindex:
 doc_store, cache_hit = get_or_create_document_store(cache_key)
 
 # Index files if cache miss
+file_stats: _FileStats
 if not cache_hit:
+    if "expanded" not in st.session_state:
+        st.session_state["expanded"] = True
     with st.status(
         "📚 Building documentation index...",
-        expanded=st.session_state.get("expanded", True),
+        expanded=st.session_state["expanded"],
     ) as status:
         if include_remote:
             status.update(label="Fetching remote repositories...")
@@ -571,10 +596,16 @@ if not cache_hit:
 else:
     # Still fetch files for statistics display
     files = fetch(docs_to_include, include_sagemath=include_sagemath)
-    file_stats = {"total_files": len(files), "sources": {}}
+    file_stats = {
+        "total_files": len(files),
+        "processed_files": len(files),
+        "final_chunks": doc_store.count_documents(),
+        "sources": {},
+    }
     for f in files:
-        source = f["meta"].get("source", "Unknown")
-        file_stats["sources"][source] = file_stats["sources"].get(source, 0) + 1
+        source = f["meta"]["source"]
+        source_counts = file_stats["sources"]
+        source_counts[source] = source_counts[source] + 1 if source in source_counts else 1
 
 
 st.header("🔎 Mathematical Documentation Finder", divider="rainbow")
@@ -595,7 +626,7 @@ if all_sources and (
     with st.spinner("Searching through documentation..."):
         answer = search(question, doc_store)
 
-    if not st.session_state.get("run_once", False):
+    if "run_once" not in st.session_state:
         st.balloons()
         st.session_state["run_once"] = True
 
@@ -607,9 +638,9 @@ if all_sources and (
             f"📚 Source References ({len(answer.documents)} documents)", expanded=False
         ):
             for i, document in enumerate(answer.documents, 1):
-                source = document.meta.get("source", "Unknown")
-                relative_path = document.meta.get("relative_path", "")
-                url_source = document.meta.get("url_source", "")
+                source = document.meta["source"]
+                relative_path = document.meta["relative_path"]
+                url_source = document.meta["url_source"]
 
                 st.write(
                     f"**Document {i}:** `{relative_path or url_source or 'Unknown'}` ({source})"
@@ -629,13 +660,13 @@ if all_sources and (
 if all_sources:
     st.sidebar.header("📊 Documentation Statistics")
     if "file_stats" in locals():
-        st.sidebar.metric("Total Files", file_stats.get("total_files", 0))
+        st.sidebar.metric("Total Files", file_stats["total_files"])
 
         # Show cache status
         cache_status = "🟢 Cached" if cache_hit else "🔄 Fresh Index"
         st.sidebar.write(f"**Status:** {cache_status}")
 
         # Count by source
-        source_counts = file_stats.get("sources", {})
+        source_counts = file_stats["sources"]
         for source, count in source_counts.items():
             st.sidebar.metric(f"{source} Files", count)

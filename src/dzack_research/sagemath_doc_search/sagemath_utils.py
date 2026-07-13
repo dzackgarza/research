@@ -189,7 +189,7 @@ def extract_raw_content_enhanced(lines: list[str], file_path: Path) -> str:
 
 def get_sage_path() -> Path:
     """Get the SageMath installation path from environment variables."""
-    return Path(os.getenv("SAGE_PATH", "/home/dzack/gitclones/sage"))
+    return Path(os.environ["SAGE_PATH"])
 
 
 def get_sagemath_patterns() -> list[str]:
@@ -241,7 +241,7 @@ def find_sagemath_files(max_file_size_mb: int = 1) -> list[dict[str, Any]]:
                     },
                 }
                 files.append(data)
-            except OSError, ValueError:
+            except (OSError, ValueError):
                 # Skip files that can't be accessed
                 continue
 
@@ -517,7 +517,7 @@ def find_symbol_line_with_sage_index(
                                 try:
                                     line_number = int(part.split(":")[1])
                                     break
-                                except ValueError, IndexError:
+                                except (ValueError, IndexError):
                                     continue
 
                         if line_number:
