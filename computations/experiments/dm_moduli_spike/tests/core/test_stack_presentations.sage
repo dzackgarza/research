@@ -2,7 +2,7 @@ r"""Symbolic quotient-stack and clutching presentations of strata."""
 
 from __future__ import annotations
 
-from dm_moduli_spike import DMCompactificationModel, ModuliFactor, StableCurveTypes
+from dm_moduli_spike import DMCompactificationModel, ModuliFactor, StableGraphTypes
 
 
 def test_open_stack_presentation_factors_and_automorphism_action():
@@ -41,7 +41,7 @@ def test_clutching_morphism_targets_the_ambient_compactification():
     clutching = stratum.clutching_morphism()
     # the nodal cubic glues M(0,3) to itself with a Z/2 branch swap
     assert clutching.source_factors() == (ModuliFactor(0, 3, compact=True, flags=(0, 1, 2)),)
-    assert clutching.target() == ModuliFactor(1, 1, compact=True)
+    assert (clutching.genus(), clutching.number_of_markings()) == (1, 1)
     assert clutching.group_order() == 2
     assert clutching.curve_type() == loop
 

@@ -16,7 +16,7 @@ from ..objects.records import StableGraph
 
 if TYPE_CHECKING:
     from ..objects.contractions import StableGraphContraction
-    from ..objects.curve_types import StableCurveType, StableCurveTypes
+    from ..objects.curve_types import StableGraphType, StableGraphTypes
 
 
 def _require_decorated_module() -> object:
@@ -179,13 +179,13 @@ def edge_orbit_sizes(decorated: object) -> tuple[tuple[tuple[int, int], int], ..
 class AdmcyclesDecoratedGraphBackend:
     r"""Enumerator via ``admcycles.decorated_graph.stable_graphs``."""
 
-    def stable_curve_types(self, curve_types: StableCurveTypes, max_codim: int | None = None) -> tuple[StableCurveType, ...]:
+    def stable_curve_types(self, curve_types: StableGraphTypes, max_codim: int | None = None) -> tuple[StableGraphType, ...]:
         decorated_graph = _require_decorated_module()
         g = curve_types.genus()
         n = curve_types.number_of_markings()
         dimension = curve_types.dimension()
         cap = dimension if max_codim is None else min(int(max_codim), dimension)
-        result: dict[object, StableCurveType] = {}
+        result: dict[object, StableGraphType] = {}
         for decorated, bucket_codim in _iter_decorated_graphs(decorated_graph, g, n, cap):
             record = _record_from_decorated_graph(decorated, g, n)
             assert record.num_edges() == bucket_codim, f"decorated_graph bucket codim {bucket_codim} disagrees with {record.num_edges()} edges"

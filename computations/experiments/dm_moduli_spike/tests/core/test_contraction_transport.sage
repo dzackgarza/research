@@ -2,9 +2,14 @@ r"""Transport of contraction morphisms along graph isomorphisms."""
 
 from __future__ import annotations
 
-from dm_moduli_spike import StableGraph, StableCurveTypes
+from dm_moduli_spike import StableGraph, StableGraphTypes
 from dm_moduli_spike.objects.contractions import contract_edge
-from dm_moduli_spike.objects.isomorphisms import isomorphism_between, transport_contraction
+from dm_moduli_spike.objects.isomorphisms import (
+    identity_isomorphism,
+    isomorphism_between,
+    transport_contraction,
+    transport_contraction_via_canonical_relabeling,
+)
 
 
 def _swap_vertices(graph: StableGraph) -> StableGraph:
@@ -19,7 +24,7 @@ def _swap_vertices(graph: StableGraph) -> StableGraph:
 
 
 def test_transport_square_preserves_flag_and_fibre_data():
-    types = StableCurveTypes(1, 2)
+    types = StableGraphTypes(1, 2)
     gamma = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
     domain = gamma.canonical_representative()
     loop_edge = next(
@@ -36,7 +41,7 @@ def test_transport_square_preserves_flag_and_fibre_data():
     assert alpha.vertex_map == (1, 0)
     assert beta.vertex_map == (1, 0)
 
-    transported = transport_contraction(contraction, domain=domain_alt, codomain=codomain_alt)
+    transported = transport_contraction(contraction, alpha, beta)
     assert transported.domain() == domain_alt
     assert transported.codomain() == codomain_alt
 
@@ -52,20 +57,47 @@ def test_transport_square_preserves_flag_and_fibre_data():
 
 
 def test_transport_composes_with_native_contraction():
-    types = StableCurveTypes(1, 2)
+    types = StableGraphTypes(1, 2)
     gamma = types.from_vertices(genera=(1, 0), markings=((), (1, 2)), edges=((0, 1),))
     domain = gamma.canonical_representative()
     domain_alt = _swap_vertices(domain)
     edge = domain.internal_edges()[0]
     _, contraction = contract_edge(domain, edge)
-    transported = transport_contraction(contraction, domain=domain_alt)
+    alpha = isomorphism_between(domain, domain_alt)
+    beta = identity_isomorphism(contraction.codomain())
+    transported = transport_contraction(contraction, alpha, beta)
     edge_alt = transported.contracted_edges()[0]
     image, native = contract_edge(domain_alt, edge_alt)
     assert image.canonical_representative() == transported.codomain()
 
 
-def test_with_endpoints_delegates_to_transport():
-    types = StableCurveTypes(1, 2)
+def test_banana_parallel_edge_transport_swaps_contracted_edge():
+    r"""Mbar(1,2) banana: Aut swaps parallel edges; transport moves edge-1 -> edge-2."""
+    from dm_moduli_spike.objects.isomorphisms import StableGraphIsomorphism
+
+    types = StableGraphTypes(1, 2)
+    banana = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
+    graph = banana.canonical_representative()
+    edges = graph.internal_edges()
+    assert len(edges) == 2
+    assert banana.automorphism_number() == 2
+
+    _, q_edge0 = contract_edge(graph, edges[0])
+    flag_perm = banana.automorphism_action().on_flags()[0]
+    assert flag_perm[edges[0][0]] == edges[1][0]
+    alpha = StableGraphIsomorphism(
+        source=graph,
+        target=graph,
+        vertex_map=tuple(range(graph.num_vertices())),
+        flag_map=flag_perm,
+    )
+    beta = identity_isomorphism(q_edge0.codomain())
+    transported = transport_contraction(q_edge0, alpha, beta)
+    assert transported.contracted_flags() == contract_edge(graph, edges[1])[1].contracted_flags()
+
+
+def test_canonical_relabeling_convenience_matches_explicit_isomorphisms():
+    types = StableGraphTypes(1, 2)
     gamma = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
     domain = gamma.canonical_representative()
     loop_edge = next(
@@ -76,6 +108,12 @@ def test_with_endpoints_delegates_to_transport():
     _, contraction = contract_edge(domain, loop_edge)
     domain_alt = _swap_vertices(domain)
     codomain_alt = _swap_vertices(contraction.codomain())
-    via_endpoints = contraction.with_endpoints(domain_alt, codomain_alt)
-    via_transport = transport_contraction(contraction, domain=domain_alt, codomain=codomain_alt)
-    assert via_endpoints == via_transport
+    alpha = isomorphism_between(domain, domain_alt)
+    beta = isomorphism_between(contraction.codomain(), codomain_alt)
+    explicit = transport_contraction(contraction, alpha, beta)
+    via_canonical = transport_contraction_via_canonical_relabeling(
+        contraction,
+        domain=domain_alt,
+        codomain=codomain_alt,
+    )
+    assert explicit == via_canonical

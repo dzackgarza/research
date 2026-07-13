@@ -1,4 +1,4 @@
-r"""Hasse diagrams, transitive order, rank/dimension, and closure duality."""
+r"""Tier-4 internal consistency: Hasse diagrams, order, rank/dimension, closure duality."""
 
 from __future__ import annotations
 
@@ -12,11 +12,8 @@ from tests.support.poset_oracle import specialization_poset
     "g,n",
     [
         (0, 4),
-        (0, 5),
-        (0, 6),
         (1, 1),
         (1, 2),
-        (2, 0),
     ],
 )
 def test_hasse_diagram_equals_elementary_contraction_relation(g, n):

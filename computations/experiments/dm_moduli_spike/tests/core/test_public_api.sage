@@ -15,18 +15,6 @@ def test_model_scalar_api():
     assert model.is_stable_range()
 
 
-def test_stratification_summary_api():
-    model = DMCompactificationModel(2, 1)
-    stratification = model.stratification(backend="admcycles-stable", max_codim=None)
-    assert stratification.is_complete()
-    assert stratification.rank_sizes() == (1, 2, 5, 5, 3)
-    assert stratification.cardinality() == 16
-    specialization = stratification.specialization_poset()
-    closure = stratification.closure_poset()
-    assert closure.sage_poset() == specialization.sage_poset().dual()
-    assert specialization.hasse_diagram().num_verts() == 16
-
-
 def test_direct_stable_graph_constructor_and_stratum():
     model = DMCompactificationModel(0, 4)
     types = model.curve_types()

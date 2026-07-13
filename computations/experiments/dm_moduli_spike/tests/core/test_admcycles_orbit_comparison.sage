@@ -11,7 +11,11 @@ from dm_moduli_spike.backends.admcycles_decorated import (
     _record_from_decorated_graph,
     _record_to_decorated_graph,
 )
-from dm_moduli_spike.objects.edge_orbits import automorphism_edge_orbit_indices
+from dm_moduli_spike.objects.edge_orbits import (
+    automorphism_edge_orbit_indices,
+    contraction_target_multiset,
+    edges_are_in_same_orbit,
+)
 from tests.support.fixtures import genus_six_counterexample
 
 
@@ -21,6 +25,18 @@ def _spike_orbit_sizes(record):
 
 def _adm_orbit_sizes(dg):
     return sorted(int(size) for _u, _v, size in dg.edge_orbit_representatives())
+
+
+def _adm_contraction_multiset(dg, g, n):
+    from dm_moduli_spike.backends.admcycles_decorated import contraction_from_decorated_morphism
+
+    parent = StableGraphTypes(g, n)
+    entries: list[tuple[object, int]] = []
+    for u, v, size in dg.edge_orbit_representatives():
+        morphism = dg.edge_contraction_morphism([(u, v, 1)])
+        contraction = contraction_from_decorated_morphism(morphism, g, n)
+        entries.append((parent(contraction.target_type()).canonical_key(), int(size)))
+    return Counter(entries)
 
 
 def test_decorated_orbit_representatives_match_spike_edge_orbits():
@@ -36,30 +52,45 @@ def test_decorated_orbit_representatives_match_spike_edge_orbits():
         assert sum(_spike_orbit_sizes(record)) == record.num_edges()
 
 
-def test_spike_m12_loop_edge_roundtrip_orbit_sizes():
-    types = StableGraphTypes(1, 2)
-    loop_edge = types.from_vertices(
-        genera=(0, 0),
-        markings=((), (1, 2)),
-        edges=((0, 0), (0, 1)),
-    )
-    record = loop_edge.canonical_representative()
-    decorated = _record_to_decorated_graph(record, 1, 2)
+def test_spike_m11_loop_branch_swap_orbit_sizes():
+    types = StableGraphTypes(1, 1)
+    loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
+    record = loop.canonical_representative()
+    decorated = _record_to_decorated_graph(record, 1, 1)
     assert _spike_orbit_sizes(record) == _adm_orbit_sizes(decorated)
+    loop_flags = [flag for flag in record.flags_at(0) if record.flag_involution[flag] != flag]
+    assert edges_are_in_same_orbit(record, (loop_flags[0], loop_flags[1]), (loop_flags[0], loop_flags[1]))
 
 
-def test_spike_m12_dumbbell_has_one_edge_orbit_class():
+def test_spike_m12_banana_has_one_edge_orbit_class():
     types = StableGraphTypes(1, 2)
-    dumbbell = types.from_vertices(
+    banana = types.from_vertices(
         genera=(0, 0),
         markings=((1,), (2,)),
         edges=((0, 1), (0, 1)),
     )
-    record = dumbbell.canonical_representative()
+    record = banana.canonical_representative()
     decorated = _record_to_decorated_graph(record, 1, 2)
     assert record.num_edges() == 2
     assert len(automorphism_edge_orbit_indices(record)) == 1
     assert len(decorated.edge_orbit_representatives()) == 1
+    edges = record.internal_edges()
+    assert edges_are_in_same_orbit(record, edges[0], edges[1])
+
+
+def test_spike_m12_true_dumbbell_has_two_singleton_orbits():
+    types = StableGraphTypes(1, 2)
+    dumbbell = types.from_vertices(
+        genera=(0, 0),
+        markings=((), (1, 2)),
+        edges=((0, 0), (0, 1)),
+    )
+    record = dumbbell.canonical_representative()
+    decorated = _record_to_decorated_graph(record, 1, 2)
+    assert _spike_orbit_sizes(record) == [1, 1]
+    assert _adm_orbit_sizes(decorated) == [1, 1]
+    edges = record.internal_edges()
+    assert not edges_are_in_same_orbit(record, edges[0], edges[1])
 
 
 def test_genus_six_orbits_match_admcycles_roundtrip():
@@ -69,5 +100,9 @@ def test_genus_six_orbits_match_admcycles_roundtrip():
     spike_sizes = _spike_orbit_sizes(record)
     assert len(automorphism_edge_orbit_indices(record)) == len(decorated.edge_orbit_representatives()) == 8
     assert Counter(spike_sizes) == Counter(_adm_orbit_sizes(decorated))
-    assert max(Counter(orbit.target().canonical_key() for orbit in gamma.elementary_contraction_orbits()).values()) == 2
+    spike_multiset = Counter(
+        (target.canonical_key(), size) for target, size in contraction_target_multiset(gamma)
+    )
+    assert spike_multiset == _adm_contraction_multiset(decorated, 6, 0)
+    assert max(Counter(target.canonical_key() for target, _size in contraction_target_multiset(gamma)).values()) == 2
     assert len(gamma.covers()) == 7

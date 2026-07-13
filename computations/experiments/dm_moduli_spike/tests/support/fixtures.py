@@ -1,17 +1,146 @@
-"""Named structural fixtures for small moduli-space regression tests."""
+"""Named structural fixtures and independent literature oracles."""
 
 from __future__ import annotations
 
+from itertools import combinations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from dm_moduli_spike.objects.graph_types import StableGraphType
+    from dm_moduli_spike.objects.automorphism_action import AutomorphismAction
+    from dm_moduli_spike.objects.graph_types import StableGraphType, StableGraphTypes
+    from dm_moduli_spike.objects.records import StableGraph
     from dm_moduli_spike.objects.strata import DMStratum
     from dm_moduli_spike.objects.stratification import DMStratification
 
+BoundaryLabel = tuple[str, ...] | tuple[str, int, frozenset[int]]
+
+CHAN_M20_COVERS: dict[str, tuple[str, ...]] = {
+    "VII": ("V", "VI"),
+    "V": ("III", "IV"),
+    "VI": ("IV",),
+    "III": ("I", "II"),
+    "IV": ("II",),
+}
+
+
+def stable_pairs(max_genus: int = 3, max_markings: int = 5) -> tuple[tuple[int, int], ...]:
+    pairs: list[tuple[int, int]] = []
+    for g in range(max_genus + 1):
+        for n in range(max_markings + 1):
+            if 2 * g - 2 + n > 0:
+                pairs.append((g, n))
+    return tuple(pairs)
+
+
+def expected_boundary_labels(g: int, n: int) -> set[BoundaryLabel]:
+    labels: set[BoundaryLabel] = set()
+    if g >= 1:
+        labels.add(("irr",))
+    ground = frozenset(range(1, n + 1))
+    seen: set[tuple[int, frozenset[int]]] = set()
+    for a in range(g + 1):
+        for size in range(n + 1):
+            for subset in combinations(ground, size):
+                a_set = frozenset(subset)
+                if 2 * a - 1 + len(a_set) <= 0:
+                    continue
+                if 2 * (g - a) - 1 + (n - len(a_set)) <= 0:
+                    continue
+                b_set = ground - a_set
+                b = g - a
+                key = (a, a_set) if (a, a_set) <= (b, b_set) else (b, b_set)
+                if key in seen:
+                    continue
+                seen.add(key)
+                labels.add(("sep", key[0], key[1]))
+    return labels
+
+
+def boundary_label(curve_type: StableGraphType, g: int, n: int) -> BoundaryLabel:
+    assert curve_type.codimension() == 1
+    record = curve_type.canonical_representative()
+    if record.num_vertices() == 1 and len(record.internal_edges()) == 1:
+        flag, partner = record.internal_edges()[0]
+        if record.flag_vertex[flag] == record.flag_vertex[partner]:
+            return ("irr",)
+    assert record.num_vertices() == 2
+    genera = record.vertex_genera
+    markings = tuple(frozenset(record.markings_at(vertex)) for vertex in range(2))
+    edge = record.internal_edges()[0]
+    left = record.flag_vertex[edge[0]]
+    right = record.flag_vertex[edge[1]]
+    assert left != right
+    a = genera[0]
+    a_set = markings[0]
+    b_set = markings[1]
+    if (genera[1], b_set) < (a, a_set):
+        a, a_set = genera[1], b_set
+    return ("sep", a, frozenset(a_set))
+
+
+def expected_clutching_signature_irr(g: int, n: int) -> tuple[tuple[int, int], ...]:
+    return ((g - 1, n + 2),)
+
+
+def expected_clutching_signature_sep(g: int, n: int, a: int, marking_set: frozenset[int]) -> tuple[tuple[int, int], ...]:
+    b = g - a
+    b_set = frozenset(label for label in range(1, n + 1) if label not in marking_set)
+    return (
+        (a, len(marking_set) + 1),
+        (b, len(b_set) + 1),
+    )
+
+
+def clutching_signature(stratum: DMStratum) -> tuple[tuple[int, int], ...]:
+    factors = stratum.clutching_morphism().source_factors()
+    return tuple(sorted((factor.genus(), factor.number_of_markings()) for factor in factors))
+
+
+def classify_chan_m20(record: StableGraph) -> str:
+    genera = record.vertex_genera
+    num_vertices = record.num_vertices()
+    num_edges = record.num_edges()
+    loops = sum(1 for flag, partner in record.internal_edges() if record.flag_vertex[flag] == record.flag_vertex[partner])
+    bridges = num_edges - loops
+
+    if num_vertices == 1 and genera == (2,) and num_edges == 0:
+        return "VII"
+    if num_vertices == 1 and genera == (1,) and loops == 1 and bridges == 0:
+        return "V"
+    if num_vertices == 2 and genera == (1, 1) and bridges == 1 and loops == 0:
+        return "VI"
+    if num_vertices == 1 and genera == (0,) and loops == 2:
+        return "III"
+    if num_vertices == 2 and genera == (1, 0) and loops == 1 and bridges == 1:
+        return "IV"
+    if num_vertices == 2 and genera == (0, 0) and bridges == 3 and loops == 0:
+        return "I"
+    if num_vertices == 2 and genera == (0, 0) and loops == 2 and bridges == 1:
+        return "II"
+    raise AssertionError(f"graph does not match any Chan Figure 3 type: V={num_vertices} G={genera} E={num_edges} L={loops}")
+
+
+def induced_edge_permutation_group(action: AutomorphismAction) -> object:
+    from sage.combinat.permutation import Permutation
+    from sage.groups.perm_gps.permgroup import PermutationGroup
+
+    edge_perms = action.on_edges()
+    if not edge_perms:
+        return PermutationGroup([()])
+    degree = len(edge_perms[0])
+    generators = [Permutation([image + 1 for image in perm]) for perm in edge_perms]
+    return PermutationGroup(generators, domain=list(range(1, degree + 1)))
+
+
+def chan_m13_curve_type(types: StableGraphTypes) -> StableGraphType:
+    return types.from_vertices(
+        genera=(0, 0),
+        markings=((1, 2), (3,)),
+        edges=((0, 1), (0, 1)),
+    )
+
 
 def m11_types(stratification: DMStratification) -> tuple[DMStratum, DMStratum]:
-    """Smooth and nodal strata of Mbar(1, 1)."""
     poset = stratification.specialization_poset()
     smooth = next(x for x in poset if x.curve_type().num_edges() == 0)
     nodal = next(x for x in poset if x.curve_type().num_edges() == 1)
@@ -19,7 +148,6 @@ def m11_types(stratification: DMStratification) -> tuple[DMStratum, DMStratum]:
 
 
 def m12_types(stratification: DMStratification) -> dict[str, DMStratum]:
-    """Markwig's five genus-one two-marked combinatorial types."""
     return {
         "A": stratification.find_unique_type(
             vertex_genera=(1,),
@@ -50,25 +178,16 @@ def m12_types(stratification: DMStratification) -> dict[str, DMStratum]:
 
 
 def m20_types(stratification: DMStratification) -> dict[str, DMStratum]:
-    """Chan's seven stable genus-two combinatorial types."""
-    from dm_moduli_spike import DMCompactificationModel
-
-    types = DMCompactificationModel(stratification.genus(), stratification.number_of_markings()).curve_types()
-    fixtures = {
-        "VII": types.from_vertices(genera=(2,), markings=((),), edges=()),
-        "V": types.from_vertices(genera=(1,), markings=((),), edges=((0, 0),)),
-        "VI": types.from_vertices(genera=(1, 1), markings=((), ()), edges=((0, 1),)),
-        "III": types.from_vertices(genera=(0,), markings=((),), edges=((0, 0), (0, 0))),
-        "IV": types.from_vertices(genera=(1, 0), markings=((), ()), edges=((0, 1), (1, 1))),
-        "I": types.from_vertices(genera=(0, 0), markings=((), ()), edges=((0, 1), (0, 1), (0, 1))),
-        "II": types.from_vertices(genera=(0, 0), markings=((), ()), edges=((0, 0), (0, 1), (1, 1))),
-    }
-    by_key = {stratum.curve_type().canonical_key(): stratum for stratum in stratification.strata()}
-    return {name: by_key[curve_type.canonical_key()] for name, curve_type in fixtures.items()}
+    by_name: dict[str, DMStratum] = {}
+    for stratum in stratification.strata():
+        name = classify_chan_m20(stratum.curve_type().canonical_representative())
+        assert name not in by_name, f"duplicate Chan type {name}"
+        by_name[name] = stratum
+    assert set(by_name) == set(CHAN_M20_COVERS) | {"I", "II", "III", "IV", "V", "VI", "VII"}
+    return by_name
 
 
 def genus_six_counterexample() -> StableGraphType:
-    """Stable genus-six graph with distinct Aut edge orbits sharing a contraction target."""
     from dm_moduli_spike import StableGraphTypes
 
     types = StableGraphTypes(6, 0)

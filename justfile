@@ -1,4 +1,4 @@
-test:
+_umbrella-hygiene:
     #!/usr/bin/env bash
     set -euo pipefail
     export PYTHONDONTWRITEBYTECODE=1
@@ -89,6 +89,10 @@ test:
     if "projects/lattice-research" not in gitmodules.read_text():
         raise SystemExit("lattice-research submodule missing from .gitmodules")
     PY
+
+test: _umbrella-hygiene
+    #!/usr/bin/env bash
+    set -euo pipefail
     # Every spike that carries a justfile is on QC rails automatically —
     # adding a spike never requires editing this file (see AGENTS.md).
     shopt -s nullglob
@@ -96,7 +100,13 @@ test:
         just -f "$spike_justfile" test
     done
 
-test-ci: test
+test-ci: _umbrella-hygiene
+    #!/usr/bin/env bash
+    set -euo pipefail
+    shopt -s nullglob
+    for spike_justfile in computations/experiments/*/justfile; do
+        just -f "$spike_justfile" test-ci
+    done
 
 # Assemble the LLM-review context packet (review-packet.tar).
 #

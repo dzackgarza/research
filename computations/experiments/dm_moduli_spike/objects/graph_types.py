@@ -19,7 +19,6 @@ from sage.structure.unique_representation import UniqueRepresentation
 
 from .automorphism_action import AutomorphismAction
 from .canonical import CanonicalKey, automorphism_group, automorphism_number, canonical_key, canonical_record, to_json
-from .contraction_orbits import ContractionOrbit
 from .records import StableGraph, intern_graph
 
 if TYPE_CHECKING:
@@ -107,8 +106,13 @@ class StableGraphType(Element):
         queue: deque[StableGraphType] = deque([self])
         while queue:
             current = queue.popleft()
-            for orbit in current.elementary_contraction_orbits():
-                image = orbit.target()
+            current_graph = current.canonical_representative()
+            from .edge_orbits import automorphism_edge_orbit_indices
+
+            for group in automorphism_edge_orbit_indices(current_graph):
+                representative = current_graph.internal_edges()[group[0]]
+                image_type, _ = current_graph.contract(representative)
+                image = self.parent()(image_type)
                 key = image.canonical_key()
                 if key == target:
                     return True
@@ -120,25 +124,21 @@ class StableGraphType(Element):
     def admits_contraction_to(self, other: StableGraphType) -> bool:
         return self.contracts_to(other)
 
-    def elementary_contraction_orbits(self) -> tuple[ContractionOrbit, ...]:
-        from .edge_orbits import elementary_contraction_orbits as compute_orbits
-
-        return compute_orbits(self)
-
     def edge_orbits(self) -> tuple[tuple[tuple[int, int], ...], ...]:
         from .edge_orbits import automorphism_edge_orbits
 
         return automorphism_edge_orbits(self._graph)
 
-    def cover_types(self) -> tuple[tuple[StableGraphType, StableGraphType], ...]:
-        r"""Deprecated alias for :meth:`covers`."""
-        return self.covers()
-
     def covers(self) -> tuple[tuple[StableGraphType, StableGraphType], ...]:
-        r"""Distinct specialization covers below this type, one per Aut edge orbit."""
+        r"""Distinct contraction targets ``[\Gamma/e]``, one per ``Aut(\Gamma)`` edge orbit."""
+        from .edge_orbits import automorphism_edge_orbit_indices
+
         seen: dict[object, tuple[StableGraphType, StableGraphType]] = {}
-        for orbit in self.elementary_contraction_orbits():
-            target = orbit.target()
+        graph = self._graph
+        for group in automorphism_edge_orbit_indices(graph):
+            representative = graph.internal_edges()[group[0]]
+            target_type, _ = graph.contract(representative)
+            target = self.parent()(target_type)
             seen.setdefault(target.canonical_key(), (target, self))
         return tuple(seen.values())
 
@@ -318,8 +318,3 @@ class StableGraphTypes(UniqueRepresentation, Parent):
 
     def cardinality(self) -> int:
         return int(sum(1 for _ in self))
-
-
-# Backward-compatible public names retained for the spike transition.
-StableCurveType = StableGraphType
-StableCurveTypes = StableGraphTypes

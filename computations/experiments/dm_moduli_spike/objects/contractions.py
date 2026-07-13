@@ -2,6 +2,7 @@ r"""Contractions as first-class morphisms between labeled stable graphs."""
 
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING
 
 from .canonical import canonical_key, canonical_record
@@ -10,6 +11,7 @@ from .records import StableGraph, intern_graph
 
 if TYPE_CHECKING:
     from .graph_types import StableGraphType
+    from .isomorphisms import StableGraphIsomorphism
 
 
 class StableGraphContraction:
@@ -39,6 +41,7 @@ class StableGraphContraction:
         self._contracted_flags = contracted_flags
         self._vertex_fibres = vertex_fibres
         self._domain_flag_of_codomain_flag = domain_flag_of_codomain_flag
+        _validate_contraction(self)
 
     def domain(self) -> StableGraph:
         return self._domain
@@ -92,13 +95,39 @@ class StableGraphContraction:
             )
         )
 
-    def with_endpoints(self, domain: StableGraph, codomain: StableGraph) -> StableGraphContraction:
-        r"""Transport this contraction to new labeled endpoints via graph isomorphisms."""
+    def with_endpoints(
+        self,
+        domain: StableGraph,
+        codomain: StableGraph,
+        *,
+        alpha: StableGraphIsomorphism | None = None,
+        beta: StableGraphIsomorphism | None = None,
+    ) -> StableGraphContraction:
+        r"""Deprecated: pass explicit isomorphisms or use :func:`transport_contraction`."""
+        warnings.warn(
+            "StableGraphContraction.with_endpoints is deprecated; "
+            "use transport_contraction(q, alpha, beta) or "
+            "transport_contraction_via_canonical_relabeling(q, domain=..., codomain=...)",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        from .isomorphisms import identity_isomorphism, transport_contraction, transport_contraction_via_canonical_relabeling
+
+        if alpha is not None and beta is not None:
+            return transport_contraction(self, alpha, beta)
         if domain is self._domain and codomain is self._codomain:
             return self
-        from .isomorphisms import transport_contraction
-
-        return transport_contraction(self, domain=domain, codomain=codomain)
+        if domain is self._domain:
+            beta_iso = beta if beta is not None else identity_isomorphism(codomain)
+            assert beta_iso.source == self._codomain
+            alpha_iso = identity_isomorphism(domain)
+            return transport_contraction(self, alpha_iso, beta_iso)
+        if codomain is self._codomain:
+            alpha_iso = alpha if alpha is not None else identity_isomorphism(domain)
+            assert alpha_iso.source == self._domain
+            beta_iso = identity_isomorphism(codomain)
+            return transport_contraction(self, alpha_iso, beta_iso)
+        return transport_contraction_via_canonical_relabeling(self, domain=domain, codomain=codomain)
 
     def compose(self, other: StableGraphContraction) -> StableGraphContraction:
         assert self._codomain == other._domain, (
@@ -111,6 +140,51 @@ class StableGraphContraction:
 
     def __repr__(self) -> str:
         return f"Contraction of {self.num_contracted_edges()} edge(s): {self._domain!r} -> {self._codomain!r}"
+
+
+def _validate_contraction(contraction: StableGraphContraction) -> None:
+    domain = contraction._domain
+    codomain = contraction._codomain
+    target_type = contraction._target_type
+    contracted_flags = contraction._contracted_flags
+    vertex_fibres = contraction._vertex_fibres
+    domain_flag_of_codomain_flag = contraction._domain_flag_of_codomain_flag
+
+    involution = domain.flag_involution
+    for flag in contracted_flags:
+        assert involution[flag] != flag, f"cannot contract a leg (flag {flag})"
+        assert involution[flag] in contracted_flags, f"contracted flags must form whole edges; partner of {flag} missing"
+
+    surviving = [flag for flag in range(domain.num_flags()) if flag not in contracted_flags]
+    assert len(domain_flag_of_codomain_flag) == len(surviving), "domain_flag_of_codomain_flag must biject surviving flags"
+    codomain_flags = {codomain_flag for codomain_flag, _domain_flag in domain_flag_of_codomain_flag}
+    domain_flags = {domain_flag for _codomain_flag, domain_flag in domain_flag_of_codomain_flag}
+    assert codomain_flags == set(range(codomain.num_flags())), "codomain flags must be fully covered"
+    assert domain_flags == set(surviving), "surviving domain flags must be fully covered"
+
+    assert len(vertex_fibres) == codomain.num_vertices(), f"|fibres|={len(vertex_fibres)} != |V(codomain)|={codomain.num_vertices()}"
+    covered_vertices: set[int] = set()
+    for fibre in vertex_fibres:
+        for vertex in fibre:
+            assert 0 <= vertex < domain.num_vertices(), f"vertex {vertex} out of range in fibre"
+            assert vertex not in covered_vertices, f"vertex {vertex} appears in multiple fibres"
+            covered_vertices.add(vertex)
+    assert covered_vertices == set(range(domain.num_vertices())), "vertex fibres must partition domain vertices"
+
+    for component, fibre in enumerate(vertex_fibres):
+        genus_sum = sum(domain.vertex_genera[v] for v in fibre)
+        contracted_in_component = sum(1 for flag in contracted_flags if flag < involution[flag] and domain.flag_vertex[flag] in fibre)
+        b1 = contracted_in_component - (len(fibre) - 1)
+        expected_genus = genus_sum + b1
+        assert codomain.vertex_genera[component] == expected_genus, (
+            f"genus formula failed at codomain vertex {component}: expected {expected_genus}, got {codomain.vertex_genera[component]}"
+        )
+
+    from .canonical import canonical_key
+
+    assert canonical_key(codomain) == target_type.canonical_key(), "target_type must match codomain type"
+    assert target_type.parent().genus() == domain.genus()
+    assert target_type.parent().number_of_markings() == domain.num_markings()
 
 
 def _union_find_parent(size: int) -> list[int]:

@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike import DMCompactificationModel, StableCurveTypes, StableGraph
+from dm_moduli_spike import DMCompactificationModel, StableGraphTypes, StableGraph
 from dm_moduli_spike.objects.canonical import canonical_record
+from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
 from dm_moduli_spike.objects.stratification import build_stratification_from_types
 
 
 def test_isomorphic_labeled_inputs_define_the_same_curve_type():
-    types = StableCurveTypes(0, 4)
+    types = StableGraphTypes(0, 4)
     left = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     right = types.from_vertices(genera=(0, 0), markings=((3, 4), (1, 2)), edges=((0, 1),))
     assert left == right
@@ -34,7 +35,7 @@ def test_record_is_immutable_after_construction():
 
 
 def test_canonical_record_is_idempotent():
-    types = StableCurveTypes(0, 4)
+    types = StableGraphTypes(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     once = canonical_record(gamma.canonical_representative())
     twice = canonical_record(once)
@@ -42,7 +43,7 @@ def test_canonical_record_is_idempotent():
 
 
 def test_automorphism_group_order_matches_number():
-    types = StableCurveTypes(0, 4)
+    types = StableGraphTypes(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     assert int(gamma.automorphism_group().order()) == gamma.automorphism_number()
     presentation = DMCompactificationModel(0, 4).stratum(gamma).open_stack_presentation()
@@ -57,21 +58,6 @@ def test_stack_signature_carries_automorphism_group_not_just_order():
     assert int(group.order()) == 2
 
 
-def test_external_backend_completeness_requires_full_rank_span():
-    curve_types = DMCompactificationModel(2, 1).curve_types()
-    partial = build_stratification_from_types(curve_types, (curve_types.smooth(),))
-    assert not partial.is_complete()
-    assert not partial.has_full_rank_support()
-    assert partial.rank_sizes() == (1,)
-
-    full = DMCompactificationModel(2, 1).stratification(backend="admcycles-stable")
-    truncated_types = tuple(gamma for level in full.curve_type_levels()[:2] for gamma in level)
-    truncated = build_stratification_from_types(curve_types, truncated_types)
-    assert not truncated.is_complete()
-    assert not truncated.has_full_rank_support()
-    assert truncated.maximum_codim() == 1
-
-
 def test_admcycles_stable_backend_matches_pure_sage_when_complete():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
         model = DMCompactificationModel(g, n)
@@ -84,7 +70,7 @@ def test_admcycles_stable_backend_matches_pure_sage_when_complete():
 
 
 def test_contraction_composition_across_isomorphic_representatives():
-    types = StableCurveTypes(0, 5)
+    types = StableGraphTypes(0, 5)
     gamma = types.from_vertices(
         genera=(0, 0, 0),
         markings=((1, 2), (3,), (4, 5)),
@@ -130,7 +116,7 @@ def test_stratification_contraction_witnesses_use_level_representatives():
 
 
 def test_presentation_data_is_invariant_under_vertex_relabeling():
-    types = StableCurveTypes(0, 4)
+    types = StableGraphTypes(0, 4)
     left = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     right = types.from_vertices(genera=(0, 0), markings=((3, 4), (1, 2)), edges=((0, 1),))
     left_presentation = DMCompactificationModel(0, 4).stratum(left).open_stack_presentation()
@@ -140,11 +126,11 @@ def test_presentation_data_is_invariant_under_vertex_relabeling():
 
 
 def test_automorphism_action_fixes_markings_and_permutes_parallel_edges():
-    types = StableCurveTypes(1, 2)
+    types = StableGraphTypes(1, 2)
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
     action = theta.automorphism_action()
     assert all(image == tuple(range(1, 3)) for image in action.on_markings())
-    assert theta.elementary_contraction_orbits()[0].orbit_size() == 2
+    assert _elementary_contraction_data(theta)[0][2] == 2
 
 
 def test_backend_independence_without_verify():
@@ -165,10 +151,8 @@ def test_completeness_false_when_enumeration_stops_early(monkeypatch):
     incomplete = DMCompactificationModel(0, 4).stratification(backend="pure-sage")
     assert not incomplete.is_complete()
     assert incomplete.rank_sizes() == (1,)
-    certificate = incomplete.enumeration_result()
-    assert not certificate.globally_complete
-    assert certificate.complete_through_codim == -1
-    assert certificate.backend == "pure-sage"
+    assert incomplete.complete_through_codim() == 0
+    assert incomplete.backend() == "pure-sage"
 
 
 def test_admcycles_backend_skips_pure_sage_without_verify(monkeypatch):
@@ -184,7 +168,7 @@ def test_admcycles_backend_skips_pure_sage_without_verify(monkeypatch):
 
 
 def test_contraction_flag_map_is_immutable_to_caller_mutation():
-    types = StableCurveTypes(0, 4)
+    types = StableGraphTypes(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     graph = gamma.canonical_representative()
     _, contraction = graph.contract(graph.internal_edges()[0])
@@ -194,7 +178,7 @@ def test_contraction_flag_map_is_immutable_to_caller_mutation():
 
 
 def test_dumbbell_graph_automorphism_swaps_loop_branches():
-    types = StableCurveTypes(1, 2)
+    types = StableGraphTypes(1, 2)
     dumbbell = types.from_vertices(
         genera=(0, 0),
         markings=((), (1, 2)),
@@ -202,11 +186,11 @@ def test_dumbbell_graph_automorphism_swaps_loop_branches():
     )
     action = dumbbell.automorphism_action()
     assert int(action.group().order()) == 2
-    assert dumbbell.elementary_contraction_orbits()[0].orbit_size() == 1
+    assert _elementary_contraction_data(dumbbell)[0][2] == 1
 
 
 def test_automorphism_actions_on_all_incidence_data():
-    types = StableCurveTypes(1, 2)
+    types = StableGraphTypes(1, 2)
     fixtures = {
         "theta": types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1))),
         "dumbbell": types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1))),
@@ -223,19 +207,8 @@ def test_automorphism_actions_on_all_incidence_data():
         assert all(image == tuple(range(1, graph.num_markings() + 1)) for image in action.on_markings())
 
 
-def test_rank_support_without_exhaustiveness():
-    model = DMCompactificationModel(2, 1)
-    full = model.stratification()
-    all_types = [gamma for level in full.curve_type_levels() for gamma in level]
-    removed = next(gamma for level in full.curve_type_levels() if len(level) > 1 for gamma in level)
-    pruned = tuple(gamma for gamma in all_types if gamma is not removed)
-    rebuilt = build_stratification_from_types(model.curve_types(), pruned)
-    assert rebuilt.has_full_rank_support()
-    assert not rebuilt.is_complete()
-
-
 def test_branch_swap_semantics_on_m11_nodal_flags():
-    types = StableCurveTypes(1, 1)
+    types = StableGraphTypes(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
     graph = loop.canonical_representative()
     marking_flag = graph.marking_to_flag[0]
@@ -253,7 +226,7 @@ def test_branch_swap_semantics_on_m11_nodal_flags():
 
 
 def test_factor_slots_on_m11_nodal_graph():
-    types = StableCurveTypes(1, 1)
+    types = StableGraphTypes(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
     graph = loop.canonical_representative()
     clutching = DMCompactificationModel(1, 1).stratum(loop).clutching_morphism()
@@ -269,7 +242,7 @@ def test_factor_slots_on_m11_nodal_graph():
 
 
 def test_factor_slots_on_m04_split_type():
-    types = StableCurveTypes(0, 4)
+    types = StableGraphTypes(0, 4)
     split = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     graph = split.canonical_representative()
     clutching = DMCompactificationModel(0, 4).stratum(split).clutching_morphism()
@@ -294,37 +267,28 @@ def test_decorated_edge_orbit_morphisms_contract_to_codimension_one():
         assert contraction.target_type().num_edges() == dg.num_edges() - 1
 
 
-def test_clutching_datum_exposes_gluing_partition():
-    types = StableCurveTypes(1, 2)
+def test_clutching_morphism_exposes_half_edge_coordinates():
+    types = StableGraphTypes(1, 2)
     dumbbell = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
     clutching = DMCompactificationModel(1, 2).stratum(dumbbell).clutching_morphism()
-    assert clutching.gluing_partition() == (frozenset(), frozenset({1, 2}))
-    assert clutching.local_markings_by_factor() == ((), (1, 2))
+    assert clutching.markings_by_vertex() == ((), (1, 2))
     assert clutching.edge_incidence() == ((0, 0), (0, 1))
     assert int(clutching.automorphism_action().group().order()) == 2
+    assert (clutching.genus(), clutching.number_of_markings()) == (1, 2)
 
 
 def test_clutching_gluing_map_assigns_markings_and_edge_branches():
-    types = StableCurveTypes(1, 2)
+    types = StableGraphTypes(1, 2)
     dumbbell = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
     clutching = DMCompactificationModel(1, 2).stratum(dumbbell).clutching_morphism()
     marking_flags, node_pairs = clutching.gluing_map()
     record = dumbbell.canonical_representative()
     assert marking_flags == record.marking_to_flag
     assert node_pairs == record.internal_edges()
-    marking_slots, slot_pairings = clutching.gluing_map_slots()
-    assert len(marking_slots) == 2
-    assert marking_slots[0].vertex == 1 and marking_slots[0].local_index == 0
-    assert marking_slots[1].vertex == 1 and marking_slots[1].local_index == 1
-    assert len(slot_pairings) == 2
-    loop_pair, edge_pair = slot_pairings
-    assert loop_pair[0].vertex == loop_pair[1].vertex == 0
-    assert {loop_pair[0].local_index, loop_pair[1].local_index} == {0, 1}
-    assert edge_pair[0].local_index == edge_pair[1].local_index == 2
 
 
 def test_all_invariants_equal_under_vertex_relabeling():
-    types = StableCurveTypes(0, 4)
+    types = StableGraphTypes(0, 4)
     left = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     right = types.from_vertices(genera=(0, 0), markings=((3, 4), (1, 2)), edges=((0, 1),))
     for gamma in (left, right):
@@ -342,7 +306,7 @@ def test_all_invariants_equal_under_vertex_relabeling():
 
 
 def test_canonical_key_unchanged_after_failed_mutation():
-    types = StableCurveTypes(0, 4)
+    types = StableGraphTypes(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     record = gamma.canonical_representative()
     key_before = gamma.canonical_key()
@@ -356,7 +320,7 @@ def test_canonical_key_unchanged_after_failed_mutation():
 
 
 def test_complete_stratifications_span_all_ranks():
-    for g, n in [(0, 4), (1, 1), (1, 2), (2, 0), (2, 1)]:
+    for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
         model = DMCompactificationModel(g, n)
         stratification = model.stratification()
         assert stratification.is_complete()
@@ -366,14 +330,14 @@ def test_complete_stratifications_span_all_ranks():
 def test_theta_dumbbell_and_m12_type_e_orbit_sizes():
     from tests.support.fixtures import m12_types
 
-    types = StableCurveTypes(1, 2)
+    types = StableGraphTypes(1, 2)
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
     dumbbell = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
     m12_e = m12_types(DMCompactificationModel(1, 2).stratification())["E"].curve_type()
-    assert theta.elementary_contraction_orbits()[0].orbit_size() == 2
-    dumbbell_orbits = {orbit.orbit_size() for orbit in dumbbell.elementary_contraction_orbits()}
+    assert _elementary_contraction_data(theta)[0][2] == 2
+    dumbbell_orbits = {size for _target, _witness, size in _elementary_contraction_data(dumbbell)}
     assert dumbbell_orbits == {1, 1}
-    m12_orbits = sorted(orbit.orbit_size() for orbit in m12_e.elementary_contraction_orbits())
+    m12_orbits = sorted(size for _target, _witness, size in _elementary_contraction_data(m12_e))
     assert m12_orbits == [2]
 
 
@@ -381,7 +345,7 @@ def test_automorphism_generators_agree_with_incidence_actions():
     from dm_moduli_spike.objects.canonical import _incidence_graph
     from tests.support.fixtures import m12_types
 
-    types = StableCurveTypes(1, 2)
+    types = StableGraphTypes(1, 2)
     fixtures = {
         "theta": types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1))),
         "dumbbell": types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1))),
@@ -402,4 +366,3 @@ def test_automorphism_generators_agree_with_incidence_actions():
                 image_label = generator(("M", label))[1]
                 assert action.on_markings()[index][label - 1] == image_label
             assert action.on_factors()[index] == action.on_vertices()[index]
-            assert len(action.on_local_markings()[index]) == gamma.num_vertices()

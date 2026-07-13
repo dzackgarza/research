@@ -1,8 +1,11 @@
-r"""Backend adapters: no third-party class leaks into the public API."""
+r"""Tier-3 differential check: backend adapters must not leak third-party types.
+
+Not a literature oracle — agreement with ``admcycles`` is tier-3 CAS differential evidence.
+"""
 
 from __future__ import annotations
 
-from dm_moduli_spike import DMCompactificationModel, StableCurveType
+from dm_moduli_spike import DMCompactificationModel, StableGraphType
 from dm_moduli_spike.backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
 from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
 
@@ -11,7 +14,7 @@ def test_stable_backend_returns_owned_curve_types_only():
     backend = AdmcyclesStableGraphBackend()
     types = DMCompactificationModel(1, 2).curve_types()
     produced = backend.stable_curve_types(types)
-    assert all(isinstance(gamma, StableCurveType) for gamma in produced)
+    assert all(isinstance(gamma, StableGraphType) for gamma in produced)
     assert all(gamma.parent() == types for gamma in produced)
 
 
@@ -36,7 +39,7 @@ def test_decorated_backend_matches_pure_sage_canonical_keys():
         produced = AdmcyclesDecoratedGraphBackend().stable_curve_types(model.curve_types())
         assert produced
         assert all(
-            isinstance(gamma, StableCurveType) and gamma.parent() == model.curve_types()
+            isinstance(gamma, StableGraphType) and gamma.parent() == model.curve_types()
             for gamma in produced
         )
 

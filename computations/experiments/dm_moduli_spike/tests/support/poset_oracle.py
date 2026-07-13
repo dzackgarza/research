@@ -62,4 +62,4 @@ def specialization_poset(g: int, n: int) -> StratificationPoset:
     """Convenience wrapper used throughout the regression suite."""
     from dm_moduli_spike import DMCompactificationModel
 
-    return DMCompactificationModel(g, n).stratification().specialization_poset()
+    return DMCompactificationModel(g, n).stratification(backend="pure-sage").specialization_poset()

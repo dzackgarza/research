@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from sage.structure.unique_representation import UniqueRepresentation
 
-from .curve_types import StableCurveTypes, StableGraphType, StableGraphTypes
+from .graph_types import StableGraphType, StableGraphTypes
 from .strata import DMStratum
 from .stratification import DMStratification, build_stratification, build_stratification_from_types
 
@@ -59,7 +59,7 @@ class DMCompactificationModel(UniqueRepresentation):
     def graph_types(self) -> StableGraphTypes:
         return StableGraphTypes(self._g, self._n)
 
-    def curve_types(self) -> StableCurveTypes:
+    def curve_types(self) -> StableGraphTypes:
         return self.graph_types()
 
     def stratum(self, curve_type: StableGraphType) -> DMStratum:

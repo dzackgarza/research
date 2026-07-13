@@ -15,7 +15,7 @@ automorphism group (not merely its order), and the indexing dual graph, without
 evaluating the quotient as an algebraic stack.
 
 A :class:`DMStratum` is the stratum itself, kept distinct from the
-:class:`~dm_moduli_spike.objects.curve_types.StableCurveType` that indexes it.
+:class:`~dm_moduli_spike.objects.graph_types.StableGraphType` that indexes it.
 """
 
 from __future__ import annotations
@@ -23,7 +23,6 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from .automorphism_action import AutomorphismAction
-from .factor_slots import FactorSlot, external_marking_slot_map, factor_slots, node_pairings
 from .graph_types import StableGraphType
 
 
@@ -147,9 +146,6 @@ class QuotientStackPresentation:
         return f"QuotientStackPresentation(product=({factors}), |Aut|={self._group_order})"
 
 
-QuotientStackSignature = QuotientStackPresentation
-
-
 class ClutchingMorphism:
     r"""Symbolic clutching (gluing) morphism
     :math:`\xi_\Gamma:\prod_v \overline{\mathcal M}_{g(v),H(v)}\to\overline{\mathcal M}_{g,n}`.
@@ -158,25 +154,32 @@ class ClutchingMorphism:
     internal edges pair the corresponding sections via ``internal_edges()``.
     """
 
-    __slots__ = ("_source_factors", "_target", "_group_order", "_curve_type")
+    __slots__ = ("_source_factors", "_target_g", "_target_n", "_group_order", "_curve_type")
 
     def __init__(
         self,
         source_factors: tuple[ModuliFactor, ...],
-        target: ModuliFactor,
+        target_genus: int,
+        target_markings: int,
         group_order: int,
         curve_type: StableGraphType,
     ) -> None:
         self._source_factors = source_factors
-        self._target = target
+        self._target_g = int(target_genus)
+        self._target_n = int(target_markings)
         self._group_order = _validate_group_order(group_order)
         self._curve_type = curve_type
 
     def source_factors(self) -> tuple[ModuliFactor, ...]:
         return self._source_factors
 
-    def target(self) -> ModuliFactor:
-        return self._target
+    def genus(self) -> int:
+        r"""Ambient genus :math:`g` of the clutching target :math:`\overline{\mathcal M}_{g,n}`."""
+        return self._target_g
+
+    def number_of_markings(self) -> int:
+        r"""Ambient marking count :math:`n`` of the clutching target."""
+        return self._target_n
 
     def group_order(self) -> int:
         return self._group_order
@@ -191,18 +194,6 @@ class ClutchingMorphism:
         r"""External marking labels on each vertex factor: :math:`(L(v))_{v\in V}`."""
         record = self._curve_type.canonical_representative()
         return tuple(record.markings_at(vertex) for vertex in range(record.num_vertices()))
-
-    def local_markings_by_factor(self) -> tuple[tuple[int, ...], ...]:
-        r"""Deprecated alias for :meth:`markings_by_vertex`."""
-        return self.markings_by_vertex()
-
-    def factor_slots(self) -> tuple[tuple[FactorSlot, ...], ...]:
-        r"""Deprecated: prefer :meth:`flags_at` on each vertex."""
-        return factor_slots(self._curve_type.canonical_representative())
-
-    def gluing_partition(self) -> tuple[frozenset[int], ...]:
-        r"""Deprecated: prefer :meth:`markings_by_vertex` (blocks may be empty)."""
-        return tuple(frozenset(block) for block in self.markings_by_vertex())
 
     def edge_incidence(self) -> tuple[tuple[int, int], ...]:
         r"""Vertex pairs for each internal edge (in half-edge record order)."""
@@ -225,30 +216,11 @@ class ClutchingMorphism:
         r"""Alias for :meth:`internal_edges` in clutching vocabulary."""
         return self.internal_edges()
 
-    def external_marking_slots(self) -> tuple[FactorSlot, ...]:
-        r"""Assignment of each external label ``1, ..., n`` to a :class:`FactorSlot`."""
-        return external_marking_slot_map(self._curve_type.canonical_representative())
-
-    def edge_branch_pairs(self) -> tuple[tuple[int, int], ...]:
-        r"""Legacy raw half-edge branch pairs; prefer :meth:`node_pairings`."""
-        record = self._curve_type.canonical_representative()
-        return tuple(record.internal_edges())
-
-    def node_pairings(self) -> tuple[tuple[FactorSlot, FactorSlot], ...]:
-        r"""Each internal node as a pair of :class:`FactorSlot` branch coordinates."""
-        return node_pairings(self._curve_type.canonical_representative())
-
     def gluing_map(
         self,
     ) -> tuple[tuple[int, ...], tuple[tuple[int, int], ...]]:
         r"""Half-edge gluing data: marking flags and internal edge flag pairs."""
         return (self.marking_flags(), self.internal_edges())
-
-    def gluing_map_slots(
-        self,
-    ) -> tuple[tuple[FactorSlot, ...], tuple[tuple[FactorSlot, FactorSlot], ...]]:
-        r"""Deprecated typed gluing data using :class:`FactorSlot` coordinates."""
-        return (self.external_marking_slots(), self.node_pairings())
 
     def curve_type(self) -> StableGraphType:
         return self._curve_type
@@ -257,20 +229,17 @@ class ClutchingMorphism:
         return (
             isinstance(other, ClutchingMorphism)
             and self._source_factors == other._source_factors
-            and self._target == other._target
+            and (self._target_g, self._target_n) == (other._target_g, other._target_n)
             and self._group_order == other._group_order
             and self._curve_type == other._curve_type
         )
 
     def __hash__(self) -> int:
-        return hash((self._source_factors, self._target, self._group_order, self._curve_type))
+        return hash((self._source_factors, self._target_g, self._target_n, self._group_order, self._curve_type))
 
     def __repr__(self) -> str:
         factors = " x ".join(repr(factor) for factor in self._source_factors) or "point"
-        return f"ClutchingMorphism({factors} -> {self._target!r}, |Aut|={self._group_order})"
-
-
-ClutchingDatum = ClutchingMorphism
+        return f"ClutchingMorphism({factors} -> Mbar({self._target_g}, {self._target_n}), |Aut|={self._group_order})"
 
 
 class DMStratum:
@@ -332,7 +301,8 @@ class DMStratum:
     def clutching_morphism(self) -> ClutchingMorphism:
         return ClutchingMorphism(
             self._factors(compact=True),
-            ModuliFactor(self._g, self._n, compact=True),
+            self._g,
+            self._n,
             self._curve_type.automorphism_number(),
             curve_type=self._curve_type,
         )

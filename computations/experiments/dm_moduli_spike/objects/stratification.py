@@ -15,39 +15,25 @@ Two order conventions are exposed explicitly and never conflated:
 * the **closure-inclusion order** ``Delta <=_cl Gamma`` iff
   ``M_Delta subset closure(M_Gamma)`` (special below generic; the smooth stratum
   is maximal), which is the dual.
+
+**Full and truncated stratifications** use codimension as rank and one-edge
+covers.  An **induced subposet** on an arbitrary subset ``S`` may have poset
+rank unequal to ambient codimension, and Hasse covers may witness multi-edge
+contractions.
 """
 
 from __future__ import annotations
 
 from collections.abc import Iterable, Iterator, Sequence
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from .contractions import StableGraphContraction
+from .contractions import StableGraphContraction, contract_edges
 from .graph_types import StableGraphType, StableGraphTypes
-from .isomorphisms import transport_contraction
+from .isomorphisms import transport_contraction_via_canonical_relabeling
 from .strata import DMStratum
 
 if TYPE_CHECKING:
     from sage.combinat.posets.posets import FinitePoset
-
-
-@dataclass(frozen=True, slots=True)
-class EnumerationResult:
-    r"""Certificate metadata for a stratification enumeration.
-
-    ``construction_mode`` is one of:
-
-    * ``enumerated`` — full or truncated rank-by-rank enumeration;
-    * ``induced_subposet`` — Hasse diagram of a supplied type family.
-    """
-
-    levels: tuple[tuple[StableGraphType, ...], ...]
-    complete_through_codim: int
-    globally_complete: bool
-    has_full_rank_support: bool
-    backend: str | None = None
-    construction_mode: str = "enumerated"
 
 
 def _normalize_codim_cap(max_codim: int | None, dimension: int) -> tuple[int, bool]:
@@ -88,15 +74,16 @@ def build_stratification(curve_types: StableGraphTypes, max_codim: int | None = 
             break
         levels.append(nxt)
 
+    globally_complete = is_effective_full and len(levels) == codim_cap + 1 and _levels_are_contiguous(levels)
     return _finish_stratification(
         curve_types,
         levels,
         max_codim=max_codim,
         codim_cap=codim_cap,
         dimension=dimension,
-        exhaustive=is_effective_full and len(levels) == codim_cap + 1 and _levels_are_contiguous(levels),
+        exhaustive=globally_complete,
         backend="pure-sage",
-        construction_mode="enumerated",
+        induced_subposet=False,
     )
 
 
@@ -114,7 +101,7 @@ def build_stratification_from_types(
     enumeration backends (e.g. admcycles); the mathematical invariants are
     checked independently of the enumerator."""
     dimension = curve_types.dimension()
-    codim_cap, is_effective_full = _normalize_codim_cap(max_codim, dimension)
+    codim_cap, _is_effective_full = _normalize_codim_cap(max_codim, dimension)
     levels: list[dict[object, StableGraphType]] = []
     enumerated = tuple(types)
     for gamma in enumerated:
@@ -134,7 +121,7 @@ def build_stratification_from_types(
         dimension=dimension,
         exhaustive=exhaustive,
         backend=backend,
-        construction_mode="induced_subposet" if induced_order else "enumerated",
+        induced_subposet=induced_order,
     )
 
 
@@ -154,15 +141,31 @@ def _induced_cover_pairs(types: tuple[StableGraphType, ...]) -> list[tuple[Stabl
     return covers
 
 
-def _orbit_contraction_witness(
+def _contraction_witness(
     delta_type: StableGraphType,
     gamma_type: StableGraphType,
 ) -> StableGraphContraction | None:
+    from .edge_orbits import _elementary_contraction_data
+
     delta_graph = delta_type.canonical_representative()
     gamma_graph = gamma_type.canonical_representative()
-    for orbit in delta_type.elementary_contraction_orbits():
-        if orbit.target() == gamma_type:
-            return transport_contraction(orbit.representative(), domain=delta_graph, codomain=gamma_graph)
+
+    for target, contraction, _orbit_size in _elementary_contraction_data(delta_type):
+        if target == gamma_type:
+            return transport_contraction_via_canonical_relabeling(contraction, domain=delta_graph, codomain=gamma_graph)
+
+    edge_diff = delta_type.num_edges() - gamma_type.num_edges()
+    if edge_diff <= 0:
+        return None
+
+    edges = delta_graph.internal_edges()
+    from itertools import combinations
+
+    for subset in combinations(range(len(edges)), edge_diff):
+        chosen = tuple(edges[index] for index in subset)
+        target_type, contraction = contract_edges(delta_graph, chosen)
+        if gamma_type.parent()(target_type) == gamma_type:
+            return transport_contraction_via_canonical_relabeling(contraction, domain=delta_graph, codomain=gamma_graph)
     return None
 
 
@@ -175,23 +178,24 @@ def _finish_stratification(
     *,
     exhaustive: bool,
     backend: str | None = None,
-    construction_mode: str = "enumerated",
+    induced_subposet: bool = False,
 ) -> DMStratification:
+    from .edge_orbits import _elementary_contraction_data
+
     by_key: dict[object, StableGraphType] = {}
     for level in levels:
         by_key.update(level)
 
     all_types = _all_types(levels)
-    if construction_mode == "induced_subposet":
+    if induced_subposet:
         cover_pairs = _induced_cover_pairs(all_types)
     else:
         cover_pairs = []
         included = set(by_key)
         for rank in range(1, len(levels)):
             for delta_type in levels[rank].values():
-                for orbit in delta_type.elementary_contraction_orbits():
-                    gamma_type = orbit.target()
-                    key = gamma_type.canonical_key()
+                for target, _contraction, _size in _elementary_contraction_data(delta_type):
+                    key = target.canonical_key()
                     if key not in included:
                         continue
                     gamma_type = by_key[key]
@@ -200,13 +204,14 @@ def _finish_stratification(
     unique_covers = list({(gamma, delta): None for gamma, delta in cover_pairs})
     contractions: list[StableGraphContraction] = []
     for gamma_type, delta_type in unique_covers:
-        witness = _orbit_contraction_witness(delta_type, gamma_type)
+        witness = _contraction_witness(delta_type, gamma_type)
         if witness is not None:
             contractions.append(witness)
 
     _, is_effective_full = _normalize_codim_cap(max_codim, dimension)
     smooth_present = bool(levels) and curve_types.smooth().canonical_key() in levels[0]
     has_full_rank_support = is_effective_full and smooth_present and _levels_are_contiguous(levels) and len(levels) == codim_cap + 1
+    is_truncation = max_codim is not None and int(max_codim) < dimension
     return DMStratification(
         g=curve_types.genus(),
         n=curve_types.number_of_markings(),
@@ -218,7 +223,8 @@ def _finish_stratification(
         has_full_rank_support=has_full_rank_support,
         codim_cap=codim_cap,
         backend=backend,
-        construction_mode=construction_mode,
+        induced_subposet=induced_subposet,
+        is_truncation=is_truncation,
     )
 
 
@@ -238,7 +244,8 @@ class DMStratification:
         has_full_rank_support: bool,
         codim_cap: int,
         backend: str | None = None,
-        construction_mode: str = "enumerated",
+        induced_subposet: bool = False,
+        is_truncation: bool = False,
     ) -> None:
         self._g = g
         self._n = n
@@ -250,7 +257,8 @@ class DMStratification:
         self._has_full_rank_support = has_full_rank_support
         self._codim_cap = codim_cap
         self._backend = backend
-        self._construction_mode = construction_mode
+        self._induced_subposet = induced_subposet
+        self._is_truncation = is_truncation
 
     def genus(self) -> int:
         return self._g
@@ -269,8 +277,12 @@ class DMStratification:
     def _stratum(self, curve_type: StableGraphType) -> DMStratum:
         return DMStratum(curve_type, self._g, self._n)
 
-    def rank_buckets(self) -> tuple[tuple[DMStratum, ...], ...]:
+    def strata_by_codimension(self) -> tuple[tuple[DMStratum, ...], ...]:
         return tuple(tuple(self._stratum(gamma) for gamma in level.values()) for level in self._levels)
+
+    def rank_buckets(self) -> tuple[tuple[DMStratum, ...], ...]:
+        r"""Deprecated alias for :meth:`strata_by_codimension`."""
+        return self.strata_by_codimension()
 
     def rank_sizes(self) -> tuple[int, ...]:
         return tuple(len(level) for level in self._levels)
@@ -280,7 +292,7 @@ class DMStratification:
 
     def strata(self, codim: int | None = None) -> tuple[DMStratum, ...]:
         if codim is None:
-            return tuple(stratum for bucket in self.rank_buckets() for stratum in bucket)
+            return tuple(stratum for bucket in self.strata_by_codimension() for stratum in bucket)
         if codim < 0 or codim >= len(self._levels):
             return ()
         return tuple(self._stratum(gamma) for gamma in self._levels[codim].values())
@@ -294,7 +306,9 @@ class DMStratification:
 
     def covers(self) -> tuple[tuple[DMStratum, DMStratum], ...]:
         r"""Specialization covers ``(generic, special)``: each pair
-        ``(Gamma, Delta)`` has ``Delta -> Gamma`` a one-edge contraction."""
+        ``(Gamma, Delta)`` has ``Delta -> Gamma`` by contraction to a distinct
+        target ``[\Gamma/e]`` (one-edge in full/truncated mode; possibly
+        multi-edge in an induced subposet)."""
         return tuple((self._stratum(gamma), self._stratum(delta)) for gamma, delta in self._covers)
 
     def contraction_witnesses(self) -> tuple[StableGraphContraction, ...]:
@@ -344,26 +358,26 @@ class DMStratification:
         r"""Alias for :meth:`is_exhaustive`."""
         return self.is_exhaustive()
 
-    def construction_mode(self) -> str:
-        return self._construction_mode
-
     def is_full_stratification(self) -> bool:
         r"""True when this object is the complete stratification of :math:`\overline{\mathcal M}_{g,n}`."""
         return self.is_exhaustive() and self.has_full_rank_support()
 
+    def is_codimension_truncation(self) -> bool:
+        r"""True when built with ``max_codim < dim`` but complete through that cap."""
+        return self._is_truncation and self.complete_through_codim() == self.maximum_codim()
+
+    def is_induced_subposet(self) -> bool:
+        r"""True when covers were recovered from an induced order on a type subset."""
+        return self._induced_subposet
+
+    def complete_through_codim(self) -> int:
+        r"""Highest codimension level enumerated completely in this object."""
+        if not _levels_are_contiguous(self._levels):
+            return max(0, len(self._levels) - 1) if self._levels else -1
+        return self.maximum_codim()
+
     def maximum_codim(self) -> int:
         return len(self._levels) - 1
-
-    def enumeration_result(self) -> EnumerationResult:
-        r"""Structured completeness certificate for this stratification."""
-        return EnumerationResult(
-            levels=tuple(self.curve_type_levels()),
-            complete_through_codim=self.maximum_codim() if self.is_exhaustive() else -1,
-            globally_complete=self.is_exhaustive(),
-            has_full_rank_support=self.has_full_rank_support(),
-            backend=self._backend,
-            construction_mode=self._construction_mode,
-        )
 
     def backend(self) -> str | None:
         return self._backend
@@ -378,7 +392,7 @@ class DMStratification:
         return Poset((strata, cover_relations), cover_relations=True, facade=True)
 
     def specialization_poset(self) -> StratificationPoset:
-        r"""Generic below special; rank function ``codimension``."""
+        r"""Generic below special; rank function ``codimension`` in full mode."""
         return StratificationPoset(self._facade_poset(), convention="specialization")
 
     def closure_poset(self) -> StratificationPoset:
@@ -386,7 +400,14 @@ class DMStratification:
         return self.specialization_poset().dual()
 
     def __repr__(self) -> str:
-        status = "exhaustive" if self._exhaustive else f"truncated at codim {self.maximum_codim()}"
+        if self.is_full_stratification():
+            status = "full"
+        elif self.is_codimension_truncation():
+            status = f"truncated through codim {self.complete_through_codim()}"
+        elif self.is_induced_subposet():
+            status = "induced subposet"
+        else:
+            status = f"partial through codim {self.complete_through_codim()}"
         return f"Stratification of Mbar({self._g}, {self._n}) [{status}], rank sizes {self.rank_sizes()}"
 
 

@@ -21,6 +21,43 @@ class StableGraphIsomorphism:
     vertex_map: tuple[int, ...]
     flag_map: tuple[int, ...]
 
+    def __post_init__(self) -> None:
+        source = self.source
+        target = self.target
+        vertex_map = self.vertex_map
+        flag_map = self.flag_map
+
+        num_vertices = source.num_vertices()
+        num_flags = source.num_flags()
+        assert len(vertex_map) == num_vertices, f"vertex_map length {len(vertex_map)} != |V|={num_vertices}"
+        assert len(flag_map) == num_flags, f"flag_map length {len(flag_map)} != |H|={num_flags}"
+        assert target.num_vertices() == num_vertices
+        assert target.num_flags() == num_flags
+
+        assert sorted(vertex_map) == list(range(num_vertices)), f"vertex_map {vertex_map} is not a bijection on V"
+        assert sorted(flag_map) == list(range(num_flags)), f"flag_map {flag_map} is not a bijection on H"
+
+        for vertex in range(num_vertices):
+            image = vertex_map[vertex]
+            assert source.vertex_genera[vertex] == target.vertex_genera[image], (
+                f"vertex genus not preserved at {vertex}: {source.vertex_genera[vertex]} != {target.vertex_genera[image]}"
+            )
+
+        for flag in range(num_flags):
+            image = flag_map[flag]
+            assert vertex_map[source.flag_vertex[flag]] == target.flag_vertex[image], (
+                f"incidence not preserved at flag {flag}: d({flag})={source.flag_vertex[flag]} maps to "
+                f"{vertex_map[source.flag_vertex[flag]]}, but flag {image} attaches to {target.flag_vertex[image]}"
+            )
+            partner = source.flag_involution[flag]
+            image_partner = flag_map[partner]
+            assert target.flag_involution[image] == image_partner, f"involution not preserved at flag {flag}: iota({image})={target.flag_involution[image]} != {image_partner}"
+
+        for label in range(1, source.num_markings() + 1):
+            source_flag = source.marking_to_flag[label - 1]
+            target_flag = target.marking_to_flag[label - 1]
+            assert flag_map[source_flag] == target_flag, f"marking {label} not preserved: {source_flag} -> {flag_map[source_flag]}, expected {target_flag}"
+
 
 StableGraphCanonicalization = StableGraphIsomorphism
 
@@ -83,7 +120,11 @@ def inverse_flag_map(flag_map: tuple[int, ...]) -> tuple[int, ...]:
 
 
 def isomorphism_between(source: StableGraph, target: StableGraph) -> StableGraphIsomorphism:
-    r"""The unique isomorphism when ``source`` and ``target`` have the same canonical type."""
+    r"""An isomorphism when ``source`` and ``target`` share a canonical type.
+
+    When ``Aut(\Gamma) \neq 1`` on a common representative, this choice is
+    determined by the canonical labelling pipeline and need not be unique.
+    """
     src = canonicalize(source)
     dst = canonicalize(target)
     assert src.target == dst.target, "graphs are not isomorphic"
@@ -121,38 +162,52 @@ def remap_vertex_fibres(
 
 
 def transport_contraction(
-    contraction: StableGraphContraction,
-    *,
-    domain: StableGraph | None = None,
-    codomain: StableGraph | None = None,
+    q: StableGraphContraction,
+    alpha: StableGraphIsomorphism,
+    beta: StableGraphIsomorphism,
 ) -> StableGraphContraction:
-    r"""Transport ``q`` along isomorphisms ``alpha: domain -> domain'``, ``beta: codomain -> codomain'``."""
+    r"""Transport ``q`` along ``alpha: domain' -> domain`` and ``beta: codomain' -> codomain``.
+
+    Returns the contraction ``beta o q o alpha^{-1}`` with domain ``alpha.target``
+    and codomain ``beta.target``.
+    """
     from .contractions import StableGraphContraction
 
-    if domain is None:
-        domain = contraction.domain()
-    if codomain is None:
-        codomain = contraction.codomain()
-    if domain is contraction.domain() and codomain is contraction.codomain():
-        return contraction
+    assert alpha.source == q.domain(), "alpha.source must equal q.domain()"
+    assert beta.source == q.codomain(), "beta.source must equal q.codomain()"
 
-    alpha = isomorphism_between(contraction.domain(), domain) if domain is not contraction.domain() else identity_isomorphism(domain)
-    beta = isomorphism_between(contraction.codomain(), codomain) if codomain is not contraction.codomain() else identity_isomorphism(codomain)
-
-    contracted_flags = frozenset(alpha.flag_map[flag] for flag in contraction.contracted_flags())
+    contracted_flags = frozenset(alpha.flag_map[flag] for flag in q.contracted_flags())
     domain_flag_of_codomain_flag = tuple(
-        sorted((beta.flag_map[codomain_flag], alpha.flag_map[domain_flag]) for codomain_flag, domain_flag in contraction.domain_flag_of_codomain_flag().items())
+        sorted((beta.flag_map[codomain_flag], alpha.flag_map[domain_flag]) for codomain_flag, domain_flag in q.domain_flag_of_codomain_flag().items())
     )
     vertex_fibres = remap_vertex_fibres(
-        contraction.vertex_fibres(),
+        q.vertex_fibres(),
         beta.vertex_map,
         alpha.vertex_map,
     )
     return StableGraphContraction(
-        domain=domain,
-        codomain=codomain,
-        target_type=contraction.target_type(),
+        domain=alpha.target,
+        codomain=beta.target,
+        target_type=q.target_type(),
         contracted_flags=contracted_flags,
         vertex_fibres=vertex_fibres,
         domain_flag_of_codomain_flag=domain_flag_of_codomain_flag,
     )
+
+
+def transport_contraction_via_canonical_relabeling(
+    q: StableGraphContraction,
+    *,
+    domain: StableGraph,
+    codomain: StableGraph,
+) -> StableGraphContraction:
+    r"""Transport ``q`` to new labeled endpoints via :func:`isomorphism_between`.
+
+    This is a convenience wrapper around :func:`transport_contraction`.  The
+    isomorphisms are **not** unique when the endpoint graphs admit nontrivial
+    automorphisms (``Aut(\Gamma) \neq 1``): the choice follows the canonical
+    labelling pipeline, not a gauge-invariant contract.
+    """
+    alpha = isomorphism_between(q.domain(), domain)
+    beta = isomorphism_between(q.codomain(), codomain)
+    return transport_contraction(q, alpha, beta)

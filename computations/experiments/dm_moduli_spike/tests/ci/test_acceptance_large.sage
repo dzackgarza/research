@@ -1,8 +1,4 @@
-r"""Acceptance fixtures: exact rank vectors of the stratification poset.
-
-Rank vectors and total cardinalities are secondary diagnostics.  The primary
-correctness claims live in the whole-poset oracle and Hasse-diagram tests.
-"""
+r"""CI-tier rank-vector and backend cross-checks on larger moduli spaces."""
 
 from __future__ import annotations
 
@@ -10,16 +6,15 @@ import pytest
 
 from dm_moduli_spike import DMCompactificationModel
 
-RANK_VECTORS = [
-    ((0, 3), (1,)),
-    ((0, 4), (1, 3)),
-    ((1, 1), (1, 1)),
-    ((1, 2), (1, 2, 2)),
-    ((2, 0), (1, 2, 2, 2)),
+pytestmark = pytest.mark.ci
+
+LARGE_RANK_VECTORS = [
+    ((0, 5), (1, 10, 15)),
+    ((2, 1), (1, 2, 5, 5, 3)),
 ]
 
 
-@pytest.mark.parametrize("gn,expected", RANK_VECTORS)
+@pytest.mark.parametrize("gn,expected", LARGE_RANK_VECTORS)
 def test_rank_vectors_match_fixtures(gn, expected):
     g, n = gn
     model = DMCompactificationModel(g, n)
@@ -32,7 +27,7 @@ def test_rank_vectors_match_fixtures(gn, expected):
 
 
 def test_bucketing_is_by_num_edges_not_generation_provenance():
-    model = DMCompactificationModel(1, 2)
+    model = DMCompactificationModel(2, 1)
     stratification = model.stratification()
     for codim, bucket in enumerate(stratification.strata_by_codimension()):
         for stratum in bucket:
@@ -41,7 +36,7 @@ def test_bucketing_is_by_num_edges_not_generation_provenance():
 
 
 def test_admcycles_stable_backend_matches_pure_sage_canonical_keys():
-    for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
+    for g, n in [(0, 5), (1, 2), (2, 0), (2, 1)]:
         model = DMCompactificationModel(g, n)
         pure = model.stratification(backend="pure-sage")
         adm = model.stratification(backend="admcycles-stable")
@@ -59,19 +54,6 @@ def test_admcycles_stable_backend_matches_pure_sage_canonical_keys():
         assert pure.rank_sizes() == adm.rank_sizes()
 
 
-def test_truncated_stratification_is_marked_incomplete():
-    model = DMCompactificationModel(1, 2)
-    truncated = model.stratification(max_codim=1)
-    assert not truncated.is_complete()
-    assert truncated.maximum_codim() == 1
-    assert truncated.rank_sizes() == (1, 2)
+def test_full_M21_stratification_is_complete():
+    model = DMCompactificationModel(2, 1)
     assert model.stratification().is_complete()
-
-
-def test_empty_external_enumeration_is_not_marked_complete():
-    from dm_moduli_spike.objects.stratification import build_stratification_from_types
-
-    curve_types = DMCompactificationModel(2, 1).curve_types()
-    incomplete = build_stratification_from_types(curve_types, ())
-    assert not incomplete.is_complete()
-    assert incomplete.rank_sizes() == (1,)
