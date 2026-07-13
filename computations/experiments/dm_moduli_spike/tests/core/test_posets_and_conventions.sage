@@ -2,15 +2,15 @@ r"""Tier-4 internal consistency: specialization/closure posets and order convent
 
 from __future__ import annotations
 
-from dm_moduli_spike import DMCompactificationModel
+from dm_moduli_spike.objects.model import DMCompactificationModel
+
 
 
 def test_m04_specialization_poset_is_the_smooth_minimum_and_three_boundary_points():
     model = DMCompactificationModel(0, 4)
     stratification = model.stratification()
     poset = stratification.specialization_poset()
-    sage_poset = poset.sage_poset()
-    assert sage_poset.cardinality() == 4
+    assert poset.cardinality() == 4
     assert len(poset.minimal_elements()) == 1
     assert poset.minimal_elements()[0].curve_type().is_smooth()
     # three maximal boundary points 12|34, 13|24, 14|23

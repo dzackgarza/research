@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike import DMCompactificationModel
+from dm_moduli_spike.objects.model import DMCompactificationModel
+
 from dm_moduli_spike.objects.stratification import build_stratification_from_types
 
 pytestmark = pytest.mark.ci
@@ -13,10 +14,10 @@ pytestmark = pytest.mark.ci
 def test_intermediate_deletion_adds_direct_cover():
     model = DMCompactificationModel(2, 1)
     full = model.stratification()
-    smooth = model.curve_types().smooth()
+    smooth = model.graph_types().smooth()
     codim_two = full.curve_type_levels()[2][0]
     subset = build_stratification_from_types(
-        model.curve_types(),
+        model.graph_types(),
         (smooth, codim_two),
         induced_order=True,
     )
@@ -33,10 +34,10 @@ def test_intermediate_deletion_adds_direct_cover():
 def test_induced_subposet_rank_differs_from_ambient_codimension():
     model = DMCompactificationModel(2, 1)
     full = model.stratification()
-    smooth = model.curve_types().smooth()
+    smooth = model.graph_types().smooth()
     codim_two = full.curve_type_levels()[2][0]
     subset = build_stratification_from_types(
-        model.curve_types(),
+        model.graph_types(),
         (smooth, codim_two),
         induced_order=True,
     )
@@ -51,10 +52,10 @@ def test_induced_subposet_rank_differs_from_ambient_codimension():
 def test_adjacent_rank_mode_skips_nonconsecutive_covers():
     model = DMCompactificationModel(2, 1)
     full = model.stratification()
-    smooth = model.curve_types().smooth()
+    smooth = model.graph_types().smooth()
     codim_two = full.curve_type_levels()[2][0]
     subset = build_stratification_from_types(
-        model.curve_types(),
+        model.graph_types(),
         (smooth, codim_two),
         induced_order=False,
     )

@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike import DMCompactificationModel
+from dm_moduli_spike.objects.model import DMCompactificationModel
+
 from tests.support.fixtures import (
     boundary_label,
     clutching_signature,

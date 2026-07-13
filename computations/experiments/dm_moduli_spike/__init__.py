@@ -37,17 +37,17 @@ from __future__ import annotations
 
 import sage.all  # noqa: F401
 
-from .objects.gamma import Gamma_gn, StableGraphCategory, StableGraphHomset, StableGraphMorphism
-from .objects.graph_types import StableGraphType, StableGraphTypes
+from .objects.gamma import (
+    Gamma_gn,
+    StableGraphCategory,
+    StableGraphHomset,
+    StableGraphMorphism,
+    StableGraphStratification,
+)
+from .objects.graph_types import StableGraphTypes
 from .objects.records import StableGraph
 
-# Scheme functor (for private landscape stubs).
 from .categories.base import AffineScheme, complex_numbers_ring, spec, spec_complex
-
-# Legacy combinatorial API (importable; not in __all__).
-from .objects.model import DMCompactificationModel  # noqa: F401
-from .objects.strata import DMStratum, ModuliFactor  # noqa: F401
-from .stratification.indexing import DualGraphType  # noqa: F401
 
 __all__ = [
     "AffineScheme",
@@ -56,11 +56,9 @@ __all__ = [
     "StableGraphCategory",
     "StableGraphHomset",
     "StableGraphMorphism",
-    "StableGraphType",
+    "StableGraphStratification",
     "StableGraphTypes",
     "complex_numbers_ring",
     "spec",
     "spec_complex",
 ]
-
-# Private landscape stubs: dm_moduli_spike.moduli, dm_moduli_spike.geometry, ...

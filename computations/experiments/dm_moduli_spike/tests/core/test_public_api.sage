@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike import DMCompactificationModel, StableGraphCategory, StableGraphTypes
+from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike import StableGraphCategory, StableGraphTypes
+
 
 
 def test_gamma_is_public_entry_point():

@@ -15,7 +15,7 @@ from ..objects.records import StableGraph
 
 if TYPE_CHECKING:
     from ..objects.contractions import StableGraphContraction
-    from ..objects.curve_types import StableGraphType, StableGraphTypes
+    from ..objects.graph_types import StableGraphType, StableGraphTypes
 
 
 def _require_decorated_module() -> object:
@@ -203,6 +203,6 @@ class AdmcyclesDecoratedGraphBackend:
             assert record.num_edges() == bucket_codim, f"decorated_graph bucket codim {bucket_codim} disagrees with {record.num_edges()} edges"
             if record.num_edges() > cap:
                 continue
-            curve_type = curve_types.from_record(record)
+            curve_type = curve_types.from_graph(record)
             result[curve_type.canonical_key()] = curve_type
         return tuple(result.values())

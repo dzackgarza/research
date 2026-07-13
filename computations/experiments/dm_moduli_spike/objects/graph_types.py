@@ -42,10 +42,6 @@ class StableGraphType(Element):
     def canonical_key(self) -> CanonicalKey:
         return self._canonical_key
 
-    def record(self) -> StableGraph:
-        r"""Deprecated alias for :meth:`canonical_representative`."""
-        return self._graph
-
     def automorphism_group(self) -> object:
         return automorphism_group(self._graph)
 
@@ -205,14 +201,14 @@ class StableGraphTypes(UniqueRepresentation, Parent):
     def _repr_(self) -> str:
         return f"Stable graph types of genus {self._g} with {self._n} marking(s)"
 
-    def __call__(self, x: StableGraph | StableGraphType) -> StableGraphType:
-        if isinstance(x, StableGraphType):
-            assert x.parent() is self, f"cannot re-parent a stable graph type from {x.parent()} into {self}"
-            return x
-        assert isinstance(x, StableGraph), f"expected a StableGraph or StableGraphType; found {type(x)}"
-        assert x.genus() == self._g, f"graph genus {x.genus()} does not match ambient genus {self._g}"
-        assert x.num_markings() == self._n, f"graph has {x.num_markings()} markings, ambient has {self._n}"
-        canonical = intern_graph(canonical_record(x))
+    def _element_constructor_(self, data: StableGraph | StableGraphType) -> StableGraphType:
+        if isinstance(data, StableGraphType):
+            assert data.parent() is self, f"cannot re-parent a stable graph type from {data.parent()} into {self}"
+            return data
+        assert isinstance(data, StableGraph), f"expected a StableGraph or StableGraphType; found {type(data)}"
+        assert data.genus() == self._g, f"graph genus {data.genus()} does not match ambient genus {self._g}"
+        assert data.num_markings() == self._n, f"graph has {data.num_markings()} markings, ambient has {self._n}"
+        canonical = intern_graph(canonical_record(data))
         key = canonical_key(canonical)
         cached = self._element_cache.get(key)
         if cached is not None:
@@ -221,14 +217,7 @@ class StableGraphTypes(UniqueRepresentation, Parent):
         self._element_cache[key] = element
         return element
 
-    def _element_constructor_(self, data: StableGraph | StableGraphType) -> StableGraphType:
-        return self(data)
-
     def from_graph(self, graph: StableGraph) -> StableGraphType:
-        return self(graph)
-
-    def from_record(self, graph: StableGraph) -> StableGraphType:
-        r"""Backward-compatible alias for :meth:`from_graph`."""
         return self(graph)
 
     def smooth(self) -> StableGraphType:

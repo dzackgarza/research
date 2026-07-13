@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from collections import Counter
 
-from dm_moduli_spike import DMCompactificationModel
+from dm_moduli_spike.objects.model import DMCompactificationModel
+
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data, contraction_target_multiset
 from tests.support.fixtures import genus_six_counterexample, m12_types
 

@@ -2,12 +2,14 @@ r"""Tier-4 internal consistency: symbolic quotient-stack and clutching presentat
 
 from __future__ import annotations
 
-from dm_moduli_spike import DMCompactificationModel, ModuliFactor, StableGraphTypes
+from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike.objects.strata import ModuliFactor
+from dm_moduli_spike import StableGraphTypes
 
 
 def test_open_stack_presentation_factors_and_automorphism_action():
     model = DMCompactificationModel(0, 4)
-    types = model.curve_types()
+    types = model.graph_types()
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     stratum = model.stratum(gamma)
     presentation = stratum.open_stack_presentation()
@@ -22,7 +24,7 @@ def test_open_stack_presentation_factors_and_automorphism_action():
 
 def test_closure_normalization_uses_compact_factors():
     model = DMCompactificationModel(0, 4)
-    types = model.curve_types()
+    types = model.graph_types()
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     stratum = model.stratum(gamma)
     presentation = stratum.closure_normalization_presentation()
@@ -35,7 +37,7 @@ def test_closure_normalization_uses_compact_factors():
 
 def test_clutching_morphism_targets_the_ambient_compactification():
     model = DMCompactificationModel(1, 1)
-    types = model.curve_types()
+    types = model.graph_types()
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
     stratum = model.stratum(loop)
     clutching = stratum.clutching_morphism()
@@ -59,7 +61,7 @@ def test_m04_boundary_clutching_maps_are_pairwise_distinct():
 
 def test_stratum_rejects_mismatched_ambient():
     model = DMCompactificationModel(0, 4)
-    wrong = DMCompactificationModel(2, 1).curve_types().smooth()
+    wrong = DMCompactificationModel(2, 1).graph_types().smooth()
     try:
         model.stratum(wrong)
     except ValueError:
@@ -70,7 +72,7 @@ def test_stratum_rejects_mismatched_ambient():
 
 def test_stratum_is_distinct_from_its_indexing_curve_type():
     model = DMCompactificationModel(1, 1)
-    smooth = model.curve_types().smooth()
+    smooth = model.graph_types().smooth()
     stratum = model.stratum(smooth)
     # graph-theoretic vocabulary lives on the curve type
     assert hasattr(smooth, "automorphism_number")

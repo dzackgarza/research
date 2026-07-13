@@ -5,15 +5,25 @@ Not a literature oracle — agreement with ``admcycles`` is tier-3 CAS different
 
 from __future__ import annotations
 
-from dm_moduli_spike import DMCompactificationModel, StableGraphType
+from dm_moduli_spike.objects.graph_types import StableGraphType
+from dm_moduli_spike.objects.model import DMCompactificationModel
+
 from dm_moduli_spike.backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
 from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
 
 
 def test_stable_backend_returns_owned_curve_types_only():
     backend = AdmcyclesStableGraphBackend()
-    types = DMCompactificationModel(1, 2).curve_types()
+    model = DMCompactificationModel(1, 2)
+    types = model.graph_types()
+    pure_keys = {
+        gamma.canonical_key()
+        for level in model.stratification(backend="pure-sage").curve_type_levels()
+        for gamma in level
+    }
     produced = backend.stable_curve_types(types)
+    produced_keys = {gamma.canonical_key() for gamma in produced}
+    assert produced_keys == pure_keys
     assert all(isinstance(gamma, StableGraphType) for gamma in produced)
     assert all(gamma.parent() == types for gamma in produced)
 
@@ -36,10 +46,11 @@ def test_decorated_backend_matches_pure_sage_canonical_keys():
             for gamma in level
         }
         assert pure_keys == decorated_keys
-        produced = AdmcyclesDecoratedGraphBackend().stable_curve_types(model.curve_types())
-        assert produced
+        produced = AdmcyclesDecoratedGraphBackend().stable_curve_types(model.graph_types())
+        produced_keys = {gamma.canonical_key() for gamma in produced}
+        assert produced_keys == pure_keys
         assert all(
-            isinstance(gamma, StableGraphType) and gamma.parent() == model.curve_types()
+            isinstance(gamma, StableGraphType) and gamma.parent() == model.graph_types()
             for gamma in produced
         )
 
@@ -64,7 +75,7 @@ def test_decorated_morphism_adapter_matches_native_contraction():
     parallel = DecoratedGraph([0, 0], [[1], [2]], [(0, 1, 2)])
     parallel_morphism = parallel.edge_contraction_morphism([(0, 1, 1)])
     adapted = contraction_from_decorated_morphism(parallel_morphism, 1, 2)
-    types = DMCompactificationModel(1, 2).curve_types()
+    types = DMCompactificationModel(1, 2).graph_types()
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
     graph = theta.canonical_representative()
     _, native = graph.contract(graph.internal_edges()[0])
@@ -97,7 +108,7 @@ def test_auto_backend_prefers_decorated_when_available():
 def test_record_to_decorated_graph_roundtrip_preserves_type():
     from dm_moduli_spike.backends.admcycles_decorated import _record_from_decorated_graph, _record_to_decorated_graph
 
-    types = DMCompactificationModel(1, 2).curve_types()
+    types = DMCompactificationModel(1, 2).graph_types()
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
     graph = theta.canonical_representative()
     decorated = _record_to_decorated_graph(graph, 1, 2)

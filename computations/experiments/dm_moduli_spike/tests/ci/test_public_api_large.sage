@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike import DMCompactificationModel
+from dm_moduli_spike.objects.model import DMCompactificationModel
+
 
 pytestmark = pytest.mark.ci
 
@@ -17,5 +18,5 @@ def test_stratification_summary_api():
     assert stratification.cardinality() == 16
     specialization = stratification.specialization_poset()
     closure = stratification.closure_poset()
-    assert closure.sage_poset() == specialization.sage_poset().dual()
+    assert closure == specialization.dual()
     assert specialization.hasse_diagram().num_verts() == 16

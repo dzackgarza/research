@@ -14,7 +14,8 @@ from collections import Counter
 
 from sage.all import posets
 
-from dm_moduli_spike import DMCompactificationModel
+from dm_moduli_spike.objects.model import DMCompactificationModel
+
 from dm_moduli_spike.objects.edge_orbits import contraction_target_multiset
 from tests.support.fixtures import CHAN_M20_COVERS, m11_types, m12_types, m20_types
 from tests.support.poset_oracle import specialization_poset

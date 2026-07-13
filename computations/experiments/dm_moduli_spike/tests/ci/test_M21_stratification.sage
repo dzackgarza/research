@@ -7,7 +7,8 @@ import pickle
 
 import pytest
 
-from dm_moduli_spike import DMCompactificationModel, StableGraphTypes
+from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike import StableGraphTypes
 from sage.combinat.permutation import Permutations
 
 from dm_moduli_spike import StableGraph
@@ -89,14 +90,14 @@ def test_random_relabelings_produce_the_same_canonical_key():
                 for fperm in Permutations(num_flags)[:3]:
                     vmap = {i: int(vperm[i]) - 1 for i in range(num_vertices)}
                     fmap = {i: int(fperm[i]) - 1 for i in range(num_flags)}
-                    relabelled = types.from_record(_relabel(record, vmap, fmap))
+                    relabelled = types.from_graph(_relabel(record, vmap, fmap))
                     assert relabelled.canonical_key() == gamma.canonical_key()
                     assert relabelled == gamma
 
 
 def test_automorphism_numbers_agree_with_admcycles_on_M21():
     model = DMCompactificationModel(2, 1)
-    types = model.curve_types()
+    types = model.graph_types()
     backend = AdmcyclesStableGraphBackend()
     for level in model.stratification().curve_type_levels():
         for gamma in level:

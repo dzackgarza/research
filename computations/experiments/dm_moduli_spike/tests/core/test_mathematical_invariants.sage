@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike import DMCompactificationModel, StableGraphTypes, StableGraph
+from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike import StableGraphTypes, StableGraph
 from dm_moduli_spike.objects.canonical import canonical_record
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
 from dm_moduli_spike.objects.stratification import build_stratification_from_types
@@ -52,7 +53,7 @@ def test_automorphism_group_order_matches_number():
 
 def test_stack_signature_carries_automorphism_group_not_just_order():
     model = DMCompactificationModel(1, 1)
-    loop = model.curve_types().from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
+    loop = model.graph_types().from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
     clutching = model.stratum(loop).clutching_morphism()
     group = clutching.automorphism_group()
     assert int(group.order()) == 2

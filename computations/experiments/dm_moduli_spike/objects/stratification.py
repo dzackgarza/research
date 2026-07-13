@@ -391,11 +391,11 @@ class DMStratification:
         cover_relations = [[self._stratum(gamma), self._stratum(delta)] for gamma, delta in self._covers]
         return Poset((strata, cover_relations), cover_relations=True, facade=True)
 
-    def specialization_poset(self) -> StratificationPoset:
-        r"""Generic below special; rank function ``codimension`` in full mode."""
-        return StratificationPoset(self._facade_poset(), convention="specialization")
+    def specialization_poset(self) -> FinitePoset:
+        r"""Generic below special; Sage ``FinitePoset`` of :class:`DMStratum`."""
+        return self._facade_poset()
 
-    def closure_poset(self) -> StratificationPoset:
+    def closure_poset(self) -> FinitePoset:
         r"""Special below generic (the dual of the specialization poset)."""
         return self.specialization_poset().dual()
 
@@ -409,75 +409,3 @@ class DMStratification:
         else:
             status = f"partial through codim {self.complete_through_codim()}"
         return f"Stratification of Mbar({self._g}, {self._n}) [{status}], rank sizes {self.rank_sizes()}"
-
-
-class StratificationPoset:
-    r"""A typed wrapper around a Sage finite poset that carries its order
-    convention.  No method is called a bare ``poset()``: the convention is part
-    of the object.
-    """
-
-    __slots__ = ("_poset", "_convention")
-
-    def __init__(self, poset: FinitePoset, convention: str) -> None:
-        assert convention in ("specialization", "closure"), f"unknown order convention {convention!r}"
-        self._poset = poset
-        self._convention = convention
-
-    def convention(self) -> str:
-        return self._convention
-
-    def sage_poset(self) -> FinitePoset:
-        r"""The underlying Sage facade poset (elements are :class:`DMStratum`)."""
-        return self._poset
-
-    def dual(self) -> StratificationPoset:
-        dual_convention = "closure" if self._convention == "specialization" else "specialization"
-        return StratificationPoset(self._poset.dual(), convention=dual_convention)
-
-    def hasse_diagram(self) -> object:
-        return self._poset.hasse_diagram()
-
-    def cardinality(self) -> int:
-        return int(self._poset.cardinality())
-
-    def is_graded(self) -> bool:
-        return bool(self._poset.is_graded())
-
-    def rank_function(self) -> object:
-        return self._poset.rank_function()
-
-    def minimal_elements(self) -> list[DMStratum]:
-        return list(self._poset.minimal_elements())
-
-    def maximal_elements(self) -> list[DMStratum]:
-        return list(self._poset.maximal_elements())
-
-    def __iter__(self) -> Iterator[DMStratum]:
-        return iter(self._poset)
-
-    def __contains__(self, element: object) -> bool:
-        return element in self._poset
-
-    def is_lequal(self, left: DMStratum, right: DMStratum) -> bool:
-        return bool(self._poset.le(left, right))
-
-    def cover_relations(self) -> list[list[DMStratum]]:
-        return list(self._poset.cover_relations())
-
-    def rank(self, element: DMStratum) -> int:
-        return int(self._poset.rank(element))
-
-    def subposet(self, elements: Sequence[DMStratum]) -> StratificationPoset:
-        return StratificationPoset(self._poset.subposet(list(elements)), self._convention)
-
-    def order_complex(self) -> object:
-        return self._poset.order_complex()
-
-    def is_isomorphic(self, other: object) -> bool:
-        if isinstance(other, StratificationPoset):
-            return bool(self._poset.is_isomorphic(other._poset))
-        return bool(self._poset.is_isomorphic(other))
-
-    def __repr__(self) -> str:
-        return f"Stratification poset ({self._convention} order) on {self.cardinality()} strata"

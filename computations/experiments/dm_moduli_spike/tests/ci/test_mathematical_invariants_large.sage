@@ -4,14 +4,15 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike import DMCompactificationModel
+from dm_moduli_spike.objects.model import DMCompactificationModel
+
 from dm_moduli_spike.objects.stratification import build_stratification_from_types
 
 pytestmark = pytest.mark.ci
 
 
 def test_external_backend_completeness_requires_full_rank_span():
-    curve_types = DMCompactificationModel(2, 1).curve_types()
+    curve_types = DMCompactificationModel(2, 1).graph_types()
     partial = build_stratification_from_types(curve_types, (curve_types.smooth(),))
     assert not partial.is_complete()
     assert not partial.has_full_rank_support()
@@ -31,7 +32,7 @@ def test_rank_support_without_exhaustiveness():
     all_types = [gamma for level in full.curve_type_levels() for gamma in level]
     removed = next(gamma for level in full.curve_type_levels() if len(level) > 1 for gamma in level)
     pruned = tuple(gamma for gamma in all_types if gamma is not removed)
-    rebuilt = build_stratification_from_types(model.curve_types(), pruned)
+    rebuilt = build_stratification_from_types(model.graph_types(), pruned)
     assert rebuilt.has_full_rank_support()
     assert not rebuilt.is_complete()
 

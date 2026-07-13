@@ -2,7 +2,8 @@ r"""Tier-4 internal consistency: contraction morphisms and cover witnesses."""
 
 from __future__ import annotations
 
-from dm_moduli_spike import DMCompactificationModel, StableGraphTypes
+from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike import StableGraphTypes
 from dm_moduli_spike.objects.contractions import contract_edges
 
 

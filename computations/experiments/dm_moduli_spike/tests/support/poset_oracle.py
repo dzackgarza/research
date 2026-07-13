@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Protocol, cast
 from sage.all import Graph, Poset
 
 if TYPE_CHECKING:
-    from dm_moduli_spike.objects.stratification import StratificationPoset
+    from sage.combinat.posets.posets import FinitePoset
 
 
 class _FaceComplex(Protocol):
@@ -58,8 +58,8 @@ def expected_M0n_specialization_poset(n: int) -> Poset:
     return augmented_face_poset(compatibility_graph.clique_complex())
 
 
-def specialization_poset(g: int, n: int) -> StratificationPoset:
+def specialization_poset(g: int, n: int) -> FinitePoset:
     """Convenience wrapper used throughout the regression suite."""
-    from dm_moduli_spike import DMCompactificationModel
+    from dm_moduli_spike.objects.model import DMCompactificationModel
 
     return DMCompactificationModel(g, n).stratification(backend="pure-sage").specialization_poset()

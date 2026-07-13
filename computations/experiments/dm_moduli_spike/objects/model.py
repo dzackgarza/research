@@ -35,8 +35,13 @@ def _resolve_backend(backend: str) -> str:
     return "pure-sage"
 
 
-class DMCompactificationModel(UniqueRepresentation):
-    r"""Internal combinatorial stratification enumerator for type `(g, n)`."""
+class StableGraphStratificationEnumerator(UniqueRepresentation):
+    r"""Internal combinatorial stratification enumerator for type `(g, n)`.
+
+    Prefer :class:`~dm_moduli_spike.objects.gamma.StableGraphCategory` for the
+    public combinatorial API.  This class remains as the enumeration backend
+    for literature/oracle tests.
+    """
 
     def __init__(self, g: int, n: int) -> None:
         g = int(g)
@@ -60,9 +65,6 @@ class DMCompactificationModel(UniqueRepresentation):
 
     def graph_types(self) -> StableGraphTypes:
         return StableGraphTypes(self._g, self._n)
-
-    def curve_types(self) -> StableGraphTypes:
-        return self.graph_types()
 
     def stratum(self, curve_type: StableGraphType) -> DMStratum:
         if not isinstance(curve_type, StableGraphType):
@@ -125,7 +127,11 @@ class DMCompactificationModel(UniqueRepresentation):
         return self.stratification().boundary_strata()
 
     def _repr_(self) -> str:
-        return f"Deligne-Mumford compactification model Mbar({self._g}, {self._n}) of dimension {self.dimension()}"
+        return f"StableGraphStratificationEnumerator({self._g}, {self._n})"
 
     def __repr__(self) -> str:
         return self._repr_()
+
+
+# Legacy alias for oracle tests during migration.
+DMCompactificationModel = StableGraphStratificationEnumerator

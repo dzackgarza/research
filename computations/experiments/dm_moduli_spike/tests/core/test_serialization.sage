@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import json
 
-from dm_moduli_spike import DMCompactificationModel, StableGraphTypes
+from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike import StableGraphTypes
 
 
 def test_json_schema_shape():

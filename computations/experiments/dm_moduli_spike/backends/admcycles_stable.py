@@ -5,7 +5,7 @@ boundary strata of :math:`\overline{\mathcal M}_{g,n}` by codimension
 (``admcycles.list_strata(g, n, r)``), tests isomorphism, contracts edges and
 reports half-edge automorphism numbers.  The adapter converts every returned
 ``StableGraph`` into the spike's owned
-:class:`~dm_moduli_spike.objects.curve_types.StableGraphType`, so no
+:class:`~dm_moduli_spike.objects.graph_types.StableGraphType`, so no
 ``admcycles`` class ever surfaces in the public API.
 """
 
@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 from ..objects.records import StableGraph
 
 if TYPE_CHECKING:
-    from ..objects.curve_types import StableGraphType, StableGraphTypes
+    from ..objects.graph_types import StableGraphType, StableGraphTypes
 
 
 def _require_admcycles() -> object:
@@ -90,7 +90,7 @@ class AdmcyclesStableGraphBackend:
                 # Cross-check the reported codimension against the actual edge
                 # count rather than trusting the bucket label.
                 assert record.num_edges() == codim, f"admcycles returned a codim-{codim} graph with {record.num_edges()} edges"
-                result.append(curve_types.from_record(record))
+                result.append(curve_types.from_graph(record))
         return tuple(result)
 
     def admcycles_automorphism_number(self, curve_types: StableGraphTypes, curve_type: StableGraphType) -> int:
@@ -101,6 +101,6 @@ class AdmcyclesStableGraphBackend:
         n = curve_types.number_of_markings()
         for stable_graph in admcycles.list_strata(g, n, curve_type.num_edges()):  # type: ignore[attr-defined]
             record = _record_from_stable_graph(stable_graph, g, n)
-            if curve_types.from_record(record) == curve_type:
+            if curve_types.from_graph(record) == curve_type:
                 return int(stable_graph.automorphism_number())
         raise ValueError(f"no admcycles StableGraph matched {curve_type!r}")

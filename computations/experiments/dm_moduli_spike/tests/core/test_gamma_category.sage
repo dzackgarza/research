@@ -5,6 +5,7 @@ from __future__ import annotations
 from sage.combinat.posets.posets import FinitePoset
 
 from dm_moduli_spike import StableGraphCategory
+
 from dm_moduli_spike.objects.model import DMCompactificationModel
 
 
@@ -25,6 +26,6 @@ def test_gamma_specialization_poset_matches_enumerator_M11():
     Gamma = StableGraphCategory(1, 1)
     P = Gamma.specialization_poset()
     assert isinstance(P, FinitePoset)
-    legacy = DMCompactificationModel(1, 1).stratification().specialization_poset().sage_poset()
+    legacy = DMCompactificationModel(1, 1).stratification().specialization_poset()
     assert P.cardinality() == legacy.cardinality()
     assert P.is_isomorphic(legacy)

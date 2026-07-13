@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike import DMCompactificationModel, StableGraphTypes, StableGraph
+from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike import StableGraphTypes, StableGraph
 
 
 def test_record_rejects_a_non_involution():

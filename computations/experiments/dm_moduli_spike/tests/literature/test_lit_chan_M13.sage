@@ -8,7 +8,9 @@ r"""Tier-1 literature oracle: Chan's explicit `\overline{\mathcal M}_{1,3}` exam
 
 from __future__ import annotations
 
-from dm_moduli_spike import DMCompactificationModel, ModuliFactor, StableGraphTypes
+from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike.objects.strata import ModuliFactor
+from dm_moduli_spike import StableGraphTypes
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
 from tests.support.fixtures import chan_m13_curve_type, induced_edge_permutation_group
 

@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike import DMCompactificationModel, ModuliFactor
+from dm_moduli_spike.objects.model import DMCompactificationModel
+from dm_moduli_spike.objects.strata import ModuliFactor
+
 from tests.support.fixtures import CHAN_M20_COVERS, m20_types
 
 

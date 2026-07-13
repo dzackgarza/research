@@ -2,7 +2,8 @@ r"""Tier-4 internal consistency: cover deduplication and exhaustive-cap normaliz
 
 from __future__ import annotations
 
-from dm_moduli_spike import DMCompactificationModel
+from dm_moduli_spike.objects.model import DMCompactificationModel
+
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
 from dm_moduli_spike.objects.stratification import build_stratification_from_types
 from tests.support.fixtures import genus_six_counterexample
