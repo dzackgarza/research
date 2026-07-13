@@ -10,7 +10,7 @@ _lock:
 test:
     #!/usr/bin/env bash
     set -euo pipefail
-    just -f ~/ai-review-ci/justfiles/sage.just -d . test
+    direnv exec . just -f ~/ai-review-ci/justfiles/sage.just -d . test
     export PYTHONDONTWRITEBYTECODE=1
     python3 - <<'PY'
     import json
@@ -109,7 +109,7 @@ test:
 test-ci:
     #!/usr/bin/env bash
     set -euo pipefail
-    just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
+    direnv exec . just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
 
 # Review calibration (submodule) — delegate to review-calibration/justfile.
 # Requires the submodule: git submodule update --init review-calibration
