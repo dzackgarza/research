@@ -38,3 +38,19 @@ def test_finite_sets_refine_the_owned_countable_sets_category():
     assert Sets().Finite().is_subcategory(countable_sets)
     assert genus in countable_sets
     assert genus.list() == list(genus)
+
+
+def test_countability_witness_has_the_python_indexing_interface():
+    r"""The chosen enumeration is public through ordinary Python operations.
+
+    The A2 genus has one isometry class, so its zeroth element and its first
+    bounded slice must select that canonical class. Sage may realize these
+    operations internally through its enumerated-set machinery; those backend
+    method names are not part of the owned category vocabulary.
+    """
+    a2 = Lattice("A2")
+    genus = a2.genus()
+    representative = genus[0]
+
+    assert representative.is_isometric(a2)
+    assert genus[:1] == [representative]
