@@ -24,9 +24,10 @@ test:
         Path(".agents"),
         Path(".agents/provenance"),
         Path(".agents/references/sage-integral-lattice"),
+        Path("archives"),
+        Path("archives/lattice-research"),
         Path("projects"),
         Path("references"),
-        Path("projects/lattice-research"),
     ]
     for path in required_dirs:
         if not path.exists():
@@ -34,7 +35,7 @@ test:
     if Path("notes/research-legacy").exists():
         raise SystemExit("legacy notes bucket still exists; classify notes under notes/papers, notes/topics, or .agents")
 
-    submodule_root = Path("projects/lattice-research")
+    submodule_root = Path("archives/lattice-research")
     def owned_by_umbrella(path):
         return path == submodule_root or submodule_root not in path.parents
 
@@ -96,7 +97,7 @@ test:
         json.loads(path.read_text())
 
     gitmodules = Path(".gitmodules")
-    if "projects/lattice-research" not in gitmodules.read_text():
+    if "path = archives/lattice-research" not in gitmodules.read_text():
         raise SystemExit("lattice-research submodule missing from .gitmodules")
     PY
     # Every spike that carries a justfile is on QC rails automatically —

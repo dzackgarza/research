@@ -176,6 +176,17 @@ def init_coxeter_colors(G: Graph) -> dict[Hashable, str]:
         colors[v] = "lightblue"
     return colors
 
+
+def lattice_vertex_labels(
+    lattice: FreeQuadraticModule_generic_pid | FreeQuadraticModule_integer_symmetric,
+) -> dict[Hashable, str]:
+    """Return the generator labels assigned through Sage's public naming API."""
+    try:
+        names = lattice.variable_names()
+    except ValueError:
+        return {vertex: str(vertex) for vertex in range(lattice.rank())}
+    return {vertex: name for vertex, name in enumerate(names)}
+
 def get_coxeter_label_connected(H: Graph) -> str:
     """
     Get the Coxeter type label for a connected graph.
@@ -326,8 +337,7 @@ class CoxeterGraph(Graph):
             self.lattice = data
             self.gram_matrix = self.lattice.gram_matrix()
             data = matrix_to_graph(self.gram_matrix)
-            if self.lattice._names is not None:
-                self._default_options["vertex_labels"] = {v: k for v, k in enumerate(self.lattice._names)}
+            self._default_options["vertex_labels"] = lattice_vertex_labels(self.lattice)
 
         if parent is not None:
             self.parent_coxeter_graph = parent
