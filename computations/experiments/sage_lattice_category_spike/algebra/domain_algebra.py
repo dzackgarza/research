@@ -90,6 +90,7 @@ else:
     from sage.structure.richcmp import richcmp
 
 if TYPE_CHECKING:
+
     def _typed_richcmp(left: object, right: object, op: int) -> bool: ...
     def _typed_repr_lincomb(value: object) -> str: ...
 else:

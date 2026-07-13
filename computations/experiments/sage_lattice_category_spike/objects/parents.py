@@ -72,10 +72,37 @@ from .elements import SyntheticLatticeElement
 type EnumerationKwargValue = bool | ExactScalar | float | int | str
 
 if TYPE_CHECKING:
+
     def _typed_lattice(value: object) -> Lattice: ...
+    def _typed_bool(value: object) -> bool: ...
+    def _typed_exact_scalar(value: object) -> ExactScalar: ...
+    def _typed_exact(value: object) -> ExactScalar | SymbolicExpression: ...
+    def _typed_matrix(value: object) -> Matrix: ...
 else:
+
     def _typed_lattice(value: object) -> object:
         return value
+
+    def _typed_bool(value: object) -> object:
+        return value
+
+    def _typed_exact(value: object) -> object:
+        return value
+
+    def _typed_exact_scalar(value: object) -> object:
+        return value
+
+    def _typed_matrix(value: object) -> Matrix:
+        return value
+
+
+if TYPE_CHECKING:
+
+    def _instantiate_concrete(concrete: type[SyntheticLattice], *args: object, **kwargs: object) -> SyntheticLattice: ...
+else:
+
+    def _instantiate_concrete(concrete: type[SyntheticLattice], *args: object, **kwargs: object) -> SyntheticLattice:
+        return concrete(*args, **kwargs)
 
 
 def category_for(base_ring: BaseRing, gram: Matrix) -> Lattices:
@@ -298,7 +325,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         return cast(SyntheticLattice, Lattices(self.base_ring()).base_change(base_ring)(self))
 
     def determinant(self) -> ExactScalar:
-        return self.gram_matrix().determinant()
+        return _typed_exact_scalar(self.gram_matrix().determinant())
 
     def discriminant(self) -> ExactScalar:
         # (-1)^(r/2) det(G), written by parity so the arithmetic stays exact.
@@ -327,10 +354,10 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         return self.base_ring() is ZZ and self.is_integral() and self.determinant() in (1, -1)
 
     def is_degenerate(self) -> bool:
-        return self.determinant() == 0
+        return _typed_bool(self.determinant() == 0)
 
     def is_nondegenerate(self) -> bool:
-        return self.gram_matrix().rank() == self.rank()
+        return _typed_bool(self.gram_matrix().rank() == self.rank())
 
     def is_positive_definite(self) -> bool:
         pos, neg = self.signature_pair()
@@ -669,7 +696,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         return cast(
             SyntheticLattice,
             Lattices(self.base_ring()).from_gram_matrix(
-                scalar * self.gram_matrix(),
+                _typed_matrix(scalar * self.gram_matrix()),
                 label=label,
                 cartan_type=self._cartan_type if keeps_provenance else None,
             ),
@@ -946,7 +973,7 @@ class _PositiveDefiniteEnumeration(_PositiveDefiniteSelf):
     def volume(self) -> ExactScalar | SymbolicExpression:
         # Covolume sqrt(det G) (Sage IntegerLattice.volume) — exact, possibly
         # irrational, so the codomain includes exact symbolic values.
-        return self.gram_matrix().determinant().sqrt()
+        return _typed_exact(self.gram_matrix().determinant().sqrt())
 
     def reduced_basis(self) -> tuple[SyntheticLatticeElement, ...]:
         from sage.matrix.constructor import matrix
@@ -1322,7 +1349,8 @@ def construct_synthetic_lattice(
         # Instantiation with open @abstract_method contracts is the framework
         # design (TestSuite._test_not_implemented_methods enumerates the gap);
         # the two Nikulin embedding contracts are issue #24's open engines.
-        return concrete(  # type: ignore[abstract]
+        return _instantiate_concrete(
+            concrete,
             gram_matrix,
             base_ring,
             label,

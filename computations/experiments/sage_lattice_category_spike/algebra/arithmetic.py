@@ -13,6 +13,15 @@ from sage.structure.element import Matrix
 from ..lexicon.foundations import CartanType, GramMatrix, SignaturePair
 
 if TYPE_CHECKING:
+
+    def _gram_matrix_witness(value: Matrix) -> GramMatrix: ...
+else:
+
+    def _gram_matrix_witness(value: Matrix) -> GramMatrix:
+        return value
+
+
+if TYPE_CHECKING:
     from .domain_algebra import LatticeName
 
 
@@ -51,7 +60,7 @@ def as_square_qq_matrix(matrix_data: object) -> GramMatrix:
     assert gram.is_square(), f"lattice Gram matrix must be square; found dimensions={gram.nrows()}x{gram.ncols()}; fix the caller's Gram data"
     assert gram == gram.transpose(), f"lattice Gram matrix must be symmetric (definitional for every object of the tree); found={gram}; fix the caller's Gram data"
     gram.set_immutable()
-    return GramMatrix(gram)
+    return _gram_matrix_witness(gram)
 
 
 def is_named_gram_data(matrix_data: object) -> TypeGuard[LatticeName]:

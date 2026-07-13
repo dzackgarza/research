@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from itertools import product
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any
 
 from sage.arith.functions import lcm
 from sage.matrix.constructor import column_matrix, identity_matrix, matrix
@@ -51,9 +51,8 @@ from .discriminant import (
 )
 
 if TYPE_CHECKING:
-    R = TypeVar("R")
 
-    def typed_cached_method(function: Callable[..., R]) -> Callable[..., R]: ...
+    def typed_cached_method[**P, R](function: Callable[P, R]) -> Callable[P, R]: ...
 else:
     typed_cached_method = cached_method
 
