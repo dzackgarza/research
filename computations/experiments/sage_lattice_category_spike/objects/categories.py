@@ -19,7 +19,7 @@ hooks -- there is deliberately no mixin-level default for those hooks.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Literal, cast
 
 from sage.categories.category import Category
@@ -119,16 +119,17 @@ class Sets(Category):
 
     ``Countable`` names the mathematical property together with a chosen
     computable enumeration. The public interface is ordinary Python:
-    ``iter(X)``, ``X[n]``, and bounded slices. ``Finite`` refines
-    ``Countable`` when the enumeration terminates, so its elements can be
-    materialized.
+    ``iter(X)``, ``X[n]``, bounded slices, and ``X.index(x)``. ``Finite``
+    refines ``Countable`` when the enumeration terminates, so its elements can
+    be materialized.
 
     Sage conventions do not define this category tree. A Sage category,
     method, or name enters the owned interface only when it represents a
     mathematical concept established independently of Sage. Sage's separate
     ``EnumeratedSets`` category and its ``rank``/``unrank`` vocabulary have no
-    such mathematical counterpart: every countable set here already supplies
-    the chosen enumeration. They remain implementation machinery only.
+    such mathematical counterpart. Their underlying maps do: ``unrank(n)``
+    realizes ``X[n]``, while ``rank(x)`` realizes ``X.index(x)``. Every
+    countable set here already supplies that chosen enumeration and its inverse.
     """
 
     def _repr_object_names(self) -> str:
@@ -156,6 +157,15 @@ class CountableSets(CategoryWithAxiom):
     """
 
     _base_category_class_and_axiom = (Sets, "Countable")
+
+    class ParentMethods:
+        def index(self, value: object) -> int:
+            r"""Return the position of ``value`` in the chosen enumeration."""
+            enumeration = cast(Iterable[object], self)
+            for position, element in enumerate(enumeration):
+                if element == value:
+                    return position
+            assert False, f"value is not in this countable set: {value!r}"
 
     def extra_super_categories(self) -> tuple[Category, ...]:
         return (EnumeratedSets(),)

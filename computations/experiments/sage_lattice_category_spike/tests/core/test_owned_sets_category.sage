@@ -56,3 +56,17 @@ def test_countability_witness_has_the_python_indexing_interface():
     assert genus[:1] == [representative]
     assert genus.index(representative) == 0
     assert genus[genus.index(representative)].is_isometric(representative)
+
+
+def test_countable_index_does_not_collide_with_mathematical_rank():
+    r"""Reverse lookup is independent of another operation named ``rank``.
+
+    The sourced A2 discriminant form reports its source lattice's rank two but
+    has three elements in its chosen enumeration. ``index`` must invert that
+    enumeration rather than dispatching to the unrelated mathematical
+    ``rank()`` operation.
+    """
+    discriminant_form = Lattice("A2").discriminant_group()
+
+    assert discriminant_form.rank() == 2
+    assert [discriminant_form.index(element) for element in discriminant_form] == [0, 1, 2]
