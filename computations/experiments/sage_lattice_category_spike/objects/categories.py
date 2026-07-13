@@ -1,7 +1,10 @@
 r"""Sage category classes for the owned synthetic lattice spike.
 
-Ratified organization (M-RATIFY): two SEPARATE categories, no shared root.
+Ratified organization (M-RATIFY): three separate categories, no shared root.
 
+- ``Sets()`` -- the spike-owned set-theoretic root. Its finite and enumerated
+  refinements preserve Sage's generic API while giving spike parents one owned
+  category route.
 - ``Lattices(R)`` -- based free ``R``-modules with a symmetric ``K``-valued form,
   on ``Modules(R).WithBasis().FiniteDimensional()``. Possibly-degenerate base;
   ``Nondegenerate`` is an axiom attached by the constructor iff ``det(G) != 0``.
@@ -27,13 +30,12 @@ from sage.categories.category_with_axiom import (
     axiom,
 )
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
-from sage.categories.enumerated_sets import EnumeratedSets
 from sage.categories.functor import ForgetfulFunctor
 from sage.categories.homset import Hom as SageHom
 from sage.categories.homset import Homset
 from sage.categories.homsets import HomsetsCategory
 from sage.categories.modules import Modules
-from sage.categories.sets_cat import Sets
+from sage.categories.sets_cat import Sets as SageSets
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
@@ -105,6 +107,30 @@ def _own_methods(carrier: type) -> type:
     delta = {name: value for name, value in vars(carrier).items() if not name.startswith("__")}
     delta["__doc__"] = carrier.__doc__
     return type("ParentMethods", (), delta)
+
+
+class Sets(Category):
+    r"""The spike-owned root for set-theoretic parent categories.
+
+    ``Finite`` and ``Enumerated`` compose through Sage's category framework,
+    so ``Sets().Finite().Enumerated()`` inherits the standard cardinality and
+    iteration vocabulary while retaining this root as its category route.
+    """
+
+    def _repr_object_names(self) -> str:
+        return "synthetic sets"
+
+    def super_categories(self) -> list[Category]:
+        return [SageSets()]
+
+    if TYPE_CHECKING:
+
+        def Finite(self) -> Category: ...
+        def Enumerated(self) -> Category: ...
+
+    class SubcategoryMethods:
+        Finite = axiom("Finite")
+        Enumerated = axiom("Enumerated")
 
 
 class Lattices(Category_over_base_ring):
@@ -333,7 +359,7 @@ class Lattices(Category_over_base_ring):
             return Implementation(domain, codomain, category=category)
 
         def extra_super_categories(self) -> list[Category]:
-            return [Sets()]
+            return [SageSets()]
 
         class ParentMethods:
             # No from_matrix contract: morphism construction is the element
@@ -422,7 +448,7 @@ class Genera(Category_over_base_ring):
         # A genus IS the finite set of its isometry classes: the finite-set API
         # (cardinality, iteration) is INHERITED from this super-category, never
         # re-declared on the genus contract or a concrete parent.
-        return [EnumeratedSets().Finite()]
+        return [Sets().Finite().Enumerated()]
 
     def additional_structure(self) -> Genera:
         return self
