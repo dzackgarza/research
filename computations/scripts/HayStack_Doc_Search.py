@@ -458,7 +458,9 @@ def search(question: str, doc_store: InMemoryDocumentStore) -> GeneratedAnswer:
     query_pipeline.connect("docs_retriever.documents", "answer_builder.documents")
     query_pipeline.connect("llm.replies", "answer_builder.replies")
     res = query_pipeline.run({"query": question})
-    return res["answer_builder"]["answers"][0]
+    answer = res["answer_builder"]["answers"][0]
+    assert isinstance(answer, GeneratedAnswer), f"expected GeneratedAnswer, found={type(answer)}"
+    return answer
 
 
 # Configuration sidebar
@@ -578,10 +580,12 @@ if all_sources and (question := st.text_input(
                 url_source = document.meta.get("url_source", "")
                 
                 st.write(f"**Document {i}:** `{relative_path or url_source or 'Unknown'}` ({source})")
-                if len(document.content) > 200:
-                    st.text(document.content[:200] + "...")
+                content = document.content
+                assert content is not None, f"expected text document, found={document.id}"
+                if len(content) > 200:
+                    st.text(content[:200] + "...")
                 else:
-                    st.text(document.content)
+                    st.text(content)
                 if i < len(answer.documents):
                     st.divider()
 
