@@ -10,6 +10,7 @@ _lock:
 test:
     #!/usr/bin/env bash
     set -euo pipefail
+    just -f ~/ai-review-ci/justfiles/sage.just -d . test
     export PYTHONDONTWRITEBYTECODE=1
     python3 - <<'PY'
     import json
@@ -98,9 +99,6 @@ test:
     if "projects/lattice-research" not in gitmodules.read_text():
         raise SystemExit("lattice-research submodule missing from .gitmodules")
     PY
-    # The root package has its own public Sage import surface.  Keep its test
-    # collection separate from the calibration slice and per-spike suites.
-    direnv exec . sage -python -m pytest -p no:cacheprovider tests
     # Every spike that carries a justfile is on QC rails automatically —
     # adding a spike never requires editing this file (see AGENTS.md).
     shopt -s nullglob
@@ -108,7 +106,10 @@ test:
         just -f "$spike_justfile" test
     done
 
-test-ci: test
+test-ci:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
 
 # Review calibration (submodule) — delegate to review-calibration/justfile.
 # Requires the submodule: git submodule update --init review-calibration
