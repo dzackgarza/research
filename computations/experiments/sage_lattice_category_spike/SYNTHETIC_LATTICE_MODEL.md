@@ -23,7 +23,8 @@ A lattice is a based projective `R`-module of finite rank with an exact symmetri
 
 - The category-namespace constructors (`Lattices(R).from_gram_matrix`, the named section-6 constructors, `DiscriminantForms(ZZ)` factories) are the only public entry; constructors prove invariants once and downstream code never re-checks them (parse-don't-validate).
 - Every computational result is obtained by building an ephemeral Sage object from the object's own data and asking it — never by reimplementing the algorithm and never from remembered theorems.
-  Owned code derives its ontology from mathematics, never from Sage. A Sage category, method, name, or convention is not evidence that a mathematical concept exists.
+  Owned code derives its ontology from mathematics, never from Sage.
+  A Sage category, method, name, or convention is not evidence that a mathematical concept exists.
   Sage may compute an independently defined mathematical operation, but anything with no mathematical counterpart is excluded from the owned ontology rather than normalized into project vocabulary.
   Sage as-is is the reference implementation; suspected Sage bugs are filed issues plus gap-ledger rows, never patched around.
 - Dispatch is by category membership and declared types; no `hasattr`/ `getattr` probing selects behavior in implementation code.
