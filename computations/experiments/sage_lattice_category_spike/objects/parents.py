@@ -71,6 +71,12 @@ from .elements import SyntheticLatticeElement
 
 type EnumerationKwargValue = bool | ExactScalar | float | int | str
 
+if TYPE_CHECKING:
+    def _typed_lattice(value: object) -> Lattice: ...
+else:
+    def _typed_lattice(value: object) -> object:
+        return value
+
 
 def category_for(base_ring: BaseRing, gram: Matrix) -> Lattices:
     category = Lattices(base_ring)
@@ -116,6 +122,8 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         # Sage's category framework injects element_class at construction;
         # for this tower it is the class assigned to Element above.
         element_class: ClassVar[type[SyntheticLatticeElement]]
+
+        def __call__(self, x: object = ..., *args: object, **kwds: object) -> SyntheticLatticeElement: ...
 
     def __init__(
         self,
@@ -840,8 +848,8 @@ class SyntheticIntegralNondegenerateLattice(IntegralNondegenerateLattice, Synthe
                 "local modification subgroup must belong to this lattice's requested p-primary discriminant form; "
                 f"requested_p={p}, subgroup_ambient={subgroup_ambient}, expected={primary_discriminant_group}"
             )
-            return subgroup_ambient.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label).codomain()
-        return primary_discriminant_group.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label).codomain()
+            return _typed_lattice(subgroup_ambient.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label).codomain())
+        return _typed_lattice(primary_discriminant_group.overlattice_from_isotropic_subgroup(subgroup_or_gens, label=label).codomain())
 
     def genus(self) -> Genus:
         return self.discriminant_group().genus(self.signature_pair())

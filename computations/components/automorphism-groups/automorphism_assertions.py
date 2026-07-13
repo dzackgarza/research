@@ -1,6 +1,6 @@
 #!/usr/bin/env sage
 
-from sage.all import *
+from sage.all import euler_phi, factorial, graphs
 from sage.groups.matrix_gps.all import GL, SL
 from sage.groups.perm_gps.permgroup_named import PSL, AbelianGroup, AlternatingGroup, DihedralGroup, KleinFourGroup, QuaternionGroup, SymmetricGroup
 from sage.groups.perm_gps.permgroup_named import CyclicPermutationGroup as CyclicGroup
@@ -88,7 +88,7 @@ def compute_automorphism_group_with_proofs(G, group_name=""):
     print(f"✓ All proofs passed for {group_name}")
     return aut_group
 
-def prove_cyclic_group_theorem():
+def prove_cyclic_group_theorem() -> None:
     """
     Prove |Aut(Z/n)| = φ(n) for cyclic groups.
     """
@@ -109,7 +109,7 @@ def prove_cyclic_group_theorem():
     
     print("✓ Theorem proven for all tested cases")
 
-def prove_symmetric_group_theorem():
+def prove_symmetric_group_theorem() -> None:
     """
     Prove automorphism properties of symmetric groups.
     """
@@ -136,7 +136,7 @@ def prove_symmetric_group_theorem():
     
     print("✓ Symmetric group theorem proven")
 
-def prove_dihedral_group_properties():
+def prove_dihedral_group_properties() -> None:
     """
     Prove properties of dihedral group automorphisms.
     """
@@ -164,7 +164,7 @@ def prove_dihedral_group_properties():
     
     print("✓ Dihedral group properties proven")
 
-def prove_matrix_group_properties():
+def prove_matrix_group_properties() -> None:
     """
     Prove properties of matrix group automorphisms.
     """
@@ -209,7 +209,7 @@ def prove_matrix_group_properties():
     
     print("✓ Matrix group properties proven")
 
-def prove_graph_automorphism_properties():
+def prove_graph_automorphism_properties() -> None:
     """
     Prove properties of graph automorphisms.
     """
@@ -249,7 +249,7 @@ def prove_graph_automorphism_properties():
     
     print("✓ Graph automorphism properties proven")
 
-def main():
+def main() -> None:
     """
     Main proof program - crashes if any mathematical property is violated.
     """

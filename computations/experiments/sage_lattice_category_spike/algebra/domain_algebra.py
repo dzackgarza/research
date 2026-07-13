@@ -62,7 +62,6 @@ if TYPE_CHECKING:
     from abc import abstractmethod as abstract_method
 
     from sage.misc.repr import repr_lincomb
-    from sage.structure.richcmp import richcmp
 
     # Type-level nouns are drawn from the lexicon (the single type surface;
     # lexicon/INVENTORY.md). TYPE_CHECKING-only, so this module keeps its
@@ -89,6 +88,13 @@ else:
     from sage.misc.abstract_method import abstract_method
     from sage.misc.repr import repr_lincomb
     from sage.structure.richcmp import richcmp
+
+if TYPE_CHECKING:
+    def _typed_richcmp(left: object, right: object, op: int) -> bool: ...
+    def _typed_repr_lincomb(value: object) -> str: ...
+else:
+    _typed_richcmp = richcmp
+    _typed_repr_lincomb = repr_lincomb
 
 
 __all__ = [
@@ -218,7 +224,7 @@ class LatticeElement:
         being hand-written. Sage calls ``_richcmp_`` only after coercing both
         operands into a common parent, so the parent match is the coercion
         framework's responsibility, not ours."""
-        return richcmp(self.coefficient_vector(), other.coefficient_vector(), op)
+        return _typed_richcmp(self.coefficient_vector(), other.coefficient_vector(), op)
 
     def __hash__(self) -> int:
         r"""Hash by generator coefficients (a hashable immutable vector).
@@ -238,7 +244,7 @@ class LatticeElement:
         Delegates to Sage's own linear-combination renderer
         (``sage.misc.repr.repr_lincomb``), which owns sign handling, unit
         coefficients, and the empty combination (``0``)."""
-        return repr_lincomb(zip(self.parent().variable_names(), self.coefficient_vector(), strict=True))
+        return _typed_repr_lincomb(zip(self.parent().variable_names(), self.coefficient_vector(), strict=True))
 
 
 class DiscriminantFormElement:

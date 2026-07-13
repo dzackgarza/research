@@ -1,9 +1,11 @@
 from collections import Counter
 from copy import copy
 
-from sage.all import *
+import sage
+from sage.all import Infinity, Poset, Set, Subsets, ZZ, sqrt, zero_matrix
 from sage.graphs.graph import Graph
 from sage.modules.free_quadratic_module_integer_symmetric import *
+from sage.misc.cachefunc import cached_method
 
 
 # Required utility functions for CoxeterGraph
@@ -799,4 +801,4 @@ class CoxeterGraph(Graph):
             usepackage=['amsmath', 'mathptmx', 'color', '/home/dzack/Notes/tikzit', 
                         '/home/dzack/Notes/DZG_Style_Tikz_Only', 'tikz-cd', 'pgfplots' ])
     
-        return t 
+        return t

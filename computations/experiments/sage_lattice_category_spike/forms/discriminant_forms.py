@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from itertools import product
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from sage.arith.functions import lcm
 from sage.matrix.constructor import column_matrix, identity_matrix, matrix
@@ -49,6 +49,13 @@ from .discriminant import (
     lattice_key,
     relation_inclusion_matrix,
 )
+
+if TYPE_CHECKING:
+    R = TypeVar("R")
+
+    def typed_cached_method(function: Callable[..., R]) -> Callable[..., R]: ...
+else:
+    typed_cached_method = cached_method
 
 
 def _presentation_radical_order(gram: Any, invariants: Any) -> Any:
@@ -1120,7 +1127,7 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
 
     # -- source-based form data: read the Gram on the invariant generators off
     # G^{-1} through the dual coordinates, never a stored Gram presentation. --
-    @cached_method
+    @typed_cached_method
     def _raw_form_matrix(self) -> Any:
         if self.ngens() == 0:
             return matrix(QQ, 0, 0)
@@ -1130,14 +1137,14 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
         form.set_immutable()
         return form
 
-    @cached_method
+    @typed_cached_method
     def gram_matrix_bilinear(self) -> Any:
         raw_form = self._raw_form_matrix()
         form = raw_form.apply_map(lambda entry: rational_mod(entry, 1))
         form.set_immutable()
         return form
 
-    @cached_method
+    @typed_cached_method
     def gram_matrix_quadratic(self) -> Any:
         raw_form = self._raw_form_matrix()
         bilinear_form = self.gram_matrix_bilinear()

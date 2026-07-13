@@ -1,5 +1,18 @@
 #!/usr/bin/env sage
 
+from sage.all import graphs
+from sage.groups.matrix_gps.all import GL
+from sage.groups.perm_gps.permgroup_named import (
+    PSL,
+    AbelianGroup,
+    DihedralGroup,
+    QuaternionGroup,
+    SymmetricGroup,
+)
+from sage.groups.perm_gps.permgroup_named import (
+    CyclicPermutationGroup as CyclicGroup,
+)
+
 def get_automorphism_guarantees():
     """
     Document the guarantees for automorphism group computation in SageMath.
@@ -48,7 +61,7 @@ def get_automorphism_guarantees():
     
     return guarantees
 
-def print_guarantees():
+def print_guarantees() -> None:
     """
     Print automorphism computation guarantees.
     """
@@ -77,7 +90,7 @@ def print_guarantees():
     for item in guarantees['no_guarantees']:
         print(f"  • {item}")
 
-def verify_core_guarantees():
+def verify_core_guarantees() -> bool:
     """
     Verify the core guarantees with actual computation.
     """
@@ -162,7 +175,7 @@ def get_implementation_notes():
     
     return notes
 
-def print_implementation_notes():
+def print_implementation_notes() -> None:
     """
     Print detailed implementation notes.
     """

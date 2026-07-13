@@ -5,6 +5,7 @@ import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import TYPE_CHECKING, Callable, ParamSpec, TypeVar
 
 import streamlit as st
 from dotenv import load_dotenv
@@ -23,6 +24,13 @@ from haystack.document_stores.types import DuplicatePolicy
 
 # Import our SageMath utilities
 from sagemath_utils import extract_python_docstrings, get_sage_path, get_sagemath_patterns
+
+P = ParamSpec("P")
+R = TypeVar("R")
+if TYPE_CHECKING:
+    def cache_data(*, show_spinner: bool = True) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
+else:
+    cache_data = st.cache_data
 
 # Load the environment variables, we're going to need it for OpenAI
 load_dotenv()
@@ -218,7 +226,7 @@ def fetch_sagemath_files():
     st.write(f"Total SageMath files selected for indexing: {len(files)}")
     return files
 
-@st.cache_data(show_spinner=False)
+@cache_data(show_spinner=False)
 def fetch(documentations: list[tuple[str, str, str]], include_sagemath: bool = True):
     files = []
     # Create the docs path if it doesn't exist

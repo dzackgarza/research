@@ -1,5 +1,15 @@
 #!/usr/bin/env sage
 
+from sage.all import euler_phi, graphs
+from sage.groups.perm_gps.permgroup_named import (
+    DihedralGroup,
+    QuaternionGroup,
+    SymmetricGroup,
+)
+from sage.groups.perm_gps.permgroup_named import (
+    CyclicPermutationGroup as CyclicGroup,
+)
+
 def analyze_automorphism_group(G, group_name=""):
     """
     Analyze the automorphism group of G with detailed information.
@@ -139,8 +149,8 @@ def automorphism_series_analysis(n_max=12):
     for n in range(2, n_max + 1):
         G = CyclicGroup(n)
         aut_order = G.automorphism_group().order()
-        euler_phi = euler_phi(n)
-        print(f"{n:<4} {aut_order:<12} {euler_phi:<8}")
+        phi_n = euler_phi(n)
+        print(f"{n:<4} {aut_order:<12} {phi_n:<8}")
     
     # Dihedral groups
     print("\nDihedral groups D_n:")
@@ -152,7 +162,7 @@ def automorphism_series_analysis(n_max=12):
         aut_order = G.automorphism_group().order()
         print(f"{n:<4} {G.order():<8} {aut_order:<12}")
 
-def graph_automorphism_demo():
+def graph_automorphism_demo() -> None:
     """
     Demonstrate automorphism computation for graphs.
     """
