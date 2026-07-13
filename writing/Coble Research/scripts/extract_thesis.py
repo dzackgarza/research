@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path.home() / ".pandoc" / "bin"))
 from expand_macros import expand_all
 
 
-def main():
+def main() -> None:
     print("1. Regenerating raw concatenated markdown...")
     subprocess.run(["python3", "200-dev/bin/build_diss.py"], cwd=str(DISS_ROOT))
     

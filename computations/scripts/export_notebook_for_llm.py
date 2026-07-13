@@ -11,7 +11,7 @@ import re
 from pathlib import Path
 
 
-def clean_code_cell(source):
+def clean_code_cell(source: str | list[str]) -> str:
     """Clean and format code cell content."""
     if isinstance(source, list):
         source = ''.join(source)
@@ -25,14 +25,14 @@ def clean_code_cell(source):
     
     return source
 
-def clean_markdown_cell(source):
+def clean_markdown_cell(source: str | list[str]) -> str:
     """Clean and format markdown cell content."""
     if isinstance(source, list):
         source = ''.join(source)
     
     return source.strip()
 
-def export_notebook_clean_text(notebook_path, output_path):
+def export_notebook_clean_text(notebook_path: Path, output_path: Path) -> None:
     """Export notebook as clean text optimized for LLMs."""
     
     with open(notebook_path, encoding='utf-8') as f:
@@ -91,7 +91,7 @@ def export_notebook_clean_text(notebook_path, output_path):
     print(f"✅ Exported clean text to: {output_path}")
     print(f"📊 Stats: {code_cell_count} code cells, {markdown_cell_count} markdown cells")
 
-def export_notebook_code_only(notebook_path, output_path):
+def export_notebook_code_only(notebook_path: Path, output_path: Path) -> None:
     """Export only code cells as a clean Python/Sage file."""
     
     with open(notebook_path, encoding='utf-8') as f:
@@ -125,7 +125,7 @@ def export_notebook_code_only(notebook_path, output_path):
     print(f"✅ Exported code-only to: {output_path}")
     print(f"📊 Extracted {code_cell_count} code cells")
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description='Export Jupyter notebook for LLM processing')
     parser.add_argument('notebook', help='Path to the Jupyter notebook')
     parser.add_argument('--format', choices=['clean', 'code', 'both'], default='both',
@@ -154,4 +154,4 @@ def main():
         export_notebook_code_only(notebook_path, code_output)
 
 if __name__ == '__main__':
-    main() 
+    main()

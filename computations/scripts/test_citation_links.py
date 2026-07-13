@@ -7,7 +7,7 @@ from haystack.dataclasses import Document
 from inline_citation_enhancer import InlineCitationEnhancer
 
 
-def test_direct_citation_links():
+def test_direct_citation_links() -> None:
     """Test that citations link directly to source files."""
     
     # Create test documents
@@ -65,4 +65,4 @@ def test_direct_citation_links():
     print("Test complete!")
 
 if __name__ == "__main__":
-    test_direct_citation_links() 
+    test_direct_citation_links()

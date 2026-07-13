@@ -6,7 +6,7 @@ Test script to verify SageMath documentation indexing.
 from dotenv import load_dotenv
 
 
-def test_sagemath_files():
+def test_sagemath_files() -> bool:
     """Test that we can find and process SageMath files."""
     
     load_dotenv()
@@ -72,4 +72,4 @@ def test_sagemath_files():
 if __name__ == "__main__":
     success = test_sagemath_files()
     print(f"\nTest {'PASSED' if success else 'FAILED'}")
-    exit(0 if success else 1) 
+    exit(0 if success else 1)
