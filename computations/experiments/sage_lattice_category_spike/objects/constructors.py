@@ -7,7 +7,7 @@ Every path routes through the section-1.4 category-namespace entry
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 
 from sage.matrix.constructor import identity_matrix, matrix
 from sage.rings.integer_ring import ZZ
@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from ..lexicon import (
         BaseRing,
         DiscriminantFormElement,
+        IntegralNondegenerateLattice,
         LatticeMorphism,
         LatticeName,
         RawGramMatrix,
@@ -30,6 +31,24 @@ if TYPE_CHECKING:
 def SyntheticLatticeFromGram(gram_matrix: RawGramMatrix | LatticeName, base_ring: BaseRing = ZZ, label: str = "L", names: Sequence[str] | str | None = None) -> lexicon.Lattice:
     r"""Construct a synthetic based lattice ``(base_ring, G)`` from its Gram matrix."""
     return Lattices(base_ring).from_gram_matrix(gram_matrix, label=label, names=names)
+
+
+@overload
+def Lattice(
+    gram_matrix: LatticeName,
+    base_ring: BaseRing = ZZ,
+    label: str | None = None,
+    names: Sequence[str] | str | None = None,
+) -> IntegralNondegenerateLattice: ...
+
+
+@overload
+def Lattice(
+    gram_matrix: RawGramMatrix,
+    base_ring: BaseRing = ZZ,
+    label: str | None = None,
+    names: Sequence[str] | str | None = None,
+) -> lexicon.Lattice: ...
 
 
 def Lattice(

@@ -58,7 +58,7 @@ def D(n: int) -> PermutationGroup_generic:
     return _typed_permutation_group(DihedralGroup(n))
 
 def prod(G: PermutationGroup_generic, H: PermutationGroup_generic) -> PermutationGroup_generic:
-    return _typed_permutation_group(G.direct_product(H)[0])
+    return G.direct_product(H)[0]
 
 def Ga(n: int) -> PermutationGroup_generic:
     Zn = ZZ.quotient(n*ZZ)
@@ -84,7 +84,7 @@ def random_prime(N: int) -> Integer:
 
 def convert_to_permutation_group(G: Group | GapElement) -> PermutationGroup_generic | None:
     if hasattr(G, "as_AbelianGroup"):
-        G = G.as_AbelianGroup()
+        return _typed_optional_permutation_group(G.as_AbelianGroup().permutation_group())
     elif hasattr(G, "permutation_group"):
         return _typed_optional_permutation_group(G.permutation_group())
     elif hasattr(G, "as_permutation_group"):
