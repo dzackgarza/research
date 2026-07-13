@@ -1,4 +1,10 @@
-r"""The typed ambient model of :math:`\overline{\mathcal M}_{g,n}`."""
+r"""Combinatorial enumeration backend for dual-graph stratification.
+
+This class is **not** a Deligne--Mumford stack or compactification. It
+enumerates stable graph types and builds the specialization poset used by
+:class:`~dm_moduli_spike.stratification.stratified.StratifiedStack`.
+Prefer the public landscape API starting at :func:`~dm_moduli_spike.moduli.instances.M_gn`.
+"""
 
 from __future__ import annotations
 
@@ -30,7 +36,7 @@ def _resolve_backend(backend: str) -> str:
 
 
 class DMCompactificationModel(UniqueRepresentation):
-    r"""Combinatorial model of :math:`\overline{\mathcal M}_{g,n}`."""
+    r"""Internal combinatorial stratification enumerator for type `(g, n)`."""
 
     def __init__(self, g: int, n: int) -> None:
         g = int(g)

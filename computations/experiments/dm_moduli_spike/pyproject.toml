@@ -13,6 +13,11 @@ build-backend = "setuptools.build_meta"
 package-dir = { "dm_moduli_spike" = "." }
 packages = [
     "dm_moduli_spike",
+    "dm_moduli_spike.categories",
+    "dm_moduli_spike.curves",
+    "dm_moduli_spike.geometry",
+    "dm_moduli_spike.moduli",
+    "dm_moduli_spike.stratification",
     "dm_moduli_spike.objects",
     "dm_moduli_spike.backends",
 ]

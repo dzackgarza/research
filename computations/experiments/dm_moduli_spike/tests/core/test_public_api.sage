@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike import DMCompactificationModel
+from dm_moduli_spike import DMCompactificationModel, M_gn, DualGraphType
 
 
 def test_model_scalar_api():
@@ -15,9 +15,16 @@ def test_model_scalar_api():
     assert model.is_stable_range()
 
 
+def test_landscape_entry_point_matches_combinatorial_dimension():
+    XS = M_gn(2, 1)
+    assert XS.dimension() == 4
+    P = XS.compactify().boundary().stratify(by=DualGraphType()).stratification_poset()
+    assert P.cardinality() >= 1
+
+
 def test_direct_stable_graph_constructor_and_stratum():
     model = DMCompactificationModel(0, 4)
-    types = model.curve_types()
+    types = model.graph_types()
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     assert gamma.total_genus() == 0
     assert gamma.num_edges() == 1
