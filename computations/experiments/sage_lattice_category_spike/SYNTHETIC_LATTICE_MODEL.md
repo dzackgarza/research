@@ -6,7 +6,9 @@ A lattice is a based projective `R`-module of finite rank with an exact symmetri
 ## Bounded contexts
 
 - **Category tree** (`categories.py`): `Sets()` is the owned set-theoretic root.
-  `Countable` sets carry a computable witness; `Finite` refines `Countable` when the witness terminates and can be materialized.
+  `Countable` sets carry a chosen computable enumeration, exposed as `iter(X)`, `X[n]`, and bounded slices.
+  Sage may implement that interface with its internal enumerated-set machinery; those backend method names are not public mathematical vocabulary.
+  `Finite` refines `Countable` when the enumeration terminates and can be materialized.
   Together they provide the shared finite-set route for `Genera(ZZ)` and `DiscriminantForms(ZZ)`. `Lattices(R)` has axiom subcategories (Nondegenerate, Integral, Even, Unimodular, Definite, PositiveDefinite, NegativeDefinite, Indefinite, Hyperbolic, RootGenerated), and `DiscriminantForms(ZZ)` has subcategories (Bilinear, Quadratic, Even, WithSourceLattice).
   Classes from the typed domain algebra install as `ParentMethods` deltas.
 - **Lattice parents/elements/morphisms** (`parents.py`, `elements.py`, `homsets.py`): one concrete hierarchy per subcategory; typed elements carrying `b`/`q`; form-preserving homsets; `O(L)` with typed subgroups as the only supplied-generators home.

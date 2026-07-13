@@ -117,10 +117,12 @@ def _own_methods(carrier: type) -> type:
 class Sets(Category):
     r"""The spike-owned root for set-theoretic parent categories.
 
-    ``Countable`` names the mathematical property. Its witness supplies the
-    standard iterator, rank, and unrank interface. ``Finite`` refines
-    ``Countable`` when that witness terminates, so its elements can be
-    materialized.
+    ``Countable`` names the mathematical property together with a chosen
+    computable enumeration. The public interface is ordinary Python:
+    ``iter(X)``, ``X[n]``, and bounded slices. Sage may realize those
+    operations through its enumerated-set machinery, but backend method names
+    are not part of the owned vocabulary. ``Finite`` refines ``Countable``
+    when the enumeration terminates, so its elements can be materialized.
     """
 
     def _repr_object_names(self) -> str:
@@ -140,7 +142,12 @@ class Sets(Category):
 
 
 class CountableSets(CategoryWithAxiom):
-    r"""Countable spike-owned sets with a computable witness."""
+    r"""Countable spike-owned sets with a chosen computable enumeration.
+
+    The Sage super-category implements the Python iteration and indexing
+    interface. Its backend-specific method names remain behind this integration
+    edge.
+    """
 
     _base_category_class_and_axiom = (Sets, "Countable")
 
