@@ -41,12 +41,12 @@ def test_finite_sets_refine_the_owned_countable_sets_category():
 
 
 def test_countability_witness_has_the_python_indexing_interface():
-    r"""The chosen enumeration is public through ordinary Python operations.
+    r"""Indexing and reverse lookup expose the chosen enumeration.
 
     The A2 genus has one isometry class, so its zeroth element and its first
-    bounded slice must select that canonical class. Sage may realize these
-    operations internally through its enumerated-set machinery; those backend
-    method names are not part of the owned category vocabulary.
+    bounded slice must select that canonical class, and ``index`` must invert
+    that selection. Sage's ``unrank`` and ``rank`` may implement these Python
+    operations but create no owned mathematical operations.
     """
     a2 = Lattice("A2")
     genus = a2.genus()
@@ -54,3 +54,5 @@ def test_countability_witness_has_the_python_indexing_interface():
 
     assert representative.is_isometric(a2)
     assert genus[:1] == [representative]
+    assert genus.index(representative) == 0
+    assert genus[genus.index(representative)].is_isometric(representative)
