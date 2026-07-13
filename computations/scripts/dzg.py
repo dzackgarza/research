@@ -1,4 +1,5 @@
 import random
+from typing import TYPE_CHECKING
 
 from sage.arith.misc import prime_range
 from sage.groups.affine_gps.affine_group import AffineGroup
@@ -17,6 +18,20 @@ from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 
+if TYPE_CHECKING:
+    def _typed_permutation_group(value: object) -> PermutationGroup_generic: ...
+    def _typed_optional_permutation_group(value: object) -> PermutationGroup_generic | None: ...
+    def _typed_integer(value: object) -> Integer: ...
+else:
+    def _typed_permutation_group(value: object) -> object:
+        return value
+
+    def _typed_optional_permutation_group(value: object) -> object:
+        return value
+
+    def _typed_integer(value: object) -> object:
+        return value
+
 # Terminal color codes
 COLOR_GREEN = "\033[92m"
 COLOR_RED = "\033[91m"
@@ -34,16 +49,16 @@ def print_info(msg: str) -> None:
 
 
 def C(n: int) -> PermutationGroup_generic:
-    return CyclicPermutationGroup(n)
+    return _typed_permutation_group(CyclicPermutationGroup(n))
 
 def S(n: int) -> PermutationGroup_generic:
-    return SymmetricGroup(n)
+    return _typed_permutation_group(SymmetricGroup(n))
 
 def D(n: int) -> PermutationGroup_generic:
-    return DihedralGroup(n)
+    return _typed_permutation_group(DihedralGroup(n))
 
 def prod(G: PermutationGroup_generic, H: PermutationGroup_generic) -> PermutationGroup_generic:
-    return G.direct_product(H)[0]
+    return _typed_permutation_group(G.direct_product(H)[0])
 
 def Ga(n: int) -> PermutationGroup_generic:
     Zn = ZZ.quotient(n*ZZ)
@@ -65,22 +80,22 @@ def Gm(n: int) -> PermutationGroup_generic:
     return PermutationGroup(perms)
 
 def random_prime(N: int) -> Integer:
-    return random.choice( prime_range(2, N + 1))
+    return _typed_integer(random.choice(prime_range(2, N + 1)))
 
 def convert_to_permutation_group(G: Group | GapElement) -> PermutationGroup_generic | None:
     if hasattr(G, "as_AbelianGroup"):
         G = G.as_AbelianGroup()
     elif hasattr(G, "permutation_group"):
-        return G.permutation_group()
+        return _typed_optional_permutation_group(G.permutation_group())
     elif hasattr(G, "as_permutation_group"):
-        return G.as_permutation_group()
+        return _typed_optional_permutation_group(G.as_permutation_group())
     elif hasattr(G, "as_finitely_presented_group"):
         #G = G.as_finitely_presented_group()
         return None
     elif "GapElement" in str(type(G)):
         return None
     elif hasattr(G, 'as_matrix_group'):
-        return G.as_matrix_group().as_permutation_group()
+        return _typed_optional_permutation_group(G.as_matrix_group().as_permutation_group())
     else:
         raise ValueError("Could not convert group to a permutation group.")
 
@@ -88,6 +103,7 @@ def convert_to_permutation_group(G: Group | GapElement) -> PermutationGroup_gene
 def group_iso(G: Group | GapElement, H: Group | GapElement) -> bool:
     Gp = convert_to_permutation_group(G)
     Hp = convert_to_permutation_group(H)
+    assert Gp is not None and Hp is not None, f"group isomorphism requires permutation-group conversions; left={G}, right={H}"
     return Gp.is_isomorphic(Hp)
     
 

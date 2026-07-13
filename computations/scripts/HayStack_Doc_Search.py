@@ -318,6 +318,7 @@ def get_or_create_document_store(
     cached_store, metadata = load_document_store_cache(cache_key)
     
     if cached_store is not None:
+        assert metadata is not None, f"cached document store must include cache metadata; cache_key={cache_key}"
         st.success(f"📁 Loaded cached index from {metadata.get('datetime', 'unknown time')} "
                   f"({metadata.get('file_count', 0)} files)")
         return cached_store, True  # True indicates cache hit
