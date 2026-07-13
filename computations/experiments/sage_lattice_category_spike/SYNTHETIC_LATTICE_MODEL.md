@@ -7,8 +7,9 @@ A lattice is a based projective `R`-module of finite rank with an exact symmetri
 
 - **Category tree** (`categories.py`): `Sets()` is the owned set-theoretic root.
   `Countable` sets carry a chosen computable enumeration, exposed as `iter(X)`, `X[n]`, and bounded slices.
-  Sage may implement that interface with its internal enumerated-set machinery; those backend method names are not public mathematical vocabulary.
   `Finite` refines `Countable` when the enumeration terminates and can be materialized.
+  Sage conventions do not define the owned ontology: a Sage category, method, or name enters it only when it represents a mathematical concept established independently of Sage.
+  Sage's separate `EnumeratedSets` category and its `rank`/`unrank` vocabulary have no such mathematical counterpart; they may implement the independently defined Python operations, but they contribute no public category or operation.
   Together they provide the shared finite-set route for `Genera(ZZ)` and `DiscriminantForms(ZZ)`. `Lattices(R)` has axiom subcategories (Nondegenerate, Integral, Even, Unimodular, Definite, PositiveDefinite, NegativeDefinite, Indefinite, Hyperbolic, RootGenerated), and `DiscriminantForms(ZZ)` has subcategories (Bilinear, Quadratic, Even, WithSourceLattice).
   Classes from the typed domain algebra install as `ParentMethods` deltas.
 - **Lattice parents/elements/morphisms** (`parents.py`, `elements.py`, `homsets.py`): one concrete hierarchy per subcategory; typed elements carrying `b`/`q`; form-preserving homsets; `O(L)` with typed subgroups as the only supplied-generators home.
@@ -22,7 +23,9 @@ A lattice is a based projective `R`-module of finite rank with an exact symmetri
 
 - The category-namespace constructors (`Lattices(R).from_gram_matrix`, the named section-6 constructors, `DiscriminantForms(ZZ)` factories) are the only public entry; constructors prove invariants once and downstream code never re-checks them (parse-don't-validate).
 - Every computational result is obtained by building an ephemeral Sage object from the object's own data and asking it — never by reimplementing the algorithm and never from remembered theorems.
-  Owned code is the ontology layer; Sage as-is is the reference implementation; suspected Sage bugs are filed issues plus gap-ledger rows, never patched around.
+  Owned code derives its ontology from mathematics, never from Sage. A Sage category, method, name, or convention is not evidence that a mathematical concept exists.
+  Sage may compute an independently defined mathematical operation, but anything with no mathematical counterpart is excluded from the owned ontology rather than normalized into project vocabulary.
+  Sage as-is is the reference implementation; suspected Sage bugs are filed issues plus gap-ledger rows, never patched around.
 - Dispatch is by category membership and declared types; no `hasattr`/ `getattr` probing selects behavior in implementation code.
 - Sage upstream defects are never corrected inline: the isolated `sage_patches/` subtree holds one module per defect (a monkey-patch applied at package import, or — where cython immutability forbids patching — a corrected re-export owned code calls instead of the defective method).
   The package `__init__` and the test conftest both import it, so every consumer and every test run carries all patches.

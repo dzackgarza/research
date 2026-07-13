@@ -119,10 +119,16 @@ class Sets(Category):
 
     ``Countable`` names the mathematical property together with a chosen
     computable enumeration. The public interface is ordinary Python:
-    ``iter(X)``, ``X[n]``, and bounded slices. Sage may realize those
-    operations through its enumerated-set machinery, but backend method names
-    are not part of the owned vocabulary. ``Finite`` refines ``Countable``
-    when the enumeration terminates, so its elements can be materialized.
+    ``iter(X)``, ``X[n]``, and bounded slices. ``Finite`` refines
+    ``Countable`` when the enumeration terminates, so its elements can be
+    materialized.
+
+    Sage conventions do not define this category tree. A Sage category,
+    method, or name enters the owned interface only when it represents a
+    mathematical concept established independently of Sage. Sage's separate
+    ``EnumeratedSets`` category and its ``rank``/``unrank`` vocabulary have no
+    such mathematical counterpart: every countable set here already supplies
+    the chosen enumeration. They remain implementation machinery only.
     """
 
     def _repr_object_names(self) -> str:
@@ -144,9 +150,9 @@ class Sets(Category):
 class CountableSets(CategoryWithAxiom):
     r"""Countable spike-owned sets with a chosen computable enumeration.
 
-    The Sage super-category implements the Python iteration and indexing
-    interface. Its backend-specific method names remain behind this integration
-    edge.
+    ``EnumeratedSets`` supplies the Python protocol at the Sage integration
+    edge. It contributes no category, operation, or vocabulary to the owned
+    mathematical ontology.
     """
 
     _base_category_class_and_axiom = (Sets, "Countable")
