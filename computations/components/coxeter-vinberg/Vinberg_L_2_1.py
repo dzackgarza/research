@@ -1,8 +1,22 @@
 
-from sage.all import *
+from collections.abc import Sequence
+
+from sage.arith.misc import gcd
+from sage.functions.other import sqrt
+from sage.geometry.polyhedron.base import Polyhedron_base
+from sage.geometry.polyhedron.constructor import Polyhedron
+from sage.graphs.graph import Graph
+from sage.matrix.constructor import diagonal_matrix
+from sage.matrix.matrix0 import Matrix as SageMatrix
+from sage.modules.free_module_element import FreeModuleElement, vector
+from sage.plot.graphics import Graphics
+from sage.rings.rational_field import QQ
+from sage.structure.element import Element
 
 
-def plot_coxeter_diagram_detailed(simple_roots, Q=diagonal_matrix([-1,1,1])):
+def plot_coxeter_diagram_detailed(
+    simple_roots: Sequence[FreeModuleElement], Q: SageMatrix = diagonal_matrix([-1, 1, 1])
+) -> Graphics:
     G = Graph(multiedges=False, loops=False)
 
     # Precompute exact cos(pi/m) values
@@ -48,22 +62,24 @@ def plot_coxeter_diagram_detailed(simple_roots, Q=diagonal_matrix([-1,1,1])):
 
 
 # Lorentzian form Q with signature (2,1)
-Q = diagonal_matrix([-1, 1, 1])
+Q: SageMatrix = diagonal_matrix([-1, 1, 1])
 
-def lorentz_inner(u, v):
+def lorentz_inner(u: FreeModuleElement, v: FreeModuleElement) -> Element:
     return u * Q * v
 
-def in_hyperbolic_domain(v):
+def in_hyperbolic_domain(v: FreeModuleElement) -> bool:
     # Negative norm and future cone (to pick one sheet)
-    return lorentz_inner(v, v) < 0 and v[0] > 0
+    negative_norm: bool = lorentz_inner(v, v) < 0
+    future_pointing: bool = v[0] > 0
+    return negative_norm and future_pointing
 
-def reflect(x, r):
+def reflect(x: FreeModuleElement, r: FreeModuleElement) -> FreeModuleElement:
     rr = lorentz_inner(r, r)
     if abs(rr) < 1e-14:
         raise ValueError("Reflection undefined for isotropic root vector")
     return x - 2 * lorentz_inner(x, r) / rr * r
 
-def chamber_polyhedron(roots):
+def chamber_polyhedron(roots: Sequence[FreeModuleElement]) -> Polyhedron_base:
     # Inequalities for half-spaces: (r, x) >= 0
     # Sage Polyhedron inequalities: c + a1 x1 + ... >= 0
     # So use: [0, -r0, -r1, -r2]
@@ -72,7 +88,7 @@ def chamber_polyhedron(roots):
         ieqs.append([0] + [-x for x in r])
     return Polyhedron(ieqs=ieqs)
 
-def chamber_fully_in_hyperbolic(chamber):
+def chamber_fully_in_hyperbolic(chamber: Polyhedron_base) -> bool:
     # Vertices and rays inside hyperbolic domain or on boundary (ideal vertices)
     for v in chamber.vertices():
         vec = vector(v)
@@ -85,21 +101,23 @@ def chamber_fully_in_hyperbolic(chamber):
             return False
     return True
 
-def is_new_root(r, roots, tol=1e-12):
+def is_new_root(
+    r: FreeModuleElement, roots: Sequence[FreeModuleElement], tol: float = 1e-12
+) -> bool:
     # Check if root r (or its negative) already in roots
     for s in roots:
         if (r - s).norm() < tol or (r + s).norm() < tol:
             return False
     return True
 
-def primitive_root(r):
+def primitive_root(r: FreeModuleElement) -> FreeModuleElement:
     # Make integer vector primitive by dividing by gcd of entries
     g = gcd(list(r))
     if g != 0 and g != 1 and g != -1:
         r = r // g
     return r
 
-def vinberg_algorithm(simple_roots):
+def vinberg_algorithm(simple_roots: Sequence[FreeModuleElement]) -> list[FreeModuleElement]:
     roots = list(simple_roots)
     new_roots_added = True
     iteration = 0
@@ -163,4 +181,3 @@ if __name__ == "__main__":
 
     p = plot_coxeter_diagram_detailed(roots, Q)
     p.show()
-

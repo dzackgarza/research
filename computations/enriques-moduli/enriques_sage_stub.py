@@ -10,10 +10,56 @@ and SageMath's matrix framework for indefinite lattices.
 Convention verification: 2U means 2 * U (scaling), not U ⊕ U (direct sum)
 """
 
-from sage.all import *
+from collections.abc import Sequence
+from typing import NotRequired, Protocol, TypedDict
+
+from sage.matrix.constructor import matrix as Matrix
+from sage.modules.free_quadratic_module_integer_symmetric import (
+    IntegralLattice,
+)
+from sage.rings.integer_ring import ZZ
+from sage.rings.rational_field import QQ
+
+class _ComparableScalar(Protocol):
+    def __eq__(self, other: object) -> bool: ...
+    def __gt__(self, other: int) -> bool: ...
+    def __lt__(self, other: int) -> bool: ...
 
 
-def classical_lattice(name):
+class _MatrixLike(Protocol):
+    def __getitem__(self, key: tuple[int, int]) -> _ComparableScalar: ...
+    def __setitem__(self, key: tuple[int, int], value: int | _ComparableScalar) -> None: ...
+    def __rmul__(self, other: int) -> "_MatrixLike": ...
+    def eigenvalues(self) -> Sequence[_ComparableScalar]: ...
+    def nrows(self) -> int: ...
+    def rank(self) -> int: ...
+
+
+class _IntegralLatticeType(Protocol):
+    def dimension(self) -> int: ...
+    def gram_matrix(self) -> _MatrixLike: ...
+    def rank(self) -> int: ...
+
+
+class _LatticeProperties(TypedDict):
+    dimension: int
+    rank: int
+    signature: tuple[int, int]
+    zero_eigenvalues: int
+    gram_matrix_rank: int
+    is_definite: bool
+    is_indefinite: bool
+    signature_matches: NotRequired[bool]
+
+
+class _TestCaseResult(TypedDict):
+    k_dimension: int
+    lattice: NotRequired[_IntegralLatticeType]
+    verification: NotRequired[_LatticeProperties]
+    error: NotRequired[str]
+
+
+def classical_lattice(name: str) -> _IntegralLatticeType:
     """
     Build classical lattices matching the GAP convention from common.g
     
@@ -26,7 +72,8 @@ def classical_lattice(name):
     if name == "U":
         # Hyperbolic plane [[0,1],[1,0]]
         gram_matrix = Matrix(ZZ, [[0, 1], [1, 0]])
-        return IntegralLattice(gram_matrix)
+        hyperbolic_lattice: _IntegralLatticeType = IntegralLattice(gram_matrix)
+        return hyperbolic_lattice
     
     elif name == "E8":
         # E8 root lattice from common.g lines 301-305
@@ -40,7 +87,8 @@ def classical_lattice(name):
             [1, 0, 0, 1, 1, 0, 2, -1],
             [0, 1, -1, -1, -1, 0, -1, 2]
         ])
-        return IntegralLattice(gram_matrix)
+        e8_lattice: _IntegralLatticeType = IntegralLattice(gram_matrix)
+        return e8_lattice
     
     elif name == "E7":
         # E7 root lattice from common.g lines 295-299
@@ -53,7 +101,8 @@ def classical_lattice(name):
             [1, 1, 2, 1, 1, 2, 0],
             [1, 1, 1, 2, 1, 0, 2]
         ])
-        return IntegralLattice(gram_matrix)
+        e7_lattice: _IntegralLatticeType = IntegralLattice(gram_matrix)
+        return e7_lattice
     
     elif name == "E6":
         # E6 root lattice from common.g lines 290-293
@@ -65,7 +114,8 @@ def classical_lattice(name):
             [1, 1, 1, 1, 2, 2],
             [1, 3, 1, 2, 2, 4]
         ])
-        return IntegralLattice(gram_matrix)
+        e6_lattice: _IntegralLatticeType = IntegralLattice(gram_matrix)
+        return e6_lattice
     
     elif name.startswith("A") and name[1:].isdigit():
         # A_n root lattices from common.g lines 240-255
@@ -81,7 +131,8 @@ def classical_lattice(name):
             gram_matrix[i, i + 1] = -1
             gram_matrix[i + 1, i] = -1
             
-        return IntegralLattice(gram_matrix)
+        a_lattice: _IntegralLatticeType = IntegralLattice(gram_matrix)
+        return a_lattice
     
     elif name.startswith("D") and name[1:].isdigit():
         # D_n root lattices from common.g lines 257-277
@@ -102,13 +153,14 @@ def classical_lattice(name):
             gram_matrix[i, j] = -1
             gram_matrix[j, i] = -1
             
-        return IntegralLattice(gram_matrix)
+        d_lattice: _IntegralLatticeType = IntegralLattice(gram_matrix)
+        return d_lattice
     
     else:
         raise ValueError(f"Unknown lattice name: {name}")
 
 
-def scaled_lattice(lattice, scale_factor):
+def scaled_lattice(lattice: _IntegralLatticeType, scale_factor: int) -> _IntegralLatticeType:
     """
     Create a scaled version of a lattice (like 2U, 2E8, etc.)
     
@@ -119,11 +171,12 @@ def scaled_lattice(lattice, scale_factor):
     Returns:
         IntegralLattice: Scaled lattice with Gram matrix multiplied by scale_factor
     """
-    scaled_gram = scale_factor * lattice.gram_matrix()
-    return IntegralLattice(scaled_gram)
+    scaled_gram: _MatrixLike = scale_factor * lattice.gram_matrix()
+    scaled_lattice: _IntegralLatticeType = IntegralLattice(scaled_gram)
+    return scaled_lattice
 
 
-def parse_lattice_spec(spec_string):
+def parse_lattice_spec(spec_string: str) -> _IntegralLatticeType:
     """
     Parse a lattice specification string like "2U", "2E8", "A3", etc.
     
@@ -144,7 +197,7 @@ def parse_lattice_spec(spec_string):
         return classical_lattice(spec_string)
 
 
-def build_lattice_from_spec(spec_list):
+def build_lattice_from_spec(spec_list: list[str]) -> _IntegralLatticeType:
     """
     Build lattice from specification list using direct sum.
     
@@ -180,10 +233,13 @@ def build_lattice_from_spec(spec_list):
                 combined_gram[row_offset + i, row_offset + j] = gram_matrix[i, j]
         row_offset += dim
     
-    return IntegralLattice(combined_gram)
+    lattice: _IntegralLatticeType = IntegralLattice(combined_gram)
+    return lattice
 
 
-def verify_lattice_properties(lattice, expected_signature=None):
+def verify_lattice_properties(
+    lattice: _IntegralLatticeType, expected_signature: tuple[int, int] | None = None
+) -> _LatticeProperties:
     """
     Verify basic properties of a lattice
     
@@ -202,7 +258,7 @@ def verify_lattice_properties(lattice, expected_signature=None):
     negative = sum(1 for ev in eigenvalues if ev < 0)
     zero = sum(1 for ev in eigenvalues if ev == 0)
     
-    result = {
+    result: _LatticeProperties = {
         'dimension': lattice.dimension(),
         'rank': lattice.rank(),
         'signature': (positive, negative),
@@ -219,7 +275,7 @@ def verify_lattice_properties(lattice, expected_signature=None):
 
 
 # Test cases from AllTests.g lines 164-169
-TEST_CASES = [
+TEST_CASES: list[tuple[list[str], int]] = [
     (["U", "2U"], 2),                    # Basic hyperbolic case
     (["U", "2U", "A2"], 2),              # With A₂ root lattice  
     (["U", "2U", "A3"], 2),              # With A₃ root lattice
@@ -229,14 +285,14 @@ TEST_CASES = [
 ]
 
 
-def build_all_test_case_lattices():
+def build_all_test_case_lattices() -> dict[tuple[str, ...], _TestCaseResult]:
     """
     Build all test case lattices and verify their properties
     
     Returns:
         dict: Dictionary mapping spec_list to (lattice, verification_info)
     """
-    results = {}
+    results: dict[tuple[str, ...], _TestCaseResult] = {}
     
     print("Building and verifying all test case lattices...")
     print("=" * 50)
@@ -271,7 +327,7 @@ def build_all_test_case_lattices():
     return results
 
 
-def demonstrate_basic_usage():
+def demonstrate_basic_usage() -> None:
     """
     Demonstrate basic usage of the lattice construction functions
     """
