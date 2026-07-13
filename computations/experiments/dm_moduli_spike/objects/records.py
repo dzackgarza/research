@@ -312,6 +312,15 @@ class StableGraph:
 
         return StableGraphTypes(self.genus(), self.num_markings())(self)
 
+    def automorphism_group(self, on: str = "vertices") -> object:
+        r"""Sage ``PermutationGroup`` of `\operatorname{Aut}(G)` on the requested set.
+
+        ``on`` is one of ``"vertices"``, ``"half_edges"`` / ``"flags"``, or ``"edges"``.
+        """
+        from .gamma import StableGraphCategory
+
+        return StableGraphCategory(self.genus(), self.num_markings()).automorphism_group(self, on=on)
+
     def contract(self, edge: tuple[int, int]) -> tuple[StableGraphType, StableGraphContraction]:
         from .contractions import contract_edge
 

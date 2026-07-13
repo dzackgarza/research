@@ -1,9 +1,8 @@
-r"""Combinatorial enumeration backend for dual-graph stratification.
+r"""Internal combinatorial enumeration backend for dual-graph stratification.
 
-This class is **not** a Deligne--Mumford stack or compactification. It
-enumerates stable graph types and builds the specialization poset used by
-:class:`~dm_moduli_spike.stratification.stratified.StratifiedStack`.
-Prefer the public landscape API starting at :func:`~dm_moduli_spike.moduli.instances.M_gn`.
+This class is **not** a Deligne--Mumford stack or compactification. Prefer
+:class:`~dm_moduli_spike.objects.gamma.StableGraphCategory` for the public
+combinatorial API. Landscape stubs live under ``dm_moduli_spike._landscape``.
 """
 
 from __future__ import annotations

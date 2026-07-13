@@ -189,7 +189,11 @@ class StableGraphMorphism:
 
 
 class StableGraphHomset(UniqueRepresentation):
-    r"""Finite hom-set `\operatorname{Hom}_{\Gamma_{g,n}}(G,H)`."""
+    r"""Finite hom-set `\operatorname{Hom}_{\Gamma_{g,n}}(G,H)`.
+
+    Sage-style finite Hom container: morphisms are its elements (iterate /
+    ``an_element`` / ``__contains__`` / ``cardinality``).
+    """
 
     __slots__ = ("_category", "_domain", "_codomain", "_morphisms")
 
@@ -205,16 +209,28 @@ class StableGraphHomset(UniqueRepresentation):
     def codomain(self) -> StableGraph:
         return self._codomain
 
+    def category(self) -> StableGraphCategory:
+        return self._category
+
     def __iter__(self) -> Iterator[StableGraphMorphism]:
         yield from self._morphisms
 
     def __len__(self) -> int:
         return len(self._morphisms)
 
+    def cardinality(self) -> int:
+        return len(self._morphisms)
+
+    def __contains__(self, morph: object) -> bool:
+        return isinstance(morph, StableGraphMorphism) and morph in self._morphisms
+
     def an_element(self) -> StableGraphMorphism:
         if not self._morphisms:
             raise ValueError("empty hom-set")
         return self._morphisms[0]
+
+    def list(self) -> list[StableGraphMorphism]:
+        return list(self._morphisms)
 
 
 class StableGraphCategory(UniqueRepresentation):

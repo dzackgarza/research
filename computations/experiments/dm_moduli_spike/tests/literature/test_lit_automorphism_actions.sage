@@ -106,3 +106,15 @@ def test_genus_two_dumbbell_has_order_two_edge_action_exchanging_loops():
     bridge_point = bridge_edges[0] + 1
     for generator in group.gens():
         assert generator(bridge_point) == bridge_point
+
+
+def test_native_gamma_edge_aut_matches_automorphism_action_M12_banana():
+    r"""Native ``PermutationGroup`` on edges agrees with ``AutomorphismAction`` orbits."""
+    from dm_moduli_spike import StableGraphCategory
+
+    stratification = DMCompactificationModel(1, 2).stratification()
+    banana = m12_types(stratification)["E"].curve_type()
+    graph = banana.canonical_representative()
+    action_group = induced_edge_permutation_group(banana.automorphism_action())
+    native = StableGraphCategory(1, 2).automorphism_group(graph, on="edges")
+    assert native.order() == action_group.order() == 2
