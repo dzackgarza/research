@@ -9,8 +9,7 @@ aliases:
 created: 2026-05-10
 ---
 
-> [!formula] Adjunction and Ramification Formulae
-> Two formulas used repeatedly in the Coble-surface constructions are the blowup formula for canonical classes and the ramification formula for branched covers.
+> [!formula] Adjunction and Ramification Formulae Two formulas used repeatedly in the Coble-surface constructions are the blowup formula for canonical classes and the ramification formula for branched covers.
 
 ## Blowups
 
@@ -18,7 +17,8 @@ Let
 $$
 f \colon Y = \operatorname{Bl}_V X \to X
 $$
-be the blowup of a smooth variety $X$ along a smooth center $V$, with exceptional divisor $E$. Then
+be the blowup of a smooth variety $X$ along a smooth center $V$, with exceptional divisor $E$.
+Then
 $$
 K_Y = f^*K_X + (\operatorname{codim}_X V - 1)E.
 $$
@@ -34,7 +34,8 @@ Let
 $$
 f \colon Y \to X
 $$
-be a branched cover with branch locus $B$ and ramification divisor $R$. Then
+be a branched cover with branch locus $B$ and ramification divisor $R$.
+Then
 $$
 K_Y = f^*K_X + R.
 $$

@@ -11,8 +11,7 @@ aliases:
 created: 2026-05-10
 ---
 
-> [!theorem] Cusp correspondence for the Coble moduli space
-> The embedding $F_{\mathrm{Co}} \hookrightarrow F_{\mathrm{En}}$ sends the two Coble boundary cusps to the Enriques boundary cusps [@AE22; @CDL24]
+> [!theorem] Cusp correspondence for the Coble moduli space The embedding $F_{\mathrm{Co}} \hookrightarrow F_{\mathrm{En}}$ sends the two Coble boundary cusps to the Enriques boundary cusps [@AE22; @CDL24]
 > $$
 > (9,9,1)_1 \mapsto (10,8,0)_1, \qquad (7,7,1)_0 \mapsto (8,6,0)_0.
 > $$

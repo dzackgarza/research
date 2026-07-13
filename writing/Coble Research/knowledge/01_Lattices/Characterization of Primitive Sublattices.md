@@ -9,8 +9,7 @@ aliases:
 created: 2026-05-08
 ---
 
-> [!proposition] Characterization of Primitive Sublattices
-> For a sublattice $S \subseteq L$, the following are equivalent:
+> [!proposition] Characterization of Primitive Sublattices For a sublattice $S \subseteq L$, the following are equivalent:
 > - $S$ is a [[Primitive and Saturated Sublattices|primitive sublattice]] of $L$.
 > - The inclusion $S \hookrightarrow L$ is a primitive embedding.
 > - $S$ is saturated in $L$, meaning $S = \operatorname{Sat}_L(S) \mathrel{\mathop:}= \{v \in L \mathrel{\Big|} nv \in S \text{ for some } n \in \mathbf{Z} \setminus \{0\}\}$.
@@ -19,4 +18,3 @@ created: 2026-05-08
 > - $S_{\mathbf{Q}} \cap L = S$.
 > - $S = (S^{\perp L})^{\perp L}$.
 > - Every integral linear functional on $S$ can be lifted to an integral linear functional on $L$.
-

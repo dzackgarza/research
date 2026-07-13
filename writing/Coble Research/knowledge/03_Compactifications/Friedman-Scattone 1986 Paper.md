@@ -9,8 +9,7 @@ aliases:
 created: 2026-05-08
 ---
 
-> [!remark] Friedman-Scattone 1986 Paper: Type III Degenerations of K3 Surfaces
-> This collaboration focuses on **Mixed Hodge Structure Analysis** to study Type III degenerations of K3 surfaces.
+> [!remark] Friedman-Scattone 1986 Paper: Type III Degenerations of K3 Surfaces This collaboration focuses on **Mixed Hodge Structure Analysis** to study Type III degenerations of K3 surfaces.
 > 
 > **Core Methods:**
 > - **Limiting Mixed Hodge Structures**: Systematic study of Steenbrink-Schmid theory.
@@ -20,4 +19,3 @@ created: 2026-05-08
 > **Key Results:**
 > - Type III degenerations correspond to triangulations of $S^2$ with specific combinatorial constraints.
 > - The dual complex structure determines lattice-theoretic invariants, establishing a precise relationship between geometric degenerations and monodromy representations.
-

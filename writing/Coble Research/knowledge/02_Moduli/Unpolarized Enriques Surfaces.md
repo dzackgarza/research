@@ -9,8 +9,7 @@ aliases:
 created: 2026-05-08
 ---
 
-> [!remark] Unpolarized Enriques Surfaces ($F_{\mathrm{En}}$)
-> The moduli space $F_{\mathrm{En}}$ of unpolarized Enriques surfaces corresponds to $T_{\mathrm{En}} = U \oplus U(2) \oplus E_8(2)$ [@AEGS23].
+> [!remark] Unpolarized Enriques Surfaces ($F_{\mathrm{En}}$) The moduli space $F_{\mathrm{En}}$ of unpolarized Enriques surfaces corresponds to $T_{\mathrm{En}} = U \oplus U(2) \oplus E_8(2)$ [@AEGS23].
 > 
 > The Baily-Borel compactification has exactly two 0-cusps and two 1-cusps [@AEGS23]:
 > - **0-cusps**: Correspond to two $\Gamma_{\mathrm{En}}$-orbits of primitive isotropic lines in $T_{\mathrm{En}}$, yielding boundary lattices $U(2) \oplus E_8(2)$ and $U \oplus E_8(2)$ [@AEGS23].

@@ -10,8 +10,7 @@ aliases:
 created: 2026-05-11
 ---
 
-> [!conjecture] No-moduli-loss in polarized Coble compactification
-> The stable quotient should still remember the **marked Coble root**. Otherwise the boundary fan could be coarsened too far and the comparison theorem would fail.
+> [!conjecture] No-moduli-loss in polarized Coble compactification The stable quotient should still remember the **marked Coble root**. Otherwise the boundary fan could be coarsened too far and the comparison theorem would fail.
 
 ## Statement
 

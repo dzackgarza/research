@@ -1,6 +1,6 @@
 # Basics of Coble surfaces
 
-::: {.remark}
+:::{.remark}
 
 Following [@DM19 §5.1], a **Coble surface** is a smooth projective rational
 surface with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S} \neq \emptyset$.
@@ -12,10 +12,9 @@ rational curves $C_i$ satisfying $C_i^2 = -4$[^2], and thus
 $C_i C_j = -4\delta_{ij}$.
 The $C_i$ are referred to as the _boundary components_ of $S$.
 One can show $n = -K_S^2$ and $n\leq 10$.
-
 :::
 
-::: {.remark}
+:::{.remark}
 
 Such a Coble surface $S$ can be shown to be a _basic rational surface_, i.e. it
 admits a birational morphism to $\pi: S\to \PP^2$ which decomposes as blowups of
@@ -45,10 +44,9 @@ be **terminal**.
 We say $S$ is **minimal** if the blowdown of any $(-1)$-curve on $S$ is no
 longer a Coble surface, or equivalently if $S$ does not admit a birational but
 not biregular morphism onto another Coble surface.
-
 :::
 
-::: {.remark}
+:::{.remark}
 
 Following [@CDL24 §1.4], a point set
 $\mathcal{P}=\ts{p_{1}, \ldots, p_{n}}$ of $\PP^{2}$ is called
@@ -65,19 +63,17 @@ either an unnodal Halphen surface (with $n=9$) or an unnodal Coble surface (with
 $n=10$), that unnodal point sets define a Zariski open subset in the moduli
 space of point sets defining Halphen and Coble surfaces, and that Cremona
 special Halphen and Coble surfaces are precisely the unnodal ones.
-
 :::
 
-[^1]:
-    More generally, by [@DK24], this can be relaxed to a reduced simple
-    normal crossings divisor.
+[^1]: More generally, by [@DK24], this can be relaxed to a reduced simple normal crossings divisor.
 
-[^2]:
-    This follows from an application of the genus formula:
-    $$p_{a}(C)=1+\frac{1}{2}\qty{ C^{2} + C \cdot K_S }=1+K_S^{2}=0,$$
+[^2]: This follows from an application of the genus formula: $$p_{a}(C)=1+\frac{1}{2}\qty{ C^{2} + C \cdot K_S }=1+K_S^{2}=0,$$
 
-    and so $C$ is a smooth rational curve satisfying $C^2 = 4K_S^2 = -4$ since
-    $K_S^2 = -1$.
-    This is [@CDL24 §. 3.1].
+```
+and so $C$ is a smooth rational curve satisfying $C^2 = 4K_S^2 = -4$ since
+$K_S^2 = -1$.
+This is [@CDL24 §. 3.1].
+```
 
 [^3]: By the proof of [@DK24 Prop 9.13].
+

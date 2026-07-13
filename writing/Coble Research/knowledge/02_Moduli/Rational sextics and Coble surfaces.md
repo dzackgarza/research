@@ -10,8 +10,8 @@ aliases:
 created: 2026-05-10
 ---
 
-> [!lemma] Rational sextic criterion for the classical Coble construction
-> Let $C \subset \mathbf{P}^2$ be an irreducible sextic curve with at worst $A_1$-singularities. Then $C$ is rational if and only if it has exactly ten $A_1$-singularities [@Cob19].
+> [!lemma] Rational sextic criterion for the classical Coble construction Let $C \subset \mathbf{P}^2$ be an irreducible sextic curve with at worst $A_1$-singularities.
+> Then $C$ is rational if and only if it has exactly ten $A_1$-singularities [@Cob19].
 
 ## Proof idea
 

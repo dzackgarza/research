@@ -1,6 +1,6 @@
 # K3 covers
 
-::: {.remark}
+:::{.remark}
 
 Let $\cL \da \OO_S(-K_S) \in \Pic(S)$; By [@DK24 Prop. 9.1.1], taking a
 section $s\in H^0(\cL ^{\tensor 2})$ with $Z(s) = C$ yields a branched double
@@ -22,5 +22,4 @@ explicitly of one of the following forms:
 
 3.  $R$ is the sum of a single rational curve and $n-1$ other disjoint
     $(-2)$-curves otherwise.
-
 :::

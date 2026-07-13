@@ -11,8 +11,7 @@ aliases:
 created: 2026-05-10
 ---
 
-> [!remark] Morrison flowerpot degenerations for Coble surfaces
-> Certain degenerations of Coble surfaces fit the classical flowerpot picture for Enriques degenerations: a central fiber is assembled from flowers, stalks, and a pot component, and the resulting period lies on the Coble divisor inside Enriques moduli [@Ols04; @Sha81; @AEGS23].
+> [!remark] Morrison flowerpot degenerations for Coble surfaces Certain degenerations of Coble surfaces fit the classical flowerpot picture for Enriques degenerations: a central fiber is assembled from flowers, stalks, and a pot component, and the resulting period lies on the Coble divisor inside Enriques moduli [@Ols04; @Sha81; @AEGS23].
 
 ## Relevance to Coble surfaces
 

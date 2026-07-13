@@ -14,12 +14,13 @@ OUT_FILE = COBLE_DIR / "references/thesis_standalone.md"
 sys.path.insert(0, str(Path.home() / ".pandoc" / "bin"))
 from expand_macros import expand_all
 
+
 def main():
     print("1. Regenerating raw concatenated markdown...")
     subprocess.run(["python3", "200-dev/bin/build_diss.py"], cwd=str(DISS_ROOT))
     
     print("2. Expanding citations and macros...")
-    with open(BUILD_MD, 'r') as f:
+    with open(BUILD_MD) as f:
         text = f.read()
     
     text = expand_all(text, sty_file=STY_FILE, bib_file=BIB_FILE)

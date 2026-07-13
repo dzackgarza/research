@@ -1,6 +1,6 @@
 # Morrison's degenerations
 
-::: {.remark}
+:::{.remark}
 
 As explained in [@Ols04] and the appendix of [@Sha81], a **flower** is a pair
 $(\PP^2, C)$ where $C^2 = 4$ is a conic, while a **pot** is a pair $(V, D)$
@@ -24,5 +24,4 @@ stalks are attached.
 Flower pots correspond to type $\mathrm{(i.b)}$ in the classification [@Ols04
 Cor. 6.2], which by [@AEGS23 Rmk. 4.12] are Type $\latI$ semistable
 degenerations of Enriques surfaces with a klt singularity.
-
 :::

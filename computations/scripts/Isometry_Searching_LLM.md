@@ -5,14 +5,16 @@
 - **Location**: Same directory as this notebook
 
 ## Available Functions:
+
 - `generate_asymptotically_parallel_svg()` - Creates asymptotically parallel geodesics
 - `generate_ultraparallel_plane_model_svg()` - Creates ultraparallel geodesics in UHP
-- `generate_hyperbolic_triangle_examples()` - Creates hyperbolic triangle examples  
+- `generate_hyperbolic_triangle_examples()` - Creates hyperbolic triangle examples
 - `do_reflect()` - Hyperbolic reflection function for tessellations
 - `create_hyperbolic_tessellation()` - Complete tessellation generation
 - `generate_all_hyperbolic_images()` - Convenience function to generate all images
 
 ## Usage:
+
 ```sage
 load('hyperbolic_diagrams.sage')
 
@@ -26,9 +28,6 @@ tessellation = create_hyperbolic_tessellation(iterations=4)
 
 ⚠️ **The original code cells remain below for reference, but use the organized functions from the Sage file for new work.**
 
- 
-
-
 ```python
 # Import all Coxeter diagram functions and utilities
 from isometry_utils import *
@@ -37,198 +36,196 @@ G = E8.genus()
 G.representatives()
 ```
 
+```
+---------------------------------------------------------------------------
 
-    ---------------------------------------------------------------------------
+ExceptionPexpect                          Traceback (most recent call last)
 
-    ExceptionPexpect                          Traceback (most recent call last)
-
-    File ~/gitclones/sage/src/sage/interfaces/expect.py:515, in Expect._start(self, alt_message, block_during_init)
-        514 try:
-    --> 515     self._expect = SageSpawn(cmd,
-        516             logfile=self.__logfile,
-        517             timeout=None,  # no timeout
-        518             env=pexpect_env,
-        519             name=self._repr_(),
-        520             echo=self._terminal_echo,
-        521             # Work around https://bugs.python.org/issue1652
-        522             preexec_fn=lambda: signal.signal(signal.SIGPIPE, signal.SIG_DFL),
-        523             quit_string=self._quit_string())
-        525     # Attempt to shutdown the running process gracefully
-        526     # when sage terminates.
-
-
-    File ~/gitclones/sage/src/sage/interfaces/sagespawn.pyx:66, in sage.interfaces.sagespawn.SageSpawn.__init__()
-         65 
-    ---> 66         with ContainChildren(silent=True):
-         67             spawn.__init__(self, *args, **kwds)
+File ~/gitclones/sage/src/sage/interfaces/expect.py:515, in Expect._start(self, alt_message, block_during_init)
+    514 try:
+--> 515     self._expect = SageSpawn(cmd,
+    516             logfile=self.__logfile,
+    517             timeout=None,  # no timeout
+    518             env=pexpect_env,
+    519             name=self._repr_(),
+    520             echo=self._terminal_echo,
+    521             # Work around https://bugs.python.org/issue1652
+    522             preexec_fn=lambda: signal.signal(signal.SIGPIPE, signal.SIG_DFL),
+    523             quit_string=self._quit_string())
+    525     # Attempt to shutdown the running process gracefully
+    526     # when sage terminates.
 
 
-    File ~/gitclones/sage/src/sage/interfaces/sagespawn.pyx:67, in sage.interfaces.sagespawn.SageSpawn.__init__()
-         66 with ContainChildren(silent=True):
-    ---> 67     spawn.__init__(self, *args, **kwds)
-         68 
+File ~/gitclones/sage/src/sage/interfaces/sagespawn.pyx:66, in sage.interfaces.sagespawn.SageSpawn.__init__()
+     65 
+---> 66         with ContainChildren(silent=True):
+     67             spawn.__init__(self, *args, **kwds)
 
 
-    File ~/gitclones/sage/local/var/lib/sage/venv-python3.11.1/lib/python3.11/site-packages/pexpect/pty_spawn.py:205, in spawn.__init__(self, command, args, timeout, maxread, searchwindowsize, logfile, cwd, env, ignore_sighup, echo, preexec_fn, encoding, codec_errors, dimensions, use_poll)
-        204 else:
-    --> 205     self._spawn(command, args, preexec_fn, dimensions)
-        206 self.use_poll = use_poll
+File ~/gitclones/sage/src/sage/interfaces/sagespawn.pyx:67, in sage.interfaces.sagespawn.SageSpawn.__init__()
+     66 with ContainChildren(silent=True):
+---> 67     spawn.__init__(self, *args, **kwds)
+     68 
 
 
-    File ~/gitclones/sage/local/var/lib/sage/venv-python3.11.1/lib/python3.11/site-packages/pexpect/pty_spawn.py:276, in spawn._spawn(self, command, args, preexec_fn, dimensions)
-        275 if command_with_path is None:
-    --> 276     raise ExceptionPexpect('The command was not found or was not ' +
-        277             'executable: %s.' % self.command)
-        278 self.command = command_with_path
+File ~/gitclones/sage/local/var/lib/sage/venv-python3.11.1/lib/python3.11/site-packages/pexpect/pty_spawn.py:205, in spawn.__init__(self, command, args, timeout, maxread, searchwindowsize, logfile, cwd, env, ignore_sighup, echo, preexec_fn, encoding, codec_errors, dimensions, use_poll)
+    204 else:
+--> 205     self._spawn(command, args, preexec_fn, dimensions)
+    206 self.use_poll = use_poll
 
 
-    ExceptionPexpect: The command was not found or was not executable: magma.
-
-    
-    During handling of the above exception, another exception occurred:
-
-
-    RuntimeError                              Traceback (most recent call last)
-
-    File ~/gitclones/sage/src/sage/interfaces/expect.py:1520, in ExpectElement.__init__(self, parent, value, is_name, name)
-       1519 try:
-    -> 1520     self._name = parent._create(value, name=name)
-       1521 # Convert ValueError and RuntimeError to TypeError for
-       1522 # coercion to work properly.
+File ~/gitclones/sage/local/var/lib/sage/venv-python3.11.1/lib/python3.11/site-packages/pexpect/pty_spawn.py:276, in spawn._spawn(self, command, args, preexec_fn, dimensions)
+    275 if command_with_path is None:
+--> 276     raise ExceptionPexpect('The command was not found or was not ' +
+    277             'executable: %s.' % self.command)
+    278 self.command = command_with_path
 
 
-    File ~/gitclones/sage/src/sage/interfaces/interface.py:516, in Interface._create(self, value, name)
-        515 def _create(self, value, name=None):
-    --> 516     name = self._next_var_name() if name is None else name
-        517     self.set(name, value)
+ExceptionPexpect: The command was not found or was not executable: magma.
 
 
-    File ~/gitclones/sage/src/sage/interfaces/magma.py:1085, in Magma._next_var_name(self)
-       1084 if self.__seq == 0:
-    -> 1085     self.eval('_sage_ := [* *];')
-       1086 else:
+During handling of the above exception, another exception occurred:
 
 
-    File ~/gitclones/sage/src/sage/interfaces/magma.py:560, in Magma.eval(self, x, strip, **kwds)
-        559     x += ';'
-    --> 560 ans = Expect.eval(self, x, **kwds).replace('\\\n', '')
-        561 if 'Runtime error' in ans or 'User error' in ans:
+RuntimeError                              Traceback (most recent call last)
+
+File ~/gitclones/sage/src/sage/interfaces/expect.py:1520, in ExpectElement.__init__(self, parent, value, is_name, name)
+   1519 try:
+-> 1520     self._name = parent._create(value, name=name)
+   1521 # Convert ValueError and RuntimeError to TypeError for
+   1522 # coercion to work properly.
 
 
-    File ~/gitclones/sage/src/sage/interfaces/expect.py:1414, in Expect.eval(self, code, strip, synchronize, locals, allow_use_file, split_lines, **kwds)
-       1413 elif split_lines:
-    -> 1414     return '\n'.join(self._eval_line(L, allow_use_file=allow_use_file, **kwds)
-       1415                      for L in code.split('\n') if L)
-       1416 else:
+File ~/gitclones/sage/src/sage/interfaces/interface.py:516, in Interface._create(self, value, name)
+    515 def _create(self, value, name=None):
+--> 516     name = self._next_var_name() if name is None else name
+    517     self.set(name, value)
 
 
-    File ~/gitclones/sage/src/sage/interfaces/expect.py:1414, in <genexpr>(.0)
-       1413 elif split_lines:
-    -> 1414     return '\n'.join(self._eval_line(L, allow_use_file=allow_use_file, **kwds)
-       1415                      for L in code.split('\n') if L)
-       1416 else:
+File ~/gitclones/sage/src/sage/interfaces/magma.py:1085, in Magma._next_var_name(self)
+   1084 if self.__seq == 0:
+-> 1085     self.eval('_sage_ := [* *];')
+   1086 else:
 
 
-    File ~/gitclones/sage/src/sage/interfaces/expect.py:992, in Expect._eval_line(self, line, allow_use_file, wait_for_prompt, restart_if_needed)
-        991 if self._expect is None:
-    --> 992     self._start()
-        993 E = self._expect
+File ~/gitclones/sage/src/sage/interfaces/magma.py:560, in Magma.eval(self, x, strip, **kwds)
+    559     x += ';'
+--> 560 ans = Expect.eval(self, x, **kwds).replace('\\\n', '')
+    561 if 'Runtime error' in ans or 'User error' in ans:
 
 
-    File ~/gitclones/sage/src/sage/interfaces/magma.py:601, in Magma._start(self)
-        600 self._change_prompt('>')
-    --> 601 Expect._start(self)
-        602 self.eval('SetPrompt("%s"); SetLineEditor(false); SetColumns(0);' % PROMPT)
+File ~/gitclones/sage/src/sage/interfaces/expect.py:1414, in Expect.eval(self, code, strip, synchronize, locals, allow_use_file, split_lines, **kwds)
+   1413 elif split_lines:
+-> 1414     return '\n'.join(self._eval_line(L, allow_use_file=allow_use_file, **kwds)
+   1415                      for L in code.split('\n') if L)
+   1416 else:
 
 
-    File ~/gitclones/sage/src/sage/interfaces/expect.py:532, in Expect._start(self, alt_message, block_during_init)
-        530     except (ExceptionPexpect, pexpect.EOF) as e:
-        531         # Change pexpect errors to RuntimeError
-    --> 532         raise RuntimeError("unable to start %s because the command %r failed: %s\n%s" %
-        533                 (self.name(), cmd, e, self._install_hints()))
-        534 except BaseException:
+File ~/gitclones/sage/src/sage/interfaces/expect.py:1414, in <genexpr>(.0)
+   1413 elif split_lines:
+-> 1414     return '\n'.join(self._eval_line(L, allow_use_file=allow_use_file, **kwds)
+   1415                      for L in code.split('\n') if L)
+   1416 else:
 
 
-    RuntimeError: unable to start magma because the command 'magma -n' failed: The command was not found or was not executable: magma.
+File ~/gitclones/sage/src/sage/interfaces/expect.py:992, in Expect._eval_line(self, line, allow_use_file, wait_for_prompt, restart_if_needed)
+    991 if self._expect is None:
+--> 992     self._start()
+    993 E = self._expect
 
 
-    
-    During handling of the above exception, another exception occurred:
+File ~/gitclones/sage/src/sage/interfaces/magma.py:601, in Magma._start(self)
+    600 self._change_prompt('>')
+--> 601 Expect._start(self)
+    602 self.eval('SetPrompt("%s"); SetLineEditor(false); SetColumns(0);' % PROMPT)
 
 
-    TypeError                                 Traceback (most recent call last)
-
-    Cell In[1], line 5
-          2 from isometry_utils import *
-          4 G = E8.genus()
-    ----> 5 G.representatives()
-
-
-    File ~/gitclones/sage/src/sage/quadratic_forms/genera/genus.py:3060, in GenusSymbol_global_ring.representatives(self, backend, algorithm)
-       3058 if self.signature_pair_of_matrix()[1] != 0:
-       3059     e = -1
-    -> 3060 K = magma.Rationals()
-       3061 gram = magma.Matrix(K, n, (e*self.representative()).list())
-       3062 L = gram.LatticeWithGram()
+File ~/gitclones/sage/src/sage/interfaces/expect.py:532, in Expect._start(self, alt_message, block_during_init)
+    530     except (ExceptionPexpect, pexpect.EOF) as e:
+    531         # Change pexpect errors to RuntimeError
+--> 532         raise RuntimeError("unable to start %s because the command %r failed: %s\n%s" %
+    533                 (self.name(), cmd, e, self._install_hints()))
+    534 except BaseException:
 
 
-    File ~/gitclones/sage/src/sage/interfaces/magma.py:1802, in MagmaFunction.__call__(self, *args, **kwds)
-       1800         del kwds['nvals']
-       1801 M = self._parent
-    -> 1802 return M.function_call(self._name,
-       1803                        list(args),
-       1804                        params=kwds,
-       1805                        nvals=nvals)
-
-
-    File ~/gitclones/sage/src/sage/interfaces/magma.py:1170, in Magma.function_call(self, function, args, params, nvals)
-       1165     par = ' : ' + ','.join('%s:=%s' % (a, b.name())
-       1166                            for a, b in params.items())
-       1168 fun = "%s(%s%s)" % (function, ",".join(s.name() for s in args), par)
-    -> 1170 return self._do_call(fun, nvals)
-
-
-    File ~/gitclones/sage/src/sage/interfaces/magma.py:1220, in Magma._do_call(self, code, nvals)
-       1218     ans = None
-       1219 elif nvals == 1:
-    -> 1220     return self(code)
-       1221 else:
-       1222     v = [self._next_var_name() for _ in range(nvals)]
-
-
-    File ~/gitclones/sage/src/sage/interfaces/magma.py:797, in Magma.__call__(self, x, gens)
-        794 except TypeError:  # if x isn't hashable
-        795     pass
-    --> 797 A = Expect.__call__(self, x)
-        798 if has_cache:
-        799     x._magma_cache[self] = A
-
-
-    File ~/gitclones/sage/src/sage/interfaces/interface.py:299, in Interface.__call__(self, x, name)
-        296         pass
-        298 if isinstance(x, str):
-    --> 299     return cls(self, x, name=name)
-        300 try:
-        301     # Special methods do not and should not have an option to
-        302     # set the name directly, as the identifier assigned by the
-        303     # interface should stay consistent. An identifier with a
-        304     # user-assigned name might change its value, so we return a
-        305     # new element.
-        306     result = self._coerce_from_special_method(x)
-
-
-    File ~/gitclones/sage/src/sage/interfaces/expect.py:1525, in ExpectElement.__init__(self, parent, value, is_name, name)
-       1523 except (RuntimeError, ValueError) as x:
-       1524     self._session_number = -1
-    -> 1525     raise TypeError(*x.args)
-       1526 except BaseException:
-       1527     self._session_number = -1
-
-
-    TypeError: unable to start magma because the command 'magma -n' failed: The command was not found or was not executable: magma.
+RuntimeError: unable to start magma because the command 'magma -n' failed: The command was not found or was not executable: magma.
 
 
 
+During handling of the above exception, another exception occurred:
+
+
+TypeError                                 Traceback (most recent call last)
+
+Cell In[1], line 5
+      2 from isometry_utils import *
+      4 G = E8.genus()
+----> 5 G.representatives()
+
+
+File ~/gitclones/sage/src/sage/quadratic_forms/genera/genus.py:3060, in GenusSymbol_global_ring.representatives(self, backend, algorithm)
+   3058 if self.signature_pair_of_matrix()[1] != 0:
+   3059     e = -1
+-> 3060 K = magma.Rationals()
+   3061 gram = magma.Matrix(K, n, (e*self.representative()).list())
+   3062 L = gram.LatticeWithGram()
+
+
+File ~/gitclones/sage/src/sage/interfaces/magma.py:1802, in MagmaFunction.__call__(self, *args, **kwds)
+   1800         del kwds['nvals']
+   1801 M = self._parent
+-> 1802 return M.function_call(self._name,
+   1803                        list(args),
+   1804                        params=kwds,
+   1805                        nvals=nvals)
+
+
+File ~/gitclones/sage/src/sage/interfaces/magma.py:1170, in Magma.function_call(self, function, args, params, nvals)
+   1165     par = ' : ' + ','.join('%s:=%s' % (a, b.name())
+   1166                            for a, b in params.items())
+   1168 fun = "%s(%s%s)" % (function, ",".join(s.name() for s in args), par)
+-> 1170 return self._do_call(fun, nvals)
+
+
+File ~/gitclones/sage/src/sage/interfaces/magma.py:1220, in Magma._do_call(self, code, nvals)
+   1218     ans = None
+   1219 elif nvals == 1:
+-> 1220     return self(code)
+   1221 else:
+   1222     v = [self._next_var_name() for _ in range(nvals)]
+
+
+File ~/gitclones/sage/src/sage/interfaces/magma.py:797, in Magma.__call__(self, x, gens)
+    794 except TypeError:  # if x isn't hashable
+    795     pass
+--> 797 A = Expect.__call__(self, x)
+    798 if has_cache:
+    799     x._magma_cache[self] = A
+
+
+File ~/gitclones/sage/src/sage/interfaces/interface.py:299, in Interface.__call__(self, x, name)
+    296         pass
+    298 if isinstance(x, str):
+--> 299     return cls(self, x, name=name)
+    300 try:
+    301     # Special methods do not and should not have an option to
+    302     # set the name directly, as the identifier assigned by the
+    303     # interface should stay consistent. An identifier with a
+    304     # user-assigned name might change its value, so we return a
+    305     # new element.
+    306     result = self._coerce_from_special_method(x)
+
+
+File ~/gitclones/sage/src/sage/interfaces/expect.py:1525, in ExpectElement.__init__(self, parent, value, is_name, name)
+   1523 except (RuntimeError, ValueError) as x:
+   1524     self._session_number = -1
+-> 1525     raise TypeError(*x.args)
+   1526 except BaseException:
+   1527     self._session_number = -1
+
+
+TypeError: unable to start magma because the command 'magma -n' failed: The command was not found or was not executable: magma.
+```
 
 ```python
 As = [A1, ..., A20]
@@ -255,7 +252,6 @@ AllLats = As + Ds + Es + As2 + Ds2 + Es2 + IPQs + IIPQs + IPQs2 + IIPQs2
 len(AllLats)
 ```
 
-
 ```python
 from collections import defaultdict
 
@@ -268,7 +264,6 @@ for L in AllLats:
 sigs = Set(lat_lookup.keys())
 sigs[0:10]
 ```
-
 
 ```python
 p = 3
@@ -291,18 +286,15 @@ correct_sigs = [s for s in sub_sigs if not s.is_empty() and sumset(s) == (p, q)]
 Set(correct_sigs).cardinality().factor()
 ```
 
-
 ```python
 L = A1.twist(-2) ** 3 @ D5
 L
 # Set(correct_sigs).cardinality().factor()
 ```
 
-
 ```python
 correct_sigs
 ```
-
 
 ```python
 # for sigs in correct_sigs[0:5]:
@@ -315,22 +307,18 @@ correct_sigs
 #             break
 ```
 
-
 ```python
 # All analysis functions and CoxeterGraph class are now imported from isometry_utils.py
 # This includes: is_elliptic_matrix, is_parabolic_matrix, is_elliptic_subgraph,
 # is_parabolic_subgraph, init_coxeter_colors, get_coxeter_label_connected,
 # CoxeterGraph class with all methods (including to_tikz_labeled), m_lookup table, etc.
-
 ```
-
 
 ```python
 # All Dynkin diagram and Coxeter graph functions are now imported from isometry_utils.py
 # This includes: matrix_to_graph, graph_to_matrix, all A/B/C/D/E/F/G/H type functions,
 # affine types (tilde functions), classification functions, and the CoxeterGraph class
 ```
-
 
 ```python
 # All analysis functions and CoxeterGraph class are now imported from isometry_utils.py
@@ -352,12 +340,9 @@ m_lookup = {
 # Subsets have  X.lattice()                                                           # needs sage.combinat sage.graphs+
 ```
 
-
 ```python
 show([TEn.q(x) for x in sterks2])
-
 ```
-
 
 ```python
 G = TEn.gram_matrix()
@@ -457,7 +442,6 @@ show(len(parab_subgraph_orbits))
 # show( G2.plot() )
 ```
 
-
 ```python
 print(all([is_elliptic_matrix(H.gram_matrix) for H in G1.get_elliptic_subgraphs()]))
 print(all([is_parabolic_matrix(H.gram_matrix) for H in G1.get_parabolic_subgraphs()]))
@@ -467,7 +451,6 @@ print(
     )
 )
 ```
-
 
 ```python
 # H = G1.get_random_subgraph(graph_type="Parabolic")
@@ -493,7 +476,6 @@ print(M2.is_singular())
 # Degenerate and every subdiagram is elliptic
 ```
 
-
 ```python
 H = G1.subgraph([0, 1, 2, 7, 11, 8, 5, 4])
 # G1.to_tikz_labeled(subgraph=H, tikz_options = {
@@ -515,7 +497,6 @@ H = ells[0]
 G1.plot(subgraph=H)  # .save(f'S1_H{i}.png')
 ```
 
-
 ```python
 s = ""
 ells = list(reversed(sorted(ell_subgraphs.maximal_elements(), key=len)))
@@ -532,9 +513,7 @@ for i, H in enumerate(ells):
 print(s)
 ```
 
-![](./S1_H0.png) ![](./S1_H1.png) ![](./S1_H2.png) ![](./S1_H3.png) ![](./S1_H4.png) ![](./S1_H5.png) ![](./S1_H6.png) ![](./S1_H7.png) ![](./S1_H8.png) ![](./S1_H9.png) ![](./S1_H10.png) ![](./S1_H11.png) ![](./S1_H12.png) ![](./S1_H13.png) ![](./S1_H14.png) ![](./S1_H15.png) ![](./S1_H16.png) ![](./S1_H17.png) ![](./S1_H18.png) ![](./S1_H19.png) ![](./S1_H20.png) 
-
-
+![](./S1_H0.png) ![](./S1_H1.png) ![](./S1_H2.png) ![](./S1_H3.png) ![](./S1_H4.png) ![](./S1_H5.png) ![](./S1_H6.png) ![](./S1_H7.png) ![](./S1_H8.png) ![](./S1_H9.png) ![](./S1_H10.png) ![](./S1_H11.png) ![](./S1_H12.png) ![](./S1_H13.png) ![](./S1_H14.png) ![](./S1_H15.png) ![](./S1_H16.png) ![](./S1_H17.png) ![](./S1_H18.png) ![](./S1_H19.png) ![](./S1_H20.png)
 
 ```python
 subgraphs = G.orbits_of_subgraphs(representatives_only=True)
@@ -560,7 +539,6 @@ B.cardinality()
 B
 ```
 
-
 ```python
 elliptic_subgraphs = filter(lambda H: is_elliptic_subgraph(H), nontrivial_subgraphs)
 elliptic_subgraphs = lmap(lambda H: Set(H.vertices()), elliptic_subgraphs)
@@ -569,7 +547,6 @@ h1 = elliptic_subgraphs[1]
 
 h0.issubset(h1)
 ```
-
 
 ```python
 Hp = CoxeterSubgraph(H)
@@ -598,16 +575,13 @@ B
 # hash( lmap(lambda s: str(s), list(H.edges()) ) )
 ```
 
-
 ```python
 ?Poset
 ```
 
-
 ```python
 print(H.to_dotfile())
 ```
-
 
 ```python
 subgraphs = G.get_subgraphs()
@@ -636,7 +610,6 @@ print(graph_orbits.cardinality())
 reps = [x[0] for x in graph_orbits]
 len(reps)
 ```
-
 
 ```python
 G._default_options["vertex_colors"]
@@ -677,7 +650,6 @@ H._default_options
 # #show( init_coxeter_colors(H) )
 ```
 
-
 ```python
 Set(H.vertices())
 
@@ -697,7 +669,6 @@ d
 # {x: vcs[x] for x in vcs if not Set( H.vertices()).intersection( Set(vcs[x]) ).is_empty()  }
 ```
 
-
 ```python
 S = Set([1, 2])
 T = Set([2, 3])
@@ -706,13 +677,11 @@ S.intersection(T).is_empty()
 # {x:pos_dict[x] for x in pos_dict if x in H.vertices()}
 ```
 
-
 ```python
 Gp = G.graphplot()
 pos_dict = G.graphplot()._pos
 pos_dict
 ```
-
 
 ```python
 import random
@@ -723,7 +692,6 @@ H.plot()
 # H.plot()
 ```
 
-
 ```python
 # H.vertices()
 Gp = G.graphplot()
@@ -731,7 +699,6 @@ Gp._pos
 # H.edges()
 # H.plot(title="ASdsa")
 ```
-
 
 ```python
 # subgraphs
@@ -778,7 +745,6 @@ pl = Gp.plot()
 pl.show(figsize=10)
 ```
 
-
 ```python
 type(sgp)
 # sgp.plot()
@@ -797,7 +763,6 @@ type(sgp)
 # B
 ```
 
-
 ```python
 b = B[200]
 
@@ -806,11 +771,9 @@ P = B.subposet(B.order_filter([b]))
 P.plot(element_labels=d)
 ```
 
-
 ```python
 B.zeta_polynomial()
 ```
-
 
 ```python
 l1 = G.subgraph([6, 7, 8, 9])
@@ -839,17 +802,13 @@ show(l1.old_plot().plot())
 # G.underlying_graph
 ```
 
-
 ```python
-
 ```
-
 
 ```python
 show(l2.edges())
 show(G.edges())
 ```
-
 
 ```python
 print(ell_subgraphs[5].vertices())
@@ -869,7 +828,6 @@ G = [l1, l2]
 show(G)
 ```
 
-
 ```python
 S = Subsets([1,..,5])
 G = [t for t in S if sum(t)<=3]
@@ -878,13 +836,11 @@ show(G)
 #Poset((G, lambda x,y: x.issubset(y)))
 ```
 
-
 ```python
 # B = posets.BooleanLattice(G.num_verts(), )
 B = Poset(([l1, l2], lambda x, y: x.issubset(y)))
 B.maximal_elements()
 ```
-
 
 ```python
 nontrivial_subgraphs
@@ -951,13 +907,11 @@ T2.Order()
 # [x[0] for x in orbits]
 ```
 
-
 ```python
 for x in orbits:
     print(x)
     print("-----")
 ```
-
 
 ```python
 L = TEn
@@ -1035,7 +989,6 @@ matrix_to_graph(TEn.sub_gram_matrix(sterks3)).plot()
 # G.plot(edge_labels_background="white")
 ```
 
-
 ```python
 
 L.<e,f,a1, ..., a8> = U @ E8_2
@@ -1049,11 +1002,7 @@ a12 = e + f + 2*(a6d - a3d)
 a13 = e + f + 2*(a1d + a8d - a3d)
 a14 = e + f + a3
 sterks5=[a2, a4, a5, a6, a7, a8, 2*a8d, a10, a11, a12, a13, a14, a1, a9]
-
-
-
 ```
-
 
 ```python
 G = Graph()
@@ -1071,7 +1020,6 @@ es = dict({e0: "-", e1: "-"})
 # Need updates Sage
 ```
 
-
 ```python
 # g = Graph(loops=True, multiedges=True, sparse=True)
 # g.add_edges([(0, 0, 'a'), (0, 0, 'b'), (0, 1, 'c'),
@@ -1083,15 +1031,12 @@ es = dict({e0: "-", e1: "-"})
 # GP.plot()
 ```
 
-
 ```python
 # g.set_latex_options(tkz_style='Classic')
 # from sage.graphs.graph_latex import check_tkz_graph
 # check_tkz_graph()  # random - depends on TeX installation
 # latex(g)
-
 ```
-
 
 ```python
 # def to_tikz(graph, subgraph=None, scale=1, merge_multiedges=False,
@@ -1169,7 +1114,6 @@ es = dict({e0: "-", e1: "-"})
 #                     '/home/dzack/Notes/DZG_Style_Tikz_Only', 'tikz-cd', 'pgfplots' ])
 ```
 
-
 ```python
 # Load the hyperbolic plane in the Poincaré Disc model
 H = HyperbolicPlane().PD()
@@ -1187,12 +1131,7 @@ g2.plot(color='blue', thickness=2)
 plot.show()
 ```
 
-
-    
 ![png](Isometry_Searching_LLM_files/Isometry_Searching_LLM_49_0.png)
-    
-
-
 
 ```python
 UHP = HyperbolicPlane().UHP()
@@ -1203,15 +1142,7 @@ perp = g.common_perpendicular(h)
 g.plot() + h.plot() + perp.plot()
 ```
 
-
-
-
-    
 ![png](Isometry_Searching_LLM_files/Isometry_Searching_LLM_50_0.png)
-    
-
-
-
 
 ```python
 # Load the hyperbolic plane in the Poincaré Disc model
@@ -1246,15 +1177,7 @@ p = g1.plot(color="orange", thickness=2) + g2.plot(color="blue", thickness=2) + 
 p
 ```
 
-
-
-
-    
 ![png](Isometry_Searching_LLM_files/Isometry_Searching_LLM_51_0.png)
-    
-
-
-
 
 ```python
 # Load the hyperbolic plane in the Poincaré Disc model
@@ -1286,28 +1209,21 @@ p.save_image("asymptotically_parallel.svg")
 #p
 ```
 
-
 ```python
 g3[0].options()
 ```
 
-
-
-
-    {'alpha': 1,
-     'rgbcolor': 'black',
-     'thickness': 2,
-     'legend_label': None,
-     'legend_color': None,
-     'linestyle': '--'}
-
-
-
-
-```python
-
+```
+{'alpha': 1,
+ 'rgbcolor': 'black',
+ 'thickness': 2,
+ 'legend_label': None,
+ 'legend_color': None,
+ 'linestyle': '--'}
 ```
 
+```python
+```
 
 ```python
 # Load the hyperbolic plane in the Poincaré Disc model
@@ -1337,7 +1253,6 @@ p = g1.plot(color="orange", thickness=2, ymin=-0.2, xmin=-4, xmax=4) + g2.plot(c
 p.save_image("ultraparallel_plane_model.svg")
 ```
 
-
 ```python
 # Load the hyperbolic plane in the Poincaré Disc model
 H = HyperbolicPlane().UHP()
@@ -1365,30 +1280,22 @@ p = g1.plot(color="orange", thickness=2, ymin=-0.2, xmin=-4, xmax=4) + g2.plot(c
 p#.save_image("asymptotically_parallel_plane_model.svg")
 ```
 
-
 ```python
 a = arrow((0, 0), (-1, 0), color="red")
 a.plot()
 ```
 
-
 ```python
-
 ```
-
 
 ```python
 
 hyperbolic_triangle(exp(2 pi I/2), exp(2 pi I / 3), 1, model='PD', color='cyan', fill=True, resolution=200)
-
 ```
-
 
 ```python
 print(plt.style.available)
-
 ```
-
 
 ```python
 hyperbolic_triangle(
@@ -1402,9 +1309,7 @@ hyperbolic_triangle(
     xmax=2,
     ymax=3,
 )
-
 ```
-
 
 ```python
 import matplotlib.pyplot as plt
@@ -1420,15 +1325,7 @@ g4.axes(False)
 g4.plot() + g5.plot() + tri.plot()
 ```
 
-
-
-
-    
 ![png](Isometry_Searching_LLM_files/Isometry_Searching_LLM_62_0.png)
-    
-
-
-
 
 ```python
 UHP = HyperbolicPlane().UHP()
@@ -1449,15 +1346,7 @@ tri = hyperbolic_triangle(
 tri
 ```
 
-
-
-
-    
 ![png](Isometry_Searching_LLM_files/Isometry_Searching_LLM_63_0.png)
-    
-
-
-
 
 ```python
 g1 = PD.get_geodesic(-1, I)
@@ -1467,15 +1356,7 @@ inv11 = g11.reflection_involution()
 plot(inv11 * g2)
 ```
 
-
-
-
-    
 ![png](Isometry_Searching_LLM_files/Isometry_Searching_LLM_64_0.png)
-    
-
-
-
 
 ```python
 allpts = []
@@ -1522,15 +1403,7 @@ g3p = inv11 * g3
 tri1
 ```
 
-
-
-
-    
 ![png](Isometry_Searching_LLM_files/Isometry_Searching_LLM_65_0.png)
-    
-
-
-
 
 ```python
 newpoints = list(
@@ -1548,13 +1421,9 @@ newpoints = list(
 newpoints
 ```
 
-
-
-
-    [1, -I, -1]
-
-
-
+```
+[1, -I, -1]
+```
 
 ```python
 tri2 = hyperbolic_triangle(
@@ -1571,27 +1440,15 @@ tri1 += tri2 + g1p.plot() + g2p.plot() + g3p.plot()
 tri1
 ```
 
-
-
-
-    
 ![png](Isometry_Searching_LLM_files/Isometry_Searching_LLM_67_0.png)
-    
-
-
-
 
 ```python
 g2.is_asymptotically_parallel(g3)
 ```
 
-
-
-
-    True
-
-
-
+```
+True
+```
 
 ```python
 
@@ -1602,11 +1459,11 @@ def do_reflect(p1, p2, p3):
     global basealpha
 
     #basealpha = basealpha/1.5
-    
+
     g1 = PD.get_geodesic(p1, p2, color="blue", axes=False)
     g2 = PD.get_geodesic(p2, p3, color="blue", axes=False)
     g3 = PD.get_geodesic(p3, p1, color="blue", axes=False)
-    
+
     inv1 = g1.reflection_involution()
     inv2 = g2.reflection_involution()
     inv3 = g3.reflection_involution()
@@ -1614,7 +1471,7 @@ def do_reflect(p1, p2, p3):
     g1p = inv1 * g1
     g2p = inv1 * g2
     g3p = inv1 * g3
-    
+
     newpoints = tuple( Set([g1p.start().coordinates(), g1p.end().coordinates(), g2p.start().coordinates(), g2p.end().coordinates(), g3p.start().coordinates(), g3p.end().coordinates()]))
     allpts.append(newpoints)
 
@@ -1690,254 +1547,254 @@ while true:
 tri1.save_image(f'tesselation_end.png')
 ```
 
-    1
-    2
-    3
-    4
-    5
-    6
-    7
-    8
-    9
-    10
-    11
-    12
-    13
-    14
-    15
-    16
-    17
-    18
-    19
-    20
-    21
-    22
-    23
-    24
-    25
-    26
-    27
-    28
-    29
-    30
-    31
-    32
-    33
-    34
-    35
-    36
-    37
-    38
-    39
-    40
-    41
-    42
-    43
-    44
-    45
-    46
-    47
-    48
-    49
-    50
-    51
-    52
-    53
-    54
-    55
-    56
-    57
-    58
-    59
-    60
-    61
-    62
-    63
-    64
-    65
-    66
-    67
-    68
-    69
-    70
-    71
-    72
-    73
-    74
-    75
-    76
-    77
-    78
-    79
-    80
-    81
-    82
-    83
-    84
-    85
-    86
-    87
-    88
-    89
-    90
-    91
-    92
-    93
-    94
-    95
-    96
-    97
-    98
-    99
-    i,
-    100
-    101
-    102
-    103
-    104
-    105
-    106
-    107
-    108
-    109
-    110
-    111
-    112
-    113
-    114
-    115
-    116
-    117
-    118
-    119
-    120
-    121
-    122
-    123
-    124
-    125
-    126
-    127
-    128
-    129
-    130
-    131
-    132
-    133
-    134
-    135
-    136
-    137
-    138
-    139
-    140
-    141
-    142
-    143
-    144
-    145
-    146
-    147
-    148
-    149
-    150
-    151
-    152
-    153
-    154
-    155
-    156
-    157
-    158
-    159
-    160
-    161
-    162
-    163
-    164
-    165
-    166
-    167
-    168
-    169
-    170
-    171
-    172
-    173
-    174
-    175
-    176
-    177
-    178
-    179
-    180
-    181
-    182
-    183
-    184
-    185
-    186
-    187
-    188
-    189
-    190
-    191
-    192
-    193
-    194
-    195
-    196
-    197
-    198
-    199
-    i,
-    200
-    201
-    202
-    203
-    204
-    205
-    206
-    207
-    208
-    209
-    210
-    211
-    212
-    213
-    214
-    215
-    216
-    217
-    218
-    219
-    220
-    221
-    222
-    223
-    224
-    225
-    226
-    227
-    228
-    229
-    230
-    231
-    232
-    233
-    234
-    235
-    236
-    237
-    238
-    239
-    240
-    241
-    242
-    243
-    244
-
-
+```
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+i,
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+i,
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+```
 
 ```python
 singular.lib("classify.lib")
@@ -1946,50 +1803,46 @@ f = singular.new("x^2 + y^2 + z^3")
 print(singular.eval("classify({})".format(f.name())))
 ```
 
-    About the singularity :
-              Milnor number(f)   = 2
-              Corank(f)          = 1
-              Determinacy       <= 3
-    Guessing type via Milnorcode:  A[2]
-    
-    Computing normal form ...
-       Arnold step number 2
-    The singularity
-       x2+y2+z3
-    is R-equivalent to A[2].
-       Milnor number = 2
-       modality      = 0
-    y^2+z^2+x^3
+```
+About the singularity :
+          Milnor number(f)   = 2
+          Corank(f)          = 1
+          Determinacy       <= 3
+Guessing type via Milnorcode:  A[2]
 
-
+Computing normal form ...
+   Arnold step number 2
+The singularity
+   x2+y2+z3
+is R-equivalent to A[2].
+   Milnor number = 2
+   modality      = 0
+y^2+z^2+x^3
+```
 
 ```python
 var("x,y")
 monomials([x, y], [4, 4])
 ```
 
-
-
-
-    [1,
-     y,
-     y^2,
-     y^3,
-     x,
-     x*y,
-     x*y^2,
-     x*y^3,
-     x^2,
-     x^2*y,
-     x^2*y^2,
-     x^2*y^3,
-     x^3,
-     x^3*y,
-     x^3*y^2,
-     x^3*y^3]
-
-
-
+```
+[1,
+ y,
+ y^2,
+ y^3,
+ x,
+ x*y,
+ x*y^2,
+ x*y^3,
+ x^2,
+ x^2*y,
+ x^2*y^2,
+ x^2*y^3,
+ x^3,
+ x^3*y,
+ x^3*y^2,
+ x^3*y^3]
+```
 
 ```python
 x, y, z = PolynomialRing(GF(5), 3, "xyz").gens()
@@ -1998,34 +1851,28 @@ X = Curve(f)
 pts = X.rational_points()
 D = X.divisor([(3, pts[0]), (-1, pts[1]), (10, pts[5])])
 X.riemann_roch_basis(D)
-
 ```
 
-
-
-
-    [(-2*x + y)/(x + y), (-x + z)/(x + y)]
-
-
-
+```
+[(-2*x + y)/(x + y), (-x + z)/(x + y)]
+```
 
 ```python
 singular.LIB("brnoeth.lib")
 _ = singular.ring(5, "(x,y)", "lp")
 print(singular.eval("list X = Adj_div(-x5+y2+x);"))
-
 ```
 
-    Computing affine singular points ... 
-    Computing all points at infinity ... 
-    Computing affine singular places ... 
-    Computing singular places at infinity ... 
-    Computing non-singular places at infinity ... 
-    Adjunction divisor computed successfully
-     
-    The genus of the curve is 2
+```
+Computing affine singular points ... 
+Computing all points at infinity ... 
+Computing affine singular places ... 
+Computing singular places at infinity ... 
+Computing non-singular places at infinity ... 
+Adjunction divisor computed successfully
 
-
+The genus of the curve is 2
+```
 
 ```python
 x, y, z = ProjectiveSpace(2, GF(5), names="x,y,z").gens()
@@ -2034,21 +1881,15 @@ pts = C.rational_points()
 pts
 D1 = C.divisor(pts[0]) * 3
 D2 = C.divisor(pts[1])
-
 ```
-
 
 ```python
 D1.
 ```
 
-
-
-
-    3*(x, y)
-
-
-
+```
+3*(x, y)
+```
 
 ```python
 P2 = Proj(2, "k")
@@ -2058,53 +1899,44 @@ sage: g = Blowup(f)
 sage: B = g.codomain()
 sage: (e, h) = B.chowring().gens()
 sage: ((6 * h - 2 * e) ^ 5).integral()
-
 ```
 
+```
+---------------------------------------------------------------------------
 
-    ---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
 
-    NameError                                 Traceback (most recent call last)
-
-    Cell In[6], line 1
-    ----> 1 P2 = Proj(Integer(2), 'k')
-          2 P5 = Proj(Integer(5), 'h')
-          3 f = P2.hom(['2*k'], P5)
-
-
-    NameError: name 'Proj' is not defined
+Cell In[6], line 1
+----> 1 P2 = Proj(Integer(2), 'k')
+      2 P5 = Proj(Integer(5), 'h')
+      3 f = P2.hom(['2*k'], P5)
 
 
+NameError: name 'Proj' is not defined
+```
 
 ```python
 P2 = ChowScheme(2, "h", 1, "h^3")
-
 ```
 
+```
+---------------------------------------------------------------------------
 
-    ---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
 
-    NameError                                 Traceback (most recent call last)
-
-    Cell In[7], line 1
-    ----> 1 P2 = ChowScheme(Integer(2), 'h', Integer(1), 'h^3')
-
-
-    NameError: name 'ChowScheme' is not defined
+Cell In[7], line 1
+----> 1 P2 = ChowScheme(Integer(2), 'h', Integer(1), 'h^3')
 
 
+NameError: name 'ChowScheme' is not defined
+```
 
 ```python
-
 ```
 
-
-
-
-    2-d CPR-Fano toric variety covered by 4 affine patches
-
-
-
+```
+2-d CPR-Fano toric variety covered by 4 affine patches
+```
 
 ```python
 HH = X.cohomology_ring()
@@ -2113,76 +1945,55 @@ show(K)
 show(X.integrate(HH(K) ^ 2))
 ```
 
-
 <html>\(\displaystyle -\mathrm{V}\left(s\right) - \mathrm{V}\left(t\right) - \mathrm{V}\left(x\right) - \mathrm{V}\left(y\right)\)</html>
 
-
-
 <html>\(\displaystyle 8\)</html>
-
-
 
 ```python
 Kp = HH(K)
 Kp.
 ```
 
-
-
-
-    [-2*t - 2*y]
-
-
-
+```
+[-2*t - 2*y]
+```
 
 ```python
 X.dimension_singularities()
 ```
 
-
-
-
-    -1
-
-
-
+```
+-1
+```
 
 ```python
 X.coordinate_ring()
 X.inject_variables()
 ```
 
-    Defining s, t, x, y
-
-
+```
+Defining s, t, x, y
+```
 
 ```python
 Z = X.subscheme([x * s + y * t, x ^ 3 + y ^ 3])
 Z
 ```
 
-
-
-
-    Closed subscheme of 2-d CPR-Fano toric variety covered by 4 affine patches defined by:
-      s*x + t*y,
-      x^3 + y^3
-
-
-
+```
+Closed subscheme of 2-d CPR-Fano toric variety covered by 4 affine patches defined by:
+  s*x + t*y,
+  x^3 + y^3
+```
 
 ```python
 Y = toric_varieties.P1xP1_Z2()
 Y
 ```
 
-
-
-
-    2-d CPR-Fano toric variety covered by 4 affine patches
-
-
-
+```
+2-d CPR-Fano toric variety covered by 4 affine patches
+```
 
 ```python
 from sage.geometry.fan import *
@@ -2197,47 +2008,40 @@ Y = Fan2d([e1, e2, -e1, -e2], ZZ ^ 2)
 # plot(Y)
 ```
 
-
 ```python
 P1 = Polyhedron(vertices=[[0, 0, 0], [0, 4, 0], [4, 0, 0], [4, 4, 0], [2, 2, 2]])
 show(P1.plot())
 len(P1.integral_points())
 ```
 
+<iframe srcdoc="&lt;!DOCTYPE html&gt; &lt;html&gt; &lt;head&gt; &lt;title&gt;&lt;/title&gt; &lt;meta charset=&quot;utf-8&quot;&gt; &lt;meta name=viewport content=&quot;width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0&quot;&gt; &lt;style&gt;
 
+```
+body { margin: 0px; overflow: hidden; }
 
-<iframe srcdoc="&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-&lt;title&gt;&lt;/title&gt;
-&lt;meta charset=&quot;utf-8&quot;&gt;
-&lt;meta name=viewport content=&quot;width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0&quot;&gt;
-&lt;style&gt;
+#menu-container { position: absolute; bottom: 30px; right: 40px; cursor: default; }
 
-    body { margin: 0px; overflow: hidden; }
+#menu-message { position: absolute; bottom: 0px; right: 0px; white-space: nowrap;
+                display: none; background-color: #F5F5F5; padding: 10px; }
 
-    #menu-container { position: absolute; bottom: 30px; right: 40px; cursor: default; }
+#menu-content { position: absolute; bottom: 0px; right: 0px;
+                display: none; background-color: #F5F5F5; border-bottom: 1px solid black;
+                border-right: 1px solid black; border-left: 1px solid black; }
 
-    #menu-message { position: absolute; bottom: 0px; right: 0px; white-space: nowrap;
-                    display: none; background-color: #F5F5F5; padding: 10px; }
+#menu-content div { border-top: 1px solid black; padding: 10px; white-space: nowrap; }
 
-    #menu-content { position: absolute; bottom: 0px; right: 0px;
-                    display: none; background-color: #F5F5F5; border-bottom: 1px solid black;
-                    border-right: 1px solid black; border-left: 1px solid black; }
+#menu-content div:hover { background-color: #FEFEFE; }
 
-    #menu-content div { border-top: 1px solid black; padding: 10px; white-space: nowrap; }
+.dark-theme #menu-container { color: white; }
 
-    #menu-content div:hover { background-color: #FEFEFE; }
+.dark-theme #menu-message { background-color: #181818; }
 
-    .dark-theme #menu-container { color: white; }
+.dark-theme #menu-content { background-color: #181818; border-color: white; }
 
-    .dark-theme #menu-message { background-color: #181818; }
+.dark-theme #menu-content div { border-color: white; }
 
-    .dark-theme #menu-content { background-color: #181818; border-color: white; }
-
-    .dark-theme #menu-content div { border-color: white; }
-
-    .dark-theme #menu-content div:hover { background-color: #303030; }
+.dark-theme #menu-content div:hover { background-color: #303030; }
+```
 
 &lt;/style&gt;
 
@@ -2245,586 +2049,559 @@ len(P1.integral_points())
 
 &lt;body&gt;
 
-&lt;script src=&quot;/nbextensions/threejs-sage/r122/three.min.js&quot;&gt;&lt;/script&gt;
-&lt;script&gt;
-  if ( !window.THREE ) document.write(&#x27; \
-&lt;script src=&quot;https://cdn.jsdelivr.net/gh/sagemath/threejs-sage@r122/build/three.min.js&quot;&gt;&lt;\/script&gt; \
-            &#x27;);
-&lt;/script&gt;
+&lt;script src=&quot;/nbextensions/threejs-sage/r122/three.min.js&quot;&gt;&lt;/script&gt; &lt;script&gt; if ( !window.THREE ) document.write(&#x27;\
+&lt;script src=&quot;https://cdn.jsdelivr.net/gh/sagemath/threejs-sage@r122/build/three.min.js&quot;&gt;&lt;\/script&gt;\
+&#x27;); &lt;/script&gt;
 
 &lt;script&gt;
 
-    var options = {&quot;animate&quot;: false, &quot;animationControls&quot;: true, &quot;aspectRatio&quot;: [1.0, 1.0, 1.0], &quot;autoScaling&quot;: [false, false, false], &quot;autoPlay&quot;: true, &quot;axes&quot;: false, &quot;axesLabels&quot;: [&quot;x&quot;, &quot;y&quot;, &quot;z&quot;], &quot;axesLabelsStyle&quot;: null, &quot;decimals&quot;: 2, &quot;delay&quot;: 20, &quot;frame&quot;: true, &quot;loop&quot;: true, &quot;projection&quot;: &quot;perspective&quot;, &quot;theme&quot;: &quot;light&quot;, &quot;viewpoint&quot;: false};
-    var animate = options.animate;
+```
+var options = {&quot;animate&quot;: false, &quot;animationControls&quot;: true, &quot;aspectRatio&quot;: [1.0, 1.0, 1.0], &quot;autoScaling&quot;: [false, false, false], &quot;autoPlay&quot;: true, &quot;axes&quot;: false, &quot;axesLabels&quot;: [&quot;x&quot;, &quot;y&quot;, &quot;z&quot;], &quot;axesLabelsStyle&quot;: null, &quot;decimals&quot;: 2, &quot;delay&quot;: 20, &quot;frame&quot;: true, &quot;loop&quot;: true, &quot;projection&quot;: &quot;perspective&quot;, &quot;theme&quot;: &quot;light&quot;, &quot;viewpoint&quot;: false};
+var animate = options.animate;
+
+if ( options.theme === &#x27;dark&#x27; )
+    document.body.className = &#x27;dark-theme&#x27;;
+
+var scene = new THREE.Scene();
+
+var renderer = new THREE.WebGLRenderer( { antialias: true, preserveDrawingBuffer: true } );
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setClearColor( options.theme === &#x27;dark&#x27; ? 0 : 0xffffff, 1 );
+document.body.appendChild( renderer.domElement );
+
+var b = [{&quot;x&quot;:0.0, &quot;y&quot;:0.0, &quot;z&quot;:0.0}, {&quot;x&quot;:4.0, &quot;y&quot;:4.0, &quot;z&quot;:2.0}]; // bounds
+
+if ( b[0].x === b[1].x ) {
+    b[0].x -= 1;
+    b[1].x += 1;
+}
+if ( b[0].y === b[1].y ) {
+    b[0].y -= 1;
+    b[1].y += 1;
+}
+if ( b[0].z === b[1].z ) {
+    b[0].z -= 1;
+    b[1].z += 1;
+}
+
+var rxRange = Math.sqrt( Math.pow( b[1].z - b[0].z, 2 )
+                        + Math.pow( b[1].y - b[0].y, 2 ) );
+var ryRange = Math.sqrt( Math.pow( b[1].x - b[0].x, 2 )
+                        + Math.pow( b[1].z - b[0].z, 2 ) );
+var rzRange = Math.sqrt( Math.pow( b[1].x - b[0].x, 2 )
+                        + Math.pow( b[1].y - b[0].y, 2 ) );
+var xRange = b[1].x - b[0].x;
+var yRange = b[1].y - b[0].y;
+var zRange = b[1].z - b[0].z;
+
+var ar = options.aspectRatio;
+var a = [ ar[0], ar[1], ar[2] ]; // aspect multipliers
+
+var autoScaling = options.autoScaling;
+var autoAspect = 2.5;
+if ( xRange &gt; autoAspect * rxRange &amp;&amp; autoScaling[0] ) a[0] = autoAspect * rxRange / xRange;
+if ( yRange &gt; autoAspect * ryRange &amp;&amp; autoScaling[1] ) a[1] = autoAspect * ryRange / yRange;
+if ( zRange &gt; autoAspect * rzRange &amp;&amp; autoScaling[2] ) a[2] = autoAspect * rzRange / zRange;
+
+// Distance from (xMid,yMid,zMid) to any corner of the bounding box, after applying aspectRatio
+var midToCorner = Math.sqrt( a[0]*a[0]*xRange*xRange + a[1]*a[1]*yRange*yRange + a[2]*a[2]*zRange*zRange ) / 2;
+
+var xMid = ( b[0].x + b[1].x ) / 2;
+var yMid = ( b[0].y + b[1].y ) / 2;
+var zMid = ( b[0].z + b[1].z ) / 2;
+
+var box = new THREE.Geometry();
+box.vertices.push( new THREE.Vector3( a[0]*b[0].x, a[1]*b[0].y, a[2]*b[0].z ) );
+box.vertices.push( new THREE.Vector3( a[0]*b[1].x, a[1]*b[1].y, a[2]*b[1].z ) );
+var boxMesh = new THREE.Line( box );
+var boxColor = options.theme === &#x27;dark&#x27; ? &#x27;white&#x27; : &#x27;black&#x27;;
+if ( options.frame ) scene.add( new THREE.BoxHelper( boxMesh, boxColor ) );
+
+if ( options.axesLabels ) {
+
+    var d = options.decimals; // decimals
+    var offsetRatio = 0.1;
+    var al = options.axesLabels;
+    var als = options.axesLabelsStyle || [{}, {}, {}];
+
+    var offset = offsetRatio * a[1]*( b[1].y - b[0].y );
+    var xm = xMid.toFixed(d);
+    if ( /^-0.?0*$/.test(xm) ) xm = xm.substr(1);
+    addLabel( al[0] + &#x27;=&#x27; + xm, a[0]*xMid, a[1]*b[1].y+offset, a[2]*b[0].z, als[0] );
+    addLabel( ( b[0].x ).toFixed(d), a[0]*b[0].x, a[1]*b[1].y+offset, a[2]*b[0].z, als[0] );
+    addLabel( ( b[1].x ).toFixed(d), a[0]*b[1].x, a[1]*b[1].y+offset, a[2]*b[0].z, als[0] );
+
+    var offset = offsetRatio * a[0]*( b[1].x - b[0].x );
+    var ym = yMid.toFixed(d);
+    if ( /^-0.?0*$/.test(ym) ) ym = ym.substr(1);
+    addLabel( al[1] + &#x27;=&#x27; + ym, a[0]*b[1].x+offset, a[1]*yMid, a[2]*b[0].z, als[1] );
+    addLabel( ( b[0].y ).toFixed(d), a[0]*b[1].x+offset, a[1]*b[0].y, a[2]*b[0].z, als[1] );
+    addLabel( ( b[1].y ).toFixed(d), a[0]*b[1].x+offset, a[1]*b[1].y, a[2]*b[0].z, als[1] );
+
+    var offset = offsetRatio * a[1]*( b[1].y - b[0].y );
+    var zm = zMid.toFixed(d);
+    if ( /^-0.?0*$/.test(zm) ) zm = zm.substr(1);
+    addLabel( al[2] + &#x27;=&#x27; + zm, a[0]*b[1].x, a[1]*b[0].y-offset, a[2]*zMid, als[2] );
+    addLabel( ( b[0].z ).toFixed(d), a[0]*b[1].x, a[1]*b[0].y-offset, a[2]*b[0].z, als[2] );
+    addLabel( ( b[1].z ).toFixed(d), a[0]*b[1].x, a[1]*b[0].y-offset, a[2]*b[1].z, als[2] );
+
+}
+
+function addLabel( text, x, y, z, style ) {
+
+    var color = style.color || &#x27;black&#x27;;
+    var fontSize = style.fontSize || 14;
+    var fontFamily = style.fontFamily || &#x27;monospace&#x27;;
+    var fontStyle = style.fontStyle || &#x27;normal&#x27;;
+    var fontWeight = style.fontWeight || &#x27;normal&#x27;;
+    var opacity = style.opacity || 1;
 
     if ( options.theme === &#x27;dark&#x27; )
-        document.body.className = &#x27;dark-theme&#x27;;
+        if ( color === &#x27;black&#x27; || color === &#x27;#000000&#x27; )
+            color = &#x27;white&#x27;;
 
-    var scene = new THREE.Scene();
+    if ( Array.isArray( fontStyle ) ) {
+        fontFamily = fontFamily.map( function( f ) {
+            // Need to put quotes around fonts that have whitespace in their names.
+            return /\s/.test( f ) ? &#x27;&quot;&#x27; + f + &#x27;&quot;&#x27; : f;
+        }).join(&#x27;, &#x27;);
+    }
 
-    var renderer = new THREE.WebGLRenderer( { antialias: true, preserveDrawingBuffer: true } );
-    renderer.setPixelRatio( window.devicePixelRatio );
+    var canvas = document.createElement( &#x27;canvas&#x27; );
+    var context = canvas.getContext( &#x27;2d&#x27; );
+    var pixelRatio = Math.round( window.devicePixelRatio );
+
+    // For example: italic bold 20px &quot;Times New Roman&quot;, Georgia, serif
+    var font = [fontStyle, fontWeight, fontSize + &#x27;px&#x27;, fontFamily].join(&#x27; &#x27;);
+
+    context.font = font;
+    var width = context.measureText( text ).width;
+    var height = fontSize;
+
+    // The dimensions of the canvas&#x27;s underlying image data need to be powers
+    // of two in order for the resulting texture to support mipmapping.
+    canvas.width = THREE.MathUtils.ceilPowerOfTwo( width * pixelRatio );
+    canvas.height = THREE.MathUtils.ceilPowerOfTwo( height * pixelRatio );
+
+    // Re-compute the unscaled dimensions after the power of two conversion.
+    width = canvas.width / pixelRatio;
+    height = canvas.height / pixelRatio;
+
+    canvas.style.width = width + &#x27;px&#x27;;
+    canvas.style.height = height + &#x27;px&#x27;;
+
+    context.scale( pixelRatio, pixelRatio );
+    context.fillStyle = color;
+    context.font = font; // Must be set again after measureText.
+    context.textAlign = &#x27;center&#x27;;
+    context.textBaseline = &#x27;middle&#x27;;
+    context.fillText( text, width/2, height/2 );
+
+    var texture = new THREE.Texture( canvas );
+    texture.needsUpdate = true;
+
+    var materialOptions = { map: texture, sizeAttenuation: false, depthWrite: false };
+    if ( opacity &lt; 1 ) {
+        // Setting opacity=1 would cause the texture&#x27;s alpha component to be
+        // discarded, giving the text a black background instead of the
+        // background being transparent.
+        materialOptions.opacity = opacity;
+    }
+    var sprite = new THREE.Sprite( new THREE.SpriteMaterial( materialOptions ) );
+    sprite.position.set( x, y, z );
+
+    // Scaling factor, chosen somewhat arbitrarily so that the size of the text
+    // is consistent with previously generated plots.
+    var scale = 1/625;
+    if ( options.projection === &#x27;orthographic&#x27; ) {
+        scale = midToCorner/256; // Needs to scale along with the plot itself.
+    }
+    sprite.scale.set( scale * width, scale * height, 1 );
+
+    scene.add( sprite );
+
+    return sprite;
+
+}
+
+if ( options.axes ) scene.add( new THREE.AxesHelper( Math.min( a[0]*b[1].x, a[1]*b[1].y, a[2]*b[1].z ) ) );
+
+var camera = createCamera();
+camera.up.set( 0, 0, 1 );
+camera.position.set( a[0]*xMid, a[1]*yMid, a[2]*zMid );
+
+// camera is positioned so that the line from the camera to the center
+// of the bounding sphere of the objects makes an angle of 60 degrees with x-axis
+// and an angle of 30 degrees with z-axis and the field of view of the camera looking
+// at the center has an angle of 45 degrees.
+const sin8 = Math.sin(Math.PI / 8);
+const sin5 = Math.sin(Math.PI / 5);
+const cos5 = Math.cos(Math.PI / 5);
+const sin3 = Math.sin(Math.PI / 3);
+const cos3 = Math.cos(Math.PI / 3);
+var r = midToCorner / sin8;
+var offset = new THREE.Vector3( r * sin3 * cos5, r * sin3 * sin5, r * cos3 );
+
+if ( options.viewpoint ) {
+
+    var aa = options.viewpoint;
+    var axis = new THREE.Vector3( aa[0][0], aa[0][1], aa[0][2] ).normalize();
+    var angle = aa[1] * Math.PI / 180;
+    var q = new THREE.Quaternion().setFromAxisAngle( axis, angle ).inverse();
+
+    offset.set( 0, 0, offset.length() );
+    offset.applyQuaternion( q );
+
+}
+
+camera.position.add( offset );
+
+function createCamera() {
+
+    var aspect = window.innerWidth / window.innerHeight;
+
+    // Scale the near and far clipping planes along with the overall plot size.
+    var nearClip = 0.01 * midToCorner;
+    var farClip = 100 * midToCorner;
+
+    if ( options.projection === &#x27;orthographic&#x27; ) {
+        var camera = new THREE.OrthographicCamera( -1, 1, 1, -1, -farClip, farClip );
+        updateCameraAspect( camera, aspect );
+        return camera;
+    }
+
+    return new THREE.PerspectiveCamera( 45, aspect, nearClip, farClip );
+
+}
+
+function updateCameraAspect( camera, aspect ) {
+
+    if ( camera.isPerspectiveCamera ) {
+        camera.aspect = aspect;
+    } else if ( camera.isOrthographicCamera ) {
+        // Fit the camera frustum to the bounding box&#x27;s diagonal so that the entire plot fits
+        // within at the default zoom level and camera position.
+        if ( aspect &gt; 1 ) { // Wide window
+            camera.top = midToCorner;
+            camera.right = midToCorner * aspect;
+        } else { // Tall or square window
+            camera.top = midToCorner / aspect;
+            camera.right = midToCorner;
+        }
+        camera.bottom = -camera.top;
+        camera.left = -camera.right;
+    }
+
+    camera.updateProjectionMatrix();
+
+}
+
+var lights = [{&quot;x&quot;:-5, &quot;y&quot;:3, &quot;z&quot;:0, &quot;color&quot;:&quot;#7f7f7f&quot;, &quot;parent&quot;:&quot;camera&quot;}];
+for ( var i=0 ; i &lt; lights.length ; i++ ) {
+    var light = new THREE.DirectionalLight( lights[i].color, 1 );
+    light.position.set( a[0]*lights[i].x, a[1]*lights[i].y, a[2]*lights[i].z );
+    if ( lights[i].parent === &#x27;camera&#x27; ) {
+        light.target.position.set( a[0]*xMid, a[1]*yMid, a[2]*zMid );
+        scene.add( light.target );
+        camera.add( light );
+    } else scene.add( light );
+}
+scene.add( camera );
+
+var ambient = {&quot;color&quot;:&quot;#7f7f7f&quot;};
+scene.add( new THREE.AmbientLight( ambient.color, 1 ) );
+
+var controls = new THREE.OrbitControls( camera, renderer.domElement );
+controls.target.set( a[0]*xMid, a[1]*yMid, a[2]*zMid );
+controls.addEventListener( &#x27;change&#x27;, function() { if ( !animate ) render(); } );
+
+window.addEventListener( &#x27;resize&#x27;, function() {
+
     renderer.setSize( window.innerWidth, window.innerHeight );
-    renderer.setClearColor( options.theme === &#x27;dark&#x27; ? 0 : 0xffffff, 1 );
-    document.body.appendChild( renderer.domElement );
-
-    var b = [{&quot;x&quot;:0.0, &quot;y&quot;:0.0, &quot;z&quot;:0.0}, {&quot;x&quot;:4.0, &quot;y&quot;:4.0, &quot;z&quot;:2.0}]; // bounds
-
-    if ( b[0].x === b[1].x ) {
-        b[0].x -= 1;
-        b[1].x += 1;
-    }
-    if ( b[0].y === b[1].y ) {
-        b[0].y -= 1;
-        b[1].y += 1;
-    }
-    if ( b[0].z === b[1].z ) {
-        b[0].z -= 1;
-        b[1].z += 1;
-    }
-
-    var rxRange = Math.sqrt( Math.pow( b[1].z - b[0].z, 2 )
-                            + Math.pow( b[1].y - b[0].y, 2 ) );
-    var ryRange = Math.sqrt( Math.pow( b[1].x - b[0].x, 2 )
-                            + Math.pow( b[1].z - b[0].z, 2 ) );
-    var rzRange = Math.sqrt( Math.pow( b[1].x - b[0].x, 2 )
-                            + Math.pow( b[1].y - b[0].y, 2 ) );
-    var xRange = b[1].x - b[0].x;
-    var yRange = b[1].y - b[0].y;
-    var zRange = b[1].z - b[0].z;
-
-    var ar = options.aspectRatio;
-    var a = [ ar[0], ar[1], ar[2] ]; // aspect multipliers
-
-    var autoScaling = options.autoScaling;
-    var autoAspect = 2.5;
-    if ( xRange &gt; autoAspect * rxRange &amp;&amp; autoScaling[0] ) a[0] = autoAspect * rxRange / xRange;
-    if ( yRange &gt; autoAspect * ryRange &amp;&amp; autoScaling[1] ) a[1] = autoAspect * ryRange / yRange;
-    if ( zRange &gt; autoAspect * rzRange &amp;&amp; autoScaling[2] ) a[2] = autoAspect * rzRange / zRange;
-
-    // Distance from (xMid,yMid,zMid) to any corner of the bounding box, after applying aspectRatio
-    var midToCorner = Math.sqrt( a[0]*a[0]*xRange*xRange + a[1]*a[1]*yRange*yRange + a[2]*a[2]*zRange*zRange ) / 2;
-
-    var xMid = ( b[0].x + b[1].x ) / 2;
-    var yMid = ( b[0].y + b[1].y ) / 2;
-    var zMid = ( b[0].z + b[1].z ) / 2;
-
-    var box = new THREE.Geometry();
-    box.vertices.push( new THREE.Vector3( a[0]*b[0].x, a[1]*b[0].y, a[2]*b[0].z ) );
-    box.vertices.push( new THREE.Vector3( a[0]*b[1].x, a[1]*b[1].y, a[2]*b[1].z ) );
-    var boxMesh = new THREE.Line( box );
-    var boxColor = options.theme === &#x27;dark&#x27; ? &#x27;white&#x27; : &#x27;black&#x27;;
-    if ( options.frame ) scene.add( new THREE.BoxHelper( boxMesh, boxColor ) );
-
-    if ( options.axesLabels ) {
-
-        var d = options.decimals; // decimals
-        var offsetRatio = 0.1;
-        var al = options.axesLabels;
-        var als = options.axesLabelsStyle || [{}, {}, {}];
-
-        var offset = offsetRatio * a[1]*( b[1].y - b[0].y );
-        var xm = xMid.toFixed(d);
-        if ( /^-0.?0*$/.test(xm) ) xm = xm.substr(1);
-        addLabel( al[0] + &#x27;=&#x27; + xm, a[0]*xMid, a[1]*b[1].y+offset, a[2]*b[0].z, als[0] );
-        addLabel( ( b[0].x ).toFixed(d), a[0]*b[0].x, a[1]*b[1].y+offset, a[2]*b[0].z, als[0] );
-        addLabel( ( b[1].x ).toFixed(d), a[0]*b[1].x, a[1]*b[1].y+offset, a[2]*b[0].z, als[0] );
-
-        var offset = offsetRatio * a[0]*( b[1].x - b[0].x );
-        var ym = yMid.toFixed(d);
-        if ( /^-0.?0*$/.test(ym) ) ym = ym.substr(1);
-        addLabel( al[1] + &#x27;=&#x27; + ym, a[0]*b[1].x+offset, a[1]*yMid, a[2]*b[0].z, als[1] );
-        addLabel( ( b[0].y ).toFixed(d), a[0]*b[1].x+offset, a[1]*b[0].y, a[2]*b[0].z, als[1] );
-        addLabel( ( b[1].y ).toFixed(d), a[0]*b[1].x+offset, a[1]*b[1].y, a[2]*b[0].z, als[1] );
-
-        var offset = offsetRatio * a[1]*( b[1].y - b[0].y );
-        var zm = zMid.toFixed(d);
-        if ( /^-0.?0*$/.test(zm) ) zm = zm.substr(1);
-        addLabel( al[2] + &#x27;=&#x27; + zm, a[0]*b[1].x, a[1]*b[0].y-offset, a[2]*zMid, als[2] );
-        addLabel( ( b[0].z ).toFixed(d), a[0]*b[1].x, a[1]*b[0].y-offset, a[2]*b[0].z, als[2] );
-        addLabel( ( b[1].z ).toFixed(d), a[0]*b[1].x, a[1]*b[0].y-offset, a[2]*b[1].z, als[2] );
-
-    }
-
-    function addLabel( text, x, y, z, style ) {
-
-        var color = style.color || &#x27;black&#x27;;
-        var fontSize = style.fontSize || 14;
-        var fontFamily = style.fontFamily || &#x27;monospace&#x27;;
-        var fontStyle = style.fontStyle || &#x27;normal&#x27;;
-        var fontWeight = style.fontWeight || &#x27;normal&#x27;;
-        var opacity = style.opacity || 1;
-
-        if ( options.theme === &#x27;dark&#x27; )
-            if ( color === &#x27;black&#x27; || color === &#x27;#000000&#x27; )
-                color = &#x27;white&#x27;;
-
-        if ( Array.isArray( fontStyle ) ) {
-            fontFamily = fontFamily.map( function( f ) {
-                // Need to put quotes around fonts that have whitespace in their names.
-                return /\s/.test( f ) ? &#x27;&quot;&#x27; + f + &#x27;&quot;&#x27; : f;
-            }).join(&#x27;, &#x27;);
-        }
-
-        var canvas = document.createElement( &#x27;canvas&#x27; );
-        var context = canvas.getContext( &#x27;2d&#x27; );
-        var pixelRatio = Math.round( window.devicePixelRatio );
-
-        // For example: italic bold 20px &quot;Times New Roman&quot;, Georgia, serif
-        var font = [fontStyle, fontWeight, fontSize + &#x27;px&#x27;, fontFamily].join(&#x27; &#x27;);
-
-        context.font = font;
-        var width = context.measureText( text ).width;
-        var height = fontSize;
-
-        // The dimensions of the canvas&#x27;s underlying image data need to be powers
-        // of two in order for the resulting texture to support mipmapping.
-        canvas.width = THREE.MathUtils.ceilPowerOfTwo( width * pixelRatio );
-        canvas.height = THREE.MathUtils.ceilPowerOfTwo( height * pixelRatio );
-
-        // Re-compute the unscaled dimensions after the power of two conversion.
-        width = canvas.width / pixelRatio;
-        height = canvas.height / pixelRatio;
-
-        canvas.style.width = width + &#x27;px&#x27;;
-        canvas.style.height = height + &#x27;px&#x27;;
-
-        context.scale( pixelRatio, pixelRatio );
-        context.fillStyle = color;
-        context.font = font; // Must be set again after measureText.
-        context.textAlign = &#x27;center&#x27;;
-        context.textBaseline = &#x27;middle&#x27;;
-        context.fillText( text, width/2, height/2 );
-
-        var texture = new THREE.Texture( canvas );
-        texture.needsUpdate = true;
-
-        var materialOptions = { map: texture, sizeAttenuation: false, depthWrite: false };
-        if ( opacity &lt; 1 ) {
-            // Setting opacity=1 would cause the texture&#x27;s alpha component to be
-            // discarded, giving the text a black background instead of the
-            // background being transparent.
-            materialOptions.opacity = opacity;
-        }
-        var sprite = new THREE.Sprite( new THREE.SpriteMaterial( materialOptions ) );
-        sprite.position.set( x, y, z );
-
-        // Scaling factor, chosen somewhat arbitrarily so that the size of the text
-        // is consistent with previously generated plots.
-        var scale = 1/625;
-        if ( options.projection === &#x27;orthographic&#x27; ) {
-            scale = midToCorner/256; // Needs to scale along with the plot itself.
-        }
-        sprite.scale.set( scale * width, scale * height, 1 );
-
-        scene.add( sprite );
-
-        return sprite;
-
-    }
-
-    if ( options.axes ) scene.add( new THREE.AxesHelper( Math.min( a[0]*b[1].x, a[1]*b[1].y, a[2]*b[1].z ) ) );
-
-    var camera = createCamera();
-    camera.up.set( 0, 0, 1 );
-    camera.position.set( a[0]*xMid, a[1]*yMid, a[2]*zMid );
-
-    // camera is positioned so that the line from the camera to the center
-    // of the bounding sphere of the objects makes an angle of 60 degrees with x-axis
-    // and an angle of 30 degrees with z-axis and the field of view of the camera looking
-    // at the center has an angle of 45 degrees.
-    const sin8 = Math.sin(Math.PI / 8);
-    const sin5 = Math.sin(Math.PI / 5);
-    const cos5 = Math.cos(Math.PI / 5);
-    const sin3 = Math.sin(Math.PI / 3);
-    const cos3 = Math.cos(Math.PI / 3);
-    var r = midToCorner / sin8;
-    var offset = new THREE.Vector3( r * sin3 * cos5, r * sin3 * sin5, r * cos3 );
-
-    if ( options.viewpoint ) {
-
-        var aa = options.viewpoint;
-        var axis = new THREE.Vector3( aa[0][0], aa[0][1], aa[0][2] ).normalize();
-        var angle = aa[1] * Math.PI / 180;
-        var q = new THREE.Quaternion().setFromAxisAngle( axis, angle ).inverse();
-
-        offset.set( 0, 0, offset.length() );
-        offset.applyQuaternion( q );
-
-    }
-
-    camera.position.add( offset );
-
-    function createCamera() {
-
-        var aspect = window.innerWidth / window.innerHeight;
-
-        // Scale the near and far clipping planes along with the overall plot size.
-        var nearClip = 0.01 * midToCorner;
-        var farClip = 100 * midToCorner;
-
-        if ( options.projection === &#x27;orthographic&#x27; ) {
-            var camera = new THREE.OrthographicCamera( -1, 1, 1, -1, -farClip, farClip );
-            updateCameraAspect( camera, aspect );
-            return camera;
-        }
-
-        return new THREE.PerspectiveCamera( 45, aspect, nearClip, farClip );
-
-    }
-
-    function updateCameraAspect( camera, aspect ) {
-
-        if ( camera.isPerspectiveCamera ) {
-            camera.aspect = aspect;
-        } else if ( camera.isOrthographicCamera ) {
-            // Fit the camera frustum to the bounding box&#x27;s diagonal so that the entire plot fits
-            // within at the default zoom level and camera position.
-            if ( aspect &gt; 1 ) { // Wide window
-                camera.top = midToCorner;
-                camera.right = midToCorner * aspect;
-            } else { // Tall or square window
-                camera.top = midToCorner / aspect;
-                camera.right = midToCorner;
-            }
-            camera.bottom = -camera.top;
-            camera.left = -camera.right;
-        }
-
-        camera.updateProjectionMatrix();
-
-    }
-
-    var lights = [{&quot;x&quot;:-5, &quot;y&quot;:3, &quot;z&quot;:0, &quot;color&quot;:&quot;#7f7f7f&quot;, &quot;parent&quot;:&quot;camera&quot;}];
-    for ( var i=0 ; i &lt; lights.length ; i++ ) {
-        var light = new THREE.DirectionalLight( lights[i].color, 1 );
-        light.position.set( a[0]*lights[i].x, a[1]*lights[i].y, a[2]*lights[i].z );
-        if ( lights[i].parent === &#x27;camera&#x27; ) {
-            light.target.position.set( a[0]*xMid, a[1]*yMid, a[2]*zMid );
-            scene.add( light.target );
-            camera.add( light );
-        } else scene.add( light );
-    }
-    scene.add( camera );
-
-    var ambient = {&quot;color&quot;:&quot;#7f7f7f&quot;};
-    scene.add( new THREE.AmbientLight( ambient.color, 1 ) );
-
-    var controls = new THREE.OrbitControls( camera, renderer.domElement );
-    controls.target.set( a[0]*xMid, a[1]*yMid, a[2]*zMid );
-    controls.addEventListener( &#x27;change&#x27;, function() { if ( !animate ) render(); } );
-
-    window.addEventListener( &#x27;resize&#x27;, function() {
-
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        updateCameraAspect( camera, window.innerWidth / window.innerHeight );
-        if ( window.rescaleFatLines ) rescaleFatLines();
-        if ( !animate ) render();
-
-    } );
-
-    var texts = [];
-    for ( var i=0 ; i &lt; texts.length ; i++ ) addText( texts[i] );
-
-    function addText( json ) {
-        var sprite = addLabel( json.text, a[0]*json.x, a[1]*json.y, a[2]*json.z, json );
-        sprite.userData = json;
-    }
-
-    var points = [{&quot;point&quot;: [0.0, 0.0, 0.0], &quot;size&quot;: 10.0, &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0}, {&quot;point&quot;: [0.0, 4.0, 0.0], &quot;size&quot;: 10.0, &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0}, {&quot;point&quot;: [2.0, 2.0, 2.0], &quot;size&quot;: 10.0, &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0}, {&quot;point&quot;: [4.0, 0.0, 0.0], &quot;size&quot;: 10.0, &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0}, {&quot;point&quot;: [4.0, 4.0, 0.0], &quot;size&quot;: 10.0, &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0}];
-    for ( var i=0 ; i &lt; points.length ; i++ ) addPoint( points[i] );
-
-    function addPoint( json ) {
-
-        var geometry = new THREE.Geometry();
-        var v = json.point;
-        geometry.vertices.push( new THREE.Vector3( a[0]*v[0], a[1]*v[1], a[2]*v[2] ) );
-
-        var canvas = document.createElement( &#x27;canvas&#x27; );
-        canvas.width = 128;
-        canvas.height = 128;
-
-        var context = canvas.getContext( &#x27;2d&#x27; );
-        context.arc( 64, 64, 64, 0, 2 * Math.PI );
-        context.fillStyle = json.color;
-        context.fill();
-
-        var texture = new THREE.Texture( canvas );
-        texture.needsUpdate = true;
-
-        var transparent = json.opacity &lt; 1 ? true : false;
-        var size = camera.isOrthographicCamera ? json.size : json.size/100;
-        var material = new THREE.PointsMaterial( { size: size, map: texture,
-                                                   transparent: transparent, opacity: json.opacity,
-                                                   alphaTest: .1 } );
-
-        var c = new THREE.Vector3();
-        geometry.computeBoundingBox();
-        geometry.boundingBox.getCenter( c );
-        geometry.translate( -c.x, -c.y, -c.z );
-
-        var mesh = new THREE.Points( geometry, material );
-        mesh.position.set( c.x, c.y, c.z );
-        mesh.userData = json;
-        scene.add( mesh );
-
-    }
-
-    var lines = [{&quot;points&quot;: [[0.0, 0.0, 0.0], [0.0, 4.0, 0.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[0.0, 0.0, 0.0], [2.0, 2.0, 2.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[0.0, 4.0, 0.0], [2.0, 2.0, 2.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[0.0, 4.0, 0.0], [4.0, 4.0, 0.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[2.0, 2.0, 2.0], [4.0, 0.0, 0.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[2.0, 2.0, 2.0], [4.0, 4.0, 0.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[4.0, 0.0, 0.0], [4.0, 4.0, 0.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}];
-    for ( var i=0 ; i &lt; lines.length ; i++ ) addLine( lines[i] );
-
-    function addLine( json ) {
-
-        var geometry = new THREE.Geometry();
-        for ( var i=0 ; i &lt; json.points.length ; i++ ) {
-            var v = json.points[i];
-            geometry.vertices.push( new THREE.Vector3( a[0]*v[0], a[1]*v[1], a[2]*v[2] ) );
-        }
-
-        var c = new THREE.Vector3();
-        geometry.computeBoundingBox();
-        geometry.boundingBox.getCenter( c );
-        geometry.translate( -c.x, -c.y, -c.z );
-
-        var transparent = json.opacity &lt; 1 ? true : false;
-        var materialOptions = { color: json.color, linewidth: json.linewidth,
-                                transparent: transparent, opacity: json.opacity };
-
-        var mesh;
-        if ( json.linewidth &gt; 1 &amp;&amp; window.createFatLineStrip ) {
-            mesh = createFatLineStrip( geometry, materialOptions );
-        } else {
-            var material = new THREE.LineBasicMaterial( materialOptions );
-            mesh = new THREE.Line( geometry, material );
-        }
-
-        mesh.position.set( c.x, c.y, c.z );
-        mesh.userData = json;
-        scene.add( mesh );
-
-    }
-
-    var surfaces = [{&quot;vertices&quot;: [{&quot;x&quot;: 0.0, &quot;y&quot;: 0.0, &quot;z&quot;: 0.0}, {&quot;x&quot;: 0.0, &quot;y&quot;: 4.0, &quot;z&quot;: 0.0}, {&quot;x&quot;: 2.0, &quot;y&quot;: 2.0, &quot;z&quot;: 2.0}, {&quot;x&quot;: 4.0, &quot;y&quot;: 0.0, &quot;z&quot;: 0.0}, {&quot;x&quot;: 4.0, &quot;y&quot;: 4.0, &quot;z&quot;: 0.0}], &quot;faces&quot;: [[3, 0, 1, 4], [1, 0, 2], [2, 0, 3], [4, 2, 3], [4, 1, 2]], &quot;color&quot;: &quot;#008000&quot;, &quot;opacity&quot;: 1.0, &quot;useFlatShading&quot;: true}];
-    for ( var i=0 ; i &lt; surfaces.length ; i++ ) addSurface( surfaces[i] );
-
-    function addSurface( json ) {
-
-        var useFaceColors = &#x27;faceColors&#x27; in json ? true : false;
-
-        var geometry = new THREE.Geometry();
-        for ( var i=0 ; i &lt; json.vertices.length ; i++ ) {
-            var v = json.vertices[i];
-            geometry.vertices.push( new THREE.Vector3( a[0]*v.x, a[1]*v.y, a[2]*v.z ) );
-        }
-        for ( var i=0 ; i &lt; json.faces.length ; i++ ) {
-            var f = json.faces[i];
-            for ( var j=0 ; j &lt; f.length - 2 ; j++ ) {
-                var face = new THREE.Face3( f[0], f[j+1], f[j+2] );
-                if ( useFaceColors ) face.color.set( json.faceColors[i] );
-                geometry.faces.push( face );
-            }
-        }
-        geometry.computeVertexNormals();
-
-        var side = json.singleSide ? THREE.FrontSide : THREE.DoubleSide;
-        var transparent = json.opacity &lt; 1 ? true : false;
-        var depthWrite = &#x27;depthWrite&#x27; in json ? json.depthWrite : !transparent;
-        var flatShading = json.useFlatShading ? json.useFlatShading : false;
-
-        var material = new THREE.MeshPhongMaterial( { side: side,
-                                     color: useFaceColors ? &#x27;white&#x27; : json.color,
-                                     vertexColors: useFaceColors ? THREE.FaceColors : THREE.NoColors,
-                                     transparent: transparent, opacity: json.opacity,
-                                     shininess: 20, flatShading: flatShading,
-                                     depthWrite: depthWrite } );
-
-        var c = new THREE.Vector3();
-        geometry.computeBoundingBox();
-        geometry.boundingBox.getCenter( c );
-        geometry.translate( -c.x, -c.y, -c.z );
-
-        var mesh = new THREE.Mesh( geometry, material );
-        mesh.position.set( c.x, c.y, c.z );
-        if ( transparent &amp;&amp; json.renderOrder ) mesh.renderOrder = json.renderOrder;
-        mesh.userData = json;
-        scene.add( mesh );
-
-        if ( json.showMeshGrid ) addSurfaceMeshGrid( json );
-
-    }
-
-    function addSurfaceMeshGrid( json ) {
-
-        var geometry = new THREE.Geometry();
-
-        for ( var i=0 ; i &lt; json.faces.length ; i++ ) {
-            var f = json.faces[i];
-            for ( var j=0 ; j &lt; f.length ; j++ ) {
-                var k = j === f.length-1 ? 0 : j+1;
-                var v1 = json.vertices[f[j]];
-                var v2 = json.vertices[f[k]];
-                // vertices in opposite directions on neighboring faces
-                var nudge = f[j] &lt; f[k] ? .0005*zRange : -.0005*zRange;
-                geometry.vertices.push( new THREE.Vector3( a[0]*v1.x, a[1]*v1.y, a[2]*(v1.z+nudge) ) );
-                geometry.vertices.push( new THREE.Vector3( a[0]*v2.x, a[1]*v2.y, a[2]*(v2.z+nudge) ) );
-            }
-        }
-
-        var c = new THREE.Vector3();
-        geometry.computeBoundingBox();
-        geometry.boundingBox.getCenter( c );
-        geometry.translate( -c.x, -c.y, -c.z );
-
-        var gridColor = options.theme === &#x27;dark&#x27; ? &#x27;white&#x27; : &#x27;black&#x27;;
-        var linewidth = json.linewidth || 1;
-        var materialOptions = { color: gridColor, linewidth: linewidth };
-
-        var mesh;
-        if ( linewidth &gt; 1 &amp;&amp; window.createFatLineSegments ) {
-            mesh = createFatLineSegments( geometry, materialOptions );
-        } else {
-            var material = new THREE.LineBasicMaterial( materialOptions );
-            mesh = new THREE.LineSegments( geometry, material );
-        }
-
-        mesh.position.set( c.x, c.y, c.z );
-        mesh.userData = json;
-        scene.add( mesh );
-
-    }
-
-    function render() {
-
-        if ( window.updateAnimation ) animate = updateAnimation();
-        if ( animate ) requestAnimationFrame( render );
-
-        renderer.render( scene, camera );
-
-    }
-
-    render();
-    controls.update();
+    updateCameraAspect( camera, window.innerWidth / window.innerHeight );
+    if ( window.rescaleFatLines ) rescaleFatLines();
     if ( !animate ) render();
 
+} );
 
-    // menu functions
+var texts = [];
+for ( var i=0 ; i &lt; texts.length ; i++ ) addText( texts[i] );
 
-    function toggleMenu() {
+function addText( json ) {
+    var sprite = addLabel( json.text, a[0]*json.x, a[1]*json.y, a[2]*json.z, json );
+    sprite.userData = json;
+}
 
-        var m = document.getElementById( &#x27;menu-content&#x27; );
-        if ( m.style.display === &#x27;block&#x27; ) m.style.display = &#x27;none&#x27;
-        else m.style.display = &#x27;block&#x27;;
+var points = [{&quot;point&quot;: [0.0, 0.0, 0.0], &quot;size&quot;: 10.0, &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0}, {&quot;point&quot;: [0.0, 4.0, 0.0], &quot;size&quot;: 10.0, &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0}, {&quot;point&quot;: [2.0, 2.0, 2.0], &quot;size&quot;: 10.0, &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0}, {&quot;point&quot;: [4.0, 0.0, 0.0], &quot;size&quot;: 10.0, &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0}, {&quot;point&quot;: [4.0, 4.0, 0.0], &quot;size&quot;: 10.0, &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0}];
+for ( var i=0 ; i &lt; points.length ; i++ ) addPoint( points[i] );
 
+function addPoint( json ) {
+
+    var geometry = new THREE.Geometry();
+    var v = json.point;
+    geometry.vertices.push( new THREE.Vector3( a[0]*v[0], a[1]*v[1], a[2]*v[2] ) );
+
+    var canvas = document.createElement( &#x27;canvas&#x27; );
+    canvas.width = 128;
+    canvas.height = 128;
+
+    var context = canvas.getContext( &#x27;2d&#x27; );
+    context.arc( 64, 64, 64, 0, 2 * Math.PI );
+    context.fillStyle = json.color;
+    context.fill();
+
+    var texture = new THREE.Texture( canvas );
+    texture.needsUpdate = true;
+
+    var transparent = json.opacity &lt; 1 ? true : false;
+    var size = camera.isOrthographicCamera ? json.size : json.size/100;
+    var material = new THREE.PointsMaterial( { size: size, map: texture,
+                                               transparent: transparent, opacity: json.opacity,
+                                               alphaTest: .1 } );
+
+    var c = new THREE.Vector3();
+    geometry.computeBoundingBox();
+    geometry.boundingBox.getCenter( c );
+    geometry.translate( -c.x, -c.y, -c.z );
+
+    var mesh = new THREE.Points( geometry, material );
+    mesh.position.set( c.x, c.y, c.z );
+    mesh.userData = json;
+    scene.add( mesh );
+
+}
+
+var lines = [{&quot;points&quot;: [[0.0, 0.0, 0.0], [0.0, 4.0, 0.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[0.0, 0.0, 0.0], [2.0, 2.0, 2.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[0.0, 4.0, 0.0], [2.0, 2.0, 2.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[0.0, 4.0, 0.0], [4.0, 4.0, 0.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[2.0, 2.0, 2.0], [4.0, 0.0, 0.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[2.0, 2.0, 2.0], [4.0, 4.0, 0.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}, {&quot;points&quot;: [[4.0, 0.0, 0.0], [4.0, 4.0, 0.0]], &quot;color&quot;: &quot;#0000ff&quot;, &quot;opacity&quot;: 1.0, &quot;linewidth&quot;: 1.0}];
+for ( var i=0 ; i &lt; lines.length ; i++ ) addLine( lines[i] );
+
+function addLine( json ) {
+
+    var geometry = new THREE.Geometry();
+    for ( var i=0 ; i &lt; json.points.length ; i++ ) {
+        var v = json.points[i];
+        geometry.vertices.push( new THREE.Vector3( a[0]*v[0], a[1]*v[1], a[2]*v[2] ) );
     }
 
+    var c = new THREE.Vector3();
+    geometry.computeBoundingBox();
+    geometry.boundingBox.getCenter( c );
+    geometry.translate( -c.x, -c.y, -c.z );
 
-    function saveAsPNG() {
+    var transparent = json.opacity &lt; 1 ? true : false;
+    var materialOptions = { color: json.color, linewidth: json.linewidth,
+                            transparent: transparent, opacity: json.opacity };
 
-        var a = document.body.appendChild( document.createElement( &#x27;a&#x27; ) );
-        a.href = renderer.domElement.toDataURL( &#x27;image/png&#x27; );
-        a.download = &#x27;screenshot&#x27;;
-        a.click();
-
+    var mesh;
+    if ( json.linewidth &gt; 1 &amp;&amp; window.createFatLineStrip ) {
+        mesh = createFatLineStrip( geometry, materialOptions );
+    } else {
+        var material = new THREE.LineBasicMaterial( materialOptions );
+        mesh = new THREE.Line( geometry, material );
     }
 
-    function saveAsHTML() {
+    mesh.position.set( c.x, c.y, c.z );
+    mesh.userData = json;
+    scene.add( mesh );
 
-        toggleMenu(); // otherwise visible in output
-        event.stopPropagation();
+}
 
-        var blob = new Blob( [ &#x27;&lt;!DOCTYPE html&gt;\n&#x27; + document.documentElement.outerHTML ] );
-        var a = document.body.appendChild( document.createElement( &#x27;a&#x27; ) );
-        a.href = window.URL.createObjectURL( blob );
-        a.download = suggestFilename();
-        a.click();
+var surfaces = [{&quot;vertices&quot;: [{&quot;x&quot;: 0.0, &quot;y&quot;: 0.0, &quot;z&quot;: 0.0}, {&quot;x&quot;: 0.0, &quot;y&quot;: 4.0, &quot;z&quot;: 0.0}, {&quot;x&quot;: 2.0, &quot;y&quot;: 2.0, &quot;z&quot;: 2.0}, {&quot;x&quot;: 4.0, &quot;y&quot;: 0.0, &quot;z&quot;: 0.0}, {&quot;x&quot;: 4.0, &quot;y&quot;: 4.0, &quot;z&quot;: 0.0}], &quot;faces&quot;: [[3, 0, 1, 4], [1, 0, 2], [2, 0, 3], [4, 2, 3], [4, 1, 2]], &quot;color&quot;: &quot;#008000&quot;, &quot;opacity&quot;: 1.0, &quot;useFlatShading&quot;: true}];
+for ( var i=0 ; i &lt; surfaces.length ; i++ ) addSurface( surfaces[i] );
 
-        function suggestFilename() {
-            if ( !document.title ) {
-                return &#x27;graphic.html&#x27;;
-            } else if ( /\.html?$/i.test( document.title ) ) {
-                return document.title; // already ends in .htm or .html
-            } else {
-                return document.title + &#x27;.html&#x27;;
-            }
+function addSurface( json ) {
+
+    var useFaceColors = &#x27;faceColors&#x27; in json ? true : false;
+
+    var geometry = new THREE.Geometry();
+    for ( var i=0 ; i &lt; json.vertices.length ; i++ ) {
+        var v = json.vertices[i];
+        geometry.vertices.push( new THREE.Vector3( a[0]*v.x, a[1]*v.y, a[2]*v.z ) );
+    }
+    for ( var i=0 ; i &lt; json.faces.length ; i++ ) {
+        var f = json.faces[i];
+        for ( var j=0 ; j &lt; f.length - 2 ; j++ ) {
+            var face = new THREE.Face3( f[0], f[j+1], f[j+2] );
+            if ( useFaceColors ) face.color.set( json.faceColors[i] );
+            geometry.faces.push( face );
         }
+    }
+    geometry.computeVertexNormals();
 
+    var side = json.singleSide ? THREE.FrontSide : THREE.DoubleSide;
+    var transparent = json.opacity &lt; 1 ? true : false;
+    var depthWrite = &#x27;depthWrite&#x27; in json ? json.depthWrite : !transparent;
+    var flatShading = json.useFlatShading ? json.useFlatShading : false;
+
+    var material = new THREE.MeshPhongMaterial( { side: side,
+                                 color: useFaceColors ? &#x27;white&#x27; : json.color,
+                                 vertexColors: useFaceColors ? THREE.FaceColors : THREE.NoColors,
+                                 transparent: transparent, opacity: json.opacity,
+                                 shininess: 20, flatShading: flatShading,
+                                 depthWrite: depthWrite } );
+
+    var c = new THREE.Vector3();
+    geometry.computeBoundingBox();
+    geometry.boundingBox.getCenter( c );
+    geometry.translate( -c.x, -c.y, -c.z );
+
+    var mesh = new THREE.Mesh( geometry, material );
+    mesh.position.set( c.x, c.y, c.z );
+    if ( transparent &amp;&amp; json.renderOrder ) mesh.renderOrder = json.renderOrder;
+    mesh.userData = json;
+    scene.add( mesh );
+
+    if ( json.showMeshGrid ) addSurfaceMeshGrid( json );
+
+}
+
+function addSurfaceMeshGrid( json ) {
+
+    var geometry = new THREE.Geometry();
+
+    for ( var i=0 ; i &lt; json.faces.length ; i++ ) {
+        var f = json.faces[i];
+        for ( var j=0 ; j &lt; f.length ; j++ ) {
+            var k = j === f.length-1 ? 0 : j+1;
+            var v1 = json.vertices[f[j]];
+            var v2 = json.vertices[f[k]];
+            // vertices in opposite directions on neighboring faces
+            var nudge = f[j] &lt; f[k] ? .0005*zRange : -.0005*zRange;
+            geometry.vertices.push( new THREE.Vector3( a[0]*v1.x, a[1]*v1.y, a[2]*(v1.z+nudge) ) );
+            geometry.vertices.push( new THREE.Vector3( a[0]*v2.x, a[1]*v2.y, a[2]*(v2.z+nudge) ) );
+        }
     }
 
-    function getViewpoint() {
+    var c = new THREE.Vector3();
+    geometry.computeBoundingBox();
+    geometry.boundingBox.getCenter( c );
+    geometry.translate( -c.x, -c.y, -c.z );
 
-        function roundTo( x, n ) { return +x.toFixed(n); }
+    var gridColor = options.theme === &#x27;dark&#x27; ? &#x27;white&#x27; : &#x27;black&#x27;;
+    var linewidth = json.linewidth || 1;
+    var materialOptions = { color: gridColor, linewidth: linewidth };
 
-        var v = camera.quaternion.inverse();
-        var r = Math.sqrt( v.x*v.x + v.y*v.y + v.z*v.z );
-        var axis = [ roundTo( v.x / r, 4 ), roundTo( v.y / r, 4 ), roundTo( v.z / r, 4 ) ];
-        var angle = roundTo( 2 * Math.atan2( r, v.w ) * 180 / Math.PI, 2 );
-
-        var textArea = document.createElement( &#x27;textarea&#x27; );
-        textArea.textContent = JSON.stringify( axis ) + &#x27;,&#x27; + angle;
-        textArea.style.csstext = &#x27;position: absolute; top: -100%&#x27;;
-        document.body.append( textArea );
-        textArea.select();
-        document.execCommand( &#x27;copy&#x27; );
-
-        var m = document.getElementById( &#x27;menu-message&#x27; );
-        m.innerHTML = &#x27;Viewpoint copied to clipboard&#x27;;
-        m.style.display = &#x27;block&#x27;;
-        setTimeout( function() { m.style.display = &#x27;none&#x27;; }, 2000 );
-
+    var mesh;
+    if ( linewidth &gt; 1 &amp;&amp; window.createFatLineSegments ) {
+        mesh = createFatLineSegments( geometry, materialOptions );
+    } else {
+        var material = new THREE.LineBasicMaterial( materialOptions );
+        mesh = new THREE.LineSegments( geometry, material );
     }
 
-    function getCamera() {
+    mesh.position.set( c.x, c.y, c.z );
+    mesh.userData = json;
+    scene.add( mesh );
 
-        function roundTo( x, n ) { return +x.toFixed(n); }
+}
 
-        var pos = camera.position;
-        var pos_r = [ roundTo( pos.x, 4 ), roundTo( pos.y, 4 ), roundTo( pos.z, 4 ) ];
-   //     var up = camera.up; // up is always (0,0,1)
-        var textArea = document.createElement(&#x27;textarea&#x27;);
-        var cam_position = JSON.stringify(pos_r);
-        textArea.textContent = &#x27;,camera_position=&#x27; + cam_position;
-        textArea.style.csstext = &#x27;position: absolute; top: -100%&#x27;;
-        document.body.append( textArea );
-        textArea.select();
-        document.execCommand( &#x27;copy&#x27; );
+function render() {
 
-        var m = document.getElementById( &#x27;menu-message&#x27; );
-        m.innerHTML = &#x27;Camera position &#x27;+ cam_position+&#x27; copied to clipboard&#x27;;
-        m.style.display = &#x27;block&#x27;;
-        setTimeout( function() { m.style.display = &#x27;none&#x27;; }, 2000 );
+    if ( window.updateAnimation ) animate = updateAnimation();
+    if ( animate ) requestAnimationFrame( render );
 
+    renderer.render( scene, camera );
+
+}
+
+render();
+controls.update();
+if ( !animate ) render();
+
+
+// menu functions
+
+function toggleMenu() {
+
+    var m = document.getElementById( &#x27;menu-content&#x27; );
+    if ( m.style.display === &#x27;block&#x27; ) m.style.display = &#x27;none&#x27;
+    else m.style.display = &#x27;block&#x27;;
+
+}
+
+
+function saveAsPNG() {
+
+    var a = document.body.appendChild( document.createElement( &#x27;a&#x27; ) );
+    a.href = renderer.domElement.toDataURL( &#x27;image/png&#x27; );
+    a.download = &#x27;screenshot&#x27;;
+    a.click();
+
+}
+
+function saveAsHTML() {
+
+    toggleMenu(); // otherwise visible in output
+    event.stopPropagation();
+
+    var blob = new Blob( [ &#x27;&lt;!DOCTYPE html&gt;\n&#x27; + document.documentElement.outerHTML ] );
+    var a = document.body.appendChild( document.createElement( &#x27;a&#x27; ) );
+    a.href = window.URL.createObjectURL( blob );
+    a.download = suggestFilename();
+    a.click();
+
+    function suggestFilename() {
+        if ( !document.title ) {
+            return &#x27;graphic.html&#x27;;
+        } else if ( /\.html?$/i.test( document.title ) ) {
+            return document.title; // already ends in .htm or .html
+        } else {
+            return document.title + &#x27;.html&#x27;;
+        }
     }
+
+}
+
+function getViewpoint() {
+
+    function roundTo( x, n ) { return +x.toFixed(n); }
+
+    var v = camera.quaternion.inverse();
+    var r = Math.sqrt( v.x*v.x + v.y*v.y + v.z*v.z );
+    var axis = [ roundTo( v.x / r, 4 ), roundTo( v.y / r, 4 ), roundTo( v.z / r, 4 ) ];
+    var angle = roundTo( 2 * Math.atan2( r, v.w ) * 180 / Math.PI, 2 );
+
+    var textArea = document.createElement( &#x27;textarea&#x27; );
+    textArea.textContent = JSON.stringify( axis ) + &#x27;,&#x27; + angle;
+    textArea.style.csstext = &#x27;position: absolute; top: -100%&#x27;;
+    document.body.append( textArea );
+    textArea.select();
+    document.execCommand( &#x27;copy&#x27; );
+
+    var m = document.getElementById( &#x27;menu-message&#x27; );
+    m.innerHTML = &#x27;Viewpoint copied to clipboard&#x27;;
+    m.style.display = &#x27;block&#x27;;
+    setTimeout( function() { m.style.display = &#x27;none&#x27;; }, 2000 );
+
+}
+
+function getCamera() {
+
+    function roundTo( x, n ) { return +x.toFixed(n); }
+
+    var pos = camera.position;
+    var pos_r = [ roundTo( pos.x, 4 ), roundTo( pos.y, 4 ), roundTo( pos.z, 4 ) ];
+```
+//     var up = camera.up; // up is always (0,0,1) var textArea = document.createElement(&#x27;textarea&#x27;); var cam_position = JSON.stringify(pos_r); textArea.textContent = &#x27;,camera_position=&#x27; + cam_position; textArea.style.csstext = &#x27;position: absolute; top: -100%&#x27;; document.body.append( textArea ); textArea.select(); document.execCommand( &#x27;copy&#x27; );
+
+```
+    var m = document.getElementById( &#x27;menu-message&#x27; );
+    m.innerHTML = &#x27;Camera position &#x27;+ cam_position+&#x27; copied to clipboard&#x27;;
+    m.style.display = &#x27;block&#x27;;
+    setTimeout( function() { m.style.display = &#x27;none&#x27;; }, 2000 );
+
+}
+```
 
 &lt;/script&gt;
 
-&lt;div id=&quot;menu-container&quot; onclick=&quot;toggleMenu()&quot;&gt;&amp;#x24d8;
-&lt;div id=&quot;menu-message&quot;&gt;&lt;/div&gt;
-&lt;div id=&quot;menu-content&quot;&gt;
-&lt;div onclick=&quot;saveAsPNG()&quot;&gt;Save as PNG&lt;/div&gt;
-&lt;div onclick=&quot;saveAsHTML()&quot;&gt;Save as HTML&lt;/div&gt;
-&lt;div onclick=&quot;getCamera()&quot;&gt;Get camera&lt;/div&gt;
-&lt;div onclick=&quot;getViewpoint()&quot;&gt;Get viewpoint&lt;/div&gt;
-&lt;div&gt;Close Menu&lt;/div&gt;
-&lt;/div&gt;&lt;/div&gt;
+&lt;div id=&quot;menu-container&quot; onclick=&quot;toggleMenu()&quot;&gt;&amp;#x24d8; &lt;div id=&quot;menu-message&quot;&gt;&lt;/div&gt; &lt;div id=&quot;menu-content&quot;&gt; &lt;div onclick=&quot;saveAsPNG()&quot;&gt;Save as PNG&lt;/div&gt; &lt;div onclick=&quot;saveAsHTML()&quot;&gt;Save as HTML&lt;/div&gt; &lt;div onclick=&quot;getCamera()&quot;&gt;Get camera&lt;/div&gt; &lt;div onclick=&quot;getViewpoint()&quot;&gt;Get viewpoint&lt;/div&gt; &lt;div&gt;Close Menu&lt;/div&gt; &lt;/div&gt;&lt;/div&gt;
 
+&lt;/body&gt; &lt;/html&gt; " width="100%" height="400" style="border: 0;"> </iframe>
 
-&lt;/body&gt;
-&lt;/html&gt;
-"
-        width="100%"
-        height="400"
-        style="border: 0;">
-</iframe>
-
-
-
-
-
-
-    35
-
-
-
+```
+35
+```
 
 ```python
 points = [[0, 0, 0], [0, 4, 0], [4, 0, 0], [4, 4, 0], [2, 2, 2]]
@@ -2843,34 +2620,32 @@ display(ls)
 len(ls)
 ```
 
-
-    [((0, 0, 0), 0),
-     ((0, 4, 0), 0),
-     ((4, 0, 0), 0),
-     ((4, 4, 0), 0),
-     ((2, 2, 2), 0),
-     ((0, 2, 0), 0),
-     ((1, 1, 0), 0),
-     ((1, 3, 0), 0),
-     ((2, 0, 0), 0),
-     ((2, 2, 0), 0),
-     ((2, 4, 0), 0),
-     ((3, 1, 0), 0),
-     ((3, 3, 0), 0),
-     ((4, 2, 0), 0),
-     ((1, 2, 1), 0),
-     ((2, 1, 1), 0),
-     ((2, 3, 1), 0),
-     ((3, 2, 1), 0)]
-
-
+```
+[((0, 0, 0), 0),
+ ((0, 4, 0), 0),
+ ((4, 0, 0), 0),
+ ((4, 4, 0), 0),
+ ((2, 2, 2), 0),
+ ((0, 2, 0), 0),
+ ((1, 1, 0), 0),
+ ((1, 3, 0), 0),
+ ((2, 0, 0), 0),
+ ((2, 2, 0), 0),
+ ((2, 4, 0), 0),
+ ((3, 1, 0), 0),
+ ((3, 3, 0), 0),
+ ((4, 2, 0), 0),
+ ((1, 2, 1), 0),
+ ((2, 1, 1), 0),
+ ((2, 3, 1), 0),
+ ((3, 2, 1), 0)]
 
 
 
-    18
 
 
-
+18
+```
 
 ```python
 W = toric_varieties.P1xP1_Z2()
@@ -2884,26 +2659,15 @@ HH = X.cohomology_ring()
 show(X.integrate(HH(K) ^ 2))
 ```
 
-
 <html>\(\displaystyle \mathrm{False}\)</html>
-
-
 
 <html>\(\displaystyle \left(\right)\)</html>
 
-
-
 <html>\(\displaystyle \mathrm{True}\)</html>
-
-
 
 <html>\(\displaystyle -\mathrm{V}\left(s\right) - \mathrm{V}\left(t\right) - \mathrm{V}\left(x\right) - \mathrm{V}\left(y\right)\)</html>
 
-
-
 <html>\(\displaystyle 8\)</html>
-
-
 
 ```python
 X = toric_varieties.P1xP1()
@@ -2913,13 +2677,9 @@ Ds, Dt, Dx, Dy = X.toric_divisor_group().gens()
 Ds
 ```
 
-
-
-
-    V(s)
-
-
-
+```
+V(s)
+```
 
 ```python
 # See https://www.math.sciences.univ-nantes.fr/~sorger/en/chow/
@@ -2928,16 +2688,11 @@ from sage.schemes.chow.all import *
 X = ChowScheme(6, ["c2", "c4", "c6"], [2, 4, 6])
 td = Sheaf(X, 6, 1 + sum(X.gens())).todd_class()
 (td._logg() / 2)._expp().by_degrees()[6]
-
 ```
 
-
-
-
-    31/967680*c2^3 - 11/241920*c2*c4 + 1/60480*c6
-
-
-
+```
+31/967680*c2^3 - 11/241920*c2*c4 + 1/60480*c6
+```
 
 ```python
 P2 = Proj(2, "k")
@@ -2947,16 +2702,11 @@ sage: g = Blowup(f)
 sage: B = g.codomain()
 sage: (e, h) = B.chowring().gens()
 sage: ((6 * h - 2 * e) ^ 5).integral()
-
 ```
 
-
-
-
-    3264
-
-
-
+```
+3264
+```
 
 ```python
 B.chowring().gens()
@@ -2977,21 +2727,15 @@ sage: B.betti_numbers()
 sage: B.tangent_bundle().chern_classes()[5].integral()  # The Euler number
 ```
 
-
 ```python
 H = Grass(5, 2)  # lines in P4
 sage: Q = H.sheaves["universal_quotient"]
 sage: Q.symm(5).chern_classes()[H.dimension()].integral()
-
 ```
 
-
-
-
-    2875
-
-
-
+```
+2875
+```
 
 ```python
  G = Grass(5, 3)  # 2-planes in P4
@@ -3000,17 +2744,11 @@ sage: H = ProjBundle(Q.symm(2).dual())
 sage: f = H.base_morphism()  # H -> G
 sage: A = f.upperstar(Q.symm(5)) - f.upperstar(Q.symm(3)) * H.o(-1)
 sage: A.chern_classes()[H.dimension()].integral()
-
 ```
 
-
-
-
-    609250
-
-
-
+```
+609250
+```
 
 ```python
-
 ```

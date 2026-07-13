@@ -23,11 +23,14 @@ agent-memory add --scope project --type context --title <title> --content <conte
 agent-memory add --scope project --type reference --title <title> --content <content>
 ```
 
-Plan work is card-backed. Create and update plan cards with `agent-memory plan add` and `agent-memory plan update`, not `agent-memory add --type plan`.
+Plan work is card-backed.
+Create and update plan cards with `agent-memory plan add` and `agent-memory plan update`, not `agent-memory add --type plan`.
 
 Use `agent-memory retrieve <key>`, `agent-memory update <key>`, and `agent-memory delete <key>` for memory CRUD.
 
-The vault should be committed at all times. Treat staged or unstaged vault changes as an ephemeral error state. Before normal memory work resumes, load the bundled vault-maintenance skill with `agent-memory maintain skill vault-maintenance` and follow its referenced check, repair, and commit workflows.
+The vault should be committed at all times.
+Treat staged or unstaged vault changes as an ephemeral error state.
+Before normal memory work resumes, load the bundled vault-maintenance skill with `agent-memory maintain skill vault-maintenance` and follow its referenced check, repair, and commit workflows.
 
 Move reusable lessons during maintenance with:
 
@@ -38,32 +41,32 @@ agent-memory maintain move <key> --to global/advice
 
 # Banned-language replacement index (always-on)
 
-The terms below have demonstrated **strong priors**: they re-emitted even after being
-catalogued in the terminology dictionary — in one case inside the anti-drift doctrine
-itself, as its self-chosen name. A reference-file row is an on-demand signal; a term
-that survives its row needs this always-loaded one. Never write these terms in code,
-issues, docs, comments, memories, or doctrine; write the replacement.
+The terms below have demonstrated **strong priors**: they re-emitted even after being catalogued in the terminology dictionary — in one case inside the anti-drift doctrine itself, as its self-chosen name.
+A reference-file row is an on-demand signal; a term that survives its row needs this always-loaded one.
+Never write these terms in code, issues, docs, comments, memories, or doctrine; write the replacement.
 
 | banned | documented emissions | replacement |
-|---|---|---|
+| --- | --- | --- |
 | **"carrier"** (carrier module/set, "carrier of a structure", "carrier siting") | 3+ — P1's first draft; the P6 enforcement clause's own name (corrected 2026-07-12); Tier B row 1 predates both | the **underlying set/module** (image of the forgetful functor); in doctrine prose name the entity: the **object, morphism, homset, or functor** |
 | **"ambient"** as free-standing data ("the ambient", "shared ambient", "shared span/coordinates", `ambient=`/`in_ambient=` parameters, stored `_ambient` state) | pervasive — Sage back-porting; issue #100's own original body; re-emitted in doctrine prose 2026-07-11 | a subobject is the pair `(A, f: A ↪ B)`: its ambient **is** `f.codomain()`; rational/real constructions live in the **base-changed parent** `L ⊗ R'`, named by its functor |
 
-**Graduation rule:** when a drift term already carrying a dictionary row is emitted a
-*second* time, it graduates to this index — the repetition is the evidence of a strong
-prior. Diagnose new drift by principle first (generative failure model P1–P6); this
-index is only for proven repeat offenders. Full catalogue:
-`.agents/references/terminology-dictionary.md`; code-shape patterns:
-`.agents/references/slop-pattern-index.md`.
+**Graduation rule:** when a drift term already carrying a dictionary row is emitted a *second* time, it graduates to this index — the repetition is the evidence of a strong prior.
+Diagnose new drift by principle first (generative failure model P1–P6); this index is only for proven repeat offenders.
+Full catalogue: `.agents/references/terminology-dictionary.md`; code-shape patterns: `.agents/references/slop-pattern-index.md`.
 
 # Repository layout
 
 Top-level directories (this is a navigational map; each tree owns its own README/AGENTS.md):
 
-- **`computations/`** — the working computational corpus. Its `experiments/` subtree holds the **spikes** (see the lineage note below and *QC integration for spikes*). Other subdirs are task-specific: `components/` (reusable computation pieces, e.g. the `coxeter-vinberg/` prototypes), `coxiter/` (CoxIter tool integration), `lattice-orbits/`, `enriques-moduli/` + `enriques-paper-artifacts/` (Enriques-surface moduli work), `notebooks/` (Jupyter), `scripts/` (one-off scripts), `reports/` (generated output).
-- **`projects/`** — long-horizon subprojects. `projects/lattice-research/` is a **git submodule** (`dzackgarza/lattice-research`) and contains `category_specs/` (see lineage note), plus `src/`, `theory/`, `lean/`, `paper/`, `tests/`, `reports/`. Because it is a submodule, edits there are commits to a *separate* repo.
-- **`review-calibration/`** — **git submodule** (`dzackgarza/research-review-calibration`) holding a frozen lattice-spike simulacrum for **LLM review calibration**. Planted violations live in `GROUND_TRUTH.md` (never in the review packet). Experiment issues and advisory review runs target the submodule repo, not this monorepo. Hill-climb prompt/context/permissions there before changing production `review-packet.tar` here.
-- **`writing/`** — authored prose: the Coble paper draft and research notes, oral exams, research statement, talks. The user's durable authored artifacts — preserve native LaTeX/tikz source.
+- **`computations/`** — the working computational corpus.
+  Its `experiments/` subtree holds the **spikes** (see the lineage note below and *QC integration for spikes*). Other subdirs are task-specific: `components/` (reusable computation pieces, e.g. the `coxeter-vinberg/` prototypes), `coxiter/` (CoxIter tool integration), `lattice-orbits/`, `enriques-moduli/` + `enriques-paper-artifacts/` (Enriques-surface moduli work), `notebooks/` (Jupyter), `scripts/` (one-off scripts), `reports/` (generated output).
+- **`projects/`** — long-horizon subprojects.
+  `projects/lattice-research/` is a **git submodule** (`dzackgarza/lattice-research`) and contains `category_specs/` (see lineage note), plus `src/`, `theory/`, `lean/`, `paper/`, `tests/`, `reports/`. Because it is a submodule, edits there are commits to a *separate* repo.
+- **`review-calibration/`** — **git submodule** (`dzackgarza/research-review-calibration`) holding a frozen lattice-spike simulacrum for **LLM review calibration**. Planted violations live in `GROUND_TRUTH.md` (never in the review packet).
+  Experiment issues and advisory review runs target the submodule repo, not this monorepo.
+  Hill-climb prompt/context/permissions there before changing production `review-packet.tar` here.
+- **`writing/`** — authored prose: the Coble paper draft and research notes, oral exams, research statement, talks.
+  The user's durable authored artifacts — preserve native LaTeX/tikz source.
 - **`notes/`** — research notes (`computations/`, `papers/`, `topics/`), including the terminology-drift dictionary.
 - **`references/`** — external inputs: `pdfs/`, `generated-indexes/`, `local-system-dependencies/`.
 - **`archives/`** — retired material (`provenance/`).
@@ -72,26 +75,29 @@ Top-level directories (this is a navigational map; each tree owns its own README
 
 Both implement the same goal — a mathematically-semantic, Sage-compatible substrate for exact lattice/surface computation (`projects/lattice-research/GOAL.md`) — but are **two distinct attempts**, and it matters which one a given task targets:
 
-- **`projects/lattice-research/category_specs/`** — the **older, more ambitious attempt**, now **stalled and frozen / on the backburner**. It aimed at the full category/refinement language up front (its `src.bak/`, `tests.bak/` are relics of that). Treat it as **frozen prior art**: read it for design intent, but it is not where active generalization happens. Parity-audit issues (#26/#84/#85 …) that cite `category_specs/…` paths are pointing at this frozen surface.
+- **`projects/lattice-research/category_specs/`** — the **older, more ambitious attempt**, now **stalled and frozen / on the backburner**. It aimed at the full category/refinement language up front (its `src.bak/`, `tests.bak/` are relics of that).
+  Treat it as **frozen prior art**: read it for design intent, but it is not where active generalization happens.
+  Parity-audit issues (#26/#84/#85 …) that cite `category_specs/…` paths are pointing at this frozen surface.
 - **`computations/experiments/*` (the spikes)** — the **current, active attempt**: the same work **broken up and made modular**, deliberately **starting from provably-working lattices and generalizing outward** rather than specifying the whole category tree first.
-  - **`sage_lattice_category_spike/`** — the **maintained base spike**: Sage parity, normalization, literature-backed behavior with a known reference surface. The lexicon (`lexicon/` + `typings/`) is its single type surface. This is where the root-datum, form, morphism, and category interfaces actually live — a repo-wide grep that skips `computations/experiments/` will falsely conclude "no repo surface exists."
+  - **`sage_lattice_category_spike/`** — the **maintained base spike**: Sage parity, normalization, literature-backed behavior with a known reference surface.
+    The lexicon (`lexicon/` + `typings/`) is its single type surface.
+    This is where the root-datum, form, morphism, and category interfaces actually live — a repo-wide grep that skips `computations/experiments/` will falsely conclude "no repo surface exists."
   - **`sage_lattice_feature_spike/`** — the **fork** carrying genuinely new mathematics with no Sage analogue, gap-ledger gated; it *imports* the base spike.
 
 When a task says "the repo owns X" or "X is a gap," resolve it against the **active spikes**, not the frozen `category_specs`.
 
 # Issue-tree and milestone policy (research repo)
 
-This is a research repository with a much longer work horizon, more detailed planning, and more human check-ins than a typical software project. Naive software-geared structural rules (e.g. itree's W040 native-milestone mirror) are less applicable here: treat such findings as a flag to investigate whether *some* consolidation is warranted, never as a mandate — and never collapse the tree or milestones by an order of magnitude to satisfy one. The itree issue tree is authoritative; native GitHub milestones are capability-level human-review checkpoints created just-in-time (user ruling 2026-07-11; W040 = 46 is accepted as-is).
+This is a research repository with a much longer work horizon, more detailed planning, and more human check-ins than a typical software project.
+Naive software-geared structural rules (e.g. itree's W040 native-milestone mirror) are less applicable here: treat such findings as a flag to investigate whether *some* consolidation is warranted, never as a mandate — and never collapse the tree or milestones by an order of magnitude to satisfy one.
+The itree issue tree is authoritative; native GitHub milestones are capability-level human-review checkpoints created just-in-time (user ruling 2026-07-11; W040 = 46 is accepted as-is).
 
-The `needs-research` label is the parking state — work parked pending investigation or upstream capability — not a register of decisions awaiting the user. Do not enumerate labeled issues as "open human decisions"; genuine decisions are extracted through decision-register sweeps (see #97) and recorded as rulings on the issues, the gap ledger, and plan cards.
+The `needs-research` label is the parking state — work parked pending investigation or upstream capability — not a register of decisions awaiting the user.
+Do not enumerate labeled issues as "open human decisions"; genuine decisions are extracted through decision-register sweeps (see #97) and recorded as rulings on the issues, the gap ledger, and plan cards.
 
 # QC integration for spikes
 
-This repo delegates all test/QC to the global QC in `~/ai-review-ci`
-(`dzackgarza/ai-review-ci`). The pre-commit hook runs the root `just test`;
-pre-push runs `just test-ci`. The root recipes run umbrella hygiene, then every
-`computations/experiments/*/justfile` — a spike with a justfile is on QC rails
-automatically; adding one never requires editing the root justfile.
+This repo delegates all test/QC to the global QC in `~/ai-review-ci` (`dzackgarza/ai-review-ci`). The pre-commit hook runs the root `just test`; pre-push runs `just test-ci`. The root recipes run umbrella hygiene, then every `computations/experiments/*/justfile` — a spike with a justfile is on QC rails automatically; adding one never requires editing the root justfile.
 
 ## Adding a new spike
 
@@ -109,31 +115,21 @@ Create `computations/experiments/<spike_name>/` with:
        @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
    ```
 
-   Pure-Python spikes delegate to `python.just` instead. Run
-   `just -f ~/ai-review-ci/justfiles/sage.just setup` for the full wiring
-   contract; the QC preflight prints the exact fix for anything missing.
+   Pure-Python spikes delegate to `python.just` instead.
+   Run `just -f ~/ai-review-ci/justfiles/sage.just setup` for the full wiring contract; the QC preflight prints the exact fix for anything missing.
 
-2. **`pyproject.toml`** — minimal `[project]` with `name`, `version`, and
-   `requires-python = ">=3.14"` (QC installs the spike editable for mypy).
+2. **`pyproject.toml`** — minimal `[project]` with `name`, `version`, and `requires-python = ">=3.14"` (QC installs the spike editable for mypy).
 
-3. **Package importability** — the spike directory is a package
-   (`__init__.py`); the repo `.envrc` already puts `computations/experiments`
-   on `PYTHONPATH`, so `import <spike_name>` works in Sage, tests, and
-   notebooks with no per-spike setup.
+3. **Package importability** — the spike directory is a package (`__init__.py`); the repo `.envrc` already puts `computations/experiments` on `PYTHONPATH`, so `import <spike_name>` works in Sage, tests, and notebooks with no per-spike setup.
 
-4. **Tests as `.sage` files** (`tests/**/test_*.sage`) so the Sage preparser
-   converts integer literals to `Integer`/`Rational` before pytest collects
-   them. Never commit generated `*.sage.py` preparse artifacts — they are
-   gitignored; QC preparses into a tempdir itself.
+4. **Tests as `.sage` files** (`tests/**/test_*.sage`) so the Sage preparser converts integer literals to `Integer`/`Rational` before pytest collects them.
+   Never commit generated `*.sage.py` preparse artifacts — they are gitignored; QC preparses into a tempdir itself.
 
-5. **Environment** — `SAGE_BIN` is exported by the repo `.envrc`; nothing
-   per-spike. Tests execute under Sage's own Python (which has pytest), not a
-   uvx CPython.
+5. **Environment** — `SAGE_BIN` is exported by the repo `.envrc`; nothing per-spike.
+   Tests execute under Sage's own Python (which has pytest), not a uvx CPython.
 
-Code in spikes is held to the global strict gates (ruff, strict mypy, pytest
-at commit; vulture/coverage/slop stack at push). QC tool configs are owned
-centrally in `~/ai-review-ci` — never add local ruff/mypy/coverage config to a
-spike.
+Code in spikes is held to the global strict gates (ruff, strict mypy, pytest at commit; vulture/coverage/slop stack at push).
+QC tool configs are owned centrally in `~/ai-review-ci` — never add local ruff/mypy/coverage config to a spike.
 
 # Review Guidelines
 

@@ -11,8 +11,7 @@ aliases:
 created: 2026-05-11
 ---
 
-> [!conjecture] KSBA vs. semitoroidal comparison for polarized Coble moduli
-> After normalization, the KSBA boundary should agree with the semitoroidal compactification defined by restricting the ramification semifan to the polarized Coble locus.
+> [!conjecture] KSBA vs. semitoroidal comparison for polarized Coble moduli After normalization, the KSBA boundary should agree with the semitoroidal compactification defined by restricting the ramification semifan to the polarized Coble locus.
 
 ## Proposed statement
 

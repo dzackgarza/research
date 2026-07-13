@@ -11,8 +11,8 @@ aliases:
 created: 2026-05-11
 ---
 
-> [!remark] Arithmetic-group issues in polarized Coble moduli
-> The current corrected framework defines the polarized Coble arithmetic group from the **stabilizer of a Coble root** inside the degree-2 Enriques group, rather than from a larger ad hoc subgroup. This is the minimal group that makes the period-map inclusion behave equivariantly.
+> [!remark] Arithmetic-group issues in polarized Coble moduli The current corrected framework defines the polarized Coble arithmetic group from the **stabilizer of a Coble root** inside the degree-2 Enriques group, rather than from a larger ad hoc subgroup.
+> This is the minimal group that makes the period-map inclusion behave equivariantly.
 
 ## Corrected framework
 

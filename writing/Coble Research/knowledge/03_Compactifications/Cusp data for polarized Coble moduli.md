@@ -12,8 +12,7 @@ aliases:
 created: 2026-05-11
 ---
 
-> [!construction] Cusp data for polarized Coble moduli
-> The durable boundary mechanism from the Talks inbox is not a table of final cusp counts, but a **reduction strategy**: encode polarized Coble cusps by isotropic data together with a marked Coble root, and compare them to Sterk's Enriques representatives.
+> [!construction] Cusp data for polarized Coble moduli The durable boundary mechanism from the Talks inbox is not a table of final cusp counts, but a **reduction strategy**: encode polarized Coble cusps by isotropic data together with a marked Coble root, and compare them to Sterk's Enriques representatives.
 
 ## Working boundary objects
 

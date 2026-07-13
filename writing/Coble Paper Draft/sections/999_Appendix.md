@@ -1,15 +1,10 @@
 # Appendix
 
-
-
-
 :::{.remark}
 Following \cite{AEGS23}, a **Kulikov model** is a $K$-trivial semistable model $\cX \to (C, 0)$ of a degeneration of K3 surfaces over a pointed curve $C$. 
 For each such degeneration, one can define the dual complex of the central fiber $\Gamma(\cX_0)$. For Type II degenerations of K3 surfaces, this yields an integral affine $S^2$ with singularities of total charge $24$, and for Type III the dual complex is an interval $\bD^1$.
 The additional data of an integral affine polarization $R_{\IA} \subset \Gamma(\cX_0)$ describes the KSBA stable limit of a degeneration $(\cX^*, \varepsilon \cR^*)$.
 For Enriques (and hence Coble) surfaces, we take the corresponding dlt models $\cZ \da \cX/\iota_{\En}$ and half-divisor models $(\cZ, \cR_{\cZ}) \da (\cX, \cR)/\iota_{\En}$ where $\cX \to (C, 0)$ and $(\cX, \cR)$ are Kulikov and divisor models of their K3 covers.
-
-
 :::
 
 :::{.remark}
@@ -32,7 +27,6 @@ A Type III degeneration can be represented by a triangulation of $S^2$ with sing
 \caption{}
 \label{fig:triangulated-sphere-fan}
 \end{figure}
-
 :::
 
 :::{.remark}
@@ -44,6 +38,4 @@ The following is a combinatorial representation of a Kulikov model for Sterk 2.
 \caption{}
 \label{fig:ias-sterk2-kulikov-model}
 \end{figure}
-
 :::
-

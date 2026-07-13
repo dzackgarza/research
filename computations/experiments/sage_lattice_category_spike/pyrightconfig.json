@@ -13,15 +13,8 @@
 {
   "typeCheckingMode": "off",
   "pythonVersion": "3.14",
-  "include": [
-    "."
-  ],
-  "exclude": [
-    "**/tests",
-    "typings",
-    "**/__pycache__",
-    "sage_patches"
-  ],
+  "include": ["."],
+  "exclude": ["**/tests", "typings", "**/__pycache__", "sage_patches"],
   "stubPath": "typings",
   "reportPrivateUsage": "error"
 }

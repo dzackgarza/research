@@ -1,4 +1,5 @@
 # SCU-Presentation-Beamer
+
 四川大学的 Beamer 演示文稿模板 `scuwqt`，旨在为四川大学的师生提供一个简洁、美观且具有学校特色的演示文稿制作工具。包含三个校区的配图，以川大红为主要用色。
 
 ## 特性
@@ -14,7 +15,7 @@
 
 1. **安装 LaTeX 环境**：确保你的计算机上安装了 LaTeX 环境，推荐使用 [TeX Live](https://www.tug.org/texlive/)，并确保可以运行 XeLaTeX 编译器。
 
-2. **下载模板**：从 [GitHub 仓库](https://github.com/WQT1123/SCU-Presentation-Beamer) 下载 `scuwqt.sty` 文件和相关资源（如背景图片、logo等）。
+2. **下载模板**：从 [GitHub 仓库](https://github.com/WQT1123/SCU-Presentation-Beamer) 下载 `scuwqt.sty` 文件和相关资源（如背景图片、logo 等）。
 
 3. **编写文档**：在你的 `.tex` 文件的导言区使用 `\usepackage{scuwqt}` 来引入模板。配置你的演示文稿的标题、作者等信息。
 
@@ -31,9 +32,9 @@
 4. **编译项目**：点击 Overleaf 编辑器中的“编译”按钮，Overleaf 将使用 XeLaTeX 编译你的文档。
 ## Beamer 命令指南
 
-本指南提供了一系列在Beamer中常用的指令，适用于特定的Beamer模板。包括页面分割、插入链接、图片、表格，以及文本格式调整等功能。
+本指南提供了一系列在 Beamer 中常用的指令，适用于特定的 Beamer 模板。包括页面分割、插入链接、图片、表格，以及文本格式调整等功能。
 
-在Beamer中，可以使用`columns`环境来实现页面的水平分割，将页面分为左右两个部分。
+在 Beamer 中，可以使用`columns`环境来实现页面的水平分割，将页面分为左右两个部分。
 ```latex
 % 使用columns环境进行水平分割
 \begin{columns}
@@ -120,7 +121,6 @@
 
 最后，对所有支持开源项目和贡献于开源社区的个人和组织表示感谢。是你们的奉献使得这样的项目得以实现并不断进步。
 
-
 ## 示例代码
 
 以下是一个使用 `scuwqt` Beamer 模板的 LaTeX 示例。此示例包括基本的演示文稿结构，如标题页、目录、几个内容板块，以及如何在演示文稿中使用表格和图片。
@@ -198,6 +198,3 @@
 确保将示例代码中的图片路径替换为实际的图片文件路径，以及根据实际情况调整文档内容。
 
 此外，为了提高效率，建议大家在编写 LaTeX 文档时结合使用 ChatGPT。ChatGPT 不仅能帮助解答 LaTeX 相关的问题，还能协助编写代码，从而大大提高编写和调试 LaTeX 文档的效率。
-
-
-    

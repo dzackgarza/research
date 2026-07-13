@@ -1,4 +1,4 @@
-::: {.remark}
+:::{.remark}
 
 Following [@Dol12 §5.1], Coble surfaces can be obtained by degenerating
 $(X, \tau)$ a K3 with a fixed-point-free involution to a K3 surface
@@ -14,5 +14,4 @@ basis $e_0,\dots, e_{10}$ of $K_S^{\perp \Num(S)} \cong E_{10}$ where
 $e_0$ is the preimage of a hyperplane class and $e_1,\dots, e_{10}$ are the
 classes of exceptional curves in the blowup of a plane sextic at 10 $A_1$
 singularities.
-
 :::

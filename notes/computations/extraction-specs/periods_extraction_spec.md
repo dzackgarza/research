@@ -7,13 +7,15 @@ This document records what is worth extracting and generalizing from Pierre Lair
 - Repository: `https://github.com/lairez/periods`
 - Scope: a preliminary Magma implementation of the algorithm in "Computing periods of rational integrals"
 
-The aim is not to preserve the implementation as-is. The aim is to identify the mathematically significant, algorithmically reusable pieces that a state-of-the-art coding model could turn into general-purpose code for SageMath or similar systems.
+The aim is not to preserve the implementation as-is.
+The aim is to identify the mathematically significant, algorithmically reusable pieces that a state-of-the-art coding model could turn into general-purpose code for SageMath or similar systems.
 
 ## High-Level Conclusion
 
 Yes, there is definitely material here worth extracting and generalizing.
 
-The strongest reusable contribution is not merely "a Magma implementation of Picard-Fuchs equations." The most important extractable content is a computational pipeline for turning rational integrals into annihilating differential equations by combining:
+The strongest reusable contribution is not merely "a Magma implementation of Picard-Fuchs equations."
+The most important extractable content is a computational pipeline for turning rational integrals into annihilating differential equations by combining:
 
 - de Rham / Griffiths-Dwork / Rham-Koszul reduction of rational forms,
 - polynomial linear algebra over function fields,
@@ -24,7 +26,8 @@ This is mathematically substantial and more broadly reusable than the current re
 
 ## What the Repository Already Exposes
 
-The README states that the package computes periods of rational integrals and implements the algorithm from Lairez's paper "Computing periods of rational integrals." It also points to `misc/apery.m` for documentation.
+The README states that the package computes periods of rational integrals and implements the algorithm from Lairez's paper "Computing periods of rational integrals."
+It also points to `misc/apery.m` for documentation.
 
 The key user-facing entry points in the code are:
 
@@ -58,7 +61,8 @@ This indicates an algorithmic reduction of rational differential forms modulo ex
 
 ### Why this is valuable
 
-This reduction machinery is not tied only to the final annihilator computation. It is useful as a standalone computational engine for:
+This reduction machinery is not tied only to the final annihilator computation.
+It is useful as a standalone computational engine for:
 
 - reduction of rational forms in de Rham cohomology,
 - period computations,
@@ -322,4 +326,5 @@ The main thing worth preserving is:
 
 This is mathematically meaningful, algorithmically distinctive, and broadly reusable in explicit AG, special-function computation, combinatorics, and holonomic systems.
 
-The correct target is not "port this Magma package as-is." The correct target is a modern period/diagonal/holonomic subsystem for Sage that uses the ideas and structure of `periods` as one of its main mathematical inputs.
+The correct target is not "port this Magma package as-is."
+The correct target is a modern period/diagonal/holonomic subsystem for Sage that uses the ideas and structure of `periods` as one of its main mathematical inputs.

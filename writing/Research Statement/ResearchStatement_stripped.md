@@ -3,53 +3,53 @@ title: "Research Statement"
 abstract: "The search for geometrically meaningful compactifications of moduli spaces of algebraic varieties is a central problem in algebraic geometry. My research focuses on explicitly and effectively classifying boundary strata of stable pair compactifications of Enriques and Coble surfaces."
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Overview
 
-My research is in algebraic geometry, particularly in explicit combinatorial techniques for compactifying moduli spaces of algebraic surfaces over \( {\mathbf{C}} \) and classifying their boundaries. For a given moduli space, there are often many choices of compactifications, leading to a need to study comparisons between them and their relative advantages and disadvantages. In particular, a natural question to ask is whether or not the boundaries have geometric and modular meanings, exhibited as degenerating limits of smooth surfaces. Toward this end, we turn to the **stable pair compactifications** of Kollár, Shepherd-Barron, and Alexeev `\cite{kollar1988threefolds-and-deformations,alexeev1996moduli-spaces,Kol23}`{=tex}.
+My research is in algebraic geometry, particularly in explicit combinatorial techniques for compactifying moduli spaces of algebraic surfaces over \( {\mathbf{C}} \) and classifying their boundaries.
+For a given moduli space, there are often many choices of compactifications, leading to a need to study comparisons between them and their relative advantages and disadvantages.
+In particular, a natural question to ask is whether or not the boundaries have geometric and modular meanings, exhibited as degenerating limits of smooth surfaces.
+Toward this end, we turn to the **stable pair compactifications** of Kollár, Shepherd-Barron, and Alexeev `\cite{kollar1988threefolds-and-deformations,alexeev1996moduli-spaces,Kol23}`{=tex}.
 
-The KSBA compactification generalizes the Deligne-Mumford compactification \( \overline{{ \mathcal{M}_{g, n} }} \) `\cite{deligne1969the-irreducibility-of-the-space}`{=tex} of \( { \mathcal{M}_{g, n} } \), the moduli space of genus \( g \) curves with \( n \) marked points, to higher-dimensional varieties. By `\cite{mumford1965git, namikawa1976a-new-compactification-of-the-siegel1, alexeev1999on-mumfords-construction, alexeev2002complete-moduli}`{=tex}, a similarly modular compactification \( \overline{{\mathcal{A}_g}} \) of the moduli space \( {\mathcal{A}_g} \) of principally polarized abelian varieties via stable pairs exists. The normalization of \( \overline{{\mathcal{A}_g}} \) coincides with a particular choice of toroidal `\cite{AMRT75}`{=tex} compactification by the work of `\cite{kollar1988threefolds-and-deformations}`{=tex} and `\cite{alexeev1996moduli-spaces}`{=tex}.
+The KSBA compactification generalizes the Deligne-Mumford compactification \( \overline{{ \mathcal{M}*{g, n} }} \) `\cite{deligne1969the-irreducibility-of-the-space}`{=tex} of \( { \mathcal{M}*{g, n} } \), the moduli space of genus \( g \) curves with \( n \) marked points, to higher-dimensional varieties.
+By `\cite{mumford1965git, namikawa1976a-new-compactification-of-the-siegel1, alexeev1999on-mumfords-construction, alexeev2002complete-moduli}`{=tex}, a similarly modular compactification \( \overline{{\mathcal{A}_g}} \) of the moduli space \( {\mathcal{A}_g} \) of principally polarized abelian varieties via stable pairs exists.
+The normalization of \( \overline{{\mathcal{A}_g}} \) coincides with a particular choice of toroidal `\cite{AMRT75}`{=tex} compactification by the work of `\cite{kollar1988threefolds-and-deformations}`{=tex} and `\cite{alexeev1996moduli-spaces}`{=tex}.
 
-More recently, similar compactifications have been constructed for moduli spaces of K3 surfaces. `\cite{alexeev2023stable-pair}`{=tex} addresses \( F_2 \), the moduli space of degree 2 primitively polarized K3 surfaces, and `\cite{ABE22}`{=tex} studies \( F_{\mathrm{ell}} \), the moduli space of elliptic K3 surfaces, which embeds into \( F_2 \). `\cite{alexeevCompactModuliK32023}`{=tex} addresses \( F_{2d} \), polarized K3 surfaces of degree \( 2d \) for \( d\geq 1 \), developing the theory of *recognizable divisors*, which gives comparison morphisms between KSBA and semitoroidal compactifications. `\cite{AEH21, AE22}`{=tex} extend the theory further to K3 surfaces with nonsymplectic automorphisms and nonsymplectic involutions respectively.
+More recently, similar compactifications have been constructed for moduli spaces of K3 surfaces.
+`\cite{alexeev2023stable-pair}`{=tex} addresses \( F_2 \), the moduli space of degree 2 primitively polarized K3 surfaces, and `\cite{ABE22}`{=tex} studies \( F_{\mathrm{ell}} \), the moduli space of elliptic K3 surfaces, which embeds into \( F_2 \). `\cite{alexeevCompactModuliK32023}`{=tex} addresses \( F_{2d} \), polarized K3 surfaces of degree \( 2d \) for \( d\geq 1 \), developing the theory of *recognizable divisors*, which gives comparison morphisms between KSBA and semitoroidal compactifications.
+`\cite{AEH21, AE22}`{=tex} extend the theory further to K3 surfaces with nonsymplectic automorphisms and nonsymplectic involutions respectively.
 
 In `\cite{AEGS23}`{=tex}, we built upon these ideas to describe the stable pair compactification of \( F_{\operatorname{En}, 2} \), the moduli space of degree 2 numerically polarized Enriques surfaces, leveraging the theory of ADE surfaces developed in `\cite{AT21}`{=tex}. In my current project, I extend these ideas to \( F_{\Co} \), the moduli space of Coble surfaces, regarded as a divisor in \( F_{\operatorname{En}} \), the moduli space of unpolarized Enriques surfaces.
 
 # Compactifications
 
-My work builds on the theory of compactifications of K3 surfaces. In compactification problems, one allows smooth surfaces to degenerate into surfaces with controllable and well-understood singularities. Our primary choices of compactifications include the following:
+My work builds on the theory of compactifications of K3 surfaces.
+In compactification problems, one allows smooth surfaces to degenerate into surfaces with controllable and well-understood singularities.
+Our primary choices of compactifications include the following:
 
--   The Baily-Borel compactification `\cite{BB66}`{=tex}, which is amenable to lattice theory. However, surfaces on the boundary lack clear interpretations as limits of smooth surfaces. These compactifications are generally "small", since they involve adjoining finitely many components of dimension at most two, and thus the boundary is comprised of points and modular curves with various level structures. In favorable cases, the number of boundary cusps and their incidence relations can be concretely computed, and thus the boundary can be encoded in an incidence diagram.
+- The Baily-Borel compactification `\cite{BB66}`{=tex}, which is amenable to lattice theory.
+  However, surfaces on the boundary lack clear interpretations as limits of smooth surfaces.
+  These compactifications are generally "small", since they involve adjoining finitely many components of dimension at most two, and thus the boundary is comprised of points and modular curves with various level structures.
+  In favorable cases, the number of boundary cusps and their incidence relations can be concretely computed, and thus the boundary can be encoded in an incidence diagram.
 
--   Toroidal compactifications, which can be studied using toric geometry. These are determined by the data of a collection of fans ranging over the Baily-Borel cusps. However, there are infinitely many choices of such data, and it is often unclear which choices (if any) lead to modular compactifications. Again in favorable cases, these fans can be described explicitly.
+- Toroidal compactifications, which can be studied using toric geometry.
+  These are determined by the data of a collection of fans ranging over the Baily-Borel cusps.
+  However, there are infinitely many choices of such data, and it is often unclear which choices (if any) lead to modular compactifications.
+  Again in favorable cases, these fans can be described explicitly.
 
--   The semitoroidal compactifications of `\cite{Loo03}`{=tex} which simultaneously generalize both of the above. They are similarly specified by a collection of infinite-type "semifans", of which there is not an *a priori* distinguished choice. However, the boundary strata can be studied using tools from Hodge theory, Picard-Lefschetz theory, lattice-theoretic techniques, and the rich combinatorial structures of Coxeter groups and integral affine geometry.
+- The semitoroidal compactifications of `\cite{Loo03}`{=tex} which simultaneously generalize both of the above.
+  They are similarly specified by a collection of infinite-type "semifans", of which there is not an *a priori* distinguished choice.
+  However, the boundary strata can be studied using tools from Hodge theory, Picard-Lefschetz theory, lattice-theoretic techniques, and the rich combinatorial structures of Coxeter groups and integral affine geometry.
 
--   The KSBA stable pair compactifications. An alternative from the log minimal model program, this yields a moduli space whose boundary strata admit strong geometric interpretations as limiting surfaces with controlled singularities. However, this comes at a cost -- it is generally very difficult to classify or describe the boundary.
+- The KSBA stable pair compactifications.
+  An alternative from the log minimal model program, this yields a moduli space whose boundary strata admit strong geometric interpretations as limiting surfaces with controlled singularities.
+  However, this comes at a cost -- it is generally very difficult to classify or describe the boundary.
 
-A central theme in my research is to construct KSBA compactifications and classify their boundary strata by relating them to particular choices of semitoroidal compactifications. In this way, one can construct compactifications that are simultaneously modular and amenable to explicit computations. In `\cite{AEGS23}`{=tex}, we prove the following:
+A central theme in my research is to construct KSBA compactifications and classify their boundary strata by relating them to particular choices of semitoroidal compactifications.
+In this way, one can construct compactifications that are simultaneously modular and amenable to explicit computations.
+In `\cite{AEGS23}`{=tex}, we prove the following:
 
-::: {.theorem title="\\cite{AEGS23}, Thm. 1.1"}
+:::{.theorem title="\\cite{AEGS23}
+, Thm. 1.1"}
 `\label{thm:aegs-normalization-comparison-morphism}`{=tex} There is an isomorphism
 \[
 \qty{ \overline{F_{\operatorname{En}, 2}} }^\nu \cong \overline{F_{\operatorname{En}, 2}}^{{\mathcal{F}}}
@@ -63,23 +63,29 @@ The semifan data \( {\mathcal{F}} \) can be combinatorially described in terms o
 
 ## Compact moduli spaces of Enriques surfaces
 
-An **Enriques surface** is a non-rational minimal algebraic surface \( Y \) of Kodaira dimension \( \kappa(Y) = 0 \) for which \( h^1({\mathcal{O}}_Y) = h^2({\mathcal{O}}_Y) = 0 \) and \( K_Y \) is nontrivial 2-torsion. `\cite{Enr06}`{=tex} originally constructed such surfaces, motivated by relating the rationality of a surface to its irregularity \( q_Y \coloneqq h^1({\mathcal{O}}_Y) \). There has been a resurgence of interest in moduli spaces of Enriques surfaces, c.f. `\cite{viehweg1995quasi-projective-moduli,Lie13,GH16,CDGK18,knutsen2020moduli,EnriquesOne,fortuna2020cohomology}`{=tex}.
+An **Enriques surface** is a non-rational minimal algebraic surface \( Y \) of Kodaira dimension \( \kappa(Y) = 0 \) for which \( h^1({\mathcal{O}}_Y) = h^2({\mathcal{O}}_Y) = 0 \) and \( K_Y \) is nontrivial 2-torsion.
+`\cite{Enr06}`{=tex} originally constructed such surfaces, motivated by relating the rationality of a surface to its irregularity \( q_Y \coloneqq h^1({\mathcal{O}}_Y) \). There has been a resurgence of interest in moduli spaces of Enriques surfaces, c.f. `\cite{viehweg1995quasi-projective-moduli,Lie13,GH16,CDGK18,knutsen2020moduli,EnriquesOne,fortuna2020cohomology}`{=tex}.
 
-Away from characteristic 2, deformations of (numerically polarized) Enriques surfaces are unobstructed by `\cite{Il79,La83}`{=tex}, yielding a quasi-separated 10-dimensional Artin stack of finite type over \( {\mathbf{C}} \) by `\cite[Thm.\, 5.11.6]{EnriquesOne}`{=tex}. By `\cite{kondo1994the-rationality}`{=tex}, the coarse moduli space is known to be rational. As for K3 surfaces, Enriques surfaces admit a global Torelli theorem and thus a coarse space \( F_{\operatorname{En}} \) of unpolarized surfaces birational to a Shimura variety \( D/\Gamma \) of orthogonal type, yielding a type IV Hermitian symmetric domain. Fixing a numerical polarization of degree \( 2d \) yields a quasiprojective, non-proper moduli space \( F_{\operatorname{En}, 2d} \).
+Away from characteristic 2, deformations of (numerically polarized) Enriques surfaces are unobstructed by `\cite{Il79,La83}`{=tex}, yielding a quasi-separated 10-dimensional Artin stack of finite type over \( {\mathbf{C}} \) by `\cite[Thm.\, 5.11.6]{EnriquesOne}`{=tex}. By `\cite{kondo1994the-rationality}`{=tex}, the coarse moduli space is known to be rational.
+As for K3 surfaces, Enriques surfaces admit a global Torelli theorem and thus a coarse space \( F_{\operatorname{En}} \) of unpolarized surfaces birational to a Shimura variety \( D/\Gamma \) of orthogonal type, yielding a type IV Hermitian symmetric domain.
+Fixing a numerical polarization of degree \( 2d \) yields a quasiprojective, non-proper moduli space \( F_{\operatorname{En}, 2d} \).
 
-Every Enriques surface can be obtained as a quotient \( X/\iota \) of a K3 surface \( X \) by a nonsymplectic fixed-point-free involution \( \iota \). Thus the moduli space of Enriques surfaces can be related to moduli of K3 surfaces with nonsymplectic involutions, allowing us to leverage the theory of `\cite{AE22}`{=tex} to describe compactifications \( \overline{F_{\operatorname{En}}} \) and \( \overline{F_{\operatorname{En}, 2}} \) and arrive at `\cref{thm:aegs-normalization-comparison-morphism}`{=tex}. A key insight in this paper is that the Coxeter diagrams for \( F_{\operatorname{En}, 2} \) can be obtained as quotients by involutions of the diagrams for K3 surfaces. Leveraging and extending the theory of ADE surfaces in `\cite{AT21}`{=tex} to Dynkin diagrams of types \( B \) and \( C \), we arrive at a description of the irreducible components of KSBA degenerations which is largely in terms of explicit toric varieties.
+Every Enriques surface can be obtained as a quotient \( X/\iota \) of a K3 surface \( X \) by a nonsymplectic fixed-point-free involution \( \iota \). Thus the moduli space of Enriques surfaces can be related to moduli of K3 surfaces with nonsymplectic involutions, allowing us to leverage the theory of `\cite{AE22}`{=tex} to describe compactifications \( \overline{F_{\operatorname{En}}} \) and \( \overline{F_{\operatorname{En}, 2}} \) and arrive at `\cref{thm:aegs-normalization-comparison-morphism}`{=tex}. A key insight in this paper is that the Coxeter diagrams for \( F_{\operatorname{En}, 2} \) can be obtained as quotients by involutions of the diagrams for K3 surfaces.
+Leveraging and extending the theory of ADE surfaces in `\cite{AT21}`{=tex} to Dynkin diagrams of types \( B \) and \( C \), we arrive at a description of the irreducible components of KSBA degenerations which is largely in terms of explicit toric varieties.
 
 # Current Work
 
 ## Compact moduli spaces of Coble surfaces
 
-::: remark
+:::
+remark
 A Coble surface is a smooth projective rational surface \( S \) with \( {\left\lvert {-K_S} \right\rvert} = \emptyset \) but \( {\left\lvert {-2K_X} \right\rvert}\neq \emptyset \). Such surfaces arise from the work of `\cite{Cob19}`{=tex} and `\cite{Cob29}`{=tex} on Cremona transformations of \( {\mathbf{P}}^2 \) preserving an irreducible rational sextic \( C \) with ten nodal singularities. The blowup \( S \) of these nodes yields a Coble surface. Coble surfaces occur as degenerations of Enriques surfaces and were ultimately classified in `\cite{DZ99}`{=tex}. As such, they are closely tied to the theory of algebraic K3 surfaces with nonsymplectic involutions, which were classified by `\cite{nikulin1979quotient-groups}`{=tex}. For a reduced sextic \( C \), the double cover of \( S \) branched along the proper transform of \( C \) is a K3 surface \( X \) which can be realized as a degeneration of the universal double cover of an Enriques surface, where \( X \) is allowed to acquire an \( A_1 \) singularity fixed by the Enriques involution.
 
 Denote by \( F_{\Co, n} \) the moduli space of Coble surfaces with \( n \) boundary components. It is well-known that \( 1\leq n\leq 10 \), and the case \( n=1 \) corresponds to the surfaces originally studied by Coble. By `\cite{DK13}`{=tex}, the moduli space \( F_{\Co} \coloneqq F_{\Co, 1} \) is known to be rational, but very little else is known about these moduli spaces. In particular, compactifications of \( F_{\Co, n} \) have not yet appeared in the literature, despite their close relation to Enriques surfaces.
 :::
 
-::: remark
+:::
+remark
 `\label{rmk:divisors-for-coble-compactification}`{=tex} Towards constructing such a KSBA compactification, one can form a period domain for \( F_{\Co} \) and study (semi)toroidal compactifications as an intermediate step. Note that the blowup of a rational plane sextic \( C \) along its ten nodes yields a Coble surface \( S \) with \( n=1 \) boundary components. The double cover of \( S \) branched along \( C \) is a K3 surface \( X \) containing divisors \( e_0,\cdots, e_{10} \) where \( e_0 \) is the preimage of the pullback of a hyperplane class in \( {\mathbf{P}}^2 \) and \( e_1,\cdots, e_{10} \) are preimages of the exceptional divisors over the nodes of \( C \).
 
 These divisors in \( X \) generate a sublattice \( S_{\Co} \) of \( \operatorname{Pic}(X) \) with orthogonal complement \( T_{\Co} \), which can be shown to be isometric to the following: `\begin{align*}
@@ -91,7 +97,8 @@ F_{\Co} \coloneqq D_{T_\Co}/{\operatorname{O}}(T_\Co),\qquad D_{T_\Co} \subseteq
 which is birational to the moduli space of Coble surfaces with \( n=1 \) boundary component constructed as a GIT quotient \( ({\mathbf{P}}^2)^{10}{ \mathbin{/\mkern-6mu/}}\operatorname{PGL}_3 \). The moduli space \( F_{\Co} \) is an arithmetic quotient of a Hermitian symmetric domain of Type IV, and thus admits semitoroidal compactifications, including the canonically defined Baily-Borel compactification \( \overline{ F_{\Co} }^{\operatorname{BB}} \).
 :::
 
-::: remark
+:::
+remark
 In my current single-author project, I have studied the boundary \( \partial \overline{ F_{\Co} }^{\operatorname{BB}} \) of the Baily-Borel compactification of the moduli space of Coble surfaces and constructed an embedding \( F_{\Co}\hookrightarrow F_{\operatorname{En}} \) into the moduli space of unpolarized Enriques surfaces. Furthermore, I extend this to a morphism
 \[
 \eta: \overline{ F_{\Co} }^{\operatorname{BB}} \to \overline{ F_{\operatorname{En}} }^{\operatorname{BB}}
@@ -126,7 +133,8 @@ Using this, I have constructed the incidence diagram that represents \( \partial
 ```
 :::
 
-::: remark
+:::
+remark
 I have extended \( \eta \) to a morphism \( \tilde \eta: \overline{  F_{\Co} }^{\operatorname{BB}} \to \overline{  F_{(2,2,0)}  }^{\operatorname{BB}} \), a moduli space of quartic hyperelliptic K3 surfaces used in `\cite{AEGS23}`{=tex}. I determined that that the Coble cusps correspond to \( U\oplus E_8^2 \), the lattice with invariants \( (18, 0, 0)_1 \) in `\cref{fig:220-cusps-diagram}`{=tex}. Using our previous work in `\cite{AEGS23}`{=tex}, I am working on a correspondence between \( F_{\Co} \) and \( F_{\operatorname{En}, 2} \) in order to construct KSBA degenerations. The cusp diagram for \( F_{\operatorname{En}, 2} \) was first given by `\cite{Ste91}`{=tex}, and I have computed that the Coble 0-cusp corresponds with cusp 2 of `\cref{fig:sterk-cusp-diagram}`{=tex}. This correspondence requires studying a separate period domain \( D_{\Co}/\Gamma \) for a certain subgroup \( \Gamma_{\Co} \leq {\operatorname{O}}(T_{\Co}) \) and classifying orbits of isotropic vectors under this subgroup.
 
 Toward this end, I have been working on adapting the techniques of `\cite{Ste91}`{=tex} and `\cite{scattone1987on-the-compactification-of-moduli}`{=tex} to new lattices. This has involved a careful study of the discriminant groups \( A_{T_{\Co}} \) and \( A_{T_{\operatorname{En}}} \) of the Coble and Enriques lattices, and finding techniques to reduce classification of orbits of isotropic vectors in \( T_{\Co} \) to finite, computable problems in \( A_{T_{\Co}} \). This has also involved explicit constructions of *Eichler transformations* which prove that vectors satisfying certain numerical properties are in the same \( \Gamma_{\Co} \)-orbit. Conjecturally, this will suffice to produce a complete cusp diagram for \( D_{\Co}/\Gamma_{\Co} \), which I can then put in correspondence with the cusps of \( F_{\operatorname{En}, 2} \).
@@ -155,7 +163,8 @@ Ultimately, this chain of correspondences will allow me to leverage `\cite{AEGS2
 
 ## Coble surfaces with \( 1\leq n\leq 10 \) boundary components {#coble-surfaces-with-1leq-nleq-10-boundary-components}
 
-::: remark
+:::
+remark
 For \( S \) a Coble surface of *K3 type*, one can write \( {\left\lvert {-2K_S} \right\rvert} = \left\{{C}\right\} \) where \( C = C_1 + \cdots + C_n \), with each \( C_i \) an irreducible curve on \( S \). The \( C_i \) are referred to as *boundary components*, and it is known that \( 1\leq n \leq 10 \). The moduli spaces \( F_{\Co, n} \) for \( n\geq 2 \) have not yet appeared in the literature, but are amenable to a similar study as the \( n=1 \) case. Let \( \Sigma \) be a general *Coble set* of points in \( {\mathbf{P}}^2 \), so that the blowup \( S \) of \( {\mathbf{P}}^2 \) along the points of \( \Sigma \) is a Coble surface double covered by a K3 surface \( X \) branched along \( C \). Following a similar construction as that described in `\cref{rmk:divisors-for-coble-compactification}`{=tex} yields a collection of primitively embedded sublattices \( L_1,\cdots, L_{10} \) in \( \operatorname{Pic}(X) \). These are 2-elementary lattices with invariants \( (r=10+n, a=12-n,\delta) \), described in `\cite[Table 5.1, p.553]{EnriquesOne}`{=tex} and reproduced in `\cref{fig:coble-boundary-components-table}`{=tex}.
 
 ```{=tex}
@@ -182,13 +191,15 @@ For \( S \) a Coble surface of *K3 type*, one can write \( {\left\lvert {-2K_S} 
 ```
 :::
 
-::: remark
+:::
+remark
 This collection coincides precisely with the \( g=0 \) line of Nikulin's triangular table of 2-elementary lattices `\cite[Fig.\,1]{AE22}`{=tex}, and applying the period domain construction to these lattices yields ten moduli spaces \( F_{\Co, n} \) for \( 1\leq n \leq 10 \). The \( n=1 \) case is the subject of my current work.
 
 I conjecture that the moduli spaces and the boundaries of their compactifications for the cases \( 2\leq n \leq 10 \) can be described using similar techniques, which would be the first explicit study of their boundaries in the literature. Most immediately, I have computed several of the boundary incidence diagrams of their Baily-Borel compactifications using algorithms described in `\cite{AE22nonsympinv}`{=tex}, and the remaining ones are similarly computable.
 :::
 
-::: remark
+:::
+remark
 The ramification locus of the K3 cover of \( S \) is described in `\cite[Eqn. 5.3.1]{EnriquesOne}`{=tex} -- I conjecture that the corresponding involutions are nonsymplectic and that a component of the ramification locus forms a **recognizable divisor** c.f. `\cite{alexeevCompactModuliK32023,AEH21}`{=tex}. Under this assumption, `\cite[Thm.\,3.24]{AEH21}`{=tex} can be applied to identify the KSBA compactification with a semitoroidal compactification for a specific choice of semifans. I conjecture that these semifans are either refinements or coarsenings of the canonical Coxeter fans at the Baily-Borel cusps, and can be described in an explicit way, using an extension of the theory of ADE surfaces developed in `\cite{AT21}`{=tex}.
 
 Moreover, from this data one can extract a classification of dlt models for KSBA stable limits of such surfaces, giving a first description of \( \partial \overline{F_{\Co, n}} \), as our previous paper `\cite{AEGS23}`{=tex} did for numerically polarized Enriques surfaces. Finally, by `\cite[Prop.\,5.4.6]{EnriquesOne}`{=tex}, for each lattice of rank \( 10+n \) in `\cref{fig:coble-boundary-components-table}`{=tex}, there is an embedding \( F_{\Co, n}\hookrightarrow F_{\operatorname{En}} \) the moduli space of Enriques surfaces as constructed from \( E_{10}(2) \)-polarized K3 surfaces. Thus the data of integral affine structures, and hence dlt and stable models, can be understood by studying restrictions of the K3 boundary data described in `\cite{AE22}`{=tex}.
@@ -196,15 +207,19 @@ Moreover, from this data one can extract a classification of dlt models for KSBA
 
 ## Nodal Enriques surfaces
 
-An Enriques surface \( Y \) is called **nodal** if \( Y \) contains a rational \( (-2) \)-curve, and **unnodal** otherwise. Let \( F_{\operatorname{En}, \Nod} \) be the moduli space of nodal Enriques surfaces. Such surfaces have received a great deal of attention in recent years, c.f.
+An Enriques surface \( Y \) is called **nodal** if \( Y \) contains a rational \( (-2) \)-curve, and **unnodal** otherwise.
+Let \( F_{\operatorname{En}, \Nod} \) be the moduli space of nodal Enriques surfaces.
+Such surfaces have received a great deal of attention in recent years, c.f.
 
--   `\cite{cossecAutomorphismsNodalEnriques1985}`{=tex} describes the automorphism group of a generic point of \( F_{\operatorname{En}, \Nod} \) using non-transcendental methods, showing it is equal to a normal subgroup of the Weyl group \( W(T_{2,4,6}) \) containing its 2-congruence subgroup. They further show that up to \( \mathop{\mathrm{Aut}}(S) \), there is a unique smooth rational curve on such a surface. Combined with the work of `\cite{barthAutomorphismsEnriquesSurfaces1983}`{=tex} on unnodal surfaces, this gives a description of the automorphism group at a generic point of \( F_{\operatorname{En}} \).
+- `\cite{cossecAutomorphismsNodalEnriques1985}`{=tex} describes the automorphism group of a generic point of \( F_{\operatorname{En}, \Nod} \) using non-transcendental methods, showing it is equal to a normal subgroup of the Weyl group \( W(T_{2,4,6}) \) containing its 2-congruence subgroup.
+  They further show that up to \( \mathop{\mathrm{Aut}}(S) \), there is a unique smooth rational curve on such a surface.
+  Combined with the work of `\cite{barthAutomorphismsEnriquesSurfaces1983}`{=tex} on unnodal surfaces, this gives a description of the automorphism group at a generic point of \( F_{\operatorname{En}} \).
 
--   `\cite{ingallsNodalEnriquesSurfaces2015}`{=tex} studies semiorthogonal decompositions of the derived categories \( D^b(Y) \) of nodal Enriques surfaces, as progress toward answering similar questions for general Enriques surfaces.
+- `\cite{ingallsNodalEnriquesSurfaces2015}`{=tex} studies semiorthogonal decompositions of the derived categories \( D^b(Y) \) of nodal Enriques surfaces, as progress toward answering similar questions for general Enriques surfaces.
 
--   `\cite{martinNodalEnriquesSurfaces2024}`{=tex} shows that an arbitrary (not just generic) nodal Enriques surface \( Y \) is a *Reye congruence*: letting \( F_{i}^{\pm} \) be the multiple fibers of the 10 elliptic pencils on \( Y \), the image of the Fano model of \( Y \) defined by \( {\left\lvert {{1\over 3} \sum F_i^+} \right\rvert} \) is contained in a quadric.
+- `\cite{martinNodalEnriquesSurfaces2024}`{=tex} shows that an arbitrary (not just generic) nodal Enriques surface \( Y \) is a *Reye congruence*: letting \( F_{i}^{\pm} \) be the multiple fibers of the 10 elliptic pencils on \( Y \), the image of the Fano model of \( Y \) defined by \( {\left\lvert {{1\over 3} \sum F_i^+} \right\rvert} \) is contained in a quadric.
 
--   `\cite{DK13}`{=tex} shows that \( F_{\operatorname{En}, \Nod} \) is rational.
+- `\cite{DK13}`{=tex} shows that \( F_{\operatorname{En}, \Nod} \) is rational.
 
 By `\cite[\S.\,5.6]{EnriquesOne}`{=tex}, the moduli space \( F_{\Nod} \) can be constructed using the period domain \( F_S \) of lattice-polarized K3 surfaces where
 \[
@@ -214,37 +229,52 @@ is the generic Picard lattice of the K3 cover \( X \) of \( Y \) and
 \[
 T_{\Nod} \coloneqq S^{\perp} \cong \left\langle{4}\right\rangle \oplus U \oplus E_8(2)
 \]
-is its transcendental lattice. It is known that \( F_{\operatorname{En}, \Nod} \) forms an irreducible hypersurface in \( F_{\operatorname{En}} \), and that a generic Enriques surface is unnodal. Similar to the case of Coble surfaces, \( F_{\Nod} \) can also be realized as a divisor \( \cH_{-4}/{\operatorname{O}}(T_{\operatorname{En}}) \), yielding an 9-dimensional irreducible quasiprojective variety. By `\cite[Def.\,5.6.3]{EnriquesOne}`{=tex}, there is a primitive embedding of lattices `\begin{align*}
-S_{\operatorname{En}} \coloneqq E_{10}(2) \coloneqq U(2) \oplus E_8(2) &\to S_{\Nod} \coloneqq\left\langle{-4}\right\rangle \oplus U \oplus E_8(2) \\
-((e_1, f_1), x) &\mapsto (f_2, 2e_2 + f_2 + h , x) 
-\end{align*}`{=tex} (where \( h \) is a generator of \( \left\langle{-4}\right\rangle \)) which exhibits \( F_{\Nod}\hookrightarrow F_{\operatorname{En}} \) as a divisor in the moduli space of unpolarized Enriques surfaces.
+is its transcendental lattice.
+It is known that \( F_{\operatorname{En}, \Nod} \) forms an irreducible hypersurface in \( F_{\operatorname{En}} \), and that a generic Enriques surface is unnodal.
+Similar to the case of Coble surfaces, \( F_{\Nod} \) can also be realized as a divisor \( \cH_{-4}/{\operatorname{O}}(T_{\operatorname{En}}) \), yielding an 9-dimensional irreducible quasiprojective variety.
+By `\cite[Def.\,5.6.3]{EnriquesOne}`{=tex}, there is a primitive embedding of lattices `\begin{align*} S_{\operatorname{En}} \coloneqq E_{10}(2) \coloneqq U(2) \oplus E_8(2) &\to S_{\Nod} \coloneqq\left\langle{-4}\right\rangle \oplus U \oplus E_8(2) \\ ((e_1, f_1), x) &\mapsto (f_2, 2e_2 + f_2 + h , x)  \end{align*}`{=tex} (where \( h \) is a generator of \( \left\langle{-4}\right\rangle \)) which exhibits \( F_{\Nod}\hookrightarrow F_{\operatorname{En}} \) as a divisor in the moduli space of unpolarized Enriques surfaces.
 
-This yields a similar setup to \( F_{\Co} \), and I conjecture that the Baily-Borel compactification can be studied using similar techniques. In particular, I conjecture that orbits under \( {\operatorname{O}}(T_{\Nod}) \) of isotropic vectors and planes can be classified, yielding a boundary incidence diagram, and that the above lattice embedding will allow leveraging `\cite{AEGS23}`{=tex} to construct the KSBA compactification. I similarly conjecture that the work in `\cite{AEGS23}`{=tex} can be used to construct dlt models and integral affine structures that classify KSBA stable limits of nodal Enriques surfaces. However, new techniques will have to be developed, since \( T_{\Nod} \) is not a 2-elementary lattice.
+This yields a similar setup to \( F_{\Co} \), and I conjecture that the Baily-Borel compactification can be studied using similar techniques.
+In particular, I conjecture that orbits under \( {\operatorname{O}}(T_{\Nod}) \) of isotropic vectors and planes can be classified, yielding a boundary incidence diagram, and that the above lattice embedding will allow leveraging `\cite{AEGS23}`{=tex} to construct the KSBA compactification.
+I similarly conjecture that the work in `\cite{AEGS23}`{=tex} can be used to construct dlt models and integral affine structures that classify KSBA stable limits of nodal Enriques surfaces.
+However, new techniques will have to be developed, since \( T_{\Nod} \) is not a 2-elementary lattice.
 
 ## Halphen and rational elliptic surfaces
 
-Following `\cite{mirandaModuliSpaceRational2021}`{=tex}, a **rational elliptic surface** is a smooth, projective, rational surface \( Y \) which admits a relatively minimal fibration \( \pi: Y\to {\mathbf{P}}^1 \) where the generic fiber is a smooth elliptic curve. Given a rational elliptic surface, the **index** of \( Y \) is the minimal \( m \) such that \( \pi \) corresponds to the anti-pluricanonical linear system \( {\left\lvert {-mK_Y} \right\rvert} \). A **Halphen pencil of index \( m \)** is a pencil of curves of degree \( 3m \) in \( {\mathbf{P}}^2 \) with 9 basepoints. A rational surface obtained by minimally resolving the base points of a Halphen pencil of index \( m \) is called a **Halphen surface of index \( m \)**. Equivalently, by `\cite[Def.\,3.18]{grivauxInfinitesimalDeformationsRational2018}`{=tex} they are rational surfaces \( Y \) such that \( {\left\lvert {-mK_Y} \right\rvert} \) is of dimension 1, has no fixed part, and defines a basepoint-free pencil.
+Following `\cite{mirandaModuliSpaceRational2021}`{=tex}, a **rational elliptic surface** is a smooth, projective, rational surface \( Y \) which admits a relatively minimal fibration \( \pi: Y\to {\mathbf{P}}^1 \) where the generic fiber is a smooth elliptic curve.
+Given a rational elliptic surface, the **index** of \( Y \) is the minimal \( m \) such that \( \pi \) corresponds to the anti-pluricanonical linear system \( {\left\lvert {-mK_Y} \right\rvert} \). A **Halphen pencil of index \( m \)** is a pencil of curves of degree \( 3m \) in \( {\mathbf{P}}^2 \) with 9 basepoints.
+A rational surface obtained by minimally resolving the base points of a Halphen pencil of index \( m \) is called a **Halphen surface of index \( m \)**. Equivalently, by `\cite[Def.\,3.18]{grivauxInfinitesimalDeformationsRational2018}`{=tex} they are rational surfaces \( Y \) such that \( {\left\lvert {-mK_Y} \right\rvert} \) is of dimension 1, has no fixed part, and defines a basepoint-free pencil.
 
-By `\cite[Rmk.\,4.9.4]{EnriquesOne}`{=tex}, the set of Halphen pencils in \( {\mathbf{P}}^2 \) up to Cremona equivalence is in bijection with the set of rational surfaces with genus 1 fibrations. Indeed, and by `\cite[Rmk.\,2.4]{DZ99}`{=tex} and `\cite[\S 3.3.3]{grivauxInfinitesimalDeformationsRational2018}`{=tex}, any relatively minimal rational elliptic surface \( Y \) is a Halphen surface of some index \( m \), realized as the blowup of \( {\mathbf{P}}^2 \) along the 9 basepoints of a Halphen pencil,
+By `\cite[Rmk.\,4.9.4]{EnriquesOne}`{=tex}, the set of Halphen pencils in \( {\mathbf{P}}^2 \) up to Cremona equivalence is in bijection with the set of rational surfaces with genus 1 fibrations.
+Indeed, and by `\cite[Rmk.\,2.4]{DZ99}`{=tex} and `\cite[\S 3.3.3]{grivauxInfinitesimalDeformationsRational2018}`{=tex}, any relatively minimal rational elliptic surface \( Y \) is a Halphen surface of some index \( m \), realized as the blowup of \( {\mathbf{P}}^2 \) along the 9 basepoints of a Halphen pencil,
 
-By `\cite[Rmk.\,2.8]{CD12}`{=tex}, Halphen surfaces of index 1 are parameterized by an open subset of the Grassmannian \( {\operatorname{Gr}}_2(10) \) of pencils of plane cubic curves, and their moduli space \( M_{H, 1} \) is an irreducible variety of dimension 8. Moreover, there are moduli spaces \( M_{H, m} \) of Halphen surfaces of index \( m \) for \( m\geq 2 \) which are fibrations over \( M_{H, 1} \) with 1-dimensional fibers, and are conjectured to be irreducible varieties of dimension 9. Equivalently, these are moduli spaces of rational elliptic surfaces of index \( m \).
+By `\cite[Rmk.\,2.8]{CD12}`{=tex}, Halphen surfaces of index 1 are parameterized by an open subset of the Grassmannian \( {\operatorname{Gr}}*2(10) \) of pencils of plane cubic curves, and their moduli space \( M*{H, 1} \) is an irreducible variety of dimension 8. Moreover, there are moduli spaces \( M_{H, m} \) of Halphen surfaces of index \( m \) for \( m\geq 2 \) which are fibrations over \( M_{H, 1} \) with 1-dimensional fibers, and are conjectured to be irreducible varieties of dimension 9. Equivalently, these are moduli spaces of rational elliptic surfaces of index \( m \).
 
-By `\cite[Prop.\,9.1.4]{EnriquesTwo}`{=tex}, any terminal Coble surface of K3 type is isomorphic to a blowup of a Halphen surface of index 1 or 2 at either 2 or 1 simple reduced fibers. In particular, `\cite{DZ99}`{=tex} shows that blowing down any \( (-1) \)-curve on an unnodal Coble surface \( S \) yields a Halphen surface \( Y \) of index 2. Conversely, by `\cite{DM19}`{=tex}, any such Coble surface \( S \) is obtained by blowing up the singular point of a non-multiple irreducible fiber of a Halphen surface \( Y \). Due to this close geometric relationship between Coble surfaces and Halphen surfaces of index 1 and 2, I conjecture that there is a relationship between \( F_{\Co} \) and the moduli spaces \( M_{H, 1} \) and \( M_{H, 2} \).
+By `\cite[Prop.\,9.1.4]{EnriquesTwo}`{=tex}, any terminal Coble surface of K3 type is isomorphic to a blowup of a Halphen surface of index 1 or 2 at either 2 or 1 simple reduced fibers.
+In particular, `\cite{DZ99}`{=tex} shows that blowing down any \( (-1) \)-curve on an unnodal Coble surface \( S \) yields a Halphen surface \( Y \) of index 2. Conversely, by `\cite{DM19}`{=tex}, any such Coble surface \( S \) is obtained by blowing up the singular point of a non-multiple irreducible fiber of a Halphen surface \( Y \). Due to this close geometric relationship between Coble surfaces and Halphen surfaces of index 1 and 2, I conjecture that there is a relationship between \( F_{\Co} \) and the moduli spaces \( M_{H, 1} \) and \( M_{H, 2} \).
 
-Open subsets of these moduli spaces are referenced in the literature, e.g. in `\cite[Rmk.\,5.4]{dolgachevChileanConfigurationConics2020}`{=tex} and `\cite[\S. 3.3.3]{grivauxInfinitesimalDeformationsRational2018}`{=tex}. `\cite{mirandaModuliWeierstrassFibrations1981}`{=tex} constructs a projective compactification of \( M_{H, 1} \) via GIT applied to the Weierstrass models of such surfaces. `\cite{mirandaModuliSpaceRational2021}`{=tex} constructs \( M_{H, 2} \), showing it is a toric variety of dimension 9, and `\cite{zanardiniStabilityPencilsPlane2023}`{=tex} studies the GIT stability of index 2 Halphen pencils in \( {\mathbf{P}}^2 \), toward a GIT compactification of \( M_{H, 2} \).
+Open subsets of these moduli spaces are referenced in the literature, e.g. in `\cite[Rmk.\,5.4]{dolgachevChileanConfigurationConics2020}`{=tex} and `\cite[\S. 3.3.3]{grivauxInfinitesimalDeformationsRational2018}`{=tex}. `\cite{mirandaModuliWeierstrassFibrations1981}`{=tex} constructs a projective compactification of \( M_{H, 1} \) via GIT applied to the Weierstrass models of such surfaces.
+`\cite{mirandaModuliSpaceRational2021}`{=tex} constructs \( M_{H, 2} \), showing it is a toric variety of dimension 9, and `\cite{zanardiniStabilityPencilsPlane2023}`{=tex} studies the GIT stability of index 2 Halphen pencils in \( {\mathbf{P}}^2 \), toward a GIT compactification of \( M_{H, 2} \).
 
-Halphen surfaces of index 2 are special classes of elliptic surfaces without a global section, and are double-covered by K3 surfaces cf. `\cite{kimura2018k3-surfaces}`{=tex}. `\cite{ABE22}`{=tex} and `\cite{AT21}`{=tex} introduce stable pair compactifications for special classes of elliptic fibrations. In particular, there is a starting point for this study provided by `\cite{AE22}`{=tex}, for which the case \( S = (10, 10, 1) \) corresponds to K3 surfaces \( X \) with nonsymplectic involution \( \iota \) such that \( Y \coloneqq X/\iota \) is an index 2 Halphen pencil. More generally, by `\cite[\S 4C]{AE22}`{=tex}, the lattices \( S = (10+n, 12-n, \delta) \) for \( 1\leq n\leq 9 \) yield index 2 Halphen K3 surfaces \( X \) with \( I_{2k} \) fiber, and the surfaces \( \overline{Y} \) obtained from contracting the \( (-1) \)-curves in the special fiber are index 2 Halphen pencils with an \( I_k \) fiber.
+Halphen surfaces of index 2 are special classes of elliptic surfaces without a global section, and are double-covered by K3 surfaces cf.
+`\cite{kimura2018k3-surfaces}`{=tex}. `\cite{ABE22}`{=tex} and `\cite{AT21}`{=tex} introduce stable pair compactifications for special classes of elliptic fibrations.
+In particular, there is a starting point for this study provided by `\cite{AE22}`{=tex}, for which the case \( S = (10, 10, 1) \) corresponds to K3 surfaces \( X \) with nonsymplectic involution \( \iota \) such that \( Y \coloneqq X/\iota \) is an index 2 Halphen pencil.
+More generally, by `\cite[\S 4C]{AE22}`{=tex}, the lattices \( S = (10+n, 12-n, \delta) \) for \( 1\leq n\leq 9 \) yield index 2 Halphen K3 surfaces \( X \) with \( I_{2k} \) fiber, and the surfaces \( \overline{Y} \) obtained from contracting the \( (-1) \)-curves in the special fiber are index 2 Halphen pencils with an \( I_k \) fiber.
 
-In particular, these are precisely the lattices that appear in `\cref{fig:coble-boundary-components-table}`{=tex}. I conjecture that these lattices can be used to construct period domains of such pencils, yielding moduli spaces \( M_{H, 2, k} \) of Halphen surfaces of index 2 with an \( I_{2k} \) fiber, and that the matching of these lattices arises from a geometric comparison to Coble surfaces. Consequently, their KSBA compactifications can be studied, much as was done for \( F_{\operatorname{En}, 2} \) and \( F_{\Co} \) in our previous and current work, and I conjecture that the boundary strata of \( M_{H, 2, k} \) can be classified in a similar way. In particular, I conjecture that the normalizations of the stable pair compactifications \( \overline{M_{H, 2, k}}^R \) are isomorphic to semitoroidal compactifications of the corresponding period domains, where \( R \) is a suitably canonical choice of divisor. In particular, a Halphen surface of index \( m\geq 2 \) has a unique multiple fiber of multiplicity \( m \), and I conjecture that such a fiber can be used to construct a recognizable divisor \( R \).
+In particular, these are precisely the lattices that appear in `\cref{fig:coble-boundary-components-table}`{=tex}. I conjecture that these lattices can be used to construct period domains of such pencils, yielding moduli spaces \( M_{H, 2, k} \) of Halphen surfaces of index 2 with an \( I_{2k} \) fiber, and that the matching of these lattices arises from a geometric comparison to Coble surfaces.
+Consequently, their KSBA compactifications can be studied, much as was done for \( F_{\operatorname{En}, 2} \) and \( F_{\Co} \) in our previous and current work, and I conjecture that the boundary strata of \( M_{H, 2, k} \) can be classified in a similar way.
+In particular, I conjecture that the normalizations of the stable pair compactifications \( \overline{M_{H, 2, k}}^R \) are isomorphic to semitoroidal compactifications of the corresponding period domains, where \( R \) is a suitably canonical choice of divisor.
+In particular, a Halphen surface of index \( m\geq 2 \) has a unique multiple fiber of multiplicity \( m \), and I conjecture that such a fiber can be used to construct a recognizable divisor \( R \).
 
-As a starting point, the Coxeter diagram for \( S \coloneqq(10, 10, 1) \) is well-known, and the moduli theory for the corresponding K3 surfaces is well-developed. Further study would include
+As a starting point, the Coxeter diagram for \( S \coloneqq(10, 10, 1) \) is well-known, and the moduli theory for the corresponding K3 surfaces is well-developed.
+Further study would include
 
--   Constructing the period domain \( F_{S} \),
--   Constructing Baily-Borel compactification \( \overline{F_{S}}^{\operatorname{BB}} \),
--   Studying \( {\operatorname{O}}(S) \)-orbits of isotropic vectors \( e_i \) in \( S \),
--   Using lattice-theoretic techniques to determine the cusp diagram of \( \partial \overline{ F_{S}}^{\operatorname{BB}} \),
--   Computing \( e_i^\perp/\left\langle{e_i}\right\rangle \) and the Coxeter diagrams at the corresponding 0-cusps,
--   Finding an appropriate recognizable divisor \( R \) and constructing the stable pair compactification \( \overline{F_S}^R \), and
--   Leveraging `\cite{AE22nonsympinv}`{=tex} to construct dlt models and integral affine structures classifying \( \partial\overline{F_S}^R \).
+- Constructing the period domain \( F_{S} \),
+- Constructing Baily-Borel compactification \( \overline{F_{S}}^{\operatorname{BB}} \),
+- Studying \( {\operatorname{O}}(S) \)-orbits of isotropic vectors \( e_i \) in \( S \),
+- Using lattice-theoretic techniques to determine the cusp diagram of \( \partial \overline{ F_{S}}^{\operatorname{BB}} \),
+- Computing \( e_i^\perp/\left\langle{e_i}\right\rangle \) and the Coxeter diagrams at the corresponding 0-cusps,
+- Finding an appropriate recognizable divisor \( R \) and constructing the stable pair compactification \( \overline{F_S}^R \), and
+- Leveraging `\cite{AE22nonsympinv}`{=tex} to construct dlt models and integral affine structures classifying \( \partial\overline{F_S}^R \).
 
 This would open an avenue of research comparing GIT compactifications to KSBA compactifications, and generalizing these techniques to compactifications \( \overline{M_{H, m}}^R \) for \( m > 2 \) to construct new moduli spaces of general rational elliptic surfaces (with no restrictions on the fiber type).

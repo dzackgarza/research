@@ -10,8 +10,8 @@ aliases:
 created: 2026-05-10
 ---
 
-> [!remark] Halphen surfaces and Coble surfaces
-> A Halphen surface of index $n$ is a relatively minimal rational elliptic surface with fiber class $F$ satisfying $F \sim -nK_S$. Terminal Coble surfaces of K3 type are closely related to index-2 Halphen surfaces [@DZ99; @CDL24; @DK24].
+> [!remark] Halphen surfaces and Coble surfaces A Halphen surface of index $n$ is a relatively minimal rational elliptic surface with fiber class $F$ satisfying $F \sim -nK_S$.
+> Terminal Coble surfaces of K3 type are closely related to index-2 Halphen surfaces [@DZ99; @CDL24; @DK24].
 
 ## Blowdown relation
 

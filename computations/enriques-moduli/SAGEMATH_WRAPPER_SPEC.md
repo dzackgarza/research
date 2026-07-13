@@ -1,14 +1,15 @@
 # SageMath Wrapper Specification for Enriques Orbit Computation
 
-**Version**: 1.0  
-**Priority**: PRIMARY - This specification drives all backend implementation decisions  
+**Version**: 1.0\
+**Priority**: PRIMARY - This specification drives all backend implementation decisions\
 **Philosophy**: The SageMath interface should feel native, intuitive, and mathematically natural
 
----
+* * *
 
 ## 1. User Experience Goals
 
 ### 1.1 Principle: "One-Line Accessibility"
+
 ```python
 # The most common use case should be this simple:
 sage: from enriques_moduli import enriques_surface_orbits
@@ -23,26 +24,29 @@ Found 7 orbit representatives in 2.3 seconds.
 ```
 
 ### 1.2 Principle: "SageMath Native Feel"
+
 - All return types should be standard SageMath objects
 - Integration with existing SageMath lattice functionality
 - Follow SageMath naming conventions and patterns
 - Support SageMath's standard `_repr_`, `_latex_`, plotting, etc.
 
 ### 1.3 Principle: "Progressive Complexity"
+
 - Simple interface for standard cases
-- Rich options for advanced users  
+- Rich options for advanced users
 - Expert-level access to all underlying algorithms
 
----
+* * *
 
 ## 2. Core Interface Design
 
 ### 2.1 Primary Entry Point
+
 ```python
 def enriques_surface_orbits(degree=2, lattice_type="standard", **kwargs):
     """
     Compute orbit representatives of isotropic vectors for Enriques surfaces.
-    
+
     PARAMETERS:
     -----------
     degree : int (default: 2)
@@ -58,111 +62,113 @@ def enriques_surface_orbits(degree=2, lattice_type="standard", **kwargs):
         Show computation progress
     max_time : int (default: 300)  
         Maximum computation time in seconds
-    
+
     RETURNS:
     --------
     EnriquesOrbitResult
         Container with orbit representatives and metadata
-        
+
     EXAMPLES:
     ---------
     sage: orbits = enriques_surface_orbits()
     sage: orbits.representatives()
     [(1, 0, 0, ...), (0, 1, 0, ...), ...]
-    
+
     sage: orbits.count()  
     7
-    
+
     sage: orbits.lattice()
     Lattice of degree 20 and rank 20 over Integer Ring
     """
 ```
 
 ### 2.2 Result Object Design
+
 ```python
 class EnriquesOrbitResult(SageObject):
     """
     Container for orbit computation results with rich SageMath integration.
     """
-    
+
     def representatives(self):
         """Return list of orbit representative vectors as SageMath vectors."""
         # Return: List[sage.modules.free_module_element.vector]
-    
+
     def count(self):
         """Number of distinct orbits."""
         # Return: Integer
-    
+
     def orbit_sizes(self):
         """Size of each orbit (if computed)."""
         # Return: List[Integer] 
-        
+
     def lattice(self):
         """The underlying lattice as a SageMath IntegralLattice."""
         # Return: sage.modules.lattice_integer.IntegralLattice
-        
+
     def automorphism_group(self):
         """Automorphism group of the lattice.""" 
         # Return: sage.groups.matrix_gps.matrix_group.MatrixGroup_gap
-        
+
     def verify(self):
         """Verify that all representatives are actually isotropic and inequivalent."""
         # Return: bool (True if verification passes)
-        
+
     def plot(self, **kwargs):
         """Visualize the orbit structure (for small cases)."""
         # Return: Graphics object
-        
+
     def save(self, filename):
         """Save results to file for later analysis."""
-        
+
     def _repr_(self):
         return f"Orbit computation result: {self.count()} orbits in {self.lattice()}"
-        
+
     def _latex_(self):
         return rf"\\text{{Orbit representatives for }} {latex(self.lattice())}"
 ```
 
 ### 2.3 Lattice Construction Interface
+
 ```python
 class IndefiniteLatticeBuilder:
     """
     SageMath-integrated builder for indefinite lattices.
     Should feel like native SageMath lattice construction.
     """
-    
+
     @staticmethod
     def from_string_spec(spec_list):
         """
         Build lattice from string specification.
-        
+
         EXAMPLES:
         ---------
         sage: L = IndefiniteLatticeBuilder.from_string_spec(["U", "2U", "2E8"])
         sage: L.gram_matrix()
         20 x 20 dense matrix over Rational Field
-        
+
         sage: L.signature()
         (2, 18)
         """
-        
+
     @staticmethod  
     def enriques_lattice(degree=2):
         """Standard Enriques lattice for given polarization degree."""
-        
+
     @staticmethod
     def from_gram_matrix(matrix):
         """Build from explicit Gram matrix."""
-        
+
     @staticmethod
     def hyperbolic_plane():
         """The lattice U."""
-        
+
     @staticmethod
     def root_lattice(type_str):
         """
         Root lattices: 'E8', 'E7', 'E6', 'A5', 'D4', etc.
-        
+
         EXAMPLES:
         ---------
         sage: E8 = IndefiniteLatticeBuilder.root_lattice('E8')
@@ -179,13 +185,14 @@ def indefinite_lattice(spec):
 ```
 
 ### 2.4 Advanced Interface for Power Users
+
 ```python
 class IndefiniteOrbitComputation:
     """
     Full-featured orbit computation with fine-grained control.
     For advanced users who need access to all parameters.
     """
-    
+
     def __init__(self, lattice, **kwargs):
         """
         PARAMETERS:
@@ -196,11 +203,11 @@ class IndefiniteOrbitComputation:
             - Matrix (Gram matrix)
             - IndefiniteLattice object
         """
-        
+
     def compute_orbit_representatives(self, norm=0, **algorithm_params):
         """
         Full algorithm control.
-        
+
         PARAMETERS:
         -----------
         norm : int/rational (default: 0)
@@ -216,22 +223,23 @@ class IndefiniteOrbitComputation:
         parallel : bool/int
             Use parallel computation (True/False or number of threads)
         """
-        
+
     def compute_automorphism_group(self, **params):
         """Compute just the automorphism group."""
-        
+
     def verify_orbit_representatives(self, representatives):
         """Verify a set of orbit representatives."""
-        
+
     def benchmark(self, methods=None):
         """Compare different computation methods."""
 ```
 
----
+* * *
 
 ## 3. Integration with SageMath Ecosystem
 
 ### 3.1 Lattice Integration
+
 ```python
 # Should work seamlessly with existing SageMath lattices
 sage: L = IntegralLattice([[2, 1], [1, 2]])  # Standard SageMath
@@ -244,7 +252,8 @@ sage: sage_lattice = enriques_orbits.lattice()
 sage: sage_lattice.short_vectors(10)  # Use SageMath methods
 ```
 
-### 3.2 Group Theory Integration  
+### 3.2 Group Theory Integration
+
 ```python
 # Automorphism groups should integrate with SageMath's group theory
 sage: orbits = enriques_surface_orbits()
@@ -255,6 +264,7 @@ sage: G.subgroups()  # Standard SageMath group methods
 ```
 
 ### 3.3 Linear Algebra Integration
+
 ```python
 # Vectors and matrices should be native SageMath objects
 sage: orbits = enriques_surface_orbits()
@@ -270,33 +280,34 @@ sage: v.norm()  # SageMath's norm function
 sage: v * enriques_lattice().gram_matrix() * v  # Should be 0 for isotropic
 ```
 
----
+* * *
 
 ## 4. Documentation and Examples
 
 ### 4.1 Docstring Standard
+
 ```python
 def enriques_surface_orbits(degree=2, **kwargs):
     r"""
     Compute orbit representatives of isotropic vectors for Enriques surfaces.
-    
+
     This function implements the algorithms from Dutour Sikirić and Hulek 
     (2023) for computing orbit representatives in the lattice M(1/2) = 
     U ⊕ 2U ⊕ 2E₈(-1), which parametrizes polarized Enriques surfaces.
-    
+
     INPUT:
-    
+
     - ``degree`` -- (default: 2) degree of the polarization
     - ``method`` -- (default: "auto") computation method
     - ``show_progress`` -- (default: False) show computation progress
-    
+
     OUTPUT:
-    
+
     An ``EnriquesOrbitResult`` object containing the orbit representatives
     and associated data.
-    
+
     EXAMPLES::
-    
+
         sage: from enriques_moduli import enriques_surface_orbits
         sage: orbits = enriques_surface_orbits()
         sage: orbits.count()
@@ -304,32 +315,33 @@ def enriques_surface_orbits(degree=2, **kwargs):
         sage: v = orbits.representatives()[0]
         sage: v * orbits.lattice().gram_matrix() * v  # Verify isotropic
         0
-        
+
     You can also work with custom lattices::
-    
+
         sage: from enriques_moduli import indefinite_lattice, compute_orbit_representatives
         sage: L = indefinite_lattice(["U", "A2"])  
         sage: orbits = compute_orbit_representatives(L, norm=0)
         sage: orbits.count()
         3
-        
+
     ALGORITHM:
-    
+
     Uses the approximate models algorithm from [DS2023]_. For the exact
     algorithm details, see :meth:`IndefiniteOrbitComputation.compute_orbit_representatives`.
-    
+
     REFERENCES:
-    
+
     .. [DS2023] Dutour Sikirić and Hulek, "Moduli of polarized Enriques 
        surfaces -- computational aspects", arXiv:2302.01679v2, 2023.
-       
+
     .. SEEALSO::
-    
+
         :func:`compute_orbit_representatives`, :class:`IndefiniteOrbitComputation`
     """
 ```
 
 ### 4.2 Tutorial Structure
+
 ```python
 """
 TUTORIAL: Enriques Surface Orbit Computation
@@ -357,7 +369,7 @@ The result object provides rich information:
     [(1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
      (0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
      (0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)]
-     
+
     sage: orbits.verify()  # Check correctness
     True
 
@@ -369,7 +381,7 @@ You can also work with your own indefinite lattices:
     sage: from enriques_moduli import indefinite_lattice
     sage: L = indefinite_lattice(["U", "2U", "A3"])
     sage: orbits = compute_orbit_representatives(L)
-    
+
 Advanced Usage
 --------------
 
@@ -386,11 +398,12 @@ For fine control over the computation:
 """
 ```
 
----
+* * *
 
 ## 5. Installation and Setup Experience
 
 ### 5.1 Installation
+
 ```bash
 # Goal: Simple pip install that "just works"
 pip install sage-enriques-moduli
@@ -403,6 +416,7 @@ conda install -c conda-forge sage-enriques-moduli
 ```
 
 ### 5.2 Import Experience
+
 ```python
 # Should work immediately after install
 sage: from enriques_moduli import *
@@ -423,11 +437,12 @@ sage: enriques_moduli.test()  # Run basic functionality tests
 All tests passed!
 ```
 
----
+* * *
 
 ## 6. Error Handling and User Experience
 
 ### 6.1 Graceful Error Messages
+
 ```python
 # Bad input should give helpful errors
 sage: enriques_surface_orbits(degree=-1)
@@ -447,6 +462,7 @@ Partial results have been saved and can be resumed with resume=True.
 ```
 
 ### 6.2 Performance Warnings
+
 ```python
 # Warn about expensive computations
 sage: L = indefinite_lattice(["U"] * 10)  # Very large lattice
@@ -458,57 +474,64 @@ for faster results, or set max_time=3600 to allow longer computation.
 Continue? [y/N]: 
 ```
 
----
+* * *
 
 ## 7. Implementation Requirements Derived from Interface
 
 ### 7.1 Backend Interface Contract
+
 ```python
 # The Julia backend must provide these exact function signatures:
 def julia_enriques_orbits(degree, method, **params):
     """Returns: (representatives_list, metadata_dict)"""
-    
+
 def julia_orbit_computation(gram_matrix, norm, method, **params):
     """Returns: (representatives_list, orbit_sizes, automorphism_generators)"""
-    
+
 def julia_automorphism_group(gram_matrix):
     """Returns: list of generator matrices"""
 ```
 
-### 7.2 Type Conversion Requirements  
+### 7.2 Type Conversion Requirements
+
 - Julia matrices ↔ SageMath matrices (exact rational arithmetic)
 - Julia vectors ↔ SageMath vectors (preserve parent/ambient space)
 - Julia integers ↔ SageMath Integers (arbitrary precision)
 - Error handling across Julia-Python boundary
 
 ### 7.3 Performance Requirements from Interface
+
 - `enriques_surface_orbits()` should complete in < 5 minutes
 - Progress reporting should update every 5-10 seconds
 - Memory usage should stay below 2GB for standard cases
 - Results should be cacheable and resumable
 
----
+* * *
 
 ## 8. Success Criteria
 
 ### 8.1 User Experience Success
+
 - [ ] New user can compute Enriques orbits in one line of code
-- [ ] Results integrate seamlessly with SageMath workflows  
+- [ ] Results integrate seamlessly with SageMath workflows
 - [ ] Documentation is clear and includes worked examples
 - [ ] Error messages are helpful and actionable
 
-### 8.2 Mathematical Success  
+### 8.2 Mathematical Success
+
 - [ ] Results match Dutour Sikirić & Hulek paper for test cases
 - [ ] Verification functions confirm all representatives are valid
 - [ ] Interface supports both standard and custom lattices
 - [ ] Advanced users can access all underlying algorithms
 
 ### 8.3 Technical Success
+
 - [ ] Installation "just works" on all SageMath platforms
 - [ ] Performance meets targets for standard use cases
 - [ ] Memory usage is reasonable and predictable
 - [ ] Computation can be interrupted and resumed
 
----
+* * *
 
-**This specification should drive all implementation decisions. The Julia backend, Python wrapper, and documentation should all be designed to deliver this exact user experience.**
+**This specification should drive all implementation decisions.
+The Julia backend, Python wrapper, and documentation should all be designed to deliver this exact user experience.**

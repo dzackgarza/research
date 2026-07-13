@@ -12,8 +12,8 @@ aliases:
 created: 2026-05-11
 ---
 
-> [!construction] Branchwise models of polarized Coble moduli
-> A provisional polarized analogue of [[Moduli space of Coble surfaces|$F_{\mathrm{Co}}$]] is obtained by taking the Coble Heegner divisor inside [[Moduli space of degree 2 numerically polarized Enriques surfaces|$F_{\mathrm{En},2}$]] and normalizing it branchwise. The durable point is that one should not assume a single global quotient until root-orbit uniqueness for the polarized arithmetic group is proved.
+> [!construction] Branchwise models of polarized Coble moduli A provisional polarized analogue of [[Moduli space of Coble surfaces|$F_{\mathrm{Co}}$]] is obtained by taking the Coble Heegner divisor inside [[Moduli space of degree 2 numerically polarized Enriques surfaces|$F_{\mathrm{En},2}$]] and normalizing it branchwise.
+> The durable point is that one should not assume a single global quotient until root-orbit uniqueness for the polarized arithmetic group is proved.
 
 ## Proposed shape
 

@@ -1,6 +1,6 @@
 # Halphen Surfaces
 
-::: {.remark}
+:::{.remark}
 
 It is well-known (e.g. as in [@DZ99] and [@CDL24 Ch.5 §6]) that a Halphen
 surface of index $n$ is a relative minimal elliptic surface $S$ with $F_1$ the
@@ -29,12 +29,11 @@ $V(\lambda f_6 + \mu f_3^2)$ such that the minimal resolution of its basepoints
 is a Halphen surface of index 2. The proof of [@DK24 Prop. 9.1.8]
 indicates that the moduli space of general Halphen surfaces of index 2 has
 dimension 9.
-
 :::
 
 The following is [@CDL24 Prop. 3.1]:
 
-::: {#lem:coble_halphen_blowdown .lemma}
+:::{#lem:coble_halphen_blowdown .lemma}
 
 Let $X$ be a Coble surface and $\pi_{E}: X \to Y$ be the blowing down of
 a (-1)-curve E.
@@ -48,10 +47,9 @@ Then
 
 Conversely, the blow-up of a singular point of an irreducible non-multiple fiber
 of a Halphen surface of index 2 is a Coble surface.
-
 :::
 
-::: {.remark}
+:::{.remark}
 
 Why introduce Halphen surfaces? I conjecture that the geometric construction(s)
 above yield some kind of correspondence between moduli spaces of Coble surfaces
@@ -62,7 +60,7 @@ Regarding the coarse spaces as period domains attached to lattices, the lattices
 match up precisely; see \cref{table:coble-lattices}.
 Applications of mirror moves indicate that the cusp diagrams would
 correspondingly coincide as well.
-
 :::
 
 [^5]: $A_1$ or $A_2$ singularities.
+

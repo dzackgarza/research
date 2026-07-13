@@ -7,6 +7,4 @@ Notebook artifacts grouped by topic and condition.
 - `periods/`: period-computation notebooks or notebook exports.
 - `empty-or-broken/`: notebooks kept for provenance but not currently useful as runnable artifacts.
 
-`periods/fermat-periods-nbviewer.html` was named `.ipynb` in the source directory but is
-an HTML notebook-viewer export, not JSON notebook data.
-
+`periods/fermat-periods-nbviewer.html` was named `.ipynb` in the source directory but is an HTML notebook-viewer export, not JSON notebook data.

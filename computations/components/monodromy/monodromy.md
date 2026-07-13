@@ -12,10 +12,6 @@ bm = C.braid_monodromy()   # needs sirocco
 bm
 ```
 
-
-
-
-
 ```python
 from sage.all import *
 from sage.interfaces.singular import singular
@@ -29,4 +25,3 @@ print(singular.eval('matrix M = monodromyB(g); M;'))
 # assert Mp.eigenvalues() == [e^(-I*pi/3), e^(I*pi/3)}]
 # assert Mp.is_conjugate_to( Matrix(ZZ, 2, [0, -1, 1, 1]))
 ```
-

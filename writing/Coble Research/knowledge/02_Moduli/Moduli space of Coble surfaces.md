@@ -11,8 +11,7 @@ aliases:
 created: 2026-05-10
 ---
 
-> [!definition] Moduli space of Coble surfaces
-> For Coble surfaces with one boundary component, the coarse moduli space $F_{\mathrm{Co}}$ is a 9-dimensional arithmetic quotient that can be presented in two compatible ways:
+> [!definition] Moduli space of Coble surfaces For Coble surfaces with one boundary component, the coarse moduli space $F_{\mathrm{Co}}$ is a 9-dimensional arithmetic quotient that can be presented in two compatible ways:
 > $$
 > F_{\mathrm{Co}} = \mathcal{H}_{-2} / \operatorname{O}(T_{\mathrm{En}})
 > $$
@@ -36,12 +35,13 @@ created: 2026-05-10
 
 ## Geometric constructions
 
-- **GIT point of view:** the blowup construction starts from ten points in $\mathbf{P}^2$, so $(\mathbf{P}^2)^{10} / \operatorname{PGL}_3$ has dimension $12$, and the Coble condition imposes three independent discriminant conditions, leaving $\dim F_{\mathrm{Co}} = 9$ [@Cob19; @DK13].
+- **GIT point of view:** the blowup construction starts from ten points in $\mathbf{P}^2$, so $(\mathbf{P}^2)^{10} / \operatorname{PGL}*3$ has dimension $12$, and the Coble condition imposes three independent discriminant conditions, leaving $\dim F*{\mathrm{Co}} = 9$ [@Cob19; @DK13].
 - **Horikawa point of view:** a $\tau$-invariant anti-bicanonical curve on $\mathbf{P}^1 \times \mathbf{P}^1$ passing through a fixed point yields a nodal K3 cover whose quotient is a Coble surface [@Hor78; @AEGS23]; see [[Horikawa model for Coble surfaces]].
 
 ## Polarized analogue
 
-- The unpolarized space $F_{\mathrm{Co}}$ is now complemented by a status-aware cluster for the degree-2 polarized problem. The safe current entry point is [[Branchwise models of polarized Coble moduli]], not a finalized single quotient.
+- The unpolarized space $F_{\mathrm{Co}}$ is now complemented by a status-aware cluster for the degree-2 polarized problem.
+  The safe current entry point is [[Branchwise models of polarized Coble moduli]], not a finalized single quotient.
 - The polarized story separates:
   - branch structure and arithmetic groups,
   - branch-curve geometry,
