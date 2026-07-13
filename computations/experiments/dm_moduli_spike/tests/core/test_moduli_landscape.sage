@@ -7,9 +7,9 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
 from dm_moduli_spike import spec, complex_numbers_ring, spec_complex
-from dm_moduli_spike.moduli.instances import M_gn
-from dm_moduli_spike.moduli.problems import StablePointedCurves
-from dm_moduli_spike.stratification import DualGraphType
+from dm_moduli_spike._landscape.moduli.instances import M_gn
+from dm_moduli_spike._landscape.moduli.problems import StablePointedCurves
+from dm_moduli_spike._landscape.stratification import DualGraphType
 from dm_moduli_spike.categories import (
     DeligneMumfordStacks,
     StratifiedStacks,

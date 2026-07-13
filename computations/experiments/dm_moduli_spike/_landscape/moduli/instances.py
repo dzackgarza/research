@@ -2,7 +2,7 @@ r"""Named moduli-stack instances."""
 
 from __future__ import annotations
 
-from ..categories.base import AffineScheme
+from ...categories.base import AffineScheme
 from .stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
 
 

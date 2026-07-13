@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..categories.base import AffineScheme
+    from ...categories.base import AffineScheme
     from ..curves.pointed import StablePointedCurve, SmoothPointedCurve
     from .stack import DeligneMumfordModuliStackOver
 

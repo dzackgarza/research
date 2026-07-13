@@ -5,8 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..objects.graph_types import StableGraphType
-    from ..objects.records import StableGraph
+    from ...objects.graph_types import StableGraphType
+    from ...objects.records import StableGraph
 
 
 class PointedCurve:
@@ -57,7 +57,7 @@ class StablePointedCurve(PointedCurve):
         return self._graph_type is None or self._graph_type.num_edges() == 0
 
     def dual_graph(self) -> StableGraph:
-        from ..objects.graph_types import StableGraphTypes
+        from ...objects.graph_types import StableGraphTypes
 
         if self._graph_type is not None:
             return self._graph_type.canonical_representative()

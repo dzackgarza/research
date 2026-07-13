@@ -5,8 +5,8 @@ from __future__ import annotations
 from sage.rings.integer_ring import ZZ
 from sage.structure.unique_representation import UniqueRepresentation
 
-from ..categories.base import AffineScheme, check_z_scheme, spec
-from ..categories.stacks import DeligneMumfordStacks
+from ...categories.base import AffineScheme, check_z_scheme, spec
+from ...categories.stacks import DeligneMumfordStacks
 from ..moduli.coarse import CoarseModuliMap, CoarseModuliScheme, CoarseModuliSchemeOver, coarse_moduli_map
 from ..moduli.families import FamiliesOver
 from ..moduli.problems import ModuliProblem, SmoothPointedCurves, StablePointedCurves

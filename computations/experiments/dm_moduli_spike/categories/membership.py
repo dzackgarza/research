@@ -7,14 +7,14 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .base import AffineScheme
     from .foundation import ModuliCategory
-    from ..moduli.coarse import CoarseModuliScheme, CoarseModuliSchemeOver
-    from ..moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
-    from ..stratification.stratified import StratifiedStack
+    from .._landscape.moduli.coarse import CoarseModuliScheme, CoarseModuliSchemeOver
+    from .._landscape.moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
+    from .._landscape.stratification.stratified import StratifiedStack
 
 
 def _object_base(obj: object) -> AffineScheme:
-    from ..moduli.coarse import CoarseModuliScheme, CoarseModuliSchemeOver
-    from ..moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
+    from .._landscape.moduli.coarse import CoarseModuliScheme, CoarseModuliSchemeOver
+    from .._landscape.moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
 
     if isinstance(obj, DeligneMumfordModuliStack):
         return obj.base_scheme()
@@ -28,7 +28,7 @@ def _object_base(obj: object) -> AffineScheme:
 
 
 def stack_in_category(stack: DeligneMumfordModuliStack | DeligneMumfordModuliStackOver, category: ModuliCategory) -> bool:
-    from ..moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
+    from .._landscape.moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
 
     if not isinstance(stack, (DeligneMumfordModuliStack, DeligneMumfordModuliStackOver)):
         return False
@@ -36,7 +36,7 @@ def stack_in_category(stack: DeligneMumfordModuliStack | DeligneMumfordModuliSta
 
 
 def coarse_in_category(scheme: CoarseModuliScheme | CoarseModuliSchemeOver, category: ModuliCategory) -> bool:
-    from ..moduli.coarse import CoarseModuliScheme, CoarseModuliSchemeOver
+    from .._landscape.moduli.coarse import CoarseModuliScheme, CoarseModuliSchemeOver
 
     if not isinstance(scheme, (CoarseModuliScheme, CoarseModuliSchemeOver)):
         return False
@@ -44,7 +44,7 @@ def coarse_in_category(scheme: CoarseModuliScheme | CoarseModuliSchemeOver, cate
 
 
 def stratified_stack_in_category(stratified: StratifiedStack, category: ModuliCategory) -> bool:
-    from ..stratification.stratified import StratifiedStack
+    from .._landscape.stratification.stratified import StratifiedStack
 
     if not isinstance(stratified, StratifiedStack):
         return False

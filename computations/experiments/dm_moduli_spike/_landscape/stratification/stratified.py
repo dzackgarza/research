@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..categories.membership import _object_base
-from ..categories.stratified import StratifiedSpaces, StratifiedStacks
-from ..objects.gamma import StableGraphCategory
+from ...categories.membership import _object_base
+from ...categories.stratified import StratifiedSpaces, StratifiedStacks
+from ...objects.gamma import StableGraphCategory
 from .indexing import DualGraphType
 
 if TYPE_CHECKING:
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from ..geometry.compactification import Compactification
     from ..moduli.coarse import CoarseModuliScheme, CoarseModuliSchemeOver
     from ..moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
-    from ..objects.graph_types import StableGraphTypes
+    from ...objects.graph_types import StableGraphTypes
 
 
 class BoundaryStack:

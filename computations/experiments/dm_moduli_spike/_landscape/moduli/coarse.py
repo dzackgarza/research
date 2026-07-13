@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 from sage.rings.integer_ring import ZZ
 from sage.structure.unique_representation import UniqueRepresentation
 
-from ..categories.base import AffineScheme, check_z_scheme, spec
-from ..categories.schemes import Varieties
+from ...categories.base import AffineScheme, check_z_scheme, spec
+from ...categories.schemes import Varieties
 from ..geometry.morphisms import CoarseModuliMap
 
 if TYPE_CHECKING:

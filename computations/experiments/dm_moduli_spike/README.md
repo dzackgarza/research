@@ -52,7 +52,7 @@ P = Gamma.specialization_poset()   # Sage FinitePoset
 | --- | --- |
 | `objects/gamma.py` | **Public center** — Γ_{g,n} |
 | `objects/` (records, contractions, …) | Combinatorial kernel |
-| `moduli/`, `curves/`, `geometry/` | **Private stubs** — typed placeholders, not geometry |
+| `_landscape/` (`moduli`, `curves`, `geometry`, `stratification`) | **Private stubs** — typed placeholders, not geometry; not in `__all__` |
 | `DMCompactificationModel` | **Being demoted** — enumerator behind stratification |
 
 Literature oracle tests live in `tests/literature/` (tier 1). See evidence table below.
