@@ -14,6 +14,7 @@ from collections.abc import Iterator
 from itertools import combinations
 from typing import TYPE_CHECKING
 
+from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
@@ -32,15 +33,18 @@ if TYPE_CHECKING:
 _Object = builtins.object
 
 
-class StableGraphMorphism:
+class StableGraphMorphism(Element):
     r"""Morphism `f : G \to H` in `\Gamma_{g,n}`.
 
     Stores a vertex map `V(G)\to V(H)`, a half-edge map on surviving flags
     (`H(G)\to H(H)`, value `-1` on contracted flags), and the contracted
     flag set.  Derived from contractions and isomorphisms.
-    """
 
-    __slots__ = ("_domain", "_codomain", "_vertex_map", "_half_edge_map", "_contracted_flags")
+    When constructed inside a :class:`StableGraphHomset`, this is a Sage
+    :class:`~sage.structure.element.Element` of that Hom-set.  Factory helpers
+    used during enumeration may temporarily produce unbound morphisms
+    (``parent=None``); the Hom-set rebinds them.
+    """
 
     def __init__(
         self,
@@ -49,6 +53,7 @@ class StableGraphMorphism:
         vertex_map: tuple[int, ...],
         half_edge_map: tuple[int, ...],
         contracted_flags: frozenset[int],
+        parent: StableGraphHomset | None = None,
     ) -> None:
         assert len(vertex_map) == domain.num_vertices()
         assert len(half_edge_map) == domain.num_flags()
@@ -57,6 +62,8 @@ class StableGraphMorphism:
         self._vertex_map = vertex_map
         self._half_edge_map = half_edge_map
         self._contracted_flags = frozenset(contracted_flags)
+        if parent is not None:
+            Element.__init__(self, parent)
 
     @staticmethod
     def from_contraction(contraction: StableGraphContraction) -> StableGraphMorphism:
@@ -196,12 +203,13 @@ class StableGraphHomset(UniqueRepresentation, Parent):
 
     Sage :class:`~sage.structure.parent.Parent` in :class:`~sage.categories.homsets.Homsets`
     (same pattern as :class:`~dm_moduli_spike.geometry.stacks.StackHomset`).
-    Morphisms are plain combinatorial objects enumerated by this parent; they are
-    not yet Sage ``Element`` instances.
+    Morphisms are :class:`StableGraphMorphism` elements of this parent.
 
     Do not name a method ``category`` here — that would shadow
-    :meth:`Parent.category`.
+    :meth:`Parent.category`.  Use :meth:`gamma` for `\Gamma_{g,n}`.
     """
+
+    Element = StableGraphMorphism
 
     def __init__(self, gamma: StableGraphCategory, domain: _GraphRecord, codomain: _GraphRecord) -> None:
         from sage.categories.homsets import Homsets
@@ -209,8 +217,19 @@ class StableGraphHomset(UniqueRepresentation, Parent):
         self._gamma = gamma
         self._domain = domain
         self._codomain = codomain
-        self._morphisms = tuple(gamma._enumerate_morphisms(domain, codomain))
+        # Parent must exist before morphisms can be Sage Elements of this Hom-set.
         Parent.__init__(self, category=Homsets())
+        self._morphisms = tuple(self._bind(morph) for morph in gamma._enumerate_morphisms(domain, codomain))
+
+    def _bind(self, morph: StableGraphMorphism) -> StableGraphMorphism:
+        return StableGraphMorphism(
+            morph.domain(),
+            morph.codomain(),
+            morph.vertex_map(),
+            morph.half_edge_map(),
+            morph.contracted_flags(),
+            parent=self,
+        )
 
     def domain(self) -> _GraphRecord:
         return self._domain
