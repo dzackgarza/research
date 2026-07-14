@@ -66,7 +66,8 @@ class StableGraphMorphism(Element):
             Element.__init__(self, parent)
 
     @staticmethod
-    def from_contraction(contraction: StableGraphContraction) -> StableGraphMorphism:
+    def _from_contraction_unbound(contraction: StableGraphContraction) -> StableGraphMorphism:
+        r"""Internal: unlabeled Hom data before parenting into a Hom-set."""
         domain = contraction.domain()
         codomain = contraction.codomain()
         vertex_map = [0] * domain.num_vertices()
@@ -83,6 +84,15 @@ class StableGraphMorphism(Element):
             tuple(half_edge_map),
             contraction.contracted_flags(),
         )
+
+    @staticmethod
+    def from_contraction(contraction: StableGraphContraction) -> StableGraphMorphism:
+        r"""Hom-set element realizing a contraction of skeletal half-edge records."""
+        unbound = StableGraphMorphism._from_contraction_unbound(contraction)
+        domain = contraction.domain()
+        codomain = contraction.codomain()
+        gamma = StableGraphCategory(domain.genus(), domain.num_markings())
+        return gamma.hom(domain, codomain)._bind(unbound)
 
     @staticmethod
     def from_isomorphism(iso: StableGraphIsomorphism) -> StableGraphMorphism:
@@ -349,22 +359,25 @@ class StableGraphCategory(UniqueRepresentation):
         graph = self._canonical(graph)
         return self.hom(graph, graph)
 
-    def identity(self, graph: _GraphRecord | StableGraph) -> StableGraphMorphism:
-        graph = self._canonical(graph)
+    def _identity_unbound(self, graph: _GraphRecord) -> StableGraphMorphism:
         n_v = graph.num_vertices()
         n_h = graph.num_flags()
         return StableGraphMorphism(graph, graph, tuple(range(n_v)), tuple(range(n_h)), frozenset())
 
+    def identity(self, graph: _GraphRecord | StableGraph) -> StableGraphMorphism:
+        graph = self._canonical(graph)
+        return self.end(graph)._bind(self._identity_unbound(graph))
+
     def contract(self, graph: _GraphRecord | StableGraph, edges: tuple[tuple[int, int], ...]) -> StableGraphMorphism:
         graph = self._canonical(graph)
         _target_type, contraction = contract_edges(graph, edges)
-        morph = StableGraphMorphism.from_contraction(contraction)
+        morph = StableGraphMorphism._from_contraction_unbound(contraction)
         # Land on skeletal object
         skeletal = self._canonical(morph._codomain)
         if morph._codomain != skeletal:
             iso = StableGraphMorphism.from_isomorphism(isomorphism_between(morph._codomain, skeletal))
             morph = iso.compose(morph)
-        return morph
+        return self.hom(graph, skeletal)._bind(morph)
 
     def automorphism_group(self, graph: _GraphRecord | StableGraph, on: str = "vertices") -> _Object:
         r"""Sage permutation group of `\operatorname{Aut}(G)` acting on the requested set."""
@@ -496,7 +509,7 @@ class StableGraphCategory(UniqueRepresentation):
             target_type, contraction = contract_edges(domain, chosen)
             if self._canonical(target_type) != codomain:
                 continue
-            base = StableGraphMorphism.from_contraction(contraction)
+            base = StableGraphMorphism._from_contraction_unbound(contraction)
             if base._codomain != codomain:
                 iso = StableGraphMorphism.from_isomorphism(isomorphism_between(base._codomain, codomain))
                 base = iso.compose(base)
@@ -512,7 +525,7 @@ class StableGraphCategory(UniqueRepresentation):
         from ._automorphism_action import _GraphAutomorphismData
 
         action = _GraphAutomorphismData.from_graph(graph)
-        morphisms = [self.identity(graph)]
+        morphisms = [self._identity_unbound(graph)]
         # Expand Aut(Γ) via generator closure on flag/vertex permutations.
         flag_gens = action.on_flags()
         vertex_gens = action.on_vertices()

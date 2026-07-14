@@ -61,17 +61,58 @@ class Stratifications(UniqueRepresentation, Parent):
         return f"Stratifications({self._space!r})"
 
 
-class Stratum:
-    r"""Locally closed stratum of a stratification; underlying stack is typically a quotient."""
+class Strata(UniqueRepresentation, Parent):
+    r"""Parent of locally closed strata of a fixed stratification ``Σ``."""
+
+    Element: type[Stratum]
+
+    def __init__(self, stratification: Stratification) -> None:
+        from sage.categories.sets_cat import Sets
+
+        self._stratification = stratification
+        Parent.__init__(self, category=Sets())
+
+    def stratification(self) -> Stratification:
+        return self._stratification
+
+    def _element_constructor_(
+        self,
+        index: object,
+        underlying: Stack | None = None,
+        immersion: LocallyClosedImmersion | None = None,
+    ) -> Stratum:
+        if isinstance(index, Stratum):
+            if index.parent() is self:
+                return index
+            raise ValueError(f"{index!r} is not a stratum of {self!r}")
+        if underlying is None:
+            raise TypeError("Strata(Σ)(index, underlying_stack) requires an underlying Stack")
+        return cast(Stratum, self.element_class(self, index, underlying, immersion=immersion))
+
+    def _repr_(self) -> str:
+        return f"Strata({self._stratification!r})"
+
+
+class Stratum(Element):
+    r"""Locally closed stratum of a stratification; underlying stack is typically a quotient.
+
+    Construct via ``Strata(Σ)(index, underlying)`` or :meth:`Stratification.stratum`.
+    """
 
     def __init__(
         self,
-        stratification: Stratification,
+        parent: Strata | Stratification,
         index: object,
         underlying: Stack,
         *,
         immersion: LocallyClosedImmersion | None = None,
     ) -> None:
+        if isinstance(parent, Stratification):
+            # Legacy construction Stratum(Σ, index, stack) used during stratification build.
+            stratification = parent
+            parent = Strata(stratification)
+        else:
+            stratification = parent.stratification()
         ambient = stratification.space()
         if not isinstance(ambient, Stack):
             raise TypeError(f"stratification ambient must be a Stack; found {type(ambient)}")
@@ -82,6 +123,7 @@ class Stratum:
         self._immersion = immersion or LocallyClosedImmersion(underlying, ambient)
         self._clutching: ClutchingMorphism | None = None
         self._substack = LocallyClosedSubstack(ambient, underlying, immersion=self._immersion)
+        Element.__init__(self, parent)
 
     def stratification(self) -> Stratification:
         return self._stratification
@@ -106,6 +148,9 @@ class Stratum:
 
     def _repr_(self) -> str:
         return f"Stratum({self._index!r})"
+
+
+Strata.Element = Stratum
 
 
 class Stratification(Element):

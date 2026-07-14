@@ -33,7 +33,7 @@ from dm_moduli_spike import (
     scheme_open_immersion_compactification,
     spec,
 )
-from dm_moduli_spike.geometry.stratification import StableDualGraph, Stratifications
+from dm_moduli_spike.geometry.stratification import StableDualGraph, Strata, Stratifications
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.testing_support.support.poset_oracle import expected_M0n_specialization_poset
 
@@ -109,6 +109,8 @@ def test_stratum_locally_closed_and_clutching_hom():
     assert Sigma.indexing_category() == StableGraphs(1, (1,))
     Gamma = next(g for g in Sigma.index_poset() if g.num_edges() > 0)
     S = Sigma.stratum(Gamma)
+    assert isinstance(S.parent(), Strata)
+    assert S.parent() is Strata(Sigma)
     assert S in LocallyClosedSubstacks(XSbar)
     assert isinstance(S.underlying_stack(), QuotientStack)
     xi = S.clutching_morphism()
@@ -126,6 +128,9 @@ def test_stable_graphs_actions_and_hom_contraction():
     assert isinstance(nodal.action_on_half_edges(), Action)
     assert isinstance(nodal.action_on_edges(), Action)
     assert isinstance(nodal.action_on_vertices(), Action)
+    target, morph, _size = nodal.elementary_contractions()[0]
+    assert morph.parent() is Hom(nodal, target)
+    assert morph.is_contraction()
     morph = Hom(nodal, smooth).an_element()
     assert morph.is_contraction()
     assert not morph.is_isomorphism() or nodal == smooth

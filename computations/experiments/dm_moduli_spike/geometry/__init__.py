@@ -32,6 +32,7 @@ from .stacks import (
 from .stratification import (
     ClutchingMorphism,
     StableDualGraph,
+    Strata,
     Stratification,
     Stratifications,
     StratifiedSpace,
@@ -64,6 +65,7 @@ __all__ = [
     "StackFiber",
     "StackHomset",
     "StackMorphism",
+    "Strata",
     "Stratification",
     "Stratifications",
     "StratifiedSpace",

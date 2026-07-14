@@ -646,8 +646,9 @@ class Compactification(Element):
         assert self._moduli_problem is not None, f"compactification has no moduli_problem; kind={self._kind_name!r}; owned boundary=Compactification.moduli_problem"
         return self._moduli_problem
 
-    def boundary(self, reduced: bool = True) -> Boundary:
-        return Boundary(self, reduced=reduced)
+    def boundary(self) -> Boundary:
+        r"""Closed complement of this compactification's open immersion."""
+        return Boundary(self)
 
     def coarse_compactification(self) -> Compactification:
         r"""Coarse-space compactification commuting with coarse moduli morphisms.
@@ -710,9 +711,8 @@ Compactifications.Element = Compactification
 class Boundary(GeometricObject):
     r"""Closed complement of a compactification open immersion."""
 
-    def __init__(self, compactification: Compactification, *, reduced: bool = True) -> None:
+    def __init__(self, compactification: Compactification) -> None:
         self._compactification = compactification
-        self._reduced = reduced
         ambient = compactification.target()
         assert hasattr(ambient, "base_scheme") and hasattr(ambient, "declared_axioms"), (
             f"compactification target must expose base_scheme/declared_axioms; found {type(ambient)!r}; owned boundary=Boundary.__init__"
