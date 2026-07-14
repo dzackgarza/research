@@ -203,28 +203,24 @@ def find_sagemath_files(max_file_size_mb: int = 1) -> list[dict[str, Any]]:
         print(f"Found {len(pattern_files)} files matching pattern {pattern}")
 
         for p in pattern_files:
-            try:
-                # Skip very large files to avoid memory issues
-                if p.stat().st_size > max_file_size:
-                    continue
-
-                # Skip binary files and certain directories
-                if any(skip in str(p) for skip in [".git", "__pycache__", ".pyc", "build", "dist"]):
-                    continue
-
-                data = {
-                    "path": p,
-                    "meta": {
-                        "url_source": f"file://{p}",
-                        "suffix": p.suffix,
-                        "source": "SageMath Local",
-                        "relative_path": str(p.relative_to(sage_path)),
-                    },
-                }
-                files.append(data)
-            except (OSError, ValueError):
-                # Skip files that can't be accessed
+            # Skip very large files to avoid memory issues
+            if p.stat().st_size > max_file_size:
                 continue
+
+            # Skip binary files and certain directories
+            if any(skip in str(p) for skip in [".git", "__pycache__", ".pyc", "build", "dist"]):
+                continue
+
+            data = {
+                "path": p,
+                "meta": {
+                    "url_source": f"file://{p}",
+                    "suffix": p.suffix,
+                    "source": "SageMath Local",
+                    "relative_path": str(p.relative_to(sage_path)),
+                },
+            }
+            files.append(data)
 
     return files
 

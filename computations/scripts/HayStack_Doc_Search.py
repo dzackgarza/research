@@ -265,28 +265,24 @@ def fetch_sagemath_files() -> list[_SourceFile]:
         st.write(f"Found {len(pattern_files)} files matching pattern {pattern}")
 
         for p in pattern_files:
-            try:
-                # Skip very large files to avoid memory issues
-                if p.stat().st_size > max_file_size:
-                    continue
-
-                # Skip binary files and certain directories
-                if any(skip in str(p) for skip in [".git", "__pycache__", ".pyc", "build", "dist"]):
-                    continue
-
-                data: _SourceFile = {
-                    "path": p,
-                    "meta": {
-                        "url_source": f"file://{p}",
-                        "suffix": p.suffix,
-                        "source": "SageMath Local",
-                        "relative_path": str(p.relative_to(SAGE_PATH)),
-                    },
-                }
-                files.append(data)
-            except (OSError, ValueError):
-                # Skip files that can't be accessed
+            # Skip very large files to avoid memory issues
+            if p.stat().st_size > max_file_size:
                 continue
+
+            # Skip binary files and certain directories
+            if any(skip in str(p) for skip in [".git", "__pycache__", ".pyc", "build", "dist"]):
+                continue
+
+            data: _SourceFile = {
+                "path": p,
+                "meta": {
+                    "url_source": f"file://{p}",
+                    "suffix": p.suffix,
+                    "source": "SageMath Local",
+                    "relative_path": str(p.relative_to(SAGE_PATH)),
+                },
+            }
+            files.append(data)
 
     st.write(f"Total SageMath files selected for indexing: {len(files)}")
     return files
