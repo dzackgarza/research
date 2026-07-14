@@ -16,7 +16,7 @@ created: 2026-05-08
 > 
 > The associated hyperbolic space $\mathbb{H}_L^n$ admits models:
 > - **Unit hyperboloid model**: $\mathbb{H}^n_L \mathrel{\mathop:}= \{ v \in L_{\mathbf{R}} \mathrel{\Big|} v^2 = 1,\, v \in C_L^+ \}$.
-> - **Projective or Klein model**: $\operatorname{BB}_L^n \mathrel{\mathop:}= \mathbf{P}(C_L ) \subset \mathbf{P}(L_{\mathbf{R}})$.
+> - **Projective or Klein model**: $\operatorname{BB}*L^n \mathrel{\mathop:}= \mathbf{P}(C_L ) \subset \mathbf{P}(L*{\mathbf{R}})$.
 > 
 > For hyperplanes $H_v, H_w$:
 > - $|vw| < 1$: intersect in interior, $-vw = \cos(\text{angle})$.

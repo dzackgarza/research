@@ -10,16 +10,34 @@ and SageMath's matrix framework for indefinite lattices.
 Convention verification: 2U means 2 * U (scaling), not U ⊕ U (direct sum)
 """
 
+from typing import NotRequired, TypedDict
+
 from sage.matrix.constructor import matrix as Matrix
 from sage.modules.free_quadratic_module_integer_symmetric import (
     FreeQuadraticModule_integer_symmetric,
     IntegralLattice,
 )
+from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
-_LatticeProperties = dict[str, object]
-_TestCaseResult = dict[str, object]
+
+class _LatticeProperties(TypedDict):
+    dimension: Integer
+    rank: Integer
+    signature: tuple[int, int]
+    zero_eigenvalues: int
+    gram_matrix_rank: int
+    is_definite: bool
+    is_indefinite: bool
+    signature_matches: NotRequired[bool]
+
+
+class _TestCaseResult(TypedDict):
+    k_dimension: int
+    lattice: NotRequired[FreeQuadraticModule_integer_symmetric]
+    verification: NotRequired[_LatticeProperties]
+    error: NotRequired[str]
 
 
 def classical_lattice(name: str) -> FreeQuadraticModule_integer_symmetric:

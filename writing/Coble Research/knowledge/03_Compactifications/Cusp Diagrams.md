@@ -11,9 +11,7 @@ aliases:
 created: 2026-05-08
 ---
 
-> [!definition] Cusp Diagrams
-> 
-> Let $X$ be a complex analytic space equipped with a stratification $\partial X = \bigsqcup_{i \geq 0} \partial_i X$ by boundary strata indexed by codimension.
+> [!definition] Cusp Diagrams Let $X$ be a complex analytic space equipped with a stratification $\partial X = \bigsqcup_{i \geq 0} \partial_i X$ by boundary strata indexed by codimension.
 > 
 > The **cusp diagram** of $X$ is the directed graph whose vertices index the irreducible components of $\partial_i X$, with a directed edge $e_{i \to j}$ corresponding to components $V_i$ and $V_j$ whenever $V_j$ lies in the Zariski closure of $V_i$.
 

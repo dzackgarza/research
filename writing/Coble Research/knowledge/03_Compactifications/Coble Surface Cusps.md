@@ -11,9 +11,7 @@ aliases:
 created: 2026-05-10
 ---
 
-> [!example] Cusps of $F_{\mathrm{Co}}$
-> 
-> Applying mirror moves to the 2-elementary lattice $S_{\mathrm{Co}} = (11,11,1)_1$ yields a cusp diagram for the Coble moduli space $F_{\mathrm{Co}}$ with exactly one 0-cusp and one adjacent 1-cusp [@AE22; @AN06; @AEGS23].
+> [!example] Cusps of $F_{\mathrm{Co}}$ Applying mirror moves to the 2-elementary lattice $S_{\mathrm{Co}} = (11,11,1)*1$ yields a cusp diagram for the Coble moduli space $F*{\mathrm{Co}}$ with exactly one 0-cusp and one adjacent 1-cusp [@AE22; @AN06; @AEGS23].
 
 ## Boundary lattices
 

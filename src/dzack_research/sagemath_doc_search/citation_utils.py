@@ -4,6 +4,7 @@ Citation utilities for the enhanced inline citation system.
 Provides necessary functions for creating links and processing citations.
 """
 
+import re
 from pathlib import Path
 
 
@@ -125,3 +126,87 @@ def convert_to_docs_url(file_path: str) -> str | None:
             return f"{base_url}/{doc_path}"
 
     return None
+
+
+def create_citation_link(citation_id: str, display_text: str, file_path: str, line_number: int = 1) -> str:
+    """
+    Create a properly formatted citation link.
+
+    Args:
+        citation_id: Citation ID (e.g., "src1")
+        display_text: Text to display for the link
+        file_path: File path to link to
+        line_number: Line number
+
+    Returns:
+        HTML link with citation formatting
+    """
+    return f'<sup><a href="#citation-{citation_id}" class="citation-ref">[{citation_id}]</a></sup>'
+
+
+def process_inline_citations(text: str, citation_map: dict[str, dict[str, object]]) -> str:
+    """
+    Process inline citations in text and convert them to proper links.
+
+    Args:
+        text: Text containing (src1), (src2) style citations
+        citation_map: Map from citation_id to document info
+
+    Returns:
+        Text with processed citations
+    """
+
+    def replace_citation(match: re.Match[str]) -> str:
+        citation_id = match.group(1)
+        if citation_id in citation_map:
+            # Create a simple superscript link
+            return f'<sup><a href="#ref-{citation_id}" class="citation-link">[{citation_id}]</a></sup>'
+        else:
+            return match.group(0)  # Return original if not found
+
+    # Replace (src1), (src2), etc. with superscript links
+    pattern = r"\((src\d+)\)"
+    return re.sub(pattern, replace_citation, text)
+
+
+def create_sources_section(documents: list, enhanced_docs: list) -> str:
+    """
+    Create a properly formatted sources section with clickable links.
+
+    Args:
+        documents: Original documents
+        enhanced_docs: Enhanced documents with citation metadata
+
+    Returns:
+        HTML formatted sources section
+    """
+    if not enhanced_docs:
+        return ""
+
+    source_lines = []
+    source_lines.append("\n\n---\n\n**Sources:**\n")
+
+    for doc in enhanced_docs:
+        citation_id = doc.meta["citation_id"]
+        citation_display = doc.meta["citation_display"]
+        rel_path = doc.meta["relative_path"]
+
+        if rel_path != "unknown":
+            # Get line number from content
+            line_no = get_primary_line_number(doc.content, rel_path)
+
+            # Create appropriate link based on file type
+            if rel_path.endswith(".rst"):
+                docs_url = convert_to_docs_url(rel_path)
+                if docs_url:
+                    file_link = f'<a href="{docs_url}" target="_blank">{Path(rel_path).name}</a>'
+                else:
+                    file_link = create_file_link(rel_path, line_no, "github")
+            else:
+                file_link = create_file_link(rel_path, line_no, "local")
+
+            source_lines.append(f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {file_link} - {citation_display}</p>')
+        else:
+            source_lines.append(f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {rel_path} - {citation_display}</p>')
+
+    return "\n".join(source_lines)

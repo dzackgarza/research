@@ -11,10 +11,7 @@ created: 2026-05-08
 
 > [!example] $A_n$ root lattice Let $\mathbf{Z}^{n+1}$ denote the standard diagonal lattice $\langle 1,1,\dots, 1 \rangle$ with generators $\{e_1,\dots, e_{n+1}\}$.
 > 
-> The [[Root lattice|root lattice]] $A_n$ is isometric to a root lattice in $v_{n+1}^{\perp \mathbf{Z}^{n+1}}$ where $v_{n+1} \mathrel{\mathop:}= \sum_{i=1}^{n+1} e_i$, and thus concretely identified as a primitively embedded sublattice
-> $$
-> A_n \hookrightarrow \{x\in \mathbf{Z}^{n+1} \mathrel{\Big|} \sum_{i=1}^{n+1} x_i = 0 \}
-> $$
+> The [[Root lattice|root lattice]] $A_n$ is isometric to a root lattice in $v_{n+1}^{\perp \mathbf{Z}^{n+1}}$ where $v_{n+1} \mathrel{\mathop:}= \sum_{i=1}^{n+1} e_i$, and thus concretely identified as a primitively embedded sublattice $$ A_n \hookrightarrow \{x\in \mathbf{Z}^{n+1} \mathrel{\Big|} \sum_{i=1}^{n+1} x_i = 0 \} $$
 
 ## Properties
 

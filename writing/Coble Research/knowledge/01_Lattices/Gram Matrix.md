@@ -11,9 +11,7 @@ aliases:
 created: 2026-05-08
 ---
 
-> [!definition] Gram Matrix
-> 
-> Given a basis $B_L = (e_i)_{1 \leq i \leq n}$ for a bilinear module $(L,\beta)$, the **Gram matrix** of $\beta$ is $G_\beta \mathrel{\mathop:}= (\beta(e_i, e_j))_{i,j} \in \operatorname{Mat}_{n \times n}(\mathbf{Q})$.
+> [!definition] Gram Matrix Given a basis $B_L = (e_i)*{1 \leq i \leq n}$ for a bilinear module $(L,\beta)$, the **Gram matrix** of $\beta$ is $G*\beta \mathrel{\mathop:}= (\beta(e_i, e_j))*{i,j} \in \operatorname{Mat}*{n \times n}(\mathbf{Q})$.
 > 
 > For vectors $v = \sum a_j e_j$ and $w = \sum b_j e_j$, we have $\beta(v,w) = v^t G_\beta w$.
 > Similarly, for a quadratic module $(L,q)$, a **Gram matrix** $G_q$ is any matrix such that $q(v) = v^t G_q v$.

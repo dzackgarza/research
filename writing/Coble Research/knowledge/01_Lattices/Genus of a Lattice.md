@@ -11,9 +11,7 @@ aliases:
 created: 2026-05-08
 ---
 
-> [!definition] Genus of a Lattice
-> 
-> Two [[Lattice|lattices]] $L_1, L_2$ belong to the same **genus** if $L_{1, \mathbf{Z}_p} \cong L_{2, \mathbf{Z}_p}$ for all primes $p$ and $L_{1, \mathbf{R}} \cong L_{2, \mathbf{R}}$.
+> [!definition] Genus of a Lattice Two [[Lattice|lattices]] $L_1, L_2$ belong to the same **genus** if $L_{1, \mathbf{Z}*p} \cong L*{2, \mathbf{Z}*p}$ for all primes $p$ and $L*{1, \mathbf{R}} \cong L_{2, \mathbf{R}}$.
 > 
 > Lattices in the same genus have the same rank, signature, and determinant, but may not be isometric over $\mathbf{Z}$.
 > 

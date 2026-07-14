@@ -1,6 +1,19 @@
 from collections.abc import Sequence
 
-from z3 import ArithRef, IntNumRef, IntVector, Or, Solver, Sum, sat
+from z3 import ArithRef, Int, IntNumRef, IntVector, Or, Solver, Sum, sat
+
+
+def find_ineq_int_soln() -> None:
+    x = Int("x")
+    y = Int("y")
+
+    solver = Solver()
+    solver.add(x > 10, y == x + 2)
+
+    if solver.check() == sat:
+        print(solver.model())
+    else:
+        print("No solution")
 
 
 def bilinear_form(G: Sequence[Sequence[int]], x: Sequence[ArithRef]) -> ArithRef:

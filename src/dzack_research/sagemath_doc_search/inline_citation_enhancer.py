@@ -28,7 +28,12 @@ class InlineCitationEnhancer:
     """Enhances the citation system to provide consistent inline citations."""
 
     def __init__(self) -> None:
-        pass
+        self.citation_formats = {
+            "inline_doc": "({filename}, section {section})",
+            "inline_source": "({filename}:{line})",
+            "inline_short": "({source_id})",
+            "footnote": "[^{id}]",
+        }
 
     def enhance_document_metadata(self, documents: list[Document]) -> list[Document]:
         """
@@ -417,6 +422,47 @@ print("Discriminant group:", L.discriminant_group())
             return get_primary_line_number(content, file_path)
         except ImportError:
             return 1  # Fallback
+
+
+def create_citation_enhanced_prompt(question: str, documents: list[Document], link_type: str = "github") -> str:
+    """
+    Convenience function to create an enhanced prompt with citation requirements.
+
+    Args:
+        question: User's question
+        documents: List of source documents
+        link_type: Type of links to generate
+
+    Returns:
+        Enhanced prompt with inline citation requirements
+    """
+    enhancer = InlineCitationEnhancer()
+
+    # Enhance document metadata first
+    enhanced_docs = enhancer.enhance_document_metadata(documents)
+
+    # Create enhanced prompt
+    return enhancer.create_enhanced_prompt_with_citations(question, enhanced_docs, link_type)
+
+
+def enhance_response_with_citations(response: str, documents: list[Document]) -> str:
+    """
+    Convenience function to enhance a response with better citations.
+
+    Args:
+        response: LLM response text
+        documents: Source documents used
+
+    Returns:
+        Enhanced response with improved citations
+    """
+    enhancer = InlineCitationEnhancer()
+
+    # Enhance document metadata first
+    enhanced_docs = enhancer.enhance_document_metadata(documents)
+
+    # Post-process the response
+    return enhancer.post_process_response_citations(response, enhanced_docs)
 
 
 # Example usage and testing
