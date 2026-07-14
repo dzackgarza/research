@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import pytest
 
-from sage.all import QQ, ZZ, TestSuite, matrix
+from sage.all import QQ, ZZ, TestSuite, identity_matrix, matrix
 from sage.categories.homset import Hom as SageHom
 from sage.categories.sets_cat import Sets
 
@@ -122,6 +122,32 @@ def test_sourced_discriminant_lifts_compare_across_fresh_dual_parents():
     assert discriminant_form.lift(generator) == discriminant_form.coset_representative(generator)
 
 
+def test_discriminant_form_group_and_duality_contracts_are_live():
+    r"""Finite discriminant forms expose the Sage finite-group vocabulary and the
+    nondegenerate Pontryagin identification as public mathematical structure."""
+    form = Lattice("A2").discriminant_group()
+    generator = form.gen(0)
+
+    assert form.generator_orders() == (3,)
+    assert form.invariant_factor_gen(0) == generator
+    assert form.gens_vector(generator) == (1,)
+    assert form.gens_to_invariant_factor_gens() == identity_matrix(ZZ, 1)
+    assert form.linear_combination_of_invariant_factor_gens([1]) == generator
+
+    torsion = form.torsion_subgroup()
+    assert form.contains_subgroup(torsion)
+    assert torsion.cardinality() == form.cardinality()
+    assert form.p_torsion(3).cardinality() == 3
+    assert form.basis_from_generators(form.gens()) == form.gens()
+
+    trivial = form.subgroup_generated_by([])
+    assert form.preimage_lattice(trivial) == form.source_lattice()
+
+    identification = form.pontryagin_dual()
+    assert identification.domain() is form
+    assert identification[generator](generator) == form.b(generator, generator)
+
+
 def test_subobjects_compare_by_lattice_and_inclusion_morphism():
     r"""Subobjects retain their slice data: equal inclusions compare equal,
     while equal-Gram inclusions into different generator lines do not."""
@@ -157,6 +183,7 @@ def test_lattice_hom_factory_accepts_the_explicit_category():
     assert direct_homset(identity_matrix) == lattice.identity_morphism()
     assert factory_homset(identity_matrix) == lattice.identity_morphism()
     assert sage_homset(identity_matrix) == lattice.identity_morphism()
+    assert lattice.identity_morphism().is_surjective()
 
 
 def test_public_hom_uses_the_canonical_forgetful_functor_to_sets():
@@ -181,10 +208,13 @@ def test_base_change_functor_refines_the_target_category_and_maps_morphisms():
     assert isinstance(functor, LatticeBaseChangeFunctor)
     assert functor.domain() == Lattices(ZZ)
     assert functor.codomain() == Lattices(QQ)
+    assert functor.source_base_ring() is ZZ
+    assert functor.target_base_ring() is QQ
     target = functor(lattice)
     assert target.base_ring() is QQ
     assert target in Lattices(QQ).Nondegenerate().Definite().NegativeDefinite()
     mapped_identity = functor(lattice.identity_morphism())
+    assert functor._apply_functor_to_morphism(lattice.identity_morphism()) == mapped_identity
     assert mapped_identity.domain() == target
     assert mapped_identity.codomain() == target
     assert mapped_identity.is_identity()

@@ -75,6 +75,8 @@ if TYPE_CHECKING:
     # (typed, and permits the empty abstract bodies below). Runtime uses Sage's.
     from abc import abstractmethod as abstract_method
 
+    from ..forms.discriminant_forms import PontryaginDualIdentification
+
 else:
     from sage.misc.abstract_method import abstract_method
 
@@ -609,7 +611,11 @@ class NondegenerateDiscriminantForms(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "Nondegenerate")
 
     class ParentMethods:
-        pass
+        def pontryagin_dual(self) -> PontryaginDualIdentification:
+            r"""The canonical identification ``A ~ Hom(A, QQ/ZZ)``."""
+            from ..forms.discriminant_forms import PontryaginDualIdentification
+
+            return PontryaginDualIdentification(self)
 
 
 class EvenDiscriminantForms(CategoryWithAxiom_over_base_ring):
