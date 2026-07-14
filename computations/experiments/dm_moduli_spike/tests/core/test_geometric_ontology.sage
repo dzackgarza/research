@@ -188,3 +188,39 @@ def test_independent_A1_P1_compactification_and_stratification():
     P = Sigma.specialization_poset()
     assert isinstance(P, FinitePoset)
     assert P.is_isomorphic(posets.ChainPoset(2))
+
+
+def test_quotient_stack_outside_moduli():
+    r"""QuotientStack is a general construction, not Mbar-specific."""
+    from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
+    from dm_moduli_spike.geometry.compactification import SchemeStack
+
+    k = spec(QQ)
+    space = SchemeStack(
+        AffineSpace(QQ, 1),
+        k,
+        name="A1",
+        axioms=frozenset({"FiniteType", "Separated"}),
+    )
+    G = SymmetricGroup(2)
+    Q = QuotientStack(space, G, None)
+    assert isinstance(Q, QuotientStack)
+    assert Q.space() is space
+    assert Q.group() is G
+    assert Q in DeligneMumfordStacks(k)
+
+
+def test_gamma_objects_and_hom_domain_are_stable_graphs():
+    from dm_moduli_spike import StableGraphCategory
+
+    Gamma = StableGraphCategory(1, 1)
+    objects = Gamma.objects()
+    assert objects
+    assert all(isinstance(g, StableGraphs(1, (1,)).element_class) for g in objects)
+    assert all(g.parent() is StableGraphs(1, (1,)) for g in objects)
+    G, H = objects[0], objects[-1]
+    HomGH = Hom(G, H)
+    assert HomGH.domain() is G or HomGH.domain() == G
+    assert isinstance(HomGH.domain(), type(G))
+    assert HomGH.domain().parent() is StableGraphs(1, (1,))

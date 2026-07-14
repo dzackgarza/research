@@ -49,7 +49,7 @@ class SymmetricDeltaComplex:
         r"""Aut-orbits on internal edges of `G` (cone generators modulo Aut)."""
         graph = self._category.object(graph)
         edges = graph.internal_edges()
-        orbits = automorphism_edge_orbit_indices(graph)
+        orbits = automorphism_edge_orbit_indices(graph.canonical_representative())
         return tuple(tuple(edges[i] for i in orbit) for orbit in orbits)
 
     def cone_dimension(self, graph: _GraphRecord | StableGraph) -> int:

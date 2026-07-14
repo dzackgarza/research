@@ -286,6 +286,9 @@ class StableGraph(Element):
     def num_flags(self) -> int:
         return self._record.num_flags()
 
+    def internal_edges(self) -> tuple[tuple[int, int], ...]:
+        return self._record.internal_edges()
+
     def num_edges(self) -> int:
         return self._record.num_edges()
 

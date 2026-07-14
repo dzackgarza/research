@@ -94,11 +94,14 @@ class StableGraphMorphism(Element):
             frozenset(),
         )
 
-    def domain(self) -> _GraphRecord:
-        return self._domain
+    def _as_stable_graph(self, record: _GraphRecord) -> StableGraph:
+        return StableGraphs(record.genus(), record.num_markings())(record)
 
-    def codomain(self) -> _GraphRecord:
-        return self._codomain
+    def domain(self) -> StableGraph:
+        return self._as_stable_graph(self._domain)
+
+    def codomain(self) -> StableGraph:
+        return self._as_stable_graph(self._codomain)
 
     def vertex_map(self) -> tuple[int, ...]:
         return self._vertex_map
@@ -155,12 +158,12 @@ class StableGraphMorphism(Element):
 
     def compose(self, other: StableGraphMorphism) -> StableGraphMorphism:
         r"""Return ``self ∘ other`` (other first): ``other.domain → self.codomain``."""
-        if other.codomain() != self._domain:
+        if other._codomain != self._domain:
             raise ValueError("compose requires other.codomain() == self.domain()")
-        vertices = tuple(self._vertex_map[other._vertex_map[v]] for v in range(other.domain().num_vertices()))
+        vertices = tuple(self._vertex_map[other._vertex_map[v]] for v in range(other._domain.num_vertices()))
         half_edges: list[int] = []
         contracted: set[int] = set()
-        for flag in range(other.domain().num_flags()):
+        for flag in range(other._domain.num_flags()):
             mid = other._half_edge_map[flag]
             if mid < 0 or flag in other._contracted_flags:
                 half_edges.append(-1)
@@ -173,8 +176,8 @@ class StableGraphMorphism(Element):
             else:
                 half_edges.append(image)
         return StableGraphMorphism(
-            other.domain(),
-            self.codomain(),
+            other._domain,
+            self._codomain,
             vertices,
             tuple(half_edges),
             frozenset(contracted),
@@ -223,19 +226,19 @@ class StableGraphHomset(UniqueRepresentation, Parent):
 
     def _bind(self, morph: StableGraphMorphism) -> StableGraphMorphism:
         return StableGraphMorphism(
-            morph.domain(),
-            morph.codomain(),
+            morph._domain,
+            morph._codomain,
             morph.vertex_map(),
             morph.half_edge_map(),
             morph.contracted_flags(),
             parent=self,
         )
 
-    def domain(self) -> _GraphRecord:
-        return self._domain
+    def domain(self) -> StableGraph:
+        return self._gamma.stable_graphs()(self._domain)
 
-    def codomain(self) -> _GraphRecord:
-        return self._codomain
+    def codomain(self) -> StableGraph:
+        return self._gamma.stable_graphs()(self._codomain)
 
     def gamma(self) -> StableGraphCategory:
         r"""The combinatorial category `\Gamma_{g,n}` that owns this Hom-set."""
@@ -274,6 +277,10 @@ class StableGraphCategory(UniqueRepresentation):
         self._n = n
         self._graphs = StableGraphs(g, n)
 
+    def stable_graphs(self) -> StableGraphs:
+        r"""Parent of stable graphs of type ``(g, n)`` for this `\Gamma_{g,n}`."""
+        return self._graphs
+
     def _as_record(self, graph: object) -> _GraphRecord:
         if isinstance(graph, StableGraph):
             return graph.canonical_representative()
@@ -295,11 +302,11 @@ class StableGraphCategory(UniqueRepresentation):
     def dimension(self) -> int:
         return 3 * self._g - 3 + self._n
 
-    def objects(self) -> tuple[_GraphRecord, ...]:
-        return tuple(gamma.canonical_representative() for gamma in self._graphs)
+    def objects(self) -> tuple[StableGraph, ...]:
+        return tuple(self._graphs)
 
-    def object(self, data: _GraphRecord | StableGraph) -> _GraphRecord:
-        return self._canonical(data)
+    def object(self, data: _GraphRecord | StableGraph) -> StableGraph:
+        return self._graphs(self._canonical(data))
 
     def half_edges(self, graph: _GraphRecord | StableGraph) -> tuple[int, ...]:
         graph = self._canonical(graph)
@@ -315,9 +322,8 @@ class StableGraphCategory(UniqueRepresentation):
     def edge_map(self, morphism: StableGraphMorphism) -> dict[tuple[int, int], tuple[int, int]]:
         r"""Contravariant map on edges induced by the half-edge injection."""
         injection = morphism.surviving_half_edge_injection()
-        codomain = morphism.codomain()
         result: dict[tuple[int, int], tuple[int, int]] = {}
-        for cod_edge in codomain.internal_edges():
+        for cod_edge in morphism._codomain.internal_edges():
             a, b = cod_edge
             da, db = injection[a], injection[b]
             if da > db:
@@ -343,9 +349,9 @@ class StableGraphCategory(UniqueRepresentation):
         _target_type, contraction = contract_edges(graph, edges)
         morph = StableGraphMorphism.from_contraction(contraction)
         # Land on skeletal object
-        skeletal = self._canonical(morph.codomain())
-        if morph.codomain() != skeletal:
-            iso = StableGraphMorphism.from_isomorphism(isomorphism_between(morph.codomain(), skeletal))
+        skeletal = self._canonical(morph._codomain)
+        if morph._codomain != skeletal:
+            iso = StableGraphMorphism.from_isomorphism(isomorphism_between(morph._codomain, skeletal))
             morph = iso.compose(morph)
         return morph
 
@@ -378,13 +384,13 @@ class StableGraphCategory(UniqueRepresentation):
             total += 3 * graph.vertex_genus(vertex) - 3 + graph.valence(vertex)
         return total
 
-    def boundary_divisors(self) -> tuple[_GraphRecord, ...]:
+    def boundary_divisors(self) -> tuple[StableGraph, ...]:
         return tuple(g for g in self.objects() if g.num_edges() == 1)
 
-    def strata_in_boundary(self) -> tuple[_GraphRecord, ...]:
+    def strata_in_boundary(self) -> tuple[StableGraph, ...]:
         return tuple(g for g in self.objects() if g.num_edges() >= 1)
 
-    def deepest_strata(self) -> tuple[_GraphRecord, ...]:
+    def deepest_strata(self) -> tuple[StableGraph, ...]:
         objects = self.objects()
         if not objects:
             return ()
@@ -406,9 +412,10 @@ class StableGraphCategory(UniqueRepresentation):
     def specialization_poset(self) -> FinitePoset:
         r"""Specialization poset whose elements are :class:`StableGraph` classes.
 
-        Cover relation: ``Gamma ∊ [Delta/e]`` for an internal edge ``e`` of
-        ``Delta`` (generic below special).  This is the Hasse diagram of the
-        Hom-order ``Hom(H, G) ≠ ∅``.
+        Cover relation: ``Γ`` is obtained from ``Δ`` by contracting one internal
+        edge (generic below special). For stable graphs this Hasse diagram is
+        the thinification of the Hom-order ``Hom(H,G) ≠ ∅``; covers are
+        computed from elementary edge contractions, not by enumerating Hom-sets.
         """
 
         from sage.combinat.posets.posets import Poset
@@ -479,8 +486,8 @@ class StableGraphCategory(UniqueRepresentation):
             if self._canonical(target_type) != codomain:
                 continue
             base = StableGraphMorphism.from_contraction(contraction)
-            if base.codomain() != codomain:
-                iso = StableGraphMorphism.from_isomorphism(isomorphism_between(base.codomain(), codomain))
+            if base._codomain != codomain:
+                iso = StableGraphMorphism.from_isomorphism(isomorphism_between(base._codomain, codomain))
                 base = iso.compose(base)
             # Left-compose Aut(codomain)
             for auto in self._isomorphism_endomorphisms(codomain):
