@@ -107,6 +107,14 @@ def test_banned_shim_modules_unimportable():
         raise AssertionError(f"banned module {modname!r} is still importable")
 
 
+def test_stable_graph_has_no_public_record_method():
+    from dm_moduli_spike.objects.stable_graphs import StableGraphs
+
+    G = StableGraphs(1, (1,)).smooth()
+    assert not hasattr(G, "record") or not callable(getattr(G, "record", None))
+    assert not hasattr(type(G), "record")
+
+
 def test_gamma_still_public():
     Gamma = StableGraphCategory(1, 1)
     assert Gamma.specialization_poset().cardinality() == 2

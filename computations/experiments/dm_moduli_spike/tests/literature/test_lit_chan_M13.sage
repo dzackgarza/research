@@ -27,7 +27,7 @@ def test_chan_M13_open_stack_is_quotient_M04_over_C2():
     graph = gamma.canonical_representative()
     XSbar = Mbar_gn(1, 3, base=spec(ZZ))
     Sigma = XSbar.stratification()
-    S = Sigma.stratum(graph)
+    S = Sigma.stratum(gamma)
     underlying = S.underlying_stack()
     assert isinstance(underlying, QuotientStack)
     assert int(underlying.group().order()) == 2
@@ -44,7 +44,7 @@ def test_chan_M13_clutching_factors():
     gamma = chan_m13_curve_type(types)
     graph = gamma.canonical_representative()
     XSbar = Mbar_gn(1, 3, base=spec(ZZ))
-    S = XSbar.stratification().stratum(graph)
+    S = XSbar.stratification().stratum(gamma)
     xi = S.clutching_morphism()
     assert xi in xi.parent()
     assert xi.codomain() is XSbar
@@ -77,6 +77,6 @@ def test_chan_M13_markings_fixed_and_quotient_presentation():
     for marking_perm in marking_generator_images(graph):
         assert marking_perm == (1, 2, 3)
     XSbar = Mbar_gn(1, 3, base=spec(ZZ))
-    S = XSbar.stratification().stratum(graph)
+    S = XSbar.stratification().stratum(gamma)
     assert isinstance(S.underlying_stack(), QuotientStack)
     assert int(S.underlying_stack().group().order()) == 2

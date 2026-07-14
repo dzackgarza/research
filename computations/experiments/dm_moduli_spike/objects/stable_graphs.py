@@ -250,7 +250,7 @@ class StableGraphs(UniqueRepresentation, StableGraphParent):
         return False
 
     def half_edges_at(self, graph: StableGraph | _GraphRecord, vertex: int) -> tuple[int, ...]:
-        rec = graph.record() if isinstance(graph, StableGraph) else graph
+        rec = graph._record if isinstance(graph, StableGraph) else graph
         return rec.flags_at(vertex)
 
     def _repr_(self) -> str:
@@ -271,10 +271,8 @@ class StableGraph(Element):
     def parent(self) -> StableGraphs:
         return cast(StableGraphs, Element.parent(self))
 
-    def record(self) -> _GraphRecord:
-        return self._record
-
     def canonical_representative(self) -> _GraphRecord:
+        r"""Private skeletal half-edge record (not part of the public vocabulary)."""
         return self._record
 
     def canonical_key(self) -> CanonicalKey:
@@ -531,7 +529,7 @@ class Vertex(Element):
     def valence(self) -> int:
         parent = self.parent()
         assert isinstance(parent, Vertices), f"Vertex.parent must be Vertices; found {type(parent)!r}"
-        return int(parent._graph.record().valence(self._index))
+        return int(parent._graph._record.valence(self._index))
 
     def _repr_(self) -> str:
         return f"Vertex({self._index})"
@@ -545,11 +543,11 @@ class HalfEdges(UniqueRepresentation, Parent):
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
     def __iter__(self) -> Iterator[HalfEdge]:
-        for h in range(self._graph.record().num_flags()):
+        for h in range(self._graph._record.num_flags()):
             yield HalfEdge(self, h)
 
     def cardinality(self) -> int:
-        return self._graph.record().num_flags()
+        return self._graph._record.num_flags()
 
 
 class HalfEdge(Element):
@@ -560,12 +558,12 @@ class HalfEdge(Element):
     def vertex(self) -> int:
         parent = self.parent()
         assert isinstance(parent, HalfEdges), f"HalfEdge.parent must be HalfEdges; found {type(parent)!r}"
-        return int(parent._graph.record().flag_vertex[self._index])
+        return int(parent._graph._record.flag_vertex[self._index])
 
     def partner(self) -> int:
         parent = self.parent()
         assert isinstance(parent, HalfEdges), f"HalfEdge.parent must be HalfEdges; found {type(parent)!r}"
-        return int(parent._graph.record().flag_involution[self._index])
+        return int(parent._graph._record.flag_involution[self._index])
 
     def _repr_(self) -> str:
         return f"HalfEdge({self._index})"
@@ -579,7 +577,7 @@ class Edges(UniqueRepresentation, Parent):
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
     def __iter__(self) -> Iterator[Edge]:
-        for i, pair in enumerate(self._graph.record().internal_edges()):
+        for i, pair in enumerate(self._graph._record.internal_edges()):
             yield Edge(self, i, pair)
 
     def cardinality(self) -> int:
@@ -607,7 +605,7 @@ class Legs(UniqueRepresentation, Parent):
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
     def __iter__(self) -> Iterator[Leg]:
-        for i, flag in enumerate(self._graph.record().legs()):
+        for i, flag in enumerate(self._graph._record.legs()):
             yield Leg(self, i + 1, flag)
 
     def cardinality(self) -> int:

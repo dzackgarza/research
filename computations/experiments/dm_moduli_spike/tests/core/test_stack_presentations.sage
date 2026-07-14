@@ -14,7 +14,7 @@ def test_open_stack_presentation_factors_and_group_order():
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     graph = gamma.canonical_representative()
     XSbar = Mbar_gn(0, 4, base=spec(ZZ))
-    S = XSbar.stratification().stratum(graph)
+    S = XSbar.stratification().stratum(gamma)
     underlying = S.underlying_stack()
     assert isinstance(underlying, QuotientStack)
     assert int(underlying.group().order()) == gamma.automorphism_number()
@@ -28,7 +28,7 @@ def test_closure_normalization_uses_compact_factors():
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     graph = gamma.canonical_representative()
     XSbar = Mbar_gn(0, 4, base=spec(ZZ))
-    S = XSbar.stratification().stratum(graph)
+    S = XSbar.stratification().stratum(gamma)
     factors = S.clutching_morphism().domain().factors()
     assert all(f.is_proper() for f in factors)
     assert sorted((f.genus(), f.number_of_markings()) for f in factors) == [(0, 3), (0, 3)]
@@ -39,7 +39,7 @@ def test_clutching_morphism_targets_the_ambient_compactification():
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
     graph = loop.canonical_representative()
     XSbar = Mbar_gn(1, 1, base=spec(ZZ))
-    S = XSbar.stratification().stratum(graph)
+    S = XSbar.stratification().stratum(loop)
     xi = S.clutching_morphism()
     assert xi in xi.parent()
     assert xi.codomain() is XSbar
@@ -72,9 +72,8 @@ def test_stable_graphs_rejects_mismatched_ambient():
 def test_geometric_stratum_is_distinct_from_indexing_graph_type():
     types = StableGraphs(1, 1)
     smooth = types.smooth()
-    graph = smooth.canonical_representative()
     XSbar = Mbar_gn(1, 1, base=spec(ZZ))
-    S = XSbar.stratification().stratum(graph)
+    S = XSbar.stratification().stratum(smooth)
     assert hasattr(smooth, "automorphism_number")
     assert hasattr(smooth, "one_edge_degenerations")
     assert hasattr(S, "underlying_stack")

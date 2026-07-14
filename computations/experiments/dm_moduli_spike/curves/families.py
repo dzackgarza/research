@@ -251,15 +251,13 @@ class PointedCurveFamily(CurveFamily):
             f"family fibers must expose dual_graph(); found {type(Cs)!r}, {type(Cg)!r}; owned boundary=PointedCurveFamily.dual_graph_specialization"
         )
         graphs = StableGraphs(self._genus, self._marking_set)
-        cs_graph = Cs.dual_graph()
-        cg_graph = Cg.dual_graph()
-        Gs = graphs(cs_graph.record() if hasattr(cs_graph, "record") else cs_graph)
-        Gg = graphs(cg_graph.record() if hasattr(cg_graph, "record") else cg_graph)
+        Gs = graphs(Cs.dual_graph())
+        Gg = graphs(Cg.dual_graph())
         if Gs == Gg:
             # Only the smooth stratum: specialization is the identity (still a contraction).
             from ..objects.gamma import StableGraphCategory
 
-            return StableGraphCategory(self._genus, len(self._marking_set)).identity(Gs.record())
+            return StableGraphCategory(self._genus, len(self._marking_set)).identity(Gs)
         morphs = [m for m in Hom(Gs, Gg) if m.is_contraction()]
         if not morphs:
             raise ValueError(f"no contraction in Hom({Gs!r}, {Gg!r}) for family specialization")

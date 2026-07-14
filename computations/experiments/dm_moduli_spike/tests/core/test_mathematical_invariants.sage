@@ -58,7 +58,7 @@ def test_automorphism_group_order_matches_number():
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     assert int(gamma.automorphism_group().order()) == gamma.automorphism_number()
     graph = gamma.canonical_representative()
-    underlying = Mbar_gn(0, 4, base=spec(ZZ)).stratification().stratum(graph).underlying_stack()
+    underlying = Mbar_gn(0, 4, base=spec(ZZ)).stratification().stratum(gamma).underlying_stack()
     assert isinstance(underlying, QuotientStack)
     assert int(underlying.group().order()) == gamma.automorphism_number()
 
@@ -67,7 +67,7 @@ def test_stack_signature_carries_automorphism_group_not_just_order():
     types = StableGraphs(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
     graph = loop.canonical_representative()
-    underlying = Mbar_gn(1, 1, base=spec(ZZ)).stratification().stratum(graph).underlying_stack()
+    underlying = Mbar_gn(1, 1, base=spec(ZZ)).stratification().stratum(loop).underlying_stack()
     assert isinstance(underlying, QuotientStack)
     assert int(underlying.group().order()) == 2
 
@@ -127,8 +127,8 @@ def test_presentation_data_is_invariant_under_vertex_relabeling():
     left = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     right = types.from_vertices(genera=(0, 0), markings=((3, 4), (1, 2)), edges=((0, 1),))
     XSbar = Mbar_gn(0, 4, base=spec(ZZ))
-    left_stack = XSbar.stratification().stratum(left.canonical_representative()).underlying_stack()
-    right_stack = XSbar.stratification().stratum(right.canonical_representative()).underlying_stack()
+    left_stack = XSbar.stratification().stratum(left).underlying_stack()
+    right_stack = XSbar.stratification().stratum(right).underlying_stack()
     assert left_stack == right_stack
     assert left.to_json() == right.to_json()
 
@@ -318,8 +318,8 @@ def test_all_invariants_equal_under_vertex_relabeling():
     assert left.to_json() == right.to_json()
     XSbar = Mbar_gn(0, 4, base=spec(ZZ))
     assert (
-        XSbar.stratification().stratum(left.canonical_representative()).underlying_stack()
-        == XSbar.stratification().stratum(right.canonical_representative()).underlying_stack()
+        XSbar.stratification().stratum(left).underlying_stack()
+        == XSbar.stratification().stratum(right).underlying_stack()
     )
 
 

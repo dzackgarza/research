@@ -145,11 +145,8 @@ class Stratification(Element):
     def stratum(self, p: object) -> Stratum:
         if p in self._strata:
             return self._strata[p]
-        # Allow StableGraphs elements keyed by underlying record.
         for key, stratum in self._strata.items():
-            if key == p or (hasattr(p, "record") and key == p.record()):
-                return stratum
-            if hasattr(key, "record") and key.record() == p:
+            if key == p:
                 return stratum
         raise KeyError(p)
 

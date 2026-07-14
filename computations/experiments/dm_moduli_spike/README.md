@@ -14,6 +14,7 @@ This package **does not claim**:
 * Computational étale atlases or equation-level decision procedures for arbitrary stacks.
 * A scheme-theoretic universal family over `\mathcal M_{g,n}`.
 * Geometric nodal gluing beyond theorem-backed dual graphs (smooth proving-set fibers use Sage `Curve_generic`).
+* That `X in DeligneMumfordStacks(k).Proper()` is an analytic properness proof — membership is the constructor's theorem stamp via declared axioms.
 
 Formal morphisms (atlases, diagonals, clutching) carry correct domain/codomain and Hom-set membership.
 
