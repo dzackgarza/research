@@ -2,13 +2,13 @@ r"""Tier-4 internal consistency: contraction morphisms and cover witnesses."""
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
-from dm_moduli_spike.objects.graph_types import StableGraphTypes
+from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.objects.contractions import contract_edges
 
 
 def test_loop_contraction_adds_one_to_genus():
-    types = StableGraphTypes(1, 1)
+    types = StableGraphs(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
     graph = loop.canonical_representative()
     edge = graph.internal_edges()[0]
@@ -22,7 +22,7 @@ def test_loop_contraction_adds_one_to_genus():
 
 
 def test_nonloop_contraction_merges_and_sums_genera():
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     gamma = types.from_vertices(genera=(1, 0), markings=((), (1, 2)), edges=((0, 1),))
     graph = gamma.canonical_representative()
     edge = graph.internal_edges()[0]
@@ -36,8 +36,7 @@ def test_nonloop_contraction_merges_and_sums_genera():
 
 def test_every_contraction_preserves_total_genus_and_stability():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        model = StableGraphStratificationEnumerator(g, n)
-        for level in model.stratification().curve_type_levels():
+        for level in _enumerate_stable_graph_levels(g, n).curve_type_levels():
             for gamma in level:
                 graph = gamma.canonical_representative()
                 for edge in graph.internal_edges():
@@ -48,7 +47,7 @@ def test_every_contraction_preserves_total_genus_and_stability():
 
 
 def test_contraction_composition_contracts_the_union_of_edges():
-    types = StableGraphTypes(0, 5)
+    types = StableGraphs(0, 5)
     # A chain of two edges: three genus-0 vertices in a path.
     gamma = types.from_vertices(
         genera=(0, 0, 0),

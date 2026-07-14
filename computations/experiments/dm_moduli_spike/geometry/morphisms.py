@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..moduli.coarse import CoarseModuliScheme
-    from ..moduli.stack import DeligneMumfordModuliStack
+    from ..moduli.instances import ModuliStack
 
 
 class ModuliMorphism:
@@ -35,7 +35,7 @@ class OpenImmersion(ModuliMorphism):
 class CoarseModuliMap(ModuliMorphism):
     r"""Universal coarse moduli map `\mathcal M_{g,n} \to M_{g,n}`."""
 
-    def __init__(self, stack: DeligneMumfordModuliStack, coarse: CoarseModuliScheme) -> None:
+    def __init__(self, stack: ModuliStack, coarse: CoarseModuliScheme) -> None:
         super().__init__(stack, coarse)
 
     def coarse_scheme(self) -> CoarseModuliScheme:

@@ -4,20 +4,20 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
+from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 
-from dm_moduli_spike.objects.stratification import build_stratification_from_types
+from dm_moduli_spike.objects.stratification import _build_stratification_from_types
 
 pytestmark = pytest.mark.ci
 
 
 def test_intermediate_deletion_adds_direct_cover():
-    model = StableGraphStratificationEnumerator(2, 1)
-    full = model.stratification()
-    smooth = model.graph_types().smooth()
+    full = _enumerate_stable_graph_levels(2, 1)
+    smooth = StableGraphs(2, 1).smooth()
     codim_two = full.curve_type_levels()[2][0]
-    subset = build_stratification_from_types(
-        model.graph_types(),
+    subset = _build_stratification_from_types(
+        StableGraphs(2, 1),
         (smooth, codim_two),
         induced_order=True,
     )
@@ -32,12 +32,11 @@ def test_intermediate_deletion_adds_direct_cover():
 
 
 def test_induced_subposet_rank_differs_from_ambient_codimension():
-    model = StableGraphStratificationEnumerator(2, 1)
-    full = model.stratification()
-    smooth = model.graph_types().smooth()
+    full = _enumerate_stable_graph_levels(2, 1)
+    smooth = StableGraphs(2, 1).smooth()
     codim_two = full.curve_type_levels()[2][0]
-    subset = build_stratification_from_types(
-        model.graph_types(),
+    subset = _build_stratification_from_types(
+        StableGraphs(2, 1),
         (smooth, codim_two),
         induced_order=True,
     )
@@ -50,12 +49,11 @@ def test_induced_subposet_rank_differs_from_ambient_codimension():
 
 
 def test_adjacent_rank_mode_skips_nonconsecutive_covers():
-    model = StableGraphStratificationEnumerator(2, 1)
-    full = model.stratification()
-    smooth = model.graph_types().smooth()
+    full = _enumerate_stable_graph_levels(2, 1)
+    smooth = StableGraphs(2, 1).smooth()
     codim_two = full.curve_type_levels()[2][0]
-    subset = build_stratification_from_types(
-        model.graph_types(),
+    subset = _build_stratification_from_types(
+        StableGraphs(2, 1),
         (smooth, codim_two),
         induced_order=False,
     )

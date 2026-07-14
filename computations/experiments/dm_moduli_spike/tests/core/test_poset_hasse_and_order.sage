@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
+from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
 
 from dm_moduli_spike.testing_support.support.poset_oracle import specialization_poset
 
@@ -18,7 +18,7 @@ from dm_moduli_spike.testing_support.support.poset_oracle import specialization_
     ],
 )
 def test_hasse_diagram_equals_elementary_contraction_relation(g, n):
-    stratification = StableGraphStratificationEnumerator(g, n).stratification()
+    stratification = _enumerate_stable_graph_levels(g, n)
     poset = stratification.specialization_poset()
 
     by_key = {stratum.canonical_key(): stratum for stratum in poset}
@@ -36,7 +36,7 @@ def test_hasse_diagram_equals_elementary_contraction_relation(g, n):
 
 
 def test_order_relation_is_contraction_reachability():
-    stratification = StableGraphStratificationEnumerator(2, 0).stratification()
+    stratification = _enumerate_stable_graph_levels(2, 0)
     poset = stratification.specialization_poset()
 
     for generic in poset:
@@ -50,28 +50,30 @@ def test_order_relation_is_contraction_reachability():
     [(0, 4), (0, 5), (0, 6), (1, 1), (1, 2), (2, 0)],
 )
 def test_rank_codimension_and_dimension_on_every_stratum(g, n):
+    from dm_moduli_spike.objects.gamma import StableGraphCategory
+
     poset = specialization_poset(g, n)
+    Gamma = StableGraphCategory(g, n)
 
     assert poset.is_graded()
 
     for stratum in poset:
-        gamma = stratum
-        graph = gamma.canonical_representative()
-        edge_count = gamma.num_edges()
+        graph = stratum  # specialization_poset elements are skeletal `_GraphRecord`s
+        edge_count = graph.num_edges()
 
         assert poset.rank(stratum) == edge_count
-        assert stratum.codimension() == edge_count
-        assert stratum.stratum_dimension() == 3 * g - 3 + n - edge_count
+        assert Gamma.codimension(stratum) == edge_count
+        assert Gamma.stratum_dimension(stratum) == 3 * g - 3 + n - edge_count
 
         local_dimension = sum(
             3 * graph.vertex_genus(vertex) - 3 + graph.valence(vertex)
             for vertex in graph.vertices()
         )
-        assert stratum.stratum_dimension() == local_dimension
+        assert Gamma.stratum_dimension(stratum) == local_dimension
 
 
 def test_poset_covers_reference_level_representatives():
-    stratification = StableGraphStratificationEnumerator(1, 2).stratification()
+    stratification = _enumerate_stable_graph_levels(1, 2)
     poset = stratification.specialization_poset()
     by_curve_type = {stratum: stratum for stratum in poset}
     level_representatives = {
@@ -87,7 +89,7 @@ def test_poset_covers_reference_level_representatives():
 
 
 def test_closure_and_specialization_orders_are_identity_dual():
-    stratification = StableGraphStratificationEnumerator(1, 2).stratification()
+    stratification = _enumerate_stable_graph_levels(1, 2)
 
     specialization = stratification.specialization_poset()
     closure = stratification.closure_poset()

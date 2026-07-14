@@ -9,10 +9,9 @@ from sage.structure.unique_representation import UniqueRepresentation
 
 from ..categories.base import AffineScheme, check_z_scheme, spec
 from ..categories.schemes import Varieties
-from ..geometry.morphisms import CoarseModuliMap
 
 if TYPE_CHECKING:
-    from .stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
+    from .instances import ModuliStack
 
 
 class CoarseModuliScheme(UniqueRepresentation):
@@ -167,13 +166,11 @@ class CoarseBoundaryOver:
         return StratifiedVariety(self._coarse.universal(), by, order=order)
 
 
-def coarse_moduli_map(stack: DeligneMumfordModuliStack | DeligneMumfordModuliStackOver) -> CoarseModuliMap:
-    from .stack import DeligneMumfordModuliStackOver
+def coarse_moduli_map(stack: ModuliStack) -> object:
+    r"""Coarse moduli morphism for a :class:`~dm_moduli_spike.moduli.instances.ModuliStack`."""
+    from ..geometry.morphisms import CoarseModuliMap
 
-    if isinstance(stack, DeligneMumfordModuliStackOver):
-        coarse_over = stack.coarse_scheme()
-        return CoarseModuliMap(stack.universal(), coarse_over.universal())
-    coarse = stack.coarse_scheme()
+    coarse = CoarseModuliScheme(stack.genus(), stack.number_of_markings(), compact=stack.is_proper())
     return CoarseModuliMap(stack, coarse)
 
 

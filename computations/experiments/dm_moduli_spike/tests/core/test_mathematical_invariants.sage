@@ -5,15 +5,15 @@ from __future__ import annotations
 from sage.rings.integer_ring import ZZ
 from dm_moduli_spike import Mbar_gn, QuotientStack, spec
 from dm_moduli_spike.objects.gamma import StableGraphCategory
-from dm_moduli_spike.objects.graph_types import StableGraphTypes
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.objects._automorphism_action import _GraphAutomorphismData
 from dm_moduli_spike.objects.records import _GraphRecord
 import pytest
 
-from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
+from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
 from dm_moduli_spike.objects.canonical import canonical_record
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
-from dm_moduli_spike.objects.stratification import build_stratification_from_types
+from dm_moduli_spike.objects.stratification import _build_stratification_from_types
 from dm_moduli_spike.testing_support.support.fixtures import (
     edge_generator_images,
     flag_generator_images,
@@ -23,7 +23,7 @@ from dm_moduli_spike.testing_support.support.fixtures import (
 
 
 def test_isomorphic_labeled_inputs_define_the_same_curve_type():
-    types = StableGraphTypes(0, 4)
+    types = StableGraphs(0, 4)
     left = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     right = types.from_vertices(genera=(0, 0), markings=((3, 4), (1, 2)), edges=((0, 1),))
     assert left == right
@@ -47,7 +47,7 @@ def test_record_is_immutable_after_construction():
 
 
 def test_canonical_record_is_idempotent():
-    types = StableGraphTypes(0, 4)
+    types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     once = canonical_record(gamma.canonical_representative())
     twice = canonical_record(once)
@@ -55,7 +55,7 @@ def test_canonical_record_is_idempotent():
 
 
 def test_automorphism_group_order_matches_number():
-    types = StableGraphTypes(0, 4)
+    types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     assert int(gamma.automorphism_group().order()) == gamma.automorphism_number()
     graph = gamma.canonical_representative()
@@ -65,7 +65,7 @@ def test_automorphism_group_order_matches_number():
 
 
 def test_stack_signature_carries_automorphism_group_not_just_order():
-    types = StableGraphTypes(1, 1)
+    types = StableGraphs(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
     graph = loop.canonical_representative()
     underlying = Mbar_gn(1, 1, base=spec(ZZ)).stratification().stratum(graph).underlying_stack()
@@ -75,9 +75,8 @@ def test_stack_signature_carries_automorphism_group_not_just_order():
 
 def test_admcycles_stable_backend_matches_pure_sage_when_complete():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        model = StableGraphStratificationEnumerator(g, n)
-        pure = model.stratification(backend="pure-sage")
-        adm = model.stratification(backend="admcycles-stable")
+        pure = _enumerate_stable_graph_levels(g, n, backend="pure-sage")
+        adm = _enumerate_stable_graph_levels(g, n, backend="admcycles-stable")
         assert adm.is_complete()
         pure_keys = {gamma.canonical_key() for level in pure.curve_type_levels() for gamma in level}
         adm_keys = {gamma.canonical_key() for level in adm.curve_type_levels() for gamma in level}
@@ -85,7 +84,7 @@ def test_admcycles_stable_backend_matches_pure_sage_when_complete():
 
 
 def test_contraction_composition_across_isomorphic_representatives():
-    types = StableGraphTypes(0, 5)
+    types = StableGraphs(0, 5)
     gamma = types.from_vertices(
         genera=(0, 0, 0),
         markings=((1, 2), (3,), (4, 5)),
@@ -112,14 +111,14 @@ def test_contraction_composition_across_isomorphic_representatives():
 
 
 def test_contracts_to_matches_specialization_order():
-    poset = StableGraphStratificationEnumerator(2, 0).stratification().specialization_poset()
+    poset = _enumerate_stable_graph_levels(2, 0).specialization_poset()
     for generic in poset:
         for special in poset:
             assert poset.is_lequal(generic, special) == special.contracts_to(generic)
 
 
 def test_stratification_contraction_witnesses_use_level_representatives():
-    stratification = StableGraphStratificationEnumerator(1, 2).stratification()
+    stratification = _enumerate_stable_graph_levels(1, 2)
     for witness in stratification.contraction_witnesses():
         generic_type = witness.target_type()
         assert witness.codomain() is generic_type.canonical_representative()
@@ -131,7 +130,7 @@ def test_stratification_contraction_witnesses_use_level_representatives():
 
 
 def test_presentation_data_is_invariant_under_vertex_relabeling():
-    types = StableGraphTypes(0, 4)
+    types = StableGraphs(0, 4)
     left = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     right = types.from_vertices(genera=(0, 0), markings=((3, 4), (1, 2)), edges=((0, 1),))
     XSbar = Mbar_gn(0, 4, base=spec(ZZ))
@@ -142,17 +141,16 @@ def test_presentation_data_is_invariant_under_vertex_relabeling():
 
 
 def test_automorphism_action_fixes_markings_and_permutes_parallel_edges():
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
     assert all(image == tuple(range(1, 3)) for image in marking_generator_images(theta.canonical_representative()))
     assert _elementary_contraction_data(theta)[0][2] == 2
 
 
 def test_backend_independence_without_verify():
-    model = StableGraphStratificationEnumerator(0, 4)
-    adm = model.stratification(backend="admcycles-stable")
+    adm = _enumerate_stable_graph_levels(0, 4, backend="admcycles-stable")
     assert adm.is_complete()
-    verified = model.stratification(backend="admcycles-stable", verify_against="pure-sage")
+    verified = _enumerate_stable_graph_levels(0, 4, backend="admcycles-stable", verify_against="pure-sage")
     assert verified.rank_sizes() == adm.rank_sizes()
 
 
@@ -163,7 +161,7 @@ def test_completeness_false_when_enumeration_stops_early(monkeypatch):
         return ()
 
     monkeypatch.setattr(enumeration, "one_edge_degenerations", stop_after_first)
-    incomplete = StableGraphStratificationEnumerator(0, 4).stratification(backend="pure-sage")
+    incomplete = _enumerate_stable_graph_levels(0, 4, backend="pure-sage")
     assert not incomplete.is_complete()
     assert incomplete.rank_sizes() == (1,)
     assert incomplete.complete_through_codim() == 0
@@ -176,14 +174,14 @@ def test_admcycles_backend_skips_pure_sage_without_verify(monkeypatch):
     def boom(*_args, **_kwargs):
         raise RuntimeError("pure-sage enumeration must not run for admcycles-stable")
 
-    monkeypatch.setattr(stratification_module, "build_stratification", boom)
-    result = StableGraphStratificationEnumerator(0, 4).stratification(backend="admcycles-stable")
+    monkeypatch.setattr(stratification_module, "_build_stratification", boom)
+    result = _enumerate_stable_graph_levels(0, 4, backend="admcycles-stable")
     assert result.is_complete()
     assert result.backend() == "admcycles-stable"
 
 
 def test_contraction_flag_map_is_immutable_to_caller_mutation():
-    types = StableGraphTypes(0, 4)
+    types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     graph = gamma.canonical_representative()
     _, contraction = graph.contract(graph.internal_edges()[0])
@@ -193,7 +191,7 @@ def test_contraction_flag_map_is_immutable_to_caller_mutation():
 
 
 def test_dumbbell_graph_automorphism_swaps_loop_branches():
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     dumbbell = types.from_vertices(
         genera=(0, 0),
         markings=((), (1, 2)),
@@ -204,7 +202,7 @@ def test_dumbbell_graph_automorphism_swaps_loop_branches():
 
 
 def test_automorphism_actions_on_all_incidence_data():
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     fixtures = {
         "theta": types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1))),
         "dumbbell": types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1))),
@@ -224,7 +222,7 @@ def test_automorphism_actions_on_all_incidence_data():
 
 
 def test_branch_swap_semantics_on_m11_nodal_flags():
-    types = StableGraphTypes(1, 1)
+    types = StableGraphs(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
     graph = loop.canonical_representative()
     marking_flag = graph.marking_to_flag[0]
@@ -241,7 +239,7 @@ def test_branch_swap_semantics_on_m11_nodal_flags():
 
 
 def test_factor_slots_on_m11_nodal_graph():
-    types = StableGraphTypes(1, 1)
+    types = StableGraphs(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
     graph = loop.canonical_representative()
     Gamma = StableGraphCategory(1, 1)
@@ -257,7 +255,7 @@ def test_factor_slots_on_m11_nodal_graph():
 
 
 def test_factor_slots_on_m04_split_type():
-    types = StableGraphTypes(0, 4)
+    types = StableGraphs(0, 4)
     split = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     graph = split.canonical_representative()
     Gamma = StableGraphCategory(0, 4)
@@ -285,7 +283,7 @@ def test_decorated_edge_orbit_morphisms_contract_to_codimension_one():
 
 
 def test_clutching_morphism_exposes_half_edge_coordinates():
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     dumbbell = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
     graph = dumbbell.canonical_representative()
     Gamma = StableGraphCategory(1, 2)
@@ -297,7 +295,7 @@ def test_clutching_morphism_exposes_half_edge_coordinates():
 
 
 def test_clutching_gluing_map_assigns_markings_and_edge_branches():
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     dumbbell = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
     record = dumbbell.canonical_representative()
     Gamma = StableGraphCategory(1, 2)
@@ -308,7 +306,7 @@ def test_clutching_gluing_map_assigns_markings_and_edge_branches():
 
 
 def test_all_invariants_equal_under_vertex_relabeling():
-    types = StableGraphTypes(0, 4)
+    types = StableGraphs(0, 4)
     left = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     right = types.from_vertices(genera=(0, 0), markings=((3, 4), (1, 2)), edges=((0, 1),))
     for gamma in (left, right):
@@ -327,7 +325,7 @@ def test_all_invariants_equal_under_vertex_relabeling():
 
 
 def test_canonical_key_unchanged_after_failed_mutation():
-    types = StableGraphTypes(0, 4)
+    types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     record = gamma.canonical_representative()
     key_before = gamma.canonical_key()
@@ -342,19 +340,18 @@ def test_canonical_key_unchanged_after_failed_mutation():
 
 def test_complete_stratifications_span_all_ranks():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        model = StableGraphStratificationEnumerator(g, n)
-        stratification = model.stratification()
+        stratification = _enumerate_stable_graph_levels(g, n)
         assert stratification.is_complete()
-        assert len(stratification.rank_sizes()) == model.dimension() + 1
+        assert len(stratification.rank_sizes()) == StableGraphs(g, n).dimension() + 1
 
 
 def test_theta_dumbbell_and_m12_type_e_orbit_sizes():
     from dm_moduli_spike.testing_support.support.fixtures import m12_types
 
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
     dumbbell = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
-    m12_e = m12_types(StableGraphStratificationEnumerator(1, 2).stratification())["E"]
+    m12_e = m12_types()["E"]
     assert _elementary_contraction_data(theta)[0][2] == 2
     dumbbell_orbits = {size for _target, _witness, size in _elementary_contraction_data(dumbbell)}
     assert dumbbell_orbits == {1, 1}
@@ -366,11 +363,11 @@ def test_automorphism_generators_agree_with_incidence_actions():
     from dm_moduli_spike.objects.canonical import _incidence_graph
     from dm_moduli_spike.testing_support.support.fixtures import m12_types
 
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     fixtures = {
         "theta": types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1))),
         "dumbbell": types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1))),
-        "m12_type_e": m12_types(StableGraphStratificationEnumerator(1, 2).stratification())["E"],
+        "m12_type_e": m12_types()["E"],
     }
     for gamma in fixtures.values():
         graph = gamma.canonical_representative()

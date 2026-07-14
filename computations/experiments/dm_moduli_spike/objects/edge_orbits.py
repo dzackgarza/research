@@ -10,7 +10,7 @@ from .records import _GraphRecord
 
 if TYPE_CHECKING:
     from .contractions import StableGraphContraction
-    from .graph_types import StableGraphType
+    from .stable_graphs import StableGraph
 
 
 def automorphism_edge_orbit_indices(record: _GraphRecord) -> tuple[tuple[int, ...], ...]:
@@ -53,11 +53,11 @@ def edges_are_in_same_orbit(record: _GraphRecord, edge_a: tuple[int, int], edge_
     return False
 
 
-def contraction_target_multiset(source: StableGraphType) -> tuple[tuple[StableGraphType, int], ...]:
+def contraction_target_multiset(source: StableGraph) -> tuple[tuple[StableGraph, int], ...]:
     r"""Multiset of distinct targets ``([Gamma/e], |O_e|)`` over Aut edge orbits."""
     parent = source.parent()
     graph = source.canonical_representative()
-    entries: list[tuple[StableGraphType, int]] = []
+    entries: list[tuple[StableGraph, int]] = []
     for group in automorphism_edge_orbit_indices(graph):
         representative = graph.internal_edges()[group[0]]
         target_type, _ = graph.contract(representative)
@@ -87,7 +87,7 @@ def _contraction_witness_from_decorated(
     return contraction_from_decorated_morphism(morphism, g, n, domain_graph=graph)
 
 
-def _elementary_contraction_data(source: StableGraphType) -> tuple[tuple[StableGraphType, StableGraphContraction, int], ...]:
+def _elementary_contraction_data(source: StableGraph) -> tuple[tuple[StableGraph, StableGraphContraction, int], ...]:
     r"""Internal: one Aut edge orbit -> (target type, witness, orbit size)."""
     parent = source.parent()
     g = parent.genus()
@@ -98,7 +98,7 @@ def _elementary_contraction_data(source: StableGraphType) -> tuple[tuple[StableG
 
     use_decorated = AdmcyclesDecoratedGraphBackend().is_available()
 
-    data: list[tuple[StableGraphType, StableGraphContraction, int]] = []
+    data: list[tuple[StableGraph, StableGraphContraction, int]] = []
     for group in automorphism_edge_orbit_indices(graph):
         representative = edges[group[0]]
         if use_decorated:

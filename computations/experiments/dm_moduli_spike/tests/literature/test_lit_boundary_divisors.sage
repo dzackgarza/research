@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
+from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
 
 from dm_moduli_spike.testing_support.support.fixtures import (
     boundary_label,
@@ -26,8 +26,7 @@ pytestmark = pytest.mark.ci
 @pytest.mark.parametrize("g,n", stable_pairs())
 def test_codimension_one_boundary_labels_match_AC(g, n):
     r"""AC Ch. XII Thm. XII.2.2: codimension-one boundary type labels."""
-    model = StableGraphStratificationEnumerator(g, n)
-    boundary = model.stratification().strata(codim=1)
+    boundary = _enumerate_stable_graph_levels(g, n).strata(codim=1)
     actual = {boundary_label(stratum, g, n) for stratum in boundary}
     expected = expected_boundary_labels(g, n)
     assert actual == expected
@@ -38,10 +37,9 @@ def test_irreducible_boundary_clutching_source_matches_AC(g, n):
     r"""AC Ch. XII Prop. XII.2.3: irreducible node clutching source `M_{g-1,n+2}`."""
     if g < 1:
         return
-    model = StableGraphStratificationEnumerator(g, n)
     irr = next(
         stratum
-        for stratum in model.stratification().strata(codim=1)
+        for stratum in _enumerate_stable_graph_levels(g, n).strata(codim=1)
         if boundary_label(stratum, g, n) == ("irr",)
     )
     assert clutching_signature(irr) == expected_clutching_signature_irr(g, n)
@@ -50,8 +48,7 @@ def test_irreducible_boundary_clutching_source_matches_AC(g, n):
 @pytest.mark.parametrize("g,n", stable_pairs())
 def test_separating_boundary_clutching_sources_match_AC(g, n):
     r"""AC Ch. XII Prop. XII.2.3: separating node clutching product factors."""
-    model = StableGraphStratificationEnumerator(g, n)
-    for stratum in model.stratification().strata(codim=1):
+    for stratum in _enumerate_stable_graph_levels(g, n).strata(codim=1):
         label = boundary_label(stratum, g, n)
         if label[0] != "sep":
             continue

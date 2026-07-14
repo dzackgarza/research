@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections import Counter
 
-from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
+from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
 
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data, contraction_target_multiset
 from dm_moduli_spike.testing_support.support.fixtures import genus_six_counterexample, m12_types
@@ -24,7 +24,7 @@ def test_genus_six_counterexample_has_distinct_aut_orbits_same_target():
 
 
 def test_M12_type_E_parallel_orbit_has_size_two():
-    m12_e = m12_types(StableGraphStratificationEnumerator(1, 2).stratification())["E"]
+    m12_e = m12_types()["E"]
     data = _elementary_contraction_data(m12_e)
     assert len(data) == 1
     assert data[0][2] == 2
@@ -39,9 +39,8 @@ def test_contraction_target_multiset_matches_covers():
 
 def test_decorated_and_pure_sage_orbit_data_agree():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        model = StableGraphStratificationEnumerator(g, n)
-        pure = model.stratification(backend="pure-sage")
-        decorated = model.stratification(backend="admcycles-decorated")
+        pure = _enumerate_stable_graph_levels(g, n, backend="pure-sage")
+        decorated = _enumerate_stable_graph_levels(g, n, backend="admcycles-decorated")
         pure_by_key = {
             gamma.canonical_key(): gamma
             for level in pure.curve_type_levels()

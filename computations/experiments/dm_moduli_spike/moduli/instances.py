@@ -208,6 +208,9 @@ class ModuliStack(DeligneMumfordStack):
     def number_of_markings(self) -> int:
         return self._problem.number_of_markings()
 
+    def is_proper(self) -> bool:
+        return self._proper
+
     def marking_set(self) -> tuple[object, ...]:
         return self._problem.marking_set()
 

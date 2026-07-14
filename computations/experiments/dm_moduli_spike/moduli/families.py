@@ -7,45 +7,47 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..categories.base import AffineScheme
     from ..curves.pointed import SmoothPointedCurve, StablePointedCurve
-    from .stack import DeligneMumfordModuliStackOver
+    from .instances import ModuliStack
 
 
 class FamiliesOver:
-    r"""Groupoid of families over `S` for a base-changed moduli stack."""
+    r"""Groupoid of families over `S` for a moduli stack fiber."""
 
-    __slots__ = ("_stack_over",)
+    __slots__ = ("_stack", "_base")
 
-    def __init__(self, stack_over: DeligneMumfordModuliStackOver) -> None:
-        self._stack_over = stack_over
+    def __init__(self, stack: ModuliStack, base: AffineScheme) -> None:
+        self._stack = stack
+        self._base = base
 
-    def stack(self) -> DeligneMumfordModuliStackOver:
-        return self._stack_over
+    def stack(self) -> ModuliStack:
+        return self._stack
 
     def over_scheme(self) -> AffineScheme:
-        return self._stack_over.over_scheme()
+        return self._base
 
     def an_element(self) -> FamilyOver:
-        return FamilyOver(self._stack_over)
+        return FamilyOver(self._stack, self._base)
 
 
 class FamilyOver:
     r"""A single family `\pi : \mathcal C \to S` in the moduli problem."""
 
-    __slots__ = ("_stack_over",)
+    __slots__ = ("_stack", "_base")
 
-    def __init__(self, stack_over: DeligneMumfordModuliStackOver) -> None:
-        self._stack_over = stack_over
+    def __init__(self, stack: ModuliStack, base: AffineScheme) -> None:
+        self._stack = stack
+        self._base = base
 
     def over_scheme(self) -> AffineScheme:
-        return self._stack_over.over_scheme()
+        return self._base
 
     def fiber(self, point: object) -> SmoothPointedCurve | StablePointedCurve:
         from ..curves.pointed import SmoothPointedCurve, StablePointedCurve
 
-        g = self._stack_over.genus()
-        n = self._stack_over.number_of_markings()
+        g = self._stack.genus()
+        n = self._stack.number_of_markings()
         base = self.over_scheme()
-        if self._stack_over.is_proper():
+        if self._stack.is_proper():
             return StablePointedCurve.from_ambient(g, n, base_scheme=base)
         return SmoothPointedCurve.from_ambient(g, n, base_scheme=base)
 

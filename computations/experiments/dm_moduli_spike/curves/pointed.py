@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from sage.schemes.curves.curve import Curve_generic
 
     from ..categories.base import AffineScheme
-    from ..objects.graph_types import StableGraphType
     from ..objects.stable_graphs import StableGraph
 
 
@@ -187,7 +186,7 @@ class StablePointedCurve(PointedCurve):
         self,
         g: int,
         n: int,
-        graph_type: StableGraphType | None = None,
+        graph_type: StableGraph | None = None,
         *,
         sage_curve: Curve_generic | None = None,
         markings: tuple[object, ...] | None = None,

@@ -2,14 +2,14 @@ r"""CI-tier serialization and invariant sweeps over the full Mbar(2, 1) stratifi
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.graph_types import StableGraphTypes
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.objects.records import _GraphRecord
 import json
 import pickle
 
 import pytest
 
-from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
+from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
 from sage.combinat.permutation import Permutations
 
 from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
@@ -38,8 +38,7 @@ def _relabel(record, vertex_perm, flag_perm):
 
 
 def test_pickle_round_trip_preserves_parent_and_equality():
-    model = StableGraphStratificationEnumerator(2, 1)
-    for level in model.stratification().curve_type_levels():
+    for level in _enumerate_stable_graph_levels(2, 1).curve_type_levels():
         for gamma in level:
             revived = pickle.loads(pickle.dumps(gamma))
             assert revived == gamma
@@ -48,9 +47,8 @@ def test_pickle_round_trip_preserves_parent_and_equality():
 
 
 def test_json_round_trip_preserves_equality():
-    types = StableGraphTypes(2, 1)
-    model = StableGraphStratificationEnumerator(2, 1)
-    for level in model.stratification().curve_type_levels():
+    types = StableGraphs(2, 1)
+    for level in _enumerate_stable_graph_levels(2, 1).curve_type_levels():
         for gamma in level:
             blob = json.dumps(gamma.to_json())
             revived = types.from_json(json.loads(blob))
@@ -59,8 +57,7 @@ def test_json_round_trip_preserves_equality():
 
 
 def test_every_type_is_connected_stable_correct_genus_and_marking_set():
-    model = StableGraphStratificationEnumerator(2, 1)
-    for level in model.stratification().curve_type_levels():
+    for level in _enumerate_stable_graph_levels(2, 1).curve_type_levels():
         for gamma in level:
             record = gamma.canonical_representative()
             assert record.is_stable()
@@ -71,17 +68,15 @@ def test_every_type_is_connected_stable_correct_genus_and_marking_set():
 
 
 def test_genus_matches_betti_plus_vertex_genera():
-    model = StableGraphStratificationEnumerator(2, 1)
-    for level in model.stratification().curve_type_levels():
+    for level in _enumerate_stable_graph_levels(2, 1).curve_type_levels():
         for gamma in level:
             record = gamma.canonical_representative()
             assert gamma.total_genus() == record.first_betti_number() + sum(record.vertex_genera)
 
 
 def test_random_relabelings_produce_the_same_canonical_key():
-    types = StableGraphTypes(2, 1)
-    model = StableGraphStratificationEnumerator(2, 1)
-    for level in model.stratification().curve_type_levels():
+    types = StableGraphs(2, 1)
+    for level in _enumerate_stable_graph_levels(2, 1).curve_type_levels():
         for gamma in level:
             record = gamma.canonical_representative()
             num_vertices = record.num_vertices()
@@ -96,17 +91,15 @@ def test_random_relabelings_produce_the_same_canonical_key():
 
 
 def test_automorphism_numbers_agree_with_admcycles_on_M21():
-    model = StableGraphStratificationEnumerator(2, 1)
-    types = model.graph_types()
+    types = StableGraphs(2, 1)
     backend = AdmcyclesStableGraphBackend()
-    for level in model.stratification().curve_type_levels():
+    for level in _enumerate_stable_graph_levels(2, 1).curve_type_levels():
         for gamma in level:
             assert gamma.automorphism_number() == backend.admcycles_automorphism_number(types, gamma)
 
 
 def test_covers_change_edge_count_by_one_and_carry_a_valid_witness():
-    model = StableGraphStratificationEnumerator(2, 1)
-    stratification = model.stratification()
+    stratification = _enumerate_stable_graph_levels(2, 1)
     for generic, special in stratification.covers():
         assert special.codimension() == generic.codimension() + 1
     for witness in stratification.contraction_witnesses():
@@ -118,8 +111,7 @@ def test_covers_change_edge_count_by_one_and_carry_a_valid_witness():
 
 @pytest.mark.parametrize("g,n", [(0, 5), (2, 1)])
 def test_every_contraction_preserves_total_genus_and_stability_large(g, n):
-    model = StableGraphStratificationEnumerator(g, n)
-    for level in model.stratification().curve_type_levels():
+    for level in _enumerate_stable_graph_levels(g, n).curve_type_levels():
         for gamma in level:
             graph = gamma.canonical_representative()
             for edge in graph.internal_edges():

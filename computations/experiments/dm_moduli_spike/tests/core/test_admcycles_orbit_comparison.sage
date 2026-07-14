@@ -6,7 +6,7 @@ from collections import Counter
 
 from admcycles.decorated_graph import DecoratedGraph
 
-from dm_moduli_spike.objects.graph_types import StableGraphTypes
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.backends.admcycles_decorated import (
     _record_from_decorated_graph,
     _record_to_decorated_graph,
@@ -30,7 +30,7 @@ def _adm_orbit_sizes(dg):
 def _adm_contraction_multiset(dg, g, n):
     from dm_moduli_spike.backends.admcycles_decorated import contraction_from_decorated_morphism
 
-    parent = StableGraphTypes(g, n)
+    parent = StableGraphs(g, n)
     entries: list[tuple[object, int]] = []
     for u, v, size in dg.edge_orbit_representatives():
         morphism = dg.edge_contraction_morphism([(u, v, 1)])
@@ -53,7 +53,7 @@ def test_decorated_orbit_representatives_match_spike_edge_orbits():
 
 
 def test_spike_m11_loop_branch_swap_orbit_sizes():
-    types = StableGraphTypes(1, 1)
+    types = StableGraphs(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
     record = loop.canonical_representative()
     decorated = _record_to_decorated_graph(record, 1, 1)
@@ -63,7 +63,7 @@ def test_spike_m11_loop_branch_swap_orbit_sizes():
 
 
 def test_spike_m12_banana_has_one_edge_orbit_class():
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     banana = types.from_vertices(
         genera=(0, 0),
         markings=((1,), (2,)),
@@ -79,7 +79,7 @@ def test_spike_m12_banana_has_one_edge_orbit_class():
 
 
 def test_spike_m12_true_dumbbell_has_two_singleton_orbits():
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     dumbbell = types.from_vertices(
         genera=(0, 0),
         markings=((), (1, 2)),

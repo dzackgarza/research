@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from ..categories.membership import _object_base
 from ..categories.stratified import StratifiedSpaces, StratifiedStacks
 from ..moduli.instances import ModuliStack
-from ..moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
 from ..objects.gamma import StableGraphCategory
 from .indexing import DualGraphType
 
@@ -16,9 +15,7 @@ if TYPE_CHECKING:
 
     from ..geometry.stacks import Compactification
     from ..moduli.coarse import CoarseModuliScheme, CoarseModuliSchemeOver
-    from ..objects.graph_types import StableGraphTypes
-
-_StackLike = DeligneMumfordModuliStack | DeligneMumfordModuliStackOver | ModuliStack
+    from ..objects.stable_graphs import StableGraphs
 
 
 class BoundaryStack:
@@ -33,11 +30,9 @@ class BoundaryStack:
     def compactification(self) -> Compactification:
         return self._compactification
 
-    def parent_stack(self) -> _StackLike:
+    def parent_stack(self) -> ModuliStack:
         codomain = self._compactification.codomain()
-        assert isinstance(codomain, (DeligneMumfordModuliStack, DeligneMumfordModuliStackOver, ModuliStack)), (
-            f"compactification codomain must be a DM moduli stack; found {type(codomain)!r}; owned boundary=BoundaryStack.parent_stack"
-        )
+        assert isinstance(codomain, ModuliStack), f"compactification codomain must be ModuliStack; found {type(codomain)!r}; owned boundary=BoundaryStack.parent_stack"
         return codomain
 
     def is_reduced(self) -> bool:
@@ -62,7 +57,7 @@ class StratifiedStack:
 
     def __init__(
         self,
-        stack: _StackLike,
+        stack: ModuliStack,
         indexer: DualGraphType,
         order: str = "specialization",
         backend: str = "auto",
@@ -74,10 +69,10 @@ class StratifiedStack:
         self._backend = backend
         self._gamma = StableGraphCategory(stack.genus(), stack.number_of_markings())
 
-    def parent_stack(self) -> _StackLike:
+    def parent_stack(self) -> ModuliStack:
         return self._stack
 
-    def indexing_category(self) -> StableGraphTypes:
+    def indexing_category(self) -> StableGraphs:
         return self._indexer.stable_graphs(self._stack.genus(), self._stack.number_of_markings())
 
     def category(self) -> object:
@@ -115,7 +110,7 @@ class StratifiedVariety:
     def parent_scheme(self) -> CoarseModuliScheme | CoarseModuliSchemeOver:
         return self._coarse
 
-    def indexing_category(self) -> StableGraphTypes:
+    def indexing_category(self) -> StableGraphs:
         return self._indexer.stable_graphs(self._coarse.genus(), self._coarse.number_of_markings())
 
     def category(self) -> object:

@@ -2,7 +2,7 @@ r"""Adapter over ``admcycles.decorated_graph``.
 
 ``admcycles.decorated_graph.stable_graphs`` enumerates stable graphs up to
 isomorphism with explicit contraction morphisms.  Results are converted to the
-spike's owned :class:`~dm_moduli_spike.objects.graph_types.StableGraphType`;
+spike's owned :class:`~dm_moduli_spike.objects.stable_graphs.StableGraph`;
 ``DecoratedGraph`` is never exposed in the public API.
 """
 
@@ -15,7 +15,7 @@ from ..objects.records import _GraphRecord
 
 if TYPE_CHECKING:
     from ..objects.contractions import StableGraphContraction
-    from ..objects.graph_types import StableGraphType, StableGraphTypes
+    from ..objects.stable_graphs import StableGraph, StableGraphs
 
 
 def _require_decorated_module() -> object:
@@ -191,13 +191,13 @@ class AdmcyclesDecoratedGraphBackend:
             return False
         return True
 
-    def stable_curve_types(self, curve_types: StableGraphTypes, max_codim: int | None = None) -> tuple[StableGraphType, ...]:
+    def stable_curve_types(self, curve_types: StableGraphs, max_codim: int | None = None) -> tuple[StableGraph, ...]:
         decorated_graph = _require_decorated_module()
         g = curve_types.genus()
         n = curve_types.number_of_markings()
         dimension = curve_types.dimension()
         cap = dimension if max_codim is None else min(int(max_codim), dimension)
-        result: dict[object, StableGraphType] = {}
+        result: dict[object, StableGraph] = {}
         for decorated, bucket_codim in _iter_decorated_graphs(decorated_graph, g, n, cap):
             record = _record_from_decorated_graph(decorated, g, n)
             assert record.num_edges() == bucket_codim, f"decorated_graph bucket codim {bucket_codim} disagrees with {record.num_edges()} edges"

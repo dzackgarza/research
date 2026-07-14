@@ -28,8 +28,8 @@ from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING
 
 from .contractions import StableGraphContraction, contract_edges
-from .graph_types import StableGraphType, StableGraphTypes
 from .isomorphisms import transport_contraction_via_canonical_relabeling
+from .stable_graphs import StableGraph, StableGraphs
 
 if TYPE_CHECKING:
     from sage.combinat.posets.posets import FinitePoset
@@ -48,13 +48,13 @@ def _normalize_codim_cap(max_codim: int | None, dimension: int) -> tuple[int, bo
     return max_codim, False
 
 
-def _levels_are_contiguous(levels: list[dict[object, StableGraphType]]) -> bool:
+def _levels_are_contiguous(levels: list[dict[object, StableGraph]]) -> bool:
     if not levels:
         return False
     return all(levels[codim] for codim in range(len(levels)))
 
 
-def build_stratification(curve_types: StableGraphTypes, max_codim: int | None = None) -> DMStratification:
+def _build_stratification(curve_types: StableGraphs, max_codim: int | None = None) -> _CombinatorialStratification:
     r"""Enumerate rank by rank and recover covers by contraction."""
     from .enumeration import one_edge_degenerations
 
@@ -62,10 +62,10 @@ def build_stratification(curve_types: StableGraphTypes, max_codim: int | None = 
     codim_cap, is_effective_full = _normalize_codim_cap(max_codim, dimension)
 
     smooth = curve_types.smooth()
-    levels: list[dict[object, StableGraphType]] = [{smooth.canonical_key(): smooth}]
+    levels: list[dict[object, StableGraph]] = [{smooth.canonical_key(): smooth}]
     for _ in range(codim_cap):
         current = levels[-1]
-        nxt: dict[object, StableGraphType] = {}
+        nxt: dict[object, StableGraph] = {}
         for gamma in current.values():
             for delta in one_edge_degenerations(gamma):
                 nxt[delta.canonical_key()] = delta
@@ -86,22 +86,22 @@ def build_stratification(curve_types: StableGraphTypes, max_codim: int | None = 
     )
 
 
-def build_stratification_from_types(
-    curve_types: StableGraphTypes,
-    types: Iterable[StableGraphType],
+def _build_stratification_from_types(
+    curve_types: StableGraphs,
+    types: Iterable[StableGraph],
     max_codim: int | None = None,
     *,
     exhaustive: bool = False,
     induced_order: bool = True,
     backend: str | None = None,
-) -> DMStratification:
+) -> _CombinatorialStratification:
     r"""Bucket an externally enumerated collection of stable curve types by
     codimension and recover covers by contraction.  Used by non-default
     enumeration backends (e.g. admcycles); the mathematical invariants are
     checked independently of the enumerator."""
     dimension = curve_types.dimension()
     codim_cap, _is_effective_full = _normalize_codim_cap(max_codim, dimension)
-    levels: list[dict[object, StableGraphType]] = []
+    levels: list[dict[object, StableGraph]] = []
     enumerated = tuple(types)
     for gamma in enumerated:
         codim = gamma.num_edges()
@@ -124,12 +124,12 @@ def build_stratification_from_types(
     )
 
 
-def _all_types(levels: list[dict[object, StableGraphType]]) -> tuple[StableGraphType, ...]:
+def _all_types(levels: list[dict[object, StableGraph]]) -> tuple[StableGraph, ...]:
     return tuple(gamma for level in levels for gamma in level.values())
 
 
-def _induced_cover_pairs(types: tuple[StableGraphType, ...]) -> list[tuple[StableGraphType, StableGraphType]]:
-    covers: list[tuple[StableGraphType, StableGraphType]] = []
+def _induced_cover_pairs(types: tuple[StableGraph, ...]) -> list[tuple[StableGraph, StableGraph]]:
+    covers: list[tuple[StableGraph, StableGraph]] = []
     for delta in types:
         for gamma in types:
             if gamma == delta or not delta.contracts_to(gamma):
@@ -141,8 +141,8 @@ def _induced_cover_pairs(types: tuple[StableGraphType, ...]) -> list[tuple[Stabl
 
 
 def _contraction_witness(
-    delta_type: StableGraphType,
-    gamma_type: StableGraphType,
+    delta_type: StableGraph,
+    gamma_type: StableGraph,
 ) -> StableGraphContraction | None:
     from .edge_orbits import _elementary_contraction_data
 
@@ -169,8 +169,8 @@ def _contraction_witness(
 
 
 def _finish_stratification(
-    curve_types: StableGraphTypes,
-    levels: list[dict[object, StableGraphType]],
+    curve_types: StableGraphs,
+    levels: list[dict[object, StableGraph]],
     max_codim: int | None,
     codim_cap: int,
     dimension: int,
@@ -178,10 +178,10 @@ def _finish_stratification(
     exhaustive: bool,
     backend: str | None = None,
     induced_subposet: bool = False,
-) -> DMStratification:
+) -> _CombinatorialStratification:
     from .edge_orbits import _elementary_contraction_data
 
-    by_key: dict[object, StableGraphType] = {}
+    by_key: dict[object, StableGraph] = {}
     for level in levels:
         by_key.update(level)
 
@@ -211,7 +211,7 @@ def _finish_stratification(
     smooth_present = bool(levels) and curve_types.smooth().canonical_key() in levels[0]
     has_full_rank_support = is_effective_full and smooth_present and _levels_are_contiguous(levels) and len(levels) == codim_cap + 1
     is_truncation = max_codim is not None and int(max_codim) < dimension
-    return DMStratification(
+    return _CombinatorialStratification(
         g=curve_types.genus(),
         n=curve_types.number_of_markings(),
         curve_types=curve_types,
@@ -227,7 +227,7 @@ def _finish_stratification(
     )
 
 
-class DMStratification:
+class _CombinatorialStratification:
     r"""A finite (or rank-truncated) stratification of
     :math:`\overline{\mathcal M}_{g,n}`."""
 
@@ -235,9 +235,9 @@ class DMStratification:
         self,
         g: int,
         n: int,
-        curve_types: StableGraphTypes,
-        levels: list[dict[object, StableGraphType]],
-        covers: list[tuple[StableGraphType, StableGraphType]],
+        curve_types: StableGraphs,
+        levels: list[dict[object, StableGraph]],
+        covers: list[tuple[StableGraph, StableGraph]],
         contractions: tuple[StableGraphContraction, ...],
         exhaustive: bool,
         has_full_rank_support: bool,
@@ -270,13 +270,13 @@ class DMStratification:
 
     # -- ranks and strata --------------------------------------------------------
 
-    def curve_type_levels(self) -> list[tuple[StableGraphType, ...]]:
+    def curve_type_levels(self) -> list[tuple[StableGraph, ...]]:
         return [tuple(level.values()) for level in self._levels]
 
-    def strata_by_codimension(self) -> tuple[tuple[StableGraphType, ...], ...]:
+    def strata_by_codimension(self) -> tuple[tuple[StableGraph, ...], ...]:
         return tuple(tuple(level.values()) for level in self._levels)
 
-    def rank_buckets(self) -> tuple[tuple[StableGraphType, ...], ...]:
+    def rank_buckets(self) -> tuple[tuple[StableGraph, ...], ...]:
         r"""Deprecated alias for :meth:`strata_by_codimension`."""
         return self.strata_by_codimension()
 
@@ -286,21 +286,21 @@ class DMStratification:
     def cardinality(self) -> int:
         return sum(len(level) for level in self._levels)
 
-    def strata(self, codim: int | None = None) -> tuple[StableGraphType, ...]:
+    def strata(self, codim: int | None = None) -> tuple[StableGraph, ...]:
         if codim is None:
             return tuple(gamma for bucket in self.strata_by_codimension() for gamma in bucket)
         if codim < 0 or codim >= len(self._levels):
             return ()
         return tuple(self._levels[codim].values())
 
-    def boundary_strata(self) -> tuple[StableGraphType, ...]:
+    def boundary_strata(self) -> tuple[StableGraph, ...]:
         r"""Every stratum of positive codimension (the boundary
         :math:`\partial \overline{\mathcal M}_{g,n}`)."""
         return tuple(gamma for codim in range(1, len(self._levels)) for gamma in self.strata(codim))
 
     # -- morphisms ---------------------------------------------------------------
 
-    def covers(self) -> tuple[tuple[StableGraphType, StableGraphType], ...]:
+    def covers(self) -> tuple[tuple[StableGraph, StableGraph], ...]:
         r"""Specialization covers ``(generic, special)``: each pair
         ``(Gamma, Delta)`` has ``Delta -> Gamma`` by contraction to a distinct
         target ``[\Gamma/e]`` (one-edge in full/truncated mode; possibly
@@ -317,7 +317,7 @@ class DMStratification:
         marking_blocks: Sequence[Sequence[int]],
         loops: Sequence[int] | None = None,
         edge_multiset: Sequence[tuple[int, int, int]] | None = None,
-    ) -> StableGraphType:
+    ) -> StableGraph:
         r"""Locate the unique stratum matching a vertex-indexed construction.
 
         The lookup is semantic: vertices are numbered ``0, ..., |V|-1`` in the
@@ -388,7 +388,7 @@ class DMStratification:
         return Poset((strata, cover_relations), cover_relations=True, facade=True)
 
     def specialization_poset(self) -> FinitePoset:
-        r"""Generic below special; Sage ``FinitePoset`` of :class:`StableGraphType`."""
+        r"""Generic below special; Sage ``FinitePoset`` of :class:`StableGraph`."""
         return self._facade_poset()
 
     def closure_poset(self) -> FinitePoset:

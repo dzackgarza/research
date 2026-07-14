@@ -6,9 +6,8 @@ from itertools import combinations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from dm_moduli_spike.objects.graph_types import StableGraphType, StableGraphTypes
     from dm_moduli_spike.objects.records import _GraphRecord
-    from dm_moduli_spike.objects.stratification import DMStratification
+    from dm_moduli_spike.objects.stable_graphs import StableGraph, StableGraphs
 
 BoundaryLabel = tuple[str, ...] | tuple[str, int, frozenset[int]]
 
@@ -54,7 +53,7 @@ def expected_boundary_labels(g: int, n: int) -> set[BoundaryLabel]:
     return labels
 
 
-def boundary_label(curve_type: StableGraphType, g: int, n: int) -> BoundaryLabel:
+def boundary_label(curve_type: StableGraph, g: int, n: int) -> BoundaryLabel:
     assert curve_type.codimension() == 1
     record = curve_type.canonical_representative()
     if record.num_vertices() == 1 and len(record.internal_edges()) == 1:
@@ -89,7 +88,7 @@ def expected_clutching_signature_sep(g: int, n: int, a: int, marking_set: frozen
     )
 
 
-def clutching_signature(curve_type: StableGraphType) -> tuple[tuple[int, int], ...]:
+def clutching_signature(curve_type: StableGraph) -> tuple[tuple[int, int], ...]:
     r"""Sorted ``(g(v), valence(v))`` factors of the clutching source product."""
     record = curve_type.canonical_representative()
     return tuple(sorted((record.vertex_genera[v], record.valence(v)) for v in range(record.num_vertices())))
@@ -149,7 +148,7 @@ def edge_generator_images(graph: _GraphRecord) -> tuple[tuple[int, ...], ...]:
     return _GraphAutomorphismData.from_graph(graph).on_edges()
 
 
-def chan_m13_curve_type(types: StableGraphTypes) -> StableGraphType:
+def chan_m13_curve_type(types: StableGraphs) -> StableGraph:
     return types.from_vertices(
         genera=(0, 0),
         markings=((1, 2), (3,)),
@@ -157,46 +156,54 @@ def chan_m13_curve_type(types: StableGraphTypes) -> StableGraphType:
     )
 
 
-def m11_types(stratification: DMStratification) -> tuple[StableGraphType, StableGraphType]:
-    poset = stratification.specialization_poset()
-    smooth = next(x for x in poset if x.num_edges() == 0)
-    nodal = next(x for x in poset if x.num_edges() == 1)
+def m11_types(graphs: StableGraphs | None = None) -> tuple[StableGraph, StableGraph]:
+    from dm_moduli_spike.objects.stable_graphs import StableGraphs as _StableGraphs
+
+    graphs = graphs if graphs is not None else _StableGraphs(1, 1)
+    smooth = next(x for x in graphs if x.num_edges() == 0)
+    nodal = next(x for x in graphs if x.num_edges() == 1)
     return smooth, nodal
 
 
-def m12_types(stratification: DMStratification) -> dict[str, StableGraphType]:
+def m12_types(graphs: StableGraphs | None = None) -> dict[str, StableGraph]:
+    from dm_moduli_spike.objects.stable_graphs import StableGraphs as _StableGraphs
+
+    graphs = graphs if graphs is not None else _StableGraphs(1, 2)
     return {
-        "A": stratification.find_unique_type(
-            vertex_genera=(1,),
-            marking_blocks=((1, 2),),
+        "A": graphs.from_vertices(
+            genera=(1,),
+            markings=((1, 2),),
+            edges=(),
         ),
-        "B": stratification.find_unique_type(
-            vertex_genera=(0,),
-            loops=(1,),
-            marking_blocks=((1, 2),),
+        "B": graphs.from_vertices(
+            genera=(0,),
+            markings=((1, 2),),
+            edges=((0, 0),),
         ),
-        "C": stratification.find_unique_type(
-            vertex_genera=(0, 1),
-            edge_multiset=((0, 1, 1),),
-            marking_blocks=((1, 2), ()),
+        "C": graphs.from_vertices(
+            genera=(0, 1),
+            markings=((1, 2), ()),
+            edges=((0, 1),),
         ),
-        "D": stratification.find_unique_type(
-            vertex_genera=(0, 0),
-            loops=(1, 0),
-            edge_multiset=((0, 1, 1),),
-            marking_blocks=((), (1, 2)),
+        "D": graphs.from_vertices(
+            genera=(0, 0),
+            markings=((), (1, 2)),
+            edges=((0, 0), (0, 1)),
         ),
-        "E": stratification.find_unique_type(
-            vertex_genera=(0, 0),
-            edge_multiset=((0, 1, 2),),
-            marking_blocks=((1,), (2,)),
+        "E": graphs.from_vertices(
+            genera=(0, 0),
+            markings=((1,), (2,)),
+            edges=((0, 1), (0, 1)),
         ),
     }
 
 
-def m20_types(stratification: DMStratification) -> dict[str, StableGraphType]:
-    by_name: dict[str, StableGraphType] = {}
-    for gamma in stratification.strata():
+def m20_types(graphs: StableGraphs | None = None) -> dict[str, StableGraph]:
+    from dm_moduli_spike.objects.stable_graphs import StableGraphs as _StableGraphs
+
+    graphs = graphs if graphs is not None else _StableGraphs(2, 0)
+    by_name: dict[str, StableGraph] = {}
+    for gamma in graphs:
         name = classify_chan_m20(gamma.canonical_representative())
         assert name not in by_name, f"duplicate Chan type {name}"
         by_name[name] = gamma
@@ -204,10 +211,10 @@ def m20_types(stratification: DMStratification) -> dict[str, StableGraphType]:
     return by_name
 
 
-def genus_six_counterexample() -> StableGraphType:
-    from dm_moduli_spike.objects.graph_types import StableGraphTypes
+def genus_six_counterexample() -> StableGraph:
+    from dm_moduli_spike.objects.stable_graphs import StableGraphs
 
-    types = StableGraphTypes(6, 0)
+    types = StableGraphs(6, 0)
     return types.from_vertices(
         genera=(1, 0, 1, 0, 1, 0),
         markings=((), (), (), (), (), ()),

@@ -60,6 +60,6 @@ def expected_M0n_specialization_poset(n: int) -> Poset:
 
 def specialization_poset(g: int, n: int) -> FinitePoset:
     """Convenience wrapper used throughout the regression suite."""
-    from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
+    from dm_moduli_spike.objects.gamma import StableGraphCategory
 
-    return StableGraphStratificationEnumerator(g, n).stratification(backend="pure-sage").specialization_poset()
+    return StableGraphCategory(g, n).specialization_poset()

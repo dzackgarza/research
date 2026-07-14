@@ -7,16 +7,16 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sage.combinat.posets.posets import FinitePoset
 
-    from ..objects.graph_types import StableGraphTypes
+    from ..objects.stable_graphs import StableGraphs
 
 
 class DualGraphType:
     r"""Stratification indexer: stable dual graphs of type `(g, n)`."""
 
-    def stable_graphs(self, g: int, n: int) -> StableGraphTypes:
-        from ..objects.graph_types import StableGraphTypes
+    def stable_graphs(self, g: int, n: int) -> StableGraphs:
+        from ..objects.stable_graphs import StableGraphs
 
-        return StableGraphTypes(g, n)
+        return StableGraphs(g, n)
 
     def thinification(self, g: int, n: int, order: str = "specialization", backend: str = "auto") -> FinitePoset:
         from ..objects.gamma import StableGraphCategory

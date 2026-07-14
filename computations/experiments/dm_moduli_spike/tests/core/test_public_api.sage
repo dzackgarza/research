@@ -2,25 +2,38 @@ r"""Tier-4: public API surface for geometric ontology + Γ."""
 
 from __future__ import annotations
 
+import importlib
+
 import dm_moduli_spike as spike
 from dm_moduli_spike import M_gn, StableGraphCategory, spec
 from sage.rings.rational_field import QQ
+
+_BANNED_PUBLIC_NAMES = (
+    "DMCompactificationModel",
+    "ModuliFactor",
+    "DMStratum",
+    "StableGraphTypes",
+    "StableGraphType",
+    "StableGraphStratification",
+    "StableGraphStratificationEnumerator",
+    "AutomorphismAction",
+    "StableGraphRecord",
+    "DMStratification",
+    "DeligneMumfordModuliStack",
+    "DeligneMumfordModuliStackOver",
+)
+
+_BANNED_MODULES = (
+    "dm_moduli_spike.objects.graph_types",
+    "dm_moduli_spike.objects.curve_types",
+    "dm_moduli_spike.moduli.stack",
+)
 
 
 def test_public_all_includes_moduli_and_gamma():
     for name in ["M_gn", "Mbar_gn", "StableGraphCategory", "ModuliStacks", "Stacks", "spec"]:
         assert name in spike.__all__
-    for name in [
-        "DMCompactificationModel",
-        "ModuliFactor",
-        "DMStratum",
-        "StableGraphTypes",
-        "StableGraphStratification",
-        "StableGraphStratificationEnumerator",
-        "AutomorphismAction",
-        "StableGraphRecord",
-        "DMStratification",
-    ]:
+    for name in _BANNED_PUBLIC_NAMES:
         assert name not in spike.__all__
     for name in [
         "LocallyClosedSubstacks",
@@ -34,8 +47,52 @@ def test_public_all_includes_moduli_and_gamma():
         "StablePointedCurveFamilies",
         "StratifiedSpaces",
         "StratifiedStacks",
+        "StableGraphs",
+        "StableGraph",
     ]:
         assert name in spike.__all__
+
+
+_SUBMODULES_TO_PROBE = (
+    "dm_moduli_spike",
+    "dm_moduli_spike.objects",
+    "dm_moduli_spike.objects.model",
+    "dm_moduli_spike.objects.stratification",
+    "dm_moduli_spike.objects.stable_graphs",
+    "dm_moduli_spike.moduli",
+    "dm_moduli_spike.moduli.instances",
+    "dm_moduli_spike.geometry",
+)
+
+
+def test_banned_names_unimportable_from_package_surface():
+    r"""Banned dual-ontology names must fail importlib/getattr, not only ``__all__``."""
+    for name in _BANNED_PUBLIC_NAMES:
+        assert not hasattr(spike, name), f"banned name {name!r} still exposed on package"
+        try:
+            getattr(spike, name)
+        except AttributeError:
+            pass
+        else:
+            raise AssertionError(f"getattr(spike, {name!r}) should fail")
+        for modname in _SUBMODULES_TO_PROBE:
+            mod = importlib.import_module(modname)
+            assert not hasattr(mod, name), f"banned name {name!r} still on {modname}"
+            try:
+                getattr(mod, name)
+            except AttributeError:
+                pass
+            else:
+                raise AssertionError(f"getattr({modname}, {name!r}) should fail")
+
+
+def test_banned_shim_modules_unimportable():
+    for modname in _BANNED_MODULES:
+        try:
+            importlib.import_module(modname)
+        except ModuleNotFoundError:
+            continue
+        raise AssertionError(f"banned module {modname!r} is still importable")
 
 
 def test_gamma_still_public():

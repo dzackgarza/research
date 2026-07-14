@@ -2,11 +2,11 @@ r"""Tier-4 internal consistency: half-edge record validation and numerical invar
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.graph_types import StableGraphTypes
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.objects.records import _GraphRecord
 import pytest
 
-from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
+from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
 
 
 def test_record_rejects_a_non_involution():
@@ -42,7 +42,7 @@ def test_record_rejects_a_disconnected_graph():
 
 def test_record_requires_markings_to_be_exactly_1_to_n():
     with pytest.raises(AssertionError):
-        StableGraphTypes(0, 4).from_vertices(
+        StableGraphs(0, 4).from_vertices(
             genera=(0,),
             markings=((1, 2, 3, 5),),  # 5 is not in 1..4
             edges=(),
@@ -50,7 +50,7 @@ def test_record_requires_markings_to_be_exactly_1_to_n():
 
 
 def test_smooth_type_is_edge_free_and_carries_all_markings():
-    types = StableGraphTypes(2, 3)
+    types = StableGraphs(2, 3)
     smooth = types.smooth()
     assert smooth.is_smooth()
     assert smooth.num_edges() == 0
@@ -63,16 +63,15 @@ def test_smooth_type_is_edge_free_and_carries_all_markings():
 
 def test_dimension_computed_two_independent_ways():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        model = StableGraphStratificationEnumerator(g, n)
-        for level in model.stratification().curve_type_levels():
+        for level in _enumerate_stable_graph_levels(g, n).curve_type_levels():
             for gamma in level:
                 by_vertices = gamma.stratum_dimension()
-                by_codim = model.dimension() - gamma.num_edges()
+                by_codim = StableGraphs(g, n).dimension() - gamma.num_edges()
                 assert by_vertices == by_codim
 
 
 def test_from_vertices_builds_the_expected_boundary_type():
-    types = StableGraphTypes(0, 4)
+    types = StableGraphs(0, 4)
     gamma = types.from_vertices(
         genera=(0, 0),
         markings=((1, 2), (3, 4)),

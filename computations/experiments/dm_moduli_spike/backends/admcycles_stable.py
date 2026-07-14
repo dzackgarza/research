@@ -5,7 +5,7 @@ boundary strata of :math:`\overline{\mathcal M}_{g,n}` by codimension
 (``admcycles.list_strata(g, n, r)``), tests isomorphism, contracts edges and
 reports half-edge automorphism numbers.  The adapter converts every returned
 ``StableGraph`` into the spike's owned
-:class:`~dm_moduli_spike.objects.graph_types.StableGraphType`, so no
+:class:`~dm_moduli_spike.objects.stable_graphs.StableGraph`, so no
 ``admcycles`` class ever surfaces in the public API.
 """
 
@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 from ..objects.records import _GraphRecord
 
 if TYPE_CHECKING:
-    from ..objects.graph_types import StableGraphType, StableGraphTypes
+    from ..objects.stable_graphs import StableGraph, StableGraphs
 
 
 def _require_admcycles() -> object:
@@ -110,13 +110,13 @@ class AdmcyclesStableGraphBackend:
             return False
         return True
 
-    def stable_curve_types(self, curve_types: StableGraphTypes, max_codim: int | None = None) -> tuple[StableGraphType, ...]:
+    def stable_curve_types(self, curve_types: StableGraphs, max_codim: int | None = None) -> tuple[StableGraph, ...]:
         admcycles = _require_admcycles()
         g = curve_types.genus()
         n = curve_types.number_of_markings()
         dimension = curve_types.dimension()
         cap = dimension if max_codim is None else min(int(max_codim), dimension)
-        result: list[StableGraphType] = []
+        result: list[StableGraph] = []
         for codim in range(cap + 1):
             for stable_graph in admcycles.list_strata(g, n, codim):  # type: ignore[attr-defined]
                 record = _record_from_stable_graph(stable_graph, g, n)
@@ -126,14 +126,14 @@ class AdmcyclesStableGraphBackend:
                 result.append(curve_types.from_graph(record))
         return tuple(result)
 
-    def admcycles_automorphism_number(self, curve_types: StableGraphTypes, curve_type: StableGraphType) -> int:
+    def admcycles_automorphism_number(self, curve_types: StableGraphs, curve_type: StableGraph) -> int:
         r"""The ``admcycles`` automorphism number of the ``StableGraph`` matching
         ``curve_type``; used to cross-check the incidence-graph implementation."""
         record = curve_type.canonical_representative()
         stable_graph = _record_to_stable_graph(record, curve_types.genus(), curve_types.number_of_markings())
         return int(stable_graph.automorphism_number())  # type: ignore[attr-defined]
 
-    def to_admcycles(self, curve_types: StableGraphTypes, curve_type: StableGraphType) -> object:
+    def to_admcycles(self, curve_types: StableGraphs, curve_type: StableGraph) -> object:
         r"""Owned Γ object → ``admcycles.StableGraph`` (adapter surface)."""
         return _record_to_stable_graph(
             curve_type.canonical_representative(),

@@ -6,12 +6,12 @@ from sage.rings.integer_ring import ZZ
 
 from dm_moduli_spike import Mbar_gn, ProductStack, QuotientStack, spec
 from dm_moduli_spike.objects.gamma import StableGraphCategory
-from dm_moduli_spike.objects.graph_types import StableGraphTypes
-from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
+from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels, _validate_stable_graph
 
 
 def test_open_stack_presentation_factors_and_group_order():
-    types = StableGraphTypes(0, 4)
+    types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     graph = gamma.canonical_representative()
     XSbar = Mbar_gn(0, 4, base=spec(ZZ))
@@ -25,7 +25,7 @@ def test_open_stack_presentation_factors_and_group_order():
 
 
 def test_closure_normalization_uses_compact_factors():
-    types = StableGraphTypes(0, 4)
+    types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     graph = gamma.canonical_representative()
     XSbar = Mbar_gn(0, 4, base=spec(ZZ))
@@ -36,7 +36,7 @@ def test_closure_normalization_uses_compact_factors():
 
 
 def test_clutching_morphism_targets_the_ambient_compactification():
-    types = StableGraphTypes(1, 1)
+    types = StableGraphs(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
     graph = loop.canonical_representative()
     XSbar = Mbar_gn(1, 1, base=spec(ZZ))
@@ -61,10 +61,9 @@ def test_m04_boundary_clutching_maps_are_pairwise_distinct():
 
 
 def test_enumerator_rejects_mismatched_ambient():
-    model = StableGraphStratificationEnumerator(0, 4)
-    wrong = StableGraphStratificationEnumerator(2, 1).graph_types().smooth()
+    wrong = StableGraphs(2, 1).smooth()
     try:
-        model.validate_type(wrong)
+        _validate_stable_graph(0, 4, wrong)
     except ValueError:
         pass
     else:
@@ -72,7 +71,7 @@ def test_enumerator_rejects_mismatched_ambient():
 
 
 def test_geometric_stratum_is_distinct_from_indexing_graph_type():
-    types = StableGraphTypes(1, 1)
+    types = StableGraphs(1, 1)
     smooth = types.smooth()
     graph = smooth.canonical_representative()
     XSbar = Mbar_gn(1, 1, base=spec(ZZ))

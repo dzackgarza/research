@@ -12,7 +12,7 @@ from sage.rings.integer_ring import ZZ
 
 from dm_moduli_spike import Mbar_gn, ProductStack, QuotientStack, spec
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
-from dm_moduli_spike.objects.graph_types import StableGraphTypes
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.testing_support.support.fixtures import (
     chan_m13_curve_type,
     induced_edge_permutation_group,
@@ -22,7 +22,7 @@ from dm_moduli_spike.testing_support.support.fixtures import (
 
 def test_chan_M13_open_stack_is_quotient_M04_over_C2():
     r"""Chan Example 4.3: open stratum is a ``QuotientStack`` with factors `(0,3)+(0,4)`."""
-    types = StableGraphTypes(1, 3)
+    types = StableGraphs(1, 3)
     gamma = chan_m13_curve_type(types)
     graph = gamma.canonical_representative()
     XSbar = Mbar_gn(1, 3, base=spec(ZZ))
@@ -40,7 +40,7 @@ def test_chan_M13_open_stack_is_quotient_M04_over_C2():
 
 def test_chan_M13_clutching_factors():
     r"""Chan Example 4.3: clutching source is ``ProductStack`` of `Mbar_{0,3}` and `Mbar_{0,4}`."""
-    types = StableGraphTypes(1, 3)
+    types = StableGraphs(1, 3)
     gamma = chan_m13_curve_type(types)
     graph = gamma.canonical_representative()
     XSbar = Mbar_gn(1, 3, base=spec(ZZ))
@@ -53,7 +53,7 @@ def test_chan_M13_clutching_factors():
 
 def test_chan_M13_edge_automorphism_and_contraction_targets():
     r"""Chan Example 4.3: `C_2` edge action collapses parallel contractions to one target."""
-    types = StableGraphTypes(1, 3)
+    types = StableGraphs(1, 3)
     gamma = chan_m13_curve_type(types)
     group = induced_edge_permutation_group(gamma.canonical_representative())
     assert group.order() == 2
@@ -71,7 +71,7 @@ def test_chan_M13_edge_automorphism_and_contraction_targets():
 
 def test_chan_M13_markings_fixed_and_quotient_presentation():
     r"""Chan Example 4.3: markings fixed under `C_2`; quotient Aut order two."""
-    types = StableGraphTypes(1, 3)
+    types = StableGraphs(1, 3)
     gamma = chan_m13_curve_type(types)
     graph = gamma.canonical_representative()
     for marking_perm in marking_generator_images(graph):

@@ -2,7 +2,7 @@ r"""Tier-4 internal consistency: executable graph isomorphism and contraction ax
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.graph_types import StableGraphTypes
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.objects.records import _GraphRecord
 from dm_moduli_spike.objects.contractions import contract_edge, contract_edges
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
@@ -10,7 +10,7 @@ from dm_moduli_spike.objects.isomorphisms import StableGraphIsomorphism, canonic
 
 
 def test_identity_isomorphism_passes_post_init():
-    types = StableGraphTypes(0, 4)
+    types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     graph = gamma.canonical_representative()
     iso = identity_isomorphism(graph)
@@ -19,7 +19,7 @@ def test_identity_isomorphism_passes_post_init():
 
 
 def test_canonicalization_certificate_is_valid_isomorphism():
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     gamma = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
     graph = gamma.canonical_representative()
     cert = canonicalize(graph)
@@ -28,7 +28,7 @@ def test_canonicalization_certificate_is_valid_isomorphism():
 
 
 def test_contraction_witnesses_from_orbit_data_validate():
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     gamma = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
     for _target, witness, orbit_size in _elementary_contraction_data(gamma):
         assert witness.num_contracted_edges() == 1
@@ -37,7 +37,7 @@ def test_contraction_witnesses_from_orbit_data_validate():
 
 
 def test_multi_edge_contraction_validates():
-    types = StableGraphTypes(0, 5)
+    types = StableGraphs(0, 5)
     gamma = types.from_vertices(
         genera=(0, 0, 0),
         markings=((1, 2), (3,), (4, 5)),

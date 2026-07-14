@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .graph_types import StableGraphType
+    from .stable_graphs import StableGraph
 
 
 def canonicalize_split(
@@ -33,7 +33,7 @@ def canonicalize_split(
     return complement
 
 
-def split_system(gamma: StableGraphType, anchor_marking: int = 1) -> frozenset[frozenset[int]]:
+def split_system(gamma: StableGraph, anchor_marking: int = 1) -> frozenset[frozenset[int]]:
     r"""The stable splits induced by internal edges of a genus-zero dual tree."""
     record = gamma.canonical_representative()
     assert gamma.total_genus() == 0, "split systems are defined for genus-zero stable graphs"

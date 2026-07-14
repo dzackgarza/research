@@ -3,7 +3,7 @@ r"""Tier-4 internal consistency: transport of contractions along isomorphisms.""
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.graph_types import StableGraphTypes
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.objects.records import _GraphRecord
 from dm_moduli_spike.objects.contractions import contract_edge
 from dm_moduli_spike.objects.isomorphisms import (
@@ -26,7 +26,7 @@ def _swap_vertices(graph: StableGraph) -> StableGraph:
 
 
 def test_transport_square_preserves_flag_and_fibre_data():
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     gamma = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
     domain = gamma.canonical_representative()
     loop_edge = next(
@@ -59,7 +59,7 @@ def test_transport_square_preserves_flag_and_fibre_data():
 
 
 def test_transport_composes_with_native_contraction():
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     gamma = types.from_vertices(genera=(1, 0), markings=((), (1, 2)), edges=((0, 1),))
     domain = gamma.canonical_representative()
     domain_alt = _swap_vertices(domain)
@@ -77,7 +77,7 @@ def test_banana_parallel_edge_transport_swaps_contracted_edge():
     r"""Mbar(1,2) banana: Aut swaps parallel edges; transport moves edge-1 -> edge-2."""
     from dm_moduli_spike.objects.isomorphisms import StableGraphIsomorphism
 
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     banana = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
     graph = banana.canonical_representative()
     edges = graph.internal_edges()
@@ -99,7 +99,7 @@ def test_banana_parallel_edge_transport_swaps_contracted_edge():
 
 
 def test_canonical_relabeling_convenience_matches_explicit_isomorphisms():
-    types = StableGraphTypes(1, 2)
+    types = StableGraphs(1, 2)
     gamma = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
     domain = gamma.canonical_representative()
     loop_edge = next(

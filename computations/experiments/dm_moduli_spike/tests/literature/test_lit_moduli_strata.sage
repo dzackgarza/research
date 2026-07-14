@@ -13,7 +13,7 @@ import pytest
 from sage.rings.integer_ring import ZZ
 
 from dm_moduli_spike import Mbar_gn, QuotientStack, spec
-from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
+from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
 
 from dm_moduli_spike.testing_support.support.fixtures import flag_generator_images
 from dm_moduli_spike.testing_support.support.fixtures import CHAN_M20_COVERS, m20_types
@@ -86,8 +86,8 @@ def test_M20_has_seven_chan_types_and_published_hasse_incidence():
 
     Reference: Chan, Figure 3; Arbarello-Cornalba, Ch. XII (edge contraction).
     """
-    stratification = StableGraphStratificationEnumerator(2, 0).stratification()
-    types = m20_types(stratification)
+    stratification = _enumerate_stable_graph_levels(2, 0)
+    types = m20_types()
     assert set(types) == set(CHAN_M20_COVERS) | {"I", "II", "III", "IV", "V", "VI", "VII"}
     poset = stratification.specialization_poset()
     actual_covers = {

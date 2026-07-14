@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import json
 
-from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
-from dm_moduli_spike.objects.graph_types import StableGraphTypes
+from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 
 
 def test_json_schema_shape():
-    types = StableGraphTypes(2, 1)
+    types = StableGraphs(2, 1)
     gamma = types.from_vertices(genera=(1, 0), markings=((1,), ()), edges=((0, 1), (1, 1)))
     data = gamma.to_json()
     assert data["schema"] == 1
@@ -19,12 +19,12 @@ def test_json_schema_shape():
 
 
 def test_parent_is_unique_representation():
-    assert StableGraphTypes(2, 1) is StableGraphTypes(2, 1)
-    assert StableGraphStratificationEnumerator(2, 1) is StableGraphStratificationEnumerator(2, 1)
+    assert StableGraphs(2, 1) is StableGraphs(2, 1)
+    assert StableGraphs(2, 1) is StableGraphs(2, 1)
 
 
 def test_from_json_rejects_unsupported_schema():
-    types = StableGraphTypes(2, 1)
+    types = StableGraphs(2, 1)
     payload = {
         "schema": 99,
         "ambient": {"g": 2, "n": 1},
@@ -40,7 +40,7 @@ def test_from_json_rejects_unsupported_schema():
 
 
 def test_from_json_rejects_duplicate_vertex_ids():
-    types = StableGraphTypes(2, 1)
+    types = StableGraphs(2, 1)
     payload = {
         "schema": 1,
         "ambient": {"g": 2, "n": 1},
@@ -59,7 +59,7 @@ def test_from_json_rejects_duplicate_vertex_ids():
 
 
 def test_from_json_rejects_unknown_edge_endpoints():
-    types = StableGraphTypes(2, 1)
+    types = StableGraphs(2, 1)
     payload = {
         "schema": 1,
         "ambient": {"g": 2, "n": 1},
@@ -75,7 +75,7 @@ def test_from_json_rejects_unknown_edge_endpoints():
 
 
 def test_from_json_rejects_malformed_vertex_object():
-    types = StableGraphTypes(2, 1)
+    types = StableGraphs(2, 1)
     payload = {
         "schema": 1,
         "ambient": {"g": 2, "n": 1},
@@ -91,7 +91,7 @@ def test_from_json_rejects_malformed_vertex_object():
 
 
 def test_from_json_rejects_missing_required_keys():
-    types = StableGraphTypes(2, 1)
+    types = StableGraphs(2, 1)
     for payload in (
         {"ambient": {"g": 2, "n": 1}, "vertices": [], "edges": []},
         {"schema": 1, "vertices": [], "edges": []},
@@ -107,7 +107,7 @@ def test_from_json_rejects_missing_required_keys():
 
 
 def test_from_json_rejects_bad_marking_labels():
-    types = StableGraphTypes(2, 1)
+    types = StableGraphs(2, 1)
     payload = {
         "schema": 1,
         "ambient": {"g": 2, "n": 1},
@@ -123,7 +123,7 @@ def test_from_json_rejects_bad_marking_labels():
 
 
 def test_canonical_form_certificate_commutes_with_contraction():
-    types = StableGraphTypes(0, 5)
+    types = StableGraphs(0, 5)
     gamma = types.from_vertices(
         genera=(0, 0, 0),
         markings=((1, 2), (3,), (4, 5)),

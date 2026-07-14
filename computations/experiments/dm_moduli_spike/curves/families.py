@@ -217,9 +217,9 @@ class PointedCurveFamily(CurveFamily):
         n = len(self._marking_set)
         want_nodal = str(s).lower() in {"special", "s", "0"}
         if self._stable:
-            from ..objects.graph_types import StableGraphTypes
+            from ..objects.stable_graphs import StableGraphs
 
-            types = StableGraphTypes(self._genus, n)
+            types = StableGraphs(self._genus, n)
             if want_nodal and types.cardinality() > 1:
                 gamma = max(types, key=lambda t: int(t.num_edges()))
                 return SageStablePointedCurve(

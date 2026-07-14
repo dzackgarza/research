@@ -231,7 +231,7 @@ def _factor_marking_set(graph: object, vertex: int) -> tuple[object, ...]:
 def build_dual_graph_stratification(stack: Stack, *, compact: bool = True) -> Stratification:
     from ..moduli.instances import M_gI, Mbar_gI
     from ..objects.gamma import StableGraphCategory
-    from ..objects.records import _GraphRecord as StableGraphRecord
+    from ..objects.records import _GraphRecord
     from ..objects.stable_graphs import StableGraph as StableGraphElement
     from ..objects.stable_graphs import StableGraphs
 
@@ -247,7 +247,7 @@ def build_dual_graph_stratification(stack: Stack, *, compact: bool = True) -> St
     poset = Gamma.specialization_poset()
     raw: dict[object, tuple[ProductStack, QuotientStack, object]] = {}
     for graph in poset:
-        assert isinstance(graph, StableGraphRecord), f"specialization poset elements must be StableGraph records; found {type(graph)!r}"
+        assert isinstance(graph, _GraphRecord), f"specialization poset elements must be _GraphRecord; found {type(graph)!r}"
         factors = []
         for v in range(graph.num_vertices()):
             w = graph.vertex_genus(v)

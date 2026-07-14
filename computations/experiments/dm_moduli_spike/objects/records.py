@@ -344,7 +344,3 @@ class _GraphRecord:
         from .canonical import to_labeled_json
 
         return to_labeled_json(self, self.genus(), self.num_markings())
-
-
-# Private alias (no public StableGraphRecord).
-_StableGraphRecord = _GraphRecord
