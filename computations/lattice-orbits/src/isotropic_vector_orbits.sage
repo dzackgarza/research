@@ -49,25 +49,6 @@ class IsotropicVectorOrbits:
         """
         return v * self.G * v == 0
     
-    def _orthogonal_complement_basis(self, v):
-        """
-        Compute basis for orthogonal complement of v.
-        """
-        # Find vectors orthogonal to v
-        basis = []
-        for i in range(self.n):
-            e_i = vector([0] * self.n)
-            e_i[i] = 1
-            if v * self.G * e_i == 0:
-                basis.append(e_i)
-        
-        # Use Gram-Schmidt to get orthogonal basis
-        if not basis:
-            return []
-            
-        # For now, return the found orthogonal vectors
-        return basis
-        
     def algorithm_2_1_orbit_equivalence(self, v1, v2):
         """
         Algorithm 2.1: Determine if v1 ~ v2 under Gamma for non-isotropic vectors
