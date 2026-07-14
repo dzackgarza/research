@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
     from ..categories.base import AffineScheme
     from ..objects.graph_types import StableGraphType
-    from ..objects.records import StableGraph
+    from ..objects.stable_graphs import StableGraph
 
 
 def _default_base() -> AffineScheme:
@@ -138,9 +138,9 @@ class SmoothPointedCurve(PointedCurve):
         return True
 
     def dual_graph(self) -> StableGraph:
-        from ..objects.graph_types import StableGraphTypes
+        from ..objects.stable_graphs import StableGraphs
 
-        return StableGraphTypes(self._g, self._n).smooth().canonical_representative()
+        return StableGraphs(self._g, self._n).smooth()
 
     def normalization(self) -> Curve_generic:
         curve = self.sage_curve()
@@ -205,12 +205,12 @@ class StablePointedCurve(PointedCurve):
         return self._graph_type is None or self._graph_type.num_edges() == 0
 
     def dual_graph(self) -> StableGraph:
-        from ..objects.graph_types import StableGraphTypes
+        from ..objects.stable_graphs import StableGraphs
 
+        graphs = StableGraphs(self._g, self._n)
         if self._graph_type is not None:
-            return self._graph_type.canonical_representative()
-        parent = StableGraphTypes(self._g, self._n)
-        return parent.smooth().canonical_representative()
+            return graphs(self._graph_type.canonical_representative())
+        return graphs.smooth()
 
     def sage_curve(self) -> Curve_generic:
         if self.is_nodal() and self._sage_curve is None:

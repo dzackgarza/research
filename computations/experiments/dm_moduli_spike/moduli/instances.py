@@ -32,13 +32,16 @@ def _marking_set(I: object) -> tuple[object, ...]:
 class Groupoid(UniqueRepresentation, Parent):
     r"""Finite formal groupoid (objects + isomorphisms) for moduli fibers."""
 
-    def __init__(self, name: str = "Groupoid") -> None:
+    def __init__(self, name: str = "Groupoid", *, family_factory: object | None = None) -> None:
         from sage.categories.sets_cat import Sets
 
         self._name = name
+        self._family_factory = family_factory
         Parent.__init__(self, category=Sets())
 
     def an_element(self) -> object:
+        if self._family_factory is not None:
+            return self._family_factory()
         return f"object of {self._name}"
 
     def _repr_(self) -> str:
@@ -78,8 +81,23 @@ class ModuliProblem(UniqueRepresentation):
         return self._base
 
     def objects_over(self, T: object) -> Groupoid:
+        from ..curves.families import PointedCurveFamily, StablePointedCurveFamily
+
         kind = "stable" if self._stable else "smooth"
-        return Groupoid(f"{kind} pointed curves of type ({self._g},{len(self._I)}) over {T!r}")
+        g, I = self._g, self._I
+        base = self._base
+        stable = self._stable
+
+        def _factory() -> object:
+            sections = tuple(I)
+            if stable:
+                return StablePointedCurveFamily(base, T, sections, genus=g, marking_set=I)
+            return PointedCurveFamily(base, T, sections, genus=g, marking_set=I, stable=False)
+
+        return Groupoid(
+            f"{kind} pointed curves of type ({self._g},{len(self._I)}) over {T!r}",
+            family_factory=_factory,
+        )
 
     def pullback(self, f: object) -> ModuliProblem:
         return self
@@ -149,10 +167,25 @@ class ModuliStack(DeligneMumfordStack):
 
     def coarse_space(self) -> Variety | AlgebraicSpace:
         axioms = frozenset({"FiniteType", "Separated"})
+        g, I = self.genus(), self.marking_set()
         if self._proper:
             axioms = axioms | {"Proper", "Normal", "Projective"}
-            return Variety(self.base_scheme(), name=f"coarse({self!r})", axioms=axioms)
-        return Variety(self.base_scheme(), name=f"coarse({self!r})", axioms=axioms | frozenset({"Integral"}))
+            space: Variety | AlgebraicSpace = Variety(
+                self.base_scheme(), name=f"coarse({self!r})", axioms=axioms
+            )
+        else:
+            space = Variety(
+                self.base_scheme(),
+                name=f"coarse({self!r})",
+                axioms=axioms | frozenset({"Integral"}),
+            )
+        # Preserve moduli type so coarse boundary posets recover dual-graph indexing.
+        space._moduli_genus = g  # type: ignore[attr-defined]
+        space._moduli_markings = I  # type: ignore[attr-defined]
+        space.genus = lambda: g  # type: ignore[method-assign]
+        space.number_of_markings = lambda: len(I)  # type: ignore[method-assign]
+        space.marking_set = lambda: I  # type: ignore[method-assign]
+        return space
 
     def coarse_moduli_morphism(self) -> CoarseModuliMorphism:
         space = self.coarse_space()
@@ -182,17 +215,38 @@ class ModuliStack(DeligneMumfordStack):
         return c.boundary()
 
     def stratify(self, by: object | None = None) -> object:
-        from ..geometry.stratification import build_dual_graph_stratification
+        r"""Return the dual-graph stratification of this stack.
 
-        return build_dual_graph_stratification(self, compact=self._proper)
+        The stratification is a total property of the stack: repeated calls
+        return the same object. Rebuilds must not produce unequal quotient
+        presentations for the same stratum.
+        """
+        from ..geometry.stratification import StableDualGraph, build_dual_graph_stratification
+
+        assert by is None or isinstance(by, StableDualGraph), (
+            f"stratification indexer must be StableDualGraph (or omitted); found {by!r}; "
+            "owned boundary=ModuliStack.stratify; "
+            "use Mbar_gn(...).stratification() or stratification(by=StableDualGraph())"
+        )
+        cached = getattr(self, "_cached_dual_graph_stratification", None)
+        if cached is not None:
+            return cached
+        cached = build_dual_graph_stratification(self, compact=self._proper)
+        self._cached_dual_graph_stratification = cached
+        return cached
 
     def stratification(self, by: object | None = None) -> object:
         return self.stratify(by=by)
 
     def __call__(self, T: object) -> StackFiber:
         fiber = StackFiber(self, T)
-        # attach moduli groupoid element factory
-        fiber._groupoid = self.objects_over(T)  # type: ignore[attr-defined]
+        groupoid = self.objects_over(T)
+        fiber._groupoid = groupoid  # type: ignore[attr-defined]
+
+        def _an_element() -> object:
+            return groupoid.an_element()
+
+        fiber.an_element = _an_element  # type: ignore[method-assign]
         return fiber
 
 

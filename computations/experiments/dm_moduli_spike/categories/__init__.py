@@ -4,7 +4,15 @@ from __future__ import annotations
 
 from .axioms import AxiomRefinement
 from .base import AffineScheme, complex_numbers_ring, spec, spec_complex
-from .curves import Curves, PointedCurves, SmoothCurves, StablePointedCurves
+from .curves import (
+    CurveFamilies,
+    Curves,
+    PointedCurveFamilies,
+    PointedCurves,
+    SmoothCurves,
+    StablePointedCurveFamilies,
+    StablePointedCurves,
+)
 from .foundation import ModuliCategory
 from .membership import (
     coarse_in_category,
@@ -26,14 +34,17 @@ __all__ = [
     "AlgebraicSpaces",
     "AlgebraicStacks",
     "AxiomRefinement",
+    "CurveFamilies",
     "Curves",
     "DeligneMumfordStacks",
     "ModuliCategory",
     "ModuliStacks",
+    "PointedCurveFamilies",
     "PointedCurves",
     "Schemes",
     "SmoothCurves",
     "Stacks",
+    "StablePointedCurveFamilies",
     "StablePointedCurves",
     "StratifiedAlgebraicSpaces",
     "StratifiedSchemes",

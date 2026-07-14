@@ -126,6 +126,14 @@ class StableGraphMorphism:
             return False
         return sorted(self._vertex_map) == list(range(n_v)) and sorted(self._half_edge_map) == list(range(n_h))
 
+    def is_contraction(self) -> bool:
+        r"""True when this morphism contracts a (possibly empty) edge set onto its codomain."""
+        if self.is_isomorphism():
+            return True
+        return bool(self._contracted_flags) and self._codomain.num_edges() == self._domain.num_edges() - len(
+            self.contracted_edges()
+        )
+
     def inverse(self) -> StableGraphMorphism:
         if not self.is_isomorphism():
             raise ValueError("morphism is not an isomorphism")
@@ -515,18 +523,30 @@ class StableGraphCategory(UniqueRepresentation):
         return f"StableGraphCategory(Gamma_{self._g},{self._n})"
 
 
+_PERM_GROUP_FROM_IMAGES: dict[tuple[object, ...], object] = {}
+
+
 def _permutation_group_from_images(images: tuple[tuple[int, ...], ...], degree: int) -> object:
+    r"""Return a shared Sage subgroup for identical generator images on ``degree`` letters."""
     from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 
+    key = (int(degree), tuple(tuple(int(x) for x in image) for image in images))
+    cached = _PERM_GROUP_FROM_IMAGES.get(key)
+    if cached is not None:
+        return cached
     sym = SymmetricGroup(degree)
     if degree == 0:
-        return sym.subgroup([])
+        group = sym.subgroup([])
+        _PERM_GROUP_FROM_IMAGES[key] = group
+        return group
     gens = []
     for image in images:
         # Sage SymmetricGroup acts on {1,...,n}
         cycles_perm = sym([image[i] + 1 for i in range(degree)])
         gens.append(cycles_perm)
-    return sym.subgroup(gens) if gens else sym.subgroup([])
+    group = sym.subgroup(gens) if gens else sym.subgroup([])
+    _PERM_GROUP_FROM_IMAGES[key] = group
+    return group
 
 
 # Public alias matching mathematical notation.

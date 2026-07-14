@@ -18,6 +18,7 @@ from ..categories.stacks import (
     Stacks,
 )
 from ..categories.schemes import AlgebraicSpaces, Schemes, Varieties
+from ..categories.stratified import StratifiedSpaces, StratifiedStacks
 
 
 class GeometricObject(UniqueRepresentation, Parent):
@@ -266,6 +267,162 @@ class LocallyClosedImmersion(StackMorphism):
         StackMorphism.__init__(self, domain, codomain, kind="locally_closed_immersion")
 
 
+class OpenSubstack(Stack):
+    r"""Open substack of an ambient stack via an open immersion."""
+
+    def __init__(self, ambient: Stack, underlying: Stack, immersion: OpenImmersion | None = None) -> None:
+        self._ambient = ambient
+        self._underlying = underlying
+        self._immersion = immersion or OpenImmersion(underlying, ambient)
+        Stack.__init__(
+            self,
+            ambient.base_scheme(),
+            name=f"OpenSubstack({underlying!r} ⊂ {ambient!r})",
+            axioms=underlying.declared_axioms(),
+            category=ambient.category(),
+        )
+
+    def ambient(self) -> Stack:
+        return self._ambient
+
+    def underlying_stack(self) -> Stack:
+        return self._underlying
+
+    def immersion(self) -> OpenImmersion:
+        return self._immersion
+
+
+class ClosedSubstack(Stack):
+    def __init__(self, ambient: Stack, underlying: Stack, immersion: ClosedImmersion | None = None) -> None:
+        self._ambient = ambient
+        self._underlying = underlying
+        self._immersion = immersion or ClosedImmersion(underlying, ambient)
+        Stack.__init__(
+            self,
+            ambient.base_scheme(),
+            name=f"ClosedSubstack({underlying!r} ⊂ {ambient!r})",
+            axioms=underlying.declared_axioms(),
+            category=ambient.category(),
+        )
+
+    def ambient(self) -> Stack:
+        return self._ambient
+
+    def underlying_stack(self) -> Stack:
+        return self._underlying
+
+    def immersion(self) -> ClosedImmersion:
+        return self._immersion
+
+
+class LocallyClosedSubstack(Stack):
+    def __init__(
+        self,
+        ambient: Stack,
+        underlying: Stack,
+        immersion: LocallyClosedImmersion | None = None,
+    ) -> None:
+        self._ambient = ambient
+        self._underlying = underlying
+        self._immersion = immersion or LocallyClosedImmersion(underlying, ambient)
+        Stack.__init__(
+            self,
+            ambient.base_scheme(),
+            name=f"LocallyClosedSubstack({underlying!r} ⊂ {ambient!r})",
+            axioms=underlying.declared_axioms(),
+            category=ambient.category(),
+        )
+
+    def ambient(self) -> Stack:
+        return self._ambient
+
+    def underlying_stack(self) -> Stack:
+        return self._underlying
+
+    def immersion(self) -> LocallyClosedImmersion:
+        return self._immersion
+
+
+class LocallyClosedSubstacks(UniqueRepresentation, Parent):
+    r"""Parent of locally closed substacks of an ambient stack ``X``."""
+
+    def __init__(self, ambient: Stack) -> None:
+        from sage.categories.sets_cat import Sets
+
+        self._ambient = ambient
+        Parent.__init__(self, category=Sets())
+
+    def ambient(self) -> Stack:
+        return self._ambient
+
+    def __contains__(self, obj: object) -> bool:
+        if isinstance(obj, LocallyClosedSubstack):
+            return obj.ambient() is self._ambient
+        # Geometric strata of ``ambient`` are locally closed substacks.
+        from .stratification import Stratum
+
+        if isinstance(obj, Stratum):
+            return obj.stratification().space() is self._ambient
+        return False
+
+    def _repr_(self) -> str:
+        return f"LocallyClosedSubstacks({self._ambient!r})"
+
+
+class OpenSubspace(AlgebraicSpace):
+    def __init__(self, ambient: AlgebraicSpace, underlying: AlgebraicSpace) -> None:
+        self._ambient = ambient
+        self._underlying = underlying
+        AlgebraicSpace.__init__(
+            self,
+            ambient.base_scheme(),
+            name=f"OpenSubspace({underlying!r})",
+            axioms=underlying.declared_axioms(),
+        )
+
+    def ambient(self) -> AlgebraicSpace:
+        return self._ambient
+
+    def underlying_space(self) -> AlgebraicSpace:
+        return self._underlying
+
+
+class ClosedSubspace(AlgebraicSpace):
+    def __init__(self, ambient: AlgebraicSpace, underlying: AlgebraicSpace) -> None:
+        self._ambient = ambient
+        self._underlying = underlying
+        AlgebraicSpace.__init__(
+            self,
+            ambient.base_scheme(),
+            name=f"ClosedSubspace({underlying!r})",
+            axioms=underlying.declared_axioms(),
+        )
+
+    def ambient(self) -> AlgebraicSpace:
+        return self._ambient
+
+    def underlying_space(self) -> AlgebraicSpace:
+        return self._underlying
+
+
+class LocallyClosedSubspace(AlgebraicSpace):
+    def __init__(self, ambient: AlgebraicSpace, underlying: AlgebraicSpace) -> None:
+        self._ambient = ambient
+        self._underlying = underlying
+        AlgebraicSpace.__init__(
+            self,
+            ambient.base_scheme(),
+            name=f"LocallyClosedSubspace({underlying!r})",
+            axioms=underlying.declared_axioms(),
+        )
+
+    def ambient(self) -> AlgebraicSpace:
+        return self._ambient
+
+    def underlying_space(self) -> AlgebraicSpace:
+        return self._underlying
+
+
 class ProductStack(DeligneMumfordStack):
     @staticmethod
     def __classcall_private__(cls, factors: tuple[Stack, ...] | list[Stack], *, base: AffineScheme | None = None) -> ProductStack:
@@ -289,10 +446,29 @@ class ProductStack(DeligneMumfordStack):
 
 
 class QuotientStack(DeligneMumfordStack):
-    def __init__(self, space: Stack, group: object, action: object | None = None) -> None:
+    r"""Quotient stack ``[space / group]``.
+
+    Uniqueness is by ``(space, group)``. The Sage ``Action`` is stored but not
+    part of the ``UniqueRepresentation`` key: ephemeral action wrappers rebuilt
+    on each call must not fracture presentation identity.
+    """
+
+    @staticmethod
+    def __classcall_private__(
+        cls,
+        space: Stack,
+        group: object,
+        action: object | None = None,
+    ) -> QuotientStack:
+        obj = super().__classcall__(cls, space, group)
+        if action is not None:
+            obj._action = action
+        return obj
+
+    def __init__(self, space: Stack, group: object) -> None:
         self._space = space
         self._group = group
-        self._action = action
+        self._action: object | None = None
         DeligneMumfordStack.__init__(
             self,
             space.base_scheme(),
@@ -305,6 +481,9 @@ class QuotientStack(DeligneMumfordStack):
 
     def group(self) -> object:
         return self._group
+
+    def action(self) -> object | None:
+        return self._action
 
 
 class Compactifications(UniqueRepresentation, Parent):
@@ -349,6 +528,18 @@ class Compactification(OpenImmersion):
     def boundary(self, reduced: bool = True) -> Boundary:
         return Boundary(self, reduced=reduced)
 
+    def coarse_compactification(self) -> Compactification:
+        r"""Coarse-space compactification commuting with coarse moduli morphisms."""
+        source = self.source()
+        target = self.target()
+        if hasattr(source, "coarse_space") and hasattr(target, "coarse_space"):
+            coarse_source = source.coarse_space()
+            coarse_target = target.coarse_space()
+            if not coarse_target.is_proper():
+                raise ValueError("coarse compactification target must be proper")
+            return Compactification(coarse_source, coarse_target, kind=f"coarse({self._kind_name})")
+        raise TypeError("coarse_compactification requires moduli stacks with coarse_space()")
+
     def _repr_(self) -> str:
         return f"Compactification({self.source()!r} ↪ {self.target()!r})"
 
@@ -360,12 +551,17 @@ class Boundary(GeometricObject):
         self._compactification = compactification
         self._reduced = reduced
         ambient = compactification.target()
-        GeometricObject.__init__(
-            self,
-            ambient.base_scheme(),
-            category=ambient.category(),
-            axioms=ambient.declared_axioms(),
-        )
+        base = ambient.base_scheme()
+        # Stack-level compactifications live in StratifiedStacks; coarse spaces in StratifiedSpaces.
+        if isinstance(ambient, AlgebraicSpace) and not hasattr(ambient, "moduli_problem"):
+            cat: object = StratifiedSpaces(base)
+        else:
+            cat = StratifiedStacks(base)
+        axioms = ambient.declared_axioms()
+        for a in sorted(axioms):
+            if hasattr(cat, a):
+                cat = getattr(cat, a)()
+        GeometricObject.__init__(self, base, category=cat, axioms=axioms)
 
     def compactification(self) -> Compactification:
         return self._compactification
@@ -381,6 +577,15 @@ class Boundary(GeometricObject):
 
     def underlying_space(self) -> Boundary:
         return self
+
+    def stratification(self, by: object | None = None) -> object:
+        from .stratification import build_dual_graph_stratification
+
+        ambient = self.ambient_space()
+        if hasattr(ambient, "stratification"):
+            full = ambient.stratification(by=by)
+            return full.restrict(self)
+        return build_dual_graph_stratification(ambient).restrict(self)
 
     def stratification_poset(self, order: str = "specialization") -> object:
         from .stratification import dual_graph_boundary_poset

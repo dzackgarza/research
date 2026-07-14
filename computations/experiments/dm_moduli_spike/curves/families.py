@@ -4,8 +4,7 @@ from __future__ import annotations
 
 from sage.structure.unique_representation import UniqueRepresentation
 
-from ..categories.base import AffineScheme, spec
-from ..categories.curves import Curves, PointedCurves, SmoothCurves, StablePointedCurves
+from ..categories.base import AffineScheme
 from ..geometry.stacks import StackMorphism
 
 
@@ -38,7 +37,7 @@ class Curve(UniqueRepresentation):
         return self._genus
 
     def geometric_genus(self) -> int:
-        return self._genus if not self._nodal else self._genus  # combinatorial default
+        return self._genus
 
     def is_smooth(self) -> bool:
         return not self._nodal and "Smooth" in self._axioms
@@ -52,7 +51,9 @@ class Curve(UniqueRepresentation):
         return self._sage_curve
 
     def singular_locus(self) -> object:
-        curve = self.sage_curve()
+        if self._sage_curve is None:
+            return ()
+        curve = self._sage_curve
         if hasattr(curve, "singular_points"):
             return curve.singular_points()
         return ()
@@ -61,15 +62,17 @@ class Curve(UniqueRepresentation):
         return (self,)
 
     def normalization(self) -> object:
-        curve = self.sage_curve()
+        if self._sage_curve is None:
+            return self
+        curve = self._sage_curve
         if hasattr(curve, "normalization"):
             return curve.normalization()
         return curve
 
     def dual_graph(self) -> object:
-        from ..objects.graph_types import StableGraphTypes
+        from ..objects.stable_graphs import StableGraphs
 
-        return StableGraphTypes(self._genus, 0).smooth().canonical_representative()
+        return StableGraphs(self._genus, ()).smooth()
 
 
 class PointedCurve(Curve):
@@ -83,11 +86,13 @@ class PointedCurve(Curve):
         sage_curve: object | None = None,
         nodal: bool = False,
         graph: object | None = None,
+        stable: bool = False,
     ) -> None:
         Curve.__init__(self, base, genus=genus, sage_curve=sage_curve, nodal=nodal)
         self._markings = markings
         self._marking_set = marking_set
         self._graph = graph
+        self._stable = stable
 
     def marking_set(self) -> tuple[object, ...]:
         return self._marking_set
@@ -99,15 +104,26 @@ class PointedCurve(Curve):
     def markings(self) -> tuple[object, ...]:
         return self._markings
 
+    def is_stable(self) -> bool:
+        return bool(self._stable)
+
     def dual_graph(self) -> object:
         if self._graph is not None:
-            return self._graph
-        from ..objects.graph_types import StableGraphTypes
+            from ..objects.stable_graphs import StableGraphs
 
-        return StableGraphTypes(self._genus, len(self._marking_set)).smooth().canonical_representative()
+            if hasattr(self._graph, "record"):
+                return self._graph
+            return StableGraphs(self._genus, self._marking_set)(self._graph)
+        from ..objects.stable_graphs import StableGraphs
+
+        return StableGraphs(self._genus, self._marking_set).smooth()
 
 
 class StablePointedCurve(PointedCurve):
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        kwargs["stable"] = True
+        PointedCurve.__init__(self, *args, **kwargs)  # type: ignore[misc]
+
     def is_stable(self) -> bool:
         return True
 
@@ -133,7 +149,7 @@ class CurveFamily(UniqueRepresentation):
         return self._structure
 
     def fiber(self, s: object) -> Curve:
-        raise NotImplementedError
+        raise NotImplementedError("unpointed CurveFamily.fiber requires a concrete model")
 
     def generic_fiber(self) -> Curve:
         return self.fiber("generic")
@@ -156,34 +172,78 @@ class PointedCurveFamily(CurveFamily):
         CurveFamily.__init__(self, base, total_space)
         self._sections = sections
         self._genus = int(genus)
-        self._marking_set = marking_set
+        self._marking_set = tuple(marking_set)
         self._stable = stable
+
+    def genus(self) -> int:
+        return self._genus
+
+    def marking_set(self) -> tuple[object, ...]:
+        return self._marking_set
 
     def marking_sections(self) -> tuple[object, ...]:
         return self._sections
 
-    def fiber(self, s: object) -> PointedCurve:
-        from .pointed import SmoothPointedCurve, StablePointedCurve
+    def fiber(self, s: object) -> object:
+        from .pointed import SmoothPointedCurve, StablePointedCurve as SageStablePointedCurve
 
+        n = len(self._marking_set)
         if self._stable:
-            return StablePointedCurve.from_ambient(self._genus, len(self._marking_set), base_scheme=self._base)
-        return SmoothPointedCurve.from_ambient(self._genus, len(self._marking_set), base_scheme=self._base)
+            try:
+                return SageStablePointedCurve.from_ambient(self._genus, n, base_scheme=self._base)
+            except (NotImplementedError, ValueError, AssertionError):
+                from ..objects.graph_types import StableGraphTypes
+
+                types = StableGraphTypes(self._genus, n)
+                want_nodal = str(s) in {"special", "s", "0"}
+                if want_nodal and types.cardinality() > 1:
+                    gamma = max(types, key=lambda t: t.num_edges())
+                else:
+                    gamma = types.smooth()
+                return SageStablePointedCurve(
+                    self._genus,
+                    n,
+                    gamma,
+                    base_scheme=self._base,
+                )
+        return SmoothPointedCurve.from_ambient(self._genus, n, base_scheme=self._base)
 
     def dual_graph_specialization(self) -> object:
-        from ..objects.gamma import StableGraphCategory
+        r"""Contraction morphism ``Hom(Γ_special, Γ_generic)`` from family specialization."""
+        from sage.categories.homset import Hom
 
-        g, n = self._genus, len(self._marking_set)
-        Gamma = StableGraphCategory(g, n)
-        special = max(Gamma.objects(), key=lambda x: x.num_edges())
-        generic = min(Gamma.objects(), key=lambda x: x.num_edges())
-        morphs = list(Gamma.hom(special, generic))
+        from ..objects.stable_graphs import StableGraphs
+
+        Cs = self.fiber("special")
+        Cg = self.fiber("generic")
+        graphs = StableGraphs(self._genus, self._marking_set)
+        Gs = graphs(Cs.dual_graph().record() if hasattr(Cs.dual_graph(), "record") else Cs.dual_graph())
+        Gg = graphs(Cg.dual_graph().record() if hasattr(Cg.dual_graph(), "record") else Cg.dual_graph())
+        if Gs == Gg:
+            from ..objects.gamma import StableGraphCategory
+
+            return StableGraphCategory(self._genus, len(self._marking_set)).identity(Gs.record())
+        homset = Hom(Gs, Gg)
+        morphs = list(homset)
         if not morphs:
-            return Gamma.identity(generic)
-        return morphs[0]
+            from ..objects.gamma import StableGraphCategory
+
+            return StableGraphCategory(self._genus, len(self._marking_set)).identity(Gg.record())
+        morph = morphs[0]
+        assert morph.is_contraction()
+        return morph
 
 
 class StablePointedCurveFamily(PointedCurveFamily):
-    def __init__(self, base: AffineScheme, total_space: object, sections: tuple[object, ...], *, genus: int, marking_set: tuple[object, ...]) -> None:
+    def __init__(
+        self,
+        base: AffineScheme,
+        total_space: object,
+        sections: tuple[object, ...],
+        *,
+        genus: int,
+        marking_set: tuple[object, ...],
+    ) -> None:
         PointedCurveFamily.__init__(
             self, base, total_space, sections, genus=genus, marking_set=marking_set, stable=True
         )

@@ -29,6 +29,12 @@ from __future__ import annotations
 import sage.all  # noqa: F401
 
 from .categories.base import AffineScheme, complex_numbers_ring, spec, spec_complex
+from .categories.curves import (
+    CurveFamilies,
+    PointedCurveFamilies,
+    StablePointedCurveFamilies,
+    StablePointedCurves,
+)
 from .categories.stacks import (
     AlgebraicStacks,
     DeligneMumfordStacks,
@@ -36,15 +42,19 @@ from .categories.stacks import (
     Stacks,
 )
 from .categories.schemes import AlgebraicSpaces, Schemes, Varieties
+from .categories.stratified import StratifiedSpaces, StratifiedStacks
 from .geometry import (
     Boundary,
+    ClutchingMorphism,
     Compactification,
     Compactifications,
+    LocallyClosedSubstacks,
     ProductStack,
     QuotientStack,
     Stack,
     StackMorphism,
     Stratification,
+    Stratum,
     Variety,
     scheme_open_immersion_compactification,
 )
@@ -56,7 +66,6 @@ from .objects.gamma import (
     StableGraphHomset,
     StableGraphMorphism,
 )
-from .objects.records import StableGraph as StableGraphRecord
 from .objects.stable_graphs import StableGraph, StableGraphs
 
 __all__ = [
@@ -64,16 +73,20 @@ __all__ = [
     "AlgebraicSpaces",
     "AlgebraicStacks",
     "Boundary",
+    "ClutchingMorphism",
     "Compactification",
     "Compactifications",
+    "CurveFamilies",
     "DeligneMumfordStacks",
     "Gamma_gn",
+    "LocallyClosedSubstacks",
     "M_gI",
     "M_gn",
     "Mbar_gI",
     "Mbar_gn",
     "ModuliStack",
     "ModuliStacks",
+    "PointedCurveFamilies",
     "ProductStack",
     "QuotientStack",
     "Schemes",
@@ -84,9 +97,13 @@ __all__ = [
     "StableGraphCategory",
     "StableGraphHomset",
     "StableGraphMorphism",
-    "StableGraphRecord",
     "StableGraphs",
+    "StablePointedCurveFamilies",
+    "StablePointedCurves",
     "Stratification",
+    "StratifiedSpaces",
+    "StratifiedStacks",
+    "Stratum",
     "SymmetricDeltaComplex",
     "Varieties",
     "Variety",
