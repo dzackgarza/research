@@ -222,7 +222,7 @@ def find_sagemath_files(max_file_size_mb: int = 1) -> list[dict[str, Any]]:
                     },
                 }
                 files.append(data)
-            except OSError, ValueError:
+            except (OSError, ValueError):
                 # Skip files that can't be accessed
                 continue
 
