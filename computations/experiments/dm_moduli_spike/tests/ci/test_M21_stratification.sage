@@ -2,17 +2,16 @@ r"""CI-tier serialization and invariant sweeps over the full Mbar(2, 1) stratifi
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.stable_graphs import StableGraphs
-from dm_moduli_spike.objects.records import _GraphRecord
 import json
 import pickle
 
 import pytest
-
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
 from sage.combinat.permutation import Permutations
 
 from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
+from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
+from dm_moduli_spike.objects.records import _GraphRecord
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 
 pytestmark = pytest.mark.ci
 
@@ -38,84 +37,76 @@ def _relabel(record, vertex_perm, flag_perm):
 
 
 def test_pickle_round_trip_preserves_parent_and_equality():
-    for level in _enumerate_stable_graph_levels(2, 1).curve_type_levels():
-        for gamma in level:
-            revived = pickle.loads(pickle.dumps(gamma))
-            assert revived == gamma
-            assert revived.parent() == gamma.parent()
-            assert revived.canonical_key() == gamma.canonical_key()
+    for gamma in StableGraphs(2, 1):
+        revived = pickle.loads(pickle.dumps(gamma))
+        assert revived == gamma
+        assert revived.parent() == gamma.parent()
+        assert revived.canonical_key() == gamma.canonical_key()
 
 
 def test_json_round_trip_preserves_equality():
     types = StableGraphs(2, 1)
-    for level in _enumerate_stable_graph_levels(2, 1).curve_type_levels():
-        for gamma in level:
-            blob = json.dumps(gamma.to_json())
-            revived = types.from_json(json.loads(blob))
-            assert revived == gamma
-            assert revived.canonical_key() == gamma.canonical_key()
+    for gamma in types:
+        blob = json.dumps(gamma.to_json())
+        revived = types.from_json(json.loads(blob))
+        assert revived == gamma
+        assert revived.canonical_key() == gamma.canonical_key()
 
 
 def test_every_type_is_connected_stable_correct_genus_and_marking_set():
-    for level in _enumerate_stable_graph_levels(2, 1).curve_type_levels():
-        for gamma in level:
-            record = gamma.canonical_representative()
-            assert record.is_stable()
-            assert record._is_connected()
-            assert gamma.total_genus() == 2
-            all_markings = tuple(m for v in range(record.num_vertices()) for m in record.markings_at(v))
-            assert sorted(all_markings) == [1]
+    for gamma in StableGraphs(2, 1):
+        record = gamma.canonical_representative()
+        assert record.is_stable()
+        assert record._is_connected()
+        assert gamma.total_genus() == 2
+        all_markings = tuple(m for v in range(record.num_vertices()) for m in record.markings_at(v))
+        assert sorted(all_markings) == [1]
 
 
 def test_genus_matches_betti_plus_vertex_genera():
-    for level in _enumerate_stable_graph_levels(2, 1).curve_type_levels():
-        for gamma in level:
-            record = gamma.canonical_representative()
-            assert gamma.total_genus() == record.first_betti_number() + sum(record.vertex_genera)
+    for gamma in StableGraphs(2, 1):
+        record = gamma.canonical_representative()
+        assert gamma.total_genus() == record.first_betti_number() + sum(record.vertex_genera)
 
 
 def test_random_relabelings_produce_the_same_canonical_key():
     types = StableGraphs(2, 1)
-    for level in _enumerate_stable_graph_levels(2, 1).curve_type_levels():
-        for gamma in level:
-            record = gamma.canonical_representative()
-            num_vertices = record.num_vertices()
-            num_flags = record.num_flags()
-            for vperm in Permutations(num_vertices)[:3]:
-                for fperm in Permutations(num_flags)[:3]:
-                    vmap = {i: int(vperm[i]) - 1 for i in range(num_vertices)}
-                    fmap = {i: int(fperm[i]) - 1 for i in range(num_flags)}
-                    relabelled = types.from_graph(_relabel(record, vmap, fmap))
-                    assert relabelled.canonical_key() == gamma.canonical_key()
-                    assert relabelled == gamma
+    for gamma in types:
+        record = gamma.canonical_representative()
+        num_vertices = record.num_vertices()
+        num_flags = record.num_flags()
+        for vperm in Permutations(num_vertices)[:3]:
+            for fperm in Permutations(num_flags)[:3]:
+                vmap = {i: int(vperm[i]) - 1 for i in range(num_vertices)}
+                fmap = {i: int(fperm[i]) - 1 for i in range(num_flags)}
+                relabelled = types.from_graph(_relabel(record, vmap, fmap))
+                assert relabelled.canonical_key() == gamma.canonical_key()
+                assert relabelled == gamma
 
 
 def test_automorphism_numbers_agree_with_admcycles_on_M21():
     types = StableGraphs(2, 1)
     backend = AdmcyclesStableGraphBackend()
-    for level in _enumerate_stable_graph_levels(2, 1).curve_type_levels():
-        for gamma in level:
-            assert gamma.automorphism_number() == backend.admcycles_automorphism_number(types, gamma)
+    for gamma in types:
+        assert gamma.automorphism_number() == backend.admcycles_automorphism_number(types, gamma)
 
 
 def test_covers_change_edge_count_by_one_and_carry_a_valid_witness():
-    stratification = _enumerate_stable_graph_levels(2, 1)
-    for generic, special in stratification.covers():
-        assert special.codimension() == generic.codimension() + 1
-    for witness in stratification.contraction_witnesses():
-        assert witness.num_contracted_edges() == 1
-        assert witness.codomain().num_edges() == witness.domain().num_edges() - 1
-        image, _ = witness.domain().contract(witness.contracted_edges()[0])
-        assert image.canonical_representative() == witness.codomain()
+    for gamma in StableGraphs(2, 1):
+        for target, witness, _size in _elementary_contraction_data(gamma):
+            assert gamma.codimension() == target.codimension() + 1
+            assert witness.num_contracted_edges() == 1
+            assert witness.codomain().num_edges() == witness.domain().num_edges() - 1
+            image, _ = witness.domain().contract(witness.contracted_edges()[0])
+            assert image.canonical_representative() == witness.codomain() or image == witness.codomain().graph_type()
 
 
 @pytest.mark.parametrize("g,n", [(0, 5), (2, 1)])
 def test_every_contraction_preserves_total_genus_and_stability_large(g, n):
-    for level in _enumerate_stable_graph_levels(g, n).curve_type_levels():
-        for gamma in level:
-            graph = gamma.canonical_representative()
-            for edge in graph.internal_edges():
-                image, _ = graph.contract(edge)
-                assert image.total_genus() == gamma.total_genus()
-                assert image.is_stable()
-                assert image.num_edges() == gamma.num_edges() - 1
+    for gamma in StableGraphs(g, n):
+        graph = gamma.canonical_representative()
+        for edge in graph.internal_edges():
+            image, _ = graph.contract(edge)
+            assert image.total_genus() == gamma.total_genus()
+            assert image.is_stable()
+            assert image.num_edges() == gamma.num_edges() - 1

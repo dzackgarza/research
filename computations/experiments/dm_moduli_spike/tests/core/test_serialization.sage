@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 
 

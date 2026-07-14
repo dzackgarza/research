@@ -9,8 +9,6 @@ Layering (each module depends only on those above it):
 - ``contractions``: contraction morphisms of stable graphs.
 - ``enumeration``: one-edge degenerations and rank-by-rank enumeration.
 - ``gamma``: combinatorial ``Γ_{g,n}`` with ``StableGraphHomset`` in ``Homsets()``.
-- ``stratification``: finite combinatorial stratification helpers (Phase 2: private).
-- ``model``: internal enumeration backend (Phase 2: delete or privatize).
 - Stack-geometric strata live under ``dm_moduli_spike.geometry``.
 """
 

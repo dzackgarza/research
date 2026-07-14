@@ -8,15 +8,13 @@ Young-diagram isomorphisms are tier-2 checksums only.
 
 from __future__ import annotations
 
-import pytest
-
 from collections import Counter
 
+import pytest
 from sage.all import posets
 
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
-
 from dm_moduli_spike.objects.edge_orbits import contraction_target_multiset
+from dm_moduli_spike.objects.gamma import StableGraphCategory
 from dm_moduli_spike.testing_support.support.fixtures import CHAN_M20_COVERS, m11_types, m12_types, m20_types
 from dm_moduli_spike.testing_support.support.poset_oracle import specialization_poset
 
@@ -30,8 +28,7 @@ def test_M11_is_two_element_chain():
 
 def test_M11_unique_cover_is_loop_contraction():
     r"""Markwig Ex. 2.2 / Fig. 2: the unique cover contracts the loop edge."""
-    stratification = _enumerate_stable_graph_levels(1, 1)
-    poset = stratification.specialization_poset()
+    poset = StableGraphCategory(1, 1).specialization_poset()
     smooth, nodal = m11_types()
 
     assert poset.cover_relations() == [[smooth, nodal]]
@@ -45,8 +42,7 @@ def test_M11_unique_cover_is_loop_contraction():
 
 def test_M12_exact_semantic_cover_relations():
     r"""Markwig Ex. 2.2 / Fig. 2: primary evidence is the exact cover set for `\overline{\mathcal M}_{1,2}`."""
-    stratification = _enumerate_stable_graph_levels(1, 2)
-    poset = stratification.specialization_poset()
+    poset = StableGraphCategory(1, 2).specialization_poset()
     types = m12_types()
 
     expected_covers = {
@@ -62,16 +58,16 @@ def test_M12_exact_semantic_cover_relations():
 
 def test_M20_exact_cover_relations_from_chan_figure():
     r"""Chan Fig. 3: primary evidence is the exact cover set for `\overline{\mathcal M}_{2,0}`."""
-    stratification = _enumerate_stable_graph_levels(2, 0)
     types = m20_types()
 
+    # CHAN_M20_COVERS maps generic -> special covers in the specialization order.
     expected_covers = {
-        (types[child], types[parent])
-        for parent, children in CHAN_M20_COVERS.items()
-        for child in children
+        (types[generic], types[special])
+        for generic, specials in CHAN_M20_COVERS.items()
+        for special in specials
     }
 
-    poset = stratification.specialization_poset()
+    poset = StableGraphCategory(2, 0).specialization_poset()
     assert set(map(tuple, poset.cover_relations())) == expected_covers
 
 
@@ -91,7 +87,6 @@ def test_M20_young_diagram_poset_checksum():
 
 def test_M12_parallel_edges_give_two_contraction_witnesses():
     r"""Markwig Ex. 2.2 / Fig. 2: type E parallel edges contribute orbit multiplicity two."""
-    stratification = _enumerate_stable_graph_levels(1, 2)
     types = m12_types()
 
     multiplicities = Counter(
@@ -102,7 +97,6 @@ def test_M12_parallel_edges_give_two_contraction_witnesses():
 
 def test_M20_contraction_multiplicities():
     r"""Chan Fig. 3: orbit multiplicities for types I–III contraction targets."""
-    stratification = _enumerate_stable_graph_levels(2, 0)
     types = m20_types()
 
     assert Counter(

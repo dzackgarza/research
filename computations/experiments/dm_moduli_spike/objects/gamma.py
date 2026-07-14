@@ -404,38 +404,27 @@ class StableGraphCategory(UniqueRepresentation):
         return self._canonical(graph).internal_edges()
 
     def specialization_poset(self) -> FinitePoset:
+        r"""Specialization poset whose elements are :class:`StableGraph` classes.
+
+        Cover relation: ``Gamma ∊ [Delta/e]`` for an internal edge ``e`` of
+        ``Delta`` (generic below special).  This is the Hasse diagram of the
+        Hom-order ``Hom(H, G) ≠ ∅``.
+        """
+
         from sage.combinat.posets.posets import Poset
 
-        objects = self.objects()
-        # G <=_sp H iff Hom(H, G) nonempty (generic below special)
-        relations: list[tuple[_GraphRecord, _GraphRecord]] = []
-        nonempty: dict[tuple[int, int], bool] = {}
-        indexed = list(objects)
-        for i, source in enumerate(indexed):
-            for j, target in enumerate(indexed):
-                if i == j:
-                    continue
-                key = (j, i)  # Hom(target, source)
-                if key not in nonempty:
-                    nonempty[key] = len(self.hom(target, source)) > 0
-                if nonempty[key]:
-                    # cover if no mid
-                    is_cover = True
-                    for k, mid in enumerate(indexed):
-                        if k in (i, j):
-                            continue
-                        key_ms = (k, i)
-                        key_tm = (j, k)
-                        if key_ms not in nonempty:
-                            nonempty[key_ms] = len(self.hom(mid, source)) > 0
-                        if key_tm not in nonempty:
-                            nonempty[key_tm] = len(self.hom(target, mid)) > 0
-                        if nonempty[key_ms] and nonempty[key_tm]:
-                            is_cover = False
-                            break
-                    if is_cover:
-                        relations.append((source, target))
-        return Poset((objects, relations), cover_relations=True, facade=True)
+        from .edge_orbits import _elementary_contraction_data
+
+        objects = tuple(self._graphs)
+        by_key = {gamma.canonical_key(): gamma for gamma in objects}
+        covers: list[tuple[StableGraph, StableGraph]] = []
+        for delta in objects:
+            for target, _contraction, _size in _elementary_contraction_data(delta):
+                key = target.canonical_key()
+                if key in by_key:
+                    covers.append((by_key[key], delta))
+        unique_covers = list({(generic, special): None for generic, special in covers})
+        return Poset((objects, unique_covers), cover_relations=True, facade=True)
 
     def closure_poset(self) -> FinitePoset:
         return self.specialization_poset().dual()
@@ -454,18 +443,17 @@ class StableGraphCategory(UniqueRepresentation):
         from sage.combinat.posets.posets import Poset
 
         max_codim = int(max_codim)
-        objects = tuple(g for g in self.objects() if g.num_edges() <= max_codim)
+        objects = tuple(gamma for gamma in self._graphs if gamma.num_edges() <= max_codim)
         full = self.specialization_poset()
-        # induced subposet
-        covers: list[tuple[_GraphRecord, _GraphRecord]] = []
+        covers: list[tuple[StableGraph, StableGraph]] = []
         object_set = set(objects)
         for source in objects:
             for target in objects:
-                if source is target:
+                if source == target:
                     continue
                 if not full.is_less_than(source, target):
                     continue
-                if any(mid is not source and mid is not target and mid in object_set and full.is_less_than(source, mid) and full.is_less_than(mid, target) for mid in objects):
+                if any(mid != source and mid != target and mid in object_set and full.is_less_than(source, mid) and full.is_less_than(mid, target) for mid in objects):
                     continue
                 covers.append((source, target))
         return Poset((objects, covers), cover_relations=True, facade=True)

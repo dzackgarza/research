@@ -9,8 +9,6 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
-
 from dm_moduli_spike.testing_support.support.fixtures import (
     boundary_label,
     clutching_signature,
@@ -18,6 +16,7 @@ from dm_moduli_spike.testing_support.support.fixtures import (
     expected_clutching_signature_irr,
     expected_clutching_signature_sep,
     stable_pairs,
+    strata_of_codim,
 )
 
 pytestmark = pytest.mark.ci
@@ -26,7 +25,7 @@ pytestmark = pytest.mark.ci
 @pytest.mark.parametrize("g,n", stable_pairs())
 def test_codimension_one_boundary_labels_match_AC(g, n):
     r"""AC Ch. XII Thm. XII.2.2: codimension-one boundary type labels."""
-    boundary = _enumerate_stable_graph_levels(g, n).strata(codim=1)
+    boundary = strata_of_codim(g, n, 1)
     actual = {boundary_label(stratum, g, n) for stratum in boundary}
     expected = expected_boundary_labels(g, n)
     assert actual == expected
@@ -39,7 +38,7 @@ def test_irreducible_boundary_clutching_source_matches_AC(g, n):
         return
     irr = next(
         stratum
-        for stratum in _enumerate_stable_graph_levels(g, n).strata(codim=1)
+        for stratum in strata_of_codim(g, n, 1)
         if boundary_label(stratum, g, n) == ("irr",)
     )
     assert clutching_signature(irr) == expected_clutching_signature_irr(g, n)
@@ -48,7 +47,7 @@ def test_irreducible_boundary_clutching_source_matches_AC(g, n):
 @pytest.mark.parametrize("g,n", stable_pairs())
 def test_separating_boundary_clutching_sources_match_AC(g, n):
     r"""AC Ch. XII Prop. XII.2.3: separating node clutching product factors."""
-    for stratum in _enumerate_stable_graph_levels(g, n).strata(codim=1):
+    for stratum in strata_of_codim(g, n, 1):
         label = boundary_label(stratum, g, n)
         if label[0] != "sep":
             continue

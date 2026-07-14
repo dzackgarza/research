@@ -3,7 +3,7 @@ r"""Parent ``StableGraphs(g, I)`` of canonical stable graphs with typed incidenc
 from __future__ import annotations
 
 from collections import deque
-from collections.abc import Iterable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from typing import TYPE_CHECKING, ClassVar, cast
 
 from sage.categories.action import Action
@@ -51,7 +51,7 @@ class _PermutationAction(Action):
         # Prefer native permutation action when labels are the standard domain.
         try:
             return g(x)
-        except (TypeError, ValueError, IndexError):
+        except TypeError, ValueError, IndexError:
             # Labels may be 0-based indices while Sage acts on {1,...,n}.
             idx = labels.index(x)
             image_pos = as_int(g(idx + 1)) - 1
@@ -379,6 +379,15 @@ class StableGraph(Element):
         from .splits import split_system
 
         return split_system(self, anchor_marking=anchor_marking)
+
+    def relabel_markings(self, sigma: Callable[[int], int]) -> StableGraph:
+        r"""Apply a permutation of ``{1, ..., n}`` to the marking labels."""
+        record = self._record
+        genera = record.vertex_genera
+        markings = tuple(record.markings_at(vertex) for vertex in range(record.num_vertices()))
+        relabeled_markings = tuple(tuple(int(sigma(marking)) for marking in vertex_markings) for vertex_markings in markings)
+        edges = tuple((record.flag_vertex[flag], record.flag_vertex[partner]) for flag, partner in record.internal_edges())
+        return self.parent().from_vertices(genera=genera, markings=relabeled_markings, edges=edges)
 
     def to_json(self) -> dict[str, object]:
         return to_json(self._record, self.parent().genus(), self.parent().number_of_markings())

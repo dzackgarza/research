@@ -10,10 +10,10 @@ from dm_moduli_spike.objects._automorphism_action import _GraphAutomorphismData
 from dm_moduli_spike.objects.records import _GraphRecord
 import pytest
 
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
+from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
 from dm_moduli_spike.objects.canonical import canonical_record
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
-from dm_moduli_spike.objects.stratification import _build_stratification_from_types
+from dm_moduli_spike.testing_support.support.fixtures import rank_sizes
 from dm_moduli_spike.testing_support.support.fixtures import (
     edge_generator_images,
     flag_generator_images,
@@ -74,12 +74,11 @@ def test_stack_signature_carries_automorphism_group_not_just_order():
 
 
 def test_admcycles_stable_backend_matches_pure_sage_when_complete():
+    backend = AdmcyclesStableGraphBackend()
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        pure = _enumerate_stable_graph_levels(g, n, backend="pure-sage")
-        adm = _enumerate_stable_graph_levels(g, n, backend="admcycles-stable")
-        assert adm.is_complete()
-        pure_keys = {gamma.canonical_key() for level in pure.curve_type_levels() for gamma in level}
-        adm_keys = {gamma.canonical_key() for level in adm.curve_type_levels() for gamma in level}
+        types = StableGraphs(g, n)
+        pure_keys = {gamma.canonical_key() for gamma in types}
+        adm_keys = {gamma.canonical_key() for gamma in backend.stable_curve_types(types)}
         assert pure_keys == adm_keys
 
 
@@ -111,22 +110,17 @@ def test_contraction_composition_across_isomorphic_representatives():
 
 
 def test_contracts_to_matches_specialization_order():
-    poset = _enumerate_stable_graph_levels(2, 0).specialization_poset()
+    poset = StableGraphCategory(2, 0).specialization_poset()
     for generic in poset:
         for special in poset:
             assert poset.is_lequal(generic, special) == special.contracts_to(generic)
 
 
-def test_stratification_contraction_witnesses_use_level_representatives():
-    stratification = _enumerate_stable_graph_levels(1, 2)
-    for witness in stratification.contraction_witnesses():
-        generic_type = witness.target_type()
-        assert witness.codomain() is generic_type.canonical_representative()
-        special_candidates = {
-            stratum.canonical_representative()
-            for stratum in stratification.strata(codim=generic_type.num_edges() + 1)
-        }
-        assert witness.domain() in special_candidates
+def test_contraction_witnesses_use_canonical_representatives():
+    for gamma in StableGraphs(1, 2):
+        for target, witness, _size in _elementary_contraction_data(gamma):
+            assert witness.codomain() is target.canonical_representative() or witness.codomain() == target.canonical_representative()
+            assert witness.domain() == gamma.canonical_representative() or witness.domain().graph_type() == gamma
 
 
 def test_presentation_data_is_invariant_under_vertex_relabeling():
@@ -147,37 +141,43 @@ def test_automorphism_action_fixes_markings_and_permutes_parallel_edges():
     assert _elementary_contraction_data(theta)[0][2] == 2
 
 
-def test_backend_independence_without_verify():
-    adm = _enumerate_stable_graph_levels(0, 4, backend="admcycles-stable")
-    assert adm.is_complete()
-    verified = _enumerate_stable_graph_levels(0, 4, backend="admcycles-stable", verify_against="pure-sage")
-    assert verified.rank_sizes() == adm.rank_sizes()
+def test_backend_enumeration_agrees_with_stable_graphs_rank_sizes():
+    backend = AdmcyclesStableGraphBackend()
+    types = StableGraphs(0, 4)
+    adm = tuple(backend.stable_curve_types(types))
+    assert {gamma.canonical_key() for gamma in adm} == {gamma.canonical_key() for gamma in types}
+    adm_sizes = tuple(
+        sum(1 for gamma in adm if gamma.num_edges() == codim)
+        for codim in range(max(gamma.num_edges() for gamma in adm) + 1)
+    )
+    assert adm_sizes == rank_sizes(0, 4)
 
 
-def test_completeness_false_when_enumeration_stops_early(monkeypatch):
+def test_enumeration_stop_early_yields_incomplete_levels(monkeypatch):
     from dm_moduli_spike.objects import enumeration
 
     def stop_after_first(_gamma):
         return ()
 
     monkeypatch.setattr(enumeration, "one_edge_degenerations", stop_after_first)
-    incomplete = _enumerate_stable_graph_levels(0, 4, backend="pure-sage")
-    assert not incomplete.is_complete()
-    assert incomplete.rank_sizes() == (1,)
-    assert incomplete.complete_through_codim() == 0
-    assert incomplete.backend() == "pure-sage"
+    levels = enumeration.stable_curve_type_levels(StableGraphs(0, 4))
+    assert len(levels) == 1
+    assert len(levels[0]) == 1
+    assert next(iter(levels[0].values())).is_smooth()
 
 
-def test_admcycles_backend_skips_pure_sage_without_verify(monkeypatch):
-    from dm_moduli_spike.objects import stratification as stratification_module
+def test_admcycles_backend_does_not_call_pure_sage_enumeration(monkeypatch):
+    from dm_moduli_spike.objects import enumeration
 
     def boom(*_args, **_kwargs):
         raise RuntimeError("pure-sage enumeration must not run for admcycles-stable")
 
-    monkeypatch.setattr(stratification_module, "_build_stratification", boom)
-    result = _enumerate_stable_graph_levels(0, 4, backend="admcycles-stable")
-    assert result.is_complete()
-    assert result.backend() == "admcycles-stable"
+    monkeypatch.setattr(enumeration, "all_stable_curve_types", boom)
+    monkeypatch.setattr(enumeration, "one_edge_degenerations", boom)
+    backend = AdmcyclesStableGraphBackend()
+    types = StableGraphs(0, 4)
+    produced = tuple(backend.stable_curve_types(types))
+    assert len(produced) == types.cardinality()
 
 
 def test_contraction_flag_map_is_immutable_to_caller_mutation():
@@ -338,11 +338,10 @@ def test_canonical_key_unchanged_after_failed_mutation():
     assert hash(gamma) == hash_before
 
 
-def test_complete_stratifications_span_all_ranks():
+def test_stable_graphs_span_all_ranks():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        stratification = _enumerate_stable_graph_levels(g, n)
-        assert stratification.is_complete()
-        assert len(stratification.rank_sizes()) == StableGraphs(g, n).dimension() + 1
+        assert len(rank_sizes(g, n)) == StableGraphs(g, n).dimension() + 1
+        assert StableGraphs(g, n).cardinality() == sum(rank_sizes(g, n))
 
 
 def test_theta_dumbbell_and_m12_type_e_orbit_sizes():

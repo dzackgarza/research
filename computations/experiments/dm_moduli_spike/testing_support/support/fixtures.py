@@ -2,14 +2,52 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from itertools import combinations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from sage.combinat.posets.posets import FinitePoset
+
     from dm_moduli_spike.objects.records import _GraphRecord
     from dm_moduli_spike.objects.stable_graphs import StableGraph, StableGraphs
 
 BoundaryLabel = tuple[str, ...] | tuple[str, int, frozenset[int]]
+
+
+def strata_by_codimension(g: int, n: int) -> tuple[tuple[StableGraph, ...], ...]:
+    r"""Rank-bucket :class:`StableGraph` classes by edge count (codimension)."""
+    from dm_moduli_spike.objects.enumeration import stable_curve_type_levels
+    from dm_moduli_spike.objects.stable_graphs import StableGraphs as _StableGraphs
+
+    return tuple(tuple(level.values()) for level in stable_curve_type_levels(_StableGraphs(g, n)))
+
+
+def rank_sizes(g: int, n: int) -> tuple[int, ...]:
+    return tuple(len(bucket) for bucket in strata_by_codimension(g, n))
+
+
+def strata_of_codim(g: int, n: int, codim: int) -> tuple[StableGraph, ...]:
+    from dm_moduli_spike.objects.stable_graphs import StableGraphs as _StableGraphs
+
+    return tuple(gamma for gamma in _StableGraphs(g, n) if gamma.num_edges() == int(codim))
+
+
+def induced_specialization_poset(types: Iterable[StableGraph]) -> FinitePoset:
+    r"""Induced specialization covers on an arbitrary :class:`StableGraph` subset."""
+    from sage.combinat.posets.posets import Poset
+
+    graphs = tuple(types)
+    covers: list[tuple[StableGraph, StableGraph]] = []
+    for delta in graphs:
+        for gamma in graphs:
+            if gamma == delta or not delta.contracts_to(gamma):
+                continue
+            if any(theta != gamma and theta != delta and delta.contracts_to(theta) and theta.contracts_to(gamma) for theta in graphs):
+                continue
+            covers.append((gamma, delta))
+    return Poset((graphs, covers), cover_relations=True, facade=True)
+
 
 CHAN_M20_COVERS: dict[str, tuple[str, ...]] = {
     "VII": ("V", "VI"),
@@ -109,7 +147,7 @@ def classify_chan_m20(record: _GraphRecord) -> str:
         return "VI"
     if num_vertices == 1 and genera == (0,) and loops == 2:
         return "III"
-    if num_vertices == 2 and genera == (1, 0) and loops == 1 and bridges == 1:
+    if num_vertices == 2 and sorted(genera) == [0, 1] and loops == 1 and bridges == 1:
         return "IV"
     if num_vertices == 2 and genera == (0, 0) and bridges == 3 and loops == 0:
         return "I"

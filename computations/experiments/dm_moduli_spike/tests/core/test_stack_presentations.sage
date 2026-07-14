@@ -7,7 +7,6 @@ from sage.rings.integer_ring import ZZ
 from dm_moduli_spike import Mbar_gn, ProductStack, QuotientStack, spec
 from dm_moduli_spike.objects.gamma import StableGraphCategory
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels, _validate_stable_graph
 
 
 def test_open_stack_presentation_factors_and_group_order():
@@ -54,20 +53,20 @@ def test_m04_boundary_clutching_maps_are_pairwise_distinct():
     Sigma = XSbar.stratification()
     boundary = [S for S in Sigma.strata() if S.index().num_edges() == 1]
     assert len(boundary) == 3
-    keys = {S.index().graph_type().canonical_key() for S in boundary}
+    keys = {S.index().canonical_key() for S in boundary}
     assert len(keys) == 3
     assert len({id(S.clutching_morphism()) for S in boundary}) == 3
     assert len({S.index() for S in boundary}) == 3
 
 
-def test_enumerator_rejects_mismatched_ambient():
+def test_stable_graphs_rejects_mismatched_ambient():
     wrong = StableGraphs(2, 1).smooth()
     try:
-        _validate_stable_graph(0, 4, wrong)
-    except ValueError:
+        StableGraphs(0, 4)(wrong)
+    except AssertionError:
         pass
     else:
-        raise AssertionError("expected ValueError for mismatched ambient (g, n)")
+        raise AssertionError("expected AssertionError for mismatched ambient (g, n)")
 
 
 def test_geometric_stratum_is_distinct_from_indexing_graph_type():

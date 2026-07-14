@@ -9,8 +9,6 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
-
 from dm_moduli_spike.testing_support.support.fixtures import (
     flag_generator_images,
     induced_edge_permutation_group,
@@ -28,7 +26,6 @@ def test_M12_banana_vs_loop_bridge_aut_edge_and_flag_actions():
     parallel edges.  The loop+bridge type has the same full automorphism order but
     the induced action on edge indices is trivial; only the loop half-edges are swapped.
     """
-    stratification = _enumerate_stable_graph_levels(1, 2)
     banana = m12_types()["E"].canonical_representative()
     loop_bridge = m12_types()["B"].canonical_representative()
 
@@ -53,7 +50,6 @@ def test_M12_banana_vs_loop_bridge_aut_edge_and_flag_actions():
 
 def test_M12_banana_has_C2_edge_transposition():
     r"""Markwig Ex. 2.2 / Fig. 2: type E banana has `C_2` edge transposition."""
-    stratification = _enumerate_stable_graph_levels(1, 2)
     banana = m12_types()["E"].canonical_representative()
     group = induced_edge_permutation_group(banana)
     assert group.order() == 2
@@ -63,7 +59,6 @@ def test_M12_banana_has_C2_edge_transposition():
 
 def test_M12_loop_bridge_has_trivial_induced_edge_action():
     r"""Markwig Ex. 2.2 / Fig. 2: type B loop+bridge has trivial induced `E(\Gamma)` action."""
-    stratification = _enumerate_stable_graph_levels(1, 2)
     loop_bridge = m12_types()["B"].canonical_representative()
     group = induced_edge_permutation_group(loop_bridge)
     assert group.order() == 1
@@ -79,7 +74,6 @@ def test_M12_loop_bridge_has_trivial_induced_edge_action():
 
 def test_genus_two_theta_has_S3_edge_action():
     r"""Markwig Ex. 2.7 / Fig. 5: type I theta graph has `S_3` edge action."""
-    stratification = _enumerate_stable_graph_levels(2, 0)
     theta = m20_types()["I"].canonical_representative()
     group = induced_edge_permutation_group(theta)
     assert group.order() == 6
@@ -87,7 +81,6 @@ def test_genus_two_theta_has_S3_edge_action():
 
 def test_genus_two_dumbbell_has_order_two_edge_action_exchanging_loops():
     r"""Markwig Ex. 2.7 / Fig. 5: type II dumbbell exchanges the two loop edges."""
-    stratification = _enumerate_stable_graph_levels(2, 0)
     dumbbell = m20_types()["II"].canonical_representative()
     group = induced_edge_permutation_group(dumbbell)
     assert group.order() == 2
@@ -111,7 +104,6 @@ def test_native_gamma_edge_aut_matches_literature_orders_M12_banana():
     r"""Native ``PermutationGroup`` on edges has Markwig order 2 for the banana."""
     from dm_moduli_spike import StableGraphCategory
 
-    stratification = _enumerate_stable_graph_levels(1, 2)
     banana = m12_types()["E"].canonical_representative()
     native = StableGraphCategory(1, 2).automorphism_group(banana, on="edges")
     assert native.order() == induced_edge_permutation_group(banana).order() == 2

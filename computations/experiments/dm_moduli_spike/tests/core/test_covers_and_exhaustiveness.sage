@@ -1,13 +1,11 @@
-r"""Tier-4 internal consistency: cover deduplication and exhaustive-cap normalization."""
+r"""Tier-4 internal consistency: cover deduplication and exhaustive enumeration."""
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.stable_graphs import StableGraphs
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
-
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
-from dm_moduli_spike.objects.stratification import _build_stratification_from_types
-from dm_moduli_spike.testing_support.support.fixtures import genus_six_counterexample
+from dm_moduli_spike.objects.gamma import StableGraphCategory
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
+from dm_moduli_spike.testing_support.support.fixtures import genus_six_counterexample, rank_sizes
 
 
 def test_covers_deduplicates_aut_orbit_targets():
@@ -24,23 +22,23 @@ def test_genus_six_has_eight_orbits_and_seven_covers():
     assert len(gamma.covers()) == 7
 
 
-def test_stratification_has_one_witness_per_cover():
+def test_orbit_data_has_one_witness_per_orbit():
     gamma = genus_six_counterexample()
-    parents = {target for target, _witness, _size in _elementary_contraction_data(gamma)}
-    mini = _build_stratification_from_types(gamma.parent(), (gamma, *parents))
-    assert len(mini.covers()) == 7
-    assert len(mini.contraction_witnesses()) == 7
+    data = _elementary_contraction_data(gamma)
+    assert len(data) == 8
+    distinct_targets = {target.canonical_key() for target, _witness, _size in data}
+    assert len(distinct_targets) == 7
+    assert len(gamma.covers()) == 7
 
 
-def test_max_codim_at_least_dimension_is_exhaustive():
+def test_full_enumeration_matches_truncated_at_dimension_cap():
     for g, n in [(0, 4), (1, 2), (2, 0)]:
         dimension = StableGraphs(g, n).dimension()
-        full = _enumerate_stable_graph_levels(g, n)
-        capped = _enumerate_stable_graph_levels(g, n, max_codim=dimension)
-        overshot = _enumerate_stable_graph_levels(g, n, max_codim=dimension + 10)
-        for stratification in (full, capped, overshot):
-            assert stratification.is_exhaustive()
-            assert stratification.is_full_stratification()
-            assert stratification.complete_through_codim() == stratification.maximum_codim()
-        assert full.rank_sizes() == capped.rank_sizes() == overshot.rank_sizes()
-
+        full = StableGraphCategory(g, n).specialization_poset()
+        capped = StableGraphCategory(g, n).truncate(dimension)
+        overshot = StableGraphCategory(g, n).truncate(dimension + 10)
+        assert full.cardinality() == capped.cardinality() == overshot.cardinality()
+        assert rank_sizes(g, n) == tuple(
+            sum(1 for gamma in StableGraphs(g, n) if gamma.num_edges() == codim)
+            for codim in range(dimension + 1)
+        )

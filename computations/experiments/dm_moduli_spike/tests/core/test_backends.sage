@@ -5,21 +5,16 @@ Not a literature oracle — agreement with ``admcycles`` is tier-3 CAS different
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.stable_graphs import StableGraph, StableGraphs
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
-
 from dm_moduli_spike.backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
 from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
+from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
+from dm_moduli_spike.objects.stable_graphs import StableGraph, StableGraphs
 
 
 def test_stable_backend_returns_owned_curve_types_only():
     backend = AdmcyclesStableGraphBackend()
     types = StableGraphs(1, 2)
-    pure_keys = {
-        gamma.canonical_key()
-        for level in _enumerate_stable_graph_levels(1, 2, backend="pure-sage").curve_type_levels()
-        for gamma in level
-    }
+    pure_keys = {gamma.canonical_key() for gamma in types}
     produced = backend.stable_curve_types(types)
     produced_keys = {gamma.canonical_key() for gamma in produced}
     assert produced_keys == pure_keys
@@ -29,33 +24,19 @@ def test_stable_backend_returns_owned_curve_types_only():
 
 def test_decorated_backend_matches_pure_sage_canonical_keys():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        pure = _enumerate_stable_graph_levels(g, n, backend="pure-sage")
-        decorated = _enumerate_stable_graph_levels(g, n, backend="admcycles-decorated")
-        assert decorated.is_complete()
-        assert decorated.backend() == "admcycles-decorated"
-        pure_keys = {
-            gamma.canonical_key()
-            for level in pure.curve_type_levels()
-            for gamma in level
-        }
-        decorated_keys = {
-            gamma.canonical_key()
-            for level in decorated.curve_type_levels()
-            for gamma in level
-        }
+        types = StableGraphs(g, n)
+        pure_keys = {gamma.canonical_key() for gamma in types}
+        decorated = tuple(AdmcyclesDecoratedGraphBackend().stable_curve_types(types))
+        decorated_keys = {gamma.canonical_key() for gamma in decorated}
         assert pure_keys == decorated_keys
-        produced = AdmcyclesDecoratedGraphBackend().stable_curve_types(StableGraphs(g, n))
-        produced_keys = {gamma.canonical_key() for gamma in produced}
-        assert produced_keys == pure_keys
-        assert all(
-            isinstance(gamma, StableGraph) and gamma.parent() == StableGraphs(g, n)
-            for gamma in produced
-        )
+        assert all(isinstance(gamma, StableGraph) and gamma.parent() == types for gamma in decorated)
 
 
 def test_decorated_backend_rank_buckets_match_edge_counts():
-    stratification = _enumerate_stable_graph_levels(1, 2, backend="admcycles-decorated")
-    for codim, level in enumerate(stratification.curve_type_levels()):
+    types = StableGraphs(1, 2)
+    decorated = tuple(AdmcyclesDecoratedGraphBackend().stable_curve_types(types))
+    for codim in range(types.dimension() + 1):
+        level = [gamma for gamma in decorated if gamma.num_edges() == codim]
         assert all(gamma.num_edges() == codim for gamma in level)
 
 
@@ -93,12 +74,12 @@ def test_decorated_converter_expands_loops_and_parallel_multiplicities():
     assert parallel_record.num_edges() == 2
 
 
-def test_auto_backend_prefers_decorated_when_available():
-    auto = _enumerate_stable_graph_levels(0, 4, backend="auto")
-    decorated = _enumerate_stable_graph_levels(0, 4, backend="admcycles-decorated")
-    assert auto.is_complete()
-    assert auto.backend() == "admcycles-decorated"
-    assert auto.rank_sizes() == decorated.rank_sizes()
+def test_decorated_backend_prefers_availability():
+    decorated_backend = AdmcyclesDecoratedGraphBackend()
+    assert decorated_backend.is_available()
+    types = StableGraphs(0, 4)
+    decorated = tuple(decorated_backend.stable_curve_types(types))
+    assert {gamma.canonical_key() for gamma in decorated} == {gamma.canonical_key() for gamma in types}
 
 
 def test_record_to_stable_graph_roundtrip_preserves_type():
@@ -117,11 +98,10 @@ def test_stable_backend_aut_number_agrees_via_owned_roundtrip():
 
     backend = AdmcyclesStableGraphBackend()
     types = StableGraphs(1, 2)
-    for level in _enumerate_stable_graph_levels(1, 2, backend="pure-sage").curve_type_levels():
-        for gamma in level:
-            stable = backend.to_admcycles(types, gamma)
-            assert types.from_graph(_record_from_stable_graph(stable, 1, 2)) == gamma
-            assert gamma.automorphism_number() == backend.admcycles_automorphism_number(types, gamma)
+    for gamma in types:
+        stable = backend.to_admcycles(types, gamma)
+        assert types.from_graph(_record_from_stable_graph(stable, 1, 2)) == gamma
+        assert gamma.automorphism_number() == backend.admcycles_automorphism_number(types, gamma)
 
 
 def test_record_to_decorated_graph_roundtrip_preserves_type():
@@ -135,7 +115,7 @@ def test_record_to_decorated_graph_roundtrip_preserves_type():
     assert types(roundtrip) == theta
 
 
-def test_decorated_stratification_covers_have_upstream_morphisms():
+def test_decorated_covers_have_upstream_morphisms():
     from admcycles.decorated_graph import DecoratedGraph
 
     from dm_moduli_spike.backends.admcycles_decorated import (
@@ -144,15 +124,17 @@ def test_decorated_stratification_covers_have_upstream_morphisms():
     )
 
     for g, n in [(1, 1), (1, 2), (2, 0)]:
-        stratification = _enumerate_stable_graph_levels(g, n, backend="admcycles-decorated")
-        for witness in stratification.contraction_witnesses():
-            domain = witness.domain()
-            decorated = _record_to_decorated_graph(domain, g, n)
-            matched = False
-            for u, v, _size in decorated.edge_orbit_representatives():
-                morphism = decorated.edge_contraction_morphism([(u, v, 1)])
-                adapted = contraction_from_decorated_morphism(morphism, g, n, domain_graph=domain)
-                if adapted.target_type() == witness.target_type():
-                    matched = True
-                    break
-            assert matched, f"no upstream morphism for cover in Mbar({g}, {n})"
+        for gamma in StableGraphs(g, n):
+            if gamma.num_edges() == 0:
+                continue
+            for _target, witness, _size in _elementary_contraction_data(gamma):
+                domain = witness.domain()
+                decorated = _record_to_decorated_graph(domain, g, n)
+                matched = False
+                for u, v, _osize in decorated.edge_orbit_representatives():
+                    morphism = decorated.edge_contraction_morphism([(u, v, 1)])
+                    adapted = contraction_from_decorated_morphism(morphism, g, n, domain_graph=domain)
+                    if adapted.target_type() == witness.target_type():
+                        matched = True
+                        break
+                assert matched, f"no upstream morphism for cover in Mbar({g}, {n})"

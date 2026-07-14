@@ -231,7 +231,6 @@ def _factor_marking_set(graph: object, vertex: int) -> tuple[object, ...]:
 def build_dual_graph_stratification(stack: Stack, *, compact: bool = True) -> Stratification:
     from ..moduli.instances import M_gI, Mbar_gI
     from ..objects.gamma import StableGraphCategory
-    from ..objects.records import _GraphRecord
     from ..objects.stable_graphs import StableGraph as StableGraphElement
     from ..objects.stable_graphs import StableGraphs
 
@@ -247,7 +246,7 @@ def build_dual_graph_stratification(stack: Stack, *, compact: bool = True) -> St
     poset = Gamma.specialization_poset()
     raw: dict[object, tuple[ProductStack, QuotientStack, object]] = {}
     for graph in poset:
-        assert isinstance(graph, _GraphRecord), f"specialization poset elements must be _GraphRecord; found {type(graph)!r}"
+        assert isinstance(graph, StableGraphElement), f"specialization poset elements must be StableGraph; found {type(graph)!r}"
         factors = []
         for v in range(graph.num_vertices()):
             w = graph.vertex_genus(v)
@@ -257,10 +256,8 @@ def build_dual_graph_stratification(stack: Stack, *, compact: bool = True) -> St
             else:
                 factors.append(M_gI(w, marks, base=base))
         product = ProductStack(tuple(factors), base=base)
-        sg = indexing(graph)
-        assert isinstance(sg, StableGraphElement), f"indexing(graph) must return StableGraph; found {type(sg)!r}"
-        aut = sg.automorphism_group(on="half_edges")
-        action = sg.action_on_half_edges()
+        aut = graph.automorphism_group(on="half_edges")
+        action = graph.action_on_half_edges()
         quot = QuotientStack(product, aut, action)
         raw[graph] = (product, quot, graph)
     strat = Stratification(stack, poset, {}, indexing_category=indexing)

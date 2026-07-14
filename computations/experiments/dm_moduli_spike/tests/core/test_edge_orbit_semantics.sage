@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from collections import Counter
 
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
-
+from dm_moduli_spike.backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data, contraction_target_multiset
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.testing_support.support.fixtures import genus_six_counterexample, m12_types
 
 
@@ -39,20 +39,14 @@ def test_contraction_target_multiset_matches_covers():
 
 def test_decorated_and_pure_sage_orbit_data_agree():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        pure = _enumerate_stable_graph_levels(g, n, backend="pure-sage")
-        decorated = _enumerate_stable_graph_levels(g, n, backend="admcycles-decorated")
-        pure_by_key = {
-            gamma.canonical_key(): gamma
-            for level in pure.curve_type_levels()
-            for gamma in level
-        }
-        for level in decorated.curve_type_levels():
-            for delta in level:
-                key = delta.canonical_key()
-                assert key in pure_by_key
-                pure_data = _elementary_contraction_data(pure_by_key[key])
-                decorated_data = _elementary_contraction_data(delta)
-                assert len(pure_data) == len(decorated_data)
-                assert sorted(size for _target, _witness, size in pure_data) == sorted(
-                    size for _target, _witness, size in decorated_data
-                )
+        types = StableGraphs(g, n)
+        pure_by_key = {gamma.canonical_key(): gamma for gamma in types}
+        for delta in AdmcyclesDecoratedGraphBackend().stable_curve_types(types):
+            key = delta.canonical_key()
+            assert key in pure_by_key
+            pure_data = _elementary_contraction_data(pure_by_key[key])
+            decorated_data = _elementary_contraction_data(delta)
+            assert len(pure_data) == len(decorated_data)
+            assert sorted(size for _target, _witness, size in pure_data) == sorted(
+                size for _target, _witness, size in decorated_data
+            )

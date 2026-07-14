@@ -4,8 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
-
+from dm_moduli_spike.objects.gamma import StableGraphCategory
 from dm_moduli_spike.testing_support.support.poset_oracle import specialization_poset
 
 
@@ -18,8 +17,7 @@ from dm_moduli_spike.testing_support.support.poset_oracle import specialization_
     ],
 )
 def test_hasse_diagram_equals_elementary_contraction_relation(g, n):
-    stratification = _enumerate_stable_graph_levels(g, n)
-    poset = stratification.specialization_poset()
+    poset = specialization_poset(g, n)
 
     by_key = {stratum.canonical_key(): stratum for stratum in poset}
     expected_covers: set[tuple[object, object]] = set()
@@ -36,8 +34,7 @@ def test_hasse_diagram_equals_elementary_contraction_relation(g, n):
 
 
 def test_order_relation_is_contraction_reachability():
-    stratification = _enumerate_stable_graph_levels(2, 0)
-    poset = stratification.specialization_poset()
+    poset = specialization_poset(2, 0)
 
     for generic in poset:
         for special in poset:
@@ -50,15 +47,13 @@ def test_order_relation_is_contraction_reachability():
     [(0, 4), (0, 5), (0, 6), (1, 1), (1, 2), (2, 0)],
 )
 def test_rank_codimension_and_dimension_on_every_stratum(g, n):
-    from dm_moduli_spike.objects.gamma import StableGraphCategory
-
     poset = specialization_poset(g, n)
     Gamma = StableGraphCategory(g, n)
 
     assert poset.is_graded()
 
     for stratum in poset:
-        graph = stratum  # specialization_poset elements are skeletal `_GraphRecord`s
+        graph = stratum  # specialization_poset elements are StableGraph classes
         edge_count = graph.num_edges()
 
         assert poset.rank(stratum) == edge_count
@@ -67,32 +62,29 @@ def test_rank_codimension_and_dimension_on_every_stratum(g, n):
 
         local_dimension = sum(
             3 * graph.vertex_genus(vertex) - 3 + graph.valence(vertex)
-            for vertex in graph.vertices()
+            for vertex in range(graph.num_vertices())
         )
         assert Gamma.stratum_dimension(stratum) == local_dimension
 
 
-def test_poset_covers_reference_level_representatives():
-    stratification = _enumerate_stable_graph_levels(1, 2)
-    poset = stratification.specialization_poset()
+def test_poset_covers_reference_stable_graph_classes():
+    from dm_moduli_spike.objects.stable_graphs import StableGraphs
+
+    Gamma = StableGraphCategory(1, 2)
+    poset = Gamma.specialization_poset()
     by_curve_type = {stratum: stratum for stratum in poset}
-    level_representatives = {
-        gamma.canonical_key(): gamma
-        for level in stratification.curve_type_levels()
-        for gamma in level
-    }
-    for generic, special in stratification.covers():
-        generic_type = generic
-        special_type = special
-        assert generic_type is level_representatives[generic_type.canonical_key()]
-        assert [by_curve_type[generic_type], by_curve_type[special_type]] in poset.cover_relations()
+    level_representatives = {gamma.canonical_key(): gamma for gamma in StableGraphs(1, 2)}
+    for generic, special in poset.cover_relations():
+        assert generic is level_representatives[generic.canonical_key()]
+        assert special is level_representatives[special.canonical_key()]
+        assert [by_curve_type[generic], by_curve_type[special]] in poset.cover_relations()
 
 
 def test_closure_and_specialization_orders_are_identity_dual():
-    stratification = _enumerate_stable_graph_levels(1, 2)
+    Gamma = StableGraphCategory(1, 2)
 
-    specialization = stratification.specialization_poset()
-    closure = stratification.closure_poset()
+    specialization = Gamma.specialization_poset()
+    closure = Gamma.closure_poset()
 
     assert set(specialization) == set(closure)
 

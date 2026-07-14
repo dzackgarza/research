@@ -6,7 +6,7 @@ import pytest
 from sage.combinat.posets.posets import FinitePoset
 
 from dm_moduli_spike import StableGraphCategory
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.testing_support.support.poset_oracle import expected_M0n_specialization_poset
 
 
@@ -23,13 +23,12 @@ def test_gamma_objects_and_homsets_M11():
     assert ident.is_isomorphism()
 
 
-def test_gamma_specialization_poset_matches_enumerator_M11():
+def test_gamma_specialization_poset_matches_stable_graphs_M11():
     Gamma = StableGraphCategory(1, 1)
     P = Gamma.specialization_poset()
     assert isinstance(P, FinitePoset)
-    legacy = _enumerate_stable_graph_levels(1, 1).specialization_poset()
-    assert P.cardinality() == legacy.cardinality()
-    assert P.is_isomorphic(legacy)
+    assert P.cardinality() == StableGraphs(1, 1).cardinality() == 2
+    assert set(P) == set(StableGraphs(1, 1))
 
 
 def test_morphism_factors_as_contraction_then_isomorphism_M11():
@@ -121,13 +120,12 @@ def test_native_automorphism_group_api_M12_banana():
 
 
 @pytest.mark.ci
-def test_thinification_matches_legacy_enumerator_small():
+def test_thinification_cardinality_matches_stable_graphs_small():
     for g, n in [(1, 1), (1, 2), (2, 0), (0, 4)]:
         Gamma = StableGraphCategory(g, n)
         P = Gamma.specialization_poset()
-        legacy = _enumerate_stable_graph_levels(g, n, backend="pure-sage").specialization_poset()
-        assert P.cardinality() == legacy.cardinality()
-        assert P.is_isomorphic(legacy)
+        assert P.cardinality() == StableGraphs(g, n).cardinality()
+        assert set(P) == set(StableGraphs(g, n))
 
 
 @pytest.mark.ci

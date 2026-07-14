@@ -13,10 +13,8 @@ import pytest
 from sage.rings.integer_ring import ZZ
 
 from dm_moduli_spike import Mbar_gn, QuotientStack, spec
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
-
-from dm_moduli_spike.testing_support.support.fixtures import flag_generator_images
-from dm_moduli_spike.testing_support.support.fixtures import CHAN_M20_COVERS, m20_types
+from dm_moduli_spike.objects.gamma import StableGraphCategory
+from dm_moduli_spike.testing_support.support.fixtures import CHAN_M20_COVERS, flag_generator_images, m20_types
 
 
 def test_M04_stratification_has_one_open_and_three_codim_one_boundary_strata():
@@ -58,7 +56,7 @@ def test_M11_nodal_boundary_has_published_combinatorics_and_branch_swap():
     boundary = [S for S in XSbar.stratification().strata() if S.index().num_edges() == 1]
     assert len(boundary) == 1
     nodal = boundary[0]
-    record = nodal.index()
+    record = nodal.index().canonical_representative()
     assert record.num_vertices() == 1
     assert record.vertex_genera == (0,)
     assert record.num_edges() == 1
@@ -86,17 +84,16 @@ def test_M20_has_seven_chan_types_and_published_hasse_incidence():
 
     Reference: Chan, Figure 3; Arbarello-Cornalba, Ch. XII (edge contraction).
     """
-    stratification = _enumerate_stable_graph_levels(2, 0)
     types = m20_types()
     assert set(types) == set(CHAN_M20_COVERS) | {"I", "II", "III", "IV", "V", "VI", "VII"}
-    poset = stratification.specialization_poset()
+    poset = StableGraphCategory(2, 0).specialization_poset()
     actual_covers = {
-        (child.canonical_key(), parent.canonical_key())
-        for parent, child in poset.cover_relations()
+        (generic.canonical_key(), special.canonical_key())
+        for generic, special in poset.cover_relations()
     }
     expected_covers = {
-        (types[child].canonical_key(), types[parent].canonical_key())
-        for parent, children in CHAN_M20_COVERS.items()
-        for child in children
+        (types[generic].canonical_key(), types[special].canonical_key())
+        for generic, specials in CHAN_M20_COVERS.items()
+        for special in specials
     }
     assert actual_covers == expected_covers

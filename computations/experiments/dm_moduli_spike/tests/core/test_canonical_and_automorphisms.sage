@@ -2,7 +2,6 @@ r"""Tier-4 internal consistency: canonical labelling and automorphism numbers.""
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
 
@@ -17,8 +16,7 @@ def test_automorphism_numbers_agree_with_admcycles():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
         types = StableGraphs(g, n)
         backend = AdmcyclesStableGraphBackend()
-        for level in _enumerate_stable_graph_levels(g, n).curve_type_levels():
-            for gamma in level:
+        for gamma in types:
                 assert gamma.automorphism_number() == backend.admcycles_automorphism_number(types, gamma)
 
 

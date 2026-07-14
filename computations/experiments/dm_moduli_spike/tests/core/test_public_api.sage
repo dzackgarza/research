@@ -26,6 +26,8 @@ _BANNED_PUBLIC_NAMES = (
 _BANNED_MODULES = (
     "dm_moduli_spike.objects.graph_types",
     "dm_moduli_spike.objects.curve_types",
+    "dm_moduli_spike.objects.model",
+    "dm_moduli_spike.objects.stratification",
     "dm_moduli_spike.moduli.stack",
 )
 
@@ -56,8 +58,6 @@ def test_public_all_includes_moduli_and_gamma():
 _SUBMODULES_TO_PROBE = (
     "dm_moduli_spike",
     "dm_moduli_spike.objects",
-    "dm_moduli_spike.objects.model",
-    "dm_moduli_spike.objects.stratification",
     "dm_moduli_spike.objects.stable_graphs",
     "dm_moduli_spike.moduli",
     "dm_moduli_spike.moduli.instances",

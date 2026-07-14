@@ -4,8 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
-
+from dm_moduli_spike.testing_support.support.poset_oracle import specialization_poset
 
 pytestmark = pytest.mark.ci
 
@@ -19,8 +18,7 @@ pytestmark = pytest.mark.ci
     ],
 )
 def test_hasse_diagram_equals_elementary_contraction_relation(g, n):
-    stratification = _enumerate_stable_graph_levels(g, n)
-    poset = stratification.specialization_poset()
+    poset = specialization_poset(g, n)
 
     by_key = {stratum.canonical_key(): stratum for stratum in poset}
     expected_covers: set[tuple[object, object]] = set()

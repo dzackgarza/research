@@ -6,7 +6,6 @@ from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.objects.records import _GraphRecord
 import pytest
 
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
 
 
 def test_record_rejects_a_non_involution():
@@ -63,8 +62,7 @@ def test_smooth_type_is_edge_free_and_carries_all_markings():
 
 def test_dimension_computed_two_independent_ways():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        for level in _enumerate_stable_graph_levels(g, n).curve_type_levels():
-            for gamma in level:
+        for gamma in StableGraphs(g, n):
                 by_vertices = gamma.stratum_dimension()
                 by_codim = StableGraphs(g, n).dimension() - gamma.num_edges()
                 assert by_vertices == by_codim

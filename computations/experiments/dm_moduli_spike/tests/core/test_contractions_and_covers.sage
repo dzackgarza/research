@@ -2,7 +2,6 @@ r"""Tier-4 internal consistency: contraction morphisms and cover witnesses."""
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.objects.contractions import contract_edges
 
@@ -36,8 +35,7 @@ def test_nonloop_contraction_merges_and_sums_genera():
 
 def test_every_contraction_preserves_total_genus_and_stability():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
-        for level in _enumerate_stable_graph_levels(g, n).curve_type_levels():
-            for gamma in level:
+        for gamma in StableGraphs(g, n):
                 graph = gamma.canonical_representative()
                 for edge in graph.internal_edges():
                     image, _ = graph.contract(edge)

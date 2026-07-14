@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.objects.model import _enumerate_stable_graph_levels
-
+from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
+from dm_moduli_spike.testing_support.support.fixtures import rank_sizes, strata_by_codimension
 
 pytestmark = pytest.mark.ci
 
@@ -18,39 +19,34 @@ LARGE_RANK_VECTORS = [
 @pytest.mark.parametrize("gn,expected", LARGE_RANK_VECTORS)
 def test_rank_vectors_match_fixtures(gn, expected):
     g, n = gn
-    stratification = _enumerate_stable_graph_levels(g, n)
-    assert stratification.rank_sizes() == expected
-    assert stratification.cardinality() == sum(expected)
-    assert stratification.is_complete()
-    assert stratification.dimension() == 3 * g - 3 + n
-    assert stratification.maximum_codim() == 3 * g - 3 + n
+    sizes = rank_sizes(g, n)
+    assert sizes == expected
+    assert StableGraphs(g, n).cardinality() == sum(expected)
+    assert StableGraphs(g, n).dimension() == 3 * g - 3 + n
+    assert max(gamma.num_edges() for gamma in StableGraphs(g, n)) == 3 * g - 3 + n
 
 
 def test_bucketing_is_by_num_edges_not_generation_provenance():
-    stratification = _enumerate_stable_graph_levels(2, 1)
-    for codim, bucket in enumerate(stratification.strata_by_codimension()):
+    for codim, bucket in enumerate(strata_by_codimension(2, 1)):
         for stratum in bucket:
             assert stratum.num_edges() == codim
             assert stratum.codimension() == codim
 
 
 def test_admcycles_stable_backend_matches_pure_sage_canonical_keys():
+    backend = AdmcyclesStableGraphBackend()
     for g, n in [(0, 5), (1, 2), (2, 0), (2, 1)]:
-        pure = _enumerate_stable_graph_levels(g, n, backend="pure-sage")
-        adm = _enumerate_stable_graph_levels(g, n, backend="admcycles-stable")
-        pure_keys = {
-            gamma.canonical_key()
-            for level in pure.curve_type_levels()
-            for gamma in level
-        }
-        adm_keys = {
-            gamma.canonical_key()
-            for level in adm.curve_type_levels()
-            for gamma in level
-        }
+        types = StableGraphs(g, n)
+        pure_keys = {gamma.canonical_key() for gamma in types}
+        adm = tuple(backend.stable_curve_types(types))
+        adm_keys = {gamma.canonical_key() for gamma in adm}
         assert pure_keys == adm_keys
-        assert pure.rank_sizes() == adm.rank_sizes()
+        adm_sizes = tuple(
+            sum(1 for gamma in adm if gamma.num_edges() == codim)
+            for codim in range(max(gamma.num_edges() for gamma in adm) + 1)
+        )
+        assert rank_sizes(g, n) == adm_sizes
 
 
-def test_full_M21_stratification_is_complete():
-    assert _enumerate_stable_graph_levels(2, 1).is_complete()
+def test_full_M21_enumeration_is_present():
+    assert StableGraphs(2, 1).cardinality() == sum(rank_sizes(2, 1)) == 16
