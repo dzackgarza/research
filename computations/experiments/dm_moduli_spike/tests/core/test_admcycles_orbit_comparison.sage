@@ -54,7 +54,7 @@ def test_decorated_orbit_representatives_match_spike_edge_orbits():
 def test_spike_m11_loop_branch_swap_orbit_sizes():
     types = StableGraphs(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
-    record = loop.canonical_representative()
+    record = loop._canonical_record()
     decorated = _record_to_decorated_graph(record, 1, 1)
     assert _spike_orbit_sizes(record) == _adm_orbit_sizes(decorated)
     loop_flags = [flag for flag in record.flags_at(0) if record.flag_involution[flag] != flag]
@@ -68,7 +68,7 @@ def test_spike_m12_banana_has_one_edge_orbit_class():
         markings=((1,), (2,)),
         edges=((0, 1), (0, 1)),
     )
-    record = banana.canonical_representative()
+    record = banana._canonical_record()
     decorated = _record_to_decorated_graph(record, 1, 2)
     assert record.num_edges() == 2
     assert len(automorphism_edge_orbit_indices(record)) == 1
@@ -84,7 +84,7 @@ def test_spike_m12_true_dumbbell_has_two_singleton_orbits():
         markings=((), (1, 2)),
         edges=((0, 0), (0, 1)),
     )
-    record = dumbbell.canonical_representative()
+    record = dumbbell._canonical_record()
     decorated = _record_to_decorated_graph(record, 1, 2)
     assert _spike_orbit_sizes(record) == [1, 1]
     assert _adm_orbit_sizes(decorated) == [1, 1]
@@ -94,7 +94,7 @@ def test_spike_m12_true_dumbbell_has_two_singleton_orbits():
 
 def test_genus_six_orbits_match_admcycles_roundtrip():
     gamma = genus_six_counterexample()
-    record = gamma.canonical_representative()
+    record = gamma._canonical_record()
     decorated = _record_to_decorated_graph(record, 6, 0)
     spike_sizes = _spike_orbit_sizes(record)
     assert len(automorphism_edge_orbit_indices(record)) == len(decorated.edge_orbit_representatives()) == 8

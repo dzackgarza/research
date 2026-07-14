@@ -56,7 +56,7 @@ def test_M11_nodal_boundary_has_published_combinatorics_and_branch_swap():
     boundary = [S for S in XSbar.stratification().strata() if S.index().num_edges() == 1]
     assert len(boundary) == 1
     nodal = boundary[0]
-    record = nodal.index().canonical_representative()
+    record = nodal.index()._canonical_record()
     assert record.num_vertices() == 1
     assert record.vertex_genera == (0,)
     assert record.num_edges() == 1

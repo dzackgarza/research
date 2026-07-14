@@ -28,7 +28,7 @@ def _swap_vertices(graph: StableGraph) -> StableGraph:
 def test_transport_square_preserves_flag_and_fibre_data():
     types = StableGraphs(1, 2)
     gamma = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
-    domain = gamma.canonical_representative()
+    domain = gamma._canonical_record()
     loop_edge = next(
         edge
         for edge in domain.internal_edges()
@@ -61,7 +61,7 @@ def test_transport_square_preserves_flag_and_fibre_data():
 def test_transport_composes_with_native_contraction():
     types = StableGraphs(1, 2)
     gamma = types.from_vertices(genera=(1, 0), markings=((), (1, 2)), edges=((0, 1),))
-    domain = gamma.canonical_representative()
+    domain = gamma._canonical_record()
     domain_alt = _swap_vertices(domain)
     edge = domain.internal_edges()[0]
     _, contraction = contract_edge(domain, edge)
@@ -70,7 +70,7 @@ def test_transport_composes_with_native_contraction():
     transported = transport_contraction(contraction, alpha, beta)
     edge_alt = transported.contracted_edges()[0]
     image, native = contract_edge(domain_alt, edge_alt)
-    assert image.canonical_representative() == transported.codomain()
+    assert image._canonical_record() == transported.codomain()
 
 
 def test_banana_parallel_edge_transport_swaps_contracted_edge():
@@ -79,7 +79,7 @@ def test_banana_parallel_edge_transport_swaps_contracted_edge():
 
     types = StableGraphs(1, 2)
     banana = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
-    graph = banana.canonical_representative()
+    graph = banana._canonical_record()
     edges = graph.internal_edges()
     assert len(edges) == 2
     assert banana.automorphism_number() == 2
@@ -101,7 +101,7 @@ def test_banana_parallel_edge_transport_swaps_contracted_edge():
 def test_canonical_relabeling_convenience_matches_explicit_isomorphisms():
     types = StableGraphs(1, 2)
     gamma = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
-    domain = gamma.canonical_representative()
+    domain = gamma._canonical_record()
     loop_edge = next(
         edge
         for edge in domain.internal_edges()

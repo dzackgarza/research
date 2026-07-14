@@ -264,6 +264,14 @@ class StableGraphHomset(UniqueRepresentation, Parent):
     def list(self) -> list[StableGraphMorphism]:
         return list(self._morphisms)
 
+    def _element_constructor_(self, x: object) -> StableGraphMorphism:
+        if isinstance(x, StableGraphMorphism):
+            if x.parent() is self:
+                return x
+            if x in self._morphisms:
+                return next(m for m in self._morphisms if m == x)
+        raise ValueError(f"{x!r} is not a morphism in {self!r}")
+
 
 class StableGraphCategory(UniqueRepresentation):
     r"""Finite skeletal category `\Gamma_{g,n}`."""
@@ -283,11 +291,11 @@ class StableGraphCategory(UniqueRepresentation):
 
     def _as_record(self, graph: object) -> _GraphRecord:
         if isinstance(graph, StableGraph):
-            return graph.canonical_representative()
+            return graph._canonical_record()
         if isinstance(graph, _GraphRecord):
             typed = self._graphs(graph)
             assert isinstance(typed, StableGraph), f"StableGraphs() must return StableGraph; found {type(typed)!r}"
-            return typed.canonical_representative()
+            return typed._canonical_record()
         raise TypeError(f"expected StableGraph or _GraphRecord; found {type(graph)}")
 
     def _canonical(self, graph: object) -> _GraphRecord:

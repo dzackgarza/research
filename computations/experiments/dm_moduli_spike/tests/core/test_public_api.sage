@@ -113,6 +113,8 @@ def test_stable_graph_has_no_public_record_method():
     G = StableGraphs(1, (1,)).smooth()
     assert not hasattr(G, "record") or not callable(getattr(G, "record", None))
     assert not hasattr(type(G), "record")
+    assert "canonical_representative" not in dir(G)
+    assert not hasattr(type(G), "canonical_representative")
 
 
 def test_gamma_still_public():

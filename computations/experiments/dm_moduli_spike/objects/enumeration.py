@@ -69,7 +69,7 @@ def _split_degenerations(record: _GraphRecord) -> Iterator[_GraphRecord]:
 
 def one_edge_degenerations(gamma: StableGraph) -> tuple[StableGraph, ...]:
     parent = gamma.parent()
-    record = gamma.canonical_representative()
+    record = gamma._canonical_record()
     seen: dict[object, StableGraph] = {}
     for degeneration in (*_loop_degenerations(record), *_split_degenerations(record)):
         candidate = parent.from_graph(degeneration)

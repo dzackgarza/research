@@ -55,7 +55,7 @@ def test_decorated_morphism_adapter_matches_native_contraction():
     adapted = contraction_from_decorated_morphism(parallel_morphism, 1, 2)
     types = StableGraphs(1, 2)
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
-    graph = theta.canonical_representative()
+    graph = theta._canonical_record()
     _, native = graph.contract(graph.internal_edges()[0])
     assert adapted.target_type() == native.target_type()
 
@@ -87,7 +87,7 @@ def test_record_to_stable_graph_roundtrip_preserves_type():
 
     types = StableGraphs(1, 2)
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
-    graph = theta.canonical_representative()
+    graph = theta._canonical_record()
     stable = _record_to_stable_graph(graph, 1, 2)
     roundtrip = _record_from_stable_graph(stable, 1, 2)
     assert types.from_graph(roundtrip) == theta
@@ -109,7 +109,7 @@ def test_record_to_decorated_graph_roundtrip_preserves_type():
 
     types = StableGraphs(1, 2)
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
-    graph = theta.canonical_representative()
+    graph = theta._canonical_record()
     decorated = _record_to_decorated_graph(graph, 1, 2)
     roundtrip = _record_from_decorated_graph(decorated, 1, 2)
     assert types(roundtrip) == theta

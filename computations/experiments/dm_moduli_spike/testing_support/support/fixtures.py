@@ -93,7 +93,7 @@ def expected_boundary_labels(g: int, n: int) -> set[BoundaryLabel]:
 
 def boundary_label(curve_type: StableGraph, g: int, n: int) -> BoundaryLabel:
     assert curve_type.codimension() == 1
-    record = curve_type.canonical_representative()
+    record = curve_type._canonical_record()
     if record.num_vertices() == 1 and len(record.internal_edges()) == 1:
         flag, partner = record.internal_edges()[0]
         if record.flag_vertex[flag] == record.flag_vertex[partner]:
@@ -128,7 +128,7 @@ def expected_clutching_signature_sep(g: int, n: int, a: int, marking_set: frozen
 
 def clutching_signature(curve_type: StableGraph) -> tuple[tuple[int, int], ...]:
     r"""Sorted ``(g(v), valence(v))`` factors of the clutching source product."""
-    record = curve_type.canonical_representative()
+    record = curve_type._canonical_record()
     return tuple(sorted((record.vertex_genera[v], record.valence(v)) for v in range(record.num_vertices())))
 
 
@@ -242,7 +242,7 @@ def m20_types(graphs: StableGraphs | None = None) -> dict[str, StableGraph]:
     graphs = graphs if graphs is not None else _StableGraphs(2, 0)
     by_name: dict[str, StableGraph] = {}
     for gamma in graphs:
-        name = classify_chan_m20(gamma.canonical_representative())
+        name = classify_chan_m20(gamma._canonical_record())
         assert name not in by_name, f"duplicate Chan type {name}"
         by_name[name] = gamma
     assert set(by_name) == set(CHAN_M20_COVERS) | {"I", "II", "III", "IV", "V", "VI", "VII"}

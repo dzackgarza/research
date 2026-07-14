@@ -24,7 +24,7 @@ def test_chan_M13_open_stack_is_quotient_M04_over_C2():
     r"""Chan Example 4.3: open stratum is a ``QuotientStack`` with factors `(0,3)+(0,4)`."""
     types = StableGraphs(1, 3)
     gamma = chan_m13_curve_type(types)
-    graph = gamma.canonical_representative()
+    graph = gamma._canonical_record()
     XSbar = Mbar_gn(1, 3, base=spec(ZZ))
     Sigma = XSbar.stratification()
     S = Sigma.stratum(gamma)
@@ -42,7 +42,7 @@ def test_chan_M13_clutching_factors():
     r"""Chan Example 4.3: clutching source is ``ProductStack`` of `Mbar_{0,3}` and `Mbar_{0,4}`."""
     types = StableGraphs(1, 3)
     gamma = chan_m13_curve_type(types)
-    graph = gamma.canonical_representative()
+    graph = gamma._canonical_record()
     XSbar = Mbar_gn(1, 3, base=spec(ZZ))
     S = XSbar.stratification().stratum(gamma)
     xi = S.clutching_morphism()
@@ -55,13 +55,13 @@ def test_chan_M13_edge_automorphism_and_contraction_targets():
     r"""Chan Example 4.3: `C_2` edge action collapses parallel contractions to one target."""
     types = StableGraphs(1, 3)
     gamma = chan_m13_curve_type(types)
-    group = induced_edge_permutation_group(gamma.canonical_representative())
+    group = induced_edge_permutation_group(gamma._canonical_record())
     assert group.order() == 2
     data = gamma.elementary_contractions()
     assert len(data) == 1
     targets = {target.canonical_key() for target, _witness, _size in data}
     assert len(targets) == 1
-    graph = gamma.canonical_representative()
+    graph = gamma._canonical_record()
     images = []
     for edge in graph.internal_edges():
         image, _ = graph.contract(edge)
@@ -73,7 +73,7 @@ def test_chan_M13_markings_fixed_and_quotient_presentation():
     r"""Chan Example 4.3: markings fixed under `C_2`; quotient Aut order two."""
     types = StableGraphs(1, 3)
     gamma = chan_m13_curve_type(types)
-    graph = gamma.canonical_representative()
+    graph = gamma._canonical_record()
     for marking_perm in marking_generator_images(graph):
         assert marking_perm == (1, 2, 3)
     XSbar = Mbar_gn(1, 3, base=spec(ZZ))

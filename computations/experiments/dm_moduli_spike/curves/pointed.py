@@ -210,7 +210,7 @@ class StablePointedCurve(PointedCurve):
 
         graphs = StableGraphs(self._g, self._n)
         if self._graph_type is not None:
-            element = graphs(self._graph_type.canonical_representative())
+            element = graphs(self._graph_type._canonical_record())
             assert isinstance(element, StableGraphElement), f"StableGraphs() must return StableGraph; found {type(element)!r}"
             return element
         return graphs.smooth()

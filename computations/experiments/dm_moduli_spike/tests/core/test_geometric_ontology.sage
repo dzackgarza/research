@@ -24,6 +24,7 @@ from dm_moduli_spike import (
     Schemes,
     Stacks,
     AlgebraicStacks,
+    StableGraphCategory,
     StablePointedCurveFamilies,
     StablePointedCurves,
     StratifiedSpaces,
@@ -212,8 +213,6 @@ def test_quotient_stack_outside_moduli():
 
 
 def test_gamma_objects_and_hom_domain_are_stable_graphs():
-    from dm_moduli_spike import StableGraphCategory
-
     Gamma = StableGraphCategory(1, 1)
     objects = Gamma.objects()
     assert objects
@@ -224,3 +223,31 @@ def test_gamma_objects_and_hom_domain_are_stable_graphs():
     assert HomGH.domain() is G or HomGH.domain() == G
     assert isinstance(HomGH.domain(), type(G))
     assert HomGH.domain().parent() is StableGraphs(1, (1,))
+
+
+def test_typed_parents_have_element_constructors():
+    from dm_moduli_spike.objects.stable_graphs import Edge, HalfEdge, Leg, Vertex
+
+    Gamma = StableGraphCategory(0, 4)
+    g = next(g for g in Gamma.stable_graphs() if g.num_edges() > 0)
+    v = g.vertices()(0)
+    assert isinstance(v, Vertex)
+    assert v == 0
+    h = g.half_edges()(0)
+    assert isinstance(h, HalfEdge)
+    assert h == 0
+    e = next(iter(g.edges()))
+    assert isinstance(g.edges()(e), Edge)
+    assert g.edges()(e) == e
+    assert g.edges()(e.half_edges()) == e
+    leg = next(iter(g.legs()))
+    assert isinstance(g.legs()(leg), Leg)
+    assert g.legs()(leg) == leg
+    assert g.legs()(leg.label()) == leg
+
+
+def test_stable_graph_canonical_record_is_private():
+    Gamma = StableGraphCategory(0, 4)
+    g = next(iter(Gamma.stable_graphs()))
+    assert "canonical_representative" not in dir(g)
+    assert hasattr(g, "_canonical_record")

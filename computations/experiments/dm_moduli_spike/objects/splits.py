@@ -35,7 +35,7 @@ def canonicalize_split(
 
 def split_system(gamma: StableGraph, anchor_marking: int = 1) -> frozenset[frozenset[int]]:
     r"""The stable splits induced by internal edges of a genus-zero dual tree."""
-    record = gamma.canonical_representative()
+    record = gamma._canonical_record()
     assert gamma.total_genus() == 0, "split systems are defined for genus-zero stable graphs"
     n = record.num_markings()
     splits: set[frozenset[int]] = set()

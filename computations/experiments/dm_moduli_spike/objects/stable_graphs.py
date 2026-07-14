@@ -271,8 +271,8 @@ class StableGraph(Element):
     def parent(self) -> StableGraphs:
         return cast(StableGraphs, Element.parent(self))
 
-    def canonical_representative(self) -> _GraphRecord:
-        r"""Private skeletal half-edge record (not part of the public vocabulary)."""
+    def _canonical_record(self) -> _GraphRecord:
+        r"""Return the private skeletal half-edge record for this element."""
         return self._record
 
     def canonical_key(self) -> CanonicalKey:
@@ -338,7 +338,7 @@ class StableGraph(Element):
         queue: deque[StableGraph] = deque([self])
         while queue:
             current = queue.popleft()
-            current_graph = current.canonical_representative()
+            current_graph = current._canonical_record()
             from .edge_orbits import automorphism_edge_orbit_indices
 
             for group in automorphism_edge_orbit_indices(current_graph):
@@ -502,15 +502,28 @@ StableGraphs.Element = StableGraph
 
 
 class Vertices(UniqueRepresentation, Parent):
+    Element: ClassVar[type[Vertex]]
+
     def __init__(self, graph: StableGraph) -> None:
         from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 
         self._graph = graph
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
+    def _element_constructor_(self, x: object) -> Vertex:
+        if isinstance(x, Vertex):
+            if x.parent() is self:
+                return x
+            index = x._index
+        else:
+            index = as_int(x)
+        if index < 0 or index >= self._graph.num_vertices():
+            raise ValueError(f"{index} is not a vertex of {self._graph!r}")
+        return cast(Vertex, self.element_class(self, index))
+
     def __iter__(self) -> Iterator[Vertex]:
         for v in range(self._graph.num_vertices()):
-            yield Vertex(self, v)
+            yield self.element_class(self, v)
 
     def cardinality(self) -> int:
         return self._graph.num_vertices()
@@ -534,17 +547,43 @@ class Vertex(Element):
     def _repr_(self) -> str:
         return f"Vertex({self._index})"
 
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Vertex):
+            return self.parent() is other.parent() and self._index == other._index
+        if isinstance(other, int):
+            return self._index == other
+        return NotImplemented
+
+    def __hash__(self) -> int:
+        return hash((id(self.parent()), self._index))
+
+
+Vertices.Element = Vertex
+
 
 class HalfEdges(UniqueRepresentation, Parent):
+    Element: ClassVar[type[HalfEdge]]
+
     def __init__(self, graph: StableGraph) -> None:
         from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 
         self._graph = graph
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
+    def _element_constructor_(self, x: object) -> HalfEdge:
+        if isinstance(x, HalfEdge):
+            if x.parent() is self:
+                return x
+            index = x._index
+        else:
+            index = as_int(x)
+        if index < 0 or index >= self._graph._record.num_flags():
+            raise ValueError(f"{index} is not a half-edge of {self._graph!r}")
+        return cast(HalfEdge, self.element_class(self, index))
+
     def __iter__(self) -> Iterator[HalfEdge]:
         for h in range(self._graph._record.num_flags()):
-            yield HalfEdge(self, h)
+            yield self.element_class(self, h)
 
     def cardinality(self) -> int:
         return self._graph._record.num_flags()
@@ -568,17 +607,51 @@ class HalfEdge(Element):
     def _repr_(self) -> str:
         return f"HalfEdge({self._index})"
 
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, HalfEdge):
+            return self.parent() is other.parent() and self._index == other._index
+        if isinstance(other, int):
+            return self._index == other
+        return NotImplemented
+
+    def __hash__(self) -> int:
+        return hash((id(self.parent()), self._index))
+
+
+HalfEdges.Element = HalfEdge
+
 
 class Edges(UniqueRepresentation, Parent):
+    Element: ClassVar[type[Edge]]
+
     def __init__(self, graph: StableGraph) -> None:
         from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 
         self._graph = graph
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
+    def _element_constructor_(self, x: object) -> Edge:
+        if isinstance(x, Edge):
+            if x.parent() is self:
+                return x
+            pair = x._pair
+        elif isinstance(x, tuple) and len(x) == 2:
+            pair = (as_int(x[0]), as_int(x[1]))
+        elif isinstance(x, int):
+            edges = self._graph._record.internal_edges()
+            if x < 0 or x >= len(edges):
+                raise ValueError(f"{x} is not an edge index of {self._graph!r}")
+            return cast(Edge, self.element_class(self, x, edges[x]))
+        else:
+            raise TypeError("edges are Edge elements, edge indices, or half-edge pairs")
+        for i, existing in enumerate(self._graph._record.internal_edges()):
+            if existing == pair or existing == (pair[1], pair[0]):
+                return cast(Edge, self.element_class(self, i, existing))
+        raise ValueError(f"{pair} is not an edge of {self._graph!r}")
+
     def __iter__(self) -> Iterator[Edge]:
         for i, pair in enumerate(self._graph._record.internal_edges()):
-            yield Edge(self, i, pair)
+            yield self.element_class(self, i, pair)
 
     def cardinality(self) -> int:
         return self._graph.num_edges()
@@ -596,17 +669,44 @@ class Edge(Element):
     def _repr_(self) -> str:
         return f"Edge{self._pair}"
 
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Edge):
+            return self.parent() is other.parent() and self._pair == other._pair
+        if isinstance(other, tuple):
+            return self._pair == other or self._pair == (other[1], other[0])
+        return NotImplemented
+
+    def __hash__(self) -> int:
+        return hash((id(self.parent()), self._pair))
+
+
+Edges.Element = Edge
+
 
 class Legs(UniqueRepresentation, Parent):
+    Element: ClassVar[type[Leg]]
+
     def __init__(self, graph: StableGraph) -> None:
         from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 
         self._graph = graph
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
+    def _element_constructor_(self, x: object) -> Leg:
+        if isinstance(x, Leg):
+            if x.parent() is self:
+                return x
+            label = x._label
+        else:
+            label = as_int(x)
+        legs = self._graph._record.legs()
+        if label < 1 or label > len(legs):
+            raise ValueError(f"{label} is not a leg label of {self._graph!r}")
+        return cast(Leg, self.element_class(self, label, legs[label - 1]))
+
     def __iter__(self) -> Iterator[Leg]:
         for i, flag in enumerate(self._graph._record.legs()):
-            yield Leg(self, i + 1, flag)
+            yield self.element_class(self, i + 1, flag)
 
     def cardinality(self) -> int:
         return self._graph.num_markings()
@@ -623,3 +723,16 @@ class Leg(Element):
 
     def _repr_(self) -> str:
         return f"Leg({self._label})"
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Leg):
+            return self.parent() is other.parent() and self._label == other._label
+        if isinstance(other, int):
+            return self._label == other
+        return NotImplemented
+
+    def __hash__(self) -> int:
+        return hash((id(self.parent()), self._label))
+
+
+Legs.Element = Leg

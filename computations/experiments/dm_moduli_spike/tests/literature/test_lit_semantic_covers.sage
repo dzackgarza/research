@@ -33,7 +33,7 @@ def test_M11_unique_cover_is_loop_contraction():
 
     assert poset.cover_relations() == [[smooth, nodal]]
 
-    nodal_graph = nodal.canonical_representative()
+    nodal_graph = nodal._canonical_record()
     contractions = list(nodal_graph.internal_edges())
     assert len(contractions) == 1
     _, contraction = nodal_graph.contract(contractions[0])

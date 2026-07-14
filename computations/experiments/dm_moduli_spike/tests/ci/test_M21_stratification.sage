@@ -54,7 +54,7 @@ def test_json_round_trip_preserves_equality():
 
 def test_every_type_is_connected_stable_correct_genus_and_marking_set():
     for gamma in StableGraphs(2, 1):
-        record = gamma.canonical_representative()
+        record = gamma._canonical_record()
         assert record.is_stable()
         assert record._is_connected()
         assert gamma.total_genus() == 2
@@ -64,14 +64,14 @@ def test_every_type_is_connected_stable_correct_genus_and_marking_set():
 
 def test_genus_matches_betti_plus_vertex_genera():
     for gamma in StableGraphs(2, 1):
-        record = gamma.canonical_representative()
+        record = gamma._canonical_record()
         assert gamma.total_genus() == record.first_betti_number() + sum(record.vertex_genera)
 
 
 def test_random_relabelings_produce_the_same_canonical_key():
     types = StableGraphs(2, 1)
     for gamma in types:
-        record = gamma.canonical_representative()
+        record = gamma._canonical_record()
         num_vertices = record.num_vertices()
         num_flags = record.num_flags()
         for vperm in Permutations(num_vertices)[:3]:
@@ -97,13 +97,13 @@ def test_covers_change_edge_count_by_one_and_carry_a_valid_witness():
             assert witness.num_contracted_edges() == 1
             assert witness.codomain().num_edges() == witness.domain().num_edges() - 1
             image, _ = witness.domain().contract(witness.contracted_edges()[0])
-            assert image.canonical_representative() == witness.codomain() or image == witness.codomain().graph_type()
+            assert image._canonical_record() == witness.codomain() or image == witness.codomain().graph_type()
 
 
 @pytest.mark.parametrize("g,n", [(0, 5), (2, 1)])
 def test_every_contraction_preserves_total_genus_and_stability_large(g, n):
     for gamma in StableGraphs(g, n):
-        graph = gamma.canonical_representative()
+        graph = gamma._canonical_record()
         for edge in graph.internal_edges():
             image, _ = graph.contract(edge)
             assert image.total_genus() == gamma.total_genus()

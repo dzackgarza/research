@@ -24,7 +24,7 @@ def test_hasse_diagram_equals_elementary_contraction_relation(g, n):
     expected_covers: set[tuple[object, object]] = set()
 
     for special in poset:
-        delta_graph = special.canonical_representative()
+        delta_graph = special._canonical_record()
         for edge in delta_graph.internal_edges():
             generic_type, _ = delta_graph.contract(edge)
             generic = by_key[generic_type.canonical_key()]

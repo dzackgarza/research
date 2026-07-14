@@ -12,7 +12,7 @@ from dm_moduli_spike.objects.stable_graphs import StableGraphs
 def test_open_stack_presentation_factors_and_group_order():
     types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
-    graph = gamma.canonical_representative()
+    graph = gamma._canonical_record()
     XSbar = Mbar_gn(0, 4, base=spec(ZZ))
     S = XSbar.stratification().stratum(gamma)
     underlying = S.underlying_stack()
@@ -26,7 +26,7 @@ def test_open_stack_presentation_factors_and_group_order():
 def test_closure_normalization_uses_compact_factors():
     types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
-    graph = gamma.canonical_representative()
+    graph = gamma._canonical_record()
     XSbar = Mbar_gn(0, 4, base=spec(ZZ))
     S = XSbar.stratification().stratum(gamma)
     factors = S.clutching_morphism().domain().factors()
@@ -37,7 +37,7 @@ def test_closure_normalization_uses_compact_factors():
 def test_clutching_morphism_targets_the_ambient_compactification():
     types = StableGraphs(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
-    graph = loop.canonical_representative()
+    graph = loop._canonical_record()
     XSbar = Mbar_gn(1, 1, base=spec(ZZ))
     S = XSbar.stratification().stratum(loop)
     xi = S.clutching_morphism()

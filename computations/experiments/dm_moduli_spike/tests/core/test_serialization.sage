@@ -128,7 +128,7 @@ def test_canonical_form_certificate_commutes_with_contraction():
         markings=((1, 2), (3,), (4, 5)),
         edges=((0, 1), (1, 2)),
     )
-    graph = gamma.canonical_representative()
+    graph = gamma._canonical_record()
     _, first = graph.contract(graph.internal_edges()[0])
     intermediate = first.codomain()
     relabeled = types.from_vertices(
@@ -138,7 +138,7 @@ def test_canonical_form_certificate_commutes_with_contraction():
             (intermediate.flag_vertex[flag], intermediate.flag_vertex[partner])
             for flag, partner in intermediate.internal_edges()
         ),
-    ).canonical_representative()
+    )._canonical_record()
     _, canonical, certificate = relabeled.canonical_form()
     edge = relabeled.internal_edges()[0]
     canonical_edge = (certificate[edge[0]], certificate[edge[1]])

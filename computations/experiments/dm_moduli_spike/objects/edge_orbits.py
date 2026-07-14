@@ -56,7 +56,7 @@ def edges_are_in_same_orbit(record: _GraphRecord, edge_a: tuple[int, int], edge_
 def contraction_target_multiset(source: StableGraph) -> tuple[tuple[StableGraph, int], ...]:
     r"""Multiset of distinct targets ``([Gamma/e], |O_e|)`` over Aut edge orbits."""
     parent = source.parent()
-    graph = source.canonical_representative()
+    graph = source._canonical_record()
     entries: list[tuple[StableGraph, int]] = []
     for group in automorphism_edge_orbit_indices(graph):
         representative = graph.internal_edges()[group[0]]
@@ -92,7 +92,7 @@ def _elementary_contraction_data(source: StableGraph) -> tuple[tuple[StableGraph
     parent = source.parent()
     g = parent.genus()
     n = parent.number_of_markings()
-    graph = source.canonical_representative()
+    graph = source._canonical_record()
     edges = graph.internal_edges()
     from ..backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
 

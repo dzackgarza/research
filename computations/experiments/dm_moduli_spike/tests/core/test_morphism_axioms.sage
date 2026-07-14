@@ -10,7 +10,7 @@ from dm_moduli_spike.objects.stable_graphs import StableGraphs
 def test_identity_isomorphism_passes_post_init():
     types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
-    graph = gamma.canonical_representative()
+    graph = gamma._canonical_record()
     iso = identity_isomorphism(graph)
     assert iso.source == graph
     assert iso.target == graph
@@ -19,7 +19,7 @@ def test_identity_isomorphism_passes_post_init():
 def test_canonicalization_certificate_is_valid_isomorphism():
     types = StableGraphs(1, 2)
     gamma = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
-    graph = gamma.canonical_representative()
+    graph = gamma._canonical_record()
     cert = canonicalize(graph)
     assert isinstance(cert, StableGraphIsomorphism)
     assert cert.source == graph
@@ -41,7 +41,7 @@ def test_multi_edge_contraction_validates():
         markings=((1, 2), (3,), (4, 5)),
         edges=((0, 1), (1, 2)),
     )
-    graph = gamma.canonical_representative()
+    graph = gamma._canonical_record()
     _, composite = contract_edges(graph, graph.internal_edges())
     assert composite.num_contracted_edges() == 2
     assert composite.is_identity() is False

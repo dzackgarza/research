@@ -129,14 +129,14 @@ class AdmcyclesStableGraphBackend:
     def admcycles_automorphism_number(self, curve_types: StableGraphs, curve_type: StableGraph) -> int:
         r"""The ``admcycles`` automorphism number of the ``StableGraph`` matching
         ``curve_type``; used to cross-check the incidence-graph implementation."""
-        record = curve_type.canonical_representative()
+        record = curve_type._canonical_record()
         stable_graph = _record_to_stable_graph(record, curve_types.genus(), curve_types.number_of_markings())
         return int(stable_graph.automorphism_number())  # type: ignore[attr-defined]
 
     def to_admcycles(self, curve_types: StableGraphs, curve_type: StableGraph) -> object:
         r"""Owned Γ object → ``admcycles.StableGraph`` (adapter surface)."""
         return _record_to_stable_graph(
-            curve_type.canonical_representative(),
+            curve_type._canonical_record(),
             curve_types.genus(),
             curve_types.number_of_markings(),
         )
