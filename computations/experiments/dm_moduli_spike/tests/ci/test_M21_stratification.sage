@@ -3,7 +3,7 @@ r"""CI-tier serialization and invariant sweeps over the full Mbar(2, 1) stratifi
 from __future__ import annotations
 
 from dm_moduli_spike.objects.graph_types import StableGraphTypes
-from dm_moduli_spike.objects.records import StableGraph
+from dm_moduli_spike.objects.records import _GraphRecord
 import json
 import pickle
 
@@ -29,7 +29,7 @@ def _relabel(record, vertex_perm, flag_perm):
         new_flag_vertex[flag_perm[flag]] = vertex_perm[record.flag_vertex[flag]]
         new_flag_involution[flag_perm[flag]] = flag_perm[record.flag_involution[flag]]
     new_marking_to_flag = tuple(flag_perm[flag] for flag in record.marking_to_flag)
-    return StableGraph(
+    return _GraphRecord(
         vertex_genera=tuple(new_genera),
         flag_vertex=tuple(new_flag_vertex),
         flag_involution=tuple(new_flag_involution),

@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from .records import StableGraph
+from .records import _GraphRecord
 
 if TYPE_CHECKING:
     from sage.graphs.graph import Graph
@@ -49,7 +49,7 @@ def _partition_sort_key(tag: _ColorTag) -> tuple[int, int]:
     raise ValueError(f"unknown incidence-graph colour tag {tag!r}")
 
 
-def _incidence_graph(record: StableGraph) -> tuple[Graph, list[list[tuple[str, int]]], dict[tuple[str, int], _ColorTag]]:
+def _incidence_graph(record: _GraphRecord) -> tuple[Graph, list[list[tuple[str, int]]], dict[tuple[str, int], _ColorTag]]:
     r"""Return the coloured incidence graph, its colour partition (a list of
     node classes for Sage's ``partition`` argument), and the node -> colour-tag
     map used to build a canonical, colour-aware key."""
@@ -92,19 +92,19 @@ def _incidence_graph(record: StableGraph) -> tuple[Graph, list[list[tuple[str, i
     return graph, partition, color_of
 
 
-def _flag_node(record: StableGraph, flag: int) -> tuple[str, int]:
+def _flag_node(record: _GraphRecord, flag: int) -> tuple[str, int]:
     if record.flag_involution[flag] == flag:
         marking = record.marking_to_flag.index(flag) + 1
         return ("M", marking)
     return ("F", flag)
 
 
-def flag_to_node(record: StableGraph, flag: int) -> tuple[str, int]:
+def flag_to_node(record: _GraphRecord, flag: int) -> tuple[str, int]:
     r"""Incidence-graph node for a half-edge flag index."""
     return _flag_node(record, flag)
 
 
-def node_to_flag(record: StableGraph, node: object) -> int:
+def node_to_flag(record: _GraphRecord, node: object) -> int:
     r"""Half-edge flag index for an incidence-graph ``M``/``F`` node."""
     if not isinstance(node, tuple) or len(node) != 2:
         raise ValueError(f"not a flag node: {node!r}")
@@ -116,7 +116,7 @@ def node_to_flag(record: StableGraph, node: object) -> int:
     raise ValueError(f"not a flag node: {node!r}")
 
 
-def canonical_record(record: StableGraph) -> StableGraph:
+def canonical_record(record: _GraphRecord) -> _GraphRecord:
     r"""The canonical half-edge representative for an isomorphism class.
 
     Two inputs with the same :func:`canonical_key` yield identical records.
@@ -126,7 +126,7 @@ def canonical_record(record: StableGraph) -> StableGraph:
     return canonicalize(record).target
 
 
-def canonical_key(record: StableGraph) -> CanonicalKey:
+def canonical_key(record: _GraphRecord) -> CanonicalKey:
     r"""A hashable, colour-aware canonical form.
 
     Two records yield the same key iff their coloured incidence graphs are
@@ -140,13 +140,13 @@ def canonical_key(record: StableGraph) -> CanonicalKey:
     return edges, colors
 
 
-def automorphism_group(record: StableGraph) -> object:
+def automorphism_group(record: _GraphRecord) -> object:
     r"""The automorphism group of the coloured incidence graph."""
     graph, partition, _ = _incidence_graph(record)
     return graph.automorphism_group(partition=partition)
 
 
-def automorphism_number(record: StableGraph) -> int:
+def automorphism_number(record: _GraphRecord) -> int:
     r""":math:`|\operatorname{Aut}(\Gamma)|`, the order of the automorphism group
     of the coloured incidence graph.  This is the half-edge automorphism number:
     it counts branch swaps of loops and permutations of parallel edges, and fixes
@@ -157,7 +157,7 @@ def automorphism_number(record: StableGraph) -> int:
     return int(group.order())
 
 
-def to_labeled_json(record: StableGraph, g: int, n: int, schema: int = 1) -> dict[str, object]:
+def to_labeled_json(record: _GraphRecord, g: int, n: int, schema: int = 1) -> dict[str, object]:
     r"""A versioned, external JSON representation (vertex/edge oriented).
 
     This is the shape crossing a process boundary; the in-process canonical key
@@ -187,6 +187,6 @@ def to_labeled_json(record: StableGraph, g: int, n: int, schema: int = 1) -> dic
     }
 
 
-def to_json(record: StableGraph, g: int, n: int, schema: int = 1) -> dict[str, object]:
+def to_json(record: _GraphRecord, g: int, n: int, schema: int = 1) -> dict[str, object]:
     r"""JSON for the canonical representative (isomorphism-class invariant)."""
     return to_labeled_json(canonical_record(record), g, n, schema=schema)

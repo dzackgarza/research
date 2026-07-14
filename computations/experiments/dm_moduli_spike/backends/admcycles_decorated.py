@@ -11,7 +11,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import TYPE_CHECKING
 
-from ..objects.records import StableGraph
+from ..objects.records import _GraphRecord
 
 if TYPE_CHECKING:
     from ..objects.contractions import StableGraphContraction
@@ -41,7 +41,7 @@ def _decorated_genera(decorated: object, num_vertices: int) -> tuple[int, ...]:
     raise TypeError(f"DecoratedGraph lacks vertex genera: {decorated!r}")
 
 
-def _record_from_decorated_graph(decorated: object, g: int, n: int) -> StableGraph:
+def _record_from_decorated_graph(decorated: object, g: int, n: int) -> _GraphRecord:
     r"""Convert an ``admcycles`` ``DecoratedGraph`` to a half-edge record."""
     num_vertices = int(decorated.num_verts())  # type: ignore[attr-defined]
     genera = _decorated_genera(decorated, num_vertices)
@@ -76,7 +76,7 @@ def _record_from_decorated_graph(decorated: object, g: int, n: int) -> StableGra
         flag_involution.append(flag_u)
 
     marking_to_flag = tuple(marking_to_flag_by_label[label] for label in range(1, n + 1))
-    record = StableGraph(
+    record = _GraphRecord(
         vertex_genera=genera,
         flag_vertex=tuple(flag_vertex),
         flag_involution=tuple(flag_involution),
@@ -99,7 +99,7 @@ def _iter_decorated_graphs(decorated_graph: object, g: int, n: int, cap: int) ->
             yield decorated, codim
 
 
-def _edge_flag_pairs(record: StableGraph) -> dict[tuple[int, int], list[tuple[int, int]]]:
+def _edge_flag_pairs(record: _GraphRecord) -> dict[tuple[int, int], list[tuple[int, int]]]:
     r"""Undirected vertex edge ``(min, max)`` to ordered flag pairs (in insertion order)."""
     buckets: dict[tuple[int, int], list[tuple[int, int]]] = {}
     for flag, partner in record.internal_edges():
@@ -114,7 +114,7 @@ def _edge_flag_pairs(record: StableGraph) -> dict[tuple[int, int], list[tuple[in
 
 
 def _contracted_flags_for_vertex_edge(
-    record: StableGraph,
+    record: _GraphRecord,
     u: int,
     v: int,
     multiplicity: int = 1,
@@ -134,7 +134,7 @@ def contraction_from_decorated_morphism(
     g: int,
     n: int,
     *,
-    domain_graph: StableGraph | None = None,
+    domain_graph: _GraphRecord | None = None,
 ) -> StableGraphContraction:
     r"""Convert an ``admcycles`` ``DecoratedGraphMorphism`` to :class:`StableGraphContraction`."""
     from ..objects.contractions import _contract_flag_set
@@ -149,7 +149,7 @@ def contraction_from_decorated_morphism(
     return _contract_flag_set(domain, frozenset(contracted))
 
 
-def _record_to_decorated_graph(record: StableGraph, g: int, n: int) -> object:
+def _record_to_decorated_graph(record: _GraphRecord, g: int, n: int) -> object:
     r"""Convert a half-edge :class:`StableGraph` to an ``admcycles`` ``DecoratedGraph``."""
     decorated_graph = _require_decorated_module()
     DecoratedGraph = decorated_graph.DecoratedGraph  # type: ignore[attr-defined]

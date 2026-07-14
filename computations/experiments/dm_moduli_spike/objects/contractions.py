@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING
 
 from .canonical import canonical_key, canonical_record
 from .isomorphisms import canonicalize, remap_vertex_fibres
-from .records import StableGraph, intern_graph
+from .records import _GraphRecord, intern_graph
 
 if TYPE_CHECKING:
-    from .graph_types import StableGraphType
     from .isomorphisms import StableGraphIsomorphism
+    from .stable_graphs import StableGraph
 
 
 class StableGraphContraction:
@@ -28,9 +28,9 @@ class StableGraphContraction:
 
     def __init__(
         self,
-        domain: StableGraph,
-        codomain: StableGraph,
-        target_type: StableGraphType,
+        domain: _GraphRecord,
+        codomain: _GraphRecord,
+        target_type: StableGraph,
         contracted_flags: frozenset[int],
         vertex_fibres: tuple[frozenset[int], ...],
         domain_flag_of_codomain_flag: tuple[tuple[int, int], ...],
@@ -43,13 +43,13 @@ class StableGraphContraction:
         self._domain_flag_of_codomain_flag = domain_flag_of_codomain_flag
         _validate_contraction(self)
 
-    def domain(self) -> StableGraph:
+    def domain(self) -> _GraphRecord:
         return self._domain
 
-    def codomain(self) -> StableGraph:
+    def codomain(self) -> _GraphRecord:
         return self._codomain
 
-    def target_type(self) -> StableGraphType:
+    def target_type(self) -> StableGraph:
         return self._target_type
 
     def domain_flag_of_codomain_flag(self) -> dict[int, int]:
@@ -97,8 +97,8 @@ class StableGraphContraction:
 
     def with_endpoints(
         self,
-        domain: StableGraph,
-        codomain: StableGraph,
+        domain: _GraphRecord,
+        codomain: _GraphRecord,
         *,
         alpha: StableGraphIsomorphism | None = None,
         beta: StableGraphIsomorphism | None = None,
@@ -200,15 +200,15 @@ def _find(parent: list[int], node: int) -> int:
     return root
 
 
-def _markings_at_vertex(record: StableGraph, vertex: int) -> tuple[int, ...]:
+def _markings_at_vertex(record: _GraphRecord, vertex: int) -> tuple[int, ...]:
     return tuple(sorted(record.markings_at(vertex)))
 
 
-def _side_signature(record: StableGraph, vertex: int) -> tuple[int, tuple[int, ...]]:
+def _side_signature(record: _GraphRecord, vertex: int) -> tuple[int, tuple[int, ...]]:
     return (record.vertex_genera[vertex], _markings_at_vertex(record, vertex))
 
 
-def _edge_signature(record: StableGraph, edge: tuple[int, int]) -> tuple[object, ...]:
+def _edge_signature(record: _GraphRecord, edge: tuple[int, int]) -> tuple[object, ...]:
     u = record.flag_vertex[edge[0]]
     v = record.flag_vertex[edge[1]]
     su = _side_signature(record, u)
@@ -218,7 +218,7 @@ def _edge_signature(record: StableGraph, edge: tuple[int, int]) -> tuple[object,
     return ("edge", tuple(sorted((su, sv))))
 
 
-def flag_map(source: StableGraph, target: StableGraph) -> dict[int, int]:
+def flag_map(source: _GraphRecord, target: _GraphRecord) -> dict[int, int]:
     r"""Deprecated heuristic flag alignment; use :func:`~dm_moduli_spike.objects.isomorphisms.isomorphism_between`."""
     assert canonical_key(source) == canonical_key(target)
     mapping: dict[int, int] = {}
@@ -241,8 +241,8 @@ def flag_map(source: StableGraph, target: StableGraph) -> dict[int, int]:
     return mapping
 
 
-def _contract_flag_set(domain: StableGraph, contracted_flags: frozenset[int]) -> StableGraphContraction:
-    from .graph_types import StableGraphTypes
+def _contract_flag_set(domain: _GraphRecord, contracted_flags: frozenset[int]) -> StableGraphContraction:
+    from .stable_graphs import StableGraphs
 
     record = domain
     involution = record.flag_involution
@@ -293,7 +293,7 @@ def _contract_flag_set(domain: StableGraph, contracted_flags: frozenset[int]) ->
     new_flag_involution = tuple(new_flag_of_old[involution[old]] for old in surviving)
     new_marking_to_flag = tuple(new_flag_of_old[flag] for flag in record.marking_to_flag)
 
-    image = StableGraph(
+    image = _GraphRecord(
         vertex_genera=tuple(new_genera),
         flag_vertex=new_flag_vertex,
         flag_involution=new_flag_involution,
@@ -303,7 +303,7 @@ def _contract_flag_set(domain: StableGraph, contracted_flags: frozenset[int]) ->
     cert = canonicalize(image)
     raw_to_canonical = {flag: cert.flag_map[flag] for flag in range(image.num_flags())}
 
-    parent_types = StableGraphTypes(record.genus(), record.num_markings())
+    parent_types = StableGraphs(record.genus(), record.num_markings())
     target_type = parent_types(codomain)
     domain_flag_of_codomain_flag = tuple(sorted((raw_to_canonical[new_flag], old_flag) for old_flag, new_flag in new_flag_of_old.items()))
     raw_vertex_fibres = tuple(frozenset(fibre_sets[component]) for component in range(num_new_vertices))
@@ -319,7 +319,7 @@ def _contract_flag_set(domain: StableGraph, contracted_flags: frozenset[int]) ->
     )
 
 
-def contract_edge(graph: StableGraph, edge: tuple[int, int]) -> tuple[StableGraphType, StableGraphContraction]:
+def contract_edge(graph: _GraphRecord, edge: tuple[int, int]) -> tuple[StableGraph, StableGraphContraction]:
     flag, partner = edge
     involution = graph.flag_involution
     assert involution[flag] == partner and involution[partner] == flag, f"{edge} is not an internal edge of {graph!r}"
@@ -327,7 +327,7 @@ def contract_edge(graph: StableGraph, edge: tuple[int, int]) -> tuple[StableGrap
     return contraction.target_type(), contraction
 
 
-def contract_edges(graph: StableGraph, edges: tuple[tuple[int, int], ...]) -> tuple[StableGraphType, StableGraphContraction]:
+def contract_edges(graph: _GraphRecord, edges: tuple[tuple[int, int], ...]) -> tuple[StableGraph, StableGraphContraction]:
     flags: set[int] = set()
     involution = graph.flag_involution
     for flag, partner in edges:

@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..objects.records import StableGraph
+from ..objects.records import _GraphRecord
 
 if TYPE_CHECKING:
     from ..objects.graph_types import StableGraphType, StableGraphTypes
@@ -27,7 +27,7 @@ def _require_admcycles() -> object:
     return admcycles
 
 
-def _record_from_stable_graph(stable_graph: object, g: int, n: int) -> StableGraph:
+def _record_from_stable_graph(stable_graph: object, g: int, n: int) -> _GraphRecord:
     r"""Convert an ``admcycles`` ``StableGraph`` to a half-edge record.
 
     ``admcycles`` labels half-edges by integers; the external markings are the
@@ -57,7 +57,7 @@ def _record_from_stable_graph(stable_graph: object, g: int, n: int) -> StableGra
         involution[flag_b] = flag_a
     marking_to_flag = [flag_of_label[m] for m in range(1, n + 1)]
 
-    record = StableGraph(
+    record = _GraphRecord(
         vertex_genera=tuple(genera),
         flag_vertex=tuple(flag_vertex),
         flag_involution=tuple(involution),
@@ -67,7 +67,7 @@ def _record_from_stable_graph(stable_graph: object, g: int, n: int) -> StableGra
     return record
 
 
-def _record_to_stable_graph(record: StableGraph, g: int, n: int) -> object:
+def _record_to_stable_graph(record: _GraphRecord, g: int, n: int) -> object:
     r"""Convert an owned half-edge :class:`StableGraph` to ``admcycles.StableGraph``.
 
     Labels are assigned so markings keep labels ``1, ..., n`` and remaining

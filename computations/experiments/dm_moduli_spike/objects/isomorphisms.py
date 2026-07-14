@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from .canonical import _flag_node, _incidence_graph
-from .records import StableGraph, intern_graph
+from .records import _GraphRecord, intern_graph
 
 if TYPE_CHECKING:
     from .contractions import StableGraphContraction
@@ -16,8 +16,8 @@ if TYPE_CHECKING:
 class StableGraphIsomorphism:
     r"""Isomorphism ``source -> target`` on vertices and half-edges."""
 
-    source: StableGraph
-    target: StableGraph
+    source: _GraphRecord
+    target: _GraphRecord
     vertex_map: tuple[int, ...]
     flag_map: tuple[int, ...]
 
@@ -62,7 +62,7 @@ class StableGraphIsomorphism:
 StableGraphCanonicalization = StableGraphIsomorphism
 
 
-def canonicalize(record: StableGraph) -> StableGraphIsomorphism:
+def canonicalize(record: _GraphRecord) -> StableGraphIsomorphism:
     r"""Canonicalize ``record``; certificate maps ``record -> canonical representative``."""
     graph, partition, color_of = _incidence_graph(record)
     _, relabelling = graph.canonical_label(partition=partition, certificate=True)
@@ -79,7 +79,7 @@ def canonicalize(record: StableGraph) -> StableGraphIsomorphism:
     flag_map = tuple(old_flags.index(flag) for flag in range(record.num_flags()))
 
     target = intern_graph(
-        StableGraph(
+        _GraphRecord(
             vertex_genera=tuple(record.vertex_genera[vertex] for vertex in old_vertices),
             flag_vertex=tuple(old_vertices.index(record.flag_vertex[old_flag]) for old_flag in old_flags),
             flag_involution=tuple(flag_map[record.flag_involution[old_flag]] for old_flag in old_flags),
@@ -94,7 +94,7 @@ def canonicalize(record: StableGraph) -> StableGraphIsomorphism:
     )
 
 
-def identity_isomorphism(record: StableGraph) -> StableGraphIsomorphism:
+def identity_isomorphism(record: _GraphRecord) -> StableGraphIsomorphism:
     size_v = record.num_vertices()
     size_h = record.num_flags()
     return StableGraphIsomorphism(
@@ -119,7 +119,7 @@ def inverse_flag_map(flag_map: tuple[int, ...]) -> tuple[int, ...]:
     return tuple(inverse)
 
 
-def isomorphism_between(source: StableGraph, target: StableGraph) -> StableGraphIsomorphism:
+def isomorphism_between(source: _GraphRecord, target: _GraphRecord) -> StableGraphIsomorphism:
     r"""An isomorphism when ``source`` and ``target`` share a canonical type.
 
     When ``Aut(\Gamma) \neq 1`` on a common representative, this choice is
@@ -135,12 +135,12 @@ def isomorphism_between(source: StableGraph, target: StableGraph) -> StableGraph
     return StableGraphIsomorphism(source=source, target=target, vertex_map=vertex_map, flag_map=flag_map)
 
 
-def apply_isomorphism(graph: StableGraph, iso: StableGraphIsomorphism) -> StableGraph:
+def apply_isomorphism(graph: _GraphRecord, iso: StableGraphIsomorphism) -> _GraphRecord:
     r"""Push ``graph`` forward along ``iso`` to its ``target`` labeling."""
     assert iso.source == graph
     inverse_vertices = inverse_vertex_map(iso.vertex_map)
     inverse_flags = inverse_flag_map(iso.flag_map)
-    return StableGraph(
+    return _GraphRecord(
         vertex_genera=tuple(graph.vertex_genera[inverse_vertices[vertex]] for vertex in range(iso.target.num_vertices())),
         flag_vertex=tuple(iso.vertex_map[graph.flag_vertex[inverse_flags[flag]]] for flag in range(iso.target.num_flags())),
         flag_involution=tuple(iso.flag_map[graph.flag_involution[inverse_flags[flag]]] for flag in range(iso.target.num_flags())),
@@ -198,8 +198,8 @@ def transport_contraction(
 def transport_contraction_via_canonical_relabeling(
     q: StableGraphContraction,
     *,
-    domain: StableGraph,
-    codomain: StableGraph,
+    domain: _GraphRecord,
+    codomain: _GraphRecord,
 ) -> StableGraphContraction:
     r"""Transport ``q`` to new labeled endpoints via :func:`isomorphism_between`.
 

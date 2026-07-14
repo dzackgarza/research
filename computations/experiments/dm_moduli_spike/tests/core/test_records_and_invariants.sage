@@ -3,7 +3,7 @@ r"""Tier-4 internal consistency: half-edge record validation and numerical invar
 from __future__ import annotations
 
 from dm_moduli_spike.objects.graph_types import StableGraphTypes
-from dm_moduli_spike.objects.records import StableGraph
+from dm_moduli_spike.objects.records import _GraphRecord
 import pytest
 
 from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
@@ -11,7 +11,7 @@ from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
 def test_record_rejects_a_non_involution():
     with pytest.raises(AssertionError):
-        StableGraph(
+        _GraphRecord(
             vertex_genera=(1,),
             flag_vertex=(0, 0),
             flag_involution=(1, 0, 0),  # length mismatch / not an involution
@@ -22,7 +22,7 @@ def test_record_rejects_a_non_involution():
 def test_record_rejects_an_unstable_vertex():
     # A genus-0 vertex with a single leg is unstable: 2*0 - 2 + 1 = -1.
     with pytest.raises(AssertionError):
-        StableGraph(
+        _GraphRecord(
             vertex_genera=(0,),
             flag_vertex=(0,),
             flag_involution=(0,),
@@ -32,7 +32,7 @@ def test_record_rejects_an_unstable_vertex():
 
 def test_record_rejects_a_disconnected_graph():
     with pytest.raises(AssertionError):
-        StableGraph(
+        _GraphRecord(
             vertex_genera=(1, 1),
             flag_vertex=(0, 1),
             flag_involution=(0, 1),  # two isolated genus-1 vertices, each a leg

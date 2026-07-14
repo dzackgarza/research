@@ -231,7 +231,7 @@ def _factor_marking_set(graph: object, vertex: int) -> tuple[object, ...]:
 def build_dual_graph_stratification(stack: Stack, *, compact: bool = True) -> Stratification:
     from ..moduli.instances import M_gI, Mbar_gI
     from ..objects.gamma import StableGraphCategory
-    from ..objects.records import StableGraph as StableGraphRecord
+    from ..objects.records import _GraphRecord as StableGraphRecord
     from ..objects.stable_graphs import StableGraph as StableGraphElement
     from ..objects.stable_graphs import StableGraphs
 

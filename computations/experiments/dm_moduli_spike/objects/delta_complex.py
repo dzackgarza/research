@@ -16,8 +16,8 @@ if TYPE_CHECKING:
     from sage.topology.simplicial_complex import SimplicialComplex
 
     from .gamma import StableGraphCategory
-    from .graph_types import StableGraphType
-    from .records import StableGraph
+    from .records import _GraphRecord
+    from .stable_graphs import StableGraph as StableGraphType
 
 
 class SymmetricDeltaComplex:
@@ -45,14 +45,14 @@ class SymmetricDeltaComplex:
     def specialization_poset(self) -> FinitePoset:
         return self._category.specialization_poset()
 
-    def edge_orbit_cells(self, graph: StableGraph | StableGraphType) -> tuple[tuple[tuple[int, int], ...], ...]:
+    def edge_orbit_cells(self, graph: _GraphRecord | StableGraphType) -> tuple[tuple[tuple[int, int], ...], ...]:
         r"""Aut-orbits on internal edges of `G` (cone generators modulo Aut)."""
         graph = self._category.object(graph)
         edges = graph.internal_edges()
         orbits = automorphism_edge_orbit_indices(graph)
         return tuple(tuple(edges[i] for i in orbit) for orbit in orbits)
 
-    def cone_dimension(self, graph: StableGraph | StableGraphType) -> int:
+    def cone_dimension(self, graph: _GraphRecord | StableGraphType) -> int:
         r"""Dimension of the open cone for `G`: number of Aut edge orbits."""
         return len(self.edge_orbit_cells(graph))
 

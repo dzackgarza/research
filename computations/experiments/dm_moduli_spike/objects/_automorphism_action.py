@@ -9,7 +9,7 @@ from .canonical import _incidence_graph, flag_to_node, node_to_flag
 if TYPE_CHECKING:
     from sage.groups.perm_gps.permgroup import PermutationGroup_generic
 
-    from .records import StableGraph
+    from .records import _GraphRecord
 
 
 def _is_identity_permutation(image: tuple[int, ...]) -> bool:
@@ -66,7 +66,7 @@ class _GraphAutomorphismData:
         return self._vertex_perms
 
     @staticmethod
-    def from_graph(graph: StableGraph) -> _GraphAutomorphismData:
+    def from_graph(graph: _GraphRecord) -> _GraphAutomorphismData:
         incidence, partition, color_of = _incidence_graph(graph)
         group = incidence.automorphism_group(partition=partition)
         vertex_nodes = sorted(

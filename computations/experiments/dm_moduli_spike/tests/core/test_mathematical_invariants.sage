@@ -7,7 +7,7 @@ from dm_moduli_spike import Mbar_gn, QuotientStack, spec
 from dm_moduli_spike.objects.gamma import StableGraphCategory
 from dm_moduli_spike.objects.graph_types import StableGraphTypes
 from dm_moduli_spike.objects._automorphism_action import _GraphAutomorphismData
-from dm_moduli_spike.objects.records import StableGraph
+from dm_moduli_spike.objects.records import _GraphRecord
 import pytest
 
 from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
@@ -32,7 +32,7 @@ def test_isomorphic_labeled_inputs_define_the_same_curve_type():
 
 
 def test_record_is_immutable_after_construction():
-    record = StableGraph(
+    record = _GraphRecord(
         vertex_genera=(1,),
         flag_vertex=(0,),
         flag_involution=(0,),

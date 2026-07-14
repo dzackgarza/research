@@ -4,7 +4,7 @@ r"""Tier-4 internal consistency: transport of contractions along isomorphisms.""
 from __future__ import annotations
 
 from dm_moduli_spike.objects.graph_types import StableGraphTypes
-from dm_moduli_spike.objects.records import StableGraph
+from dm_moduli_spike.objects.records import _GraphRecord
 from dm_moduli_spike.objects.contractions import contract_edge
 from dm_moduli_spike.objects.isomorphisms import (
     identity_isomorphism,
@@ -17,7 +17,7 @@ from dm_moduli_spike.objects.isomorphisms import (
 def _swap_vertices(graph: StableGraph) -> StableGraph:
     r"""Relabel vertices ``0 <-> 1`` while keeping flag indices fixed."""
     swap = (1, 0)
-    return StableGraph(
+    return _GraphRecord(
         vertex_genera=tuple(graph.vertex_genera[swap[vertex]] for vertex in range(graph.num_vertices())),
         flag_vertex=tuple(swap[graph.flag_vertex[flag]] for flag in range(graph.num_flags())),
         flag_involution=graph.flag_involution,

@@ -6,14 +6,14 @@ from typing import TYPE_CHECKING
 
 from .._sage_types import SagePermutationGroup
 from .._typing_utils import as_int
-from .records import StableGraph
+from .records import _GraphRecord
 
 if TYPE_CHECKING:
     from .contractions import StableGraphContraction
     from .graph_types import StableGraphType
 
 
-def automorphism_edge_orbit_indices(record: StableGraph) -> tuple[tuple[int, ...], ...]:
+def automorphism_edge_orbit_indices(record: _GraphRecord) -> tuple[tuple[int, ...], ...]:
     r"""Edge-index orbits aligned with :meth:`StableGraph.internal_edges`."""
     num_edges = record.num_edges()
     if num_edges == 0:
@@ -33,7 +33,7 @@ def automorphism_edge_orbit_indices(record: StableGraph) -> tuple[tuple[int, ...
     return tuple(sorted(edge_orbits + singletons, key=lambda orbit: orbit[0]))
 
 
-def automorphism_edge_orbits(record: StableGraph) -> tuple[tuple[tuple[int, int], ...], ...]:
+def automorphism_edge_orbits(record: _GraphRecord) -> tuple[tuple[tuple[int, int], ...], ...]:
     r"""Return internal edges grouped by the action of ``Aut(\Gamma)``."""
     edges = record.internal_edges()
     if not edges:
@@ -42,7 +42,7 @@ def automorphism_edge_orbits(record: StableGraph) -> tuple[tuple[tuple[int, int]
     return tuple(tuple(edges[index] for index in group) for group in groups)
 
 
-def edges_are_in_same_orbit(record: StableGraph, edge_a: tuple[int, int], edge_b: tuple[int, int]) -> bool:
+def edges_are_in_same_orbit(record: _GraphRecord, edge_a: tuple[int, int], edge_b: tuple[int, int]) -> bool:
     r"""Whether two internal edges lie in the same ``Aut(\Gamma)`` orbit."""
     edges = record.internal_edges()
     index_a = edges.index(edge_a)
@@ -66,7 +66,7 @@ def contraction_target_multiset(source: StableGraphType) -> tuple[tuple[StableGr
 
 
 def _contraction_witness_from_decorated(
-    graph: StableGraph,
+    graph: _GraphRecord,
     edge: tuple[int, int],
     g: int,
     n: int,

@@ -37,15 +37,15 @@ if TYPE_CHECKING:
     from sage.graphs.graph import Graph
 
     from .contractions import StableGraphContraction
-    from .graph_types import StableGraphType
+    from .stable_graphs import StableGraph as StableGraphElement
 
 
 _RecordKey = tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...], tuple[int, ...]]
-_GRAPH_INTERN: dict[_RecordKey, StableGraph] = {}
+_GRAPH_INTERN: dict[_RecordKey, _GraphRecord] = {}
 
 
-def intern_graph(graph: StableGraph) -> StableGraph:
-    r"""Return a shared :class:`StableGraph` instance for identical data."""
+def intern_graph(graph: _GraphRecord) -> _GraphRecord:
+    r"""Return a shared :class:`_GraphRecord` instance for identical data."""
     key = (
         graph.vertex_genera,
         graph.flag_vertex,
@@ -60,12 +60,12 @@ def intern_graph(graph: StableGraph) -> StableGraph:
 
 
 # Backward-compatible alias used by older imports and tests.
-def intern_record(graph: StableGraph) -> StableGraph:
+def intern_record(graph: _GraphRecord) -> _GraphRecord:
     return intern_graph(graph)
 
 
-class StableGraph:
-    r"""Immutable half-edge record for a connected stable dual graph.
+class _GraphRecord:
+    r"""Immutable half-edge record for a connected stable dual graph (private).
 
     The constructor validates the structural axioms (indices in range, ``iota``
     an involution, legs are exactly the marked flags, markings are exactly
@@ -73,7 +73,7 @@ class StableGraph:
     know the ambient ``(g, n)``; the total genus is intrinsic and is exposed via
     :meth:`genus`.  Matching that intrinsic genus against an ambient
     :math:`\overline{\mathcal M}_{g,n}` is the job of the parent
-    :class:`~dm_moduli_spike.objects.graph_types.StableGraphTypes`.
+    :class:`~dm_moduli_spike.objects.stable_graphs.StableGraphs`.
     """
 
     __slots__ = (
@@ -272,7 +272,7 @@ class StableGraph:
 
     def __repr__(self) -> str:
         return (
-            "StableGraph("
+            "_GraphRecord("
             f"vertex_genera={self._vertex_genera}, "
             f"flag_vertex={self._flag_vertex}, "
             f"flag_involution={self._flag_involution}, "
@@ -280,7 +280,7 @@ class StableGraph:
         )
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, StableGraph):
+        if not isinstance(other, _GraphRecord):
             return NotImplemented
         return (
             self._vertex_genera == other._vertex_genera
@@ -307,12 +307,12 @@ class StableGraph:
     def vertex_genus(self, vertex: int) -> int:
         return self._vertex_genera[vertex]
 
-    def graph_type(self) -> StableGraphType:
-        from .graph_types import StableGraphType as StableGraphTypeCls
-        from .graph_types import StableGraphTypes
+    def graph_type(self) -> StableGraphElement:
+        from .stable_graphs import StableGraph as StableGraphCls
+        from .stable_graphs import StableGraphs
 
-        typed = StableGraphTypes(self.genus(), self.num_markings())(self)
-        assert isinstance(typed, StableGraphTypeCls), f"StableGraphTypes() must return StableGraphType; found {type(typed)!r}"
+        typed = StableGraphs(self.genus(), self.num_markings())(self)
+        assert isinstance(typed, StableGraphCls), f"StableGraphs() must return StableGraph; found {type(typed)!r}"
         return typed
 
     def automorphism_group(self, on: str = "vertices") -> object:
@@ -324,18 +324,18 @@ class StableGraph:
 
         return StableGraphCategory(self.genus(), self.num_markings()).automorphism_group(self, on=on)
 
-    def contract(self, edge: tuple[int, int]) -> tuple[StableGraphType, StableGraphContraction]:
+    def contract(self, edge: tuple[int, int]) -> tuple[StableGraphElement, StableGraphContraction]:
         from .contractions import contract_edge
 
         return contract_edge(self, edge)
 
-    def canonical_form(self) -> tuple[StableGraphType, StableGraph, dict[int, int]]:
-        from .graph_types import StableGraphTypes
+    def canonical_form(self) -> tuple[StableGraphElement, _GraphRecord, dict[int, int]]:
         from .isomorphisms import canonicalize
+        from .stable_graphs import StableGraphs
 
         cert = canonicalize(self)
         canonical = intern_graph(cert.target)
-        parent = StableGraphTypes(self.genus(), self.num_markings())
+        parent = StableGraphs(self.genus(), self.num_markings())
         graph_type = parent(canonical)
         certificate = {flag: cert.flag_map[flag] for flag in range(self.num_flags())}
         return graph_type, canonical, certificate
@@ -346,4 +346,5 @@ class StableGraph:
         return to_labeled_json(self, self.genus(), self.num_markings())
 
 
-StableGraphRecord = StableGraph
+# Private alias (no public StableGraphRecord).
+_StableGraphRecord = _GraphRecord

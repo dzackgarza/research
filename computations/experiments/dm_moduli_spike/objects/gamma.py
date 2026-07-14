@@ -14,12 +14,13 @@ from collections.abc import Iterator
 from itertools import combinations
 from typing import TYPE_CHECKING
 
+from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
 from .contractions import StableGraphContraction, contract_edges
-from .graph_types import StableGraphType, StableGraphTypes
 from .isomorphisms import StableGraphIsomorphism, isomorphism_between
-from .records import StableGraph
+from .records import _GraphRecord
+from .stable_graphs import StableGraph, StableGraphs
 
 if TYPE_CHECKING:
     from sage.combinat.posets.posets import FinitePoset
@@ -43,8 +44,8 @@ class StableGraphMorphism:
 
     def __init__(
         self,
-        domain: StableGraph,
-        codomain: StableGraph,
+        domain: _GraphRecord,
+        codomain: _GraphRecord,
         vertex_map: tuple[int, ...],
         half_edge_map: tuple[int, ...],
         contracted_flags: frozenset[int],
@@ -86,10 +87,10 @@ class StableGraphMorphism:
             frozenset(),
         )
 
-    def domain(self) -> StableGraph:
+    def domain(self) -> _GraphRecord:
         return self._domain
 
-    def codomain(self) -> StableGraph:
+    def codomain(self) -> _GraphRecord:
         return self._codomain
 
     def vertex_map(self) -> tuple[int, ...]:
@@ -190,29 +191,36 @@ class StableGraphMorphism:
         return f"StableGraphMorphism({self._domain!r} -> {self._codomain!r}, |E_c|={len(self.contracted_edges())})"
 
 
-class StableGraphHomset(UniqueRepresentation):
+class StableGraphHomset(UniqueRepresentation, Parent):
     r"""Finite hom-set `\operatorname{Hom}_{\Gamma_{g,n}}(G,H)`.
 
-    Sage-style finite Hom container: morphisms are its elements (iterate /
-    ``an_element`` / ``__contains__`` / ``cardinality``).
+    Sage :class:`~sage.structure.parent.Parent` in :class:`~sage.categories.homsets.Homsets`
+    (same pattern as :class:`~dm_moduli_spike.geometry.stacks.StackHomset`).
+    Morphisms are plain combinatorial objects enumerated by this parent; they are
+    not yet Sage ``Element`` instances.
+
+    Do not name a method ``category`` here — that would shadow
+    :meth:`Parent.category`.
     """
 
-    __slots__ = ("_category", "_domain", "_codomain", "_morphisms")
+    def __init__(self, gamma: StableGraphCategory, domain: _GraphRecord, codomain: _GraphRecord) -> None:
+        from sage.categories.homsets import Homsets
 
-    def __init__(self, category: StableGraphCategory, domain: StableGraph, codomain: StableGraph) -> None:
-        self._category = category
+        self._gamma = gamma
         self._domain = domain
         self._codomain = codomain
-        self._morphisms = tuple(category._enumerate_morphisms(domain, codomain))
+        self._morphisms = tuple(gamma._enumerate_morphisms(domain, codomain))
+        Parent.__init__(self, category=Homsets())
 
-    def domain(self) -> StableGraph:
+    def domain(self) -> _GraphRecord:
         return self._domain
 
-    def codomain(self) -> StableGraph:
+    def codomain(self) -> _GraphRecord:
         return self._codomain
 
-    def category(self) -> StableGraphCategory:
-        return self._category
+    def gamma(self) -> StableGraphCategory:
+        r"""The combinatorial category `\Gamma_{g,n}` that owns this Hom-set."""
+        return self._gamma
 
     def __iter__(self) -> Iterator[StableGraphMorphism]:
         yield from self._morphisms
@@ -245,16 +253,19 @@ class StableGraphCategory(UniqueRepresentation):
         assert 2 * g - 2 + n > 0
         self._g = g
         self._n = n
-        self._types = StableGraphTypes(g, n)
+        self._graphs = StableGraphs(g, n)
 
-    def _canonical(self, graph: StableGraph | StableGraphType) -> StableGraph:
-        if isinstance(graph, StableGraphType):
-            return graph.canonical_representative()
+    def _as_record(self, graph: object) -> _GraphRecord:
         if isinstance(graph, StableGraph):
-            typed = self._types(graph)
-            assert isinstance(typed, StableGraphType), f"StableGraphTypes() must return StableGraphType; found {type(typed)!r}"
+            return graph.canonical_representative()
+        if isinstance(graph, _GraphRecord):
+            typed = self._graphs(graph)
+            assert isinstance(typed, StableGraph), f"StableGraphs() must return StableGraph; found {type(typed)!r}"
             return typed.canonical_representative()
-        raise TypeError(f"expected StableGraph or StableGraphType; found {type(graph)}")
+        raise TypeError(f"expected StableGraph or _GraphRecord; found {type(graph)}")
+
+    def _canonical(self, graph: object) -> _GraphRecord:
+        return self._as_record(graph)
 
     def genus(self) -> int:
         return self._g
@@ -265,17 +276,17 @@ class StableGraphCategory(UniqueRepresentation):
     def dimension(self) -> int:
         return 3 * self._g - 3 + self._n
 
-    def objects(self) -> tuple[StableGraph, ...]:
-        return tuple(gamma.canonical_representative() for gamma in self._types)
+    def objects(self) -> tuple[_GraphRecord, ...]:
+        return tuple(gamma.canonical_representative() for gamma in self._graphs)
 
-    def object(self, data: StableGraph | StableGraphType) -> StableGraph:
+    def object(self, data: _GraphRecord | StableGraph) -> _GraphRecord:
         return self._canonical(data)
 
-    def half_edges(self, graph: StableGraph | StableGraphType) -> tuple[int, ...]:
+    def half_edges(self, graph: _GraphRecord | StableGraph) -> tuple[int, ...]:
         graph = self._canonical(graph)
         return tuple(range(graph.num_flags()))
 
-    def edges(self, graph: StableGraph | StableGraphType) -> tuple[tuple[int, int], ...]:
+    def edges(self, graph: _GraphRecord | StableGraph) -> tuple[tuple[int, int], ...]:
         return self._canonical(graph).internal_edges()
 
     def half_edge_map(self, morphism: StableGraphMorphism) -> dict[int, int]:
@@ -295,20 +306,20 @@ class StableGraphCategory(UniqueRepresentation):
             result[cod_edge] = (da, db)
         return result
 
-    def hom(self, domain: StableGraph | StableGraphType, codomain: StableGraph | StableGraphType) -> StableGraphHomset:
+    def hom(self, domain: _GraphRecord | StableGraph, codomain: _GraphRecord | StableGraph) -> StableGraphHomset:
         return StableGraphHomset(self, self._canonical(domain), self._canonical(codomain))
 
-    def end(self, graph: StableGraph | StableGraphType) -> StableGraphHomset:
+    def end(self, graph: _GraphRecord | StableGraph) -> StableGraphHomset:
         graph = self._canonical(graph)
         return self.hom(graph, graph)
 
-    def identity(self, graph: StableGraph | StableGraphType) -> StableGraphMorphism:
+    def identity(self, graph: _GraphRecord | StableGraph) -> StableGraphMorphism:
         graph = self._canonical(graph)
         n_v = graph.num_vertices()
         n_h = graph.num_flags()
         return StableGraphMorphism(graph, graph, tuple(range(n_v)), tuple(range(n_h)), frozenset())
 
-    def contract(self, graph: StableGraph | StableGraphType, edges: tuple[tuple[int, int], ...]) -> StableGraphMorphism:
+    def contract(self, graph: _GraphRecord | StableGraph, edges: tuple[tuple[int, int], ...]) -> StableGraphMorphism:
         graph = self._canonical(graph)
         _target_type, contraction = contract_edges(graph, edges)
         morph = StableGraphMorphism.from_contraction(contraction)
@@ -319,7 +330,7 @@ class StableGraphCategory(UniqueRepresentation):
             morph = iso.compose(morph)
         return morph
 
-    def automorphism_group(self, graph: StableGraph | StableGraphType, on: str = "vertices") -> _Object:
+    def automorphism_group(self, graph: _GraphRecord | StableGraph, on: str = "vertices") -> _Object:
         r"""Sage permutation group of `\operatorname{Aut}(G)` acting on the requested set."""
         from ._automorphism_action import _GraphAutomorphismData
 
@@ -333,35 +344,35 @@ class StableGraphCategory(UniqueRepresentation):
             return _permutation_group_from_images(action.on_edges(), graph.num_edges())
         raise ValueError(f"unknown automorphism action target {on!r}")
 
-    def automorphism_morphisms(self, graph: StableGraph | StableGraphType) -> tuple[StableGraphMorphism, ...]:
+    def automorphism_morphisms(self, graph: _GraphRecord | StableGraph) -> tuple[StableGraphMorphism, ...]:
         graph = self._canonical(graph)
         units = [m for m in self.end(graph) if m.is_isomorphism()]
         return tuple(units)
 
-    def codimension(self, graph: StableGraph | StableGraphType) -> int:
+    def codimension(self, graph: _GraphRecord | StableGraph) -> int:
         return self._canonical(graph).num_edges()
 
-    def stratum_dimension(self, graph: StableGraph | StableGraphType) -> int:
+    def stratum_dimension(self, graph: _GraphRecord | StableGraph) -> int:
         graph = self._canonical(graph)
         total = 0
         for vertex in range(graph.num_vertices()):
             total += 3 * graph.vertex_genus(vertex) - 3 + graph.valence(vertex)
         return total
 
-    def boundary_divisors(self) -> tuple[StableGraph, ...]:
+    def boundary_divisors(self) -> tuple[_GraphRecord, ...]:
         return tuple(g for g in self.objects() if g.num_edges() == 1)
 
-    def strata_in_boundary(self) -> tuple[StableGraph, ...]:
+    def strata_in_boundary(self) -> tuple[_GraphRecord, ...]:
         return tuple(g for g in self.objects() if g.num_edges() >= 1)
 
-    def deepest_strata(self) -> tuple[StableGraph, ...]:
+    def deepest_strata(self) -> tuple[_GraphRecord, ...]:
         objects = self.objects()
         if not objects:
             return ()
         max_e = max(g.num_edges() for g in objects)
         return tuple(g for g in objects if g.num_edges() == max_e)
 
-    def clutching_source(self, graph: StableGraph | StableGraphType) -> tuple[tuple[int, tuple[int, ...]], ...]:
+    def clutching_source(self, graph: _GraphRecord | StableGraph) -> tuple[tuple[int, tuple[int, ...]], ...]:
         r"""Formal source `\prod_v \overline{\mathcal M}_{g(v),H(v)}` as `((g(v), H(v)))_v`."""
         graph = self._canonical(graph)
         factors: list[tuple[int, tuple[int, ...]]] = []
@@ -369,7 +380,7 @@ class StableGraphCategory(UniqueRepresentation):
             factors.append((graph.vertex_genus(vertex), graph.flags_at(vertex)))
         return tuple(factors)
 
-    def node_pairings(self, graph: StableGraph | StableGraphType) -> tuple[tuple[int, int], ...]:
+    def node_pairings(self, graph: _GraphRecord | StableGraph) -> tuple[tuple[int, int], ...]:
         r"""Internal edges as two-element `\iota`-orbits (formal node gluings)."""
         return self._canonical(graph).internal_edges()
 
@@ -378,7 +389,7 @@ class StableGraphCategory(UniqueRepresentation):
 
         objects = self.objects()
         # G <=_sp H iff Hom(H, G) nonempty (generic below special)
-        relations: list[tuple[StableGraph, StableGraph]] = []
+        relations: list[tuple[_GraphRecord, _GraphRecord]] = []
         nonempty: dict[tuple[int, int], bool] = {}
         indexed = list(objects)
         for i, source in enumerate(indexed):
@@ -427,7 +438,7 @@ class StableGraphCategory(UniqueRepresentation):
         objects = tuple(g for g in self.objects() if g.num_edges() <= max_codim)
         full = self.specialization_poset()
         # induced subposet
-        covers: list[tuple[StableGraph, StableGraph]] = []
+        covers: list[tuple[_GraphRecord, _GraphRecord]] = []
         object_set = set(objects)
         for source in objects:
             for target in objects:
@@ -440,7 +451,7 @@ class StableGraphCategory(UniqueRepresentation):
                 covers.append((source, target))
         return Poset((objects, covers), cover_relations=True, facade=True)
 
-    def _enumerate_morphisms(self, domain: StableGraph, codomain: StableGraph) -> tuple[StableGraphMorphism, ...]:
+    def _enumerate_morphisms(self, domain: _GraphRecord, codomain: _GraphRecord) -> tuple[StableGraphMorphism, ...]:
         domain = self._canonical(domain)
         codomain = self._canonical(codomain)
 
@@ -472,7 +483,7 @@ class StableGraphCategory(UniqueRepresentation):
                     morphisms.append(morph)
         return tuple(morphisms)
 
-    def _isomorphism_endomorphisms(self, graph: StableGraph) -> tuple[StableGraphMorphism, ...]:
+    def _isomorphism_endomorphisms(self, graph: _GraphRecord) -> tuple[StableGraphMorphism, ...]:
         from ._automorphism_action import _GraphAutomorphismData
 
         action = _GraphAutomorphismData.from_graph(graph)
@@ -504,7 +515,7 @@ class StableGraphCategory(UniqueRepresentation):
             unique[morph] = None
         return tuple(unique)
 
-    def _endomorphism_units_and_id(self, graph: StableGraph) -> tuple[StableGraphMorphism, ...]:
+    def _endomorphism_units_and_id(self, graph: _GraphRecord) -> tuple[StableGraphMorphism, ...]:
         return self._isomorphism_endomorphisms(graph)
 
     def _repr_(self) -> str:
