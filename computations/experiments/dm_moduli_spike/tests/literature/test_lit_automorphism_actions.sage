@@ -11,7 +11,7 @@ import pytest
 
 from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
-from tests.support.fixtures import (
+from dm_moduli_spike.testing_support.support.fixtures import (
     flag_generator_images,
     induced_edge_permutation_group,
     m12_types,

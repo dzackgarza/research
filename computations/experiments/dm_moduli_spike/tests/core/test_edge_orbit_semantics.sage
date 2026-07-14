@@ -7,7 +7,7 @@ from collections import Counter
 from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data, contraction_target_multiset
-from tests.support.fixtures import genus_six_counterexample, m12_types
+from dm_moduli_spike.testing_support.support.fixtures import genus_six_counterexample, m12_types
 
 
 def test_genus_six_counterexample_has_distinct_aut_orbits_same_target():

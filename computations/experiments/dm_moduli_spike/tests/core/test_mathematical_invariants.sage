@@ -14,7 +14,7 @@ from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 from dm_moduli_spike.objects.canonical import canonical_record
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
 from dm_moduli_spike.objects.stratification import build_stratification_from_types
-from tests.support.fixtures import (
+from dm_moduli_spike.testing_support.support.fixtures import (
     edge_generator_images,
     flag_generator_images,
     marking_generator_images,
@@ -349,7 +349,7 @@ def test_complete_stratifications_span_all_ranks():
 
 
 def test_theta_dumbbell_and_m12_type_e_orbit_sizes():
-    from tests.support.fixtures import m12_types
+    from dm_moduli_spike.testing_support.support.fixtures import m12_types
 
     types = StableGraphTypes(1, 2)
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
@@ -364,7 +364,7 @@ def test_theta_dumbbell_and_m12_type_e_orbit_sizes():
 
 def test_automorphism_generators_agree_with_incidence_actions():
     from dm_moduli_spike.objects.canonical import _incidence_graph
-    from tests.support.fixtures import m12_types
+    from dm_moduli_spike.testing_support.support.fixtures import m12_types
 
     types = StableGraphTypes(1, 2)
     fixtures = {

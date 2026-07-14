@@ -17,8 +17,8 @@ from sage.all import posets
 from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
 from dm_moduli_spike.objects.edge_orbits import contraction_target_multiset
-from tests.support.fixtures import CHAN_M20_COVERS, m11_types, m12_types, m20_types
-from tests.support.poset_oracle import specialization_poset
+from dm_moduli_spike.testing_support.support.fixtures import CHAN_M20_COVERS, m11_types, m12_types, m20_types
+from dm_moduli_spike.testing_support.support.poset_oracle import specialization_poset
 
 pytestmark = pytest.mark.ci
 

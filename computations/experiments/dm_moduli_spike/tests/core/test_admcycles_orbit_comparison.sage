@@ -16,7 +16,7 @@ from dm_moduli_spike.objects.edge_orbits import (
     contraction_target_multiset,
     edges_are_in_same_orbit,
 )
-from tests.support.fixtures import genus_six_counterexample
+from dm_moduli_spike.testing_support.support.fixtures import genus_six_counterexample
 
 
 def _spike_orbit_sizes(record):

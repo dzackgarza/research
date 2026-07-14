@@ -29,7 +29,7 @@ from itertools import combinations
 from dm_moduli_spike.objects.splits import canonicalize_split
 from sage.all import Graph, SymmetricGroup, factorial, graphs
 from sage.rings.rational_field import QQ
-from tests.support.poset_oracle import (
+from dm_moduli_spike.testing_support.support.poset_oracle import (
     augmented_face_poset,
     compatible_splits,
     expected_M0n_specialization_poset,

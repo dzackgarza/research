@@ -6,7 +6,7 @@ import pytest
 
 from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
-from tests.support.poset_oracle import specialization_poset
+from dm_moduli_spike.testing_support.support.poset_oracle import specialization_poset
 
 
 @pytest.mark.parametrize(

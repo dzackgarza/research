@@ -34,7 +34,7 @@ from dm_moduli_spike import (
 )
 from dm_moduli_spike.geometry.stratification import StableDualGraph
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
-from tests.support.poset_oracle import expected_M0n_specialization_poset
+from dm_moduli_spike.testing_support.support.poset_oracle import expected_M0n_specialization_poset
 
 
 def test_category_hierarchy_subcategories():

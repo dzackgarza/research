@@ -7,7 +7,7 @@ from sage.combinat.posets.posets import FinitePoset
 
 from dm_moduli_spike import StableGraphCategory
 from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
-from tests.support.poset_oracle import expected_M0n_specialization_poset
+from dm_moduli_spike.testing_support.support.poset_oracle import expected_M0n_specialization_poset
 
 
 def test_gamma_objects_and_homsets_M11():
@@ -110,7 +110,7 @@ def test_closure_poset_is_dual():
 
 
 def test_native_automorphism_group_api_M12_banana():
-    from tests.support.fixtures import m12_types
+    from dm_moduli_spike.testing_support.support.fixtures import m12_types
 
     Gamma = StableGraphCategory(1, 2)
     banana = m12_types(StableGraphStratificationEnumerator(1, 2).stratification())["E"].canonical_representative()

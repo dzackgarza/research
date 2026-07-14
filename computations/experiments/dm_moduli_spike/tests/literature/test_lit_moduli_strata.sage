@@ -15,8 +15,8 @@ from sage.rings.integer_ring import ZZ
 from dm_moduli_spike import Mbar_gn, QuotientStack, spec
 from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
-from tests.support.fixtures import flag_generator_images
-from tests.support.fixtures import CHAN_M20_COVERS, m20_types
+from dm_moduli_spike.testing_support.support.fixtures import flag_generator_images
+from dm_moduli_spike.testing_support.support.fixtures import CHAN_M20_COVERS, m20_types
 
 
 def test_M04_stratification_has_one_open_and_three_codim_one_boundary_strata():

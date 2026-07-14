@@ -11,7 +11,7 @@ import pytest
 
 from dm_moduli_spike.objects.model import StableGraphStratificationEnumerator
 
-from tests.support.fixtures import (
+from dm_moduli_spike.testing_support.support.fixtures import (
     boundary_label,
     clutching_signature,
     expected_boundary_labels,

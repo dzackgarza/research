@@ -13,7 +13,7 @@ from sage.rings.integer_ring import ZZ
 from dm_moduli_spike import Mbar_gn, ProductStack, QuotientStack, spec
 from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
 from dm_moduli_spike.objects.graph_types import StableGraphTypes
-from tests.support.fixtures import (
+from dm_moduli_spike.testing_support.support.fixtures import (
     chan_m13_curve_type,
     induced_edge_permutation_group,
     marking_generator_images,

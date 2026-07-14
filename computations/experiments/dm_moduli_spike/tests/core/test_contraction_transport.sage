@@ -1,4 +1,4 @@
-from tests.support.fixtures import flag_generator_images
+from dm_moduli_spike.testing_support.support.fixtures import flag_generator_images
 r"""Tier-4 internal consistency: transport of contractions along isomorphisms."""
 
 from __future__ import annotations
