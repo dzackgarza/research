@@ -70,6 +70,70 @@ class Subobject:
     def gram_matrix(self) -> Any:
         return self.lattice().gram_matrix()
 
+    def base_ring(self) -> Any:
+        return self.lattice().base_ring()
+
+    def category(self) -> Any:
+        return self.lattice().category()
+
+    def determinant(self) -> Any:
+        return self.lattice().determinant()
+
+    def discriminant(self) -> Any:
+        return self.lattice().discriminant()
+
+    def signature_pair(self) -> Any:
+        return self.lattice().signature_pair()
+
+    def is_even(self) -> bool:
+        return bool(self.lattice().is_even())
+
+    def is_unimodular(self) -> bool:
+        return bool(self.lattice().is_unimodular())
+
+    def is_degenerate(self) -> bool:
+        return bool(self.lattice().is_degenerate())
+
+    def roots(self) -> Any:
+        return self.lattice().roots()
+
+    def discriminant_group(self) -> Any:
+        return self.lattice().discriminant_group()
+
+    def twist(self, factor: Any, label: str | None = None) -> Any:
+        return self.lattice().twist(factor, label=label)
+
+    def dual(self) -> Any:
+        return self.lattice().dual()
+
+    def rationalization(self) -> Any:
+        return self.lattice().rationalization()
+
+    def base_extend(self, base_ring: Any) -> Any:
+        return self.lattice().base_extend(base_ring)
+
+    def gen(self, index: int) -> Any:
+        return self.lattice().gen(index)
+
+    def gens(self) -> Any:
+        return self.lattice().gens()
+
+    def zero(self) -> Any:
+        return self.lattice().zero()
+
+    def cartan_type(self) -> Any:
+        return self.lattice().cartan_type()
+
+    def is_root(self, element: Any) -> bool:
+        return bool(self.lattice().is_root(element))
+
+    def radical_quotient(self, label: str = "radical_quotient") -> Any:
+        return self.lattice().radical_quotient(label=label)
+
+    def tensor_product(self, other: Any, label: str = "tensor_product") -> Any:
+        other_lattice = other.lattice() if isinstance(other, Subobject) else other
+        return self.lattice().tensor_product(other_lattice, label=label)
+
     def cokernel(self) -> SyntheticLatticeCokernel:
         r"""The cokernel ``M / L`` of the inclusion."""
         return self._inclusion.cokernel()
@@ -82,16 +146,6 @@ class Subobject:
         r"""The index ``[M : L]`` of the subobject in its ambient -- the order of
         the cokernel (infinite when ``L`` is not full rank in ``M``)."""
         return self._inclusion.index()
-
-    def __getattr__(self, name: str) -> Any:
-        # A subobject exposes its lattice's intrinsic vocabulary (determinant,
-        # signature_pair, roots, twist, discriminant_group, is_even, ...); the
-        # subobject-specific operations (inclusion, orthogonal_complement,
-        # is_primitive, is_isometric/is_submodule against another subobject) are
-        # defined explicitly above and take precedence.
-        if name.startswith("_"):
-            raise AttributeError(name)
-        return getattr(self.lattice(), name)
 
     def direct_sum(self, *others: Any, label: str = "direct_sum") -> Any:
         lattices = [other.lattice() if isinstance(other, Subobject) else other for other in others]

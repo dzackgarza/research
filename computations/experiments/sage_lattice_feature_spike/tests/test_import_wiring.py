@@ -19,8 +19,11 @@ def test_feature_spike_reexports_the_base_parity_spike() -> None:
 
 
 def test_base_exposes_its_public_lattice_surface() -> None:
-    for name in ("Lattices", "DiscriminantForms", "SyntheticLattice", "LatticeMorphism"):
-        assert hasattr(sage_lattice_feature_spike.base, name), name
+    base = sage_lattice_feature_spike.base
+    assert base.Lattices is sage_lattice_category_spike.Lattices
+    assert base.DiscriminantForms is sage_lattice_category_spike.DiscriminantForms
+    assert base.SyntheticLattice is sage_lattice_category_spike.SyntheticLattice
+    assert base.LatticeMorphism is sage_lattice_category_spike.LatticeMorphism
 
 
 def test_base_is_live_over_ZZ_through_the_import() -> None:
