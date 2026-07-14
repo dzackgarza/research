@@ -166,7 +166,7 @@ class CountableSets(CategoryWithAxiom):
             for position, element in enumerate(enumeration):
                 if element == value:
                     return position
-            raise ValueError(f"value is not in this countable set: {value!r}")
+            assert False, f"countable-set enumeration exhausted without value; value={value!r}"
 
     def extra_super_categories(self) -> tuple[Category, ...]:
         return (EnumeratedSets(),)

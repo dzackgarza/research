@@ -284,7 +284,7 @@ def fetch_sagemath_files() -> list[_SourceFile]:
                     },
                 }
                 files.append(data)
-            except OSError, ValueError:
+            except (OSError, ValueError):
                 # Skip files that can't be accessed
                 continue
 
