@@ -30,9 +30,7 @@ def test_direct_citation_links() -> None:
     test_response = "You can compute the discriminant using the discriminant method (src1). This is documented in the lattice tutorial (src2)."
 
     # Process the response
-    enhanced_response = enhancer.post_process_response_citations(
-        test_response, enhanced_docs
-    )
+    enhanced_response = enhancer.post_process_response_citations(test_response, enhanced_docs)
 
     print("🔗 Testing Citation Link Generation")
     print("=" * 50)
@@ -52,9 +50,7 @@ def test_direct_citation_links() -> None:
     print("Found links:")
     for i, link in enumerate(links, 1):
         if link.startswith("#"):
-            print(
-                f"  ❌ Link {i}: {link} (internal anchor - should be direct file link)"
-            )
+            print(f"  ❌ Link {i}: {link} (internal anchor - should be direct file link)")
         elif link.startswith("http") or link.startswith("file://"):
             print(f"  ✅ Link {i}: {link} (direct link)")
         else:

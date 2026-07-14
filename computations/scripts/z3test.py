@@ -4,8 +4,8 @@ from z3 import ArithRef, Int, IntNumRef, IntVector, Or, Solver, Sum, sat
 
 
 def find_ineq_int_soln() -> None:
-    x = Int('x')
-    y = Int('y')
+    x = Int("x")
+    y = Int("y")
 
     solver = Solver()
     solver.add(x > 10, y == x + 2)
@@ -18,10 +18,8 @@ def find_ineq_int_soln() -> None:
 
 def bilinear_form(G: Sequence[Sequence[int]], x: Sequence[ArithRef]) -> ArithRef:
     n = len(x)
-    return Sum([
-        x[i] * G[i][j] * x[j]
-        for i in range(n) for j in range(n)
-    ])
+    return Sum([x[i] * G[i][j] * x[j] for i in range(n) for j in range(n)])
+
 
 def find_roots(
     G: Sequence[Sequence[int]],
@@ -32,7 +30,7 @@ def find_roots(
     x = IntVector("x", n)
     s = Solver()
     s.add(bilinear_form(G, x) == k)
-    s.add(Sum([x[i]*x[i] for i in range(n)]) > 0)
+    s.add(Sum([x[i] * x[i] for i in range(n)]) > 0)
 
     if bounds:
         for i in range(n):
@@ -51,12 +49,8 @@ def find_roots(
         s.add(Or([x[i] != r[i] for i in range(n)]))
     return roots
 
-G = [
-    [0, 1, 0, 0],
-    [1, 0, 0, 0],
-    [0, 0, 0, 2],
-    [0, 0, 2, 0]
-]
+
+G = [[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 0, 2], [0, 0, 2, 0]]
 
 N = 20
 roots = find_roots(G, k=-2, bounds=(-N, N))

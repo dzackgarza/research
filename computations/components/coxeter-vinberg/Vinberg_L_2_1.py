@@ -14,36 +14,32 @@ from sage.rings.rational_field import QQ
 from sage.structure.element import Matrix as SageMatrix
 
 
-def plot_coxeter_diagram_detailed(
-    simple_roots: Sequence[FreeModuleElement], Q: SageMatrix = diagonal_matrix([-1, 1, 1])
-) -> Graphics:
+def plot_coxeter_diagram_detailed(simple_roots: Sequence[FreeModuleElement], Q: SageMatrix = diagonal_matrix([-1, 1, 1])) -> Graphics:
     G = Graph(multiedges=False, loops=False)
 
     for i in range(len(simple_roots)):
         for j in range(i + 1, len(simple_roots)):
             ri, rj = simple_roots[i], simple_roots[j]
-            ip = (ri * Q * rj)
+            ip = ri * Q * rj
             val = -ip / 2
 
             if val == 1:
                 continue  # no edge
             elif val == -1:
-                G.add_edge(i, j, label='∞')
+                G.add_edge(i, j, label="∞")
                 continue
 
             # Determine m from known cos(pi/m) values
             found = False
-            for m, cosval in [(2, -1), (3, -QQ(1)/2), (4, 0), (6, QQ(1)/2)]:
+            for m, cosval in [(2, -1), (3, -QQ(1) / 2), (4, 0), (6, QQ(1) / 2)]:
                 if val == cosval:
                     G.add_edge(i, j, label=str(m))
                     found = True
                     break
             if not found:
-                G.add_edge(i, j, label='?')  # fallback for unrecognized angles
+                G.add_edge(i, j, label="?")  # fallback for unrecognized angles
 
-    vertex_labels = {
-        i: f"{i}\n({(r * Q * r)})" for i, r in enumerate(simple_roots)
-    }
+    vertex_labels = {i: f"{i}\n({(r * Q * r)})" for i, r in enumerate(simple_roots)}
 
     graph_plot: GraphPlot = G.graphplot(
         vertex_labels=vertex_labels,
@@ -53,12 +49,13 @@ def plot_coxeter_diagram_detailed(
     return graph_plot.plot()
 
 
-
 # Lorentzian form Q with signature (2,1)
 Q: SageMatrix = diagonal_matrix([-1, 1, 1])
 
+
 def lorentz_inner(u: FreeModuleElement, v: FreeModuleElement) -> Integer | Rational:
     return u * Q * v
+
 
 def in_hyperbolic_domain(v: FreeModuleElement) -> bool:
     # Negative norm and future cone (to pick one sheet)
@@ -66,11 +63,13 @@ def in_hyperbolic_domain(v: FreeModuleElement) -> bool:
     future_pointing: bool = v[0] > 0
     return negative_norm and future_pointing
 
+
 def reflect(x: FreeModuleElement, r: FreeModuleElement) -> FreeModuleElement:
     rr = lorentz_inner(r, r)
     if rr == 0:
         raise ValueError("Reflection undefined for isotropic root vector")
     return x - 2 * lorentz_inner(x, r) / rr * r
+
 
 def chamber_polyhedron(roots: Sequence[FreeModuleElement]) -> Polyhedron_base:
     # Inequalities for half-spaces: (r, x) >= 0
@@ -80,6 +79,7 @@ def chamber_polyhedron(roots: Sequence[FreeModuleElement]) -> Polyhedron_base:
     for r in roots:
         ieqs.append([0] + [-x for x in r])
     return Polyhedron(ieqs=ieqs)
+
 
 def chamber_fully_in_hyperbolic(chamber: Polyhedron_base) -> bool:
     # Vertices and rays inside hyperbolic domain or on boundary (ideal vertices)
@@ -94,14 +94,14 @@ def chamber_fully_in_hyperbolic(chamber: Polyhedron_base) -> bool:
             return False
     return True
 
-def is_new_root(
-    r: FreeModuleElement, roots: Sequence[FreeModuleElement], tol: float = 1e-12
-) -> bool:
+
+def is_new_root(r: FreeModuleElement, roots: Sequence[FreeModuleElement], tol: float = 1e-12) -> bool:
     # Check if root r (or its negative) already in roots
     for s in roots:
         if (r - s).norm() < tol or (r + s).norm() < tol:
             return False
     return True
+
 
 def primitive_root(r: FreeModuleElement) -> FreeModuleElement:
     # Make integer vector primitive by dividing by gcd of entries
@@ -109,6 +109,7 @@ def primitive_root(r: FreeModuleElement) -> FreeModuleElement:
     if g != 0 and g != 1 and g != -1:
         r = r // g
     return r
+
 
 def vinberg_algorithm(simple_roots: Sequence[FreeModuleElement]) -> list[FreeModuleElement]:
     roots = list(simple_roots)
@@ -158,13 +159,10 @@ def vinberg_algorithm(simple_roots: Sequence[FreeModuleElement]) -> list[FreeMod
 
     return roots
 
+
 if __name__ == "__main__":
     # Example initial simple roots of norm -2 (change for your lattice)
-    simple_roots = [
-        vector([-1, 1, 0]),
-        vector([-1, 0, 1]),
-        vector([-2, 1, 1])
-    ]
+    simple_roots = [vector([-1, 1, 0]), vector([-1, 0, 1]), vector([-2, 1, 1])]
 
     roots = vinberg_algorithm(simple_roots)
     print("Simple roots found:")

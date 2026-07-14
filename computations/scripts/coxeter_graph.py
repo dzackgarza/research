@@ -44,13 +44,9 @@ class TikzOptionsPatch(TypedDict, total=False):
     tex_font_size: str
     edge_width: float
     node_size: str
-type CoxeterInput = (
-    Matrix
-    | FreeQuadraticModule_generic_pid
-    | FreeQuadraticModule_integer_symmetric
-    | Graph
-    | None
-)
+
+
+type CoxeterInput = Matrix | FreeQuadraticModule_generic_pid | FreeQuadraticModule_integer_symmetric | Graph | None
 type CoxeterEdge = tuple[Hashable, Hashable, str | int | float | None]
 
 
@@ -71,9 +67,10 @@ def matrix_to_graph(M: Matrix) -> Graph:
     G = Graph(loops=True)
     for i in range(nverts):
         for j in range(nverts):
-            if i==j or M[i,j] != 0:
-                G.add_edge(i, j, str(M[i, j]) )
+            if i == j or M[i, j] != 0:
+                G.add_edge(i, j, str(M[i, j]))
     return G
+
 
 def graph_to_matrix(G: Graph) -> Matrix:
     """
@@ -93,9 +90,10 @@ def graph_to_matrix(G: Graph) -> Matrix:
     M: Matrix = zero_matrix(ZZ, n)
     Gp = G.relabel(list(range(n)), inplace=False)
     for e in Gp.edges():
-        M[ e[0], e[1] ] = e[2]
-        M[ e[1], e[0] ] = e[2]
+        M[e[0], e[1]] = e[2]
+        M[e[1], e[0]] = e[2]
     return M
+
 
 def is_elliptic_matrix(M: Matrix) -> bool:
     """
@@ -110,6 +108,7 @@ def is_elliptic_matrix(M: Matrix) -> bool:
     """
     return M.det() > 0
 
+
 def is_parabolic_matrix(M: Matrix) -> bool:
     """
     Check if a matrix corresponds to a parabolic subgraph.
@@ -123,6 +122,7 @@ def is_parabolic_matrix(M: Matrix) -> bool:
     """
     return M.det() == 0
 
+
 def is_elliptic_subgraph(H: CoxeterGraph | Graph) -> bool:
     """
     Check if a subgraph is elliptic.
@@ -135,10 +135,11 @@ def is_elliptic_subgraph(H: CoxeterGraph | Graph) -> bool:
         sage: is_elliptic_subgraph(G)
         True
     """
-    if hasattr(H, 'gram_matrix') and H.gram_matrix is not None:
+    if hasattr(H, "gram_matrix") and H.gram_matrix is not None:
         return is_elliptic_matrix(H.gram_matrix)
     else:
         return is_elliptic_matrix(graph_to_matrix(H))
+
 
 def is_parabolic_subgraph(H: CoxeterGraph | Graph) -> bool:
     """
@@ -152,10 +153,11 @@ def is_parabolic_subgraph(H: CoxeterGraph | Graph) -> bool:
         sage: is_parabolic_subgraph(G)
         False
     """
-    if hasattr(H, 'gram_matrix') and H.gram_matrix is not None:
+    if hasattr(H, "gram_matrix") and H.gram_matrix is not None:
         return is_parabolic_matrix(H.gram_matrix)
     else:
         return is_parabolic_matrix(graph_to_matrix(H))
+
 
 def init_coxeter_colors(G: Graph) -> dict[Hashable, str]:
     """
@@ -187,6 +189,7 @@ def lattice_vertex_labels(
         return {vertex: str(vertex) for vertex in range(lattice.rank())}
     return {vertex: name for vertex, name in enumerate(names)}
 
+
 def get_coxeter_label_connected(H: Graph) -> str:
     """
     Get the Coxeter type label for a connected graph.
@@ -210,6 +213,7 @@ def get_coxeter_label_connected(H: Graph) -> str:
         # Simplified labeling - for more accurate labeling, would need full classification
         return f"Type_{n}"
 
+
 # Lookup table for Coxeter diagram edge calculations
 m_lookup = {
     ZZ(0): ZZ(2),
@@ -219,14 +223,15 @@ m_lookup = {
     ZZ(1): Infinity,
 }
 
+
 class CoxeterGraph(Graph):
     """
     A specialized Graph class for working with Coxeter diagrams.
-    
+
     This class extends Sage's Graph class with functionality specific to
     Coxeter diagrams, including automatic coloring, labeling, and analysis
     of elliptic and parabolic subdiagrams.
-    
+
     EXAMPLES::
         sage: from coxeter_graph import CoxeterGraph
         sage: from isometry_utils import matrix_A_n
@@ -235,17 +240,13 @@ class CoxeterGraph(Graph):
         sage: G.num_verts()
         3
     """
-    
+
     _default_options: dict[str, CoxeterOption] = {}
     if TYPE_CHECKING:
         gram_matrix: Matrix
     else:
         gram_matrix = None
-    lattice: (
-        FreeQuadraticModule_generic_pid
-        | FreeQuadraticModule_integer_symmetric
-        | None
-    ) = None
+    lattice: FreeQuadraticModule_generic_pid | FreeQuadraticModule_integer_symmetric | None = None
     coxeter_graph: Graph | None = None
     all_subgraphs = None
     all_elliptic_subgraphs = None
@@ -283,14 +284,11 @@ class CoxeterGraph(Graph):
         same_vertices: bool = Set(self.vertices()) == Set(other.vertices())
         same_edges: bool = Set(self.edges()) == Set(other.edges())
         return same_vertices and same_edges
-        
+
     @cached_method
     def __hash__(self) -> int:
-        return hash(
-            frozenset(self.edges(sort=True)).union(
-                frozenset(self.vertices(sort=True)))
-        )
-    
+        return hash(frozenset(self.edges(sort=True)).union(frozenset(self.vertices(sort=True))))
+
     def __init__(
         self,
         data: CoxeterInput = None,
@@ -312,7 +310,7 @@ class CoxeterGraph(Graph):
     ) -> None:
         """
         Initialize a CoxeterGraph.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import matrix_A_n
@@ -321,7 +319,7 @@ class CoxeterGraph(Graph):
             sage: G.gram_matrix is not None
             True
         """
-        
+
         # Handle matrix input
         if isinstance(data, Matrix_integer_dense):
             self.gram_matrix = data
@@ -346,11 +344,22 @@ class CoxeterGraph(Graph):
         if tikz_options is not None:
             self.update_tikz_options(tikz_options)
 
-        Graph.__init__(self, data=data, pos=pos, loops=loops, format=format,
-                     weighted=weighted, data_structure=data_structure,
-                     vertex_labels=vertex_labels, name=name,
-                     multiedges=multiedges, convert_empty_dict_labels_to_None=convert_empty_dict_labels_to_None,
-                     sparse=sparse, immutable=immutable, hash_labels=hash_labels)
+        Graph.__init__(
+            self,
+            data=data,
+            pos=pos,
+            loops=loops,
+            format=format,
+            weighted=weighted,
+            data_structure=data_structure,
+            vertex_labels=vertex_labels,
+            name=name,
+            multiedges=multiedges,
+            convert_empty_dict_labels_to_None=convert_empty_dict_labels_to_None,
+            sparse=sparse,
+            immutable=immutable,
+            hash_labels=hash_labels,
+        )
 
         self._default_options["edge_labels"] = True
 
@@ -374,7 +383,7 @@ class CoxeterGraph(Graph):
     def get_coxeter_graph(self) -> Graph:
         """
         Convert the bilinear form graph to a standard Coxeter diagram.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import matrix_A_n
@@ -388,7 +397,7 @@ class CoxeterGraph(Graph):
             Gp = Graph(multiedges=True)
             for v in sorted(self.vertices()):
                 Gp.add_vertex(v)
-            
+
             for e in [e for e in self.edges() if e[0] != e[1]]:
                 v1 = e[0]
                 v2 = e[1]
@@ -396,14 +405,14 @@ class CoxeterGraph(Graph):
                 v1_2 = [e for e in self.edges_incident(v1) if e[0] == v1 and e[1] == v1][0][2]
                 v2_2 = [e for e in self.edges_incident(v2) if e[0] == v2 and e[1] == v2][0][2]
                 g12 = int(v1_v2) / sqrt(int(v1_2) * int(v2_2))
-                
+
                 if g12 > 1:
                     Gp.add_edge(v1, v2, g12)
                 elif g12 == 1:
                     Gp.add_edge(v1, v2, "∞")
                 elif g12 < 1:
                     m = m_lookup[g12]
-                    for i in range(m-2):
+                    for i in range(m - 2):
                         Gp.add_edge(v1, v2, "")
                 else:
                     raise ValueError("Unknown entry.")
@@ -413,7 +422,7 @@ class CoxeterGraph(Graph):
     def get_coxeter_label(self) -> list[str]:
         """
         Get the Coxeter type label for this graph.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import matrix_A_n
@@ -432,14 +441,14 @@ class CoxeterGraph(Graph):
 
         # print("Plotting, updating colors")
         self._default_options["vertex_colors"] = init_coxeter_colors(self)
-        
-        updated_opts = dict( list( options.items() ) + list( self._default_options.items() ) )
+
+        updated_opts = dict(list(options.items()) + list(self._default_options.items()))
 
         # updated_opts["pos"] = self._default_options["pos"]
         if "pos" in updated_opts.keys():
             del updated_opts["pos"]
-        
-        #options.update(opts)
+
+        # options.update(opts)
         updated_opts["title"] = self.get_coxeter_label()
         # if self.parent_coxeter_graph is not None:
         #     updated_opts["pos"] = self.parent_coxeter_graph._default_options["pos"]
@@ -447,20 +456,20 @@ class CoxeterGraph(Graph):
         #     updated_opts["pos"] = self._default_options["pos"]
 
         Gp = self.get_coxeter_graph()
-            
+
         # return self.coxeter_graph
         # print("Default options:")
         # print(self._default_options)
         # print("Options going into graphplot:")
         # print(updated_opts)
-        positions = { x: self.fixed_positions[x] for x in self.fixed_positions if x in self.vertices()}
+        positions = {x: self.fixed_positions[x] for x in self.fixed_positions if x in self.vertices()}
         # print("Using positions: " + str( positions ) )
-        pl = Gp.graphplot(pos = positions, **updated_opts)
+        pl = Gp.graphplot(pos=positions, **updated_opts)
         pl.show(figsize=10)
 
     def old_plot(self, **options: CoxeterOption) -> GraphPlot:
         return self.graphplot(**options)
-    
+
     def get_subgraphs(
         self,
         only_connected: bool = False,
@@ -468,7 +477,7 @@ class CoxeterGraph(Graph):
     ) -> list[CoxeterGraph]:
         """
         Get all subgraphs of this Coxeter graph.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import matrix_A_n
@@ -490,7 +499,7 @@ class CoxeterGraph(Graph):
     ) -> list[CoxeterGraph]:
         """
         Get all elliptic subgraphs of this Coxeter graph.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import matrix_A_n
@@ -506,21 +515,18 @@ class CoxeterGraph(Graph):
                 raise ValueError("Error: not all matrices are elliptic.")
             else:
                 self.all_elliptic_subgraphs = list(reversed(sorted(all_elliptic_subgraphs, key=len)))
-        
+
         assert len(self.all_elliptic_subgraphs) > 0
-        
-        elliptic_subgraphs = (
-            H for H in self.all_elliptic_subgraphs
-            if not only_connected or H.is_connected()
-        )
-        
+
+        elliptic_subgraphs = (H for H in self.all_elliptic_subgraphs if not only_connected or H.is_connected())
+
         elliptic_subgraphs = (H for H in elliptic_subgraphs if len(H) > 0)
         return list(reversed(sorted(elliptic_subgraphs, key=len)))
 
     def get_parabolic_subgraphs(self) -> list[CoxeterGraph]:
         """
         Get all parabolic subgraphs of this Coxeter graph.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import graph_tilde_A_n
@@ -536,9 +542,9 @@ class CoxeterGraph(Graph):
                 raise ValueError("Error: not all matrices are parabolic.")
             else:
                 self.all_parabolic_subgraphs = list(reversed(sorted(all_parabolic_subgraphs, key=len)))
-        
+
         assert len(self.all_parabolic_subgraphs) > 0
-        
+
         parabolic_subgraphs = filter(lambda H: len(H) > 0, self.all_parabolic_subgraphs)
         return list(reversed(sorted(parabolic_subgraphs, key=len)))
 
@@ -566,7 +572,7 @@ class CoxeterGraph(Graph):
     ) -> list[CoxeterGraph] | list[tuple[CoxeterGraph, ...]]:
         """
         Compute orbits of subgraphs under the automorphism group.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import matrix_A_n
@@ -586,7 +592,7 @@ class CoxeterGraph(Graph):
             int_orbits.add(tuple(lp))
 
         graph_orbits = Set([tuple(map(lambda x: self.subgraph(x), some_orbs)) for some_orbs in int_orbits])
-                
+
         if representatives_only:
             return [x[0] for x in graph_orbits]
         else:
@@ -600,7 +606,7 @@ class CoxeterGraph(Graph):
     ) -> FinitePoset | list[CoxeterGraph]:
         """
         Compute orbits of elliptic subgraphs under the automorphism group.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import matrix_A_n
@@ -614,17 +620,14 @@ class CoxeterGraph(Graph):
         nontrivial_subgraphs = [H for H in subgraphs if len(H) > 0]
         elliptic_subgraphs = filter(lambda H: is_elliptic_subgraph(H), nontrivial_subgraphs)
         if only_connected:
-            elliptic_subgraphs = filter(lambda H: H.is_connected(), elliptic_subgraphs)      
+            elliptic_subgraphs = filter(lambda H: H.is_connected(), elliptic_subgraphs)
 
         if as_poset:
             if fast:
                 elliptic_vertex_sets = list(map(lambda H: Set(H.vertices()), elliptic_subgraphs))
                 B = Poset((elliptic_vertex_sets, lambda h0, h1: h0.issubset(h1)))
             else:
-                B = Poset(
-                    (set(elliptic_subgraphs), lambda x, y: 
-                     all([v in y.vertices() for v in x.vertices()]))
-                )
+                B = Poset((set(elliptic_subgraphs), lambda x, y: all([v in y.vertices() for v in x.vertices()])))
             return B
         else:
             return list(elliptic_subgraphs)
@@ -637,7 +640,7 @@ class CoxeterGraph(Graph):
     ) -> FinitePoset | list[CoxeterGraph]:
         """
         Compute orbits of parabolic subgraphs under the automorphism group.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import graph_tilde_A_n
@@ -651,17 +654,14 @@ class CoxeterGraph(Graph):
         nontrivial_subgraphs = [H for H in subgraphs if len(H) > 0]
         parabolic_subgraphs = filter(lambda H: is_parabolic_subgraph(H), nontrivial_subgraphs)
         if only_connected:
-            parabolic_subgraphs = filter(lambda H: H.is_connected(), parabolic_subgraphs)      
+            parabolic_subgraphs = filter(lambda H: H.is_connected(), parabolic_subgraphs)
 
         if as_poset:
             if fast:
                 parabolic_vertex_sets = list(map(lambda H: Set(H.vertices()), parabolic_subgraphs))
                 B = Poset((parabolic_vertex_sets, lambda h0, h1: h0.issubset(h1)))
             else:
-                B = Poset(
-                    (set(parabolic_subgraphs), lambda x, y: 
-                     all([v in y.vertices() for v in x.vertices()]))
-                )
+                B = Poset((set(parabolic_subgraphs), lambda x, y: all([v in y.vertices() for v in x.vertices()])))
             return B
         else:
             return list(parabolic_subgraphs)
@@ -669,7 +669,7 @@ class CoxeterGraph(Graph):
     def set_parent(self, parent: CoxeterGraph) -> None:
         """
         Set the parent CoxeterGraph for this subgraph.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import matrix_A_n
@@ -697,7 +697,7 @@ class CoxeterGraph(Graph):
     ) -> CoxeterGraph:
         """
         Create a CoxeterGraph subgraph.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import matrix_A_n
@@ -707,19 +707,19 @@ class CoxeterGraph(Graph):
             sage: isinstance(H, CoxeterGraph)
             True
         """
-        H = super().subgraph(vertices=vertices, edges=edges, inplace=inplace,
-                 vertex_property=vertex_property, edge_property=edge_property, 
-                 algorithm=algorithm, immutable=immutable)
+        H = super().subgraph(
+            vertices=vertices, edges=edges, inplace=inplace, vertex_property=vertex_property, edge_property=edge_property, algorithm=algorithm, immutable=immutable
+        )
 
         H.gram_matrix = graph_to_matrix(H)
         H.set_parent(self)
-        H._default_options["vertex_colors"] = init_coxeter_colors(H)        
+        H._default_options["vertex_colors"] = init_coxeter_colors(H)
         return H
 
     def get_title(self) -> str:
         """
         Get the title for this CoxeterGraph.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import matrix_A_n
@@ -739,16 +739,16 @@ class CoxeterGraph(Graph):
                     if mult == 1:
                         combined_labs.append(x)
                     else:
-                        combined_labs.append(f'{x}^{mult}')
+                        combined_labs.append(f"{x}^{mult}")
                 self.tex_title = "$" + "".join(combined_labs) + "$"
-            else: 
+            else:
                 self.tex_title = "Untitled Graph"
         return self.tex_title
 
     def update_tikz_options(self, opts: TikzOptionsPatch) -> None:
         """
         Update TikZ options for this CoxeterGraph.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import matrix_A_n
@@ -766,7 +766,7 @@ class CoxeterGraph(Graph):
     ) -> CoxeterGraph:
         """
         Get a random subgraph of a specified type.
-        
+
         EXAMPLES::
             sage: from coxeter_graph import CoxeterGraph
             sage: from isometry_utils import matrix_A_n
@@ -777,6 +777,7 @@ class CoxeterGraph(Graph):
             True
         """
         import random
+
         if graph_type == "Elliptic":
             H = random.choice(self.get_elliptic_subgraphs())
         elif graph_type == "Parabolic":
@@ -796,12 +797,12 @@ class CoxeterGraph(Graph):
 
         if tikz_options is None:
             tikz_options = self.tikz_options
-        
+
         if self.is_subgraph:
             return self.parent_coxeter_graph.to_tikz_labeled(subgraph=self, tikz_options=tikz_options, debug=debug)
         else:
             return self.to_tikz_labeled(subgraph=subgraph, tikz_options=tikz_options, debug=debug)
-            
+
     def to_dotfile(
         self,
         tikz_options: TikzOptions | None = None,
@@ -811,19 +812,19 @@ class CoxeterGraph(Graph):
 
         if tikz_options is None:
             tikz_options = self.tikz_options
-            
+
         graphviz_scale = tikz_options["graphviz_scale"]
         graphviz_width = tikz_options["graphviz_width"]
         fontsize = tikz_options["fontsize"]
 
         if tex_title is None:
             tex_title = self.get_title()
-        
+
         graph_to_plot = self.get_coxeter_graph()
         pos = self.get_pos()
         if pos is None:
-            raise ValueError('vertex positions need to be set first')
-    
+            raise ValueError("vertex positions need to be set first")
+
         vertex_lines = []
         for u in graph_to_plot.vertices(sort=False):
             v2 = [x for x in self.edges() if x[0] == x[1] and x[1] == u][0][2]
@@ -834,15 +835,15 @@ class CoxeterGraph(Graph):
             else:
                 line = f'node_{u} [texlbl="$r_{{{u}}}$", pos="{p[0]},{p[1]}!", fillcolor="{color}"];'
             vertex_lines.append(line)
-            
+
         edge_lines = []
-        for (u, v, label) in graph_to_plot.edges():
+        for u, v, label in graph_to_plot.edges():
             if u == v:
                 # loops are done below
                 continue
-            line = f'node_{u} -- node_{v};'
+            line = f"node_{u} -- node_{v};"
             edge_lines.append(line)
-    
+
         nl = "\n\t"
         dot_string = f'''
         graph {{
@@ -858,9 +859,9 @@ class CoxeterGraph(Graph):
             {nl.join(edge_lines)}
         }}
         '''
-        
+
         return dot_string
-        
+
     def to_tikz_labeled(
         self,
         subgraph: CoxeterGraph | None = None,
@@ -870,7 +871,7 @@ class CoxeterGraph(Graph):
 
         if tikz_options is None:
             tikz_options = self.tikz_options
-            
+
         scale = tikz_options["scale"]
         scale_factor = tikz_options["scale_factor"]
         scale_factor_labels = tikz_options["scale_factor_labels"]
@@ -882,76 +883,76 @@ class CoxeterGraph(Graph):
             tex_title = subgraph.get_title()
         else:
             tex_title = self.get_title()
-        
+
         dotdata = self.to_dotfile(tex_title=tex_title)
         parser = dotparsing.DotDataParser()
-        tmpdata = d2t.create_xdot(dotdata, prog="neato", options='')
+        tmpdata = d2t.create_xdot(dotdata, prog="neato", options="")
         main_graph = parser.parse_dot_data(tmpdata)
-        edges = list(main_graph.alledges )
+        edges = list(main_graph.alledges)
 
-        graph = list( main_graph.allgraphs )[0]
+        graph = list(main_graph.allgraphs)[0]
         title = graph.attr["label"].replace("\\n", "")
-        title_pos = tuple( [float(x)/scale_factor for x in graph.attr["lp"].split(",")])
-        
-        
-        lines = []
-        lines.append(r'\begin{tikzpicture}')
-        lines.append(f'[auto, scale={scale}, every node/.style={{scale={scale}}},minimum size={node_size}]')
+        title_pos = tuple([float(x) / scale_factor for x in graph.attr["lp"].split(",")])
 
-        line = f'\\node (node_title) at {title_pos} {{{title}}};'
+        lines = []
+        lines.append(r"\begin{tikzpicture}")
+        lines.append(f"[auto, scale={scale}, every node/.style={{scale={scale}}},minimum size={node_size}]")
+
+        line = f"\\node (node_title) at {title_pos} {{{title}}};"
         lines.append(line)
-        
-        lines.append(r'% vertices')
-        lines.append(r'\begin{pgfonlayer}{nodelayer}')
+
+        lines.append(r"% vertices")
+        lines.append(r"\begin{pgfonlayer}{nodelayer}")
         for node in main_graph.allnodes:
-            position = tuple( [float(x)/scale_factor for x in node.pos.split(",")])
-            line = f'\\node [style={node.fillcolor} node] ({node.name}) at {position} {{}};'
+            position = tuple([float(x) / scale_factor for x in node.pos.split(",")])
+            line = f"\\node [style={node.fillcolor} node] ({node.name}) at {position} {{}};"
             lines.append(line)
-            lbl_position = tuple( [float(x)/scale_factor_labels for x in node.xlp.split(",")])
-            line = f'\\draw {lbl_position} node {{\\{tex_font_size} {node.texlbl}}};'
+            lbl_position = tuple([float(x) / scale_factor_labels for x in node.xlp.split(",")])
+            line = f"\\draw {lbl_position} node {{\\{tex_font_size} {node.texlbl}}};"
             lines.append(line)
-        lines.append(r'\end{pgfonlayer}')
-        
-        edge_counts = Counter( [ (str(e.get_source()), str(e.get_destination())) for e in edges])
-        
-        lines.append(r'\begin{pgfonlayer}{edgelayer}')
+        lines.append(r"\end{pgfonlayer}")
+
+        edge_counts = Counter([(str(e.get_source()), str(e.get_destination())) for e in edges])
+
+        lines.append(r"\begin{pgfonlayer}{edgelayer}")
         for e in edges:
             src = e.get_source()
             dest = e.get_destination()
             mult = edge_counts.get((src, dest))
             if mult == 1:
-                line = f'\\draw [line width={edge_width}, style=plain edge] ({src}) -- ({dest});'
+                line = f"\\draw [line width={edge_width}, style=plain edge] ({src}) -- ({dest});"
             elif mult == 2:
-                line = f'\\draw [line width={edge_width}, style=double edge] ({src}) -- ({dest});'
+                line = f"\\draw [line width={edge_width}, style=double edge] ({src}) -- ({dest});"
             else:
                 raise ValueError("Higher multiplicity found: " + str(mult))
             lines.append(line)
-        lines.append(r'\end{pgfonlayer}')
-        
+        lines.append(r"\end{pgfonlayer}")
+
         if subgraph is not None:
-            lines.append(r'% highlights')
-            lines.append(r'\begin{pgfonlayer}{main}')
-            lines.append(r'')
-            for (u, v, label) in subgraph.edges():
+            lines.append(r"% highlights")
+            lines.append(r"\begin{pgfonlayer}{main}")
+            lines.append(r"")
+            for u, v, label in subgraph.edges():
                 if u == v:
-                    line = f'\\filldraw[cyan] (node_{u}) circle (6pt);'
+                    line = f"\\filldraw[cyan] (node_{u}) circle (6pt);"
                 else:
-                    line = f'\\fill[cyan] \\convexpath{{node_{u},node_{v}}}{{4pt}};'
+                    line = f"\\fill[cyan] \\convexpath{{node_{u},node_{v}}}{{4pt}};"
                 lines.append(line)
-        
-            lines.append(r'\end{scope}')
-            lines.append(r'\end{pgfonlayer}')
-        
-        lines.append(r'\end{tikzpicture}')
-        tikz = '\n'.join(lines)
-    
+
+            lines.append(r"\end{scope}")
+            lines.append(r"\end{pgfonlayer}")
+
+        lines.append(r"\end{tikzpicture}")
+        tikz = "\n".join(lines)
+
         if debug:
             print(tikz)
-        
+
         t = TikzPicture(
-            tikz, standalone_config=["border=4mm"], 
-            usetikzlibrary=['arrows', 'calc', 'positioning'],
-            usepackage=['amsmath', 'mathptmx', 'color', '/home/dzack/Notes/tikzit', 
-                        '/home/dzack/Notes/DZG_Style_Tikz_Only', 'tikz-cd', 'pgfplots' ])
-    
+            tikz,
+            standalone_config=["border=4mm"],
+            usetikzlibrary=["arrows", "calc", "positioning"],
+            usepackage=["amsmath", "mathptmx", "color", "/home/dzack/Notes/tikzit", "/home/dzack/Notes/DZG_Style_Tikz_Only", "tikz-cd", "pgfplots"],
+        )
+
         return t

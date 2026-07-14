@@ -28,9 +28,7 @@ def get_primary_line_number(content: str, file_path: str) -> int:
     if file_path.endswith((".py", ".pyx")):
         for i, line in enumerate(lines, 1):
             stripped = line.strip()
-            if stripped.startswith(("class ", "def ")) and not stripped.startswith(
-                "def _"
-            ):
+            if stripped.startswith(("class ", "def ")) and not stripped.startswith("def _"):
                 return i
 
     # For RST files, look for section headers
@@ -44,9 +42,7 @@ def get_primary_line_number(content: str, file_path: str) -> int:
     return 1
 
 
-def create_file_link(
-    file_path: str, line_number: int = 1, link_type: str = "local"
-) -> str:
+def create_file_link(file_path: str, line_number: int = 1, link_type: str = "local") -> str:
     """
     Create a clickable link for a file path.
 
@@ -66,14 +62,10 @@ def create_file_link(
         if file_path.endswith(".rst"):
             docs_url = convert_to_docs_url(file_path)
             if docs_url:
-                return (
-                    f'<a href="{docs_url}" target="_blank">{Path(file_path).name}</a>'
-                )
+                return f'<a href="{docs_url}" target="_blank">{Path(file_path).name}</a>'
 
         # Default to GitHub source view
-        github_url = (
-            f"https://github.com/sagemath/sage/blob/develop/{clean_path}#L{line_number}"
-        )
+        github_url = f"https://github.com/sagemath/sage/blob/develop/{clean_path}#L{line_number}"
         return f'<a href="{github_url}" target="_blank">{file_path}:{line_number}</a>'
 
     else:  # local
@@ -136,9 +128,7 @@ def convert_to_docs_url(file_path: str) -> str | None:
     return None
 
 
-def create_citation_link(
-    citation_id: str, display_text: str, file_path: str, line_number: int = 1
-) -> str:
+def create_citation_link(citation_id: str, display_text: str, file_path: str, line_number: int = 1) -> str:
     """
     Create a properly formatted citation link.
 
@@ -154,9 +144,7 @@ def create_citation_link(
     return f'<sup><a href="#citation-{citation_id}" class="citation-ref">[{citation_id}]</a></sup>'
 
 
-def process_inline_citations(
-    text: str, citation_map: dict[str, dict[str, object]]
-) -> str:
+def process_inline_citations(text: str, citation_map: dict[str, dict[str, object]]) -> str:
     """
     Process inline citations in text and convert them to proper links.
 
@@ -217,12 +205,8 @@ def create_sources_section(documents: list, enhanced_docs: list) -> str:
             else:
                 file_link = create_file_link(rel_path, line_no, "local")
 
-            source_lines.append(
-                f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {file_link} - {citation_display}</p>'
-            )
+            source_lines.append(f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {file_link} - {citation_display}</p>')
         else:
-            source_lines.append(
-                f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {rel_path} - {citation_display}</p>'
-            )
+            source_lines.append(f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {rel_path} - {citation_display}</p>')
 
     return "\n".join(source_lines)

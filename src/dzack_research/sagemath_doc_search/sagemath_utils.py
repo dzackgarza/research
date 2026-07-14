@@ -46,16 +46,11 @@ def extract_python_docstrings(file_path: Path) -> str:
             if isinstance(node, ast.ClassDef):
                 docstring = ast.get_docstring(node)
                 if docstring and docstring.strip():
-                    enhanced_doc = enhance_sage_docstring(
-                        docstring, f"Class {node.name}", node.lineno
-                    )
+                    enhanced_doc = enhance_sage_docstring(docstring, f"Class {node.name}", node.lineno)
                     classes_found.append(enhanced_doc)
 
                     # Also extract method docstrings for important classes
-                    if any(
-                        keyword in node.name
-                        for keyword in ["Lattice", "Matrix", "Group", "Ring"]
-                    ):
+                    if any(keyword in node.name for keyword in ["Lattice", "Matrix", "Group", "Ring"]):
                         for method_node in node.body:
                             if isinstance(method_node, ast.FunctionDef):
                                 method_doc = ast.get_docstring(method_node)
@@ -69,14 +64,10 @@ def extract_python_docstrings(file_path: Path) -> str:
 
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 # Only extract top-level functions (not methods, which are handled above)
-                if isinstance(
-                    node.parent if hasattr(node, "parent") else None, ast.Module
-                ):
+                if isinstance(node.parent if hasattr(node, "parent") else None, ast.Module):
                     docstring = ast.get_docstring(node)
                     if docstring and docstring.strip():
-                        enhanced_doc = enhance_sage_docstring(
-                            docstring, f"Function {node.name}", node.lineno
-                        )
+                        enhanced_doc = enhance_sage_docstring(docstring, f"Function {node.name}", node.lineno)
                         functions_found.append(enhanced_doc)
 
         # Combine all extracted content
@@ -116,9 +107,7 @@ def enhance_sage_docstring(docstring: str, context: str, line_no: int) -> str:
                 in_example = True
                 enhanced_lines.append("\nEXAMPLES:")
             example_buffer.append(line)
-        elif in_example and (
-            stripped.startswith("...") or stripped == "" or line.startswith("    ")
-        ):
+        elif in_example and (stripped.startswith("...") or stripped == "" or line.startswith("    ")):
             example_buffer.append(line)
         else:
             # End of example block
@@ -154,9 +143,7 @@ def extract_raw_content_enhanced(lines: list[str], file_path: Path) -> str:
         stripped = line.strip()
 
         # Detect docstring start/end
-        if not in_docstring and (
-            stripped.startswith('r"""') or stripped.startswith('"""')
-        ):
+        if not in_docstring and (stripped.startswith('r"""') or stripped.startswith('"""')):
             in_docstring = True
             docstring_quotes = '"""'
             current_section = [f"Documentation (line {i}):"]
@@ -174,10 +161,7 @@ def extract_raw_content_enhanced(lines: list[str], file_path: Path) -> str:
             enhanced_lines.append(f"Line {i}: {stripped}")
 
         # Detect important SageMath patterns
-        elif any(
-            keyword in stripped.lower()
-            for keyword in ["lattice", "invariant", "matrix", "example"]
-        ):
+        elif any(keyword in stripped.lower() for keyword in ["lattice", "invariant", "matrix", "example"]):
             enhanced_lines.append(f"Line {i}: {stripped}")
 
     # Add any remaining docstring content
@@ -225,10 +209,7 @@ def find_sagemath_files(max_file_size_mb: int = 1) -> list[dict[str, Any]]:
                     continue
 
                 # Skip binary files and certain directories
-                if any(
-                    skip in str(p)
-                    for skip in [".git", "__pycache__", ".pyc", "build", "dist"]
-                ):
+                if any(skip in str(p) for skip in [".git", "__pycache__", ".pyc", "build", "dist"]):
                     continue
 
                 data = {
@@ -241,7 +222,7 @@ def find_sagemath_files(max_file_size_mb: int = 1) -> list[dict[str, Any]]:
                     },
                 }
                 files.append(data)
-            except (OSError, ValueError):
+            except OSError, ValueError:
                 # Skip files that can't be accessed
                 continue
 
@@ -294,9 +275,7 @@ def convert_to_docs_url(relative_path: str) -> str | None:
     return None
 
 
-def create_file_link(
-    relative_path: str, line_number: int | None = None, link_type: str = "github"
-) -> str:
+def create_file_link(relative_path: str, line_number: int | None = None, link_type: str = "github") -> str:
     """
     Create a clickable link to open a file locally or on GitHub.
     For documentation files (.rst), prefer the rendered HTML documentation URL.
@@ -435,9 +414,7 @@ def create_sage_ctags_index(force_rebuild: bool = False) -> bool:
             return True
 
     print("🏗️  Building comprehensive ctags index for Sage repository...")
-    print(
-        "   This may take a few minutes but will greatly speed up line number detection."
-    )
+    print("   This may take a few minutes but will greatly speed up line number detection.")
 
     try:
         # Create ctags for the entire sage source tree
@@ -477,9 +454,7 @@ def create_sage_ctags_index(force_rebuild: bool = False) -> bool:
         return False
 
 
-def find_symbol_line_with_sage_index(
-    symbol_name: str, file_hint: str | None = None
-) -> tuple[int | None, str | None]:
+def find_symbol_line_with_sage_index(symbol_name: str, file_hint: str | None = None) -> tuple[int | None, str | None]:
     """
     Use the comprehensive Sage ctags index to find symbol definitions.
 
@@ -517,7 +492,7 @@ def find_symbol_line_with_sage_index(
                                 try:
                                     line_number = int(part.split(":")[1])
                                     break
-                                except (ValueError, IndexError):
+                                except ValueError, IndexError:
                                     continue
 
                         if line_number:
@@ -563,9 +538,7 @@ def get_symbol_from_content(content: str) -> str | None:
     return None
 
 
-def get_primary_line_number(
-    content: str, relative_path: str | None = None
-) -> int | None:
+def get_primary_line_number(content: str, relative_path: str | None = None) -> int | None:
     """Get the most relevant line number from content, using ctags if available."""
     # First try explicit line number references
     line_numbers = extract_line_numbers_from_content(content)
@@ -577,9 +550,7 @@ def get_primary_line_number(
         # Try to find the main symbol in this content
         symbol = get_symbol_from_content(content)
         if symbol:
-            line_no, found_file = find_symbol_line_with_sage_index(
-                symbol, relative_path
-            )
+            line_no, found_file = find_symbol_line_with_sage_index(symbol, relative_path)
             if line_no:
                 return line_no
 
@@ -603,11 +574,7 @@ def get_primary_line_number(
     # Look for docstring starts (often indicate beginning of classes/functions)
     for i, line in enumerate(lines):
         stripped = line.strip()
-        if (
-            stripped.startswith('r"""')
-            or stripped.startswith('"""')
-            or stripped.startswith("'''")
-        ):
+        if stripped.startswith('r"""') or stripped.startswith('"""') or stripped.startswith("'''"):
             return min(i + 1, 20)  # Assume docstrings are near the beginning
 
     # If no specific indicators found, return None (no line number)

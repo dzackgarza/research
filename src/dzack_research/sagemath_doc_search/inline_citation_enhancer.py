@@ -66,9 +66,7 @@ class InlineCitationEnhancer:
                     enhanced_meta.update(code_info)
 
                 # Add citation display name
-                enhanced_meta["citation_display"] = self._create_citation_display(
-                    enhanced_meta
-                )
+                enhanced_meta["citation_display"] = self._create_citation_display(enhanced_meta)
 
                 # Create enhanced document
                 enhanced_doc = Document(content=doc.content, meta=enhanced_meta)
@@ -96,9 +94,7 @@ class InlineCitationEnhancer:
                 next_line = lines[i + 1].strip()
                 if next_line and len(set(next_line)) == 1 and next_line[0] in "=-~^\"'":
                     # This is likely a section header
-                    if (
-                        len(next_line) >= len(stripped) * 0.8
-                    ):  # Underline is roughly the same length
+                    if len(next_line) >= len(stripped) * 0.8:  # Underline is roughly the same length
                         current_section = stripped
                         break
 
@@ -173,9 +169,7 @@ class InlineCitationEnhancer:
         else:
             return Path(rel_path).name if rel_path != "unknown" else "unknown"
 
-    def create_enhanced_prompt_with_citations(
-        self, question: str, documents: list[Document], link_type: str = "github"
-    ) -> str:
+    def create_enhanced_prompt_with_citations(self, question: str, documents: list[Document], link_type: str = "github") -> str:
         """
         Create a structured, pedagogical prompt with a full example template for consistent formatting.
         """
@@ -280,9 +274,7 @@ print("Discriminant group:", L.discriminant_group())
 
         return prompt
 
-    def post_process_response_citations(
-        self, response: str, documents: list[Document]
-    ) -> str:
+    def post_process_response_citations(self, response: str, documents: list[Document]) -> str:
         """
         Post-process the response minimally to preserve clean Markdown formatting.
 
@@ -300,9 +292,7 @@ print("Discriminant group:", L.discriminant_group())
 
             # Only process if there are absolutely no citations and the response seems incomplete
             if len(existing_citations) == 0 and len(response.strip()) < 100:
-                logger.warning(
-                    "Very short response with no citations, adding minimal citation..."
-                )
+                logger.warning("Very short response with no citations, adding minimal citation...")
                 response = self._add_single_citation(response, documents)
 
             # Add source list at the end (but only if it doesn't already have a References section)
@@ -369,22 +359,16 @@ print("Discriminant group:", L.discriminant_group())
                 else:
                     file_link = create_file_link(rel_path, line_no, "local")
 
-                source_lines.append(
-                    f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {file_link} - {citation_display}</p>'
-                )
+                source_lines.append(f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {file_link} - {citation_display}</p>')
 
             except Exception as e:
                 logger.warning(f"Failed to create link for {rel_path}: {e}")
                 # Fallback if link creation fails
-                source_lines.append(
-                    f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {rel_path} - {citation_display}</p>'
-                )
+                source_lines.append(f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {rel_path} - {citation_display}</p>')
 
         return processed_response + "\n".join(source_lines)
 
-    def _process_inline_citations(
-        self, text: str, citation_map: dict[str, _CitationTarget]
-    ) -> str:
+    def _process_inline_citations(self, text: str, citation_map: dict[str, _CitationTarget]) -> str:
         """Process inline citations and convert them to direct source file links."""
 
         def replace_citation(match: re.Match[str]) -> str:
@@ -401,14 +385,10 @@ print("Discriminant group:", L.discriminant_group())
 
                     if file_path.endswith(".rst"):
                         # For documentation files, prefer GitHub/docs URLs
-                        file_link = create_file_link(
-                            file_path, line_number, "github"
-                        )
+                        file_link = create_file_link(file_path, line_number, "github")
                     else:
                         # For source files, use local links
-                        file_link = create_file_link(
-                            file_path, line_number, "local"
-                        )
+                        file_link = create_file_link(file_path, line_number, "local")
 
                     # Extract just the href attribute for the inline citation
                     import re
@@ -422,9 +402,7 @@ print("Discriminant group:", L.discriminant_group())
                         return f'<sup><a href="#ref-{citation_id}" class="citation-link">[{citation_id}]</a></sup>'
 
                 except Exception as e:
-                    logger.warning(
-                        f"Failed to create direct citation link for {file_path}: {e}"
-                    )
+                    logger.warning(f"Failed to create direct citation link for {file_path}: {e}")
                     # Fallback to internal reference
                     return f'<sup><a href="#ref-{citation_id}" class="citation-link">[{citation_id}]</a></sup>'
             else:
@@ -446,9 +424,7 @@ print("Discriminant group:", L.discriminant_group())
             return 1  # Fallback
 
 
-def create_citation_enhanced_prompt(
-    question: str, documents: list[Document], link_type: str = "github"
-) -> str:
+def create_citation_enhanced_prompt(question: str, documents: list[Document], link_type: str = "github") -> str:
     """
     Convenience function to create an enhanced prompt with citation requirements.
 
@@ -466,9 +442,7 @@ def create_citation_enhanced_prompt(
     enhanced_docs = enhancer.enhance_document_metadata(documents)
 
     # Create enhanced prompt
-    return enhancer.create_enhanced_prompt_with_citations(
-        question, enhanced_docs, link_type
-    )
+    return enhancer.create_enhanced_prompt_with_citations(question, enhanced_docs, link_type)
 
 
 def enhance_response_with_citations(response: str, documents: list[Document]) -> str:
@@ -515,17 +489,13 @@ if __name__ == "__main__":
         print(f"- {doc.meta['citation_id']}: {doc.meta['citation_display']}")
 
     # Test prompt creation
-    prompt = enhancer.create_enhanced_prompt_with_citations(
-        "How do I compute the discriminant of a lattice?", enhanced_docs
-    )
+    prompt = enhancer.create_enhanced_prompt_with_citations("How do I compute the discriminant of a lattice?", enhanced_docs)
 
     print("\nExample enhanced prompt length:", len(prompt))
 
     # Test response enhancement
     test_response = "You can compute the discriminant using the discriminant method. This is available in the IntegralLattice class."
-    enhanced_response = enhancer.post_process_response_citations(
-        test_response, enhanced_docs
-    )
+    enhanced_response = enhancer.post_process_response_citations(test_response, enhanced_docs)
 
     print("\nEnhanced response:")
     print(enhanced_response)

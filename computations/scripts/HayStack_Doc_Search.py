@@ -79,19 +79,13 @@ class _RuntimeConfig:
 
 def _required_environment_value(name: str) -> str:
     value = os.environ[name]
-    assert value.strip(), (
-        f"{name} must be nonempty; config source=environment; "
-        "set it in ~/.envrc before starting the documentation search"
-    )
+    assert value.strip(), f"{name} must be nonempty; config source=environment; set it in ~/.envrc before starting the documentation search"
     return value
 
 
 def _required_environment_bool(name: str) -> bool:
     value = _required_environment_value(name).lower()
-    assert value in {"true", "false"}, (
-        f"{name} must be true or false; observed={value!r}; "
-        "fix ~/.envrc before starting the documentation search"
-    )
+    assert value in {"true", "false"}, f"{name} must be true or false; observed={value!r}; fix ~/.envrc before starting the documentation search"
     return value == "true"
 
 
@@ -101,18 +95,14 @@ def _load_runtime_config() -> _RuntimeConfig:
         use_local_openai=_required_environment_bool("USE_LOCAL_OPENAI"),
         openai_model=_required_environment_value("OPENAI_MODEL"),
         max_file_size_mb=int(_required_environment_value("MAX_FILE_SIZE_MB")),
-        include_sagemath_initially=_required_environment_bool(
-            "INCLUDE_SAGEMATH_DEFAULT"
-        ),
+        include_sagemath_initially=_required_environment_bool("INCLUDE_SAGEMATH_DEFAULT"),
         include_remote_initially=_required_environment_bool("INCLUDE_REMOTE_DEFAULT"),
     )
 
 
 if TYPE_CHECKING:
 
-    def cache_data(
-        *, show_spinner: bool = True
-    ) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
+    def cache_data(*, show_spinner: bool = True) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
 else:
     cache_data = st.cache_data
 
@@ -262,9 +252,7 @@ def fetch_sagemath_files() -> list[_SourceFile]:
     files: list[_SourceFile] = []
 
     if not SAGE_PATH.exists():
-        st.warning(
-            f"SageMath path not found at {SAGE_PATH}. Skipping SageMath indexing."
-        )
+        st.warning(f"SageMath path not found at {SAGE_PATH}. Skipping SageMath indexing.")
         return files
 
     st.write(f"Indexing local SageMath installation at {SAGE_PATH}")
@@ -283,10 +271,7 @@ def fetch_sagemath_files() -> list[_SourceFile]:
                     continue
 
                 # Skip binary files and certain directories
-                if any(
-                    skip in str(p)
-                    for skip in [".git", "__pycache__", ".pyc", "build", "dist"]
-                ):
+                if any(skip in str(p) for skip in [".git", "__pycache__", ".pyc", "build", "dist"]):
                     continue
 
                 data: _SourceFile = {
@@ -299,7 +284,7 @@ def fetch_sagemath_files() -> list[_SourceFile]:
                     },
                 }
                 files.append(data)
-            except (OSError, ValueError):
+            except OSError, ValueError:
                 # Skip files that can't be accessed
                 continue
 
@@ -360,13 +345,8 @@ def get_or_create_document_store(
     cached_store, metadata = load_document_store_cache(cache_key)
 
     if cached_store is not None:
-        assert metadata is not None, (
-            f"cached document store must include cache metadata; cache_key={cache_key}"
-        )
-        st.success(
-            f"📁 Loaded cached index from {metadata['datetime']} "
-            f"({metadata['file_count']} files)"
-        )
+        assert metadata is not None, f"cached document store must include cache metadata; cache_key={cache_key}"
+        st.success(f"📁 Loaded cached index from {metadata['datetime']} ({metadata['file_count']} files)")
         return cached_store, True  # True indicates cache hit
 
     # Create new document store if cache miss
@@ -420,23 +400,17 @@ def index_files(
     # Create components for processing
     document_cleaner = DocumentCleaner()
     document_splitter = DocumentSplitter(split_length=500, split_overlap=50)
-    document_writer = DocumentWriter(
-        document_store=doc_store, policy=DuplicatePolicy.OVERWRITE
-    )
+    document_writer = DocumentWriter(document_store=doc_store, policy=DuplicatePolicy.OVERWRITE)
 
     # Process documents through the pipeline
     cleaned_docs = document_cleaner.run(documents=documents)["documents"]
     split_docs = document_splitter.run(documents=cleaned_docs)["documents"]
 
     # Filter out any remaining empty documents after splitting
-    non_empty_docs = [
-        doc for doc in split_docs if doc.content and len(doc.content.strip()) > 10
-    ]
+    non_empty_docs = [doc for doc in split_docs if doc.content and len(doc.content.strip()) > 10]
 
     if len(non_empty_docs) != len(split_docs):
-        st.info(
-            f"Filtered out {len(split_docs) - len(non_empty_docs)} empty document chunks"
-        )
+        st.info(f"Filtered out {len(split_docs) - len(non_empty_docs)} empty document chunks")
 
     document_writer.run(documents=non_empty_docs)
 
@@ -483,9 +457,7 @@ def search(question: str, doc_store: InMemoryDocumentStore) -> GeneratedAnswer:
 
     # Configure generator for local or remote OpenAI
     if CONFIG.use_local_openai:
-        generator = OpenAIGenerator(
-            model=CONFIG.openai_model, api_base_url=CONFIG.openai_base_url
-        )
+        generator = OpenAIGenerator(model=CONFIG.openai_model, api_base_url=CONFIG.openai_base_url)
     else:
         generator = OpenAIGenerator(model=CONFIG.openai_model)
 
@@ -504,9 +476,7 @@ def search(question: str, doc_store: InMemoryDocumentStore) -> GeneratedAnswer:
     query_pipeline.connect("llm.replies", "answer_builder.replies")
     res = query_pipeline.run({"query": question})
     answer = res["answer_builder"]["answers"][0]
-    assert isinstance(answer, GeneratedAnswer), (
-        f"expected GeneratedAnswer, found={type(answer)}"
-    )
+    assert isinstance(answer, GeneratedAnswer), f"expected GeneratedAnswer, found={type(answer)}"
     return answer
 
 
@@ -589,9 +559,7 @@ if not cache_hit:
         files = fetch(docs_to_include, include_sagemath=include_sagemath)
         status.update(label="Indexing documentation...")
         file_stats = index_files(files, doc_store, cache_key)
-        status.update(
-            label="✅ Indexing complete and cached!", state="complete", expanded=False
-        )
+        status.update(label="✅ Indexing complete and cached!", state="complete", expanded=False)
         st.session_state["expanded"] = False
 else:
     # Still fetch files for statistics display
@@ -613,9 +581,7 @@ st.header("🔎 Mathematical Documentation Finder", divider="rainbow")
 if all_sources:
     st.caption(f"Search through documentation for: {', '.join(all_sources)}")
 else:
-    st.warning(
-        "No documentation sources selected. Please enable at least one source in the sidebar."
-    )
+    st.warning("No documentation sources selected. Please enable at least one source in the sidebar.")
 
 if all_sources and (
     question := st.text_input(
@@ -634,21 +600,15 @@ if all_sources and (
 
     # Show source references in a compact format
     if answer.documents:
-        with st.expander(
-            f"📚 Source References ({len(answer.documents)} documents)", expanded=False
-        ):
+        with st.expander(f"📚 Source References ({len(answer.documents)} documents)", expanded=False):
             for i, document in enumerate(answer.documents, 1):
                 source = document.meta["source"]
                 relative_path = document.meta["relative_path"]
                 url_source = document.meta["url_source"]
 
-                st.write(
-                    f"**Document {i}:** `{relative_path or url_source or 'Unknown'}` ({source})"
-                )
+                st.write(f"**Document {i}:** `{relative_path or url_source or 'Unknown'}` ({source})")
                 content = document.content
-                assert content is not None, (
-                    f"expected text document, found={document.id}"
-                )
+                assert content is not None, f"expected text document, found={document.id}"
                 if len(content) > 200:
                     st.text(content[:200] + "...")
                 else:

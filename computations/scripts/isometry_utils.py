@@ -17,9 +17,7 @@ class _CoxeterGraph(Protocol):
     def add_edge(self, u: _SageIndex, v: _SageIndex, label: _SageIndex | str) -> None: ...
     def allow_loops(self, enabled: bool) -> None: ...
     def vertices(self, sort: bool = True) -> list[_SageIndex]: ...
-    def edges(
-        self, sort: bool = True, labels: bool = True
-    ) -> list[tuple[_SageIndex, _SageIndex, _SageIndex | str]]: ...
+    def edges(self, sort: bool = True, labels: bool = True) -> list[tuple[_SageIndex, _SageIndex, _SageIndex | str]]: ...
     def relabel(self, permutation: list[_SageIndex], inplace: bool) -> Self: ...
     def num_verts(self) -> int: ...
     def get_subgraphs(self) -> list[Self]: ...
@@ -28,9 +26,7 @@ class _CoxeterGraph(Protocol):
 class _Matrix(Protocol):
     def ncols(self) -> int: ...
     def __getitem__(self, key: tuple[_SageIndex, _SageIndex]) -> _SageIndex: ...
-    def __setitem__(
-        self, key: tuple[_SageIndex, _SageIndex], value: _SageIndex | str
-    ) -> None: ...
+    def __setitem__(self, key: tuple[_SageIndex, _SageIndex], value: _SageIndex | str) -> None: ...
     def __rmul__(self, scalar: int) -> Self: ...
     def __mul__(self, scalar: int) -> Self: ...
     def is_positive_definite(self) -> bool: ...
@@ -39,6 +35,7 @@ class _Matrix(Protocol):
 
 
 if TYPE_CHECKING:
+
     def Graph(loops: bool = False) -> _CoxeterGraph: ...
 else:
     from sage.graphs.graph import Graph
@@ -54,6 +51,7 @@ class _CoxeterTypeWithBilinearForm(Protocol):
 
 
 if TYPE_CHECKING:
+
     def IntegralLattice(data: str) -> _IntegralLatticeWithGram: ...
 
     def CoxeterType(data: list[str | int]) -> _CoxeterTypeWithBilinearForm: ...
@@ -61,6 +59,7 @@ else:
     from sage.all import CoxeterType, IntegralLattice
 
 # --- Extracted functions from Isometry Searching.ipynb ---
+
 
 def matrix_to_graph(M: _Matrix) -> _CoxeterGraph:
     """
@@ -78,9 +77,10 @@ def matrix_to_graph(M: _Matrix) -> _CoxeterGraph:
     G = Graph(loops=True)
     for i in range(nverts):
         for j in range(nverts):
-            if i==j or M[i,j] != 0:
-                G.add_edge(i, j, str(M[i, j]) )
+            if i == j or M[i, j] != 0:
+                G.add_edge(i, j, str(M[i, j]))
     return G
+
 
 def graph_to_matrix(G: _CoxeterGraph) -> _Matrix:
     """
@@ -100,35 +100,38 @@ def graph_to_matrix(G: _CoxeterGraph) -> _Matrix:
     M: _Matrix = zero_matrix(ZZ, n)
     Gp = G.relabel(list(range(n)), inplace=False)
     for e in Gp.edges():
-        M[ e[0], e[1] ] = e[2]
-        M[ e[1], e[0] ] = e[2]
+        M[e[0], e[1]] = e[2]
+        M[e[1], e[0]] = e[2]
     return M
 
+
 # --- Add all other function and class definitions from the notebook below, with docstrings and examples where possible ---
+
 
 def graph_A_n(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type A_n as a Sage Graph.
-    
+
     EXAMPLES::
         sage: from isometry_utils import graph_A_n
         sage: G = graph_A_n(3)
         sage: sorted(G.edges(labels=True))
         [(0, 0, -2), (0, 1, 1), (1, 1, -2), (1, 2, 1), (2, 2, -2)]
     """
-    m = n-1
+    m = n - 1
     G = Graph()
     G.allow_loops(True)
-    for i in range(m+1):
+    for i in range(m + 1):
         G.add_edge(i, i, -2)
     for i in range(m):
-        G.add_edge(i, i+1, 1)
+        G.add_edge(i, i + 1, 1)
     return G
+
 
 def matrix_A_n(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the Dynkin diagram of type A_n.
-    
+
     EXAMPLES::
         sage: from isometry_utils import matrix_A_n
         sage: M = matrix_A_n(3)
@@ -139,6 +142,7 @@ def matrix_A_n(n: _SageIndex) -> _Matrix:
     """
     return graph_to_matrix(graph_A_n(n))
 
+
 def graph_A_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type A_n as a Sage Graph.
@@ -148,13 +152,14 @@ def graph_A_n_2(n: _SageIndex) -> _CoxeterGraph:
         sage: sorted(G.edges(labels=True))
         [(0, 0, -4), (0, 1, 2), (1, 1, -4), (1, 2, 2), (2, 2, -4)]
     """
-    m = n-1
+    m = n - 1
     G = Graph(loops=True)
-    for i in range(m+1):
+    for i in range(m + 1):
         G.add_edge(i, i, -4)
     for i in range(m):
-        G.add_edge(i, i+1, 2)
+        G.add_edge(i, i + 1, 2)
     return G
+
 
 def matrix_A_n_2(n: _SageIndex) -> _Matrix:
     """
@@ -169,6 +174,7 @@ def matrix_A_n_2(n: _SageIndex) -> _Matrix:
     """
     return graph_to_matrix(graph_A_n_2(n))
 
+
 def graph_B_n(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type B_n as a Sage Graph.
@@ -178,15 +184,16 @@ def graph_B_n(n: _SageIndex) -> _CoxeterGraph:
         sage: sorted(G.edges(labels=True))
         [(0, 0, -4), (0, 1, 2), (1, 1, -4), (1, 2, 2), (2, 2, -2)]
     """
-    m = n-1
+    m = n - 1
     G = Graph(loops=True)
     for i in range(m + 1):
         G.add_edge(i, i, -4)
     G.add_edge(m, m, -2)
     for i in range(m):
-        G.add_edge(i, i+1, 2)
-    G.add_edge(m-1, m, 2)
+        G.add_edge(i, i + 1, 2)
+    G.add_edge(m - 1, m, 2)
     return G
+
 
 def matrix_B_n(n: _SageIndex) -> _Matrix:
     """
@@ -201,6 +208,7 @@ def matrix_B_n(n: _SageIndex) -> _Matrix:
     """
     return graph_to_matrix(graph_B_n(n))
 
+
 def graph_B_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type B_n as a Sage Graph.
@@ -210,15 +218,16 @@ def graph_B_n_2(n: _SageIndex) -> _CoxeterGraph:
         sage: sorted(G.edges(labels=True))
         [(0, 0, -8), (0, 1, 4), (1, 1, -8), (1, 2, 4), (2, 2, -4)]
     """
-    m = n-1
+    m = n - 1
     G = Graph(loops=True)
     for i in range(m + 1):
         G.add_edge(i, i, -8)
     G.add_edge(m, m, -4)
     for i in range(m):
-        G.add_edge(i, i+1, 4)
-    G.add_edge(m-1, m, 4)
+        G.add_edge(i, i + 1, 4)
+    G.add_edge(m - 1, m, 4)
     return G
+
 
 def matrix_B_n_2(n: _SageIndex) -> _Matrix:
     """
@@ -233,6 +242,7 @@ def matrix_B_n_2(n: _SageIndex) -> _Matrix:
     """
     return graph_to_matrix(graph_B_n_2(n))
 
+
 def graph_C_n(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type C_n as a Sage Graph.
@@ -242,15 +252,16 @@ def graph_C_n(n: _SageIndex) -> _CoxeterGraph:
         sage: sorted(G.edges(labels=True))
         [(0, 0, -2), (0, 1, 1), (1, 1, -2), (1, 2, 2), (2, 2, -4)]
     """
-    m = n-1
+    m = n - 1
     G = Graph(loops=True)
     for i in range(m + 1):
         G.add_edge(i, i, -2)
     G.add_edge(m, m, -4)
     for i in range(m):
-        G.add_edge(i, i+1, 1)
-    G.add_edge(m-1, m, 2)
+        G.add_edge(i, i + 1, 1)
+    G.add_edge(m - 1, m, 2)
     return G
+
 
 def graph_C_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
@@ -261,15 +272,16 @@ def graph_C_n_2(n: _SageIndex) -> _CoxeterGraph:
         sage: sorted(G.edges(labels=True))
         [(0, 0, -4), (0, 1, 4), (1, 1, -4), (1, 2, 4), (2, 2, -8)]
     """
-    m = n-1
+    m = n - 1
     G = Graph(loops=True)
     for i in range(m + 1):
         G.add_edge(i, i, -4)
     G.add_edge(m, m, -8)
     for i in range(m):
-        G.add_edge(i, i+1, 4)
-    G.add_edge(m-1, m, 4)
+        G.add_edge(i, i + 1, 4)
+    G.add_edge(m - 1, m, 4)
     return G
+
 
 def matrix_C_n_2(n: _SageIndex) -> _Matrix:
     """
@@ -283,6 +295,7 @@ def matrix_C_n_2(n: _SageIndex) -> _Matrix:
         [ 0  4  8]
     """
     return graph_to_matrix(graph_C_n_2(n))
+
 
 def graph_D_2() -> _CoxeterGraph:
     """
@@ -298,6 +311,7 @@ def graph_D_2() -> _CoxeterGraph:
     G.add_edge(1, 1, -2)
     return G
 
+
 def graph_D_n(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type D_n as a Sage Graph.
@@ -311,15 +325,16 @@ def graph_D_n(n: _SageIndex) -> _CoxeterGraph:
         return graph_D_2()
     if n == 3:
         return graph_A_n(2)
-    m = n-1
+    m = n - 1
     G = Graph(loops=True)
     for i in range(m + 1):
         G.add_edge(i, i, -2)
     G.add_edge(0, 2, 1)
     G.add_edge(1, 2, 1)
     for i in range(2, m):
-        G.add_edge(i, i+1, 1)
+        G.add_edge(i, i + 1, 1)
     return G
+
 
 def matrix_D_n(n: _SageIndex) -> _Matrix:
     """
@@ -335,6 +350,7 @@ def matrix_D_n(n: _SageIndex) -> _Matrix:
     """
     return graph_to_matrix(graph_D_n(n))
 
+
 def graph_D_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type D_n as a Sage Graph.
@@ -344,15 +360,16 @@ def graph_D_n_2(n: _SageIndex) -> _CoxeterGraph:
         sage: sorted(G.edges(labels=True))
         [(0, 0, -4), (0, 2, 2), (1, 1, -4), (1, 2, 2), (2, 2, -4), (2, 3, 2), (3, 3, -4)]
     """
-    m = n-1
+    m = n - 1
     G = Graph(loops=True)
     for i in range(m + 1):
         G.add_edge(i, i, -4)
     G.add_edge(0, 2, 2)
     G.add_edge(1, 2, 2)
     for i in range(2, m):
-        G.add_edge(i, i+1, 2)
+        G.add_edge(i, i + 1, 2)
     return G
+
 
 def matrix_D_n_2(n: _SageIndex) -> _Matrix:
     """
@@ -368,6 +385,7 @@ def matrix_D_n_2(n: _SageIndex) -> _Matrix:
     """
     return graph_to_matrix(graph_D_n_2(n))
 
+
 def graph_E_6() -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type E_6 as a Sage Graph.
@@ -378,6 +396,7 @@ def graph_E_6() -> _CoxeterGraph:
         6
     """
     return matrix_to_graph(matrix_E_6())
+
 
 def matrix_E_6() -> _Matrix:
     """
@@ -390,6 +409,7 @@ def matrix_E_6() -> _Matrix:
     """
     return IntegralLattice("E6").twist(-1).gram_matrix()
 
+
 def graph_E_6_2() -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type E_6 as a Sage Graph.
@@ -400,6 +420,7 @@ def graph_E_6_2() -> _CoxeterGraph:
         6
     """
     return matrix_to_graph(matrix_E_6_2())
+
 
 def matrix_E_6_2() -> _Matrix:
     """
@@ -412,6 +433,7 @@ def matrix_E_6_2() -> _Matrix:
     """
     return IntegralLattice("E6").twist(-2).gram_matrix()
 
+
 def graph_E_7() -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type E_7 as a Sage Graph.
@@ -422,6 +444,7 @@ def graph_E_7() -> _CoxeterGraph:
         7
     """
     return matrix_to_graph(matrix_E_7())
+
 
 def matrix_E_7() -> _Matrix:
     """
@@ -434,6 +457,7 @@ def matrix_E_7() -> _Matrix:
     """
     return IntegralLattice("E7").twist(-1).gram_matrix()
 
+
 def graph_E_7_2() -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type E_7 as a Sage Graph.
@@ -444,6 +468,7 @@ def graph_E_7_2() -> _CoxeterGraph:
         7
     """
     return matrix_to_graph(matrix_E_7_2())
+
 
 def matrix_E_7_2() -> _Matrix:
     """
@@ -456,6 +481,7 @@ def matrix_E_7_2() -> _Matrix:
     """
     return IntegralLattice("E7").twist(-2).gram_matrix()
 
+
 def graph_E_8() -> _CoxeterGraph:
     """
     Construct the Dynkin diagram of type E_8 as a Sage Graph.
@@ -466,6 +492,7 @@ def graph_E_8() -> _CoxeterGraph:
         8
     """
     return matrix_to_graph(matrix_E_8())
+
 
 def matrix_E_8() -> _Matrix:
     """
@@ -478,6 +505,7 @@ def matrix_E_8() -> _Matrix:
     """
     return IntegralLattice("E8").twist(-1).gram_matrix()
 
+
 def graph_E_8_2() -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type E_8 as a Sage Graph.
@@ -489,6 +517,7 @@ def graph_E_8_2() -> _CoxeterGraph:
     """
     return matrix_to_graph(matrix_E_8_2())
 
+
 def matrix_E_8_2() -> _Matrix:
     """
     Return the Gram matrix for the doubled Dynkin diagram of type E_8.
@@ -499,6 +528,7 @@ def matrix_E_8_2() -> _Matrix:
         8
     """
     return IntegralLattice("E8").twist(-2).gram_matrix()
+
 
 def graph_G_2() -> _CoxeterGraph:
     """
@@ -515,6 +545,7 @@ def graph_G_2() -> _CoxeterGraph:
     G.add_edge(0, 1, 3)
     return G
 
+
 def matrix_G_2() -> _Matrix:
     """
     Return the Gram matrix for the Dynkin diagram of type G_2.
@@ -526,6 +557,7 @@ def matrix_G_2() -> _Matrix:
         [-3  6]
     """
     return graph_to_matrix(graph_G_2())
+
 
 def graph_G_2_2() -> _CoxeterGraph:
     """
@@ -542,6 +574,7 @@ def graph_G_2_2() -> _CoxeterGraph:
     G.add_edge(0, 1, 6)
     return G
 
+
 def matrix_G_2_2() -> _Matrix:
     """
     Return the Gram matrix for the doubled Dynkin diagram of type G_2.
@@ -553,6 +586,7 @@ def matrix_G_2_2() -> _Matrix:
         [-6 12]
     """
     return graph_to_matrix(graph_G_2_2())
+
 
 def graph_F_4() -> _CoxeterGraph:
     """
@@ -568,11 +602,12 @@ def graph_F_4() -> _CoxeterGraph:
     G.add_edge(1, 1, -2)
     G.add_edge(2, 2, -4)
     G.add_edge(3, 3, -4)
-    
+
     G.add_edge(0, 1, 1)
     G.add_edge(1, 2, 2)
     G.add_edge(2, 3, 2)
     return G
+
 
 def matrix_F_4() -> _Matrix:
     """
@@ -584,6 +619,7 @@ def matrix_F_4() -> _Matrix:
         4
     """
     return graph_to_matrix(graph_F_4())
+
 
 def graph_H_3() -> _CoxeterGraph:
     """
@@ -598,10 +634,11 @@ def graph_H_3() -> _CoxeterGraph:
     G.add_edge(0, 0, -2)
     G.add_edge(1, 1, -4)
     G.add_edge(2, 2, -4)
-    
+
     G.add_edge(0, 1, 2)
     G.add_edge(1, 2, 2)
     return G
+
 
 def matrix_H_3() -> _Matrix:
     """
@@ -616,6 +653,7 @@ def matrix_H_3() -> _Matrix:
     """
     return graph_to_matrix(graph_H_3())
 
+
 def graph_H_3_2() -> _CoxeterGraph:
     """
     Construct the doubled Dynkin diagram of type H_3 as a Sage Graph.
@@ -629,10 +667,11 @@ def graph_H_3_2() -> _CoxeterGraph:
     G.add_edge(0, 0, -4)
     G.add_edge(1, 1, -8)
     G.add_edge(2, 2, -8)
-    
+
     G.add_edge(0, 1, 4)
     G.add_edge(1, 2, 4)
     return G
+
 
 def matrix_H_3_2() -> _Matrix:
     """
@@ -646,6 +685,7 @@ def matrix_H_3_2() -> _Matrix:
         [ 0 -4  8]
     """
     return graph_to_matrix(graph_H_3_2())
+
 
 def graph_H_4() -> _CoxeterGraph:
     """
@@ -661,11 +701,12 @@ def graph_H_4() -> _CoxeterGraph:
     G.add_edge(1, 1, -2)
     G.add_edge(2, 2, -2)
     G.add_edge(3, 3, -4)
-    
+
     G.add_edge(0, 1, 1)
     G.add_edge(1, 2, 1)
     G.add_edge(2, 3, 2)
     return G
+
 
 def matrix_H_4() -> _Matrix:
     """
@@ -678,7 +719,9 @@ def matrix_H_4() -> _Matrix:
     """
     return graph_to_matrix(graph_H_4())
 
+
 # Parabolic types (Affine/Tilde diagrams)
+
 
 def graph_tilde_A_1() -> _CoxeterGraph:
     """
@@ -695,6 +738,7 @@ def graph_tilde_A_1() -> _CoxeterGraph:
     G.add_edge(0, 1, 2)
     return G
 
+
 def matrix_tilde_A_1() -> _Matrix:
     """
     Return the Gram matrix for the affine Dynkin diagram of type ~A_1.
@@ -707,6 +751,7 @@ def matrix_tilde_A_1() -> _Matrix:
     """
     M: _Matrix = matrix(ZZ, 2, [2, -2, -2, 2])
     return M
+
 
 def graph_tilde_A_n(n: _SageIndex) -> _CoxeterGraph:
     """
@@ -721,9 +766,10 @@ def graph_tilde_A_n(n: _SageIndex) -> _CoxeterGraph:
     for i in range(n + 1):
         G.add_edge(i, i, -2)
     for i in range(n):
-        G.add_edge(i, i+1, 1)
+        G.add_edge(i, i + 1, 1)
     G.add_edge(n, 0, 1)
     return G
+
 
 def matrix_tilde_A_n(n: _SageIndex) -> _Matrix:
     """
@@ -735,6 +781,7 @@ def matrix_tilde_A_n(n: _SageIndex) -> _Matrix:
         4
     """
     return graph_to_matrix(graph_tilde_A_n(n))
+
 
 def graph_tilde_B_n(n: _SageIndex) -> _CoxeterGraph:
     """
@@ -754,9 +801,10 @@ def graph_tilde_B_n(n: _SageIndex) -> _CoxeterGraph:
     G.add_edge(0, 2, 1)
     G.add_edge(1, 2, 1)
     for i in range(2, n - 1):
-        G.add_edge(i, i+1, 1)
-    G.add_edge(n-1, n, 2)
+        G.add_edge(i, i + 1, 1)
+    G.add_edge(n - 1, n, 2)
     return G
+
 
 def graph_tilde_B_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
@@ -776,9 +824,10 @@ def graph_tilde_B_n_2(n: _SageIndex) -> _CoxeterGraph:
     G.add_edge(0, 2, 2)
     G.add_edge(1, 2, 2)
     for i in range(2, n - 1):
-        G.add_edge(i, i+1, 2)
-    G.add_edge(n-1, n, 2)
+        G.add_edge(i, i + 1, 2)
+    G.add_edge(n - 1, n, 2)
     return G
+
 
 def matrix_tilde_B_n(n: _SageIndex) -> _Matrix:
     """
@@ -791,6 +840,7 @@ def matrix_tilde_B_n(n: _SageIndex) -> _Matrix:
     """
     return graph_to_matrix(graph_tilde_B_n(n))
 
+
 def matrix_tilde_B_n_2(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the doubled affine Dynkin diagram of type ~B_n.
@@ -801,6 +851,7 @@ def matrix_tilde_B_n_2(n: _SageIndex) -> _Matrix:
         4
     """
     return graph_to_matrix(graph_tilde_B_n_2(n))
+
 
 def graph_tilde_C_n(n: _SageIndex) -> _CoxeterGraph:
     """
@@ -820,9 +871,10 @@ def graph_tilde_C_n(n: _SageIndex) -> _CoxeterGraph:
     # Edges
     G.add_edge(0, 1, 2)
     for i in range(1, n - 1):
-        G.add_edge(i, i+1, 1)
-    G.add_edge(n-1, n, 2)
+        G.add_edge(i, i + 1, 1)
+    G.add_edge(n - 1, n, 2)
     return G
+
 
 def graph_tilde_C_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
@@ -842,9 +894,10 @@ def graph_tilde_C_n_2(n: _SageIndex) -> _CoxeterGraph:
     # Edges
     G.add_edge(0, 1, 2)
     for i in range(1, n - 1):
-        G.add_edge(i, i+1, 2)
-    G.add_edge(n-1, n, 2)
+        G.add_edge(i, i + 1, 2)
+    G.add_edge(n - 1, n, 2)
     return G
+
 
 def matrix_tilde_C_n(n: _SageIndex) -> _Matrix:
     """
@@ -857,6 +910,7 @@ def matrix_tilde_C_n(n: _SageIndex) -> _Matrix:
     """
     return graph_to_matrix(graph_tilde_C_n(n))
 
+
 def matrix_tilde_C_n_2(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the doubled affine Dynkin diagram of type ~C_n.
@@ -867,6 +921,7 @@ def matrix_tilde_C_n_2(n: _SageIndex) -> _Matrix:
         4
     """
     return graph_to_matrix(graph_tilde_C_n_2(n))
+
 
 def graph_tilde_D_n(n: _SageIndex) -> _CoxeterGraph:
     """
@@ -883,10 +938,11 @@ def graph_tilde_D_n(n: _SageIndex) -> _CoxeterGraph:
     G.add_edge(0, 2, 1)
     G.add_edge(1, 2, 1)
     for i in range(2, n - 2):
-        G.add_edge(i, i+1, 1)
-    G.add_edge(n-2, n-1, 1)
-    G.add_edge(n-2, n, 1)
+        G.add_edge(i, i + 1, 1)
+    G.add_edge(n - 2, n - 1, 1)
+    G.add_edge(n - 2, n, 1)
     return G
+
 
 def graph_tilde_D_n_2(n: _SageIndex) -> _CoxeterGraph:
     """
@@ -903,10 +959,11 @@ def graph_tilde_D_n_2(n: _SageIndex) -> _CoxeterGraph:
     G.add_edge(0, 2, 2)
     G.add_edge(1, 2, 2)
     for i in range(2, n - 2):
-        G.add_edge(i, i+1, 2)
-    G.add_edge(n-2, n-1, 2)
-    G.add_edge(n-2, n, 2)
+        G.add_edge(i, i + 1, 2)
+    G.add_edge(n - 2, n - 1, 2)
+    G.add_edge(n - 2, n, 2)
     return G
+
 
 def matrix_tilde_D_n(n: _SageIndex) -> _Matrix:
     """
@@ -919,6 +976,7 @@ def matrix_tilde_D_n(n: _SageIndex) -> _Matrix:
     """
     return graph_to_matrix(graph_tilde_D_n(n))
 
+
 def matrix_tilde_D_n_2(n: _SageIndex) -> _Matrix:
     """
     Return the Gram matrix for the doubled affine Dynkin diagram of type ~D_n.
@@ -929,6 +987,7 @@ def matrix_tilde_D_n_2(n: _SageIndex) -> _Matrix:
         5
     """
     return graph_to_matrix(graph_tilde_D_n_2(n))
+
 
 def graph_tilde_G_2() -> _CoxeterGraph:
     """
@@ -947,6 +1006,7 @@ def graph_tilde_G_2() -> _CoxeterGraph:
     G.add_edge(1, 2, 3)
     return G
 
+
 def matrix_tilde_G_2() -> _Matrix:
     """
     Return the Gram matrix for the affine Dynkin diagram of type ~G_2.
@@ -957,6 +1017,7 @@ def matrix_tilde_G_2() -> _Matrix:
         3
     """
     return graph_to_matrix(graph_tilde_G_2())
+
 
 def graph_tilde_G_2_2() -> _CoxeterGraph:
     """
@@ -975,6 +1036,7 @@ def graph_tilde_G_2_2() -> _CoxeterGraph:
     G.add_edge(1, 2, 6)
     return G
 
+
 def matrix_tilde_G_2_2() -> _Matrix:
     """
     Return the Gram matrix for the doubled affine Dynkin diagram of type ~G_2.
@@ -985,6 +1047,7 @@ def matrix_tilde_G_2_2() -> _Matrix:
         3
     """
     return graph_to_matrix(graph_tilde_G_2_2())
+
 
 def graph_tilde_F_4() -> _CoxeterGraph:
     """
@@ -1001,12 +1064,13 @@ def graph_tilde_F_4() -> _CoxeterGraph:
     G.add_edge(2, 2, -2)
     G.add_edge(3, 3, -2)
     G.add_edge(4, 4, -2)
-    
+
     G.add_edge(0, 1, 2)
     G.add_edge(1, 2, 2)
     G.add_edge(2, 3, 1)
     G.add_edge(3, 4, 1)
     return G
+
 
 def matrix_tilde_F_4() -> _Matrix:
     """
@@ -1018,6 +1082,7 @@ def matrix_tilde_F_4() -> _Matrix:
         5
     """
     return graph_to_matrix(graph_tilde_F_4())
+
 
 def graph_tilde_F_4_2() -> _CoxeterGraph:
     """
@@ -1034,12 +1099,13 @@ def graph_tilde_F_4_2() -> _CoxeterGraph:
     G.add_edge(2, 2, -4)
     G.add_edge(3, 3, -4)
     G.add_edge(4, 4, -4)
-    
+
     G.add_edge(0, 1, 1)
     G.add_edge(1, 2, 2)
     G.add_edge(2, 3, 2)
     G.add_edge(3, 4, 2)
     return G
+
 
 def matrix_tilde_F_4_2() -> _Matrix:
     """
@@ -1052,6 +1118,7 @@ def matrix_tilde_F_4_2() -> _Matrix:
     """
     return graph_to_matrix(graph_tilde_F_4_2())
 
+
 def graph_tilde_E_6() -> _CoxeterGraph:
     """
     Construct the affine Dynkin diagram of type ~E_6 as a Sage Graph.
@@ -1062,6 +1129,7 @@ def graph_tilde_E_6() -> _CoxeterGraph:
         7
     """
     return matrix_to_graph(matrix_tilde_E_6())
+
 
 def matrix_tilde_E_6() -> _Matrix:
     """
@@ -1074,6 +1142,7 @@ def matrix_tilde_E_6() -> _Matrix:
     """
     return CoxeterType(["E", 6, 1]).bilinear_form() * -2
 
+
 def graph_tilde_E_6_2() -> _CoxeterGraph:
     """
     Construct the doubled affine Dynkin diagram of type ~E_6 as a Sage Graph.
@@ -1084,6 +1153,7 @@ def graph_tilde_E_6_2() -> _CoxeterGraph:
         7
     """
     return matrix_to_graph(matrix_tilde_E_6_2())
+
 
 def matrix_tilde_E_6_2() -> _Matrix:
     """
@@ -1096,6 +1166,7 @@ def matrix_tilde_E_6_2() -> _Matrix:
     """
     return CoxeterType(["E", 6, 1]).bilinear_form() * -4
 
+
 def graph_tilde_E_7() -> _CoxeterGraph:
     """
     Construct the affine Dynkin diagram of type ~E_7 as a Sage Graph.
@@ -1106,6 +1177,7 @@ def graph_tilde_E_7() -> _CoxeterGraph:
         8
     """
     return matrix_to_graph(matrix_tilde_E_7())
+
 
 def matrix_tilde_E_7() -> _Matrix:
     """
@@ -1118,6 +1190,7 @@ def matrix_tilde_E_7() -> _Matrix:
     """
     return CoxeterType(["E", 7, 1]).bilinear_form() * -2
 
+
 def graph_tilde_E_7_2() -> _CoxeterGraph:
     """
     Construct the doubled affine Dynkin diagram of type ~E_7 as a Sage Graph.
@@ -1128,6 +1201,7 @@ def graph_tilde_E_7_2() -> _CoxeterGraph:
         8
     """
     return matrix_to_graph(matrix_tilde_E_7_2())
+
 
 def matrix_tilde_E_7_2() -> _Matrix:
     """
@@ -1140,6 +1214,7 @@ def matrix_tilde_E_7_2() -> _Matrix:
     """
     return CoxeterType(["E", 7, 1]).bilinear_form() * -4
 
+
 def graph_tilde_E_8() -> _CoxeterGraph:
     """
     Construct the affine Dynkin diagram of type ~E_8 as a Sage Graph.
@@ -1150,6 +1225,7 @@ def graph_tilde_E_8() -> _CoxeterGraph:
         9
     """
     return matrix_to_graph(matrix_tilde_E_8())
+
 
 def matrix_tilde_E_8() -> _Matrix:
     """
@@ -1162,6 +1238,7 @@ def matrix_tilde_E_8() -> _Matrix:
     """
     return CoxeterType(["E", 8, 1]).bilinear_form() * -2
 
+
 def graph_tilde_E_8_2() -> _CoxeterGraph:
     """
     Construct the doubled affine Dynkin diagram of type ~E_8 as a Sage Graph.
@@ -1172,6 +1249,7 @@ def graph_tilde_E_8_2() -> _CoxeterGraph:
         9
     """
     return matrix_to_graph(matrix_tilde_E_8_2())
+
 
 def matrix_tilde_E_8_2() -> _Matrix:
     """
@@ -1184,12 +1262,14 @@ def matrix_tilde_E_8_2() -> _Matrix:
     """
     return CoxeterType(["E", 8, 1]).bilinear_form() * -4
 
+
 # Utility functions
+
 
 def sumset(s: Sequence[_IntegerPair]) -> _IntegerPair:
     """
     Sum tuples in a collection element-wise.
-    
+
     EXAMPLES::
         sage: from isometry_utils import sumset
         sage: s = [(1, 2), (3, 4), (5, 6)]
@@ -1198,10 +1278,11 @@ def sumset(s: Sequence[_IntegerPair]) -> _IntegerPair:
     """
     return reduce(lambda x, y: (x[0] + y[0], x[1] + y[1]), s)
 
+
 def is_elliptic_matrix(M: _Matrix) -> bool:
     """
     Check if a matrix is elliptic (negative definite).
-    
+
     EXAMPLES::
         sage: from isometry_utils import is_elliptic_matrix
         sage: M = matrix([[-2, 1], [1, -2]])
@@ -1210,10 +1291,11 @@ def is_elliptic_matrix(M: _Matrix) -> bool:
     """
     return (-1 * M).is_positive_definite()
 
+
 def is_parabolic_matrix(M: _Matrix) -> bool:
     """
     Check if a matrix is parabolic (negative semidefinite).
-    
+
     EXAMPLES::
         sage: from isometry_utils import is_parabolic_matrix
         sage: M = matrix([[-2, 1], [1, -2]])
@@ -1222,10 +1304,11 @@ def is_parabolic_matrix(M: _Matrix) -> bool:
     """
     return (-1 * M).is_positive_semidefinite()
 
+
 def is_elliptic_subgraph(H: _CoxeterGraph) -> bool:
     """
     Check if a graph corresponds to an elliptic subdiagram.
-    
+
     EXAMPLES::
         sage: from isometry_utils import is_elliptic_subgraph, graph_A_n
         sage: G = graph_A_n(3)
@@ -1234,10 +1317,11 @@ def is_elliptic_subgraph(H: _CoxeterGraph) -> bool:
     """
     return is_elliptic_matrix(graph_to_matrix(H))
 
+
 def is_parabolic_subgraph(H: _CoxeterGraph) -> bool:
     """
     Check if a graph corresponds to a parabolic subdiagram.
-    
+
     EXAMPLES::
         sage: from isometry_utils import is_parabolic_subgraph, graph_tilde_A_n
         sage: G = graph_tilde_A_n(3)
@@ -1246,10 +1330,11 @@ def is_parabolic_subgraph(H: _CoxeterGraph) -> bool:
     """
     return is_parabolic_matrix(graph_to_matrix(H))
 
+
 def coxeter_str_format(s: _StringPieces) -> str:
     """
     Format a string for Coxeter diagram labels.
-    
+
     EXAMPLES::
         sage: from isometry_utils import coxeter_str_format
         sage: coxeter_str_format(["A", "3"])
@@ -1257,10 +1342,11 @@ def coxeter_str_format(s: _StringPieces) -> str:
     """
     return "".join(s)
 
+
 def init_coxeter_colors(G: _CoxeterGraph) -> dict[str, list[_SageIndex]]:
     """
     Initialize vertex colors for a Coxeter graph based on loop weights.
-    
+
     EXAMPLES::
         sage: from isometry_utils import init_coxeter_colors, graph_A_n
         sage: G = graph_A_n(3)
@@ -1269,9 +1355,9 @@ def init_coxeter_colors(G: _CoxeterGraph) -> dict[str, list[_SageIndex]]:
         3
     """
     vertex_colors: dict[str, list[_SageIndex]] = {
-        '#F8F9FE': [], # white
-        '#BFC9CA': [], # black
-        '#b3f0fb': []  # blue
+        "#F8F9FE": [],  # white
+        "#BFC9CA": [],  # black
+        "#b3f0fb": [],  # blue
     }
     edge_verts = [x for x in G.edges() if x[0] == x[1]]
 
@@ -1279,19 +1365,20 @@ def init_coxeter_colors(G: _CoxeterGraph) -> dict[str, list[_SageIndex]]:
         v2 = edge[2]
         v_name = edge[0]
         if v2 == -4:
-            vertex_colors["#F8F9FE"].append(v_name) # white
+            vertex_colors["#F8F9FE"].append(v_name)  # white
         elif v2 == -2:
-            vertex_colors["#BFC9CA"].append(v_name) # black
+            vertex_colors["#BFC9CA"].append(v_name)  # black
         else:
-            vertex_colors["#b3f0fb"].append(v_name) # blue
-    if len(reduce(lambda x, y: x+y, list(vertex_colors.values()))) != G.num_verts():
+            vertex_colors["#b3f0fb"].append(v_name)  # blue
+    if len(reduce(lambda x, y: x + y, list(vertex_colors.values()))) != G.num_verts():
         raise ValueError("Error while assigning vertex colors.")
     return vertex_colors
+
 
 def get_all_rank_n_types(n: _SageIndex) -> list[tuple[str, _Matrix]]:
     """
     Get all ADE type matrices of rank n.
-    
+
     EXAMPLES::
         sage: from isometry_utils import get_all_rank_n_types
         sage: types = get_all_rank_n_types(2)
@@ -1299,57 +1386,35 @@ def get_all_rank_n_types(n: _SageIndex) -> list[tuple[str, _Matrix]]:
         3
     """
     if n == 0:
-        return [ 
-            ("A_{0}" , matrix(ZZ, 0) ) 
-       ]
+        return [("A_{0}", matrix(ZZ, 0))]
     if n == 1:
-        return [ 
-            (f"A_{n}" ,matrix_A_n(1) ),
-            (f"A_{n}(2)" ,matrix_A_n_2(1)) 
-        ]
+        return [(f"A_{n}", matrix_A_n(1)), (f"A_{n}(2)", matrix_A_n_2(1))]
     if n == 2:
-        return [ 
-            (f"A_{n}",    matrix_A_n(2)),
-            (f"A_{n}(2)", matrix_A_n_2(2)), 
-            (f"G_{2}",    matrix_G_2()) 
-        ]
+        return [(f"A_{n}", matrix_A_n(2)), (f"A_{n}(2)", matrix_A_n_2(2)), (f"G_{2}", matrix_G_2())]
     if n == 3:
-        return [ 
-            (f"A_{n}",    matrix_A_n(3)),
-            (f"A_{n}(2)", matrix_A_n_2(3)), 
-            (f"B_{n}(2)", matrix_B_n_2(3)),
-            (f"C_{n}(2)", matrix_C_n_2(3))
-        ]
+        return [(f"A_{n}", matrix_A_n(3)), (f"A_{n}(2)", matrix_A_n_2(3)), (f"B_{n}(2)", matrix_B_n_2(3)), (f"C_{n}(2)", matrix_C_n_2(3))]
     else:
-        Ms = [ 
-            (f"A_{n}",    matrix_A_n(n)),
-            (f"A_{n}(2)", matrix_A_n_2(n)), 
+        Ms = [
+            (f"A_{n}", matrix_A_n(n)),
+            (f"A_{n}(2)", matrix_A_n_2(n)),
             (f"B_{n}(2)", matrix_B_n_2(n)),
             (f"C_{n}(2)", matrix_C_n_2(n)),
-            (f"D_{n}",    matrix_D_n(n)),
-            (f"D_{n}(2)", matrix_D_n_2(n)) 
+            (f"D_{n}", matrix_D_n(n)),
+            (f"D_{n}(2)", matrix_D_n_2(n)),
         ]
         if n == 6:
-            Ms.extend([
-                ("E_6",    matrix_E_6() ),
-                ("E_6(2)", matrix_E_6_2() )
-            ])
+            Ms.extend([("E_6", matrix_E_6()), ("E_6(2)", matrix_E_6_2())])
         elif n == 7:
-            Ms.extend([
-                ("E_7",    matrix_E_7() ),
-                ("E_7(2)", matrix_E_7_2() )
-            ])
+            Ms.extend([("E_7", matrix_E_7()), ("E_7(2)", matrix_E_7_2())])
         elif n == 8:
-            Ms.extend([
-                ("E_8", matrix_E_8() ),
-                ("E_8(2)", matrix_E_8_2() )
-            ])
+            Ms.extend([("E_8", matrix_E_8()), ("E_8(2)", matrix_E_8_2())])
         return Ms
+
 
 def get_coxeter_label_connected(H: _CoxeterGraph) -> str:
     """
     Get the Coxeter type label for a connected graph.
-    
+
     EXAMPLES::
         sage: from isometry_utils import get_coxeter_label_connected, graph_A_n
         sage: G = graph_A_n(3)
@@ -1361,7 +1426,7 @@ def get_coxeter_label_connected(H: _CoxeterGraph) -> str:
     M_H = graph_to_matrix(H)
     this_type = [x[0] for x in ade_types if x[1].is_similar(M_H)]
     if len(this_type) == 0:
-        this_type_negs = [x[0] for x in ade_types if x[1].is_similar(-1*M_H)]
+        this_type_negs = [x[0] for x in ade_types if x[1].is_similar(-1 * M_H)]
         if len(this_type_negs) == 0:
             return "?"
         assert len(this_type_negs) == 1
@@ -1369,13 +1434,14 @@ def get_coxeter_label_connected(H: _CoxeterGraph) -> str:
     assert len(this_type) == 1
     return this_type[0]
 
+
 def is_lanner(G: _CoxeterGraph) -> bool:
     """
     Check if a Coxeter diagram is a Lanner diagram.
-    
+
     A Coxeter diagram S is called a Lanner diagram if any subdiagram of S is
     elliptic, and the diagram S is neither elliptic nor parabolic.
-    
+
     EXAMPLES::
         sage: from isometry_utils import is_lanner, graph_A_n
         sage: G = graph_A_n(3)
@@ -1386,5 +1452,6 @@ def is_lanner(G: _CoxeterGraph) -> bool:
         return False
     else:
         return all([is_elliptic_subgraph(H) for H in G.get_subgraphs()])
+
 
 # Import CoxeterGraph class from separate module
