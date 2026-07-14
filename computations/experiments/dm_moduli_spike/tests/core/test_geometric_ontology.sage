@@ -32,7 +32,7 @@ from dm_moduli_spike import (
     scheme_open_immersion_compactification,
     spec,
 )
-from dm_moduli_spike.geometry.stratification import StableDualGraph
+from dm_moduli_spike.geometry.stratification import StableDualGraph, Stratifications
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.testing_support.support.poset_oracle import expected_M0n_specialization_poset
 
@@ -66,9 +66,11 @@ def test_compactification_open_immersion_M11():
     k = spec(QQ)
     XS = M_gn(1, 1, base=k)
     c = XS.compactification()
+    assert c.parent() is Compactifications(XS)
     assert c.domain() is XS
     assert c.codomain() is Mbar_gn(1, 1, base=k)
     assert c.is_open_immersion()
+    assert c.open_immersion() in Hom(XS, c.codomain())
     assert c.codomain().is_proper()
     assert c in Compactifications(XS)
 
@@ -101,6 +103,8 @@ def test_stratum_locally_closed_and_clutching_hom():
     k = spec(QQ)
     XSbar = Mbar_gn(1, 1, base=k)
     Sigma = XSbar.stratification(by=StableDualGraph())
+    assert Sigma.parent() is Stratifications(XSbar)
+    assert Sigma in Stratifications(XSbar)
     assert Sigma.indexing_category() == StableGraphs(1, (1,))
     Gamma = next(g for g in Sigma.index_poset() if g.num_edges() > 0)
     S = Sigma.stratum(Gamma)
@@ -175,9 +179,12 @@ def test_independent_A1_P1_compactification_and_stratification():
     A1 = AffineSpace(QQ, 1)
     P1 = ProjectiveSpace(QQ, 1)
     c = scheme_open_immersion_compactification(A1, P1)
+    assert c.parent() is Compactifications(c.source())
+    assert c.open_immersion() in Hom(c.source(), c.target())
     assert c.target().is_proper()
     b = c.boundary()
     Sigma = c.target().stratify([c.source(), b])
+    assert Sigma.parent() is Stratifications(c.target())
     P = Sigma.specialization_poset()
     assert isinstance(P, FinitePoset)
     assert P.is_isomorphic(posets.ChainPoset(2))

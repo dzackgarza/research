@@ -2,10 +2,12 @@ r"""Compactifications of ordinary schemes (independent of moduli of curves)."""
 
 from __future__ import annotations
 
+from typing import cast
+
 from sage.rings.rational_field import QQ
 
 from ..categories.base import AffineScheme, spec
-from .stacks import Compactification, Stack
+from .stacks import Compactification, Compactifications, Stack
 from .stratification import Stratification, scheme_compactification_stratification
 
 
@@ -40,4 +42,4 @@ def scheme_open_immersion_compactification(open_scheme: object, proper_scheme: o
     base = spec(QQ)
     source = SchemeStack(open_scheme, base, proper=False, name=repr(open_scheme))
     target = SchemeStack(proper_scheme, base, proper=True, name=repr(proper_scheme))
-    return Compactification(source, target, kind="scheme-open-immersion")
+    return cast(Compactification, Compactifications(source)(target, kind="scheme-open-immersion"))

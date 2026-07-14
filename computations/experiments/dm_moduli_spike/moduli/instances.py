@@ -240,7 +240,11 @@ class ModuliStack(DeligneMumfordStack):
         if self._proper:
             raise ValueError("already proper; compactification is the identity immersion")
         target = Mbar_gI(self.genus(), self.marking_set(), base=self.base_scheme())
-        return Compactification(self, target, kind=kind)
+        from typing import cast
+
+        from ..geometry.stacks import Compactifications
+
+        return cast(Compactification, Compactifications(self)(target, kind=kind))
 
     def compactify(self, kind: str = "stable-pointed-curves") -> ModuliStack:
         target = self.compactification(kind=kind).target()

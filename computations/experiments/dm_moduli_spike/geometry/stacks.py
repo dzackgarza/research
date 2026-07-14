@@ -505,46 +505,91 @@ class QuotientStack(DeligneMumfordStack):
 
 
 class Compactifications(UniqueRepresentation, Parent):
-    def __init__(self, source: Stack) -> None:
+    r"""Parent of compactifications of a fixed open object ``X``.
+
+    Elements are equipped open immersions `j: X ↪ X̄` with proper target
+    (Stacks Project 0F44). The Sage parent of each element is this
+    :class:`Compactifications` instance; the underlying open immersion is
+    recovered by :meth:`Compactification.open_immersion` and lives in
+    ``Hom(X, X̄)``.
+    """
+
+    Element: type[Compactification]
+
+    def __init__(self, source: object) -> None:
         from sage.categories.sets_cat import Sets
 
         self._source = source
         Parent.__init__(self, category=Sets())
 
-    def source(self) -> Stack:
+    def source(self) -> object:
         return self._source
 
+    def _element_constructor_(
+        self,
+        target: object,
+        moduli_problem: object | None = None,
+        kind: str = "compactification",
+        open_immersion: OpenImmersion | None = None,
+    ) -> Compactification:
+        if isinstance(target, Compactification):
+            assert target.source() is self._source, f"cannot re-parent compactification of {target.source()!r} into {self!r}"
+            return target
+        return cast(
+            Compactification,
+            self.element_class(
+                self,
+                target,
+                moduli_problem=moduli_problem,
+                kind=kind,
+                open_immersion=open_immersion,
+            ),
+        )
+
     def __contains__(self, obj: object) -> bool:
-        return isinstance(obj, Compactification) and obj.source() is self._source
+        return isinstance(obj, Compactification) and obj.parent() is self
 
     def _repr_(self) -> str:
         return f"Compactifications({self._source!r})"
 
 
-class Compactification(OpenImmersion):
-    r"""Open immersion `j: X ↪ X̄` with proper target (Stacks Project 0F44)."""
+class Compactification(Element):
+    r"""Compactification `j: X ↪ X̄`: equipped open immersion with proper target.
+
+    Construct via ``Compactifications(X)(Xbar)``.
+    """
 
     def __init__(
         self,
-        source: object,
+        parent: Compactifications,
         target: object,
         moduli_problem: object | None = None,
         *,
         kind: str = "compactification",
+        open_immersion: OpenImmersion | None = None,
     ) -> None:
         assert hasattr(target, "is_proper"), f"compactification target must expose is_proper(); found {type(target)!r}; owned boundary=Compactification.__init__"
         if not target.is_proper():
-            # theorem-backed parents must declare Proper
             raise ValueError("compactification target must be proper over the base")
         self._kind_name = kind
         self._moduli_problem = moduli_problem
-        OpenImmersion.__init__(self, source, target)
+        immersion = open_immersion if open_immersion is not None else OpenImmersion(parent.source(), target)
+        assert immersion.domain() is parent.source(), f"open immersion domain must be parent.source(); found {immersion.domain()!r}"
+        assert immersion.codomain() is target, f"open immersion codomain must be the compactification target; found {immersion.codomain()!r}"
+        self._immersion = immersion
+        Element.__init__(self, parent)
+
+    def open_immersion(self) -> OpenImmersion:
+        return self._immersion
+
+    def is_open_immersion(self) -> bool:
+        return True
 
     def source(self) -> object:
-        return self._domain
+        return self._immersion.domain()
 
     def target(self) -> GeometricObject:
-        target = self._codomain
+        target = self._immersion.codomain()
         assert isinstance(target, GeometricObject), f"compactification target must be GeometricObject; found {type(target)!r}; owned boundary=Compactification.target"
         return target
 
@@ -578,13 +623,19 @@ class Compactification(OpenImmersion):
             coarse_target = pi_bar.space()
             if not coarse_target.is_proper():
                 raise ValueError("coarse compactification target must be proper")
-            return Compactification(coarse_source, coarse_target, kind=f"coarse({self._kind_name})")
+            return cast(
+                Compactification,
+                Compactifications(coarse_source)(coarse_target, kind=f"coarse({self._kind_name})"),
+            )
         if hasattr(source, "coarse_space") and hasattr(target, "coarse_space"):
             coarse_source = source.coarse_space()
             coarse_target = target.coarse_space()
             if not coarse_target.is_proper():
                 raise ValueError("coarse compactification target must be proper")
-            return Compactification(coarse_source, coarse_target, kind=f"coarse({self._kind_name})")
+            return cast(
+                Compactification,
+                Compactifications(coarse_source)(coarse_target, kind=f"coarse({self._kind_name})"),
+            )
         raise TypeError("coarse_compactification requires moduli stacks with coarse_space()")
 
     def coarse_moduli_square_commutes(self) -> bool:
@@ -607,6 +658,10 @@ class Compactification(OpenImmersion):
 
     def _repr_(self) -> str:
         return f"Compactification({self.source()!r} ↪ {self.target()!r})"
+
+
+# Forward Element class assignment (Sage Parent.element_class).
+Compactifications.Element = Compactification
 
 
 class Boundary(GeometricObject):

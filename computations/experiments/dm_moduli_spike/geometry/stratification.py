@@ -2,7 +2,10 @@ r"""General finite stratifications and dual-graph stratification of DM boundarie
 
 from __future__ import annotations
 
+from typing import cast
+
 from sage.combinat.posets.posets import FinitePoset
+from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
@@ -18,6 +21,10 @@ from .stacks import (
 
 
 class Stratifications(UniqueRepresentation, Parent):
+    r"""Parent of stratifications of a fixed space ``X``."""
+
+    Element: type[Stratification]
+
     def __init__(self, space: object) -> None:
         from sage.categories.sets_cat import Sets
 
@@ -27,8 +34,28 @@ class Stratifications(UniqueRepresentation, Parent):
     def space(self) -> object:
         return self._space
 
+    def _element_constructor_(
+        self,
+        poset: object,
+        strata: dict[object, Stratum] | None = None,
+        indexing_category: object | None = None,
+    ) -> Stratification:
+        if isinstance(poset, Stratification):
+            assert poset.space() is self._space, f"cannot re-parent stratification of {poset.space()!r} into {self!r}"
+            return poset
+        assert isinstance(poset, FinitePoset), f"expected FinitePoset or Stratification; found {type(poset)!r}"
+        return cast(
+            Stratification,
+            self.element_class(
+                self,
+                poset,
+                strata,
+                indexing_category=indexing_category,
+            ),
+        )
+
     def __contains__(self, obj: object) -> bool:
-        return isinstance(obj, Stratification) and obj.space() is self._space
+        return isinstance(obj, Stratification) and obj.parent() is self
 
     def _repr_(self) -> str:
         return f"Stratifications({self._space!r})"
@@ -81,22 +108,27 @@ class Stratum:
         return f"Stratum({self._index!r})"
 
 
-class Stratification:
+class Stratification(Element):
+    r"""Stratification of a space: index poset plus locally closed strata.
+
+    Construct via ``Stratifications(X)(poset, strata=...)``.
+    """
+
     def __init__(
         self,
-        space: object,
+        parent: Stratifications,
         poset: FinitePoset,
         strata: dict[object, Stratum] | None = None,
         *,
         indexing_category: object | None = None,
     ) -> None:
-        self._space = space
         self._poset = poset
         self._strata = dict(strata or {})
         self._indexing_category = indexing_category
+        Element.__init__(self, parent)
 
     def space(self) -> object:
-        return self._space
+        return cast(Stratifications, self.parent()).space()
 
     def indexing_category(self) -> object | None:
         return self._indexing_category
@@ -125,15 +157,20 @@ class Stratification:
         return tuple(self._strata[p] for p in self._poset)
 
     def restrict(self, subspace: object) -> Stratification:
-        return Stratification(
-            subspace,
-            self._poset,
-            self._strata,
-            indexing_category=self._indexing_category,
+        return cast(
+            Stratification,
+            Stratifications(subspace)(
+                self._poset,
+                self._strata,
+                indexing_category=self._indexing_category,
+            ),
         )
 
     def _repr_(self) -> str:
-        return f"Stratification({self._space!r}, |P|={self._poset.cardinality()})"
+        return f"Stratification({self.space()!r}, |P|={self._poset.cardinality()})"
+
+
+Stratifications.Element = Stratification
 
 
 class StratifiedSpace(UniqueRepresentation, Parent):
@@ -260,7 +297,7 @@ def build_dual_graph_stratification(stack: Stack, *, compact: bool = True) -> St
         action = graph.action_on_half_edges()
         quot = QuotientStack(product, aut, action)
         raw[graph] = (product, quot, graph)
-    strat = Stratification(stack, poset, {}, indexing_category=indexing)
+    strat = cast(Stratification, Stratifications(stack)(poset, {}, indexing_category=indexing))
     for graph, (product, quot, _g) in raw.items():
         stratum = Stratum(strat, graph, quot)
         stratum._clutching = ClutchingMorphism(product, stack, graph=graph)
@@ -285,7 +322,7 @@ def scheme_compactification_stratification(open_part: object, boundary: object, 
         return stack
 
     poset = Poset((["open", "boundary"], [("open", "boundary")]), cover_relations=True, facade=True)
-    strat = Stratification(ambient, poset, {})
+    strat = cast(Stratification, Stratifications(ambient)(poset, {}))
     open_stack = _require_stack(open_part, "open stratum")
     bd_stack = _require_stack(boundary, "boundary stratum")
     strat._strata["open"] = Stratum(strat, "open", open_stack)
