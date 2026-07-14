@@ -12,7 +12,6 @@ import pytest
 
 from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
 from dm_moduli_spike.objects.canonical import canonical_record
-from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
 from dm_moduli_spike.testing_support.support.fixtures import rank_sizes
 from dm_moduli_spike.testing_support.support.fixtures import (
     edge_generator_images,
@@ -118,7 +117,7 @@ def test_contracts_to_matches_specialization_order():
 
 def test_contraction_witnesses_use_canonical_representatives():
     for gamma in StableGraphs(1, 2):
-        for target, witness, _size in _elementary_contraction_data(gamma):
+        for target, witness, _size in gamma.elementary_contractions():
             assert witness.codomain() is target.canonical_representative() or witness.codomain() == target.canonical_representative()
             assert witness.domain() == gamma.canonical_representative() or witness.domain().graph_type() == gamma
 
@@ -138,7 +137,7 @@ def test_automorphism_action_fixes_markings_and_permutes_parallel_edges():
     types = StableGraphs(1, 2)
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
     assert all(image == tuple(range(1, 3)) for image in marking_generator_images(theta.canonical_representative()))
-    assert _elementary_contraction_data(theta)[0][2] == 2
+    assert theta.elementary_contractions()[0][2] == 2
 
 
 def test_backend_enumeration_agrees_with_stable_graphs_rank_sizes():
@@ -198,7 +197,7 @@ def test_dumbbell_graph_automorphism_swaps_loop_branches():
         edges=((0, 0), (0, 1)),
     )
     assert int(dumbbell.automorphism_number()) == 2
-    assert _elementary_contraction_data(dumbbell)[0][2] == 1
+    assert dumbbell.elementary_contractions()[0][2] == 1
 
 
 def test_automorphism_actions_on_all_incidence_data():
@@ -351,10 +350,10 @@ def test_theta_dumbbell_and_m12_type_e_orbit_sizes():
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
     dumbbell = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
     m12_e = m12_types()["E"]
-    assert _elementary_contraction_data(theta)[0][2] == 2
-    dumbbell_orbits = {size for _target, _witness, size in _elementary_contraction_data(dumbbell)}
+    assert theta.elementary_contractions()[0][2] == 2
+    dumbbell_orbits = {size for _target, _witness, size in dumbbell.elementary_contractions()}
     assert dumbbell_orbits == {1, 1}
-    m12_orbits = sorted(size for _target, _witness, size in _elementary_contraction_data(m12_e))
+    m12_orbits = sorted(size for _target, _witness, size in m12_e.elementary_contractions())
     assert m12_orbits == [2]
 
 

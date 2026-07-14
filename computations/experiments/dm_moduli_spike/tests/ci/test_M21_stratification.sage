@@ -9,7 +9,6 @@ import pytest
 from sage.combinat.permutation import Permutations
 
 from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
-from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
 from dm_moduli_spike.objects.records import _GraphRecord
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 
@@ -93,7 +92,7 @@ def test_automorphism_numbers_agree_with_admcycles_on_M21():
 
 def test_covers_change_edge_count_by_one_and_carry_a_valid_witness():
     for gamma in StableGraphs(2, 1):
-        for target, witness, _size in _elementary_contraction_data(gamma):
+        for target, witness, _size in gamma.elementary_contractions():
             assert gamma.codimension() == target.codimension() + 1
             assert witness.num_contracted_edges() == 1
             assert witness.codomain().num_edges() == witness.domain().num_edges() - 1

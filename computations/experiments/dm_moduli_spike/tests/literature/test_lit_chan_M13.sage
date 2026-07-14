@@ -11,7 +11,7 @@ from __future__ import annotations
 from sage.rings.integer_ring import ZZ
 
 from dm_moduli_spike import Mbar_gn, ProductStack, QuotientStack, spec
-from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
+
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.testing_support.support.fixtures import (
     chan_m13_curve_type,
@@ -57,7 +57,7 @@ def test_chan_M13_edge_automorphism_and_contraction_targets():
     gamma = chan_m13_curve_type(types)
     group = induced_edge_permutation_group(gamma.canonical_representative())
     assert group.order() == 2
-    data = _elementary_contraction_data(gamma)
+    data = gamma.elementary_contractions()
     assert len(data) == 1
     targets = {target.canonical_key() for target, _witness, _size in data}
     assert len(targets) == 1

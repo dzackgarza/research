@@ -2,7 +2,7 @@ r"""Tier-4 internal consistency: cover deduplication and exhaustive enumeration.
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
+
 from dm_moduli_spike.objects.gamma import StableGraphCategory
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.testing_support.support.fixtures import genus_six_counterexample, rank_sizes
@@ -18,13 +18,13 @@ def test_covers_deduplicates_aut_orbit_targets():
 
 def test_genus_six_has_eight_orbits_and_seven_covers():
     gamma = genus_six_counterexample()
-    assert len(_elementary_contraction_data(gamma)) == 8
+    assert len(gamma.elementary_contractions()) == 8
     assert len(gamma.covers()) == 7
 
 
 def test_orbit_data_has_one_witness_per_orbit():
     gamma = genus_six_counterexample()
-    data = _elementary_contraction_data(gamma)
+    data = gamma.elementary_contractions()
     assert len(data) == 8
     distinct_targets = {target.canonical_key() for target, _witness, _size in data}
     assert len(distinct_targets) == 7

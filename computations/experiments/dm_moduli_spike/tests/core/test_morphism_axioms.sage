@@ -2,11 +2,9 @@ r"""Tier-4 internal consistency: executable graph isomorphism and contraction ax
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.stable_graphs import StableGraphs
-from dm_moduli_spike.objects.records import _GraphRecord
-from dm_moduli_spike.objects.contractions import contract_edge, contract_edges
-from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
+from dm_moduli_spike.objects.contractions import contract_edges
 from dm_moduli_spike.objects.isomorphisms import StableGraphIsomorphism, canonicalize, identity_isomorphism
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
 
 
 def test_identity_isomorphism_passes_post_init():
@@ -30,7 +28,7 @@ def test_canonicalization_certificate_is_valid_isomorphism():
 def test_contraction_witnesses_from_orbit_data_validate():
     types = StableGraphs(1, 2)
     gamma = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
-    for _target, witness, orbit_size in _elementary_contraction_data(gamma):
+    for _target, witness, orbit_size in gamma.elementary_contractions():
         assert witness.num_contracted_edges() == 1
         assert orbit_size >= 1
         assert witness.target_type().num_edges() == gamma.num_edges() - 1

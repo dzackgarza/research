@@ -13,7 +13,6 @@ from dm_moduli_spike.backends.admcycles_decorated import (
 )
 from dm_moduli_spike.objects.edge_orbits import (
     automorphism_edge_orbit_indices,
-    contraction_target_multiset,
     edges_are_in_same_orbit,
 )
 from dm_moduli_spike.testing_support.support.fixtures import genus_six_counterexample
@@ -101,8 +100,8 @@ def test_genus_six_orbits_match_admcycles_roundtrip():
     assert len(automorphism_edge_orbit_indices(record)) == len(decorated.edge_orbit_representatives()) == 8
     assert Counter(spike_sizes) == Counter(_adm_orbit_sizes(decorated))
     spike_multiset = Counter(
-        (target.canonical_key(), size) for target, size in contraction_target_multiset(gamma)
+        (target.canonical_key(), size) for target, size in gamma.contraction_target_multiset()
     )
     assert spike_multiset == _adm_contraction_multiset(decorated, 6, 0)
-    assert max(Counter(target.canonical_key() for target, _size in contraction_target_multiset(gamma)).values()) == 2
+    assert max(Counter(target.canonical_key() for target, _size in gamma.contraction_target_multiset()).values()) == 2
     assert len(gamma.covers()) == 7

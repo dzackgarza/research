@@ -363,6 +363,18 @@ class StableGraph(Element):
 
         return automorphism_edge_orbits(self._record)
 
+    def elementary_contractions(self) -> tuple[tuple[StableGraph, object, int], ...]:
+        r"""One entry per ``Aut`` edge orbit: ``(target, contraction witness, orbit size)``."""
+        from .edge_orbits import _elementary_contraction_data
+
+        return _elementary_contraction_data(self)
+
+    def contraction_target_multiset(self) -> tuple[tuple[StableGraph, int], ...]:
+        r"""Multiset of contraction targets ``([Γ/e], |O_e|)`` over Aut edge orbits."""
+        from .edge_orbits import contraction_target_multiset
+
+        return contraction_target_multiset(self)
+
     def covers(self) -> tuple[tuple[StableGraph, StableGraph], ...]:
         r"""Distinct contraction targets ``[\Gamma/e]``, one per ``Aut(\Gamma)`` edge orbit."""
         from .edge_orbits import automorphism_edge_orbit_indices

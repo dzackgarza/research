@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections import Counter
 
 from dm_moduli_spike.backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
-from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data, contraction_target_multiset
+
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.testing_support.support.fixtures import genus_six_counterexample, m12_types
 
@@ -13,7 +13,7 @@ from dm_moduli_spike.testing_support.support.fixtures import genus_six_counterex
 def test_genus_six_counterexample_has_distinct_aut_orbits_same_target():
     gamma = genus_six_counterexample()
     assert gamma.automorphism_number() == 1
-    data = _elementary_contraction_data(gamma)
+    data = gamma.elementary_contractions()
     assert len(data) == 8
     assert all(size == 1 for _target, _witness, size in data)
     target_counts = Counter(target.canonical_key() for target, _witness, _size in data)
@@ -25,14 +25,14 @@ def test_genus_six_counterexample_has_distinct_aut_orbits_same_target():
 
 def test_M12_type_E_parallel_orbit_has_size_two():
     m12_e = m12_types()["E"]
-    data = _elementary_contraction_data(m12_e)
+    data = m12_e.elementary_contractions()
     assert len(data) == 1
     assert data[0][2] == 2
 
 
 def test_contraction_target_multiset_matches_covers():
     gamma = genus_six_counterexample()
-    multiset = contraction_target_multiset(gamma)
+    multiset = gamma.contraction_target_multiset()
     assert len(multiset) == 8
     assert len({target.canonical_key() for target, _size in multiset}) == 7
 
@@ -44,8 +44,8 @@ def test_decorated_and_pure_sage_orbit_data_agree():
         for delta in AdmcyclesDecoratedGraphBackend().stable_curve_types(types):
             key = delta.canonical_key()
             assert key in pure_by_key
-            pure_data = _elementary_contraction_data(pure_by_key[key])
-            decorated_data = _elementary_contraction_data(delta)
+            pure_data = pure_by_key[key].elementary_contractions()
+            decorated_data = delta.elementary_contractions()
             assert len(pure_data) == len(decorated_data)
             assert sorted(size for _target, _witness, size in pure_data) == sorted(
                 size for _target, _witness, size in decorated_data

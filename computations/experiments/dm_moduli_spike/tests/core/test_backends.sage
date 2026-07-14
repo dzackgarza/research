@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dm_moduli_spike.backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
 from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
-from dm_moduli_spike.objects.edge_orbits import _elementary_contraction_data
+
 from dm_moduli_spike.objects.stable_graphs import StableGraph, StableGraphs
 
 
@@ -127,7 +127,7 @@ def test_decorated_covers_have_upstream_morphisms():
         for gamma in StableGraphs(g, n):
             if gamma.num_edges() == 0:
                 continue
-            for _target, witness, _size in _elementary_contraction_data(gamma):
+            for _target, witness, _size in gamma.elementary_contractions():
                 domain = witness.domain()
                 decorated = _record_to_decorated_graph(domain, g, n)
                 matched = False

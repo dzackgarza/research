@@ -13,7 +13,7 @@ from collections import Counter
 import pytest
 from sage.all import posets
 
-from dm_moduli_spike.objects.edge_orbits import contraction_target_multiset
+
 from dm_moduli_spike.objects.gamma import StableGraphCategory
 from dm_moduli_spike.testing_support.support.fixtures import CHAN_M20_COVERS, m11_types, m12_types, m20_types
 from dm_moduli_spike.testing_support.support.poset_oracle import specialization_poset
@@ -90,7 +90,7 @@ def test_M12_parallel_edges_give_two_contraction_witnesses():
     types = m12_types()
 
     multiplicities = Counter(
-        target.canonical_key() for target, _size in contraction_target_multiset(types["E"])
+        target.canonical_key() for target, _size in types["E"].contraction_target_multiset()
     )
     assert multiplicities == Counter({types["B"].canonical_key(): 1})
 
@@ -100,10 +100,10 @@ def test_M20_contraction_multiplicities():
     types = m20_types()
 
     assert Counter(
-        target.canonical_key() for target, _size in contraction_target_multiset(types["I"])
+        target.canonical_key() for target, _size in types["I"].contraction_target_multiset()
     ) == Counter({types["III"].canonical_key(): 1})
     assert Counter(
-        target.canonical_key() for target, _size in contraction_target_multiset(types["II"])
+        target.canonical_key() for target, _size in types["II"].contraction_target_multiset()
     ) == Counter(
         {
             types["III"].canonical_key(): 1,
@@ -111,5 +111,5 @@ def test_M20_contraction_multiplicities():
         }
     )
     assert Counter(
-        target.canonical_key() for target, _size in contraction_target_multiset(types["III"])
+        target.canonical_key() for target, _size in types["III"].contraction_target_multiset()
     ) == Counter({types["V"].canonical_key(): 1})
