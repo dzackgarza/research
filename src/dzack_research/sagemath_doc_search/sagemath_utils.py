@@ -488,7 +488,7 @@ def find_symbol_line_with_sage_index(symbol_name: str, file_hint: str | None = N
                                 try:
                                     line_number = int(part.split(":")[1])
                                     break
-                                except ValueError, IndexError:
+                                except (ValueError, IndexError):
                                     continue
 
                         if line_number:
