@@ -39,6 +39,11 @@ class Groupoid(UniqueRepresentation, Parent):
         self._family_factory = family_factory
         Parent.__init__(self, category=Sets())
 
+    def _element_constructor_(self, x: object = None) -> object:
+        if x is not None:
+            return x
+        return self.an_element()
+
     def an_element(self) -> object:
         if self._family_factory is not None:
             assert callable(self._family_factory), f"family_factory must be callable; found {type(self._family_factory)!r}"

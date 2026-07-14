@@ -95,9 +95,10 @@ def test_covers_change_edge_count_by_one_and_carry_a_valid_witness():
         for target, witness, _size in gamma.elementary_contractions():
             assert gamma.codimension() == target.codimension() + 1
             assert witness.num_contracted_edges() == 1
+            assert witness.codomain() == target
+            assert witness.domain() == gamma
             assert witness.codomain().num_edges() == witness.domain().num_edges() - 1
-            image, _ = witness.domain().contract(witness.contracted_edges()[0])
-            assert image._canonical_record() == witness.codomain() or image == witness.codomain().graph_type()
+            assert witness.is_contraction()
 
 
 @pytest.mark.parametrize("g,n", [(0, 5), (2, 1)])

@@ -127,14 +127,14 @@ def test_decorated_covers_have_upstream_morphisms():
         for gamma in StableGraphs(g, n):
             if gamma.num_edges() == 0:
                 continue
-            for _target, witness, _size in gamma.elementary_contractions():
-                domain = witness.domain()
+            for target, witness, _size in gamma.elementary_contractions():
+                domain = witness.domain()._canonical_record()
                 decorated = _record_to_decorated_graph(domain, g, n)
                 matched = False
                 for u, v, _osize in decorated.edge_orbit_representatives():
                     morphism = decorated.edge_contraction_morphism([(u, v, 1)])
                     adapted = contraction_from_decorated_morphism(morphism, g, n, domain_graph=domain)
-                    if adapted.target_type() == witness.target_type():
+                    if adapted.target_type() == target or adapted.target_type() == witness.codomain():
                         matched = True
                         break
                 assert matched, f"no upstream morphism for cover in Mbar({g}, {n})"

@@ -25,6 +25,8 @@ from .canonical import (
 from .records import _GraphRecord, intern_graph
 
 if TYPE_CHECKING:
+    from .gamma import StableGraphMorphism
+
     StableGraphParent = Parent["StableGraph"]
 else:
     StableGraphParent = Parent
@@ -361,11 +363,16 @@ class StableGraph(Element):
 
         return automorphism_edge_orbits(self._record)
 
-    def elementary_contractions(self) -> tuple[tuple[StableGraph, object, int], ...]:
-        r"""One entry per ``Aut`` edge orbit: ``(target, contraction witness, orbit size)``."""
-        from .edge_orbits import _elementary_contraction_data
+    def elementary_contractions(self) -> tuple[tuple[StableGraph, StableGraphMorphism, int], ...]:
+        r"""One entry per ``Aut`` edge orbit: ``(target, Hom contraction, orbit size)``.
 
-        return _elementary_contraction_data(self)
+        The contraction is a :class:`~dm_moduli_spike.objects.gamma.StableGraphMorphism`
+        in ``Hom(self, target)``, not a private labeled-record witness.
+        """
+        from .edge_orbits import _elementary_contraction_data
+        from .gamma import StableGraphMorphism
+
+        return tuple((target, StableGraphMorphism.from_contraction(witness), size) for target, witness, size in _elementary_contraction_data(self))
 
     def contraction_target_multiset(self) -> tuple[tuple[StableGraph, int], ...]:
         r"""Multiset of contraction targets ``([Γ/e], |O_e|)`` over Aut edge orbits."""

@@ -2,6 +2,7 @@ r"""Tier-4 internal consistency: canonical representatives, immutability, automo
 
 from __future__ import annotations
 
+from sage.categories.homset import Hom
 from sage.rings.integer_ring import ZZ
 from dm_moduli_spike import Mbar_gn, QuotientStack, spec
 from dm_moduli_spike.objects.gamma import StableGraphCategory
@@ -115,11 +116,18 @@ def test_contracts_to_matches_specialization_order():
             assert poset.is_lequal(generic, special) == special.contracts_to(generic)
 
 
-def test_contraction_witnesses_use__canonical_records():
+def test_contraction_witnesses_are_hom_morphisms():
+    from dm_moduli_spike.objects.gamma import StableGraphMorphism
+
     for gamma in StableGraphs(1, 2):
         for target, witness, _size in gamma.elementary_contractions():
-            assert witness.codomain() is target._canonical_record() or witness.codomain() == target._canonical_record()
-            assert witness.domain() == gamma._canonical_record() or witness.domain().graph_type() == gamma
+            assert isinstance(witness, StableGraphMorphism)
+            assert witness.parent() is Hom(gamma, target) or (
+                witness.domain() == gamma and witness.codomain() == target
+            )
+            assert witness.codomain() == target
+            assert witness.domain() == gamma
+            assert witness.is_contraction()
 
 
 def test_presentation_data_is_invariant_under_vertex_relabeling():

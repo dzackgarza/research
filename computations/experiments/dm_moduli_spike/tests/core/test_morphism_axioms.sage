@@ -28,10 +28,12 @@ def test_canonicalization_certificate_is_valid_isomorphism():
 def test_contraction_witnesses_from_orbit_data_validate():
     types = StableGraphs(1, 2)
     gamma = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
-    for _target, witness, orbit_size in gamma.elementary_contractions():
+    for target, witness, orbit_size in gamma.elementary_contractions():
         assert witness.num_contracted_edges() == 1
         assert orbit_size >= 1
-        assert witness.target_type().num_edges() == gamma.num_edges() - 1
+        assert witness.codomain() == target
+        assert witness.codomain().num_edges() == gamma.num_edges() - 1
+        assert witness.is_contraction()
 
 
 def test_multi_edge_contraction_validates():

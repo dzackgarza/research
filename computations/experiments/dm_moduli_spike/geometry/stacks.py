@@ -160,6 +160,8 @@ class Variety(AlgebraicSpace):
 class StackFiber(UniqueRepresentation, Parent):
     r"""Groupoid of objects of a stack over a test scheme `T`."""
 
+    Element: type[StackObject]
+
     def __init__(self, stack: Stack, test_object: object) -> None:
         from sage.categories.sets_cat import Sets
 
@@ -173,8 +175,17 @@ class StackFiber(UniqueRepresentation, Parent):
     def base(self) -> object:
         return self._T
 
+    def _element_constructor_(self, x: object = None) -> StackObject:
+        if isinstance(x, StackObject):
+            if x.parent() is self:
+                return x
+            raise ValueError(f"{x!r} is not an object of {self!r}")
+        if x is None:
+            return cast(StackObject, self.element_class(self))
+        raise TypeError(f"cannot construct a stack object from {type(x).__name__}")
+
     def an_element(self) -> object:
-        return StackObject(self)
+        return cast(StackObject, self())
 
     def _repr_(self) -> str:
         return f"{self._stack!r}({self._T!r})"
@@ -188,6 +199,9 @@ class StackObject(Element):
         return f"Object of {self.parent()}"
 
 
+StackFiber.Element = StackObject
+
+
 class StackObjectIsomorphism(Element):
     def __init__(self, parent: object, source: StackObject, target: StackObject) -> None:
         self._source = source
@@ -196,6 +210,10 @@ class StackObjectIsomorphism(Element):
 
 
 class StackHomset(UniqueRepresentation, Parent):
+    r"""Hom-set parent ``Hom(X, Y)`` of stack morphisms."""
+
+    Element: type[StackMorphism]
+
     def __init__(self, domain: object, codomain: object) -> None:
         from sage.categories.homsets import Homsets
 
@@ -209,20 +227,23 @@ class StackHomset(UniqueRepresentation, Parent):
     def codomain(self) -> object:
         return self._codomain
 
-    def __call__(self, x: object = None, *args: object, **kwds: object) -> StackMorphism:
-        assert not args, f"StackHomset() does not take positional args beyond data; found args={args!r}; owned boundary=StackHomset.__call__"
+    def _element_constructor_(self, x: object = None, **kwds: object) -> StackMorphism:
         if isinstance(x, StackMorphism):
-            return x
-        assert "kind" in kwds, (
-            f"StackHomset() requires explicit kind=; found keys={sorted(kwds)!r}; "
-            "owned boundary=StackHomset.__call__; "
-            "pass kind='morphism' (or a named morphism kind) at the call site"
-        )
-        kind = str(kwds["kind"])
-        return StackMorphism(self._domain, self._codomain, kind=kind)
+            if x.domain() is self._domain and x.codomain() is self._codomain:
+                return x
+            raise ValueError(f"{x!r} is not a morphism in {self!r}")
+        kind = kwds.pop("kind", None)
+        if kwds:
+            raise TypeError(f"unexpected keyword arguments {sorted(kwds)!r}")
+        if kind is None:
+            if x is None:
+                kind = "morphism"
+            else:
+                raise TypeError(f"StackHomset() requires kind=... or an existing StackMorphism; got positional data of type {type(x).__name__}")
+        return StackMorphism(self._domain, self._codomain, kind=str(kind))
 
     def an_element(self) -> StackMorphism:
-        return StackMorphism(self._domain, self._codomain, kind="morphism")
+        return cast(StackMorphism, self(kind="morphism"))
 
     def _repr_(self) -> str:
         return f"Hom({self._domain!r}, {self._codomain!r})"
@@ -253,6 +274,9 @@ class StackMorphism(Element):
 
     def _repr_(self) -> str:
         return f"StackMorphism({self._domain!r} -> {self._codomain!r}, {self._kind})"
+
+
+StackHomset.Element = StackMorphism
 
 
 class Stack2Isomorphism(Element):
@@ -364,6 +388,25 @@ class LocallyClosedSubstacks(UniqueRepresentation, Parent):
 
     def ambient(self) -> Stack:
         return self._ambient
+
+    def _element_constructor_(
+        self,
+        underlying: object,
+        immersion: LocallyClosedImmersion | None = None,
+    ) -> LocallyClosedSubstack:
+        if isinstance(underlying, LocallyClosedSubstack):
+            if underlying.ambient() is self._ambient:
+                return underlying
+            raise ValueError(f"{underlying!r} is not a locally closed substack of {self._ambient!r}")
+        from .stratification import Stratum
+
+        if isinstance(underlying, Stratum):
+            if underlying.stratification().space() is not self._ambient:
+                raise ValueError(f"{underlying!r} is not a stratum of {self._ambient!r}")
+            return underlying.as_substack()
+        if not isinstance(underlying, Stack):
+            raise TypeError(f"expected Stack, LocallyClosedSubstack, or Stratum; found {type(underlying)!r}")
+        return LocallyClosedSubstack(self._ambient, underlying, immersion=immersion)
 
     def __contains__(self, obj: object) -> bool:
         if isinstance(obj, LocallyClosedSubstack):
@@ -722,6 +765,12 @@ class Boundary(GeometricObject):
         return build_dual_graph_stratification(ambient).restrict(self)
 
     def stratification_poset(self, order: str = "specialization") -> object:
+        r"""Boundary strata poset of the dual-graph stratification of this boundary.
+
+        Owned by the equipped boundary (not by an arbitrary proper space). Uses the
+        Γ thinification with the open stratum removed — the combinatorial model of
+        the closed complement of the open immersion defining this boundary.
+        """
         from .stratification import dual_graph_boundary_poset
 
         return dual_graph_boundary_poset(self, order=order)

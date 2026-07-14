@@ -117,6 +117,9 @@ class StableGraphMorphism(Element):
         involution = self._domain.flag_involution
         return tuple(sorted((flag, involution[flag]) for flag in self._contracted_flags if flag < involution[flag]))
 
+    def num_contracted_edges(self) -> int:
+        return len(self.contracted_edges())
+
     def surviving_half_edge_injection(self) -> dict[int, int]:
         r"""Contravariant injection `H(H)\hookrightarrow H(G)`."""
         return {codomain_flag: domain_flag for domain_flag, codomain_flag in enumerate(self._half_edge_map) if codomain_flag >= 0}

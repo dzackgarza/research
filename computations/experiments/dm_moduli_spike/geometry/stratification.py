@@ -194,13 +194,6 @@ class StratifiedSpace(UniqueRepresentation, Parent):
     def stratification(self) -> Stratification:
         return self._stratification
 
-    def stratification_poset(self, order: str = "specialization") -> FinitePoset:
-        if order == "specialization":
-            return self._stratification.specialization_poset()
-        if order == "closure":
-            return self._stratification.closure_poset()
-        raise ValueError(order)
-
 
 class ClutchingMorphism(StackMorphism):
     r"""Clutching morphism as a stack morphism in a Hom-set."""
