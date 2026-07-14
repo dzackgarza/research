@@ -16,5 +16,5 @@ created: 2026-05-08
 ## Role in Moduli Theory
 
 For an [[Enriques surface]] $Z$, the Néron--Severi group satisfies $\operatorname{NS}(Z) \cong H^2(Z; \mathbf{Z}) \cong \mathbf{Z}^{10} \oplus \mathbf{Z}_2$.
-The intersection pairing endows the free part $H^2(Z; \mathbf{Z})_f$ with the structure of a lattice, and there are isometries $H^2(Z; \mathbf{Z})*f \xrightarrow{\sim} L*{\mathrm{En}}$.
-A marking for an Enriques surface $Y$ is an isometry $H^2(Y,\mathbf{Z})*f \cong L*{\mathrm{En}}$.
+The intersection pairing endows the free part $H^2(Z; \mathbf{Z})_f$ with the structure of a lattice, and there are isometries $H^2(Z; \mathbf{Z})_f \xrightarrow{\sim} L_{\mathrm{En}}$.
+A marking for an Enriques surface $Y$ is an isometry $H^2(Y,\mathbf{Z})_f \cong L_{\mathrm{En}}$.

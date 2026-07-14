@@ -8,7 +8,9 @@ aliases:
 created: 2026-05-08
 ---
 
-> [!remark] The K3 Double Cover construction A standard method to produce Calabi-Yau varieties involves taking a double cover $\pi: X \to Y$ branched over a reduced divisor $B$.
+> [!remark] The K3 Double Cover construction
+>
+> A standard method to produce Calabi-Yau varieties involves taking a double cover $\pi: X \to Y$ branched over a reduced divisor $B$.
 > If $B \in |-2K_Y|$, one takes $L = -K_Y$.
 > The cover $X$ is defined via the $\mathcal{O}_Y$-algebra $\mathcal{A} = \mathcal{O}_Y \oplus L^{-1}$.
 > 

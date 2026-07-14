@@ -17,8 +17,7 @@ quartic singularity whose resolution is an irreducible smooth rational curve $C$
 satisfying $C^2 = -4$, and by [@Nue15 p. 8] is thus a Coble surface $S$.
 :::
 
-:::
-: {.remark}
+:::{.remark}
 
 Separately, one can construct a Hodge-theoretic period domain directly using
 lattice theory [@DM19].

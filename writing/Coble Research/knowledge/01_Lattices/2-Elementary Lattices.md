@@ -33,5 +33,5 @@ The classification of such lattices is determined by three invariants:
 2. the 2-rank $a = \dim_{\mathbf{F}_2}(A_L)$, or equivalently $\ell(L)$, and
 3. the coparity $\delta \in \{0,1\}$.
 
-We denote by $(r, a, \delta)*{n*+}$ the 2-elementary lattice with these invariants and signature $(n_+, n_-)$.
+We denote by $(r, a, \delta)_{n_+}$ the 2-elementary lattice with these invariants and signature $(n_+, n_-)$.
 For each admissible triple $(r, a, \delta)$ satisfying $r \geq 4$, there exists a unique isometry class of even, indefinite, 2-elementary lattice with these invariants (Nikulin 1980).

@@ -67,13 +67,8 @@ special Halphen and Coble surfaces are precisely the unnodal ones.
 
 [^1]: More generally, by [@DK24], this can be relaxed to a reduced simple normal crossings divisor.
 
-[^2]: This follows from an application of the genus formula: $$p_{a}(C)=1+\frac{1}{2}\qty{ C^{2} + C \cdot K_S }=1+K_S^{2}=0,$$
-
-```
-and so $C$ is a smooth rational curve satisfying $C^2 = 4K_S^2 = -4$ since
-$K_S^2 = -1$.
-This is [@CDL24 §. 3.1].
-```
+[^2]: This follows from an application of the genus formula: $$p_{a}(C)=1+\frac{1}{2}\qty{ C^{2} + C \cdot K_S }=1+K_S^{2}=0,$$ and so $C$ is a smooth rational curve satisfying $C^2 = 4K_S^2 = -4$ since $K_S^2 = -1$.
+    This is [@CDL24 §. 3.1].
 
 [^3]: By the proof of [@DK24 Prop 9.13].
 

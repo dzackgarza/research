@@ -73,7 +73,10 @@ test:
         " ".join(("BEGIN", "OPENSSH")),
         " ".join(("BEGIN", "RSA")),
     ]
-    for path in Path(".").rglob("*"):
+    for entry in tracked:
+        if not entry:
+            continue
+        path = Path(entry)
         if not owned_by_umbrella(path):
             continue
         if not path.is_file() or ".git" in path.parts:
@@ -107,10 +110,14 @@ test:
         just -f "$spike_justfile" test
     done
 
-test-ci:
+test-ci: test
     #!/usr/bin/env bash
     set -euo pipefail
     direnv exec . just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
+    shopt -s nullglob
+    for spike_justfile in computations/experiments/*/justfile; do
+        just -f "$spike_justfile" test-ci
+    done
 
 # Review calibration (submodule) — delegate to review-calibration/justfile.
 # Requires the submodule: git submodule update --init review-calibration

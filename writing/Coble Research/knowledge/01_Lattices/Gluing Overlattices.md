@@ -9,7 +9,9 @@ aliases:
 created: 2026-05-08
 ---
 
-> [!proposition] Gluing Overlattices via Isotropic Subgroups Let $S$ be a lattice.
+> [!proposition] Gluing Overlattices via Isotropic Subgroups
+>
+> Let $S$ be a lattice.
 > There is a bijection between even [[Overlattices and Gluing Theory|overlattices]] $L$ of $S$ and isotropic subgroups $H \leq A_S$:
 > \begin{align*}
 > \{\text{Even overlattices } L \text{ of } S\} &\rightleftharpoons \{\text{Isotropic subgroups } H \leq A_S\} \\

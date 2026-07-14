@@ -8,7 +8,9 @@ aliases:
 created: 2026-05-08
 ---
 
-> [!definition] Moduli space of degree 2 numerically polarized Enriques surfaces ($F_{\mathrm{En}, 2}$) The moduli space $F_{\mathrm{En}, 2}$ parameterizes pairs $(Z, [\mathcal{L}_Z])$, where $Z$ is an [[Enriques surface]], possibly with ADE singularities, and $[\mathcal{L}_Z] \in \operatorname{Pic}(Z)/\mathbf{Z}_2 \cong \operatorname{Num}(Z)$ is the [[Numerical polarization|numerical class of an ample polarization]] of degree 2.
+> [!definition] Moduli space of degree 2 numerically polarized Enriques surfaces ($F_{\mathrm{En}, 2}$)
+>
+> The moduli space $F_{\mathrm{En}, 2}$ parameterizes pairs $(Z, [\mathcal{L}_Z])$, where $Z$ is an [[Enriques surface]], possibly with ADE singularities, and $[\mathcal{L}_Z] \in \operatorname{Pic}(Z)/\mathbf{Z}_2 \cong \operatorname{Num}(Z)$ is the [[Numerical polarization|numerical class of an ample polarization]] of degree 2.
 > 
 > Equivalently, it may be described as the moduli space of pairs $(Z, \mathcal{M})$, where $\mathcal{M} = \mathcal{L}_Z^{\otimes 2} \in \operatorname{Pic}(Z)$ is a 2-divisible polarization of degree 8.
 

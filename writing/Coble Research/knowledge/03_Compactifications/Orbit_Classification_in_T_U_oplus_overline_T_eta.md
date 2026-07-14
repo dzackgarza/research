@@ -10,7 +10,9 @@ aliases:
 created: 2026-05-08
 ---
 
-> [!theorem] Orbit Classification in $T = U \oplus \overline{T}*\eta$ (Sterk 1991) Fix an even [[Lattice]] $T$ with a splitting $T = U \oplus \overline{T}*\eta$ with $\overline{T}$ negative-definite and even.
+> [!theorem] Orbit Classification in $T = U \oplus \overline{T}_\eta$ (Sterk 1991)
+>
+> Fix an even [[Lattice]] $T$ with a splitting $T = U \oplus \overline{T}_\eta$ with $\overline{T}$ negative-definite and even.
 > Let $\eta_1, \eta_2 \in T$ be primitive isotropic vectors satisfying:
 > 1. $\eta_1^2 = \eta_2^2 = k$
 > 2. $\operatorname{div}_T(\eta_1) = \operatorname{div}_T(\eta_2) = p > 0$
