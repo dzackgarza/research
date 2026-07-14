@@ -1,6 +1,7 @@
 # Nodal Enriques Surfaces
 
-The lattices for $S_{\Nod}$ comes from [@DK13 Prop. 3.1]. There is a primitive embedding
+The lattices for $S_{\Nod}$ comes from [@DK13 Prop. 3.1].
+There is a primitive embedding
 
 $$
 \begin{aligned}
@@ -10,8 +11,11 @@ $$
 \end{aligned}
 $$
 
-where $U(2) = \gens{e,f}$, $U = \gens{\tilde e, \tilde f}$, and $\gens{-4} = \gens{h}$; this map is the identity on the $E_8(2)$ component.
-This formula is given on [@CDL24 p. 561]. There is is claimed that this induces a map $F_{S_{\Nod}} \injects F_{S_{\En}}$ where the former coincides with the moduli space of nodal Enriques surfaces.
+where $U(2) = \gens{e,f}$, $U = \gens{\tilde e, \tilde f}$, and
+$\gens{-4} = \gens{h}$; this map is the identity on the $E_8(2)$ component.
+This formula is given on [@CDL24 p. 561].
+There is is claimed that this induces a map $F_{S_{\Nod}} \injects F_{S_{\En}}$
+where the former coincides with the moduli space of nodal Enriques surfaces.
 
 $$
 \begin{aligned}

@@ -1,4 +1,4 @@
-# Introduction
+# Introduction 
 
 :::{.remark}
 A Coble surface is a smooth projective rational surface $S$ with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S}\neq \emptyset$.
@@ -47,6 +47,4 @@ This result is made possible by recent advances in \cite{AE22,alexeev2021nonsymp
 We also critically leverage the related stable pair compactification of the moduli spaces of Enriques surfaces studied in \cite{AEGS23}. In particular, we use the folding theory of Coxeter diagrams, their associated integral affine structures, and the theory of $ADE+BC$ surfaces in order to explicitly describe stable degenerations of Coble surfaces.
 :::
 
-**Acknowledgements**. I would like to thank my advisor Valery Alexeev for his guidance and support throughout this project.
-I thank Luca Schaffler and Philip Engel for many useful discussions.
-I would also like to gratefully acknowledge financial support from the Office of the Graduate School of the University of Georgia and the Research and Training Group in Algebra, Algebraic Geometry, and Number Theory at the University of Georgia.
+**Acknowledgements**. I would like to thank my advisor Valery Alexeev for his guidance and support throughout this project. I thank Luca Schaffler and Philip Engel for many useful discussions. I would also like to gratefully acknowledge financial support from the Office of the Graduate School of the University of Georgia and the Research and Training Group in Algebra, Algebraic Geometry, and Number Theory at the University of Georgia.

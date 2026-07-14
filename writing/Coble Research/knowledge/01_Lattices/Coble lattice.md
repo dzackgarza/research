@@ -12,7 +12,8 @@ aliases:
 created: 2026-05-10
 ---
 
-> [!example] Coble lattice For a classical Coble surface with one boundary component, the invariant lattice of the K3 cover is
+> [!example] Coble lattice
+> For a classical Coble surface with one boundary component, the invariant lattice of the K3 cover is
 > $$
 > S_{\mathrm{Co}} = (11,11,1)_1 \cong \langle -2 \rangle \oplus E_{10}(2),
 > $$
@@ -20,7 +21,6 @@ created: 2026-05-10
 > $$
 > T_{\mathrm{Co}} = (11,11,1)_2 \cong \langle 2 \rangle \oplus E_{10}(2).
 > $$ [@DM19; @DK13]
-> $$
 
 ## Basic properties
 
@@ -48,7 +48,6 @@ For the first map, writing $T_{\mathrm{Co}} = \langle h \rangle \oplus E_{10}(2)
 $$
 h \longmapsto \tilde e + \tilde f \in U
 $$
-and act as the identity on the $E_{10}(2)$ summand.
-The embedding is primitive, and its uniqueness up to the orthogonal group is justified using Nikulin's results and the Enriques compactification arguments in [@AEGS23; @Nik79].
+and act as the identity on the $E_{10}(2)$ summand. The embedding is primitive, and its uniqueness up to the orthogonal group is justified using Nikulin's results and the Enriques compactification arguments in [@AEGS23; @Nik79].
 
 - These embeddings induce locally closed maps on period domains and extend to Baily-Borel compactifications [@KK72].

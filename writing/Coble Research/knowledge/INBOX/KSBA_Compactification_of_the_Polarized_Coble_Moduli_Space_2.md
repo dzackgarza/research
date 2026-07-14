@@ -5,11 +5,12 @@ type: note
 title: "KSBA Compactification of the Polarized Coble Moduli Space"
 ---
 
+
 # KSBA Compactification of the Polarized Coble Moduli Space
 
 导出时间: 5/11/2026, 11:53:27 AM
 
-* * *
+---
 
 Based on the sources, the following claims constitute the rigorous framework for the **KSBA compactification of the polarized Coble moduli space**:
 
@@ -61,8 +62,38 @@ Based on the sources, the following claims constitute the rigorous framework for
 
 **Integral-Affine Structure (IAS):** The Coble IAS is constructed by marking a **zero-length root** in a K3 IAS that admits Enriques symmetry, representing the A1​\-node fixed by the involution\[46\].
 
-## **Geometric Sequence:** The construction follows a formal sequence from K3 Coxeter/IAS data to folded Enriques data, and finally to Coble marked-root trace data\[49\]\[50\].
+**Geometric Sequence:** The construction follows a formal sequence from K3 Coxeter/IAS data to folded Enriques data, and finally to Coble marked-root trace data\[49\]\[50\].
+---
 
 ## 引用来源
 
-[1] KSBA Compactification and Coble.md [2] KSBA Compactification and Coble.md [3] KSBA Compactification and Coble.md [4] KSBA Compactification and Coble.md [7] KSBA Compactification and Coble.md [8] KSBA Compactification and Coble.md [9] KSBA Compactification and Coble.md [12] KSBA Compactification and Coble.md [13] KSBA Compactification and Coble.md [14] KSBA Compactification and Coble.md [17] KSBA Compactification and Coble.md [19] KSBA Compactification and Coble.md [20] KSBA Compactification and Coble.md [23] KSBA Compactification and Coble.md [24] KSBA Compactification and Coble.md [25] KSBA Compactification and Coble.md [26] KSBA Compactification and Coble.md [27] KSBA Compactification and Coble.md [28] KSBA Compactification and Coble.md [32] KSBA Compactification and Coble.md [35] KSBA Compactification and Coble.md [36] KSBA Compactification and Coble.md [37] KSBA Compactification and Coble.md [38] KSBA Compactification and Coble.md [41] KSBA Compactification and Coble.md [42] KSBA Compactification and Coble.md [43] KSBA Compactification and Coble.md [46] KSBA Compactification and Coble.md [49] KSBA Compactification and Coble.md [50] KSBA Compactification and Coble.md
+[1] KSBA Compactification and Coble.md
+[2] KSBA Compactification and Coble.md
+[3] KSBA Compactification and Coble.md
+[4] KSBA Compactification and Coble.md
+[7] KSBA Compactification and Coble.md
+[8] KSBA Compactification and Coble.md
+[9] KSBA Compactification and Coble.md
+[12] KSBA Compactification and Coble.md
+[13] KSBA Compactification and Coble.md
+[14] KSBA Compactification and Coble.md
+[17] KSBA Compactification and Coble.md
+[19] KSBA Compactification and Coble.md
+[20] KSBA Compactification and Coble.md
+[23] KSBA Compactification and Coble.md
+[24] KSBA Compactification and Coble.md
+[25] KSBA Compactification and Coble.md
+[26] KSBA Compactification and Coble.md
+[27] KSBA Compactification and Coble.md
+[28] KSBA Compactification and Coble.md
+[32] KSBA Compactification and Coble.md
+[35] KSBA Compactification and Coble.md
+[36] KSBA Compactification and Coble.md
+[37] KSBA Compactification and Coble.md
+[38] KSBA Compactification and Coble.md
+[41] KSBA Compactification and Coble.md
+[42] KSBA Compactification and Coble.md
+[43] KSBA Compactification and Coble.md
+[46] KSBA Compactification and Coble.md
+[49] KSBA Compactification and Coble.md
+[50] KSBA Compactification and Coble.md

@@ -3,7 +3,8 @@ title: "Complete moduli spaces of Coble surfaces"
 abstract: "We describe a modular KSBA stable pair compactification of the moduli space of Coble surfaces and compare it to a semitoroidal compactification of the corresponding period domain. We further describe KSBA stable limits in terms of integral affine structures."
 ---
 
-# Introduction
+
+# Introduction 
 
 :::{.remark}
 A Coble surface is a smooth projective rational surface $S$ with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S}\neq \emptyset$.
@@ -52,11 +53,9 @@ This result is made possible by recent advances in \cite{AE22,alexeev2021nonsymp
 We also critically leverage the related stable pair compactification of the moduli spaces of Enriques surfaces studied in \cite{AEGS23}. In particular, we use the folding theory of Coxeter diagrams, their associated integral affine structures, and the theory of $ADE+BC$ surfaces in order to explicitly describe stable degenerations of Coble surfaces.
 :::
 
-**Acknowledgements**. I would like to thank my advisor Valery Alexeev for his guidance and support throughout this project.
-I thank Luca Schaffler and Philip Engel for many useful discussions.
-I would also like to gratefully acknowledge financial support from the Office of the Graduate School of the University of Georgia and the Research and Training Group in Algebra, Algebraic Geometry, and Number Theory at the University of Georgia.
+**Acknowledgements**. I would like to thank my advisor Valery Alexeev for his guidance and support throughout this project. I thank Luca Schaffler and Philip Engel for many useful discussions. I would also like to gratefully acknowledge financial support from the Office of the Graduate School of the University of Georgia and the Research and Training Group in Algebra, Algebraic Geometry, and Number Theory at the University of Georgia.
 
-# Coble surfaces
+# Coble surfaces 
 
 ## The geometry of Coble surfaces
 
@@ -120,6 +119,9 @@ K_S = -3e_0 + e_1 + \cdots + e_N
 .\]
 :::
 
+
+
+
 # Lattice Theory
 
 :::{.remark}
@@ -127,12 +129,14 @@ We refer to:
 
 - \cite{vinberg1985hyperbolic-groups}
 - \cite{Vin75}
+
 :::
 
 ## Basic Theory
 
 :::{.remark}
 The study of semitoroidal compactifications of moduli spaces of Coble surfaces largely reduces to lattice theory, of which we will now recall the essential notions.
+
 :::
 
 :::{.remark title="Basic invariants"}
@@ -154,6 +158,7 @@ The **rank** $r$ of a lattice is its rank as a free $\ZZ$-module and is given by
 An indefinite lattice of signature $(1, r-1)$ is said to be **hyperbolic**. 
 Fixing a generating set $e_i$ of $L$, we define the **Gram matrix** of $L$ as the matrix $G_L \da (\beta_L(e_i, e_j))_{ij}$, and the **discriminant** as $\operatorname{disc} L \da \det G_L$. 
 The discriminant is independent of the choice of generating set.
+
 :::
 
 :::{.remark title="Discriminant forms"}
@@ -212,6 +217,7 @@ We also note that for any lattices $L_i$,
 \[
 A_{L_1 \oplus \cdots \oplus L_n} = A_{L_1} \oplus \cdots \oplus A_{L_n}
 \]
+
 :::
 
 :::{.remark title="2-elementary lattices"}
@@ -249,8 +255,7 @@ If $L$ is a lattice with bilinear for $\beta_L$, define $L(n)$ to be the twist o
 \[\beta_{L(n)}(v,w) \da n\cdot \beta_L(v, w).\]
 :::
 
-:::{.remark title="The lattice $\gens{n}
-$"}
+:::{.remark title="The lattice $\gens{n}$"}
 The lattice $\gens{n}$ is defined as the rank 1 lattice $\ZZ$ with one generator $v$ satisfying $\beta_{\gens{n}}(v,v) = n$. The Gram matrix is the $1\times 1$ matrix $G_{\gens n} = [n]$, and the associated quadratic form is $q_{\gens{n}}(x) = nx^2$. 
 :::
 
@@ -260,6 +265,7 @@ We refer to the latter as the \textbf{hyperbolic lattice}, which can be realized
 \[ 
 G_U = \begin{bmatrix}0&1\\1&0\end{bmatrix}
 .\]
+
 :::
 
 :::{.remark title="ADE lattices"}
@@ -274,18 +280,18 @@ Any Dynkin diagram of type $A_n, D_n, E_6, E_7, E_8$ corresponds to a root latti
 \caption{The Dynkin diagram $E_{8}$}
 \label{fig:e8-coxeter-diagram}
 \end{figure}
+
 :::
 
-:::{.remark title="The lattice ${{\rm{I}
-}_{p, q}}$."}
+:::{.remark title="The lattice ${{\rm{I} }_{p, q}}$."}
 For any pair of non-negative integers $(p, q)$, there exists an odd indefinite unimodular lattice determined up to isomorphism by its rank and signature:
 \[
 \mathrm{I}_{p, q} \da \gens{1}^{\oplus p}\oplus \gens{-1}^{\oplus q}
 .\]
+
 :::
 
-:::{.remark title="The lattice ${\rm{II}
-}_{p, q}$"}
+:::{.remark title="The lattice ${\rm{II}}_{p, q}$"}
 Let $L$ be an even indefinite unimodular lattice of signature $(p, q)$. Then $p-q\equiv 0 \pmod 8$, and $L$ is uniquely determined up to isomorphism by its rank and signature:
 \[ 
 {\rm{II}}_{p, q} \da 
@@ -296,9 +302,11 @@ Let $L$ be an even indefinite unimodular lattice of signature $(p, q)$. Then $p-
 \]
 :::
 
+
 [^1]: A bilinear form is *nondegenerate* if for any $x$, $\beta_L(x, L) = 0$ implies $x=0$.
-    [^2]: For example, let $L = U = \gens{e,f}$ and $M = \gens{e}$.
-    Then $M^{\perp L} = M$.
+[^2]: For example, let $L = U = \gens{e,f}$ and $M = \gens{e}$. Then $M^{\perp L} = M$.
+
+
 
 ## Summary
 
@@ -315,6 +323,7 @@ $$\begin{aligned}
     S_{\dP} &= (2,2,0)_1        = U(2) &
     T_{\dP} &= (20, 2, 0)_2     = U \oplus U(2) \oplus E_8^2
 \end{aligned}$$
+
 :::
 
 :::{.lemma}
@@ -378,16 +387,17 @@ It remains to show that the stabilizer of $T_{\Co}$ in $\Orth(T_{\En})$ is preci
 This morphism is finite because...
 
 The stabilizer statement follows from...
+
+
 :::
 
-\todo[inline]{I don't know how to prove this.
-Maybe one should embed into $T_{\dP}$ instead to get the stabilizer statement?
-Finiteness is still unclear.
-Maybe one can use finite $\iff$ proper and finite fibers, using Stacks tag 02LS. This can be checked Zariski locally?}
+\todo[inline]{I don't know how to prove this. Maybe one should embed into $T_{\dP}$ instead to get the stabilizer statement? Finiteness is still unclear. Maybe one can use finite $\iff$ proper and finite fibers, using Stacks tag 02LS. This can be checked Zariski locally?}
 
-\todo[inline]{Maybe this can be proved using Zariski's main theorem: a birational morphism to a normal variety with finite fibers is an isomorphism onto an open subset.
-Is this morphism birational?
-What are the fibers, and how can we tell if they are finite?}
+\todo[inline]{Maybe this can be proved using Zariski's main theorem: a birational morphism to a normal variety with finite fibers is an isomorphism onto an open subset. Is this morphism birational? What are the fibers, and how can we tell if they are finite?}
+
+
+
+
 
 ## Moduli of Coble Surfaces
 
@@ -455,6 +465,7 @@ We set up the moduli space of KSBA stable pairs for Coble surfaces, possibly usi
 The above embeddings should allow us to take closures of stable pairs in already existing moduli spaces.
 :::
 
+
 # Cusp Correspondence
 
 ## Coble Cusps
@@ -469,7 +480,9 @@ We have Nikulin's 2-elementary diagram:
 \caption{White nodes are $\delta=0$, black are $\delta=1$, double circled are $\delta = 1,2$.}
 \label{fig:nikulin_table}
 \end{figure}
+
 :::
+
 
 :::{.remark}
 Having identified the 2-elementary lattice $S_\Co = (11, 11, 0)_1$, one can apply the mirror move algorithm of \cite[Thm. 5.10]{AE22nonsympinv} to determine the 0-cusps and 1-cusps of $F_\Co$.
@@ -518,7 +531,9 @@ For an isotropic plane $J$, we denote the divisibilities of the constituent gene
 \caption{Cusp diagram for $F_\Co = F_{(11, 11, 1)}$ where $T_\Co = \gens{2} \oplus E_{10}(2)$.}
 \label{fig:coble-cusp-diagram}
 \end{figure}
+
 :::
+
 
 :::{.remark}
 As further proof that this cusp diagram is correct, we can use the theory of Coxeter diagrams.
@@ -530,6 +545,7 @@ Given an isotropic vector $e\in L$ a lattice of signature $(2, n)$, the lattice 
 \caption{The unique maximal parabolic subdiagram $\tilde B_7(2)$ of $(9,9,1)_1$, corresponding to single one-cusp $(7,7,1)_0$ in $F_\Co$.}
 \label{fig:coble-cusp-9-9-1-parabolics}
 \end{figure}
+
 :::
 
 :::{.remark}
@@ -541,6 +557,7 @@ Given an isotropic vector $e\in L$ a lattice of signature $(2, n)$, the lattice 
 The former is clear, since the image of $v_0$ in $T_{\dP}$ is $e'\in U(2)$ and $e'f' = 2$.
 The latter follows from the fact that $v_1\alpha_3 = 1$.
 :::
+
 
 :::{.remark}
 We note the divisibilities of $v_i$ under various lattice embeddings:
@@ -571,6 +588,7 @@ $T_{\dP}$ & $e'$ & $2e + 2f + \alpha_1 + \tilde\alpha_1 + \alpha_2 + \tilde \alp
 \caption{Isotropic vectors in $F_{\En, 2}$ and their divisibilities.}
 \label{tab:coble-cusp-divisibilities}
 \end{table}
+
 :::
 
 ## Enriques Cusps
@@ -594,6 +612,8 @@ This can be recovered using the mirror move algorithm:
 \caption{}
 \label{fig:mirror-moves-enriques-simplified}
 \end{figure}
+
+
 :::
 
 :::{.remark}
@@ -605,6 +625,7 @@ We recall the Coxeter diagrams and their maximal parabolic subdiagrams at the 0-
 \input{tikz/enriques-cusp-coxeter-diagrams-maximal-parabolics.tikz}
 \label{fig:enriques-maximal-parabolics-10-10-0}
 \end{figure}
+
 :::
 
 ## Sterk Cusps
@@ -635,7 +656,11 @@ Sterk Cusp & Vector                           & $\mathrm{div}_{T_{\En}}$ & $\mat
 \caption{Isotropic vectors in $F_{\En, 2}$ and their divisibilities.}
 \label{tab:sterk-cusp-divisibilities}
 \end{table}
+
 :::
+
+
+
 
 ## K3 Cusps
 
@@ -648,7 +673,12 @@ We recall the cusp diagram for $F_{(2,2,0)}$:
 \caption{}
 \label{fig:220-cusp-diagram}
 \end{figure}
+
+
+
+
 :::
+
 
 ## Coble to Enriques Cusp Correspondence
 
@@ -697,6 +727,7 @@ since $y\in U(2)$ and $\tilde e'\in (U\oplus E_8(2))^{\perp T_{\En}}$.
 Thus $\beta_{T_{\En}}(\tilde e', T_{\En}) = \beta_{T_{\En}}(\tilde e', U(2)) = 2\bZ$ since $\tilde e'\cdot\tilde f' = 2$.
 :::
 
+
 :::{.lemma}
 \label{lem:w1_perp_calculation}
 The 0-cusp $(9,9,1)_1$ in $F_{\Co}$ maps to the zero-cusp $(10, 8, 0)_1$ in $F_{\En}$.
@@ -741,6 +772,7 @@ since the isomorphism type of $\tilde J^\perp/\tilde J$ is uniquely determined b
 where we've used orthogonality relations. We note that the first term is evidently even, while the second term is even because all pairings are either zero or divisible by two in the $E_8(2)$ summand of $U \oplus E_8(2)$.
 :::
 
+
 # Degenerations of stable Coble surfaces
 
 :::{.remark}
@@ -751,13 +783,20 @@ We describe the KSBA stable limits of Coble surfaces.
 We give an example of an integral affine structure for a degeneration of Coble surfaces.
 :::
 
+
+
 # Appendix
+
+
+
 
 :::{.remark}
 Following \cite{AEGS23}, a **Kulikov model** is a $K$-trivial semistable model $\cX \to (C, 0)$ of a degeneration of K3 surfaces over a pointed curve $C$. 
 For each such degeneration, one can define the dual complex of the central fiber $\Gamma(\cX_0)$. For Type II degenerations of K3 surfaces, this yields an integral affine $S^2$ with singularities of total charge $24$, and for Type III the dual complex is an interval $\bD^1$.
 The additional data of an integral affine polarization $R_{\IA} \subset \Gamma(\cX_0)$ describes the KSBA stable limit of a degeneration $(\cX^*, \varepsilon \cR^*)$.
 For Enriques (and hence Coble) surfaces, we take the corresponding dlt models $\cZ \da \cX/\iota_{\En}$ and half-divisor models $(\cZ, \cR_{\cZ}) \da (\cX, \cR)/\iota_{\En}$ where $\cX \to (C, 0)$ and $(\cX, \cR)$ are Kulikov and divisor models of their K3 covers.
+
+
 :::
 
 :::{.remark}
@@ -780,6 +819,7 @@ A Type III degeneration can be represented by a triangulation of $S^2$ with sing
 \caption{}
 \label{fig:triangulated-sphere-fan}
 \end{figure}
+
 :::
 
 :::{.remark}
@@ -791,4 +831,6 @@ The following is a combinatorial representation of a Kulikov model for Sterk 2.
 \caption{}
 \label{fig:ias-sterk2-kulikov-model}
 \end{figure}
+
 :::
+

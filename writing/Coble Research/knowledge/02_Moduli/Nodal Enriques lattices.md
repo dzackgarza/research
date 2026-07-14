@@ -12,7 +12,8 @@ aliases:
 created: 2026-05-10
 ---
 
-> [!example] Nodal Enriques lattices For the moduli space of nodal Enriques surfaces, one has
+> [!example] Nodal Enriques lattices
+> For the moduli space of nodal Enriques surfaces, one has
 > $$
 > S_{\mathrm{Nod}} = (11,10,1)_1 \cong \langle -4 \rangle \oplus E_{10}(2),
 > \qquad

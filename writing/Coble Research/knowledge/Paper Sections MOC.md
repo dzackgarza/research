@@ -10,8 +10,7 @@ created: 2026-05-11
 
 # Map of Content: Paper Sections
 
-This MOC shows how the notes in `knowledge/` assemble into the paper's sections.
-The file paths below are only there to show where each section is sourced from in the repo.
+This MOC shows how the notes in `knowledge/` assemble into the paper's sections. The file paths below are only there to show where each section is sourced from in the repo.
 
 ## Introduction
 

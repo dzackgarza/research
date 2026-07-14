@@ -12,8 +12,8 @@ aliases:
 created: 2026-05-11
 ---
 
-> [!construction] KSBA model for polarized Coble surfaces The intended polarized-Coble KSBA boundary object is a quotient surface together with the descended ramification divisor.
-> The divisor is identified, while the singularity package and comparison theorem remain conjectural.
+> [!construction] KSBA model for polarized Coble surfaces
+> The intended polarized-Coble KSBA boundary object is a quotient surface together with the descended ramification divisor. The divisor is identified, while the singularity package and comparison theorem remain conjectural.
 
 ## Stable-pair package
 

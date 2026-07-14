@@ -1,13 +1,13 @@
 {
-  "sources": [
-    {
-      "usage": "toplevel",
-      "filename": "sextic20250904.tex"
-    }
-  ],
-  "spec_version": 1,
-  "texlive_version": "2025",
-  "process": {
-    "compiler": "pdflatex"
-  }
+   "sources" : [
+      {
+         "usage" : "toplevel",
+         "filename" : "sextic20250904.tex"
+      }
+   ],
+   "spec_version" : 1,
+   "texlive_version" : "2025",
+   "process" : {
+      "compiler" : "pdflatex"
+   }
 }

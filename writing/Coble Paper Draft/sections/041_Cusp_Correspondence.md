@@ -45,6 +45,7 @@ since $y\in U(2)$ and $\tilde e'\in (U\oplus E_8(2))^{\perp T_{\En}}$.
 Thus $\beta_{T_{\En}}(\tilde e', T_{\En}) = \beta_{T_{\En}}(\tilde e', U(2)) = 2\bZ$ since $\tilde e'\cdot\tilde f' = 2$.
 :::
 
+
 :::{.lemma}
 \label{lem:w1_perp_calculation}
 The 0-cusp $(9,9,1)_1$ in $F_{\Co}$ maps to the zero-cusp $(10, 8, 0)_1$ in $F_{\En}$.
@@ -88,3 +89,4 @@ since the isomorphism type of $\tilde J^\perp/\tilde J$ is uniquely determined b
 ,\end{align*}
 where we've used orthogonality relations. We note that the first term is evidently even, while the second term is even because all pairings are either zero or divisible by two in the $E_8(2)$ summand of $U \oplus E_8(2)$.
 :::
+

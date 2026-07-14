@@ -1,4 +1,4 @@
-# Coble surfaces
+# Coble surfaces 
 
 ## The geometry of Coble surfaces
 
@@ -61,3 +61,6 @@ We remark that
 K_S = -3e_0 + e_1 + \cdots + e_N
 .\]
 :::
+
+
+

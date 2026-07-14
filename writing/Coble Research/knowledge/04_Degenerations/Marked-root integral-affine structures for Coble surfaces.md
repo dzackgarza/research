@@ -12,7 +12,8 @@ aliases:
 created: 2026-05-11
 ---
 
-> [!construction] Marked-root integral-affine structures for Coble surfaces The Talks inbox replaces an unclear “read the IAS directly from the Enriques Coxeter diagram” slogan by an upstairs construction: build the integral-affine data on the K3 side first, then impose the Coble condition by marking a zero-length root before folding to the Enriques/Coble picture.
+> [!construction] Marked-root integral-affine structures for Coble surfaces
+> The Talks inbox replaces an unclear “read the IAS directly from the Enriques Coxeter diagram” slogan by an upstairs construction: build the integral-affine data on the K3 side first, then impose the Coble condition by marking a zero-length root before folding to the Enriques/Coble picture.
 
 ## Upstairs-before-downstairs principle
 

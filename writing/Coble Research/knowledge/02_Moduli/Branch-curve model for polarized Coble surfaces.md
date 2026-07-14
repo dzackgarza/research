@@ -11,7 +11,8 @@ aliases:
 created: 2026-05-11
 ---
 
-> [!construction] Branch-curve model for polarized Coble surfaces The polarized Coble locus is modeled on the Horikawa picture for $\tau$-invariant $(4,4)$-curves on $\mathbf{P}^1 \times \mathbf{P}^1$, but the Talks inbox refined the geometric slogan: passing through **exactly one** torus fixed point describes only the generic branch, not the whole closure.
+> [!construction] Branch-curve model for polarized Coble surfaces
+> The polarized Coble locus is modeled on the Horikawa picture for $\tau$-invariant $(4,4)$-curves on $\mathbf{P}^1 \times \mathbf{P}^1$, but the Talks inbox refined the geometric slogan: passing through **exactly one** torus fixed point describes only the generic branch, not the whole closure.
 
 ## Established anchor
 

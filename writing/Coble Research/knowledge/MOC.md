@@ -9,7 +9,6 @@ tags:
 This vault centralizes all documentation, research notes, and mathematical extractions related to the study of Coble surfaces and their moduli.
 
 ## 🗺️ Maps of Content
-
 - [[Narrative MOC]] - Primary paper/proof surface for the current draft.
 - [[Paper Sections MOC]] - Crosswalk from the paper's section files to the assembled vault notes.
 - [[Papers Index]] - Bibliography and notes on literature.
@@ -17,7 +16,6 @@ This vault centralizes all documentation, research notes, and mathematical extra
 ## 📂 Vault Structure
 
 ### 🧮 Lattice Theory
-
 Foundational lattice theory and classification.
 - [[Lattice]]
 - [[Quadratic Form]]
@@ -26,7 +24,6 @@ Foundational lattice theory and classification.
 - [[Coble lattice table]]
 
 ### 🏛️ Moduli Spaces
-
 Surface geometry and moduli constructions.
 - [[K3 surface]]
 - [[Enriques surface]]
@@ -44,7 +41,6 @@ Surface geometry and moduli constructions.
 - [[Moduli Stack of Enriques Surfaces]]
 
 ### 🌀 Compactification Theory
-
 Techniques for compactifying moduli spaces.
 - [[Baily-Borel Compactification]]
 - [[Toroidal Compactifications]]
@@ -59,7 +55,6 @@ Techniques for compactifying moduli spaces.
 - [[Sterk cusp divisibilities]]
 
 ### 📉 Degenerations
-
 Kulikov models and integral-affine geometry.
 - [[Kulikov Models]]
 - [[Integral Affine Structures on Degenerations]]
@@ -68,17 +63,15 @@ Kulikov models and integral-affine geometry.
 - [[Morrison flowerpot degenerations for Coble surfaces]]
 
 ### 🏆 Main Results
-
 The core identification of compactifications for $F_{En,2}$.
 - [[The Main Theorem for F_En,2]]
 - [[Five Cusps of F_En,2]]
 - [[KSBA vs. semitoroidal comparison for polarized Coble moduli]]
 - [[No-moduli-loss issue in polarized Coble compactification]]
 
-* * *
+---
 
 ### 📄 [[Papers Index|Papers & Literature]]
-
 Summaries and OCR data from key references.
 - [[AE23]] - Alexeev-Engel 2023
 - [[AEGS23.pdf|AEGS23]] - AEGS 2023
@@ -88,15 +81,13 @@ Summaries and OCR data from key references.
 - [[DK24]] - Dolgachev-Kondo 2024
 
 ### 🧪 [[Construction|Active Research]]
-
 Drafts and construction notes.
 - [[Construction]] - Construction of Coble surfaces via double covers.
 
 ### 📋 Project Meta
-
 Project management and quality control.
 - [[SUMMARY]] - High-level summary of the paper.
 - [[AUDIT]] - Mathematical audit and fixes.
 - [[mathematical_gaps]] - Identified areas for further development.
 
-* * *
+---

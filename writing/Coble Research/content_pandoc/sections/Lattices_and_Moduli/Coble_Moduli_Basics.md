@@ -1,6 +1,6 @@
 # Moduli
 
-:::{.remark}
+::: {.remark}
 
 For each $1\leq n \leq 10$, there is a moduli space of Coble surfaces with $n$
 boundary components.
@@ -15,10 +15,10 @@ These are realized by allowing the K3 cover of an Enriques surface to acquire an
 $A_1$ singularity fixed by the Enriques involution; the resulting quotient has a
 quartic singularity whose resolution is an irreducible smooth rational curve $C$
 satisfying $C^2 = -4$, and by [@Nue15 p. 8] is thus a Coble surface $S$.
-:::
 
 :::
-: {.remark}
+
+:::: {.remark}
 
 Separately, one can construct a Hodge-theoretic period domain directly using
 lattice theory [@DM19].
@@ -55,4 +55,6 @@ It seems that these degenerations correspond to the (weakly projective)
 **flowerpot** degenerations of [@Ols04], and I conjecture that the corresponding
 Kulikov models correspond to integral-affine discs (as opposed to spheres or
 real projective spaces).
+
 :::
+

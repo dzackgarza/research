@@ -12,7 +12,8 @@ aliases:
 created: 2026-05-11
 ---
 
-> [!conjecture] Restriction of the ramification semifan to polarized Coble moduli The semitoroidal side of the polarized Coble program should come from **restricting the Enriques ramification semifan** to the Coble Noether-Lefschetz hyperplane and then keeping the cones that meet the polarized Coble positive cone.
+> [!conjecture] Restriction of the ramification semifan to polarized Coble moduli
+> The semitoroidal side of the polarized Coble program should come from **restricting the Enriques ramification semifan** to the Coble Noether-Lefschetz hyperplane and then keeping the cones that meet the polarized Coble positive cone.
 
 ## Restriction statement
 

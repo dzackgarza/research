@@ -10,7 +10,8 @@ aliases:
 created: 2026-05-08
 ---
 
-> [!definition] Coble surface A **Coble surface** is a smooth rational projective surface with an empty anti-canonical linear system $|-K| = \varnothing$, but a non-empty anti-bicanonical system $|-2K| \neq \varnothing$ [@DM19; @DK24].
+> [!definition] Coble surface
+> A **Coble surface** is a smooth rational projective surface with an empty anti-canonical linear system $|-K| = \varnothing$, but a non-empty anti-bicanonical system $|-2K| \neq \varnothing$ [@DM19; @DK24].
 
 ## Terminal Coble surfaces of K3 type
 

@@ -12,7 +12,8 @@ aliases:
 created: 2026-05-11
 ---
 
-> [!question] Admissibility for polarized Coble cusps Which roots at a polarized Coble cusp are **admissible**, meaning compatible with the marked Coble orbit and still visible after passing through the folded K3-to-Enriques boundary data?
+> [!question] Admissibility for polarized Coble cusps
+> Which roots at a polarized Coble cusp are **admissible**, meaning compatible with the marked Coble orbit and still visible after passing through the folded K3-to-Enriques boundary data?
 
 ## Proposed criterion
 

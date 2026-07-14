@@ -1,6 +1,6 @@
 # Cusps
 
-:::{#tab:sterk-cusps}
+::: {#tab:sterk-cusps}
 
 | Sterk Cusp | Vector                           | $\mathrm{div}_{T_\En}$ | $\mathrm{div}_{T_{\mathrm{K3}}}$ |
 | :--------- | :------------------------------- | :--------------------- | :------------------------------- |
@@ -11,4 +11,5 @@
 | 5          | $2e + 2f + \overline{\alpha}_1$  | 2                      | 1                                |
 
 : Isotropic vectors in $F_{\En, 2}$ and their divisibilities.
+
 :::

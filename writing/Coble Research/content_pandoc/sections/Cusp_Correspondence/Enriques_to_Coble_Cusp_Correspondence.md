@@ -1,6 +1,6 @@
 # Enriques to Coble correspondence
 
-:::{#thm:cusp_correspondence .theorem}
+::: {#thm:cusp_correspondence .theorem}
 
 The embedding $F_\Co\to F_\En$ induces the correspondence on boundary cusps of
 the Baily-Borel compactifications shown in \cref{fig:enriques-coble-correspondence}.
@@ -14,9 +14,10 @@ vectors at 0-cusps.
 
 Any $v\in T_\Co$ satisfies $\di_{T_\Co}(v) = 2$ if there exists any
 $v'\in T_\Co$ for which $v\cdot v' \neq 0$.
+
 :::
 
-:::{.proof}
+::: {.proof}
 
 Let $M_{T_\Co}$ be the Gram matrix for $T_\Co$, and note that since
 
@@ -50,9 +51,10 @@ Euclidean inner product.
 Thus 2 divides $v\cdot v'$, and since
 $\di_{T_\Co}(v) \in \ts{1, 2}$ for any $v \in T_\Co$, the
 result follows.
+
 :::
 
-:::{#lem:divisibilityTcoOne .lemma}
+::: {#lem:divisibilityTcoOne .lemma}
 
 Fixing
 notation,
@@ -66,9 +68,10 @@ J &\da \gens{v_1, v_2} & \tilde J &\da \gens{w_1, w_2}
 $$
 
 We then have $\di_{T_\En}(w_1) = 2$.
+
 :::
 
-:::{.proof}
+::: {.proof}
 
 By \cref{lem:divisibilityAlwaysTwoTco}, we have in particular that
 $v_1$ has divisibility 2 in $T_\Co$; moreover it is isotropic.
@@ -84,15 +87,17 @@ $$
 \di_{T_\En}(w_1) \da \di_{T_\En}(\eta(e'))
 = \di_{T_\En}(\tilde e') = 2.
 $$
+
 :::
 
-:::{#lem:w1_perp_calculation .lemma}
+::: {#lem:w1_perp_calculation .lemma}
 
 Cusp
 $(9,9,1)$ maps to cusp $(10, 8, 0)$.
+
 :::
 
-:::{.proof}
+::: {.proof}
 
 The cusp correspondence follows from computing the lattice
 $w_1^{\perp T_{\En}}/w_1$ under the primitive embedding $\eta$:
@@ -117,14 +122,16 @@ $w_1^{\perp T_{\En}}/w_1$ is determined by $\mathrm{div}_{T_\En}(w_1)$; by
 Since the divisibility of the isotropic vector at the Enriques 0-cusp
 $(10, 8,
 0)$ is also 2, the correspondence follows.
+
 :::
 
-:::{#lem:1_cusp_correspondence .lemma}
+::: {#lem:1_cusp_correspondence .lemma}
 
 Cusp $(7,7,1)$ maps to cusp $(8, 6, 0)$.
+
 :::
 
-:::{.proof}
+::: {.proof}
 
 The results follows from verifying that the unique orbit $J$ of a
 primitive isotropic plane in $T_\Co$ satisfies
@@ -160,9 +167,10 @@ We note that
 the first term is evidently even, while the second term is even because
 all pairings are either zero or divisible by two in the $E_8(2)$ summand
 of $U \oplus E_8(2)$.
+
 :::
 
-:::{.remark}
+::: {.remark}
 
 This can also be proved by considering the divisorial presentation of
 $F_{\Co}$ as $\cH_{-2}/\Orth(T_\En)$.
@@ -184,9 +192,10 @@ On the other hand, cusp $(8,8,0)$ does not satisfy
 this property -- the vector $e\in T_\En$ is not orthogonal to any
 $(-2)$-vectors in $T_\En$, and the isotropic plane at this cusp must
 include $e$ as a generator.
+
 :::
 
-:::{.remark}
+::: {.remark}
 
 The two 1-cusps $(8,8,0)$ and $(8,6,0)$ in $F_\En$ are isomorphic to the
 modular curves $X_0(2)$ and $X \da \overline{\bH / \SL_2(\bZ)}$
@@ -199,9 +208,10 @@ We
 conjecture that general correspondences on 1-cusps must preserve the
 isomorphism types of the corresponding modular curves, yielding an
 alternative proof of \cref{lem:1_cusp_correspondence}.
+
 :::
 
-:::{#lem:cusp_map_dP .lemma}
+::: {#lem:cusp_map_dP .lemma}
 
 Let $\tilde w_i$ be the
 images of $v_i$ in $T_\dP$ under the embedding described in \cref{lem:sequence_of_embeddings}.
@@ -223,9 +233,10 @@ $$
     (7, 7, 1)_0 &\mapsto (16, 0, 0)_0
 \end{aligned}
 $$
+
 :::
 
-:::{.proof}
+::: {.proof}
 
 The map on 0-cusps follows from identifying
 $\tilde w_1 = e' \in T_{\dP} = \gens{e,f} \oplus \gens{e', f'}\oplus \gens{\alpha_1,\cdots,\alpha_8}\oplus \gens{\tilde \alpha_1,\cdots, \tilde \alpha_8}$
@@ -248,6 +259,7 @@ However, observing that $\tilde w_2\cdot \alpha_3 = 1$, we immediately obtain
 that the divisibility is one.
 Thus $\tilde w_2$ is odd, and we apply case (a) of [@AE22 Thm.
 5.10].
+
 :::
 
 :::
@@ -259,4 +271,5 @@ $T_\Co$ with Sterk cusp 2 as the folding of $(18,0,0)_1$ by the horizontal
 symmetry of its Coxeter diagram.
 This means that the corresponding IAS and Kulikov models will be disc type, and
 correspond to the folding involution of Sterk 2.
+
 :::

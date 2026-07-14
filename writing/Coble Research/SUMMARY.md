@@ -10,22 +10,21 @@ tags:
 
 # Coble Moduli Project — Current State Summary
 
-**Last Updated:** May 16, 2026 **Based on:** May 11, 2026 NotebookLM self-audit (knowledge/INBOX/)
+**Last Updated:** May 16, 2026
+**Based on:** May 11, 2026 NotebookLM self-audit (knowledge/INBOX/)
 
 ## Executive Summary
 
-This project establishes the moduli theory and compactifications of Coble surfaces (rational surfaces arising from plane sextics with 10 nodes).
-The unpolarized case (Sections 1-4) is largely complete with rigorous proofs.
-The polarized case (Section 7) has a conceptual framework but **5 critical unresolved obstacles** blocking completion.
+This project establishes the moduli theory and compactifications of Coble surfaces (rational surfaces arising from plane sextics with 10 nodes). The unpolarized case (Sections 1-4) is largely complete with rigorous proofs. The polarized case (Section 7) has a conceptual framework but **5 critical unresolved obstacles** blocking completion.
 
 ## What's Proven (Sections 1-4)
 
 ### Unpolarized Coble Moduli $F_{\text{Co}}$
 
 **Complete results:**
-- Coble lattice: $T_{\text{Co}} = (11, 11, 1)*2 \cong \langle 2 \rangle \oplus E*{10}(2)$
+- Coble lattice: $T_{\text{Co}} = (11, 11, 1)_2 \cong \langle 2 \rangle \oplus E_{10}(2)$
 - Primitive lattice embedding chain: $T_{\text{Co}} \hookrightarrow T_{\text{En}} \hookrightarrow T_{\text{dP}} \hookrightarrow \Lambda_{\text{K3}}$
-- Period domain construction: $F_{\text{Co}} = \mathcal{H}*{-2} / O(T*{\text{En}})$
+- Period domain construction: $F_{\text{Co}} = \mathcal{H}_{-2} / O(T_{\text{En}})$
 - Dimension: 9-dimensional rational quasiprojective variety
 - Baily-Borel compactification structure
 
@@ -44,29 +43,28 @@ Maps to Enriques cusps:
 ### Polarized Coble Moduli $F_{\text{Co},2}$ — 5 Major Blockers
 
 #### 1. **Root Orbit Uniqueness** (CRITICAL BLOCKER)
-
-**Status:** Unproven **Issue:** Need to prove $\Gamma_{\text{Co},2}$ acts transitively on the $(-2)$-curves in the polarized boundary.
-**Why critical:** This is the foundation for all other Section 7 claims.
-Without it, the cusp count and trace fan identity cannot be established.
+**Status:** Unproven
+**Issue:** Need to prove $\Gamma_{\text{Co},2}$ acts transitively on the $(-2)$-curves in the polarized boundary.
+**Why critical:** This is the foundation for all other Section 7 claims. Without it, the cusp count and trace fan identity cannot be established.
 **Known as:** The Vinberg trap
 
 #### 2. **Cusp Classification**
-
-**Status:** Conjectured but not computed **Issue:** The polarized cusp count is asserted without numerical verification.
+**Status:** Conjectured but not computed
+**Issue:** The polarized cusp count is asserted without numerical verification.
 **Note:** All numerical claims from pre-May 2026 work were reclassified as conjectures in the audit.
 
 #### 3. **Trace Fan Identity**
-
-**Status:** Unproven **Issue:** Whether $\text{Tr}(D_{\text{Co},2}) = D_{\text{En}}$ is asserted without proof.
+**Status:** Unproven
+**Issue:** Whether $\text{Tr}(D_{\text{Co},2}) = D_{\text{En}}$ is asserted without proof.
 **Connection:** Relates to the $\Gamma_{\text{Co},2}$ fundamental domain structure.
 
 #### 4. **No-Moduli-Loss**
-
-**Status:** Conceptual gap **Issue:** Need to verify the KSBA boundary captures all geometric degenerations without spurious points or missing components.
+**Status:** Conceptual gap
+**Issue:** Need to verify the KSBA boundary captures all geometric degenerations without spurious points or missing components.
 
 #### 5. **IAS Construction Gaps**
-
-**Status:** Incomplete **Issue:** The compactification chain Baily-Borel → semitoroidal → KSBA → coarse moduli has conceptual gaps at each arrow.
+**Status:** Incomplete
+**Issue:** The compactification chain Baily-Borel → semitoroidal → KSBA → coarse moduli has conceptual gaps at each arrow.
 **Missing:** Explicit IAS construction, boundary divisor verification, semitoroidal fan computation.
 
 ## Conjectural Claims (May 11, 2026 Audit)
@@ -79,8 +77,7 @@ The May 11, 2026 NotebookLM audit transitioned the project from "research progra
 - The trace fan identity $\text{Tr}(D_{\text{Co},2}) = D_{\text{En}}$
 - All claims about IAS boundary structure without explicit construction
 
-**Key realization:** Sections 1-4 (unpolarized) are rigorous.
-Section 7 (polarized) mixes proven lattice-theoretic setup with conjectural/computational claims that lack verification.
+**Key realization:** Sections 1-4 (unpolarized) are rigorous. Section 7 (polarized) mixes proven lattice-theoretic setup with conjectural/computational claims that lack verification.
 
 ## Outstanding Computational Tasks
 
@@ -100,10 +97,10 @@ From `knowledge/meta/computational_hurdles.md`:
 
 ### YZZ25 Paper (Added May 16, 2026)
 
-**Reference:** Yang-Yin-Zhang, "Moduli spaces of sextic curves with simple singularities" (arXiv:2505.16727) **Extracted to:** `knowledge/papers/YZZ25.md`
+**Reference:** Yang-Yin-Zhang, "Moduli spaces of sextic curves with simple singularities" (arXiv:2505.16727)
+**Extracted to:** `knowledge/papers/YZZ25.md`
 
-**Relevance:** Coble surfaces arise from plane sextics with 10 nodes (ADE singularities).
-The YZZ25 paper studies:
+**Relevance:** Coble surfaces arise from plane sextics with 10 nodes (ADE singularities). The YZZ25 paper studies:
 - GIT moduli of sextics with simple singularities
 - Stability conditions for sextic degenerations
 - Compactification theory for sextic moduli

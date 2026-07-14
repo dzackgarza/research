@@ -1,372 +1,372 @@
 - generic [ref=e1]:
-    - link "Skip to content" [ref=e120] [cursor=pointer]:
-        - /url: '#main'
-    - generic [ref=e124]:
-        - generic [ref=e126]:
-            - navigation "Sidebar":
+  - link "Skip to content" [ref=e120] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e124]:
+    - generic [ref=e126]:
+      - navigation "Sidebar":
+        - generic:
+          - generic:
+            - generic:
+              - button "Open sidebar":
+                - img
+        - generic:
+          - generic:
+            - link "New chat":
+              - /url: /
+              - generic:
+                - img
+              - generic: New chat
+          - generic:
+            - button "Search chats":
+              - generic:
+                - img
+              - generic: Search chats
+          - generic:
+            - button "Recents":
+              - generic:
+                - img
+              - generic: Recents
+        - generic:
+          - generic:
+            - button "Open profile menu":
+              - generic:
                 - generic:
-                    - generic:
-                        - generic:
-                            - button "Open sidebar":
-                                - img
-                - generic:
-                    - generic:
-                        - link "New chat":
-                            - /url: /
-                            - generic:
-                                - img
-                            - generic: New chat
-                    - generic:
-                        - button "Search chats":
-                            - generic:
-                                - img
-                            - generic: Search chats
-                    - generic:
-                        - button "Recents":
-                            - generic:
-                                - img
-                            - generic: Recents
-                - generic:
-                    - generic:
-                        - button "Open profile menu":
-                            - generic:
-                                - generic:
-                                    - img "Profile image"
-            - generic [ref=e127]:
-                - heading "Chat history" [level=2] [ref=e128]
-                - generic [ref=e129]:
-                    - navigation "Chat history" [ref=e130]:
-                        - generic [ref=e133]:
-                            - link "Home" [ref=e134] [cursor=pointer]:
-                                - /url: /
-                                - generic [ref=e135]: ChatGPT
-                            - button "Close sidebar" [expanded] [ref=e137]:
-                                - img [ref=e138]
-                        - list [ref=e141]:
-                            - listitem [ref=e142]:
-                                - link "New chat Control Shift O" [ref=e143] [cursor=pointer]:
-                                    - /url: /
-                                    - generic [ref=e144]:
-                                        - img [ref=e146]
-                                        - generic [ref=e149]: New chat
-                                    - generic [ref=e151]:
-                                        - generic "Control" [ref=e152]:
-                                            - generic [ref=e153]: Ctrl
-                                            - text: +
-                                        - generic "Shift" [ref=e154]:
-                                            - generic [ref=e155]: Shift
-                                            - text: +
-                                        - generic [ref=e157]: O
-                            - listitem [ref=e158]:
-                                - button "Search chats Control K" [ref=e159] [cursor=pointer]:
-                                    - generic [ref=e160]:
-                                        - img [ref=e162]
-                                        - generic [ref=e165]: Search chats
-                                    - generic [ref=e167]:
-                                        - generic "Control" [ref=e168]:
-                                            - generic [ref=e169]: Ctrl
-                                            - text: +
-                                        - generic [ref=e171]: K
-                        - link "Codex" [ref=e172] [cursor=pointer]:
-                            - /url: /codex/cloud
-                            - generic [ref=e173]:
-                                - img [ref=e175]
-                                - generic [ref=e178]: Codex
-                            - img [ref=e180]
-                        - generic [ref=e183] [cursor=pointer]:
-                            - img [ref=e185]
-                            - generic [ref=e188]: More
-                        - generic [ref=e189]:
-                            - button "GPTs" [expanded] [ref=e191] [cursor=pointer]:
-                                - heading "GPTs" [level=2] [ref=e192]
-                            - list [ref=e193]:
-                                - listitem [ref=e194]:
-                                    - link "Calendar and email Assistant" [ref=e195] [cursor=pointer]:
-                                        - /url: /g/g-F4eevrFo4-calendar-and-email-assistant
-                                        - generic "Calendar and email Assistant" [ref=e200]
-                                        - button [ref=e202]:
-                                            - img [ref=e204]
-                                - listitem [ref=e206]:
-                                    - link "Audio Analyzer" [ref=e207] [cursor=pointer]:
-                                        - /url: /g/g-g0Ob3Qbue-audio-analyzer
-                                        - generic [ref=e212]: Audio Analyzer
-                                        - button [ref=e214]:
-                                            - img [ref=e216]
-                                - listitem [ref=e218]:
-                                    - link "のYouTube Video Summarizer ✏️ のYouTube Unaffiliated" [ref=e219] [cursor=pointer]:
-                                        - /url: /g/g-GvcYCKPIH-noyoutube-video-summarizer-noyoutube-unaffiliated
-                                        - generic "のYouTube Video Summarizer ✏️ のYouTube Unaffiliated" [ref=e224]
-                                        - button [ref=e226]:
-                                            - img [ref=e228]
-                            - link "Explore GPTs" [ref=e230] [cursor=pointer]:
-                                - /url: /gpts
-                                - img [ref=e232]
-                                - generic [ref=e235]: Explore GPTs
-                        - generic [ref=e236]:
-                            - button "Projects" [expanded] [ref=e238] [cursor=pointer]:
-                                - heading "Projects" [level=2] [ref=e239]
-                            - list [ref=e240]:
-                                - listitem [ref=e241]:
-                                    - button "New project" [ref=e242] [cursor=pointer]:
-                                        - img [ref=e244]
-                                        - generic [ref=e247]: New project
-                                - listitem [ref=e248]:
-                                    - link "Show chats COBLE Open project options for COBLE" [ref=e249] [cursor=pointer]:
-                                        - /url: /g/g-p-69d4f82e30b88191b3e4ebae25d5c09b-coble/project
-                                        - generic [ref=e250]:
-                                            - button "Show chats" [ref=e252]:
-                                                - generic [ref=e253]:
-                                                    - img [ref=e257]
-                                                    - img [ref=e267]
-                                            - generic [ref=e270]: COBLE
-                                        - button "Open project options for COBLE" [ref=e272]:
-                                            - img [ref=e274]
-                                - listitem [ref=e276]:
-                                    - link "Show chats Category Theory Open project options for Category Theory" [ref=e277] [cursor=pointer]:
-                                        - /url: /g/g-p-6925c3c7d8888191a5e37001950c54ef-category-theory/project
-                                        - generic [ref=e278]:
-                                            - button "Show chats" [ref=e280]:
-                                                - generic [ref=e281]:
-                                                    - img [ref=e285]
-                                                    - img [ref=e295]
-                                            - generic [ref=e298]: Category Theory
-                                        - button "Open project options for Category Theory" [ref=e300]:
-                                            - img [ref=e302]
-                        - generic [ref=e304]:
-                            - button "Recents" [expanded] [ref=e306] [cursor=pointer]:
-                                - heading "Recents" [level=2] [ref=e307]
-                            - generic [ref=e308]:
-                                - list [ref=e309]:
-                                    - listitem [ref=e310]:
-                                        - link "Sprint Tasks for Compliance, pinned conversation" [ref=e311] [cursor=pointer]:
-                                            - /url: /c/69f62e7f-55fc-8323-bbc0-df4adb1b1429
-                                            - generic [ref=e313]:
-                                                - text: Sprint Tasks for Compliance
-                                                - generic [ref=e314]: Pinned
-                                            - generic [ref=e315]:
-                                                - generic [ref=e317]:
-                                                    - img [ref=e319]
-                                                    - button "Open conversation options for Sprint Tasks for Compliance" [ref=e321]:
-                                                        - img [ref=e323]
-                                                - img [ref=e327]
-                                - list [ref=e329]:
-                                    - listitem [ref=e330]:
-                                        - link "K3 Double Cover Computation" [ref=e331] [cursor=pointer]:
-                                            - /url: /c/6a015f5c-98f4-8323-8f51-e97aabc932e1
-                                            - generic [ref=e333]: K3 Double Cover Computation
-                                            - button "Open conversation options for K3 Double Cover Computation" [ref=e336]:
-                                                - img [ref=e338]
-                                    - listitem [ref=e340]:
-                                        - link "K_S in Blowup Formula" [ref=e341] [cursor=pointer]:
-                                            - /url: /c/6a01555a-2ec0-8323-b0dc-3b871a59388a
-                                            - generic [ref=e343]: K_S in Blowup Formula
-                                            - button "Open conversation options for K_S in Blowup Formula" [ref=e346]:
-                                                - img [ref=e348]
-                                    - listitem [ref=e350]:
-                                        - link "Sage Override Mypy Plugin" [ref=e351] [cursor=pointer]:
-                                            - /url: /c/6a000385-8ed8-8324-8e2e-e4de8b6fe4cd
-                                            - generic [ref=e353]: Sage Override Mypy Plugin
-                                            - button "Open conversation options for Sage Override Mypy Plugin" [ref=e356]:
-                                                - img [ref=e358]
-                                    - listitem [ref=e360]:
-                                        - link "KSBA Compactification and Coble" [ref=e361] [cursor=pointer]:
-                                            - /url: /c/69ff3d2a-5f28-8322-83c6-80592937e472
-                                            - generic "KSBA Compactification and Coble" [ref=e363]
-                                            - button "Open conversation options for KSBA Compactification and Coble" [ref=e366]:
-                                                - img [ref=e368]
-                                    - listitem [ref=e370]:
-                                        - link "AI memory managers" [ref=e371] [cursor=pointer]:
-                                            - /url: /c/69ff336f-5390-8322-8ea5-ca1ea084e515
-                                            - generic [ref=e373]: AI memory managers
-                                            - button "Open conversation options for AI memory managers" [ref=e376]:
-                                                - img [ref=e378]
-                                    - listitem [ref=e380]:
-                                        - link "IWE claude command explanation" [ref=e381] [cursor=pointer]:
-                                            - /url: /c/69feffe4-257c-8324-9e35-92b33e2eeefb
-                                            - generic "IWE claude command explanation" [ref=e383]
-                                            - button "Open conversation options for IWE claude command explanation" [ref=e386]:
-                                                - img [ref=e388]
-                                    - listitem [ref=e390]:
-                                        - link "LLM Test Jokes Explained" [ref=e391] [cursor=pointer]:
-                                            - /url: /c/69fdbc49-10f0-8323-9ab1-46b42e766411
-                                            - generic [ref=e393]: LLM Test Jokes Explained
-                                            - button "Open conversation options for LLM Test Jokes Explained" [ref=e396]:
-                                                - img [ref=e398]
-                                    - listitem [ref=e400]:
-                                        - link "Jerryboree and Agent Review" [ref=e401] [cursor=pointer]:
-                                            - /url: /c/69fc4a91-5484-8324-b0c6-a32bdd489535
-                                            - generic [ref=e403]: Jerryboree and Agent Review
-                                            - button "Open conversation options for Jerryboree and Agent Review" [ref=e406]:
-                                                - img [ref=e408]
-                                    - listitem [ref=e410]:
-                                        - link "Degree 2 Enriques Surfaces" [ref=e411] [cursor=pointer]:
-                                            - /url: /c/69fb5f3e-9aa4-8323-beb1-95b2dd26a0c5
-                                            - generic [ref=e413]: Degree 2 Enriques Surfaces
-                                            - button "Open conversation options for Degree 2 Enriques Surfaces" [ref=e416]:
-                                                - img [ref=e418]
-                                    - listitem [ref=e420]:
-                                        - link "Coble Surface and K3" [ref=e421] [cursor=pointer]:
-                                            - /url: /c/69fb0b23-6740-8321-83ba-edfc9157cf45
-                                            - generic [ref=e423]: Coble Surface and K3
-                                            - button "Open conversation options for Coble Surface and K3" [ref=e426]:
-                                                - img [ref=e428]
-                                    - listitem [ref=e430]:
-                                        - link "Laptop Battery Energy Rate" [ref=e431] [cursor=pointer]:
-                                            - /url: /c/69f9cb67-b008-8320-a09f-049b411bc3ba
-                                            - generic [ref=e433]: Laptop Battery Energy Rate
-                                            - button "Open conversation options for Laptop Battery Energy Rate" [ref=e436]:
-                                                - img [ref=e438]
-                                    - listitem [ref=e440]:
-                                        - link "Daemon refactor decisions" [ref=e441] [cursor=pointer]:
-                                            - /url: /c/69f9b257-e264-8322-9fc3-5bd2f8ca12e5
-                                            - generic [ref=e443]: Daemon refactor decisions
-                                            - button "Open conversation options for Daemon refactor decisions" [ref=e446]:
-                                                - img [ref=e448]
-                                    - listitem [ref=e450]:
-                                        - link "Feature Plan Guidance" [ref=e451] [cursor=pointer]:
-                                            - /url: /c/69f9aa3f-7c90-8322-b45b-7e506390bbdf
-                                            - generic [ref=e453]: Feature Plan Guidance
-                                            - button "Open conversation options for Feature Plan Guidance" [ref=e456]:
-                                                - img [ref=e458]
-                                    - listitem [ref=e460]:
-                                        - link "Repository Tagging System Design" [ref=e461] [cursor=pointer]:
-                                            - /url: /c/69f988bb-1674-8324-a2b7-74923529b9c5
-                                            - generic "Repository Tagging System Design" [ref=e463]
-                                            - button "Open conversation options for Repository Tagging System Design" [ref=e466]:
-                                                - img [ref=e468]
-                                    - listitem [ref=e470]:
-                                        - link "Information architecture guidance" [ref=e471] [cursor=pointer]:
-                                            - /url: /c/69f9879a-2d20-8323-b88e-d3fdc38120b7
-                                            - generic "Information architecture guidance" [ref=e473]
-                                            - button "Open conversation options for Information architecture guidance" [ref=e476]:
-                                                - img [ref=e478]
-                                    - listitem [ref=e480]:
-                                        - link "Obsidian plugins for projects" [ref=e481] [cursor=pointer]:
-                                            - /url: /c/69f86554-eb30-8322-b1b9-1079d5d5a2dd
-                                            - generic [ref=e483]: Obsidian plugins for projects
-                                            - button "Open conversation options for Obsidian plugins for projects" [ref=e486]:
-                                                - img [ref=e488]
-                                    - listitem [ref=e490]:
-                                        - link "DAG for Sprint Planning" [ref=e491] [cursor=pointer]:
-                                            - /url: /c/69f84d87-a64c-8324-b9f6-972f84805808
-                                            - generic [ref=e493]: DAG for Sprint Planning
-                                            - button "Open conversation options for DAG for Sprint Planning" [ref=e496]:
-                                                - img [ref=e498]
-                                    - listitem [ref=e500]:
-                                        - link "AI Coding Agent Guidance" [ref=e501] [cursor=pointer]:
-                                            - /url: /c/69f8493c-78b8-8321-b92a-c0833de6c424
-                                            - generic [ref=e503]: AI Coding Agent Guidance
-                                            - button "Open conversation options for AI Coding Agent Guidance" [ref=e506]:
-                                                - img [ref=e508]
-                                    - listitem [ref=e510]:
-                                        - link "Codex Skill Audit" [ref=e511] [cursor=pointer]:
-                                            - /url: /c/69f8461c-40b0-8321-a3a9-4840ee4cdb7e
-                                            - generic [ref=e513]: Codex Skill Audit
-                                            - button "Open conversation options for Codex Skill Audit" [ref=e516]:
-                                                - img [ref=e518]
-                                    - listitem [ref=e520]:
-                                        - link "Headed Cleanup Request" [ref=e521] [cursor=pointer]:
-                                            - /url: /c/69f8428d-4bdc-8320-8791-09a97456e84c
-                                            - generic [ref=e523]: Headed Cleanup Request
-                                            - button "Open conversation options for Headed Cleanup Request" [ref=e526]:
-                                                - img [ref=e528]
-                                    - listitem [ref=e530]:
-                                        - link "CLI Workflow Documentation Plan" [ref=e531] [cursor=pointer]:
-                                            - /url: /c/69f83fdf-2a9c-8321-8632-577831ba79bc
-                                            - generic "CLI Workflow Documentation Plan" [ref=e533]
-                                            - button "Open conversation options for CLI Workflow Documentation Plan" [ref=e536]:
-                                                - img [ref=e538]
-                                    - listitem [ref=e540]:
-                                        - link "CHATGPT_EXTENSION_POC_OK" [ref=e541] [cursor=pointer]:
-                                            - /url: /c/69f83eff-3b9c-8324-8594-f5744d216156
-                                            - generic "CHATGPT_EXTENSION_POC_OK" [ref=e543]
-                                            - button "Open conversation options for CHATGPT_EXTENSION_POC_OK" [ref=e546]:
-                                                - img [ref=e548]
-                                    - listitem [ref=e550]:
-                                        - link "E2E Test Plan Review" [ref=e551] [cursor=pointer]:
-                                            - /url: /c/69f83571-eff0-8322-b1e9-cd1b3edf4a7e
-                                            - generic [ref=e553]: E2E Test Plan Review
-                                            - button "Open conversation options for E2E Test Plan Review" [ref=e556]:
-                                                - img [ref=e558]
-                                    - listitem [ref=e560]:
-                                        - link "Markdown-based Kanban Tools" [ref=e561] [cursor=pointer]:
-                                            - /url: /c/69f82176-b360-8320-8594-2dfb72b7adf7
-                                            - generic [ref=e563]: Markdown-based Kanban Tools
-                                            - button "Open conversation options for Markdown-based Kanban Tools" [ref=e566]:
-                                                - img [ref=e568]
-                                    - listitem [ref=e570]:
-                                        - link "Battery and Charging Specs" [ref=e571] [cursor=pointer]:
-                                            - /url: /c/69f7f839-fdb0-8323-af81-9859a806777f
-                                            - generic [ref=e573]: Battery and Charging Specs
-                                            - button "Open conversation options for Battery and Charging Specs" [ref=e576]:
-                                                - img [ref=e578]
-                                    - listitem [ref=e580]:
-                                        - link "Improving Agent Capabilities" [ref=e581] [cursor=pointer]:
-                                            - /url: /c/69f6e90f-9514-8323-9db4-0734dd6aee05
-                                            - generic [ref=e583]: Improving Agent Capabilities
-                                            - button "Open conversation options for Improving Agent Capabilities" [ref=e586]:
-                                                - img [ref=e588]
-                                    - listitem [ref=e590]:
-                                        - link "Accessing Nimbalyst Database" [ref=e591] [cursor=pointer]:
-                                            - /url: /c/69f65f53-a17c-8323-90e8-bf026566854d
-                                            - generic [ref=e593]: Accessing Nimbalyst Database
-                                            - button "Open conversation options for Accessing Nimbalyst Database" [ref=e596]:
-                                                - img [ref=e598]
-                                    - listitem [ref=e600]:
-                                        - link "Organizing Agent Projects" [ref=e601] [cursor=pointer]:
-                                            - /url: /c/69f687eb-3e20-8322-9c75-9d096f26f737
-                                            - generic [ref=e603]: Organizing Agent Projects
-                                            - button "Open conversation options for Organizing Agent Projects" [ref=e606]:
-                                                - img [ref=e608]
-                    - button "Zack Garza, open profile menu" [ref=e612] [cursor=pointer]:
-                        - img "Profile image" [ref=e615]
-                        - generic [ref=e616]:
-                            - generic [ref=e618]: Zack Garza
-                            - generic [ref=e621]: Pro
-        - generic [ref=e623]:
-            - banner
-            - main [ref=e632]:
-                - generic [ref=e633]:
-                    - generic [ref=e680]:
-                        - generic [ref=e683]:
-                            - heading "You said:" [level=4] [ref=e684]
-                            - generic [ref=e686]:
-                                - generic [ref=e692]:
-                                    - checkbox "Show more" [ref=e693]
-                                    - generic [ref=e695]: 'I am a weaker coding agent seeking frontier-model planning/audit guidance. This problem may be under-specified. Do not jump straight to a solution if the framing is weak. If the prompt does not provide enough information for a well-grounded recommendation, say so explicitly, state what information is missing, and ask targeted follow-up questions before proposing new structure. Task goal: Design hardening guidelines, audits, and stop rules for a knowledge-base migration workflow so that an agent cannot mistake structure for content, cannot claim success via proxies, and cannot delete source material before substantive migration is real. Repository/project context: - Research knowledge base in markdown/Obsidian style. - Current work is reorganizing a corpus of mathematical research notes, extracted model-generated reports, images/diagrams, and proof-outline material into canonical knowledge notes and a paper-outline surface. - The work recently failed badly because the agent created destination notes and navigation structure that looked organized but did not actually preserve the underlying mathematical content. - The user now wants the plan itself hardened so that future agents are prevented from repeating this large-scale failure mode. Current facts: - The bad workflow used success-shaped proxies such as: "has a destination note", "has a status/provenance section", "has a link target", "is represented in a claim ledger", or "passes a crude word-count threshold". - Some source-rich notes were compressed into thin status/framework shells rather than substantial notes. - Empty or near-empty notes were allowed to exist as standalone targets and were linked from MOCs. - Duplicate basenames and empty shadow stubs broke navigation. - Images/diagrams were initially treated as expendable support instead of first-class mathematical content. - Raw source artifacts were deleted from the repo-facing working set before coverage and substance were actually verified. - A subsequent attempt to detect "fake notes" kept thrashing between bad proxies: hardcoded suspect lists, domain-specific heuristics, and then naive word-count thresholds. - The deeper invariant is: a standalone note should only exist, and should only be linked from a MOC, if it contains enough independent intellectual content that separating it from a parent note is justified. Current plan or candidate options: - Recovery-first migration plan that restores deleted sources, builds passage-level and figure-level indexes, migrates content in full fidelity, then runs coverage/substance/structure audits. - Recently added requirement for a "note-worthiness audit" testing whether a standalone note earns separate existence. - Need stronger hardening so that future agents do not satisfy the plan through fake completion signals. Uncertainty: - How to formulate audits/rules that test the real invariant rather than another gameable proxy. - How to encode stop conditions so structure cannot outpace content. - How to design verification that catches fake standalone notes and fake migration progress without overfitting to this exact incident. - How to define note-worthiness in a way that is operational enough for auditing but not simplistic. Please provide: 1. The strongest reasons this problem may still be under-specified. 2. The minimum clarifying questions needed before a sound recommendation exists. 3. What you know from the prompt, what you tentatively suspect but cannot yet justify, and what you cannot determine without more context. 4. What the current system may already solve, so we do not add structure prematurely. 5. The exact evidence or recurring workflow pain that would justify adding new structure. 6. Candidate hardening guidelines, audits, stop rules, and anti-proxy rules for this kind of migration. 7. A way to define and audit "standalone note worthiness" without collapsing into simple length heuristics. 8. The strongest argument against your own proposed audit framework. Do not merely affirm the current direction. Push back on weak framing, ask for missing information, and avoid inventing ontology or process unless you can justify why the existing structure is insufficient.'
-                                    - generic [ref=e696] [cursor=pointer]:
-                                        - generic [ref=e697]: Show more
-                                        - img [ref=e698]
-                                - generic [ref=e700]:
-                                    - group "Your message actions":
-                                        - button "Copy message":
-                                            - generic:
-                                                - img
-                        - generic [ref=e704]:
-                            - heading "ChatGPT said:" [level=4] [ref=e705]
-                            - generic [ref=e712]: Thinking
-                    - generic [ref=e643]:
-                        - generic:
-                            - generic:
-                                - button:
-                                    - img
-                        - generic [ref=e648]:
-                            - generic [ref=e652]:
-                                - button "Add files and more" [ref=e655] [cursor=pointer]:
-                                    - img
-                                - textbox "Chat with ChatGPT" [active] [ref=e658]:
-                                    - paragraph [ref=e713]: Ask anything
-                                - generic [ref=e660]:
-                                    - button "Heavy" [ref=e665] [cursor=pointer]:
-                                        - generic [ref=e666]: Heavy
-                                        - img
-                                    - generic [ref=e667]:
-                                        - button "Start dictation" [ref=e668] [cursor=pointer]:
-                                            - img
-                                        - button "Stop answering" [ref=e714] [cursor=pointer]:
-                                            - img [ref=e715]
-                            - button [ref=e673]
-                            - button [ref=e674]
-                        - generic [ref=e722]: ChatGPT can make mistakes. Check important info. See Cookie Preferences.
-    - alert [ref=e117]
-    - status [ref=e118]
+                  - img "Profile image"
+      - generic [ref=e127]:
+        - heading "Chat history" [level=2] [ref=e128]
+        - generic [ref=e129]:
+          - navigation "Chat history" [ref=e130]:
+            - generic [ref=e133]:
+              - link "Home" [ref=e134] [cursor=pointer]:
+                - /url: /
+                - generic [ref=e135]: ChatGPT
+              - button "Close sidebar" [expanded] [ref=e137]:
+                - img [ref=e138]
+            - list [ref=e141]:
+              - listitem [ref=e142]:
+                - link "New chat Control Shift O" [ref=e143] [cursor=pointer]:
+                  - /url: /
+                  - generic [ref=e144]:
+                    - img [ref=e146]
+                    - generic [ref=e149]: New chat
+                  - generic [ref=e151]:
+                    - generic "Control" [ref=e152]:
+                      - generic [ref=e153]: Ctrl
+                      - text: +
+                    - generic "Shift" [ref=e154]:
+                      - generic [ref=e155]: Shift
+                      - text: +
+                    - generic [ref=e157]: O
+              - listitem [ref=e158]:
+                - button "Search chats Control K" [ref=e159] [cursor=pointer]:
+                  - generic [ref=e160]:
+                    - img [ref=e162]
+                    - generic [ref=e165]: Search chats
+                  - generic [ref=e167]:
+                    - generic "Control" [ref=e168]:
+                      - generic [ref=e169]: Ctrl
+                      - text: +
+                    - generic [ref=e171]: K
+            - link "Codex" [ref=e172] [cursor=pointer]:
+              - /url: /codex/cloud
+              - generic [ref=e173]:
+                - img [ref=e175]
+                - generic [ref=e178]: Codex
+              - img [ref=e180]
+            - generic [ref=e183] [cursor=pointer]:
+              - img [ref=e185]
+              - generic [ref=e188]: More
+            - generic [ref=e189]:
+              - button "GPTs" [expanded] [ref=e191] [cursor=pointer]:
+                - heading "GPTs" [level=2] [ref=e192]
+              - list [ref=e193]:
+                - listitem [ref=e194]:
+                  - link "Calendar and email Assistant" [ref=e195] [cursor=pointer]:
+                    - /url: /g/g-F4eevrFo4-calendar-and-email-assistant
+                    - generic "Calendar and email Assistant" [ref=e200]
+                    - button [ref=e202]:
+                      - img [ref=e204]
+                - listitem [ref=e206]:
+                  - link "Audio Analyzer" [ref=e207] [cursor=pointer]:
+                    - /url: /g/g-g0Ob3Qbue-audio-analyzer
+                    - generic [ref=e212]: Audio Analyzer
+                    - button [ref=e214]:
+                      - img [ref=e216]
+                - listitem [ref=e218]:
+                  - link "のYouTube Video Summarizer ✏️ のYouTube Unaffiliated" [ref=e219] [cursor=pointer]:
+                    - /url: /g/g-GvcYCKPIH-noyoutube-video-summarizer-noyoutube-unaffiliated
+                    - generic "のYouTube Video Summarizer ✏️ のYouTube Unaffiliated" [ref=e224]
+                    - button [ref=e226]:
+                      - img [ref=e228]
+              - link "Explore GPTs" [ref=e230] [cursor=pointer]:
+                - /url: /gpts
+                - img [ref=e232]
+                - generic [ref=e235]: Explore GPTs
+            - generic [ref=e236]:
+              - button "Projects" [expanded] [ref=e238] [cursor=pointer]:
+                - heading "Projects" [level=2] [ref=e239]
+              - list [ref=e240]:
+                - listitem [ref=e241]:
+                  - button "New project" [ref=e242] [cursor=pointer]:
+                    - img [ref=e244]
+                    - generic [ref=e247]: New project
+                - listitem [ref=e248]:
+                  - link "Show chats COBLE Open project options for COBLE" [ref=e249] [cursor=pointer]:
+                    - /url: /g/g-p-69d4f82e30b88191b3e4ebae25d5c09b-coble/project
+                    - generic [ref=e250]:
+                      - button "Show chats" [ref=e252]:
+                        - generic [ref=e253]:
+                          - img [ref=e257]
+                          - img [ref=e267]
+                      - generic [ref=e270]: COBLE
+                    - button "Open project options for COBLE" [ref=e272]:
+                      - img [ref=e274]
+                - listitem [ref=e276]:
+                  - link "Show chats Category Theory Open project options for Category Theory" [ref=e277] [cursor=pointer]:
+                    - /url: /g/g-p-6925c3c7d8888191a5e37001950c54ef-category-theory/project
+                    - generic [ref=e278]:
+                      - button "Show chats" [ref=e280]:
+                        - generic [ref=e281]:
+                          - img [ref=e285]
+                          - img [ref=e295]
+                      - generic [ref=e298]: Category Theory
+                    - button "Open project options for Category Theory" [ref=e300]:
+                      - img [ref=e302]
+            - generic [ref=e304]:
+              - button "Recents" [expanded] [ref=e306] [cursor=pointer]:
+                - heading "Recents" [level=2] [ref=e307]
+              - generic [ref=e308]:
+                - list [ref=e309]:
+                  - listitem [ref=e310]:
+                    - link "Sprint Tasks for Compliance, pinned conversation" [ref=e311] [cursor=pointer]:
+                      - /url: /c/69f62e7f-55fc-8323-bbc0-df4adb1b1429
+                      - generic [ref=e313]:
+                        - text: Sprint Tasks for Compliance
+                        - generic [ref=e314]: Pinned
+                      - generic [ref=e315]:
+                        - generic [ref=e317]:
+                          - img [ref=e319]
+                          - button "Open conversation options for Sprint Tasks for Compliance" [ref=e321]:
+                            - img [ref=e323]
+                        - img [ref=e327]
+                - list [ref=e329]:
+                  - listitem [ref=e330]:
+                    - link "K3 Double Cover Computation" [ref=e331] [cursor=pointer]:
+                      - /url: /c/6a015f5c-98f4-8323-8f51-e97aabc932e1
+                      - generic [ref=e333]: K3 Double Cover Computation
+                      - button "Open conversation options for K3 Double Cover Computation" [ref=e336]:
+                        - img [ref=e338]
+                  - listitem [ref=e340]:
+                    - link "K_S in Blowup Formula" [ref=e341] [cursor=pointer]:
+                      - /url: /c/6a01555a-2ec0-8323-b0dc-3b871a59388a
+                      - generic [ref=e343]: K_S in Blowup Formula
+                      - button "Open conversation options for K_S in Blowup Formula" [ref=e346]:
+                        - img [ref=e348]
+                  - listitem [ref=e350]:
+                    - link "Sage Override Mypy Plugin" [ref=e351] [cursor=pointer]:
+                      - /url: /c/6a000385-8ed8-8324-8e2e-e4de8b6fe4cd
+                      - generic [ref=e353]: Sage Override Mypy Plugin
+                      - button "Open conversation options for Sage Override Mypy Plugin" [ref=e356]:
+                        - img [ref=e358]
+                  - listitem [ref=e360]:
+                    - link "KSBA Compactification and Coble" [ref=e361] [cursor=pointer]:
+                      - /url: /c/69ff3d2a-5f28-8322-83c6-80592937e472
+                      - generic "KSBA Compactification and Coble" [ref=e363]
+                      - button "Open conversation options for KSBA Compactification and Coble" [ref=e366]:
+                        - img [ref=e368]
+                  - listitem [ref=e370]:
+                    - link "AI memory managers" [ref=e371] [cursor=pointer]:
+                      - /url: /c/69ff336f-5390-8322-8ea5-ca1ea084e515
+                      - generic [ref=e373]: AI memory managers
+                      - button "Open conversation options for AI memory managers" [ref=e376]:
+                        - img [ref=e378]
+                  - listitem [ref=e380]:
+                    - link "IWE claude command explanation" [ref=e381] [cursor=pointer]:
+                      - /url: /c/69feffe4-257c-8324-9e35-92b33e2eeefb
+                      - generic "IWE claude command explanation" [ref=e383]
+                      - button "Open conversation options for IWE claude command explanation" [ref=e386]:
+                        - img [ref=e388]
+                  - listitem [ref=e390]:
+                    - link "LLM Test Jokes Explained" [ref=e391] [cursor=pointer]:
+                      - /url: /c/69fdbc49-10f0-8323-9ab1-46b42e766411
+                      - generic [ref=e393]: LLM Test Jokes Explained
+                      - button "Open conversation options for LLM Test Jokes Explained" [ref=e396]:
+                        - img [ref=e398]
+                  - listitem [ref=e400]:
+                    - link "Jerryboree and Agent Review" [ref=e401] [cursor=pointer]:
+                      - /url: /c/69fc4a91-5484-8324-b0c6-a32bdd489535
+                      - generic [ref=e403]: Jerryboree and Agent Review
+                      - button "Open conversation options for Jerryboree and Agent Review" [ref=e406]:
+                        - img [ref=e408]
+                  - listitem [ref=e410]:
+                    - link "Degree 2 Enriques Surfaces" [ref=e411] [cursor=pointer]:
+                      - /url: /c/69fb5f3e-9aa4-8323-beb1-95b2dd26a0c5
+                      - generic [ref=e413]: Degree 2 Enriques Surfaces
+                      - button "Open conversation options for Degree 2 Enriques Surfaces" [ref=e416]:
+                        - img [ref=e418]
+                  - listitem [ref=e420]:
+                    - link "Coble Surface and K3" [ref=e421] [cursor=pointer]:
+                      - /url: /c/69fb0b23-6740-8321-83ba-edfc9157cf45
+                      - generic [ref=e423]: Coble Surface and K3
+                      - button "Open conversation options for Coble Surface and K3" [ref=e426]:
+                        - img [ref=e428]
+                  - listitem [ref=e430]:
+                    - link "Laptop Battery Energy Rate" [ref=e431] [cursor=pointer]:
+                      - /url: /c/69f9cb67-b008-8320-a09f-049b411bc3ba
+                      - generic [ref=e433]: Laptop Battery Energy Rate
+                      - button "Open conversation options for Laptop Battery Energy Rate" [ref=e436]:
+                        - img [ref=e438]
+                  - listitem [ref=e440]:
+                    - link "Daemon refactor decisions" [ref=e441] [cursor=pointer]:
+                      - /url: /c/69f9b257-e264-8322-9fc3-5bd2f8ca12e5
+                      - generic [ref=e443]: Daemon refactor decisions
+                      - button "Open conversation options for Daemon refactor decisions" [ref=e446]:
+                        - img [ref=e448]
+                  - listitem [ref=e450]:
+                    - link "Feature Plan Guidance" [ref=e451] [cursor=pointer]:
+                      - /url: /c/69f9aa3f-7c90-8322-b45b-7e506390bbdf
+                      - generic [ref=e453]: Feature Plan Guidance
+                      - button "Open conversation options for Feature Plan Guidance" [ref=e456]:
+                        - img [ref=e458]
+                  - listitem [ref=e460]:
+                    - link "Repository Tagging System Design" [ref=e461] [cursor=pointer]:
+                      - /url: /c/69f988bb-1674-8324-a2b7-74923529b9c5
+                      - generic "Repository Tagging System Design" [ref=e463]
+                      - button "Open conversation options for Repository Tagging System Design" [ref=e466]:
+                        - img [ref=e468]
+                  - listitem [ref=e470]:
+                    - link "Information architecture guidance" [ref=e471] [cursor=pointer]:
+                      - /url: /c/69f9879a-2d20-8323-b88e-d3fdc38120b7
+                      - generic "Information architecture guidance" [ref=e473]
+                      - button "Open conversation options for Information architecture guidance" [ref=e476]:
+                        - img [ref=e478]
+                  - listitem [ref=e480]:
+                    - link "Obsidian plugins for projects" [ref=e481] [cursor=pointer]:
+                      - /url: /c/69f86554-eb30-8322-b1b9-1079d5d5a2dd
+                      - generic [ref=e483]: Obsidian plugins for projects
+                      - button "Open conversation options for Obsidian plugins for projects" [ref=e486]:
+                        - img [ref=e488]
+                  - listitem [ref=e490]:
+                    - link "DAG for Sprint Planning" [ref=e491] [cursor=pointer]:
+                      - /url: /c/69f84d87-a64c-8324-b9f6-972f84805808
+                      - generic [ref=e493]: DAG for Sprint Planning
+                      - button "Open conversation options for DAG for Sprint Planning" [ref=e496]:
+                        - img [ref=e498]
+                  - listitem [ref=e500]:
+                    - link "AI Coding Agent Guidance" [ref=e501] [cursor=pointer]:
+                      - /url: /c/69f8493c-78b8-8321-b92a-c0833de6c424
+                      - generic [ref=e503]: AI Coding Agent Guidance
+                      - button "Open conversation options for AI Coding Agent Guidance" [ref=e506]:
+                        - img [ref=e508]
+                  - listitem [ref=e510]:
+                    - link "Codex Skill Audit" [ref=e511] [cursor=pointer]:
+                      - /url: /c/69f8461c-40b0-8321-a3a9-4840ee4cdb7e
+                      - generic [ref=e513]: Codex Skill Audit
+                      - button "Open conversation options for Codex Skill Audit" [ref=e516]:
+                        - img [ref=e518]
+                  - listitem [ref=e520]:
+                    - link "Headed Cleanup Request" [ref=e521] [cursor=pointer]:
+                      - /url: /c/69f8428d-4bdc-8320-8791-09a97456e84c
+                      - generic [ref=e523]: Headed Cleanup Request
+                      - button "Open conversation options for Headed Cleanup Request" [ref=e526]:
+                        - img [ref=e528]
+                  - listitem [ref=e530]:
+                    - link "CLI Workflow Documentation Plan" [ref=e531] [cursor=pointer]:
+                      - /url: /c/69f83fdf-2a9c-8321-8632-577831ba79bc
+                      - generic "CLI Workflow Documentation Plan" [ref=e533]
+                      - button "Open conversation options for CLI Workflow Documentation Plan" [ref=e536]:
+                        - img [ref=e538]
+                  - listitem [ref=e540]:
+                    - link "CHATGPT_EXTENSION_POC_OK" [ref=e541] [cursor=pointer]:
+                      - /url: /c/69f83eff-3b9c-8324-8594-f5744d216156
+                      - generic "CHATGPT_EXTENSION_POC_OK" [ref=e543]
+                      - button "Open conversation options for CHATGPT_EXTENSION_POC_OK" [ref=e546]:
+                        - img [ref=e548]
+                  - listitem [ref=e550]:
+                    - link "E2E Test Plan Review" [ref=e551] [cursor=pointer]:
+                      - /url: /c/69f83571-eff0-8322-b1e9-cd1b3edf4a7e
+                      - generic [ref=e553]: E2E Test Plan Review
+                      - button "Open conversation options for E2E Test Plan Review" [ref=e556]:
+                        - img [ref=e558]
+                  - listitem [ref=e560]:
+                    - link "Markdown-based Kanban Tools" [ref=e561] [cursor=pointer]:
+                      - /url: /c/69f82176-b360-8320-8594-2dfb72b7adf7
+                      - generic [ref=e563]: Markdown-based Kanban Tools
+                      - button "Open conversation options for Markdown-based Kanban Tools" [ref=e566]:
+                        - img [ref=e568]
+                  - listitem [ref=e570]:
+                    - link "Battery and Charging Specs" [ref=e571] [cursor=pointer]:
+                      - /url: /c/69f7f839-fdb0-8323-af81-9859a806777f
+                      - generic [ref=e573]: Battery and Charging Specs
+                      - button "Open conversation options for Battery and Charging Specs" [ref=e576]:
+                        - img [ref=e578]
+                  - listitem [ref=e580]:
+                    - link "Improving Agent Capabilities" [ref=e581] [cursor=pointer]:
+                      - /url: /c/69f6e90f-9514-8323-9db4-0734dd6aee05
+                      - generic [ref=e583]: Improving Agent Capabilities
+                      - button "Open conversation options for Improving Agent Capabilities" [ref=e586]:
+                        - img [ref=e588]
+                  - listitem [ref=e590]:
+                    - link "Accessing Nimbalyst Database" [ref=e591] [cursor=pointer]:
+                      - /url: /c/69f65f53-a17c-8323-90e8-bf026566854d
+                      - generic [ref=e593]: Accessing Nimbalyst Database
+                      - button "Open conversation options for Accessing Nimbalyst Database" [ref=e596]:
+                        - img [ref=e598]
+                  - listitem [ref=e600]:
+                    - link "Organizing Agent Projects" [ref=e601] [cursor=pointer]:
+                      - /url: /c/69f687eb-3e20-8322-9c75-9d096f26f737
+                      - generic [ref=e603]: Organizing Agent Projects
+                      - button "Open conversation options for Organizing Agent Projects" [ref=e606]:
+                        - img [ref=e608]
+          - button "Zack Garza, open profile menu" [ref=e612] [cursor=pointer]:
+            - img "Profile image" [ref=e615]
+            - generic [ref=e616]:
+              - generic [ref=e618]: Zack Garza
+              - generic [ref=e621]: Pro
+    - generic [ref=e623]:
+      - banner
+      - main [ref=e632]:
+        - generic [ref=e633]:
+          - generic [ref=e680]:
+            - generic [ref=e683]:
+              - heading "You said:" [level=4] [ref=e684]
+              - generic [ref=e686]:
+                - generic [ref=e692]:
+                  - checkbox "Show more" [ref=e693]
+                  - generic [ref=e695]: "I am a weaker coding agent seeking frontier-model planning/audit guidance. This problem may be under-specified. Do not jump straight to a solution if the framing is weak. If the prompt does not provide enough information for a well-grounded recommendation, say so explicitly, state what information is missing, and ask targeted follow-up questions before proposing new structure. Task goal: Design hardening guidelines, audits, and stop rules for a knowledge-base migration workflow so that an agent cannot mistake structure for content, cannot claim success via proxies, and cannot delete source material before substantive migration is real. Repository/project context: - Research knowledge base in markdown/Obsidian style. - Current work is reorganizing a corpus of mathematical research notes, extracted model-generated reports, images/diagrams, and proof-outline material into canonical knowledge notes and a paper-outline surface. - The work recently failed badly because the agent created destination notes and navigation structure that looked organized but did not actually preserve the underlying mathematical content. - The user now wants the plan itself hardened so that future agents are prevented from repeating this large-scale failure mode. Current facts: - The bad workflow used success-shaped proxies such as: \"has a destination note\", \"has a status/provenance section\", \"has a link target\", \"is represented in a claim ledger\", or \"passes a crude word-count threshold\". - Some source-rich notes were compressed into thin status/framework shells rather than substantial notes. - Empty or near-empty notes were allowed to exist as standalone targets and were linked from MOCs. - Duplicate basenames and empty shadow stubs broke navigation. - Images/diagrams were initially treated as expendable support instead of first-class mathematical content. - Raw source artifacts were deleted from the repo-facing working set before coverage and substance were actually verified. - A subsequent attempt to detect \"fake notes\" kept thrashing between bad proxies: hardcoded suspect lists, domain-specific heuristics, and then naive word-count thresholds. - The deeper invariant is: a standalone note should only exist, and should only be linked from a MOC, if it contains enough independent intellectual content that separating it from a parent note is justified. Current plan or candidate options: - Recovery-first migration plan that restores deleted sources, builds passage-level and figure-level indexes, migrates content in full fidelity, then runs coverage/substance/structure audits. - Recently added requirement for a \"note-worthiness audit\" testing whether a standalone note earns separate existence. - Need stronger hardening so that future agents do not satisfy the plan through fake completion signals. Uncertainty: - How to formulate audits/rules that test the real invariant rather than another gameable proxy. - How to encode stop conditions so structure cannot outpace content. - How to design verification that catches fake standalone notes and fake migration progress without overfitting to this exact incident. - How to define note-worthiness in a way that is operational enough for auditing but not simplistic. Please provide: 1. The strongest reasons this problem may still be under-specified. 2. The minimum clarifying questions needed before a sound recommendation exists. 3. What you know from the prompt, what you tentatively suspect but cannot yet justify, and what you cannot determine without more context. 4. What the current system may already solve, so we do not add structure prematurely. 5. The exact evidence or recurring workflow pain that would justify adding new structure. 6. Candidate hardening guidelines, audits, stop rules, and anti-proxy rules for this kind of migration. 7. A way to define and audit \"standalone note worthiness\" without collapsing into simple length heuristics. 8. The strongest argument against your own proposed audit framework. Do not merely affirm the current direction. Push back on weak framing, ask for missing information, and avoid inventing ontology or process unless you can justify why the existing structure is insufficient."
+                  - generic [ref=e696] [cursor=pointer]:
+                    - generic [ref=e697]: Show more
+                    - img [ref=e698]
+                - generic [ref=e700]:
+                  - group "Your message actions":
+                    - button "Copy message":
+                      - generic:
+                        - img
+            - generic [ref=e704]:
+              - heading "ChatGPT said:" [level=4] [ref=e705]
+              - generic [ref=e712]: Thinking
+          - generic [ref=e643]:
+            - generic:
+              - generic:
+                - button:
+                  - img
+            - generic [ref=e648]:
+              - generic [ref=e652]:
+                - button "Add files and more" [ref=e655] [cursor=pointer]:
+                  - img
+                - textbox "Chat with ChatGPT" [active] [ref=e658]:
+                  - paragraph [ref=e713]: Ask anything
+                - generic [ref=e660]:
+                  - button "Heavy" [ref=e665] [cursor=pointer]:
+                    - generic [ref=e666]: Heavy
+                    - img
+                  - generic [ref=e667]:
+                    - button "Start dictation" [ref=e668] [cursor=pointer]:
+                      - img
+                    - button "Stop answering" [ref=e714] [cursor=pointer]:
+                      - img [ref=e715]
+              - button [ref=e673]
+              - button [ref=e674]
+            - generic [ref=e722]: ChatGPT can make mistakes. Check important info. See Cookie Preferences.
+  - alert [ref=e117]
+  - status [ref=e118]
