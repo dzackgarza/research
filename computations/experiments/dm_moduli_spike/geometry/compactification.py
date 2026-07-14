@@ -9,8 +9,12 @@ from .stacks import Compactification, Stack
 from .stratification import Stratification, scheme_compactification_stratification
 
 
-class SchemeStackAdapter(Stack):
-    r"""Wrap a Sage scheme as a formal stack/space for general compactifications."""
+class SchemeStack(Stack):
+    r"""A scheme regarded as a stack (representable Deligne--Mumford stack).
+
+    Used for general compactification examples independent of moduli of curves
+    (e.g. `\mathbf A^1\hookrightarrow\mathbf P^1`).
+    """
 
     def __init__(self, scheme: object, base: AffineScheme, *, proper: bool, name: str) -> None:
         axioms = frozenset({"FiniteType", "Separated"})
@@ -22,7 +26,7 @@ class SchemeStackAdapter(Stack):
     def sage_scheme(self) -> object:
         return self._scheme
 
-    def as_stack(self) -> SchemeStackAdapter:
+    def as_stack(self) -> SchemeStack:
         return self
 
     def stratify(self, pieces: list[object] | None = None) -> Stratification:
@@ -34,6 +38,6 @@ class SchemeStackAdapter(Stack):
 def scheme_open_immersion_compactification(open_scheme: object, proper_scheme: object) -> Compactification:
     r"""Compactification of an open scheme into a proper scheme (e.g. A^1 ↪ P^1)."""
     base = spec(QQ)
-    source = SchemeStackAdapter(open_scheme, base, proper=False, name=repr(open_scheme))
-    target = SchemeStackAdapter(proper_scheme, base, proper=True, name=repr(proper_scheme))
+    source = SchemeStack(open_scheme, base, proper=False, name=repr(open_scheme))
+    target = SchemeStack(proper_scheme, base, proper=True, name=repr(proper_scheme))
     return Compactification(source, target, kind="scheme-open-immersion")

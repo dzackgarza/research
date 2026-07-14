@@ -21,6 +21,13 @@ _BANNED_PUBLIC_NAMES = (
     "DMStratification",
     "DeligneMumfordModuliStack",
     "DeligneMumfordModuliStackOver",
+    "DualGraphType",
+    "BoundaryStack",
+    "StratifiedStack",
+    "StratifiedVariety",
+    "ModuliMorphism",
+    "CoarseModuliMap",
+    "SchemeStackAdapter",
 )
 
 _BANNED_MODULES = (
@@ -29,6 +36,10 @@ _BANNED_MODULES = (
     "dm_moduli_spike.objects.model",
     "dm_moduli_spike.objects.stratification",
     "dm_moduli_spike.moduli.stack",
+    "dm_moduli_spike.stratification",
+    "dm_moduli_spike.stratification.indexing",
+    "dm_moduli_spike.stratification.stratified",
+    "dm_moduli_spike.geometry.morphisms",
 )
 
 

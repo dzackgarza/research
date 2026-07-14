@@ -146,7 +146,7 @@ class StratifiedSpace(UniqueRepresentation, Parent):
         assert hasattr(underlying, "base_scheme"), (
             f"StratifiedSpace requires underlying.base_scheme(); found {type(underlying)!r}; "
             f"underlying={underlying!r}; owned boundary=StratifiedSpace.__init__; "
-            "pass a GeometricObject (or adapter) that exposes base_scheme()"
+            "pass a GeometricObject that exposes base_scheme()"
         )
         base = underlying.base_scheme()
         assert isinstance(base, AffineScheme), (
@@ -278,7 +278,7 @@ def scheme_compactification_stratification(open_part: object, boundary: object, 
         assert hasattr(piece, "as_stack"), (
             f"{role} requires Stack or as_stack(); found {type(piece)!r}; "
             f"piece={piece!r}; owned boundary=scheme_compactification_stratification; "
-            "pass SchemeStackAdapter / Boundary / Stack from SchemeStackAdapter.stratify"
+            "pass SchemeStack / Boundary / Stack from SchemeStack.stratify"
         )
         stack = piece.as_stack()
         assert isinstance(stack, Stack), f"{role}.as_stack() must return Stack; found {type(stack)!r}; piece={piece!r}"

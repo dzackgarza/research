@@ -11,6 +11,7 @@ from ..categories.base import AffineScheme, check_z_scheme, spec
 from ..categories.schemes import Varieties
 
 if TYPE_CHECKING:
+    from ..geometry.stratification import StratifiedSpace
     from .instances import ModuliStack
 
 
@@ -126,6 +127,24 @@ class CoarseModuliSchemeOver(UniqueRepresentation):
         return f"{prefix}({self.genus()}, {self.number_of_markings()}) over {self._over}"
 
 
+def _coarse_stratified_space(coarse: CoarseModuliScheme, by: object, order: str) -> StratifiedSpace:
+    from ..geometry.stratification import (
+        StableDualGraph,
+        StratifiedSpace,
+        build_dual_graph_stratification,
+    )
+    from .instances import M_gn, Mbar_gn
+
+    if not isinstance(by, StableDualGraph):
+        raise TypeError(f"expected StableDualGraph; found {type(by)}")
+    if order not in ("specialization", "closure"):
+        raise ValueError(f"unknown order {order!r}")
+    g, n = coarse.genus(), coarse.number_of_markings()
+    stack = Mbar_gn(g, n) if coarse.is_compact() else M_gn(g, n)
+    Sigma = build_dual_graph_stratification(stack, compact=coarse.is_compact())
+    return StratifiedSpace(coarse, Sigma)
+
+
 class CoarseBoundary:
     r"""Boundary of a coarse moduli scheme (positive-codimension strata)."""
 
@@ -137,13 +156,8 @@ class CoarseBoundary:
     def parent_scheme(self) -> CoarseModuliScheme:
         return self._coarse
 
-    def stratify(self, by: object, order: str = "specialization") -> object:
-        from ..stratification.indexing import DualGraphType
-        from ..stratification.stratified import StratifiedVariety
-
-        if not isinstance(by, DualGraphType):
-            raise TypeError(f"expected DualGraphType; found {type(by)}")
-        return StratifiedVariety(self._coarse, by, order=order)
+    def stratify(self, by: object, order: str = "specialization") -> StratifiedSpace:
+        return _coarse_stratified_space(self._coarse, by, order)
 
 
 class CoarseBoundaryOver:
@@ -157,21 +171,13 @@ class CoarseBoundaryOver:
     def parent_scheme(self) -> CoarseModuliSchemeOver:
         return self._coarse
 
-    def stratify(self, by: object, order: str = "specialization") -> object:
-        from ..stratification.indexing import DualGraphType
-        from ..stratification.stratified import StratifiedVariety
-
-        if not isinstance(by, DualGraphType):
-            raise TypeError(f"expected DualGraphType; found {type(by)}")
-        return StratifiedVariety(self._coarse.universal(), by, order=order)
+    def stratify(self, by: object, order: str = "specialization") -> StratifiedSpace:
+        return _coarse_stratified_space(self._coarse.universal(), by, order)
 
 
 def coarse_moduli_map(stack: ModuliStack) -> object:
-    r"""Coarse moduli morphism for a :class:`~dm_moduli_spike.moduli.instances.ModuliStack`."""
-    from ..geometry.morphisms import CoarseModuliMap
-
-    coarse = CoarseModuliScheme(stack.genus(), stack.number_of_markings(), compact=stack.is_proper())
-    return CoarseModuliMap(stack, coarse)
+    r"""Coarse moduli morphism; delegates to :meth:`ModuliStack.coarse_moduli_morphism`."""
+    return stack.coarse_moduli_morphism()
 
 
 CoarseModuliSpace = CoarseModuliScheme
