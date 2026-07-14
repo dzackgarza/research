@@ -11,7 +11,7 @@ created: 2026-05-08
 ---
 
 > [!definition] Symmetric Bilinear Form
->
+> 
 > Let $L$ be a $\mathbf{Z}$-module.
 > A **bilinear form** $\beta$ on $L$ is a morphism $\beta: L \otimes_{\mathbf{Z}} L \to \mathbf{Q}$.
 > We often write $v \cdot w$ or $vw$ for $\beta(v,w)$.

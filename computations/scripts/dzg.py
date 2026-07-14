@@ -1,11 +1,6 @@
-import random
 from typing import TYPE_CHECKING
 
-from sage.arith.misc import prime_range
-from sage.groups.affine_gps.affine_group import AffineGroup
 from sage.groups.group import Group
-from sage.groups.matrix_gps.finitely_generated import MatrixGroup
-from sage.groups.matrix_gps.finitely_generated_gap import FinitelyGeneratedMatrixGroup_gap
 from sage.groups.perm_gps.permgroup import PermutationGroup, PermutationGroup_generic
 from sage.groups.perm_gps.permgroup_named import (
     CyclicPermutationGroup,
@@ -16,7 +11,6 @@ from sage.interfaces.gap import GapElement
 from sage.libs.gap.libgap import libgap
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
 from sage.rings.integer import Integer
-from sage.rings.integer_ring import ZZ
 
 if TYPE_CHECKING:
 
@@ -70,16 +64,6 @@ def prod(G: PermutationGroup_generic, H: PermutationGroup_generic) -> Permutatio
     return G.direct_product(H)[0]
 
 
-def Ga(n: int) -> PermutationGroup_generic:
-    Zn = ZZ.quotient(n * ZZ)
-    elements = list(Zn)
-    perms = []
-    for a in elements:
-        perm = [elements.index(a + b) + 1 for b in elements]  # +1 for Sage's 1-based indexing
-        perms.append(perm)
-    return PermutationGroup(perms)
-
-
 def Gm(n: int) -> PermutationGroup_generic:
     Zn = IntegerModRing(n)
     units = list(Zn.unit_group())
@@ -89,10 +73,6 @@ def Gm(n: int) -> PermutationGroup_generic:
         perm = [units.index(u * v) + 1 for v in units]  # +1 for Sage's 1-based indexing
         perms.append(perm)
     return PermutationGroup(perms)
-
-
-def random_prime(N: int) -> Integer:
-    return _typed_integer(random.choice(prime_range(2, N + 1)))
 
 
 def convert_to_permutation_group(G: Group | GapElement) -> PermutationGroup_generic | None:
@@ -111,13 +91,6 @@ def convert_to_permutation_group(G: Group | GapElement) -> PermutationGroup_gene
         return _typed_optional_permutation_group(G.as_matrix_group().as_permutation_group())
     else:
         raise ValueError("Could not convert group to a permutation group.")
-
-
-def group_iso(G: Group | GapElement, H: Group | GapElement) -> bool:
-    Gp = convert_to_permutation_group(G)
-    Hp = convert_to_permutation_group(H)
-    assert Gp is not None and Hp is not None, f"group isomorphism requires permutation-group conversions; left={G}, right={H}"
-    return Gp.is_isomorphic(Hp)
 
 
 def compute_gap_automorphism_group(G: GapElement) -> PermutationGroup_generic:
@@ -151,17 +124,3 @@ def aut(G: Group | GapElement) -> PermutationGroup_generic:
             return compute_gap_automorphism_group(libgap(G))
         else:
             raise ValueError("Could not convert group to a type with known automorphism computations")
-
-
-def get_affine_matrix_group(G_affine: AffineGroup) -> FinitelyGeneratedMatrixGroup_gap:
-    mats = list(G_affine._GL)  # Iterate over the GL(1,F) group to get its elements
-    vecs = list(G_affine.vector_space())  # Iterate over the vector space to get its elements
-
-    elements_as_matrices = []
-    for A_gl in mats:
-        for b_vec in vecs:
-            # Construct an AffineGroupElement using its element_class
-            # Then get its matrix representation.
-            affine_element = G_affine.element_class(G_affine, A_gl, b_vec, check=False, convert=False)
-            elements_as_matrices.append(affine_element.matrix())
-    return MatrixGroup(elements_as_matrices)

@@ -187,11 +187,11 @@ def main():
     
     # Example 2.2
     G1, v1, v2 = example_2_2_from_paper()
-    complement_v1 = compute_orthogonal_complement_smith(G1, v1)
+    compute_orthogonal_complement_smith(G1, v1)
     
     # Example 2.6  
     G2, u1, u2 = example_2_6_from_paper()
-    complement_u1 = compute_orthogonal_complement_smith(G2, u1)
+    compute_orthogonal_complement_smith(G2, u1)
     
     # Find isotropic vectors for Tits' buildings
     isotropic_vecs = verify_isotropic_examples()

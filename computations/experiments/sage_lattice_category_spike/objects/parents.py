@@ -98,7 +98,7 @@ else:
 
 if TYPE_CHECKING:
 
-    def _instantiate_concrete(concrete: type[SyntheticLattice], *args: object, **kwargs: object) -> SyntheticLattice: ...
+    def _instantiate_concrete(concrete: object, *args: object, **kwargs: object) -> SyntheticLattice: ...
 else:
 
     def _instantiate_concrete(concrete: type[SyntheticLattice], *args: object, **kwargs: object) -> SyntheticLattice:
@@ -150,7 +150,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         # for this tower it is the class assigned to Element above.
         element_class: ClassVar[type[SyntheticLatticeElement]]
 
-        def __call__(self, x: object = ..., *args: object, **kwds: object) -> SyntheticLatticeElement: ...
+        def __call__(self, x: object = ..., *args: object, **_kwds: object) -> SyntheticLatticeElement: ...
 
     def __init__(
         self,
@@ -472,17 +472,6 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         sublattice = Lattices(self.base_ring()).from_gram_matrix(gram, label=label)
         return Subobject(sublattice.embedding(rows.transpose(), codomain=self))
 
-    def lattice_in_rationalization(
-        self,
-        generators: RawVectors,
-        label: str = "lattice_in_rationalization",
-    ) -> SyntheticLattice:
-        r"""The ZZ-lattice in ``L_QQ = L (x) QQ`` spanned by the given rational
-        generators (commensurable with ``L`` when full-rank). Rational generators
-        span no ZZ-submodule of ``L`` itself; the object lives in the rational
-        quadratic space, so the ambient is always ``L_QQ`` (Nik80 section 1)."""
-        return self.sublattice(generators, label=label, require_subset=False, require_integral=False)
-
     def span(
         self,
         generators: RawVectors,
@@ -500,20 +489,6 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         assert check_integral is not True or lattice.is_integral(), f"span is not integral; gram={lattice.gram_matrix()}"
         assert check_even is not True or lattice.is_even(), f"span is not even; gram={lattice.gram_matrix()}"
         return lattice
-
-    def span_of_basis(
-        self,
-        basis: RawVectors,
-        base_ring: BaseRing | None = None,
-        label: str = "span",
-    ) -> SyntheticLattice:
-        base_ring = self.base_ring() if base_ring is None else base_ring
-        basis_matrix = matrix(QQ, basis)
-        assert basis_matrix.rank() == basis_matrix.nrows(), f"basis rows must be independent; basis={basis_matrix}"
-        return self._from_rows(basis_matrix, base_ring, label)
-
-    def zero_lattice(self, label: str = "zero_lattice") -> SyntheticLattice:
-        return self._from_rows(matrix(QQ, 0, self.rank()), self.base_ring(), label)
 
     def overlattice(
         self,
@@ -552,9 +527,6 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
 
     def denominator(self) -> ExactScalar:
         return lcm([entry.denominator() for entry in self.gram_matrix().list()] or [ZZ.one()])
-
-    def clear_denominators(self, label: str = "clear_denominators") -> SyntheticLattice:
-        return self.scale(self.denominator(), label=label)
 
     def finite_quotient(self, relation: Lattice | Subobject) -> FiniteAbelianGroup:
         r"""The finite quotient ``self / relation``. ``relation`` is a subobject
@@ -628,21 +600,6 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         # enables sum([U, V, W]), whose implicit start value is the integer 0
         assert other == 0, f"a lattice sums only with lattices or the sum() identity 0; got {other!r}"
         return self
-
-    def direct_sum_with_embeddings(self, other: SyntheticLattice, label: str = "direct_sum") -> tuple[SyntheticLattice, LatticeMorphism, LatticeMorphism]:
-        r"""The direct sum together with its two summand embedding morphisms
-        (gap-ledger row 9a; parity with Sage's
-        ``IntegralLatticeDirectSum(return_embeddings=True)``): returns
-        ``(S, left, right)`` with ``left: self -> S`` and ``right: other -> S``
-        the primitive orthogonal-summand embeddings."""
-        total = self.direct_sum(other, label=label)
-        left_matrix = identity_matrix(ZZ, self.rank()).stack(matrix(ZZ, other.rank(), self.rank()))
-        right_matrix = matrix(ZZ, self.rank(), other.rank()).stack(identity_matrix(ZZ, other.rank()))
-        left = self.embedding(left_matrix, codomain=total)
-        right = other.embedding(right_matrix, codomain=total)
-        assert left.is_primitive_embedding()
-        assert right.is_primitive_embedding()
-        return total, left, right
 
     def tensor_product(self, other: Lattice, label: str = "tensor_product") -> SyntheticLattice:
         base_ring = QQ if QQ in (self.base_ring(), other.base_ring()) else ZZ
@@ -803,9 +760,6 @@ class SyntheticNondegenerateLattice(NondegenerateLattice, SyntheticLattice):
             f"the dual of a nondegenerate lattice is nondegenerate (Gram G^-1 is invertible); dispatch returned {type(dual_lattice)}"
         )
         return dual_lattice
-
-    def is_self_dual(self) -> bool:
-        return self.base_ring() is ZZ and self == self.dual()
 
     def dual_inclusion(self) -> LatticeMorphism:
         r"""The natural injection ``L -> L^*``, ``v |-> b(v, -)``, with matrix ``G``."""
@@ -1330,7 +1284,7 @@ def construct_synthetic_lattice(
     nondegenerate = gram.det() != 0
     integral = base_ring is ZZ and all(entry in ZZ for entry in gram.list())
     pos, neg = signature_pair(gram)
-    concrete: type[SyntheticLattice]
+    concrete: object
     positive_definite = nondegenerate and pos == gram.nrows()
     if cartan_type is not None:
         even = integral and all(entry % 2 == 0 for entry in gram.diagonal())
@@ -1372,4 +1326,4 @@ def construct_synthetic_lattice(
         concrete = SyntheticNondegenerateLattice
     else:
         concrete = SyntheticLattice
-    return concrete(gram_matrix, base_ring, label, names=names)
+    return _instantiate_concrete(concrete, gram_matrix, base_ring, label, names=names)

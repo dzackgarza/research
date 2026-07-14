@@ -12,7 +12,7 @@ created: 2026-05-08
 ---
 
 > [!definition] Nikulin's lattices $V_k$ and $U_k$
->
+> 
 > Let $\mathbf{Z}_2$ denote the 2-adic integers.
 > For $k \geq 0$, define $$ V_k \mathrel{\mathop:}= \left(\mathbf{Z}_2^2, \begin{bmatrix} 2^{k+1} & 2^k \\ 2^k & 2^{k+1} \end{bmatrix}\right) $$ For $k=1$, we write $V \mathrel{\mathop:}= V_1$.
 > This is an even, nondegenerate lattice of 2-adic rank 2 and signature $(2, 0)$.

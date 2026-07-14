@@ -12,7 +12,7 @@ created: 2026-05-08
 ---
 
 > [!definition] Root lattice
->
+> 
 > Let $L$ be a [[Lattice]] and $R(L) \subseteq L$ denote the set of **roots** (vectors $v\in L$ with $v^2=2$). A **simple root system** $\Phi(L)\subseteq R(L)$ is a subset of roots $\alpha_i$ such that $\mathbf{Z}_{\geq 0} \Phi(L) = R(L)$, i.e., every $v\in R(L)$ can be written as $v=\sum_{\alpha_i \in \Phi(L)} c_i \alpha_i$ with all $c_i \geq 0$ integral.
 > 
 > This defines a sublattice $\mathbf{Z}\Phi(L) \hookrightarrow L$.

@@ -12,7 +12,7 @@ created: 2026-05-08
 ---
 
 > [!definition] ADE and BC Surfaces
->
+> 
 > An **ADE surface** $(Y, C)$ is a log canonical log del Pezzo surface of index two where the dual intersection graph of the boundary $C$ is a simply-laced Dynkin diagram ($A_n, D_n, E_n$). These surfaces have canonical toric models determined by lattice polytopes in $\mathbf{Z}^2$ [@AT17].
 > 
 > **Priming**: A weighted blowup at a boundary node (corner blowup) that reduces the lattice length of a long edge.

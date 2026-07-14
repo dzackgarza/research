@@ -16,30 +16,6 @@ def smith_normal_form_with_transforms(A):
     """
     return A.smith_form()
 
-def gram_matrix_to_dual_inclusion(G):
-    """
-    Convert Gram matrix G to inclusion G(L): L -> L^vee
-    """
-    return G
-
-def compute_divisor(v, L_gram):
-    """
-    Compute div(v) - the positive generator of the ideal (v, L)
-    """
-    # For vector v in lattice with Gram matrix L_gram
-    # div(v) is gcd of all inner products (v, w) for w in L
-    n = L_gram.nrows()
-    inner_products = []
-    
-    # Compute inner products with basis vectors
-    for i in range(n):
-        e_i = vector([0] * n)
-        e_i[i] = 1
-        inner_prod = v * L_gram * e_i
-        inner_products.append(inner_prod)
-    
-    return gcd(inner_products)
-
 class IsotropicVectorOrbits:
     """
     Main class for computing orbits of isotropic vectors in lattices.
@@ -73,22 +49,6 @@ class IsotropicVectorOrbits:
         """
         return v * self.G * v == 0
     
-    def is_definite_orthogonal_complement(self, v):
-        """
-        Check if v^perp is definite.
-        """
-        # Compute orthogonal complement basis
-        perp_basis = self._orthogonal_complement_basis(v)
-        if not perp_basis:
-            return True
-            
-        # Form Gram matrix of orthogonal complement
-        perp_gram = matrix([[u * self.G * w for w in perp_basis] for u in perp_basis])
-        
-        # Check if definite (all eigenvalues same sign)
-        eigenvals = perp_gram.change_ring(RR).eigenvalues()
-        return all(ev > 0 for ev in eigenvals) or all(ev < 0 for ev in eigenvals)
-    
     def _orthogonal_complement_basis(self, v):
         """
         Compute basis for orthogonal complement of v.
@@ -108,14 +68,13 @@ class IsotropicVectorOrbits:
         # For now, return the found orthogonal vectors
         return basis
         
-    def algorithm_2_1_orbit_equivalence(self, v1, v2, group_type='O'):
+    def algorithm_2_1_orbit_equivalence(self, v1, v2):
         """
         Algorithm 2.1: Determine if v1 ~ v2 under Gamma for non-isotropic vectors
         where v1^perp is definite.
         
         INPUT:
         - v1, v2: Vectors in L ⊗ Q  
-        - group_type: Type of orthogonal group ('O', 'SO', 'O+', 'SO+')
         
         OUTPUT:
         - True if v1 ~ v2 under the group action, False otherwise

@@ -23,4 +23,4 @@ created: 2026-05-08
 > Two lattices $L_1, L_2$ are **isometric**, written $L_1 \xrightarrow{\sim} L_2$, if an isometry exists between them.
 > 
 > The **orthogonal group** of a lattice $L$ is its group of self-isometries $\operatorname{O}(L) \mathrel{\mathop:}= \operatorname{Aut}_{\operatorname{Lat}}(L)$.
-> In terms of a [[Gram Matrix|Gram matrix]] $G_\beta$, the orthogonal group has the characterization: $$ \operatorname{O}(L) = \{M \in \operatorname{GL}_n(\mathbf{Z}) \mathrel{\Big|} M G_\beta M^t = G_\beta\} $$
+> In terms of a [[Gram Matrix|Gram matrix]] $G_\beta$, the orthogonal group has the characterization: $$ \operatorname{O}(L) = \{M \in \operatorname{GL}*n(\mathbf{Z}) \mathrel{\Big|} M G*\beta M^t = G_\beta\} $$

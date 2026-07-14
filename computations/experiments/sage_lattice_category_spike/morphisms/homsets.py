@@ -298,6 +298,10 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         r"""[total] — full column rank (spec 3.5; free modules carry no torsion)."""
         return bool(self.matrix().rank() == self.domain().rank())
 
+    def is_surjective(self) -> bool:
+        r"""Surjective exactly when the cokernel is trivial."""
+        return bool(self.cokernel().cardinality() == 1)
+
     def is_primitive_embedding(self) -> bool:
         r"""An injective morphism whose cokernel is torsion-free -- i.e. it has
         primitive image. Nothing more than "the cokernel is torsion-free"."""
@@ -319,10 +323,6 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         discriminant vocabulary gates the rest."""
         assert self.domain() == self.codomain(), f"the induced discriminant action needs an endomorphism; domain={self.domain()}, codomain={self.codomain()}"
         return self.domain().discriminant_group().action_of_isometry(self)
-
-    def is_surjective(self) -> bool:
-        r"""[total] — the cokernel is trivial (spec 3.5)."""
-        return bool(self.cokernel().cardinality() == 1)
 
     def index(self) -> Any:
         r"""The index ``[codomain : image]`` -- the order of the cokernel."""
@@ -394,9 +394,6 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
             descends = quotient.projection(self(inclusion(relation.gen(index)))) == quotient.zero()
             assert descends, f"morphism does not preserve the quotient relation lattice; relation generator index={index}"
         return cast(lexicon.DiscriminantAction, quotient.hom([quotient.projection(self(quotient.lift(generator))) for generator in quotient.gens()]))
-
-    def im_gens(self) -> tuple[Any, ...]:
-        return tuple(self(self.domain().gen(i)) for i in range(self.domain().rank()))
 
     def lift(self, element: LatticeElement) -> Any:
         element = self.codomain()(element) if element.parent() is not self.codomain() else element

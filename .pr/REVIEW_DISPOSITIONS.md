@@ -4,75 +4,72 @@
 
 ## Accepted and remediated
 
-### computations/experiments/sage_lattice_category_spike/morphisms/homsets.py:544 (ct:0e92717129bde47a)
-
-- Verdict: accepted with modified remediation
-- Commit: (none recorded)
-- Verification stamp present: False
-- Thread: PRRT_kwDOTBB78M6QKeoS
-
-### computations/experiments/sage_lattice_category_spike/morphisms/homsets.py:None (ct:b6ce18e2165cd125)
-
-- Verdict: accepted with modified remediation
-- Commit: (none recorded)
-- Verification stamp present: False
-- Thread: PRRT_kwDOTBB78M6QKfuW
-
-### computations/experiments/sage_lattice_category_spike/morphisms/homsets.py:None (ct:587cc62d7bb4197f)
-
-- Verdict: accepted as written
-- Commit: (none recorded)
-- Verification stamp present: False
-- Thread: PRRT_kwDOTBB78M6QKfuY
-
-### computations/experiments/sage_lattice_category_spike/justfile:10 (ct:c7a629fb55cda773)
-
-- Verdict: accepted as written
-- Commit: (none recorded)
-- Verification stamp present: False
-- Thread: PRRT_kwDOTBB78M6QKl5Q
-
-### computations/experiments/sage_lattice_category_spike/pyrightconfig.json:14 (ct:aefd1ce35c0e0de0)
-
-- Verdict: accepted as written
-- Commit: (none recorded)
-- Verification stamp present: False
-- Thread: PRRT_kwDOTBB78M6QKl5T
-
-### computations/experiments/sage_lattice_category_spike/morphisms/homsets.py:205 (ct:8fb6f8c3933e6227)
-
-- Verdict: accepted as written
-- Commit: (none recorded)
-- Verification stamp present: False
-- Thread: PRRT_kwDOTBB78M6QKl5U
-
-### computations/experiments/sage_lattice_category_spike/sage_patches/**init**.py:None (ct:0db78f88444e2fdb)
-
-- Verdict: accepted as written
-- Commit: (none recorded)
-- Verification stamp present: False
-- Thread: PRRT_kwDOTBB78M6QKl6U
+- `PRRT_kwDOTBB78M6Qt9XF` (computations/experiments/sage_lattice_category_spike/objects/categories.py:168)
+- `PRRT_kwDOTBB78M6QuNOi` (computations/experiments/sage_lattice_category_spike/typings/z3/**init**.pyi:3)
 
 ## Rejected / Outdated / Duplicate
 
-### computations/experiments/sage_lattice_category_spike/morphisms/homsets.py:607 (ct:927091e0a66ecf14)  — rejected
-
-- Thread: PRRT_kwDOTBB78M6QKeoT
-
-### computations/experiments/sage_lattice_category_spike/morphisms/homsets.py:719 (ct:c8e6f318aca221e4)  — rejected
-
-- Thread: PRRT_kwDOTBB78M6QKeoU
-
-### computations/experiments/sage_lattice_category_spike/morphisms/homsets.py:560 (ct:d911fc737efa1794)  — duplicate
-
-- Thread: PRRT_kwDOTBB78M6QKfuX
-
-### computations/experiments/sage_lattice_category_spike/morphisms/homsets.py:719 (ct:79e7b0f0733d376a)  — duplicate
-
-- Thread: PRRT_kwDOTBB78M6QKfuZ
+- `PRRT_kwDOTBB78M6Qt9WO` (computations/scripts/HayStack_Doc_Search.py:287)
 
 ## Still open
 
-### .pr/REVIEW_DISPOSITIONS.md:65 (ct:78fdfc30e1645939)  — NEW
+### Subagent A lane (all items)
 
-- Thread: PRRT_kwDOTBB78M6QNep-
+- `PRRT_kwDOTBB78M6Qt9WO` (computations/scripts/HayStack_Doc_Search.py:287) — The except OSError, ValueError: syntax is from Python 2. For Python 3, which is specified for this project, multiple exc
+- `PRRT_kwDOTBB78M6QuNMX` (writing/Coble Research/knowledge/01_Lattices/Genus of a Lattice.md:14) — P0: The LaTeX subscripts in the definition were corrupted during the line-collapse — underscores _ inside math mode were
+- `PRRT_kwDOTBB78M6QuNMv` (writing/Coble Research/content_pandoc/sections/Cusp_Correspondence/Enriques_Surface_Cusps.md:7) — P1: LaTeX subscript operator _ was incorrectly replaced with * inside $...$ math mode in the Coxeter diagrams caption.
+  *
+- `PRRT_kwDOTBB78M6QuNM6` (writing/Coble Research/knowledge/01_Lattices/2-Elementary Lattices.md:36) — P1: LaTeX rendering is broken in the signature notation.
+  The subscript *{n*+} was corrupted to *{n*+}, which will displa
+- `PRRT_kwDOTBB78M6QuNNF` (writing/Coble Research/content_pandoc/sections/Cusp_Correspondence/Coble_Surface_Cusps.md:11) — P1: Figure caption has inconsistent subscript rendering: $(7, 7, 1)*0$ and $F*\Co$ use * instead of _, while other subsc
+- `PRRT_kwDOTBB78M6QuNNL` (writing/Coble Research/knowledge/01_Lattices/Gram Matrix.md:14) — P1: The LaTeX math expressions on this line use * in place of _ for subscript notation, which will break math rendering
+- `PRRT_kwDOTBB78M6QuNNV` (writing/Coble Research/knowledge/01_Lattices/Type I Unimodular Lattices.md:13) — P1: The Gram matrix display math contains broken LaTeX: \mathrm{id}*{p \times p} and \mathrm{id}*{q \times q} render the
+- `PRRT_kwDOTBB78M6QuNNk` (writing/Coble Research/knowledge/02_Moduli/ADE and BC Surfaces.md:14) — P1: The definition body text has been merged onto the callout header line, so it will render as part of the callout titl
+- `PRRT_kwDOTBB78M6QuNNq` (writing/Coble Research/knowledge/02_Moduli/Noether-Lefschetz Locus for Enriques Surfaces.md:12) — P1: The LaTeX math expression $\mathrm{NL}*{T*{\mathrm{En}}}$ has * where _ is needed for subscript syntax.
+  This renders
+- `PRRT_kwDOTBB78M6QuNN6` (writing/Coble Research/knowledge/01_Lattices/A_n root lattice.md:14) — P1: Displayed equation $$ A_n \hookrightarrow ... $$ is embedded inline within a > paragraph line instead of on its own
+- `PRRT_kwDOTBB78M6QuNOP` (justfile:110) — P1: just test-ci now bypasses the repository hygiene loop and both spike-owned gates, so the pre-push CI command can pas
+- `PRRT_kwDOTBB78M6QuNOo` (writing/Coble Research/content_pandoc/sections/Lattices_and_Moduli/Coble_Moduli_Basics.md:21) — P1: Custom agent: Enforce Strict Maintainability Standards
+- `PRRT_kwDOTBB78M6QuNO5` (writing/Coble Research/knowledge/01_Lattices/Geometric Identification of the Dual Lattice.md:12) — P2: The callout header on line 12 merges the title with the first sentence of the theorem.
+  In Obsidian callout syntax, [
+- `PRRT_kwDOTBB78M6QuNPF` (writing/Coble Research/knowledge/02_Moduli/The K3 Double Cover construction.md:11) — P2: The [!remark] callout title now reads "The K3 Double Cover construction A standard method to produce..." — the line
+
+### Subagent B lane (all items)
+
+- `PRRT_kwDOTBB78M6QuNMZ` (writing/Coble Research/knowledge/01_Lattices/Lattice Morphisms and Embeddings.md:26) — P0: LaTeX subscript operator _ was replaced with * in several math expressions during reformatting, producing invalid La
+- `PRRT_kwDOTBB78M6QuNMy` (writing/Coble Research/knowledge/01_Lattices/E_n root lattices.md:17) — P1: LaTeX subscript corrupted: \operatorname{Ann}*{E_8} renders incorrectly or errors out because * is not a valid subsc
+- `PRRT_kwDOTBB78M6QuNM_` (writing/Coble Research/knowledge/01_Lattices/Root lattice.md:14) — P1: LaTeX math rendering broken in the definition callout — \mathbf{Z}*{\geq 0} and \sum*{\alpha_i \in \Phi(L)} use * in
+- `PRRT_kwDOTBB78M6QuNNI` (writing/Coble Research/content_pandoc/sections/Cusp_Correspondence/Coble_Surface_Cusps.md:9) — P1: Figure caption renders broken LaTeX: G_{(9,9,1)*1} and G*{\gens{2} \oplus E_8(2)} use * where _ is needed for subscr
+- `PRRT_kwDOTBB78M6QuNNO` (writing/Coble Research/content_pandoc/sections/Coble_Surfaces/Coble_Surface_Basics.md:70) — P1: The content originally belonging to footnote [^2] is split: only the first line ("This follows from...") is inside t
+- `PRRT_kwDOTBB78M6QuNNZ` (writing/Coble Research/knowledge/03_Compactifications/Coxeter Groups and Polytopes.md:13) — P1: The Obsidian definition callout is broken by collapsing it into a single line.
+  The entire LaTeX content A **Coxeter
+- `PRRT_kwDOTBB78M6QuNNl` (writing/Coble Research/knowledge/01_Lattices/Enriques lattice.md:19) — P1: LaTeX subscript operator _ was replaced with * in two places on this line, producing literal asterisks instead of pr
+- `PRRT_kwDOTBB78M6QuNNx` (writing/Coble Research/knowledge/01_Lattices/Type II Unimodular Lattices.md:13) — P1: LaTeX subscripts broken: \mathbf{Z}*{\geq 0} and \mathrm{II}*{p, q} render literal asterisks instead of proper subsc
+- `PRRT_kwDOTBB78M6QuNN9` (writing/Coble Research/knowledge/01_Lattices/Torsion Bilinear and Quadratic Forms.md:13) — P1: The definition text after [!definition] has been merged onto the same line as the callout header, which breaks Obsid
+- `PRRT_kwDOTBB78M6QuNOW` (writing/Coble Research/knowledge/01_Lattices/Gluing Overlattices.md:13) — P1: The callout title now includes the proposition's opening sentence.
+  The text after [!proposition] on the same line —
+- `PRRT_kwDOTBB78M6QuNOt` (writing/Coble Research/knowledge/01_Lattices/Eichler-Siegel transformations on U+U.md:12) — P2: This change merges the theorem body into the callout title line, breaking Obsidian callout semantics.
+  In Obsidian ca
+- `PRRT_kwDOTBB78M6QuNO9` (writing/Coble Research/knowledge/01_Lattices/B_n and C_n root systems.md:13) — P2: The callout title and its body description were merged onto a single line, which breaks Obsidian callout rendering.
+- `PRRT_kwDOTBB78M6QuNPI` (writing/Coble Research/knowledge/01_Lattices/Nikulin's lattices V_k and U_k.md:14) — P2: The callout title now includes body text (Let $\mathbf{Z}_2$ denote the 2-adic integers.)
+  because Obsidian treats ev
+
+### Subagent C lane (all items)
+
+- `PRRT_kwDOTBB78M6QuNMS` (writing/Coble Research/knowledge/03_Compactifications/Generalized Coxeter Semifans.md:21) — P0: Same broken LaTeX pattern in $g(\bigcup*{h \in W^{\mathrm{irr}}} h(\mathfrak{C}))$: * instead of _ breaks the subscr
+- `PRRT_kwDOTBB78M6QuNMq` (writing/Coble Research/content_pandoc/sections/Cusp_Correspondence/Enriques_Surface_Cusps.md:11) — P1: Same _→* substitution error in the maximal parabolic caption.
+  $(8, 8, 0)*0$ should be $(8, 8, 0)_0$ and $F*\En$ shou
+- `PRRT_kwDOTBB78M6QuNM3` (writing/Coble Research/content_pandoc/sections/Cusp_Correspondence/Cusp_Diagram_Calculations.md:5) — P1: LaTeX math rendering is broken on this line — two underscores were replaced with asterisks during line joining.
+  (11,
+- `PRRT_kwDOTBB78M6QuNNC` (writing/Coble Research/content_pandoc/sections/Cusp_Correspondence/Coble_Surface_Cusps.md:13) — P1: Running text has multiple broken LaTeX subscripts across three consecutive paragraphs.
+  Every occurrence of * inside
+- `PRRT_kwDOTBB78M6QuNNJ` (writing/Coble Research/knowledge/03_Compactifications/Coble Surface Cusps.md:14) — P1: LaTeX subscripts broken by _ → * substitution inside math mode.
+  $S_{\mathrm{Co}} = (11,11,1)*1$ became $S*{\mathrm{C
+- `PRRT_kwDOTBB78M6QuNNS` (writing/Coble Research/knowledge/03_Compactifications/Mirror Moves.md:17) — P1: LaTeX subscripts were corrupted in the "Even, characteristic" bullet: \operatorname{div}*T and I*{1,1}(2) will rende
+- `PRRT_kwDOTBB78M6QuNNe` (writing/Coble Research/knowledge/03_Compactifications/Hyperbolic Lattices and Polytopes.md:19) — P1: LaTeX subscript corruption in the Klein model line: * replaced _ in two places (\operatorname{BB}*L^n and L*{\mathbf
+- `PRRT_kwDOTBB78M6QuNNn` (writing/Coble Research/knowledge/02_Moduli/Noether-Lefschetz Locus for Enriques Surfaces.md:15) — P1: Same LaTeX corruption: $\mathrm{NL}*{T*{\mathrm{En}}}$ should be $\mathrm{NL}*{T*{\mathrm{En}}}$ with proper subscri
+- `PRRT_kwDOTBB78M6QuNN3` (writing/Coble Research/knowledge/01_Lattices/Coble lattice table.md:19) — P1: LaTeX subscripts broken — \mathrm{E}*{10} uses *{ instead of _{, which renders as E*{10} instead of E₁₀ in standard
+- `PRRT_kwDOTBB78M6QuNOB` (writing/Coble Research/knowledge/02_Moduli/Moduli space of degree 2 numerically polarized Enriques surfaces.md:12) — P1: The definition content is merged onto the same blockquote line as [!definition], so Obsidian renders it as the callo
+- `PRRT_kwDOTBB78M6QuNOz` (writing/Coble Research/knowledge/01_Lattices/Symmetric Bilinear Form.md:13) — P2: The callout title is now concatenated with the first content sentence: the > [!definition] line includes Let $L$ be
+- `PRRT_kwDOTBB78M6QuNPA` (writing/Coble Research/knowledge/03_Compactifications/Orbit_Classification_in_T_U_oplus_overline_T_eta.md:13) — P2: The theorem's premise text Fix an even [[Lattice]]... is concatenated onto the callout header line, so it will rende
+- `PRRT_kwDOTBB78M6QuNPO` (writing/Coble Research/knowledge/03_Compactifications/Cusp Diagrams.md:14) — P2: The definition text for the cusp diagram callout has been merged onto the same line as the [!definition] header, whi

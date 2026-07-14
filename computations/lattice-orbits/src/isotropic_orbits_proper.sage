@@ -119,20 +119,6 @@ class IsotropicVectorOrbitsProper:
                     
         return isotropic_vectors
     
-    def orthogonal_complement_basis(self, v):
-        """
-        Compute basis for orthogonal complement v^perp using proper linear algebra.
-        """
-        # Create the linear form v^T * G
-        linear_form = v * self.G
-        
-        # Find kernel of this linear form
-        # This gives us the orthogonal complement
-        A = matrix([linear_form])
-        kernel = A.right_kernel()
-        
-        return kernel.basis()
-    
     def smith_normal_form_detailed(self, v):
         """
         Compute Smith normal form for vector v following Algorithm 2.1.
@@ -207,10 +193,10 @@ class IsotropicVectorOrbitsProper:
         
         # Step 3: Compute K_i = w_i^⊥ using Smith normal form
         print("\nComputing K1 = w1^⊥:")
-        D1, U1, V1, K1_basis = self.smith_normal_form_detailed(w1)
+        _, _, _, K1_basis = self.smith_normal_form_detailed(w1)
         
         print("\nComputing K2 = w2^⊥:")
-        D2, U2, V2, K2_basis = self.smith_normal_form_detailed(w2)
+        _, _, _, K2_basis = self.smith_normal_form_detailed(w2)
         
         # Step 4: Check if K1 and K2 are isometric
         if len(K1_basis) != len(K2_basis):
@@ -266,14 +252,14 @@ def test_examples_from_paper():
     print("EXAMPLE 2.2 from Paper")
     v1 = vector(QQ, [4, 4, 1, 2, -1])
     v2 = vector(QQ, [36, 144, 5, -30, 83])
-    result_2_2 = orbits.algorithm_2_1_detailed(v1, v2)
+    orbits.algorithm_2_1_detailed(v1, v2)
     
     # Example 2.6 from paper  
     print("\n" + "=" * 60)
     print("EXAMPLE 2.6 from Paper")
     u1 = vector(QQ, [1, -1, 0, 0, 0])
     u2 = vector(QQ, [1, 0, 1, 0, 0])
-    result_2_6 = orbits.algorithm_2_1_detailed(u1, u2)
+    orbits.algorithm_2_1_detailed(u1, u2)
     
     # Find isotropic vectors
     print("\n" + "=" * 60)

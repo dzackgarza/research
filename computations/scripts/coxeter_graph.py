@@ -6,10 +6,8 @@ from copy import copy
 from typing import TYPE_CHECKING, Literal, TypedDict, overload
 
 from dot2tex import d2t, dotparsing
-from sage.all import ZZ, Infinity, Poset, Set, Subsets, sqrt, zero_matrix
-from sage.combinat.posets.posets import FinitePoset
+from sage.all import ZZ, Infinity, Set, Subsets, sqrt, zero_matrix
 from sage.graphs.graph import Graph
-from sage.graphs.graph_plot import GraphPlot
 from sage.matrix.matrix_integer_dense import Matrix_integer_dense
 from sage.misc.cachefunc import cached_method
 from sage.misc.latex_standalone import TikzPicture
@@ -258,8 +256,8 @@ class CoxeterGraph(Graph):
         def edges_incident(
             self,
             vertices: Hashable | Iterable[Hashable] | None = ...,
-            labels: bool = ...,
-            sort: bool = ...,
+            _labels: bool = ...,
+            _sort: bool = ...,
         ) -> list[tuple[Hashable, Hashable, str | int | float]]: ...
     else:
         parent_coxeter_graph = None
@@ -437,39 +435,6 @@ class CoxeterGraph(Graph):
             s.append(get_coxeter_label_connected(Hp))
         return s
 
-    def plot_basic(self, **options: CoxeterOption) -> None:
-
-        # print("Plotting, updating colors")
-        self._default_options["vertex_colors"] = init_coxeter_colors(self)
-
-        updated_opts = dict(list(options.items()) + list(self._default_options.items()))
-
-        # updated_opts["pos"] = self._default_options["pos"]
-        if "pos" in updated_opts.keys():
-            del updated_opts["pos"]
-
-        # options.update(opts)
-        updated_opts["title"] = self.get_coxeter_label()
-        # if self.parent_coxeter_graph is not None:
-        #     updated_opts["pos"] = self.parent_coxeter_graph._default_options["pos"]
-        # else:
-        #     updated_opts["pos"] = self._default_options["pos"]
-
-        Gp = self.get_coxeter_graph()
-
-        # return self.coxeter_graph
-        # print("Default options:")
-        # print(self._default_options)
-        # print("Options going into graphplot:")
-        # print(updated_opts)
-        positions = {x: self.fixed_positions[x] for x in self.fixed_positions if x in self.vertices()}
-        # print("Using positions: " + str( positions ) )
-        pl = Gp.graphplot(pos=positions, **updated_opts)
-        pl.show(figsize=10)
-
-    def old_plot(self, **options: CoxeterOption) -> GraphPlot:
-        return self.graphplot(**options)
-
     def get_subgraphs(
         self,
         only_connected: bool = False,
@@ -598,74 +563,6 @@ class CoxeterGraph(Graph):
         else:
             return list(graph_orbits)
 
-    def orbits_of_elliptic_subgraphs(
-        self,
-        only_connected: bool = False,
-        fast: bool = False,
-        as_poset: bool = True,
-    ) -> FinitePoset | list[CoxeterGraph]:
-        """
-        Compute orbits of elliptic subgraphs under the automorphism group.
-
-        EXAMPLES::
-            sage: from coxeter_graph import CoxeterGraph
-            sage: from isometry_utils import matrix_A_n
-            sage: M = matrix_A_n(3)
-            sage: G = CoxeterGraph(M)
-            sage: elliptic_orbits = G.orbits_of_elliptic_subgraphs(as_poset=False)
-            sage: len(elliptic_orbits) >= 1
-            True
-        """
-        subgraphs = self.orbits_of_subgraphs(representatives_only=True)
-        nontrivial_subgraphs = [H for H in subgraphs if len(H) > 0]
-        elliptic_subgraphs = filter(lambda H: is_elliptic_subgraph(H), nontrivial_subgraphs)
-        if only_connected:
-            elliptic_subgraphs = filter(lambda H: H.is_connected(), elliptic_subgraphs)
-
-        if as_poset:
-            if fast:
-                elliptic_vertex_sets = list(map(lambda H: Set(H.vertices()), elliptic_subgraphs))
-                B = Poset((elliptic_vertex_sets, lambda h0, h1: h0.issubset(h1)))
-            else:
-                B = Poset((set(elliptic_subgraphs), lambda x, y: all([v in y.vertices() for v in x.vertices()])))
-            return B
-        else:
-            return list(elliptic_subgraphs)
-
-    def orbits_of_parabolic_subgraphs(
-        self,
-        only_connected: bool = False,
-        fast: bool = False,
-        as_poset: bool = True,
-    ) -> FinitePoset | list[CoxeterGraph]:
-        """
-        Compute orbits of parabolic subgraphs under the automorphism group.
-
-        EXAMPLES::
-            sage: from coxeter_graph import CoxeterGraph
-            sage: from isometry_utils import graph_tilde_A_n
-            sage: G_tilde = graph_tilde_A_n(3)
-            sage: CG = CoxeterGraph(G_tilde)
-            sage: parabolic_orbits = CG.orbits_of_parabolic_subgraphs(as_poset=False)
-            sage: len(parabolic_orbits) >= 1
-            True
-        """
-        subgraphs = self.orbits_of_subgraphs(representatives_only=True)
-        nontrivial_subgraphs = [H for H in subgraphs if len(H) > 0]
-        parabolic_subgraphs = filter(lambda H: is_parabolic_subgraph(H), nontrivial_subgraphs)
-        if only_connected:
-            parabolic_subgraphs = filter(lambda H: H.is_connected(), parabolic_subgraphs)
-
-        if as_poset:
-            if fast:
-                parabolic_vertex_sets = list(map(lambda H: Set(H.vertices()), parabolic_subgraphs))
-                B = Poset((parabolic_vertex_sets, lambda h0, h1: h0.issubset(h1)))
-            else:
-                B = Poset((set(parabolic_subgraphs), lambda x, y: all([v in y.vertices() for v in x.vertices()])))
-            return B
-        else:
-            return list(parabolic_subgraphs)
-
     def set_parent(self, parent: CoxeterGraph) -> None:
         """
         Set the parent CoxeterGraph for this subgraph.
@@ -759,34 +656,6 @@ class CoxeterGraph(Graph):
             2
         """
         self.tikz_options.update(opts)
-
-    def get_random_subgraph(
-        self,
-        graph_type: Literal["Elliptic", "Parabolic"] | None = None,
-    ) -> CoxeterGraph:
-        """
-        Get a random subgraph of a specified type.
-
-        EXAMPLES::
-            sage: from coxeter_graph import CoxeterGraph
-            sage: from isometry_utils import matrix_A_n
-            sage: M = matrix_A_n(3)
-            sage: G = CoxeterGraph(M)
-            sage: H = G.get_random_subgraph(graph_type="Elliptic")
-            sage: isinstance(H, CoxeterGraph)
-            True
-        """
-        import random
-
-        if graph_type == "Elliptic":
-            H = random.choice(self.get_elliptic_subgraphs())
-        elif graph_type == "Parabolic":
-            H = random.choice(self.get_parabolic_subgraphs())
-        elif graph_type is None:
-            H = random.choice(self.get_subgraphs())
-        else:
-            raise ValueError("Invalid graph type given.")
-        return H
 
     def plot(
         self,

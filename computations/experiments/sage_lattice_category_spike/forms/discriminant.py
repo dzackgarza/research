@@ -386,20 +386,9 @@ class SyntheticDiscriminantAction(DiscriminantAction):
             (element for element in group.elements() if self(element) == group.zero()),
         )
 
-    def inverse_image(self, subgroup_or_gens: Any) -> SyntheticDiscriminantSubgroup:
-        group = self.discriminant_form()
-        subgroup = group._subgroup(subgroup_or_gens)
-        return SyntheticDiscriminantSubgroup(
-            group,
-            (element for element in group.elements() if self(element) in subgroup),
-        )
-
     def image(self) -> SyntheticDiscriminantSubgroup:
         group = self.discriminant_form()
         return SyntheticDiscriminantSubgroup(group, (self(generator) for generator in group.gens()))
-
-    def im_gens(self) -> tuple[Any, ...]:
-        return self.image().gens()
 
     def lift(self, element: Any) -> Any:
         group = self.discriminant_form()
