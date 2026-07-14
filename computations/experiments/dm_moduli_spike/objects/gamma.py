@@ -89,9 +89,15 @@ class StableGraphMorphism(Element):
     def from_contraction(contraction: StableGraphContraction) -> StableGraphMorphism:
         r"""Hom-set element realizing a contraction of skeletal half-edge records."""
         unbound = StableGraphMorphism._from_contraction_unbound(contraction)
-        domain = contraction.domain()
-        codomain = contraction.codomain()
-        gamma = StableGraphCategory(domain.genus(), domain.num_markings())
+        gamma = StableGraphCategory(unbound._domain.genus(), unbound._domain.num_markings())
+        domain = gamma._canonical(unbound._domain)
+        codomain = gamma._canonical(unbound._codomain)
+        if unbound._codomain != codomain:
+            iso = StableGraphMorphism.from_isomorphism(isomorphism_between(unbound._codomain, codomain))
+            unbound = iso.compose(unbound)
+        if unbound._domain != domain:
+            # Domain of a contraction witness is already the labeled source record.
+            pass
         return gamma.hom(domain, codomain)._bind(unbound)
 
     @staticmethod
@@ -234,10 +240,18 @@ class StableGraphHomset(UniqueRepresentation, Parent):
         self._domain = domain
         self._codomain = codomain
         # Parent must exist before morphisms can be Sage Elements of this Hom-set.
+        # Enumeration is lazy: binding a known witness must not force Hom enumeration.
         Parent.__init__(self, category=Homsets())
-        self._morphisms = tuple(self._bind(morph) for morph in gamma._enumerate_morphisms(domain, codomain))
+        self._morphisms: tuple[StableGraphMorphism, ...] | None = None
+
+    def _ensure_morphisms(self) -> tuple[StableGraphMorphism, ...]:
+        if self._morphisms is None:
+            self._morphisms = tuple(self._bind(morph) for morph in self._gamma._enumerate_morphisms(self._domain, self._codomain))
+        return self._morphisms
 
     def _bind(self, morph: StableGraphMorphism) -> StableGraphMorphism:
+        if morph._domain != self._domain or morph._codomain != self._codomain:
+            raise ValueError(f"{morph!r} does not land in {self!r}")
         return StableGraphMorphism(
             morph._domain,
             morph._codomain,
@@ -258,31 +272,34 @@ class StableGraphHomset(UniqueRepresentation, Parent):
         return self._gamma
 
     def __iter__(self) -> Iterator[StableGraphMorphism]:
-        yield from self._morphisms
+        yield from self._ensure_morphisms()
 
     def __len__(self) -> int:
-        return len(self._morphisms)
+        return len(self._ensure_morphisms())
 
     def cardinality(self) -> int:
-        return len(self._morphisms)
+        return len(self._ensure_morphisms())
 
     def __contains__(self, morph: object) -> bool:
-        return isinstance(morph, StableGraphMorphism) and morph in self._morphisms
+        return isinstance(morph, StableGraphMorphism) and morph in self._ensure_morphisms()
 
     def an_element(self) -> StableGraphMorphism:
-        if not self._morphisms:
+        morphisms = self._ensure_morphisms()
+        if not morphisms:
             raise ValueError("empty hom-set")
-        return self._morphisms[0]
+        return morphisms[0]
 
     def list(self) -> list[StableGraphMorphism]:
-        return list(self._morphisms)
+        return list(self._ensure_morphisms())
 
     def _element_constructor_(self, x: object) -> StableGraphMorphism:
         if isinstance(x, StableGraphMorphism):
             if x.parent() is self:
                 return x
-            if x in self._morphisms:
-                return next(m for m in self._morphisms if m == x)
+            if x._domain == self._domain and x._codomain == self._codomain:
+                bound = self._bind(x)
+                if bound in self._ensure_morphisms():
+                    return bound
         raise ValueError(f"{x!r} is not a morphism in {self!r}")
 
 
