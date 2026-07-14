@@ -40,6 +40,7 @@ _BANNED_MODULES = (
     "dm_moduli_spike.stratification.indexing",
     "dm_moduli_spike.stratification.stratified",
     "dm_moduli_spike.geometry.morphisms",
+    "dm_moduli_spike.moduli.coarse",
 )
 
 

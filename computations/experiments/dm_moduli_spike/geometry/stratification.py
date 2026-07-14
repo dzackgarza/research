@@ -265,7 +265,12 @@ def _factor_marking_set(graph: object, vertex: int) -> tuple[object, ...]:
     return tuple(graph.flags_at(vertex))
 
 
-def build_dual_graph_stratification(stack: Stack, *, compact: bool = True) -> Stratification:
+def build_dual_graph_stratification(stack: Stack) -> Stratification:
+    r"""Dual-graph stratification of a moduli stack.
+
+    Stratum factors are ``Mbar`` or ``M`` according to whether ``stack`` is
+    proper (axiom), matching the ambient stack — not a boolean constructor flag.
+    """
     from ..moduli.instances import M_gI, Mbar_gI
     from ..objects.gamma import StableGraphCategory
     from ..objects.stable_graphs import StableGraph as StableGraphElement
@@ -278,6 +283,7 @@ def build_dual_graph_stratification(stack: Stack, *, compact: bool = True) -> St
     n = int(stack.number_of_markings())
     I = stack.marking_set() if hasattr(stack, "marking_set") else tuple(range(1, n + 1))
     base = stack.base_scheme()
+    factor = Mbar_gI if stack.is_proper() else M_gI
     Gamma = StableGraphCategory(g, n)
     indexing = StableGraphs(g, I)
     poset = Gamma.specialization_poset()
@@ -288,10 +294,7 @@ def build_dual_graph_stratification(stack: Stack, *, compact: bool = True) -> St
         for v in range(graph.num_vertices()):
             w = graph.vertex_genus(v)
             marks = _factor_marking_set(graph, v)
-            if compact:
-                factors.append(Mbar_gI(w, marks, base=base))
-            else:
-                factors.append(M_gI(w, marks, base=base))
+            factors.append(factor(w, marks, base=base))
         product = ProductStack(tuple(factors), base=base)
         aut = graph.automorphism_group(on="half_edges")
         action = graph.action_on_half_edges()

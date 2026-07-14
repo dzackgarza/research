@@ -16,12 +16,19 @@ class SchemeStack(Stack):
 
     Used for general compactification examples independent of moduli of curves
     (e.g. `\mathbf A^1\hookrightarrow\mathbf P^1`).
+
+    Properness is encoded by the ``Proper`` axiom on the stack, not a boolean
+    constructor flag.
     """
 
-    def __init__(self, scheme: object, base: AffineScheme, *, proper: bool, name: str) -> None:
-        axioms = frozenset({"FiniteType", "Separated"})
-        if proper:
-            axioms = axioms | {"Proper"}
+    def __init__(
+        self,
+        scheme: object,
+        base: AffineScheme,
+        *,
+        name: str,
+        axioms: frozenset[str],
+    ) -> None:
         self._scheme = scheme
         Stack.__init__(self, base, name=name, axioms=axioms)
 
@@ -40,6 +47,16 @@ class SchemeStack(Stack):
 def scheme_open_immersion_compactification(open_scheme: object, proper_scheme: object) -> Compactification:
     r"""Compactification of an open scheme into a proper scheme (e.g. A^1 ↪ P^1)."""
     base = spec(QQ)
-    source = SchemeStack(open_scheme, base, proper=False, name=repr(open_scheme))
-    target = SchemeStack(proper_scheme, base, proper=True, name=repr(proper_scheme))
+    source = SchemeStack(
+        open_scheme,
+        base,
+        name=repr(open_scheme),
+        axioms=frozenset({"FiniteType", "Separated"}),
+    )
+    target = SchemeStack(
+        proper_scheme,
+        base,
+        name=repr(proper_scheme),
+        axioms=frozenset({"FiniteType", "Separated", "Proper"}),
+    )
     return cast(Compactification, Compactifications(source)(target, kind="scheme-open-immersion"))

@@ -85,6 +85,10 @@ class ModuliProblem(UniqueRepresentation):
     def base_scheme(self) -> AffineScheme:
         return self._base
 
+    def is_stable(self) -> bool:
+        r"""True when this is the stable (compactified) pointed-curve moduli problem."""
+        return self._stable
+
     def objects_over(self, T: object) -> Groupoid:
         from ..curves.families import PointedCurveFamily, StablePointedCurveFamily
 
@@ -155,19 +159,23 @@ class ModuliStackFiber(StackFiber):
 
 
 class ModuliStack(DeligneMumfordStack):
-    r"""Stack equipped with a moduli problem."""
+    r"""Stack equipped with a moduli problem.
+
+    Properness is the ``Proper`` axiom, derived from whether the moduli problem
+    is the stable (compactified) one — not a constructor boolean. Public
+    constructors are :func:`M_gI` / :func:`Mbar_gI`.
+    """
 
     @staticmethod
     def __classcall_private__(cls: type[ModuliStack], *args: object, **kwargs: object) -> ModuliStack:
-        assert len(args) == 1, f"ModuliStack(problem, *, proper=False, name=None); found args={args!r}"
+        assert len(args) == 1, f"ModuliStack(problem, *, name=None); found args={args!r}"
         problem = args[0]
-        proper = bool(kwargs.pop("proper", False))
         name = kwargs.pop("name", None)
         assert not kwargs, f"unexpected kwargs {sorted(kwargs)!r}"
         assert isinstance(problem, ModuliProblem), f"expected ModuliProblem; found {type(problem)!r}"
         if name is None:
-            name = ("Mbar" if proper else "M") + f"_{problem.genus()},{problem.number_of_markings()}"
-        result = super().__classcall__(cls, problem, proper=proper, name=name)
+            name = ("Mbar" if problem.is_stable() else "M") + f"_{problem.genus()},{problem.number_of_markings()}"
+        result = super().__classcall__(cls, problem, name=name)
         assert isinstance(result, ModuliStack), f"classcall must return ModuliStack; found {type(result)!r}"
         return result
 
@@ -175,19 +183,17 @@ class ModuliStack(DeligneMumfordStack):
         self,
         problem: ModuliProblem,
         *,
-        proper: bool = False,
         name: str | None = None,
     ) -> None:
         self._problem = problem
-        self._proper = bool(proper)
         base = problem.base_scheme()
         axioms = frozenset({"Smooth", "FiniteType"})
-        if self._proper:
+        if problem.is_stable():
             axioms = axioms | {"Proper"}
         cat = ModuliStacks(base)
         for a in sorted(axioms):
             cat = getattr(cat, a)()
-        label = name or ("Mbar" if self._proper else "M") + f"_{problem.genus()},{problem.number_of_markings()}"
+        label = name or ("Mbar" if problem.is_stable() else "M") + f"_{problem.genus()},{problem.number_of_markings()}"
         from sage.structure.parent import Parent
 
         self._name = label
@@ -208,9 +214,6 @@ class ModuliStack(DeligneMumfordStack):
     def number_of_markings(self) -> int:
         return self._problem.number_of_markings()
 
-    def is_proper(self) -> bool:
-        return self._proper
-
     def marking_set(self) -> tuple[object, ...]:
         return self._problem.marking_set()
 
@@ -220,7 +223,7 @@ class ModuliStack(DeligneMumfordStack):
     def coarse_space(self) -> CoarseModuliVariety:
         axioms = frozenset({"FiniteType", "Separated"})
         g, I = self.genus(), self.marking_set()
-        if self._proper:
+        if self.is_proper():
             axioms = axioms | {"Proper", "Normal", "Projective"}
         else:
             axioms = axioms | frozenset({"Integral"})
@@ -237,7 +240,7 @@ class ModuliStack(DeligneMumfordStack):
         return CoarseModuliMorphism(self, space)
 
     def compactification(self, kind: str = "stable-pointed-curves") -> Compactification:
-        if self._proper:
+        if self.is_proper():
             raise ValueError("already proper; compactification is the identity immersion")
         target = Mbar_gI(self.genus(), self.marking_set(), base=self.base_scheme())
         from typing import cast
@@ -252,7 +255,7 @@ class ModuliStack(DeligneMumfordStack):
         return target
 
     def open_part(self) -> ModuliStack:
-        if not self._proper:
+        if not self.is_proper():
             return self
         return M_gI(self.genus(), self.marking_set(), base=self.base_scheme())
 
@@ -260,7 +263,7 @@ class ModuliStack(DeligneMumfordStack):
         return self.open_part().compactification()
 
     def boundary(self) -> Boundary:
-        if not self._proper:
+        if not self.is_proper():
             raise ValueError("boundary is relative to a compactification of the open moduli stack")
         c = self.open_part().compactification()
         return c.boundary()
@@ -282,7 +285,7 @@ class ModuliStack(DeligneMumfordStack):
         cached = self._cached_dual_graph_stratification
         if cached is not None:
             return cached
-        cached = build_dual_graph_stratification(self, compact=self._proper)
+        cached = build_dual_graph_stratification(self)
         self._cached_dual_graph_stratification = cached
         return cached
 
@@ -299,15 +302,13 @@ class ModuliStack(DeligneMumfordStack):
 def M_gI(g: int, I: object, base: AffineScheme | None = None) -> ModuliStack:
     resolved = base if base is not None else spec(ZZ)
     check_z_scheme(resolved)
-    problem = ModuliProblem(g, I, resolved, stable=False)
-    return ModuliStack(problem, proper=False)
+    return ModuliStack(ModuliProblem(g, I, resolved, stable=False))
 
 
 def Mbar_gI(g: int, I: object, base: AffineScheme | None = None) -> ModuliStack:
     resolved = base if base is not None else spec(ZZ)
     check_z_scheme(resolved)
-    problem = ModuliProblem(g, I, resolved, stable=True)
-    return ModuliStack(problem, proper=True)
+    return ModuliStack(ModuliProblem(g, I, resolved, stable=True))
 
 
 def M_gn(g: int, n: int, base: AffineScheme | None = None) -> ModuliStack:

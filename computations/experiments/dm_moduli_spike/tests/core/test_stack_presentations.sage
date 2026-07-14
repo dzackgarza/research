@@ -30,7 +30,7 @@ def test_closure_normalization_uses_compact_factors():
     XSbar = Mbar_gn(0, 4, base=spec(ZZ))
     S = XSbar.stratification().stratum(graph)
     factors = S.clutching_morphism().domain().factors()
-    assert all(getattr(f, "_proper", False) for f in factors)
+    assert all(f.is_proper() for f in factors)
     assert sorted((f.genus(), f.number_of_markings()) for f in factors) == [(0, 3), (0, 3)]
 
 
