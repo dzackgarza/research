@@ -2,7 +2,8 @@ r"""Internal combinatorial enumeration backend for dual-graph stratification.
 
 This class is **not** a Deligne--Mumford stack or compactification. Prefer
 :class:`~dm_moduli_spike.objects.gamma.StableGraphCategory` for the public
-combinatorial API. Landscape stubs live under ``dm_moduli_spike._landscape``.
+combinatorial API. Landscape stubs live under
+``computations/scripts/dm_moduli_landscape``.
 """
 
 from __future__ import annotations
@@ -129,4 +130,3 @@ class StableGraphStratificationEnumerator(UniqueRepresentation):
 
     def __repr__(self) -> str:
         return self._repr_()
-

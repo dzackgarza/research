@@ -75,10 +75,12 @@ def test_compactification_open_immersion_M11():
 
 def test_coarse_compactification_boundary_stratified_spaces():
     k = spec(QQ)
-    c = M_gn(1, 1, base=k).compactification()
+    XS = M_gn(1, 1, base=k)
+    c = XS.compactification()
     cc = c.coarse_compactification()
-    assert cc.source() is c.source().coarse_space()
-    assert cc.target() is c.target().coarse_space()
+    assert c.coarse_moduli_square_commutes()
+    assert cc.source() is XS.coarse_moduli_morphism().space()
+    assert cc.target() is c.target().coarse_moduli_morphism().space()
     boundary = cc.boundary()
     assert boundary in StratifiedSpaces(k)
     P = boundary.stratification_poset(order="specialization")
@@ -136,10 +138,19 @@ def test_moduli_fiber_family_and_dual_graph():
     C = family.fiber("t")
     assert C in StablePointedCurves(k, 1, I)
     assert C.is_stable()
+    assert C.is_smooth()
+    Cs = family.fiber("special")
+    Cg = family.fiber("generic")
+    assert Cs.is_nodal()
+    assert Cg.is_smooth()
+    assert Cs.dual_graph().num_edges() > Cg.dual_graph().num_edges()
     Gamma = C.dual_graph()
     assert Gamma in StableGraphs(1, I)
     phi = family.dual_graph_specialization()
     assert phi.is_contraction()
+    assert not phi.is_isomorphism()
+    assert phi.domain().num_edges() == Cs.dual_graph().num_edges()
+    assert phi.codomain().num_edges() == Cg.dual_graph().num_edges()
     assert phi in Hom(
         StableGraphs(1, I)(phi.domain()),
         StableGraphs(1, I)(phi.codomain()),

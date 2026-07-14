@@ -16,6 +16,6 @@ created: 2026-05-08
 > - The discriminant of the dual satifies $\operatorname{disc}(L^{\vee}) = 1/\operatorname{disc}(L)$.
 > - The dual of a scaled lattice is $(L(m))^{\vee} = L^{\vee}(1/m)$.
 
-
 ## See Also
+
 - [[Dual Lattice]]

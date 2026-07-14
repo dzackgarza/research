@@ -4,13 +4,15 @@
 
 This document records a realistic extraction plan for turning the mathematically valuable parts of `foliation.lib` into reusable, higher-level code suitable for integration into a system such as SageMath for experimentation in explicit Hodge theory and degenerations of hypersurfaces.
 
-The question is not merely what `foliation.lib` already implements directly. The question is what a state-of-the-art coding model, given this library plus standard mathematical infrastructure from Sage/Julia/Python/Ore-algebra ecosystems, could reasonably assemble into general-purpose computational tools.
+The question is not merely what `foliation.lib` already implements directly.
+The question is what a state-of-the-art coding model, given this library plus standard mathematical infrastructure from Sage/Julia/Python/Ore-algebra ecosystems, could reasonably assemble into general-purpose computational tools.
 
 The intended scale is a serious implementation effort, roughly on the order of 20-40M tokens of code generation, refactoring, glue, testing, and mathematical integration.
 
 ## High-Level Conclusion
 
-The realistic target is not a universal engine for mixed Hodge structures of arbitrary degenerations. The realistic target is a strong experimental package for explicit Hodge theory of hypersurfaces and their degenerations, centered around:
+The realistic target is not a universal engine for mixed Hodge structures of arbitrary degenerations.
+The realistic target is a strong experimental package for explicit Hodge theory of hypersurfaces and their degenerations, centered around:
 
 - Jacobian-ring and Brieskorn-module models of cohomology.
 - Gauss-Manin connection computation for explicit polynomial families.
@@ -85,7 +87,8 @@ Output:
 
 ### Why this is general-purpose
 
-This is not tied to Fermat families. It applies broadly to explicit hypersurface families and provides the algebraic model needed for many further computations.
+This is not tied to Fermat families.
+It applies broadly to explicit hypersurface families and provides the algebraic model needed for many further computations.
 
 ### What `foliation.lib` contributes
 
@@ -164,7 +167,8 @@ For smooth projective hypersurfaces, compute:
 
 ### Why this is realistic
 
-This uses standard Griffiths theory and Jacobian-ring constructions. The theory is classical and algorithmic enough for implementation.
+This uses standard Griffiths theory and Jacobian-ring constructions.
+The theory is classical and algorithmic enough for implementation.
 
 ### What `foliation.lib` contributes
 
@@ -342,7 +346,8 @@ Computing the variation means:
 
 ### For a degeneration
 
-The extracted system should be careful not to overstate what it computes. A realistic claim is:
+The extracted system should be careful not to overstate what it computes.
+A realistic claim is:
 
 - It computes de Rham/Gauss-Manin/Picard-Fuchs data for explicit families.
 - It can derive local monodromy information and nilpotent data in many one-parameter cases.

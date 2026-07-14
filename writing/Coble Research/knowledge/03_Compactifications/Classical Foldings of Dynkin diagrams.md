@@ -17,4 +17,3 @@ created: 2026-05-08
 > - $D_{n+1} \to B_n$ via $S_2$ (Vertical reflection)
 > - $D_4 \to G_2$ via $S_3$ (Rotation by $2\pi/3$)
 > - $E_6 \to F_4$ via $S_2$ (Horizontal reflection)
-

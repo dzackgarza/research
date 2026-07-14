@@ -308,9 +308,12 @@ class StableGraph:
         return self._vertex_genera[vertex]
 
     def graph_type(self) -> StableGraphType:
+        from .graph_types import StableGraphType as StableGraphTypeCls
         from .graph_types import StableGraphTypes
 
-        return StableGraphTypes(self.genus(), self.num_markings())(self)
+        typed = StableGraphTypes(self.genus(), self.num_markings())(self)
+        assert isinstance(typed, StableGraphTypeCls), f"StableGraphTypes() must return StableGraphType; found {type(typed)!r}"
+        return typed
 
     def automorphism_group(self, on: str = "vertices") -> object:
         r"""Sage ``PermutationGroup`` of `\operatorname{Aut}(G)` on the requested set.

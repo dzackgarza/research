@@ -7,7 +7,7 @@ from sage.categories.category import Category
 from .axioms import _AxiomMixin
 from .foundation import ModuliCategory
 from .schemes import AlgebraicSpaces, Schemes
-from .stacks import DeligneMumfordStacks, Stacks
+from .stacks import DeligneMumfordStacks
 
 
 class StratifiedSpaces(ModuliCategory, _AxiomMixin):

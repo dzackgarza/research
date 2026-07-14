@@ -3,11 +3,16 @@ export PYTHONDONTWRITEBYTECODE := "1"
 # Commit gate: fast pytest only (`@pytest.mark.ci` tests run under test-ci).
 export PYTEST_ADDOPTS := "-m 'not ci'"
 
-# Run the full spike test suite via the global Sage QC.
-# Test files are .sage so the Sage preparser converts integer literals to
-# Sage Integer/Rational before pytest collects them.
+# Commit gate: syntax/mypy/ruff only (pre-commit hook).
+test-commit:
+    @just -f ~/ai-review-ci/justfiles/sage.just -d . test-commit
+
+# Local/dev alias: commit gate + fast pytest (matches global sage.just `test`).
 test:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test
+
+test-push:
+    @just -f ~/ai-review-ci/justfiles/sage.just -d . test-push
 
 # CI gate: full pytest (including ci-marked oracle / enumeration tests).
 test-ci:

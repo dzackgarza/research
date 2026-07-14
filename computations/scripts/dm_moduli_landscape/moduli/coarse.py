@@ -168,7 +168,7 @@ class CoarseBoundaryOver:
 
 
 def coarse_moduli_map(stack: DeligneMumfordModuliStack | DeligneMumfordModuliStackOver) -> CoarseModuliMap:
-    from .stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
+    from .stack import DeligneMumfordModuliStackOver
 
     if isinstance(stack, DeligneMumfordModuliStackOver):
         coarse = stack.coarse_scheme()

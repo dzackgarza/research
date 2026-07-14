@@ -14,16 +14,16 @@ from sage.all import ZZ
 import sage_lattice_feature_spike
 
 
-def test_feature_spike_reexports_the_base_parity_spike():
+def test_feature_spike_reexports_the_base_parity_spike() -> None:
     assert sage_lattice_feature_spike.base is sage_lattice_category_spike
 
 
-def test_base_exposes_its_public_lattice_surface():
+def test_base_exposes_its_public_lattice_surface() -> None:
     for name in ("Lattices", "DiscriminantForms", "SyntheticLattice", "LatticeMorphism"):
         assert hasattr(sage_lattice_feature_spike.base, name), name
 
 
-def test_base_is_live_over_ZZ_through_the_import():
+def test_base_is_live_over_ZZ_through_the_import() -> None:
     # A real construction over the imported base: build <2> and read its form.
     base = sage_lattice_feature_spike.base
     L = base.Lattices(ZZ).from_gram_matrix([[2]])

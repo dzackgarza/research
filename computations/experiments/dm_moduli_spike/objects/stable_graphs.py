@@ -2,17 +2,26 @@ r"""Parent ``StableGraphs(g, I)`` of canonical stable graphs with typed incidenc
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Iterator
+from typing import TYPE_CHECKING, ClassVar, cast
+
+from sage.categories.action import Action
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
-from sage.categories.action import Action
-
+from .._sage_types import SagePermutation
+from .._typing_utils import as_int
 from .canonical import canonical_record
 from .graph_types import StableGraphTypes
 from .records import StableGraph as StableGraphRecord
 from .records import intern_graph
+
+if TYPE_CHECKING:
+    StableGraphParent = Parent["StableGraph"]
+else:
+    StableGraphParent = Parent
 
 
 def _markings(I: object) -> tuple[int, ...]:
@@ -20,6 +29,7 @@ def _markings(I: object) -> tuple[int, ...]:
 
     if isinstance(I, (int, Integer)):
         return tuple(range(1, int(I) + 1))
+    assert isinstance(I, Iterable), f"expected marking count or iterable; found {type(I)!r}"
     return tuple(int(x) for x in I)
 
 
@@ -31,14 +41,15 @@ class _PermutationAction(Action):
         labels = list(self.codomain())
         if x not in labels:
             raise ValueError(f"{x!r} not in action codomain")
+        assert isinstance(g, SagePermutation) or callable(g), f"group element must be callable; found {type(g)!r}; owned boundary=_PermutationAction._act_"
         # Prefer native permutation action when labels are the standard domain.
         try:
             return g(x)
-        except (TypeError, ValueError, IndexError):
+        except TypeError, ValueError, IndexError:
             pass
         idx = labels.index(x)
         # Fall back: interpret g as acting on positions 1..n.
-        image_pos = int(g(idx + 1)) - 1
+        image_pos = as_int(g(idx + 1)) - 1
         return labels[image_pos]
 
 
@@ -56,6 +67,7 @@ def _permutation_action(group: object, domain: object) -> Action:
     if hasattr(domain, "list"):
         labels = tuple(domain.list())
     else:
+        assert isinstance(domain, Iterable), f"action domain must be iterable; found {type(domain)!r}"
         labels = tuple(domain)
     key = (id(group), labels)
     cached = _PERMUTATION_ACTIONS.get(key)
@@ -67,8 +79,11 @@ def _permutation_action(group: object, domain: object) -> Action:
     return action
 
 
-class StableGraphs(UniqueRepresentation, Parent):
+class StableGraphs(UniqueRepresentation, StableGraphParent):
     r"""Finite enumerated set of isomorphism classes of stable graphs of type `(g,I)`."""
+
+    if TYPE_CHECKING:
+        element_class: ClassVar[type[StableGraph]]
 
     def __init__(self, g: int, I: object) -> None:
         self._g = int(g)
@@ -95,7 +110,7 @@ class StableGraphs(UniqueRepresentation, Parent):
             return StableGraph(self, rec)
         raise TypeError(f"cannot construct StableGraph from {type(data)}")
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[StableGraph]:
         for gamma in self._types:
             yield StableGraph(self, gamma.canonical_representative())
 
@@ -110,9 +125,7 @@ class StableGraphs(UniqueRepresentation, Parent):
 
     def __contains__(self, obj: object) -> bool:
         if isinstance(obj, StableGraph):
-            return obj.parent() is self or (
-                obj.genus() == self._g and obj.num_markings() == self._n
-            )
+            return obj.parent() is self or (obj.genus() == self._g and obj.num_markings() == self._n)
         if isinstance(obj, StableGraphRecord):
             try:
                 return obj.genus() == self._g and obj.num_markings() == self._n
@@ -134,6 +147,9 @@ class StableGraph(Element):
     def __init__(self, parent: StableGraphs, record: StableGraphRecord) -> None:
         self._record = record
         Element.__init__(self, parent)
+
+    def parent(self) -> StableGraphs:
+        return cast(StableGraphs, Element.parent(self))
 
     def record(self) -> StableGraphRecord:
         return self._record
@@ -235,7 +251,7 @@ class Vertices(UniqueRepresentation, Parent):
         self._graph = graph
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Vertex]:
         for v in range(self._graph.num_vertices()):
             yield Vertex(self, v)
 
@@ -249,10 +265,14 @@ class Vertex(Element):
         Element.__init__(self, parent)
 
     def genus(self) -> int:
-        return self.parent()._graph.vertex_genus(self._index)  # type: ignore[attr-defined]
+        parent = self.parent()
+        assert isinstance(parent, Vertices), f"Vertex.parent must be Vertices; found {type(parent)!r}"
+        return int(parent._graph.vertex_genus(self._index))
 
     def valence(self) -> int:
-        return self.parent()._graph.record().valence(self._index)  # type: ignore[attr-defined]
+        parent = self.parent()
+        assert isinstance(parent, Vertices), f"Vertex.parent must be Vertices; found {type(parent)!r}"
+        return int(parent._graph.record().valence(self._index))
 
     def _repr_(self) -> str:
         return f"Vertex({self._index})"
@@ -265,7 +285,7 @@ class HalfEdges(UniqueRepresentation, Parent):
         self._graph = graph
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[HalfEdge]:
         for h in range(self._graph.record().num_flags()):
             yield HalfEdge(self, h)
 
@@ -279,10 +299,14 @@ class HalfEdge(Element):
         Element.__init__(self, parent)
 
     def vertex(self) -> int:
-        return self.parent()._graph.record().flag_vertex[self._index]  # type: ignore[attr-defined]
+        parent = self.parent()
+        assert isinstance(parent, HalfEdges), f"HalfEdge.parent must be HalfEdges; found {type(parent)!r}"
+        return int(parent._graph.record().flag_vertex[self._index])
 
     def partner(self) -> int:
-        return self.parent()._graph.record().flag_involution[self._index]  # type: ignore[attr-defined]
+        parent = self.parent()
+        assert isinstance(parent, HalfEdges), f"HalfEdge.parent must be HalfEdges; found {type(parent)!r}"
+        return int(parent._graph.record().flag_involution[self._index])
 
     def _repr_(self) -> str:
         return f"HalfEdge({self._index})"
@@ -295,7 +319,7 @@ class Edges(UniqueRepresentation, Parent):
         self._graph = graph
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Edge]:
         for i, pair in enumerate(self._graph.record().internal_edges()):
             yield Edge(self, i, pair)
 
@@ -323,7 +347,7 @@ class Legs(UniqueRepresentation, Parent):
         self._graph = graph
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Leg]:
         for i, flag in enumerate(self._graph.record().legs()):
             yield Leg(self, i + 1, flag)
 

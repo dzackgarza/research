@@ -8,10 +8,8 @@ from .families import (
     NormalizationMorphism,
     PointedCurve,
     PointedCurveFamily,
-    StablePointedCurve as StablePointedCurveBase,
     StablePointedCurveFamily,
 )
-from .pointed import PointedCurve as LandscapePointedCurve  # noqa: F401
 from .pointed import SmoothPointedCurve, StablePointedCurve
 
 __all__ = [

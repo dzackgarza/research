@@ -27,9 +27,10 @@ def _default_base() -> AffineScheme:
 
 
 def _curve_generic_type() -> type:
-    from sage.schemes.curves.curve import Curve_generic
+    from sage.schemes.curves.curve import Curve_generic as CurveGenericCls
 
-    return Curve_generic
+    assert isinstance(CurveGenericCls, type), f"Curve_generic import must be a type; found {type(CurveGenericCls)!r}"
+    return CurveGenericCls
 
 
 def rational_plane_model(ring: object) -> Curve_generic:
@@ -95,7 +96,7 @@ class PointedCurve:
         self._base = base_scheme if base_scheme is not None else _default_base()
         self._sage_curve = sage_curve
         if markings is None:
-            self._markings = ()
+            self._markings: tuple[object, ...] = ()
         else:
             if len(markings) != self._n:
                 raise ValueError(f"expected {self._n} markings; found {len(markings)}")
@@ -145,7 +146,9 @@ class SmoothPointedCurve(PointedCurve):
     def normalization(self) -> Curve_generic:
         curve = self.sage_curve()
         if hasattr(curve, "normalization"):
-            return curve.normalization()  # type: ignore[no-any-return]
+            normalized = curve.normalization()
+            assert isinstance(normalized, _curve_generic_type()), f"curve.normalization() must return Curve_generic; found {type(normalized)!r}"
+            return normalized
         return curve
 
     @classmethod
@@ -161,7 +164,8 @@ class SmoothPointedCurve(PointedCurve):
             return cls(0, n, sage_curve=curve, markings=marks, base_scheme=base)
         if g == 1 and n == 1:
             curve = elliptic_model(ring)
-            origin = curve(0)  # type: ignore[operator]
+            assert callable(curve), f"elliptic model must be callable; found {type(curve)!r}"
+            origin = curve(0)
             return cls(1, 1, sage_curve=curve, markings=(origin,), base_scheme=base)
         if g >= 2 and n == 0:
             curve = hyperelliptic_model(ring, genus=g)
@@ -171,10 +175,7 @@ class SmoothPointedCurve(PointedCurve):
             curve = hyperelliptic_model(ring, genus=g)
             if n == 0:
                 return cls(g, 0, sage_curve=curve, markings=(), base_scheme=base)
-        raise NotImplementedError(
-            f"no concrete Sage smooth model for (g, n)=({g}, {n}); "
-            "supported proving set: (0, n>=3), (1, 1), (g>=2, n=0)"
-        )
+        raise NotImplementedError(f"no concrete Sage smooth model for (g, n)=({g}, {n}); supported proving set: (0, n>=3), (1, 1), (g>=2, n=0)")
 
 
 class StablePointedCurve(PointedCurve):
@@ -205,25 +206,25 @@ class StablePointedCurve(PointedCurve):
         return self._graph_type is None or self._graph_type.num_edges() == 0
 
     def dual_graph(self) -> StableGraph:
+        from ..objects.stable_graphs import StableGraph as StableGraphElement
         from ..objects.stable_graphs import StableGraphs
 
         graphs = StableGraphs(self._g, self._n)
         if self._graph_type is not None:
-            return graphs(self._graph_type.canonical_representative())
+            element = graphs(self._graph_type.canonical_representative())
+            assert isinstance(element, StableGraphElement), f"StableGraphs() must return StableGraph; found {type(element)!r}"
+            return element
         return graphs.smooth()
 
     def sage_curve(self) -> Curve_generic:
         if self.is_nodal() and self._sage_curve is None:
-            raise ValueError(
-                "nodal stable fibers use combinatorial dual_graph(); "
-                "geometric nodal Sage models are not implemented"
-            )
+            raise ValueError("nodal stable fibers use combinatorial dual_graph(); geometric nodal Sage models are not implemented")
         if self._sage_curve is None:
             # Smooth stable fiber: attach a concrete model from the proving set.
             smooth = SmoothPointedCurve.from_ambient(self._g, self._n, self._base)
             self._sage_curve = smooth.sage_curve()
             if not self._markings:
-                self._markings = smooth.markings()
+                self._markings = tuple(smooth.markings())
         return super().sage_curve()
 
     @classmethod

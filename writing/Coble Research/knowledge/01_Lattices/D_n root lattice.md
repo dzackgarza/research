@@ -11,8 +11,7 @@ created: 2026-05-08
 ---
 
 > [!example] $D_n$ root lattice
-> The $D_n$ [[Root lattice|root lattice]] is the root sublattice $\mathbf{Z}^n_{\mathrm{ev}} = \ker(\mathbf{Z}^n\xrightarrow{\varepsilon_2} 2\mathbf{Z})$, realized as
-> $$ \mathbf{Z}^n_{\mathrm{ev}} \mathrel{\mathop:}= \{ x = (x_1, \ldots, x_n) \in \mathbf{Z}^n \mathrel{\Big|} \sum_{i=1}^n x_i \equiv 0 \pmod{2\mathbf{Z}} \} \hookrightarrow \mathbf{Z}^n $$
+> The $D_n$ [[Root lattice|root lattice]] is the root sublattice $\mathbf{Z}^n_{\mathrm{ev}} = \ker(\mathbf{Z}^n\xrightarrow{\varepsilon_2} 2\mathbf{Z})$, realized as $$ \mathbf{Z}^n_{\mathrm{ev}} \mathrel{\mathop:}= \{ x = (x_1, \ldots, x_n) \in \mathbf{Z}^n \mathrel{\Big|} \sum_{i=1}^n x_i \equiv 0 \pmod{2\mathbf{Z}} \} \hookrightarrow \mathbf{Z}^n $$
 > 
 > ## Properties
 > - The roots $R(D_n)$ consist of all vectors $r_{i,j} \mathrel{\mathop:}= \pm e_i \pm e_j$ in $\mathbf{Z}^n_{\mathrm{ev}}$ for all $1 \leq i < j \leq n$.

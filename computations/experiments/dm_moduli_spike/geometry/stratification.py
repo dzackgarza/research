@@ -2,9 +2,9 @@ r"""General finite stratifications and dual-graph stratification of DM boundarie
 
 from __future__ import annotations
 
+from sage.combinat.posets.posets import FinitePoset
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
-from sage.combinat.posets.posets import FinitePoset
 
 from .stacks import (
     Boundary,
@@ -138,17 +138,20 @@ class Stratification:
 
 class StratifiedSpace(UniqueRepresentation, Parent):
     def __init__(self, underlying: object, stratification: Stratification) -> None:
-        from ..categories.stratified import StratifiedSpaces
         from ..categories.base import AffineScheme
+        from ..categories.stratified import StratifiedSpaces
 
         self._underlying = underlying
         self._stratification = stratification
-        base = getattr(underlying, "base_scheme", lambda: None)()
-        if not isinstance(base, AffineScheme):
-            from ..categories.base import spec
-            from sage.rings.integer_ring import ZZ
-
-            base = spec(ZZ)
+        assert hasattr(underlying, "base_scheme"), (
+            f"StratifiedSpace requires underlying.base_scheme(); found {type(underlying)!r}; "
+            f"underlying={underlying!r}; owned boundary=StratifiedSpace.__init__; "
+            "pass a GeometricObject (or adapter) that exposes base_scheme()"
+        )
+        base = underlying.base_scheme()
+        assert isinstance(base, AffineScheme), (
+            f"underlying.base_scheme() must return AffineScheme; found {type(base)!r}; underlying={underlying!r}; owned boundary=StratifiedSpace.__init__"
+        )
         Parent.__init__(self, category=StratifiedSpaces(base))
 
     def underlying_space(self) -> object:
@@ -182,8 +185,14 @@ class StableDualGraph(UniqueRepresentation):
     def indexing_category(self, stack: Stack) -> object:
         from ..objects.stable_graphs import StableGraphs
 
-        g = int(stack.genus())  # type: ignore[attr-defined]
-        I = stack.marking_set() if hasattr(stack, "marking_set") else range(1, int(stack.number_of_markings()) + 1)  # type: ignore[attr-defined]
+        assert hasattr(stack, "genus") and hasattr(stack, "number_of_markings"), (
+            f"stack must expose genus() and number_of_markings(); found {type(stack)!r}; owned boundary=StableDualGraph.indexing_category"
+        )
+        g = int(stack.genus())
+        if hasattr(stack, "marking_set"):
+            I = stack.marking_set()
+        else:
+            I = range(1, int(stack.number_of_markings()) + 1)
         return StableGraphs(g, I)
 
     def __repr__(self) -> str:
@@ -193,17 +202,14 @@ class StableDualGraph(UniqueRepresentation):
 def dual_graph_boundary_poset(boundary: Boundary, order: str = "specialization") -> FinitePoset:
     r"""Boundary specialization poset from combinatorial Γ thinification."""
     ambient = boundary.ambient_space()
-    g = getattr(ambient, "genus", lambda: None)()
-    n = getattr(ambient, "number_of_markings", lambda: None)()
-    if g is None or n is None:
-        # Coarse spaces may expose moduli type via attached attributes.
-        g = getattr(ambient, "_moduli_genus", None)
-        marks = getattr(ambient, "_moduli_markings", None)
-        n = len(marks) if marks is not None else None
-    if g is None or n is None:
-        from sage.combinat.posets.posets import Poset
-
-        return Poset((["boundary"], []), facade=True)
+    assert hasattr(ambient, "genus") and hasattr(ambient, "number_of_markings"), (
+        f"boundary ambient must expose genus() and number_of_markings(); "
+        f"found type={type(ambient)!r}; ambient={ambient!r}; "
+        "owned boundary=dual_graph_boundary_poset; "
+        "attach moduli type on coarse spaces via ModuliStack.coarse_space()"
+    )
+    g = ambient.genus()
+    n = ambient.number_of_markings()
     from ..objects.gamma import StableGraphCategory
 
     gamma = StableGraphCategory(int(g), int(n))
@@ -218,16 +224,22 @@ def dual_graph_boundary_poset(boundary: Boundary, order: str = "specialization")
 
 def _factor_marking_set(graph: object, vertex: int) -> tuple[object, ...]:
     r"""Half-edges at ``vertex`` as the marking set of the factor moduli stack."""
+    assert hasattr(graph, "flags_at"), f"graph must expose flags_at(vertex); found {type(graph)!r}; owned boundary=_factor_marking_set"
     return tuple(graph.flags_at(vertex))
 
 
 def build_dual_graph_stratification(stack: Stack, *, compact: bool = True) -> Stratification:
-    from ..objects.gamma import StableGraphCategory
-    from ..objects.stable_graphs import StableGraphs
     from ..moduli.instances import M_gI, Mbar_gI
+    from ..objects.gamma import StableGraphCategory
+    from ..objects.records import StableGraph as StableGraphRecord
+    from ..objects.stable_graphs import StableGraph as StableGraphElement
+    from ..objects.stable_graphs import StableGraphs
 
-    g = int(stack.genus())  # type: ignore[attr-defined]
-    n = int(stack.number_of_markings())  # type: ignore[attr-defined]
+    assert hasattr(stack, "genus") and hasattr(stack, "number_of_markings"), (
+        f"stack must expose genus() and number_of_markings(); found {type(stack)!r}; owned boundary=build_dual_graph_stratification"
+    )
+    g = int(stack.genus())
+    n = int(stack.number_of_markings())
     I = stack.marking_set() if hasattr(stack, "marking_set") else tuple(range(1, n + 1))
     base = stack.base_scheme()
     Gamma = StableGraphCategory(g, n)
@@ -235,9 +247,10 @@ def build_dual_graph_stratification(stack: Stack, *, compact: bool = True) -> St
     poset = Gamma.specialization_poset()
     raw: dict[object, tuple[ProductStack, QuotientStack, object]] = {}
     for graph in poset:
+        assert isinstance(graph, StableGraphRecord), f"specialization poset elements must be StableGraph records; found {type(graph)!r}"
         factors = []
         for v in range(graph.num_vertices()):
-            w = graph.vertex_genera[v]
+            w = graph.vertex_genus(v)
             marks = _factor_marking_set(graph, v)
             if compact:
                 factors.append(Mbar_gI(w, marks, base=base))
@@ -245,6 +258,7 @@ def build_dual_graph_stratification(stack: Stack, *, compact: bool = True) -> St
                 factors.append(M_gI(w, marks, base=base))
         product = ProductStack(tuple(factors), base=base)
         sg = indexing(graph)
+        assert isinstance(sg, StableGraphElement), f"indexing(graph) must return StableGraph; found {type(sg)!r}"
         aut = sg.automorphism_group(on="half_edges")
         action = sg.action_on_half_edges()
         quot = QuotientStack(product, aut, action)
@@ -261,20 +275,22 @@ def scheme_compactification_stratification(open_part: object, boundary: object, 
     r"""Two-stratum stratification for the independent A1↪P1 generality test."""
     from sage.combinat.posets.posets import Poset
 
+    def _require_stack(piece: object, role: str) -> Stack:
+        if isinstance(piece, Stack):
+            return piece
+        assert hasattr(piece, "as_stack"), (
+            f"{role} requires Stack or as_stack(); found {type(piece)!r}; "
+            f"piece={piece!r}; owned boundary=scheme_compactification_stratification; "
+            "pass SchemeStackAdapter / Boundary / Stack from SchemeStackAdapter.stratify"
+        )
+        stack = piece.as_stack()
+        assert isinstance(stack, Stack), f"{role}.as_stack() must return Stack; found {type(stack)!r}; piece={piece!r}"
+        return stack
+
     poset = Poset((["open", "boundary"], [("open", "boundary")]), cover_relations=True, facade=True)
     strat = Stratification(ambient, poset, {})
-    open_stack = getattr(open_part, "as_stack", lambda: open_part)()
-    bd_stack = getattr(boundary, "as_stack", lambda: boundary)()
-    if not isinstance(open_stack, Stack):
-        from ..categories.base import spec
-        from sage.rings.rational_field import QQ
-
-        open_stack = Stack(spec(QQ), name="OpenStratum")
-    if not isinstance(bd_stack, Stack):
-        from ..categories.base import spec
-        from sage.rings.rational_field import QQ
-
-        bd_stack = Stack(spec(QQ), name="BoundaryStratum")
-    strat._strata["open"] = Stratum(strat, "open", open_stack)  # type: ignore[index]
-    strat._strata["boundary"] = Stratum(strat, "boundary", bd_stack)  # type: ignore[index]
+    open_stack = _require_stack(open_part, "open stratum")
+    bd_stack = _require_stack(boundary, "boundary stratum")
+    strat._strata["open"] = Stratum(strat, "open", open_stack)
+    strat._strata["boundary"] = Stratum(strat, "boundary", bd_stack)
     return strat

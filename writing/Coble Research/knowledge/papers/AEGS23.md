@@ -20,8 +20,7 @@ abstract: |
 
 VALERY ALEXEEV, PHILIP ENGEL, D. ZACK GARZA, AND LUCA SCHAFFLER
 
-ABSTRACT.
-We describe a geometric, stable pair compactification of the moduli space of Enriques surfaces with a numerical polarization of degree 2, and identify it with a semitoroidal compactification of the period space.
+ABSTRACT. We describe a geometric, stable pair compactification of the moduli space of Enriques surfaces with a numerical polarization of degree 2, and identify it with a semitoroidal compactification of the period space.
 
 # CONTENTS
 

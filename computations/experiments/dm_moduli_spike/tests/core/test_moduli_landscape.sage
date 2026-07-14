@@ -47,7 +47,7 @@ def test_moduli_stack_membership_and_compactification():
     P = b.stratification_poset()
     assert isinstance(P, FinitePoset)
     Sigma = XSbar.stratification(by=StableDualGraph())
-    assert Sigma.specialization_poset().cardinality() == P.cardinality() + 1 or True
+    assert Sigma.specialization_poset().cardinality() == P.cardinality() + 1
 
 
 def test_symbolic_complex_numbers():

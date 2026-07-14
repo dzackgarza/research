@@ -5,7 +5,7 @@ from __future__ import annotations
 from sage.rings.rational_field import QQ
 
 from ..categories.base import AffineScheme, spec
-from .stacks import Compactification, Stack, Variety
+from .stacks import Compactification, Stack
 from .stratification import Stratification, scheme_compactification_stratification
 
 

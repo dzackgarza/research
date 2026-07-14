@@ -7,14 +7,11 @@ from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
 from ..categories.base import AffineScheme, check_z_scheme, spec
-from ..categories.stacks import DeligneMumfordStacks, ModuliStacks
-from ..categories.schemes import AlgebraicSpaces, Varieties
+from ..categories.stacks import ModuliStacks
 from ..geometry.stacks import (
-    AlgebraicSpace,
     Boundary,
     CoarseModuliMorphism,
     Compactification,
-    Compactifications,
     DeligneMumfordStack,
     StackFiber,
     Variety,
@@ -22,10 +19,13 @@ from ..geometry.stacks import (
 
 
 def _marking_set(I: object) -> tuple[object, ...]:
+    from collections.abc import Iterable
+
     from sage.rings.integer import Integer
 
     if isinstance(I, (int, Integer)):
         return tuple(range(1, int(I) + 1))
+    assert isinstance(I, Iterable), f"expected marking count or iterable; found {type(I)!r}"
     return tuple(I)
 
 
@@ -41,6 +41,7 @@ class Groupoid(UniqueRepresentation, Parent):
 
     def an_element(self) -> object:
         if self._family_factory is not None:
+            assert callable(self._family_factory), f"family_factory must be callable; found {type(self._family_factory)!r}"
             return self._family_factory()
         return f"object of {self._name}"
 
@@ -52,19 +53,23 @@ class ModuliProblem(UniqueRepresentation):
     r"""Contravariant pseudofunctor-shaped moduli problem to groupoids."""
 
     @staticmethod
-    def __classcall_private__(
-        cls,
-        g: int,
-        I: object,
-        base: AffineScheme,
-        *,
-        stable: bool = False,
-    ) -> ModuliProblem:
-        return super().__classcall__(cls, int(g), _marking_set(I), base, stable=bool(stable))
+    def __classcall_private__(cls: type[ModuliProblem], *args: object, **kwargs: object) -> ModuliProblem:
+        from .._typing_utils import as_int
 
-    def __init__(self, g: int, I: tuple[object, ...], base: AffineScheme, *, stable: bool = False) -> None:
-        self._g = int(g)
-        self._I = tuple(I)
+        assert len(args) >= 3, f"ModuliProblem(g, I, base, *, stable=False); found args={args!r}"
+        g, I, base = args[0], args[1], args[2]
+        stable = bool(kwargs.pop("stable", False))
+        assert not kwargs, f"unexpected kwargs {sorted(kwargs)!r}"
+        assert isinstance(base, AffineScheme), f"expected AffineScheme; found {type(base)!r}"
+        result = super().__classcall__(cls, as_int(g), _marking_set(I), base, stable=stable)
+        assert isinstance(result, ModuliProblem), f"classcall must return ModuliProblem; found {type(result)!r}"
+        return result
+
+    def __init__(self, g: int, I: object, base: AffineScheme, *, stable: bool = False) -> None:
+        from .._typing_utils import as_int
+
+        self._g = as_int(g)
+        self._I = _marking_set(I) if not isinstance(I, tuple) else tuple(I)
         self._base = base
         self._stable = bool(stable)
 
@@ -107,21 +112,64 @@ class ModuliProblem(UniqueRepresentation):
         return f"{tag}({self._g}, {len(self._I)})"
 
 
+class CoarseModuliVariety(Variety):
+    r"""Coarse space of a moduli stack, retaining combinatorial type ``(g, I)``."""
+
+    def __init__(
+        self,
+        base: AffineScheme,
+        *,
+        genus: int,
+        markings: tuple[object, ...],
+        name: str,
+        axioms: frozenset[str] | None = None,
+    ) -> None:
+        self._moduli_genus = int(genus)
+        self._moduli_markings = tuple(markings)
+        Variety.__init__(self, base, name=name, axioms=axioms)
+
+    def genus(self) -> int:
+        return self._moduli_genus
+
+    def number_of_markings(self) -> int:
+        return len(self._moduli_markings)
+
+    def marking_set(self) -> tuple[object, ...]:
+        return self._moduli_markings
+
+
+class ModuliStackFiber(StackFiber):
+    r"""Stack fiber with an attached moduli groupoid for ``an_element``."""
+
+    def __init__(self, stack: ModuliStack, test_object: object, groupoid: Groupoid) -> None:
+        self._groupoid = groupoid
+        StackFiber.__init__(self, stack, test_object)
+
+    def an_element(self) -> object:
+        r"""A representative object of the moduli groupoid over the test object.
+
+        Returns the concrete geometric object produced by the moduli problem
+        (e.g. a pointed-curve family), not a bare :class:`StackObject` wrapper.
+        """
+        return self._groupoid.an_element()
+
+
 class ModuliStack(DeligneMumfordStack):
     r"""Stack equipped with a moduli problem."""
 
     @staticmethod
-    def __classcall_private__(
-        cls,
-        problem: ModuliProblem,
-        *,
-        proper: bool = False,
-        name: str | None = None,
-    ) -> ModuliStack:
-        proper = bool(proper)
+    def __classcall_private__(cls: type[ModuliStack], *args: object, **kwargs: object) -> ModuliStack:
+        assert len(args) == 1, f"ModuliStack(problem, *, proper=False, name=None); found args={args!r}"
+        problem = args[0]
+        proper = bool(kwargs.pop("proper", False))
+        name = kwargs.pop("name", None)
+        assert not kwargs, f"unexpected kwargs {sorted(kwargs)!r}"
+        assert isinstance(problem, ModuliProblem), f"expected ModuliProblem; found {type(problem)!r}"
         if name is None:
             name = ("Mbar" if proper else "M") + f"_{problem.genus()},{problem.number_of_markings()}"
-        return super().__classcall__(cls, problem, proper=proper, name=name)
+        result = super().__classcall__(cls, problem, proper=proper, name=name)
+        assert isinstance(result, ModuliStack), f"classcall must return ModuliStack; found {type(result)!r}"
+        return result
 
     def __init__(
         self,
@@ -145,6 +193,7 @@ class ModuliStack(DeligneMumfordStack):
         self._name = label
         self._base = base
         self._axioms = axioms
+        self._cached_dual_graph_stratification: object | None = None
         Parent.__init__(self, category=cat)
 
     def moduli_problem(self) -> ModuliProblem:
@@ -165,31 +214,24 @@ class ModuliStack(DeligneMumfordStack):
     def dimension(self) -> int:
         return 3 * self.genus() - 3 + self.number_of_markings()
 
-    def coarse_space(self) -> Variety | AlgebraicSpace:
+    def coarse_space(self) -> CoarseModuliVariety:
         axioms = frozenset({"FiniteType", "Separated"})
         g, I = self.genus(), self.marking_set()
         if self._proper:
             axioms = axioms | {"Proper", "Normal", "Projective"}
-            space: Variety | AlgebraicSpace = Variety(
-                self.base_scheme(), name=f"coarse({self!r})", axioms=axioms
-            )
         else:
-            space = Variety(
-                self.base_scheme(),
-                name=f"coarse({self!r})",
-                axioms=axioms | frozenset({"Integral"}),
-            )
-        # Preserve moduli type so coarse boundary posets recover dual-graph indexing.
-        space._moduli_genus = g  # type: ignore[attr-defined]
-        space._moduli_markings = I  # type: ignore[attr-defined]
-        space.genus = lambda: g  # type: ignore[method-assign]
-        space.number_of_markings = lambda: len(I)  # type: ignore[method-assign]
-        space.marking_set = lambda: I  # type: ignore[method-assign]
-        return space
+            axioms = axioms | frozenset({"Integral"})
+        return CoarseModuliVariety(
+            self.base_scheme(),
+            genus=g,
+            markings=I,
+            name=f"coarse({self!r})",
+            axioms=axioms,
+        )
 
     def coarse_moduli_morphism(self) -> CoarseModuliMorphism:
         space = self.coarse_space()
-        return CoarseModuliMorphism(self, space)  # type: ignore[arg-type]
+        return CoarseModuliMorphism(self, space)
 
     def compactification(self, kind: str = "stable-pointed-curves") -> Compactification:
         if self._proper:
@@ -198,7 +240,9 @@ class ModuliStack(DeligneMumfordStack):
         return Compactification(self, target, kind=kind)
 
     def compactify(self, kind: str = "stable-pointed-curves") -> ModuliStack:
-        return self.compactification(kind=kind).target()  # type: ignore[return-value]
+        target = self.compactification(kind=kind).target()
+        assert isinstance(target, ModuliStack), f"compactification target must be ModuliStack; found {type(target)!r}"
+        return target
 
     def open_part(self) -> ModuliStack:
         if not self._proper:
@@ -228,7 +272,7 @@ class ModuliStack(DeligneMumfordStack):
             "owned boundary=ModuliStack.stratify; "
             "use Mbar_gn(...).stratification() or stratification(by=StableDualGraph())"
         )
-        cached = getattr(self, "_cached_dual_graph_stratification", None)
+        cached = self._cached_dual_graph_stratification
         if cached is not None:
             return cached
         cached = build_dual_graph_stratification(self, compact=self._proper)
@@ -238,29 +282,24 @@ class ModuliStack(DeligneMumfordStack):
     def stratification(self, by: object | None = None) -> object:
         return self.stratify(by=by)
 
-    def __call__(self, T: object) -> StackFiber:
-        fiber = StackFiber(self, T)
-        groupoid = self.objects_over(T)
-        fiber._groupoid = groupoid  # type: ignore[attr-defined]
-
-        def _an_element() -> object:
-            return groupoid.an_element()
-
-        fiber.an_element = _an_element  # type: ignore[method-assign]
-        return fiber
+    def __call__(self, x: object = None, *args: object, **kwds: object) -> ModuliStackFiber:
+        assert x is not None and not args and not kwds, (
+            f"ModuliStack() expects a single test object T; found T={x!r} args={args!r} kwds={kwds!r}; owned boundary=ModuliStack.__call__"
+        )
+        return ModuliStackFiber(self, x, self.objects_over(x))
 
 
 def M_gI(g: int, I: object, base: AffineScheme | None = None) -> ModuliStack:
-    base = base if base is not None else spec(ZZ)
-    check_z_scheme(base)
-    problem = ModuliProblem(g, I, base, stable=False)
+    resolved = base if base is not None else spec(ZZ)
+    check_z_scheme(resolved)
+    problem = ModuliProblem(g, I, resolved, stable=False)
     return ModuliStack(problem, proper=False)
 
 
 def Mbar_gI(g: int, I: object, base: AffineScheme | None = None) -> ModuliStack:
-    base = base if base is not None else spec(ZZ)
-    check_z_scheme(base)
-    problem = ModuliProblem(g, I, base, stable=True)
+    resolved = base if base is not None else spec(ZZ)
+    check_z_scheme(resolved)
+    problem = ModuliProblem(g, I, resolved, stable=True)
     return ModuliStack(problem, proper=True)
 
 

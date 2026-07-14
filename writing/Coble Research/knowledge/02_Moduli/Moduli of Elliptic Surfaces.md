@@ -14,7 +14,7 @@ created: 2026-05-08
 > 
 > Brunyate-Alexeev construct two KSBA compactifications isomorphic to semitoroidal compactifications:
 > 1. **Ramification Divisor Compactification ($\overline{F}^{\operatorname{ram}}$)**: Polarization is $[R] = 3(s+2f)$ (ramification of double cover of $\mathbf{P}(1,1,4)$). The associated fan is a coarsening of the Coxeter fan.
-> 2. **Rational Curve Divisor Compactification ($\overline{F}^{\mathrm{rc}}$)**: Polarization is $R = s + m \sum_{i=1}^{24} f_i$. The associated fan is a refinement of the Coxeter fan.
+> 2. **Rational Curve Divisor Compactification ($\overline{F}^{\mathrm{rc}}$)**: Polarization is $R = s + m \sum_{i=1}^{24} f_i$.
+>    The associated fan is a refinement of the Coxeter fan.
 > 
 > Geometric models for the boundary strata are constructed using **integral-affine spheres with 24 singularities ($\mathrm{IAS}^2$)**. The Baily-Borel boundary contains a unique 0-cusp $\eta$ and two 1-cusps (yielding boundary lattices $E_8^2$ and $D_{16}$).
-

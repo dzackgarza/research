@@ -9,20 +9,26 @@ Every morphism factors as an edge contraction followed by an isomorphism.
 
 from __future__ import annotations
 
+import builtins
 from collections.abc import Iterator
 from itertools import combinations
 from typing import TYPE_CHECKING
 
 from sage.structure.unique_representation import UniqueRepresentation
 
-from .canonical import automorphism_group
 from .contractions import StableGraphContraction, contract_edges
 from .graph_types import StableGraphType, StableGraphTypes
-from .isomorphisms import isomorphism_between
+from .isomorphisms import StableGraphIsomorphism, isomorphism_between
 from .records import StableGraph
 
 if TYPE_CHECKING:
     from sage.combinat.posets.posets import FinitePoset
+    from sage.topology.simplicial_complex import SimplicialComplex
+
+    from .delta_complex import SymmetricDeltaComplex
+
+# Builtin ``object`` shadowed by :meth:`StableGraphCategory.object` inside the class body.
+_Object = builtins.object
 
 
 class StableGraphMorphism:
@@ -71,7 +77,7 @@ class StableGraphMorphism:
         )
 
     @staticmethod
-    def from_isomorphism(iso: object) -> StableGraphMorphism:
+    def from_isomorphism(iso: StableGraphIsomorphism) -> StableGraphMorphism:
         return StableGraphMorphism(
             iso.source,
             iso.target,
@@ -98,24 +104,14 @@ class StableGraphMorphism:
 
     def contracted_edges(self) -> tuple[tuple[int, int], ...]:
         involution = self._domain.flag_involution
-        return tuple(
-            sorted((flag, involution[flag]) for flag in self._contracted_flags if flag < involution[flag])
-        )
+        return tuple(sorted((flag, involution[flag]) for flag in self._contracted_flags if flag < involution[flag]))
 
     def surviving_half_edge_injection(self) -> dict[int, int]:
         r"""Contravariant injection `H(H)\hookrightarrow H(G)`."""
-        return {
-            codomain_flag: domain_flag
-            for domain_flag, codomain_flag in enumerate(self._half_edge_map)
-            if codomain_flag >= 0
-        }
+        return {codomain_flag: domain_flag for domain_flag, codomain_flag in enumerate(self._half_edge_map) if codomain_flag >= 0}
 
     def vertex_fiber(self, codomain_vertex: int) -> frozenset[int]:
-        return frozenset(
-            domain_vertex
-            for domain_vertex, image in enumerate(self._vertex_map)
-            if image == codomain_vertex
-        )
+        return frozenset(domain_vertex for domain_vertex, image in enumerate(self._vertex_map) if image == codomain_vertex)
 
     def is_isomorphism(self) -> bool:
         if self._contracted_flags:
@@ -130,9 +126,7 @@ class StableGraphMorphism:
         r"""True when this morphism contracts a (possibly empty) edge set onto its codomain."""
         if self.is_isomorphism():
             return True
-        return bool(self._contracted_flags) and self._codomain.num_edges() == self._domain.num_edges() - len(
-            self.contracted_edges()
-        )
+        return bool(self._contracted_flags) and self._codomain.num_edges() == self._domain.num_edges() - len(self.contracted_edges())
 
     def inverse(self) -> StableGraphMorphism:
         if not self.is_isomorphism():
@@ -257,7 +251,9 @@ class StableGraphCategory(UniqueRepresentation):
         if isinstance(graph, StableGraphType):
             return graph.canonical_representative()
         if isinstance(graph, StableGraph):
-            return self._types(graph).canonical_representative()
+            typed = self._types(graph)
+            assert isinstance(typed, StableGraphType), f"StableGraphTypes() must return StableGraphType; found {type(typed)!r}"
+            return typed.canonical_representative()
         raise TypeError(f"expected StableGraph or StableGraphType; found {type(graph)}")
 
     def genus(self) -> int:
@@ -323,7 +319,7 @@ class StableGraphCategory(UniqueRepresentation):
             morph = iso.compose(morph)
         return morph
 
-    def automorphism_group(self, graph: StableGraph | StableGraphType, on: str = "vertices") -> object:
+    def automorphism_group(self, graph: StableGraph | StableGraphType, on: str = "vertices") -> _Object:
         r"""Sage permutation group of `\operatorname{Aut}(G)` acting on the requested set."""
         from ._automorphism_action import _GraphAutomorphismData
 
@@ -349,8 +345,7 @@ class StableGraphCategory(UniqueRepresentation):
         graph = self._canonical(graph)
         total = 0
         for vertex in range(graph.num_vertices()):
-            valence = sum(1 for flag in range(graph.num_flags()) if graph.flag_vertex[flag] == vertex)
-            total += 3 * graph.vertex_genera[vertex] - 3 + valence
+            total += 3 * graph.vertex_genus(vertex) - 3 + graph.valence(vertex)
         return total
 
     def boundary_divisors(self) -> tuple[StableGraph, ...]:
@@ -371,8 +366,7 @@ class StableGraphCategory(UniqueRepresentation):
         graph = self._canonical(graph)
         factors: list[tuple[int, tuple[int, ...]]] = []
         for vertex in range(graph.num_vertices()):
-            flags = tuple(flag for flag in range(graph.num_flags()) if graph.flag_vertex[flag] == vertex)
-            factors.append((graph.vertex_genera[vertex], flags))
+            factors.append((graph.vertex_genus(vertex), graph.flags_at(vertex)))
         return tuple(factors)
 
     def node_pairings(self, graph: StableGraph | StableGraphType) -> tuple[tuple[int, int], ...]:
@@ -416,13 +410,13 @@ class StableGraphCategory(UniqueRepresentation):
     def closure_poset(self) -> FinitePoset:
         return self.specialization_poset().dual()
 
-    def symmetric_delta_complex(self) -> object:
+    def symmetric_delta_complex(self) -> SymmetricDeltaComplex:
         r"""Symmetric Δ-complex / cone complex attached to this `\Gamma_{g,n}`."""
         from .delta_complex import SymmetricDeltaComplex
 
         return SymmetricDeltaComplex(self)
 
-    def order_complex(self) -> object:
+    def order_complex(self) -> SimplicialComplex:
         r"""Thin boundary order complex (see :meth:`SymmetricDeltaComplex.order_complex`)."""
         return self.symmetric_delta_complex().order_complex()
 
@@ -441,10 +435,7 @@ class StableGraphCategory(UniqueRepresentation):
                     continue
                 if not full.is_less_than(source, target):
                     continue
-                if any(
-                    mid is not source and mid is not target and mid in object_set and full.is_less_than(source, mid) and full.is_less_than(mid, target)
-                    for mid in objects
-                ):
+                if any(mid is not source and mid is not target and mid in object_set and full.is_less_than(source, mid) and full.is_less_than(mid, target) for mid in objects):
                     continue
                 covers.append((source, target))
         return Poset((objects, covers), cover_relations=True, facade=True)
@@ -486,10 +477,7 @@ class StableGraphCategory(UniqueRepresentation):
 
         action = _GraphAutomorphismData.from_graph(graph)
         morphisms = [self.identity(graph)]
-        # Build group elements from generator permutations on flags/vertices via Sage group
-        group = action.group()
-        # Fall back: use incidence aut to produce flag perms for each group element is expensive.
-        # Use generator closure via on_flags / on_vertices images of gens, expand small groups.
+        # Expand Aut(Γ) via generator closure on flag/vertex permutations.
         flag_gens = action.on_flags()
         vertex_gens = action.on_vertices()
         n_h = graph.num_flags()
@@ -551,4 +539,3 @@ def _permutation_group_from_images(images: tuple[tuple[int, ...], ...], degree: 
 
 # Public alias matching mathematical notation.
 Gamma_gn = StableGraphCategory
-

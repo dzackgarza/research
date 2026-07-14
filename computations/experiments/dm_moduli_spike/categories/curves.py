@@ -12,15 +12,18 @@ Hierarchy (over `B` in `\mathrm{Sch}/B`):
 
 These declare the geometric hierarchy.  Concrete curve *objects* are Sage
 :class:`~sage.schemes.curves.curve.Curve_generic` instances wrapped in
-:mod:`dm_moduli_spike._landscape.curves.pointed`.  This package does **not**
-claim Sage supplies Deligne--Mumford stacks or a universal family over
+``computations/scripts/dm_moduli_landscape/curves/pointed``.  This package does
+**not** claim Sage supplies Deligne--Mumford stacks or a universal family over
 `\mathcal M_{g,n}`.
 """
 
 from __future__ import annotations
 
 from sage.categories.category import Category
+from sage.structure.unique_representation import UniqueRepresentation
 
+from .._typing_utils import as_int
+from .base import AffineScheme
 from .foundation import ModuliCategory
 from .schemes import Schemes
 
@@ -35,9 +38,9 @@ class Curves(ModuliCategory):
         from .membership import pointed_curve_in_category
 
         try:
-            return pointed_curve_in_category(obj, self) or super().__contains__(obj)
+            return bool(pointed_curve_in_category(obj, self) or super().__contains__(obj))
         except Exception:
-            return super().__contains__(obj)
+            return bool(super().__contains__(obj))
 
 
 class SmoothCurves(Curves):
@@ -55,26 +58,29 @@ class PointedCurves(SmoothCurves):
     """
 
     @staticmethod
-    def __classcall_private__(
-        cls,
-        base: object,
-        g: int | None = None,
-        n: int | None = None,
-    ) -> PointedCurves:
-        from .base import AffineScheme
-
+    def __classcall_private__(cls: type, *args: object, **kwargs: object) -> PointedCurves:
+        assert len(args) >= 1, "PointedCurves(B, g=None, n=None) requires base"
+        base = args[0]
+        g = args[1] if len(args) > 1 else kwargs.pop("g", None)
+        n = args[2] if len(args) > 2 else kwargs.pop("n", None)
+        assert not kwargs, f"unexpected kwargs {sorted(kwargs)!r}"
         if not isinstance(base, AffineScheme):
             raise TypeError(f"expected AffineScheme; found {type(base)}")
         if (g is None) ^ (n is None):
             raise TypeError("PointedCurves(B, g, n) requires both g and n, or neither")
+        gg: int | None = None
+        nn: int | None = None
         if g is not None:
-            g = int(g)
-            n = int(n)  # type: ignore[arg-type]
-            if g < 0 or n < 0:
-                raise ValueError(f"expected nonnegative (g, n); found ({g}, {n})")
-        return super().__classcall__(cls, base, g, n)
+            gg = as_int(g)
+            assert n is not None
+            nn = as_int(n)
+            if gg < 0 or nn < 0:
+                raise ValueError(f"expected nonnegative (g, n); found ({gg}, {nn})")
+        result = UniqueRepresentation.__classcall__(cls, base, gg, nn)
+        assert isinstance(result, PointedCurves), f"classcall must return PointedCurves; found {type(result)!r}"
+        return result
 
-    def __init__(self, base: object, g: int | None = None, n: int | None = None) -> None:
+    def __init__(self, base: AffineScheme, g: int | None = None, n: int | None = None) -> None:
         self._g = g
         self._n = n
         SmoothCurves.__init__(self, base)
@@ -113,34 +119,39 @@ class StablePointedCurves(PointedCurves):
     """
 
     @staticmethod
-    def __classcall_private__(
-        cls,
-        base: object,
-        g: int | None = None,
-        n: object | None = None,
-    ) -> StablePointedCurves:
+    def __classcall_private__(cls: type, *args: object, **kwargs: object) -> StablePointedCurves:
+        from collections.abc import Iterable
+
         from sage.rings.integer import Integer
 
-        from .base import AffineScheme
-
+        assert len(args) >= 1, "StablePointedCurves(B, g=None, n=None) requires base"
+        base = args[0]
+        g = args[1] if len(args) > 1 else kwargs.pop("g", None)
+        n = args[2] if len(args) > 2 else kwargs.pop("n", None)
+        assert not kwargs, f"unexpected kwargs {sorted(kwargs)!r}"
         if not isinstance(base, AffineScheme):
             raise TypeError(f"expected AffineScheme; found {type(base)}")
         if (g is None) ^ (n is None):
             raise TypeError("StablePointedCurves(B, g, n) requires both g and n, or neither")
+        gg: int | None = None
+        nn: int | None = None
         if g is not None:
-            g = int(g)
+            gg = as_int(g)
+            assert n is not None
             if isinstance(n, (int, Integer)):
-                nn = int(n)
+                nn = as_int(n)
             else:
-                nn = len(tuple(n))  # type: ignore[arg-type]
-            if g < 0 or nn < 0:
-                raise ValueError(f"expected nonnegative (g, n); found ({g}, {nn})")
-            if 2 * g - 2 + nn <= 0:
-                raise ValueError(f"({g}, {nn}) is not a stable range")
-            n = nn
-        return super(PointedCurves, cls).__classcall__(cls, base, g, n)
+                assert isinstance(n, Iterable), f"expected marking count or iterable; found {type(n)!r}"
+                nn = len(tuple(n))
+            if gg < 0 or nn < 0:
+                raise ValueError(f"expected nonnegative (g, n); found ({gg}, {nn})")
+            if 2 * gg - 2 + nn <= 0:
+                raise ValueError(f"({gg}, {nn}) is not a stable range")
+        result = UniqueRepresentation.__classcall__(cls, base, gg, nn)
+        assert isinstance(result, StablePointedCurves), f"classcall must return StablePointedCurves; found {type(result)!r}"
+        return result
 
-    def __init__(self, base: object, g: int | None = None, n: int | None = None) -> None:
+    def __init__(self, base: AffineScheme, g: int | None = None, n: int | None = None) -> None:
         self._g = g
         self._n = n
         # Skip PointedCurves.__init__ UniqueRepresentation path; init as SmoothCurves.
@@ -170,10 +181,13 @@ class StablePointedCurves(PointedCurves):
 
 
 def _marking_tuple(I: object) -> tuple[object, ...]:
+    from collections.abc import Iterable
+
     from sage.rings.integer import Integer
 
     if isinstance(I, (int, Integer)):
         return tuple(range(1, int(I) + 1))
+    assert isinstance(I, Iterable), f"expected marking count or iterable; found {type(I)!r}"
     return tuple(I)
 
 
@@ -193,15 +207,19 @@ class PointedCurveFamilies(CurveFamilies):
     r"""Families of pointed curves with marking set `I` over `S`."""
 
     @staticmethod
-    def __classcall_private__(cls, base: object, I: object | None = None) -> PointedCurveFamilies:
-        from .base import AffineScheme
-
+    def __classcall_private__(cls: type, *args: object, **kwargs: object) -> PointedCurveFamilies:
+        assert len(args) >= 1, "PointedCurveFamilies(B, I=None) requires base"
+        base = args[0]
+        I = args[1] if len(args) > 1 else kwargs.pop("I", None)
+        assert not kwargs, f"unexpected kwargs {sorted(kwargs)!r}"
         if not isinstance(base, AffineScheme):
             raise TypeError(f"expected AffineScheme; found {type(base)}")
         marks = None if I is None else _marking_tuple(I)
-        return super().__classcall__(cls, base, marks)
+        result = UniqueRepresentation.__classcall__(cls, base, marks)
+        assert isinstance(result, PointedCurveFamilies), f"classcall must return PointedCurveFamilies; found {type(result)!r}"
+        return result
 
-    def __init__(self, base: object, I: tuple[object, ...] | None = None) -> None:
+    def __init__(self, base: AffineScheme, I: tuple[object, ...] | None = None) -> None:
         self._I = I
         CurveFamilies.__init__(self, base)
 
@@ -225,25 +243,25 @@ class StablePointedCurveFamilies(PointedCurveFamilies):
     r"""Families of stable pointed curves of genus `g` with markings `I` over `S`."""
 
     @staticmethod
-    def __classcall_private__(
-        cls,
-        base: object,
-        g: int | None = None,
-        I: object | None = None,
-    ) -> StablePointedCurveFamilies:
-        from .base import AffineScheme
-
+    def __classcall_private__(cls: type, *args: object, **kwargs: object) -> StablePointedCurveFamilies:
+        assert len(args) >= 1, "StablePointedCurveFamilies(S, g=None, I=None) requires base"
+        base = args[0]
+        g = args[1] if len(args) > 1 else kwargs.pop("g", None)
+        I = args[2] if len(args) > 2 else kwargs.pop("I", None)
+        assert not kwargs, f"unexpected kwargs {sorted(kwargs)!r}"
         if not isinstance(base, AffineScheme):
             raise TypeError(f"expected AffineScheme; found {type(base)}")
         if (g is None) ^ (I is None):
             raise TypeError("StablePointedCurveFamilies(S, g, I) requires both g and I, or neither")
         marks = None if I is None else _marking_tuple(I)
-        gg = None if g is None else int(g)
+        gg = None if g is None else as_int(g)
         if gg is not None and marks is not None and 2 * gg - 2 + len(marks) <= 0:
             raise ValueError(f"({gg}, {len(marks)}) is not a stable range")
-        return super(PointedCurveFamilies, cls).__classcall__(cls, base, gg, marks)
+        result = UniqueRepresentation.__classcall__(cls, base, gg, marks)
+        assert isinstance(result, StablePointedCurveFamilies), f"classcall must return StablePointedCurveFamilies; found {type(result)!r}"
+        return result
 
-    def __init__(self, base: object, g: int | None = None, I: tuple[object, ...] | None = None) -> None:
+    def __init__(self, base: AffineScheme, g: int | None = None, I: tuple[object, ...] | None = None) -> None:
         self._g = g
         self._I = I
         CurveFamilies.__init__(self, base)

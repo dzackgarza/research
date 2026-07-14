@@ -10,8 +10,7 @@ No engine is added by an autonomous agent: each obeys the gap-ledger gating
 (interactive session, cited source, reviewed test design, explicit user go) and
 the freeze precondition on the base spike. See README.md.
 
-Importable the same way as the base spike (the `experiments/` dir on sys.path, as
-pytest inserts it): `import sage_lattice_feature_spike`.
+The root research package re-exports this spike as `dzack_research.feature`.
 """
 
 # The defining architectural property: the fork IS an import of the base parity

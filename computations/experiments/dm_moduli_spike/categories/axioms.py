@@ -8,9 +8,9 @@ decision procedure for properness.
 from __future__ import annotations
 
 from sage.categories.category import Category
+from sage.structure.unique_representation import UniqueRepresentation
 
 from .foundation import ModuliCategory
-
 
 _AXIOM_NAMES = (
     "FiniteType",
@@ -29,14 +29,17 @@ _AXIOM_NAMES = (
 class _AxiomMixin:
     r"""Mixin providing geometric axiom refinements on :class:`ModuliCategory`."""
 
+    _axioms: frozenset[str]
+
     def _with_axiom(self, name: str) -> Category:
         if name not in _AXIOM_NAMES:
             raise ValueError(f"unknown geometric axiom {name!r}")
-        axioms = frozenset(getattr(self, "_axioms", ())) | {name}
+        axioms = frozenset(self._axioms) | {name}
         return AxiomRefinement(self._base_category_for_axioms(), axioms)
 
     def _base_category_for_axioms(self) -> ModuliCategory:
-        return self  # type: ignore[return-value]
+        assert isinstance(self, ModuliCategory), f"_AxiomMixin requires ModuliCategory; found {type(self)!r}; owned boundary=_AxiomMixin._base_category_for_axioms"
+        return self
 
     def FiniteType(self) -> Category:
         return self._with_axiom("FiniteType")
@@ -69,21 +72,30 @@ class _AxiomMixin:
         return self._with_axiom("Nodal")
 
     def axioms(self) -> frozenset[str]:
-        return frozenset(getattr(self, "_axioms", ()))
+        return frozenset(self._axioms)
 
 
 class AxiomRefinement(ModuliCategory, _AxiomMixin):
     r"""Join of a geometric category with a finite set of structure-morphism axioms."""
 
     @staticmethod
-    def __classcall_private__(cls, base_category: ModuliCategory, axioms: frozenset[str] | set[str]) -> AxiomRefinement:
-        axioms = frozenset(axioms)
-        return super().__classcall__(cls, base_category, axioms)
+    def __classcall_private__(cls: type, *args: object, **kwargs: object) -> AxiomRefinement:
+        from .._typing_utils import as_frozenset
+
+        assert len(args) == 2 and not kwargs, (
+            f"AxiomRefinement(base_category, axioms); found args={args!r} kwargs={kwargs!r}; owned boundary=AxiomRefinement.__classcall_private__"
+        )
+        base_category, axioms_arg = args
+        assert isinstance(base_category, ModuliCategory), f"expected ModuliCategory; found {type(base_category)!r}"
+        axioms = as_frozenset(axioms_arg)
+        result = UniqueRepresentation.__classcall__(cls, base_category, axioms)
+        assert isinstance(result, AxiomRefinement), f"classcall must return AxiomRefinement; found {type(result)!r}"
+        return result
 
     def __init__(self, base_category: ModuliCategory, axioms: frozenset[str]) -> None:
         self._base_category = base_category
-        self._axioms = axioms
         ModuliCategory.__init__(self, base_category.base_scheme())
+        self._axioms = axioms
 
     def _base_category_for_axioms(self) -> ModuliCategory:
         return self._base_category
@@ -99,5 +111,10 @@ class AxiomRefinement(ModuliCategory, _AxiomMixin):
     def __contains__(self, obj: object) -> bool:
         if obj not in self._base_category:
             return False
-        declared = getattr(obj, "declared_axioms", lambda: frozenset())()
+        assert hasattr(obj, "declared_axioms"), (
+            f"axiom membership requires declared_axioms; found {type(obj)!r}; "
+            f"object={obj!r}; owned boundary=AxiomRefinement.__contains__; "
+            "declare axioms on GeometricObject (or equivalent) before membership checks"
+        )
+        declared = obj.declared_axioms()
         return self._axioms <= frozenset(declared)

@@ -4,24 +4,18 @@
 
 This package **implements**:
 
-1. A **theorem-backed geometric ontology** in Sage’s category / parent / element / Hom
-   framework: stacks, moduli stacks, coarse spaces, compactifications, boundaries,
-   stratifications, product/quotient stacks, and curve/family types.
-2. Concrete moduli objects `M_gI` / `Mbar_gI` (and `M_gn` / `Mbar_gn`) with
-   constructor-established smooth/proper/dimension/coarse-space properties.
-3. The finite combinatorial category **Γ_{g,n}** and `StableGraphs(g,I)` as the
-   dual-graph indexing layer beneath geometric stratifications.
+1. A **theorem-backed geometric ontology** in Sage’s category / parent / element / Hom framework: stacks, moduli stacks, coarse spaces, compactifications, boundaries, stratifications, product/quotient stacks, and curve/family types.
+2. Concrete moduli objects `M_gI` / `Mbar_gI` (and `M_gn` / `Mbar_gn`) with constructor-established smooth/proper/dimension/coarse-space properties.
+3. The finite combinatorial category **Γ_{g,n}** and `StableGraphs(g,I)` as the dual-graph indexing layer beneath geometric stratifications.
 4. The symmetric Δ-complex of Γ (DM boundary identification only for `g=0`).
 
 This package **does not claim**:
 
 * Computational étale atlases or equation-level decision procedures for arbitrary stacks.
 * A scheme-theoretic universal family over `\mathcal M_{g,n}`.
-* Geometric nodal gluing beyond theorem-backed dual graphs (smooth proving-set fibers use
-  Sage `Curve_generic`).
+* Geometric nodal gluing beyond theorem-backed dual graphs (smooth proving-set fibers use Sage `Curve_generic`).
 
-Formal morphisms (atlases, diagonals, clutching) carry correct domain/codomain and Hom-set
-membership.
+Formal morphisms (atlases, diagonals, clutching) carry correct domain/codomain and Hom-set membership.
 
 ## Organizing chain
 

@@ -24,7 +24,7 @@ contractions.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator, Sequence
+from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING
 
 from .contractions import StableGraphContraction, contract_edges

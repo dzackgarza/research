@@ -18,8 +18,24 @@ def test_public_all_includes_moduli_and_gamma():
         "StableGraphStratification",
         "StableGraphStratificationEnumerator",
         "AutomorphismAction",
+        "StableGraphRecord",
+        "DMStratification",
     ]:
         assert name not in spike.__all__
+    for name in [
+        "LocallyClosedSubstacks",
+        "OpenSubstack",
+        "ClosedSubstack",
+        "LocallyClosedSubstack",
+        "StableDualGraph",
+        "ClutchingMorphism",
+        "CurveFamilies",
+        "PointedCurveFamilies",
+        "StablePointedCurveFamilies",
+        "StratifiedSpaces",
+        "StratifiedStacks",
+    ]:
+        assert name in spike.__all__
 
 
 def test_gamma_still_public():

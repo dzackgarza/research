@@ -15,7 +15,7 @@ created: 2026-05-10
 > The five 0-cusps of $F_{\mathrm{En},2}$ can be represented by primitive isotropic vectors with the following divisibilities:
 
 | Sterk cusp | Vector | $\operatorname{div}_{T_{\mathrm{En}}}$ | $\operatorname{div}_{T_{\mathrm{K3}}}$ |
-| :--------- | :----- | :------------------------------------- | :-------------------------------------- |
+| :--- | :--- | :--- | :--- |
 | 1 | $e$ | 1 | 1 |
 | 2 | $e'$ | 2 | 2 |
 | 3 | $e' + f' + \overline{\alpha}_8$ | 2 | 1 |

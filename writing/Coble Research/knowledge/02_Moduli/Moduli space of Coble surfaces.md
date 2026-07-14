@@ -41,7 +41,8 @@ created: 2026-05-10
 
 ## Polarized analogue
 
-- The unpolarized space $F_{\mathrm{Co}}$ is now complemented by a status-aware cluster for the degree-2 polarized problem. The safe current entry point is [[Branchwise models of polarized Coble moduli]], not a finalized single quotient.
+- The unpolarized space $F_{\mathrm{Co}}$ is now complemented by a status-aware cluster for the degree-2 polarized problem.
+  The safe current entry point is [[Branchwise models of polarized Coble moduli]], not a finalized single quotient.
 - The polarized story separates:
   - branch structure and arithmetic groups,
   - branch-curve geometry,

@@ -90,10 +90,7 @@ def _record_to_stable_graph(record: StableGraph, g: int, n: int) -> object:
             flag_label[flag] = next_label
             next_label += 1
 
-    legs = [
-        [flag_label[flag] for flag in record.flags_at(vertex)]
-        for vertex in range(record.num_vertices())
-    ]
+    legs = [[flag_label[flag] for flag in record.flags_at(vertex)] for vertex in range(record.num_vertices())]
     edges = [(flag_label[a], flag_label[b]) for a, b in record.internal_edges()]
     stable_graph = StableGraphAdm(list(record.vertex_genera), legs, edges)
     roundtrip = _record_from_stable_graph(stable_graph, g, n)

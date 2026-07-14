@@ -14,6 +14,6 @@ created: 2026-05-08
 > 
 > Conversely, every $\mathbf{Q}$-valued [[Quadratic Form|quadratic module]] $(L,q)$ determines a [[Symmetric Bilinear Form|symmetric bilinear module]] $(L,\beta_q)$ via the polar form.
 
-
 ## See Also
+
 - [[Bijection for Even Lattices]]

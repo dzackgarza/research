@@ -12,7 +12,8 @@ created: 2026-05-10
 ---
 
 > [!remark] K3 covers of Coble surfaces
-> Let $S$ be a terminal Coble surface of K3 type and write $\mathcal{L} = \mathcal{O}_S(-K_S)$. A section of $\mathcal{L}^{\otimes 2}$ vanishing on $C \in |-2K_S|$ defines a branched double cover
+> Let $S$ be a terminal Coble surface of K3 type and write $\mathcal{L} = \mathcal{O}_S(-K_S)$.
+> A section of $\mathcal{L}^{\otimes 2}$ vanishing on $C \in |-2K_S|$ defines a branched double cover
 > $$
 > f \colon X \to S
 > $$

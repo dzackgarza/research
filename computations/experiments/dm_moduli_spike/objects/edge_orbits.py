@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from .._sage_types import SagePermutationGroup
+from .._typing_utils import as_int
 from .records import StableGraph
 
 if TYPE_CHECKING:
@@ -17,13 +19,14 @@ def automorphism_edge_orbit_indices(record: StableGraph) -> tuple[tuple[int, ...
     if num_edges == 0:
         return ()
     group = record.automorphism_group(on="edges")
-    if int(group.order()) == 1:
+    assert isinstance(group, SagePermutationGroup), (
+        f"automorphism_group(on='edges') must return a Sage permutation group; found {type(group)!r}; owned boundary=automorphism_edge_orbit_indices"
+    )
+    if as_int(group.order()) == 1:
         return tuple((index,) for index in range(num_edges))
     orbits = group.orbits()
     edge_orbits = tuple(
-        tuple(sorted(int(index) - 1 for index in orbit if 1 <= int(index) <= num_edges))
-        for orbit in orbits
-        if any(1 <= int(index) <= num_edges for index in orbit)
+        tuple(sorted(as_int(index) - 1 for index in orbit if 1 <= as_int(index) <= num_edges)) for orbit in orbits if any(1 <= as_int(index) <= num_edges for index in orbit)
     )
     covered = {index for orbit in edge_orbits for index in orbit}
     singletons = tuple((index,) for index in range(num_edges) if index not in covered)
@@ -77,7 +80,10 @@ def _contraction_witness_from_decorated(
     u = graph.flag_vertex[edge[0]]
     v = graph.flag_vertex[edge[1]]
     key_u, key_v = (u, v) if u <= v else (v, u)
-    morphism = decorated.edge_contraction_morphism([(key_u, key_v, 1)])  # type: ignore[attr-defined]
+    assert hasattr(decorated, "edge_contraction_morphism"), (
+        f"decorated graph must expose edge_contraction_morphism; found {type(decorated)!r}; owned boundary=_contraction_witness_from_decorated"
+    )
+    morphism = decorated.edge_contraction_morphism([(key_u, key_v, 1)])
     return contraction_from_decorated_morphism(morphism, g, n, domain_graph=graph)
 
 

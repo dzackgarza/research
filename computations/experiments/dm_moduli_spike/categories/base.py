@@ -14,6 +14,8 @@ from __future__ import annotations
 from sage.rings.integer_ring import ZZ
 from sage.structure.unique_representation import UniqueRepresentation
 
+from .._sage_types import SageRing
+
 
 class AffineScheme(UniqueRepresentation):
     r"""Affine scheme `\mathrm{Spec}(R)`."""
@@ -39,14 +41,14 @@ class AffineScheme(UniqueRepresentation):
     def is_z_scheme(self) -> bool:
         r"""True when the canonical `\mathbb Z \to R` algebra map exists."""
         ring = self._ring
+        if isinstance(ring, SageRing):
+            return bool(ring.has_coerce_map_from(ZZ))
         try:
-            return ring.has_coerce_map_from(ZZ)  # type: ignore[attr-defined]
-        except AttributeError:
-            try:
-                ring(ZZ.one())  # noqa: S101 — probe canonical Z embed
-                return True
-            except (TypeError, ValueError):
-                return False
+            assert callable(ring), f"ring must be callable for Z-embed probe; found {type(ring)!r}; ring={ring!r}; owned boundary=AffineScheme.is_z_scheme"
+            ring(ZZ.one())
+            return True
+        except TypeError, ValueError, AttributeError:
+            return False
 
     def _repr_(self) -> str:
         return f"Spec({self._ring})"
@@ -60,9 +62,7 @@ def spec(ring: object) -> AffineScheme:
 def check_z_scheme(S: AffineScheme) -> None:
     r"""Require the canonical `\mathbb Z`-algebra structure on `S = \mathrm{Spec}(R)`."""
     if not S.is_z_scheme():
-        raise TypeError(
-            f"base change along the canonical map to Spec(ZZ) requires a Z-scheme; {S} is not"
-        )
+        raise TypeError(f"base change along the canonical map to Spec(ZZ) requires a Z-scheme; {S} is not")
 
 
 def complex_numbers_ring() -> object:

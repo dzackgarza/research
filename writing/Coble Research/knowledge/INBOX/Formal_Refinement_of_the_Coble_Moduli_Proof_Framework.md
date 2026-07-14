@@ -5,14 +5,14 @@ type: note
 title: "Formal Refinement of the Coble Moduli Proof Framework"
 ---
 
-
 # Formal Refinement of the Coble Moduli Proof Framework
 
 导出时间: 5/11/2026, 11:53:17 AM
 
----
+* * *
 
-The conversation history confirms that several earlier claims and tables were indeed **unverified** or **insufficiently proven**, a point the model eventually conceded. If the report includes specific numerical tables for cusp counts or incidence diagrams, those are part of what the model explicitly **discarded** and identified as "unproved"\[1\]\[2\].
+The conversation history confirms that several earlier claims and tables were indeed **unverified** or **insufficiently proven**, a point the model eventually conceded.
+If the report includes specific numerical tables for cusp counts or incidence diagrams, those are part of what the model explicitly **discarded** and identified as "unproved"\[1\]\[2\].
 
 The sources show a progression where the initial "research program" provided unverified data, which was then systematically deconstructed and replaced by a **rigorous theoretical framework**. The "results" that remain valid in the final narrative are not the numerical counts, but the **mathematical mechanisms** and **claims** required for the proof:
 
@@ -26,20 +26,8 @@ The sources show a progression where the initial "research program" provided unv
 
 **Cusp Reduction to Sterk:** The model replaced the "made-up" counts with a rigorous **reduction mechanism**, where Coble cusps are defined as orbits of pairs (I,r) mapping to Sterk’s established five 0-cusps and nine 1-cusps\[4\].
 
-In summary, while the _framework_ for the proof is rigorously grounded in the sources, any **specific numerical results** (like cusp counts or the incidence table) should be viewed with skepticism, as the model itself identified them as "unproved" and "insufficient"\[1\]\[2\]. The final narrative provides the **recipe** for the proof, but the final numerical "deliverables" are still pending explicit computation\[21\].
----
+## In summary, while the *framework* for the proof is rigorously grounded in the sources, any **specific numerical results** (like cusp counts or the incidence table) should be viewed with skepticism, as the model itself identified them as "unproved" and "insufficient"\[1\]\[2\]. The final narrative provides the **recipe** for the proof, but the final numerical "deliverables" are still pending explicit computation\[21\].
 
 ## 引用来源
 
-[1] KSBA Compactification and Coble.md
-[2] KSBA Compactification and Coble.md
-[3] KSBA Compactification and Coble.md
-[4] KSBA Compactification and Coble.md
-[6] KSBA Compactification and Coble.md
-[7] KSBA Compactification and Coble.md
-[8] KSBA Compactification and Coble.md
-[9] KSBA Compactification and Coble.md
-[10] KSBA Compactification and Coble.md
-[11] KSBA Compactification and Coble.md
-[12] KSBA Compactification and Coble.md
-[21] KSBA Compactification and Coble.md
+[1] KSBA Compactification and Coble.md [2] KSBA Compactification and Coble.md [3] KSBA Compactification and Coble.md [4] KSBA Compactification and Coble.md [6] KSBA Compactification and Coble.md [7] KSBA Compactification and Coble.md [8] KSBA Compactification and Coble.md [9] KSBA Compactification and Coble.md [10] KSBA Compactification and Coble.md [11] KSBA Compactification and Coble.md [12] KSBA Compactification and Coble.md [21] KSBA Compactification and Coble.md

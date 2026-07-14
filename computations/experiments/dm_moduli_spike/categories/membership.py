@@ -4,24 +4,30 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ..categories.base import AffineScheme
+
 if TYPE_CHECKING:
-    from .base import AffineScheme
     from .foundation import ModuliCategory
-    from ..curves.pointed import PointedCurve
-    from ..geometry.stacks import AlgebraicSpace, Stack
-    from ..moduli.instances import ModuliStack
+
+
+def _object_base(obj: object) -> AffineScheme:
+    r"""Base scheme of a geometric object exposing :meth:`base_scheme`."""
+    assert hasattr(obj, "base_scheme"), f"expected object with base_scheme(); found {type(obj)!r}; obj={obj!r}; owned boundary=membership._object_base"
+    base = obj.base_scheme()
+    assert isinstance(base, AffineScheme), f"base_scheme() must return AffineScheme; found {type(base)!r}; obj={obj!r}"
+    return base
 
 
 def stack_in_category(stack: object, category: ModuliCategory) -> bool:
-    return stack in category
+    return bool(stack in category)
 
 
 def coarse_in_category(scheme: object, category: ModuliCategory) -> bool:
-    return scheme in category
+    return bool(scheme in category)
 
 
 def stratified_stack_in_category(stratified: object, category: ModuliCategory) -> bool:
-    return stratified in category
+    return bool(stratified in category)
 
 
 def pointed_curve_in_category(curve: object, category: ModuliCategory) -> bool:
@@ -38,7 +44,9 @@ def pointed_curve_in_category(curve: object, category: ModuliCategory) -> bool:
     if isinstance(category, PointedCurves):
         return True
     if isinstance(category, SmoothCurves):
-        return curve.is_smooth()
+        if isinstance(curve, (SmoothPointedCurve, StablePointedCurve)):
+            return bool(curve.is_smooth())
+        return False
     if isinstance(category, Curves):
         return True
     return False

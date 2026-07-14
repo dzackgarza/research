@@ -9,8 +9,8 @@ from .morphisms import OpenImmersion
 if TYPE_CHECKING:
     from ..moduli.problems import ModuliProblem
     from ..moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
-    from ..stratification.stratified import BoundaryStack, StratifiedStack
     from ..stratification.indexing import DualGraphType
+    from ..stratification.stratified import BoundaryStack
 
 
 class Compactification:

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from .canonical import _incidence_graph, flag_to_node, node_to_flag
 
 if TYPE_CHECKING:
-    from sage.groups.perm_gps.permgroup import PermutationGroup
+    from sage.groups.perm_gps.permgroup import PermutationGroup_generic
 
     from .records import StableGraph
 
@@ -30,7 +30,7 @@ class _GraphAutomorphismData:
 
     def __init__(
         self,
-        group: PermutationGroup,
+        group: PermutationGroup_generic,
         vertex_perms: tuple[tuple[int, ...], ...],
         flag_perms: tuple[tuple[int, ...], ...],
         edge_perms: tuple[tuple[int, ...], ...],
@@ -42,7 +42,7 @@ class _GraphAutomorphismData:
         self._edge_perms = edge_perms
         self._marking_perms = marking_perms
 
-    def group(self) -> PermutationGroup:
+    def group(self) -> PermutationGroup_generic:
         return self._group
 
     def on_vertices(self) -> tuple[tuple[int, ...], ...]:

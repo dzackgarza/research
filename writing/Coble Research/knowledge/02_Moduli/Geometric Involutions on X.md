@@ -17,4 +17,3 @@ created: 2026-05-08
 > - $\iota_{\mathrm{Nik}}(x,y,z) = (-x,-y,z)$ (Nikulin involution, singular K3 quotient $Z'$ with $\geq 8A_1$ singularities, $\iota_{\mathrm{Nik}}^*\omega_X = +\omega_X$)
 > 
 > These generate a faithful representation of the Klein 4-group $\mathbf{Z}_2^2 \hookrightarrow \operatorname{Aut}(X)$.
-

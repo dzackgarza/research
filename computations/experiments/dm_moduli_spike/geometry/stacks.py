@@ -6,22 +6,29 @@ axioms; atlases/diagonals are formal morphisms with correct Hom membership.
 
 from __future__ import annotations
 
-from sage.structure.parent import Parent
+from typing import TYPE_CHECKING, cast
+
 from sage.structure.element import Element
+from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
-from ..categories.base import AffineScheme, spec
+from ..categories.base import AffineScheme
+from ..categories.schemes import AlgebraicSpaces, Varieties
 from ..categories.stacks import (
     AlgebraicStacks,
     DeligneMumfordStacks,
-    ModuliStacks,
     Stacks,
 )
-from ..categories.schemes import AlgebraicSpaces, Schemes, Varieties
 from ..categories.stratified import StratifiedSpaces, StratifiedStacks
 
+if TYPE_CHECKING:
+    # Stacks use ``__call__(T)`` for fibers (parents), not element conversion.
+    _GeometricParent = Parent[object]
+else:
+    _GeometricParent = Parent
 
-class GeometricObject(UniqueRepresentation, Parent):
+
+class GeometricObject(UniqueRepresentation, _GeometricParent):
     r"""Base parent for theorem-backed geometric objects over a base scheme."""
 
     def __init__(self, base: AffineScheme, category: object, *, axioms: frozenset[str] | None = None) -> None:
@@ -69,8 +76,9 @@ class Stack(GeometricObject):
     def fiber(self, T: object) -> StackFiber:
         return StackFiber(self, T)
 
-    def __call__(self, T: object) -> StackFiber:
-        return self.fiber(T)
+    def __call__(self, x: object = None, *args: object, **kwds: object) -> StackFiber:
+        assert x is not None and not args and not kwds, f"Stack() expects a single test object T; found T={x!r} args={args!r} kwds={kwds!r}; owned boundary=Stack.__call__"
+        return self.fiber(x)
 
     def pullback(self, f: object) -> Stack:
         return self
@@ -165,7 +173,7 @@ class StackFiber(UniqueRepresentation, Parent):
     def base(self) -> object:
         return self._T
 
-    def an_element(self) -> StackObject:
+    def an_element(self) -> object:
         return StackObject(self)
 
     def _repr_(self) -> str:
@@ -184,7 +192,7 @@ class StackObjectIsomorphism(Element):
     def __init__(self, parent: object, source: StackObject, target: StackObject) -> None:
         self._source = source
         self._target = target
-        Element.__init__(self, parent)
+        Element.__init__(self, cast(Parent, parent))
 
 
 class StackHomset(UniqueRepresentation, Parent):
@@ -201,28 +209,30 @@ class StackHomset(UniqueRepresentation, Parent):
     def codomain(self) -> object:
         return self._codomain
 
-    def __call__(self, data: object = None, **kwargs: object) -> StackMorphism:
-        if isinstance(data, StackMorphism):
-            return data
-        kind = str(kwargs.get("kind", "morphism"))
+    def __call__(self, x: object = None, *args: object, **kwds: object) -> StackMorphism:
+        assert not args, f"StackHomset() does not take positional args beyond data; found args={args!r}; owned boundary=StackHomset.__call__"
+        if isinstance(x, StackMorphism):
+            return x
+        assert "kind" in kwds, (
+            f"StackHomset() requires explicit kind=; found keys={sorted(kwds)!r}; "
+            "owned boundary=StackHomset.__call__; "
+            "pass kind='morphism' (or a named morphism kind) at the call site"
+        )
+        kind = str(kwds["kind"])
         return StackMorphism(self._domain, self._codomain, kind=kind)
 
     def an_element(self) -> StackMorphism:
-        return StackMorphism(self._domain, self._codomain)
+        return StackMorphism(self._domain, self._codomain, kind="morphism")
 
     def _repr_(self) -> str:
         return f"Hom({self._domain!r}, {self._codomain!r})"
 
     def __contains__(self, morph: object) -> bool:
-        return (
-            isinstance(morph, StackMorphism)
-            and morph.domain() is self._domain
-            and morph.codomain() is self._codomain
-        )
+        return isinstance(morph, StackMorphism) and morph.domain() is self._domain and morph.codomain() is self._codomain
 
 
 class StackMorphism(Element):
-    def __init__(self, domain: object, codomain: object, *, kind: str = "morphism") -> None:
+    def __init__(self, domain: object, codomain: object, *, kind: str) -> None:
         self._domain = domain
         self._codomain = codomain
         self._kind = kind
@@ -249,7 +259,7 @@ class Stack2Isomorphism(Element):
     def __init__(self, parent: object, f: StackMorphism, g: StackMorphism) -> None:
         self._f = f
         self._g = g
-        Element.__init__(self, parent)
+        Element.__init__(self, cast(Parent, parent))
 
 
 class OpenImmersion(StackMorphism):
@@ -425,9 +435,16 @@ class LocallyClosedSubspace(AlgebraicSpace):
 
 class ProductStack(DeligneMumfordStack):
     @staticmethod
-    def __classcall_private__(cls, factors: tuple[Stack, ...] | list[Stack], *, base: AffineScheme | None = None) -> ProductStack:
+    def __classcall_private__(cls: type, *args: object, **kwargs: object) -> ProductStack:
+        assert len(args) == 1, f"ProductStack(factors, *, base=None); found args={args!r}"
+        factors = args[0]
+        base = kwargs.pop("base", None)
+        assert not kwargs, f"unexpected kwargs {sorted(kwargs)!r}"
+        assert isinstance(factors, (tuple, list)), f"factors must be a sequence of stacks; found {type(factors)!r}"
         factors_t = tuple(factors)
-        return super().__classcall__(cls, factors_t, base=base)
+        result = UniqueRepresentation.__classcall__(cls, factors_t, base=base)
+        assert isinstance(result, ProductStack), f"classcall must return ProductStack; found {type(result)!r}"
+        return result
 
     def __init__(self, factors: tuple[Stack, ...], *, base: AffineScheme | None = None) -> None:
         if not factors:
@@ -454,21 +471,22 @@ class QuotientStack(DeligneMumfordStack):
     """
 
     @staticmethod
-    def __classcall_private__(
-        cls,
-        space: Stack,
-        group: object,
-        action: object | None = None,
-    ) -> QuotientStack:
-        obj = super().__classcall__(cls, space, group)
+    def __classcall_private__(cls: type, *args: object, **kwargs: object) -> QuotientStack:
+        assert len(args) >= 2, f"QuotientStack(space, group, action=None); found args={args!r}"
+        space, group = args[0], args[1]
+        action = args[2] if len(args) > 2 else kwargs.pop("action", None)
+        assert not kwargs, f"unexpected kwargs {sorted(kwargs)!r}"
+        assert isinstance(space, Stack), f"expected Stack; found {type(space)!r}"
+        obj = UniqueRepresentation.__classcall__(cls, space, group)
+        assert isinstance(obj, QuotientStack), f"classcall must return QuotientStack; found {type(obj)!r}"
         if action is not None:
             obj._action = action
         return obj
 
-    def __init__(self, space: Stack, group: object) -> None:
+    def __init__(self, space: Stack, group: object, action: object | None = None) -> None:
         self._space = space
         self._group = group
-        self._action: object | None = None
+        self._action: object | None = action
         DeligneMumfordStack.__init__(
             self,
             space.base_scheme(),
@@ -506,32 +524,61 @@ class Compactifications(UniqueRepresentation, Parent):
 class Compactification(OpenImmersion):
     r"""Open immersion `j: X ↪ X̄` with proper target (Stacks Project 0F44)."""
 
-    def __init__(self, source: Stack, target: Stack, *, kind: str = "compactification") -> None:
+    def __init__(
+        self,
+        source: object,
+        target: object,
+        moduli_problem: object | None = None,
+        *,
+        kind: str = "compactification",
+    ) -> None:
+        assert hasattr(target, "is_proper"), f"compactification target must expose is_proper(); found {type(target)!r}; owned boundary=Compactification.__init__"
         if not target.is_proper():
             # theorem-backed parents must declare Proper
             raise ValueError("compactification target must be proper over the base")
         self._kind_name = kind
+        self._moduli_problem = moduli_problem
         OpenImmersion.__init__(self, source, target)
 
-    def source(self) -> Stack:
-        return self._domain  # type: ignore[return-value]
+    def source(self) -> object:
+        return self._domain
 
-    def target(self) -> Stack:
-        return self._codomain  # type: ignore[return-value]
+    def target(self) -> GeometricObject:
+        target = self._codomain
+        assert isinstance(target, GeometricObject), f"compactification target must be GeometricObject; found {type(target)!r}; owned boundary=Compactification.target"
+        return target
 
-    def domain(self) -> Stack:
+    def domain(self) -> object:
         return self.source()
 
-    def codomain(self) -> Stack:
+    def codomain(self) -> object:
         return self.target()
+
+    def moduli_problem(self) -> object:
+        assert self._moduli_problem is not None, f"compactification has no moduli_problem; kind={self._kind_name!r}; owned boundary=Compactification.moduli_problem"
+        return self._moduli_problem
 
     def boundary(self, reduced: bool = True) -> Boundary:
         return Boundary(self, reduced=reduced)
 
     def coarse_compactification(self) -> Compactification:
-        r"""Coarse-space compactification commuting with coarse moduli morphisms."""
+        r"""Coarse-space compactification commuting with coarse moduli morphisms.
+
+        If ``j: X ↪ X̄`` is this compactification and ``π``, ``π̄`` are the coarse
+        moduli morphisms of source and target, the returned ``j_c: X_c ↪ X̄_c``
+        satisfies ``j_c.source() is π.space()`` and ``j_c.target() is π̄.space()``,
+        so the formal square ``π̄ ∘ j = j_c ∘ π`` has matching corners.
+        """
         source = self.source()
         target = self.target()
+        if hasattr(source, "coarse_moduli_morphism") and hasattr(target, "coarse_moduli_morphism"):
+            pi = source.coarse_moduli_morphism()
+            pi_bar = target.coarse_moduli_morphism()
+            coarse_source = pi.space()
+            coarse_target = pi_bar.space()
+            if not coarse_target.is_proper():
+                raise ValueError("coarse compactification target must be proper")
+            return Compactification(coarse_source, coarse_target, kind=f"coarse({self._kind_name})")
         if hasattr(source, "coarse_space") and hasattr(target, "coarse_space"):
             coarse_source = source.coarse_space()
             coarse_target = target.coarse_space()
@@ -539,6 +586,24 @@ class Compactification(OpenImmersion):
                 raise ValueError("coarse compactification target must be proper")
             return Compactification(coarse_source, coarse_target, kind=f"coarse({self._kind_name})")
         raise TypeError("coarse_compactification requires moduli stacks with coarse_space()")
+
+    def coarse_moduli_square_commutes(self) -> bool:
+        r"""True when ``coarse_compactification`` matches ``coarse_moduli_morphism`` corners."""
+        source = self.source()
+        target = self.target()
+        if not (hasattr(source, "coarse_moduli_morphism") and hasattr(target, "coarse_moduli_morphism")):
+            return False
+        pi = source.coarse_moduli_morphism()
+        pi_bar = target.coarse_moduli_morphism()
+        j_c = self.coarse_compactification()
+        return (
+            pi.domain() is source
+            and pi_bar.domain() is target
+            and j_c.source() is pi.space()
+            and j_c.target() is pi_bar.space()
+            and j_c.domain() is pi.codomain()
+            and j_c.codomain() is pi_bar.codomain()
+        )
 
     def _repr_(self) -> str:
         return f"Compactification({self.source()!r} ↪ {self.target()!r})"
@@ -551,13 +616,18 @@ class Boundary(GeometricObject):
         self._compactification = compactification
         self._reduced = reduced
         ambient = compactification.target()
+        assert hasattr(ambient, "base_scheme") and hasattr(ambient, "declared_axioms"), (
+            f"compactification target must expose base_scheme/declared_axioms; found {type(ambient)!r}; owned boundary=Boundary.__init__"
+        )
         base = ambient.base_scheme()
+        assert isinstance(base, AffineScheme), f"base_scheme() must return AffineScheme; found {type(base)!r}"
         # Stack-level compactifications live in StratifiedStacks; coarse spaces in StratifiedSpaces.
         if isinstance(ambient, AlgebraicSpace) and not hasattr(ambient, "moduli_problem"):
             cat: object = StratifiedSpaces(base)
         else:
             cat = StratifiedStacks(base)
         axioms = ambient.declared_axioms()
+        assert isinstance(axioms, frozenset), f"declared_axioms() must return frozenset; found {type(axioms)!r}"
         for a in sorted(axioms):
             if hasattr(cat, a):
                 cat = getattr(cat, a)()
@@ -566,10 +636,18 @@ class Boundary(GeometricObject):
     def compactification(self) -> Compactification:
         return self._compactification
 
-    def ambient_space(self) -> Stack:
+    def ambient_space(self) -> object:
         return self._compactification.target()
 
-    def open_complement(self) -> Stack:
+    def as_stack(self) -> Stack:
+        r"""Stack presentation of this closed complement for stratification strata."""
+        return Stack(
+            self.base_scheme(),
+            name=f"Boundary({self.ambient_space()!r})",
+            axioms=self.declared_axioms(),
+        )
+
+    def open_complement(self) -> object:
         return self._compactification.source()
 
     def closed_immersion(self) -> ClosedImmersion:
@@ -585,6 +663,7 @@ class Boundary(GeometricObject):
         if hasattr(ambient, "stratification"):
             full = ambient.stratification(by=by)
             return full.restrict(self)
+        assert isinstance(ambient, Stack), f"boundary ambient for dual-graph stratification must be Stack; found {type(ambient)!r}; owned boundary=Boundary.stratification"
         return build_dual_graph_stratification(ambient).restrict(self)
 
     def stratification_poset(self, order: str = "specialization") -> object:

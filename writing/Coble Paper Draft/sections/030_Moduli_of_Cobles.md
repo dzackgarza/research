@@ -63,4 +63,3 @@ By \cref{lem:lattice-embeddings-induce-morphisms}, there are morphisms $\overlin
 We set up the moduli space of KSBA stable pairs for Coble surfaces, possibly using the ramification divisor of the K3 involution (which is in this case not fixed-point free).
 The above embeddings should allow us to take closures of stable pairs in already existing moduli spaces.
 :::
-

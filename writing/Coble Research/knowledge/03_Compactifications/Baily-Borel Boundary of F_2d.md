@@ -15,4 +15,3 @@ created: 2026-05-08
 > - **1-cusps** correspond to primitive isotropic planes.
 > 
 > The incidence relations are set by lattice inclusions: a 0-cusp is contained in the closure of all 1-cusps corresponding to isotropic planes containing the isotropic line.
-

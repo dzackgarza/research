@@ -6,16 +6,19 @@ from typing import TYPE_CHECKING
 
 from ..categories.membership import _object_base
 from ..categories.stratified import StratifiedSpaces, StratifiedStacks
+from ..moduli.instances import ModuliStack
+from ..moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
 from ..objects.gamma import StableGraphCategory
 from .indexing import DualGraphType
 
 if TYPE_CHECKING:
     from sage.combinat.posets.posets import FinitePoset
 
-    from ..geometry.compactification import Compactification
+    from ..geometry.stacks import Compactification
     from ..moduli.coarse import CoarseModuliScheme, CoarseModuliSchemeOver
-    from ..moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
     from ..objects.graph_types import StableGraphTypes
+
+_StackLike = DeligneMumfordModuliStack | DeligneMumfordModuliStackOver | ModuliStack
 
 
 class BoundaryStack:
@@ -30,8 +33,12 @@ class BoundaryStack:
     def compactification(self) -> Compactification:
         return self._compactification
 
-    def parent_stack(self) -> DeligneMumfordModuliStack | DeligneMumfordModuliStackOver:
-        return self._compactification.codomain()
+    def parent_stack(self) -> _StackLike:
+        codomain = self._compactification.codomain()
+        assert isinstance(codomain, (DeligneMumfordModuliStack, DeligneMumfordModuliStackOver, ModuliStack)), (
+            f"compactification codomain must be a DM moduli stack; found {type(codomain)!r}; owned boundary=BoundaryStack.parent_stack"
+        )
+        return codomain
 
     def is_reduced(self) -> bool:
         return self._reduced
@@ -55,7 +62,7 @@ class StratifiedStack:
 
     def __init__(
         self,
-        stack: DeligneMumfordModuliStack | DeligneMumfordModuliStackOver,
+        stack: _StackLike,
         indexer: DualGraphType,
         order: str = "specialization",
         backend: str = "auto",
@@ -67,7 +74,7 @@ class StratifiedStack:
         self._backend = backend
         self._gamma = StableGraphCategory(stack.genus(), stack.number_of_markings())
 
-    def parent_stack(self) -> DeligneMumfordModuliStack | DeligneMumfordModuliStackOver:
+    def parent_stack(self) -> _StackLike:
         return self._stack
 
     def indexing_category(self) -> StableGraphTypes:

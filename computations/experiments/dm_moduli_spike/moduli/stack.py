@@ -2,6 +2,8 @@ r"""Deligne--Mumford moduli stacks as first-class geometric objects."""
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sage.rings.integer_ring import ZZ
 from sage.structure.unique_representation import UniqueRepresentation
 
@@ -10,6 +12,9 @@ from ..categories.stacks import DeligneMumfordStacks
 from ..moduli.coarse import CoarseModuliMap, CoarseModuliScheme, CoarseModuliSchemeOver, coarse_moduli_map
 from ..moduli.families import FamiliesOver
 from ..moduli.problems import ModuliProblem, SmoothPointedCurves, StablePointedCurves
+
+if TYPE_CHECKING:
+    from ..geometry.stacks import Compactification
 
 
 class DeligneMumfordModuliStack(UniqueRepresentation):
@@ -91,18 +96,20 @@ class DeligneMumfordModuliStack(UniqueRepresentation):
         self,
         by: ModuliProblem | None = None,
         kind: str = "Deligne-Mumford",
-    ) -> object:
-        from ..geometry.compactification import Compactification
+    ) -> Compactification:
+        from ..geometry.stacks import Compactification
 
         if self._proper:
             raise ValueError("already a compactified moduli stack")
         assert kind == "Deligne-Mumford", f"unsupported compactification kind {kind!r}"
         problem = by if by is not None else StablePointedCurves(self._g, self._n)
         codomain = DeligneMumfordModuliStack(self._g, self._n, proper=True, problem=problem)
-        return Compactification(self, codomain, problem)
+        return Compactification(self, codomain, problem, kind=kind)
 
     def compactify(self, by: ModuliProblem | None = None, kind: str = "Deligne-Mumford") -> DeligneMumfordModuliStack:
-        return self.compactification(by=by, kind=kind).codomain()
+        codomain = self.compactification(by=by, kind=kind).codomain()
+        assert isinstance(codomain, DeligneMumfordModuliStack), f"compactification codomain must be DeligneMumfordModuliStack; found {type(codomain)!r}"
+        return codomain
 
     def _repr_(self) -> str:
         name = "Mbar" if self._proper else "M"
@@ -170,15 +177,19 @@ class DeligneMumfordModuliStackOver(UniqueRepresentation):
         self,
         by: ModuliProblem | None = None,
         kind: str = "Deligne-Mumford",
-    ) -> object:
-        compact = self._universal.compactification(by=by, kind=kind)
-        codomain = DeligneMumfordModuliStackOver(compact.codomain(), self._over)
-        from ..geometry.compactification import Compactification
+    ) -> Compactification:
+        from ..geometry.stacks import Compactification as CompactificationCls
 
-        return Compactification(self, codomain, compact.moduli_problem())
+        compact = self._universal.compactification(by=by, kind=kind)
+        inner_codomain = compact.codomain()
+        assert isinstance(inner_codomain, DeligneMumfordModuliStack), f"universal compactification codomain must be DeligneMumfordModuliStack; found {type(inner_codomain)!r}"
+        codomain = DeligneMumfordModuliStackOver(inner_codomain, self._over)
+        return CompactificationCls(self, codomain, compact.moduli_problem(), kind=kind)
 
     def compactify(self, by: ModuliProblem | None = None, kind: str = "Deligne-Mumford") -> DeligneMumfordModuliStackOver:
-        return self.compactification(by=by, kind=kind).codomain()
+        codomain = self.compactification(by=by, kind=kind).codomain()
+        assert isinstance(codomain, DeligneMumfordModuliStackOver), f"compactification codomain must be DeligneMumfordModuliStackOver; found {type(codomain)!r}"
+        return codomain
 
     def _repr_(self) -> str:
         name = "Mbar" if self.is_proper() else "M"

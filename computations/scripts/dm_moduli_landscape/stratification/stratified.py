@@ -12,10 +12,10 @@ from .indexing import DualGraphType
 if TYPE_CHECKING:
     from sage.combinat.posets.posets import FinitePoset
 
+    from ...objects.graph_types import StableGraphTypes
     from ..geometry.compactification import Compactification
     from ..moduli.coarse import CoarseModuliScheme, CoarseModuliSchemeOver
     from ..moduli.stack import DeligneMumfordModuliStack, DeligneMumfordModuliStackOver
-    from ...objects.graph_types import StableGraphTypes
 
 
 class BoundaryStack:

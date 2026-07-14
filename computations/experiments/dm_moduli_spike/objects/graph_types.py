@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from collections import deque
 from collections.abc import Iterator, Sequence
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, cast
 
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.structure.element import Element
@@ -21,7 +21,9 @@ from .canonical import CanonicalKey, automorphism_group, automorphism_number, ca
 from .records import StableGraph, intern_graph
 
 if TYPE_CHECKING:
-    pass
+    GraphTypeParent = Parent["StableGraphType"]
+else:
+    GraphTypeParent = Parent
 
 
 class StableGraphType(Element):
@@ -35,6 +37,9 @@ class StableGraphType(Element):
         self._graph = canonical
         self._canonical_key: CanonicalKey = canonical_key(canonical)
 
+    def parent(self) -> StableGraphTypes:
+        return cast(StableGraphTypes, Element.parent(self))
+
     def canonical_representative(self) -> StableGraph:
         return self._graph
 
@@ -43,7 +48,6 @@ class StableGraphType(Element):
 
     def automorphism_group(self) -> object:
         return automorphism_group(self._graph)
-
 
     def total_genus(self) -> int:
         return self._graph.genus()
@@ -168,7 +172,7 @@ class StableGraphType(Element):
         return f"Stable graph type of genus {self.total_genus()} with {self.num_edges()} node(s), vertex genera {genera}"
 
 
-class StableGraphTypes(UniqueRepresentation, Parent):
+class StableGraphTypes(UniqueRepresentation, GraphTypeParent):
     r"""The finite set of stable graph types of a fixed stable ``(g, n)``."""
 
     Element = StableGraphType
@@ -215,7 +219,9 @@ class StableGraphTypes(UniqueRepresentation, Parent):
         return element
 
     def from_graph(self, graph: StableGraph) -> StableGraphType:
-        return self(graph)
+        typed = self(graph)
+        assert isinstance(typed, StableGraphType), f"StableGraphTypes() must return StableGraphType; found {type(typed)!r}"
+        return typed
 
     def smooth(self) -> StableGraphType:
         flags = tuple(range(self._n))
@@ -225,7 +231,7 @@ class StableGraphTypes(UniqueRepresentation, Parent):
             flag_involution=flags,
             marking_to_flag=flags,
         )
-        return self(graph)
+        return self.from_graph(graph)
 
     def from_vertices(
         self,
@@ -267,7 +273,7 @@ class StableGraphTypes(UniqueRepresentation, Parent):
             flag_involution=tuple(flag_involution),
             marking_to_flag=marking_to_flag,
         )
-        return self(graph)
+        return self.from_graph(graph)
 
     def from_json(self, data: dict[str, object]) -> StableGraphType:
         schema = data["schema"]

@@ -120,9 +120,28 @@ class PointedCurve(Curve):
 
 
 class StablePointedCurve(PointedCurve):
-    def __init__(self, *args: object, **kwargs: object) -> None:
-        kwargs["stable"] = True
-        PointedCurve.__init__(self, *args, **kwargs)  # type: ignore[misc]
+    def __init__(
+        self,
+        base: AffineScheme,
+        *,
+        genus: int,
+        markings: tuple[object, ...],
+        marking_set: tuple[object, ...],
+        sage_curve: object | None = None,
+        nodal: bool = False,
+        graph: object | None = None,
+    ) -> None:
+        PointedCurve.__init__(
+            self,
+            base,
+            genus=genus,
+            markings=markings,
+            marking_set=marking_set,
+            sage_curve=sage_curve,
+            nodal=nodal,
+            graph=graph,
+            stable=True,
+        )
 
     def is_stable(self) -> bool:
         return True
@@ -148,13 +167,13 @@ class CurveFamily(UniqueRepresentation):
     def structure_morphism(self) -> object:
         return self._structure
 
-    def fiber(self, s: object) -> Curve:
+    def fiber(self, s: object) -> object:
         raise NotImplementedError("unpointed CurveFamily.fiber requires a concrete model")
 
-    def generic_fiber(self) -> Curve:
+    def generic_fiber(self) -> object:
         return self.fiber("generic")
 
-    def special_fiber(self) -> Curve:
+    def special_fiber(self) -> object:
         return self.fiber("special")
 
 
@@ -185,25 +204,37 @@ class PointedCurveFamily(CurveFamily):
         return self._sections
 
     def fiber(self, s: object) -> object:
-        from .pointed import SmoothPointedCurve, StablePointedCurve as SageStablePointedCurve
+        r"""Fiber over a base point; trait-aware for stable families.
+
+        For stable families, ``special`` / ``s`` / ``0`` select a maximally nodal
+        dual-graph fiber when the stratification has more than the smooth stratum;
+        ``generic`` (and other tokens) select the smooth Sage proving-set model
+        when available, else the combinatorial smooth graph.
+        """
+        from .pointed import SmoothPointedCurve
+        from .pointed import StablePointedCurve as SageStablePointedCurve
 
         n = len(self._marking_set)
+        want_nodal = str(s).lower() in {"special", "s", "0"}
         if self._stable:
-            try:
-                return SageStablePointedCurve.from_ambient(self._genus, n, base_scheme=self._base)
-            except (NotImplementedError, ValueError, AssertionError):
-                from ..objects.graph_types import StableGraphTypes
+            from ..objects.graph_types import StableGraphTypes
 
-                types = StableGraphTypes(self._genus, n)
-                want_nodal = str(s) in {"special", "s", "0"}
-                if want_nodal and types.cardinality() > 1:
-                    gamma = max(types, key=lambda t: t.num_edges())
-                else:
-                    gamma = types.smooth()
+            types = StableGraphTypes(self._genus, n)
+            if want_nodal and types.cardinality() > 1:
+                gamma = max(types, key=lambda t: int(t.num_edges()))
                 return SageStablePointedCurve(
                     self._genus,
                     n,
                     gamma,
+                    base_scheme=self._base,
+                )
+            try:
+                return SageStablePointedCurve.from_ambient(self._genus, n, base_scheme=self._base)
+            except NotImplementedError, ValueError, AssertionError:
+                return SageStablePointedCurve(
+                    self._genus,
+                    n,
+                    types.smooth(),
                     base_scheme=self._base,
                 )
         return SmoothPointedCurve.from_ambient(self._genus, n, base_scheme=self._base)
@@ -216,22 +247,23 @@ class PointedCurveFamily(CurveFamily):
 
         Cs = self.fiber("special")
         Cg = self.fiber("generic")
+        assert hasattr(Cs, "dual_graph") and hasattr(Cg, "dual_graph"), (
+            f"family fibers must expose dual_graph(); found {type(Cs)!r}, {type(Cg)!r}; owned boundary=PointedCurveFamily.dual_graph_specialization"
+        )
         graphs = StableGraphs(self._genus, self._marking_set)
-        Gs = graphs(Cs.dual_graph().record() if hasattr(Cs.dual_graph(), "record") else Cs.dual_graph())
-        Gg = graphs(Cg.dual_graph().record() if hasattr(Cg.dual_graph(), "record") else Cg.dual_graph())
+        cs_graph = Cs.dual_graph()
+        cg_graph = Cg.dual_graph()
+        Gs = graphs(cs_graph.record() if hasattr(cs_graph, "record") else cs_graph)
+        Gg = graphs(cg_graph.record() if hasattr(cg_graph, "record") else cg_graph)
         if Gs == Gg:
+            # Only the smooth stratum: specialization is the identity (still a contraction).
             from ..objects.gamma import StableGraphCategory
 
             return StableGraphCategory(self._genus, len(self._marking_set)).identity(Gs.record())
-        homset = Hom(Gs, Gg)
-        morphs = list(homset)
+        morphs = [m for m in Hom(Gs, Gg) if m.is_contraction()]
         if not morphs:
-            from ..objects.gamma import StableGraphCategory
-
-            return StableGraphCategory(self._genus, len(self._marking_set)).identity(Gg.record())
-        morph = morphs[0]
-        assert morph.is_contraction()
-        return morph
+            raise ValueError(f"no contraction in Hom({Gs!r}, {Gg!r}) for family specialization")
+        return morphs[0]
 
 
 class StablePointedCurveFamily(PointedCurveFamily):
@@ -244,6 +276,4 @@ class StablePointedCurveFamily(PointedCurveFamily):
         genus: int,
         marking_set: tuple[object, ...],
     ) -> None:
-        PointedCurveFamily.__init__(
-            self, base, total_space, sections, genus=genus, marking_set=marking_set, stable=True
-        )
+        PointedCurveFamily.__init__(self, base, total_space, sections, genus=genus, marking_set=marking_set, stable=True)

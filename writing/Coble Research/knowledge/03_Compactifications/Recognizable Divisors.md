@@ -17,4 +17,3 @@ created: 2026-05-08
 > **Examples**:
 > 1. The **rational curve divisor** $R_{\mathrm{rc}} = \sum R_i$ (sum of all smooth rational curves in $|L|$).
 > 2. The **ramification divisor** $R_\iota$ of a nonsymplectic involution.
-
