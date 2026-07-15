@@ -56,21 +56,23 @@ def test_M11_nodal_boundary_has_published_combinatorics_and_branch_swap():
     boundary = [S for S in XSbar.stratification().strata() if S.index().num_edges() == 1]
     assert len(boundary) == 1
     nodal = boundary[0]
-    record = nodal.index()._canonical_record()
-    assert record.num_vertices() == 1
-    assert record.vertex_genera == (0,)
-    assert record.num_edges() == 1
-    assert record.num_markings() == 1
+    gamma = nodal.index()
+    assert gamma.num_vertices() == 1
+    assert gamma.vertex_genera() == (0,)
+    assert gamma.num_edges() == 1
+    assert gamma.num_markings() == 1
     factors = nodal.clutching_morphism().domain().factors()
     assert [(f.genus(), f.number_of_markings()) for f in factors] == [(0, 3)]
+    H = gamma.half_edges()
     loop_flags = [
         flag
-        for flag in range(record.num_flags())
-        if record.flag_vertex[flag] == 0 and record.flag_involution[flag] != flag
+        for flag in gamma.half_edges_at(0)
+        if H(flag).partner() != flag
     ]
     assert len(loop_flags) == 2
-    flag_perm = flag_generator_images(record)[0]
-    assert flag_perm[record.marking_to_flag[0]] == record.marking_to_flag[0]
+    flag_perm = flag_generator_images(gamma)[0]
+    marking_flag = next(iter(gamma.legs())).flag()
+    assert flag_perm[marking_flag] == marking_flag
     assert {flag_perm[loop_flags[0]], flag_perm[loop_flags[1]]} == set(loop_flags)
     assert flag_perm[loop_flags[0]] != loop_flags[0]
 

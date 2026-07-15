@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 
+from dm_moduli_spike.objects.gamma import StableGraphCategory
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 
 
@@ -128,18 +129,24 @@ def test_canonical_form_certificate_commutes_with_contraction():
         markings=((1, 2), (3,), (4, 5)),
         edges=((0, 1), (1, 2)),
     )
-    graph = gamma._canonical_record()
-    _, first = graph.contract(graph.internal_edges()[0])
+    Gamma = StableGraphCategory(0, 5)
+    first = Gamma.contract(gamma, (gamma.internal_edges()[0],))
     intermediate = first.codomain()
+    H = intermediate.half_edges()
     relabeled = types.from_vertices(
-        genera=intermediate.vertex_genera,
-        markings=tuple(tuple(reversed(intermediate.markings_at(vertex))) for vertex in range(intermediate.num_vertices())),
-        edges=tuple(
-            (intermediate.flag_vertex[flag], intermediate.flag_vertex[partner])
-            for flag, partner in intermediate.internal_edges()
+        genera=intermediate.vertex_genera(),
+        markings=tuple(
+            tuple(reversed(tuple(leg.label() for leg in intermediate.legs() if leg.vertex() == v)))
+            for v in range(intermediate.num_vertices())
         ),
-    )._canonical_record()
-    _, canonical, certificate = relabeled.canonical_form()
-    edge = relabeled.internal_edges()[0]
-    canonical_edge = (certificate[edge[0]], certificate[edge[1]])
-    assert relabeled.contract(edge)[0] == canonical.contract(canonical_edge)[0]
+        edges=tuple(
+            (H(a).vertex(), H(b).vertex())
+            for e in intermediate.edges()
+            for a, b in [e.half_edges()]
+        ),
+    )
+    assert relabeled == intermediate
+    second = Gamma.contract(relabeled, (relabeled.internal_edges()[0],))
+    direct = Gamma.contract(gamma, gamma.internal_edges())
+    assert second.codomain() == direct.codomain()
+    assert second.codomain().is_smooth()

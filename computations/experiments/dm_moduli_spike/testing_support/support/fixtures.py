@@ -165,34 +165,45 @@ def classify_chan_m20(record: _GraphRecord) -> str:
     raise AssertionError(f"graph does not match any Chan Figure 3 type: V={num_vertices} G={genera} E={num_edges} L={loops}")
 
 
-def induced_edge_permutation_group(graph: _GraphRecord) -> object:
+def _as_graph_record(graph: StableGraph | _GraphRecord) -> _GraphRecord:
+    from dm_moduli_spike.objects.records import _GraphRecord
+    from dm_moduli_spike.objects.stable_graphs import StableGraph
+
+    if isinstance(graph, StableGraph):
+        return graph._canonical_record()
+    if isinstance(graph, _GraphRecord):
+        return graph
+    raise TypeError(f"expected StableGraph or _GraphRecord; found {type(graph)!r}")
+
+
+def induced_edge_permutation_group(graph: StableGraph | _GraphRecord) -> object:
     r"""Sage ``PermutationGroup`` of `\operatorname{Aut}(G)` acting on edge indices."""
-    return graph.automorphism_group(on="edges")
+    return _as_graph_record(graph).automorphism_group(on="edges")
 
 
-def flag_generator_images(graph: _GraphRecord) -> tuple[tuple[int, ...], ...]:
+def flag_generator_images(graph: StableGraph | _GraphRecord) -> tuple[tuple[int, ...], ...]:
     r"""0-indexed flag images of Aut generators (test helper)."""
     from dm_moduli_spike.objects._automorphism_action import _GraphAutomorphismData
 
-    return _GraphAutomorphismData.from_graph(graph).on_flags()
+    return _GraphAutomorphismData.from_graph(_as_graph_record(graph)).on_flags()
 
 
-def marking_generator_images(graph: _GraphRecord) -> tuple[tuple[int, ...], ...]:
+def marking_generator_images(graph: StableGraph | _GraphRecord) -> tuple[tuple[int, ...], ...]:
     from dm_moduli_spike.objects._automorphism_action import _GraphAutomorphismData
 
-    return _GraphAutomorphismData.from_graph(graph).on_markings()
+    return _GraphAutomorphismData.from_graph(_as_graph_record(graph)).on_markings()
 
 
-def vertex_generator_images(graph: _GraphRecord) -> tuple[tuple[int, ...], ...]:
+def vertex_generator_images(graph: StableGraph | _GraphRecord) -> tuple[tuple[int, ...], ...]:
     from dm_moduli_spike.objects._automorphism_action import _GraphAutomorphismData
 
-    return _GraphAutomorphismData.from_graph(graph).on_vertices()
+    return _GraphAutomorphismData.from_graph(_as_graph_record(graph)).on_vertices()
 
 
-def edge_generator_images(graph: _GraphRecord) -> tuple[tuple[int, ...], ...]:
+def edge_generator_images(graph: StableGraph | _GraphRecord) -> tuple[tuple[int, ...], ...]:
     from dm_moduli_spike.objects._automorphism_action import _GraphAutomorphismData
 
-    return _GraphAutomorphismData.from_graph(graph).on_edges()
+    return _GraphAutomorphismData.from_graph(_as_graph_record(graph)).on_edges()
 
 
 def chan_m13_curve_type(types: StableGraphs) -> StableGraph:

@@ -27,7 +27,6 @@ def test_isomorphic_labeled_inputs_define_the_same_curve_type():
     left = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     right = types.from_vertices(genera=(0, 0), markings=((3, 4), (1, 2)), edges=((0, 1),))
     assert left == right
-    assert left._canonical_record() == right._canonical_record()
     assert left is right
 
 
@@ -58,7 +57,6 @@ def test_automorphism_group_order_matches_number():
     types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     assert int(gamma.automorphism_group().order()) == gamma.automorphism_number()
-    graph = gamma._canonical_record()
     underlying = Mbar_gn(0, 4, base=spec(ZZ)).stratification().stratum(gamma).underlying_stack()
     assert isinstance(underlying, QuotientStack)
     assert int(underlying.group().order()) == gamma.automorphism_number()
@@ -67,7 +65,6 @@ def test_automorphism_group_order_matches_number():
 def test_stack_signature_carries_automorphism_group_not_just_order():
     types = StableGraphs(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
-    graph = loop._canonical_record()
     underlying = Mbar_gn(1, 1, base=spec(ZZ)).stratification().stratum(loop).underlying_stack()
     assert isinstance(underlying, QuotientStack)
     assert int(underlying.group().order()) == 2
@@ -89,24 +86,29 @@ def test_contraction_composition_across_isomorphic_representatives():
         markings=((1, 2), (3,), (4, 5)),
         edges=((0, 1), (1, 2)),
     )
-    graph = gamma._canonical_record()
-    edges = graph.internal_edges()
-    _, first = graph.contract(edges[0])
+    Gamma = StableGraphCategory(0, 5)
+    edges = gamma.internal_edges()
+    first = Gamma.contract(gamma, (edges[0],))
     intermediate = first.codomain()
+    H = intermediate.half_edges()
     relabeled = types.from_vertices(
-        genera=intermediate.vertex_genera,
-        markings=tuple(tuple(reversed(intermediate.markings_at(vertex))) for vertex in range(intermediate.num_vertices())),
+        genera=intermediate.vertex_genera(),
+        markings=tuple(
+            tuple(leg.label() for leg in intermediate.legs() if leg.vertex() == v)
+            for v in range(intermediate.num_vertices())
+        ),
         edges=tuple(
-            (intermediate.flag_vertex[flag], intermediate.flag_vertex[partner])
-            for flag, partner in intermediate.internal_edges()
+            (H(a).vertex(), H(b).vertex())
+            for e in intermediate.edges()
+            for a, b in [e.half_edges()]
         ),
     )
-    assert relabeled == intermediate.graph_type()
-    relabeled_graph = relabeled._canonical_record()
-    _, second = relabeled_graph.contract(relabeled_graph.internal_edges()[0])
-    composite = first.compose(second)
-    assert composite.domain() == graph
-    assert composite.codomain().graph_type().is_smooth()
+    assert relabeled == intermediate
+    second = Gamma.contract(relabeled, (relabeled.internal_edges()[0],))
+    assert second.codomain().is_smooth()
+    direct = Gamma.contract(gamma, edges)
+    assert direct.codomain() == second.codomain()
+
 
 
 def test_contracts_to_matches_specialization_order():
@@ -144,7 +146,7 @@ def test_presentation_data_is_invariant_under_vertex_relabeling():
 def test_automorphism_action_fixes_markings_and_permutes_parallel_edges():
     types = StableGraphs(1, 2)
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
-    assert all(image == tuple(range(1, 3)) for image in marking_generator_images(theta._canonical_record()))
+    assert all(image == tuple(range(1, 3)) for image in marking_generator_images(theta))
     assert theta.elementary_contractions()[0][2] == 2
 
 
@@ -188,10 +190,12 @@ def test_admcycles_backend_does_not_call_pure_sage_enumeration(monkeypatch):
 
 
 def test_contraction_flag_map_is_immutable_to_caller_mutation():
+    from dm_moduli_spike.objects.contractions import _contract_edge
+
     types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     graph = gamma._canonical_record()
-    _, contraction = graph.contract(graph.internal_edges()[0])
+    _, contraction = _contract_edge(graph, graph.internal_edges()[0])
     flag_map = contraction.domain_flag_of_codomain_flag()
     flag_map[0] = 999
     assert contraction.domain_flag_of_codomain_flag()[0] != 999
@@ -215,31 +219,26 @@ def test_automorphism_actions_on_all_incidence_data():
         "dumbbell": types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1))),
     }
     for gamma in fixtures.values():
-        graph = gamma._canonical_record()
-        assert int(gamma.automorphism_number()) == int(graph.automorphism_group(on="half_edges").order())
-        verts = vertex_generator_images(graph)
-        flags = flag_generator_images(graph)
-        edges = edge_generator_images(graph)
-        marks = marking_generator_images(graph)
-        assert len(verts[0]) == graph.num_vertices()
-        assert len(flags[0]) == graph.num_flags()
-        assert len(edges[0]) == graph.num_edges()
-        assert len(marks[0]) == graph.num_markings()
-        assert all(image == tuple(range(1, graph.num_markings() + 1)) for image in marks)
+        assert int(gamma.automorphism_number()) == int(gamma.automorphism_group(on="half_edges").order())
+        verts = vertex_generator_images(gamma)
+        flags = flag_generator_images(gamma)
+        edges = edge_generator_images(gamma)
+        marks = marking_generator_images(gamma)
+        assert len(verts[0]) == gamma.num_vertices()
+        assert len(flags[0]) == gamma.num_flags()
+        assert len(edges[0]) == gamma.num_edges()
+        assert len(marks[0]) == gamma.num_markings()
+        assert all(image == tuple(range(1, gamma.num_markings() + 1)) for image in marks)
 
 
 def test_branch_swap_semantics_on_m11_nodal_flags():
     types = StableGraphs(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
-    graph = loop._canonical_record()
-    marking_flag = graph.marking_to_flag[0]
-    loop_flags = [
-        flag
-        for flag in range(graph.num_flags())
-        if graph.flag_vertex[flag] == 0 and graph.flag_involution[flag] != flag
-    ]
+    marking_flag = next(iter(loop.legs())).flag()
+    H = loop.half_edges()
+    loop_flags = [flag for flag in loop.half_edges_at(0) if H(flag).partner() != flag]
     assert len(loop_flags) == 2
-    flag_perm = flag_generator_images(graph)[0]
+    flag_perm = flag_generator_images(loop)[0]
     assert flag_perm[marking_flag] == marking_flag
     assert {flag_perm[loop_flags[0]], flag_perm[loop_flags[1]]} == set(loop_flags)
     assert flag_perm[loop_flags[0]] != loop_flags[0]
@@ -248,14 +247,14 @@ def test_branch_swap_semantics_on_m11_nodal_flags():
 def test_factor_slots_on_m11_nodal_graph():
     types = StableGraphs(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
-    graph = loop._canonical_record()
     Gamma = StableGraphCategory(1, 1)
     assert Gamma.clutching_source(loop)[0][1] == (0, 1, 2)
-    assert graph.marking_to_flag == (0,)
-    loop_flags = [flag for flag in graph.flags_at(0) if graph.flag_involution[flag] != flag]
+    assert next(iter(loop.legs())).flag() == 0
+    H = loop.half_edges()
+    loop_flags = [flag for flag in loop.half_edges_at(0) if H(flag).partner() != flag]
     assert loop_flags == [1, 2]
-    assert graph.flag_involution[1] == 2 and graph.flag_involution[2] == 1
-    flag_perm = flag_generator_images(graph)[0]
+    assert H(1).partner() == 2 and H(2).partner() == 1
+    flag_perm = flag_generator_images(loop)[0]
     assert flag_perm[0] == 0
     assert {flag_perm[1], flag_perm[2]} == {1, 2}
     assert flag_perm[1] != 1
@@ -264,14 +263,13 @@ def test_factor_slots_on_m11_nodal_graph():
 def test_factor_slots_on_m04_split_type():
     types = StableGraphs(0, 4)
     split = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
-    graph = split._canonical_record()
     Gamma = StableGraphCategory(0, 4)
     sources = Gamma.clutching_source(split)
     assert sources[0][1] == (0, 1, 4)
     assert sources[1][1] == (2, 3, 5)
-    marking_flags = graph.marking_to_flag
+    marking_flags = tuple(leg.flag() for leg in sorted(split.legs(), key=lambda leg: leg.label()))
     node_pairs = Gamma.node_pairings(split)
-    assert marking_flags == graph.marking_to_flag
+    assert marking_flags == (0, 1, 2, 3)
     assert node_pairs == ((4, 5),)
     branch_flags = {node_pairs[0][0], node_pairs[0][1]}
     assert branch_flags == {4, 5}
@@ -292,24 +290,23 @@ def test_decorated_edge_orbit_morphisms_contract_to_codimension_one():
 def test_clutching_morphism_exposes_half_edge_coordinates():
     types = StableGraphs(1, 2)
     dumbbell = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
-    graph = dumbbell._canonical_record()
     Gamma = StableGraphCategory(1, 2)
-    assert tuple(graph.markings_at(v) for v in range(graph.num_vertices())) == ((), (1, 2))
-    assert Gamma.node_pairings(dumbbell) == graph.internal_edges()
-    assert [(graph.flag_vertex[a], graph.flag_vertex[b]) for a, b in graph.internal_edges()] == [(0, 0), (0, 1)]
-    assert int(graph.automorphism_group(on="half_edges").order()) == 2
-    assert (graph.genus(), graph.num_markings()) == (1, 2)
+    H = dumbbell.half_edges()
+    assert tuple(tuple(leg.label() for leg in dumbbell.legs() if leg.vertex() == v) for v in range(dumbbell.num_vertices())) == ((), (1, 2))
+    assert Gamma.node_pairings(dumbbell) == dumbbell.internal_edges()
+    assert [(H(a).vertex(), H(b).vertex()) for a, b in dumbbell.internal_edges()] == [(0, 0), (0, 1)]
+    assert int(dumbbell.automorphism_group(on="half_edges").order()) == 2
+    assert (dumbbell.genus(), dumbbell.num_markings()) == (1, 2)
 
 
 def test_clutching_gluing_map_assigns_markings_and_edge_branches():
     types = StableGraphs(1, 2)
     dumbbell = types.from_vertices(genera=(0, 0), markings=((), (1, 2)), edges=((0, 0), (0, 1)))
-    record = dumbbell._canonical_record()
     Gamma = StableGraphCategory(1, 2)
-    marking_flags = record.marking_to_flag
+    marking_flags = tuple(leg.flag() for leg in sorted(dumbbell.legs(), key=lambda leg: leg.label()))
     node_pairs = Gamma.node_pairings(dumbbell)
-    assert marking_flags == record.marking_to_flag
-    assert node_pairs == record.internal_edges()
+    assert marking_flags == (0, 1)
+    assert node_pairs == dumbbell.internal_edges()
 
 
 def test_all_invariants_equal_under_vertex_relabeling():
@@ -376,7 +373,7 @@ def test_automorphism_generators_agree_with_incidence_actions():
         "m12_type_e": m12_types()["E"],
     }
     for gamma in fixtures.values():
-        graph = gamma._canonical_record()
+        graph = gamma._canonical_record()  # private incidence certificate only
         action = _GraphAutomorphismData.from_graph(graph)
         incidence, _partition, color_of = _incidence_graph(graph)
         vertex_nodes = sorted(node for node in color_of if node[0] == "V")
