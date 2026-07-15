@@ -76,6 +76,8 @@ class Curve(UniqueRepresentation):
 
 
 class PointedCurve(Curve):
+    r"""Pointed curve; stable vs smooth are distinct subclasses — not a ``stable=`` flag."""
+
     def __init__(
         self,
         base: AffineScheme,
@@ -86,13 +88,11 @@ class PointedCurve(Curve):
         sage_curve: object | None = None,
         nodal: bool = False,
         graph: object | None = None,
-        stable: bool = False,
     ) -> None:
         Curve.__init__(self, base, genus=genus, sage_curve=sage_curve, nodal=nodal)
         self._markings = markings
         self._marking_set = marking_set
         self._graph = graph
-        self._stable = stable
 
     def marking_set(self) -> tuple[object, ...]:
         return self._marking_set
@@ -105,7 +105,7 @@ class PointedCurve(Curve):
         return self._markings
 
     def is_stable(self) -> bool:
-        return bool(self._stable)
+        return isinstance(self, StablePointedCurve)
 
     def dual_graph(self) -> object:
         if self._graph is not None:
@@ -120,28 +120,7 @@ class PointedCurve(Curve):
 
 
 class StablePointedCurve(PointedCurve):
-    def __init__(
-        self,
-        base: AffineScheme,
-        *,
-        genus: int,
-        markings: tuple[object, ...],
-        marking_set: tuple[object, ...],
-        sage_curve: object | None = None,
-        nodal: bool = False,
-        graph: object | None = None,
-    ) -> None:
-        PointedCurve.__init__(
-            self,
-            base,
-            genus=genus,
-            markings=markings,
-            marking_set=marking_set,
-            sage_curve=sage_curve,
-            nodal=nodal,
-            graph=graph,
-            stable=True,
-        )
+    r"""Stable pointed curve of type `(g, I)`."""
 
     def is_stable(self) -> bool:
         return True
@@ -178,6 +157,8 @@ class CurveFamily(UniqueRepresentation):
 
 
 class PointedCurveFamily(CurveFamily):
+    r"""Family of pointed curves; stable families are a distinct subclass (§13)."""
+
     def __init__(
         self,
         base: AffineScheme,
@@ -186,13 +167,11 @@ class PointedCurveFamily(CurveFamily):
         *,
         genus: int,
         marking_set: tuple[object, ...],
-        stable: bool = False,
     ) -> None:
         CurveFamily.__init__(self, base, total_space)
         self._sections = sections
         self._genus = int(genus)
         self._marking_set = tuple(marking_set)
-        self._stable = stable
 
     def genus(self) -> int:
         return self._genus
@@ -203,40 +182,14 @@ class PointedCurveFamily(CurveFamily):
     def marking_sections(self) -> tuple[object, ...]:
         return self._sections
 
-    def fiber(self, s: object) -> object:
-        r"""Fiber over a base point; trait-aware for stable families.
+    def is_stable(self) -> bool:
+        return isinstance(self, StablePointedCurveFamily)
 
-        For stable families, ``special`` / ``s`` / ``0`` select a maximally nodal
-        dual-graph fiber when the stratification has more than the smooth stratum;
-        ``generic`` (and other tokens) select the smooth Sage proving-set model
-        when available, else the combinatorial smooth graph.
-        """
+    def fiber(self, s: object) -> object:
+        r"""Smooth fiber over a base point (Sage proving-set model when available)."""
         from .pointed import SmoothPointedCurve
-        from .pointed import StablePointedCurve as SageStablePointedCurve
 
         n = len(self._marking_set)
-        want_nodal = str(s).lower() in {"special", "s", "0"}
-        if self._stable:
-            from ..objects.stable_graphs import StableGraphs
-
-            types = StableGraphs(self._genus, n)
-            if want_nodal and types.cardinality() > 1:
-                gamma = max(types, key=lambda t: int(t.num_edges()))
-                return SageStablePointedCurve(
-                    self._genus,
-                    n,
-                    gamma,
-                    base_scheme=self._base,
-                )
-            try:
-                return SageStablePointedCurve.from_ambient(self._genus, n, base_scheme=self._base)
-            except NotImplementedError, ValueError, AssertionError:
-                return SageStablePointedCurve(
-                    self._genus,
-                    n,
-                    types.smooth(),
-                    base_scheme=self._base,
-                )
         return SmoothPointedCurve.from_ambient(self._genus, n, base_scheme=self._base)
 
     def dual_graph_specialization(self) -> object:
@@ -265,13 +218,37 @@ class PointedCurveFamily(CurveFamily):
 
 
 class StablePointedCurveFamily(PointedCurveFamily):
-    def __init__(
-        self,
-        base: AffineScheme,
-        total_space: object,
-        sections: tuple[object, ...],
-        *,
-        genus: int,
-        marking_set: tuple[object, ...],
-    ) -> None:
-        PointedCurveFamily.__init__(self, base, total_space, sections, genus=genus, marking_set=marking_set, stable=True)
+    r"""Family of stable pointed curves of type `(g, I)`."""
+
+    def fiber(self, s: object) -> object:
+        r"""Fiber over a base point for a stable family.
+
+        ``special`` / ``s`` / ``0`` select a maximally nodal dual-graph fiber when the
+        stratification has more than the smooth stratum; ``generic`` (and other tokens)
+        select the smooth Sage proving-set model when available, else the combinatorial
+        smooth graph.
+        """
+        from .pointed import StablePointedCurve as SageStablePointedCurve
+
+        n = len(self._marking_set)
+        want_nodal = str(s).lower() in {"special", "s", "0"}
+        from ..objects.stable_graphs import StableGraphs
+
+        types = StableGraphs(self._genus, n)
+        if want_nodal and types.cardinality() > 1:
+            gamma = max(types, key=lambda t: int(t.num_edges()))
+            return SageStablePointedCurve(
+                self._genus,
+                n,
+                gamma,
+                base_scheme=self._base,
+            )
+        try:
+            return SageStablePointedCurve.from_ambient(self._genus, n, base_scheme=self._base)
+        except NotImplementedError, ValueError, AssertionError:
+            return SageStablePointedCurve(
+                self._genus,
+                n,
+                types.smooth(),
+                base_scheme=self._base,
+            )

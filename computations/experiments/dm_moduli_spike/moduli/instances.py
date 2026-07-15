@@ -123,7 +123,7 @@ class SmoothPointedCurveModuliProblem(ModuliProblem):
         g, I, base = self._g, self._I, self._base
 
         def _factory() -> object:
-            return PointedCurveFamily(base, T, tuple(I), genus=g, marking_set=I, stable=False)
+            return PointedCurveFamily(base, T, tuple(I), genus=g, marking_set=I)
 
         return Groupoid(
             f"smooth pointed curves of type ({self._g},{len(self._I)}) over {T!r}",

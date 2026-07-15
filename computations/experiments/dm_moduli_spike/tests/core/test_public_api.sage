@@ -59,6 +59,20 @@ def test_moduli_problems_are_distinct_classes_not_stable_flag():
     assert XSbar.moduli_problem().is_stable()
 
 
+def test_curve_families_are_distinct_classes_not_stable_flag():
+    from dm_moduli_spike.curves.families import PointedCurveFamily, StablePointedCurveFamily
+
+    XS = M_gn(1, 1, base=spec(QQ))
+    XSbar = spike.Mbar_gn(1, 1, base=spec(QQ))
+    smooth_fam = XS(spec(QQ)).an_element()
+    stable_fam = XSbar(spec(QQ)).an_element()
+    assert isinstance(smooth_fam, PointedCurveFamily)
+    assert not isinstance(smooth_fam, StablePointedCurveFamily)
+    assert isinstance(stable_fam, StablePointedCurveFamily)
+    assert not smooth_fam.is_stable()
+    assert stable_fam.is_stable()
+
+
 def test_public_all_includes_moduli_and_gamma():
     for name in ["M_gn", "Mbar_gn", "StableGraphCategory", "ModuliStacks", "Stacks", "spec"]:
         assert name in spike.__all__
