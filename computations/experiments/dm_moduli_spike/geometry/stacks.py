@@ -95,9 +95,11 @@ class AlgebraicStack(Stack):
         Stack.__init__(self, base, name=name, axioms=axioms, category=AlgebraicStacks(base))
 
     def diagonal(self) -> StackMorphism:
+        r"""Formal diagonal morphism (Hom membership only; not equation-level)."""
         return StackMorphism(self, self, kind="diagonal")
 
     def atlas(self) -> StackMorphism:
+        r"""Formal atlas morphism (Hom membership only; not computational étale cover)."""
         return StackMorphism(self, self, kind="atlas")
 
 
@@ -116,6 +118,7 @@ class DeligneMumfordStack(AlgebraicStack):
         Stack.__init__(self, base, name=name, axioms=ax, category=cat)
 
     def etale_atlas(self) -> StackMorphism:
+        r"""Formal étale-atlas label for DM stacks (theorem stamp; not computed covers)."""
         return StackMorphism(self, self, kind="etale_atlas")
 
 
