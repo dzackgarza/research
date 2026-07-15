@@ -1,5 +1,5 @@
 [submodule "projects/lattice-research"]
-	path = projects/lattice-research
+	path = archives/lattice-research
 	url = git@github.com:dzackgarza/lattice-research.git
 [submodule "review-calibration"]
 	path = review-calibration
