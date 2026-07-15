@@ -3,7 +3,9 @@ from typing import Any
 
 from sage.categories.rings import Rings
 from sage.modules.free_module import FreeModule_generic
+from sage.rings.ideal import Ideal_pid
 from sage.rings.integer import Integer
+from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.structure.parent import Parent
 
 class IntegerRing_class(Rings.ParentMethods, Parent):
@@ -15,6 +17,13 @@ class IntegerRing_class(Rings.ParentMethods, Parent):
     def gen(self, i: int = ...) -> Integer: ...
     def random_element(self) -> Integer: ...
     def __contains__(self, x: object) -> bool: ...
+    def __rmul__(self, other: int | Integer) -> Ideal_pid: ...
     def __pow__(self, n: int | Integer) -> FreeModule_generic[Any]: ...
+    def quotient(
+        self,
+        I: Ideal_pid,
+        names: str | tuple[str, ...] | None = ...,
+        **kwds: object,
+    ) -> IntegerModRing_generic: ...
 
 ZZ: IntegerRing_class

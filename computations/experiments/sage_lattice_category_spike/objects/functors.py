@@ -23,12 +23,13 @@ class LatticeBaseChangeFunctor(lexicon.LatticeBaseChangeFunctor, lexicon.SageFun
         assert codomain.base_ring().coerce_map_from(domain.base_ring()) is not None, f"base change requires a canonical map {domain.base_ring()} -> {codomain.base_ring()}"
         lexicon.SageFunctor.__init__(self, domain, codomain)
 
-    if TYPE_CHECKING:
-        # The generic Sage functor surface returns Category.  This functor's
-        # source and target are specifically lattice-category roots.
-        def domain(self) -> Lattices: ...
+    def domain(self) -> Lattices:
+        r"""The source lattice category of this scalar-extension functor."""
+        return cast("Lattices", lexicon.SageFunctor.domain(self))
 
-        def codomain(self) -> Lattices: ...
+    def codomain(self) -> Lattices:
+        r"""The target lattice category of this scalar-extension functor."""
+        return cast("Lattices", lexicon.SageFunctor.codomain(self))
 
     def source_base_ring(self) -> lexicon.BaseRing:
         return cast(lexicon.BaseRing, self.domain().base_ring())
@@ -36,15 +37,11 @@ class LatticeBaseChangeFunctor(lexicon.LatticeBaseChangeFunctor, lexicon.SageFun
     def target_base_ring(self) -> lexicon.BaseRing:
         return cast(lexicon.BaseRing, self.codomain().base_ring())
 
-    def _coerce_into_domain(self, lattice: lexicon.Lattice) -> lexicon.Lattice:
-        assert lattice in self.domain(), f"base-change source must belong to {self.domain()}; found={lattice.category()}"
-        return lattice
-
     def _apply_functor(self, lattice: lexicon.Lattice) -> lexicon.Lattice:
         target = self.codomain()
         return target.from_base_change(lattice)
 
-    def _apply_functor_to_morphism(self, morphism: lexicon.SageMorphism) -> lexicon.LatticeMorphism:
+    def _apply_functor_to_morphism(self, morphism: lexicon.LatticeMorphism) -> lexicon.LatticeMorphism:
         assert isinstance(morphism, lexicon.LatticeMorphism), f"base change acts on lattice morphisms; found={type(morphism)}"
         target = self.codomain()
         domain = self._apply_functor(morphism.domain())

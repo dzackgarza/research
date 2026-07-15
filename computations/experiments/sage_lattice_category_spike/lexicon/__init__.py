@@ -8,6 +8,8 @@ Part V). Downstream code draws from here:
 
 from ..algebra.domain_algebra import (
     BilinearDiscriminantForm,
+    CategoryMorphism,
+    CategoryObject,
     DefiniteLattice,
     DiscriminantAction,
     DiscriminantForm,
@@ -16,6 +18,7 @@ from ..algebra.domain_algebra import (
     DiscriminantSubgroup,
     EmbeddingHomset,
     FormKind,
+    Functor,
     Genus,
     HyperbolicLattice,
     IndefiniteLattice,
@@ -134,6 +137,8 @@ __all__ = [
     "Polyhedron",
     # owned lattice tower (authority: algebra/domain_algebra.py)
     "BilinearDiscriminantForm",
+    "CategoryMorphism",
+    "CategoryObject",
     "DefiniteLattice",
     "DiscriminantAction",
     "DiscriminantForm",
@@ -141,6 +146,7 @@ __all__ = [
     "DiscriminantOrthogonalGroup",
     "DiscriminantSubgroup",
     "FormKind",
+    "Functor",
     "Genus",
     "GramMatrix",
     "HyperbolicLattice",
