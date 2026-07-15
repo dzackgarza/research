@@ -34,6 +34,9 @@ _BANNED_PUBLIC_NAMES = (
     "StableGraphContraction",
     "contract_edges",
     "contract_edge",
+    "edges_are_in_same_orbit",
+    "automorphism_edge_orbits",
+    "automorphism_edge_orbit_indices",
     "Backend",
     "Adapter",
 )

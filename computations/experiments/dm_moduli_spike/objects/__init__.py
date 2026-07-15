@@ -6,7 +6,8 @@ Layering (each module depends only on those above it):
 - ``canonical``: canonical labelling and JSON serialization.
 - ``stable_graphs``: the ``StableGraphs(g,I)`` parent and ``StableGraph`` element
   (typed Vertices / HalfEdges / Edges / Legs); owns enumeration caches.
-- ``contractions``: contraction morphisms of stable graphs.
+- ``contractions``: private labeled-record contraction witnesses
+  (``_StableGraphContraction``); public morphisms live in ``gamma`` Hom-sets.
 - ``enumeration``: one-edge degenerations and rank-by-rank enumeration.
 - ``gamma``: combinatorial ``Γ_{g,n}`` with ``StableGraphHomset`` in ``Homsets()``.
 - Stack-geometric strata live under ``dm_moduli_spike.geometry``.

@@ -13,14 +13,14 @@ if TYPE_CHECKING:
     from .stable_graphs import StableGraph
 
 
-def automorphism_edge_orbit_indices(record: _GraphRecord) -> tuple[tuple[int, ...], ...]:
+def _automorphism_edge_orbit_indices(record: _GraphRecord) -> tuple[tuple[int, ...], ...]:
     r"""Edge-index orbits aligned with :meth:`StableGraph.internal_edges`."""
     num_edges = record.num_edges()
     if num_edges == 0:
         return ()
     group = record.automorphism_group(on="edges")
     assert isinstance(group, SagePermutationGroup), (
-        f"automorphism_group(on='edges') must return a Sage permutation group; found {type(group)!r}; owned boundary=automorphism_edge_orbit_indices"
+        f"automorphism_group(on='edges') must return a Sage permutation group; found {type(group)!r}; owned boundary=_automorphism_edge_orbit_indices"
     )
     if as_int(group.order()) == 1:
         return tuple((index,) for index in range(num_edges))
@@ -33,32 +33,32 @@ def automorphism_edge_orbit_indices(record: _GraphRecord) -> tuple[tuple[int, ..
     return tuple(sorted(edge_orbits + singletons, key=lambda orbit: orbit[0]))
 
 
-def automorphism_edge_orbits(record: _GraphRecord) -> tuple[tuple[tuple[int, int], ...], ...]:
+def _automorphism_edge_orbits(record: _GraphRecord) -> tuple[tuple[tuple[int, int], ...], ...]:
     r"""Return internal edges grouped by the action of ``Aut(\Gamma)``."""
     edges = record.internal_edges()
     if not edges:
         return ()
-    groups = automorphism_edge_orbit_indices(record)
+    groups = _automorphism_edge_orbit_indices(record)
     return tuple(tuple(edges[index] for index in group) for group in groups)
 
 
-def edges_are_in_same_orbit(record: _GraphRecord, edge_a: tuple[int, int], edge_b: tuple[int, int]) -> bool:
+def _edges_are_in_same_orbit(record: _GraphRecord, edge_a: tuple[int, int], edge_b: tuple[int, int]) -> bool:
     r"""Whether two internal edges lie in the same ``Aut(\Gamma)`` orbit."""
     edges = record.internal_edges()
     index_a = edges.index(edge_a)
     index_b = edges.index(edge_b)
-    for group in automorphism_edge_orbit_indices(record):
+    for group in _automorphism_edge_orbit_indices(record):
         if index_a in group and index_b in group:
             return True
     return False
 
 
-def contraction_target_multiset(source: StableGraph) -> tuple[tuple[StableGraph, int], ...]:
+def _contraction_target_multiset(source: StableGraph) -> tuple[tuple[StableGraph, int], ...]:
     r"""Multiset of distinct targets ``([Gamma/e], |O_e|)`` over Aut edge orbits."""
     parent = source.parent()
     graph = source._canonical_record()
     entries: list[tuple[StableGraph, int]] = []
-    for group in automorphism_edge_orbit_indices(graph):
+    for group in _automorphism_edge_orbit_indices(graph):
         representative = graph.internal_edges()[group[0]]
         target_type, _ = graph.contract(representative)
         entries.append((parent(target_type), len(group)))
@@ -99,7 +99,7 @@ def _elementary_contraction_data(source: StableGraph) -> tuple[tuple[StableGraph
     use_decorated = AdmcyclesDecoratedGraphs().is_available()
 
     data: list[tuple[StableGraph, _StableGraphContraction, int]] = []
-    for group in automorphism_edge_orbit_indices(graph):
+    for group in _automorphism_edge_orbit_indices(graph):
         representative = edges[group[0]]
         if use_decorated:
             contraction = _contraction_witness_from_decorated(graph, representative, g, n)

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .edge_orbits import automorphism_edge_orbit_indices
+from .edge_orbits import _automorphism_edge_orbit_indices
 from .stable_graphs import StableGraph, StableGraphs
 
 if TYPE_CHECKING:
@@ -53,7 +53,7 @@ class SymmetricDeltaComplex:
             typed = StableGraphs(self.genus(), self.number_of_markings())(graph)
         typed = self._category.object(typed)
         edges = typed.internal_edges()
-        orbits = automorphism_edge_orbit_indices(typed._canonical_record())
+        orbits = _automorphism_edge_orbit_indices(typed._canonical_record())
         return tuple(tuple(edges[i] for i in orbit) for orbit in orbits)
 
     def cone_dimension(self, graph: _GraphRecord | StableGraph) -> int:

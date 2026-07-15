@@ -341,9 +341,9 @@ class StableGraph(Element):
         while queue:
             current = queue.popleft()
             current_graph = current._canonical_record()
-            from .edge_orbits import automorphism_edge_orbit_indices
+            from .edge_orbits import _automorphism_edge_orbit_indices
 
-            for group in automorphism_edge_orbit_indices(current_graph):
+            for group in _automorphism_edge_orbit_indices(current_graph):
                 representative = current_graph.internal_edges()[group[0]]
                 image_type, _ = current_graph.contract(representative)
                 image = self.parent()(image_type)
@@ -359,9 +359,9 @@ class StableGraph(Element):
         return self.contracts_to(other)
 
     def edge_orbits(self) -> tuple[tuple[tuple[int, int], ...], ...]:
-        from .edge_orbits import automorphism_edge_orbits
+        from .edge_orbits import _automorphism_edge_orbits
 
-        return automorphism_edge_orbits(self._record)
+        return _automorphism_edge_orbits(self._record)
 
     def elementary_contractions(self) -> tuple[tuple[StableGraph, StableGraphMorphism, int], ...]:
         r"""One entry per ``Aut`` edge orbit: ``(target, Hom contraction, orbit size)``.
@@ -376,17 +376,17 @@ class StableGraph(Element):
 
     def contraction_target_multiset(self) -> tuple[tuple[StableGraph, int], ...]:
         r"""Multiset of contraction targets ``([Γ/e], |O_e|)`` over Aut edge orbits."""
-        from .edge_orbits import contraction_target_multiset
+        from .edge_orbits import _contraction_target_multiset
 
-        return contraction_target_multiset(self)
+        return _contraction_target_multiset(self)
 
     def covers(self) -> tuple[tuple[StableGraph, StableGraph], ...]:
         r"""Distinct contraction targets ``[\Gamma/e]``, one per ``Aut(\Gamma)`` edge orbit."""
-        from .edge_orbits import automorphism_edge_orbit_indices
+        from .edge_orbits import _automorphism_edge_orbit_indices
 
         seen: dict[object, tuple[StableGraph, StableGraph]] = {}
         graph = self._record
-        for group in automorphism_edge_orbit_indices(graph):
+        for group in _automorphism_edge_orbit_indices(graph):
             representative = graph.internal_edges()[group[0]]
             target_type, _ = graph.contract(representative)
             target = self.parent()(target_type)
