@@ -112,7 +112,7 @@ def test_native_automorphism_group_api_M12_banana():
     from dm_moduli_spike.testing_support.support.fixtures import m12_types
 
     Gamma = StableGraphCategory(1, 2)
-    banana = m12_types()["E"]._canonical_record()
+    banana = m12_types()["E"]
     edge_aut = banana.automorphism_group(on="edges")
     assert edge_aut.order() == 2
     flag_aut = Gamma.automorphism_group(banana, on="half_edges")

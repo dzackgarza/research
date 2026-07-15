@@ -250,7 +250,7 @@ def test_factor_slots_on_m11_nodal_graph():
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
     graph = loop._canonical_record()
     Gamma = StableGraphCategory(1, 1)
-    assert Gamma.clutching_source(graph)[0][1] == (0, 1, 2)
+    assert Gamma.clutching_source(loop)[0][1] == (0, 1, 2)
     assert graph.marking_to_flag == (0,)
     loop_flags = [flag for flag in graph.flags_at(0) if graph.flag_involution[flag] != flag]
     assert loop_flags == [1, 2]
@@ -266,11 +266,11 @@ def test_factor_slots_on_m04_split_type():
     split = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
     graph = split._canonical_record()
     Gamma = StableGraphCategory(0, 4)
-    sources = Gamma.clutching_source(graph)
+    sources = Gamma.clutching_source(split)
     assert sources[0][1] == (0, 1, 4)
     assert sources[1][1] == (2, 3, 5)
     marking_flags = graph.marking_to_flag
-    node_pairs = Gamma.node_pairings(graph)
+    node_pairs = Gamma.node_pairings(split)
     assert marking_flags == graph.marking_to_flag
     assert node_pairs == ((4, 5),)
     branch_flags = {node_pairs[0][0], node_pairs[0][1]}
@@ -295,7 +295,7 @@ def test_clutching_morphism_exposes_half_edge_coordinates():
     graph = dumbbell._canonical_record()
     Gamma = StableGraphCategory(1, 2)
     assert tuple(graph.markings_at(v) for v in range(graph.num_vertices())) == ((), (1, 2))
-    assert Gamma.node_pairings(graph) == graph.internal_edges()
+    assert Gamma.node_pairings(dumbbell) == graph.internal_edges()
     assert [(graph.flag_vertex[a], graph.flag_vertex[b]) for a, b in graph.internal_edges()] == [(0, 0), (0, 1)]
     assert int(graph.automorphism_group(on="half_edges").order()) == 2
     assert (graph.genus(), graph.num_markings()) == (1, 2)
@@ -307,7 +307,7 @@ def test_clutching_gluing_map_assigns_markings_and_edge_branches():
     record = dumbbell._canonical_record()
     Gamma = StableGraphCategory(1, 2)
     marking_flags = record.marking_to_flag
-    node_pairs = Gamma.node_pairings(record)
+    node_pairs = Gamma.node_pairings(dumbbell)
     assert marking_flags == record.marking_to_flag
     assert node_pairs == record.internal_edges()
 

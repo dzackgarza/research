@@ -97,7 +97,7 @@ class StableGraphMorphism(Element):
         if unbound._domain != domain:
             # Domain of a contraction witness is already the labeled source record.
             pass
-        return gamma.hom(domain, codomain)._bind(unbound)
+        return gamma.hom(gamma._graphs(domain), gamma._graphs(codomain))._bind(unbound)
 
     @staticmethod
     def from_isomorphism(iso: StableGraphIsomorphism) -> StableGraphMorphism:
@@ -318,14 +318,21 @@ class StableGraphCategory(UniqueRepresentation):
         r"""Parent of stable graphs of type ``(g, n)`` for this `\Gamma_{g,n}`."""
         return self._graphs
 
-    def _as_record(self, graph: object) -> _GraphRecord:
+    def _require_stable_graph(self, graph: object) -> StableGraph:
+        r"""Public Γ APIs speak StableGraph elements only; records stay private."""
         if isinstance(graph, StableGraph):
-            return graph._canonical_record()
+            typed = self._graphs(graph)
+            assert isinstance(typed, StableGraph), f"StableGraphs() must return StableGraph; found {type(typed)!r}"
+            return typed
+        raise TypeError(f"expected StableGraph element of StableGraphs({self._g}, {self._n}); found {type(graph)!r}")
+
+    def _as_record(self, graph: object) -> _GraphRecord:
         if isinstance(graph, _GraphRecord):
+            # Private enumeration paths may still hand records; public APIs use StableGraph.
             typed = self._graphs(graph)
             assert isinstance(typed, StableGraph), f"StableGraphs() must return StableGraph; found {type(typed)!r}"
             return typed._canonical_record()
-        raise TypeError(f"expected StableGraph or _GraphRecord; found {type(graph)}")
+        return self._require_stable_graph(graph)._canonical_record()
 
     def _canonical(self, graph: object) -> _GraphRecord:
         return self._as_record(graph)
@@ -342,15 +349,15 @@ class StableGraphCategory(UniqueRepresentation):
     def objects(self) -> tuple[StableGraph, ...]:
         return tuple(self._graphs)
 
-    def object(self, data: _GraphRecord | StableGraph) -> StableGraph:
-        return self._graphs(self._canonical(data))
+    def object(self, data: StableGraph) -> StableGraph:
+        return self._require_stable_graph(data)
 
-    def half_edges(self, graph: _GraphRecord | StableGraph) -> tuple[int, ...]:
-        graph = self._canonical(graph)
-        return tuple(range(graph.num_flags()))
+    def half_edges(self, graph: StableGraph) -> tuple[int, ...]:
+        record = self._require_stable_graph(graph)._canonical_record()
+        return tuple(range(record.num_flags()))
 
-    def edges(self, graph: _GraphRecord | StableGraph) -> tuple[tuple[int, int], ...]:
-        return self._canonical(graph).internal_edges()
+    def edges(self, graph: StableGraph) -> tuple[tuple[int, int], ...]:
+        return self._require_stable_graph(graph)._canonical_record().internal_edges()
 
     def half_edge_map(self, morphism: StableGraphMorphism) -> dict[int, int]:
         r"""Contravariant map on half-edges: `H(\mathrm{cod})\hookrightarrow H(\mathrm{dom})`."""
@@ -368,11 +375,15 @@ class StableGraphCategory(UniqueRepresentation):
             result[cod_edge] = (da, db)
         return result
 
-    def hom(self, domain: _GraphRecord | StableGraph, codomain: _GraphRecord | StableGraph) -> StableGraphHomset:
-        return StableGraphHomset(self, self._canonical(domain), self._canonical(codomain))
+    def hom(self, domain: StableGraph, codomain: StableGraph) -> StableGraphHomset:
+        return StableGraphHomset(
+            self,
+            self._require_stable_graph(domain)._canonical_record(),
+            self._require_stable_graph(codomain)._canonical_record(),
+        )
 
-    def end(self, graph: _GraphRecord | StableGraph) -> StableGraphHomset:
-        graph = self._canonical(graph)
+    def end(self, graph: StableGraph) -> StableGraphHomset:
+        graph = self._require_stable_graph(graph)
         return self.hom(graph, graph)
 
     def _identity_unbound(self, graph: _GraphRecord) -> StableGraphMorphism:
@@ -380,48 +391,49 @@ class StableGraphCategory(UniqueRepresentation):
         n_h = graph.num_flags()
         return StableGraphMorphism(graph, graph, tuple(range(n_v)), tuple(range(n_h)), frozenset())
 
-    def identity(self, graph: _GraphRecord | StableGraph) -> StableGraphMorphism:
-        graph = self._canonical(graph)
-        return self.end(graph)._bind(self._identity_unbound(graph))
+    def identity(self, graph: StableGraph) -> StableGraphMorphism:
+        graph = self._require_stable_graph(graph)
+        return self.end(graph)._bind(self._identity_unbound(graph._canonical_record()))
 
-    def contract(self, graph: _GraphRecord | StableGraph, edges: tuple[tuple[int, int], ...]) -> StableGraphMorphism:
-        graph = self._canonical(graph)
-        _target_type, contraction = contract_edges(graph, edges)
+    def contract(self, graph: StableGraph, edges: tuple[tuple[int, int], ...]) -> StableGraphMorphism:
+        graph = self._require_stable_graph(graph)
+        record = graph._canonical_record()
+        _target_type, contraction = contract_edges(record, edges)
         morph = StableGraphMorphism._from_contraction_unbound(contraction)
         # Land on skeletal object
         skeletal = self._canonical(morph._codomain)
         if morph._codomain != skeletal:
             iso = StableGraphMorphism.from_isomorphism(isomorphism_between(morph._codomain, skeletal))
             morph = iso.compose(morph)
-        return self.hom(graph, skeletal)._bind(morph)
+        return self.hom(graph, self._graphs(skeletal))._bind(morph)
 
-    def automorphism_group(self, graph: _GraphRecord | StableGraph, on: str = "vertices") -> _Object:
+    def automorphism_group(self, graph: StableGraph, on: str = "vertices") -> _Object:
         r"""Sage permutation group of `\operatorname{Aut}(G)` acting on the requested set."""
         from ._automorphism_action import _GraphAutomorphismData
 
-        graph = self._canonical(graph)
-        action = _GraphAutomorphismData.from_graph(graph)
+        record = self._require_stable_graph(graph)._canonical_record()
+        action = _GraphAutomorphismData.from_graph(record)
         if on == "vertices":
-            return _permutation_group_from_images(action.on_vertices(), graph.num_vertices())
+            return _permutation_group_from_images(action.on_vertices(), record.num_vertices())
         if on in ("half_edges", "flags"):
-            return _permutation_group_from_images(action.on_flags(), graph.num_flags())
+            return _permutation_group_from_images(action.on_flags(), record.num_flags())
         if on == "edges":
-            return _permutation_group_from_images(action.on_edges(), graph.num_edges())
+            return _permutation_group_from_images(action.on_edges(), record.num_edges())
         raise ValueError(f"unknown automorphism action target {on!r}")
 
-    def automorphism_morphisms(self, graph: _GraphRecord | StableGraph) -> tuple[StableGraphMorphism, ...]:
-        graph = self._canonical(graph)
+    def automorphism_morphisms(self, graph: StableGraph) -> tuple[StableGraphMorphism, ...]:
+        graph = self._require_stable_graph(graph)
         units = [m for m in self.end(graph) if m.is_isomorphism()]
         return tuple(units)
 
-    def codimension(self, graph: _GraphRecord | StableGraph) -> int:
-        return self._canonical(graph).num_edges()
+    def codimension(self, graph: StableGraph) -> int:
+        return self._require_stable_graph(graph).num_edges()
 
-    def stratum_dimension(self, graph: _GraphRecord | StableGraph) -> int:
-        graph = self._canonical(graph)
+    def stratum_dimension(self, graph: StableGraph) -> int:
+        record = self._require_stable_graph(graph)._canonical_record()
         total = 0
-        for vertex in range(graph.num_vertices()):
-            total += 3 * graph.vertex_genus(vertex) - 3 + graph.valence(vertex)
+        for vertex in range(record.num_vertices()):
+            total += 3 * record.vertex_genus(vertex) - 3 + record.valence(vertex)
         return total
 
     def boundary_divisors(self) -> tuple[StableGraph, ...]:
@@ -437,17 +449,17 @@ class StableGraphCategory(UniqueRepresentation):
         max_e = max(g.num_edges() for g in objects)
         return tuple(g for g in objects if g.num_edges() == max_e)
 
-    def clutching_source(self, graph: _GraphRecord | StableGraph) -> tuple[tuple[int, tuple[int, ...]], ...]:
+    def clutching_source(self, graph: StableGraph) -> tuple[tuple[int, tuple[int, ...]], ...]:
         r"""Formal source `\prod_v \overline{\mathcal M}_{g(v),H(v)}` as `((g(v), H(v)))_v`."""
-        graph = self._canonical(graph)
+        record = self._require_stable_graph(graph)._canonical_record()
         factors: list[tuple[int, tuple[int, ...]]] = []
-        for vertex in range(graph.num_vertices()):
-            factors.append((graph.vertex_genus(vertex), graph.flags_at(vertex)))
+        for vertex in range(record.num_vertices()):
+            factors.append((record.vertex_genus(vertex), record.flags_at(vertex)))
         return tuple(factors)
 
-    def node_pairings(self, graph: _GraphRecord | StableGraph) -> tuple[tuple[int, int], ...]:
+    def node_pairings(self, graph: StableGraph) -> tuple[tuple[int, int], ...]:
         r"""Internal edges as two-element `\iota`-orbits (formal node gluings)."""
-        return self._canonical(graph).internal_edges()
+        return self._require_stable_graph(graph)._canonical_record().internal_edges()
 
     def specialization_poset(self) -> FinitePoset:
         r"""Specialization poset whose elements are :class:`StableGraph` classes.

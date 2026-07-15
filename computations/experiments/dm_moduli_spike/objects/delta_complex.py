@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .edge_orbits import automorphism_edge_orbit_indices
+from .stable_graphs import StableGraph, StableGraphs
 
 if TYPE_CHECKING:
     from sage.combinat.posets.posets import FinitePoset
@@ -17,7 +18,6 @@ if TYPE_CHECKING:
 
     from .gamma import StableGraphCategory
     from .records import _GraphRecord
-    from .stable_graphs import StableGraph
 
 
 class SymmetricDeltaComplex:
@@ -47,9 +47,13 @@ class SymmetricDeltaComplex:
 
     def edge_orbit_cells(self, graph: _GraphRecord | StableGraph) -> tuple[tuple[tuple[int, int], ...], ...]:
         r"""Aut-orbits on internal edges of `G` (cone generators modulo Aut)."""
-        graph = self._category.object(graph)
-        edges = graph.internal_edges()
-        orbits = automorphism_edge_orbit_indices(graph._canonical_record())
+        if isinstance(graph, StableGraph):
+            typed = graph
+        else:
+            typed = StableGraphs(self.genus(), self.number_of_markings())(graph)
+        typed = self._category.object(typed)
+        edges = typed.internal_edges()
+        orbits = automorphism_edge_orbit_indices(typed._canonical_record())
         return tuple(tuple(edges[i] for i in orbit) for orbit in orbits)
 
     def cone_dimension(self, graph: _GraphRecord | StableGraph) -> int:

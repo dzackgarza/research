@@ -83,4 +83,8 @@ def test_geometric_stratum_is_distinct_from_indexing_graph_type():
 
 
 def Gamma_clutching_flags(graph):
+    from dm_moduli_spike.objects.stable_graphs import StableGraph, StableGraphs
+
+    if not isinstance(graph, StableGraph):
+        graph = StableGraphs(graph.genus(), graph.num_markings())(graph)
     return StableGraphCategory(graph.genus(), graph.num_markings()).clutching_source(graph)

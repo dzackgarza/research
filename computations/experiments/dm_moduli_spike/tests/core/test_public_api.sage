@@ -143,6 +143,24 @@ def test_banned_shim_modules_unimportable():
         raise AssertionError(f"banned module {modname!r} is still importable")
 
 
+def test_gamma_public_apis_reject_private_graph_records():
+    from dm_moduli_spike.objects.records import _GraphRecord
+    from dm_moduli_spike.objects.stable_graphs import StableGraphs
+
+    gamma = StableGraphCategory(1, 1)
+    graphs = StableGraphs(1, (1,))
+    smooth = graphs.smooth()
+    record = smooth._canonical_record()
+    assert isinstance(record, _GraphRecord)
+    try:
+        gamma.identity(record)
+    except TypeError as exc:
+        assert "StableGraph" in str(exc)
+    else:
+        raise AssertionError("identity() must reject private _GraphRecord")
+    assert gamma.identity(smooth).domain() == smooth
+
+
 def test_stable_graph_has_no_public_record_method():
     from dm_moduli_spike.objects.stable_graphs import StableGraphs
 

@@ -321,8 +321,10 @@ class _GraphRecord:
         ``on`` is one of ``"vertices"``, ``"half_edges"`` / ``"flags"``, or ``"edges"``.
         """
         from .gamma import StableGraphCategory
+        from .stable_graphs import StableGraphs
 
-        return StableGraphCategory(self.genus(), self.num_markings()).automorphism_group(self, on=on)
+        element = StableGraphs(self.genus(), self.num_markings())(self)
+        return StableGraphCategory(self.genus(), self.num_markings()).automorphism_group(element, on=on)
 
     def contract(self, edge: tuple[int, int]) -> tuple[StableGraphElement, StableGraphContraction]:
         from .contractions import contract_edge
