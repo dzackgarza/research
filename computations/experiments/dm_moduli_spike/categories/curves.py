@@ -12,7 +12,7 @@ Hierarchy (over `B` in `\mathrm{Sch}/B`):
 
 These declare the geometric hierarchy.  Concrete curve *objects* are Sage
 :class:`~sage.schemes.curves.curve.Curve_generic` instances wrapped in
-``computations/scripts/dm_moduli_landscape/curves/pointed``.  This package does
+``dm_moduli_spike.curves.pointed``.  This package does
 **not** claim Sage supplies Deligne--Mumford stacks or a universal family over
 `\mathcal M_{g,n}`.
 """

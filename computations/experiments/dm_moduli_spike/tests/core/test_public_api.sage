@@ -28,6 +28,8 @@ _BANNED_PUBLIC_NAMES = (
     "ModuliMorphism",
     "CoarseModuliMap",
     "SchemeStackAdapter",
+    "Curve",
+    "NormalizationMorphism",
 )
 
 _BANNED_MODULES = (
