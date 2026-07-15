@@ -72,7 +72,7 @@ def expected_boundary_labels(g: int, n: int) -> set[BoundaryLabel]:
     if g >= 1:
         labels.add(("irr",))
     ground = frozenset(range(1, n + 1))
-    seen: set[tuple[int, frozenset[int]]] = set()
+    seen: set[tuple[int, tuple[int, ...]]] = set()
     for a in range(g + 1):
         for size in range(n + 1):
             for subset in combinations(ground, size):
@@ -83,11 +83,14 @@ def expected_boundary_labels(g: int, n: int) -> set[BoundaryLabel]:
                     continue
                 b_set = ground - a_set
                 b = g - a
-                key = (a, a_set) if (a, a_set) <= (b, b_set) else (b, b_set)
+                # Total order: frozenset <= is subset, so incomparable parts must not be compared that way.
+                left = (a, tuple(sorted(a_set)))
+                right = (b, tuple(sorted(b_set)))
+                key = left if left <= right else right
                 if key in seen:
                     continue
                 seen.add(key)
-                labels.add(("sep", key[0], key[1]))
+                labels.add(("sep", key[0], frozenset(key[1])))
     return labels
 
 
@@ -107,10 +110,12 @@ def boundary_label(curve_type: StableGraph, g: int, n: int) -> BoundaryLabel:
     assert left != right
     a = genera[0]
     a_set = markings[0]
+    b = genera[1]
     b_set = markings[1]
-    if (genera[1], b_set) < (a, a_set):
-        a, a_set = genera[1], b_set
-    return ("sep", a, frozenset(a_set))
+    left_key = (a, tuple(sorted(a_set)))
+    right_key = (b, tuple(sorted(b_set)))
+    chosen = left_key if left_key <= right_key else right_key
+    return ("sep", chosen[0], frozenset(chosen[1]))
 
 
 def expected_clutching_signature_irr(g: int, n: int) -> tuple[tuple[int, int], ...]:
