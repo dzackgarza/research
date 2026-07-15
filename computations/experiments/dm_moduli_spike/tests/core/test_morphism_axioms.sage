@@ -1,28 +1,27 @@
-r"""Tier-4 internal consistency: executable graph isomorphism and contraction axioms."""
+r"""Tier-4: isomorphism certificates and contraction morphisms on StableGraph."""
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.contractions import _contract_edges
-from dm_moduli_spike.objects.isomorphisms import StableGraphIsomorphism, canonicalize, identity_isomorphism
+from dm_moduli_spike.objects.gamma import StableGraphCategory
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 
 
-def test_identity_isomorphism_passes_post_init():
+def test_identity_morphism_is_isomorphism():
     types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
-    graph = gamma._canonical_record()
-    iso = identity_isomorphism(graph)
-    assert iso.source == graph
-    assert iso.target == graph
+    morph = StableGraphCategory(0, 4).identity(gamma)
+    assert morph.domain() == gamma
+    assert morph.codomain() == gamma
+    assert morph.is_isomorphism()
+    assert morph.num_contracted_edges() == 0
 
 
-def test_canonicalization_certificate_is_valid_isomorphism():
+def test_from_vertices_returns_canonical_stable_graph():
     types = StableGraphs(1, 2)
     gamma = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
-    graph = gamma._canonical_record()
-    cert = canonicalize(graph)
-    assert isinstance(cert, StableGraphIsomorphism)
-    assert cert.source == graph
+    again = types.from_vertices(genera=(0, 0), markings=((2,), (1,)), edges=((0, 1), (0, 1)))
+    assert gamma == again
+    assert gamma.parent() is types
 
 
 def test_contraction_witnesses_from_orbit_data_validate():
@@ -43,7 +42,7 @@ def test_multi_edge_contraction_validates():
         markings=((1, 2), (3,), (4, 5)),
         edges=((0, 1), (1, 2)),
     )
-    graph = gamma._canonical_record()
-    _, composite = _contract_edges(graph, graph.internal_edges())
-    assert composite.num_contracted_edges() == 2
-    assert composite.is_identity() is False
+    morph = StableGraphCategory(0, 5).contract(gamma, gamma.internal_edges())
+    assert morph.num_contracted_edges() == 2
+    assert morph.is_isomorphism() is False
+    assert morph.is_contraction()

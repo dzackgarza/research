@@ -24,11 +24,12 @@ def test_hasse_diagram_equals_elementary_contraction_relation(g, n):
     expected_covers: set[tuple[object, object]] = set()
 
     for special in poset:
-        delta_graph = special._canonical_record()
-        for edge in delta_graph.internal_edges():
-            generic_type, _ = delta_graph.contract(edge)
-            generic = by_key[generic_type.canonical_key()]
-            expected_covers.add((generic, special))
+        from dm_moduli_spike.objects.gamma import StableGraphCategory
+
+        Gamma = StableGraphCategory(special.genus(), special.num_markings())
+        for edge in special.internal_edges():
+            generic = Gamma.contract(special, (edge,)).codomain()
+            expected_covers.add((by_key[generic.canonical_key()], special))
 
     actual_covers = set(map(tuple, poset.cover_relations()))
     assert actual_covers == expected_covers

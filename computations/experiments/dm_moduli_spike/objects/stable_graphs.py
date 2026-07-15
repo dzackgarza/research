@@ -728,6 +728,14 @@ class Leg(Element):
     def label(self) -> int:
         return self._label
 
+    def flag(self) -> int:
+        return self._flag
+
+    def vertex(self) -> int:
+        parent = self.parent()
+        assert isinstance(parent, Legs), f"Leg.parent must be Legs; found {type(parent)!r}"
+        return int(parent._graph._record.flag_vertex[self._flag])
+
     def _repr_(self) -> str:
         return f"Leg({self._label})"
 

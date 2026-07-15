@@ -202,13 +202,6 @@ class StackObject(Element):
 StackFiber.Element = StackObject
 
 
-class StackObjectIsomorphism(Element):
-    def __init__(self, parent: object, source: StackObject, target: StackObject) -> None:
-        self._source = source
-        self._target = target
-        Element.__init__(self, cast(Parent, parent))
-
-
 class StackHomset(UniqueRepresentation, Parent):
     r"""Hom-set parent ``Hom(X, Y)`` of stack morphisms."""
 
@@ -277,13 +270,6 @@ class StackMorphism(Element):
 
 
 StackHomset.Element = StackMorphism
-
-
-class Stack2Isomorphism(Element):
-    def __init__(self, parent: object, f: StackMorphism, g: StackMorphism) -> None:
-        self._f = f
-        self._g = g
-        Element.__init__(self, cast(Parent, parent))
 
 
 class OpenImmersion(StackMorphism):

@@ -12,7 +12,6 @@ from dm_moduli_spike.objects.stable_graphs import StableGraphs
 def test_open_stack_presentation_factors_and_group_order():
     types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
-    graph = gamma._canonical_record()
     XSbar = Mbar_gn(0, 4, base=spec(ZZ))
     S = XSbar.stratification().stratum(gamma)
     underlying = S.underlying_stack()
@@ -20,13 +19,12 @@ def test_open_stack_presentation_factors_and_group_order():
     assert int(underlying.group().order()) == gamma.automorphism_number()
     factors = S.clutching_morphism().domain().factors()
     assert sorted((f.genus(), f.number_of_markings()) for f in factors) == [(0, 3), (0, 3)]
-    assert [flags for _g, flags in Gamma_clutching_flags(graph)] == [(0, 1, 4), (2, 3, 5)]
+    assert [flags for _g, flags in Gamma_clutching_flags(gamma)] == [(0, 1, 4), (2, 3, 5)]
 
 
 def test_closure_normalization_uses_compact_factors():
     types = StableGraphs(0, 4)
     gamma = types.from_vertices(genera=(0, 0), markings=((1, 2), (3, 4)), edges=((0, 1),))
-    graph = gamma._canonical_record()
     XSbar = Mbar_gn(0, 4, base=spec(ZZ))
     S = XSbar.stratification().stratum(gamma)
     factors = S.clutching_morphism().domain().factors()
@@ -37,7 +35,6 @@ def test_closure_normalization_uses_compact_factors():
 def test_clutching_morphism_targets_the_ambient_compactification():
     types = StableGraphs(1, 1)
     loop = types.from_vertices(genera=(0,), markings=((1,),), edges=((0, 0),))
-    graph = loop._canonical_record()
     XSbar = Mbar_gn(1, 1, base=spec(ZZ))
     S = XSbar.stratification().stratum(loop)
     xi = S.clutching_morphism()
@@ -83,8 +80,4 @@ def test_geometric_stratum_is_distinct_from_indexing_graph_type():
 
 
 def Gamma_clutching_flags(graph):
-    from dm_moduli_spike.objects.stable_graphs import StableGraph, StableGraphs
-
-    if not isinstance(graph, StableGraph):
-        graph = StableGraphs(graph.genus(), graph.num_markings())(graph)
     return StableGraphCategory(graph.genus(), graph.num_markings()).clutching_source(graph)

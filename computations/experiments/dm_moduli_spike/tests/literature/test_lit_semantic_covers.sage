@@ -33,11 +33,11 @@ def test_M11_unique_cover_is_loop_contraction():
 
     assert poset.cover_relations() == [[smooth, nodal]]
 
-    nodal_graph = nodal._canonical_record()
-    contractions = list(nodal_graph.internal_edges())
-    assert len(contractions) == 1
-    _, contraction = nodal_graph.contract(contractions[0])
-    assert contraction.target_type() == smooth
+    edges = nodal.internal_edges()
+    assert len(edges) == 1
+    morph = StableGraphCategory(1, 1).contract(nodal, edges)
+    assert morph.codomain() == smooth
+    assert morph.is_contraction()
 
 
 def test_M12_exact_semantic_cover_relations():
