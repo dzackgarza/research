@@ -125,9 +125,13 @@ def expected_clutching_signature_irr(g: int, n: int) -> tuple[tuple[int, int], .
 def expected_clutching_signature_sep(g: int, n: int, a: int, marking_set: frozenset[int]) -> tuple[tuple[int, int], ...]:
     b = g - a
     b_set = frozenset(label for label in range(1, n + 1) if label not in marking_set)
-    return (
-        (a, len(marking_set) + 1),
-        (b, len(b_set) + 1),
+    return tuple(
+        sorted(
+            (
+                (a, len(marking_set) + 1),
+                (b, len(b_set) + 1),
+            )
+        )
     )
 
 
