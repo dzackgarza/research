@@ -1,4 +1,4 @@
-r"""Adapter over ``admcycles.decorated_graph``.
+r"""Owned-graph wrap of ``admcycles.decorated_graph``.
 
 ``admcycles.decorated_graph.stable_graphs`` enumerates stable graphs up to
 isomorphism with explicit contraction morphisms.  Results are converted to the
@@ -181,7 +181,7 @@ def edge_orbit_sizes(decorated: object) -> tuple[tuple[tuple[int, int], int], ..
     )
 
 
-class AdmcyclesDecoratedGraphBackend:
+class AdmcyclesDecoratedGraphs:
     r"""Enumerator via ``admcycles.decorated_graph.stable_graphs``."""
 
     def is_available(self) -> bool:

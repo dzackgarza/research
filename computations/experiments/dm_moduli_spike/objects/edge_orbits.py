@@ -71,7 +71,7 @@ def _contraction_witness_from_decorated(
     g: int,
     n: int,
 ) -> StableGraphContraction:
-    from ..backends.admcycles_decorated import (
+    from .._admcycles.admcycles_decorated import (
         _record_to_decorated_graph,
         contraction_from_decorated_morphism,
     )
@@ -94,9 +94,9 @@ def _elementary_contraction_data(source: StableGraph) -> tuple[tuple[StableGraph
     n = parent.number_of_markings()
     graph = source._canonical_record()
     edges = graph.internal_edges()
-    from ..backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
+    from .._admcycles.admcycles_decorated import AdmcyclesDecoratedGraphs
 
-    use_decorated = AdmcyclesDecoratedGraphBackend().is_available()
+    use_decorated = AdmcyclesDecoratedGraphs().is_available()
 
     data: list[tuple[StableGraph, StableGraphContraction, int]] = []
     for group in automorphism_edge_orbit_indices(graph):

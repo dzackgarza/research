@@ -1,12 +1,11 @@
-r"""Adapter over the established ``admcycles`` :class:`StableGraph` interface.
+r"""Owned-graph wrap of the ``admcycles`` :class:`StableGraph` interface.
 
-This is the correctness-oriented backend.  ``admcycles`` already enumerates the
-boundary strata of :math:`\overline{\mathcal M}_{g,n}` by codimension
-(``admcycles.list_strata(g, n, r)``), tests isomorphism, contracts edges and
-reports half-edge automorphism numbers.  The adapter converts every returned
-``StableGraph`` into the spike's owned
-:class:`~dm_moduli_spike.objects.stable_graphs.StableGraph`, so no
-``admcycles`` class ever surfaces in the public API.
+``admcycles`` enumerates boundary strata of :math:`\overline{\mathcal M}_{g,n}`
+by codimension (``admcycles.list_strata(g, n, r)``), tests isomorphism, contracts
+edges, and reports half-edge automorphism numbers.  Every returned object is
+converted to the spike's owned
+:class:`~dm_moduli_spike.objects.stable_graphs.StableGraph`, so no ``admcycles``
+class surfaces in the public API.
 """
 
 from __future__ import annotations
@@ -100,7 +99,7 @@ def _record_to_stable_graph(record: _GraphRecord, g: int, n: int) -> object:
     return stable_graph
 
 
-class AdmcyclesStableGraphBackend:
+class AdmcyclesStableGraphs:
     r"""Enumeration and cross-checks via ``admcycles.list_strata``."""
 
     def is_available(self) -> bool:

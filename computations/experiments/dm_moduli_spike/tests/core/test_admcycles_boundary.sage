@@ -1,18 +1,18 @@
-r"""Tier-3 differential check: backend adapters must not leak third-party types.
+r"""Tier-3 differential check: admcycles boundary must not leak third-party types.
 
 Not a literature oracle — agreement with ``admcycles`` is tier-3 CAS differential evidence.
 """
 
 from __future__ import annotations
 
-from dm_moduli_spike.backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
-from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
+from dm_moduli_spike._admcycles.admcycles_decorated import AdmcyclesDecoratedGraphs
+from dm_moduli_spike._admcycles.admcycles_stable import AdmcyclesStableGraphs
 
 from dm_moduli_spike.objects.stable_graphs import StableGraph, StableGraphs
 
 
-def test_stable_backend_returns_owned_curve_types_only():
-    backend = AdmcyclesStableGraphBackend()
+def test_admcycles_stable_returns_owned_curve_types_only():
+    backend = AdmcyclesStableGraphs()
     types = StableGraphs(1, 2)
     pure_keys = {gamma.canonical_key() for gamma in types}
     produced = backend.stable_curve_types(types)
@@ -22,19 +22,19 @@ def test_stable_backend_returns_owned_curve_types_only():
     assert all(gamma.parent() == types for gamma in produced)
 
 
-def test_decorated_backend_matches_pure_sage_canonical_keys():
+def test_decorated_matches_pure_sage_canonical_keys():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
         types = StableGraphs(g, n)
         pure_keys = {gamma.canonical_key() for gamma in types}
-        decorated = tuple(AdmcyclesDecoratedGraphBackend().stable_curve_types(types))
+        decorated = tuple(AdmcyclesDecoratedGraphs().stable_curve_types(types))
         decorated_keys = {gamma.canonical_key() for gamma in decorated}
         assert pure_keys == decorated_keys
         assert all(isinstance(gamma, StableGraph) and gamma.parent() == types for gamma in decorated)
 
 
-def test_decorated_backend_rank_buckets_match_edge_counts():
+def test_decorated_rank_buckets_match_edge_counts():
     types = StableGraphs(1, 2)
-    decorated = tuple(AdmcyclesDecoratedGraphBackend().stable_curve_types(types))
+    decorated = tuple(AdmcyclesDecoratedGraphs().stable_curve_types(types))
     for codim in range(types.dimension() + 1):
         level = [gamma for gamma in decorated if gamma.num_edges() == codim]
         assert all(gamma.num_edges() == codim for gamma in level)
@@ -43,7 +43,7 @@ def test_decorated_backend_rank_buckets_match_edge_counts():
 def test_decorated_morphism_adapter_matches_native_contraction():
     from admcycles.decorated_graph import DecoratedGraph
 
-    from dm_moduli_spike.backends.admcycles_decorated import contraction_from_decorated_morphism
+    from dm_moduli_spike._admcycles.admcycles_decorated import contraction_from_decorated_morphism
 
     loop = DecoratedGraph([0], [[1]], [(0, 0, 1)])
     loop_morphism = loop.edge_contraction_morphism([(0, 0, 1)])
@@ -63,7 +63,7 @@ def test_decorated_morphism_adapter_matches_native_contraction():
 def test_decorated_converter_expands_loops_and_parallel_multiplicities():
     from admcycles.decorated_graph import DecoratedGraph
 
-    from dm_moduli_spike.backends.admcycles_decorated import _record_from_decorated_graph
+    from dm_moduli_spike._admcycles.admcycles_decorated import _record_from_decorated_graph
 
     loop = DecoratedGraph([0], [[1]], [(0, 0, 1)])
     loop_record = _record_from_decorated_graph(loop, 1, 1)
@@ -74,16 +74,16 @@ def test_decorated_converter_expands_loops_and_parallel_multiplicities():
     assert parallel_record.num_edges() == 2
 
 
-def test_decorated_backend_prefers_availability():
-    decorated_backend = AdmcyclesDecoratedGraphBackend()
-    assert decorated_backend.is_available()
+def test_decorated_prefers_availability():
+    decorated = AdmcyclesDecoratedGraphs()
+    assert decorated.is_available()
     types = StableGraphs(0, 4)
-    decorated = tuple(decorated_backend.stable_curve_types(types))
+    decorated = tuple(decorated.stable_curve_types(types))
     assert {gamma.canonical_key() for gamma in decorated} == {gamma.canonical_key() for gamma in types}
 
 
 def test_record_to_stable_graph_roundtrip_preserves_type():
-    from dm_moduli_spike.backends.admcycles_stable import _record_from_stable_graph, _record_to_stable_graph
+    from dm_moduli_spike._admcycles.admcycles_stable import _record_from_stable_graph, _record_to_stable_graph
 
     types = StableGraphs(1, 2)
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
@@ -93,10 +93,10 @@ def test_record_to_stable_graph_roundtrip_preserves_type():
     assert types.from_graph(roundtrip) == theta
 
 
-def test_stable_backend_aut_number_agrees_via_owned_roundtrip():
-    from dm_moduli_spike.backends.admcycles_stable import _record_from_stable_graph
+def test_admcycles_stable_aut_number_agrees_via_owned_roundtrip():
+    from dm_moduli_spike._admcycles.admcycles_stable import _record_from_stable_graph
 
-    backend = AdmcyclesStableGraphBackend()
+    backend = AdmcyclesStableGraphs()
     types = StableGraphs(1, 2)
     for gamma in types:
         stable = backend.to_admcycles(types, gamma)
@@ -105,7 +105,7 @@ def test_stable_backend_aut_number_agrees_via_owned_roundtrip():
 
 
 def test_record_to_decorated_graph_roundtrip_preserves_type():
-    from dm_moduli_spike.backends.admcycles_decorated import _record_from_decorated_graph, _record_to_decorated_graph
+    from dm_moduli_spike._admcycles.admcycles_decorated import _record_from_decorated_graph, _record_to_decorated_graph
 
     types = StableGraphs(1, 2)
     theta = types.from_vertices(genera=(0, 0), markings=((1,), (2,)), edges=((0, 1), (0, 1)))
@@ -118,7 +118,7 @@ def test_record_to_decorated_graph_roundtrip_preserves_type():
 def test_decorated_covers_have_upstream_morphisms():
     from admcycles.decorated_graph import DecoratedGraph
 
-    from dm_moduli_spike.backends.admcycles_decorated import (
+    from dm_moduli_spike._admcycles.admcycles_decorated import (
         _record_to_decorated_graph,
         contraction_from_decorated_morphism,
     )

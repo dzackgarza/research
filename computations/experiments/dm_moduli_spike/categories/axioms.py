@@ -1,8 +1,10 @@
 r"""Category axioms for structure morphisms over a base scheme.
 
 Refinements such as ``DeligneMumfordStacks(S).Smooth().Proper()`` are theorem-backed
-joins: constructors of concrete parents declare membership; there is no equation-level
-decision procedure for properness.
+joins. Membership ``X in C.Proper()`` checks that ``X.declared_axioms()`` contains
+``Proper`` — it does **not** recompute properness from equations or atlases.
+Constructors of concrete parents are responsible for declaring only axioms that
+the literature / theorem establishes for that object.
 """
 
 from __future__ import annotations

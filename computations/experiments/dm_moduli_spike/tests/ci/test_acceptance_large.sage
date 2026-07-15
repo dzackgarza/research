@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
+from dm_moduli_spike._admcycles.admcycles_stable import AdmcyclesStableGraphs
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.testing_support.support.fixtures import rank_sizes, strata_by_codimension
 
@@ -34,7 +34,7 @@ def test_bucketing_is_by_num_edges_not_generation_provenance():
 
 
 def test_admcycles_stable_backend_matches_pure_sage_canonical_keys():
-    backend = AdmcyclesStableGraphBackend()
+    backend = AdmcyclesStableGraphs()
     for g, n in [(0, 5), (1, 2), (2, 0), (2, 1)]:
         types = StableGraphs(g, n)
         pure_keys = {gamma.canonical_key() for gamma in types}

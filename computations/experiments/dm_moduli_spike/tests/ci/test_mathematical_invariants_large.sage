@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
+from dm_moduli_spike._admcycles.admcycles_stable import AdmcyclesStableGraphs
 from dm_moduli_spike.objects.gamma import StableGraphCategory
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.testing_support.support.fixtures import rank_sizes, strata_by_codimension
@@ -18,7 +18,7 @@ def test_external_backend_subset_disagrees_with_full_enumeration():
     full_keys = {gamma.canonical_key() for gamma in curve_types}
     assert partial_keys != full_keys
 
-    backend = AdmcyclesStableGraphBackend()
+    backend = AdmcyclesStableGraphs()
     full = tuple(backend.stable_curve_types(curve_types))
     truncated = tuple(gamma for gamma in full if gamma.num_edges() <= 1)
     assert {gamma.canonical_key() for gamma in truncated} != full_keys

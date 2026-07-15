@@ -8,7 +8,7 @@ import pickle
 import pytest
 from sage.combinat.permutation import Permutations
 
-from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
+from dm_moduli_spike._admcycles.admcycles_stable import AdmcyclesStableGraphs
 from dm_moduli_spike.objects.records import _GraphRecord
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 
@@ -85,7 +85,7 @@ def test_random_relabelings_produce_the_same_canonical_key():
 
 def test_automorphism_numbers_agree_with_admcycles_on_M21():
     types = StableGraphs(2, 1)
-    backend = AdmcyclesStableGraphBackend()
+    backend = AdmcyclesStableGraphs()
     for gamma in types:
         assert gamma.automorphism_number() == backend.admcycles_automorphism_number(types, gamma)
 

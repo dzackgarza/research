@@ -7,7 +7,7 @@ from collections import Counter
 from admcycles.decorated_graph import DecoratedGraph
 
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
-from dm_moduli_spike.backends.admcycles_decorated import (
+from dm_moduli_spike._admcycles.admcycles_decorated import (
     _record_from_decorated_graph,
     _record_to_decorated_graph,
 )
@@ -27,7 +27,7 @@ def _adm_orbit_sizes(dg):
 
 
 def _adm_contraction_multiset(dg, g, n):
-    from dm_moduli_spike.backends.admcycles_decorated import contraction_from_decorated_morphism
+    from dm_moduli_spike._admcycles.admcycles_decorated import contraction_from_decorated_morphism
 
     parent = StableGraphs(g, n)
     entries: list[tuple[object, int]] = []

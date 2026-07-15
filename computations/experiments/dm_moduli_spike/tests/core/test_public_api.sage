@@ -31,6 +31,8 @@ _BANNED_PUBLIC_NAMES = (
     "Curve",
     "NormalizationMorphism",
     "StratifiedSpace",
+    "Backend",
+    "Adapter",
 )
 
 _BANNED_MODULES = (
@@ -45,6 +47,8 @@ _BANNED_MODULES = (
     "dm_moduli_spike.geometry.morphisms",
     "dm_moduli_spike.moduli.coarse",
     "dm_moduli_spike.moduli.problems",
+    "dm_moduli_spike.backends",
+    "dm_moduli_spike.admcycles",
 )
 
 

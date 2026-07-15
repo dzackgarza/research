@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections import Counter
 
-from dm_moduli_spike.backends.admcycles_decorated import AdmcyclesDecoratedGraphBackend
+from dm_moduli_spike._admcycles.admcycles_decorated import AdmcyclesDecoratedGraphs
 
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.testing_support.support.fixtures import genus_six_counterexample, m12_types
@@ -41,7 +41,7 @@ def test_decorated_and_pure_sage_orbit_data_agree():
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
         types = StableGraphs(g, n)
         pure_by_key = {gamma.canonical_key(): gamma for gamma in types}
-        for delta in AdmcyclesDecoratedGraphBackend().stable_curve_types(types):
+        for delta in AdmcyclesDecoratedGraphs().stable_curve_types(types):
             key = delta.canonical_key()
             assert key in pure_by_key
             pure_data = pure_by_key[key].elementary_contractions()

@@ -11,7 +11,7 @@ from dm_moduli_spike.objects._automorphism_action import _GraphAutomorphismData
 from dm_moduli_spike.objects.records import _GraphRecord
 import pytest
 
-from dm_moduli_spike.backends.admcycles_stable import AdmcyclesStableGraphBackend
+from dm_moduli_spike._admcycles.admcycles_stable import AdmcyclesStableGraphs
 from dm_moduli_spike.objects.canonical import canonical_record
 from dm_moduli_spike.testing_support.support.fixtures import rank_sizes
 from dm_moduli_spike.testing_support.support.fixtures import (
@@ -74,7 +74,7 @@ def test_stack_signature_carries_automorphism_group_not_just_order():
 
 
 def test_admcycles_stable_backend_matches_pure_sage_when_complete():
-    backend = AdmcyclesStableGraphBackend()
+    backend = AdmcyclesStableGraphs()
     for g, n in [(0, 4), (1, 1), (1, 2), (2, 0)]:
         types = StableGraphs(g, n)
         pure_keys = {gamma.canonical_key() for gamma in types}
@@ -149,7 +149,7 @@ def test_automorphism_action_fixes_markings_and_permutes_parallel_edges():
 
 
 def test_backend_enumeration_agrees_with_stable_graphs_rank_sizes():
-    backend = AdmcyclesStableGraphBackend()
+    backend = AdmcyclesStableGraphs()
     types = StableGraphs(0, 4)
     adm = tuple(backend.stable_curve_types(types))
     assert {gamma.canonical_key() for gamma in adm} == {gamma.canonical_key() for gamma in types}
@@ -181,7 +181,7 @@ def test_admcycles_backend_does_not_call_pure_sage_enumeration(monkeypatch):
 
     monkeypatch.setattr(enumeration, "all_stable_curve_types", boom)
     monkeypatch.setattr(enumeration, "one_edge_degenerations", boom)
-    backend = AdmcyclesStableGraphBackend()
+    backend = AdmcyclesStableGraphs()
     types = StableGraphs(0, 4)
     produced = tuple(backend.stable_curve_types(types))
     assert len(produced) == types.cardinality()
@@ -280,7 +280,7 @@ def test_factor_slots_on_m04_split_type():
 def test_decorated_edge_orbit_morphisms_contract_to_codimension_one():
     from admcycles.decorated_graph import DecoratedGraph
 
-    from dm_moduli_spike.backends.admcycles_decorated import contraction_from_decorated_morphism
+    from dm_moduli_spike._admcycles.admcycles_decorated import contraction_from_decorated_morphism
 
     dg = DecoratedGraph([0, 0], [[1, 2], [3, 4]], [(0, 1, 1)])
     for u, v, _size in dg.edge_orbit_representatives():

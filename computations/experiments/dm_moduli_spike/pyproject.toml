@@ -18,7 +18,7 @@ packages = [
     "dm_moduli_spike.geometry",
     "dm_moduli_spike.moduli",
     "dm_moduli_spike.objects",
-    "dm_moduli_spike.backends",
+    "dm_moduli_spike._admcycles",
 ]
 
 [tool.pytest.ini_options]

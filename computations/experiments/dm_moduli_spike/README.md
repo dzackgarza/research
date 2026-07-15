@@ -47,7 +47,7 @@ Combinatorial Γ remains available via `StableGraphCategory`.
 | --- | --- | --- |
 | 1 | Literature oracles | `tests/literature/` |
 | 2 | Independent checksums | literature docstrings |
-| 3 | `admcycles` differential | `tests/core/test_backends.sage` |
+| 3 | `admcycles` differential | `tests/core/test_admcycles_boundary.sage` |
 | 4 | Geometric ontology + Γ oracles | `tests/core/test_geometric_ontology.sage`, `test_gamma_category.sage` |
 | 5 | Rank vectors / diagnostics | acceptance fixtures |
 
