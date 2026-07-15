@@ -55,28 +55,37 @@ class Groupoid(UniqueRepresentation, Parent):
 
 
 class ModuliProblem(UniqueRepresentation):
-    r"""Contravariant pseudofunctor-shaped moduli problem to groupoids."""
+    r"""Contravariant pseudofunctor-shaped moduli problem to groupoids.
+
+    Smooth vs stable pointed-curve problems are distinct subclasses — not a
+    ``stable=`` constructor flag (§13).
+    """
 
     @staticmethod
-    def __classcall_private__(cls: type[ModuliProblem], *args: object, **kwargs: object) -> ModuliProblem:
+    def __classcall__(cls: type[ModuliProblem], *args: object, **kwargs: object) -> ModuliProblem:
+        r"""Normalize markings and cache; inherited by concrete subclasses.
+
+        Must be ``__classcall__`` (not ``__classcall_private__``): Sage ignores
+        private classcalls on subclasses, so ``StablePointedCurveModuliProblem(g, n, …)``
+        would otherwise cache raw integer markings and break uniqueness vs tuple ``I``.
+        """
         from .._typing_utils import as_int
 
-        assert len(args) >= 3, f"ModuliProblem(g, I, base, *, stable=False); found args={args!r}"
+        assert cls is not ModuliProblem, f"construct SmoothPointedCurveModuliProblem or StablePointedCurveModuliProblem; found bare ModuliProblem args={args!r}"
+        assert len(args) >= 3, f"{cls.__name__}(g, I, base); found args={args!r}"
         g, I, base = args[0], args[1], args[2]
-        stable = bool(kwargs.pop("stable", False))
         assert not kwargs, f"unexpected kwargs {sorted(kwargs)!r}"
         assert isinstance(base, AffineScheme), f"expected AffineScheme; found {type(base)!r}"
-        result = super().__classcall__(cls, as_int(g), _marking_set(I), base, stable=stable)
+        result = UniqueRepresentation.__classcall__(cls, as_int(g), _marking_set(I), base)
         assert isinstance(result, ModuliProblem), f"classcall must return ModuliProblem; found {type(result)!r}"
         return result
 
-    def __init__(self, g: int, I: object, base: AffineScheme, *, stable: bool = False) -> None:
+    def __init__(self, g: int, I: object, base: AffineScheme) -> None:
         from .._typing_utils import as_int
 
         self._g = as_int(g)
         self._I = _marking_set(I) if not isinstance(I, tuple) else tuple(I)
         self._base = base
-        self._stable = bool(stable)
 
     def genus(self) -> int:
         return self._g
@@ -91,34 +100,52 @@ class ModuliProblem(UniqueRepresentation):
         return self._base
 
     def is_stable(self) -> bool:
-        r"""True when this is the stable (compactified) pointed-curve moduli problem."""
-        return self._stable
+        r"""True for the stable pointed-curve moduli problem."""
+        return isinstance(self, StablePointedCurveModuliProblem)
 
     def objects_over(self, T: object) -> Groupoid:
-        from ..curves.families import PointedCurveFamily, StablePointedCurveFamily
-
-        kind = "stable" if self._stable else "smooth"
-        g, I = self._g, self._I
-        base = self._base
-        stable = self._stable
-
-        def _factory() -> object:
-            sections = tuple(I)
-            if stable:
-                return StablePointedCurveFamily(base, T, sections, genus=g, marking_set=I)
-            return PointedCurveFamily(base, T, sections, genus=g, marking_set=I, stable=False)
-
-        return Groupoid(
-            f"{kind} pointed curves of type ({self._g},{len(self._I)}) over {T!r}",
-            family_factory=_factory,
-        )
+        raise NotImplementedError("implemented on SmoothPointedCurveModuliProblem / StablePointedCurveModuliProblem")
 
     def pullback(self, f: object) -> ModuliProblem:
         return self
 
     def _repr_(self) -> str:
-        tag = "StablePointedCurves" if self._stable else "SmoothPointedCurves"
+        tag = "StablePointedCurves" if self.is_stable() else "SmoothPointedCurves"
         return f"{tag}({self._g}, {len(self._I)})"
+
+
+class SmoothPointedCurveModuliProblem(ModuliProblem):
+    r"""Moduli problem of smooth pointed curves of type `(g, I)`."""
+
+    def objects_over(self, T: object) -> Groupoid:
+        from ..curves.families import PointedCurveFamily
+
+        g, I, base = self._g, self._I, self._base
+
+        def _factory() -> object:
+            return PointedCurveFamily(base, T, tuple(I), genus=g, marking_set=I, stable=False)
+
+        return Groupoid(
+            f"smooth pointed curves of type ({self._g},{len(self._I)}) over {T!r}",
+            family_factory=_factory,
+        )
+
+
+class StablePointedCurveModuliProblem(ModuliProblem):
+    r"""Moduli problem of stable pointed curves of type `(g, I)`."""
+
+    def objects_over(self, T: object) -> Groupoid:
+        from ..curves.families import StablePointedCurveFamily
+
+        g, I, base = self._g, self._I, self._base
+
+        def _factory() -> object:
+            return StablePointedCurveFamily(base, T, tuple(I), genus=g, marking_set=I)
+
+        return Groupoid(
+            f"stable pointed curves of type ({self._g},{len(self._I)}) over {T!r}",
+            family_factory=_factory,
+        )
 
 
 class CoarseModuliVariety(Variety):
@@ -180,7 +207,7 @@ class ModuliStack(DeligneMumfordStack):
         assert isinstance(problem, ModuliProblem), f"expected ModuliProblem; found {type(problem)!r}"
         if name is None:
             name = ("Mbar" if problem.is_stable() else "M") + f"_{problem.genus()},{problem.number_of_markings()}"
-        result = super().__classcall__(cls, problem, name=name)
+        result = UniqueRepresentation.__classcall__(cls, problem, name=name)
         assert isinstance(result, ModuliStack), f"classcall must return ModuliStack; found {type(result)!r}"
         return result
 
@@ -303,17 +330,20 @@ class ModuliStack(DeligneMumfordStack):
         )
         return ModuliStackFiber(self, x, self.objects_over(x))
 
+    def fiber(self, T: object) -> ModuliStackFiber:
+        return self(T)
+
 
 def M_gI(g: int, I: object, base: AffineScheme | None = None) -> ModuliStack:
     resolved = base if base is not None else spec(ZZ)
     check_z_scheme(resolved)
-    return ModuliStack(ModuliProblem(g, I, resolved, stable=False))
+    return ModuliStack(SmoothPointedCurveModuliProblem(g, I, resolved))
 
 
 def Mbar_gI(g: int, I: object, base: AffineScheme | None = None) -> ModuliStack:
     resolved = base if base is not None else spec(ZZ)
     check_z_scheme(resolved)
-    return ModuliStack(ModuliProblem(g, I, resolved, stable=True))
+    return ModuliStack(StablePointedCurveModuliProblem(g, I, resolved))
 
 
 def M_gn(g: int, n: int, base: AffineScheme | None = None) -> ModuliStack:

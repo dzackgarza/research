@@ -41,7 +41,22 @@ _BANNED_MODULES = (
     "dm_moduli_spike.stratification.stratified",
     "dm_moduli_spike.geometry.morphisms",
     "dm_moduli_spike.moduli.coarse",
+    "dm_moduli_spike.moduli.problems",
 )
+
+
+def test_moduli_problems_are_distinct_classes_not_stable_flag():
+    from dm_moduli_spike.moduli.instances import (
+        SmoothPointedCurveModuliProblem,
+        StablePointedCurveModuliProblem,
+    )
+
+    XS = M_gn(0, 4, base=spec(QQ))
+    XSbar = spike.Mbar_gn(0, 4, base=spec(QQ))
+    assert isinstance(XS.moduli_problem(), SmoothPointedCurveModuliProblem)
+    assert isinstance(XSbar.moduli_problem(), StablePointedCurveModuliProblem)
+    assert not XS.moduli_problem().is_stable()
+    assert XSbar.moduli_problem().is_stable()
 
 
 def test_public_all_includes_moduli_and_gamma():
