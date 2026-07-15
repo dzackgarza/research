@@ -41,9 +41,8 @@ class StableGraphMorphism(Element):
     flag set.  Derived from contractions and isomorphisms.
 
     When constructed inside a :class:`StableGraphHomset`, this is a Sage
-    :class:`~sage.structure.element.Element` of that Hom-set.  Factory helpers
-    used during enumeration may temporarily produce unbound morphisms
-    (``parent=None``); the Hom-set rebinds them.
+    :class:`~sage.structure.element.Element` of that Hom-set.  Enumeration may
+    temporarily produce unbound morphisms (``parent=None``); the Hom-set rebinds them.
     """
 
     def __init__(

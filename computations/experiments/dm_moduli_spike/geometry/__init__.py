@@ -35,7 +35,6 @@ from .stratification import (
     Strata,
     Stratification,
     Stratifications,
-    StratifiedSpace,
     Stratum,
 )
 
@@ -68,7 +67,6 @@ __all__ = [
     "Strata",
     "Stratification",
     "Stratifications",
-    "StratifiedSpace",
     "Stratum",
     "Variety",
     "scheme_open_immersion_compactification",

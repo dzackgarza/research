@@ -30,6 +30,7 @@ _BANNED_PUBLIC_NAMES = (
     "SchemeStackAdapter",
     "Curve",
     "NormalizationMorphism",
+    "StratifiedSpace",
 )
 
 _BANNED_MODULES = (

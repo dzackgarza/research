@@ -215,31 +215,6 @@ class Stratification(Element):
 Stratifications.Element = Stratification
 
 
-class StratifiedSpace(UniqueRepresentation, Parent):
-    def __init__(self, underlying: object, stratification: Stratification) -> None:
-        from ..categories.base import AffineScheme
-        from ..categories.stratified import StratifiedSpaces
-
-        self._underlying = underlying
-        self._stratification = stratification
-        assert hasattr(underlying, "base_scheme"), (
-            f"StratifiedSpace requires underlying.base_scheme(); found {type(underlying)!r}; "
-            f"underlying={underlying!r}; owned boundary=StratifiedSpace.__init__; "
-            "pass a GeometricObject that exposes base_scheme()"
-        )
-        base = underlying.base_scheme()
-        assert isinstance(base, AffineScheme), (
-            f"underlying.base_scheme() must return AffineScheme; found {type(base)!r}; underlying={underlying!r}; owned boundary=StratifiedSpace.__init__"
-        )
-        Parent.__init__(self, category=StratifiedSpaces(base))
-
-    def underlying_space(self) -> object:
-        return self._underlying
-
-    def stratification(self) -> Stratification:
-        return self._stratification
-
-
 class ClutchingMorphism(StackMorphism):
     r"""Clutching morphism as a stack morphism in a Hom-set."""
 
