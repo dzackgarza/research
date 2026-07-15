@@ -14,6 +14,34 @@ test: siting-check
 test-ci: siting-check
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
 
+# Run one Sage proof file through the same preparse boundary used by central QC.
+test-file test_file:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{justfile_directory()}}"
+    case "{{test_file}}" in
+        tests/*/test_*.sage) ;;
+        *) echo "test-file requires tests/**/test_*.sage; found={{test_file}}" >&2; exit 2 ;;
+    esac
+    if [ ! -f "{{test_file}}" ]; then
+        echo "test file does not exist: {{test_file}}" >&2
+        exit 2
+    fi
+    sage_bin="${SAGE_BIN:?SAGE_BIN must name the Sage executable}"
+    preparse_dir="$(mktemp -d "${TMPDIR:-/tmp}/owned-sets-test.XXXXXX")"
+    trap 'if [ -e "$preparse_dir" ]; then gio trash "$preparse_dir"; fi' EXIT
+    copied_file="$preparse_dir/{{test_file}}"
+    mkdir -p "$(dirname "$copied_file")"
+    cp "{{test_file}}" "$copied_file"
+    (
+        cd "$preparse_dir"
+        "$sage_bin" --preparse "{{test_file}}" >/dev/null
+    )
+    generated_file="$copied_file.py"
+    importable_file="${generated_file%.sage.py}.py"
+    mv "$generated_file" "$importable_file"
+    "$sage_bin" -python -m pytest -p no:cacheprovider "$importable_file"
+
 # Prove the lexicon stub subtree (lexicon/ + typings/): the catalogue must
 # type-check strictly as a collection of stubs, and every claim the stubs make
 # about Sage must hold on the running Sage (INVENTORY.md Part V).
