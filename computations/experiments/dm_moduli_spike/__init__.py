@@ -57,7 +57,9 @@ from .geometry import (
     QuotientStack,
     StableDualGraph,
     Stack,
+    Stack2Isomorphism,
     StackMorphism,
+    StackObjectIsomorphism,
     Strata,
     Stratification,
     Stratifications,
@@ -65,7 +67,7 @@ from .geometry import (
     Variety,
     scheme_open_immersion_compactification,
 )
-from .moduli import M_gI, M_gn, Mbar_gI, Mbar_gn, ModuliStack
+from .moduli import M_gI, M_gn, Mbar_gI, Mbar_gn, ModuliProblem, ModuliStack
 from .objects.delta_complex import SymmetricDeltaComplex, symmetric_delta_complex
 from .objects.gamma import (
     Gamma_gn,
@@ -94,6 +96,7 @@ __all__ = [
     "M_gn",
     "Mbar_gI",
     "Mbar_gn",
+    "ModuliProblem",
     "ModuliStack",
     "ModuliStacks",
     "OpenSubstack",
@@ -102,7 +105,9 @@ __all__ = [
     "QuotientStack",
     "Schemes",
     "Stack",
+    "Stack2Isomorphism",
     "StackMorphism",
+    "StackObjectIsomorphism",
     "Stacks",
     "StableDualGraph",
     "StableGraph",

@@ -217,6 +217,34 @@ def test_quotient_stack_outside_moduli():
     assert Q in DeligneMumfordStacks(k)
 
 
+def test_stack_fiber_and_hom_2_isomorphisms():
+    r"""Stack fibers and Hom-sets carry formal isomorphism / 2-isomorphism certificates."""
+    from dm_moduli_spike import ModuliProblem, Stack, Stack2Isomorphism, StackObjectIsomorphism
+    from dm_moduli_spike.geometry.stacks import StackHomset
+
+    k = spec(QQ)
+    XS = M_gn(1, 1, base=k)
+    assert isinstance(XS.moduli_problem(), ModuliProblem)
+
+    X = Stack(k, name="X", axioms=frozenset({"FiniteType"}))
+    fiber = X.fiber(k)
+    a = fiber.an_element()
+    b = fiber.an_element()
+    iso = fiber.isomorphism(a, b)
+    assert isinstance(iso, StackObjectIsomorphism)
+    assert iso.source() is a
+    assert iso.target() is b
+
+    HomXX = StackHomset(XS, XS)
+    f = HomXX.an_element()
+    g = HomXX(kind="atlas")
+    two = HomXX.isomorphism(f, g)
+    assert isinstance(two, Stack2Isomorphism)
+    assert two in HomXX
+    assert two.source() is f
+    assert two.target() is g
+
+
 def test_gamma_objects_and_hom_domain_are_stable_graphs():
     Gamma = StableGraphCategory(1, 1)
     objects = Gamma.objects()

@@ -188,7 +188,11 @@ class StackFiber(UniqueRepresentation, Parent):
         raise TypeError(f"cannot construct a stack object from {type(x).__name__}")
 
     def an_element(self) -> object:
-        return cast(StackObject, self())
+        return cast(StackObject, self.element_class(self))
+
+    def isomorphism(self, source: StackObject, target: StackObject) -> StackObjectIsomorphism:
+        r"""Formal isomorphism in this fiber groupoid between ``source`` and ``target``."""
+        return StackObjectIsomorphism(self, source, target)
 
     def _repr_(self) -> str:
         return f"{self._stack!r}({self._T!r})"
@@ -203,6 +207,58 @@ class StackObject(Element):
 
 
 StackFiber.Element = StackObject
+
+
+class StackObjectIsomorphism(Element):
+    r"""Isomorphism in a stack fiber groupoid ``X(T)`` between two objects.
+
+    Formal certificate: domain/codomain objects live in the same
+    :class:`StackFiber`. This is the 1-cell invertibility data inside the fiber,
+    not an equation-level check of atlases.
+    """
+
+    def __init__(self, parent: StackFiber, source: StackObject, target: StackObject) -> None:
+        if source.parent() is not parent or target.parent() is not parent:
+            raise ValueError(f"fiber isomorphisms require objects of {parent!r}; found {source.parent()!r} and {target.parent()!r}")
+        self._source = source
+        self._target = target
+        Element.__init__(self, parent)
+
+    def source(self) -> StackObject:
+        return self._source
+
+    def target(self) -> StackObject:
+        return self._target
+
+    def _repr_(self) -> str:
+        return f"StackObjectIsomorphism({self._source!r} ≃ {self._target!r})"
+
+
+class Stack2Isomorphism(Element):
+    r"""2-isomorphism between parallel stack morphisms ``f, g: X → Y``.
+
+    Stacks form a 2-category: 1-morphisms may be isomorphic without being equal.
+    This element is a formal certificate that ``f`` and ``g`` share domain and
+    codomain; it lives in :class:`StackHomset` alongside the 1-morphisms.
+    """
+
+    def __init__(self, parent: StackHomset, f: StackMorphism, g: StackMorphism) -> None:
+        if f.parent() is not parent or g.parent() is not parent:
+            raise ValueError(f"2-isomorphisms require morphisms of {parent!r}; found {f.parent()!r} and {g.parent()!r}")
+        if f.domain() is not g.domain() or f.codomain() is not g.codomain():
+            raise ValueError(f"parallel 2-isomorphism requires shared domain/codomain; found {f!r} and {g!r}")
+        self._f = f
+        self._g = g
+        Element.__init__(self, parent)
+
+    def source(self) -> StackMorphism:
+        return self._f
+
+    def target(self) -> StackMorphism:
+        return self._g
+
+    def _repr_(self) -> str:
+        return f"Stack2Isomorphism({self._f!r} ⇒ {self._g!r})"
 
 
 class StackHomset(UniqueRepresentation, Parent):
@@ -241,11 +297,19 @@ class StackHomset(UniqueRepresentation, Parent):
     def an_element(self) -> StackMorphism:
         return cast(StackMorphism, self(kind="morphism"))
 
+    def isomorphism(self, f: StackMorphism, g: StackMorphism) -> Stack2Isomorphism:
+        r"""Formal 2-isomorphism certificate between parallel morphisms ``f`` and ``g``."""
+        return Stack2Isomorphism(self, f, g)
+
     def _repr_(self) -> str:
         return f"Hom({self._domain!r}, {self._codomain!r})"
 
     def __contains__(self, morph: object) -> bool:
-        return isinstance(morph, StackMorphism) and morph.domain() is self._domain and morph.codomain() is self._codomain
+        if isinstance(morph, StackMorphism):
+            return morph.domain() is self._domain and morph.codomain() is self._codomain
+        if isinstance(morph, Stack2Isomorphism):
+            return morph.parent() is self
+        return False
 
 
 class StackMorphism(Element):

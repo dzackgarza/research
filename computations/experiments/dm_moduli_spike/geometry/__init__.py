@@ -24,9 +24,11 @@ from .stacks import (
     ProductStack,
     QuotientStack,
     Stack,
+    Stack2Isomorphism,
     StackFiber,
     StackHomset,
     StackMorphism,
+    StackObjectIsomorphism,
     Variety,
 )
 from .stratification import (
@@ -61,9 +63,11 @@ __all__ = [
     "QuotientStack",
     "StableDualGraph",
     "Stack",
+    "Stack2Isomorphism",
     "StackFiber",
     "StackHomset",
     "StackMorphism",
+    "StackObjectIsomorphism",
     "Strata",
     "Stratification",
     "Stratifications",
