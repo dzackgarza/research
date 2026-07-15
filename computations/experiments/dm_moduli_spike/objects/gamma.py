@@ -18,7 +18,7 @@ from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
-from .contractions import StableGraphContraction, contract_edges
+from .contractions import _contract_edges, _StableGraphContraction
 from .isomorphisms import StableGraphIsomorphism, isomorphism_between
 from .records import _GraphRecord
 from .stable_graphs import StableGraph, StableGraphs
@@ -65,7 +65,7 @@ class StableGraphMorphism(Element):
             Element.__init__(self, parent)
 
     @staticmethod
-    def _from_contraction_unbound(contraction: StableGraphContraction) -> StableGraphMorphism:
+    def _from_contraction_unbound(contraction: _StableGraphContraction) -> StableGraphMorphism:
         r"""Internal: unlabeled Hom data before parenting into a Hom-set."""
         domain = contraction.domain()
         codomain = contraction.codomain()
@@ -85,7 +85,7 @@ class StableGraphMorphism(Element):
         )
 
     @staticmethod
-    def from_contraction(contraction: StableGraphContraction) -> StableGraphMorphism:
+    def from_contraction(contraction: _StableGraphContraction) -> StableGraphMorphism:
         r"""Hom-set element realizing a contraction of skeletal half-edge records."""
         unbound = StableGraphMorphism._from_contraction_unbound(contraction)
         gamma = StableGraphCategory(unbound._domain.genus(), unbound._domain.num_markings())
@@ -398,7 +398,7 @@ class StableGraphCategory(UniqueRepresentation):
     def contract(self, graph: StableGraph, edges: tuple[tuple[int, int], ...]) -> StableGraphMorphism:
         graph = self._require_stable_graph(graph)
         record = graph._canonical_record()
-        _target_type, contraction = contract_edges(record, edges)
+        _target_type, contraction = _contract_edges(record, edges)
         morph = StableGraphMorphism._from_contraction_unbound(contraction)
         # Land on skeletal object
         skeletal = self._canonical(morph._codomain)
@@ -534,7 +534,7 @@ class StableGraphCategory(UniqueRepresentation):
 
         for subset in combinations(range(len(edges)), edge_diff):
             chosen = tuple(edges[i] for i in subset)
-            target_type, contraction = contract_edges(domain, chosen)
+            target_type, contraction = _contract_edges(domain, chosen)
             if self._canonical(target_type) != codomain:
                 continue
             base = StableGraphMorphism._from_contraction_unbound(contraction)

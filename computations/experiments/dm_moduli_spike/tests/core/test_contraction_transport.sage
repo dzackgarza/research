@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.objects.records import _GraphRecord
-from dm_moduli_spike.objects.contractions import contract_edge
+from dm_moduli_spike.objects.contractions import _contract_edge
 from dm_moduli_spike.objects.isomorphisms import (
     identity_isomorphism,
     isomorphism_between,
@@ -34,7 +34,7 @@ def test_transport_square_preserves_flag_and_fibre_data():
         for edge in domain.internal_edges()
         if domain.flag_vertex[edge[0]] == domain.flag_vertex[edge[1]]
     )
-    _, contraction = contract_edge(domain, loop_edge)
+    _, contraction = _contract_edge(domain, loop_edge)
 
     domain_alt = _swap_vertices(domain)
     codomain_alt = _swap_vertices(contraction.codomain())
@@ -64,12 +64,12 @@ def test_transport_composes_with_native_contraction():
     domain = gamma._canonical_record()
     domain_alt = _swap_vertices(domain)
     edge = domain.internal_edges()[0]
-    _, contraction = contract_edge(domain, edge)
+    _, contraction = _contract_edge(domain, edge)
     alpha = isomorphism_between(domain, domain_alt)
     beta = identity_isomorphism(contraction.codomain())
     transported = transport_contraction(contraction, alpha, beta)
     edge_alt = transported.contracted_edges()[0]
-    image, native = contract_edge(domain_alt, edge_alt)
+    image, native = _contract_edge(domain_alt, edge_alt)
     assert image._canonical_record() == transported.codomain()
 
 
@@ -84,7 +84,7 @@ def test_banana_parallel_edge_transport_swaps_contracted_edge():
     assert len(edges) == 2
     assert banana.automorphism_number() == 2
 
-    _, q_edge0 = contract_edge(graph, edges[0])
+    _, q_edge0 = _contract_edge(graph, edges[0])
     flag_perm = flag_generator_images(graph)[0]
     assert flag_perm[edges[0][0]] == edges[1][0]
     alpha = StableGraphIsomorphism(
@@ -95,7 +95,7 @@ def test_banana_parallel_edge_transport_swaps_contracted_edge():
     )
     beta = identity_isomorphism(q_edge0.codomain())
     transported = transport_contraction(q_edge0, alpha, beta)
-    assert transported.contracted_flags() == contract_edge(graph, edges[1])[1].contracted_flags()
+    assert transported.contracted_flags() == _contract_edge(graph, edges[1])[1].contracted_flags()
 
 
 def test_canonical_relabeling_convenience_matches_explicit_isomorphisms():
@@ -107,7 +107,7 @@ def test_canonical_relabeling_convenience_matches_explicit_isomorphisms():
         for edge in domain.internal_edges()
         if domain.flag_vertex[edge[0]] == domain.flag_vertex[edge[1]]
     )
-    _, contraction = contract_edge(domain, loop_edge)
+    _, contraction = _contract_edge(domain, loop_edge)
     domain_alt = _swap_vertices(domain)
     codomain_alt = _swap_vertices(contraction.codomain())
     alpha = isomorphism_between(domain, domain_alt)

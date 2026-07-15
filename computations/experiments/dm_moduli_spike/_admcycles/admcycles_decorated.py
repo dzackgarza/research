@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 from ..objects.records import _GraphRecord
 
 if TYPE_CHECKING:
-    from ..objects.contractions import StableGraphContraction
+    from ..objects.contractions import _StableGraphContraction
     from ..objects.stable_graphs import StableGraph, StableGraphs
 
 
@@ -135,8 +135,8 @@ def contraction_from_decorated_morphism(
     n: int,
     *,
     domain_graph: _GraphRecord | None = None,
-) -> StableGraphContraction:
-    r"""Convert an ``admcycles`` ``DecoratedGraphMorphism`` to :class:`StableGraphContraction`."""
+) -> _StableGraphContraction:
+    r"""Convert an ``admcycles`` ``DecoratedGraphMorphism`` to :class:`_StableGraphContraction`."""
     from ..objects.contractions import _contract_flag_set
 
     if domain_graph is None:

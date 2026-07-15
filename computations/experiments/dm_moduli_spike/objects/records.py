@@ -36,7 +36,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sage.graphs.graph import Graph
 
-    from .contractions import StableGraphContraction
+    from .contractions import _StableGraphContraction
     from .stable_graphs import StableGraph as StableGraphElement
 
 
@@ -326,10 +326,10 @@ class _GraphRecord:
         element = StableGraphs(self.genus(), self.num_markings())(self)
         return StableGraphCategory(self.genus(), self.num_markings()).automorphism_group(element, on=on)
 
-    def contract(self, edge: tuple[int, int]) -> tuple[StableGraphElement, StableGraphContraction]:
-        from .contractions import contract_edge
+    def contract(self, edge: tuple[int, int]) -> tuple[StableGraphElement, _StableGraphContraction]:
+        from .contractions import _contract_edge
 
-        return contract_edge(self, edge)
+        return _contract_edge(self, edge)
 
     def canonical_form(self) -> tuple[StableGraphElement, _GraphRecord, dict[int, int]]:
         from .isomorphisms import canonicalize

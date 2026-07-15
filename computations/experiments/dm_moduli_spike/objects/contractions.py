@@ -1,4 +1,9 @@
-r"""Contractions as first-class morphisms between labeled stable graphs."""
+r"""Private contraction witnesses between labeled graph records.
+
+Public morphisms are :class:`~dm_moduli_spike.objects.gamma.StableGraphMorphism`
+elements of Hom-sets; this module owns the labeled-record witness used to
+build them.
+"""
 
 from __future__ import annotations
 
@@ -14,8 +19,8 @@ if TYPE_CHECKING:
     from .stable_graphs import StableGraph
 
 
-class StableGraphContraction:
-    r"""A contraction morphism ``domain -> codomain`` between labeled graphs."""
+class _StableGraphContraction:
+    r"""Private labeled-record witness for an edge contraction ``domain → codomain``."""
 
     __slots__ = (
         "_domain",
@@ -72,7 +77,7 @@ class StableGraphContraction:
         return len(self._contracted_flags) == 0
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, StableGraphContraction):
+        if not isinstance(other, _StableGraphContraction):
             return NotImplemented
         return (
             self._domain == other._domain
@@ -102,10 +107,10 @@ class StableGraphContraction:
         *,
         alpha: StableGraphIsomorphism | None = None,
         beta: StableGraphIsomorphism | None = None,
-    ) -> StableGraphContraction:
+    ) -> _StableGraphContraction:
         r"""Deprecated: pass explicit isomorphisms or use :func:`transport_contraction`."""
         warnings.warn(
-            "StableGraphContraction.with_endpoints is deprecated; "
+            "_StableGraphContraction.with_endpoints is deprecated; "
             "use transport_contraction(q, alpha, beta) or "
             "transport_contraction_via_canonical_relabeling(q, domain=..., codomain=...)",
             DeprecationWarning,
@@ -129,7 +134,7 @@ class StableGraphContraction:
             return transport_contraction(self, alpha_iso, beta_iso)
         return transport_contraction_via_canonical_relabeling(self, domain=domain, codomain=codomain)
 
-    def compose(self, other: StableGraphContraction) -> StableGraphContraction:
+    def compose(self, other: _StableGraphContraction) -> _StableGraphContraction:
         assert self._codomain == other._domain, (
             "composition requires the codomain graph of the first contraction to be the same labeled representative as the domain graph of the second"
         )
@@ -142,7 +147,7 @@ class StableGraphContraction:
         return f"Contraction of {self.num_contracted_edges()} edge(s): {self._domain!r} -> {self._codomain!r}"
 
 
-def _validate_contraction(contraction: StableGraphContraction) -> None:
+def _validate_contraction(contraction: _StableGraphContraction) -> None:
     domain = contraction._domain
     codomain = contraction._codomain
     target_type = contraction._target_type
@@ -241,7 +246,7 @@ def flag_map(source: _GraphRecord, target: _GraphRecord) -> dict[int, int]:
     return mapping
 
 
-def _contract_flag_set(domain: _GraphRecord, contracted_flags: frozenset[int]) -> StableGraphContraction:
+def _contract_flag_set(domain: _GraphRecord, contracted_flags: frozenset[int]) -> _StableGraphContraction:
     from .stable_graphs import StableGraphs
 
     record = domain
@@ -309,7 +314,7 @@ def _contract_flag_set(domain: _GraphRecord, contracted_flags: frozenset[int]) -
     raw_vertex_fibres = tuple(frozenset(fibre_sets[component]) for component in range(num_new_vertices))
     identity_domain = tuple(range(record.num_vertices()))
     vertex_fibres = remap_vertex_fibres(raw_vertex_fibres, cert.vertex_map, identity_domain)
-    return StableGraphContraction(
+    return _StableGraphContraction(
         domain=domain,
         codomain=codomain,
         target_type=target_type,
@@ -319,7 +324,7 @@ def _contract_flag_set(domain: _GraphRecord, contracted_flags: frozenset[int]) -
     )
 
 
-def contract_edge(graph: _GraphRecord, edge: tuple[int, int]) -> tuple[StableGraph, StableGraphContraction]:
+def _contract_edge(graph: _GraphRecord, edge: tuple[int, int]) -> tuple[StableGraph, _StableGraphContraction]:
     flag, partner = edge
     involution = graph.flag_involution
     assert involution[flag] == partner and involution[partner] == flag, f"{edge} is not an internal edge of {graph!r}"
@@ -327,7 +332,7 @@ def contract_edge(graph: _GraphRecord, edge: tuple[int, int]) -> tuple[StableGra
     return contraction.target_type(), contraction
 
 
-def contract_edges(graph: _GraphRecord, edges: tuple[tuple[int, int], ...]) -> tuple[StableGraph, StableGraphContraction]:
+def _contract_edges(graph: _GraphRecord, edges: tuple[tuple[int, int], ...]) -> tuple[StableGraph, _StableGraphContraction]:
     flags: set[int] = set()
     involution = graph.flag_involution
     for flag, partner in edges:

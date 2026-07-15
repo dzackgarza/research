@@ -31,6 +31,9 @@ _BANNED_PUBLIC_NAMES = (
     "Curve",
     "NormalizationMorphism",
     "StratifiedSpace",
+    "StableGraphContraction",
+    "contract_edges",
+    "contract_edge",
     "Backend",
     "Adapter",
 )

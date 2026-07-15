@@ -2,7 +2,7 @@ r"""Tier-4 internal consistency: executable graph isomorphism and contraction ax
 
 from __future__ import annotations
 
-from dm_moduli_spike.objects.contractions import contract_edges
+from dm_moduli_spike.objects.contractions import _contract_edges
 from dm_moduli_spike.objects.isomorphisms import StableGraphIsomorphism, canonicalize, identity_isomorphism
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 
@@ -44,6 +44,6 @@ def test_multi_edge_contraction_validates():
         edges=((0, 1), (1, 2)),
     )
     graph = gamma._canonical_record()
-    _, composite = contract_edges(graph, graph.internal_edges())
+    _, composite = _contract_edges(graph, graph.internal_edges())
     assert composite.num_contracted_edges() == 2
     assert composite.is_identity() is False

@@ -9,7 +9,7 @@ from .canonical import _flag_node, _incidence_graph
 from .records import _GraphRecord, intern_graph
 
 if TYPE_CHECKING:
-    from .contractions import StableGraphContraction
+    from .contractions import _StableGraphContraction
 
 
 @dataclass(frozen=True, slots=True)
@@ -162,16 +162,16 @@ def remap_vertex_fibres(
 
 
 def transport_contraction(
-    q: StableGraphContraction,
+    q: _StableGraphContraction,
     alpha: StableGraphIsomorphism,
     beta: StableGraphIsomorphism,
-) -> StableGraphContraction:
+) -> _StableGraphContraction:
     r"""Transport ``q`` along ``alpha: domain' -> domain`` and ``beta: codomain' -> codomain``.
 
     Returns the contraction ``beta o q o alpha^{-1}`` with domain ``alpha.target``
     and codomain ``beta.target``.
     """
-    from .contractions import StableGraphContraction
+    from .contractions import _StableGraphContraction
 
     assert alpha.source == q.domain(), "alpha.source must equal q.domain()"
     assert beta.source == q.codomain(), "beta.source must equal q.codomain()"
@@ -185,7 +185,7 @@ def transport_contraction(
         beta.vertex_map,
         alpha.vertex_map,
     )
-    return StableGraphContraction(
+    return _StableGraphContraction(
         domain=alpha.target,
         codomain=beta.target,
         target_type=q.target_type(),
@@ -196,11 +196,11 @@ def transport_contraction(
 
 
 def transport_contraction_via_canonical_relabeling(
-    q: StableGraphContraction,
+    q: _StableGraphContraction,
     *,
     domain: _GraphRecord,
     codomain: _GraphRecord,
-) -> StableGraphContraction:
+) -> _StableGraphContraction:
     r"""Transport ``q`` to new labeled endpoints via :func:`isomorphism_between`.
 
     This is a convenience wrapper around :func:`transport_contraction`.  The

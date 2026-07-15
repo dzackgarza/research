@@ -3,7 +3,7 @@ r"""Tier-4 internal consistency: contraction morphisms and cover witnesses."""
 from __future__ import annotations
 
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
-from dm_moduli_spike.objects.contractions import contract_edges
+from dm_moduli_spike.objects.contractions import _contract_edges
 
 
 def test_loop_contraction_adds_one_to_genus():
@@ -64,5 +64,5 @@ def test_contraction_composition_contracts_the_union_of_edges():
     assert composite.num_contracted_edges() == 2
     assert composite.codomain().graph_type().is_smooth()
     # contracting both edges directly agrees with the composite
-    direct, _ = contract_edges(graph, edges)
+    direct, _ = _contract_edges(graph, edges)
     assert direct._canonical_record() == composite.codomain()

@@ -9,7 +9,7 @@ from .._typing_utils import as_int
 from .records import _GraphRecord
 
 if TYPE_CHECKING:
-    from .contractions import StableGraphContraction
+    from .contractions import _StableGraphContraction
     from .stable_graphs import StableGraph
 
 
@@ -70,7 +70,7 @@ def _contraction_witness_from_decorated(
     edge: tuple[int, int],
     g: int,
     n: int,
-) -> StableGraphContraction:
+) -> _StableGraphContraction:
     from .._admcycles.admcycles_decorated import (
         _record_to_decorated_graph,
         contraction_from_decorated_morphism,
@@ -87,7 +87,7 @@ def _contraction_witness_from_decorated(
     return contraction_from_decorated_morphism(morphism, g, n, domain_graph=graph)
 
 
-def _elementary_contraction_data(source: StableGraph) -> tuple[tuple[StableGraph, StableGraphContraction, int], ...]:
+def _elementary_contraction_data(source: StableGraph) -> tuple[tuple[StableGraph, _StableGraphContraction, int], ...]:
     r"""Internal: one Aut edge orbit -> (target type, witness, orbit size)."""
     parent = source.parent()
     g = parent.genus()
@@ -98,7 +98,7 @@ def _elementary_contraction_data(source: StableGraph) -> tuple[tuple[StableGraph
 
     use_decorated = AdmcyclesDecoratedGraphs().is_available()
 
-    data: list[tuple[StableGraph, StableGraphContraction, int]] = []
+    data: list[tuple[StableGraph, _StableGraphContraction, int]] = []
     for group in automorphism_edge_orbit_indices(graph):
         representative = edges[group[0]]
         if use_decorated:
