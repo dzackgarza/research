@@ -26,7 +26,6 @@ from sage.categories.category_with_axiom import (
     all_axioms,
     axiom,
 )
-from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 from sage.categories.enumerated_sets import EnumeratedSets
 from sage.categories.functor import ForgetfulFunctor
 from sage.categories.homset import Hom as SageHom
@@ -383,7 +382,13 @@ class DiscriminantForms(Category_over_base_ring):
         return SyntheticQuadraticDiscriminantForm(gram_matrix, quadratic_modulus=quadratic_modulus, invariants=invariants)
 
     def super_categories(self) -> list[Category]:
-        return [CommutativeAdditiveGroups().Finite()]
+        # CP3 routing: the finite abelian groups chain through the owned
+        # additive spine, which itself refines Sage's commutative additive
+        # groups — listing both breaks C3 linearization, so the owned node
+        # alone carries the chain.
+        from .magmas import AdditiveGroups
+
+        return [AdditiveGroups().AdditiveCommutative().Finite()]
 
     def additional_structure(self) -> DiscriminantForms:
         return self

@@ -1246,8 +1246,48 @@ class FiniteAbelianGroup:
     @abstract_method
     def elementary_divisors(self) -> tuple[int, ...]: ...
 
-    @abstract_method
-    def cardinality(self) -> int: ...
+    # generic set behavior through the cyclic-factor rollup (CP3 routing).
+    # The invariant-factor decomposition D = prod Z/n_i is the group's
+    # trivialization; these are its definitional consequences, computed at
+    # this node once — leaf classes carry none of them.
+    def _cyclic_factor_product(self) -> Any:
+        r"""``U(Z/n_1) x ... x U(Z/n_k)``: the coordinate description's home,
+        built from the fundamental sets underlying the cyclic factors."""
+        from ..objects.fundamental_sets import IntegerModRing
+        from ..objects.set_constructions import CartesianProduct
+
+        return CartesianProduct(*[cast(Any, IntegerModRing(int(invariant))).underlying_set() for invariant in self.invariants()])
+
+    def cardinality(self) -> Cardinal:
+        r"""``|D| = prod n_i`` as a Cardinal — the rollup through the
+        cyclic-factor product (the empty decomposition is the singleton)."""
+        return cast("Cardinal", cast(Any, self._cyclic_factor_product()).cardinality())
+
+    def is_finite(self) -> bool:
+        return self.cardinality().is_finite()
+
+    def elements(self) -> tuple[DiscriminantFormElement, ...]:
+        r"""All elements, through the cyclic-factor coordinates — group
+        elements, never coordinate tuples."""
+        return tuple(cast(Any, self)(tuple(int(entry) for entry in cast(Any, point).value)) for point in self._cyclic_factor_product())
+
+    def list(self) -> tuple[DiscriminantFormElement, ...]:
+        return self.elements()
+
+    def __iter__(self) -> Iterator[DiscriminantFormElement]:
+        return iter(self.elements())
+
+    def _test_cardinality(self, **options: Any) -> None:
+        r"""Replace Sage's coarse cardinality contract (Integer-or-Infinity)
+        with the owned one: cardinality is a ``Cardinal``, coherent with
+        the finiteness predicate and the classical group order."""
+        tester = cast(Any, self)._tester(**options)
+        cardinality = self.cardinality()
+        from ..objects.cardinals import Cardinal as RuntimeCardinal
+
+        tester.assertTrue(isinstance(cardinality, RuntimeCardinal), f"cardinality must be a Cardinal; found {type(cardinality)}")
+        tester.assertTrue(cardinality.is_finite())
+        tester.assertEqual(cardinality, self.order())
 
     @abstract_method
     def order(self, element: DiscriminantFormElement | None = None) -> int: ...
@@ -1283,9 +1323,6 @@ class FiniteAbelianGroup:
     def zero(self) -> DiscriminantFormElement: ...
 
     @abstract_method
-    def elements(self) -> tuple[DiscriminantFormElement, ...]: ...
-
-    @abstract_method
     def discrete_exp(self, coefficients: Sequence[int]) -> DiscriminantFormElement: ...
 
     @abstract_method
@@ -1314,12 +1351,6 @@ class FiniteAbelianGroup:
         self,
     ) -> PermutationGroup:  # the GAP-backed permutation-group entry point
         ...
-
-    @abstract_method
-    def is_finite(self) -> bool: ...
-
-    @abstract_method
-    def list(self) -> tuple[DiscriminantFormElement, ...]: ...
 
     @abstract_method
     def random_element(self) -> DiscriminantFormElement: ...

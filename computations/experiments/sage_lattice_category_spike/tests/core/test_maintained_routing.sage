@@ -16,10 +16,11 @@ from __future__ import annotations
 
 from itertools import islice
 
-from sage.all import QQ, ZZ, matrix
+from sage.all import QQ, ZZ, Integer, matrix
 
 from sage_lattice_category_spike.lattice_categories import Lattice
 from sage_lattice_category_spike.objects.cardinals import Cardinal, aleph0
+from sage_lattice_category_spike.objects.magmas import AdditiveGroups
 from sage_lattice_category_spike.objects.modules import (
     FiniteFreeModules,
     FiniteProjectiveModules,
@@ -73,3 +74,36 @@ def test_enumeration_returns_lattice_elements_through_the_chosen_basis():
     # the enumeration speaks the lattice's own vocabulary: the form
     # evaluates on enumerated elements (A2 is negative-definite here)
     assert all(element.q() <= 0 for element in elements)
+
+
+def test_discriminant_groups_route_through_the_owned_additive_spine():
+    group = Lattice("A2").discriminant_group()
+    assert group in AdditiveGroups().AdditiveCommutative().Finite()
+
+
+def test_a_discriminant_group_rolls_up_through_its_cyclic_factor_product():
+    r"""The finite abelian group's rollup point is its cyclic-factor
+    decomposition ``D = prod Z/n_i``: cardinality is the product's Cardinal
+    and enumeration maps the factor product back through the group's own
+    element constructor. The group-theory spelling ``order()`` keeps its
+    classical Integer type."""
+    group = Lattice("A2").discriminant_group()
+
+    cardinality = group.cardinality()
+    assert isinstance(cardinality, Cardinal)
+    assert cardinality == 3
+    assert group.is_finite()
+
+    order = group.order()
+    assert order == 3
+    assert isinstance(order, Integer)
+
+    elements = group.elements()
+    assert len(elements) == 3
+    assert len(set(elements)) == 3
+    assert all(element.parent() is group for element in elements)
+    assert group.zero() in elements
+
+    trivial = Lattice("E8").discriminant_group()
+    assert trivial.cardinality() == 1
+    assert trivial.elements() == (trivial.zero(),)
