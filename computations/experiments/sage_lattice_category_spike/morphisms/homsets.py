@@ -302,6 +302,13 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
 
         return image(self)
 
+    def direct_sum(self, *others: lexicon.LatticeMorphism) -> lexicon.LatticeMorphism:
+        r"""``f (+) g`` — the direct-sum functor's action on morphisms, the
+        module-level construction's spelling on this morphism."""
+        from .constructions import direct_sum
+
+        return direct_sum(self, *others)
+
     def is_injective(self) -> bool:
         r"""[total] — full column rank (spec 3.5; free modules carry no torsion)."""
         return bool(self.matrix().rank() == self.domain().rank())

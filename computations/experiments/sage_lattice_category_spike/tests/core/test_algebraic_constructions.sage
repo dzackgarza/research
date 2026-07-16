@@ -70,6 +70,47 @@ def test_the_image_inclusion_and_cokernel_compose_exactly():
     assert constructions.cokernel(doubling).invariants() == constructions.cokernel(image_inclusion).invariants()
 
 
+def test_direct_sum_acts_on_morphisms_functorially():
+    r"""The direct sum is a functor, not an object-only construction: it
+    preserves identities and composition."""
+    a2 = Lattice("A2")
+    a1 = Lattice("A1")
+    first, second = a2.isometry_group().gens()[:2]
+    other = a1.identity_morphism()
+
+    summed = constructions.direct_sum(first, other)
+    assert summed.domain() == a2.direct_sum(a1)
+    assert summed.codomain() == a2.direct_sum(a1)
+
+    identity_sum = constructions.direct_sum(a2.identity_morphism(), other)
+    assert identity_sum == a2.direct_sum(a1).identity_morphism()
+
+    composed = constructions.direct_sum(second * first, other)
+    assert composed == constructions.direct_sum(second, other) * constructions.direct_sum(first, other)
+
+
+def test_direct_sum_of_morphisms_commutes_with_the_summand_embeddings():
+    r"""Naturality of the embeddings: ``(f (+) g)`` restricted along a
+    summand embedding is that summand's morphism followed by its embedding."""
+    a2 = Lattice("A2")
+    a1 = Lattice("A1")
+    isometry = a2.isometry_group().gens()[0]
+    other = a1.identity_morphism()
+
+    _, into_first, into_second = a2.direct_sum_with_embeddings(a1)
+    summed = constructions.direct_sum(isometry, other)
+    assert summed * into_first == into_first * isometry
+    assert summed * into_second == into_second * other
+
+
+def test_the_morphism_direct_sum_spelling_delegates_to_the_construction():
+    a2 = Lattice("A2")
+    a1 = Lattice("A1")
+    isometry = a2.isometry_group().gens()[0]
+    other = a1.identity_morphism()
+    assert isometry.direct_sum(other) == constructions.direct_sum(isometry, other)
+
+
 def test_lattice_morphism_spellings_delegate_to_the_constructions():
     collapse, _, _ = _collapse_of_degenerate_rank_two()
     assert collapse.kernel() == constructions.kernel(collapse)
