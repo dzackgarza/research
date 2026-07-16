@@ -695,6 +695,14 @@ class IsometryHomset(lexicon.IsometryHomset, Parent):
         r"""The ``O(M)``-action: postcomposition."""
         return group_element * element
 
+    def underlying_set(self) -> Any:
+        r"""``U(Isom(L, M))`` through the standard structure-forgetting
+        functor — the homset's own spelling; it sits outside the forwarding
+        roots' injection scope, so the delegation is written here."""
+        from ..objects.underlying_sets import UnderlyingSet
+
+        return UnderlyingSet(self)
+
     def cardinality(self) -> Cardinal:
         r"""``0`` when empty; the torsor contract's ``|O(M)|`` otherwise —
         the general node's typed operation, not a leaf spelling."""

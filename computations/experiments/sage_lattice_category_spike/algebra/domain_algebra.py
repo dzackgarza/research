@@ -349,6 +349,19 @@ class Lattice(CategoryObject):
         trivialization = self._coordinate_trivialization()
         return (cast("LatticeElement", trivialization(point)) for point in cast(Iterable[Any], trivialization.domain()))
 
+    def __getitem__(self, n: int) -> LatticeElement:
+        r"""The ``n``-th element of the enumeration, through the
+        trivialization — the coordinate product's own indexing, mapped back."""
+        trivialization = self._coordinate_trivialization()
+        return cast("LatticeElement", trivialization(cast(Any, trivialization.domain())[n]))
+
+    def index(self, element: LatticeElement) -> int:
+        r"""Reverse lookup: the element's position in the enumeration. The
+        element's coefficient vector IS its chosen-basis coordinates — the
+        element-side spelling of the same trivialization crossing."""
+        product = cast(Any, self._coordinate_trivialization().domain())
+        return int(product.index(product(tuple(element.coefficient_vector()))))
+
     def _test_cardinality(self, **options: Any) -> None:
         r"""Replace Sage's coarse cardinality contract (Integer-or-Infinity)
         with the owned one: this graph's cardinality is a ``Cardinal``
