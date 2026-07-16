@@ -1993,7 +1993,7 @@ class AtlasMorphism(StackMorphism):
         return self._covering_kind == "coarse_moduli" and not self._etale
 
     def is_quotient_presentation_atlas(self) -> bool:
-        r"""True for ``U → [U/G]`` presentations (quotient stacks; Legendre / Hesse ``M_{1,*}``)."""
+        r"""True for ``U → [U/G]`` presentations (quotient stacks; Legendre / Hesse / Igusa)."""
         return self._covering_kind in (
             "quotient_cover",
             "legendre_finite_etale_cover",
@@ -2008,6 +2008,7 @@ class AtlasMorphism(StackMorphism):
             "hesse_compact_universal_curve_finite_etale_cover",
             "hesse_marked_configuration_finite_etale_cover",
             "hesse_compact_marked_configuration_finite_etale_cover",
+            "igusa_binary_sextic_finite_etale_cover",
         )
 
     def covering_space(self) -> object | None:
