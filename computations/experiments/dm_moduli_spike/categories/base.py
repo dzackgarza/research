@@ -50,6 +50,18 @@ class AffineScheme(UniqueRepresentation):
         except TypeError, ValueError, AttributeError:
             return False
 
+    def standard_open(self, element: object) -> AffineScheme:
+        r"""Standard open `D(f) = \mathrm{Spec}(R_f)` for `f \in R`.
+
+        Localization uses Sage's ``ring.localization(element)`` when available.
+        The open immersion `D(f) \hookrightarrow \mathrm{Spec}(R)` is formally étale
+        (flat + unramified); see :class:`~dm_moduli_spike.geometry.stacks.FormallyEtaleSchemeCertificate`.
+        """
+        ring = self._ring
+        assert hasattr(ring, "localization"), f"ring must expose localization() for standard opens; found {type(ring)!r}"
+        localized = ring.localization(element)
+        return AffineScheme(localized)
+
     def _repr_(self) -> str:
         return f"Spec({self._ring})"
 

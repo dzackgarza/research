@@ -22,8 +22,8 @@ Wave 1 is **not complete**. Prior “honesty demotions” (`NotImplementedError`
 | Item | Status |
 | --- | --- |
 | Category / curve / stratification ontology fixes | Landed |
-| `atlas()` / `etale_atlas()` as `U → X` | **Deepened, incomplete** — quotient `(U,G)` presentation; product-of-étale-atlases; coarse≠étale checks; DM diagonal evidence + proving-set identity-Spec formally étale certificate. General equation-level étaleness unfinished |
-| Structured `pullback` (`PullbackStack`/`BaseChangeStack`) | **Deepened, incomplete** — both square legs + `mediating_morphism(a,b)` with leg recovery via `π₁∘m` / `π₂∘m`. Full Hom-category UP waits on #225 |
+| `atlas()` / `etale_atlas()` as `U → X` | **Deepened, incomplete** — quotient `(U,G)`; product-of-étale-atlases; coarse≠étale; DM diagonal evidence; proving-set certificates (identity, localization opens, separable finite étale); finite-`G` finite étale groupoid flags. Arbitrary-atlas equation-level étaleness unfinished |
+| Structured `pullback` / `fiber_product` | **Deepened, incomplete** — `BaseChangeStack` + `FiberProductStack` with legs/mediating recovery. Full Hom-category UP waits on #225 |
 | Aut(Γ) action on product strata | **Deepened, incomplete** — Sage `Action` subclass; factor swap on equal-type 2-vertex graphs; quotient covering autos. #225 `Actions` wiring unfinished |
 
 ## Mathematical contract (in-spike)
@@ -42,7 +42,7 @@ This package **implements** (partial; Wave 1 incomplete on atlas/pullback/Aut):
 
 This package **does not claim**:
 
-* Computational equation-level étale/properness tests for arbitrary stacks (proving-set identity-Spec certificate only).
+* Computational equation-level étale/properness tests for arbitrary stacks (proving-set certificates: identity, localization opens, separable finite étale algebras only).
 
 * A scheme-theoretic universal family over `\mathcal M_{g,n}`.
 
@@ -59,7 +59,7 @@ This package **does not claim**:
 | Canonical transport (public API) | **PARTIAL** |
 | Specialization poset Hom-certified | **PASS** |
 | Extraction of either package | **FAIL** |
-| Wave 1 complete (incl. full coherence) | **FAIL** — structural deepenings landed; #225-blocked: Hom-category UP, Actions category, Cat/Sets substrate; local: general equation-level étaleness |
+| Wave 1 complete (incl. full coherence) | **FAIL** — structural deepenings landed; #225-blocked: Hom-category UP, Actions category, Cat/Sets substrate; pre-#225: general equation-level étaleness beyond proving set |
 
 ## Public entry
 

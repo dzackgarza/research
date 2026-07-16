@@ -32,10 +32,10 @@ Independent DM math corrections that do not wait on #225. Status after deepen:
 | Surface | Status |
 | --- | --- |
 | Equipped `ModuliStacks` (not ⊆ DM), curve hierarchy, stratified objects, coarse AlgebraicSpaces-first, Γ indexing, restrict | Landed |
-| `atlas()` / `etale_atlas()` | **Deepened, still incomplete** — quotient atlases expose `(U, G)` presentation with domain = covering space; product étale atlas = product of factor étale atlases; coarse vs étale structurally distinguished; `AtlasEvidence` wires DM diagonal unramified+representable stamps; proving-set `FormallyEtaleSchemeCertificate` on identity `Spec(R)→Spec(R)`. Full equation-level étaleness on arbitrary atlases unfinished (Sage scheme morphisms lack `is_etale`) |
-| `pullback` | **Deepened, still incomplete** — `BaseChangeStack.mediating_morphism(a, b)` returns `PullbackMediatingMorphism` with recorded legs; formal `π₁∘m` / `π₂∘m` recover legs (2-cell check). Full 2-categorical Hom-category UP waits on #225 |
-| Aut(Γ) on product strata | **Deepened, still incomplete** — `AutProductStackAction` is a Sage `Action` subclass (`_act_` / overridden `act`); `QuotientStack` consumes action for covering autos / presentation uniqueness; equal-type 2-vertex swap hardened. #225 `Actions` category wiring unfinished |
-| Wave 1 overall | **Incomplete** — remaining blockers that truly need #225: Hom-category composition laws, Actions category membership, Cat/Sets substrate. Local structural deepenings above are not wins for Wave 1 completion |
+| `atlas()` / `etale_atlas()` | **Deepened, still incomplete** — quotient `(U,G)` presentation; product-of-étale-atlases; coarse≠étale; DM diagonal evidence; proving-set `FormallyEtaleSchemeCertificate` for identity, localization opens `D(f)→Spec(R)`, and separable finite étale `Spec(k[t]/(f))→Spec(k)` (Jacobian); finite-`G` quotient atlases expose finite étale groupoid flags (unramified+smooth / formally étale on covering). Equation-level étaleness on *arbitrary* atlases unfinished |
+| `pullback` / `fiber_product` | **Deepened, still incomplete** — `BaseChangeStack` mediating UP; `FiberProductStack` (not nameless shell) with projections + mediating leg recovery. Full Hom-category UP waits on #225 |
+| Aut(Γ) on product strata | **Deepened, still incomplete** — Sage `Action` subclass; `QuotientStack` consumes action; equal-type 2-vertex swap. #225 `Actions` category wiring unfinished |
+| Wave 1 overall | **Incomplete** — #225-blocked: Hom-category UP, Actions category, Cat/Sets substrate. Pre-#225: general atlas étaleness beyond proving-set certificates remains open |
 
 **Trap:** honesty demotion (`NotImplementedError`, identity morphisms, formal empty shells) is **not** remediation for PR #111 Wave 1.
 
@@ -96,7 +96,7 @@ Owns moduli parents, stratifications, clutching, geometric categories (`categori
 
 6. Axiom membership = theorem stamps (honest; not analytic proof).
 
-7. Atlas/pullback/Aut: structural deepenings landed (quotient presentation, product étale atlas, mediating UP, Sage `Action` subclass); equation-level étaleness on general atlases, full 2-cat Hom UP, and #225 Actions wiring remain (named gaps, not wins).
+7. Atlas/pullback/Aut/fiber-product: structural deepenings landed (quotient presentation, product étale atlas, `FiberProductStack`, mediating UP, Sage `Action`, proving-set étale certificates + finite étale groupoid flags); equation-level étaleness on arbitrary atlases, full 2-cat Hom UP, and #225 Actions wiring remain (named gaps, not wins).
 
 ## Forbidden
 

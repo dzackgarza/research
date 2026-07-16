@@ -91,19 +91,19 @@ class Stack(GeometricObject):
         """
         return BaseChangeStack(self, f)
 
-    def fiber_product(self, other: Stack, *, over: object | None = None) -> Stack:
-        r"""Formal fiber product ``self ×_S other`` (theorem-backed parent)."""
+    def fiber_product(self, other: Stack, *, over: object | None = None) -> FiberProductStack:
+        r"""Fiber product ``self ×_S other`` as a structured :class:`FiberProductStack`.
+
+        Not a nameless formal shell: records both factors, the base, and both
+        projections. Full Hom-category universal property waits on PR #225.
+        """
+        assert isinstance(other, Stack), f"fiber_product requires Stack; found {type(other)!r}"
         base = over if over is not None else self.base_scheme()
         if not isinstance(base, AffineScheme):
             if hasattr(base, "base_scheme"):
                 base = base.base_scheme()
         assert isinstance(base, AffineScheme), f"fiber_product requires AffineScheme base; found {type(base)!r}"
-        return Stack(
-            base,
-            name=f"FiberProduct({self!r}, {other!r})",
-            axioms=self.declared_axioms() & other.declared_axioms(),
-            category=self.category(),
-        )
+        return FiberProductStack(self, other, over=base)
 
     def _Hom_(self, other: object, category: object = None) -> StackHomset:
         return StackHomset(self, other)
@@ -302,6 +302,101 @@ def _base_scheme_along(base_morphism: object, fallback: AffineScheme) -> AffineS
         if isinstance(base, AffineScheme):
             return base
     return fallback
+
+
+class FiberProductStack(Stack):
+    r"""Structured fiber product ``X ×_S Y``.
+
+    Records both factors, the base scheme ``S``, and both projections
+    ``π₁: X×_S Y → X``, ``π₂: X×_S Y → Y``. Structural equality is
+    UniqueRepresentation on ``(left, right, base)``. Not a nameless formal
+    shell. Full Hom-category universal property waits on PR #225.
+    """
+
+    @staticmethod
+    def __classcall_private__(
+        cls: type,
+        left: Stack,
+        right: Stack,
+        *,
+        over: AffineScheme,
+    ) -> FiberProductStack:
+        assert isinstance(left, Stack), f"FiberProductStack requires Stack left; found {type(left)!r}"
+        assert isinstance(right, Stack), f"FiberProductStack requires Stack right; found {type(right)!r}"
+        assert isinstance(over, AffineScheme), f"FiberProductStack requires AffineScheme base; found {type(over)!r}"
+        result = UniqueRepresentation.__classcall__(cls, left, right, over)
+        assert isinstance(result, FiberProductStack), f"classcall must return FiberProductStack; found {type(result)!r}"
+        return result
+
+    def __init__(self, left: Stack, right: Stack, over: AffineScheme) -> None:
+        self._left = left
+        self._right = right
+        self._over = over
+        self._cached_pi1: StackMorphism | None = None
+        self._cached_pi2: StackMorphism | None = None
+        axioms = left.declared_axioms() & right.declared_axioms()
+        cat: object = left.category()
+        Stack.__init__(
+            self,
+            over,
+            name=f"FiberProduct({left!r}, {right!r})",
+            axioms=axioms,
+            category=cat,
+        )
+
+    def left_factor(self) -> Stack:
+        return self._left
+
+    def right_factor(self) -> Stack:
+        return self._right
+
+    def factors(self) -> tuple[Stack, Stack]:
+        return (self._left, self._right)
+
+    def over_scheme(self) -> AffineScheme:
+        return self._over
+
+    def projection_to_left(self) -> StackMorphism:
+        r"""First projection ``π₁: X ×_S Y → X``."""
+        cached = self._cached_pi1
+        if cached is None:
+            cached = StackMorphism(self, self._left, kind="fiber_product_projection_left")
+            self._cached_pi1 = cached
+        return cached
+
+    def projection_to_right(self) -> StackMorphism:
+        r"""Second projection ``π₂: X ×_S Y → Y``."""
+        cached = self._cached_pi2
+        if cached is None:
+            cached = StackMorphism(self, self._right, kind="fiber_product_projection_right")
+            self._cached_pi2 = cached
+        return cached
+
+    def projections(self) -> tuple[StackMorphism, StackMorphism]:
+        return (self.projection_to_left(), self.projection_to_right())
+
+    def square_corners(self) -> tuple[object, object, object, object]:
+        r"""Corners ``(X×_S Y, X, Y, S)`` of the fiber-product square."""
+        return (self, self._left, self._right, self._over)
+
+    def mediating_morphism(self, a: object, b: object) -> FiberProductMediatingMorphism:
+        r"""Universal mediating morphism ``Z → X×_S Y`` for compatible legs ``a, b``.
+
+        Given ``a: Z → X`` and ``b: Z → Y``, returns the mediating map into this
+        fiber product with formal recovery of the legs via ``π₁ ∘ m`` / ``π₂ ∘ m``.
+        Full Hom-category uniqueness waits on PR #225.
+        """
+        if not isinstance(a, StackMorphism):
+            raise TypeError(f"mediating_morphism requires StackMorphism leg a: Z→X; found {type(a)!r}")
+        if not isinstance(b, StackMorphism):
+            raise TypeError(f"mediating_morphism requires StackMorphism leg b: Z→Y; found {type(b)!r}")
+        if a.codomain() is not self._left:
+            raise ValueError(f"leg a must land in left factor {self._left!r}; found codomain {a.codomain()!r}")
+        if b.codomain() is not self._right:
+            raise ValueError(f"leg b must land in right factor {self._right!r}; found codomain {b.codomain()!r}")
+        if a.domain() is not b.domain():
+            raise ValueError(f"legs a, b must share domain Z; found {a.domain()!r} vs {b.domain()!r}")
+        return FiberProductMediatingMorphism(a.domain(), self, a, b)
 
 
 class AlgebraicStack(Stack):
@@ -708,12 +803,62 @@ class PullbackMediatingMorphism(StackMorphism):
         )
 
 
+class FiberProductMediatingMorphism(StackMorphism):
+    r"""Mediating morphism into a :class:`FiberProductStack` with recorded legs."""
+
+    def __init__(
+        self,
+        domain: object,
+        fiber_product: FiberProductStack,
+        leg_to_left: StackMorphism,
+        leg_to_right: StackMorphism,
+    ) -> None:
+        self._fiber_product = fiber_product
+        self._leg_to_left = leg_to_left
+        self._leg_to_right = leg_to_right
+        StackMorphism.__init__(self, domain, fiber_product, kind="fiber_product_mediating")
+
+    def fiber_product_stack(self) -> FiberProductStack:
+        return self._fiber_product
+
+    def recorded_leg_to_left(self) -> StackMorphism:
+        return self._leg_to_left
+
+    def recorded_leg_to_right(self) -> StackMorphism:
+        return self._leg_to_right
+
+    def composed_with_projection_left(self) -> StackMorphism:
+        r"""Formal ``π₁ ∘ m`` recovering the left leg (same kind as recorded)."""
+        return StackMorphism(self.domain(), self._fiber_product.left_factor(), kind=self._leg_to_left.kind())
+
+    def composed_with_projection_right(self) -> StackMorphism:
+        r"""Formal ``π₂ ∘ m`` recovering the right leg (same kind as recorded)."""
+        return StackMorphism(self.domain(), self._fiber_product.right_factor(), kind=self._leg_to_right.kind())
+
+    def recovers_legs(self) -> bool:
+        c1 = self.composed_with_projection_left()
+        c2 = self.composed_with_projection_right()
+        return (
+            c1.domain() is self._leg_to_left.domain()
+            and c1.codomain() is self._leg_to_left.codomain()
+            and c1.kind() == self._leg_to_left.kind()
+            and c2.domain() is self._leg_to_right.domain()
+            and c2.codomain() is self._leg_to_right.codomain()
+            and c2.kind() == self._leg_to_right.kind()
+        )
+
+
 class FormallyEtaleSchemeCertificate:
-    r"""Certificate that a concrete Sage affine-scheme morphism is formally étale.
+    r"""Owned certificate that a concrete affine ring map is formally étale.
 
     Sage's ``SchemeMorphism_spec`` does not expose ``is_etale`` / ``is_flat``.
-    For the proving set we certify the identity ``Spec(R) → Spec(R)``: the
-    identity ring map is an isomorphism, hence flat and unramified (formally étale).
+    This spike certifies proving-set morphisms by ring-level checks:
+
+    - identity ``Spec(R) → Spec(R)`` (isomorphism),
+    - standard open immersions ``D(f) → Spec(R)`` via localization (flat; ``f``
+      becomes a unit, witnessing vanishing of relative Kähler differentials),
+    - finite étale covers ``Spec(k[t]/(f)) → Spec(k)`` when ``gcd(f, f') = 1``
+      (Jacobian / separability criterion over a field).
     """
 
     def __init__(
@@ -723,11 +868,25 @@ class FormallyEtaleSchemeCertificate:
         flat: bool,
         unramified: bool,
         reason: str,
+        open_immersion: bool = False,
+        finite_etale: bool = False,
+        kahler_differentials_vanish: bool = False,
+        localizing_element: object | None = None,
+        separable_polynomial: object | None = None,
+        domain_scheme: AffineScheme | None = None,
+        codomain_scheme: AffineScheme | None = None,
     ) -> None:
         self._sage_morphism = sage_morphism
         self._flat = bool(flat)
         self._unramified = bool(unramified)
         self._reason = reason
+        self._open_immersion = bool(open_immersion)
+        self._finite_etale = bool(finite_etale)
+        self._kahler_differentials_vanish = bool(kahler_differentials_vanish)
+        self._localizing_element = localizing_element
+        self._separable_polynomial = separable_polynomial
+        self._domain_scheme = domain_scheme
+        self._codomain_scheme = codomain_scheme
 
     @staticmethod
     def identity_affine(base: AffineScheme) -> FormallyEtaleSchemeCertificate:
@@ -742,6 +901,75 @@ class FormallyEtaleSchemeCertificate:
             flat=True,
             unramified=True,
             reason="identity_ring_map_isomorphism",
+            kahler_differentials_vanish=True,
+            domain_scheme=base,
+            codomain_scheme=base,
+        )
+
+    @staticmethod
+    def localization_open(ring: object, element: object) -> FormallyEtaleSchemeCertificate:
+        r"""Standard open immersion ``D(f) = Spec(R_f) → Spec(R)``.
+
+        Owned checks: Sage localization exists; ``f`` is a unit in ``R_f``;
+        Spec morphism from the localization ring map exists. Localization is
+        always flat, and ``Ω_{R_f/R} = 0`` (unramified / formally étale).
+        """
+        from sage.schemes.generic.spec import Spec
+
+        assert hasattr(ring, "localization"), f"ring must expose localization(); found {type(ring)!r}"
+        localized = cast(Any, ring).localization(element)
+        unit_image = localized(element)
+        assert hasattr(unit_image, "is_unit"), f"localized image of f must expose is_unit(); found {type(unit_image)!r}"
+        assert bool(unit_image.is_unit()), f"localizing element must become a unit in R_f; found {unit_image!r}"
+        ring_hom = cast(Any, ring).hom(localized)
+        domain_scheme = AffineScheme(localized)
+        codomain_scheme = AffineScheme(ring)
+        sage_morphism = Spec(localized).Hom(Spec(ring))(ring_hom)
+        return FormallyEtaleSchemeCertificate(
+            sage_morphism,
+            flat=True,
+            unramified=True,
+            reason="localization_standard_open_immersion",
+            open_immersion=True,
+            kahler_differentials_vanish=True,
+            localizing_element=element,
+            domain_scheme=domain_scheme,
+            codomain_scheme=codomain_scheme,
+        )
+
+    @staticmethod
+    def separable_finite_etale(base_field: object, polynomial: object) -> FormallyEtaleSchemeCertificate:
+        r"""Finite étale cover ``Spec(k[t]/(f)) → Spec(k)`` for separable ``f``.
+
+        Owned Jacobian check: ``gcd(f, f') = 1`` over the field ``k``. The
+        structure map ``k → k[t]/(f)`` is then finite étale (hence formally étale).
+        """
+        from sage.schemes.generic.spec import Spec
+
+        assert hasattr(polynomial, "derivative"), f"polynomial must expose derivative(); found {type(polynomial)!r}"
+        assert hasattr(polynomial, "parent"), f"polynomial must expose parent(); found {type(polynomial)!r}"
+        poly_ring = polynomial.parent()
+        assert hasattr(poly_ring, "quotient") or hasattr(poly_ring, "quo"), f"polynomial parent must expose quotient/quo; found {type(poly_ring)!r}"
+        derivative = polynomial.derivative()
+        from sage.all import gcd as sage_gcd
+
+        g = sage_gcd(polynomial, derivative)
+        assert g == 1 or (hasattr(g, "is_one") and bool(g.is_one())), f"polynomial must be separable (gcd(f, f')=1); found gcd={g!r}"
+        quo = poly_ring.quo(polynomial) if hasattr(poly_ring, "quo") else poly_ring.quotient(polynomial)
+        ring_hom = cast(Any, base_field).hom(quo)
+        domain_scheme = AffineScheme(quo)
+        codomain_scheme = AffineScheme(base_field)
+        sage_morphism = Spec(quo).Hom(Spec(base_field))(ring_hom)
+        return FormallyEtaleSchemeCertificate(
+            sage_morphism,
+            flat=True,
+            unramified=True,
+            reason="separable_finite_etale_jacobian",
+            finite_etale=True,
+            kahler_differentials_vanish=True,
+            separable_polynomial=polynomial,
+            domain_scheme=domain_scheme,
+            codomain_scheme=codomain_scheme,
         )
 
     def sage_morphism(self) -> object:
@@ -756,11 +984,62 @@ class FormallyEtaleSchemeCertificate:
     def is_formally_etale(self) -> bool:
         return self._flat and self._unramified
 
+    def is_open_immersion(self) -> bool:
+        return self._open_immersion
+
+    def is_finite_etale(self) -> bool:
+        return self._finite_etale
+
+    def kahler_differentials_vanish(self) -> bool:
+        r"""True when the certificate's owned checks imply ``Ω_{B/A} = 0``."""
+        return self._kahler_differentials_vanish
+
+    def localizing_element(self) -> object | None:
+        return self._localizing_element
+
+    def separable_polynomial(self) -> object | None:
+        return self._separable_polynomial
+
+    def domain_scheme(self) -> AffineScheme | None:
+        return self._domain_scheme
+
+    def codomain_scheme(self) -> AffineScheme | None:
+        return self._codomain_scheme
+
     def reason(self) -> str:
         return self._reason
 
     def _repr_(self) -> str:
-        return f"FormallyEtaleSchemeCertificate(flat={self._flat}, unramified={self._unramified}, reason={self._reason!r})"
+        return (
+            f"FormallyEtaleSchemeCertificate(flat={self._flat}, unramified={self._unramified}, "
+            f"open={self._open_immersion}, finite_etale={self._finite_etale}, reason={self._reason!r})"
+        )
+
+
+def _proving_set_etale_certificates(base: AffineScheme) -> tuple[FormallyEtaleSchemeCertificate, ...]:
+    r"""Identity certificate plus a localization open when the base ring admits one."""
+    certs: list[FormallyEtaleSchemeCertificate] = [FormallyEtaleSchemeCertificate.identity_affine(base)]
+    ring = cast(Any, base.ring())
+    if hasattr(ring, "localization") and hasattr(ring, "gens"):
+        gens = tuple(ring.gens())
+        if gens:
+            try:
+                certs.append(FormallyEtaleSchemeCertificate.localization_open(ring, gens[0]))
+            except TypeError, ValueError, AttributeError, AssertionError:
+                pass
+    elif hasattr(ring, "localization"):
+        # ZZ / similar: localize at 2 when available.
+        try:
+            from sage.rings.integer_ring import ZZ as _ZZ
+
+            if ring is _ZZ or (hasattr(ring, "is_subring") and bool(ring.is_subring(_ZZ))):
+                certs.append(FormallyEtaleSchemeCertificate.localization_open(ring, 2))
+            else:
+                two = ring(2)
+                certs.append(FormallyEtaleSchemeCertificate.localization_open(ring, two))
+        except TypeError, ValueError, AttributeError, AssertionError:
+            pass
+    return tuple(certs)
 
 
 class AtlasEvidence:
@@ -768,8 +1047,10 @@ class AtlasEvidence:
 
     Records covering/representability data and links to DM diagonal properties
     already claimed on the target stack. For quotient presentations, also
-    records ``(covering_space, group)``. Optionally attaches a proving-set
-    :class:`FormallyEtaleSchemeCertificate` (identity affine morphism).
+    records ``(covering_space, group)`` and, when ``G`` is finite, finite étale
+    groupoid presentation flags (unramified+smooth / formally étale on the
+    covering ``U → [U/G]``). Optionally attaches proving-set
+    :class:`FormallyEtaleSchemeCertificate` data.
     """
 
     def __init__(
@@ -787,6 +1068,12 @@ class AtlasEvidence:
         factor_atlases: tuple[AtlasMorphism, ...] | None = None,
         scheme_certificate: FormallyEtaleSchemeCertificate | None = None,
         dm_diagonal_representable_stamp: bool = False,
+        finite_etale_groupoid: bool = False,
+        group_order: int | None = None,
+        covering_unramified_stamp: bool = False,
+        covering_smooth_stamp: bool = False,
+        covering_formally_etale_stamp: bool = False,
+        scheme_certificates: tuple[FormallyEtaleSchemeCertificate, ...] | None = None,
     ) -> None:
         self._stack = stack
         self._domain = domain
@@ -800,6 +1087,17 @@ class AtlasEvidence:
         self._quotient_group = quotient_group
         self._factor_atlases = factor_atlases
         self._scheme_certificate = scheme_certificate
+        self._finite_etale_groupoid = bool(finite_etale_groupoid)
+        self._group_order = group_order
+        self._covering_unramified_stamp = bool(covering_unramified_stamp)
+        self._covering_smooth_stamp = bool(covering_smooth_stamp)
+        self._covering_formally_etale_stamp = bool(covering_formally_etale_stamp)
+        if scheme_certificates is not None:
+            self._scheme_certificates = scheme_certificates
+        elif scheme_certificate is not None:
+            self._scheme_certificates = (scheme_certificate,)
+        else:
+            self._scheme_certificates = ()
 
     @staticmethod
     def from_dm_stack(stack: Stack, *, domain: object, covering_kind: str) -> AtlasEvidence:
@@ -807,9 +1105,11 @@ class AtlasEvidence:
         dm_stamp = isinstance(stack, DeligneMumfordStack)
         if isinstance(stack, AlgebraicStack):
             diagonal = stack.diagonal()
+        scheme_certs: tuple[FormallyEtaleSchemeCertificate, ...] = ()
         scheme_cert: FormallyEtaleSchemeCertificate | None = None
         if isinstance(domain, AtlasChart) and domain.is_etale_chart():
-            scheme_cert = FormallyEtaleSchemeCertificate.identity_affine(stack.base_scheme())
+            scheme_certs = _proving_set_etale_certificates(stack.base_scheme())
+            scheme_cert = scheme_certs[0] if scheme_certs else None
         return AtlasEvidence(
             stack=stack,
             domain=domain,
@@ -820,6 +1120,7 @@ class AtlasEvidence:
             dm_diagonal_unramified_stamp=dm_stamp,
             dm_diagonal_representable_stamp=dm_stamp,
             scheme_certificate=scheme_cert,
+            scheme_certificates=scheme_certs,
         )
 
     def stack(self) -> Stack:
@@ -862,8 +1163,32 @@ class AtlasEvidence:
         return self._factor_atlases
 
     def scheme_certificate(self) -> FormallyEtaleSchemeCertificate | None:
-        r"""Proving-set formally étale certificate on an affine chart, if attached."""
+        r"""Primary proving-set formally étale certificate, if attached."""
         return self._scheme_certificate
+
+    def scheme_certificates(self) -> tuple[FormallyEtaleSchemeCertificate, ...]:
+        r"""All attached proving-set formally étale certificates."""
+        return self._scheme_certificates
+
+    def finite_etale_groupoid(self) -> bool:
+        r"""True when the atlas is a finite étale groupoid presentation ``U → [U/G]``."""
+        return self._finite_etale_groupoid
+
+    def group_order(self) -> int | None:
+        r"""Order of ``G`` when this is a finite quotient presentation, else ``None``."""
+        return self._group_order
+
+    def covering_unramified_stamp(self) -> bool:
+        r"""Theorem stamp: covering ``U → [U/G]`` is unramified when ``G`` is finite."""
+        return self._covering_unramified_stamp
+
+    def covering_smooth_stamp(self) -> bool:
+        r"""Theorem stamp: covering ``U → [U/G]`` is smooth when ``G`` is finite."""
+        return self._covering_smooth_stamp
+
+    def covering_formally_etale_stamp(self) -> bool:
+        r"""Theorem stamp: covering ``U → [U/G]`` is formally étale when ``G`` is finite."""
+        return self._covering_formally_etale_stamp
 
     def links_dm_diagonal_axioms(self) -> bool:
         r"""True when evidence wires the DM unramified+representable diagonal stamps to ``Δ``."""
@@ -875,10 +1200,22 @@ class AtlasEvidence:
             and self._diagonal.kind() == "diagonal"
         )
 
+    def links_finite_etale_groupoid(self) -> bool:
+        r"""True when finite-``G`` covering→quotient carries unramified+smooth+formally étale stamps."""
+        return (
+            self._finite_etale_groupoid
+            and self._covering_unramified_stamp
+            and self._covering_smooth_stamp
+            and self._covering_formally_etale_stamp
+            and self._group_order is not None
+            and self._group_order >= 1
+        )
+
     def _repr_(self) -> str:
         return (
             f"AtlasEvidence(covering={self._covering_kind!r}, etale={self._etale_stamp}, "
-            f"representable={self._representable_domain}, dm_diagonal={self._dm_diagonal_unramified_stamp})"
+            f"representable={self._representable_domain}, dm_diagonal={self._dm_diagonal_unramified_stamp}, "
+            f"finite_etale_groupoid={self._finite_etale_groupoid})"
         )
 
 
@@ -960,6 +1297,13 @@ class AtlasMorphism(StackMorphism):
             data["quotient_group"] = self._evidence.quotient_group()
             data["factor_atlases"] = self._evidence.factor_atlases()
             data["scheme_certificate"] = self._evidence.scheme_certificate()
+            data["scheme_certificates"] = self._evidence.scheme_certificates()
+            data["finite_etale_groupoid"] = self._evidence.finite_etale_groupoid()
+            data["group_order"] = self._evidence.group_order()
+            data["covering_unramified_stamp"] = self._evidence.covering_unramified_stamp()
+            data["covering_smooth_stamp"] = self._evidence.covering_smooth_stamp()
+            data["covering_formally_etale_stamp"] = self._evidence.covering_formally_etale_stamp()
+            data["links_finite_etale_groupoid"] = self._evidence.links_finite_etale_groupoid()
         return data
 
     def is_coarse_atlas(self) -> bool:
@@ -1354,15 +1698,61 @@ class QuotientStack(Stack):
     def action(self) -> object:
         return self._action
 
+    def group_is_finite(self) -> bool:
+        r"""True when the acting group ``G`` has a finite Sage ``order()``."""
+        return self.group_order() is not None
+
+    def group_order(self) -> int | None:
+        r"""Order of ``G`` when finite and Sage-computable; else ``None``."""
+        group = self._group
+        order_fn = getattr(group, "order", None)
+        if not callable(order_fn):
+            return None
+        try:
+            order = int(order_fn())
+        except TypeError, ValueError, AttributeError:
+            return None
+        if order < 1:
+            return None
+        return order
+
+    def finite_etale_groupoid_presentation(self) -> dict[str, object] | None:
+        r"""Inspectable finite étale groupoid data for ``U → [U/G]`` when ``G`` is finite.
+
+        For a finite group acting, the standard presentation morphism is étale
+        (smooth + unramified / formally étale). Returns ``None`` when ``G`` is
+        not known finite.
+        """
+        if not self.group_is_finite():
+            return None
+        order = self.group_order()
+        assert order is not None
+        return {
+            "covering_space": self.covering_space(),
+            "group": self._group,
+            "group_order": order,
+            "finite_etale_groupoid": True,
+            "covering_unramified_stamp": True,
+            "covering_smooth_stamp": True,
+            "covering_formally_etale_stamp": True,
+            "atlas_domain_is_covering": self.atlas_domain() is self.covering_space(),
+        }
+
     def quotient_presentation(self) -> dict[str, object]:
         r"""Inspectable ``(U, G, ρ)`` data for the standard quotient presentation."""
-        return {
+        data: dict[str, object] = {
             "covering_space": self.covering_space(),
             "group": self._group,
             "action": self._action,
             "stack": self,
             "atlas_domain_is_covering": self.atlas_domain() is self.covering_space(),
+            "group_is_finite": self.group_is_finite(),
+            "group_order": self.group_order(),
         }
+        groupoid = self.finite_etale_groupoid_presentation()
+        if groupoid is not None:
+            data["finite_etale_groupoid_presentation"] = groupoid
+        return data
 
     def act_on_covering(self, group_element: object) -> Stack:
         r"""Apply the stored action to the covering space (consumes ``ρ`` meaningfully)."""
@@ -1416,17 +1806,21 @@ class QuotientStack(Stack):
         r"""Étale atlas ``U → [U/G]`` with domain the covering space (not a self-map).
 
         Exposes the standard quotient presentation: covering space ``U``, group
-        ``G``, and morphism as quotient presentation atlas. Étaleness for finite
-        group actions is a theorem stamp with attached :class:`AtlasEvidence`
-        wired to DM diagonal axioms; a proving-set formally étale scheme
-        certificate is attached when the base is an affine Spec.
+        ``G``, and morphism as quotient presentation atlas. When ``G`` is finite,
+        attaches finite étale groupoid presentation flags (unramified + smooth /
+        formally étale on the covering). Proving-set scheme certificates include
+        the identity affine morphism on the base and, when the base ring admits
+        localization, a standard-open localization certificate.
         """
         domain = self._space
         assert domain is self.covering_space(), "quotient étale atlas domain must be the covering space"
         representable = isinstance(domain, (AlgebraicSpace, ProductStack))
         dm = isinstance(domain, DeligneMumfordStack) or (isinstance(domain, ProductStack) and all(isinstance(f, DeligneMumfordStack) for f in domain.factors()))
         diagonal = StackMorphism(self, self.fiber_product(self), kind="diagonal") if dm else None
-        scheme_cert = FormallyEtaleSchemeCertificate.identity_affine(self.base_scheme())
+        scheme_certs = _proving_set_etale_certificates(self.base_scheme())
+        primary = scheme_certs[0] if scheme_certs else None
+        finite = self.group_is_finite()
+        order = self.group_order()
         return AtlasMorphism(
             domain,
             self,
@@ -1444,7 +1838,13 @@ class QuotientStack(Stack):
                 dm_diagonal_representable_stamp=dm,
                 covering_space=domain,
                 quotient_group=self._group,
-                scheme_certificate=scheme_cert,
+                scheme_certificate=primary,
+                scheme_certificates=scheme_certs,
+                finite_etale_groupoid=finite,
+                group_order=order,
+                covering_unramified_stamp=finite,
+                covering_smooth_stamp=finite,
+                covering_formally_etale_stamp=finite,
             ),
         )
 

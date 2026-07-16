@@ -157,9 +157,25 @@ def test_stratum_locally_closed_and_clutching_hom():
     assert q_etale.evidence().links_dm_diagonal_axioms()
     assert q_etale.evidence().scheme_certificate() is not None
     assert q_etale.evidence().scheme_certificate().is_formally_etale()
+    assert open_quot.group_is_finite()
+    assert open_quot.group_order() == int(open_quot.group().order())
+    assert q_etale.evidence().finite_etale_groupoid()
+    assert q_etale.evidence().links_finite_etale_groupoid()
+    assert q_etale.evidence().covering_unramified_stamp()
+    assert q_etale.evidence().covering_smooth_stamp()
+    assert q_etale.evidence().covering_formally_etale_stamp()
+    assert q_etale.evidence().group_order() == open_quot.group_order()
+    assert q_etale.covering_data()["finite_etale_groupoid"] is True
+    assert q_etale.covering_data()["links_finite_etale_groupoid"] is True
+    groupoid = open_quot.finite_etale_groupoid_presentation()
+    assert groupoid is not None
+    assert groupoid["finite_etale_groupoid"] is True
+    assert groupoid["group_order"] == open_quot.group_order()
     presentation = open_quot.quotient_presentation()
     assert presentation["covering_space"] is open_quot.covering_space()
     assert presentation["atlas_domain_is_covering"] is True
+    assert presentation["group_is_finite"] is True
+    assert "finite_etale_groupoid_presentation" in presentation
     assert isinstance(open_action, Action)
     xi = S.clutching_morphism()
     assert xi is not None
@@ -382,16 +398,14 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert two.source() is f
     assert two.target() is g
 
-    Delta = XS.diagonal()
-    assert Delta.domain() is XS
-    assert Delta.codomain() == XS.fiber_product(XS)
-
     from dm_moduli_spike.geometry.stacks import (
         AlgebraicSpace,
         AtlasChart,
         AtlasEvidence,
         AtlasMorphism,
         BaseChangeStack,
+        FiberProductMediatingMorphism,
+        FiberProductStack,
         FormallyEtaleSchemeCertificate,
         ModuliBaseChangeStack,
         ProductStack,
@@ -399,6 +413,27 @@ def test_stack_fiber_and_hom_2_isomorphisms():
         PullbackStack,
         StackMorphism,
     )
+
+    Delta = XS.diagonal()
+    assert Delta.domain() is XS
+    fp = XS.fiber_product(XS)
+    assert isinstance(fp, FiberProductStack)
+    assert Delta.codomain() == fp
+    assert fp.left_factor() is XS
+    assert fp.right_factor() is XS
+    assert fp.over_scheme() is XS.base_scheme()
+    pi1, pi2 = fp.projections()
+    assert pi1.domain() is fp and pi1.codomain() is XS
+    assert pi2.domain() is fp and pi2.codomain() is XS
+    assert fp.square_corners() == (fp, XS, XS, XS.base_scheme())
+    Z = Stack(k, name="Z_for_fp", axioms=frozenset({"FiniteType"}))
+    a_fp = StackMorphism(Z, XS, kind="fp_leg_left")
+    b_fp = StackMorphism(Z, XS, kind="fp_leg_right")
+    m_fp = fp.mediating_morphism(a_fp, b_fp)
+    assert isinstance(m_fp, FiberProductMediatingMorphism)
+    assert m_fp.recovers_legs()
+    assert m_fp.composed_with_projection_left().kind() == "fp_leg_left"
+    assert m_fp.composed_with_projection_right().kind() == "fp_leg_right"
 
     atlas = XS.atlas()
     assert isinstance(atlas, AtlasMorphism)
@@ -523,6 +558,69 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert len(two_cells) == 2
     assert isinstance(two_cells[0], Stack2Isomorphism)
     assert isinstance(two_cells[1], Stack2Isomorphism)
+
+
+def test_formally_etale_proving_set_expanded():
+    r"""Owned equation-level certificates: identity, localization opens, finite étale."""
+    from sage.rings.finite_rings.finite_field_constructor import GF
+    from sage.rings.integer_ring import ZZ
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    from dm_moduli_spike.categories.base import AffineScheme
+    from dm_moduli_spike.geometry.stacks import FormallyEtaleSchemeCertificate
+
+    # Identity Spec(R)→Spec(R)
+    id_cert = FormallyEtaleSchemeCertificate.identity_affine(spec(QQ))
+    assert id_cert.is_formally_etale()
+    assert id_cert.kahler_differentials_vanish()
+    assert id_cert.reason() == "identity_ring_map_isomorphism"
+    assert id_cert.domain_scheme() is spec(QQ)
+
+    # Standard open D(f)→Spec(R) via localization (QQ[x]_x → QQ[x])
+    R = PolynomialRing(QQ, "x")
+    x = R.gen()
+    loc = FormallyEtaleSchemeCertificate.localization_open(R, x)
+    assert loc.is_formally_etale()
+    assert loc.is_open_immersion()
+    assert loc.kahler_differentials_vanish()
+    assert loc.localizing_element() == x
+    assert loc.reason() == "localization_standard_open_immersion"
+    assert isinstance(loc.domain_scheme(), AffineScheme)
+    assert isinstance(loc.codomain_scheme(), AffineScheme)
+    assert loc.codomain_scheme() is AffineScheme(R)
+    # AffineScheme.standard_open matches the localization domain.
+    open_spec = AffineScheme(R).standard_open(x)
+    assert open_spec is loc.domain_scheme()
+
+    # ZZ localization at 2
+    zz_loc = FormallyEtaleSchemeCertificate.localization_open(ZZ, 2)
+    assert zz_loc.is_formally_etale() and zz_loc.is_open_immersion()
+    assert ZZ(2).is_unit() is False
+    assert zz_loc.domain_scheme().ring()(2).is_unit()
+
+    # Finite étale Spec(k[t]/(t^2-1)) → Spec(k) over QQ and GF(7)
+    A = PolynomialRing(QQ, "t")
+    t = A.gen()
+    fin = FormallyEtaleSchemeCertificate.separable_finite_etale(QQ, t**2 - 1)
+    assert fin.is_formally_etale()
+    assert fin.is_finite_etale()
+    assert fin.kahler_differentials_vanish()
+    assert fin.reason() == "separable_finite_etale_jacobian"
+    assert fin.separable_polynomial() == t**2 - 1
+
+    k = GF(7)
+    Ak = PolynomialRing(k, "u")
+    u = Ak.gen()
+    fin_ff = FormallyEtaleSchemeCertificate.separable_finite_etale(k, u**2 - 1)
+    assert fin_ff.is_finite_etale() and fin_ff.is_formally_etale()
+
+    # Fail-closed: inseparable polynomial rejected
+    try:
+        FormallyEtaleSchemeCertificate.separable_finite_etale(GF(2), PolynomialRing(GF(2), "v").gen() ** 2)
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("expected AssertionError for inseparable polynomial over GF(2)")
 
 
 def test_arbitrary_marking_set():
