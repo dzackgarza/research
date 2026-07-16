@@ -27,7 +27,8 @@ PR #111  →  Stacks, curves, moduli, compactifications, strata, Γ  built on th
 
 ### Wave 2 (after #225 merges) — **BLOCKED** until [#225](https://github.com/dzackgarza/research/pull/225) merges
 
-Status (2026-07-16): #225 is still an **OPEN draft**; CP3 unfinished. Do not rebase or delete the local foundation yet.
+Status (2026-07-16): #225 is still an **OPEN draft**; CP3 unfinished.
+Do not rebase or delete the local foundation yet.
 
 1. Rebase #111 onto the #225 merge commit.
 
