@@ -289,16 +289,18 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         return self.codomain()(self.matrix() * vector(self.domain().base_ring(), element.coefficient_vector()))
 
     def kernel(self) -> Subobject:
-        r"""The kernel as a subobject of the domain."""
-        domain = self.domain()
-        basis = self.matrix().right_kernel().basis_matrix()
-        return cast(Subobject, domain.subobject([domain(list(row)) for row in basis.rows()], "ker"))
+        r"""The kernel as a subobject of the domain — the module-level
+        construction's spelling on this morphism."""
+        from .constructions import kernel
+
+        return kernel(self)
 
     def image(self) -> Subobject:
-        r"""The image as a subobject of the codomain: the sublattice spanned by
-        the images of the domain generators, together with its inclusion."""
-        codomain = self.codomain()
-        return cast(Subobject, codomain.subobject([codomain(list(column)) for column in self.matrix().columns()], "im"))
+        r"""The image as a subobject of the codomain — the module-level
+        construction's spelling on this morphism."""
+        from .constructions import image
+
+        return image(self)
 
     def is_injective(self) -> bool:
         r"""[total] — full column rank (spec 3.5; free modules carry no torsion)."""
@@ -310,14 +312,11 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         return self.is_injective() and self.cokernel().is_torsion_free()
 
     def cokernel(self) -> SyntheticLatticeCokernel:
-        r"""The cokernel ``codomain / image`` (spec 3.5). ``R-Mod`` is an abelian
-        category, so the cokernel exists and is computable by contract for EVERY
-        morphism -- the finite (full-rank image) case is the special one, not the
-        only one."""
-        codomain = self.codomain()
-        codomain_module = codomain.base_ring() ** codomain.rank()
-        image_span = codomain_module.span(self.matrix().columns())
-        return SyntheticLatticeCokernel(codomain_module.quotient(image_span))
+        r"""The cokernel ``codomain / image`` (spec 3.5) — the module-level
+        construction's spelling on this morphism."""
+        from .constructions import cokernel
+
+        return cokernel(self)
 
     def induced_map_on_discriminant_group(self) -> Any:
         r"""The per-morphism functor to O(q_L) (spec 3.3); defined for
