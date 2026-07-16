@@ -1222,6 +1222,13 @@ class DiscriminantOrthogonalGroup:
     """O(q) (or a subgroup of it): FINITE for every discriminant form, so the
     full set of group operations is total on this side."""
 
+    def cardinality(self) -> Cardinal:
+        r"""``|O(q)|`` as a Cardinal — the rollup through the group's own
+        order (the classical Integer spelling stays ``order()``)."""
+        from ..objects.cardinals import cardinal
+
+        return cardinal(self.order())
+
     @abstract_method
     def discriminant_form(self) -> DiscriminantForm: ...
 

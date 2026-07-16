@@ -162,6 +162,64 @@ def maintained_parent_inventory() -> tuple[MaintainedParent, ...]:
             },
         ),
         MaintainedParent(
+            label="NN (fundamental)",
+            construct=_naturals,
+            classification="countably_infinite",
+            owners={
+                "cardinality": _forwarding("cardinality"),
+                "is_countable": _forwarding("is_countable"),
+                "__iter__": f"{_SPIKE}.objects.fundamental_sets::NonNegativeIntegers.__iter__",
+                "underlying_set": _forwarding("underlying_set"),
+            },
+            enumeration_surface="underlying_set",
+        ),
+        MaintainedParent(
+            label="QQ (fundamental)",
+            construct=_rationals,
+            classification="countably_infinite",
+            owners={
+                "cardinality": _forwarding("cardinality"),
+                "is_countable": _forwarding("is_countable"),
+                "underlying_set": _forwarding("underlying_set"),
+            },
+            enumeration_surface="underlying_set",
+        ),
+        MaintainedParent(
+            label="GF(9) (fundamental)",
+            construct=lambda: _finite_field(9),
+            classification="finite",
+            owners={
+                "cardinality": f"{_SPIKE}.objects.fundamental_sets::FiniteField.cardinality",
+                "is_finite": _forwarding("is_finite"),
+                "underlying_set": _forwarding("underlying_set"),
+            },
+            enumeration_surface="underlying_set",
+        ),
+        MaintainedParent(
+            label="ZZ x ZZ (owned product)",
+            construct=lambda: _product_of_integers(),
+            classification="countably_infinite",
+            owners={
+                # foundation parents ARE their own sanctioned providers;
+                # index arrives through the owned Countable generics
+                "cardinality": f"{_SPIKE}.objects.set_constructions::CartesianProduct.cardinality",
+                "__iter__": f"{_SPIKE}.objects.set_constructions::CartesianProduct.__iter__",
+                "index": f"{_SPIKE}.objects.sets::CountableSets.ParentMethods.index",
+                "is_countable": f"{_SPIKE}.objects.sets::CountableSets.ParentMethods.is_countable",
+            },
+        ),
+        MaintainedParent(
+            label="ZZ (+) ZZ (owned disjoint union)",
+            construct=lambda: _union_of_integers(),
+            classification="countably_infinite",
+            owners={
+                "cardinality": f"{_SPIKE}.objects.set_constructions::DisjointUnion.cardinality",
+                "__iter__": f"{_SPIKE}.objects.set_constructions::DisjointUnion.__iter__",
+                "index": f"{_SPIKE}.objects.sets::CountableSets.ParentMethods.index",
+                "is_countable": f"{_SPIKE}.objects.sets::CountableSets.ParentMethods.is_countable",
+            },
+        ),
+        MaintainedParent(
             label="ZZ (fundamental)",
             construct=_integers,
             classification="countably_infinite",
@@ -197,6 +255,38 @@ def maintained_parent_inventory() -> tuple[MaintainedParent, ...]:
             enumeration_surface="underlying_set",
         ),
     )
+
+
+def _naturals() -> Any:
+    from .objects.fundamental_sets import NonNegativeIntegers
+
+    return NonNegativeIntegers()
+
+
+def _rationals() -> Any:
+    from .objects.fundamental_sets import Rationals
+
+    return Rationals()
+
+
+def _finite_field(order: int) -> Any:
+    from .objects.fundamental_sets import FiniteField
+
+    return FiniteField(order)
+
+
+def _product_of_integers() -> Any:
+    from .objects.fundamental_sets import Integers
+    from .objects.set_constructions import CartesianProduct
+
+    return CartesianProduct(Integers(), Integers())
+
+
+def _union_of_integers() -> Any:
+    from .objects.fundamental_sets import Integers
+    from .objects.set_constructions import DisjointUnion
+
+    return DisjointUnion(Integers(), Integers())
 
 
 def _integers() -> Any:
@@ -255,6 +345,26 @@ def derived_route(parent: Any) -> tuple[str, ...]:
     return tuple(repr(node) for node in parent.category().all_super_categories() if type(node).__module__.startswith(_SPIKE))
 
 
+_REQUIRED_OWNER_KEYS = {
+    "finite": ("cardinality",),
+    "countably_infinite": ("cardinality", "__iter__"),
+    "uncountable": ("cardinality", "is_countable"),
+}
+
+
+def _validate_row(spec: MaintainedParent) -> list[str]:
+    r"""The inventory row itself is audited: a classification without its
+    required audited operations cannot silently narrow the audit."""
+    failures = []
+    required = _REQUIRED_OWNER_KEYS.get(spec.classification)
+    if required is None:
+        return [f"unknown classification {spec.classification!r}"]
+    for key in required:
+        if key not in spec.owners and not (key == "__iter__" and spec.enumeration_surface == "underlying_set"):
+            failures.append(f"row {spec.label!r} audits no owner for required operation {key}")
+    return failures
+
+
 def _audit_route(spec: MaintainedParent, parent: Any) -> list[str]:
     r"""Check 1: the route to the owned Sets() exists and terminates.
     Structured parents are deliberately NOT subcategories of Sets() (the
@@ -271,6 +381,39 @@ def _audit_route(spec: MaintainedParent, parent: Any) -> list[str]:
         return failures
     if parent.underlying_set() not in Sets():
         failures.append("the underlying-set route does not terminate at the owned Sets()")
+    if spec.owners["underlying_set"].endswith("ViaUnderlyingSet.underlying_set"):
+        # root-forwarded route: the shared block only reaches the parent
+        # through an owned forwarding root on its category chain, so that
+        # root must actually appear — the composition is derived, not
+        # declared
+        from .objects.g_sets import GSets
+        from .objects.magmas import AdditiveMagmas, Magmas
+
+        roots = (Magmas(), AdditiveMagmas())
+        in_root = any(parent in root for root in roots) or any(isinstance(node, GSets) for node in parent.category().all_super_categories())
+        if not in_root:
+            failures.append("no owned forwarding root appears on the parent's category route")
+    # otherwise the table declares a direct spelling of the forgetful
+    # functor on the parent itself (sanctioned for parents outside the
+    # roots' injection scope, e.g. homsets); its codomain was checked above
+    return failures
+
+
+def _audit_two_leg_coherence(parent: Any) -> list[str]:
+    r"""Check 6's diamond, traversed independently: a parent reaching Sets()
+    through BOTH operation roots (the ring diamond) must forget to the SAME
+    underlying set along each leg."""
+    from .objects.magmas import AdditiveMagmas, Magmas, UnderlyingSetFunctor
+
+    failures: list[str] = []
+    if not (parent in Magmas() and parent in AdditiveMagmas()):
+        return failures
+    multiplicative_leg = UnderlyingSetFunctor(Magmas())(parent)
+    additive_leg = UnderlyingSetFunctor(AdditiveMagmas())(parent)
+    if multiplicative_leg is not additive_leg:
+        failures.append("the multiplicative and additive forgetful legs disagree on the underlying set")
+    if multiplicative_leg is not parent.underlying_set():
+        failures.append("the forwarding surface disagrees with the traversed legs")
     return failures
 
 
@@ -278,7 +421,7 @@ def _audit_provenance(spec: MaintainedParent, parent: Any) -> list[str]:
     return provenance_failures(type(parent), spec.owners)
 
 
-def _audit_forgetful_functor(spec: MaintainedParent, parent: Any) -> list[str]:
+def forgetful_functor_failures(spec: MaintainedParent, parent: Any) -> list[str]:
     r"""Checks 3-5: honesty, morphism action, and functor laws, run where
     the parent carries the forwarding surface and a morphism factory."""
     from .objects.magmas import UnderlyingSetFunctor
@@ -339,7 +482,7 @@ def _audit_route_coherence(spec: MaintainedParent, parent: Any) -> list[str]:
     return failures
 
 
-def _audit_refinement(spec: MaintainedParent, parent: Any) -> list[str]:
+def refinement_failures(spec: MaintainedParent, parent: Any) -> list[str]:
     r"""Check 7: the classification's executable consequences."""
     from .objects.cardinals import Cardinal, aleph0
 
@@ -395,11 +538,13 @@ def audit_parent(spec: MaintainedParent) -> list[str]:
     r"""All checks for one inventory row; empty means green."""
     parent = spec.construct()
     return (
-        _audit_route(spec, parent)
+        _validate_row(spec)
+        + _audit_route(spec, parent)
+        + _audit_two_leg_coherence(parent)
         + _audit_provenance(spec, parent)
-        + _audit_forgetful_functor(spec, parent)
+        + forgetful_functor_failures(spec, parent)
         + _audit_route_coherence(spec, parent)
-        + _audit_refinement(spec, parent)
+        + refinement_failures(spec, parent)
     )
 
 

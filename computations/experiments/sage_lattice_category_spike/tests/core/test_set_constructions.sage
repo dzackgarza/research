@@ -203,3 +203,31 @@ def test_disjoint_union_membership_agrees_with_construction_on_sage_integer_tags
     assert union((ZZ(1), ZZ(5))) == union((int(1), int(5)))
     assert (ZZ(2), ZZ(5)) not in union
     assert ("1", ZZ(5)) not in union
+
+
+def test_owned_constructions_stay_aligned_with_the_delegated_native_machinery():
+    r"""The owned parents delegate fair iteration to Sage's native
+    constructions; this pins the alignment at the REAL boundary — the
+    owned enumeration is exactly the delegated one's, element for element,
+    and the owned points carry the owned parent while agreeing with the
+    native raw representation (the Integer-tag drift was exactly such a
+    wrapper/native disagreement)."""
+    from itertools import islice
+
+    from sage.categories.cartesian_product import cartesian_product
+    from sage.sets.disjoint_union_enumerated_sets import DisjointUnionEnumeratedSets
+    from sage.sets.family import Family
+
+    integers = Integers()
+    product = CartesianProduct(integers, integers)
+    native_product = cartesian_product([integers, integers])
+    for owned, native in islice(zip(product, native_product), 12):
+        assert tuple(owned.value) == tuple(native)
+        assert owned.parent() is product
+
+    union = DisjointUnion(integers, integers)
+    native_union = DisjointUnionEnumeratedSets(Family({0: integers, 1: integers}), keepkey=True)
+    for owned, native in islice(zip(union, native_union), 12):
+        assert (int(owned.value[0]), owned.value[1]) == (int(native[0]), native[1])
+        assert owned.parent() is union
+        assert native in union
