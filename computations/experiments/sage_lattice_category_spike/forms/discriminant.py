@@ -230,6 +230,12 @@ class SyntheticDiscriminantGroupElement(Element):
     def __eq__(self, other: object) -> bool:
         return isinstance(other, SyntheticDiscriminantGroupElement) and self.parent() == other.parent() and self.coefficient_vector() == other.coefficient_vector()
 
+    def __ne__(self, other: object) -> bool:
+        # Coherent inequality: on Sage Element subclasses a Python-level
+        # __eq__ shadows only ==, while != would fall through to cython
+        # richcmp (id-based or coercion) and disagree or raise (#226).
+        return not self == other
+
     def __mul__(self, other: Any) -> Any:
         r"""``g * h`` = bilinear pairing (same parent); ``s * g`` = scalar action.
 
@@ -311,6 +317,12 @@ class SyntheticDiscriminantSubgroup:
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, SyntheticDiscriminantSubgroup) and self.ambient() is other.ambient() and self._key() == other._key()
+
+    def __ne__(self, other: object) -> bool:
+        # Coherent inequality: on Sage Element subclasses a Python-level
+        # __eq__ shadows only ==, while != would fall through to cython
+        # richcmp (id-based or coercion) and disagree or raise (#226).
+        return not self == other
 
     def __hash__(self) -> int:
         return hash((id(self.ambient()), self._key()))
@@ -433,6 +445,12 @@ class SyntheticDiscriminantAction(DiscriminantAction):
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, SyntheticDiscriminantAction) and self.discriminant_form() is other.discriminant_form() and self.matrix() == other.matrix()
+
+    def __ne__(self, other: object) -> bool:
+        # Coherent inequality: on Sage Element subclasses a Python-level
+        # __eq__ shadows only ==, while != would fall through to cython
+        # richcmp (id-based or coercion) and disagree or raise (#226).
+        return not self == other
 
     def __hash__(self) -> int:
         return hash((id(self.discriminant_form()), self.matrix()))
@@ -668,6 +686,12 @@ class SyntheticGenus(Genus, Parent):
         if self.signature_pair() != other.signature_pair() or self.is_even() != other.is_even():
             return False
         return bool(self._sage_engine() == other._sage_engine())
+
+    def __ne__(self, other: object) -> bool:
+        # Coherent inequality: on Sage Element subclasses a Python-level
+        # __eq__ shadows only ==, while != would fall through to cython
+        # richcmp (id-based or coercion) and disagree or raise (#226).
+        return not self == other
 
     def __hash__(self) -> int:
         # Consistent with __eq__: a genus is fixed by its signature, parity, and

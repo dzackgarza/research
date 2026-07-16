@@ -52,6 +52,12 @@ class Subobject:
             )
         return False
 
+    def __ne__(self, other: object) -> bool:
+        # Coherent inequality: on Sage Element subclasses a Python-level
+        # __eq__ shadows only ==, while != would fall through to cython
+        # richcmp (id-based or coercion) and disagree or raise (#226).
+        return not self == other
+
     def __hash__(self) -> int:
         return hash(self.inclusion())
 
@@ -455,6 +461,12 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
 
     def __eq__(self, other: object) -> bool:
         return bool(isinstance(other, LatticeMorphism) and self.domain() == other.domain() and self.codomain() == other.codomain() and self.matrix() == other.matrix())
+
+    def __ne__(self, other: object) -> bool:
+        # Coherent inequality: on Sage Element subclasses a Python-level
+        # __eq__ shadows only ==, while != would fall through to cython
+        # richcmp (id-based or coercion) and disagree or raise (#226).
+        return not self == other
 
     def __hash__(self) -> int:
         return hash((self.domain(), self.codomain(), self.matrix()))
