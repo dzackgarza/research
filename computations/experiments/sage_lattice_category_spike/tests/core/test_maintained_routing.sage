@@ -195,10 +195,15 @@ def test_subgroup_and_infinite_index_answers_are_cardinals():
     assert isinstance(subgroup.cardinality(), Cardinal)
 
     thin = a2.subobject([a2([1, 0])], "thin")
-    # index() is the EXTENDED-scalar spelling (ZZ u {oo}, where the
-    # determinant-scaling formulas are equations); the Cardinal answer
-    # lives on the cokernel object itself
+    # index() is the EXTENDED-scalar spelling (ZZ u {oo}): the
+    # determinant-scaling formulas are conventionally TOTAL there — with
+    # an infinite index both sides evaluate to infinity, absorption doing
+    # the work — so the infinite spelling must participate in scalar
+    # arithmetic smoothly, never refuse. The Cardinal answer to the SET
+    # question lives on the cokernel object itself.
     assert thin.index() == oo
+    assert thin.index() ** 2 == oo
+    assert QQ(1) / 4 * thin.index() ** 2 == oo
     cokernel_cardinality = thin.cokernel().cardinality()
     assert isinstance(cokernel_cardinality, Cardinal)
     assert cokernel_cardinality == aleph0
