@@ -323,6 +323,30 @@ def _configuration_M06_affine_scheme(base: AffineScheme) -> AffineScheme:
     return _knudsen_open_M0n_affine_scheme(base, 6)
 
 
+def _igusa_open_M20_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Igusa / binary-sextic affine chart for open unmarked ``M_{2,0}``.
+
+    Every genus-2 curve is hyperelliptic. After ``PGL₂``-normalizing three
+    Weierstrass points to ``{0,1,∞}``, a dense open of binary sextics with
+    distinct roots is the Knudsen configuration chart
+
+    ``Spec(R[λ,μ,ν]_{S})``
+
+    where ``S`` is the product of all pairwise differences among
+    ``{0,1,λ,μ,ν}`` (equivalently the nonsingular locus of the model
+    ``y² = x(x-1)(x-λ)(x-μ)(x-ν)``, the sixth branch point being ``∞``).
+
+    Requires ``2 ∈ Rˣ`` (standard hyperelliptic double cover). This is an
+    affine chart of the Igusa / binary-sextic presentation covering a dense
+    open of open ``M_2`` — **not** a scheme isomorphism ``M_2 ≅ U``, and
+    **not** a compact ``Mbar_2`` atlas. The finite étale groupoid is
+    ``S₆`` permuting the six Weierstrass points (see
+    :func:`_igusa_galois_group`).
+    """
+    assert _two_is_invertible(base), "Igusa binary-sextic M_{2,0} chart requires 2 invertible"
+    return _knudsen_open_M0n_affine_scheme(base, 6)
+
+
 def _legendre_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
     r"""Legendre universal-curve chart for open ``M_{1,2}``.
 
@@ -704,6 +728,23 @@ def _hesse_galois_group() -> object:
     from sage.rings.finite_rings.finite_field_constructor import GF
 
     return cast(Any, SL(2, GF(3)))
+
+
+def _igusa_galois_group() -> object:
+    r"""``S₆ ≅ Sp₄(𝔽₂)`` acting on the Igusa level-``2`` cover of open ``M_2``.
+
+    Six labeled Weierstrass / branch points of a genus-2 hyperelliptic curve;
+    ``Sp₄(𝔽₂)`` is the symplectic group of the 2-torsion of the Jacobian and is
+    isomorphic to ``S₆``. Degree ``720``. The coarse space is ``M_{0,6}/S₆``;
+    the covering space is a dense open of ``M_{0,6}``. Does **not** erase the
+    residual hyperelliptic involution of the DM stack — the presentation is
+    the finite étale groupoid ``[U / S₆]``, not a scheme isomorphism.
+    """
+    from typing import Any, cast
+
+    from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
+    return cast(Any, SymmetricGroup(6))
 
 
 class Groupoid(UniqueRepresentation, Parent):
@@ -1120,6 +1161,41 @@ class ModuliStack(DeligneMumfordStack):
             "degree": 24,
             "level_structure": level_structure,
             "presentation": presentation,
+        }
+
+    def igusa_quotient_presentation(self) -> dict[str, object] | None:
+        r"""Inspectable ``(U, S₆)`` data when the Igusa binary-sextic cover is owned.
+
+        Returns ``None`` unless this is open unmarked ``M_{2,0}`` over a base with
+        ``2`` invertible. Covering space
+        :func:`_igusa_open_M20_affine_scheme` (dense open of ``M_{0,6}`` /
+        binary sextics after ``PGL₂`` normalization); ``G = S₆ ≅ Sp₄(𝔽₂)`` of
+        order ``720``. Covers a dense open of open ``M_2`` — **not** a scheme
+        isomorphism, and **not** a compact ``Mbar_2`` atlas.
+        """
+        if self.genus() != 2 or self.number_of_markings() != 0 or self.is_proper():
+            return None
+        if not _two_is_invertible(self.base_scheme()):
+            return None
+        domain = _moduli_etale_atlas_domain(self)
+        if domain is None:
+            return None
+        group = _igusa_galois_group()
+        from typing import Any, cast
+
+        return {
+            "covering_space": domain,
+            "group": group,
+            "group_order": int(cast(Any, group).order()),
+            "finite_etale_groupoid": True,
+            "covering_unramified_stamp": True,
+            "covering_smooth_stamp": True,
+            "covering_formally_etale_stamp": True,
+            "degree": 720,
+            "level_structure": "Igusa_binary_sextic_Sp4_F2",
+            "presentation": "M_2 ≅ [Igusa_binary_sextic_U / S6] (dense open)",
+            "construction": "igusa_binary_sextic_PGL2",
+            "coverage": "dense_open_of_open_M_2",
         }
 
     def weierstrass_gm_presentation(self) -> dict[str, object] | None:

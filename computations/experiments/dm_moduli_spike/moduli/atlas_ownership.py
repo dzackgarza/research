@@ -29,8 +29,10 @@ rows own every proper ``Mbar_{1,n}`` for ``n ≥ 1`` via
 :func:`~.instances._hesse_compact_M1n_covering_space`. Call
 :func:`owned_etale_atlas_presentations` with ``expand_open_m0n_through`` /
 ``expand_open_m1n_through`` / ``expand_compact_m1n_through`` /
-``expand_proper_m0n_through`` to materialize inspectable per-``n`` rows. This
-module does **not** invent charts for unowned types (e.g. ``M_{2,0}``,
+``expand_proper_m0n_through`` to materialize inspectable per-``n`` rows. Open
+unmarked ``M_{2,0}`` is owned via the Igusa binary-sextic / ``M_{0,6}/S₆``
+chart under ``2 ∈ Rˣ``. This module does **not** invent charts for unowned
+types (e.g. proper ``Mbar_{2,*}``, marked ``M_{2,n}`` for ``n ≥ 1``,
 ``Mbar_{0,n}`` for ``n > PROPER_M0N_OWNED_MAX``).
 """
 
@@ -45,7 +47,7 @@ if TYPE_CHECKING:
     from .instances import ModuliStack
 
 BaseHypothesis = Literal["none", "two_invertible", "three_invertible"]
-GroupoidKind = Literal["none", "legendre_s3", "hesse_sl2_f3"]
+GroupoidKind = Literal["none", "legendre_s3", "hesse_sl2_f3", "igusa_s6"]
 
 # Default inspectable expansion of parametric families.
 OPEN_M0N_INSPECTABLE_MAX = 8
@@ -310,6 +312,16 @@ _PARAMETRIC_PROPER_M0N_ROW = OwnedAtlasPresentation(
     parametric_proper_m0n=True,
 )
 
+_OPEN_M20_IGUSA_ROW = OwnedAtlasPresentation(
+    2,
+    0,
+    False,
+    "igusa_binary_sextic_finite_etale_cover",
+    "igusa_binary_sextic_PGL2",
+    "two_invertible",
+    "igusa_s6",
+)
+
 _OWNED_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
     _PARAMETRIC_OPEN_M0N_ROW,
     _PARAMETRIC_OPEN_M1N_LEGENDRE_ROW,
@@ -317,6 +329,7 @@ _OWNED_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
     _PARAMETRIC_COMPACT_M1N_LEGENDRE_ROW,
     _PARAMETRIC_COMPACT_M1N_HESSE_ROW,
     _PARAMETRIC_PROPER_M0N_ROW,
+    _OPEN_M20_IGUSA_ROW,
 )
 
 
@@ -330,8 +343,8 @@ def owned_etale_atlas_presentations(
     r"""Owned equation-level étale-atlas presentations.
 
     Default: one parametric open-Knudsen row, two parametric open-``M_{1,n}``
-    rows, two parametric compact-``Mbar_{1,n}`` rows, and one parametric proper
-    Kapranov genus-0 row (cardinality 6).
+    rows, two parametric compact-``Mbar_{1,n}`` rows, one parametric proper
+    Kapranov genus-0 row, and one open Igusa ``M_{2,0}`` row (cardinality 7).
 
     When ``expand_open_m0n_through`` is set to an integer ``N ≥ 3``, the
     parametric Knudsen row is replaced by concrete open ``M_{0,3}``…``M_{0,N}``.
@@ -342,7 +355,8 @@ def owned_etale_atlas_presentations(
     replaced by concrete Legendre+Hesse pairs for ``n = 1…N``. When
     ``expand_proper_m0n_through`` is set to an integer ``N`` with
     ``3 ≤ N ≤ PROPER_M0N_OWNED_MAX``, the parametric proper Kapranov row is
-    replaced by concrete proper ``Mbar_{0,3}``…``Mbar_{0,N}``.
+    replaced by concrete proper ``Mbar_{0,3}``…``Mbar_{0,N}``. The Igusa
+    ``M_{2,0}`` row is always concrete (not parametric).
     """
     open_m0n: tuple[OwnedAtlasPresentation, ...]
     if expand_open_m0n_through is None:
@@ -390,7 +404,7 @@ def owned_etale_atlas_presentations(
         assert 3 <= n_max_p <= PROPER_M0N_OWNED_MAX, f"expand_proper_m0n_through must satisfy 3 ≤ N ≤ {PROPER_M0N_OWNED_MAX}; got {n_max_p!r}"
         proper_m0n = tuple(_proper_m0n_concrete_row(n) for n in range(3, n_max_p + 1))
 
-    return open_m0n + open_m1n + compact_m1n + proper_m0n
+    return open_m0n + open_m1n + compact_m1n + proper_m0n + (_OPEN_M20_IGUSA_ROW,)
 
 
 def owned_etale_atlas_cardinality(
@@ -478,14 +492,24 @@ def is_proper_m0n_kapranov_owned(markings: int, *, proper: bool) -> bool:
     return proper and 3 <= n <= PROPER_M0N_OWNED_MAX
 
 
+def is_open_m20_igusa_owned(markings: int, *, proper: bool) -> bool:
+    r"""True when open Igusa owns ``(2, markings, proper)`` (unmarked open only)."""
+    try:
+        n = int(markings)
+    except TypeError, ValueError:
+        return False
+    return (not proper) and n == 0
+
+
 def is_owned_etale_atlas_type(genus: int, markings: int, *, proper: bool) -> bool:
     r"""True when the registry owns a presentation for ``(g,n,proper)``.
 
     Open ``M_{0,n}`` for every ``n ≥ 3``, proper ``Mbar_{0,n}`` for
     ``3 ≤ n ≤ PROPER_M0N_OWNED_MAX``, open ``M_{1,n}`` for every ``n ≥ 1``, and
     compact ``Mbar_{1,n}`` for every ``n ≥ 1`` are owned parametrically.
-    Genus-1 types remain owned at the type level even when a concrete base fails
-    Legendre/Hesse hypotheses (those bases get a structured gap, not a silent
+    Open unmarked ``M_{2,0}`` is owned via Igusa (requires ``2 ∈ Rˣ`` at
+    resolution). Genus-1 / Igusa types remain owned at the type level even when
+    a concrete base fails the unit hypothesis (structured gap, not a silent
     equation-level stamp).
     """
     if genus == 0 and is_open_m0n_knudsen_owned(markings, proper=proper):
@@ -495,6 +519,8 @@ def is_owned_etale_atlas_type(genus: int, markings: int, *, proper: bool) -> boo
     if genus == 1 and is_open_m1n_level_owned(markings, proper=proper):
         return True
     if genus == 1 and is_compact_m1n_level_owned(markings, proper=proper):
+        return True
+    if genus == 2 and is_open_m20_igusa_owned(markings, proper=proper):
         return True
     return (genus, markings, proper) in owned_etale_atlas_type_keys()
 
@@ -525,9 +551,10 @@ def lookup_owned_etale_atlas(
     Proper ``Mbar_{0,n}`` (``3 ≤ n ≤ PROPER_M0N_OWNED_MAX``) resolves to a
     concrete Kapranov alias row. Open ``M_{1,n}`` (``n ≥ 1``) and compact
     ``Mbar_{1,n}`` (``n ≥ 1``) resolve to concrete Legendre/Hesse alias rows
-    under the matching base hypothesis. When ``base`` is omitted, returns the
-    first matching row (do not treat as runtime atlas resolution without a base
-    for genus-1 hypothesis rows).
+    under the matching base hypothesis. Open unmarked ``M_{2,0}`` resolves to
+    the Igusa binary-sextic row when ``2 ∈ Rˣ``. When ``base`` is omitted,
+    returns the first matching row (do not treat as runtime atlas resolution
+    without a base for hypothesis rows).
     """
     if genus == 0 and is_open_m0n_knudsen_owned(markings, proper=proper):
         row = _open_m0n_concrete_row(markings)
@@ -550,6 +577,11 @@ def lookup_owned_etale_atlas(
             row = _compact_m1n_concrete_row(markings, legendre=legendre)
             if base is None or _hypothesis_holds(row.base_hypothesis, base):
                 return row
+        return None
+    if genus == 2 and is_open_m20_igusa_owned(markings, proper=proper):
+        row = _OPEN_M20_IGUSA_ROW
+        if base is None or _hypothesis_holds(row.base_hypothesis, base):
+            return row
         return None
     for row in _OWNED_ETALE_ATLAS_PRESENTATIONS:
         if row.parametric_open_m0n or row.parametric_open_m1n or row.parametric_compact_m1n or row.parametric_proper_m0n:
@@ -582,6 +614,7 @@ def _domain_for_presentation(stack: ModuliStack, row: OwnedAtlasPresentation) ->
     from .instances import (
         _hesse_compact_M1n_covering_space,
         _hesse_open_M1n_affine_scheme,
+        _igusa_open_M20_affine_scheme,
         _knudsen_open_M0n_affine_scheme,
         _legendre_compact_M1n_covering_space,
         _legendre_open_M1n_affine_scheme,
@@ -629,11 +662,13 @@ def _domain_for_presentation(stack: ModuliStack, row: OwnedAtlasPresentation) ->
         "hesse_marked_configuration_compact",
     ):
         return _hesse_compact_M1n_covering_space(base, stack.number_of_markings())
+    if name == "igusa_binary_sextic_PGL2":
+        return AffineAlgebraicSpace(_igusa_open_M20_affine_scheme(base))
     raise AssertionError(f"unowned construction name in registry: {name!r}")
 
 
 def _group_for_presentation(row: OwnedAtlasPresentation) -> object | None:
-    from .instances import _hesse_galois_group, _legendre_galois_group
+    from .instances import _hesse_galois_group, _igusa_galois_group, _legendre_galois_group
 
     if row.groupoid == "none":
         return None
@@ -641,6 +676,8 @@ def _group_for_presentation(row: OwnedAtlasPresentation) -> object | None:
         return _legendre_galois_group()
     if row.groupoid == "hesse_sl2_f3":
         return _hesse_galois_group()
+    if row.groupoid == "igusa_s6":
+        return _igusa_galois_group()
     raise AssertionError(f"unknown groupoid kind {row.groupoid!r}")
 
 
@@ -652,7 +689,7 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
     if resolve_owned_etale_atlas(stack) is not None:
         return None
 
-    from .instances import _legendre_and_hesse_unavailable
+    from .instances import _legendre_and_hesse_unavailable, _two_is_invertible
 
     g = stack.genus()
     n = stack.number_of_markings()
@@ -726,6 +763,33 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
         gap["pre_225_remaining_after_this"] = "general_(g,n)_only"
         return gap
 
+    # Open M_{2,0} is owned under 2 invertible; fail closed when 2 is not a unit.
+    owned_igusa_type = g == 2 and n == 0 and not proper and is_owned_etale_atlas_type(2, 0, proper=False)
+    if owned_igusa_type and not _two_is_invertible(base):
+        gap["reason"] = "igusa_requires_two_invertible"
+        gap["base_hypothesis"] = {
+            "two_invertible": False,
+            "prototype": "Spec(Z) or char 2",
+            "note": (
+                "Igusa / Rosenhain binary-sextic chart for open M_{2,0} requires "
+                "2 ∈ Rˣ (ordinary hyperelliptic double cover y² = f₆). On fields "
+                "of characteristic 2 the Artin–Schreier model is needed — not owned."
+            ),
+        }
+        gap["alternate_proving_sets"] = (
+            {
+                "name": "igusa_binary_sextic_quotient",
+                "status": "owned_under_two_invertible",
+                "construction": "igusa_binary_sextic_PGL2",
+                "requires": "2 ∈ Rˣ; Spec(R[λ,μ,ν]_S) Rosenhain / Knudsen M_{0,6} chart with S₆ groupoid",
+                "note": ("Registry owns open unmarked M_{2,0} under two_invertible. This base fails that hypothesis — formal AtlasChart only."),
+                "owned_registry_cardinality": owned_etale_atlas_cardinality(),
+                "owned_registry_type_keys": list(owned_etale_atlas_type_keys()),
+            },
+        )
+        gap["pre_225_remaining_after_this"] = "general_(g,n)_beyond_owned_open_M20"
+        return gap
+
     owned_rows = [row.as_dict() for row in owned_etale_atlas_presentations()]
     registry_alt: dict[str, object] = {
         "name": "general_dm_moduli_etale_atlas",
@@ -740,9 +804,10 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
             "expand_compact_m1n_through). Proper Mbar_{0,n} is owned "
             f"parametrically for 3≤n≤{PROPER_M0N_OWNED_MAX} (Kapranov "
             "kapranov_iterated_blowup_P_{n-3}; expand via "
-            "expand_proper_m0n_through). Do not invent charts for larger n — "
-            "the literature construction name remains "
-            "kapranov_iterated_blowup_P_{n-3}."
+            "expand_proper_m0n_through). Open unmarked M_{2,0} is owned via "
+            "Igusa binary-sextic / Rosenhain (igusa_binary_sextic_PGL2) under "
+            "2 ∈ Rˣ. Do not invent charts for larger genus-0 n — the literature "
+            "construction name remains kapranov_iterated_blowup_P_{n-3}."
         ),
         "owned_registry_cardinality": owned_etale_atlas_cardinality(),
         "owned_registry_type_keys": list(owned_etale_atlas_type_keys()),
@@ -751,6 +816,7 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
         "parametric_open_m1n": True,
         "parametric_compact_m1n": True,
         "parametric_proper_m0n": True,
+        "open_m20_igusa": True,
         "open_m0n_knudsen_inspectable_max": OPEN_M0N_INSPECTABLE_MAX,
         "open_m1n_level_inspectable_max": OPEN_M1N_INSPECTABLE_MAX,
         "compact_m1n_level_inspectable_max": COMPACT_M1N_INSPECTABLE_MAX,
@@ -759,22 +825,36 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
         "proper_m0n_owned_max": PROPER_M0N_OWNED_MAX,
     }
 
-    # Genus 2: name the Igusa binary-sextic literature presentation; do not invent charts.
+    # Remaining genus-2: proper Mbar_2 / marked M_{2,n} — Igusa open M_{2,0} is owned.
     if g == 2:
-        gap["reason"] = "genus_2_igusa_binary_sextic_unavailable"
+        if proper:
+            gap["reason"] = "genus_2_igusa_compact_unavailable"
+            requires = (
+                "proper: DM stable-curve atlas (clutching / hyperelliptic models / "
+                "Igusa compactification) — not owned; open unmarked M_{2,0} is owned "
+                "under 2 ∈ Rˣ via igusa_binary_sextic_PGL2"
+            )
+            remaining = "mbar_2_and_marked_M2n"
+        else:
+            gap["reason"] = "genus_2_igusa_marked_unavailable"
+            requires = (
+                f"marked open M_{{2,{n}}}: pullback of Igusa / Rosenhain cover along "
+                "forgetful M_{2,n} → M_2 — not owned; unmarked open M_{2,0} is owned "
+                "under 2 ∈ Rˣ via igusa_binary_sextic_PGL2"
+            )
+            remaining = "marked_M2n_and_mbar_2"
         gap["alternate_proving_sets"] = (
             {
                 "name": "igusa_binary_sextic_quotient",
-                "status": "not_in_spike",
+                "status": "open_M20_owned_under_two_invertible",
                 "construction": "igusa_binary_sextic_PGL2",
-                "requires": (
-                    "open: binary sextics with distinct roots modulo PGL₂ (Igusa invariants); proper: DM stable-curve atlas (clutching / hyperelliptic models) — neither owned"
-                ),
+                "requires": requires,
                 "note": (
-                    "Every genus-2 curve is hyperelliptic: y² = f₆. Igusa's binary-sextic "
-                    "quotient presents the coarse moduli space of M_2; a stacky étale atlas "
-                    "needs level structure or an owned DM chart cover. Not constructed "
-                    "in-spike — fail-closed formal AtlasChart only."
+                    "Every genus-2 curve is hyperelliptic: y² = f₆. Open unmarked "
+                    "M_{2,0} owns the Rosenhain / Knudsen M_{0,6} chart with finite "
+                    "étale S₆ ≅ Sp₄(𝔽₂) groupoid (dense open of binary sextics with "
+                    "distinct roots modulo PGL₂). Proper Mbar_2 and marked M_{2,n} "
+                    "(n≥1) remain fail-closed — no invented compact/marked charts."
                 ),
                 "owned_registry_cardinality": owned_etale_atlas_cardinality(),
                 "owned_registry_type_keys": list(owned_etale_atlas_type_keys()),
@@ -782,7 +862,7 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
             },
             registry_alt,
         )
-        gap["pre_225_remaining_after_this"] = "general_(g,n)_beyond_named_g2"
+        gap["pre_225_remaining_after_this"] = remaining
         return gap
 
     gap["reason"] = "no_owned_affine_etale_presentation"

@@ -1024,14 +1024,15 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     )
 
     rows = owned_etale_atlas_presentations()
-    # Parametric open M0n + 2 open M1n + 2 compact M1n + 1 proper Kapranov = 6.
-    assert owned_etale_atlas_cardinality() == 6
-    assert len(rows) == 6
+    # Parametric open M0n + 2 open M1n + 2 compact M1n + 1 proper Kapranov + Igusa M20 = 7.
+    assert owned_etale_atlas_cardinality() == 7
+    assert len(rows) == 7
     assert all(isinstance(r, OwnedAtlasPresentation) for r in rows)
     assert sum(1 for r in rows if r.parametric_open_m0n) == 1
     assert sum(1 for r in rows if r.parametric_open_m1n) == 2
     assert sum(1 for r in rows if r.parametric_compact_m1n) == 2
     assert sum(1 for r in rows if r.parametric_proper_m0n) == 1
+    assert sum(1 for r in rows if r.construction == "igusa_binary_sextic_PGL2") == 1
     expanded = owned_etale_atlas_presentations(
         expand_open_m0n_through=8,
         expand_open_m1n_through=4,
@@ -1045,9 +1046,9 @@ def test_stack_fiber_and_hom_2_isomorphisms():
             expand_compact_m1n_through=4,
             expand_proper_m0n_through=8,
         )
-        == 28
+        == 29
     )
-    assert len(expanded) == 28
+    assert len(expanded) == 29
     assert all(
         not r.parametric_open_m0n
         and not r.parametric_open_m1n
@@ -1056,8 +1057,8 @@ def test_stack_fiber_and_hom_2_isomorphisms():
         for r in expanded
     )
     type_keys = owned_etale_atlas_type_keys()
-    # Open M0n n=3..8 + open M1n n=1..4 + compact M1n n=1..4 + proper (0,3..8).
-    assert len(type_keys) == 20
+    # Open M0n n=3..8 + open M1n n=1..4 + compact M1n n=1..4 + proper (0,3..8) + (2,0,False).
+    assert len(type_keys) == 21
     assert type_keys == (
         (0, 3, False),
         (0, 4, False),
@@ -1079,6 +1080,7 @@ def test_stack_fiber_and_hom_2_isomorphisms():
         (0, 6, True),
         (0, 7, True),
         (0, 8, True),
+        (2, 0, False),
     )
     assert is_owned_etale_atlas_type(0, 4, proper=False)
     assert is_owned_etale_atlas_type(1, 1, proper=True)
@@ -1091,7 +1093,9 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert is_owned_etale_atlas_type(1, 3, proper=True)
     assert is_owned_etale_atlas_type(1, 4, proper=True)
     assert is_owned_etale_atlas_type(1, 9, proper=True)  # parametric compact: all n≥1
+    assert is_owned_etale_atlas_type(2, 0, proper=False)  # Igusa open M_{2,0}
     assert not is_owned_etale_atlas_type(2, 0, proper=True)
+    assert not is_owned_etale_atlas_type(2, 1, proper=False)
     assert is_owned_etale_atlas_type(0, 6, proper=True)
     assert is_owned_etale_atlas_type(0, 7, proper=True)
     assert is_owned_etale_atlas_type(0, 8, proper=True)
@@ -1111,6 +1115,9 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert lookup_owned_etale_atlas(0, 3, proper=False).construction == "point_spec"
     assert lookup_owned_etale_atlas(1, 3, proper=False).construction == "legendre_marked_configuration"
     assert lookup_owned_etale_atlas(1, 3, proper=True).construction == "legendre_marked_configuration_compact"
+    assert lookup_owned_etale_atlas(2, 0, proper=False).construction == "igusa_binary_sextic_PGL2"
+    assert lookup_owned_etale_atlas(2, 0, proper=False).covering_kind == "igusa_binary_sextic_finite_etale_cover"
+    assert lookup_owned_etale_atlas(2, 0, proper=False).groupoid == "igusa_s6"
     assert resolve_owned_etale_atlas(XS) is not None
     assert XS.owned_etale_atlas_presentation().covering_kind == "legendre_finite_etale_cover"
     assert resolve_owned_etale_atlas(YS).construction == "knudsen_cross_ratio"
@@ -1139,25 +1146,27 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     M20 = Mbar_gn(2, 0, base=k)
     gap_gen = M20.etale_atlas_gap()
     assert gap_gen is not None
-    assert gap_gen["reason"] == "genus_2_igusa_binary_sextic_unavailable"
+    assert gap_gen["reason"] == "genus_2_igusa_compact_unavailable"
     assert gap_gen["registry_owned_type"] is False
     assert gap_gen["equation_level"] is False
-    assert gap_gen["pre_225_remaining_after_this"] == "general_(g,n)_beyond_named_g2"
+    assert gap_gen["pre_225_remaining_after_this"] == "mbar_2_and_marked_M2n"
     assert isinstance(M20.etale_atlas().domain(), AtlasChart)
     assert not M20.etale_atlas().has_equation_level_etale_certificate()
     assert M20.owned_etale_atlas_presentation() is None
     alts_gen = gap_gen["alternate_proving_sets"]
     assert alts_gen[0]["name"] == "igusa_binary_sextic_quotient"
     assert alts_gen[0]["construction"] == "igusa_binary_sextic_PGL2"
-    assert alts_gen[0]["status"] == "not_in_spike"
-    assert alts_gen[0]["owned_registry_cardinality"] == 6
+    assert alts_gen[0]["status"] == "open_M20_owned_under_two_invertible"
+    assert alts_gen[0]["owned_registry_cardinality"] == 7
     assert alts_gen[0]["proper_m0n_owned_max"] == 8
     assert alts_gen[1]["name"] == "general_dm_moduli_etale_atlas"
     assert alts_gen[1]["parametric_open_m0n"] is True
     assert alts_gen[1]["parametric_open_m1n"] is True
     assert alts_gen[1]["parametric_compact_m1n"] is True
     assert alts_gen[1]["parametric_proper_m0n"] is True
+    assert alts_gen[1]["open_m20_igusa"] is True
     assert (2, 0, True) not in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
+    assert (2, 0, False) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
     assert (0, 6, False) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
     assert (0, 6, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
     assert (0, 7, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
@@ -1169,12 +1178,46 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert (1, 4, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
     assert alts_gen[1]["proper_m0n_owned_max"] == 8
     assert alts_gen[1]["proper_m0n_gap_construction"] == "kapranov_iterated_blowup_P_{n-3}"
-    # Open M_{2,0}: same named Igusa gap (still no owned charts).
+    # Open M_{2,0}: owned Igusa / Rosenhain finite étale cover (2 invertible).
     M20_open = M_gn(2, 0, base=k)
-    gap_m20_open = M20_open.etale_atlas_gap()
-    assert gap_m20_open is not None
-    assert gap_m20_open["reason"] == "genus_2_igusa_binary_sextic_unavailable"
-    assert gap_m20_open["alternate_proving_sets"][0]["name"] == "igusa_binary_sextic_quotient"
+    m20_etale = M20_open.etale_atlas()
+    assert isinstance(m20_etale.domain(), AffineAlgebraicSpace)
+    assert M20_open.etale_atlas_gap() is None
+    assert m20_etale.has_equation_level_etale_certificate()
+    assert m20_etale.covering_kind() == "igusa_binary_sextic_finite_etale_cover"
+    assert m20_etale.is_quotient_presentation_atlas()
+    assert M20_open.owned_etale_atlas_presentation().construction == "igusa_binary_sextic_PGL2"
+    assert M20_open.owned_etale_atlas_presentation().groupoid == "igusa_s6"
+    assert m20_etale.domain().affine_cover() != ()
+    assert len(m20_etale.domain().affine_cover()[0].ring().gens()) == 3  # λ,μ,ν
+    igusa_pres = M20_open.igusa_quotient_presentation()
+    assert igusa_pres is not None
+    assert igusa_pres["finite_etale_groupoid"] is True
+    assert igusa_pres["group_order"] == 720
+    assert igusa_pres["degree"] == 720
+    assert igusa_pres["construction"] == "igusa_binary_sextic_PGL2"
+    assert igusa_pres["coverage"] == "dense_open_of_open_M_2"
+    assert igusa_pres["covering_space"] is m20_etale.domain()
+    assert not M20_open.atlas().has_equation_level_etale_certificate()
+    # Marked open M_{2,1}: still fail-closed (named gap).
+    M21_open = M_gn(2, 1, base=k)
+    gap_m21 = M21_open.etale_atlas_gap()
+    assert gap_m21 is not None
+    assert gap_m21["reason"] == "genus_2_igusa_marked_unavailable"
+    assert gap_m21["alternate_proving_sets"][0]["status"] == "open_M20_owned_under_two_invertible"
+    assert not M21_open.etale_atlas().has_equation_level_etale_certificate()
+    # Spec(Z) / char 2: open M_{2,0} owned as type but 2 not a unit → structured gap.
+    M20_Z = M_gn(2, 0, base=Z)
+    gap_m20_Z = M20_Z.etale_atlas_gap()
+    assert gap_m20_Z is not None
+    assert gap_m20_Z["reason"] == "igusa_requires_two_invertible"
+    assert gap_m20_Z["registry_owned_type"] is True
+    assert not M20_Z.etale_atlas().has_equation_level_etale_certificate()
+    assert M20_Z.igusa_quotient_presentation() is None
+    assert M20.igusa_quotient_presentation() is None  # proper
+    M20_char2 = M_gn(2, 0, base=spec(GF(2)))
+    assert M20_char2.etale_atlas_gap()["reason"] == "igusa_requires_two_invertible"
+    assert not M20_char2.etale_atlas().has_equation_level_etale_certificate()
 
     # Owned proving-set stacks expose no gap record.
     assert XS.etale_atlas_gap() is None
@@ -1199,6 +1242,7 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert M12_char2.etale_atlas_gap() is None
     assert Mbar12_char2.etale_atlas_gap() is None
     assert Mbar13_char2.etale_atlas_gap() is None
+    assert M20_open.etale_atlas_gap() is None
 
     # Product of owned charts: M_{1,1} × M_{0,4} both equation-level → product True.
     prod = ProductStack((XS, YS), base=k)
