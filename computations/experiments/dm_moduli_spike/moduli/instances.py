@@ -213,8 +213,8 @@ def _legendre_open_M1n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme
       the double cover), and at ``x_i - x_j`` (``i < j``; dense open of
       pairwise-distinct configurations with distinct ``x``-coordinates).
 
-    Not a scheme isomorphism ``M_{1,n} ≅ U``. Proper ``Mbar_{1,n}`` for ``n > 2``
-    is not claimed here (no honest compactified multi-mark cover owned).
+    Not a scheme isomorphism ``M_{1,n} ≅ U``. Proper compact charts live in
+    :func:`_legendre_compact_M1n_covering_space`.
     """
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
@@ -266,7 +266,7 @@ def _hesse_open_M1n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme:
       identity stays on ``Z = 0``).
 
     Primitive cube roots of unity are not required in the base ring. Proper
-    ``Mbar_{1,n}`` for ``n > 2`` is not claimed here.
+    compact charts live in :func:`_hesse_compact_M1n_covering_space`.
     """
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
@@ -325,7 +325,7 @@ def _legendre_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
     r"""Legendre universal-curve chart for open ``M_{1,2}``.
 
     Special case ``n = 2`` of :func:`_legendre_open_M1n_affine_scheme`. Proper
-    ``Mbar_{1,2}`` uses :func:`_legendre_Mbar12_algebraic_space`.
+    ``Mbar_{1,2}`` uses :func:`_legendre_compact_M1n_algebraic_space`.
     """
     return _legendre_open_M1n_affine_scheme(base, 2)
 
@@ -334,114 +334,273 @@ def _hesse_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
     r"""Hesse universal-curve chart for open ``M_{1,2}`` (incl. char ``2``).
 
     Special case ``n = 2`` of :func:`_hesse_open_M1n_affine_scheme`. Proper
-    ``Mbar_{1,2}`` uses :func:`_hesse_Mbar12_algebraic_space`.
+    ``Mbar_{1,2}`` uses :func:`_hesse_compact_M1n_algebraic_space`.
     """
     return _hesse_open_M1n_affine_scheme(base, 2)
 
 
-def _legendre_Mbar12_finite_lambda_chart(base: AffineScheme) -> AffineScheme:
-    r"""Legendre Weierstrass chart over ``𝔸¹_λ``, including nodal fibers ``λ ∈ {0,1}``.
+def _legendre_compact_M1n_infinite_point_names(extra_marks: int) -> tuple[str, ...]:
+    r"""Infinite-chart coordinate names for ``extra_marks`` Legendre Weierstrass points."""
+    if extra_marks == 1:
+        return ("X", "Y")
+    names: list[str] = []
+    for i in range(1, extra_marks + 1):
+        names.extend((f"X{i}", f"Y{i}"))
+    return tuple(names)
 
-    ``Spec(R[λ,x,y] / (y² - x(x-1)(x-λ)))`` — no localization at ``λ(λ-1)``.
-    Covers the compactified universal curve over the standard affine of
-    ``Mbar(Γ(2)) ≅ ℙ¹`` away from ``λ = ∞``.
+
+def _hesse_compact_M1n_infinite_point_names(extra_marks: int) -> tuple[str, ...]:
+    r"""Infinite-chart coordinate names for ``extra_marks`` Hesse affine points."""
+    return _legendre_compact_M1n_infinite_point_names(extra_marks)
+
+
+def _legendre_compact_M1n_finite_lambda_chart(base: AffineScheme, n: int) -> AffineScheme:
+    r"""Compact Legendre Weierstrass chart over ``𝔸¹_λ``, including nodal fibers.
+
+    * ``n = 2``: ``Spec(R[λ,x,y] / (y² - x(x-1)(x-λ)))`` — historical cover; no
+      localization at ``λ(λ-1)``.
+    * ``n ≥ 3``: ``n - 1`` points on the same model; localize at each ``y_i`` and
+      at ``x_i - x_j`` (collision-free marks on the smooth locus of fibers), but
+      **not** at ``λ(λ-1)``, so discriminant-zero base points remain.
     """
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
-    assert _two_is_invertible(base), "Legendre Mbar_{1,2} chart requires 2 invertible"
+    n_int = int(n)
+    assert n_int >= 2, f"compact Legendre finite chart requires n ≥ 2; got {n!r}"
+    assert _two_is_invertible(base), "Legendre Mbar_{1,n} chart requires 2 invertible"
+    extra = n_int - 1
+    names = ("lambda",) + _legendre_open_M1n_point_names(extra)
     ring = base.ring()
-    poly = PolynomialRing(ring, names=("lambda", "x", "y"))
-    lam, x, y = poly.gens()
-    equation = y**2 - x * (x - 1) * (x - lam)
-    return AffineScheme(poly.quo(equation))
+    poly = PolynomialRing(ring, names=names)
+    gens = poly.gens()
+    lam = gens[0]
+    if n_int == 2:
+        x, y = gens[1], gens[2]
+        return AffineScheme(poly.quo(y**2 - x * (x - 1) * (x - lam)))
+
+    xs = gens[1::2]
+    ys = gens[2::2]
+    denom = poly.one()
+    for y in ys:
+        denom *= y
+    for i, xi in enumerate(xs):
+        for xj in xs[i + 1 :]:
+            denom *= xi - xj
+    localized = poly.localization(denom)
+    equations = [
+        localized(gens[2 + 2 * i]) ** 2 - localized(gens[1 + 2 * i]) * (localized(gens[1 + 2 * i]) - 1) * (localized(gens[1 + 2 * i]) - localized(lam)) for i in range(extra)
+    ]
+    return AffineScheme(localized.quo(localized.ideal(equations)))
 
 
-def _legendre_Mbar12_infinite_lambda_chart(base: AffineScheme) -> AffineScheme:
-    r"""Legendre chart near ``λ = ∞`` via ``ν = 1/λ`` on the projective model.
+def _legendre_compact_M1n_infinite_lambda_chart(base: AffineScheme, n: int) -> AffineScheme:
+    r"""Compact Legendre chart near ``λ = ∞`` via ``ν = 1/λ``.
 
     From ``Y² Z = X(X-Z)(X-λ Z)`` with ``λ = 1/ν`` and affine ``Z = 1``:
 
-    ``Spec(R[ν,X,Y] / (ν Y² - X(X-1)(ν X - 1)))``
-
-    At ``ν = 0`` the fiber is nodal (multiplicative reduction); together with the
-    finite-``λ`` chart this is an affine cover of the compactified Legendre
-    universal curve minus the zero section over ``ℙ¹``.
+    * ``n = 2``: ``Spec(R[ν,X,Y] / (ν Y² - X(X-1)(ν X - 1)))``.
+    * ``n ≥ 3``: same fiber equation for each mark, localized at ``Y_i`` and
+      ``X_i - X_j`` (not at ``ν``), so the nodal fiber ``ν = 0`` stays.
     """
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
-    assert _two_is_invertible(base), "Legendre Mbar_{1,2} chart requires 2 invertible"
+    n_int = int(n)
+    assert n_int >= 2, f"compact Legendre infinite chart requires n ≥ 2; got {n!r}"
+    assert _two_is_invertible(base), "Legendre Mbar_{1,n} chart requires 2 invertible"
+    extra = n_int - 1
+    names = ("nu",) + _legendre_compact_M1n_infinite_point_names(extra)
     ring = base.ring()
-    poly = PolynomialRing(ring, names=("nu", "X", "Y"))
-    nu, X, Y = poly.gens()
-    equation = nu * Y**2 - X * (X - 1) * (nu * X - 1)
-    return AffineScheme(poly.quo(equation))
+    poly = PolynomialRing(ring, names=names)
+    gens = poly.gens()
+    nu = gens[0]
+    if n_int == 2:
+        X, Y = gens[1], gens[2]
+        return AffineScheme(poly.quo(nu * Y**2 - X * (X - 1) * (nu * X - 1)))
+
+    Xs = gens[1::2]
+    Ys = gens[2::2]
+    denom = poly.one()
+    for Y in Ys:
+        denom *= Y
+    for i, Xi in enumerate(Xs):
+        for Xj in Xs[i + 1 :]:
+            denom *= Xi - Xj
+    localized = poly.localization(denom)
+    equations = [
+        localized(nu) * localized(gens[2 + 2 * i]) ** 2 - localized(gens[1 + 2 * i]) * (localized(gens[1 + 2 * i]) - 1) * (localized(nu) * localized(gens[1 + 2 * i]) - 1)
+        for i in range(extra)
+    ]
+    return AffineScheme(localized.quo(localized.ideal(equations)))
+
+
+def _legendre_compact_M1n_algebraic_space(base: AffineScheme, n: int) -> CompactifiedUniversalCurveAlgebraicSpace:
+    r"""Compactified Legendre multi-mark cover of proper ``Mbar_{1,n}``, ``n ≥ 2``.
+
+    Pullback of ``Mbar(Γ(2)) → Mbar_{1,1}`` along the forgetful map
+    ``Mbar_{1,n} → Mbar_{1,1}``. Covering space is the compactified Legendre
+    family with ``n - 1`` extra marked points (identity / zero section at
+    infinity), affine charts including discriminant zero. Finite étale of
+    degree 6 with group ``S₃``. Not a scheme isomorphism.
+
+    * ``n = 2``: historical ``Mbar_Gamma2_univ_curve`` two-chart cover.
+    * ``n ≥ 3``: same two-chart pattern with collision-free mark localizations.
+
+    For ``n = 1`` use :func:`_legendre_compact_M1n_covering_space` (``ℙ¹``).
+    """
+    n_int = int(n)
+    assert n_int >= 2, f"compact Legendre multi-mark cover requires n ≥ 2; got {n!r}"
+    assert _two_is_invertible(base), "Legendre Mbar_{1,n} chart requires 2 invertible"
+    role = "Mbar_Gamma2_univ_curve" if n_int == 2 else "Mbar_Gamma2_marked_configuration"
+    return CompactifiedUniversalCurveAlgebraicSpace(
+        base,
+        role,
+        (
+            _legendre_compact_M1n_finite_lambda_chart(base, n_int),
+            _legendre_compact_M1n_infinite_lambda_chart(base, n_int),
+        ),
+    )
+
+
+def _legendre_compact_M1n_covering_space(base: AffineScheme, n: int) -> AlgebraicSpace:
+    r"""Parametric compact Legendre covering space of proper ``Mbar_{1,n}``, ``n ≥ 1``.
+
+    * ``n = 1``: ``Mbar(Γ(2)) ≅ ℙ¹``.
+    * ``n ≥ 2``: :func:`_legendre_compact_M1n_algebraic_space`.
+    """
+    from ..geometry.stacks import ProjectiveLineAlgebraicSpace
+
+    n_int = int(n)
+    assert n_int >= 1, f"compact Legendre Mbar_{{1,n}} requires n ≥ 1; got {n!r}"
+    assert _two_is_invertible(base), "Legendre Mbar_{1,n} chart requires 2 invertible"
+    if n_int == 1:
+        return ProjectiveLineAlgebraicSpace(base, "Mbar_Gamma2")
+    return _legendre_compact_M1n_algebraic_space(base, n_int)
 
 
 def _legendre_Mbar12_algebraic_space(base: AffineScheme) -> CompactifiedUniversalCurveAlgebraicSpace:
-    r"""Compactified Legendre universal-curve cover of proper ``Mbar_{1,2}``.
+    r"""Historical alias: compact Legendre cover of proper ``Mbar_{1,2}``."""
+    return _legendre_compact_M1n_algebraic_space(base, 2)
 
-    Pullback of ``Mbar(Γ(2)) → Mbar_{1,1}`` along the forgetful universal curve
-    ``Mbar_{1,2} → Mbar_{1,1}``. Covering space is the compactified Legendre
-    family minus the identity section, with affine charts including discriminant
-    zero. Finite étale of degree 6 with group ``S₃``. Not a scheme isomorphism.
+
+def _hesse_compact_M1n_finite_mu_chart(base: AffineScheme, n: int) -> AffineScheme:
+    r"""Compact Hesse cubic chart over ``𝔸¹_μ``, including nodal fibers ``μ³ = 1``.
+
+    * ``n = 2``: ``Spec(R[μ,x,y] / (x³ + y³ + 1 - 3μ x y))`` — no localization
+      at ``μ³ - 1``.
+    * ``n ≥ 3``: ``n - 1`` points; localize at ``y_i`` and ``x_i - x_j`` only.
     """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    n_int = int(n)
+    assert n_int >= 2, f"compact Hesse finite chart requires n ≥ 2; got {n!r}"
+    assert _three_is_invertible(base), "Hesse Mbar_{1,n} chart requires 3 invertible"
+    extra = n_int - 1
+    names = ("mu",) + _hesse_open_M1n_point_names(extra)
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=names)
+    gens = poly.gens()
+    mu = gens[0]
+    if n_int == 2:
+        x, y = gens[1], gens[2]
+        return AffineScheme(poly.quo(x**3 + y**3 + 1 - poly(3) * mu * x * y))
+
+    xs = gens[1::2]
+    ys = gens[2::2]
+    denom = poly.one()
+    for y in ys:
+        denom *= y
+    for i, xi in enumerate(xs):
+        for xj in xs[i + 1 :]:
+            denom *= xi - xj
+    localized = poly.localization(denom)
+    equations = [
+        localized(gens[1 + 2 * i]) ** 3 + localized(gens[2 + 2 * i]) ** 3 + 1 - localized(3) * localized(mu) * localized(gens[1 + 2 * i]) * localized(gens[2 + 2 * i])
+        for i in range(extra)
+    ]
+    return AffineScheme(localized.quo(localized.ideal(equations)))
+
+
+def _hesse_compact_M1n_infinite_mu_chart(base: AffineScheme, n: int) -> AffineScheme:
+    r"""Compact Hesse chart near ``μ = ∞`` via ``ν = 1/μ`` and scaling.
+
+    * ``n = 2``: ``Spec(R[ν,X,Y] / (X³ + Y³ + ν³ - 3 X Y))``.
+    * ``n ≥ 3``: same for each mark, localized at ``Y_i`` and ``X_i - X_j``.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    n_int = int(n)
+    assert n_int >= 2, f"compact Hesse infinite chart requires n ≥ 2; got {n!r}"
+    assert _three_is_invertible(base), "Hesse Mbar_{1,n} chart requires 3 invertible"
+    extra = n_int - 1
+    names = ("nu",) + _hesse_compact_M1n_infinite_point_names(extra)
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=names)
+    gens = poly.gens()
+    nu = gens[0]
+    if n_int == 2:
+        X, Y = gens[1], gens[2]
+        return AffineScheme(poly.quo(X**3 + Y**3 + nu**3 - poly(3) * X * Y))
+
+    Xs = gens[1::2]
+    Ys = gens[2::2]
+    denom = poly.one()
+    for Y in Ys:
+        denom *= Y
+    for i, Xi in enumerate(Xs):
+        for Xj in Xs[i + 1 :]:
+            denom *= Xi - Xj
+    localized = poly.localization(denom)
+    equations = [
+        localized(gens[1 + 2 * i]) ** 3 + localized(gens[2 + 2 * i]) ** 3 + localized(nu) ** 3 - localized(3) * localized(gens[1 + 2 * i]) * localized(gens[2 + 2 * i])
+        for i in range(extra)
+    ]
+    return AffineScheme(localized.quo(localized.ideal(equations)))
+
+
+def _hesse_compact_M1n_algebraic_space(base: AffineScheme, n: int) -> CompactifiedUniversalCurveAlgebraicSpace:
+    r"""Compactified Hesse multi-mark cover of proper ``Mbar_{1,n}``, ``n ≥ 2``.
+
+    Pullback of ``Mbar(Γ(3)) → Mbar_{1,1}`` along ``Mbar_{1,n} → Mbar_{1,1}``.
+    Finite étale of degree ``|SL₂(𝔽₃)| = 24``. Used when Legendre is unavailable.
+
+    * ``n = 2``: historical ``Mbar_Gamma3_univ_curve`` two-chart cover.
+    * ``n ≥ 3``: same two-chart pattern with collision-free mark localizations.
+
+    For ``n = 1`` use :func:`_hesse_compact_M1n_covering_space` (``ℙ¹``).
+    """
+    n_int = int(n)
+    assert n_int >= 2, f"compact Hesse multi-mark cover requires n ≥ 2; got {n!r}"
+    assert _three_is_invertible(base), "Hesse Mbar_{1,n} chart requires 3 invertible"
+    role = "Mbar_Gamma3_univ_curve" if n_int == 2 else "Mbar_Gamma3_marked_configuration"
     return CompactifiedUniversalCurveAlgebraicSpace(
         base,
-        "Mbar_Gamma2_univ_curve",
+        role,
         (
-            _legendre_Mbar12_finite_lambda_chart(base),
-            _legendre_Mbar12_infinite_lambda_chart(base),
+            _hesse_compact_M1n_finite_mu_chart(base, n_int),
+            _hesse_compact_M1n_infinite_mu_chart(base, n_int),
         ),
     )
 
 
-def _hesse_Mbar12_finite_mu_chart(base: AffineScheme) -> AffineScheme:
-    r"""Hesse cubic chart over ``𝔸¹_μ``, including nodal fibers ``μ³ = 1``.
+def _hesse_compact_M1n_covering_space(base: AffineScheme, n: int) -> AlgebraicSpace:
+    r"""Parametric compact Hesse covering space of proper ``Mbar_{1,n}``, ``n ≥ 1``.
 
-    ``Spec(R[μ,x,y] / (x³ + y³ + 1 - 3μ x y))`` — no localization at ``μ³ - 1``.
+    * ``n = 1``: ``Mbar(Γ(3)) ≅ ℙ¹``.
+    * ``n ≥ 2``: :func:`_hesse_compact_M1n_algebraic_space`.
     """
-    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+    from ..geometry.stacks import ProjectiveLineAlgebraicSpace
 
-    assert _three_is_invertible(base), "Hesse Mbar_{1,2} chart requires 3 invertible"
-    ring = base.ring()
-    poly = PolynomialRing(ring, names=("mu", "x", "y"))
-    mu, x, y = poly.gens()
-    equation = x**3 + y**3 + 1 - poly(3) * mu * x * y
-    return AffineScheme(poly.quo(equation))
-
-
-def _hesse_Mbar12_infinite_mu_chart(base: AffineScheme) -> AffineScheme:
-    r"""Hesse chart near ``μ = ∞`` via ``ν = 1/μ`` and scaling ``x = X/ν``, ``y = Y/ν``.
-
-    ``Spec(R[ν,X,Y] / (X³ + Y³ + ν³ - 3 X Y))``
-
-    Together with the finite-``μ`` chart, an affine cover of the compactified
-    Hesse universal curve minus a flex zero section over ``ℙ¹ = Mbar(Γ(3))``.
-    """
-    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-
-    assert _three_is_invertible(base), "Hesse Mbar_{1,2} chart requires 3 invertible"
-    ring = base.ring()
-    poly = PolynomialRing(ring, names=("nu", "X", "Y"))
-    nu, X, Y = poly.gens()
-    equation = X**3 + Y**3 + nu**3 - poly(3) * X * Y
-    return AffineScheme(poly.quo(equation))
+    n_int = int(n)
+    assert n_int >= 1, f"compact Hesse Mbar_{{1,n}} requires n ≥ 1; got {n!r}"
+    assert _three_is_invertible(base), "Hesse Mbar_{1,n} chart requires 3 invertible"
+    if n_int == 1:
+        return ProjectiveLineAlgebraicSpace(base, "Mbar_Gamma3")
+    return _hesse_compact_M1n_algebraic_space(base, n_int)
 
 
 def _hesse_Mbar12_algebraic_space(base: AffineScheme) -> CompactifiedUniversalCurveAlgebraicSpace:
-    r"""Compactified Hesse universal-curve cover of proper ``Mbar_{1,2}`` (incl. char 2).
-
-    Pullback of ``Mbar(Γ(3)) → Mbar_{1,1}`` along ``Mbar_{1,2} → Mbar_{1,1}``.
-    Finite étale of degree ``|SL₂(𝔽₃)| = 24``. Used when Legendre is unavailable.
-    """
-    return CompactifiedUniversalCurveAlgebraicSpace(
-        base,
-        "Mbar_Gamma3_univ_curve",
-        (
-            _hesse_Mbar12_finite_mu_chart(base),
-            _hesse_Mbar12_infinite_mu_chart(base),
-        ),
-    )
+    r"""Historical alias: compact Hesse cover of proper ``Mbar_{1,2}``."""
+    return _hesse_compact_M1n_algebraic_space(base, 2)
 
 
 def _tate_weierstrass_discriminant(a1: object, a2: object, a3: object, a4: object, a6: object) -> object:
@@ -843,13 +1002,14 @@ class ModuliStack(DeligneMumfordStack):
     def legendre_quotient_presentation(self) -> dict[str, object] | None:
         r"""Inspectable ``(U, S₃)`` data when a Legendre ``Γ(2)`` presentation is owned.
 
-        Returns ``None`` unless this is open ``M_{1,n}`` (``n ≥ 1``) or proper
-        ``Mbar_{1,1}`` / ``Mbar_{1,2}`` over a base with ``2`` invertible.
+        Returns ``None`` unless this is open ``M_{1,n}`` or proper ``Mbar_{1,n}``
+        (``n ≥ 1``) over a base with ``2`` invertible.
 
         - Open ``M_{1,n}``: parametric Legendre chart
           :func:`_legendre_open_M1n_affine_scheme`.
-        - Proper ``Mbar_{1,1}`` / ``Mbar_{1,2}``: compact Legendre covers.
-        - Proper ``Mbar_{1,n}`` for ``n > 2`` is not owned.
+        - Proper ``Mbar_{1,1}``: compact ``ℙ¹ = Mbar(Γ(2))``.
+        - Proper ``Mbar_{1,n}`` (``n ≥ 2``): compact multi-mark Legendre cover
+          :func:`_legendre_compact_M1n_algebraic_space`.
 
         ``G = S₃`` acts by permuting ``{0,1,∞}`` on the level structure.
         Does **not** claim a scheme isomorphism ``M_{1,*} ≅ U``.
@@ -857,9 +1017,7 @@ class ModuliStack(DeligneMumfordStack):
         if self.genus() != 1:
             return None
         n = int(self.number_of_markings())
-        if self.is_proper() and n not in (1, 2):
-            return None
-        if (not self.is_proper()) and n < 1:
+        if n < 1:
             return None
         if not _two_is_invertible(self.base_scheme()):
             return None
@@ -870,12 +1028,15 @@ class ModuliStack(DeligneMumfordStack):
         from typing import Any, cast
 
         if self.is_proper():
-            if n == 2:
+            if n == 1:
+                presentation = "Mbar_1_1 ≅ [P1 / S3]"
+                level_structure = "Mbar(Gamma(2))"
+            elif n == 2:
                 presentation = "Mbar_1_2 ≅ [compact_Legendre_univ_curve / S3]"
                 level_structure = "Mbar(Gamma(2))_universal_curve"
             else:
-                presentation = "Mbar_1_1 ≅ [P1 / S3]"
-                level_structure = "Mbar(Gamma(2))"
+                presentation = f"Mbar_1_{n} ≅ [compact_Legendre_marked_configuration / S3]"
+                level_structure = "Mbar(Gamma(2))_marked_configuration"
         elif n == 1:
             presentation = "M_1_1 ≅ [Legendre_U / S3]"
             level_structure = "Gamma(2)"
@@ -901,13 +1062,14 @@ class ModuliStack(DeligneMumfordStack):
     def hesse_quotient_presentation(self) -> dict[str, object] | None:
         r"""Inspectable ``(U, SL₂(𝔽₃))`` data when a Hesse ``Γ(3)`` presentation is owned.
 
-        Returns ``None`` unless this is open ``M_{1,n}`` (``n ≥ 1``) or proper
-        ``Mbar_{1,1}`` / ``Mbar_{1,2}`` over a base with ``2`` **not** invertible
-        and ``3`` invertible (Legendre preferred whenever available).
+        Returns ``None`` unless this is open ``M_{1,n}`` or proper ``Mbar_{1,n}``
+        (``n ≥ 1``) over a base with ``2`` **not** invertible and ``3`` invertible
+        (Legendre preferred whenever available).
 
         - Open ``M_{1,n}``: parametric Hesse chart :func:`_hesse_open_M1n_affine_scheme`.
-        - Proper ``Mbar_{1,1}`` / ``Mbar_{1,2}``: compact Hesse covers.
-        - Proper ``Mbar_{1,n}`` for ``n > 2`` is not owned.
+        - Proper ``Mbar_{1,1}``: compact ``ℙ¹ = Mbar(Γ(3))``.
+        - Proper ``Mbar_{1,n}`` (``n ≥ 2``): compact multi-mark Hesse cover
+          :func:`_hesse_compact_M1n_algebraic_space`.
 
         ``G = SL₂(𝔽₃)`` has order 24. Does **not** claim a scheme isomorphism
         ``M_{1,*} ≅ U``.
@@ -915,9 +1077,7 @@ class ModuliStack(DeligneMumfordStack):
         if self.genus() != 1:
             return None
         n = int(self.number_of_markings())
-        if self.is_proper() and n not in (1, 2):
-            return None
-        if (not self.is_proper()) and n < 1:
+        if n < 1:
             return None
         base = self.base_scheme()
         if _two_is_invertible(base) or not _three_is_invertible(base):
@@ -929,12 +1089,15 @@ class ModuliStack(DeligneMumfordStack):
         from typing import Any, cast
 
         if self.is_proper():
-            if n == 2:
+            if n == 1:
+                presentation = "Mbar_1_1 ≅ [P1 / SL2(F3)]"
+                level_structure = "Mbar(Gamma(3))"
+            elif n == 2:
                 presentation = "Mbar_1_2 ≅ [compact_Hesse_univ_curve / SL2(F3)]"
                 level_structure = "Mbar(Gamma(3))_universal_curve"
             else:
-                presentation = "Mbar_1_1 ≅ [P1 / SL2(F3)]"
-                level_structure = "Mbar(Gamma(3))"
+                presentation = f"Mbar_1_{n} ≅ [compact_Hesse_marked_configuration / SL2(F3)]"
+                level_structure = "Mbar(Gamma(3))_marked_configuration"
         elif n == 1:
             presentation = "M_1_1 ≅ [Hesse_U / SL2(F3)]"
             level_structure = "Gamma(3)"

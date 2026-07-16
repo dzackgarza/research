@@ -662,17 +662,20 @@ class KapranovBlowupFourPointsP2AlgebraicSpace(AlgebraicSpace):
 
 
 class CompactifiedUniversalCurveAlgebraicSpace(AlgebraicSpace):
-    r"""Affine cover of a compactified Legendre/Hesse universal curve over ``ℙ¹``.
+    r"""Affine cover of a compactified Legendre/Hesse multi-mark curve over ``ℙ¹``.
 
-    Owned as the finite-étale covering space of proper ``Mbar_{1,2}`` when a
-    level structure applies:
+    Owned as the finite-étale covering space of proper ``Mbar_{1,n}`` (``n ≥ 2``)
+    when a level structure applies:
 
     - Legendre (``2`` invertible): two Weierstrass charts over ``Mbar(Γ(2)) ≅ ℙ¹``,
       including discriminant-zero (nodal) fibers — **not** the open localization
-      at ``λ(λ-1)``. Kapranov ``Bl₄(ℙ²)`` for ``Mbar_{0,5}`` is owned separately
-      as :class:`KapranovBlowupFourPointsP2AlgebraicSpace`.
+      at ``λ(λ-1)``. For ``n ≥ 3`` the charts carry ``n - 1`` marked points with
+      collision-free localizations that remain valid at nodal fibers. Kapranov
+      ``Bl₄(ℙ²)`` for ``Mbar_{0,5}`` is owned separately as
+      :class:`KapranovBlowupFourPointsP2AlgebraicSpace`.
     - Hesse (``2`` not invertible, ``3`` invertible): two Hesse-cubic charts over
-      ``Mbar(Γ(3)) ≅ ℙ¹``, including ``μ³ = 1`` nodal fibers.
+      ``Mbar(Γ(3)) ≅ ℙ¹``, including ``μ³ = 1`` nodal fibers, likewise extended
+      by extra marked-point coordinates for ``n ≥ 3``.
 
     Charts are equation-level ``AffineScheme`` hypersurfaces; the finite étale
     groupoid ``S₃`` / ``SL₂(𝔽₃)`` is recorded on the atlas morphism, pulled back
@@ -1543,10 +1546,14 @@ class AtlasEvidence:
                 "legendre_compact_finite_etale_cover",
                 "legendre_universal_curve_finite_etale_cover",
                 "legendre_compact_universal_curve_finite_etale_cover",
+                "legendre_marked_configuration_finite_etale_cover",
+                "legendre_compact_marked_configuration_finite_etale_cover",
                 "hesse_finite_etale_cover",
                 "hesse_compact_finite_etale_cover",
                 "hesse_universal_curve_finite_etale_cover",
                 "hesse_compact_universal_curve_finite_etale_cover",
+                "hesse_marked_configuration_finite_etale_cover",
+                "hesse_compact_marked_configuration_finite_etale_cover",
             )
             and not self.links_finite_etale_groupoid()
         ):
@@ -1671,11 +1678,13 @@ class AtlasMorphism(StackMorphism):
             "legendre_universal_curve_finite_etale_cover",
             "legendre_compact_universal_curve_finite_etale_cover",
             "legendre_marked_configuration_finite_etale_cover",
+            "legendre_compact_marked_configuration_finite_etale_cover",
             "hesse_finite_etale_cover",
             "hesse_compact_finite_etale_cover",
             "hesse_universal_curve_finite_etale_cover",
             "hesse_compact_universal_curve_finite_etale_cover",
             "hesse_marked_configuration_finite_etale_cover",
+            "hesse_compact_marked_configuration_finite_etale_cover",
         )
 
     def covering_space(self) -> object | None:
