@@ -16,4 +16,5 @@ abstract: |
 # Enriques surfaces I
 
 - **Used here for:** the lattice table for Coble surfaces, fixed-locus formulas for the K3 cover involution, boundary-component geometry, and Halphen/Coble results.
+
 - **Project relevance:** this is the main modern reference behind many Coble facts imported into the paper's introduction and appendix.

@@ -14,4 +14,5 @@ abstract: |
 # Classical algebraic geometry
 
 - **Used here for:** the geometric description of Coble surfaces as degenerations of Enriques/K3 quotients and the linear systems $|2f_i+2f_j|$ mapping to quartic del Pezzo surfaces.
+
 - **Project relevance:** anchors the source citations for the geometric Coble remarks migrated into the vault.

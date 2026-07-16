@@ -14,4 +14,5 @@ abstract: |
 # Semistable degenerations of Enriques' and hyperelliptic surfaces
 
 - **Used here for:** the flowerpot description of degenerations expected to model parts of the Coble boundary.
+
 - **Project relevance:** historical source behind the degeneration picture later reformulated in dlt / KSBA language.

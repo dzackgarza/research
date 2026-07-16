@@ -3,29 +3,6 @@ title: "Complete moduli spaces of Coble surfaces"
 abstract: "We describe a modular KSBA stable pair compactification of the moduli space of Coble surfaces and compare it to a semitoroidal compactification of the corresponding period domain. We further describe KSBA stable limits in terms of integral affine structures."
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Introduction
 
 ::: remark
@@ -56,7 +33,9 @@ from the normalization of the KSBA compactification to the semitoroidal compacti
 This result is made possible by recent advances in `\cite{AE22,alexeev2021nonsymplectic}`{=tex} on compactifications of K3 surfaces with nonsymplectic automorphisms, along with the theory of recognizable divisors developed in `\cite{alexeev2023compact}`{=tex}. We also critically leverage the related stable pair compactification of the moduli spaces of Enriques surfaces studied in `\cite{AEGS23}`{=tex}. In particular, we use the folding theory of Coxeter diagrams, their associated integral affine structures, and the theory of \( ADE+BC \) surfaces in order to explicitly describe stable degenerations of Coble surfaces.
 :::
 
-**Acknowledgements**. I would like to thank my advisor Valery Alexeev for his guidance and support throughout this project. I thank Luca Schaffler and Philip Engel for many useful discussions. I would also like to gratefully acknowledge financial support from the Office of the Graduate School of the University of Georgia and the Research and Training Group in Algebra, Algebraic Geometry, and Number Theory at the University of Georgia.
+**Acknowledgements**. I would like to thank my advisor Valery Alexeev for his guidance and support throughout this project.
+I thank Luca Schaffler and Philip Engel for many useful discussions.
+I would also like to gratefully acknowledge financial support from the Office of the Graduate School of the University of Georgia and the Research and Training Group in Algebra, Algebraic Geometry, and Number Theory at the University of Georgia.
 
 # Coble surfaces
 

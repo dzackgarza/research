@@ -27,8 +27,10 @@ pyproject.toml
 ./objects/categories.py
 ./objects/constructors.py
 ./objects/elements.py
+./objects/functors.py
 ./objects/parents.py
 ./sage_patches/__init__.py
+./sage_patches/brown_indecomposable.py
 ./sage_patches/laurent_polynomial_ring_coercion_import.py
 ./sage_patches/multiplicative_order.py
 algebra/__init__.py

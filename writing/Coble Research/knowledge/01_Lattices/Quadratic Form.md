@@ -19,8 +19,9 @@ created: 2026-05-08
 > \end{aligned}
 > $$
 > 
-> We say $q$ is **integral** if $q(L) \subseteq \mathbf{Z}$. The pair $(L,q)$ is called a **quadratic $\mathbf{Z}$-module**.
-
+> We say $q$ is **integral** if $q(L) \subseteq \mathbf{Z}$.
+> The pair $(L,q)$ is called a **quadratic $\mathbf{Z}$-module**.
 
 ## See Also
+
 - [[Correspondence between Bilinear and Quadratic Forms]]

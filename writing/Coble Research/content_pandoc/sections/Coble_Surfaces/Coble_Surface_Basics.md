@@ -12,7 +12,6 @@ rational curves $C_i$ satisfying $C_i^2 = -4$[^2], and thus
 $C_i C_j = -4\delta_{ij}$.
 The $C_i$ are referred to as the _boundary components_ of $S$.
 One can show $n = -K_S^2$ and $n\leq 10$.
-
 :::
 
 ::: {.remark}
@@ -45,7 +44,6 @@ be **terminal**.
 We say $S$ is **minimal** if the blowdown of any $(-1)$-curve on $S$ is no
 longer a Coble surface, or equivalently if $S$ does not admit a birational but
 not biregular morphism onto another Coble surface.
-
 :::
 
 ::: {.remark}
@@ -65,19 +63,15 @@ either an unnodal Halphen surface (with $n=9$) or an unnodal Coble surface (with
 $n=10$), that unnodal point sets define a Zariski open subset in the moduli
 space of point sets defining Halphen and Coble surfaces, and that Cremona
 special Halphen and Coble surfaces are precisely the unnodal ones.
-
 :::
 
 [^1]:
-    More generally, by [@DK24], this can be relaxed to a reduced simple
-    normal crossings divisor.
+    More generally, by [@DK24], this can be relaxed to a reduced simple normal crossings divisor.
 
 [^2]:
-    This follows from an application of the genus formula:
-    $$p_{a}(C)=1+\frac{1}{2}\qty{ C^{2} + C \cdot K_S }=1+K_S^{2}=0,$$
+    This follows from an application of the genus formula: $$p_{a}(C)=1+\frac{1}{2}\qty{ C^{2} + C \cdot K_S }=1+K_S^{2}=0,$$
 
-    and so $C$ is a smooth rational curve satisfying $C^2 = 4K_S^2 = -4$ since
-    $K_S^2 = -1$.
+    and so $C$ is a smooth rational curve satisfying $C^2 = 4K_S^2 = -4$ since $K_S^2 = -1$.
     This is [@CDL24 §. 3.1].
 
 [^3]: By the proof of [@DK24 Prop 9.13].

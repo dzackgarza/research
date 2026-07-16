@@ -18,7 +18,8 @@ Let
 $$
 f \colon Y = \operatorname{Bl}_V X \to X
 $$
-be the blowup of a smooth variety $X$ along a smooth center $V$, with exceptional divisor $E$. Then
+be the blowup of a smooth variety $X$ along a smooth center $V$, with exceptional divisor $E$.
+Then
 $$
 K_Y = f^*K_X + (\operatorname{codim}_X V - 1)E.
 $$
@@ -34,7 +35,8 @@ Let
 $$
 f \colon Y \to X
 $$
-be a branched cover with branch locus $B$ and ramification divisor $R$. Then
+be a branched cover with branch locus $B$ and ramification divisor $R$.
+Then
 $$
 K_Y = f^*K_X + R.
 $$

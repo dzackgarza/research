@@ -22,5 +22,4 @@ explicitly of one of the following forms:
 
 3.  $R$ is the sum of a single rational curve and $n-1$ other disjoint
     $(-2)$-curves otherwise.
-
 :::

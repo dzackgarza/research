@@ -2,7 +2,7 @@
 
 ## Coble Cusps
 
-:::{.remark}
+::: {.remark}
 We recall the mirror move algorithm from \cite{AE22nonsympinv}.
 We have Nikulin's 2-elementary diagram:
 
@@ -12,11 +12,9 @@ We have Nikulin's 2-elementary diagram:
 \caption{White nodes are $\delta=0$, black are $\delta=1$, double circled are $\delta = 1,2$.}
 \label{fig:nikulin_table}
 \end{figure}
-
 :::
 
-
-:::{.remark}
+::: {.remark}
 Having identified the 2-elementary lattice $S_\Co = (11, 11, 0)_1$, one can apply the mirror move algorithm of \cite[Thm. 5.10]{AE22nonsympinv} to determine the 0-cusps and 1-cusps of $F_\Co$.
 The outcome of the algorithm is summarized by the following tree:
 
@@ -63,11 +61,9 @@ For an isotropic plane $J$, we denote the divisibilities of the constituent gene
 \caption{Cusp diagram for $F_\Co = F_{(11, 11, 1)}$ where $T_\Co = \gens{2} \oplus E_{10}(2)$.}
 \label{fig:coble-cusp-diagram}
 \end{figure}
-
 :::
 
-
-:::{.remark}
+::: {.remark}
 As further proof that this cusp diagram is correct, we can use the theory of Coxeter diagrams.
 Given an isotropic vector $e\in L$ a lattice of signature $(2, n)$, the lattice $e^{\perp L}/\gens{e}$ is a hyperbolic lattice equipped with a root system $R_e$ with a Coxeter diagram $G_e$. Generally, when $e$ corresponds to a 0-cusp in a Baily-Borel compactification, the adjacent 1-cusps correspond precisely to maximal parabolic subdiagrams of $G_e$. The cusp diagram above suggests that the 0-cusp $v_0$ should have a Coxeter diagram $G_{v_0}$ with precisely one maximal parabolic subdiagram. One can run Vinberg's algorithm to determine the Coxeter diagram for $v_0$, and it is a straightforward check to determine that there is indeed a unique maximal parabolic subdiagram of the form $\tilde B_7(2)$:
 
@@ -77,10 +73,9 @@ Given an isotropic vector $e\in L$ a lattice of signature $(2, n)$, the lattice 
 \caption{The unique maximal parabolic subdiagram $\tilde B_7(2)$ of $(9,9,1)_1$, corresponding to single one-cusp $(7,7,1)_0$ in $F_\Co$.}
 \label{fig:coble-cusp-9-9-1-parabolics}
 \end{figure}
-
 :::
 
-:::{.remark}
+::: {.remark}
 \begin{align*}
 \div_{T_{\dP}}(v_0) = 2 &&
 \div_{T_{\dP}}(v_1) = 1 
@@ -90,8 +85,7 @@ The former is clear, since the image of $v_0$ in $T_{\dP}$ is $e'\in U(2)$ and $
 The latter follows from the fact that $v_1\alpha_3 = 1$.
 :::
 
-
-:::{.remark}
+::: {.remark}
 We note the divisibilities of $v_i$ under various lattice embeddings:
 
 \begin{table}[H]
@@ -120,12 +114,11 @@ $T_{\dP}$ & $e'$ & $2e + 2f + \alpha_1 + \tilde\alpha_1 + \alpha_2 + \tilde \alp
 \caption{Isotropic vectors in $F_{\En, 2}$ and their divisibilities.}
 \label{tab:coble-cusp-divisibilities}
 \end{table}
-
 :::
 
 ## Enriques Cusps
 
-:::{.remark}
+::: {.remark}
 We recall the cusp diagram of $F_{\En}$:
 
 % Cusp diagram F_En
@@ -144,11 +137,9 @@ This can be recovered using the mirror move algorithm:
 \caption{}
 \label{fig:mirror-moves-enriques-simplified}
 \end{figure}
-
-
 :::
 
-:::{.remark}
+::: {.remark}
 We recall the Coxeter diagrams and their maximal parabolic subdiagrams at the 0-cusps of $F_{\En}$:
 
 \begin{figure}[H]
@@ -157,12 +148,11 @@ We recall the Coxeter diagrams and their maximal parabolic subdiagrams at the 0-
 \input{tikz/enriques-cusp-coxeter-diagrams-maximal-parabolics.tikz}
 \label{fig:enriques-maximal-parabolics-10-10-0}
 \end{figure}
-
 :::
 
 ## Sterk Cusps
 
-:::{.remark}
+::: {.remark}
 We recall Sterk's cusp diagram for $F_{\En, 2}$:
 
 \begin{figure}[H]
@@ -188,15 +178,11 @@ Sterk Cusp & Vector                           & $\mathrm{div}_{T_{\En}}$ & $\mat
 \caption{Isotropic vectors in $F_{\En, 2}$ and their divisibilities.}
 \label{tab:sterk-cusp-divisibilities}
 \end{table}
-
 :::
-
-
-
 
 ## K3 Cusps
 
-:::{.remark}
+::: {.remark}
 We recall the cusp diagram for $F_{(2,2,0)}$:
 
 \begin{figure}[H]
@@ -205,9 +191,4 @@ We recall the cusp diagram for $F_{(2,2,0)}$:
 \caption{}
 \label{fig:220-cusp-diagram}
 \end{figure}
-
-
-
-
 :::
-

@@ -17,8 +17,10 @@ created: 2026-05-08
 > 
 > A lattice $(L,\beta)$ is **even** if $\beta(v,v) \in 2\mathbf{Z}$ for all $v \in L$, and **odd** otherwise.
 
-
 ## See Also
+
 - [[Rank and Signature]]
+
 - [[Scaled Lattices]]
+
 - [[Gram Matrix]]

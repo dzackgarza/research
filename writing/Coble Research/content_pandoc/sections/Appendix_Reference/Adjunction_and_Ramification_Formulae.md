@@ -12,7 +12,6 @@ $$
 
 Note that if $X$ is a surface and $V$ is a divisor, this recovers
 $$K_Y = f^* K_X + E.$$
-
 :::
 
 ::: {.remark}
@@ -24,5 +23,4 @@ Then
 $$
 K_Y = f^* K_X + R, \qquad R \da \sum_{p\in X} \mathrm{len}\qty{ \Omega_{X/Y, p}} [p].
 $$
-
 :::

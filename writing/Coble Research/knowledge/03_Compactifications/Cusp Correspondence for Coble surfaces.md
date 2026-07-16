@@ -28,7 +28,9 @@ created: 2026-05-10
   T_{\mathrm{Co}} = \langle 2 \rangle \oplus E_{10}(2),
   $$
   every nonzero pairing is even, so primitive isotropic vectors have divisibility 2 [@AE22].
+
 - For the standard isotropic vector $v_1 = e'$, its image $w_1 = \tilde e'$ in $T_{\mathrm{En}}$ also has divisibility 2 [@AE22].
+
 - Therefore
   $$
   w_1^\perp / w_1 \cong U \oplus E_8(2) \cong (10,8,0)_1,
@@ -42,11 +44,13 @@ created: 2026-05-10
   v_2 = 2h + \alpha_1 + \alpha_2, \qquad
   w_2 = 2\tilde e + 2\tilde f + \tilde\alpha_1 + \tilde\alpha_2.
   $$
+
 - Inside
   $$
   w_1^\perp / w_1 \cong U \oplus E_8(2),
   $$
   the vector $w_2$ has divisibility 2 because both the $U$-part and the $E_8(2)$-part pair evenly [@AE22].
+
 - This identifies the image 1-cusp as $(8,6,0)_0$ rather than $(8,8,0)_0$ [@AE22; @CDL24].
 
 ## Degree-2 K3 interpretation
@@ -55,5 +59,7 @@ created: 2026-05-10
   $$
   \tilde w_1^\perp / \tilde w_1 \cong U \oplus E_8^{\oplus 2} \cong (18,0,0)_1.
   $$
+
 - The image $\tilde w_2$ has divisibility 1, so its cusp is of odd type and gives $(16,0,0)_0$ [@AEGS23].
+
 - The 0-cusp therefore matches **Sterk cusp 2** after folding the Coxeter diagram of $(18,0,0)_1$, explaining the expected disk-type IAS and Kulikov behavior [@AEGS23; @Ste91].

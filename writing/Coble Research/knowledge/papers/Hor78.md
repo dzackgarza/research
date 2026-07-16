@@ -14,4 +14,5 @@ abstract: |
 # On the periods of Enriques surfaces. II
 
 - **Used here for:** the $\mathbf{P}^1 \times \mathbf{P}^1$ model with a $\tau$-invariant anti-bicanonical branch curve.
+
 - **Project relevance:** underlies the Horikawa construction that realizes the Coble locus as a boundary of Enriques moduli.

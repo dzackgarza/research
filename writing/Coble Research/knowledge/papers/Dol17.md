@@ -14,4 +14,5 @@ abstract: |
 # Salem numbers and Enriques surfaces
 
 - **Used here for:** the geometric remark on degenerating an Enriques K3 cover to the Coble case.
+
 - **Project relevance:** provides background on Enriques involutions and automorphisms that informs the geometric discussion.
