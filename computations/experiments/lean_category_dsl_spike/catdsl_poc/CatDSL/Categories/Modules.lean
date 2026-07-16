@@ -144,4 +144,62 @@ def FreeFinModule.toFiniteSet (R : FiniteRingObj) :
     simp only [CategoryStruct.comp, LinearMap.coe_comp, Function.comp_apply,
                Equiv.symm_apply_apply]
 
+/-!
+## Morphism-sited operations
+
+Operations whose input is a morphism are typed on the morphism — they cannot
+be spelled without constructing it (the ratified method-placement doctrine).
+-/
+
+namespace ModuleHom
+
+/--
+The **index** `[N : f(M)]` of a module morphism `f : M ⟶ N`: the cardinality
+of its cokernel `N ⧸ range f`.
+
+*Home.*  Morphisms of `Mod(R)`.  The operation is meaningful here with no
+extra hypothesis because `Mod(R)` is abelian — every morphism has a cokernel.
+Contrast groups: the image of a group homomorphism need not be normal, the
+coset object exists only as a set, and no such operation can be declared on
+`Grp`'s morphisms with this definition.
+
+*Value.*  A `Cardinal`; finite exactly when the image has finite colength
+(for `ℤ`-lattices: full rank).  The Sage realization spells the value in the
+extended scalars `ℤ ∪ {∞}` (`domain_algebra.py`, morphism-sited geometry
+per #100).
+
+*Name adjudication (manifest finding).*  The Sage spike carries TWO distinct
+operations named `index`: this one, morphism-sited (`domain_algebra.py:868`),
+and `Lattice.index(element)` — reverse enumeration lookup, the inverse of
+`__getitem__` (`domain_algebra.py:358`), whose honest concept is
+`CountableSetObj.number` and whose home is numbering-equipped countable
+sets.  The alignment manifest must give the two distinct concept identities;
+`list.index` idiom notwithstanding, they share nothing but the string.
+-/
+noncomputable def index {R : RingObj} {M N : ModuleObj R} (f : M ⟶ N) :
+    Cardinal :=
+  Cardinal.mk (N.set ⧸ LinearMap.range (f : M.set →ₗ[R.set] N.set))
+
+/-- The identity has index 1: its cokernel is `N ⧸ ⊤`, which is trivial. -/
+theorem index_id {R : RingObj} (N : ModuleObj R) :
+    index (𝟙 N) = 1 := by
+  unfold index
+  rw [show LinearMap.range ((𝟙 N : N ⟶ N) : N.set →ₗ[R.set] N.set) = ⊤ from
+        LinearMap.range_id]
+  exact Cardinal.mk_eq_one _
+
+/--
+The zero morphism has index `|N|`: its cokernel is all of `N`.  This is the
+exact point where the two operations that collide on the name `index` touch:
+the morphism index of `0 : M ⟶ N` equals the cardinality that enumeration
+indexes.
+-/
+theorem index_zero {R : RingObj} (M N : ModuleObj R) :
+    index ((0 : M.set →ₗ[R.set] N.set) : M ⟶ N) = Cardinal.mk N.set := by
+  unfold index
+  rw [LinearMap.range_zero]
+  exact Cardinal.mk_congr (Submodule.quotEquivOfEqBot ⊥ rfl).toEquiv
+
+end ModuleHom
+
 end CatDSL.Categories
