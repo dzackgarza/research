@@ -19,6 +19,7 @@ from ..geometry.stacks import (
     CompactifiedUniversalCurveAlgebraicSpace,
     DeligneMumfordStack,
     FormallyEtaleSchemeCertificate,
+    KapranovBlowupFourPointsP2AlgebraicSpace,
     ProjectiveLineAlgebraicSpace,
     StackFiber,
     Variety,
@@ -156,8 +157,9 @@ def _configuration_M05_affine_scheme(base: AffineScheme) -> AffineScheme:
 
     as schemes (hence as DM stacks: ``n ≥ 3`` genus-0 moduli are representable).
     Literature: Knudsen's construction of ``M_{0,n}``; Fulton–MacPherson /
-    configuration-space presentation. Owned only for the **open** stack — the
-    proper ``Mbar_{0,5}`` needs a blowup / del Pezzo affine cover not built here.
+    configuration-space presentation. Owned for the **open** stack; proper
+    ``Mbar_{0,5}`` uses the Kapranov ``Bl₄(ℙ²)`` cover
+    :class:`~dm_moduli_spike.geometry.stacks.KapranovBlowupFourPointsP2AlgebraicSpace`.
     """
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
@@ -336,6 +338,9 @@ def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
       coarse-moduli map),
     - ``M_{0,5}`` (open): Knudsen configuration
       ``Spec(R[λ,μ]_{λ(λ-1)μ(μ-1)(λ-μ)})`` (scheme isomorphism),
+    - ``Mbar_{0,5}``: Kapranov ``Bl₄(ℙ²)`` at four points in general position
+      (twelve successive-blowup affine charts; stack ≅ scheme; not the coarse
+      map),
     - ``M_{1,1}`` (``2`` invertible): Legendre ``M(Γ(2))`` affine chart — finite
       étale cover of degree 6, not a scheme isomorphism,
     - ``M_{1,1}`` (``2`` not invertible, ``3`` invertible): Hesse ``M(Γ(3))``
@@ -353,10 +358,9 @@ def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
     - ``Mbar_{1,2}`` (``2`` not invertible, ``3`` invertible): compactified Hesse
       universal-curve affine cover — finite étale of degree 24.
 
-    Fail-closed (``None``) for general ``(g,n)``, proper ``Mbar_{0,5}``, and when
-    neither Legendre nor Hesse hypotheses hold on ``(1,1)`` / ``(1,2)`` — see
-    :meth:`ModuliStack.etale_atlas_gap`. No fake charts / weighted-Proj shells /
-    Kapranov ``Bl₄``.
+    Fail-closed (``None``) for general ``(g,n)`` and when neither Legendre nor
+    Hesse hypotheses hold on ``(1,1)`` / ``(1,2)`` — see
+    :meth:`ModuliStack.etale_atlas_gap`. No fake charts / weighted-Proj shells.
     """
     g = stack.genus()
     n = stack.number_of_markings()
@@ -368,7 +372,9 @@ def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
         if proper:
             return ProjectiveLineAlgebraicSpace(base, "Mbar_0_4")
         return AffineAlgebraicSpace(_cross_ratio_affine_scheme(base))
-    if g == 0 and n == 5 and not proper:
+    if g == 0 and n == 5:
+        if proper:
+            return KapranovBlowupFourPointsP2AlgebraicSpace(base, "Mbar_0_5")
         return AffineAlgebraicSpace(_configuration_M05_affine_scheme(base))
     if g == 1 and n == 1:
         if _two_is_invertible(base):
@@ -866,18 +872,6 @@ class ModuliStack(DeligneMumfordStack):
                 },
             )
             return gap
-        if g == 0 and n == 5 and proper:
-            gap["reason"] = "mbar_0_5_needs_blowup_affine_cover"
-            gap["owned_open_counterpart"] = "M_{0,5} Knudsen configuration chart"
-            gap["alternate_proving_sets"] = (
-                {
-                    "name": "kapranov_blowup_P2",
-                    "status": "not_in_spike",
-                    "requires": "explicit affine charts of Bl_4(ℙ²) ≅ Mbar_{0,5} (del Pezzo degree 5)",
-                    "note": ("Open M_{0,5} is owned; the proper compactification needs blowup / boundary charts not constructed as AffineScheme covers in-spike."),
-                },
-            )
-            return gap
         if g == 1 and n == 2 and proper:
             gap["reason"] = "mbar_1_2_legendre_and_hesse_unavailable"
             gap["alternate_proving_sets"] = (
@@ -915,9 +909,10 @@ class ModuliStack(DeligneMumfordStack):
                     "(Legendre when 2 invertible; Hesse Γ(3) when 2 not invertible "
                     "and 3 invertible), open/proper M_{1,2}/Mbar_{1,2} (same "
                     "level-structure hypotheses; compactified universal-curve "
-                    "affine covers for Mbar), and proper Mbar_{0,3}/Mbar_{0,4}/Mbar_{1,1} "
+                    "affine covers for Mbar), and proper Mbar_{0,3}/Mbar_{0,4}/"
+                    "Mbar_{0,5} (Kapranov Bl₄(ℙ²))/Mbar_{1,1} "
                     "(same level-structure hypotheses). "
-                    "General (g,n) atlases and Mbar_{0,5} need constructions not present in this spike."
+                    "General (g,n) atlases need constructions not present in this spike."
                 ),
             },
         )
@@ -935,6 +930,9 @@ class ModuliStack(DeligneMumfordStack):
         - ``M_{0,5}`` (open): Knudsen configuration
           ``Spec(R[λ,μ]_{λ(λ-1)μ(μ-1)(λ-μ)})``;
           ``covering_kind="moduli_affine_etale_chart"``.
+        - ``Mbar_{0,5}``: Kapranov ``Bl₄(ℙ²)`` twelve-chart affine cover
+          (stack ≅ scheme); ``covering_kind="moduli_scheme_affine_cover"``.
+          Never the coarse space.
         - ``M_{1,1}`` (``2`` invertible): affine Legendre ``M(Γ(2))`` finite
           étale cover; ``covering_kind="legendre_finite_etale_cover"``.
         - ``M_{1,1}`` (``2`` not invertible, ``3`` invertible): affine Hesse
@@ -955,8 +953,8 @@ class ModuliStack(DeligneMumfordStack):
           Hesse universal-curve affine cover;
           ``covering_kind="hesse_compact_universal_curve_finite_etale_cover"``.
 
-        For general ``(g,n)``, proper ``Mbar_{0,5}``, and ``(1,*)`` when neither
-        Legendre nor Hesse applies: fail-closed formal
+        For general ``(g,n)`` and ``(1,*)`` when neither Legendre nor Hesse
+        applies: fail-closed formal
         :class:`~dm_moduli_spike.geometry.stacks.AtlasChart`
         (see :meth:`etale_atlas_gap`). Never uses the coarse space as an étale
         atlas domain.
@@ -1016,7 +1014,7 @@ class ModuliStack(DeligneMumfordStack):
                     covering_formally_etale_stamp=True,
                 ),
             )
-        if isinstance(domain, ProjectiveLineAlgebraicSpace):
+        if isinstance(domain, (ProjectiveLineAlgebraicSpace, KapranovBlowupFourPointsP2AlgebraicSpace)):
             covering_kind = "moduli_scheme_affine_cover"
         else:
             covering_kind = "moduli_affine_etale_chart"

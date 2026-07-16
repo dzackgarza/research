@@ -22,7 +22,7 @@ Wave 1 is **not complete**. Prior “honesty demotions” (`NotImplementedError`
 | Item | Status |
 | --- | --- |
 | Category / curve / stratification ontology fixes | Landed |
-| `atlas()` / `etale_atlas()` as `U → X` | **Deepened, incomplete** — fail-closed `has_equation_level_etale_certificate()`; positive on affine covering + finite `G`, proving-set open `M_{0,3}` / `M_{0,4}` / `M_{0,5}` (Knudsen config) / `M_{1,1}` (Legendre when `2` invertible; Hesse `Γ(3)` / `SL₂(𝔽₃)` when `2` not invertible and `3` invertible, including char 2) / `M_{1,2}` (same hypotheses; Legendre/Hesse universal-curve Weierstrass affine), and proper `Mbar_{0,3}` / `Mbar_{0,4}` (`ℙ¹` affine cover) / `Mbar_{1,1}` (same level-structure hypotheses) / `Mbar_{1,2}` (compactified Legendre/Hesse universal-curve affine cover, nodal fibers included). Fail-closed with `etale_atlas_gap()`: `(1,1)` / `(1,2)` when neither Legendre nor Hesse applies, `Mbar_{0,5}`, general `(g,n)`, products with a formal factor. Still open: affine presentations for general DM moduli / remaining compactifications |
+| `atlas()` / `etale_atlas()` as `U → X` | **Deepened, incomplete** — fail-closed `has_equation_level_etale_certificate()`; positive on affine covering + finite `G`, proving-set open `M_{0,3}` / `M_{0,4}` / `M_{0,5}` (Knudsen config) / `M_{1,1}` (Legendre when `2` invertible; Hesse `Γ(3)` / `SL₂(𝔽₃)` when `2` not invertible and `3` invertible, including char 2) / `M_{1,2}` (same hypotheses; Legendre/Hesse universal-curve Weierstrass affine), and proper `Mbar_{0,3}` / `Mbar_{0,4}` (`ℙ¹` affine cover) / `Mbar_{0,5}` (Kapranov `Bl₄(ℙ²)` twelve-chart affine cover) / `Mbar_{1,1}` (same level-structure hypotheses) / `Mbar_{1,2}` (compactified Legendre/Hesse universal-curve affine cover, nodal fibers included). Fail-closed with `etale_atlas_gap()`: `(1,1)` / `(1,2)` when neither Legendre nor Hesse applies, general `(g,n)`, products with a formal factor. Still open: affine presentations for general DM moduli / remaining compactifications |
 | Structured `pullback` / `fiber_product` | **Deepened, incomplete** — `BaseChangeStack` + `FiberProductStack` with legs/mediating recovery. Full Hom-category UP waits on #225 |
 | Aut(Γ) action on product strata | **Deepened, incomplete** — Sage `Action` subclass; factor swap on equal-type 2-vertex graphs; quotient covering autos. #225 `Actions` wiring unfinished |
 
@@ -59,7 +59,7 @@ This package **does not claim**:
 | Canonical transport (public API) | **PARTIAL** |
 | Specialization poset Hom-certified | **PASS** |
 | Extraction of either package | **FAIL** |
-| Wave 1 complete (incl. full coherence) | **FAIL** — structural deepenings landed; #225-blocked: Hom-category UP, Actions category, Cat/Sets substrate; pre-#225: equation-level étaleness for general `(g,n)` / `Mbar_{0,5}` / `Mbar_{1,2}` (owned for proving-set open `M_{0,3}` / `M_{0,4}` / `M_{0,5}` / `M_{1,1}` / `M_{1,2}` and proper `Mbar_{0,3}` / `Mbar_{0,4}` / `Mbar_{1,1}` + quotient proving set) |
+| Wave 1 complete (incl. full coherence) | **FAIL** — structural deepenings landed; #225-blocked: Hom-category UP, Actions category, Cat/Sets substrate; pre-#225: equation-level étaleness for general `(g,n)` (owned for proving-set open `M_{0,3}` / `M_{0,4}` / `M_{0,5}` / `M_{1,1}` / `M_{1,2}` and proper `Mbar_{0,3}` / `Mbar_{0,4}` / `Mbar_{0,5}` / `Mbar_{1,1}` / `Mbar_{1,2}` + quotient proving set) |
 
 ## Public entry
 

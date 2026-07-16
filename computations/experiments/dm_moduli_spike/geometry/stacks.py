@@ -566,6 +566,101 @@ class ProjectiveLineAlgebraicSpace(AlgebraicSpace):
         return self._affine_charts
 
 
+def _blowup_A2_at_two_points_charts(ring: object, prefix: str) -> tuple[AffineScheme, ...]:
+    r"""Four standard affine charts for ``Bl_{(0,0),(1,1)}(𝔸²_R)``.
+
+    Successive blowups of the plane at two distinct points (Hartshorne-style
+    charts). Each chart is ``Spec(R[u,v]) ≅ 𝔸²``; gluing / exceptional-divisor
+    equations live in the coordinate changes (same honesty level as the two
+    charts of :class:`ProjectiveLineAlgebraicSpace`).
+
+    First blowup at the origin:
+
+    - ``C_ξ``: coords ``(x, ξ)`` with ``y = x ξ``
+    - ``C_η``: coords ``(η, y)`` with ``x = η y``
+
+    The second point ``(1,1)`` sits at ``(x,ξ)=(1,1)`` in ``C_ξ`` and at
+    ``(η,y)=(1,1)`` in ``C_η``. Blow it up in each chart (two charts each):
+
+    - translate to the origin, then take the two standard blowup charts.
+
+    Variable names are prefixed so Sage ``UniqueRepresentation`` rings stay
+    distinct across the twelve Kapranov charts.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    names = (
+        (f"{prefix}_xi_X", f"{prefix}_xi_a"),
+        (f"{prefix}_xi_b", f"{prefix}_xi_Xi"),
+        (f"{prefix}_eta_H", f"{prefix}_eta_c"),
+        (f"{prefix}_eta_d", f"{prefix}_eta_Y"),
+    )
+    return tuple(AffineScheme(PolynomialRing(ring, names=pair)) for pair in names)
+
+
+class KapranovBlowupFourPointsP2AlgebraicSpace(AlgebraicSpace):
+    r"""Kapranov model ``Mbar_{0,5} ≅ Bl_4(ℙ²)`` with an owned affine cover.
+
+    Blow up ``ℙ²_R`` at four points in general position (no three collinear):
+
+    - ``p₁ = [1:0:0]``, ``p₂ = [0:1:0]``, ``p₃ = [0:0:1]``, ``p₄ = [1:1:1]``.
+
+    Literature: Kapranov, *Chow quotients of Grassmannians I* — del Pezzo of
+    degree 5. Genus-0 moduli are representable, so the stack is a scheme; an
+    affine cover of the scheme is a valid étale atlas of the stack-as-scheme
+    (``covering_kind=moduli_scheme_affine_cover``). **Not** a claim that the
+    coarse moduli map is étale.
+
+    Owned cover: for each standard affine open ``U_X, U_Y, U_Z ≅ 𝔸²`` of
+    ``ℙ²`` (each containing exactly one axis point among ``{p₁,p₂,p₃}`` and
+    also ``p₄``), take the four charts of
+    :func:`_blowup_A2_at_two_points_charts` for ``Bl_{(0,0),(1,1)}(𝔸²)``.
+    Twelve charts ``Spec(R[u,v])``, each isomorphic to ``𝔸²``.
+
+    Consistency with open ``M_{0,5}``: the Knudsen configuration chart
+    ``Spec(R[λ,μ]_{λ(λ-1)μ(μ-1)(λ-μ)})`` is an affine open of the complement
+    of the exceptional divisors; this cover includes the boundary
+    exceptional ``ℙ¹``'s of the Kapranov blowup.
+    """
+
+    @staticmethod
+    def __classcall_private__(cls: type, base: AffineScheme, role: str = "Mbar_0_5") -> KapranovBlowupFourPointsP2AlgebraicSpace:
+        assert isinstance(base, AffineScheme), f"KapranovBlowupFourPointsP2AlgebraicSpace requires AffineScheme base; found {type(base)!r}"
+        assert isinstance(role, str) and role, f"role must be a nonempty str; found {role!r}"
+        result = UniqueRepresentation.__classcall__(cls, base, role)
+        assert isinstance(result, KapranovBlowupFourPointsP2AlgebraicSpace), f"classcall must return KapranovBlowupFourPointsP2AlgebraicSpace; found {type(result)!r}"
+        return result
+
+    def __init__(self, base: AffineScheme, role: str = "Mbar_0_5") -> None:
+        self._role = role
+        # Homogeneous coords of the four blown-up points (general position).
+        self._points = ((1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 1))
+        ring = base.ring()
+        # U_Z ∋ p₃=(0,0), p₄=(1,1); U_X ∋ p₁,p₄; U_Y ∋ p₂,p₄.
+        self._affine_charts = (
+            *_blowup_A2_at_two_points_charts(ring, "UZ"),
+            *_blowup_A2_at_two_points_charts(ring, "UX"),
+            *_blowup_A2_at_two_points_charts(ring, "UY"),
+        )
+        AlgebraicSpace.__init__(
+            self,
+            base,
+            name=f"KapranovBl4P2({role}/{base!r})",
+            axioms=frozenset({"FiniteType", "Separated", "Proper", "Projective"}),
+        )
+
+    def role(self) -> str:
+        r"""Literature role tag (e.g. ``Mbar_0_5``)."""
+        return self._role
+
+    def blown_up_points(self) -> tuple[tuple[int, int, int], ...]:
+        r"""Homogeneous coordinates of the four Kapranov centers in ``ℙ²``."""
+        return self._points
+
+    def affine_cover(self) -> tuple[AffineScheme, ...]:
+        return self._affine_charts
+
+
 class CompactifiedUniversalCurveAlgebraicSpace(AlgebraicSpace):
     r"""Affine cover of a compactified Legendre/Hesse universal curve over ``ℙ¹``.
 
@@ -574,7 +669,8 @@ class CompactifiedUniversalCurveAlgebraicSpace(AlgebraicSpace):
 
     - Legendre (``2`` invertible): two Weierstrass charts over ``Mbar(Γ(2)) ≅ ℙ¹``,
       including discriminant-zero (nodal) fibers — **not** the open localization
-      at ``λ(λ-1)``, and **not** a fake ``Bl₄`` / Kapranov model.
+      at ``λ(λ-1)``. Kapranov ``Bl₄(ℙ²)`` for ``Mbar_{0,5}`` is owned separately
+      as :class:`KapranovBlowupFourPointsP2AlgebraicSpace`.
     - Hesse (``2`` not invertible, ``3`` invertible): two Hesse-cubic charts over
       ``Mbar(Γ(3)) ≅ ℙ¹``, including ``μ³ = 1`` nodal fibers.
 
@@ -1214,7 +1310,12 @@ def _affine_cover_of(domain: object) -> tuple[AffineScheme, ...]:
         return (domain,)
     if isinstance(
         domain,
-        (AffineAlgebraicSpace, ProjectiveLineAlgebraicSpace, CompactifiedUniversalCurveAlgebraicSpace),
+        (
+            AffineAlgebraicSpace,
+            ProjectiveLineAlgebraicSpace,
+            KapranovBlowupFourPointsP2AlgebraicSpace,
+            CompactifiedUniversalCurveAlgebraicSpace,
+        ),
     ):
         return domain.affine_cover()
     if isinstance(domain, ProductStack):

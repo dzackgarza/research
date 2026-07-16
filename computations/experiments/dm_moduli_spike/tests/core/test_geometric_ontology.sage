@@ -603,14 +603,25 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert M05.etale_atlas_gap() is None
     m05_ring = m05_etale.domain().as_affine_scheme().ring()
     assert len(m05_ring.gens()) == 2
-    # Mbar_{0,5}: blowup / del Pezzo cover not owned — fail-closed with named gap.
+    # Mbar_{0,5}: Kapranov Bl₄(ℙ²) — owned twelve-chart affine cover (stack ≅ scheme).
+    from dm_moduli_spike.geometry.stacks import KapranovBlowupFourPointsP2AlgebraicSpace
+
     Mbar05 = Mbar_gn(0, 5, base=k)
-    assert isinstance(Mbar05.etale_atlas().domain(), AtlasChart)
-    assert not Mbar05.etale_atlas().has_equation_level_etale_certificate()
-    mbar05_gap = Mbar05.etale_atlas_gap()
-    assert mbar05_gap is not None
-    assert mbar05_gap["reason"] == "mbar_0_5_needs_blowup_affine_cover"
-    assert mbar05_gap["alternate_proving_sets"][0]["name"] == "kapranov_blowup_P2"
+    mbar05_etale = Mbar05.etale_atlas()
+    assert isinstance(mbar05_etale.domain(), KapranovBlowupFourPointsP2AlgebraicSpace)
+    assert mbar05_etale.domain() is not Mbar05
+    assert mbar05_etale.domain() is not Mbar05.coarse_space()
+    assert mbar05_etale.covering_kind() == "moduli_scheme_affine_cover"
+    assert mbar05_etale.has_equation_level_etale_certificate()
+    assert mbar05_etale.equation_level_etale()
+    assert Mbar05.etale_atlas_gap() is None
+    assert len(mbar05_etale.domain().affine_cover()) == 12
+    assert mbar05_etale.domain().role() == "Mbar_0_5"
+    assert mbar05_etale.domain().blown_up_points() == ((1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 1))
+    assert all(len(c.ring().gens()) == 2 for c in mbar05_etale.domain().affine_cover())
+    # Coarse atlas of Mbar_{0,5} remains non-equation-level (coarse ≠ étale).
+    assert Mbar05.atlas().covering_kind() == "coarse_moduli"
+    assert not Mbar05.atlas().has_equation_level_etale_certificate()
 
     # M_{1,2} (open, 2 invertible): Legendre universal-curve Weierstrass affine, S₃ cover.
     M12 = M_gn(1, 2, base=k)
@@ -747,6 +758,7 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert M12.etale_atlas_gap() is None
     assert Mbar12.etale_atlas_gap() is None
     assert Mbar04.etale_atlas_gap() is None
+    assert Mbar05.etale_atlas_gap() is None
     assert Mbar11.etale_atlas_gap() is None
     assert M11_char2.etale_atlas_gap() is None
     assert Mbar11_char2.etale_atlas_gap() is None
@@ -773,8 +785,17 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert factor_eas[1].has_equation_level_etale_certificate() is True
     assert prod_etale.has_equation_level_etale_certificate()
 
-    # Product fails closed when a factor still has a formal AtlasChart (Mbar_{0,5}).
-    prod_formal = ProductStack((Mbar05, YS), base=k)
+    # Product of owned Kapranov Mbar_{0,5} with owned M_{0,4}: equation-level.
+    prod_mbar05 = ProductStack((Mbar05, YS), base=k)
+    prod_mbar05_etale = prod_mbar05.etale_atlas()
+    assert prod_mbar05_etale.factor_atlases()[0].has_equation_level_etale_certificate() is True
+    assert prod_mbar05_etale.factor_atlases()[1].has_equation_level_etale_certificate() is True
+    assert prod_mbar05_etale.has_equation_level_etale_certificate()
+
+    # Product fails closed when a factor still has a formal AtlasChart (general (g,n)).
+    M20 = Mbar_gn(2, 0, base=k)
+    assert isinstance(M20.etale_atlas().domain(), AtlasChart)
+    prod_formal = ProductStack((M20, YS), base=k)
     prod_formal_etale = prod_formal.etale_atlas()
     assert prod_formal_etale.factor_atlases()[0].has_equation_level_etale_certificate() is False
     assert prod_formal_etale.factor_atlases()[1].has_equation_level_etale_certificate() is True
