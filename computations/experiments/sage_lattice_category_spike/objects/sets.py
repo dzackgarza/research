@@ -69,6 +69,7 @@ class Sets(Category):
         def Uncountable(self) -> Sets: ...
         def Finite(self) -> Sets: ...
         def Infinite(self) -> Sets: ...
+        def Facade(self) -> Sets: ...
 
     class SubcategoryMethods:
         # Runtime Sage mixes this class into every subcategory, so ``self``
@@ -126,20 +127,47 @@ class CountableSets(CategoryWithAxiom):
     _base_category_class_and_axiom = (Sets, "Countable")
 
     class ParentMethods:
+        # The enumeration is the sole abstract witness obligation: indexing,
+        # reverse lookup, and the injection into the naturals are all
+        # constructed from it (generic first-owner implementations below,
+        # overridable by exact formulas).
         @abstract_method
         def __iter__(self) -> Iterator[object]:
             r"""A chosen computable, exhaustive, duplicate-free enumeration
             of this set."""
 
-        @abstract_method
         def __getitem__(self, n: int) -> object:
             r"""The ``n``-th element of the chosen enumeration, ``n >= 0``."""
+            assert n >= 0, f"enumeration indices are nonnegative; found {n}"
+            for position, element in enumerate(self):
+                if position == n:
+                    return element
+            assert False, f"index {n} exceeds the enumeration of {self}"
 
-        @abstract_method
         def index(self, element: object) -> int:
             r"""Reverse lookup in the chosen enumeration: terminates for
             members and satisfies ``X[X.index(x)] == x``. No termination
             promise for a nonmember of an infinite parent."""
+            for position, candidate in enumerate(self):
+                if candidate == element:
+                    return position
+            assert False, f"{element} is not in the enumeration of {self}"
+
+        def enumeration_injection(self) -> object:
+            r"""The monomorphism into the nonnegative integers realized by
+            the chosen enumeration, ``x -> index(x)``, as an element of the
+            actual homset — the constructed effective witness of
+            countability."""
+            from sage.categories.homset import Hom
+            from sage.categories.morphism import SetMorphism
+
+            from .fundamental_sets import NonNegativeIntegers
+
+            naturals = NonNegativeIntegers()
+            homset = Hom(self, naturals, SageSets())
+            # naturals[n] IS the natural number n (identity enumeration),
+            # already normalized into the host parent.
+            return SetMorphism(homset, lambda element: naturals[self.index(element)])
 
         def is_countable(self) -> bool:
             return True

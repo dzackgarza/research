@@ -22,7 +22,10 @@ class Parent(Generic[_E]):
         category: object = ...,
         names: object = ...,
         normalize: bool = ...,
+        facade: object = ...,
     ) -> None: ...
+    # NOTE: facade_for is NOT stubbed here: it is injected by the Facade
+    # axiom's ParentMethods, not defined on the base Parent class.
     def category(self) -> Any: ...
     def base_ring(self) -> Any: ...
     # Generator-naming surface (inherited from CategoryObject): the preparser
