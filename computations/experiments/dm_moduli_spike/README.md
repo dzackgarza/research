@@ -22,9 +22,9 @@ Wave 1 is **not complete**. Prior “honesty demotions” (`NotImplementedError`
 | Item | Status |
 | --- | --- |
 | Category / curve / stratification ontology fixes | Landed |
-| `atlas()` / `etale_atlas()` as `U → X` | **Incomplete** — structured morphisms exist (coarse / `AtlasChart`; not self); full étale verification unfinished |
-| Structured `pullback` (`PullbackStack`/`BaseChangeStack`) | **Incomplete** — `base_morphism` / `projections` / UniqueRepresentation exist; 2-categorical coherence unfinished |
-| Aut(Γ) action on product strata | **Incomplete** — `AutProductStackAction` wired; #225 `Actions` wiring unfinished |
+| `atlas()` / `etale_atlas()` as `U → X` | **Incomplete** — structured morphisms + covering data + `AtlasEvidence` (diagonal link); quotient strata use covering space as étale domain; equation-level étaleness unfinished |
+| Structured `pullback` (`PullbackStack`/`BaseChangeStack`) | **Incomplete** — both square legs + `ModuliBaseChangeStack` (genus/markings/problem preserved); 2-categorical universal property unfinished |
+| Aut(Γ) action on product strata | **Incomplete** — `act`/`_act_` reorders product factors; `QuotientStack.act_on_covering` consumes it; #225 `Actions` wiring unfinished |
 
 ## Mathematical contract (in-spike)
 
@@ -59,7 +59,7 @@ This package **does not claim**:
 | Canonical transport (public API) | **PARTIAL** |
 | Specialization poset Hom-certified | **PASS** |
 | Extraction of either package | **FAIL** |
-| Wave 1 complete (incl. full coherence) | **FAIL** (structured atlas/pullback/Aut landed; coherence gaps remain) |
+| Wave 1 complete (incl. full coherence) | **FAIL** (covering data / both pullback legs / real Aut action landed; étale verification, 2-cat UP, #225 Actions remain) |
 
 ## Public entry
 

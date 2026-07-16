@@ -22,6 +22,8 @@ class _GraphAutomorphismData:
 
     __slots__ = (
         "_group",
+        "_vertex_nodes",
+        "_vertex_index",
         "_vertex_perms",
         "_flag_perms",
         "_edge_perms",
@@ -31,12 +33,16 @@ class _GraphAutomorphismData:
     def __init__(
         self,
         group: PermutationGroup_generic,
+        vertex_nodes: tuple[object, ...],
+        vertex_index: dict[object, int],
         vertex_perms: tuple[tuple[int, ...], ...],
         flag_perms: tuple[tuple[int, ...], ...],
         edge_perms: tuple[tuple[int, ...], ...],
         marking_perms: tuple[tuple[int, ...], ...],
     ) -> None:
         self._group = group
+        self._vertex_nodes = vertex_nodes
+        self._vertex_index = vertex_index
         self._vertex_perms = vertex_perms
         self._flag_perms = flag_perms
         self._edge_perms = edge_perms
@@ -44,6 +50,9 @@ class _GraphAutomorphismData:
 
     def group(self) -> PermutationGroup_generic:
         return self._group
+
+    def num_vertices(self) -> int:
+        return len(self._vertex_nodes)
 
     def on_vertices(self) -> tuple[tuple[int, ...], ...]:
         r"""Generator images as permutations of ``0, ..., |V|-1``."""
@@ -65,15 +74,44 @@ class _GraphAutomorphismData:
         r"""The same vertex permutations, acting on moduli-factor indices."""
         return self._vertex_perms
 
+    def _identity_element(self) -> object:
+        group = self._group
+        if hasattr(group, "one"):
+            return group.one()
+        assert hasattr(group, "identity"), f"Aut group must expose one()/identity(); found {type(group)!r}"
+        return group.identity()
+
+    def factor_permutation(self, element: object) -> tuple[int, ...]:
+        r"""Factor-index permutation induced by a single ``Aut(Γ)`` element.
+
+        Identity returns ``(0, 1, …, |V|-1)``. Arbitrary group elements are evaluated
+        by applying the incidence-graph automorphism to vertex nodes.
+        """
+        n = len(self._vertex_nodes)
+        if n == 0:
+            return ()
+        if element == self._identity_element():
+            return tuple(range(n))
+        assert callable(element), f"Aut element must be callable on incidence nodes; found {type(element)!r}; owned boundary=_GraphAutomorphismData.factor_permutation"
+        image = [0] * n
+        for node in self._vertex_nodes:
+            src = self._vertex_index[node]
+            image_node = element(node)
+            assert image_node in self._vertex_index, f"Aut element must send vertices to vertices; found {image_node!r}"
+            image[src] = self._vertex_index[image_node]
+        return tuple(image)
+
     @staticmethod
     def from_graph(graph: _GraphRecord) -> _GraphAutomorphismData:
         incidence, partition, color_of = _incidence_graph(graph)
         group = incidence.automorphism_group(partition=partition)
-        vertex_nodes = sorted(
-            (node for node in color_of if node[0] == "V"),
-            key=lambda node: node[1],
+        vertex_nodes = tuple(
+            sorted(
+                (node for node in color_of if node[0] == "V"),
+                key=lambda node: node[1],
+            )
         )
-        vertex_index = {node: index for index, node in enumerate(vertex_nodes)}
+        vertex_index: dict[object, int] = {node: index for index, node in enumerate(vertex_nodes)}
         edge_nodes = sorted(
             (node for node in color_of if node[0] == "E"),
             key=lambda node: node[1],
@@ -118,6 +156,8 @@ class _GraphAutomorphismData:
 
         return _GraphAutomorphismData(
             group,
+            vertex_nodes,
+            vertex_index,
             tuple(vertex_perms),
             tuple(flag_perms),
             tuple(edge_perms),

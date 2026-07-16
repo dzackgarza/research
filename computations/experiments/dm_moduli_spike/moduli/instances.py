@@ -108,7 +108,14 @@ class ModuliProblem(UniqueRepresentation):
         raise NotImplementedError("implemented on SmoothPointedCurveModuliProblem / StablePointedCurveModuliProblem")
 
     def pullback(self, f: object) -> ModuliProblem:
-        return self
+        r"""Base change of this moduli problem along a morphism of bases.
+
+        Returns a new problem of the same class over the new base — not ``self``.
+        """
+        from ..geometry.stacks import _base_scheme_along
+
+        new_base = _base_scheme_along(f, self._base)
+        return type(self)(self._g, self._I, new_base)
 
     def _repr_(self) -> str:
         tag = "StablePointedCurves" if self.is_stable() else "SmoothPointedCurves"

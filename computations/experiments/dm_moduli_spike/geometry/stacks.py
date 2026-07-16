@@ -114,13 +114,25 @@ class Stack(GeometricObject):
 class BaseChangeStack(Stack):
     r"""Stack obtained by base change of ``original`` along ``base_morphism``.
 
-    Records the original stack, the base morphism, and the projection
-    ``π: X ×_S S' → X``. Structural equality is UniqueRepresentation on that data.
+    Records the original stack, the base morphism, and both legs of the
+    base-change square:
+
+    - ``π₁: X ×_S S' → X`` (projection to the original),
+    - ``π₂: X ×_S S' → S'`` (structure map to the new base).
+
+    Structural equality is UniqueRepresentation on ``(original, base_morphism)``.
+    Full 2-categorical pullback coherence (universal property of the square)
+    waits on PR #225.
     """
 
     @staticmethod
     def __classcall_private__(cls: type, original: Stack, base_morphism: object) -> BaseChangeStack:
         assert isinstance(original, Stack), f"BaseChangeStack requires Stack; found {type(original)!r}"
+        # Moduli stacks get a moduli-aware base change preserving (g, I, problem class).
+        from ..moduli.instances import ModuliStack
+
+        if cls is BaseChangeStack and isinstance(original, ModuliStack):
+            return ModuliBaseChangeStack(original, base_morphism)
         result = UniqueRepresentation.__classcall__(cls, original, base_morphism)
         assert isinstance(result, BaseChangeStack), f"classcall must return BaseChangeStack; found {type(result)!r}"
         return result
@@ -128,6 +140,8 @@ class BaseChangeStack(Stack):
     def __init__(self, original: Stack, base_morphism: object) -> None:
         self._original = original
         self._base_morphism = base_morphism
+        self._cached_projection: StackMorphism | None = None
+        self._cached_to_new_base: StackMorphism | None = None
         new_base = _base_scheme_along(base_morphism, original.base_scheme())
         axioms = original.declared_axioms()
         cat: object = original.category()
@@ -145,20 +159,106 @@ class BaseChangeStack(Stack):
     def base_morphism(self) -> object:
         return self._base_morphism
 
+    def new_base(self) -> AffineScheme:
+        return self.base_scheme()
+
     def projection(self) -> StackMorphism:
-        r"""Structure map ``π: X_{S'} → X`` of the base change."""
-        return StackMorphism(self, self._original, kind="base_change_projection")
+        r"""First leg ``π₁: X_{S'} → X`` of the base-change square."""
+        cached = self._cached_projection
+        if cached is None:
+            cached = StackMorphism(self, self._original, kind="base_change_projection")
+            self._cached_projection = cached
+        return cached
+
+    def structure_morphism_to_new_base(self) -> StackMorphism:
+        r"""Second leg ``π₂: X_{S'} → S'`` — structure map of the base-changed stack."""
+        cached = self._cached_to_new_base
+        if cached is None:
+            cached = StackMorphism(self, self.base_scheme(), kind="structure_morphism_to_new_base")
+            self._cached_to_new_base = cached
+        return cached
+
+    def pullback_of_structure_morphism(self) -> StackMorphism:
+        r"""Alias for the second leg (pullback of ``X → S`` along ``S' → S``)."""
+        return self.structure_morphism_to_new_base()
 
     def projections(self) -> tuple[StackMorphism, ...]:
-        r"""Structure morphisms of the base-change square (currently ``π`` to the original)."""
-        return (self.projection(),)
+        r"""Both legs ``(π₁: X' → X, π₂: X' → S')`` of the base-change square."""
+        return (self.projection(), self.structure_morphism_to_new_base())
 
     def structure_map(self) -> StackMorphism:
         return self.projection()
 
+    def square_corners(self) -> tuple[object, object, object, object]:
+        r"""Corners ``(X', X, S', S)`` of the base-change square."""
+        old_base = self._original.base_scheme()
+        return (self, self._original, self.base_scheme(), old_base)
+
 
 # Acceptance / literature name for the structured base-change object.
 PullbackStack = BaseChangeStack
+
+
+class ModuliBaseChangeStack(BaseChangeStack):
+    r"""Base change of a :class:`~dm_moduli_spike.moduli.instances.ModuliStack`.
+
+    Preserves genus, markings, and moduli-problem class over the new base.
+    Not the identity and not a nameless shell.
+    """
+
+    @staticmethod
+    def __classcall_private__(cls: type, original: Stack, base_morphism: object) -> ModuliBaseChangeStack:
+        from ..moduli.instances import ModuliStack
+
+        assert isinstance(original, ModuliStack), f"ModuliBaseChangeStack requires ModuliStack; found {type(original)!r}"
+        result = UniqueRepresentation.__classcall__(cls, original, base_morphism)
+        assert isinstance(result, ModuliBaseChangeStack), f"classcall must return ModuliBaseChangeStack; found {type(result)!r}"
+        return result
+
+    def __init__(self, original: Stack, base_morphism: object) -> None:
+        from ..moduli.instances import ModuliStack
+
+        assert isinstance(original, ModuliStack), f"ModuliBaseChangeStack requires ModuliStack; found {type(original)!r}"
+        self._original = original
+        self._base_morphism = base_morphism
+        self._cached_projection = None
+        self._cached_to_new_base = None
+        new_base = _base_scheme_along(base_morphism, original.base_scheme())
+        problem = original.moduli_problem()
+        problem_cls = type(problem)
+        self._base_changed_problem = problem_cls(problem.genus(), problem.marking_set(), new_base)
+        axioms = original.declared_axioms()
+        from sage.categories.category import Category
+
+        from ..categories.stacks import DeligneMumfordStacks, ModuliStacks
+
+        join = getattr(Category, "join")
+        cat = join((ModuliStacks(new_base), DeligneMumfordStacks(new_base)))
+        for a in sorted(axioms):
+            if hasattr(cat, a):
+                cat = getattr(cat, a)()
+        Stack.__init__(
+            self,
+            new_base,
+            name=f"BaseChange({original!r})",
+            axioms=axioms,
+            category=cat,
+        )
+
+    def moduli_problem(self) -> object:
+        return self._base_changed_problem
+
+    def genus(self) -> int:
+        return int(self._base_changed_problem.genus())
+
+    def number_of_markings(self) -> int:
+        return int(self._base_changed_problem.number_of_markings())
+
+    def marking_set(self) -> tuple[object, ...]:
+        return tuple(self._base_changed_problem.marking_set())
+
+    def original_moduli_stack(self) -> Stack:
+        return self._original
 
 
 def _base_scheme_along(base_morphism: object, fallback: AffineScheme) -> AffineScheme:
@@ -202,7 +302,15 @@ class AlgebraicStack(Stack):
 
     def atlas(self) -> AtlasMorphism:
         r"""Atlas ``U → X`` with ``U`` a scheme/algebraic space, not ``X`` itself."""
-        return AtlasMorphism(self.atlas_domain(), self, etale=False)
+        domain = self.atlas_domain()
+        covering = "coarse_moduli" if hasattr(self, "coarse_space") and domain is self.coarse_space() else "atlas_chart"
+        return AtlasMorphism(
+            domain,
+            self,
+            etale=False,
+            covering_kind=covering,
+            representable_domain=isinstance(domain, AlgebraicSpace),
+        )
 
 
 class DeligneMumfordStack(AlgebraicStack):
@@ -224,10 +332,18 @@ class DeligneMumfordStack(AlgebraicStack):
 
         Uses a dedicated étale atlas chart — not the coarse moduli space (the
         coarse map ``X → X_c`` is not étale in general) and not a self-map.
-        Étaleness is a DM theorem stamp, not an equation-level verification.
+        Étaleness is a DM theorem stamp with attached :class:`AtlasEvidence`
+        (diagonal data), not an equation-level verification.
         """
         domain = AtlasChart(self, etale=True)
-        return AtlasMorphism(domain, self, etale=True)
+        return AtlasMorphism(
+            domain,
+            self,
+            etale=True,
+            covering_kind="etale_atlas_chart",
+            representable_domain=True,
+            evidence=AtlasEvidence.from_dm_stack(self, domain=domain, covering_kind="etale_atlas_chart"),
+        )
 
 
 class AlgebraicSpace(DeligneMumfordStack):
@@ -482,19 +598,113 @@ class StackMorphism(Element):
 StackHomset.Element = StackMorphism
 
 
+class AtlasEvidence:
+    r"""Inspectable evidence attached to an atlas morphism.
+
+    Records covering/representability data and links to DM diagonal properties
+    already claimed on the target stack. This is **not** an equation-level proof
+    of étaleness — it is structured evidence tests can inspect when full
+    verification is unfinished.
+    """
+
+    def __init__(
+        self,
+        *,
+        stack: Stack,
+        domain: object,
+        covering_kind: str,
+        etale_stamp: bool,
+        representable_domain: bool,
+        diagonal: StackMorphism | None,
+        dm_diagonal_unramified_stamp: bool,
+    ) -> None:
+        self._stack = stack
+        self._domain = domain
+        self._covering_kind = covering_kind
+        self._etale_stamp = bool(etale_stamp)
+        self._representable_domain = bool(representable_domain)
+        self._diagonal = diagonal
+        self._dm_diagonal_unramified_stamp = bool(dm_diagonal_unramified_stamp)
+
+    @staticmethod
+    def from_dm_stack(stack: Stack, *, domain: object, covering_kind: str) -> AtlasEvidence:
+        diagonal: StackMorphism | None = None
+        dm_stamp = isinstance(stack, DeligneMumfordStack)
+        if isinstance(stack, AlgebraicStack):
+            diagonal = stack.diagonal()
+        return AtlasEvidence(
+            stack=stack,
+            domain=domain,
+            covering_kind=covering_kind,
+            etale_stamp=True,
+            representable_domain=isinstance(domain, AlgebraicSpace) or isinstance(domain, ProductStack),
+            diagonal=diagonal,
+            dm_diagonal_unramified_stamp=dm_stamp,
+        )
+
+    def stack(self) -> Stack:
+        return self._stack
+
+    def domain(self) -> object:
+        return self._domain
+
+    def covering_kind(self) -> str:
+        return self._covering_kind
+
+    def etale_stamp(self) -> bool:
+        return self._etale_stamp
+
+    def representable_domain(self) -> bool:
+        return self._representable_domain
+
+    def diagonal(self) -> StackMorphism | None:
+        r"""Diagonal ``Δ: X → X ×_S X`` of the target, when the target is algebraic."""
+        return self._diagonal
+
+    def dm_diagonal_unramified_stamp(self) -> bool:
+        r"""True when the target carries the DM stamp (unramified diagonal, theorem-level)."""
+        return self._dm_diagonal_unramified_stamp
+
+    def _repr_(self) -> str:
+        return (
+            f"AtlasEvidence(covering={self._covering_kind!r}, etale={self._etale_stamp}, "
+            f"representable={self._representable_domain}, dm_diagonal={self._dm_diagonal_unramified_stamp})"
+        )
+
+
 class AtlasMorphism(StackMorphism):
     r"""Atlas morphism ``U → X`` from a scheme/algebraic space into a stack.
 
     Domain is never the stack itself. The ``etale`` flag is a theorem stamp for
     DM existence of an étale atlas — not a claim that the coarse moduli map is
-    étale (it is not, in general).
+    étale (it is not, in general). Covering/representability data and
+    :class:`AtlasEvidence` are inspectable even when equation-level étaleness
+    is unfinished.
     """
 
-    def __init__(self, domain: object, codomain: object, *, etale: bool = False) -> None:
+    def __init__(
+        self,
+        domain: object,
+        codomain: object,
+        *,
+        etale: bool = False,
+        covering_kind: str | None = None,
+        representable_domain: bool | None = None,
+        evidence: AtlasEvidence | None = None,
+    ) -> None:
         if domain is codomain:
             raise ValueError(f"atlas domain must not be the stack itself; found domain=codomain={codomain!r}")
         self._etale = bool(etale)
         kind = "etale_atlas" if self._etale else "atlas"
+        if covering_kind is None:
+            covering_kind = "etale_atlas_chart" if self._etale else "atlas"
+        self._covering_kind = covering_kind
+        if representable_domain is None:
+            representable_domain = isinstance(domain, AlgebraicSpace) or isinstance(domain, ProductStack)
+        self._representable_domain = bool(representable_domain)
+        if evidence is None and self._etale and isinstance(codomain, Stack):
+            evidence = AtlasEvidence.from_dm_stack(codomain, domain=domain, covering_kind=self._covering_kind)
+        self._evidence = evidence
         StackMorphism.__init__(self, domain, codomain, kind=kind)
 
     def is_etale(self) -> bool:
@@ -502,6 +712,37 @@ class AtlasMorphism(StackMorphism):
 
     def is_atlas(self) -> bool:
         return True
+
+    def covering_kind(self) -> str:
+        r"""Named covering presentation: ``coarse_moduli``, ``etale_atlas_chart``, ``quotient_cover``, …"""
+        return self._covering_kind
+
+    def domain_is_representable(self) -> bool:
+        r"""True when the atlas domain is an algebraic space / product of such (representable)."""
+        return self._representable_domain
+
+    def is_covering(self) -> bool:
+        r"""True: atlas morphisms are covering maps by construction (theorem stamp)."""
+        return True
+
+    def evidence(self) -> AtlasEvidence | None:
+        r"""Structured evidence (diagonal link, covering kind, representability); may be ``None`` for non-étale atlases."""
+        return self._evidence
+
+    def covering_data(self) -> dict[str, object]:
+        r"""Inspectable covering/representability record for tests."""
+        data: dict[str, object] = {
+            "covering_kind": self._covering_kind,
+            "etale": self._etale,
+            "representable_domain": self._representable_domain,
+            "domain": self.domain(),
+            "codomain": self.codomain(),
+            "is_covering": True,
+        }
+        if self._evidence is not None:
+            data["dm_diagonal_unramified_stamp"] = self._evidence.dm_diagonal_unramified_stamp()
+            data["diagonal"] = self._evidence.diagonal()
+        return data
 
 
 class OpenImmersion(StackMorphism):
@@ -729,9 +970,37 @@ class ProductStack(Stack):
     def factors(self) -> tuple[Stack, ...]:
         return self._factors
 
+    def atlas_domain(self) -> AlgebraicSpace | ProductStack:
+        r"""Product of coarse spaces of moduli factors when available; else an atlas chart."""
+        coarse_factors: list[AlgebraicSpace] = []
+        for factor in self._factors:
+            if hasattr(factor, "coarse_space"):
+                space = factor.coarse_space()
+                assert isinstance(space, AlgebraicSpace), f"coarse_space() must return AlgebraicSpace; found {type(space)!r}"
+                coarse_factors.append(space)
+            else:
+                return AtlasChart(self, etale=False)
+        # Product of algebraic spaces as a ProductStack of AlgebraicSpace factors.
+        return ProductStack(tuple(coarse_factors), base=self.base_scheme())
+
+    def atlas(self) -> AtlasMorphism:
+        domain = self.atlas_domain()
+        return AtlasMorphism(
+            domain,
+            self,
+            etale=False,
+            covering_kind="product_of_coarse",
+            representable_domain=True,
+        )
+
 
 class QuotientStack(Stack):
-    r"""Quotient stack ``[space / group]`` determined by an action ``ρ``."""
+    r"""Quotient stack ``[space / group]`` determined by an action ``ρ``.
+
+    When ``ρ`` exposes ``act`` / ``_act_`` (e.g. :class:`AutProductStackAction`),
+    :meth:`act_on_covering` consumes that action. The étale atlas domain is the
+    covering space (standard ``U → [U/G]``), not a self-map.
+    """
 
     @staticmethod
     def __classcall_private__(cls: type, *args: object, **kwargs: object) -> QuotientStack:
@@ -776,6 +1045,59 @@ class QuotientStack(Stack):
 
     def action(self) -> object:
         return self._action
+
+    def act_on_covering(self, group_element: object) -> Stack:
+        r"""Apply the stored action to the covering space (consumes ``ρ`` meaningfully)."""
+        action = self._action
+        if hasattr(action, "act"):
+            result = action.act(group_element)
+            assert isinstance(result, Stack), f"action.act must return Stack; found {type(result)!r}"
+            return result
+        if hasattr(action, "_act_"):
+            result = action._act_(group_element, self._space)
+            assert isinstance(result, Stack), f"action._act_ must return Stack; found {type(result)!r}"
+            return result
+        raise TypeError(f"quotient action must expose act/_act_; found {type(action)!r}")
+
+    def atlas_domain(self) -> Stack:
+        r"""Covering space ``U`` of ``[U/G]`` — the natural atlas domain."""
+        return self._space
+
+    def atlas(self) -> AtlasMorphism:
+        return AtlasMorphism(
+            self._space,
+            self,
+            etale=False,
+            covering_kind="quotient_cover",
+            representable_domain=isinstance(self._space, (AlgebraicSpace, ProductStack)),
+        )
+
+    def etale_atlas(self) -> AtlasMorphism:
+        r"""Étale atlas ``U → [U/G]`` with domain the covering space (not a self-map).
+
+        Étaleness of ``U → [U/G]`` for finite group actions is a theorem stamp with
+        attached :class:`AtlasEvidence`; equation-level verification unfinished.
+        """
+        domain = self._space
+        representable = isinstance(domain, (AlgebraicSpace, ProductStack))
+        dm = isinstance(domain, DeligneMumfordStack) or (isinstance(domain, ProductStack) and all(isinstance(f, DeligneMumfordStack) for f in domain.factors()))
+        diagonal = StackMorphism(self, self.fiber_product(self), kind="diagonal") if dm else None
+        return AtlasMorphism(
+            domain,
+            self,
+            etale=True,
+            covering_kind="quotient_cover",
+            representable_domain=representable,
+            evidence=AtlasEvidence(
+                stack=self,
+                domain=domain,
+                covering_kind="quotient_cover",
+                etale_stamp=True,
+                representable_domain=representable,
+                diagonal=diagonal,
+                dm_diagonal_unramified_stamp=dm,
+            ),
+        )
 
 
 class Compactifications(UniqueRepresentation, Parent):

@@ -325,7 +325,12 @@ class AutProductStackAction(UniqueRepresentation):
     An automorphism permutes vertices of equal type (hence product factors) and
     transports marking/half-edge labels on each factor. This is not the action of
     ``Aut(Γ)`` on the set of half-edges alone; the acted-upon object is the product
-    stack. Full PR #225 ``Actions`` category wiring remains Wave 2.
+    stack.
+
+    Implements the Sage Action API surface (``act`` / ``_act_`` / ``__call__``) without
+    subclassing :class:`~sage.categories.action.Action`, which fights
+    :class:`~sage.structure.unique_representation.UniqueRepresentation` caching.
+    Full PR #225 ``Actions`` category wiring remains unfinished.
     """
 
     @staticmethod
@@ -348,16 +353,20 @@ class AutProductStackAction(UniqueRepresentation):
         self._graph = graph
         assert hasattr(graph, "_canonical_record"), f"graph must expose _canonical_record(); found {type(graph)!r}; owned boundary=AutProductStackAction.__init__"
         record = graph._canonical_record()
-        aut_data = _GraphAutomorphismData.from_graph(record)
-        self._factor_perms = aut_data.on_factors()
-        self._flag_perms = aut_data.on_flags()
-        self._marking_perms = aut_data.on_markings()
+        self._aut_data = _GraphAutomorphismData.from_graph(record)
+        self._factor_perms = self._aut_data.on_factors()
+        self._flag_perms = self._aut_data.on_flags()
+        self._marking_perms = self._aut_data.on_markings()
         n_factors = len(product.factors())
         assert all(len(perm) == n_factors for perm in self._factor_perms) or n_factors == 0 or not self._factor_perms, (
             f"factor permutations must act on {n_factors} factors; found {self._factor_perms!r}"
         )
 
     def group(self) -> object:
+        return self._group
+
+    def G(self) -> object:
+        r"""Acting group (Sage Action API name)."""
         return self._group
 
     def set(self) -> ProductStack:
@@ -373,6 +382,9 @@ class AutProductStackAction(UniqueRepresentation):
     def acted_upon(self) -> ProductStack:
         return self._product
 
+    def is_left(self) -> bool:
+        return True
+
     def graph(self) -> object:
         return self._graph
 
@@ -387,6 +399,72 @@ class AutProductStackAction(UniqueRepresentation):
     def marking_permutations(self) -> tuple[tuple[int, ...], ...]:
         return self._marking_perms
 
+    def _group_identity(self) -> object:
+        group = self._group
+        if hasattr(group, "one"):
+            return group.one()
+        assert hasattr(group, "identity"), f"Aut group must expose one()/identity(); found {type(group)!r}"
+        return group.identity()
+
+    def _group_generators(self) -> list[object]:
+        group = self._group
+        assert hasattr(group, "gens"), f"Aut group must expose gens(); found {type(group)!r}"
+        return list(group.gens())
+
+    def factor_permutation_of(self, group_element: object) -> tuple[int, ...]:
+        r"""Factor-index permutation induced by an arbitrary Aut element.
+
+        Accepts elements of the stored group (typically ``Aut(Γ)`` on half-edges)
+        or of the incidence-graph automorphism group used to compute factor perms.
+        """
+        n = len(self._product.factors())
+        identity_perm = tuple(range(n))
+        if group_element == self._group_identity():
+            return identity_perm
+        incidence_group = self._aut_data.group()
+        parent = group_element.parent() if hasattr(group_element, "parent") else None
+        if parent is incidence_group:
+            return self._aut_data.factor_permutation(group_element)
+        return self._factor_perm_via_cayley(group_element)
+
+    def _factor_perm_via_cayley(self, group_element: object) -> tuple[int, ...]:
+        r"""Translate a half-edge Aut element to a factor permutation via generators."""
+        from collections import deque
+
+        n = len(self._product.factors())
+        identity_perm = tuple(range(n))
+        gens = self._group_generators()
+        if not gens or not self._factor_perms:
+            return identity_perm
+
+        def compose(left: tuple[int, ...], right: tuple[int, ...]) -> tuple[int, ...]:
+            # Apply ``right`` then ``left``: i ↦ left[right[i]].
+            return tuple(left[right[i]] for i in range(n))
+
+        def multiply(left: object, right: object) -> object:
+            assert hasattr(left, "__mul__"), f"Aut element must support multiplication; found {type(left)!r}"
+            return left.__mul__(right)
+
+        one = self._group_identity()
+        seen: dict[object, tuple[int, ...]] = {one: identity_perm}
+        queue: deque[object] = deque([one])
+        while queue:
+            current = queue.popleft()
+            current_perm = seen[current]
+            for index, gen in enumerate(gens):
+                factor_gen = self._factor_perms[index] if index < len(self._factor_perms) else identity_perm
+                for next_elt, next_perm in (
+                    (multiply(current, gen), compose(factor_gen, current_perm)),
+                    (multiply(gen, current), compose(current_perm, factor_gen)),
+                ):
+                    if next_elt not in seen:
+                        seen[next_elt] = next_perm
+                        queue.append(next_elt)
+        assert group_element in seen, (
+            f"Aut element {group_element!r} not reached from generators of {self._group!r}; owned boundary=AutProductStackAction._factor_perm_via_cayley"
+        )
+        return seen[group_element]
+
     def permute_factors(self, generator_index: int = 0) -> tuple[Stack, ...]:
         r"""Reorder product factors by the ``generator_index``-th Aut generator."""
         factors = self._product.factors()
@@ -394,6 +472,35 @@ class AutProductStackAction(UniqueRepresentation):
             return factors
         perm = self._factor_perms[generator_index]
         return tuple(factors[perm[i]] for i in range(len(factors)))
+
+    def _reorder_product(self, perm: tuple[int, ...]) -> ProductStack:
+        factors = self._product.factors()
+        assert len(perm) == len(factors), f"permutation length {len(perm)} != factor count {len(factors)}"
+        reordered = tuple(factors[perm[i]] for i in range(len(factors)))
+        return ProductStack(reordered, base=self._product.base_scheme())
+
+    def _act_(self, group_element: object, product: ProductStack | None = None) -> ProductStack:
+        r"""Left action: reorder product factors by the Aut element.
+
+        Identity acts as the identity on the product. A nontrivial factor
+        permutation returns the UniqueRepresentation product with reordered factors.
+        """
+        acted = product if product is not None else self._product
+        assert acted is self._product, f"AutProductStackAction acts only on its product stack; found {acted!r}, expected {self._product!r}"
+        perm = self.factor_permutation_of(group_element)
+        return self._reorder_product(perm)
+
+    def act(self, group_element: object, product: ProductStack | None = None) -> ProductStack:
+        r"""Apply ``group_element`` to the product stack (Sage Action API)."""
+        return self._act_(group_element, product)
+
+    def __call__(self, group_element: object, product: ProductStack | None = None) -> ProductStack:
+        return self.act(group_element, product)
+
+    def induced_isomorphism(self, group_element: object) -> StackMorphism:
+        r"""Isomorphism ``∏ → ∏'`` induced by the Aut element (factor reordering)."""
+        image = self.act(group_element)
+        return StackMorphism(self._product, image, kind="aut_product_factor_permutation")
 
     def acts_on_product_stack(self) -> bool:
         return True
