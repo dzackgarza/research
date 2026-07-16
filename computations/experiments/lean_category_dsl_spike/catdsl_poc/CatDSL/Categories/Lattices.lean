@@ -87,6 +87,19 @@ instance (R : FiniteRingObj) : Category (LatticeObj R) where
 abbrev Lattices (R : FiniteRingObj) : LargeCat := Cat.of (LatticeObj R)
 
 /--
+`Isom(L, M)`: the isomorphism homset of `Lat(R)`.  Morphisms of `Lat(R)`
+are isometries, so categorical isomorphisms are the bijective isometries —
+Mathlib's `L ≅ M` is already the right object, and its torsor structure
+under `Aut L` is the kernel-level `transporter` (Foundation), not lattice
+code.
+-/
+abbrev Isometries {R : FiniteRingObj} (L M : LatticeObj R) := L ≅ M
+
+/-- `O(L)` IS the automorphism group of `L` in `Lat(R)`: Mathlib's `Aut L`,
+with its group structure.  Nothing lattice-specific defines it. -/
+abbrev isometryGroup {R : FiniteRingObj} (L : LatticeObj R) := Aut L
+
+/--
 A lattice is **unimodular** when its form is perfect: `b̃` is an isomorphism,
 not merely injective.  Equivalently, the discriminant group `coker b̃` is
 trivial.
