@@ -19,6 +19,7 @@ open CatDSL CatDSL.Categories CatDSL.DSL
 
 /-! ## `prefer F` — registry state via the surface -/
 
+prefer CatDSL.Categories.Unimodular.toLattice
 prefer CatDSL.Categories.Lattice.toFreeFinModule
 prefer CatDSL.Categories.FreeFinModule.toFiniteSet
 prefer CatDSL.Categories.FreeFinModule.toModule
@@ -31,14 +32,18 @@ prefer CatDSL.Categories.CountableSet.forget
 
 let L := CatDSL.Example.L ∈ CatDSL.Categories.Lattices CatDSL.Categories.𝔽₂
 
+let Lu := CatDSL.Example.Lu ∈ CatDSL.Categories.UnimodularLattices CatDSL.Categories.𝔽₂
+
 /-! ## `#home` and `#via` — the graph queries -/
 
 #home L
+#home Lu
 
 #via L ∈ CatDSL.Categories.FreeFinModules CatDSL.Categories.𝔽₂
 #via L ∈ CatDSL.Categories.FiniteSets
 #via L ∈ CatDSL.Categories.CountableSets
 #via L ∈ CatDSL.Categories.Sets
+#via Lu ∈ CatDSL.Categories.FiniteSets
 
 /--
 The surface `let` really produced an ordinary Lean declaration of type

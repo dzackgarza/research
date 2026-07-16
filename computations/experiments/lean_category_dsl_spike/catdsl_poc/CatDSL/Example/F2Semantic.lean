@@ -10,10 +10,13 @@ architecture*, not of an elaborator.
 
 The point being tested is the architecture's central claim:
 
-    Lat(𝔽₂) → FreeFinMod(𝔽₂) → FiniteSet → CountableSet
+    UnimodularLat(𝔽₂) → Lat(𝔽₂) → FreeFinMod(𝔽₂) → FiniteSet → CountableSet
 
 carries `L` to a countable set **with no lattice-specific code** — the
 enumeration and the cardinality are inherited from the finite-set product.
+The example enters at the unimodular full subcategory: its membership is a
+proved fact (`standard_isUnimodular`), and the first step of the path is
+the inclusion functor forgetting that witness.
 
 Everything below is `rfl` or `decide`. Nothing is assumed.
 -/
@@ -22,8 +25,14 @@ namespace CatDSL.Example
 
 open CatDSL CatDSL.Categories
 
-/-- `L := (𝔽₂², id) ∈ Lat(𝔽₂)` — the rank-two standard lattice over `𝔽₂`. -/
-noncomputable def L : LatticeObj 𝔽₂ := LatticeObj.standard 𝔽₂
+/-- `Lu ∈ UnimodularLat(𝔽₂)` — the standard lattice with its proved
+unimodularity witness. -/
+noncomputable def Lu : UnimodularLatticeObj 𝔽₂ :=
+  LatticeObj.standardUnimodular 𝔽₂
+
+/-- Step 0 of the preferred path: the inclusion of the unimodular full
+subcategory forgets the witness.  `L := (𝔽₂², id) ∈ Lat(𝔽₂)`. -/
+noncomputable def L : LatticeObj 𝔽₂ := (Unimodular.toLattice 𝔽₂).obj Lu
 
 /-- Step 1 of the preferred path: `π_R` forgets the form. -/
 noncomputable def Lmod : FreeFinModuleObj 𝔽₂ :=

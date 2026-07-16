@@ -21,7 +21,8 @@ open CatDSL CatDSL.Registry CatDSL.Categories
 /-! ## Register the 𝔽₂ preferred-functor graph -/
 
 run_cmd do
-  for e in [``CatDSL.Categories.Lattice.toFreeFinModule,
+  for e in [``CatDSL.Categories.Unimodular.toLattice,
+            ``CatDSL.Categories.Lattice.toFreeFinModule,
             ``CatDSL.Categories.FreeFinModule.toFiniteSet,
             ``CatDSL.Categories.FreeFinModule.toModule,
             ``CatDSL.Categories.Module.forget,
@@ -37,8 +38,8 @@ run_cmd do
 -- The edges really landed in the extension.
 run_cmd do
   let names := Registry.preferredFunctorNames (← getEnv)
-  unless names.size = 10 do
-    throwError "expected 10 registered edges, got {names.size}: {names}"
+  unless names.size = 11 do
+    throwError "expected 11 registered edges, got {names.size}: {names}"
   logInfo m!"registry holds {names.size} edges"
 
 /-! ## checkPreferredFunctor rejects a non-functor -/
@@ -74,6 +75,33 @@ run_cmd liftTermElabM do
   let tgt ← Term.elabTerm (← `(CatDSL.Categories.CountableSets)) none
   let path ← Registry.resolvePath (← instantiateMVars src) (← instantiateMVars tgt)
   logInfo m!"Lat(𝔽₂) ⇝ CountableSets via {Registry.pathNames path}"
+
+-- From the unimodular full subcategory, the resolver must discover the
+-- inclusion as the first step: UnimodularLat(𝔽₂) ⇝ FiniteSets in 3 steps.
+run_cmd liftTermElabM do
+  let src ← Term.elabTerm
+    (← `(CatDSL.Categories.UnimodularLattices CatDSL.Categories.𝔽₂)) none
+  let tgt ← Term.elabTerm (← `(CatDSL.Categories.FiniteSets)) none
+  let path ← Registry.resolvePath (← instantiateMVars src) (← instantiateMVars tgt)
+  logInfo m!"UnimodularLat(𝔽₂) ⇝ FiniteSets via {Registry.pathNames path}"
+  unless path.steps.size = 3 do
+    throwError "expected a 3-step path through the inclusion, got {path.steps.size}"
+
+-- And the discovered inclusion-extended path applied to `Lu` is
+-- definitionally the same finite set the semantics builds from `L`.
+run_cmd liftTermElabM do
+  let src ← instantiateMVars
+    (← Term.elabTerm (← `(CatDSL.Categories.UnimodularLattices CatDSL.Categories.𝔽₂)) none)
+  let tgt ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Categories.FiniteSets)) none)
+  let path ← Registry.resolvePath src tgt
+  let Lu ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Example.Lu)) none)
+  let resolved ← Registry.applyPath path Lu
+  let manual ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Example.Lfin)) none)
+  unless ← Meta.isDefEq resolved manual do
+    throwError
+      "unimodular-resolved realization differs from the manual one:\n\
+       resolved: {resolved}\nmanual:   {manual}"
+  logInfo m!"unimodular registry path ≡ hand-built Lfin"
 
 -- Reflexivity: a category resolves to itself in zero steps.
 run_cmd liftTermElabM do

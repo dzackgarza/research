@@ -57,12 +57,54 @@ build:
     cd catdsl_poc && lake build CatDSL
 
 # Run the proof surface: |L| = 4, the registry, the DSL syntax
-test: build
+test: build layering-check-selftest
     # lemma project  finite-pair numbering: number/unnumber form an Equiv
     # CatDSL         |L| = 4, number (a,b) = 2a+b, nth inverts number, the
     #                registry finding the F₂ path itself, and the surface
     #                let/prefer/#via actually running
     cd catdsl_poc && lake build CatDSLTest
+
+# ForMathlib/ is upstream-destined general theory: it may import only Mathlib.
+# The count check comes first so an empty directory cannot green the gate.
+layering-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mapfile -t files < <(find catdsl_poc/CatDSL/ForMathlib -name '*.lean' | sort)
+    if [ "${#files[@]}" -eq 0 ]; then
+      echo "layering-check: no .lean files under catdsl_poc/CatDSL/ForMathlib -- the gate would be vacuous" >&2
+      exit 1
+    fi
+    bad=0
+    for f in "${files[@]}"; do
+      while IFS= read -r line; do
+        case "$line" in
+          "import Mathlib"|"import Mathlib."*) ;;
+          import*)
+            echo "layering-check: $f: '$line' -- ForMathlib may import only Mathlib" >&2
+            bad=1
+            ;;
+        esac
+      done < <(grep '^import ' "$f" || true)
+    done
+    [ "$bad" -eq 0 ]
+    echo "layering-check: ${#files[@]} ForMathlib file(s), imports clean"
+
+# Red demonstration, self-contained: the gate must reject a ForMathlib file
+# importing project code, and must return to green once it is gone.
+layering-check-selftest:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just layering-check
+    fixture=catdsl_poc/CatDSL/ForMathlib/LayeringViolationFixture.lean
+    trap 'rm -f "$fixture"' EXIT
+    printf 'import CatDSL.Foundation\n' > "$fixture"
+    if just layering-check >/dev/null 2>&1; then
+      echo "layering-check-selftest: gate FAILED to red on a CatDSL import in ForMathlib" >&2
+      exit 1
+    fi
+    rm -f "$fixture"
+    just layering-check >/dev/null
+    echo "layering-check-selftest: gate reds on the violation and greens after removal"
 
 # Everything, from a cold checkout
 test-ci: setup cache test
