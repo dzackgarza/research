@@ -3,6 +3,10 @@
 The single catalogue of the spike's typed mathematical language: every noun the code is allowed to use in a signature, where it is defined, how it is represented, and what Sage object realizes it.
 This document is normative for *names and placement*; the type definitions themselves live in the sibling modules and in `typings/sage/` (see `README.md` for the layout and rules).
 
+> **Authority scope (issue #251, from discussion #217).** This inventory is normative for the *Sage executable interpretation* — which Python name realizes which noun, and where methods are placed.
+> It is not the project's mathematical ontology.
+> Discussion #217 ratified a Lean-authored alignment manifest (issue #251) as the single auditable source for stable concept IDs, operation homes, Lean/Mathlib alignments, and sanctioned rollup owners; when it lands, this document becomes the Sage-side realization column of that manifest, and the route audit's declared-owner tables are generated from it rather than hand-frozen.
+
 Status legend used throughout:
 
 - **canonical** — defined in this subtree; downstream code should draw from here.

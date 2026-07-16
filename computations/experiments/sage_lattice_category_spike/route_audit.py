@@ -17,6 +17,15 @@ parent's resolution order and compares; a leaf override turns the
 provenance check red even when its answer is numerically correct — that
 anti-bypass discrimination is what distinguishes this audit from
 output-comparison testing.
+
+INTERIM AUTHORITY (issue #251): the frozen ownership table is
+proto-manifest data. Discussion #217 ratified a Lean-authored alignment
+manifest — stable concept IDs, operation homes, Lean/Mathlib alignments,
+sanctioned Sage rollup owners — as the single auditable source going
+forward; #251 derives (or validates) the declared-owner column here from
+that manifest's export, so placement-appropriateness becomes a declared,
+mechanically checked fact instead of a hand-frozen one. The comparator
+below and its anti-bypass property are unchanged by that migration.
 """
 
 from __future__ import annotations
