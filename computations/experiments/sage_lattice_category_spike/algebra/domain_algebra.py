@@ -1084,6 +1084,16 @@ class IsometryGroup:
     """O(L). Membership/construction/is_finite are total; gens/order/iteration
     are contracts implemented exactly where the group is finite."""
 
+    def cardinality(self) -> Cardinal:
+        r"""``|O(L)|`` as a Cardinal — the rollup through the group's own
+        order engine (CP3 routing; the classical Integer spelling stays
+        ``order()``). Sage's coarse Groups().Finite() cardinality would
+        otherwise outrank the forwarding root, so the owned contract is
+        spelled here."""
+        from ..objects.cardinals import cardinal
+
+        return cardinal(self.order())
+
     @abstract_method
     def lattice(self) -> Lattice: ...
 

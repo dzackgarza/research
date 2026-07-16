@@ -20,7 +20,7 @@ from sage.all import QQ, ZZ, Integer, matrix
 
 from sage_lattice_category_spike.lattice_categories import Lattice
 from sage_lattice_category_spike.objects.cardinals import Cardinal, aleph0
-from sage_lattice_category_spike.objects.magmas import AdditiveGroups
+from sage_lattice_category_spike.objects.magmas import AdditiveGroups, Groups
 from sage_lattice_category_spike.objects.modules import (
     FiniteFreeModules,
     FiniteProjectiveModules,
@@ -149,3 +149,18 @@ def test_the_isometry_homset_routes_through_the_torsor_node():
     assert empty.cardinality() == 0
     assert isinstance(empty.cardinality(), Cardinal)
     assert list(empty) == []
+
+
+def test_isometry_groups_route_through_the_owned_group_node():
+    r"""O(L) is placed in the owned Groups() node, so the forwarding root
+    serves its set behavior: cardinality arrives through the underlying
+    set's finite materialization, while order() keeps its classical
+    Integer type from the engine."""
+    group = Lattice("A2").isometry_group()
+    assert group in Groups().Finite()
+
+    cardinality = group.cardinality()
+    assert isinstance(cardinality, Cardinal)
+    assert cardinality == 12
+    assert group.order() == 12
+    assert isinstance(group.order(), Integer)

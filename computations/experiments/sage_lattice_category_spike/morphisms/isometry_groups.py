@@ -17,13 +17,13 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import Any
 
-from sage.categories.groups import Groups
 from sage.matrix.constructor import identity_matrix, matrix
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.parent import Parent
 
 from ..lexicon import IsometryGroup, IsometrySubgroup
+from ..objects.magmas import Groups
 from ..objects.parents import SyntheticIntegralNondegenerateLattice, SyntheticLattice
 from .homsets import LatticeMorphism
 
@@ -33,6 +33,8 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
 
     def __init__(self, lattice: SyntheticLattice) -> None:
         self._lattice = lattice
+        # CP3 routing: the owned Groups() node (refining Sage's), so the
+        # forwarding root serves the group's generic set behavior.
         category = Groups().Finite() if self._finiteness(lattice) else Groups()
         Parent.__init__(self, category=category)
 
