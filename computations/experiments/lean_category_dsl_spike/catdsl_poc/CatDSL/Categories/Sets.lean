@@ -27,6 +27,35 @@ instance : Category SetObj where
 /-- The category of small sets, as a first-class category object. -/
 abbrev Sets : LargeCat := Cat.of SetObj
 
+namespace SetObj
+
+/--
+The **cardinality** of a set — total on `Sets`, valued in cardinals.  Every
+set has one; `ℤ` has one.
+
+This is the concept; its home is `Sets`, all of it.  It is not a functor out
+of the whole category into the discrete category of cardinals (a functor
+into a discrete category would force `|X| = |Y|` whenever any map `X → Y`
+exists); it is a functor on the **core groupoid** — an isomorphism invariant
+of objects, transported along bijections and nothing else.
+
+The enumeration-equipped subcategories (`FiniteSetObj`, `CountableSetObj`)
+are *presentations* that evaluate this invariant (`cardinality_eval` below),
+never its home.
+-/
+def cardinality (X : SetObj) : Cardinal :=
+  Cardinal.mk X.set
+
+end SetObj
+
+/-- `ℤ` as a set object: infinite sets are first-class citizens of `Sets`,
+and the cardinality invariant is total on them. -/
+def integers : SetObj := ⟨ℤ⟩
+
+/-- `|ℤ| = ℵ₀`, obviously. -/
+theorem cardinality_integers : integers.cardinality = Cardinal.aleph0 :=
+  Cardinal.mk_int
+
 /--
 A set carrying an actual countability implementation.
 
@@ -128,9 +157,22 @@ def FiniteSet.toCountable : FiniteSetObj ⥤ CountableSetObj where
   obj := FiniteSetObj.toCountable
   map f := f
 
-/-- The finite cardinality implementation used by the elaborator. -/
+/--
+Evaluation of the cardinality invariant on an enumeration-equipped
+presentation: `|X|` read off the chosen `X ≃ Fin size`.
+
+This is the finite fragment's *computation witness*, not the concept — the
+concept is `SetObj.cardinality`, total on `Sets` (its home).
+`cardinality_eval` is the proof that this evaluation computes the invariant.
+-/
 def cardinality (X : FiniteSetObj) : Nat :=
   X.size
+
+/-- The presentation evaluates the invariant: for an enumeration-equipped
+finite set, the total cardinality on `Sets` is exactly `size`. -/
+theorem cardinality_eval (X : FiniteSetObj) :
+    (FiniteSet.forget.obj X).cardinality = (cardinality X : Cardinal) :=
+  (Cardinal.mk_congr X.enumerate).trans (Cardinal.mk_fin X.size)
 
 /-- The concrete two-element set `{0,1}`, owned by `FiniteSets`. -/
 abbrev two : FiniteSetObj where
