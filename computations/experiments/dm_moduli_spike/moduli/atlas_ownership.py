@@ -625,15 +625,16 @@ def owned_etale_atlas_presentations(
 ) -> tuple[OwnedAtlasPresentation, ...]:
     r"""Owned equation-level étale-atlas presentations.
 
-    Default cardinality **15**: parametric open Knudsen / open+compact
+    Default cardinality **17**: parametric open Knudsen / open+compact
     ``M_{1,n}`` / proper Kapranov / open+compact Igusa ``M_{2,*}`` / open del
-    Pezzo ``M_{3,0}`` / locus-only hyperelliptic open ``M_3`` / compact
-    hyperelliptic ``Mbar_3`` / parametric open+compact hyperelliptic marked
-    ``M_{3,n}``.
+    Pezzo ``M_{3,0}`` / locus-only hyperelliptic open ``M_3`` / compact del
+    Pezzo ``Mbar_3`` / locus-only hyperelliptic ``Mbar_3`` / parametric
+    open+compact hyperelliptic marked ``M_{3,n}`` / open canonical ``M_{4,0}``.
 
     Expand flags materialize concrete per-``n`` rows. Unmarked open ``M_{2,0}``,
-    compact ``Mbar_2``, open del Pezzo ``M_{3,0}``, locus-only hyperelliptic
-    open ``M_3``, and compact hyperelliptic ``Mbar_3`` stay concrete.
+    compact ``Mbar_2``, open/compact del Pezzo ``M_{3,0}``/``Mbar_3``,
+    locus-only hyperelliptic open/compact ``M_3``/``Mbar_3``, and open
+    canonical ``M_{4,0}`` stay concrete.
     """
     open_m0n: tuple[OwnedAtlasPresentation, ...]
     if expand_open_m0n_through is None:
