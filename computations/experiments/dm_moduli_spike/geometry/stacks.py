@@ -2009,6 +2009,9 @@ class AtlasMorphism(StackMorphism):
             "hesse_marked_configuration_finite_etale_cover",
             "hesse_compact_marked_configuration_finite_etale_cover",
             "igusa_binary_sextic_finite_etale_cover",
+            "igusa_compact_finite_etale_cover",
+            "igusa_universal_curve_finite_etale_cover",
+            "igusa_marked_configuration_finite_etale_cover",
         )
 
     def covering_space(self) -> object | None:

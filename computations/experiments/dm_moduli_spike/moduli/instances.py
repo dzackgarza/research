@@ -341,10 +341,102 @@ def _igusa_open_M20_affine_scheme(base: AffineScheme) -> AffineScheme:
     open of open ``M_2`` — **not** a scheme isomorphism ``M_2 ≅ U``, and
     **not** a compact ``Mbar_2`` atlas. The finite étale groupoid is
     ``S₆`` permuting the six Weierstrass points (see
-    :func:`_igusa_galois_group`).
+    :func:`_igusa_galois_group`). Proper ``Mbar_2`` uses
+    :func:`_igusa_compact_M20_covering_space`; marked open ``M_{2,n}`` uses
+    :func:`_igusa_open_M2n_affine_scheme`.
     """
     assert _two_is_invertible(base), "Igusa binary-sextic M_{2,0} chart requires 2 invertible"
     return _knudsen_open_M0n_affine_scheme(base, 6)
+
+
+def _igusa_open_M2n_point_names(n_marks: int) -> tuple[str, ...]:
+    r"""Coordinate names for ``n_marks`` affine points on the Rosenhain model."""
+    if n_marks == 1:
+        return ("x", "y")
+    names: list[str] = []
+    for i in range(1, n_marks + 1):
+        names.extend((f"x{i}", f"y{i}"))
+    return tuple(names)
+
+
+def _igusa_open_M2n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme:
+    r"""Parametric Rosenhain / Igusa chart for open ``M_{2,n}``, ``n ≥ 0``.
+
+    Forgetful ``M_{2,n} → M_2``; the fiber is a configuration of ``n`` marked
+    points on the universal Rosenhain curve
+    ``y² = x(x-1)(x-λ)(x-μ)(x-ν)``. Requires ``2 ∈ Rˣ``. Finite étale
+    groupoid ``S₆`` pulled back from unmarked open ``M_{2,0}``.
+
+    * ``n = 0``: :func:`_igusa_open_M20_affine_scheme` (Knudsen ``M_{0,6}``).
+    * ``n = 1``: universal-curve chart
+      ``Spec(R[λ,μ,ν,x,y]_S / (y² - x(x-1)(x-λ)(x-μ)(x-ν)))`` with ``S`` the
+      product of pairwise branch-point differences and ``y`` (dense open away
+      from Weierstrass points).
+    * ``n ≥ 2``: ``n`` points on the same model, localized also at ``x_i - x_j``.
+
+    Not a scheme isomorphism ``M_{2,n} ≅ U``. Proper unmarked ``Mbar_2`` uses
+    :func:`_igusa_compact_M20_covering_space`; proper marked ``Mbar_{2,n}``
+    stay fail-closed.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    n_int = int(n)
+    assert n_int >= 0, f"open Igusa M_{{2,n}} chart requires n ≥ 0; got {n!r}"
+    assert _two_is_invertible(base), "Igusa Rosenhain M_{2,n} chart requires 2 invertible"
+    if n_int == 0:
+        return _igusa_open_M20_affine_scheme(base)
+
+    names = ("lambda", "mu", "nu") + _igusa_open_M2n_point_names(n_int)
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=names)
+    gens = poly.gens()
+    lam, mu, nu = gens[0], gens[1], gens[2]
+    # Branch-point discriminant (same as Knudsen open M_{0,6}).
+    denom = lam * (lam - 1) * mu * (mu - 1) * nu * (nu - 1) * (lam - mu) * (lam - nu) * (mu - nu)
+    xs = gens[3::2]
+    ys = gens[4::2]
+    for y in ys:
+        denom *= y
+    for i, xi in enumerate(xs):
+        for xj in xs[i + 1 :]:
+            denom *= xi - xj
+    localized = poly.localization(denom)
+    equations = [
+        localized(gens[4 + 2 * i]) ** 2
+        - localized(gens[3 + 2 * i])
+        * (localized(gens[3 + 2 * i]) - 1)
+        * (localized(gens[3 + 2 * i]) - localized(lam))
+        * (localized(gens[3 + 2 * i]) - localized(mu))
+        * (localized(gens[3 + 2 * i]) - localized(nu))
+        for i in range(n_int)
+    ]
+    if len(equations) == 1:
+        return AffineScheme(localized.quo(equations[0]))
+    return AffineScheme(localized.quo(localized.ideal(equations)))
+
+
+def _igusa_compact_M20_covering_space(base: AffineScheme) -> AlgebraicSpace:
+    r"""Kapranov ``Mbar_{0,6}`` cover of proper unmarked ``Mbar_2``.
+
+    Classical identification: every genus-2 curve is hyperelliptic, so the
+    finite étale ``S₆``-cover of open ``M_2`` by ordered Weierstrass /
+    Knudsen ``M_{0,6}`` extends to the Deligne–Mumford compactification as
+
+    ``Mbar_{0,6} → Mbar_2``
+
+    (degree ``720``, Galois group ``S₆``). The covering space is the owned
+    Kapranov ``Bl(ℙ³)`` algebraic space
+    :class:`~dm_moduli_spike.geometry.stacks.KapranovBlowupFivePointsP3AlgebraicSpace`
+    — affine charts include the discriminant-zero / stable-degeneration locus;
+    this is **not** a fake “add infinity” stamp on the open Rosenhain chart.
+
+    Requires ``2 ∈ Rˣ`` (same hyperelliptic double-cover hypothesis as open
+    Igusa). Marked proper ``Mbar_{2,n}`` (``n ≥ 1``) stay fail-closed.
+    """
+    from ..geometry.stacks import KapranovBlowupFivePointsP3AlgebraicSpace
+
+    assert _two_is_invertible(base), "Igusa compact Mbar_2 cover requires 2 invertible"
+    return KapranovBlowupFivePointsP3AlgebraicSpace(base, "Mbar_2_via_Mbar_0_6")
 
 
 def _legendre_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
@@ -1164,16 +1256,28 @@ class ModuliStack(DeligneMumfordStack):
         }
 
     def igusa_quotient_presentation(self) -> dict[str, object] | None:
-        r"""Inspectable ``(U, S₆)`` data when the Igusa binary-sextic cover is owned.
+        r"""Inspectable ``(U, S₆)`` data when an Igusa / Rosenhain cover is owned.
 
-        Returns ``None`` unless this is open unmarked ``M_{2,0}`` over a base with
-        ``2`` invertible. Covering space
-        :func:`_igusa_open_M20_affine_scheme` (dense open of ``M_{0,6}`` /
-        binary sextics after ``PGL₂`` normalization); ``G = S₆ ≅ Sp₄(𝔽₂)`` of
-        order ``720``. Covers a dense open of open ``M_2`` — **not** a scheme
-        isomorphism, and **not** a compact ``Mbar_2`` atlas.
+        Returns ``None`` unless this is open ``M_{2,n}`` (``n ≥ 0``) or proper
+        unmarked ``Mbar_2`` over a base with ``2`` invertible.
+
+        - Open ``M_{2,0}``: Rosenhain / Knudsen ``M_{0,6}`` chart
+          :func:`_igusa_open_M20_affine_scheme` (dense open of binary sextics).
+        - Open ``M_{2,n}`` (``n ≥ 1``): marked Rosenhain
+          :func:`_igusa_open_M2n_affine_scheme`.
+        - Proper ``Mbar_2``: Kapranov ``Mbar_{0,6}`` cover
+          :func:`_igusa_compact_M20_covering_space`.
+
+        ``G = S₆ ≅ Sp₄(𝔽₂)`` of order ``720``. Not a scheme isomorphism.
+        Proper marked ``Mbar_{2,n}`` (``n ≥ 1``) stay fail-closed.
         """
-        if self.genus() != 2 or self.number_of_markings() != 0 or self.is_proper():
+        if self.genus() != 2:
+            return None
+        n = int(self.number_of_markings())
+        if self.is_proper():
+            if n != 0:
+                return None
+        elif n < 0:
             return None
         if not _two_is_invertible(self.base_scheme()):
             return None
@@ -1183,6 +1287,26 @@ class ModuliStack(DeligneMumfordStack):
         group = _igusa_galois_group()
         from typing import Any, cast
 
+        if self.is_proper():
+            presentation = "Mbar_2 ≅ [Mbar_0_6 / S6] (Kapranov Bl(P3))"
+            level_structure = "Igusa_compact_Mbar06_S6"
+            construction = "igusa_mbar06_s6"
+            coverage = "proper_Mbar_2"
+        elif n == 0:
+            presentation = "M_2 ≅ [Igusa_binary_sextic_U / S6] (dense open)"
+            level_structure = "Igusa_binary_sextic_Sp4_F2"
+            construction = "igusa_binary_sextic_PGL2"
+            coverage = "dense_open_of_open_M_2"
+        elif n == 1:
+            presentation = "M_2_1 ≅ [Igusa_Rosenhain_univ_curve / S6] (dense open)"
+            level_structure = "Igusa_rosenhain_universal_curve"
+            construction = "igusa_rosenhain_universal_curve"
+            coverage = "dense_open_of_open_M_2_1"
+        else:
+            presentation = f"M_2_{n} ≅ [Igusa_Rosenhain_marked_configuration / S6] (dense open)"
+            level_structure = "Igusa_rosenhain_marked_configuration"
+            construction = "igusa_rosenhain_marked_configuration"
+            coverage = f"dense_open_of_open_M_2_{n}"
         return {
             "covering_space": domain,
             "group": group,
@@ -1192,10 +1316,10 @@ class ModuliStack(DeligneMumfordStack):
             "covering_smooth_stamp": True,
             "covering_formally_etale_stamp": True,
             "degree": 720,
-            "level_structure": "Igusa_binary_sextic_Sp4_F2",
-            "presentation": "M_2 ≅ [Igusa_binary_sextic_U / S6] (dense open)",
-            "construction": "igusa_binary_sextic_PGL2",
-            "coverage": "dense_open_of_open_M_2",
+            "level_structure": level_structure,
+            "presentation": presentation,
+            "construction": construction,
+            "coverage": coverage,
         }
 
     def weierstrass_gm_presentation(self) -> dict[str, object] | None:
