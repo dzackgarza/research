@@ -52,11 +52,26 @@ tether CatDSL.Categories.Isometries ~ CategoryTheory.Iso
 tether CatDSL.Categories.isometryGroup ~ CategoryTheory.Aut
   via CatDSL.Categories.isometryGroup.eq_aut
 
-tether CatDSL.Categories.LatticeObj ~ LinearMap.BilinForm
-  via CatDSL.Categories.LatticeObj.bilinForm
-
 tether CatDSL.Categories.Lattice.toFreeFinModule
   ~ CategoryTheory.Functor.ReflectsIsomorphisms
   via CatDSL.Categories.Lattice.toFreeFinModule_reflectsIsomorphisms
+
+tether CatDSL.Categories.CountableSetObj ~ Countable
+  via CatDSL.Categories.CountableSetObj.equivCountableSets
+
+tether CatDSL.Categories.FiniteSetObj ~ Finite
+  via CatDSL.Categories.FiniteSetObj.equivFiniteSets
+
+tether CatDSL.Categories.FreeFinModuleObj.standard ~ Pi.basisFun
+  via CatDSL.Categories.FreeFinModuleObj.standard_basis
+
+tether CatDSL.Categories.Ring.forget ~ CategoryTheory.forget
+  via CatDSL.Categories.Ring.forget_eq_forget
+
+tether CatDSL.Categories.Module.forget ~ CategoryTheory.forget
+  via CatDSL.Categories.Module.forget_eq_forget
+
+tether CatDSL.Categories.Unimodular.toLattice ~ CategoryTheory.ObjectProperty.ι
+  via CatDSL.Categories.Unimodular.toLattice_eq_ι
 
 end CatDSL.Manifest

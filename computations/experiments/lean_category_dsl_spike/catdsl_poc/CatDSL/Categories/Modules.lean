@@ -82,6 +82,14 @@ def Module.forget (R : FiniteRingObj) : ModuleObj R.toRing ⥤ SetObj where
   obj M := ⟨M.set⟩
   map {M N} (f : M.set →ₗ[R.set] N.set) := ⇑f
 
+/-- Tether witness: `Module.forget` IS Mathlib's forgetful functor on
+`ModuleCat`, transported across the equivalence (see
+`Ring.forget_eq_forget`). -/
+def Module.forget_eq_forget (R : FiniteRingObj) :
+    (ModuleObj.equivModuleCat R.toRing).functor ⋙ CategoryTheory.forget (ModuleCat R.set) ≅
+      Module.forget R ⋙ SetObj.equivTypes.functor :=
+  NatIso.ofComponents fun M => Iso.refl _
+
 /--
 A finite free module with chosen coordinates and a chosen concrete finite
 realization of its underlying set.
@@ -96,7 +104,7 @@ structure FreeFinModuleObj (R : FiniteRingObj) where
     module.set ≃ₗ[R.set] (Fin rank → R.set)
   finiteSet : FiniteSetObj
   finiteSetEquiv : module.set ≃ finiteSet.set
-  cardinality_eq : finiteSet.size = R.size ^ rank
+  cardinality_eq : finiteSet.card = R.finiteSet.card ^ rank
 
 instance (R : FiniteRingObj) : CoeSort (FreeFinModuleObj R) Type where
   coe M := M.module.set
@@ -104,20 +112,43 @@ instance (R : FiniteRingObj) : CoeSort (FreeFinModuleObj R) Type where
 namespace FreeFinModuleObj
 
 /--
-The standard rank-two free module.  Its finite set is the product of two
-copies of the finite set of `R`, so all enumeration and cardinality code is
-inherited from finite-set products.  The set-level identification
-`(Fin 2 → R) ≃ R × R` is Mathlib's `piFinTwoEquiv`, not hand-rolled.
+The standard presentation of the free module of rank `n`: the function
+module `Fin n → R` with identity coordinates, enumerated by Mathlib's
+`finFunctionFinEquiv` (little-endian mixed radix) through the base ring's
+enumeration.
+
+This is the GENERAL definition; examples instantiate it (`n = 2` for the
+standard lattice).  Special cases are recovered, never named — there is no
+`rankTwo`.
 -/
-def rankTwo (R : FiniteRingObj) : FreeFinModuleObj R where
-  module := ModuleObj.of R.toRing (Fin 2 → R.set)
-  rank := 2
-  coordinates := LinearEquiv.refl R.set (Fin 2 → R.set)
-  finiteSet := FiniteSetObj.prod R.toFiniteSet R.toFiniteSet
-  finiteSetEquiv := piFinTwoEquiv fun _ => R.set
-  cardinality_eq := by
-    show R.size * R.size = R.size ^ 2
-    ring
+def standard (R : FiniteRingObj) (n : Nat) : FreeFinModuleObj R where
+  module := ModuleObj.of R.toRing (Fin n → R.set)
+  rank := n
+  coordinates := LinearEquiv.refl R.set (Fin n → R.set)
+  finiteSet :=
+    { set := Fin n → R.set
+      card := R.finiteSet.card ^ n
+      enumerate :=
+        (Equiv.arrowCongr (Equiv.refl (Fin n)) R.finiteSet.enumerate).trans
+          finFunctionFinEquiv }
+  finiteSetEquiv := Equiv.refl _
+  cardinality_eq := rfl
+
+/--
+Tether witness: the `coordinates` field IS a Mathlib basis — a finitely
+generated free module of rank `rank` with chosen coordinates is exactly a
+module with a `Module.Basis (Fin rank)` (`Basis.ofEquivFun`).
+-/
+noncomputable def basis {R : FiniteRingObj} (M : FreeFinModuleObj R) :
+    Module.Basis (Fin M.rank) R.set M.module.set :=
+  Module.Basis.ofEquivFun M.coordinates
+
+/-- Tether witness: the standard presentation's basis is Mathlib's standard
+basis, definitionally, at every rank (`Pi.basisFun` is itself
+`Basis.ofEquivFun (LinearEquiv.refl _ _)`). -/
+theorem standard_basis (R : FiniteRingObj) (n : Nat) :
+    (standard R n).basis = Pi.basisFun R.set (Fin n) :=
+  rfl
 
 end FreeFinModuleObj
 

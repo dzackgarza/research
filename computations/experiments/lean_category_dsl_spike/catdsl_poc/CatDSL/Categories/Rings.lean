@@ -81,11 +81,8 @@ abbrev set (R : FiniteRingObj) : Type :=
 instance : CoeSort FiniteRingObj Type where
   coe R := R.set
 
-abbrev size (R : FiniteRingObj) : Nat :=
-  R.finiteSet.size
-
 abbrev enumerate (R : FiniteRingObj) :
-    R.set ≃ Fin R.size :=
+    R.set ≃ Fin R.finiteSet.card :=
   R.finiteSet.enumerate
 
 abbrev toRing (R : FiniteRingObj) : RingObj where
@@ -120,6 +117,23 @@ def FiniteRing.toRing : FiniteRingObj ⥤ RingObj where
 def FiniteRing.toFiniteSet : FiniteRingObj ⥤ FiniteSetObj where
   obj := FiniteRingObj.toFiniteSet
   map {R S} (f : R.set →+* S.set) := ⇑f
+
+/--
+Tether witness: `Ring.forget` IS Mathlib's forgetful functor, transported
+across the equivalence — the square
+
+    RingObj  ⥤  CommRingCat
+       |               |
+  Ring.forget    forget CommRingCat
+       ↓               ↓
+    SetObj   ⥤     Type
+
+commutes up to (identity-component) natural isomorphism.
+-/
+def Ring.forget_eq_forget :
+    RingObj.equivCommRingCat.functor ⋙ CategoryTheory.forget CommRingCat ≅
+      Ring.forget ⋙ SetObj.equivTypes.functor :=
+  NatIso.ofComponents fun R => Iso.refl _
 
 /-- The field `𝔽₂`: the commutative-ring structure on `𝟚`. -/
 def 𝔽₂ : FiniteRingObj where

@@ -3,6 +3,14 @@ import CatDSL.Foundation
 /-!
 # Sets, countable sets, finite sets
 
+**Convention (category vs objects).**  Following Mathlib (`CommRingCat`,
+`FintypeCat` are *types* whose terms are the objects), the object type
+together with its `Category` instance IS the category.  The plural
+`abbrev Foos := Cat.of FooObj` is that same category bundled as an object of
+`Cat`; it exists only so the surface syntax `L ∈ Lat(R)` can read as the
+standard abuse of notation for "object of".  Neither the plural name nor the
+`Obj` suffix denotes a different mathematical entity.
+
 Each layer is an object *type* carrying a Mathlib `Category` instance,
 bundled with `Cat.of` into a first-class category object.  This is the
 reference shape for every category module.
@@ -127,6 +135,43 @@ instance — the tie to Mathlib as a construction, not prose. -/
 def CountableSetObj.encodable (X : CountableSetObj) : Encodable X.set :=
   ⟨X.number, X.nth, X.nth_number⟩
 
+/-- The concept is the PROPERTY: the set is countable. -/
+theorem CountableSetObj.countable (X : CountableSetObj) : Countable X.set := by
+  haveI := X.encodable
+  infer_instance
+
+/--
+Tether witness: `CountableSetObj` IS (classically) the full subcategory of
+`Sets` on `Countable` — "enumeration" is a chosen witness, not the noun.
+Every countable set admits an enumeration (`Encodable.ofCountable`, choice),
+and since morphisms ignore the numbering, the identity function is an
+isomorphism between any two enumerated dressings of one set.  Lean needs no
+enumeration-carrying category: the concept is the property-gated
+subcategory; the data version is its computational presentation, equivalent
+to it.
+-/
+noncomputable def CountableSetObj.equivCountableSets :
+    CountableSetObj ≌
+      ObjectProperty.FullSubcategory (fun X : SetObj => Countable X.set) :=
+  CategoryTheory.Equivalence.mk
+    (ObjectProperty.lift _ CountableSet.forget fun X => X.countable)
+    { obj := fun X =>
+        letI : Countable X.obj.set := X.property
+        letI e := Encodable.ofCountable X.obj.set
+        { set := X.obj.set
+          number := e.encode
+          nth := e.decode
+          nth_number := e.encodek }
+      map := fun {X Y} f =>
+        ((ObjectProperty.ι _).map f : X.obj.set → Y.obj.set) }
+    (NatIso.ofComponents
+      (fun X => { hom := (fun x => x : X.set → X.set)
+                  inv := (fun x => x : X.set → X.set)
+                  hom_inv_id := rfl
+                  inv_hom_id := rfl })
+      (fun _ => rfl))
+    (NatIso.ofComponents (fun X => Iso.refl _) (fun _ => rfl))
+
 /--
 A finite set with a chosen enumeration.  The enumeration is data, not a
 proposition asserting finiteness.
@@ -140,8 +185,9 @@ per the #217-ratified consolidation; new fields must mirror the class.
 -/
 structure FiniteSetObj where
   set : Type
-  size : Nat
-  enumerate : set ≃ Fin size
+  /-- The cardinality — the invariant, not a new notion named "size". -/
+  card : Nat
+  enumerate : set ≃ Fin card
 
 instance : CoeSort FiniteSetObj Type where
   coe X := X.set
@@ -160,7 +206,7 @@ def number (X : FiniteSetObj) : X.set → Nat :=
 
 def nth (X : FiniteSetObj) : Nat → Option X.set :=
   fun n =>
-    if h : n < X.size then
+    if h : n < X.card then
       some (X.enumerate.symm ⟨n, h⟩)
     else
       none
@@ -174,9 +220,13 @@ theorem nth_number (X : FiniteSetObj) :
 instance (`decEq` transported along the chosen enumeration). -/
 @[reducible]
 def finEnum (X : FiniteSetObj) : FinEnum X.set where
-  card := X.size
+  card := X.card
   equiv := X.enumerate
   decEq := X.enumerate.decidableEq
+
+/-- The concept is the PROPERTY: the set is finite. -/
+theorem finite (X : FiniteSetObj) : Finite X.set :=
+  Finite.intro X.enumerate
 
 /-- The countability implementation induced by a chosen enumeration. -/
 def toCountable (X : FiniteSetObj) : CountableSetObj where
@@ -194,13 +244,13 @@ equivalence `Fin m × Fin n ≃ Fin (m*n)`.
 -/
 def prod (X Y : FiniteSetObj) : FiniteSetObj where
   set := X.set × Y.set
-  size := X.size * Y.size
+  card := X.card * Y.card
   enumerate :=
     (Equiv.prodCongr X.enumerate Y.enumerate).trans finProdFinEquiv
 
 @[simp]
-theorem prod_size (X Y : FiniteSetObj) :
-    (prod X Y).size = X.size * Y.size :=
+theorem prod_card (X Y : FiniteSetObj) :
+    (prod X Y).card = X.card * Y.card :=
   rfl
 
 end FiniteSetObj
@@ -216,21 +266,48 @@ def FiniteSet.toCountable : FiniteSetObj ⥤ CountableSetObj where
   map f := f
 
 /--
+Tether witness: `FiniteSetObj` IS (classically) the full subcategory of
+`Sets` on `Finite` — same statement as `CountableSetObj.equivCountableSets`;
+every finite set admits an enumeration (`Fintype.ofFinite` + `equivFin`).
+-/
+noncomputable def FiniteSetObj.equivFiniteSets :
+    FiniteSetObj ≌
+      ObjectProperty.FullSubcategory (fun X : SetObj => Finite X.set) :=
+  CategoryTheory.Equivalence.mk
+    (ObjectProperty.lift _ FiniteSet.forget fun X => X.finite)
+    { obj := fun X =>
+        letI : Finite X.obj.set := X.property
+        letI ft : Fintype X.obj.set := Fintype.ofFinite _
+        { set := X.obj.set
+          card := Fintype.card X.obj.set
+          enumerate := Fintype.equivFin X.obj.set }
+      map := fun {X Y} f =>
+        ((ObjectProperty.ι _).map f : X.obj.set → Y.obj.set) }
+    (NatIso.ofComponents
+      (fun X => { hom := (fun x => x : X.set → X.set)
+                  inv := (fun x => x : X.set → X.set)
+                  hom_inv_id := rfl
+                  inv_hom_id := rfl })
+      (fun _ => rfl))
+    (NatIso.ofComponents (fun X => Iso.refl _) (fun _ => rfl))
+
+
+/--
 Evaluation of the cardinality invariant on an enumeration-equipped
-presentation: `|X|` read off the chosen `X ≃ Fin size`.
+presentation: `|X|` read off the chosen `X ≃ Fin card`.
 
 This is the finite fragment's *computation witness*, not the concept — the
 concept is `SetObj.cardinality`, total on `Sets` (its home).
 `cardinality_eval` is the proof that this evaluation computes the invariant.
 -/
 def cardinality (X : FiniteSetObj) : Nat :=
-  X.size
+  X.card
 
 /-- The presentation evaluates the invariant: for an enumeration-equipped
-finite set, the total cardinality on `Sets` is exactly `size`. -/
+finite set, the total cardinality on `Sets` is exactly `card`. -/
 theorem cardinality_eval (X : FiniteSetObj) :
     (FiniteSet.forget.obj X).cardinality = (cardinality X : Cardinal) :=
-  (Cardinal.mk_congr X.enumerate).trans (Cardinal.mk_fin X.size)
+  (Cardinal.mk_congr X.enumerate).trans (Cardinal.mk_fin X.card)
 
 /-- Tether witness: the finite evaluation IS Mathlib's `FinEnum.card`. -/
 theorem cardinality_eq_finEnumCard (X : FiniteSetObj) :
@@ -240,7 +317,7 @@ theorem cardinality_eq_finEnumCard (X : FiniteSetObj) :
 /-- The concrete two-element set `{0,1}`, owned by `FiniteSets`. -/
 abbrev two : FiniteSetObj where
   set := ZMod 2
-  size := 2
+  card := 2
   enumerate := Equiv.refl (Fin 2)
 
 /--

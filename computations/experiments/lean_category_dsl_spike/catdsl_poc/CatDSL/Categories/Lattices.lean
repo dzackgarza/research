@@ -150,7 +150,7 @@ architecture's own point: `π_R` forgets the form, so `|L|` reduces through
 `L.module` and never touches `form` at all.
 -/
 noncomputable def standard (R : FiniteRingObj) : LatticeObj R where
-  module := FreeFinModuleObj.rankTwo R
+  module := FreeFinModuleObj.standard R 2
   form := (Pi.basisFun R.set (Fin 2)).toDual
   nondegenerate := (Pi.basisFun R.set (Fin 2)).toDual_injective
   symmetric := fun x y => Module.Basis.toDual_comm _ x y
@@ -192,6 +192,13 @@ theorem bilinForm_isSymm {R : FiniteRingObj} (L : LatticeObj R) :
   LinearMap.BilinForm.isSymm_def.mpr L.symmetric
 
 end LatticeObj
+
+/-- Tether witness: the inclusion of the unimodular full subcategory IS
+Mathlib's `ObjectProperty.ι`, definitionally — it is not a project-owned
+arrow. -/
+theorem Unimodular.toLattice_eq_ι (R : FiniteRingObj) :
+    Unimodular.toLattice R = ObjectProperty.ι _ :=
+  rfl
 
 /-- The `FreeFinMod(R)`-realization of a lattice: `(L,b) ↦ L`. -/
 def Lattice.toFreeFinModule (R : FiniteRingObj) :

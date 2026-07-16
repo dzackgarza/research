@@ -13,7 +13,8 @@ The point being tested is the architecture's central claim:
     UnimodularLat(𝔽₂) → Lat(𝔽₂) → FreeFinMod(𝔽₂) → FiniteSet → CountableSet
 
 carries `L` to a countable set **with no lattice-specific code** — the
-enumeration and the cardinality are inherited from the finite-set product.
+enumeration and the cardinality are inherited from the general standard
+free-module presentation (`finFunctionFinEquiv`, little-endian).
 The example enters at the unimodular full subcategory: its membership is a
 proved fact (`standard_isUnimodular`), and the first step of the path is
 the inclusion functor forgetting that witness.
@@ -56,36 +57,52 @@ noncomputable def Lcount : CountableSetObj :=
 theorem card_L : cardinality Lfin = 4 := by rfl
 
 /-- `|L| = |𝔽₂|²`: the cardinality factors through the product, as claimed. -/
-theorem card_L_eq_sq : cardinality Lfin = 𝔽₂.size ^ 2 := by rfl
+theorem card_L_eq_sq : cardinality Lfin = 𝔽₂.finiteSet.card ^ 2 := by rfl
 
 /-!
 ## Numbering
 
-The mixed-radix numbering is inherited from `FiniteSetObj.prod`; no lattice,
-module, or ring code computes it.  `number (a,b) = 2a + b`.
+The mixed-radix numbering is inherited from the general standard
+presentation (`finFunctionFinEquiv`); no lattice, module, or ring code
+computes it.  Little-endian: `number ![a, b] = a + 2b`.
 -/
 
-/-- Acceptance criterion 11: the generated numbering is `2a + b`. -/
+/-- Acceptance criterion 11: the generated numbering is `a + 2b`. -/
 theorem number_table :
-    Lcount.number (0, 0) = 0 ∧
-    Lcount.number (0, 1) = 1 ∧
-    Lcount.number (1, 0) = 2 ∧
-    Lcount.number (1, 1) = 3 := by
+    Lcount.number ![0, 0] = 0 ∧
+    Lcount.number ![1, 0] = 1 ∧
+    Lcount.number ![0, 1] = 2 ∧
+    Lcount.number ![1, 1] = 3 := by
   refine ⟨?_, ?_, ?_, ?_⟩ <;> decide
 
 /-- `nth` inverts `number`, and is undefined past the end. -/
 theorem nth_table :
-    Lcount.nth 0 = some (0, 0) ∧
-    Lcount.nth 1 = some (0, 1) ∧
-    Lcount.nth 2 = some (1, 0) ∧
-    Lcount.nth 3 = some (1, 1) ∧
+    Lcount.nth 0 = some ![0, 0] ∧
+    Lcount.nth 1 = some ![1, 0] ∧
+    Lcount.nth 2 = some ![0, 1] ∧
+    Lcount.nth 3 = some ![1, 1] ∧
     Lcount.nth 4 = none := by
-  -- `decide` would need `DecidableEq Lcount.set`, which does not resolve:
-  -- the type only reduces to `ZMod 2 × ZMod 2` at default transparency.
-  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> rfl
+  -- The inverse of the general enumeration is not `rfl`-transparent
+  -- (`Equiv.ofRightInverseOfCardLE`), so each entry is obtained from the
+  -- generic inverse law at the decidably-computed forward value.
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  · have h := Lcount.nth_number ![0, 0]
+    rwa [show Lcount.number ![0, 0] = 0 from by decide] at h
+  · have h := Lcount.nth_number ![1, 0]
+    rwa [show Lcount.number ![1, 0] = 1 from by decide] at h
+  · have h := Lcount.nth_number ![0, 1]
+    rwa [show Lcount.number ![0, 1] = 2 from by decide] at h
+  · have h := Lcount.nth_number ![1, 1]
+    rwa [show Lcount.number ![1, 1] = 3 from by decide] at h
+  · rfl
 
 /-- Criterion 7: the countability implementation is real, not a proposition. -/
 theorem nth_number_L (x : Lcount.set) : Lcount.nth (Lcount.number x) = some x :=
   Lcount.nth_number x
+
+/-- `R.cardinality := F(R).cardinality` — a ring's cardinality is obtained
+ONLY through the forgetful functor; no ring-level spelling exists.  This is
+the architecture's central equation, kernel-checked. -/
+example : cardinality (FiniteRing.toFiniteSet.obj 𝔽₂) = 2 := rfl
 
 end CatDSL.Example

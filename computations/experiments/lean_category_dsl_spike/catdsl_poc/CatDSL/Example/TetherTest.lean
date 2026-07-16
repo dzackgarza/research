@@ -6,9 +6,10 @@ import CatDSL.Manifest.Tethers
 The untethered list is COMPUTED from the environment (`untetheredIn`), never
 self-reported.  This test pins it: a new notion with no checked Lean anchor
 reds here until it is either tethered (`tether … ~ … via …`) or consciously
-acknowledged below **with a documented reason** — an entry without a reason
-does not typecheck.  Shrinking this list is the alignment-catalogue work
-(#251); silent growth is the drift this mechanism exists to catch.
+acknowledged below with its **mathematical identification** — what the
+declaration IS in standard language, and what witness identifies it.  There
+is no "plumbing" classification: everything is mathematics, translated;
+entries differ only in whether their identification witness exists yet.
 
 The positive assertions come first: a dead extension would pass any
 "correctly absent" check.
@@ -22,83 +23,109 @@ open CatDSL.Manifest
 -- Positive count first: the tether registry is alive.
 run_cmd do
   let ts := tethers (← getEnv)
-  unless ts.size = 15 do
-    throwError "expected 15 tethers, got {ts.size}: {ts.map (·.localDecl)}"
+  unless ts.size = 20 do
+    throwError "expected 20 tethers, got {ts.size}: {ts.map (·.localDecl)}"
   let kinds := ts.map (·.kind)
-  unless kinds.count .exact = 4 && kinds.count .divergent = 1
-      && kinds.count .structural = 10 do
+  unless kinds.count .exact = 5 && kinds.count .divergent = 2
+      && kinds.count .structural = 13 do
     throwError "tether kinds drifted: {ts.map fun t => (t.localDecl, t.kind)}"
   logInfo m!"tether registry alive: {ts.size} tethers, kinds as pinned"
 
-/-! ## Acknowledged reasons (shared) -/
+/-! ## Mathematical identifications of the not-yet-tethered (shared) -/
 
-private def bundleAbbrev : String :=
-  "Cat.of bundle or surface alias naming an instance-carrying object type; \
-   the notion is the object type, which is tethered or acknowledged \
-   separately"
+private def standardFunctor : String :=
+  "a standard functor — forgetful, full-subcategory inclusion, or a \
+   restriction square of these; identification witness (commuting square / \
+   FullSubcategory.map) pending"
 
-private def realizationEdge : String :=
-  "realization functor (preferred-graph edge); its mathematical \
-   characterization is CONSERVATIVITY (Functor.ReflectsIsomorphisms — see \
-   the tethered Lattice.toFreeFinModule exemplar), not forgetfulness; \
-   per-edge conservativity witnesses queued"
+private def bundleOfCat : String :=
+  "the category bundled as an object of Cat via Cat.of; the category itself \
+   is the object type + instance (see the convention note in Sets.lean) and \
+   is identified there"
 
-private def presentationData : String :=
-  "presentation data, accessor, or concrete example on project objects; \
-   internal by design, no external concept to anchor"
+private def routedSpelling : String :=
+  "object-level spelling of an already-identified concept, reached through \
+   the realization functor (X.op := F(X).op); not a new notion"
 
-private def pendingUpstream : String :=
-  "the surrounding CATEGORY has no Mathlib home (for lattices: ZLattice is \
-   the embedded-discrete-subgroup ontology and QuadraticModuleCat is \
-   quadratic, not symmetric bilinear — over ℤ exactly even vs odd); the \
-   INGREDIENTS are tethered (LatticeObj.bilinForm ~ LinearMap.BilinForm); \
-   see the ForMathlib policy"
+private def encodePresentation : String :=
+  "Encodable.encode / Encodable.decode of the enumeration presentation \
+   (identity witnessed by CountableSetObj.encodable / FiniteSetObj.finEnum)"
+
+private def binaryProduct : String :=
+  "the binary product construction; identification target: a limit-cone \
+   witness that it IS the categorical product, pending"
+
+private def fgFreeModules : String :=
+  "the category of finitely generated free R-modules — full subcategory of \
+   ModuleCat on Module.Free ∧ Module.Finite; equivalence witness pending \
+   (supporting lemma: basis = Basis.ofEquivFun coordinates)"
+
+private def finCommRings : String :=
+  "the category of finite commutative rings — full subcategory of \
+   CommRingCat on Finite; equivalence witness pending"
+
+private def latticeCategory : String :=
+  "the isometry category of nondegenerate symmetric bilinear f.g. free \
+   modules — Mathlib has no home (ZLattice is the embedded-discrete-subgroup \
+   ontology; QuadraticModuleCat is quadratic, not symmetric bilinear — over \
+   ℤ exactly even vs odd); ForMathlib/upstream target; supporting lemmas: \
+   bilinForm, bilinForm_isSymm"
+
+private def supportingLemma : String :=
+  "supporting lemma for a pending identification; its statement names the \
+   Mathlib target"
+
+private def workedExample : String :=
+  "worked example — the identity-Gram form on the standard free \
+   presentation, built entirely from identified pieces (standard, \
+   Pi.basisFun.toDual)"
+
+private def ofConstructor : String :=
+  "object constructor corresponding to ModuleCat.of under the equivalence \
+   ModuleObj.equivModuleCat"
 
 /--
-The acknowledged untethered set, each entry carrying its documented,
-auditable reason.
+The acknowledged not-yet-tethered set: every entry carries its mathematical
+identification.
 -/
 def acknowledgedUntethered : Array (Name × String) := #[
-  (`CatDSL.Categories.CountableSet.forget, realizationEdge),
-  (`CatDSL.Categories.CountableSets, bundleAbbrev),
-  (`CatDSL.Categories.FiniteRing.toFiniteSet, realizationEdge),
-  (`CatDSL.Categories.FiniteRing.toRing, realizationEdge),
-  (`CatDSL.Categories.FiniteRingObj, pendingUpstream),
-  (`CatDSL.Categories.FiniteRingObj.enumerate, presentationData),
-  (`CatDSL.Categories.FiniteRingObj.prod, presentationData),
-  (`CatDSL.Categories.FiniteRingObj.set, presentationData),
-  (`CatDSL.Categories.FiniteRingObj.size, presentationData),
-  (`CatDSL.Categories.FiniteRingObj.toFiniteSet, presentationData),
-  (`CatDSL.Categories.FiniteRingObj.toRing, presentationData),
-  (`CatDSL.Categories.FiniteRings, bundleAbbrev),
-  (`CatDSL.Categories.FiniteSet.forget, realizationEdge),
-  (`CatDSL.Categories.FiniteSet.toCountable, realizationEdge),
-  (`CatDSL.Categories.FiniteSetObj.nth, presentationData),
-  (`CatDSL.Categories.FiniteSetObj.number, presentationData),
-  (`CatDSL.Categories.FiniteSetObj.prod, presentationData),
-  (`CatDSL.Categories.FiniteSetObj.toCountable, presentationData),
-  (`CatDSL.Categories.FiniteSets, bundleAbbrev),
-  (`CatDSL.Categories.FreeFinModule.toFiniteSet, realizationEdge),
-  (`CatDSL.Categories.FreeFinModule.toModule, realizationEdge),
-  (`CatDSL.Categories.FreeFinModuleObj, pendingUpstream),
-  (`CatDSL.Categories.FreeFinModuleObj.rankTwo, presentationData),
-  (`CatDSL.Categories.FreeFinModules, bundleAbbrev),
-  (`CatDSL.Categories.LatticeHom, pendingUpstream),
-  (`CatDSL.Categories.LatticeObj.IsUnimodular, pendingUpstream),
-  (`CatDSL.Categories.LatticeObj.standard, presentationData),
-  (`CatDSL.Categories.LatticeObj.standardUnimodular, presentationData),
-  (`CatDSL.Categories.Lattices, bundleAbbrev),
-  (`CatDSL.Categories.Mod, bundleAbbrev),
-  (`CatDSL.Categories.Module.forget, realizationEdge),
-  (`CatDSL.Categories.ModuleObj.of, presentationData),
-  (`CatDSL.Categories.Modules, bundleAbbrev),
-  (`CatDSL.Categories.Ring.forget, realizationEdge),
-  (`CatDSL.Categories.Rings, bundleAbbrev),
-  (`CatDSL.Categories.Sets, bundleAbbrev),
-  (`CatDSL.Categories.Unimodular.toLattice, realizationEdge),
-  (`CatDSL.Categories.UnimodularLatticeObj, pendingUpstream),
-  (`CatDSL.Categories.UnimodularLattices, bundleAbbrev)]
-
+  (`CatDSL.Categories.CountableSet.forget, standardFunctor),
+  (`CatDSL.Categories.CountableSets, bundleOfCat),
+  (`CatDSL.Categories.FiniteRing.toFiniteSet, standardFunctor),
+  (`CatDSL.Categories.FiniteRing.toRing, standardFunctor),
+  (`CatDSL.Categories.FiniteRingObj, finCommRings),
+  (`CatDSL.Categories.FiniteRingObj.enumerate, routedSpelling),
+  (`CatDSL.Categories.FiniteRingObj.prod, binaryProduct),
+  (`CatDSL.Categories.FiniteRingObj.set, routedSpelling),
+  (`CatDSL.Categories.FiniteRingObj.toFiniteSet, routedSpelling),
+  (`CatDSL.Categories.FiniteRingObj.toRing, routedSpelling),
+  (`CatDSL.Categories.FiniteRings, bundleOfCat),
+  (`CatDSL.Categories.FiniteSet.forget, standardFunctor),
+  (`CatDSL.Categories.FiniteSet.toCountable, standardFunctor),
+  (`CatDSL.Categories.FiniteSetObj.nth, encodePresentation),
+  (`CatDSL.Categories.FiniteSetObj.number, encodePresentation),
+  (`CatDSL.Categories.FiniteSetObj.prod, binaryProduct),
+  (`CatDSL.Categories.FiniteSetObj.toCountable, routedSpelling),
+  (`CatDSL.Categories.FiniteSets, bundleOfCat),
+  (`CatDSL.Categories.FreeFinModule.toFiniteSet, standardFunctor),
+  (`CatDSL.Categories.FreeFinModule.toModule, standardFunctor),
+  (`CatDSL.Categories.FreeFinModuleObj, fgFreeModules),
+  (`CatDSL.Categories.FreeFinModuleObj.basis, supportingLemma),
+  (`CatDSL.Categories.FreeFinModules, bundleOfCat),
+  (`CatDSL.Categories.LatticeHom, latticeCategory),
+  (`CatDSL.Categories.LatticeObj, latticeCategory),
+  (`CatDSL.Categories.LatticeObj.IsUnimodular, latticeCategory),
+  (`CatDSL.Categories.LatticeObj.bilinForm, supportingLemma),
+  (`CatDSL.Categories.LatticeObj.standard, workedExample),
+  (`CatDSL.Categories.LatticeObj.standardUnimodular, workedExample),
+  (`CatDSL.Categories.Lattices, bundleOfCat),
+  (`CatDSL.Categories.Mod, bundleOfCat),
+  (`CatDSL.Categories.ModuleObj.of, ofConstructor),
+  (`CatDSL.Categories.Modules, bundleOfCat),
+  (`CatDSL.Categories.Rings, bundleOfCat),
+  (`CatDSL.Categories.Sets, bundleOfCat),
+  (`CatDSL.Categories.UnimodularLatticeObj, latticeCategory),
+  (`CatDSL.Categories.UnimodularLattices, bundleOfCat)]
 
 run_cmd liftTermElabM do
   let actual ← untetheredIn #[`CatDSL.Categories]
@@ -110,9 +137,9 @@ run_cmd liftTermElabM do
     let gone := expected.filter (!actual.contains ·)
     throwError
       "untethered set drifted.\n\
-       new untethered (tether them or acknowledge WITH a reason): {extra}\n\
+       new untethered (tether or identify): {extra}\n\
        no longer untethered (remove from the acknowledged list): {gone}"
-  logInfo m!"untethered set pinned: {actual.size} acknowledged notions, \
-             each with a documented reason"
+  logInfo m!"untethered set pinned: {actual.size} notions, each with its \
+             mathematical identification"
 
 end CatDSL.TetherTest
