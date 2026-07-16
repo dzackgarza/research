@@ -61,7 +61,7 @@ def test_cokernel_exists_for_every_morphism_and_measures_the_index():
     assert not cokernel.is_torsion_free()
     assert cokernel.cardinality() == 2
     assert isinstance(cokernel.cardinality(), Cardinal)
-    assert doubling.index() == 2  # classical scalar spelling of the same order
+    assert doubling.index() == 2  # the extended-scalar (ZZ u {oo}) spelling of the same order
     assert cokernel.invariants() == (2,)
 
     collapse, _, _ = _collapse_of_degenerate_rank_two()

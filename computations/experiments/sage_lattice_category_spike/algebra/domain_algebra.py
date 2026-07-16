@@ -866,10 +866,12 @@ class LatticeMorphism(CategoryMorphism):
 
     @abstract_method
     def index(self) -> ExactScalar | SageInfinity:
-        """The index ``[codomain : image]`` — the CLASSICAL scalar spelling
-        of the cokernel's cardinality (index scales determinants, so it
-        stays arithmetic); the Cardinal answer is the cokernel object's own
-        ``cardinality()``."""
+        """The index ``[codomain : image]`` — the cokernel's cardinality
+        spelled in the EXTENDED scalars ``ZZ u {oo}``, where the
+        determinant-scaling formulas are equations (Sage's infinity ring
+        carries that arithmetic natively). The Cardinal answer is the
+        cokernel object's own ``cardinality()``; there is no scalar action
+        of ``QQ`` on the cardinals."""
 
     # -- morphism-sited geometry (ratified method placement, #100): the
     # -- operations below consume the morphism itself, so they are typed here

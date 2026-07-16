@@ -15,6 +15,8 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable
 from typing import TYPE_CHECKING, cast
 
+from sage.categories.homset import Homset as SageHomset
+
 from .. import lexicon
 
 if TYPE_CHECKING:
@@ -151,31 +153,25 @@ class CatObject:
         return FunctorSpace(cast(lexicon.SageCategory, self), codomain)
 
 
-class FunctorSpace(lexicon.SageUniqueRepresentation, lexicon.SageParent):
+class FunctorSpace(lexicon.SageUniqueRepresentation, SageHomset):
     r"""``Fun(C, D)``: the functors ``C -> D`` as a first-class parent.
 
-    A homset of ``Cat``, the category of categories: unique per
-    boundary pair, membership is exact boundary agreement, and the
-    endofunctor space owns its identity. Existence and element handling are
-    the contract; no enumeration is promised.
+    A homset of ``Cat``, the category of categories — and therefore a
+    subclass of Sage's OWN ``Homset`` machinery, from which the boundary
+    accessors (``domain``/``codomain``, which Sage's Hom cache revalidates
+    through) and homset semantics are INHERITED, never re-spelled here.
+    Unique per boundary pair, membership is exact boundary agreement, and
+    the endofunctor space owns its identity. Existence and element handling
+    are the contract; no enumeration is promised.
     """
 
     def __init__(self, domain: lexicon.SageCategory, codomain: lexicon.SageCategory) -> None:
         self._domain_category = domain
         self._codomain_category = codomain
-        lexicon.SageParent.__init__(self)
+        SageHomset.__init__(self, domain, codomain, category=Cat(), check=False)
 
     def _repr_(self) -> str:
         return f"Fun({self._domain_category}, {self._codomain_category})"
-
-    def domain(self) -> lexicon.SageCategory:
-        r"""The source category — Sage's Hom cache also reads this boundary
-        (a cached ``Hom(C, D)`` is revalidated through ``domain()``)."""
-        return self._domain_category
-
-    def codomain(self) -> lexicon.SageCategory:
-        r"""The target category."""
-        return self._codomain_category
 
     def __contains__(self, functor: object) -> bool:
         return isinstance(functor, lexicon.SageFunctor) and functor.domain() == self._domain_category and functor.codomain() == self._codomain_category

@@ -195,8 +195,9 @@ def test_subgroup_and_infinite_index_answers_are_cardinals():
     assert isinstance(subgroup.cardinality(), Cardinal)
 
     thin = a2.subobject([a2([1, 0])], "thin")
-    # index() is the classical scalar spelling (it scales determinants);
-    # the Cardinal answer lives on the cokernel object itself
+    # index() is the EXTENDED-scalar spelling (ZZ u {oo}, where the
+    # determinant-scaling formulas are equations); the Cardinal answer
+    # lives on the cokernel object itself
     assert thin.index() == oo
     cokernel_cardinality = thin.cokernel().cardinality()
     assert isinstance(cokernel_cardinality, Cardinal)

@@ -118,8 +118,24 @@ class Cardinal:
     def __ge__(self, other: object) -> bool:
         return not self < other
 
+    @staticmethod
+    def _as_cardinal_operand(other: object, operation: str) -> Cardinal:
+        r"""Cardinal arithmetic is CLOSED over counts: the operand must be
+        a Cardinal, an integer, or the two-valued infinity (read as
+        ``aleph_0``). There is no scalar action of a larger ring on the
+        cardinals — a rational times a cardinal does not typecheck
+        mathematically, so it fails loudly here. Formulas that mix a
+        finite-or-infinite count into scalar arithmetic (the determinant
+        law ``|det L| = |det O| * [O : L]^2``) live in the EXTENDED
+        scalars ``ZZ u {oo}`` and consume the extended-scalar spelling
+        (``index()``), never a Cardinal."""
+        if isinstance(other, Cardinal):
+            return other
+        assert other == Infinity or other in ZZ, f"cardinal {operation} takes a count (a Cardinal, an integer, or oo); found the non-count scalar {other!r} — extended-scalar formulas consume the extended-scalar spelling instead"
+        return cardinal(other)
+
     def __add__(self, other: object) -> Cardinal:
-        other_cardinal = cardinal(other)
+        other_cardinal = self._as_cardinal_operand(other, "addition")
         if self.is_finite() and other_cardinal.is_finite():
             return Cardinal(self.finite_value() + other_cardinal.finite_value())
         return max(self, other_cardinal)
@@ -128,7 +144,7 @@ class Cardinal:
         return self + other
 
     def __mul__(self, other: object) -> Cardinal:
-        other_cardinal = cardinal(other)
+        other_cardinal = self._as_cardinal_operand(other, "multiplication")
         if self == 0 or other_cardinal == 0:
             return Cardinal(ZZ(0))
         if self.is_finite() and other_cardinal.is_finite():

@@ -97,3 +97,29 @@ def test_equal_cardinals_hash_equally_across_the_coercion_boundary():
     assert hash(cardinal(ZZ(3))) == hash(3)
     assert continuum != oo
     assert hash(aleph0) != hash(continuum) or aleph0 == continuum
+
+
+def test_cardinal_arithmetic_is_closed_over_counts_and_refuses_scalar_actions():
+    r"""There is no scalar action of a larger ring on the cardinals: a
+    rational times a cardinal does not typecheck mathematically, finite or
+    not, and fails loudly. Counts (Cardinals, integers, the two-valued
+    infinity) stay inside cardinal arithmetic. Formulas that mix counts
+    into scalar arithmetic — the determinant law |det L| = |det O| *
+    [O : L]^2 — are equations in the EXTENDED scalars ZZ u {oo} and
+    consume the extended-scalar spelling index(), never a Cardinal."""
+    from sage.all import QQ
+
+    quarter = QQ(1) / 4
+    assert isinstance(cardinal(ZZ(2)) * cardinal(ZZ(3)), Cardinal)
+    assert isinstance(cardinal(ZZ(2)) * 3, Cardinal)
+    assert isinstance(aleph0 * 2, Cardinal)
+    assert isinstance(cardinal(ZZ(2)) + aleph0, Cardinal)
+
+    with pytest.raises(AssertionError):
+        cardinal(ZZ(4)) * quarter
+    with pytest.raises(AssertionError):
+        quarter * cardinal(ZZ(4))
+    with pytest.raises(AssertionError):
+        aleph0 * quarter
+    with pytest.raises(AssertionError):
+        quarter + cardinal(ZZ(2))

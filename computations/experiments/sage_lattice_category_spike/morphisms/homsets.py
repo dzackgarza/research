@@ -88,9 +88,9 @@ class Subobject:
         return self._inclusion.cokernel().is_torsion_free()
 
     def index(self) -> Any:
-        r"""The index ``[M : L]`` of the subobject in its ambient -- the
-        classical scalar spelling (infinite when ``L`` is not full rank in
-        ``M``); the Cardinal answer is ``cokernel().cardinality()``."""
+        r"""The index ``[M : L]`` in the EXTENDED scalars ``ZZ u {oo}``
+        (Sage's infinity ring): determinant-scaling formulas are equations
+        there. The Cardinal answer is ``cokernel().cardinality()``."""
         return self._inclusion.index()
 
     def __getattr__(self, name: str) -> Any:
@@ -344,10 +344,10 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         return bool(self.cokernel().cardinality() == 1)
 
     def index(self) -> Any:
-        r"""The index ``[codomain : image]`` -- the classical scalar
-        spelling of the cokernel's order (index scales determinants, so it
-        stays arithmetic; the Cardinal answer is the cokernel's own
-        ``cardinality()``)."""
+        r"""The index ``[codomain : image]`` — the cokernel's cardinality
+        spelled in the EXTENDED scalars ``ZZ u {oo}`` (Sage's infinity
+        ring), where determinant-scaling formulas are equations; there is
+        no scalar action of ``QQ`` on the cardinals themselves."""
         from sage.rings.infinity import Infinity
 
         cardinality = self.cokernel().cardinality()
