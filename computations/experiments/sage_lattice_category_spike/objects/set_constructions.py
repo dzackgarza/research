@@ -221,6 +221,10 @@ class DisjointUnion(SageUniqueRepresentation, SageParent):
     def _element_constructor_(self, tagged: object) -> ElementWrapper:
         assert isinstance(tagged, tuple) and len(tagged) == 2, f"a point of a disjoint union is a (tag, element) pair; found {tagged!r}"
         tag, value = tagged
+        # Construction accepts exactly the integral tag types membership
+        # accepts — no silent normalization of floats or strings into a
+        # summand index.
+        assert isinstance(tag, (int, Integer)), f"a disjoint-union tag is an integral index (int or Integer); found {type(tag).__name__} {tag!r}"
         position = int(tag)
         assert 0 <= position < len(self._summands), f"tag {position} has no summand among {len(self._summands)}"
         summand = self._summands[position]

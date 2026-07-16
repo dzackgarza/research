@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import itertools
 
+import pytest
 from sage.all import ZZ, oo
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
@@ -203,6 +204,18 @@ def test_disjoint_union_membership_agrees_with_construction_on_sage_integer_tags
     assert union((ZZ(1), ZZ(5))) == union((int(1), int(5)))
     assert (ZZ(2), ZZ(5)) not in union
     assert ("1", ZZ(5)) not in union
+
+
+def test_disjoint_union_construction_rejects_non_integral_tags_loudly():
+    r"""Membership rejects non-integral tags, so construction must too:
+    a raw point like ``(0.5, x)`` or ``("1", x)`` fails loudly instead of
+    being silently normalized into summand 0 or 1."""
+    union = DisjointUnion(Integers(), Integers())
+    assert union((0, ZZ(5))) in union
+    for bad_tag in (0.5, "1", ZZ(1) / 2):
+        assert (bad_tag, ZZ(5)) not in union
+        with pytest.raises(AssertionError):
+            union((bad_tag, ZZ(5)))
 
 
 def test_owned_constructions_stay_aligned_with_the_delegated_native_machinery():
