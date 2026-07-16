@@ -101,6 +101,27 @@ def _legendre_affine_scheme(base: AffineScheme) -> AffineScheme:
     return _punctured_lambda_affine_scheme(base)
 
 
+def _configuration_M05_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Affine scheme for open ``ℳ_{0,5}`` via Knudsen / cross-ratio coordinates.
+
+    Fix three markings at ``{0,1,∞}``. The remaining two markings are
+    ``(λ, μ) ∈ (𝔸¹ ∖ {0,1})²`` with ``λ ≠ μ``, so
+
+    ``ℳ_{0,5} ≅ Spec(R[λ, μ]_{λ(λ-1)μ(μ-1)(λ-μ)})``
+
+    as schemes (hence as DM stacks: ``n ≥ 3`` genus-0 moduli are representable).
+    Literature: Knudsen's construction of ``M_{0,n}``; Fulton–MacPherson /
+    configuration-space presentation. Owned only for the **open** stack — the
+    proper ``Mbar_{0,5}`` needs a blowup / del Pezzo affine cover not built here.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=("lambda", "mu"))
+    lam, mu = poly.gens()
+    return AffineScheme(poly.localization(lam * (lam - 1) * mu * (mu - 1) * (lam - mu)))
+
+
 def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
     r"""Owned étale-atlas domain for literature-backed proving-set cases.
 
@@ -110,13 +131,16 @@ def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
     - ``M_{0,4}``: cross-ratio chart ``Spec(R[λ]_{λ(λ-1)}) ≅ ℙ¹ ∖ {0,1,∞}``,
     - ``Mbar_{0,4}``: standard affine cover of ``ℙ¹`` (stack ≅ scheme; not the
       coarse-moduli map),
+    - ``M_{0,5}`` (open): Knudsen configuration
+      ``Spec(R[λ,μ]_{λ(λ-1)μ(μ-1)(λ-μ)})`` (scheme isomorphism),
     - ``M_{1,1}`` (``2`` invertible): Legendre ``M(Γ(2))`` affine chart — finite
       étale cover of degree 6, not a scheme isomorphism,
     - ``Mbar_{1,1}`` (``2`` invertible): ``Mbar(Γ(2)) ≅ ℙ¹`` with the same
       ``S₃`` finite étale groupoid (affine opens of the covering space).
 
-    Fail-closed (``None``) for general ``(g,n)`` and when ``2`` is not invertible
-    on ``(1,1)`` — no fake charts / weighted-Proj shells.
+    Fail-closed (``None``) for general ``(g,n)``, proper ``Mbar_{0,5}``, and when
+    ``2`` is not invertible on ``(1,1)`` — see :meth:`ModuliStack.etale_atlas_gap`.
+    No fake charts / weighted-Proj shells.
     """
     g = stack.genus()
     n = stack.number_of_markings()
@@ -128,6 +152,8 @@ def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
         if proper:
             return ProjectiveLineAlgebraicSpace(base, "Mbar_0_4")
         return AffineAlgebraicSpace(_cross_ratio_affine_scheme(base))
+    if g == 0 and n == 5 and not proper:
+        return AffineAlgebraicSpace(_configuration_M05_affine_scheme(base))
     if g == 1 and n == 1 and _two_is_invertible(base):
         if proper:
             return ProjectiveLineAlgebraicSpace(base, "Mbar_Gamma2")
@@ -480,6 +506,98 @@ class ModuliStack(DeligneMumfordStack):
             "presentation": presentation,
         }
 
+    def etale_atlas_gap(self) -> dict[str, object] | None:
+        r"""Named fail-closed gap when no equation-level étale atlas is owned.
+
+        Returns ``None`` precisely when :meth:`etale_atlas` has an owned proving-set
+        domain (so ``has_equation_level_etale_certificate()`` can be True).
+
+        Otherwise returns an inspectable record: why the atlas stays formal, and
+        which literature alternate proving-sets are **not** constructed in-spike
+        (honest slowdown — not a completion claim).
+        """
+        if _moduli_etale_atlas_domain(self) is not None:
+            return None
+        g = self.genus()
+        n = self.number_of_markings()
+        proper = self.is_proper()
+        base = self.base_scheme()
+        gap: dict[str, object] = {
+            "genus": g,
+            "markings": n,
+            "proper": proper,
+            "equation_level": False,
+            "covering_kind_if_formal": "etale_atlas_chart",
+        }
+        if g == 1 and n == 1 and not _two_is_invertible(base):
+            gap["reason"] = "legendre_requires_2_invertible"
+            gap["alternate_proving_sets"] = (
+                {
+                    "name": "hesse_gamma3",
+                    "status": "not_in_spike",
+                    "requires": "3 invertible; μ₃ in the base for the standard Galois Hesse model",
+                    "note": (
+                        "M(Γ(3)) → M_{1,1} is finite étale of degree |SL₂(𝔽₃)| = 24 when "
+                        "3 is invertible (includes char 2). Not owned: cyclotomic base change "
+                        "and explicit Hesse discriminant chart are outside this spike's rings."
+                    ),
+                },
+                {
+                    "name": "weierstrass_gm_quotient",
+                    "status": "not_in_spike",
+                    "requires": "Spec(Z[a1,…,a6][Δ⁻¹]) with weighted 𝔾_m-action",
+                    "note": (
+                        "Deligne–Rapoport / Katz–Mazur Weierstrass presentation works over "
+                        "Spec(Z) including char 2, but 𝔾_m is not finite — outside the "
+                        "finite-étale-groupoid proving set used for Legendre / quotients."
+                    ),
+                },
+                {
+                    "name": "igusa_ordinary_a6_chart",
+                    "status": "not_in_spike",
+                    "requires": "char 2; ordinary locus only",
+                    "note": ("y² + xy = x³ + a₆ with j = 1/a₆ covers the ordinary locus; misses the supersingular point j = 0 — incomplete as a full atlas."),
+                },
+            )
+            return gap
+        if g == 0 and n == 5 and proper:
+            gap["reason"] = "mbar_0_5_needs_blowup_affine_cover"
+            gap["owned_open_counterpart"] = "M_{0,5} Knudsen configuration chart"
+            gap["alternate_proving_sets"] = (
+                {
+                    "name": "kapranov_blowup_P2",
+                    "status": "not_in_spike",
+                    "requires": "explicit affine charts of Bl_4(ℙ²) ≅ Mbar_{0,5} (del Pezzo degree 5)",
+                    "note": ("Open M_{0,5} is owned; the proper compactification needs blowup / boundary charts not constructed as AffineScheme covers in-spike."),
+                },
+            )
+            return gap
+        if g == 1 and n == 2:
+            gap["reason"] = "m_1_2_needs_universal_curve_second_mark"
+            gap["alternate_proving_sets"] = (
+                {
+                    "name": "legendre_universal_curve_marked_point",
+                    "status": "not_in_spike",
+                    "requires": "2 invertible; affine coords of a non-2-torsion point on y²=x(x-1)(x-λ)",
+                    "note": ("M_{1,2} relates to the universal elliptic curve over M_{1,1}; no owned ring presentation in-spike (prefer not to stamp a fake chart)."),
+                },
+            )
+            return gap
+        gap["reason"] = "no_owned_affine_etale_presentation"
+        gap["alternate_proving_sets"] = (
+            {
+                "name": "general_dm_moduli_etale_atlas",
+                "status": "not_in_spike",
+                "requires": "research constructions (level structures, clutching, blowups) beyond proving set",
+                "note": (
+                    "Owned proving set: open M_{0,3}/M_{0,4}/M_{0,5}, M_{1,1} (2 invertible), "
+                    "and proper Mbar_{0,3}/Mbar_{0,4}/Mbar_{1,1} (2 invertible). "
+                    "General (g,n) atlases need constructions not present in this spike."
+                ),
+            },
+        )
+        return gap
+
     def etale_atlas(self) -> AtlasMorphism:
         r"""Étale atlas ``U → ℳ`` with owned domain on proving-set cases.
 
@@ -489,15 +607,20 @@ class ModuliStack(DeligneMumfordStack):
           ``covering_kind="moduli_affine_etale_chart"``.
         - ``Mbar_{0,4}``: standard affine cover of ``ℙ¹`` (stack ≅ scheme);
           ``covering_kind="moduli_scheme_affine_cover"``. Never the coarse space.
+        - ``M_{0,5}`` (open): Knudsen configuration
+          ``Spec(R[λ,μ]_{λ(λ-1)μ(μ-1)(λ-μ)})``;
+          ``covering_kind="moduli_affine_etale_chart"``.
         - ``M_{1,1}`` (``2`` invertible): affine Legendre ``M(Γ(2))`` finite
           étale cover; ``covering_kind="legendre_finite_etale_cover"``.
         - ``Mbar_{1,1}`` (``2`` invertible): ``Mbar(Γ(2)) ≅ ℙ¹`` finite étale
           cover; ``covering_kind="legendre_compact_finite_etale_cover"``.
           Stackiness retained as finite étale groupoid evidence.
 
-        For general ``(g,n)`` and ``(1,1)`` when ``2`` is not invertible:
-        fail-closed formal :class:`~dm_moduli_spike.geometry.stacks.AtlasChart`.
-        Never uses the coarse space as an étale atlas domain.
+        For general ``(g,n)``, proper ``Mbar_{0,5}``, and ``(1,1)`` when ``2`` is
+        not invertible: fail-closed formal
+        :class:`~dm_moduli_spike.geometry.stacks.AtlasChart`
+        (see :meth:`etale_atlas_gap`). Never uses the coarse space as an étale
+        atlas domain.
         """
         domain = _moduli_etale_atlas_domain(self)
         if domain is None:

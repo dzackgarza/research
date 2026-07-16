@@ -590,10 +590,35 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert mbar11_pres["level_structure"] == "Mbar(Gamma(2))"
     assert "P1" in str(mbar11_pres["presentation"])
 
+    # M_{0,5}: Knudsen configuration Spec(R[λ,μ]_{λ(λ-1)μ(μ-1)(λ-μ)}).
+    M05 = M_gn(0, 5, base=k)
+    m05_etale = M05.etale_atlas()
+    assert isinstance(m05_etale.domain(), AffineAlgebraicSpace)
+    assert m05_etale.domain() is not M05
+    assert m05_etale.domain() is not M05.coarse_space()
+    assert m05_etale.covering_kind() == "moduli_affine_etale_chart"
+    assert m05_etale.domain().affine_cover() != ()
+    assert m05_etale.has_equation_level_etale_certificate()
+    assert m05_etale.equation_level_etale()
+    assert M05.etale_atlas_gap() is None
+    m05_ring = m05_etale.domain().as_affine_scheme().ring()
+    assert len(m05_ring.gens()) == 2
+    # Mbar_{0,5}: blowup / del Pezzo cover not owned — fail-closed with named gap.
+    Mbar05 = Mbar_gn(0, 5, base=k)
+    assert isinstance(Mbar05.etale_atlas().domain(), AtlasChart)
+    assert not Mbar05.etale_atlas().has_equation_level_etale_certificate()
+    mbar05_gap = Mbar05.etale_atlas_gap()
+    assert mbar05_gap is not None
+    assert mbar05_gap["reason"] == "mbar_0_5_needs_blowup_affine_cover"
+    assert mbar05_gap["alternate_proving_sets"][0]["name"] == "kapranov_blowup_P2"
+
     # General (g,n) and char-2 (1,1): remain fail-closed.
     M12 = M_gn(1, 2, base=k)
     assert isinstance(M12.etale_atlas().domain(), AtlasChart)
     assert not M12.etale_atlas().has_equation_level_etale_certificate()
+    m12_gap = M12.etale_atlas_gap()
+    assert m12_gap is not None
+    assert m12_gap["reason"] == "m_1_2_needs_universal_curve_second_mark"
 
     # Char 2: Legendre form unavailable — M_{1,1} / Mbar_{1,1} fail-closed formal chart.
     from sage.rings.finite_rings.finite_field_constructor import GF
@@ -602,10 +627,22 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert isinstance(M11_char2.etale_atlas().domain(), AtlasChart)
     assert not M11_char2.etale_atlas().has_equation_level_etale_certificate()
     assert M11_char2.legendre_quotient_presentation() is None
+    char2_gap = M11_char2.etale_atlas_gap()
+    assert char2_gap is not None
+    assert char2_gap["reason"] == "legendre_requires_2_invertible"
+    alt_names = {a["name"] for a in char2_gap["alternate_proving_sets"]}
+    assert alt_names == {"hesse_gamma3", "weierstrass_gm_quotient", "igusa_ordinary_a6_chart"}
     Mbar11_char2 = Mbar_gn(1, 1, base=spec(GF(2)))
     assert isinstance(Mbar11_char2.etale_atlas().domain(), AtlasChart)
     assert not Mbar11_char2.etale_atlas().has_equation_level_etale_certificate()
     assert Mbar11_char2.legendre_quotient_presentation() is None
+    assert Mbar11_char2.etale_atlas_gap()["reason"] == "legendre_requires_2_invertible"
+
+    # Owned proving-set stacks expose no gap record.
+    assert XS.etale_atlas_gap() is None
+    assert YS.etale_atlas_gap() is None
+    assert Mbar04.etale_atlas_gap() is None
+    assert Mbar11.etale_atlas_gap() is None
 
     # Product of owned charts: M_{1,1} × M_{0,4} both equation-level → product True.
     prod = ProductStack((XS, YS), base=k)
