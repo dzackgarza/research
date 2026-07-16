@@ -727,40 +727,66 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
         return gap
 
     owned_rows = [row.as_dict() for row in owned_etale_atlas_presentations()]
+    registry_alt: dict[str, object] = {
+        "name": "general_dm_moduli_etale_atlas",
+        "status": "not_in_spike",
+        "requires": "research constructions (level structures, clutching, blowups) beyond proving set",
+        "note": (
+            "Owned proving-set presentations are the rows of "
+            "owned_etale_atlas_presentations(); open M_{0,n} for every n≥3, "
+            "open M_{1,n} for every n≥1, and compact Mbar_{1,n} for every n≥1 "
+            "(Legendre/Hesse under unit hypotheses) are owned parametrically "
+            "(expand via expand_open_m0n_through / expand_open_m1n_through / "
+            "expand_compact_m1n_through). Proper Mbar_{0,n} is owned "
+            f"parametrically for 3≤n≤{PROPER_M0N_OWNED_MAX} (Kapranov "
+            "kapranov_iterated_blowup_P_{n-3}; expand via "
+            "expand_proper_m0n_through). Do not invent charts for larger n — "
+            "the literature construction name remains "
+            "kapranov_iterated_blowup_P_{n-3}."
+        ),
+        "owned_registry_cardinality": owned_etale_atlas_cardinality(),
+        "owned_registry_type_keys": list(owned_etale_atlas_type_keys()),
+        "owned_registry_rows": owned_rows,
+        "parametric_open_m0n": True,
+        "parametric_open_m1n": True,
+        "parametric_compact_m1n": True,
+        "parametric_proper_m0n": True,
+        "open_m0n_knudsen_inspectable_max": OPEN_M0N_INSPECTABLE_MAX,
+        "open_m1n_level_inspectable_max": OPEN_M1N_INSPECTABLE_MAX,
+        "compact_m1n_level_inspectable_max": COMPACT_M1N_INSPECTABLE_MAX,
+        "proper_m0n_inspectable_max": PROPER_M0N_INSPECTABLE_MAX,
+        "proper_m0n_gap_construction": "kapranov_iterated_blowup_P_{n-3}",
+        "proper_m0n_owned_max": PROPER_M0N_OWNED_MAX,
+    }
+
+    # Genus 2: name the Igusa binary-sextic literature presentation; do not invent charts.
+    if g == 2:
+        gap["reason"] = "genus_2_igusa_binary_sextic_unavailable"
+        gap["alternate_proving_sets"] = (
+            {
+                "name": "igusa_binary_sextic_quotient",
+                "status": "not_in_spike",
+                "construction": "igusa_binary_sextic_PGL2",
+                "requires": (
+                    "open: binary sextics with distinct roots modulo PGL₂ (Igusa invariants); proper: DM stable-curve atlas (clutching / hyperelliptic models) — neither owned"
+                ),
+                "note": (
+                    "Every genus-2 curve is hyperelliptic: y² = f₆. Igusa's binary-sextic "
+                    "quotient presents the coarse moduli space of M_2; a stacky étale atlas "
+                    "needs level structure or an owned DM chart cover. Not constructed "
+                    "in-spike — fail-closed formal AtlasChart only."
+                ),
+                "owned_registry_cardinality": owned_etale_atlas_cardinality(),
+                "owned_registry_type_keys": list(owned_etale_atlas_type_keys()),
+                "proper_m0n_owned_max": PROPER_M0N_OWNED_MAX,
+            },
+            registry_alt,
+        )
+        gap["pre_225_remaining_after_this"] = "general_(g,n)_beyond_named_g2"
+        return gap
+
     gap["reason"] = "no_owned_affine_etale_presentation"
-    gap["alternate_proving_sets"] = (
-        {
-            "name": "general_dm_moduli_etale_atlas",
-            "status": "not_in_spike",
-            "requires": "research constructions (level structures, clutching, blowups) beyond proving set",
-            "note": (
-                "Owned proving-set presentations are the rows of "
-                "owned_etale_atlas_presentations(); open M_{0,n} for every n≥3, "
-                "open M_{1,n} for every n≥1, and compact Mbar_{1,n} for every n≥1 "
-                "(Legendre/Hesse under unit hypotheses) are owned parametrically "
-                "(expand via expand_open_m0n_through / expand_open_m1n_through / "
-                "expand_compact_m1n_through). Proper Mbar_{0,n} is owned "
-                f"parametrically for 3≤n≤{PROPER_M0N_OWNED_MAX} (Kapranov "
-                "kapranov_iterated_blowup_P_{n-3}; expand via "
-                "expand_proper_m0n_through). Do not invent charts for larger n — "
-                "the literature construction name remains "
-                "kapranov_iterated_blowup_P_{n-3}."
-            ),
-            "owned_registry_cardinality": owned_etale_atlas_cardinality(),
-            "owned_registry_type_keys": list(owned_etale_atlas_type_keys()),
-            "owned_registry_rows": owned_rows,
-            "parametric_open_m0n": True,
-            "parametric_open_m1n": True,
-            "parametric_compact_m1n": True,
-            "parametric_proper_m0n": True,
-            "open_m0n_knudsen_inspectable_max": OPEN_M0N_INSPECTABLE_MAX,
-            "open_m1n_level_inspectable_max": OPEN_M1N_INSPECTABLE_MAX,
-            "compact_m1n_level_inspectable_max": COMPACT_M1N_INSPECTABLE_MAX,
-            "proper_m0n_inspectable_max": PROPER_M0N_INSPECTABLE_MAX,
-            "proper_m0n_gap_construction": "kapranov_iterated_blowup_P_{n-3}",
-            "proper_m0n_owned_max": PROPER_M0N_OWNED_MAX,
-        },
-    )
+    gap["alternate_proving_sets"] = (registry_alt,)
     return gap
 
 

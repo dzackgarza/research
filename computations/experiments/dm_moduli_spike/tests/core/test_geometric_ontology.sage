@@ -1139,31 +1139,42 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     M20 = Mbar_gn(2, 0, base=k)
     gap_gen = M20.etale_atlas_gap()
     assert gap_gen is not None
-    assert gap_gen["reason"] == "no_owned_affine_etale_presentation"
+    assert gap_gen["reason"] == "genus_2_igusa_binary_sextic_unavailable"
     assert gap_gen["registry_owned_type"] is False
     assert gap_gen["equation_level"] is False
-    assert "pre_225_remaining_after_this" not in gap_gen
+    assert gap_gen["pre_225_remaining_after_this"] == "general_(g,n)_beyond_named_g2"
     assert isinstance(M20.etale_atlas().domain(), AtlasChart)
     assert not M20.etale_atlas().has_equation_level_etale_certificate()
     assert M20.owned_etale_atlas_presentation() is None
     alts_gen = gap_gen["alternate_proving_sets"]
+    assert alts_gen[0]["name"] == "igusa_binary_sextic_quotient"
+    assert alts_gen[0]["construction"] == "igusa_binary_sextic_PGL2"
+    assert alts_gen[0]["status"] == "not_in_spike"
     assert alts_gen[0]["owned_registry_cardinality"] == 6
-    assert alts_gen[0]["parametric_open_m0n"] is True
-    assert alts_gen[0]["parametric_open_m1n"] is True
-    assert alts_gen[0]["parametric_compact_m1n"] is True
-    assert alts_gen[0]["parametric_proper_m0n"] is True
-    assert (2, 0, True) not in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
-    assert (0, 6, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
-    assert (0, 6, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
-    assert (0, 7, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
-    assert (0, 8, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
-    assert (0, 9, True) not in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
-    assert (0, 8, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
-    assert (1, 3, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
-    assert (1, 3, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
-    assert (1, 4, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert alts_gen[0]["proper_m0n_owned_max"] == 8
-    assert alts_gen[0]["proper_m0n_gap_construction"] == "kapranov_iterated_blowup_P_{n-3}"
+    assert alts_gen[1]["name"] == "general_dm_moduli_etale_atlas"
+    assert alts_gen[1]["parametric_open_m0n"] is True
+    assert alts_gen[1]["parametric_open_m1n"] is True
+    assert alts_gen[1]["parametric_compact_m1n"] is True
+    assert alts_gen[1]["parametric_proper_m0n"] is True
+    assert (2, 0, True) not in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
+    assert (0, 6, False) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
+    assert (0, 6, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
+    assert (0, 7, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
+    assert (0, 8, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
+    assert (0, 9, True) not in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
+    assert (0, 8, False) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
+    assert (1, 3, False) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
+    assert (1, 3, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
+    assert (1, 4, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
+    assert alts_gen[1]["proper_m0n_owned_max"] == 8
+    assert alts_gen[1]["proper_m0n_gap_construction"] == "kapranov_iterated_blowup_P_{n-3}"
+    # Open M_{2,0}: same named Igusa gap (still no owned charts).
+    M20_open = M_gn(2, 0, base=k)
+    gap_m20_open = M20_open.etale_atlas_gap()
+    assert gap_m20_open is not None
+    assert gap_m20_open["reason"] == "genus_2_igusa_binary_sextic_unavailable"
+    assert gap_m20_open["alternate_proving_sets"][0]["name"] == "igusa_binary_sextic_quotient"
 
     # Owned proving-set stacks expose no gap record.
     assert XS.etale_atlas_gap() is None
