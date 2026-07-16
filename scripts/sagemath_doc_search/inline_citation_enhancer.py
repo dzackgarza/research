@@ -351,7 +351,7 @@ print("Discriminant group:", L.discriminant_group())
 
             # Create appropriate link
             try:
-                from dzack_research.sagemath_doc_search.citation_utils import (
+                from sagemath_doc_search.citation_utils import (
                     create_file_link,
                     get_primary_line_number,
                 )
@@ -388,7 +388,7 @@ print("Discriminant group:", L.discriminant_group())
 
                 # Create direct link to source file instead of internal anchor
                 try:
-                    from dzack_research.sagemath_doc_search.citation_utils import (
+                    from sagemath_doc_search.citation_utils import (
                         create_file_link,
                     )
 
@@ -430,7 +430,7 @@ print("Discriminant group:", L.discriminant_group())
     def _get_line_number(self, content: str, file_path: str) -> int | None:
         """Get line number for citation purposes."""
         try:
-            from dzack_research.sagemath_doc_search.citation_utils import (
+            from sagemath_doc_search.citation_utils import (
                 get_primary_line_number,
             )
 

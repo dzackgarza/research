@@ -1,3 +1,8 @@
+import sys as _sys
+from pathlib import Path as _Path
+
+_sys.path.insert(0, str(_Path(__file__).resolve().parents[2] / "scripts"))
+
 #!/usr/bin/env python3
 """
 Test script to verify SageMath documentation indexing.
@@ -12,7 +17,7 @@ def test_sagemath_files():
     load_dotenv()
 
     # Import utility functions
-    from dzack_research.sagemath_doc_search import (
+    from sagemath_doc_search import (
         extract_python_docstrings,
         get_sage_path,
         get_sagemath_patterns,
