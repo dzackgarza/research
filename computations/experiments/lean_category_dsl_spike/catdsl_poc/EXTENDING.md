@@ -21,36 +21,25 @@ Only when Mathlib genuinely lacks the concept does new theory get written, and t
 
 ## The alignment surface: tethers (checked), not markers (self-reported)
 
-What must be visible at a glance is what we DON'T know: (A) which notions
-are untethered to any Lean definition, and (B) which are tethered but
-diverge in convention.  Neither is answerable by docstring grep — prose is
-self-reporting.  The mechanism is `CatDSL/Manifest/Tether.lean`:
+What must be visible at a glance is what we DON'T know: (A) which notions are untethered to any Lean definition, and (B) which are tethered but diverge in convention.
+Neither is answerable by docstring grep — prose is self-reporting.
+The mechanism is `CatDSL/Manifest/Tether.lean`:
 
-- `tether Local ~ Anchor via Witness` elaborates only if the witness's
-  *type* mentions both constants — a connection theorem (`rfl` for
-  definitional wrappers, `index_toNat`-style for convention bridges) or a
-  construction (`CountableSetObj.encodable : Encodable X.set`).
-- The kind is **computed**, never declared: `exact` (equation headed by the
-  two constants — same convention), `divergent` (a wrapped side — the wrap
-  IS the convention gap, machine-visible), `structural` (a bundling
-  construction).
-- **(A) is the computed complement**: `untetheredIn` walks the environment
-  and subtracts the tethered; `Example/TetherTest.lean` pins the result, so
-  a new unanchored notion reds until tethered or consciously acknowledged.
-  Shrinking that pinned list is catalogue work; silent growth is the drift
-  this exists to catch.
+- `tether Local ~ Anchor via Witness` elaborates only if the witness's *type* mentions both constants — a connection theorem (`rfl` for definitional wrappers, `index_toNat`-style for convention bridges) or a construction (`CountableSetObj.encodable : Encodable X.set`).
+
+- The kind is **computed**, never declared: `exact` (equation headed by the two constants — same convention), `divergent` (a wrapped side — the wrap IS the convention gap, machine-visible), `structural` (a bundling construction).
+
+- **(A) is the computed complement**: `untetheredIn` walks the environment and subtracts the tethered; `Example/TetherTest.lean` pins the result, so a new unanchored notion reds until tethered or consciously acknowledged.
+  Shrinking that pinned list is catalogue work; silent growth is the drift this exists to catch.
+
 - **(B) is the divergent/structural tether list** — `just tether-report`.
 
 Prose remains only for what cannot be computed:
 
-- `Upstream target: <Mathlib module>` — on every `ForMathlib/` declaration
-  (the directory is by construction the upstream-contribution queue;
-  `just upstream-candidates`).
-- `Convention divergence:` — the human *adjudication* for each divergent
-  tether: which side should change, upstream (Mathlib too narrow or subtly
-  wrong) or local (our definition was myopic, under-general, or missing
-  hypotheses).  `just conventions` lists them; a divergent tether without
-  an adjudication marker is a defect.
+- `Upstream target: <Mathlib module>` — on every `ForMathlib/` declaration (the directory is by construction the upstream-contribution queue; `just upstream-candidates`).
+
+- `Convention divergence:` — the human *adjudication* for each divergent tether: which side should change, upstream (Mathlib too narrow or subtly wrong) or local (our definition was myopic, under-general, or missing hypotheses).
+  `just conventions` lists them; a divergent tether without an adjudication marker is a defect.
 
 ## A. Add a category family
 

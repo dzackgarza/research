@@ -13,6 +13,15 @@ notions with no checked Lean anchor.
 
 namespace CatDSL.Manifest
 
+tether CatDSL.Categories.SetObj ~ CategoryTheory.types
+  via CatDSL.Categories.SetObj.equivTypes
+
+tether CatDSL.Categories.RingObj ~ CommRingCat
+  via CatDSL.Categories.RingObj.equivCommRingCat
+
+tether CatDSL.Categories.ModuleObj ~ ModuleCat
+  via CatDSL.Categories.ModuleObj.equivModuleCat
+
 tether CatDSL.Categories.SetObj.cardinality ~ Cardinal.mk
   via CatDSL.Categories.SetObj.cardinality_eq_mk
 

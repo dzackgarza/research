@@ -54,6 +54,25 @@ instance (R : RingObj) : Category (ModuleObj R) where
 
 abbrev Modules (R : RingObj) : LargeCat := Cat.of (ModuleObj R)
 
+/--
+Tether witness: our category of `R`-modules IS Mathlib's `ModuleCat R.set`,
+as an equivalence of categories — the #217 consolidation claim
+kernel-checked before any structure retirement.
+-/
+def ModuleObj.equivModuleCat (R : RingObj) :
+    ModuleObj R ≌ ModuleCat R.set where
+  functor :=
+    { obj := fun M => ModuleCat.of R.set M.set
+      map := fun {M N} (f : M.set →ₗ[R.set] N.set) => ModuleCat.ofHom f }
+  inverse :=
+    { obj := fun X =>
+        { set := X.carrier
+          addCommGroup := inferInstance
+          module := inferInstance }
+      map := fun f => f.hom }
+  unitIso := NatIso.ofComponents fun M => Iso.refl _
+  counitIso := NatIso.ofComponents fun X => Iso.refl _
+
 /-- Surface category family `Mod(R)`. -/
 abbrev Mod (R : FiniteRingObj) : LargeCat :=
   Modules R.toRing

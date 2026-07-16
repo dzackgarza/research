@@ -35,6 +35,22 @@ instance : Category RingObj where
 
 abbrev Rings : LargeCat := Cat.of RingObj
 
+/--
+Tether witness: our category of rings IS Mathlib's `CommRingCat`, as an
+equivalence of categories — the #217 consolidation claim kernel-checked
+*before* any structure retirement.  Structure eta makes both round trips
+definitional, so the unit and counit are identities.
+-/
+def RingObj.equivCommRingCat : RingObj ≌ CommRingCat where
+  functor :=
+    { obj := fun R => CommRingCat.of R.set
+      map := fun {R S} (f : R.set →+* S.set) => CommRingCat.ofHom f }
+  inverse :=
+    { obj := fun X => ⟨X.carrier, inferInstance⟩
+      map := fun f => f.hom }
+  unitIso := NatIso.ofComponents fun R => Iso.refl _
+  counitIso := NatIso.ofComponents fun X => Iso.refl _
+
 /-- The `Set`-realization of a ring. -/
 def Ring.forget : RingObj ⥤ SetObj where
   obj R := ⟨R.set⟩

@@ -27,6 +27,23 @@ instance : Category SetObj where
 /-- The category of small sets, as a first-class category object. -/
 abbrev Sets : LargeCat := Cat.of SetObj
 
+/--
+Tether witness: our category of sets IS Mathlib's category of types, as an
+equivalence of categories.  `SetObj` is a transparent bundling of `Type`;
+this witness is the kernel-checked form of that claim.
+-/
+def SetObj.equivTypes : SetObj ≌ Type where
+  functor :=
+    { obj := fun X => X.set
+      -- this Mathlib wraps `Type`'s morphisms (`TypeCat.Hom`); wrap/unwrap
+      -- explicitly
+      map := fun {X Y} (f : X.set → Y.set) => TypeCat.ofHom f }
+  inverse :=
+    { obj := fun T => ⟨T⟩
+      map := fun {T U} f => (f.hom : T → U) }
+  unitIso := NatIso.ofComponents fun X => Iso.refl _
+  counitIso := NatIso.ofComponents fun T => Iso.refl _
+
 namespace SetObj
 
 /--
@@ -102,6 +119,7 @@ def CountableSet.forget : CountableSetObj ⥤ SetObj where
 
 /-- Tether witness: the fields of a countable set object ARE an `Encodable`
 instance — the tie to Mathlib as a construction, not prose. -/
+@[reducible]
 def CountableSetObj.encodable (X : CountableSetObj) : Encodable X.set :=
   ⟨X.number, X.nth, X.nth_number⟩
 
@@ -150,6 +168,7 @@ theorem nth_number (X : FiniteSetObj) :
 
 /-- Tether witness: the fields of a finite set object ARE a `FinEnum`
 instance (`decEq` transported along the chosen enumeration). -/
+@[reducible]
 def finEnum (X : FiniteSetObj) : FinEnum X.set where
   card := X.size
   equiv := X.enumerate
