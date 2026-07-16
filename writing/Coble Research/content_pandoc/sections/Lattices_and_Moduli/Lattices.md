@@ -15,7 +15,7 @@ $$
 \end{aligned}
 $$
 
-::: {#lem:primitive_embedding_eta .lemma}
+:::{#lem:primitive_embedding_eta .lemma}
 
 Writing
 
@@ -40,7 +40,7 @@ the identity on the $E_{10}(2)$ summand.
 Since $\coker \eta$ is torsionfree, $\eta$ is a primitive embedding.
 :::
 
-::: {#lem:sequence_of_embeddings .lemma}
+:::{#lem:sequence_of_embeddings .lemma}
 
 There is a sequence of primitive embeddings
 
@@ -62,7 +62,7 @@ $$
 and thus an embedding $F_{\Co} \injects F_{(2,2,0)}$.
 :::
 
-::: {.proof}
+:::{.proof}
 
 By [@AEGS23 Lem. 2.4], it suffices to show uniqueness of
 $S_{\En} \injects S_{\Co}$, i.e.
@@ -85,7 +85,7 @@ Similarly, by [@Nik79 Cor. 1.5.2, Thm.
 3.6.3], the homomorphism $\Orth(L)\to \Orth(T_\Co)$ is surjective. 
 :::
 
-::: {#lem:locally_closed_embedding_BB .lemma}
+:::{#lem:locally_closed_embedding_BB .lemma}
 
 The embeddings of lattices
 $\eta: T_\Co\injects T_\En$ (resp.
@@ -95,7 +95,7 @@ $F_{\Co} \injects F_{(2,2,0)}$) which extend to a morphisms on the
 Baily-Borel compactifications.
 :::
 
-::: {.proof}
+:::{.proof}
 
 This follows from [@KK72 §5, Thm.2]. 
 :::

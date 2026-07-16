@@ -12,10 +12,11 @@ created: 2026-05-10
 ---
 
 > [!table] Coble lattice table
-> For a Coble surface with $n$ boundary components, there are 10 irreducible families of K3 covers obtained by branching along the anti-bicanonical divisor. The corresponding invariant lattice $M$ and orthogonal complement $N=M^\perp$ are [@DM19; @CDL24]:
+> For a Coble surface with $n$ boundary components, there are 10 irreducible families of K3 covers obtained by branching along the anti-bicanonical divisor.
+> The corresponding invariant lattice $M$ and orthogonal complement $N=M^\perp$ are [@DM19; @CDL24]:
 
 | $n$ | $\abs{\Sigma}$ | $K_{\mathrm{V}}^{2}$ | $M = (r,l,\delta)$ | 2-elementary lattice $M$ | $N=M^\perp$ |
-| :-- | :------------- | :------------------- | :----------------- | :----------------------- | :---------- |
+| :--- | :--- | :--- | :--- | :--- | :--- |
 | 1 | 10 | -1 | $(11,11,1)$ | $\mathrm{E}_{10}(2) \oplus \mathrm{A}_{1}$ | $\latI_{2,9}(2)$ |
 | 2 | 11 | -2 | $(12,10,1)$ | $\mathrm{E}_{8}(2) \oplus \mathrm{U} \oplus \mathrm{A}_1^{\oplus 2}$ | $\latI_{2,8}(2)$ |
 | 3 | 12 | -3 | $(13,9,1)$ | $\mathrm{D}_{4}^{\oplus 2} \oplus \mathrm{A}_{1}^{\oplus 3} \oplus \mathrm{U}(2)$ | $\latI_{2,7}(2)$ |

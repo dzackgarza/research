@@ -1,6 +1,6 @@
 # K3 covers
 
-::: {.remark}
+:::{.remark}
 
 Let $\cL \da \OO_S(-K_S) \in \Pic(S)$; By [@DK24 Prop. 9.1.1], taking a
 section $s\in H^0(\cL ^{\tensor 2})$ with $Z(s) = C$ yields a branched double

@@ -19,4 +19,3 @@ created: 2026-05-08
 > - $S_{\mathbf{Q}} \cap L = S$.
 > - $S = (S^{\perp L})^{\perp L}$.
 > - Every integral linear functional on $S$ can be lifted to an integral linear functional on $L$.
-

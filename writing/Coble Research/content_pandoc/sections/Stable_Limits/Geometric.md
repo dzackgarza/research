@@ -1,4 +1,4 @@
-::: {.remark}
+:::{.remark}
 
 Following [@Dol12 §5.1], Coble surfaces can be obtained by degenerating
 $(X, \tau)$ a K3 with a fixed-point-free involution to a K3 surface

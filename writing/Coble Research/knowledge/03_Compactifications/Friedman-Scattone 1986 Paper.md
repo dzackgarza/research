@@ -20,4 +20,3 @@ created: 2026-05-08
 > **Key Results:**
 > - Type III degenerations correspond to triangulations of $S^2$ with specific combinatorial constraints.
 > - The dual complex structure determines lattice-theoretic invariants, establishing a precise relationship between geometric degenerations and monodromy representations.
-

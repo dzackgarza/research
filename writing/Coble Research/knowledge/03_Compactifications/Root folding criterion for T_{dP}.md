@@ -17,5 +17,4 @@ created: 2026-05-08
 > 2. $v \in \Phi^4(T_{\operatorname{dP}})$ and $\beta_{[v]}\in \Phi(T_{\mathrm{En}})$, or
 > 3. $v\in \Phi^2(T_{\operatorname{dP}})\cap I(v)^{\perp T_{\operatorname{dP}}}$, and so $\beta_{[v]} \mathrel{\mathop:}= v + I(v) \in \Phi^4(T_{\mathrm{En}})$ is the sum of orthogonal roots in $\Phi^2(T_{\operatorname{dP}})$.
 
-
 This criteria governs how roots in the boundary lattices at 0-cusps of $F_{(2,2,0)}$ descend or combine when passing to the $I$-invariant sublattices corresponding to $F_{\mathrm{En}, 2}$.

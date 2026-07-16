@@ -1,6 +1,6 @@
 # Morrison's degenerations
 
-::: {.remark}
+:::{.remark}
 
 As explained in [@Ols04] and the appendix of [@Sha81], a **flower** is a pair
 $(\PP^2, C)$ where $C^2 = 4$ is a conic, while a **pot** is a pair $(V, D)$

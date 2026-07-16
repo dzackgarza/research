@@ -16,17 +16,13 @@ Invent.
 math.
 91, 299–338 (1988)
 
-Inventiones mathematicae
-© Springer-Verlag 1988
+Inventiones mathematicae © Springer-Verlag 1988
 
 # Threefolds and deformations of surface singularities
 
-J.
-Kollár $^{1\star}$ and N.I.
-Shepherd-Barron $^{2\star\star}$
+J. Kollár $^{1\star}$ and N.I. Shepherd-Barron $^{2\star\star}$
 
-$^{1}$ Harvard University Cambridge, MA 02138, USA
-$^{2}$ University of Pennsylvania Philadelphia, PA 19104, USA
+$^{1}$ Harvard University Cambridge, MA 02138, USA $^{2}$ University of Pennsylvania Philadelphia, PA 19104, USA
 
 ## § 1. Introduction
 
@@ -41,12 +37,10 @@ The existence of a resolution was established by Zariski; the problem is that th
 
 Mori and Reid discovered that the best one can hope for is a partial resolution $f \colon X' \to X$ where $X'$ possesses certain mild singularities but otherwise is a good analog of the minimal resolution of surface singularities.
 
-The search for such a resolution is known as Mori’s program (see e.g. [Ko 3, KMM]).
-After substantial contributions by several mathematicians (Benveniste, Kawamata, Kollár, Mori, Reid, Shokurov, Viehweg) this was recently completed by Mori [Mo 3].
+The search for such a resolution is known as Mori’s program (see e.g. [Ko 3, KMM]). After substantial contributions by several mathematicians (Benveniste, Kawamata, Kollár, Mori, Reid, Shokurov, Viehweg) this was recently completed by Mori [Mo 3].
 
 A special case, which is nonetheless sufficient for the applications presented here, was settled by several persons.
-A proof was first announced by Tsunoda [TsM], later followed by Shokurov [Sh], Mori [Mo 2] and Kawamata [Kaw 2].
-A precise formulation of the result we need will be provided at the end of the introduction.
+A proof was first announced by Tsunoda [TsM], later followed by Shokurov [Sh], Mori [Mo 2] and Kawamata [Kaw 2]. A precise formulation of the result we need will be provided at the end of the introduction.
 
 In certain situations $X_0$ will impose very strong restrictions on $X'$ and one can use this to obtain information about $X$ and $X_t$ for $t \neq 0$.
 
@@ -56,15 +50,11 @@ Let $\{X_s \colon s \in S\}$ be a flat family of surfaces parameterized by the c
 Let $\bar{X}_s$ be the minimal resolution of $X_s$.
 In general $\{\bar{X}_s \colon s \in S\}$ is not a flat family of surfaces, and it is of interest to find necessary and sufficient conditions for this to hold.
 
----
+* * *
 
-$^{\star}$ Current address: University of Utah Salt Lake City, UT 84112, USA
-$^{\star\star}$ Current address: University of Illinois Chicago, IL 60680, USA
+$^{\star}$ Current address: University of Utah Salt Lake City, UT 84112, USA $^{\star\star}$ Current address: University of Illinois Chicago, IL 60680, USA
 
-300
-J.
-Kollár and N.I.
-Shepherd-Barron
+300 J. Kollár and N.I. Shepherd-Barron
 
 If $\{\bar{X}_s\colon s\in S\}$ is a flat family, then $K_{\bar{X}_s}^2$ is locally constant on $S$.
 One can hope that the converse is also true (at least after a finite and surjective base change).
@@ -81,8 +71,7 @@ The next two chapters contain results pertaining to the problem of compactifying
 This involves the study of certain singular surfaces that appear as limits of smooth ones.
 A good class of such singular surfaces is suggested by the above-mentioned results of three dimensional geometry.
 The possible singularities of such surfaces are introduced and classified in chapter four.
-This generalizes earlier results of Kawamata [Kaw1, Kaw2].
-In chapter five the deformations of these singularities are analyzed.
+This generalizes earlier results of Kawamata [Kaw1, Kaw2]. In chapter five the deformations of these singularities are analyzed.
 The main conclusion is that the proposed compactification of the moduli of surfaces is a separated algebraic space.
 
 The methods of the last two chapters are largely unrelated to the rest of the article.
@@ -117,17 +106,11 @@ By a result of Knudsen and Mumford [KKMS], if $h \colon Y \to S$ is arbitrary th
 Now one can formulate the following result which was proved by Tsunoda, Shokurov, Mori and Kawamata.
 
 Theorem.
-Let $f \colon X \to T$ be a morphism of an algebraic (complex analytic) three-dimensional space onto a smooth curve $T$ .
-Assume that $f$ admits a semi-stable resolution.
-Then there is a projective birational (bimeromorphic) morphism $g \colon \bar{X} \to X$ such that $\bar{X}$ has only terminal singularities and such that for every compact curve $C \subset \bar{X}$ such that $g(C) = \text{point}$ we have $C \cdot K_{\bar{X}} \geq 0$ .
-By [Ben, Kaw3] one can also find a $\tilde{g} \colon \bar{X} \to X$ such that $\bar{X}$ has canonical singularities and such that $C \cdot K_{\bar{X}} &gt; 0$ for every compact curve $C \subset \bar{X}$ such that $\tilde{g}(C) = \text{point}$ .
-Such an $\bar{X}$ is unique, and is called the relative canonical model of $X$ .
+Let $f \colon X \to T$ be a morphism of an algebraic (complex analytic) three-dimensional space onto a smooth curve $T$ . Assume that $f$ admits a semi-stable resolution.
+Then there is a projective birational (bimeromorphic) morphism $g \colon \bar{X} \to X$ such that $\bar{X}$ has only terminal singularities and such that for every compact curve $C \subset \bar{X}$ such that $g(C) = \text{point}$ we have $C \cdot K_{\bar{X}} \geq 0$ . By [Ben, Kaw3] one can also find a $\tilde{g} \colon \bar{X} \to X$ such that $\bar{X}$ has canonical singularities and such that $C \cdot K_{\bar{X}} &gt; 0$ for every compact curve $C \subset \bar{X}$ such that $\tilde{g}(C) = \text{point}$ . Such an $\bar{X}$ is unique, and is called the relative canonical model of $X$ .
 
 Acknowledgements.
-Various parts of this article were discussed with S.
-Mori, B.
-Teissier and J.
-Wahl.
+Various parts of this article were discussed with S. Mori, B. Teissier and J. Wahl.
 We are very grateful for their comments and suggestions.
 Partial financial support was provided by the NSF under grant numbers DMS 85-03734 and DMS 85-03743.
 
@@ -144,18 +127,14 @@ Definition 2.1. Let $f \colon X \to Y$ be a flat family of reduced algebraic sur
 Let $g \colon \bar{X} \to X$ be a projective morphism such that $f \circ g \colon \bar{X} \to Y$ is flat too.
 The fibre of $f$ (resp.
 $f \circ g$ ) above $y \in Y$ will be denoted by $X_y$ (resp.
-$\bar{X}_y$ ).
-We will always assume that $Y$ is reduced.
+$\bar{X}_y$ ). We will always assume that $Y$ is reduced.
 
 (i) $g$ is called a simultaneous DuVal (or rational double point) resolution of $f$ if each $\bar{X}_y \to X_y$ is the minimal resolution with DuVal singularities.
-(ii) $g$ is called a very weak simultaneous resolution if each $\bar{X}_y \to X_y$ is the minimal resolution of $X_y$ .
-(iii) If $p \colon Y \to X$ is a section of $f$ , then $f$ is called a weak simultaneous resolution along $p$ if it is a very weak simultaneous resolution near $f(Y)$ and the map $g \colon (g^{-1}(p(Y))) \to p(Y)$ is simple (i.e. locally in the Euclidean topology on $g^{-1}(p(Y))$ ) it is the projection of a direct product.)
+(ii) $g$ is called a very weak simultaneous resolution if each $\bar{X}_y \to X_y$ is the minimal resolution of $X_y$ . (iii) If $p \colon Y \to X$ is a section of $f$ , then $f$ is called a weak simultaneous resolution along $p$ if it is a very weak simultaneous resolution near $f(Y)$ and the map $g \colon (g^{-1}(p(Y))) \to p(Y)$ is simple (i.e. locally in the Euclidean topology on $g^{-1}(p(Y))$ ) it is the projection of a direct product.)
 (iv) $f$ is said to admit a simultaneous DuVal resolution (respectively a very weak or weak simultaneous resolution) if there exists a $g\colon \bar{X}\to X$ satisfying (i) (resp.
 (ii) or (iii)).
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 (v) It is important to note that very weak simultaneous resolutions are not unique in general, despite the fact that the minimal resolution of the individual surfaces are unique.
 
@@ -215,14 +194,10 @@ Let $F \subset \mathbb{P}^5$ be the scroll $\operatorname{Proj}_{\mathbb{P}^1}(\
 Finally, let $C_4 \subset \mathbb{P}^5$ be the cone over the rational normal curve of degree four.
 It we cut $C_V$ (resp.
 $C_F$ ) with a pencil of hyperplanes, then the hyperplane through the vertex gives a copy of $C_4$ ; the general member will be isomorphic to $V$ (resp.
-$F$ ).
-Obviously $K_{\mathrm{rel},V}^2 = K_{\mathrm{rel},F}^2 = 0$ .
-The family obtained from $C_F$ admits a simultaneous DuVal resolution: blow up $C_l$ , the cone over a line on $F$ .
-The family obtained from $C_V$ does not admit a simultaneous DuVal resolution: the singularity at the vertex is $\mathbb{C}^3 / (x \sim -x)$ ; hence for any birational modification the exceptional locus must be of pure dimension two.
+$F$ ). Obviously $K_{\mathrm{rel},V}^2 = K_{\mathrm{rel},F}^2 = 0$ . The family obtained from $C_F$ admits a simultaneous DuVal resolution: blow up $C_l$ , the cone over a line on $F$ . The family obtained from $C_V$ does not admit a simultaneous DuVal resolution: the singularity at the vertex is $\mathbb{C}^3 / (x \sim -x)$ ; hence for any birational modification the exceptional locus must be of pure dimension two.
 Therefore any modification of $C_V$ would introduce a new component to the central fibre.
 
-Note however that $\bar{K}_{C_4}^2 = \bar{K}_F^2 = 8$ , whereas $\bar{K}_V^2 = 9$ .
-The global invariant detects the existence of simultaneous resolution.
+Note however that $\bar{K}_{C_4}^2 = \bar{K}_F^2 = 8$ , whereas $\bar{K}_V^2 = 9$ . The global invariant detects the existence of simultaneous resolution.
 This is the case in general (see 2.10).
 
 Definition 2.9. Recall that a scheme $Y$ is called seminormal [Tr] if the following holds:
@@ -236,9 +211,7 @@ This $Z'$ is unique and is called the seminormalization of $Z$ (see [Tr]).
 Theorem 2.10. Let $f \colon X \to Y$ be a flat family of projective surfaces with isolated singularities only such that $Y$ is seminormal.
 Then
 
-(i) $\bar{K}_y^2$ is lower semi-continuous;
-(ii) $\bar{K}_y^2$ is locally constant if and only if $f$ admits a simultaneous DuVal resolution;
-(iii) If $p \colon Y \to X$ is a section and $Y$ is connected; then $X$ admits a weak simultaneous resolution along $p$ if and only if the germs of $X_y$ along $p$ are pairwise homeomorphic.
+(i) $\bar{K}_y^2$ is lower semi-continuous; (ii) $\bar{K}_y^2$ is locally constant if and only if $f$ admits a simultaneous DuVal resolution; (iii) If $p \colon Y \to X$ is a section and $Y$ is connected; then $X$ admits a weak simultaneous resolution along $p$ if and only if the germs of $X_y$ along $p$ are pairwise homeomorphic.
 
 Remark 2.11. Karras informed us that he also proved part (iii) of the theorem.
 He considers only the case of normal singularities, but he is able to treat the analytic case as well.
@@ -247,9 +220,7 @@ His proof is a generalization of Laufer's ideas [Kar2].
 Remark 2.12. There is some hope that the present methods will work in the analytic case as well.
 (See 2.25).
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 **Proposition 2.13.** Let $g \colon \widehat{U} \to V$ be an arbitrary resolution of the projective surface $V$, and let $\widehat{U}$ be the minimal resolution.
 Assume that $K_{\widehat{U}} = H - E$, where $H$ is $g$-nef, $E$ is effective and supported on the $g$-exceptional locus.
@@ -346,8 +317,7 @@ Since $E$ is effective and exceptional with respect to $\bar{X}_0 \to X_0$, and 
 This gives $\bar{K}_t^2 \geq K_{\bar{X}_0}^2 - E^2$.
 Using 5.1 and taking $H = n^* K_{\bar{X}}$ the conditions of 2.14 are satisfied for $(\bar{X}_0 \to X_0, K_{\bar{X}_0} = H - E)$.
 Therefore, if $\bar{X}_0$ is the minimal desingularization of $X_0$, then $K_{\bar{X}_0}^2 \geq \bar{K}_0^2 + E^2$.
-These two inequalities give that $\bar{K}_t^2 \geq \bar{K}_0^2$, which is (i).
-If we have equality, then $E = 0$.
+These two inequalities give that $\bar{K}_t^2 \geq \bar{K}_0^2$, which is (i). If we have equality, then $E = 0$.
 Hence $\sum E_i = 0$ and $X_0'$ is normal and has only DuVal singularities.
 
 This is nearly what we want.
@@ -359,8 +329,7 @@ This in turn gives that $K_{\bar{X}_0} = h^{*}K_{\bar{X}_0}$; thus $\bar{X}_0$ h
 Since $K_{\bar{X}}$ is $g$-ample, each fibre of $\bar{X} \to D$ is the minimal DuVal resolution of the corresponding fibre of $X \to D$.
 This proves one direction of (ii), and the other one is trivial.
 
-2.16 Proof of 2.10 (i).
-$Y$ can be written as the union of locally closed subsets $Y_{i}$ such that $f$ admits a simultaneous DuVal resolution over each $Y_{i}$.
+2.16 Proof of 2.10 (i). $Y$ can be written as the union of locally closed subsets $Y_{i}$ such that $f$ admits a simultaneous DuVal resolution over each $Y_{i}$.
 This implies that $\bar{K}_y^2$ is a constructible function on $Y$.
 By 2.15 it is lower semi-continuous along curves, and therefore it is lower semi-continuous.
 
@@ -382,13 +351,9 @@ Let $\mathbb{P}$ be the projective space of dimension $h^0(\bar{X}_y, \bar{H}_y)
 In $\mathbb{P} \times X$ let the coordinate projections be $p$ and $q$.
 We consider subchemes $Z \subset \mathbb{P} \times X$ satisfying the following conditions.
 
-(i) $Z$ has only DuVal singularities
-(ii) $q\colon Z\to X$ is birational onto a fibre of $f$
-(iii) $K_{Z}$ is relatively $q$-ample;
+(i) $Z$ has only DuVal singularities (ii) $q\colon Z\to X$ is birational onto a fibre of $f$ (iii) $K_{Z}$ is relatively $q$-ample;
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 (iv) $p\colon Z\to \mathbb{P}$ is a non-degenerate embedding and
 
@@ -401,8 +366,7 @@ $$
 These subschemes are parametrized by some subscheme $R$ of the relative Hilbert scheme of $\mathbb{P} \times X / Y$.
 Let $u \colon U \to R$ be the universal family.
 We have a natural map $c \colon R \to Y$ given by $r \to f(q(u^{-1}(r)))$.
-$R$ parametrizes pairs (minimal resolution of some $X_y$; an embedding of it given by $\bar{H}_y$).
-The different embeddings differ by an element of Aut $\mathbb{P}$, so the natural action of Aut $\mathbb{P}$ on $R$ is transitive on the fibers of $c$.
+$R$ parametrizes pairs (minimal resolution of some $X_y$; an embedding of it given by $\bar{H}_y$). The different embeddings differ by an element of Aut $\mathbb{P}$, so the natural action of Aut $\mathbb{P}$ on $R$ is transitive on the fibers of $c$.
 Aut $\mathbb{P}$ clearly operates without fixed points.
 Hence the universal family $U$ descends to $Y = R / \mathrm{Aut} \mathbb{P}$ (cf.
 [Po, Lecture 3]) and we get a map $\bar{u} \colon \bar{X} = U / \mathrm{Aut} \mathbb{P} \to \bar{Y}$ and a natural map $\bar{c} \colon \bar{Y} \to Y$ which is 1:1 on closed points.
@@ -465,9 +429,7 @@ $$
 \end{array}
 $$
 
-Applying 2.19 for $D = K_{Z}$ gives that the l.h.s.
-is asymptotic to $\frac{1}{2} m^{2}K_{X_{0}}^{2}$, the r.h.s.
-to $\frac{1}{2} m^{2}K_{X_{t}}^{2}$.
+Applying 2.19 for $D = K_{Z}$ gives that the l.h.s. is asymptotic to $\frac{1}{2} m^{2}K_{X_{0}}^{2}$, the r.h.s. to $\frac{1}{2} m^{2}K_{X_{t}}^{2}$.
 Dividing by $\frac{1}{2} m^{2}$ gives the required inequality.
 
 We shall also need the following result.
@@ -509,16 +471,11 @@ By 2.20 the $a_i$ are independent of $y$.
 Let $K_y' = \sum a_i E_{i,y}$.
 Then we define $\bar{H}_y = n(K_y' + mr_y^* H_y)$ to be the polarizing divisor.
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 Continuing as in 2.17, in $\mathbb{P} \times X$ we consider subschemes $Z$ with the following properties.
 
-(i) $q\colon Z\to X$ is birational onto a fibre of $f$ and is an isomorphism off $p(y)$;
-(ii) above $p(y)$ it has only DuVal singularities;
-(iii) the exceptional divisor is homeomorphic to the above $\sum E_{i,y}$ and $\sum a_i E_{i,y}$ is $q$-ample;
-(iv) $p\colon Z\to \mathbb{P}$ is a non-degenerate embedding and $p^* \mathcal{O}(1) = \mathcal{O}\big(n(\sum a_i E_i + m q^* H)\big)$.
+(i) $q\colon Z\to X$ is birational onto a fibre of $f$ and is an isomorphism off $p(y)$; (ii) above $p(y)$ it has only DuVal singularities; (iii) the exceptional divisor is homeomorphic to the above $\sum E_{i,y}$ and $\sum a_i E_{i,y}$ is $q$-ample; (iv) $p\colon Z\to \mathbb{P}$ is a non-degenerate embedding and $p^* \mathcal{O}(1) = \mathcal{O}\big(n(\sum a_i E_i + m q^* H)\big)$.
 
 As there we obtain that $f \colon X \to Y$ admits a simultaneous DuVal resolution along $p$.
 
@@ -630,10 +587,7 @@ Remark 2.27. (i) This proposition is very closely related to some results of Nak
 (iii) Nakayama [Na, 11] proves that $\sum h^0(E_i', \mathcal{O}(mK_{E_i})) \leqslant h^0(X_t, \mathcal{O}(mK_{X_t}))$ holds for every $m \geq 1$.
 It is possible that equality for a few small $m$ already implies that $X_0$ is irreducible with DuVal singularities only.
 
-310
-J.
-Kollár and N.I.
-Shepherd-Barron
+310 J. Kollár and N.I. Shepherd-Barron
 
 ## § 3. Deformations of quotient singularities
 
@@ -646,20 +600,19 @@ We begin by recalling some terminology and a theorem of Kawamata.
 
 **Definition 3.1.** (i) A normal variety $Y$ is $\mathbb{Q}$-Gorenstein if some non-zero integral multiple $mK_Y$ of the canonical divisor $K_Y$ is Cartier and $Y$ is Cohen-Macaulay.
 
-(ii) A germ $Y$ of a normal threefold is _pseudo terminal_ if it is canonical and its canonical cover has only cDV singularities.
+(ii) A germ $Y$ of a normal threefold is *pseudo terminal* if it is canonical and its canonical cover has only cDV singularities.
 Equivalently, $Y$ is pseudo-terminal if it is $\mathbb{Q}$-Gorenstein and for some (or equivalently, every) resolution $f\colon \widehat{Y} \to Y$ whose exceptional prime divisors are $E_1, \ldots, E_r$, we have $K_{\widehat{Y}} \sim f^* K_Y + \sum a_i E_i$, where $a_i \geq 0$ for all $i$ and $a_j &gt; 0$ if $f(E_i)$ is a point.
 
-(iii) A normal surface singularity $(X, P)$ is _log terminal_ if for some (or equivalently, every) resolution $f \colon \widehat{X} \to X$ whose exceptional locus $E = \bigcup_{i=1}^{r} E_i$ has normal crossings, there are rational numbers $a_1, \ldots, a_r$ such that $K_{\widehat{X}} \equiv -\sum a_i E_i$ and for all $i, a_i &lt; 1$.
+(iii) A normal surface singularity $(X, P)$ is *log terminal* if for some (or equivalently, every) resolution $f \colon \widehat{X} \to X$ whose exceptional locus $E = \bigcup_{i=1}^{r} E_i$ has normal crossings, there are rational numbers $a_1, \ldots, a_r$ such that $K_{\widehat{X}} \equiv -\sum a_i E_i$ and for all $i, a_i &lt; 1$.
 
-**Theorem 3.2.** (Kawamata [Kaw2]).
-The normal surface singularity $(X, P)$ is _log terminal_ if and only if it is a quotient singularity.
+**Theorem 3.2.** (Kawamata [Kaw2]). The normal surface singularity $(X, P)$ is *log terminal* if and only if it is a quotient singularity.
 
 **Lemma 3.3.** Suppose that $X \to \Delta$ is a one-parameter deformation of a normal surface singularity $(X_0, P)$, that $\Delta' \to \Delta$ is a finite base change and that $X' = X \times_{\Delta} \Delta'$.
 Then if $X'$ has just terminal (resp.
 canonical, resp.
 pseudo-terminal) singularities the same holds for $X$.
 
-_Proof._ We first deal with the case where $X'$ is terminal (resp.
+*Proof.* We first deal with the case where $X'$ is terminal (resp.
 canonical).
 There are uniformizing parameters $t, t'$ on $\Delta, \Delta'$ respectively such that $t = t'^m$, some $m$.
 Then the Galois group $G = \operatorname{Gal}(\Delta' / \Delta)$ is cyclic of order $m$; say $G = \langle \tau \rangle$.
@@ -678,14 +631,11 @@ some integer $e$ with $e|m, C \cdot x'^e$, say, is a uniformizing parameter for 
 We have $t' = D \cdot x'^a$, where $v'(D) = 0$ and $\alpha &gt; 0$.
 Choose $y, z \in \mathcal{O}_v$, the valuation ring of $v$, that induce a transcendence basis of the residue field of $\mathcal{O}_v$ over $\mathbb{C}$.
 We can write $\sigma = B \cdot x^\delta \cdot (dx \wedge dy \wedge dz)^{\otimes r}$, where $v(B) = 0$, and we must show that $\delta &gt; 0$ (resp.
-$\delta \geq 0$).
-Now $\sigma / t'^r(m-1) = \omega$ generates $\mathcal{O}(r \cdot K_X)$, and so we can write $\omega = A \cdot x'^y (dx' \wedge dy \wedge dz)^{\otimes r}$, where $v'(A) = 0$ and by hypothesis $\gamma &gt; 0$ (resp.
-$\gamma \geq 0$).
-Now $dx = dc \cdot x'^e + e \cdot C \cdot x'^e - 1 dx' = C' \cdot x'^e - 1 (dx' + C_2 dy + C_3 dz)$, where $v'(C') = 0$, and so $\sigma = B \cdot C^\delta \cdot x'^{\delta e} \cdot C'^r \cdot x'^r(e-1) \cdot (dx' \wedge dy \wedge dz)^{\otimes r}$; comparing the powers of $x'$ shows that $\delta e + r(e-1) = \alpha r(m-1) + \gamma$.
+$\delta \geq 0$). Now $\sigma / t'^r(m-1) = \omega$ generates $\mathcal{O}(r \cdot K_X)$, and so we can write $\omega = A \cdot x'^y (dx' \wedge dy \wedge dz)^{\otimes r}$, where $v'(A) = 0$ and by hypothesis $\gamma &gt; 0$ (resp.
+$\gamma \geq 0$). Now $dx = dc \cdot x'^e + e \cdot C \cdot x'^e - 1 dx' = C' \cdot x'^e - 1 (dx' + C_2 dy + C_3 dz)$, where $v'(C') = 0$, and so $\sigma = B \cdot C^\delta \cdot x'^{\delta e} \cdot C'^r \cdot x'^r(e-1) \cdot (dx' \wedge dy \wedge dz)^{\otimes r}$; comparing the powers of $x'$ shows that $\delta e + r(e-1) = \alpha r(m-1) + \gamma$.
 Since $\alpha &gt; 0$ and $e \leq m$ it follows that $r(e-1) \leq \alpha r(m-1)$, and so $\delta e \geq \gamma$.
 Hence $\delta &gt; 0$ (resp.
-$\delta \geq 0$).
-So, since the geometric generic fibre of $X$ is isomorphic to that of $X'$, it must be smooth (resp.
+$\delta \geq 0$). So, since the geometric generic fibre of $X$ is isomorphic to that of $X'$, it must be smooth (resp.
 have only RDP's) and the Lemma is proved in this case.
 
 Finally, to deal with the case where $X'$ is pseudo-terminal, we must show that if $v$ is a valuation of $\mathbb{C}(X)$ centred at the generic point of a curve in the singular locus of $X$, then (in the same notation as above), $\delta \geq 0$, and that if $v$ is centred at $P$, then $\delta &gt; 0$.
@@ -705,9 +655,7 @@ Then, after making a finite base change if necessary, there is a proper biration
 (iii) For $t \in \Delta^{*} = \Delta - \{0\}$, the morphism $Y_{t} \to X_{t}$ is the minimal resolution.
 (iv) The special fibre $Y_0$ is normal, with only quotient singularities.
 (b) Suppose that $X \to \Delta$ is as above.
-Then, even without base-change, there is a birational model $g \colon Z \to X$ with following properties:
-(i) $Z$ has only pseudo-terminal singularities
-(ii) For all complete curves $C$ contracted by $g$, we have $K_Z \cdot C &gt; 0$.
+Then, even without base-change, there is a birational model $g \colon Z \to X$ with following properties: (i) $Z$ has only pseudo-terminal singularities (ii) For all complete curves $C$ contracted by $g$, we have $K_Z \cdot C &gt; 0$.
 (iii) For $t \in \Delta^{*}$, the morphism $Z_{t} \to X_{t}$ is the canonical model.
 (iv) The special fibre $Z_0$ is normal, with only quotient singularities.
 
@@ -720,9 +668,7 @@ Let $V$ denote the strict transform of $X_0$ in $Y_0$ and $\tilde{V}$ the normal
 We can write $Y_0 = \sum V_i$, with $V_1 = V$.
 Denote the exceptional locus of the
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 morphism $h: \tilde{V} \to X_0$ by $\cup C_i$, where each $C_i$ is an integral curve.
 We have $K_Y|_{\tilde{V}} \sim D - E + h^*F$, where $D, E$ are effective $\mathbb{Q}$-divisors supported on $\cup C_i$ with no common component and $F$ is a $\mathbb{Q}$-divisor on $X_0$.
@@ -749,8 +695,7 @@ In order to complete the proof of (b), suppose that $X \to \Delta$ is a one-para
 Let $Z_1 \to \Delta$ be the canonical model of $\tilde{X}_1$; then the birational action of $G$ on $Z_1$ is in fact biregular.
 Put $Z = Z_1 / G$; then $Z_1 \cong Z \times_{\Delta} \Delta_1$, and so by Lemma 3.4 $Z$ is $\mathbb{Q}$-Gorenstein.
 Since the special fibres of $Z$ and $Z_1$ are the same and that of $Z_1$ is log terminal, it follows from Lemma 3.3 that $Z$ has just pseudo-terminal singularities.
-Finally, the ampleness of $K_Z$ can be checked on the special fibre, and the geometric generic fibre of $Z$ is isomorphic to that of $Z_1$, and so has only RDP's.
-Q.E.D.
+Finally, the ampleness of $K_Z$ can be checked on the special fibre, and the geometric generic fibre of $Z$ is isomorphic to that of $Z_1$, and so has only RDP's. Q.E.D.
 
 Corollary 3.6. If $X \to \Delta$ is a $\mathbb{Q}$-Gorenstein one-parameter deformation of the quotient singularity $X_0$, then $X$ has just a terminal singularity if the general fibre $X_t$ is smooth, and pseudo-terminal singularities if $X_t$ has only RDP's.
 
@@ -809,20 +754,16 @@ It follows directly that $X_0$ is as described.
 
 If conversely $X_0$ is one of these quotient singularities, then we can write $X_0 = Y_0 / \langle \sigma \rangle$, where $Y_0$ is given by $xy - z^{sr} = 0$ and $\sigma$ acts via $\sigma(x, y, z) = (\omega x, \omega^{-1} y, \omega^c z)$.
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
-$\omega^{-1}y, \omega^{c}z$).
-Thus we can write down a $\mathbb{Q}$-Gorenstein smoothing $X \to \varDelta = \operatorname{Spec} \mathbb{C}[[u]]$ by taking $X = Y / \langle \sigma \rangle$, where $Y$ is given by $xy - z^{sr} + u = 0$ and $\sigma$ acts on $Y$ via $\sigma(x, y, z, u) = (\omega x, \omega^{-1}y, \omega^{c}z, u)$.
+$\omega^{-1}y, \omega^{c}z$). Thus we can write down a $\mathbb{Q}$-Gorenstein smoothing $X \to \varDelta = \operatorname{Spec} \mathbb{C}[[u]]$ by taking $X = Y / \langle \sigma \rangle$, where $Y$ is given by $xy - z^{sr} + u = 0$ and $\sigma$ acts on $Y$ via $\sigma(x, y, z, u) = (\omega x, \omega^{-1}y, \omega^{c}z, u)$.
 By corollary 3.6, this is a terminal smoothing.
 
 Another way of proving this first part of Proposition 3.10 is to note that if $X_0$ has a terminal smoothing and if $Z_0$ is a resolution of $X_0$, then $K_{Z_0}^2$ is an integer; Wahl has classified the quotient singularities with this property [Wa 3], and apart from RDP's they are as described in 3.10.
 
 The next result, due essentially to Wahl [Wa 3], tells us how a cyclic quotient singularity of class $T$ may be recognized from its minimal resolution.
 
-**Proposition 3.11** (i).
-The singularities $^{-4}$ and $^{-3}$ are of class $T$.
+**Proposition 3.11** (i). The singularities $^{-4}$ and $^{-3}$ are of class $T$.
 
 (ii) If the singularity $^{-b_1}$ is of class $T$, then so are
 
@@ -876,25 +817,17 @@ Proof.
 for any resolution $\pi_i\colon X_i\to X$ , we can write $K_{X_i}\sim \pi_i^* K_X + \sum_j(-1 + \alpha_j)E_j$
 
 the $E_{j}$ being the exceptional curves.
-If $Q = E_{j} \cap E_{j+1}$ , $\sigma \colon X_{i+1} \to X_{i}$ is the blow-up along $Q$ and $E_{k} = \sigma^{-1}(Q)$ , then $\alpha_{k} = \alpha_{i} + \alpha_{i+1}$ .
-Clearly, we may not blow up along a point lying on only one component.
-Now if $\pi_{i}$ is the minimal resolution, every $\alpha_{i}$ lies between 0 and 1, and so to construct a maximal resolution one starts with the minimal resolution and successively blows up points where exceptional curves meet until the quantities $\alpha_{i}$ have the property that $\alpha_{i} &lt; 1$ for all $i$ , while if $E_{i} \cap E_{j} \neq \emptyset$ , then $\alpha_{i} + \alpha_{j} \geq 1$ .
-This certainly happens, and so a maximal resolution does exist.
+If $Q = E_{j} \cap E_{j+1}$ , $\sigma \colon X_{i+1} \to X_{i}$ is the blow-up along $Q$ and $E_{k} = \sigma^{-1}(Q)$ , then $\alpha_{k} = \alpha_{i} + \alpha_{i+1}$ . Clearly, we may not blow up along a point lying on only one component.
+Now if $\pi_{i}$ is the minimal resolution, every $\alpha_{i}$ lies between 0 and 1, and so to construct a maximal resolution one starts with the minimal resolution and successively blows up points where exceptional curves meet until the quantities $\alpha_{i}$ have the property that $\alpha_{i} &lt; 1$ for all $i$ , while if $E_{i} \cap E_{j} \neq \emptyset$ , then $\alpha_{i} + \alpha_{j} \geq 1$ . This certainly happens, and so a maximal resolution does exist.
 Moreover, any two maximal resolutions are isomorphic in codimension one, and so isomorphic, since we are dealing with normal surfaces.
 
-Lemma 3.14. Suppose that $(X, P)$ is a quotient singularity and that $f\colon Z \to X$ is a partial resolution such that $Z$ has only quotient singularities and $K_Z$ is ample relative to $f$ .
-Then $Z$ is dominated by the maximal resolution $X_m$ of $X$ .
+Lemma 3.14. Suppose that $(X, P)$ is a quotient singularity and that $f\colon Z \to X$ is a partial resolution such that $Z$ has only quotient singularities and $K_Z$ is ample relative to $f$ . Then $Z$ is dominated by the maximal resolution $X_m$ of $X$ .
 
 Proof.
-Suppose that $X_{m}$ does not dominate $Z$ .
-Then there is a point $Q \in X_{m}$ corresponding to a curve $C$ in $Z$ .
-The multiplicity of $C$ in $K_{Z}$ cannot be negative, by the defining property of $X_{m}$ .
-As we saw in the proof of 3.5, we have $K_{Z} \sim -E$ , with $E$ an effective $\mathbb{Q}$ -divisor.
-The multiplicity of $C$ is non-negative, and so $C$ is not a component of $E$ .
-Hence $\operatorname{Supp} E \neq f^{-1}(P)$ , so that by the connectedness of $f^{-1}(P)$ there is a curve $G$ in $f^{-1}(P)$ such that $K_{Z} \cdot G &lt; 0$ ; this is absurd, and the lemma is proved.
+Suppose that $X_{m}$ does not dominate $Z$ . Then there is a point $Q \in X_{m}$ corresponding to a curve $C$ in $Z$ . The multiplicity of $C$ in $K_{Z}$ cannot be negative, by the defining property of $X_{m}$ . As we saw in the proof of 3.5, we have $K_{Z} \sim -E$ , with $E$ an effective $\mathbb{Q}$ -divisor.
+The multiplicity of $C$ is non-negative, and so $C$ is not a component of $E$ . Hence $\operatorname{Supp} E \neq f^{-1}(P)$ , so that by the connectedness of $f^{-1}(P)$ there is a curve $G$ in $f^{-1}(P)$ such that $K_{Z} \cdot G &lt; 0$ ; this is absurd, and the lemma is proved.
 
-Example 3.15. Consider the quotient $(X, P) = \operatorname{Spec} \mathbb{C}[[u, v]] / \langle \sigma \rangle$ , where $\sigma(u, v) = (\eta u, \eta^7 v)$ , $\eta = \exp(2\pi i / 19)$ .
-The minimal resolution is
+Example 3.15. Consider the quotient $(X, P) = \operatorname{Spec} \mathbb{C}[[u, v]] / \langle \sigma \rangle$ , where $\sigma(u, v) = (\eta u, \eta^7 v)$ , $\eta = \exp(2\pi i / 19)$ . The minimal resolution is
 
 ![img-0.jpeg](img-0.jpeg)
 
@@ -904,9 +837,7 @@ where the negative integers are self-intersections and the positive numbers are 
 
 and it is easy to see that the $P$ -resolutions are $Z_{1}, Z_{2}$ and $Z_{3}$ , where $Z_{1}$ is obtained from the minimal resolution by contracting the $(-2)$ curve (i.e. $Z_{1}$ is the RDP model of $X$ ), $Z_{2}$ is obtained from $X_{m}$ by contracting all curves
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 except the $(-1)$ curve between the $(-4)$ and the $(-6)$ curve and $Z_{3}$ is obtained from the minimal resolution by contracting the $(-4)$ curve.
 It will follow from Theorem 3.9 that $\operatorname{Def} X$ has exactly three components, the Artin component corresponding to $Z_{1}$.
@@ -954,41 +885,27 @@ By Lemma 3.16, $X$ and
 
 Threefolds and deformations of surface singularities
 
-$X_0$ have the same index, so that if $Y$ is the canonical cover of $X$ then $Y \to \Delta$ is a deformation of $Y_0$ .
-Hence $\Delta \subseteq \beta(S)$ , and so the image of $\beta$ is just $(\mathrm{Def}^* X_0)_{\mathrm{red}} = D$ , say and so in particular $D$ is irreducible.
+$X_0$ have the same index, so that if $Y$ is the canonical cover of $X$ then $Y \to \Delta$ is a deformation of $Y_0$ . Hence $\Delta \subseteq \beta(S)$ , and so the image of $\beta$ is just $(\mathrm{Def}^* X_0)_{\mathrm{red}} = D$ , say and so in particular $D$ is irreducible.
 Also, we have just shown that any formal arc in $D$ lifts to an arc in $S$ , and so $\beta$ is of degree one.
 Finally since $\beta$ is a map of a local scheme, $\beta$ is $1 - 1$
 
 Now suppose that $X_0$ is an arbitrary quotient singularity and that $f\colon Z_0\to X_0$ is a $P$ -resolution.
-Suppose that $Q_{1},\ldots ,Q_{r}$ are the singular points of $Z_{0}$ , and let $Z_{i}^{*}$ denote the germ $(Z_0,Q_i)$ .
-There is a natural smooth morphism $\phi \colon \operatorname{Def}Z_0 \to \prod_{i = 1}^{r}\operatorname{Def}Z_{i}^{*}$ ; define $\operatorname{Def}^* Z_0$ to be $\phi^{-1}\left(\prod_{i = 1}^{r}\operatorname{Def}^* Z_i^*\right)$ .
+Suppose that $Q_{1},\ldots ,Q_{r}$ are the singular points of $Z_{0}$ , and let $Z_{i}^{*}$ denote the germ $(Z_0,Q_i)$ . There is a natural smooth morphism $\phi \colon \operatorname{Def}Z_0 \to \prod_{i = 1}^{r}\operatorname{Def}Z_{i}^{*}$ ; define $\operatorname{Def}^* Z_0$ to be $\phi^{-1}\left(\prod_{i = 1}^{r}\operatorname{Def}^* Z_i^*\right)$ .
 
 Then clearly 3.9 (i) follows from 3.18.
 
 Proof of 3.9 (iv).
-Let $B$ be a component of $\operatorname{Def} X_0$ , and suppose that $\Delta$ is a general arc in $B$ ; we know that this corresponds to a smoothing $X \to \Delta$ of $X_0$ .
-By Theorem 3.5, the canonical model $Z \to \Delta$ of $X$ is a $\mathbb{Q}$ -Gorenstein smoothing of a $P$ -resolution $Z_0$ of $X_0$ .
-So if $F \colon \operatorname{Def} Z_0 \to \operatorname{Def} X_0$ is the natural map, we have $\Delta \subseteq F(\operatorname{Def}^* Z_0)$ .
-Since $X_0$ has only finitely many $P$ -resolutions, by 3.14, there is a $P$ -resolution $Z_0$ such that $F(\operatorname{Def}^* Z_0) = B$ .
-This proves 3.9 (iv).
+Let $B$ be a component of $\operatorname{Def} X_0$ , and suppose that $\Delta$ is a general arc in $B$ ; we know that this corresponds to a smoothing $X \to \Delta$ of $X_0$ . By Theorem 3.5, the canonical model $Z \to \Delta$ of $X$ is a $\mathbb{Q}$ -Gorenstein smoothing of a $P$ -resolution $Z_0$ of $X_0$ . So if $F \colon \operatorname{Def} Z_0 \to \operatorname{Def} X_0$ is the natural map, we have $\Delta \subseteq F(\operatorname{Def}^* Z_0)$ . Since $X_0$ has only finitely many $P$ -resolutions, by 3.14, there is a $P$ -resolution $Z_0$ such that $F(\operatorname{Def}^* Z_0) = B$ . This proves 3.9 (iv).
 
 Proof of 3.9 (ii), (iii).
-Suppose that $Z_0, Z_0^*$ are two $P$ -resolutions of $X_0$ that are not isomorphic over $X_0$ .
-Let $F \colon \operatorname{Def} Z_0 \to \operatorname{Def} X_0$ , $F^* \colon \operatorname{Def} Z_0^* \to \operatorname{Def} X_0$ be the map of versal deformation spaces.
-Assume that $F(\operatorname{Def} Z_0) \subseteq F^*(\operatorname{Def} Z_0^*)$ .
-Let $Z \to \Delta$ be a $\mathbb{Q}$ -Gorenstein smoothing of $Z_0$ ; these smoothings exist because each singularity of $Z_0$ admits such a smoothing, and through a general point of $\operatorname{Def} Z_0$ there passes an arc corresponding to a smoothing.
-Consider the surface $Y$ obtained by contracting all the complete curves on $Z_{\mathrm{gen}}$ (the general fibre), and take a smoothing of $Y$ that lies on the Artin component of each singularity of $Y$ .
-The general fibre of this is smooth and contains no complete curves.
-So by the openness of versality, there is a one-parameter smoothing $\tilde{Z} \to \Delta$ of $Z_0$ whose general fibre contains no complete curves, and whose total space $\tilde{Z}$ is a deformation of $Z$ .
-Since $Z$ is $\mathbb{Q}$ -Gorenstein, so is $\tilde{Z}$ , by [Ko2].
-Hence we may assume that $Z_{\mathrm{gen}}$ contains no complete curves.
+Suppose that $Z_0, Z_0^*$ are two $P$ -resolutions of $X_0$ that are not isomorphic over $X_0$ . Let $F \colon \operatorname{Def} Z_0 \to \operatorname{Def} X_0$ , $F^* \colon \operatorname{Def} Z_0^* \to \operatorname{Def} X_0$ be the map of versal deformation spaces.
+Assume that $F(\operatorname{Def} Z_0) \subseteq F^*(\operatorname{Def} Z_0^*)$ . Let $Z \to \Delta$ be a $\mathbb{Q}$ -Gorenstein smoothing of $Z_0$ ; these smoothings exist because each singularity of $Z_0$ admits such a smoothing, and through a general point of $\operatorname{Def} Z_0$ there passes an arc corresponding to a smoothing.
+Consider the surface $Y$ obtained by contracting all the complete curves on $Z_{\mathrm{gen}}$ (the general fibre), and take a smoothing of $Y$ that lies on the Artin component of each singularity of $Y$ . The general fibre of this is smooth and contains no complete curves.
+So by the openness of versality, there is a one-parameter smoothing $\tilde{Z} \to \Delta$ of $Z_0$ whose general fibre contains no complete curves, and whose total space $\tilde{Z}$ is a deformation of $Z$ . Since $Z$ is $\mathbb{Q}$ -Gorenstein, so is $\tilde{Z}$ , by [Ko2]. Hence we may assume that $Z_{\mathrm{gen}}$ contains no complete curves.
 Thus if $X \to \Delta$ is the deformation of $X_0$ obtained from $Z \to \Delta$ via $F$ , the general fibre $X_{\mathrm{gen}}$ is smooth.
-We also know that $X$ can be blown up to give a terminal smoothing $Z^* \to \Delta$ of $Z_0^*$ ; i.e., $Z$ and $Z$ are both canonical models of $X \to \Delta$ , and so $Z_0 \cong Z_0^*$ over $X_0$ .
-This contradiction completes the proof of Theorem 3.9.
+We also know that $X$ can be blown up to give a terminal smoothing $Z^* \to \Delta$ of $Z_0^*$ ; i.e., $Z$ and $Z$ are both canonical models of $X \to \Delta$ , and so $Z_0 \cong Z_0^*$ over $X_0$ . This contradiction completes the proof of Theorem 3.9.
 
-We now indicate briefly how to compute the dimensions of the various components of $\operatorname{Def} X_0$ .
-Suppose that $Z$ is $P$ -resolution of $X_0$ , $Q_1, \ldots, Q_r$ its singularities and $B$ the component of $\operatorname{Def} X_0$ corresponding to $Z$ .
-We first refine 3.9 (ii) slightly.
+We now indicate briefly how to compute the dimensions of the various components of $\operatorname{Def} X_0$ . Suppose that $Z$ is $P$ -resolution of $X_0$ , $Q_1, \ldots, Q_r$ its singularities and $B$ the component of $\operatorname{Def} X_0$ corresponding to $Z$ . We first refine 3.9 (ii) slightly.
 
 Lemma 3.19. The map $\operatorname{Def}^* Z \to B$ is one to one.
 
@@ -997,10 +914,7 @@ This follows from the fact that a one-parameter smoothing $X \to \Delta$ of $X_0
 
 Corollary 3.20. $\operatorname{Dim} B = \sum_{i=1}^{r} \dim \operatorname{Def}^*(Z, Q_i) + d$ , where $d$ is the dimension of the space $D$ of locally trivial deformations of $Z$ .
 
-318
-J.
-Kollár and N.I.
-Shepherd-Barron
+318 J. Kollár and N.I. Shepherd-Barron
 
 Lemma 3.21. If $(X, P)$ is the singularity $\operatorname{Spec} \mathbb{C}[[u, v]] / G$, where $G = \langle \alpha \rangle \cong Z_{r^2 s}$ and $\alpha$ acts via $\alpha(u, v) = (\eta u, \eta^{dsr-1}v)$, where $\eta = \exp(2\pi i / r^2 s)$ and $(d, r) = 1$, then $\dim \operatorname{Def} X = s$.
 
@@ -1029,8 +943,7 @@ $$
 $$
 
 Remark 3.24. In summary, we have shown, for any quotient singularity $X_0$, how to find the components of $\operatorname{Def}(X_0)$, that the components have smooth normalization and how to compute their dimensions, but we have said nothing of how the components intersect, or of what adjacencies occur over the various components.
-We know only that singularities deform to quotient singularities [EV] and that the class of cyclic quotient singularities is closed under deformation (see ch.
-7 for a direct geometrical proof of this).
+We know only that singularities deform to quotient singularities [EV] and that the class of cyclic quotient singularities is closed under deformation (see ch. 7 for a direct geometrical proof of this).
 
 § 4. Semi-log-canonical singularities
 
@@ -1051,24 +964,16 @@ Since for the purposes of the present article the surface case is sufficient, th
 
 Definition 4.1. A surface singularity $(x, X)$ is called a normal crossing point (resp.
 pinch point) if it is analytically isomorphic to $(0, xy = 0) \subset (0, \mathbb{C}^3)$ (resp.
-$(0, x^2 = zy^2) \subset (0, \mathbb{C}^3)$ ).
-Normal crossing will usually be abbreviated to n.c..
-Note that we will not call the triple normal crossing point $(xyz = 0)$ an n.c.
-point.
+$(0, x^2 = zy^2) \subset (0, \mathbb{C}^3)$ ). Normal crossing will usually be abbreviated to n.c.. Note that we will not call the triple normal crossing point $(xyz = 0)$ an n.c. point.
 
-Definition 4.2. A surface $X$ will be called semi-smooth if every closed point of $X$ is either smooth or n.c.
-or a pinch point.
+Definition 4.2. A surface $X$ will be called semi-smooth if every closed point of $X$ is either smooth or n.c. or a pinch point.
 
-The singular locus of a semi-smooth surface is a smooth curve $D_X$ , which will be called the double curve of $X$ .
-The normalization $\pi \colon \bar{X} \to X$ is smooth.
+The singular locus of a semi-smooth surface is a smooth curve $D_X$ , which will be called the double curve of $X$ . The normalization $\pi \colon \bar{X} \to X$ is smooth.
 $\bar{D}_X = \pi^{-1}(D_X)$ is again smooth; $\pi \colon \bar{D}_X \to D_X$ is generically 2:1 and ramifies exactly at the pinch points.
 
 Definition 4.3. A map $f \colon Y \to X$ is called a semi-resolution of $X$ if the following conditions are satisfied:
 
-(i) $f$ is proper;
-(ii) $Y$ is semi-smooth;
-(iii) if $D_Y$ is the double curve of $Y$ , then no component of $D_Y$ is mapped to a point;
-(iv) there is a finite set $S \subset X$ such that $f \colon f^{-1}(X - S) \to X - S$ is an isomorphism.
+(i) $f$ is proper; (ii) $Y$ is semi-smooth; (iii) if $D_Y$ is the double curve of $Y$ , then no component of $D_Y$ is mapped to a point; (iv) there is a finite set $S \subset X$ such that $f \colon f^{-1}(X - S) \to X - S$ is an isomorphism.
 
 Definition 4.4. (i) If $f \colon Y \to X$ is a semi-resolution, then a curve $E_i \subset Y$ is called exceptional if $f(E_i)$ is a point.
 Let $E = \cup E_i$ be all the exceptional curves.
@@ -1080,14 +985,12 @@ It is important to note that $E$ is not a Cartier divisor in general.
 The only points where $E$ is non-Cartier are the pinch points; here $E$ is necessarily smooth.
 
 Notions akin to these were introduced independently by the Dutch school.
-They informed us that 4.5-4.15 are closely related to some of their results, especially to forthcoming works of van Straten [vS].
-The following result is a very special case of a theorem of van Straten [vS].
+They informed us that 4.5-4.15 are closely related to some of their results, especially to forthcoming works of van Straten [vS]. The following result is a very special case of a theorem of van Straten [vS].
 
 Proposition 4.5. Let $X$ be a surface such that outside finitely many points $S \subset X$ it is either smooth or has normal crossing.
 Then $X$ has a good semi-resolution.
 
-Proposition-Definition 4.6. Notation as in 4.2. Let $E \subset X$ be a curve which is not contained in $D_X$ and let $\bar{E} = \pi^{-1}E$ .
-Since $\omega_{\bar{X}} = \pi^{*}\omega_{X}(-\bar{D}_{X})$ , the usual adjunction formula gives
+Proposition-Definition 4.6. Notation as in 4.2. Let $E \subset X$ be a curve which is not contained in $D_X$ and let $\bar{E} = \pi^{-1}E$ . Since $\omega_{\bar{X}} = \pi^{*}\omega_{X}(-\bar{D}_{X})$ , the usual adjunction formula gives
 
 $$
 2 g (\bar {E}) - 2 = \left(\omega_ {\bar {X}} + \bar {E}\right) \cdot \bar {E} = \bar {E} ^ {2} + \deg_ {E} \omega_ {X} - \bar {E} \cdot \bar {D} _ {X}.
@@ -1095,12 +998,9 @@ $$
 
 Therefore we get:
 
-(i) $\bar{E}^2 &lt; 0$ and $\deg_E\omega_X &lt; 0$ iff $\bar{E}$ is exceptional of the first kind and does not intersect $\bar{D}_X$ .
-(ii) $\bar{E}^2 &lt; 0$ and $\deg_E\omega_X = 0$ iff either $\bar{E}$ is exceptional of the first kind and intersects $\bar{D}_X$ once or $\bar{E}^2 = -2$ , $\bar{E}\cong \mathbb{P}^1$ and $\bar{E}$ does not intersect $\bar{D}_X$ .
+(i) $\bar{E}^2 &lt; 0$ and $\deg_E\omega_X &lt; 0$ iff $\bar{E}$ is exceptional of the first kind and does not intersect $\bar{D}_X$ . (ii) $\bar{E}^2 &lt; 0$ and $\deg_E\omega_X = 0$ iff either $\bar{E}$ is exceptional of the first kind and intersects $\bar{D}_X$ once or $\bar{E}^2 = -2$ , $\bar{E}\cong \mathbb{P}^1$ and $\bar{E}$ does not intersect $\bar{D}_X$ .
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 In the first two cases (i.e. when $\bar{E}^2 = -1$) we shall call $E$ a $-1$ curve on $X$.
 It is clear that one can contract $E \subset X$ and the resulting surface $X'$ is again semi-smooth.
@@ -1142,8 +1042,7 @@ Then
 
 (ii) If $f$ is the minimal semi-resolution then $Z \geq 0$.
 
-(iii) If $X$ is Cohen-Macaulay, $f$ is minimal and $Z = 0$, then $X$ is either a smooth, an n.c.
-or a pinch point or a DuVal singularity.
+(iii) If $X$ is Cohen-Macaulay, $f$ is minimal and $Z = 0$, then $X$ is either a smooth, an n.c. or a pinch point or a DuVal singularity.
 
 (iv) If $X$ is Cohen-Macaulay and $f$ is minimal, then $Z = 0$ or $-a_i &gt; 0$ for every $i$.
 
@@ -1160,12 +1059,10 @@ By 4.6 (ii) $E_i$ is therefore a $-2$ curve that does not intersect
 
 Threefolds and deformations of surface singularities
 
-$D_{Y}$ .
-If $\overline{E}_j\cdot \overline{E}_i &gt; 0$ , then again we get that $E_{j}$ is such a $-2$ curve.
+$D_{Y}$ . If $\overline{E}_j\cdot \overline{E}_i &gt; 0$ , then again we get that $E_{j}$ is such a $-2$ curve.
 $E_{i}$ lies on an irreducible component $Y^{\prime}$ of $Y$ and by the above $Y^{\prime}$ contains no double curve.
 Hence it is a connected component.
-If $X$ is Cohen-Macaulay, then by [Hart] this implies that $Y^{\prime} = Y$ .
-Hence $X$ is a DuVal singularity.
+If $X$ is Cohen-Macaulay, then by [Hart] this implies that $Y^{\prime} = Y$ . Hence $X$ is a DuVal singularity.
 This proves both (iii) and (iv).
 
 (v) follows from (iv) as in [Z, 7.1].
@@ -1173,32 +1070,25 @@ This proves both (iii) and (iv).
 Proposition 4.13. Let $f \colon Y \to X$ be a semi-resolution of a Cohen-Macaulay surface.
 Then
 
-(i) $f_{*}\mathcal{O}_{Y} = \mathcal{O}_{X},$
-(ii) $R^1 f_* \omega_Y = 0$ ,
-(iii) $R^1 f_* \mathcal{O}_Y$ and $\omega_X / f_* \omega_Y$ are dual to each other.
+(i) $f_{*}\mathcal{O}_{Y} = \mathcal{O}_{X},$ (ii) $R^1 f_* \omega_Y = 0$ , (iii) $R^1 f_* \mathcal{O}_Y$ and $\omega_X / f_* \omega_Y$ are dual to each other.
 
 Proof.
 (i) $\mathcal{O}_X \subseteq f_* \mathcal{O}_Y$ and they agree in codimension one.
 Since $\mathcal{O}_X$ is $S_2$ they are equal.
 
-(ii) We have an exact sequence $0 \to \pi_* \omega_{\bar{Y}} \to \omega_Y \to Q \to 0$ , where $Q$ is supported on $D_Y$ .
-$R^1 f_* \pi_* \omega_{\bar{Y}} = 0$ by Grauert-Riemenschneider vanishing [G-R], and $R^1 f_* Q = 0$ since $\pi|D_Y$ is finite.
+(ii) We have an exact sequence $0 \to \pi_* \omega_{\bar{Y}} \to \omega_Y \to Q \to 0$ , where $Q$ is supported on $D_Y$ . $R^1 f_* \pi_* \omega_{\bar{Y}} = 0$ by Grauert-Riemenschneider vanishing [G-R], and $R^1 f_* Q = 0$ since $\pi|D_Y$ is finite.
 This proves (ii).
-(iii) This can be proved the same way as for normal $X$ .
-See e.g. [Ko 1, 3.3.3].
+(iii) This can be proved the same way as for normal $X$ . See e.g. [Ko 1, 3.3.3].
 
 Definition 4.14. Let $f \colon Y \to X$ be a semi-resolution of a Cohen-Macaulay surface singularity.
 $X$ is called semi-rational if $R^1 f_* \mathcal{O}_Y = 0$ .
 
 Remark 4.15. (i) It is easy to check that this definition is independent of the semi-resolution.
 
-(ii) This definition declares n.c.
-and pinch points to be "rational".
+(ii) This definition declares n.c. and pinch points to be "rational".
 This is a reasonable thing to do.
-We hope that everyone agrees that a n.c.
-point should be considered "rational".
-A pinch point is a quotient of a n.c.
-point so it should be rational.
+We hope that everyone agrees that a n.c. point should be considered "rational".
+A pinch point is a quotient of a n.c. point so it should be rational.
 (iii) It is true that the deformation of a semi-rational singularity is semirational again [vS].
 
 Definition 4.16. (i) If $F$ is a rank one sheaf, then $F^{[s]}$ denotes the double dual of the $s^{\text{th}}$ tensor power of $F$ .
@@ -1207,23 +1097,16 @@ Definition 4.16. (i) If $F$ is a rank one sheaf, then $F^{[s]}$ denotes the doub
 The smallest such $s$ is called the index of $(x,X)$ .
 
 Definition 4.17. Let $(x,X)$ be a $\mathbb{Q}$ -Gorenstein surface singularity such that $X - x$ is semi-smooth.
-Let $f\colon Y\to X$ be a good semi-resolution of $X$ .
-We can write $\omega_{Y}^{s}\cong f^{*}\omega_{X}^{[s]}\otimes \mathcal{O}(\sum sa_{i}E_{i})$ , where the $E_{i}$ are exceptional divisors and the $a_{i}$ are rational.
-With the notation of 4.11, we have that $Z = \sum a_{i}E_{i}$ .
-$(x,X)$ is called
+Let $f\colon Y\to X$ be a good semi-resolution of $X$ . We can write $\omega_{Y}^{s}\cong f^{*}\omega_{X}^{[s]}\otimes \mathcal{O}(\sum sa_{i}E_{i})$ , where the $E_{i}$ are exceptional divisors and the $a_{i}$ are rational.
+With the notation of 4.11, we have that $Z = \sum a_{i}E_{i}$ . $(x,X)$ is called
 
-(i) semi-canonical if $a_{i}\geq 0$
-(ii) semi-log-terminal if $a_{i} &gt; -1$
-(iii) semi-log-canonical if $a_{i}\geq -1$
+(i) semi-canonical if $a_{i}\geq 0$ (ii) semi-log-terminal if $a_{i} &gt; -1$ (iii) semi-log-canonical if $a_{i}\geq -1$
 
 Remark 4.18. (i) Using 4.8 one can easily see that these notions are independent of the good semi-resolution chosen.
 
-(ii) One could try to define semi-terminal by $a_i &gt; 0$ .
-This, however, would not be independent of the resolution chosen.
+(ii) One could try to define semi-terminal by $a_i &gt; 0$ . This, however, would not be independent of the resolution chosen.
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 (iii) If $f' \colon Y' \to X$ is any semi-resolution of $X$ and if $Z' = \sum a_i' E_i'$, then $X$ is semi-canonical iff $a_i' \geq 0$.
 This follows easily from 4.8.
@@ -1233,8 +1116,7 @@ canonical), then $a_{i} &gt; -1$ (resp.
 $\geq -1$).
 
 **Definition 4.19.** The rest of this chapter will be devoted to the classification of the above singularities.
-For normal surfaces this was done by Kawamata [Kaw1]; see also [Kaw2].
-The general case runs very much along the same lines.
+For normal surfaces this was done by Kawamata [Kaw1]; see also [Kaw2]. The general case runs very much along the same lines.
 Using 4.12 the Gorenstein case can be handled very efficiently.
 Therefore we shall give full proofs for this.
 First we have to recall the definition of certain singularities.
@@ -1250,8 +1132,7 @@ In this case $Y$ has no pinch points and the irreducible components of $X$ have 
 **Theorem 4.21.** Let $(x, X)$ be a Gorenstein surface singularity such that $X - x$ is semi-smooth.
 Then
 
-(i) $X$ is semi-canonical iff $x \in X$ is either a smooth, a n.c.
-point, a pinch point or a DuVal singularity.
+(i) $X$ is semi-canonical iff $x \in X$ is either a smooth, a n.c. point, a pinch point or a DuVal singularity.
 
 (ii) $X$ is semi-log-canonical iff $X$ is either a simple elliptic singularity, a cusp, a degenerate cusp or semi-canonical.
 
@@ -1337,8 +1218,7 @@ It is easy to decide which ones descend to an action on the pinch point.
 
 (ii) The Gorenstein ones enumerated in 4.21 (ii),
 
-(iii) $\mathbb{Z}_2, \mathbb{Z}_3, \mathbb{Z}_4$ and $\mathbb{Z}_6$ quotients of simple elliptic ones enumerated in (Kaw 1, pp.
-226–227],
+(iii) $\mathbb{Z}_2, \mathbb{Z}_3, \mathbb{Z}_4$ and $\mathbb{Z}_6$ quotients of simple elliptic ones enumerated in (Kaw 1, pp. 226–227],
 
 (iv) $\mathbb{Z}_2$ quotients of cusp and degenerate cusps.
 
@@ -1347,9 +1227,7 @@ It is easy to decide which ones descend to an action on the pinch point.
 **Remark 4.25.** [Kaw 1, pp. 226–227] lists the dual graph of the minimal resolution of the singularity.
 The first one is a $\mathbb{Z}_2$ quotient of a cusp; this we consider
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 in (iv).
 Note also that the last graph is incorrect.
@@ -1370,9 +1248,7 @@ For $n = 1$ we blow up the origin of $\mathbb{C}^2$ once.
 
 These are the same objects as given in [Kaw 2, 9.6 (5), (7) and (6)].
 
-(iv) If $(X, \Delta)$ is one of the above objects, then $\Delta$ is a small disc which intersects the exceptional divisor in one point, which we can take as the origin of some coordinatization of $\Delta$ .
-By the expression “ $(X, \Delta)$ with $\Delta$ pinched together” we mean the object we obtain from $X$ by identifying $d \in \Delta$ with $-d \in \Delta$ .
-This way we get a pinch point at the origin.
+(iv) If $(X, \Delta)$ is one of the above objects, then $\Delta$ is a small disc which intersects the exceptional divisor in one point, which we can take as the origin of some coordinatization of $\Delta$ . By the expression “ $(X, \Delta)$ with $\Delta$ pinched together” we mean the object we obtain from $X$ by identifying $d \in \Delta$ with $-d \in \Delta$ . This way we get a pinch point at the origin.
 
 Proposition 4.27. The minimal semi-resolutions of the semi-log-canonical singularities are given as follows:
 
@@ -1380,9 +1256,7 @@ Proposition 4.27. The minimal semi-resolutions of the semi-log-canonical singula
 
 (ii) identity resolution.
 
-(iii) $(A, \mathbb{Z}_r, a, \Delta)$ and $(A, \mathbb{Z}_r, b, \Delta)$ attached along the curves $\Delta$ .
-(iv) $(A, \mathbb{Z}_{r/2}, \frac{1}{2} a, \Delta)$ pinched along $\Delta$ .
-(v) $(A, \mathbb{Z}_r, a, \Delta)$ pinched along $\Delta$ .
+(iii) $(A, \mathbb{Z}_r, a, \Delta)$ and $(A, \mathbb{Z}_r, b, \Delta)$ attached along the curves $\Delta$ . (iv) $(A, \mathbb{Z}_{r/2}, \frac{1}{2} a, \Delta)$ pinched along $\Delta$ . (v) $(A, \mathbb{Z}_r, a, \Delta)$ pinched along $\Delta$ .
 
 4.24 (iii) see Kawamata [Kaw 2,9] and 4.25.
 
@@ -1393,12 +1267,10 @@ At the ends we have either $a(C, \Delta)$ component or an $(A, 2\Delta)$ compone
 We can also have only one $(A, 2\Delta)$ with both components of $\Delta$ pinched.
 
 Remark 4.28. Both (iii) and (iv) are of the form $(A, \mathbb{Z}_n, \Delta)$ with $\Delta$ pinched.
-However, if $n$ is even, then the index is $2n$ , while if $n$ is odd, then the index is $n$ .
-This is somewhat surprising.
+However, if $n$ is even, then the index is $2n$ , while if $n$ is odd, then the index is $n$ . This is somewhat surprising.
 
 Remark 4.29. Let $(x,X)$ be a singularity such that $X - x$ is semi-smooth and let $D\subset X$ be the double curve.
-Let $g\colon \bar{X}\to X$ be the normalization and $\varDelta=g^{*}D$ .
-Kawamata [Kaw2, 9] defines the notion of the pair $(\bar{X},\varDelta)$ being log-canonical.
+Let $g\colon \bar{X}\to X$ be the normalization and $\varDelta=g^{*}D$ . Kawamata [Kaw2, 9] defines the notion of the pair $(\bar{X},\varDelta)$ being log-canonical.
 One can easily prove the following.
 
 Threefolds and deformations of surface singularities
@@ -1415,28 +1287,23 @@ This phenomenon, namely that information is lost after normalization or becomes 
 In the introduction, we mentioned that one of our motivating problems is that of compactifying moduli spaces for surfaces of general type.
 In this section we shall first show that the appropriate singularities to permit on the surfaces at the boundaries of moduli spaces are semi-log-canonical (s.l.c.), and secondly we shall make precise the moduli problem to consider.
 
-The first part amounts to showing that if $\bar{X} \to \Delta$ is a semi-stable family of surfaces of general type and $X \to \Delta$ is its canonical model, then the special fibre $X_0$ has just s.l.c.
-singularities, and that conversely if $X \to \Delta$ is a one-parameter deformation of the surface $X_0$ that has just s.l.c.
-singularities, if the general fibre $X_t$ has only RDP singularities and if $X$ is $\mathbb{Q}$-Gorenstein, then $X$ has just canonical singularities.
+The first part amounts to showing that if $\bar{X} \to \Delta$ is a semi-stable family of surfaces of general type and $X \to \Delta$ is its canonical model, then the special fibre $X_0$ has just s.l.c. singularities, and that conversely if $X \to \Delta$ is a one-parameter deformation of the surface $X_0$ that has just s.l.c. singularities, if the general fibre $X_t$ has only RDP singularities and if $X$ is $\mathbb{Q}$-Gorenstein, then $X$ has just canonical singularities.
 This is made precise in Theorem 5.1, which is a generalization of Corollary 3.6.
 
 Theorem 5.1. Suppose that $X \to \Delta$ is a $\mathbb{Q}$-Gorenstein one-parameter deformation of the surface $X_0$.
 
 (a) Suppose that $X$ admits a resolution $\bar{X} \to X$ such that the composite $\bar{X} \to \Delta$ is semi-stable.
-Then $X$ has canonical singularities if and only if $X_0$ has s.l.c.
-singularities and for $t \neq 0$, $X_t$ has only RDP's.
+Then $X$ has canonical singularities if and only if $X_0$ has s.l.c. singularities and for $t \neq 0$, $X_t$ has only RDP's.
 
 (b) The product $X \times_{\Delta} \Delta_1$ has canonical (resp.
 pseudo-terminal, resp.
-terminal) singularities for all finite base changes $\Delta_1 \to \Delta$ if and only if $X_0$ has s.l.c.
-(resp.
+terminal) singularities for all finite base changes $\Delta_1 \to \Delta$ if and only if $X_0$ has s.l.c. (resp.
 s.l.t., resp.
 quotient) singularities and for $t \neq 0$.
 $X_t$ has only RDP's (resp.
 RDP's, resp.
 no singularities).
-In particular, if $X_0$ has s.l.c.
-(resp.
+In particular, if $X_0$ has s.l.c. (resp.
 s.l.t., resp.
 quotient) singularities and for $t \neq 0$, $X_t$ has RDP's (resp.
 RDP's, resp.
@@ -1451,44 +1318,27 @@ Let $V$ be a component of $X_0$, $D$ its double curve with reduced structure and
 Let $\mu: W \to V$ denote the induced map.
 We can write $K_W \sim \mu^*(K_V + D) + \sum a_i F_i$, where $\cup F_i$ is the union of the exceptional locus of $\mu$ with the strict transform of $D$ and $a_i = -1$ if $\dim \mu(F_i) = 1$.
 Now $K_{\bar{X}} \sim \pi^* K_X + \sum v_i E_i$, where the $E_i$ are the exceptional divisors in $\bar{X}$ and every $v_i \geq 0$, then by the adjunction formula $a_j \geq -1$ for every $j$.
-I.e. the pair $(V, D)$ is log canonical in the sense of Kawamata [Kaw2] and so by 4.30, $X_0$ is s.l.c.
-That $X_t$ has only RDP's is clear.
+I.e. the pair $(V, D)$ is log canonical in the sense of Kawamata [Kaw2] and so by 4.30, $X_0$ is s.l.c. That $X_t$ has only RDP's is clear.
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
-Conversely, suppose that $X_0$ has s.l.c.
-singularities and that $X_t$ has RDP's for $t \neq 0$ .
-Let $X'$ denote a minimal model of $\tilde{X}$ , so that there is a factorization $\tilde{X} \to X' \to X$ over $\Delta$ .
-Let $V, D$ be as above and $W'$ the strict transform of $V$ in $X'$ .
-Let $v: W' \to V$ denote the induced map.
-Since by 4.30 $X_0$ has log canonical singularities, we can write $K_{W'} \sim v^*(K_V + D) + \sum a_i F_i$ , where $a_i \geq -1$ and $a_i = -1$ if $\dim v(F_i) = 1$ .
-Since by the adjunction formula $K_{X'} | W' \sim K_{W'} + G$ , where $G$ is the reduced sum of the double curves on $W'$ , we get $K_{X'} | W' \sim v^*(K_V + D) + \sum b_j H_j$ , where the $H_j$ are the exceptional curves of $v, b_j = a_j + 1$ if $H_j$ is a double curve in $X_0'$ and $b_j = a_j$ otherwise.
-Then since $\cup_{H_j}$ is connected and $K_{X'}$ is numerically effective, it follows that if some $H_j$ is a double curve in $X_0'$ , then every $H_j$ is double and every $a_i = -1$ .
-In this case, $K_{X'} \cdot H_j = 0$ for all $j$ .
-Now let $X''$ denote the canonical model of $X'$ and $g: X' \to X''$ the corresponding contraction.
-Then for every component $V$ of $X_0$ with strict transform $W''$ in $X''$ , no exceptional curve of the contraction $W'' \to V$ is a double curve in $X_0''$ .
-Hence for every exceptional divisor $E$ of the morphism $h: X'' \to X$ , the centre of $E$ on $X$ is not $P$ .
-Since $X$ certainly has canonical (in fact $cDV$ ) singularities outside $P$ , it follows that $K_{X'} \sim h^* K_X + B$ , where $B \geq 0$ , and so $X$ has canonical singularities.
+Conversely, suppose that $X_0$ has s.l.c. singularities and that $X_t$ has RDP's for $t \neq 0$ . Let $X'$ denote a minimal model of $\tilde{X}$ , so that there is a factorization $\tilde{X} \to X' \to X$ over $\Delta$ . Let $V, D$ be as above and $W'$ the strict transform of $V$ in $X'$ . Let $v: W' \to V$ denote the induced map.
+Since by 4.30 $X_0$ has log canonical singularities, we can write $K_{W'} \sim v^*(K_V + D) + \sum a_i F_i$ , where $a_i \geq -1$ and $a_i = -1$ if $\dim v(F_i) = 1$ . Since by the adjunction formula $K_{X'} | W' \sim K_{W'} + G$ , where $G$ is the reduced sum of the double curves on $W'$ , we get $K_{X'} | W' \sim v^*(K_V + D) + \sum b_j H_j$ , where the $H_j$ are the exceptional curves of $v, b_j = a_j + 1$ if $H_j$ is a double curve in $X_0'$ and $b_j = a_j$ otherwise.
+Then since $\cup_{H_j}$ is connected and $K_{X'}$ is numerically effective, it follows that if some $H_j$ is a double curve in $X_0'$ , then every $H_j$ is double and every $a_i = -1$ . In this case, $K_{X'} \cdot H_j = 0$ for all $j$ . Now let $X''$ denote the canonical model of $X'$ and $g: X' \to X''$ the corresponding contraction.
+Then for every component $V$ of $X_0$ with strict transform $W''$ in $X''$ , no exceptional curve of the contraction $W'' \to V$ is a double curve in $X_0''$ . Hence for every exceptional divisor $E$ of the morphism $h: X'' \to X$ , the centre of $E$ on $X$ is not $P$ . Since $X$ certainly has canonical (in fact $cDV$ ) singularities outside $P$ , it follows that $K_{X'} \sim h^* K_X + B$ , where $B \geq 0$ , and so $X$ has canonical singularities.
 
 The proof of (b) is very similar, and so omitted.
 
-5.2. We pause to consider which s.l.c.
-singularities admit one-parameter $\mathbb{Q}$ -Gorenstein deformations to RDP's.
-We refer to the classification given in Theorems 4.21, 4.23, 4.24.
+5.2. We pause to consider which s.l.c. singularities admit one-parameter $\mathbb{Q}$ -Gorenstein deformations to RDP's. We refer to the classification given in Theorems 4.21, 4.23, 4.24.
 
 4.21. (i): All
 
-(ii) The simple elliptic singularities of multiplicity at most 9 [Pi2].
-For cusps the problem is unsolved, and we have nothing to contribute.
-Recently J.
-Stevens showed that all degenerate cusps are smoothable (unpublished).
+(ii) The simple elliptic singularities of multiplicity at most 9 [Pi2]. For cusps the problem is unsolved, and we have nothing to contribute.
+Recently J. Stevens showed that all degenerate cusps are smoothable (unpublished).
 
 4.23. (i): See Proposition 3.10
 
-(iii) Only those with $a + b = r$
-(iv), (v): None
+(iii) Only those with $a + b = r$ (iv), (v): None
 
 All these can be proved as in 3.10.
 
@@ -1496,58 +1346,38 @@ All these can be proved as in 3.10.
 
 ![img-3.jpeg](img-3.jpeg)
 
-and admit deformations as above if and only if $3 \leq d \leq 6$ .
-There are examples of $\mathbb{Z}_3$ - and $\mathbb{Z}_4$ -quotients possessing the deformations we see.
+and admit deformations as above if and only if $3 \leq d \leq 6$ . There are examples of $\mathbb{Z}_3$ - and $\mathbb{Z}_4$ -quotients possessing the deformations we see.
 
 (iv) This is at least as hard as determining which cusps are smoothable, but there are examples of arbitrarily high multiplicity.
 
-Theorem 5.3. Suppose that $X \to \Delta$ is a one-parameter deformation of the normal s.l.c.
-singularity $(X_0, P)$ , and that $X$ has a semistable $\tilde{X}$ .
-Let $X' \to \Delta$ be a minimal model of $\tilde{X} \to \Delta$ .
-Then either the special fibre $X_0'$ has only RDP's or quotient
+Theorem 5.3. Suppose that $X \to \Delta$ is a one-parameter deformation of the normal s.l.c. singularity $(X_0, P)$ , and that $X$ has a semistable $\tilde{X}$ . Let $X' \to \Delta$ be a minimal model of $\tilde{X} \to \Delta$ . Then either the special fibre $X_0'$ has only RDP's or quotient
 
 Threefolds and deformations of surface singularities
 
 singularities of class $T$ (i.e. normal log terminal singularities) or $X$ has just canonical singularities.
 
 Proof.
-Write $X_0' = \cup V_i$ , where $V_1 = V$ is the strict transform of $X_0$ .
-Let $\tilde{V}$ be the normalization of $V$ and let $f \colon \tilde{V} \to X_0$ be the contraction.
+Write $X_0' = \cup V_i$ , where $V_1 = V$ is the strict transform of $X_0$ . Let $\tilde{V}$ be the normalization of $V$ and let $f \colon \tilde{V} \to X_0$ be the contraction.
 Write $K_X | \tilde{W} \sim -E + f^* F$ , where $F$ is a $\mathbb{Q}$ -divisor on $X_0$ and $E = \sum v_i C_i$ , where the $C_i$ are exceptional curves of $f$ , where $v_i \in \mathbb{Q}$ , and $v_i \geq 0$ since $K_X$ is numerically effective and the exceptional locus of $f$ is negative definite.
-So in a neighbourhood of $f^{-1}(p) = \cup C_i$ , we have $K_{X'} | \tilde{W} \sim -\sum v_i C_i$ .
-By the adjunction formula, $K_{\tilde{V}} \sim -\sum \mu_i C_i$ , where $\mu_i = v_i$ if $C_i$ is not a double curve and $\mu_i = v_i + 1$ if $C_i$ is a double curve.
-The condition that $X_0$ be log canonical implies that $\mu_i \leq 1$ for all $i$ , so that if we assume $C_r$ to be double, then $\mu_r = 1$ and $v_r = 0$ .
-Since $K_{X'}$ is numerically effective and $\cup C_i$ is connected, it follows that $v_i = 0$ for all $i$ .
-Then $K_{X'}$ is numerically trivial on $\cup C_i$ , so that if $\pi \colon X' \to X''$ is the contraction to the canonical model, then $\pi$ contracts $\cup C_i$ to a point.
+So in a neighbourhood of $f^{-1}(p) = \cup C_i$ , we have $K_{X'} | \tilde{W} \sim -\sum v_i C_i$ . By the adjunction formula, $K_{\tilde{V}} \sim -\sum \mu_i C_i$ , where $\mu_i = v_i$ if $C_i$ is not a double curve and $\mu_i = v_i + 1$ if $C_i$ is a double curve.
+The condition that $X_0$ be log canonical implies that $\mu_i \leq 1$ for all $i$ , so that if we assume $C_r$ to be double, then $\mu_r = 1$ and $v_r = 0$ . Since $K_{X'}$ is numerically effective and $\cup C_i$ is connected, it follows that $v_i = 0$ for all $i$ . Then $K_{X'}$ is numerically trivial on $\cup C_i$ , so that if $\pi \colon X' \to X''$ is the contraction to the canonical model, then $\pi$ contracts $\cup C_i$ to a point.
 So either no curve $C_i$ is double, in which case $X_0'$ is normal, or $X'' = X$ , and the theorem follows from the classification of log-terminal singularities.
 
 5.4. We shall now make precise the moduli problem that we want to consider.
 Fix positive integers $A, B, N$ ; then we should like to construct a coarse moduli space (at least in the category of algebraic spaces) for those schemes $S$ satisfying the following properties:
 
-(i) $S$ is a reduced projective surface;
-(ii) $S$ is connected with only s.l.c.
-singularities;
-(iii) the sheaf $\omega_{S}^{[N]}$ , defined by $\omega_{S}^{[N]} = j_{*}(\omega_{S_{0}}^{\otimes N})$ , where $j\colon S_0\to S$ is the locus of Gorenstein points of $S$ in an ample line bundle;
-(iv) the self-intersection $K_S^2$ , defined to be $\frac{1}{N^2} (\omega_S^{[N]}\cdot \omega_S^{[N]})$ , equals $A$ ;
-(v) $\chi (\mathcal{C}_S) = B$
+(i) $S$ is a reduced projective surface; (ii) $S$ is connected with only s.l.c. singularities; (iii) the sheaf $\omega_{S}^{[N]}$ , defined by $\omega_{S}^{[N]} = j_{*}(\omega_{S_{0}}^{\otimes N})$ , where $j\colon S_0\to S$ is the locus of Gorenstein points of $S$ in an ample line bundle; (iv) the self-intersection $K_S^2$ , defined to be $\frac{1}{N^2} (\omega_S^{[N]}\cdot \omega_S^{[N]})$ , equals $A$ ; (v) $\chi (\mathcal{C}_S) = B$
 
-The functor $\mathcal{M}$ : (Schemes) $\rightarrow$ (Sets) under consideration is given by $\mathcal{M}(T) = \{\text{isomorphism classes of flat projective morphisms } f\colon \mathcal{S} \to T \text{ such that (i)-(v) above hold for every geometric fibre of } f \text{ and for every geometric point } t \in T, \text{ the natural map } \omega_{\mathcal{S}/T}^{[N]} \otimes k(t) \to \omega_{\mathcal{S}/T}^{[N]}\}$ is an isomorphism, where $\omega_{\mathcal{S}/T}^{[N]} = j_*(\omega_{\mathcal{S}_0/T}^{N}), j\colon \mathcal{S}_0 \to \mathcal{S}$ being the inclusion of the locus where $f$ is a Gorenstein morphism\}.
-More briefly, we should be concerned with families of semi-log canonical surfaces in which the formation of $\omega^{[N]}$ commutes with specialization; this is required to ensure that any resulting moduli space will be separated.
+The functor $\mathcal{M}$ : (Schemes) $\rightarrow$ (Sets) under consideration is given by $\mathcal{M}(T) = \{\text{isomorphism classes of flat projective morphisms } f\colon \mathcal{S} \to T \text{ such that (i)-(v) above hold for every geometric fibre of } f \text{ and for every geometric point } t \in T, \text{ the natural map } \omega_{\mathcal{S}/T}^{[N]} \otimes k(t) \to \omega_{\mathcal{S}/T}^{[N]}\}$ is an isomorphism, where $\omega_{\mathcal{S}/T}^{[N]} = j_*(\omega_{\mathcal{S}_0/T}^{N}), j\colon \mathcal{S}_0 \to \mathcal{S}$ being the inclusion of the locus where $f$ is a Gorenstein morphism\}. More briefly, we should be concerned with families of semi-log canonical surfaces in which the formation of $\omega^{[N]}$ commutes with specialization; this is required to ensure that any resulting moduli space will be separated.
 
 This approach raises several questions:
 
-(1) Given positive integers $A, B$ , does there exist an integer $N$ , depending only on $A$ and $B$ , and such that whenever $S$ is the special fibre of a relative canonical model $X \to \Delta$ whose general fibre satisfies $K^2 = A$ and $\chi(\mathcal{C}) = B$ , the index of $S$ divides $N$ ?
-(2) Given positive integers $A, B, N$ , is there a number $M$ such that for every s.l.c.
-surface $S$ with $K_S^2 = A$ , $\chi(\mathcal{C}_S) = B$ whose index divides $N$ , the sheaf $(\omega_S^{[N]})^{\otimes M}$ is very ample?
-(3) Given an s.l.c.
-surface $S$ with $\omega_{S}$ ample, is Aut $S$ finite?
-(4) If $X \to \Delta$ is a one-parameter family of surfaces such that the special fibre $S$ is an s.l.c.
-surface with $K_S^2 = A$ , $\chi(\mathcal{C}_S) = B$ whose index divides $N$ , and if $\omega_{X/\Delta}^{[N]}$ is invertible, then is the geometric generic fibre also an s.l.c.
-surface? Of course,
+(1) Given positive integers $A, B$ , does there exist an integer $N$ , depending only on $A$ and $B$ , and such that whenever $S$ is the special fibre of a relative canonical model $X \to \Delta$ whose general fibre satisfies $K^2 = A$ and $\chi(\mathcal{C}) = B$ , the index of $S$ divides $N$ ? (2) Given positive integers $A, B, N$ , is there a number $M$ such that for every s.l.c. surface $S$ with $K_S^2 = A$ , $\chi(\mathcal{C}_S) = B$ whose index divides $N$ , the sheaf $(\omega_S^{[N]})^{\otimes M}$ is very ample?
+(3) Given an s.l.c. surface $S$ with $\omega_{S}$ ample, is Aut $S$ finite?
+(4) If $X \to \Delta$ is a one-parameter family of surfaces such that the special fibre $S$ is an s.l.c. surface with $K_S^2 = A$ , $\chi(\mathcal{C}_S) = B$ whose index divides $N$ , and if $\omega_{X/\Delta}^{[N]}$ is invertible, then is the geometric generic fibre also an s.l.c. surface?
+Of course,
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 it would be of interest to know the answer to this without the hypothesis that $\omega_{X / \Delta}^{[N]}$ be invertible, but for our moduli problem this generality would be superfluous.
 
@@ -1556,9 +1386,8 @@ Question (1) seems rather hard, and we leave it completely open.
 However, the answer to both (2) and (3) is yes.
 The first by [Ko1, 2.1.2] and the second by Iitaka [I], who has shown that a surface of log general type (and so every component of $S$) has finite automorphism group.
 
-Corollary 5.5. Suppose that $X \to \Delta$ is a one-parameter deformation of the (germ of the) normal s.l.c.
-singularity $(X_0, P)$ and that for some $N &gt; 0$, the sheaf $\omega_{X / \Delta}^{[N]} is invertible. Then the general fibre $X_t$ has just s.l.c.
-singularities.
+Corollary 5.5. Suppose that $X \to \Delta$ is a one-parameter deformation of the (germ of the) normal s.l.c. singularity $(X_0, P)$ and that for some $N &gt; 0$, the sheaf $\omega_{X / \Delta}^{[N]} is invertible.
+Then the general fibre $X_t$ has just s.l.c. singularities.
 
 Proof.
 One may assume that $X \to \Delta$ admits a semistable resolution.
@@ -1566,9 +1395,7 @@ By Theorem 5.3, either $X$ is cannonical, in which case the general fibre has on
 In the first case there is nothing to prove, while in the second we argue as follows.
 Let $f \colon X' \to X$ be a minimal model of $X$.
 We can write $K_{X'} \sim f^* K_X + \sum a_i E_i$ as $\mathbb{Q}$-divisors, where the exceptional prime divisors $E_i$ are flat over $\Delta$.
-So $K_{X_0} \sim f^* K_{X0} + \sum a_i (E_i|_{X_0})$; since $X_0$ has only s.l.c.
-singularities and $E_i|_{X_0}$ is an effective integral divisor, it follows that $a_i \geq -1$ for all $i$, and so, since $X_1'$ is smooth for $t \neq 0$, we see that $X_t$ has only s.l.c.
-singularities.
+So $K_{X_0} \sim f^* K_{X0} + \sum a_i (E_i|_{X_0})$; since $X_0$ has only s.l.c. singularities and $E_i|_{X_0}$ is an effective integral divisor, it follows that $a_i \geq -1$ for all $i$, and so, since $X_1'$ is smooth for $t \neq 0$, we see that $X_t$ has only s.l.c. singularities.
 
 Remark 5.6. If $X_0$ is not normal, then Corollary 5.5 still holds.
 For by the classification of ch.4, we may assume that $X_0$ is a degenerate cusp or a $\mathbb{Z}_2$-quotient of one; in the first case the techniques of [S-B1] prove the result, and in the second case one can apply the same approach to the $\mathbb{Z}_2$ cover.
@@ -1577,21 +1404,16 @@ For by the classification of ch.4, we may assume that $X_0$ is a degenerate cusp
 Corollary 5.7. The functor $\mathcal{M}$ is coarsely represented by a separated algebraic space $M$ of finite type.
 
 Proof.
-Since questions (2)-(4) have affirmative answers, we can apply the results described in ch.
-4 of Popp's book [Po] to prove the result.
+Since questions (2)-(4) have affirmative answers, we can apply the results described in ch. 4 of Popp's book [Po] to prove the result.
 
 Remark 5.8. Of course, if we knew how to bound the index in terms of the Chern numbers, as asked in question (1), then for sufficiently divisible $N$, $M$ would be proper.
 
-Finally, we can sometimes analyze the versal deformation space of a normal s.l.c.
-singularity, as we did for quotient singularities in ch.
-3.
+Finally, we can sometimes analyze the versal deformation space of a normal s.l.c. singularity, as we did for quotient singularities in ch. 3.
 
-Theorem 5.9. Suppose that $(X, P)$ is a normal s.l.c.
-singularity whose canonical cover $(Y, Q)$ has a smooth versal deformation space.
+Theorem 5.9. Suppose that $(X, P)$ is a normal s.l.c. singularity whose canonical cover $(Y, Q)$ has a smooth versal deformation space.
 Then the irreducible components of $\operatorname{Def}(X)$ are in $1 - 1$ correspondence with the partial resolutions $f \colon Z \to X$ such that $K_Z$ is ample and either
 
-(i) $Z$ has only singularities of class $T$, or
-(ii) $f$ is an isomorphism and $X$ admits a $\mathbb{Q}$-Gorenstein one-parameter deformation to RDP's.
+(i) $Z$ has only singularities of class $T$, or (ii) $f$ is an isomorphism and $X$ admits a $\mathbb{Q}$-Gorenstein one-parameter deformation to RDP's.
 
 Threefolds and deformations of surface singularities
 
@@ -1604,31 +1426,24 @@ Example 5.11. Suppose that $X$ is the singularity with dual graph
 
 ![img-4.jpeg](img-4.jpeg)
 
-Then $X$ is s.l.c.
-and its canonical cover $Y$ is the singularity $x^3 + y^3 + z^3 = 0$ on which $H = \langle \sigma \rangle$ acts via $\sigma(x, y, z) = (\omega x, \omega y, \omega^2 z)$ , where $\omega = \exp(2\pi i / 3)$ .
-Then Def $X$ has five components.
+Then $X$ is s.l.c. and its canonical cover $Y$ is the singularity $x^3 + y^3 + z^3 = 0$ on which $H = \langle \sigma \rangle$ acts via $\sigma(x, y, z) = (\omega x, \omega y, \omega^2 z)$ , where $\omega = \exp(2\pi i / 3)$ . Then Def $X$ has five components.
 One corresponding to Fix $H \subset \operatorname{Def} Y$ , one (the Artin component) corresponding to the canonical model of $X$ and one for each of the partial resolutions obtained by contracting one of [3, 2, 3] configurations in the diagram above.
 To check that these are all is a little tedious, especially as here there is no maximal resolution.
 
 Example 5.12. We give an example to show that our partial compactifications can lead to disconnected components of the moduli space becoming joined together.
-To see this, let $Y_0 \subset \mathbb{P}^8$ be the projective cone over an octic elliptic curve in $\mathbb{P}^7$ .
-Then there are (projective) smoothings $Y \to \varLambda$ and $Y' \to \varLambda$ of $Y_0$ , where for $t \neq 0$ , $Y_t$ and $Y_t'$ are octic Del Pezzo surfaces, isomorphic to $\mathbb{P}^1 \times \mathbb{P}^1$ and the rational ruled surface $\mathbb{F}_1$ , respectively.
-Let $X \to \varLambda$ and $X' \to \varLambda$ be the double covers of $Y$ and $Y'$ , respectively, branched in a general quartic hypersurface section, both of which cut out the same smooth curve on $Y_0$ .
-Then for $t \neq 0$ , both $X_t$ and $X_t'$ have $K^2 = 16$ , $\chi = 10$ , while $K_{X_t}$ is even and $K_{X_t'}$ is not.
+To see this, let $Y_0 \subset \mathbb{P}^8$ be the projective cone over an octic elliptic curve in $\mathbb{P}^7$ . Then there are (projective) smoothings $Y \to \varLambda$ and $Y' \to \varLambda$ of $Y_0$ , where for $t \neq 0$ , $Y_t$ and $Y_t'$ are octic Del Pezzo surfaces, isomorphic to $\mathbb{P}^1 \times \mathbb{P}^1$ and the rational ruled surface $\mathbb{F}_1$ , respectively.
+Let $X \to \varLambda$ and $X' \to \varLambda$ be the double covers of $Y$ and $Y'$ , respectively, branched in a general quartic hypersurface section, both of which cut out the same smooth curve on $Y_0$ . Then for $t \neq 0$ , both $X_t$ and $X_t'$ have $K^2 = 16$ , $\chi = 10$ , while $K_{X_t}$ is even and $K_{X_t'}$ is not.
 Hence $X_t$ and $X_t'$ are not homeomorphic, and so lie on different components of the moduli space; introducing the moduli point of $X_0(\cong X_0')$ connects these two components together.
 
 Notice also that the singularities of $X_0$ are of multiplicity eight, so that $X_0$ is asymptotically unstable [M2].
 
 # $\S 6$ Three dimensional terminal singularities
 
-The aim of this chapter is to settle some questions that were left open in Mori [Mo1].
-This will complete the classification of three dimensional terminal singularities.
+The aim of this chapter is to settle some questions that were left open in Mori [Mo1]. This will complete the classification of three dimensional terminal singularities.
 
 Most of the work was done earlier by various persons, we now recall their relevant results.
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 Theorem 6.1. (Reid [Re 3])
 
@@ -1646,11 +1461,7 @@ Theorem 6.4. (Mori [Mo1]) Assume that $\mathbb{Z}_m(m &gt; 1)$ acts on a cDV poi
 Then one can take a suitable embedding of the cDV point into $\mathbb{C}^4$ and suitable coordinates such that the equation $g$ of the cDV point and the action of the group are given by one of the following cases:
 
 (1) $m$ arbitrary, $g = xy + f(z,u^{m}), w(x) + w(y) = m, w(z) = 0, w(x), w(y)$ and $w(u)$ prime to $m$.
-(2) $m = 2, g = x^{2} + y^{2} + f(z,u), f \in m^{4}$, weight of $x, y, z, u$ are 1, 0, 1, 1.
-(3) $m = 2, g = u^2 + f(x, y, z), f \in m^3, xyz$ or $y^2z$ appears in $f$ with non-zero coefficient, weights of variables are 1, 1, 0, 1.
-(4) $m = 2, g = u^2 + x^3 + f(y, z) x + h(y, z), h \notin m^5$, weights are 0, 1, 1, 1.
-(5) $m = 3, g = u^2 + f(x, y, z), f \in m^3$, cubic term of $f$ is $x^3 + y^3 + z^3$, $x^3 + yz^2$ or $x^3 + y^3$, weights are 1, 2, 2, 0.
-(6) $m = 4, g = x^{2} + y^{2} + f(z,u^{2})$, weights are 1, 3, 2, 1.
+(2) $m = 2, g = x^{2} + y^{2} + f(z,u), f \in m^{4}$, weight of $x, y, z, u$ are 1, 0, 1, 1. (3) $m = 2, g = u^2 + f(x, y, z), f \in m^3, xyz$ or $y^2z$ appears in $f$ with non-zero coefficient, weights of variables are 1, 1, 0, 1. (4) $m = 2, g = u^2 + x^3 + f(y, z) x + h(y, z), h \notin m^5$, weights are 0, 1, 1, 1. (5) $m = 3, g = u^2 + f(x, y, z), f \in m^3$, cubic term of $f$ is $x^3 + y^3 + z^3$, $x^3 + yz^2$ or $x^3 + y^3$, weights are 1, 2, 2, 0. (6) $m = 4, g = x^{2} + y^{2} + f(z,u^{2})$, weights are 1, 3, 2, 1.
 
 (It is understood that $f$ and $h$ are such that $g$ is an eigenvector of $\mathbb{Z}_m$.)
 
@@ -1665,47 +1476,33 @@ Remark 6.6. (i) (1) should be considered as the main series and (2)-(6) as the e
 We shall use two different methods to handle these two cases.
 Neither of the methods seems to work for the other case.
 
-(ii) We shall give two proofs for (1).
-The first uses 3.6. The second, communicated to us by Mori, does not use any hard result from three dimensional geometry.
+(ii) We shall give two proofs for (1). The first uses 3.6. The second, communicated to us by Mori, does not use any hard result from three dimensional geometry.
 
-6.7. Proof in case of (1).
-First proof.
+6.7. Proof in case of (1). First proof.
 $z$ is invariant under the group action and therefore $(xy + f(0,u^{m}) = 0) / \mathbb{Z}_{m}$ is a hyperplane section of the 3-dimensional quotient singularity.
-$xy + f(0,u^{m}) = 0$ is either a n.c.
-point $(f\equiv 0)$ or a DV point
+$xy + f(0,u^{m}) = 0$ is either a n.c. point $(f\equiv 0)$ or a DV point
 
 Threefolds and deformations of surface singularities
 
-$(f \neq 0)$ , and hence the quotient is semi-log-terminal by 4.23. Therefore, 3.6 implies that the 3-dimensional quotient is terminal (the n.c.
-case is the same).
+$(f \neq 0)$ , and hence the quotient is semi-log-terminal by 4.23. Therefore, 3.6 implies that the 3-dimensional quotient is terminal (the n.c. case is the same).
 
-Second proof (by S.
-Mori).
-Since $\mathbb{Z}_m$ acts freely on $X$ , $z$ does not divide $f(z, u^m)$ .
-Therefore by Puiseux expansion we can write $f(z, u^m) = \Pi(u^m - h_i(v))$ , where $v^n = z$ for some $n$ .
-By 3.3 it is sufficient to show that the $\mathbb{Z}_m$ quotient of $xy + \Pi(u^m - h_i(v)) = 0$ is terminal.
-If we blow up the ideal $(x, u^m - h_1(v))$ , then we get a small morphism $\pi_1 \colon X_1 \to X$ and easy computation shows that the only singularities of $X_1$ are the $\mathbb{Z}_m$ quotient of $xy + u^m - h_1(v) = 0$ and the $\mathbb{Z}_m$ quotient of $xy + \Pi_{i \geq 2}(u^m - h_i(v)) = 0$ .
-Repeating this procedure, we get a small morphism $\pi \colon \bar{X} \to Y$ such that the only singularities of $\bar{X}$ are of the form $(xy + u^m - h_i(v) = 0) / \mathbb{Z}_m$ .
-By a suitable choice of $v_i = v g_i(v)$ , this becomes $(xy + u^m - v_i^s = 0) / \mathbb{Z}_m$ .
-By 6.4 and 6.8 (v) $\bar{X}$ has terminal singularities.
+Second proof (by S. Mori).
+Since $\mathbb{Z}_m$ acts freely on $X$ , $z$ does not divide $f(z, u^m)$ . Therefore by Puiseux expansion we can write $f(z, u^m) = \Pi(u^m - h_i(v))$ , where $v^n = z$ for some $n$ . By 3.3 it is sufficient to show that the $\mathbb{Z}_m$ quotient of $xy + \Pi(u^m - h_i(v)) = 0$ is terminal.
+If we blow up the ideal $(x, u^m - h_1(v))$ , then we get a small morphism $\pi_1 \colon X_1 \to X$ and easy computation shows that the only singularities of $X_1$ are the $\mathbb{Z}_m$ quotient of $xy + u^m - h_1(v) = 0$ and the $\mathbb{Z}_m$ quotient of $xy + \Pi_{i \geq 2}(u^m - h_i(v)) = 0$ . Repeating this procedure, we get a small morphism $\pi \colon \bar{X} \to Y$ such that the only singularities of $\bar{X}$ are of the form $(xy + u^m - h_i(v) = 0) / \mathbb{Z}_m$ . By a suitable choice of $v_i = v g_i(v)$ , this becomes $(xy + u^m - v_i^s = 0) / \mathbb{Z}_m$ . By 6.4 and 6.8 (v) $\bar{X}$ has terminal singularities.
 Since $\pi$ is small $K_{\bar{K}} = \pi^* K_X$ and consequently $X$ is terminal as well.
 
 Facts 6.8. For convenient references here we gather some facts that will be used in the sequel.
 
 (i) For any $f$ consider the family $f(x_{1},\ldots ,x_{n - 1},tx_{n}) = 0$ ; this is a flat family of hypersurfaces.
-If $t\neq 0$ then the hypersurface is isomorphic to $f(x_{1},\dots,x_{n}) = 0$ ; if $t = 0$ , to $f(x_{1},\dots,x_{n - 1},0) = 0$ .
-(ii) If $f(t, x_1, \ldots, x_n)$ is a family of hypersurfaces such that the multiplicity of $f(t, x_1, \ldots, x_n) \subset \mathbb{C}^n$ at the origin is independent of $t$ , then the family $B_0f(t, \underline{x})$ is also flat, where $B_0f(t, \underline{x})$ is the blow-up of $f(t, \underline{x}) \subset \mathbb{C}^n$ at the origin.
+If $t\neq 0$ then the hypersurface is isomorphic to $f(x_{1},\dots,x_{n}) = 0$ ; if $t = 0$ , to $f(x_{1},\dots,x_{n - 1},0) = 0$ . (ii) If $f(t, x_1, \ldots, x_n)$ is a family of hypersurfaces such that the multiplicity of $f(t, x_1, \ldots, x_n) \subset \mathbb{C}^n$ at the origin is independent of $t$ , then the family $B_0f(t, \underline{x})$ is also flat, where $B_0f(t, \underline{x})$ is the blow-up of $f(t, \underline{x}) \subset \mathbb{C}^n$ at the origin.
 (iii) [MT, Re2] Assume the $\sum a_{I}x^{I}$ defines a rational singularity at the origin.
-Then the following condition is satisfied:
-(\*) If $0 \leq v_{1}, \ldots, v_{n}$ are such that for any $I = (i_{1}, \ldots, i_{n})$ , $a_{I} \neq 0 \Rightarrow \sum i_{j} v_{j} \geq 0$ , then we necessarily have $\sum v_{i} &gt; 1$ .
+Then the following condition is satisfied: (\*) If $0 \leq v_{1}, \ldots, v_{n}$ are such that for any $I = (i_{1}, \ldots, i_{n})$ , $a_{I} \neq 0 \Rightarrow \sum i_{j} v_{j} \geq 0$ , then we necessarily have $\sum v_{i} &gt; 1$ .
 
 For any given polynomial it is standard linear algebra to check if $(^{*})$ is satisfied or not.
 We shall omit such computations.
 
-(iv) [Re2, §4] Assume that $\sum a_{I}x^{I}$ satisfies condition $(^{*})$ .
-The for generic $\lambda_I\neq 0$ the singularity of $\sum \lambda_I a_I x^I$ is rational at the origin.
-(v) For certain polynomials one can always find a change of variables $\bar{x}_i = \mu_i x_i$ such that $\sum \lambda_I a_I x^I = \sum a_I \bar{x}^I$ (e.g. $\sum a_i x_i^{b_i}$ ).
-We shall call such a polynomial generic.
+(iv) [Re2, §4] Assume that $\sum a_{I}x^{I}$ satisfies condition $(^{*})$ . The for generic $\lambda_I\neq 0$ the singularity of $\sum \lambda_I a_I x^I$ is rational at the origin.
+(v) For certain polynomials one can always find a change of variables $\bar{x}_i = \mu_i x_i$ such that $\sum \lambda_I a_I x^I = \sum a_I \bar{x}^I$ (e.g. $\sum a_i x_i^{b_i}$ ). We shall call such a polynomial generic.
 A generic polynomial defines a rational singularity iff (\*) is satisfied.
 It is easy to check whether a polynomial is generic or not, and we shall omit such computations.
 (vi) [Hin] Let $\mathbb{Z}_m$ act on $X = (f(x_1, \ldots, x_n) = 0)$ such that the $x_i$ are eigenvectors.
@@ -1717,13 +1514,9 @@ Then $B_0X$ has rational singularities only.
 
 Proof.
 In a generic coordinate system $X$ is given by $f(x_{1},\ldots ,x_{4})$ and by 6.8 (i) is specializes to $f(x_{1},x_{2},x_{3},0) = 0$ , which is the trivial deformation of a DuVal singularity.
-By a suitable change of coordinates we can assume that $f(x_{1},x_{2},x_{3},0)$ is in one of the standard forms as in [Re2, 0.2].
-In each case one can write down explicit equations for $B_0f(x_1,x_2,x_3,0)$ , and it is easy to check that all these equations are generic and satisfy (\*) .
-Therefore $B_0f(x_1,x_2,x_3,0)$ has rational singularities only.
+By a suitable change of coordinates we can assume that $f(x_{1},x_{2},x_{3},0)$ is in one of the standard forms as in [Re2, 0.2]. In each case one can write down explicit equations for $B_0f(x_1,x_2,x_3,0)$ , and it is easy to check that all these equations are generic and satisfy (\*) . Therefore $B_0f(x_1,x_2,x_3,0)$ has rational singularities only.
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 By 6.8 (ii) $B_0X$ is a flat deformation of $B_0f(x_1, x_2, x_3, 0)$.
 Hence by [E1] it too has rational singularities.
@@ -1732,8 +1525,7 @@ Hence by [E1] it too has rational singularities.
 Let $B_0X$ be the blow-up of the origin and let $E \subset B_0X$ be the exceptional divisor.
 Assume that
 
-(i) The induced $\mathbb{Z}_m$-action is faithful on every component of $E$ and
-(ii) $B_0X / \mathbb{Z}_m$ has canonical singularities only.
+(i) The induced $\mathbb{Z}_m$-action is faithful on every component of $E$ and (ii) $B_0X / \mathbb{Z}_m$ has canonical singularities only.
 
 Then $X / \mathbb{Z}_m$ is terminal.
 
@@ -1792,8 +1584,7 @@ This proves that $Y$ is canonical.
 
 Threefolds and deformations of surface singularities
 
-6.13 Proof of 6.5 in cases (2)-(6).
-Let $Y = X / \mathbb{Z}_m$ be one of the cases.
+6.13 Proof of 6.5 in cases (2)-(6). Let $Y = X / \mathbb{Z}_m$ be one of the cases.
 We want to check the conditions of 6.10. Condition (i) is easy to see.
 By 6.9 all points of $BX$ are rational.
 Therefore all the singularities of $BY$ are rational again.
@@ -1808,8 +1599,7 @@ Armed with this information, we can consider the cases.
 (3) The $z$-axis gives the only non-Gorenstein point.
 On $BX$ this gives a cDV point (just compute the blow-up); hence by 6.12 the quotient is canonical.
 (4) We have to consider the $x$-axis only.
-On $BX$ this gives a smooth point; hence the quotient is canonical (even terminal) by 6.3.
-(5) Again the $x$-axis is the only fixed line to be checked.
+On $BX$ this gives a smooth point; hence the quotient is canonical (even terminal) by 6.3. (5) Again the $x$-axis is the only fixed line to be checked.
 On $BX$ we get a smooth point and again by 6.3 all isolated $\mathbb{Z}_3$ quotients of $\mathbb{C}^3$ are canonical.
 (6) The $z$-axis is the only one to be checked (both for $\mathbb{Z}_4$ and $\mathbb{Z}_2$ fixed points).
 Here $BX$ is given by the equation $x'^2 + y'^2 + z'^{-2}f(z', z'^2u'^2) = 0$, and the action is given by weights 3, 1, 2, 3, which is the same we started with.
@@ -1846,19 +1636,15 @@ By Hironaka's resolution theorem there is an $m$ such that $X^m$ is normally fla
 This means that $(x_t, X_t)$ for $t \neq 0$ is a normally flat deformation of $(s^m(0), F^m)$.
 If we can control the singularities of $F^m$ in terms of $(x_0, X_0)$, then we get some information about $(x_t, X_t)$.
 
-For the proof the natural context is the class of minimal singularities studied in [Ko1, 3.4].
-We recall some of the definitions and results.
+For the proof the natural context is the class of minimal singularities studied in [Ko1, 3.4]. We recall some of the definitions and results.
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 Proposition-Definition 7.2. [Ko1, 3.4.1–2.] Let $(x, X)$ be a reduced Cohen-Macaulay singularity.
 Then $\mathrm{mult}_x X \geq \mathrm{emdim}_x X - \dim_x X + 1$.
 $(x, X)$ is called minimal if equality holds and tangent cone is reduced.
 
-Proposition 7.3. ([Ko1, 3.4], Sally [Sa] and Xambó [X]).
-Let $(x, X)$ be a minimal singularity.
+Proposition 7.3. ([Ko1, 3.4], Sally [Sa] and Xambó [X]). Let $(x, X)$ be a minimal singularity.
 Then the projectivized tangent cone $F = \cup F_i$ is a subvariety of some $\mathbb{P}^n$ of minimal degree, connected in codimension one.
 Its irreducible components $F_i$ satisfy $\deg F_i = \mathrm{emdim} F_i - \dim F_i$ and any two intersect in a linear subspace.
 For any $y \in F$ the singularity $(y, F)$ is minimal again.
@@ -1870,10 +1656,7 @@ The following result describes the irreducible components.
 Proposition 7.4. ([Ber, Harr])
 
 (i) A reduced, irreducible, non-degenerate curve $C \subset \mathbb{P}^k$ satisfying $\deg C = k$ is a rational normal curve.
-(ii) A reduced, irreducible, non-degenerate surface $F \subset \mathbb{P}^k$ satisfying $\deg F = k - 1$ is one of the following;
-(a) Veronese in $\mathbb{P}^5$;
-(b) a cone over a rational normal curve;
-(c) a ruled surface $\operatorname{Proj}_{\mathbb{P}^1}(\mathcal{O}(a) \otimes \mathcal{O}(b))$ embedded by $\mathcal{O}(1)$ for $a, b \geq 1$.
+(ii) A reduced, irreducible, non-degenerate surface $F \subset \mathbb{P}^k$ satisfying $\deg F = k - 1$ is one of the following; (a) Veronese in $\mathbb{P}^5$; (b) a cone over a rational normal curve; (c) a ruled surface $\operatorname{Proj}_{\mathbb{P}^1}(\mathcal{O}(a) \otimes \mathcal{O}(b))$ embedded by $\mathcal{O}(1)$ for $a, b \geq 1$.
 
 Definition 7.5. Let $C = \cup C_i \subset \mathbb{P}^n$ be a reduced, connected curve of degree $n$.
 We associated to it a labeled graph as follows.
@@ -1886,10 +1669,7 @@ Then by 7.3 $C$ satisfies the conditions of 7.5. $G(C)$ will be denoted by $G(x,
 
 Definition 7.7. Assume that $C$ and $C'$ both satisfy the conditions of 7.5. We shall say that $G(C')$ is a simplification of $G(C)$ if it can be obtained from $G(C)$ by repeated application of the following procedures:
 
-(i) Replace $G(C)$ with a connected subgraph, keeping the labeling fixed; or
-(ii) change the labeling of a vertex to 1; or
-(iii) if a vertex $v$ is connected with vertices $v_1, \ldots, v_2$ and $v_1$ is labeled 1, then erase $v$ and connect $v_1$ with each of $v_2, \ldots, v_k$; or
-(iv) if $v_1, \ldots, v_k$ are vertices such that any two of them are connected, then replace $G(C)$ with some $G(C'')$ where $\deg C'' \leq k$.
+(i) Replace $G(C)$ with a connected subgraph, keeping the labeling fixed; or (ii) change the labeling of a vertex to 1; or (iii) if a vertex $v$ is connected with vertices $v_1, \ldots, v_2$ and $v_1$ is labeled 1, then erase $v$ and connect $v_1$ with each of $v_2, \ldots, v_k$; or (iv) if $v_1, \ldots, v_k$ are vertices such that any two of them are connected, then replace $G(C)$ with some $G(C'')$ where $\deg C'' \leq k$.
 
 The reason for this definition is the following.
 
@@ -1921,8 +1701,7 @@ If $(x_0, X_0)$ is a minimal singularity then so is $(y, F)$ for any $y$ and $G(
 Otherwise 7.2 easily gives that $\mathrm{mult}_{x_0} X = \mathrm{mult}_{x_0} X_0$.
 Let $C$ (resp.
 $F$) be the projectivized tangent cone of $(x_0, X_0)$ (resp.
-$(x_0, X)$).
-Then $C$ is a hyperplane section of $F$.
+$(x_0, X)$). Then $C$ is a hyperplane section of $F$.
 This implies that $F$ is reduced.
 Hence $(x_0, X)$ is minimal.
 The rest follows from 7.8.
@@ -1954,9 +1733,7 @@ The vertices corresponding to $E_i$ and $E_j$ are connected iff there is a chain
 
 (iii) It is quite easy to see from this that if $G(C')$ is a simplification of $G(C)$, then $\operatorname{end} G(C') \leq \operatorname{end} G(C)$.
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 This easily yields the following:
 
@@ -1978,229 +1755,152 @@ Our results however do not imply that their deformations are again quotient sing
 
 [A1] Artin, M.: On isolated rational singularities of surfaces.
 Am.
-J.
-Math.
-88, 129–136 (1966)
-[A2] Artin, M.: Algebraic construction of Brieskorn’s resolutions.
-J.
-Algebra 29, 330–348 (1974)
-[Ben] Benveniste, X.: Sur l’anneau canonique de certaines variétés de dimension trois.
+J. Math.
+88, 129–136 (1966) [A2] Artin, M.: Algebraic construction of Brieskorn’s resolutions.
+J. Algebra 29, 330–348 (1974) [Ben] Benveniste, X.: Sur l’anneau canonique de certaines variétés de dimension trois.
 Invent.
 Math.
-73, 157–164 (1983)
-[Ber] Bertini, E.: Introduzione alla geometria proiettiva degli iperspazi.
-Messina 1923
-[Br1] Brieskorn, E.: Rationale Singularitäten komplexer Flächen, Invent.
+73, 157–164 (1983) [Ber] Bertini, E.: Introduzione alla geometria proiettiva degli iperspazi.
+Messina 1923 [Br1] Brieskorn, E.: Rationale Singularitäten komplexer Flächen, Invent.
 Math.
-4, 336–358 (1968)
-[Br2] Brieskorn, E.: Singular elements in semi-simple algebraic groups.
+4, 336–358 (1968) [Br2] Brieskorn, E.: Singular elements in semi-simple algebraic groups.
 Proc.
 Int.
 Con.
-Math., Nice, 2, 279–284 (1971)
-[D] Danilov, V.I.: Birational geometry of toric 3-folds, Math.
+Math., Nice, 2, 279–284 (1971) [D] Danilov, V.I.: Birational geometry of toric 3-folds, Math.
 USSR Izv.
-21, 269–279 (1983)
-[E1] Elkik, R.: Singularités rationelles et déformations, Invent.
+21, 269–279 (1983) [E1] Elkik, R.: Singularités rationelles et déformations, Invent.
 Math.
-47, 139–147 (1978)
-[EV] Esnault, H., Viehweg, E.: Two-dimensional quotient singularities deform to quotient singularities.
+47, 139–147 (1978) [EV] Esnault, H., Viehweg, E.: Two-dimensional quotient singularities deform to quotient singularities.
 Math.
 Ann.
-271, 439–449 (1985)
-[GR] Grauert, H., Riemenschneider, O.: Verschwindungssätze für analytische Kohomolgiegruppen auf komplexen Räumen.
+271, 439–449 (1985) [GR] Grauert, H., Riemenschneider, O.: Verschwindungssätze für analytische Kohomolgiegruppen auf komplexen Räumen.
 Invent.
 Math.
-11, 263–292 (1970)
-[Harr] Harris, J.: A bound on the geometric genus of projective varieties.
+11, 263–292 (1970) [Harr] Harris, J.: A bound on the geometric genus of projective varieties.
 Ann.
 Scu.
 Norm.
-Pisa 8, 35–68 (1981)
-[Hart] Hartshorne, R.: Complete intersections and connectedness.
+Pisa 8, 35–68 (1981) [Hart] Hartshorne, R.: Complete intersections and connectedness.
 Am.
-J.
-Math.
-84, 497–508 (1962)
-[Hin] Hinic, V.A.: On the Gorenstein property of a ring of invariants.
+J. Math.
+84, 497–508 (1962) [Hin] Hinic, V.A.: On the Gorenstein property of a ring of invariants.
 Izv.
 Akad.
-Nauk SSSR 40, 50–56 (1976) (= Math USSR.
-Izv 10, 47–53 (1976))
-[I] Iitaka, S.: Birational geometry for open varieties.
+Nauk SSSR 40, 50–56 (1976) (= Math USSR. Izv 10, 47–53 (1976)) [I] Iitaka, S.: Birational geometry for open varieties.
 Sém.
 Math.
-Sup., Montreal, 76 (1981)
-[Kar1] Karras, U.: Deformations of cusp singularities.
+Sup., Montreal, 76 (1981) [Kar1] Karras, U.: Deformations of cusp singularities.
 Proc.
 Symp.
 Pure Math.
-30, 37–44 (1970)
-[Kar2] Karras, U.: Weak simultaneous resolution (to appear)
-[Kaw1] Kawamata, Y.: On singularities in the classification theory of algebraic varieties.
+30, 37–44 (1970) [Kar2] Karras, U.: Weak simultaneous resolution (to appear) [Kaw1] Kawamata, Y.: On singularities in the classification theory of algebraic varieties.
 Math.
 Ann.
-251, 51–55 (1980)
-[Kaw2] Kawamata, Y.: Crepant blowings-up of three-dimensional canonical singularities and its application to degenerations of surfaces.
+251, 51–55 (1980) [Kaw2] Kawamata, Y.: Crepant blowings-up of three-dimensional canonical singularities and its application to degenerations of surfaces.
 Ann.
 Math.
-(to appear)
-[Kaw3] Kawamata, Y.: On the finiteness of generators of a pluricanonical ring for a 3-fold of general type.
+(to appear) [Kaw3] Kawamata, Y.: On the finiteness of generators of a pluricanonical ring for a 3-fold of general type.
 Am.
-J.
-Math.
-106, 1503–1512 (1984)
-[KMM] Kawamata, Y., Matsuda, K., Matsuki, K.: Introduction to the minimal model problem.
-In: T.
-Oda (ed.) Alg.
+J. Math.
+106, 1503–1512 (1984) [KMM] Kawamata, Y., Matsuda, K., Matsuki, K.: Introduction to the minimal model problem.
+In: T. Oda (ed.)
+Alg.
 Geom.
 Sendai Adv.
 Stud.
 Pure Math.
-10 (1987) Kinokuniya-North-Holland, pp.
-283–360
+10 (1987) Kinokuniya-North-Holland, pp. 283–360
 
 Threefolds and deformations of surface singularities
 
 [KKMS] Kempf, G., Knudsen, F., Mumford, D., Saint Donat, B.: Toroidal Embeddings I (Lect.
-Notes Math., vol.
-339), Berlin Heidelberg New York: Springer 1973
-[Ko1] Kollár, J.: Toward moduli of singular varieties.
+Notes Math., vol. 339), Berlin Heidelberg New York: Springer 1973 [Ko1] Kollár, J.: Toward moduli of singular varieties.
 Comp.
 Math.
-56, 369-398 (1985)
-[Ko2] Kollár, J.: Deformations of related singularities (Preprint)
-[Ko3] Kollár, J.: The structure of algebraic threefolds, Bull.
-AMS 17, 211-273 (1987)
-[La] Laufer, H.A.: Weak simultaneous resolution of surface singularities.
+56, 369-398 (1985) [Ko2] Kollár, J.: Deformations of related singularities (Preprint) [Ko3] Kollár, J.: The structure of algebraic threefolds, Bull.
+AMS 17, 211-273 (1987) [La] Laufer, H.A.: Weak simultaneous resolution of surface singularities.
 Proc.
 Symp.
 Pure.
 Math.
-40, part 2, 1-29 (1983)
-[LW] Looijenga, E., Wahl, J.: Quadratic functions and smoothing surface singularities.
-Topology 25, 261-297 (1986)
-[MM] Matsusaka, T., Mumford, D.: Two fundamental theorems on deformations of polarized varieties.
+40, part 2, 1-29 (1983) [LW] Looijenga, E., Wahl, J.: Quadratic functions and smoothing surface singularities.
+Topology 25, 261-297 (1986) [MM] Matsusaka, T., Mumford, D.: Two fundamental theorems on deformations of polarized varieties.
 Am.
-J.
-Math.
-86, 668-684 (1964)
-[MT] Merle, M., Teissier, B.: Conditions d'adjonction, d'après DuVal (Lect.
-Notes Math., vol 777) Berlin Heidelberg New York: Springer 1980
-[Mo1] Mori, S.: On three dimensional terminal singularities.
+J. Math.
+86, 668-684 (1964) [MT] Merle, M., Teissier, B.: Conditions d'adjonction, d'après DuVal (Lect.
+Notes Math., vol 777) Berlin Heidelberg New York: Springer 1980 [Mo1] Mori, S.: On three dimensional terminal singularities.
 Nagoya Math.
-J.
-98, 43-66 (1985)
-[Mo2] Mori, S.: Minimal models for semi-stable degenerations of surfaces (unpublished)
-[Mo3] Mori, S.: Flip conjecture and the existence of minimal models for 3-folds.
-J.
-Am.
+J. 98, 43-66 (1985) [Mo2] Mori, S.: Minimal models for semi-stable degenerations of surfaces (unpublished) [Mo3] Mori, S.: Flip conjecture and the existence of minimal models for 3-folds.
+J. Am.
 Math.
 Soc.
-(to appear)
-[MS] Morrison, D., Stevens, G.: Terminal quotient singularities in dimensions three and four.
+(to appear) [MS] Morrison, D., Stevens, G.: Terminal quotient singularities in dimensions three and four.
 Proc.
 Am.
 Math.
 Soc.
-90, 15-20 (1984)
-[M1] Mumford, D.: The topology of normal singularities of an algebraic surface and a criterion or simplicity.
+90, 15-20 (1984) [M1] Mumford, D.: The topology of normal singularities of an algebraic surface and a criterion or simplicity.
 Pub.
 Math.
-IHES 9, 5-22 (1961)
-[M2] Mumford, D.: The stability of projective varieties, L'Ens.
+IHES 9, 5-22 (1961) [M2] Mumford, D.: The stability of projective varieties, L'Ens.
 Math.
-23, 39-110 (1977)
-[Na] Nakayama, N.: Invariance of plurigenera under deformation.
-Topology 25, 237-251 (1986)
-[Ne] Neumann, W.: A calculus for plumbing and the topology of links.
+23, 39-110 (1977) [Na] Nakayama, N.: Invariance of plurigenera under deformation.
+Topology 25, 237-251 (1986) [Ne] Neumann, W.: A calculus for plumbing and the topology of links.
 Trans.
 Am.
 Math.
 Soc.
-268, 299-344 (1981)
-[Pi1] Pinkham, H.: Deformations of algebraic varieties with $G_{m}$ -action.
-Astérisque 20, (1974)
-[Pi2] Pinkham, H.: Simple elliptic singularities.
+268, 299-344 (1981) [Pi1] Pinkham, H.: Deformations of algebraic varieties with $G_{m}$ -action.
+Astérisque 20, (1974) [Pi2] Pinkham, H.: Simple elliptic singularities.
 Proc.
 Symp.
 Pure.
 Math.
-30, 69-71 (1977)
-[Po] Popp, H.: Moduli theory and classification theory for algebraic varieties (Lect.
-Notes Math., vol 620) Berlin Heidelberg New York: Springer 1977
-[Re1] Reid, M.: Elliptic Gorenstein singularities of surfaces.
-(preprint, 1976)
-[Re2] Reid, M.: Canonical threefolds, Journées de Géométrie algébrique d'Angers.
-Sijthoff and Nordhoff (1980), pp.
-273-310
-[Re3] Reid, M.: Minimal models of canonical threefolds, Algebraic and Analytic Varieties.
+30, 69-71 (1977) [Po] Popp, H.: Moduli theory and classification theory for algebraic varieties (Lect.
+Notes Math., vol 620) Berlin Heidelberg New York: Springer 1977 [Re1] Reid, M.: Elliptic Gorenstein singularities of surfaces.
+(preprint, 1976) [Re2] Reid, M.: Canonical threefolds, Journées de Géométrie algébrique d'Angers.
+Sijthoff and Nordhoff (1980), pp. 273-310 [Re3] Reid, M.: Minimal models of canonical threefolds, Algebraic and Analytic Varieties.
 Adv.
 Stud.
 Pure Math.
-1, 131-180 (1983)
-[Ri] Riemenschneider, O.: Deformation von Quotientsingularitäten (nach zyklischen Gruppen).
+1, 131-180 (1983) [Ri] Riemenschneider, O.: Deformation von Quotientsingularitäten (nach zyklischen Gruppen).
 Math.
 Ann.
-209, 211-248 (1974)
-[Sai] Saito, K.: Einfach-elliptische Singularitäten.
+209, 211-248 (1974) [Sai] Saito, K.: Einfach-elliptische Singularitäten.
 Invent.
 Math.
-23, 284-375 (1974)
-[Sak] Sakai, F.: Weil divisors on normal surfaces.
+23, 284-375 (1974) [Sak] Sakai, F.: Weil divisors on normal surfaces.
 Duke Math.
-J.
-512, 877-888 (1984)
-[Sal] Sally, J.: On the associated graded ring of a Cohen-Macaulay ring.
-J.
+J. 512, 877-888 (1984) [Sal] Sally, J.: On the associated graded ring of a Cohen-Macaulay ring.
+J. Math.
+Kyoto Univ. 17, 19-21 (1977) [S-B1] Shepherd-Barron, N.: Some questions on singularities in two and three dimensions, Thesis, Warwick Univ., 1981 (unpublished) [S-B2] Shepherd-Barron, N.: Degenerations with numerically effective canonical divisor, The Birational Geometry of Degenerations, Progr.
 Math.
-Kyoto Univ.
-17, 19-21 (1977)
-[S-B1] Shepherd-Barron, N.: Some questions on singularities in two and three dimensions, Thesis, Warwick Univ., 1981 (unpublished)
-[S-B2] Shepherd-Barron, N.: Degenerations with numerically effective canonical divisor, The Birational Geometry of Degenerations, Progr.
-Math.
-29, 33-84 (1983)
-[Sh] Shokurov, V.V.: Letter to M.
-Reid
-[vS] Straten, D.
-van: Weakly normal surface singularities and their improvements, Thesis, Leiden, 1987
-[Te] Teissier, B.: Résolution simultanée I, II (Lect.
-Notes Math., vol.
-777, pp.
-71-146) Berlin Heidelberg New York: Springer 1980
-[Tr] Traverso, C.: Seminormality and the Picard group.
+29, 33-84 (1983) [Sh] Shokurov, V.V.: Letter to M. Reid [vS] Straten, D. van: Weakly normal surface singularities and their improvements, Thesis, Leiden, 1987 [Te] Teissier, B.: Résolution simultanée I, II (Lect.
+Notes Math., vol. 777, pp. 71-146) Berlin Heidelberg New York: Springer 1980 [Tr] Traverso, C.: Seminormality and the Picard group.
 Ann.
 Scu.
 Norm.
-Pisa 75, 585-595 (1970)
-[Ts] Tsunoda, S.: Minimal models for semi-stable degenerations of surfaces (Preprint)
-[TsM] Tsunoda, S., Miyanishi, M.: The structure of open algebraic surfaces II, Classification of algebraic and analytic manifolds.
+Pisa 75, 585-595 (1970) [Ts] Tsunoda, S.: Minimal models for semi-stable degenerations of surfaces (Preprint) [TsM] Tsunoda, S., Miyanishi, M.: The structure of open algebraic surfaces II, Classification of algebraic and analytic manifolds.
 Progr.
 Math.
-39, (1983)
-[V] Vaquie M.: Résolution simultanée de surfaces normales.
+39, (1983) [V] Vaquie M.: Résolution simultanée de surfaces normales.
 Ann.
 Inst.
-Fourier 35, 1-38 (1985)
-[Wa1] Wahl, J.: Equisingular deformations of normal surfaces singularities.
+Fourier 35, 1-38 (1985) [Wa1] Wahl, J.: Equisingular deformations of normal surfaces singularities.
 Ann.
 Math.
 104, 325-356
 
-J.
-Kollár and N.I.
-Shepherd-Barron
+J. Kollár and N.I. Shepherd-Barron
 
 [Wa2] Wahl, J.: Elliptic deformations of minimally elliptic singularities.
 Math.
 Ann.
-253, 241–262 (1980)
-[Wa3] Wahl, J.: Smoothing of normal surface singularities.
-Topology 20, 219–246 (1981)
-[X] Xambò, S.: On projective varieties of minimal degree.
+253, 241–262 (1980) [Wa3] Wahl, J.: Smoothing of normal surface singularities.
+Topology 20, 219–246 (1981) [X] Xambò, S.: On projective varieties of minimal degree.
 Collectanea Math.
-32, 149–163 (1981)
-[Z] Zariski, O.: The problem of Riemann-Roch for high multiples of an effective divisor.
+32, 149–163 (1981) [Z] Zariski, O.: The problem of Riemann-Roch for high multiples of an effective divisor.
 Ann.
 Math.
 76, 560–615 (1962)

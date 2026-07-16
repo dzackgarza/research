@@ -1,6 +1,6 @@
 # Cusps
 
-::: {#tab:sterk-cusps}
+:::{#tab:sterk-cusps}
 
 | Sterk Cusp | Vector                           | $\mathrm{div}_{T_\En}$ | $\mathrm{div}_{T_{\mathrm{K3}}}$ |
 | :--------- | :------------------------------- | :--------------------- | :------------------------------- |

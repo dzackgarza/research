@@ -1,6 +1,6 @@
 # Halphen Surfaces
 
-::: {.remark}
+:::{.remark}
 
 It is well-known (e.g. as in [@DZ99] and [@CDL24 Ch.5 §6]) that a Halphen
 surface of index $n$ is a relative minimal elliptic surface $S$ with $F_1$ the
@@ -33,7 +33,7 @@ dimension 9.
 
 The following is [@CDL24 Prop. 3.1]:
 
-::: {#lem:coble_halphen_blowdown .lemma}
+:::{#lem:coble_halphen_blowdown .lemma}
 
 Let $X$ be a Coble surface and $\pi_{E}: X \to Y$ be the blowing down of
 a (-1)-curve E.
@@ -49,7 +49,7 @@ Conversely, the blow-up of a singular point of an irreducible non-multiple fiber
 of a Halphen surface of index 2 is a Coble surface.
 :::
 
-::: {.remark}
+:::{.remark}
 
 Why introduce Halphen surfaces? I conjecture that the geometric construction(s)
 above yield some kind of correspondence between moduli spaces of Coble surfaces
@@ -63,3 +63,4 @@ correspondingly coincide as well.
 :::
 
 [^5]: $A_1$ or $A_2$ singularities.
+

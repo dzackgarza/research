@@ -1,0 +1,22 @@
+export PYTHONDONTWRITEBYTECODE := "1"
+
+# Commit gate: fast pytest only (`@pytest.mark.ci` tests run under test-ci).
+export PYTEST_ADDOPTS := "-m 'not ci'"
+
+# Commit gate: syntax/mypy/ruff only (pre-commit hook).
+test-commit:
+    @just -f ~/ai-review-ci/justfiles/sage.just -d . test-commit
+
+# Local/dev alias: commit gate + fast pytest (sage.just has no bare `test`).
+test:
+    @just -f ~/ai-review-ci/justfiles/sage.just -d . test-push
+
+test-push:
+    @just -f ~/ai-review-ci/justfiles/sage.just -d . test-push
+
+# CI gate: full pytest (including ci-marked oracle / enumeration tests).
+test-ci:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    export PYTEST_ADDOPTS=""
+    just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci

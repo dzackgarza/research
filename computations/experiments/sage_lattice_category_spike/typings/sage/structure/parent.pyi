@@ -3,7 +3,10 @@ from typing import Any, ClassVar, Generic, TypeVar
 
 from sage.structure.element import Element
 
-_E = TypeVar("_E", bound=Element, default=Element, covariant=True)
+# Bound is ``object`` (not ``Element``): some Sage-like parents use ``__call__`` for
+# non-element construction (e.g. stack fibers over a test object). Lattice parents
+# still bind ``Parent[SyntheticLatticeElement]``.
+_E = TypeVar("_E", bound=object, default=Element, covariant=True)
 
 class Parent(Generic[_E]):
     # Generic over the element type: Parent.__call__ (conversion into the

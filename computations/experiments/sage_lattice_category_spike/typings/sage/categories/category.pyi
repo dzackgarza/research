@@ -4,7 +4,9 @@
 # subclasses' own declarations.
 from typing import Any
 
-class Category:
+from sage.structure.unique_representation import UniqueRepresentation
+
+class Category(UniqueRepresentation):
     def __call__(self, *args: Any, **kwds: Any) -> Any: ...
     def super_categories(self) -> list[Category]: ...
     def is_subcategory(self, other: Category) -> bool: ...

@@ -177,9 +177,7 @@ abstract: |
 
 # Lecture Notes in Mathematics
 
-Edited by A.
-Dold and B.
-Eckmann
+Edited by A. Dold and B. Eckmann
 
 812
 
@@ -195,29 +193,22 @@ Berlin Heidelberg New York 1980
 
 # Author
 
-Yukihiko Namikawa
-Department of Mathematics, Nagoya University
-Furocho, Chikusa-Ku
-Nagoya, 464/Japan
+Yukihiko Namikawa Department of Mathematics, Nagoya University Furocho, Chikusa-Ku Nagoya, 464/Japan
 
 AMS Subject Classifications (1980): 14 L17, 20 G20, 32 J05, 32 M15, 32 N15
 
-ISBN 3-540-10021-0 Springer-Verlag Berlin Heidelberg New York
-ISBN 0-387-10021-0 Springer-Verlag New York Heidelberg Berlin
+ISBN 3-540-10021-0 Springer-Verlag Berlin Heidelberg New York ISBN 0-387-10021-0 Springer-Verlag New York Heidelberg Berlin
 
 This work is subject to copyright.
 All rights are reserved, whether the whole or part of the material is concerned, specifically those of translation, reprinting, re-use of illustrations, broadcasting, reproduction by photocopying machine or similar means, and storage in data banks.
 Under § 54 of the German Copyright Law where copies are made for other than private use, a fee is payable to the publisher, the amount of the fee to be determined by agreement with the publisher.
 
-© by Springer-Verlag Berlin Heidelberg 1980
-Printed in Germany
-Printing and binding: Beltz Offsetdruck, Hemsbach/Bergstr.
+© by Springer-Verlag Berlin Heidelberg 1980 Printed in Germany Printing and binding: Beltz Offsetdruck, Hemsbach/Bergstr.
 2141/3140-543210
 
 To My Parents
 
-Τίς ἄξιος ἀνοῖξαι το βιβλίον
-και λῦσαι τας σφραγῖδας αὐτοῦ.
+Τίς ἄξιος ἀνοῖξαι το βιβλίον και λῦσαι τας σφραγῖδας αὐτοῦ.
 
 Introduction
 
@@ -245,8 +236,7 @@ The second answer was quite recently given by Mumford and others [2], suggested 
 
 The aim of this lecture note is to exhibit these theories of compactification of $\Gamma \backslash \mathcal{D}$ in the case of the Siegel upperhalf plane.
 Thanks to this restriction one can see the whole theory elementarily and explicitly in this typical example, which would help the reader to understand the general theory developed in [2] written in complete but abstract form.
-In this respect this book might be considered as an introduction to or supplement of [2].
-On account of such expositive character of this book all proofs where one needs general theory (the latter half of Chap.V, Chap.VI-VII) are omitted but giving a suitable reference, mostly to [2] or [17].
+In this respect this book might be considered as an introduction to or supplement of [2]. On account of such expositive character of this book all proofs where one needs general theory (the latter half of Chap.V, Chap.VI-VII) are omitted but giving a suitable reference, mostly to [2] or [17].
 
 The content is as follows.
 In Chapter I we introduce the notion of the Siegel upperhalf plane, the symplectic group and its arithmetic
@@ -255,102 +245,54 @@ VI
 
 subgroup and exhibit their fundamental properties.
 Chapter II is devoted to the summary of main results concerning the problem of compactification.
-In Chapter III we explained the idea of the toroidal compactification in the simplest case of $\Gamma \backslash D$ with the unit disc $D$ and $\Gamma = \operatorname{SL}(2, \mathbb{Z})$ .
-Two main tools are used for the construction of the compactification, the theory of bounded symmetric domain due to Korányi-Wolf [20] from differential geometry and the theory of torus embeddings due to Mumford [17] from algebraic geometry.
-The former is exhibited in Chapter IV and V, and the latter in Chapter VI.
-More precisely, the notion of boundary component of $D$ and the structure of the associated parabolic subgroup in $G$ are given in Chapter IV and the realization of the domain as a Siegel domain of the third kind with a boundary component in the first half of Chapter V.
-Here we give complete proof for the case of Siegel upperhalf plane.
+In Chapter III we explained the idea of the toroidal compactification in the simplest case of $\Gamma \backslash D$ with the unit disc $D$ and $\Gamma = \operatorname{SL}(2, \mathbb{Z})$ . Two main tools are used for the construction of the compactification, the theory of bounded symmetric domain due to Korányi-Wolf [20] from differential geometry and the theory of torus embeddings due to Mumford [17] from algebraic geometry.
+The former is exhibited in Chapter IV and V, and the latter in Chapter VI. More precisely, the notion of boundary component of $D$ and the structure of the associated parabolic subgroup in $G$ are given in Chapter IV and the realization of the domain as a Siegel domain of the third kind with a boundary component in the first half of Chapter V. Here we give complete proof for the case of Siegel upperhalf plane.
 For the general case we refer the reader to [2] or [28] (the latter would be more readable).
-The theory of torus embedding is given without proof in Chapter VI.
-The complete proof can be found in [17] or [24] except for an elementary construction of torus embedding given in (6.13).
-The latter half of Chapter V is devoted to the exposition of the Satake compactification.
+The theory of torus embedding is given without proof in Chapter VI. The complete proof can be found in [17] or [24] except for an elementary construction of torus embedding given in (6.13). The latter half of Chapter V is devoted to the exposition of the Satake compactification.
 After these preliminaries, in Chapter VII we construct Mumford's toroidal compactification and show fundamental properties of it, some of which are not explicitly stated in [2] though the proof is already contained there essentially.
 In Chapter VIII we give some concrete examples of admissible decompositions which relate to the reduction theory of quadratic forms in our case.
-In the last Chapter IX a particular decomposition, called the 2nd Voronoi decomposition, is treated and we show that the toroidal compactification associated with this decomposition admits an algebro-geometric interpretation of this compactification extending the fact that $\operatorname{Sp}(g, \mathbb{Z}) \backslash \mathfrak{S}_g$ can be considered as the coarse moduli space of principally polarised abelian varieties of dimension $g$ .
-As an appendix we sum up the abstract theory by giving explicit description in the case of the Siegel upperhalf plane with notations and the course of exposition being in accordance with those in [2] in order that the reader would see where the abstract procedure is going through.
+In the last Chapter IX a particular decomposition, called the 2nd Voronoi decomposition, is treated and we show that the toroidal compactification associated with this decomposition admits an algebro-geometric interpretation of this compactification extending the fact that $\operatorname{Sp}(g, \mathbb{Z}) \backslash \mathfrak{S}_g$ can be considered as the coarse moduli space of principally polarised abelian varieties of dimension $g$ . As an appendix we sum up the abstract theory by giving explicit description in the case of the Siegel upperhalf plane with notations and the course of exposition being in accordance with those in [2] in order that the reader would see where the abstract procedure is going through.
 There we indicate also a number of missprints in [2].
 
-This note is based on the author's lecture at the Catholic University at Nijmegen in 1978. He would like to express his sincere gratitude to Prof.
-Looijenga and his colleagues at Nijmegen for their kind hospitality and encouragement, and to Mrs.
-Kozaki for her neat typing.
+This note is based on the author's lecture at the Catholic University at Nijmegen in 1978. He would like to express his sincere gratitude to Prof. Looijenga and his colleagues at Nijmegen for their kind hospitality and encouragement, and to Mrs. Kozaki for her neat typing.
 
 Table of Contents
 
-§1.
-The Siegel upperhalf plane and the symplectic group.
-1
-§2.
-Main problem and main results.
-7
-§3.
-The case of g = 1. 11
-§4.
-Boundary components and the structure of parabolic subgroups.
-15
-§5.
-Realization as a Siegel domain of the third kind, and 29
-Satake compactification.
-§6.
-Theory of torus embeddings.
-39
-§7.
-Toroidal compactification due to Mumford.
-58
-A) Construction of toroidal compactification.
-58
-B) Geometric properties of toroidal compactifications 70
-(smoothness, projectivity, extension of holomorphic maps).
-§8.
-Examples: reduction theory of positive quadratic forms.
-85
-§9.
-An application of the Voronoi compactification to 95
-the theory of moduli of polarized abelian varieties.
+§1. The Siegel upperhalf plane and the symplectic group.
+1 §2. Main problem and main results.
+7 §3. The case of g = 1. 11 §4. Boundary components and the structure of parabolic subgroups.
+15 §5. Realization as a Siegel domain of the third kind, and 29 Satake compactification.
+§6. Theory of torus embeddings.
+39 §7. Toroidal compactification due to Mumford.
+58 A) Construction of toroidal compactification.
+58 B) Geometric properties of toroidal compactifications 70 (smoothness, projectivity, extension of holomorphic maps).
+§8. Examples: reduction theory of positive quadratic forms.
+85 §9. An application of the Voronoi compactification to 95 the theory of moduli of polarized abelian varieties.
 A) 2nd Voronoi reduction theory.
-95
-B) Mixed decomposition of Ω² × V.
-100
-C) Compactification of the moduli space of polarized abelian varieties.
-102
-D) The extension of Torelli map.
-110
-Appendix: Abstract theory of bounded symmetric domains 113
-(with explicit description in the case of Siegel upperhalf plane).
-I.
-The structure of bounded symmetric domains.
-113
-A) Definition and realizations.
-113
-B) The structure of roots of G.
-119
+95 B) Mixed decomposition of Ω² × V. 100 C) Compactification of the moduli space of polarized abelian varieties.
+102 D) The extension of Torelli map.
+110 Appendix: Abstract theory of bounded symmetric domains 113 (with explicit description in the case of Siegel upperhalf plane).
+I. The structure of bounded symmetric domains.
+113 A) Definition and realizations.
+113 B) The structure of roots of G. 119
 
 VIII
 
 C) The description of $\mathcal{D}$ in $\pi_{+}$ via the Harish-Chandra embedding.
 
-II.
-Boundary components.
+II. Boundary components.
 128
 
 A) Boundary components.
-128
-B) The normalizer of a boundary component.
-134
-C) The structure of $\mathbf{N}(\mathbf{F})$ 136
-D) The natural projection $\pi_{\mathbb{P}}: \mathcal{D} \to \mathbb{F}$ .
-140
-E) Rational boundary components.
+128 B) The normalizer of a boundary component.
+134 C) The structure of $\mathbf{N}(\mathbf{F})$ 136 D) The natural projection $\pi_{\mathbb{P}}: \mathcal{D} \to \mathbb{F}$ . 140 E) Rational boundary components.
 143
 
-III.
-Realization of $\mathcal{D}$ as a Siegel domain of the third kind.
+III. Realization of $\mathcal{D}$ as a Siegel domain of the third kind.
 144
 
-A) The self-adjoint cone $C(F)$ in $U(F)$ .
-144
-B) Realization of $\mathcal{D}$ as a Siegel domain.
-145
-C) Relation of the normalizers of adjacent boundary components.
+A) The self-adjoint cone $C(F)$ in $U(F)$ . 144 B) Realization of $\mathcal{D}$ as a Siegel domain.
+145 C) Relation of the normalizers of adjacent boundary components.
 152
 
 Bibliography.
@@ -359,10 +301,10 @@ Bibliography.
 List of notations.
 156
 
-Index. 161
+Index.
+161
 
-§1.
-The Siegel upperhalf plane and the symplectic group.
+§1. The Siegel upperhalf plane and the symplectic group.
 
 We first define two notions which are the main objects studied in this section.
 They are meaningful generalizations of the usual upper half plane $H = \{\tau \in \mathfrak{C} ; \text{Im } \tau &gt; 0\}$ and the linear fractional transformation group $\text{SL}(2, \mathbb{Z})$ acting on $H$.
@@ -373,7 +315,7 @@ $$
 \mathcal{G}_g = \{\tau \in M(g, \mathfrak{C}) ; \tau = \tau, \text{Im } \tau &gt; 0\}
 $$
 
-is called the _Siegel upper half plane of degree $g$._
+is called the *Siegel upper half plane of degree $g$.*
 
 **Definition (1.2).** The subgroup of $\text{GL}(2g, \mathbb{R})$ defined as
 
@@ -385,7 +327,7 @@ G &amp;= \{M \in M(2g, \mathbb{R}) ; \quad \tau_M \begin{pmatrix} 0 &amp; 1_g \\
 \end{aligned}
 $$
 
-is called the (real) _symplectic group_ (of degree $g$) and denoted by $\text{Sp}(g, \mathbb{R})$.
+is called the (real) *symplectic group* (of degree $g$) and denoted by $\text{Sp}(g, \mathbb{R})$.
 (Some denote it by $\text{Sp}(2g, \mathbb{R})$.)
 
 **Remark (1.3).** In general, for a non-degenerate skew-symmetric bilinear form $A$ of degree $2g$, we can define
@@ -394,7 +336,7 @@ $$
 \text{Sp}(A, \mathbb{R}) = \{M \in M(2g, \mathbb{R}) ; \quad \tau_{MAM} = A\}.
 $$
 
-However, these groups, called _paramodular groups_, are conjugate to each other in $\text{GL}(2g, \mathbb{R})$ hence isomorphic, for there is an element
+However, these groups, called *paramodular groups*, are conjugate to each other in $\text{GL}(2g, \mathbb{R})$ hence isomorphic, for there is an element
 
 $$
 T \quad \text{in} \quad \text{GL}(2g, \mathbb{R}) \quad \text{with} \quad \tau_{TAT} = \begin{pmatrix} 0 &amp; 1_g \\ -1_g &amp; 0 \end{pmatrix}, \quad \text{then}
@@ -416,8 +358,7 @@ half plane and the symplectic groups.
 We restrict ourselves only in stating results we need later.
 Much more beautiful and stimulating exposition on these subjects is [31].
 
-**Proposition (1.4).**
-i) G acts on $\mathcal{G}_g$ biholomorphically as
+**Proposition (1.4).** i) G acts on $\mathcal{G}_g$ biholomorphically as
 
 $$
 M = \left( \begin{array}{cc} A &amp; B \\ C &amp; D \end{array} \right) : \tau \to M \cdot \tau = (A\tau + B)(C\tau + D)^{-1}.
@@ -425,8 +366,7 @@ $$
 
 ii) G acts on $\mathcal{G}_g$ transitively.
 
-**Remark (1.5).**
-Actually all biholomorphic automorphisms of $\mathcal{G}_g$ are expressed in this form.
+**Remark (1.5).** Actually all biholomorphic automorphisms of $\mathcal{G}_g$ are expressed in this form.
 Namely
 
 $$
@@ -434,13 +374,9 @@ $$
 $$
 
 (cf.
-(1.6)).
-Note that $\{\pm 1\}$ is the center of $\operatorname{Sp}(g, \mathbb{R})$ and the quotient is a simple group.
+(1.6)). Note that $\{\pm 1\}$ is the center of $\operatorname{Sp}(g, \mathbb{R})$ and the quotient is a simple group.
 
-**Proof of (1.4).**
-i) First we note the following two equalities:
-a) $t(A\tau + B)(C\tau + D) - t(C\tau + D)(A\tau + B) = 0$
-b) $t(A\tau + B)(\overline{C\tau + D}) - t(C\tau + D)(\overline{A\tau + B}) = 2\sqrt{-1} \operatorname{Im} \tau.$
+**Proof of (1.4).** i) First we note the following two equalities: a) $t(A\tau + B)(C\tau + D) - t(C\tau + D)(A\tau + B) = 0$ b) $t(A\tau + B)(\overline{C\tau + D}) - t(C\tau + D)(\overline{A\tau + B}) = 2\sqrt{-1} \operatorname{Im} \tau.$
 
 We shall prove the second equality.
 
@@ -550,10 +486,9 @@ $$
 
 The third main notion studied here is the following.
 
-**Definition (1.7).** A subgroup $\Gamma$ of $G$ is called an _arithmetic subgroup_ if
+**Definition (1.7).** A subgroup $\Gamma$ of $G$ is called an *arithmetic subgroup* if
 
-1. $\Gamma \subset G_{\mathbb{Q}} = \operatorname{Sp}(g, \mathbb{Q})$ and
-   1i) for a faithful rational representation $\rho : G_{\mathbb{Q}} \to GL(n, \mathbb{Q})$, $\rho(\Gamma)$ is commensurable with $\rho(G) \cap GL(n, \mathbb{Z})$.
+1. $\Gamma \subset G_{\mathbb{Q}} = \operatorname{Sp}(g, \mathbb{Q})$ and 1i) for a faithful rational representation $\rho : G_{\mathbb{Q}} \to GL(n, \mathbb{Q})$, $\rho(\Gamma)$ is commensurable with $\rho(G) \cap GL(n, \mathbb{Z})$.
 
 **Example (1.8).**
 
@@ -575,8 +510,7 @@ d_g
 $$
 
 where $d_i \in N$ with $d_i \mid d_{i+1}$ (cf.
-(1.3)).
-$\Gamma(\Delta)$ is seen to be an arithmetic subgroup of $G$ by a monomorphism
+(1.3)). $\Gamma(\Delta)$ is seen to be an arithmetic subgroup of $G$ by a monomorphism
 
 $$
 \begin{array}{l}
@@ -595,7 +529,7 @@ Note that for an arbitrary nondegenerate skew-symmetric matrix $A$ there is an i
 
 1ii) $\Gamma(n) = \{M \in \operatorname{Sp}(g, \mathbb{Z}) \mid M \equiv l_{2g} \pmod{n}\}$.
 
-This group is called the _principal congruence subgroup of Stufe $n$_.
+This group is called the *principal congruence subgroup of Stufe $n$*.
 
 1v) $\Gamma(\Delta)(n)$ is defined similarly.
 
@@ -614,14 +548,12 @@ The proof is elementary if we note the fact that the natural projection $G \to G
 
 ## Remark (1.10)
 
-We know much stronger property on the action of arithmetic subgroups on a bounded symmetric domain, namely, the existence of a so-called fundamental domains, thanks to Borel _[11]_ (in our particular case of $\mathcal{G}_g$ by Siegel _[31]_).
-In particular for any arithmetic subgroup the number of conjugacy classes of $\mathcal{U}_{\tau}$ (Iso$(\tau)$ $\cap$ $\Gamma$) is finite and a suitable subgroup $\Gamma'$ of $\Gamma$ of finite index acts on $\mathcal{D}$ even without fixed points.
+We know much stronger property on the action of arithmetic subgroups on a bounded symmetric domain, namely, the existence of a so-called fundamental domains, thanks to Borel *[11]* (in our particular case of $\mathcal{G}_g$ by Siegel *[31]*). In particular for any arithmetic subgroup the number of conjugacy classes of $\mathcal{U}_{\tau}$ (Iso$(\tau)$ $\cap$ $\Gamma$) is finite and a suitable subgroup $\Gamma'$ of $\Gamma$ of finite index acts on $\mathcal{D}$ even without fixed points.
 For example $\Gamma(n)$, $n \geq 3$, acts on $\mathcal{G}_g$ without fixed points.
 
 However, concrete description of fundamental domain is very difficult.
 Only classical case of $g = 1$ is known.
-Gauss obtained fundamental domains of $\Gamma(2)$ and $\Gamma(4)$ for $g = 1$ already in 1805 (_[10]_ Vol.8).
-Siegel expressed a fundamental domain of $\Gamma = \operatorname{Sp}(g, \mathbb{Z})$ with a countable number of inequalities as follows (_[16]_ Chap.V §4).
+Gauss obtained fundamental domains of $\Gamma(2)$ and $\Gamma(4)$ for $g = 1$ already in 1805 (*[10]* Vol.8). Siegel expressed a fundamental domain of $\Gamma = \operatorname{Sp}(g, \mathbb{Z})$ with a countable number of inequalities as follows (*[16]* Chap.V §4).
 
 $$
 F = \{\tau \in \mathcal{G}_g \mid i) \quad | \det(0 \tau + D) | \geq 1 \quad \text{for} \quad \forall \underset{0}{\overset{A}{C}} B \in \Gamma,
@@ -657,7 +589,7 @@ index acts on $\mathcal{D}$ without fixed points, $\Gamma \backslash \mathcal{D}
 
 ii) It turns out that $\Gamma \backslash \mathcal{D}$ admits even the structure of a quasi-projective algebraic variety ([3] in our case of $\mathcal{D} = \mathbb{G}_{\mathbf{g}}$, and [4] in general).
 
-A holomorphic function $f$ on $\mathcal{D}$ is called a _modular form of weight_ $k$ if
+A holomorphic function $f$ on $\mathcal{D}$ is called a *modular form of weight* $k$ if
 
 $$
 f(gz) = \left(\frac{dg}{dz}(z)\right)^k f(z)
@@ -705,8 +637,7 @@ III) If $\Gamma$ operates freely, then the divisor defined by $f = 0$ for $f \in
 
 iii) The space $\Gamma(\Delta) \backslash \mathbb{G}_g$ is of much importance in algebraic geometry since it is interpreted as the coarse moduli space of polarised abelian varieties of dimension $g$ with type of polarization $\Delta$ ([16]).
 
-§2.
-Main problem and main results.
+§2. Main problem and main results.
 
 As we have seen in the previous section, the quotient space $\Gamma \backslash \mathcal{D}$ endowed with the canonical normal analytic structure is an important geometric object to study.
 In studying, the main difficulty lies in the fact that this quotient space is not necessarily compact as is the case when $\Gamma = \operatorname{Sp}(g, \mathbb{Z})$.
@@ -717,8 +648,8 @@ Here arises our main problem.
 Of course it is obscure what "good" means.
 It will be made precise in the course of the statement of main results in the following.
 
-**1st Answer (2.2).** (Satake compactification or Baily-Borel compactification.) ([27], [4].
-→ §5)
+**1st Answer (2.2).** (Satake compactification or Baily-Borel compactification.)
+([27], [4]. → §5)
 
 This compactification $(\Gamma \backslash \mathcal{D})^{\gamma}$ is defined to be the quotient space $\Gamma \backslash (\mathcal{D}^{\mathfrak{I}})$ of the "rational" closure $\mathcal{D}^{\mathfrak{I}}$ of $\mathcal{D}$ in $\overline{\mathcal{D}}$ endowed with the Satake topology or the cylindrical topology.
 (The latter topology, defined by Pjatečki-Šapiro, is different from the former.
@@ -779,7 +710,8 @@ For $\mathbf{g} \leq 3$ this procedure gives a resolution for $\Gamma(n)$, $n \g
 2nd Answer (2.3) (Mumford's toroidal compactification) ([2], $\rightarrow$ §7).
 
 As is shown in the following this compactification $(\Gamma \backslash \mathcal{D})^{\gamma}$ complements the bad property of Satake compactification, and gives sometimes even nicer compactification to study.
-(The symbol "$\gamma$", pronounced as "ma", is the initial of Mumford in Japanese.) The main purpose of this lecture is to exhibit how to construct this toroidal compactification.
+(The symbol "$\gamma$", pronounced as "ma", is the initial of Mumford in Japanese.)
+The main purpose of this lecture is to exhibit how to construct this toroidal compactification.
 
 A) Good and bad properties: i) The boundary is of codimension 1.
 
@@ -800,13 +732,11 @@ See §7.)
 
 v) For a subgroup $\Gamma'$ of $\Gamma$ we have a finite holomorphic map $(\Gamma' \backslash \mathcal{D})^{\gamma} \to (\Gamma \backslash \mathcal{D})^{\gamma}$ extending the canonical map $\Gamma' \backslash \mathcal{D} \to \Gamma \backslash \mathcal{D}$ (when an admissible decomposition is fixed).
 
-B) Example: $\Gamma = \operatorname{Sp}(g, \mathbb{Z})$ (or $\Gamma(n)$).
-$(\rightarrow \S 8)$
+B) Example: $\Gamma = \operatorname{Sp}(g, \mathbb{Z})$ (or $\Gamma(n)$). $(\rightarrow \S 8)$
 
 Given $\Sigma = \{\sigma_{1}\}_{1\in \mathcal{I}}$, cone decomposition of $\overline{\Psi}_{g}^{+}$
 
-s.t.
-i) $\sigma_{1} \subset \overline{\Psi}_{g}^{+}$, generated by a finite number of integral matrices;
+s.t. i) $\sigma_{1} \subset \overline{\Psi}_{g}^{+}$, generated by a finite number of integral matrices;
 
 ii) $\sigma_{1} &gt; \sigma'$ ($\sigma'$ is a face of $\sigma_{1}$) $\Rightarrow \sigma' \in \Sigma$;
 
@@ -839,8 +769,7 @@ $$
 
 then we can construct $(\Gamma \backslash \mathfrak{S}_g)^{\gamma}$ (defined by $\Sigma$) with a stratification $\{X_{\overline{1}} - \}_{\overline{1} \in \mathcal{I}}$ mod $GL(g, \mathbb{Z})$
 
-s.t.
-i) $X_{\overline{1}} \subset \overline{X}_{\overline{1}}, \iff \exists_{1'}, 1' \mod GL(g, \mathbb{Z}) = \overline{1}'$ with $\sigma_{1} &gt; \sigma_{1}$;
+s.t. i) $X_{\overline{1}} \subset \overline{X}_{\overline{1}}, \iff \exists_{1'}, 1' \mod GL(g, \mathbb{Z}) = \overline{1}'$ with $\sigma_{1} &gt; \sigma_{1}$;
 
 ii) $\dim X_{\overline{1}} + \dim \sigma_{1} = \frac{1}{2} g(g + 1)$ ($= \dim \mathfrak{S}_g$);
 
@@ -872,8 +801,7 @@ $$
 
 Here we show the first theory in the case of $\mathcal{D} = \mathbf{G}_{\mathbf{g}}$ , where it can be obtained elementarily and explicitly ( $\rightarrow$ §5), and give an outline of the second theory without proof ( $\rightarrow$ §6).
 
-§3.
-The case of g = 1.
+§3. The case of g = 1.
 
 (3.1) We shall explain in this section how to construct toroidal compactification in the simplest case:
 
@@ -948,8 +876,7 @@ is factored with $\underline{\mathbf{e}}$ as
 
 and we have $H = \operatorname{Im}^{-1}(\mathbb{R}_{+})$ .
 
-We obtain $\mathbb{C}$ by adding $\{0\}$ to $\mathbb{C}^*$ , which can be regarded as the torus embedding associated with $\overline{\mathbb{R}}_+ = \{r \in \mathbb{R} : r \geq 0\}$ .
-Then we have
+We obtain $\mathbb{C}$ by adding $\{0\}$ to $\mathbb{C}^*$ , which can be regarded as the torus embedding associated with $\overline{\mathbb{R}}_+ = \{r \in \mathbb{R} : r \geq 0\}$ . Then we have
 
 ![img-4.jpeg](img-4.jpeg)
 
@@ -963,8 +890,7 @@ This step is unnecessary in our case $(\rightarrow (7.10))$
 
 First we note
 
-Lemma (3.6.1).
-There is a positive constant $K$ (= 1 in fact) such that in $V_{K} = \{\tau ; \text{Im } \tau &gt; K\}$ , $\Gamma$ -equivalence and B-equivalence are the same, or equivalently, if for $\tau_{1}, \tau_{2} \in V_{K}$ , $\mathbb{H}M \in \Gamma$ with $M \cdot \tau_{1} = \tau_{2}$ , then $M \in B$ .
+Lemma (3.6.1). There is a positive constant $K$ (= 1 in fact) such that in $V_{K} = \{\tau ; \text{Im } \tau &gt; K\}$ , $\Gamma$ -equivalence and B-equivalence are the same, or equivalently, if for $\tau_{1}, \tau_{2} \in V_{K}$ , $\mathbb{H}M \in \Gamma$ with $M \cdot \tau_{1} = \tau_{2}$ , then $M \in B$ .
 
 This can be seen at once from the well-known shape of a fundamental domain in $H$ with respect to $\operatorname{SL}(2, \mathbb{Z})$ .
 
@@ -1022,15 +948,14 @@ $$
 \varrho_g = \{ Z \in M(g, \mathbb{C}) \ ; \ l_g - Z \overline{Z} &gt; 0 \}
 $$
 
-in $\Psi_{g,\mathbb{C}} = \{ \text{symmetric} \ \mathbb{C}\text{-matrices of degree} \ g \}$ by the Cayley transformation $Z = (\tau - \sqrt{-1} \l_g)(\tau + \sqrt{-1} \l_g)^{-1}$ ((1.6) 2)).
-This realization is a special case of Harish-Chandra realization ([2] p.170).
+in $\Psi_{g,\mathbb{C}} = \{ \text{symmetric} \ \mathbb{C}\text{-matrices of degree} \ g \}$ by the Cayley transformation $Z = (\tau - \sqrt{-1} \l_g)(\tau + \sqrt{-1} \l_g)^{-1}$ ((1.6) 2)). This realization is a special case of Harish-Chandra realization ([2] p.170).
 
 In the topological closure $\overline{\varrho}_g$ of $\varrho_g$ in $\Psi_{g,\mathbb{C}}$, we introduce an equivalence relation:
 
 for $p, q \in \overline{\varrho}_g$, $p \sim q \iff \exists \xi_1: D = \{ z \in \mathbb{C} \ ; \ |z| &lt; 1 \} \to \overline{\varrho}_g$, $i = 1, \cdots, m$, holomorphic maps, such that $\xi_1(0) = p$, $\xi_m(0) = q$, and $\xi_1(D) \cap \xi_{i+1}(D) \neq \emptyset$.
 Roughly speaking, $p \sim q$ if they can be connected by a finite number of holomorphic curves.
 
-**Definition (4.2).** A maximal subset in $\overline{\varrho}_g$ of mutually equivalent points is called a _boundary component_ of $\varrho_g$.
+**Definition (4.2).** A maximal subset in $\overline{\varrho}_g$ of mutually equivalent points is called a *boundary component* of $\varrho_g$.
 
 Hence $\overline{\varrho}_g$ is devided into a disjoint union of boundary components.
 
@@ -1114,7 +1039,7 @@ By the action of $G$ a boundary component is transformed to another, namely the 
 
 2. We have a bijective correspondence between the set of boundary components $\{F\}$ and the set of real subspaces in $\mathbb{R}^{2g}$ of dimension $g'' \leq g$ $\{U\}$ defined as
 
-$$F = F(U) = \{Z \in \overline{\mathbf{p}}_g \text{; for } W := \text{the vector subspace in } \mathfrak{C}^{2g} \text{ spanned by the columns of } \left( \begin{array}{c} Z + 1_g \\ \sqrt{-1}(Z - 1_g) \end{array} \right), U_{\mathfrak{C}} = W \cap \overline{W}\}$.
+$$F = F(U) = \{Z \in \overline{\mathbf{p}}*g \text{; for } W := \text{the vector subspace in } \mathfrak{C}^{2g} \text{ spanned by the columns of } \left( \begin{array}{c} Z + 1_g \\ \sqrt{-1}(Z - 1_g) \end{array} \right), U*{\mathfrak{C}} = W \cap \overline{W}\}$.
 
 111. For a boundary component $F = F(U)$ and $M \in G$ we have
 
@@ -1130,7 +1055,7 @@ For $F_{g'}$ the corresponding real subspace is of dimension $g'' = g - g'$.
 
 v) $\overline{\mathbf{p}}_g = \bigcup_{0 \leq g' \leq g} G \cdot F_{g'}$.
 
-If $F = M \cdot F_{g'}$ for $M \in G$, we say $F$ is _of degree_ $g'$.
+If $F = M \cdot F_{g'}$ for $M \in G$, we say $F$ is *of degree* $g'$.
 For $F = F(U)$ we have: degree $F + \dim U = g$.
 (Actually $G$ can be replaced by a maximal compact subgroup $K = \operatorname{Iso}(\sqrt{-1}1_g) \to (1.6) \text{ i})$ as is seen in the proof.)
 
@@ -1244,8 +1169,7 @@ $$
 
 which implies iii) by the definition of $F(U)$.
 
-ii), v).
-It is easily seen that
+ii), v). It is easily seen that
 
 $$
 F_g' = F(U_{g'}')
@@ -1315,8 +1239,7 @@ Now we go into study of the second topic, the structure of the parabolic subgrou
 
 21
 
-Definition (4.6).
-Let $F$ be a boundary component of $D = D_g$.
+Definition (4.6). Let $F$ be a boundary component of $D = D_g$.
 Then we define:
 
 1. $P(F) = \{g \in G; gF = F\}$, the parabolic subgroup associated with $F$;
@@ -1325,15 +1248,13 @@ Then we define:
 
 3. $U(F) =$ the centre of $W(F)$.
 
-Lemma (4.7).
-Let $F_1$ and $F_2$ be two boundary components.
+Lemma (4.7). Let $F_1$ and $F_2$ be two boundary components.
 If $gF_1 = F_2$ for an element $g \in G$, then $P(F_2) = gP(F_1)g^{-1}$, etc.
 
 Proof.
 Clear from the Definition (4.6).
 
-Proposition (4.8).
-For a boundary component $F_g$, the subgroups of $G$ defined in (4.6) can be expressed explicitly as follows.
+Proposition (4.8). For a boundary component $F_g$, the subgroups of $G$ defined in (4.6) can be expressed explicitly as follows.
 
 1. $P_{g'} = P(F_{g'}) = \left\{ \begin{array}{lll} A' &amp; 0 &amp; B' * \\ * &amp; u &amp; * * \\ C' &amp; 0 &amp; D' * \\ 0 &amp; 0 &amp; 0 &amp; t_{u^{-1}} \end{array} \right\} \in G; u \in GL(g'', IR), g'' = g - g' \}.$
 
@@ -1352,8 +1273,7 @@ If the claim 1) is established, the others 11) 111) are easy.
 
 22
 
-We prove i).
-Write $ g = \begin{pmatrix} A &amp; B \\ C &amp; D \end{pmatrix} \in \mathbb{P}(F_g') $ and further
+We prove i). Write $ g = \begin{pmatrix} A &amp; B \\ C &amp; D \end{pmatrix} \in \mathbb{P}(F_g') $ and further
 
 $$
 A = \begin{pmatrix} A_1 &amp; A_2 \\ A_3 &amp; A_4 \end{pmatrix}, \quad B = \begin{pmatrix} B_1 &amp; B_2 \\ B_3 &amp; B_4 \end{pmatrix}, \quad C = \begin{pmatrix} C_1 &amp; C_2 \\ C_3 &amp; C_4 \end{pmatrix}, \quad D = \begin{pmatrix} D_1 &amp; D_2 \\ D_3 &amp; D_4 \end{pmatrix},
@@ -1408,8 +1328,7 @@ $$ D_3 = 0. $$
 
 To show the rest is left to the reader.
 
-Definition (4.9).
-For $ F = F_g' $,
+Definition (4.9). For $ F = F_g' $,
 
 $$ G_h(F_g') := \left\{ \begin{pmatrix} A' &amp; 0 &amp; B' &amp; 0 \\ 0 &amp; l_g'' &amp; 0 &amp; 0 \\ C' &amp; 0 &amp; D' &amp; 0 \\ 0 &amp; 0 &amp; 0 &amp; l_g'' \end{pmatrix} \right\} ; \quad \begin{pmatrix} A' &amp; B' \\ C' &amp; D' \end{pmatrix} \in \mathrm{Sp}(g'', \mathbb{R}) \right\} $$
 
@@ -1428,8 +1347,7 @@ $$
 In order to define these groups in general, we need quite deep part of the theory of Lie algebras.
 Note that these subgroups are not normal in $ P_g' $.
 
-Proposition (4.10).
-For $ F = F_g' $, $ P_g' = P(F_g') $ enjoys the following properties.
+Proposition (4.10). For $ F = F_g' $, $ P_g' = P(F_g') $ enjoys the following properties.
 
 1. $ P_g' = (G_h \times G_k)W_g' $, semidirect product.
 
@@ -1478,14 +1396,12 @@ Here $\operatorname{GL}(g'', \mathbb{R}) \ni u$ acts on $\mathcal{U}_{g''}$ as $
 
 The proof, being straightforward or elementary, is left to the reader.
 
-**Remark (4.11).**
-i) The above holds for all $F$ when one defines $G_{h}$ and $G_{h'}$ suitably.
+**Remark (4.11).** i) The above holds for all $F$ when one defines $G_{h}$ and $G_{h'}$ suitably.
 (The easiest way would be to put $G_{h}(gF_{g'}) = gG_{h}(F_{g'})g^{-1}$, etc. Note that these subgroups are defined up to conjugacy.)
 
 ii) $P(F)$ acts transitively on $\mathcal{D}_{g}$.
 
-**Proof.** For $p, q \in \mathcal{D}_{g}$ there is a $g \in G$ with $q = g(p)$ ((1.4) ii)).
-By (4.4) v) there is an element $h \in \operatorname{Iso}(q) \approx K$ such that $h(g(F)) = F$.
+**Proof.** For $p, q \in \mathcal{D}_{g}$ there is a $g \in G$ with $q = g(p)$ ((1.4) ii)). By (4.4) v) there is an element $h \in \operatorname{Iso}(q) \approx K$ such that $h(g(F)) = F$.
 Then $(h \cdot q)(p) = q$ and $h \cdot g \in P(F)$.
 
 iii) Under the notation in (4.10) v) $\mathcal{U}_{g''}$ has a quadratic form
@@ -1529,10 +1445,7 @@ $$
 F \langle F' \quad \langle \Rightarrow \quad U \supset U'.
 $$
 
-**Theorem (4.14).**
-i) For two boundary components $F$ and $F'$ of $\mathcal{D}$ with $F \langle F' \quad$ we have
-a) $U(F) \supset U(F')$ (The converse holds by (4.10) iii).)
-b) $G_{\mathfrak{L}}(F) \supset G_{\mathfrak{L}}(F')$,
+**Theorem (4.14).** i) For two boundary components $F$ and $F'$ of $\mathcal{D}$ with $F \langle F' \quad$ we have a) $U(F) \supset U(F')$ (The converse holds by (4.10) iii).) b) $G_{\mathfrak{L}}(F) \supset G_{\mathfrak{L}}(F')$,
 
 26
 
@@ -1591,7 +1504,8 @@ U_0 = \left\{ \begin{array}{l} u_1 \\ u_2 \\ 0 \\ \vdots \\ 0 \end{array} \right
 $$
 
 Considering $U^{(1)}$ and $U^{(2)}$ as subspaces of $\mathbb{R}^g = U_0$, one can show that there is an element $u_1 \in GL(g, \mathbb{R})$ with $u_1 U^{(1)} = U_{g_1}$.
-(This operation is nothing but to choose a basis of $U^{(1)}$ and extend it to a basis of $U_0$.) Again choose an element $u_2 \in GL(g_1, \mathbb{R})$ so that $u_2(u_1 U^{(2)}) = U_{g_2}$.
+(This operation is nothing but to choose a basis of $U^{(1)}$ and extend it to a basis of $U_0$.)
+Again choose an element $u_2 \in GL(g_1, \mathbb{R})$ so that $u_2(u_1 U^{(2)}) = U_{g_2}$.
 Then $u = \begin{pmatrix} 1 &amp; &amp; \\ &amp; u_2 \end{pmatrix} \cdot u_1$ satisfies the condition
 
 $$
@@ -1609,7 +1523,7 @@ Q.E.D.
 
 The last topic in this section is "rationality" of boundary components.
 
-**Definition (4.15).** A boundary component $F$ of $D_g$ is called _rational_ if it satisfies one of the following mutually equivalent conditions.
+**Definition (4.15).** A boundary component $F$ of $D_g$ is called *rational* if it satisfies one of the following mutually equivalent conditions.
 
 i) $P(F)$ is defined over $\mathbb{Q}$ (general definition).
 
@@ -1628,7 +1542,7 @@ $$
 
 28
 
-and call it the _rational closure_ of $\mathcal{D}$.
+and call it the *rational closure* of $\mathcal{D}$.
 
 **Remark (4.16).** Actually, if $F$ is a rational boundary component of $\mathcal{D}_g$, then there is $M \in G_{\mathbb{Z}} = \mathrm{Sp}(g, \mathbb{Z})$ such that $M \cdot F = F_g$.
 This is a very special property of $\Gamma$.
@@ -1667,8 +1581,7 @@ From the above we may assume $F &gt; F_0$.
 Then the same proof as (4.14) iii) goes through under a stronger condition that $u$ is chosen to be integral.
 (In our case this operation is essentially to choose a basis of $U_{\mathbb{Z}}$ and extend it to a basis of $(U_0)_{\mathbb{Z}}$.)
 
-§5.
-Realization as a Siegel domain of the third kind, and Satake compactification.
+§5. Realization as a Siegel domain of the third kind, and Satake compactification.
 
 (5.1) We keep our notation in the previous section.
 
@@ -1756,9 +1669,9 @@ b) $\phi^{-1}(\Omega(F)) = \mathcal{D}_{g}$.
 
 Roughly speaking, the theorem claims that $\mathcal{D}$ is a family of tube domain parametrized by $\mathcal{D}'(F)$ which is a vector bundle over the boundary component $F$ considered.
 
-**Remark (5.3).** $\phi$ is _not_ defined by the projection with the isomorphism in 1).
+**Remark (5.3).** $\phi$ is *not* defined by the projection with the isomorphism in 1).
 
-(5.4) _Example-Proof of (5.2)._ By (4.4) it suffices to treat the case when $F = F_{g'}$ which we exhibit the theorem more explicitly (cf.
+(5.4) *Example-Proof of (5.2).* By (4.4) it suffices to treat the case when $F = F_{g'}$ which we exhibit the theorem more explicitly (cf.
 (4.8)).
 
 i) In the unbounded realization $\mathcal{G}_{g}$, we write
@@ -1832,8 +1745,7 @@ t_{\tau'''} \quad \tau'' &amp; &amp; .
 $$
 
 All claims can be checked directly.
-Let us just prove the claim b).
-Put
+Let us just prove the claim b). Put
 
 $$
 a = \text{Im } \tau', \quad b = \text{Im } \tau'', \quad c = \text{Im } \tau'''.
@@ -1868,8 +1780,7 @@ $$
 \lim_{t \to 0} w_{F}(t)^{-1} \circ = \circ_{F} \in F
 $$
 
-where $\circ$ is a base point in $D$ .
-For example in the case of $D = \mathfrak{S}_g$ , $F = F_g$ ,
+where $\circ$ is a base point in $D$ . For example in the case of $D = \mathfrak{S}_g$ , $F = F_g$ ,
 
 $$
 w_{F}(t) = \left( \begin{array}{cccc} 1_g &amp; &amp; &amp; \\ &amp; t_{1_g} &amp; &amp; \\ &amp; &amp; 1_g &amp; \\ &amp; &amp; &amp; t^{-1}_{1_g} \end{array} \right),
@@ -2009,7 +1920,7 @@ Then $\overline{\mathcal{D}}_{g}^{(F)} \subset \mathcal{D}(F)$, and by the map $
 
 The proof is similar to (5.4) by reducing to the case $F = F_{g'}$.
 
-(5.7) _Definition of cylindrical topology on $\mathcal{D}^2$_ (Pjatečki-Šapiro).
+(5.7) *Definition of cylindrical topology on $\mathcal{D}^2$* (Pjatečki-Šapiro).
 
 Consider a boundary component $F_{g'}, 0 \leq g' \leq g$.
 We have a chain of boundary components
@@ -2026,8 +1937,7 @@ $$
 
 35
 
-defined in (5.6).
-Also by (5.6) 11) the map $\Phi : \mathcal{D}(\mathsf{F}_{\mathsf{g}^{\prime}}) \to \mathcal{U}_{\mathsf{g}^{\prime}}$ maps $\mathsf{F}_{\mathsf{g}_1}, \mathsf{g}_1 \geq \mathsf{g}^{\prime}$, onto a boundary component $\Omega_{\mathsf{g}_1}^*$ dual to $\Omega_{\mathsf{g}^{\prime} - \mathsf{g}_1}$ in $\mathcal{U}_{\mathsf{g}^{\prime}}$ (cf.(5.4)).
+defined in (5.6). Also by (5.6) 11) the map $\Phi : \mathcal{D}(\mathsf{F}_{\mathsf{g}^{\prime}}) \to \mathcal{U}_{\mathsf{g}^{\prime}}$ maps $\mathsf{F}_{\mathsf{g}_1}, \mathsf{g}_1 \geq \mathsf{g}^{\prime}$, onto a boundary component $\Omega_{\mathsf{g}_1}^*$ dual to $\Omega_{\mathsf{g}^{\prime} - \mathsf{g}_1}$ in $\mathcal{U}_{\mathsf{g}^{\prime}}$ (cf.(5.4)).
 
 For an open set $U$ of $\mathsf{F}_{\mathsf{g}'}$ and an element $K_{\mathsf{g}_1}$ in $\Omega_{\mathsf{g}_1}^*$, $\mathsf{g}' \leq \mathsf{g}_1 \leq \mathsf{g}$, we put
 
@@ -2056,8 +1966,7 @@ Then we define cylindrical topology on $\mathcal{D}^2$ as the weakest topology w
 
 Note that $\mathcal{D}_g$ is open in $\mathcal{D}^2$ and on $\mathcal{D}_g$ the cylindrical topology is a natural one.
 
-Example (5.8).
-In the case of $\mathbf{g} = 1$ fundamental system of neighbourhood of $1 \in \mathcal{D}^2$ is given as unions of $\{1\}$ and open discs in $\overline{\mathcal{D}}$ whose boundary circles pass through 1.
+Example (5.8). In the case of $\mathbf{g} = 1$ fundamental system of neighbourhood of $1 \in \mathcal{D}^2$ is given as unions of $\{1\}$ and open discs in $\overline{\mathcal{D}}$ whose boundary circles pass through 1.
 
 ![img-9.jpeg](img-9.jpeg)
 
@@ -2107,7 +2016,7 @@ ii) $(\Gamma \backslash \mathcal{D})^\gamma := \Gamma \backslash \mathcal{D}^2$ 
 
 iii) $(\Gamma \backslash \mathcal{D})^\gamma$ admits a canonical structure of a normal analytic space such that $\Gamma \backslash \mathcal{D}$ is an analytic open subset, and is even a projective algebraic variety.
 
-We call $(\Gamma \backslash \mathcal{D})^\gamma$ _Satake(-Baily-Borel)_ _compactification_ of $\Gamma \backslash \mathcal{D}$.
+We call $(\Gamma \backslash \mathcal{D})^\gamma$ *Satake(-Baily-Borel)* *compactification* of $\Gamma \backslash \mathcal{D}$.
 
 **Remark (5.11).** The topology on $\mathcal{D}^2$ defined by Satake-Baily-Borel (called Satake topology) is somewhat different from the
 
@@ -2115,8 +2024,7 @@ We call $(\Gamma \backslash \mathcal{D})^\gamma$ _Satake(-Baily-Borel)_ _compact
 
 cylindrical topology, but they define the same quotient topology on $(\Gamma \backslash \mathcal{D})^{\gamma}$ (Kiernan-Kobayashi [18]).
 
-Example (5.12).
-$\Gamma = \operatorname{Sp}(g, \mathbb{Z})$.
+Example (5.12). $\Gamma = \operatorname{Sp}(g, \mathbb{Z})$.
 
 By (4.16) we see that as a set
 
@@ -2308,17 +2216,16 @@ is an epimorphism of real analytic groups whose kernel is a real compact torus.
 
 **Definition (6.3).**
 
-1. An _affine torus embedding_ (resp.
-   a _torus embedding_) of $T$, $X$, is an affine $\mathbb{C}$-scheme (resp.
+1. An *affine torus embedding* (resp.
+   a *torus embedding*) of $T$, $X$, is an affine $\mathbb{C}$-scheme (resp.
    a $\mathbb{C}$-scheme) such that
-1. $X$ contains $T$ as a Zariski open dense subset;
-1. $T$ acts on $X$ extending the natural action on itself defined by translation.
-1. Let $X$ (resp.
+2. $X$ contains $T$ as a Zariski open dense subset;
+3. $T$ acts on $X$ extending the natural action on itself defined by translation.
+4. Let $X$ (resp.
    $X'$) be a torus embedding of $T$ (resp.
-   $T'$).
-   A _morphism_ $f: X \to X'$ of _torus embeddings_ is a morphism of $\mathbb{C}$-schemes such that
-1. $f(T) = T'$,
-1. $g = f|_{T}: T \to T'$ is a homomorphism of groups, hence the diagram
+   $T'$). A *morphism* $f: X \to X'$ of *torus embeddings* is a morphism of $\mathbb{C}$-schemes such that
+5. $f(T) = T'$,
+6. $g = f|_{T}: T \to T'$ is a homomorphism of groups, hence the diagram
 
 $$
 \begin{array}{c}
@@ -2332,21 +2239,18 @@ commutes where the horizontal arrows denote the action of $T$ and $T'$ on $X$ an
 
 **Definition (6.4).**
 
-1. A cone $\sigma$ in $N_{\mathbb{R}}$ (or $M_{\mathbb{R}}$) is called a _convex rational polyhedral cone_ (abbreviated to a _c.r.p.
-   cone_) if
+1. A cone $\sigma$ in $N_{\mathbb{R}}$ (or $M_{\mathbb{R}}$) is called a *convex rational polyhedral cone* (abbreviated to a *c.r.p. cone*) if
    $$
    \begin{array}{r l}
    \sigma &amp; = (a \in N_{\mathbb{R}} \text{ (or } M_{\mathbb{R}}) \text{; } \langle r_i, a \rangle \geq 0, i = 1, \dots, m, \\
    &amp; \text{with } r_i \in M \text{ (or } N).
    \end{array}
    $$
-2. A (_finite_) rational partial polyhedral decomposition (abbr.
+2. A (*finite*) rational partial polyhedral decomposition (abbr.
 
 41
 
-to an $(f.)$ r.p.p.
-decomposition) of $\mathbf{N}_{\mathbb{R}}$ is a (finite) collection $\Sigma = \{\sigma_{\alpha}\}$ of c.r.p.
-cones in $\mathbf{N}_{\mathbb{R}}$ such that
+to an $(f.)$ r.p.p. decomposition) of $\mathbf{N}_{\mathbb{R}}$ is a (finite) collection $\Sigma = \{\sigma_{\alpha}\}$ of c.r.p. cones in $\mathbf{N}_{\mathbb{R}}$ such that
 
 0. $\sigma_{\alpha}$ contains no linear subspaces;
 
@@ -2355,31 +2259,22 @@ cones in $\mathbf{N}_{\mathbb{R}}$ such that
 2. for $\sigma_{\alpha}, \sigma_{\beta} \in \Sigma, \sigma_{\alpha} \cap \sigma_{\beta} \prec \sigma_{\alpha}, \prec \sigma_{\beta}$.
 
 iii) Let $\Sigma$ (resp.
-$\Sigma'$) be an r.p.p.
-decomposition of $\mathbb{N}$ (resp.
-$\mathbb{N}'$).
-A morphism $\psi : \Sigma \to \Sigma'$ of r.p.p.
-decompositions is a linear map $\psi : \mathbb{N} \to \mathbb{N}'$ with finite cokernel such that for $\sigma \in \Sigma$ there is a $\sigma' \in \Sigma'$ with $\psi_{\mathbb{R}}(\sigma) \subset \sigma'$ where $\psi_{\mathbb{R}} = \psi \otimes \mathbb{R} : \mathbb{N}_{\mathbb{R}} \to \mathbb{N}_{\mathbb{R}}'$.
+$\Sigma'$) be an r.p.p. decomposition of $\mathbb{N}$ (resp.
+$\mathbb{N}'$). A morphism $\psi : \Sigma \to \Sigma'$ of r.p.p. decompositions is a linear map $\psi : \mathbb{N} \to \mathbb{N}'$ with finite cokernel such that for $\sigma \in \Sigma$ there is a $\sigma' \in \Sigma'$ with $\psi_{\mathbb{R}}(\sigma) \subset \sigma'$ where $\psi_{\mathbb{R}} = \psi \otimes \mathbb{R} : \mathbb{N}_{\mathbb{R}} \to \mathbb{N}_{\mathbb{R}}'$.
 
-Thus r.p.p.
-decompositions form a category.
+Thus r.p.p. decompositions form a category.
 
-iv) By the correspondence $\sigma \to \Sigma(\sigma) = \{\sigma \text{ and its faces}\}$ the set of c.r.p.
-cones can be considered as a full subcategory of the category of r.p.p.
-decompositions.
+iv) By the correspondence $\sigma \to \Sigma(\sigma) = \{\sigma \text{ and its faces}\}$ the set of c.r.p. cones can be considered as a full subcategory of the category of r.p.p. decompositions.
 
 ```
 Category of r.p.p. decompositions
 ```
 
-Category of f.r.p.p.
-decompositions
+Category of f.r.p.p. decompositions
 
-Category of c.r.p.
-cones.
+Category of c.r.p. cones.
 
-**Notation (6.5).** Let $\sigma$ be a c.r.p.
-cone in $\mathbf{N}_{\mathbb{R}}$.
+**Notation (6.5).** Let $\sigma$ be a c.r.p. cone in $\mathbf{N}_{\mathbb{R}}$.
 Then the dual cone of $\sigma$ is defined to be
 
 $$
@@ -2446,13 +2341,9 @@ $$\sigma \cap M = \{a \in N; \ E_{\lim_{t \to 0} \lambda_a(t)} \in X_{\sigma}\}.
 
 The proof is based on the following two facts (6.8), (6.10).
 
-**Proposition (6.8).** For c.r.p.
-cones $\sigma, \tau$
+**Proposition (6.8).** For c.r.p. cones $\sigma, \tau$
 
-1.  $$\tau \subset \sigma \iff X_{\tau} \to X_{\sigma} \text{ homomorphism};$$
-    u
-    u
-    T = T
+1. $$\tau \subset \sigma \iff X_{\tau} \to X_{\sigma} \text{ homomorphism};$$ u u T = T
 
 43
 
@@ -2482,8 +2373,7 @@ $$
 
 2. Similar.
 
-**Corollary (6.9).** Given an r.p.p.
-decomposition $\Sigma = \{\sigma_{\alpha}\}$, the affine torus embeddings $X_{\sigma_{\alpha}}$ patches together to form a torus embedding $X_{\Sigma} = \upsilon_{\alpha} X_{\sigma_{\alpha}}$ by $X_{\sigma_{\alpha}} \subset X_{\sigma_{\beta}}$ for $\sigma_{\alpha} &lt; \sigma_{\beta}$.
+**Corollary (6.9).** Given an r.p.p. decomposition $\Sigma = \{\sigma_{\alpha}\}$, the affine torus embeddings $X_{\sigma_{\alpha}}$ patches together to form a torus embedding $X_{\Sigma} = \upsilon_{\alpha} X_{\sigma_{\alpha}}$ by $X_{\sigma_{\alpha}} \subset X_{\sigma_{\beta}}$ for $\sigma_{\alpha} &lt; \sigma_{\beta}$.
 
 Hence we have a morphism of categories $\Sigma \to X_{\Sigma}$.
 
@@ -2491,13 +2381,11 @@ Hence we have a morphism of categories $\Sigma \to X_{\Sigma}$.
 
 This theorem implies that the correspondence $\Sigma \to X_{\Sigma}$ is an equivalence of categories.
 
-**Remark (6.11).**
-i) Sumihiro proved only for the case of finite type.
+**Remark (6.11).** i) Sumihiro proved only for the case of finite type.
 But Ishida pointed out that the claim can be strengthened as above with a fact that, if an algebraic group acts on $X$ locally of finite type, then $X$ is covered with $G$-stable open sets which are of finite type.
 
 ii) The claim (6.10) does not hold unless $X$ is normal and the action is algebraic.
-For example $T = \mathbb{C}^*$ acts naturally on a rational curve with one node $\mathbb{P}^1 / \{0\} = \{\infty\}$, and the node has no $T$-stable affine open neighbourhood (remarked by Prof.
-Matsumura).
+For example $T = \mathbb{C}^*$ acts naturally on a rational curve with one node $\mathbb{P}^1 / \{0\} = \{\infty\}$, and the node has no $T$-stable affine open neighbourhood (remarked by Prof. Matsumura).
 On the other hand $T = \mathbb{C}^*$ acts on elliptic curves $\mathbb{C}^* / \mathbb{Z}$ analytically, which however has no $T$-stable open affine subsets.
 
 The action of $T$ on $X_{\Sigma}$ determines an orbit decomposition whose structure can be described in terms of $\Sigma$ as follows.
@@ -2506,8 +2394,7 @@ The action of $T$ on $X_{\Sigma}$ determines an orbit decomposition whose struct
 
 ## Proposition (6.12)
 
-Let $\Sigma$ be an r.p.p.
-decomposition and $X_{\Sigma}$ the corresponding torus embedding of $T$.
+Let $\Sigma$ be an r.p.p. decomposition and $X_{\Sigma}$ the corresponding torus embedding of $T$.
 Then there is a bijective correspondence
 
 $$
@@ -2540,8 +2427,7 @@ Here the limit in the right hand side does not depend on a (cf.
 
 a) Construction of $X_{\sigma}$.
 
-Let $\sigma$ be a c.r.p.
-cone and suppose that
+Let $\sigma$ be a c.r.p. cone and suppose that
 
 $$
 \hat{\sigma} \cap M = \mathbb{Z}r_{1} + \cdots + \mathbb{Z}r_{m},
@@ -2578,8 +2464,7 @@ b) Orbit decomposition.
 
 First note that
 
-to choose $\tau &lt; \sigma \iff$ to give a subset $N(\tau)$ of $\{r_1, \dots, r_n\}$ s.t.
-$N(\tau) \ni r_1 \iff r_1, \dots, r_n$, and
+to choose $\tau &lt; \sigma \iff$ to give a subset $N(\tau)$ of $\{r_1, \dots, r_n\}$ s.t. $N(\tau) \ni r_1 \iff r_1, \dots, r_n$, and
 
 $$
 \tau &lt; \tau' \iff N(\tau) \ni N(\tau'),
@@ -2671,9 +2556,8 @@ Some geometric properties of $X_{\Sigma}$ can be expressed also in terms of thos
 
 **Proposition (6.14).**
 
-1. For a c.r.p.
-   cone $\sigma$, $X_{\sigma}$ is nonsingular iff $\sigma$ is given by a part of a basis of $N$.
-   (We call such $\sigma$ _regular_.) In particular in this case $\sigma$ is a cone over a simplex.
+1. For a c.r.p. cone $\sigma$, $X_{\sigma}$ is nonsingular iff $\sigma$ is given by a part of a basis of $N$.
+   (We call such $\sigma$ *regular*.) In particular in this case $\sigma$ is a cone over a simplex.
 
 2. $X_{\Sigma}$ is proper iff $\Sigma$ is finite and $N_{\mathbb{R}} = \upsilon \sigma_{\alpha}$.
 
@@ -2686,7 +2570,7 @@ ii) $f$ is $\mathbb{R}$-linear on $\sigma_{\alpha}$;
 iii) $f(N \cap \upsilon \sigma_{\alpha}) \subset \mathbb{Z}$;
 
 iv) for each $\sigma_{\alpha}$ there are $r_i \in M$ and $n_i &gt; 0$ such that $n_i f \geq r_i$ on $\upsilon \sigma_{\alpha}$ and $\sigma_{\alpha} = \{a \in N_{\mathbb{R}}; \langle r_i, a \rangle = n_i f(a)\}$.
-(We call such $f$ _a polar function_.)
+(We call such $f$ *a polar function*.)
 
 47
 
@@ -2747,8 +2631,6 @@ $$</e_1,>
 48
 
 The action of  $\mathbf{T}$  on  $\mathbb{P}^n$  is defined by the coordinatewise multiplication.
-
-
 $$
 
 \Sigma = \left\{\sigma* {0}, \sigma* {1}, \dots , \sigma\_ {n} \text{ and their faces} \right\}
@@ -2756,22 +2638,16 @@ $$
 $$
 
 where
-
-
 $$
 
 \sigma* {0} = \left\{\left(a * {1}, \dots , a _ {n}\right) \in \mathbb {R} ^ {n}; a _ {1} \geq 0 \right\},
 
 $$
-
-
 $$
 
 \sigma* {k} = \left\{\left(a * {1}, \dots , a _ {n}\right) \in \mathbb {R} ^ {n}; - a _ {k} \geq 0, a _ {1} - a _ {k} \geq 0 \text{ for } \forall\_ {i} \right\},
 
 $$
-
-
 $$
 
 k = 1, \dots , n.
@@ -2781,53 +2657,38 @@ $$
 For example  $n = 2$
 
 ![img-10.jpeg](img-10.jpeg)
-
-
 $$
 
 \hat {\sigma} _ {0} \cap M = \sum_ {i = 1} ^ {n} \mathbb {N} e \_ {i}, \quad (\text{cf.1})
 
 $$
-
-
 $$
 
 \hat {\sigma} _ {k} \cap M = \mathbb {N} (- e _ {k}) \oplus \sum* {i = 1} ^ {n} \mathbb {N} (e * {i} - e \_ {k}), \quad k = 1, \dots , n.
 
 $$
-
-
 $$
 
 x _ {\sigma_ {0}} = \operatorname {Spec} \left(\mathbb {C} \left[ T _ {1}, \dots , T _ {n} \right]\right),
 
 $$
-
-
 $$
 
 x _ {\sigma_ {k}} = \operatorname {Spec} \left(\mathbb {C} \left[ T _ {k} ^ {- 1}, T _ {1} T _ {k} ^ {- 1}, \dots , T _ {n} T _ {k} ^ {- 1} \right]\right), \quad k = 1, \dots , n.
 
 $$
-
-
 $$
 
 \mathbb {P} ^ {n} = \operatorname {Proj} \left(\mathbb {C} \left[ U _ {0}, \dots , U _ {n} \right]\right),
 
 $$
-
-
 $$
 
-\begin{array}{l}
-\left(\mathbb {P} ^ {n}\right) _ {u _ {0}} = \{u = (u _ {1}); u _ {0} \neq 0 \} \\
+\begin{array}{l} \left(\mathbb {P} ^ {n}\right) _ {u _ {0}} = \{u = (u _ {1}); u _ {0} \neq 0 \} \\
 = \operatorname {Spec} \left(\mathbb {C} \left[ U _ {1} / U _ {0}, \dots , U _ {n} / U _ {0} \right]\right) \\
 \end{array}
 
 $$
-
-
 $$
 
 x _ {\sigma_ {0}} = \operatorname {Spec} \left(\mathbb {C} \left[ T _ {1} \right]\right) \quad \text{with} \quad T _ {1} = U _ {1} / U \_ {0}.
@@ -2837,18 +2698,13 @@ $$
 49
 
 Then
-
-
 $$
 
-\begin{array}{l}
-\left(\mathbb{P}^{n}\right)_{u_{k}} = \{u = \left(u*{1}\right); u*{k} \neq 0\} \\
-= \operatorname{Spec}\left(\mathbb{C}\left[\mathrm{U}_{0} / \mathrm{U}_{k}, \dots, \mathrm{U}_{n} / \mathrm{U}_{k}\right]\right) \\
+\begin{array}{l} \left(\mathbb{P}^{n}\right)*{u*{k}} = \{u = \left(u*{1}\right); u*{k} \neq 0\} \\
+= \operatorname{Spec}\left(\mathbb{C}\left[\mathrm{U}*{0} / \mathrm{U}*{k}, \dots, \mathrm{U}*{n} / \mathrm{U}*{k}\right]\right) \\
 \end{array}
 
 $$
-
-
 $$
 
 x*{\sigma*{k}} \quad \text{as above}.
@@ -2856,8 +2712,6 @@ x*{\sigma*{k}} \quad \text{as above}.
 $$
 
 Hence
-
-
 $$
 
 \mathbb{P}^{n} \nsubseteq x\_{\Sigma}.
@@ -2867,21 +2721,15 @@ $$
 3) Cyclic quotient singularity and its resolution.
 
 a) Let $\zeta = \exp(2\pi \sqrt{-1/p})$ be a primitive $p$-th root. Then the map
-
-
 $$
 
-\begin{array}{l}
-g: \mathbb{C}^{n} \longrightarrow \mathbb{C}^{n} \\
+\begin{array}{l} g: \mathbb{C}^{n} \longrightarrow \mathbb{C}^{n} \\
 \downarrow \\
-\left(z*{1}, \dots, z*{n}\right) \longrightarrow \left(\zeta^{a*{1}} z*{1}, \dots, \zeta^{a*{n}} z*{n}\right)
-\end{array}
+\left(z*{1}, \dots, z*{n}\right) \longrightarrow \left(\zeta^{a*{1}} z*{1}, \dots, \zeta^{a*{n}} z*{n}\right) \end{array}
 
 $$
 
 generates a finite cyclic group $G = \langle g \rangle$ of automorphisms of $\mathbb{C}^{n}$ of order $p$. The quotient space
-
-
 $$
 
 X = \mathbb{C}^{n}/G
@@ -2891,21 +2739,15 @@ $$
 has a normal singularity at $o = 0$ mod $G$ called cyclic quotient singularity. It is isolated for example if $(a_{1}, \dots, a_{n}) = 1$, and $a_{i} \neq 0$ (p).
 
 Put
-
-
 $$
 
-\begin{array}{l}
-\pi: M = ZZ^{n} \longrightarrow ZZ/pZZ \\
+\begin{array}{l} \pi: M = ZZ^{n} \longrightarrow ZZ/pZZ \\
 \downarrow \\
-\alpha = (\alpha*{1}, \dots, \alpha*{n}) \rightarrow \langle \alpha, a \rangle = \Sigma \alpha*{1} a*{1} \bmod p.
-\end{array}
+\alpha = (\alpha*{1}, \dots, \alpha*{n}) \rightarrow \langle \alpha, a \rangle = \Sigma \alpha*{1} a*{1} \bmod p. \end{array}
 
 $$
 
 Then $M = \operatorname{Ker}(\pi)$ is again a free abelian group of rank $n$. Consider the transpose of the inclusion map $i: M \subset \mathring{M}$,
-
-
 $$
 
 j = {}^{t}i: \mathring{N} \approx \operatorname{Hom}(\mathring{M}, ZZ) \rightarrow N = \operatorname{Hom}(M, ZZ).
@@ -2915,8 +2757,6 @@ $$
 50
 
 and put
-
-
 $$
 
 \hat{\sigma} = \{t = (t*1, \dots, t_n) \in \mathbb{N}*{\mathbb{R}}; t*1 \geq 0, i = 1, \dots, n\} \in \mathbb{N}*{\mathbb{R}}
@@ -2924,8 +2764,6 @@ $$
 $$
 
 and
-
-
 $$
 
 \sigma = j*{\mathbb{R}}(\hat{\sigma}) \in \mathbb{N}*{\mathbb{R}}.
@@ -2933,8 +2771,6 @@ $$
 $$
 
 Then we have
-
-
 $$
 
 X \ni X\_\sigma
@@ -2942,8 +2778,6 @@ X \ni X\_\sigma
 $$
 
 and $j: \mathbb{N} \to \mathbb{N}$ corresponds to the canonical surjection
-
-
 $$
 
 p: \mathbb{C}^n \left(= X\_{\hat{\sigma}}\right) \to X.
@@ -2953,21 +2787,15 @@ $$
 b) (Hirzebruch's method of resolution of quotient singularity of dimension 2 [14])
 
 We consider the case $n = 2$, and
-
-
 $$
 
-\begin{array}{l}
-g: \mathbb{C}^2 \longrightarrow \mathbb{C}^2 \\
+\begin{array}{l} g: \mathbb{C}^2 \longrightarrow \mathbb{C}^2 \\
 \downarrow \\
-(z_1, z_2) \rightarrow (\zeta z_1, \zeta^q z_2), (p, q) = 1.
-\end{array}
+(z_1, z_2) \rightarrow (\zeta z_1, \zeta^q z_2), (p, q) = 1. \end{array}
 
 $$
 
 (It is easily seen that for $n = 2$ we have not lost generality by this assumption.) We want to obtain a resolution of the quotient singularity
-
-
 $$
 
 X = \mathbb{C}^2 / \langle g \rangle \gg 0.
@@ -2975,8 +2803,6 @@ X = \mathbb{C}^2 / \langle g \rangle \gg 0.
 $$
 
 By the above a)
-
-
 $$
 
 X \ni X\_\sigma
@@ -2988,36 +2814,26 @@ with $\sigma = \mathbb{R}_+(0,1) + \mathbb{R}_+(p, -q)$ (by choosing a basis of 
 Define non-negative integers $\lambda_1$ and $\mu_1$ inductively by the following relations.
 
 51
-
-
 $$
 
-\begin{array}{l}
-\lambda*0 = p, \lambda_1 = q, \\
+\begin{array}{l} \lambda*0 = p, \lambda_1 = q, \\
 \lambda_0 = b_1 \lambda_1 - \lambda_2, \; 0 \leq \lambda_2 &lt; \lambda_1, \; 1 &lt; b_1, \\
 \lambda_1 = b_2 \lambda_2 - \lambda_3, \; 0 \leq \lambda_3 &lt; \lambda_2, \; 1 &lt; b_2, \\
 \vdots \\
 \lambda*{s-2} = b*{s-1} \lambda*{s-1} - \lambda*s, \; \lambda_s = 1, \\
-\lambda*{s-1} = b*s \lambda_s - \lambda*{s+1}, \; \lambda\_{s+1} = 0,
-\end{array}
+\lambda*{s-1} = b*s \lambda_s - \lambda*{s+1}, \; \lambda\_{s+1} = 0, \end{array}
 
 $$
 
 and
-
-
 $$
 
-\begin{array}{l}
-\mu*0 = 0, \; \mu_1 = 1, \\
-\mu_k = b*{k-1} \mu*{k-1} - \mu*{k-2}.
-\end{array}
+\begin{array}{l} \mu*0 = 0, \; \mu_1 = 1, \\
+\mu_k = b*{k-1} \mu*{k-1} - \mu*{k-2}. \end{array}
 
 $$
 
 Set moreover
-
-
 $$
 
 a_i = \mu_i, \; b_i = \frac{1}{p} (\lambda_i - q \mu_i).
@@ -3033,8 +2849,6 @@ b) $a_1 b_{i+1} - a_{i+1} b_i = 1$,
 c) $(a_0, b_0) = (0, 1), \; (a_1, b_1) = (1, 0), \; (a_{s+1}, b_{s+1}) = (p, -q)$.
 
 We define a *subdivision* $\{\sigma_i\}$ of $\sigma$ as
-
-
 $$
 
 \sigma*i = \mathbb{R}*+ (a*i, b_i) + \mathbb{R}*+ (a*{i+1}, b*{i+1}), \; i = 0, \dots, s.
@@ -3050,13 +2864,11 @@ The number-theoretic meaning of this example is as follows. The above  $(\mathbf
 ![img-12.jpeg](img-12.jpeg)
 
 and
-
-
 $$
 
 - \frac {b _ {1}}{a _ {1}} = \frac {1}{p} \left(\frac {\lambda* {1}}{\mu* {1}} - q\right)
   $$
-
+  $$
 gives the 1-th convergent of $q / p$ .
 
 53
@@ -3077,11 +2889,9 @@ $$
 We can construct $N_{\Sigma}$ similarly as $X_{\Sigma}$ in two ways as follows.
 
 A) First elementary construction.
-This construction is analogous to (6.13).
-We use the notation there.
+This construction is analogous to (6.13). We use the notation there.
 
-For a c.r.p.
-cone $\sigma$ in $\Sigma$ define an immersion of $N_{\mathbb{R}}$ as
+For a c.r.p. cone $\sigma$ in $\Sigma$ define an immersion of $N_{\mathbb{R}}$ as
 
 $$
 \begin{array}{c c c c c}
@@ -3199,8 +3009,7 @@ $$
 by which $X_{\Sigma}/c-T \stackrel{\circ}{\to} N_{\Sigma}$.
 
 B) Second coordinate-free construction.
-We keep the notation in A).
-For $\tau \in \Sigma$ we define
+We keep the notation in A). For $\tau \in \Sigma$ we define
 
 $$
 \overline{O}_{\tau} = N_{\mathbb{R}} / L(\tau)
@@ -3245,7 +3054,7 @@ $$
 $$
 
 $(U^{\circ} = U^{\{0\}})$ where $\varepsilon$ and $w$ run through $\mathbb{R}_{+}$ and $L(\tau)$ respectively.
-Such neighbourhood is called _typical_.
+Such neighbourhood is called *typical*.
 
 ![img-13.jpeg](img-13.jpeg)
 
@@ -3268,8 +3077,7 @@ for $n \gg 0$ (cf.(5.9)).
 
 Roughly speaking, $y + \infty \cdot \tau$ is the ideal point obtained by starting at $y$ and moving to infinity in the direction of $\tau$.
 
-§7.
-Toroidal compactification due to Mumford.
+§7. Toroidal compactification due to Mumford.
 
 ## A) Construction of toroidal compactification.
 
@@ -3423,8 +3231,7 @@ $$
 
 2. $\sigma_{\mu}, \sigma_{\nu} \in \Sigma_{\alpha} \Rightarrow \sigma_{\mu} \cap \sigma_{\nu} \prec \sigma_{\mu}, \sigma_{\nu}$;
 
-(0), 1), 2) &lt;=&gt; $\Sigma_{\alpha}$ is an r.p.p.
-decomposition of $U_{\alpha}$)
+(0), 1), 2) &lt;=&gt; $\Sigma_{\alpha}$ is an r.p.p. decomposition of $U_{\alpha}$)
 
 3. $\gamma \in \overline{F}_{\alpha}, \sigma_{\mu} \in \Sigma_{\alpha} \Rightarrow \gamma \sigma_{\mu} \in \Sigma_{\alpha}$;
 
@@ -3604,8 +3411,7 @@ $$
 
 hence preserving the orbit decompositions $\{0(\mu)\}$ in $(U_{\alpha} \backslash \mathcal{D}(F_{\alpha}))_{\Sigma_{\alpha}}$ and $\{\widetilde{O}_{\mu}\}$ in $(U_{\alpha})_{\Sigma_{\alpha}}$ by (6.16).
 
-We have another map $\Phi$ of $U_{\alpha} \backslash \mathcal{D}(F_{\alpha})$ to $U_{\alpha}$ .
-We see that, if one fixes the $(F_{\alpha} \times V_{\alpha})$ -component, then $\Phi$ and $\operatorname{Im}$ differ only by a translation of $U_{\alpha}$ as shown directly in the case of $F_{\alpha} = F_{g'}$ ;
+We have another map $\Phi$ of $U_{\alpha} \backslash \mathcal{D}(F_{\alpha})$ to $U_{\alpha}$ . We see that, if one fixes the $(F_{\alpha} \times V_{\alpha})$ -component, then $\Phi$ and $\operatorname{Im}$ differ only by a translation of $U_{\alpha}$ as shown directly in the case of $F_{\alpha} = F_{g'}$ ;
 
 $$
 \text{for } \tau \text{ mod } U _ {g ^ {\prime}} = (\tau^ {\prime}, \tau^ {\prime \prime}, \tau^ {\prime \prime} \text{ mod } U _ {g ^ {\prime}}),
@@ -3636,8 +3442,7 @@ $$
 $$
 
 (cf.
-(7.6)).
-In $(U_{\alpha})_{\Sigma_{\alpha}}$ we define $(\Omega_{\alpha})_{\Sigma_{\alpha}}$ in the similar manner as in (7.7), namely
+(7.6)). In $(U_{\alpha})_{\Sigma_{\alpha}}$ we define $(\Omega_{\alpha})_{\Sigma_{\alpha}}$ in the similar manner as in (7.7), namely
 
 $$
 (\Omega_{\alpha})_{\Sigma_{\alpha}} := \text{the interior of the closure of } \Omega_{\alpha} \text{ in } (U_{\alpha})_{\Sigma_{\alpha}}.
@@ -3662,8 +3467,7 @@ $$
 
 64
 
-which is closed in $(\mathrm{U}_{\alpha} \backslash \mathcal{D})_{\Sigma_{\alpha}}$ by the property i) in (7.7).
-This is so-to-say the set of points essentially added with respect to $\mathbf{F}_{\alpha}$.
+which is closed in $(\mathrm{U}_{\alpha} \backslash \mathcal{D})_{\Sigma_{\alpha}}$ by the property i) in (7.7). This is so-to-say the set of points essentially added with respect to $\mathbf{F}_{\alpha}$.
 
 2. For $\mathbf{F}_{\alpha} &lt; \mathbf{F}_{\beta}$ (i.e. $\mathbf{F}_{\alpha} \subset (\mathbf{F}_{\beta})^{-}$) (hence $U_{\beta} \subset U_{\alpha}$, $\Sigma_{\beta} = \Sigma_{\alpha} \cap U_{\beta}$) we have a commutative diagram
 
@@ -3690,7 +3494,8 @@ $$
 $$
 
 where $\Pi_{\alpha, \beta}$ is an Galois covering over the open image with covering group $\mathrm{U}_{\alpha} / \mathrm{U}_{\beta}$.
-(Easy to see from the definition.) Note also that $\mathrm{O}(\mathbf{F}_{\alpha})$ is the complement of the union of $\operatorname{Im} \Pi_{\alpha, \beta}$ for $\forall \mathbf{F}_{\beta} \geqslant \mathbf{F}_{\alpha}$, which is the reason why we call $\mathrm{O}(\mathbf{F}_{\alpha})$ the set of points essentially added.
+(Easy to see from the definition.)
+Note also that $\mathrm{O}(\mathbf{F}_{\alpha})$ is the complement of the union of $\operatorname{Im} \Pi_{\alpha, \beta}$ for $\forall \mathbf{F}_{\beta} \geqslant \mathbf{F}_{\alpha}$, which is the reason why we call $\mathrm{O}(\mathbf{F}_{\alpha})$ the set of points essentially added.
 
 3. The canonical holomorphic map: $\mathrm{U}_{\alpha} \backslash \mathcal{D} \to \Gamma \backslash \mathcal{D}$ extends to a holomorphic map
 
@@ -3739,8 +3544,7 @@ $$
 
 The basic fact is the following
 
-Proposition (7.11.1).
-$\Gamma_{\alpha} / U_{\alpha}$ acts properly discontinuously on $(U_{\alpha} \backslash D)_{\Sigma_{\alpha}}$.
+Proposition (7.11.1). $\Gamma_{\alpha} / U_{\alpha}$ acts properly discontinuously on $(U_{\alpha} \backslash D)_{\Sigma_{\alpha}}$.
 
 Idea of the proof.
 By the $\overline{\Gamma}_{\alpha}$-admissibility of $\Sigma_{\alpha}$ (especially (7.3) i) 3)) $\Gamma_{\alpha} / U_{\alpha}$ acts on $(U_{\alpha} \backslash D(F_{\alpha}))_{\Sigma_{\alpha}}$ and preserves $(U_{\alpha} \backslash D)_{\Sigma_{\alpha}}$.
@@ -3772,8 +3576,7 @@ $$
 
 We use one more elementary lemma.
 
-Lemma (7.11.2).
-Let $f: X \to Y$ be a continuous map of Hausdorff
+Lemma (7.11.2). Let $f: X \to Y$ be a continuous map of Hausdorff
 
 66
 
@@ -3803,8 +3606,7 @@ $\overline{F}_{\alpha}$ acts properly discontinuously on $(\Omega_{\alpha})_{\Si
 
 We shall give a sketchy but almost complete proof.
 
-Recall the construction of $(U_{\alpha})_{\Sigma_{\alpha}}$ in (6.16) B).
-All points of $(U_{\alpha})_{\Sigma_{\alpha}}$ can be described with symbols $y + \infty \cdot \sigma_{\mu}$, $y \in U_{\alpha}$, and a fundamental system of neighbourhoods of $y + \infty \cdot \sigma_{\mu}$ meets $\Omega_{\alpha}$ in the sets $y + z + B_{\varepsilon} + \sigma_{\mu}$, $B_{\varepsilon} : \varepsilon$-ball around $0 \in U_{\alpha}$ and $z \in \sigma_{\mu}$.
+Recall the construction of $(U_{\alpha})_{\Sigma_{\alpha}}$ in (6.16) B). All points of $(U_{\alpha})_{\Sigma_{\alpha}}$ can be described with symbols $y + \infty \cdot \sigma_{\mu}$, $y \in U_{\alpha}$, and a fundamental system of neighbourhoods of $y + \infty \cdot \sigma_{\mu}$ meets $\Omega_{\alpha}$ in the sets $y + z + B_{\varepsilon} + \sigma_{\mu}$, $B_{\varepsilon} : \varepsilon$-ball around $0 \in U_{\alpha}$ and $z \in \sigma_{\mu}$.
 Hence by the definition of $(\Omega_{\alpha})_{\Sigma_{\alpha}}$ in (7.8) if $y + \infty \cdot \sigma_{\mu} \in (\Omega_{\alpha})_{\Sigma_{\alpha}}$, then $y + z + B_{\varepsilon} + \sigma_{\mu} \subset \Omega_{\alpha}$ for suitable $z \in \sigma_{\mu}$ and $\varepsilon$.
 Since $x + y + \infty \cdot \sigma_{\mu} = x + \infty \cdot \sigma_{\mu}$, it follows that all points in $(\Omega_{\alpha})_{\Sigma_{\alpha}}$ can be described as $y + \infty \cdot \sigma_{\mu}$ with $y \in \Omega_{\alpha}$.
 Conversely if $y \in \Omega_{\alpha}$, $y + B_{\varepsilon} + \sigma_{\mu} \subset \Omega_{\alpha}$ for small enough $\varepsilon$, hence $y + z + B_{\varepsilon} + \infty \cdot \sigma_{\mu}$ is contained in the closure of $\Omega_{\alpha}$ in $(U_{\alpha})_{\Sigma_{\alpha}}$ for all $z \in \sigma_{\mu}$ and for all faces $\sigma_{\nu}$ of $\sigma_{\mu}$.
@@ -3835,21 +3637,19 @@ $$
 $$
 
 contains $y$ in its interior.
-(Here some precise argument is skipped.) Then it follows in a similar way as above that $\overline{\sigma}$ in $(U_{\alpha})_{\Sigma_{\alpha}}$ is a neighbourhood of $y + \infty \cdot \sigma_{\mu}$, hence so is $(\sigma)_{\Sigma_{\alpha}} = (\overline{\sigma})^{\circ}$ in $(U_{\alpha})_{\Sigma_{\alpha}}$.
+(Here some precise argument is skipped.)
+Then it follows in a similar way as above that $\overline{\sigma}$ in $(U_{\alpha})_{\Sigma_{\alpha}}$ is a neighbourhood of $y + \infty \cdot \sigma_{\mu}$, hence so is $(\sigma)_{\Sigma_{\alpha}} = (\overline{\sigma})^{\circ}$ in $(U_{\alpha})_{\Sigma_{\alpha}}$.
 
 By the $\overline{\Gamma}_{\alpha}$-admissibility (7.3) 3) only a finite number of $\overline{\gamma} \in \overline{\Gamma}_{\alpha}$ satisfy $\overline{\gamma} \cdot \sigma^{\circ} \cap \sigma^{\circ} \neq \phi$, which is shown to be equivalent to say that $\overline{\gamma}(\sigma)_{\Sigma_{\alpha}} \cap (\sigma)_{\Sigma_{\alpha}} \neq \phi$.
 This last claim is what we want to prove.
 
-Q.E.D.
-of 4).
+Q.E.D. of 4).
 
 Applying Lemma (7.11.2) once again for $\phi : (U_{\alpha} \backslash D)_{\Sigma_{\alpha}} \to (\Omega_{\alpha})_{\Sigma_{\alpha}}$ and $p_{\xi} : \Gamma_{\alpha} / U_{\alpha} \to \overline{\Gamma}_{\alpha}$ and using 3) and 4) we obtain the desired result (7.11.1).
 
-Q.E.D.
-of (7.11.1).
+Q.E.D. of (7.11.1).
 
-By H.
-Cartan's theorem we obtain:
+By H. Cartan's theorem we obtain:
 
 **Theorem (7.12).** The quotient space $(\Gamma_{\alpha} / U_{\alpha}) \backslash (U_{\alpha} \backslash D)_{\Sigma_{\alpha}}$ has a canonical quotient structure of a normal analytic space, and $\overline{O}(F_{\alpha}) = (\Gamma_{\alpha} / U_{\alpha}) \backslash O(F_{\alpha})$ is a closed analytic set in it.
 
@@ -3865,7 +3665,7 @@ $$
 \end{array}
 $$
 
-(7.14) **Step 4.** _Gluing._
+(7.14) **Step 4.** *Gluing.*
 
 68
 
@@ -3938,8 +3738,7 @@ $$
 
 (far from trivial, cf.(3.6.1)), by which we can endow $(\Gamma \backslash \mathcal{D})^{\vee}$ a structure of a normal complex analytic space.
 
-**Observations (7.15).**
-i) We have a commutative diagram of holomorphic maps
+**Observations (7.15).** i) We have a commutative diagram of holomorphic maps
 
 $$
 \begin{array}{l}
@@ -3983,11 +3782,9 @@ $$
 (\Gamma \backslash D) ^ {\vee} = \underset {F _ {\alpha} \mod \Gamma} {\Pi} \overline {{O}} (F _ {\alpha}).
 $$
 
-Thus we have shown the main theorem (7.10).
-The other properties of $(\Gamma \backslash D)^{\vee}$ in (2.3) are now easy to check.
+Thus we have shown the main theorem (7.10). The other properties of $(\Gamma \backslash D)^{\vee}$ in (2.3) are now easy to check.
 
-(2.3) i).
-By (7.7) ii) the boundary $O(\mu)$ is of codimension one in $(U_{\alpha} \setminus (F_{\alpha}))_{\Sigma_{\alpha}}$ if $\dim \mu = 1$.
+(2.3) i). By (7.7) ii) the boundary $O(\mu)$ is of codimension one in $(U_{\alpha} \setminus (F_{\alpha}))_{\Sigma_{\alpha}}$ if $\dim \mu = 1$.
 Since any cone $\sigma_{\mu}$ has a face of dimension 1 and any $O(\mu)$ meets $(U_{\alpha} \setminus D)_{\Sigma_{\alpha}}$, the boundary $(U_{\alpha} \setminus D)_{\Sigma_{\alpha}} - U_{\alpha} \setminus D$ is purely of codimension 1. Therefore the boundary $(\Gamma \setminus D)^{\vee} - (\Gamma \setminus D)$, being locally a finite quotient of $(U_{\alpha} \setminus D)_{\Sigma_{\alpha}}$, has also pure codimension 1.
 
 (2.3) ii) is clear from the construction, and (2.3) iii) has already been shown.
@@ -4010,7 +3807,7 @@ Some geometric properties of $(\Gamma \backslash D)^{\vee}$ can be expressed in 
 
 Before stating a criterion for smoothness we need one notion as preliminary.
 
-**Definition (7.17).** A subgroup $\Gamma$ of $\mathrm{GL}(n, \mathbb{C})$ is called _neat_ if the subgroup of $\mathbb{C}^*$ generated by the eigenvalues of all $\gamma \in \Gamma$ is torsion free.
+**Definition (7.17).** A subgroup $\Gamma$ of $\mathrm{GL}(n, \mathbb{C})$ is called *neat* if the subgroup of $\mathbb{C}^*$ generated by the eigenvalues of all $\gamma \in \Gamma$ is torsion free.
 
 We recall two fundamental properties concerning neat subgroups
 
@@ -4035,21 +3832,16 @@ i) $(\Gamma \backslash \mathcal{D})^{\mathcal{V}}$ has at most finite quotient s
 ii) $(\Gamma \backslash \mathcal{D})^{\mathcal{V}}$ is smooth if moreover $\Gamma$ is neat.
 (More strongly, as the proof below shows, under the assumption for $\Gamma$ to be neat, $(\Gamma \backslash \mathcal{D})^{\mathcal{V}}$ is smooth near $\pi_{\mathbb{F}_{\alpha}}(0(\mu))$ iff $\sigma_{\mu}$ in $\Sigma_{\alpha}$ is regular.)
 
-**Proof.** The first claim follows from the second by using (7.18) i) and (2.3) v).
-By the assumption $(U_{\alpha} \backslash \mathcal{D})_{\Sigma_{\alpha}}$ is nonsingular for any $\alpha$ ((6.14) 1)) and $\Gamma_{\alpha}$ is neat.
-Then one can show that $\Gamma_{\alpha} / U_{\alpha}$ operates on $(U_{\alpha} \backslash \mathcal{D})_{\Sigma_{\alpha}}$ without fixed points in a similar way as (7.11.1) and by using (7.11.1).
-(The essential idea is the same as to show (7.18) ii).) Hence the claim ii) follows since $(\Gamma \backslash \mathcal{D})^{\mathcal{V}}$ is locally isomorphic to $(\Gamma_{\alpha} / U_{\alpha}) \backslash (U_{\alpha} \backslash \mathcal{D})_{\Sigma_{\alpha}}$ which is nonsingular.
-Q.
-E.
-D.
+**Proof.** The first claim follows from the second by using (7.18) i) and (2.3) v). By the assumption $(U_{\alpha} \backslash \mathcal{D})_{\Sigma_{\alpha}}$ is nonsingular for any $\alpha$ ((6.14) 1)) and $\Gamma_{\alpha}$ is neat.
+Then one can show that $\Gamma_{\alpha} / U_{\alpha}$ operates on $(U_{\alpha} \backslash \mathcal{D})_{\Sigma_{\alpha}}$ without fixed points in a similar way as (7.11.1) and by using (7.11.1). (The essential idea is the same as to show (7.18) ii).) Hence the claim ii) follows since $(\Gamma \backslash \mathcal{D})^{\mathcal{V}}$ is locally isomorphic to $(\Gamma_{\alpha} / U_{\alpha}) \backslash (U_{\alpha} \backslash \mathcal{D})_{\Sigma_{\alpha}}$ which is nonsingular.
+Q. E. D.
 
 Concerning the existence of smooth compactifications we have
 
 **Theorem (7.20).** For any $\Gamma$-admissible decomposition $\Sigma = \{\Sigma_{\alpha}\}$ there exists a refinement $\Gamma' = \{\Sigma_{\alpha}'\}$ such that all cones are regular.
 
 Hence if $\Gamma$ is neat, any toroidal compactification is dominated by a smooth toroidal compactification.
-(N.B.
-Moreover, as the proof shows, the dominating map is a blowing-up, hence projective.)
+(N.B. Moreover, as the proof shows, the dominating map is a blowing-up, hence projective.)
 
 **Proof.** In [17] Theorem 11 (p.32) this statement is proved in the case of torus embeddings of finite type, which is not the case for $\Sigma_{\alpha}$.
 By virtue of the finiteness condition (7.3) 4), however, the same argument works since, as one notes, the construction of the refinement is done essentially by the ascending induction on the dimension of cones.
@@ -4069,7 +3861,7 @@ u := \underset{\mathbf{v}}{\mathrm{U}} \quad \mathbf{v}, \quad \mathbf{u}_\alpha
 \end{array}
 $$
 
-**Definition (7.22).** A $\Gamma$-admissible decomposition $\Sigma = \{\Sigma_\alpha\}$ is called _projective_ if there exists a continuous convex piecewise linear function
+**Definition (7.22).** A $\Gamma$-admissible decomposition $\Sigma = \{\Sigma_\alpha\}$ is called *projective* if there exists a continuous convex piecewise linear function
 
 $$
 f: \Omega \longrightarrow \mathbb{R}
@@ -4078,16 +3870,13 @@ $$
 such that
 
 1. $f(u) &gt; 0$ for $u \neq 1$ ($= 0$ in $\mathbf{u}_\alpha$);
-2. for each $\sigma_\mu \in \Sigma_\alpha$ there is a linear function $\ell_\mu$ on $\mathbf{u}_\alpha$ such that
-   a) $\ell_\mu \geq f$ on $\Omega_\alpha$ and
-   b) $\sigma_\mu = \{u \in \mathbf{u}_\alpha; \ell_\mu(u) = f(u)\}$;
+2. for each $\sigma_\mu \in \Sigma_\alpha$ there is a linear function $\ell_\mu$ on $\mathbf{u}_\alpha$ such that a) $\ell_\mu \geq f$ on $\Omega_\alpha$ and b) $\sigma_\mu = \{u \in \mathbf{u}_\alpha; \ell_\mu(u) = f(u)\}$;
 3. $f(\Gamma \cap \Omega) &lt; \mathbb{Z}$;
 
 (1) -3) $\leq f|_{\mathbf{u}_\alpha}$ is a polar function (6.14); 4) $f$ is $\Gamma$-invariant.
 
 **Theorem (7.23)** (Tai, [2] Chap.
-IV, §2).
-If $\Gamma$-admissible decomposition is projective, then
+IV, §2). If $\Gamma$-admissible decomposition is projective, then
 
 $$
 p: (\Gamma \backslash p)^\gamma \longrightarrow (\Gamma \backslash p)^\eta
@@ -4116,8 +3905,7 @@ $$
 \end{array}
 $$
 
-For $\sigma \in \Sigma_{g}$, we can define an open subset $(U_{g}, \backslash D)_{\sigma}$ of $(U_{g}, \backslash D)_{\Sigma_{g}}$, similarly as $(U_{g}, \backslash D)_{\Sigma_{g}}$ in (7.7).
-By virtue of (6.8) $(U_{g}, \backslash D)_{\Sigma_{g}}$ is covered with $(U_{g}, \backslash D)_{\sigma}$, $\sigma \in \Sigma_{g}$, where $\Sigma_{g}^{\max} = \{\sigma \in \Sigma_{g}; \text{dim } \sigma \text{ is maximal in } \Sigma_{g}\}$.
+For $\sigma \in \Sigma_{g}$, we can define an open subset $(U_{g}, \backslash D)_{\sigma}$ of $(U_{g}, \backslash D)_{\Sigma_{g}}$, similarly as $(U_{g}, \backslash D)_{\Sigma_{g}}$ in (7.7). By virtue of (6.8) $(U_{g}, \backslash D)_{\Sigma_{g}}$ is covered with $(U_{g}, \backslash D)_{\sigma}$, $\sigma \in \Sigma_{g}$, where $\Sigma_{g}^{\max} = \{\sigma \in \Sigma_{g}; \text{dim } \sigma \text{ is maximal in } \Sigma_{g}\}$.
 
 For $\sigma \in \Sigma_{g}^{\max}$, there is a unique linear form $\ell_{\sigma}$ on $U_{g}$, such that a) $f \leq \ell_{\sigma}$ on $\Omega_{g}$, and b) $\sigma = \{u \in U_{g}; f(u) = \ell_{\sigma}(u)\}$.
 
@@ -4194,8 +3982,7 @@ By replacing $f$ by $nf$ (hence $a_{\sigma}$ by $na_{\sigma}$) if necessary, we 
 $\theta_{\sigma}(\tau', \tau'') \neq 0$.
 (Here we need the finiteness condition (7.3) 4).)
 
-This series $\overline{H}_{\sigma}^{\theta}$, called a Fourier-Jacobi series, is uniformly convergent on any compact set in $U(V, K)$ ([15] Lemma 8).
-Moreover it is $\Gamma_{g'}'$-invariant and defines a holomorphic function on $m(U(V, K)) \subset \Gamma \backslash D$ which turns out to extend to a holomorphic function $\overline{H}_{\sigma}^{\theta}$ near $\overline{\tau}' \in \Gamma_{g'}, \backslash F_{g'}, \subset (\Gamma \backslash D)^{\gamma}$.
+This series $\overline{H}_{\sigma}^{\theta}$, called a Fourier-Jacobi series, is uniformly convergent on any compact set in $U(V, K)$ ([15] Lemma 8). Moreover it is $\Gamma_{g'}'$-invariant and defines a holomorphic function on $m(U(V, K)) \subset \Gamma \backslash D$ which turns out to extend to a holomorphic function $\overline{H}_{\sigma}^{\theta}$ near $\overline{\tau}' \in \Gamma_{g'}, \backslash F_{g'}, \subset (\Gamma \backslash D)^{\gamma}$.
 
 Now we define a sheaf of ideals $I$ of $\mathcal{O}_{(\Gamma \backslash D)^{\gamma}}$ as
 
@@ -4203,8 +3990,7 @@ $$
 I_{\overline{\tau}'} = \text{the } \mathcal{O}_{\overline{\tau}'} \text{-ideal generated by such } \overline{H}_{\sigma}^{\theta}, \quad \sigma \in \Sigma_{g'}^{\max}
 $$
 
-for $\overline{\tau}' \in \Gamma_{g'}, \backslash F_{g'}, \subset (\Gamma \backslash D)^{\gamma}$ (for the other boundary components by the action of $\overline{G}$).
-We claim that
+for $\overline{\tau}' \in \Gamma_{g'}, \backslash F_{g'}, \subset (\Gamma \backslash D)^{\gamma}$ (for the other boundary components by the action of $\overline{G}$). We claim that
 
 $$
 \begin{array}{r}
@@ -4281,8 +4067,7 @@ near $z$, hence the claim 1) follows because $\theta_{\sigma}(\tau'', \tau''') \
 The proof of the claim 11 proceeds in a similar way.
 We omit it but a remark that there one reduces it to an elementary fact that for a fixed $\sigma \in \Sigma_{\underline{g}'}^{\max}$, $a_{\sigma'} - a_{\sigma}$, $\sigma' \in \Sigma_{\underline{g}'}^{\max}$, generate a rational cone $\sigma \cap U_{\underline{g}', \mathfrak{Q}}^{*}$ over $\mathfrak{Q}$.
 
-Q.E.D.
-of (7.23).
+Q.E.D. of (7.23).
 
 As a typical example the normalized blowing-up of $(\Gamma \backslash D)^{\eta}$ along the boundary turns out to be a toroidal compactification.
 
@@ -4303,15 +4088,15 @@ $\varphi$ is a well-defined function on $\Omega$ and a family of cone decomposit
 The associated toroidal compactification is the normalized blowing up of $(\Gamma \backslash \mathcal{D})^{\gamma}$ along the boundary.
 
 We omit the proof here, which is essentially contained in Tai’s work (loc.
-cit.) though not explicitly mentioned.
-In the case of $\Gamma = \operatorname{Sp}(g, \mathbb{Z})$ or $\Gamma(n)$ this result is essentially due to Igusa [15] ($\rightarrow$ Proof of (7.23)).
-The associated cone decomposition is what we call the central decomposition ($\rightarrow$ (8.9)).
+cit.)
+though not explicitly mentioned.
+In the case of $\Gamma = \operatorname{Sp}(g, \mathbb{Z})$ or $\Gamma(n)$ this result is essentially due to Igusa [15] ($\rightarrow$ Proof of (7.23)). The associated cone decomposition is what we call the central decomposition ($\rightarrow$ (8.9)).
 
 Together with (7.20) we have the following existence theorem.
 
 ## Theorem (7.26)
 
-For any neat arithmetic subgroup there is a _nonsingular and projective_ toroidal compactification $(\Gamma \backslash \mathcal{D})^{\gamma}$ of $(\Gamma \backslash \mathcal{D})$.
+For any neat arithmetic subgroup there is a *nonsingular and projective* toroidal compactification $(\Gamma \backslash \mathcal{D})^{\gamma}$ of $(\Gamma \backslash \mathcal{D})$.
 
 ### (7.27)
 
@@ -4324,7 +4109,7 @@ $$
 h: X = \underbrace{D^* \times \cdots \times D}_{m}^m \times \underbrace{D \times \cdots \times D}_{n} \rightarrow \Gamma \backslash \mathcal{D}
 $$
 
-which lifts locally to $\mathcal{D}$, we consider a _problem_:
+which lifts locally to $\mathcal{D}$, we consider a *problem*:
 
 - Does $h$ extend to a holomorphic map
 
@@ -4418,13 +4203,12 @@ $$
 \overline{h}: \overline{x} = (D)^{m+n} \quad \rightarrow \quad (\Gamma \backslash \mathcal{D})^\gamma
 $$
 
-if and only if for $\mathbf{U}_{\mathbb{R}}^+ = \{ (\xi_1, \dots, \xi_m) \mid \xi_i \geq 0 \} \succcurlyeq (\mathbb{R}_{\geq 0})^m$, $\psi_{\mathbb{R}}(\mathbf{U}_{\mathbb{R}}^+)$ is contained in one of the c.r.p.
-cones in $\Sigma_\alpha$.
+if and only if for $\mathbf{U}_{\mathbb{R}}^+ = \{ (\xi_1, \dots, \xi_m) \mid \xi_i \geq 0 \} \succcurlyeq (\mathbb{R}_{\geq 0})^m$, $\psi_{\mathbb{R}}(\mathbf{U}_{\mathbb{R}}^+)$ is contained in one of the c.r.p. cones in $\Sigma_\alpha$.
 (The meaning of this condition will become clear in the proof.
 cf.
 Remark (7.30).)
 
-_Proof._ We shall prove this theorem in the case of $\mathcal{D} = \mathfrak{S}_g$.
+*Proof.* We shall prove this theorem in the case of $\mathcal{D} = \mathfrak{S}_g$.
 However almost all arguments work in general.
 
 Recall the construction of $(\Gamma \backslash \mathcal{D})^\gamma$ (7.14) which says that we have a commutative diagram
@@ -4490,8 +4274,7 @@ Note that $h'(t, t')$ and $h'''(t, t')$ are hence single-valued (cf.
 
 Then we are ready to prove the next claim which contains the first part of (7.29).
 
-**Claim (7.29.1).**
-i) $h'(t, t')$ and $h'''(t, t')$ are bounded, hence extends to matrix-valued holomorphic functions $\overline{h}'(t, t')$ and $\overline{h}'''(t, t')$ on $\overline{X}$.
+**Claim (7.29.1).** i) $h'(t, t')$ and $h'''(t, t')$ are bounded, hence extends to matrix-valued holomorphic functions $\overline{h}'(t, t')$ and $\overline{h}'''(t, t')$ on $\overline{X}$.
 ii) $h''(t, t')$ has a lifting $\tilde{h}(z, t')$ on $\tilde{X}$ written in the form
 
 $$
@@ -4523,8 +4306,7 @@ iii) For $\xi = (\xi_1, \dots, \xi_m)$, $\xi_1 \geq 0$, $\psi(\xi) \in \mathfrak
 81
 
 Proof.
-1), 11).
-With the same argument as before the statement of (7.29.1) we can again replace $h$ by $h_1$ so that $\psi_1(U') \subset U_{g'}$ since $U_{g'}$ and $U(F_{g'})$ is commensurable in $U_{g'}$.
+1), 11). With the same argument as before the statement of (7.29.1) we can again replace $h$ by $h_1$ so that $\psi_1(U') \subset U_{g'}$ since $U_{g'}$ and $U(F_{g'})$ is commensurable in $U_{g'}$.
 Hence we may assume that $\psi(U) \subset U_{g'}$, namely $e(h_{ij}(t, t'))$ is single-valued.
 
 Since $\text{Im}(h(t, t')) &gt; 0$, for $\eta = (\eta_1, \dots, \eta_g) \in \mathbb{Z}^g$ we have
@@ -4570,11 +4352,9 @@ $$
 
 Since $e(\eta h(t, t')^t \eta)$ does not vanish on $\overline{X}$ and $e(\eta h(t, t')^t \eta)$ is bounded on $\overline{X}$, we have $\eta A_k^t \eta \geq 0$.
 A closer argument shows the second claim which we leave to the reader.
-Q.E.D.
-of (7.29.1).
+Q.E.D. of (7.29.1).
 
-Next we prove 2) of Theorem (7.29).
-We keep the assumption that $U' = U$.
+Next we prove 2) of Theorem (7.29). We keep the assumption that $U' = U$.
 Hence $h$ has a lifting $\tilde{h}$ satisfying the commutative diagram
 
 82
@@ -4598,11 +4378,9 @@ $$
 $$
 
 Proof.
-We may assume that $F_{\alpha} = F_{g}$ , by transforming $F_{\alpha}$ to $F_{g}$ , by an element $g$ of $\operatorname{Sp}(g, \mathbb{C})$ and replacing $\Gamma$ by $g \Gamma g^{-1}$ .
-Hence we can use the claim (7.29.1).
+We may assume that $F_{\alpha} = F_{g}$ , by transforming $F_{\alpha}$ to $F_{g}$ , by an element $g$ of $\operatorname{Sp}(g, \mathbb{C})$ and replacing $\Gamma$ by $g \Gamma g^{-1}$ . Hence we can use the claim (7.29.1).
 
-Recall the example (6.15) 1) where the affine space $\mathbb{C}^m$ can be considered as the torus embedding of $(\mathbb{C}^*)^m$ associated with the cone $U_{\mathbb{R}}^{+}$ .
-$X$ and $\overline{X}$ can be then considered as subsets of them such as
+Recall the example (6.15) 1) where the affine space $\mathbb{C}^m$ can be considered as the torus embedding of $(\mathbb{C}^*)^m$ associated with the cone $U_{\mathbb{R}}^{+}$ . $X$ and $\overline{X}$ can be then considered as subsets of them such as
 
 $$
 \begin{array}{l}
@@ -4695,8 +4473,7 @@ $$
 $$
 
 A closer observation shows that we can reverse the argument to prove the converse of 2), but we omit it.
-Q.E.D.
-of (7.29).
+Q.E.D. of (7.29).
 
 **Remark (7.30).**
 
@@ -4708,8 +4485,7 @@ $$
 \psi_{1}: U' \rightarrow U_{\alpha}
 $$
 
-is a morphism of r.p.p.
-decompositions
+is a morphism of r.p.p. decompositions
 
 $$
 \{U_{\overline{\mathbb{R}}}^{+}\} \rightarrow \Sigma_{\alpha}
@@ -4766,8 +4542,7 @@ $$
 $$
 
 3. (cf.
-   (4.4)).
-   We can decompose $\overline{\Omega}$ into boundary components as
+   (4.4)). We can decompose $\overline{\Omega}$ into boundary components as
 
 $$
 \overline{\Omega} = \Omega \perp \perp_{\mathrm{W}} \Omega(\mathrm{W})
@@ -4805,8 +4580,7 @@ $$
 They are lattices in $\mathbb{V}_g$ dual to each other (i.e. $Y'_g = \{y' \in \mathbb{V}_g \mid xy', y \in \mathbb{Z} \text{ for } y \in Y_g\}$ and vice versa) and preserved by $G_{\mathbb{Z}} = GL(g, \mathbb{Z})$, and define the same rational structure on $\mathbb{V}_g$.
 
 For $W \subset \mathbb{R}^g$ we say $\Omega(W)$ is rational if $W$ is defined over $\mathbb{Q}$, which is equivalent to say that for a $u \in G_{\mathbb{Q}} = GL(g, \mathbb{Q})$ (actually one can take one in $G_{\mathbb{Z}}$) $u\Omega(W)^t u = \Omega_{g''}$ (cf.
-(4.15), (4.16)).
-We define
+(4.15), (4.16)). We define
 
 $$
 \Omega^1 := \Omega \amalg \amalg W: \text{rational} \quad \Omega(W), \text{ the rational closure of } \Omega.
@@ -4832,7 +4606,7 @@ $$
 
 5. $u \sigma_{\mu} = \Omega^{1}$.
 
-_Proof._ By (5.4), for $F = F_{g}$, we have natural isomorphisms: $\Omega(F_{g}) = \Omega$, $\overline{F}(F_{g}) = GL(g, \mathbb{Z})$, with which $G_{\mathbb{Z}^{\prime}}$-admissible decomposition $\Sigma$ of $\Omega$ can be identified with $\overline{F}(F_{g})$-admissible decomposition on $U(F_{g})$.
+*Proof.* By (5.4), for $F = F_{g}$, we have natural isomorphisms: $\Omega(F_{g}) = \Omega$, $\overline{F}(F_{g}) = GL(g, \mathbb{Z})$, with which $G_{\mathbb{Z}^{\prime}}$-admissible decomposition $\Sigma$ of $\Omega$ can be identified with $\overline{F}(F_{g})$-admissible decomposition on $U(F_{g})$.
 
 First suppose that a family of decompositions $\{ \Sigma_{\alpha} \}$ is given.
 For any rational boundary component $F_{\alpha}$ there is an $M \in \operatorname{Sp}(g, \mathbb{Z})$ such that $M \cdot F_{\alpha} = F_{g'}$.
@@ -4859,10 +4633,8 @@ Find an explicit $GL(g, \mathbb{Z})$-admissible decomposition of $\eta_{g}^{+}$.
 (8.5) Known results.
 
 1. Perfect cone decomposition, or $1^{st}$ Voronoi decomposition.
-   (Voronoi: Crelle J.
-   133 (1908), Coxeter: Canad.
-   J.
-   3 (1951) etc.)
+   (Voronoi: Crelle J. 133 (1908), Coxeter: Canad.
+   J. 3 (1951) etc.)
 
 2. Central cone decomposition.
    (Koecher: Math.
@@ -4871,20 +4643,16 @@ Find an explicit $GL(g, \mathbb{Z})$-admissible decomposition of $\eta_{g}^{+}$.
    Ann.
    168 (1967))
 
-3. $2^{nd}$ Voronoi decomposition ($\rightarrow$ §9).
-   (Voronoi: Crelle J.
-   134 (1908), 136 (1909))
+3. $2^{nd}$ Voronoi decomposition ($\rightarrow$ §9). (Voronoi: Crelle J. 134 (1908), 136 (1909))
 
-4. Minkowski reduction (C.R.
-   96 (1883)).
+4. Minkowski reduction (C.R. 96 (1883)).
 
 88
 
 When one wants to prove the admissibility of such decompositions, the condition 4) in (8.3) is the most difficult to check.
 
 Among the above decompositions 1) and 2) can be generalized to the case of other selfdual homogeneous cones (cf.
-[2] Chap.II).
-The decomposition 3) appears naturally when one studies degeneration of theta functions (cf.
+[2] Chap.II). The decomposition 3) appears naturally when one studies degeneration of theta functions (cf.
 §9, [?3]).
 
 (8.6) The case of $g = 2$ (Legendre).
@@ -4924,8 +4692,7 @@ The permutation group $S_3$ acts naturally on $(\lambda_1, \lambda_2, \lambda_3)
 This is nothing but the isomorphism $\operatorname{Iso}(\sigma_o)/\pm 1 \stackrel{\circ}{\to} S_3$.
 (The above says only $S_3 \subset \operatorname{Iso}(\sigma_o)/\pm 1$, but the equality is clear since any $u \in \operatorname{Iso}(\sigma_o)$ interchanges the above three generators of $\sigma_o$.
 
-![img-15.jpeg](img-15.jpeg)
-Ω mod scalar
+![img-15.jpeg](img-15.jpeg) Ω mod scalar
 
 Then the theorem can be deduced from the following two claims.
 
@@ -4978,8 +4745,7 @@ This implies the claim of (8.7.3).
 We note that the condition "$y \in \Omega^1$" is essential in order to reduce to the case of $y \in \Omega$.
 For general points in the boundary of $\Omega$ the claim does not hold.
 
-Now we continue the proof of (8.7.2).
-For any $y$ by the last lemma there is $v \in G_{\mathbb{Z}} = \mathrm{GL}(g, \mathbb{Z})$ such that $\operatorname{tr}(\mathrm{v}a^{\mathrm{t}}\mathrm{v}y) \leq \operatorname{tr}(\mathrm{u}a^{\mathrm{t}}\mathrm{u}y)$ for $\forall u \in G_{\mathbb{Z}}$.
+Now we continue the proof of (8.7.2). For any $y$ by the last lemma there is $v \in G_{\mathbb{Z}} = \mathrm{GL}(g, \mathbb{Z})$ such that $\operatorname{tr}(\mathrm{v}a^{\mathrm{t}}\mathrm{v}y) \leq \operatorname{tr}(\mathrm{u}a^{\mathrm{t}}\mathrm{u}y)$ for $\forall u \in G_{\mathbb{Z}}$.
 The last condition is rewritten as
 
 $$\operatorname{tr}(a^{\mathrm{t}}\mathrm{v}yv) \leq \operatorname{tr}((v^{-1}u)a^{\mathrm{t}}(v^{-1}u)(\mathrm{t}vyv)) \text{ for } \forall u \in G_{\mathbb{Z}},$$
@@ -4992,8 +4758,7 @@ Q.E.D.
 
 91
 
-Proof of (8.7.1).
-For
+Proof of (8.7.1). For
 
 $$
 y = \begin{pmatrix} \lambda_1 + \lambda_3 &amp; -\lambda_3 \\ -\lambda_3 &amp; \lambda_2 + \lambda_3 \end{pmatrix} \in \mathfrak{V}_2
@@ -5072,8 +4837,7 @@ $$
 \end{array}
 $$
 
-We see that $\mathbb{M}(y) \neq \phi$ similarly as (8.7.3).
-Then the cone decomposition
+We see that $\mathbb{M}(y) \neq \phi$ similarly as (8.7.3). Then the cone decomposition
 
 $$
 \Sigma_{\text{perf}} = \{\sigma = \sigma(y) = \sum_{\xi \in \mathbb{M}(y)} \mathbb{R}^{+t} \xi \xi\}_y \in \Omega
@@ -5144,7 +4908,8 @@ The toroidal compactification associated with this decomposition is nothing but 
 Together with (7.19) the above explicit structure of the central cone decomposition implies the following main result of Igusa in [15].
 
 **Theorem (8.9.1).** Let $n \geq 3$.
-(Then $\Gamma(n)$, (1.8) iii), is neat.) The (normalization of the) blowing-up of the Satake compactification $(\Gamma(n) \backslash \mathfrak{S}_g)^\top$ along the boundary is nonsingular for $g \leq 3$ but singular for $g \geq 4$.
+(Then $\Gamma(n)$, (1.8) iii), is neat.)
+The (normalization of the) blowing-up of the Satake compactification $(\Gamma(n) \backslash \mathfrak{S}_g)^\top$ along the boundary is nonsingular for $g \leq 3$ but singular for $g \geq 4$.
 
 ## (8.10) Principal cone.
 
@@ -5162,7 +4927,8 @@ $$
 = \left\{ \sum_{i=1}^{g} \lambda_{i,g+1}x_i^2 + \sum_{1 \leq i &lt; j \leq g} \lambda_{ij}(x_i - x_j)^2; \lambda_{ij} \geq 0, \lambda_{i,g+1} \geq 0 \right\}
 $$
 
-(Here we identify a matrix $y = (y_{ij})$ and a quadratic form $\sum_{i,j} y_{ij}x_i x_j$.) which is clearly a maximal and regular cone contained in $\Omega^1$.
+(Here we identify a matrix $y = (y_{ij})$ and a quadratic form $\sum_{i,j} y_{ij}x_i x_j$.)
+which is clearly a maximal and regular cone contained in $\Omega^1$.
 
 Now for
 
@@ -5177,8 +4943,7 @@ $$
 $$
 
 i.e. $a_o$ is both perfect and central.
-The former equality is easy to see and the latter is shown similarly as in (8.7.1).
-(Use $a_{ij} = \frac{1}{2}(\sum_{k \neq i,j}^{g+1} x_k^2 + (x_i - x_j)^2$ with $x_{g+1} = -(x_1 + \cdots + x_g)$, $1 \leq i &lt; j \leq g+1$.)
+The former equality is easy to see and the latter is shown similarly as in (8.7.1). (Use $a_{ij} = \frac{1}{2}(\sum_{k \neq i,j}^{g+1} x_k^2 + (x_i - x_j)^2$ with $x_{g+1} = -(x_1 + \cdots + x_g)$, $1 \leq i &lt; j \leq g+1$.)
 
 For $g \leq 3$, $\sigma_o$ is the unique maximal cone in those three decompositions up to $\mathrm{GL}(g, \mathbb{Z})$ but not for $g \geq 4$.
 
@@ -5198,12 +4963,10 @@ whether the second Voronoi decomposition is a refinement of the first.
 
 Dickson [9] has shown that a cone $\sigma$ appears in the both decompositions iff $\sigma$ is conjugate to a principal cone by $\mathrm{GL}(g, \mathbb{Z})$.
 
-§9.
-An application of the Voronoi compactification to the theory of moduli of polarized abelian varieties.
+§9. An application of the Voronoi compactification to the theory of moduli of polarized abelian varieties.
 
 (9.1) The toroidal compactification of $\mathbf{G}_{\mathbf{g}}^{\mathbf{s}} = \mathrm{Sp}(\mathbf{g},\mathbb{Z})\backslash \mathbf{G}_{\mathbf{g}}$ associated with the $2^{\mathrm{nd}}$ Voronoi reduction theory (8.5) 3) has a remarkable geometric meaning.
-As is wellknown the space $\mathbf{G}_{\mathbf{g}}^{\mathbf{s}}$ can be interpreted as the (coarse) moduli space of principally polarized abelian varieties of dimension $\mathbf{g}$ ($\rightarrow$ (9.19)).
-Namely every point of $\mathbf{G}_{\mathbf{g}}^{\mathbf{s}}$ corresponds bijectively to an isomorphism class of a principally polarized abelian variety of dimension $\mathbf{g}$.
+As is wellknown the space $\mathbf{G}_{\mathbf{g}}^{\mathbf{s}}$ can be interpreted as the (coarse) moduli space of principally polarized abelian varieties of dimension $\mathbf{g}$ ($\rightarrow$ (9.19)). Namely every point of $\mathbf{G}_{\mathbf{g}}^{\mathbf{s}}$ corresponds bijectively to an isomorphism class of a principally polarized abelian variety of dimension $\mathbf{g}$.
 If one considers $(\mathbf{G}_{\mathbf{g}}^{\mathbf{s}})^{\gamma}$ associated with the $2^{\mathrm{nd}}$ Voronoi decomposition, then every boundary point also corresponds to a polarized singular variety to which abelian varieties degenerate.
 From function theoretic point of view it can be regarded as a degeneration of theta functions.
 We here sketch an outline of this theory, whose more precise and complete description can be found in [23].
@@ -5220,8 +4983,7 @@ iff $a = a_i$ for $\exists i = 1, \dots, k$.
 
 ii) For a Delaunay cell $\sigma = D(a_1, \dots, a_k)$ we define $\Delta = \Delta(\sigma) \subset V = \operatorname{Hom}(V^{\mathbf{s}}, \mathbb{R})$ ($\geq \mathbb{R}^{\mathbf{g}}$ with the dual base) to be $\Delta = \{-2\alpha y \in \mathbb{R}^{\mathbf{g}}; \|a_1 - \alpha\|_y = \min_{\xi \in \mathbb{Z}^{\mathbf{g}}} \| \xi - \alpha \|_y\}$, and call it the Voronoi cell (abbreviated to V-cell) corresponding to $\sigma$.
 
-**Proposition (9.3).**
-i) The D-cells and V-cells are bounded, piecewise linear and have only a finite number of faces.
+**Proposition (9.3).** i) The D-cells and V-cells are bounded, piecewise linear and have only a finite number of faces.
 ii) All faces of D-cells (resp.
 V-cells) are again D-cells (resp.
 V-cells).
@@ -5267,9 +5029,9 @@ The proof is elementary.
 
 **Definition (9.4).**
 
-i) The decomposition $\{\sigma\}$ of $V^*$ with D-cells is called the _Delaunay decomposition_ of $V^*$ with respect to $y$.
+i) The decomposition $\{\sigma\}$ of $V^*$ with D-cells is called the *Delaunay decomposition* of $V^*$ with respect to $y$.
 
-ii) The decomposition $\{\Delta\}$ of $V$ with V-cells is called the _Voronoi decomposition_ of $V$ with respect to $y$.
+ii) The decomposition $\{\Delta\}$ of $V$ with V-cells is called the *Voronoi decomposition* of $V$ with respect to $y$.
 
 The above proposition (9.3) says that these two decompositions are dual to each other.
 
@@ -5313,11 +5075,9 @@ $\Delta(\sigma_{12}) = D((1, -1), (-1, -1))$
 
 $\Delta(\sigma_2) = \{(-1, -1)\}$
 
-![img-17.jpeg](img-17.jpeg)
-V\*
+![img-17.jpeg](img-17.jpeg) V\*
 
-![img-18.jpeg](img-18.jpeg)
-V
+![img-18.jpeg](img-18.jpeg) V
 
 98
 
@@ -5373,11 +5133,9 @@ $$
 \Delta(\sigma_{22}) = \{(0, -2)\}.
 $$
 
-![img-19.jpeg](img-19.jpeg)
-V\*
+![img-19.jpeg](img-19.jpeg) V\*
 
-![img-20.jpeg](img-20.jpeg)
-V
+![img-20.jpeg](img-20.jpeg) V
 
 $$
 y = \left( \begin{array}{ccc} g &amp; &amp; \\ &amp; \ddots &amp; -1 \\ -1 &amp; &amp; g \end{array} \right) \in \Omega_g.
@@ -5425,7 +5183,7 @@ $$
 \Sigma(y) = (\Sigma(y)^\circ)^{-}
 $$
 
-which we call a _Delaunay-Voronoi cone_ (abbreviated to a _D-V cone_).
+which we call a *Delaunay-Voronoi cone* (abbreviated to a *D-V cone*).
 
 We see that the relative interior of $\Sigma(y)$ ($= \Sigma(y)$ - proper faces) is then $\Sigma(y)^\circ$, which justifies the notation.
 By definition we can say a Delaunay cell or Voronoi cell with respect to $\Sigma$.
@@ -5440,9 +5198,7 @@ In the case of $g = 2$ the 2nd Voronoi decomposition is given as in (2.3).
 
 ### B) Mixed decomposition of $\Omega^1 \times V$.
 
-**Lemma (9.11)**.
-Let $y \in \Omega^1$ and $\sigma = D(a_1)_{1 \in I}$ a D-cell w.r.t.
-$y$.
+**Lemma (9.11)**. Let $y \in \Omega^1$ and $\sigma = D(a_1)_{1 \in I}$ a D-cell w.r.t. $y$.
 Then the corresponding V-cell can be expressed in the form
 
 $$
@@ -5465,8 +5221,7 @@ $$
 
 ### Definition (9.12)
 
-Let $\Sigma$ be a D-V cone and $\sigma = D(a_1)_{1 \in I}$ a D-cell w.r.t.
-$\Sigma$.
+Let $\Sigma$ be a D-V cone and $\sigma = D(a_1)_{1 \in I}$ a D-cell w.r.t. $\Sigma$.
 Then the cone $K_{\Sigma,\sigma}$ in $\mathcal{Y}_g \times V$ defined by
 
 $$
@@ -5476,11 +5231,9 @@ K_{\Sigma,\sigma} &amp;= \{(y, z) \in \Sigma \times V; \xi y^t(\xi + 2a_1) + \xi
 \end{aligned}
 $$
 
-is called a _mixed cone_.
+is called a *mixed cone*.
 
-If we consider the projection $p: \mathcal{Y}_g \times V \to \mathcal{Y}_g$, then $K_{\Sigma,\sigma}$ is mapped onto $\Sigma$ and the fibre over $y \in \Sigma^\circ$ is nothing but $\Delta_y(\sigma)$ (9.11).
-Hence by (9.3) and (9.9) mixed cones form a p.p.r.
-decomposition in $\mathcal{Y}_g \times V$ which we call the _mixed decomposition_ of $\Omega^1 \times V$.
+If we consider the projection $p: \mathcal{Y}_g \times V \to \mathcal{Y}_g$, then $K_{\Sigma,\sigma}$ is mapped onto $\Sigma$ and the fibre over $y \in \Sigma^\circ$ is nothing but $\Delta_y(\sigma)$ (9.11). Hence by (9.3) and (9.9) mixed cones form a p.p.r. decomposition in $\mathcal{Y}_g \times V$ which we call the *mixed decomposition* of $\Omega^1 \times V$.
 
 $$
 \begin{aligned}
@@ -5630,9 +5383,7 @@ $$
 \Gamma(\mathcal{G}_g, \mathfrak{L}_* L_g) \supseteq \Gamma(A_g, L_g) \supseteq \Gamma(\mathcal{G}_g \times \mathfrak{C}^g, \mathcal{O}_{\mathcal{G}_g \times \mathfrak{C}^g})^X.
 $$
 
-Q.
-E.
-D.
+Q. E. D.
 
 104
 
@@ -5643,8 +5394,7 @@ Remark (9.17).
 
 ii) The above family of polarized abelian varieties descends to the one over $U_g' \backslash \mathcal{G}_g = \mathbb{Z}_g^\circ$ where $U_g' = \{ [b] \in U_g; b \in 0 \pmod{2} \}$.
 
-Definition (9.18).
-A pair $(A, L)$ of an abelian variety $A$ and an ample line bundle $L$ on $A$ with $\dim \Gamma(A, L) = 1$ is called a principally polarized abelian variety.
+Definition (9.18). A pair $(A, L)$ of an abelian variety $A$ and an ample line bundle $L$ on $A$ with $\dim \Gamma(A, L) = 1$ is called a principally polarized abelian variety.
 
 The above (9.16) shows that $(\mathfrak{L} : A_g \to \mathcal{G}_g, L_g)$ is a family of principally polarized abelian varieties.
 
@@ -5671,22 +5421,18 @@ Moreover $\operatorname{Iso}(\tau)$ acts on $\pi: A_V \to V$ and this action ind
 
 Now we can state the main result in this section, which gives an algebro-geometric meaning of the Voronoi compactification by extending the above theorem.
 
-Main Theorem (9.20).
-Consider the toroidal compactification $(\mathcal{G}_g^*)^\gamma$ of $\mathcal{G}_g^* = \mathrm{Sp}(g, \mathbb{Z}) \backslash \mathcal{G}_g$ associated with the second Voronoi decomposition (cf.
+Main Theorem (9.20). Consider the toroidal compactification $(\mathcal{G}_g^*)^\gamma$ of $\mathcal{G}_g^* = \mathrm{Sp}(g, \mathbb{Z}) \backslash \mathcal{G}_g$ associated with the second Voronoi decomposition (cf.
 (8.3)), which we call the Voronoi compactification.
 
 105
 
-Each point of the Voronoi compactification corresponds to a polarized variety which is in $\mathbb{G}_{\mathbf{g}}^{\bullet}$ the corresponding principally polarized abelian variety in (9.19).
-This correspondence has the following properties.
+Each point of the Voronoi compactification corresponds to a polarized variety which is in $\mathbb{G}_{\mathbf{g}}^{\bullet}$ the corresponding principally polarized abelian variety in (9.19). This correspondence has the following properties.
 
 1. (cf.
    (9.19) iii)) For each point $x \in (\mathbb{G}_{\mathbf{g}}^{\bullet})^{\overline{\mathbf{r}}}$ there are an open neighbourhood $U$ of $x$, a finite Galois covering $p: V \to U$ with $p^{-1}(x) = 0$ with its covering group $G$ and a polarized family $(\hat{\pi}: \hat{A}_V \to V, \hat{L}_V)$ such that for each $v \in V$ the point $p(v)$ corresponds to the fibre $(A_V = \hat{\pi}^{-1}(v), L_V = L_{V|A_V})$ and the extension $\hat{G}$ of $G$ by $\{\pm 1\}$ acts on $\hat{\pi}$.
    Moreover this $\hat{G}$ is isomorphic to $\operatorname{Iso}(\hat{\mathbf{x}}) \subset \Gamma$ where $\hat{\mathbf{x}}$ is a point in $(U_{\mathbf{g}}, \backslash \mathcal{D})_{\Sigma_{\mathbf{g}}}$, with $\pi_{\mathbf{F}_{\mathbf{g}}}, (\hat{\mathbf{x}}) = x$ and $p_{\mathbf{g}}, (\hat{\mathbf{x}}) \in P_{\mathbf{g}}, \backslash F_{\mathbf{g}}, \subset (\Gamma \backslash \mathcal{D})^{\overline{\mathbf{r}}}$ where $\pi_{\mathbf{F}_{\mathbf{g}}}: (U_{\mathbf{g}}, \backslash \mathcal{D})_{\Sigma_{\mathbf{g}}}, \to (\Gamma \backslash \mathcal{D})^{\overline{\mathbf{r}}}$ and $p_{\mathbf{g}}: (U_{\mathbf{g}}, \backslash \mathcal{D})_{\Sigma_{\mathbf{g}}}, \to (\Gamma \backslash \mathcal{D})^{\overline{\mathbf{r}}}$ (7.15).
 
-ii) We consider $\hat{\mathbf{x}} \in (U_{\mathbf{g}}, \backslash \mathcal{D})_{\Sigma_{\mathbf{g}}}$, as above in 1).
-Moreover we suppose that $\overline{\pi}'(\hat{\mathbf{x}}) = (\tau', \tau'') \in \mathbb{G}_{\mathbf{g}}, \times V_{\mathbf{g}}$, for $\overline{\pi}': (U_{\mathbf{g}}, \backslash \mathcal{D})_{\Sigma_{\mathbf{g}}}, \to \mathcal{D}(F_{\mathbf{g}},)' \supsetneq \mathbb{G}_{\mathbf{g}}, \times V_{\mathbf{g}}$, and $\hat{\mathbf{x}} \in O(\Sigma)$ for a D-V cone $\Sigma \in \Sigma_{\mathbf{g}}$, with $\Sigma \cap \Omega_{\mathbf{g}}' \neq \varphi$ ($g'' = g - g'$) (7.7).
-In other words $\hat{\mathbf{x}}$ is a limit of $\left[ \begin{array}{cc} \tau' &amp; \tau''' \\ \tau''' &amp; \tau''' \end{array} \right]$ mod $\Gamma$ with $\tau' \in \mathbb{G}_{\mathbf{g}}, \tau''' \in M(\mathbf{g}', \mathbf{g}'', \mathbb{C})$, and $\operatorname{Im} \tau'' \to \infty$ in the direction of $\Sigma$.
+ii) We consider $\hat{\mathbf{x}} \in (U_{\mathbf{g}}, \backslash \mathcal{D})_{\Sigma_{\mathbf{g}}}$, as above in 1). Moreover we suppose that $\overline{\pi}'(\hat{\mathbf{x}}) = (\tau', \tau'') \in \mathbb{G}_{\mathbf{g}}, \times V_{\mathbf{g}}$, for $\overline{\pi}': (U_{\mathbf{g}}, \backslash \mathcal{D})_{\Sigma_{\mathbf{g}}}, \to \mathcal{D}(F_{\mathbf{g}},)' \supsetneq \mathbb{G}_{\mathbf{g}}, \times V_{\mathbf{g}}$, and $\hat{\mathbf{x}} \in O(\Sigma)$ for a D-V cone $\Sigma \in \Sigma_{\mathbf{g}}$, with $\Sigma \cap \Omega_{\mathbf{g}}' \neq \varphi$ ($g'' = g - g'$) (7.7). In other words $\hat{\mathbf{x}}$ is a limit of $\left[ \begin{array}{cc} \tau' &amp; \tau''' \\ \tau''' &amp; \tau''' \end{array} \right]$ mod $\Gamma$ with $\tau' \in \mathbb{G}_{\mathbf{g}}, \tau''' \in M(\mathbf{g}', \mathbf{g}'', \mathbb{C})$, and $\operatorname{Im} \tau'' \to \infty$ in the direction of $\Sigma$.
 
 Then the structure of the variety $A_{x}$ corresponding to $x$ is as follows.
 
@@ -5696,11 +5442,9 @@ $$
 A _ {x} = \underline {{U}} _ {\sigma} O (\bar {\sigma})
 $$
 
-where the index set is $\{D$-cells w.r.t.
-$\Sigma\}$ mod $V_{\Sigma}^{\bullet}$.
+where the index set is $\{D$-cells w.r.t. $\Sigma\}$ mod $V_{\Sigma}^{\bullet}$.
 
-b) For a D-cell $\sigma$ w.r.t.
-$\Sigma$ the corresponding stratum $O(\overline{\sigma})$ is a commutative group variety with an exact sequence
+b) For a D-cell $\sigma$ w.r.t. $\Sigma$ the corresponding stratum $O(\overline{\sigma})$ is a commutative group variety with an exact sequence
 
 $$
 1 \rightarrow T _ {\overline {{\sigma}}} \rightarrow O (\overline {{\sigma}}) \rightarrow A _ {\tau}, \rightarrow 0
@@ -5712,10 +5456,9 @@ The extension class of this exact sequence is determined by $\tau'''$.
 
 106
 
-c) The adherence relation of the stratification $\{O(\overline{\sigma})\}$ is given by that of the Delaunay decomposition w.r.t.
-$\Sigma$.
+c) The adherence relation of the stratification $\{O(\overline{\sigma})\}$ is given by that of the Delaunay decomposition w.r.t. $\Sigma$.
 
-_Remark (9.21)._ i) The letter "$\overline{\sigma}$", pronounced as "te", is the initial of theta function in Japanese.
+*Remark (9.21).* i) The letter "$\overline{\sigma}$", pronounced as "te", is the initial of theta function in Japanese.
 The reason why we employed this notation is given in the next remark.
 
 ii) The varieties appearing in corresponding to the boundary points are constructed essentially by using "degenerating" theta functions as follows.
@@ -5732,8 +5475,7 @@ i: A_{\mathbf{g}}^{\circ} \subset \mathcal{Z}_{\mathbf{g}}^{\circ} \times \mathb
 $$
 
 which can be expressed explicitly by using theta functions.
-With the D-V decomposition $\{\Sigma\}$ we have a partial compactification $(\mathcal{Z}_{\mathbf{g}}^{\circ})_{\{\Sigma\}}$ (7.7).
-Now take the closure of $\operatorname{Im} i$ in $(\mathcal{Z}_{\mathbf{g}}^{\circ})_{\{\Sigma\}} \times \mathbb{P}^{N}$ to obtain a family
+With the D-V decomposition $\{\Sigma\}$ we have a partial compactification $(\mathcal{Z}_{\mathbf{g}}^{\circ})_{\{\Sigma\}}$ (7.7). Now take the closure of $\operatorname{Im} i$ in $(\mathcal{Z}_{\mathbf{g}}^{\circ})_{\{\Sigma\}} \times \mathbb{P}^{N}$ to obtain a family
 
 $$
 \overline{\mathfrak{L}}^{\prime}: \overline{A}_{\mathbf{g}}^{\prime} \subset (\mathcal{Z}_{\mathbf{g}}^{\circ})_{\{\Sigma\}} \times \mathbb{P}^{N} \quad \rightarrow \quad (\mathcal{Z}_{\mathbf{g}}^{\circ})_{\{\Sigma\}}
@@ -5745,7 +5487,7 @@ Here we make essential use of the explicit form of theta functions.
 
 iii) The result can be generalized for any type of polarizations in which case we change the arithmetic subgroup $(\Gamma(\Delta)$ in (1.8) ii)) and the decomposition suitably ([23] Part III).
 
-_Idea of the proof of (9.20)._ (For the complete proof see [23]) The method is almost word-for-word modification of the construction of $(\Gamma \backslash \mathcal{D})^{\overline{\mathbf{v}}}$.
+*Idea of the proof of (9.20).* (For the complete proof see [23]) The method is almost word-for-word modification of the construction of $(\Gamma \backslash \mathcal{D})^{\overline{\mathbf{v}}}$.
 
 Since $\pi_{\mathcal{F}_{\mathbf{g}}}: (U_{\mathbf{g}}^{\prime} \backslash \mathcal{D})_{\{\Sigma\}} \rightarrow (\Gamma \backslash \mathcal{D})^{\overline{\mathbf{v}}}$ is surjective, it is enough to extend the family
 
@@ -5839,11 +5581,9 @@ $$
 
 is the desired family.
 The structure of the fibre is now easy to check by writing the action of $X/X''$ explicitly.
-Q.
-E.
-D.
+Q. E. D.
 
-_Example (9.22)._
+*Example (9.22).*
 
 1. $g = 1$.
 
@@ -5876,8 +5616,10 @@ We see that the configuration of the fibre is exactly the Delaunay decomposition
 
 **Problem (9.23).**
 
-1. Is the Vornoi compactification projective? (The answer is affirmative for $g \leq 4$.)
-   ii) Is the 2nd Voronoi decomposition regular? (Yes for $g \leq 4$.)
+1. Is the Vornoi compactification projective?
+   (The answer is affirmative for $g \leq 4$.)
+   ii) Is the 2nd Voronoi decomposition regular?
+   (Yes for $g \leq 4$.)
 
 **D)** The extension of Torelli map.
 
@@ -5902,29 +5644,23 @@ Now the space $M_g$ has a nice compactification $S_g$ of moduli of stable curves
 **Definition (9.26)** (Deligne-Mumford-Mayer).
 A complete curve $C$ is called a stable curve of genus $g$ (≥ 1) if
 
-1. $C$ is reduced;
-   ii) $C$ has only ordinary double points as possible singularities;
-   iii) each nonsingular rational irreducible component of $C$ meets the other components at more than two points;
-   iv) $\dim_{\mathbb{R}} H^1(C, O_C) = g$.
+1. $C$ is reduced; ii) $C$ has only ordinary double points as possible singularities; iii) each nonsingular rational irreducible component of $C$ meets the other components at more than two points; iv) $\dim_{\mathbb{R}} H^1(C, O_C) = g$.
 
-**Theorem (9.27)** (Mumford et al.
-[8], [21]).
+**Theorem (9.27)** (Mumford et al. [8], [21]).
 
 1. The coarse moduli space $S_g$ of stable curves of genus $g$ exists and contains $M_g$ as a Zariski open subset.
    ii) $S_g$ is projective and irreducible.
 
 Now we can state the main theorem in this paragraph.
 
-Theorem (9.28) (Mumford, [23] §18).
-The map $i: M_g \to \mathbb{G}_g^*$ extends to a holomorphic map
+Theorem (9.28) (Mumford, [23] §18). The map $i: M_g \to \mathbb{G}_g^*$ extends to a holomorphic map
 
 ![img-30.jpeg](img-30.jpeg)
 
 Concerning the property of $j$ we can say the following.
 Before stating the result we prepare a notion.
 
-Definition (9.29).
-To a stable curve $C$ we associate a graph $\Gamma(C)$ as follows:
+Definition (9.29). To a stable curve $C$ we associate a graph $\Gamma(C)$ as follows:
 
 ```txt
 {vertices of  $\Gamma (C)\}$  = {irreducible components of C}, {edges of  $\Gamma (C)\}$  = {double points on C}, {terminal points of an edge} the corresponding double point lies}.
@@ -5932,17 +5668,13 @@ To a stable curve $C$ we associate a graph $\Gamma(C)$ as follows:
 
 e.g.
 
-![img-31.jpeg](img-31.jpeg)
-C
+![img-31.jpeg](img-31.jpeg) C
 
-![img-32.jpeg](img-32.jpeg)
-$\Gamma (C)$
+![img-32.jpeg](img-32.jpeg) $\Gamma (C)$
 
 Theorem (9.30) ([22]).
 
-1. The composite map $\mathrm{poj}: S_g \to (\mathbb{G}_g^*)^\overline{\tau} \to (\mathbb{G}_g^*)^\overline{\tau}$ maps the isomorphism class [C] of a stable curve C with irreducible components $C_1, i = 1, \dots, r$ , to the isomorphism class of $J(\mathcal{C}_1) \times \dots \times J(\mathcal{C}_r)$ where $\mathcal{C}_1$ denotes the normalization of $C_1$ .
-   ii) We keep the notation in i), and let $g' = \sum_{i} \text{ genus of } \mathcal{C}_i$ .
-   We have rank $H_1(\Gamma(C), \mathbb{Z}) = g'' := g - g'$ (elementary).
+1. The composite map $\mathrm{poj}: S_g \to (\mathbb{G}_g^*)^\overline{\tau} \to (\mathbb{G}_g^*)^\overline{\tau}$ maps the isomorphism class [C] of a stable curve C with irreducible components $C_1, i = 1, \dots, r$ , to the isomorphism class of $J(\mathcal{C}_1) \times \dots \times J(\mathcal{C}_r)$ where $\mathcal{C}_1$ denotes the normalization of $C_1$ . ii) We keep the notation in i), and let $g' = \sum_{i} \text{ genus of } \mathcal{C}_i$ . We have rank $H_1(\Gamma(C), \mathbb{Z}) = g'' := g - g'$ (elementary).
    Giving an orientation on $\Gamma(C)$ and regarding edges $\{e_k\}$ as 1-simplices,
 
 112
@@ -5965,14 +5697,14 @@ Then $j$ is injective on $\underline{u}_{\mathbf{g}}$.
 v) In case $g = 2$, $j$ is an isomorphism.
 
 vi) For $g \geq 3$ $j$ is not injective already when $j([C]) \in \underline{\mathbb{G}}_{\mathbf{g}}^{\bullet}$.
-(Hence it has nothing to do with the compactification.) Namely let $S_{\mathbf{g}', \mathbf{g}''}, \mathbf{g}' + \mathbf{g}'' = \mathbf{g}, \mathbf{g}' &gt; 0, \mathbf{g}'' &gt; 0$, be the closed subset of $S_{\mathbf{g}}$ whose general points correspond to a join of two smooth curves of genus $\mathbf{g}'$ and $\mathbf{g}''$ meeting at one point.
+(Hence it has nothing to do with the compactification.)
+Namely let $S_{\mathbf{g}', \mathbf{g}''}, \mathbf{g}' + \mathbf{g}'' = \mathbf{g}, \mathbf{g}' &gt; 0, \mathbf{g}'' &gt; 0$, be the closed subset of $S_{\mathbf{g}}$ whose general points correspond to a join of two smooth curves of genus $\mathbf{g}'$ and $\mathbf{g}''$ meeting at one point.
 
 ![img-33.jpeg](img-33.jpeg)
 
 Then $j$ is not injective on $S_{\mathbf{g}', \mathbf{g}''}$ (since $j([C_1 \cup C_2]) = [J(C_1) \times J(C_2)] \in \underline{\mathbb{G}}_{\mathbf{g}}^{\bullet}$ but the isomorphism class of $C_1 \cup C_2$ depends not only on those of $C_1$ and $C_2$ but also on the point where $C_1$ and $C_2$ meet together).
 
-Problem (9.31).
-i) Does the converse of iii) hold?
+Problem (9.31). i) Does the converse of iii) hold?
 
 ii) Is $j$ injective on $S_{\mathbf{g}} - \cup S_{\mathbf{g}', \mathbf{g}''}$?
 
@@ -5985,11 +5717,9 @@ We correct also a number of missprints in [2] pointed out with $(\star)$.
 
 We indicate the corresponding place in [2] as follows:
 
-[§2.1, p.166]...
-[2] Chapter III, §2.1, p.166.
+[§2.1, p.166]... [2] Chapter III, §2.1, p.166.
 
-I.
-The structure of bounded symmetric domains [§2].
+I. The structure of bounded symmetric domains [§2].
 
 A) Definition and realizations [§2.1, p.166 ff]
 
@@ -6013,8 +5743,7 @@ Definition 3. A hermitian symmetric space $\mathcal{D}$ is called a bounded symm
 
 Definition 4. If a non-euclidean symmetric space $\mathcal{D}$ consists of only one irreducible component, then $\mathcal{D}$ is called simple.
 
-Theorem 1 (E.
-Cartan).
+Theorem 1 (E. Cartan).
 The simple bounded symmetric domains
 
 114
@@ -6076,8 +5805,7 @@ $$
 115
 
 iii) (cf.
-(1.6)) $K = \mathrm{Iso}(\sqrt{-1} l_g) = \{\begin{pmatrix} A &amp; B \\ -B &amp; A \end{pmatrix} ; A^t A + B^t B = 1, A^t B = B^t A\} \sim \{U = A + \sqrt{-1} B; U^t \overline{U} = l_g\}$
-(the unitary group);
+(1.6)) $K = \mathrm{Iso}(\sqrt{-1} l_g) = \{\begin{pmatrix} A &amp; B \\ -B &amp; A \end{pmatrix} ; A^t A + B^t B = 1, A^t B = B^t A\} \sim \{U = A + \sqrt{-1} B; U^t \overline{U} = l_g\}$ (the unitary group);
 
 iv) (cf.
 (1.6)) the symmetry $s_o$ at $o = \sqrt{-1} l_g$ is
@@ -6100,7 +5828,7 @@ $$
 \varpi = \text{the subspace of } \varpi \text{ where } s_o = -\operatorname{Id}.
 $$
 
-We have a decomposition (called _Cartan decomposition_)
+We have a decomposition (called *Cartan decomposition*)
 
 $$
 \varphi = \kappa \oplus \varpi
@@ -6177,10 +5905,7 @@ $$
 
 from the circle group $U^1$ into $G$ such that
 
-a) $\operatorname{Im} u_0 \subset K$,
-b) $u_0(z)$ induces the multiplication by $z$ on the tangent space $T_0$ of $\vec{v}$ at $0$,
-c) $K$ is the centralizer of $\operatorname{Im} u_0$ in $G$,
-d) if moreover $G$ is simple, $\operatorname{Im} u_0$ is the center of $K$.
+a) $\operatorname{Im} u_0 \subset K$, b) $u_0(z)$ induces the multiplication by $z$ on the tangent space $T_0$ of $\vec{v}$ at $0$, c) $K$ is the centralizer of $\operatorname{Im} u_0$ in $G$, d) if moreover $G$ is simple, $\operatorname{Im} u_0$ is the center of $K$.
 Example.
 For $\vec{v} = \vec{G}_g$
 
@@ -6337,10 +6062,9 @@ $$
 \mathfrak{g}_{\mathfrak{C}} = \mathfrak{J}_{\mathfrak{C}} + \sum_{\varphi \in \Psi} \mathfrak{g}^{\varphi}.
 $$
 
-A root $\varphi$ is called _compact_ (resp.
-_non-compact_) if $\mathfrak{g}^{\varphi} \subset \mathfrak{k}_{\mathfrak{C}}$ (resp.
-$\mathfrak{g}^{\varphi} \subset \mathfrak{p}_{\mathfrak{C}}$).
-We denote
+A root $\varphi$ is called *compact* (resp.
+*non-compact*) if $\mathfrak{g}^{\varphi} \subset \mathfrak{k}_{\mathfrak{C}}$ (resp.
+$\mathfrak{g}^{\varphi} \subset \mathfrak{p}_{\mathfrak{C}}$). We denote
 
 $$
 \begin{aligned}
@@ -6382,7 +6106,7 @@ $$
 = \{\sqrt{-1}(\Lambda_i - \Lambda_{i+1}), i = 1, \dots, g-1, 2\sqrt{-1}\Lambda_g\}.
 $$
 
-**Definition 9.** i) Two roots $\varphi, \psi$ are called _strongly orthogonal_ if neither of $\varphi \pm \psi$ is a root.
+**Definition 9.** i) Two roots $\varphi, \psi$ are called *strongly orthogonal* if neither of $\varphi \pm \psi$ is a root.
 In this case $\varphi$ and $\psi$ are orthogonal.
 
 ii) Choose a maximal set of strongly orthogonal roots
@@ -6627,11 +6351,11 @@ $$
 (\tau_1, \dots, \tau_g) \longrightarrow \begin{pmatrix} \tau_1^w &amp; &amp; \\ &amp; \cdot &amp; \\ &amp; &amp; \tau_g \end{pmatrix}.
 $$
 
-_Definition 11._ The number $r$ appearing in Theorem 3 is called the _rank_ of $D$ or the _R-rank_ of $G$.
+*Definition 11.* The number $r$ appearing in Theorem 3 is called the *rank* of $D$ or the *R-rank* of $G$.
 
 Next we analyze the irreducible decomposition of the representation $\operatorname{Ad}(\varphi)$ of $U^1 \times \operatorname{SL}(2, \mathbb{R})^r$ in $\varphi$ and relation with the structure of roots.
 
-_Notation._ 1) We denote the irreducible representations of $U^1$ by
+*Notation.* 1) We denote the irreducible representations of $U^1$ by
 
 $$
 U_0 = \mathbb{R}, \text{ trivial},
@@ -6647,7 +6371,7 @@ $$
 W_k = k\text{-th symmetric power of the standard representation}, \quad k = 0, 1, 2, \dots.
 $$
 
-_Proposition 2._ The irreducible representations of $U^1 \times \operatorname{SL}(2, \mathbb{R})^r$ which appear in $\varphi$ (associated with $\varphi$ in Theorem 3) are the following:
+*Proposition 2.* The irreducible representations of $U^1 \times \operatorname{SL}(2, \mathbb{R})^r$ which appear in $\varphi$ (associated with $\varphi$ in Theorem 3) are the following:
 
 a_1) $U_0 \otimes (W_0 \otimes \cdots \otimes W_2 \otimes \cdots \otimes W_0)$ (one $W_2$),
 
@@ -6659,7 +6383,7 @@ e) $U_0 \otimes (W_0 \otimes \cdots \otimes W_0)$ (trivial).
 
 Moreover the representation of type $a_1$) appears only as i-th factor of $d\varphi$ in Theorem 3 ii) b).
 
-_Definition 12._ Letting
+*Definition 12.* Letting
 
 $$
 \sigma' = \sum_{i=1}^{r} \mathbb{R}h_i \subset \sqrt{-1}\gamma,
@@ -6702,7 +6426,7 @@ $$
 \operatorname{Ad}(c)(\sigma) = \sigma'.
 $$
 
-Hence for $\mathbb{R}^{\Psi} = (\operatorname{Ad}(c))^*(\mathbb{R}^{\Psi'})$ (the induced set of linear maps $\sigma \to \mathbb{R}$) we have an isomorphic _real_ decomposition of $\varphi$ via $\operatorname{ad} \sigma$:
+Hence for $\mathbb{R}^{\Psi} = (\operatorname{Ad}(c))^*(\mathbb{R}^{\Psi'})$ (the induced set of linear maps $\sigma \to \mathbb{R}$) we have an isomorphic *real* decomposition of $\varphi$ via $\operatorname{ad} \sigma$:
 
 $$
 \varphi = Z(\sigma) \oplus \sum_{\psi \in \mathbb{R}^{\Psi}} \varphi^{\psi}.
@@ -6715,13 +6439,8 @@ $$
 
 2. If moreover $\varphi$ is simple, then either:
 
-- Case $C_r$)
-  $\mathbb{R}^{\Psi} = \{ \pm \frac{\gamma_1 + \gamma_j}{2}, 1 \geq j, \pm \frac{\gamma_1 - \gamma_j}{2}, 1 &gt; j \}$
-  all $(b_{1j})$-factor occur, but no $(c_1)$-factors;
-  or
-- Case $BC_r$)
-  $\mathbb{R}^{\Psi} = \{ \pm \frac{\gamma_1 + \gamma_j}{2}, 1 \geq j, \pm \frac{\gamma_1 - \gamma_j}{2}, 1 &gt; j, \pm \frac{\gamma_1}{2} \}$
-  all $(b_{1j})$- and all $(c_1)$-factors occur.
+- Case $C_r$) $\mathbb{R}^{\Psi} = \{ \pm \frac{\gamma_1 + \gamma_j}{2}, 1 \geq j, \pm \frac{\gamma_1 - \gamma_j}{2}, 1 &gt; j \}$ all $(b_{1j})$-factor occur, but no $(c_1)$-factors; or
+- Case $BC_r$) $\mathbb{R}^{\Psi} = \{ \pm \frac{\gamma_1 + \gamma_j}{2}, 1 \geq j, \pm \frac{\gamma_1 - \gamma_j}{2}, 1 &gt; j, \pm \frac{\gamma_1}{2} \}$ all $(b_{1j})$- and all $(c_1)$-factors occur.
 
 126
 
@@ -6867,9 +6586,7 @@ Hence $\mathrm{T}^{*}(X)\mathrm{T}(X)(Y) = YX\overline{X} + \overline{X}XY$.
 iv) $\mathcal{D}_{g} = \{X \in \psi_{g,\mathfrak{C}} (\sim \pi_{-}) ; X\overline{X} &lt; l_{g}\}$ (cf.
 (1.6) 2)).
 
-II.
-Boundary components [§3](cf.
-§4).
+II. Boundary components [§3](cf. §4).
 
 A) Boundary components [§3.1, p.194ff].
 
@@ -6906,8 +6623,7 @@ $$
 
 **Fact 1.** 1) We have
 
-a) $\ell_{S} = \mathcal{K} \cap \ell_{S} \oplus \mathcal{R} \cap \ell_{S};$
-b) $\mathcal{R}_{\mathfrak{C}} \cap (\ell_{S})_{\mathfrak{C}} = \mathcal{R}_{+} \cap (\ell_{S})_{\mathfrak{C}} \oplus \mathcal{R}_{-} \cap (\ell_{S})_{\mathfrak{C}}.$
+a) $\ell_{S} = \mathcal{K} \cap \ell_{S} \oplus \mathcal{R} \cap \ell_{S};$ b) $\mathcal{R}_{\mathfrak{C}} \cap (\ell_{S})_{\mathfrak{C}} = \mathcal{R}_{+} \cap (\ell_{S})_{\mathfrak{C}} \oplus \mathcal{R}_{-} \cap (\ell_{S})_{\mathfrak{C}}.$
 
 We write $\mathcal{R}_{S}, \mathcal{R}_{i,S}$ for $\mathcal{R} \cap \ell_{S}, \mathcal{R}_{i} \cap (\ell_{S})_{\mathfrak{C}}$ respectively.
 
@@ -6945,8 +6661,7 @@ D^{s} \times D_{S} \xrightarrow{\text{f}_{1}} D \\
 \end{array}
 $$
 
-where $s = |S|$ and $D = \{z \in \mathbb{C}; |z| &lt; 1\}$ considered as a bounded symmetric domain $\operatorname{SL}(2, \mathbb{R}) / \operatorname{SO}(2, \mathbb{R})$ (instead of $H$).
-Note that $f_{2}$ is linear and $f_{3}$ is algebraic.
+where $s = |S|$ and $D = \{z \in \mathbb{C}; |z| &lt; 1\}$ considered as a bounded symmetric domain $\operatorname{SL}(2, \mathbb{R}) / \operatorname{SO}(2, \mathbb{R})$ (instead of $H$). Note that $f_{2}$ is linear and $f_{3}$ is algebraic.
 
 Example.
 For $\mathcal{D} = \mathbb{G}_g$ recall
@@ -6987,16 +6702,16 @@ $$
 
 Let $S = \{g' + 1, \cdots, g\}$, $g'' = g - g' = \#S$.
 
-1.  $$
-    \ell_{S} = \left\{ \begin{pmatrix}
-    a' &amp; 0 &amp; b' &amp; 0 \\
-    0 &amp; 0 &amp; 0 &amp; 0 \\
-    c' &amp; 0 &amp; d' &amp; 0 \\
-    0 &amp; 0 &amp; 0 &amp; 0
-    \end{pmatrix} \in \mathcal{Q}; \begin{pmatrix}
-    a' &amp; b' \\
-    c' &amp; d' \end{pmatrix} \in \mathcal{M}(g', \mathbb{R}) \right\} \supseteq \mathcal{M}(g', \mathbb{R}),
-    $$
+1. $$
+   \ell_{S} = \left\{ \begin{pmatrix}
+   a' &amp; 0 &amp; b' &amp; 0 \\
+   0 &amp; 0 &amp; 0 &amp; 0 \\
+   c' &amp; 0 &amp; d' &amp; 0 \\
+   0 &amp; 0 &amp; 0 &amp; 0
+   \end{pmatrix} \in \mathcal{Q}; \begin{pmatrix}
+   a' &amp; b' \\
+   c' &amp; d' \end{pmatrix} \in \mathcal{M}(g', \mathbb{R}) \right\} \supseteq \mathcal{M}(g', \mathbb{R}),
+   $$
 
 131
 
@@ -7096,9 +6811,8 @@ $$
 
 maps $\cdot\mathrm{D}$ into $\mathrm{F}_{\mathrm{S}}$.
 
-_Definition 3 (cf.
-(4.2)).
-A boundary component of a bounded symmetric domain_ $\mathcal{D}$ is an equivalence class in $\overline{\mathcal{D}}$ under the equivalence relation generated by $x \sim y$ if there is a holomorphic map
+*Definition 3 (cf.
+(4.2)). A boundary component of a bounded symmetric domain* $\mathcal{D}$ is an equivalence class in $\overline{\mathcal{D}}$ under the equivalence relation generated by $x \sim y$ if there is a holomorphic map
 
 $$
 \lambda : \mathrm{D} \longrightarrow \mathcal{R}_{+}
@@ -7106,13 +6820,12 @@ $$
 
 such that $\operatorname{Im} \lambda \subset \overline{D}, x, y \in \operatorname{Im} \lambda$.
 
-The above Fact 2 ii) together with the Hermann convexity (I.
-Theorem 4) says that $\mathrm{F}_{\mathrm{S}}$ is a boundary component.
+The above Fact 2 ii) together with the Hermann convexity (I. Theorem 4) says that $\mathrm{F}_{\mathrm{S}}$ is a boundary component.
 
 We consider $\mathcal{D}$ itself as a boundary component $\mathrm{F}_{\Phi}$.
 
-_Theorem 1 (cf.
-(4.4))._ i) $\overline{\mathcal{D}}$ is the disjoint union of boundary components (trivial).
+*Theorem 1 (cf.
+(4.4)).* i) $\overline{\mathcal{D}}$ is the disjoint union of boundary components (trivial).
 
 ii) The boundary components of $\mathcal{D}$ are just the set of the form
 
@@ -7160,8 +6873,7 @@ $$
 \varphi_S(\mathrm{e}^{\sqrt{-1}\theta}, x) = \varphi(\mathrm{e}^{\sqrt{-1}\theta}, \dots, \mathrm{e}_{1 \times S}^{\sqrt{-1}\theta} \dots x, \dots)
 $$
 
-with the Harish-Chandra map $\varphi$ in I.
-Theorem 3.
+with the Harish-Chandra map $\varphi$ in I. Theorem 3.
 
 Example.
 For $\mathcal{D} = \mathbb{G}_g$, $S = \{g' + 1, \dots, g\}$ ($g'' = g - g'$),
@@ -7204,8 +6916,7 @@ where $s(\theta) = \sin \theta$, $c(\theta) = \cos \theta$.
 1. If $S_1 \subset S_2$, then $\overline{F}_{S_1} \supset F_{S_2}$.
 
 2. (cf.
-   (4.14) 111)).
-   For any flag of boundary components
+   (4.14) 111)). For any flag of boundary components
 
 $$
 \overline{D} \supset \overline{F}_1 \supset \overline{F}_2 \supset \cdots \supset \overline{F}_t
@@ -7257,8 +6968,7 @@ Then
 1. Lie $P(w_S) = Z(\alpha) + \sum_{\substack{\psi \in \mathbb{R}^* \\ \langle dw_S, \psi \rangle \geq 0}} \varphi^{(*)}$
 
 where $w_S = w_{F_S}$ (cf.
-I.
-Fact 4).
+I. Fact 4).
 
 11. $\{\psi \in \mathbb{R}^* ; \langle dw_S, \psi \rangle \geq 0\}$
 
@@ -7268,8 +6978,7 @@ $$
 = \left\{ \begin{array}{l l} \text{all roots} &amp; \frac{\pm \gamma_1 \pm \gamma_j}{2}, \pm \frac{\gamma_1}{2}, 1, j \notin S \\ \text{and} &amp; \\ \text{all roots} &amp; \frac{\gamma_1 \pm \gamma_j}{2}, \frac{\gamma_1}{2}, 1 \in S, \text{ any } j \end{array} \right.
 $$
 
-(The change of signs here is the result of the correction in I.
-Theorem 3 ii) b).)
+(The change of signs here is the result of the correction in I. Theorem 3 ii) b).)
 
 **Theorem 2.** i) For each boundary component $F \subset \overline{\mathcal{D}}$, the equivariant pair $(f, \varphi)$ (cf.
 Theorem 1):
@@ -7411,8 +7120,7 @@ ii) Lie $W(F_S) = \underline{u}(F_S) + \underline{v}(F_S)$.
 iii) Lie $U(F_S) = \underline{u}(F_S)$.
 
 iv) $U(F_S)$ is contained in (actually equal to, cf.
-III.
-Corollary to Theorem 2,) the centre of $W(F_S)$.
+III. Corollary to Theorem 2,) the centre of $W(F_S)$.
 
 v) With $V(F_S) = \exp \underline{v}(F_S)$,
 
@@ -7426,8 +7134,7 @@ vi) $W(F_S)/U(F_S)$ is an abelian Lie group whose Lie algebra is naturally isomo
 
 138
 
-Definition 6. 1) Recall (I.
-Def.
+Definition 6. 1) Recall (I. Def.
 13)
 
 $$
@@ -7484,9 +7191,7 @@ $$
 \mathrm{N}(F) = \mathrm{Z}(\mathrm{w}_F) \cdot \mathrm{W}(F)
 $$
 
-where
-$\mathrm{W}(F) = \text{the unipotent radical of } \mathrm{N}(F),$
-$\mathrm{Z}(\mathrm{w}_F) = \text{the centralizer of } \mathrm{w}_F;$
+where $\mathrm{W}(F) = \text{the unipotent radical of } \mathrm{N}(F),$ $\mathrm{Z}(\mathrm{w}_F) = \text{the centralizer of } \mathrm{w}_F;$
 
 ii) $\mathrm{Z}(\mathrm{w}_F)^0$ is a direct product up to finite group
 
@@ -7505,8 +7210,7 @@ $\mathrm{G}_k(F)$ is reductive without compact factor,
 $\mathrm{M}(F)$ is compact.
 
 Example (cf.
-(4.8), (4.9)).
-For $\mathcal{D} = \mathbb{G}_g$, $F = F_S$ with $S = \{g' + 1, \dots, g\}$,
+(4.8), (4.9)). For $\mathcal{D} = \mathbb{G}_g$, $F = F_S$ with $S = \{g' + 1, \dots, g\}$,
 
 $$
 \mathrm{W}(F) = \left\{ \begin{array}{l}
@@ -7673,15 +7377,13 @@ $$
 \pi_F = s_{o_F} \circ s_{o} \circ p_F : \mathcal{D}(\overline{F}) \longrightarrow \overline{F},
 $$
 
-which is often called the _geodesic projection_ of $\mathcal{D}$ onto $F$ because of its differential-geometric property.
+which is often called the *geodesic projection* of $\mathcal{D}$ onto $F$ because of its differential-geometric property.
 
 142
 
 Theorem 4. We use the notation in Definition 8. Then
 
-1. $\pi_{\mathrm{F}}(\mathcal{D}) \subset \mathrm{F}$,
-   ii) $\pi_{\mathrm{F}}$ is equivariant for $\mathsf{N}(\mathsf{F})_{\mathfrak{C}}$ acting $\mathcal{D}(\vec{\mathsf{F}})$ and $\vec{\mathsf{F}}$ naturally,
-   iii) $\pi_{\mathrm{F}}$ is independent of a choice of base point $\circ$.
+1. $\pi_{\mathrm{F}}(\mathcal{D}) \subset \mathrm{F}$, ii) $\pi_{\mathrm{F}}$ is equivariant for $\mathsf{N}(\mathsf{F})_{\mathfrak{C}}$ acting $\mathcal{D}(\vec{\mathsf{F}})$ and $\vec{\mathsf{F}}$ naturally, iii) $\pi_{\mathrm{F}}$ is independent of a choice of base point $\circ$.
 
 Example.
 For $\mathcal{D} = \mathbb{G}_{\mathrm{g}}$, $\mathrm{F} = \mathrm{F}_{\mathrm{S}}$ with $\mathrm{S} = \{\mathrm{g}' + 1, \dots, \mathrm{g}\}$,
@@ -7769,11 +7471,11 @@ $$
 E) Rational boundary components [§2.5, p.192f, §3.5, p.219ff].
 
 **Definition 9.** Suppose that a semisimple algebraic group $G$ is defined over $\mathbb{Q}$.
-(We allow $G$ such that $G^{\circ}$/compact normal subgroup $= \operatorname{Aut}(\mathcal{D})^{\circ}$.) Choose a maximal $\mathbb{Q}$-split torus $A_{\mathbb{Q}}$ and a maximal $\mathbb{R}$-split torus $A$ containing $A_{\mathbb{Q}}$.
+(We allow $G$ such that $G^{\circ}$/compact normal subgroup $= \operatorname{Aut}(\mathcal{D})^{\circ}$.)
+Choose a maximal $\mathbb{Q}$-split torus $A_{\mathbb{Q}}$ and a maximal $\mathbb{R}$-split torus $A$ containing $A_{\mathbb{Q}}$.
 Let $q = \dim A_{\mathbb{Q}} = \mathbb{Q}$-rank of $G$ and $r = \dim A = \mathbb{R}$-rank of $G$ (defined before).
 
-**Proposition 3.** There is a maximal strongly-orthogonal system of roots $\gamma_1, \dots, \gamma_r \in \operatorname{Hom}(A, \mathbb{G}_m) \otimes \mathbb{Q}$ enjoying similar properties as in I.
-Prop.
+**Proposition 3.** There is a maximal strongly-orthogonal system of roots $\gamma_1, \dots, \gamma_r \in \operatorname{Hom}(A, \mathbb{G}_m) \otimes \mathbb{Q}$ enjoying similar properties as in I. Prop.
 3, and moreover $A_{\mathbb{Q}}$ is defined by the equations:
 
 $$A_{\mathbb{Q}} = \text{the connected component of the subgroup defined by } \gamma_1 = 1 \text{ for } 1 \in I_0, \gamma_1 = \gamma_j \text{ for } 1, j \in I_k$$
@@ -7783,7 +7485,7 @@ with a suitable partition
 $$\{1, \dots, r\} = I_0 \cup I_1 \cup \cdots \cup I_q.$$
 
 **Definition 10 (cf.
-(4.15)).** A boundary component $F$ of $\mathcal{D}$ is called _rational_ if $N(F)$ is defined over $\mathbb{Q}$ as a subgroup of $G$.
+(4.15)).** A boundary component $F$ of $\mathcal{D}$ is called *rational* if $N(F)$ is defined over $\mathbb{Q}$ as a subgroup of $G$.
 
 **Proposition 4.** A boundary component $F_S$ is rational if and only if
 
@@ -7801,22 +7503,19 @@ is defined over $\mathbb{Q}$.
 
 144
 
-III.
-Realization of $\mathcal{D}$ as a Siegel domain of the third kind (cf.
+III. Realization of $\mathcal{D}$ as a Siegel domain of the third kind (cf.
 §5)[§4].
 
 A) The self-adjoint cone $\mathrm{C}(\mathrm{F})$ in $\mathrm{U}(\mathrm{F})$ (cf.
 (4.10))[§4.2, p.227ff].
 
-Definition 1. With $\varphi_{\mathrm{F}}: \mathrm{U}^{1} \times \mathrm{SL}(2, \mathbb{R}) \to \mathrm{G}$ in II.
-Theorem 1 we define
+Definition 1. With $\varphi_{\mathrm{F}}: \mathrm{U}^{1} \times \mathrm{SL}(2, \mathbb{R}) \to \mathrm{G}$ in II. Theorem 1 we define
 
 $$
 \Omega_{\mathrm{F}} = \varphi_{\mathrm{F}}(1, \begin{pmatrix} 1 &amp; 1 \\ 0 &amp; 1 \end{pmatrix}) \in \mathrm{U}(\mathrm{F}).
 $$
 
-Theorem 1. With the above definition and notation in II.
-Theorem 3,
+Theorem 1. With the above definition and notation in II. Theorem 3,
 
 i) $[\mathrm{G}_{\mathrm{h}}(\mathrm{F}) \times \mathrm{M}(\mathrm{F})] \cdot \mathrm{W}(\mathrm{F})$ centralizes $\mathrm{U}(\mathrm{F})$;
 
@@ -7826,8 +7525,7 @@ $$
 \mathrm{C}(\mathrm{F}) = \left\{ \mathrm{g} \Omega_{\mathrm{F}} \mathrm{g}^{-1}; \mathrm{g} \in \mathrm{G}_{\ell}(\mathrm{F}) \right\}
 $$
 
-is an open homogeneous cone in $\mathrm{U}(\mathrm{F})$ which is self-adjoint with respect to the positive quadratic form $\mathbf{B}_{\mathrm{I}}$ on $\underline{\mathbf{u}}(\mathrm{F})$ (I.
-Def.
+is an open homogeneous cone in $\mathrm{U}(\mathrm{F})$ which is self-adjoint with respect to the positive quadratic form $\mathbf{B}_{\mathrm{I}}$ on $\underline{\mathbf{u}}(\mathrm{F})$ (I. Def.
 14 ii)), hence on $\mathrm{U}(\mathrm{F})$ (by exp).
 
 The centralizer of $\Omega_{\mathrm{F}}$ in $\mathbf{G}_{\ell}(\mathbf{F})$ is a maximal compact subgroup $\mathbf{G}_{\ell}(\mathbf{F}) \cap \mathbf{K}$, hence
@@ -7869,8 +7567,7 @@ G_{\ell}(F) \cap K \sim O(g'') = \{u; u^t u = l_{g''}\} \subset GL(g'', \mathbb{
 \end{array}
 $$
 
-**Theorem 2.** For $v \neq 0 \in v(F)$ (II.
-Fact 4)
+**Theorem 2.** For $v \neq 0 \in v(F)$ (II. Fact 4)
 
 $$
 [v, J_F v] \in \overline{C(F)} - \{0\}^{(*)}
@@ -7919,8 +7616,7 @@ $$
 
 **B) Realization of $\mathcal{D}$ as a Siegel domain** [§4.3, p.233ff].
 
-**Definition 2.** Recall (II.
-Theorem 2 iii), Theorem 3)
+**Definition 2.** Recall (II. Theorem 2 iii), Theorem 3)
 
 $$
 \mathcal{D} = [G_h(F) \cdot G_\ell(F) \cdot M(F)] \cdot W(F) / K_h(F) \cdot K_\ell(F) \cdot M(F)
@@ -7961,10 +7657,8 @@ o \longrightarrow \circ_F
 \end{array}
 $$
 
-the latter of which is the same as the map defined in II.
-Def.
-8 by virtue of II.
-Th.
+the latter of which is the same as the map defined in II. Def.
+8 by virtue of II. Th.
 4 ii).
 
 **Fact 1.** The above description of $D$ induces a decomposition of $D$ as a real analytic manifold:
@@ -8060,8 +7754,7 @@ Definition 3. $\mathcal{D}(\mathrm{F}) = \mathrm{U}(\mathrm{F})_{\mathfrak{T}} \
 
 Note that $\mathrm{N}(\mathrm{F})\mathrm{U}(\mathrm{F})_{\mathfrak{T}}$ acts on $\mathcal{D}(\mathrm{F})$ transitively.
 
-**Lemma.** For $\circ_{\mathrm{F}^{\circ}}^{(*)} = \varphi_{\mathrm{F}}(1, \left( \frac{1}{0} - \sqrt{\frac{-1}{1}} \right) \circ = f_{\mathrm{F}}(0)$ (II.
-Def.
+**Lemma.** For $\circ_{\mathrm{F}^{\circ}}^{(*)} = \varphi_{\mathrm{F}}(1, \left( \frac{1}{0} - \sqrt{\frac{-1}{1}} \right) \circ = f_{\mathrm{F}}(0)$ (II. Def.
 7)
 
 $$
@@ -8093,8 +7786,7 @@ D(\mathrm{F}) \longrightarrow \stackrel{\circ}{\circ} \quad F
 \end{array}
 $$
 
-which is $\mathrm{N}(\mathrm{F})$-equivariant, hence is the same as in II.
-Definition 8.
+which is $\mathrm{N}(\mathrm{F})$-equivariant, hence is the same as in II. Definition 8.
 
 **Example.** For $\mathcal{D} = \mathbb{G}_{\mathrm{g}}$, $\mathrm{F} = \mathrm{F}_{\mathrm{S}}$ with $\mathrm{S} = \{g' + 1, \dots, g\}$
 
@@ -8135,8 +7827,7 @@ $$
 where $N(F)U(F)_{\mathfrak{C}}$ acts on $U(F)$ so that $N(F)$ acts by conjugation and $\sqrt{-1}U(F)$ acts by (real) translation.
 
 **Fact 3** (cf.
-(5.2) ii)).
-i) Two $\Phi_F$ in Def.2 and Def.4 coincide on $\mathcal{D}$
+(5.2) ii)). i) Two $\Phi_F$ in Def.2 and Def.4 coincide on $\mathcal{D}$
 
 $$
 \begin{array}{l}
@@ -8149,8 +7840,7 @@ $$
 ii) $\Phi_F^{-1}(C(F)) = \mathcal{D}$.
 
 **Example** ((cf.
-(5.4) ii)).
-For $\mathcal{D} = \mathbb{S}_g$, $F = F_S$ with $S = \{g' + 1, \dots, g\}$
+(5.4) ii)). For $\mathcal{D} = \mathbb{S}_g$, $F = F_S$ with $S = \{g' + 1, \dots, g\}$
 
 $$
 \begin{array}{l}
@@ -8186,8 +7876,7 @@ $$
 Note that these maps are $N(F)U(F)_{\underline{\alpha}}$-equivariant.
 By virtue of Fact 2 $\pi_F'$ is a holomorphic principal fibre bundle with fibre $U(F)_{\underline{\alpha}}$ and $p_F$ is a real analytic fibre bundle with fibre $V(F)$.
 
-Theorem 3 ((5.2) i)).
-i) The fibre bundle $\pi_F'$ is trivial:
+Theorem 3 ((5.2) i)). i) The fibre bundle $\pi_F'$ is trivial:
 
 $$
 \varrho(F) \simeq \varrho(F)' \times U(F)_{\underline{\alpha}}.
@@ -8246,10 +7935,10 @@ $$
 $$
 
 roughly saying, $\mathcal{D}$ is a family of tube domains (in $\mathrm{U}(\mathrm{F})_{\mathfrak{C}}$) parametrized by $\mathcal{D}(\mathrm{F})' \succcurlyeq \mathrm{F} \times \mathbb{C}^{k}$.
-Such a domain is called a _Siegel domain of the third kind_ due to Pjatecki-Sapiro.
+Such a domain is called a *Siegel domain of the third kind* due to Pjatecki-Sapiro.
 
-_Example (cf.
-(5.4))._ For $\mathcal{D} = \mathbb{G}_{\mathrm{g}}$, $\mathrm{F} = \mathrm{F}_{\mathrm{S}}$ with $\mathrm{S} = \{ \mathrm{g}' + 1, \dots, \mathrm{g} \}$
+*Example (cf.
+(5.4)).* For $\mathcal{D} = \mathbb{G}_{\mathrm{g}}$, $\mathrm{F} = \mathrm{F}_{\mathrm{S}}$ with $\mathrm{S} = \{ \mathrm{g}' + 1, \dots, \mathrm{g} \}$
 
 i) + iii) $\mathcal{D}(\mathrm{F}) \succcurlyeq \mathrm{F} \times \mathbb{C}^{\mathrm{g}'\mathrm{g}''} \times \mathrm{U}(\mathrm{F})_{\mathfrak{C}}$
 
@@ -8310,8 +7999,7 @@ $$
 C) Relation of the normalizers of adjacent boundary components [§4.4, p.240ff].
 
 Theorem 4 (cf.
-(4.14)).
-Let $F$ and $F'$ be two boundary components with $F \subset (F')^-$.
+(4.14)). Let $F$ and $F'$ be two boundary components with $F \subset (F')^-$.
 Then
 
 1. $U(F) \supset U(F')$
@@ -8331,56 +8019,39 @@ iii) if moreover $\mathcal{D} = G(\mathbb{R})^\circ / K$ where $G$ is defined ov
 # Bibliography
 
 [1] Andreotti, A.: On a theorem of Torelli, Amer.
-J.
-Math.
+J. Math.
 80 (1958), 801-828.
 
-[2] Ash, A., Mumford, D., Rapoport, M.
-and Tai, Y.: Smooth Compactification of Locally Symmetric Varieties, Math.
+[2] Ash, A., Mumford, D., Rapoport, M. and Tai, Y.: Smooth Compactification of Locally Symmetric Varieties, Math.
 Sci.
 Press, Brookline, 1975.
 
-[3] Baily, W.
-L.: Satake's compactification of $V_n$, Amer.
-J.
-Math., 80 (1958), 348-364.
+[3] Baily, W. L.: Satake's compactification of $V_n$, Amer.
+J. Math., 80 (1958), 348-364.
 
-[4] Baily, W.L.
-and Borel, A.: Compactification of arithmetic quotients of bounded symmetric domains, Ann.
+[4] Baily, W.L. and Borel, A.: Compactification of arithmetic quotients of bounded symmetric domains, Ann.
 of Math., 84 (1966), 442-528.
 
-[5] Borel, A.: Some metric properties of arithmetic quotients of symmetric spaces and an extension theorem, J.
-Diff.
+[5] Borel, A.: Some metric properties of arithmetic quotients of symmetric spaces and an extension theorem, J. Diff.
 Geom., 6 (1972), 543-560.
 
-[6] Cartan, H.: Quotient d'un espace analytique par un groupe d'automorphismes, Algebraic Geometry and Topology, A Symposium in Honor of S.
-Lefschetz, Princeton Univ.
-Press, 1957, 90-102.
+[6] Cartan, H.: Quotient d'un espace analytique par un groupe d'automorphismes, Algebraic Geometry and Topology, A Symposium in Honor of S. Lefschetz, Princeton Univ. Press, 1957, 90-102.
 
-[7] Coxeter, H.
-S.
-M.: Extreme forms, Can.
-J.
-Math., 3 (1951), 391-441.
+[7] Coxeter, H. S. M.: Extreme forms, Can.
+J. Math., 3 (1951), 391-441.
 
-[8] Deligne, P.
-and Mumford, D.: The irreducibility of the space of curves of given genus, Publ.
+[8] Deligne, P. and Mumford, D.: The irreducibility of the space of curves of given genus, Publ.
 math.
 I.H.E.S., 36 (1969), 75-110.
 
-[9] Dickson, T.
-J.: On Voronoi reduction of positive definite quadratic forms, J.
-Number Theory, 4 (1972), 330-341.
+[9] Dickson, T. J.: On Voronoi reduction of positive definite quadratic forms, J. Number Theory, 4 (1972), 330-341.
 
-[10] Gauss, C.
-F.: Werke, Göttingen, 1870-1927.
+[10] Gauss, C. F.: Werke, Göttingen, 1870-1927.
 
 [11] Godement, R.: Domaines fondamentaux des groupes arithmétiques, Sém.
 Bourbaki, 15, 1962-63, Exp.257.
 
-[12] Griffiths, P.H.
-and Schmid, W.: Recent developments in Hodge theory: a discussion of techniques and results, Discrete Subgroups of Lie Groups and Applications to Moduli, Bombay, 1973, Oxford Univ.
-Press, 1975, 31-127.
+[12] Griffiths, P.H. and Schmid, W.: Recent developments in Hodge theory: a discussion of techniques and results, Discrete Subgroups of Lie Groups and Applications to Moduli, Bombay, 1973, Oxford Univ. Press, 1975, 31-127.
 
 [13] Helgason, S.: Differential Geometry and Symmetric Spaces, Academic Press, New York, 1963.
 
@@ -8394,23 +8065,18 @@ Ann., 168 (1967), 228-260.
 
 [16] Igusa, J.: Theta Functions, Grundlehren, 194, Springer, Berlin-Heidelberg-New York, 1972.
 
-[17] Kempf, G., Knudsen, F., Mumford, D.
-and Saint-Donat, B.: Toroidal Embeddings, I., Lect.
+[17] Kempf, G., Knudsen, F., Mumford, D. and Saint-Donat, B.: Toroidal Embeddings, I., Lect.
 Notes in Math., 339, Springer, Berlin-Heidelberg-New York, 1972.
 
-[18] Kiernan, P.
-and Kobayashi, S.: Comments on Satake compactification and the great Picard theorem, J.
-Math.
+[18] Kiernan, P. and Kobayashi, S.: Comments on Satake compactification and the great Picard theorem, J. Math.
 Soc.
 Japan, 28 (1976), 577-580.
 
-[19] Kobayashi, S and Ochiai, T.: Satake compactification and the great Picard theorem, J.
-Math.
+[19] Kobayashi, S and Ochiai, T.: Satake compactification and the great Picard theorem, J. Math.
 Soc.
 Japan, 23 (1971), 340-350.
 
-[20] Korányi, A.
-and Wolf, J.A.: Realization of hermitian symmetric spaces as generalized half planes, Ann.
+[20] Korányi, A. and Wolf, J.A.: Realization of hermitian symmetric spaces as generalized half planes, Ann.
 of Math., 81 (1965), 265-288.
 
 [21] Mumford, D: Stability of projective varieties, L'Enseignement Math., 23 (1977), 39-110.
@@ -8419,46 +8085,37 @@ of Math., 81 (1965), 265-288.
 J., 52 (1973), 197-259.
 
 [23] Namikawa, Y.: A new compactification of the Siegel space and degeneration of abelian varieties, I, Math.
-Ann., 221 (1976), 97-141; II.
-ibid.
-201-241; III.
-in preparation.
+Ann., 221 (1976), 97-141; II. ibid.
+201-241; III. in preparation.
 
 [24] Oda, T.: On Torus Embeddings and Applications, Tata Lect.
 Notes, 57, Springer, Berlin-Heidelberg-New York, 1978.
 
-[25] Oort, F.
-and Steenbrink, J.: The local Torelli theorem for algebraic curves, to appear.
+[25] Oort, F. and Steenbrink, J.: The local Torelli theorem for algebraic curves, to appear.
 
-[26] Pjatečki-Shapiro, I.
-I.: Arithmetic groups on complex domains, Uspehi Mat.
+[26] Pjatečki-Shapiro, I. I.: Arithmetic groups on complex domains, Uspehi Mat.
 Nauk.
 SSSR, 19(6) (1964), 93-121; English translation, Russ.
 Math.
 Surveys, 19(6), 83-109.
 
-[27] Satake, I.: On the compactification of the Siegel space, J.
-Indian Math.
+[27] Satake, I.: On the compactification of the Siegel space, J. Indian Math.
 Soc., 20 (1956), 259-281.
 
 [28] Satake, I.: Realization of symmetric domains as Siegel domains of 3rd kind, Lecture Notes at Berkeley, 1972.
 
 [29] Schmid, W.: Variation of Hodge structure: the singularities of the period mapping, Inventiones math., 22 (1973), 211-319.
 
-[30] Siegel, C.
-F.: Zur Theorie der Modulfunktionen n-ten Grades, Comm.
+[30] Siegel, C. F.: Zur Theorie der Modulfunktionen n-ten Grades, Comm.
 Pure Appl.
 Math., 8 (1955), 677-681; Gesammelte Abhandlungen, 3, Springer, Berlin-Heidelberg-New York, 1966, 223-227.
 
-[31] Siegel, C.
-F.: Symplectic Geometry, Academic Press, New York, 1964; Gesammelte Abhandlungen, 2, Springer, Berlin-Heidelberg-New York, 1966, 274-360.
+[31] Siegel, C. F.: Symplectic Geometry, Academic Press, New York, 1964; Gesammelte Abhandlungen, 2, Springer, Berlin-Heidelberg-New York, 1966, 274-360.
 
 155
 
-[32] Sumihiro, H.: Equivariant completion, I-II, J.
-Math.
-Kyoto Univ., 14 (1974), 1-28; 15 (1975), 573-605.
-[33] Weil, A.: Zum Beweis des Torellischen Satzes, Nachr.
+[32] Sumihiro, H.: Equivariant completion, I-II, J. Math.
+Kyoto Univ., 14 (1974), 1-28; 15 (1975), 573-605. [33] Weil, A.: Zum Beweis des Torellischen Satzes, Nachr.
 Akad.
 Wiss.
 Göttingen, 1957, 33-53.
@@ -8466,12 +8123,9 @@ Göttingen, 1957, 33-53.
 # List of Notations
 
 A = exp(σ), App.
-I B) Th.3.
-$\sigma = \sum \mathbb{R}x_{1}$, App.
-I B) Th.3.
-$\sigma' = \sum \mathbb{R}h_{1}$, App.
-I B) Def.12.
-Aut(D): the group of biholomorphic automorphisms of D.
+I B) Th.3. $\sigma = \sum \mathbb{R}x_{1}$, App.
+I B) Th.3. $\sigma' = \sum \mathbb{R}h_{1}$, App.
+I B) Def.12. Aut(D): the group of biholomorphic automorphisms of D.
 
 $$
 \operatorname{Aut}(U_{g'}, \Omega_{g'}) = \{g \in GL(U_{g'}); g\Omega_{g'} = \Omega_{g'} \}, \operatorname{Aut}(U(F), \Omega(F)), (4.10), (8.1).
@@ -8558,8 +8212,7 @@ $$
 $$
 
 $\vec{q} = \text{Lie}(G)$, App.
-I A) Def.5.
-$\vec{q}_c$: the compact real form of $\vec{q}$, App.
+I A) Def.5. $\vec{q}_c$: the compact real form of $\vec{q}$, App.
 I A) Def.6.
 
 $$
@@ -8574,7 +8227,8 @@ $$
 
 $H = \{\tau \in \mathbb{C}; \text{Im } \tau &gt; 0\}$: upper half plane.
 
-$h_{\varphi}, h_{1}, \text{App. I B) Def.10.}$
+$h_{\varphi}, h_{1}, \text{App.
+I B) Def.10.}$
 
 $\text{Im} : T \to N_{\mathbb{R}}, x_{\Sigma} \to N_{\Sigma}, (6.2), (6.16).$
 
@@ -8582,11 +8236,13 @@ $\text{Iso}(p)$: the isotropy group at $p$, (1.6) 1).
 
 $K$ (= Iso(p)): a maximal compact subgroup of $G$.
 
-$\bar{K} = \text{Lie}(K), \text{App. I A) Def.5.}$
+$\bar{K} = \text{Lie}(K), \text{App.
+I A) Def.5.}$
 
 $K_{\Sigma, \sigma}$: a mixed cone, (9.12).
 
-$\ell_{S}, \text{App. II A) Def.1.}$
+$\ell_{S}, \text{App.
+II A) Def.1.}$
 
 $M = \text{Hom}(T, \mathbb{C}^*)$: the group of characters of $T$, (6.1).
 
@@ -8671,11 +8327,9 @@ II B) Def.4 ii).
 
 $x^r = \Pi T_1^{r_1} \in M$: a character of $T$ = a monomial in $k[T]$, (6.1).
 
-$x_\Sigma$: torus embedding associated with an r.p.p.
-decomposition $\Sigma$, (6.9).
+$x_\Sigma$: torus embedding associated with an r.p.p. decomposition $\Sigma$, (6.9).
 
-$x_\sigma$: affine torus embedding associated with a c.r.p.
-cone $\sigma$, (6.7).
+$x_\sigma$: affine torus embedding associated with a c.r.p. cone $\sigma$, (6.7).
 
 $x_\phi$, $x_1$, App.
 I B) Def.10.
@@ -8719,7 +8373,9 @@ $$\lambda_{a} \in \mathbb{N}: \text{ one-parameter subgroup in } T, \quad (6.1).
 
 $$\Pi_{\alpha,\beta}: (U_{\beta} \setminus p(F_{\beta}))_{\Sigma_{\beta}} \to (U_{\alpha} \setminus p(F_{\alpha}))_{\Sigma_{\alpha}}, \quad (7.9) \quad 2).$$
 
-$$\pi_{F}: p(F) \to F, \quad (5.2) \quad i), \quad (5.3) \quad i), \quad (5.5) \quad i), \quad \text{App. II D) Def.8, App. III B) Def.2.}$$
+$$\pi_{F}: p(F) \to F, \quad (5.2) \quad i), \quad (5.3) \quad i), \quad (5.5) \quad i), \quad \text{App.
+II D) Def.8, App.
+III B) Def.2.}$$
 
 $$\pi_{F,F'}: F' \to F, \quad (5.6).$$
 
@@ -8739,17 +8395,22 @@ $$\sigma^{\circ} = \sigma - \text{ proper faces: relative interior of } \sigma.$
 
 $$\sigma_{0}: \text{ principal cone, } (8.7), \quad (8.10).$$
 
-$$\phi: p(F) \to u(\overline{F}), \quad (5.2) \quad ii), \quad (5.3) \quad ii), \quad (5.5) \quad ii), \quad \text{App. III B) Def.2, Def.4.}$$
+$$\phi: p(F) \to u(\overline{F}), \quad (5.2) \quad ii), \quad (5.3) \quad ii), \quad (5.5) \quad ii), \quad \text{App.
+III B) Def.2, Def.4.}$$
 
 $$\phi: (U_{\alpha} \setminus p(F_{\alpha}))_{\Sigma_{\alpha}} \to (U_{\alpha})_{\Sigma_{\alpha}}, \quad (7.8).$$
 
-$$\Psi: \text{ root system of } \Psi_{\text{II}}, \quad \text{App. I B) Def.8.}$$
+$$\Psi: \text{ root system of } \Psi_{\text{II}}, \quad \text{App.
+I B) Def.8.}$$
 
-$$\Psi': \text{ root system, App. I B) Fact 4.}$$
+$$\Psi': \text{ root system, App.
+I B) Fact 4.}$$
 
-$$\Psi': \text{ root system, App. I B) Def.13.}$$
+$$\Psi': \text{ root system, App.
+I B) Def.13.}$$
 
-$$\Omega_{F}, \quad \text{App. III A) Def.1.}$$
+$$\Omega_{F}, \quad \text{App.
+III A) Def.1.}$$
 
 $$\Omega(F): \text{ selfdual cone in } u(F), \quad (4.10).$$
 
@@ -8782,737 +8443,52 @@ $$
 
 # Index
 
-affine torus embedding (6.3)
-algebraic torus (6.1)
-arithmetic subgroup (1.7)
+affine torus embedding (6.3) algebraic torus (6.1) arithmetic subgroup (1.7)
 
-Baily-Borel compactification (2.2), (5.10)
-Borel embedding App.I A) Th.2
-boundary component
-of a bounded symmetric domain (4.2), App.
-II A) Def.3
-of a cone $\Omega(\mathbf{F})$ 4.14), (8.1)
-bounded symmetric domain App.
+Baily-Borel compactification (2.2), (5.10) Borel embedding App.I A) Th.2 boundary component of a bounded symmetric domain (4.2), App.
+II A) Def.3 of a cone $\Omega(\mathbf{F})$ 4.14), (8.1) bounded symmetric domain App.
 I A) Def.3
 
 Cartan decomposition App.
-I A) Def.5
-Cayley transformation (1.6) 2)
-Central (cone decomposition, form) (8.9)
-compact dual App.
-I A) Def.6
-convex rational polyhedral cone, c.r.p.
-cone (6.4) 1)
-cylindrical topology (5.7)
+I A) Def.5 Cayley transformation (1.6) 2) Central (cone decomposition, form) (8.9) compact dual App.
+I A) Def.6 convex rational polyhedral cone, c.r.p. cone (6.4) 1) cylindrical topology (5.7)
 
-Delaunay (Delone) cell, D-cell (9.2)
-Delaunay decomposition (9.4)
-Delaunay-Voronoi cone, D-V cone (9.8)
+Delaunay (Delone) cell, D-cell (9.2) Delaunay decomposition (9.4) Delaunay-Voronoi cone, D-V cone (9.8)
 
 geodesic projection App.
 II D) Def.8
 
 Harish-Chandra embedding App.
-I A) Th.2
-hermitian symmetric space App.
+I A) Th.2 hermitian symmetric space App.
 I A) Def.1
 
-mixed cone (9.12)
-mixed decomposition (9.12)
-modular form (1.12) 11)
+mixed cone (9.12) mixed decomposition (9.12) modular form (1.12) 11)
 
-neat (arithmetic subgroup) (7.17)
-normalizer of $\mathbf{F}$ (= parabolic subgroup associated with $\mathbf{F}$ ) App.
+neat (arithmetic subgroup) (7.17) normalizer of $\mathbf{F}$ (= parabolic subgroup associated with $\mathbf{F}$ ) App.
 II B) Def.4
 
-parabolic subgroup (associated with $\mathbf{F}$ ) (4.6) 1)
-perfect (cone decomposition, form) (8.8)
-polar function (6.14)
+parabolic subgroup (associated with $\mathbf{F}$ ) (4.6) 1) perfect (cone decomposition, form) (8.8) polar function (6.14)
 
 162
 
-principal cone .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(8.10)
-principal congruence subgroup .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(1.8) iii)
-principally polarized abelian variety .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(9.18)
-projective (Γ-admissible decomposition) .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(7.22)
-properly discontinuous .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(1.9)
+principal cone . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . (8.10) principal congruence subgroup . . . . . . . . . . . . . . . . . . (1.8) iii) principally polarized abelian variety . . . . . . . . . . . . . . . (9.18) projective (Γ-admissible decomposition) . . . . . . . . . . . . . (7.22) properly discontinuous . . . . . . . . . . . . . . . . . . . . . . . . . (1.9)
 
-Q-rank of G .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-App.
+Q-rank of G . . . . . . . . . . . . . . . . . . . . . . . . App.
 II E) Def.9
 
-rank of D .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-App.
-I B) Def.11
-rational boundary component .
-.
-.
-.
-.
-.
-.
-.
-.
-(4.15), App.
-II E) Def.10
-rational closure
-of a bounded symmetric domain .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(2.2), (4.15)
-of a cone Ω = ηg⁺ .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(8.2)
-rational partial polyhedral decomposition,
-r.p.p.
-decomposition .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(6.4) ii)
-regular (c.r.p.
-cone) .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(6.14)
-R-rank of G .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-App.
+rank of D . . . . . . . . . . . . . . . . . . . . . . . . App.
+I B) Def.11 rational boundary component . . . . . . . . . (4.15), App.
+II E) Def.10 rational closure of a bounded symmetric domain . . . . . . . . . . . . . (2.2), (4.15) of a cone Ω = ηg⁺ . . . . . . . . . . . . . . . . . . . . . . . . . (8.2) rational partial polyhedral decomposition, r.p.p. decomposition . . . . . . . . . . . . . . . . . . . . . . (6.4) ii) regular (c.r.p. cone) . . . . . . . . . . . . . . . . . . . . . . . . (6.14) R-rank of G . . . . . . . . . . . . . . . . . . . . . . . . App.
 I B) Def.11
 
-Satake compactification .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(2.2), (5.10)
-Siegel domain of the third kind .
-.
-.
-.
-.
-.
-.
-.
-(5.2), App.
-III B) Th.3
-Siegel upperhalf plane .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(1.1)
-simple (symmetric domain) .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-App.
-I A) Def.4
-stable curve .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(9.26)
-strongly orthogonal (roots) .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-App.
-I B) Def.9
-symmetric space .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(1.6) 3)
-symmetry .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(1.6) 3), App.
-I A) Def.1
-symplectic group .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(1.2)
+Satake compactification . . . . . . . . . . . . . . . . . . . (2.2), (5.10) Siegel domain of the third kind . . . . . . . . (5.2), App.
+III B) Th.3 Siegel upperhalf plane . . . . . . . . . . . . . . . . . . . . . . . (1.1) simple (symmetric domain) . . . . . . . . . . . . . . . . App.
+I A) Def.4 stable curve . . . . . . . . . . . . . . . . . . . . . . . . . . . . (9.26) strongly orthogonal (roots) . . . . . . . . . . . . . . . . App.
+I B) Def.9 symmetric space . . . . . . . . . . . . . . . . . . . . . . . . . . (1.6) 3) symmetry . . . . . . . . . . . . . . . . . . . . . (1.6) 3), App.
+I A) Def.1 symplectic group . . . . . . . . . . . . . . . . . . . . . . . . . . (1.2)
 
-toroidal compactification .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(2.3), (7.4), (7.10)
-torus embedding .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(6.3)
-tube domain .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(1.6) 4)
-typical neighbourhood in NΣ .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(6.16)
+toroidal compactification . . . . . . . . . . . . . (2.3), (7.4), (7.10) torus embedding . . . . . . . . . . . . . . . . . . . . . . . . . . (6.3) tube domain . . . . . . . . . . . . . . . . . . . . . . . . . . . (1.6) 4) typical neighbourhood in NΣ . . . . . . . . . . . . . . . . . . . (6.16)
 
-Voronoi cell, V-cell .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(9.2)
-Voronoi compactification .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(9.20)
-Voronoi decomposition of V .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(9.4)
-(second) Voronoi decomposition of ηg⁺ .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(9.9)
+Voronoi cell, V-cell . . . . . . . . . . . . . . . . . . . . . . . . . (9.2) Voronoi compactification . . . . . . . . . . . . . . . . . . . . . . (9.20) Voronoi decomposition of V . . . . . . . . . . . . . . . . . . . . . (9.4) (second) Voronoi decomposition of ηg⁺ . . . . . . . . . . . . . . (9.9)
 
-Γ-admissible family of polyhedral decompositions .
-.
-.
-.
-.
-.
-.
-(7.3)
-Γa-admissible polyhedral decomposition .
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-.
-(7.3)
+Γ-admissible family of polyhedral decompositions . . . . . . . (7.3) Γa-admissible polyhedral decomposition . . . . . . . . . . . . (7.3)

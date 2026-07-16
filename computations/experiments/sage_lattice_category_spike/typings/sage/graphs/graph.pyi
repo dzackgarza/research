@@ -42,6 +42,14 @@ class Graph:
         sort: bool = ...,
     ) -> Sequence[GraphEdge]: ...
     def graphplot(self, **options: GraphOption) -> GraphPlot: ...
+    def canonical_label(
+        self,
+        partition: Sequence[Sequence[Hashable]] | None = ...,
+        certificate: Literal[True] = ...,
+        edge_labels: bool = ...,
+        algorithm: str | None = ...,
+        return_graph: bool = ...,
+    ) -> tuple[Self, dict[Hashable, int]]: ...
     def automorphism_group(
         self,
         partition: Sequence[Sequence[Hashable]] | None = ...,

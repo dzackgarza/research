@@ -154,7 +154,6 @@ def create_citation_link(
     Returns:
         HTML link with citation formatting
     """
-    file_link = create_file_link(file_path, line_number, "local")
     return f'<sup><a href="#citation-{citation_id}" class="citation-ref">[{citation_id}]</a></sup>'
 
 
@@ -175,10 +174,6 @@ def process_inline_citations(
     def replace_citation(match: re.Match[str]) -> str:
         citation_id = match.group(1)
         if citation_id in citation_map:
-            doc_info = citation_map[citation_id]
-            file_path = doc_info.get("file_path", "unknown")
-            line_no = doc_info.get("line_number", 1)
-
             # Create a simple superscript link
             return f'<sup><a href="#ref-{citation_id}" class="citation-link">[{citation_id}]</a></sup>'
         else:

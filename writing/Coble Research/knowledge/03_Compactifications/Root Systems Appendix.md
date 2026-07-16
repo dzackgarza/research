@@ -11,7 +11,8 @@ created: 2026-05-08
 ---
 
 > [!definition] Root Systems and Conventions
-> Bourbaki conventions for simply-laced (A, D, E) and non-simply-laced (B, C, F, G) root systems. The Coxeter diagrams and Gram matrices are derived from these conventions.
+> Bourbaki conventions for simply-laced (A, D, E) and non-simply-laced (B, C, F, G) root systems.
+> The Coxeter diagrams and Gram matrices are derived from these conventions.
 > - $A_n(-1)$
 > - $B_n(-2)$
 > - $C_n(-1)$
@@ -21,4 +22,3 @@ created: 2026-05-08
 > - $G_2(-1)$
 > 
 > The tables summarize ranks, root counts, Weyl groups, discriminant groups, and explicit basis constructions for Euclidean embeddings.
-

@@ -18,5 +18,6 @@ created: 2026-05-08
 > 
 > The geometry is encoded by an **integral-affine divisor** $R_{\mathrm{IA}} \subset \Gamma({\mathcal{X}}_0)$, which assigns weights to the double curves reflecting the intersection with ${\mathcal{R}}_0$, satisfying a balancing condition at every vertex.
 > 
-> A **half-divisor model** arises when $({\mathcal{X}}, {\mathcal{R}})$ admits an Enriques involution preserving ${\mathcal{R}}$. The quotient $({\mathcal{Z}}, {\mathcal{R}}_{\mathcal{Z}}) = ({\mathcal{X}}, {\mathcal{R}}) / \iota_{{\mathrm{En}}}$ is a half-divisor model. Its KSBA stable limit can be computed directly from the relative Proj of its section ring.
-
+> A **half-divisor model** arises when $({\mathcal{X}}, {\mathcal{R}})$ admits an Enriques involution preserving ${\mathcal{R}}$.
+> The quotient $({\mathcal{Z}}, {\mathcal{R}}_{\mathcal{Z}}) = ({\mathcal{X}}, {\mathcal{R}}) / \iota_{{\mathrm{En}}}$ is a half-divisor model.
+> Its KSBA stable limit can be computed directly from the relative Proj of its section ring.

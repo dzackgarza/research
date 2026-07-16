@@ -135,6 +135,9 @@ at commit; vulture/coverage/slop stack at push). QC tool configs are owned
 centrally in `~/ai-review-ci` — never add local ruff/mypy/coverage config to a
 spike.
 
+Code in spikes is held to the global strict gates (ruff, strict mypy, pytest at commit; vulture/coverage/slop stack at push).
+QC tool configs are owned centrally in `~/ai-review-ci` — never add local ruff/mypy/coverage config to a spike.
+
 # Review Guidelines
 
 These are additional requirements for reviewing agent work.

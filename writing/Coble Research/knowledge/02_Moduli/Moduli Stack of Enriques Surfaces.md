@@ -17,4 +17,3 @@ created: 2026-05-08
 > - $(Z, \varepsilon R_Z)$ is semi-log canonical (slc)
 > - $K_Z + \varepsilon R_Z$ is ample
 > - $R_Z$ is numerically equivalent to $2L$ on the smooth locus.
-

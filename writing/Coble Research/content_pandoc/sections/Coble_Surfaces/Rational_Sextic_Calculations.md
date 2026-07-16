@@ -1,6 +1,6 @@
 # Calculations
 
-::: {#lem:rational_sextic_ten_nodes .lemma}
+:::{#lem:rational_sextic_ten_nodes .lemma}
 
 Let $C \subset \PP^2$ be an irreducible sextic curve with at worst $A_1$
 singularities.
@@ -8,7 +8,7 @@ Then $C$ is a rational curve if and only if it has exactly ten $A_1$
 singularities.
 :::
 
-::: {.proof}
+:::{.proof}
 
 One has the genus-degree formula for singular plane curves:
 
@@ -26,7 +26,7 @@ Thus
 $g = 0$ if and only if $k = 10$.
 :::
 
-::: {#rmk:severi-sextics .remark}
+:::{#rmk:severi-sextics .remark}
 
 We note that an
 arbitrary rational irreducible sextic need not have exactly ten
@@ -48,7 +48,7 @@ unnodal Coble surface construction specifically requires a sextic from
 the generic, 10-$A_1$ locus.
 :::
 
-::: {.remark}
+:::{.remark}
 
 Let $W\subset \PP^2$ be a generic irreducible rational sextic with ten $A_1$ singularities.
 The classical Coble surfaces $S$, first constructed
@@ -91,7 +91,7 @@ $$
 yielding $C\sim -2K_S$.
 :::
 
-::: {.remark}
+:::{.remark}
 
 By [@CDL24 §3.1], if $S$ is Coble surface of K3 type with $n=1$ boundary
 components and $C \in \abs{-2K_S}$ is an irreducible curve, then

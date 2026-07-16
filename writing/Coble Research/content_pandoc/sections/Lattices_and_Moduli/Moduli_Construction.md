@@ -27,7 +27,7 @@ We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$
 
 # GIT Discussion
 
-::: {.remark}
+:::{.remark}
 
 Following [@DK13], by varying the coefficients of $p_i$ in the planar blowup
 construction, one can construct $F_\Co$ as a locally closed subvariety of
@@ -47,7 +47,7 @@ conditions_ described in [@Cob19 §2, Prop. (10)].
 
 # Horikawa model
 
-::: {.remark}
+:::{.remark}
 
 Alternatively, Horikawa [@Hor78] and more recently [@AEGS23] consider
 the following: let $Y\da \PP^1\times \PP^1$ and define an involution
@@ -120,3 +120,4 @@ Alternatively, this follows immediately from the mirror move $S\leadsto T$ of [@
 We obtain $F_\Co$ as an open subset of the period domain $D_{T_\Co}/\Orth(T_\Co)$, a normal quasiprojective variety of dimension 9, by [@DK13 Prop. 3.2] and an application of the Torelli theorem for algebraic K3 surfaces from [@PS71]. We note that [@DK13] shows that $F_\Co$ is rational by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics in $\PP^2$.
 
 # KSBA Spaces
+

@@ -1,0 +1,152 @@
+r"""Tier-4 internal consistency: pickling and JSON round-trip preservation."""
+
+from __future__ import annotations
+
+import json
+
+from dm_moduli_spike.objects.gamma import StableGraphCategory
+from dm_moduli_spike.objects.stable_graphs import StableGraphs
+
+
+def test_json_schema_shape():
+    types = StableGraphs(2, 1)
+    gamma = types.from_vertices(genera=(1, 0), markings=((1,), ()), edges=((0, 1), (1, 1)))
+    data = gamma.to_json()
+    assert data["schema"] == 1
+    assert data["ambient"] == {"g": 2, "n": 1}
+    assert {v["id"] for v in data["vertices"]} == {0, 1}
+    assert len(data["edges"]) == gamma.num_edges()
+
+
+def test_parent_is_unique_representation():
+    assert StableGraphs(2, 1) is StableGraphs(2, 1)
+    assert StableGraphs(2, 1) is StableGraphs(2, 1)
+
+
+def test_from_json_rejects_unsupported_schema():
+    types = StableGraphs(2, 1)
+    payload = {
+        "schema": 99,
+        "ambient": {"g": 2, "n": 1},
+        "vertices": [{"id": 0, "genus": 2, "markings": [1]}],
+        "edges": [],
+    }
+    try:
+        types.from_json(payload)
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("expected AssertionError for unsupported schema")
+
+
+def test_from_json_rejects_duplicate_vertex_ids():
+    types = StableGraphs(2, 1)
+    payload = {
+        "schema": 1,
+        "ambient": {"g": 2, "n": 1},
+        "vertices": [
+            {"id": 0, "genus": 1, "markings": [1]},
+            {"id": 0, "genus": 1, "markings": []},
+        ],
+        "edges": [],
+    }
+    try:
+        types.from_json(payload)
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("expected AssertionError for duplicate vertex ids")
+
+
+def test_from_json_rejects_unknown_edge_endpoints():
+    types = StableGraphs(2, 1)
+    payload = {
+        "schema": 1,
+        "ambient": {"g": 2, "n": 1},
+        "vertices": [{"id": 0, "genus": 2, "markings": [1]}],
+        "edges": [{"id": 0, "ends": [0, 9]}],
+    }
+    try:
+        types.from_json(payload)
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("expected AssertionError for unknown edge endpoint")
+
+
+def test_from_json_rejects_malformed_vertex_object():
+    types = StableGraphs(2, 1)
+    payload = {
+        "schema": 1,
+        "ambient": {"g": 2, "n": 1},
+        "vertices": [{"id": 0, "genus": "bad", "markings": [1]}],
+        "edges": [],
+    }
+    try:
+        types.from_json(payload)
+    except (AssertionError, TypeError, ValueError):
+        pass
+    else:
+        raise AssertionError("expected failure for malformed vertex genus")
+
+
+def test_from_json_rejects_missing_required_keys():
+    types = StableGraphs(2, 1)
+    for payload in (
+        {"ambient": {"g": 2, "n": 1}, "vertices": [], "edges": []},
+        {"schema": 1, "vertices": [], "edges": []},
+        {"schema": 1, "ambient": {"g": 2, "n": 1}, "edges": []},
+        {"schema": 1, "ambient": {"g": 2, "n": 1}, "vertices": []},
+    ):
+        try:
+            types.from_json(payload)
+        except (AssertionError, KeyError, TypeError):
+            pass
+        else:
+            raise AssertionError(f"expected failure for payload {payload!r}")
+
+
+def test_from_json_rejects_bad_marking_labels():
+    types = StableGraphs(2, 1)
+    payload = {
+        "schema": 1,
+        "ambient": {"g": 2, "n": 1},
+        "vertices": [{"id": 0, "genus": 2, "markings": [2]}],
+        "edges": [],
+    }
+    try:
+        types.from_json(payload)
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("expected AssertionError for noncontiguous marking labels")
+
+
+def test_canonical_form_certificate_commutes_with_contraction():
+    types = StableGraphs(0, 5)
+    gamma = types.from_vertices(
+        genera=(0, 0, 0),
+        markings=((1, 2), (3,), (4, 5)),
+        edges=((0, 1), (1, 2)),
+    )
+    Gamma = StableGraphCategory(0, 5)
+    first = Gamma.contract(gamma, (gamma.internal_edges()[0],))
+    intermediate = first.codomain()
+    H = intermediate.half_edges()
+    relabeled = types.from_vertices(
+        genera=intermediate.vertex_genera(),
+        markings=tuple(
+            tuple(reversed(tuple(leg.label() for leg in intermediate.legs() if leg.vertex() == v)))
+            for v in range(intermediate.num_vertices())
+        ),
+        edges=tuple(
+            (H(a).vertex(), H(b).vertex())
+            for e in intermediate.edges()
+            for a, b in [e.half_edges()]
+        ),
+    )
+    assert relabeled == intermediate
+    second = Gamma.contract(relabeled, (relabeled.internal_edges()[0],))
+    direct = Gamma.contract(gamma, gamma.internal_edges())
+    assert second.codomain() == direct.codomain()
+    assert second.codomain().is_smooth()
