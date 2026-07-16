@@ -60,11 +60,13 @@ index is only for proven repeat offenders. Full catalogue:
 
 Top-level directories (this is a navigational map; each tree owns its own README/AGENTS.md):
 
-- **`computations/`** — the working computational corpus. Its `experiments/` subtree holds the **spikes** (see the lineage note below and *QC integration for spikes*). Other subdirs are task-specific: `components/` (reusable computation pieces, e.g. the `coxeter-vinberg/` prototypes), `coxiter/` (CoxIter tool integration), `lattice-orbits/`, `enriques-moduli/` + `enriques-paper-artifacts/` (Enriques-surface moduli work), `notebooks/` (Jupyter), `scripts/` (one-off scripts), `reports/` (generated output).
-- **`projects/`** — long-horizon subprojects. `projects/lattice-research/` is a **git submodule** (`dzackgarza/lattice-research`) and contains `category_specs/` (see lineage note), plus `src/`, `theory/`, `lean/`, `paper/`, `tests/`, `reports/`. Because it is a submodule, edits there are commits to a *separate* repo.
+- **`computations/`** — the working computational corpus. Its `experiments/` subtree holds the **spikes** (see the lineage note below and *QC integration for spikes*). Other subdirs are task-specific: `components/` (reusable computation pieces, e.g. the `coxeter-vinberg/` prototypes), `coxiter/` (CoxIter tool integration), `lattice-orbits/`, `enriques-moduli/` + `enriques-paper-artifacts/` (Enriques-surface moduli work), `notebooks/` (Jupyter), `scripts/` (one-off and exploratory scripts — **the only `scripts/` dir; it is QC-exempt**, and is where exploratory code is relocated to de-scope it from the strict gates), `reports/` (generated output).
+- **`src/`** — the installable package (`dzack_research`). Deliberately thin: right now it is the public Sage import surface re-exporting the maintained spikes (`lattice`, `feature`), covered by `tests/`.
+  **Migration criterion:** code lives in a spike until it has matured past spike status and is usable for real research — demonstrated by *shipped, tested, high-level notebooks* that do actual work with it. Only then does it migrate here, and the move is the semantic statement that it is meant to be shared and reused. Do not promote code into `src/` because it looks finished; promote it when a notebook proves a researcher can use it.
+- **`tests/`** — tests for the `src/` package surface only. Spike tests live in each spike's own `tests/` tree. `projects/lattice-research/` is a **git submodule** (`dzackgarza/lattice-research`) and contains `category_specs/` (see lineage note), plus `src/`, `theory/`, `lean/`, `paper/`, `tests/`, `reports/`. Because it is a submodule, edits there are commits to a *separate* repo.
 - **`review-calibration/`** — **git submodule** (`dzackgarza/research-review-calibration`) holding a frozen lattice-spike simulacrum for **LLM review calibration**. Planted violations live in `GROUND_TRUTH.md` (never in the review packet). Experiment issues and advisory review runs target the submodule repo, not this monorepo. Hill-climb prompt/context/permissions there before changing production `review-packet.tar` here.
 - **`writing/`** — authored prose: the Coble paper draft and research notes, oral exams, research statement, talks. The user's durable authored artifacts — preserve native LaTeX/tikz source.
-- **`notes/`** — research notes (`computations/`, `papers/`, `topics/`), including the terminology-drift dictionary.
+- **`notes/`** — research notes (`computations/`, `papers/`, `topics/`). The terminology-drift dictionary is **not** here; it is vault-owned at `.agents/references/terminology-dictionary.md` (see the banned-language index above).
 - **`references/`** — external inputs: `pdfs/`, `generated-indexes/`, `local-system-dependencies/`.
 - **`archives/`** — retired material (`provenance/`).
 
@@ -84,6 +86,17 @@ When a task says "the repo owns X" or "X is a gap," resolve it against the **act
 This is a research repository with a much longer work horizon, more detailed planning, and more human check-ins than a typical software project. Naive software-geared structural rules (e.g. itree's W040 native-milestone mirror) are less applicable here: treat such findings as a flag to investigate whether *some* consolidation is warranted, never as a mandate — and never collapse the tree or milestones by an order of magnitude to satisfy one. The itree issue tree is authoritative; native GitHub milestones are capability-level human-review checkpoints created just-in-time (user ruling 2026-07-11; W040 = 46 is accepted as-is).
 
 The `needs-research` label is the parking state — work parked pending investigation or upstream capability — not a register of decisions awaiting the user. Do not enumerate labeled issues as "open human decisions"; genuine decisions are extracted through decision-register sweeps (see #97) and recorded as rulings on the issues, the gap ledger, and plan cards.
+
+## Where in-progress ideas live
+
+Ideas are not all issues yet. An agent that searches only the issue tree will miss live thinking and re-derive it badly.
+
+- **GitHub Discussions** hold ideas still **in flux**: competing framings, pasted prompt responses to be reconciled, designs whose scope has not settled. A discussion is a thinking surface, not a decision — nothing in one is authoritative, and no PR may claim work from a discussion alone. Live example: #217 (*Bridging Lean to computational backends*, Ideas category).
+- **Issues** hold ideas that have a scope, carrying the label that names their state: `draft` (the scope itself is provisional; expect the body to change), `research` (empirical research or evaluation required before implementation), `needs-research` (parked — above), `needs-planning` (scope known; decomposition or an executable plan required before any PR claim).
+
+The pipeline is one-directional: **a discussion is crystallized into an issue once its scope stops moving**, and everything downstream — implementation research, decomposition into work units, proof obligations, PR claims — is carried out on the issue tree, never in the discussion. Link the discussion from the issue and leave it in place as the rationale trail; the development of an idea, including its retractions, is the record of why the scope is what it is. Do not delete it or summarize it away.
+
+Practical consequences: when picking up a topic, search discussions as well as issues. When a discussion has stabilized, the next action is to file the issue, not to keep commenting. When a discussion is still moving, do not manufacture an issue to make it look tracked.
 
 # QC integration for spikes
 
