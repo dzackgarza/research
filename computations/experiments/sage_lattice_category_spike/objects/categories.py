@@ -121,7 +121,14 @@ class Lattices(Category_over_base_ring):
         # vocabulary; the CombinatorialFreeModule element idiom must not reach
         # lattice elements. Every name the leaner tree stops inheriting is owned
         # on the concrete classes (basis/gens/gen/rank/random_element/...).
-        return [Modules(self.base_ring()).FiniteDimensional()]
+        # CP3 routing: lattices are based free modules, so they chain through
+        # the owned module spine (FiniteFreeModules -> FreeModules +
+        # FiniteProjectiveModules -> Modules -> the forwarding roots), which
+        # supplies the freeness predicates, coordinates, and the generic
+        # set-behavior route.
+        from .modules import FiniteFreeModules
+
+        return [FiniteFreeModules(self.base_ring()), Modules(self.base_ring()).FiniteDimensional()]
 
     def additional_structure(self) -> Lattices:
         return self

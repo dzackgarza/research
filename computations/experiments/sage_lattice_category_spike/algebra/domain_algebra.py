@@ -61,6 +61,7 @@ if TYPE_CHECKING:
     # abstract_method ships untyped; use abc.abstractmethod for type-checking
     from abc import abstractmethod as abstract_method
 
+    from sage.categories.morphism import SetMorphism
     from sage.misc.repr import repr_lincomb
 
     # Type-level nouns are drawn from the lexicon (the single type surface;
@@ -84,6 +85,10 @@ if TYPE_CHECKING:
     from ..lexicon.geometry import Polyhedron
     from ..lexicon.interop import SageCategory, SageInfinity, SageLocalGenusSymbol
     from ..morphisms.homsets import Subobject
+
+    # Cardinal is owned by the foundation layer; a candidate lexicon
+    # admission once the routing settles (type-only here).
+    from ..objects.cardinals import Cardinal
 else:
     from sage.misc.abstract_method import abstract_method
     from sage.misc.repr import repr_lincomb
@@ -308,6 +313,54 @@ class DiscriminantFormElement:
 
 class Lattice(CategoryObject):
     """A based free R-module (R, G) with symmetric bilinear form; possibly degenerate."""
+
+    # generic set behavior through the trivialization (CP3 routing). A lattice
+    # is BASED, so the chosen basis identifies U(L) with U(R)^rank; these are
+    # definitional consequences of that identification, not leaf algorithms —
+    # the presentation crosses the boundary exactly once, in the
+    # trivialization itself. ``from_coordinates`` is injected at runtime by
+    # the owned FreeModules node the lattice categories chain through.
+    def _coordinate_trivialization(self) -> SetMorphism:
+        r"""``U(R)^rank -> U(L)`` through the lattice's own basis."""
+        return cast("SetMorphism", cast(Any, self).from_coordinates(self.basis()))
+
+    def cardinality(self) -> Cardinal:
+        r"""``|L| = |U(R)^rank|`` — the rollup ``X.cardinality() :=
+        F(X).cardinality()`` with ``F`` the coordinate trivialization (the
+        rank-zero product is the singleton, so ``|L| = 1`` there)."""
+        return cast("Cardinal", cast(Any, self._coordinate_trivialization().domain()).cardinality())
+
+    def is_finite(self) -> bool:
+        return self.cardinality().is_finite()
+
+    def is_infinite(self) -> bool:
+        return self.cardinality().is_infinite()
+
+    def is_countable(self) -> bool:
+        return self.cardinality().is_countable()
+
+    def is_uncountable(self) -> bool:
+        return self.cardinality().is_uncountable()
+
+    def __iter__(self) -> Iterator[LatticeElement]:
+        r"""Enumeration through the trivialization: fair enumeration of the
+        coordinate product, mapped back to lattice elements (the
+        inverse-application law: never bare coordinate tuples)."""
+        trivialization = self._coordinate_trivialization()
+        return (cast("LatticeElement", trivialization(point)) for point in cast(Iterable[Any], trivialization.domain()))
+
+    def _test_cardinality(self, **options: Any) -> None:
+        r"""Replace Sage's coarse cardinality contract (Integer-or-Infinity)
+        with the owned one: this graph's cardinality is a ``Cardinal``
+        (ratified — never the two-valued infinity), coherent with the
+        finiteness predicates."""
+        from ..objects.cardinals import Cardinal as RuntimeCardinal
+
+        tester = cast(Any, self)._tester(**options)
+        cardinality = self.cardinality()
+        tester.assertTrue(isinstance(cardinality, RuntimeCardinal), f"cardinality must be a Cardinal; found {type(cardinality)}")
+        tester.assertEqual(cardinality.is_finite(), self.is_finite())
+        tester.assertEqual(cardinality.is_countable(), self.is_countable())
 
     # structural
     @abstract_method

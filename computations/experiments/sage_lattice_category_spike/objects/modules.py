@@ -134,7 +134,9 @@ class FreeModules(CatObject, Category_over_base_ring):
             base_ring = parent.category().base_ring()
             target = _coordinate_target(base_ring, len(basis))
             codomain = cast(Any, self).underlying_set()
-            return SetMorphism(Hom(target, codomain, SageSets()), lambda point: sum(scalar * b for scalar, b in zip(point.value, basis)))
+            # The sum starts at the module's zero so the empty basis (rank
+            # zero) still returns a module element, never a bare scalar.
+            return SetMorphism(Hom(target, codomain, SageSets()), lambda point: sum((scalar * b for scalar, b in zip(point.value, basis)), cast(Any, self).zero()))
 
 
 class FiniteProjectiveModules(CatObject, Category_over_base_ring):
