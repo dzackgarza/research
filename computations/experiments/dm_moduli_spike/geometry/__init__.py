@@ -29,6 +29,7 @@ from .stacks import (
     StackHomset,
     StackMorphism,
     StackObjectIsomorphism,
+    StratifiedSpace,
     Variety,
 )
 from .stratification import (
@@ -71,6 +72,7 @@ __all__ = [
     "Strata",
     "Stratification",
     "Stratifications",
+    "StratifiedSpace",
     "Stratum",
     "Variety",
     "scheme_open_immersion_compactification",

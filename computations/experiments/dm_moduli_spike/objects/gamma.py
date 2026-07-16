@@ -85,7 +85,7 @@ class StableGraphMorphism(Element):
         )
 
     @staticmethod
-    def from_contraction(contraction: _StableGraphContraction) -> StableGraphMorphism:
+    def from_contraction(contraction: _StableGraphContraction) -> StableGraphContraction:
         r"""Hom-set element realizing a contraction of skeletal half-edge records."""
         unbound = StableGraphMorphism._from_contraction_unbound(contraction)
         gamma = StableGraphCategory(unbound._domain.genus(), unbound._domain.num_markings())
@@ -97,7 +97,9 @@ class StableGraphMorphism(Element):
         if unbound._domain != domain:
             # Domain of a contraction witness is already the labeled source record.
             pass
-        return gamma.hom(gamma._graphs(domain), gamma._graphs(codomain))._bind(unbound)
+        bound = gamma.hom(gamma._graphs(domain), gamma._graphs(codomain))._bind(unbound)
+        assert isinstance(bound, StableGraphContraction), f"contraction Hom element must be StableGraphContraction; found {type(bound)!r}"
+        return bound
 
     @staticmethod
     def from_isomorphism(iso: StableGraphIsomorphism) -> StableGraphMorphism:
@@ -193,13 +195,22 @@ class StableGraphMorphism(Element):
                 contracted.add(flag)
             else:
                 half_edges.append(image)
-        return StableGraphMorphism(
+        unbound = StableGraphMorphism(
             other._domain,
             self._codomain,
             vertices,
             tuple(half_edges),
             frozenset(contracted),
         )
+        if unbound.is_contraction():
+            unbound = StableGraphContraction(
+                unbound._domain,
+                unbound._codomain,
+                unbound.vertex_map(),
+                unbound.half_edge_map(),
+                unbound.contracted_flags(),
+            )
+        return unbound
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, StableGraphMorphism):
@@ -217,6 +228,17 @@ class StableGraphMorphism(Element):
 
     def __repr__(self) -> str:
         return f"StableGraphMorphism({self._domain!r} -> {self._codomain!r}, |E_c|={len(self.contracted_edges())})"
+
+
+class StableGraphContraction(StableGraphMorphism):
+    r"""Hom-set element that contracts a (possibly empty) set of edges.
+
+    Public contraction morphisms live in :class:`StableGraphHomset`; the private
+    labeled-record witness remains :class:`_StableGraphContraction`.
+    """
+
+    def __repr__(self) -> str:
+        return f"StableGraphContraction({self._domain!r} -> {self._codomain!r}, |E_c|={len(self.contracted_edges())})"
 
 
 class StableGraphHomset(UniqueRepresentation, Parent):
@@ -251,7 +273,8 @@ class StableGraphHomset(UniqueRepresentation, Parent):
     def _bind(self, morph: StableGraphMorphism) -> StableGraphMorphism:
         if morph._domain != self._domain or morph._codomain != self._codomain:
             raise ValueError(f"{morph!r} does not land in {self!r}")
-        return StableGraphMorphism(
+        cls: type[StableGraphMorphism] = StableGraphContraction if morph.is_contraction() else StableGraphMorphism
+        return cls(
             morph._domain,
             morph._codomain,
             morph.vertex_map(),
@@ -395,7 +418,7 @@ class StableGraphCategory(UniqueRepresentation):
         graph = self._require_stable_graph(graph)
         return self.end(graph)._bind(self._identity_unbound(graph._canonical_record()))
 
-    def contract(self, graph: StableGraph, edges: tuple[tuple[int, int], ...]) -> StableGraphMorphism:
+    def contract(self, graph: StableGraph, edges: tuple[tuple[int, int], ...]) -> StableGraphContraction:
         graph = self._require_stable_graph(graph)
         record = graph._canonical_record()
         _target_type, contraction = _contract_edges(record, edges)
@@ -405,7 +428,9 @@ class StableGraphCategory(UniqueRepresentation):
         if morph._codomain != skeletal:
             iso = StableGraphMorphism.from_isomorphism(isomorphism_between(morph._codomain, skeletal))
             morph = iso.compose(morph)
-        return self.hom(graph, self._graphs(skeletal))._bind(morph)
+        bound = self.hom(graph, self._graphs(skeletal))._bind(morph)
+        assert isinstance(bound, StableGraphContraction), f"contract() must return StableGraphContraction; found {type(bound)!r}"
+        return bound
 
     def automorphism_group(self, graph: StableGraph, on: str = "vertices") -> _Object:
         r"""Sage permutation group of `\operatorname{Aut}(G)` acting on the requested set."""
@@ -465,9 +490,9 @@ class StableGraphCategory(UniqueRepresentation):
         r"""Specialization poset whose elements are :class:`StableGraph` classes.
 
         Cover relation: ``Γ`` is obtained from ``Δ`` by contracting one internal
-        edge (generic below special). For stable graphs this Hasse diagram is
-        the thinification of the Hom-order ``Hom(H,G) ≠ ∅``; covers are
-        computed from elementary edge contractions, not by enumerating Hom-sets.
+        edge (generic below special). Covers are certified by nonempty
+        ``Hom(special, generic)``: elementary one-edge contractions supply
+        candidates, and each retained cover has ``Hom``-set cardinality ``> 0``.
         """
 
         from sage.combinat.posets.posets import Poset
@@ -477,11 +502,15 @@ class StableGraphCategory(UniqueRepresentation):
         objects = tuple(self._graphs)
         by_key = {gamma.canonical_key(): gamma for gamma in objects}
         covers: list[tuple[StableGraph, StableGraph]] = []
-        for delta in objects:
-            for target, _contraction, _size in _elementary_contraction_data(delta):
+        for special in objects:
+            for target, _contraction, _size in _elementary_contraction_data(special):
                 key = target.canonical_key()
-                if key in by_key:
-                    covers.append((by_key[key], delta))
+                if key not in by_key:
+                    continue
+                generic = by_key[key]
+                # Hom-certification of the cover (not mere combinatorial adjacency).
+                if self.hom(special, generic).cardinality() > 0:
+                    covers.append((generic, special))
         unique_covers = list({(generic, special): None for generic, special in covers})
         return Poset((objects, unique_covers), cover_relations=True, facade=True)
 

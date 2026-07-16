@@ -1,19 +1,22 @@
 # Architecture: common Sets substrate + two mathematical packages
 
-Authoritative ruling (2026-07-16): do **not** finish PR #111 as a monolith ontology independent of the shared Sets/functor/Hom foundation.
-Do **not** extract packages until the gates below have artifact proof.
+Authoritative ruling (2026-07-16, updated same day): PR [#182](https://github.com/dzackgarza/research/pull/182)
+is the **live** Sets / functor / Hom foundations vehicle (user fact: pointed at new foundations;
+supersedes any “frozen / to-be-dropped” posture). Do **not** invent a parallel Sets/Hom stack
+inside this spike. Do **not** extract `sage-stable-graphs` / `sage-dm-strata` until G1/G2 have
+artifact proof.
 
 ## Dependency on PR #182
 
 | Fact | Evidence |
 | --- | --- |
-| PR | [#182](https://github.com/dzackgarza/research/pull/182) `feat/owned-sets-foundation-complete` |
-| State in this worktree | **Absent.** This branch has no `sage_lattice_category_spike/sets/` tree. |
-| State upstream | OPEN **DRAFT**, `mergeable=MERGEABLE` (not merged to `main`). |
-| Intended public substrate | Owned `Sets()` / `Finite`/`Countable`/`Infinite`/`Uncountable` axioms; `SetObject` / `SetMap` / `SetEquivalence`; standard Hom / End / Aut; functorial constructions; algebraic spine through magmas → modules. Location on #182: `computations/experiments/sage_lattice_category_spike/sets/` (+ `objects/functors.py`, `morphisms/homsets.py`, category axiom nodes). |
-| Current dm dependence | **None wired.** `dm_moduli_spike` still owns a parallel lightweight `categories/foundation.ModuliCategory` tower and attaches parents to Sage `Homsets()` / `Sets()` directly. That parallel spine is **debt**, not the target foundation. |
+| PR | [#182](https://github.com/dzackgarza/research/pull/182) (branch family `feat/owned-sets-foundation*`, related `feat/category-foundations`) |
+| Role | Owned algebraic category spine: `Sets()` axioms, set maps/homsets, Hom/End/Aut, actions, functorial constructions, magmas → modules. |
+| State in this worktree (`cursor/dm-compactification-spike-0d2c`) | **Unwired.** No `sage_lattice_category_spike/sets/` tree on this branch’s merge base. |
+| GitHub PR status (audit) | May show CLOSED/DRAFT while the foundations vehicle is still the dependency target — do not treat closure as permission to grow a competing substrate. |
+| Current dm dependence | **None wired.** `dm_moduli_spike` still uses a lightweight `categories/foundation.ModuliCategory` tower and Sage `Homsets()` / `Sets()` directly. That parallel spine is **debt** to replace when #182’s surface is on the merge base — not a second foundation to expand. |
 
-### Integration plan (when #182 is on the merge base)
+### Integration plan (when #182 surface is on the merge base)
 
 1. Consume #182’s Sets / Hom / functor APIs; delete duplicate category-root inventions in `dm_moduli_spike/categories/foundation.py` that restate ownership already claimed by #182.
 
@@ -21,7 +24,7 @@ Do **not** extract packages until the gates below have artifact proof.
 
 3. Do not invent a third Sets/Hom stack beside #182.
 
-Until #182 lands on the base used by this spike: **blocker** — wire against the best in-tree shared foundation only if it is already the #182 surface; otherwise document the missing import and keep fixing DM math in place without growing a competing substrate.
+Until #182’s substrate is present here: keep fixing DM ontology **in place** without growing a competing Sets/Hom layer; wire imports only against the #182 surface (or its successor branch content landed on the base), never a local reinvention.
 
 ## Target packages (extract only after gates)
 
@@ -39,10 +42,11 @@ Owns stable marked weighted graphs and the finite category Γ:
 | `objects/isomorphisms.py` | Labeled-record isomorphisms + transport |
 | `objects/stable_graphs.py` | `StableGraphs` / `StableGraph` + typed V/H/E/L |
 | `objects/gamma.py` | `StableGraphCategory`, Hom, morphisms |
-| `objects/edge_orbits.py` | Elementary contraction data |
+| `objects/edge_orbits.py` | Elementary contraction candidates |
 | `objects/delta_complex.py` | Symmetric Δ-complex |
 | `tests/core/test_gamma_category.sage` | Γ oracles |
-| `tests/core/test_contraction_transport.sage` | Canonical transport (private layer) |
+| `tests/core/test_hom_composition.sage` | Public Hom composition + Hom-certified covers |
+| `tests/core/test_contraction_transport.sage` | Canonical transport (private layer still present) |
 
 ### `sage-dm-strata` (geometric)
 
@@ -82,13 +86,15 @@ Extract `sage-dm-strata` **only after**:
 
 2. Boolean / frozenset axiom geometry flags (`declared_axioms` stamps) — keep theorem-stamp honesty; do not fake proof.
 
-3. Graph Hom objects storing / leaking `_GraphRecord`.
+3. Graph Hom morphisms still store private `_GraphRecord` internally (public `domain()`/`codomain()` return `StableGraph`).
 
-4. `specialization_poset()` computed from elementary contractions; docstring claims Hom-order thinification but covers are **not** enumerated from nonempty Hom-sets.
+4. ~~Uncertified specialization covers~~ — **remediated**: candidates from elementary one-edge contractions; each retained cover certified by `Hom(special, generic).cardinality() > 0`.
 
 5. Unproved geometric axiom membership beyond constructor stamps.
 
 6. Quotient-stack behavior insufficiently tested outside moduli examples.
+
+7. #182 substrate not yet on this branch’s merge base (wiring blocked; do not invent a replacement).
 
 ## Forbidden until gates pass
 

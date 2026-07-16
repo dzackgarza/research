@@ -761,7 +761,30 @@ class Compactification(Element):
 Compactifications.Element = Compactification
 
 
-class Boundary(GeometricObject):
+class StratifiedSpace(GeometricObject):
+    r"""Geometric space equipped with a finite stratification.
+
+    Concrete objects in :class:`~dm_moduli_spike.categories.stratified.StratifiedSpaces`
+    (boundaries, stratified schemes, …) inherit this type so stratification is part
+    of the object, not a free-floating descriptor.
+    """
+
+    def stratification(self, by: object | None = None) -> object:
+        raise NotImplementedError(f"{type(self).__name__}.stratification")
+
+    def stratification_poset(self, order: str = "specialization") -> object:
+        strat = self.stratification()
+        assert hasattr(strat, "specialization_poset"), f"stratification must expose specialization_poset(); found {type(strat)!r}"
+        poset = strat.specialization_poset()
+        if order == "closure":
+            return poset.dual()
+        return poset
+
+    def underlying_space(self) -> StratifiedSpace:
+        return self
+
+
+class Boundary(StratifiedSpace):
     r"""Closed complement of a compactification open immersion."""
 
     def __init__(self, compactification: Compactification) -> None:

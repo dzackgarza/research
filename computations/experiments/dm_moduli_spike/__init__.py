@@ -31,7 +31,9 @@ import sage.all  # noqa: F401
 from .categories.base import AffineScheme, complex_numbers_ring, spec, spec_complex
 from .categories.curves import (
     CurveFamilies,
+    Curves,
     PointedCurveFamilies,
+    PointedCurves,
     StablePointedCurveFamilies,
     StablePointedCurves,
 )
@@ -42,7 +44,13 @@ from .categories.stacks import (
     ModuliStacks,
     Stacks,
 )
-from .categories.stratified import StratifiedSpaces, StratifiedStacks
+from .categories.stratified import (
+    StratifiedAlgebraicSpaces,
+    StratifiedSchemes,
+    StratifiedSpaces,
+    StratifiedStacks,
+)
+from .curves import Curve, NormalizationMorphism, PointedCurve, StablePointedCurve
 from .geometry import (
     Boundary,
     ClosedSubstack,
@@ -63,6 +71,7 @@ from .geometry import (
     Strata,
     Stratification,
     Stratifications,
+    StratifiedSpace,
     Stratum,
     Variety,
     scheme_open_immersion_compactification,
@@ -72,9 +81,11 @@ from .objects.delta_complex import SymmetricDeltaComplex, symmetric_delta_comple
 from .objects.gamma import (
     Gamma_gn,
     StableGraphCategory,
+    StableGraphContraction,
     StableGraphHomset,
     StableGraphMorphism,
 )
+from .objects.isomorphisms import StableGraphIsomorphism
 from .objects.stable_graphs import StableGraph, StableGraphs
 
 __all__ = [
@@ -86,7 +97,9 @@ __all__ = [
     "ClutchingMorphism",
     "Compactification",
     "Compactifications",
+    "Curve",
     "CurveFamilies",
+    "Curves",
     "DeligneMumfordStacks",
     "Gamma_gn",
     "LocallyClosedSubspace",
@@ -99,8 +112,11 @@ __all__ = [
     "ModuliProblem",
     "ModuliStack",
     "ModuliStacks",
+    "NormalizationMorphism",
     "OpenSubstack",
+    "PointedCurve",
     "PointedCurveFamilies",
+    "PointedCurves",
     "ProductStack",
     "QuotientStack",
     "Schemes",
@@ -112,14 +128,20 @@ __all__ = [
     "StableDualGraph",
     "StableGraph",
     "StableGraphCategory",
+    "StableGraphContraction",
     "StableGraphHomset",
+    "StableGraphIsomorphism",
     "StableGraphMorphism",
     "StableGraphs",
+    "StablePointedCurve",
     "StablePointedCurveFamilies",
     "StablePointedCurves",
     "Strata",
     "Stratification",
     "Stratifications",
+    "StratifiedAlgebraicSpaces",
+    "StratifiedSchemes",
+    "StratifiedSpace",
     "StratifiedSpaces",
     "StratifiedStacks",
     "Stratum",
