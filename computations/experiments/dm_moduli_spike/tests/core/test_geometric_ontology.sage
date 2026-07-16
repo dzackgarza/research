@@ -612,7 +612,7 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert mbar05_gap["reason"] == "mbar_0_5_needs_blowup_affine_cover"
     assert mbar05_gap["alternate_proving_sets"][0]["name"] == "kapranov_blowup_P2"
 
-    # General (g,n) and char-2 (1,1): remain fail-closed.
+    # General (g,n): remain fail-closed.
     M12 = M_gn(1, 2, base=k)
     assert isinstance(M12.etale_atlas().domain(), AtlasChart)
     assert not M12.etale_atlas().has_equation_level_etale_certificate()
@@ -620,29 +620,61 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert m12_gap is not None
     assert m12_gap["reason"] == "m_1_2_needs_universal_curve_second_mark"
 
-    # Char 2: Legendre form unavailable — M_{1,1} / Mbar_{1,1} fail-closed formal chart.
+    # Char 2: Legendre unavailable; Hesse Γ(3) owns open / proper M_{1,1} (3=1 invertible).
     from sage.rings.finite_rings.finite_field_constructor import GF
 
     M11_char2 = M_gn(1, 1, base=spec(GF(2)))
-    assert isinstance(M11_char2.etale_atlas().domain(), AtlasChart)
-    assert not M11_char2.etale_atlas().has_equation_level_etale_certificate()
+    m11_c2 = M11_char2.etale_atlas()
+    assert isinstance(m11_c2.domain(), AffineAlgebraicSpace)
+    assert m11_c2.domain() is not M11_char2
+    assert m11_c2.domain() is not M11_char2.coarse_space()
+    assert m11_c2.covering_kind() == "hesse_finite_etale_cover"
+    assert m11_c2.is_quotient_presentation_atlas()
+    assert m11_c2.has_equation_level_etale_certificate()
+    assert m11_c2.equation_level_etale()
+    assert m11_c2.evidence().finite_etale_groupoid()
+    assert m11_c2.evidence().group_order() == 24
     assert M11_char2.legendre_quotient_presentation() is None
-    char2_gap = M11_char2.etale_atlas_gap()
-    assert char2_gap is not None
-    assert char2_gap["reason"] == "legendre_requires_2_invertible"
-    alt_names = {a["name"] for a in char2_gap["alternate_proving_sets"]}
-    assert alt_names == {"hesse_gamma3", "weierstrass_gm_quotient", "igusa_ordinary_a6_chart"}
+    assert M11_char2.etale_atlas_gap() is None
+    hesse_pres = M11_char2.hesse_quotient_presentation()
+    assert hesse_pres is not None
+    assert hesse_pres["group_order"] == 24
+    assert hesse_pres["degree"] == 24
+    assert hesse_pres["level_structure"] == "Gamma(3)"
+    assert hesse_pres["covering_space"] is m11_c2.domain()
+    assert "Hesse" in str(hesse_pres["presentation"]) or "SL2" in str(hesse_pres["presentation"])
+    m11_c2_ring = m11_c2.domain().as_affine_scheme().ring()
+    assert len(m11_c2_ring.gens()) == 1
+
     Mbar11_char2 = Mbar_gn(1, 1, base=spec(GF(2)))
-    assert isinstance(Mbar11_char2.etale_atlas().domain(), AtlasChart)
-    assert not Mbar11_char2.etale_atlas().has_equation_level_etale_certificate()
+    mbar11_c2 = Mbar11_char2.etale_atlas()
+    assert isinstance(mbar11_c2.domain(), ProjectiveLineAlgebraicSpace)
+    assert mbar11_c2.covering_kind() == "hesse_compact_finite_etale_cover"
+    assert mbar11_c2.is_quotient_presentation_atlas()
+    assert mbar11_c2.has_equation_level_etale_certificate()
+    assert mbar11_c2.evidence().group_order() == 24
     assert Mbar11_char2.legendre_quotient_presentation() is None
-    assert Mbar11_char2.etale_atlas_gap()["reason"] == "legendre_requires_2_invertible"
+    assert Mbar11_char2.etale_atlas_gap() is None
+    mbar_hesse = Mbar11_char2.hesse_quotient_presentation()
+    assert mbar_hesse is not None
+    assert mbar_hesse["level_structure"] == "Mbar(Gamma(3))"
+    assert mbar_hesse["covering_space"] is mbar11_c2.domain()
+
+    # Char 3: Hesse unavailable; Legendre still owns (2 invertible). Prefer Legendre over Hesse.
+    M11_char3 = M_gn(1, 1, base=spec(GF(3)))
+    assert M11_char3.etale_atlas().covering_kind() == "legendre_finite_etale_cover"
+    assert M11_char3.etale_atlas().has_equation_level_etale_certificate()
+    assert M11_char3.hesse_quotient_presentation() is None
+    assert M11_char3.legendre_quotient_presentation() is not None
+    assert M11_char3.etale_atlas_gap() is None
 
     # Owned proving-set stacks expose no gap record.
     assert XS.etale_atlas_gap() is None
     assert YS.etale_atlas_gap() is None
     assert Mbar04.etale_atlas_gap() is None
     assert Mbar11.etale_atlas_gap() is None
+    assert M11_char2.etale_atlas_gap() is None
+    assert Mbar11_char2.etale_atlas_gap() is None
 
     # Product of owned charts: M_{1,1} × M_{0,4} both equation-level → product True.
     prod = ProductStack((XS, YS), base=k)

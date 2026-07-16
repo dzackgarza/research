@@ -36,14 +36,19 @@ def _marking_set(I: object) -> tuple[object, ...]:
     return tuple(I)
 
 
-def _two_is_invertible(base: AffineScheme) -> bool:
-    r"""True when ``2`` is a unit in the base ring (Legendre form needs char ≠ 2)."""
+def _prime_invertible_or_char_ok(base: AffineScheme, prime: int) -> bool:
+    r"""True when ``prime`` is a unit, or else when ``char ≠ prime`` (proving-set heuristic).
+
+    Matches the Legendre / Hesse literature hypotheses: the form is available over
+    bases of characteristic not equal to the bad prime. When the ring exposes
+    ``is_unit``, a genuine unit wins immediately (e.g. ``2`` in ``ℚ``).
+    """
     from typing import Any, cast
 
     ring = cast(Any, base.ring())
     try:
-        two = ring(2)
-        if hasattr(two, "is_unit") and bool(two.is_unit()):
+        element = ring(prime)
+        if hasattr(element, "is_unit") and bool(element.is_unit()):
             return True
     except TypeError, ValueError, AttributeError, ArithmeticError:
         pass
@@ -56,7 +61,17 @@ def _two_is_invertible(base: AffineScheme) -> bool:
         char = int(characteristic())
     except TypeError, ValueError:
         return False
-    return char != 2
+    return char != prime
+
+
+def _two_is_invertible(base: AffineScheme) -> bool:
+    r"""True when ``2`` is available for the Legendre form (char ≠ 2 / unit ``2``)."""
+    return _prime_invertible_or_char_ok(base, 2)
+
+
+def _three_is_invertible(base: AffineScheme) -> bool:
+    r"""True when ``3`` is available for the Hesse form (char ≠ 3 / unit ``3``)."""
+    return _prime_invertible_or_char_ok(base, 3)
 
 
 def _punctured_lambda_affine_scheme(base: AffineScheme) -> AffineScheme:
@@ -101,6 +116,35 @@ def _legendre_affine_scheme(base: AffineScheme) -> AffineScheme:
     return _punctured_lambda_affine_scheme(base)
 
 
+def _hesse_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Hesse parameter space ``Spec(R[μ]_{μ³-1})`` for the level-``Γ(3)`` cover.
+
+    Literature: the Hesse pencil ``X³ + Y³ + Z³ = 3μ XYZ`` (equivalently
+    ``X³ + Y³ + Z³ + λ XYZ = 0``) is smooth elliptic precisely when ``μ³ ≠ 1``,
+    and carries a full level-3 structure at the flexes. Over bases with ``3``
+    invertible (including characteristic ``2``, where ``3 = 1``), the forgetful
+    map ``M(Γ(3)) → M_{1,1}`` is finite étale Galois of degree
+    ``|SL₂(𝔽₃)| = 24`` (binary tetrahedral group). Owned affine chart:
+
+    ``U = Spec(R[μ]_{μ³ - 1})``
+
+    so ``M_{1,1} ≅ [U / SL₂(𝔽₃)]`` as DM stacks — not a scheme isomorphism.
+    Fail-closed when ``3`` is not invertible (Hesse coefficient / flex theory
+    collapses in characteristic ``3``). Primitive cube roots of unity are **not**
+    required in the base ring for this affine domain: the moduli problem
+    ``M(Γ(3))`` and the finite étale map to ``M_{1,1}`` are defined over
+    ``ℤ[1/3]``; ``μ₃`` appears only in optional explicit linear models of the
+    Galois action on flex coordinates.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    assert _three_is_invertible(base), "Hesse form requires 3 invertible in the base ring"
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=("mu",))
+    mu = poly.gen()
+    return AffineScheme(poly.localization(mu**3 - 1))
+
+
 def _configuration_M05_affine_scheme(base: AffineScheme) -> AffineScheme:
     r"""Affine scheme for open ``ℳ_{0,5}`` via Knudsen / cross-ratio coordinates.
 
@@ -135,12 +179,16 @@ def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
       ``Spec(R[λ,μ]_{λ(λ-1)μ(μ-1)(λ-μ)})`` (scheme isomorphism),
     - ``M_{1,1}`` (``2`` invertible): Legendre ``M(Γ(2))`` affine chart — finite
       étale cover of degree 6, not a scheme isomorphism,
+    - ``M_{1,1}`` (``2`` not invertible, ``3`` invertible): Hesse ``M(Γ(3))``
+      affine chart ``Spec(R[μ]_{μ³-1})`` — finite étale of degree 24,
     - ``Mbar_{1,1}`` (``2`` invertible): ``Mbar(Γ(2)) ≅ ℙ¹`` with the same
-      ``S₃`` finite étale groupoid (affine opens of the covering space).
+      ``S₃`` finite étale groupoid (affine opens of the covering space),
+    - ``Mbar_{1,1}`` (``2`` not invertible, ``3`` invertible): ``Mbar(Γ(3)) ≅ ℙ¹``
+      with ``SL₂(𝔽₃)`` finite étale groupoid.
 
     Fail-closed (``None``) for general ``(g,n)``, proper ``Mbar_{0,5}``, and when
-    ``2`` is not invertible on ``(1,1)`` — see :meth:`ModuliStack.etale_atlas_gap`.
-    No fake charts / weighted-Proj shells.
+    neither Legendre nor Hesse hypotheses hold on ``(1,1)`` — see
+    :meth:`ModuliStack.etale_atlas_gap`. No fake charts / weighted-Proj shells.
     """
     g = stack.genus()
     n = stack.number_of_markings()
@@ -154,10 +202,15 @@ def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
         return AffineAlgebraicSpace(_cross_ratio_affine_scheme(base))
     if g == 0 and n == 5 and not proper:
         return AffineAlgebraicSpace(_configuration_M05_affine_scheme(base))
-    if g == 1 and n == 1 and _two_is_invertible(base):
-        if proper:
-            return ProjectiveLineAlgebraicSpace(base, "Mbar_Gamma2")
-        return AffineAlgebraicSpace(_legendre_affine_scheme(base))
+    if g == 1 and n == 1:
+        if _two_is_invertible(base):
+            if proper:
+                return ProjectiveLineAlgebraicSpace(base, "Mbar_Gamma2")
+            return AffineAlgebraicSpace(_legendre_affine_scheme(base))
+        if _three_is_invertible(base):
+            if proper:
+                return ProjectiveLineAlgebraicSpace(base, "Mbar_Gamma3")
+            return AffineAlgebraicSpace(_hesse_affine_scheme(base))
     return None
 
 
@@ -168,6 +221,23 @@ def _legendre_galois_group() -> object:
     from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 
     return cast(Any, SymmetricGroup(3))
+
+
+def _hesse_galois_group() -> object:
+    r"""``SL₂(𝔽₃)`` (order 24, binary tetrahedral) for the Hesse ``Γ(3)`` cover.
+
+    Parallel to Legendre's ``S₃ ≅ SL₂(𝔽₂)``: the forgetful map
+    ``M(Γ(N)) → M_{1,1}`` is finite étale Galois of degree ``|SL₂(ℤ/Nℤ)|``.
+    For ``N = 3`` that group is ``SL₂(𝔽₃)``, not ``PSL₂(𝔽₃) ≅ A₄`` (order 12),
+    because stacky moduli retain the full symplectic level structure (cf.
+    Deligne–Rapoport / Katz–Mazur).
+    """
+    from typing import Any, cast
+
+    from sage.groups.matrix_gps.linear import SL
+    from sage.rings.finite_rings.finite_field_constructor import GF
+
+    return cast(Any, SL(2, GF(3)))
 
 
 class Groupoid(UniqueRepresentation, Parent):
@@ -506,6 +576,49 @@ class ModuliStack(DeligneMumfordStack):
             "presentation": presentation,
         }
 
+    def hesse_quotient_presentation(self) -> dict[str, object] | None:
+        r"""Inspectable ``(U, SL₂(𝔽₃))`` data when a Hesse ``Γ(3)`` presentation is owned.
+
+        Returns ``None`` unless this is ``M_{1,1}`` / ``Mbar_{1,1}`` over a base
+        with ``2`` **not** invertible and ``3`` invertible (Legendre preferred
+        whenever available).
+
+        - Open: ``U = Spec(R[μ]_{μ³-1}) = M(Γ(3))`` Hesse chart.
+        - Proper: ``U = ℙ¹ = Mbar(Γ(3))`` (standard affine cover).
+
+        ``G = SL₂(𝔽₃)`` has order 24. Does **not** claim a scheme isomorphism
+        ``M_{1,1} ≅ U``.
+        """
+        if self.genus() != 1 or self.number_of_markings() != 1:
+            return None
+        base = self.base_scheme()
+        if _two_is_invertible(base) or not _three_is_invertible(base):
+            return None
+        domain = _moduli_etale_atlas_domain(self)
+        if domain is None:
+            return None
+        group = _hesse_galois_group()
+        from typing import Any, cast
+
+        if self.is_proper():
+            presentation = "Mbar_1_1 ≅ [P1 / SL2(F3)]"
+            level_structure = "Mbar(Gamma(3))"
+        else:
+            presentation = "M_1_1 ≅ [Hesse_U / SL2(F3)]"
+            level_structure = "Gamma(3)"
+        return {
+            "covering_space": domain,
+            "group": group,
+            "group_order": int(cast(Any, group).order()),
+            "finite_etale_groupoid": True,
+            "covering_unramified_stamp": True,
+            "covering_smooth_stamp": True,
+            "covering_formally_etale_stamp": True,
+            "degree": 24,
+            "level_structure": level_structure,
+            "presentation": presentation,
+        }
+
     def etale_atlas_gap(self) -> dict[str, object] | None:
         r"""Named fail-closed gap when no equation-level étale atlas is owned.
 
@@ -529,27 +642,17 @@ class ModuliStack(DeligneMumfordStack):
             "equation_level": False,
             "covering_kind_if_formal": "etale_atlas_chart",
         }
-        if g == 1 and n == 1 and not _two_is_invertible(base):
-            gap["reason"] = "legendre_requires_2_invertible"
+        if g == 1 and n == 1 and not _two_is_invertible(base) and not _three_is_invertible(base):
+            gap["reason"] = "legendre_and_hesse_unavailable"
             gap["alternate_proving_sets"] = (
-                {
-                    "name": "hesse_gamma3",
-                    "status": "not_in_spike",
-                    "requires": "3 invertible; μ₃ in the base for the standard Galois Hesse model",
-                    "note": (
-                        "M(Γ(3)) → M_{1,1} is finite étale of degree |SL₂(𝔽₃)| = 24 when "
-                        "3 is invertible (includes char 2). Not owned: cyclotomic base change "
-                        "and explicit Hesse discriminant chart are outside this spike's rings."
-                    ),
-                },
                 {
                     "name": "weierstrass_gm_quotient",
                     "status": "not_in_spike",
                     "requires": "Spec(Z[a1,…,a6][Δ⁻¹]) with weighted 𝔾_m-action",
                     "note": (
                         "Deligne–Rapoport / Katz–Mazur Weierstrass presentation works over "
-                        "Spec(Z) including char 2, but 𝔾_m is not finite — outside the "
-                        "finite-étale-groupoid proving set used for Legendre / quotients."
+                        "Spec(Z) including char 2 and 3, but 𝔾_m is not finite — outside the "
+                        "finite-étale-groupoid proving set used for Legendre / Hesse quotients."
                     ),
                 },
                 {
@@ -590,8 +693,10 @@ class ModuliStack(DeligneMumfordStack):
                 "status": "not_in_spike",
                 "requires": "research constructions (level structures, clutching, blowups) beyond proving set",
                 "note": (
-                    "Owned proving set: open M_{0,3}/M_{0,4}/M_{0,5}, M_{1,1} (2 invertible), "
-                    "and proper Mbar_{0,3}/Mbar_{0,4}/Mbar_{1,1} (2 invertible). "
+                    "Owned proving set: open M_{0,3}/M_{0,4}/M_{0,5}, M_{1,1} "
+                    "(Legendre when 2 invertible; Hesse Γ(3) when 2 not invertible "
+                    "and 3 invertible), and proper Mbar_{0,3}/Mbar_{0,4}/Mbar_{1,1} "
+                    "(same level-structure hypotheses). "
                     "General (g,n) atlases need constructions not present in this spike."
                 ),
             },
@@ -612,12 +717,15 @@ class ModuliStack(DeligneMumfordStack):
           ``covering_kind="moduli_affine_etale_chart"``.
         - ``M_{1,1}`` (``2`` invertible): affine Legendre ``M(Γ(2))`` finite
           étale cover; ``covering_kind="legendre_finite_etale_cover"``.
+        - ``M_{1,1}`` (``2`` not invertible, ``3`` invertible): affine Hesse
+          ``M(Γ(3))`` finite étale cover; ``covering_kind="hesse_finite_etale_cover"``.
         - ``Mbar_{1,1}`` (``2`` invertible): ``Mbar(Γ(2)) ≅ ℙ¹`` finite étale
           cover; ``covering_kind="legendre_compact_finite_etale_cover"``.
-          Stackiness retained as finite étale groupoid evidence.
+        - ``Mbar_{1,1}`` (``2`` not invertible, ``3`` invertible):
+          ``Mbar(Γ(3)) ≅ ℙ¹``; ``covering_kind="hesse_compact_finite_etale_cover"``.
 
-        For general ``(g,n)``, proper ``Mbar_{0,5}``, and ``(1,1)`` when ``2`` is
-        not invertible: fail-closed formal
+        For general ``(g,n)``, proper ``Mbar_{0,5}``, and ``(1,1)`` when neither
+        Legendre nor Hesse applies: fail-closed formal
         :class:`~dm_moduli_spike.geometry.stacks.AtlasChart`
         (see :meth:`etale_atlas_gap`). Never uses the coarse space as an étale
         atlas domain.
@@ -632,12 +740,16 @@ class ModuliStack(DeligneMumfordStack):
             certs.extend(_proving_set_etale_certificates(chart))
         scheme_certs = tuple(certs)
         primary = scheme_certs[0] if scheme_certs else None
-        is_legendre = self.genus() == 1 and self.number_of_markings() == 1
-        if is_legendre:
+        if self.genus() == 1 and self.number_of_markings() == 1:
             from typing import Any, cast
 
-            covering_kind = "legendre_compact_finite_etale_cover" if self.is_proper() else "legendre_finite_etale_cover"
-            group = _legendre_galois_group()
+            base = self.base_scheme()
+            if _two_is_invertible(base):
+                covering_kind = "legendre_compact_finite_etale_cover" if self.is_proper() else "legendre_finite_etale_cover"
+                group = _legendre_galois_group()
+            else:
+                covering_kind = "hesse_compact_finite_etale_cover" if self.is_proper() else "hesse_finite_etale_cover"
+                group = _hesse_galois_group()
             group_order = int(cast(Any, group).order())
             return AtlasMorphism(
                 domain,
