@@ -24,8 +24,9 @@ actual homsets.
 from __future__ import annotations
 
 from collections.abc import Iterable, Iterator
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 
+from sage.categories.category import Category
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
@@ -35,9 +36,6 @@ from sage.structure.element_wrapper import ElementWrapper
 from ..lexicon import SageParent, SageUniqueRepresentation
 from .cardinals import Cardinal, cardinal
 from .sets import Sets
-
-if TYPE_CHECKING:
-    from sage.categories.category import Category
 
 
 def _declared_axioms(factor: SageParent) -> frozenset[str]:
@@ -121,8 +119,10 @@ class CartesianProduct(SageUniqueRepresentation, SageParent):
     def __init__(self, *factors: SageParent) -> None:
         self._factors = factors
         self._has_empty_factor = any(_is_known_empty(factor) for factor in factors)
-        category = Sets().Finite() if self._has_empty_factor or not factors else _placement(factors)
-        SageParent.__init__(self, category=category)
+        placement = Sets().Finite() if self._has_empty_factor or not factors else _placement(factors)
+        # Integration, not invention: the parent is a member of Sage's
+        # standard CartesianProducts() construction category.
+        SageParent.__init__(self, category=Category.join([placement, Sets().CartesianProducts()]))
 
     def _repr_(self) -> str:
         if not self._factors:
@@ -173,6 +173,13 @@ class CartesianProduct(SageUniqueRepresentation, SageParent):
         factor = self._factors[i]
         homset = Hom(self, factor, SageSets())
         return SetMorphism(homset, lambda point: point.value[i])
+
+    # Sage's CartesianProducts() spellings of the same data:
+    def cartesian_factors(self) -> tuple[SageParent, ...]:
+        return self._factors
+
+    def cartesian_projection(self, i: int) -> SetMorphism:
+        return self.projection(i)
 
 
 def cartesian_product_morphism(*maps: SetMorphism) -> SetMorphism:

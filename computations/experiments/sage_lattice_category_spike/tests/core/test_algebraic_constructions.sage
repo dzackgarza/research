@@ -13,8 +13,13 @@ from __future__ import annotations
 
 from sage.all import ZZ, matrix
 
+from sage.categories.sets_cat import Sets as SageSets
+
 from sage_lattice_category_spike.lattice_categories import Lattice
 from sage_lattice_category_spike.morphisms import constructions
+from sage_lattice_category_spike.objects.fundamental_sets import Integers
+from sage_lattice_category_spike.objects.set_constructions import CartesianProduct
+from sage_lattice_category_spike.objects.sets import Sets
 
 
 def _collapse_of_degenerate_rank_two():
@@ -103,6 +108,20 @@ def test_direct_sum_of_morphisms_commutes_with_the_summand_embeddings():
     assert summed * into_second == into_second * other
 
 
+def test_the_lattice_direct_sum_is_the_module_theoretic_one():
+    r"""A lattice is module data: ``(L, b)`` with ``b in Hom(L, L*)``, and
+    ``(L1, b1) (+) (L2, b2) = (L1 (+) L2, b1 (+) b2)`` — nothing here is
+    form-specific. Executable witness: the summed lattice's canonical map
+    to its dual IS the direct sum of the summands' canonical maps, as a
+    morphism identity (boundaries included), not a matrix coincidence."""
+    a2 = Lattice("A2")
+    a1 = Lattice("A1")
+    summed_form = constructions.direct_sum(a2.dual_inclusion(), a1.dual_inclusion())
+    assert summed_form == (a2 + a1).dual_inclusion()
+    assert summed_form.domain() == (a2 + a1)
+    assert summed_form.codomain() == (a2 + a1).dual()
+
+
 def test_the_morphism_direct_sum_spelling_delegates_to_the_construction():
     a2 = Lattice("A2")
     a1 = Lattice("A1")
@@ -119,3 +138,21 @@ def test_lattice_morphism_spellings_delegate_to_the_constructions():
     doubling, _ = _index_two_embedding()
     assert doubling.cokernel().invariants() == constructions.cokernel(doubling).invariants()
     assert doubling.image().cokernel().invariants() == constructions.cokernel(doubling).invariants()
+
+
+def test_the_owned_cartesian_product_lives_in_the_standard_construction_category():
+    r"""Integration, not invention: the owned product parent is a member of
+    Sage's ``CartesianProducts()`` construction category — reached through
+    the owned ``Sets()`` and agreeing with Sage's own node."""
+    product = CartesianProduct(Integers(), Integers())
+    assert product in Sets().CartesianProducts()
+    assert product in SageSets().CartesianProducts()
+    assert CartesianProduct() in Sets().CartesianProducts()
+    assert product.cartesian_factors() == product.factors()
+
+
+def test_the_cartesian_projections_answer_both_spellings():
+    product = CartesianProduct(Integers(), Integers())
+    point = product((ZZ(3), ZZ(-1)))
+    assert product.cartesian_projection(0)(point) == ZZ(3)
+    assert product.cartesian_projection(1)(point) == product.projection(1)(point)
