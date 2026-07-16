@@ -84,30 +84,18 @@ instance (R : FiniteRingObj) : CoeSort (FreeFinModuleObj R) Type where
 
 namespace FreeFinModuleObj
 
-/-- The explicit equivalence `(Fin 2 → α) ≃ α × α`. -/
-def finTwoFunctionEquiv (α : Type) : (Fin 2 → α) ≃ α × α where
-  toFun := fun f => (f 0, f 1)
-  invFun := fun p i => Fin.cases p.1 (fun _ => p.2) i
-  left_inv := by
-    intro f
-    funext i
-    fin_cases i <;> rfl
-  right_inv := by
-    intro p
-    cases p
-    rfl
-
 /--
 The standard rank-two free module.  Its finite set is the product of two
 copies of the finite set of `R`, so all enumeration and cardinality code is
-inherited from finite-set products.
+inherited from finite-set products.  The set-level identification
+`(Fin 2 → R) ≃ R × R` is Mathlib's `piFinTwoEquiv`, not hand-rolled.
 -/
 def rankTwo (R : FiniteRingObj) : FreeFinModuleObj R where
   module := ModuleObj.of R.toRing (Fin 2 → R.set)
   rank := 2
   coordinates := LinearEquiv.refl R.set (Fin 2 → R.set)
   finiteSet := FiniteSetObj.prod R.toFiniteSet R.toFiniteSet
-  finiteSetEquiv := finTwoFunctionEquiv R.set
+  finiteSetEquiv := piFinTwoEquiv fun _ => R.set
   cardinality_eq := by
     show R.size * R.size = R.size ^ 2
     ring
@@ -183,7 +171,18 @@ the 0-for-infinite convention).  This declaration is that invariant applied
 to `range f` — the subobject a morphism carries — stated convention-free in
 cardinals; `index_toNat` connects the two value conventions by `rfl`.  The
 home is not chosen: it is read off Mathlib's own signature, transported from
-the subobject to the morphism that presents it.
+the subobject to the morphism that presents it.  At abelian-category
+generality the universal invariant is the cokernel *object*; every numeric
+"index" is a decategorification (Nat.card for groups, length for modules,
+covolume ratio for ℤ-lattices in ℝⁿ), which is why Mathlib names only the
+concrete shadows.
+
+Convention divergence: value is a `Cardinal` here vs Mathlib's ℕ with the
+0-for-infinite collapse (`AddSubgroup.index`).  Deliberate: the cardinal
+statement is convention-free and the ℕ shadow is recovered by `index_toNat`
+(`rfl`).  Adjudication: keep local; the collapse choice belongs to each
+concrete context, and conflating "infinite" with "0" at the concept level
+would repeat the unimodular-`Lat(R)` mistake in miniature.
 -/
 noncomputable def index {R : RingObj} {M N : ModuleObj R} (f : M ⟶ N) :
     Cardinal :=

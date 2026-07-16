@@ -65,8 +65,14 @@ implementation.
 
 **Mathlib identity.**  Field for field this is Mathlib's `Encodable`
 (`encode` / `decode` / `encodek`) in bundled-object form; the manifest
-aligns the concept to `Encodable`, and consolidating the structure onto the
-class is the #217-ratified parallel work.
+aligns the concept to `Encodable`.
+
+Convention divergence: bundled object structure vs Mathlib's typeclass form
+(`Encodable`).  Reason: the spike wanted objects carrying chosen data as
+first-class category objects.  Adjudication: local change queued — the
+#217-ratified consolidation replaces this structure with a thin bundling of
+the class; until then any new field must mirror the class exactly so the
+consolidation stays mechanical.
 -/
 structure CountableSetObj where
   set : Type
@@ -94,9 +100,11 @@ A finite set with a chosen enumeration.  The enumeration is data, not a
 proposition asserting finiteness.
 
 **Mathlib identity.**  This is Mathlib's `FinEnum` (`card` + `α ≃ Fin card`)
-in bundled-object form; the manifest aligns the concept to `FinEnum`, and
-consolidating the structure onto the class is the #217-ratified parallel
-work.
+in bundled-object form; the manifest aligns the concept to `FinEnum`.
+
+Convention divergence: bundled object structure vs Mathlib's typeclass form
+(`FinEnum`).  Same status as `CountableSetObj` above: local change queued
+per the #217-ratified consolidation; new fields must mirror the class.
 -/
 structure FiniteSetObj where
   set : Type

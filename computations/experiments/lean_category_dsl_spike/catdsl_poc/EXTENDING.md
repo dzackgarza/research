@@ -2,6 +2,52 @@
 
 This file gives the concrete recipe for adding a new mathematical layer.
 
+## 0. Locate the Mathlib expression first
+
+Before defining anything, find how Mathlib already expresses the concept, and
+anchor to it exactly or by a thin thread.  This is not a style preference; it
+is what makes placement automatic: **in Lean the home of a notion is read off
+its signature, not chosen.**  A synthetic definition ("cardinality as a field
+we attach wherever we like") is attachable to anything and therefore coheres
+with nothing; the real anchor (`Cardinal.mk : Type → Cardinal`) puts the
+notion in a coherent place with its whole lemma library for free.
+
+Precedents in this tree:
+
+- `SetObj.cardinality` **is** `Cardinal.mk`, one line; the enumeration
+  presentation only *evaluates* it (`cardinality_eval`).
+- `ModuleHom.index` **is** `AddSubgroup.index`'s invariant applied to
+  `range f`, and its ℕ shadow equals Mathlib's convention by `rfl`
+  (`index_toNat`).
+- `CountableSetObj` / `FiniteSetObj` are field-for-field Mathlib's
+  `Encodable` / `FinEnum`; the identity is stated at the definitions and
+  consolidation onto the classes is queued (#217).
+
+If the anchoring is exact, cite the Mathlib name in the docstring.  If it is
+a thin thread (a wrapper, a convention change, a generalization), prove the
+connection — ideally a `rfl` lemma — and add a ledger marker (below).  Only
+when Mathlib genuinely lacks the concept does new theory get written, and
+then it goes in `ForMathlib/` with its upstream target named (see the layer
+contract in `CatDSL/ForMathlib/`).
+
+## Ledgers: upstream candidates and convention divergences
+
+Two greppable docstring markers keep the exceptional cases auditable at the
+declaration, with `just` recipes to list them (`just upstream-candidates`,
+`just conventions` in the spike root).  Both listings are interim query
+surfaces until the alignment manifest's export (#251) carries the columns.
+
+- `Upstream target: <Mathlib module>` — on every `ForMathlib/` declaration:
+  theory Mathlib should own but does not yet.  The `ForMathlib/` directory is
+  by construction the upstream-contribution queue.
+- `Convention divergence:` — wherever a local notion **competes** with an
+  existing Mathlib convention (value conventions, bundled vs class form,
+  sign conventions, generality).  The marker states the local convention,
+  the Mathlib convention, why they differ, and the adjudication direction:
+  an upstream change (Mathlib too narrow or subtly wrong) or a local one
+  (our definition was myopic, under-general, or missing hypotheses).  A
+  divergence without a marker is a defect.
+
 ## A. Add a category family
 
 Suppose objects are `StructuredObj R`.
