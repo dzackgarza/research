@@ -8,8 +8,11 @@ Hierarchy (contract §2):
       └── AlgebraicStacks(S)
             └── DeligneMumfordStacks(S)
                   └── AlgebraicSpaces(S)
-                        └── Schemes(S)
+                        └── (Sage) Schemes(S)
                               └── Varieties(k)
+
+``ModuliStacks(S)`` is an *equipped* category over ``Stacks(S)`` — not a
+subcategory of ``DeligneMumfordStacks(S)``. Concrete ``M_{g,I}`` may inhabit both.
 """
 
 from __future__ import annotations
@@ -52,11 +55,15 @@ class DeligneMumfordStacks(AlgebraicStacks):
         return DeligneMumfordStacks(self.base_scheme())
 
 
-class ModuliStacks(DeligneMumfordStacks):
-    r"""Moduli stacks over `S` (stacks equipped with a moduli problem)."""
+class ModuliStacks(ModuliCategory, _AxiomMixin):
+    r"""Moduli stacks over `S`: stacks equipped with a moduli problem.
+
+    Forgetful to ``Stacks(S)``. Not a subcategory of Deligne--Mumford stacks:
+    a moduli stack need not be DM (e.g. many moduli of sheaves are Artin).
+    """
 
     def super_categories(self) -> list[Category]:
-        return [DeligneMumfordStacks(self.base_scheme())]
+        return [Stacks(self.base_scheme())]
 
     def _base_category_for_axioms(self) -> ModuliCategory:
         return ModuliStacks(self.base_scheme())

@@ -37,7 +37,7 @@ from .categories.curves import (
     StablePointedCurveFamilies,
     StablePointedCurves,
 )
-from .categories.schemes import AlgebraicSpaces, Schemes, Varieties
+from .categories.schemes import AlgebraicSpaces, Schemes, Varieties, schemes_over
 from .categories.stacks import (
     AlgebraicStacks,
     DeligneMumfordStacks,
@@ -150,6 +150,7 @@ __all__ = [
     "Variety",
     "complex_numbers_ring",
     "scheme_open_immersion_compactification",
+    "schemes_over",
     "spec",
     "spec_complex",
     "symmetric_delta_complex",

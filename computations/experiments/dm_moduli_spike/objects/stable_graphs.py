@@ -32,13 +32,15 @@ else:
     StableGraphParent = Parent
 
 
-def _markings(I: object) -> tuple[int, ...]:
+def _markings(I: object) -> tuple[object, ...]:
     from sage.rings.integer import Integer
 
     if isinstance(I, (int, Integer)):
         return tuple(range(1, int(I) + 1))
     assert isinstance(I, Iterable), f"expected marking count or iterable; found {type(I)!r}"
-    return tuple(int(x) for x in I)
+    marks = tuple(I)
+    assert len(set(marks)) == len(marks), f"marking set must have distinct labels; found {marks!r}"
+    return marks
 
 
 class _PermutationAction(Action):
@@ -53,7 +55,7 @@ class _PermutationAction(Action):
         # Prefer native permutation action when labels are the standard domain.
         try:
             return g(x)
-        except (TypeError, ValueError, IndexError):
+        except TypeError, ValueError, IndexError:
             # Labels may be 0-based indices while Sage acts on {1,...,n}.
             idx = labels.index(x)
             image_pos = as_int(g(idx + 1)) - 1
@@ -104,7 +106,7 @@ class StableGraphs(UniqueRepresentation, StableGraphParent):
     def __init__(self, g: int, I: object) -> None:
         self._g = int(g)
         # ``I`` is already a marking tuple when constructed via ``__classcall__``.
-        self._I = tuple(as_int(x) for x in cast(tuple[object, ...], I))
+        self._I = tuple(cast(tuple[object, ...], I))
         self._n = len(self._I)
         assert self._g >= 0 and self._n >= 0, f"(g, n) must be nonnegative integers; (g, n)=({self._g}, {self._n})"
         assert 2 * self._g - 2 + self._n > 0, f"(g, n)=({self._g}, {self._n}) is not in the stable range 2g - 2 + n > 0"
@@ -115,7 +117,7 @@ class StableGraphs(UniqueRepresentation, StableGraphParent):
     def genus(self) -> int:
         return self._g
 
-    def marking_set(self) -> tuple[int, ...]:
+    def marking_set(self) -> tuple[object, ...]:
         return self._I
 
     def number_of_markings(self) -> int:
@@ -159,19 +161,19 @@ class StableGraphs(UniqueRepresentation, StableGraphParent):
     def from_vertices(
         self,
         genera: Sequence[int],
-        markings: Sequence[Sequence[int]],
+        markings: Sequence[Sequence[object]],
         edges: Sequence[tuple[int, int]],
     ) -> StableGraph:
         genera = tuple(int(g) for g in genera)
-        markings = tuple(tuple(int(m) for m in vertex_markings) for vertex_markings in markings)
+        markings_t = tuple(tuple(vertex_markings) for vertex_markings in markings)
         edges = tuple((int(u), int(v)) for u, v in edges)
-        assert len(genera) == len(markings), f"genera and markings must be indexed by the same vertex set; |genera|={len(genera)}, |markings|={len(markings)}"
+        assert len(genera) == len(markings_t), f"genera and markings must be indexed by the same vertex set; |genera|={len(genera)}, |markings|={len(markings_t)}"
 
         flag_vertex: list[int] = []
         flag_involution: list[int] = []
-        marking_to_flag_by_label: dict[int, int] = {}
+        marking_to_flag_by_label: dict[object, int] = {}
 
-        for vertex, vertex_markings in enumerate(markings):
+        for vertex, vertex_markings in enumerate(markings_t):
             for label in vertex_markings:
                 flag = len(flag_vertex)
                 flag_vertex.append(vertex)
@@ -186,9 +188,11 @@ class StableGraphs(UniqueRepresentation, StableGraphParent):
             flag_vertex.append(v)
             flag_involution.append(flag_u)
 
-        labels = sorted(marking_to_flag_by_label)
-        assert labels == list(range(1, self._n + 1)), f"markings must be exactly 1, ..., {self._n}; found {labels}"
-        marking_to_flag = tuple(marking_to_flag_by_label[label] for label in labels)
+        used = frozenset(marking_to_flag_by_label)
+        expected = frozenset(self._I)
+        assert used == expected, f"markings must be exactly {self._I}; found {sorted(used, key=repr)}"
+        # Private record stores flags in ambient marking-set order.
+        marking_to_flag = tuple(marking_to_flag_by_label[label] for label in self._I)
 
         graph = _GraphRecord(
             vertex_genera=genera,
@@ -700,32 +704,35 @@ class Legs(UniqueRepresentation, Parent):
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
     def _element_constructor_(self, x: object) -> Leg:
+        marks = self._graph.parent().marking_set()
         if isinstance(x, Leg):
             if x.parent() is self:
                 return x
             label = x._label
         else:
-            label = as_int(x)
+            label = x
+        if label not in marks:
+            raise ValueError(f"{label!r} is not a leg label of {self._graph!r}; marking set={marks!r}")
+        idx = marks.index(label)
         legs = self._graph._record.legs()
-        if label < 1 or label > len(legs):
-            raise ValueError(f"{label} is not a leg label of {self._graph!r}")
-        return cast(Leg, self.element_class(self, label, legs[label - 1]))
+        return cast(Leg, self.element_class(self, label, legs[idx]))
 
     def __iter__(self) -> Iterator[Leg]:
+        marks = self._graph.parent().marking_set()
         for i, flag in enumerate(self._graph._record.legs()):
-            yield self.element_class(self, i + 1, flag)
+            yield self.element_class(self, marks[i], flag)
 
     def cardinality(self) -> int:
         return self._graph.num_markings()
 
 
 class Leg(Element):
-    def __init__(self, parent: Legs, label: int, flag: int) -> None:
-        self._label = int(label)
+    def __init__(self, parent: Legs, label: object, flag: int) -> None:
+        self._label = label
         self._flag = int(flag)
         Element.__init__(self, parent)
 
-    def label(self) -> int:
+    def label(self) -> object:
         return self._label
 
     def flag(self) -> int:

@@ -369,8 +369,9 @@ class StableGraphCategory(UniqueRepresentation):
     def dimension(self) -> int:
         return 3 * self._g - 3 + self._n
 
-    def objects(self) -> tuple[StableGraph, ...]:
-        return tuple(self._graphs)
+    def objects(self) -> StableGraphs:
+        r"""Object set of `\Gamma_{g,n}`: the parent :class:`StableGraphs`."""
+        return self._graphs
 
     def object(self, data: StableGraph) -> StableGraph:
         return self._require_stable_graph(data)

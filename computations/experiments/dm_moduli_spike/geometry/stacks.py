@@ -81,7 +81,31 @@ class Stack(GeometricObject):
         return self.fiber(x)
 
     def pullback(self, f: object) -> Stack:
-        return self
+        r"""Base change along a morphism of test schemes.
+
+        Wave 1: formal base-changed presentation (not identity). Full
+        pseudofunctor coherence waits on PR #225's functor kernel.
+        """
+        return Stack(
+            self.base_scheme(),
+            name=f"Pullback({self._name})",
+            axioms=self.declared_axioms(),
+            category=self.category(),
+        )
+
+    def fiber_product(self, other: Stack, *, over: object | None = None) -> Stack:
+        r"""Formal fiber product ``self ×_S other`` (theorem-backed parent)."""
+        base = over if over is not None else self.base_scheme()
+        if not isinstance(base, AffineScheme):
+            if hasattr(base, "base_scheme"):
+                base = base.base_scheme()
+        assert isinstance(base, AffineScheme), f"fiber_product requires AffineScheme base; found {type(base)!r}"
+        return Stack(
+            base,
+            name=f"FiberProduct({self!r}, {other!r})",
+            axioms=self.declared_axioms() & other.declared_axioms(),
+            category=self.category(),
+        )
 
     def _Hom_(self, other: object, category: object = None) -> StackHomset:
         return StackHomset(self, other)
@@ -95,12 +119,18 @@ class AlgebraicStack(Stack):
         Stack.__init__(self, base, name=name, axioms=axioms, category=AlgebraicStacks(base))
 
     def diagonal(self) -> StackMorphism:
-        r"""Formal diagonal morphism (Hom membership only; not equation-level)."""
-        return StackMorphism(self, self, kind="diagonal")
+        r"""Diagonal ``Δ: X → X ×_S X`` (formal fiber-product codomain)."""
+        return StackMorphism(self, self.fiber_product(self), kind="diagonal")
 
     def atlas(self) -> StackMorphism:
-        r"""Formal atlas morphism (Hom membership only; not computational étale cover)."""
-        return StackMorphism(self, self, kind="atlas")
+        r"""Atlas ``U → X`` with ``U`` a scheme.
+
+        Unavailable until a concrete scheme atlas is selected; returning a
+        self-map would be mathematically false.
+        """
+        raise NotImplementedError(
+            f"{self!r}.atlas() requires a selected scheme/algebraic-space atlas; self-maps are not atlases (Wave 1 honesty; Wave 3 may attach formal atlases)"
+        )
 
 
 class DeligneMumfordStack(AlgebraicStack):
@@ -118,8 +148,8 @@ class DeligneMumfordStack(AlgebraicStack):
         Stack.__init__(self, base, name=name, axioms=ax, category=cat)
 
     def etale_atlas(self) -> StackMorphism:
-        r"""Formal étale-atlas label for DM stacks (theorem stamp; not computed covers)."""
-        return StackMorphism(self, self, kind="etale_atlas")
+        r"""Étale atlas ``U → X``; unavailable without a selected atlas scheme."""
+        raise NotImplementedError(f"{self!r}.etale_atlas() requires a selected étale atlas scheme; self-maps are not atlases")
 
 
 class AlgebraicSpace(DeligneMumfordStack):
@@ -234,22 +264,22 @@ class StackObjectIsomorphism(Element):
         return f"StackObjectIsomorphism({self._source!r} ≃ {self._target!r})"
 
 
-class Stack2Isomorphism(Element):
+class Stack2Isomorphism:
     r"""2-isomorphism between parallel stack morphisms ``f, g: X → Y``.
 
     Stacks form a 2-category: 1-morphisms may be isomorphic without being equal.
-    This element is a formal certificate that ``f`` and ``g`` share domain and
-    codomain; it lives in :class:`StackHomset` alongside the 1-morphisms.
+    A 2-cell is **not** an element of the 1-Hom-set ``Hom(X,Y)``; it relates two
+    1-morphisms. Full Hom-category structure waits on PR #225.
     """
 
-    def __init__(self, parent: StackHomset, f: StackMorphism, g: StackMorphism) -> None:
-        if f.parent() is not parent or g.parent() is not parent:
-            raise ValueError(f"2-isomorphisms require morphisms of {parent!r}; found {f.parent()!r} and {g.parent()!r}")
+    def __init__(self, f: StackMorphism, g: StackMorphism) -> None:
         if f.domain() is not g.domain() or f.codomain() is not g.codomain():
             raise ValueError(f"parallel 2-isomorphism requires shared domain/codomain; found {f!r} and {g!r}")
+        if f.parent() is not g.parent():
+            raise ValueError(f"2-isomorphisms require morphisms of the same Hom-set; found {f.parent()!r} and {g.parent()!r}")
         self._f = f
         self._g = g
-        Element.__init__(self, parent)
+        self._homset = f.parent()
 
     def source(self) -> StackMorphism:
         return self._f
@@ -257,12 +287,16 @@ class Stack2Isomorphism(Element):
     def target(self) -> StackMorphism:
         return self._g
 
+    def hom_category(self) -> object:
+        r"""The 1-Hom-set whose objects are related by this 2-cell."""
+        return self._homset
+
     def _repr_(self) -> str:
         return f"Stack2Isomorphism({self._f!r} ⇒ {self._g!r})"
 
 
 class StackHomset(UniqueRepresentation, Parent):
-    r"""Hom-set parent ``Hom(X, Y)`` of stack morphisms."""
+    r"""Hom-set parent ``Hom(X, Y)`` of stack **1**-morphisms only."""
 
     Element: type[StackMorphism]
 
@@ -298,8 +332,8 @@ class StackHomset(UniqueRepresentation, Parent):
         return cast(StackMorphism, self(kind="morphism"))
 
     def isomorphism(self, f: StackMorphism, g: StackMorphism) -> Stack2Isomorphism:
-        r"""Formal 2-isomorphism certificate between parallel morphisms ``f`` and ``g``."""
-        return Stack2Isomorphism(self, f, g)
+        r"""Formal 2-isomorphism between parallel 1-morphisms (not a Hom-set element)."""
+        return Stack2Isomorphism(f, g)
 
     def _repr_(self) -> str:
         return f"Hom({self._domain!r}, {self._codomain!r})"
@@ -307,8 +341,6 @@ class StackHomset(UniqueRepresentation, Parent):
     def __contains__(self, morph: object) -> bool:
         if isinstance(morph, StackMorphism):
             return morph.domain() is self._domain and morph.codomain() is self._codomain
-        if isinstance(morph, Stack2Isomorphism):
-            return morph.parent() is self
         return False
 
 
@@ -529,7 +561,7 @@ class LocallyClosedSubspace(AlgebraicSpace):
         return self._underlying
 
 
-class ProductStack(DeligneMumfordStack):
+class ProductStack(Stack):
     @staticmethod
     def __classcall_private__(cls: type, *args: object, **kwargs: object) -> ProductStack:
         assert len(args) == 1, f"ProductStack(factors, *, base=None); found args={args!r}"
@@ -547,56 +579,69 @@ class ProductStack(DeligneMumfordStack):
             raise ValueError("ProductStack requires at least one factor")
         base = base if base is not None else factors[0].base_scheme()
         self._factors = factors
-        DeligneMumfordStack.__init__(
+        axioms = frozenset.intersection(*(f.declared_axioms() for f in factors))
+        all_dm = all(isinstance(f, DeligneMumfordStack) for f in factors)
+        cat: object = DeligneMumfordStacks(base) if all_dm else Stacks(base)
+        for a in sorted(axioms):
+            if hasattr(cat, a):
+                cat = getattr(cat, a)()
+        Stack.__init__(
             self,
             base,
             name=f"ProductStack({len(factors)})",
-            axioms=frozenset({"Smooth", "FiniteType"}),
+            axioms=axioms,
+            category=cat,
         )
 
     def factors(self) -> tuple[Stack, ...]:
         return self._factors
 
 
-class QuotientStack(DeligneMumfordStack):
-    r"""Quotient stack ``[space / group]``.
-
-    Uniqueness is by ``(space, group)``. The Sage ``Action`` is stored but not
-    part of the ``UniqueRepresentation`` key: ephemeral action wrappers rebuilt
-    on each call must not fracture presentation identity.
-    """
+class QuotientStack(Stack):
+    r"""Quotient stack ``[space / group]`` determined by an action ``ρ``."""
 
     @staticmethod
     def __classcall_private__(cls: type, *args: object, **kwargs: object) -> QuotientStack:
-        assert len(args) >= 2, f"QuotientStack(space, group, action=None); found args={args!r}"
-        space, group = args[0], args[1]
-        action = args[2] if len(args) > 2 else kwargs.pop("action", None)
+        assert len(args) >= 3, f"QuotientStack(space, group, action) requires three arguments; found args={args!r}"
+        space, group, action = args[0], args[1], args[2]
         assert not kwargs, f"unexpected kwargs {sorted(kwargs)!r}"
         assert isinstance(space, Stack), f"expected Stack; found {type(space)!r}"
-        obj = UniqueRepresentation.__classcall__(cls, space, group)
+        if action is None:
+            raise TypeError("QuotientStack requires a genuine group action; action=None is forbidden")
+        obj = UniqueRepresentation.__classcall__(cls, space, group, action)
         assert isinstance(obj, QuotientStack), f"classcall must return QuotientStack; found {type(obj)!r}"
-        if action is not None:
-            obj._action = action
         return obj
 
-    def __init__(self, space: Stack, group: object, action: object | None = None) -> None:
+    def __init__(self, space: Stack, group: object, action: object) -> None:
+        if action is None:
+            raise TypeError("QuotientStack requires a genuine group action; action=None is forbidden")
         self._space = space
         self._group = group
-        self._action: object | None = action
-        DeligneMumfordStack.__init__(
+        self._action = action
+        axioms = space.declared_axioms()
+        base = space.base_scheme()
+        cat: object = DeligneMumfordStacks(base) if isinstance(space, DeligneMumfordStack) else Stacks(base)
+        for a in sorted(axioms):
+            if hasattr(cat, a):
+                cat = getattr(cat, a)()
+        Stack.__init__(
             self,
-            space.base_scheme(),
+            base,
             name=f"QuotientStack({space!r}/{group!r})",
-            axioms=frozenset({"Smooth", "FiniteType"}),
+            axioms=axioms,
+            category=cat,
         )
 
     def space(self) -> Stack:
         return self._space
 
+    def covering_product(self) -> Stack:
+        return self._space
+
     def group(self) -> object:
         return self._group
 
-    def action(self) -> object | None:
+    def action(self) -> object:
         return self._action
 
 

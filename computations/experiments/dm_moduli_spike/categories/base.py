@@ -66,15 +66,15 @@ def check_z_scheme(S: AffineScheme) -> None:
 
 
 def complex_numbers_ring() -> object:
-    r"""\mathbb C \cong \mathbb R[x]/(x^2+1)` with formal generator `i`."""
-    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-    from sage.rings.real_mpfr import RR
+    r"""Exact algebraic surrogate for `\mathbf C`: the field of algebraic numbers.
 
-    R = PolynomialRing(RR, names="i")
-    i = R.gen()
-    return R.quotient(R.ideal(i**2 + 1))
+    Uses ``QQbar``, not a floating ``RR[i]/(i^2+1)`` model.
+    """
+    from sage.rings.qqbar import QQbar
+
+    return QQbar
 
 
 def spec_complex() -> AffineScheme:
-    r"""\mathrm{Spec}(\mathbb C)` for the symbolic model :func:`complex_numbers_ring`."""
+    r"""``Spec(QQbar)`` as an exact surrogate for ``Spec(\mathbf C)``."""
     return spec(complex_numbers_ring())

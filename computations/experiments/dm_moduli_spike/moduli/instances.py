@@ -9,6 +9,7 @@ from sage.structure.unique_representation import UniqueRepresentation
 from ..categories.base import AffineScheme, check_z_scheme, spec
 from ..categories.stacks import ModuliStacks
 from ..geometry.stacks import (
+    AlgebraicSpace,
     Boundary,
     CoarseModuliMorphism,
     Compactification,
@@ -148,8 +149,34 @@ class StablePointedCurveModuliProblem(ModuliProblem):
         )
 
 
+class CoarseModuliSpace(AlgebraicSpace):
+    r"""Coarse moduli space as an algebraic space over a general base."""
+
+    def __init__(
+        self,
+        base: AffineScheme,
+        *,
+        genus: int,
+        markings: tuple[object, ...],
+        name: str,
+        axioms: frozenset[str] | None = None,
+    ) -> None:
+        self._moduli_genus = int(genus)
+        self._moduli_markings = tuple(markings)
+        AlgebraicSpace.__init__(self, base, name=name, axioms=axioms)
+
+    def genus(self) -> int:
+        return self._moduli_genus
+
+    def number_of_markings(self) -> int:
+        return len(self._moduli_markings)
+
+    def marking_set(self) -> tuple[object, ...]:
+        return self._moduli_markings
+
+
 class CoarseModuliVariety(Variety):
-    r"""Coarse space of a moduli stack, retaining combinatorial type ``(g, I)``."""
+    r"""Coarse space over a field, strengthened to a variety when theorems apply."""
 
     def __init__(
         self,
@@ -222,9 +249,16 @@ class ModuliStack(DeligneMumfordStack):
         axioms = frozenset({"Smooth", "FiniteType"})
         if problem.is_stable():
             axioms = axioms | {"Proper"}
-        cat = ModuliStacks(base)
+        from sage.categories.category import Category
+
+        from ..categories.stacks import DeligneMumfordStacks
+
+        # Sage category join (objects inhabiting both equipped moduli and DM).
+        join = getattr(Category, "join")
+        cat = join((ModuliStacks(base), DeligneMumfordStacks(base)))
         for a in sorted(axioms):
-            cat = getattr(cat, a)()
+            if hasattr(cat, a):
+                cat = getattr(cat, a)()
         label = name or ("Mbar" if problem.is_stable() else "M") + f"_{problem.genus()},{problem.number_of_markings()}"
         from sage.structure.parent import Parent
 
@@ -252,15 +286,28 @@ class ModuliStack(DeligneMumfordStack):
     def dimension(self) -> int:
         return 3 * self.genus() - 3 + self.number_of_markings()
 
-    def coarse_space(self) -> CoarseModuliVariety:
+    def coarse_space(self) -> AlgebraicSpace:
+        r"""Coarse moduli space: algebraic space in general; variety over a field."""
         axioms = frozenset({"FiniteType", "Separated"})
         g, I = self.genus(), self.marking_set()
         if self.is_proper():
             axioms = axioms | {"Proper", "Normal", "Projective"}
         else:
             axioms = axioms | frozenset({"Integral"})
-        return CoarseModuliVariety(
-            self.base_scheme(),
+        base = self.base_scheme()
+        ring = base.ring()
+        from sage.categories.fields import Fields
+
+        if ring in Fields():
+            return CoarseModuliVariety(
+                base,
+                genus=g,
+                markings=I,
+                name=f"coarse({self!r})",
+                axioms=axioms,
+            )
+        return CoarseModuliSpace(
+            base,
             genus=g,
             markings=I,
             name=f"coarse({self!r})",

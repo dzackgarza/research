@@ -32,7 +32,7 @@ def stratified_stack_in_category(stratified: object, category: ModuliCategory) -
 
 def pointed_curve_in_category(curve: object, category: ModuliCategory) -> bool:
     from ..curves.pointed import Curve, PointedCurve, SmoothPointedCurve, StablePointedCurve
-    from .curves import Curves, PointedCurves, SmoothCurves, StablePointedCurves
+    from .curves import Curves, PointedCurves, SmoothCurves, SmoothPointedCurves, StablePointedCurves
 
     if not isinstance(curve, Curve):
         return False
@@ -41,6 +41,8 @@ def pointed_curve_in_category(curve: object, category: ModuliCategory) -> bool:
         return False
     if isinstance(category, StablePointedCurves):
         return isinstance(curve, StablePointedCurve)
+    if isinstance(category, SmoothPointedCurves):
+        return isinstance(curve, (SmoothPointedCurve, StablePointedCurve)) and bool(curve.is_smooth())
     if isinstance(category, PointedCurves):
         return isinstance(curve, PointedCurve)
     if isinstance(category, SmoothCurves):

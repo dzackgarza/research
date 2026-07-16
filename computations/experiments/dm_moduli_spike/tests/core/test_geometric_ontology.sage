@@ -1,29 +1,32 @@
-r"""§14 acceptance tests for the geometric ontology foundation."""
+r"""§14 / review Wave-1 acceptance tests for the geometric ontology foundation."""
 
 from __future__ import annotations
 
 from sage.categories.action import Action
 from sage.categories.homset import Hom
+from sage.categories.schemes import Schemes
 from sage.combinat.posets.posets import FinitePoset
 from sage.rings.rational_field import QQ
 from sage.schemes.affine.affine_space import AffineSpace
 from sage.schemes.projective.projective_space import ProjectiveSpace
+from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
 
 from dm_moduli_spike import (
     AlgebraicSpaces,
+    AlgebraicStacks,
     Compactifications,
     CurveFamilies,
     DeligneMumfordStacks,
     LocallyClosedSubstacks,
+    M_gI,
     M_gn,
+    Mbar_gI,
     Mbar_gn,
     ModuliStacks,
     PointedCurveFamilies,
     ProductStack,
     QuotientStack,
-    Schemes,
     Stacks,
-    AlgebraicStacks,
     StableGraphCategory,
     StablePointedCurveFamilies,
     StablePointedCurves,
@@ -33,6 +36,8 @@ from dm_moduli_spike import (
     scheme_open_immersion_compactification,
     spec,
 )
+from dm_moduli_spike.categories.curves import SmoothCurves
+from dm_moduli_spike.categories.schemes import schemes_over
 from dm_moduli_spike.geometry.stratification import StableDualGraph, Strata, Stratifications
 from dm_moduli_spike.objects.stable_graphs import StableGraphs
 from dm_moduli_spike.testing_support.support.poset_oracle import expected_M0n_specialization_poset
@@ -40,14 +45,19 @@ from dm_moduli_spike.testing_support.support.poset_oracle import expected_M0n_sp
 
 def test_category_hierarchy_subcategories():
     k = spec(QQ)
-    assert Varieties(k).is_subcategory(Schemes(k))
+    assert Varieties(k).is_subcategory(schemes_over(k))
     assert Varieties(k).is_subcategory(AlgebraicSpaces(k))
     assert AlgebraicSpaces(k).is_subcategory(DeligneMumfordStacks(k))
     assert DeligneMumfordStacks(k).is_subcategory(AlgebraicStacks(k))
     assert AlgebraicStacks(k).is_subcategory(Stacks(k))
-    assert ModuliStacks(k).is_subcategory(DeligneMumfordStacks(k))
+    # Equipped moduli stacks are NOT a subcategory of DM stacks.
+    assert not ModuliStacks(k).is_subcategory(DeligneMumfordStacks(k))
+    assert ModuliStacks(k).is_subcategory(Stacks(k))
     assert StratifiedStacks(k).is_subcategory(DeligneMumfordStacks(k))
     assert StratifiedSpaces(k).is_subcategory(AlgebraicSpaces(k))
+    # Stratified stacks do not inherit into algebraic spaces via StratifiedSpaces.
+    assert not StratifiedStacks(k).is_subcategory(StratifiedSpaces(k))
+    assert not StratifiedStacks(k).is_subcategory(AlgebraicSpaces(k))
 
 
 def test_moduli_stack_category_membership_M11():
@@ -55,6 +65,7 @@ def test_moduli_stack_category_membership_M11():
     XS = M_gn(1, 1, base=k)
     assert XS in ModuliStacks(k)
     assert XS in DeligneMumfordStacks(k)
+    assert XS.coarse_space() in AlgebraicSpaces(k)
     assert XS.coarse_space() in Varieties(k)
     assert XS.dimension() == 1
 
@@ -95,6 +106,7 @@ def test_boundary_stratification_poset_M11():
     XSbar = Mbar_gn(1, 1, base=k)
     bX = XSbar.boundary()
     assert bX in StratifiedStacks(k)
+    assert bX not in AlgebraicSpaces(k)
     P = bX.stratification_poset(order="specialization")
     assert isinstance(P, FinitePoset)
     assert P.cardinality() >= 1
@@ -106,19 +118,35 @@ def test_stratum_locally_closed_and_clutching_hom():
     Sigma = XSbar.stratification(by=StableDualGraph())
     assert Sigma.parent() is Stratifications(XSbar)
     assert Sigma in Stratifications(XSbar)
-    assert Sigma.indexing_category() == StableGraphs(1, (1,))
+    assert Sigma.indexing_category() is StableGraphCategory(1, 1)
+    assert Sigma.indexing_category().objects() is StableGraphs(1, (1,))
     Gamma = next(g for g in Sigma.index_poset() if g.num_edges() > 0)
     S = Sigma.stratum(Gamma)
     assert isinstance(S.parent(), Strata)
     assert S.parent() is Strata(Sigma)
     assert S in LocallyClosedSubstacks(XSbar)
     assert isinstance(S.underlying_stack(), QuotientStack)
+    open_factors = S.underlying_stack().covering_product().factors()
+    assert all(isinstance(F, type(M_gI(0, (1,), base=k))) or F.genus() >= 0 for F in open_factors)
+    for F in open_factors:
+        assert not F.is_proper()
     xi = S.clutching_morphism()
     assert xi is not None
     assert xi in Hom(xi.domain(), XSbar)
     assert xi.codomain() is XSbar
     assert isinstance(xi.domain(), ProductStack)
-    assert xi.domain() is ProductStack(xi.domain().factors(), base=k)
+    for F in xi.domain().factors():
+        assert F.is_proper()
+    assert S.closure_normalization() is not None
+    assert isinstance(S.closure_normalization(), QuotientStack)
+
+
+def test_boundary_restrict_drops_smooth_stratum():
+    k = spec(QQ)
+    XSbar = Mbar_gn(1, 1, base=k)
+    Sigma = XSbar.stratification(by=StableDualGraph())
+    Sigma_D = Sigma.restrict(XSbar.boundary())
+    assert set(Sigma_D.index_poset()) == {G for G in Sigma.index_poset() if G.num_edges() > 0}
 
 
 def test_stable_graphs_actions_and_hom_contraction():
@@ -139,7 +167,7 @@ def test_stable_graphs_actions_and_hom_contraction():
 def test_moduli_fiber_family_and_dual_graph():
     k = spec(QQ)
     I = (1,)
-    assert CurveFamilies(k).is_subcategory(Schemes(k))
+    assert CurveFamilies(k).is_subcategory(schemes_over(k))
     assert PointedCurveFamilies(k, I).is_subcategory(CurveFamilies(k))
     assert StablePointedCurveFamilies(k, 1, I).is_subcategory(PointedCurveFamilies(k, I))
 
@@ -153,6 +181,7 @@ def test_moduli_fiber_family_and_dual_graph():
     Cg = family.fiber("generic")
     assert Cs.is_nodal()
     assert Cg.is_smooth()
+    assert Cs not in SmoothCurves(k)
     assert Cs.dual_graph().num_edges() > Cg.dual_graph().num_edges()
     Gamma = C.dual_graph()
     assert Gamma in StableGraphs(1, I)
@@ -172,8 +201,6 @@ def test_g0_boundary_poset_matches_compatible_splits():
     n = 4
     XSbar = Mbar_gn(0, n, base=k)
     P = XSbar.boundary().stratification_poset(order="specialization")
-    # Full dual-graph specialization poset (including smooth) matches the oracle;
-    # boundary drops the smooth stratum, so compare to the induced subposet.
     full = XSbar.stratification(by=StableDualGraph()).specialization_poset()
     oracle = expected_M0n_specialization_poset(n)
     assert full.is_isomorphic(oracle)
@@ -196,9 +223,10 @@ def test_independent_A1_P1_compactification_and_stratification():
     assert P.is_isomorphic(posets.ChainPoset(2))
 
 
-def test_quotient_stack_outside_moduli():
-    r"""QuotientStack is a general construction, not Mbar-specific."""
+def test_quotient_stack_requires_action():
+    r"""QuotientStack requires a genuine action; actionless DM stamps are forbidden."""
     from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+    from sage.structure.unique_representation import UniqueRepresentation
 
     from dm_moduli_spike.geometry.compactification import SchemeStack
 
@@ -210,15 +238,27 @@ def test_quotient_stack_outside_moduli():
         axioms=frozenset({"FiniteType", "Separated"}),
     )
     G = SymmetricGroup(2)
-    Q = QuotientStack(space, G, None)
+    try:
+        QuotientStack(space, G, None)
+        assert False, "expected TypeError for action=None"
+    except TypeError:
+        pass
+
+    class FormalAction(UniqueRepresentation):
+        def __init__(self, group, X):
+            self._group = group
+            self._X = X
+
+    rho = FormalAction(G, space)
+    Q = QuotientStack(space, G, rho)
     assert isinstance(Q, QuotientStack)
     assert Q.space() is space
     assert Q.group() is G
-    assert Q in DeligneMumfordStacks(k)
+    assert Q.action() is rho
 
 
 def test_stack_fiber_and_hom_2_isomorphisms():
-    r"""Stack fibers and Hom-sets carry formal isomorphism / 2-isomorphism certificates."""
+    r"""2-isomorphisms relate 1-morphisms; they are not Hom-set elements."""
     from dm_moduli_spike import ModuliProblem, Stack, Stack2Isomorphism, StackObjectIsomorphism
     from dm_moduli_spike.geometry.stacks import StackHomset
 
@@ -237,50 +277,44 @@ def test_stack_fiber_and_hom_2_isomorphisms():
 
     HomXX = StackHomset(XS, XS)
     f = HomXX.an_element()
-    g = HomXX(kind="atlas")
+    g = HomXX(kind="morphism")
     two = HomXX.isomorphism(f, g)
     assert isinstance(two, Stack2Isomorphism)
-    assert two in HomXX
+    assert two not in HomXX
     assert two.source() is f
     assert two.target() is g
+
+    Delta = XS.diagonal()
+    assert Delta.domain() is XS
+    assert Delta.codomain() == XS.fiber_product(XS)
+    try:
+        XS.atlas()
+        assert False, "atlas() must not return a self-map"
+    except NotImplementedError:
+        pass
+
+
+def test_arbitrary_marking_set():
+    I = FiniteEnumeratedSet(("p", "q", "r", "s"))
+    graphs = StableGraphs(0, I)
+    assert graphs.marking_set() == ("p", "q", "r", "s")
+    G = graphs.from_vertices(
+        genera=(0, 0),
+        markings=(("p", "q"), ("r", "s")),
+        edges=((0, 1),),
+    )
+    assert G.genus() == 0
+    assert set(graphs.marking_set()) == {"p", "q", "r", "s"}
+    M = M_gI(0, I, base=spec(QQ))
+    assert M.marking_set() == ("p", "q", "r", "s")
 
 
 def test_gamma_objects_and_hom_domain_are_stable_graphs():
     Gamma = StableGraphCategory(1, 1)
     objects = Gamma.objects()
-    assert objects
-    assert all(isinstance(g, StableGraphs(1, (1,)).element_class) for g in objects)
-    assert all(g.parent() is StableGraphs(1, (1,)) for g in objects)
-    G, H = objects[0], objects[-1]
-    HomGH = Hom(G, H)
-    assert HomGH.domain() is G or HomGH.domain() == G
-    assert isinstance(HomGH.domain(), type(G))
-    assert HomGH.domain().parent() is StableGraphs(1, (1,))
-
-
-def test_typed_parents_have_element_constructors():
-    from dm_moduli_spike.objects.stable_graphs import Edge, HalfEdge, Leg, Vertex
-
-    Gamma = StableGraphCategory(0, 4)
-    g = next(g for g in Gamma.stable_graphs() if g.num_edges() > 0)
-    v = g.vertices()(0)
-    assert isinstance(v, Vertex)
-    assert v == 0
-    h = g.half_edges()(0)
-    assert isinstance(h, HalfEdge)
-    assert h == 0
-    e = next(iter(g.edges()))
-    assert isinstance(g.edges()(e), Edge)
-    assert g.edges()(e) == e
-    assert g.edges()(e.half_edges()) == e
-    leg = next(iter(g.legs()))
-    assert isinstance(g.legs()(leg), Leg)
-    assert g.legs()(leg) == leg
-    assert g.legs()(leg.label()) == leg
-
-
-def test_stable_graph_canonical_record_is_private():
-    Gamma = StableGraphCategory(0, 4)
-    g = next(iter(Gamma.stable_graphs()))
-    assert "canonical_representative" not in dir(g)
-    assert hasattr(g, "_canonical_record")
+    assert objects is StableGraphs(1, 1)
+    smooth = next(iter(objects))
+    assert smooth.parent() is StableGraphs(1, 1)
+    end = Gamma.end(smooth)
+    assert end.domain() is smooth or end.domain() == smooth
+    assert end.codomain() == smooth

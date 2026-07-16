@@ -1,20 +1,17 @@
 r"""Categories of algebraic curves over a base scheme.
 
-Hierarchy (over `B` in `\mathrm{Sch}/B`):
+Hierarchy (over `B`):
 
 .. code-block:: text
 
-    ModuliCategory(B)
-      └── Curves(B)
-            └── SmoothCurves(B)
-                  └── PointedCurves(B) / PointedCurves(B, g, n)
-                        └── StablePointedCurves(B, g, n)
+    Curves(B)
+      ├── SmoothCurves(B)
+      └── PointedCurves(B) / PointedCurves(B, g, n)
+            ├── SmoothPointedCurves(B, g, n)   # join with SmoothCurves
+            └── StablePointedCurves(B, g, I)   # nodal stable; not under Smooth
 
-These declare the geometric hierarchy.  Concrete curve *objects* are Sage
-:class:`~sage.schemes.curves.curve.Curve_generic` instances wrapped in
-``dm_moduli_spike.curves.pointed``.  This package does
-**not** claim Sage supplies Deligne--Mumford stacks or a universal family over
-`\mathcal M_{g,n}`.
+Pointed curves need not be smooth: boundary fibers of the DM compactification
+are stable nodal pointed curves.
 """
 
 from __future__ import annotations
@@ -25,14 +22,14 @@ from sage.structure.unique_representation import UniqueRepresentation
 from .._typing_utils import as_int
 from .base import AffineScheme
 from .foundation import ModuliCategory
-from .schemes import Schemes
+from .schemes import schemes_over
 
 
 class Curves(ModuliCategory):
     r"""Algebraic curves over a base scheme `B`."""
 
     def super_categories(self) -> list[Category]:
-        return [Schemes(self.base_scheme())]
+        return [schemes_over(self.base_scheme())]
 
     def __contains__(self, obj: object) -> bool:
         from .membership import pointed_curve_in_category
@@ -50,11 +47,10 @@ class SmoothCurves(Curves):
         return [Curves(self.base_scheme())]
 
 
-class PointedCurves(SmoothCurves):
-    r"""Smooth `n`-pointed curves of genus `g` over `B`.
+class PointedCurves(Curves):
+    r"""Pointed curves of genus `g` over `B` (not necessarily smooth).
 
-    Call as ``PointedCurves(B)`` for the untyped pointed-curve category, or
-    ``PointedCurves(B, g, n)`` to fix genus and marking count.
+    Call as ``PointedCurves(B)`` or ``PointedCurves(B, g, n)``.
     """
 
     @staticmethod
@@ -83,7 +79,7 @@ class PointedCurves(SmoothCurves):
     def __init__(self, base: AffineScheme, g: int | None = None, n: int | None = None) -> None:
         self._g = g
         self._n = n
-        SmoothCurves.__init__(self, base)
+        Curves.__init__(self, base)
 
     def genus(self) -> int | None:
         return self._g
@@ -92,7 +88,7 @@ class PointedCurves(SmoothCurves):
         return self._n
 
     def super_categories(self) -> list[Category]:
-        return [SmoothCurves(self.base_scheme())]
+        return [Curves(self.base_scheme())]
 
     def __contains__(self, obj: object) -> bool:
         from .membership import pointed_curve_in_category
@@ -111,11 +107,20 @@ class PointedCurves(SmoothCurves):
             return super().__contains__(obj)
 
 
-class StablePointedCurves(PointedCurves):
-    r"""Stable `n`-pointed curves of genus `g` over `B` (DM compactification fibers).
+class SmoothPointedCurves(PointedCurves):
+    r"""Smooth pointed curves: join of ``PointedCurves`` and ``SmoothCurves``."""
 
-    Call as ``StablePointedCurves(B, g, n)`` or ``StablePointedCurves(B, g, I)``
-    with a finite marking set ``I``.
+    def super_categories(self) -> list[Category]:
+        base = self.base_scheme()
+        if self._g is None:
+            return [PointedCurves(base), SmoothCurves(base)]
+        return [PointedCurves(base, self._g, self._n), SmoothCurves(base)]
+
+
+class StablePointedCurves(PointedCurves):
+    r"""Stable pointed curves of genus `g` over `B` (may be nodal).
+
+    Not a subcategory of smooth curves.
     """
 
     @staticmethod
@@ -154,8 +159,7 @@ class StablePointedCurves(PointedCurves):
     def __init__(self, base: AffineScheme, g: int | None = None, n: int | None = None) -> None:
         self._g = g
         self._n = n
-        # Skip PointedCurves.__init__ UniqueRepresentation path; init as SmoothCurves.
-        SmoothCurves.__init__(self, base)
+        Curves.__init__(self, base)
 
     def super_categories(self) -> list[Category]:
         base = self.base_scheme()
@@ -175,9 +179,9 @@ class StablePointedCurves(PointedCurves):
                     if int(obj.number_of_markings()) != self._n:
                         return False
                 return True
-            return super().__contains__(obj)
+            return False
         except Exception:
-            return super().__contains__(obj)
+            return False
 
 
 def _marking_tuple(I: object) -> tuple[object, ...]:
@@ -195,7 +199,7 @@ class CurveFamilies(ModuliCategory):
     r"""Families of curves over a base scheme `S`."""
 
     def super_categories(self) -> list[Category]:
-        return [Schemes(self.base_scheme())]
+        return [schemes_over(self.base_scheme())]
 
     def __contains__(self, obj: object) -> bool:
         from ..curves.families import CurveFamily
