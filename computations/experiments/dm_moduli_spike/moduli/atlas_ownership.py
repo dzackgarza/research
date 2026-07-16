@@ -16,7 +16,7 @@ goes through :func:`dispatch_etale_atlas`:
   :func:`etale_atlas_gap_from_registry` (reason + named literature alts).
 
 This module does **not** invent charts for arbitrary ``(g, n)``. Unowned types
-(e.g. ``M_{2,0}``, ``M_{0,6}``) stay gap-only until a literature-backed
+(e.g. ``M_{2,0}``, ``Mbar_{0,6}``) stay gap-only until a literature-backed
 construction is registered here.
 """
 
@@ -76,6 +76,7 @@ _OWNED_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
     OwnedAtlasPresentation(0, 4, True, "moduli_scheme_affine_cover", "projective_line_affine_cover", "none"),
     OwnedAtlasPresentation(0, 5, False, "moduli_affine_etale_chart", "knudsen_configuration", "none"),
     OwnedAtlasPresentation(0, 5, True, "moduli_scheme_affine_cover", "kapranov_blowup_four_points_p2", "none"),
+    OwnedAtlasPresentation(0, 6, False, "moduli_affine_etale_chart", "knudsen_configuration", "none"),
     OwnedAtlasPresentation(
         1,
         1,
@@ -231,6 +232,7 @@ def _domain_for_presentation(stack: ModuliStack, row: OwnedAtlasPresentation) ->
     )
     from .instances import (
         _configuration_M05_affine_scheme,
+        _configuration_M06_affine_scheme,
         _cross_ratio_affine_scheme,
         _hesse_affine_scheme,
         _hesse_M12_affine_scheme,
@@ -249,7 +251,12 @@ def _domain_for_presentation(stack: ModuliStack, row: OwnedAtlasPresentation) ->
     if name == "projective_line_affine_cover":
         return ProjectiveLineAlgebraicSpace(base, "Mbar_0_4")
     if name == "knudsen_configuration":
-        return AffineAlgebraicSpace(_configuration_M05_affine_scheme(base))
+        n = stack.number_of_markings()
+        if n == 5:
+            return AffineAlgebraicSpace(_configuration_M05_affine_scheme(base))
+        if n == 6:
+            return AffineAlgebraicSpace(_configuration_M06_affine_scheme(base))
+        raise AssertionError(f"knudsen_configuration owns open M_{{0,5}} and M_{{0,6}} only; got n={n}")
     if name == "kapranov_blowup_four_points_p2":
         return KapranovBlowupFourPointsP2AlgebraicSpace(base, "Mbar_0_5")
     if name == "legendre_gamma2":

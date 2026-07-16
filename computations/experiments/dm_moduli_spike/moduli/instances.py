@@ -175,6 +175,30 @@ def _configuration_M05_affine_scheme(base: AffineScheme) -> AffineScheme:
     return AffineScheme(poly.localization(lam * (lam - 1) * mu * (mu - 1) * (lam - mu)))
 
 
+def _configuration_M06_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Affine scheme for open ``ℳ_{0,6}`` via Knudsen / configuration coordinates.
+
+    Fix three markings at ``{0,1,∞}``. The remaining three markings are
+    ``(λ, μ, ν) ∈ (𝔸¹ ∖ {0,1})³`` with pairwise distinct coordinates, so
+
+    ``ℳ_{0,6} ≅ Spec(R[λ, μ, ν]_{λ(λ-1)μ(μ-1)ν(ν-1)(λ-μ)(λ-ν)(μ-ν)})``
+
+    as schemes (genus-0 moduli with ``n ≥ 3`` are representable). Literature:
+    Knudsen's inductive construction of ``M_{0,n}``; configuration-space
+    presentation removing diagonals and ``{0,1,∞}`` collisions. Owned for the
+    **open** stack only; proper ``Mbar_{0,6}`` (Kapranov blowups of ``ℙ³`` /
+    Fulton–MacPherson) is **not** owned here — leave fail-closed until an
+    honest scheme affine cover is registered.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=("lambda", "mu", "nu"))
+    lam, mu, nu = poly.gens()
+    denom = lam * (lam - 1) * mu * (mu - 1) * nu * (nu - 1) * (lam - mu) * (lam - nu) * (mu - nu)
+    return AffineScheme(poly.localization(denom))
+
+
 def _legendre_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
     r"""Legendre universal-curve chart for open ``M_{1,2}``.
 

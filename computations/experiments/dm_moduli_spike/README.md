@@ -22,7 +22,7 @@ Wave 1 is **not complete**. Prior “honesty demotions” (`NotImplementedError`
 | Item | Status |
 | --- | --- |
 | Category / curve / stratification ontology fixes | Landed |
-| `atlas()` / `etale_atlas()` as `U → X` | **Deepened, incomplete** — owned-presentation registry (`owned_etale_atlas_presentations` / `dispatch_etale_atlas`); 14 rows / 10 `(g,n,proper)` keys. Owned proving-set charts equation-level True; unowned `M_{2,0}` / `M_{0,6}` fail-closed with structured `etale_atlas_gap()` (no invented charts). `(1,*)` without units `2`/`3`: Weierstrass `𝔾_m` owned as non-finite-étale evidence. Remaining pre-#225 atlas debt: general `(g,n)`. Wave 1 incomplete; Wave 2 waits on #225 merge. |
+| `atlas()` / `etale_atlas()` as `U → X` | **Deepened, incomplete** — owned-presentation registry (`owned_etale_atlas_presentations` / `dispatch_etale_atlas`); 15 rows / 11 `(g,n,proper)` keys. Owned proving-set charts equation-level True (incl. open Knudsen `M_{0,6}`); unowned `M_{2,0}` / `Mbar_{0,6}` fail-closed with structured `etale_atlas_gap()` (no invented charts). `(1,*)` without units `2`/`3`: Weierstrass `𝔾_m` owned as non-finite-étale evidence. Remaining pre-#225 atlas debt: general `(g,n)`. Wave 1 incomplete; Wave 2 waits on #225 merge. |
 | Structured `pullback` / `fiber_product` | **Deepened, incomplete** — `BaseChangeStack` + `FiberProductStack` with legs/mediating recovery. Full Hom-category UP waits on #225 |
 | Aut(Γ) action on product strata | **Deepened, incomplete** — Sage `Action` subclass; factor swap on equal-type 2-vertex graphs; quotient covering autos. #225 `Actions` wiring unfinished |
 
