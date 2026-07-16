@@ -40,8 +40,26 @@ if TYPE_CHECKING:
     from sage.categories.category import Category
 
 
-def _is_placed(factor: SageParent, axiom_category: Category) -> bool:
-    return cast(bool, factor.category().is_subcategory(axiom_category))
+def _declared_axioms(factor: SageParent) -> frozenset[str]:
+    return frozenset(factor.category().axioms())
+
+
+def _is_finite_placed(factor: SageParent) -> bool:
+    return "Finite" in _declared_axioms(factor)
+
+
+def _is_countable_placed(factor: SageParent) -> bool:
+    declared = _declared_axioms(factor)
+    return "Countable" in declared or "Finite" in declared
+
+
+def _is_infinite_placed(factor: SageParent) -> bool:
+    declared = _declared_axioms(factor)
+    return "Infinite" in declared or "Uncountable" in declared
+
+
+def _is_uncountable_placed(factor: SageParent) -> bool:
+    return "Uncountable" in _declared_axioms(factor)
 
 
 def _exact_cardinality(factor: SageParent) -> Cardinal:
@@ -58,11 +76,11 @@ def _is_known_empty(factor: SageParent) -> bool:
     Infinite and uncountable sets are nonempty; a finite set answers by
     exact cardinality; a countable set answers by a terminating first
     -element probe. Anything else must declare its placement first."""
-    if _is_placed(factor, Sets().Infinite()) or _is_placed(factor, Sets().Uncountable()):
+    if _is_infinite_placed(factor):
         return False
-    if _is_placed(factor, Sets().Finite()):
+    if _is_finite_placed(factor):
         return _exact_cardinality(factor) == 0
-    assert _is_placed(factor, Sets().Countable()), f"emptiness of {factor} is undetermined: declare its placement in the owned Sets() axioms"
+    assert _is_countable_placed(factor), f"emptiness of {factor} is undetermined: declare its placement in the owned set axioms"
     for _ in cast(Iterable[object], factor):
         return False
     return True
@@ -76,13 +94,13 @@ def _placement(factors: tuple[SageParent, ...]) -> Category:
     is uncountable. Empty-constituent precedence for products is handled by
     the caller before this is consulted."""
     category: Sets = Sets()
-    if all(_is_placed(factor, Sets().Finite()) for factor in factors):
+    if all(_is_finite_placed(factor) for factor in factors):
         return category.Finite()
-    if all(_is_placed(factor, Sets().Countable()) for factor in factors):
+    if all(_is_countable_placed(factor) for factor in factors):
         category = category.Countable()
-    if any(_is_placed(factor, Sets().Uncountable()) for factor in factors):
+    if any(_is_uncountable_placed(factor) for factor in factors):
         category = category.Uncountable()
-    elif any(_is_placed(factor, Sets().Infinite()) for factor in factors):
+    elif any(_is_infinite_placed(factor) for factor in factors):
         category = category.Infinite()
     return category
 

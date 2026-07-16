@@ -148,12 +148,12 @@ class InfiniteSets(CategoryWithAxiom):
 class CountableSets(CategoryWithAxiom):
     r"""Countable sets: membership forces the executable witness suite.
 
-    A set with a chosen enumeration is exactly an enumerated set, so this
-    axiom refines Sage's ``EnumeratedSets`` — the sanctioned adapter
-    integration that lets Sage's solved construction machinery (fair
-    Cartesian-product iteration, disjoint unions) consume owned countable
-    sets natively. The owned public meanings remain ``iter(X)``, ``X[n]``,
-    and ``X.index(x)``."""
+    The owned notion is countability with a chosen enumeration; Sage's
+    ``EnumeratedSets`` is ADAPTER machinery only ("enumerated" is a
+    Sage-side word, not owned vocabulary), refined here so Sage's solved
+    construction machinery (fair Cartesian-product iteration, disjoint
+    unions) consumes owned countable sets natively. The owned public
+    meanings remain ``iter(X)``, ``X[n]``, and ``X.index(x)``."""
 
     _base_category_class_and_axiom = (Sets, "Countable")
 
@@ -190,20 +190,23 @@ class CountableSets(CategoryWithAxiom):
             assert False, f"{element} is not in the enumeration of {self}"
 
         def enumeration_injection(self) -> object:
-            r"""The monomorphism into the nonnegative integers realized by
-            the chosen enumeration, ``x -> index(x)``, as an element of the
-            actual homset — the constructed effective witness of
-            countability."""
+            r"""The monomorphism into the SET of nonnegative integers
+            realized by the chosen enumeration, ``x -> index(x)``, as an
+            element of the actual homset — the constructed effective
+            witness of countability. (The codomain is the underlying set of
+            the naturals: the injection is a set map, so it forgets the
+            semiring structure of its codomain.)"""
             from sage.categories.homset import Hom
             from sage.categories.morphism import SetMorphism
 
             from .fundamental_sets import NonNegativeIntegers
+            from .underlying_sets import UnderlyingSet
 
-            naturals = NonNegativeIntegers()
-            homset = Hom(self, naturals, SageSets())
-            # naturals[n] IS the natural number n (identity enumeration),
+            target = UnderlyingSet(NonNegativeIntegers())
+            homset = Hom(self, target, SageSets())
+            # target[n] IS the natural number n (identity enumeration),
             # already normalized into the host parent.
-            return SetMorphism(homset, lambda element: naturals[self.index(element)])
+            return SetMorphism(homset, lambda element: target[self.index(element)])
 
         def is_countable(self) -> bool:
             return True

@@ -106,9 +106,18 @@ class CountableMagmas(CategoryWithAxiom):
     r"""Magmas whose underlying set is countable. (Sage silently discards
     an axiom request with no defining class, so this class must exist even
     though the countability semantics live entirely on the ``Sets()``
-    side, reached through the underlying-set route.)"""
+    side, reached through the underlying-set route.) Carries the same
+    Sage-``EnumeratedSets`` ADAPTER integration as the owned ``Countable``
+    sets — internal wiring only; the owned notion is countability — so
+    Sage's construction machinery consumes countable structured parents
+    natively."""
 
     _base_category_class_and_axiom = (Magmas, "Countable")
+
+    def extra_super_categories(self) -> list[Category]:
+        from sage.categories.enumerated_sets import EnumeratedSets
+
+        return [EnumeratedSets()]
 
 
 class UncountableMagmas(CategoryWithAxiom):
@@ -145,17 +154,31 @@ class AdditiveMonoids(CategoryWithAxiom):
 
     _base_category_class_and_axiom = (AdditiveSemigroups, "AdditiveUnital")
 
+    if TYPE_CHECKING:
+        # Sage's standard axiom, synthesized at runtime.
+        def AdditiveCommutative(self) -> Category: ...
+
 
 class AdditiveGroups(CategoryWithAxiom):
     r"""Additive monoids with additive inverses."""
 
     _base_category_class_and_axiom = (AdditiveMonoids, "AdditiveInverse")
 
+    if TYPE_CHECKING:
+        # Sage's standard axiom, synthesized at runtime.
+        def AdditiveCommutative(self) -> Category: ...
+
 
 class CountableAdditiveMagmas(CategoryWithAxiom):
-    r"""Additive magmas whose underlying set is countable."""
+    r"""Additive magmas whose underlying set is countable, carrying the
+    same Sage-adapter wiring."""
 
     _base_category_class_and_axiom = (AdditiveMagmas, "Countable")
+
+    def extra_super_categories(self) -> list[Category]:
+        from sage.categories.enumerated_sets import EnumeratedSets
+
+        return [EnumeratedSets()]
 
 
 class UncountableAdditiveMagmas(CategoryWithAxiom):

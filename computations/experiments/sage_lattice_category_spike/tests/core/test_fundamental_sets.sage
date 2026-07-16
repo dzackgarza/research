@@ -40,9 +40,12 @@ def test_integers_reuse_sage_zigzag_with_the_exact_index_formula():
     assert integers.index(-1) == 2
     assert integers.index(17) == 33
     assert integers.index(-17) == 34
-    assert integers[7] == 4
-    assert integers[integers.index(-9)] == -9
-    assert integers.index(integers[36]) == 36
+    # Enumeration indexing lives on the SET side: the facade is a ring, so
+    # bracket syntax keeps Sage's ring semantics and U(X) owns X[n].
+    underlying = integers.underlying_set()
+    assert underlying[7] == 4
+    assert underlying[integers.index(-9)] == -9
+    assert integers.index(underlying[36]) == 36
 
     assert integers.is_countable()
     assert not integers.is_uncountable()
@@ -71,7 +74,7 @@ def test_rationals_reuse_sage_height_enumeration_with_scan_reverse_lookup():
 
     assert rationals.index(QQ(1) / 3) == 7
     witness = QQ(2) / 5
-    assert rationals[rationals.index(witness)] == witness
+    assert rationals.underlying_set()[rationals.index(witness)] == witness
 
     assert QQ(1) / 2 in rationals
     assert 3 in rationals
@@ -84,7 +87,7 @@ def test_nonnegative_integers_enumerate_identically():
     naturals = NonNegativeIntegers()
     assert list(itertools.islice(iter(naturals), 5)) == [0, 1, 2, 3, 4]
     assert naturals.index(7) == 7
-    assert naturals[11] == 11
+    assert naturals.underlying_set()[11] == 11
     assert 0 in naturals
     assert -1 not in naturals
     assert naturals.is_countable()
@@ -110,22 +113,24 @@ def test_enumeration_injection_is_an_element_of_the_actual_homset():
     construction from the operational suite: the morphism lives in the real
     homset, computes index values as elements of the owned naturals, and is
     injective on a genuine prefix."""
-    integers = Integers()
-    naturals = NonNegativeIntegers()
-    injection = integers.enumeration_injection()
+    # The injection is a SET map: it lives on the underlying sets, with the
+    # structured facades' operations forgotten on both sides.
+    underlying = Integers().underlying_set()
+    target = NonNegativeIntegers().underlying_set()
+    injection = underlying.enumeration_injection()
 
-    assert injection.parent() is Hom(integers, naturals, SageSets())
-    assert injection.domain() is integers
-    assert injection.codomain() is naturals
+    assert injection.parent() is Hom(underlying, target, SageSets())
+    assert injection.domain() is underlying
+    assert injection.codomain() is target
 
     assert injection(ZZ(-9)) == 18
     assert injection(ZZ(5)) == 9
     # Sage's NN is itself a facade over ZZ, so images are (nonnegative) ZZ
     # elements; the semantic fact is membership in the owned codomain.
-    assert injection(ZZ(5)) in naturals
+    assert injection(ZZ(5)) in target
     assert injection(ZZ(-9)) in NN
 
-    prefix = list(itertools.islice(iter(integers), 15))
+    prefix = list(itertools.islice(iter(underlying), 15))
     images = [injection(element) for element in prefix]
     assert len(set(images)) == 15
 
