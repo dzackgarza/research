@@ -22,5 +22,4 @@ created: 2026-05-08
 > \end{aligned}
 > $$
 
-
 Even 2-elementary lattices that admit a primitive embedding into the [[K3 lattice]] $L_{\mathrm{K3}}$ are finite direct sums of basic lattices such as $A_1$, $D_4$, $D_6$, $D_8$, $E_7$, $E_8$, $E_8(2)$, $\langle 2\rangle$, $U$, and $U(2)$.

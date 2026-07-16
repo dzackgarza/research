@@ -6,7 +6,6 @@ Let $C \subset \PP^2$ be an irreducible sextic curve with at worst $A_1$
 singularities.
 Then $C$ is a rational curve if and only if it has exactly ten $A_1$
 singularities.
-
 :::
 
 ::: {.proof}
@@ -25,7 +24,6 @@ Noting that $d=6$, we obtain the geometric genus
 $g = 10 - k$, where $k$ is the number of $A_1$ singularities.
 Thus
 $g = 0$ if and only if $k = 10$.
-
 :::
 
 ::: {#rmk:severi-sextics .remark}
@@ -48,7 +46,6 @@ satisfy the bounded condition $\sum \delta_p = 10$.
 The classical
 unnodal Coble surface construction specifically requires a sextic from
 the generic, 10-$A_1$ locus.
-
 :::
 
 ::: {.remark}
@@ -92,7 +89,6 @@ $$
 $$
 
 yielding $C\sim -2K_S$.
-
 :::
 
 ::: {.remark}
@@ -107,5 +103,4 @@ $$
 noting that $K_S^2 = -1$.
 This forces $C$ to be a smooth rational curve
 with $C^2 = 4K_S^2 = -4$.
-
 :::

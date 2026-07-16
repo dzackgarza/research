@@ -14,7 +14,6 @@ created: 2026-05-08
 > $$
 > L^{\vee} \cong \{ v \in L_{\mathbf{Q}} \mathrel{\Big|} \beta_{\mathbf{Q}}(v,L) \subseteq \mathbf{Z}\}
 > $$
-> where a functional $\phi \in L^{\vee}$ corresponds to the unique vector $v_\phi \in L_{\mathbf{Q}}$ such that $\phi(w) = \beta(v_\phi, w)$ for all $w \in L$. 
+> where a functional $\phi \in L^{\vee}$ corresponds to the unique vector $v_\phi \in L_{\mathbf{Q}}$ such that $\phi(w) = \beta(v_\phi, w)$ for all $w \in L$.
 > 
 > Under this identification, we have the inclusions $L \subseteq L^{\vee} \subseteq L_{\mathbf{Q}}$.
-

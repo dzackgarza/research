@@ -29,7 +29,6 @@ $V(\lambda f_6 + \mu f_3^2)$ such that the minimal resolution of its basepoints
 is a Halphen surface of index 2. The proof of [@DK24 Prop. 9.1.8]
 indicates that the moduli space of general Halphen surfaces of index 2 has
 dimension 9.
-
 :::
 
 The following is [@CDL24 Prop. 3.1]:
@@ -48,7 +47,6 @@ Then
 
 Conversely, the blow-up of a singular point of an irreducible non-multiple fiber
 of a Halphen surface of index 2 is a Coble surface.
-
 :::
 
 ::: {.remark}
@@ -62,7 +60,6 @@ Regarding the coarse spaces as period domains attached to lattices, the lattices
 match up precisely; see \cref{table:coble-lattices}.
 Applications of mirror moves indicate that the cusp diagrams would
 correspondingly coincide as well.
-
 :::
 
 [^5]: $A_1$ or $A_2$ singularities.

@@ -4,8 +4,8 @@ Utility functions for SageMath documentation processing.
 This module contains functions that can be used independently of Streamlit.
 """
 
-import os
 import ast
+import os
 from pathlib import Path
 from typing import Any
 
@@ -13,7 +13,7 @@ from typing import Any
 def extract_python_docstrings(file_path: Path) -> str:
     """Extract docstrings and class/function definitions from Python files with enhanced SageMath support."""
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         # Skip empty files
@@ -89,10 +89,10 @@ def extract_python_docstrings(file_path: Path) -> str:
             # Fallback to enhanced raw content extraction
             return extract_raw_content_enhanced(lines, file_path)
 
-    except Exception as e:
+    except Exception:
         # Fallback to enhanced raw content
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 lines = f.readlines()
             return extract_raw_content_enhanced(lines, file_path)
         except Exception:
@@ -416,7 +416,6 @@ def create_sage_ctags_index(force_rebuild: bool = False) -> bool:
         True if index was created/exists, False otherwise
     """
     import subprocess
-    import os
     from pathlib import Path
 
     sage_path = get_sage_path()
@@ -435,9 +434,9 @@ def create_sage_ctags_index(force_rebuild: bool = False) -> bool:
         if age_days < 7:
             return True
 
-    print(f"🏗️  Building comprehensive ctags index for Sage repository...")
+    print("🏗️  Building comprehensive ctags index for Sage repository...")
     print(
-        f"   This may take a few minutes but will greatly speed up line number detection."
+        "   This may take a few minutes but will greatly speed up line number detection."
     )
 
     try:
@@ -499,7 +498,7 @@ def find_symbol_line_with_sage_index(
             return None, None
 
     try:
-        with open(ctags_file, "r") as f:
+        with open(ctags_file) as f:
             matches: list[tuple[int, str]] = []
             for line in f:
                 if line.startswith("!_TAG_"):

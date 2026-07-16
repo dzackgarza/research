@@ -14,4 +14,5 @@ abstract: |
 # Projective degenerations of Enriques' surfaces
 
 - **Used here for:** projective degenerations related to the flowerpot picture.
+
 - **Project relevance:** forms part of the classical degeneration background that the paper interprets on the Coble boundary.

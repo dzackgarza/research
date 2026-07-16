@@ -16,4 +16,5 @@ abstract: |
 # Stable pair compactification of moduli of K3 surfaces of degree 2
 
 - **Used here for:** the stable-pair side of degree-2 K3 compactifications in the stable-limits discussion.
+
 - **Project relevance:** forms part of the KSBA background for comparing period-domain compactifications with geometric compactifications.

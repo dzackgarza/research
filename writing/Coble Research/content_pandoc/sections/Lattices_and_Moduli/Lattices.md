@@ -38,7 +38,6 @@ $$
 which sends the generator $h$ of $\gens{2}$ to $\tilde e+\tilde f\in U$ and is
 the identity on the $E_{10}(2)$ summand.
 Since $\coker \eta$ is torsionfree, $\eta$ is a primitive embedding.
-
 :::
 
 ::: {#lem:sequence_of_embeddings .lemma}
@@ -61,7 +60,6 @@ $$
 $$
 
 and thus an embedding $F_{\Co} \injects F_{(2,2,0)}$.
-
 :::
 
 ::: {.proof}
@@ -85,7 +83,6 @@ This embedding is unique since one can write the codomain as
 $E_{10}^\perp \oplus E_{10}$.
 Similarly, by [@Nik79 Cor. 1.5.2, Thm.
 3.6.3], the homomorphism $\Orth(L)\to \Orth(T_\Co)$ is surjective. 
-
 :::
 
 ::: {#lem:locally_closed_embedding_BB .lemma}
@@ -96,11 +93,9 @@ $T_{\Co} \injects T_{\dP}$) induce
 locally closed embedding $F_\Co \injects F_\En$ (resp.
 $F_{\Co} \injects F_{(2,2,0)}$) which extend to a morphisms on the
 Baily-Borel compactifications.
-
 :::
 
 ::: {.proof}
 
 This follows from [@KK72 §5, Thm.2]. 
-
 :::

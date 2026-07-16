@@ -9,11 +9,10 @@ This module provides LlamaIndex-style inline citations by:
 4. Supporting both page-style citations (for docs) and line-based citations (for source)
 """
 
-import re
-import hashlib
-from typing import Any, TypedDict
-from pathlib import Path
 import logging
+import re
+from pathlib import Path
+from typing import Any, TypedDict
 
 logger = logging.getLogger(__name__)
 

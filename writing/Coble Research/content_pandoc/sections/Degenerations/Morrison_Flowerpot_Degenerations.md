@@ -24,5 +24,4 @@ stalks are attached.
 Flower pots correspond to type $\mathrm{(i.b)}$ in the classification [@Ols04
 Cor. 6.2], which by [@AEGS23 Rmk. 4.12] are Type $\latI$ semistable
 degenerations of Enriques surfaces with a klt singularity.
-
 :::

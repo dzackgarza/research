@@ -6,7 +6,6 @@ Provides necessary functions for creating links and processing citations.
 
 import re
 from pathlib import Path
-from typing import Optional
 
 
 def get_primary_line_number(content: str, file_path: str) -> int:
@@ -104,7 +103,7 @@ def fix_github_path(file_path: str) -> str:
     return file_path
 
 
-def convert_to_docs_url(file_path: str) -> Optional[str]:
+def convert_to_docs_url(file_path: str) -> str | None:
     """
     Convert a file path to SageMath documentation URL if possible.
 

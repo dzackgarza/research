@@ -15,7 +15,6 @@ These are realized by allowing the K3 cover of an Enriques surface to acquire an
 $A_1$ singularity fixed by the Enriques involution; the resulting quotient has a
 quartic singularity whose resolution is an irreducible smooth rational curve $C$
 satisfying $C^2 = -4$, and by [@Nue15 p. 8] is thus a Coble surface $S$.
-
 :::
 
 :::: {.remark}
@@ -41,7 +40,6 @@ The case of interest to us is $n=1$, and thus the lattice
 $M = (11, 11, 1) = A_1 \oplus E_{10}(2)$ and its complement $N$ in the K3
 lattice will be used to construct a period domain quotiented by an appropriate
 arithmetic subgroup, producing the coarse moduli space of interest.
-
 ::::
 
 ::: {.remark}
@@ -55,6 +53,4 @@ It seems that these degenerations correspond to the (weakly projective)
 **flowerpot** degenerations of [@Ols04], and I conjecture that the corresponding
 Kulikov models correspond to integral-affine discs (as opposed to spheres or
 real projective spaces).
-
 :::
-

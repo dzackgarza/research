@@ -17,5 +17,5 @@ created: 2026-05-08
 > \beta_q &\mathrel{\reflectbox{\ensuremath{\mapsto}}} q
 > \end{aligned}
 > 
-> In other words, the polar form of any integral quadratic form is an even symmetric integral form. Conversely, every even symmetric integral form $\beta$ is the polar form of the integral quadratic form $q(v) \mathrel{\mathop:}= \frac{1}{2}\beta(v,v)$.
-
+> In other words, the polar form of any integral quadratic form is an even symmetric integral form.
+> Conversely, every even symmetric integral form $\beta$ is the polar form of the integral quadratic form $q(v) \mathrel{\mathop:}= \frac{1}{2}\beta(v,v)$.

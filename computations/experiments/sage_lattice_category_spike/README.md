@@ -15,11 +15,17 @@ Gate every type change with `just lexicon-check`. Known Sage typing traps are in
 ## Boundaries
 
 - `lattice_categories.py` is the public facade used by tests and downstream spikes.
+
 - `lexicon/` + `typings/` are the centralized type surface (see above).
+
 - `algebra/` is pure language shape: typed carriers, value modules, and scalar helpers.
+
 - `objects/` owns Sage category classes, lattice parents, elements, and constructors.
+
 - `forms/` owns discriminant groups/forms and genus data.
+
 - `morphisms/` owns Hom/End/O(L) objects and group actions.
+
 - `tests/` is organized by proof obligation: owned behavior, literature fixtures, Sage reference contracts, and slow CI-only fixtures.
 
 Keep new code in the narrowest owning package.

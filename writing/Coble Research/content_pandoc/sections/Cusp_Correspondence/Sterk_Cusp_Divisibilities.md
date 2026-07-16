@@ -11,5 +11,4 @@
 | 5          | $2e + 2f + \overline{\alpha}_1$  | 2                      | 1                                |
 
 : Isotropic vectors in $F_{\En, 2}$ and their divisibilities.
-
 :::

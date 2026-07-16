@@ -261,7 +261,6 @@ Thus $\tilde w_2$ is odd, and we apply case (a) of [@AE22 Thm.
 5.10].
 
 :::
-
 :::
 
 ::: {.remark}
@@ -271,5 +270,4 @@ $T_\Co$ with Sterk cusp 2 as the folding of $(18,0,0)_1$ by the horizontal
 symmetry of its Coxeter diagram.
 This means that the corresponding IAS and Kulikov models will be disc type, and
 correspond to the folding involution of Sterk 2.
-
 :::

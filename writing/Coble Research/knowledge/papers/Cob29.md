@@ -14,4 +14,5 @@ abstract: |
 # Algebraic geometry and theta functions
 
 - **Used here for:** classical background on point configurations and the historical geometry surrounding Coble surfaces.
+
 - **Project relevance:** complements the original sextic-node construction with the broader classical theory.

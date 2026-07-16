@@ -5,14 +5,14 @@ type: note
 title: "Refining the Moduli Space of Polarized Coble Surfaces"
 ---
 
-
 # Refining the Moduli Space of Polarized Coble Surfaces
 
 导出时间: 5/11/2026, 11:53:32 AM
 
----
+* * *
 
-In the course of this conversation, the user identified a series of critical mathematical and logical gaps in the initial research program, which the model subsequently confirmed and corrected. The explicit gaps identified and confirmed include:
+In the course of this conversation, the user identified a series of critical mathematical and logical gaps in the initial research program, which the model subsequently confirmed and corrected.
+The explicit gaps identified and confirmed include:
 
 **Lack of Root Uniqueness Statement:** The user pointed out there was no canonical or logical choice for the **Coble root** δ without a uniqueness statement\[1\]. The model later admitted it had incorrectly conflated **Namikawa’s** ΓEn​**\-orbit uniqueness** with the ΓEn,2​**\-orbit uniqueness** required for the degree-two polarized case\[2\]. Without proving that the pullback of the unpolarized Coble divisor to FEn,2​ is irreducible, TCo,2​\=δ⊥ represents only one branch of the moduli space rather than the full space\[5\]\[6\].
 
@@ -30,27 +30,8 @@ In the course of this conversation, the user identified a series of critical mat
 
 **Missing Mechanism for Integral-Affine Structures (IAS):** The user noted the lack of a clear relationship between the abstract Coxeter diagrams and the IAS\[1\]\[28\]. The model corrected this by grounding the IAS construction in the **K3-side data**, where the Coble condition is imposed as a **marked zero-length root** on a folded Enriques IAS\[32\].
 
-**Equivariance of the Period Map:** The user noted that the equivariance of the map on period domains was "hand-waved"\[14\]. The model responded by explicitly formulating the equivariant inclusion ιδ​:D(δ⊥)↪D(TEn​) to justify the morphism of arithmetic quotients\[8\].
----
+## **Equivariance of the Period Map:** The user noted that the equivariance of the map on period domains was "hand-waved"\[14\]. The model responded by explicitly formulating the equivariant inclusion ιδ​:D(δ⊥)↪D(TEn​) to justify the morphism of arithmetic quotients\[8\].
 
 ## 引用来源
 
-[1] KSBA Compactification and Coble.md
-[2] KSBA Compactification and Coble.md
-[5] KSBA Compactification and Coble.md
-[6] KSBA Compactification and Coble.md
-[7] KSBA Compactification and Coble.md
-[8] KSBA Compactification and Coble.md
-[9] KSBA Compactification and Coble.md
-[10] KSBA Compactification and Coble.md
-[11] KSBA Compactification and Coble.md
-[12] KSBA Compactification and Coble.md
-[13] KSBA Compactification and Coble.md
-[14] KSBA Compactification and Coble.md
-[15] KSBA Compactification and Coble.md
-[20] KSBA Compactification and Coble.md
-[21] KSBA Compactification and Coble.md
-[25] KSBA Compactification and Coble.md
-[28] KSBA Compactification and Coble.md
-[29] KSBA Compactification and Coble.md
-[32] KSBA Compactification and Coble.md
+[1] KSBA Compactification and Coble.md [2] KSBA Compactification and Coble.md [5] KSBA Compactification and Coble.md [6] KSBA Compactification and Coble.md [7] KSBA Compactification and Coble.md [8] KSBA Compactification and Coble.md [9] KSBA Compactification and Coble.md [10] KSBA Compactification and Coble.md [11] KSBA Compactification and Coble.md [12] KSBA Compactification and Coble.md [13] KSBA Compactification and Coble.md [14] KSBA Compactification and Coble.md [15] KSBA Compactification and Coble.md [20] KSBA Compactification and Coble.md [21] KSBA Compactification and Coble.md [25] KSBA Compactification and Coble.md [28] KSBA Compactification and Coble.md [29] KSBA Compactification and Coble.md [32] KSBA Compactification and Coble.md
