@@ -1,3 +1,8 @@
+import sys as _sys
+from pathlib import Path as _Path
+
+_sys.path.insert(0, str(_Path(__file__).resolve().parents[2] / "scripts"))
+
 import hashlib
 import os
 import pickle
@@ -23,7 +28,7 @@ from haystack.document_stores.in_memory import InMemoryDocumentStore
 from haystack.document_stores.types import DuplicatePolicy
 
 # Import our SageMath utilities
-from dzack_research.sagemath_doc_search import (
+from sagemath_doc_search import (
     extract_python_docstrings,
     get_sage_path,
     get_sagemath_patterns,
