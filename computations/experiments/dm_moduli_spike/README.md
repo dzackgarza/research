@@ -22,7 +22,7 @@ Wave 1 is **not complete**. Prior “honesty demotions” (`NotImplementedError`
 | Item | Status |
 | --- | --- |
 | Category / curve / stratification ontology fixes | Landed |
-| `atlas()` / `etale_atlas()` as `U → X` | **Deepened, incomplete** — owned-presentation registry (`owned_etale_atlas_presentations` / `dispatch_etale_atlas`); 15 rows / 11 `(g,n,proper)` keys. Owned proving-set charts equation-level True (incl. open Knudsen `M_{0,6}`); unowned `M_{2,0}` / `Mbar_{0,6}` fail-closed with structured `etale_atlas_gap()` (no invented charts). `(1,*)` without units `2`/`3`: Weierstrass `𝔾_m` owned as non-finite-étale evidence. Remaining pre-#225 atlas debt: general `(g,n)`. Wave 1 incomplete; Wave 2 waits on #225 merge. |
+| `atlas()` / `etale_atlas()` as `U → X` | **Deepened, incomplete** — owned-presentation registry: **12** rows by default (one parametric open Knudsen `M_{0,n}` for all `n≥3` + proper genus-0 + genus-1); `expand_open_m0n_through=8` yields **17** inspectable rows / **13** type keys. Open Knudsen equation-level True for every `n≥3`; `M_{2,0}` / `Mbar_{0,n}` (`n>5`) fail-closed (no invented Kapranov). `(1,*)` without units `2`/`3`: Weierstrass `𝔾_m` as non-finite-étale evidence. Remaining pre-#225 atlas debt: general `(g,n)` beyond open genus-0 Knudsen. Wave 1 incomplete; Wave 2 waits on #225 merge. |
 | Structured `pullback` / `fiber_product` | **Deepened, incomplete** — `BaseChangeStack` + `FiberProductStack` with legs/mediating recovery. Full Hom-category UP waits on #225 |
 | Aut(Γ) action on product strata | **Deepened, incomplete** — Sage `Action` subclass; factor swap on equal-type 2-vertex graphs; quotient covering autos. #225 `Actions` wiring unfinished |
 

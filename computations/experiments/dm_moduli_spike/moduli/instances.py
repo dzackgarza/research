@@ -104,11 +104,66 @@ def _punctured_lambda_affine_scheme(base: AffineScheme) -> AffineScheme:
 def _cross_ratio_affine_scheme(base: AffineScheme) -> AffineScheme:
     r"""Affine scheme ``Spec(R[λ]_{λ(λ-1)}) ≅ ℙ¹ ∖ {0,1,∞}`` (cross-ratio chart).
 
-    Literature: ``ℳ_{0,4}`` is isomorphic to this affine scheme (Knudsen / standard
-    moduli of 4-pointed genus-0 curves). Used only as an owned étale-atlas domain
-    for the open stack ``M_{0,4}``, not for general ``(g,n)`` or ``Mbar``.
+    Special case ``n = 4`` of :func:`_knudsen_open_M0n_affine_scheme`.
     """
-    return _punctured_lambda_affine_scheme(base)
+    return _knudsen_open_M0n_affine_scheme(base, 4)
+
+
+def _knudsen_open_M0n_coordinate_names(dimension: int) -> tuple[str, ...]:
+    r"""Coordinate names for the open Knudsen chart of dimension ``n - 3``.
+
+    Matches historical special cases: ``λ`` (``n=4``), ``λ,μ`` (``n=5``),
+    ``λ,μ,ν`` (``n=6``); for ``n ≥ 7`` uses ``t_1,…,t_{n-3}``.
+    """
+    if dimension == 1:
+        return ("lambda",)
+    if dimension == 2:
+        return ("lambda", "mu")
+    if dimension == 3:
+        return ("lambda", "mu", "nu")
+    return tuple(f"t{i}" for i in range(1, dimension + 1))
+
+
+def _knudsen_open_M0n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme:
+    r"""Parametric Knudsen / configuration chart for open ``ℳ_{0,n}``, ``n ≥ 3``.
+
+    Fix three markings at ``{0,1,∞}``. The remaining ``n - 3`` markings are
+    coordinates ``t_1,…,t_{n-3}`` in ``𝔸^{n-3}`` minus the diagonals and the
+    hyperplanes ``t_i ∈ {0,1}`` (pairwise distinct and avoiding ``{0,1,∞}``), so
+
+    ``ℳ_{0,n} ≅ Spec( R[t_1,…,t_{n-3}]_S )``
+
+    where ``S`` is the product of all ``t_i``, ``t_i - 1``, and ``t_i - t_j``
+    (``i < j``). Special cases:
+
+    * ``n = 3``: ``Spec(R)`` (a point),
+    * ``n = 4``: ``Spec(R[λ]_{λ(λ-1)})``,
+    * ``n = 5``: ``Spec(R[λ,μ]_{λ(λ-1)μ(μ-1)(λ-μ)})``,
+    * ``n = 6``: ``Spec(R[λ,μ,ν]_{…})``.
+
+    Literature: Knudsen's construction of ``M_{0,n}``; Fulton–MacPherson /
+    configuration-space presentation. Owned for the **open** stack only —
+    proper ``Mbar_{0,n}`` for ``n > 5`` is not claimed here (Kapranov /
+    Fulton–MacPherson compactifications stay fail-closed until registered).
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    n_int = int(n)
+    assert n_int >= 3, f"open Knudsen chart requires n ≥ 3; got {n!r}"
+    dimension = n_int - 3
+    if dimension == 0:
+        return base
+    names = _knudsen_open_M0n_coordinate_names(dimension)
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=names)
+    gens = poly.gens()
+    denom = poly.one()
+    for t in gens:
+        denom *= t * (t - 1)
+    for i, ti in enumerate(gens):
+        for tj in gens[i + 1 :]:
+            denom *= ti - tj
+    return AffineScheme(poly.localization(denom))
 
 
 def _legendre_affine_scheme(base: AffineScheme) -> AffineScheme:
@@ -154,49 +209,20 @@ def _hesse_affine_scheme(base: AffineScheme) -> AffineScheme:
 
 
 def _configuration_M05_affine_scheme(base: AffineScheme) -> AffineScheme:
-    r"""Affine scheme for open ``ℳ_{0,5}`` via Knudsen / cross-ratio coordinates.
+    r"""Affine scheme for open ``ℳ_{0,5}`` — special case of Knudsen ``n = 5``.
 
-    Fix three markings at ``{0,1,∞}``. The remaining two markings are
-    ``(λ, μ) ∈ (𝔸¹ ∖ {0,1})²`` with ``λ ≠ μ``, so
-
-    ``ℳ_{0,5} ≅ Spec(R[λ, μ]_{λ(λ-1)μ(μ-1)(λ-μ)})``
-
-    as schemes (hence as DM stacks: ``n ≥ 3`` genus-0 moduli are representable).
-    Literature: Knudsen's construction of ``M_{0,n}``; Fulton–MacPherson /
-    configuration-space presentation. Owned for the **open** stack; proper
-    ``Mbar_{0,5}`` uses the Kapranov ``Bl₄(ℙ²)`` cover
+    Proper ``Mbar_{0,5}`` uses the Kapranov ``Bl₄(ℙ²)`` cover
     :class:`~dm_moduli_spike.geometry.stacks.KapranovBlowupFourPointsP2AlgebraicSpace`.
     """
-    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-
-    ring = base.ring()
-    poly = PolynomialRing(ring, names=("lambda", "mu"))
-    lam, mu = poly.gens()
-    return AffineScheme(poly.localization(lam * (lam - 1) * mu * (mu - 1) * (lam - mu)))
+    return _knudsen_open_M0n_affine_scheme(base, 5)
 
 
 def _configuration_M06_affine_scheme(base: AffineScheme) -> AffineScheme:
-    r"""Affine scheme for open ``ℳ_{0,6}`` via Knudsen / configuration coordinates.
+    r"""Affine scheme for open ``ℳ_{0,6}`` — special case of Knudsen ``n = 6``.
 
-    Fix three markings at ``{0,1,∞}``. The remaining three markings are
-    ``(λ, μ, ν) ∈ (𝔸¹ ∖ {0,1})³`` with pairwise distinct coordinates, so
-
-    ``ℳ_{0,6} ≅ Spec(R[λ, μ, ν]_{λ(λ-1)μ(μ-1)ν(ν-1)(λ-μ)(λ-ν)(μ-ν)})``
-
-    as schemes (genus-0 moduli with ``n ≥ 3`` are representable). Literature:
-    Knudsen's inductive construction of ``M_{0,n}``; configuration-space
-    presentation removing diagonals and ``{0,1,∞}`` collisions. Owned for the
-    **open** stack only; proper ``Mbar_{0,6}`` (Kapranov blowups of ``ℙ³`` /
-    Fulton–MacPherson) is **not** owned here — leave fail-closed until an
-    honest scheme affine cover is registered.
+    Proper ``Mbar_{0,6}`` stays fail-closed (no Kapranov/FM affine cover owned).
     """
-    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-
-    ring = base.ring()
-    poly = PolynomialRing(ring, names=("lambda", "mu", "nu"))
-    lam, mu, nu = poly.gens()
-    denom = lam * (lam - 1) * mu * (mu - 1) * nu * (nu - 1) * (lam - mu) * (lam - nu) * (mu - nu)
-    return AffineScheme(poly.localization(denom))
+    return _knudsen_open_M0n_affine_scheme(base, 6)
 
 
 def _legendre_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
