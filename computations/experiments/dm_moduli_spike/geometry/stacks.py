@@ -520,6 +520,52 @@ class AffineAlgebraicSpace(AlgebraicSpace):
         return (self._affine_scheme,)
 
 
+class ProjectiveLineAlgebraicSpace(AlgebraicSpace):
+    r"""Standard projective line ``ℙ¹_R`` with the two-chart affine cover.
+
+    Owned affine cover: ``Spec(R[t]) ∪ Spec(R[u])`` (standard opens
+    ``D₊(X)`` and ``D₊(Y)``). Used as an owned étale-atlas domain when:
+
+    - ``Mbar_{0,4} ≅ ℙ¹`` as schemes (stack ≅ scheme; affine cover of the
+      scheme is a valid étale atlas of the stack-as-scheme),
+    - ``Mbar(Γ(2)) ≅ ℙ¹`` as the covering space of the finite étale
+      presentation ``Mbar_{1,1} ≅ [ℙ¹ / S₃]`` (``2`` invertible).
+
+    Distinct from the coarse-moduli algebraic-space object — never used to
+    claim that the coarse moduli map is étale.
+    """
+
+    @staticmethod
+    def __classcall_private__(cls: type, base: AffineScheme, role: str = "P1") -> ProjectiveLineAlgebraicSpace:
+        assert isinstance(base, AffineScheme), f"ProjectiveLineAlgebraicSpace requires AffineScheme base; found {type(base)!r}"
+        assert isinstance(role, str) and role, f"role must be a nonempty str; found {role!r}"
+        result = UniqueRepresentation.__classcall__(cls, base, role)
+        assert isinstance(result, ProjectiveLineAlgebraicSpace), f"classcall must return ProjectiveLineAlgebraicSpace; found {type(result)!r}"
+        return result
+
+    def __init__(self, base: AffineScheme, role: str = "P1") -> None:
+        from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+        self._role = role
+        ring = base.ring()
+        chart_t = AffineScheme(PolynomialRing(ring, names=("t",)))
+        chart_u = AffineScheme(PolynomialRing(ring, names=("u",)))
+        self._affine_charts = (chart_t, chart_u)
+        AlgebraicSpace.__init__(
+            self,
+            base,
+            name=f"ProjectiveLine({role}/{base!r})",
+            axioms=frozenset({"FiniteType", "Separated", "Proper", "Projective"}),
+        )
+
+    def role(self) -> str:
+        r"""Literature role tag (e.g. ``Mbar_0_4``, ``Mbar_Gamma2``)."""
+        return self._role
+
+    def affine_cover(self) -> tuple[AffineScheme, ...]:
+        return self._affine_charts
+
+
 class AtlasChart(AlgebraicSpace):
     r"""Algebraic-space chart serving as the domain of an atlas morphism ``U → X``.
 
@@ -1116,7 +1162,7 @@ def _affine_cover_of(domain: object) -> tuple[AffineScheme, ...]:
     r"""Affine opens of an atlas domain for equation-level certification (fail-closed)."""
     if isinstance(domain, AffineScheme):
         return (domain,)
-    if isinstance(domain, AffineAlgebraicSpace):
+    if isinstance(domain, (AffineAlgebraicSpace, ProjectiveLineAlgebraicSpace)):
         return domain.affine_cover()
     if isinstance(domain, ProductStack):
         covers: list[AffineScheme] = []
@@ -1335,7 +1381,15 @@ class AtlasEvidence:
             return False
         if self._factor_atlases is not None:
             return all(fa.has_equation_level_etale_certificate() for fa in self._factor_atlases)
-        if self._covering_kind in ("quotient_cover", "legendre_finite_etale_cover") and not self.links_finite_etale_groupoid():
+        if (
+            self._covering_kind
+            in (
+                "quotient_cover",
+                "legendre_finite_etale_cover",
+                "legendre_compact_finite_etale_cover",
+            )
+            and not self.links_finite_etale_groupoid()
+        ):
             return False
         cover = self.domain_affine_cover()
         if not cover:
@@ -1449,8 +1503,12 @@ class AtlasMorphism(StackMorphism):
         return self._covering_kind == "coarse_moduli" and not self._etale
 
     def is_quotient_presentation_atlas(self) -> bool:
-        r"""True for ``U → [U/G]`` presentations (quotient stacks; Legendre ``M_{1,1}``)."""
-        return self._covering_kind in ("quotient_cover", "legendre_finite_etale_cover")
+        r"""True for ``U → [U/G]`` presentations (quotient stacks; Legendre ``M_{1,1}`` / ``Mbar_{1,1}``)."""
+        return self._covering_kind in (
+            "quotient_cover",
+            "legendre_finite_etale_cover",
+            "legendre_compact_finite_etale_cover",
+        )
 
     def covering_space(self) -> object | None:
         if self._evidence is not None:

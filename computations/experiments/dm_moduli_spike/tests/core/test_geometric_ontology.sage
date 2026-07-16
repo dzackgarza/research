@@ -537,27 +537,75 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert zs_etale.covering_kind() == "moduli_affine_etale_chart"
     assert zs_etale.has_equation_level_etale_certificate()
 
-    # Mbar and general (g,n): remain fail-closed (incl. proper Mbar_{1,1}).
+    # Mbar_{0,3}: same point Spec(R) — stack ≅ scheme ≅ Spec(R).
+    Mbar03 = Mbar_gn(0, 3, base=k)
+    mbar03_etale = Mbar03.etale_atlas()
+    assert isinstance(mbar03_etale.domain(), AffineAlgebraicSpace)
+    assert mbar03_etale.domain().as_affine_scheme() is k
+    assert mbar03_etale.covering_kind() == "moduli_affine_etale_chart"
+    assert mbar03_etale.has_equation_level_etale_certificate()
+    assert mbar03_etale.domain() is not Mbar03.coarse_space()
+
+    # Mbar_{0,4}: stack ≅ ℙ¹ — owned standard affine cover (not the coarse map).
+    from dm_moduli_spike.geometry.stacks import ProjectiveLineAlgebraicSpace
+
     Mbar04 = Mbar_gn(0, 4, base=k)
     mbar_etale = Mbar04.etale_atlas()
-    assert isinstance(mbar_etale.domain(), AtlasChart)
-    assert mbar_etale.domain().affine_cover() == ()
-    assert not mbar_etale.has_equation_level_etale_certificate()
+    assert mbar_etale.is_etale()
+    assert isinstance(mbar_etale.domain(), ProjectiveLineAlgebraicSpace)
+    assert mbar_etale.domain().role() == "Mbar_0_4"
+    assert mbar_etale.domain() is not Mbar04
+    assert mbar_etale.domain() is not Mbar04.coarse_space()
+    assert mbar_etale.covering_kind() == "moduli_scheme_affine_cover"
+    assert len(mbar_etale.domain().affine_cover()) == 2
+    assert mbar_etale.has_equation_level_etale_certificate()
+    assert mbar_etale.equation_level_etale()
+    assert not mbar_etale.is_coarse_atlas()
+    mbar_certs = mbar_etale.evidence().scheme_certificates()
+    assert mbar_certs
+    assert all(
+        any(c.domain_scheme() is chart or c.domain_scheme().ring() == chart.ring() for c in mbar_certs)
+        for chart in mbar_etale.evidence().domain_affine_cover()
+    )
+    # Coarse atlas of Mbar_{0,4} remains non-equation-level (coarse ≠ étale).
+    assert Mbar04.atlas().covering_kind() == "coarse_moduli"
+    assert not Mbar04.atlas().has_equation_level_etale_certificate()
+
+    # Mbar_{1,1}: Mbar(Γ(2)) ≅ ℙ¹ with S₃ finite étale groupoid (2 invertible).
     Mbar11 = Mbar_gn(1, 1, base=k)
-    assert isinstance(Mbar11.etale_atlas().domain(), AtlasChart)
-    assert not Mbar11.etale_atlas().has_equation_level_etale_certificate()
-    assert Mbar11.legendre_quotient_presentation() is None
+    mbar11_etale = Mbar11.etale_atlas()
+    assert isinstance(mbar11_etale.domain(), ProjectiveLineAlgebraicSpace)
+    assert mbar11_etale.domain().role() == "Mbar_Gamma2"
+    assert mbar11_etale.domain() is not Mbar11.coarse_space()
+    assert mbar11_etale.domain() is not mbar_etale.domain()
+    assert mbar11_etale.covering_kind() == "legendre_compact_finite_etale_cover"
+    assert mbar11_etale.is_quotient_presentation_atlas()
+    assert mbar11_etale.has_equation_level_etale_certificate()
+    assert mbar11_etale.evidence().finite_etale_groupoid()
+    assert mbar11_etale.evidence().group_order() == 6
+    mbar11_pres = Mbar11.legendre_quotient_presentation()
+    assert mbar11_pres is not None
+    assert mbar11_pres["group_order"] == 6
+    assert mbar11_pres["covering_space"] is mbar11_etale.domain()
+    assert mbar11_pres["level_structure"] == "Mbar(Gamma(2))"
+    assert "P1" in str(mbar11_pres["presentation"])
+
+    # General (g,n) and char-2 (1,1): remain fail-closed.
     M12 = M_gn(1, 2, base=k)
     assert isinstance(M12.etale_atlas().domain(), AtlasChart)
     assert not M12.etale_atlas().has_equation_level_etale_certificate()
 
-    # Char 2: Legendre form unavailable — M_{1,1} fail-closed formal chart.
+    # Char 2: Legendre form unavailable — M_{1,1} / Mbar_{1,1} fail-closed formal chart.
     from sage.rings.finite_rings.finite_field_constructor import GF
 
     M11_char2 = M_gn(1, 1, base=spec(GF(2)))
     assert isinstance(M11_char2.etale_atlas().domain(), AtlasChart)
     assert not M11_char2.etale_atlas().has_equation_level_etale_certificate()
     assert M11_char2.legendre_quotient_presentation() is None
+    Mbar11_char2 = Mbar_gn(1, 1, base=spec(GF(2)))
+    assert isinstance(Mbar11_char2.etale_atlas().domain(), AtlasChart)
+    assert not Mbar11_char2.etale_atlas().has_equation_level_etale_certificate()
+    assert Mbar11_char2.legendre_quotient_presentation() is None
 
     # Product of owned charts: M_{1,1} × M_{0,4} both equation-level → product True.
     prod = ProductStack((XS, YS), base=k)
