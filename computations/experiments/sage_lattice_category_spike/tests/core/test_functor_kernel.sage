@@ -150,6 +150,28 @@ def test_cat_is_a_proper_class_never_an_object_of_itself():
         FunctorSpace(Lattices(ZZ), cat)
 
 
+def test_functor_space_refuses_non_category_endpoints_on_every_route():
+    r"""Objecthood in ``Cat`` is the functor space's construction invariant:
+    a ring is not an object of the category of categories, so ``Fun(C, ZZ)``
+    must refuse on EVERY route -- the public constructor, the ``Hom_Cat``
+    spelling, and Sage's ``_Hom_`` dispatch -- instead of silently
+    constructing a parent whose identity and membership operate on a
+    non-category endpoint."""
+    from sage_lattice_category_spike.objects.functors import Cat
+    from sage_lattice_category_spike.objects.sets import Sets
+
+    # Positive control first: the same routes are alive on real objects.
+    assert Cat().homset(Lattices(ZZ), Lattices(QQ)) is FunctorSpace(Lattices(ZZ), Lattices(QQ))
+    assert Sets()._Hom_(Lattices(ZZ)) is FunctorSpace(Sets(), Lattices(ZZ))
+
+    with pytest.raises(AssertionError):
+        FunctorSpace(Lattices(ZZ), ZZ)
+    with pytest.raises(AssertionError):
+        Cat().homset(ZZ, Lattices(ZZ))
+    with pytest.raises(AssertionError):
+        Sets()._Hom_(ZZ)
+
+
 def test_functor_space_membership_is_boundary_exact():
     r"""``Fun(C, D)`` is a genuine parent: unique per boundary pair, and
     membership is exactly agreement of domain and codomain."""
