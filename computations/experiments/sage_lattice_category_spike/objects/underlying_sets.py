@@ -75,3 +75,35 @@ class UnderlyingSet(SageUniqueRepresentation, SageParent):
 
     def __contains__(self, x: object) -> bool:
         return x in self._structured
+
+
+class ViaUnderlyingSet:
+    r"""The forwarding owner's parent methods: every generic set behavior
+    of a structured parent is the corresponding behavior of its underlying
+    set. Installed at each structured root (the operation roots, the G-set root) and nowhere below."""
+
+    def underlying_set(self) -> UnderlyingSet:
+        r"""The set ``U(X)`` underlying this structured parent: the same
+        elements with the operations forgotten — the single functorial
+        obligation everything else rolls up through."""
+        # Runtime Sage copies these methods onto structured parent classes,
+        # so ``self`` is a Parent there.
+        return UnderlyingSet(cast("SageParent", self))
+
+    def cardinality(self) -> Cardinal:
+        return self.underlying_set().cardinality()
+
+    def is_finite(self) -> bool:
+        return self.underlying_set().is_finite()
+
+    def is_infinite(self) -> bool:
+        return not self.underlying_set().is_finite()
+
+    def is_countable(self) -> bool:
+        return self.underlying_set().is_countable()
+
+    def is_uncountable(self) -> bool:
+        return self.underlying_set().is_uncountable()
+
+    def index(self, element: object) -> int:
+        return self.underlying_set().index(element)

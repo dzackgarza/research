@@ -14,7 +14,7 @@ facade and whose morphism action reads the same mapping as a set map.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from sage.categories.additive_magmas import AdditiveMagmas as SageAdditiveMagmas
 from sage.categories.category import Category
@@ -27,44 +27,10 @@ from sage.categories.sets_cat import Sets as SageSets
 from ..lexicon import SageMorphism, SageParent
 from .functors import CatObject, Functor
 from .sets import CountabilitySubcategoryMethods
+from .underlying_sets import ViaUnderlyingSet
 
 if TYPE_CHECKING:
-    from .cardinals import Cardinal
     from .underlying_sets import UnderlyingSet
-
-
-class _ViaUnderlyingSet:
-    r"""The forwarding owner's parent methods: every generic set behavior
-    of a structured parent is the corresponding behavior of its underlying
-    set. Installed at the two operation roots and nowhere below."""
-
-    def underlying_set(self) -> UnderlyingSet:
-        r"""The set ``U(X)`` underlying this structured parent: the same
-        elements with the operations forgotten — the single functorial
-        obligation everything else rolls up through."""
-        from .underlying_sets import UnderlyingSet
-
-        # Runtime Sage copies these methods onto structured parent classes,
-        # so ``self`` is a Parent there.
-        return UnderlyingSet(cast("SageParent", self))
-
-    def cardinality(self) -> Cardinal:
-        return self.underlying_set().cardinality()
-
-    def is_finite(self) -> bool:
-        return self.underlying_set().is_finite()
-
-    def is_infinite(self) -> bool:
-        return not self.underlying_set().is_finite()
-
-    def is_countable(self) -> bool:
-        return self.underlying_set().is_countable()
-
-    def is_uncountable(self) -> bool:
-        return self.underlying_set().is_uncountable()
-
-    def index(self, element: object) -> int:
-        return self.underlying_set().index(element)
 
 
 class Magmas(CatObject, Category):
@@ -81,7 +47,7 @@ class Magmas(CatObject, Category):
 
     SubcategoryMethods = CountabilitySubcategoryMethods
 
-    ParentMethods = _ViaUnderlyingSet
+    ParentMethods = ViaUnderlyingSet
 
 
 class Semigroups(CatObject, CategoryWithAxiom):
@@ -140,7 +106,7 @@ class AdditiveMagmas(CatObject, Category):
 
     SubcategoryMethods = CountabilitySubcategoryMethods
 
-    ParentMethods = _ViaUnderlyingSet
+    ParentMethods = ViaUnderlyingSet
 
 
 class AdditiveSemigroups(CatObject, CategoryWithAxiom):
