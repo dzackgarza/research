@@ -16,6 +16,7 @@ from .atlas_ownership import is_compact_m1n_level_owned as is_compact_m1n_level_
 from .atlas_ownership import is_compact_m2n_igusa_owned as is_compact_m2n_igusa_owned
 from .atlas_ownership import is_compact_m3n_hyperelliptic_owned as is_compact_m3n_hyperelliptic_owned
 from .atlas_ownership import is_compact_m20_igusa_owned as is_compact_m20_igusa_owned
+from .atlas_ownership import is_compact_m30_del_pezzo_owned as is_compact_m30_del_pezzo_owned
 from .atlas_ownership import is_compact_m30_hyperelliptic_owned as is_compact_m30_hyperelliptic_owned
 from .atlas_ownership import is_open_m0n_knudsen_owned as is_open_m0n_knudsen_owned
 from .atlas_ownership import is_open_m1n_level_owned as is_open_m1n_level_owned
@@ -23,6 +24,7 @@ from .atlas_ownership import is_open_m2n_igusa_owned as is_open_m2n_igusa_owned
 from .atlas_ownership import is_open_m3n_hyperelliptic_owned as is_open_m3n_hyperelliptic_owned
 from .atlas_ownership import is_open_m20_igusa_owned as is_open_m20_igusa_owned
 from .atlas_ownership import is_open_m30_del_pezzo_owned as is_open_m30_del_pezzo_owned
+from .atlas_ownership import is_open_m40_canonical_owned as is_open_m40_canonical_owned
 from .atlas_ownership import is_owned_etale_atlas_type as is_owned_etale_atlas_type
 from .atlas_ownership import is_proper_m0n_kapranov_owned as is_proper_m0n_kapranov_owned
 from .atlas_ownership import lookup_owned_etale_atlas as lookup_owned_etale_atlas
@@ -65,6 +67,7 @@ __all__ = [
     "is_compact_m1n_level_owned",
     "is_compact_m20_igusa_owned",
     "is_compact_m2n_igusa_owned",
+    "is_compact_m30_del_pezzo_owned",
     "is_compact_m30_hyperelliptic_owned",
     "is_compact_m3n_hyperelliptic_owned",
     "is_open_m0n_knudsen_owned",
@@ -73,6 +76,7 @@ __all__ = [
     "is_open_m2n_igusa_owned",
     "is_open_m30_del_pezzo_owned",
     "is_open_m3n_hyperelliptic_owned",
+    "is_open_m40_canonical_owned",
     "is_owned_etale_atlas_type",
     "is_proper_m0n_kapranov_owned",
     "lookup_owned_etale_atlas",

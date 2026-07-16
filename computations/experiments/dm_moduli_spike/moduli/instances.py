@@ -884,8 +884,9 @@ def _del_pezzo_open_M30_affine_scheme(base: AffineScheme) -> AffineScheme:
     ``W(E₇)`` of order ``2903040`` (geometric markings of a degree-2 del Pezzo).
     Coverage: **dense open of the non-hyperelliptic locus** of open ``M_3`` —
     not the hyperelliptic divisor (see :func:`_hyperelliptic_open_M30_affine_scheme`),
-    not proper ``Mbar_3``, and not a scheme isomorphism ``M_3 ≅ U``. Ternary-quartic
-    GIT with expanded discriminant is intentionally not materialized here.
+    and not a scheme isomorphism ``M_3 ≅ U``. Proper ``Mbar_3`` uses
+    :func:`_del_pezzo_compact_M30_covering_space`. Ternary-quartic GIT with
+    expanded discriminant is intentionally not materialized here.
     """
     from itertools import combinations
 
@@ -923,13 +924,72 @@ def _del_pezzo_galois_group() -> object:
     form a ``W(E₇)``-torsor over the non-hyperelliptic locus; order
     ``2903040 = 576 · 7!``. The covering space is a dense open of the
     configuration space of 7 labeled points in ``ℙ²`` modulo ``PGL₃``. Does
-    **not** claim the hyperelliptic locus or proper ``Mbar_3``.
+    **not** claim the hyperelliptic locus. Proper ``Mbar_3`` uses the same
+    groupoid on the compactified covering space
+    :func:`_del_pezzo_compact_M30_covering_space`.
     """
     from typing import Any, cast
 
     from sage.combinat.root_system.weyl_group import WeylGroup
 
     return cast(Any, WeylGroup(["E", 7]))
+
+
+def _del_pezzo_compact_M30_covering_space(base: AffineScheme) -> AlgebraicSpace:
+    r"""Compactified 7-points-in-``(ℙ²)³`` cover of non-hyperelliptic ``Mbar_3``.
+
+    Covering space:
+    :class:`~dm_moduli_spike.geometry.stacks.DelPezzoCompactSevenPointsAlgebraicSpace`
+    with lazy ``Spec(R[u₁,…,u₆])`` charts (cardinality ``27 = 3³``; sample of
+    ``3``). Finite étale ``W(E₇)``. Requires ``2 ∈ Rˣ``.
+
+    Coverage: **dense open of the non-hyperelliptic locus of proper ``Mbar_3``**
+    — not the hyperelliptic Kapranov ``Mbar_{0,8}/S₈`` locus presentation.
+    """
+    from ..geometry.stacks import DelPezzoCompactSevenPointsAlgebraicSpace
+
+    assert _two_is_invertible(base), "del Pezzo compact Mbar_3 cover requires 2 invertible"
+    return DelPezzoCompactSevenPointsAlgebraicSpace(base, "Mbar_3_nh_via_seven_points")
+
+
+def _genus4_open_M40_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Canonical ``(2,3)``-complete-intersection chart for open unmarked ``M_{4,0}``.
+
+    Every non-hyperelliptic genus-4 curve is the complete intersection of a
+    unique quadric and a cubic in ``ℙ³`` (Petri). When the quadric is smooth,
+    the curve is **non-trigonal**; that locus is a dense open of open ``M_4``
+    (trigonal = singular quadric is a divisor; hyperelliptic has codimension
+    ``2``).
+
+    After ``PGL₄``-normalization of a smooth quadric, residual moduli are
+    9-dimensional. This chart is a dense open of that normal-form coefficient
+    space:
+
+    ``Spec(R[c₁,…,c₉]_S)``
+
+    with ``S`` the product of the coordinates and pairwise differences (general-
+    coefficient open of the normal-form family). Requires ``2 ∈ Rˣ`` (smooth
+    quadric diagonalization / ordinary double cover hypotheses).
+
+    Coverage: **dense open of the non-trigonal locus of open ``M_4``**. No
+    residual finite groupoid is stamped (continuous ``PGL₄`` is already
+    quotiented in the normal form; ``PSO(Q)`` is positive-dimensional, so this
+    is Knudsen-style ``groupoid=none``). Not proper ``Mbar_4``, not the trigonal
+    divisor, not hyperelliptic.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    assert _two_is_invertible(base), "genus-4 canonical CI M_{4,0} chart requires 2 invertible"
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=tuple(f"c{i}" for i in range(1, 10)))
+    gens = poly.gens()
+    denom = poly.one()
+    for c in gens:
+        denom *= c
+    for i, ci in enumerate(gens):
+        for cj in gens[i + 1 :]:
+            denom *= ci - cj
+    return AffineScheme(poly.localization(denom))
 
 
 def _hyperelliptic_open_M30_affine_scheme(base: AffineScheme) -> AffineScheme:
@@ -1564,27 +1624,47 @@ class ModuliStack(DeligneMumfordStack):
         }
 
     def del_pezzo_quotient_presentation(self) -> dict[str, object] | None:
-        r"""Inspectable ``(U, W(E₇))`` data when the open ``M_{3,0}`` del Pezzo cover is owned.
+        r"""Inspectable ``(U, W(E₇))`` data when a del Pezzo / 7-points cover is owned.
 
-        Returns ``None`` unless this is open unmarked ``M_{3,0}`` over a base with
-        ``2`` invertible. Covering space:
-        :func:`_del_pezzo_open_M30_affine_scheme` (7 points in ``ℙ²`` / ``PGL₃``).
+        Returns ``None`` unless this is unmarked genus ``3`` over a base with
+        ``2`` invertible:
+
+        - Open ``M_{3,0}``: :func:`_del_pezzo_open_M30_affine_scheme`.
+        - Proper ``Mbar_3``: :func:`_del_pezzo_compact_M30_covering_space`.
+
         ``G = W(E₇)`` of order ``2903040``. Coverage is the non-hyperelliptic
         dense open — not hyperelliptic binary octics (see
         :meth:`hyperelliptic_quotient_presentation`).
         """
-        if self.genus() != 3 or self.is_proper() or int(self.number_of_markings()) != 0:
+        if self.genus() != 3 or int(self.number_of_markings()) != 0:
             return None
         if not _two_is_invertible(self.base_scheme()):
-            return None
-        domain = _moduli_etale_atlas_domain(self)
-        if domain is None:
             return None
         group = _del_pezzo_galois_group()
         from typing import Any, cast
 
+        if self.is_proper():
+            covering = _del_pezzo_compact_M30_covering_space(self.base_scheme())
+            return {
+                "covering_space": covering,
+                "group": group,
+                "group_order": int(cast(Any, group).order()),
+                "finite_etale_groupoid": True,
+                "covering_unramified_stamp": True,
+                "covering_smooth_stamp": True,
+                "covering_formally_etale_stamp": True,
+                "degree": 2903040,
+                "level_structure": "del_Pezzo_degree2_W_E7_compact",
+                "presentation": "Mbar_3_nh ≅ [(P2)^3_seven_points_U / W(E7)] (dense open)",
+                "construction": "del_pezzo_compact_seven_points_PGL3",
+                "coverage": "dense_open_nonhyperelliptic_of_proper_Mbar_3",
+                "excludes": "hyperelliptic_locus_binary_octics",
+            }
+        covering_open = _moduli_etale_atlas_domain(self)
+        if covering_open is None:
+            return None
         return {
-            "covering_space": domain,
+            "covering_space": covering_open,
             "group": group,
             "group_order": int(cast(Any, group).order()),
             "finite_etale_groupoid": True,
@@ -1597,6 +1677,37 @@ class ModuliStack(DeligneMumfordStack):
             "construction": "del_pezzo_degree2_seven_points_PGL3",
             "coverage": "dense_open_nonhyperelliptic_of_open_M_3",
             "excludes": "hyperelliptic_locus_binary_octics",
+        }
+
+    def genus4_canonical_quotient_presentation(self) -> dict[str, object] | None:
+        r"""Inspectable canonical ``(2,3)``-CI chart data when open ``M_{4,0}`` is owned.
+
+        Returns ``None`` unless this is open unmarked ``M_{4,0}`` over a base with
+        ``2`` invertible. Covering space:
+        :func:`_genus4_open_M40_affine_scheme`. No residual finite groupoid
+        (Knudsen-style). Coverage: dense open of the non-trigonal locus.
+        """
+        if self.genus() != 4 or self.is_proper() or int(self.number_of_markings()) != 0:
+            return None
+        if not _two_is_invertible(self.base_scheme()):
+            return None
+        domain = _moduli_etale_atlas_domain(self)
+        if domain is None:
+            return None
+        return {
+            "covering_space": domain,
+            "group": None,
+            "group_order": None,
+            "finite_etale_groupoid": False,
+            "covering_unramified_stamp": True,
+            "covering_smooth_stamp": True,
+            "covering_formally_etale_stamp": True,
+            "degree": 1,
+            "level_structure": "genus4_canonical_ci_P3",
+            "presentation": "M_4_ntrig ≅ Spec(R[c1..c9]_S) (PGL4-normalized dense open)",
+            "construction": "genus4_canonical_quadric_cubic_P3",
+            "coverage": "dense_open_nontrigonal_of_open_M_4",
+            "excludes": "trigonal_divisor_and_hyperelliptic_locus",
         }
 
     def hyperelliptic_quotient_presentation(self) -> dict[str, object] | None:

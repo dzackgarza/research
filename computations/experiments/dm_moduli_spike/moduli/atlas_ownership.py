@@ -38,12 +38,15 @@ marked ``Mbar_{2,n}`` (``n ≥ 1``) parametrically via Kapranov fiber-product
 Rosenhain charts. Open unmarked ``M_{3,0}`` is owned via the degree-2 del Pezzo
 / 7-points-in-``ℙ²`` chart (non-hyperelliptic dense open) under ``2 ∈ Rˣ``;
 the hyperelliptic locus of open ``M_3`` is a parallel locus-only binary-octic
-/ ``M_{0,8}/S₈`` row. Proper unmarked ``Mbar_3`` and parametric open/proper
-marked ``M_{3,n}`` / ``Mbar_{3,n}`` are owned via hyperelliptic binary-octic /
-Kapranov ``Mbar_{0,8}/S₈`` presentations (hyperelliptic locus coverage) under
-``2 ∈ Rˣ``. This module does **not** invent charts for unowned types
-(e.g. ``Mbar_{0,n}`` for ``n > PROPER_M0N_OWNED_MAX``, genus ``≥ 4``,
-char-2 Artin–Schreier models).
+/ ``M_{0,8}/S₈`` row. Proper unmarked ``Mbar_3`` is owned via the compactified
+del Pezzo / stable marked degree-2 del Pezzo chart (``W(E₇)``) under ``2 ∈ Rˣ``,
+with the hyperelliptic Kapranov ``Mbar_{0,8}/S₈`` row demoted to locus-only.
+Parametric open/proper marked ``M_{3,n}`` / ``Mbar_{3,n}`` remain hyperelliptic
+binary-octic / Kapranov presentations under ``2 ∈ Rˣ``. Open unmarked
+``M_{4,0}`` is owned via a ``PGL₄``-normalized canonical ``(2,3)``-complete-
+intersection chart (non-trigonal dense open) under ``2 ∈ Rˣ``. This module does
+**not** invent charts for unowned types (e.g. ``Mbar_{0,n}`` for
+``n > PROPER_M0N_OWNED_MAX``, proper ``Mbar_4``, char-2 Artin–Schreier models).
 """
 
 from __future__ import annotations
@@ -534,7 +537,18 @@ _OPEN_M30_HYPERELLIPTIC_LOCUS_ROW = OwnedAtlasPresentation(
     locus_only=True,
 )
 
-_COMPACT_M30_HYPERELLIPTIC_ROW = OwnedAtlasPresentation(
+_COMPACT_M30_DEL_PEZZO_ROW = OwnedAtlasPresentation(
+    3,
+    0,
+    True,
+    "del_pezzo_compact_seven_points_finite_etale_cover",
+    "del_pezzo_compact_seven_points_PGL3",
+    "two_invertible",
+    "weyl_e7",
+)
+
+# Locus-only: inspectable hyperelliptic cover of Mbar_3; etale_atlas stays compact del Pezzo.
+_COMPACT_M30_HYPERELLIPTIC_LOCUS_ROW = OwnedAtlasPresentation(
     3,
     0,
     True,
@@ -542,6 +556,7 @@ _COMPACT_M30_HYPERELLIPTIC_ROW = OwnedAtlasPresentation(
     "hyperelliptic_mbar08_s8",
     "two_invertible",
     "hyperelliptic_s8",
+    locus_only=True,
 )
 
 _PARAMETRIC_OPEN_M3N_ROW = OwnedAtlasPresentation(
@@ -566,6 +581,16 @@ _PARAMETRIC_COMPACT_M3N_ROW = OwnedAtlasPresentation(
     parametric_compact_m3n=True,
 )
 
+_OPEN_M40_CANONICAL_ROW = OwnedAtlasPresentation(
+    4,
+    0,
+    False,
+    "genus4_canonical_ci_affine_chart",
+    "genus4_canonical_quadric_cubic_P3",
+    "two_invertible",
+    "none",
+)
+
 _OWNED_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
     _PARAMETRIC_OPEN_M0N_ROW,
     _PARAMETRIC_OPEN_M1N_LEGENDRE_ROW,
@@ -579,9 +604,11 @@ _OWNED_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
     _PARAMETRIC_COMPACT_M2N_ROW,
     _OPEN_M30_DEL_PEZZO_ROW,
     _OPEN_M30_HYPERELLIPTIC_LOCUS_ROW,
-    _COMPACT_M30_HYPERELLIPTIC_ROW,
+    _COMPACT_M30_DEL_PEZZO_ROW,
+    _COMPACT_M30_HYPERELLIPTIC_LOCUS_ROW,
     _PARAMETRIC_OPEN_M3N_ROW,
     _PARAMETRIC_COMPACT_M3N_ROW,
+    _OPEN_M40_CANONICAL_ROW,
 )
 
 
@@ -694,9 +721,15 @@ def owned_etale_atlas_presentations(
         + (_OPEN_M20_IGUSA_ROW, _COMPACT_M20_IGUSA_ROW)
         + open_m2n
         + compact_m2n
-        + (_OPEN_M30_DEL_PEZZO_ROW, _OPEN_M30_HYPERELLIPTIC_LOCUS_ROW, _COMPACT_M30_HYPERELLIPTIC_ROW)
+        + (
+            _OPEN_M30_DEL_PEZZO_ROW,
+            _OPEN_M30_HYPERELLIPTIC_LOCUS_ROW,
+            _COMPACT_M30_DEL_PEZZO_ROW,
+            _COMPACT_M30_HYPERELLIPTIC_LOCUS_ROW,
+        )
         + open_m3n
         + compact_m3n
+        + (_OPEN_M40_CANONICAL_ROW,)
     )
 
 
@@ -743,9 +776,9 @@ def owned_etale_atlas_type_keys(
     in ``n`` for open ``M_{0,n}``, open/compact ``M_{1,n}``, open/compact
     ``M_{2,n}``, and open/compact hyperelliptic ``M_{3,n}`` (``n ≥ 1``);
     proper ``Mbar_{0,n}`` for ``3 ≤ n ≤ PROPER_M0N_OWNED_MAX``; unmarked open
-    ``M_{2,0}``, proper ``Mbar_2``, open del Pezzo ``M_{3,0}``, and proper
-    hyperelliptic ``Mbar_3`` are owned concretely. The locus-only hyperelliptic
-    open ``M_3`` row shares the ``(3,0,False)`` key with del Pezzo.
+    ``M_{2,0}``, proper ``Mbar_2``, open del Pezzo ``M_{3,0}``, compact del Pezzo
+    ``Mbar_3``, and open canonical ``M_{4,0}`` are owned concretely. Locus-only
+    hyperelliptic open/compact ``M_3`` / ``Mbar_3`` rows share keys with del Pezzo.
     """
     rows = owned_etale_atlas_presentations(
         expand_open_m0n_through=expand_open_m0n_through,
@@ -847,8 +880,22 @@ def is_open_m30_del_pezzo_owned(markings: int, *, proper: bool) -> bool:
     return (not proper) and n == 0
 
 
+def is_compact_m30_del_pezzo_owned(markings: int, *, proper: bool) -> bool:
+    r"""True when compact del Pezzo owns ``(3, markings, proper)`` (unmarked proper)."""
+    try:
+        n = int(markings)
+    except TypeError, ValueError:
+        return False
+    return proper and n == 0
+
+
 def is_compact_m30_hyperelliptic_owned(markings: int, *, proper: bool) -> bool:
-    r"""True when compact hyperelliptic owns ``(3, markings, proper)`` (unmarked proper)."""
+    r"""True when compact hyperelliptic locus row matches unmarked proper ``Mbar_3``.
+
+    The row is **locus-only**: it does not own ``etale_atlas`` dispatch (compact
+    del Pezzo does). Kept for inspectable
+    :meth:`~.instances.ModuliStack.hyperelliptic_quotient_presentation`.
+    """
     try:
         n = int(markings)
     except TypeError, ValueError:
@@ -874,6 +921,15 @@ def is_compact_m3n_hyperelliptic_owned(markings: int, *, proper: bool) -> bool:
     return proper and n >= 1
 
 
+def is_open_m40_canonical_owned(markings: int, *, proper: bool) -> bool:
+    r"""True when open canonical CI owns ``(4, markings, proper)`` (unmarked open)."""
+    try:
+        n = int(markings)
+    except TypeError, ValueError:
+        return False
+    return (not proper) and n == 0
+
+
 def is_owned_etale_atlas_type(genus: int, markings: int, *, proper: bool) -> bool:
     r"""True when the registry owns a presentation for ``(g,n,proper)``.
 
@@ -883,11 +939,12 @@ def is_owned_etale_atlas_type(genus: int, markings: int, *, proper: bool) -> boo
     Open unmarked ``M_{2,0}``, proper unmarked ``Mbar_2``, open marked
     ``M_{2,n}`` (``n ≥ 1``), and proper marked ``Mbar_{2,n}`` (``n ≥ 1``) are
     owned via Igusa (require ``2 ∈ Rˣ`` at resolution). Open unmarked
-    ``M_{3,0}`` is owned via degree-2 del Pezzo / 7-points; proper unmarked
-    ``Mbar_3`` and marked open/compact ``M_{3,n}`` via hyperelliptic binary
-    octics / ``M_{0,8}/S₈`` (hyperelliptic locus). Genus-1 / Igusa / del Pezzo /
-    hyperelliptic types remain owned at the type level even when a concrete base
-    fails the unit hypothesis (structured gap, not a silent equation-level stamp).
+    ``M_{3,0}`` and proper unmarked ``Mbar_3`` are owned via degree-2 del Pezzo
+    / 7-points (``W(E₇)``); marked open/compact ``M_{3,n}`` via hyperelliptic
+    binary octics / ``M_{0,8}/S₈``. Open unmarked ``M_{4,0}`` via canonical
+    ``(2,3)``-CI. Genus-1 / Igusa / del Pezzo / hyperelliptic / genus-4 types
+    remain owned at the type level even when a concrete base fails the unit
+    hypothesis (structured gap, not a silent equation-level stamp).
     """
     if genus == 0 and is_open_m0n_knudsen_owned(markings, proper=proper):
         return True
@@ -907,11 +964,13 @@ def is_owned_etale_atlas_type(genus: int, markings: int, *, proper: bool) -> boo
         return True
     if genus == 3 and is_open_m30_del_pezzo_owned(markings, proper=proper):
         return True
-    if genus == 3 and is_compact_m30_hyperelliptic_owned(markings, proper=proper):
+    if genus == 3 and is_compact_m30_del_pezzo_owned(markings, proper=proper):
         return True
     if genus == 3 and is_open_m3n_hyperelliptic_owned(markings, proper=proper):
         return True
     if genus == 3 and is_compact_m3n_hyperelliptic_owned(markings, proper=proper):
+        return True
+    if genus == 4 and is_open_m40_canonical_owned(markings, proper=proper):
         return True
     return (genus, markings, proper) in owned_etale_atlas_type_keys()
 
@@ -946,8 +1005,10 @@ def lookup_owned_etale_atlas(
     ``M_{2,n}`` (``n ≥ 1``), and proper marked ``Mbar_{2,n}`` (``n ≥ 1``)
     resolve to Igusa / Rosenhain rows when ``2 ∈ Rˣ``. Open unmarked
     ``M_{3,0}`` resolves to the del Pezzo row (not the locus-only hyperelliptic
-    row). Proper unmarked ``Mbar_3`` and marked open/compact ``M_{3,n}`` resolve
-    to hyperelliptic binary-octic rows under the same hypothesis.
+    row). Proper unmarked ``Mbar_3`` resolves to the compact del Pezzo row (not
+    the locus-only hyperelliptic Kapranov row). Marked open/compact ``M_{3,n}``
+    resolve to hyperelliptic binary-octic rows. Open unmarked ``M_{4,0}``
+    resolves to the canonical ``(2,3)``-CI row under the same hypothesis.
     When ``base`` is omitted, returns the first matching row (do not treat as
     runtime atlas resolution without a base for hypothesis rows).
     """
@@ -998,8 +1059,8 @@ def lookup_owned_etale_atlas(
         if base is None or _hypothesis_holds(row.base_hypothesis, base):
             return row
         return None
-    if genus == 3 and is_compact_m30_hyperelliptic_owned(markings, proper=proper):
-        row = _COMPACT_M30_HYPERELLIPTIC_ROW
+    if genus == 3 and is_compact_m30_del_pezzo_owned(markings, proper=proper):
+        row = _COMPACT_M30_DEL_PEZZO_ROW
         if base is None or _hypothesis_holds(row.base_hypothesis, base):
             return row
         return None
@@ -1010,6 +1071,11 @@ def lookup_owned_etale_atlas(
         return None
     if genus == 3 and is_compact_m3n_hyperelliptic_owned(markings, proper=proper):
         row = _compact_m3n_concrete_row(markings)
+        if base is None or _hypothesis_holds(row.base_hypothesis, base):
+            return row
+        return None
+    if genus == 4 and is_open_m40_canonical_owned(markings, proper=proper):
+        row = _OPEN_M40_CANONICAL_ROW
         if base is None or _hypothesis_holds(row.base_hypothesis, base):
             return row
         return None
@@ -1052,7 +1118,9 @@ def _domain_for_presentation(stack: ModuliStack, row: OwnedAtlasPresentation) ->
         ProjectiveLineAlgebraicSpace,
     )
     from .instances import (
+        _del_pezzo_compact_M30_covering_space,
         _del_pezzo_open_M30_affine_scheme,
+        _genus4_open_M40_affine_scheme,
         _hesse_compact_M1n_covering_space,
         _hesse_open_M1n_affine_scheme,
         _hyperelliptic_compact_M3n_covering_space,
@@ -1120,6 +1188,10 @@ def _domain_for_presentation(stack: ModuliStack, row: OwnedAtlasPresentation) ->
         return _igusa_compact_M2n_covering_space(base, stack.number_of_markings())
     if name == "del_pezzo_degree2_seven_points_PGL3":
         return AffineAlgebraicSpace(_del_pezzo_open_M30_affine_scheme(base))
+    if name == "del_pezzo_compact_seven_points_PGL3":
+        return _del_pezzo_compact_M30_covering_space(base)
+    if name == "genus4_canonical_quadric_cubic_P3":
+        return AffineAlgebraicSpace(_genus4_open_M40_affine_scheme(base))
     if name == "hyperelliptic_binary_octic_M08_S8":
         return AffineAlgebraicSpace(_hyperelliptic_open_M30_affine_scheme(base))
     if name == "hyperelliptic_mbar08_s8":
@@ -1272,53 +1344,54 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
         gap["pre_225_remaining_after_this"] = "general_(g,n)_beyond_owned_igusa"
         return gap
 
-    # Owned open M_{3,0} del Pezzo fails closed when 2 is not a unit.
-    owned_del_pezzo_type = g == 3 and is_open_m30_del_pezzo_owned(n, proper=proper)
+    # Owned open/compact M_{3,0} del Pezzo fails closed when 2 is not a unit.
+    owned_del_pezzo_type = g == 3 and (is_open_m30_del_pezzo_owned(n, proper=proper) or is_compact_m30_del_pezzo_owned(n, proper=proper))
     if owned_del_pezzo_type and not _two_is_invertible(base):
         gap["reason"] = "del_pezzo_requires_two_invertible"
         gap["base_hypothesis"] = {
             "two_invertible": False,
             "prototype": "Spec(Z) or char 2",
             "note": (
-                "Degree-2 del Pezzo / plane-quartic chart for open M_{3,0} requires "
-                "2 ∈ Rˣ (anticanonical double cover of ℙ²). Parallel locus-only "
-                "hyperelliptic binary octics / M_{0,8}/S₈ likewise require 2 ∈ Rˣ."
+                "Degree-2 del Pezzo / plane-quartic charts for open M_{3,0} and "
+                "proper Mbar_3 require 2 ∈ Rˣ (anticanonical double cover of ℙ²). "
+                "Parallel locus-only hyperelliptic binary octics / M_{0,8}/S₈ "
+                "likewise require 2 ∈ Rˣ."
             ),
         }
         gap["alternate_proving_sets"] = (
             {
                 "name": "del_pezzo_degree2_seven_points",
                 "status": "owned_under_two_invertible",
-                "construction": "del_pezzo_degree2_seven_points_PGL3",
-                "requires": "2 ∈ Rˣ; Spec(R[a..f]_S) with S = collinearity discriminants; W(E₇)",
-                "note": ("Registry owns open unmarked M_{3,0} (non-hyperelliptic dense open) under two_invertible. This base fails that hypothesis — formal AtlasChart only."),
+                "construction": "del_pezzo_degree2_seven_points_PGL3 / del_pezzo_compact_seven_points_PGL3",
+                "requires": ("2 ∈ Rˣ; open: Spec(R[a..f]_S); compact: lazy (ℙ²)³ charts Spec(R[u1..u6])×27; W(E₇)"),
+                "note": (
+                    "Registry owns open/proper unmarked M_{3,0}/Mbar_3 "
+                    "(non-hyperelliptic dense open) under two_invertible. "
+                    "This base fails that hypothesis — formal AtlasChart only."
+                ),
                 "owned_registry_cardinality": owned_etale_atlas_cardinality(),
                 "owned_registry_type_keys": list(owned_etale_atlas_type_keys()),
             },
             {
                 "name": "hyperelliptic_binary_octic_M08_S8",
                 "status": "owned_locus_under_two_invertible",
-                "requires": "2 ∈ Rˣ; Knudsen open M_{0,8}/S₈",
-                "note": "Locus-only registry row: covers the hyperelliptic divisor of M_3 — not the non-hyperelliptic dense open (del Pezzo owns etale_atlas).",
+                "requires": "2 ∈ Rˣ; Knudsen open M_{0,8}/S₈ or Kapranov Mbar_{0,8}/S₈",
+                "note": "Locus-only registry rows: cover the hyperelliptic divisor — not the non-hyperelliptic dense open (del Pezzo owns etale_atlas).",
             },
         )
         gap["pre_225_remaining_after_this"] = "general_(g,n)_beyond_owned_del_pezzo"
         return gap
 
-    # Owned hyperelliptic genus-3 types (Mbar_3, marked M_{3,n}) fail closed without 2 unit.
-    owned_hyp_g3 = g == 3 and (
-        is_compact_m30_hyperelliptic_owned(n, proper=proper)
-        or is_open_m3n_hyperelliptic_owned(n, proper=proper)
-        or is_compact_m3n_hyperelliptic_owned(n, proper=proper)
-    )
+    # Owned hyperelliptic marked genus-3 types fail closed without 2 unit.
+    owned_hyp_g3 = g == 3 and (is_open_m3n_hyperelliptic_owned(n, proper=proper) or is_compact_m3n_hyperelliptic_owned(n, proper=proper))
     if owned_hyp_g3 and not _two_is_invertible(base):
         gap["reason"] = "hyperelliptic_requires_two_invertible"
         gap["base_hypothesis"] = {
             "two_invertible": False,
             "prototype": "Spec(Z) or char 2",
             "note": (
-                "Hyperelliptic binary-octic / M_{0,8}/S₈ charts for proper Mbar_3 "
-                "and marked M_{3,n} / Mbar_{3,n} require 2 ∈ Rˣ. Coverage is the "
+                "Hyperelliptic binary-octic / M_{0,8}/S₈ charts for marked "
+                "M_{3,n} / Mbar_{3,n} require 2 ∈ Rˣ. Coverage is the "
                 "hyperelliptic locus only. Char-2 Artin–Schreier models are not owned."
             ),
         }
@@ -1326,17 +1399,41 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
             {
                 "name": "hyperelliptic_binary_octic_M08_S8",
                 "status": "owned_under_two_invertible",
-                "construction": "hyperelliptic_mbar08_s8 / hyperelliptic_binary_octic_* / hyperelliptic_compact_binary_octic_*",
-                "requires": (
-                    "2 ∈ Rˣ; open marked: Spec(R[t1..t5,x_i,y_i]_S)/(y²=octic); "
-                    "proper Mbar_3: Kapranov Mbar_{0,8}/S₈; marked compact: Kapranov fiber product"
+                "construction": "hyperelliptic_binary_octic_* / hyperelliptic_compact_binary_octic_*",
+                "requires": ("2 ∈ Rˣ; open marked: Spec(R[t1..t5,x_i,y_i]_S)/(y²=octic); marked compact: Kapranov fiber product over Mbar_{0,8}/S₈"),
+                "note": (
+                    "Registry owns hyperelliptic locus presentations for marked "
+                    "M_{3,n}/Mbar_{3,n} under two_invertible. This base fails that "
+                    "hypothesis — formal AtlasChart only."
                 ),
-                "note": ("Registry owns hyperelliptic locus presentations for Mbar_3 and M_{3,n}/Mbar_{3,n} under two_invertible. This base fails that hypothesis — formal AtlasChart only."),
                 "owned_registry_cardinality": owned_etale_atlas_cardinality(),
                 "owned_registry_type_keys": list(owned_etale_atlas_type_keys()),
             },
         )
         gap["pre_225_remaining_after_this"] = "general_(g,n)_beyond_owned_hyperelliptic_g3"
+        return gap
+
+    # Owned open M_{4,0} canonical CI fails closed when 2 is not a unit.
+    owned_m40 = g == 4 and is_open_m40_canonical_owned(n, proper=proper)
+    if owned_m40 and not _two_is_invertible(base):
+        gap["reason"] = "genus4_canonical_requires_two_invertible"
+        gap["base_hypothesis"] = {
+            "two_invertible": False,
+            "prototype": "Spec(Z) or char 2",
+            "note": ("Canonical (2,3)-complete-intersection charts for open M_{4,0} require 2 ∈ Rˣ (smooth-quadric / non-trigonal normal form)."),
+        }
+        gap["alternate_proving_sets"] = (
+            {
+                "name": "genus4_canonical_quadric_cubic_P3",
+                "status": "owned_under_two_invertible",
+                "construction": "genus4_canonical_quadric_cubic_P3",
+                "requires": ("2 ∈ Rˣ; Spec(R[c1..c9]_S) PGL₄-normalized non-trigonal dense open"),
+                "note": ("Registry owns open unmarked M_{4,0} (non-trigonal dense open) under two_invertible. This base fails that hypothesis — formal AtlasChart only."),
+                "owned_registry_cardinality": owned_etale_atlas_cardinality(),
+                "owned_registry_type_keys": list(owned_etale_atlas_type_keys()),
+            },
+        )
+        gap["pre_225_remaining_after_this"] = "general_(g,n)_beyond_owned_genus4"
         return gap
 
     owned_rows = [row.as_dict() for row in owned_etale_atlas_presentations()]
@@ -1356,16 +1453,17 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
             "expand_proper_m0n_through). Open M_{2,n} (n≥0) and proper "
             "Mbar_{2,n} (n≥0) are owned via Igusa / Rosenhain / Kapranov "
             "Mbar_{0,6} fiber products with S₆ under 2 ∈ Rˣ (expand marked via "
-            "expand_open_m2n_through / expand_compact_m2n_through). Open "
-            "unmarked M_{3,0} is owned via degree-2 del Pezzo / 7-points in ℙ² "
-            "with W(E₇) under 2 ∈ Rˣ (non-hyperelliptic dense open); a "
-            "locus-only binary-octic / M_{0,8}/S₈ row covers the hyperelliptic "
-            "locus of open M_3. Proper Mbar_3 and marked M_{3,n}/Mbar_{3,n} "
-            "are owned via hyperelliptic Kapranov Mbar_{0,8}/S₈ (hyperelliptic "
-            "locus coverage; expand marked via expand_open_m3n_through / "
-            "expand_compact_m3n_through). Do not invent charts for larger "
-            "genus-0 n — the literature construction name remains "
-            "kapranov_iterated_blowup_P_{n-3}."
+            "expand_open_m2n_through / expand_compact_m2n_through). Open and "
+            "proper unmarked M_{3,0}/Mbar_3 are owned via degree-2 del Pezzo / "
+            "7-points with W(E₇) under 2 ∈ Rˣ (non-hyperelliptic dense open); "
+            "locus-only binary-octic / M_{0,8}/S₈ rows cover the hyperelliptic "
+            "loci. Marked M_{3,n}/Mbar_{3,n} are owned via hyperelliptic "
+            "Kapranov Mbar_{0,8}/S₈ (hyperelliptic locus coverage; expand via "
+            "expand_open_m3n_through / expand_compact_m3n_through). Open "
+            "unmarked M_{4,0} is owned via PGL₄-normalized canonical "
+            "(2,3)-CI (non-trigonal dense open) under 2 ∈ Rˣ. Do not invent "
+            "charts for larger genus-0 n — the literature construction name "
+            "remains kapranov_iterated_blowup_P_{n-3}."
         ),
         "owned_registry_cardinality": owned_etale_atlas_cardinality(),
         "owned_registry_type_keys": list(owned_etale_atlas_type_keys()),
@@ -1382,7 +1480,9 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
         "compact_m20_igusa": True,
         "open_m30_del_pezzo": True,
         "open_m30_hyperelliptic_locus": True,
-        "compact_m30_hyperelliptic": True,
+        "compact_m30_del_pezzo": True,
+        "compact_m30_hyperelliptic_locus": True,
+        "open_m40_canonical": True,
         "open_m0n_knudsen_inspectable_max": OPEN_M0N_INSPECTABLE_MAX,
         "open_m1n_level_inspectable_max": OPEN_M1N_INSPECTABLE_MAX,
         "compact_m1n_level_inspectable_max": COMPACT_M1N_INSPECTABLE_MAX,
@@ -1395,8 +1495,8 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
         "proper_m0n_owned_max": PROPER_M0N_OWNED_MAX,
     }
 
-    # Genus ≤3 owned under hypotheses (g=3: del Pezzo + hyperelliptic locus).
-    # Remaining gaps: g≥4, char-2 Igusa/del Pezzo/hyperelliptic, non-hyp Mbar_3 boundary.
+    # Remaining gaps: Mbar_4 / marked M_{4,n}, char-2 Artin–Schreier / del Pezzo,
+    # marked non-hyperelliptic del Pezzo, trigonal M_4 locus charts.
     gap["reason"] = "no_owned_affine_etale_presentation"
     gap["alternate_proving_sets"] = (registry_alt,)
     return gap
@@ -1414,6 +1514,7 @@ def dispatch_etale_atlas(stack: ModuliStack) -> AtlasMorphism:
         AtlasEvidence,
         AtlasMorphism,
         DeligneMumfordStack,
+        DelPezzoCompactSevenPointsAlgebraicSpace,
         FormallyEtaleSchemeCertificate,
         HyperellipticCompactMarkedM3nAlgebraicSpace,
         IgusaCompactMarkedM2nAlgebraicSpace,
@@ -1426,18 +1527,19 @@ def dispatch_etale_atlas(stack: ModuliStack) -> AtlasMorphism:
         return DeligneMumfordStack.etale_atlas(stack)
 
     domain = _domain_for_presentation(stack, row)
-    # Kapranov iterated / Igusa / hyperelliptic marked compact: certify a uniform
-    # sample, not the full combinatorial chart list (eager N hangs QC).
+    # Kapranov iterated / Igusa / hyperelliptic / del Pezzo compact: certify a
+    # uniform sample, not the full combinatorial chart list (eager N hangs QC).
     if isinstance(
         domain,
         (
             KapranovIteratedBlowupPnMinus3AlgebraicSpace,
             IgusaCompactMarkedM2nAlgebraicSpace,
             HyperellipticCompactMarkedM3nAlgebraicSpace,
+            DelPezzoCompactSevenPointsAlgebraicSpace,
         ),
     ):
         cover = domain.affine_cover_sample()
-        assert cover and domain.affine_cover_cardinality() >= 1, "owned lazy Kapranov/Igusa/hyperelliptic domain must expose a nonempty sample cover"
+        assert cover and domain.affine_cover_cardinality() >= 1, "owned lazy Kapranov/Igusa/hyperelliptic/del-Pezzo domain must expose a nonempty sample cover"
     else:
         cover = domain.affine_cover()
         assert cover, "owned moduli étale domain must expose a nonempty affine cover"

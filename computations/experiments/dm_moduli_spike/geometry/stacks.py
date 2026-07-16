@@ -1141,6 +1141,98 @@ class IgusaCompactMarkedM2nAlgebraicSpace(AlgebraicSpace):
         return tuple(self.affine_chart(i) for i in range(self.affine_cover_cardinality()))
 
 
+class DelPezzoCompactSevenPointsAlgebraicSpace(AlgebraicSpace):
+    r"""Compactified 7-points-in-``ℙ²`` cover of non-hyperelliptic proper ``Mbar_3``.
+
+    Open unmarked non-hyperelliptic ``M_3`` uses the normalized chart
+    ``Spec(R[a,b,c,d,e,f]_S)`` (four points fixed at the simplex / all-ones; three
+    free points in the ``{X ≠ 0}`` affine of ``ℙ²``; ``S`` = collinearity
+    discriminants). This space compactifies that covering space by allowing the
+    three free points to range over all of ``(ℙ²)³``:
+
+    after ``PGL₃``-normalizing four labeled points to
+    ``{[1:0:0],[0:1:0],[0:0:1],[1:1:1]}``, the residual moduli are three labeled
+    points in ``ℙ²``. Standard affine charts of ``(ℙ²)³`` give ``3³ = 27`` charts
+    ``Spec(R[u₁,…,u₆])``, each dehomogenizing every free point in one of the three
+    standard affines of ``ℙ²``.
+
+    Collinearity discriminants are **not** inverted (parallel to Kapranov / compact
+    Legendre charts): nodal / degenerate anticanonical models stay in the cover.
+    Finite étale groupoid ``W(E₇)``. Requires ``2 ∈ Rˣ``.
+
+    Coverage: **dense open of the non-hyperelliptic locus of proper ``Mbar_3``** —
+    not the hyperelliptic divisor (Kapranov ``Mbar_{0,8}/S₈`` remains the
+    locus-only parallel row), not Naruki's full wonderful compactification, and
+    not a scheme isomorphism ``Mbar_3 ≅ U``. Charts are lazy / cached; prefer
+    :meth:`affine_cover_sample` (three charts) for equation-level certs.
+    """
+
+    @staticmethod
+    def __classcall_private__(
+        cls: type,
+        base: AffineScheme,
+        role: str,
+    ) -> DelPezzoCompactSevenPointsAlgebraicSpace:
+        assert isinstance(base, AffineScheme), f"DelPezzoCompactSevenPointsAlgebraicSpace requires AffineScheme base; found {type(base)!r}"
+        assert isinstance(role, str) and role, f"role must be a nonempty str; found {role!r}"
+        result = UniqueRepresentation.__classcall__(cls, base, role)
+        assert isinstance(result, DelPezzoCompactSevenPointsAlgebraicSpace), f"classcall must return DelPezzoCompactSevenPointsAlgebraicSpace; found {type(result)!r}"
+        return result
+
+    def __init__(self, base: AffineScheme, role: str) -> None:
+        self._role = role
+        self._base_ring = base.ring()
+        self._affine_chart_cache: dict[int, AffineScheme] = {}
+        AlgebraicSpace.__init__(
+            self,
+            base,
+            name=f"DelPezzoCompactSevenPoints({role}/{base!r})",
+            axioms=frozenset({"FiniteType", "Separated", "Proper"}),
+        )
+
+    def role(self) -> str:
+        r"""Literature role tag (e.g. ``Mbar_3_nh_via_seven_points``)."""
+        return self._role
+
+    def affine_cover_cardinality(self) -> int:
+        r"""Combinatorial chart count ``27 = 3³`` (standard affines of ``(ℙ²)³``)."""
+        return 27
+
+    def affine_chart(self, index: int) -> AffineScheme:
+        r"""Materialize (and cache) the ``index``-th ``(ℙ²)³`` chart ``Spec(R[u₁,…,u₆])``."""
+        from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+        idx = int(index)
+        n_total = self.affine_cover_cardinality()
+        assert 0 <= idx < n_total, f"affine chart index out of range: {idx!r} not in [0, {n_total})"
+        cached = self._affine_chart_cache.get(idx)
+        if cached is not None:
+            return cached
+        c4, c5, c6 = idx // 9, (idx // 3) % 3, idx % 3
+        prefix = f"P{c4}{c5}{c6}"
+        chart = AffineScheme(
+            PolynomialRing(
+                self._base_ring,
+                names=tuple(f"{prefix}_u{j}" for j in range(1, 7)),
+            )
+        )
+        self._affine_chart_cache[idx] = chart
+        return chart
+
+    def affine_cover_sample(self) -> tuple[AffineScheme, ...]:
+        r"""One chart per global affine type: all three free points in chart ``i`` (``3`` charts).
+
+        Indices ``0, 13, 26`` are ``(0,0,0)``, ``(1,1,1)``, ``(2,2,2)``. Every owned
+        chart is ``Spec(R[u₁,…,u₆])``; this sample witnesses the uniform shape
+        without building all ``27`` rings when only cert shape is needed.
+        """
+        return (self.affine_chart(0), self.affine_chart(13), self.affine_chart(26))
+
+    def affine_cover(self) -> tuple[AffineScheme, ...]:
+        r"""Full affine cover (``27`` charts; prefer sample for QC certs)."""
+        return tuple(self.affine_chart(i) for i in range(self.affine_cover_cardinality()))
+
+
 class HyperellipticCompactMarkedM3nAlgebraicSpace(AlgebraicSpace):
     r"""Compactified binary-octic cover of hyperelliptic proper marked ``Mbar_{3,n}``.
 
@@ -1876,6 +1968,8 @@ def _affine_cover_of(domain: object) -> tuple[AffineScheme, ...]:
         return domain.affine_cover_sample()
     if isinstance(domain, HyperellipticCompactMarkedM3nAlgebraicSpace):
         return domain.affine_cover_sample()
+    if isinstance(domain, DelPezzoCompactSevenPointsAlgebraicSpace):
+        return domain.affine_cover_sample()
     if isinstance(
         domain,
         (
@@ -2142,6 +2236,12 @@ class AtlasEvidence:
             cover = self._domain.affine_cover_sample()
             if not cover or self._domain.affine_cover_cardinality() < 1:
                 return False
+        elif isinstance(self._domain, DelPezzoCompactSevenPointsAlgebraicSpace):
+            cover = self._domain.affine_cover_sample()
+            if not cover or self._domain.affine_cover_cardinality() < 1:
+                return False
+            if not all(len(tuple(cast(Any, chart.ring()).gens())) == 6 for chart in cover):
+                return False
         else:
             cover = self.domain_affine_cover()
             if not cover:
@@ -2258,6 +2358,10 @@ class AtlasMorphism(StackMorphism):
                 hyp_m = cast(HyperellipticCompactMarkedM3nAlgebraicSpace, self.domain())
                 data["domain_affine_cover_cardinality"] = hyp_m.affine_cover_cardinality()
                 data["domain_affine_cover"] = hyp_m.affine_cover_sample()
+            elif isinstance(self.domain(), DelPezzoCompactSevenPointsAlgebraicSpace):
+                dp = cast(DelPezzoCompactSevenPointsAlgebraicSpace, self.domain())
+                data["domain_affine_cover_cardinality"] = dp.affine_cover_cardinality()
+                data["domain_affine_cover"] = dp.affine_cover_sample()
             else:
                 data["domain_affine_cover"] = self._evidence.domain_affine_cover()
         else:
@@ -2291,6 +2395,7 @@ class AtlasMorphism(StackMorphism):
             "igusa_compact_universal_curve_finite_etale_cover",
             "igusa_compact_marked_configuration_finite_etale_cover",
             "del_pezzo_seven_points_finite_etale_cover",
+            "del_pezzo_compact_seven_points_finite_etale_cover",
             "hyperelliptic_binary_octic_finite_etale_cover",
             "hyperelliptic_compact_finite_etale_cover",
             "hyperelliptic_universal_curve_finite_etale_cover",
