@@ -32,10 +32,10 @@ Independent DM math corrections that do not wait on #225. Status after deepen:
 | Surface | Status |
 | --- | --- |
 | Equipped `ModuliStacks` (not ⊆ DM), curve hierarchy, stratified objects, coarse AlgebraicSpaces-first, Γ indexing, restrict | Landed |
-| `atlas()` / `etale_atlas()` | **Deepened, still incomplete** — fail-closed `has_equation_level_etale_certificate()` (affine-cover + domain-matched ring certs; base Spec identity alone does not count; formal `AtlasChart` fail closed). Positive on: (i) `AffineAlgebraicSpace` covering + finite `G`; (ii) open proving-set moduli `M_{0,3}` (point) and `M_{0,4}` (cross-ratio `Spec(R[t]_{t(t-1)}) ≅ ℙ¹∖{0,1,∞}`, `covering_kind=moduli_affine_etale_chart`). `M_{1,1}` / `Mbar` / general `(g,n)` stay formal charts. Proving-set certs: identity, `D(f)`, separable finite étale. **Still open:** owned affine étale presentations for general DM moduli |
+| `atlas()` / `etale_atlas()` | **Deepened, still incomplete** — fail-closed `has_equation_level_etale_certificate()` (affine-cover + domain-matched ring certs; base Spec identity alone does not count; formal `AtlasChart` fail closed). Positive on: (i) `AffineAlgebraicSpace` covering + finite `G`; (ii) open proving-set moduli `M_{0,3}` (point), `M_{0,4}` (cross-ratio `Spec(R[λ]_{λ(λ-1)}) ≅ ℙ¹∖{0,1,∞}`, `covering_kind=moduli_affine_etale_chart`), and `M_{1,1}` with `2` invertible (Legendre `M(Γ(2))` finite étale cover of degree 6, `covering_kind=legendre_finite_etale_cover`, `S₃` groupoid stamps; **not** a scheme isomorphism). `Mbar` / general `(g,n)` / `M_{1,1}` in char 2 stay formal charts. Proving-set certs: identity, `D(f)`, separable finite étale. **Still open:** owned affine étale presentations for general DM moduli and for proper `Mbar_*` (e.g. `Mbar_{1,1}` needs non-affine `Mbar(Γ(2))≅ℙ¹` / weighted Proj) |
 | `pullback` / `fiber_product` | **Deepened, still incomplete** — `BaseChangeStack` mediating UP; `FiberProductStack` (not nameless shell) with projections + mediating leg recovery. Full Hom-category UP waits on #225 |
 | Aut(Γ) on product strata | **Deepened, still incomplete** — Sage `Action` subclass; `QuotientStack` consumes action; equal-type 2-vertex swap. #225 `Actions` category wiring unfinished |
-| Wave 1 overall | **Incomplete** — #225-blocked: Hom-category UP, Actions category, Cat/Sets substrate. Pre-#225: owned affine presentations for general DM moduli étale atlases (beyond `M_{0,3}` / `M_{0,4}`) |
+| Wave 1 overall | **Incomplete** — #225-blocked: Hom-category UP, Actions category, Cat/Sets substrate. Pre-#225: owned affine presentations for general DM moduli / `Mbar` étale atlases (beyond `M_{0,3}` / `M_{0,4}` / open `M_{1,1}` Legendre) |
 
 **Trap:** honesty demotion (`NotImplementedError`, identity morphisms, formal empty shells) is **not** remediation for PR #111 Wave 1.
 
@@ -96,7 +96,7 @@ Owns moduli parents, stratifications, clutching, geometric categories (`categori
 
 6. Axiom membership = theorem stamps (honest; not analytic proof).
 
-7. Atlas/pullback/Aut/fiber-product: structural deepenings landed (quotient presentation, product étale atlas, `FiberProductStack`, mediating UP, Sage `Action`, proving-set étale certificates + finite étale groupoid flags, owned `M_{0,3}`/`M_{0,4}` affine étale charts); equation-level étaleness on arbitrary/general moduli atlases, full 2-cat Hom UP, and #225 Actions wiring remain (named gaps, not wins).
+7. Atlas/pullback/Aut/fiber-product: structural deepenings landed (quotient presentation, product étale atlas, `FiberProductStack`, mediating UP, Sage `Action`, proving-set étale certificates + finite étale groupoid flags, owned `M_{0,3}`/`M_{0,4}` affine charts + open `M_{1,1}` Legendre/`S₃` cover); equation-level étaleness on arbitrary/general/`Mbar` moduli atlases, full 2-cat Hom UP, and #225 Actions wiring remain (named gaps, not wins).
 
 ## Forbidden
 

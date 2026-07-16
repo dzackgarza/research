@@ -35,32 +35,83 @@ def _marking_set(I: object) -> tuple[object, ...]:
     return tuple(I)
 
 
+def _two_is_invertible(base: AffineScheme) -> bool:
+    r"""True when ``2`` is a unit in the base ring (Legendre form needs char ≠ 2)."""
+    from typing import Any, cast
+
+    ring = cast(Any, base.ring())
+    try:
+        two = ring(2)
+        if hasattr(two, "is_unit") and bool(two.is_unit()):
+            return True
+    except TypeError, ValueError, AttributeError, ArithmeticError:
+        pass
+    if not hasattr(ring, "characteristic"):
+        return False
+    characteristic = ring.characteristic
+    if not callable(characteristic):
+        return False
+    try:
+        char = int(characteristic())
+    except TypeError, ValueError:
+        return False
+    return char != 2
+
+
+def _punctured_lambda_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Affine scheme ``Spec(R[λ]_{λ(λ-1)}) ≅ 𝔸¹ ∖ {0,1}``.
+
+    Shared coordinate ring for:
+
+    - ``M_{0,4}`` cross-ratio chart (isomorphism of schemes),
+    - Legendre level-``Γ(2)`` cover of ``M_{1,1}`` (finite étale of degree 6).
+
+    Same ring, different morphisms to different stacks — not a claim that
+    ``M_{0,4} ≅ M_{1,1}``.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=("lambda",))
+    lam = poly.gen()
+    return AffineScheme(poly.localization(lam * (lam - 1)))
+
+
 def _cross_ratio_affine_scheme(base: AffineScheme) -> AffineScheme:
-    r"""Affine scheme ``Spec(R[t]_{t(t-1)}) ≅ ℙ¹ ∖ {0,1,∞}`` (cross-ratio chart).
+    r"""Affine scheme ``Spec(R[λ]_{λ(λ-1)}) ≅ ℙ¹ ∖ {0,1,∞}`` (cross-ratio chart).
 
     Literature: ``ℳ_{0,4}`` is isomorphic to this affine scheme (Knudsen / standard
     moduli of 4-pointed genus-0 curves). Used only as an owned étale-atlas domain
     for the open stack ``M_{0,4}``, not for general ``(g,n)`` or ``Mbar``.
     """
-    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+    return _punctured_lambda_affine_scheme(base)
 
-    ring = base.ring()
-    poly = PolynomialRing(ring, names=("t",))
-    t = poly.gen()
-    return AffineScheme(poly.localization(t * (t - 1)))
+
+def _legendre_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Legendre parameter space ``Spec(R[λ]_{λ(λ-1)})`` for ``y² = x(x-1)(x-λ)``.
+
+    Over bases with ``2`` invertible, this is ``M(Γ(2))``, and the forgetful map
+    ``M(Γ(2)) → M_{1,1}`` is finite étale Galois of degree 6 with group
+    ``S₃ ≅ SL₂(𝔽₂)`` (permuting the three nonzero 2-torsion points). Hence
+    ``M_{1,1} ≅ [Spec(R[λ]_{λ(λ-1)}) / S₃]`` as Deligne–Mumford stacks — an owned
+    affine étale atlas domain, not an isomorphism of stacks to an affine scheme.
+    """
+    assert _two_is_invertible(base), "Legendre form requires 2 invertible in the base ring"
+    return _punctured_lambda_affine_scheme(base)
 
 
 def _moduli_affine_etale_domain(stack: ModuliStack) -> AffineAlgebraicSpace | None:
     r"""Owned affine étale-atlas domain for literature-backed proving-set cases.
 
-    Returns an :class:`AffineAlgebraicSpace` when the open moduli stack is a scheme
-    with an owned affine presentation:
+    Returns an :class:`AffineAlgebraicSpace` when an owned affine presentation exists:
 
-    - ``M_{0,3}``: a point ``Spec(R)`` over the base,
-    - ``M_{0,4}``: cross-ratio chart ``Spec(R[t]_{t(t-1)}) ≅ ℙ¹ ∖ {0,1,∞}``.
+    - ``M_{0,3}``: a point ``Spec(R)`` over the base (scheme isomorphism),
+    - ``M_{0,4}``: cross-ratio chart ``Spec(R[λ]_{λ(λ-1)}) ≅ ℙ¹ ∖ {0,1,∞}``,
+    - ``M_{1,1}`` (``2`` invertible): Legendre ``M(Γ(2))`` chart — finite étale
+      cover of degree 6, not a scheme isomorphism (stacky stabilizers remain).
 
-    Fail-closed (``None``) for ``M_{1,1}`` (stacky), all ``Mbar``, and general
-    ``(g,n)`` — no fake affine charts.
+    Fail-closed (``None``) for ``Mbar``, general ``(g,n)``, and ``M_{1,1}`` when
+    ``2`` is not invertible — no fake affine charts.
     """
     if stack.is_proper():
         return None
@@ -71,7 +122,18 @@ def _moduli_affine_etale_domain(stack: ModuliStack) -> AffineAlgebraicSpace | No
         return AffineAlgebraicSpace(base)
     if g == 0 and n == 4:
         return AffineAlgebraicSpace(_cross_ratio_affine_scheme(base))
+    if g == 1 and n == 1 and _two_is_invertible(base):
+        return AffineAlgebraicSpace(_legendre_affine_scheme(base))
     return None
+
+
+def _legendre_galois_group() -> object:
+    r"""``S₃ ≅ SL₂(𝔽₂)`` acting on the Legendre ``Γ(2)`` cover of ``M_{1,1}``."""
+    from typing import Any, cast
+
+    from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
+    return cast(Any, SymmetricGroup(3))
 
 
 class Groupoid(UniqueRepresentation, Parent):
@@ -369,18 +431,51 @@ class ModuliStack(DeligneMumfordStack):
         space = self.coarse_space()
         return CoarseModuliMorphism(self, space)
 
+    def legendre_quotient_presentation(self) -> dict[str, object] | None:
+        r"""Inspectable ``(U, S₃)`` data when ``M_{1,1} ≅ [U/S₃]`` is owned.
+
+        Returns ``None`` unless this is the open stack ``M_{1,1}`` over a base
+        with ``2`` invertible. ``U`` is the Legendre affine
+        ``Spec(R[λ]_{λ(λ-1)})``; ``G = S₃`` acts by permuting ``{0,1,∞}``.
+        Does **not** claim a scheme isomorphism ``M_{1,1} ≅ U``.
+        """
+        if self.is_proper() or self.genus() != 1 or self.number_of_markings() != 1:
+            return None
+        if not _two_is_invertible(self.base_scheme()):
+            return None
+        domain = _moduli_affine_etale_domain(self)
+        if domain is None:
+            return None
+        group = _legendre_galois_group()
+        from typing import Any, cast
+
+        return {
+            "covering_space": domain,
+            "group": group,
+            "group_order": int(cast(Any, group).order()),
+            "finite_etale_groupoid": True,
+            "covering_unramified_stamp": True,
+            "covering_smooth_stamp": True,
+            "covering_formally_etale_stamp": True,
+            "degree": 6,
+            "level_structure": "Gamma(2)",
+            "presentation": "M_1_1 ≅ [Legendre_U / S3]",
+        }
+
     def etale_atlas(self) -> AtlasMorphism:
         r"""Étale atlas ``U → ℳ`` with owned affine domain on proving-set cases.
 
-        For ``M_{0,3}`` / ``M_{0,4}`` (open stacks representable by owned affine
-        schemes), the domain is an :class:`AffineAlgebraicSpace` with matching
-        identity / localization :class:`FormallyEtaleSchemeCertificate` data and
-        ``covering_kind="moduli_affine_etale_chart"``.
+        - ``M_{0,3}`` / ``M_{0,4}``: scheme-isomorphic affine charts;
+          ``covering_kind="moduli_affine_etale_chart"``.
+        - ``M_{1,1}`` (``2`` invertible): Legendre finite étale cover
+          ``U = Spec(R[λ]_{λ(λ-1)}) → M_{1,1}`` of degree 6 with Galois group
+          ``S₃``; ``covering_kind="legendre_finite_etale_cover"``. Equation-level
+          True via domain affine identity/localization certs; stackiness is
+          recorded as finite étale groupoid evidence, not erased.
 
-        For ``M_{1,1}``, ``Mbar``, and general ``(g,n)``: fail-closed formal
-        :class:`~dm_moduli_spike.geometry.stacks.AtlasChart` (empty affine cover;
-        equation-level certificate is ``False``). Never uses the coarse space as
-        an étale atlas domain.
+        For ``Mbar``, general ``(g,n)``, and ``M_{1,1}`` when ``2`` is not
+        invertible: fail-closed formal :class:`~dm_moduli_spike.geometry.stacks.AtlasChart`.
+        Never uses the coarse space as an étale atlas domain.
         """
         domain = _moduli_affine_etale_domain(self)
         if domain is None:
@@ -392,6 +487,39 @@ class ModuliStack(DeligneMumfordStack):
             certs.extend(_proving_set_etale_certificates(chart))
         scheme_certs = tuple(certs)
         primary = scheme_certs[0] if scheme_certs else None
+        is_legendre = self.genus() == 1 and self.number_of_markings() == 1
+        if is_legendre:
+            from typing import Any, cast
+
+            covering_kind = "legendre_finite_etale_cover"
+            group = _legendre_galois_group()
+            group_order = int(cast(Any, group).order())
+            return AtlasMorphism(
+                domain,
+                self,
+                etale=True,
+                covering_kind=covering_kind,
+                representable_domain=True,
+                evidence=AtlasEvidence(
+                    stack=self,
+                    domain=domain,
+                    covering_kind=covering_kind,
+                    etale_stamp=True,
+                    representable_domain=True,
+                    diagonal=self.diagonal(),
+                    dm_diagonal_unramified_stamp=True,
+                    dm_diagonal_representable_stamp=True,
+                    scheme_certificate=primary,
+                    scheme_certificates=scheme_certs,
+                    covering_space=domain,
+                    quotient_group=group,
+                    finite_etale_groupoid=True,
+                    group_order=group_order,
+                    covering_unramified_stamp=True,
+                    covering_smooth_stamp=True,
+                    covering_formally_etale_stamp=True,
+                ),
+            )
         return AtlasMorphism(
             domain,
             self,

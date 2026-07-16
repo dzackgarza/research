@@ -1335,7 +1335,7 @@ class AtlasEvidence:
             return False
         if self._factor_atlases is not None:
             return all(fa.has_equation_level_etale_certificate() for fa in self._factor_atlases)
-        if self._covering_kind == "quotient_cover" and not self.links_finite_etale_groupoid():
+        if self._covering_kind in ("quotient_cover", "legendre_finite_etale_cover") and not self.links_finite_etale_groupoid():
             return False
         cover = self.domain_affine_cover()
         if not cover:
@@ -1449,8 +1449,8 @@ class AtlasMorphism(StackMorphism):
         return self._covering_kind == "coarse_moduli" and not self._etale
 
     def is_quotient_presentation_atlas(self) -> bool:
-        r"""True for the standard ``U → [U/G]`` quotient presentation atlas."""
-        return self._covering_kind == "quotient_cover"
+        r"""True for ``U → [U/G]`` presentations (quotient stacks; Legendre ``M_{1,1}``)."""
+        return self._covering_kind in ("quotient_cover", "legendre_finite_etale_cover")
 
     def covering_space(self) -> object | None:
         if self._evidence is not None:
@@ -1859,7 +1859,9 @@ class QuotientStack(Stack):
     def group_order(self) -> int | None:
         r"""Order of ``G`` when finite and Sage-computable; else ``None``."""
         group = self._group
-        order_fn = getattr(group, "order", None)
+        if not hasattr(group, "order"):
+            return None
+        order_fn = group.order
         if not callable(order_fn):
             return None
         try:

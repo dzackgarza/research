@@ -456,15 +456,18 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     etale = XS.etale_atlas()
     assert isinstance(etale, AtlasMorphism)
     assert etale.is_etale()
-    assert isinstance(etale.domain(), AtlasChart)
-    assert etale.domain().is_etale_chart()
+    from dm_moduli_spike.geometry.stacks import AffineAlgebraicSpace, _TrivialCoveringAction
+
+    # M_{1,1}: owned Legendre finite étale cover U → M_{1,1} ≅ [U/S₃] (2 invertible).
+    assert isinstance(etale.domain(), AffineAlgebraicSpace)
     assert etale.domain() is not XS
     assert etale.domain() is not XS.coarse_space()
     assert etale.codomain() is XS
     assert etale in Hom(etale.domain(), XS)
     assert etale.is_covering()
     assert etale.domain_is_representable()
-    assert etale.covering_kind() == "etale_atlas_chart"
+    assert etale.covering_kind() == "legendre_finite_etale_cover"
+    assert etale.is_quotient_presentation_atlas()
     assert not etale.is_coarse_atlas()
     assert etale.distinguishes_etale_from_coarse()
     # Fail-closed: étale atlas must not silently become the coarse atlas.
@@ -483,18 +486,27 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert etale.covering_data()["dm_diagonal_unramified_stamp"] is True
     assert etale.covering_data()["diagonal"] is ev.diagonal()
     assert etale.covering_data()["links_dm_diagonal_axioms"] is True
+    assert ev.finite_etale_groupoid()
+    assert ev.links_finite_etale_groupoid()
+    assert ev.group_order() == 6
+    assert etale.covering_space() is etale.domain()
+    assert int(etale.quotient_group().order()) == 6
     cert = ev.scheme_certificate()
     assert isinstance(cert, FormallyEtaleSchemeCertificate)
     assert cert.is_flat() and cert.is_unramified() and cert.is_formally_etale()
     assert cert.reason() == "identity_ring_map_isomorphism"
-    # M_{1,1} is stacky: fail-closed formal chart (empty affine cover).
-    assert etale.domain().affine_cover() == ()
-    assert not etale.has_equation_level_etale_certificate()
+    assert etale.domain().affine_cover() != ()
+    assert etale.has_equation_level_etale_certificate()
+    assert etale.equation_level_etale()
     assert not atlas.has_equation_level_etale_certificate()
+    presentation = XS.legendre_quotient_presentation()
+    assert presentation is not None
+    assert presentation["group_order"] == 6
+    assert presentation["covering_space"] is etale.domain()
+    assert presentation["finite_etale_groupoid"] is True
+    assert presentation["degree"] == 6
 
     # M_{0,4}: owned cross-ratio affine étale atlas (ℙ¹ ∖ {0,1,∞}).
-    from dm_moduli_spike.geometry.stacks import AffineAlgebraicSpace, _TrivialCoveringAction
-
     YS = M_gn(0, 4, base=k)
     ys_atlas = YS.atlas()
     ys_etale = YS.etale_atlas()
@@ -525,17 +537,29 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert zs_etale.covering_kind() == "moduli_affine_etale_chart"
     assert zs_etale.has_equation_level_etale_certificate()
 
-    # Mbar and general (g,n): remain fail-closed.
+    # Mbar and general (g,n): remain fail-closed (incl. proper Mbar_{1,1}).
     Mbar04 = Mbar_gn(0, 4, base=k)
     mbar_etale = Mbar04.etale_atlas()
     assert isinstance(mbar_etale.domain(), AtlasChart)
     assert mbar_etale.domain().affine_cover() == ()
     assert not mbar_etale.has_equation_level_etale_certificate()
+    Mbar11 = Mbar_gn(1, 1, base=k)
+    assert isinstance(Mbar11.etale_atlas().domain(), AtlasChart)
+    assert not Mbar11.etale_atlas().has_equation_level_etale_certificate()
+    assert Mbar11.legendre_quotient_presentation() is None
     M12 = M_gn(1, 2, base=k)
     assert isinstance(M12.etale_atlas().domain(), AtlasChart)
     assert not M12.etale_atlas().has_equation_level_etale_certificate()
 
-    # Product of DM stacks: étale atlas is product of factor étale atlases.
+    # Char 2: Legendre form unavailable — M_{1,1} fail-closed formal chart.
+    from sage.rings.finite_rings.finite_field_constructor import GF
+
+    M11_char2 = M_gn(1, 1, base=spec(GF(2)))
+    assert isinstance(M11_char2.etale_atlas().domain(), AtlasChart)
+    assert not M11_char2.etale_atlas().has_equation_level_etale_certificate()
+    assert M11_char2.legendre_quotient_presentation() is None
+
+    # Product of owned charts: M_{1,1} × M_{0,4} both equation-level → product True.
     prod = ProductStack((XS, YS), base=k)
     prod_etale = prod.etale_atlas()
     assert prod_etale.is_etale()
@@ -551,10 +575,16 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert not prod_etale.is_coarse_atlas()
     assert prod.atlas().covering_kind() == "product_of_coarse"
     assert not prod.atlas().is_etale()
-    # Product fails closed: M_{1,1} factor still has formal AtlasChart.
-    assert factor_eas[0].has_equation_level_etale_certificate() is False
+    assert factor_eas[0].has_equation_level_etale_certificate() is True
     assert factor_eas[1].has_equation_level_etale_certificate() is True
-    assert not prod_etale.has_equation_level_etale_certificate()
+    assert prod_etale.has_equation_level_etale_certificate()
+
+    # Product fails closed when a factor still has a formal AtlasChart.
+    prod_formal = ProductStack((M12, YS), base=k)
+    prod_formal_etale = prod_formal.etale_atlas()
+    assert prod_formal_etale.factor_atlases()[0].has_equation_level_etale_certificate() is False
+    assert prod_formal_etale.factor_atlases()[1].has_equation_level_etale_certificate() is True
+    assert not prod_formal_etale.has_equation_level_etale_certificate()
 
     # Affine covering + finite G: equation-level étale certificate on U → [U/G].
     from sage.groups.perm_gps.permgroup_named import CyclicPermutationGroup
@@ -570,7 +600,6 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert aff_etale.equation_level_etale()
     assert aff_etale.evidence().domain_affine_cover() == (spec(QQ),)
     assert aff_etale.covering_data()["has_equation_level_etale_certificate"] is True
-    assert not prod_etale.has_equation_level_etale_certificate()
 
     from sage.rings.integer_ring import ZZ
 

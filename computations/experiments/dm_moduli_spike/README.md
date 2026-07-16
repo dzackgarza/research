@@ -22,7 +22,7 @@ Wave 1 is **not complete**. Prior “honesty demotions” (`NotImplementedError`
 | Item | Status |
 | --- | --- |
 | Category / curve / stratification ontology fixes | Landed |
-| `atlas()` / `etale_atlas()` as `U → X` | **Deepened, incomplete** — fail-closed `has_equation_level_etale_certificate()`; positive on affine covering + finite `G`, and on proving-set open moduli `M_{0,3}` / `M_{0,4}` (`moduli_affine_etale_chart`). `M_{1,1}`, `Mbar`, general `(g,n)`, and product coverings with a formal factor stay fail-closed. Still open: affine presentations for general DM moduli étale atlases |
+| `atlas()` / `etale_atlas()` as `U → X` | **Deepened, incomplete** — fail-closed `has_equation_level_etale_certificate()`; positive on affine covering + finite `G`, and on proving-set open moduli `M_{0,3}` / `M_{0,4}` (`moduli_affine_etale_chart`) plus `M_{1,1}` with `2` invertible (Legendre finite étale cover, `legendre_finite_etale_cover` + `S₃`). `Mbar`, general `(g,n)`, char-2 `M_{1,1}`, and products with a formal factor stay fail-closed. Still open: affine presentations for general / proper DM moduli étale atlases |
 | Structured `pullback` / `fiber_product` | **Deepened, incomplete** — `BaseChangeStack` + `FiberProductStack` with legs/mediating recovery. Full Hom-category UP waits on #225 |
 | Aut(Γ) action on product strata | **Deepened, incomplete** — Sage `Action` subclass; factor swap on equal-type 2-vertex graphs; quotient covering autos. #225 `Actions` wiring unfinished |
 
@@ -59,7 +59,7 @@ This package **does not claim**:
 | Canonical transport (public API) | **PARTIAL** |
 | Specialization poset Hom-certified | **PASS** |
 | Extraction of either package | **FAIL** |
-| Wave 1 complete (incl. full coherence) | **FAIL** — structural deepenings landed; #225-blocked: Hom-category UP, Actions category, Cat/Sets substrate; pre-#225: equation-level étaleness for general `(g,n)` / `Mbar` / stacky `M_{1,1}` (owned only for `M_{0,3}` / `M_{0,4}` + quotient proving set) |
+| Wave 1 complete (incl. full coherence) | **FAIL** — structural deepenings landed; #225-blocked: Hom-category UP, Actions category, Cat/Sets substrate; pre-#225: equation-level étaleness for general `(g,n)` / `Mbar` (owned for `M_{0,3}` / `M_{0,4}` / open `M_{1,1}` Legendre + quotient proving set) |
 
 ## Public entry
 
