@@ -661,6 +661,108 @@ class KapranovBlowupFourPointsP2AlgebraicSpace(AlgebraicSpace):
         return self._affine_charts
 
 
+def _kapranov_A3_chart_count() -> int:
+    r"""Number of Hartshorne charts for Kapranov centers in one ``𝔸³ ⊂ ℙ³``.
+
+    Blow up two points (``3×3 = 9`` charts), then successively blow up the seven
+    lines that meet the chart among Kapranov's ten: three axes through the
+    origin, three parallels through ``(1,1,1)``, and the diagonal. Meeting model
+    (same honesty level as :func:`_blowup_A2_at_two_points_charts`): each
+    origin-axis meets one third of the point-blowup charts; each
+    ``(1,1,1)``-parallel meets one third; the diagonal meets all charts present
+    at that stage. Chart count evolves ``9 → 12 → 15 → 18 → 24 → 30 → 36 → 72``.
+    """
+    return 72
+
+
+def _blowup_A3_kapranov_charts(ring: object, prefix: str) -> tuple[AffineScheme, ...]:
+    r"""Seventy-two standard affine charts for Kapranov centers in ``𝔸³_R``.
+
+    Centers in one standard affine open of ``ℙ³`` containing an axis point and
+    ``(1,1,1)``:
+
+    - points ``O = (0,0,0)``, ``Q = (1,1,1)``;
+    - lines: axes through ``O``, parallels to the axes through ``Q``, and the
+      diagonal ``OQ``.
+
+    Each chart is ``Spec(R[u,v,w]) ≅ 𝔸³``; gluing / exceptional-divisor equations
+    live in the coordinate changes (same honesty level as
+    :func:`_blowup_A2_at_two_points_charts` and
+    :class:`ProjectiveLineAlgebraicSpace`). Variable names are prefixed so Sage
+    ``UniqueRepresentation`` rings stay distinct across the ``4 × 72`` Kapranov
+    charts of :class:`KapranovBlowupFivePointsP3AlgebraicSpace`.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    n_charts = _kapranov_A3_chart_count()
+    return tuple(AffineScheme(PolynomialRing(ring, names=(f"{prefix}_c{i}_u", f"{prefix}_c{i}_v", f"{prefix}_c{i}_w"))) for i in range(n_charts))
+
+
+class KapranovBlowupFivePointsP3AlgebraicSpace(AlgebraicSpace):
+    r"""Kapranov model ``Mbar_{0,6} ≅ Bl(ℙ³)`` at five points and ten lines.
+
+    Blow up ``ℙ³_R`` at five points in general position, then at the proper
+    transforms of all lines through pairs of those points:
+
+    - ``p₁ = [1:0:0:0]``, ``p₂ = [0:1:0:0]``, ``p₃ = [0:0:1:0]``,
+      ``p₄ = [0:0:0:1]``, ``p₅ = [1:1:1:1]``.
+
+    Literature: Kapranov, *Chow quotients of Grassmannians I*; Hassett, *Moduli
+    spaces of weighted pointed stable curves*, §6.2. Genus-0 moduli are
+    representable, so the stack is a scheme; an affine cover of the scheme is a
+    valid étale atlas of the stack-as-scheme
+    (``covering_kind=moduli_scheme_affine_cover``). **Not** a claim that the
+    coarse moduli map is étale.
+
+    Owned cover: for each standard affine open ``U_W, U_X, U_Y, U_Z ≅ 𝔸³`` of
+    ``ℙ³`` (each containing one coordinate point and ``p₅``), take the
+    seventy-two charts of :func:`_blowup_A3_kapranov_charts`. Total
+    ``288`` charts ``Spec(R[u,v,w])``, each isomorphic to ``𝔸³``.
+
+    Consistency with open ``M_{0,6}``: the Knudsen configuration chart
+    ``Spec(R[λ,μ,ν]_{…})`` is an affine open of the complement of the
+    exceptional divisors. Proper ``Mbar_{0,n}`` for ``n > 6`` stays fail-closed
+    (named gap: Kapranov iterated blowup of ``ℙ^{n-3}``).
+    """
+
+    @staticmethod
+    def __classcall_private__(cls: type, base: AffineScheme, role: str = "Mbar_0_6") -> KapranovBlowupFivePointsP3AlgebraicSpace:
+        assert isinstance(base, AffineScheme), f"KapranovBlowupFivePointsP3AlgebraicSpace requires AffineScheme base; found {type(base)!r}"
+        assert isinstance(role, str) and role, f"role must be a nonempty str; found {role!r}"
+        result = UniqueRepresentation.__classcall__(cls, base, role)
+        assert isinstance(result, KapranovBlowupFivePointsP3AlgebraicSpace), f"classcall must return KapranovBlowupFivePointsP3AlgebraicSpace; found {type(result)!r}"
+        return result
+
+    def __init__(self, base: AffineScheme, role: str = "Mbar_0_6") -> None:
+        self._role = role
+        self._points = ((1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1), (1, 1, 1, 1))
+        ring = base.ring()
+        # Each standard affine of ℙ³ contains one coordinate point and p₅.
+        self._affine_charts = (
+            *_blowup_A3_kapranov_charts(ring, "UW"),
+            *_blowup_A3_kapranov_charts(ring, "UX"),
+            *_blowup_A3_kapranov_charts(ring, "UY"),
+            *_blowup_A3_kapranov_charts(ring, "UZ"),
+        )
+        AlgebraicSpace.__init__(
+            self,
+            base,
+            name=f"KapranovBl5P3({role}/{base!r})",
+            axioms=frozenset({"FiniteType", "Separated", "Proper", "Projective"}),
+        )
+
+    def role(self) -> str:
+        r"""Literature role tag (e.g. ``Mbar_0_6``)."""
+        return self._role
+
+    def blown_up_points(self) -> tuple[tuple[int, int, int, int], ...]:
+        r"""Homogeneous coordinates of the five Kapranov centers in ``ℙ³``."""
+        return self._points
+
+    def affine_cover(self) -> tuple[AffineScheme, ...]:
+        return self._affine_charts
+
+
 class CompactifiedUniversalCurveAlgebraicSpace(AlgebraicSpace):
     r"""Affine cover of a compactified Legendre/Hesse multi-mark curve over ``ℙ¹``.
 
@@ -671,8 +773,9 @@ class CompactifiedUniversalCurveAlgebraicSpace(AlgebraicSpace):
       including discriminant-zero (nodal) fibers — **not** the open localization
       at ``λ(λ-1)``. For ``n ≥ 3`` the charts carry ``n - 1`` marked points with
       collision-free localizations that remain valid at nodal fibers. Kapranov
-      ``Bl₄(ℙ²)`` for ``Mbar_{0,5}`` is owned separately as
-      :class:`KapranovBlowupFourPointsP2AlgebraicSpace`.
+      ``Bl₄(ℙ²)`` / ``Bl(ℙ³)`` for ``Mbar_{0,5}`` / ``Mbar_{0,6}`` are owned
+      separately as :class:`KapranovBlowupFourPointsP2AlgebraicSpace` /
+      :class:`KapranovBlowupFivePointsP3AlgebraicSpace`.
     - Hesse (``2`` not invertible, ``3`` invertible): two Hesse-cubic charts over
       ``Mbar(Γ(3)) ≅ ℙ¹``, including ``μ³ = 1`` nodal fibers, likewise extended
       by extra marked-point coordinates for ``n ≥ 3``.
@@ -1317,6 +1420,7 @@ def _affine_cover_of(domain: object) -> tuple[AffineScheme, ...]:
             AffineAlgebraicSpace,
             ProjectiveLineAlgebraicSpace,
             KapranovBlowupFourPointsP2AlgebraicSpace,
+            KapranovBlowupFivePointsP3AlgebraicSpace,
             CompactifiedUniversalCurveAlgebraicSpace,
         ),
     ):

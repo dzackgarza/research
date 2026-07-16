@@ -143,8 +143,8 @@ def _knudsen_open_M0n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme:
 
     Literature: Knudsen's construction of ``M_{0,n}``; Fulton–MacPherson /
     configuration-space presentation. Owned for the **open** stack only —
-    proper ``Mbar_{0,n}`` for ``n > 5`` is not claimed here (Kapranov /
-    Fulton–MacPherson compactifications stay fail-closed until registered).
+    proper ``Mbar_{0,n}`` for ``n ≤ 6`` is registered separately (Kapranov);
+    ``n > 6`` stays fail-closed (named gap ``kapranov_iterated_blowup_P_{n-3}``).
     """
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
@@ -316,7 +316,8 @@ def _configuration_M05_affine_scheme(base: AffineScheme) -> AffineScheme:
 def _configuration_M06_affine_scheme(base: AffineScheme) -> AffineScheme:
     r"""Affine scheme for open ``ℳ_{0,6}`` — special case of Knudsen ``n = 6``.
 
-    Proper ``Mbar_{0,6}`` stays fail-closed (no Kapranov/FM affine cover owned).
+    Proper ``Mbar_{0,6}`` uses the Kapranov ``Bl(ℙ³)`` cover
+    :class:`~dm_moduli_spike.geometry.stacks.KapranovBlowupFivePointsP3AlgebraicSpace`.
     """
     return _knudsen_open_M0n_affine_scheme(base, 6)
 

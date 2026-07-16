@@ -25,7 +25,7 @@ every open ``M_{1,n}`` for ``n ≥ 1``. Compact genus-1 ownership is also
 :func:`owned_etale_atlas_presentations` with ``expand_open_m0n_through`` /
 ``expand_open_m1n_through`` / ``expand_compact_m1n_through`` to materialize
 inspectable per-``n`` rows. This module does **not** invent charts for unowned
-types (e.g. ``M_{2,0}``, ``Mbar_{0,n}`` for ``n > 5``).
+types (e.g. ``M_{2,0}``, ``Mbar_{0,n}`` for ``n > 6``).
 """
 
 from __future__ import annotations
@@ -251,6 +251,7 @@ _NONPARAMETRIC_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
     OwnedAtlasPresentation(0, 3, True, "moduli_affine_etale_chart", "point_spec", "none"),
     OwnedAtlasPresentation(0, 4, True, "moduli_scheme_affine_cover", "projective_line_affine_cover", "none"),
     OwnedAtlasPresentation(0, 5, True, "moduli_scheme_affine_cover", "kapranov_blowup_four_points_p2", "none"),
+    OwnedAtlasPresentation(0, 6, True, "moduli_scheme_affine_cover", "kapranov_blowup_five_points_p3", "none"),
 )
 
 _OWNED_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
@@ -272,7 +273,7 @@ def owned_etale_atlas_presentations(
 
     Default: one parametric open-Knudsen row, two parametric open-``M_{1,n}``
     rows, two parametric compact-``Mbar_{1,n}`` rows, plus non-parametric proper
-    genus-0 rows (cardinality 8).
+    genus-0 rows (cardinality 9).
 
     When ``expand_open_m0n_through`` is set to an integer ``N ≥ 3``, the
     parametric Knudsen row is replaced by concrete open ``M_{0,3}``…``M_{0,N}``.
@@ -479,6 +480,7 @@ def resolve_owned_etale_atlas(stack: ModuliStack) -> OwnedAtlasPresentation | No
 def _domain_for_presentation(stack: ModuliStack, row: OwnedAtlasPresentation) -> AlgebraicSpace:
     from ..geometry.stacks import (
         AffineAlgebraicSpace,
+        KapranovBlowupFivePointsP3AlgebraicSpace,
         KapranovBlowupFourPointsP2AlgebraicSpace,
         ProjectiveLineAlgebraicSpace,
     )
@@ -511,6 +513,8 @@ def _domain_for_presentation(stack: ModuliStack, row: OwnedAtlasPresentation) ->
         return ProjectiveLineAlgebraicSpace(base, "Mbar_0_4")
     if name == "kapranov_blowup_four_points_p2":
         return KapranovBlowupFourPointsP2AlgebraicSpace(base, "Mbar_0_5")
+    if name == "kapranov_blowup_five_points_p3":
+        return KapranovBlowupFivePointsP3AlgebraicSpace(base, "Mbar_0_6")
     if name in ("legendre_gamma2", "legendre_universal_curve", "legendre_marked_configuration"):
         return AffineAlgebraicSpace(_legendre_open_M1n_affine_scheme(base, stack.number_of_markings()))
     if name in ("hesse_gamma3", "hesse_universal_curve", "hesse_marked_configuration"):
@@ -637,8 +641,10 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
                 "open M_{1,n} for every n≥1, and compact Mbar_{1,n} for every n≥1 "
                 "(Legendre/Hesse under unit hypotheses) are owned parametrically "
                 "(expand via expand_open_m0n_through / expand_open_m1n_through / "
-                "expand_compact_m1n_through). Do not invent charts — in particular "
-                "do not fake Kapranov Mbar_{0,n} for n>5."
+                "expand_compact_m1n_through). Proper Mbar_{0,n} is owned for "
+                "n≤6 (Kapranov). Do not invent charts — in particular do not fake "
+                "Kapranov Mbar_{0,n} for n>6; literature name for the gap is "
+                "kapranov_iterated_blowup_P_{n-3}."
             ),
             "owned_registry_cardinality": owned_etale_atlas_cardinality(),
             "owned_registry_type_keys": list(owned_etale_atlas_type_keys()),
@@ -649,6 +655,8 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
             "open_m0n_knudsen_inspectable_max": OPEN_M0N_INSPECTABLE_MAX,
             "open_m1n_level_inspectable_max": OPEN_M1N_INSPECTABLE_MAX,
             "compact_m1n_level_inspectable_max": COMPACT_M1N_INSPECTABLE_MAX,
+            "proper_m0n_gap_construction": "kapranov_iterated_blowup_P_{n-3}",
+            "proper_m0n_owned_max": 6,
         },
     )
     return gap
