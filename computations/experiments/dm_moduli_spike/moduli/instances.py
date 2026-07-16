@@ -952,6 +952,94 @@ def _del_pezzo_compact_M30_covering_space(base: AffineScheme) -> AlgebraicSpace:
     return DelPezzoCompactSevenPointsAlgebraicSpace(base, "Mbar_3_nh_via_seven_points")
 
 
+def _del_pezzo_open_M3n_point_names(n_marks: int) -> tuple[str, ...]:
+    r"""Coordinate names for ``n_marks`` affine points in the anticanonical ``ℙ²``."""
+    if n_marks == 1:
+        return ("s", "t")
+    names: list[str] = []
+    for i in range(1, n_marks + 1):
+        names.extend((f"s{i}", f"t{i}"))
+    return tuple(names)
+
+
+def _del_pezzo_open_M3n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme:
+    r"""Parametric marked degree-2 del Pezzo chart for open non-hyperelliptic ``M_{3,n}``.
+
+    Forgetful to the non-hyperelliptic locus of ``M_3``; fiber is ``n`` residual
+    marked points in the anticanonical ``ℙ²`` model over the owned 7-points chart
+    :func:`_del_pezzo_open_M30_affine_scheme`. Requires ``2 ∈ Rˣ``. Finite étale
+    ``W(E₇)``.
+
+    * ``n = 0``: :func:`_del_pezzo_open_M30_affine_scheme`.
+    * ``n ≥ 1``: ``Spec(R[a..f,s_i,t_i]_S)`` with ``S`` the product of the
+      unmarked collinearity denominators and pairwise differences of marking
+      coordinates (dense open of configurations; anticanonical incidence of
+      markings lives in the stack map / gluing, parallel to compact del Pezzo
+      charts that omit collinearity equations).
+
+    Coverage: dense open of the non-hyperelliptic locus of open ``M_{3,n}`` —
+    not the hyperelliptic binary-octic locus.
+    """
+    from itertools import combinations
+
+    from sage.matrix.constructor import matrix
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    n_int = int(n)
+    assert n_int >= 0, f"open del Pezzo M_{{3,n}} chart requires n ≥ 0; got {n!r}"
+    assert _two_is_invertible(base), "del Pezzo M_{3,n} chart requires 2 invertible"
+    if n_int == 0:
+        return _del_pezzo_open_M30_affine_scheme(base)
+
+    names = ("a", "b", "c", "d", "e", "f") + _del_pezzo_open_M3n_point_names(n_int)
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=names)
+    a, b, c, d, e, f = poly.gens()[:6]
+    one = poly.one()
+    zero = poly.zero()
+    pts = (
+        (one, zero, zero),
+        (zero, one, zero),
+        (zero, zero, one),
+        (one, one, one),
+        (one, a, b),
+        (one, c, d),
+        (one, e, f),
+    )
+    denom = one
+    for i, j, k in combinations(range(7), 3):
+        det = matrix(poly, [pts[i], pts[j], pts[k]]).det()
+        if det == zero or det == one or det == -one:
+            continue
+        denom *= det
+    marks = poly.gens()[6:]
+    for i, mi in enumerate(marks):
+        for mj in marks[i + 1 :]:
+            denom *= mi - mj
+    return AffineScheme(poly.localization(denom))
+
+
+def _del_pezzo_compact_M3n_covering_space(base: AffineScheme, n: int) -> AlgebraicSpace:
+    r"""Compactified marked del Pezzo / fiber-product cover of non-hyperelliptic ``Mbar_{3,n}``.
+
+    Pullback of :func:`_del_pezzo_compact_M30_covering_space` along forgetful
+    ``Mbar_{3,n} → Mbar_3``. Covering space is
+    :class:`~dm_moduli_spike.geometry.stacks.DelPezzoCompactMarkedM3nAlgebraicSpace`.
+    Finite étale ``W(E₇)``. Requires ``2 ∈ Rˣ``. Lazy sample certs.
+
+    * ``n = 0``: :func:`_del_pezzo_compact_M30_covering_space`.
+    * ``n ≥ 1``: marked fibers over compact seven-point charts.
+    """
+    from ..geometry.stacks import DelPezzoCompactMarkedM3nAlgebraicSpace
+
+    n_int = int(n)
+    assert n_int >= 0, f"compact del Pezzo Mbar_{{3,n}} requires n ≥ 0; got {n!r}"
+    assert _two_is_invertible(base), "del Pezzo compact Mbar_{3,n} cover requires 2 invertible"
+    if n_int == 0:
+        return _del_pezzo_compact_M30_covering_space(base)
+    return DelPezzoCompactMarkedM3nAlgebraicSpace(base, n_int, f"Mbar_3_{n_int}_nh_via_seven_points")
+
+
 def _genus4_open_M40_affine_scheme(base: AffineScheme) -> AffineScheme:
     r"""Canonical ``(2,3)``-complete-intersection chart for open unmarked ``M_{4,0}``.
 
@@ -990,6 +1078,60 @@ def _genus4_open_M40_affine_scheme(base: AffineScheme) -> AffineScheme:
         for cj in gens[i + 1 :]:
             denom *= ci - cj
     return AffineScheme(poly.localization(denom))
+
+
+def _genus4_trigonal_open_M40_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Cone-cubic / Maroni chart for the trigonal locus of open ``M_4``.
+
+    A trigonal genus-4 curve is the complete intersection of a **singular**
+    quadric cone and a cubic in ``ℙ³`` (Petri). After fixing the cone to the
+    normal form ``XY = Z²`` (Maroni scroll / ``𝔽₁`` image), residual moduli of
+    the cubic restricted to the cone are 8-dimensional — matching
+    ``dim(trigonal locus) = dim M_4 - 1 = 8``.
+
+    This chart is a dense open of that normal-form coefficient space:
+
+    ``Spec(R[d₁,…,d₈]_S)``
+
+    with ``S`` the product of the coordinates and pairwise differences (general-
+    coefficient open). Requires ``2 ∈ Rˣ``. No residual finite groupoid
+    (``Aut(cone)`` is positive-dimensional; ``groupoid=none``).
+
+    Coverage: **trigonal locus of open ``M_4`` only** — not the non-trigonal
+    dense open (smooth-quadric Petri chart), not hyperelliptic, not proper
+    ``Mbar_4``. The open unmarked stack's étale-atlas dispatch stays on the
+    non-trigonal Petri row; this chart is the owned trigonal locus presentation.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    assert _two_is_invertible(base), "genus-4 trigonal cone-cubic chart requires 2 invertible"
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=tuple(f"d{i}" for i in range(1, 9)))
+    gens = poly.gens()
+    denom = poly.one()
+    for d in gens:
+        denom *= d
+    for i, di in enumerate(gens):
+        for dj in gens[i + 1 :]:
+            denom *= di - dj
+    return AffineScheme(poly.localization(denom))
+
+
+def _genus4_compact_M40_covering_space(base: AffineScheme) -> AlgebraicSpace:
+    r"""Compactified Petri ``ℙ⁹`` cover of non-trigonal proper ``Mbar_4``.
+
+    Covering space:
+    :class:`~dm_moduli_spike.geometry.stacks.Genus4CompactCanonicalAlgebraicSpace`
+    with lazy ``Spec(R[u₁,…,u₉])`` charts (cardinality ``10``; sample of ``2``).
+    Requires ``2 ∈ Rˣ``. No residual finite groupoid.
+
+    Coverage: **dense open of the non-trigonal locus of proper ``Mbar_4``** —
+    not the trigonal cone-cubic locus, not marked ``Mbar_{4,n}``.
+    """
+    from ..geometry.stacks import Genus4CompactCanonicalAlgebraicSpace
+
+    assert _two_is_invertible(base), "genus-4 compact Petri Mbar_4 cover requires 2 invertible"
+    return Genus4CompactCanonicalAlgebraicSpace(base, "Mbar_4_ntrig_via_petri")
 
 
 def _hyperelliptic_open_M30_affine_scheme(base: AffineScheme) -> AffineScheme:
@@ -1626,17 +1768,23 @@ class ModuliStack(DeligneMumfordStack):
     def del_pezzo_quotient_presentation(self) -> dict[str, object] | None:
         r"""Inspectable ``(U, W(E₇))`` data when a del Pezzo / 7-points cover is owned.
 
-        Returns ``None`` unless this is unmarked genus ``3`` over a base with
-        ``2`` invertible:
+        Returns ``None`` unless this is genus ``3`` over a base with ``2`` invertible
+        and a non-hyperelliptic del Pezzo presentation applies:
 
-        - Open ``M_{3,0}``: :func:`_del_pezzo_open_M30_affine_scheme`.
-        - Proper ``Mbar_3``: :func:`_del_pezzo_compact_M30_covering_space`.
+        - Open unmarked ``M_{3,0}``: :func:`_del_pezzo_open_M30_affine_scheme`.
+        - Open marked ``M_{3,n}`` (``n ≥ 1``): :func:`_del_pezzo_open_M3n_affine_scheme`.
+        - Proper unmarked ``Mbar_3``: :func:`_del_pezzo_compact_M30_covering_space`.
+        - Proper marked ``Mbar_{3,n}`` (``n ≥ 1``):
+          :func:`_del_pezzo_compact_M3n_covering_space`.
 
         ``G = W(E₇)`` of order ``2903040``. Coverage is the non-hyperelliptic
         dense open — not hyperelliptic binary octics (see
         :meth:`hyperelliptic_quotient_presentation`).
         """
-        if self.genus() != 3 or int(self.number_of_markings()) != 0:
+        if self.genus() != 3:
+            return None
+        n = int(self.number_of_markings())
+        if n < 0:
             return None
         if not _two_is_invertible(self.base_scheme()):
             return None
@@ -1644,7 +1792,33 @@ class ModuliStack(DeligneMumfordStack):
         from typing import Any, cast
 
         if self.is_proper():
-            covering = _del_pezzo_compact_M30_covering_space(self.base_scheme())
+            covering = _del_pezzo_compact_M3n_covering_space(self.base_scheme(), n)
+            if n == 0:
+                return {
+                    "covering_space": covering,
+                    "group": group,
+                    "group_order": int(cast(Any, group).order()),
+                    "finite_etale_groupoid": True,
+                    "covering_unramified_stamp": True,
+                    "covering_smooth_stamp": True,
+                    "covering_formally_etale_stamp": True,
+                    "degree": 2903040,
+                    "level_structure": "del_Pezzo_degree2_W_E7_compact",
+                    "presentation": "Mbar_3_nh ≅ [(P2)^3_seven_points_U / W(E7)] (dense open)",
+                    "construction": "del_pezzo_compact_seven_points_PGL3",
+                    "coverage": "dense_open_nonhyperelliptic_of_proper_Mbar_3",
+                    "excludes": "hyperelliptic_locus_binary_octics",
+                }
+            if n == 1:
+                presentation = "Mbar_3_1_nh ≅ [del_Pezzo_compact_univ_curve / W(E7)] (dense open)"
+                level_structure = "del_Pezzo_degree2_W_E7_compact_universal_curve"
+                construction = "del_pezzo_compact_universal_curve"
+                coverage = "dense_open_nonhyperelliptic_of_proper_Mbar_3_1"
+            else:
+                presentation = f"Mbar_3_{n}_nh ≅ [del_Pezzo_compact_marked_config / W(E7)] (dense open)"
+                level_structure = "del_Pezzo_degree2_W_E7_compact_marked_configuration"
+                construction = "del_pezzo_compact_marked_configuration"
+                coverage = f"dense_open_nonhyperelliptic_of_proper_Mbar_3_{n}"
             return {
                 "covering_space": covering,
                 "group": group,
@@ -1654,15 +1828,30 @@ class ModuliStack(DeligneMumfordStack):
                 "covering_smooth_stamp": True,
                 "covering_formally_etale_stamp": True,
                 "degree": 2903040,
-                "level_structure": "del_Pezzo_degree2_W_E7_compact",
-                "presentation": "Mbar_3_nh ≅ [(P2)^3_seven_points_U / W(E7)] (dense open)",
-                "construction": "del_pezzo_compact_seven_points_PGL3",
-                "coverage": "dense_open_nonhyperelliptic_of_proper_Mbar_3",
+                "level_structure": level_structure,
+                "presentation": presentation,
+                "construction": construction,
+                "coverage": coverage,
                 "excludes": "hyperelliptic_locus_binary_octics",
             }
         covering_open = _moduli_etale_atlas_domain(self)
         if covering_open is None:
             return None
+        if n == 0:
+            presentation = "M_3_nh ≅ [del_Pezzo_Bl7_P2_U / W(E7)] (dense open)"
+            level_structure = "del_Pezzo_degree2_W_E7"
+            construction = "del_pezzo_degree2_seven_points_PGL3"
+            coverage = "dense_open_nonhyperelliptic_of_open_M_3"
+        elif n == 1:
+            presentation = "M_3_1_nh ≅ [del_Pezzo_univ_curve / W(E7)] (dense open)"
+            level_structure = "del_Pezzo_degree2_W_E7_universal_curve"
+            construction = "del_pezzo_universal_curve"
+            coverage = "dense_open_nonhyperelliptic_of_open_M_3_1"
+        else:
+            presentation = f"M_3_{n}_nh ≅ [del_Pezzo_marked_configuration / W(E7)] (dense open)"
+            level_structure = "del_Pezzo_degree2_W_E7_marked_configuration"
+            construction = "del_pezzo_marked_configuration"
+            coverage = f"dense_open_nonhyperelliptic_of_open_M_3_{n}"
         return {
             "covering_space": covering_open,
             "group": group,
@@ -1672,25 +1861,46 @@ class ModuliStack(DeligneMumfordStack):
             "covering_smooth_stamp": True,
             "covering_formally_etale_stamp": True,
             "degree": 2903040,
-            "level_structure": "del_Pezzo_degree2_W_E7",
-            "presentation": "M_3_nh ≅ [del_Pezzo_Bl7_P2_U / W(E7)] (dense open)",
-            "construction": "del_pezzo_degree2_seven_points_PGL3",
-            "coverage": "dense_open_nonhyperelliptic_of_open_M_3",
+            "level_structure": level_structure,
+            "presentation": presentation,
+            "construction": construction,
+            "coverage": coverage,
             "excludes": "hyperelliptic_locus_binary_octics",
         }
 
     def genus4_canonical_quotient_presentation(self) -> dict[str, object] | None:
-        r"""Inspectable canonical ``(2,3)``-CI chart data when open ``M_{4,0}`` is owned.
+        r"""Inspectable Petri ``(2,3)``-CI chart data when unmarked genus-4 is owned.
 
-        Returns ``None`` unless this is open unmarked ``M_{4,0}`` over a base with
-        ``2`` invertible. Covering space:
-        :func:`_genus4_open_M40_affine_scheme`. No residual finite groupoid
-        (Knudsen-style). Coverage: dense open of the non-trigonal locus.
+        Returns ``None`` unless this is unmarked genus ``4`` over a base with
+        ``2`` invertible:
+
+        - Open ``M_{4,0}``: :func:`_genus4_open_M40_affine_scheme`.
+        - Proper ``Mbar_4``: :func:`_genus4_compact_M40_covering_space`.
+
+        No residual finite groupoid (Knudsen-style). Coverage: dense open of the
+        non-trigonal locus.
         """
-        if self.genus() != 4 or self.is_proper() or int(self.number_of_markings()) != 0:
+        if self.genus() != 4 or int(self.number_of_markings()) != 0:
             return None
         if not _two_is_invertible(self.base_scheme()):
             return None
+        if self.is_proper():
+            covering = _genus4_compact_M40_covering_space(self.base_scheme())
+            return {
+                "covering_space": covering,
+                "group": None,
+                "group_order": None,
+                "finite_etale_groupoid": False,
+                "covering_unramified_stamp": True,
+                "covering_smooth_stamp": True,
+                "covering_formally_etale_stamp": True,
+                "degree": 1,
+                "level_structure": "genus4_canonical_ci_P3_compact",
+                "presentation": "Mbar_4_ntrig ≅ [P9_petri_U] (dense open)",
+                "construction": "genus4_compact_canonical_petri_P9",
+                "coverage": "dense_open_nontrigonal_of_proper_Mbar_4",
+                "excludes": "trigonal_divisor_and_hyperelliptic_locus",
+            }
         domain = _moduli_etale_atlas_domain(self)
         if domain is None:
             return None
@@ -1708,6 +1918,35 @@ class ModuliStack(DeligneMumfordStack):
             "construction": "genus4_canonical_quadric_cubic_P3",
             "coverage": "dense_open_nontrigonal_of_open_M_4",
             "excludes": "trigonal_divisor_and_hyperelliptic_locus",
+        }
+
+    def trigonal_quotient_presentation(self) -> dict[str, object] | None:
+        r"""Inspectable cone-cubic / Maroni data when the trigonal ``M_4`` locus is owned.
+
+        Returns ``None`` unless this is open unmarked ``M_{4,0}`` over a base with
+        ``2`` invertible. Covering space:
+        :func:`_genus4_trigonal_open_M40_affine_scheme`. Coverage is the
+        **trigonal locus only** — not the non-trigonal dense open.
+        """
+        if self.genus() != 4 or self.is_proper() or int(self.number_of_markings()) != 0:
+            return None
+        if not _two_is_invertible(self.base_scheme()):
+            return None
+        domain = AffineAlgebraicSpace(_genus4_trigonal_open_M40_affine_scheme(self.base_scheme()))
+        return {
+            "covering_space": domain,
+            "group": None,
+            "group_order": None,
+            "finite_etale_groupoid": False,
+            "covering_unramified_stamp": True,
+            "covering_smooth_stamp": True,
+            "covering_formally_etale_stamp": True,
+            "degree": 1,
+            "level_structure": "genus4_trigonal_cone_cubic_maroni",
+            "presentation": "Trig(M_4) ≅ Spec(R[d1..d8]_S) (cone XY=Z² cubic normal form)",
+            "construction": "genus4_trigonal_cone_cubic_P3",
+            "coverage": "trigonal_locus_of_open_M_4",
+            "excludes": "nontrigonal_dense_open_petri",
         }
 
     def hyperelliptic_quotient_presentation(self) -> dict[str, object] | None:
