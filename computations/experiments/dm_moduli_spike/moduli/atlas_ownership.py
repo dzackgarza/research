@@ -245,7 +245,7 @@ def is_open_m0n_knudsen_owned(markings: int, *, proper: bool) -> bool:
     r"""True when open Knudsen owns ``(0, markings, proper)`` parametrically."""
     try:
         n = int(markings)
-    except TypeError, ValueError:
+    except (TypeError, ValueError):
         return False
     return (not proper) and n >= 3
 
