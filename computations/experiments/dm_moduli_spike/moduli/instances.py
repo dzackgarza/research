@@ -38,42 +38,48 @@ def _marking_set(I: object) -> tuple[object, ...]:
     return tuple(I)
 
 
-def _prime_invertible_or_char_ok(base: AffineScheme, prime: int) -> bool:
-    r"""True when ``prime`` is a unit, or else when ``char ≠ prime`` (proving-set heuristic).
+def _prime_is_unit(base: AffineScheme, prime: int) -> bool:
+    r"""True when ``prime`` is a genuine unit in the base ring.
 
-    Matches the Legendre / Hesse literature hypotheses: the form is available over
-    bases of characteristic not equal to the bad prime. When the ring exposes
-    ``is_unit``, a genuine unit wins immediately (e.g. ``2`` in ``ℚ``).
+    Legendre needs ``2 ∈ Rˣ`` (finite étale ``M(Γ(2)) → M_{1,1}`` over ``Spec(R)``);
+    Hesse needs ``3 ∈ Rˣ``. The older ``char ≠ p`` heuristic incorrectly treated
+    ``Spec(ℤ)`` as Legendre-ready (``char 0 ≠ 2``) even though ``2`` is not a unit —
+    over ``Spec(ℤ)`` the level covers are finite étale only after inverting the
+    bad prime. Fail closed when ``is_unit`` is unavailable.
     """
     from typing import Any, cast
 
     ring = cast(Any, base.ring())
     try:
         element = ring(prime)
-        if hasattr(element, "is_unit") and bool(element.is_unit()):
-            return True
     except TypeError, ValueError, AttributeError, ArithmeticError:
-        pass
-    if not hasattr(ring, "characteristic"):
         return False
-    characteristic = ring.characteristic
-    if not callable(characteristic):
+    if not hasattr(element, "is_unit"):
         return False
     try:
-        char = int(characteristic())
-    except TypeError, ValueError:
+        return bool(element.is_unit())
+    except TypeError, ValueError, AttributeError, ArithmeticError:
         return False
-    return char != prime
 
 
 def _two_is_invertible(base: AffineScheme) -> bool:
-    r"""True when ``2`` is available for the Legendre form (char ≠ 2 / unit ``2``)."""
-    return _prime_invertible_or_char_ok(base, 2)
+    r"""True when ``2`` is a unit (Legendre ``Γ(2)`` hypothesis)."""
+    return _prime_is_unit(base, 2)
 
 
 def _three_is_invertible(base: AffineScheme) -> bool:
-    r"""True when ``3`` is available for the Hesse form (char ≠ 3 / unit ``3``)."""
-    return _prime_invertible_or_char_ok(base, 3)
+    r"""True when ``3`` is a unit (Hesse ``Γ(3)`` hypothesis)."""
+    return _prime_is_unit(base, 3)
+
+
+def _legendre_and_hesse_unavailable(base: AffineScheme) -> bool:
+    r"""True when neither Legendre nor Hesse level hypotheses hold.
+
+    Concrete bases: ``Spec(ℤ)`` (neither ``2`` nor ``3`` is a unit). On fields this
+    never holds: char ``2`` ⇒ ``3 = 1`` is a unit (Hesse); char ``3`` ⇒ ``2 = -1``
+    is a unit (Legendre); otherwise both are units.
+    """
+    return not _two_is_invertible(base) and not _three_is_invertible(base)
 
 
 def _punctured_lambda_affine_scheme(base: AffineScheme) -> AffineScheme:
@@ -327,6 +333,65 @@ def _hesse_Mbar12_algebraic_space(base: AffineScheme) -> CompactifiedUniversalCu
     )
 
 
+def _tate_weierstrass_discriminant(a1: object, a2: object, a3: object, a4: object, a6: object) -> object:
+    r"""Integral Tate discriminant of ``y² + a₁xy + a₃y = x³ + a₂x² + a₄x + a₆``."""
+    from typing import Any, cast
+
+    a1_, a2_, a3_, a4_, a6_ = cast(Any, a1), cast(Any, a2), cast(Any, a3), cast(Any, a4), cast(Any, a6)
+    b2 = a1_**2 + 4 * a2_
+    b4 = 2 * a4_ + a1_ * a3_
+    b6 = a3_**2 + 4 * a6_
+    b8 = a1_**2 * a6_ + 4 * a2_ * a6_ - a1_ * a3_ * a4_ + a2_ * a3_**2 - a4_**2
+    return -(b2**2) * b8 - 8 * b4**3 - 27 * b6**2 + 9 * b2 * b4 * b6
+
+
+def _weierstrass_M11_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Deligne–Rapoport / Katz–Mazur Weierstrass affine for open ``M_{1,1}``.
+
+    ``U = Spec(R[a₁,a₂,a₃,a₄,a₆][Δ⁻¹])`` with Tate's integral discriminant ``Δ``.
+    Weighted ``𝔾_m`` acts by ``λ·aᵢ = λⁱ aᵢ``; classically
+    ``M_{1,1} ≅ [U / 𝔾_m]`` as Artin stacks. The covering ``U → [U/𝔾_m]`` is
+    smooth of relative dimension ``1``, **not** finite étale — ``𝔾_m`` is
+    infinite — so this is owned as fail-closed evidence for
+    :meth:`ModuliStack.etale_atlas_gap`, not as an equation-level finite étale
+    atlas. Used when neither Legendre nor Hesse applies (e.g. ``Spec(ℤ)``).
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=("a1", "a2", "a3", "a4", "a6"))
+    a1, a2, a3, a4, a6 = poly.gens()
+    delta = _tate_weierstrass_discriminant(a1, a2, a3, a4, a6)
+    return AffineScheme(poly.localization(delta))
+
+
+def _weierstrass_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Weierstrass universal-curve affine for open ``M_{1,2}`` (``𝔾_m`` presentation).
+
+    ``U = Spec( R[a₁,…,a₆,x,y][Δ⁻¹] / (y² + a₁xy + a₃y - x³ - a₂x² - a₄x - a₆) )``.
+
+    Same infinite-``𝔾_m`` obstruction as :func:`_weierstrass_M11_affine_scheme`:
+    owned for gap evidence, not finite étale equation-level certification.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=("a1", "a2", "a3", "a4", "a6", "x", "y"))
+    a1, a2, a3, a4, a6, x, y = poly.gens()
+    delta = _tate_weierstrass_discriminant(a1, a2, a3, a4, a6)
+    localized = poly.localization(delta)
+    equation = (
+        localized(y) ** 2
+        + localized(a1) * localized(x) * localized(y)
+        + localized(a3) * localized(y)
+        - localized(x) ** 3
+        - localized(a2) * localized(x) ** 2
+        - localized(a4) * localized(x)
+        - localized(a6)
+    )
+    return AffineScheme(localized.quo(equation))
+
+
 def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
     r"""Owned étale-atlas domain for literature-backed proving-set cases.
 
@@ -359,8 +424,12 @@ def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
       universal-curve affine cover — finite étale of degree 24.
 
     Fail-closed (``None``) for general ``(g,n)`` and when neither Legendre nor
-    Hesse hypotheses hold on ``(1,1)`` / ``(1,2)`` — see
-    :meth:`ModuliStack.etale_atlas_gap`. No fake charts / weighted-Proj shells.
+    Hesse hypotheses hold on ``(1,1)`` / ``(1,2)`` (e.g. ``Spec(ℤ)``: neither
+    ``2`` nor ``3`` is a unit). The Weierstrass ``𝔾_m`` affine is owned as
+    inspectable gap evidence via :meth:`ModuliStack.weierstrass_gm_presentation`
+    — it does **not** become an étale-atlas domain here, because ``𝔾_m`` is not
+    a finite étale groupoid. See :meth:`ModuliStack.etale_atlas_gap`.
+    No fake charts / weighted-Proj shells.
     """
     g = stack.genus()
     n = stack.number_of_markings()
@@ -828,15 +897,81 @@ class ModuliStack(DeligneMumfordStack):
             "presentation": presentation,
         }
 
+    def weierstrass_gm_presentation(self) -> dict[str, object] | None:
+        r"""Owned Weierstrass ``𝔾_m`` presentation when Legendre/Hesse are unavailable.
+
+        Returns inspectable evidence for ``(1,1)`` / ``(1,2)`` over bases where
+        neither ``2`` nor ``3`` is a unit (prototype: ``Spec(ℤ)``):
+
+        - Open ``M_{1,1}``: Tate–Weierstrass affine
+          ``Spec(R[a₁,…,a₆][Δ⁻¹])`` with weighted ``𝔾_m``.
+        - Open ``M_{1,2}``: Weierstrass universal-curve affine over that base.
+        - Proper ``Mbar_{1,*}``: same open affine as covering evidence; compact
+          Deligne–Rapoport likewise uses non-finite ``𝔾_m`` (no finite étale
+          groupoid stamp).
+
+        Always stamps ``finite_etale_groupoid=False``, ``equation_level=False``,
+        ``group_infinite=True``: ``𝔾_m`` is not a finite group, so this cannot
+        enter the finite-étale-groupoid proving set used for Legendre / Hesse.
+        The covering ``U → [U/𝔾_m]`` is smooth of relative dimension ``1``, not
+        étale — so :meth:`etale_atlas` stays formal. Does **not** stamp
+        equation-level True.
+        """
+        if self.genus() != 1 or self.number_of_markings() not in (1, 2):
+            return None
+        base = self.base_scheme()
+        if not _legendre_and_hesse_unavailable(base):
+            return None
+        n = self.number_of_markings()
+        if n == 1:
+            domain = AffineAlgebraicSpace(_weierstrass_M11_affine_scheme(base))
+            if self.is_proper():
+                presentation = "Mbar_1_1 ≅ [Weierstrass_U / Gm] (smooth Artin; Gm infinite)"
+                level_structure = "Deligne-Rapoport_Weierstrass_compact"
+            else:
+                presentation = "M_1_1 ≅ [Weierstrass_U / Gm] (smooth Artin; Gm infinite)"
+                level_structure = "Deligne-Rapoport_Weierstrass"
+        else:
+            domain = AffineAlgebraicSpace(_weierstrass_M12_affine_scheme(base))
+            if self.is_proper():
+                presentation = "Mbar_1_2 ≅ [Weierstrass_univ_curve / Gm] (smooth Artin; Gm infinite)"
+                level_structure = "Deligne-Rapoport_Weierstrass_universal_curve_compact"
+            else:
+                presentation = "M_1_2 ≅ [Weierstrass_univ_curve / Gm] (smooth Artin; Gm infinite)"
+                level_structure = "Deligne-Rapoport_Weierstrass_universal_curve"
+        return {
+            "covering_space": domain,
+            "group_kind": "Gm",
+            "group_infinite": True,
+            "group_order": None,
+            "finite_etale_groupoid": False,
+            "covering_unramified_stamp": False,
+            "covering_smooth_stamp": True,
+            "covering_formally_etale_stamp": False,
+            "equation_level": False,
+            "covering_kind": "weierstrass_gm_smooth_quotient",
+            "level_structure": level_structure,
+            "presentation": presentation,
+            "proof_not_finite_etale": (
+                "Weighted Gm acting on the Weierstrass affine is an infinite group scheme; "
+                "U → [U/Gm] is smooth of relative dimension 1, not finite étale. "
+                "Finite-étale-groupoid equation-level certificates require finite G "
+                "(Legendre S3 / Hesse SL2(F3))."
+            ),
+        }
+
     def etale_atlas_gap(self) -> dict[str, object] | None:
         r"""Named fail-closed gap when no equation-level étale atlas is owned.
 
         Returns ``None`` precisely when :meth:`etale_atlas` has an owned proving-set
         domain (so ``has_equation_level_etale_certificate()`` can be True).
 
-        Otherwise returns an inspectable record: why the atlas stays formal, and
-        which literature alternate proving-sets are **not** constructed in-spike
-        (honest slowdown — not a completion claim).
+        For ``(1,*)`` when neither Legendre nor Hesse applies (e.g. ``Spec(ℤ)``),
+        the Weierstrass ``𝔾_m`` affine is **owned** via
+        :meth:`weierstrass_gm_presentation` as proof that finite étale
+        equation-level certs are impossible for that presentation (infinite group);
+        Igusa is recorded as ordinary-only incomplete. Remaining pre-#225 atlas
+        debt after this sharpening is general ``(g,n)`` only.
         """
         if _moduli_etale_atlas_domain(self) is not None:
             return None
@@ -851,52 +986,41 @@ class ModuliStack(DeligneMumfordStack):
             "equation_level": False,
             "covering_kind_if_formal": "etale_atlas_chart",
         }
-        if g == 1 and n == 1 and not _two_is_invertible(base) and not _three_is_invertible(base):
-            gap["reason"] = "legendre_and_hesse_unavailable"
+        if g == 1 and n in (1, 2) and _legendre_and_hesse_unavailable(base):
+            weierstrass = self.weierstrass_gm_presentation()
+            assert weierstrass is not None, "Weierstrass Gm presentation must be owned when Legendre/Hesse unavailable"
+            if n == 1:
+                gap["reason"] = "legendre_and_hesse_unavailable"
+            elif proper:
+                gap["reason"] = "mbar_1_2_legendre_and_hesse_unavailable"
+            else:
+                gap["reason"] = "m_1_2_legendre_and_hesse_unavailable"
+            gap["base_hypothesis"] = {
+                "two_invertible": False,
+                "three_invertible": False,
+                "prototype": "Spec(Z)",
+                "note": ("Neither 2 nor 3 is a unit in the base ring. On fields this case never arises (char 2 ⇒ Hesse; char 3 ⇒ Legendre; else both units)."),
+            }
             gap["alternate_proving_sets"] = (
                 {
                     "name": "weierstrass_gm_quotient",
-                    "status": "not_in_spike",
-                    "requires": "Spec(Z[a1,…,a6][Δ⁻¹]) with weighted 𝔾_m-action",
-                    "note": (
-                        "Deligne–Rapoport / Katz–Mazur Weierstrass presentation works over "
-                        "Spec(Z) including char 2 and 3, but 𝔾_m is not finite — outside the "
-                        "finite-étale-groupoid proving set used for Legendre / Hesse quotients."
-                    ),
+                    "status": "owned_not_finite_etale",
+                    "presentation": weierstrass,
+                    "requires": "Spec(R[a1,…,a6][Δ⁻¹]) with weighted 𝔾_m-action",
+                    "note": weierstrass["proof_not_finite_etale"],
                 },
                 {
                     "name": "igusa_ordinary_a6_chart",
-                    "status": "not_in_spike",
+                    "status": "incomplete_ordinary_only",
                     "requires": "char 2; ordinary locus only",
-                    "note": ("y² + xy = x³ + a₆ with j = 1/a₆ covers the ordinary locus; misses the supersingular point j = 0 — incomplete as a full atlas."),
-                },
-            )
-            return gap
-        if g == 1 and n == 2 and proper:
-            gap["reason"] = "mbar_1_2_legendre_and_hesse_unavailable"
-            gap["alternate_proving_sets"] = (
-                {
-                    "name": "weierstrass_stable_universal_curve_gm",
-                    "status": "not_in_spike",
-                    "requires": "Weierstrass / Deligne–Rapoport universal curve over Spec(Z) with weighted 𝔾_m",
                     "note": (
-                        "Compact Legendre/Hesse charts own Mbar_{1,2} when 2 or 3 is invertible; "
-                        "over Spec(Z) the finite-étale-groupoid proving set needs a non-finite 𝔾_m "
-                        "Weierstrass presentation not constructed in-spike."
+                        "y² + xy = x³ + a₆ with j = 1/a₆ covers the ordinary locus; "
+                        "misses the supersingular point j = 0 — incomplete as a full "
+                        "atlas of M_{1,1}. Not constructed in-spike."
                     ),
                 },
             )
-            return gap
-        if g == 1 and n == 2 and not _two_is_invertible(base) and not _three_is_invertible(base):
-            gap["reason"] = "m_1_2_legendre_and_hesse_unavailable"
-            gap["alternate_proving_sets"] = (
-                {
-                    "name": "weierstrass_universal_curve_gm",
-                    "status": "not_in_spike",
-                    "requires": "Weierstrass universal curve over Spec(Z[a_i][Δ⁻¹]) with weighted 𝔾_m",
-                    "note": ("Works over Spec(Z) including char 2 and 3, but 𝔾_m is not a finite étale groupoid."),
-                },
-            )
+            gap["pre_225_remaining_after_this"] = "general_(g,n)_only"
             return gap
         gap["reason"] = "no_owned_affine_etale_presentation"
         gap["alternate_proving_sets"] = (
@@ -912,6 +1036,8 @@ class ModuliStack(DeligneMumfordStack):
                     "affine covers for Mbar), and proper Mbar_{0,3}/Mbar_{0,4}/"
                     "Mbar_{0,5} (Kapranov Bl₄(ℙ²))/Mbar_{1,1} "
                     "(same level-structure hypotheses). "
+                    "When neither Legendre nor Hesse applies, Weierstrass 𝔾_m is "
+                    "owned as fail-closed evidence (not finite étale). "
                     "General (g,n) atlases need constructions not present in this spike."
                 ),
             },
@@ -953,11 +1079,13 @@ class ModuliStack(DeligneMumfordStack):
           Hesse universal-curve affine cover;
           ``covering_kind="hesse_compact_universal_curve_finite_etale_cover"``.
 
-        For general ``(g,n)`` and ``(1,*)`` when neither Legendre nor Hesse
-        applies: fail-closed formal
+        For general ``(g,n)``: fail-closed formal
         :class:`~dm_moduli_spike.geometry.stacks.AtlasChart`
-        (see :meth:`etale_atlas_gap`). Never uses the coarse space as an étale
-        atlas domain.
+        (see :meth:`etale_atlas_gap`). For ``(1,*)`` when neither ``2`` nor ``3``
+        is a unit (e.g. ``Spec(ℤ)``): Weierstrass ``𝔾_m`` is owned as
+        :meth:`weierstrass_gm_presentation` evidence that finite étale
+        equation-level certs are impossible (infinite group); ``etale_atlas``
+        stays formal. Never uses the coarse space as an étale atlas domain.
         """
         domain = _moduli_etale_atlas_domain(self)
         if domain is None:

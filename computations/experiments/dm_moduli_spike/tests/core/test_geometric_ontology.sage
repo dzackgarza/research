@@ -752,6 +752,68 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert M11_char3.legendre_quotient_presentation() is not None
     assert M11_char3.etale_atlas_gap() is None
 
+    # Spec(Z): neither 2 nor 3 is a unit — Weierstrass 𝔾_m owned as fail-closed
+    # evidence (infinite group ⇒ not finite étale equation-level). Igusa ordinary-only.
+    from sage.rings.integer_ring import ZZ as _ZZ_atlas
+
+    Z = spec(_ZZ_atlas)
+    M11_Z = M_gn(1, 1, base=Z)
+    Mbar11_Z = Mbar_gn(1, 1, base=Z)
+    M12_Z = M_gn(1, 2, base=Z)
+    Mbar12_Z = Mbar_gn(1, 2, base=Z)
+    assert isinstance(M11_Z.etale_atlas().domain(), AtlasChart)
+    assert not M11_Z.etale_atlas().has_equation_level_etale_certificate()
+    gap_Z = M11_Z.etale_atlas_gap()
+    assert gap_Z is not None
+    assert gap_Z["reason"] == "legendre_and_hesse_unavailable"
+    assert gap_Z["equation_level"] is False
+    assert gap_Z["pre_225_remaining_after_this"] == "general_(g,n)_only"
+    assert gap_Z["base_hypothesis"]["two_invertible"] is False
+    assert gap_Z["base_hypothesis"]["three_invertible"] is False
+    alts_Z = gap_Z["alternate_proving_sets"]
+    assert alts_Z[0]["name"] == "weierstrass_gm_quotient"
+    assert alts_Z[0]["status"] == "owned_not_finite_etale"
+    assert alts_Z[1]["name"] == "igusa_ordinary_a6_chart"
+    assert alts_Z[1]["status"] == "incomplete_ordinary_only"
+    wei = M11_Z.weierstrass_gm_presentation()
+    assert wei is not None
+    assert alts_Z[0]["presentation"]["covering_space"] is wei["covering_space"]
+    assert alts_Z[0]["presentation"]["covering_kind"] == wei["covering_kind"]
+    assert alts_Z[0]["presentation"]["finite_etale_groupoid"] is False
+    assert wei["group_kind"] == "Gm"
+    assert wei["group_infinite"] is True
+    assert wei["finite_etale_groupoid"] is False
+    assert wei["equation_level"] is False
+    assert wei["covering_kind"] == "weierstrass_gm_smooth_quotient"
+    assert wei["covering_smooth_stamp"] is True
+    assert wei["covering_formally_etale_stamp"] is False
+    assert isinstance(wei["covering_space"], AffineAlgebraicSpace)
+    assert wei["covering_space"].affine_cover() != ()
+    assert "infinite" in wei["proof_not_finite_etale"].lower() or "Gm" in wei["proof_not_finite_etale"]
+    # Fields never hit both-unavailable: char 2 ⇒ Hesse; char 3 ⇒ Legendre.
+    assert XS.weierstrass_gm_presentation() is None
+    assert M11_char2.weierstrass_gm_presentation() is None
+    assert M11_char3.weierstrass_gm_presentation() is None
+    gap_mbar11_Z = Mbar11_Z.etale_atlas_gap()
+    assert gap_mbar11_Z is not None
+    assert gap_mbar11_Z["reason"] == "legendre_and_hesse_unavailable"
+    assert Mbar11_Z.weierstrass_gm_presentation() is not None
+    assert Mbar11_Z.weierstrass_gm_presentation()["finite_etale_groupoid"] is False
+    gap_m12_Z = M12_Z.etale_atlas_gap()
+    assert gap_m12_Z is not None
+    assert gap_m12_Z["reason"] == "m_1_2_legendre_and_hesse_unavailable"
+    assert M12_Z.weierstrass_gm_presentation()["covering_space"].affine_cover() != ()
+    gap_mbar12_Z = Mbar12_Z.etale_atlas_gap()
+    assert gap_mbar12_Z is not None
+    assert gap_mbar12_Z["reason"] == "mbar_1_2_legendre_and_hesse_unavailable"
+    assert gap_mbar12_Z["pre_225_remaining_after_this"] == "general_(g,n)_only"
+    # General (g,n) remains the only pre-#225 atlas gap class beyond this sharpening.
+    M20 = Mbar_gn(2, 0, base=k)
+    gap_gen = M20.etale_atlas_gap()
+    assert gap_gen is not None
+    assert gap_gen["reason"] == "no_owned_affine_etale_presentation"
+    assert "pre_225_remaining_after_this" not in gap_gen
+
     # Owned proving-set stacks expose no gap record.
     assert XS.etale_atlas_gap() is None
     assert YS.etale_atlas_gap() is None
@@ -793,7 +855,6 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert prod_mbar05_etale.has_equation_level_etale_certificate()
 
     # Product fails closed when a factor still has a formal AtlasChart (general (g,n)).
-    M20 = Mbar_gn(2, 0, base=k)
     assert isinstance(M20.etale_atlas().domain(), AtlasChart)
     prod_formal = ProductStack((M20, YS), base=k)
     prod_formal_etale = prod_formal.etale_atlas()
