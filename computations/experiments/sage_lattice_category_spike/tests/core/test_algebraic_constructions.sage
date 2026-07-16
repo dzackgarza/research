@@ -45,12 +45,12 @@ def test_kernel_and_image_are_module_level_operations():
 
     kernel = constructions.kernel(collapse)
     assert kernel.rank() == 1
-    assert kernel.ambient() == degenerate
+    assert kernel.inclusion().codomain() == degenerate
     for generator in kernel.lattice().gens():
         assert collapse(kernel.inclusion()(generator)) == a1([0])
 
     image = constructions.image(collapse)
-    assert image.ambient() == a1
+    assert image.inclusion().codomain() == a1
     assert image.rank() == 1
     assert image.index() == 1
 

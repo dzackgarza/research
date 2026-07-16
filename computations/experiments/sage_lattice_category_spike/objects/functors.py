@@ -204,10 +204,11 @@ class NaturalIsomorphism(lexicon.NaturalIsomorphism):
         source: lexicon.SageFunctor,
         target: lexicon.SageFunctor,
         components: Callable[..., lexicon.CategoryMorphism],
-        inverse_components: Callable[..., lexicon.CategoryMorphism] | None = None,
+        inverse_components: Callable[..., lexicon.CategoryMorphism],
     ) -> None:
         parallel = source.domain() == target.domain() and source.codomain() == target.codomain()
         assert parallel, f"natural transformations require parallel functors; found {source.domain()} -> {source.codomain()} and {target.domain()} -> {target.codomain()}"
+        assert inverse_components is not None, "a natural isomorphism declares its inverse components at construction; a component family with no declared inverse is a natural transformation, not an isomorphism"
         self._source = source
         self._target = target
         self._components = components
@@ -228,7 +229,6 @@ class NaturalIsomorphism(lexicon.NaturalIsomorphism):
         return True
 
     def inverse(self) -> NaturalIsomorphism:
-        assert self._inverse_components is not None, "a natural isomorphism inverts through its declared inverse components; none were declared"
         return NaturalIsomorphism(self._target, self._source, self._inverse_components, self._components)
 
 
