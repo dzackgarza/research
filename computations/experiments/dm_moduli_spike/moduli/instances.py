@@ -2,6 +2,8 @@ r"""Moduli problems, moduli stacks, and concrete M_{g,I} / Mbar_{g,I}."""
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sage.rings.integer_ring import ZZ
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
@@ -11,20 +13,18 @@ from ..categories.stacks import ModuliStacks
 from ..geometry.stacks import (
     AffineAlgebraicSpace,
     AlgebraicSpace,
-    AtlasEvidence,
     AtlasMorphism,
     Boundary,
     CoarseModuliMorphism,
     Compactification,
     CompactifiedUniversalCurveAlgebraicSpace,
     DeligneMumfordStack,
-    FormallyEtaleSchemeCertificate,
-    KapranovBlowupFourPointsP2AlgebraicSpace,
-    ProjectiveLineAlgebraicSpace,
     StackFiber,
     Variety,
-    _proving_set_etale_certificates,
 )
+
+if TYPE_CHECKING:
+    from .atlas_ownership import OwnedAtlasPresentation
 
 
 def _marking_set(I: object) -> tuple[object, ...]:
@@ -393,77 +393,19 @@ def _weierstrass_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
 
 
 def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
-    r"""Owned étale-atlas domain for literature-backed proving-set cases.
+    r"""Owned étale-atlas domain via the atlas-ownership registry.
 
-    Returns a concrete :class:`AlgebraicSpace` when an owned presentation exists:
-
-    - ``M_{0,3}`` / ``Mbar_{0,3}``: a point ``Spec(R)`` (scheme isomorphism),
-    - ``M_{0,4}``: cross-ratio chart ``Spec(R[λ]_{λ(λ-1)}) ≅ ℙ¹ ∖ {0,1,∞}``,
-    - ``Mbar_{0,4}``: standard affine cover of ``ℙ¹`` (stack ≅ scheme; not the
-      coarse-moduli map),
-    - ``M_{0,5}`` (open): Knudsen configuration
-      ``Spec(R[λ,μ]_{λ(λ-1)μ(μ-1)(λ-μ)})`` (scheme isomorphism),
-    - ``Mbar_{0,5}``: Kapranov ``Bl₄(ℙ²)`` at four points in general position
-      (twelve successive-blowup affine charts; stack ≅ scheme; not the coarse
-      map),
-    - ``M_{1,1}`` (``2`` invertible): Legendre ``M(Γ(2))`` affine chart — finite
-      étale cover of degree 6, not a scheme isomorphism,
-    - ``M_{1,1}`` (``2`` not invertible, ``3`` invertible): Hesse ``M(Γ(3))``
-      affine chart ``Spec(R[μ]_{μ³-1})`` — finite étale of degree 24,
-    - ``Mbar_{1,1}`` (``2`` invertible): ``Mbar(Γ(2)) ≅ ℙ¹`` with the same
-      ``S₃`` finite étale groupoid (affine opens of the covering space),
-    - ``Mbar_{1,1}`` (``2`` not invertible, ``3`` invertible): ``Mbar(Γ(3)) ≅ ℙ¹``
-      with ``SL₂(𝔽₃)`` finite étale groupoid,
-    - ``M_{1,2}`` (open, ``2`` invertible): Legendre universal-curve Weierstrass
-      affine (``E \\ {O}`` over ``M(Γ(2))``) — finite étale of degree 6,
-    - ``M_{1,2}`` (open, ``2`` not invertible, ``3`` invertible): Hesse
-      universal-curve affine over ``M(Γ(3))`` — finite étale of degree 24,
-    - ``Mbar_{1,2}`` (``2`` invertible): compactified Legendre universal-curve
-      affine cover (includes nodal fibers) — finite étale of degree 6,
-    - ``Mbar_{1,2}`` (``2`` not invertible, ``3`` invertible): compactified Hesse
-      universal-curve affine cover — finite étale of degree 24.
-
-    Fail-closed (``None``) for general ``(g,n)`` and when neither Legendre nor
-    Hesse hypotheses hold on ``(1,1)`` / ``(1,2)`` (e.g. ``Spec(ℤ)``: neither
-    ``2`` nor ``3`` is a unit). The Weierstrass ``𝔾_m`` affine is owned as
-    inspectable gap evidence via :meth:`ModuliStack.weierstrass_gm_presentation`
-    — it does **not** become an étale-atlas domain here, because ``𝔾_m`` is not
-    a finite étale groupoid. See :meth:`ModuliStack.etale_atlas_gap`.
-    No fake charts / weighted-Proj shells.
+    Delegates to :mod:`dm_moduli_spike.moduli.atlas_ownership`. Returns
+    ``None`` for unowned ``(g,n)`` and for ``(1,*)`` when neither Legendre nor
+    Hesse hypotheses hold. Weierstrass ``𝔾_m`` is gap evidence only — never an
+    étale-atlas domain here.
     """
-    g = stack.genus()
-    n = stack.number_of_markings()
-    base = stack.base_scheme()
-    proper = stack.is_proper()
-    if g == 0 and n == 3:
-        return AffineAlgebraicSpace(base)
-    if g == 0 and n == 4:
-        if proper:
-            return ProjectiveLineAlgebraicSpace(base, "Mbar_0_4")
-        return AffineAlgebraicSpace(_cross_ratio_affine_scheme(base))
-    if g == 0 and n == 5:
-        if proper:
-            return KapranovBlowupFourPointsP2AlgebraicSpace(base, "Mbar_0_5")
-        return AffineAlgebraicSpace(_configuration_M05_affine_scheme(base))
-    if g == 1 and n == 1:
-        if _two_is_invertible(base):
-            if proper:
-                return ProjectiveLineAlgebraicSpace(base, "Mbar_Gamma2")
-            return AffineAlgebraicSpace(_legendre_affine_scheme(base))
-        if _three_is_invertible(base):
-            if proper:
-                return ProjectiveLineAlgebraicSpace(base, "Mbar_Gamma3")
-            return AffineAlgebraicSpace(_hesse_affine_scheme(base))
-    if g == 1 and n == 2:
-        if _two_is_invertible(base):
-            if proper:
-                return _legendre_Mbar12_algebraic_space(base)
-            return AffineAlgebraicSpace(_legendre_M12_affine_scheme(base))
-        if _three_is_invertible(base):
-            if proper:
-                return _hesse_Mbar12_algebraic_space(base)
-            return AffineAlgebraicSpace(_hesse_M12_affine_scheme(base))
-    return None
+    from .atlas_ownership import _domain_for_presentation, resolve_owned_etale_atlas
+
+    row = resolve_owned_etale_atlas(stack)
+    if row is None:
+        return None
+    return _domain_for_presentation(stack, row)
 
 
 def _legendre_galois_group() -> object:
@@ -963,208 +905,36 @@ class ModuliStack(DeligneMumfordStack):
     def etale_atlas_gap(self) -> dict[str, object] | None:
         r"""Named fail-closed gap when no equation-level étale atlas is owned.
 
-        Returns ``None`` precisely when :meth:`etale_atlas` has an owned proving-set
-        domain (so ``has_equation_level_etale_certificate()`` can be True).
-
-        For ``(1,*)`` when neither Legendre nor Hesse applies (e.g. ``Spec(ℤ)``),
-        the Weierstrass ``𝔾_m`` affine is **owned** via
-        :meth:`weierstrass_gm_presentation` as proof that finite étale
-        equation-level certs are impossible for that presentation (infinite group);
-        Igusa is recorded as ordinary-only incomplete. Remaining pre-#225 atlas
-        debt after this sharpening is general ``(g,n)`` only.
+        Dispatches through :mod:`dm_moduli_spike.moduli.atlas_ownership`.
+        Returns ``None`` precisely when :meth:`etale_atlas` matches an owned
+        proving-set presentation. For ``(1,*)`` when neither Legendre nor Hesse
+        applies, Weierstrass ``𝔾_m`` is owned as fail-closed evidence (not
+        equation-level). Remaining pre-#225 atlas debt is general ``(g,n)``.
         """
-        if _moduli_etale_atlas_domain(self) is not None:
-            return None
-        g = self.genus()
-        n = self.number_of_markings()
-        proper = self.is_proper()
-        base = self.base_scheme()
-        gap: dict[str, object] = {
-            "genus": g,
-            "markings": n,
-            "proper": proper,
-            "equation_level": False,
-            "covering_kind_if_formal": "etale_atlas_chart",
-        }
-        if g == 1 and n in (1, 2) and _legendre_and_hesse_unavailable(base):
-            weierstrass = self.weierstrass_gm_presentation()
-            assert weierstrass is not None, "Weierstrass Gm presentation must be owned when Legendre/Hesse unavailable"
-            if n == 1:
-                gap["reason"] = "legendre_and_hesse_unavailable"
-            elif proper:
-                gap["reason"] = "mbar_1_2_legendre_and_hesse_unavailable"
-            else:
-                gap["reason"] = "m_1_2_legendre_and_hesse_unavailable"
-            gap["base_hypothesis"] = {
-                "two_invertible": False,
-                "three_invertible": False,
-                "prototype": "Spec(Z)",
-                "note": ("Neither 2 nor 3 is a unit in the base ring. On fields this case never arises (char 2 ⇒ Hesse; char 3 ⇒ Legendre; else both units)."),
-            }
-            gap["alternate_proving_sets"] = (
-                {
-                    "name": "weierstrass_gm_quotient",
-                    "status": "owned_not_finite_etale",
-                    "presentation": weierstrass,
-                    "requires": "Spec(R[a1,…,a6][Δ⁻¹]) with weighted 𝔾_m-action",
-                    "note": weierstrass["proof_not_finite_etale"],
-                },
-                {
-                    "name": "igusa_ordinary_a6_chart",
-                    "status": "incomplete_ordinary_only",
-                    "requires": "char 2; ordinary locus only",
-                    "note": (
-                        "y² + xy = x³ + a₆ with j = 1/a₆ covers the ordinary locus; "
-                        "misses the supersingular point j = 0 — incomplete as a full "
-                        "atlas of M_{1,1}. Not constructed in-spike."
-                    ),
-                },
-            )
-            gap["pre_225_remaining_after_this"] = "general_(g,n)_only"
-            return gap
-        gap["reason"] = "no_owned_affine_etale_presentation"
-        gap["alternate_proving_sets"] = (
-            {
-                "name": "general_dm_moduli_etale_atlas",
-                "status": "not_in_spike",
-                "requires": "research constructions (level structures, clutching, blowups) beyond proving set",
-                "note": (
-                    "Owned proving set: open M_{0,3}/M_{0,4}/M_{0,5}, M_{1,1} "
-                    "(Legendre when 2 invertible; Hesse Γ(3) when 2 not invertible "
-                    "and 3 invertible), open/proper M_{1,2}/Mbar_{1,2} (same "
-                    "level-structure hypotheses; compactified universal-curve "
-                    "affine covers for Mbar), and proper Mbar_{0,3}/Mbar_{0,4}/"
-                    "Mbar_{0,5} (Kapranov Bl₄(ℙ²))/Mbar_{1,1} "
-                    "(same level-structure hypotheses). "
-                    "When neither Legendre nor Hesse applies, Weierstrass 𝔾_m is "
-                    "owned as fail-closed evidence (not finite étale). "
-                    "General (g,n) atlases need constructions not present in this spike."
-                ),
-            },
-        )
-        return gap
+        from .atlas_ownership import etale_atlas_gap_from_registry
+
+        return etale_atlas_gap_from_registry(self)
+
+    def owned_etale_atlas_presentation(self) -> OwnedAtlasPresentation | None:
+        r"""Matched :class:`~.atlas_ownership.OwnedAtlasPresentation` row, or ``None``."""
+        from .atlas_ownership import resolve_owned_etale_atlas
+
+        return resolve_owned_etale_atlas(self)
 
     def etale_atlas(self) -> AtlasMorphism:
-        r"""Étale atlas ``U → ℳ`` with owned domain on proving-set cases.
+        r"""Étale atlas ``U → ℳ`` via the owned-presentation registry.
 
-        - ``M_{0,3}`` / ``Mbar_{0,3}``: scheme-isomorphic point ``Spec(R)``;
-          ``covering_kind="moduli_affine_etale_chart"``.
-        - ``M_{0,4}``: cross-ratio affine chart;
-          ``covering_kind="moduli_affine_etale_chart"``.
-        - ``Mbar_{0,4}``: standard affine cover of ``ℙ¹`` (stack ≅ scheme);
-          ``covering_kind="moduli_scheme_affine_cover"``. Never the coarse space.
-        - ``M_{0,5}`` (open): Knudsen configuration
-          ``Spec(R[λ,μ]_{λ(λ-1)μ(μ-1)(λ-μ)})``;
-          ``covering_kind="moduli_affine_etale_chart"``.
-        - ``Mbar_{0,5}``: Kapranov ``Bl₄(ℙ²)`` twelve-chart affine cover
-          (stack ≅ scheme); ``covering_kind="moduli_scheme_affine_cover"``.
-          Never the coarse space.
-        - ``M_{1,1}`` (``2`` invertible): affine Legendre ``M(Γ(2))`` finite
-          étale cover; ``covering_kind="legendre_finite_etale_cover"``.
-        - ``M_{1,1}`` (``2`` not invertible, ``3`` invertible): affine Hesse
-          ``M(Γ(3))`` finite étale cover; ``covering_kind="hesse_finite_etale_cover"``.
-        - ``Mbar_{1,1}`` (``2`` invertible): ``Mbar(Γ(2)) ≅ ℙ¹`` finite étale
-          cover; ``covering_kind="legendre_compact_finite_etale_cover"``.
-        - ``Mbar_{1,1}`` (``2`` not invertible, ``3`` invertible):
-          ``Mbar(Γ(3)) ≅ ℙ¹``; ``covering_kind="hesse_compact_finite_etale_cover"``.
-        - ``M_{1,2}`` (open, ``2`` invertible): Legendre universal-curve affine;
-          ``covering_kind="legendre_universal_curve_finite_etale_cover"``.
-        - ``M_{1,2}`` (open, ``2`` not invertible, ``3`` invertible): Hesse
-          universal-curve affine;
-          ``covering_kind="hesse_universal_curve_finite_etale_cover"``.
-        - ``Mbar_{1,2}`` (``2`` invertible): compactified Legendre universal-curve
-          affine cover (nodal fibers included);
-          ``covering_kind="legendre_compact_universal_curve_finite_etale_cover"``.
-        - ``Mbar_{1,2}`` (``2`` not invertible, ``3`` invertible): compactified
-          Hesse universal-curve affine cover;
-          ``covering_kind="hesse_compact_universal_curve_finite_etale_cover"``.
-
-        For general ``(g,n)``: fail-closed formal
-        :class:`~dm_moduli_spike.geometry.stacks.AtlasChart`
-        (see :meth:`etale_atlas_gap`). For ``(1,*)`` when neither ``2`` nor ``3``
-        is a unit (e.g. ``Spec(ℤ)``): Weierstrass ``𝔾_m`` is owned as
-        :meth:`weierstrass_gm_presentation` evidence that finite étale
-        equation-level certs are impossible (infinite group); ``etale_atlas``
-        stays formal. Never uses the coarse space as an étale atlas domain.
+        Single dispatch: :func:`~.atlas_ownership.dispatch_etale_atlas`. Owned
+        ``(g,n,proper)`` rows (see
+        :func:`~.atlas_ownership.owned_etale_atlas_presentations`) yield
+        equation-level domains; unowned types and failed genus-1 base hypotheses
+        fail closed to a formal
+        :class:`~dm_moduli_spike.geometry.stacks.AtlasChart` with
+        :meth:`etale_atlas_gap`. Never uses the coarse space as an étale domain.
         """
-        domain = _moduli_etale_atlas_domain(self)
-        if domain is None:
-            return DeligneMumfordStack.etale_atlas(self)
-        cover = domain.affine_cover()
-        assert cover, "owned moduli étale domain must expose a nonempty affine cover"
-        certs: list[FormallyEtaleSchemeCertificate] = []
-        for chart in cover:
-            certs.extend(_proving_set_etale_certificates(chart))
-        scheme_certs = tuple(certs)
-        primary = scheme_certs[0] if scheme_certs else None
-        if self.genus() == 1 and self.number_of_markings() in (1, 2):
-            from typing import Any, cast
+        from .atlas_ownership import dispatch_etale_atlas
 
-            base = self.base_scheme()
-            n = self.number_of_markings()
-            proper = self.is_proper()
-            if _two_is_invertible(base):
-                if n == 2:
-                    covering_kind = "legendre_compact_universal_curve_finite_etale_cover" if proper else "legendre_universal_curve_finite_etale_cover"
-                else:
-                    covering_kind = "legendre_compact_finite_etale_cover" if proper else "legendre_finite_etale_cover"
-                group = _legendre_galois_group()
-            else:
-                if n == 2:
-                    covering_kind = "hesse_compact_universal_curve_finite_etale_cover" if proper else "hesse_universal_curve_finite_etale_cover"
-                else:
-                    covering_kind = "hesse_compact_finite_etale_cover" if proper else "hesse_finite_etale_cover"
-                group = _hesse_galois_group()
-            group_order = int(cast(Any, group).order())
-            return AtlasMorphism(
-                domain,
-                self,
-                etale=True,
-                covering_kind=covering_kind,
-                representable_domain=True,
-                evidence=AtlasEvidence(
-                    stack=self,
-                    domain=domain,
-                    covering_kind=covering_kind,
-                    etale_stamp=True,
-                    representable_domain=True,
-                    diagonal=self.diagonal(),
-                    dm_diagonal_unramified_stamp=True,
-                    dm_diagonal_representable_stamp=True,
-                    scheme_certificate=primary,
-                    scheme_certificates=scheme_certs,
-                    covering_space=domain,
-                    quotient_group=group,
-                    finite_etale_groupoid=True,
-                    group_order=group_order,
-                    covering_unramified_stamp=True,
-                    covering_smooth_stamp=True,
-                    covering_formally_etale_stamp=True,
-                ),
-            )
-        if isinstance(domain, (ProjectiveLineAlgebraicSpace, KapranovBlowupFourPointsP2AlgebraicSpace)):
-            covering_kind = "moduli_scheme_affine_cover"
-        else:
-            covering_kind = "moduli_affine_etale_chart"
-        return AtlasMorphism(
-            domain,
-            self,
-            etale=True,
-            covering_kind=covering_kind,
-            representable_domain=True,
-            evidence=AtlasEvidence(
-                stack=self,
-                domain=domain,
-                covering_kind=covering_kind,
-                etale_stamp=True,
-                representable_domain=True,
-                diagonal=self.diagonal(),
-                dm_diagonal_unramified_stamp=True,
-                dm_diagonal_representable_stamp=True,
-                scheme_certificate=primary,
-                scheme_certificates=scheme_certs,
-            ),
-        )
+        return dispatch_etale_atlas(self)
 
     def compactification(self, kind: str = "stable-pointed-curves") -> Compactification:
         if self.is_proper():

@@ -808,11 +808,73 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert gap_mbar12_Z["reason"] == "mbar_1_2_legendre_and_hesse_unavailable"
     assert gap_mbar12_Z["pre_225_remaining_after_this"] == "general_(g,n)_only"
     # General (g,n) remains the only pre-#225 atlas gap class beyond this sharpening.
+    # Ownership registry: single inspectable source for owned (g,n,proper) presentations.
+    from dm_moduli_spike.moduli.atlas_ownership import (
+        OwnedAtlasPresentation,
+        is_owned_etale_atlas_type,
+        lookup_owned_etale_atlas,
+        owned_etale_atlas_cardinality,
+        owned_etale_atlas_presentations,
+        owned_etale_atlas_type_keys,
+        resolve_owned_etale_atlas,
+    )
+
+    rows = owned_etale_atlas_presentations()
+    assert owned_etale_atlas_cardinality() == 14
+    assert len(rows) == 14
+    assert all(isinstance(r, OwnedAtlasPresentation) for r in rows)
+    type_keys = owned_etale_atlas_type_keys()
+    assert len(type_keys) == 10
+    assert type_keys == (
+        (0, 3, False),
+        (0, 3, True),
+        (0, 4, False),
+        (0, 4, True),
+        (0, 5, False),
+        (0, 5, True),
+        (1, 1, False),
+        (1, 1, True),
+        (1, 2, False),
+        (1, 2, True),
+    )
+    assert is_owned_etale_atlas_type(0, 4, proper=False)
+    assert is_owned_etale_atlas_type(1, 1, proper=True)
+    assert not is_owned_etale_atlas_type(2, 0, proper=True)
+    assert not is_owned_etale_atlas_type(0, 6, proper=False)
+    assert lookup_owned_etale_atlas(0, 5, proper=False) is not None
+    assert lookup_owned_etale_atlas(0, 5, proper=False).construction == "knudsen_configuration"
+    assert lookup_owned_etale_atlas(0, 5, proper=True).covering_kind == "moduli_scheme_affine_cover"
+    assert resolve_owned_etale_atlas(XS) is not None
+    assert XS.owned_etale_atlas_presentation().covering_kind == "legendre_finite_etale_cover"
+    assert resolve_owned_etale_atlas(YS).construction == "knudsen_cross_ratio"
+    # Owned types stay equation-level True under matching base hypotheses.
+    assert XS.etale_atlas().has_equation_level_etale_certificate()
+    assert YS.etale_atlas().has_equation_level_etale_certificate()
+    assert M05.etale_atlas().has_equation_level_etale_certificate()
+    assert Mbar05.etale_atlas().has_equation_level_etale_certificate()
+    assert M12.etale_atlas().has_equation_level_etale_certificate()
+    assert Mbar12.etale_atlas().has_equation_level_etale_certificate()
+
     M20 = Mbar_gn(2, 0, base=k)
+    M06 = M_gn(0, 6, base=k)
     gap_gen = M20.etale_atlas_gap()
     assert gap_gen is not None
     assert gap_gen["reason"] == "no_owned_affine_etale_presentation"
+    assert gap_gen["registry_owned_type"] is False
+    assert gap_gen["equation_level"] is False
     assert "pre_225_remaining_after_this" not in gap_gen
+    assert isinstance(M20.etale_atlas().domain(), AtlasChart)
+    assert not M20.etale_atlas().has_equation_level_etale_certificate()
+    assert M20.owned_etale_atlas_presentation() is None
+    gap_m06 = M06.etale_atlas_gap()
+    assert gap_m06 is not None
+    assert gap_m06["reason"] == "no_owned_affine_etale_presentation"
+    assert gap_m06["registry_owned_type"] is False
+    assert isinstance(M06.etale_atlas().domain(), AtlasChart)
+    assert not M06.etale_atlas().has_equation_level_etale_certificate()
+    alts_gen = gap_gen["alternate_proving_sets"]
+    assert alts_gen[0]["owned_registry_cardinality"] == 14
+    assert (2, 0, True) not in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
 
     # Owned proving-set stacks expose no gap record.
     assert XS.etale_atlas_gap() is None
