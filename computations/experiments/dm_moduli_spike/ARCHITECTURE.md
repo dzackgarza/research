@@ -25,6 +25,20 @@ PR #111  →  Stacks, curves, moduli, compactifications, strata, Γ  built on th
 | State | **OPEN draft**; CP3 (Hom/Actions/constructions) still landing |
 | Current dm dependence | **Unwired.** Local `ModuliCategory` tower in `categories/foundation.py` is **debt pending Wave 2 rebase**, not a second foundation to expand. |
 
+### Wave 1 — **INCOMPLETE** (reopened 2026-07-16)
+
+Independent DM math corrections that do not wait on #225. Status after user ruling:
+
+| Surface | Status |
+| --- | --- |
+| Equipped `ModuliStacks` (not ⊆ DM), curve hierarchy, stratified objects, coarse AlgebraicSpaces-first, Γ indexing, restrict | Landed |
+| `atlas()` / `etale_atlas()` | **Landed (structured)** — `AtlasMorphism` `U → X` (coarse / `AtlasChart`); prior `NotImplementedError` was a **defect**, not a win |
+| `pullback` | **Landed (structured)** — `BaseChangeStack` with `base_morphism` / `projection`; prior nameless/identity forms were defects |
+| Aut(Γ) on product strata | **Landed (structured)** — `AutProductStackAction` on `∏_v M_{g(v),H(v)}`; half-edge set action is not a substitute |
+| Wave 1 overall | **Incomplete** — full étale verification, 2-categorical pullback coherence, and #225 `Actions` wiring remain named gaps |
+
+**Trap:** honesty demotion (`NotImplementedError`, identity morphisms, formal empty shells) is **not** remediation for PR #111 Wave 1.
+
 ### Wave 2 (after #225 merges) — **BLOCKED** until [#225](https://github.com/dzackgarza/research/pull/225) merges
 
 Status (2026-07-16): #225 is still an **OPEN draft**; CP3 unfinished.
@@ -68,7 +82,7 @@ Owns moduli parents, stratifications, clutching, geometric categories (`categori
 
 **Neither gate claims package extraction complete.**
 
-## Known structural debt (Wave 1 remediates math; Wave 2 remediates kernel)
+## Known structural debt
 
 1. Local `ModuliCategory` foundation (Wave 2 delete).
 
@@ -82,6 +96,8 @@ Owns moduli parents, stratifications, clutching, geometric categories (`categori
 
 6. Axiom membership = theorem stamps (honest; not analytic proof).
 
+7. Atlas/pullback/Aut product action: structured objects exist; full étale/2-categorical coherence unfinished (named gaps, not wins).
+
 ## Forbidden
 
 - Parallel Sets/Hom category foundation.
@@ -91,3 +107,7 @@ Owns moduli parents, stratifications, clutching, geometric categories (`categori
 - Compatibility wrappers that preserve duplicate ownership.
 
 - Claiming #225 wiring complete while substrate is unwired.
+
+- Claiming Wave 1 complete while atlas / pullback / Aut-on-product are unfinished.
+
+- Treating `NotImplementedError` / identity morphisms as remediation.

@@ -6,6 +6,9 @@ from .compactification import scheme_open_immersion_compactification
 from .stacks import (
     AlgebraicSpace,
     AlgebraicStack,
+    AtlasChart,
+    AtlasMorphism,
+    BaseChangeStack,
     Boundary,
     ClosedImmersion,
     ClosedSubspace,
@@ -33,6 +36,7 @@ from .stacks import (
     Variety,
 )
 from .stratification import (
+    AutProductStackAction,
     ClutchingMorphism,
     StableDualGraph,
     Strata,
@@ -44,6 +48,10 @@ from .stratification import (
 __all__ = [
     "AlgebraicSpace",
     "AlgebraicStack",
+    "AtlasChart",
+    "AtlasMorphism",
+    "AutProductStackAction",
+    "BaseChangeStack",
     "Boundary",
     "ClosedImmersion",
     "ClosedSubspace",

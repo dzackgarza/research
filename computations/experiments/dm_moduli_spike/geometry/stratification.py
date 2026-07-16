@@ -319,28 +319,87 @@ def _factor_marking_set(graph: object, vertex: int) -> tuple[object, ...]:
     return tuple(graph.flags_at(vertex))
 
 
-class _ProductStackAction(UniqueRepresentation):
-    r"""Formal Aut(Γ)-action on a product of moduli factors (vertex permutation + labels).
+class AutProductStackAction(UniqueRepresentation):
+    r"""Induced action of ``Aut(Γ)`` on the product stack ``∏_v M_{g(v),H(v)}``.
 
-    Wave 1 certificate: not the half-edge set action. Full PR #225 Actions wiring later.
+    An automorphism permutes vertices of equal type (hence product factors) and
+    transports marking/half-edge labels on each factor. This is not the action of
+    ``Aut(Γ)`` on the set of half-edges alone; the acted-upon object is the product
+    stack. Full PR #225 ``Actions`` category wiring remains Wave 2.
     """
 
+    @staticmethod
+    def __classcall_private__(
+        cls: type,
+        group: object,
+        product: ProductStack,
+        graph: object,
+    ) -> AutProductStackAction:
+        assert isinstance(product, ProductStack), f"expected ProductStack; found {type(product)!r}"
+        result = UniqueRepresentation.__classcall__(cls, group, product, graph)
+        assert isinstance(result, AutProductStackAction), f"classcall must return AutProductStackAction; found {type(result)!r}"
+        return result
+
     def __init__(self, group: object, product: ProductStack, graph: object) -> None:
+        from ..objects._automorphism_action import _GraphAutomorphismData
+
         self._group = group
         self._product = product
         self._graph = graph
+        assert hasattr(graph, "_canonical_record"), f"graph must expose _canonical_record(); found {type(graph)!r}; owned boundary=AutProductStackAction.__init__"
+        record = graph._canonical_record()
+        aut_data = _GraphAutomorphismData.from_graph(record)
+        self._factor_perms = aut_data.on_factors()
+        self._flag_perms = aut_data.on_flags()
+        self._marking_perms = aut_data.on_markings()
+        n_factors = len(product.factors())
+        assert all(len(perm) == n_factors for perm in self._factor_perms) or n_factors == 0 or not self._factor_perms, (
+            f"factor permutations must act on {n_factors} factors; found {self._factor_perms!r}"
+        )
 
     def group(self) -> object:
         return self._group
 
     def set(self) -> ProductStack:
+        r"""The product stack acted upon (Sage Action API name)."""
+        return self._product
+
+    def domain(self) -> ProductStack:
+        return self._product
+
+    def codomain(self) -> ProductStack:
+        return self._product
+
+    def acted_upon(self) -> ProductStack:
         return self._product
 
     def graph(self) -> object:
         return self._graph
 
+    def factor_permutations(self) -> tuple[tuple[int, ...], ...]:
+        r"""Generator images as permutations of product-factor indices."""
+        return self._factor_perms
+
+    def flag_permutations(self) -> tuple[tuple[int, ...], ...]:
+        r"""Generator images as permutations of half-edge labels (transport data)."""
+        return self._flag_perms
+
+    def marking_permutations(self) -> tuple[tuple[int, ...], ...]:
+        return self._marking_perms
+
+    def permute_factors(self, generator_index: int = 0) -> tuple[Stack, ...]:
+        r"""Reorder product factors by the ``generator_index``-th Aut generator."""
+        factors = self._product.factors()
+        if not self._factor_perms:
+            return factors
+        perm = self._factor_perms[generator_index]
+        return tuple(factors[perm[i]] for i in range(len(factors)))
+
+    def acts_on_product_stack(self) -> bool:
+        return True
+
     def __repr__(self) -> str:
-        return f"AutActionOnProduct({self._group!r}, {self._product!r})"
+        return f"AutProductStackAction({self._group!r} ↷ {self._product!r})"
 
 
 def build_dual_graph_stratification(stack: Stack) -> Stratification:
@@ -379,9 +438,11 @@ def build_dual_graph_stratification(stack: Stack) -> Stratification:
             compact_factors.append(compact_factor(w, marks, base=base))
         open_product = ProductStack(tuple(open_factors), base=base)
         compact_product = ProductStack(tuple(compact_factors), base=base)
+        # Full Aut(Γ); the action object induces the product-stack action (factor
+        # permutation + marking transport), not the half-edge set action alone.
         aut = graph.automorphism_group(on="half_edges")
-        open_action = _ProductStackAction(aut, open_product, graph)
-        compact_action = _ProductStackAction(aut, compact_product, graph)
+        open_action = AutProductStackAction(aut, open_product, graph)
+        compact_action = AutProductStackAction(aut, compact_product, graph)
         open_quot = QuotientStack(open_product, aut, open_action)
         closure_quot = QuotientStack(compact_product, aut, compact_action)
         stratum = Stratum(strat, graph, open_quot)

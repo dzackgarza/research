@@ -15,9 +15,20 @@ Short form:
 3. This worktree **does not yet wire** #225’s landed surface (draft; CP3 in progress).
    Local `ModuliCategory` is **debt pending rebase**, not permission to reinvent Sets/Hom.
 
+## Wave 1 status — **incomplete**
+
+Wave 1 is **not complete**. Prior “honesty demotions” (`NotImplementedError` for atlases, nameless/identity pullbacks, half-edge set action as Aut-on-product) were **defects**, not remediations.
+
+| Item | Status |
+| --- | --- |
+| Category / curve / stratification ontology fixes | Landed |
+| `atlas()` / `etale_atlas()` as `U → X` | Landed structured morphisms (coarse / `AtlasChart`; not self; not `NotImplemented`) |
+| Structured `pullback` (`BaseChangeStack`) | Landed (projection / UniqueRepresentation); 2-categorical coherence unfinished |
+| Aut(Γ) action on product strata | Landed `AutProductStackAction`; #225 `Actions` wiring unfinished |
+
 ## Mathematical contract (in-spike)
 
-This package **implements** (partial, under remediation):
+This package **implements** (partial; Wave 1 incomplete on atlas/pullback/Aut):
 
 1. Theorem-backed geometric parents for DM moduli of curves (stacks, compactifications, stratifications, quotient strata).
 
@@ -31,13 +42,13 @@ This package **implements** (partial, under remediation):
 
 This package **does not claim**:
 
-* Computational étale atlases or equation-level properness tests.
+* Computational equation-level étale/properness tests (theorem stamps only).
 
 * A scheme-theoretic universal family over `\mathcal M_{g,n}`.
 
 * That `ModuliStacks` is a subcategory of `DeligneMumfordStacks`.
 
-* Package extraction or completed wiring to #225.
+* Package extraction, completed wiring to #225, or completed Wave 1.
 
 ## Evidence status (extraction gates)
 
@@ -48,6 +59,7 @@ This package **does not claim**:
 | Canonical transport (public API) | **PARTIAL** |
 | Specialization poset Hom-certified | **PASS** |
 | Extraction of either package | **FAIL** |
+| Wave 1 complete (incl. full coherence) | **FAIL** (structured atlas/pullback/Aut landed; coherence gaps remain) |
 
 ## Public entry
 

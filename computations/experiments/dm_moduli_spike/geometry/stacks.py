@@ -1,7 +1,8 @@
 r"""Core geometric parents: stacks, immersions, compactifications, quotients.
 
 Theorem-backed formal geometry: constructors establish category membership and
-axioms; atlases/diagonals are formal morphisms with correct Hom membership.
+axioms. Atlases are morphisms from a scheme/algebraic space into the stack
+(never self-maps). Base change returns a structured :class:`BaseChangeStack`.
 """
 
 from __future__ import annotations
@@ -80,18 +81,14 @@ class Stack(GeometricObject):
         assert x is not None and not args and not kwds, f"Stack() expects a single test object T; found T={x!r} args={args!r} kwds={kwds!r}; owned boundary=Stack.__call__"
         return self.fiber(x)
 
-    def pullback(self, f: object) -> Stack:
-        r"""Base change along a morphism of test schemes.
+    def pullback(self, f: object) -> BaseChangeStack:
+        r"""Base change of this stack along a morphism of bases.
 
-        Wave 1: formal base-changed presentation (not identity). Full
-        pseudofunctor coherence waits on PR #225's functor kernel.
+        Returns a structured :class:`BaseChangeStack` recording ``f``, the
+        original stack, and the projection — not ``self`` and not a nameless
+        formal shell. Full 2-categorical pullback coherence waits on PR #225.
         """
-        return Stack(
-            self.base_scheme(),
-            name=f"Pullback({self._name})",
-            axioms=self.declared_axioms(),
-            category=self.category(),
-        )
+        return BaseChangeStack(self, f)
 
     def fiber_product(self, other: Stack, *, over: object | None = None) -> Stack:
         r"""Formal fiber product ``self ×_S other`` (theorem-backed parent)."""
@@ -114,6 +111,67 @@ class Stack(GeometricObject):
         return self._name
 
 
+class BaseChangeStack(Stack):
+    r"""Stack obtained by base change of ``original`` along ``base_morphism``.
+
+    Records the original stack, the base morphism, and the projection
+    ``π: X ×_S S' → X``. Structural equality is UniqueRepresentation on that data.
+    """
+
+    @staticmethod
+    def __classcall_private__(cls: type, original: Stack, base_morphism: object) -> BaseChangeStack:
+        assert isinstance(original, Stack), f"BaseChangeStack requires Stack; found {type(original)!r}"
+        result = UniqueRepresentation.__classcall__(cls, original, base_morphism)
+        assert isinstance(result, BaseChangeStack), f"classcall must return BaseChangeStack; found {type(result)!r}"
+        return result
+
+    def __init__(self, original: Stack, base_morphism: object) -> None:
+        self._original = original
+        self._base_morphism = base_morphism
+        new_base = _base_scheme_along(base_morphism, original.base_scheme())
+        axioms = original.declared_axioms()
+        cat: object = original.category()
+        Stack.__init__(
+            self,
+            new_base,
+            name=f"BaseChange({original!r})",
+            axioms=axioms,
+            category=cat,
+        )
+
+    def original_stack(self) -> Stack:
+        return self._original
+
+    def base_morphism(self) -> object:
+        return self._base_morphism
+
+    def projection(self) -> StackMorphism:
+        r"""Structure map ``π: X_{S'} → X`` of the base change."""
+        return StackMorphism(self, self._original, kind="base_change_projection")
+
+    def structure_map(self) -> StackMorphism:
+        return self.projection()
+
+
+def _base_scheme_along(base_morphism: object, fallback: AffineScheme) -> AffineScheme:
+    r"""Infer the new base scheme from a base-change morphism when possible."""
+    if isinstance(base_morphism, AffineScheme):
+        return base_morphism
+    if hasattr(base_morphism, "domain"):
+        domain = base_morphism.domain()
+        if isinstance(domain, AffineScheme):
+            return domain
+        if hasattr(domain, "base_scheme"):
+            base = domain.base_scheme()
+            if isinstance(base, AffineScheme):
+                return base
+    if hasattr(base_morphism, "base_scheme"):
+        base = base_morphism.base_scheme()
+        if isinstance(base, AffineScheme):
+            return base
+    return fallback
+
+
 class AlgebraicStack(Stack):
     def __init__(self, base: AffineScheme, *, name: str = "AlgebraicStack", axioms: frozenset[str] | None = None) -> None:
         Stack.__init__(self, base, name=name, axioms=axioms, category=AlgebraicStacks(base))
@@ -122,15 +180,21 @@ class AlgebraicStack(Stack):
         r"""Diagonal ``Δ: X → X ×_S X`` (formal fiber-product codomain)."""
         return StackMorphism(self, self.fiber_product(self), kind="diagonal")
 
-    def atlas(self) -> StackMorphism:
-        r"""Atlas ``U → X`` with ``U`` a scheme.
+    def atlas_domain(self) -> AlgebraicSpace:
+        r"""Scheme/algebraic-space domain of the atlas morphism ``U → X``.
 
-        Unavailable until a concrete scheme atlas is selected; returning a
-        self-map would be mathematically false.
+        For moduli stacks with a coarse space, that coarse space is the atlas
+        domain. Otherwise a dedicated :class:`AtlasChart` is used. Never ``self``.
         """
-        raise NotImplementedError(
-            f"{self!r}.atlas() requires a selected scheme/algebraic-space atlas; self-maps are not atlases (Wave 1 honesty; Wave 3 may attach formal atlases)"
-        )
+        if hasattr(self, "coarse_space"):
+            space = self.coarse_space()
+            assert isinstance(space, AlgebraicSpace), f"coarse_space() must return AlgebraicSpace; found {type(space)!r}"
+            return space
+        return AtlasChart(self, etale=False)
+
+    def atlas(self) -> AtlasMorphism:
+        r"""Atlas ``U → X`` with ``U`` a scheme/algebraic space, not ``X`` itself."""
+        return AtlasMorphism(self.atlas_domain(), self, etale=False)
 
 
 class DeligneMumfordStack(AlgebraicStack):
@@ -147,9 +211,15 @@ class DeligneMumfordStack(AlgebraicStack):
             cat = getattr(cat, a)()
         Stack.__init__(self, base, name=name, axioms=ax, category=cat)
 
-    def etale_atlas(self) -> StackMorphism:
-        r"""Étale atlas ``U → X``; unavailable without a selected atlas scheme."""
-        raise NotImplementedError(f"{self!r}.etale_atlas() requires a selected étale atlas scheme; self-maps are not atlases")
+    def etale_atlas(self) -> AtlasMorphism:
+        r"""Étale atlas ``U → X`` with a scheme/algebraic-space domain distinct from ``X``.
+
+        Uses a dedicated étale atlas chart — not the coarse moduli space (the
+        coarse map ``X → X_c`` is not étale in general) and not a self-map.
+        Étaleness is a DM theorem stamp, not an equation-level verification.
+        """
+        domain = AtlasChart(self, etale=True)
+        return AtlasMorphism(domain, self, etale=True)
 
 
 class AlgebraicSpace(DeligneMumfordStack):
@@ -169,6 +239,39 @@ class AlgebraicSpace(DeligneMumfordStack):
 
     def as_stack(self) -> DeligneMumfordStack:
         return self
+
+
+class AtlasChart(AlgebraicSpace):
+    r"""Algebraic-space chart serving as the domain of an atlas morphism ``U → X``.
+
+    Distinct from the stack itself. For moduli stacks, :meth:`AlgebraicStack.atlas`
+    prefers the coarse moduli space as atlas domain when available; this chart is
+    the fallback for stacks without a coarse space, and the dedicated domain for
+    :meth:`DeligneMumfordStack.etale_atlas` (never the coarse space).
+    """
+
+    @staticmethod
+    def __classcall_private__(cls: type, stack: Stack, *, etale: bool = False) -> AtlasChart:
+        result = UniqueRepresentation.__classcall__(cls, stack, etale)
+        assert isinstance(result, AtlasChart), f"classcall must return AtlasChart; found {type(result)!r}"
+        return result
+
+    def __init__(self, stack: Stack, etale: bool = False) -> None:
+        self._presented_stack = stack
+        self._etale_chart = bool(etale)
+        tag = "EtaleAtlasChart" if etale else "AtlasChart"
+        AlgebraicSpace.__init__(
+            self,
+            stack.base_scheme(),
+            name=f"{tag}({stack!r})",
+            axioms=frozenset({"FiniteType", "Separated"}),
+        )
+
+    def presented_stack(self) -> Stack:
+        return self._presented_stack
+
+    def is_etale_chart(self) -> bool:
+        return self._etale_chart
 
 
 class Variety(AlgebraicSpace):
@@ -369,6 +472,28 @@ class StackMorphism(Element):
 
 
 StackHomset.Element = StackMorphism
+
+
+class AtlasMorphism(StackMorphism):
+    r"""Atlas morphism ``U → X`` from a scheme/algebraic space into a stack.
+
+    Domain is never the stack itself. The ``etale`` flag is a theorem stamp for
+    DM existence of an étale atlas — not a claim that the coarse moduli map is
+    étale (it is not, in general).
+    """
+
+    def __init__(self, domain: object, codomain: object, *, etale: bool = False) -> None:
+        if domain is codomain:
+            raise ValueError(f"atlas domain must not be the stack itself; found domain=codomain={codomain!r}")
+        self._etale = bool(etale)
+        kind = "etale_atlas" if self._etale else "atlas"
+        StackMorphism.__init__(self, domain, codomain, kind=kind)
+
+    def is_etale(self) -> bool:
+        return self._etale
+
+    def is_atlas(self) -> bool:
+        return True
 
 
 class OpenImmersion(StackMorphism):

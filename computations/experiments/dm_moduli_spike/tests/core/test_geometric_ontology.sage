@@ -126,7 +126,17 @@ def test_stratum_locally_closed_and_clutching_hom():
     assert S.parent() is Strata(Sigma)
     assert S in LocallyClosedSubstacks(XSbar)
     assert isinstance(S.underlying_stack(), QuotientStack)
-    open_factors = S.underlying_stack().covering_product().factors()
+    from dm_moduli_spike.geometry.stratification import AutProductStackAction
+
+    open_quot = S.underlying_stack()
+    open_action = open_quot.action()
+    assert open_action is not None
+    assert isinstance(open_action, AutProductStackAction)
+    assert open_action.acts_on_product_stack()
+    assert open_action.domain() is open_quot.covering_product()
+    assert open_action.codomain() is open_quot.covering_product()
+    assert open_action.set() is open_quot.space()
+    open_factors = open_quot.covering_product().factors()
     assert all(isinstance(F, type(M_gI(0, (1,), base=k))) or F.genus() >= 0 for F in open_factors)
     for F in open_factors:
         assert not F.is_proper()
@@ -139,6 +149,9 @@ def test_stratum_locally_closed_and_clutching_hom():
         assert F.is_proper()
     assert S.closure_normalization() is not None
     assert isinstance(S.closure_normalization(), QuotientStack)
+    closure_action = S.closure_normalization().action()
+    assert isinstance(closure_action, AutProductStackAction)
+    assert closure_action.domain() is S.closure_normalization().covering_product()
 
 
 def test_boundary_restrict_drops_smooth_stratum():
@@ -287,11 +300,44 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     Delta = XS.diagonal()
     assert Delta.domain() is XS
     assert Delta.codomain() == XS.fiber_product(XS)
-    try:
-        XS.atlas()
-        assert False, "atlas() must not return a self-map"
-    except NotImplementedError:
-        pass
+
+    from dm_moduli_spike.geometry.stacks import (
+        AlgebraicSpace,
+        AtlasChart,
+        AtlasMorphism,
+        BaseChangeStack,
+    )
+
+    atlas = XS.atlas()
+    assert isinstance(atlas, AtlasMorphism)
+    assert isinstance(atlas.domain(), AlgebraicSpace)
+    assert atlas.domain() is XS.coarse_space()
+    assert atlas.domain() is not XS
+    assert atlas.codomain() is XS
+    assert atlas in Hom(atlas.domain(), XS)
+    assert not atlas.is_etale()
+
+    etale = XS.etale_atlas()
+    assert isinstance(etale, AtlasMorphism)
+    assert etale.is_etale()
+    assert isinstance(etale.domain(), AtlasChart)
+    assert etale.domain().is_etale_chart()
+    assert etale.domain() is not XS
+    assert etale.domain() is not XS.coarse_space()
+    assert etale.codomain() is XS
+    assert etale in Hom(etale.domain(), XS)
+
+    S_prime = spec(QQ)
+    pb = XS.pullback(S_prime)
+    assert isinstance(pb, BaseChangeStack)
+    assert pb is not XS
+    assert pb is BaseChangeStack(XS, S_prime)
+    assert pb.original_stack() is XS
+    assert pb.base_morphism() is S_prime
+    pi = pb.projection()
+    assert pi.domain() is pb
+    assert pi.codomain() is XS
+    assert pi in Hom(pb, XS)
 
 
 def test_arbitrary_marking_set():
