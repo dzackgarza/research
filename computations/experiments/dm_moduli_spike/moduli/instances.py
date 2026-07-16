@@ -883,9 +883,9 @@ def _del_pezzo_open_M30_affine_scheme(base: AffineScheme) -> AffineScheme:
     Requires ``2 ∈ Rˣ`` (anticanonical double cover). Finite étale groupoid
     ``W(E₇)`` of order ``2903040`` (geometric markings of a degree-2 del Pezzo).
     Coverage: **dense open of the non-hyperelliptic locus** of open ``M_3`` —
-    not the hyperelliptic divisor (binary octics / ``M_{0,8}/S₈``), not proper
-    ``Mbar_3``, and not a scheme isomorphism ``M_3 ≅ U``. Ternary-quartic GIT
-    with expanded discriminant is intentionally not materialized here.
+    not the hyperelliptic divisor (see :func:`_hyperelliptic_open_M30_affine_scheme`),
+    not proper ``Mbar_3``, and not a scheme isomorphism ``M_3 ≅ U``. Ternary-quartic
+    GIT with expanded discriminant is intentionally not materialized here.
     """
     from itertools import combinations
 
@@ -930,6 +930,145 @@ def _del_pezzo_galois_group() -> object:
     from sage.combinat.root_system.weyl_group import WeylGroup
 
     return cast(Any, WeylGroup(["E", 7]))
+
+
+def _hyperelliptic_open_M30_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Binary-octic / Knudsen ``M_{0,8}`` chart for the hyperelliptic locus of open ``M_3``.
+
+    A hyperelliptic genus-3 curve is ``y² = f₈(x)`` with eight distinct branch
+    points. After ``PGL₂``-normalizing three to ``{0,1,∞}``, a dense open of
+    ordered branch configurations is the Knudsen chart
+
+    ``Spec(R[t₁,…,t₅]_S) ≅`` open ``M_{0,8}``.
+
+    Requires ``2 ∈ Rˣ``. Finite étale groupoid ``S₈`` of degree ``40320``.
+    Coverage: **hyperelliptic locus only** — not the non-hyperelliptic dense open
+    (del Pezzo / ``W(E₇)``), and not a scheme isomorphism ``M_3 ≅ U``. The open
+    unmarked stack's étale-atlas dispatch stays on the del Pezzo row; this chart
+    is the owned hyperelliptic locus presentation.
+    """
+    assert _two_is_invertible(base), "hyperelliptic binary-octic M_3 chart requires 2 invertible"
+    return _knudsen_open_M0n_affine_scheme(base, 8)
+
+
+def _hyperelliptic_open_M3n_point_names(n_marks: int) -> tuple[str, ...]:
+    r"""Coordinate names for ``n_marks`` affine points on the binary-octic model."""
+    if n_marks == 1:
+        return ("x", "y")
+    names: list[str] = []
+    for i in range(1, n_marks + 1):
+        names.extend((f"x{i}", f"y{i}"))
+    return tuple(names)
+
+
+def _hyperelliptic_open_M3n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme:
+    r"""Parametric binary-octic chart for open hyperelliptic ``M_{3,n}``, ``n ≥ 0``.
+
+    Forgetful to the hyperelliptic locus of ``M_3``; fiber is ``n`` marked points
+    on ``y² = x(x-1)(x-t₁)⋯(x-t₅)``. Requires ``2 ∈ Rˣ``. Finite étale ``S₈``.
+
+    * ``n = 0``: :func:`_hyperelliptic_open_M30_affine_scheme`.
+    * ``n ≥ 1``: points on the same model, localized at ``y_i`` and ``x_i - x_j``.
+
+    Coverage: hyperelliptic locus of open ``M_{3,n}`` only — not the
+    non-hyperelliptic dense open.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    n_int = int(n)
+    assert n_int >= 0, f"open hyperelliptic M_{{3,n}} chart requires n ≥ 0; got {n!r}"
+    assert _two_is_invertible(base), "hyperelliptic M_{3,n} chart requires 2 invertible"
+    if n_int == 0:
+        return _hyperelliptic_open_M30_affine_scheme(base)
+
+    names = ("t1", "t2", "t3", "t4", "t5") + _hyperelliptic_open_M3n_point_names(n_int)
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=names)
+    gens = poly.gens()
+    ts = gens[:5]
+    # Branch-point discriminant (same as Knudsen open M_{0,8}).
+    denom = poly.one()
+    for t in ts:
+        denom *= t * (t - 1)
+    for i, ti in enumerate(ts):
+        for tj in ts[i + 1 :]:
+            denom *= ti - tj
+    xs = gens[5::2]
+    ys = gens[6::2]
+    for y in ys:
+        denom *= y
+    for i, xi in enumerate(xs):
+        for xj in xs[i + 1 :]:
+            denom *= xi - xj
+    localized = poly.localization(denom)
+    equations = [
+        localized(ys[i]) ** 2
+        - localized(xs[i])
+        * (localized(xs[i]) - 1)
+        * (localized(xs[i]) - localized(ts[0]))
+        * (localized(xs[i]) - localized(ts[1]))
+        * (localized(xs[i]) - localized(ts[2]))
+        * (localized(xs[i]) - localized(ts[3]))
+        * (localized(xs[i]) - localized(ts[4]))
+        for i in range(n_int)
+    ]
+    if len(equations) == 1:
+        return AffineScheme(localized.quo(equations[0]))
+    return AffineScheme(localized.quo(localized.ideal(equations)))
+
+
+def _hyperelliptic_compact_M30_covering_space(base: AffineScheme) -> AlgebraicSpace:
+    r"""Kapranov ``Mbar_{0,8}`` cover of the hyperelliptic locus of proper ``Mbar_3``.
+
+    Classical identification: the hyperelliptic locus of ``Mbar_3`` is
+    ``Mbar_{0,8}/S₈``. Covering space is the owned lazy Kapranov
+    ``Bl(ℙ⁵)`` algebraic space
+    :class:`~dm_moduli_spike.geometry.stacks.KapranovIteratedBlowupPnMinus3AlgebraicSpace`
+    for ``n = 8``. Requires ``2 ∈ Rˣ``.
+
+    Coverage: **hyperelliptic locus of ``Mbar_3`` only** — not the
+    non-hyperelliptic dense open, not a del Pezzo compactification.
+    """
+    from ..geometry.stacks import KapranovIteratedBlowupPnMinus3AlgebraicSpace
+
+    assert _two_is_invertible(base), "hyperelliptic compact Mbar_3 cover requires 2 invertible"
+    return KapranovIteratedBlowupPnMinus3AlgebraicSpace(base, 8, "Mbar_3_hyp_via_Mbar_0_8")
+
+
+def _hyperelliptic_compact_M3n_covering_space(base: AffineScheme, n: int) -> AlgebraicSpace:
+    r"""Compactified binary-octic / Kapranov fiber-product cover of hyperelliptic ``Mbar_{3,n}``.
+
+    Pullback of :func:`_hyperelliptic_compact_M30_covering_space` along forgetful
+    ``Mbar_{3,n} → Mbar_3``. Covering space is
+    :class:`~dm_moduli_spike.geometry.stacks.HyperellipticCompactMarkedM3nAlgebraicSpace`.
+    Finite étale ``S₈``. Requires ``2 ∈ Rˣ``. Lazy sample certs (Kapranov ``n=8``).
+
+    * ``n = 0``: :func:`_hyperelliptic_compact_M30_covering_space`.
+    * ``n ≥ 1``: marked fibers over Kapranov ``Mbar_{0,8}`` charts.
+    """
+    from ..geometry.stacks import HyperellipticCompactMarkedM3nAlgebraicSpace
+
+    n_int = int(n)
+    assert n_int >= 0, f"compact hyperelliptic Mbar_{{3,n}} requires n ≥ 0; got {n!r}"
+    assert _two_is_invertible(base), "hyperelliptic compact Mbar_{3,n} cover requires 2 invertible"
+    if n_int == 0:
+        return _hyperelliptic_compact_M30_covering_space(base)
+    return HyperellipticCompactMarkedM3nAlgebraicSpace(base, n_int, f"Mbar_3_{n_int}_hyp_via_Mbar_0_8")
+
+
+def _hyperelliptic_galois_group() -> object:
+    r"""``S₈`` acting on the binary-octic / ``M_{0,8}`` cover of hyperelliptic ``M_3``.
+
+    Eight labeled Weierstrass / branch points of a hyperelliptic genus-3 curve.
+    Degree ``40320``. Coarse space of the locus is ``M_{0,8}/S₈``; covering space
+    is a dense open of ``M_{0,8}`` (open) or Kapranov ``Mbar_{0,8}`` (compact).
+    Does **not** claim the non-hyperelliptic dense open.
+    """
+    from typing import Any, cast
+
+    from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
+    return cast(Any, SymmetricGroup(8))
 
 
 class Groupoid(UniqueRepresentation, Parent):
@@ -1431,7 +1570,8 @@ class ModuliStack(DeligneMumfordStack):
         ``2`` invertible. Covering space:
         :func:`_del_pezzo_open_M30_affine_scheme` (7 points in ``ℙ²`` / ``PGL₃``).
         ``G = W(E₇)`` of order ``2903040``. Coverage is the non-hyperelliptic
-        dense open — not hyperelliptic binary octics, not ``Mbar_3``.
+        dense open — not hyperelliptic binary octics (see
+        :meth:`hyperelliptic_quotient_presentation`).
         """
         if self.genus() != 3 or self.is_proper() or int(self.number_of_markings()) != 0:
             return None
@@ -1456,7 +1596,87 @@ class ModuliStack(DeligneMumfordStack):
             "presentation": "M_3_nh ≅ [del_Pezzo_Bl7_P2_U / W(E7)] (dense open)",
             "construction": "del_pezzo_degree2_seven_points_PGL3",
             "coverage": "dense_open_nonhyperelliptic_of_open_M_3",
-            "excludes": "hyperelliptic_locus_binary_octics; proper_Mbar_3; marked_M_3_n",
+            "excludes": "hyperelliptic_locus_binary_octics",
+        }
+
+    def hyperelliptic_quotient_presentation(self) -> dict[str, object] | None:
+        r"""Inspectable ``(U, S₈)`` data when a hyperelliptic binary-octic cover is owned.
+
+        Returns ``None`` unless this is genus ``3`` over a base with ``2`` invertible
+        and a hyperelliptic presentation applies:
+
+        - Open unmarked ``M_{3,0}``: locus chart
+          :func:`_hyperelliptic_open_M30_affine_scheme` (parallel to del Pezzo
+          étale-atlas ownership of the non-hyperelliptic dense open).
+        - Open marked ``M_{3,n}`` (``n ≥ 1``):
+          :func:`_hyperelliptic_open_M3n_affine_scheme`.
+        - Proper unmarked ``Mbar_3``:
+          :func:`_hyperelliptic_compact_M30_covering_space`.
+        - Proper marked ``Mbar_{3,n}`` (``n ≥ 1``):
+          :func:`_hyperelliptic_compact_M3n_covering_space`.
+
+        ``G = S₈`` of order ``40320``. Coverage is always the **hyperelliptic
+        locus** — never the non-hyperelliptic dense open.
+        """
+        if self.genus() != 3:
+            return None
+        n = int(self.number_of_markings())
+        if n < 0:
+            return None
+        if not _two_is_invertible(self.base_scheme()):
+            return None
+        group = _hyperelliptic_galois_group()
+        from typing import Any, cast
+
+        if self.is_proper():
+            domain = _hyperelliptic_compact_M3n_covering_space(self.base_scheme(), n)
+            if n == 0:
+                presentation = "Hyp(Mbar_3) ≅ [Mbar_0_8 / S8] (Kapranov Bl(P5))"
+                level_structure = "hyperelliptic_compact_Mbar08_S8"
+                construction = "hyperelliptic_mbar08_s8"
+                coverage = "hyperelliptic_locus_of_proper_Mbar_3"
+            elif n == 1:
+                presentation = "Hyp(Mbar_3_1) ≅ [Kapranov_Mbar_0_8_univ_curve / S8]"
+                level_structure = "hyperelliptic_compact_binary_octic_universal_curve"
+                construction = "hyperelliptic_compact_binary_octic_universal_curve"
+                coverage = "hyperelliptic_locus_of_proper_Mbar_3_1"
+            else:
+                presentation = f"Hyp(Mbar_3_{n}) ≅ [Kapranov_Mbar_0_8_marked_config / S8]"
+                level_structure = "hyperelliptic_compact_binary_octic_marked_configuration"
+                construction = "hyperelliptic_compact_binary_octic_marked_configuration"
+                coverage = f"hyperelliptic_locus_of_proper_Mbar_3_{n}"
+        elif n == 0:
+            domain = AffineAlgebraicSpace(_hyperelliptic_open_M30_affine_scheme(self.base_scheme()))
+            presentation = "Hyp(M_3) ≅ [binary_octic_M_0_8_U / S8] (dense open of locus)"
+            level_structure = "hyperelliptic_binary_octic_S8"
+            construction = "hyperelliptic_binary_octic_M08_S8"
+            coverage = "hyperelliptic_locus_of_open_M_3"
+        elif n == 1:
+            domain = AffineAlgebraicSpace(_hyperelliptic_open_M3n_affine_scheme(self.base_scheme(), n))
+            presentation = "Hyp(M_3_1) ≅ [binary_octic_univ_curve / S8] (dense open of locus)"
+            level_structure = "hyperelliptic_binary_octic_universal_curve"
+            construction = "hyperelliptic_binary_octic_universal_curve"
+            coverage = "hyperelliptic_locus_of_open_M_3_1"
+        else:
+            domain = AffineAlgebraicSpace(_hyperelliptic_open_M3n_affine_scheme(self.base_scheme(), n))
+            presentation = f"Hyp(M_3_{n}) ≅ [binary_octic_marked_configuration / S8] (dense open of locus)"
+            level_structure = "hyperelliptic_binary_octic_marked_configuration"
+            construction = "hyperelliptic_binary_octic_marked_configuration"
+            coverage = f"hyperelliptic_locus_of_open_M_3_{n}"
+        return {
+            "covering_space": domain,
+            "group": group,
+            "group_order": int(cast(Any, group).order()),
+            "finite_etale_groupoid": True,
+            "covering_unramified_stamp": True,
+            "covering_smooth_stamp": True,
+            "covering_formally_etale_stamp": True,
+            "degree": 40320,
+            "level_structure": level_structure,
+            "presentation": presentation,
+            "construction": construction,
+            "coverage": coverage,
+            "excludes": "nonhyperelliptic_dense_open_del_Pezzo",
         }
 
     def weierstrass_gm_presentation(self) -> dict[str, object] | None:

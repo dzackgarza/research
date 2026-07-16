@@ -1141,6 +1141,133 @@ class IgusaCompactMarkedM2nAlgebraicSpace(AlgebraicSpace):
         return tuple(self.affine_chart(i) for i in range(self.affine_cover_cardinality()))
 
 
+class HyperellipticCompactMarkedM3nAlgebraicSpace(AlgebraicSpace):
+    r"""Compactified binary-octic cover of hyperelliptic proper marked ``Mbar_{3,n}``.
+
+    Pullback of Kapranov ``Mbar_{0,8} → Hyp(Mbar_3)`` along forgetful
+    ``Mbar_{3,n} → Mbar_3``: the relative ``n``-marked hyperelliptic double cover
+    over Kapranov ``Bl(ℙ⁵)``, with finite étale ``S₈`` groupoid. Requires
+    ``2 ∈ Rˣ``.
+
+    Each Kapranov affine chart ``Spec(R[u₁,…,u₅]) ≅ 𝔸⁵`` carries a fiber
+
+    ``y_i² = x_i(x_i-1)(x_i-u₁)⋯(x_i-u₅)``
+
+    **without** localizing at the branch discriminant (stable / nodal fibers
+    stay), only at ``y_i`` and ``x_i - x_j``.
+
+    Charts are **lazy / cached**. Kapranov ``n=8`` has combinatorial cardinality
+    ``(n-2)·N(n-3) ≈ 2·10⁶`` — never eagerly materialize. Use
+    :meth:`affine_cover_cardinality`, :meth:`affine_cover_sample` (one fiber per
+    standard affine of ``ℙ⁵``, six charts), and :meth:`affine_chart`.
+    """
+
+    @staticmethod
+    def __classcall_private__(
+        cls: type,
+        base: AffineScheme,
+        n: int,
+        role: str,
+    ) -> HyperellipticCompactMarkedM3nAlgebraicSpace:
+        assert isinstance(base, AffineScheme), f"HyperellipticCompactMarkedM3nAlgebraicSpace requires AffineScheme base; found {type(base)!r}"
+        n_int = int(n)
+        assert n_int >= 1, f"compact marked hyperelliptic cover requires n ≥ 1; got {n!r}"
+        assert isinstance(role, str) and role, f"role must be a nonempty str; found {role!r}"
+        result = UniqueRepresentation.__classcall__(cls, base, n_int, role)
+        assert isinstance(result, HyperellipticCompactMarkedM3nAlgebraicSpace), f"classcall must return HyperellipticCompactMarkedM3nAlgebraicSpace; found {type(result)!r}"
+        return result
+
+    def __init__(self, base: AffineScheme, n: int, role: str) -> None:
+        self._n = int(n)
+        self._role = role
+        self._kapranov = KapranovIteratedBlowupPnMinus3AlgebraicSpace(base, 8, "Mbar_3_hyp_via_Mbar_0_8")
+        self._affine_chart_cache: dict[int, AffineScheme] = {}
+        AlgebraicSpace.__init__(
+            self,
+            base,
+            name=f"HyperellipticCompactMarkedM3n({role}/{base!r})",
+            axioms=frozenset({"FiniteType", "Separated"}),
+        )
+
+    def number_of_markings(self) -> int:
+        r"""Marking count ``n`` for this hyperelliptic ``Mbar_{3,n}`` cover."""
+        return self._n
+
+    def role(self) -> str:
+        r"""Literature role tag (e.g. ``Mbar_3_1_hyp_via_Mbar_0_8``)."""
+        return self._role
+
+    def kapranov_base(self) -> KapranovIteratedBlowupPnMinus3AlgebraicSpace:
+        r"""Underlying Kapranov ``Mbar_{0,8}`` cover of unmarked hyperelliptic ``Mbar_3``."""
+        return self._kapranov
+
+    def affine_cover_cardinality(self) -> int:
+        r"""Combinatorial chart count (one binary-octic fiber per Kapranov chart)."""
+        return self._kapranov.affine_cover_cardinality()
+
+    def affine_chart(self, index: int) -> AffineScheme:
+        r"""Materialize (and cache) the binary-octic fiber over the ``index``-th Kapranov chart."""
+        from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+        idx = int(index)
+        n_total = self.affine_cover_cardinality()
+        assert 0 <= idx < n_total, f"affine chart index out of range: {idx!r} not in [0, {n_total})"
+        cached = self._affine_chart_cache.get(idx)
+        if cached is not None:
+            return cached
+        # Lazy: never call Kapranov.affine_cover() for n=8.
+        base_chart = self._kapranov.affine_chart(idx)
+        r5 = cast(Any, base_chart.ring())
+        gens5 = tuple(r5.gens())
+        assert len(gens5) == 5, f"Kapranov Mbar_0_8 chart must be 𝔸⁵; found {len(gens5)} gens"
+        coeff = r5.base_ring()
+        old_names = tuple(str(g) for g in gens5)
+        mark_names: tuple[str, ...]
+        if self._n == 1:
+            mark_names = ("x", "y")
+        else:
+            mark_names = tuple(name for i in range(1, self._n + 1) for name in (f"x{i}", f"y{i}"))
+        poly = PolynomialRing(coeff, names=old_names + mark_names)
+        gens = poly.gens()
+        us = gens[:5]
+        xs = gens[5::2]
+        ys = gens[6::2]
+        denom = poly.one()
+        for y in ys:
+            denom *= y
+        for i, xi in enumerate(xs):
+            for xj in xs[i + 1 :]:
+                denom *= xi - xj
+        localized = poly.localization(denom)
+        equations = [
+            localized(ys[i]) ** 2
+            - localized(xs[i])
+            * (localized(xs[i]) - 1)
+            * (localized(xs[i]) - localized(us[0]))
+            * (localized(xs[i]) - localized(us[1]))
+            * (localized(xs[i]) - localized(us[2]))
+            * (localized(xs[i]) - localized(us[3]))
+            * (localized(xs[i]) - localized(us[4]))
+            for i in range(self._n)
+        ]
+        if len(equations) == 1:
+            chart = AffineScheme(localized.quo(equations[0]))
+        else:
+            chart = AffineScheme(localized.quo(localized.ideal(equations)))
+        self._affine_chart_cache[idx] = chart
+        return chart
+
+    def affine_cover_sample(self) -> tuple[AffineScheme, ...]:
+        r"""One binary-octic fiber chart per standard affine open of ``ℙ⁵`` (``6`` charts)."""
+        d = self._kapranov.projective_dimension()
+        per = self.affine_cover_cardinality() // (d + 1)
+        return tuple(self.affine_chart(i * per) for i in range(d + 1))
+
+    def affine_cover(self) -> tuple[AffineScheme, ...]:
+        r"""Full affine cover (materializes all fiber charts; prefer sample for QC)."""
+        return tuple(self.affine_chart(i) for i in range(self.affine_cover_cardinality()))
+
+
 class AtlasChart(AlgebraicSpace):
     r"""Algebraic-space chart serving as the domain of an atlas morphism ``U → X``.
 
@@ -1747,6 +1874,8 @@ def _affine_cover_of(domain: object) -> tuple[AffineScheme, ...]:
         return domain.affine_cover_sample()
     if isinstance(domain, IgusaCompactMarkedM2nAlgebraicSpace):
         return domain.affine_cover_sample()
+    if isinstance(domain, HyperellipticCompactMarkedM3nAlgebraicSpace):
+        return domain.affine_cover_sample()
     if isinstance(
         domain,
         (
@@ -2009,6 +2138,10 @@ class AtlasEvidence:
             cover = self._domain.affine_cover_sample()
             if not cover or self._domain.affine_cover_cardinality() < 1:
                 return False
+        elif isinstance(self._domain, HyperellipticCompactMarkedM3nAlgebraicSpace):
+            cover = self._domain.affine_cover_sample()
+            if not cover or self._domain.affine_cover_cardinality() < 1:
+                return False
         else:
             cover = self.domain_affine_cover()
             if not cover:
@@ -2121,6 +2254,10 @@ class AtlasMorphism(StackMorphism):
                 igusa_m = cast(IgusaCompactMarkedM2nAlgebraicSpace, self.domain())
                 data["domain_affine_cover_cardinality"] = igusa_m.affine_cover_cardinality()
                 data["domain_affine_cover"] = igusa_m.affine_cover_sample()
+            elif isinstance(self.domain(), HyperellipticCompactMarkedM3nAlgebraicSpace):
+                hyp_m = cast(HyperellipticCompactMarkedM3nAlgebraicSpace, self.domain())
+                data["domain_affine_cover_cardinality"] = hyp_m.affine_cover_cardinality()
+                data["domain_affine_cover"] = hyp_m.affine_cover_sample()
             else:
                 data["domain_affine_cover"] = self._evidence.domain_affine_cover()
         else:
@@ -2154,6 +2291,12 @@ class AtlasMorphism(StackMorphism):
             "igusa_compact_universal_curve_finite_etale_cover",
             "igusa_compact_marked_configuration_finite_etale_cover",
             "del_pezzo_seven_points_finite_etale_cover",
+            "hyperelliptic_binary_octic_finite_etale_cover",
+            "hyperelliptic_compact_finite_etale_cover",
+            "hyperelliptic_universal_curve_finite_etale_cover",
+            "hyperelliptic_marked_configuration_finite_etale_cover",
+            "hyperelliptic_compact_universal_curve_finite_etale_cover",
+            "hyperelliptic_compact_marked_configuration_finite_etale_cover",
         )
 
     def covering_space(self) -> object | None:
