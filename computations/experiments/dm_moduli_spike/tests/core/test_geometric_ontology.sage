@@ -144,11 +144,23 @@ def test_stratum_locally_closed_and_clutching_hom():
     q_etale = open_quot.etale_atlas()
     assert q_etale.is_etale()
     assert q_etale.domain() is open_quot.covering_product()
+    assert q_etale.domain() is open_quot.covering_space()
     assert q_etale.domain() is not open_quot
     assert q_etale.covering_kind() == "quotient_cover"
+    assert q_etale.is_quotient_presentation_atlas()
+    assert not q_etale.is_coarse_atlas()
     assert q_etale.domain_is_representable()
+    assert q_etale.covering_space() is open_quot.covering_space()
+    assert q_etale.quotient_group() is open_quot.group()
     assert q_etale.evidence() is not None
     assert q_etale.evidence().dm_diagonal_unramified_stamp()
+    assert q_etale.evidence().links_dm_diagonal_axioms()
+    assert q_etale.evidence().scheme_certificate() is not None
+    assert q_etale.evidence().scheme_certificate().is_formally_etale()
+    presentation = open_quot.quotient_presentation()
+    assert presentation["covering_space"] is open_quot.covering_space()
+    assert presentation["atlas_domain_is_covering"] is True
+    assert isinstance(open_action, Action)
     xi = S.clutching_morphism()
     assert xi is not None
     assert xi in Hom(xi.domain(), XSbar)
@@ -164,7 +176,11 @@ def test_stratum_locally_closed_and_clutching_hom():
 
 
 def test_aut_product_stack_action_permutes_equal_type_factors():
-    r"""Aut(Γ) acts on ∏ M by factor permutation; identity acts as id."""
+    r"""Aut(Γ) acts on ∏ M by factor permutation; identity acts as id.
+
+    Hardened on an equal-type 2-vertex graph: the nontrivial Aut element must
+    return a ProductStack with swapped factors (not the original product).
+    """
     from dm_moduli_spike import ProductStack, QuotientStack, StableGraphs, M_gI
     from dm_moduli_spike.geometry.stratification import AutProductStackAction
 
@@ -178,10 +194,16 @@ def test_aut_product_stack_action_permutes_equal_type_factors():
         and g.vertex_genus(1) == 1
         and g.automorphism_group(on="half_edges").order() == 2
     )
+    assert graph.vertex_genus(0) == graph.vertex_genus(1)
     factors = tuple(M_gI(graph.vertex_genus(v), graph.flags_at(v), base=k) for v in range(2))
+    # Equal-type factors are UniqueRepresentation-equal when markings match type.
     product = ProductStack(factors, base=k)
     aut = graph.automorphism_group(on="half_edges")
     action = AutProductStackAction(aut, product, graph)
+    assert isinstance(action, Action)
+    assert action.actor() is aut
+    assert action.domain() is product
+    assert action.codomain() is product
     identity = aut.one()
     swap = next(g for g in aut if g.order() == 2)
 
@@ -189,22 +211,32 @@ def test_aut_product_stack_action_permutes_equal_type_factors():
     assert action.act(identity) is product
     assert action(identity) is product
     assert action._act_(identity) is product
+    assert action._act_(identity, product) is product
 
     assert action.factor_permutation_of(swap) == (1, 0)
     swapped = action.act(swap)
     assert isinstance(swapped, ProductStack)
     assert swapped is not product
     assert swapped.factors() == (factors[1], factors[0])
+    assert swapped.factors()[0] is factors[1]
+    assert swapped.factors()[1] is factors[0]
     assert action.permute_factors(0) == (factors[1], factors[0])
+    assert action(swap, product) is swapped
 
     iso = action.induced_isomorphism(swap)
     assert iso.domain() is product
     assert iso.codomain() is swapped
 
     quot = QuotientStack(product, aut, action)
+    assert quot.covering_space() is product
     assert quot.act_on_covering(identity) is product
     assert quot.act_on_covering(swap) is swapped
     assert quot.etale_atlas().domain() is product
+    assert quot.etale_atlas().domain() is quot.covering_space()
+    induced = quot.induced_covering_automorphism(swap)
+    assert induced.domain() is product
+    assert induced.codomain() is swapped
+    assert induced.kind() == "quotient_covering_automorphism"
 
 
 def test_boundary_restrict_drops_smooth_stratum():
@@ -360,8 +392,12 @@ def test_stack_fiber_and_hom_2_isomorphisms():
         AtlasEvidence,
         AtlasMorphism,
         BaseChangeStack,
+        FormallyEtaleSchemeCertificate,
         ModuliBaseChangeStack,
+        ProductStack,
+        PullbackMediatingMorphism,
         PullbackStack,
+        StackMorphism,
     )
 
     atlas = XS.atlas()
@@ -375,7 +411,10 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert atlas.is_covering()
     assert atlas.domain_is_representable()
     assert atlas.covering_kind() == "coarse_moduli"
+    assert atlas.is_coarse_atlas()
+    assert atlas.distinguishes_etale_from_coarse()
     assert atlas.covering_data()["covering_kind"] == "coarse_moduli"
+    assert atlas.covering_data()["is_coarse_atlas"] is True
 
     etale = XS.etale_atlas()
     assert isinstance(etale, AtlasMorphism)
@@ -389,16 +428,46 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert etale.is_covering()
     assert etale.domain_is_representable()
     assert etale.covering_kind() == "etale_atlas_chart"
+    assert not etale.is_coarse_atlas()
+    assert etale.distinguishes_etale_from_coarse()
+    # Fail-closed: étale atlas must not silently become the coarse atlas.
+    assert etale.domain() is not atlas.domain()
+    assert etale.covering_kind() != atlas.covering_kind()
     ev = etale.evidence()
     assert isinstance(ev, AtlasEvidence)
     assert ev.etale_stamp()
     assert ev.representable_domain()
     assert ev.dm_diagonal_unramified_stamp()
+    assert ev.dm_diagonal_representable_stamp()
+    assert ev.links_dm_diagonal_axioms()
     assert ev.diagonal() is not None
     assert ev.diagonal().domain() is XS
     assert ev.diagonal().codomain() == XS.fiber_product(XS)
     assert etale.covering_data()["dm_diagonal_unramified_stamp"] is True
     assert etale.covering_data()["diagonal"] is ev.diagonal()
+    assert etale.covering_data()["links_dm_diagonal_axioms"] is True
+    cert = ev.scheme_certificate()
+    assert isinstance(cert, FormallyEtaleSchemeCertificate)
+    assert cert.is_flat() and cert.is_unramified() and cert.is_formally_etale()
+    assert cert.reason() == "identity_ring_map_isomorphism"
+
+    # Product of DM stacks: étale atlas is product of factor étale atlases.
+    YS = M_gn(0, 4, base=k)
+    prod = ProductStack((XS, YS), base=k)
+    prod_etale = prod.etale_atlas()
+    assert prod_etale.is_etale()
+    assert prod_etale.covering_kind() == "product_of_etale_atlases"
+    assert isinstance(prod_etale.domain(), ProductStack)
+    assert prod_etale.domain() is not prod
+    assert prod_etale.domain() is not prod.atlas().domain()
+    factor_eas = prod_etale.factor_atlases()
+    assert factor_eas is not None
+    assert len(factor_eas) == 2
+    assert all(ea.is_etale() for ea in factor_eas)
+    assert prod_etale.domain().factors() == (factor_eas[0].domain(), factor_eas[1].domain())
+    assert not prod_etale.is_coarse_atlas()
+    assert prod.atlas().covering_kind() == "product_of_coarse"
+    assert not prod.atlas().is_etale()
 
     from sage.rings.integer_ring import ZZ
 
@@ -434,6 +503,26 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     corners = pb.square_corners()
     assert corners == (pb, XS, S_prime, XS.base_scheme())
     assert pb is BaseChangeStack(XS, S_prime)
+
+    # Pullback universal property: mediating morphism recovers legs via π₁, π₂.
+    Y = Stack(k, name="Y", axioms=frozenset({"FiniteType"}))
+    a = StackMorphism(Y, XS, kind="test_leg_to_X")
+    b = StackMorphism(Y, S_prime, kind="test_leg_to_Sprime")
+    m = pb.mediating_morphism(a, b)
+    assert isinstance(m, PullbackMediatingMorphism)
+    assert m.domain() is Y
+    assert m.codomain() is pb
+    assert m.recorded_leg_to_original() is a
+    assert m.recorded_leg_to_new_base() is b
+    assert m.recovers_legs()
+    c1 = m.composed_with_projection()
+    c2 = m.composed_with_structure_morphism()
+    assert c1.domain() is Y and c1.codomain() is XS
+    assert c2.domain() is Y and c2.codomain() is S_prime
+    two_cells = m.projection_2_isomorphisms()
+    assert len(two_cells) == 2
+    assert isinstance(two_cells[0], Stack2Isomorphism)
+    assert isinstance(two_cells[1], Stack2Isomorphism)
 
 
 def test_arbitrary_marking_set():

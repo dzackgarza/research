@@ -16,7 +16,8 @@ Mathematical contract
 
 **Does not claim**
 
-* Computational étale atlases or equation-level properness tests for arbitrary stacks.
+* Computational étale atlases or equation-level properness tests for arbitrary stacks
+  (proving-set identity-Spec formally étale certificates only).
 * A universal family computed as a scheme over ``M_{g,n}``.
 * Geometric nodal gluing beyond theorem-backed dual graphs (smooth fibers are Sage curves).
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import cast
 
+from sage.categories.action import Action
 from sage.combinat.posets.posets import FinitePoset
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -319,7 +320,7 @@ def _factor_marking_set(graph: object, vertex: int) -> tuple[object, ...]:
     return tuple(graph.flags_at(vertex))
 
 
-class AutProductStackAction(UniqueRepresentation):
+class AutProductStackAction(UniqueRepresentation, Action):
     r"""Induced action of ``Aut(Γ)`` on the product stack ``∏_v M_{g(v),H(v)}``.
 
     An automorphism permutes vertices of equal type (hence product factors) and
@@ -327,10 +328,11 @@ class AutProductStackAction(UniqueRepresentation):
     ``Aut(Γ)`` on the set of half-edges alone; the acted-upon object is the product
     stack.
 
-    Implements the Sage Action API surface (``act`` / ``_act_`` / ``__call__``) without
-    subclassing :class:`~sage.categories.action.Action`, which fights
+    Subclasses Sage :class:`~sage.categories.action.Action` with
     :class:`~sage.structure.unique_representation.UniqueRepresentation` caching.
-    Full PR #225 ``Actions`` category wiring remains unfinished.
+    ``act`` / ``__call__`` bypass element coercion into the product parent (the
+    product stack *is* the acted-upon object, not a parent of elements). Full PR
+    #225 ``Actions`` category wiring remains unfinished.
     """
 
     @staticmethod
@@ -361,29 +363,17 @@ class AutProductStackAction(UniqueRepresentation):
         assert all(len(perm) == n_factors for perm in self._factor_perms) or n_factors == 0 or not self._factor_perms, (
             f"factor permutations must act on {n_factors} factors; found {self._factor_perms!r}"
         )
+        Action.__init__(self, group, product, is_left=True, op=None)
 
     def group(self) -> object:
         return self._group
 
-    def G(self) -> object:
-        r"""Acting group (Sage Action API name)."""
-        return self._group
-
     def set(self) -> ProductStack:
-        r"""The product stack acted upon (Sage Action API name)."""
-        return self._product
-
-    def domain(self) -> ProductStack:
-        return self._product
-
-    def codomain(self) -> ProductStack:
+        r"""The product stack acted upon."""
         return self._product
 
     def acted_upon(self) -> ProductStack:
         return self._product
-
-    def is_left(self) -> bool:
-        return True
 
     def graph(self) -> object:
         return self._graph
@@ -479,23 +469,34 @@ class AutProductStackAction(UniqueRepresentation):
         reordered = tuple(factors[perm[i]] for i in range(len(factors)))
         return ProductStack(reordered, base=self._product.base_scheme())
 
-    def _act_(self, group_element: object, product: ProductStack | None = None) -> ProductStack:
+    def _act_(self, group_element: object, product: object | None = None) -> ProductStack:
         r"""Left action: reorder product factors by the Aut element.
 
         Identity acts as the identity on the product. A nontrivial factor
         permutation returns the UniqueRepresentation product with reordered factors.
+        ``product`` may be the covering :class:`ProductStack` itself.
         """
         acted = product if product is not None else self._product
         assert acted is self._product, f"AutProductStackAction acts only on its product stack; found {acted!r}, expected {self._product!r}"
+        assert isinstance(acted, ProductStack), f"_act_ expects ProductStack; found {type(acted)!r}"
         perm = self.factor_permutation_of(group_element)
         return self._reorder_product(perm)
 
     def act(self, group_element: object, product: ProductStack | None = None) -> ProductStack:
-        r"""Apply ``group_element`` to the product stack (Sage Action API)."""
-        return self._act_(group_element, product)
+        r"""Apply ``group_element`` to the product stack.
 
-    def __call__(self, group_element: object, product: ProductStack | None = None) -> ProductStack:
-        return self.act(group_element, product)
+        Overrides :meth:`Action.act` to skip coercion of the product stack into
+        an element of itself (the stack is the acted-upon object).
+        """
+        return self._act_(group_element, product if product is not None else self._product)
+
+    def __call__(self, *args: object) -> ProductStack:
+        r"""``action(g)`` or ``action(g, product)`` — bypass Action element coercion."""
+        if len(args) == 1:
+            return self.act(args[0])
+        if len(args) == 2:
+            return self.act(args[0], args[1] if isinstance(args[1], ProductStack) else None)
+        raise TypeError(f"AutProductStackAction() expects 1 or 2 arguments; found {len(args)}")
 
     def induced_isomorphism(self, group_element: object) -> StackMorphism:
         r"""Isomorphism ``∏ → ∏'`` induced by the Aut element (factor reordering)."""

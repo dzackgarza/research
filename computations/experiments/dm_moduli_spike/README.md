@@ -22,9 +22,9 @@ Wave 1 is **not complete**. Prior “honesty demotions” (`NotImplementedError`
 | Item | Status |
 | --- | --- |
 | Category / curve / stratification ontology fixes | Landed |
-| `atlas()` / `etale_atlas()` as `U → X` | **Incomplete** — structured morphisms + covering data + `AtlasEvidence` (diagonal link); quotient strata use covering space as étale domain; equation-level étaleness unfinished |
-| Structured `pullback` (`PullbackStack`/`BaseChangeStack`) | **Incomplete** — both square legs + `ModuliBaseChangeStack` (genus/markings/problem preserved); 2-categorical universal property unfinished |
-| Aut(Γ) action on product strata | **Incomplete** — `act`/`_act_` reorders product factors; `QuotientStack.act_on_covering` consumes it; #225 `Actions` wiring unfinished |
+| `atlas()` / `etale_atlas()` as `U → X` | **Deepened, incomplete** — quotient `(U,G)` presentation; product-of-étale-atlases; coarse≠étale checks; DM diagonal evidence + proving-set identity-Spec formally étale certificate. General equation-level étaleness unfinished |
+| Structured `pullback` (`PullbackStack`/`BaseChangeStack`) | **Deepened, incomplete** — both square legs + `mediating_morphism(a,b)` with leg recovery via `π₁∘m` / `π₂∘m`. Full Hom-category UP waits on #225 |
+| Aut(Γ) action on product strata | **Deepened, incomplete** — Sage `Action` subclass; factor swap on equal-type 2-vertex graphs; quotient covering autos. #225 `Actions` wiring unfinished |
 
 ## Mathematical contract (in-spike)
 
@@ -42,7 +42,7 @@ This package **implements** (partial; Wave 1 incomplete on atlas/pullback/Aut):
 
 This package **does not claim**:
 
-* Computational equation-level étale/properness tests (theorem stamps only).
+* Computational equation-level étale/properness tests for arbitrary stacks (proving-set identity-Spec certificate only).
 
 * A scheme-theoretic universal family over `\mathcal M_{g,n}`.
 
@@ -59,7 +59,7 @@ This package **does not claim**:
 | Canonical transport (public API) | **PARTIAL** |
 | Specialization poset Hom-certified | **PASS** |
 | Extraction of either package | **FAIL** |
-| Wave 1 complete (incl. full coherence) | **FAIL** (covering data / both pullback legs / real Aut action landed; étale verification, 2-cat UP, #225 Actions remain) |
+| Wave 1 complete (incl. full coherence) | **FAIL** — structural deepenings landed; #225-blocked: Hom-category UP, Actions category, Cat/Sets substrate; local: general equation-level étaleness |
 
 ## Public entry
 
