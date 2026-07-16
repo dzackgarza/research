@@ -51,9 +51,10 @@ GroupoidKind = Literal["none", "legendre_s3", "hesse_sl2_f3"]
 OPEN_M0N_INSPECTABLE_MAX = 8
 OPEN_M1N_INSPECTABLE_MAX = 4
 COMPACT_M1N_INSPECTABLE_MAX = 4
-# Proper Kapranov Mbar_{0,n}: owned through n=7 via lazy uniform Spec(A^{n-3}) charts
-# (n=8 combinatorial count is ~2e6; not owned until a cheap lazy claim is justified).
-PROPER_M0N_OWNED_MAX = 7
+# Proper Kapranov Mbar_{0,n}: owned through n=8 via lazy uniform Spec(A^{n-3}) charts.
+# Combinatorial counts (n=7: 17280; n=8: 2073600) are never eagerly materialized —
+# equation-level certs use affine_cover_sample() (n-2 charts). Larger n stay fail-closed.
+PROPER_M0N_OWNED_MAX = 8
 PROPER_M0N_INSPECTABLE_MAX = PROPER_M0N_OWNED_MAX
 
 # Sentinel markings on parametric rows (not a concrete n).

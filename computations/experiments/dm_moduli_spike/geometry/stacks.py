@@ -1605,9 +1605,17 @@ def _proving_set_etale_certificates(base: AffineScheme) -> tuple[FormallyEtaleSc
 
 
 def _affine_cover_of(domain: object) -> tuple[AffineScheme, ...]:
-    r"""Affine opens of an atlas domain for equation-level certification (fail-closed)."""
+    r"""Affine opens of an atlas domain for equation-level certification (fail-closed).
+
+    For :class:`KapranovIteratedBlowupPnMinus3AlgebraicSpace`, returns the
+    uniform sample cover (one chart per standard affine of ``ℙ^{n-3}``), not the
+    full combinatorial tuple — materializing ``N`` Spec rings hangs QC for
+    ``n ≥ 7`` (``N = 17280`` already).
+    """
     if isinstance(domain, AffineScheme):
         return (domain,)
+    if isinstance(domain, KapranovIteratedBlowupPnMinus3AlgebraicSpace):
+        return domain.affine_cover_sample()
     if isinstance(
         domain,
         (
@@ -1615,7 +1623,6 @@ def _affine_cover_of(domain: object) -> tuple[AffineScheme, ...]:
             ProjectiveLineAlgebraicSpace,
             KapranovBlowupFourPointsP2AlgebraicSpace,
             KapranovBlowupFivePointsP3AlgebraicSpace,
-            KapranovIteratedBlowupPnMinus3AlgebraicSpace,
             CompactifiedUniversalCurveAlgebraicSpace,
         ),
     ):
@@ -1970,7 +1977,13 @@ class AtlasMorphism(StackMorphism):
             data["covering_formally_etale_stamp"] = self._evidence.covering_formally_etale_stamp()
             data["links_finite_etale_groupoid"] = self._evidence.links_finite_etale_groupoid()
             data["has_equation_level_etale_certificate"] = self._evidence.has_equation_level_etale_certificate()
-            data["domain_affine_cover"] = self._evidence.domain_affine_cover()
+            # Kapranov iterated: never materialize the full combinatorial cover here.
+            if isinstance(self.domain(), KapranovIteratedBlowupPnMinus3AlgebraicSpace):
+                kap = cast(KapranovIteratedBlowupPnMinus3AlgebraicSpace, self.domain())
+                data["domain_affine_cover_cardinality"] = kap.affine_cover_cardinality()
+                data["domain_affine_cover"] = kap.affine_cover_sample()
+            else:
+                data["domain_affine_cover"] = self._evidence.domain_affine_cover()
         else:
             data["has_equation_level_etale_certificate"] = False
         return data
