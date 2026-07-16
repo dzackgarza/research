@@ -306,6 +306,7 @@ def test_stack_fiber_and_hom_2_isomorphisms():
         AtlasChart,
         AtlasMorphism,
         BaseChangeStack,
+        PullbackStack,
     )
 
     atlas = XS.atlas()
@@ -330,14 +331,22 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     S_prime = spec(QQ)
     pb = XS.pullback(S_prime)
     assert isinstance(pb, BaseChangeStack)
+    assert isinstance(pb, PullbackStack)
+    assert PullbackStack is BaseChangeStack
     assert pb is not XS
     assert pb is BaseChangeStack(XS, S_prime)
     assert pb.original_stack() is XS
     assert pb.base_morphism() is S_prime
+    assert pb.category() is XS.category()
     pi = pb.projection()
     assert pi.domain() is pb
     assert pi.codomain() is XS
     assert pi in Hom(pb, XS)
+    projs = pb.projections()
+    assert len(projs) == 1
+    assert projs[0].domain() is pb
+    assert projs[0].codomain() is XS
+    assert all(p in Hom(pb, XS) for p in projs)
 
 
 def test_arbitrary_marking_set():

@@ -149,8 +149,16 @@ class BaseChangeStack(Stack):
         r"""Structure map ``π: X_{S'} → X`` of the base change."""
         return StackMorphism(self, self._original, kind="base_change_projection")
 
+    def projections(self) -> tuple[StackMorphism, ...]:
+        r"""Structure morphisms of the base-change square (currently ``π`` to the original)."""
+        return (self.projection(),)
+
     def structure_map(self) -> StackMorphism:
         return self.projection()
+
+
+# Acceptance / literature name for the structured base-change object.
+PullbackStack = BaseChangeStack
 
 
 def _base_scheme_along(base_morphism: object, fallback: AffineScheme) -> AffineScheme:

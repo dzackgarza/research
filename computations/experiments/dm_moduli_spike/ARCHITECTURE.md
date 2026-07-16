@@ -32,10 +32,10 @@ Independent DM math corrections that do not wait on #225. Status after user ruli
 | Surface | Status |
 | --- | --- |
 | Equipped `ModuliStacks` (not ⊆ DM), curve hierarchy, stratified objects, coarse AlgebraicSpaces-first, Γ indexing, restrict | Landed |
-| `atlas()` / `etale_atlas()` | **Landed (structured)** — `AtlasMorphism` `U → X` (coarse / `AtlasChart`); prior `NotImplementedError` was a **defect**, not a win |
-| `pullback` | **Landed (structured)** — `BaseChangeStack` with `base_morphism` / `projection`; prior nameless/identity forms were defects |
-| Aut(Γ) on product strata | **Landed (structured)** — `AutProductStackAction` on `∏_v M_{g(v),H(v)}`; half-edge set action is not a substitute |
-| Wave 1 overall | **Incomplete** — full étale verification, 2-categorical pullback coherence, and #225 `Actions` wiring remain named gaps |
+| `atlas()` / `etale_atlas()` | **Incomplete** — structured `AtlasMorphism` `U → X` exists (coarse / `AtlasChart`; not self); full étale verification unfinished. Prior `NotImplementedError` was a **defect**, not a win |
+| `pullback` | **Incomplete** — structured `PullbackStack`/`BaseChangeStack` with `base_morphism` / `projections` exists; 2-categorical coherence unfinished. Prior nameless/identity forms were defects |
+| Aut(Γ) on product strata | **Incomplete** — `AutProductStackAction` on `∏_v M_{g(v),H(v)}` wired into `QuotientStack`; #225 `Actions` wiring unfinished. Half-edge set action is not a substitute |
+| Wave 1 overall | **Incomplete** — atlas / étale atlas / pullback / Aut-on-product remain open; named gaps above |
 
 **Trap:** honesty demotion (`NotImplementedError`, identity morphisms, formal empty shells) is **not** remediation for PR #111 Wave 1.
 

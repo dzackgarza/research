@@ -22,9 +22,9 @@ Wave 1 is **not complete**. Prior “honesty demotions” (`NotImplementedError`
 | Item | Status |
 | --- | --- |
 | Category / curve / stratification ontology fixes | Landed |
-| `atlas()` / `etale_atlas()` as `U → X` | Landed structured morphisms (coarse / `AtlasChart`; not self; not `NotImplemented`) |
-| Structured `pullback` (`BaseChangeStack`) | Landed (projection / UniqueRepresentation); 2-categorical coherence unfinished |
-| Aut(Γ) action on product strata | Landed `AutProductStackAction`; #225 `Actions` wiring unfinished |
+| `atlas()` / `etale_atlas()` as `U → X` | **Incomplete** — structured morphisms exist (coarse / `AtlasChart`; not self); full étale verification unfinished |
+| Structured `pullback` (`PullbackStack`/`BaseChangeStack`) | **Incomplete** — `base_morphism` / `projections` / UniqueRepresentation exist; 2-categorical coherence unfinished |
+| Aut(Γ) action on product strata | **Incomplete** — `AutProductStackAction` wired; #225 `Actions` wiring unfinished |
 
 ## Mathematical contract (in-spike)
 
