@@ -1,10 +1,15 @@
+import sys as _sys
+from pathlib import Path as _Path
+
+_sys.path.insert(0, str(_Path(__file__).resolve().parents[2] / "scripts"))
+
 #!/usr/bin/env python3
 """
 Test script to verify that citation links now go directly to source files.
 """
 
 from haystack.dataclasses import Document
-from dzack_research.sagemath_doc_search import InlineCitationEnhancer
+from sagemath_doc_search import InlineCitationEnhancer
 
 
 def test_direct_citation_links():
