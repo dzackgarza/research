@@ -54,7 +54,7 @@ runtime realizations live in the concrete modules.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 
 if TYPE_CHECKING:
@@ -113,6 +113,9 @@ __all__ = [
     "CategoryObject",
     "CategoryMorphism",
     "Functor",
+    "FunctorSpace",
+    "NaturalIsomorphism",
+    "TwistFunctor",
     # lattice vocabulary
     "Lattice",
     "NondegenerateLattice",
@@ -899,6 +902,43 @@ class LatticeBaseChangeFunctor(Functor[Lattice, Lattice, LatticeMorphism, Lattic
 
     @abstract_method
     def target_base_ring(self) -> BaseRing: ...
+
+
+class TwistFunctor(Functor[Lattice, Lattice, LatticeMorphism, LatticeMorphism]):
+    r"""The twist endofunctor ``L -> L(a)`` of a lattice root: the bilinear
+    form is scaled by a fixed nonzero scalar while the underlying module and
+    every morphism matrix are unchanged (Nikulin's ``L(a)``)."""
+
+    @abstract_method
+    def scalar(self) -> ExactScalar | int: ...
+
+
+class FunctorSpace:
+    r"""``Fun(C, D)``: the functors ``C -> D`` as a first-class parent — the
+    homset of the (mostly synthetic) category of categories. Unique per
+    boundary pair; membership is exact boundary agreement; the endofunctor
+    space owns its identity. Existence and element handling are the
+    contract — no enumeration is promised."""
+
+    @abstract_method
+    def identity(self) -> Functor[Any, Any, Any, Any]: ...
+
+
+class NaturalIsomorphism:
+    r"""A natural isomorphism between parallel functors, given by its
+    component family. Components are isomorphisms ``eta_X: F(X) -> G(X)``;
+    naturality squares are checked on demand against real morphisms — no
+    universal bijectivity decision procedure is required, per the declared
+    isomorphism discipline."""
+
+    @abstract_method
+    def component(self, obj: CategoryObject) -> CategoryMorphism: ...
+
+    @abstract_method
+    def check_naturality_on(self, morphisms: Iterable[CategoryMorphism]) -> bool: ...
+
+    @abstract_method
+    def inverse(self) -> NaturalIsomorphism: ...
 
 
 class IsometryHomset:
