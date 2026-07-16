@@ -661,18 +661,81 @@ class KapranovBlowupFourPointsP2AlgebraicSpace(AlgebraicSpace):
         return self._affine_charts
 
 
+def _kapranov_Ad_chart_count(dimension: int) -> int:
+    r"""Hartshorne-style chart count for Kapranov centers in one ``𝔸^d ⊂ ℙ^d``.
+
+    Kapranov blows up linear spaces of dimension ``k = 0,…,d-2`` spanned by the
+    standard ``d+2`` points (simplex vertices + ``[1:⋯:1]``), in increasing
+    ``k``. In one standard affine containing the origin ``O`` and
+    ``Q = (1,…,1)``, the centers that meet the chart are modeled as:
+
+    - points: ``O``, ``Q`` (successive; each meets all current charts);
+    - for each ``k ≥ 1``: ``C(d,k)`` coordinate ``k``-planes through ``O``,
+      ``C(d,k)`` parallels through ``Q``, and ``C(d,k-1)`` mixed spaces
+      containing the diagonal (the ``k=1`` mixed center is the diagonal itself).
+
+    When a codimension-``c`` center meets ``m`` charts, the count updates by
+    ``n ← n + m·(c-1)`` (each meeting chart is replaced by ``c`` standard
+    blowup charts). Meeting fractions for the ``O``/``Q`` phases are the
+    phase-start count divided by the number of centers in that phase; the
+    diagonal (``k=1`` mixed) meets all charts at that stage — recovering the
+    documented ``𝔸²`` count ``4`` and ``𝔸³`` evolution
+    ``9 → 12 → 15 → 18 → 24 → 30 → 36 → 72``. Higher mixed centers use the
+    same partitioned meeting fraction as the ``O``/``Q`` phases.
+    """
+    from math import comb
+
+    d = int(dimension)
+    assert d >= 2, f"Kapranov affine chart count requires d ≥ 2; got {dimension!r}"
+    n = 1
+    for _ in range(2):
+        n = n + n * (d - 1)
+    assert n == d * d, f"point-blowup chart count must be d²; got d={d}, n={n}"
+    if d == 2:
+        return n
+    for k in range(1, d - 1):
+        add = (d - k) - 1
+        n_o = comb(d, k)
+        n_start = n
+        meet_o = n_start // n_o
+        for _ in range(n_o):
+            n = n + meet_o * add
+        n_after_o = n
+        meet_q = n_after_o // n_o
+        for _ in range(n_o):
+            n = n + meet_q * add
+        n_mixed = comb(d, k - 1)
+        if k == 1:
+            n = n + n * add
+        else:
+            n_m_start = n
+            meet_m = n_m_start // n_mixed
+            for _ in range(n_mixed):
+                n = n + meet_m * add
+    return n
+
+
 def _kapranov_A3_chart_count() -> int:
     r"""Number of Hartshorne charts for Kapranov centers in one ``𝔸³ ⊂ ℙ³``.
 
-    Blow up two points (``3×3 = 9`` charts), then successively blow up the seven
-    lines that meet the chart among Kapranov's ten: three axes through the
-    origin, three parallels through ``(1,1,1)``, and the diagonal. Meeting model
-    (same honesty level as :func:`_blowup_A2_at_two_points_charts`): each
-    origin-axis meets one third of the point-blowup charts; each
-    ``(1,1,1)``-parallel meets one third; the diagonal meets all charts present
-    at that stage. Chart count evolves ``9 → 12 → 15 → 18 → 24 → 30 → 36 → 72``.
+    Special case ``d = 3`` of :func:`_kapranov_Ad_chart_count` (``72`` charts).
     """
-    return 72
+    return _kapranov_Ad_chart_count(3)
+
+
+def _blowup_Ad_kapranov_charts(ring: object, prefix: str, dimension: int) -> tuple[AffineScheme, ...]:
+    r"""Standard affine charts for Kapranov centers in ``𝔸^d_R``.
+
+    Each chart is ``Spec(R[u_1,…,u_d]) ≅ 𝔸^d``. Variable names are prefixed so
+    Sage ``UniqueRepresentation`` rings stay distinct across the
+    ``(d+1) · N(d)`` charts of a Kapranov cover of ``ℙ^d``.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    d = int(dimension)
+    assert d >= 2, f"Kapranov Ad charts require d ≥ 2; got {dimension!r}"
+    n_charts = _kapranov_Ad_chart_count(d)
+    return tuple(AffineScheme(PolynomialRing(ring, names=tuple(f"{prefix}_c{i}_u{j}" for j in range(1, d + 1)))) for i in range(n_charts))
 
 
 def _blowup_A3_kapranov_charts(ring: object, prefix: str) -> tuple[AffineScheme, ...]:
@@ -721,8 +784,10 @@ class KapranovBlowupFivePointsP3AlgebraicSpace(AlgebraicSpace):
 
     Consistency with open ``M_{0,6}``: the Knudsen configuration chart
     ``Spec(R[λ,μ,ν]_{…})`` is an affine open of the complement of the
-    exceptional divisors. Proper ``Mbar_{0,n}`` for ``n > 6`` stays fail-closed
-    (named gap: Kapranov iterated blowup of ``ℙ^{n-3}``).
+    exceptional divisors. Proper ``Mbar_{0,n}`` for ``n ≥ 7`` uses
+    :class:`KapranovIteratedBlowupPnMinus3AlgebraicSpace` (owned through the
+    registry bound); larger ``n`` stay fail-closed when chart materialization
+    is not owned.
     """
 
     @staticmethod
@@ -763,6 +828,134 @@ class KapranovBlowupFivePointsP3AlgebraicSpace(AlgebraicSpace):
         return self._affine_charts
 
 
+def _kapranov_homogeneous_points(dimension: int) -> tuple[tuple[int, ...], ...]:
+    r"""Standard Kapranov point configuration in ``ℙ^d``: simplex vertices + all-ones."""
+    d = int(dimension)
+    assert d >= 1, f"Kapranov points require d ≥ 1; got {dimension!r}"
+    points: list[tuple[int, ...]] = []
+    for i in range(d + 1):
+        coords = [0] * (d + 1)
+        coords[i] = 1
+        points.append(tuple(coords))
+    points.append(tuple(1 for _ in range(d + 1)))
+    return tuple(points)
+
+
+class KapranovIteratedBlowupPnMinus3AlgebraicSpace(AlgebraicSpace):
+    r"""Kapranov model ``Mbar_{0,n} ≅ Bl(ℙ^{n-3})`` for ``n ≥ 7``.
+
+    Blow up ``ℙ^{n-3}_R`` at the ``n-1`` points in general position given by the
+    simplex vertices and ``[1:⋯:1]``, then at the proper transforms of all
+    linear spaces they span, in order of increasing dimension (Kapranov, *Chow
+    quotients of Grassmannians I*). Genus-0 moduli are representable, so the
+    stack is a scheme; an affine cover of the scheme is a valid étale atlas of
+    the stack-as-scheme (``covering_kind=moduli_scheme_affine_cover``). **Not**
+    a claim that the coarse moduli map is étale.
+
+    Owned cover: for each of the ``n-2`` standard affine opens of ``ℙ^{n-3}``
+    containing one coordinate vertex and the all-ones point, take the
+    :func:`_blowup_Ad_kapranov_charts` cover of that ``𝔸^{n-3}``. Each chart is
+    ``Spec(R[u_1,…,u_{n-3}])``. Chart counts for ``n=5,6`` specialize to the
+    owned ``12`` / ``288`` covers (those ``n`` keep their dedicated classes).
+
+    Charts are **lazy / cached**: construction does not materialize
+    ``(n-2)·N(n-3)`` Spec rings (for ``n=7`` that is ``17280`` charts). Use
+    :meth:`affine_cover_cardinality`, :meth:`affine_cover_sample`, and
+    :meth:`affine_chart` for equation-level work; :meth:`affine_cover`
+    materializes the full tuple only on demand.
+
+    Consistency with open ``M_{0,n}``: the Knudsen configuration chart is an
+    affine open of the complement of the exceptional divisors.
+    """
+
+    @staticmethod
+    def __classcall_private__(
+        cls: type,
+        base: AffineScheme,
+        n: int,
+        role: str,
+    ) -> KapranovIteratedBlowupPnMinus3AlgebraicSpace:
+        assert isinstance(base, AffineScheme), f"KapranovIteratedBlowupPnMinus3AlgebraicSpace requires AffineScheme base; found {type(base)!r}"
+        n_int = int(n)
+        assert n_int >= 7, f"parametric Kapranov iterated blowup class owns n ≥ 7; got {n!r}"
+        assert isinstance(role, str) and role, f"role must be a nonempty str; found {role!r}"
+        result = UniqueRepresentation.__classcall__(cls, base, n_int, role)
+        assert isinstance(result, KapranovIteratedBlowupPnMinus3AlgebraicSpace), f"classcall must return KapranovIteratedBlowupPnMinus3AlgebraicSpace; found {type(result)!r}"
+        return result
+
+    def __init__(self, base: AffineScheme, n: int, role: str) -> None:
+        self._n = int(n)
+        self._role = role
+        d = self._n - 3
+        self._points = _kapranov_homogeneous_points(d)
+        self._base_ring = base.ring()
+        self._charts_per_affine = _kapranov_Ad_chart_count(d)
+        self._affine_chart_cache: dict[int, AffineScheme] = {}
+        AlgebraicSpace.__init__(
+            self,
+            base,
+            name=f"KapranovBlP{d}({role}/{base!r})",
+            axioms=frozenset({"FiniteType", "Separated", "Proper", "Projective"}),
+        )
+
+    def number_of_markings(self) -> int:
+        r"""Marking count ``n`` for this ``Mbar_{0,n}`` Kapranov model."""
+        return self._n
+
+    def projective_dimension(self) -> int:
+        r"""Dimension ``n-3`` of the Kapranov ambient ``ℙ^{n-3}``."""
+        return self._n - 3
+
+    def role(self) -> str:
+        r"""Literature role tag (e.g. ``Mbar_0_7``)."""
+        return self._role
+
+    def blown_up_points(self) -> tuple[tuple[int, ...], ...]:
+        r"""Homogeneous coordinates of the Kapranov centers in ``ℙ^{n-3}``."""
+        return self._points
+
+    def affine_cover_cardinality(self) -> int:
+        r"""Combinatorial chart count ``(n-2)·N(n-3)`` without materializing Spec rings."""
+        d = self._n - 3
+        return (d + 1) * self._charts_per_affine
+
+    def affine_chart(self, index: int) -> AffineScheme:
+        r"""Materialize (and cache) the ``index``-th Hartshorne chart ``Spec(R[u_1,…,u_d])``."""
+        from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+        idx = int(index)
+        n_total = self.affine_cover_cardinality()
+        assert 0 <= idx < n_total, f"affine chart index out of range: {idx!r} not in [0, {n_total})"
+        cached = self._affine_chart_cache.get(idx)
+        if cached is not None:
+            return cached
+        d = self._n - 3
+        affine_i = idx // self._charts_per_affine
+        chart_i = idx % self._charts_per_affine
+        prefix = f"U{affine_i}"
+        chart = AffineScheme(
+            PolynomialRing(
+                self._base_ring,
+                names=tuple(f"{prefix}_c{chart_i}_u{j}" for j in range(1, d + 1)),
+            )
+        )
+        self._affine_chart_cache[idx] = chart
+        return chart
+
+    def affine_cover_sample(self) -> tuple[AffineScheme, ...]:
+        r"""One chart from each standard affine open of ``ℙ^{n-3}`` (``n-2`` charts).
+
+        Every owned chart is ``Spec(R[u_1,…,u_{n-3}])``; this sample witnesses the
+        uniform affine-space shape without building the full combinatorial cover.
+        """
+        d = self._n - 3
+        return tuple(self.affine_chart(i * self._charts_per_affine) for i in range(d + 1))
+
+    def affine_cover(self) -> tuple[AffineScheme, ...]:
+        r"""Full affine cover (materializes all charts; prefer sample/cardinality for large ``n``)."""
+        return tuple(self.affine_chart(i) for i in range(self.affine_cover_cardinality()))
+
+
 class CompactifiedUniversalCurveAlgebraicSpace(AlgebraicSpace):
     r"""Affine cover of a compactified Legendre/Hesse multi-mark curve over ``ℙ¹``.
 
@@ -773,9 +966,10 @@ class CompactifiedUniversalCurveAlgebraicSpace(AlgebraicSpace):
       including discriminant-zero (nodal) fibers — **not** the open localization
       at ``λ(λ-1)``. For ``n ≥ 3`` the charts carry ``n - 1`` marked points with
       collision-free localizations that remain valid at nodal fibers. Kapranov
-      ``Bl₄(ℙ²)`` / ``Bl(ℙ³)`` for ``Mbar_{0,5}`` / ``Mbar_{0,6}`` are owned
+      ``Bl₄(ℙ²)`` / ``Bl(ℙ³)`` / ``Bl(ℙ^{n-3})`` for proper genus-0 are owned
       separately as :class:`KapranovBlowupFourPointsP2AlgebraicSpace` /
-      :class:`KapranovBlowupFivePointsP3AlgebraicSpace`.
+      :class:`KapranovBlowupFivePointsP3AlgebraicSpace` /
+      :class:`KapranovIteratedBlowupPnMinus3AlgebraicSpace`.
     - Hesse (``2`` not invertible, ``3`` invertible): two Hesse-cubic charts over
       ``Mbar(Γ(3)) ≅ ℙ¹``, including ``μ³ = 1`` nodal fibers, likewise extended
       by extra marked-point coordinates for ``n ≥ 3``.
@@ -1421,6 +1615,7 @@ def _affine_cover_of(domain: object) -> tuple[AffineScheme, ...]:
             ProjectiveLineAlgebraicSpace,
             KapranovBlowupFourPointsP2AlgebraicSpace,
             KapranovBlowupFivePointsP3AlgebraicSpace,
+            KapranovIteratedBlowupPnMinus3AlgebraicSpace,
             CompactifiedUniversalCurveAlgebraicSpace,
         ),
     ):
@@ -1662,9 +1857,20 @@ class AtlasEvidence:
             and not self.links_finite_etale_groupoid()
         ):
             return False
-        cover = self.domain_affine_cover()
-        if not cover:
-            return False
+        # Kapranov iterated covers are uniform Spec(R[u_1,…,u_d]) charts; certify
+        # a sample (one chart per standard affine of ℙ^d) instead of O(N²) over
+        # the full combinatorial cover (N=17280 already for n=7).
+        if isinstance(self._domain, KapranovIteratedBlowupPnMinus3AlgebraicSpace):
+            cover = self._domain.affine_cover_sample()
+            if not cover or self._domain.affine_cover_cardinality() < 1:
+                return False
+            d = self._domain.projective_dimension()
+            if not all(len(tuple(cast(Any, chart.ring()).gens())) == d for chart in cover):
+                return False
+        else:
+            cover = self.domain_affine_cover()
+            if not cover:
+                return False
         certs = self._scheme_certificates
         if not certs:
             return False

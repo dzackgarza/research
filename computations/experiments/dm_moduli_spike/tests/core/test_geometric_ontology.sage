@@ -675,21 +675,44 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert all(len(c.ring().gens()) == 3 for c in mbar06_etale.domain().affine_cover())
     assert Mbar06.atlas().covering_kind() == "coarse_moduli"
     assert not Mbar06.atlas().has_equation_level_etale_certificate()
-    # Mbar_{0,n} for n>6: not owned (Kapranov P^{n-3} gap) — fail-closed.
+    # Mbar_{0,7}: Kapranov Bl(ℙ⁴) — lazy owned cover (cardinality 17280; sample certs).
+    from dm_moduli_spike.geometry.stacks import KapranovIteratedBlowupPnMinus3AlgebraicSpace
+    from dm_moduli_spike.geometry.stacks import _kapranov_Ad_chart_count
+
     Mbar07 = Mbar_gn(0, 7, base=k)
-    assert not Mbar07.etale_atlas().has_equation_level_etale_certificate()
-    gap_mbar07 = Mbar07.etale_atlas_gap()
-    assert gap_mbar07 is not None
-    assert gap_mbar07["reason"] == "no_owned_affine_etale_presentation"
-    assert gap_mbar07["registry_owned_type"] is False
-    assert isinstance(Mbar07.etale_atlas().domain(), AtlasChart)
-    alts07 = gap_mbar07["alternate_proving_sets"]
-    assert alts07[0]["proper_m0n_gap_construction"] == "kapranov_iterated_blowup_P_{n-3}"
-    assert alts07[0]["proper_m0n_owned_max"] == 6
+    mbar07_etale = Mbar07.etale_atlas()
+    assert isinstance(mbar07_etale.domain(), KapranovIteratedBlowupPnMinus3AlgebraicSpace)
+    assert mbar07_etale.domain() is not Mbar07
+    assert mbar07_etale.domain() is not Mbar07.coarse_space()
+    assert mbar07_etale.covering_kind() == "moduli_scheme_affine_cover"
+    assert mbar07_etale.has_equation_level_etale_certificate()
+    assert mbar07_etale.equation_level_etale()
+    assert Mbar07.etale_atlas_gap() is None
+    assert mbar07_etale.domain().role() == "Mbar_0_7"
+    assert mbar07_etale.domain().number_of_markings() == 7
+    assert mbar07_etale.domain().projective_dimension() == 4
+    assert len(mbar07_etale.domain().blown_up_points()) == 6
+    assert mbar07_etale.domain().affine_cover_cardinality() == 5 * _kapranov_Ad_chart_count(4)
+    assert mbar07_etale.domain().affine_cover_cardinality() == 17280
+    mbar07_sample = mbar07_etale.domain().affine_cover_sample()
+    assert len(mbar07_sample) == 5
+    assert all(len(c.ring().gens()) == 4 for c in mbar07_sample)
+    assert len(mbar07_etale.domain().affine_chart(0).ring().gens()) == 4
+    assert len(mbar07_etale.domain().affine_chart(17279).ring().gens()) == 4
+    assert Mbar07.atlas().covering_kind() == "coarse_moduli"
+    assert not Mbar07.atlas().has_equation_level_etale_certificate()
+    # Mbar_{0,n} for n>7: not owned (Kapranov chart bound) — fail-closed.
     Mbar08 = Mbar_gn(0, 8, base=k)
     assert not Mbar08.etale_atlas().has_equation_level_etale_certificate()
-    assert Mbar08.etale_atlas_gap()["reason"] == "no_owned_affine_etale_presentation"
-    assert Mbar08.etale_atlas_gap()["registry_owned_type"] is False
+    gap_mbar08 = Mbar08.etale_atlas_gap()
+    assert gap_mbar08 is not None
+    assert gap_mbar08["reason"] == "no_owned_affine_etale_presentation"
+    assert gap_mbar08["registry_owned_type"] is False
+    assert isinstance(Mbar08.etale_atlas().domain(), AtlasChart)
+    alts08 = gap_mbar08["alternate_proving_sets"]
+    assert alts08[0]["proper_m0n_gap_construction"] == "kapranov_iterated_blowup_P_{n-3}"
+    assert alts08[0]["proper_m0n_owned_max"] == 7
+    assert alts08[0]["parametric_proper_m0n"] is True
 
     # M_{1,2} (open, 2 invertible): Legendre universal-curve Weierstrass affine, S₃ cover.
     M12 = M_gn(1, 2, base=k)
@@ -978,34 +1001,40 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     )
 
     rows = owned_etale_atlas_presentations()
-    # Parametric open M0n + 2 open M1n + 2 compact M1n + 4 proper genus-0 = 9.
-    assert owned_etale_atlas_cardinality() == 9
-    assert len(rows) == 9
+    # Parametric open M0n + 2 open M1n + 2 compact M1n + 1 proper Kapranov = 6.
+    assert owned_etale_atlas_cardinality() == 6
+    assert len(rows) == 6
     assert all(isinstance(r, OwnedAtlasPresentation) for r in rows)
     assert sum(1 for r in rows if r.parametric_open_m0n) == 1
     assert sum(1 for r in rows if r.parametric_open_m1n) == 2
     assert sum(1 for r in rows if r.parametric_compact_m1n) == 2
+    assert sum(1 for r in rows if r.parametric_proper_m0n) == 1
     expanded = owned_etale_atlas_presentations(
         expand_open_m0n_through=8,
         expand_open_m1n_through=4,
         expand_compact_m1n_through=4,
+        expand_proper_m0n_through=7,
     )
     assert (
         owned_etale_atlas_cardinality(
             expand_open_m0n_through=8,
             expand_open_m1n_through=4,
             expand_compact_m1n_through=4,
+            expand_proper_m0n_through=7,
         )
-        == 26
+        == 27
     )
-    assert len(expanded) == 26
+    assert len(expanded) == 27
     assert all(
-        not r.parametric_open_m0n and not r.parametric_open_m1n and not r.parametric_compact_m1n
+        not r.parametric_open_m0n
+        and not r.parametric_open_m1n
+        and not r.parametric_compact_m1n
+        and not r.parametric_proper_m0n
         for r in expanded
     )
     type_keys = owned_etale_atlas_type_keys()
-    # Open M0n n=3..8 + open M1n n=1..4 + compact M1n n=1..4 + proper (0,3..6).
-    assert len(type_keys) == 18
+    # Open M0n n=3..8 + open M1n n=1..4 + compact M1n n=1..4 + proper (0,3..7).
+    assert len(type_keys) == 19
     assert type_keys == (
         (0, 3, False),
         (0, 4, False),
@@ -1025,6 +1054,7 @@ def test_stack_fiber_and_hom_2_isomorphisms():
         (0, 4, True),
         (0, 5, True),
         (0, 6, True),
+        (0, 7, True),
     )
     assert is_owned_etale_atlas_type(0, 4, proper=False)
     assert is_owned_etale_atlas_type(1, 1, proper=True)
@@ -1039,7 +1069,8 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert is_owned_etale_atlas_type(1, 9, proper=True)  # parametric compact: all n≥1
     assert not is_owned_etale_atlas_type(2, 0, proper=True)
     assert is_owned_etale_atlas_type(0, 6, proper=True)
-    assert not is_owned_etale_atlas_type(0, 7, proper=True)
+    assert is_owned_etale_atlas_type(0, 7, proper=True)
+    assert not is_owned_etale_atlas_type(0, 8, proper=True)
     assert lookup_owned_etale_atlas(0, 5, proper=False) is not None
     assert lookup_owned_etale_atlas(0, 5, proper=False).construction == "knudsen_configuration"
     assert lookup_owned_etale_atlas(0, 5, proper=True).covering_kind == "moduli_scheme_affine_cover"
@@ -1047,6 +1078,8 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert lookup_owned_etale_atlas(0, 6, proper=False).covering_kind == "moduli_affine_etale_chart"
     assert lookup_owned_etale_atlas(0, 6, proper=True).construction == "kapranov_blowup_five_points_p3"
     assert lookup_owned_etale_atlas(0, 6, proper=True).covering_kind == "moduli_scheme_affine_cover"
+    assert lookup_owned_etale_atlas(0, 7, proper=True).construction == "kapranov_iterated_blowup_P_{n-3}"
+    assert lookup_owned_etale_atlas(0, 7, proper=True).covering_kind == "moduli_scheme_affine_cover"
     assert lookup_owned_etale_atlas(0, 7, proper=False).construction == "knudsen_configuration"
     assert lookup_owned_etale_atlas(0, 3, proper=False).construction == "point_spec"
     assert lookup_owned_etale_atlas(1, 3, proper=False).construction == "legendre_marked_configuration"
@@ -1067,6 +1100,7 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert M08.etale_atlas().has_equation_level_etale_certificate()
     assert Mbar05.etale_atlas().has_equation_level_etale_certificate()
     assert Mbar06.etale_atlas().has_equation_level_etale_certificate()
+    assert Mbar07.etale_atlas().has_equation_level_etale_certificate()
     assert M12.etale_atlas().has_equation_level_etale_certificate()
     assert M13.etale_atlas().has_equation_level_etale_certificate()
     assert M14.etale_atlas().has_equation_level_etale_certificate()
@@ -1085,19 +1119,21 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert not M20.etale_atlas().has_equation_level_etale_certificate()
     assert M20.owned_etale_atlas_presentation() is None
     alts_gen = gap_gen["alternate_proving_sets"]
-    assert alts_gen[0]["owned_registry_cardinality"] == 9
+    assert alts_gen[0]["owned_registry_cardinality"] == 6
     assert alts_gen[0]["parametric_open_m0n"] is True
     assert alts_gen[0]["parametric_open_m1n"] is True
     assert alts_gen[0]["parametric_compact_m1n"] is True
+    assert alts_gen[0]["parametric_proper_m0n"] is True
     assert (2, 0, True) not in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert (0, 6, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert (0, 6, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
-    assert (0, 7, True) not in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (0, 7, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (0, 8, True) not in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert (0, 8, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert (1, 3, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert (1, 3, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert (1, 4, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
-    assert alts_gen[0]["proper_m0n_owned_max"] == 6
+    assert alts_gen[0]["proper_m0n_owned_max"] == 7
     assert alts_gen[0]["proper_m0n_gap_construction"] == "kapranov_iterated_blowup_P_{n-3}"
 
     # Owned proving-set stacks expose no gap record.
@@ -1115,6 +1151,7 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert Mbar04.etale_atlas_gap() is None
     assert Mbar05.etale_atlas_gap() is None
     assert Mbar06.etale_atlas_gap() is None
+    assert Mbar07.etale_atlas_gap() is None
     assert Mbar11.etale_atlas_gap() is None
     assert M11_char2.etale_atlas_gap() is None
     assert Mbar11_char2.etale_atlas_gap() is None

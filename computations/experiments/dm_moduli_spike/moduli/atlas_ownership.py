@@ -17,15 +17,21 @@ goes through :func:`dispatch_etale_atlas`:
 
 Open genus-0 ownership is **parametric**: one registry row owns every open
 ``M_{0,n}`` for ``n ≥ 3`` via :func:`~.instances._knudsen_open_M0n_affine_scheme`.
-Open genus-1 ownership is likewise **parametric**: Legendre / Hesse rows own
-every open ``M_{1,n}`` for ``n ≥ 1``. Compact genus-1 ownership is also
-**parametric**: Legendre / Hesse rows own every proper ``Mbar_{1,n}`` for
-``n ≥ 1`` via :func:`~.instances._legendre_compact_M1n_covering_space` /
+Proper genus-0 ownership is **parametric** through
+:data:`PROPER_M0N_OWNED_MAX`: one registry row owns every proper ``Mbar_{0,n}``
+for ``3 ≤ n ≤ PROPER_M0N_OWNED_MAX`` via Kapranov
+``kapranov_iterated_blowup_P_{n-3}`` (specializing to the point / ``ℙ¹`` /
+``Bl₄(ℙ²)`` / ``Bl(ℙ³)`` covers for ``n ≤ 6``). Open genus-1 ownership is
+likewise **parametric**: Legendre / Hesse rows own every open ``M_{1,n}`` for
+``n ≥ 1``. Compact genus-1 ownership is also **parametric**: Legendre / Hesse
+rows own every proper ``Mbar_{1,n}`` for ``n ≥ 1`` via
+:func:`~.instances._legendre_compact_M1n_covering_space` /
 :func:`~.instances._hesse_compact_M1n_covering_space`. Call
 :func:`owned_etale_atlas_presentations` with ``expand_open_m0n_through`` /
-``expand_open_m1n_through`` / ``expand_compact_m1n_through`` to materialize
-inspectable per-``n`` rows. This module does **not** invent charts for unowned
-types (e.g. ``M_{2,0}``, ``Mbar_{0,n}`` for ``n > 6``).
+``expand_open_m1n_through`` / ``expand_compact_m1n_through`` /
+``expand_proper_m0n_through`` to materialize inspectable per-``n`` rows. This
+module does **not** invent charts for unowned types (e.g. ``M_{2,0}``,
+``Mbar_{0,n}`` for ``n > PROPER_M0N_OWNED_MAX``).
 """
 
 from __future__ import annotations
@@ -45,11 +51,16 @@ GroupoidKind = Literal["none", "legendre_s3", "hesse_sl2_f3"]
 OPEN_M0N_INSPECTABLE_MAX = 8
 OPEN_M1N_INSPECTABLE_MAX = 4
 COMPACT_M1N_INSPECTABLE_MAX = 4
+# Proper Kapranov Mbar_{0,n}: owned through n=7 via lazy uniform Spec(A^{n-3}) charts
+# (n=8 combinatorial count is ~2e6; not owned until a cheap lazy claim is justified).
+PROPER_M0N_OWNED_MAX = 7
+PROPER_M0N_INSPECTABLE_MAX = PROPER_M0N_OWNED_MAX
 
 # Sentinel markings on parametric rows (not a concrete n).
 _PARAMETRIC_OPEN_M0N_MARKINGS = -1
 _PARAMETRIC_OPEN_M1N_MARKINGS = -1
 _PARAMETRIC_COMPACT_M1N_MARKINGS = -1
+_PARAMETRIC_PROPER_M0N_MARKINGS = -1
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,11 +69,14 @@ class OwnedAtlasPresentation:
 
     Keys are ``(genus, markings, proper)``. Parametric open Knudsen uses sentinel
     ``markings = -1`` with ``parametric_open_m0n=True`` (every open ``M_{0,n}``,
-    ``n ≥ 3``). Parametric open Legendre/Hesse uses the same sentinel with
-    ``parametric_open_m1n=True`` (every open ``M_{1,n}``, ``n ≥ 1``). Parametric
-    compact Legendre/Hesse uses ``parametric_compact_m1n=True`` (every proper
-    ``Mbar_{1,n}``, ``n ≥ 1``). Genus-1 rows require a base hypothesis (``2`` or
-    ``3`` a unit); matching prefers Legendre when both apply.
+    ``n ≥ 3``). Parametric proper Kapranov uses the same sentinel with
+    ``parametric_proper_m0n=True`` (every proper ``Mbar_{0,n}`` for
+    ``3 ≤ n ≤ PROPER_M0N_OWNED_MAX``). Parametric open Legendre/Hesse uses the
+    same sentinel with ``parametric_open_m1n=True`` (every open ``M_{1,n}``,
+    ``n ≥ 1``). Parametric compact Legendre/Hesse uses
+    ``parametric_compact_m1n=True`` (every proper ``Mbar_{1,n}``, ``n ≥ 1``).
+    Genus-1 rows require a base hypothesis (``2`` or ``3`` a unit); matching
+    prefers Legendre when both apply.
     """
 
     genus: int
@@ -75,6 +89,7 @@ class OwnedAtlasPresentation:
     parametric_open_m0n: bool = False
     parametric_open_m1n: bool = False
     parametric_compact_m1n: bool = False
+    parametric_proper_m0n: bool = False
 
     @property
     def key(self) -> tuple[int, int, bool]:
@@ -83,6 +98,8 @@ class OwnedAtlasPresentation:
     def as_dict(self) -> dict[str, object]:
         if self.parametric_open_m0n:
             markings: object = "n>=3"
+        elif self.parametric_proper_m0n:
+            markings = f"3<=n<={PROPER_M0N_OWNED_MAX}"
         elif self.parametric_open_m1n or self.parametric_compact_m1n:
             markings = "n>=1"
         else:
@@ -98,9 +115,13 @@ class OwnedAtlasPresentation:
             "parametric_open_m0n": self.parametric_open_m0n,
             "parametric_open_m1n": self.parametric_open_m1n,
             "parametric_compact_m1n": self.parametric_compact_m1n,
+            "parametric_proper_m0n": self.parametric_proper_m0n,
         }
         if self.parametric_open_m0n:
             out["markings_min"] = 3
+        if self.parametric_proper_m0n:
+            out["markings_min"] = 3
+            out["markings_max"] = PROPER_M0N_OWNED_MAX
         if self.parametric_open_m1n or self.parametric_compact_m1n:
             out["markings_min"] = 1
         return out
@@ -191,6 +212,39 @@ def _compact_m1n_concrete_row(n: int, *, legendre: bool) -> OwnedAtlasPresentati
     )
 
 
+def _proper_m0n_covering_kind(n: int) -> str:
+    if n == 3:
+        return "moduli_affine_etale_chart"
+    return "moduli_scheme_affine_cover"
+
+
+def _proper_m0n_construction_name(n: int) -> str:
+    r"""Historical / parametric construction alias for proper ``Mbar_{0,n}``."""
+    if n == 3:
+        return "point_spec"
+    if n == 4:
+        return "projective_line_affine_cover"
+    if n == 5:
+        return "kapranov_blowup_four_points_p2"
+    if n == 6:
+        return "kapranov_blowup_five_points_p3"
+    return "kapranov_iterated_blowup_P_{n-3}"
+
+
+def _proper_m0n_concrete_row(n: int) -> OwnedAtlasPresentation:
+    n_int = int(n)
+    assert 3 <= n_int <= PROPER_M0N_OWNED_MAX, f"proper Kapranov concrete row requires 3 ≤ n ≤ {PROPER_M0N_OWNED_MAX}; got {n!r}"
+    return OwnedAtlasPresentation(
+        0,
+        n_int,
+        True,
+        _proper_m0n_covering_kind(n_int),
+        _proper_m0n_construction_name(n_int),
+        "none",
+        parametric_proper_m0n=False,
+    )
+
+
 _PARAMETRIC_OPEN_M0N_ROW = OwnedAtlasPresentation(
     0,
     _PARAMETRIC_OPEN_M0N_MARKINGS,
@@ -245,13 +299,14 @@ _PARAMETRIC_COMPACT_M1N_HESSE_ROW = OwnedAtlasPresentation(
     parametric_compact_m1n=True,
 )
 
-# Non-parametric rows: proper genus-0 proving set only.
-# Genus-1 open/compact rows are parametric (see above).
-_NONPARAMETRIC_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
-    OwnedAtlasPresentation(0, 3, True, "moduli_affine_etale_chart", "point_spec", "none"),
-    OwnedAtlasPresentation(0, 4, True, "moduli_scheme_affine_cover", "projective_line_affine_cover", "none"),
-    OwnedAtlasPresentation(0, 5, True, "moduli_scheme_affine_cover", "kapranov_blowup_four_points_p2", "none"),
-    OwnedAtlasPresentation(0, 6, True, "moduli_scheme_affine_cover", "kapranov_blowup_five_points_p3", "none"),
+_PARAMETRIC_PROPER_M0N_ROW = OwnedAtlasPresentation(
+    0,
+    _PARAMETRIC_PROPER_M0N_MARKINGS,
+    True,
+    "moduli_scheme_affine_cover",
+    "kapranov_iterated_blowup_P_{n-3}",
+    "none",
+    parametric_proper_m0n=True,
 )
 
 _OWNED_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
@@ -260,7 +315,8 @@ _OWNED_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
     _PARAMETRIC_OPEN_M1N_HESSE_ROW,
     _PARAMETRIC_COMPACT_M1N_LEGENDRE_ROW,
     _PARAMETRIC_COMPACT_M1N_HESSE_ROW,
-) + _NONPARAMETRIC_ETALE_ATLAS_PRESENTATIONS
+    _PARAMETRIC_PROPER_M0N_ROW,
+)
 
 
 def owned_etale_atlas_presentations(
@@ -268,12 +324,13 @@ def owned_etale_atlas_presentations(
     expand_open_m0n_through: int | None = None,
     expand_open_m1n_through: int | None = None,
     expand_compact_m1n_through: int | None = None,
+    expand_proper_m0n_through: int | None = None,
 ) -> tuple[OwnedAtlasPresentation, ...]:
     r"""Owned equation-level étale-atlas presentations.
 
     Default: one parametric open-Knudsen row, two parametric open-``M_{1,n}``
-    rows, two parametric compact-``Mbar_{1,n}`` rows, plus non-parametric proper
-    genus-0 rows (cardinality 9).
+    rows, two parametric compact-``Mbar_{1,n}`` rows, and one parametric proper
+    Kapranov genus-0 row (cardinality 6).
 
     When ``expand_open_m0n_through`` is set to an integer ``N ≥ 3``, the
     parametric Knudsen row is replaced by concrete open ``M_{0,3}``…``M_{0,N}``.
@@ -281,7 +338,10 @@ def owned_etale_atlas_presentations(
     parametric open-``M_{1,n}`` rows are replaced by concrete Legendre+Hesse
     pairs for ``n = 1…N``. When ``expand_compact_m1n_through`` is set to an
     integer ``N ≥ 1``, the two parametric compact-``Mbar_{1,n}`` rows are
-    replaced by concrete Legendre+Hesse pairs for ``n = 1…N``.
+    replaced by concrete Legendre+Hesse pairs for ``n = 1…N``. When
+    ``expand_proper_m0n_through`` is set to an integer ``N`` with
+    ``3 ≤ N ≤ PROPER_M0N_OWNED_MAX``, the parametric proper Kapranov row is
+    replaced by concrete proper ``Mbar_{0,3}``…``Mbar_{0,N}``.
     """
     open_m0n: tuple[OwnedAtlasPresentation, ...]
     if expand_open_m0n_through is None:
@@ -321,7 +381,15 @@ def owned_etale_atlas_presentations(
             )
         )
 
-    return open_m0n + open_m1n + compact_m1n + _NONPARAMETRIC_ETALE_ATLAS_PRESENTATIONS
+    proper_m0n: tuple[OwnedAtlasPresentation, ...]
+    if expand_proper_m0n_through is None:
+        proper_m0n = (_PARAMETRIC_PROPER_M0N_ROW,)
+    else:
+        n_max_p = int(expand_proper_m0n_through)
+        assert 3 <= n_max_p <= PROPER_M0N_OWNED_MAX, f"expand_proper_m0n_through must satisfy 3 ≤ N ≤ {PROPER_M0N_OWNED_MAX}; got {n_max_p!r}"
+        proper_m0n = tuple(_proper_m0n_concrete_row(n) for n in range(3, n_max_p + 1))
+
+    return open_m0n + open_m1n + compact_m1n + proper_m0n
 
 
 def owned_etale_atlas_cardinality(
@@ -329,6 +397,7 @@ def owned_etale_atlas_cardinality(
     expand_open_m0n_through: int | None = None,
     expand_open_m1n_through: int | None = None,
     expand_compact_m1n_through: int | None = None,
+    expand_proper_m0n_through: int | None = None,
 ) -> int:
     r"""Number of owned presentation rows from :func:`owned_etale_atlas_presentations`."""
     return len(
@@ -336,6 +405,7 @@ def owned_etale_atlas_cardinality(
             expand_open_m0n_through=expand_open_m0n_through,
             expand_open_m1n_through=expand_open_m1n_through,
             expand_compact_m1n_through=expand_compact_m1n_through,
+            expand_proper_m0n_through=expand_proper_m0n_through,
         )
     )
 
@@ -345,20 +415,24 @@ def owned_etale_atlas_type_keys(
     expand_open_m0n_through: int = OPEN_M0N_INSPECTABLE_MAX,
     expand_open_m1n_through: int = OPEN_M1N_INSPECTABLE_MAX,
     expand_compact_m1n_through: int = COMPACT_M1N_INSPECTABLE_MAX,
+    expand_proper_m0n_through: int = PROPER_M0N_INSPECTABLE_MAX,
 ) -> tuple[tuple[int, int, bool], ...]:
     r"""Inspectable ``(genus, markings, proper)`` keys.
 
     Expands parametric open Knudsen through ``expand_open_m0n_through``,
-    parametric open ``M_{1,n}`` through ``expand_open_m1n_through``, and
-    parametric compact ``Mbar_{1,n}`` through ``expand_compact_m1n_through`` so
-    the returned tuple is a finite concrete sample; ownership itself is
-    unbounded in ``n`` for open ``M_{0,n}`` (``n ≥ 3``), open ``M_{1,n}``
-    (``n ≥ 1``), and compact ``Mbar_{1,n}`` (``n ≥ 1``).
+    parametric open ``M_{1,n}`` through ``expand_open_m1n_through``,
+    parametric compact ``Mbar_{1,n}`` through ``expand_compact_m1n_through``,
+    and parametric proper Kapranov through ``expand_proper_m0n_through`` so the
+    returned tuple is a finite concrete sample. Ownership itself is unbounded
+    in ``n`` for open ``M_{0,n}`` (``n ≥ 3``), open ``M_{1,n}`` (``n ≥ 1``), and
+    compact ``Mbar_{1,n}`` (``n ≥ 1``); proper ``Mbar_{0,n}`` is owned for
+    ``3 ≤ n ≤ PROPER_M0N_OWNED_MAX``.
     """
     rows = owned_etale_atlas_presentations(
         expand_open_m0n_through=expand_open_m0n_through,
         expand_open_m1n_through=expand_open_m1n_through,
         expand_compact_m1n_through=expand_compact_m1n_through,
+        expand_proper_m0n_through=expand_proper_m0n_through,
     )
     seen: list[tuple[int, int, bool]] = []
     for row in rows:
@@ -394,16 +468,28 @@ def is_compact_m1n_level_owned(markings: int, *, proper: bool) -> bool:
     return proper and n >= 1
 
 
+def is_proper_m0n_kapranov_owned(markings: int, *, proper: bool) -> bool:
+    r"""True when proper Kapranov owns ``(0, markings, proper)`` parametrically."""
+    try:
+        n = int(markings)
+    except TypeError, ValueError:
+        return False
+    return proper and 3 <= n <= PROPER_M0N_OWNED_MAX
+
+
 def is_owned_etale_atlas_type(genus: int, markings: int, *, proper: bool) -> bool:
     r"""True when the registry owns a presentation for ``(g,n,proper)``.
 
-    Open ``M_{0,n}`` for every ``n ≥ 3``, open ``M_{1,n}`` for every ``n ≥ 1``,
-    and compact ``Mbar_{1,n}`` for every ``n ≥ 1`` are owned parametrically.
+    Open ``M_{0,n}`` for every ``n ≥ 3``, proper ``Mbar_{0,n}`` for
+    ``3 ≤ n ≤ PROPER_M0N_OWNED_MAX``, open ``M_{1,n}`` for every ``n ≥ 1``, and
+    compact ``Mbar_{1,n}`` for every ``n ≥ 1`` are owned parametrically.
     Genus-1 types remain owned at the type level even when a concrete base fails
     Legendre/Hesse hypotheses (those bases get a structured gap, not a silent
     equation-level stamp).
     """
     if genus == 0 and is_open_m0n_knudsen_owned(markings, proper=proper):
+        return True
+    if genus == 0 and is_proper_m0n_kapranov_owned(markings, proper=proper):
         return True
     if genus == 1 and is_open_m1n_level_owned(markings, proper=proper):
         return True
@@ -435,13 +521,20 @@ def lookup_owned_etale_atlas(
     r"""First registry row matching ``(g,n,proper)`` and optional base hypothesis.
 
     Open ``M_{0,n}`` (``n ≥ 3``) resolves to a concrete Knudsen alias row.
-    Open ``M_{1,n}`` (``n ≥ 1``) and compact ``Mbar_{1,n}`` (``n ≥ 1``) resolve
-    to concrete Legendre/Hesse alias rows under the matching base hypothesis.
-    When ``base`` is omitted, returns the first matching row (do not treat as
-    runtime atlas resolution without a base for genus-1 hypothesis rows).
+    Proper ``Mbar_{0,n}`` (``3 ≤ n ≤ PROPER_M0N_OWNED_MAX``) resolves to a
+    concrete Kapranov alias row. Open ``M_{1,n}`` (``n ≥ 1``) and compact
+    ``Mbar_{1,n}`` (``n ≥ 1``) resolve to concrete Legendre/Hesse alias rows
+    under the matching base hypothesis. When ``base`` is omitted, returns the
+    first matching row (do not treat as runtime atlas resolution without a base
+    for genus-1 hypothesis rows).
     """
     if genus == 0 and is_open_m0n_knudsen_owned(markings, proper=proper):
         row = _open_m0n_concrete_row(markings)
+        if base is None or _hypothesis_holds(row.base_hypothesis, base):
+            return row
+        return None
+    if genus == 0 and is_proper_m0n_kapranov_owned(markings, proper=proper):
+        row = _proper_m0n_concrete_row(markings)
         if base is None or _hypothesis_holds(row.base_hypothesis, base):
             return row
         return None
@@ -458,7 +551,7 @@ def lookup_owned_etale_atlas(
                 return row
         return None
     for row in _OWNED_ETALE_ATLAS_PRESENTATIONS:
-        if row.parametric_open_m0n or row.parametric_open_m1n or row.parametric_compact_m1n:
+        if row.parametric_open_m0n or row.parametric_open_m1n or row.parametric_compact_m1n or row.parametric_proper_m0n:
             continue
         if row.genus != genus or row.markings != markings or row.proper != proper:
             continue
@@ -482,6 +575,7 @@ def _domain_for_presentation(stack: ModuliStack, row: OwnedAtlasPresentation) ->
         AffineAlgebraicSpace,
         KapranovBlowupFivePointsP3AlgebraicSpace,
         KapranovBlowupFourPointsP2AlgebraicSpace,
+        KapranovIteratedBlowupPnMinus3AlgebraicSpace,
         ProjectiveLineAlgebraicSpace,
     )
     from .instances import (
@@ -515,6 +609,9 @@ def _domain_for_presentation(stack: ModuliStack, row: OwnedAtlasPresentation) ->
         return KapranovBlowupFourPointsP2AlgebraicSpace(base, "Mbar_0_5")
     if name == "kapranov_blowup_five_points_p3":
         return KapranovBlowupFivePointsP3AlgebraicSpace(base, "Mbar_0_6")
+    if name == "kapranov_iterated_blowup_P_{n-3}":
+        n_marks = stack.number_of_markings()
+        return KapranovIteratedBlowupPnMinus3AlgebraicSpace(base, n_marks, f"Mbar_0_{n_marks}")
     if name in ("legendre_gamma2", "legendre_universal_curve", "legendre_marked_configuration"):
         return AffineAlgebraicSpace(_legendre_open_M1n_affine_scheme(base, stack.number_of_markings()))
     if name in ("hesse_gamma3", "hesse_universal_curve", "hesse_marked_configuration"):
@@ -641,9 +738,11 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
                 "open M_{1,n} for every n≥1, and compact Mbar_{1,n} for every n≥1 "
                 "(Legendre/Hesse under unit hypotheses) are owned parametrically "
                 "(expand via expand_open_m0n_through / expand_open_m1n_through / "
-                "expand_compact_m1n_through). Proper Mbar_{0,n} is owned for "
-                "n≤6 (Kapranov). Do not invent charts — in particular do not fake "
-                "Kapranov Mbar_{0,n} for n>6; literature name for the gap is "
+                "expand_compact_m1n_through). Proper Mbar_{0,n} is owned "
+                f"parametrically for 3≤n≤{PROPER_M0N_OWNED_MAX} (Kapranov "
+                "kapranov_iterated_blowup_P_{n-3}; expand via "
+                "expand_proper_m0n_through). Do not invent charts for larger n — "
+                "the literature construction name remains "
                 "kapranov_iterated_blowup_P_{n-3}."
             ),
             "owned_registry_cardinality": owned_etale_atlas_cardinality(),
@@ -652,11 +751,13 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
             "parametric_open_m0n": True,
             "parametric_open_m1n": True,
             "parametric_compact_m1n": True,
+            "parametric_proper_m0n": True,
             "open_m0n_knudsen_inspectable_max": OPEN_M0N_INSPECTABLE_MAX,
             "open_m1n_level_inspectable_max": OPEN_M1N_INSPECTABLE_MAX,
             "compact_m1n_level_inspectable_max": COMPACT_M1N_INSPECTABLE_MAX,
+            "proper_m0n_inspectable_max": PROPER_M0N_INSPECTABLE_MAX,
             "proper_m0n_gap_construction": "kapranov_iterated_blowup_P_{n-3}",
-            "proper_m0n_owned_max": 6,
+            "proper_m0n_owned_max": PROPER_M0N_OWNED_MAX,
         },
     )
     return gap
@@ -675,6 +776,7 @@ def dispatch_etale_atlas(stack: ModuliStack) -> AtlasMorphism:
         AtlasMorphism,
         DeligneMumfordStack,
         FormallyEtaleSchemeCertificate,
+        KapranovIteratedBlowupPnMinus3AlgebraicSpace,
         _proving_set_etale_certificates,
     )
 
@@ -683,8 +785,14 @@ def dispatch_etale_atlas(stack: ModuliStack) -> AtlasMorphism:
         return DeligneMumfordStack.etale_atlas(stack)
 
     domain = _domain_for_presentation(stack, row)
-    cover = domain.affine_cover()
-    assert cover, "owned moduli étale domain must expose a nonempty affine cover"
+    # Kapranov iterated covers: certify a uniform affine-space sample, not the
+    # full combinatorial chart list (eager N=17280 certs + quadratic checks hang QC).
+    if isinstance(domain, KapranovIteratedBlowupPnMinus3AlgebraicSpace):
+        cover = domain.affine_cover_sample()
+        assert cover and domain.affine_cover_cardinality() >= 1, "owned Kapranov domain must expose a nonempty sample cover"
+    else:
+        cover = domain.affine_cover()
+        assert cover, "owned moduli étale domain must expose a nonempty affine cover"
     certs: list[FormallyEtaleSchemeCertificate] = []
     for chart in cover:
         certs.extend(_proving_set_etale_certificates(chart))

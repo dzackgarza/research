@@ -143,8 +143,9 @@ def _knudsen_open_M0n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme:
 
     Literature: Knudsen's construction of ``M_{0,n}``; Fulton–MacPherson /
     configuration-space presentation. Owned for the **open** stack only —
-    proper ``Mbar_{0,n}`` for ``n ≤ 6`` is registered separately (Kapranov);
-    ``n > 6`` stays fail-closed (named gap ``kapranov_iterated_blowup_P_{n-3}``).
+    proper ``Mbar_{0,n}`` for ``3 ≤ n ≤ PROPER_M0N_OWNED_MAX`` is registered
+    separately (parametric Kapranov); larger ``n`` stay fail-closed (named gap
+    ``kapranov_iterated_blowup_P_{n-3}``).
     """
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
