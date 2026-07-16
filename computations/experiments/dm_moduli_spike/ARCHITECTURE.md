@@ -32,10 +32,10 @@ Independent DM math corrections that do not wait on #225. Status after deepen:
 | Surface | Status |
 | --- | --- |
 | Equipped `ModuliStacks` (not ⊆ DM), curve hierarchy, stratified objects, coarse AlgebraicSpaces-first, Γ indexing, restrict | Landed |
-| `atlas()` / `etale_atlas()` | **Deepened, still incomplete** — quotient `(U,G)` presentation; product-of-étale-atlases; coarse≠étale; DM diagonal evidence; proving-set `FormallyEtaleSchemeCertificate` for identity, localization opens `D(f)→Spec(R)`, and separable finite étale `Spec(k[t]/(f))→Spec(k)` (Jacobian); finite-`G` quotient atlases expose finite étale groupoid flags (unramified+smooth / formally étale on covering). Equation-level étaleness on *arbitrary* atlases unfinished |
+| `atlas()` / `etale_atlas()` | **Deepened, still incomplete** — fail-closed `has_equation_level_etale_certificate()` (affine-cover + domain-matched ring certs; base Spec identity alone does not count; formal `AtlasChart` / moduli product coverings fail closed). Positive on `AffineAlgebraicSpace` covering + finite `G`. Proving-set certs: identity, `D(f)`, separable finite étale. **Still open:** equation-level étale affine presentations for general DM moduli étale atlases (no owned affine cover yet) |
 | `pullback` / `fiber_product` | **Deepened, still incomplete** — `BaseChangeStack` mediating UP; `FiberProductStack` (not nameless shell) with projections + mediating leg recovery. Full Hom-category UP waits on #225 |
 | Aut(Γ) on product strata | **Deepened, still incomplete** — Sage `Action` subclass; `QuotientStack` consumes action; equal-type 2-vertex swap. #225 `Actions` category wiring unfinished |
-| Wave 1 overall | **Incomplete** — #225-blocked: Hom-category UP, Actions category, Cat/Sets substrate. Pre-#225: general atlas étaleness beyond proving-set certificates remains open |
+| Wave 1 overall | **Incomplete** — #225-blocked: Hom-category UP, Actions category, Cat/Sets substrate. Pre-#225: owned affine presentations for general DM moduli étale atlases |
 
 **Trap:** honesty demotion (`NotImplementedError`, identity morphisms, formal empty shells) is **not** remediation for PR #111 Wave 1.
 

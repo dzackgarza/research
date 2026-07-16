@@ -22,7 +22,7 @@ Wave 1 is **not complete**. Prior “honesty demotions” (`NotImplementedError`
 | Item | Status |
 | --- | --- |
 | Category / curve / stratification ontology fixes | Landed |
-| `atlas()` / `etale_atlas()` as `U → X` | **Deepened, incomplete** — quotient `(U,G)`; product-of-étale-atlases; coarse≠étale; DM diagonal evidence; proving-set certificates (identity, localization opens, separable finite étale); finite-`G` finite étale groupoid flags. Arbitrary-atlas equation-level étaleness unfinished |
+| `atlas()` / `etale_atlas()` as `U → X` | **Deepened, incomplete** — fail-closed `has_equation_level_etale_certificate()`; positive on affine covering + finite `G`; formal `AtlasChart` / moduli product coverings fail closed. Still open: affine presentations for general DM moduli étale atlases |
 | Structured `pullback` / `fiber_product` | **Deepened, incomplete** — `BaseChangeStack` + `FiberProductStack` with legs/mediating recovery. Full Hom-category UP waits on #225 |
 | Aut(Γ) action on product strata | **Deepened, incomplete** — Sage `Action` subclass; factor swap on equal-type 2-vertex graphs; quotient covering autos. #225 `Actions` wiring unfinished |
 

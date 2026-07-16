@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .compactification import scheme_open_immersion_compactification
 from .stacks import (
+    AffineAlgebraicSpace,
     AlgebraicSpace,
     AlgebraicStack,
     AtlasChart,
@@ -53,6 +54,7 @@ from .stratification import (
 )
 
 __all__ = [
+    "AffineAlgebraicSpace",
     "AlgebraicSpace",
     "AlgebraicStack",
     "AtlasChart",

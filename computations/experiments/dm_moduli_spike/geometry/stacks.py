@@ -483,6 +483,42 @@ class AlgebraicSpace(DeligneMumfordStack):
     def as_stack(self) -> DeligneMumfordStack:
         return self
 
+    def affine_cover(self) -> tuple[AffineScheme, ...]:
+        r"""Affine open cover for equation-level atlas certificates.
+
+        Default: empty (fail-closed). Concrete affine algebraic spaces override.
+        """
+        return ()
+
+
+class AffineAlgebraicSpace(AlgebraicSpace):
+    r"""Algebraic space that *is* ``Spec(R)`` — usable as a quotient covering ``U``.
+
+    Supplies a singleton affine cover for equation-level étale certificates.
+    """
+
+    @staticmethod
+    def __classcall_private__(cls: type, scheme: AffineScheme) -> AffineAlgebraicSpace:
+        assert isinstance(scheme, AffineScheme), f"AffineAlgebraicSpace requires AffineScheme; found {type(scheme)!r}"
+        result = UniqueRepresentation.__classcall__(cls, scheme)
+        assert isinstance(result, AffineAlgebraicSpace), f"classcall must return AffineAlgebraicSpace; found {type(result)!r}"
+        return result
+
+    def __init__(self, scheme: AffineScheme) -> None:
+        self._affine_scheme = scheme
+        AlgebraicSpace.__init__(
+            self,
+            scheme,
+            name=f"AffineAlgebraicSpace({scheme!r})",
+            axioms=frozenset({"FiniteType", "Separated"}),
+        )
+
+    def as_affine_scheme(self) -> AffineScheme:
+        return self._affine_scheme
+
+    def affine_cover(self) -> tuple[AffineScheme, ...]:
+        return (self._affine_scheme,)
+
 
 class AtlasChart(AlgebraicSpace):
     r"""Algebraic-space chart serving as the domain of an atlas morphism ``U → X``.
@@ -491,6 +527,9 @@ class AtlasChart(AlgebraicSpace):
     prefers the coarse moduli space as atlas domain when available; this chart is
     the fallback for stacks without a coarse space, and the dedicated domain for
     :meth:`DeligneMumfordStack.etale_atlas` (never the coarse space).
+
+    Formal charts have an empty :meth:`affine_cover` — they do **not** carry
+    equation-level étale certificates (fail-closed).
     """
 
     @staticmethod
@@ -515,6 +554,37 @@ class AtlasChart(AlgebraicSpace):
 
     def is_etale_chart(self) -> bool:
         return self._etale_chart
+
+    def affine_cover(self) -> tuple[AffineScheme, ...]:
+        r"""Formal atlas charts have no owned affine presentation."""
+        return ()
+
+
+class _TrivialCoveringAction(UniqueRepresentation):
+    r"""Trivial action of a group on a covering stack (proving-set quotients)."""
+
+    @staticmethod
+    def __classcall_private__(cls: type, group: object, space: Stack) -> _TrivialCoveringAction:
+        assert isinstance(space, Stack), f"expected Stack; found {type(space)!r}"
+        result = UniqueRepresentation.__classcall__(cls, group, space)
+        assert isinstance(result, _TrivialCoveringAction), f"classcall must return _TrivialCoveringAction; found {type(result)!r}"
+        return result
+
+    def __init__(self, group: object, space: Stack) -> None:
+        self._group = group
+        self._space = space
+
+    def group(self) -> object:
+        return self._group
+
+    def set(self) -> Stack:
+        return self._space
+
+    def act(self, group_element: object) -> Stack:
+        return self._space
+
+    def _act_(self, group_element: object, x: object) -> object:
+        return x
 
 
 class Variety(AlgebraicSpace):
@@ -1042,6 +1112,39 @@ def _proving_set_etale_certificates(base: AffineScheme) -> tuple[FormallyEtaleSc
     return tuple(certs)
 
 
+def _affine_cover_of(domain: object) -> tuple[AffineScheme, ...]:
+    r"""Affine opens of an atlas domain for equation-level certification (fail-closed)."""
+    if isinstance(domain, AffineScheme):
+        return (domain,)
+    if isinstance(domain, AffineAlgebraicSpace):
+        return domain.affine_cover()
+    if isinstance(domain, ProductStack):
+        covers: list[AffineScheme] = []
+        for factor in domain.factors():
+            factor_cover = _affine_cover_of(factor)
+            if not factor_cover:
+                return ()
+            covers.extend(factor_cover)
+        return tuple(covers)
+    if hasattr(domain, "affine_cover"):
+        cover = domain.affine_cover()
+        assert isinstance(cover, tuple), f"affine_cover() must return a tuple; found {type(cover)!r}"
+        return cover
+    return ()
+
+
+def _certificate_covers_affine(cert: FormallyEtaleSchemeCertificate, chart: AffineScheme) -> bool:
+    r"""True when ``cert`` is a formally étale certificate whose domain is ``chart``."""
+    if not cert.is_formally_etale():
+        return False
+    domain = cert.domain_scheme()
+    if domain is None:
+        return False
+    if domain is chart:
+        return True
+    return domain.ring() is chart.ring() or domain.ring() == chart.ring()
+
+
 class AtlasEvidence:
     r"""Inspectable evidence attached to an atlas morphism.
 
@@ -1211,6 +1314,37 @@ class AtlasEvidence:
             and self._group_order >= 1
         )
 
+    def domain_affine_cover(self) -> tuple[AffineScheme, ...]:
+        r"""Affine cover of the atlas domain used for equation-level checks."""
+        return _affine_cover_of(self._domain)
+
+    def has_equation_level_etale_certificate(self) -> bool:
+        r"""Fail-closed equation-level étaleness for this atlas presentation.
+
+        Returns ``True`` only when every affine chart of the atlas domain carries
+        a matching :class:`FormallyEtaleSchemeCertificate`. DM stamps, base
+        ``Spec(R)→Spec(R)`` certificates detached from the atlas domain, and
+        formal :class:`AtlasChart` domains (empty affine cover) do **not** count.
+
+        - Coarse moduli atlases: always ``False``.
+        - Product-of-étale-atlases: all factor atlases must certify equation-level.
+        - Quotient ``U → [U/G]``: requires finite étale groupoid stamps **and**
+          affine-cover certificates on ``U``.
+        """
+        if self._covering_kind == "coarse_moduli":
+            return False
+        if self._factor_atlases is not None:
+            return all(fa.has_equation_level_etale_certificate() for fa in self._factor_atlases)
+        if self._covering_kind == "quotient_cover" and not self.links_finite_etale_groupoid():
+            return False
+        cover = self.domain_affine_cover()
+        if not cover:
+            return False
+        certs = self._scheme_certificates
+        if not certs:
+            return False
+        return all(any(_certificate_covers_affine(cert, chart) for cert in certs) for chart in cover)
+
     def _repr_(self) -> str:
         return (
             f"AtlasEvidence(covering={self._covering_kind!r}, etale={self._etale_stamp}, "
@@ -1304,6 +1438,10 @@ class AtlasMorphism(StackMorphism):
             data["covering_smooth_stamp"] = self._evidence.covering_smooth_stamp()
             data["covering_formally_etale_stamp"] = self._evidence.covering_formally_etale_stamp()
             data["links_finite_etale_groupoid"] = self._evidence.links_finite_etale_groupoid()
+            data["has_equation_level_etale_certificate"] = self._evidence.has_equation_level_etale_certificate()
+            data["domain_affine_cover"] = self._evidence.domain_affine_cover()
+        else:
+            data["has_equation_level_etale_certificate"] = False
         return data
 
     def is_coarse_atlas(self) -> bool:
@@ -1340,6 +1478,22 @@ class AtlasMorphism(StackMorphism):
         if self._etale and self._covering_kind != "coarse_moduli":
             return True
         return not self._etale
+
+    def has_equation_level_etale_certificate(self) -> bool:
+        r"""Fail-closed: equation-level étale data on this atlas morphism ``U → X``.
+
+        Theorem stamps (``is_etale()``) alone are insufficient. See
+        :meth:`AtlasEvidence.has_equation_level_etale_certificate`.
+        """
+        if not self._etale or self.is_coarse_atlas():
+            return False
+        if self._evidence is None:
+            return False
+        return self._evidence.has_equation_level_etale_certificate()
+
+    def equation_level_etale(self) -> bool:
+        r"""Alias of :meth:`has_equation_level_etale_certificate`."""
+        return self.has_equation_level_etale_certificate()
 
 
 class OpenImmersion(StackMorphism):
@@ -1817,7 +1971,17 @@ class QuotientStack(Stack):
         representable = isinstance(domain, (AlgebraicSpace, ProductStack))
         dm = isinstance(domain, DeligneMumfordStack) or (isinstance(domain, ProductStack) and all(isinstance(f, DeligneMumfordStack) for f in domain.factors()))
         diagonal = StackMorphism(self, self.fiber_product(self), kind="diagonal") if dm else None
-        scheme_certs = _proving_set_etale_certificates(self.base_scheme())
+        # Equation-level certs must match the covering's affine charts — not the
+        # ambient base Spec alone (fail-closed for ProductStack / AtlasChart covers).
+        cover = _affine_cover_of(domain)
+        scheme_certs: tuple[FormallyEtaleSchemeCertificate, ...]
+        if cover:
+            certs: list[FormallyEtaleSchemeCertificate] = []
+            for chart in cover:
+                certs.extend(_proving_set_etale_certificates(chart))
+            scheme_certs = tuple(certs)
+        else:
+            scheme_certs = ()
         primary = scheme_certs[0] if scheme_certs else None
         finite = self.group_is_finite()
         order = self.group_order()

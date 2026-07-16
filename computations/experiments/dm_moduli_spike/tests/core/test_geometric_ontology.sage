@@ -155,8 +155,10 @@ def test_stratum_locally_closed_and_clutching_hom():
     assert q_etale.evidence() is not None
     assert q_etale.evidence().dm_diagonal_unramified_stamp()
     assert q_etale.evidence().links_dm_diagonal_axioms()
-    assert q_etale.evidence().scheme_certificate() is not None
-    assert q_etale.evidence().scheme_certificate().is_formally_etale()
+    # Fail-closed: product-of-moduli covering has no affine equation-level certs.
+    assert q_etale.evidence().domain_affine_cover() == ()
+    assert q_etale.evidence().scheme_certificates() == ()
+    assert not q_etale.has_equation_level_etale_certificate()
     assert open_quot.group_is_finite()
     assert open_quot.group_order() == int(open_quot.group().order())
     assert q_etale.evidence().finite_etale_groupoid()
@@ -485,6 +487,10 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert isinstance(cert, FormallyEtaleSchemeCertificate)
     assert cert.is_flat() and cert.is_unramified() and cert.is_formally_etale()
     assert cert.reason() == "identity_ring_map_isomorphism"
+    # Base Spec identity attached for ambient evidence ≠ equation-level on AtlasChart.
+    assert etale.domain().affine_cover() == ()
+    assert not etale.has_equation_level_etale_certificate()
+    assert not atlas.has_equation_level_etale_certificate()
 
     # Product of DM stacks: étale atlas is product of factor étale atlases.
     YS = M_gn(0, 4, base=k)
@@ -503,6 +509,26 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert not prod_etale.is_coarse_atlas()
     assert prod.atlas().covering_kind() == "product_of_coarse"
     assert not prod.atlas().is_etale()
+    assert not prod_etale.has_equation_level_etale_certificate()
+
+    # Affine covering + finite G: equation-level étale certificate on U → [U/G].
+    from dm_moduli_spike.geometry.stacks import AffineAlgebraicSpace, _TrivialCoveringAction
+    from sage.groups.perm_gps.permgroup_named import CyclicPermutationGroup
+
+    U_aff = AffineAlgebraicSpace(spec(QQ))
+    G2 = CyclicPermutationGroup(2)
+    quot_aff = QuotientStack(U_aff, G2, _TrivialCoveringAction(G2, U_aff))
+    aff_etale = quot_aff.etale_atlas()
+    assert aff_etale.is_etale()
+    assert aff_etale.domain() is U_aff
+    assert aff_etale.domain() is quot_aff.covering_space()
+    assert aff_etale.has_equation_level_etale_certificate()
+    assert aff_etale.equation_level_etale()
+    assert aff_etale.evidence().domain_affine_cover() == (spec(QQ),)
+    assert aff_etale.covering_data()["has_equation_level_etale_certificate"] is True
+    # Product of two equation-level quotient atlases via ProductStack factors that are DM with AffineAlgebraicSpace charts:
+    # product of moduli étale atlases remains non-equation-level (formal charts).
+    assert not prod_etale.has_equation_level_etale_certificate()
 
     from sage.rings.integer_ring import ZZ
 
