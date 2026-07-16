@@ -129,11 +129,25 @@ axioms:
     lake env lean /tmp/catdsl-axioms.lean
     echo "expect only: propext, Classical.choice, Quot.sound"
 
-# List upstream-contribution candidates: ForMathlib/ is the by-construction
-# queue (every declaration names its upstream target); the heuristic scan
-# flags declarations whose docstrings never anchor to Mathlib.  Both are
-# interim query surfaces until the alignment manifest export (#251) carries
-# the columns.
+# The COMPUTED alignment surface (never self-reported): tethers are checked
+# ties (a witness theorem/construction whose type mentions both the local
+# notion and its Mathlib anchor), their kind is derived (exact / divergent /
+# structural — divergent = a convention difference, visible in the witness
+# statement), and the untethered list is the environment-walked complement.
+# Example/TetherTest.lean pins the untethered set so silent growth reds.
+tether-report:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd catdsl_poc
+    lake build CatDSL >/dev/null
+    tmp=$(mktemp --suffix .lean)
+    trap 'rm -f "$tmp"' EXIT
+    printf 'import CatDSL\n#tether_report\n' > "$tmp"
+    lake env lean "$tmp"
+
+# Upstream-contribution queue: ForMathlib/ is known-missing by the layer
+# contract (each declaration names its upstream target).  For the UNKNOWNS —
+# notions with no checked Lean anchor at all — see `just tether-report`.
 upstream-candidates:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -143,26 +157,12 @@ upstream-candidates:
       rg -n '^(noncomputable )?(theorem|def|structure|class|abbrev) |Upstream target' "$f" | sed 's/^/   /'
     done
     echo
-    echo "== Heuristic: declarations with no Mathlib anchor in their docstring =="
-    echo "   (interim; a hit here is a candidate, not a verdict)"
-    find catdsl_poc/CatDSL/Categories catdsl_poc/CatDSL -maxdepth 1 -name '*.lean' | sort -u | while read -r f; do
-      awk -v file="$f" '
-        /^\/--/     { indoc = 1; hasM = 0 }
-        indoc && /Mathlib/ { hasM = 1 }
-        indoc && /-\/[[:space:]]*$/ { indoc = 0; anchored = hasM; primed = 1; next }
-        /^(noncomputable )?(def|structure|abbrev) / {
-          if (!primed || !anchored) print file ":" FNR ": " $0
-          primed = 0
-        }
-        !/^(noncomputable )?(def|structure|abbrev) / && !indoc && !/^\/--/ && $0 !~ /^[[:space:]]*$/ && $0 !~ /^--/ && $0 !~ /^@\[/ { primed = 0 }
-      ' "$f"
-    done
+    echo "== Untethered notions (computed): run 'just tether-report' =="
 
-# List convention divergences from Mathlib (competing notions), recorded as
-# 'Convention divergence:' docstring markers at the declarations they govern.
-# Each states local vs Mathlib convention and the adjudication direction
-# (upstream change vs local change).  A divergence without a marker is a
-# defect; see EXTENDING.md.
+# Convention divergences: the COMPUTED list is the divergent/structural
+# tethers in `just tether-report` (the witness statement shows the exact
+# convention gap).  The prose markers below carry the human adjudication
+# (upstream change vs local change) for each.
 conventions:
     rg -n 'Convention divergence:' catdsl_poc/CatDSL --after-context 4
 

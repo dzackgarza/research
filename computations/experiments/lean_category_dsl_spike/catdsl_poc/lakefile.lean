@@ -20,4 +20,5 @@ than of the library.
 lean_lib CatDSLTest where
   roots := #[`CatDSL.Example.F2Semantic,
              `CatDSL.Example.RegistryTest,
-             `CatDSL.Example.SurfaceTest]
+             `CatDSL.Example.SurfaceTest,
+             `CatDSL.Example.TetherTest]

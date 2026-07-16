@@ -195,6 +195,15 @@ theorem index_toNat {R : RingObj} {M N : ModuleObj R} (f : M ⟶ N) :
       = Nat.card (N.set ⧸ LinearMap.range (f : M.set →ₗ[R.set] N.set)) :=
   rfl
 
+/-- Tether witness: the ℕ shadow of `index` is exactly Mathlib's
+`AddSubgroup.index` of the image — the wrapping (`toNat`) is the recorded
+convention divergence. -/
+theorem index_eq_addSubgroupIndex {R : RingObj} {M N : ModuleObj R}
+    (f : M ⟶ N) :
+    (index f).toNat
+      = ((LinearMap.range (f : M.set →ₗ[R.set] N.set)).toAddSubgroup).index :=
+  rfl
+
 /-- The identity has index 1: its cokernel is `N ⧸ ⊤`, which is trivial. -/
 theorem index_id {R : RingObj} (N : ModuleObj R) :
     index (𝟙 N) = 1 := by

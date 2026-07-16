@@ -46,6 +46,11 @@ never its home.
 def cardinality (X : SetObj) : Cardinal :=
   Cardinal.mk X.set
 
+/-- Tether witness: `cardinality` IS `Cardinal.mk`, definitionally. -/
+theorem cardinality_eq_mk (X : SetObj) :
+    X.cardinality = Cardinal.mk X.set :=
+  rfl
+
 end SetObj
 
 /-- `ℤ` as a set object: infinite sets are first-class citizens of `Sets`,
@@ -95,6 +100,11 @@ def CountableSet.forget : CountableSetObj ⥤ SetObj where
   obj X := ⟨X.set⟩
   map f := f
 
+/-- Tether witness: the fields of a countable set object ARE an `Encodable`
+instance — the tie to Mathlib as a construction, not prose. -/
+def CountableSetObj.encodable (X : CountableSetObj) : Encodable X.set :=
+  ⟨X.number, X.nth, X.nth_number⟩
+
 /--
 A finite set with a chosen enumeration.  The enumeration is data, not a
 proposition asserting finiteness.
@@ -137,6 +147,13 @@ theorem nth_number (X : FiniteSetObj) :
     ∀ x, X.nth (X.number x) = some x := by
   intro x
   simp [nth, number]
+
+/-- Tether witness: the fields of a finite set object ARE a `FinEnum`
+instance (`decEq` transported along the chosen enumeration). -/
+def finEnum (X : FiniteSetObj) : FinEnum X.set where
+  card := X.size
+  equiv := X.enumerate
+  decEq := X.enumerate.decidableEq
 
 /-- The countability implementation induced by a chosen enumeration. -/
 def toCountable (X : FiniteSetObj) : CountableSetObj where

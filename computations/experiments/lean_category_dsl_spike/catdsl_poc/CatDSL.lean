@@ -5,4 +5,6 @@ import CatDSL.Categories.Sets
 import CatDSL.Categories.Rings
 import CatDSL.Categories.Modules
 import CatDSL.Categories.Lattices
+import CatDSL.Manifest.Tether
+import CatDSL.Manifest.Tethers
 import CatDSL.Syntax
