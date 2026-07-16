@@ -54,6 +54,31 @@ def register_set_axioms() -> None:
 register_set_axioms()
 
 
+class CountabilitySubcategoryMethods:
+    r"""The ``Countable``/``Uncountable`` axiom requests with their
+    disjointness guards. Shared by the owned ``Sets()`` root and by every
+    owned structured root whose objects carry set axioms (magmas, additive
+    magmas, and their descendants)."""
+
+    # Runtime Sage mixes this class into every subcategory, so ``self``
+    # is a Category there; the casts state that fact for the checker.
+    def Countable(self) -> Category:
+        r"""Objects whose underlying set has a chosen computable,
+        exhaustive, duplicate-free enumeration."""
+        category = cast(Category, self)
+        assert "Uncountable" not in category.axioms(), "Countable and Uncountable are disjoint"
+        return category._with_axiom("Countable")
+
+    def Uncountable(self) -> Category:
+        r"""Objects whose underlying set is beyond every enumeration, by
+        trusted declaration. (The reverse contradiction, ``Uncountable``
+        then ``Finite``, is refused by Sage's native finite/infinite
+        incompatibility because ``Uncountable`` implies ``Infinite``.)"""
+        category = cast(Category, self)
+        assert "Countable" not in category.axioms(), "Countable and Uncountable are disjoint"
+        return category._with_axiom("Uncountable")
+
+
 class Sets(Category):
     r"""The owned category of sets: declaration owner of the generic
     meanings of cardinality, finiteness, infinitude, countability,
@@ -73,24 +98,7 @@ class Sets(Category):
         def Infinite(self) -> Sets: ...
         def Facade(self) -> Sets: ...
 
-    class SubcategoryMethods:
-        # Runtime Sage mixes this class into every subcategory, so ``self``
-        # is a Category there; the casts state that fact for the checker.
-        def Countable(self) -> Category:
-            r"""Sets with a chosen computable, exhaustive, duplicate-free
-            enumeration."""
-            category = cast(Category, self)
-            assert "Uncountable" not in category.axioms(), "Countable and Uncountable are disjoint"
-            return category._with_axiom("Countable")
-
-        def Uncountable(self) -> Category:
-            r"""Sets placed beyond every enumeration, by trusted
-            declaration. (The reverse contradiction, ``Uncountable`` then
-            ``Finite``, is refused by Sage's native finite/infinite
-            incompatibility because ``Uncountable`` implies ``Infinite``.)"""
-            category = cast(Category, self)
-            assert "Countable" not in category.axioms(), "Countable and Uncountable are disjoint"
-            return category._with_axiom("Uncountable")
+    SubcategoryMethods = CountabilitySubcategoryMethods
 
     class ParentMethods:
         @abstract_method
@@ -113,6 +121,20 @@ class FiniteSets(CategoryWithAxiom):
 
     def extra_super_categories(self) -> list[Category]:
         return [cast("Sets", self.base_category()).Countable()]
+
+    class ParentMethods:
+        def cardinality(self) -> Cardinal:
+            r"""The exact count, by materializing the chosen enumeration —
+            finite sets own the termination-dependent implementation,
+            constructed from the witness suite."""
+            from collections.abc import Iterable
+
+            from sage.rings.integer_ring import ZZ
+
+            from .cardinals import Cardinal
+
+            members = cast(Iterable[object], self)
+            return Cardinal(ZZ(sum(1 for _ in members)))
 
 
 class InfiniteSets(CategoryWithAxiom):
