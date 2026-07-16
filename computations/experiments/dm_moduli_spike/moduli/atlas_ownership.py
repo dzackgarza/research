@@ -17,9 +17,13 @@ goes through :func:`dispatch_etale_atlas`:
 
 Open genus-0 ownership is **parametric**: one registry row owns every open
 ``M_{0,n}`` for ``n ≥ 3`` via :func:`~.instances._knudsen_open_M0n_affine_scheme`.
-Call :func:`owned_etale_atlas_presentations` with ``expand_open_m0n_through`` to
-materialize inspectable per-``n`` rows. This module does **not** invent charts
-for unowned types (e.g. ``M_{2,0}``, ``Mbar_{0,n}`` for ``n > 5``).
+Open genus-1 ownership is likewise **parametric**: Legendre / Hesse rows own
+every open ``M_{1,n}`` for ``n ≥ 1`` under the base hypotheses
+(``2 ∈ Rˣ`` → Legendre; else ``3 ∈ Rˣ`` → Hesse). Call
+:func:`owned_etale_atlas_presentations` with ``expand_open_m0n_through`` /
+``expand_open_m1n_through`` to materialize inspectable per-``n`` rows. This
+module does **not** invent charts for unowned types (e.g. ``M_{2,0}``,
+``Mbar_{0,n}`` for ``n > 5``, ``Mbar_{1,n}`` for ``n > 2``).
 """
 
 from __future__ import annotations
@@ -35,21 +39,25 @@ if TYPE_CHECKING:
 BaseHypothesis = Literal["none", "two_invertible", "three_invertible"]
 GroupoidKind = Literal["none", "legendre_s3", "hesse_sl2_f3"]
 
-# Default inspectable expansion of the parametric open Knudsen family.
+# Default inspectable expansion of parametric open families.
 OPEN_M0N_INSPECTABLE_MAX = 8
+OPEN_M1N_INSPECTABLE_MAX = 4
 
-# Sentinel markings on the single parametric open-M_{0,n} row (not a concrete n).
+# Sentinel markings on parametric rows (not a concrete n).
 _PARAMETRIC_OPEN_M0N_MARKINGS = -1
+_PARAMETRIC_OPEN_M1N_MARKINGS = -1
 
 
 @dataclass(frozen=True, slots=True)
 class OwnedAtlasPresentation:
     r"""One owned equation-level étale-atlas presentation.
 
-    Keys are ``(genus, markings, proper)``. The parametric open Knudsen row uses
-    sentinel ``markings = -1`` with ``parametric_open_m0n=True`` and matches every
-    open ``M_{0,n}`` for ``n ≥ 3``. Genus-1 rows additionally require a base
-    hypothesis (``2`` or ``3`` a unit); matching prefers Legendre when both apply.
+    Keys are ``(genus, markings, proper)``. Parametric open Knudsen uses sentinel
+    ``markings = -1`` with ``parametric_open_m0n=True`` (every open ``M_{0,n}``,
+    ``n ≥ 3``). Parametric open Legendre/Hesse uses the same sentinel with
+    ``parametric_open_m1n=True`` (every open ``M_{1,n}``, ``n ≥ 1``). Genus-1
+    rows require a base hypothesis (``2`` or ``3`` a unit); matching prefers
+    Legendre when both apply.
     """
 
     genus: int
@@ -60,24 +68,34 @@ class OwnedAtlasPresentation:
     base_hypothesis: BaseHypothesis
     groupoid: GroupoidKind = "none"
     parametric_open_m0n: bool = False
+    parametric_open_m1n: bool = False
 
     @property
     def key(self) -> tuple[int, int, bool]:
         return (self.genus, self.markings, self.proper)
 
     def as_dict(self) -> dict[str, object]:
+        if self.parametric_open_m0n:
+            markings: object = "n>=3"
+        elif self.parametric_open_m1n:
+            markings = "n>=1"
+        else:
+            markings = self.markings
         out: dict[str, object] = {
             "genus": self.genus,
-            "markings": "n>=3" if self.parametric_open_m0n else self.markings,
+            "markings": markings,
             "proper": self.proper,
             "covering_kind": self.covering_kind,
             "construction": self.construction,
             "base_hypothesis": self.base_hypothesis,
             "groupoid": self.groupoid,
             "parametric_open_m0n": self.parametric_open_m0n,
+            "parametric_open_m1n": self.parametric_open_m1n,
         }
         if self.parametric_open_m0n:
             out["markings_min"] = 3
+        if self.parametric_open_m1n:
+            out["markings_min"] = 1
         return out
 
 
@@ -104,6 +122,37 @@ def _open_m0n_concrete_row(n: int) -> OwnedAtlasPresentation:
     )
 
 
+def _open_m1n_covering_kind(n: int, *, legendre: bool) -> str:
+    if n == 1:
+        return "legendre_finite_etale_cover" if legendre else "hesse_finite_etale_cover"
+    if n == 2:
+        return "legendre_universal_curve_finite_etale_cover" if legendre else "hesse_universal_curve_finite_etale_cover"
+    return "legendre_marked_configuration_finite_etale_cover" if legendre else "hesse_marked_configuration_finite_etale_cover"
+
+
+def _open_m1n_construction_name(n: int, *, legendre: bool) -> str:
+    if n == 1:
+        return "legendre_gamma2" if legendre else "hesse_gamma3"
+    if n == 2:
+        return "legendre_universal_curve" if legendre else "hesse_universal_curve"
+    return "legendre_marked_configuration" if legendre else "hesse_marked_configuration"
+
+
+def _open_m1n_concrete_row(n: int, *, legendre: bool) -> OwnedAtlasPresentation:
+    n_int = int(n)
+    assert n_int >= 1, f"open M_{{1,n}} concrete row requires n ≥ 1; got {n!r}"
+    return OwnedAtlasPresentation(
+        1,
+        n_int,
+        False,
+        _open_m1n_covering_kind(n_int, legendre=legendre),
+        _open_m1n_construction_name(n_int, legendre=legendre),
+        "two_invertible" if legendre else "three_invertible",
+        "legendre_s3" if legendre else "hesse_sl2_f3",
+        parametric_open_m1n=False,
+    )
+
+
 _PARAMETRIC_OPEN_M0N_ROW = OwnedAtlasPresentation(
     0,
     _PARAMETRIC_OPEN_M0N_MARKINGS,
@@ -114,7 +163,29 @@ _PARAMETRIC_OPEN_M0N_ROW = OwnedAtlasPresentation(
     parametric_open_m0n=True,
 )
 
-# Non-parametric rows: proper genus-0 proving set + genus-1 Legendre/Hesse.
+_PARAMETRIC_OPEN_M1N_LEGENDRE_ROW = OwnedAtlasPresentation(
+    1,
+    _PARAMETRIC_OPEN_M1N_MARKINGS,
+    False,
+    "legendre_marked_configuration_finite_etale_cover",
+    "legendre_marked_configuration",
+    "two_invertible",
+    "legendre_s3",
+    parametric_open_m1n=True,
+)
+
+_PARAMETRIC_OPEN_M1N_HESSE_ROW = OwnedAtlasPresentation(
+    1,
+    _PARAMETRIC_OPEN_M1N_MARKINGS,
+    False,
+    "hesse_marked_configuration_finite_etale_cover",
+    "hesse_marked_configuration",
+    "three_invertible",
+    "hesse_sl2_f3",
+    parametric_open_m1n=True,
+)
+
+# Non-parametric rows: proper genus-0 proving set + proper genus-1 compact (n=1,2).
 # Ordered: for a fixed (g,n,proper), first matching hypothesis wins
 # (Legendre before Hesse, matching historical dispatch).
 _NONPARAMETRIC_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
@@ -124,29 +195,11 @@ _NONPARAMETRIC_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
     OwnedAtlasPresentation(
         1,
         1,
-        False,
-        "legendre_finite_etale_cover",
-        "legendre_gamma2",
-        "two_invertible",
-        "legendre_s3",
-    ),
-    OwnedAtlasPresentation(
-        1,
-        1,
         True,
         "legendre_compact_finite_etale_cover",
         "legendre_gamma2_compact",
         "two_invertible",
         "legendre_s3",
-    ),
-    OwnedAtlasPresentation(
-        1,
-        1,
-        False,
-        "hesse_finite_etale_cover",
-        "hesse_gamma3",
-        "three_invertible",
-        "hesse_sl2_f3",
     ),
     OwnedAtlasPresentation(
         1,
@@ -160,29 +213,11 @@ _NONPARAMETRIC_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
     OwnedAtlasPresentation(
         1,
         2,
-        False,
-        "legendre_universal_curve_finite_etale_cover",
-        "legendre_universal_curve",
-        "two_invertible",
-        "legendre_s3",
-    ),
-    OwnedAtlasPresentation(
-        1,
-        2,
         True,
         "legendre_compact_universal_curve_finite_etale_cover",
         "legendre_universal_curve_compact",
         "two_invertible",
         "legendre_s3",
-    ),
-    OwnedAtlasPresentation(
-        1,
-        2,
-        False,
-        "hesse_universal_curve_finite_etale_cover",
-        "hesse_universal_curve",
-        "three_invertible",
-        "hesse_sl2_f3",
     ),
     OwnedAtlasPresentation(
         1,
@@ -195,45 +230,86 @@ _NONPARAMETRIC_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
     ),
 )
 
-_OWNED_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (_PARAMETRIC_OPEN_M0N_ROW,) + _NONPARAMETRIC_ETALE_ATLAS_PRESENTATIONS
+_OWNED_ETALE_ATLAS_PRESENTATIONS: tuple[OwnedAtlasPresentation, ...] = (
+    _PARAMETRIC_OPEN_M0N_ROW,
+    _PARAMETRIC_OPEN_M1N_LEGENDRE_ROW,
+    _PARAMETRIC_OPEN_M1N_HESSE_ROW,
+) + _NONPARAMETRIC_ETALE_ATLAS_PRESENTATIONS
 
 
 def owned_etale_atlas_presentations(
     *,
     expand_open_m0n_through: int | None = None,
+    expand_open_m1n_through: int | None = None,
 ) -> tuple[OwnedAtlasPresentation, ...]:
     r"""Owned equation-level étale-atlas presentations.
 
-    Default: one parametric open-Knudsen row plus non-parametric proper genus-0
-    and genus-1 rows (cardinality 12).
+    Default: one parametric open-Knudsen row, two parametric open-``M_{1,n}``
+    rows (Legendre + Hesse), plus non-parametric proper genus-0 / compact
+    genus-1 rows (cardinality 10).
 
-    When ``expand_open_m0n_through`` is set to an integer ``N ≥ 3``, the parametric
-    row is replaced by concrete open ``M_{0,3}``…``M_{0,N}`` rows (inspectable).
+    When ``expand_open_m0n_through`` is set to an integer ``N ≥ 3``, the
+    parametric Knudsen row is replaced by concrete open ``M_{0,3}``…``M_{0,N}``.
+    When ``expand_open_m1n_through`` is set to an integer ``N ≥ 1``, the two
+    parametric open-``M_{1,n}`` rows are replaced by concrete Legendre+Hesse
+    pairs for ``n = 1…N``.
     """
+    open_m0n: tuple[OwnedAtlasPresentation, ...]
     if expand_open_m0n_through is None:
-        return _OWNED_ETALE_ATLAS_PRESENTATIONS
-    n_max = int(expand_open_m0n_through)
-    assert n_max >= 3, f"expand_open_m0n_through must be ≥ 3; got {n_max!r}"
-    open_rows = tuple(_open_m0n_concrete_row(n) for n in range(3, n_max + 1))
-    return open_rows + _NONPARAMETRIC_ETALE_ATLAS_PRESENTATIONS
+        open_m0n = (_PARAMETRIC_OPEN_M0N_ROW,)
+    else:
+        n_max = int(expand_open_m0n_through)
+        assert n_max >= 3, f"expand_open_m0n_through must be ≥ 3; got {n_max!r}"
+        open_m0n = tuple(_open_m0n_concrete_row(n) for n in range(3, n_max + 1))
+
+    open_m1n: tuple[OwnedAtlasPresentation, ...]
+    if expand_open_m1n_through is None:
+        open_m1n = (_PARAMETRIC_OPEN_M1N_LEGENDRE_ROW, _PARAMETRIC_OPEN_M1N_HESSE_ROW)
+    else:
+        n_max_1 = int(expand_open_m1n_through)
+        assert n_max_1 >= 1, f"expand_open_m1n_through must be ≥ 1; got {n_max_1!r}"
+        open_m1n = tuple(
+            row
+            for n in range(1, n_max_1 + 1)
+            for row in (
+                _open_m1n_concrete_row(n, legendre=True),
+                _open_m1n_concrete_row(n, legendre=False),
+            )
+        )
+
+    return open_m0n + open_m1n + _NONPARAMETRIC_ETALE_ATLAS_PRESENTATIONS
 
 
-def owned_etale_atlas_cardinality(*, expand_open_m0n_through: int | None = None) -> int:
+def owned_etale_atlas_cardinality(
+    *,
+    expand_open_m0n_through: int | None = None,
+    expand_open_m1n_through: int | None = None,
+) -> int:
     r"""Number of owned presentation rows from :func:`owned_etale_atlas_presentations`."""
-    return len(owned_etale_atlas_presentations(expand_open_m0n_through=expand_open_m0n_through))
+    return len(
+        owned_etale_atlas_presentations(
+            expand_open_m0n_through=expand_open_m0n_through,
+            expand_open_m1n_through=expand_open_m1n_through,
+        )
+    )
 
 
 def owned_etale_atlas_type_keys(
     *,
     expand_open_m0n_through: int = OPEN_M0N_INSPECTABLE_MAX,
+    expand_open_m1n_through: int = OPEN_M1N_INSPECTABLE_MAX,
 ) -> tuple[tuple[int, int, bool], ...]:
     r"""Inspectable ``(genus, markings, proper)`` keys.
 
-    Expands the parametric open Knudsen family through ``expand_open_m0n_through``
-    (default :data:`OPEN_M0N_INSPECTABLE_MAX`) so the returned tuple is a finite
-    concrete sample; ownership itself is unbounded in ``n`` for open ``M_{0,n}``.
+    Expands parametric open Knudsen through ``expand_open_m0n_through`` and
+    parametric open ``M_{1,n}`` through ``expand_open_m1n_through`` so the
+    returned tuple is a finite concrete sample; ownership itself is unbounded
+    in ``n`` for open ``M_{0,n}`` (``n ≥ 3``) and open ``M_{1,n}`` (``n ≥ 1``).
     """
-    rows = owned_etale_atlas_presentations(expand_open_m0n_through=expand_open_m0n_through)
+    rows = owned_etale_atlas_presentations(
+        expand_open_m0n_through=expand_open_m0n_through,
+        expand_open_m1n_through=expand_open_m1n_through,
+    )
     seen: list[tuple[int, int, bool]] = []
     for row in rows:
         if row.key not in seen:
@@ -245,19 +321,31 @@ def is_open_m0n_knudsen_owned(markings: int, *, proper: bool) -> bool:
     r"""True when open Knudsen owns ``(0, markings, proper)`` parametrically."""
     try:
         n = int(markings)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return False
     return (not proper) and n >= 3
+
+
+def is_open_m1n_level_owned(markings: int, *, proper: bool) -> bool:
+    r"""True when open Legendre/Hesse owns ``(1, markings, proper)`` parametrically."""
+    try:
+        n = int(markings)
+    except TypeError, ValueError:
+        return False
+    return (not proper) and n >= 1
 
 
 def is_owned_etale_atlas_type(genus: int, markings: int, *, proper: bool) -> bool:
     r"""True when the registry owns a presentation for ``(g,n,proper)``.
 
-    Open ``M_{0,n}`` for every ``n ≥ 3`` is owned parametrically. Genus-1 types
-    remain owned at the type level even when a concrete base fails Legendre/Hesse
-    hypotheses (those bases get a structured gap, not a silent equation-level stamp).
+    Open ``M_{0,n}`` for every ``n ≥ 3`` and open ``M_{1,n}`` for every ``n ≥ 1``
+    are owned parametrically. Genus-1 types remain owned at the type level even
+    when a concrete base fails Legendre/Hesse hypotheses (those bases get a
+    structured gap, not a silent equation-level stamp).
     """
     if genus == 0 and is_open_m0n_knudsen_owned(markings, proper=proper):
+        return True
+    if genus == 1 and is_open_m1n_level_owned(markings, proper=proper):
         return True
     return (genus, markings, proper) in owned_etale_atlas_type_keys()
 
@@ -284,19 +372,26 @@ def lookup_owned_etale_atlas(
 ) -> OwnedAtlasPresentation | None:
     r"""First registry row matching ``(g,n,proper)`` and optional base hypothesis.
 
-    Open ``M_{0,n}`` (``n ≥ 3``) resolves to a concrete Knudsen alias row
-    (``point_spec`` / ``knudsen_cross_ratio`` / ``knudsen_configuration``) even
-    though the static registry stores a single parametric row. When ``base`` is
-    omitted, returns the first matching row (do not treat as runtime atlas
-    resolution without a base for genus-1 hypothesis rows).
+    Open ``M_{0,n}`` (``n ≥ 3``) resolves to a concrete Knudsen alias row.
+    Open ``M_{1,n}`` (``n ≥ 1``) resolves to a concrete Legendre/Hesse alias
+    row under the matching base hypothesis. When ``base`` is omitted, returns
+    the first matching row (do not treat as runtime atlas resolution without a
+    base for genus-1 hypothesis rows).
     """
     if genus == 0 and is_open_m0n_knudsen_owned(markings, proper=proper):
         row = _open_m0n_concrete_row(markings)
         if base is None or _hypothesis_holds(row.base_hypothesis, base):
             return row
         return None
+    if genus == 1 and is_open_m1n_level_owned(markings, proper=proper):
+        # Prefer Legendre when base is omitted or both hypotheses hold.
+        for legendre in (True, False):
+            row = _open_m1n_concrete_row(markings, legendre=legendre)
+            if base is None or _hypothesis_holds(row.base_hypothesis, base):
+                return row
+        return None
     for row in _OWNED_ETALE_ATLAS_PRESENTATIONS:
-        if row.parametric_open_m0n:
+        if row.parametric_open_m0n or row.parametric_open_m1n:
             continue
         if row.genus != genus or row.markings != markings or row.proper != proper:
             continue
@@ -322,13 +417,11 @@ def _domain_for_presentation(stack: ModuliStack, row: OwnedAtlasPresentation) ->
         ProjectiveLineAlgebraicSpace,
     )
     from .instances import (
-        _hesse_affine_scheme,
-        _hesse_M12_affine_scheme,
         _hesse_Mbar12_algebraic_space,
+        _hesse_open_M1n_affine_scheme,
         _knudsen_open_M0n_affine_scheme,
-        _legendre_affine_scheme,
-        _legendre_M12_affine_scheme,
         _legendre_Mbar12_algebraic_space,
+        _legendre_open_M1n_affine_scheme,
     )
 
     base = stack.base_scheme()
@@ -352,20 +445,16 @@ def _domain_for_presentation(stack: ModuliStack, row: OwnedAtlasPresentation) ->
         return ProjectiveLineAlgebraicSpace(base, "Mbar_0_4")
     if name == "kapranov_blowup_four_points_p2":
         return KapranovBlowupFourPointsP2AlgebraicSpace(base, "Mbar_0_5")
-    if name == "legendre_gamma2":
-        return AffineAlgebraicSpace(_legendre_affine_scheme(base))
+    if name in ("legendre_gamma2", "legendre_universal_curve", "legendre_marked_configuration"):
+        return AffineAlgebraicSpace(_legendre_open_M1n_affine_scheme(base, stack.number_of_markings()))
     if name == "legendre_gamma2_compact":
         return ProjectiveLineAlgebraicSpace(base, "Mbar_Gamma2")
-    if name == "hesse_gamma3":
-        return AffineAlgebraicSpace(_hesse_affine_scheme(base))
+    if name in ("hesse_gamma3", "hesse_universal_curve", "hesse_marked_configuration"):
+        return AffineAlgebraicSpace(_hesse_open_M1n_affine_scheme(base, stack.number_of_markings()))
     if name == "hesse_gamma3_compact":
         return ProjectiveLineAlgebraicSpace(base, "Mbar_Gamma3")
-    if name == "legendre_universal_curve":
-        return AffineAlgebraicSpace(_legendre_M12_affine_scheme(base))
     if name == "legendre_universal_curve_compact":
         return _legendre_Mbar12_algebraic_space(base)
-    if name == "hesse_universal_curve":
-        return AffineAlgebraicSpace(_hesse_M12_affine_scheme(base))
     if name == "hesse_universal_curve_compact":
         return _hesse_Mbar12_algebraic_space(base)
     raise AssertionError(f"unowned construction name in registry: {name!r}")
@@ -406,29 +495,48 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
         "registry_owned_type": is_owned_etale_atlas_type(g, n, proper=proper),
     }
 
-    if is_owned_etale_atlas_type(g, n, proper=proper) and g == 1 and n in (1, 2) and _legendre_and_hesse_unavailable(base):
+    owned_genus1 = is_owned_etale_atlas_type(g, n, proper=proper) and g == 1 and _legendre_and_hesse_unavailable(base)
+    if owned_genus1:
         weierstrass = stack.weierstrass_gm_presentation()
-        assert weierstrass is not None, "Weierstrass Gm presentation must be owned when Legendre/Hesse unavailable"
         if n == 1:
             gap["reason"] = "legendre_and_hesse_unavailable"
-        elif proper:
+        elif n == 2 and proper:
             gap["reason"] = "mbar_1_2_legendre_and_hesse_unavailable"
-        else:
+        elif n == 2:
             gap["reason"] = "m_1_2_legendre_and_hesse_unavailable"
+        else:
+            gap["reason"] = "m_1_n_legendre_and_hesse_unavailable"
         gap["base_hypothesis"] = {
             "two_invertible": False,
             "three_invertible": False,
             "prototype": "Spec(Z)",
             "note": ("Neither 2 nor 3 is a unit in the base ring. On fields this case never arises (char 2 ⇒ Hesse; char 3 ⇒ Legendre; else both units)."),
         }
-        gap["alternate_proving_sets"] = (
-            {
-                "name": "weierstrass_gm_quotient",
-                "status": "owned_not_finite_etale",
-                "presentation": weierstrass,
-                "requires": "Spec(R[a1,…,a6][Δ⁻¹]) with weighted 𝔾_m-action",
-                "note": weierstrass["proof_not_finite_etale"],
-            },
+        alts: list[dict[str, object]] = []
+        if weierstrass is not None:
+            alts.append(
+                {
+                    "name": "weierstrass_gm_quotient",
+                    "status": "owned_not_finite_etale",
+                    "presentation": weierstrass,
+                    "requires": "Spec(R[a1,…,a6][Δ⁻¹]) with weighted 𝔾_m-action",
+                    "note": weierstrass["proof_not_finite_etale"],
+                }
+            )
+        else:
+            alts.append(
+                {
+                    "name": "weierstrass_gm_quotient",
+                    "status": "owned_not_finite_etale_for_n_le_2_only",
+                    "requires": "n ∈ {1,2}; Spec(R[a1,…,a6][Δ⁻¹]) with weighted 𝔾_m-action",
+                    "note": (
+                        "Weierstrass 𝔾_m fail-closed evidence is owned for (1,1)/(1,2). "
+                        "Open M_{1,n} for n≥3 stays fail-closed under the same base "
+                        "hypothesis without inventing a multi-mark Weierstrass chart."
+                    ),
+                }
+            )
+        alts.append(
             {
                 "name": "igusa_ordinary_a6_chart",
                 "status": "incomplete_ordinary_only",
@@ -438,8 +546,9 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
                     "misses the supersingular point j = 0 — incomplete as a full "
                     "atlas of M_{1,1}. Not constructed in-spike."
                 ),
-            },
+            }
         )
+        gap["alternate_proving_sets"] = tuple(alts)
         gap["pre_225_remaining_after_this"] = "general_(g,n)_only"
         return gap
 
@@ -452,16 +561,19 @@ def etale_atlas_gap_from_registry(stack: ModuliStack) -> dict[str, object] | Non
             "requires": "research constructions (level structures, clutching, blowups) beyond proving set",
             "note": (
                 "Owned proving-set presentations are the rows of "
-                "owned_etale_atlas_presentations(); open M_{0,n} for every n≥3 is "
-                "owned by one parametric Knudsen row (expand via "
-                "expand_open_m0n_through). Do not invent charts — in particular do "
-                "not fake Kapranov Mbar_{0,n} for n>5."
+                "owned_etale_atlas_presentations(); open M_{0,n} for every n≥3 and "
+                "open M_{1,n} for every n≥1 (Legendre/Hesse under unit hypotheses) "
+                "are owned parametrically (expand via expand_open_m0n_through / "
+                "expand_open_m1n_through). Do not invent charts — in particular do "
+                "not fake Kapranov Mbar_{0,n} for n>5 or compact Mbar_{1,n} for n>2."
             ),
             "owned_registry_cardinality": owned_etale_atlas_cardinality(),
             "owned_registry_type_keys": list(owned_etale_atlas_type_keys()),
             "owned_registry_rows": owned_rows,
             "parametric_open_m0n": True,
+            "parametric_open_m1n": True,
             "open_m0n_knudsen_inspectable_max": OPEN_M0N_INSPECTABLE_MAX,
+            "open_m1n_level_inspectable_max": OPEN_M1N_INSPECTABLE_MAX,
         },
     )
     return gap

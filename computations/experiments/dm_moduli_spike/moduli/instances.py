@@ -169,43 +169,139 @@ def _knudsen_open_M0n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme:
 def _legendre_affine_scheme(base: AffineScheme) -> AffineScheme:
     r"""Legendre parameter space ``Spec(R[λ]_{λ(λ-1)})`` for ``y² = x(x-1)(x-λ)``.
 
-    Over bases with ``2`` invertible, this is ``M(Γ(2))``, and the forgetful map
-    ``M(Γ(2)) → M_{1,1}`` is finite étale Galois of degree 6 with group
-    ``S₃ ≅ SL₂(𝔽₂)`` (permuting the three nonzero 2-torsion points). Hence
-    ``M_{1,1} ≅ [Spec(R[λ]_{λ(λ-1)}) / S₃]`` as Deligne–Mumford stacks — an owned
-    affine étale atlas domain, not an isomorphism of stacks to an affine scheme.
+    Special case ``n = 1`` of :func:`_legendre_open_M1n_affine_scheme`.
     """
-    assert _two_is_invertible(base), "Legendre form requires 2 invertible in the base ring"
-    return _punctured_lambda_affine_scheme(base)
+    return _legendre_open_M1n_affine_scheme(base, 1)
 
 
 def _hesse_affine_scheme(base: AffineScheme) -> AffineScheme:
     r"""Hesse parameter space ``Spec(R[μ]_{μ³-1})`` for the level-``Γ(3)`` cover.
 
-    Literature: the Hesse pencil ``X³ + Y³ + Z³ = 3μ XYZ`` (equivalently
-    ``X³ + Y³ + Z³ + λ XYZ = 0``) is smooth elliptic precisely when ``μ³ ≠ 1``,
-    and carries a full level-3 structure at the flexes. Over bases with ``3``
-    invertible (including characteristic ``2``, where ``3 = 1``), the forgetful
-    map ``M(Γ(3)) → M_{1,1}`` is finite étale Galois of degree
-    ``|SL₂(𝔽₃)| = 24`` (binary tetrahedral group). Owned affine chart:
+    Special case ``n = 1`` of :func:`_hesse_open_M1n_affine_scheme`.
+    """
+    return _hesse_open_M1n_affine_scheme(base, 1)
 
-    ``U = Spec(R[μ]_{μ³ - 1})``
 
-    so ``M_{1,1} ≅ [U / SL₂(𝔽₃)]`` as DM stacks — not a scheme isomorphism.
-    Fail-closed when ``3`` is not invertible (Hesse coefficient / flex theory
-    collapses in characteristic ``3``). Primitive cube roots of unity are **not**
-    required in the base ring for this affine domain: the moduli problem
-    ``M(Γ(3))`` and the finite étale map to ``M_{1,1}`` are defined over
-    ``ℤ[1/3]``; ``μ₃`` appears only in optional explicit linear models of the
-    Galois action on flex coordinates.
+def _legendre_open_M1n_point_names(extra_marks: int) -> tuple[str, ...]:
+    r"""Coordinate names for ``extra_marks`` Weierstrass points on the Legendre model."""
+    if extra_marks == 1:
+        return ("x", "y")
+    names: list[str] = []
+    for i in range(1, extra_marks + 1):
+        names.extend((f"x{i}", f"y{i}"))
+    return tuple(names)
+
+
+def _hesse_open_M1n_point_names(extra_marks: int) -> tuple[str, ...]:
+    r"""Coordinate names for ``extra_marks`` affine points on the Hesse cubic."""
+    return _legendre_open_M1n_point_names(extra_marks)
+
+
+def _legendre_open_M1n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme:
+    r"""Parametric Legendre / ``Γ(2)`` chart for open ``M_{1,n}``, ``n ≥ 1``.
+
+    Forgetful ``M_{1,n} → M_{1,1}``; the fiber is a configuration of ``n - 1``
+    extra marked points on the universal Legendre curve (first mark at the
+    identity / zero section at infinity). Requires ``2 ∈ Rˣ``. Finite étale
+    groupoid pulled back from ``M(Γ(2)) → M_{1,1}`` (Galois group ``S₃``).
+
+    * ``n = 1``: ``Spec(R[λ]_{λ(λ-1)}) = M(Γ(2))``.
+    * ``n = 2``: Weierstrass affine
+      ``Spec(R[λ,x,y]_{λ(λ-1)}/(y²-x(x-1)(x-λ)))`` (historical chart).
+    * ``n ≥ 3``: ``n - 1`` points ``(x_i,y_i)`` on the Legendre model, localized
+      at ``λ(λ-1)``, at each ``y_i`` (away from nonzero 2-torsion / branch of
+      the double cover), and at ``x_i - x_j`` (``i < j``; dense open of
+      pairwise-distinct configurations with distinct ``x``-coordinates).
+
+    Not a scheme isomorphism ``M_{1,n} ≅ U``. Proper ``Mbar_{1,n}`` for ``n > 2``
+    is not claimed here (no honest compactified multi-mark cover owned).
     """
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
-    assert _three_is_invertible(base), "Hesse form requires 3 invertible in the base ring"
+    n_int = int(n)
+    assert n_int >= 1, f"open Legendre M_{{1,n}} chart requires n ≥ 1; got {n!r}"
+    assert _two_is_invertible(base), "Legendre M_{1,n} chart requires 2 invertible"
+    if n_int == 1:
+        return _punctured_lambda_affine_scheme(base)
+
+    extra = n_int - 1
+    names = ("lambda",) + _legendre_open_M1n_point_names(extra)
     ring = base.ring()
-    poly = PolynomialRing(ring, names=("mu",))
-    mu = poly.gen()
-    return AffineScheme(poly.localization(mu**3 - 1))
+    poly = PolynomialRing(ring, names=names)
+    gens = poly.gens()
+    lam = gens[0]
+    denom = lam * (lam - 1)
+    if n_int >= 3:
+        xs = gens[1::2]
+        ys = gens[2::2]
+        for y in ys:
+            denom *= y
+        for i, xi in enumerate(xs):
+            for xj in xs[i + 1 :]:
+                denom *= xi - xj
+    localized = poly.localization(denom)
+    equations = []
+    for i in range(extra):
+        x = localized(gens[1 + 2 * i])
+        y = localized(gens[2 + 2 * i])
+        equations.append(y**2 - x * (x - 1) * (x - localized(lam)))
+    if len(equations) == 1:
+        return AffineScheme(localized.quo(equations[0]))
+    return AffineScheme(localized.quo(localized.ideal(equations)))
+
+
+def _hesse_open_M1n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme:
+    r"""Parametric Hesse / ``Γ(3)`` chart for open ``M_{1,n}``, ``n ≥ 1``.
+
+    Parallel to :func:`_legendre_open_M1n_affine_scheme` under ``3 ∈ Rˣ``
+    (including characteristic ``2``). Finite étale groupoid pulled back from
+    ``M(Γ(3)) → M_{1,1}`` (Galois group ``SL₂(𝔽₃)``, order 24).
+
+    * ``n = 1``: ``Spec(R[μ]_{μ³-1}) = M(Γ(3))``.
+    * ``n = 2``: Hesse affine
+      ``Spec(R[μ,x,y]_{μ³-1}/(x³+y³+1-3μxy))`` (historical chart).
+    * ``n ≥ 3``: ``n - 1`` points on the ``Z = 1`` Hesse cubic, localized at
+      ``μ³ - 1``, at each ``y_i``, and at pairwise ``x_i - x_j`` (dense open of
+      collision-free configurations in the affine chart; zero section / flex
+      identity stays on ``Z = 0``).
+
+    Primitive cube roots of unity are not required in the base ring. Proper
+    ``Mbar_{1,n}`` for ``n > 2`` is not claimed here.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    n_int = int(n)
+    assert n_int >= 1, f"open Hesse M_{{1,n}} chart requires n ≥ 1; got {n!r}"
+    assert _three_is_invertible(base), "Hesse M_{1,n} chart requires 3 invertible"
+    ring = base.ring()
+    if n_int == 1:
+        poly = PolynomialRing(ring, names=("mu",))
+        mu = poly.gen()
+        return AffineScheme(poly.localization(mu**3 - 1))
+
+    extra = n_int - 1
+    names = ("mu",) + _hesse_open_M1n_point_names(extra)
+    poly = PolynomialRing(ring, names=names)
+    gens = poly.gens()
+    mu = gens[0]
+    denom = mu**3 - 1
+    if n_int >= 3:
+        xs = gens[1::2]
+        ys = gens[2::2]
+        for y in ys:
+            denom *= y
+        for i, xi in enumerate(xs):
+            for xj in xs[i + 1 :]:
+                denom *= xi - xj
+    localized = poly.localization(denom)
+    equations = []
+    for i in range(extra):
+        x = localized(gens[1 + 2 * i])
+        y = localized(gens[2 + 2 * i])
+        equations.append(x**3 + y**3 + 1 - localized(3) * localized(mu) * x * y)
+    if len(equations) == 1:
+        return AffineScheme(localized.quo(equations[0]))
+    return AffineScheme(localized.quo(localized.ideal(equations)))
 
 
 def _configuration_M05_affine_scheme(base: AffineScheme) -> AffineScheme:
@@ -228,54 +324,19 @@ def _configuration_M06_affine_scheme(base: AffineScheme) -> AffineScheme:
 def _legendre_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
     r"""Legendre universal-curve chart for open ``M_{1,2}``.
 
-    Translate so the first mark is the identity of the Legendre model
-    ``y² = x(x-1)(x-λ)``. The identity lies at infinity, so the Weierstrass
-    affine already parametrizes a second mark ``P ≠ O``. Localize the polynomial
-    ring at ``λ(λ-1)`` (smooth Legendre locus), then quotient by the Weierstrass
-    equation:
-
-    ``U = Spec( R[λ,x,y]_{λ(λ-1)} / (y² - x(x-1)(x-λ)) )``
-
-    The forgetful map ``U → M_{1,2}`` is the pullback of ``M(Γ(2)) → M_{1,1}``
-    along ``M_{1,2} → M_{1,1}``, hence finite étale Galois of degree ``6`` with
-    group ``S₃``. Not a scheme isomorphism ``M_{1,2} ≅ U``. Requires ``2``
-    invertible. Proper ``Mbar_{1,2}`` uses the compactified two-chart cover
-    :func:`_legendre_Mbar12_algebraic_space`.
+    Special case ``n = 2`` of :func:`_legendre_open_M1n_affine_scheme`. Proper
+    ``Mbar_{1,2}`` uses :func:`_legendre_Mbar12_algebraic_space`.
     """
-    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-
-    assert _two_is_invertible(base), "Legendre M_{1,2} chart requires 2 invertible"
-    ring = base.ring()
-    poly = PolynomialRing(ring, names=("lambda", "x", "y"))
-    lam, x, y = poly.gens()
-    localized = poly.localization(lam * (lam - 1))
-    equation = localized(y) ** 2 - localized(x) * (localized(x) - 1) * (localized(x) - localized(lam))
-    return AffineScheme(localized.quo(equation))
+    return _legendre_open_M1n_affine_scheme(base, 2)
 
 
 def _hesse_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
     r"""Hesse universal-curve chart for open ``M_{1,2}`` (incl. char ``2``).
 
-    Over the Hesse ``Γ(3)`` base ``Spec(R[μ]_{μ³-1})``, take the standard affine
-    ``Z = 1`` chart of the Hesse cubic ``X³ + Y³ + Z³ = 3μ XYZ``:
-
-    ``U = Spec( R[μ,x,y]_{μ³-1} / (x³ + y³ + 1 - 3μ x y) )``
-
-    A flex used as identity lies on the line ``Z = 0``, so this affine excludes
-    the zero section. Pullback of ``M(Γ(3)) → M_{1,1}`` along ``M_{1,2} → M_{1,1}``
-    is finite étale of degree ``|SL₂(𝔽₃)| = 24``. Requires ``3`` invertible
-    (and is used when Legendre is unavailable). Proper ``Mbar_{1,2}`` uses the
-    compactified two-chart cover :func:`_hesse_Mbar12_algebraic_space`.
+    Special case ``n = 2`` of :func:`_hesse_open_M1n_affine_scheme`. Proper
+    ``Mbar_{1,2}`` uses :func:`_hesse_Mbar12_algebraic_space`.
     """
-    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-
-    assert _three_is_invertible(base), "Hesse M_{1,2} chart requires 3 invertible"
-    ring = base.ring()
-    poly = PolynomialRing(ring, names=("mu", "x", "y"))
-    mu, x, y = poly.gens()
-    localized = poly.localization(mu**3 - 1)
-    equation = localized(x) ** 3 + localized(y) ** 3 + 1 - localized(3) * localized(mu) * localized(x) * localized(y)
-    return AffineScheme(localized.quo(equation))
+    return _hesse_open_M1n_affine_scheme(base, 2)
 
 
 def _legendre_Mbar12_finite_lambda_chart(base: AffineScheme) -> AffineScheme:
@@ -782,21 +843,23 @@ class ModuliStack(DeligneMumfordStack):
     def legendre_quotient_presentation(self) -> dict[str, object] | None:
         r"""Inspectable ``(U, S₃)`` data when a Legendre ``Γ(2)`` presentation is owned.
 
-        Returns ``None`` unless this is ``M_{1,1}`` / ``Mbar_{1,1}`` / ``M_{1,2}`` /
-        ``Mbar_{1,2}`` over a base with ``2`` invertible.
+        Returns ``None`` unless this is open ``M_{1,n}`` (``n ≥ 1``) or proper
+        ``Mbar_{1,1}`` / ``Mbar_{1,2}`` over a base with ``2`` invertible.
 
-        - Open ``M_{1,1}``: ``U = Spec(R[λ]_{λ(λ-1)}) = M(Γ(2))``.
-        - Proper ``Mbar_{1,1}``: ``U = ℙ¹ = Mbar(Γ(2))`` (standard affine cover).
-        - Open ``M_{1,2}``: ``U`` = Legendre Weierstrass affine
-          ``Spec(R[λ,x,y]_{λ(λ-1)}/(y²-x(x-1)(x-λ)))`` (universal curve minus
-          zero section over ``M(Γ(2))``).
-        - Proper ``Mbar_{1,2}``: ``U`` = compactified Legendre universal-curve
-          affine cover (includes nodal fibers over ``Mbar(Γ(2)) ≅ ℙ¹``).
+        - Open ``M_{1,n}``: parametric Legendre chart
+          :func:`_legendre_open_M1n_affine_scheme`.
+        - Proper ``Mbar_{1,1}`` / ``Mbar_{1,2}``: compact Legendre covers.
+        - Proper ``Mbar_{1,n}`` for ``n > 2`` is not owned.
 
         ``G = S₃`` acts by permuting ``{0,1,∞}`` on the level structure.
         Does **not** claim a scheme isomorphism ``M_{1,*} ≅ U``.
         """
-        if self.genus() != 1 or self.number_of_markings() not in (1, 2):
+        if self.genus() != 1:
+            return None
+        n = int(self.number_of_markings())
+        if self.is_proper() and n not in (1, 2):
+            return None
+        if (not self.is_proper()) and n < 1:
             return None
         if not _two_is_invertible(self.base_scheme()):
             return None
@@ -806,20 +869,22 @@ class ModuliStack(DeligneMumfordStack):
         group = _legendre_galois_group()
         from typing import Any, cast
 
-        n = self.number_of_markings()
-        if n == 2:
-            if self.is_proper():
+        if self.is_proper():
+            if n == 2:
                 presentation = "Mbar_1_2 ≅ [compact_Legendre_univ_curve / S3]"
                 level_structure = "Mbar(Gamma(2))_universal_curve"
             else:
-                presentation = "M_1_2 ≅ [Legendre_univ_curve_minus_0 / S3]"
-                level_structure = "Gamma(2)_universal_curve"
-        elif self.is_proper():
-            presentation = "Mbar_1_1 ≅ [P1 / S3]"
-            level_structure = "Mbar(Gamma(2))"
-        else:
+                presentation = "Mbar_1_1 ≅ [P1 / S3]"
+                level_structure = "Mbar(Gamma(2))"
+        elif n == 1:
             presentation = "M_1_1 ≅ [Legendre_U / S3]"
             level_structure = "Gamma(2)"
+        elif n == 2:
+            presentation = "M_1_2 ≅ [Legendre_univ_curve_minus_0 / S3]"
+            level_structure = "Gamma(2)_universal_curve"
+        else:
+            presentation = f"M_1_{n} ≅ [Legendre_marked_configuration / S3]"
+            level_structure = "Gamma(2)_marked_configuration"
         return {
             "covering_space": domain,
             "group": group,
@@ -836,22 +901,23 @@ class ModuliStack(DeligneMumfordStack):
     def hesse_quotient_presentation(self) -> dict[str, object] | None:
         r"""Inspectable ``(U, SL₂(𝔽₃))`` data when a Hesse ``Γ(3)`` presentation is owned.
 
-        Returns ``None`` unless this is ``M_{1,1}`` / ``Mbar_{1,1}`` / ``M_{1,2}`` /
-        ``Mbar_{1,2}`` over a base with ``2`` **not** invertible and ``3`` invertible
-        (Legendre preferred whenever available).
+        Returns ``None`` unless this is open ``M_{1,n}`` (``n ≥ 1``) or proper
+        ``Mbar_{1,1}`` / ``Mbar_{1,2}`` over a base with ``2`` **not** invertible
+        and ``3`` invertible (Legendre preferred whenever available).
 
-        - Open ``M_{1,1}``: ``U = Spec(R[μ]_{μ³-1}) = M(Γ(3))`` Hesse chart.
-        - Proper ``Mbar_{1,1}``: ``U = ℙ¹ = Mbar(Γ(3))`` (standard affine cover).
-        - Open ``M_{1,2}``: ``U`` = Hesse affine
-          ``Spec(R[μ,x,y]_{μ³-1}/(x³+y³+1-3μxy))`` (universal curve minus a flex
-          zero section over ``M(Γ(3))``).
-        - Proper ``Mbar_{1,2}``: ``U`` = compactified Hesse universal-curve affine
-          cover (includes nodal fibers over ``Mbar(Γ(3)) ≅ ℙ¹``).
+        - Open ``M_{1,n}``: parametric Hesse chart :func:`_hesse_open_M1n_affine_scheme`.
+        - Proper ``Mbar_{1,1}`` / ``Mbar_{1,2}``: compact Hesse covers.
+        - Proper ``Mbar_{1,n}`` for ``n > 2`` is not owned.
 
         ``G = SL₂(𝔽₃)`` has order 24. Does **not** claim a scheme isomorphism
         ``M_{1,*} ≅ U``.
         """
-        if self.genus() != 1 or self.number_of_markings() not in (1, 2):
+        if self.genus() != 1:
+            return None
+        n = int(self.number_of_markings())
+        if self.is_proper() and n not in (1, 2):
+            return None
+        if (not self.is_proper()) and n < 1:
             return None
         base = self.base_scheme()
         if _two_is_invertible(base) or not _three_is_invertible(base):
@@ -862,20 +928,22 @@ class ModuliStack(DeligneMumfordStack):
         group = _hesse_galois_group()
         from typing import Any, cast
 
-        n = self.number_of_markings()
-        if n == 2:
-            if self.is_proper():
+        if self.is_proper():
+            if n == 2:
                 presentation = "Mbar_1_2 ≅ [compact_Hesse_univ_curve / SL2(F3)]"
                 level_structure = "Mbar(Gamma(3))_universal_curve"
             else:
-                presentation = "M_1_2 ≅ [Hesse_univ_curve_minus_0 / SL2(F3)]"
-                level_structure = "Gamma(3)_universal_curve"
-        elif self.is_proper():
-            presentation = "Mbar_1_1 ≅ [P1 / SL2(F3)]"
-            level_structure = "Mbar(Gamma(3))"
-        else:
+                presentation = "Mbar_1_1 ≅ [P1 / SL2(F3)]"
+                level_structure = "Mbar(Gamma(3))"
+        elif n == 1:
             presentation = "M_1_1 ≅ [Hesse_U / SL2(F3)]"
             level_structure = "Gamma(3)"
+        elif n == 2:
+            presentation = "M_1_2 ≅ [Hesse_univ_curve_minus_0 / SL2(F3)]"
+            level_structure = "Gamma(3)_universal_curve"
+        else:
+            presentation = f"M_1_{n} ≅ [Hesse_marked_configuration / SL2(F3)]"
+            level_structure = "Gamma(3)_marked_configuration"
         return {
             "covering_space": domain,
             "group": group,

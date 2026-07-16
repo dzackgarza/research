@@ -1670,10 +1670,12 @@ class AtlasMorphism(StackMorphism):
             "legendre_compact_finite_etale_cover",
             "legendre_universal_curve_finite_etale_cover",
             "legendre_compact_universal_curve_finite_etale_cover",
+            "legendre_marked_configuration_finite_etale_cover",
             "hesse_finite_etale_cover",
             "hesse_compact_finite_etale_cover",
             "hesse_universal_curve_finite_etale_cover",
             "hesse_compact_universal_curve_finite_etale_cover",
+            "hesse_marked_configuration_finite_etale_cover",
         )
 
     def covering_space(self) -> object | None:
