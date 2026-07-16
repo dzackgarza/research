@@ -25,7 +25,7 @@ def test_dickson_ross_equivalence_uses_splag_unimodular_witness():
     assert witness * first_gram * witness.transpose() == second_gram
 
     assert first.is_isometric(second)
-    isometry = second.Hom(first).from_matrix(witness.transpose())
+    isometry = second.hom(witness.transpose(), codomain=first)
     assert isometry.is_isometry()
     assert isometry.inverse().is_isometry()
     assert [isometry(v).q() for v in second.gens()] == [v.q() for v in second.gens()]
@@ -76,7 +76,7 @@ def test_a2_isometry_group_has_splag_dihedral_conjugacy_data():
     The hexagonal lattice has dihedral automorphism group of order 12; Ch. 4,
     Secs. 6.1-6.2 give the A2 Weyl part of order 3! and the extra factor of 2.
     """
-    a2 = lc.Lattice("A2")
+    a2 = lc.Lattice("A2(-1)")
     group = a2.isometry_group()
 
     assert a2.minimum() == 2

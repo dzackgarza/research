@@ -20,5 +20,7 @@ created: 2026-05-08
 ## See Also
 
 - [[Rank and Signature]]
+
 - [[Scaled Lattices]]
+
 - [[Gram Matrix]]

@@ -6,7 +6,9 @@ This document is normative for *names and placement*; the type definitions thems
 Status legend used throughout:
 
 - **canonical** — defined in this subtree; downstream code should draw from here.
+
 - **owned elsewhere** — defined in `algebra/domain_algebra.py` (the lattice DSL proper), re-exported here so the lexicon is the one import surface.
+
 - **defect** — an existing construct this catalogue supersedes; listed with the evidence so remediation is a lookup, not an investigation.
 
 * * *
@@ -26,7 +28,9 @@ No amount of annotation inside the package can fix this: the meaning of `Parent`
 `domain_algebra.py` declares structural protocols for Sage objects and grows them one method at a time as call sites demand:
 
 - `SageRing` (`domain_algebra.py:178`) — 7 methods, described in its own docstring as "the finite union of Sage ring classes" but implemented as a protocol, so it captures neither the union nor the interface.
+
 - `SageFreeModule` (`domain_algebra.py:202`) — 3 methods, while `objects/parents.py` calls `basis_matrix`, `base_ring`, `gen`, `is_submodule`, `intersection`, `saturation`, `index_in`, `quotient`, `submodule`, `dimension` on values of this type → 15 `[attr-defined]` errors.
+
 - `MatrixGroupLike`, `PermutationGroupLike`, `FundamentalChamberLike` (`domain_algebra.py:159-175`) — near-empty placeholder facades.
 
 Each new method call forces a protocol patch.
@@ -38,7 +42,9 @@ Superseded by real Sage classes from `typings/sage/` (`interop.py` names them); 
 The underlying classes have correct mathematical names; the mangles are manufactured at import and mixin sites:
 
 - `Lattice as LatticeCarrier`, `NondegenerateLattice as NondegenerateCarrier`, … — ten aliased imports in `objects/parents.py:50-79` and eleven in `objects/categories.py:35-81`. A "LatticeCarrier" resolves to the class installed as `ParentMethods` on the category of lattices — i.e. it is literally a `Lattice`. The suffix encodes an implementation role (this class is copied into a dynamic parent class), which is invisible to a reader and false as mathematics.
+
 - `_PositiveDefiniteKernelHost`, `_DefiniteKernelHost`, `_RootGeneratedHost` (`objects/parents.py:809-821`) — TYPE_CHECKING-conditional base aliases.
+
 - `_carrier_delta` (`objects/categories.py:113`) — projects a class's own attributes for Sage's category injection.
 
 Rule (Part IV): types in signatures are mathematical nouns.
@@ -50,6 +56,7 @@ The import-alias layer is unnecessary once the lexicon is the import surface: `f
 `domain_algebra.py` does not pass `mypy --strict` on its own:
 
 - `GramMatrix = NewType("GramMatrix", MatrixLike)` and `MorphismMatrix` (`domain_algebra.py:145,149`) — `NewType` over a Protocol is invalid (`[misc]` × 2).
+
 - `ExactScalar = NewType("ExactScalar", ExactScalarBase)` (`domain_algebra.py:152`) with `ExactScalarBase = int | Integer | Rational` under TYPE_CHECKING — `NewType` over a union is invalid (`[valid-newtype]`), and the runtime/`TYPE_CHECKING` fork means the checked type and the runtime type disagree.
 
 Superseded: with real stubs, `ExactScalar` is the plain union `Integer | Rational` (`foundations.py`) and `GramMatrix` is a `NewType` over the real (subclassable) `Matrix` class.
@@ -69,9 +76,12 @@ Representation vocabulary used below:
 
 - *alias* — `Name = SageClass` (or `type Name = ...` union).
   The semantic noun **is** the Sage implementation type; tightest possible contract, follows the ratified preference for tying types to real implementations.
+
 - *union* — enumerated union over the Sage implementation classes in play.
   Sage's class inventory is stable on the timescale of this research; extend the union when a new implementation class actually enters the repo.
+
 - *owned class* — a class this repo defines (the lattice DSL). The lattice-side classes double as category `ParentMethods` (the single-source design of `domain_algebra.py`).
+
 - *NewType* — a parse-witness: same runtime object, but the type records that a codec has validated it.
 
 ### II.1 Foundations (`foundations.py`)
@@ -130,7 +140,9 @@ Defined in `algebra/domain_algebra.py`, re-exported by `lexicon/__init__.py`. Th
 
 Objects: `Lattice`, `NondegenerateLattice`, `IntegralNondegenerateLattice`, `DefiniteLattice`, `PositiveDefiniteLattice`, `IndefiniteLattice`, `HyperbolicLattice`, `RootGeneratedLattice`, `LatticeElement`.
 
-Morphisms and homs: `LatticeMorphism`, `LatticeHomset`, `LatticeSimilarity`. `LatticeSimilarity` (name ratified 2026-07-08) is a *similitude*: a map with `b(f x, f y) = λ·b(x, y)` for a fixed multiplier λ (O'Meara, Introduction to Quadratic Forms, §42; λ = 1 recovers isometry; distinct from a homothety `x ↦ λx`, which multiplies the form by λ²). Its role here is mostly a convenient generalization for discussing symmetric and skew-symmetric forms at once.
+Morphisms and homs: `LatticeMorphism`, `LatticeHomset`, `LatticeSimilarity`, `LatticeBaseChangeFunctor`, `Subobject` (the pair `(L, ι: L ↪ M)` — runtime authority `morphisms/homsets.py`, referenced by the contracts here), `IsometryHomset` (`Isom(L, M)` as a first-class parent: existence/classification questions are homset questions; `is_isometric` is its emptiness router), `EmbeddingHomset` (`Emb(L, M)` likewise — the home of the Nikulin-class machinery).
+`LatticeBaseChangeFunctor` is the scalar-extension functor `Lattices(R) → Lattices(S)` induced by a canonical map `R → S`; it rebuilds each object through the target category root and acts on lattice morphisms through target homsets.
+Morphism-sited geometry (ratified method placement, #100): `restrict`, `preserves`, `saturation`, `saturation_factorization`, `orthogonal_complement`, `induced_map_on_quotient` are typed on `LatticeMorphism` — object spellings survive only as delegations through a canonical attached morphism (`identity_morphism`). `LatticeSimilarity` (name ratified 2026-07-08) is a *similitude*: a map with `b(f x, f y) = λ·b(x, y)` for a fixed multiplier λ (O'Meara, Introduction to Quadratic Forms, §42; λ = 1 recovers isometry; distinct from a homothety `x ↦ λx`, which multiplies the form by λ²). Its role here is mostly a convenient generalization for discussing symmetric and skew-symmetric forms at once.
 
 Isometry: `IsometryGroup`, `IsometrySubgroup`, `DiscriminantOrthogonalGroup`, `DiscriminantAction`.
 
@@ -168,7 +180,9 @@ Dev-facing; never in researcher-facing signatures unless the sentence is genuine
 | `SageQuadraticForm` | owned lattices carry the form intrinsically | `sage.quadratic_forms.quadratic_form.QuadraticForm` |
 | `SageFreeModule` | semantic `FreeModule`; dev union over whatever module implementation a Sage seam hands back | `FreeModule_generic \| FGP_Module_class` (extend on first use) |
 | `SageParent` / `SageElement` | owned parents/elements subclass these | `sage.structure.parent.Parent`, `sage.structure.element.Element` |
-| `SageCategory` | owned category classes subclass these | `sage.categories.category_types.Category_over_base_ring` |
+| `SageCategory` | category argument or implementation class | `sage.categories.category.Category` |
+| `SageFunctor` | external category functor base class | `sage.categories.functor.Functor` |
+| `SageMorphism` | external morphism base class | `sage.categories.morphism.Morphism` |
 | `SageCartanMatrix` | `foundations.CartanType` (the datum) vs Sage's matrix object | `sage.combinat.root_system.cartan_matrix.CartanMatrix_crystallographic` |
 | `SageQmodnZ` | `ValueModule` protocol in `domain_algebra` (kept: it types this external object structurally by ratified design) | `sage.groups.additive_abelian.qmodnz.QmodnZ` |
 | `SageInfinity` | — (return type of `minimum`/`maximum` on rank-0/indefinite regimes) | `sage.rings.infinity.PlusInfinity` / `MinusInfinity` |
@@ -200,11 +214,16 @@ Priority order when a noun enters the lexicon:
 
 1. **Owned class, wired as category `ParentMethods`** — when the repo owns the mathematics (the lattice/discriminant towers).
    This is the ratified single-source design: the typed class and the runtime-injected API are one artifact.
+
 2. **Sage category `ParentMethods`** — when the noun is a *kind of Sage parent* (`Ring`, `Field`). The stub tree declares the category MRO edge on each implementation class it stubs, so everything Sage codes correctly is captured for free; check that the category actually carries the surface, since many Sage implementations forget to opt in (see II.2 preamble).
+
 3. **Alias to the Sage implementation class** (through `typings/sage/`) — when the semantic meaning coincides with one Sage class (`Matrix`, `Vector`, `Polyhedron`). Tightest contract; no drift possible.
+
 4. **Union over enumerated Sage implementation classes** — the documented fallback for kinds whose implementations don't opt into their category, and for dev seams (`SageFreeModule`). Extension is a catalogued one-liner.
+
 5. **Protocol** — only for external objects we neither own nor can enumerate, where structural typing is the honest statement (`ValueModule` is the one ratified example; a protocol built by *inspecting* a known set of non-opted-in implementations is the other sanctioned shape).
    A protocol that shadows a single concrete class is a defect (I.2).
+
 6. **NewType over a real class** — parse-witnesses (`GramMatrix`): the codec proved a property the class does not encode.
    A witness must still be a mathematical noun: "Gram matrix" is one; "MorphismMatrix" was not (the morphism object is its own witness), which is why it does not exist here.
 
@@ -217,11 +236,15 @@ The same pattern is the template for any future noun whose meaning varies over a
 ## Part IV — Naming rules
 
 1. Type names are mathematical nouns a researcher would say aloud: `Lattice`, `FiniteAbelianGroup`, `IsometryGroup`.
+
 2. Banned in type names: implementation-role vocabulary — `Carrier`, `Host`, `Kernel` (in the software sense), `Delta`, `Like`, `Impl`, `Base` (as a suffix), `Mixin`. If a class plays an implementation role, the *docstring* says so; the name states the mathematics.
+
 3. `Sage*` prefix is reserved for Part II.5: Sage's object where it differs from ours.
    Never prefix a noun whose only realization is Sage's class.
+
 4. No import-site renames of lexicon nouns (`import X as YCarrier` is how I.3 happened).
    If two meanings collide in one module, the collision is real: one of them is a `Sage*` noun or a missing catalogue entry.
+
 5. Raw/parsed pairs follow the codec convention: `RawX` (untrusted input) → codec → `X` (witness).
    Codecs are the only producers of witnesses.
 
@@ -230,5 +253,7 @@ The same pattern is the template for any future noun whose meaning varies over a
 The subtree must satisfy, at all times (enforced by `just -f justfile lexicon-check`, see README):
 
 1. `mypy --strict` passes over `lexicon/` with `../typings/` on the stub path — the catalogue type-checks as a collection of stubs.
+
 2. Every Sage identifier the stubs or aliases name exists on the running Sage (`lexicon/verify_against_sage.py` imports every aliased class and asserts every stubbed attribute) — stubs are claims about an external system and are verified against it, never trusted from memory.
+
 3. One authority per noun: a name is defined in exactly one lexicon module; `__init__.py` is re-export only; `domain_algebra.py` remains the authority for the owned tower until migration step M2.

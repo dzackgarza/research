@@ -14,10 +14,13 @@ Each item is a demand recorded in the gap ledger, **not** a build license — se
 - **Nikulin primitive embeddings** — existence / construction / uniqueness (Nikulin 1.12.2 / 1.12.3 / 1.14.4). No Sage analogue.
   Core Enriques-moduli demand.
   Second oracle: Oscar `primitive_embeddings` via the rack sage-julia bridge (`dzack@rack:~/sage-julia-bridge`). Cite Nik80 (Zotero `TTY9FFJS`, extraction `D7BP5F7Z`); verify against the paper, not memory.
+
 - **Base-ring generalization Sage cannot do** — `Lattices(R)` over `ZZ_p` / `QQ_p`, general Dedekind `K`/`R`; base-change functors `Lattices(R) -> Lattices(S)`; pro/ind completion axioms.
   (Base rings Sage *does* support — `GF(p)`, `Integers(n)`, polynomial/fraction fields — are parity and live in the BASE spike, not here.)
+
 - **Hyperbolic engines** (Weyl group, fundamental chamber, reflectivity, Vinberg).
   Branch-off: graduates into its **own** workstream plan with its own tree; the base spike keeps only the declared vocabulary stable.
+
 - **Dual / functional machinery** — first-class `L^# -> L^*` module morphism, `as_homspace` / `as_functional`; metric-dual vs monoidal-dual reconciliation across base rings.
   Deferred unless it falls out naturally.
   Ground in Peters & Sterk 2024 (Zotero `TWBY2QDS`, extraction `PS24_extracted.md`).
@@ -30,8 +33,11 @@ Those land in the base spike codebase.
 Every engine here obeys the gap-ledger rule [lattice-spike-gap-ledger-novel-work-requiring-human-oversight]:
 
 1. an **interactive session** with the user (never an autonomous agent);
+
 2. a **literature-backed correctness argument** (cited Zotero source, human-reviewed), not a theorem recalled from training data;
+
 3. its **own test design reviewed by the user** (expected values from cited sources or an independent oracle, never from agent memory);
+
 4. an explicit user **go**.
 
 **Freeze precondition:** fork engines are built only after the base spike is frozen externally, tested in real human research work, and clearly correct and at parity.
@@ -41,6 +47,7 @@ This directory and its roadmap may be provisioned before that gate; the engines 
 
 - **Research package.** The root `dzack_research.feature` import exposes this fork for general research use.
   Its engines remain subject to the gates above.
+
 - Nothing here migrates into the broader `projects/lattice-research` program implicitly.
 
 ## Layout

@@ -10,7 +10,7 @@ For a given moduli space, there are often many choices of compactifications, lea
 In particular, a natural question to ask is whether or not the boundaries have geometric and modular meanings, exhibited as degenerating limits of smooth surfaces.
 Toward this end, we turn to the **stable pair compactifications** of Kollár, Shepherd-Barron, and Alexeev `\cite{kollar1988threefolds-and-deformations,alexeev1996moduli-spaces,Kol23}`{=tex}.
 
-The KSBA compactification generalizes the Deligne-Mumford compactification \( \overline{{ \mathcal{M}*{g, n} }} \) `\cite{deligne1969the-irreducibility-of-the-space}`{=tex} of \( { \mathcal{M}*{g, n} } \), the moduli space of genus \( g \) curves with \( n \) marked points, to higher-dimensional varieties.
+The KSBA compactification generalizes the Deligne-Mumford compactification \( \overline{{ \mathcal{M}_{g, n} }} \) `\cite{deligne1969the-irreducibility-of-the-space}`{=tex} of \( { \mathcal{M}_{g, n} } \), the moduli space of genus \( g \) curves with \( n \) marked points, to higher-dimensional varieties.
 By `\cite{mumford1965git, namikawa1976a-new-compactification-of-the-siegel1, alexeev1999on-mumfords-construction, alexeev2002complete-moduli}`{=tex}, a similarly modular compactification \( \overline{{\mathcal{A}_g}} \) of the moduli space \( {\mathcal{A}_g} \) of principally polarized abelian varieties via stable pairs exists.
 The normalization of \( \overline{{\mathcal{A}_g}} \) coincides with a particular choice of toroidal `\cite{AMRT75}`{=tex} compactification by the work of `\cite{kollar1988threefolds-and-deformations}`{=tex} and `\cite{alexeev1996moduli-spaces}`{=tex}.
 
@@ -48,8 +48,7 @@ A central theme in my research is to construct KSBA compactifications and classi
 In this way, one can construct compactifications that are simultaneously modular and amenable to explicit computations.
 In `\cite{AEGS23}`{=tex}, we prove the following:
 
-:::{.theorem title="\\cite{AEGS23}
-, Thm. 1.1"}
+::: {.theorem title="\\cite{AEGS23}, Thm. 1.1"}
 `\label{thm:aegs-normalization-comparison-morphism}`{=tex} There is an isomorphism
 \[
 \qty{ \overline{F_{\operatorname{En}, 2}} }^\nu \cong \overline{F_{\operatorname{En}, 2}}^{{\mathcal{F}}}
@@ -77,15 +76,13 @@ Leveraging and extending the theory of ADE surfaces in `\cite{AT21}`{=tex} to Dy
 
 ## Compact moduli spaces of Coble surfaces
 
-:::
-remark
+::: remark
 A Coble surface is a smooth projective rational surface \( S \) with \( {\left\lvert {-K_S} \right\rvert} = \emptyset \) but \( {\left\lvert {-2K_X} \right\rvert}\neq \emptyset \). Such surfaces arise from the work of `\cite{Cob19}`{=tex} and `\cite{Cob29}`{=tex} on Cremona transformations of \( {\mathbf{P}}^2 \) preserving an irreducible rational sextic \( C \) with ten nodal singularities. The blowup \( S \) of these nodes yields a Coble surface. Coble surfaces occur as degenerations of Enriques surfaces and were ultimately classified in `\cite{DZ99}`{=tex}. As such, they are closely tied to the theory of algebraic K3 surfaces with nonsymplectic involutions, which were classified by `\cite{nikulin1979quotient-groups}`{=tex}. For a reduced sextic \( C \), the double cover of \( S \) branched along the proper transform of \( C \) is a K3 surface \( X \) which can be realized as a degeneration of the universal double cover of an Enriques surface, where \( X \) is allowed to acquire an \( A_1 \) singularity fixed by the Enriques involution.
 
 Denote by \( F_{\Co, n} \) the moduli space of Coble surfaces with \( n \) boundary components. It is well-known that \( 1\leq n\leq 10 \), and the case \( n=1 \) corresponds to the surfaces originally studied by Coble. By `\cite{DK13}`{=tex}, the moduli space \( F_{\Co} \coloneqq F_{\Co, 1} \) is known to be rational, but very little else is known about these moduli spaces. In particular, compactifications of \( F_{\Co, n} \) have not yet appeared in the literature, despite their close relation to Enriques surfaces.
 :::
 
-:::
-remark
+::: remark
 `\label{rmk:divisors-for-coble-compactification}`{=tex} Towards constructing such a KSBA compactification, one can form a period domain for \( F_{\Co} \) and study (semi)toroidal compactifications as an intermediate step. Note that the blowup of a rational plane sextic \( C \) along its ten nodes yields a Coble surface \( S \) with \( n=1 \) boundary components. The double cover of \( S \) branched along \( C \) is a K3 surface \( X \) containing divisors \( e_0,\cdots, e_{10} \) where \( e_0 \) is the preimage of the pullback of a hyperplane class in \( {\mathbf{P}}^2 \) and \( e_1,\cdots, e_{10} \) are preimages of the exceptional divisors over the nodes of \( C \).
 
 These divisors in \( X \) generate a sublattice \( S_{\Co} \) of \( \operatorname{Pic}(X) \) with orthogonal complement \( T_{\Co} \), which can be shown to be isometric to the following: `\begin{align*}
@@ -97,8 +94,7 @@ F_{\Co} \coloneqq D_{T_\Co}/{\operatorname{O}}(T_\Co),\qquad D_{T_\Co} \subseteq
 which is birational to the moduli space of Coble surfaces with \( n=1 \) boundary component constructed as a GIT quotient \( ({\mathbf{P}}^2)^{10}{ \mathbin{/\mkern-6mu/}}\operatorname{PGL}_3 \). The moduli space \( F_{\Co} \) is an arithmetic quotient of a Hermitian symmetric domain of Type IV, and thus admits semitoroidal compactifications, including the canonically defined Baily-Borel compactification \( \overline{ F_{\Co} }^{\operatorname{BB}} \).
 :::
 
-:::
-remark
+::: remark
 In my current single-author project, I have studied the boundary \( \partial \overline{ F_{\Co} }^{\operatorname{BB}} \) of the Baily-Borel compactification of the moduli space of Coble surfaces and constructed an embedding \( F_{\Co}\hookrightarrow F_{\operatorname{En}} \) into the moduli space of unpolarized Enriques surfaces. Furthermore, I extend this to a morphism
 \[
 \eta: \overline{ F_{\Co} }^{\operatorname{BB}} \to \overline{ F_{\operatorname{En}} }^{\operatorname{BB}}
@@ -133,8 +129,7 @@ Using this, I have constructed the incidence diagram that represents \( \partial
 ```
 :::
 
-:::
-remark
+::: remark
 I have extended \( \eta \) to a morphism \( \tilde \eta: \overline{  F_{\Co} }^{\operatorname{BB}} \to \overline{  F_{(2,2,0)}  }^{\operatorname{BB}} \), a moduli space of quartic hyperelliptic K3 surfaces used in `\cite{AEGS23}`{=tex}. I determined that that the Coble cusps correspond to \( U\oplus E_8^2 \), the lattice with invariants \( (18, 0, 0)_1 \) in `\cref{fig:220-cusps-diagram}`{=tex}. Using our previous work in `\cite{AEGS23}`{=tex}, I am working on a correspondence between \( F_{\Co} \) and \( F_{\operatorname{En}, 2} \) in order to construct KSBA degenerations. The cusp diagram for \( F_{\operatorname{En}, 2} \) was first given by `\cite{Ste91}`{=tex}, and I have computed that the Coble 0-cusp corresponds with cusp 2 of `\cref{fig:sterk-cusp-diagram}`{=tex}. This correspondence requires studying a separate period domain \( D_{\Co}/\Gamma \) for a certain subgroup \( \Gamma_{\Co} \leq {\operatorname{O}}(T_{\Co}) \) and classifying orbits of isotropic vectors under this subgroup.
 
 Toward this end, I have been working on adapting the techniques of `\cite{Ste91}`{=tex} and `\cite{scattone1987on-the-compactification-of-moduli}`{=tex} to new lattices. This has involved a careful study of the discriminant groups \( A_{T_{\Co}} \) and \( A_{T_{\operatorname{En}}} \) of the Coble and Enriques lattices, and finding techniques to reduce classification of orbits of isotropic vectors in \( T_{\Co} \) to finite, computable problems in \( A_{T_{\Co}} \). This has also involved explicit constructions of *Eichler transformations* which prove that vectors satisfying certain numerical properties are in the same \( \Gamma_{\Co} \)-orbit. Conjecturally, this will suffice to produce a complete cusp diagram for \( D_{\Co}/\Gamma_{\Co} \), which I can then put in correspondence with the cusps of \( F_{\operatorname{En}, 2} \).
@@ -163,8 +158,7 @@ Ultimately, this chain of correspondences will allow me to leverage `\cite{AEGS2
 
 ## Coble surfaces with \( 1\leq n\leq 10 \) boundary components {#coble-surfaces-with-1leq-nleq-10-boundary-components}
 
-:::
-remark
+::: remark
 For \( S \) a Coble surface of *K3 type*, one can write \( {\left\lvert {-2K_S} \right\rvert} = \left\{{C}\right\} \) where \( C = C_1 + \cdots + C_n \), with each \( C_i \) an irreducible curve on \( S \). The \( C_i \) are referred to as *boundary components*, and it is known that \( 1\leq n \leq 10 \). The moduli spaces \( F_{\Co, n} \) for \( n\geq 2 \) have not yet appeared in the literature, but are amenable to a similar study as the \( n=1 \) case. Let \( \Sigma \) be a general *Coble set* of points in \( {\mathbf{P}}^2 \), so that the blowup \( S \) of \( {\mathbf{P}}^2 \) along the points of \( \Sigma \) is a Coble surface double covered by a K3 surface \( X \) branched along \( C \). Following a similar construction as that described in `\cref{rmk:divisors-for-coble-compactification}`{=tex} yields a collection of primitively embedded sublattices \( L_1,\cdots, L_{10} \) in \( \operatorname{Pic}(X) \). These are 2-elementary lattices with invariants \( (r=10+n, a=12-n,\delta) \), described in `\cite[Table 5.1, p.553]{EnriquesOne}`{=tex} and reproduced in `\cref{fig:coble-boundary-components-table}`{=tex}.
 
 ```{=tex}
@@ -191,15 +185,13 @@ For \( S \) a Coble surface of *K3 type*, one can write \( {\left\lvert {-2K_S} 
 ```
 :::
 
-:::
-remark
+::: remark
 This collection coincides precisely with the \( g=0 \) line of Nikulin's triangular table of 2-elementary lattices `\cite[Fig.\,1]{AE22}`{=tex}, and applying the period domain construction to these lattices yields ten moduli spaces \( F_{\Co, n} \) for \( 1\leq n \leq 10 \). The \( n=1 \) case is the subject of my current work.
 
 I conjecture that the moduli spaces and the boundaries of their compactifications for the cases \( 2\leq n \leq 10 \) can be described using similar techniques, which would be the first explicit study of their boundaries in the literature. Most immediately, I have computed several of the boundary incidence diagrams of their Baily-Borel compactifications using algorithms described in `\cite{AE22nonsympinv}`{=tex}, and the remaining ones are similarly computable.
 :::
 
-:::
-remark
+::: remark
 The ramification locus of the K3 cover of \( S \) is described in `\cite[Eqn. 5.3.1]{EnriquesOne}`{=tex} -- I conjecture that the corresponding involutions are nonsymplectic and that a component of the ramification locus forms a **recognizable divisor** c.f. `\cite{alexeevCompactModuliK32023,AEH21}`{=tex}. Under this assumption, `\cite[Thm.\,3.24]{AEH21}`{=tex} can be applied to identify the KSBA compactification with a semitoroidal compactification for a specific choice of semifans. I conjecture that these semifans are either refinements or coarsenings of the canonical Coxeter fans at the Baily-Borel cusps, and can be described in an explicit way, using an extension of the theory of ADE surfaces developed in `\cite{AT21}`{=tex}.
 
 Moreover, from this data one can extract a classification of dlt models for KSBA stable limits of such surfaces, giving a first description of \( \partial \overline{F_{\Co, n}} \), as our previous paper `\cite{AEGS23}`{=tex} did for numerically polarized Enriques surfaces. Finally, by `\cite[Prop.\,5.4.6]{EnriquesOne}`{=tex}, for each lattice of rank \( 10+n \) in `\cref{fig:coble-boundary-components-table}`{=tex}, there is an embedding \( F_{\Co, n}\hookrightarrow F_{\operatorname{En}} \) the moduli space of Enriques surfaces as constructed from \( E_{10}(2) \)-polarized K3 surfaces. Thus the data of integral affine structures, and hence dlt and stable models, can be understood by studying restrictions of the K3 boundary data described in `\cite{AE22}`{=tex}.
@@ -270,11 +262,17 @@ As a starting point, the Coxeter diagram for \( S \coloneqq(10, 10, 1) \) is wel
 Further study would include
 
 - Constructing the period domain \( F_{S} \),
+
 - Constructing Baily-Borel compactification \( \overline{F_{S}}^{\operatorname{BB}} \),
+
 - Studying \( {\operatorname{O}}(S) \)-orbits of isotropic vectors \( e_i \) in \( S \),
+
 - Using lattice-theoretic techniques to determine the cusp diagram of \( \partial \overline{ F_{S}}^{\operatorname{BB}} \),
+
 - Computing \( e_i^\perp/\left\langle{e_i}\right\rangle \) and the Coxeter diagrams at the corresponding 0-cusps,
+
 - Finding an appropriate recognizable divisor \( R \) and constructing the stable pair compactification \( \overline{F_S}^R \), and
+
 - Leveraging `\cite{AE22nonsympinv}`{=tex} to construct dlt models and integral affine structures classifying \( \partial\overline{F_S}^R \).
 
 This would open an avenue of research comparing GIT compactifications to KSBA compactifications, and generalizing these techniques to compactifications \( \overline{M_{H, m}}^R \) for \( m > 2 \) to construct new moduli spaces of general rational elliptic surfaces (with no restrictions on the fiber type).

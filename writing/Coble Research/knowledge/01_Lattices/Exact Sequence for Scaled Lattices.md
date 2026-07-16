@@ -19,5 +19,7 @@ created: 2026-05-08
 ## Details
 
 - The cokernel $\operatorname{O}^*(A_L)$ measures the obstruction to lifting isometries from the discriminant form $A_L$ to the lattice $L$.
+
 - The homomorphism $\psi$ is surjective (i.e., $\operatorname{O}^*(A_L) = 0$) when $L$ is indefinite and satisfies $\ell(A_L) + 2 \leq \operatorname{rank}(L)$, where $\ell(A_L)$ is the minimal number of generators of $A_L$.
+
 - For unimodular lattices like $U$ and $E_8$, the discriminant group is trivial, so $\operatorname{O}^*(L) = \operatorname{O}(L)$.

@@ -28,7 +28,9 @@ created: 2026-05-08
 ## Properties
 
 - The group $\langle I_{\operatorname{dP}}, I_{\mathrm{En}}, I_{\mathrm{Nik}} \rangle$ is isomorphic to $\mathbf{Z}_2^2$, meaning these involutions mutually commute.
+
 - For each involution $I_\star$, the invariant sublattice is denoted $S_\star \mathrel{\mathop:}= L_{\mathrm{K3}}^{I_\star = 1}$ and the co-invariant sublattice is $T_\star = L_{\mathrm{K3}}^{I_\star = -1}$.
+
 - The transcendental lattices $T_Z$ of [[Enriques surface|Enriques surfaces]] $Z$ primitively embed into these invariant sublattices.
 
 ## (Co)Invariant Lattices

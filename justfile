@@ -1,3 +1,9 @@
+# research — SageMath research automation.
+#
+# QC delegates to ~/ai-review-ci/justfiles/sage.just. Project-specific recipes
+# below are non-QC entry points or narrow repo orchestration.
+
+# ai-review-ci contract variables consumed by doctor and workflow installers.
 ai_review_ci_schema_version := "1"
 ai_review_ci_profile := "sage"
 ai_review_ci_ref := "main"
@@ -5,6 +11,10 @@ ai_review_ci_release_channel := "main"
 ai_review_ci_workflow_template_version := "1"
 ai_review_ci_local_delegation := "global-justfile"
 ai_review_ci_default_branch := "main"
+
+# List available recipes
+default:
+    @just --list
 
 # Build the installable Sage research distribution
 build: _lock
@@ -14,17 +24,15 @@ build: _lock
 _lock:
     uv lock
 
-# Commit gate — exact sage.just delegation required by QC doctor.
+# Run commit-tier SageMath QC through the central implementation
 test-commit:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-commit
 
-# Push gate — commit checks plus full Sage pytest discovery.
+# Run push-tier SageMath QC through the central implementation
 test-push:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-push
 
-# Backward-compatible aliases.
-test: test-commit
-
+# Run CI acceptance QC through the central implementation
 test-ci:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
 

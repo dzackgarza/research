@@ -1,0 +1,20 @@
+// Siting-enforcement checker (#100 T4): flaggability, not prevention.
+// Only reportPrivateUsage is enabled -- a private reach outside its
+// sanctioned scope is a type-check finding routed to the audit/disposition
+// workflow. All other type checking is owned by mypy (the just test gate)
+// and the lexicon check. The sage_patches subtree is the one sanctioned
+// crossing point for Sage-boundary reaches (each ruled-in Sage-private
+// engine is one documented module there), so it is excluded by name.
+// pythonVersion pins the language level to the pyproject floor (>=3.14):
+// without it basedpyright infers the host's Python, and an older-default
+// host rejects PEP 695 type-alias syntax before the private-usage
+// obligation is ever evaluated. The gate must fail only for its owned
+// obligation, deterministically across hosts.
+{
+  "typeCheckingMode": "off",
+  "pythonVersion": "3.14",
+  "include": ["."],
+  "exclude": ["**/tests", "typings", "**/__pycache__", "sage_patches"],
+  "stubPath": "typings",
+  "reportPrivateUsage": "error"
+}

@@ -21,5 +21,7 @@ created: 2026-05-08
 ## Properties
 
 - For indefinite even lattices $L$, one typically expects the class number of $L$ to be one.
+
 - For definite lattices, the situation is reversed, and having class number one is somewhat rare.
+
 - By [@Sca87], if $\operatorname{rank}(L) > 16+\ell(L)$, then $\operatorname{cl}(L) \geq 2$.

@@ -44,8 +44,7 @@ A central theme in my research is to construct KSBA compactifications and classi
 In this way, one can construct compactifications that are simultaneously modular and amenable to explicit computations.
 In \cite{AEGS23}, we prove the following:
 
-:::{.theorem title="\cite{AEGS23}
-, Thm. 1.1"}
+::: {.theorem title="\cite{AEGS23}, Thm. 1.1"}
 \label{thm:aegs-normalization-comparison-morphism}
 There is an isomorphism
 \[
@@ -78,7 +77,7 @@ Leveraging and extending the theory of ADE surfaces in \cite{AT21} to Dynkin dia
 
 ## Compact moduli spaces of Coble surfaces
 
-:::{.remark}
+::: {.remark}
 A Coble surface is a smooth projective rational surface $S$ with $\abs{-K_S} = \emptyset$ but $\abs{-2K_X}\neq \emptyset$.
 Such surfaces arise from the work of \cite{Cob19} and \cite{Cob29} on Cremona transformations of $\PP^2$ preserving an irreducible rational sextic $C$ with ten nodal singularities. The blowup $S$ of these nodes yields a Coble surface.
 Coble surfaces occur as degenerations of Enriques surfaces and were ultimately classified in \cite{DZ99}.
@@ -90,7 +89,7 @@ By \cite{DK13}, the moduli space $F_{\Co} \da F_{\Co, 1}$ is known to be rationa
 In particular, compactifications of $F_{\Co, n}$ have not yet appeared in the literature, despite their close relation to Enriques surfaces.
 :::
 
-:::{.remark}
+::: {.remark}
 \label{rmk:divisors-for-coble-compactification}
 Towards constructing such a KSBA compactification, one can form a period domain for $F_{\Co}$ and study (semi)toroidal compactifications as an intermediate step. Note that the blowup of a rational plane sextic $C$ along its ten nodes yields a Coble surface $S$ with $n=1$ boundary components.
 The double cover of $S$ branched along $C$ is a K3 surface $X$ containing divisors $e_0,\cdots, e_{10}$ where $e_0$ is the preimage of the pullback of a hyperplane class in $\PP^2$ and $e_1,\cdots, e_{10}$ are preimages of the exceptional divisors over the nodes of $C$.
@@ -108,7 +107,7 @@ which is birational to the moduli space of Coble surfaces with $n=1$ boundary co
 The moduli space $F_{\Co}$ is an arithmetic quotient of a Hermitian symmetric domain of Type IV, and thus admits semitoroidal compactifications, including the canonically defined Baily-Borel compactification $\bbcpt{F_{\Co}}$.
 :::
 
-:::{.remark}
+::: {.remark}
 In my current single-author project, I have studied the boundary $\partial \bbcpt{F_{\Co}}$ of the Baily-Borel compactification of the moduli space of Coble surfaces and constructed an embedding $F_{\Co}\injects F_{\En}$ into the moduli space of unpolarized Enriques surfaces. Furthermore, I extend this to a morphism 
 \[
 \eta: \bbcpt{F_{\Co}} \to \bbcpt{F_{\En}}
@@ -143,7 +142,7 @@ Using lattice theoretic techniques, and in particular an invariant called the *d
 \end{figure}
 :::
 
-:::{.remark}
+::: {.remark}
 I have extended $\eta$ to a morphism $\tilde \eta: \bbcpt{ F_{\Co}} \to \bbcpt{ F_{(2,2,0)} }$, a moduli space of quartic hyperelliptic K3 surfaces used in \cite{AEGS23}. I determined that that the Coble cusps correspond to $U\oplus E_8^2$, the lattice with invariants $(18, 0, 0)_1$ in \cref{fig:220-cusps-diagram}.
 Using our previous work in \cite{AEGS23}, I am working on a correspondence between $F_{\Co}$ and $F_{\En, 2}$ in order to construct KSBA degenerations. The cusp diagram for $F_{\En, 2}$ was first given by \cite{Ste91}, and I have computed that the Coble 0-cusp corresponds with cusp 2 of \cref{fig:sterk-cusp-diagram}. This correspondence requires studying a separate period domain $D_{\Co}/\Gamma$ for a certain subgroup $\Gamma_{\Co} \leq \Orth(T_{\Co})$ and classifying orbits of isotropic vectors under this subgroup.
 
@@ -171,7 +170,7 @@ From these data, in an in-progress paper which will comprise the majority of my 
 
 ## Coble surfaces with $1\leq n\leq 10$ boundary components
 
-:::{.remark}
+::: {.remark}
 For $S$ a Coble surface of *K3 type*, one can write 
 $\abs{-2K_S} = \ts{C}$ where $C = C_1 + \cdots + C_n$, with each $C_i$ an irreducible curve on $S$.
 The $C_i$ are referred to as *boundary components*, and it is known that $1\leq n \leq 10$.
@@ -203,7 +202,7 @@ Following a similar construction as that described in \cref{rmk:divisors-for-cob
 \end{figure}
 :::
 
-:::{.remark}
+::: {.remark}
 This collection coincides precisely with the $g=0$ line of Nikulin's triangular table of 2-elementary lattices \cite[Fig.\,1]{AE22}, 
 and applying the period domain construction to these lattices yields ten moduli spaces $F_{\Co, n}$ for $1\leq n \leq 10$.
 The $n=1$ case is the subject of my current work.
@@ -212,7 +211,7 @@ I conjecture that the moduli spaces and the boundaries of their compactification
 Most immediately, I have computed several of the boundary incidence diagrams of their Baily-Borel compactifications using algorithms described in \cite{AE22nonsympinv}, and the remaining ones are similarly computable.
 :::
 
-:::{.remark}
+::: {.remark}
 The ramification locus of the K3 cover of $S$ is described in \cite[Eqn. 5.3.1]{EnriquesOne} --
 I conjecture that the corresponding involutions are nonsymplectic and that a component of the ramification locus forms a **recognizable divisor** c.f. \cite{alexeevCompactModuliK32023,AEH21}.
 Under this assumption, \cite[Thm.\,3.24]{AEH21} can be applied to identify the KSBA compactification with a semitoroidal compactification for a specific choice of semifans.
@@ -295,11 +294,17 @@ As a starting point, the Coxeter diagram for $S \da (10, 10, 1)$ is well-known, 
 Further study would include
 
 - Constructing the period domain $F_{S}$,
+
 - Constructing Baily-Borel compactification $\overline{F_{S}}^{\bb}$,
+
 - Studying $\Orth(S)$-orbits of isotropic vectors $e_i$ in $S$,
+
 - Using lattice-theoretic techniques to determine the cusp diagram of $\partial \overline{ F_{S}}^{\bb}$,
+
 - Computing $e_i^\perp/\gens{e_i}$ and the Coxeter diagrams at the corresponding 0-cusps,
+
 - Finding an appropriate recognizable divisor $R$ and constructing the stable pair compactification $\overline{F_S}^R$, and
+
 - Leveraging \cite{AE22nonsympinv} to construct dlt models and integral affine structures classifying $\partial\overline{F_S}^R$.
 
 This would open an avenue of research comparing GIT compactifications to KSBA compactifications, and generalizing these techniques to compactifications $\overline{M_{H, m}}^R$ for $m > 2$ to construct new moduli spaces of general rational elliptic surfaces (with no restrictions on the fiber type).

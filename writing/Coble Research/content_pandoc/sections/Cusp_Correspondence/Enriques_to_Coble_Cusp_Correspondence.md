@@ -249,7 +249,6 @@ that the divisibility is one.
 Thus $\tilde w_2$ is odd, and we apply case (a) of [@AE22 Thm.
 5.10].
 :::
-
 :::
 
 ::: {.remark}

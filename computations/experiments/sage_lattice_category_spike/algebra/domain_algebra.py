@@ -62,14 +62,12 @@ if TYPE_CHECKING:
     from abc import abstractmethod as abstract_method
 
     from sage.misc.repr import repr_lincomb
-    from sage.structure.richcmp import richcmp
 
     # Type-level nouns are drawn from the lexicon (the single type surface;
     # lexicon/INVENTORY.md). TYPE_CHECKING-only, so this module keeps its
     # no-runtime-Sage-import rule.
     from ..lexicon.algebra import (
         BaseRing,
-        FreeModule,
         Matrix,
         MatrixGroup,
         PermutationGroup,
@@ -84,11 +82,20 @@ if TYPE_CHECKING:
         SymbolicExpression,
     )
     from ..lexicon.geometry import Polyhedron
-    from ..lexicon.interop import SageInfinity, SageLocalGenusSymbol
+    from ..lexicon.interop import SageCategory, SageInfinity, SageLocalGenusSymbol
+    from ..morphisms.homsets import Subobject
 else:
     from sage.misc.abstract_method import abstract_method
     from sage.misc.repr import repr_lincomb
     from sage.structure.richcmp import richcmp
+
+if TYPE_CHECKING:
+
+    def _typed_richcmp(left: object, right: object, op: int) -> bool: ...
+    def _typed_repr_lincomb(value: object) -> str: ...
+else:
+    _typed_richcmp = richcmp
+    _typed_repr_lincomb = repr_lincomb
 
 
 __all__ = [
@@ -102,6 +109,10 @@ __all__ = [
     "FormKind",
     # value objects
     "ValueModule",
+    # category vocabulary
+    "CategoryObject",
+    "CategoryMorphism",
+    "Functor",
     # lattice vocabulary
     "Lattice",
     "NondegenerateLattice",
@@ -116,12 +127,14 @@ __all__ = [
     "LatticeMorphism",
     "LatticeHomset",
     "LatticeSimilarity",
+    "LatticeBaseChangeFunctor",
     # groups
     "IsometryGroup",
     "IsometrySubgroup",
     "DiscriminantOrthogonalGroup",
     # discriminant vocabulary
     "FiniteAbelianGroup",
+    "LatticeCokernel",
     "DiscriminantForm",
     "BilinearDiscriminantForm",
     "QuadraticDiscriminantForm",
@@ -185,6 +198,29 @@ class ValueModule(Protocol):
 
 
 # ---------------------------------------------------------------------------
+# Categories, objects, morphisms, and functors
+# ---------------------------------------------------------------------------
+
+
+class CategoryObject:
+    r"""An object of a category."""
+
+    if TYPE_CHECKING:
+
+        def category(self) -> SageCategory: ...
+
+
+class CategoryMorphism:
+    r"""A morphism in a category."""
+
+    @abstract_method
+    def domain(self) -> CategoryObject: ...
+
+    @abstract_method
+    def codomain(self) -> CategoryObject: ...
+
+
+# ---------------------------------------------------------------------------
 # Elements
 # ---------------------------------------------------------------------------
 
@@ -216,7 +252,7 @@ class LatticeElement:
         being hand-written. Sage calls ``_richcmp_`` only after coercing both
         operands into a common parent, so the parent match is the coercion
         framework's responsibility, not ours."""
-        return richcmp(self.coefficient_vector(), other.coefficient_vector(), op)
+        return _typed_richcmp(self.coefficient_vector(), other.coefficient_vector(), op)
 
     def __hash__(self) -> int:
         r"""Hash by generator coefficients (a hashable immutable vector).
@@ -236,7 +272,7 @@ class LatticeElement:
         Delegates to Sage's own linear-combination renderer
         (``sage.misc.repr.repr_lincomb``), which owns sign handling, unit
         coefficients, and the empty combination (``0``)."""
-        return repr_lincomb(zip(self.parent().variable_names(), self.coefficient_vector(), strict=True))
+        return _typed_repr_lincomb(zip(self.parent().variable_names(), self.coefficient_vector(), strict=True))
 
 
 class DiscriminantFormElement:
@@ -267,7 +303,7 @@ class DiscriminantFormElement:
 # ---------------------------------------------------------------------------
 
 
-class Lattice:
+class Lattice(CategoryObject):
     """A based free R-module (R, G) with symmetric bilinear form; possibly degenerate."""
 
     # structural
@@ -305,6 +341,11 @@ class Lattice:
     def ngens(self) -> int: ...
 
     if TYPE_CHECKING:
+        # Sage's Parent supplies the category accessor at runtime.  Keep the
+        # declaration here type-only so the category framework remains the
+        # implementation authority.
+        def category(self) -> SageCategory: ...
+
         # Generator symbols (the ordered symbol set S with L = R[S]).
         # Declaration only: at runtime Sage's CategoryObject provides this,
         # and a def here would shadow it in the synthetic parents' MRO
@@ -328,7 +369,7 @@ class Lattice:
     def signature_pair(self) -> SignaturePair: ...
 
     @abstract_method
-    def signature(self) -> int: ...
+    def signature(self) -> SignaturePair: ...
 
     @abstract_method
     def denominator(self) -> ExactScalar: ...
@@ -374,10 +415,15 @@ class Lattice:
 
     # radical theory (the functor that STAYS a lattice)
     @abstract_method
-    def radical(self) -> Lattice: ...
+    def radical(self) -> Subobject:
+        """``rad(L)`` as a subobject — the orthogonal complement of the
+        identity morphism (the object spelling delegates through the
+        canonical attached morphism; #100 ratified placement)."""
 
     @abstract_method
-    def radical_quotient(self) -> NondegenerateLattice: ...
+    def radical_quotient(self) -> NondegenerateLattice:
+        """``L / rad(L)`` — the coimage of the radical's presentation,
+        derived from ``radical()``'s carried inclusion."""
 
     # constructions
     @abstract_method
@@ -387,7 +433,7 @@ class Lattice:
     def scale(self, scalar: ExactScalar | int, label: str = "scale") -> Lattice: ...
 
     @abstract_method
-    def direct_sum(self, other: Lattice, label: str = "direct_sum") -> Lattice: ...
+    def direct_sum(self, *others: Lattice, label: str = "direct_sum") -> Lattice: ...
 
     @abstract_method
     def tensor_product(self, other: Lattice) -> Lattice: ...
@@ -411,29 +457,21 @@ class Lattice:
     @abstract_method
     def span_of_basis(self, basis: RawVectors) -> Lattice: ...
 
-    @abstract_method
-    def sum(self, other: Lattice) -> Lattice: ...
+    # sum / intersection / saturation / primitive_closure / is_submodule are
+    # subobject vocabulary: they relate a carried inclusion to its codomain and
+    # are not defined on a bare lattice (P6 siting gate, #100). Saturation and
+    # its factorization are morphism-sited (``LatticeMorphism``); ``Subobject``
+    # spellings delegate to the carried inclusion, and the subobject algebra
+    # (sum, intersection) is sited on ``Subobject`` itself.
 
     @abstract_method
-    def intersection(self, other: Lattice) -> Lattice: ...
+    def subobject(self, elements: Sequence[LatticeElement]) -> Subobject:
+        """The subobject generated by elements of this lattice: the spanned
+        sublattice together with its inclusion morphism (the pair IS the
+        subobject; #25)."""
 
     @abstract_method
-    def saturation(self) -> Lattice: ...
-
-    @abstract_method
-    def primitive_closure(self, ambient: Lattice) -> Lattice: ...
-
-    @abstract_method
-    def index_in(self, other: Lattice) -> ExactScalar: ...
-
-    @abstract_method
-    def index_in_saturation(self) -> ExactScalar: ...
-
-    @abstract_method
-    def is_submodule(self, other: Lattice) -> bool: ...
-
-    @abstract_method
-    def is_primitive(self, sublattice: Lattice) -> bool: ...
+    def is_primitive(self, subobject: Subobject) -> bool: ...
 
     @abstract_method
     def overlattice(
@@ -441,27 +479,40 @@ class Lattice:
         generators: RawVectors,
         check_integral: bool = False,
         label: str = "overlattice",
-    ) -> Lattice: ...
+    ) -> LatticeMorphism:
+        """The overlattice as the inclusion morphism ``L -> M``: the
+        constructor is the once-only presentation crossing, so it mints the
+        witness; the object alone is its codomain."""
 
     @abstract_method
-    def orthogonal_complement(self, other: Lattice) -> Lattice: ...
+    def orthogonal_complement(self, subobject: Subobject) -> Subobject: ...
 
     @abstract_method
     def zero_lattice(self) -> Lattice: ...
 
     # quotients (the functor that LEAVES: plain finite abelian quotient, no form axioms)
     @abstract_method
-    def finite_quotient(self, sublattice: Lattice) -> FiniteAbelianGroup: ...
-
-    @abstract_method
-    def _rationalization_module(self) -> FreeModule: ...
-
-    @abstract_method
-    def _underlying_module(self) -> FreeModule: ...
+    def finite_quotient(self, sublattice: Lattice | Subobject) -> FiniteAbelianGroup: ...
 
     # morphisms
     @abstract_method
-    def Hom(self, codomain: Lattice) -> LatticeHomset: ...
+    def Hom(self, codomain: Lattice, category: SageCategory | None = None) -> LatticeHomset: ...
+
+    @abstract_method
+    def Isom(self, codomain: Lattice) -> IsometryHomset:
+        """``Isom(L, M)``: the isometries ``L -> M`` as a first-class parent
+        (ratified method placement, #100) — existence and classification
+        questions are asked of the homset, never of a bare boolean."""
+
+    @abstract_method
+    def Emb(self, codomain: Lattice) -> EmbeddingHomset:
+        """``Emb(L, M)``: the embeddings ``L -> M`` as a first-class parent —
+        the honest home of the Nikulin-class existence machinery."""
+
+    @abstract_method
+    def identity_morphism(self) -> LatticeMorphism:
+        """The identity of ``End(L)`` — the canonical attached morphism that
+        object spellings delegate through."""
 
     @abstract_method
     def hom(self, matrix: RawMorphismMatrix, codomain: Lattice) -> LatticeMorphism: ...
@@ -480,7 +531,9 @@ class Lattice:
     def isometry_group(self) -> IsometryGroup: ...
 
     @abstract_method
-    def is_isometric(self, other: Lattice) -> bool: ...
+    def is_isometric(self, other: Lattice) -> bool:
+        """Router for ``not Isom(self, other).is_empty()`` — the homset is
+        the first-class object; this boolean is its emptiness question."""
 
 
 # ---------------------------------------------------------------------------
@@ -514,10 +567,10 @@ class IntegralNondegenerateLattice(NondegenerateLattice):
     def same_genus(self, other: IntegralNondegenerateLattice) -> bool: ...
 
     @abstract_method
-    def glue(self, isotropic_subgroup: DiscriminantSubgroup) -> Lattice: ...
+    def glue(self, isotropic_subgroup: DiscriminantSubgroup) -> LatticeMorphism: ...
 
     @abstract_method
-    def maximal_overlattice(self, p: int | None = None) -> Lattice: ...
+    def maximal_overlattice(self, p: int | None = None) -> LatticeMorphism: ...
 
     @abstract_method
     def local_modification(self, data: Matrix | DiscriminantSubgroup | Sequence[DiscriminantFormElement], p: int) -> Lattice: ...
@@ -657,7 +710,7 @@ class RootGeneratedLattice(Lattice):
 # ---------------------------------------------------------------------------
 
 
-class LatticeMorphism:
+class LatticeMorphism(CategoryMorphism):
     """Form-preserving by construction: A^T G_M A = G_L, enforced at creation."""
 
     @abstract_method
@@ -672,6 +725,11 @@ class LatticeMorphism:
 
     @abstract_method
     def __call__(self, element: LatticeElement) -> LatticeElement: ...
+
+    @abstract_method
+    def __mul__(self, other: LatticeMorphism) -> LatticeMorphism:
+        """Composition ``(f * g)(x) = f(g(x))``; defined when the inner
+        codomain equals the outer domain."""
 
     @abstract_method
     def is_isometry(self) -> bool: ...
@@ -709,14 +767,59 @@ class LatticeMorphism:
         equivalently, torsion-free module cokernel."""
 
     @abstract_method
-    def kernel(self) -> Lattice: ...
+    def kernel(self) -> Subobject: ...
 
     @abstract_method
-    def image(self) -> Lattice: ...
+    def image(self) -> Subobject: ...
 
     @abstract_method
-    def cokernel(self) -> DiscriminantForm:
-        """Finite-cokernel case only; the general case is a gap-ledger contract."""
+    def cokernel(self) -> LatticeCokernel:
+        """The cokernel ``codomain / image`` as a finitely generated abelian
+        group — total for every morphism by the abelian-category contract."""
+
+    @abstract_method
+    def index(self) -> ExactScalar | SageInfinity:
+        """The index ``[codomain : image]`` — the cokernel's cardinality,
+        infinite when the image is not full rank."""
+
+    # -- morphism-sited geometry (ratified method placement, #100): the
+    # -- operations below consume the morphism itself, so they are typed here
+    # -- and nowhere else; object spellings survive only as delegations
+    # -- through a canonical attached morphism. ------------------------------
+
+    @abstract_method
+    def restrict(self, subobject: Subobject) -> LatticeMorphism:
+        """Precomposition with the subobject's inclusion — the morphism
+        ``sub -> codomain`` given by ``self * subobject.inclusion()``; defined
+        when the subobject's codomain is this morphism's domain."""
+
+    @abstract_method
+    def preserves(self, subobject: Subobject) -> bool:
+        """Factorization query: does ``self * subobject.inclusion()`` factor
+        through ``subobject.inclusion()``? For an endomorphism this is
+        stability of the subobject."""
+
+    @abstract_method
+    def saturation(self) -> Subobject:
+        """For a monomorphism: the saturation of its image in the codomain —
+        the smallest primitive subobject it factors through."""
+
+    @abstract_method
+    def saturation_factorization(self) -> LatticeMorphism:
+        """For a monomorphism ``f: A -> B``: the mono ``A -> A^sat`` with
+        ``f.saturation().inclusion() * f.saturation_factorization() == f``;
+        its index is ``[A^sat : A]``, ``1`` exactly when ``f`` is primitive."""
+
+    @abstract_method
+    def orthogonal_complement(self) -> Subobject:
+        """The subobject of the codomain pairing to zero with the image —
+        the kernel of the composed pairing."""
+
+    @abstract_method
+    def induced_map_on_quotient(self, quotient: FiniteAbelianGroup) -> DiscriminantAction:
+        """Descent to a finite quotient of the codomain: defined exactly when
+        the morphism kills the quotient's relation subobject through the
+        projection (``pi . phi . iota = 0``)."""
 
     @abstract_method
     def induced_map_on_discriminant_group(self) -> DiscriminantAction: ...
@@ -748,6 +851,66 @@ class LatticeSimilarity:
 
 
 class LatticeHomset:
+    if TYPE_CHECKING:
+        # A Sage homset is callable through Parent's element constructor.  The
+        # concrete homset supplies that runtime method; this declaration keeps
+        # the mathematical return type at the lexicon boundary.
+        def __call__(self, matrix_data: RawMorphismMatrix) -> LatticeMorphism: ...
+
+    @abstract_method
+    def domain(self) -> Lattice: ...
+
+    @abstract_method
+    def codomain(self) -> Lattice: ...
+
+    # No constructor row: a morphism is built by the public named
+    # constructors on lattices (hom/embedding/reflection/similarity) or by
+    # constructing the homset's element class, whose constructor asserts
+    # well-definedness (#70; from_matrix demoted per #100 T4).
+
+
+class Functor[
+    _DomainObject: CategoryObject,
+    _CodomainObject: CategoryObject,
+    _DomainMorphism: CategoryMorphism,
+    _CodomainMorphism: CategoryMorphism,
+]:
+    r"""A functor is total data: source/target categories plus actions on
+    objects and morphisms.  An object-only construction is not a functor."""
+
+    @abstract_method
+    def domain(self) -> SageCategory: ...
+
+    @abstract_method
+    def codomain(self) -> SageCategory: ...
+
+    @abstract_method
+    def _apply_functor(self, obj: _DomainObject) -> _CodomainObject: ...
+
+    @abstract_method
+    def _apply_functor_to_morphism(self, morphism: _DomainMorphism) -> _CodomainMorphism: ...
+
+
+class LatticeBaseChangeFunctor(Functor[Lattice, Lattice, LatticeMorphism, LatticeMorphism]):
+    r"""The canonical scalar-extension functor between two lattice roots."""
+
+    @abstract_method
+    def source_base_ring(self) -> BaseRing: ...
+
+    @abstract_method
+    def target_base_ring(self) -> BaseRing: ...
+
+
+class IsometryHomset:
+    """``Isom(L, M)``: the isometries ``L -> M`` as a first-class parent,
+    an object of ``Lattices(R).Homsets()`` for a single base ring ``R`` — a
+    cross-ring premise is an incoherent construction (asserted at the homset
+    boundary), not an empty homset; base-change explicitly before asking.
+    Emptiness and membership are total contracts; ``an_element`` and
+    iteration are implemented exactly where they are computable — when
+    nonempty, ``Isom(L, M)`` is an ``O(M)``-torsor, so enumeration composes
+    one isometry with the isometry group of the codomain."""
+
     @abstract_method
     def domain(self) -> Lattice: ...
 
@@ -755,7 +918,55 @@ class LatticeHomset:
     def codomain(self) -> Lattice: ...
 
     @abstract_method
-    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism: ...
+    def is_empty(self) -> bool: ...
+
+    @abstract_method
+    def an_element(self) -> LatticeMorphism:
+        """A distinguished isometry; defined exactly when the homset is
+        nonempty (asserted)."""
+
+    @abstract_method
+    def cardinality(self) -> int:
+        """``0`` when empty; ``|O(M)|`` otherwise (the nonempty homset is an
+        ``O(M)``-torsor). Answers exactly where ``O(M)`` carries a grounded
+        finiteness answer; elsewhere no computation grounds any answer
+        (finite or infinite) yet, and the contract asserts out by name."""
+
+    @abstract_method
+    def __iter__(self) -> Iterator[LatticeMorphism]: ...
+
+    @abstract_method
+    def __contains__(self, candidate: Any) -> bool: ...
+
+
+class EmbeddingHomset:
+    """``Emb(L, M)``: the form-preserving monomorphisms ``L -> M`` as a
+    first-class parent — the honest home of the Nikulin-class existence and
+    classification machinery. Emptiness is the existence question; iteration
+    is a contract implemented exactly where enumeration by generator
+    patterns is computable (e.g. integral definite codomain via vectors of
+    the right squares); an implementation names its supported regime at its
+    own boundary and asserts out everything else."""
+
+    @abstract_method
+    def domain(self) -> Lattice: ...
+
+    @abstract_method
+    def codomain(self) -> Lattice: ...
+
+    @abstract_method
+    def is_empty(self) -> bool: ...
+
+    @abstract_method
+    def an_element(self) -> LatticeMorphism:
+        """A distinguished embedding; defined exactly when the homset is
+        nonempty (asserted)."""
+
+    @abstract_method
+    def __iter__(self) -> Iterator[LatticeMorphism]: ...
+
+    @abstract_method
+    def __contains__(self, candidate: Any) -> bool: ...
 
 
 # ---------------------------------------------------------------------------
@@ -774,7 +985,12 @@ class IsometryGroup:
     def __contains__(self, candidate: Any) -> bool: ...
 
     @abstract_method
-    def from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism: ...
+    def _from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism:
+        """Presentation-facing constructor, demoted to a private convenience
+        (#100 ratified placement): declared here so private reaches outside
+        the sanctioned crossings are flaggable, never prevented. The public
+        canonical constructors are the few named ones (``hom``,
+        ``embedding``, ``reflection``, ``similarity``)."""
 
     @abstract_method
     def one(self) -> LatticeMorphism: ...
@@ -832,7 +1048,9 @@ class IsometrySubgroup:
     def gens(self) -> tuple[LatticeMorphism, ...]: ...
 
     @abstract_method
-    def preserves(self, sublattice: Lattice) -> bool: ...
+    def preserves(self, subobject: Subobject) -> bool:
+        """Whether every generator maps the subobject into itself -- a
+        factorization query on the carried inclusion, never a bare lattice."""
 
     @abstract_method
     def discriminant_image(self) -> DiscriminantOrthogonalGroup: ...
@@ -903,6 +1121,24 @@ class DiscriminantAction:
 # ---------------------------------------------------------------------------
 # Discriminant forms (one consolidated parent; axioms select the vocabulary)
 # ---------------------------------------------------------------------------
+
+
+class LatticeCokernel:
+    """The cokernel ``M / im(f)`` of a lattice morphism: a finitely generated
+    abelian group (free plus torsion). ``R-Mod`` is abelian, so it exists and is
+    computable by contract for EVERY morphism — the finite (full-rank image) case
+    is the special one. Its predicates are asked of the object, never
+    reconstructed from matrix internals by the caller."""
+
+    @abstract_method
+    def is_torsion_free(self) -> bool:
+        """No torsion — exactly the primitivity condition on the inclusion."""
+
+    @abstract_method
+    def cardinality(self) -> int: ...
+
+    @abstract_method
+    def invariants(self) -> tuple[int, ...]: ...
 
 
 class FiniteAbelianGroup:
@@ -1173,7 +1409,7 @@ class SourcedDiscriminantForm(QuadraticDiscriminantForm):
     def lift(self, element: DiscriminantFormElement) -> LatticeElement: ...
 
     @abstract_method
-    def _coset_representative_in_source(self, element: DiscriminantFormElement) -> Sequence[ExactScalar]: ...
+    def coset_representative_in_source(self, element: DiscriminantFormElement) -> Sequence[ExactScalar]: ...
 
     @abstract_method
     def projection(self, element: LatticeElement) -> DiscriminantFormElement: ...
@@ -1186,10 +1422,11 @@ class SourcedDiscriminantForm(QuadraticDiscriminantForm):
         self,
         subgroup: DiscriminantSubgroup | Sequence[DiscriminantFormElement],
         label: str = "overlattice",
-    ) -> IntegralNondegenerateLattice:
+    ) -> LatticeMorphism:
         """Gluing along an isotropic subgroup preserves rank and integrality
-        and scales the determinant by the square of the index, so the result
-        is again integral nondegenerate."""
+        and scales the determinant by the square of the index, so the codomain
+        is again integral nondegenerate; the return value is the inclusion
+        morphism minted by the overlattice constructor."""
 
     @abstract_method
     def discriminant_form_of_overlattice(self, subgroup: DiscriminantSubgroup) -> DiscriminantForm: ...
@@ -1240,7 +1477,7 @@ class Genus:
     def signature_pair(self) -> SignaturePair: ...
 
     @abstract_method
-    def signature(self) -> int: ...
+    def signature(self) -> SignaturePair: ...
 
     @abstract_method
     def det(self) -> ExactScalar: ...

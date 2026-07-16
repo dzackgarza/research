@@ -16,9 +16,16 @@ from __future__ import annotations
 
 import pytest
 
-from sage.all import ZZ, TestSuite, matrix
+from sage.all import QQ, ZZ, TestSuite, matrix
+from sage.categories.homset import Hom as SageHom
+from sage.categories.sets_cat import Sets
 
-from sage_lattice_category_spike.lattice_categories import Lattice, Lattices
+from sage_lattice_category_spike.lattice_categories import (
+    Hom,
+    Lattice,
+    LatticeBaseChangeFunctor,
+    Lattices,
+)
 
 
 CONSTRUCTORS = [
@@ -74,30 +81,133 @@ def test_elements_are_hashable_consistently_with_equality(construct):
     assert {generator, lattice.zero()} == {lattice.gen(0), lattice.zero()}
 
 
-@pytest.mark.xfail(
-    reason="parents are not UniqueRepresentation, so loads(dumps(L)) is not L and "
-    "pickled elements compare unequal. Deferred to the object/subobject identity "
-    "refactor. THIS MARKER MUST BE REMOVED FOR dzackgarza/research#25 TO CLOSE.",
-    strict=True,
-)
 @pytest.mark.parametrize("construct", CONSTRUCTORS)
 def test_pickling_roundtrip_preserves_equality(construct):
-    r"""The pickling slice of ``TestSuite(obj).run()``. Currently xfails: object
-    identity keys on ``(R, G)`` but the parent is not ``UniqueRepresentation``, so
-    ``loads(dumps(L))`` is a distinct value-equal parent and ``_richcmp_`` (which
-    only fires after coercion to a common parent) reports the pickled zero as
-    unequal to the original. The fix is parent ``UniqueRepresentation`` on ``(R, G)``
-    (subobjects on ``(R, G, f)``), tracked in dzackgarza/research#25. When that
-    lands this xpasses under ``strict`` and forces removal of the marker."""
+    r"""The pickling slice of ``TestSuite(obj).run()``. A deserialized element
+    has a fresh parent equal by ``(R, G)``; the equal-parent coercion must make
+    Sage compare its coefficient vector in a common parent."""
     lattice = construct()
     lattice.zero()._test_pickling()
 
 
+def test_fresh_dual_elements_compare_through_equal_parent_coercion():
+    r"""Fresh dual parents have equal lattice data, so corresponding elements
+    compare through the canonical identity coercion rather than by allocation
+    identity."""
+    lattice = Lattice("A2")
+    first_dual = lattice.dual()
+    second_dual = lattice.dual()
+    assert first_dual == second_dual
+    assert first_dual.gen(0) == second_dual.gen(0)
+
+
+def test_equal_parent_coercion_maps_elements_to_the_target_parent():
+    r"""The public coercion map transports a vector from a fresh equal parent
+    into the target parent without changing its coefficient data."""
+    lattice = Lattice("A2")
+    target = lattice.dual()
+    source = lattice.dual()
+    coercion = target.coerce_map_from(source)
+    assert coercion is not None
+    converted = coercion(source.gen(0))
+    assert converted.parent() == target
+    assert converted == target.gen(0)
+
+
+def test_sourced_discriminant_lifts_compare_across_fresh_dual_parents():
+    r"""``lift`` and ``coset_representative`` independently construct the
+    dual cover, but represent the same discriminant coset."""
+    discriminant_form = Lattice("A2").discriminant_group()
+    generator = discriminant_form.gen(0)
+    assert discriminant_form.lift(generator) == discriminant_form.coset_representative(generator)
+
+
+def test_subobjects_compare_by_lattice_and_inclusion_morphism():
+    r"""Subobjects retain their slice data: equal inclusions compare equal,
+    while equal-Gram inclusions into different generator lines do not."""
+    lattice = Lattices(ZZ).from_gram_matrix(matrix(ZZ, [[2, 0], [0, 2]]))
+    first = lattice.subobject([lattice.gen(0)])
+    same = lattice.subobject([lattice.gen(0)])
+    different = lattice.subobject([lattice.gen(1)])
+    assert first == same
+    assert hash(first) == hash(same)
+    assert first != different
+
+
+def test_plain_lattice_and_subobject_compare_false_with_warning():
+    r"""A plain lattice and an equal presented subobject are categorically
+    distinct; the comparison must be visible rather than silently conflated."""
+    lattice = Lattices(ZZ).from_gram_matrix(matrix(ZZ, [[2]]))
+    subobject = lattice.subobject([lattice.gen(0)])
+    with pytest.warns(UserWarning):
+        assert not (lattice == subobject)
+    with pytest.warns(UserWarning):
+        assert not (subobject == lattice)
+
+
+def test_lattice_hom_factory_accepts_the_explicit_category():
+    r"""The category-root ``Hom`` factory and parent spelling construct the
+    form-preserving homset in the requested lattice category."""
+    lattice = Lattice("A2")
+    category = lattice.category()
+    direct_homset = lattice.Hom(lattice, category=category)
+    factory_homset = Hom(lattice, lattice, category=category)
+    sage_homset = SageHom(lattice, lattice, category=category)
+    identity_matrix = lattice.identity_morphism().matrix()
+    assert direct_homset(identity_matrix) == lattice.identity_morphism()
+    assert factory_homset(identity_matrix) == lattice.identity_morphism()
+    assert sage_homset(identity_matrix) == lattice.identity_morphism()
+
+
+def test_public_hom_uses_the_canonical_forgetful_functor_to_sets():
+    r"""A request in ``Sets()`` follows the canonical forgetful functor and
+    then asks Sage for the resulting generic set homset."""
+    lattice = Lattice("A2")
+    forgetful = Lattices(ZZ).canonical_functor(Sets())
+    assert forgetful(lattice) is lattice
+    set_homset = Hom(lattice, lattice, category=Sets())
+    sage_set_homset = SageHom(lattice, lattice, category=Sets())
+    set_morphism = set_homset(lattice.identity_morphism().matrix())
+    assert set_morphism != lattice.identity_morphism()
+    assert sage_set_homset(lattice.identity_morphism().matrix()) != lattice.identity_morphism()
+
+
+def test_base_change_functor_refines_the_target_category_and_maps_morphisms():
+    r"""Base change is a first-class functor from ``Lattices(ZZ)`` to
+    ``Lattices(QQ)``. Its object value is rebuilt by the target category, and
+    its morphism value belongs to the transported homset."""
+    lattice = Lattice("A2")
+    functor = Lattices(ZZ).base_change(QQ)
+    assert isinstance(functor, LatticeBaseChangeFunctor)
+    assert functor.domain() == Lattices(ZZ)
+    assert functor.codomain() == Lattices(QQ)
+    target = functor(lattice)
+    assert target.base_ring() is QQ
+    assert target in Lattices(QQ).Nondegenerate().Definite().NegativeDefinite()
+    mapped_identity = functor(lattice.identity_morphism())
+    assert mapped_identity.domain() == target
+    assert mapped_identity.codomain() == target
+    assert mapped_identity.is_identity()
+
+
+def test_cross_base_hom_uses_base_change_before_the_category_meet():
+    r"""The lattice Hom resolver transports the ``ZZ`` source to ``QQ``
+    before computing the lattice-category meet. An explicit target category is
+    the same canonical request, not a membership assertion on the source."""
+    lattice = Lattice("A2")
+    target = Lattices(ZZ).base_change(QQ)(lattice)
+    default_homset = Hom(lattice, target)
+    explicit_homset = Hom(lattice, target, category=Lattices(QQ))
+    for homset in (default_homset, explicit_homset):
+        assert homset.domain().base_ring() is QQ
+        assert homset.codomain() == target
+        assert homset(homset.domain().identity_morphism().matrix()).is_identity()
+
+
 # Axes skipped by the full-battery runner because they fail for separately-tracked
 # reasons that already have dedicated coverage above:
-#   _test_elements                -> element _test_pickling (strict xfail + #25)
 #   _test_not_implemented_methods -> #24 abstract-method contracts (honest-red)
-FULL_TESTSUITE_SKIP = ("_test_elements", "_test_not_implemented_methods")
+FULL_TESTSUITE_SKIP = ("_test_not_implemented_methods",)
 
 
 @pytest.mark.parametrize("construct", CONSTRUCTORS)

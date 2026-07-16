@@ -31,11 +31,14 @@ def test_named_construction_carries_the_cartan_datum():
     assert Lattice(("A", 2)).cartan_type() == ("A", 2)
 
 
-def test_negative_twist_routes_through_lattice_itself():
-    E8_neg = Lattice("E8", negative=True)
-    assert E8_neg.signature_pair() == (0, 8)
-    assert E8_neg in Lattices(ZZ).Even().RootGenerated()
-    assert E8_neg.cartan_type() == ("E", 8)
+def test_minus_one_spelling_routes_through_lattice_itself_with_provenance():
+    # The AG default Lattice("E8") is negative definite; the positive
+    # (crystallographic) form is the -1 twist, spelled "E8(-1)". It routes
+    # through Lattice itself and keeps its root-generated provenance.
+    E8_positive = Lattice("E8(-1)")
+    assert E8_positive.signature_pair() == (8, 0)
+    assert E8_positive in Lattices(ZZ).Even().RootGenerated()
+    assert E8_positive.cartan_type() == ("E", 8)
 
 
 def test_raw_gram_matrix_never_acquires_the_certificate():
@@ -52,7 +55,7 @@ def test_hyperbolic_plane_by_name_routes_to_hyperbolic():
 
 def test_named_construction_defaults_label_to_the_name():
     assert "A2" in repr(Lattice("A2"))
-    assert "E8" in repr(Lattice("E8", negative=True))
+    assert "E8(-1)" in repr(Lattice("E8(-1)"))
 
 
 def test_names_compose_with_name_routing():
@@ -66,11 +69,6 @@ def test_names_compose_with_name_routing():
 def test_unknown_name_fails_loudly():
     with pytest.raises(AssertionError):
         Lattice("Z5")
-
-
-def test_negative_twist_requires_a_named_lattice():
-    with pytest.raises(AssertionError):
-        Lattice(matrix(ZZ, [[2]]), negative=True)
 
 
 def test_there_is_no_public_root_lattice_constructor():

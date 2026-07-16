@@ -7,21 +7,21 @@ Every path routes through the section-1.4 category-namespace entry
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 
-from sage.matrix.constructor import column_matrix
+from sage.matrix.constructor import identity_matrix, matrix
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
-from sage.structure.element import Matrix
 
 from .categories import Lattices
-from .parents import SyntheticIntegralNondegenerateLattice
+from .parents import SyntheticIntegralNondegenerateLattice, SyntheticLattice
 
 if TYPE_CHECKING:
     from .. import lexicon
     from ..lexicon import (
         BaseRing,
         DiscriminantFormElement,
+        IntegralNondegenerateLattice,
         LatticeMorphism,
         LatticeName,
         RawGramMatrix,
@@ -33,12 +33,29 @@ def SyntheticLatticeFromGram(gram_matrix: RawGramMatrix | LatticeName, base_ring
     return Lattices(base_ring).from_gram_matrix(gram_matrix, label=label, names=names)
 
 
+@overload
+def Lattice(
+    gram_matrix: LatticeName,
+    base_ring: BaseRing = ZZ,
+    label: str | None = None,
+    names: Sequence[str] | str | None = None,
+) -> IntegralNondegenerateLattice: ...
+
+
+@overload
+def Lattice(
+    gram_matrix: RawGramMatrix,
+    base_ring: BaseRing = ZZ,
+    label: str | None = None,
+    names: Sequence[str] | str | None = None,
+) -> lexicon.Lattice: ...
+
+
 def Lattice(
     gram_matrix: RawGramMatrix | LatticeName,
     base_ring: BaseRing = ZZ,
     label: str | None = None,
     names: Sequence[str] | str | None = None,
-    negative: bool = False,
 ) -> lexicon.Lattice:
     r"""THE constructor: minimal routing on ``Lattice`` itself — subcategory
     membership is output, never input (vault decision 2026-07-09).
@@ -47,18 +64,77 @@ def Lattice(
     string like ``"E8"``, or a Cartan datum ``("A", 2)``. A name is
     construction data, so ``Lattice("E8")`` yields a root-generated lattice
     (the Cartan certificate rides the name); the same Gram passed as a raw
-    matrix never acquires the axiom. ``negative=True`` twists a named Gram
-    by ``-1`` (the K3 convention)."""
-    from ..algebra.arithmetic import _is_named_gram_data, named_cartan_type, named_gram
+    matrix never acquires the axiom.
 
-    if _is_named_gram_data(gram_matrix):
-        name = gram_matrix
-        gram = -named_gram(name) if negative else named_gram(name)
-        if label is None:
-            label = (name if isinstance(name, str) else f"{name[0]}{name[1]}") + ("(-1)" if negative else "")
-        return Lattices(base_ring).from_gram_matrix(gram, label=label, cartan_type=named_cartan_type(name), names=names)
-    assert not negative, "negative= twists a NAMED lattice by -1; for a raw Gram matrix, negate the matrix"
+    Named root lattices are **negative definite** by construction, the AG
+    convention: ``Lattice("E8")`` has signature ``(0, 8)`` and roots of square
+    ``-2``, realized as a subobject of the standard negative-definite lattice
+    ``I_{0,m}`` via the Bourbaki simple roots. The positive (crystallographic)
+    form is the ``-1`` twist, spelled ``Lattice("E8(-1)")`` or, equivalently,
+    ``Lattice("E8").twist(-1)``. There is no sign flag: the sign is carried by
+    the twist, not a boolean mode."""
+    from ..algebra.arithmetic import is_named_gram_data
+
+    if is_named_gram_data(gram_matrix):
+        return _named_lattice(gram_matrix, base_ring, label, names)
     return SyntheticLatticeFromGram(gram_matrix, base_ring=base_ring, label=label if label is not None else "L", names=names)
+
+
+def _default_named_label(name: LatticeName) -> str:
+    return name if isinstance(name, str) else f"{name[0]}{name[1]}"
+
+
+def _named_lattice(
+    name: LatticeName,
+    base_ring: BaseRing,
+    label: str | None,
+    names: Sequence[str] | str | None,
+) -> lexicon.Lattice:
+    r"""Build a named lattice. A trailing ``"(-1)"`` on a string name is the
+    positive (crystallographic) twist of the negative-definite default."""
+    from ..algebra.arithmetic import named_cartan_type, named_gram
+
+    base_name: LatticeName
+    if isinstance(name, str) and name.endswith("(-1)"):
+        positive_twist = True
+        base_name = name[:-4]
+    else:
+        positive_twist = False
+        base_name = name
+    base_label = _default_named_label(base_name)
+    final_label = label if label is not None else base_label + ("(-1)" if positive_twist else "")
+
+    cartan = named_cartan_type(base_name)
+    if cartan is None:
+        # U/H: the hyperbolic plane; no root provenance, no subobject ambient.
+        plane = SyntheticLatticeFromGram(named_gram(base_name), base_ring=base_ring, label=base_label, names=names)
+        return plane.twist(-1, label=final_label) if positive_twist else plane
+
+    negative = _negative_definite_root_lattice(cartan, base_ring, base_label, names)
+    return negative.twist(-1, label=final_label) if positive_twist else negative
+
+
+def _negative_definite_root_lattice(
+    cartan: LatticeName,
+    base_ring: BaseRing,
+    label: str,
+    names: Sequence[str] | str | None,
+) -> lexicon.Lattice:
+    r"""The AG-convention root lattice: Gram ``= -Cartan``, so it is negative
+    definite with roots of square ``-2``. The Bourbaki roots realize it inside
+    ``I_{0,m} = I_{m,0}(-1)`` (m the ambient dimension), but the lattice itself
+    is stored on its intrinsic rank-``n`` coordinates -- its identity is the
+    pair ``(R, G)`` -- so every rank-``n`` operation (dual, finite quotient,
+    reflection) is well defined; A_n / E_6 / E_7 have ``m > n`` and must not be
+    pinned to the oversized ambient."""
+    from ..algebra.arithmetic import named_cartan_type, named_gram
+
+    return Lattices(base_ring).from_gram_matrix(
+        -named_gram(cartan),
+        label=label,
+        cartan_type=named_cartan_type(cartan),
+        names=names,
+    )
 
 
 def IntegralLatticeGluing(
@@ -93,21 +169,25 @@ def IntegralLatticeGluing(
 
             discriminant_group = lattice.discriminant_group()
             assert isinstance(discriminant_group, SyntheticSourcedDiscriminantForm), f"expected a sourced discriminant group; found={type(discriminant_group)}"
-            lift = discriminant_group._coset_representative_in_source(discriminant_element)
+            lift = discriminant_group.coset_representative_in_source(discriminant_element)
             for i, value in enumerate(lift):
                 row[start + i] = value
         lift_rows.append(row)
 
-    glued = ambient.overlattice(lift_rows, check_integral=True, label=label)
+    # The glued lattice IS the overlattice of the direct-sum determined by the
+    # glue lifts, so the overlattice constructor mints the witnessing morphism
+    # (the once-only presentation crossing); each summand's embedding is
+    # morphism algebra -- its block inclusion into the direct sum composed
+    # with that witness.
+    glue_matrix = matrix(QQ, lift_rows) if lift_rows else matrix(QQ, 0, ambient.rank())
+    assert isinstance(ambient, SyntheticLattice), f"gluing builds the overlattice on the direct-sum ambient; found={type(ambient)}"
+    glue_embedding = ambient.overlattice(glue_matrix, label=label)
+    glued = glue_embedding.codomain()
+    assert glued.is_integral(), f"glued overlattice is not integral; gram={glued.gram_matrix()}"
     if not return_embeddings:
         return glued
-    embeddings = tuple(lattice.Hom(glued).from_matrix(_embedding_matrix(lattice, glued, start)) for lattice, start in zip(lattices, offsets))
-    return glued, embeddings
-
-
-def _embedding_matrix(domain: lexicon.Lattice, codomain: lexicon.Lattice, start: int) -> Matrix:
-    ambient_basis = codomain._rationalization_module().basis()
-    return column_matrix(
-        ZZ,
-        [codomain._underlying_module().coordinate_vector(ambient_basis[start + j]) for j in range(domain.rank())],
+    block_units = identity_matrix(ZZ, ambient.rank())
+    embeddings = tuple(
+        glue_embedding * lattice.embedding(block_units.matrix_from_columns(range(start, start + lattice.rank())), codomain=ambient) for lattice, start in zip(lattices, offsets)
     )
+    return glued, embeddings

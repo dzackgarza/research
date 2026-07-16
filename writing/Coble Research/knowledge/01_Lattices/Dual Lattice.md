@@ -15,4 +15,5 @@ created: 2026-05-08
 ## See Also
 
 - [[Geometric Identification of the Dual Lattice]]
+
 - [[Properties of Dual Lattices]]

@@ -14,12 +14,16 @@ created: 2026-05-08
 > 
 > 1. **$\eta_1$**: Divisibility 1, derived from $\tilde\eta_1$ via $180^\circ$ rotation.
 >    (Boundary lattice: $U(2) \oplus E_8(2)$)
+>
 > 2. **$\eta_2$**: Divisibility 2, derived from $\tilde\eta_2$ via vertical reflection.
 >    (Boundary lattice: $U \oplus E_8(2)$)
+>
 > 3. **$\eta_3$**: Divisibility 2, derived from $\tilde\eta_1$ via diagonal reflection + root swap.
 >    (Boundary lattice: $U \oplus E_8(2)$)
+>
 > 4. **$\eta_4$**: Divisibility 2, derived from $\tilde\eta_1$ via horizontal reflection.
 >    (Boundary lattice: $U \oplus E_8(2)$)
+>
 > 5. **$\eta_5$**: Divisibility 2, derived from $\tilde\eta_1$ via 8 commuting reflections.
 >    (Boundary lattice: $U \oplus E_8(2)$)
 

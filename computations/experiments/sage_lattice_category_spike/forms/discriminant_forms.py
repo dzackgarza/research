@@ -39,15 +39,15 @@ from .discriminant import (
     SyntheticDiscriminantSubgroup,
     SyntheticGenus,
     SyntheticOrthogonalGroup,
-    _all_group_automorphisms,
-    _finite_all_subgroups,
-    _finite_basis_from_generators,
-    _finite_p_torsion,
-    _finite_relations_among,
-    _form_matrix_on_images,
-    _induced_subquotient_form,
-    _lattice_key,
-    _relation_inclusion_matrix,
+    all_group_automorphisms,
+    finite_all_subgroups,
+    finite_basis_from_generators,
+    finite_p_torsion,
+    finite_relations_among,
+    form_matrix_on_images,
+    induced_subquotient_form,
+    lattice_key,
+    relation_inclusion_matrix,
 )
 
 
@@ -165,6 +165,12 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
     def invariants(self) -> tuple[Any, ...]:
         return self._invariants
 
+    def invariant_factors(self) -> tuple[Any, ...]:
+        r"""The invariant factors of the finite abelian group (the standard
+        name for ``invariants``): e.g. ``(2, 2)`` for the ``D4`` discriminant
+        group."""
+        return self.invariants()
+
     def elementary_divisors(self) -> tuple[Any, ...]:
         divisors = []
         for invariant in self.invariants():
@@ -232,14 +238,15 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
         R = self.base_ring()
         assert base_ring.coerce_map_from(R) is not None, f"base_extend requires a natural map {R} → {base_ring}"
         if all(base_ring(ZZ(n)).is_unit() for n in self.invariants()) or not self.invariants():
-            # All torsion killed by localization → zero module
-            if isinstance(self, SyntheticQuadraticDiscriminantForm):
-                return SyntheticQuadraticDiscriminantForm(
-                    matrix(QQ, 0, 0),
-                    quadratic_modulus=self._quadratic_modulus(),
-                )
-            return SyntheticBilinearDiscriminantForm(matrix(QQ, 0, 0))
+            # All torsion killed by localization → zero module (each subclass
+            # supplies its own zero form -- polymorphism, not isinstance).
+            return self._zero_localization()
         assert False, f"base_extend to {base_ring} with surviving torsion invariants {self.invariants()} is not yet implemented (issue #20)"
+
+    def _zero_localization(self) -> Any:
+        r"""The zero form this presentation collapses to when every invariant
+        becomes a unit under base extension."""
+        return SyntheticBilinearDiscriminantForm(matrix(QQ, 0, 0))
 
     def elements(self) -> tuple[Any, ...]:
         if not self.invariants():
@@ -358,19 +365,19 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
         return self
 
     def all_submodules(self) -> tuple[Any, ...]:
-        return _finite_all_subgroups(self)
+        return finite_all_subgroups(self)
 
     def p_torsion(self, p: Any, k: Any = 1) -> Any:
-        return _finite_p_torsion(self, p, k=k)
+        return finite_p_torsion(self, p, k=k)
 
     def relations_among(self, gens: Any) -> Any:
-        return _finite_relations_among(self, gens)
+        return finite_relations_among(self, gens)
 
     def basis_from_generators(self, gens: Any) -> tuple[Any, ...]:
-        return _finite_basis_from_generators(self, gens)
+        return finite_basis_from_generators(self, gens)
 
     def automorphism_group(self) -> Any:
-        return SyntheticOrthogonalGroup(self, _all_group_automorphisms(self))
+        return SyntheticOrthogonalGroup(self, all_group_automorphisms(self))
 
     def _invariant_factors(self) -> tuple[Any, ...]:
         r"""Canonical invariant factors of the underlying group, from Sage's
@@ -411,7 +418,7 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
     ``coset_representative``/``hom``) that the group case does not.
     """
 
-    def __init__(self, cover_lattice: Any, relation_lattice: Any) -> None:
+    def __init__(self, cover_lattice: Any, relation_lattice: Any, inclusion: Any = None) -> None:
         from ..objects.parents import SyntheticLattice
 
         assert isinstance(cover_lattice, SyntheticLattice), f"expected SyntheticLattice cover; found={type(cover_lattice)}"
@@ -419,7 +426,7 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
         assert cover_lattice.base_ring() is ZZ, "finite lattice quotient cover must be a ZZ-lattice"
         assert relation_lattice.base_ring() is ZZ, "finite lattice quotient relations must be a ZZ-lattice"
         assert relation_lattice.rank() == cover_lattice.rank(), "finite quotients require same-rank lattices"
-        self._inclusion = _relation_inclusion_matrix(cover_lattice, relation_lattice)
+        self._inclusion = inclusion if inclusion is not None else relation_inclusion_matrix(cover_lattice, relation_lattice)
         self._install(cover_lattice, relation_lattice, self._inclusion)
 
     def _cover_dim(self) -> Any:
@@ -447,12 +454,12 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
         )
 
     def __hash__(self) -> int:
-        from .discriminant import _lattice_key
+        from .discriminant import lattice_key
 
         return hash(
             (
-                _lattice_key(self.cover_lattice()),
-                _lattice_key(self.relation_lattice()),
+                lattice_key(self.cover_lattice()),
+                lattice_key(self.relation_lattice()),
                 self.invariants(),
             )
         )
@@ -462,6 +469,12 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
 
     def relation_lattice(self) -> Any:
         return self._relations
+
+    def relation_inclusion(self) -> Any:
+        r"""The carried witness: the inclusion morphism ``relation -> cover``
+        this quotient is the cokernel of (the stored rows are the relation's
+        generators in the cover's coordinates)."""
+        return self._relations.embedding(matrix(ZZ, self._inclusion).transpose(), codomain=self._cover)
 
     def coset_representative(self, element: Any) -> Any:
         return self.lift(element)
@@ -481,7 +494,7 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
         lift_rows = [vector(QQ, self.lift(generator).coefficient_vector()) * inclusion_inverse for generator in subgroup.gens()]
         if not lift_rows:
             return self.relation_lattice()
-        return self.relation_lattice().overlattice(lift_rows, check_integral=False, label=label)
+        return self.relation_lattice().overlattice(lift_rows, check_integral=False, label=label).codomain()
 
 
 class DiscriminantCharacter:
@@ -714,7 +727,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
 
     def restricted_form(self, subgroup_or_gens: Any) -> Any:
         subgroup = self._subgroup(subgroup_or_gens)
-        return _form_matrix_on_images(self, subgroup.gens())
+        return form_matrix_on_images(self, subgroup.gens())
 
     def orthogonal_quotient(self, subgroup_or_gens: Any) -> Any:
         subgroup = self._subgroup(subgroup_or_gens)
@@ -724,7 +737,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
         # whose closure enumerates a product over every generator order).
         if subgroup.cardinality() == 1:
             return self
-        return _induced_subquotient_form(self, subgroup, self.orthogonal(subgroup))
+        return induced_subquotient_form(self, subgroup, self.orthogonal(subgroup))
 
     def subquotient_form(self, subgroup_or_gens: Any, quotient_subgroup_or_gens: Any) -> Any:
         subgroup = self._subgroup(subgroup_or_gens)
@@ -732,16 +745,16 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
         assert subgroup._key() <= quotient_subgroup._key(), "subquotient form requires H contained in K"
         assert self.is_isotropic_subgroup(subgroup), "subquotient form requires a quadratic-isotropic relation subgroup"
         assert quotient_subgroup._key() <= self.orthogonal(subgroup)._key(), "subquotient form requires K contained in the orthogonal complement of H"
-        return _induced_subquotient_form(self, subgroup, quotient_subgroup)
+        return induced_subquotient_form(self, subgroup, quotient_subgroup)
 
     def pushforward_form(self, phi: Any) -> Any:
         assert phi.discriminant_form() is self, "pushforward requires an endomorphism of this finite quadratic form"
         inverse = phi.inverse()
-        return _form_matrix_on_images(self, [inverse(generator) for generator in self.gens()])
+        return form_matrix_on_images(self, [inverse(generator) for generator in self.gens()])
 
     def pullback_form(self, phi: Any) -> Any:
         assert phi.discriminant_form() is self, "pullback requires an endomorphism of this finite quadratic form"
-        return _form_matrix_on_images(self, [phi(generator) for generator in self.gens()])
+        return form_matrix_on_images(self, [phi(generator) for generator in self.gens()])
 
     def _sage_engine(self) -> Any:
         r"""Ephemeral Sage torsion module carrying this form. The quadratic
@@ -809,10 +822,10 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
         built from this form's own Gram, translated back onto the owned generators.
         Sage's invariant-factor presentation reproduces those generators, so a Sage
         action matrix (rows = images) becomes an owned action by transposition."""
+        sage_form = self._sage_engine()
         assert isinstance(self, SyntheticQuadraticDiscriminantForm), (
             f"the delegated orthogonal group runs through the quadratic Sage engine; a bilinear-only presented form has none yet; found={type(self).__name__}"
         )
-        sage_form = self._sage_engine()
         assert tuple(sage_form.invariants()) == self.invariants() and sage_form.gram_matrix_quadratic() == self.gram_matrix_quadratic(), (
             "the ephemeral Sage TorsionQuadraticModule must reproduce the synthetic invariant-factor presentation to "
             "translate orthogonal-group actions onto the owned generators; "
@@ -862,6 +875,12 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
     def _repr_(self) -> str:
         return f"Synthetic finite quadratic discriminant form with invariants {self.invariants()}"
 
+    def _zero_localization(self) -> Any:
+        return SyntheticQuadraticDiscriminantForm(
+            matrix(QQ, 0, 0),
+            quadratic_modulus=self._quadratic_modulus(),
+        )
+
     def _quadratic_modulus(self) -> Any:
         return self._quadratic_modulus_value
 
@@ -890,7 +909,7 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
         modulus = self._quadratic_modulus()
         if not images:
             return SyntheticQuadraticDiscriminantForm(matrix(QQ, 0, 0), quadratic_modulus=modulus)
-        return SyntheticQuadraticDiscriminantForm(_form_matrix_on_images(self, images), quadratic_modulus=modulus)
+        return SyntheticQuadraticDiscriminantForm(form_matrix_on_images(self, images), quadratic_modulus=modulus)
 
     def _sage_engine(self) -> Any:
         r"""An ephemeral Sage torsion quadratic module built from this form's own
@@ -939,9 +958,10 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
 
         OUTPUT: a tuple of ``(p, block_gram, value)`` triples with ``value``
         in ZZ/8; the values sum to ``brown_invariant()``."""
-        from sage.modules.torsion_quadratic_module import _brown_indecomposable
         from sage.quadratic_forms.genera.normal_form import collect_small_blocks
         from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
+
+        from ..sage_patches import brown_indecomposable
 
         assert self._quadratic_modulus() == 2, (
             f"the Brown invariant is defined for quadratic values in QQ/2ZZ only; quadratic modulus={self._quadratic_modulus()}, invariants={self.invariants()}"
@@ -953,7 +973,7 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
             primary_gram = engine.primary_part(p).normal_form().gram_matrix_quadratic()
             for block in collect_small_blocks(primary_gram):
                 block.set_immutable()
-                blocks.append((ZZ(p), block, ring(_brown_indecomposable(block, ZZ(p)))))
+                blocks.append((ZZ(p), block, ring(brown_indecomposable(block, ZZ(p)))))
         return tuple(blocks)
 
     def is_genus(self, signature_pair: Any) -> Any:
@@ -1065,13 +1085,13 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
     def __eq__(self, other: object) -> bool:
         return (
             isinstance(other, SyntheticSourcedDiscriminantForm)
-            and _lattice_key(self.source_lattice()) == _lattice_key(other.source_lattice())
+            and lattice_key(self.source_lattice()) == lattice_key(other.source_lattice())
             and self._primary == other._primary
             and self.invariants() == other.invariants()
         )
 
     def __hash__(self) -> int:
-        return hash((_lattice_key(self.source_lattice()), self._primary, self.invariants()))
+        return hash((lattice_key(self.source_lattice()), self._primary, self.invariants()))
 
     # -- source-aware part: cover = L#, relations = L --
     def rank(self) -> Any:
@@ -1168,28 +1188,29 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
     def coset_representative(self, element: Any) -> Any:
         return self.lift(element)
 
-    def _coset_representative_in_source(self, element: Any) -> Any:
+    def coset_representative_in_source(self, element: Any) -> Any:
         r"""Coset representative of ``element`` in the source lattice's rational hull.
 
         A lift lives in ``L# ⊇ L``; its dual-basis column ``z`` has source-basis
-        coordinates ``G^{-1} z``.  The source lattice's ``overlattice`` / ``span``
-        builders consume rows in the *root* (hull) frame, so map through the source's
-        own inclusion into its root.
+        coordinates ``G^{-1} z`` -- exactly the rows the source lattice's
+        ``overlattice`` / ``span`` builders consume.
         """
         z_coordinates = self._old_dual_coordinates(self(element))
-        source_coordinates = self.source_lattice().gram_matrix().inverse() * z_coordinates
-        return source_coordinates * self.source_lattice()._inclusion_rows()
+        return self.source_lattice().gram_matrix().inverse() * z_coordinates
 
     def primary_part(self, p: Any) -> Any:
         return SyntheticSourcedDiscriminantForm(self.source_lattice(), p)
 
     # -- overlattices and preimages in the source hull --
     def overlattice_from_isotropic_subgroup(self, subgroup_or_gens: Any, label: str = "overlattice") -> Any:
+        r"""The overlattice glued along a bilinear-isotropic subgroup, as the
+        inclusion morphism ``L -> L_glued`` minted by the overlattice
+        constructor (the identity for the trivial subgroup)."""
         subgroup = self._subgroup(subgroup_or_gens)
         assert subgroup.is_bilinear_isotropic(), "overlattice construction requires a bilinear-isotropic subgroup"
-        lift_rows = [self._coset_representative_in_source(generator) for generator in subgroup.gens()]
+        lift_rows = [self.coset_representative_in_source(generator) for generator in subgroup.gens()]
         if not lift_rows:
-            return self.source_lattice()
+            return self.source_lattice().identity_morphism()
         return self.source_lattice().overlattice(lift_rows, check_integral=True, label=label)
 
     def preimage_lattice(self, subgroup_or_gens: Any, label: str = "preimage_lattice") -> Any:
@@ -1198,13 +1219,13 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
         # isometric HNF overlattice representative.
         if subgroup.cardinality() == self.cardinality():
             return self.cover()
-        lift_rows = [self._coset_representative_in_source(generator) for generator in subgroup.gens()]
+        lift_rows = [self.coset_representative_in_source(generator) for generator in subgroup.gens()]
         if not lift_rows:
             return self.source_lattice()
-        return self.source_lattice().overlattice(lift_rows, check_integral=False, label=label)
+        return self.source_lattice().overlattice(lift_rows, check_integral=False, label=label).codomain()
 
     def discriminant_form_of_overlattice(self, subgroup_or_gens: Any) -> Any:
-        return self.overlattice_from_isotropic_subgroup(subgroup_or_gens).discriminant_group()
+        return self.overlattice_from_isotropic_subgroup(subgroup_or_gens).codomain().discriminant_group()
 
     # -- the induced action of a lattice isometry, and its orbit vocabulary --
     def action_of_isometry(self, isometry: Any) -> Any:

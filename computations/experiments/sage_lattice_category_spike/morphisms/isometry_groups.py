@@ -59,7 +59,7 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
         )
 
     def _repr_(self) -> str:
-        return f"Isometry group O({self._lattice._label})"
+        return f"Isometry group O({self._lattice.label()})"
 
     def lattice(self) -> Any:
         return self._lattice
@@ -83,7 +83,7 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
         invertible_over_R = determinant in (1, -1) if base_ring is ZZ else determinant != 0
         return bool(invertible_over_R and A.transpose() * gram * A == gram)
 
-    def from_matrix(self, matrix_data: object) -> Any:
+    def _from_matrix(self, matrix_data: object) -> Any:
         r"""Construct the isometry element; asserts the isometry contract."""
         A = matrix(QQ, matrix_data)
         assert A in self, (
@@ -106,7 +106,7 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
         satisfy V G V^T = G; the synthetic convention U^T G U = G is met by
         U = V^T), on the domain where Sage's computation applies."""
         self._assert_engine_grounded()
-        return tuple(self.from_matrix(g) for g in self._delegated_generator_matrices())
+        return tuple(self._from_matrix(g) for g in self._delegated_generator_matrices())
 
     def order(self) -> Any:
         self._assert_engine_grounded()
@@ -136,7 +136,7 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
             yield self.one()
             return
         for element in self._delegated_engine():
-            yield self.from_matrix(matrix(ZZ, element.matrix()).transpose())
+            yield self._from_matrix(matrix(ZZ, element.matrix()).transpose())
 
     def as_matrix_group(self) -> Any:
         r"""GAP-backed matrix group — the point where Sage's MatrixGroup is
@@ -175,7 +175,7 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
         self._assert_engine_grounded()
         if self._lattice.rank() == 0:
             return (self.one(),)
-        return tuple(self.from_matrix(matrix(ZZ, representative.matrix())) for representative in self.as_matrix_group().conjugacy_classes_representatives())
+        return tuple(self._from_matrix(matrix(ZZ, representative.matrix())) for representative in self.as_matrix_group().conjugacy_classes_representatives())
 
     def _discriminant_source(self) -> SyntheticIntegralNondegenerateLattice:
         r"""The lattice, narrowed to the subcategory where the discriminant
@@ -189,7 +189,7 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
     def discriminant_action(self, f: Any) -> Any:
         r"""The induced action of the single verified isometry ``f`` on A_L.
         Per-element functor; NO group-level claim."""
-        assert f in self, f"discriminant_action needs a verified element of O({self._lattice._label}); got={f}"
+        assert f in self, f"discriminant_action needs a verified element of O({self._lattice.label()}); got={f}"
         return self._discriminant_source().discriminant_group().action_of_isometry(f)
 
     def discriminant_representation(self) -> Any:
@@ -232,11 +232,13 @@ class SyntheticIsometrySubgroup(IsometrySubgroup):
         self._ambient = ambient
         validated = []
         for gen in gens:
-            validated.append(gen if isinstance(gen, LatticeMorphism) and gen in ambient else ambient.from_matrix(gen if not isinstance(gen, LatticeMorphism) else gen.matrix()))
+            morphism = gen if isinstance(gen, LatticeMorphism) else ambient.lattice().hom(matrix(ambient.lattice().base_ring(), gen))
+            assert morphism in ambient, f"subgroup generators must be isometries of the acting lattice; matrix={morphism.matrix()}, gram={ambient.lattice().gram_matrix()}"
+            validated.append(morphism)
         self._gens = tuple(validated)
 
     def _repr_(self) -> str:
-        return f"Subgroup of O({self._ambient._lattice._label}) on {len(self._gens)} generators"
+        return f"Subgroup of O({self._ambient.lattice().label()}) on {len(self._gens)} generators"
 
     __repr__ = _repr_
 
@@ -249,26 +251,17 @@ class SyntheticIsometrySubgroup(IsometrySubgroup):
     def ambient(self) -> SyntheticIsometryGroup:
         return self._ambient
 
-    def preserves(self, sublattice: Any) -> bool:
-        r"""Whether every generator maps ``sublattice`` into itself."""
-        acting = self.lattice()
-        acting._assert_same_ambient(sublattice)
-        acting_basis = acting._inclusion_rows()
-        assert acting_basis.nrows() == acting_basis.ncols() and acting_basis.rank() == acting.rank(), (
-            f"preserves() requires the acting lattice to span the ambient; inclusion={acting_basis}"
-        )
-        from sage.modules.free_module_element import vector
+    def preserves(self, subobject: Any) -> bool:
+        r"""Whether every generator maps the subobject into itself — the
+        generator-wise morphism-sited factorization query (#100 ratified
+        placement): ``g.preserves(subobject)`` for each generator ``g``."""
+        from .homsets import Subobject
 
-        other_module = sublattice._underlying_module()
-        for morphism in self._gens:
-            action_matrix = matrix(QQ, morphism.matrix())
-            for row in sublattice._inclusion_rows().rows():
-                coordinates = acting_basis.solve_left(vector(QQ, row))
-                image_coordinates = action_matrix * coordinates
-                image_row = image_coordinates * acting_basis
-                if image_row not in other_module:
-                    return False
-        return True
+        assert isinstance(subobject, Subobject), f"preserves takes a subobject (M.subobject(...)/an image/kernel), not a bare lattice; found={type(subobject)}"
+        assert subobject.inclusion().codomain() == self.lattice(), (
+            f"the subobject must live in the acting lattice; codomain={subobject.inclusion().codomain()}, acting={self.lattice()}"
+        )
+        return all(generator.preserves(subobject) for generator in self._gens)
 
     def discriminant_image(self) -> Any:
         r"""The subgroup of the finite O(q_L) generated by the generators'
@@ -328,7 +321,9 @@ class SyntheticIsometrySubgroup(IsometrySubgroup):
             yield self._ambient.one()
             return
         for element in self.as_matrix_group():
-            yield self._ambient.from_matrix(matrix(QQ, element.matrix()))
+            morphism = self._ambient.lattice().hom(matrix(self._ambient.lattice().base_ring(), element.matrix()))
+            assert morphism in self._ambient, f"closure enumeration produced a non-isometry; matrix={morphism.matrix()}"
+            yield morphism
 
     def __eq__(self, other: object) -> bool:
         return bool(isinstance(other, SyntheticIsometrySubgroup) and self._ambient == other._ambient and self._gens == other._gens)

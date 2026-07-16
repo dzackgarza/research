@@ -14,4 +14,5 @@ abstract: |
 # Semistable degenerations and period spaces for polarized K3 surfaces
 
 - **Used here for:** the flower, stalk, and pot terminology and the Type I / flowerpot degeneration picture applied to Coble surfaces.
+
 - **Project relevance:** provides the older degeneration language that the vault uses to relate the Coble boundary to modern KSBA and IAS viewpoints.

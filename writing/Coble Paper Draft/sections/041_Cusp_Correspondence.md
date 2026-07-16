@@ -1,6 +1,6 @@
 ## Coble to Enriques Cusp Correspondence
 
-:::{.theorem}
+::: {.theorem}
 The embedding $\eta: F_{\Co}\to F_{\En}$ induces the correspondence on boundary cusps of the Baily-Borel compactifications shown in \cref{fig:enriques-coble-correspondence}.
 
 \begin{figure}[H]
@@ -11,12 +11,12 @@ The embedding $\eta: F_{\Co}\to F_{\En}$ induces the correspondence on boundary 
 \end{figure}
 :::
 
-:::{.remark}
+::: {.remark}
 We prove this correspondence by considering divisibilities at the corresponding 0-cusps and 1-cusps in both moduli spaces.
 We first note that since $T_{\Co}$ can be written as $L(2)$ where $L = \gens{1} \oplus E_8$, every $v\in T_{\Co}$ satisfies $\div_{T_{\Co}}(v) = 2$.
 :::
 
-:::{.lemma}
+::: {.lemma}
 \label{lem:divisibility_Tco_one}
 Fixing notation,
 \begin{align*}
@@ -27,7 +27,7 @@ Fixing notation,
 We then have $\mathrm{div}_{T_{\En} }(w_1) = 2$.
 :::
 
-:::{.proof}
+::: {.proof}
 This follows from the fact that $\tilde e\in U(2)$ where 
 $T_{\En} = U \oplus U(2) \oplus E_8(2)$ 
 Noting that
@@ -45,12 +45,12 @@ since $y\in U(2)$ and $\tilde e'\in (U\oplus E_8(2))^{\perp T_{\En}}$.
 Thus $\beta_{T_{\En}}(\tilde e', T_{\En}) = \beta_{T_{\En}}(\tilde e', U(2)) = 2\bZ$ since $\tilde e'\cdot\tilde f' = 2$.
 :::
 
-:::{.lemma}
+::: {.lemma}
 \label{lem:w1_perp_calculation}
 The 0-cusp $(9,9,1)_1$ in $F_{\Co}$ maps to the zero-cusp $(10, 8, 0)_1$ in $F_{\En}$.
 :::
 
-:::{.proof}
+::: {.proof}
 The cusp correspondence follows from computing the lattice $w_1^{\perp T_{\En}}/\gens{w_1}$ under the primitive embedding $\eta$, since $\eta(v_1) = w_1$ and $v_1$ is the isotropic vector corresponding to $(9,9,1)_1$ in $F_{\Co}$.
 This particular case follows from a direct computation:
 \begin{align*}
@@ -69,12 +69,12 @@ Alternatively, by \cite[Prop. 5.5]{AE22nonsympinv}, the isomorphism type of $w_1
 Since the divisibility of the isotropic vector at the Enriques 0-cusp $(10, 8, 0)_1$ is also 2 and the two Enriques 0-cusps are distinguished by divisibility, the correspondence follows.
 :::
 
-:::{.lemma}
+::: {.lemma}
 \label{lem:1_cusp_correspondence}
 Cusp $(7,7,1)_0$ in $F_{\Co}$ maps to cusp $(8, 6, 0)_0$ in $F_{\En}$.
 :::
 
-:::{.proof}
+::: {.proof}
 The results follows from verifying that the unique orbit $J$ of a primitive isotropic plane in $T_{\Co}$ satisfies $J^{\perp T_{\Co}}/J \cong (7,7,1)$, and identifying the isomorphism type of its image $\tilde J^{\perp T_{\En}}/\tilde J$ in $T_{\En}$.
 One checks that both $v_2$ and $w_2$ are isotropic, and $v_2 \in v_1^{\perp T_{\Co}}/v_1$, and so $J$ and $\tilde J$ define isotropic planes in $T_{\Co}$ and $T_{\En}$ respectively. By \cite[Prop. 5.5, Lem. 5.9]{AE22nonsympinv}, it suffices to show
 \[

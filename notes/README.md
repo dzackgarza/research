@@ -5,7 +5,9 @@ Human-readable research notes live here.
 ## Layout
 
 - `papers/`: notes organized by source paper.
+
 - `topics/`: imported cross-paper findings, speculative threads, and mathematical synthesis.
+
 - `computations/`: notes about computational artifacts, extraction plans, and comparisons.
 
 These folders are conveniences for existing material, not required categories.

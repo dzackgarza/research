@@ -16,4 +16,5 @@ created: 2026-05-08
 ## See Also
 
 - [[Divisibility and Discriminant for Primitive Vectors]]
+
 - [[Divisibility of Isotropic Vectors in Unimodular Lattices]]

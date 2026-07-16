@@ -1,6 +1,6 @@
 # Lattice Theory
 
-:::{.remark}
+::: {.remark}
 We refer to:
 
 - \cite{vinberg1985hyperbolic-groups}
@@ -9,11 +9,11 @@ We refer to:
 
 ## Basic Theory
 
-:::{.remark}
+::: {.remark}
 The study of semitoroidal compactifications of moduli spaces of Coble surfaces largely reduces to lattice theory, of which we will now recall the essential notions.
 :::
 
-:::{.remark title="Basic invariants"}
+::: {.remark title="Basic invariants"}
 By a **lattice**, we mean a free $\ZZ$-module $L$ of finite rank equipped with a nondegenerate[^1] symmetric integral bilinear form $\beta_L: L \otimes_\ZZ L \to \ZZ$. 
 We abbreviate $vw \da \beta_L(v, w)$ and $v^2 \da \beta_L(v, v)$ and refer to the latter as the \textbf{norm} of $v$. 
 We write $L_R \da L\otimes_{\ZZ} R$  and $\beta_{L_R}$ for $R = \QQ, \RR, \CC$ for the $\ZZ$-linear extensions of $(L, \beta_L)$ to the rational, real, and complex numbers respectively. 
@@ -34,7 +34,7 @@ Fixing a generating set $e_i$ of $L$, we define the **Gram matrix** of $L$ as th
 The discriminant is independent of the choice of generating set.
 :::
 
-:::{.remark title="Discriminant forms"}
+::: {.remark title="Discriminant forms"}
 
 The **dual lattice** to $L$ is denoted $L\dual \da \Hom_\ZZ(L, \ZZ)$,
 and there is an morphism 
@@ -72,7 +72,7 @@ preserve the quadratic form. There is a natural group homomorphism
 $\Orth(L)\to\Orth(q_L)$, the kernel is denoted $\tilde \Orth(L)$.
 :::
 
-:::{.remark title="Orthogonal complements"}
+::: {.remark title="Orthogonal complements"}
 
 Given two lattices $L_1, L_2$ we write $L_1\oplus L_2$ for the
 **orthogonal direct sum**, which is the direct sum of the underlying
@@ -92,7 +92,7 @@ A_{L_1 \oplus \cdots \oplus L_n} = A_{L_1} \oplus \cdots \oplus A_{L_n}
 \]
 :::
 
-:::{.remark title="2-elementary lattices"}
+::: {.remark title="2-elementary lattices"}
 Let $L$ be a 2-elementary lattice. The **divisibility** of a vector
 $v\in L$, denoted $\operatorname{div}_L(v)$, is defined by
 $\beta_L(v, L) = \operatorname{div}_L(v)\ZZ$, i.e. the positive
@@ -122,17 +122,16 @@ We accordingly specify such lattices using the notation
 $(r,a,\delta)_{n_+}$.
 :::
 
-:::{.remark title="Twists of a lattice"}
+::: {.remark title="Twists of a lattice"}
 If $L$ is a lattice with bilinear for $\beta_L$, define $L(n)$ to be the twist of $L$ by $n$, which has the same underlying $\ZZ$-module but is equipped with the scaled bilinear form 
 \[\beta_{L(n)}(v,w) \da n\cdot \beta_L(v, w).\]
 :::
 
-:::{.remark title="The lattice $\gens{n}
-$"}
+::: {.remark title="The lattice $\gens{n}$"}
 The lattice $\gens{n}$ is defined as the rank 1 lattice $\ZZ$ with one generator $v$ satisfying $\beta_{\gens{n}}(v,v) = n$. The Gram matrix is the $1\times 1$ matrix $G_{\gens n} = [n]$, and the associated quadratic form is $q_{\gens{n}}(x) = nx^2$. 
 :::
 
-:::{.remark title="The hyperbolic lattice"}
+::: {.remark title="The hyperbolic lattice"}
 In rank 2, there are two unimodular hyperbolic lattices: the odd $\rm{I}_{1, 1} \da \gens{1} \oplus \gens{-1}$, and the even $U\da \rm{II}_{1, 1}$.
 We refer to the latter as the \textbf{hyperbolic lattice}, which can be realized as $U \da \ZZ e \oplus \ZZ f$ with $e^2=f^2 = 0$ and $ef = 1$, and thus the following Gram matrix:
 \[ 
@@ -140,7 +139,7 @@ G_U = \begin{bmatrix}0&1\\1&0\end{bmatrix}
 .\]
 :::
 
-:::{.remark title="ADE lattices"}
+::: {.remark title="ADE lattices"}
 Any Dynkin diagram of type $A_n, D_n, E_6, E_7, E_8$ corresponds to a root lattice of the respective type. By convention, we take the negative definite twists of these lattices. Of particular importance to us is the $E_8$ lattice associated to the following Dynkin diagram:
 
 
@@ -154,16 +153,14 @@ Any Dynkin diagram of type $A_n, D_n, E_6, E_7, E_8$ corresponds to a root latti
 \end{figure}
 :::
 
-:::{.remark title="The lattice ${{\rm{I}
-}_{p, q}}$."}
+::: {.remark title="The lattice ${{\rm{I} }_{p, q}}$."}
 For any pair of non-negative integers $(p, q)$, there exists an odd indefinite unimodular lattice determined up to isomorphism by its rank and signature:
 \[
 \mathrm{I}_{p, q} \da \gens{1}^{\oplus p}\oplus \gens{-1}^{\oplus q}
 .\]
 :::
 
-:::{.remark title="The lattice ${\rm{II}
-}_{p, q}$"}
+::: {.remark title="The lattice ${\rm{II}}_{p, q}$"}
 Let $L$ be an even indefinite unimodular lattice of signature $(p, q)$. Then $p-q\equiv 0 \pmod 8$, and $L$ is uniquely determined up to isomorphism by its rank and signature:
 \[ 
 {\rm{II}}_{p, q} \da 
@@ -175,6 +172,6 @@ Let $L$ be an even indefinite unimodular lattice of signature $(p, q)$. Then $p-
 :::
 
 [^1]: A bilinear form is *nondegenerate* if for any $x$, $\beta_L(x, L) = 0$ implies $x=0$.
-    [^2]: For example, let $L = U = \gens{e,f}$ and $M = \gens{e}$.
-    Then $M^{\perp L} = M$.
 
+[^2]: For example, let $L = U = \gens{e,f}$ and $M = \gens{e}$.
+    Then $M^{\perp L} = M$.

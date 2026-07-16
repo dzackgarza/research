@@ -19,44 +19,39 @@ if TYPE_CHECKING:
     from .discriminant_forms import SyntheticDiscriminantForm
 
 
-def _lattice_key(lattice: Any) -> tuple[Any, ...]:
+def lattice_key(lattice: Any) -> tuple[Any, ...]:
     return (
         repr(lattice.base_ring()),
         lattice.rank(),
         tuple(lattice.gram_matrix().list()),
-        tuple(lattice._inclusion_rows().list()),
-        tuple(lattice._ambient_gram().list()),
     )
 
 
-def _relation_inclusion_matrix(cover_lattice: Any, relation_lattice: Any) -> Any:
+def relation_inclusion_matrix(cover_lattice: Any, relation_lattice: Any) -> Any:
     r"""Integer inclusion of ``relation_lattice`` into ``cover_lattice`` (rows in cover coordinates).
 
-    A finite quotient ``cover / relation`` needs the relation expressed as a genuine
-    sublattice of the cover.  Two based-model routes carry that inclusion:
-
-    - the relation is a subobject sharing the cover's coordinate system (a common root);
-    - the cover is the metric dual ``relation#``, so the inclusion is the natural map
-      ``relation -> relation#`` with matrix ``G`` (the relation's Gram).
+    A finite quotient ``cover / relation`` is defined by an inclusion morphism.
+    Exactly two witnesses are canonically selectable from bare objects, and
+    both are read off canonical attached morphisms: the metric dual's
+    ``relation -> relation#`` (``dual_inclusion``), and the identity morphism
+    for an identical cover. Anything else must carry its witness — pass a
+    ``Subobject`` to ``finite_quotient``.
     """
     if cover_lattice.rank() == 0:
         return matrix(ZZ, 0, 0)
-    if relation_lattice._ambient_gram() == cover_lattice._ambient_gram():
-        assert relation_lattice.is_submodule(cover_lattice), "relations must be a sublattice of the cover"
-        return matrix(
-            ZZ,
-            [cover_lattice._underlying_module().coordinate_vector(vector(QQ, row)) for row in relation_lattice._inclusion_rows().rows()],
-        )
     if relation_lattice.base_ring() is ZZ and relation_lattice.determinant() != 0 and relation_lattice.dual() == cover_lattice:
-        return matrix(ZZ, relation_lattice.gram_matrix())
-    assert False, "relation lattice is not a recognized sublattice of the cover; provide the relation as a subobject of the cover or as its metric dual"
+        return matrix(ZZ, relation_lattice.dual_inclusion().matrix()).transpose()
+    assert relation_lattice.gram_matrix() == cover_lattice.gram_matrix(), (
+        "finite_quotient of plain lattices supports the metric dual (L#/L) or an identical cover; for a general subobject quotient use the inclusion morphism's cokernel"
+    )
+    return matrix(ZZ, relation_lattice.identity_morphism().matrix())
 
 
 def _finite_coordinates(group: Any, element: Any) -> tuple[Any, ...]:
     return tuple(group.coordinates(group(element)))
 
 
-def _all_group_automorphisms(group: Any) -> tuple[SyntheticDiscriminantAction, ...]:
+def all_group_automorphisms(group: Any) -> tuple[SyntheticDiscriminantAction, ...]:
     if group.ngens() == 0:
         return (SyntheticDiscriminantAction(group, identity_matrix(ZZ, 0)),)
     automorphisms = []
@@ -68,7 +63,7 @@ def _all_group_automorphisms(group: Any) -> tuple[SyntheticDiscriminantAction, .
     return tuple(automorphisms)
 
 
-def _finite_all_subgroups(parent: Any) -> tuple[Any, ...]:
+def finite_all_subgroups(parent: Any) -> tuple[Any, ...]:
     seen = {}
     zero = parent.subgroup_generated_by(())
     seen[zero._key()] = zero
@@ -84,13 +79,13 @@ def _finite_all_subgroups(parent: Any) -> tuple[Any, ...]:
     return tuple(seen[key] for key in sorted(seen, key=lambda item: sorted(item)))
 
 
-def _finite_relations_among(parent: Any, gens: Any) -> tuple[tuple[Any, ...], ...]:
+def finite_relations_among(parent: Any, gens: Any) -> tuple[tuple[Any, ...], ...]:
     gens = tuple(parent(gen) for gen in gens)
     ranges = tuple(range(parent.order(generator)) for generator in gens)
     return tuple(tuple(ZZ(coefficient) for coefficient in coefficients) for coefficients in product(*ranges) if parent.discrete_exp(coefficients, gens=gens) == parent.zero())
 
 
-def _finite_basis_from_generators(parent: Any, gens: Any) -> tuple[Any, ...]:
+def finite_basis_from_generators(parent: Any, gens: Any) -> tuple[Any, ...]:
     subgroup = parent.subgroup_generated_by(gens)
     assert subgroup.cardinality() == parent.cardinality(), "generators do not span the whole group"
     return tuple(parent(gen) for gen in gens)
@@ -100,7 +95,7 @@ def _finite_scalar_multiply(parent: Any, scalar: Any, element: Any) -> Any:
     return ZZ(scalar) * element
 
 
-def _finite_p_torsion(parent: Any, p: Any, k: Any = 1) -> Any:
+def finite_p_torsion(parent: Any, p: Any, k: Any = 1) -> Any:
     p = ZZ(p)
     k = ZZ(k)
     assert p.is_prime(), f"p-torsion requires a prime; found={p}"
@@ -108,7 +103,7 @@ def _finite_p_torsion(parent: Any, p: Any, k: Any = 1) -> Any:
     return parent.subgroup_generated_by(element for element in parent.elements() if _finite_scalar_multiply(parent, p**k, element) == parent.zero())
 
 
-def _form_matrix_on_images(group: Any, images: Any) -> Any:
+def form_matrix_on_images(group: Any, images: Any) -> Any:
     images = tuple(group(image) for image in images)
     form = matrix(QQ, len(images), len(images))
     for i, left in enumerate(images):
@@ -142,7 +137,7 @@ def _quotient_closure(reduce: Callable[[Any], Any], zero: Any, generators: Any) 
     return seen
 
 
-def _induced_subquotient_form(ambient: Any, relation_subgroup: Any, cover_subgroup: Any) -> Any:
+def induced_subquotient_form(ambient: Any, relation_subgroup: Any, cover_subgroup: Any) -> Any:
     r"""The finite quadratic form on ``K / H`` (``H ⊆ K ⊆ H``-perp, ``H`` isotropic).
 
     The ambient bilinear/quadratic form descends to ``K / H``; present it on a
@@ -167,7 +162,7 @@ def _induced_subquotient_form(ambient: Any, relation_subgroup: Any, cover_subgro
         span = set(_quotient_closure(reduce, zero, generators))
         if len(span) == len(representatives):
             break
-    form = _form_matrix_on_images(ambient, generators)
+    form = form_matrix_on_images(ambient, generators)
     # lazy import: discriminant_forms imports this module at load time
     from .discriminant_forms import SyntheticQuadraticDiscriminantForm
 
@@ -597,16 +592,16 @@ class SyntheticGenus(Genus, Parent):
     def representative(self) -> Any:
         r"""A lattice in this genus: Sage's genus machinery returns an integer
         Gram matrix, converted into an owned synthetic lattice."""
-        from ..objects.parents import synthetic_lattice
+        from ..objects.categories import Lattices
 
-        return synthetic_lattice(self._sage_engine().representative(), ZZ, "genus_representative")
+        return Lattices(ZZ).from_gram_matrix(self._sage_engine().representative(), label="genus_representative")
 
     def representatives(self) -> tuple[Any, ...]:
         r"""One lattice per isometry class in this genus, from Sage's genus
         enumeration (computed exactly where Sage's engines compute it)."""
-        from ..objects.parents import synthetic_lattice
+        from ..objects.categories import Lattices
 
-        return tuple(synthetic_lattice(gram, ZZ, f"genus_class_{index}") for index, gram in enumerate(self._sage_engine().representatives()))
+        return tuple(Lattices(ZZ).from_gram_matrix(gram, label=f"genus_class_{index}") for index, gram in enumerate(self._sage_engine().representatives()))
 
     def class_number(self) -> Any:
         r"""``h(genus)`` = the number of isometry classes, counted from the

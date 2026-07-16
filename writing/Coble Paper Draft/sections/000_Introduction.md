@@ -1,6 +1,6 @@
 # Introduction
 
-:::{.remark}
+::: {.remark}
 A Coble surface is a smooth projective rational surface $S$ with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S}\neq \emptyset$.
 Such surfaces arise from the work of \cite{Cob19} and \cite{Cob29} on Cremona transformations of $\PP^2$ preserving an irreducible rational sextic $C$ with ten nodes -- the blowup $S$ along these nodes yields a Coble surface. \cite{Cob19} shows that the Cremona class of such a curve $C$ can be written as a union of finitely many projective equivalence classes, and that if $C$ is sufficiently general then $\Aut(S) \cong W(E_{10})$, the Weyl group of an infinite root system of type $E_{10}$.
  Moreover, he shows that that modulo $\Aut(S)$, there are only finitely many smooth rational negative curves on $S$.
@@ -16,7 +16,7 @@ A natural question is whether or not $F_{\Co}$ admits a geometrically meaningful
 Toward this end, we turn to the stable pair compactifications of Kollár, Shepherd-Barron, and Alexeev \cite{kollar1988threefolds-and-deformations,alexeev1996moduli-spaces,Kol23}.
 :::
 
-:::{.remark}
+::: {.remark}
 The search for modular compactifications of moduli spaces is a central problem in algebraic geometry. 
 The prototypical example stems from the work of \cite{deligne1969the-irreducibility-of-the-space, knudsen1976the-projectivity-of-the-moduli,knudsen1983the-projectivity-of-the-moduli23} on the Deligne-Mumford-Knudsen compactification $\overline{\Mgn}$ of the moduli space of stable pointed curves $\Mgn$. 
 By \cite{mumford1965git, namikawa1976a-new-compactification-of-the-siegel1, alexeev1999on-mumfords-construction, alexeev2002complete-moduli}, a similarly modular compactification $\overline{\Ag}$ of the moduli space $\Ag$ of principally polarized abelian varieties via stable pairs exists, the normalization of which coincides with a particular choice of toroidal \cite{AMRT75} compactification by the work of \cite{kollar1988threefolds-and-deformations} and \cite{alexeev1996moduli-spaces}.
@@ -33,7 +33,7 @@ Perhaps more naturally, one can also search for a semifan $\cF$ such that the re
 To this end, we prove the following:
 :::
 
-:::{.theorem}
+::: {.theorem}
 There is a semifan $\cF$ such that there exists a morphism
 \[
 \Psi: (\overline{F_\Co})^{\nu} \to \overline{F_\Co}^{\cF}
@@ -42,7 +42,7 @@ from the normalization of the KSBA compactification to the semitoroidal compacti
 The Coxeter fan of $T_{\Co}$ is a refinement of $\cF$, and stable Coble surfaces in the boundary of $\overline{F_\Co}$ admit explicit descriptions in terms of surfaces associated to sub-Dynkin diagrams of Coxeter diagrams.
 :::
 
-:::{.remark}
+::: {.remark}
 This result is made possible by recent advances in \cite{AE22,alexeev2021nonsymplectic} on compactifications of K3 surfaces with nonsymplectic automorphisms, along with the theory of recognizable divisors developed in \cite{alexeev2023compact}.
 We also critically leverage the related stable pair compactification of the moduli spaces of Enriques surfaces studied in \cite{AEGS23}. In particular, we use the folding theory of Coxeter diagrams, their associated integral affine structures, and the theory of $ADE+BC$ surfaces in order to explicitly describe stable degenerations of Coble surfaces.
 :::

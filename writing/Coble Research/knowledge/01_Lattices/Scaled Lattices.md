@@ -15,5 +15,7 @@ created: 2026-05-08
 ## Properties
 
 - The signature of $L(m)$ is the same as $L$.
+
 - The discriminant scales as $\operatorname{disc}(L(m)) = m^{\operatorname{rank}(L)} \cdot \operatorname{disc}(L)$.
+
 - If $L$ is unimodular and $m>1$, $L(m)$ is not unimodular.

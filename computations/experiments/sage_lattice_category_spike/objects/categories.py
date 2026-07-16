@@ -17,7 +17,7 @@ hooks -- there is deliberately no mixin-level default for those hooks.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Literal, cast
 
 from sage.categories.category import Category
 from sage.categories.category_types import Category_over_base_ring
@@ -28,6 +28,9 @@ from sage.categories.category_with_axiom import (
 )
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 from sage.categories.enumerated_sets import EnumeratedSets
+from sage.categories.functor import ForgetfulFunctor
+from sage.categories.homset import Hom as SageHom
+from sage.categories.homset import Homset
 from sage.categories.homsets import HomsetsCategory
 from sage.categories.modules import Modules
 from sage.categories.sets_cat import Sets
@@ -35,10 +38,12 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
 from ..lexicon import (
+    BaseRing,
     BilinearDiscriminantForm,
     CartanType,
     DefiniteLattice,
     DiscriminantForm,
+    ExactScalar,
     FiniteAbelianGroup,
     Genus,
     HyperbolicLattice,
@@ -46,14 +51,18 @@ from ..lexicon import (
     IntegralNondegenerateLattice,
     Lattice,
     LatticeElement,
+    LatticeHomset,
     LatticeMorphism,
     LatticeName,
+    LatticeSimilarity,
     NondegenerateLattice,
     PositiveDefiniteLattice,
     QuadraticDiscriminantForm,
     RawGramMatrix,
     RawMorphismMatrix,
     RootGeneratedLattice,
+    SageCategory,
+    SageFunctor,
     SourcedDiscriminantForm,
 )
 
@@ -159,7 +168,7 @@ class Lattices(Category_over_base_ring):
         self,
         gram_matrix: RawGramMatrix | LatticeName,
         label: str = "L",
-        cartan_type: CartanType | None = None,
+        cartan_type: CartanType | Literal["composite"] | None = None,
         names: Sequence[str] | str | None = None,
     ) -> Lattice:
         r"""Section 1.4: the functor from square symmetric matrices over the
@@ -173,18 +182,142 @@ class Lattices(Category_over_base_ring):
         output, not input: you construct E8 as a lattice and GET a
         root-generated lattice.
         """
-        from ..algebra.arithmetic import _is_named_gram_data, as_square_qq_matrix, named_cartan_type
-        from .parents import synthetic_lattice
+        from ..algebra.arithmetic import as_square_qq_matrix, is_named_gram_data, named_cartan_type
+        from .parents import construct_synthetic_lattice
 
         base_ring = self.base_ring()
         assert base_ring in (ZZ, QQ), f"lattice base ring must be ZZ or QQ; found={base_ring}; enter through Lattices(ZZ) or Lattices(QQ)"
-        if cartan_type is None and _is_named_gram_data(gram_matrix):
+        if cartan_type is None and is_named_gram_data(gram_matrix):
             cartan_type = named_cartan_type(gram_matrix)
         gram = as_square_qq_matrix(gram_matrix)
         return cast(
             "Lattice",
-            synthetic_lattice(gram, base_ring, label, cartan_type=cartan_type, names=names),
+            construct_synthetic_lattice(gram, base_ring, label, cartan_type=cartan_type, names=names),
         )
+
+    @staticmethod
+    def _lattice_root(category: SageCategory) -> Lattices | None:
+        r"""Return the lattice root that owns a lattice subcategory, if any."""
+        for base_ring in (ZZ, QQ):
+            root = Lattices(base_ring)
+            if category.is_subcategory(root):
+                return root
+        return None
+
+    def base_change(self, target_base_ring: BaseRing) -> SageFunctor:
+        r"""Return the canonical scalar-extension functor from this root."""
+        assert target_base_ring in (ZZ, QQ), f"lattice base ring must be ZZ or QQ; found={target_base_ring}"
+        from .functors import LatticeBaseChangeFunctor
+
+        return LatticeBaseChangeFunctor(self, Lattices(target_base_ring))
+
+    def canonical_functor(self, target: SageCategory) -> SageFunctor:
+        r"""Return the canonical functor from this lattice root to ``target``."""
+        lattice_target = self._lattice_root(target)
+        if lattice_target is not None:
+            return self.base_change(lattice_target.base_ring())
+        assert self.is_subcategory(target), f"no canonical functor from {self} to {target}"
+        return ForgetfulFunctor(self, target)
+
+    def from_base_change(self, source: Lattice) -> Lattice:
+        r"""Construct a scalar extension through this target category root."""
+        source_root = Lattices(source.base_ring())
+        assert source in source_root, f"base-change source must belong to {source_root}; found={source.category()}"
+        assert self.base_ring().coerce_map_from(source.base_ring()) is not None, f"base change requires a canonical map {source.base_ring()} -> {self.base_ring()}"
+        if source.base_ring() == self.base_ring():
+            return source
+        return self.from_gram_matrix(source.gram_matrix(), label=f"base_change_to_{self.base_ring()}")
+
+    def _transport_to(self, lattice: Lattice, category: SageCategory) -> Lattice:
+        r"""Apply the canonical functor that realizes ``lattice`` in ``category``."""
+        source_root = Lattices(lattice.base_ring())
+        lattice_target = self._lattice_root(category)
+        functor = source_root.base_change(lattice_target.base_ring()) if lattice_target is not None else source_root.canonical_functor(category)
+        transported = cast(Lattice, functor(lattice))
+        assert transported in category, f"canonical transport from {lattice.category()} does not land in {category}; result={transported.category()}"
+        return transported
+
+    def _default_hom_resolution(self, domain: Lattice, codomain: Lattice) -> tuple[Lattice, Lattice, SageCategory]:
+        r"""Resolve a default Hom request, preferring canonical base change to
+        the native meet of different base categories."""
+        if domain.base_ring() == codomain.base_ring():
+            return domain, codomain, domain.category()._meet_(codomain.category())
+        if codomain.base_ring().coerce_map_from(domain.base_ring()) is not None:
+            transported_domain = cast(Lattice, Lattices(domain.base_ring()).base_change(codomain.base_ring())(domain))
+            return transported_domain, codomain, transported_domain.category()._meet_(codomain.category())
+        if domain.base_ring().coerce_map_from(codomain.base_ring()) is not None:
+            transported_codomain = cast(Lattice, Lattices(codomain.base_ring()).base_change(domain.base_ring())(codomain))
+            return domain, transported_codomain, domain.category()._meet_(transported_codomain.category())
+        return domain, codomain, domain.category()._meet_(codomain.category())
+
+    def Hom(
+        self,
+        domain: Lattice,
+        codomain: Lattice,
+        category: SageCategory | None = None,
+    ) -> LatticeHomset | Homset:
+        r"""Construct a Hom through this category root.
+
+        An explicit category means transport both arguments through their
+        canonical functors before invoking Sage's standard Hom factory. Without
+        an explicit category, scalar extension takes precedence over the native
+        meet when it provides a common lattice category.
+        """
+        assert domain.base_ring() == self.base_ring(), f"enter through Lattices({domain.base_ring()}) for a Hom whose source is {domain}"
+        if category is None:
+            resolved_domain, resolved_codomain, resolved_category = self._default_hom_resolution(domain, codomain)
+        else:
+            assert isinstance(category, Category), f"Hom category must be a Sage category; found={type(category)}"
+            resolved_domain = self._transport_to(domain, category)
+            resolved_codomain = self._transport_to(codomain, category)
+            resolved_category = category
+        return cast(LatticeHomset | Homset, SageHom(resolved_domain, resolved_codomain, category=resolved_category))
+
+    def homset_from_sage(self, domain: Lattice, codomain: Lattice, category: SageCategory | None) -> LatticeHomset | Homset:
+        r"""The Sage Hom hook after Sage has selected and checked a category."""
+        assert category is not None, "Sage Hom must provide its resolved category"
+        lattice_root = self._lattice_root(category)
+        if lattice_root is not None:
+            assert domain.base_ring() == codomain.base_ring() == lattice_root.base_ring(), (
+                f"a lattice homset needs one base ring; domain={domain.base_ring()}, codomain={codomain.base_ring()}, category={category}"
+            )
+            assert domain in category and codomain in category, f"lattice homset arguments must belong to {category}"
+            return lattice_root._lattice_homset(domain, codomain, category)
+        assert domain in category and codomain in category, f"generic Hom arguments must belong to {category}"
+        return Homset(domain, codomain, category=category)
+
+    def _lattice_homset(self, domain: Lattice, codomain: Lattice, category: SageCategory) -> LatticeHomset:
+        r"""The single private binding from the lattice category to its homset
+        implementation."""
+        return Lattices.Homsets.implementation(domain, codomain, category)
+
+    def morphism(
+        self,
+        domain: Lattice,
+        matrix_data: RawMorphismMatrix,
+        codomain: Lattice | None = None,
+    ) -> LatticeMorphism:
+        r"""Construct a form-preserving morphism through its category homset."""
+        codomain = domain if codomain is None else codomain
+        assert domain.base_ring() == codomain.base_ring() == self.base_ring(), (
+            f"morphism construction needs one lattice category; domain={domain.base_ring()}, codomain={codomain.base_ring()}"
+        )
+        return cast(LatticeMorphism, self.Hom(domain, codomain)(matrix_data))
+
+    def similarity(
+        self,
+        domain: Lattice,
+        matrix_data: RawMorphismMatrix,
+        codomain: Lattice,
+        scalar: ExactScalar,
+    ) -> LatticeSimilarity:
+        r"""The private binding for lattice similarities."""
+        assert domain.base_ring() == codomain.base_ring() == self.base_ring(), (
+            f"similarity construction needs one lattice category; domain={domain.base_ring()}, codomain={codomain.base_ring()}"
+        )
+        from ..morphisms.homsets import LatticeSimilarity as Implementation
+
+        return Implementation(domain, codomain, matrix_data, scalar)
 
     class MorphismMethods:
         pass
@@ -192,13 +325,20 @@ class Lattices(Category_over_base_ring):
     class Homsets(HomsetsCategory):
         r"""Homsets of form-preserving lattice morphisms."""
 
+        @staticmethod
+        def implementation(domain: Lattice, codomain: Lattice, category: SageCategory) -> LatticeHomset:
+            r"""The lattice category's registered homset implementation."""
+            from ..morphisms.homsets import LatticeHomset as Implementation
+
+            return Implementation(domain, codomain, category=category)
+
         def extra_super_categories(self) -> list[Category]:
             return [Sets()]
 
         class ParentMethods:
-            @abstract_method
-            def from_matrix(self, matrix_data: RawMorphismMatrix) -> LatticeMorphism:
-                r"""Construct the lattice morphism represented by ``matrix_data``."""
+            # No from_matrix contract: morphism construction is the element
+            # constructor / the lattices' public named constructors (#100 T4).
+            pass
 
         class ElementMethods:
             @abstract_method

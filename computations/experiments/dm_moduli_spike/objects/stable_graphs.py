@@ -53,7 +53,7 @@ class _PermutationAction(Action):
         # Prefer native permutation action when labels are the standard domain.
         try:
             return g(x)
-        except TypeError, ValueError, IndexError:
+        except (TypeError, ValueError, IndexError):
             # Labels may be 0-based indices while Sage acts on {1,...,n}.
             idx = labels.index(x)
             image_pos = as_int(g(idx + 1)) - 1

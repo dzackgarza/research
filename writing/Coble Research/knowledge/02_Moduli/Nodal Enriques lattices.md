@@ -43,4 +43,5 @@ The map is the identity on the $E_8(2)$ summand [@CDL24].
 ## Moduli interpretation
 
 - The induced period-domain map identifies the nodal Enriques locus as a subspace of the Enriques moduli space [@DK13; @CDL24].
+
 - Geometrically, this is the lattice-theoretic avatar of the locus of Enriques surfaces containing a nodal curve [@DK13; @CDL24].

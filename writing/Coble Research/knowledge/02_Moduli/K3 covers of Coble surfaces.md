@@ -22,7 +22,9 @@ created: 2026-05-10
 ## Fixed locus
 
 - If $C = C_1 + \cdots + C_n$, then the fixed locus of the covering involution is the disjoint union of the preimages $f^{-1}(C_i)$.
+
 - These are $(-2)$-curves on $X$ [@CD12; @CDL24].
+
 - The invariant lattice is 2-elementary with invariants of the form [@CDL24]
   $$
   (r,a,\delta) = (10+n, 12-n, \delta).
@@ -31,7 +33,9 @@ created: 2026-05-10
 ## Important special cases
 
 - $(10,10,0)$: empty fixed locus.
+
 - $(10,8,0)$: fixed locus is two elliptic curves.
+
 - Otherwise: fixed locus is one rational curve together with $n-1$ additional disjoint $(-2)$-curves [@CD12].
 
 ## Coble case with one boundary component

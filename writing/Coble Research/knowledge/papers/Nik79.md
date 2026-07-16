@@ -14,4 +14,5 @@ abstract: |
 # Integer symmetric bilinear forms and some of their geometric applications
 
 - **Used here for:** classification of 2-elementary lattices, uniqueness of primitive embeddings, and surjectivity statements for orthogonal groups.
+
 - **Project relevance:** this is the lattice-theoretic backbone of the Coble, Enriques, and degree-2 K3 embedding arguments.

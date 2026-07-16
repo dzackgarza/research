@@ -41,7 +41,6 @@ The case of interest to us is $n=1$, and thus the lattice
 $M = (11, 11, 1) = A_1 \oplus E_{10}(2)$ and its complement $N$ in the K3
 lattice will be used to construct a period domain quotiented by an appropriate
 arithmetic subgroup, producing the coarse moduli space of interest.
-
 ::::
 
 ::: {.remark}

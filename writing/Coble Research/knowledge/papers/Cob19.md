@@ -14,4 +14,5 @@ abstract: |
 # The ten nodes of the rational sextic and of the Cayley symmetroid
 
 - **Used here for:** the original plane-sextic construction of the classical Coble surface.
+
 - **Project relevance:** foundational citation for the blowup of the ten nodes of a rational sextic.

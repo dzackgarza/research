@@ -48,7 +48,7 @@ def test_root_reflection_is_the_humphreys_involution_fixing_the_mirror():
     i.e. A^T G A = G).
     """
     for name, cheap in (("A3", ((3, 0), 4)), ("D4", ((4, 0), 4))):
-        lattice = lc.Lattice(name)
+        lattice = lc.Lattice(f"{name}(-1)")
         signature_pair, determinant = cheap
         # cheap characterizing invariants
         assert lattice.rank() == int(name[1:])
@@ -95,7 +95,7 @@ def test_o_a2_is_the_order_12_dihedral_group_of_the_hexagon():
     Each returned conjugacy-class representative is verified to be a genuine
     isometry of A_2.
     """
-    a2 = lc.Lattice("A2")
+    a2 = lc.Lattice("A2(-1)")
     # cheap characterizing invariants
     assert a2.rank() == 2
     assert a2.signature_pair() == (2, 0)
@@ -130,7 +130,7 @@ def test_orthogonal_group_of_a2_plus_a2_is_the_wreath_product():
     (already pinned in test_literature_citations.py) do not exercise. |O(A_2)| = 12
     is CS10's order-12 dihedral hexagon group.
     """
-    a2 = lc.Lattice("A2")
+    a2 = lc.Lattice("A2(-1)")
     lattice = a2.direct_sum(a2)
     # cheap characterizing invariants
     assert lattice.rank() == 4

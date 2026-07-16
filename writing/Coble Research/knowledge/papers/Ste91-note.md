@@ -14,4 +14,5 @@ abstract: |
 # Sterk 1991 note
 
 - **Used here for:** divisibilities of isotropic vectors, cusp labels, and the identification of Sterk cusp 2.
+
 - **Project relevance:** the Coble cusp map to $(18,0,0)_1$ is interpreted through Sterk's cusp classification.

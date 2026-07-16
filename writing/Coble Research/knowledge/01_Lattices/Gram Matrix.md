@@ -20,6 +20,9 @@ created: 2026-05-08
 ## Properties
 
 - We define the **discriminant** $\operatorname{disc}(L)$ of $L$ as $\operatorname{det}(G_\beta)$ in any choice of basis.
+
 - For any sublattice $S \leq L$, we have the formula $\operatorname{disc}(S) = [L:S]^2 \operatorname{disc}(L)$, so the discriminant typically *increases* when passing to a sublattice.
+
 - We say $L$ is **unimodular** if $\operatorname{disc}(L) = \pm 1$.
+
 - The Gram matrix reflects properties of the form: $\beta$ is symmetric iff $G_\beta^t = G_\beta$, skew-symmetric iff $G_\beta^t = -G_\beta$, and an integral [[Lattice]] is even iff $G_\beta$ is an integer matrix with diagonal entries in $2\mathbf{Z}$.

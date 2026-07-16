@@ -22,4 +22,5 @@ created: 2026-05-08
 ## Polarized Coble trace restriction
 
 - The polarized Coble compactification program uses a Coble-specific restriction of the Enriques ramification semifan rather than a new unrelated fan from scratch; see [[Restriction of the ramification semifan to polarized Coble moduli]].
+
 - The point of that note is to keep the semitoroidal side of the Coble comparison problem visible without pretending that the trace identity is already proved.

@@ -2,7 +2,7 @@
 
 ## The geometry of Coble surfaces
 
-:::{.remark}
+::: {.remark}
 For the general theory of Coble surfaces, we refer to \cite{EnriquesOne,EnriquesTwo}, along with \cite{DM19, DZ99, dolgachev2013the-rationality, CD89, CD12, Dol17}.
 Following \cite[\S 5.1]{DM19}, a \textbf{Coble surface} is a smooth projective rational surface $S$ with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S} \neq \emptyset$. 
 We say $S$ is of **K3 type** if $\abs{-2K_S}$ consists of a single smooth divisor $C = C_1 + \cdots + C_n$, the union of $n$ disjoint smooth rational curves satisfying $C_i\cdot C_j = -4\delta_{ij}$. For Coble surfaces obtained as the blowup along ten nodes of a nodal plane sextic, this calculation follows from adjunction and the genus formula.
@@ -17,7 +17,7 @@ We will primarily be interested in the case $n=1$, whence $S$ is obtained as the
 Such Coble surfaces are not the image of any birational but not biregular morphism from another Coble surface and are said to be \textbf{terminal}. We say $S$ is \textbf{minimal} if the blowdown of any $(-1)$-curve on $S$ is no longer a Coble surface, or equivalently if $S$ does not admit a birational but not biregular morphism onto another Coble surface.
 :::
 
-:::{.remark}
+::: {.remark}
 Let $\cL \da \OO_S(-K_S) \in \Pic(S)$; By \cite[Prop. 9.1.1]{EnriquesTwo}, taking a section $s\in H^0(\cL ^{\otimes 2})$ with $Z(s) = C$ yields a double branched double cover $f: X\to S$ where $X$ is a smooth K3 surface. By \cite[Def. 5.4.3]{EnriquesOne}, the preimages $f^{-1}(C_i)$ are disjoint $(-2)$-curves and $\Pic(X)$ is a 2-elementary lattice with invariants of the form 
 \[
 (r,a,\delta)_1 = (10+n, 12-n, \delta)_1
@@ -51,7 +51,7 @@ Alternatively, this can be seen directly using the mirror move $S\leadsto T$ of 
 The lattices $S_{\Co}$ and $T_{\Co}$ will be of fundamental importance in constructing the Hodge-theoretic period domain for Coble surfaces, yielding a coarse space for the corresponding moduli space.
 :::
 
-:::{.remark}
+::: {.remark}
 Following \cite{CD12}, we note that this computation is a special case of a general construction. Let $S$ be any basic rational surface and write $S$ as the blowup of $\PP^2$ at $N$ points $p_1,\cdots, p_N$ with $N\geq 9$.
 It is a fact that $\Pic(S) \cong \rm{I}_{1, N}$, since one can construct a **geometric basis** in the following way: let $e_0$ be the class of the total transform of a hyperplane class in $\PP^2$ and for $1\leq i\leq N$, let $e_i$ be the class of the total transform of the exceptional divisor over $p_i$.
 Then $\Pic(S) = \gens{e_0,e_1,\cdots, e_N}$ and $\rho(X) = N+1$; one verifies that $e_0^2 = 1$, and for $i\geq 1$, that $e_i^2 = -1$. Moreover $e_ie_j = 0$ for $i\neq j$, making this an orthogonal basis with respect to the intersection pairing, yielding $\rm{I}_{1, N}$.

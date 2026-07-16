@@ -24,12 +24,17 @@ created: 2026-05-08
 ## Marked-root Coble constraint
 
 - In the polarized Coble program, the integral-affine data is refined by a marked root satisfying $\lambda \cdot r = 0$ before one folds from the K3 picture to the Enriques/Coble picture.
+
 - This is recorded in [[Marked-root integral-affine structures for Coble surfaces]], where the remaining open point is compatibility with an equivariant triangulation.
 
 ## Polarized Coble landing zone
 
 - The preserved Coble source packets route the IAS continuation as an upstairs-to-downstairs sequence:
+
   - start with K3 monodromy / Coxeter data,
+
   - fold to Enriques boundary data,
+
   - then impose the marked-root constraint $\lambda \cdot r = 0$ for the polarized Coble branch.
+
 - In this vault, that means this card remains the generic IAS entry point, while the Coble-specific section-6 payload lives in [[Marked-root integral-affine structures for Coble surfaces]].

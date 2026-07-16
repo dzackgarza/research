@@ -41,68 +41,102 @@ Branch-curve geometry plus KSBA stability, cusps plus semifan proof obligations,
 Hard constraints:
 
 - Do not use OpenCode `write`, `edit`, or `apply_patch`.
+
 - Do not use Serena read, search, list, find, symbol, memory, project, shell, create-file, line-insert, line-range replace, or whole-file rewrite tools.
+
 - Do not use Serena `create_text_file`.
+
 - Use Serena `replace_content` only for exact local replacements around source text you just read.
   Use literal matching only; do not use regex mode, `.*`, anchors, capture groups, or replacement backreferences.
   If exact replacement would require a broad block rewrite, line arithmetic, or regenerating source lines, leave the passage unresolved.
+
 - Use repository-approved shell tools for discovery: `tree`, `exa`, `ctags`, `npx -y @probelabs/probe`, `ast-grep`, and `semtools search`.
+
 - Shell commands may inspect, search, diff, and mechanically copy or move the raw source into `.annotated`. Never use shell commands to edit markdown bodies, remove comments, insert comments, restore artifacts, or rewrite annotated sources.
+
 - Do not regenerate a transcript, source note, or processed artifact from model text.
+
 - Do not reflow, normalize, repair markdown, or clean up source text.
+
 - Do not edit durable notes, MOCs, paper files, or inbox lifecycle artifacts other than the copied source you are annotating.
+
 - Do not read, list, cite, or expand `INBOX/.annotated/`, `INBOX/.processed/`, `INBOX/.incorporated/`, or scratch output folders while researching targets.
   If a directory listing or search result reveals one of these paths, skip it without opening it; those are lifecycle surfaces, not durable vault notes.
+
 - Treat existing lifecycle artifacts as quarantined evidence.
   Never open an existing `.annotated` copy to understand the source, copy its style, compare work, or decide whether the redo is needed.
+
 - To create the annotated output, run the direct stage-directory creation and raw-source copy.
   Do not glob, list, read, or otherwise inspect lifecycle directories first.
   If the user asked for a redo from raw and the output file already exists, overwrite it mechanically from the raw source before semantic research.
+
 - Ground the analysis in the raw source and durable vault notes.
   Do not imitate prior processed copies or use them as format examples.
+
 - Treat hashes, file existence, target lists, and worker claims as non-evidence.
+
 - CriticMarkup fields must be single-valued.
   Never write slash-separated `unit:` or `status:` values such as `remark/question` or `disputed/needs-human`; choose one allowed value and put nuance in the reason.
+
 - A source item can be already recorded in the vault and still remain conjectural, open, disputed, or in need of human judgment.
   When choosing the single `status:` value, preserve mathematical proof status over bookkeeping status: prefer `conjectural`, `open`, `disputed`, or `needs-human` over `duplicate` whenever the target note says the item is pending verification, proposed, disputed, or still needs proof.
   Put "already recorded in the target" in the `reason:` instead of using `status: duplicate`.
+
 - Do not add work-status metadata such as `analysis_status`, `analysis_scope`, `candidate_targets`, or `blocked_targets`.
+
 - Do not append a handoff, progress summary, routing ledger, completion note, next-steps block, or source-level/global annotation.
   Later agents must read the source and local CriticMarkup directly.
+
 - Do not add `locator: entire source` or a top-of-file source summary comment.
   If a whole-source synthesis matters, attach it to the passages that support it.
+
 - Obsidian heading links must use the target note's displayed heading text.
   Do not invent slugified anchors.
+
 - Do not use shorthand targets such as "same note", "above note", or "this note"; every comment must name the actual vault-relative target note path and section.
+
 - Do not use `route:` to point to source turns, source lines, other annotations, or expanded annotations.
   For repeated or superseded passages, repeat the durable vault target path and put the supersession in `status:` and `reason:`.
+
 - Do not alter source citations or punctuation adjacent to comments.
   If a source paragraph has citations such as `[12][13]`, keep those characters exactly; use a standalone comment line instead of escaping brackets or moving punctuation.
+
 - Allowed `status:` values are exactly: `proved`, `source-backed`, `conjectural`, `unproved`, `open`, `proof-sketch`, `contradicted`, `superseded`, `duplicate`, `rejected`, `disputed`, `needs-human`, `blocked`, `external`, `source-uncertain`. `source-verified` is invalid; use `source-backed`.
 
 For markdown/text analysis tasks:
 
 - First copy or move the raw source mechanically into `.annotated`.
+
 - Then use only Serena `replace_content` with a literal exact source block to insert CriticMarkup into the copied source.
+
 - Frontmatter metadata is optional.
   If adding it is not a one-pass targeted edit, skip frontmatter and continue semantic annotation.
+
 - Draft comments against stable passages before editing.
   Insert multiple comments around exact source passages.
   Do not use regex replacement, backreferences, or absolute line arithmetic.
+
 - When using `replace_content`, copy existing source lines verbatim from the current read output into the replacement block.
   Do not retype source prose from memory.
   After the edit, inspect the artifact diff.
   If any non-CriticMarkup source line changes outside inserted or removed comments, including quote marks, dashes, Unicode, formula text, citation escaping, or punctuation, repair that source line before doing anything else.
+
 - Do not call a segment source-faithful unless the diff shows only CriticMarkup insertion/removal/narrowing around unchanged source lines.
+
 - Do not target repeated source/reference-list lines for comment insertion.
   Put comments beside the mathematical heading, paragraph, or list item being routed.
+
 - Never compose the annotated artifact as a new file.
+
 - If targeted editing would require regenerating the file, stop and report `blocked`.
+
 - If the source is too large to finish without broad catch-all comments, leave the unfinished passages for a later direct pass after completing one coherent source segment well.
   Do not make the artifact look complete by compressing hard sections.
+
 - If any long claim-list or proof-sketch turn still has only a compact turn-level comment, do not claim "fully mapped", "no blockers", "no durable note edits required", or "ready to retire".
   Refine the annotation locally.
   Leaving work for a later pass means leaving the unhandled source passage without a synthetic umbrella comment.
+
 - Before leaving the artifact, audit for `route: superseded`, `route: see`, `line ~`, `expanded annotation`, title-only wikilinks for existing notes, and escaped source citations such as `\[12\]` introduced by your edits, and `status: source-verified`. Fix hits in the artifact when they are part of the segment you handled; otherwise leave them visible for a later direct pass.
 
 Prefer useful passage-local routing, but never use "dense annotation noise" as a reason to keep an umbrella comment on a structured claim list.

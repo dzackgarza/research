@@ -1,14 +1,15 @@
 # SageMath Interface Specification: Table Reproduction Focus
 
-**Version**: 1.0  
-**Priority**: PRIMARY - Reproduce Dutour Sikirić & Hulek computational results exactly  
+**Version**: 1.0\
+**Priority**: PRIMARY - Reproduce Dutour Sikirić & Hulek computational results exactly\
 **Philosophy**: The interface should enable exact reproduction of every calculation in the paper
 
----
+* * *
 
 ## 1. Core Mathematical Goal
 
 ### 1.1 Target Calculations (from GAP test suite)
+
 The paper's computational results are based on these test cases:
 
 ```python
@@ -23,19 +24,25 @@ TEST_CASES = [
 ```
 
 ### 1.2 Required Computations for Each Test Case
+
 For each lattice specification `(eList, k)`:
 
 1. **Orbit Representatives for Norm 0** (isotropic vectors)
-2. **Orbit Representatives for Norm 2** 
+
+2. **Orbit Representatives for Norm 2**
+
 3. **Isotropic k-plane orbits** (both "plane" and "flag" types)
+
 4. **Automorphism group** generators and order
+
 5. **Equivalence testing** (verify lattice invariants)
 
----
+* * *
 
 ## 2. Primary Interface Design
 
 ### 2.1 Core Function: Reproduce Table Entry
+
 ```python
 def compute_lattice_orbit_data(lattice_spec, k_dim=2, norms=[0, 2]):
     """
@@ -77,6 +84,7 @@ def compute_lattice_orbit_data(lattice_spec, k_dim=2, norms=[0, 2]):
 ```
 
 ### 2.2 Result Container Class
+
 ```python
 class LatticeOrbitData(SageObject):
     """
@@ -139,6 +147,7 @@ class LatticeOrbitData(SageObject):
 ```
 
 ### 2.3 Test Suite Driver Function
+
 ```python
 def reproduce_paper_table(test_cases=None, verbose=True):
     """
@@ -180,6 +189,7 @@ def reproduce_paper_table(test_cases=None, verbose=True):
 ```
 
 ### 2.4 Individual Lattice Construction
+
 ```python
 def build_lattice_from_spec(lattice_spec):
     """
@@ -218,11 +228,12 @@ STANDARD_LATTICES = {
 }
 ```
 
----
+* * *
 
 ## 3. Computational Algorithm Interface
 
 ### 3.1 Core Orbit Computation
+
 ```python
 def compute_orbit_representatives_exact(gram_matrix, norm=0, method="auto"):
     """
@@ -271,6 +282,7 @@ def compute_automorphism_group(gram_matrix):
 ```
 
 ### 3.2 Backend Interface Requirements
+
 ```python
 # The Julia/OSCAR backend must provide these exact signatures:
 
@@ -295,11 +307,12 @@ def oscar_isotropic_kplane_orbits(gram_matrix_rational, k_dim, plane_type):
     """
 ```
 
----
+* * *
 
 ## 4. Verification and Testing
 
 ### 4.1 Exact Reproduction Tests
+
 ```python
 def test_reproduce_gap_results():
     """
@@ -360,6 +373,7 @@ def test_enriques_specific():
 ```
 
 ### 4.2 Mathematical Verification
+
 ```python
 def verify_mathematical_correctness(data):
     """Comprehensive mathematical verification of results."""
@@ -393,11 +407,12 @@ def verify_mathematical_correctness(data):
         assert g_matrix * gram * g_matrix.transpose() == gram
 ```
 
----
+* * *
 
 ## 5. Output Formats
 
 ### 5.1 Table Format Matching Paper
+
 ```python
 def format_results_table(results_list):
     """
@@ -425,27 +440,39 @@ def latex_results_table(results_list):
     # Returns LaTeX tabular environment with all results
 ```
 
----
+* * *
 
 ## 6. Success Criteria
 
 ### 6.1 Primary Success: Exact Reproduction
+
 - [ ] All 6 test cases from GAP file reproduce exactly
+
 - [ ] Enriques case (["U", "2U", "2E8"]) matches paper's orbit count
+
 - [ ] Verification functions confirm mathematical correctness
+
 - [ ] Table output matches paper's format
 
 ### 6.2 Interface Success
+
 - [ ] `compute_lattice_orbit_data()` works for all test cases
+
 - [ ] `reproduce_paper_table()` generates complete results
+
 - [ ] Results integrate cleanly with SageMath objects
+
 - [ ] Verification tests all pass
 
-### 6.3 Performance Success  
+### 6.3 Performance Success
+
 - [ ] Each test case completes within reasonable time (< 10 minutes)
+
 - [ ] Enriques case completes within target time (< 5 minutes)
+
 - [ ] Memory usage reasonable for all cases
 
----
+* * *
 
-**This specification focuses on the core goal: reproducing the paper's computational results exactly. The interface should make it trivial to verify our implementation against their published data.**
+**This specification focuses on the core goal: reproducing the paper's computational results exactly.
+The interface should make it trivial to verify our implementation against their published data.**

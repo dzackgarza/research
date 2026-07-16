@@ -24,4 +24,5 @@ created: 2026-05-08
 ## See Also
 
 - [[Properties of Discriminant Forms]]
+
 - [[Discriminant Group and Discriminant]]

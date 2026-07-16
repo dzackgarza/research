@@ -17,5 +17,7 @@ created: 2026-05-08
 ## Properties
 
 - The roots $R(A_n)$ consist of $r_{i,j} \mathrel{\mathop:}= e_i - e_j$ for $1\leq i \neq j \leq n+1$.
+
 - There are $n(n+1)$ roots in total.
+
 - The $n$ simple roots $\Phi(A_n)$ can be chosen as $\alpha_i \mathrel{\mathop:}= e_i - e_{i+1}$ for $1\leq i \leq n$.
