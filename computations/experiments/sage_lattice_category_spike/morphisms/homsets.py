@@ -88,8 +88,9 @@ class Subobject:
         return self._inclusion.cokernel().is_torsion_free()
 
     def index(self) -> Any:
-        r"""The index ``[M : L]`` of the subobject in its ambient -- the order of
-        the cokernel (infinite when ``L`` is not full rank in ``M``)."""
+        r"""The index ``[M : L]`` of the subobject in its ambient -- the
+        classical scalar spelling (infinite when ``L`` is not full rank in
+        ``M``); the Cardinal answer is ``cokernel().cardinality()``."""
         return self._inclusion.index()
 
     def __getattr__(self, name: str) -> Any:
@@ -194,9 +195,12 @@ class SyntheticLatticeCokernel(lexicon.LatticeCokernel):
         summand. This is exactly the primitivity condition on the inclusion."""
         return all(invariant == 0 for invariant in self._quotient.invariants())
 
-    def cardinality(self) -> Any:
-        r"""The order of the cokernel (infinite when the image is not full rank)."""
-        return self._quotient.cardinality()
+    def cardinality(self) -> Cardinal:
+        r"""The order of the cokernel as a Cardinal (a finitely generated
+        ZZ-module is countable, so the infinite case is aleph_0)."""
+        from ..objects.cardinals import cardinal
+
+        return cardinal(self._quotient.cardinality())
 
     def invariants(self) -> tuple[Any, ...]:
         return tuple(self._quotient.invariants())
@@ -340,8 +344,14 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         return bool(self.cokernel().cardinality() == 1)
 
     def index(self) -> Any:
-        r"""The index ``[codomain : image]`` -- the order of the cokernel."""
-        return self.cokernel().cardinality()
+        r"""The index ``[codomain : image]`` -- the classical scalar
+        spelling of the cokernel's order (index scales determinants, so it
+        stays arithmetic; the Cardinal answer is the cokernel's own
+        ``cardinality()``)."""
+        from sage.rings.infinity import Infinity
+
+        cardinality = self.cokernel().cardinality()
+        return cardinality.finite_value() if cardinality.is_finite() else Infinity
 
     # -- morphism-sited geometry (ratified method placement, #100): each
     # -- operation below consumes this morphism's data, so it lives here;

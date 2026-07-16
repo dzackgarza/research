@@ -83,3 +83,17 @@ def test_predicates_and_hashing_are_consistent():
     assert hash(cardinal(5)) == hash(ZZ(5))
     assert hash(aleph0) != hash(continuum)
     assert len({aleph0, continuum, aleph0 + aleph0, continuum * aleph0}) == 2
+
+
+def test_equal_cardinals_hash_equally_across_the_coercion_boundary():
+    r"""The Python hash law: whatever compares equal hashes equally — in
+    particular against Sage's two-valued infinity, which the countable
+    infinite cardinal absorbs on equality."""
+    from sage.all import oo
+
+    assert aleph0 == oo
+    assert hash(aleph0) == hash(oo)
+    assert cardinal(ZZ(3)) == 3
+    assert hash(cardinal(ZZ(3))) == hash(3)
+    assert continuum != oo
+    assert hash(aleph0) != hash(continuum) or aleph0 == continuum

@@ -34,7 +34,9 @@ def test_torsors_refine_g_sets():
     group = Lattice("A2").isometry_group()
     assert Torsors(group).is_subcategory(GSets(group))
     assert Torsors(group).is_subcategory(SageGSets(group))
-    assert Torsors(group).acting_group() is group
+    # equality, not identity: Torsors(G) is unique per group VALUE, so a
+    # prior equal group's torsor is legitimately returned from the cache
+    assert Torsors(group).acting_group() == group
 
 
 class IsometriesAsTorsor(Parent):

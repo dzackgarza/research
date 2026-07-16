@@ -164,3 +164,40 @@ def test_isometry_groups_route_through_the_owned_group_node():
     assert cardinality == 12
     assert group.order() == 12
     assert isinstance(group.order(), Integer)
+
+
+def test_lattice_coordinates_speak_the_based_elements_own_vocabulary():
+    r"""The free-module coordinate chart consumes vector-like elements;
+    based lattice elements carry coefficient vectors instead, so the based
+    node owns its coordinates spelling. Round trip through a NON-standard
+    basis proves the chart is basis-honest, not a coefficient echo."""
+    a2 = Lattice("A2")
+    e0, e1 = a2.basis()
+    chart = a2.coordinates((e0 + e1, e1))
+    point = chart(a2([2, -1]))
+    assert tuple(point.value) == (2, -3)
+    back = a2.from_coordinates((e0 + e1, e1))(point)
+    assert back == a2([2, -1])
+    assert back.parent() is a2
+
+
+def test_subgroup_and_infinite_index_answers_are_cardinals():
+    r"""The owned-cardinal contract reaches the quotient-side vocabulary:
+    a discriminant subgroup's cardinality and a non-full-rank subobject's
+    infinite index are Cardinals, absorbing Sage's two-valued infinity on
+    equality."""
+    from sage.all import oo
+
+    a2 = Lattice("A2")
+    group = a2.discriminant_group()
+    subgroup = group.subgroup_generated_by((group.gen(0),))
+    assert subgroup.cardinality() == 3
+    assert isinstance(subgroup.cardinality(), Cardinal)
+
+    thin = a2.subobject([a2([1, 0])], "thin")
+    # index() is the classical scalar spelling (it scales determinants);
+    # the Cardinal answer lives on the cokernel object itself
+    assert thin.index() == oo
+    cokernel_cardinality = thin.cokernel().cardinality()
+    assert isinstance(cokernel_cardinality, Cardinal)
+    assert cokernel_cardinality == aleph0

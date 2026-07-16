@@ -17,6 +17,7 @@ from sage.categories.sets_cat import Sets as SageSets
 
 from sage_lattice_category_spike.lattice_categories import Lattice
 from sage_lattice_category_spike.morphisms import constructions
+from sage_lattice_category_spike.objects.cardinals import Cardinal, aleph0
 from sage_lattice_category_spike.objects.fundamental_sets import Integers
 from sage_lattice_category_spike.objects.set_constructions import CartesianProduct
 from sage_lattice_category_spike.objects.sets import Sets
@@ -59,6 +60,8 @@ def test_cokernel_exists_for_every_morphism_and_measures_the_index():
     cokernel = constructions.cokernel(doubling)
     assert not cokernel.is_torsion_free()
     assert cokernel.cardinality() == 2
+    assert isinstance(cokernel.cardinality(), Cardinal)
+    assert doubling.index() == 2  # classical scalar spelling of the same order
     assert cokernel.invariants() == (2,)
 
     collapse, _, _ = _collapse_of_degenerate_rank_two()

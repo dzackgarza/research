@@ -30,6 +30,7 @@ from sage.categories.category import Category
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
+from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.structure.element_wrapper import ElementWrapper
 
@@ -233,7 +234,12 @@ class DisjointUnion(SageUniqueRepresentation, SageParent):
         if not isinstance(point, tuple) or len(point) != 2:
             return False
         tag, value = point
-        return isinstance(tag, int) and 0 <= tag < len(self._summands) and value in self._summands[tag]
+        # A preparsed literal tag is a Sage Integer, not a Python int:
+        # membership accepts exactly the integral tags construction accepts.
+        if not isinstance(tag, (int, Integer)):
+            return False
+        position = int(tag)
+        return 0 <= position < len(self._summands) and value in self._summands[position]
 
     def cardinality(self) -> Cardinal:
         r"""Exact cardinal sum of the summand cardinalities."""

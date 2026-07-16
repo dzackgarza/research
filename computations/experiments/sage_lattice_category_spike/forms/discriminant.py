@@ -167,7 +167,7 @@ def induced_subquotient_form(ambient: Any, relation_subgroup: Any, cover_subgrou
     from .discriminant_forms import SyntheticQuadraticDiscriminantForm
 
     result = SyntheticQuadraticDiscriminantForm(form, quadratic_modulus=ambient._quadratic_modulus())
-    expected_order = cover_subgroup.cardinality() // relation_subgroup.cardinality()
+    expected_order = cover_subgroup.cardinality().finite_value() // relation_subgroup.cardinality().finite_value()
     assert result.cardinality() == expected_order, (
         "subquotient K/H is degenerate; its group order is not recoverable from the induced "
         f"Gram; |K|/|H|={expected_order}, induced form order={result.cardinality()}; "
@@ -288,7 +288,11 @@ class SyntheticDiscriminantSubgroup:
         return self._elements
 
     def cardinality(self) -> Any:
-        return ZZ(len(self.elements()))
+        # Cardinal per the ratified owned-cardinal contract (the classical
+        # Integer count remains available as len(elements())).
+        from ..objects.cardinals import cardinal
+
+        return cardinal(ZZ(len(self.elements())))
 
     def invariants(self) -> tuple[Any, ...]:
         r"""Invariant factors of this subgroup as an abstract group, from an

@@ -185,3 +185,86 @@ def test_base_change_preserves_laws_and_is_faithful_on_a_finite_homset():
     assert all(F(g * h) == F(g) * F(h) for g in isometries[:4] for h in isometries[:4])
     assert len({tuple(tuple(row) for row in phi.matrix().rows()) for phi in images}) == 12
     assert F.is_faithful()
+
+
+def test_every_owned_category_class_is_an_object_of_cat():
+    r"""Completeness sweep, not a hand-picked list: every category class
+    the spike's object modules define is swept up introspectively, an
+    instance is realized, and BOTH objecthood protocols are exercised —
+    category() answers Cat() and Sage's Hom dispatches to the functor
+    space. A new category class is audited here the moment it exists."""
+    import inspect
+
+    from sage.all import QQ, ZZ
+    from sage.categories.category import Category as SageCategory
+    from sage.categories.homset import Hom as SageHomFunction
+
+    from sage_lattice_category_spike.objects import (
+        categories,
+        functors,
+        g_sets,
+        magmas,
+        modules,
+        scalars,
+    )
+    from sage_lattice_category_spike.objects import sets as sets_module
+    from sage_lattice_category_spike.objects.functors import Cat, FunctorSpace
+
+    from sage_lattice_category_spike.lattice_categories import Lattice
+
+    a2 = Lattice("A2")
+    instance_overrides = {
+        "GSets": lambda: g_sets.GSets(a2.isometry_group()),
+        "Torsors": lambda: g_sets.Torsors(a2.isometry_group()),
+        "Modules": lambda: modules.Modules(ZZ),
+        "VectorSpaces": lambda: modules.VectorSpaces(QQ),
+        "FreeModules": lambda: modules.FreeModules(ZZ),
+        "FiniteProjectiveModules": lambda: modules.FiniteProjectiveModules(ZZ),
+        "FiniteFreeModules": lambda: modules.FiniteFreeModules(ZZ),
+        "Lattices": lambda: categories.Lattices(ZZ),
+        "DiscriminantForms": lambda: categories.DiscriminantForms(ZZ),
+        "Genera": lambda: categories.Genera(ZZ),
+        "NondegenerateLattices": lambda: categories.Lattices(ZZ).Nondegenerate(),
+        "IntegralLattices": lambda: categories.Lattices(ZZ).Integral(),
+        "IntegralNondegenerateLattices": lambda: categories.Lattices(ZZ).Integral().Nondegenerate(),
+        "EvenLattices": lambda: categories.Lattices(ZZ).Even(),
+        "RootGeneratedLattices": lambda: categories.Lattices(ZZ).RootGenerated(),
+        "UnimodularLattices": lambda: categories.Lattices(ZZ).Unimodular(),
+        "DefiniteLattices": lambda: categories.Lattices(ZZ).Definite(),
+        "PositiveDefiniteLattices": lambda: categories.Lattices(ZZ).PositiveDefinite(),
+        "NegativeDefiniteLattices": lambda: categories.Lattices(ZZ).NegativeDefinite(),
+        "IndefiniteLattices": lambda: categories.Lattices(ZZ).Indefinite(),
+        "HyperbolicLattices": lambda: categories.Lattices(ZZ).Hyperbolic(),
+        "BilinearDiscriminantForms": lambda: categories.DiscriminantForms(ZZ).Bilinear(),
+        "QuadraticDiscriminantForms": lambda: categories.DiscriminantForms(ZZ).Quadratic(),
+        "NondegenerateDiscriminantForms": lambda: categories.DiscriminantForms(ZZ).Nondegenerate(),
+        "EvenDiscriminantForms": lambda: categories.DiscriminantForms(ZZ).Even(),
+        "WithSourceLatticeDiscriminantForms": lambda: categories.DiscriminantForms(ZZ).WithSourceLattice(),
+        "EvenGenera": lambda: categories.Genera(ZZ).Even(),
+        "Cat": lambda: Cat(),
+    }
+
+    swept = 0
+    for module in (categories, functors, g_sets, magmas, modules, scalars, sets_module):
+        for name, cls in sorted(vars(module).items()):
+            # Sage's functorial-construction __classget__ re-exports nested
+            # construction classes into the module under dotted names; those
+            # are exercised transitively through their owners, not here.
+            if not (name.isidentifier() and inspect.isclass(cls) and issubclass(cls, SageCategory) and cls.__module__ == module.__name__):
+                continue
+            build = instance_overrides.get(name, getattr(cls, "an_instance", None))
+            assert build is not None, f"no way to realize an instance of {name}"
+            instance = build()
+            if name == "Cat":
+                # Ratified: Cat is an object of Objects(), never of itself
+                # (no Russell-flavored self-membership); its objecthood is
+                # proven by every OTHER row of this sweep.
+                assert instance.category() is not Cat()
+                swept += 1
+                continue
+            assert instance.category() is Cat(), f"{name}.category() is {instance.category()}, not Cat()"
+            assert instance in Cat(), f"{name} instance is not an object of Cat()"
+            homset = SageHomFunction(instance, Sets())
+            assert homset is FunctorSpace(instance, Sets()), f"Hom({name}, Sets()) did not dispatch to the functor space"
+            swept += 1
+    assert swept >= 40, f"the sweep found only {swept} owned category classes; the module list is stale"

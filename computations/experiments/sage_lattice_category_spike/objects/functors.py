@@ -168,6 +168,15 @@ class FunctorSpace(lexicon.SageUniqueRepresentation, lexicon.SageParent):
     def _repr_(self) -> str:
         return f"Fun({self._domain_category}, {self._codomain_category})"
 
+    def domain(self) -> lexicon.SageCategory:
+        r"""The source category — Sage's Hom cache also reads this boundary
+        (a cached ``Hom(C, D)`` is revalidated through ``domain()``)."""
+        return self._domain_category
+
+    def codomain(self) -> lexicon.SageCategory:
+        r"""The target category."""
+        return self._codomain_category
+
     def __contains__(self, functor: object) -> bool:
         return isinstance(functor, lexicon.SageFunctor) and functor.domain() == self._domain_category and functor.codomain() == self._codomain_category
 

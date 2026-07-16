@@ -362,6 +362,24 @@ class Lattice(CategoryObject):
         product = cast(Any, self._coordinate_trivialization().domain())
         return int(product.index(product(tuple(element.coefficient_vector()))))
 
+    def coordinates(self, basis: Sequence[LatticeElement]) -> SetMorphism:
+        r"""The coordinate chart ``U(L) -> U(R)^rank`` for a CHOSEN basis.
+        The free-module generic consumes vector-like elements; based
+        lattice elements carry coefficient vectors instead, so the based
+        node owns this spelling (its inverse is the injected generic
+        ``from_coordinates``, whose module arithmetic is presentation-free).
+        Non-coordinates fail loudly at the target's membership boundary."""
+        from sage.categories.homset import Hom
+        from sage.categories.morphism import SetMorphism
+        from sage.categories.sets_cat import Sets as SageSets
+        from sage.matrix.constructor import matrix
+
+        assert len(basis) == self.rank(), f"a basis of this lattice has {self.rank()} elements; found {len(basis)}"
+        basis_matrix = matrix(self.base_ring(), [list(b.coefficient_vector()) for b in basis])
+        target = cast(Any, self._coordinate_trivialization().domain())
+        domain = cast(Any, self).underlying_set()
+        return SetMorphism(Hom(domain, target, SageSets()), lambda element: target(tuple(basis_matrix.solve_left(cast(Any, element).coefficient_vector()))))
+
     def _test_cardinality(self, **options: Any) -> None:
         r"""Replace Sage's coarse cardinality contract (Integer-or-Infinity)
         with the owned one: this graph's cardinality is a ``Cardinal``
@@ -848,8 +866,10 @@ class LatticeMorphism(CategoryMorphism):
 
     @abstract_method
     def index(self) -> ExactScalar | SageInfinity:
-        """The index ``[codomain : image]`` — the cokernel's cardinality,
-        infinite when the image is not full rank."""
+        """The index ``[codomain : image]`` — the CLASSICAL scalar spelling
+        of the cokernel's cardinality (index scales determinants, so it
+        stays arithmetic); the Cardinal answer is the cokernel object's own
+        ``cardinality()``."""
 
     # -- morphism-sited geometry (ratified method placement, #100): the
     # -- operations below consume the morphism itself, so they are typed here
@@ -1264,7 +1284,9 @@ class LatticeCokernel:
         """No torsion — exactly the primitivity condition on the inclusion."""
 
     @abstract_method
-    def cardinality(self) -> int: ...
+    def cardinality(self) -> Cardinal:
+        """The cokernel's order as a Cardinal (aleph_0 when the image is
+        not full rank) — the ratified owned-cardinal contract."""
 
     @abstract_method
     def invariants(self) -> tuple[int, ...]: ...
@@ -1612,7 +1634,9 @@ class DiscriminantSubgroup:
     def gens(self) -> tuple[DiscriminantFormElement, ...]: ...
 
     @abstract_method
-    def cardinality(self) -> int: ...
+    def cardinality(self) -> Cardinal:
+        """The subgroup's order as a Cardinal — the ratified owned-cardinal
+        contract."""
 
     @abstract_method
     def __contains__(self, element: Any) -> bool: ...

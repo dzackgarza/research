@@ -191,3 +191,15 @@ def test_uncountable_summand_makes_the_union_uncountable():
     assert union.is_uncountable()
     assert not union.is_finite()
     assert union.cardinality() == continuum
+
+
+def test_disjoint_union_membership_agrees_with_construction_on_sage_integer_tags():
+    r"""A preparsed literal tag is a Sage Integer, not a Python int: the
+    advertised raw ``(tag, element)`` representation must be accepted by
+    membership exactly where the element constructor accepts it."""
+    union = DisjointUnion(Integers(), Integers())
+    assert (ZZ(1), ZZ(5)) in union
+    assert (int(1), int(5)) in union
+    assert union((ZZ(1), ZZ(5))) == union((int(1), int(5)))
+    assert (ZZ(2), ZZ(5)) not in union
+    assert ("1", ZZ(5)) not in union

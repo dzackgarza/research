@@ -85,9 +85,12 @@ class Cardinal:
         return "\N{HEBREW LETTER ALEF}_0" if self._countable else "2^\N{HEBREW LETTER ALEF}_0"
 
     def __hash__(self) -> int:
+        # The Python hash law: equality normalizes through cardinal(), so
+        # aleph_0 == oo and finite cardinals equal their exact values —
+        # hashes must follow (the uncountable cardinal equals neither).
         if self.is_finite():
             return hash(self._value)
-        return hash(("aleph_0",)) if self._countable else hash(("continuum",))
+        return hash(Infinity) if self._countable else hash(("continuum",))
 
     def __eq__(self, other: object) -> bool:
         other_cardinal = cardinal(other)
