@@ -187,8 +187,11 @@ def test_uncountable_trusted_placement_owns_the_uniform_consequences():
     r"""Trusted placement instantiates cleanly with no witness suite and the
     consequences are category facts: uncountable, not countable, infinite
     cardinality."""
-    continuum = ContinuumStandIn()
-    assert continuum.is_uncountable()
-    assert not continuum.is_countable()
-    assert not continuum.is_finite()
-    assert continuum.cardinality() == oo
+    from sage_lattice_category_spike.objects.cardinals import aleph0, continuum
+
+    stand_in = ContinuumStandIn()
+    assert stand_in.is_uncountable()
+    assert not stand_in.is_countable()
+    assert not stand_in.is_finite()
+    assert stand_in.cardinality() == continuum
+    assert stand_in.cardinality() > aleph0

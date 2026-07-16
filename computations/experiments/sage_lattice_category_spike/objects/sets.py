@@ -33,6 +33,8 @@ if TYPE_CHECKING:
     # abc.abstractmethod (typed, and permits the empty abstract bodies
     # below). Runtime uses Sage's.
     from abc import abstractmethod as abstract_method
+
+    from .cardinals import Cardinal
 else:
     from sage.misc.abstract_method import abstract_method
 
@@ -122,9 +124,21 @@ class InfiniteSets(CategoryWithAxiom):
 
 
 class CountableSets(CategoryWithAxiom):
-    r"""Countable sets: membership forces the executable witness suite."""
+    r"""Countable sets: membership forces the executable witness suite.
+
+    A set with a chosen enumeration is exactly an enumerated set, so this
+    axiom refines Sage's ``EnumeratedSets`` — the sanctioned adapter
+    integration that lets Sage's solved construction machinery (fair
+    Cartesian-product iteration, disjoint unions) consume owned countable
+    sets natively. The owned public meanings remain ``iter(X)``, ``X[n]``,
+    and ``X.index(x)``."""
 
     _base_category_class_and_axiom = (Sets, "Countable")
+
+    def extra_super_categories(self) -> list[Category]:
+        from sage.categories.enumerated_sets import EnumeratedSets
+
+        return [EnumeratedSets()]
 
     class ParentMethods:
         # The enumeration is the sole abstract witness obligation: indexing,
@@ -176,6 +190,21 @@ class CountableSets(CategoryWithAxiom):
             return False
 
 
+class CountablyInfiniteSets(CategoryWithAxiom):
+    r"""Countably infinite sets — the join ``Sets().Countable().Infinite()``,
+    never a new named root. Owns the exact cardinal: ``aleph_0``."""
+
+    _base_category_class_and_axiom = (CountableSets, "Infinite")
+
+    class ParentMethods:
+        def cardinality(self) -> Cardinal:
+            r"""``aleph_0``, exactly — not Sage's countable-blind
+            ``+Infinity`` (to which it compares equal)."""
+            from .cardinals import aleph0
+
+            return aleph0
+
+
 class UncountableSets(CategoryWithAxiom):
     r"""Uncountable sets: trusted placement, uniform consequences, and in
     particular infinite."""
@@ -192,6 +221,13 @@ class UncountableSets(CategoryWithAxiom):
         def is_uncountable(self) -> bool:
             return True
 
+        def cardinality(self) -> Cardinal:
+            r"""The continuum, ``2^aleph_0``: exact for every uncountable
+            object constructible in this graph (see ``objects/cardinals``)."""
+            from .cardinals import continuum
+
+            return continuum
+
 
 if not TYPE_CHECKING:
     # Sage's class-resolution shortcut: the axiom category class must be
@@ -202,3 +238,4 @@ if not TYPE_CHECKING:
     Sets.Infinite = InfiniteSets
     Sets.Countable = CountableSets
     Sets.Uncountable = UncountableSets
+    CountableSets.Infinite = CountablyInfiniteSets

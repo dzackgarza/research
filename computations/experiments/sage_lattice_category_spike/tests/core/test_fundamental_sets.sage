@@ -22,6 +22,7 @@ from sage.all import NN, QQ, RR, ZZ, oo
 from sage.categories.homset import Hom
 from sage.categories.sets_cat import Sets as SageSets
 
+from sage_lattice_category_spike.objects.cardinals import aleph0, continuum
 from sage_lattice_category_spike.objects.fundamental_sets import (
     Integers,
     NonNegativeIntegers,
@@ -46,6 +47,7 @@ def test_integers_reuse_sage_zigzag_with_the_exact_index_formula():
     assert integers.is_countable()
     assert not integers.is_uncountable()
     assert not integers.is_finite()
+    assert integers.cardinality() == aleph0
     assert integers.cardinality() == oo
 
 
@@ -96,7 +98,9 @@ def test_reals_are_uncountable_by_trusted_placement():
     assert reals.is_uncountable()
     assert not reals.is_countable()
     assert not reals.is_finite()
-    assert reals.cardinality() == oo
+    assert reals.cardinality() == continuum
+    assert reals.cardinality() > aleph0
+    assert reals.cardinality() != oo
     assert reals(1.5).parent() is RR
     assert 1.5 in reals
 
