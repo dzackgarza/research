@@ -54,12 +54,17 @@ def test_modules_over_a_field_dispatch_to_vector_spaces():
 
 class RankTwoIntegerModule(Parent):
     r"""``ZZ^2`` as an owned finite free module: facade over Sage's free
-    module, supplying ONLY the enumeration witness (through the coordinate
-    inverse and the fair product enumeration) — every predicate and every
-    set behavior must arrive through the category."""
+    module, supplying ONLY the two witnesses (the enumeration, and the
+    distinguished presentation demanded by the free node's abstract
+    ``coordinate_vector``) — every predicate and every set behavior must
+    arrive through the category."""
 
     def __init__(self):
         Parent.__init__(self, facade=FreeModule(ZZ, 2), category=FiniteFreeModules(ZZ).Countable().Infinite())
+
+    def coordinate_vector(self, element):
+        r"""The distinguished presentation is the host free module's own."""
+        return FreeModule(ZZ, 2).coordinate_vector(element)
 
     def __iter__(self):
         host = FreeModule(ZZ, 2)

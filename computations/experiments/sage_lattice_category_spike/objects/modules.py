@@ -37,7 +37,14 @@ from .functors import CatObject
 from .magmas import AdditiveGroups
 
 if TYPE_CHECKING:
+    # Sage's abstract_method ships untyped; for type-checking use abc.abstractmethod
+    # (typed, and permits the empty abstract body below). Runtime uses Sage's.
+    from abc import abstractmethod as abstract_method
+
+    from ..lexicon import Vector
     from .set_constructions import CartesianProduct
+else:
+    from sage.misc.abstract_method import abstract_method
 
 
 def _undispatched_modules(base_ring: BaseRing) -> Category:
@@ -112,18 +119,32 @@ class FreeModules(CatObject, Category_over_base_ring):
         def is_torsion(self) -> bool:
             return False
 
+        @abstract_method
+        def coordinate_vector(self, element: Any) -> Vector:
+            r"""The element's vector of scalars in the module's distinguished
+            presentation (Sage's own free-module spelling of this map) — the
+            ONE boundary where an element presentation crosses into
+            coordinate data. Freeness alone supplies no such crossing: a
+            parent joining this node states its distinguished presentation
+            here, and the chart machinery below consumes elements ONLY
+            through this method — never by iterating an element or handing
+            it to linear algebra directly."""
+
         def coordinates(self, basis: Sequence[Any]) -> SetMorphism:
             r"""The coordinate set map ``U(M) -> U(R) x ... x U(R)`` for a
             CHOSEN basis: strictly stronger data than freeness, supplied
-            per call and never stored as classification. Non-coordinates
-            (a vector outside the basis span over ``R``) fail loudly at
-            the target's own membership boundary."""
+            per call and never stored as classification. Basis entries and
+            arguments cross into coordinate data exclusively through
+            ``coordinate_vector``. Non-coordinates (a vector outside the
+            basis span over ``R``) fail loudly at the target's own
+            membership boundary."""
             parent = cast(SageParent, self)
             base_ring = parent.category().base_ring()
-            basis_matrix = matrix(base_ring, [list(b) for b in basis])
+            coordinate_vector = cast(Any, self).coordinate_vector
+            basis_matrix = matrix(base_ring, [coordinate_vector(b) for b in basis])
             target = _coordinate_target(base_ring, len(basis))
             domain = cast(Any, self).underlying_set()
-            return SetMorphism(Hom(domain, target, SageSets()), lambda element: target(tuple(basis_matrix.solve_left(element))))
+            return SetMorphism(Hom(domain, target, SageSets()), lambda element: target(tuple(basis_matrix.solve_left(coordinate_vector(element)))))
 
         def from_coordinates(self, basis: Sequence[Any]) -> SetMorphism:
             r"""The registered inverse of ``coordinates(basis)``: coordinate

@@ -362,23 +362,17 @@ class Lattice(CategoryObject):
         product = cast(Any, self._coordinate_trivialization().domain())
         return int(product.index(product(tuple(element.coefficient_vector()))))
 
-    def coordinates(self, basis: Sequence[LatticeElement]) -> SetMorphism:
-        r"""The coordinate chart ``U(L) -> U(R)^rank`` for a CHOSEN basis.
-        The free-module generic consumes vector-like elements; based
-        lattice elements carry coefficient vectors instead, so the based
-        node owns this spelling (its inverse is the injected generic
-        ``from_coordinates``, whose module arithmetic is presentation-free).
-        Non-coordinates fail loudly at the target's membership boundary."""
-        from sage.categories.homset import Hom
-        from sage.categories.morphism import SetMorphism
-        from sage.categories.sets_cat import Sets as SageSets
-        from sage.matrix.constructor import matrix
-
-        assert len(basis) == self.rank(), f"a basis of this lattice has {self.rank()} elements; found {len(basis)}"
-        basis_matrix = matrix(self.base_ring(), [list(b.coefficient_vector()) for b in basis])
-        target = cast(Any, self._coordinate_trivialization().domain())
-        domain = cast(Any, self).underlying_set()
-        return SetMorphism(Hom(domain, target, SageSets()), lambda element: target(tuple(basis_matrix.solve_left(cast(Any, element).coefficient_vector()))))
+    def coordinate_vector(self, element: LatticeElement) -> Vector:
+        r"""The distinguished-presentation crossing declared abstract on the
+        owned ``FreeModules`` node: a based lattice's distinguished
+        presentation IS its own basis, and the element already carries those
+        coordinates as its coefficient vector. This is the ONE place a
+        lattice element's presentation crosses into coordinate data; the
+        chart for any CHOSEN basis is the injected generic ``coordinates``,
+        which consumes elements only through this method (its inverse is the
+        injected generic ``from_coordinates``, whose module arithmetic is
+        presentation-free)."""
+        return element.coefficient_vector()
 
     def _test_cardinality(self, **options: Any) -> None:
         r"""Replace Sage's coarse cardinality contract (Integer-or-Infinity)

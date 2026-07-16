@@ -167,12 +167,16 @@ def test_isometry_groups_route_through_the_owned_group_node():
 
 
 def test_lattice_coordinates_speak_the_based_elements_own_vocabulary():
-    r"""The free-module coordinate chart consumes vector-like elements;
-    based lattice elements carry coefficient vectors instead, so the based
-    node owns its coordinates spelling. Round trip through a NON-standard
-    basis proves the chart is basis-honest, not a coefficient echo."""
+    r"""The free-module coordinate chart consumes elements ONLY through the
+    one owned presentation crossing (``coordinate_vector``, declared
+    abstract on the free node); the based lattice supplies that crossing
+    from the coefficient vector its elements already carry, so the ONE
+    generic chart serves lattice elements directly. Round trip through a
+    NON-standard basis proves the chart is basis-honest, not a coefficient
+    echo."""
     a2 = Lattice("A2")
     e0, e1 = a2.basis()
+    assert tuple(a2.coordinate_vector(e0 + e1)) == (1, 1)
     chart = a2.coordinates((e0 + e1, e1))
     point = chart(a2([2, -1]))
     assert tuple(point.value) == (2, -3)
