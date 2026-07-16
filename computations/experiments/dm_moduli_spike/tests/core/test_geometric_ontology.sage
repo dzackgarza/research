@@ -612,13 +612,36 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert mbar05_gap["reason"] == "mbar_0_5_needs_blowup_affine_cover"
     assert mbar05_gap["alternate_proving_sets"][0]["name"] == "kapranov_blowup_P2"
 
-    # General (g,n): remain fail-closed.
+    # M_{1,2} (open, 2 invertible): Legendre universal-curve Weierstrass affine, S₃ cover.
     M12 = M_gn(1, 2, base=k)
-    assert isinstance(M12.etale_atlas().domain(), AtlasChart)
-    assert not M12.etale_atlas().has_equation_level_etale_certificate()
-    m12_gap = M12.etale_atlas_gap()
-    assert m12_gap is not None
-    assert m12_gap["reason"] == "m_1_2_needs_universal_curve_second_mark"
+    m12_etale = M12.etale_atlas()
+    assert isinstance(m12_etale.domain(), AffineAlgebraicSpace)
+    assert m12_etale.domain() is not M12
+    assert m12_etale.domain() is not M12.coarse_space()
+    assert m12_etale.covering_kind() == "legendre_universal_curve_finite_etale_cover"
+    assert m12_etale.is_quotient_presentation_atlas()
+    assert m12_etale.has_equation_level_etale_certificate()
+    assert m12_etale.equation_level_etale()
+    assert m12_etale.evidence().finite_etale_groupoid()
+    assert m12_etale.evidence().group_order() == 6
+    assert M12.etale_atlas_gap() is None
+    m12_pres = M12.legendre_quotient_presentation()
+    assert m12_pres is not None
+    assert m12_pres["group_order"] == 6
+    assert m12_pres["degree"] == 6
+    assert m12_pres["level_structure"] == "Gamma(2)_universal_curve"
+    assert m12_pres["covering_space"] is m12_etale.domain()
+    assert "univ_curve" in str(m12_pres["presentation"]) or "S3" in str(m12_pres["presentation"])
+    m12_ring = m12_etale.domain().as_affine_scheme().ring()
+    assert len(m12_ring.gens()) == 3
+    # Mbar_{1,2}: stable universal-curve / boundary cover not owned — fail-closed.
+    Mbar12 = Mbar_gn(1, 2, base=k)
+    assert isinstance(Mbar12.etale_atlas().domain(), AtlasChart)
+    assert not Mbar12.etale_atlas().has_equation_level_etale_certificate()
+    mbar12_gap = Mbar12.etale_atlas_gap()
+    assert mbar12_gap is not None
+    assert mbar12_gap["reason"] == "mbar_1_2_needs_stable_universal_curve_cover"
+    assert Mbar12.legendre_quotient_presentation() is None
 
     # Char 2: Legendre unavailable; Hesse Γ(3) owns open / proper M_{1,1} (3=1 invertible).
     from sage.rings.finite_rings.finite_field_constructor import GF
@@ -660,6 +683,22 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert mbar_hesse["level_structure"] == "Mbar(Gamma(3))"
     assert mbar_hesse["covering_space"] is mbar11_c2.domain()
 
+    # Char 2 open M_{1,2}: Hesse universal-curve affine (3 invertible).
+    M12_char2 = M_gn(1, 2, base=spec(GF(2)))
+    m12_c2 = M12_char2.etale_atlas()
+    assert isinstance(m12_c2.domain(), AffineAlgebraicSpace)
+    assert m12_c2.covering_kind() == "hesse_universal_curve_finite_etale_cover"
+    assert m12_c2.is_quotient_presentation_atlas()
+    assert m12_c2.has_equation_level_etale_certificate()
+    assert m12_c2.evidence().group_order() == 24
+    assert M12_char2.legendre_quotient_presentation() is None
+    assert M12_char2.etale_atlas_gap() is None
+    m12_hesse = M12_char2.hesse_quotient_presentation()
+    assert m12_hesse is not None
+    assert m12_hesse["level_structure"] == "Gamma(3)_universal_curve"
+    assert m12_hesse["covering_space"] is m12_c2.domain()
+    assert len(m12_c2.domain().as_affine_scheme().ring().gens()) == 3
+
     # Char 3: Hesse unavailable; Legendre still owns (2 invertible). Prefer Legendre over Hesse.
     M11_char3 = M_gn(1, 1, base=spec(GF(3)))
     assert M11_char3.etale_atlas().covering_kind() == "legendre_finite_etale_cover"
@@ -671,10 +710,12 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     # Owned proving-set stacks expose no gap record.
     assert XS.etale_atlas_gap() is None
     assert YS.etale_atlas_gap() is None
+    assert M12.etale_atlas_gap() is None
     assert Mbar04.etale_atlas_gap() is None
     assert Mbar11.etale_atlas_gap() is None
     assert M11_char2.etale_atlas_gap() is None
     assert Mbar11_char2.etale_atlas_gap() is None
+    assert M12_char2.etale_atlas_gap() is None
 
     # Product of owned charts: M_{1,1} × M_{0,4} both equation-level → product True.
     prod = ProductStack((XS, YS), base=k)
@@ -696,8 +737,8 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert factor_eas[1].has_equation_level_etale_certificate() is True
     assert prod_etale.has_equation_level_etale_certificate()
 
-    # Product fails closed when a factor still has a formal AtlasChart.
-    prod_formal = ProductStack((M12, YS), base=k)
+    # Product fails closed when a factor still has a formal AtlasChart (Mbar_{0,5}).
+    prod_formal = ProductStack((Mbar05, YS), base=k)
     prod_formal_etale = prod_formal.etale_atlas()
     assert prod_formal_etale.factor_atlases()[0].has_equation_level_etale_certificate() is False
     assert prod_formal_etale.factor_atlases()[1].has_equation_level_etale_certificate() is True
