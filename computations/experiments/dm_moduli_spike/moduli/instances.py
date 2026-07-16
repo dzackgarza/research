@@ -9,13 +9,18 @@ from sage.structure.unique_representation import UniqueRepresentation
 from ..categories.base import AffineScheme, check_z_scheme, spec
 from ..categories.stacks import ModuliStacks
 from ..geometry.stacks import (
+    AffineAlgebraicSpace,
     AlgebraicSpace,
+    AtlasEvidence,
+    AtlasMorphism,
     Boundary,
     CoarseModuliMorphism,
     Compactification,
     DeligneMumfordStack,
+    FormallyEtaleSchemeCertificate,
     StackFiber,
     Variety,
+    _proving_set_etale_certificates,
 )
 
 
@@ -28,6 +33,45 @@ def _marking_set(I: object) -> tuple[object, ...]:
         return tuple(range(1, int(I) + 1))
     assert isinstance(I, Iterable), f"expected marking count or iterable; found {type(I)!r}"
     return tuple(I)
+
+
+def _cross_ratio_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Affine scheme ``Spec(R[t]_{t(t-1)}) ≅ ℙ¹ ∖ {0,1,∞}`` (cross-ratio chart).
+
+    Literature: ``ℳ_{0,4}`` is isomorphic to this affine scheme (Knudsen / standard
+    moduli of 4-pointed genus-0 curves). Used only as an owned étale-atlas domain
+    for the open stack ``M_{0,4}``, not for general ``(g,n)`` or ``Mbar``.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=("t",))
+    t = poly.gen()
+    return AffineScheme(poly.localization(t * (t - 1)))
+
+
+def _moduli_affine_etale_domain(stack: ModuliStack) -> AffineAlgebraicSpace | None:
+    r"""Owned affine étale-atlas domain for literature-backed proving-set cases.
+
+    Returns an :class:`AffineAlgebraicSpace` when the open moduli stack is a scheme
+    with an owned affine presentation:
+
+    - ``M_{0,3}``: a point ``Spec(R)`` over the base,
+    - ``M_{0,4}``: cross-ratio chart ``Spec(R[t]_{t(t-1)}) ≅ ℙ¹ ∖ {0,1,∞}``.
+
+    Fail-closed (``None``) for ``M_{1,1}`` (stacky), all ``Mbar``, and general
+    ``(g,n)`` — no fake affine charts.
+    """
+    if stack.is_proper():
+        return None
+    g = stack.genus()
+    n = stack.number_of_markings()
+    base = stack.base_scheme()
+    if g == 0 and n == 3:
+        return AffineAlgebraicSpace(base)
+    if g == 0 and n == 4:
+        return AffineAlgebraicSpace(_cross_ratio_affine_scheme(base))
+    return None
 
 
 class Groupoid(UniqueRepresentation, Parent):
@@ -324,6 +368,49 @@ class ModuliStack(DeligneMumfordStack):
     def coarse_moduli_morphism(self) -> CoarseModuliMorphism:
         space = self.coarse_space()
         return CoarseModuliMorphism(self, space)
+
+    def etale_atlas(self) -> AtlasMorphism:
+        r"""Étale atlas ``U → ℳ`` with owned affine domain on proving-set cases.
+
+        For ``M_{0,3}`` / ``M_{0,4}`` (open stacks representable by owned affine
+        schemes), the domain is an :class:`AffineAlgebraicSpace` with matching
+        identity / localization :class:`FormallyEtaleSchemeCertificate` data and
+        ``covering_kind="moduli_affine_etale_chart"``.
+
+        For ``M_{1,1}``, ``Mbar``, and general ``(g,n)``: fail-closed formal
+        :class:`~dm_moduli_spike.geometry.stacks.AtlasChart` (empty affine cover;
+        equation-level certificate is ``False``). Never uses the coarse space as
+        an étale atlas domain.
+        """
+        domain = _moduli_affine_etale_domain(self)
+        if domain is None:
+            return DeligneMumfordStack.etale_atlas(self)
+        cover = domain.affine_cover()
+        assert cover, "owned moduli affine étale domain must expose a nonempty affine cover"
+        certs: list[FormallyEtaleSchemeCertificate] = []
+        for chart in cover:
+            certs.extend(_proving_set_etale_certificates(chart))
+        scheme_certs = tuple(certs)
+        primary = scheme_certs[0] if scheme_certs else None
+        return AtlasMorphism(
+            domain,
+            self,
+            etale=True,
+            covering_kind="moduli_affine_etale_chart",
+            representable_domain=True,
+            evidence=AtlasEvidence(
+                stack=self,
+                domain=domain,
+                covering_kind="moduli_affine_etale_chart",
+                etale_stamp=True,
+                representable_domain=True,
+                diagonal=self.diagonal(),
+                dm_diagonal_unramified_stamp=True,
+                dm_diagonal_representable_stamp=True,
+                scheme_certificate=primary,
+                scheme_certificates=scheme_certs,
+            ),
+        )
 
     def compactification(self, kind: str = "stable-pointed-curves") -> Compactification:
         if self.is_proper():

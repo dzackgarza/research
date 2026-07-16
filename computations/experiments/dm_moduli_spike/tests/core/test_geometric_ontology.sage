@@ -487,13 +487,55 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert isinstance(cert, FormallyEtaleSchemeCertificate)
     assert cert.is_flat() and cert.is_unramified() and cert.is_formally_etale()
     assert cert.reason() == "identity_ring_map_isomorphism"
-    # Base Spec identity attached for ambient evidence ≠ equation-level on AtlasChart.
+    # M_{1,1} is stacky: fail-closed formal chart (empty affine cover).
     assert etale.domain().affine_cover() == ()
     assert not etale.has_equation_level_etale_certificate()
     assert not atlas.has_equation_level_etale_certificate()
 
-    # Product of DM stacks: étale atlas is product of factor étale atlases.
+    # M_{0,4}: owned cross-ratio affine étale atlas (ℙ¹ ∖ {0,1,∞}).
+    from dm_moduli_spike.geometry.stacks import AffineAlgebraicSpace, _TrivialCoveringAction
+
     YS = M_gn(0, 4, base=k)
+    ys_atlas = YS.atlas()
+    ys_etale = YS.etale_atlas()
+    assert ys_atlas.covering_kind() == "coarse_moduli"
+    assert not ys_atlas.is_etale()
+    assert not ys_atlas.has_equation_level_etale_certificate()
+    assert ys_etale.is_etale()
+    assert isinstance(ys_etale.domain(), AffineAlgebraicSpace)
+    assert ys_etale.domain() is not YS
+    assert ys_etale.domain() is not YS.coarse_space()
+    assert ys_etale.covering_kind() == "moduli_affine_etale_chart"
+    assert ys_etale.domain().affine_cover() != ()
+    assert ys_etale.has_equation_level_etale_certificate()
+    assert ys_etale.equation_level_etale()
+    ys_certs = ys_etale.evidence().scheme_certificates()
+    assert ys_certs
+    assert any(c.reason() == "identity_ring_map_isomorphism" for c in ys_certs)
+    assert all(
+        any(c.domain_scheme() is chart or c.domain_scheme().ring() == chart.ring() for c in ys_certs)
+        for chart in ys_etale.evidence().domain_affine_cover()
+    )
+
+    # M_{0,3}: point Spec(R) — owned affine identity chart.
+    ZS = M_gn(0, 3, base=k)
+    zs_etale = ZS.etale_atlas()
+    assert isinstance(zs_etale.domain(), AffineAlgebraicSpace)
+    assert zs_etale.domain().as_affine_scheme() is k
+    assert zs_etale.covering_kind() == "moduli_affine_etale_chart"
+    assert zs_etale.has_equation_level_etale_certificate()
+
+    # Mbar and general (g,n): remain fail-closed.
+    Mbar04 = Mbar_gn(0, 4, base=k)
+    mbar_etale = Mbar04.etale_atlas()
+    assert isinstance(mbar_etale.domain(), AtlasChart)
+    assert mbar_etale.domain().affine_cover() == ()
+    assert not mbar_etale.has_equation_level_etale_certificate()
+    M12 = M_gn(1, 2, base=k)
+    assert isinstance(M12.etale_atlas().domain(), AtlasChart)
+    assert not M12.etale_atlas().has_equation_level_etale_certificate()
+
+    # Product of DM stacks: étale atlas is product of factor étale atlases.
     prod = ProductStack((XS, YS), base=k)
     prod_etale = prod.etale_atlas()
     assert prod_etale.is_etale()
@@ -509,10 +551,12 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert not prod_etale.is_coarse_atlas()
     assert prod.atlas().covering_kind() == "product_of_coarse"
     assert not prod.atlas().is_etale()
+    # Product fails closed: M_{1,1} factor still has formal AtlasChart.
+    assert factor_eas[0].has_equation_level_etale_certificate() is False
+    assert factor_eas[1].has_equation_level_etale_certificate() is True
     assert not prod_etale.has_equation_level_etale_certificate()
 
     # Affine covering + finite G: equation-level étale certificate on U → [U/G].
-    from dm_moduli_spike.geometry.stacks import AffineAlgebraicSpace, _TrivialCoveringAction
     from sage.groups.perm_gps.permgroup_named import CyclicPermutationGroup
 
     U_aff = AffineAlgebraicSpace(spec(QQ))
@@ -526,8 +570,6 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert aff_etale.equation_level_etale()
     assert aff_etale.evidence().domain_affine_cover() == (spec(QQ),)
     assert aff_etale.covering_data()["has_equation_level_etale_certificate"] is True
-    # Product of two equation-level quotient atlases via ProductStack factors that are DM with AffineAlgebraicSpace charts:
-    # product of moduli étale atlases remains non-equation-level (formal charts).
     assert not prod_etale.has_equation_level_etale_certificate()
 
     from sage.rings.integer_ring import ZZ
