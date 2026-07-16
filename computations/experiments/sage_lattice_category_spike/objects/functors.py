@@ -130,12 +130,17 @@ class Cat(lexicon.SageCategory):
         return "categories"
 
     def __contains__(self, x: object) -> bool:
-        return isinstance(x, lexicon.SageCategory)
+        # The type test alone cannot express the proper-class exclusion:
+        # ``Cat`` is itself a ``SageCategory`` instance, so bare isinstance
+        # would make ``Cat`` an object of itself. An object of ``Cat`` is any
+        # category EXCEPT ``Cat`` (no Russell-flavored self-membership).
+        return isinstance(x, lexicon.SageCategory) and not isinstance(x, Cat)
 
     def homset(self, domain: lexicon.SageCategory, codomain: lexicon.SageCategory) -> FunctorSpace:
         r"""``Hom_Cat(C, D) = Fun(C, D)``. (Convenience spelling; owned
-        categories also reach this through Sage's standard ``Hom``.)"""
-        assert domain in self and codomain in self, f"the homset boundary must be categories; found {domain!r} and {codomain!r}"
+        categories also reach this through Sage's standard ``Hom``. The
+        boundary-membership guard lives on ``FunctorSpace`` itself, the one
+        constructor every route reaches.)"""
         return FunctorSpace(domain, codomain)
 
 
@@ -166,9 +171,11 @@ class FunctorSpace(lexicon.SageUniqueRepresentation, SageHomset):
     """
 
     def __init__(self, domain: lexicon.SageCategory, codomain: lexicon.SageCategory) -> None:
+        cat = Cat()
+        assert domain in cat and codomain in cat, f"a functor space's boundary must be objects of Cat; found {domain!r} and {codomain!r}"
         self._domain_category = domain
         self._codomain_category = codomain
-        SageHomset.__init__(self, domain, codomain, category=Cat(), check=False)
+        SageHomset.__init__(self, domain, codomain, category=cat, check=False)
 
     def _repr_(self) -> str:
         return f"Fun({self._domain_category}, {self._codomain_category})"

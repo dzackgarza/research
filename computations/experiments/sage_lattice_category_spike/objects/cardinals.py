@@ -131,7 +131,10 @@ class Cardinal:
         (``index()``), never a Cardinal."""
         if isinstance(other, Cardinal):
             return other
-        assert other == Infinity or other in ZZ, f"cardinal {operation} takes a count (a Cardinal, an integer, or oo); found the non-count scalar {other!r} — extended-scalar formulas consume the extended-scalar spelling instead"
+        assert other == Infinity or other in ZZ, (
+            f"cardinal {operation} takes a count (a Cardinal, an integer, or oo); "
+            f"found the non-count scalar {other!r} — extended-scalar formulas consume the extended-scalar spelling instead"
+        )
         return cardinal(other)
 
     def __add__(self, other: object) -> Cardinal:

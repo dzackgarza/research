@@ -128,6 +128,28 @@ def test_categories_are_objects_of_cat_and_functor_spaces_are_its_homsets():
     assert Hom(Magmas(), Sets()) is FunctorSpace(Magmas(), Sets())
 
 
+def test_cat_is_a_proper_class_never_an_object_of_itself():
+    r"""``Cat`` is an object of ``Objects()``, never of itself: its objects
+    form a proper class. Membership therefore cannot be the bare type test
+    (``Cat`` is itself a category instance), and every route to a functor
+    space with ``Cat`` on a boundary — the ``homset`` spelling and direct
+    construction, which ``_Hom_`` also reaches — must refuse."""
+    from sage.categories.objects import Objects
+
+    from sage_lattice_category_spike.objects.functors import Cat
+
+    cat = Cat()
+    # Positive control first: membership is alive on real category objects.
+    assert Lattices(ZZ) in cat
+    assert cat in Objects()
+
+    assert cat not in cat
+    with pytest.raises(AssertionError):
+        cat.homset(cat, Lattices(ZZ))
+    with pytest.raises(AssertionError):
+        FunctorSpace(Lattices(ZZ), cat)
+
+
 def test_functor_space_membership_is_boundary_exact():
     r"""``Fun(C, D)`` is a genuine parent: unique per boundary pair, and
     membership is exactly agreement of domain and codomain."""
