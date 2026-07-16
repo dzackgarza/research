@@ -57,6 +57,30 @@ class GSets(CatObject, Category):
     ParentMethods = ViaUnderlyingSet
 
 
+def torsor_enumeration(torsor: Any) -> Iterator[object]:
+    r"""Enumeration through the trivializing choice: acting the group
+    through one chosen point is exhaustive (transitivity) and
+    duplicate-free (freeness). The typed operation both the ``Torsors``
+    node and torsor-structured specialized parents route through."""
+    chosen = torsor.an_element()
+    return (torsor.act(group_element, chosen) for group_element in torsor.acting_group())
+
+
+def torsor_cardinality(torsor: Any) -> Cardinal:
+    r"""``|T| = |G|``: the trivialization is a bijection."""
+    return cardinal(torsor.acting_group().order())
+
+
+def torsor_transporter(torsor: Any, source: object, target: object) -> object:
+    r"""The unique ``g`` with ``g . source == target`` — existence by
+    transitivity, uniqueness by freeness. Terminates for finite acting
+    groups; no termination promise otherwise."""
+    for group_element in torsor.acting_group():
+        if torsor.act(group_element, source) == target:
+            return group_element
+    assert False, f"no group element moves {source} to {target}: the action is not transitive, so this parent is not a torsor"
+
+
 class Torsors(CatObject, Category):
     r"""``G``-torsors: free transitive ``G``-sets."""
 
@@ -92,21 +116,11 @@ class Torsors(CatObject, Category):
             assert False, f"{parent} is not in any Torsors(G) category"
 
         def __iter__(self) -> Iterator[object]:
-            r"""Enumeration through the trivializing choice: acting the
-            group through one point is exhaustive (transitivity) and
-            duplicate-free (freeness)."""
-            chosen = self.an_element()
-            return (self.act(group_element, chosen) for group_element in self.acting_group())
+            return torsor_enumeration(self)
 
         def cardinality(self) -> Cardinal:
-            r"""``|T| = |G|``: the trivialization is a bijection."""
-            return cardinal(self.acting_group().order())
+            return torsor_cardinality(self)
 
         def transporter(self, source: object, target: object) -> object:
-            r"""The unique ``g`` with ``g . source == target`` — existence
-            by transitivity, uniqueness by freeness. Terminates for finite
-            acting groups; no termination promise otherwise."""
-            for group_element in self.acting_group():
-                if self.act(group_element, source) == target:
-                    return group_element
-            assert False, f"no group element moves {source} to {target}: the action is not transitive, so this parent is not a torsor"
+            r"""The unique ``g`` with ``g . source == target``."""
+            return torsor_transporter(self, source, target)

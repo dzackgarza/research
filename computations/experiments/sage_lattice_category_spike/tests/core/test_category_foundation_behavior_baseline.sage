@@ -76,7 +76,11 @@ def test_baseline_isometry_homset_of_a2():
     homset = a2.Isom(a2)
     cardinality = homset.cardinality()
     assert cardinality == 12
-    assert isinstance(cardinality, Integer)
+    # Row DELIBERATELY updated during CP3 routing (was Integer): the
+    # ratified owned-cardinal contract makes every cardinality() in the
+    # owned graph a Cardinal; the classical Integer count remains as
+    # O(A2).order(). Not a silent fix — see the routing commit.
+    assert isinstance(cardinality, Cardinal)
 
 
 def test_baseline_genus_of_a2():

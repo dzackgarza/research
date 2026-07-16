@@ -5,6 +5,9 @@ from __future__ import annotations
 import warnings
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
+if TYPE_CHECKING:
+    from ..objects.cardinals import Cardinal
+
 from sage.categories.homset import Homset
 from sage.matrix.constructor import column_matrix, matrix
 from sage.modules.free_module_element import vector
@@ -669,35 +672,53 @@ class IsometryHomset(lexicon.IsometryHomset, Parent):
         # mismatch in the engine's transformation fails loudly here.
         return cast(LatticeMorphism, left.hom(matrix(ZZ, transformation), codomain=right))
 
-    def cardinality(self) -> Any:
-        r"""``0`` when empty; ``|O(M)|`` otherwise (the nonempty homset is an
-        ``O(M)``-torsor). Computed exactly where ``O(M)`` carries a grounded
+    def acting_group(self) -> Any:
+        r"""``O(M)``: the nonempty homset is an ``O(M)``-torsor by
+        postcomposition. Answered exactly where ``O(M)`` carries a grounded
         finiteness answer — the ``Groups().Finite()`` category refinement
         stamped on the group at construction; elsewhere no computation
         grounds any answer (finite or infinite) yet, and the assertion below
         says so under this contract's own name."""
-        if self.is_empty():
-            return ZZ(0)
         from sage.categories.groups import Groups
 
         group = self._codomain.isometry_group()
         assert group in Groups().Finite(), (
-            f"Isom({self._domain.label()}, {self._codomain.label()}).cardinality() is "
-            "|O(M)| (the nonempty homset is an O(M)-torsor), computed exactly where "
-            f"O(M) carries a grounded finiteness answer; O({self._codomain.label()}) "
-            "carries none — extend the group engine, do not special-case; "
+            f"Isom({self._domain.label()}, {self._codomain.label()}) routes through its "
+            "O(M)-torsor structure, implemented exactly where O(M) carries a grounded "
+            f"finiteness answer; O({self._codomain.label()}) carries none — extend the "
+            "group engine, do not special-case; "
             f"codomain_gram={self._codomain.gram_matrix()}"
         )
-        return group.order()
+        return group
+
+    def act(self, group_element: Any, element: Any) -> Any:
+        r"""The ``O(M)``-action: postcomposition."""
+        return group_element * element
+
+    def cardinality(self) -> Cardinal:
+        r"""``0`` when empty; the torsor contract's ``|O(M)|`` otherwise —
+        the general node's typed operation, not a leaf spelling."""
+        from ..objects.cardinals import cardinal
+        from ..objects.g_sets import torsor_cardinality
+
+        if self.is_empty():
+            return cardinal(ZZ(0))
+        return torsor_cardinality(self)
 
     def __iter__(self) -> Any:
-        r"""Torsor enumeration: ``{g . f0 : g in O(M)}``; implemented exactly
-        where ``O(M)`` is finite."""
+        r"""Torsor enumeration: ``{g . f0 : g in O(M)}`` through the general
+        node's typed operation; implemented exactly where ``O(M)`` is finite."""
+        from ..objects.g_sets import torsor_enumeration
+
         if self.is_empty():
-            return
-        base = self.an_element()
-        for isometry in self._codomain.isometry_group():
-            yield isometry * base
+            return iter(())
+        return torsor_enumeration(self)
+
+    def transporter(self, source: Any, target: Any) -> Any:
+        r"""The unique ``g in O(M)`` with ``g . source == target``."""
+        from ..objects.g_sets import torsor_transporter
+
+        return torsor_transporter(self, source, target)
 
     def __contains__(self, candidate: Any) -> bool:
         return isinstance(candidate, LatticeMorphism) and candidate.domain() == self._domain and candidate.codomain() == self._codomain and candidate.is_isometry()

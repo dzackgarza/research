@@ -123,3 +123,29 @@ def test_a_genus_is_a_finite_set_placed_in_the_owned_axioms():
     representatives = list(genus)
     assert len(representatives) == 1
     assert representatives[0].genus() == genus
+
+
+def test_the_isometry_homset_routes_through_the_torsor_node():
+    r"""Isom(L, M) carries its O(M)-torsor structure as first-class data
+    (acting_group + act) and its set behavior arrives through the general
+    node's typed operations — the leaf spellings are gone."""
+    a2 = Lattice("A2")
+    homset = a2.Isom(a2)
+
+    cardinality = homset.cardinality()
+    assert isinstance(cardinality, Cardinal)
+    assert cardinality == 12
+    assert homset.acting_group() is a2.isometry_group()
+
+    isometries = list(homset)
+    assert len(isometries) == 12
+    assert len(set(isometries)) == 12
+
+    first, second = isometries[0], isometries[7]
+    mover = homset.transporter(first, second)
+    assert homset.act(mover, first) == second
+
+    empty = a2.Isom(Lattice("A1").direct_sum(Lattice("A1")))
+    assert empty.cardinality() == 0
+    assert isinstance(empty.cardinality(), Cardinal)
+    assert list(empty) == []

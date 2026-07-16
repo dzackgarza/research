@@ -1019,11 +1019,24 @@ class IsometryHomset:
         nonempty (asserted)."""
 
     @abstract_method
-    def cardinality(self) -> int:
-        """``0`` when empty; ``|O(M)|`` otherwise (the nonempty homset is an
-        ``O(M)``-torsor). Answers exactly where ``O(M)`` carries a grounded
+    def acting_group(self) -> IsometryGroup:
+        """``O(M)`` — the group the nonempty homset is a torsor under (by
+        postcomposition). Answers exactly where ``O(M)`` carries a grounded
         finiteness answer; elsewhere no computation grounds any answer
         (finite or infinite) yet, and the contract asserts out by name."""
+
+    @abstract_method
+    def act(self, group_element: LatticeMorphism, element: LatticeMorphism) -> LatticeMorphism:
+        """The ``O(M)``-action: postcomposition."""
+
+    @abstract_method
+    def cardinality(self) -> Cardinal:
+        """``0`` when empty; the torsor contract's ``|O(M)|`` otherwise —
+        routed through the general node's typed operation."""
+
+    @abstract_method
+    def transporter(self, source: LatticeMorphism, target: LatticeMorphism) -> LatticeMorphism:
+        """The unique ``g in O(M)`` with ``g . source == target``."""
 
     @abstract_method
     def __iter__(self) -> Iterator[LatticeMorphism]: ...
