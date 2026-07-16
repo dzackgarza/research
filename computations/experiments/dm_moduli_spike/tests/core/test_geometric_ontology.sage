@@ -1025,15 +1025,17 @@ def test_stack_fiber_and_hom_2_isomorphisms():
 
     rows = owned_etale_atlas_presentations()
     # Parametric open M0n + 2 open M1n + 2 compact M1n + 1 proper Kapranov
-    # + open Igusa M20 + compact Igusa Mbar2 + parametric open M2n = 9.
-    assert owned_etale_atlas_cardinality() == 9
-    assert len(rows) == 9
+    # + open Igusa M20 + compact Igusa Mbar2 + parametric open M2n
+    # + parametric compact M2n = 10.
+    assert owned_etale_atlas_cardinality() == 10
+    assert len(rows) == 10
     assert all(isinstance(r, OwnedAtlasPresentation) for r in rows)
     assert sum(1 for r in rows if r.parametric_open_m0n) == 1
     assert sum(1 for r in rows if r.parametric_open_m1n) == 2
     assert sum(1 for r in rows if r.parametric_compact_m1n) == 2
     assert sum(1 for r in rows if r.parametric_proper_m0n) == 1
     assert sum(1 for r in rows if r.parametric_open_m2n) == 1
+    assert sum(1 for r in rows if r.parametric_compact_m2n) == 1
     assert sum(1 for r in rows if r.construction == "igusa_binary_sextic_PGL2") == 1
     assert sum(1 for r in rows if r.construction == "igusa_mbar06_s6") == 1
     expanded = owned_etale_atlas_presentations(
@@ -1042,6 +1044,7 @@ def test_stack_fiber_and_hom_2_isomorphisms():
         expand_compact_m1n_through=4,
         expand_proper_m0n_through=8,
         expand_open_m2n_through=4,
+        expand_compact_m2n_through=4,
     )
     assert (
         owned_etale_atlas_cardinality(
@@ -1050,22 +1053,24 @@ def test_stack_fiber_and_hom_2_isomorphisms():
             expand_compact_m1n_through=4,
             expand_proper_m0n_through=8,
             expand_open_m2n_through=4,
+            expand_compact_m2n_through=4,
         )
-        == 34
+        == 38
     )
-    assert len(expanded) == 34
+    assert len(expanded) == 38
     assert all(
         not r.parametric_open_m0n
         and not r.parametric_open_m1n
         and not r.parametric_compact_m1n
         and not r.parametric_proper_m0n
         and not r.parametric_open_m2n
+        and not r.parametric_compact_m2n
         for r in expanded
     )
     type_keys = owned_etale_atlas_type_keys()
     # Open M0n n=3..8 + open M1n n=1..4 + compact M1n n=1..4 + proper (0,3..8)
-    # + (2,0,False) + (2,0,True) + open M2n n=1..4.
-    assert len(type_keys) == 26
+    # + (2,0,False) + (2,0,True) + open M2n n=1..4 + compact M2n n=1..4.
+    assert len(type_keys) == 30
     assert type_keys == (
         (0, 3, False),
         (0, 4, False),
@@ -1093,6 +1098,10 @@ def test_stack_fiber_and_hom_2_isomorphisms():
         (2, 2, False),
         (2, 3, False),
         (2, 4, False),
+        (2, 1, True),
+        (2, 2, True),
+        (2, 3, True),
+        (2, 4, True),
     )
     assert is_owned_etale_atlas_type(0, 4, proper=False)
     assert is_owned_etale_atlas_type(1, 1, proper=True)
@@ -1108,8 +1117,9 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert is_owned_etale_atlas_type(2, 0, proper=False)  # Igusa open M_{2,0}
     assert is_owned_etale_atlas_type(2, 0, proper=True)  # Igusa compact Mbar_2
     assert is_owned_etale_atlas_type(2, 1, proper=False)  # Igusa marked open
-    assert is_owned_etale_atlas_type(2, 9, proper=False)  # parametric marked
-    assert not is_owned_etale_atlas_type(2, 1, proper=True)  # compact marked fail-closed
+    assert is_owned_etale_atlas_type(2, 9, proper=False)  # parametric marked open
+    assert is_owned_etale_atlas_type(2, 1, proper=True)  # Igusa compact marked
+    assert is_owned_etale_atlas_type(2, 9, proper=True)  # parametric compact marked
     assert is_owned_etale_atlas_type(0, 6, proper=True)
     assert is_owned_etale_atlas_type(0, 7, proper=True)
     assert is_owned_etale_atlas_type(0, 8, proper=True)
@@ -1139,6 +1149,10 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert lookup_owned_etale_atlas(2, 1, proper=False).covering_kind == "igusa_universal_curve_finite_etale_cover"
     assert lookup_owned_etale_atlas(2, 2, proper=False).construction == "igusa_rosenhain_marked_configuration"
     assert lookup_owned_etale_atlas(2, 2, proper=False).covering_kind == "igusa_marked_configuration_finite_etale_cover"
+    assert lookup_owned_etale_atlas(2, 1, proper=True).construction == "igusa_compact_rosenhain_universal_curve"
+    assert lookup_owned_etale_atlas(2, 1, proper=True).covering_kind == "igusa_compact_universal_curve_finite_etale_cover"
+    assert lookup_owned_etale_atlas(2, 2, proper=True).construction == "igusa_compact_rosenhain_marked_configuration"
+    assert lookup_owned_etale_atlas(2, 2, proper=True).covering_kind == "igusa_compact_marked_configuration_finite_etale_cover"
     assert resolve_owned_etale_atlas(XS) is not None
     assert XS.owned_etale_atlas_presentation().covering_kind == "legendre_finite_etale_cover"
     assert resolve_owned_etale_atlas(YS).construction == "knudsen_cross_ratio"
@@ -1186,45 +1200,66 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert igusa_compact_pres["construction"] == "igusa_mbar06_s6"
     assert igusa_compact_pres["coverage"] == "proper_Mbar_2"
     assert igusa_compact_pres["covering_space"] is mbar20_etale.domain()
-    # Proper marked Mbar_{2,1}: still fail-closed (named gap).
+    # Proper marked Mbar_{2,1} / Mbar_{2,2}: Kapranov fiber-product Rosenhain covers.
+    from dm_moduli_spike.geometry.stacks import IgusaCompactMarkedM2nAlgebraicSpace
+
     Mbar21 = Mbar_gn(2, 1, base=k)
-    gap_mbar21 = Mbar21.etale_atlas_gap()
-    assert gap_mbar21 is not None
-    assert gap_mbar21["reason"] == "genus_2_igusa_compact_marked_unavailable"
-    assert gap_mbar21["registry_owned_type"] is False
-    assert gap_mbar21["equation_level"] is False
-    assert gap_mbar21["pre_225_remaining_after_this"] == "mbar_2n_marked_compact"
-    assert isinstance(Mbar21.etale_atlas().domain(), AtlasChart)
-    assert not Mbar21.etale_atlas().has_equation_level_etale_certificate()
-    assert Mbar21.owned_etale_atlas_presentation() is None
-    alts_gen = gap_mbar21["alternate_proving_sets"]
-    assert alts_gen[0]["name"] == "igusa_binary_sextic_quotient"
-    assert alts_gen[0]["status"] == "open_M2n_and_Mbar2_owned_under_two_invertible"
-    assert alts_gen[0]["owned_registry_cardinality"] == 9
+    mbar21_etale = Mbar21.etale_atlas()
+    assert Mbar21.etale_atlas_gap() is None
+    assert isinstance(mbar21_etale.domain(), IgusaCompactMarkedM2nAlgebraicSpace)
+    assert mbar21_etale.has_equation_level_etale_certificate()
+    assert mbar21_etale.covering_kind() == "igusa_compact_universal_curve_finite_etale_cover"
+    assert mbar21_etale.is_quotient_presentation_atlas()
+    assert Mbar21.owned_etale_atlas_presentation().construction == "igusa_compact_rosenhain_universal_curve"
+    assert Mbar21.owned_etale_atlas_presentation().groupoid == "igusa_s6"
+    assert mbar21_etale.domain().role() == "Mbar_2_1_via_Mbar_0_6"
+    assert mbar21_etale.domain().affine_cover_cardinality() == 288
+    assert len(mbar21_etale.domain().affine_cover_sample()) == 4
+    assert mbar21_etale.domain().kapranov_base().role() == "Mbar_2_via_Mbar_0_6"
+    igusa_mbar21 = Mbar21.igusa_quotient_presentation()
+    assert igusa_mbar21 is not None
+    assert igusa_mbar21["construction"] == "igusa_compact_rosenhain_universal_curve"
+    assert igusa_mbar21["coverage"] == "proper_Mbar_2_1"
+    assert igusa_mbar21["degree"] == 720
+    Mbar22 = Mbar_gn(2, 2, base=k)
+    mbar22_etale = Mbar22.etale_atlas()
+    assert Mbar22.etale_atlas_gap() is None
+    assert isinstance(mbar22_etale.domain(), IgusaCompactMarkedM2nAlgebraicSpace)
+    assert mbar22_etale.has_equation_level_etale_certificate()
+    assert mbar22_etale.covering_kind() == "igusa_compact_marked_configuration_finite_etale_cover"
+    assert Mbar22.owned_etale_atlas_presentation().construction == "igusa_compact_rosenhain_marked_configuration"
+    # General (g,n) beyond owned Igusa: g=3 still fail-closed with registry alts.
+    M30 = M_gn(3, 0, base=k)
+    gap_gen = M30.etale_atlas_gap()
+    assert gap_gen is not None
+    assert gap_gen["reason"] == "no_owned_affine_etale_presentation"
+    alts_gen = gap_gen["alternate_proving_sets"]
+    assert alts_gen[0]["name"] == "general_dm_moduli_etale_atlas"
+    assert alts_gen[0]["parametric_open_m0n"] is True
+    assert alts_gen[0]["parametric_open_m1n"] is True
+    assert alts_gen[0]["parametric_compact_m1n"] is True
+    assert alts_gen[0]["parametric_proper_m0n"] is True
+    assert alts_gen[0]["parametric_open_m2n"] is True
+    assert alts_gen[0]["parametric_compact_m2n"] is True
+    assert alts_gen[0]["open_m20_igusa"] is True
+    assert alts_gen[0]["compact_m20_igusa"] is True
+    assert alts_gen[0]["owned_registry_cardinality"] == 10
+    assert (2, 0, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (2, 0, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (2, 1, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (2, 1, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (2, 2, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (0, 6, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (0, 6, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (0, 7, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (0, 8, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (0, 9, True) not in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (0, 8, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (1, 3, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (1, 3, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (1, 4, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert alts_gen[0]["proper_m0n_owned_max"] == 8
-    assert alts_gen[1]["name"] == "general_dm_moduli_etale_atlas"
-    assert alts_gen[1]["parametric_open_m0n"] is True
-    assert alts_gen[1]["parametric_open_m1n"] is True
-    assert alts_gen[1]["parametric_compact_m1n"] is True
-    assert alts_gen[1]["parametric_proper_m0n"] is True
-    assert alts_gen[1]["parametric_open_m2n"] is True
-    assert alts_gen[1]["open_m20_igusa"] is True
-    assert alts_gen[1]["compact_m20_igusa"] is True
-    assert (2, 0, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
-    assert (2, 0, False) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
-    assert (2, 1, False) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
-    assert (2, 1, True) not in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
-    assert (0, 6, False) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
-    assert (0, 6, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
-    assert (0, 7, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
-    assert (0, 8, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
-    assert (0, 9, True) not in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
-    assert (0, 8, False) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
-    assert (1, 3, False) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
-    assert (1, 3, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
-    assert (1, 4, True) in [tuple(t) for t in alts_gen[1]["owned_registry_type_keys"]]
-    assert alts_gen[1]["proper_m0n_owned_max"] == 8
-    assert alts_gen[1]["proper_m0n_gap_construction"] == "kapranov_iterated_blowup_P_{n-3}"
+    assert alts_gen[0]["proper_m0n_gap_construction"] == "kapranov_iterated_blowup_P_{n-3}"
     # Open M_{2,0}: owned Igusa / Rosenhain finite étale cover (2 invertible).
     M20_open = M_gn(2, 0, base=k)
     m20_etale = M20_open.etale_atlas()
@@ -1280,6 +1315,9 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert Mbar20_Z.igusa_quotient_presentation() is None
     M21_Z = M_gn(2, 1, base=Z)
     assert M21_Z.etale_atlas_gap()["reason"] == "igusa_requires_two_invertible"
+    Mbar21_Z = Mbar_gn(2, 1, base=Z)
+    assert Mbar21_Z.etale_atlas_gap()["reason"] == "igusa_requires_two_invertible"
+    assert Mbar21_Z.igusa_quotient_presentation() is None
     M20_char2 = M_gn(2, 0, base=spec(GF(2)))
     assert M20_char2.etale_atlas_gap()["reason"] == "igusa_requires_two_invertible"
     assert not M20_char2.etale_atlas().has_equation_level_etale_certificate()
@@ -1311,6 +1349,8 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert M20.etale_atlas_gap() is None
     assert M21_open.etale_atlas_gap() is None
     assert M22_open.etale_atlas_gap() is None
+    assert Mbar21.etale_atlas_gap() is None
+    assert Mbar22.etale_atlas_gap() is None
 
     # Product of owned charts: M_{1,1} × M_{0,4} both equation-level → product True.
     prod = ProductStack((XS, YS), base=k)
@@ -1340,8 +1380,8 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert prod_mbar05_etale.has_equation_level_etale_certificate()
 
     # Product fails closed when a factor still has a formal AtlasChart (general (g,n)).
-    assert isinstance(Mbar21.etale_atlas().domain(), AtlasChart)
-    prod_formal = ProductStack((Mbar21, YS), base=k)
+    assert isinstance(M30.etale_atlas().domain(), AtlasChart)
+    prod_formal = ProductStack((M30, YS), base=k)
     prod_formal_etale = prod_formal.etale_atlas()
     assert prod_formal_etale.factor_atlases()[0].has_equation_level_etale_certificate() is False
     assert prod_formal_etale.factor_atlases()[1].has_equation_level_etale_certificate() is True

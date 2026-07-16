@@ -3,6 +3,7 @@ r"""Concrete moduli stacks M_{g,I} and Mbar_{g,I}."""
 from __future__ import annotations
 
 from .atlas_ownership import COMPACT_M1N_INSPECTABLE_MAX as COMPACT_M1N_INSPECTABLE_MAX
+from .atlas_ownership import COMPACT_M2N_INSPECTABLE_MAX as COMPACT_M2N_INSPECTABLE_MAX
 from .atlas_ownership import OPEN_M0N_INSPECTABLE_MAX as OPEN_M0N_INSPECTABLE_MAX
 from .atlas_ownership import OPEN_M1N_INSPECTABLE_MAX as OPEN_M1N_INSPECTABLE_MAX
 from .atlas_ownership import OPEN_M2N_INSPECTABLE_MAX as OPEN_M2N_INSPECTABLE_MAX
@@ -10,6 +11,7 @@ from .atlas_ownership import PROPER_M0N_INSPECTABLE_MAX as PROPER_M0N_INSPECTABL
 from .atlas_ownership import PROPER_M0N_OWNED_MAX as PROPER_M0N_OWNED_MAX
 from .atlas_ownership import OwnedAtlasPresentation as OwnedAtlasPresentation
 from .atlas_ownership import is_compact_m1n_level_owned as is_compact_m1n_level_owned
+from .atlas_ownership import is_compact_m2n_igusa_owned as is_compact_m2n_igusa_owned
 from .atlas_ownership import is_compact_m20_igusa_owned as is_compact_m20_igusa_owned
 from .atlas_ownership import is_open_m0n_knudsen_owned as is_open_m0n_knudsen_owned
 from .atlas_ownership import is_open_m1n_level_owned as is_open_m1n_level_owned
@@ -36,6 +38,7 @@ from .instances import (
 
 __all__ = [
     "COMPACT_M1N_INSPECTABLE_MAX",
+    "COMPACT_M2N_INSPECTABLE_MAX",
     "Groupoid",
     "M_gI",
     "M_gn",
@@ -53,6 +56,7 @@ __all__ = [
     "StablePointedCurveModuliProblem",
     "is_compact_m1n_level_owned",
     "is_compact_m20_igusa_owned",
+    "is_compact_m2n_igusa_owned",
     "is_open_m0n_knudsen_owned",
     "is_open_m1n_level_owned",
     "is_open_m20_igusa_owned",

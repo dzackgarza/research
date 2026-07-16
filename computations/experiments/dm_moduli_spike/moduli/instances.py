@@ -375,8 +375,8 @@ def _igusa_open_M2n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme:
     * ``n ≥ 2``: ``n`` points on the same model, localized also at ``x_i - x_j``.
 
     Not a scheme isomorphism ``M_{2,n} ≅ U``. Proper unmarked ``Mbar_2`` uses
-    :func:`_igusa_compact_M20_covering_space`; proper marked ``Mbar_{2,n}``
-    stay fail-closed.
+    :func:`_igusa_compact_M20_covering_space`; proper marked ``Mbar_{2,n}`` uses
+    :func:`_igusa_compact_M2n_covering_space`.
     """
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
@@ -431,12 +431,39 @@ def _igusa_compact_M20_covering_space(base: AffineScheme) -> AlgebraicSpace:
     this is **not** a fake “add infinity” stamp on the open Rosenhain chart.
 
     Requires ``2 ∈ Rˣ`` (same hyperelliptic double-cover hypothesis as open
-    Igusa). Marked proper ``Mbar_{2,n}`` (``n ≥ 1``) stay fail-closed.
+    Igusa). Marked proper ``Mbar_{2,n}`` (``n ≥ 1``) uses
+    :func:`_igusa_compact_M2n_covering_space`.
     """
     from ..geometry.stacks import KapranovBlowupFivePointsP3AlgebraicSpace
 
     assert _two_is_invertible(base), "Igusa compact Mbar_2 cover requires 2 invertible"
     return KapranovBlowupFivePointsP3AlgebraicSpace(base, "Mbar_2_via_Mbar_0_6")
+
+
+def _igusa_compact_M2n_covering_space(base: AffineScheme, n: int) -> AlgebraicSpace:
+    r"""Compactified Rosenhain / Kapranov fiber-product cover of ``Mbar_{2,n}``.
+
+    Pullback of :func:`_igusa_compact_M20_covering_space` along forgetful
+    ``Mbar_{2,n} → Mbar_2``. Covering space is
+    :class:`~dm_moduli_spike.geometry.stacks.IgusaCompactMarkedM2nAlgebraicSpace`:
+    Rosenhain fibers over each Kapranov ``Mbar_{0,6}`` chart, without branch-
+    discriminant localization (stable / nodal fibers stay). Finite étale
+    ``S₆`` of degree ``720``. Requires ``2 ∈ Rˣ``.
+
+    * ``n = 0``: :func:`_igusa_compact_M20_covering_space`.
+    * ``n ≥ 1``: lazy Kapranov fiber product (sample certs; cardinality ``288``).
+
+    Not a scheme isomorphism ``Mbar_{2,n} ≅ U``.
+    """
+    from ..geometry.stacks import IgusaCompactMarkedM2nAlgebraicSpace
+
+    n_int = int(n)
+    assert n_int >= 0, f"compact Igusa Mbar_{{2,n}} requires n ≥ 0; got {n!r}"
+    assert _two_is_invertible(base), "Igusa compact Mbar_{2,n} cover requires 2 invertible"
+    if n_int == 0:
+        return _igusa_compact_M20_covering_space(base)
+    role = f"Mbar_2_{n_int}_via_Mbar_0_6"
+    return IgusaCompactMarkedM2nAlgebraicSpace(base, n_int, role)
 
 
 def _legendre_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
@@ -1259,7 +1286,7 @@ class ModuliStack(DeligneMumfordStack):
         r"""Inspectable ``(U, S₆)`` data when an Igusa / Rosenhain cover is owned.
 
         Returns ``None`` unless this is open ``M_{2,n}`` (``n ≥ 0``) or proper
-        unmarked ``Mbar_2`` over a base with ``2`` invertible.
+        ``Mbar_{2,n}`` (``n ≥ 0``) over a base with ``2`` invertible.
 
         - Open ``M_{2,0}``: Rosenhain / Knudsen ``M_{0,6}`` chart
           :func:`_igusa_open_M20_affine_scheme` (dense open of binary sextics).
@@ -1267,17 +1294,15 @@ class ModuliStack(DeligneMumfordStack):
           :func:`_igusa_open_M2n_affine_scheme`.
         - Proper ``Mbar_2``: Kapranov ``Mbar_{0,6}`` cover
           :func:`_igusa_compact_M20_covering_space`.
+        - Proper ``Mbar_{2,n}`` (``n ≥ 1``): Kapranov fiber-product
+          :func:`_igusa_compact_M2n_covering_space`.
 
         ``G = S₆ ≅ Sp₄(𝔽₂)`` of order ``720``. Not a scheme isomorphism.
-        Proper marked ``Mbar_{2,n}`` (``n ≥ 1``) stay fail-closed.
         """
         if self.genus() != 2:
             return None
         n = int(self.number_of_markings())
-        if self.is_proper():
-            if n != 0:
-                return None
-        elif n < 0:
+        if n < 0:
             return None
         if not _two_is_invertible(self.base_scheme()):
             return None
@@ -1288,10 +1313,21 @@ class ModuliStack(DeligneMumfordStack):
         from typing import Any, cast
 
         if self.is_proper():
-            presentation = "Mbar_2 ≅ [Mbar_0_6 / S6] (Kapranov Bl(P3))"
-            level_structure = "Igusa_compact_Mbar06_S6"
-            construction = "igusa_mbar06_s6"
-            coverage = "proper_Mbar_2"
+            if n == 0:
+                presentation = "Mbar_2 ≅ [Mbar_0_6 / S6] (Kapranov Bl(P3))"
+                level_structure = "Igusa_compact_Mbar06_S6"
+                construction = "igusa_mbar06_s6"
+                coverage = "proper_Mbar_2"
+            elif n == 1:
+                presentation = "Mbar_2_1 ≅ [Kapranov_Mbar_0_6_univ_curve / S6]"
+                level_structure = "Igusa_compact_rosenhain_universal_curve"
+                construction = "igusa_compact_rosenhain_universal_curve"
+                coverage = "proper_Mbar_2_1"
+            else:
+                presentation = f"Mbar_2_{n} ≅ [Kapranov_Mbar_0_6_marked_config / S6]"
+                level_structure = "Igusa_compact_rosenhain_marked_configuration"
+                construction = "igusa_compact_rosenhain_marked_configuration"
+                coverage = f"proper_Mbar_2_{n}"
         elif n == 0:
             presentation = "M_2 ≅ [Igusa_binary_sextic_U / S6] (dense open)"
             level_structure = "Igusa_binary_sextic_Sp4_F2"

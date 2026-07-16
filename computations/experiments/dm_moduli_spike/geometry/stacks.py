@@ -977,6 +977,9 @@ class CompactifiedUniversalCurveAlgebraicSpace(AlgebraicSpace):
     Charts are equation-level ``AffineScheme`` hypersurfaces; the finite étale
     groupoid ``S₃`` / ``SL₂(𝔽₃)`` is recorded on the atlas morphism, pulled back
     from the owned ``Mbar_{1,1}`` level covers.
+
+    Proper marked genus-2 uses :class:`IgusaCompactMarkedM2nAlgebraicSpace`
+    (Kapranov ``Mbar_{0,6}`` fiber product), not this class.
     """
 
     @staticmethod
@@ -1010,6 +1013,132 @@ class CompactifiedUniversalCurveAlgebraicSpace(AlgebraicSpace):
 
     def affine_cover(self) -> tuple[AffineScheme, ...]:
         return self._affine_charts
+
+
+class IgusaCompactMarkedM2nAlgebraicSpace(AlgebraicSpace):
+    r"""Compactified Rosenhain / Igusa cover of proper marked ``Mbar_{2,n}``.
+
+    Pullback of Kapranov ``Mbar_{0,6} → Mbar_2`` along forgetful
+    ``Mbar_{2,n} → Mbar_2``: the relative ``n``-marked hyperelliptic double cover
+    over Kapranov ``Bl(ℙ³)``, with finite étale ``S₆`` groupoid. Requires
+    ``2 ∈ Rˣ``.
+
+    Each Kapranov affine chart ``Spec(R[u,v,w]) ≅ 𝔸³`` carries a Rosenhain fiber
+
+    ``y_i² = x_i(x_i-1)(x_i-u)(x_i-v)(x_i-w)``
+
+    **without** localizing at the branch discriminant (disc-zero / stable
+    degeneration fibers stay), only at ``y_i`` and ``x_i - x_j``. Same honesty
+    level as bare Kapranov ``𝔸³`` charts for unmarked ``Mbar_2``: transitions /
+    admissible-cover equations live in gluing.
+
+    Charts are **lazy / cached** (``288`` Kapranov base charts × one fiber chart).
+    Use :meth:`affine_cover_cardinality`, :meth:`affine_cover_sample` (one fiber
+    chart per standard affine of ``ℙ³``), and :meth:`affine_chart`; prefer sample
+    for equation-level certs — do not eagerly materialize all ``288`` fiber
+    hypersurfaces in QC hot paths.
+    """
+
+    @staticmethod
+    def __classcall_private__(
+        cls: type,
+        base: AffineScheme,
+        n: int,
+        role: str,
+    ) -> IgusaCompactMarkedM2nAlgebraicSpace:
+        assert isinstance(base, AffineScheme), f"IgusaCompactMarkedM2nAlgebraicSpace requires AffineScheme base; found {type(base)!r}"
+        n_int = int(n)
+        assert n_int >= 1, f"compact marked Igusa cover requires n ≥ 1; got {n!r}"
+        assert isinstance(role, str) and role, f"role must be a nonempty str; found {role!r}"
+        result = UniqueRepresentation.__classcall__(cls, base, n_int, role)
+        assert isinstance(result, IgusaCompactMarkedM2nAlgebraicSpace), f"classcall must return IgusaCompactMarkedM2nAlgebraicSpace; found {type(result)!r}"
+        return result
+
+    def __init__(self, base: AffineScheme, n: int, role: str) -> None:
+        self._n = int(n)
+        self._role = role
+        self._kapranov = KapranovBlowupFivePointsP3AlgebraicSpace(base, "Mbar_2_via_Mbar_0_6")
+        self._affine_chart_cache: dict[int, AffineScheme] = {}
+        AlgebraicSpace.__init__(
+            self,
+            base,
+            name=f"IgusaCompactMarkedM2n({role}/{base!r})",
+            axioms=frozenset({"FiniteType", "Separated"}),
+        )
+
+    def number_of_markings(self) -> int:
+        r"""Marking count ``n`` for this ``Mbar_{2,n}`` Igusa cover."""
+        return self._n
+
+    def role(self) -> str:
+        r"""Literature role tag (e.g. ``Mbar_2_1_via_Mbar_0_6``)."""
+        return self._role
+
+    def kapranov_base(self) -> KapranovBlowupFivePointsP3AlgebraicSpace:
+        r"""Underlying Kapranov ``Mbar_{0,6}`` cover of unmarked ``Mbar_2``."""
+        return self._kapranov
+
+    def affine_cover_cardinality(self) -> int:
+        r"""Combinatorial chart count ``288`` (one Rosenhain fiber per Kapranov chart)."""
+        return 288
+
+    def affine_chart(self, index: int) -> AffineScheme:
+        r"""Materialize (and cache) the Rosenhain fiber over the ``index``-th Kapranov chart."""
+        from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+        idx = int(index)
+        n_total = self.affine_cover_cardinality()
+        assert 0 <= idx < n_total, f"affine chart index out of range: {idx!r} not in [0, {n_total})"
+        cached = self._affine_chart_cache.get(idx)
+        if cached is not None:
+            return cached
+        base_chart = self._kapranov.affine_cover()[idx]
+        r3 = cast(Any, base_chart.ring())
+        gens3 = tuple(r3.gens())
+        assert len(gens3) == 3, f"Kapranov chart must be 𝔸³; found {len(gens3)} gens"
+        coeff = r3.base_ring()
+        old_names = tuple(str(g) for g in gens3)
+        mark_names: tuple[str, ...]
+        if self._n == 1:
+            mark_names = ("x", "y")
+        else:
+            mark_names = tuple(name for i in range(1, self._n + 1) for name in (f"x{i}", f"y{i}"))
+        poly = PolynomialRing(coeff, names=old_names + mark_names)
+        gens = poly.gens()
+        u, v, w = gens[0], gens[1], gens[2]
+        xs = gens[3::2]
+        ys = gens[4::2]
+        denom = poly.one()
+        for y in ys:
+            denom *= y
+        for i, xi in enumerate(xs):
+            for xj in xs[i + 1 :]:
+                denom *= xi - xj
+        localized = poly.localization(denom)
+        equations = [
+            localized(ys[i]) ** 2
+            - localized(xs[i]) * (localized(xs[i]) - 1) * (localized(xs[i]) - localized(u)) * (localized(xs[i]) - localized(v)) * (localized(xs[i]) - localized(w))
+            for i in range(self._n)
+        ]
+        if len(equations) == 1:
+            chart = AffineScheme(localized.quo(equations[0]))
+        else:
+            chart = AffineScheme(localized.quo(localized.ideal(equations)))
+        self._affine_chart_cache[idx] = chart
+        return chart
+
+    def affine_cover_sample(self) -> tuple[AffineScheme, ...]:
+        r"""One Rosenhain fiber chart per standard affine open of ``ℙ³`` (``4`` charts).
+
+        Kapranov owns ``4 × 72`` charts; this sample witnesses the uniform fiber
+        shape without building all ``288`` hypersurfaces.
+        """
+        charts_per_affine = 72
+        return tuple(self.affine_chart(i * charts_per_affine) for i in range(4))
+
+    def affine_cover(self) -> tuple[AffineScheme, ...]:
+        r"""Full affine cover (materializes all fiber charts; prefer sample for QC)."""
+        return tuple(self.affine_chart(i) for i in range(self.affine_cover_cardinality()))
 
 
 class AtlasChart(AlgebraicSpace):
@@ -1616,6 +1745,8 @@ def _affine_cover_of(domain: object) -> tuple[AffineScheme, ...]:
         return (domain,)
     if isinstance(domain, KapranovIteratedBlowupPnMinus3AlgebraicSpace):
         return domain.affine_cover_sample()
+    if isinstance(domain, IgusaCompactMarkedM2nAlgebraicSpace):
+        return domain.affine_cover_sample()
     if isinstance(
         domain,
         (
@@ -1864,15 +1995,19 @@ class AtlasEvidence:
             and not self.links_finite_etale_groupoid()
         ):
             return False
-        # Kapranov iterated covers are uniform Spec(R[u_1,…,u_d]) charts; certify
-        # a sample (one chart per standard affine of ℙ^d) instead of O(N²) over
-        # the full combinatorial cover (N=17280 already for n=7).
+        # Kapranov iterated / Igusa marked compact: certify a sample, not the
+        # full combinatorial cover (N=17280 already for Mbar_{0,7}; N=288 fiber
+        # hypersurfaces for Mbar_{2,n}).
         if isinstance(self._domain, KapranovIteratedBlowupPnMinus3AlgebraicSpace):
             cover = self._domain.affine_cover_sample()
             if not cover or self._domain.affine_cover_cardinality() < 1:
                 return False
             d = self._domain.projective_dimension()
             if not all(len(tuple(cast(Any, chart.ring()).gens())) == d for chart in cover):
+                return False
+        elif isinstance(self._domain, IgusaCompactMarkedM2nAlgebraicSpace):
+            cover = self._domain.affine_cover_sample()
+            if not cover or self._domain.affine_cover_cardinality() < 1:
                 return False
         else:
             cover = self.domain_affine_cover()
@@ -1977,11 +2112,15 @@ class AtlasMorphism(StackMorphism):
             data["covering_formally_etale_stamp"] = self._evidence.covering_formally_etale_stamp()
             data["links_finite_etale_groupoid"] = self._evidence.links_finite_etale_groupoid()
             data["has_equation_level_etale_certificate"] = self._evidence.has_equation_level_etale_certificate()
-            # Kapranov iterated: never materialize the full combinatorial cover here.
+            # Kapranov iterated / Igusa marked compact: never materialize full cover.
             if isinstance(self.domain(), KapranovIteratedBlowupPnMinus3AlgebraicSpace):
                 kap = cast(KapranovIteratedBlowupPnMinus3AlgebraicSpace, self.domain())
                 data["domain_affine_cover_cardinality"] = kap.affine_cover_cardinality()
                 data["domain_affine_cover"] = kap.affine_cover_sample()
+            elif isinstance(self.domain(), IgusaCompactMarkedM2nAlgebraicSpace):
+                igusa_m = cast(IgusaCompactMarkedM2nAlgebraicSpace, self.domain())
+                data["domain_affine_cover_cardinality"] = igusa_m.affine_cover_cardinality()
+                data["domain_affine_cover"] = igusa_m.affine_cover_sample()
             else:
                 data["domain_affine_cover"] = self._evidence.domain_affine_cover()
         else:
@@ -2012,6 +2151,8 @@ class AtlasMorphism(StackMorphism):
             "igusa_compact_finite_etale_cover",
             "igusa_universal_curve_finite_etale_cover",
             "igusa_marked_configuration_finite_etale_cover",
+            "igusa_compact_universal_curve_finite_etale_cover",
+            "igusa_compact_marked_configuration_finite_etale_cover",
         )
 
     def covering_space(self) -> object | None:
