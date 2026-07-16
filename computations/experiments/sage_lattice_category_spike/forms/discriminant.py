@@ -563,14 +563,8 @@ class SyntheticGenus(Genus, Parent):
         category = Genera(ZZ).Even() if self._even else Genera(ZZ)
         Parent.__init__(self, base=ZZ, category=category)
 
-    def cardinality(self) -> Any:
-        r"""The genus IS the finite set of its isometry classes; its cardinality
-        is the class number."""
-        return self.class_number()
-
-    def __iter__(self) -> Any:
-        r"""One representative lattice per isometry class in this genus."""
-        return iter(self.representatives())
+    # cardinality/__iter__ are the class-number/representatives rollup on
+    # the Genus base (CP3 routing) — no leaf spellings here.
 
     def discriminant_form(self) -> Any:
         return self._discriminant_group

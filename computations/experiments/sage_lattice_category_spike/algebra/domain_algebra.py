@@ -1656,6 +1656,34 @@ class Genus:
     @abstract_method
     def class_number(self) -> int: ...
 
+    # generic set behavior (CP3 routing): the genus IS the finite set of
+    # its isometry classes, so cardinality rolls up through the class-number
+    # engine (sharper than materializing representatives) and enumeration is
+    # the representative set — the witness data.
+    def cardinality(self) -> Cardinal:
+        r"""The class number, as a Cardinal."""
+        from ..objects.cardinals import cardinal
+
+        return cardinal(self.class_number())
+
+    def is_finite(self) -> bool:
+        return self.cardinality().is_finite()
+
+    def __iter__(self) -> Iterator[Lattice]:
+        r"""One representative lattice per isometry class."""
+        return iter(self.representatives())
+
+    def _test_cardinality(self, **options: Any) -> None:
+        r"""Replace Sage's coarse cardinality contract (Integer-or-Infinity)
+        with the owned one: cardinality is a ``Cardinal``, equal to the
+        class number."""
+        tester = cast(Any, self)._tester(**options)
+        cardinality = self.cardinality()
+        from ..objects.cardinals import Cardinal as RuntimeCardinal
+
+        tester.assertTrue(isinstance(cardinality, RuntimeCardinal), f"cardinality must be a Cardinal; found {type(cardinality)}")
+        tester.assertEqual(cardinality, self.class_number())
+
     @abstract_method
     def is_unique_class(self) -> bool: ...
 

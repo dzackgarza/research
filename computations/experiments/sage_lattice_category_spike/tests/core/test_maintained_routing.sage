@@ -26,6 +26,7 @@ from sage_lattice_category_spike.objects.modules import (
     FiniteProjectiveModules,
     Modules,
 )
+from sage_lattice_category_spike.objects.sets import Sets
 
 
 def test_lattices_route_through_the_owned_module_spine():
@@ -107,3 +108,18 @@ def test_a_discriminant_group_rolls_up_through_its_cyclic_factor_product():
     trivial = Lattice("E8").discriminant_group()
     assert trivial.cardinality() == 1
     assert trivial.elements() == (trivial.zero(),)
+
+
+def test_a_genus_is_a_finite_set_placed_in_the_owned_axioms():
+    genus = Lattice("A2").genus()
+    assert genus in Sets().Finite()
+
+    cardinality = genus.cardinality()
+    assert isinstance(cardinality, Cardinal)
+    assert cardinality == 1
+    assert cardinality == genus.class_number()
+    assert genus.is_finite()
+
+    representatives = list(genus)
+    assert len(representatives) == 1
+    assert representatives[0].genus() == genus

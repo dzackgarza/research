@@ -19,6 +19,7 @@ from __future__ import annotations
 from sage.rings.integer import Integer
 
 from sage_lattice_category_spike.lattice_categories import Lattice
+from sage_lattice_category_spike.objects.cardinals import Cardinal
 
 
 def test_baseline_discriminant_group_of_a2():
@@ -87,8 +88,13 @@ def test_baseline_genus_of_a2():
 
     cardinality = genus.cardinality()
     assert cardinality == 1
-    assert isinstance(cardinality, Integer)
+    # Row DELIBERATELY updated during CP3 routing (was Integer): the
+    # ratified owned-cardinal contract makes every cardinality() in the
+    # owned graph a Cardinal; the classical Integer spelling remains as
+    # class_number(). Not a silent fix — see the routing commit.
+    assert isinstance(cardinality, Cardinal)
     assert genus.class_number() == 1
+    assert isinstance(genus.class_number(), Integer)
 
     representatives = genus.representatives()
     assert len(representatives) == 1

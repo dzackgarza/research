@@ -26,7 +26,6 @@ from sage.categories.category_with_axiom import (
     all_axioms,
     axiom,
 )
-from sage.categories.enumerated_sets import EnumeratedSets
 from sage.categories.functor import ForgetfulFunctor
 from sage.categories.homset import Hom as SageHom
 from sage.categories.homset import Homset
@@ -431,10 +430,13 @@ class Genera(Category_over_base_ring):
         return f"synthetic genera over {self.base_ring()}"
 
     def super_categories(self) -> list[Category]:
-        # A genus IS the finite set of its isometry classes: the finite-set API
-        # (cardinality, iteration) is INHERITED from this super-category, never
-        # re-declared on the genus contract or a concrete parent.
-        return [EnumeratedSets().Finite()]
+        # A genus IS the finite set of its isometry classes. CP3 routing: the
+        # placement is the OWNED finite-sets node (which refines Sage's
+        # enumerated finite sets through the Countable chain); the sharper
+        # class-number rollup lives on the Genus contract itself.
+        from .sets import Sets as OwnedSets
+
+        return [OwnedSets().Finite()]
 
     def additional_structure(self) -> Genera:
         return self
