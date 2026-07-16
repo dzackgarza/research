@@ -2153,6 +2153,7 @@ class AtlasMorphism(StackMorphism):
             "igusa_marked_configuration_finite_etale_cover",
             "igusa_compact_universal_curve_finite_etale_cover",
             "igusa_compact_marked_configuration_finite_etale_cover",
+            "del_pezzo_seven_points_finite_etale_cover",
         )
 
     def covering_space(self) -> object | None:

@@ -866,6 +866,72 @@ def _igusa_galois_group() -> object:
     return cast(Any, SymmetricGroup(6))
 
 
+def _del_pezzo_open_M30_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Degree-2 del Pezzo / 7-points-in-``ℙ²`` chart for open unmarked ``M_{3,0}``.
+
+    Every non-hyperelliptic genus-3 curve is a smooth plane quartic (canonical
+    model). The double cover of ``ℙ²`` branched on that quartic is a degree-2
+    del Pezzo surface, equivalently the blow-up of ``ℙ²`` at 7 points with no
+    three collinear. After ``PGL₃``-normalizing four points to
+    ``{[1:0:0],[0:1:0],[0:0:1],[1:1:1]}``, a dense open of ordered markings is
+
+    ``Spec(R[a,b,c,d,e,f]_S)``
+
+    with free points ``[1:a:b]``, ``[1:c:d]``, ``[1:e:f]`` and ``S`` the product
+    of all ``3×3`` collinearity determinants among the seven points.
+
+    Requires ``2 ∈ Rˣ`` (anticanonical double cover). Finite étale groupoid
+    ``W(E₇)`` of order ``2903040`` (geometric markings of a degree-2 del Pezzo).
+    Coverage: **dense open of the non-hyperelliptic locus** of open ``M_3`` —
+    not the hyperelliptic divisor (binary octics / ``M_{0,8}/S₈``), not proper
+    ``Mbar_3``, and not a scheme isomorphism ``M_3 ≅ U``. Ternary-quartic GIT
+    with expanded discriminant is intentionally not materialized here.
+    """
+    from itertools import combinations
+
+    from sage.matrix.constructor import matrix
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    assert _two_is_invertible(base), "del Pezzo / plane-quartic M_{3,0} chart requires 2 invertible"
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=("a", "b", "c", "d", "e", "f"))
+    a, b, c, d, e, f = poly.gens()
+    one = poly.one()
+    zero = poly.zero()
+    pts = (
+        (one, zero, zero),
+        (zero, one, zero),
+        (zero, zero, one),
+        (one, one, one),
+        (one, a, b),
+        (one, c, d),
+        (one, e, f),
+    )
+    denom = one
+    for i, j, k in combinations(range(7), 3):
+        det = matrix(poly, [pts[i], pts[j], pts[k]]).det()
+        if det == zero or det == one or det == -one:
+            continue
+        denom *= det
+    return AffineScheme(poly.localization(denom))
+
+
+def _del_pezzo_galois_group() -> object:
+    r"""``W(E₇)`` acting on the marked degree-2 del Pezzo cover of open ``M_3``.
+
+    Geometric markings of a degree-2 del Pezzo (ordered blow-downs to ``ℙ²``)
+    form a ``W(E₇)``-torsor over the non-hyperelliptic locus; order
+    ``2903040 = 576 · 7!``. The covering space is a dense open of the
+    configuration space of 7 labeled points in ``ℙ²`` modulo ``PGL₃``. Does
+    **not** claim the hyperelliptic locus or proper ``Mbar_3``.
+    """
+    from typing import Any, cast
+
+    from sage.combinat.root_system.weyl_group import WeylGroup
+
+    return cast(Any, WeylGroup(["E", 7]))
+
+
 class Groupoid(UniqueRepresentation, Parent):
     r"""Finite formal groupoid (objects + isomorphisms) for moduli fibers."""
 
@@ -1356,6 +1422,41 @@ class ModuliStack(DeligneMumfordStack):
             "presentation": presentation,
             "construction": construction,
             "coverage": coverage,
+        }
+
+    def del_pezzo_quotient_presentation(self) -> dict[str, object] | None:
+        r"""Inspectable ``(U, W(E₇))`` data when the open ``M_{3,0}`` del Pezzo cover is owned.
+
+        Returns ``None`` unless this is open unmarked ``M_{3,0}`` over a base with
+        ``2`` invertible. Covering space:
+        :func:`_del_pezzo_open_M30_affine_scheme` (7 points in ``ℙ²`` / ``PGL₃``).
+        ``G = W(E₇)`` of order ``2903040``. Coverage is the non-hyperelliptic
+        dense open — not hyperelliptic binary octics, not ``Mbar_3``.
+        """
+        if self.genus() != 3 or self.is_proper() or int(self.number_of_markings()) != 0:
+            return None
+        if not _two_is_invertible(self.base_scheme()):
+            return None
+        domain = _moduli_etale_atlas_domain(self)
+        if domain is None:
+            return None
+        group = _del_pezzo_galois_group()
+        from typing import Any, cast
+
+        return {
+            "covering_space": domain,
+            "group": group,
+            "group_order": int(cast(Any, group).order()),
+            "finite_etale_groupoid": True,
+            "covering_unramified_stamp": True,
+            "covering_smooth_stamp": True,
+            "covering_formally_etale_stamp": True,
+            "degree": 2903040,
+            "level_structure": "del_Pezzo_degree2_W_E7",
+            "presentation": "M_3_nh ≅ [del_Pezzo_Bl7_P2_U / W(E7)] (dense open)",
+            "construction": "del_pezzo_degree2_seven_points_PGL3",
+            "coverage": "dense_open_nonhyperelliptic_of_open_M_3",
+            "excludes": "hyperelliptic_locus_binary_octics; proper_Mbar_3; marked_M_3_n",
         }
 
     def weierstrass_gm_presentation(self) -> dict[str, object] | None:
