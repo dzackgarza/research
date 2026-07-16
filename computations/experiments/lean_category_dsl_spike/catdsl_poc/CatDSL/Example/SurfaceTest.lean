@@ -15,30 +15,30 @@ mathematics.
 
 namespace CatDSL.SurfaceTest
 
-open CatDSL CatDSL.Std CatDSL.DSL
+open CatDSL CatDSL.Categories CatDSL.DSL
 
 /-! ## `prefer F` — registry state via the surface -/
 
-prefer CatDSL.Std.Lattice.toFreeFinModule
-prefer CatDSL.Std.FreeFinModule.toFiniteSet
-prefer CatDSL.Std.FreeFinModule.toModule
-prefer CatDSL.Std.Module.forget
-prefer CatDSL.Std.FiniteSet.toCountable
-prefer CatDSL.Std.FiniteSet.forget
-prefer CatDSL.Std.CountableSet.forget
+prefer CatDSL.Categories.Lattice.toFreeFinModule
+prefer CatDSL.Categories.FreeFinModule.toFiniteSet
+prefer CatDSL.Categories.FreeFinModule.toModule
+prefer CatDSL.Categories.Module.forget
+prefer CatDSL.Categories.FiniteSet.toCountable
+prefer CatDSL.Categories.FiniteSet.forget
+prefer CatDSL.Categories.CountableSet.forget
 
 /-! ## `let X := t ∈ 𝒞` — a paper-like declaration -/
 
-let L := CatDSL.Example.L ∈ CatDSL.Std.Lattices CatDSL.Std.𝔽₂
+let L := CatDSL.Example.L ∈ CatDSL.Categories.Lattices CatDSL.Categories.𝔽₂
 
 /-! ## `#home` and `#via` — the graph queries -/
 
 #home L
 
-#via L ∈ CatDSL.Std.FreeFinModules CatDSL.Std.𝔽₂
-#via L ∈ CatDSL.Std.FiniteSets
-#via L ∈ CatDSL.Std.CountableSets
-#via L ∈ CatDSL.Std.Sets
+#via L ∈ CatDSL.Categories.FreeFinModules CatDSL.Categories.𝔽₂
+#via L ∈ CatDSL.Categories.FiniteSets
+#via L ∈ CatDSL.Categories.CountableSets
+#via L ∈ CatDSL.Categories.Sets
 
 /--
 The surface `let` really produced an ordinary Lean declaration of type

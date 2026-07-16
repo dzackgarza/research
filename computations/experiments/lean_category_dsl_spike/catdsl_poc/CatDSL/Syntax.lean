@@ -1,5 +1,5 @@
 import CatDSL.Registry
-import CatDSL.Std.Algebra
+import CatDSL.Categories.Lattices
 
 /-!
 # Surface syntax

@@ -1,4 +1,4 @@
-import CatDSL.Std.Algebra
+import CatDSL.Categories.Lattices
 
 /-!
 # The 𝔽₂ vertical slice, in ordinary Lean
@@ -20,7 +20,7 @@ Everything below is `rfl` or `decide`. Nothing is assumed.
 
 namespace CatDSL.Example
 
-open CatDSL CatDSL.Std
+open CatDSL CatDSL.Categories
 
 /-- `L := (𝔽₂², id) ∈ Lat(𝔽₂)` — the rank-two standard lattice over `𝔽₂`. -/
 noncomputable def L : LatticeObj 𝔽₂ := LatticeObj.standard 𝔽₂

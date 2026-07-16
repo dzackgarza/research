@@ -8,7 +8,7 @@ bundled with `Cat.of` into a first-class category object.  This is the
 reference shape for every category module.
 -/
 
-namespace CatDSL.Std
+namespace CatDSL.Categories
 
 open CategoryTheory CatDSL
 
@@ -132,4 +132,20 @@ def FiniteSet.toCountable : FiniteSetObj ⥤ CountableSetObj where
 def cardinality (X : FiniteSetObj) : Nat :=
   X.size
 
-end CatDSL.Std
+/-- The concrete two-element set `{0,1}`, owned by `FiniteSets`. -/
+abbrev two : FiniteSetObj where
+  set := ZMod 2
+  size := 2
+  enumerate := Equiv.refl (Fin 2)
+
+/--
+Paper-like notation for `two`.
+
+`𝟚` is U+1D7DA, a mathematical double-struck *digit*.  Lean's identifier
+lexer accepts double-struck *letters* (`𝔽` is fine) but rejects digits, so
+`def 𝟚` cannot be written.  Notation may use any token, so the surface
+spelling lives here over a declaration whose name Lean can lex.
+-/
+notation "𝟚" => two
+
+end CatDSL.Categories
