@@ -1,10 +1,8 @@
 # Architecture: common Sets substrate + two mathematical packages
 
-Authoritative ruling (2026-07-16, updated same day): PR [#182](https://github.com/dzackgarza/research/pull/182)
-is the **live** Sets / functor / Hom foundations vehicle (user fact: pointed at new foundations;
-supersedes any “frozen / to-be-dropped” posture). Do **not** invent a parallel Sets/Hom stack
-inside this spike. Do **not** extract `sage-stable-graphs` / `sage-dm-strata` until G1/G2 have
-artifact proof.
+Authoritative ruling (2026-07-16, updated same day): PR [#182](https://github.com/dzackgarza/research/pull/182) is the **live** Sets / functor / Hom foundations vehicle (user fact: pointed at new foundations; supersedes any “frozen / to-be-dropped” posture).
+Do **not** invent a parallel Sets/Hom stack inside this spike.
+Do **not** extract `sage-stable-graphs` / `sage-dm-strata` until G1/G2 have artifact proof.
 
 ## Dependency on PR #182
 

@@ -5,8 +5,7 @@
 See [ARCHITECTURE.md](ARCHITECTURE.md).
 Short form:
 
-1. **Depend on** PR [#182](https://github.com/dzackgarza/research/pull/182) as the live Sets / functor / Hom foundations vehicle
-   (pointed at new foundations; not “frozen/dropped”). Do **not** grow a parallel category foundation inside this spike.
+1. **Depend on** PR [#182](https://github.com/dzackgarza/research/pull/182) as the live Sets / functor / Hom foundations vehicle (pointed at new foundations; not “frozen/dropped”). Do **not** grow a parallel category foundation inside this spike.
 
 2. Target packages later: `sage-stable-graphs` (Γ + graphs) and `sage-dm-strata` (moduli, strata, clutching).
    Stay mathematically distinct **in-tree**; extract **only** after gates in ARCHITECTURE.md pass.
