@@ -126,4 +126,8 @@ def 𝔽₂ : FiniteRingObj where
   finiteSet := 𝟚
   commRing := inferInstance
 
+/-- Tether witness: `𝔽₂` carries Mathlib's `ZMod 2`, definitionally. -/
+def 𝔽₂.equivZMod : 𝔽₂.set ≃ ZMod 2 :=
+  Equiv.refl _
+
 end CatDSL.Categories

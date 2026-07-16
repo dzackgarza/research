@@ -99,6 +99,16 @@ abbrev Isometries {R : FiniteRingObj} (L M : LatticeObj R) := L ≅ M
 with its group structure.  Nothing lattice-specific defines it. -/
 abbrev isometryGroup {R : FiniteRingObj} (L : LatticeObj R) := Aut L
 
+/-- Tether witness: `Isom(L, M)` IS Mathlib's isomorphism type. -/
+theorem Isometries.eq_iso {R : FiniteRingObj} (L M : LatticeObj R) :
+    Isometries L M = (L ≅ M) :=
+  rfl
+
+/-- Tether witness: `O(L)` IS Mathlib's `Aut`. -/
+theorem isometryGroup.eq_aut {R : FiniteRingObj} (L : LatticeObj R) :
+    isometryGroup L = Aut L :=
+  rfl
+
 /--
 A lattice is **unimodular** when its form is perfect: `b̃` is an isomorphism,
 not merely injective.  Equivalently, the discriminant group `coker b̃` is
@@ -160,6 +170,27 @@ noncomputable def standardUnimodular (R : FiniteRingObj) :
     UnimodularLatticeObj R :=
   ⟨standard R, standard_isUnimodular R⟩
 
+/--
+Tether witness: the form IS Mathlib's `LinearMap.BilinForm` — `Dual R M`
+is `M →ₗ[R] R` by definition, so the field is a bilinear form in curried
+dress, definitionally.
+
+What Mathlib genuinely lacks reduces to the isometry CATEGORY of
+nondegenerate symmetric bilinear finite-free modules: `ZLattice` is the
+embedded-discrete-subgroup ontology (common, but not the right notion for
+lattice theory proper), and `QuadraticModuleCat` is quadratic — not
+symmetric bilinear, a real distinction over `ℤ` where it is exactly the
+even/odd dichotomy.
+-/
+def bilinForm {R : FiniteRingObj} (L : LatticeObj R) :
+    LinearMap.BilinForm R.set L.module.module.set :=
+  L.form
+
+/-- The form is symmetric in Mathlib's sense. -/
+theorem bilinForm_isSymm {R : FiniteRingObj} (L : LatticeObj R) :
+    L.bilinForm.IsSymm :=
+  LinearMap.BilinForm.isSymm_def.mpr L.symmetric
+
 end LatticeObj
 
 /-- The `FreeFinMod(R)`-realization of a lattice: `(L,b) ↦ L`. -/
@@ -167,5 +198,33 @@ def Lattice.toFreeFinModule (R : FiniteRingObj) :
     LatticeObj R ⥤ FreeFinModuleObj R where
   obj L := L.module
   map f := f.hom
+
+/--
+Tether witness: the realization functor is **conservative** (it reflects
+isomorphisms) — the inverse of an invertible isometry is automatically an
+isometry.  Conservativity, not "forgetfulness", is the mathematical
+characterization of a realization edge; `HasForget₂` is bookkeeping.
+-/
+instance Lattice.toFreeFinModule_reflectsIsomorphisms (R : FiniteRingObj) :
+    (Lattice.toFreeFinModule R).ReflectsIsomorphisms where
+  reflects {L M} f hf := by
+    haveI := hf
+    let F := Lattice.toFreeFinModule R
+    let g : M.module.module.set →ₗ[R.set] L.module.module.set :=
+      CategoryTheory.inv (F.map f)
+    have hgf : ∀ x, f.hom (g x) = x := fun x =>
+      LinearMap.congr_fun
+        (IsIso.inv_hom_id (F.map f) :
+          (F.map f).comp g = LinearMap.id) x
+    have hfg : ∀ x, g (f.hom x) = x := fun x =>
+      LinearMap.congr_fun
+        (IsIso.hom_inv_id (F.map f) :
+          g.comp (F.map f) = LinearMap.id) x
+    refine ⟨⟨{ hom := g, isometry := fun x y => ?_ }, ?_, ?_⟩⟩
+    · -- L.form (g x) (g y) = M.form x y, via x = f (g x), y = f (g y)
+      conv_rhs => rw [← hgf x, ← hgf y]
+      exact (f.isometry (g x) (g y)).symm
+    · exact LatticeHom.ext (LinearMap.ext hfg)
+    · exact LatticeHom.ext (LinearMap.ext hgf)
 
 end CatDSL.Categories

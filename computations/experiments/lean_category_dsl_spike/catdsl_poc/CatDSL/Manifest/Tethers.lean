@@ -34,4 +34,29 @@ tether CatDSL.Categories.CountableSetObj ~ Encodable
 tether CatDSL.Categories.FiniteSetObj ~ FinEnum
   via CatDSL.Categories.FiniteSetObj.finEnum
 
+tether CatDSL.Categories.integers ~ Int
+  via CatDSL.Categories.integers.equivInt
+
+tether CatDSL.Categories.two ~ ZMod
+  via CatDSL.Categories.two.equivZMod
+
+tether CatDSL.Categories.𝔽₂ ~ ZMod
+  via CatDSL.Categories.𝔽₂.equivZMod
+
+tether CatDSL.Categories.cardinality ~ FinEnum.card
+  via CatDSL.Categories.cardinality_eq_finEnumCard
+
+tether CatDSL.Categories.Isometries ~ CategoryTheory.Iso
+  via CatDSL.Categories.Isometries.eq_iso
+
+tether CatDSL.Categories.isometryGroup ~ CategoryTheory.Aut
+  via CatDSL.Categories.isometryGroup.eq_aut
+
+tether CatDSL.Categories.LatticeObj ~ LinearMap.BilinForm
+  via CatDSL.Categories.LatticeObj.bilinForm
+
+tether CatDSL.Categories.Lattice.toFreeFinModule
+  ~ CategoryTheory.Functor.ReflectsIsomorphisms
+  via CatDSL.Categories.Lattice.toFreeFinModule_reflectsIsomorphisms
+
 end CatDSL.Manifest

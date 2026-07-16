@@ -78,6 +78,10 @@ def integers : SetObj := ⟨ℤ⟩
 theorem cardinality_integers : integers.cardinality = Cardinal.aleph0 :=
   Cardinal.mk_int
 
+/-- Tether witness: `integers` carries Mathlib's `ℤ`, definitionally. -/
+def integers.equivInt : integers.set ≃ ℤ :=
+  Equiv.refl ℤ
+
 /--
 A set carrying an actual countability implementation.
 
@@ -228,6 +232,11 @@ theorem cardinality_eval (X : FiniteSetObj) :
     (FiniteSet.forget.obj X).cardinality = (cardinality X : Cardinal) :=
   (Cardinal.mk_congr X.enumerate).trans (Cardinal.mk_fin X.size)
 
+/-- Tether witness: the finite evaluation IS Mathlib's `FinEnum.card`. -/
+theorem cardinality_eq_finEnumCard (X : FiniteSetObj) :
+    cardinality X = @FinEnum.card X.set X.finEnum :=
+  rfl
+
 /-- The concrete two-element set `{0,1}`, owned by `FiniteSets`. -/
 abbrev two : FiniteSetObj where
   set := ZMod 2
@@ -243,5 +252,9 @@ lexer accepts double-struck *letters* (`𝔽` is fine) but rejects digits, so
 spelling lives here over a declaration whose name Lean can lex.
 -/
 notation "𝟚" => two
+
+/-- Tether witness: `two` carries Mathlib's `ZMod 2`, definitionally. -/
+def two.equivZMod : (two).set ≃ ZMod 2 :=
+  Equiv.refl _
 
 end CatDSL.Categories

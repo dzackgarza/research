@@ -22,11 +22,11 @@ open CatDSL.Manifest
 -- Positive count first: the tether registry is alive.
 run_cmd do
   let ts := tethers (← getEnv)
-  unless ts.size = 7 do
-    throwError "expected 7 tethers, got {ts.size}: {ts.map (·.localDecl)}"
+  unless ts.size = 15 do
+    throwError "expected 15 tethers, got {ts.size}: {ts.map (·.localDecl)}"
   let kinds := ts.map (·.kind)
-  unless kinds.count .exact = 1 && kinds.count .divergent = 1
-      && kinds.count .structural = 5 do
+  unless kinds.count .exact = 4 && kinds.count .divergent = 1
+      && kinds.count .structural = 10 do
     throwError "tether kinds drifted: {ts.map fun t => (t.localDecl, t.kind)}"
   logInfo m!"tether registry alive: {ts.size} tethers, kinds as pinned"
 
@@ -38,17 +38,21 @@ private def bundleAbbrev : String :=
    separately"
 
 private def realizationEdge : String :=
-  "project-owned realization functor (preferred-graph edge); the Mathlib \
-   analog is HasForget₂ plumbing — consolidation queued (#217)"
+  "realization functor (preferred-graph edge); its mathematical \
+   characterization is CONSERVATIVITY (Functor.ReflectsIsomorphisms — see \
+   the tethered Lattice.toFreeFinModule exemplar), not forgetfulness; \
+   per-edge conservativity witnesses queued"
 
 private def presentationData : String :=
   "presentation data, accessor, or concrete example on project objects; \
    internal by design, no external concept to anchor"
 
 private def pendingUpstream : String :=
-  "no Mathlib home exists yet — pending upstream theory (nondegenerate \
-   lattices / enumeration-equipped finite structures); see the docstring \
-   and the ForMathlib policy"
+  "the surrounding CATEGORY has no Mathlib home (for lattices: ZLattice is \
+   the embedded-discrete-subgroup ontology and QuadraticModuleCat is \
+   quadratic, not symmetric bilinear — over ℤ exactly even vs odd); the \
+   INGREDIENTS are tethered (LatticeObj.bilinForm ~ LinearMap.BilinForm); \
+   see the ForMathlib policy"
 
 /--
 The acknowledged untethered set, each entry carrying its documented,
@@ -79,10 +83,7 @@ def acknowledgedUntethered : Array (Name × String) := #[
   (`CatDSL.Categories.FreeFinModuleObj, pendingUpstream),
   (`CatDSL.Categories.FreeFinModuleObj.rankTwo, presentationData),
   (`CatDSL.Categories.FreeFinModules, bundleAbbrev),
-  (`CatDSL.Categories.Isometries, bundleAbbrev),
-  (`CatDSL.Categories.Lattice.toFreeFinModule, realizationEdge),
   (`CatDSL.Categories.LatticeHom, pendingUpstream),
-  (`CatDSL.Categories.LatticeObj, pendingUpstream),
   (`CatDSL.Categories.LatticeObj.IsUnimodular, pendingUpstream),
   (`CatDSL.Categories.LatticeObj.standard, presentationData),
   (`CatDSL.Categories.LatticeObj.standardUnimodular, presentationData),
@@ -96,12 +97,8 @@ def acknowledgedUntethered : Array (Name × String) := #[
   (`CatDSL.Categories.Sets, bundleAbbrev),
   (`CatDSL.Categories.Unimodular.toLattice, realizationEdge),
   (`CatDSL.Categories.UnimodularLatticeObj, pendingUpstream),
-  (`CatDSL.Categories.UnimodularLattices, bundleAbbrev),
-  (`CatDSL.Categories.cardinality, presentationData),
-  (`CatDSL.Categories.integers, presentationData),
-  (`CatDSL.Categories.isometryGroup, bundleAbbrev),
-  (`CatDSL.Categories.two, presentationData),
-  (`CatDSL.Categories.𝔽₂, presentationData)]
+  (`CatDSL.Categories.UnimodularLattices, bundleAbbrev)]
+
 
 run_cmd liftTermElabM do
   let actual ← untetheredIn #[`CatDSL.Categories]
