@@ -634,14 +634,31 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert "univ_curve" in str(m12_pres["presentation"]) or "S3" in str(m12_pres["presentation"])
     m12_ring = m12_etale.domain().as_affine_scheme().ring()
     assert len(m12_ring.gens()) == 3
-    # Mbar_{1,2}: stable universal-curve / boundary cover not owned — fail-closed.
+    # Mbar_{1,2} (2 invertible): compactified Legendre universal-curve affine cover.
+    from dm_moduli_spike.geometry.stacks import CompactifiedUniversalCurveAlgebraicSpace
+
     Mbar12 = Mbar_gn(1, 2, base=k)
-    assert isinstance(Mbar12.etale_atlas().domain(), AtlasChart)
-    assert not Mbar12.etale_atlas().has_equation_level_etale_certificate()
-    mbar12_gap = Mbar12.etale_atlas_gap()
-    assert mbar12_gap is not None
-    assert mbar12_gap["reason"] == "mbar_1_2_needs_stable_universal_curve_cover"
-    assert Mbar12.legendre_quotient_presentation() is None
+    mbar12_etale = Mbar12.etale_atlas()
+    assert isinstance(mbar12_etale.domain(), CompactifiedUniversalCurveAlgebraicSpace)
+    assert mbar12_etale.domain() is not Mbar12
+    assert mbar12_etale.domain() is not Mbar12.coarse_space()
+    assert mbar12_etale.covering_kind() == "legendre_compact_universal_curve_finite_etale_cover"
+    assert mbar12_etale.is_quotient_presentation_atlas()
+    assert mbar12_etale.has_equation_level_etale_certificate()
+    assert mbar12_etale.equation_level_etale()
+    assert mbar12_etale.evidence().finite_etale_groupoid()
+    assert mbar12_etale.evidence().group_order() == 6
+    assert len(mbar12_etale.domain().affine_cover()) == 2
+    assert mbar12_etale.domain().role() == "Mbar_Gamma2_univ_curve"
+    assert Mbar12.etale_atlas_gap() is None
+    mbar12_pres = Mbar12.legendre_quotient_presentation()
+    assert mbar12_pres is not None
+    assert mbar12_pres["group_order"] == 6
+    assert mbar12_pres["degree"] == 6
+    assert mbar12_pres["level_structure"] == "Mbar(Gamma(2))_universal_curve"
+    assert mbar12_pres["covering_space"] is mbar12_etale.domain()
+    assert "compact" in str(mbar12_pres["presentation"]) or "S3" in str(mbar12_pres["presentation"])
+    assert Mbar12.hesse_quotient_presentation() is None
 
     # Char 2: Legendre unavailable; Hesse Γ(3) owns open / proper M_{1,1} (3=1 invertible).
     from sage.rings.finite_rings.finite_field_constructor import GF
@@ -699,6 +716,23 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert m12_hesse["covering_space"] is m12_c2.domain()
     assert len(m12_c2.domain().as_affine_scheme().ring().gens()) == 3
 
+    # Char 2 proper Mbar_{1,2}: compactified Hesse universal-curve cover.
+    Mbar12_char2 = Mbar_gn(1, 2, base=spec(GF(2)))
+    mbar12_c2 = Mbar12_char2.etale_atlas()
+    assert isinstance(mbar12_c2.domain(), CompactifiedUniversalCurveAlgebraicSpace)
+    assert mbar12_c2.covering_kind() == "hesse_compact_universal_curve_finite_etale_cover"
+    assert mbar12_c2.is_quotient_presentation_atlas()
+    assert mbar12_c2.has_equation_level_etale_certificate()
+    assert mbar12_c2.evidence().group_order() == 24
+    assert len(mbar12_c2.domain().affine_cover()) == 2
+    assert mbar12_c2.domain().role() == "Mbar_Gamma3_univ_curve"
+    assert Mbar12_char2.legendre_quotient_presentation() is None
+    assert Mbar12_char2.etale_atlas_gap() is None
+    mbar12_hesse = Mbar12_char2.hesse_quotient_presentation()
+    assert mbar12_hesse is not None
+    assert mbar12_hesse["level_structure"] == "Mbar(Gamma(3))_universal_curve"
+    assert mbar12_hesse["covering_space"] is mbar12_c2.domain()
+
     # Char 3: Hesse unavailable; Legendre still owns (2 invertible). Prefer Legendre over Hesse.
     M11_char3 = M_gn(1, 1, base=spec(GF(3)))
     assert M11_char3.etale_atlas().covering_kind() == "legendre_finite_etale_cover"
@@ -711,11 +745,13 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert XS.etale_atlas_gap() is None
     assert YS.etale_atlas_gap() is None
     assert M12.etale_atlas_gap() is None
+    assert Mbar12.etale_atlas_gap() is None
     assert Mbar04.etale_atlas_gap() is None
     assert Mbar11.etale_atlas_gap() is None
     assert M11_char2.etale_atlas_gap() is None
     assert Mbar11_char2.etale_atlas_gap() is None
     assert M12_char2.etale_atlas_gap() is None
+    assert Mbar12_char2.etale_atlas_gap() is None
 
     # Product of owned charts: M_{1,1} × M_{0,4} both equation-level → product True.
     prod = ProductStack((XS, YS), base=k)

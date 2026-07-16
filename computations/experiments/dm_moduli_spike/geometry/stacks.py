@@ -566,6 +566,56 @@ class ProjectiveLineAlgebraicSpace(AlgebraicSpace):
         return self._affine_charts
 
 
+class CompactifiedUniversalCurveAlgebraicSpace(AlgebraicSpace):
+    r"""Affine cover of a compactified Legendre/Hesse universal curve over ``ℙ¹``.
+
+    Owned as the finite-étale covering space of proper ``Mbar_{1,2}`` when a
+    level structure applies:
+
+    - Legendre (``2`` invertible): two Weierstrass charts over ``Mbar(Γ(2)) ≅ ℙ¹``,
+      including discriminant-zero (nodal) fibers — **not** the open localization
+      at ``λ(λ-1)``, and **not** a fake ``Bl₄`` / Kapranov model.
+    - Hesse (``2`` not invertible, ``3`` invertible): two Hesse-cubic charts over
+      ``Mbar(Γ(3)) ≅ ℙ¹``, including ``μ³ = 1`` nodal fibers.
+
+    Charts are equation-level ``AffineScheme`` hypersurfaces; the finite étale
+    groupoid ``S₃`` / ``SL₂(𝔽₃)`` is recorded on the atlas morphism, pulled back
+    from the owned ``Mbar_{1,1}`` level covers.
+    """
+
+    @staticmethod
+    def __classcall_private__(
+        cls: type,
+        base: AffineScheme,
+        role: str,
+        charts: tuple[AffineScheme, ...],
+    ) -> CompactifiedUniversalCurveAlgebraicSpace:
+        assert isinstance(base, AffineScheme), f"base must be AffineScheme; found {type(base)!r}"
+        assert isinstance(role, str) and role, f"role must be nonempty str; found {role!r}"
+        assert isinstance(charts, tuple) and len(charts) >= 2, f"need ≥2 affine charts; found {charts!r}"
+        assert all(isinstance(c, AffineScheme) for c in charts), f"charts must be AffineScheme; found {charts!r}"
+        result = UniqueRepresentation.__classcall__(cls, base, role, charts)
+        assert isinstance(result, CompactifiedUniversalCurveAlgebraicSpace), f"classcall must return CompactifiedUniversalCurveAlgebraicSpace; found {type(result)!r}"
+        return result
+
+    def __init__(self, base: AffineScheme, role: str, charts: tuple[AffineScheme, ...]) -> None:
+        self._role = role
+        self._affine_charts = charts
+        AlgebraicSpace.__init__(
+            self,
+            base,
+            name=f"CompactifiedUnivCurve({role}/{base!r})",
+            axioms=frozenset({"FiniteType", "Separated"}),
+        )
+
+    def role(self) -> str:
+        r"""Literature role tag (e.g. ``Mbar_Gamma2_univ_curve``)."""
+        return self._role
+
+    def affine_cover(self) -> tuple[AffineScheme, ...]:
+        return self._affine_charts
+
+
 class AtlasChart(AlgebraicSpace):
     r"""Algebraic-space chart serving as the domain of an atlas morphism ``U → X``.
 
@@ -1162,7 +1212,10 @@ def _affine_cover_of(domain: object) -> tuple[AffineScheme, ...]:
     r"""Affine opens of an atlas domain for equation-level certification (fail-closed)."""
     if isinstance(domain, AffineScheme):
         return (domain,)
-    if isinstance(domain, (AffineAlgebraicSpace, ProjectiveLineAlgebraicSpace)):
+    if isinstance(
+        domain,
+        (AffineAlgebraicSpace, ProjectiveLineAlgebraicSpace, CompactifiedUniversalCurveAlgebraicSpace),
+    ):
         return domain.affine_cover()
     if isinstance(domain, ProductStack):
         covers: list[AffineScheme] = []
@@ -1388,9 +1441,11 @@ class AtlasEvidence:
                 "legendre_finite_etale_cover",
                 "legendre_compact_finite_etale_cover",
                 "legendre_universal_curve_finite_etale_cover",
+                "legendre_compact_universal_curve_finite_etale_cover",
                 "hesse_finite_etale_cover",
                 "hesse_compact_finite_etale_cover",
                 "hesse_universal_curve_finite_etale_cover",
+                "hesse_compact_universal_curve_finite_etale_cover",
             )
             and not self.links_finite_etale_groupoid()
         ):
@@ -1513,9 +1568,11 @@ class AtlasMorphism(StackMorphism):
             "legendre_finite_etale_cover",
             "legendre_compact_finite_etale_cover",
             "legendre_universal_curve_finite_etale_cover",
+            "legendre_compact_universal_curve_finite_etale_cover",
             "hesse_finite_etale_cover",
             "hesse_compact_finite_etale_cover",
             "hesse_universal_curve_finite_etale_cover",
+            "hesse_compact_universal_curve_finite_etale_cover",
         )
 
     def covering_space(self) -> object | None:

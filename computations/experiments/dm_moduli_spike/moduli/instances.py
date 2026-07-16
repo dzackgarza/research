@@ -16,6 +16,7 @@ from ..geometry.stacks import (
     Boundary,
     CoarseModuliMorphism,
     Compactification,
+    CompactifiedUniversalCurveAlgebraicSpace,
     DeligneMumfordStack,
     FormallyEtaleSchemeCertificate,
     ProjectiveLineAlgebraicSpace,
@@ -180,7 +181,8 @@ def _legendre_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
     The forgetful map ``U → M_{1,2}`` is the pullback of ``M(Γ(2)) → M_{1,1}``
     along ``M_{1,2} → M_{1,1}``, hence finite étale Galois of degree ``6`` with
     group ``S₃``. Not a scheme isomorphism ``M_{1,2} ≅ U``. Requires ``2``
-    invertible. Proper ``Mbar_{1,2}`` is not owned here (stable/boundary charts).
+    invertible. Proper ``Mbar_{1,2}`` uses the compactified two-chart cover
+    :func:`_legendre_Mbar12_algebraic_space`.
     """
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
@@ -204,7 +206,8 @@ def _hesse_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
     A flex used as identity lies on the line ``Z = 0``, so this affine excludes
     the zero section. Pullback of ``M(Γ(3)) → M_{1,1}`` along ``M_{1,2} → M_{1,1}``
     is finite étale of degree ``|SL₂(𝔽₃)| = 24``. Requires ``3`` invertible
-    (and is used when Legendre is unavailable). Proper ``Mbar_{1,2}`` not owned.
+    (and is used when Legendre is unavailable). Proper ``Mbar_{1,2}`` uses the
+    compactified two-chart cover :func:`_hesse_Mbar12_algebraic_space`.
     """
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
@@ -215,6 +218,111 @@ def _hesse_M12_affine_scheme(base: AffineScheme) -> AffineScheme:
     localized = poly.localization(mu**3 - 1)
     equation = localized(x) ** 3 + localized(y) ** 3 + 1 - localized(3) * localized(mu) * localized(x) * localized(y)
     return AffineScheme(localized.quo(equation))
+
+
+def _legendre_Mbar12_finite_lambda_chart(base: AffineScheme) -> AffineScheme:
+    r"""Legendre Weierstrass chart over ``𝔸¹_λ``, including nodal fibers ``λ ∈ {0,1}``.
+
+    ``Spec(R[λ,x,y] / (y² - x(x-1)(x-λ)))`` — no localization at ``λ(λ-1)``.
+    Covers the compactified universal curve over the standard affine of
+    ``Mbar(Γ(2)) ≅ ℙ¹`` away from ``λ = ∞``.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    assert _two_is_invertible(base), "Legendre Mbar_{1,2} chart requires 2 invertible"
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=("lambda", "x", "y"))
+    lam, x, y = poly.gens()
+    equation = y**2 - x * (x - 1) * (x - lam)
+    return AffineScheme(poly.quo(equation))
+
+
+def _legendre_Mbar12_infinite_lambda_chart(base: AffineScheme) -> AffineScheme:
+    r"""Legendre chart near ``λ = ∞`` via ``ν = 1/λ`` on the projective model.
+
+    From ``Y² Z = X(X-Z)(X-λ Z)`` with ``λ = 1/ν`` and affine ``Z = 1``:
+
+    ``Spec(R[ν,X,Y] / (ν Y² - X(X-1)(ν X - 1)))``
+
+    At ``ν = 0`` the fiber is nodal (multiplicative reduction); together with the
+    finite-``λ`` chart this is an affine cover of the compactified Legendre
+    universal curve minus the zero section over ``ℙ¹``.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    assert _two_is_invertible(base), "Legendre Mbar_{1,2} chart requires 2 invertible"
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=("nu", "X", "Y"))
+    nu, X, Y = poly.gens()
+    equation = nu * Y**2 - X * (X - 1) * (nu * X - 1)
+    return AffineScheme(poly.quo(equation))
+
+
+def _legendre_Mbar12_algebraic_space(base: AffineScheme) -> CompactifiedUniversalCurveAlgebraicSpace:
+    r"""Compactified Legendre universal-curve cover of proper ``Mbar_{1,2}``.
+
+    Pullback of ``Mbar(Γ(2)) → Mbar_{1,1}`` along the forgetful universal curve
+    ``Mbar_{1,2} → Mbar_{1,1}``. Covering space is the compactified Legendre
+    family minus the identity section, with affine charts including discriminant
+    zero. Finite étale of degree 6 with group ``S₃``. Not a scheme isomorphism.
+    """
+    return CompactifiedUniversalCurveAlgebraicSpace(
+        base,
+        "Mbar_Gamma2_univ_curve",
+        (
+            _legendre_Mbar12_finite_lambda_chart(base),
+            _legendre_Mbar12_infinite_lambda_chart(base),
+        ),
+    )
+
+
+def _hesse_Mbar12_finite_mu_chart(base: AffineScheme) -> AffineScheme:
+    r"""Hesse cubic chart over ``𝔸¹_μ``, including nodal fibers ``μ³ = 1``.
+
+    ``Spec(R[μ,x,y] / (x³ + y³ + 1 - 3μ x y))`` — no localization at ``μ³ - 1``.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    assert _three_is_invertible(base), "Hesse Mbar_{1,2} chart requires 3 invertible"
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=("mu", "x", "y"))
+    mu, x, y = poly.gens()
+    equation = x**3 + y**3 + 1 - poly(3) * mu * x * y
+    return AffineScheme(poly.quo(equation))
+
+
+def _hesse_Mbar12_infinite_mu_chart(base: AffineScheme) -> AffineScheme:
+    r"""Hesse chart near ``μ = ∞`` via ``ν = 1/μ`` and scaling ``x = X/ν``, ``y = Y/ν``.
+
+    ``Spec(R[ν,X,Y] / (X³ + Y³ + ν³ - 3 X Y))``
+
+    Together with the finite-``μ`` chart, an affine cover of the compactified
+    Hesse universal curve minus a flex zero section over ``ℙ¹ = Mbar(Γ(3))``.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    assert _three_is_invertible(base), "Hesse Mbar_{1,2} chart requires 3 invertible"
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=("nu", "X", "Y"))
+    nu, X, Y = poly.gens()
+    equation = X**3 + Y**3 + nu**3 - poly(3) * X * Y
+    return AffineScheme(poly.quo(equation))
+
+
+def _hesse_Mbar12_algebraic_space(base: AffineScheme) -> CompactifiedUniversalCurveAlgebraicSpace:
+    r"""Compactified Hesse universal-curve cover of proper ``Mbar_{1,2}`` (incl. char 2).
+
+    Pullback of ``Mbar(Γ(3)) → Mbar_{1,1}`` along ``Mbar_{1,2} → Mbar_{1,1}``.
+    Finite étale of degree ``|SL₂(𝔽₃)| = 24``. Used when Legendre is unavailable.
+    """
+    return CompactifiedUniversalCurveAlgebraicSpace(
+        base,
+        "Mbar_Gamma3_univ_curve",
+        (
+            _hesse_Mbar12_finite_mu_chart(base),
+            _hesse_Mbar12_infinite_mu_chart(base),
+        ),
+    )
 
 
 def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
@@ -239,12 +347,16 @@ def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
     - ``M_{1,2}`` (open, ``2`` invertible): Legendre universal-curve Weierstrass
       affine (``E \\ {O}`` over ``M(Γ(2))``) — finite étale of degree 6,
     - ``M_{1,2}`` (open, ``2`` not invertible, ``3`` invertible): Hesse
-      universal-curve affine over ``M(Γ(3))`` — finite étale of degree 24.
+      universal-curve affine over ``M(Γ(3))`` — finite étale of degree 24,
+    - ``Mbar_{1,2}`` (``2`` invertible): compactified Legendre universal-curve
+      affine cover (includes nodal fibers) — finite étale of degree 6,
+    - ``Mbar_{1,2}`` (``2`` not invertible, ``3`` invertible): compactified Hesse
+      universal-curve affine cover — finite étale of degree 24.
 
-    Fail-closed (``None``) for general ``(g,n)``, proper ``Mbar_{0,5}``, proper
-    ``Mbar_{1,2}``, and when neither Legendre nor Hesse hypotheses hold on
-    ``(1,1)`` / open ``(1,2)`` — see :meth:`ModuliStack.etale_atlas_gap`. No fake
-    charts / weighted-Proj shells.
+    Fail-closed (``None``) for general ``(g,n)``, proper ``Mbar_{0,5}``, and when
+    neither Legendre nor Hesse hypotheses hold on ``(1,1)`` / ``(1,2)`` — see
+    :meth:`ModuliStack.etale_atlas_gap`. No fake charts / weighted-Proj shells /
+    Kapranov ``Bl₄``.
     """
     g = stack.genus()
     n = stack.number_of_markings()
@@ -267,10 +379,14 @@ def _moduli_etale_atlas_domain(stack: ModuliStack) -> AlgebraicSpace | None:
             if proper:
                 return ProjectiveLineAlgebraicSpace(base, "Mbar_Gamma3")
             return AffineAlgebraicSpace(_hesse_affine_scheme(base))
-    if g == 1 and n == 2 and not proper:
+    if g == 1 and n == 2:
         if _two_is_invertible(base):
+            if proper:
+                return _legendre_Mbar12_algebraic_space(base)
             return AffineAlgebraicSpace(_legendre_M12_affine_scheme(base))
         if _three_is_invertible(base):
+            if proper:
+                return _hesse_Mbar12_algebraic_space(base)
             return AffineAlgebraicSpace(_hesse_M12_affine_scheme(base))
     return None
 
@@ -599,21 +715,21 @@ class ModuliStack(DeligneMumfordStack):
     def legendre_quotient_presentation(self) -> dict[str, object] | None:
         r"""Inspectable ``(U, S₃)`` data when a Legendre ``Γ(2)`` presentation is owned.
 
-        Returns ``None`` unless this is ``M_{1,1}`` / ``Mbar_{1,1}`` / open ``M_{1,2}``
-        over a base with ``2`` invertible.
+        Returns ``None`` unless this is ``M_{1,1}`` / ``Mbar_{1,1}`` / ``M_{1,2}`` /
+        ``Mbar_{1,2}`` over a base with ``2`` invertible.
 
         - Open ``M_{1,1}``: ``U = Spec(R[λ]_{λ(λ-1)}) = M(Γ(2))``.
         - Proper ``Mbar_{1,1}``: ``U = ℙ¹ = Mbar(Γ(2))`` (standard affine cover).
         - Open ``M_{1,2}``: ``U`` = Legendre Weierstrass affine
           ``Spec(R[λ,x,y]_{λ(λ-1)}/(y²-x(x-1)(x-λ)))`` (universal curve minus
           zero section over ``M(Γ(2))``).
+        - Proper ``Mbar_{1,2}``: ``U`` = compactified Legendre universal-curve
+          affine cover (includes nodal fibers over ``Mbar(Γ(2)) ≅ ℙ¹``).
 
         ``G = S₃`` acts by permuting ``{0,1,∞}`` on the level structure.
         Does **not** claim a scheme isomorphism ``M_{1,*} ≅ U``.
         """
         if self.genus() != 1 or self.number_of_markings() not in (1, 2):
-            return None
-        if self.number_of_markings() == 2 and self.is_proper():
             return None
         if not _two_is_invertible(self.base_scheme()):
             return None
@@ -625,8 +741,12 @@ class ModuliStack(DeligneMumfordStack):
 
         n = self.number_of_markings()
         if n == 2:
-            presentation = "M_1_2 ≅ [Legendre_univ_curve_minus_0 / S3]"
-            level_structure = "Gamma(2)_universal_curve"
+            if self.is_proper():
+                presentation = "Mbar_1_2 ≅ [compact_Legendre_univ_curve / S3]"
+                level_structure = "Mbar(Gamma(2))_universal_curve"
+            else:
+                presentation = "M_1_2 ≅ [Legendre_univ_curve_minus_0 / S3]"
+                level_structure = "Gamma(2)_universal_curve"
         elif self.is_proper():
             presentation = "Mbar_1_1 ≅ [P1 / S3]"
             level_structure = "Mbar(Gamma(2))"
@@ -649,22 +769,22 @@ class ModuliStack(DeligneMumfordStack):
     def hesse_quotient_presentation(self) -> dict[str, object] | None:
         r"""Inspectable ``(U, SL₂(𝔽₃))`` data when a Hesse ``Γ(3)`` presentation is owned.
 
-        Returns ``None`` unless this is ``M_{1,1}`` / ``Mbar_{1,1}`` / open ``M_{1,2}``
-        over a base with ``2`` **not** invertible and ``3`` invertible (Legendre
-        preferred whenever available).
+        Returns ``None`` unless this is ``M_{1,1}`` / ``Mbar_{1,1}`` / ``M_{1,2}`` /
+        ``Mbar_{1,2}`` over a base with ``2`` **not** invertible and ``3`` invertible
+        (Legendre preferred whenever available).
 
         - Open ``M_{1,1}``: ``U = Spec(R[μ]_{μ³-1}) = M(Γ(3))`` Hesse chart.
         - Proper ``Mbar_{1,1}``: ``U = ℙ¹ = Mbar(Γ(3))`` (standard affine cover).
         - Open ``M_{1,2}``: ``U`` = Hesse affine
           ``Spec(R[μ,x,y]_{μ³-1}/(x³+y³+1-3μxy))`` (universal curve minus a flex
           zero section over ``M(Γ(3))``).
+        - Proper ``Mbar_{1,2}``: ``U`` = compactified Hesse universal-curve affine
+          cover (includes nodal fibers over ``Mbar(Γ(3)) ≅ ℙ¹``).
 
         ``G = SL₂(𝔽₃)`` has order 24. Does **not** claim a scheme isomorphism
         ``M_{1,*} ≅ U``.
         """
         if self.genus() != 1 or self.number_of_markings() not in (1, 2):
-            return None
-        if self.number_of_markings() == 2 and self.is_proper():
             return None
         base = self.base_scheme()
         if _two_is_invertible(base) or not _three_is_invertible(base):
@@ -677,8 +797,12 @@ class ModuliStack(DeligneMumfordStack):
 
         n = self.number_of_markings()
         if n == 2:
-            presentation = "M_1_2 ≅ [Hesse_univ_curve_minus_0 / SL2(F3)]"
-            level_structure = "Gamma(3)_universal_curve"
+            if self.is_proper():
+                presentation = "Mbar_1_2 ≅ [compact_Hesse_univ_curve / SL2(F3)]"
+                level_structure = "Mbar(Gamma(3))_universal_curve"
+            else:
+                presentation = "M_1_2 ≅ [Hesse_univ_curve_minus_0 / SL2(F3)]"
+                level_structure = "Gamma(3)_universal_curve"
         elif self.is_proper():
             presentation = "Mbar_1_1 ≅ [P1 / SL2(F3)]"
             level_structure = "Mbar(Gamma(3))"
@@ -755,14 +879,17 @@ class ModuliStack(DeligneMumfordStack):
             )
             return gap
         if g == 1 and n == 2 and proper:
-            gap["reason"] = "mbar_1_2_needs_stable_universal_curve_cover"
-            gap["owned_open_counterpart"] = "open M_{1,2} Legendre/Hesse universal-curve Weierstrass affine (when 2 or 3 invertible)"
+            gap["reason"] = "mbar_1_2_legendre_and_hesse_unavailable"
             gap["alternate_proving_sets"] = (
                 {
-                    "name": "stable_marked_universal_curve_over_Mbar_1_1",
+                    "name": "weierstrass_stable_universal_curve_gm",
                     "status": "not_in_spike",
-                    "requires": "affine charts of the stable universal curve over Mbar_{1,1} including nodal fibers",
-                    "note": ("Open M_{1,2} is owned via level-structure pullback of E\\{O}; proper Mbar_{1,2} needs boundary / clutching charts not built in-spike."),
+                    "requires": "Weierstrass / Deligne–Rapoport universal curve over Spec(Z) with weighted 𝔾_m",
+                    "note": (
+                        "Compact Legendre/Hesse charts own Mbar_{1,2} when 2 or 3 is invertible; "
+                        "over Spec(Z) the finite-étale-groupoid proving set needs a non-finite 𝔾_m "
+                        "Weierstrass presentation not constructed in-spike."
+                    ),
                 },
             )
             return gap
@@ -786,10 +913,11 @@ class ModuliStack(DeligneMumfordStack):
                 "note": (
                     "Owned proving set: open M_{0,3}/M_{0,4}/M_{0,5}, M_{1,1} "
                     "(Legendre when 2 invertible; Hesse Γ(3) when 2 not invertible "
-                    "and 3 invertible), open M_{1,2} (same level-structure hypotheses, "
-                    "universal-curve affine), and proper Mbar_{0,3}/Mbar_{0,4}/Mbar_{1,1} "
+                    "and 3 invertible), open/proper M_{1,2}/Mbar_{1,2} (same "
+                    "level-structure hypotheses; compactified universal-curve "
+                    "affine covers for Mbar), and proper Mbar_{0,3}/Mbar_{0,4}/Mbar_{1,1} "
                     "(same level-structure hypotheses). "
-                    "General (g,n) atlases need constructions not present in this spike."
+                    "General (g,n) atlases and Mbar_{0,5} need constructions not present in this spike."
                 ),
             },
         )
@@ -820,9 +948,15 @@ class ModuliStack(DeligneMumfordStack):
         - ``M_{1,2}`` (open, ``2`` not invertible, ``3`` invertible): Hesse
           universal-curve affine;
           ``covering_kind="hesse_universal_curve_finite_etale_cover"``.
+        - ``Mbar_{1,2}`` (``2`` invertible): compactified Legendre universal-curve
+          affine cover (nodal fibers included);
+          ``covering_kind="legendre_compact_universal_curve_finite_etale_cover"``.
+        - ``Mbar_{1,2}`` (``2`` not invertible, ``3`` invertible): compactified
+          Hesse universal-curve affine cover;
+          ``covering_kind="hesse_compact_universal_curve_finite_etale_cover"``.
 
-        For general ``(g,n)``, proper ``Mbar_{0,5}``, proper ``Mbar_{1,2}``, and
-        ``(1,*)`` when neither Legendre nor Hesse applies: fail-closed formal
+        For general ``(g,n)``, proper ``Mbar_{0,5}``, and ``(1,*)`` when neither
+        Legendre nor Hesse applies: fail-closed formal
         :class:`~dm_moduli_spike.geometry.stacks.AtlasChart`
         (see :meth:`etale_atlas_gap`). Never uses the coarse space as an étale
         atlas domain.
@@ -842,17 +976,18 @@ class ModuliStack(DeligneMumfordStack):
 
             base = self.base_scheme()
             n = self.number_of_markings()
+            proper = self.is_proper()
             if _two_is_invertible(base):
                 if n == 2:
-                    covering_kind = "legendre_universal_curve_finite_etale_cover"
+                    covering_kind = "legendre_compact_universal_curve_finite_etale_cover" if proper else "legendre_universal_curve_finite_etale_cover"
                 else:
-                    covering_kind = "legendre_compact_finite_etale_cover" if self.is_proper() else "legendre_finite_etale_cover"
+                    covering_kind = "legendre_compact_finite_etale_cover" if proper else "legendre_finite_etale_cover"
                 group = _legendre_galois_group()
             else:
                 if n == 2:
-                    covering_kind = "hesse_universal_curve_finite_etale_cover"
+                    covering_kind = "hesse_compact_universal_curve_finite_etale_cover" if proper else "hesse_universal_curve_finite_etale_cover"
                 else:
-                    covering_kind = "hesse_compact_finite_etale_cover" if self.is_proper() else "hesse_finite_etale_cover"
+                    covering_kind = "hesse_compact_finite_etale_cover" if proper else "hesse_finite_etale_cover"
                 group = _hesse_galois_group()
             group_order = int(cast(Any, group).order())
             return AtlasMorphism(
