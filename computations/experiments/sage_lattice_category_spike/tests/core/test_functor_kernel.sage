@@ -100,6 +100,24 @@ def test_composition_refuses_mismatched_boundaries():
         T2 * F
 
 
+def test_categories_are_objects_of_cat_and_functor_spaces_are_its_homsets():
+    r"""The kernel's categorical statement made literal: category instances
+    are elements of ``Cat``, and ``Hom_Cat(C, D)`` IS the functor space, so
+    functors are genuinely morphisms of a category of categories."""
+    from sage_lattice_category_spike.objects.functors import Cat
+
+    cat = Cat()
+    assert Lattices(ZZ) in cat
+    assert Lattices(QQ) in cat
+    assert ZZ not in cat
+
+    homset = cat.homset(Lattices(ZZ), Lattices(QQ))
+    assert homset is FunctorSpace(Lattices(ZZ), Lattices(QQ))
+    assert LatticeBaseChangeFunctor(Lattices(ZZ), Lattices(QQ)) in homset
+    a2 = Lattice("A2")
+    assert cat.homset(Lattices(ZZ), Lattices(ZZ)).identity()(a2) is a2
+
+
 def test_functor_space_membership_is_boundary_exact():
     r"""``Fun(C, D)`` is a genuine parent: unique per boundary pair, and
     membership is exactly agreement of domain and codomain."""

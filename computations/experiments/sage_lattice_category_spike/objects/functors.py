@@ -105,10 +105,35 @@ class ComposedFunctor(Functor):
         return result
 
 
+class Cat(lexicon.SageUniqueRepresentation, lexicon.SageParent):
+    r"""The (mostly synthetic) category of categories.
+
+    Its objects are the category instances of the graph (the owned
+    ``Category`` classes are Python machinery; their INSTANCES are the
+    objects of ``Cat`` — this parent makes that categorical statement
+    first-class), its morphisms are functors, and its homsets are the
+    functor spaces. ``Cat`` itself carries no owned set placement: its
+    objects form a proper class, not a set. (Sage's own ``Hom`` between
+    categories degenerates to an id-equality homset in ``Objects()``;
+    the real homsets are reached through this parent.)"""
+
+    def _repr_(self) -> str:
+        return "Category of categories"
+
+    def __contains__(self, x: object) -> bool:
+        return isinstance(x, lexicon.SageCategory)
+
+    def homset(self, domain: lexicon.SageCategory, codomain: lexicon.SageCategory) -> FunctorSpace:
+        r"""``Hom_Cat(C, D) = Fun(C, D)``. (Named ``homset`` because Sage's
+        ``Parent.hom`` is its morphism constructor, a different surface.)"""
+        assert domain in self and codomain in self, f"the homset boundary must be categories; found {domain!r} and {codomain!r}"
+        return FunctorSpace(domain, codomain)
+
+
 class FunctorSpace(lexicon.SageUniqueRepresentation, lexicon.SageParent):
     r"""``Fun(C, D)``: the functors ``C -> D`` as a first-class parent.
 
-    The homset of the (mostly synthetic) category of categories: unique per
+    A homset of ``Cat``, the category of categories: unique per
     boundary pair, membership is exact boundary agreement, and the
     endofunctor space owns its identity. Existence and element handling are
     the contract; no enumeration is promised.
