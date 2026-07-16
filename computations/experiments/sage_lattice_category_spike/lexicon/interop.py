@@ -33,6 +33,9 @@ from sage.quadratic_forms.quadratic_form import QuadraticForm as SageQuadraticFo
 from sage.rings.infinity import MinusInfinity, PlusInfinity
 from sage.structure.element import Element as SageElement
 from sage.structure.parent import Parent as SageParent
+from sage.structure.unique_representation import (
+    UniqueRepresentation as SageUniqueRepresentation,
+)
 
 __all__ = [
     "SageCartanMatrix",
@@ -49,6 +52,7 @@ __all__ = [
     "SageParent",
     "SageQmodnZ",
     "SageQuadraticForm",
+    "SageUniqueRepresentation",
 ]
 
 type SageInfinity = PlusInfinity | MinusInfinity

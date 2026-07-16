@@ -26,8 +26,6 @@ from sage.categories.category_with_axiom import (
     all_axioms,
     axiom,
 )
-from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
-from sage.categories.enumerated_sets import EnumeratedSets
 from sage.categories.functor import ForgetfulFunctor
 from sage.categories.homset import Hom as SageHom
 from sage.categories.homset import Homset
@@ -65,6 +63,7 @@ from ..lexicon import (
     SageFunctor,
     SourcedDiscriminantForm,
 )
+from .functors import CatObject
 
 if TYPE_CHECKING:
     # Sage's abstract_method ships untyped; for type-checking use abc.abstractmethod
@@ -107,7 +106,7 @@ def _own_methods(carrier: type) -> type:
     return type("ParentMethods", (), delta)
 
 
-class Lattices(Category_over_base_ring):
+class Lattices(CatObject, Category_over_base_ring):
     r"""Based free ``R``-modules with a symmetric ``K``-valued form.
 
     Base is possibly-degenerate; ``Nondegenerate`` is an axiom subcategory.
@@ -121,7 +120,14 @@ class Lattices(Category_over_base_ring):
         # vocabulary; the CombinatorialFreeModule element idiom must not reach
         # lattice elements. Every name the leaner tree stops inheriting is owned
         # on the concrete classes (basis/gens/gen/rank/random_element/...).
-        return [Modules(self.base_ring()).FiniteDimensional()]
+        # CP3 routing: lattices are based free modules, so they chain through
+        # the owned module spine (FiniteFreeModules -> FreeModules +
+        # FiniteProjectiveModules -> Modules -> the forwarding roots), which
+        # supplies the freeness predicates, coordinates, and the generic
+        # set-behavior route.
+        from .modules import FiniteFreeModules
+
+        return [FiniteFreeModules(self.base_ring()), Modules(self.base_ring()).FiniteDimensional()]
 
     def additional_structure(self) -> Lattices:
         return self
@@ -350,7 +356,7 @@ class Lattices(Category_over_base_ring):
                 r"""Return the image lattice of this morphism."""
 
 
-class DiscriminantForms(Category_over_base_ring):
+class DiscriminantForms(CatObject, Category_over_base_ring):
     r"""Finite abelian groups with a discriminant bilinear/quadratic form.
 
     Typed as a finite abelian group (fixing Sage's "modules over ZZ" mis-typing);
@@ -376,7 +382,13 @@ class DiscriminantForms(Category_over_base_ring):
         return SyntheticQuadraticDiscriminantForm(gram_matrix, quadratic_modulus=quadratic_modulus, invariants=invariants)
 
     def super_categories(self) -> list[Category]:
-        return [CommutativeAdditiveGroups().Finite()]
+        # CP3 routing: the finite abelian groups chain through the owned
+        # additive spine, which itself refines Sage's commutative additive
+        # groups — listing both breaks C3 linearization, so the owned node
+        # alone carries the chain.
+        from .magmas import AdditiveGroups
+
+        return [AdditiveGroups().AdditiveCommutative().Finite()]
 
     def additional_structure(self) -> DiscriminantForms:
         return self
@@ -406,7 +418,7 @@ class DiscriminantForms(Category_over_base_ring):
         pass
 
 
-class Genera(Category_over_base_ring):
+class Genera(CatObject, Category_over_base_ring):
     r"""Genera of nondegenerate integral lattices: an object is the finite set of
     isometry classes sharing a signature and discriminant quadratic form
     (Nikulin 1.10.1). Its cardinality is the class number.
@@ -419,10 +431,13 @@ class Genera(Category_over_base_ring):
         return f"synthetic genera over {self.base_ring()}"
 
     def super_categories(self) -> list[Category]:
-        # A genus IS the finite set of its isometry classes: the finite-set API
-        # (cardinality, iteration) is INHERITED from this super-category, never
-        # re-declared on the genus contract or a concrete parent.
-        return [EnumeratedSets().Finite()]
+        # A genus IS the finite set of its isometry classes. CP3 routing: the
+        # placement is the OWNED finite-sets node (which refines Sage's
+        # enumerated finite sets through the Countable chain); the sharper
+        # class-number rollup lives on the Genus contract itself.
+        from .sets import Sets as OwnedSets
+
+        return [OwnedSets().Finite()]
 
     def additional_structure(self) -> Genera:
         return self
@@ -439,17 +454,17 @@ class Genera(Category_over_base_ring):
     ParentMethods = Genus
 
 
-class NondegenerateLattices(CategoryWithAxiom_over_base_ring):
+class NondegenerateLattices(CatObject, CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Nondegenerate")
 
     ParentMethods = _own_methods(NondegenerateLattice)
 
 
-class IntegralLattices(CategoryWithAxiom_over_base_ring):
+class IntegralLattices(CatObject, CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Integral")
 
 
-class IntegralNondegenerateLattices(CategoryWithAxiom_over_base_ring):
+class IntegralNondegenerateLattices(CatObject, CategoryWithAxiom_over_base_ring):
     # Section 1.2: home of the discriminant/genus vocabulary (section 2.4). That
     # vocabulary is installed here in T1c; the class is declared now so the tree
     # and its routing exist.
@@ -458,34 +473,34 @@ class IntegralNondegenerateLattices(CategoryWithAxiom_over_base_ring):
     ParentMethods = _own_methods(IntegralNondegenerateLattice)
 
 
-class EvenLattices(CategoryWithAxiom_over_base_ring):
+class EvenLattices(CatObject, CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Even")
 
     def extra_super_categories(self) -> tuple[Category_over_base_ring, ...]:
         return (Lattices(self.base_ring()).Integral(),)
 
 
-class RootGeneratedLattices(CategoryWithAxiom_over_base_ring):
+class RootGeneratedLattices(CatObject, CategoryWithAxiom_over_base_ring):
     # Section 1.2: even integral lattice generated by its roots {v : q(v) = +-2}.
     _base_category_class_and_axiom = (EvenLattices, "RootGenerated")
 
     ParentMethods = _own_methods(RootGeneratedLattice)
 
 
-class UnimodularLattices(CategoryWithAxiom_over_base_ring):
+class UnimodularLattices(CatObject, CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Unimodular")
 
     def extra_super_categories(self) -> tuple[Category_over_base_ring, ...]:
         return (Lattices(self.base_ring()).Integral(),)
 
 
-class DefiniteLattices(CategoryWithAxiom_over_base_ring):
+class DefiniteLattices(CatObject, CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Definite")
 
     ParentMethods = _own_methods(DefiniteLattice)
 
 
-class PositiveDefiniteLattices(CategoryWithAxiom_over_base_ring):
+class PositiveDefiniteLattices(CatObject, CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "PositiveDefinite")
 
     def extra_super_categories(self) -> tuple[Category_over_base_ring, ...]:
@@ -494,20 +509,20 @@ class PositiveDefiniteLattices(CategoryWithAxiom_over_base_ring):
     ParentMethods = _own_methods(PositiveDefiniteLattice)
 
 
-class NegativeDefiniteLattices(CategoryWithAxiom_over_base_ring):
+class NegativeDefiniteLattices(CatObject, CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "NegativeDefinite")
 
     def extra_super_categories(self) -> tuple[Category_over_base_ring, ...]:
         return (Lattices(self.base_ring()).Definite(),)
 
 
-class IndefiniteLattices(CategoryWithAxiom_over_base_ring):
+class IndefiniteLattices(CatObject, CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Lattices, "Indefinite")
 
     ParentMethods = _own_methods(IndefiniteLattice)
 
 
-class HyperbolicLattices(CategoryWithAxiom_over_base_ring):
+class HyperbolicLattices(CatObject, CategoryWithAxiom_over_base_ring):
     # Section 1.2: signature_pair == (1, rank-1), rank >= 2 (Nikulin convention:
     # one positive square). Refines indefinite nondegenerate lattices.
     _base_category_class_and_axiom = (IndefiniteLattices, "Hyperbolic")
@@ -518,13 +533,13 @@ class HyperbolicLattices(CategoryWithAxiom_over_base_ring):
         return (Lattices(self.base_ring()).Indefinite().Nondegenerate(),)
 
 
-class BilinearDiscriminantForms(CategoryWithAxiom_over_base_ring):
+class BilinearDiscriminantForms(CatObject, CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "Bilinear")
 
     ParentMethods = _own_methods(BilinearDiscriminantForm)
 
 
-class QuadraticDiscriminantForms(CategoryWithAxiom_over_base_ring):
+class QuadraticDiscriminantForms(CatObject, CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "Quadratic")
 
     ParentMethods = _own_methods(QuadraticDiscriminantForm)
@@ -533,7 +548,7 @@ class QuadraticDiscriminantForms(CategoryWithAxiom_over_base_ring):
         return (DiscriminantForms(self.base_ring()).Bilinear(),)
 
 
-class NondegenerateDiscriminantForms(CategoryWithAxiom_over_base_ring):
+class NondegenerateDiscriminantForms(CatObject, CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "Nondegenerate")
 
     class ParentMethods:
@@ -548,20 +563,20 @@ class NondegenerateDiscriminantForms(CategoryWithAxiom_over_base_ring):
             return PontryaginDualIdentification(self)
 
 
-class EvenDiscriminantForms(CategoryWithAxiom_over_base_ring):
+class EvenDiscriminantForms(CatObject, CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "Even")
 
     def extra_super_categories(self) -> tuple[Category_over_base_ring, ...]:
         return (DiscriminantForms(self.base_ring()).Quadratic(),)
 
 
-class WithSourceLatticeDiscriminantForms(CategoryWithAxiom_over_base_ring):
+class WithSourceLatticeDiscriminantForms(CatObject, CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (DiscriminantForms, "WithSourceLattice")
 
     ParentMethods = _own_methods(SourcedDiscriminantForm)
 
 
-class EvenGenera(CategoryWithAxiom_over_base_ring):
+class EvenGenera(CatObject, CategoryWithAxiom_over_base_ring):
     # Genera of even lattices: parity acquired as output (Phase B adds the odd
     # branch; until then a non-even genus fails loud at construction).
     _base_category_class_and_axiom = (Genera, "Even")

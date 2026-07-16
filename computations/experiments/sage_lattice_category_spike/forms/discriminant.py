@@ -167,7 +167,7 @@ def induced_subquotient_form(ambient: Any, relation_subgroup: Any, cover_subgrou
     from .discriminant_forms import SyntheticQuadraticDiscriminantForm
 
     result = SyntheticQuadraticDiscriminantForm(form, quadratic_modulus=ambient._quadratic_modulus())
-    expected_order = cover_subgroup.cardinality() // relation_subgroup.cardinality()
+    expected_order = cover_subgroup.cardinality().finite_value() // relation_subgroup.cardinality().finite_value()
     assert result.cardinality() == expected_order, (
         "subquotient K/H is degenerate; its group order is not recoverable from the induced "
         f"Gram; |K|/|H|={expected_order}, induced form order={result.cardinality()}; "
@@ -230,6 +230,12 @@ class SyntheticDiscriminantGroupElement(Element):
     def __eq__(self, other: object) -> bool:
         return isinstance(other, SyntheticDiscriminantGroupElement) and self.parent() == other.parent() and self.coefficient_vector() == other.coefficient_vector()
 
+    def __ne__(self, other: object) -> bool:
+        # Coherent inequality: on Sage Element subclasses a Python-level
+        # __eq__ shadows only ==, while != would fall through to cython
+        # richcmp (id-based or coercion) and disagree or raise (#226).
+        return not self == other
+
     def __mul__(self, other: Any) -> Any:
         r"""``g * h`` = bilinear pairing (same parent); ``s * g`` = scalar action.
 
@@ -282,7 +288,11 @@ class SyntheticDiscriminantSubgroup:
         return self._elements
 
     def cardinality(self) -> Any:
-        return ZZ(len(self.elements()))
+        # Cardinal per the ratified owned-cardinal contract (the classical
+        # Integer count remains available as len(elements())).
+        from ..objects.cardinals import cardinal
+
+        return cardinal(ZZ(len(self.elements())))
 
     def invariants(self) -> tuple[Any, ...]:
         r"""Invariant factors of this subgroup as an abstract group, from an
@@ -311,6 +321,12 @@ class SyntheticDiscriminantSubgroup:
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, SyntheticDiscriminantSubgroup) and self.ambient() is other.ambient() and self._key() == other._key()
+
+    def __ne__(self, other: object) -> bool:
+        # Coherent inequality: on Sage Element subclasses a Python-level
+        # __eq__ shadows only ==, while != would fall through to cython
+        # richcmp (id-based or coercion) and disagree or raise (#226).
+        return not self == other
 
     def __hash__(self) -> int:
         return hash((id(self.ambient()), self._key()))
@@ -434,6 +450,12 @@ class SyntheticDiscriminantAction(DiscriminantAction):
     def __eq__(self, other: object) -> bool:
         return isinstance(other, SyntheticDiscriminantAction) and self.discriminant_form() is other.discriminant_form() and self.matrix() == other.matrix()
 
+    def __ne__(self, other: object) -> bool:
+        # Coherent inequality: on Sage Element subclasses a Python-level
+        # __eq__ shadows only ==, while != would fall through to cython
+        # richcmp (id-based or coercion) and disagree or raise (#226).
+        return not self == other
+
     def __hash__(self) -> int:
         return hash((id(self.discriminant_form()), self.matrix()))
 
@@ -545,14 +567,8 @@ class SyntheticGenus(Genus, Parent):
         category = Genera(ZZ).Even() if self._even else Genera(ZZ)
         Parent.__init__(self, base=ZZ, category=category)
 
-    def cardinality(self) -> Any:
-        r"""The genus IS the finite set of its isometry classes; its cardinality
-        is the class number."""
-        return self.class_number()
-
-    def __iter__(self) -> Any:
-        r"""One representative lattice per isometry class in this genus."""
-        return iter(self.representatives())
+    # cardinality/__iter__ are the class-number/representatives rollup on
+    # the Genus base (CP3 routing) — no leaf spellings here.
 
     def discriminant_form(self) -> Any:
         return self._discriminant_group
@@ -668,6 +684,12 @@ class SyntheticGenus(Genus, Parent):
         if self.signature_pair() != other.signature_pair() or self.is_even() != other.is_even():
             return False
         return bool(self._sage_engine() == other._sage_engine())
+
+    def __ne__(self, other: object) -> bool:
+        # Coherent inequality: on Sage Element subclasses a Python-level
+        # __eq__ shadows only ==, while != would fall through to cython
+        # richcmp (id-based or coercion) and disagree or raise (#226).
+        return not self == other
 
     def __hash__(self) -> int:
         # Consistent with __eq__: a genus is fixed by its signature, parity, and

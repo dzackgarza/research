@@ -1,6 +1,11 @@
 # Repo-scoped stubs; see lexicon/README.md. RealNumber is inexact: display
 # and plotting boundaries only, never exact domain arithmetic (repo policy).
 from sage.structure.element import RingElement
+from sage.structure.parent import Parent
+
+class RealField_class(Parent[RealNumber]): ...
+
+RR: RealField_class
 
 class RealNumber(RingElement):
     def __float__(self) -> float: ...

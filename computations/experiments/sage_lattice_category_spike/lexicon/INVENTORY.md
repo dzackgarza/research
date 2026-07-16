@@ -3,6 +3,10 @@
 The single catalogue of the spike's typed mathematical language: every noun the code is allowed to use in a signature, where it is defined, how it is represented, and what Sage object realizes it.
 This document is normative for *names and placement*; the type definitions themselves live in the sibling modules and in `typings/sage/` (see `README.md` for the layout and rules).
 
+> **Authority scope (issue #251, from discussion #217).** This inventory is normative for the *Sage executable interpretation* — which Python name realizes which noun, and where methods are placed.
+> It is not the project's mathematical ontology.
+> Discussion #217 ratified a Lean-authored alignment manifest (issue #251) as the single auditable source for stable concept IDs, operation homes, Lean/Mathlib alignments, and sanctioned rollup owners; when it lands, this document becomes the Sage-side realization column of that manifest, and the route audit's declared-owner tables are generated from it rather than hand-frozen.
+
 Status legend used throughout:
 
 - **canonical** — defined in this subtree; downstream code should draw from here.
@@ -142,6 +146,9 @@ Objects: `Lattice`, `NondegenerateLattice`, `IntegralNondegenerateLattice`, `Def
 
 Morphisms and homs: `LatticeMorphism`, `LatticeHomset`, `LatticeSimilarity`, `LatticeBaseChangeFunctor`, `Subobject` (the pair `(L, ι: L ↪ M)` — runtime authority `morphisms/homsets.py`, referenced by the contracts here), `IsometryHomset` (`Isom(L, M)` as a first-class parent: existence/classification questions are homset questions; `is_isometric` is its emptiness router), `EmbeddingHomset` (`Emb(L, M)` likewise — the home of the Nikulin-class machinery).
 `LatticeBaseChangeFunctor` is the scalar-extension functor `Lattices(R) → Lattices(S)` induced by a canonical map `R → S`; it rebuilds each object through the target category root and acts on lattice morphisms through target homsets.
+Functor kernel (issue #211; runtime authority `objects/functors.py`): functors are morphisms of the (mostly synthetic) category of categories.
+`FunctorSpace` is `Fun(C, D)` — functors as a first-class parent, unique per boundary pair, membership by exact boundary agreement, with the endofunctor space owning its identity; composition (with exact identity absorption and chain flattening) is owned by the runtime functor base, since Sage's `Functor` has no composition operator and Sage's `Hom` between categories degenerates to an id-equality homset in `Objects()`. `TwistFunctor` is the twist endofunctor `L ↦ L(a)` (Nikulin's form-scaling; module and morphism matrices unchanged).
+`NaturalIsomorphism` is a natural isomorphism given by its component family, with naturality squares checked on demand against real morphisms; faithfulness is a declared functor property (opt-in-with-trust) whose `Sets`-valued case is concreteness.
 Morphism-sited geometry (ratified method placement, #100): `restrict`, `preserves`, `saturation`, `saturation_factorization`, `orthogonal_complement`, `induced_map_on_quotient` are typed on `LatticeMorphism` — object spellings survive only as delegations through a canonical attached morphism (`identity_morphism`). `LatticeSimilarity` (name ratified 2026-07-08) is a *similitude*: a map with `b(f x, f y) = λ·b(x, y)` for a fixed multiplier λ (O'Meara, Introduction to Quadratic Forms, §42; λ = 1 recovers isometry; distinct from a homothety `x ↦ λx`, which multiplies the form by λ²). Its role here is mostly a convenient generalization for discussing symmetric and skew-symmetric forms at once.
 
 Isometry: `IsometryGroup`, `IsometrySubgroup`, `DiscriminantOrthogonalGroup`, `DiscriminantAction`.
@@ -182,6 +189,7 @@ Dev-facing; never in researcher-facing signatures unless the sentence is genuine
 | `SageParent` / `SageElement` | owned parents/elements subclass these | `sage.structure.parent.Parent`, `sage.structure.element.Element` |
 | `SageCategory` | category argument or implementation class | `sage.categories.category.Category` |
 | `SageFunctor` | external category functor base class | `sage.categories.functor.Functor` |
+| `SageUniqueRepresentation` | external unique-instance parent base | `sage.structure.unique_representation.UniqueRepresentation` |
 | `SageMorphism` | external morphism base class | `sage.categories.morphism.Morphism` |
 | `SageCartanMatrix` | `foundations.CartanType` (the datum) vs Sage's matrix object | `sage.combinat.root_system.cartan_matrix.CartanMatrix_crystallographic` |
 | `SageQmodnZ` | `ValueModule` protocol in `domain_algebra` (kept: it types this external object structurally by ratified design) | `sage.groups.additive_abelian.qmodnz.QmodnZ` |

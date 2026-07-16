@@ -19,6 +19,7 @@ from ..algebra.domain_algebra import (
     EmbeddingHomset,
     FormKind,
     Functor,
+    FunctorSpace,
     Genus,
     HyperbolicLattice,
     IndefiniteLattice,
@@ -33,6 +34,7 @@ from ..algebra.domain_algebra import (
     LatticeMorphism,
     LatticeName,
     LatticeSimilarity,
+    NaturalIsomorphism,
     NondegenerateLattice,
     PositiveDefiniteLattice,
     QuadraticDiscriminantForm,
@@ -41,6 +43,7 @@ from ..algebra.domain_algebra import (
     RawVectors,
     RootGeneratedLattice,
     SourcedDiscriminantForm,
+    TwistFunctor,
     ValueModule,
     in_definite,
     in_hyperbolic,
@@ -98,6 +101,7 @@ from .interop import (
     SageParent,
     SageQmodnZ,
     SageQuadraticForm,
+    SageUniqueRepresentation,
 )
 
 __all__ = [
@@ -147,6 +151,7 @@ __all__ = [
     "DiscriminantSubgroup",
     "FormKind",
     "Functor",
+    "FunctorSpace",
     "Genus",
     "GramMatrix",
     "HyperbolicLattice",
@@ -162,6 +167,7 @@ __all__ = [
     "LatticeHomset",
     "LatticeMorphism",
     "LatticeSimilarity",
+    "NaturalIsomorphism",
     "NondegenerateLattice",
     "PositiveDefiniteLattice",
     "QuadraticDiscriminantForm",
@@ -171,6 +177,7 @@ __all__ = [
     "RawVectors",
     "RootGeneratedLattice",
     "SourcedDiscriminantForm",
+    "TwistFunctor",
     "ValueModule",
     "in_definite",
     "in_hyperbolic",
@@ -193,4 +200,5 @@ __all__ = [
     "SageParent",
     "SageQmodnZ",
     "SageQuadraticForm",
+    "SageUniqueRepresentation",
 ]

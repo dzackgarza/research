@@ -5,6 +5,9 @@ from __future__ import annotations
 import warnings
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
+if TYPE_CHECKING:
+    from ..objects.cardinals import Cardinal
+
 from sage.categories.homset import Homset
 from sage.matrix.constructor import column_matrix, matrix
 from sage.modules.free_module_element import vector
@@ -52,6 +55,12 @@ class Subobject:
             )
         return False
 
+    def __ne__(self, other: object) -> bool:
+        # Coherent inequality: on Sage Element subclasses a Python-level
+        # __eq__ shadows only ==, while != would fall through to cython
+        # richcmp (id-based or coercion) and disagree or raise (#226).
+        return not self == other
+
     def __hash__(self) -> int:
         return hash(self.inclusion())
 
@@ -79,8 +88,9 @@ class Subobject:
         return self._inclusion.cokernel().is_torsion_free()
 
     def index(self) -> Any:
-        r"""The index ``[M : L]`` of the subobject in its ambient -- the order of
-        the cokernel (infinite when ``L`` is not full rank in ``M``)."""
+        r"""The index ``[M : L]`` in the EXTENDED scalars ``ZZ u {oo}``
+        (Sage's infinity ring): determinant-scaling formulas are equations
+        there. The Cardinal answer is ``cokernel().cardinality()``."""
         return self._inclusion.index()
 
     def __getattr__(self, name: str) -> Any:
@@ -185,9 +195,12 @@ class SyntheticLatticeCokernel(lexicon.LatticeCokernel):
         summand. This is exactly the primitivity condition on the inclusion."""
         return all(invariant == 0 for invariant in self._quotient.invariants())
 
-    def cardinality(self) -> Any:
-        r"""The order of the cokernel (infinite when the image is not full rank)."""
-        return self._quotient.cardinality()
+    def cardinality(self) -> Cardinal:
+        r"""The order of the cokernel as a Cardinal (a finitely generated
+        ZZ-module is countable, so the infinite case is aleph_0)."""
+        from ..objects.cardinals import cardinal
+
+        return cardinal(self._quotient.cardinality())
 
     def invariants(self) -> tuple[Any, ...]:
         return tuple(self._quotient.invariants())
@@ -283,16 +296,25 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         return self.codomain()(self.matrix() * vector(self.domain().base_ring(), element.coefficient_vector()))
 
     def kernel(self) -> Subobject:
-        r"""The kernel as a subobject of the domain."""
-        domain = self.domain()
-        basis = self.matrix().right_kernel().basis_matrix()
-        return cast(Subobject, domain.subobject([domain(list(row)) for row in basis.rows()], "ker"))
+        r"""The kernel as a subobject of the domain — the module-level
+        construction's spelling on this morphism."""
+        from .constructions import kernel
+
+        return kernel(self)
 
     def image(self) -> Subobject:
-        r"""The image as a subobject of the codomain: the sublattice spanned by
-        the images of the domain generators, together with its inclusion."""
-        codomain = self.codomain()
-        return cast(Subobject, codomain.subobject([codomain(list(column)) for column in self.matrix().columns()], "im"))
+        r"""The image as a subobject of the codomain — the module-level
+        construction's spelling on this morphism."""
+        from .constructions import image
+
+        return image(self)
+
+    def direct_sum(self, *others: lexicon.LatticeMorphism) -> lexicon.LatticeMorphism:
+        r"""``f (+) g`` — the direct-sum functor's action on morphisms, the
+        module-level construction's spelling on this morphism."""
+        from .constructions import direct_sum
+
+        return direct_sum(self, *others)
 
     def is_injective(self) -> bool:
         r"""[total] — full column rank (spec 3.5; free modules carry no torsion)."""
@@ -304,14 +326,11 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         return self.is_injective() and self.cokernel().is_torsion_free()
 
     def cokernel(self) -> SyntheticLatticeCokernel:
-        r"""The cokernel ``codomain / image`` (spec 3.5). ``R-Mod`` is an abelian
-        category, so the cokernel exists and is computable by contract for EVERY
-        morphism -- the finite (full-rank image) case is the special one, not the
-        only one."""
-        codomain = self.codomain()
-        codomain_module = codomain.base_ring() ** codomain.rank()
-        image_span = codomain_module.span(self.matrix().columns())
-        return SyntheticLatticeCokernel(codomain_module.quotient(image_span))
+        r"""The cokernel ``codomain / image`` (spec 3.5) — the module-level
+        construction's spelling on this morphism."""
+        from .constructions import cokernel
+
+        return cokernel(self)
 
     def induced_map_on_discriminant_group(self) -> Any:
         r"""The per-morphism functor to O(q_L) (spec 3.3); defined for
@@ -325,8 +344,14 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         return bool(self.cokernel().cardinality() == 1)
 
     def index(self) -> Any:
-        r"""The index ``[codomain : image]`` -- the order of the cokernel."""
-        return self.cokernel().cardinality()
+        r"""The index ``[codomain : image]`` — the cokernel's cardinality
+        spelled in the EXTENDED scalars ``ZZ u {oo}`` (Sage's infinity
+        ring), where determinant-scaling formulas are equations; there is
+        no scalar action of ``QQ`` on the cardinals themselves."""
+        from sage.rings.infinity import Infinity
+
+        cardinality = self.cokernel().cardinality()
+        return cardinality.finite_value() if cardinality.is_finite() else Infinity
 
     # -- morphism-sited geometry (ratified method placement, #100): each
     # -- operation below consumes this morphism's data, so it lives here;
@@ -455,6 +480,12 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
 
     def __eq__(self, other: object) -> bool:
         return bool(isinstance(other, LatticeMorphism) and self.domain() == other.domain() and self.codomain() == other.codomain() and self.matrix() == other.matrix())
+
+    def __ne__(self, other: object) -> bool:
+        # Coherent inequality: on Sage Element subclasses a Python-level
+        # __eq__ shadows only ==, while != would fall through to cython
+        # richcmp (id-based or coercion) and disagree or raise (#226).
+        return not self == other
 
     def __hash__(self) -> int:
         return hash((self.domain(), self.codomain(), self.matrix()))
@@ -651,35 +682,61 @@ class IsometryHomset(lexicon.IsometryHomset, Parent):
         # mismatch in the engine's transformation fails loudly here.
         return cast(LatticeMorphism, left.hom(matrix(ZZ, transformation), codomain=right))
 
-    def cardinality(self) -> Any:
-        r"""``0`` when empty; ``|O(M)|`` otherwise (the nonempty homset is an
-        ``O(M)``-torsor). Computed exactly where ``O(M)`` carries a grounded
+    def acting_group(self) -> Any:
+        r"""``O(M)``: the nonempty homset is an ``O(M)``-torsor by
+        postcomposition. Answered exactly where ``O(M)`` carries a grounded
         finiteness answer — the ``Groups().Finite()`` category refinement
         stamped on the group at construction; elsewhere no computation
         grounds any answer (finite or infinite) yet, and the assertion below
         says so under this contract's own name."""
-        if self.is_empty():
-            return ZZ(0)
         from sage.categories.groups import Groups
 
         group = self._codomain.isometry_group()
         assert group in Groups().Finite(), (
-            f"Isom({self._domain.label()}, {self._codomain.label()}).cardinality() is "
-            "|O(M)| (the nonempty homset is an O(M)-torsor), computed exactly where "
-            f"O(M) carries a grounded finiteness answer; O({self._codomain.label()}) "
-            "carries none — extend the group engine, do not special-case; "
+            f"Isom({self._domain.label()}, {self._codomain.label()}) routes through its "
+            "O(M)-torsor structure, implemented exactly where O(M) carries a grounded "
+            f"finiteness answer; O({self._codomain.label()}) carries none — extend the "
+            "group engine, do not special-case; "
             f"codomain_gram={self._codomain.gram_matrix()}"
         )
-        return group.order()
+        return group
+
+    def act(self, group_element: Any, element: Any) -> Any:
+        r"""The ``O(M)``-action: postcomposition."""
+        return group_element * element
+
+    def underlying_set(self) -> Any:
+        r"""``U(Isom(L, M))`` through the standard structure-forgetting
+        functor — the homset's own spelling; it sits outside the forwarding
+        roots' injection scope, so the delegation is written here."""
+        from ..objects.underlying_sets import UnderlyingSet
+
+        return UnderlyingSet(self)
+
+    def cardinality(self) -> Cardinal:
+        r"""``0`` when empty; the torsor contract's ``|O(M)|`` otherwise —
+        the general node's typed operation, not a leaf spelling."""
+        from ..objects.cardinals import cardinal
+        from ..objects.g_sets import torsor_cardinality
+
+        if self.is_empty():
+            return cardinal(ZZ(0))
+        return torsor_cardinality(self)
 
     def __iter__(self) -> Any:
-        r"""Torsor enumeration: ``{g . f0 : g in O(M)}``; implemented exactly
-        where ``O(M)`` is finite."""
+        r"""Torsor enumeration: ``{g . f0 : g in O(M)}`` through the general
+        node's typed operation; implemented exactly where ``O(M)`` is finite."""
+        from ..objects.g_sets import torsor_enumeration
+
         if self.is_empty():
-            return
-        base = self.an_element()
-        for isometry in self._codomain.isometry_group():
-            yield isometry * base
+            return iter(())
+        return torsor_enumeration(self)
+
+    def transporter(self, source: Any, target: Any) -> Any:
+        r"""The unique ``g in O(M)`` with ``g . source == target``."""
+        from ..objects.g_sets import torsor_transporter
+
+        return torsor_transporter(self, source, target)
 
     def __contains__(self, candidate: Any) -> bool:
         return isinstance(candidate, LatticeMorphism) and candidate.domain() == self._domain and candidate.codomain() == self._codomain and candidate.is_isometry()

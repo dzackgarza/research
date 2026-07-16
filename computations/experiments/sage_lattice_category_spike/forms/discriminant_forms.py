@@ -203,13 +203,8 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
     def ngens(self) -> int:
         return len(self.invariants())
 
-    def cardinality(self) -> Any:
-        if not self.invariants():
-            return ZZ.one()
-        return ZZ.prod(self.invariants())
-
-    def is_finite(self) -> bool:
-        return True
+    # cardinality/is_finite/elements/list are the cyclic-factor rollup on
+    # the FiniteAbelianGroup base (CP3 routing) — no leaf spellings here.
 
     def gens(self) -> tuple[Any, ...]:
         return tuple(self.gen(i) for i in range(self.ngens()))
@@ -248,14 +243,6 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
         becomes a unit under base extension."""
         return SyntheticBilinearDiscriminantForm(matrix(QQ, 0, 0))
 
-    def elements(self) -> tuple[Any, ...]:
-        if not self.invariants():
-            return (self([]),)
-        return tuple(self(coordinates) for coordinates in product(*[range(invariant) for invariant in self.invariants()]))
-
-    def list(self) -> tuple[Any, ...]:
-        return self.elements()
-
     def random_element(self) -> Any:
         from sage.misc.prandom import choice
 
@@ -263,7 +250,9 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
 
     def order(self, element: Any = None) -> Any:
         if element is None:
-            return self.cardinality()
+            # The classical group order, as an Integer (the Cardinal answer
+            # is cardinality(), the routed set question).
+            return ZZ.one() if not self.invariants() else ZZ.prod(self.invariants())
         element = self(element)
         orders = []
         for coordinate, invariant in zip(element.coefficient_vector(), self.invariants()):

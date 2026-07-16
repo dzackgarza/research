@@ -38,6 +38,7 @@ from ..lexicon import (
     in_integral_nondegenerate,
     in_positive_definite,
 )
+from ..objects.cardinals import Cardinal
 from .domain_algebra import from_gram_matrix
 
 
@@ -88,7 +89,7 @@ def morphism_algebra(lattice: Lattice, vector: LatticeElement) -> LatticeMorphis
     action = sigma.induced_map_on_discriminant_group()
     assert not action.is_identity() or sigma.is_isometry()
     kernel: Lattice = sigma.kernel().lattice()
-    cokernel_order: int = sigma.cokernel().cardinality()
+    cokernel_order: Cardinal = sigma.cokernel().cardinality()
     assert kernel.rank() >= 0 and cokernel_order >= 1
     return sigma
 

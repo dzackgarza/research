@@ -150,7 +150,7 @@ def test_isometry_homset_cardinality_fails_under_its_own_name_when_ungrounded():
     right = Lattice(gram, label="odd-2-1-right")
     isometries = left.Isom(right)
     assert not isometries.is_empty()  # existence IS decided (Eichler)
-    with pytest.raises(AssertionError, match=r"cardinality\(\) is \|O\(M\)\|"):
+    with pytest.raises(AssertionError, match=r"routes through its O\(M\)-torsor structure"):
         isometries.cardinality()
 
 

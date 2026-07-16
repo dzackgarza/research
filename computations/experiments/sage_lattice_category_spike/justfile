@@ -30,3 +30,10 @@ lexicon-check:
 # enabled (see pyrightconfig.json). Flaggability, not prevention.
 siting-check:
     uvx basedpyright -p pyrightconfig.json
+
+# Print the ephemeral per-parent route report (issue #197): constructor,
+# category and axioms, derived route to Sets(), per-operation provenance,
+# audit outcome, and refinement status — generated from the live graph by
+# the same introspection surface the audit tests use; nothing is stored.
+route-report:
+    sage -python -m sage_lattice_category_spike.route_audit

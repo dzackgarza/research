@@ -667,11 +667,23 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
             ),
         )
 
+    def _foreign_homset(self, codomain: Parent, category: SageCategory | None) -> Any:
+        r"""Cross-category homsets Sage's conversion machinery asks for
+        (e.g. into the underlying-set facade — surfaced by the #197 route
+        audit) belong to Sage's generic homsets, not the lattice homset:
+        the lattice overrides serve lattice codomains only."""
+        from sage.categories.homset import Homset
+        from sage.categories.sets_cat import Sets as SageSets
+
+        return Homset(self, codomain, category=SageSets() if category is None else category)
+
     def Hom(
         self,
         codomain: Lattice,
         category: SageCategory | None = None,
     ) -> LatticeHomset:
+        if not isinstance(codomain, SyntheticLattice):
+            return cast(LatticeHomset, self._foreign_homset(cast(Parent, codomain), category))
         return cast(LatticeHomset, Lattices(self.base_ring()).Hom(self, codomain, category=category))
 
     def _Hom_(
@@ -679,6 +691,8 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
         codomain: Lattice,
         category: SageCategory | None = None,
     ) -> LatticeHomset:
+        if not isinstance(codomain, SyntheticLattice):
+            return cast(LatticeHomset, self._foreign_homset(cast(Parent, codomain), category))
         return cast(LatticeHomset, Lattices(self.base_ring()).homset_from_sage(self, codomain, category))
 
     def Isom(self, codomain: Lattice) -> IsometryHomset:

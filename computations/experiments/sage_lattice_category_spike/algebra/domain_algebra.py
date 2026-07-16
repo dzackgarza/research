@@ -54,13 +54,14 @@ runtime realizations live in the concrete modules.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 
 if TYPE_CHECKING:
     # abstract_method ships untyped; use abc.abstractmethod for type-checking
     from abc import abstractmethod as abstract_method
 
+    from sage.categories.morphism import SetMorphism
     from sage.misc.repr import repr_lincomb
 
     # Type-level nouns are drawn from the lexicon (the single type surface;
@@ -84,6 +85,10 @@ if TYPE_CHECKING:
     from ..lexicon.geometry import Polyhedron
     from ..lexicon.interop import SageCategory, SageInfinity, SageLocalGenusSymbol
     from ..morphisms.homsets import Subobject
+
+    # Cardinal is owned by the foundation layer; a candidate lexicon
+    # admission once the routing settles (type-only here).
+    from ..objects.cardinals import Cardinal
 else:
     from sage.misc.abstract_method import abstract_method
     from sage.misc.repr import repr_lincomb
@@ -113,6 +118,9 @@ __all__ = [
     "CategoryObject",
     "CategoryMorphism",
     "Functor",
+    "FunctorSpace",
+    "NaturalIsomorphism",
+    "TwistFunctor",
     # lattice vocabulary
     "Lattice",
     "NondegenerateLattice",
@@ -305,6 +313,79 @@ class DiscriminantFormElement:
 
 class Lattice(CategoryObject):
     """A based free R-module (R, G) with symmetric bilinear form; possibly degenerate."""
+
+    # generic set behavior through the trivialization (CP3 routing). A lattice
+    # is BASED, so the chosen basis identifies U(L) with U(R)^rank; these are
+    # definitional consequences of that identification, not leaf algorithms —
+    # the presentation crosses the boundary exactly once, in the
+    # trivialization itself. ``from_coordinates`` is injected at runtime by
+    # the owned FreeModules node the lattice categories chain through.
+    def _coordinate_trivialization(self) -> SetMorphism:
+        r"""``U(R)^rank -> U(L)`` through the lattice's own basis."""
+        return cast("SetMorphism", cast(Any, self).from_coordinates(self.basis()))
+
+    def cardinality(self) -> Cardinal:
+        r"""``|L| = |U(R)^rank|`` — the rollup ``X.cardinality() :=
+        F(X).cardinality()`` with ``F`` the coordinate trivialization (the
+        rank-zero product is the singleton, so ``|L| = 1`` there)."""
+        return cast("Cardinal", cast(Any, self._coordinate_trivialization().domain()).cardinality())
+
+    def is_finite(self) -> bool:
+        return self.cardinality().is_finite()
+
+    def is_infinite(self) -> bool:
+        return self.cardinality().is_infinite()
+
+    def is_countable(self) -> bool:
+        return self.cardinality().is_countable()
+
+    def is_uncountable(self) -> bool:
+        return self.cardinality().is_uncountable()
+
+    def __iter__(self) -> Iterator[LatticeElement]:
+        r"""Enumeration through the trivialization: fair enumeration of the
+        coordinate product, mapped back to lattice elements (the
+        inverse-application law: never bare coordinate tuples)."""
+        trivialization = self._coordinate_trivialization()
+        return (cast("LatticeElement", trivialization(point)) for point in cast(Iterable[Any], trivialization.domain()))
+
+    def __getitem__(self, n: int) -> LatticeElement:
+        r"""The ``n``-th element of the enumeration, through the
+        trivialization — the coordinate product's own indexing, mapped back."""
+        trivialization = self._coordinate_trivialization()
+        return cast("LatticeElement", trivialization(cast(Any, trivialization.domain())[n]))
+
+    def index(self, element: LatticeElement) -> int:
+        r"""Reverse lookup: the element's position in the enumeration. The
+        element's coefficient vector IS its chosen-basis coordinates — the
+        element-side spelling of the same trivialization crossing."""
+        product = cast(Any, self._coordinate_trivialization().domain())
+        return int(product.index(product(tuple(element.coefficient_vector()))))
+
+    def coordinate_vector(self, element: LatticeElement) -> Vector:
+        r"""The distinguished-presentation crossing declared abstract on the
+        owned ``FreeModules`` node: a based lattice's distinguished
+        presentation IS its own basis, and the element already carries those
+        coordinates as its coefficient vector. This is the ONE place a
+        lattice element's presentation crosses into coordinate data; the
+        chart for any CHOSEN basis is the injected generic ``coordinates``,
+        which consumes elements only through this method (its inverse is the
+        injected generic ``from_coordinates``, whose module arithmetic is
+        presentation-free)."""
+        return element.coefficient_vector()
+
+    def _test_cardinality(self, **options: Any) -> None:
+        r"""Replace Sage's coarse cardinality contract (Integer-or-Infinity)
+        with the owned one: this graph's cardinality is a ``Cardinal``
+        (ratified — never the two-valued infinity), coherent with the
+        finiteness predicates."""
+        from ..objects.cardinals import Cardinal as RuntimeCardinal
+
+        tester = cast(Any, self)._tester(**options)
+        cardinality = self.cardinality()
+        tester.assertTrue(isinstance(cardinality, RuntimeCardinal), f"cardinality must be a Cardinal; found {type(cardinality)}")
+        tester.assertEqual(cardinality.is_finite(), self.is_finite())
+        tester.assertEqual(cardinality.is_countable(), self.is_countable())
 
     # structural
     @abstract_method
@@ -779,8 +860,12 @@ class LatticeMorphism(CategoryMorphism):
 
     @abstract_method
     def index(self) -> ExactScalar | SageInfinity:
-        """The index ``[codomain : image]`` — the cokernel's cardinality,
-        infinite when the image is not full rank."""
+        """The index ``[codomain : image]`` — the cokernel's cardinality
+        spelled in the EXTENDED scalars ``ZZ u {oo}``, where the
+        determinant-scaling formulas are equations (Sage's infinity ring
+        carries that arithmetic natively). The Cardinal answer is the
+        cokernel object's own ``cardinality()``; there is no scalar action
+        of ``QQ`` on the cardinals."""
 
     # -- morphism-sited geometry (ratified method placement, #100): the
     # -- operations below consume the morphism itself, so they are typed here
@@ -901,6 +986,43 @@ class LatticeBaseChangeFunctor(Functor[Lattice, Lattice, LatticeMorphism, Lattic
     def target_base_ring(self) -> BaseRing: ...
 
 
+class TwistFunctor(Functor[Lattice, Lattice, LatticeMorphism, LatticeMorphism]):
+    r"""The twist endofunctor ``L -> L(a)`` of a lattice root: the bilinear
+    form is scaled by a fixed nonzero scalar while the underlying module and
+    every morphism matrix are unchanged (Nikulin's ``L(a)``)."""
+
+    @abstract_method
+    def scalar(self) -> ExactScalar | int: ...
+
+
+class FunctorSpace:
+    r"""``Fun(C, D)``: the functors ``C -> D`` as a first-class parent — the
+    homset of the (mostly synthetic) category of categories. Unique per
+    boundary pair; membership is exact boundary agreement; the endofunctor
+    space owns its identity. Existence and element handling are the
+    contract — no enumeration is promised."""
+
+    @abstract_method
+    def identity(self) -> Functor[Any, Any, Any, Any]: ...
+
+
+class NaturalIsomorphism:
+    r"""A natural isomorphism between parallel functors, given by its
+    component family. Components are isomorphisms ``eta_X: F(X) -> G(X)``;
+    naturality squares are checked on demand against real morphisms — no
+    universal bijectivity decision procedure is required, per the declared
+    isomorphism discipline."""
+
+    @abstract_method
+    def component(self, obj: CategoryObject) -> CategoryMorphism: ...
+
+    @abstract_method
+    def check_naturality_on(self, morphisms: Iterable[CategoryMorphism]) -> bool: ...
+
+    @abstract_method
+    def inverse(self) -> NaturalIsomorphism: ...
+
+
 class IsometryHomset:
     """``Isom(L, M)``: the isometries ``L -> M`` as a first-class parent,
     an object of ``Lattices(R).Homsets()`` for a single base ring ``R`` — a
@@ -926,11 +1048,24 @@ class IsometryHomset:
         nonempty (asserted)."""
 
     @abstract_method
-    def cardinality(self) -> int:
-        """``0`` when empty; ``|O(M)|`` otherwise (the nonempty homset is an
-        ``O(M)``-torsor). Answers exactly where ``O(M)`` carries a grounded
+    def acting_group(self) -> IsometryGroup:
+        """``O(M)`` — the group the nonempty homset is a torsor under (by
+        postcomposition). Answers exactly where ``O(M)`` carries a grounded
         finiteness answer; elsewhere no computation grounds any answer
         (finite or infinite) yet, and the contract asserts out by name."""
+
+    @abstract_method
+    def act(self, group_element: LatticeMorphism, element: LatticeMorphism) -> LatticeMorphism:
+        """The ``O(M)``-action: postcomposition."""
+
+    @abstract_method
+    def cardinality(self) -> Cardinal:
+        """``0`` when empty; the torsor contract's ``|O(M)|`` otherwise —
+        routed through the general node's typed operation."""
+
+    @abstract_method
+    def transporter(self, source: LatticeMorphism, target: LatticeMorphism) -> LatticeMorphism:
+        """The unique ``g in O(M)`` with ``g . source == target``."""
 
     @abstract_method
     def __iter__(self) -> Iterator[LatticeMorphism]: ...
@@ -977,6 +1112,16 @@ class EmbeddingHomset:
 class IsometryGroup:
     """O(L). Membership/construction/is_finite are total; gens/order/iteration
     are contracts implemented exactly where the group is finite."""
+
+    def cardinality(self) -> Cardinal:
+        r"""``|O(L)|`` as a Cardinal — the rollup through the group's own
+        order engine (CP3 routing; the classical Integer spelling stays
+        ``order()``). Sage's coarse Groups().Finite() cardinality would
+        otherwise outrank the forwarding root, so the owned contract is
+        spelled here."""
+        from ..objects.cardinals import cardinal
+
+        return cardinal(self.order())
 
     @abstract_method
     def lattice(self) -> Lattice: ...
@@ -1073,6 +1218,13 @@ class DiscriminantOrthogonalGroup:
     """O(q) (or a subgroup of it): FINITE for every discriminant form, so the
     full set of group operations is total on this side."""
 
+    def cardinality(self) -> Cardinal:
+        r"""``|O(q)|`` as a Cardinal — the rollup through the group's own
+        order (the classical Integer spelling stays ``order()``)."""
+        from ..objects.cardinals import cardinal
+
+        return cardinal(self.order())
+
     @abstract_method
     def discriminant_form(self) -> DiscriminantForm: ...
 
@@ -1135,7 +1287,9 @@ class LatticeCokernel:
         """No torsion — exactly the primitivity condition on the inclusion."""
 
     @abstract_method
-    def cardinality(self) -> int: ...
+    def cardinality(self) -> Cardinal:
+        """The cokernel's order as a Cardinal (aleph_0 when the image is
+        not full rank) — the ratified owned-cardinal contract."""
 
     @abstract_method
     def invariants(self) -> tuple[int, ...]: ...
@@ -1153,8 +1307,48 @@ class FiniteAbelianGroup:
     @abstract_method
     def elementary_divisors(self) -> tuple[int, ...]: ...
 
-    @abstract_method
-    def cardinality(self) -> int: ...
+    # generic set behavior through the cyclic-factor rollup (CP3 routing).
+    # The invariant-factor decomposition D = prod Z/n_i is the group's
+    # trivialization; these are its definitional consequences, computed at
+    # this node once — leaf classes carry none of them.
+    def _cyclic_factor_product(self) -> Any:
+        r"""``U(Z/n_1) x ... x U(Z/n_k)``: the coordinate description's home,
+        built from the fundamental sets underlying the cyclic factors."""
+        from ..objects.fundamental_sets import IntegerModRing
+        from ..objects.set_constructions import CartesianProduct
+
+        return CartesianProduct(*[cast(Any, IntegerModRing(int(invariant))).underlying_set() for invariant in self.invariants()])
+
+    def cardinality(self) -> Cardinal:
+        r"""``|D| = prod n_i`` as a Cardinal — the rollup through the
+        cyclic-factor product (the empty decomposition is the singleton)."""
+        return cast("Cardinal", cast(Any, self._cyclic_factor_product()).cardinality())
+
+    def is_finite(self) -> bool:
+        return self.cardinality().is_finite()
+
+    def elements(self) -> tuple[DiscriminantFormElement, ...]:
+        r"""All elements, through the cyclic-factor coordinates — group
+        elements, never coordinate tuples."""
+        return tuple(cast(Any, self)(tuple(int(entry) for entry in cast(Any, point).value)) for point in self._cyclic_factor_product())
+
+    def list(self) -> tuple[DiscriminantFormElement, ...]:
+        return self.elements()
+
+    def __iter__(self) -> Iterator[DiscriminantFormElement]:
+        return iter(self.elements())
+
+    def _test_cardinality(self, **options: Any) -> None:
+        r"""Replace Sage's coarse cardinality contract (Integer-or-Infinity)
+        with the owned one: cardinality is a ``Cardinal``, coherent with
+        the finiteness predicate and the classical group order."""
+        tester = cast(Any, self)._tester(**options)
+        cardinality = self.cardinality()
+        from ..objects.cardinals import Cardinal as RuntimeCardinal
+
+        tester.assertTrue(isinstance(cardinality, RuntimeCardinal), f"cardinality must be a Cardinal; found {type(cardinality)}")
+        tester.assertTrue(cardinality.is_finite())
+        tester.assertEqual(cardinality, self.order())
 
     @abstract_method
     def order(self, element: DiscriminantFormElement | None = None) -> int: ...
@@ -1190,9 +1384,6 @@ class FiniteAbelianGroup:
     def zero(self) -> DiscriminantFormElement: ...
 
     @abstract_method
-    def elements(self) -> tuple[DiscriminantFormElement, ...]: ...
-
-    @abstract_method
     def discrete_exp(self, coefficients: Sequence[int]) -> DiscriminantFormElement: ...
 
     @abstract_method
@@ -1221,12 +1412,6 @@ class FiniteAbelianGroup:
         self,
     ) -> PermutationGroup:  # the GAP-backed permutation-group entry point
         ...
-
-    @abstract_method
-    def is_finite(self) -> bool: ...
-
-    @abstract_method
-    def list(self) -> tuple[DiscriminantFormElement, ...]: ...
 
     @abstract_method
     def random_element(self) -> DiscriminantFormElement: ...
@@ -1452,7 +1637,9 @@ class DiscriminantSubgroup:
     def gens(self) -> tuple[DiscriminantFormElement, ...]: ...
 
     @abstract_method
-    def cardinality(self) -> int: ...
+    def cardinality(self) -> Cardinal:
+        """The subgroup's order as a Cardinal — the ratified owned-cardinal
+        contract."""
 
     @abstract_method
     def __contains__(self, element: Any) -> bool: ...
@@ -1531,6 +1718,34 @@ class Genus:
 
     @abstract_method
     def class_number(self) -> int: ...
+
+    # generic set behavior (CP3 routing): the genus IS the finite set of
+    # its isometry classes, so cardinality rolls up through the class-number
+    # engine (sharper than materializing representatives) and enumeration is
+    # the representative set — the witness data.
+    def cardinality(self) -> Cardinal:
+        r"""The class number, as a Cardinal."""
+        from ..objects.cardinals import cardinal
+
+        return cardinal(self.class_number())
+
+    def is_finite(self) -> bool:
+        return self.cardinality().is_finite()
+
+    def __iter__(self) -> Iterator[Lattice]:
+        r"""One representative lattice per isometry class."""
+        return iter(self.representatives())
+
+    def _test_cardinality(self, **options: Any) -> None:
+        r"""Replace Sage's coarse cardinality contract (Integer-or-Infinity)
+        with the owned one: cardinality is a ``Cardinal``, equal to the
+        class number."""
+        tester = cast(Any, self)._tester(**options)
+        cardinality = self.cardinality()
+        from ..objects.cardinals import Cardinal as RuntimeCardinal
+
+        tester.assertTrue(isinstance(cardinality, RuntimeCardinal), f"cardinality must be a Cardinal; found {type(cardinality)}")
+        tester.assertEqual(cardinality, self.class_number())
 
     @abstract_method
     def is_unique_class(self) -> bool: ...
