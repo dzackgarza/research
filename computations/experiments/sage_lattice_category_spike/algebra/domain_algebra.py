@@ -62,7 +62,6 @@ if TYPE_CHECKING:
     from abc import abstractmethod as abstract_method
 
     from sage.misc.repr import repr_lincomb
-    from sage.structure.richcmp import richcmp
 
     # Type-level nouns are drawn from the lexicon (the single type surface;
     # lexicon/INVENTORY.md). TYPE_CHECKING-only, so this module keeps its
@@ -90,6 +89,14 @@ else:
     from sage.misc.repr import repr_lincomb
     from sage.structure.richcmp import richcmp
 
+if TYPE_CHECKING:
+
+    def _typed_richcmp(left: object, right: object, op: int) -> bool: ...
+    def _typed_repr_lincomb(value: object) -> str: ...
+else:
+    _typed_richcmp = richcmp
+    _typed_repr_lincomb = repr_lincomb
+
 
 __all__ = [
     # boundary codecs (scalar/matrix nouns and witnesses live in the lexicon)
@@ -102,6 +109,10 @@ __all__ = [
     "FormKind",
     # value objects
     "ValueModule",
+    # category vocabulary
+    "CategoryObject",
+    "CategoryMorphism",
+    "Functor",
     # lattice vocabulary
     "Lattice",
     "NondegenerateLattice",
@@ -187,6 +198,29 @@ class ValueModule(Protocol):
 
 
 # ---------------------------------------------------------------------------
+# Categories, objects, morphisms, and functors
+# ---------------------------------------------------------------------------
+
+
+class CategoryObject:
+    r"""An object of a category."""
+
+    if TYPE_CHECKING:
+
+        def category(self) -> SageCategory: ...
+
+
+class CategoryMorphism:
+    r"""A morphism in a category."""
+
+    @abstract_method
+    def domain(self) -> CategoryObject: ...
+
+    @abstract_method
+    def codomain(self) -> CategoryObject: ...
+
+
+# ---------------------------------------------------------------------------
 # Elements
 # ---------------------------------------------------------------------------
 
@@ -218,7 +252,7 @@ class LatticeElement:
         being hand-written. Sage calls ``_richcmp_`` only after coercing both
         operands into a common parent, so the parent match is the coercion
         framework's responsibility, not ours."""
-        return richcmp(self.coefficient_vector(), other.coefficient_vector(), op)
+        return _typed_richcmp(self.coefficient_vector(), other.coefficient_vector(), op)
 
     def __hash__(self) -> int:
         r"""Hash by generator coefficients (a hashable immutable vector).
@@ -238,7 +272,7 @@ class LatticeElement:
         Delegates to Sage's own linear-combination renderer
         (``sage.misc.repr.repr_lincomb``), which owns sign handling, unit
         coefficients, and the empty combination (``0``)."""
-        return repr_lincomb(zip(self.parent().variable_names(), self.coefficient_vector(), strict=True))
+        return _typed_repr_lincomb(zip(self.parent().variable_names(), self.coefficient_vector(), strict=True))
 
 
 class DiscriminantFormElement:
@@ -269,7 +303,7 @@ class DiscriminantFormElement:
 # ---------------------------------------------------------------------------
 
 
-class Lattice:
+class Lattice(CategoryObject):
     """A based free R-module (R, G) with symmetric bilinear form; possibly degenerate."""
 
     # structural
@@ -676,7 +710,7 @@ class RootGeneratedLattice(Lattice):
 # ---------------------------------------------------------------------------
 
 
-class LatticeMorphism:
+class LatticeMorphism(CategoryMorphism):
     """Form-preserving by construction: A^T G_M A = G_L, enforced at creation."""
 
     @abstract_method
@@ -835,7 +869,29 @@ class LatticeHomset:
     # well-definedness (#70; from_matrix demoted per #100 T4).
 
 
-class LatticeBaseChangeFunctor:
+class Functor[
+    _DomainObject: CategoryObject,
+    _CodomainObject: CategoryObject,
+    _DomainMorphism: CategoryMorphism,
+    _CodomainMorphism: CategoryMorphism,
+]:
+    r"""A functor is total data: source/target categories plus actions on
+    objects and morphisms.  An object-only construction is not a functor."""
+
+    @abstract_method
+    def domain(self) -> SageCategory: ...
+
+    @abstract_method
+    def codomain(self) -> SageCategory: ...
+
+    @abstract_method
+    def _apply_functor(self, obj: _DomainObject) -> _CodomainObject: ...
+
+    @abstract_method
+    def _apply_functor_to_morphism(self, morphism: _DomainMorphism) -> _CodomainMorphism: ...
+
+
+class LatticeBaseChangeFunctor(Functor[Lattice, Lattice, LatticeMorphism, LatticeMorphism]):
     r"""The canonical scalar-extension functor between two lattice roots."""
 
     @abstract_method

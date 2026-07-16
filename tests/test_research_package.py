@@ -3,7 +3,7 @@ r"""Public Sage import surface for the research workspace."""
 from __future__ import annotations
 
 
-def test_research_package_exposes_the_base_and_feature_spikes():
+def test_research_package_exposes_the_base_and_feature_spikes() -> None:
     r"""Both public routes construct the same A2 lattice and its order-three form."""
     from dzack_research import feature, lattice
 

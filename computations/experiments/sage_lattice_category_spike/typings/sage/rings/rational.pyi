@@ -1,9 +1,12 @@
 # Repo-scoped stubs; see lexicon/README.md.
-from typing import Any
+from typing import TYPE_CHECKING, Any, overload
 
 from sage.rings.integer import Integer
 from sage.structure.element import RingElement
 from sage.symbolic.expression import Expression
+
+if TYPE_CHECKING:
+    from sage.modules.free_module_element import FreeModuleElement
 
 class Rational(RingElement):
     def __init__(self, x: object = ...) -> None: ...
@@ -11,7 +14,10 @@ class Rational(RingElement):
     def __radd__(self, other: int | Integer) -> Rational: ...
     def __sub__(self, other: int | Integer | Rational) -> Rational: ...
     def __rsub__(self, other: int | Integer) -> Rational: ...
+    @overload
     def __mul__(self, other: int | Integer | Rational) -> Rational: ...  # type: ignore[override]
+    @overload
+    def __mul__(self, other: FreeModuleElement[Integer | Rational]) -> FreeModuleElement[Integer | Rational]: ...
     def __rmul__(self, other: int | Integer) -> Rational: ...  # type: ignore[override]
     def __truediv__(self, other: int | Integer | Rational) -> Rational: ...
     def __rtruediv__(self, other: int | Integer) -> Rational: ...

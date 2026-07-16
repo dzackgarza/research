@@ -4,6 +4,7 @@
 # assembly. The factory's class has no importable runtime name (a cython
 # function with attached attributes), so the stub names its shape locally
 # (STUB_ONLY in lexicon/verify_against_sage.py).
+from collections.abc import Sequence
 from typing import Any
 
 from sage.rings.integer import Integer
@@ -21,3 +22,4 @@ matrix: _MatrixConstructor
 
 def identity_matrix(ring: Parent | int | Integer, n: int | Integer = ...) -> Matrix: ...
 def column_matrix(*args: Any, **kwds: Any) -> Matrix: ...
+def diagonal_matrix(diagonal: Sequence[int | Integer]) -> Matrix: ...
