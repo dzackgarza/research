@@ -62,6 +62,11 @@ A set carrying an actual countability implementation.
 `number` is injective because `nth (number x) = some x`.  Morphisms are all
 functions between the `Set`-realizations; they need not preserve the chosen
 implementation.
+
+**Mathlib identity.**  Field for field this is Mathlib's `Encodable`
+(`encode` / `decode` / `encodek`) in bundled-object form; the manifest
+aligns the concept to `Encodable`, and consolidating the structure onto the
+class is the #217-ratified parallel work.
 -/
 structure CountableSetObj where
   set : Type
@@ -87,6 +92,11 @@ def CountableSet.forget : CountableSetObj ⥤ SetObj where
 /--
 A finite set with a chosen enumeration.  The enumeration is data, not a
 proposition asserting finiteness.
+
+**Mathlib identity.**  This is Mathlib's `FinEnum` (`card` + `α ≃ Fin card`)
+in bundled-object form; the manifest aligns the concept to `FinEnum`, and
+consolidating the structure onto the class is the #217-ratified parallel
+work.
 -/
 structure FiniteSetObj where
   set : Type

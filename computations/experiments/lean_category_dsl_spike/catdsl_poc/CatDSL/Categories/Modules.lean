@@ -172,13 +172,29 @@ per #100).
 operations named `index`: this one, morphism-sited (`domain_algebra.py:868`),
 and `Lattice.index(element)` — reverse enumeration lookup, the inverse of
 `__getitem__` (`domain_algebra.py:358`), whose honest concept is
-`CountableSetObj.number` and whose home is numbering-equipped countable
-sets.  The alignment manifest must give the two distinct concept identities;
-`list.index` idiom notwithstanding, they share nothing but the string.
+`CountableSetObj.number` (= Mathlib's `Encodable.encode`) and whose home is
+numbering-equipped countable sets.  The alignment manifest must give the two
+distinct concept identities; `list.index` idiom notwithstanding, they share
+nothing but the string.
+
+*Mathlib alignment.*  Mathlib owns this concept as `AddSubgroup.index` /
+`Subgroup.index` (`Nat.card (G ⧸ H)`, sited on the subobject, ℕ-valued with
+the 0-for-infinite convention).  This declaration is that invariant applied
+to `range f` — the subobject a morphism carries — stated convention-free in
+cardinals; `index_toNat` connects the two value conventions by `rfl`.  The
+home is not chosen: it is read off Mathlib's own signature, transported from
+the subobject to the morphism that presents it.
 -/
 noncomputable def index {R : RingObj} {M N : ModuleObj R} (f : M ⟶ N) :
     Cardinal :=
   Cardinal.mk (N.set ⧸ LinearMap.range (f : M.set →ₗ[R.set] N.set))
+
+/-- The ℕ-valued shadow of `index` is Mathlib's convention (`Nat.card` of
+the cokernel, 0 if infinite) — definitionally. -/
+theorem index_toNat {R : RingObj} {M N : ModuleObj R} (f : M ⟶ N) :
+    (index f).toNat
+      = Nat.card (N.set ⧸ LinearMap.range (f : M.set →ₗ[R.set] N.set)) :=
+  rfl
 
 /-- The identity has index 1: its cokernel is `N ⧸ ⊤`, which is trivial. -/
 theorem index_id {R : RingObj} (N : ModuleObj R) :
