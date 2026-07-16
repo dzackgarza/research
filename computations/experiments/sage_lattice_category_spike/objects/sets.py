@@ -28,6 +28,8 @@ from sage.categories.category import Category
 from sage.categories.category_with_axiom import CategoryWithAxiom, all_axioms
 from sage.categories.sets_cat import Sets as SageSets
 
+from .functors import CatObject
+
 if TYPE_CHECKING:
     # Sage's abstract_method ships untyped; for type-checking use
     # abc.abstractmethod (typed, and permits the empty abstract bodies
@@ -79,7 +81,7 @@ class CountabilitySubcategoryMethods:
         return category._with_axiom("Uncountable")
 
 
-class Sets(Category):
+class Sets(CatObject, Category):
     r"""The owned category of sets: declaration owner of the generic
     meanings of cardinality, finiteness, infinitude, countability,
     uncountability, enumeration, indexing, and reverse lookup."""
@@ -113,7 +115,7 @@ class Sets(Category):
             the placement, abstract when undetermined."""
 
 
-class FiniteSets(CategoryWithAxiom):
+class FiniteSets(CatObject, CategoryWithAxiom):
     r"""Finite sets: Sage's standard axiom, plus the owned refinement that
     finiteness implies the countable enumeration contract."""
 
@@ -137,7 +139,7 @@ class FiniteSets(CategoryWithAxiom):
             return Cardinal(ZZ(sum(1 for _ in members)))
 
 
-class InfiniteSets(CategoryWithAxiom):
+class InfiniteSets(CatObject, CategoryWithAxiom):
     r"""Infinite sets: Sage's standard axiom supplies the uniform
     consequences (``is_finite() == False``, ``cardinality() == +Infinity``)
     through the join; nothing is reimplemented here."""
@@ -145,7 +147,7 @@ class InfiniteSets(CategoryWithAxiom):
     _base_category_class_and_axiom = (Sets, "Infinite")
 
 
-class CountableSets(CategoryWithAxiom):
+class CountableSets(CatObject, CategoryWithAxiom):
     r"""Countable sets: membership forces the executable witness suite.
 
     The owned notion is countability with a chosen enumeration; Sage's
@@ -215,7 +217,7 @@ class CountableSets(CategoryWithAxiom):
             return False
 
 
-class CountablyInfiniteSets(CategoryWithAxiom):
+class CountablyInfiniteSets(CatObject, CategoryWithAxiom):
     r"""Countably infinite sets — the join ``Sets().Countable().Infinite()``,
     never a new named root. Owns the exact cardinal: ``aleph_0``."""
 
@@ -230,7 +232,7 @@ class CountablyInfiniteSets(CategoryWithAxiom):
             return aleph0
 
 
-class UncountableSets(CategoryWithAxiom):
+class UncountableSets(CatObject, CategoryWithAxiom):
     r"""Uncountable sets: trusted placement, uniform consequences, and in
     particular infinite."""
 

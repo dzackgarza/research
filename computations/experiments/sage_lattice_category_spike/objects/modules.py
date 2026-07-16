@@ -33,6 +33,7 @@ from sage.categories.sets_cat import Sets as SageSets
 from sage.matrix.constructor import matrix
 
 from ..lexicon import BaseRing, SageParent
+from .functors import CatObject
 from .magmas import AdditiveGroups
 
 if TYPE_CHECKING:
@@ -60,7 +61,7 @@ def _coordinate_target(base_ring: BaseRing, rank: int) -> CartesianProduct:
     return CartesianProduct(*([scalar_set] * rank))
 
 
-class Modules(Category_over_base_ring):
+class Modules(CatObject, Category_over_base_ring):
     r"""The owned category of modules over ``R``: an additively commutative
     group with ``R``-scalar action, dispatching to ``VectorSpaces(K)``
     over a field."""
@@ -80,7 +81,7 @@ class Modules(Category_over_base_ring):
         def Uncountable(self) -> Category: ...
 
 
-class VectorSpaces(Category_over_base_ring):
+class VectorSpaces(CatObject, Category_over_base_ring):
     r"""The owned category of vector spaces over a field ``K``: the
     field-dispatch image of ``Modules(K)``."""
 
@@ -90,12 +91,14 @@ class VectorSpaces(Category_over_base_ring):
         return [SageVectorSpaces(self.base_ring()), _undispatched_modules(self.base_ring())]
 
 
-class FreeModules(Category_over_base_ring):
+class FreeModules(CatObject, Category_over_base_ring):
     r"""Free ``R``-modules: joining this node IS the opt-in declaration of
     freeness, with its predicate consequences."""
 
     def super_categories(self) -> list[Category]:
-        return [_undispatched_modules(self.base_ring())]
+        # Plain construction: over a field this correctly dispatches, since
+        # a free module over a field IS a vector space.
+        return [cast(Category, Modules(self.base_ring()))]
 
     class ParentMethods:
         def is_free(self) -> bool:
@@ -134,14 +137,14 @@ class FreeModules(Category_over_base_ring):
             return SetMorphism(Hom(target, codomain, SageSets()), lambda point: sum(scalar * b for scalar, b in zip(point.value, basis)))
 
 
-class FiniteProjectiveModules(Category_over_base_ring):
+class FiniteProjectiveModules(CatObject, Category_over_base_ring):
     r"""Finite projective ``R``-modules: the standard supercategory
     required by lattices. Finite projectivity supplies NO coordinate
     isomorphism — a projective module without a chosen trivialization has
     only its ordinary underlying-set route."""
 
     def super_categories(self) -> list[Category]:
-        return [_undispatched_modules(self.base_ring())]
+        return [cast(Category, Modules(self.base_ring()))]
 
     class ParentMethods:
         def is_projective(self) -> bool:
@@ -151,7 +154,7 @@ class FiniteProjectiveModules(Category_over_base_ring):
             return True
 
 
-class FiniteFreeModules(Category_over_base_ring):
+class FiniteFreeModules(CatObject, Category_over_base_ring):
     r"""Finite free ``R``-modules: free of finite rank, hence in
     particular finite projective."""
 

@@ -117,6 +117,16 @@ def test_categories_are_objects_of_cat_and_functor_spaces_are_its_homsets():
     a2 = Lattice("A2")
     assert cat.homset(Lattices(ZZ), Lattices(ZZ)).identity()(a2) is a2
 
+    # Owned categories are objects of Cat through the STANDARD protocols:
+    # category() answers Cat, and Sage's own Hom dispatches to Fun(C, D).
+    from sage.categories.homset import Hom
+    from sage_lattice_category_spike.objects.magmas import Magmas
+    from sage_lattice_category_spike.objects.sets import Sets
+
+    assert Magmas().category() is cat
+    assert Sets().category() is cat
+    assert Hom(Magmas(), Sets()) is FunctorSpace(Magmas(), Sets())
+
 
 def test_functor_space_membership_is_boundary_exact():
     r"""``Fun(C, D)`` is a genuine parent: unique per boundary pair, and

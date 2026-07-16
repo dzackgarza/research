@@ -25,7 +25,7 @@ from sage.categories.morphism import SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 
 from ..lexicon import SageMorphism, SageParent
-from .functors import Functor
+from .functors import CatObject, Functor
 from .sets import CountabilitySubcategoryMethods
 
 if TYPE_CHECKING:
@@ -67,7 +67,7 @@ class _ViaUnderlyingSet:
         return self.underlying_set().index(element)
 
 
-class Magmas(Category):
+class Magmas(CatObject, Category):
     r"""The owned category of magmas: the first structured forwarding
     owner on the multiplicative side."""
 
@@ -84,25 +84,25 @@ class Magmas(Category):
     ParentMethods = _ViaUnderlyingSet
 
 
-class Semigroups(CategoryWithAxiom):
+class Semigroups(CatObject, CategoryWithAxiom):
     r"""Associative magmas."""
 
     _base_category_class_and_axiom = (Magmas, "Associative")
 
 
-class Monoids(CategoryWithAxiom):
+class Monoids(CatObject, CategoryWithAxiom):
     r"""Unital semigroups."""
 
     _base_category_class_and_axiom = (Semigroups, "Unital")
 
 
-class Groups(CategoryWithAxiom):
+class Groups(CatObject, CategoryWithAxiom):
     r"""Monoids with inverses."""
 
     _base_category_class_and_axiom = (Monoids, "Inverse")
 
 
-class CountableMagmas(CategoryWithAxiom):
+class CountableMagmas(CatObject, CategoryWithAxiom):
     r"""Magmas whose underlying set is countable. (Sage silently discards
     an axiom request with no defining class, so this class must exist even
     though the countability semantics live entirely on the ``Sets()``
@@ -120,13 +120,13 @@ class CountableMagmas(CategoryWithAxiom):
         return [EnumeratedSets()]
 
 
-class UncountableMagmas(CategoryWithAxiom):
+class UncountableMagmas(CatObject, CategoryWithAxiom):
     r"""Magmas whose underlying set is uncountable, by trusted placement."""
 
     _base_category_class_and_axiom = (Magmas, "Uncountable")
 
 
-class AdditiveMagmas(Category):
+class AdditiveMagmas(CatObject, Category):
     r"""The owned category of additive magmas: the first structured
     forwarding owner on the additive side."""
 
@@ -143,13 +143,13 @@ class AdditiveMagmas(Category):
     ParentMethods = _ViaUnderlyingSet
 
 
-class AdditiveSemigroups(CategoryWithAxiom):
+class AdditiveSemigroups(CatObject, CategoryWithAxiom):
     r"""Additively associative additive magmas."""
 
     _base_category_class_and_axiom = (AdditiveMagmas, "AdditiveAssociative")
 
 
-class AdditiveMonoids(CategoryWithAxiom):
+class AdditiveMonoids(CatObject, CategoryWithAxiom):
     r"""Additively unital additive semigroups."""
 
     _base_category_class_and_axiom = (AdditiveSemigroups, "AdditiveUnital")
@@ -159,7 +159,7 @@ class AdditiveMonoids(CategoryWithAxiom):
         def AdditiveCommutative(self) -> Category: ...
 
 
-class AdditiveGroups(CategoryWithAxiom):
+class AdditiveGroups(CatObject, CategoryWithAxiom):
     r"""Additive monoids with additive inverses."""
 
     _base_category_class_and_axiom = (AdditiveMonoids, "AdditiveInverse")
@@ -169,7 +169,7 @@ class AdditiveGroups(CategoryWithAxiom):
         def AdditiveCommutative(self) -> Category: ...
 
 
-class CountableAdditiveMagmas(CategoryWithAxiom):
+class CountableAdditiveMagmas(CatObject, CategoryWithAxiom):
     r"""Additive magmas whose underlying set is countable, carrying the
     same Sage-adapter wiring."""
 
@@ -181,7 +181,7 @@ class CountableAdditiveMagmas(CategoryWithAxiom):
         return [EnumeratedSets()]
 
 
-class UncountableAdditiveMagmas(CategoryWithAxiom):
+class UncountableAdditiveMagmas(CatObject, CategoryWithAxiom):
     r"""Additive magmas whose underlying set is uncountable, by trusted
     placement."""
 

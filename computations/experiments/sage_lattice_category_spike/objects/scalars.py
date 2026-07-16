@@ -26,13 +26,14 @@ from sage.categories.rings import Rings as SageRings
 from sage.categories.rngs import Rngs as SageRngs
 from sage.categories.semirings import Semirings as SageSemirings
 
+from .functors import CatObject
 from .magmas import AdditiveGroups, AdditiveMonoids, Monoids, Semigroups
 
 if TYPE_CHECKING:
     pass
 
 
-class Semirings(Category):
+class Semirings(CatObject, Category):
     r"""The owned category of semirings: a multiplicative monoid over an
     additively commutative monoid, with distributivity carried by Sage's
     standard node."""
@@ -51,7 +52,7 @@ class Semirings(Category):
         def Facade(self) -> Semirings: ...
 
 
-class Rngs(Category):
+class Rngs(CatObject, Category):
     r"""The owned category of rngs: a multiplicative semigroup over an
     additively commutative group."""
 
@@ -59,7 +60,7 @@ class Rngs(Category):
         return [SageRngs(), Semigroups(), AdditiveGroups().AdditiveCommutative()]
 
 
-class Rings(Category):
+class Rings(CatObject, Category):
     r"""The owned category of unital rings: the join of the semiring and
     rng routes."""
 
@@ -77,14 +78,14 @@ class Rings(Category):
         def Facade(self) -> Rings: ...
 
 
-class DivisionRings(Category):
+class DivisionRings(CatObject, Category):
     r"""The owned category of division rings."""
 
     def super_categories(self) -> list[Category]:
         return [SageDivisionRings(), Rings()]
 
 
-class Fields(Category):
+class Fields(CatObject, Category):
     r"""The owned category of fields: commutative division rings."""
 
     def super_categories(self) -> list[Category]:

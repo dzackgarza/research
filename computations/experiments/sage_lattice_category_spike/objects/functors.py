@@ -105,29 +105,50 @@ class ComposedFunctor(Functor):
         return result
 
 
-class Cat(lexicon.SageUniqueRepresentation, lexicon.SageParent):
+class Cat(lexicon.SageCategory):
     r"""The (mostly synthetic) category of categories.
 
-    Its objects are the category instances of the graph (the owned
-    ``Category`` classes are Python machinery; their INSTANCES are the
-    objects of ``Cat`` — this parent makes that categorical statement
-    first-class), its morphisms are functors, and its homsets are the
-    functor spaces. ``Cat`` itself carries no owned set placement: its
-    objects form a proper class, not a set. (Sage's own ``Hom`` between
-    categories degenerates to an id-equality homset in ``Objects()``;
-    the real homsets are reached through this parent.)"""
+    Its objects are the category instances of the graph — the owned
+    ``Category`` classes are Python machinery (presentations), their
+    INSTANCES are the objects of ``Cat`` — its morphisms are functors,
+    and its homsets are the functor spaces. Owned categories carry this
+    objecthood through the STANDARD protocols: their ``category()`` is
+    ``Cat()`` and Sage's own ``Hom(C, D)`` dispatches to ``Fun(C, D)``
+    via ``_Hom_`` (Sage-native categories, whose ``category()`` Sage
+    hard-wires to ``Objects()``, are admitted through the membership
+    adapter below). ``Cat`` is an object of ``Objects()``, not of
+    itself: its objects form a proper class."""
 
-    def _repr_(self) -> str:
-        return "Category of categories"
+    def super_categories(self) -> list[lexicon.SageCategory]:
+        from sage.categories.objects import Objects
+
+        return [Objects()]
+
+    def _repr_object_names(self) -> str:
+        return "categories"
 
     def __contains__(self, x: object) -> bool:
         return isinstance(x, lexicon.SageCategory)
 
     def homset(self, domain: lexicon.SageCategory, codomain: lexicon.SageCategory) -> FunctorSpace:
-        r"""``Hom_Cat(C, D) = Fun(C, D)``. (Named ``homset`` because Sage's
-        ``Parent.hom`` is its morphism constructor, a different surface.)"""
+        r"""``Hom_Cat(C, D) = Fun(C, D)``. (Convenience spelling; owned
+        categories also reach this through Sage's standard ``Hom``.)"""
         assert domain in self and codomain in self, f"the homset boundary must be categories; found {domain!r} and {codomain!r}"
         return FunctorSpace(domain, codomain)
+
+
+class CatObject:
+    r"""Mixin declaring that a category class's instances are objects of
+    ``Cat`` through the standard protocols: ``category()`` answers
+    ``Cat()`` and ``Hom(C, D)`` dispatches to the functor space. Every
+    owned category class mixes this in; the class itself stays what it
+    is — Python machinery presenting the object."""
+
+    def category(self) -> Cat:
+        return Cat()
+
+    def _Hom_(self, codomain: lexicon.SageCategory, category: object = None) -> FunctorSpace:
+        return FunctorSpace(cast(lexicon.SageCategory, self), codomain)
 
 
 class FunctorSpace(lexicon.SageUniqueRepresentation, lexicon.SageParent):
