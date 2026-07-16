@@ -85,6 +85,17 @@ This is a research repository with a much longer work horizon, more detailed pla
 
 The `needs-research` label is the parking state — work parked pending investigation or upstream capability — not a register of decisions awaiting the user. Do not enumerate labeled issues as "open human decisions"; genuine decisions are extracted through decision-register sweeps (see #97) and recorded as rulings on the issues, the gap ledger, and plan cards.
 
+## Where in-progress ideas live
+
+Ideas are not all issues yet. An agent that searches only the issue tree will miss live thinking and re-derive it badly.
+
+- **GitHub Discussions** hold ideas still **in flux**: competing framings, pasted prompt responses to be reconciled, designs whose scope has not settled. A discussion is a thinking surface, not a decision — nothing in one is authoritative, and no PR may claim work from a discussion alone. Live example: #217 (*Bridging Lean to computational backends*, Ideas category).
+- **Issues** hold ideas that have a scope, carrying the label that names their state: `draft` (the scope itself is provisional; expect the body to change), `research` (empirical research or evaluation required before implementation), `needs-research` (parked — above), `needs-planning` (scope known; decomposition or an executable plan required before any PR claim).
+
+The pipeline is one-directional: **a discussion is crystallized into an issue once its scope stops moving**, and everything downstream — implementation research, decomposition into work units, proof obligations, PR claims — is carried out on the issue tree, never in the discussion. Link the discussion from the issue and leave it in place as the rationale trail; the development of an idea, including its retractions, is the record of why the scope is what it is. Do not delete it or summarize it away.
+
+Practical consequences: when picking up a topic, search discussions as well as issues. When a discussion has stabilized, the next action is to file the issue, not to keep commenting. When a discussion is still moving, do not manufacture an issue to make it look tracked.
+
 # QC integration for spikes
 
 This repo delegates all test/QC to the global QC in `~/ai-review-ci`
