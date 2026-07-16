@@ -56,6 +56,43 @@ index is only for proven repeat offenders. Full catalogue:
 `.agents/references/terminology-dictionary.md`; code-shape patterns:
 `.agents/references/slop-pattern-index.md`.
 
+# Work-selection discipline (always-on)
+
+An output that cannot fail carries no information. Plans, schemas, id systems, plan
+cards, ledgers, status rows, memories, and readiness reports always "succeed" —
+producing them reduces no mathematical uncertainty, so they are exhaust around the
+work, never the work. The unit of progress at every scale is a **falsifiable
+specimen**: something a mathematician could find *wrong* — a category defined natively,
+an operation placed with its hypotheses and codomain, a surfaced spike-vs-doctrine
+mismatch, a notebook cell reproducing a source. This is the fourth graduation of one
+lesson (tests assert accomplishment, not declaration; negative tests assert a positive
+count first; real declarations are the schema); the work-selection instance graduated
+after recurring (#217's BFS registry; the 2026-07-16 #251 planning session, three
+corrections deep).
+
+- **Specimen-first.** The first deliverable of any work unit is the specimen. A plan is
+  approvable only if it names its first specimen; preparation is justified only by a
+  named uncertainty and stops when the specimen can begin. Coordination machinery is
+  justified only by friction observed while producing specimens, never by anticipated
+  scale.
+- **Mathematical questions get mathematical answers** — stated before any plan card,
+  schema, or memory is touched. Artifact updates are exhaust around the answer, never
+  the answer.
+- **A correction that removes machinery halts artifact production.** The rebuild's
+  first act is the specimen, not the re-filed card; two machinery-removals on one
+  proposal invalidate the frame (vault:
+  `global/advice/corrections-update-the-model-not-the-artifact`).
+- **Turn audit.** What statement could now be falsified that could not before this
+  turn? If none, the turn was preparation — apply the deletion test (vault:
+  `global/traps/hard-problem-artifact-drift`). Meaningful work can be embarrassing;
+  process noise cannot.
+
+Work-shape catalogue with this repo's exemplars and the meaningful-vs-noise litmus:
+`.agents/references/displacement-pattern-index.md` (D1–D6). These are review criteria
+for plans and completion claims alike — the Review Guidelines below guard completion
+*claims*; this section guards the loop that never claims. This discipline is culture,
+not a gate: do not build detectors, hooks, or mandatory checklists from it.
+
 # Repository layout
 
 Top-level directories (this is a navigational map; each tree owns its own README/AGENTS.md):
