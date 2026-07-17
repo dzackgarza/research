@@ -165,35 +165,69 @@ $$
 carrying the induced $K/R$-valued form.
 The discriminant construction is the functor "cokernel of polarization with induced form," from the free-nondegenerate restriction to the finite-torsion restriction, declared **on cores** (§7): it is functorial for isometries, not for arbitrary form-preserving maps.
 
-**6.2 (The three sequences.)** Kernel-checked diagram lemmas, never re-encoded informally:
-
-*Radical sequence.* $\operatorname{rad}(M) = \ker \tilde b$ and
+**6.2 (Two witnesses of the polarization; regularity is vanishing.)** The polarization $\tilde b : L \to L^* = \operatorname{Hom}_R(L, R)$ carries two functorial witness objects, and the form's regularity conditions are the **vanishing** of those objects — never predicates asserted directly:
 
 $$
-0 \to \operatorname{rad}(M) \to M \to \operatorname{Hom}(M, W)
+\operatorname{rad}(L) := \ker \tilde b, \qquad A_L := \operatorname{coker} \tilde b .
 $$
 
-is exact; nondegeneracy is $\operatorname{rad} = 0$, and exactness continued by $\to 0$ is precisely perfectness.
-
-*Base-change sequence.* With $T(M)$ the torsion submodule,
+$b$ is **nondegenerate** $:\!\iff \operatorname{rad}(L) = 0$; $b$ is **perfect (unimodular)** $:\!\iff \tilde b$ is an isomorphism, i.e. $\operatorname{rad}(L) = 0$ *and* $A_L = 0$. Thus $\operatorname{rad}(L)$ is the obstruction to nondegeneracy, and — once it vanishes — $A_L$ is the remaining obstruction to unimodularity. Neither condition is a property read off the object; each is the vanishing of a carried object. The radical sequence names both witnesses at once (here $W = R$; in general $L^* = \operatorname{Hom}(L, W)$):
 
 $$
-0 \to T(M) \to M \to M \otimes_R K,
+0 \to \operatorname{rad}(L) \to L \xrightarrow{\ \tilde b\ } L^* \to A_L \to 0 .
 $$
 
-and inside $L \otimes K$ the metric dual is
+**6.3 (The localization long exact sequence.)** The base-change map $L \to L \otimes_R K$ is the truncation of $L \otimes_R (-)$ applied to $0 \to R \to K \to K/R \to 0$. Since $K$ is flat ($\operatorname{Tor}_1^R(L, K) = 0$), the sequence continues to
 
 $$
-L^{\#} \;=\; \{\, x \in L \otimes K \;:\; b_K(x, L) \subseteq R \,\}.
+0 \to \operatorname{Tor}_1^R(L,\, K/R) \to L \to L \otimes_R K \to L \otimes_R (K/R) \to 0,
 $$
 
-*Comparison.* A map of the two sequences realizes $\operatorname{Hom}(L, R) \cong L^{\#} \subseteq L \otimes K$ over $L \hookrightarrow L^{\#}$, and
+with the identification $\operatorname{Tor}_1^R(L, K/R) \cong T(L)$, the torsion submodule. For a lattice ($L$ f.g. projective, hence torsion-free) it collapses to $0 \to L \to L_K \to L \otimes (K/R) \to 0$.
+
+**6.4 (Metric dual and the comparison witness.)** Inside $L_K = L \otimes_R K$ the **metric dual**
 
 $$
-A_L \;=\; L^{\#}/L \;\cong\; \operatorname{coker}(\tilde b).
+L^{\#} := \{\, x \in L_K : b_K(x, L) \subseteq R \,\}
 $$
 
-This comparison is the **once-only** sanctioned realization of the dual inside the rational span; everything downstream consumes the abstract objects and canonical maps.
+is *always* an honest $R$-submodule containing $L$ — the inclusion $L^{\#} \hookrightarrow L_K$ is injective by construction. Writing $\tilde b_K : L_K \to (L_K)^* = \operatorname{Hom}_K(L_K, K)$ for the rational polarization, one has $L^{\#} = \tilde b_K^{-1}(L^*)$, and the comparison map
+
+$$
+\beta := \tilde b_K|_{L^{\#}} : L^{\#} \to L^*, \qquad x \mapsto b_K(x, -)|_L
+$$
+
+is the restriction of $\tilde b_K$. The obstruction to $\beta$ (equivalently to $\tilde b_K$) being an isomorphism is the object
+
+$$
+\operatorname{rad}(L_K) = \ker \tilde b_K = \operatorname{rad}(L) \otimes_R K,
+$$
+
+whose **vanishing is nondegeneracy** (over the field $K$, injective $\iff$ bijective; and for torsion-free $L$, $\operatorname{rad}(L_K) = 0 \iff \operatorname{rad}(L) = 0$). When it vanishes, $\beta : L^{\#} \xrightarrow{\ \sim\ } L^*$, and the discriminant is computed either way:
+
+$$
+A_L = L^*/\tilde b(L) \;\cong\; L^{\#}/L .
+$$
+
+This isomorphism, realizing $L^* \cong L^{\#}$ inside the rational span, is the **once-only** sanctioned use of the ambient $L_K$; everything downstream consumes the abstract objects and canonical maps.
+
+**6.5 (The double complex.)** For nondegenerate $L$ the radical obstruction vanishes, so the polarization is a morphism of short exact sequences (top the localization LES of 6.3, bottom its $\operatorname{Hom}_R(L, -)$-dual, exact because $\operatorname{Ext}^1_R(L, R) = 0$ for $L$ projective) whose **middle vertical $\tilde b_K$ is an isomorphism**:
+
+$$
+\begin{array}{ccccccccc}
+0 &\to& L &\to& L_K &\to& L \otimes (K/R) &\to& 0\\[2pt]
+&& \downarrow{\scriptstyle\,\tilde b} && \downarrow{\scriptstyle\,\tilde b_K} && \downarrow{\scriptstyle\,\bar b} &&\\[2pt]
+0 &\to& L^* &\to& \operatorname{Hom}(L, K) &\to& \operatorname{Hom}(L, K/R) &\to& 0
+\end{array}
+$$
+
+The snake lemma reads the discriminant off the connecting map — $A_L = \operatorname{coker} \tilde b \cong \ker \bar b$ — and yields the dual presentation
+
+$$
+0 \to A_L \to L \otimes (K/R) \xrightarrow{\ \bar b\ } \operatorname{Hom}(L,\, K/R) \to 0 .
+$$
+
+These are kernel-checked diagram lemmas, never re-encoded informally: the two witnesses of 6.2, the localization LES, and this comparison are the highest-drift-risk material in the program.
 
 *Seated rulings:* [the discriminant construction and the exact-sequence package](Settled-Mathematical-Rulings.md#the-discriminant-construction-and-the-exact-sequence-package).
 
