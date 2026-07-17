@@ -82,3 +82,25 @@ The single per-entry audit question: **is this item at the lowest level at which
 The presentation is therefore maintained as machine-checked data with standard vocabulary.
 
 The hazards these disciplines guard against — with the mechanism by which each one occurs — are catalogued in the [Design Hazard Ledger](Design-Hazard-Ledger.md); the authoring workflow that applies them is the [Contribution Guidelines](Contribution-Guidelines.md).
+
+## The principles, named
+
+The disciplines above and their object-level consequences are named for reference; each is developed in the section or ruling cited.
+
+**Meta-conventions — how mathematics is registered here.**
+
+- **M1 — Lowest generating level.** Every item sits at the lowest categorical level at which it is generated; over-leveling and under-leveling are one defect. The master audit (Generation discipline, above; [Settled Rulings A1](Settled-Mathematical-Rulings.md#master-rulings)).
+- **M2 — Propositions become morphisms one level up.** A predicate becomes a lift; its class (property / structure / stuff) is *computed* from the classifier, and the vocabulary must respect the computed class (the master principle and the classifier section, above).
+- **M3 — Auditability is audience-relative.** A term is admissible iff the working algebraist can detect its misuse; foreign-discipline vocabulary is worse than coinage ([Style Guide P1 / Class A](Mathematical-Language-Style-Guide.md)).
+- **M4 — The artifact is the dictionary; the diagram is its image.** Generate-then-audit is forbidden; the registered object is checked data, never prose to be re-derived (Generation discipline, above).
+- **M5 — Naming scales with non-fullness.** Where a classifier is full, reference without naming is sound; where it is not, every consumer names its section (Name every section, above).
+- **H1 — Homological presentation** *(peer of M1).* A property is defined by the exact sequence it sits in and the invariants that sequence exposes, not by a condition on a single map ([Settled Rulings A5](Settled-Mathematical-Rulings.md#master-rulings)).
+
+**Object-conventions — what the mathematics is.**
+
+- **O1 — One primitive per family, parametrized.** Right modules are $\mathrm{Mod}_{R^{\mathrm{op}}}$; $O(L)$ is $\operatorname{Aut}(L)$; $\mathbf{Ab}$ is the $\mathbb{Z}$-fiber. First-class treatment of a generic's instance is a defect ([Settled Rulings A2](Settled-Mathematical-Rulings.md#master-rulings)).
+- **O2 — The datum of a form is the $W$-valued form**, never the map to a dual (that is derived polarization) ([Definitions §3](Mathematical-Definitions.md#3-bilinear-and-quadratic-form-categories)).
+- **O3 — Predicates own at their factoring node; transport is pullback.** The domain of transport is properties of underlying data; finite generation is the boundary counterexample (Ownership and transport, above; [Settled Rulings A3](Settled-Mathematical-Rulings.md#master-rulings)).
+- **O4 — Implications are witnessed theorem edges, not nested definitions** (Level 2, above).
+- **O5 — Everything up to equivalence**; strict category-equalities are forbidden and each canonical equivalence carries a named witness ([Settled Rulings A4](Settled-Mathematical-Rulings.md#master-rulings)).
+- **O6 — Truncation level is content and must be stated** (Level 2, above; the genus ruling).

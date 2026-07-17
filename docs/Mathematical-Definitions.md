@@ -23,6 +23,8 @@ and for commutative $R$ the identification $\mathrm{Mod}_R \simeq \mathrm{Mod}_{
 **1.2 (The tower.)** The algebraic tower is generated from magmas by four subcategory inclusions — associativity, commutativity, unitality, inverses — with monoids, groups, and abelian groups arising as intersections, never as new declarations.
 The abelian landing is *equivalent to* the $\mathbb{Z}$-fiber of the module family — $\mathbf{Ab} \simeq \mathrm{Mod}_{\mathbb{Z}}$, a canonical equivalence with a named witness, not an identity — and $\mathbb{Z}$ initial in rings gives base change $\mathrm{Mod}_{\mathbb{Z}} \to \mathrm{Mod}_R$ along the unique $\mathbb{Z} \to R$.
 
+**1.3 (Module subcategories.)** The module properties the program pulls back are declared as replete full subcategories of $\mathrm{Mod}_R$: **free** $\subseteq$ **projective** (the inclusion a theorem), **finitely generated**, **torsion**, and **torsion-free**. These are *structure-relative* — they do not factor through the underlying set (Rulings A3) — so they are owned here and only pulled back along $\pi$ below, never re-declared.
+
 *Seated rulings:* [left/right modules are distinct categories](Settled-Mathematical-Rulings.md#invariants-and-their-evaluation).
 
 ## 2. Axioms as subcategories; transport
@@ -83,6 +85,7 @@ $$
 $$
 
 hold unconditionally, and skew-symmetric implies alternating exactly when multiplication by $2$ is injective on $W$.
+Even is nontrivial only where $2W \neq W$ (e.g. $W = R = \mathbb{Z}$, the even lattices); on a divisible value module such as $W = \mathbb{Q}/\mathbb{Z}$ it is vacuous ($2W = W$), and the torsion-side content passes instead to the quadratic refinement over $\mathbb{Q}/2\mathbb{Z}$ (§4, §5.5).
 
 **3.4 (Polarization of a form.)** For $(M, b)$, currying gives the polarization
 
@@ -92,6 +95,8 @@ $$
 
 requiring no freeness.
 **Nondegenerate** means $\tilde b$ injective; **perfect** means $\tilde b$ an isomorphism.
+
+**3.5 (Orthogonal sum.)** The form categories carry a symmetric monoidal structure, the **orthogonal sum**: $(M, b_M) \perp (N, b_N) = (M \oplus N,\, b_M \oplus b_N)$ with vanishing cross terms. Being a *structure* (not a property), it is a named section $\mathcal{B}_{R,W}^{(\perp)}$ (P4), consumed by the bitorsor composition of §7.1 and the adelic product of §8, which reference the named lift rather than "the" monoidal structure.
 
 *Seated rulings:* [the W-valued form is the defining datum](Settled-Mathematical-Rulings.md#forms-and-lattices) · [the total category and its variance](Settled-Mathematical-Rulings.md#forms-and-lattices) · [alternating vs skew-symmetric](Settled-Mathematical-Rulings.md#forms-and-lattices) · [nondegenerate is not unimodular](Settled-Mathematical-Rulings.md#forms-and-lattices).
 
@@ -149,7 +154,7 @@ $$
 \mathbf{DiscBil}_{\mathbb{Z}} \;=\; \mathcal{B}_{\mathbb{Z},\, \mathbb{Q}/\mathbb{Z}}\big[\, \mathrm{Symmetric} \wedge \mathrm{Nondegenerate} \wedge (U \circ \pi)^{*}(\mathrm{Finite}) \,\big],
 $$
 
-the finiteness axiom pulled back from sets through the underlying-set functor (2.2). In general the torsion fiber takes $W = K/R$.
+the finiteness axiom pulled back from sets through the underlying-set functor (2.2). In general the torsion fiber takes $W = K/R$, and the same expression defines $\mathbf{DiscBil}_R$ — the codomain of the §6.1 discriminant functor for general $R$, not only $\mathbb{Z}$.
 
 **5.5 (Discriminant quadratic forms.)** The quadratic discriminant category is the pullback of $\mathbf{DiscBil}_{\mathbb{Z}}$ along the bilinearization $\beta$ of §4 — quadratic objects whose bilinearization is a discriminant form, **not** an even cut of bilinear objects.
 
@@ -193,7 +198,7 @@ $$
 L^{\#} := \{\, x \in L_K : b_K(x, L) \subseteq R \,\}
 $$
 
-is *always* an honest $R$-submodule containing $L$ — the inclusion $L^{\#} \hookrightarrow L_K$ is injective by construction. Writing $\tilde b_K : L_K \to (L_K)^* = \operatorname{Hom}_K(L_K, K)$ for the rational polarization, one has $L^{\#} = \tilde b_K^{-1}(L^*)$, and the comparison map
+is *always* an honest $R$-submodule containing $L$ — the inclusion $L^{\#} \hookrightarrow L_K$ is injective by construction (a lattice is f.g. projective over the domain $R$, hence torsion-free, so $L \hookrightarrow L_K$; for a module with torsion, $L^{\#}$ is the dual of $L/T(L)$). Writing $\tilde b_K : L_K \to (L_K)^* = \operatorname{Hom}_K(L_K, K)$ for the rational polarization, one has $L^{\#} = \tilde b_K^{-1}(L^*)$, and the comparison map
 
 $$
 \beta := \tilde b_K|_{L^{\#}} : L^{\#} \to L^*, \qquad x \mapsto b_K(x, -)|_L
@@ -259,6 +264,14 @@ On the torsion side, for $A = \mathbb{Z}^n / D\mathbb{Z}^n$ with mixed invariant
 
 **7.4 (Index.)** Index is an invariant on **monomorphisms** — its domain of definition is the subcategory of monos, a named restriction, not a prose qualification — with value the cardinality of the coset object $G/H$.
 Its identity with a cokernel cardinality is a theorem under the abelian hypothesis, not a definition.
+
+**7.5 (The Miranda–Morrison sequence.)** For an even lattice $L$ that is **indefinite of rank $\ge 3$**, the discriminant representation extends to the exact sequence
+
+$$
+1 \to \widetilde O(L) \to O(L) \to O(A_L, q_{A_L}) \to \Sigma(L)\big/\big((\Gamma_{\mathbb{Q}} \cap \Sigma(L)) \cdot \Sigma^{\#}(L)\big) \to 0,
+$$
+
+whose cokernel is a finite group of spinor/determinant data (Miranda–Morrison, *Embeddings of Integral Quadratic Forms*, Thm. V.5.1), computable by Legendre symbols — the genus / spinor-genus obstruction (Rulings A5, H3/H7). Notation caveat: the kernel is $\widetilde O(L) = \mathcal{O}^{\#}(L)$ (isometries trivial on the discriminant), **not** $\mathcal{O}^{+}(L) = \ker\det$; the two are distinct subgroups.
 
 *Seated rulings:* [O is an instance, never a node](Settled-Mathematical-Rulings.md#automorphism-groups) · [the torsion side is a quotient of a matrix group](Settled-Mathematical-Rulings.md#automorphism-groups) · [index](Settled-Mathematical-Rulings.md#invariants-and-their-evaluation).
 
