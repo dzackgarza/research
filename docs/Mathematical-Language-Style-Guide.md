@@ -18,7 +18,7 @@ Coinage is forbidden.
 Prose says "isomorphism-invariant predicate on objects", "inverse image of a full subcategory".
 The mathematical text stays auditable by mathematicians who have never opened Mathlib — the population the DSL exists to serve.
 
-**P2 — One term, one type.** Every term carries a declared categorical type: object of **Cat**, 1-morphism (functor), 2-morphism (natural transformation), object property (predicate / replete full subcategory), invariant (function on isomorphism classes), section (named lift of a classifier), or witness (chosen auxiliary data).
+**P2 — One term, one type.** Every term carries a declared categorical type: object of **Cat**, 1-morphism (functor), 2-morphism (natural transformation), object property (predicate / replete full subcategory), invariant (function on isomorphism classes), section (named lift of a classifier), witness (chosen auxiliary data), or **obstruction** (a named object or class whose vanishing is the property, together with the exact sequence it sits in).
 Using a term at the wrong type is a language error with the same severity as a mathematical error, because it becomes one downstream.
 
 **P3 — Uniform formalism, differentiated vocabulary.** All classifiers are functors `ι_A : S_A → Cat`. The property / structure / stuff trichotomy is *computed* from `ι_A` (full + replete ⇒ property; faithful ⇒ structure; general ⇒ stuff), never declared.
@@ -125,6 +125,8 @@ These are already the standard names; do not re-coin them.
 5. **Level check**: every declared item is at the lowest level at which it is generated; a declared composite, whiskering, induced functor, or witnessed implication ⇒ red.
 
 6. **Layer quarantine**: implementation vocabulary in mathematical prose (or conversely) ⇒ red.
+
+7. **Homological presentation**: a property defined as a bare map-condition ("$f$ injective/iso") with no named obstruction object and no exact sequence it sits in ⇒ red (Settled Rulings A5).
 
 ## Self-audit (recorded reversals, kept visible)
 

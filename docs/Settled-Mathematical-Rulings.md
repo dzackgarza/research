@@ -5,6 +5,33 @@ Where a ruling replaced an earlier one, the supersession is recorded — the rec
 Every ruling is **seated** under a definition in [Mathematical Definitions](Mathematical-Definitions.md): the definition states the object, the ruling states the settled choice about it.
 Vocabulary follows the [Mathematical Language Style Guide](Mathematical-Language-Style-Guide.md).
 
+## Master rulings
+
+These govern all the object-level rulings below. The first two are peers: A1 fixes *where* an object is declared, A5 fixes *how* a property is defined once you are there.
+
+**A1 — Lowest generating level.** *Seat: [Categorical Foundations](Categorical-Foundations.md); [Categorical Presentation Principles](Categorical-Presentation-Principles.md).* Every object and every property is declared at the **lowest categorical level at which it is generated**, and nowhere else. The rule is "lowest generating level," not "highest generality": generality is correct for the deflationary errors but is itself the disease for the inflationary ones. Its five instances are one defect:
+
+- *object-as-node* — a primitive node for what is an instance of a generic construction;
+- *theorem-as-definition* — an implication baked into a definition instead of witnessed as an edge;
+- *comparison-as-edge* — a $2$-cell (natural transformation) drawn as a $1$-cell;
+- *induced-as-declared* — a derived/whiskered functor declared as primitive;
+- *truncation-inflation* — a set-level or $1$-categorical object reached for at a higher level ($\pi_0$ promoted to a homotopy pullback; the genus is the sharp case).
+
+**A2 — No first-class instance of a generic.** *Seat: [Definitions §7](Mathematical-Definitions.md#7-isometry-groupoids-and-automorphism-groups).* Any first-class treatment — a node, a bespoke definition, special-cased notation — of an instance of a generic construction is a defect (the object-as-node instance of A1, made explicit because it recurred most). $O(L) = \operatorname{Aut}(L)$, $GL(M) = \operatorname{Aut}_{\mathrm{Mod}}(M)$, Galois and unit groups, $\pi_1$: each is a value of a functor, interrogated through the functor, never declared.
+
+**A3 — Transport is legal only through the forgetful.** *Seat: [Definitions §2.2](Mathematical-Definitions.md#2-axioms-as-subcategories-transport).* A property transports by pullback (Def. 2.2) exactly when it is a property of the underlying data the functor sees — i.e. it factors through the forgetful functor. Properties of the underlying set or module (finite, torsion-free) pull back freely; structure-relative ones do not and are declared per node. **Boundary counterexample:** finite generation. The same abelian group $\mathbb Q$ is finitely generated as a $\mathbb Q$-module (rank one) and *not* as a $\mathbb Z$-module (it needs $\{1/n\}$); generation depends on the available operations, so it does not factor through the underlying set (Sage records this as `FinitelyGeneratedAsMagma`, never a bare `FinitelyGenerated`) and is owned at each structured node.
+
+**A4 — Everything up to equivalence.** *Seat: [Categorical Foundations §F.3.1](Categorical-Foundations.md#f.3.1-pullback-in-mathbfcat-isofibrations-and-pseudo-pullback).* All categorical statements are up to equivalence; strict equalities of categories are never asserted, and each canonical equivalence carries a named witness ($\mathbf{Ab} \simeq \mathrm{Mod}_{\mathbb Z}$, $\mathrm{Mod}_R \simeq \mathrm{Mod}_{R^{\mathrm{op}}}$). This premise is *why* the isofibration/pseudo-pullback correction (F.3.1) is not optional: strict pullbacks are equivalence-invariant only along isofibrations, so "up to equivalence" forces the machinery.
+
+**A5 — Homological presentation of properties.** *Seat: [Definitions §6](Mathematical-Definitions.md#6-the-discriminant-construction-and-the-exact-sequence-package).* A property is defined by **naming the exact sequence (or diagram) it sits in and the homological invariants that sequence exposes** — not by a prose predicate or a formula about a single map. "The map is injective/iso" is demoted to "the named object ($\operatorname{rad}$, $\operatorname{coker}$, the obstruction class) has such-and-such position in the named sequence." Corollaries:
+
+- *H2 — name the sequence, not the leg-condition.* Nondegeneracy is $\operatorname{rad} = 0$ in the radical sequence; perfectness is that sequence extended by $\to 0$; the implication perfect $\Rightarrow$ nondegenerate is read off one sequence, not asserted separately.
+- *H3 — name the obstruction object/class.* $\operatorname{rad}(M)$, $A_L = \operatorname{coker}\tilde b = L^{\#}/L$, and the stable orthogonal group $\widetilde O(L) = \ker(O(L) \to O(A_L, q_{A_L}))$ get first-class status; the prose predicate is a dead end and the obstruction is the object of interest.
+- *H4 — LES over SES; the connecting map is data.* Wherever a functor is applied to a short exact sequence (localization, $\operatorname{Hom}$, $\otimes$, completion), display the governing long exact sequence with its connecting maps named — that is where torsion, nondegeneracy-failure, and the discriminant obstruction appear ($T(M) = \operatorname{Tor}_1^R(M, K/R)$ is the localization LES's connecting object).
+- *H5 — the discriminant lives in a comparison of two sequences.* $A_L$ is presented as $L^{\#}/L \cong \operatorname{coker}\tilde b$ inside the comparison (Definitions §6.4–6.5), never as a bare cokernel formula; defining it by formula before the sequence that gives it meaning is a convention violation, not a nit.
+- *H6 — functoriality is a named domain restriction.* When a construction is functorial only on a subcategory, name that subcategory ($\operatorname{Core}$ for the discriminant, the monomorphism subcategory for index, the free locus for basis-dependent constructions) rather than qualifying naturality in prose.
+- *H7 — invariants land through the exact/homotopy structure.* Genus is $\pi_0$ of a fiber sequence; index is $\lvert G/H\rvert$ with $G/H$ the named coset object; cardinality is $\pi_0(\mathbf{Set}^{\simeq}) \to \mathbf{Card}$. This is A5 one categorical level up: the "sequence" is the fiber sequence and the "obstruction" is the $\pi_1$-orbit data the invariant quotients away.
+
 ## Forms and lattices
 
 **Nondegenerate is not unimodular.** *Seat: [Definitions §3](Mathematical-Definitions.md#3-bilinear-and-quadratic-form-categories).* Nondegeneracy is injectivity of the polarization $\tilde b : L \to L^{\vee}$; unimodularity/perfectness is bijectivity (Mathlib anchors: `LinearMap.BilinForm.Nondegenerate`, `LinearMap.IsPerfPair`). They coincide only when the determinant is a unit.
