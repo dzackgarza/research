@@ -16,29 +16,30 @@ connects the metaprogram to the already-proved semantics.
 namespace CatDSL.RegistryTest
 
 open Lean Elab Command Meta
-open CatDSL CatDSL.Registry CatDSL.Std
+open CatDSL CatDSL.Registry CatDSL.Categories
 
 /-! ## Register the 𝔽₂ preferred-functor graph -/
 
 run_cmd do
-  for e in [``CatDSL.Std.Lattice.toFreeFinModule,
-            ``CatDSL.Std.FreeFinModule.toFiniteSet,
-            ``CatDSL.Std.FreeFinModule.toModule,
-            ``CatDSL.Std.Module.forget,
-            ``CatDSL.Std.FiniteSet.toCountable,
-            ``CatDSL.Std.FiniteSet.forget,
-            ``CatDSL.Std.CountableSet.forget,
-            ``CatDSL.Std.Ring.forget,
-            ``CatDSL.Std.FiniteRing.toRing,
-            ``CatDSL.Std.FiniteRing.toFiniteSet] do
+  for e in [``CatDSL.Categories.Unimodular.toLattice,
+            ``CatDSL.Categories.Lattice.toFreeFinModule,
+            ``CatDSL.Categories.FreeFinModule.toFiniteSet,
+            ``CatDSL.Categories.FreeFinModule.toModule,
+            ``CatDSL.Categories.Module.forget,
+            ``CatDSL.Categories.FiniteSet.toCountable,
+            ``CatDSL.Categories.FiniteSet.forget,
+            ``CatDSL.Categories.CountableSet.forget,
+            ``CatDSL.Categories.Ring.forget,
+            ``CatDSL.Categories.FiniteRing.toRing,
+            ``CatDSL.Categories.FiniteRing.toFiniteSet] do
     liftTermElabM <| Registry.checkPreferredFunctor e
     liftCoreM <| Registry.addPreferredFunctor e
 
 -- The edges really landed in the extension.
 run_cmd do
   let names := Registry.preferredFunctorNames (← getEnv)
-  unless names.size = 10 do
-    throwError "expected 10 registered edges, got {names.size}: {names}"
+  unless names.size = 11 do
+    throwError "expected 11 registered edges, got {names.size}: {names}"
   logInfo m!"registry holds {names.size} edges"
 
 /-! ## checkPreferredFunctor rejects a non-functor -/
@@ -46,7 +47,7 @@ run_cmd do
 run_cmd do
   -- `𝔽₂` is an object, not a functor: registering it must fail.
   let ok ← try
-      liftTermElabM <| Registry.checkPreferredFunctor ``CatDSL.Std.𝔽₂
+      liftTermElabM <| Registry.checkPreferredFunctor ``CatDSL.Categories.𝔽₂
       pure true
     catch _ => pure false
   if ok then
@@ -59,8 +60,8 @@ run_cmd do
 -- `FiniteSets` on its own -- discovering the edges, inferring `R := 𝔽₂` for the
 -- parameterized families, and composing.
 run_cmd liftTermElabM do
-  let src ← Term.elabTerm (← `(CatDSL.Std.Lattices CatDSL.Std.𝔽₂)) none
-  let tgt ← Term.elabTerm (← `(CatDSL.Std.FiniteSets)) none
+  let src ← Term.elabTerm (← `(CatDSL.Categories.Lattices CatDSL.Categories.𝔽₂)) none
+  let tgt ← Term.elabTerm (← `(CatDSL.Categories.FiniteSets)) none
   let src ← instantiateMVars src
   let tgt ← instantiateMVars tgt
   let path ← Registry.resolvePath src tgt
@@ -70,22 +71,49 @@ run_cmd liftTermElabM do
 
 -- The composite reaches `CountableSets` too, in three steps.
 run_cmd liftTermElabM do
-  let src ← Term.elabTerm (← `(CatDSL.Std.Lattices CatDSL.Std.𝔽₂)) none
-  let tgt ← Term.elabTerm (← `(CatDSL.Std.CountableSets)) none
+  let src ← Term.elabTerm (← `(CatDSL.Categories.Lattices CatDSL.Categories.𝔽₂)) none
+  let tgt ← Term.elabTerm (← `(CatDSL.Categories.CountableSets)) none
   let path ← Registry.resolvePath (← instantiateMVars src) (← instantiateMVars tgt)
   logInfo m!"Lat(𝔽₂) ⇝ CountableSets via {Registry.pathNames path}"
 
+-- From the unimodular full subcategory, the resolver must discover the
+-- inclusion as the first step: UnimodularLat(𝔽₂) ⇝ FiniteSets in 3 steps.
+run_cmd liftTermElabM do
+  let src ← Term.elabTerm
+    (← `(CatDSL.Categories.UnimodularLattices CatDSL.Categories.𝔽₂)) none
+  let tgt ← Term.elabTerm (← `(CatDSL.Categories.FiniteSets)) none
+  let path ← Registry.resolvePath (← instantiateMVars src) (← instantiateMVars tgt)
+  logInfo m!"UnimodularLat(𝔽₂) ⇝ FiniteSets via {Registry.pathNames path}"
+  unless path.steps.size = 3 do
+    throwError "expected a 3-step path through the inclusion, got {path.steps.size}"
+
+-- And the discovered inclusion-extended path applied to `Lu` is
+-- definitionally the same finite set the semantics builds from `L`.
+run_cmd liftTermElabM do
+  let src ← instantiateMVars
+    (← Term.elabTerm (← `(CatDSL.Categories.UnimodularLattices CatDSL.Categories.𝔽₂)) none)
+  let tgt ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Categories.FiniteSets)) none)
+  let path ← Registry.resolvePath src tgt
+  let Lu ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Example.Lu)) none)
+  let resolved ← Registry.applyPath path Lu
+  let manual ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Example.Lfin)) none)
+  unless ← Meta.isDefEq resolved manual do
+    throwError
+      "unimodular-resolved realization differs from the manual one:\n\
+       resolved: {resolved}\nmanual:   {manual}"
+  logInfo m!"unimodular registry path ≡ hand-built Lfin"
+
 -- Reflexivity: a category resolves to itself in zero steps.
 run_cmd liftTermElabM do
-  let c ← Term.elabTerm (← `(CatDSL.Std.FiniteSets)) none
+  let c ← Term.elabTerm (← `(CatDSL.Categories.FiniteSets)) none
   let path ← Registry.resolvePath (← instantiateMVars c) (← instantiateMVars c)
   unless path.steps.size = 0 do
     throwError "self-path should be empty, got {path.steps.size}"
 
 -- An unreachable target must fail, not silently succeed.
 run_cmd liftTermElabM do
-  let src ← Term.elabTerm (← `(CatDSL.Std.Sets)) none
-  let tgt ← Term.elabTerm (← `(CatDSL.Std.Lattices CatDSL.Std.𝔽₂)) none
+  let src ← Term.elabTerm (← `(CatDSL.Categories.Sets)) none
+  let tgt ← Term.elabTerm (← `(CatDSL.Categories.Lattices CatDSL.Categories.𝔽₂)) none
   let ok ← try
       let _ ← Registry.resolvePath (← instantiateMVars src) (← instantiateMVars tgt)
       pure true
@@ -106,8 +134,8 @@ result must be definitionally the manually-composed `Lfin`.
 -/
 
 run_cmd liftTermElabM do
-  let src ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Std.Lattices CatDSL.Std.𝔽₂)) none)
-  let tgt ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Std.FiniteSets)) none)
+  let src ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Categories.Lattices CatDSL.Categories.𝔽₂)) none)
+  let tgt ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Categories.FiniteSets)) none)
   let path ← Registry.resolvePath src tgt
   -- apply the discovered composite to L
   let L ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Example.L)) none)
@@ -140,8 +168,8 @@ rather than an argument.
 -/
 
 run_cmd liftTermElabM do
-  let src ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Std.Lattices CatDSL.Std.𝔽₂)) none)
-  let tgt ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Std.Sets)) none)
+  let src ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Categories.Lattices CatDSL.Categories.𝔽₂)) none)
+  let tgt ← instantiateMVars (← Term.elabTerm (← `(CatDSL.Categories.Sets)) none)
   let path ← Registry.resolvePath src tgt
   logInfo m!"Lat(𝔽₂) ⇝ Sets selected ({path.steps.size} steps): {Registry.pathNames path}"
 

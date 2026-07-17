@@ -57,12 +57,54 @@ build:
     cd catdsl_poc && lake build CatDSL
 
 # Run the proof surface: |L| = 4, the registry, the DSL syntax
-test: build
+test: build layering-check-selftest
     # lemma project  finite-pair numbering: number/unnumber form an Equiv
     # CatDSL         |L| = 4, number (a,b) = 2a+b, nth inverts number, the
     #                registry finding the F₂ path itself, and the surface
     #                let/prefer/#via actually running
     cd catdsl_poc && lake build CatDSLTest
+
+# ForMathlib/ is upstream-destined general theory: it may import only Mathlib.
+# The count check comes first so an empty directory cannot green the gate.
+layering-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mapfile -t files < <(find catdsl_poc/CatDSL/ForMathlib -name '*.lean' | sort)
+    if [ "${#files[@]}" -eq 0 ]; then
+      echo "layering-check: no .lean files under catdsl_poc/CatDSL/ForMathlib -- the gate would be vacuous" >&2
+      exit 1
+    fi
+    bad=0
+    for f in "${files[@]}"; do
+      while IFS= read -r line; do
+        case "$line" in
+          "import Mathlib"|"import Mathlib."*) ;;
+          import*)
+            echo "layering-check: $f: '$line' -- ForMathlib may import only Mathlib" >&2
+            bad=1
+            ;;
+        esac
+      done < <(grep '^import ' "$f" || true)
+    done
+    [ "$bad" -eq 0 ]
+    echo "layering-check: ${#files[@]} ForMathlib file(s), imports clean"
+
+# Red demonstration, self-contained: the gate must reject a ForMathlib file
+# importing project code, and must return to green once it is gone.
+layering-check-selftest:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just layering-check
+    fixture=catdsl_poc/CatDSL/ForMathlib/LayeringViolationFixture.lean
+    trap 'rm -f "$fixture"' EXIT
+    printf 'import CatDSL.Foundation\n' > "$fixture"
+    if just layering-check >/dev/null 2>&1; then
+      echo "layering-check-selftest: gate FAILED to red on a CatDSL import in ForMathlib" >&2
+      exit 1
+    fi
+    rm -f "$fixture"
+    just layering-check >/dev/null
+    echo "layering-check-selftest: gate reds on the violation and greens after removal"
 
 # Everything, from a cold checkout
 test-ci: setup cache test
@@ -86,6 +128,43 @@ axioms:
     LEAN
     lake env lean /tmp/catdsl-axioms.lean
     echo "expect only: propext, Classical.choice, Quot.sound"
+
+# The COMPUTED alignment surface (never self-reported): tethers are checked
+# ties (a witness theorem/construction whose type mentions both the local
+# notion and its Mathlib anchor), their kind is derived (exact / divergent /
+# structural — divergent = a convention difference, visible in the witness
+# statement), and the untethered list is the environment-walked complement.
+# Example/TetherTest.lean pins the untethered set so silent growth reds.
+tether-report:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd catdsl_poc
+    lake build CatDSL >/dev/null
+    tmp=$(mktemp --suffix .lean)
+    trap 'rm -f "$tmp"' EXIT
+    printf 'import CatDSL\n#tether_report\n' > "$tmp"
+    lake env lean "$tmp"
+
+# Upstream-contribution queue: ForMathlib/ is known-missing by the layer
+# contract (each declaration names its upstream target).  For the UNKNOWNS —
+# notions with no checked Lean anchor at all — see `just tether-report`.
+upstream-candidates:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "== ForMathlib/ (upstream-destined by layer contract) =="
+    find catdsl_poc/CatDSL/ForMathlib -name '*.lean' | sort | while read -r f; do
+      echo "-- $f"
+      rg -n '^(noncomputable )?(theorem|def|structure|class|abbrev) |Upstream target' "$f" | sed 's/^/   /'
+    done
+    echo
+    echo "== Untethered notions (computed): run 'just tether-report' =="
+
+# Convention divergences: the COMPUTED list is the divergent/structural
+# tethers in `just tether-report` (the witness statement shows the exact
+# convention gap).  The prose markers below carry the human adjudication
+# (upstream change vs local change) for each.
+conventions:
+    rg -n 'Convention divergence:' catdsl_poc/CatDSL --after-context 4
 
 # Remove build artifacts (~20G); mathlib is re-fetched from cache, not rebuilt
 clean:

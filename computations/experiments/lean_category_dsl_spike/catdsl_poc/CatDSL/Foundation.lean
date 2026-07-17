@@ -78,4 +78,71 @@ abbrev Maps (C : Cat.{v, u}) (X Y : C) : Cat.{v, v} :=
 /-- Applying a functor to an object. -/
 abbrev view {C D : Cat.{v, u}} (F : C ⥤ D) (X : C) : D := F.obj X
 
+/-!
+## Isomorphism homsets and the transporters
+
+Generic category theory, so it lives at the kernel: the isomorphism homset
+`Isom(L, M)` is Mathlib's `L ≅ M`, the automorphism group is Mathlib's
+`Aut L` — for lattices this *is* `O(L)`.  Nothing here is specific to any
+one category; siting this on a lattice node would be a placement defect.
+
+When nonempty, `Isom(L, M)` is an **`(Aut M, Aut L)`-bitorsor**: `Aut L`
+acts by precomposition and `Aut M` by postcomposition, each freely and
+transitively.  The four theorems below are exactly that statement —
+`transporterDom`/`transporterCod` give transitivity of each action, their
+uniqueness lemmas give freeness.  This is the whole mathematics of the
+"empty-or-torsor dispatch".
+
+**Alignment note (manifest).**  The Sage realization
+`IsometryHomset.transporter` (homsets.py, "the unique `g in O(M)` with
+`g . source == target`") implements the **codomain** side,
+`transporterCod`.  The manifest row must name the side; "the torsor" is
+underspecified for a bitorsor.
+-/
+
+section Transporter
+
+variable {C : Type u} [Category.{v} C] {L M : C}
+
+/--
+The domain-side transporter of `σ` to `τ`: the unique `g ∈ Aut L` with
+`g ≪≫ σ = τ`, namely `τ ≪≫ σ.symm`.
+-/
+def transporterDom (σ τ : L ≅ M) : Aut L :=
+  τ ≪≫ σ.symm
+
+/-- Transitivity of the precomposition `Aut L`-action. -/
+@[simp]
+theorem transporterDom_comp (σ τ : L ≅ M) :
+    (transporterDom σ τ : L ≅ L) ≪≫ σ = τ := by
+  simp [transporterDom]
+
+/-- Freeness of the precomposition `Aut L`-action. -/
+theorem transporterDom_unique (σ τ : L ≅ M) {g : Aut L}
+    (h : (g : L ≅ L) ≪≫ σ = τ) :
+    g = transporterDom σ τ := by
+  simp [transporterDom, ← h]
+
+/--
+The codomain-side transporter of `σ` to `τ`: the unique `g ∈ Aut M` with
+`σ ≪≫ g = τ`, namely `σ.symm ≪≫ τ`.  This is the side the Sage
+`IsometryHomset.transporter` realizes.
+-/
+def transporterCod (σ τ : L ≅ M) : Aut M :=
+  σ.symm ≪≫ τ
+
+/-- Transitivity of the postcomposition `Aut M`-action. -/
+@[simp]
+theorem transporterCod_comp (σ τ : L ≅ M) :
+    σ ≪≫ (transporterCod σ τ : M ≅ M) = τ := by
+  simp [transporterCod]
+
+/-- Freeness of the postcomposition `Aut M`-action. -/
+theorem transporterCod_unique (σ τ : L ≅ M) {g : Aut M}
+    (h : σ ≪≫ (g : M ≅ M) = τ) :
+    g = transporterCod σ τ := by
+  simp [transporterCod, ← h]
+
+end Transporter
+
 end CatDSL
