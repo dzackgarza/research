@@ -28,6 +28,14 @@ docs-bib:
 docs-check: docs-bib
     python3 scripts/docs_check.py
 
+# Add an nLab citation to docs/refs-web.bib by scraping its canonical /cite page
+cite-nlab page:
+    python3 scripts/cite_add.py nlab "{{page}}"
+
+# Verify a Stacks Project tag resolves (cite as [@stacks-TAG]; links via the global The25 entry)
+cite-stacks tag:
+    python3 scripts/cite_add.py stacks "{{tag}}"
+
 # Serve the docs site locally with live reload
 docs-preview: docs-bib
     quarto preview docs --no-browser --port 7654

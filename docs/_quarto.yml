@@ -26,7 +26,9 @@ book:
     - Design-Hazard-Ledger.md
     - Lean-Sage-Integration-Model.md
   - Roadmap.md
-bibliography: references.bib
+bibliography:
+- references.bib
+- refs-web.bib
 link-citations: true
 number-sections: true
 crossref:
@@ -41,3 +43,5 @@ format:
     html-math-method: mathjax
     code-copy: true
     smooth-scroll: true
+filters:
+- stacks-tags.lua
