@@ -34,7 +34,7 @@ The abelian landing is *equivalent to* the $\mathbb{Z}$-fiber of the module fami
 ::: {#def-module-subcategories}
 ## Module subcategories
 
-The module properties the program pulls back are declared as replete full subcategories of $\mathrm{Mod}_R$: **free** $\subseteq$ **projective** (the inclusion a theorem), **finitely generated**, **torsion**, and **torsion-free**. These are *structure-relative* — they do not factor through the underlying set (Rulings A3) — so they are owned here and only pulled back along $\pi$ below, never re-declared.
+The module properties the program pulls back are declared as replete full subcategories of $\mathrm{Mod}_R$: **free** $\subseteq$ **projective** (the inclusion a theorem), **finitely generated**, **torsion**, and **torsion-free**. These are *structure-relative* — they do not factor through the underlying set (Rulings [A3](Settled-Mathematical-Rulings.md#a3)) — so they are owned here and only pulled back along $\pi$ below, never re-declared.
 :::
 
 *Seated rulings:* [left/right modules are distinct categories](Settled-Mathematical-Rulings.md#invariants-and-their-evaluation).
@@ -146,7 +146,7 @@ requiring no freeness. The form is **nondegenerate** when $\tilde b$ is injectiv
 ::: {#def-orthogonal-sum}
 ## Orthogonal sum
 
-The form categories carry a symmetric monoidal structure, the **orthogonal sum**: $(M, b_M) \perp (N, b_N) = (M \oplus N,\, b_M \oplus b_N)$ with vanishing cross terms. Being a *structure* (not a property), it is a named section $\mathcal{B}_{R,W}^{(\perp)}$ (P4), consumed by the bitorsor composition of @def-isometry-groups and the adelic product of @sec-genus-sec, which reference the named lift rather than "the" monoidal structure.
+The form categories carry a symmetric monoidal structure, the **orthogonal sum**: $(M, b_M) \perp (N, b_N) = (M \oplus N,\, b_M \oplus b_N)$ with vanishing cross terms. Being a *structure* (not a property), it is a named section $\mathcal{B}_{R,W}^{(\perp)}$ ([P4](Mathematical-Language-Style-Guide.md#p4)), consumed by the bitorsor composition of @def-isometry-groups and the adelic product of @sec-genus-sec, which reference the named lift rather than "the" monoidal structure.
 :::
 
 *Seated rulings:* [the W-valued form is the defining datum](Settled-Mathematical-Rulings.md#forms-and-lattices) · [the total category and its variance](Settled-Mathematical-Rulings.md#forms-and-lattices) · [alternating vs skew-symmetric](Settled-Mathematical-Rulings.md#forms-and-lattices) · [nondegenerate is not unimodular](Settled-Mathematical-Rulings.md#forms-and-lattices).
@@ -379,7 +379,7 @@ $$
 1 \to \widetilde O(L) \to O(L) \to O(A_L, q_{A_L}) \to \Sigma(L)\big/\big((\Gamma_{\mathbb{Q}} \cap \Sigma(L)) \cdot \Sigma^{\#}(L)\big) \to 0,
 $$
 
-whose cokernel is a finite group of spinor/determinant data [@MM09, Thm. V.5.1], computable by Legendre symbols — the genus / spinor-genus obstruction (Rulings A5, H3/H7). Notation caveat: the kernel is $\widetilde O(L) = \mathcal{O}^{\#}(L)$ (isometries trivial on the discriminant), **not** $\mathcal{O}^{+}(L) = \ker\det$; the two are distinct subgroups.
+whose cokernel is a finite group of spinor/determinant data [@MM09, Thm. V.5.1], computable by Legendre symbols — the genus / spinor-genus obstruction (Rulings [A5](Settled-Mathematical-Rulings.md#a5), [H3](Settled-Mathematical-Rulings.md#h3)/[H7](Settled-Mathematical-Rulings.md#h7)). Notation caveat: the kernel is $\widetilde O(L) = \mathcal{O}^{\#}(L)$ (isometries trivial on the discriminant), **not** $\mathcal{O}^{+}(L) = \ker\det$; the two are distinct subgroups.
 :::
 
 *Seated rulings:* [O is an instance, never a node](Settled-Mathematical-Rulings.md#automorphism-groups) · [the torsion side is a quotient of a matrix group](Settled-Mathematical-Rulings.md#automorphism-groups) · [index](Settled-Mathematical-Rulings.md#invariants-and-their-evaluation).

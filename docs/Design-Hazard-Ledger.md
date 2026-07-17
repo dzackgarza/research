@@ -22,7 +22,7 @@ A proof that a bespoke accessor agrees with the standard invariant is evidence t
 ## H3 — Capability-to-structure promotion {#sec-h3-capability-to-structure-promotion}
 
 **Mechanism.** Backend requirements are promoted into mathematical structure: enumeration machinery becomes an "enumeration-equipped category", a chosen basis becomes object data, computational presentations become homes of the invariants they evaluate.
-**Guard.** Witness discipline (style guide P2: witness is a declared type; a presentation is never the home of the invariant it evaluates); layer quarantine (P6).
+**Guard.** Witness discipline (style guide [P2](Mathematical-Language-Style-Guide.md#p2): witness is a declared type; a presentation is never the home of the invariant it evaluates); layer quarantine ([P6](Mathematical-Language-Style-Guide.md#p6)).
 
 ## H4 — Exact-name fixation {#sec-h4-exact-name-fixation}
 
@@ -73,13 +73,13 @@ Artifacts read as work, so agents are drawn to reinvention even when the correct
 ## H12 — Lift ambiguity {#sec-h12-lift-ambiguity}
 
 **Mechanism.** Structure consumed without naming which structure: one session proves something about ⊕ and a later session silently consumes it for ⊗, because both are "the monoidal structure."
-**Guard.** Name every section (style guide P4); unnamed structure-reference is grep-detectable red.
+**Guard.** Name every section (style guide [P4](Mathematical-Language-Style-Guide.md#p4)); unnamed structure-reference is grep-detectable red.
 The name goes on the lift, never on the classifier — a classifier node per structure is the proliferation hazard one level up.
 
 ## H13 — Authority laundering {#sec-h13-authority-laundering}
 
 **Mechanism.** Vocabulary with a rigorous definition in a literature the intended auditor does not command (model theory, type theory, PL theory) reads as authoritative but is unfalsifiable by the audience the artifact serves — worse than visible coinage.
-**Guard.** Audience-relative admissibility (style guide P1, Class A); the corpus boundary is which literature, not how well-known.
+**Guard.** Audience-relative admissibility (style guide [P1](Mathematical-Language-Style-Guide.md#p1), Class A); the corpus boundary is which literature, not how well-known.
 
 ## H14 — Stale-prior convention claims {#sec-h14-stale-prior-convention-claims}
 

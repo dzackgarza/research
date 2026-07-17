@@ -11,9 +11,9 @@ theorem downstream — bare familiarity is not the bar; *auditability of the exa
 is.
 
 Citations are drawn from the declared corpus (nLab, the Stacks Project, standard texts,
-Mathlib as anchor). Per the [Style Guide](Mathematical-Language-Style-Guide.html) P1b,
+Mathlib as anchor). Per the [Style Guide](Mathematical-Language-Style-Guide.html) [P1b](Mathematical-Language-Style-Guide.md#p1b),
 Mathlib names appear only as code-formatted anchors, never as prose nouns. Bracketed codes
-such as [`001D`](https://stacks.math.columbia.edu/tag/001D) are Stacks Project tags.
+such as [@stacks-001D] are Stacks Project tags.
 
 Two constructions are not citation lines but **full statements**, because in each the
 naive construction gives the wrong answer and the correction is exactly what makes a
@@ -30,7 +30,7 @@ $\pi_0$ fiber sequence (@sec-pi0-fiber). A third, the composite $\operatorname{E
 | Replete (strictly full) subcategory | @def-axiom, @def-form-axioms, @sec-derived |
 | Inverse image of an object property | @def-transport, every derived category in @sec-derived |
 | Pullback in $\mathbf{Cat}$ (@sec-constructions) | @def-transport, @def-even-lattice, @def-discquad |
-| Stuff / structure / property | @def-property-structure; Style Guide P3–P4 |
+| Stuff / structure / property | @def-property-structure; Style Guide [P3](Mathematical-Language-Style-Guide.md#p3)–[P4](Mathematical-Language-Style-Guide.md#p4) |
 | Core $\operatorname{Core}(\mathcal C)$ | @def-discriminant, @def-isometry-groups, @sec-genus-sec |
 | Automorphism-group functor $\operatorname{Aut}$ | @def-isometry-groups and @def-discriminant-rep |
 | Torsor / bitorsor | @def-isometry-groups |
@@ -49,8 +49,7 @@ the condition $f^*b_N=b_M$. The projection $(M,b)\mapsto M$ is a functor
 $\operatorname{El}(P)\to\mathcal C$ (covariant, and a discrete fibration). The program's
 $\mathcal B_{R,W}$ and $\mathcal Q_{R,W}$ are instances; the exact composite with $(-)^{\mathrm{op}}$
 is fixed once in @sec-el, because the two constructions each reverse variance and a careless
-composite cancels. *Citation:* nLab, *category of elements*; Riehl,
-*Category Theory in Context* §2.4; Mac Lane–Moerdijk, *Sheaves in Geometry and Logic* I.5.
+composite cancels. *Citation:* [@nlab:category_of_elements; @Rie16, §2.4; @Mac94, I.5].
 Mathlib anchor: `CategoryTheory.CategoryOfElements` (whose `Functor.Elements` is the
 covariant elements of a functor $\mathcal C\to\mathbf{Set}$).
 
@@ -61,17 +60,13 @@ special case. The program invokes the fibration picture only where a form catego
 as fibred over $\mathrm{Mod}_R$ (@def-isometry-groups bitorsors, @sec-genus-sec genus). **Boundary:** the program stays
 strictly $1$-categorical here; the $\infty$-categorical straightening/unstraightening is
 *not* invoked, and reaching for it would be a level-inflation error of the kind @sec-pi0-fiber
-guards against. *Citation:* Stacks Project, *Categories*, fibred categories, e.g.
-[`003S`](https://stacks.math.columbia.edu/tag/003S) (categories fibred in groupoids);
-nLab, *Grothendieck construction*.
+guards against. *Citation:* [@stacks-003S] (categories fibred in groupoids); [@nlab:grothendieck_construction].
 
 **Replete (strictly full) subcategory.** A *replete full* — equivalently *strictly full* —
 subcategory is a full subcategory whose objects form an isomorphism-closed class;
 equivalently it is cut out by an isomorphism-invariant predicate on objects. This is the
 meaning the program assigns to the arrow $\hookrightarrow$: an axiom (@def-axiom) is such an
-inclusion, and every membership claim is a factorization through it. *Citation:* Stacks
-Project [`001D`](https://stacks.math.columbia.edu/tag/001D) (subcategory / full / strictly
-full); nLab, *replete subcategory*. Mathlib anchor: `CategoryTheory.ObjectProperty` and
+inclusion, and every membership claim is a factorization through it. *Citation:* [@stacks-001D] (subcategory / full / strictly full); [@nlab:replete_subcategory]. Mathlib anchor: `CategoryTheory.ObjectProperty` and
 its full-subcategory construction.
 
 **Inverse image of an object property.** For a functor $F\colon\mathcal C\to\mathcal D$
@@ -79,8 +74,7 @@ and a replete full $\mathcal D.P\hookrightarrow\mathcal D$, the *inverse image*
 $\mathcal C\times_{\mathcal D}\mathcal D.P$ is the full subcategory of $\mathcal C$ on the
 objects $X$ with $FX\in\mathcal D.P$. This is the pullback that @def-transport uses to
 *transport* a property along $F$, and it is the sole mechanism by which any derived
-category in @sec-derived acquires its defining conditions. *Citation:* nLab, *replete subcategory*
-(pullback-stability); Mathlib anchor: `ObjectProperty.inverseImage`. The *legality* of a
+category in @sec-derived acquires its defining conditions. *Citation:* [@nlab:replete_subcategory] (pullback-stability); Mathlib anchor: `ObjectProperty.inverseImage`. The *legality* of a
 given transport — that $P$ actually factors through the forgetful data $F$ sees — is a
 separate ruling (see [Settled Rulings](Settled-Mathematical-Rulings.html); the
 finitely-generated predicate is the boundary counterexample).
@@ -95,44 +89,40 @@ the trichotomy is *computed*, not declared: $\iota_A$ full and faithful makes $A
 **property** (each fibre is empty or contractible, so "$A$ holds" is a proposition);
 $\iota_A$ merely faithful makes $A$ a **structure**; a general $\iota_A$ forgets **stuff**.
 That "a property is a proposition" is then a *lemma* of fullness, not a convention.
-*Citation:* Baez–Shulman, *Lectures on $n$-Categories and Cohomology* §2 (the canonical
-source); nLab, *stuff, structure, property*. This is the content behind @def-property-structure and
-Style Guide P3–P4.
+*Citation:* [@BS07, §2] (the canonical source); [@nlab:stuff_structure_property]. This is the content behind @def-property-structure and
+Style Guide [P3](Mathematical-Language-Style-Guide.md#p3)–[P4](Mathematical-Language-Style-Guide.md#p4).
 
 **Core.** The *core* $\operatorname{Core}(\mathcal C)$ is the maximal subgroupoid — all
 objects, only the isomorphisms — and is the right adjoint to the inclusion
 $\mathbf{Grpd}\hookrightarrow\mathbf{Cat}$, hence functorial. Its functoriality is precisely
 why @def-discriminant can site the discriminant construction on cores: the assignment is functorial for
-isometries even though it is not for arbitrary form-preserving maps. *Citation:* nLab,
-*core (of a category)*; Mathlib anchor: `CategoryTheory.Core`.
+isometries even though it is not for arbitrary form-preserving maps. *Citation:* [@nlab:core_groupoid]; Mathlib anchor: `CategoryTheory.Core`.
 
 **Automorphism-group functor.** $\operatorname{Aut}\colon\operatorname{Core}(\mathcal C)\to\mathbf{Grp}$
 is a functor; $O(X):=\operatorname{Aut}(X)$ is therefore an *instance* of a generic
 construction, never a primitive node, and the induced $O(L)\to O(q_L)$ is the whiskering of
-$\operatorname{Aut}$ along the discriminant functor. *Citation:* nLab, *automorphism group*.
+$\operatorname{Aut}$ along the discriminant functor. *Citation:* [@nlab:automorphism].
 
 **Torsor and bitorsor.** A $(G,H)$-*bitorsor* is a set carrying commuting principal (free
 and transitive) left $G$- and right $H$-actions. When nonempty, $\operatorname{Isom}(L,M)$
 is an $(O(L),O(M))$-bitorsor; principality is the mathematical content of the claim.
-*Citation:* nLab, *torsor* and *bitorsor*; Breen, *Bitorseurs et cohomologie non
-abélienne*.
+*Citation:* [@nlab:torsor; @Bre07].
 
 **$\pi_0$.** The connected-components functor $\pi_0\colon\mathbf{Grpd}\to\mathbf{Set}$ is
 left adjoint to the discrete embedding and **does not preserve pullbacks**. This
 non-preservation is exactly what makes the genus a set-level object; it is established in
-@sec-pi0-fiber. *Citation:* nLab, *connected components*.
+@sec-pi0-fiber. *Citation:* [@nlab:connected_object].
 
 **Limits and colimits.** The standard (co)limit notions are sited once, at the level of an
 arbitrary category; each concrete instance then owes a *cited* isomorphism to that sited
 construction — the "identification obligation" of @sec-constructors — rather than a re-definition.
 $\mathrm{Mod}_R$, $\mathbf{Ab}$, and the form categories are complete and cocomplete.
-*Citation:* Riehl ch. 3; module facts in Weibel, *An Introduction to Homological Algebra*
-ch. 1–2; Mathlib anchor: `CategoryTheory.Limits`.
+*Citation:* [@Rie16, ch. 3]; module facts in [@Wei94, ch. 1–2]; Mathlib anchor: `CategoryTheory.Limits`.
 
 **Abelian category.** The ambient for the @sec-discriminant exact sequences, and the boundary case for
 property-vs-structure. An abelian category is an additive category with all kernels and
 cokernels in which coimage and image agree
-([`0109`](https://stacks.math.columbia.edu/tag/0109), Def. 12.5.1). Its additive
+[@stacks-0109] (Def. 12.5.1). Its additive
 ($\mathbf{Ab}$-enriched) structure is **property-like**: it is unique when it exists,
 recovered from the finite biproducts every abelian category has (a category with finite
 biproducts carries a canonical, unique commutative-monoid enrichment; when the hom-monoids
@@ -142,10 +132,10 @@ functors that make the @sec-discriminant machinery functorial, however, are the 
 and abelian categories with exact functors form a subcategory of $\mathbf{Cat}$ that is
 **not full**; this is the sense in which "abelian" is *structure*, and it is why Mathlib's
 `CategoryTheory.Abelian` extends `CategoryTheory.Preadditive`
-([`09SE`](https://stacks.math.columbia.edu/tag/09SE), preadditive/additive categories).
+[@stacks-09SE] (preadditive/additive categories).
 The two readings do not conflict once the morphisms are named: membership is a property
 (unique enrichment), while the enrichment-preserving functors are a non-full class, so any
-consumer of the exact-sequence machinery names that class as its section (@sec-pullback-cat, P4).
+consumer of the exact-sequence machinery names that class as its section (@sec-pullback-cat, [P4](Mathematical-Language-Style-Guide.md#p4)).
 
 ## Pullback in $\mathbf{Cat}$: isofibrations and pseudo-pullback {#sec-pullback-cat}
 
@@ -161,8 +151,7 @@ every isomorphism $d\cong p(e)$ in $\mathcal D$ lifts to an isomorphism out of $
 $\mathcal E$. The relevant facts:
 
 - Strict pullback along an isofibration **is** equivalence-invariant, and coincides with
-  the pseudo-pullback. (nLab, *isofibration* and *pseudopullback*; Johnstone, *Sketches of
-  an Elephant* B1.1.)
+  the pseudo-pullback [@nlab:isofibration; @nlab:2-pullback; @Joh23, B1.1].
 - **Replete full inclusions are isofibrations.** Hence for *properties* — @def-axiom, all of
   @def-form-axioms, and every @sec-derived pullback along a property classifier — the strict pullback of
   @def-transport is legitimate exactly as written. This is the theorem that licenses the
@@ -170,8 +159,7 @@ $\mathcal E$. The relevant facts:
 - **Structure classifiers are not full**, so their legs are not covered by the above. For
   these — the monoidal structures $\otimes,\oplus$ and the orthogonal sum $\perp$ of
   @def-property-structure, and abelian-over-preadditive — the correct construction is the **pseudo-pullback**
-  ($2$-pullback). (nLab, *2-pullback*; Stacks $2$-fibre-product material, e.g.
-  [`02XA`](https://stacks.math.columbia.edu/tag/02XA).)
+  ($2$-pullback) [@nlab:2-pullback; @stacks-02XA].
 
 **Ruling induced.** Read @def-transport as: a pullback along a *property* classifier is
 strict (equivalently pseudo, by the isofibration fact); a pullback along a *structure*
@@ -216,10 +204,7 @@ are $O(L)\backslash\prod_v O(L_v)$, typically uncountable. So $\pi_0$ of the hom
 differs from the fibre of $\pi_0$; this is the non-preservation of pullbacks by $\pi_0$, and
 it is why the genus is the set-level object rather than the groupoid one. If the genus
 *groupoid* is ever wanted, it is the classical adelic double coset (with restricted products
-doing essential work); the $1$-truncation is the content. *Citation:* May, *A Concise
-Course in Algebraic Topology* (the fibration exact sequence of pointed sets); nLab, *fiber
-sequence*; for the arithmetic double coset, Cassels, *Rational Quadratic Forms*, or
-Conway–Sloane, *Sphere Packings, Lattices and Groups* [@CS10, ch. 15].
+doing essential work); the $1$-truncation is the content. *Citation:* [@May99] (the fibration exact sequence of pointed sets); [@nlab:fiber_sequence]; for the arithmetic double coset, [@Cas08a], or [@CS10, ch. 15].
 
 ## The composite convention $\operatorname{El}$ (adopted) {#sec-el}
 

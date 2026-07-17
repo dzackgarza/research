@@ -1,7 +1,7 @@
 # Lean–Sage Integration Model
 
 The ratified layering and working discipline for the alignment work, distilled from the [#251](https://github.com/dzackgarza/research/issues/251) record (2026-07-16/17; the A/B/C model is user-ratified and canonical).
-This page is the implementation map from the mathematical presentation to code — implementation vocabulary (manifest, conformance, dispatch, realization owner) is legal here and only here (style-guide P6).
+This page is the implementation map from the mathematical presentation to code — implementation vocabulary (manifest, conformance, dispatch, realization owner) is legal here and only here (style-guide [P6](Mathematical-Language-Style-Guide.md#p6)).
 
 ## Layering {#sec-layering}
 

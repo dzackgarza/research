@@ -13,7 +13,7 @@ Never start from an existing declaration and search for mathematics to justify i
 
 Before any field, method, type, or category is introduced, state:
 
-- its **typed signature** — functor, natural transformation, object property, invariant on the core, or n-ary operation with typed source (style guide P2);
+- its **typed signature** — functor, natural transformation, object property, invariant on the core, or n-ary operation with typed source (style guide [P2](Mathematical-Language-Style-Guide.md#p2));
 
 - its **mathematical home** — the category it is defined on, with structured objects reaching it through canonical functors, never re-declaring it;
 
@@ -72,7 +72,7 @@ Fix or surface it before continuing (H15).
 
 2. **Prove by bundled transport.** When a datum lifts to a bundled structure (`LinearEquiv`, `Iso`, `Equiv`), derive properties from its API in one word — never componentwise re-proofs.
 
-3. **Mathlib names are anchors, not prose** (style guide P1b): code-formatted in identification columns only.
+3. **Mathlib names are anchors, not prose** (style guide [P1b](Mathematical-Language-Style-Guide.md#p1b)): code-formatted in identification columns only.
 
 4. **Cop-outs stay visible.** `sorry`/`admit`, extra axioms, `native_decide`, `unsafe`/`implemented_by`, `partial def` are enumerated by the tree-wide report; the hard gate applies outside the Synthetic layer.
 

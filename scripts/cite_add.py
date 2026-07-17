@@ -30,22 +30,26 @@ def add_nlab(arg: str) -> None:
         base = arg.rstrip("/").removesuffix("/cite")
     else:
         base = "https://ncatlab.org/nlab/show/" + arg.strip().replace(" ", "+")
-    html = fetch(base + "/cite")
-    m = re.search(r"@misc\{nlab:[^}]*?howpublished.*?\n\}", html, re.S)
+    # fetch() follows redirects and raises on 404 — a page that cannot be verified
+    # to exist is never cited. Resolve to the canonical page the redirect lands on.
+    resp = urllib.request.urlopen(urllib.request.Request(base + "/cite", headers=UA), timeout=30)
+    final = resp.geturl().removesuffix("/cite")
+    html = resp.read().decode("utf-8", "replace")
+    m = re.search(r"@misc\{nlab:[^@]*?\n\}", html.replace("&amp;", "&"), re.S)
     if not m:
-        # entries may be inside <pre>/escaped; unescape and retry
-        html2 = html.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
-        m = re.search(r"@misc\{nlab:[^@]*?\n\}", html2, re.S)
-    if not m:
-        sys.exit(f"cite_add: could not find a BibTeX entry at {base}/cite")
+        sys.exit(f"cite_add: could not find a BibTeX entry at {final}/cite")
     entry = m.group(0).strip()
-    key = re.match(r"@misc\{([^,]+),", entry).group(1)
+    # normalize the key to a valid citekey (nLab emits commas/spaces, which are illegal
+    # and break the whole bibliography parse). Derive it deterministically from the slug.
+    slug = final.rsplit("/show/", 1)[-1]
+    key = "nlab:" + re.sub(r"[^A-Za-z0-9_-]", "", slug.replace("+", "_").replace(",", ""))
+    entry = re.sub(r"^@misc\{[^\n]*,", f"@misc{{{key},", entry, count=1)
     existing = BIB.read_text() if BIB.exists() else ""
     if f"{{{key}," in existing:
         print(f"already present: [@{key}]")
         return
     BIB.write_text(existing.rstrip() + "\n\n" + entry + "\n")
-    print(f"added [@{key}] from {base}/cite")
+    print(f"added [@{key}] from {final}/cite")
 
 
 def check_stacks(tag: str) -> None:
