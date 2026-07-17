@@ -20,6 +20,14 @@ default:
 build: _lock
     uv build
 
+# Refresh the docs bibliography from the shared ~/.pandoc bib (never frozen in-repo; CI fetches it from the pandoc-config repo)
+docs-bib:
+    cp ~/.pandoc/bib/references.bib docs/references.bib
+
+# Serve the docs site locally with live reload
+docs-preview: docs-bib
+    quarto preview docs --no-browser --port 7654
+
 [private]
 _lock:
     uv lock

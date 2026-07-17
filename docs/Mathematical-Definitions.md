@@ -271,7 +271,7 @@ $$
 1 \to \widetilde O(L) \to O(L) \to O(A_L, q_{A_L}) \to \Sigma(L)\big/\big((\Gamma_{\mathbb{Q}} \cap \Sigma(L)) \cdot \Sigma^{\#}(L)\big) \to 0,
 $$
 
-whose cokernel is a finite group of spinor/determinant data (Miranda–Morrison, *Embeddings of Integral Quadratic Forms*, Thm. V.5.1), computable by Legendre symbols — the genus / spinor-genus obstruction (Rulings A5, H3/H7). Notation caveat: the kernel is $\widetilde O(L) = \mathcal{O}^{\#}(L)$ (isometries trivial on the discriminant), **not** $\mathcal{O}^{+}(L) = \ker\det$; the two are distinct subgroups.
+whose cokernel is a finite group of spinor/determinant data [@MM09, Thm. V.5.1], computable by Legendre symbols — the genus / spinor-genus obstruction (Rulings A5, H3/H7). Notation caveat: the kernel is $\widetilde O(L) = \mathcal{O}^{\#}(L)$ (isometries trivial on the discriminant), **not** $\mathcal{O}^{+}(L) = \ker\det$; the two are distinct subgroups.
 
 *Seated rulings:* [O is an instance, never a node](Settled-Mathematical-Rulings.md#automorphism-groups) · [the torsion side is a quotient of a matrix group](Settled-Mathematical-Rulings.md#automorphism-groups) · [index](Settled-Mathematical-Rulings.md#invariants-and-their-evaluation).
 

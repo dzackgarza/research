@@ -45,3 +45,5 @@ format:
     html-math-method: mathjax
     code-copy: true
     smooth-scroll: true
+bibliography: references.bib
+link-citations: true

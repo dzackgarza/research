@@ -219,7 +219,7 @@ it is why the genus is the set-level object rather than the groupoid one. If the
 doing essential work); the $1$-truncation is the content. *Citation:* May, *A Concise
 Course in Algebraic Topology* (the fibration exact sequence of pointed sets); nLab, *fiber
 sequence*; for the arithmetic double coset, Cassels, *Rational Quadratic Forms*, or
-Conway–Sloane, *Sphere Packings, Lattices and Groups* [CS10] ch. 15.
+Conway–Sloane, *Sphere Packings, Lattices and Groups* [@CS10, ch. 15].
 
 ## F.4 The composite convention $\operatorname{El}$ (adopted)
 

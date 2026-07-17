@@ -12,3 +12,4 @@ node_modules/
 site/
 docs/_site/
 docs/.quarto/
+docs/references.bib
