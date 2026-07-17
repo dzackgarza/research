@@ -1,0 +1,39 @@
+site_name: Lattice Research
+site_url: https://dzackgarza.github.io/research/
+repo_url: https://github.com/dzackgarza/research
+theme:
+  name: material
+  features:
+  - navigation.sections
+  - navigation.top
+  - toc.integrate
+  - content.code.copy
+markdown_extensions:
+- tables
+- admonition
+- toc:
+    permalink: true
+- pymdownx.arithmatex:
+    generic: true
+- pymdownx.superfences
+- pymdownx.details
+extra_javascript:
+- javascripts/mathjax.js
+- https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+nav:
+- Home: index.md
+- Mathematics:
+  - Mathematical-Definitions.md
+  - Settled-Mathematical-Rulings.md
+  - Categorical-Presentation-Principles.md
+  - Mathematical-Lexicon.md
+- Sage Reference:
+  - Sage-Category-Framework-Inventory.md
+  - Sage-Category-Classes.md
+  - Generating graph (interactive): generating-graph.html
+- Doctrine:
+  - Mathematical-Language-Style-Guide.md
+  - Contribution-Guidelines.md
+  - Design-Hazard-Ledger.md
+  - Lean-Sage-Integration-Model.md
+- Roadmap: Roadmap.md
