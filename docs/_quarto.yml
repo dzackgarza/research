@@ -12,28 +12,29 @@ website:
     search: true
     collapse-level: 2
     contents:
-      - href: index.md
-        text: Home
-      - section: Mathematics
-        contents:
-          - Mathematical-Definitions.md
-          - Settled-Mathematical-Rulings.md
-          - Categorical-Presentation-Principles.md
-          - Mathematical-Lexicon.md
-      - section: Sage Reference
-        contents:
-          - Sage-Category-Framework-Inventory.md
-          - Sage-Category-Classes.md
-          - href: generating-graph.html
-            text: Generating graph (interactive)
-      - section: Doctrine
-        contents:
-          - Mathematical-Language-Style-Guide.md
-          - Contribution-Guidelines.md
-          - Design-Hazard-Ledger.md
-          - Lean-Sage-Integration-Model.md
-      - href: Roadmap.md
-        text: Roadmap
+    - href: index.md
+      text: Home
+    - section: Mathematics
+      contents:
+      - Mathematical-Definitions.md
+      - Categorical-Foundations.md
+      - Settled-Mathematical-Rulings.md
+      - Categorical-Presentation-Principles.md
+      - Mathematical-Lexicon.md
+    - section: Sage Reference
+      contents:
+      - Sage-Category-Framework-Inventory.md
+      - Sage-Category-Classes.md
+      - href: generating-graph.html
+        text: Generating graph (interactive)
+    - section: Doctrine
+      contents:
+      - Mathematical-Language-Style-Guide.md
+      - Contribution-Guidelines.md
+      - Design-Hazard-Ledger.md
+      - Lean-Sage-Integration-Model.md
+    - href: Roadmap.md
+      text: Roadmap
 format:
   html:
     theme:

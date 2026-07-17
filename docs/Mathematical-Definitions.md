@@ -21,7 +21,7 @@ $$
 and for commutative $R$ the identification $\mathrm{Mod}_R \simeq \mathrm{Mod}_{R^{\mathrm{op}}}$ is a hypothesis-bearing equivalence witnessed by a natural isomorphism, not an equality.
 
 **1.2 (The tower.)** The algebraic tower is generated from magmas by four subcategory inclusions — associativity, commutativity, unitality, inverses — with monoids, groups, and abelian groups arising as intersections, never as new declarations.
-The abelian landing is identified with the $\mathbb{Z}$-fiber of the module family, $\mathbf{Ab} \simeq \mathrm{Mod}_{\mathbb{Z}}$, and $\mathbb{Z}$ initial in rings gives base change $\mathrm{Mod}_{\mathbb{Z}} \to \mathrm{Mod}_R$ along the unique $\mathbb{Z} \to R$.
+The abelian landing is *equivalent to* the $\mathbb{Z}$-fiber of the module family — $\mathbf{Ab} \simeq \mathrm{Mod}_{\mathbb{Z}}$, a canonical equivalence with a named witness, not an identity — and $\mathbb{Z}$ initial in rings gives base change $\mathrm{Mod}_{\mathbb{Z}} \to \mathrm{Mod}_R$ along the unique $\mathbb{Z} \to R$.
 
 *Seated rulings:* [left/right modules are distinct categories](Settled-Mathematical-Rulings.md#invariants-and-their-evaluation).
 
@@ -47,7 +47,7 @@ This single rule generates every transported axiom; a property is declared at th
 
 **2.4 (Theorem-witness inclusions.)** Inclusions such as $\mathrm{PID} \subset \mathrm{UFD} \subset \mathrm{Dom}$ are full subcategory inclusions whose witness is a theorem rather than a defining axiom; they are recorded as such.
 
-**2.5 (Property vs structure.)** A *property* of a category is a lift of its classifying point through a full inclusion (being abelian, being a groupoid, having cokernels); a *structure* is a lift through a forgetful functor that is not full (a monoidal structure — one category may carry several: $\otimes$ and $\oplus$ on modules, orthogonal sum on forms).
+**2.5 (Property vs structure.)** A *property* of a category is a lift of its classifying point through a full inclusion (being a groupoid, having cokernels); a *structure* is a lift through a forgetful functor that is not full (a monoidal structure — one category may carry several: $\otimes$ and $\oplus$ on modules, orthogonal sum $\perp$ on forms). Which of the two a lift is gets **computed** from the classifier (full $\Rightarrow$ property, faithful $\Rightarrow$ structure), never declared. Being **abelian** is the boundary case: the additive enrichment is *property-like* (unique when it exists, recovered from biproducts), so membership is a property; but the exact functors that carry the §6 machinery form a non-full class, so a consumer of that machinery names its section. See [Categorical Foundations](Categorical-Foundations.html) (abelian; §F.3.1).
 
 *Seated rulings:* the calculus itself is in [Categorical Presentation Principles](Categorical-Presentation-Principles.md); [relation kinds are not fungible](Settled-Mathematical-Rulings.md#relation-kinds-are-not-fungible).
 
@@ -61,17 +61,18 @@ $$
 
 sending a module to its $W$-valued bilinear forms, respectively quadratic maps, acting by pullback along module maps.
 
-**3.2 (Categories of elements.)** The total form categories are the Grothendieck constructions
+**3.2 (Categories of elements.)** The total form categories are the categories of elements of these presheaves,
 
 $$
-\mathcal{B}_{R,W} \;=\; \operatorname{El}\!\big(\operatorname{Bil}_{R,W}\big)^{\mathrm{op}},
+\mathcal{B}_{R,W} \;=\; \operatorname{El}\!\big(\operatorname{Bil}_{R,W}\big),
 \qquad
-\mathcal{Q}_{R,W} \;=\; \operatorname{El}\!\big(\operatorname{Quad}_{R,W}\big)^{\mathrm{op}},
+\mathcal{Q}_{R,W} \;=\; \operatorname{El}\!\big(\operatorname{Quad}_{R,W}\big),
 $$
 
-with projections $\pi : \mathcal{B}_{R,W} \to \mathrm{Mod}_R$.
-The variance is chosen so that a morphism $(M, b_M) \to (N, b_N)$ has underlying map $f : M \to N$ with $f^{*} b_N = b_M$.
+with covariant projection $\pi : \mathcal{B}_{R,W} \to \mathrm{Mod}_R$.
+A morphism $(M, b_M) \to (N, b_N)$ is a module map $f : M \to N$ with $f^{*} b_N = b_M$ — an underlying map in the same direction as $\pi$, pulling the target form back to the source.
 The defining datum is always the $W$-valued form; the map-to-dual picture appears only as the derived polarization of 3.4.
+The convention for $\operatorname{El}$ — the standard category of elements of a presheaf, with **no** $(-)^{\mathrm{op}}$ — is fixed, and shown to be forced, in [Categorical Foundations §F.4](Categorical-Foundations.html#f.4-the-composite-convention-operatornameel-adopted).
 
 **3.3 (Form axioms at the total.)** Owned at $\mathcal{B}_{R,W}$, each a property-defined replete full subcategory: symmetric, skew-symmetric, alternating ($b(x,x) = 0$), nondegenerate, perfect, and even ($b(x,x) \in 2W$). The implications
 
