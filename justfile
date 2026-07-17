@@ -36,6 +36,10 @@ cite-nlab page:
 cite-stacks tag:
     python3 scripts/cite_add.py stacks "{{tag}}"
 
+# Regenerate docs/refs-web.bib from canonical sources (re-scrapes every nLab entry; hand-edits are lost)
+refs-web-refresh:
+    python3 scripts/refs_web_refresh.py
+
 # Serve the docs site locally with live reload
 docs-preview: docs-bib
     quarto preview docs --no-browser --port 7654

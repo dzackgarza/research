@@ -39,11 +39,12 @@ def add_nlab(arg: str) -> None:
     if not m:
         sys.exit(f"cite_add: could not find a BibTeX entry at {final}/cite")
     entry = m.group(0).strip()
-    # normalize the key to a valid citekey (nLab emits commas/spaces, which are illegal
-    # and break the whole bibliography parse). Derive it deterministically from the slug.
-    slug = final.rsplit("/show/", 1)[-1]
-    key = "nlab:" + re.sub(r"[^A-Za-z0-9_-]", "", slug.replace("+", "_").replace(",", ""))
-    entry = re.sub(r"^@misc\{[^\n]*,", f"@misc{{{key},", entry, count=1)
+    # keep nLab's own citekey (lowercase/underscore convention) but strip characters
+    # illegal in a citekey (commas, spaces), which otherwise break the whole bib parse.
+    first = entry.split("\n", 1)[0]              # "@misc{<rawkey>,"
+    rawkey = first[len("@misc{"):].rstrip(",")   # "<rawkey>" (may contain commas)
+    key = re.sub(r"[^A-Za-z0-9:_+.\-]", "", rawkey)
+    entry = entry.replace(first, f"@misc{{{key},", 1)
     existing = BIB.read_text() if BIB.exists() else ""
     if f"{{{key}," in existing:
         print(f"already present: [@{key}]")

@@ -54,7 +54,31 @@ for md in DOCS.glob("*.md"):
         if page in ids and anchor not in ids[page]:
             failures.append(f"{md.name}: broken anchor link -> {page}#{anchor}")
 
-# 4. external links must resolve — a cited resource that 404s can't be verified to exist
+# 4. no manual numbers in section headings — sections auto-number (Quarto book)
+for md in DOCS.glob("*.md"):
+    for i, line in enumerate(md.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+        if re.match(r"^#{2,6}\s+(\d+\.?\s|F\.\d|[IVX]+\.\s)", line):
+            failures.append(f"{md.name}:{i}: manual number in heading {line.strip()[:48]!r} — drop it; sections auto-number and are referenced by @sec-")
+
+# 5. no bespoke citations — a citation-source URL must go through the bibliography, never an inline link
+CITE_DOMAINS = r"(ncatlab\.org|stacks\.math\.columbia\.edu|(?:dx\.)?doi\.org|arxiv\.org/abs|link\.springer\.com|zbmath\.org|mathscinet)"
+for md in DOCS.glob("*.md"):
+    for i, line in enumerate(md.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+        m = re.search(r"https?://" + CITE_DOMAINS, line)
+        if m:
+            failures.append(f"{md.name}:{i}: inline citation URL {m.group(0)} bypasses the bibliography — cite via @key, [@stacks-TAG], or `just cite-nlab`")
+
+# 6. refs-web.bib holds only scraped nLab entries (no bespoke/hand-written citations)
+webbib = DOCS / "refs-web.bib"
+if webbib.exists():
+    for m in re.finditer(r"@(\w+)\{([^,]+),(.*?)\n\}", webbib.read_text(encoding="utf-8", errors="replace"), re.S):
+        key, body = m.group(2), m.group(3)
+        if not key.startswith("nlab:"):
+            failures.append(f"refs-web.bib: bespoke entry @{key} — web citations are added only via `just cite-nlab` (scraped from the canonical /cite page)")
+        elif "ncatlab.org" not in body:
+            failures.append(f"refs-web.bib: @{key} carries no ncatlab.org URL — not a scraped entry")
+
+# 7. external links must resolve — a cited resource that 404s can't be verified to exist
 import urllib.request
 import urllib.error
 from concurrent.futures import ThreadPoolExecutor
