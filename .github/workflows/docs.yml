@@ -23,7 +23,8 @@ jobs:
     - name: Fetch shared bibliography
       run: curl -sSL https://raw.githubusercontent.com/dzackgarza/pandoc-config/main/bib/references.bib
         -o docs/references.bib
-    - run: quarto render docs
+    - run: python3 scripts/docs_check.py
+      name: Render + integrity gate
     - uses: actions/configure-pages@v5
     - uses: actions/upload-pages-artifact@v3
       with:

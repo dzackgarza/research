@@ -24,6 +24,10 @@ build: _lock
 docs-bib:
     cp ~/.pandoc/bib/references.bib docs/references.bib
 
+# Gate: render the docs book and fail on undefined citations, unresolved cross-refs, or broken anchor links
+docs-check: docs-bib
+    python3 scripts/docs_check.py
+
 # Serve the docs site locally with live reload
 docs-preview: docs-bib
     quarto preview docs --no-browser --port 7654
