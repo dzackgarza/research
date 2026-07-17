@@ -53,14 +53,18 @@ For nondegenerate integral $L$, **$\operatorname{coker}(\tilde b)$ carrying the 
 It is declared **on cores** — functorial for isometries, not for arbitrary form-preserving embeddings.
 Applying $\operatorname{Aut}$ to it generates $O(L) \to O(q_L)$; its kernel is the stable isometry group, its image the discriminant representation — all generic group-homomorphism machinery, none of it bespoke.
 
+**Regularity is the vanishing of a carried witness, not a predicate.** The polarization $\tilde b : L \to L^*$ carries two functorial objects: $\operatorname{rad}(L) = \ker \tilde b$ and $A_L = \operatorname{coker} \tilde b$.
+Nondegeneracy *is* $\operatorname{rad}(L) = 0$ (the radical is the obstruction, and nondegeneracy its vanishing — never "$b$ is degenerate" named as the obstruction); unimodularity/perfectness *is* $\tilde b$ an isomorphism, i.e. $\operatorname{rad}(L) = 0$ and $A_L = 0$.
+Passing to $K$, the obstruction to the rational polarization $\tilde b_K : L_K \to (L_K)^*$ — equivalently to the comparison $\beta = \tilde b_K|_{L^{\#}} : L^{\#} \to L^*$ between the metric dual and the monoidal dual — is the object $\operatorname{rad}(L_K) = \operatorname{rad}(L) \otimes K$, whose vanishing is nondegeneracy. The discriminant $A_L$ is a *cokernel* witness, not an obstruction to this comparison: for a nondegenerate lattice $\beta$ is an isomorphism regardless of how large $A_L$ is.
+
 Three kernel-checked diagram lemmas (formalization obligations, never re-encoded informally at the DSL level — the highest-drift-risk material in the program):
 
-1. **Radical sequence.** $0 \to \operatorname{rad}(M) \to M \to \operatorname{Hom}(M, W)$ exact, $\operatorname{rad} = \ker(\tilde b)$; nondegenerate $\Leftrightarrow$ $\operatorname{rad} = 0$; exactness with $\to 0$ is precisely perfectness.
+1. **Radical/discriminant sequence.** $0 \to \operatorname{rad}(L) \to L \xrightarrow{\tilde b} L^* \to A_L \to 0$ (with $W = R$; in general $L^* = \operatorname{Hom}(L, W)$), naming both witnesses at once.
 
-2. **Base-change sequence.** $0 \to T(M) \to M \to M \otimes_R K$, kernel the torsion submodule; inside $M \otimes K$ the metric dual $L^{\#} = \{x : b_K(x, L) \subseteq R\}$ is defined.
+2. **Localization LES.** From $L \otimes_R (0 \to R \to K \to K/R \to 0)$ with $K$ flat: $0 \to \operatorname{Tor}_1^R(L, K/R) \to L \to L \otimes_R K \to L \otimes_R (K/R) \to 0$, where $\operatorname{Tor}_1^R(L, K/R) \cong T(L)$; the metric dual $L^{\#} = \{x \in L_K : b_K(x, L) \subseteq R\} = \tilde b_K^{-1}(L^*)$ is always an honest submodule of $L_K$ containing $L$.
 
-3. **Comparison.** A map of the two sequences realizing $\operatorname{Hom}(L, R) \cong L^{\#} \subseteq L \otimes K$ over $L \hookrightarrow L^{\#}$, and $A_L = L^{\#}/L \cong \operatorname{coker}(\tilde b)$.
-   This is the **once-only** sanctioned realization of the dual inside the rational span; everything downstream consumes the abstract objects and canonical maps.
+3. **The double complex.** For nondegenerate $L$ the polarization is a morphism of the localization LES to its $\operatorname{Hom}(L, -)$-dual with middle vertical $\tilde b_K$ an isomorphism; the snake lemma gives $A_L = \operatorname{coker} \tilde b \cong \ker \bar b$ and the dual presentation $0 \to A_L \to L \otimes (K/R) \xrightarrow{\bar b} \operatorname{Hom}(L, K/R) \to 0$, with $A_L = L^{\#}/L \cong L^*/\tilde b(L)$.
+   The comparison $L^* \cong L^{\#}$ is the **once-only** sanctioned realization of the dual inside the rational span; everything downstream consumes the abstract objects and canonical maps.
 
 ## Automorphism groups
 
