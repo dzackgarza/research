@@ -157,14 +157,15 @@ the finiteness axiom pulled back from sets through the underlying-set functor (2
 
 ## 6. The discriminant construction and the exact-sequence package
 
-**6.1 (Discriminant form of a lattice.)** For nondegenerate integral $L$,
+**6.1 (Discriminant form of a lattice.)** For a nondegenerate lattice $L$ the discriminant is the object exhibited by the comparison of 6.4–6.5,
 
 $$
-A_L \;=\; \operatorname{coker}\big(\tilde b : L \to \operatorname{Hom}(L, R)\big)
+A_L \;:=\; L^{\#}/L \;\cong\; \operatorname{coker}\big(\tilde b : L \to \operatorname{Hom}(L, R)\big),
 $$
 
-carrying the induced $K/R$-valued form.
-The discriminant construction is the functor "cokernel of polarization with induced form," from the free-nondegenerate restriction to the finite-torsion restriction, declared **on cores** (§7): it is functorial for isometries, not for arbitrary form-preserving maps.
+carrying the $K/R$-valued form induced from $b_K \bmod R$ on $L^{\#}$.
+Presenting $A_L$ this way — as a quotient inside the two-sequence comparison, with the isomorphism to $\operatorname{coker}\tilde b$ a *theorem* (the map $\beta$ of 6.4) — is what makes the $K/R$-valuation manifest rather than asserted before the comparison that licenses it.
+The discriminant construction is the functor $L \mapsto A_L$; its **domain of functoriality is $\operatorname{Core}$** (§7) — it is functorial for isometries, not for arbitrary form-preserving maps, and that named restriction is the content, not a caveat.
 
 **6.2 (Two witnesses of the polarization; regularity is vanishing.)** The polarization $\tilde b : L \to L^* = \operatorname{Hom}_R(L, R)$ carries two functorial witness objects, and the form's regularity conditions are the **vanishing** of those objects — never predicates asserted directly:
 
@@ -245,19 +246,19 @@ $$
 
 When nonempty, $\operatorname{Isom}(L, M)$ is an $(O(L), O(M))$-bitorsor.
 
-**7.2 (Discriminant representation.)** Applying $\operatorname{Aut}$ to the discriminant functor (6.1) yields
+**7.2 (Discriminant representation.)** Applying $\operatorname{Aut}$ to the discriminant functor (6.1) yields the reduction
 
 $$
-O(L) \longrightarrow O(q_L),
+O(L) \longrightarrow O(A_L, q_{A_L}),
 $$
 
-with kernel the stable isometry group and image the discriminant representation — generic group-homomorphism machinery.
+the **discriminant representation**. Its kernel is the **stable orthogonal group** $\widetilde O(L) := \ker\big(O(L) \to O(A_L, q_{A_L})\big)$ — named as a kernel in this sequence, not as "the isometries acting trivially." Surjectivity is *not* automatic: when it holds it is Nikulin's theorem under hypotheses (indefinite, $\operatorname{rank} L \ge \ell(A_L) + 2$), and in general the cokernel is the Miranda–Morrison genus / spinor-genus obstruction.
 
 **7.3 (Matrix realizations.)** On the free restriction a choice of basis induces the faithful representation $O(L) \hookrightarrow \mathrm{GL}_n(R)$ — the precise sense in which $O(L)$ "is" a matrix group.
 On the torsion side, for $A = \mathbb{Z}^n / D\mathbb{Z}^n$ with mixed invariant factors, $O(A)$ is canonically a **quotient** of a congruence-type matrix group and not a subgroup of any $\mathrm{GL}_n$; the homocyclic case $A \cong (\mathbb{Z}/d)^n$ is the genuine exception, with $O(q) \le \mathrm{GL}_n(\mathbb{Z}/d)$.
 
-**7.4 (Index.)** The home of index is the subgroup (a monomorphism); its value is the cardinality of the coset space $G/H$.
-The identity of index with a cokernel cardinality is a theorem under the abelian hypothesis, not a definition.
+**7.4 (Index.)** Index is an invariant on **monomorphisms** — its domain of definition is the subcategory of monos, a named restriction, not a prose qualification — with value the cardinality of the coset object $G/H$.
+Its identity with a cokernel cardinality is a theorem under the abelian hypothesis, not a definition.
 
 *Seated rulings:* [O is an instance, never a node](Settled-Mathematical-Rulings.md#automorphism-groups) · [the torsion side is a quotient of a matrix group](Settled-Mathematical-Rulings.md#automorphism-groups) · [index](Settled-Mathematical-Rulings.md#invariants-and-their-evaluation).
 
