@@ -15,8 +15,8 @@ The lattice category declares the **nondegenerate** notion; unimodularity is a f
 The value module $W$ is a structural parameter, never a convention: $\operatorname{Hom}(A, R) = 0$ for finite $A$, so "$b$ as a map to $\operatorname{Hom}(-, R)$" is empty exactly where discriminant forms live.
 Free restriction with $W = R$ recovers lattices; finite-torsion restriction with $W = K/R$ (for $\mathbb{Z}$: $\mathbb{Q}/\mathbb{Z}$, even refinement $\mathbb{Q}/2\mathbb{Z}$) recovers discriminant forms — special cases recovered, never defined independently.
 
-**The total category and its variance.** *Seat: [Definitions §3](Mathematical-Definitions.md#3-bilinear-and-quadratic-form-categories).* The bilinear category is the category of elements of the presheaf of $W$-valued bilinear forms on f.g. $R$-modules, taken as the **opposite** of Mathlib's covariant `Functor.Elements` so a morphism $(M, b_M) \to (N, b_N)$ has underlying map $f : M \to N$ with $f^{*} b_N = b_M$.
-The integral sign here is the Grothendieck construction, not an end or coend.
+**The total category and its variance.** *Seat: [Definitions §3](Mathematical-Definitions.md#3-bilinear-and-quadratic-form-categories); convention fixed in [Categorical Foundations §F.4](Categorical-Foundations.md#f.4-the-composite-convention-operatornameel-adopted).* The bilinear category is the category of elements of the presheaf of $W$-valued bilinear forms on f.g. $R$-modules, in the standard sense (no $(-)^{\mathrm{op}}$), so a morphism $(M, b_M) \to (N, b_N)$ has underlying map $f : M \to N$ with $f^{*} b_N = b_M$ and the projection to $\mathrm{Mod}_R$ is covariant.
+The variance is forced, not chosen: the datum is the $W$-valued form and a form morphism pulls the target form back to the source. The integral sign is the Grothendieck construction, not an end or coend.
 *Supersession:* the root presheaf is the **full bilinear** one — symmetry, skew-symmetry, alternating, nondegeneracy, perfectness are property-defined replete full subcategories of it.
 The earlier working presheaf that baked symmetry into the construction is superseded.
 
