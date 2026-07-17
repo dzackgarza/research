@@ -1,0 +1,46 @@
+project:
+  type: website
+  output-dir: _site
+website:
+  title: Lattice Research
+  repo-url: https://github.com/dzackgarza/research
+  site-url: https://dzackgarza.github.io/research/
+  page-navigation: true
+  back-to-top-navigation: true
+  sidebar:
+    style: docked
+    search: true
+    collapse-level: 2
+    contents:
+      - href: index.md
+        text: Home
+      - section: Mathematics
+        contents:
+          - Mathematical-Definitions.md
+          - Settled-Mathematical-Rulings.md
+          - Categorical-Presentation-Principles.md
+          - Mathematical-Lexicon.md
+      - section: Sage Reference
+        contents:
+          - Sage-Category-Framework-Inventory.md
+          - Sage-Category-Classes.md
+          - href: generating-graph.html
+            text: Generating graph (interactive)
+      - section: Doctrine
+        contents:
+          - Mathematical-Language-Style-Guide.md
+          - Contribution-Guidelines.md
+          - Design-Hazard-Ledger.md
+          - Lean-Sage-Integration-Model.md
+      - href: Roadmap.md
+        text: Roadmap
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+    toc-depth: 3
+    html-math-method: mathjax
+    code-copy: true
+    smooth-scroll: true
