@@ -1,6 +1,8 @@
 project:
   type: book
   output-dir: _site
+  resources:
+  - data/**
 book:
   title: Lattice Research
   repo-url: https://github.com/dzackgarza/research

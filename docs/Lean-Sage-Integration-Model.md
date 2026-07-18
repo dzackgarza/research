@@ -46,7 +46,7 @@ Cataloguing is mathematical research, not inventory transcription: the presentat
 
 ## Registry semantics {#sec-registry-semantics}
 
-The manifest's gap rows follow the recording discipline in [Contribution Guidelines](Contribution-Guidelines.md): a `pending`/no-analog row is a negative claim about Mathlib, admissible only with search evidence.
+The manifest's gap rows follow the recording discipline in [Contribution Guidelines](Contribution-Guidelines.md#sec-cg-recording-a-gap): a `pending`/no-analog row is a negative claim about Mathlib, admissible only with search evidence.
 The standing prior the registry encodes: every notion here is standard mathematics with an upstream anchor at ingredient level — absence of a single prepackaged name is not a gap (compositional constructions count), and a wrong alias at the root of the single auditable source is poison where a pending row is honest.
 
 The per-contributor workflow — the authoring checkpoint, dictionary-first generation, Lean authoring rules, and correction handling — lives in the [Contribution Guidelines](Contribution-Guidelines.md); the failure modes it guards are catalogued in the [Design Hazard Ledger](Design-Hazard-Ledger.md).

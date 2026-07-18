@@ -17,7 +17,7 @@ Mathematics becomes post-hoc justification for preserving code.
 
 **Mechanism.** A checked witness relating a local declaration to upstream mathematics is treated as legitimizing the declaration.
 A proof that a bespoke accessor agrees with the standard invariant is evidence the accessor is redundant or misplaced — the proof can certify the defect more strongly.
-**Guard.** Identification is never admission: right-to-exist first ([Contribution Guidelines](Contribution-Guidelines.md)); level check (a declared item generable one level down is a defect).
+**Guard.** Identification is never admission: right-to-exist first ([Contribution Guidelines](Contribution-Guidelines.md#sec-cg-derive-first-admit-declarations-second)); level check (a declared item generable one level down is a defect).
 
 ## H3 — Capability-to-structure promotion {#sec-h3-capability-to-structure-promotion}
 
@@ -47,7 +47,7 @@ Progress-shaped evidence accumulates while the mathematical question goes unreso
 **Mechanism.** A counterexample is treated as a defect at its site rather than evidence against the framework: each correction produces another local theorem, label, or reason field while the ambient scheme survives.
 Patching looks like responsiveness; asking "what standard theory makes this unrepresentable?"
 produces the required deletion.
-**Guard.** A mathematical correction invalidates downstream classifications until the presentation is re-derived ([Contribution Guidelines](Contribution-Guidelines.md)); one counterexample indicts the classifier.
+**Guard.** A mathematical correction invalidates downstream classifications until the presentation is re-derived ([Contribution Guidelines](Contribution-Guidelines.md#sec-cg-corrections-reset-they-do-not-patch)); one counterexample indicts the classifier.
 
 ## H8 — Novelty-as-progress {#sec-h8-novelty-as-progress}
 
@@ -89,4 +89,4 @@ Recorded exemplar: a reviewer's "standard namespace is `Basis`, not `Module.Basi
 ## H15 — Supervision inversion {#sec-h15-supervision-inversion}
 
 **Mechanism.** After repeated corrections or forced stops, autonomy is *increased* ("the remaining work is mechanical") — exporting a malformed foundation multiplies the damage precisely when self-monitoring has demonstrably failed.
-**Guard.** Repeated corrections escalate to specification review and tighter supervision; foundational defects are never deferred because remaining tasks are mechanical ([Contribution Guidelines](Contribution-Guidelines.md)).
+**Guard.** Repeated corrections escalate to specification review and tighter supervision ([Contribution Guidelines: corrections reset](Contribution-Guidelines.md#sec-cg-corrections-reset-they-do-not-patch)); foundational defects are never deferred because remaining tasks are mechanical ([never defer a foundational defect](Contribution-Guidelines.md#sec-cg-never-defer-a-foundational-defect)).
