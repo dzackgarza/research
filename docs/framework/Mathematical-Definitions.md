@@ -2,7 +2,7 @@
 
 The dependency tree of the program's mathematical objects, stated as definitions in standard language.
 Every settled design ruling is **seated** under one of these definitions: the definition says what the object *is*; the [Settled Mathematical Rulings](Settled-Mathematical-Rulings.md) say which choices about it are closed, with their supersession trails.
-The generation calculus (classify, factor, lift; property vs structure; transport as factorization) is owned by [Categorical Presentation Principles](Categorical-Presentation-Principles.md); vocabulary is governed by the [Mathematical Language Style Guide](Mathematical-Language-Style-Guide.md); Sage's actual category framework is enumerated in the [Sage Category Framework Inventory](Sage-Category-Framework-Inventory.md).
+The generation calculus (classify, factor, lift; property vs structure; transport as factorization) is owned by [Categorical Presentation Principles](../contributing/Categorical-Presentation-Principles.md); vocabulary is governed by the [Mathematical Language Style Guide](../contributing/Mathematical-Language-Style-Guide.md); Sage's actual category framework is enumerated in the [Sage Category Framework Inventory](../sage/Sage-Category-Framework-Inventory.md).
 Provenance for everything here is the [#251](https://github.com/dzackgarza/research/issues/251) record.
 
 Throughout, $R$ is a commutative ring — the arithmetic fibers take $R$ a PID or Dedekind domain with fraction field $K$ — and $W$ is an $R$-module, the **value module** of a form.
@@ -83,7 +83,7 @@ Inclusions such as $\mathrm{PID} \subset \mathrm{UFD} \subset \mathrm{Dom}$ are 
 A *property* of a category is a lift of its classifying point through a full inclusion (being a groupoid, having cokernels); a *structure* is a lift through a forgetful functor that is not full (a monoidal structure — one category may carry several: $\otimes$ and $\oplus$ on modules, orthogonal sum $\perp$ on forms). Which of the two a lift is gets **computed** from the classifier (full $\Rightarrow$ property, faithful $\Rightarrow$ structure), never declared. Being **abelian** is the boundary case: the additive enrichment is *property-like* (unique when it exists, recovered from biproducts), so membership is a property; but the exact functors that carry the @sec-discriminant machinery form a non-full class, so a consumer of that machinery names its section. See [Categorical Foundations](Categorical-Foundations.html) (abelian; §F.3.1).
 :::
 
-*Seated rulings:* the calculus itself is in [Categorical Presentation Principles](Categorical-Presentation-Principles.md); [relation kinds are not fungible](Settled-Mathematical-Rulings.md#relation-kinds-are-not-fungible).
+*Seated rulings:* the calculus itself is in [Categorical Presentation Principles](../contributing/Categorical-Presentation-Principles.md); [relation kinds are not fungible](Settled-Mathematical-Rulings.md#relation-kinds-are-not-fungible).
 
 ## Bilinear and quadratic form categories {#sec-forms}
 
@@ -146,7 +146,7 @@ requiring no freeness. The form is **nondegenerate** when $\tilde b$ is injectiv
 ::: {#def-orthogonal-sum}
 ## Orthogonal sum
 
-The form categories carry a symmetric monoidal structure, the **orthogonal sum**: $(M, b_M) \perp (N, b_N) = (M \oplus N,\, b_M \oplus b_N)$ with vanishing cross terms. Being a *structure* (not a property), it is a named section $\mathcal{B}_{R,W}^{(\perp)}$ ([P4](Mathematical-Language-Style-Guide.md#p4)), consumed by the bitorsor composition of @def-isometry-groups and the adelic product of @sec-genus-sec, which reference the named lift rather than "the" monoidal structure.
+The form categories carry a symmetric monoidal structure, the **orthogonal sum**: $(M, b_M) \perp (N, b_N) = (M \oplus N,\, b_M \oplus b_N)$ with vanishing cross terms. Being a *structure* (not a property), it is a named section $\mathcal{B}_{R,W}^{(\perp)}$ ([P4](../contributing/Mathematical-Language-Style-Guide.md#p4)), consumed by the bitorsor composition of @def-isometry-groups and the adelic product of @sec-genus-sec, which reference the named lift rather than "the" monoidal structure.
 :::
 
 *Seated rulings:* [the W-valued form is the defining datum](Settled-Mathematical-Rulings.md#forms-and-lattices) · [the total category and its variance](Settled-Mathematical-Rulings.md#forms-and-lattices) · [alternating vs skew-symmetric](Settled-Mathematical-Rulings.md#forms-and-lattices) · [nondegenerate is not unimodular](Settled-Mathematical-Rulings.md#forms-and-lattices).

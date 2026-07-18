@@ -10,23 +10,26 @@ book:
   search: true
   chapters:
   - index.md
-  - part: Mathematics
+  - part: Mathematical Framework
     chapters:
-    - Mathematical-Definitions.md
-    - Categorical-Foundations.md
-    - Settled-Mathematical-Rulings.md
-    - Categorical-Presentation-Principles.md
-    - Mathematical-Lexicon.md
-  - part: Sage Reference
+    - framework/Mathematical-Framework.md
+    - framework/Mathematical-Definitions.md
+    - framework/Categorical-Foundations.md
+    - framework/Settled-Mathematical-Rulings.md
+  - part: Sage
     chapters:
-    - Sage-Category-Framework-Inventory.md
-    - Sage-Category-Classes.md
-  - part: Doctrine
+    - sage/Sage-Category-Framework-Inventory.md
+    - sage/Sage-Category-Classes.md
+  - part: Lean
     chapters:
-    - Mathematical-Language-Style-Guide.md
-    - Contribution-Guidelines.md
-    - Design-Hazard-Ledger.md
-    - Lean-Sage-Integration-Model.md
+    - lean/Lean-Sage-Integration-Model.md
+  - part: Contributing
+    chapters:
+    - contributing/Contribution-Guidelines.md
+    - contributing/Mathematical-Language-Style-Guide.md
+    - contributing/Categorical-Presentation-Principles.md
+    - contributing/Design-Hazard-Ledger.md
+    - contributing/Mathematical-Lexicon.md
   - Roadmap.md
 bibliography:
 - references.bib

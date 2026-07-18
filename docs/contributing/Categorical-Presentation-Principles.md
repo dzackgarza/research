@@ -57,7 +57,7 @@ In **Cat** as a 2-category:
 
 - **Parameters are indices**: a parameter is a variable in a functor category, so its coherence is automatic rather than legislated.
 
-Truncation is content, not decoration: set-level and groupoid-level constructions are not interchanged, and π₀ does not commute with homotopy pullbacks (see the genus ruling in [Settled Mathematical Rulings](Settled-Mathematical-Rulings.md)).
+Truncation is content, not decoration: set-level and groupoid-level constructions are not interchanged, and π₀ does not commute with homotopy pullbacks (see the genus ruling in [Settled Mathematical Rulings](../framework/Settled-Mathematical-Rulings.md)).
 
 ## Name every section {#sec-name-every-section}
 
@@ -89,18 +89,30 @@ The disciplines above and their object-level consequences are named for referenc
 
 **Meta-conventions — how mathematics is registered here.**
 
-- **M1 — Lowest generating level.** Every item sits at the lowest categorical level at which it is generated; over-leveling and under-leveling are one defect. The master audit (Generation discipline, above; [Settled Rulings A1](Settled-Mathematical-Rulings.md#master-rulings)).
+- **M1 — Lowest generating level.** Every item sits at the lowest categorical level at which it is generated; over-leveling and under-leveling are one defect.
+  The master audit (Generation discipline, above; [Settled Rulings A1](../framework/Settled-Mathematical-Rulings.md#master-rulings)).
+
 - **M2 — Propositions become morphisms one level up.** A predicate becomes a lift; its class (property / structure / stuff) is *computed* from the classifier, and the vocabulary must respect the computed class (the master principle and the classifier section, above).
+
 - **M3 — Auditability is audience-relative.** A term is admissible iff the working algebraist can detect its misuse; foreign-discipline vocabulary is worse than coinage ([Style Guide P1 / Class A](Mathematical-Language-Style-Guide.md)).
+
 - **M4 — The artifact is the dictionary; the diagram is its image.** Generate-then-audit is forbidden; the registered object is checked data, never prose to be re-derived (Generation discipline, above).
+
 - **M5 — Naming scales with non-fullness.** Where a classifier is full, reference without naming is sound; where it is not, every consumer names its section (Name every section, above).
-- **H1 — Homological presentation** *(peer of M1).* A property is defined by the exact sequence it sits in and the invariants that sequence exposes, not by a condition on a single map ([Settled Rulings A5](Settled-Mathematical-Rulings.md#master-rulings)).
+
+- **H1 — Homological presentation** *(peer of M1).* A property is defined by the exact sequence it sits in and the invariants that sequence exposes, not by a condition on a single map ([Settled Rulings A5](../framework/Settled-Mathematical-Rulings.md#master-rulings)).
 
 **Object-conventions — what the mathematics is.**
 
-- **O1 — One primitive per family, parametrized.** Right modules are $\mathrm{Mod}_{R^{\mathrm{op}}}$; $O(L)$ is $\operatorname{Aut}(L)$; $\mathbf{Ab}$ is the $\mathbb{Z}$-fiber. First-class treatment of a generic's instance is a defect ([Settled Rulings A2](Settled-Mathematical-Rulings.md#master-rulings)).
+- **O1 — One primitive per family, parametrized.** Right modules are $\mathrm{Mod}_{R^{\mathrm{op}}}$; $O(L)$ is $\operatorname{Aut}(L)$; $\mathbf{Ab}$ is the $\mathbb{Z}$-fiber.
+  First-class treatment of a generic's instance is a defect ([Settled Rulings A2](../framework/Settled-Mathematical-Rulings.md#master-rulings)).
+
 - **O2 — The datum of a form is the $W$-valued form**, never the map to a dual (that is derived polarization) (@sec-forms).
-- **O3 — Predicates own at their factoring node; transport is pullback.** The domain of transport is properties of underlying data; finite generation is the boundary counterexample (Ownership and transport, above; [Settled Rulings A3](Settled-Mathematical-Rulings.md#master-rulings)).
+
+- **O3 — Predicates own at their factoring node; transport is pullback.** The domain of transport is properties of underlying data; finite generation is the boundary counterexample (Ownership and transport, above; [Settled Rulings A3](../framework/Settled-Mathematical-Rulings.md#master-rulings)).
+
 - **O4 — Implications are witnessed theorem edges, not nested definitions** (Level 2, above).
-- **O5 — Everything up to equivalence**; strict category-equalities are forbidden and each canonical equivalence carries a named witness ([Settled Rulings A4](Settled-Mathematical-Rulings.md#master-rulings)).
+
+- **O5 — Everything up to equivalence**; strict category-equalities are forbidden and each canonical equivalence carries a named witness ([Settled Rulings A4](../framework/Settled-Mathematical-Rulings.md#master-rulings)).
+
 - **O6 — Truncation level is content and must be stated** (Level 2, above; the genus ruling).

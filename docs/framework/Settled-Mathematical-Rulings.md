@@ -3,36 +3,55 @@
 Rulings ratified through the [#251](https://github.com/dzackgarza/research/issues/251) record (2026-07-16/17), stated once in their final superseding form.
 Where a ruling replaced an earlier one, the supersession is recorded — the record is a progression, and earlier phrasings on the issue are not authoritative.
 Every ruling is **seated** under a definition in [Mathematical Definitions](Mathematical-Definitions.md): the definition states the object, the ruling states the settled choice about it.
-Vocabulary follows the [Mathematical Language Style Guide](Mathematical-Language-Style-Guide.md).
+Vocabulary follows the [Mathematical Language Style Guide](../contributing/Mathematical-Language-Style-Guide.md).
 
 ## Master rulings {#sec-master-rulings}
 
 []{#master-rulings}
 
-These govern all the object-level rulings below. The first two are peers: [A1](#a1) fixes *where* an object is declared, [A5](#a5) fixes *how* a property is defined once you are there.
+These govern all the object-level rulings below.
+The first two are peers: [A1](#a1) fixes *where* an object is declared, [A5](#a5) fixes *how* a property is defined once you are there.
 
-[]{#a1}**A1 — Lowest generating level.** *Seat: [Categorical Foundations](Categorical-Foundations.md); [Categorical Presentation Principles](Categorical-Presentation-Principles.md).* Every object and every property is declared at the **lowest categorical level at which it is generated**, and nowhere else. The rule is "lowest generating level," not "highest generality": generality is correct for the deflationary errors but is itself the disease for the inflationary ones. Its five instances are one defect:
+[]{#a1}**A1 — Lowest generating level.** *Seat: [Categorical Foundations](Categorical-Foundations.md); [Categorical Presentation Principles](../contributing/Categorical-Presentation-Principles.md).* Every object and every property is declared at the **lowest categorical level at which it is generated**, and nowhere else.
+The rule is "lowest generating level," not "highest generality": generality is correct for the deflationary errors but is itself the disease for the inflationary ones.
+Its five instances are one defect:
 
 - *object-as-node* — a primitive node for what is an instance of a generic construction;
+
 - *theorem-as-definition* — an implication baked into a definition instead of witnessed as an edge;
+
 - *comparison-as-edge* — a $2$-cell (natural transformation) drawn as a $1$-cell;
+
 - *induced-as-declared* — a derived/whiskered functor declared as primitive;
+
 - *truncation-inflation* — a set-level or $1$-categorical object reached for at a higher level ($\pi_0$ promoted to a homotopy pullback; the genus is the sharp case).
 
-[]{#a2}**A2 — No first-class instance of a generic.** *Seat: @sec-isometry.* Any first-class treatment — a node, a bespoke definition, special-cased notation — of an instance of a generic construction is a defect (the object-as-node instance of [A1](#a1), made explicit because it recurred most). $O(L) = \operatorname{Aut}(L)$, $GL(M) = \operatorname{Aut}_{\mathrm{Mod}}(M)$, Galois and unit groups, $\pi_1$: each is a value of a functor, interrogated through the functor, never declared.
+[]{#a2}**A2 — No first-class instance of a generic.** *Seat: @sec-isometry.* Any first-class treatment — a node, a bespoke definition, special-cased notation — of an instance of a generic construction is a defect (the object-as-node instance of [A1](#a1), made explicit because it recurred most).
+$O(L) = \operatorname{Aut}(L)$, $GL(M) = \operatorname{Aut}_{\mathrm{Mod}}(M)$, Galois and unit groups, $\pi_1$: each is a value of a functor, interrogated through the functor, never declared.
 
-[]{#a3}**A3 — Transport is legal only through the forgetful.** *Seat: @def-transport.* A property transports by pullback (@def-transport) exactly when it is a property of the underlying data the functor sees — i.e. it factors through the forgetful functor. Properties of the underlying set or module (finite, torsion-free) pull back freely; structure-relative ones do not and are declared per node. **Boundary counterexample:** finite generation. The same abelian group $\mathbb Q$ is finitely generated as a $\mathbb Q$-module (rank one) and *not* as a $\mathbb Z$-module (it needs $\{1/n\}$); generation depends on the available operations, so it does not factor through the underlying set (Sage records this as `FinitelyGeneratedAsMagma`, never a bare `FinitelyGenerated`) and is owned at each structured node.
+[]{#a3}**A3 — Transport is legal only through the forgetful.** *Seat: @def-transport.* A property transports by pullback (@def-transport) exactly when it is a property of the underlying data the functor sees — i.e. it factors through the forgetful functor.
+Properties of the underlying set or module (finite, torsion-free) pull back freely; structure-relative ones do not and are declared per node.
+**Boundary counterexample:** finite generation.
+The same abelian group $\mathbb Q$ is finitely generated as a $\mathbb Q$-module (rank one) and *not* as a $\mathbb Z$-module (it needs $\{1/n\}$); generation depends on the available operations, so it does not factor through the underlying set (Sage records this as `FinitelyGeneratedAsMagma`, never a bare `FinitelyGenerated`) and is owned at each structured node.
 
 []{#a4}**A4 — Everything up to equivalence.** *Seat: @sec-pullback-cat.* All categorical statements are up to equivalence; strict equalities of categories are never asserted, and each canonical equivalence carries a named witness ($\mathbf{Ab} \simeq \mathrm{Mod}_{\mathbb Z}$, $\mathrm{Mod}_R \simeq \mathrm{Mod}_{R^{\mathrm{op}}}$). This premise is *why* the isofibration/pseudo-pullback correction (@sec-pullback-cat) is not optional: strict pullbacks are equivalence-invariant only along isofibrations, so "up to equivalence" forces the machinery.
 
-[]{#a5}[]{#h1}**A5 — Homological presentation of properties.** *Seat: @sec-discriminant.* A property is defined by **naming the exact sequence (or diagram) it sits in and the homological invariants that sequence exposes** — not by a prose predicate or a formula about a single map. "The map is injective/iso" is demoted to "the named object ($\operatorname{rad}$, $\operatorname{coker}$, the obstruction class) has such-and-such position in the named sequence." Corollaries:
+[]{#a5}[]{#h1}**A5 — Homological presentation of properties.** *Seat: @sec-discriminant.* A property is defined by **naming the exact sequence (or diagram) it sits in and the homological invariants that sequence exposes** — not by a prose predicate or a formula about a single map.
+"The map is injective/iso" is demoted to "the named object ($\operatorname{rad}$, $\operatorname{coker}$, the obstruction class) has such-and-such position in the named sequence."
+Corollaries:
 
 - []{#h2}*H2 — name the sequence, not the leg-condition.* Nondegeneracy is $\operatorname{rad} = 0$ in the radical sequence; perfectness is that sequence extended by $\to 0$; the implication perfect $\Rightarrow$ nondegenerate is read off one sequence, not asserted separately.
+
 - []{#h3}*H3 — name the obstruction object/class.* $\operatorname{rad}(M)$, $A_L = \operatorname{coker}\tilde b = L^{\#}/L$, and the stable orthogonal group $\widetilde O(L) = \ker(O(L) \to O(A_L, q_{A_L}))$ get first-class status; the prose predicate is a dead end and the obstruction is the object of interest.
+
 - []{#h4}*H4 — LES over SES; the connecting map is data.* Wherever a functor is applied to a short exact sequence (localization, $\operatorname{Hom}$, $\otimes$, completion), display the governing long exact sequence with its connecting maps named — that is where torsion, nondegeneracy-failure, and the discriminant obstruction appear ($T(M) = \operatorname{Tor}_1^R(M, K/R)$ is the localization LES's connecting object).
+
 - []{#h5}*H5 — the discriminant lives in a comparison of two sequences.* $A_L$ is presented as $L^{\#}/L \cong \operatorname{coker}\tilde b$ inside the comparison (@def-metric-dual and @thm-double-complex), never as a bare cokernel formula; defining it by formula before the sequence that gives it meaning is a convention violation, not a nit.
+
 - []{#h6}*H6 — functoriality is a named domain restriction.* When a construction is functorial only on a subcategory, name that subcategory ($\operatorname{Core}$ for the discriminant, the monomorphism subcategory for index, the free locus for basis-dependent constructions) rather than qualifying naturality in prose.
-- []{#h7}*H7 — invariants land through the exact/homotopy structure.* Genus is $\pi_0$ of a fiber sequence; index is $\lvert G/H\rvert$ with $G/H$ the named coset object; cardinality is $\pi_0(\mathbf{Set}^{\simeq}) \to \mathbf{Card}$. This is [A5](#a5) one categorical level up: the "sequence" is the fiber sequence and the "obstruction" is the $\pi_1$-orbit data the invariant quotients away.
+
+- []{#h7}*H7 — invariants land through the exact/homotopy structure.* Genus is $\pi_0$ of a fiber sequence; index is $\lvert G/H\rvert$ with $G/H$ the named coset object; cardinality is $\pi_0(\mathbf{Set}^{\simeq}) \to \mathbf{Card}$.
+  This is [A5](#a5) one categorical level up: the "sequence" is the fiber sequence and the "obstruction" is the $\pi_1$-orbit data the invariant quotients away.
 
 ## Forms and lattices {#sec-forms-lattices}
 
@@ -47,7 +66,8 @@ The value module $W$ is a structural parameter, never a convention: $\operatorna
 Free restriction with $W = R$ recovers lattices; finite-torsion restriction with $W = K/R$ (for $\mathbb{Z}$: $\mathbb{Q}/\mathbb{Z}$, even refinement $\mathbb{Q}/2\mathbb{Z}$) recovers discriminant forms — special cases recovered, never defined independently.
 
 **The total category and its variance.** *Seat: @sec-forms; convention fixed in @sec-el.* The bilinear category is the category of elements of the presheaf of $W$-valued bilinear forms on f.g. $R$-modules, in the standard sense (no $(-)^{\mathrm{op}}$), so a morphism $(M, b_M) \to (N, b_N)$ has underlying map $f : M \to N$ with $f^{*} b_N = b_M$ and the projection to $\mathrm{Mod}_R$ is covariant.
-The variance is forced, not chosen: the datum is the $W$-valued form and a form morphism pulls the target form back to the source. The integral sign is the Grothendieck construction, not an end or coend.
+The variance is forced, not chosen: the datum is the $W$-valued form and a form morphism pulls the target form back to the source.
+The integral sign is the Grothendieck construction, not an end or coend.
 *Supersession:* the root presheaf is the **full bilinear** one — symmetry, skew-symmetry, alternating, nondegeneracy, perfectness are property-defined replete full subcategories of it.
 The earlier working presheaf that baked symmetry into the construction is superseded.
 
@@ -88,7 +108,8 @@ Applying $\operatorname{Aut}$ to it generates $O(L) \to O(q_L)$; its kernel is t
 
 **Regularity is the vanishing of a carried witness, not a predicate.** The polarization $\tilde b : L \to L^*$ carries two functorial objects: $\operatorname{rad}(L) = \ker \tilde b$ and $A_L = \operatorname{coker} \tilde b$.
 Nondegeneracy *is* $\operatorname{rad}(L) = 0$ (the radical is the obstruction, and nondegeneracy its vanishing — never "$b$ is degenerate" named as the obstruction); unimodularity/perfectness *is* $\tilde b$ an isomorphism, i.e. $\operatorname{rad}(L) = 0$ and $A_L = 0$.
-Passing to $K$, the obstruction to the rational polarization $\tilde b_K : L_K \to (L_K)^*$ — equivalently to the comparison $\beta = \tilde b_K|_{L^{\#}} : L^{\#} \to L^*$ between the metric dual and the monoidal dual — is the object $\operatorname{rad}(L_K) = \operatorname{rad}(L) \otimes K$, whose vanishing is nondegeneracy. The discriminant $A_L$ is a *cokernel* witness, not an obstruction to this comparison: for a nondegenerate lattice $\beta$ is an isomorphism regardless of how large $A_L$ is.
+Passing to $K$, the obstruction to the rational polarization $\tilde b_K : L_K \to (L_K)^*$ — equivalently to the comparison $\beta = \tilde b_K|_{L^{\#}} : L^{\#} \to L^*$ between the metric dual and the monoidal dual — is the object $\operatorname{rad}(L_K) = \operatorname{rad}(L) \otimes K$, whose vanishing is nondegeneracy.
+The discriminant $A_L$ is a *cokernel* witness, not an obstruction to this comparison: for a nondegenerate lattice $\beta$ is an isomorphism regardless of how large $A_L$ is.
 
 Three kernel-checked diagram lemmas (formalization obligations, never re-encoded informally at the DSL level — the highest-drift-risk material in the program):
 
@@ -141,7 +162,7 @@ $\mathrm{Mod}_R$, $\mathrm{Mod}_{R^{\mathrm{op}}}$, and ${}_{R}\mathrm{BiMod}_S$
 
 []{#relation-kinds-are-not-fungible}
 
-*Seat: @sec-axioms and [Categorical Presentation Principles](Categorical-Presentation-Principles.md).*
+*Seat: @sec-axioms and [Categorical Presentation Principles](../contributing/Categorical-Presentation-Principles.md).*
 
 Identity, definitional equality, equivalence, isomorphism, forgetful image, chosen presentation, property, ingredient, and example are distinct relation kinds, and every recorded claim names which one it makes.
 Standing consequences:
@@ -156,4 +177,4 @@ Standing consequences:
 
 - a proof that a local declaration agrees with a standard one is evidence the local declaration is redundant or misplaced, not evidence it belongs where it is.
 
-Absence of a single prepackaged upstream name is **not** absence of the mathematics: standard mathematics is frequently compositional (full subcategories cut by properties, categories of elements, transported functors), and a claimed gap is admissible only with search evidence — what was searched, the nearest notions found and distinguished (negative-finding bar; see the [Lean–Sage Integration Model](Lean-Sage-Integration-Model.md)).
+Absence of a single prepackaged upstream name is **not** absence of the mathematics: standard mathematics is frequently compositional (full subcategories cut by properties, categories of elements, transported functors), and a claimed gap is admissible only with search evidence — what was searched, the nearest notions found and distinguished (negative-finding bar; see the [Lean–Sage Integration Model](../lean/Lean-Sage-Integration-Model.md)).

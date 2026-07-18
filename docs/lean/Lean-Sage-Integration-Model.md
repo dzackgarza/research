@@ -1,7 +1,7 @@
 # Lean–Sage Integration Model
 
 The ratified layering and working discipline for the alignment work, distilled from the [#251](https://github.com/dzackgarza/research/issues/251) record (2026-07-16/17; the A/B/C model is user-ratified and canonical).
-This page is the implementation map from the mathematical presentation to code — implementation vocabulary (manifest, conformance, dispatch, realization owner) is legal here and only here (style-guide [P6](Mathematical-Language-Style-Guide.md#p6)).
+This page is the implementation map from the mathematical presentation to code — implementation vocabulary (manifest, conformance, dispatch, realization owner) is legal here and only here (style-guide [P6](../contributing/Mathematical-Language-Style-Guide.md#p6)).
 
 ## Layering {#sec-layering}
 
@@ -46,10 +46,10 @@ Cataloguing is mathematical research, not inventory transcription: the presentat
 
 ## Registry semantics {#sec-registry-semantics}
 
-The manifest's gap rows follow the recording discipline in [Contribution Guidelines](Contribution-Guidelines.md#sec-cg-recording-a-gap): a `pending`/no-analog row is a negative claim about Mathlib, admissible only with search evidence.
+The manifest's gap rows follow the recording discipline in [Contribution Guidelines](../contributing/Contribution-Guidelines.md#sec-cg-recording-a-gap): a `pending`/no-analog row is a negative claim about Mathlib, admissible only with search evidence.
 The standing prior the registry encodes: every notion here is standard mathematics with an upstream anchor at ingredient level — absence of a single prepackaged name is not a gap (compositional constructions count), and a wrong alias at the root of the single auditable source is poison where a pending row is honest.
 
-The per-contributor workflow — the authoring checkpoint, dictionary-first generation, Lean authoring rules, and correction handling — lives in the [Contribution Guidelines](Contribution-Guidelines.md); the failure modes it guards are catalogued in the [Design Hazard Ledger](Design-Hazard-Ledger.md).
+The per-contributor workflow — the authoring checkpoint, dictionary-first generation, Lean authoring rules, and correction handling — lives in the [Contribution Guidelines](../contributing/Contribution-Guidelines.md); the failure modes it guards are catalogued in the [Design Hazard Ledger](../contributing/Design-Hazard-Ledger.md).
 
 ## Cop-out visibility {#sec-cop-out-visibility}
 
