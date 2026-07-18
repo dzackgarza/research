@@ -1,12 +1,12 @@
 # Mathematical Language Style Guide
 
 Normative for all issue bodies, comments, plan cards, docstrings, and manifest prose in the Lean/Sage alignment work (#251 and descendants).
-This is the **final edition** of the guide developed on [#251](https://github.com/dzackgarza/research/issues/251) (2026-07-17): it supersedes the two earlier editions posted there, and its own recorded reversals are kept visible (§ self-audit) because the failure mode they name — auditor vocabulary escaping its own audit — is the one this guide exists to prevent.
+This is the **final edition** of the guide developed on [#251](https://github.com/dzackgarza/research/issues/251) (2026-07-17): it supersedes the two earlier editions posted there, and its own recorded reversals are kept visible (@sec-self-audit) because the failure mode they name — auditor vocabulary escaping its own audit — is the one this guide exists to prevent.
 
-## 1. Governing principles
+## Governing principles {#sec-governing-principles}
 
-**P1 — Standard-first, relative to a declared corpus and auditor.** Grounding is not bare citability; it is citability *within the reference corpus the intended auditor commands*. The declared corpus is the working mathematician's literature: nLab, the Stacks Project, Kerodon, the standard canon (Higher Algebra/HTT, EGA/SGA-class references, standard textbooks), and math.xx arXiv papers, including specialized ones.
-Advanced or niche *mathematics* is fair game; the corpus excludes, as grounding sources for prose: model theory / type theory / formal logic literature, programming-language theory, and Mathlib's naming conventions (anchors, not vocabulary — P1b).
+[]{#p1}**P1 — Standard-first, relative to a declared corpus and auditor.** Grounding is not bare citability; it is citability *within the reference corpus the intended auditor commands*. The declared corpus is the working mathematician's literature: nLab, the Stacks Project, Kerodon, the standard canon (Higher Algebra/HTT, EGA/SGA-class references, standard textbooks), and math.xx arXiv papers, including specialized ones.
+Advanced or niche *mathematics* is fair game; the corpus excludes, as grounding sources for prose: model theory / type theory / formal logic literature, programming-language theory, and Mathlib's naming conventions (anchors, not vocabulary — [P1b](#p1b)).
 
 A term is admissible in mathematical prose iff **(i)** it has a definition in the corpus, and **(ii)** a working mathematician can check any particular use against that definition — misuse must be *detectable* by the intended auditor.
 A term with a rigorous definition the auditor does not command is an unauditable degree of freedom — the original disease (inert, unpoliceable assertions) in citation-laundered form.
@@ -14,28 +14,28 @@ Citing a corpus the auditor cannot police is authority-laundering, not grounding
 A noun failing (i) or (ii) is a defect; the nearest corpus-standard term is used even when imperfect, with the mismatch stated explicitly.
 Coinage is forbidden.
 
-**P1b — Mathlib names are anchors, not prose.** Mathlib declarations appear only code-formatted in identification columns (`ObjectProperty.inverseImage`, `FullSubcategory`), never as prose nouns.
+[]{#p1b}**P1b — Mathlib names are anchors, not prose.** Mathlib declarations appear only code-formatted in identification columns (`ObjectProperty.inverseImage`, `FullSubcategory`), never as prose nouns.
 Prose says "isomorphism-invariant predicate on objects", "inverse image of a full subcategory".
 The mathematical text stays auditable by mathematicians who have never opened Mathlib — the population the DSL exists to serve.
 
-**P2 — One term, one type.** Every term carries a declared categorical type: object of **Cat**, 1-morphism (functor), 2-morphism (natural transformation), object property (predicate / replete full subcategory), invariant (function on isomorphism classes), section (named lift of a classifier), witness (chosen auxiliary data), or **obstruction** (a named object or class whose vanishing is the property, together with the exact sequence it sits in).
+[]{#p2}**P2 — One term, one type.** Every term carries a declared categorical type: object of **Cat**, 1-morphism (functor), 2-morphism (natural transformation), object property (predicate / replete full subcategory), invariant (function on isomorphism classes), section (named lift of a classifier), witness (chosen auxiliary data), or **obstruction** (a named object or class whose vanishing is the property, together with the exact sequence it sits in).
 Using a term at the wrong type is a language error with the same severity as a mathematical error, because it becomes one downstream.
 
-**P3 — Uniform formalism, differentiated vocabulary.** All classifiers are functors `ι_A : S_A → Cat`. The property / structure / stuff trichotomy is *computed* from `ι_A` (full + replete ⇒ property; faithful ⇒ structure; general ⇒ stuff), never declared.
-But prose must respect the computed class: property-language ("C is P") is legal only when the fiber is contractible; otherwise structure-language is mandatory ("C equipped with", plus a named section — P4). The formalism does not case-split; the vocabulary must.
+[]{#p3}**P3 — Uniform formalism, differentiated vocabulary.** All classifiers are functors `ι_A : S_A → Cat`. The property / structure / stuff trichotomy is *computed* from `ι_A` (full + replete ⇒ property; faithful ⇒ structure; general ⇒ stuff), never declared.
+But prose must respect the computed class: property-language ("C is P") is legal only when the fiber is contractible; otherwise structure-language is mandatory ("C equipped with", plus a named section — [P4](#p4)). The formalism does not case-split; the vocabulary must.
 
-**P4 — Name every section.** When `ι_A` is not full, lifts are choices and may be many (R-Mod is monoidal under ⊗, ⊕, …). Every lift is a separate theorem row with a name (`RMod^(⊗)`, `RMod^(⊕)`), and every consumer of structure references the named lift, never "the" structure.
+[]{#p4}**P4 — Name every section.** When `ι_A` is not full, lifts are choices and may be many (R-Mod is monoidal under ⊗, ⊕, …). Every lift is a separate theorem row with a name (`RMod^(⊗)`, `RMod^(⊕)`), and every consumer of structure references the named lift, never "the" structure.
 Unnamed structure-reference is a defect class (lift ambiguity), detectable by grep.
 Property-level facts are exempt because contractibility of the fiber — itself a theorem, discharged once from fullness of `ι_A` — makes the reference unambiguous.
 
-**P5 — Notation carries claims.** Symbols are typed: `↪` asserts full + replete; `=` vs `≅` vs `≃` are distinct claims; strict vs pseudo (2-)pullback is stated.
+[]{#p5}**P5 — Notation carries claims.** Symbols are typed: `↪` asserts full + replete; `=` vs `≅` vs `≃` are distinct claims; strict vs pseudo (2-)pullback is stated.
 Writing `↪` for a non-full forgetful is a false assertion, not a stylistic liberty.
 
-**P6 — Layer quarantine.** Mathematical prose and implementation prose never share vocabulary.
+[]{#p6}**P6 — Layer quarantine.** Mathematical prose and implementation prose never share vocabulary.
 Terms with no mathematical analogue (rollup owner, route audit, anti-bypass, conformance, manifest, dispatch) are legal only in the implementation map from the presentation to code, and mathematical terms are never overloaded to mean implementation artifacts.
 The gradient never flows upward: a term needed to talk about the machinery must not appear in the mathematics the machinery expresses.
 
-## 2. The admissibility taxonomy (three ways a term fails)
+## The admissibility taxonomy (three ways a term fails) {#sec-admissibility}
 
 **Class A — foreign-discipline technical terms.** Rigorously defined, but in a literature the auditor does not command: model theory ("interpretation", "signature", "sort", "theory" in the logician's sense), type theory ("judgment", "elaboration" as prose), universal-algebra register, PL theory.
 The *most* dangerous class, strictly worse than nonsense: they read as either colloquial or authoritative, the auditor cannot tell which, and cannot detect abuse — any concept can be tagged with them, unfalsifiably.
@@ -45,17 +45,17 @@ The boundary is *which literature*, not *how well-known*.)
 
 **Class B — coinage and LLM-isms.** No definition anywhere: "landing refinement", "specimen", "spine", "cut", "seed", "tether".
 Audit against these is vacuous — nothing to check a use against.
-Visibly nonstandard, hence less dangerous than Class A; still banned, with the §3 replacements.
+Visibly nonstandard, hence less dangerous than Class A; still banned, with the @sec-replacement-dictionary replacements.
 
 **Class C — colliding overloads.** A corpus word repurposed with a second meaning ("kernel" for a codebase, "core" for centrality, "fiber" for a locus).
 Audit is actively misled: the auditor applies the corpus definition and reaches wrong conclusions.
 
-## 3. Replacement dictionary (organizational → standard)
+## Replacement dictionary (organizational → standard) {#sec-replacement-dictionary}
 
 | Deprecated | Replacement |
 | --- | --- |
 | ontology | categorical presentation / diagram in **Cat** |
-| project lexicon | the defined terms of the presentation: its generators (categories, functors), predicates, and named constructions — a glossary with types, not a logic-theoretic "signature" (that translation itself violated P1 and is withdrawn) |
+| project lexicon | the defined terms of the presentation: its generators (categories, functors), predicates, and named constructions — a glossary with types, not a logic-theoretic "signature" (that translation itself violated [P1](#p1) and is withdrawn) |
 | corpus (for the generated object) | generated sub-2-category |
 | graph, tree (for the whole object) | 2-diagram in **Cat**; "tree" only for an actual poset that is one |
 | node | category (object of **Cat**) |
@@ -94,7 +94,7 @@ Rules following from the table:
 
 - "Minimal graph" is meaningless unqualified: minimality is relative to required targets, permitted closure operations, and an equivalence on presentations — an inclusion-minimal generating subdiagram, not necessarily unique.
 
-## 4. Formation conventions
+## Formation conventions {#sec-formation-conventions}
 
 - **Ambient 2-category**: `Cat_𝒰` of 𝒰-small categories, functors, natural transformations; coherence claims name their 2-cells.
 
@@ -107,12 +107,12 @@ Rules following from the table:
 
 - **Presheaf-level primitives**: form families are declared as presheaves (valued in R-Mod when their comparison identities require it, e.g. `polar ∘ diag = 2`); element categories, projections, and induced functors are generated from presheaf-level natural transformations.
 
-## 5. Standard terms to keep unchanged
+## Standard terms to keep unchanged {#sec-standard-terms}
 
 category of elements, Grothendieck construction, core, arrow category, full subcategory, replete, natural isomorphism, automorphism group, torsor, monoidal / abelian / preadditive category, kernel, cokernel, discriminant form, genus, isometry.
 These are already the standard names; do not re-coin them.
 
-## 6. Audit hooks (each rule induces a mechanical check)
+## Audit hooks (each rule induces a mechanical check) {#sec-audit-hooks}
 
 1. **Grounding**: every noun resolves via the dictionary or a corpus citation; unresolved noun ⇒ red.
 
@@ -126,9 +126,9 @@ These are already the standard names; do not re-coin them.
 
 6. **Layer quarantine**: implementation vocabulary in mathematical prose (or conversely) ⇒ red.
 
-7. **Homological presentation**: a property defined as a bare map-condition ("$f$ injective/iso") with no named obstruction object and no exact sequence it sits in ⇒ red (Settled Rulings A5).
+7. **Homological presentation**: a property defined as a bare map-condition ("$f$ injective/iso") with no named obstruction object and no exact sequence it sits in ⇒ red (Settled Rulings [A5](Settled-Mathematical-Rulings.md#a5)).
 
-## Self-audit (recorded reversals, kept visible)
+## Self-audit (recorded reversals, kept visible) {#sec-self-audit}
 
 - "multi-sorted signature" (first edition's replacement for "project lexicon"): Class A, model theory.
   Withdrawn and replaced.
@@ -136,6 +136,6 @@ These are already the standard names; do not re-coin them.
 - "semantic / executable interpretation": the first edition explicitly *kept* it on the ground that model theory defines "interpretation" — a textbook Class A error (grounding claimed in a corpus the audience does not command).
   Reversed, and recorded rather than silently edited.
 
-- Mathlib identifiers as prose nouns: demoted to code-formatted anchors (P1b).
+- Mathlib identifiers as prose nouns: demoted to code-formatted anchors ([P1b](#p1b)).
 
 Sweep obligation: the guide's dictionary grows by adding any further coinage found in older artifacts here, never by adjudicating it ad hoc.

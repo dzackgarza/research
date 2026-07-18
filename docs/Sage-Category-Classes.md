@@ -3,7 +3,7 @@
 The full catalogue of named categories and wrapper constructors in `sage.categories` (SageMath 10.9 source, pinned commit `686dc1a`), one row per class: source-linked name, module, role, and the syntactic defining axiom chain or construction where the class is axiom- or construction-defined.
 The last column marks classes confirmed loaded in the runtime walk at 10.10.beta0. Entrypoint: [Sage Category Framework Inventory](Sage-Category-Framework-Inventory.md).
 
-| category | module | role | defined by | loaded @10.10 |
+| category | module | role | defined by | loaded at 10.10 |
 | --- | --- | --- | --- | --- |
 | [`IdempotentSemigroups`](https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/examples/semigroups_cython.pyx#L13) | `examples.semigroups_cython` | example-only | — | – |
 | [`AlgebrasCategory`](https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/algebra_functor.py#L640) | `algebra_functor` | framework/helper | — | ✓ |

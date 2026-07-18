@@ -3,7 +3,7 @@
 Distilled from the ratified record on [#251](https://github.com/dzackgarza/research/issues/251) (2026-07-16/17). That record is a progression: later rulings supersede earlier artifacts, and this page carries only the surviving form, with supersession noted where a ruling replaced an earlier one.
 Execution artifacts (per-method mappings, generated graphs, the quarry ledger) remain on the issue and its PRs; vocabulary is governed by the [Mathematical Language Style Guide](Mathematical-Language-Style-Guide.md).
 
-## The master principle: propositions become morphisms one level up
+## The master principle: propositions become morphisms one level up {#sec-master-principle}
 
 A predicate asserted about a thing at level *n* is replaced by a morphism at level *n*+1, and the assertion becomes a factorization.
 A bare declaration ("C is abelian", "this group is finite", "O(L) preserves b") is inert prose — checkable only by a human re-reading it — whereas a morphism is subject to a calculus: it composes, pulls back, whiskers, and satisfies commutativity conditions, so "is this claim consistent with the others?"
@@ -11,7 +11,7 @@ becomes "does this diagram commute?"
 — a mechanical question.
 The whole framework is three moves — **classify, factor, lift** — applied uniformly at every level.
 
-## Classifiers; property / structure / stuff is computed, never declared
+## Classifiers; property / structure / stuff is computed, never declared {#sec-classifiers}
 
 Every axiom package *A* is presented by a classifier functor `ι_A : S_A → Cat`. The trichotomy is read off `ι_A`:
 
@@ -29,14 +29,14 @@ Conflating the two cases was identified as the most consequential language error
 Every property-defined subcategory is replete (closed under isomorphism); a predicate not invariant under isomorphism may not define a subcategory.
 Conservativity is the minimal requirement on "axiomatic" forgetfuls: axioms may cut objects and add data, but must not create isomorphisms.
 
-## Ownership and transport are factorization, not doctrine
+## Ownership and transport are factorization, not doctrine {#sec-ownership-and-transport}
 
 Which properties descend along forgetfuls is a definition, not a rule with exceptions: a property P at C is *inherited* iff it factors through the forgetful `U : C → B` — iff the full subcategory `C_P` is the pullback of `B_Q`. **A property is declared once, at the terminal category through which it factors, and everywhere else it is the pullback** (Mathlib anchor: `ObjectProperty.inverseImage` / `FullSubcategory`). Failure of factorization is the counterexample, stated once: ℤ is finitely generated as a group but not as a monoid, so finite generation does not factor through the monoid forgetful.
 
 The entire derived corpus of subcategories (finite sets, finite abelian groups, finite commutative rings, f.g. free modules, the lattice and discriminant-form categories) is the set of instances of one pullback square.
 A manually-declared subcategory that is derivable is a defect — extensional correctness does not excuse hand-instantiation.
 
-## Present, don't enumerate
+## Present, don't enumerate {#sec-present-dont-enumerate}
 
 Declared 1-cells are **adjacent forgetfuls only**; every other functor is generated — a composite, an inverse image, a Grothendieck construction, or induced/whiskered — and is marked generated.
 Relations (agreement of alternative composites, distinguished factorizations) are imposed as identifications of composites: named natural isomorphisms, not extra edges.
@@ -45,7 +45,7 @@ The ring diamond (additive vs multiplicative underlying-set composites) is the s
 
 Parameterized families are declared at presheaf level, valued in R-Mod when their comparison identities require it (e.g. `polar ∘ diag = 2` does not parse for Set-valued presheaves); element categories, projections, and induced functors (pushforward in the value module, diag, polar, base change) are generated from presheaf-level natural transformations.
 
-## Level 2: comparisons are 2-cells, theorems are lifts
+## Level 2: comparisons are 2-cells, theorems are lifts {#sec-level-2}
 
 The relationships the project kept needing have no home at level 1; refusing level 2 forces faking them (e.g. `O(L) ↪ Aut(L)` drawn as an edge between fake objects).
 In **Cat** as a 2-category:
@@ -59,14 +59,14 @@ In **Cat** as a 2-category:
 
 Truncation is content, not decoration: set-level and groupoid-level constructions are not interchanged, and π₀ does not commute with homotopy pullbacks (see the genus ruling in [Settled Mathematical Rulings](Settled-Mathematical-Rulings.md)).
 
-## Name every section
+## Name every section {#sec-name-every-section}
 
 When a classifier is not full, lifts are choices and may be many (R-Mod is monoidal under ⊗ and under ⊕ — genuinely distinct points of the fiber).
 Every lift is a separate named theorem row (`RMod^(⊗)`, `RMod^(⊕)`), and every consumer of structure references the named lift, never "the" structure.
 An unnamed structure-reference is a defect (lift ambiguity), detectable by grep — it is precisely the drift vector by which one session proves something about ⊕ while a later session silently consumes it for ⊗. Property-level references are exempt because contractibility of the fiber makes them unambiguous.
 The subscript goes on the *lift*, never on the classifier: one classifier, many named sections; a classifier node per structure is generator-proliferation one level up.
 
-## Generation discipline
+## Generation discipline {#sec-generation-discipline}
 
 The positive criterion that replaced the growing defect-class list:
 
@@ -82,3 +82,25 @@ The single per-entry audit question: **is this item at the lowest level at which
 The presentation is therefore maintained as machine-checked data with standard vocabulary.
 
 The hazards these disciplines guard against — with the mechanism by which each one occurs — are catalogued in the [Design Hazard Ledger](Design-Hazard-Ledger.md); the authoring workflow that applies them is the [Contribution Guidelines](Contribution-Guidelines.md).
+
+## The principles, named {#sec-principles-named}
+
+The disciplines above and their object-level consequences are named for reference; each is developed in the section or ruling cited.
+
+**Meta-conventions — how mathematics is registered here.**
+
+- **M1 — Lowest generating level.** Every item sits at the lowest categorical level at which it is generated; over-leveling and under-leveling are one defect. The master audit (Generation discipline, above; [Settled Rulings A1](Settled-Mathematical-Rulings.md#master-rulings)).
+- **M2 — Propositions become morphisms one level up.** A predicate becomes a lift; its class (property / structure / stuff) is *computed* from the classifier, and the vocabulary must respect the computed class (the master principle and the classifier section, above).
+- **M3 — Auditability is audience-relative.** A term is admissible iff the working algebraist can detect its misuse; foreign-discipline vocabulary is worse than coinage ([Style Guide P1 / Class A](Mathematical-Language-Style-Guide.md)).
+- **M4 — The artifact is the dictionary; the diagram is its image.** Generate-then-audit is forbidden; the registered object is checked data, never prose to be re-derived (Generation discipline, above).
+- **M5 — Naming scales with non-fullness.** Where a classifier is full, reference without naming is sound; where it is not, every consumer names its section (Name every section, above).
+- **H1 — Homological presentation** *(peer of M1).* A property is defined by the exact sequence it sits in and the invariants that sequence exposes, not by a condition on a single map ([Settled Rulings A5](Settled-Mathematical-Rulings.md#master-rulings)).
+
+**Object-conventions — what the mathematics is.**
+
+- **O1 — One primitive per family, parametrized.** Right modules are $\mathrm{Mod}_{R^{\mathrm{op}}}$; $O(L)$ is $\operatorname{Aut}(L)$; $\mathbf{Ab}$ is the $\mathbb{Z}$-fiber. First-class treatment of a generic's instance is a defect ([Settled Rulings A2](Settled-Mathematical-Rulings.md#master-rulings)).
+- **O2 — The datum of a form is the $W$-valued form**, never the map to a dual (that is derived polarization) (@sec-forms).
+- **O3 — Predicates own at their factoring node; transport is pullback.** The domain of transport is properties of underlying data; finite generation is the boundary counterexample (Ownership and transport, above; [Settled Rulings A3](Settled-Mathematical-Rulings.md#master-rulings)).
+- **O4 — Implications are witnessed theorem edges, not nested definitions** (Level 2, above).
+- **O5 — Everything up to equivalence**; strict category-equalities are forbidden and each canonical equivalence carries a named witness ([Settled Rulings A4](Settled-Mathematical-Rulings.md#master-rulings)).
+- **O6 — Truncation level is content and must be stated** (Level 2, above; the genus ruling).

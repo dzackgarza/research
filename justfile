@@ -20,6 +20,30 @@ default:
 build: _lock
     uv build
 
+# Refresh the docs bibliography from the shared ~/.pandoc bib (never frozen in-repo; CI fetches it from the pandoc-config repo)
+docs-bib:
+    cp ~/.pandoc/bib/references.bib docs/references.bib
+
+# Gate: render the docs book and fail on undefined citations, unresolved cross-refs, or broken anchor links
+docs-check: docs-bib
+    python3 scripts/docs_check.py
+
+# Add an nLab citation to docs/refs-web.bib by scraping its canonical /cite page
+cite-nlab page:
+    python3 scripts/cite_add.py nlab "{{page}}"
+
+# Verify a Stacks Project tag resolves (cite as [@stacks-TAG]; links via the global The25 entry)
+cite-stacks tag:
+    python3 scripts/cite_add.py stacks "{{tag}}"
+
+# Regenerate docs/refs-web.bib from canonical sources (re-scrapes every nLab entry; hand-edits are lost)
+refs-web-refresh:
+    python3 scripts/refs_web_refresh.py
+
+# Serve the docs site locally with live reload
+docs-preview: docs-bib
+    quarto preview docs --no-browser --port 7654
+
 [private]
 _lock:
     uv lock
