@@ -126,7 +126,7 @@ These are already the standard names; do not re-coin them.
 
 6. **Layer quarantine**: implementation vocabulary in mathematical prose (or conversely) ⇒ red.
 
-7. **Homological presentation**: a property defined as a bare map-condition ("$f$ injective/iso") with no named obstruction object and no exact sequence it sits in ⇒ red (Settled Rulings [A5](Settled-Mathematical-Rulings.md#a5)).
+7. **Homological presentation**: a property defined as a bare map-condition ("$f$ injective/iso") with no named obstruction object and no exact sequence it sits in ⇒ red (Settled Rulings [A5](../framework/Settled-Mathematical-Rulings.md#a5)).
 
 ## Self-audit (recorded reversals, kept visible) {#sec-self-audit}
 

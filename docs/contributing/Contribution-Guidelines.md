@@ -1,7 +1,7 @@
 # Contribution Guidelines
 
 Forward-facing workflow for contributing to the Lean/Sage alignment work.
-Doctrine lives in [Categorical Presentation Principles](Categorical-Presentation-Principles.md) and [Settled Mathematical Rulings](Settled-Mathematical-Rulings.md); architecture in the [Lean–Sage Integration Model](Lean-Sage-Integration-Model.md); vocabulary in the [Mathematical Language Style Guide](Mathematical-Language-Style-Guide.md).
+Doctrine lives in [Categorical Presentation Principles](Categorical-Presentation-Principles.md) and [Settled Mathematical Rulings](../framework/Settled-Mathematical-Rulings.md); architecture in the [Lean–Sage Integration Model](../lean/Lean-Sage-Integration-Model.md); vocabulary in the [Mathematical Language Style Guide](Mathematical-Language-Style-Guide.md).
 Each rule below guards one or more entries in the [Design Hazard Ledger](Design-Hazard-Ledger.md) (cited as H*n*).
 
 ## Derive first, admit declarations second {#sec-cg-derive-first-admit-declarations-second}
@@ -38,7 +38,7 @@ Grounding is a generation constraint, not a post-hoc audit (H8, H9). Concretely:
 
 ## Route through the integration model {#sec-cg-route-through-the-integration-model}
 
-Classify every notion before implementing (details in the [Integration Model](Lean-Sage-Integration-Model.md)):
+Classify every notion before implementing (details in the [Integration Model](../lean/Lean-Sage-Integration-Model.md)):
 
 - **(A)** Mathlib provides it → wrap and declare its seat; the DSL never holds definitions.
 

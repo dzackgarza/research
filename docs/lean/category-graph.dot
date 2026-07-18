@@ -1,0 +1,189 @@
+// Category & functor graph — planning-stage manifest for the Lean category hierarchy.
+// Nodes = categories; edges = the preferred forgetful/inclusion functors; clusters = towers.
+// THIS FILE IS THE MANIFEST. Edit it, then `just graph` regenerates the interactive SVG.
+// Later, a Lean -> manifest exporter can emit this file from the CatDSL declarations (#251).
+digraph G {
+  rankdir=BT;
+  compound=true;
+  graph [fontname="Helvetica", fontsize=13, labelloc=t, nodesep=0.28, ranksep=0.55];
+  node  [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=12];
+  edge  [color="#9ca3af", arrowsize=0.7];
+
+  subgraph cluster_bedrock {
+    label="sets & bedrock — Finite/Countable declared here, pulled back everywhere";
+    node [fillcolor="#dbeafe", color="#1d4ed8"];
+    Objects [label="Cat₁Objects"];
+    Sets;
+    SetsCtble [label="Sets.Countable"];
+    SetsFin [label="Sets.Finite"];
+    SwPM [label="SetsWithPartialMaps"];
+  }
+
+  subgraph cluster_tower {
+    label="magma tower — declared axioms: Associative, Commutative, Unital, Inverse; layers derived";
+    node [fillcolor="#dcfce7", color="#15803d"];
+    Ab;
+    CMon [label="CommMonoid"];
+    Gfg [label="Grp.f.g."];
+    Gfp [label="Grp.f.p."];
+    Grp;
+    Mag [label="Magma"];
+    MagAssoc [label="Semigroup"];
+    MagComm [label="CommMagma"];
+    MagInv [label="InvUnitalMagma"];
+    MagUnital [label="UnitalMagma"];
+    Mon [label="Monoid"];
+  }
+
+  subgraph cluster_rings {
+    label="ring categories — declared axioms at Ring; Domain/Field derived";
+    node [fillcolor="#fef9c3", color="#a16207"];
+    CRing [label="CommRing"];
+    Ded [label="Dedekind"];
+    Div [label="Ring.Division"];
+    Dom [label="Domain"];
+    Field;
+    FieldPID [label="Field (⊂ PID)"];
+    NZD [label="Ring.NoZeroDiv"];
+    Noeth [label="Ring.Noeth"];
+    PID;
+    Ring;
+    UFD;
+  }
+
+  subgraph cluster_mods {
+    label="module categories — one family Mod(A); right modules = Mod(Rᵒᵖ); ℤ-branch via ℤ initial";
+    node [fillcolor="#fae8ff", color="#a21caf"];
+    BiModRR [label="Bimodules(R,R)"];
+    Mfg [label="Mod.f.g."];
+    Mfree [label="Mod.free"];
+    Mod [label="Modules(R)"];
+    ModZ [label="Modules(ℤ)"];
+    Mproj [label="Mod.proj"];
+    Mtf [label="Mod.tors-free"];
+    Mtors [label="Mod.tors"];
+    RModr [label="Modules(Rᵒᵖ)"];
+  }
+
+  subgraph cluster_forms {
+    label="form categories — seeds are the presheaves Bil/Quad; ∫ = Elᵒᵖ derived; axioms at the total";
+    node [fillcolor="#ffe4e6", color="#be123c"];
+    Balt [label="∫Bil.alt"];
+    Bev [label="∫SymBil.even"];
+    Bil [label="∫Bil_R(W)"];
+    Bnd [label="∫Bil.sym.nondeg"];
+    Bskew [label="∫Bil.skew"];
+    Bsym [label="∫Bil.sym"];
+    DF [label="disc. forms"];
+    DFq [label="disc. quad. forms"];
+    Ev [label="∫Bil.even"];
+    Gen [label="Genera(R)"];
+    Lat [label="Lat(R)"];
+    LatEv [label="Lat.even"];
+    ND [label="∫Bil.nondeg"];
+    Quad [label="∫Quad_R(W)"];
+    UM [label="∫Bil.perf (unimod)"];
+  }
+
+  subgraph cluster_meta {
+    label="Cat₁ (meta) & groupoids — properties are full subcats; Monoidal is structure";
+    node [fillcolor="#f1f5f9", color="#475569"];
+    Cat1 [label="Cat₁"];
+    CatAb [label="Cat₁.Abelian"];
+    CatAdd [label="Cat₁.Additive"];
+    CatCoker [label="Cat₁.HasCokernels"];
+    CatConc [label="Cat₁.Concrete"];
+    CatMon [label="Cat₁.Monoidal (str.)"];
+    Grpd;
+  }
+
+  // ---- functor edges ----
+  Sets -> SwPM;
+  Sets -> Grpd;
+  SwPM -> Objects;
+  SetsFin -> Sets;
+  SetsFin -> SetsCtble;
+  SetsCtble -> Sets;
+  Mag -> Sets;
+  MagAssoc -> Mag;
+  MagComm -> Mag;
+  MagUnital -> Mag;
+  MagInv -> MagUnital;
+  Mon -> MagAssoc;
+  Mon -> MagUnital;
+  CMon -> MagComm;
+  CMon -> Mon;
+  Grp -> MagInv;
+  Grp -> Mon;
+  Ab -> MagComm;
+  Ab -> Grp;
+  Ab -> ModZ;
+  Ab -> CatAb;
+  Gfg -> Grp;
+  Gfp -> Gfg;
+  Ring -> Mon;
+  Ring -> Ab;
+  Noeth -> Ring;
+  NZD -> Ring;
+  Div -> Ring;
+  CRing -> Ring;
+  Dom -> NZD;
+  Dom -> CRing;
+  UFD -> Dom;
+  PID -> UFD;
+  FieldPID -> PID;
+  Ded -> Noeth;
+  Ded -> Dom;
+  Mod -> Ab;
+  Mod -> Mod;
+  Mod -> BiModRR;
+  Mod -> RModr;
+  Mod -> CatMon;
+  Mod -> CatAb;
+  ModZ -> Mod;
+  BiModRR -> Mod;
+  BiModRR -> RModr;
+  RModr -> Ab;
+  Mfree -> Mproj;
+  Mfree -> Mtf;
+  Mproj -> Mod;
+  Mtf -> Mod;
+  Mtors -> Mod;
+  Mfg -> Mod;
+  Bil -> Mod;
+  Bil -> Bil;
+  Bil -> CatMon;
+  Quad -> Mod;
+  Quad -> Bsym;
+  Balt -> Bskew;
+  Bskew -> Bil;
+  Bsym -> Bil;
+  Bsym -> Quad;
+  ND -> Bil;
+  UM -> ND;
+  Ev -> Bil;
+  Bnd -> Bsym;
+  Bnd -> ND;
+  Bev -> Bsym;
+  Bev -> Ev;
+  Lat -> Bnd;
+  Lat -> DF;
+  Lat -> Gen;
+  LatEv -> Ev;
+  LatEv -> Lat;
+  LatEv -> DFq;
+  DF -> Bnd;
+  DFq -> Quad;
+  DFq -> DF;
+  Cat1 -> Grpd;
+  CatMon -> Cat1;
+  CatAb -> CatAdd;
+  CatAb -> CatCoker;
+  CatAdd -> Cat1;
+  CatCoker -> Cat1;
+  CatConc -> Cat1;
+  Grpd -> Sets;
+  Grpd -> Cat1;
+  Field -> Div;
+  Field -> CRing;
+}

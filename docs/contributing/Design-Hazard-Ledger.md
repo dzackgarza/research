@@ -28,7 +28,7 @@ A proof that a bespoke accessor agrees with the standard invariant is evidence t
 
 **Mechanism.** When no single upstream constant names a construction, the mathematics is experienced as missing, producing false gaps and false contribution opportunities.
 Standard mathematics is frequently compositional.
-**Guard.** Gap epistemics ([Integration Model](Lean-Sage-Integration-Model.md)): a gap claim is a negative claim requiring search evidence with nearest notions distinguished; compositional expressions count as matches.
+**Guard.** Gap epistemics ([Integration Model](../lean/Lean-Sage-Integration-Model.md)): a gap claim is a negative claim requiring search evidence with nearest notions distinguished; compositional expressions count as matches.
 
 ## H5 — Singleton reification {#sec-h5-singleton-reification}
 
