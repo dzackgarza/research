@@ -40,6 +40,10 @@ cite-stacks tag:
 refs-web-refresh:
     python3 scripts/refs_web_refresh.py
 
+# Regenerate the interactive category graph from its DOT manifest (docs/lean/category-graph.dot)
+graph:
+    python3 scripts/build_graph.py
+
 # Serve the docs site locally with live reload
 docs-preview: docs-bib
     quarto preview docs --no-browser --port 7654

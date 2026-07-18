@@ -32,6 +32,6 @@ Live execution state is the GitHub [issue tree](https://github.com/dzackgarza/re
 
 - **[Lean–Sage Integration Model](lean/Lean-Sage-Integration-Model.md)** — layering, the A/B/C routing model, ForMathlib contract, registry semantics, cop-out visibility.
 
-**Interactive:** the [generating graph](generating-graph.html) — the pan/zoom canvas of the category-and-functor graph from the research#251 record.
+**Interactive:** [the category graph](lean/Category-Graph.md) — the pan/zoom canvas of the category-and-functor graph, generated from its GraphViz manifest (research#251).
 
 More pages (user stories, feature doctrine, proof burdens) will be linked here as they land.
