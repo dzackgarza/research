@@ -13,15 +13,7 @@ The whole framework is three moves — **classify, factor, lift** — applied un
 
 ## Classifiers; property / structure / stuff is computed, never declared {#sec-classifiers}
 
-Every axiom package *A* is presented by a classifier functor `ι_A : S_A → Cat`. The trichotomy is read off `ι_A`:
-
-- **full + replete ⇒ property.** The fiber over a category is empty or contractible; "C has A" is a proposition, and *uniqueness of the lift is itself a theorem*, discharged once from fullness.
-
-- **faithful, not full ⇒ structure.** The fiber is a (generally non-trivial) groupoid; "C has A" is a *choice*, and each lift is a separate theorem-with-witness.
-
-- **general ⇒ stuff.**
-
-A proof that C has A is a lift of the point `1 → Cat` selecting C through `ι_A` (the source is the terminal category, not a one-object full subcategory).
+The stuff / structure / property trichotomy and its computation from the classifier `ι_A : S_A → Cat` are @def-property-structure-stuff in the [Mathematical Framework](../framework/Mathematical-Framework.md). As an authoring rule it is *computed, never declared*: full + replete ⇒ property ("C has A" a proposition, uniqueness of the lift discharged once from fullness); faithful-not-full ⇒ structure (each lift a separate theorem-with-witness); general ⇒ stuff. A proof that C has A is a lift of the point `1 → Cat` selecting C through `ι_A` (the source is the terminal category, not a one-object full subcategory).
 Properties of categories (HasInitial, HasKernels, HasCokernels, HasFiniteProducts) get replete full subcategories of **Cat**; genuine structure (monoidal, preadditive/abelian in Mathlib's packaging) gets a forgetful 2-functor (`MonCat → Cat`), never a subcategory inclusion.
 Conflating the two cases was identified as the most consequential language error in the record.
 
@@ -31,7 +23,7 @@ Conservativity is the minimal requirement on "axiomatic" forgetfuls: axioms may 
 
 ## Ownership and transport are factorization, not doctrine {#sec-ownership-and-transport}
 
-Which properties descend along forgetfuls is a definition, not a rule with exceptions: a property P at C is *inherited* iff it factors through the forgetful `U : C → B` — iff the full subcategory `C_P` is the pullback of `B_Q`. **A property is declared once, at the terminal category through which it factors, and everywhere else it is the pullback** (Mathlib anchor: `ObjectProperty.inverseImage` / `FullSubcategory`). Failure of factorization is the counterexample, stated once: ℤ is finitely generated as a group but not as a monoid, so finite generation does not factor through the monoid forgetful.
+The transport mechanism — a property `P` at `C` descends along a forgetful `U : C → B` iff it factors through `U`, and is then the pullback `C_P = U^{-1}(B_Q)` — is @def-transport-property. As an authoring rule it is a definition, not a rule with exceptions: **a property is declared once, at the terminal category through which it factors, and everywhere else it is the pullback** (Mathlib anchor: `ObjectProperty.inverseImage` / `FullSubcategory`). Failure of factorization is the counterexample, stated once: ℤ is finitely generated as a group but not as a monoid, so finite generation does not factor through the monoid forgetful.
 
 The entire derived corpus of subcategories (finite sets, finite abelian groups, finite commutative rings, f.g. free modules, the lattice and discriminant-form categories) is the set of instances of one pullback square.
 A manually-declared subcategory that is derivable is a defect — extensional correctness does not excuse hand-instantiation.

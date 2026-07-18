@@ -19,10 +19,10 @@ A third, the composite $\operatorname{El}$ convention (@sec-el), is stated in fu
 | --- | --- |
 | Category of elements $\operatorname{El}(P)$ | @def-form-categories — $\mathcal B_{R,W},\ \mathcal Q_{R,W}$ |
 | Grothendieck construction (fibration form) | @def-isometry-groups bitorsors, @sec-genus-sec genus |
-| Replete (strictly full) subcategory | @def-axiom, @def-form-axioms, @sec-derived |
-| Inverse image of an object property | @def-transport, every derived category in @sec-derived |
-| Pullback in $\mathbf{Cat}$ (@sec-constructions) | @def-transport, @def-even-lattice, @def-discquad |
-| Stuff / structure / property | @def-property-structure; Style Guide [P3](../contributing/Mathematical-Language-Style-Guide.md#p3)–[P4](../contributing/Mathematical-Language-Style-Guide.md#p4) |
+| Replete (strictly full) subcategory | @def-axiom-classifier, @def-form-axioms, @sec-derived |
+| Inverse image of an object property | @def-transport-property, every derived category in @sec-derived |
+| Pullback in $\mathbf{Cat}$ (@sec-constructions) | @def-transport-property, @def-even-lattice, @def-discquad |
+| Stuff / structure / property | @def-property-structure-stuff; Style Guide [P3](../contributing/Mathematical-Language-Style-Guide.md#p3)–[P4](../contributing/Mathematical-Language-Style-Guide.md#p4) |
 | Core $\operatorname{Core}(\mathcal C)$ | @def-discriminant, @def-isometry-groups, @sec-genus-sec |
 | Automorphism-group functor $\operatorname{Aut}$ | @def-isometry-groups and @def-discriminant-rep |
 | Torsor / bitorsor | @def-isometry-groups |
@@ -44,18 +44,18 @@ The program invokes the fibration picture only where a form category is read as 
 *Citation:* [@stacks-003S] (categories fibred in groupoids); [@nlab:grothendieck_construction].
 
 **Replete (strictly full) subcategory.** A *replete full* — equivalently *strictly full* — subcategory is a full subcategory whose objects form an isomorphism-closed class; equivalently it is cut out by an isomorphism-invariant predicate on objects.
-This is the meaning the program assigns to the arrow $\hookrightarrow$: an axiom (@def-axiom) is such an inclusion, and every membership claim is a factorization through it.
+This is the meaning the program assigns to the arrow $\hookrightarrow$: an axiom (@def-axiom-classifier) is such an inclusion, and every membership claim is a factorization through it.
 *Citation:* [@stacks-001D] (subcategory / full / strictly full); [@nlab:replete_subcategory]. Mathlib anchor: `CategoryTheory.ObjectProperty` and its full-subcategory construction.
 
 **Inverse image of an object property.** For a functor $F\colon\mathcal C\to\mathcal D$ and a replete full $\mathcal D.P\hookrightarrow\mathcal D$, the *inverse image* $\mathcal C\times_{\mathcal D}\mathcal D.P$ is the full subcategory of $\mathcal C$ on the objects $X$ with $FX\in\mathcal D.P$.
-This is the pullback that @def-transport uses to *transport* a property along $F$, and it is the sole mechanism by which any derived category in @sec-derived acquires its defining conditions.
+This is the pullback that @def-transport-property uses to *transport* a property along $F$, and it is the sole mechanism by which any derived category in @sec-derived acquires its defining conditions.
 *Citation:* [@nlab:replete_subcategory] (pullback-stability); Mathlib anchor: `ObjectProperty.inverseImage`. The *legality* of a given transport — that $P$ actually factors through the forgetful data $F$ sees — is a separate ruling (see [Settled Rulings](Settled-Mathematical-Rulings.html); the finitely-generated predicate is the boundary counterexample).
 
 **Pullback in $\mathbf{Cat}$.** The strict pullback of categories is equivalence-invariant **only** along isofibrations; for the non-full classifiers that present *structure* it must be replaced by the pseudo-pullback.
 This is not a citation line but a statement the program depends on; it is established in @sec-pullback-cat below.
 
 **Stuff, structure, property.** Given a classifier $\iota_A\colon\mathcal C.A\to\mathcal C$, the trichotomy is *computed*, not declared: $\iota_A$ full and faithful makes $A$ a **property** (each fibre is empty or contractible, so "$A$ holds" is a proposition); $\iota_A$ merely faithful makes $A$ a **structure**; a general $\iota_A$ forgets **stuff**. That "a property is a proposition" is then a *lemma* of fullness, not a convention.
-*Citation:* [@BS07, §2] (the canonical source); [@nlab:stuff_structure_property]. This is the content behind @def-property-structure and Style Guide [P3](../contributing/Mathematical-Language-Style-Guide.md#p3)–[P4](../contributing/Mathematical-Language-Style-Guide.md#p4).
+*Citation:* [@BS07, §2] (the canonical source); [@nlab:stuff_structure_property]. This is the content behind @def-property-structure-stuff and Style Guide [P3](../contributing/Mathematical-Language-Style-Guide.md#p3)–[P4](../contributing/Mathematical-Language-Style-Guide.md#p4).
 
 **Core.** The *core* $\operatorname{Core}(\mathcal C)$ is the maximal subgroupoid — all objects, only the isomorphisms — and is the right adjoint to the inclusion $\mathbf{Grpd}\hookrightarrow\mathbf{Cat}$, hence functorial.
 Its functoriality is precisely why @def-discriminant can site the discriminant construction on cores: the assignment is functorial for isometries even though it is not for arbitrary form-preserving maps.
@@ -78,13 +78,13 @@ $\mathrm{Mod}_R$, $\mathbf{Ab}$, and the form categories are complete and cocomp
 **Abelian category.** The ambient for the @sec-discriminant exact sequences, and the boundary case for property-vs-structure.
 An abelian category is an additive category with all kernels and cokernels in which coimage and image agree [@stacks-0109] (Def.
 12.5.1). Its additive ($\mathbf{Ab}$-enriched) structure is **property-like**: it is unique when it exists, recovered from the finite biproducts every abelian category has (a category with finite biproducts carries a canonical, unique commutative-monoid enrichment; when the hom-monoids are groups this is the $\mathbf{Ab}$-enrichment).
-So *being abelian* is a **property** of the bare category — no data is chosen — which is the reading @def-property-structure needs.
+So *being abelian* is a **property** of the bare category — no data is chosen — which is the reading @def-property-structure-stuff needs.
 The functors that make the @sec-discriminant machinery functorial, however, are the **additive/exact** ones, and abelian categories with exact functors form a subcategory of $\mathbf{Cat}$ that is **not full**; this is the sense in which "abelian" is *structure*, and it is why Mathlib's `CategoryTheory.Abelian` extends `CategoryTheory.Preadditive` [@stacks-09SE] (preadditive/additive categories).
 The two readings do not conflict once the morphisms are named: membership is a property (unique enrichment), while the enrichment-preserving functors are a non-full class, so any consumer of the exact-sequence machinery names that class as its section (@sec-pullback-cat, [P4](../contributing/Mathematical-Language-Style-Guide.md#p4)).
 
 ## Pullback in $\mathbf{Cat}$: isofibrations and pseudo-pullback {#sec-pullback-cat}
 
-**Why this needs establishing.** @def-transport transports a property by the strict pullback $\mathcal C\times_{\mathcal D}\mathcal D.P$, and @sec-derived builds every headline category as such a pullback.
+**Why this needs establishing.** @def-transport-property transports a property by the strict pullback $\mathcal C\times_{\mathcal D}\mathcal D.P$, and @sec-derived builds every headline category as such a pullback.
 But the strict pullback in $\mathbf{Cat}$ is **not** invariant under equivalence of its input functors: replacing a leg by an equivalent functor can change the strict pullback by more than an equivalence.
 Since the whole program is stated up to equivalence (O5), an uncorrected strict pullback is ill-defined data.
 
@@ -93,13 +93,13 @@ The relevant facts:
 
 - Strict pullback along an isofibration **is** equivalence-invariant, and coincides with the pseudo-pullback [@nlab:isofibration; @nlab:2-pullback; @Joh23, B1.1].
 
-- **Replete full inclusions are isofibrations.** Hence for *properties* — @def-axiom, all of @def-form-axioms, and every @sec-derived pullback along a property classifier — the strict pullback of @def-transport is legitimate exactly as written.
+- **Replete full inclusions are isofibrations.** Hence for *properties* — @def-axiom-classifier, all of @def-form-axioms, and every @sec-derived pullback along a property classifier — the strict pullback of @def-transport-property is legitimate exactly as written.
   This is the theorem that licenses the program's notation.
 
 - **Structure classifiers are not full**, so their legs are not covered by the above.
-  For these — the monoidal structures $\otimes,\oplus$ and the orthogonal sum $\perp$ of @def-property-structure, and abelian-over-preadditive — the correct construction is the **pseudo-pullback** ($2$-pullback) [@nlab:2-pullback; @stacks-02XA].
+  For these — the monoidal structures $\otimes,\oplus$ and the orthogonal sum $\perp$ of @def-property-structure-stuff, and abelian-over-preadditive — the correct construction is the **pseudo-pullback** ($2$-pullback) [@nlab:2-pullback; @stacks-02XA].
 
-**Ruling induced.** Read @def-transport as: a pullback along a *property* classifier is strict (equivalently pseudo, by the isofibration fact); a pullback along a *structure* classifier is pseudo.
+**Ruling induced.** Read @def-transport-property as: a pullback along a *property* classifier is strict (equivalently pseudo, by the isofibration fact); a pullback along a *structure* classifier is pseudo.
 The notation need not case-split, but @def-discquad (DiscQuad as a pullback along the bilinearization $\beta$) and every structure-consumer are read in the pseudo sense.
 This is the compatibility the Definitions page otherwise assumes silently, and it is forced by the "everything up to equivalence" premise (O5), which is why it is not optional.
 

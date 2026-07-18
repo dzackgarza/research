@@ -29,7 +29,7 @@ Its five instances are one defect:
 []{#a2}**A2 — No first-class instance of a generic.** *Seat: @sec-isometry.* Any first-class treatment — a node, a bespoke definition, special-cased notation — of an instance of a generic construction is a defect (the object-as-node instance of [A1](#a1), made explicit because it recurred most).
 $O(L) = \operatorname{Aut}(L)$, $GL(M) = \operatorname{Aut}_{\mathrm{Mod}}(M)$, Galois and unit groups, $\pi_1$: each is a value of a functor, interrogated through the functor, never declared.
 
-[]{#a3}**A3 — Transport is legal only through the forgetful.** *Seat: @def-transport.* A property transports by pullback (@def-transport) exactly when it is a property of the underlying data the functor sees — i.e. it factors through the forgetful functor.
+[]{#a3}**A3 — Transport is legal only through the forgetful.** *Seat: @def-transport-property.* A property transports by pullback (@def-transport-property) exactly when it is a property of the underlying data the functor sees — i.e. it factors through the forgetful functor.
 Properties of the underlying set or module (finite, torsion-free) pull back freely; structure-relative ones do not and are declared per node.
 **Boundary counterexample:** finite generation.
 The same abelian group $\mathbb Q$ is finitely generated as a $\mathbb Q$-module (rank one) and *not* as a $\mathbb Z$-module (it needs $\{1/n\}$); generation depends on the available operations, so it does not factor through the underlying set (Sage records this as `FinitelyGeneratedAsMagma`, never a bare `FinitelyGenerated`) and is owned at each structured node.

@@ -41,29 +41,7 @@ The module properties the program pulls back are declared as replete full subcat
 
 ## Axioms as subcategories; transport {#sec-axioms}
 
-::: {#def-axiom}
-## Axiom
-
-An axiom on a category $\mathcal{C}$ is a **property-defined replete full subcategory**, declared once at the node that owns the property:
-
-$$
-\iota_A : \mathcal{C}.A \hookrightarrow \mathcal{C}.
-$$
-
-A proof that an object satisfies $A$ is a factorization through $\iota_A$.
-:::
-
-::: {#def-transport}
-## Transport
-
-For a functor $F : \mathcal{C} \to \mathcal{D}$ and a declared $\mathcal{D}.P \hookrightarrow \mathcal{D}$, the transported subcategory is the pullback
-
-$$
-\mathcal{C}.P \;=\; \mathcal{C} \times_{\mathcal{D}} \mathcal{D}.P .
-$$
-
-This single rule generates every transported axiom; a property is declared at the highest node where it is well defined and only pulled back below.
-:::
+The axiom-classifier, transport, and property/structure machinery is the [Mathematical Framework](Mathematical-Framework.md#sec-axiom-classifiers): an axiom is a classifier $\iota_A : \mathcal{C}.A \to \mathcal{C}$ (@def-axiom-classifier), in the property case a replete full subcategory cut out at the node that owns the property; a property transports by pullback along a forgetful functor (@def-transport-property), declared at the highest node where it is well defined and pulled back below; and whether a lift is property or structure is computed from the classifier, never declared (@def-property-structure-stuff). This section applies that calculus to modules and forms; the two inclusions it needs beyond the generic machinery are:
 
 ::: {#def-derived-expressions}
 ## Derived expressions
@@ -77,13 +55,7 @@ Categories built from declared axioms by intersection, pullback, and the constru
 Inclusions such as $\mathrm{PID} \subset \mathrm{UFD} \subset \mathrm{Dom}$ are full subcategory inclusions whose witness is a theorem rather than a defining axiom; they are recorded as such.
 :::
 
-::: {#def-property-structure}
-## Property vs structure
-
-A *property* of a category is a lift of its classifying point through a full inclusion (being a groupoid, having cokernels); a *structure* is a lift through a forgetful functor that is not full (a monoidal structure — one category may carry several: $\otimes$ and $\oplus$ on modules, orthogonal sum $\perp$ on forms). Which of the two a lift is gets **computed** from the classifier (full $\Rightarrow$ property, faithful $\Rightarrow$ structure), never declared. Being **abelian** is the boundary case: the additive enrichment is *property-like* (unique when it exists, recovered from biproducts), so membership is a property; but the exact functors that carry the @sec-discriminant machinery form a non-full class, so a consumer of that machinery names its section. See [Categorical Foundations](Categorical-Foundations.html) (abelian; §F.3.1).
-:::
-
-*Seated rulings:* the calculus itself is in [Categorical Presentation Principles](../contributing/Categorical-Presentation-Principles.md); [relation kinds are not fungible](Settled-Mathematical-Rulings.md#relation-kinds-are-not-fungible).
+*Seated rulings:* the calculus itself is in [Categorical Presentation Principles](../contributing/Categorical-Presentation-Principles.md); [relation kinds are not fungible](Settled-Mathematical-Rulings.md#relation-kinds-are-not-fungible). The **abelian** boundary case — additive enrichment is property-like (membership a property), while the exact functors carrying the discriminant machinery are a non-full class (a structure a consumer names) — is developed in [Categorical Foundations](Categorical-Foundations.md#sec-constructions).
 
 ## Bilinear and quadratic form categories {#sec-forms}
 
@@ -218,7 +190,7 @@ $$
 \mathbf{DiscBil}_{\mathbb{Z}} \;=\; \mathcal{B}_{\mathbb{Z},\, \mathbb{Q}/\mathbb{Z}}\big[\, \mathrm{Symmetric} \wedge \mathrm{Nondegenerate} \wedge (U \circ \pi)^{*}(\mathrm{Finite}) \,\big],
 $$
 
-the finiteness axiom pulled back from sets through the underlying-set functor (@def-transport). In general the torsion fiber takes $W = K/R$, and the same expression defines $\mathbf{DiscBil}_R$ — the codomain of the @def-discriminant discriminant functor for general $R$, not only $\mathbb{Z}$.
+the finiteness axiom pulled back from sets through the underlying-set functor (@def-transport-property). In general the torsion fiber takes $W = K/R$, and the same expression defines $\mathbf{DiscBil}_R$ — the codomain of the @def-discriminant discriminant functor for general $R$, not only $\mathbb{Z}$.
 :::
 
 ::: {#def-discquad}
@@ -412,7 +384,7 @@ The generation calculus uses a fixed small set of category-level constructors, e
 
 - $\pi_0$ — connected components, landing invariants at the set level (@sec-genus-sec);
 
-- pullback of a replete full subcategory along a functor — the transport rule (@def-transport);
+- pullback of a replete full subcategory along a functor — the transport rule (@def-transport-property);
 
 - intersection of replete full subcategories — derived nodes (@def-derived-expressions).
 
