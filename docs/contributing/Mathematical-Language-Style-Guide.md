@@ -1,4 +1,4 @@
-# Mathematical Language Style Guide
+# Language Style Guide
 
 Normative for all issue bodies, comments, plan cards, docstrings, and manifest prose in the Lean/Sage alignment work (#251 and descendants).
 This is the **final edition** of the guide developed on [#251](https://github.com/dzackgarza/research/issues/251) (2026-07-17): it supersedes the two earlier editions posted there, and its own recorded reversals are kept visible (@sec-self-audit) because the failure mode they name — auditor vocabulary escaping its own audit — is the one this guide exists to prevent.
@@ -12,7 +12,7 @@ A term is admissible in mathematical prose iff **(i)** it has a definition in th
 A term with a rigorous definition the auditor does not command is an unauditable degree of freedom — the original disease (inert, unpoliceable assertions) in citation-laundered form.
 Citing a corpus the auditor cannot police is authority-laundering, not grounding.
 A noun failing (i) or (ii) is a defect; the nearest corpus-standard term is used even when imperfect, with the mismatch stated explicitly.
-Coinage is forbidden.
+Coinage is forbidden — and so is invented *definition*: a construction is stated as its corpus definition with a citation, never reconstructed from memory (the nerve is the homotopy coherent nerve [Kerodon `00KS`], not "composable chains"), and a special-case reduction is recorded as a lemma, never presented as the definition.
 
 []{#p1b}**P1b — Mathlib names are anchors, not prose.** Mathlib declarations appear only code-formatted in identification columns (`ObjectProperty.inverseImage`, `FullSubcategory`), never as prose nouns.
 Prose says "isomorphism-invariant predicate on objects", "inverse image of a full subcategory".
@@ -21,7 +21,7 @@ The mathematical text stays auditable by mathematicians who have never opened Ma
 []{#p2}**P2 — One term, one type.** Every term carries a declared categorical type: object of **Cat**, 1-morphism (functor), 2-morphism (natural transformation), object property (predicate / replete full subcategory), invariant (function on isomorphism classes), section (named lift of a classifier), witness (chosen auxiliary data), or **obstruction** (a named object or class whose vanishing is the property, together with the exact sequence it sits in).
 Using a term at the wrong type is a language error with the same severity as a mathematical error, because it becomes one downstream.
 
-[]{#p3}**P3 — Uniform formalism, differentiated vocabulary.** All classifiers are functors `ι_A : S_A → Cat`. The property / structure / stuff trichotomy is *computed* from `ι_A` (full + replete ⇒ property; faithful ⇒ structure; general ⇒ stuff), never declared.
+[]{#p3}**P3 — Uniform formalism, differentiated vocabulary.** All classifiers are functors `ι_A : S_A → Cat`. The property / structure / stuff classification is *computed* from `ι_A` (full + replete ⇒ property; faithful ⇒ structure; general ⇒ stuff), never declared.
 But prose must respect the computed class: property-language ("C is P") is legal only when the fiber is contractible; otherwise structure-language is mandatory ("C equipped with", plus a named section — [P4](#p4)). The formalism does not case-split; the vocabulary must.
 
 []{#p4}**P4 — Name every section.** When `ι_A` is not full, lifts are choices and may be many (R-Mod is monoidal under ⊗, ⊕, …). Every lift is a separate theorem row with a name (`RMod^(⊗)`, `RMod^(⊕)`), and every consumer of structure references the named lift, never "the" structure.
@@ -34,6 +34,9 @@ Writing `↪` for a non-full forgetful is a false assertion, not a stylistic lib
 []{#p6}**P6 — Layer quarantine.** Mathematical prose and implementation prose never share vocabulary.
 Terms with no mathematical analogue (rollup owner, route audit, anti-bypass, conformance, manifest, dispatch) are legal only in the implementation map from the presentation to code, and mathematical terms are never overloaded to mean implementation artifacts.
 The gradient never flows upward: a term needed to talk about the machinery must not appear in the mathematics the machinery expresses.
+
+[]{#p7}**P7 — One name, declared once.** Each object, notion, or construction has exactly one name or notation across the whole corpus, and no synonyms circulate.
+There are two admissible shapes, chosen at the defining occurrence and never varied afterward: either (i) the full, possibly abstruse definitional form is used everywhere unchanged (e.g. the full pullback square, drawn every time), or (ii) the definition introduces the full form together with one explicitly declared shorthand and only the shorthand is used thereafter (e.g. `C.A` declared for the pullback square at its definition, or $\mathbf{Cat}_\omega := \lim_n \mathbf{Cat}_n$). A second name for the same object — even a "clearly equal" one — is a defect; the fix is to pick the canonical name and route every other occurrence to it, not to note the equality.
 
 ## The admissibility taxonomy (three ways a term fails) {#sec-admissibility}
 
@@ -81,6 +84,9 @@ Audit is actively misled: the auditor applies the corpus definition and reaches 
 | residue | missing definition / unformalized theorem |
 | gap row | documented missing formalization (keep — already precise) |
 | Synthetic layer | provisional axiomatization (declarations with unproved theorems) |
+| base (of an axiom) | there is none: an axiom *is* the universal fibration $u_A\colon E_A\to B_A$, with *classifying category* $B_A$ (codomain) and *total category* $E_A$ (domain) |
+| transport (of an axiom); "axiom transported to $\mathcal C$" | the *axiom on $\mathcal C$* — the pullback of $u_A$ along the classifying functor; there is no separate transport operation (and it is not transport-of-structure $a\ast_R b:=f(a)\ast_S f(b)$) |
+| owned at / ownership (of an axiom) | *classifying category*; *defined over* — the universal property already fixes where the axiom is defined |
 
 Rules following from the table:
 
@@ -109,8 +115,10 @@ Rules following from the table:
 
 ## Standard terms to keep unchanged {#sec-standard-terms}
 
-category of elements, Grothendieck construction, core, arrow category, full subcategory, replete, natural isomorphism, automorphism group, torsor, monoidal / abelian / preadditive category, kernel, cokernel, discriminant form, genus, isometry.
+category of elements, Grothendieck construction, core, arrow category, full subcategory, replete, natural isomorphism, automorphism group, torsor, monoidal / abelian / preadditive category, kernel, cokernel, discriminant form, genus, isometry, universal fibration, classifying category, total category.
 These are already the standard names; do not re-coin them.
+An *axiom* is a universal fibration $u_A\colon E_A\to B_A$ (classifying category $B_A$, total category $E_A$); the *axiom on $\mathcal C$* is the pullback along the classifying functor.
+It has no "base", and it is not "transported" — the pullback *is* the axiom on $\mathcal C$.
 
 ## Audit hooks (each rule induces a mechanical check) {#sec-audit-hooks}
 
