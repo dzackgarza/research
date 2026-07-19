@@ -52,8 +52,9 @@ Bad prose on its own terms. The fix is a rewrite; no mathematical content change
 
 **PR-1 — Self-narration.** The prose describes what the document is or does instead of doing
 it. *Banned:* "This is the framework that situates the conversion; it is mathematics, not
-procedure." *Fix:* "The classifier, transport, and intersection machinery for the Sage →
-Lean conversion." — state the content, do not characterize the text.
+procedure." *Fix:* "The specified forgetful functor, its pullbacks, and the intersections
+of replete full subcategories used in the Sage-to-Lean conversion." State the content; do
+not characterize the text.
 
 **PR-2 — Reflexive negative parallelism.** A notion is characterized by contrast with the
 alternative it rejects: "X, not Y" / "is X, never Y" / "not just X but Y" / "X rather than
@@ -102,6 +103,14 @@ not "Axiom Classifier"); straight quotes, not curly; no emoji; no collaborative 
 language ("let me know", "I hope this helps", knowledge-cutoff apologies); no bold-header
 bullet lists where prose is clearer.
 
+**PR-10 — Project process inside mathematical exposition.** A mathematical chapter pauses
+to discuss rulings, audit procedure, implementation status, editorial policy, or the work
+needed to maintain the book. *Banned:* "This ruling guards the conversion pipeline and is
+enforced by the audit." *Fix:* state the mathematical proposition in the chapter. Put
+contribution rules in the contributing part of the book, implementation state in its
+public execution record, and audit instructions in the agent-facing policy that governs
+the audit.
+
 ---
 
 ## Evasion tells (`EV-*`)
@@ -111,18 +120,22 @@ that a definition was not written or an object not named. The remediation is nev
 phrase — it is the work.
 
 **EV-1 — Vibe-adjectives for a definition.** Impressive qualifiers replace the definition
-itself. *Banned:* "Equality of objects is contextual and witnessed, given as data." *Fix:*
-write the definition — "Let $\mathcal C$ be a category and $a,b \in \operatorname{Ob}(\mathcal
-C)$; then $a = b$ in $\mathcal C$ if there is an isomorphism $a \to b$." "Contextual and
-witnessed" is a mood; the definition is the work.
+itself. *Banned:* "The subcategory is structurally complete under sameness." *Fix:* write
+the definition — "A full subcategory $\mathcal D \subseteq \mathcal C$ is *replete* if
+every object of $\mathcal C$ isomorphic to an object of $\mathcal D$ belongs to
+$\mathcal D$." "Structurally complete under sameness" is a mood; the definition is the
+work.
 
 **EV-2 — Carrier / "carries".** "carries" and "carrier" name a structure without naming the
 morphism that is the structure — hand-waving past the precision. *Banned:* "objects that
 carry both structures"; "an object together with a carried structure"; "the underlying set
-carries the operation." *Fix:* name the morphism or section — a subobject is a pair $(N,
-f\colon N \hookrightarrow M)$; a structure is a named lift of a classifier; the underlying
-set is the value $U(X)$ of the forgetful functor. ("carried monomorphism/inclusion", where
-the morphism *is* named, is fine.) Banned outright in the [AGENTS.md](../AGENTS.md) index.
+carries the operation." *Fix:* name the morphism or section — a representative of a
+subobject of $M$ is a monomorphism $f\colon N\hookrightarrow M$, and subobjects are
+isomorphism classes of such monomorphisms; a structure on $X$ is a chosen object in the
+fiber over $X$ of a specified forgetful functor $U\colon \mathcal S\to\mathcal C$; the
+underlying set is the value $U(X)$ of the forgetful functor. Name a monomorphism or
+inclusion directly; avoid "carried" even when the morphism is named. Banned outright in
+the [AGENTS.md](../AGENTS.md) index.
 
 **EV-3 — Engineering collective nouns.** "package", "frame", "pipeline", "suite", "layer"
 gather mathematical objects under a software noun instead of naming them. *Banned:* "the
@@ -141,16 +154,17 @@ Colloquial or reinvented parlance in place of the standard notion, or of the def
 repo already fixes. The remediation is the established definition — cite it.
 
 **MA-1 — Reinvented established term.** A term the repo defines is used with a meaning from
-priors instead of that definition. *Banned:* "$a = b$ is a proposition" (a prior — the repo
-defines equality as an isomorphism, `@def-equality-of-objects`); "axiom" used loosely, where
-the repo's axiom is the universal classifier $u_A \colon E_A \to B_A$
-(`@def-axiom-classifier`). *Fix:* use the in-repo definition and cite it; if the definition
-seems wrong, fix it at its source, do not shadow it with a prior.
+another notion. *Banned:* writing $a=b$ after constructing only an isomorphism
+$a\cong b$; calling a map a "classifier" without stating the universal property it
+satisfies. *Fix:* use the standard term and symbol. If a project definition conflicts
+with that meaning, repair the defining occurrence; do not propagate the conflict through
+later prose.
 
 **MA-2 — Coinage for a standard notion.** A private word stands in for a notion with a
 standard name. *Banned:* "cut" / "axiom cut" (→ full subcategory defined by a property, or
-classifier); "refinement" for a subcategory (→ full subcategory / classifier); "least common
-category" (→ the **Meet** of the argument categories). *Fix:* the standard term or the
+specified forgetful functor); "refinement" for a subcategory (→ full subcategory); "least common
+category" (→ a greatest lower bound in the specified preorder of categories, if it
+exists). *Fix:* the standard term or the
 repo's term; full inventory and citations in `.agents/references/terminology-dictionary.md`.
 
 **MA-3 — Notation colliding with a standard meaning.** A symbol is reused against its
@@ -181,12 +195,12 @@ by fullness and faithfulness and extends to $k$-stuff. *Fix:* name by content ("
 
 **MA-7 — Backwards or premature notation.** A symbol is introduced with `:=` pointing from
 the standard, primitive notation to the coinage, or coined notation is used before it is
-defined (see [Requirements](#requirements), definition before use). *Banned:* "the total
-$E_A := B_A.A$" — $E_A$ is the standard universal-bundle total space, $B_A.A$ the coined
-shorthand, so the `:=` is reversed; and $\mathcal C.A$ is only defined in the next sentence.
-*Fix:* define the primitive directly ($E_A$ is the total), introduce the shorthand once it
-has a definition ($\mathcal C.A := \mathcal C \times_{B_A} E_A$), and state the identity in
-the correct direction ($B_A.A = E_A$).
+defined (see [Requirements](#requirements), definition before use). *Banned:* "$E_A :=
+B_A.A$" before either notation has a defining occurrence. *Fix:* first specify the family
+$p_A\colon E_A\to B_A$ and the map $\chi\colon\mathcal C\to B_A$, then draw their pullback.
+Only afterward introduce the shorthand $\mathcal C.A$ for its apex. A specialization such
+as the pullback along $\operatorname{id}_{B_A}$ is stated with its canonical isomorphism,
+not used to define the family backwards.
 
 **MA-8 — Compressed notation where the diagram is owed.** A pullback written as the apex
 $A \times_C B$, or a universal family named only by its classifying map $S \to M$, in place
@@ -197,26 +211,21 @@ fiber-product notation only as a named shorthand for the apex once its square is
 vertical-presentation convention, [Categorical Presentation Principles
 M6](contributing/Categorical-Presentation-Principles.md#sec-draw-the-square).
 
-**MA-9 — Colloquial "ownership" for an axiom's base.** "owns", "owned at", "ownership" name
-where an axiom or predicate lives, but there is no ownership relation in the mathematics: an
-axiom is a universal fibration (`@def-axiom-classifier`), *defined on* its base $B_A$ by its
-universal property, and on any other category it is the pullback (`@def-axiom-through-functor`).
-*Banned:* "commutativity is owned at $\mathbf{Mag}$"; "the node that owns the property";
-"the object owns its local invariants". *Fix:* name the base — "commutativity is *based at*
-$\mathbf{Mag}$", "the node where the property is *defined*", "the invariants *live on* the
-object"; the universal property already fixes the base, so no ownership notion is needed.
+**MA-9 — Colloquial "ownership" for a mathematical relation.** "owns", "owned at", and
+"ownership" replace the relation that should be stated. *Banned:* "commutativity is owned
+at $\mathbf{Mag}$"; "the node that owns the property"; "the object owns its local
+invariants". *Fix:* name the relation — "commutativity is a property of magmas", "the
+category whose objects satisfy the property", "the invariants are defined on the
+object".
 (Organizational "owned by" a wiki, doc, or issue — surface responsibility, not mathematics —
 is a separate, admissible sense.)
 
-**MA-10 — "base" or "transport" for an axiom.** An axiom *is* the universal fibration
-$u_A \colon E_A \to B_A$ (`@def-axiom-classifier`); it has no "base" — $B_A$ is the
-*classifying category*, $E_A$ the *total category* — and it is not "transported": the *axiom
-on $\mathcal C$* is the pullback along the classifying functor, and "axiom transported to
-$\mathcal C$" names nothing further (nor is it transport-of-structure,
-$a \ast_R b := f(a) \ast_S f(b)$). *Banned:* "$\mathrm{Assoc}$ has base $\mathbf{Mag}$"; "the
-property transports to $\mathcal C$". *Fix:* "$\mathrm{Assoc}$ has classifying category
-$\mathbf{Mag}$"; "the axiom on $\mathcal C$ is the pullback" — full vocabulary in the
-[Language Style Guide](contributing/Mathematical-Language-Style-Guide.md#sec-replacement-dictionary).
+**MA-10 — Classifier language without a universal property.** "classifier", "classifying
+category", and "universal family" are used as labels before a representing or universal
+property is stated. *Banned:* "$u_A\colon E_A\to B_A$ is the axiom classifier" with no
+description of the objects it classifies or the equivalence it represents. *Fix:* state
+the property or structure directly. If a classifying object or fibration exists, state
+its universal property and call a change along a functor the pullback family.
 
 ---
 
@@ -236,12 +245,12 @@ parentheses is not one and is out of scope.
   prose or a definition that states the distinction.
 - **Smuggled theorem or equivalence** — "(equivalently, $X$)", an "iff" asserted in a
   parenthesis, often over undefined terms. *Banned:* "full and faithful (equivalently, a
-  replete full subcategory)" — "replete" and "subcategory" are undefined and an equivalence
-  is asserted aside. *Fix:* expand into explicit mathematics — "Let $F \colon \mathcal C \to
-  \mathcal D$ be a functor; $F$ is *replete* if …, and $\mathcal C$ is a *subcategory* of
-  $\mathcal D$ if …; then $F$ is fully faithful iff $\mathcal C$ is a replete subcategory of
-  $\mathcal D$." The explicit formalization is the safe default: precise, and demotable to a
-  remark, a cited theorem, or a footnote later.
+  replete full subcategory)" — a functor is being identified with its essential image and
+  an equivalence is asserted aside. *Fix:* expand into explicit mathematics — "If
+  $F\colon\mathcal C\to\mathcal D$ is fully faithful, then $F$ induces an equivalence from
+  $\mathcal C$ to its replete full essential image in $\mathcal D$." Cite the result and
+  define any term not already established. The expanded statement can later be demoted to
+  a remark, cited theorem, or footnote.
 - **Legitimate qualification** — a small, correct, load-bearing modifier; keep inline.
   *Fine as is:* "fibers are (possibly nontrivial) groupoids."
 - **Smuggled example** — "(e.g. …)" carrying a genuine example. *Fix:* promote to a
@@ -263,44 +272,31 @@ Each is auditable against the artifact; independent reality, not a sentence, det
 whether one holds.
 
 - **Definition before use.** A term *and every symbol* is defined before it is used
-  (including the ambient universe $\mathcal U$), and chapters and definitions are ordered so
-  that dependencies precede dependents (what "dependency order" would have asserted).
-- **Foundational order: primitives before derived.** The ambient weak higher category
-  $\mathbf{Cat}_\omega$ is defined before anything internal to it and before "morphism," which
-  presupposes it: $\mathbf{Cat}_\omega \to$ internal hom $\to$ cells $\to$ the enrichment tower
-  $\mathbf{Cat}_0, \dots, \mathbf{Cat}_\omega := \lim_n \mathbf{Cat}_n$, then "a
-  *category* is an object of $\mathbf{Cat}_1$," then equality/equivalence of objects
-  immediately. Never define
-  the ambient in terms of categories — a category is an object of $\mathbf{Cat}_1$, so that
-  inverts the dependency and is circular.
-- **Define intrinsically in $\mathbf{Cat}_\omega$; recover the space-level notion as a
-  $\Pi$-image.** The theory is synthetic — no simplicial, quasicategorical, or type-theoretic
-  model is primitive. Every notion is defined intrinsically at the level of $\mathbf{Cat}_\omega$
-  first; the functor $\Pi \colon \mathbf{Cat}_\omega \to \mathbf{Spaces}$ sends a category to its
-  homotopy type, and a notion usually stated in $\mathbf{Spaces}$ is the $\Pi$-image of a
-  $\mathbf{Cat}_\omega$ notion — defined upstairs, with the space-level version recovered by
-  applying $\Pi$, never taken as primitive. Truncation is the endofunctor
-  $\tau_{\le n} \colon \mathbf{Cat}_\omega \to \mathbf{Cat}_\omega$ (an object is $n$-truncated
-  iff the unit $C \to \tau_{\le n} C$ is an equivalence), not an operation on spaces that objects
-  are then tested against.
-- **Do not detect by homs; reformulate as a property of a functor, and keep detection a
-  theorem.** A definition of the shape "$X$ has $P$ iff $\operatorname{Hom}_C(Y, X)$ has $P$ for
-  every $Y$" is detection-by-probes — it reads $X$ through every other object. Reformulate it as
-  "$X$ has $P$ iff the representable $h_X = \operatorname{Hom}_C(-, X)$ has $P$", reducing to a
-  property of a *functor*, and define $P$ there. The probe form is non-ideal for two reasons: it
-  hides the intrinsic $\mathbf{Cat}_\omega$ definition that generalizes and recovers it, and it
-  promotes to a definition what should be a theorem. **Detection by probes is a theorem, not a
-  definition**: "$P$ holds iff $\operatorname{Hom}(D, -)$ (or its $\Pi$-image) has $P$ for all
-  $D$" is a characterization to be proven; using it to *define* $P$ inverts the definition/theorem
-  order. A terminal object is $[D, T] \simeq *$; a contractible object is $C \to *$ an equivalence
-  in $\mathbf{Cat}_\omega$ — not "$\operatorname{Map}(X, t)$ is contractible for all $X$". Mapping
-  spaces are themselves *derived*, $\operatorname{Maps} = \Pi_\infty[-, -]$.
+  (including the universe $\mathcal U$), and chapters and definitions are ordered so that
+  dependencies precede dependents (what "dependency order" would have asserted).
+- **Models and derived constructions are named.** A weak higher category, mapping space,
+  homotopy type, truncation, limit, or completion is not determined by its name alone.
+  State the chosen model or universal property, the diagram and transition functors for a
+  limit, and the exact functor used for every derived construction. Do not make a
+  model-specific formula into an unqualified definition.
+- **Definitions and characterizations are distinct.** Define a notion from a cited source
+  before giving representable, Yoneda, mapping-space, or other detection criteria. A
+  characterization is stated and proved as a theorem with its hypotheses; it is not
+  silently promoted to the definition, and an arbitrary property of objects is not
+  transferred to representable functors without defining the corresponding functor
+  property.
+- **Classifier terminology states what is represented.** "Classifier", "classifying
+  object", "classifying category", and "universal family" are used only with the
+  represented functor or explicit universal property. A specified forgetful functor is
+  not called a classifier merely because its fibers record properties or structure.
 - **Definitions are corpus-grounded, never invented.** A definition, like a term (Style
   Guide [P1](contributing/Mathematical-Language-Style-Guide.md#p1)), comes from the declared
   corpus (Kerodon, HTT, the Stacks Project, nLab, standard texts) with a citation; a
-  plausible definition reconstructed from memory is a defect even when close — the nerve is
-  *not* "composable chains," it is the homotopy coherent nerve (Kerodon tag `00KS`), of which
-  the ordinary nerve is a restriction.
+  plausible definition reconstructed from memory is a defect even when close. For an
+  ordinary category, the ordinary nerve is the simplicial set of composable chains. When
+  using simplicial categories to model $\infty$-categories, specify the homotopy coherent
+  nerve (Kerodon tag `00KS`); on an ordinary category regarded as a simplicial category
+  with discrete mapping spaces, it agrees with the ordinary nerve.
 - **A reduction is a lemma, not a definition.** Define the general construction; that it
   restricts or reduces to a familiar special case is a remark. Do not present the special
   case as the definition and the general construction as a generalization (Kerodon 002Y,
@@ -308,8 +304,27 @@ whether one holds.
 - **Everything checkable resolves.** Citations, cross-references, and anchor links resolve,
   and rendered output is inspected — enforced by `just docs-check` and the fresh-context
   audit, not by prose claiming correctness.
-- **One home per fact.** A definition, ruling, or requirement lives in one place and is
-  referenced elsewhere, never restated.
+- **Acyclic exposition order.** The chapter and section hierarchy places every
+  load-bearing definition, hypothesis, and construction before its first use. A forward
+  reference may point to a later example, proof, implementation note, or elaboration only
+  when the current statement is already meaningful without it. Moving prose does not
+  discharge this requirement until its symbols, anchors, and mathematical prerequisites
+  have been checked in the new order.
+- **One defining occurrence per fact.** A definition, ruling, or requirement has one anchored defining
+  occurrence and is cited elsewhere. A later use may repeat its established notation or
+  type signature when needed to parse the sentence; it may not present a second
+  definition, redraw the defining diagram as though new, or introduce a synonym. A worked
+  example must cite the defining occurrence and contribute an instance or consequence,
+  not a disguised restatement.
+- **Mathematics and project process occupy separate surfaces.** Mathematical chapters
+  contain definitions, constructions, examples, propositions, proofs, and mathematical
+  remarks. Contribution rules, editorial decisions, audit instructions, implementation
+  status, issue history, and remediation queues belong to their respective contributing,
+  agent-facing, or public execution surfaces (`PR-10`).
+- **Headings distinguish their contents.** Headings use sentence case and are unique
+  within a chapter. A definition, theorem, example, or callout title does not repeat its
+  immediately enclosing heading unless the block itself is the only content of that
+  section.
 - **Adjunctions are drawn, not named.** An adjunction $F \dashv G$ is written as the diagram
   $\adj{\mathcal C}{\mathcal D}{F}{G}$ — the shared `\adj` macro in `docs/_mathjax-macros.html`,
   which renders $\mathcal C$ and $\mathcal D$ with $F$ (right, on top) and $G$ (left, below) —
@@ -318,6 +333,31 @@ whether one holds.
 
 Record a requirement here when one is introduced; do not let it re-enter the prose as a
 self-certification.
+
+## Delegated rewrite contract
+
+Before assigning a chapter or section rewrite, the coordinator gives the writer the
+artifact itself, not a summary, together with:
+
+- this guide and the [Language style
+  guide](contributing/Mathematical-Language-Style-Guide.md), read in full;
+- the approved chapter → section → subsection slice, including the mathematical purpose
+  and prerequisites of each node;
+- the exact source files and passages whose mathematical content must be preserved;
+- the anchors that own definitions used by the slice, and the facts the writer may move
+  but may not redefine;
+- explicit non-goals and adjacent files the writer must not edit; and
+- acceptance evidence: every source proposition is either preserved, corrected with
+  mathematical justification, or recorded as an unresolved contradiction; citations and
+  cross-references resolve; the rendered pages are inspected.
+
+After the edit, the coordinator compares the destination against the source for lost
+definitions, hypotheses, codomains, diagrams, citations, examples, warnings, and anchors.
+An independent fresh-context auditor then receives the rewritten artifact and the
+verbatim priming prompt from
+`.agents/references/mathematical-auditor-priming.md`. The auditor does not edit the
+artifact. Its findings are corrected at the defining occurrence or rejected with a
+source showing that the questioned term is standard.
 
 ## Not flags
 
