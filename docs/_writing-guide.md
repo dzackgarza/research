@@ -1,26 +1,126 @@
-# Writing guide — prose policy for the docs
+# Agent writing and audit guide
 
-Authoring and audit reference for the mathematical prose in this book. It ships with the
-docs but is **not a rendered chapter** (the leading `_` keeps Quarto from rendering it):
-it is guidance for writers and auditors, not part of the exposition.
+This is the non-rendered policy for agents that write, reorganize, or audit the book. The
+leading `_` keeps Quarto from publishing it. It is not a human contribution chapter and
+none of its threat-model vocabulary, pattern catalogues, audit machinery, or delegation
+contracts belongs in the rendered book.
 
 This is a **policy index**. Each item has a citable id, a concrete banned example, and —
 where it applies — the remediation, so a single example teaches the pattern. Items are
 separated into three kinds by what a violation actually is:
 
-- **Prose tells (`PR-*`)** — bad prose regardless of intent: AI-writing register.
+- **Prose tells (`PR-*`)** — recurrent AI-writing register.
 - **Evasion tells (`EV-*`)** — prose that stands in for avoided mathematical work; the
   remediation is to *do the work* (name the morphism, write the definition).
 - **Mathematical tells (`MA-*`)** — colloquial or reinvented parlance in place of the
   standard notion or the established in-repo definition; the remediation is to *use the
   definition*.
 
-Related references (this guide does not repeat them): admissible vocabulary is the rendered
-[Language Style Guide](contributing/Mathematical-Language-Style-Guide.md); citation-backed
+Related references: the positive mathematical conventions for human contributors are the
+rendered [Mathematical authoring
+conventions](contributing/Mathematical-Language-Style-Guide.md); citation-backed recurring
 drift rows are `.agents/references/terminology-dictionary.md`; code and work-selection
 smells are `.agents/references/slop-pattern-index.md` and `displacement-pattern-index.md`;
 the fresh-context audit procedure is `.agents/references/mathematical-auditor-priming.md`.
 External failure model: [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing).
+
+## Audience boundary
+
+A convention belongs in the rendered guide only when a mathematician needs it to state
+the mathematics correctly: types, chosen structure, model choices, universal properties,
+diagrams, notation, or the relation between a primitive construction in
+the chosen category of higher categories and its cited specialization in
+$\mathbf{Spaces}$.
+
+A rule stays here when its purpose is to counter an agent failure: prose generated from a
+language-model cadence, undefined vocabulary imported from priors, a book definition
+replaced by a remembered external definition, process text inserted into exposition, or
+an audit and delegation control. When the two surfaces touch, the rendered guide states
+the positive mathematical convention once; this guide names the agent failure and links
+to that convention.
+
+## Prior-grounding controls
+
+These controls govern agents, issue bodies, plans, docstrings, and implementation maps.
+They are not mathematical conventions for a human contribution chapter.
+
+- Read the book's defining occurrence and its prerequisites before writing a dependent
+  passage. A definition reconstructed from training priors is inadmissible even when it
+  resembles a standard definition.
+- Check mathematical nouns against literature a working mathematician can audit: standard
+  texts and papers, the Stacks Project, Kerodon, and nLab. A term borrowed from model
+  theory, type theory, formal logic, universal algebra, or programming-language theory is
+  not a substitute for the book's mathematical object merely because that term is defined
+  in its own field.
+- Lean, Mathlib, and Sage identifiers are code-formatted implementation anchors. They do
+  not become prose names or definitions.
+- Each mathematical notion has one anchored defining occurrence in the book. Agents cite
+  it, preserve its hypotheses, and repair it at that occurrence when it is wrong; they do
+  not shadow it with a second local definition or a synonym.
+- Implementation vocabulary stays in implementation pages. Mathematical vocabulary is
+  not overloaded to name manifests, dispatch rules, conformance records, review routes,
+  or other project machinery.
+
+Agent terminology failures have three recurring forms:
+
+- **Foreign-discipline substitution.** A technical term from another field is used where
+  the book owes a standard mathematical object and definition.
+- **Project or model coinage.** An undefined word such as "spine", "cut", "seat", vague
+  "slice", or "carrier" is made to do mathematical work.
+- **Colliding overload.** A standard word such as "kernel", "core", or "fiber" is reused
+  with a project-management or implementation meaning.
+
+The citation-backed recurring inventory belongs in
+`.agents/references/terminology-dictionary.md`. The following book-specific replacements
+preserve the controls removed from the former rendered language guide; they are audit
+input, not vocabulary for the book.
+
+| Agent or organizational term | Required mathematical statement |
+| --- | --- |
+| ontology | a specified functor, strict 2-functor, or pseudofunctor into $\mathbf{Cat}$; say *presentation of a category or 2-category by generators and relations* only after specifying those generators, relations, and closure operations |
+| project lexicon | the defined categories, functors, predicates, and constructions, each with its type |
+| corpus, when used for a generated object | the generated sub-2-category |
+| graph or tree, when used for the whole object | a specified functor $I\to\mathbf{Cat}$, or a specified strict 2-functor or pseudofunctor $\mathcal I\to\mathbf{Cat}$; for a finite indexing poset $I$, say *tree-shaped* only when its undirected Hasse diagram is connected and acyclic |
+| node | category or object, whichever is meant |
+| edge | functor or morphism, whichever is meant |
+| seed | generator |
+| constructor | the named categorical construction or 2-functor |
+| cut or axiom cut | a replete full subcategory defined by an object property, or a specified forgetful functor from structured objects |
+| cut owner | the category whose objects satisfy the property, or the domain of the forgetful functor |
+| cut instantiation | for $F\colon\mathcal D\to\mathcal C$ and a full subcategory $\mathcal C_P\hookrightarrow\mathcal C$, the full subcategory of $\mathcal D$ on objects $D$ satisfying $P(FD)$; or the pullback of $p\colon E\to B$ along a named map $f\colon X\to B$ |
+| implication edge | the inclusion induced by a stated implication, with its proof |
+| generation rule or square | the pullback of a replete full subcategory along a functor |
+| minimal graph | an inclusion-minimal generating subdiagram relative to stated targets, permitted closure operations, and a specified equivalence relation on the class of presentations; uniqueness is a separate claim |
+| Level-0 generic | the general construction and the parameter choice producing the instance |
+| operation home | the domain, codomain, and type of the functor, natural transformation, object property, invariant, or operation |
+| route | a composite or factorization of functors |
+| preferred route or preferred functor | a distinguished functor or factorization with comparison maps, or an implementation dispatch policy confined to an implementation page |
+| routing diamond | a commutative square, strictly or up to a specified natural isomorphism |
+| tether or alignment | the specified equality, isomorphism, equivalence, natural isomorphism, or factorization |
+| realization functor | the actual functor with source and target; use *forgetful functor* only when structure is forgotten and *realization* only for a defined realization construction |
+| witness-level datum | the chosen basis, enumeration, presentation, section, or other auxiliary datum |
+| free or torsion fiber | for a named functor $F\colon\mathcal D\to\mathcal C$, the full subcategory of $\mathcal D$ on objects mapped into the specified free or torsion full subcategory of $\mathcal C$; add finiteness only when it is a hypothesis |
+| unified O | $\operatorname{Aut}\colon\operatorname{Core}(\mathcal C)\to\mathbf{Grp}$, with $O(X):=\operatorname{Aut}(X)$ as an instance |
+| homsets-as-parents | the hom-bifunctor, the core groupoid, or $\operatorname{Iso}_{\mathcal C}(X,Y)$, which is a bitorsor under $\operatorname{Aut}(Y)$ on the left and $\operatorname{Aut}(X)$ on the right when $X\cong Y$ |
+| residue | the missing definition or unformalized theorem |
+| gap row | a documented missing formalization; this already has a precise implementation meaning |
+| Synthetic layer | a provisional axiomatization, with its axioms and conjectures declared |
+| base of an axiom | the property or structure and the category whose objects satisfy or support it; for a classifying fibration, its domain, codomain, and universal property |
+| transport of an axiom | the pullback of the specified family along the named functor, when that family and its universal property have been defined |
+| owned at or ownership, when used mathematically | the property of objects of the named category, or a chosen structured object in the fiber of a specified forgetful functor |
+
+### Retired agent substitutions
+
+These corrections remain here because they identify priors that already survived one
+round of editing:
+
+- "multi-sorted signature" was introduced as a replacement for "project lexicon" and is
+  withdrawn. State the actual categories, functors, predicates, and constructions.
+- "semantic interpretation" and "executable interpretation" were retained by appeal to
+  model-theoretic terminology and are withdrawn. Name the mathematical functor or the
+  implementation operation actually meant.
+- Mathlib identifiers were used as prose nouns and are restricted to code-formatted
+  implementation anchors.
 
 ## The standard
 
@@ -30,7 +130,7 @@ how to read it, or characterize a notion by contrast with the notion it rejects.
 definition is a sentence with quantifiers and conditions ("Let … . We say … iff …"), not a
 string of adjectives. Significance is shown by use, never asserted.
 
-## From feedback to policy
+## From agent feedback to policy
 
 Every piece of writing feedback is checked against this index before it is applied: is it
 an instance of a recorded item? If so, fix it and cite the item. If it is a **new**
@@ -106,10 +206,10 @@ bullet lists where prose is clearer.
 **PR-10 — Project process inside mathematical exposition.** A mathematical chapter pauses
 to discuss rulings, audit procedure, implementation status, editorial policy, or the work
 needed to maintain the book. *Banned:* "This ruling guards the conversion pipeline and is
-enforced by the audit." *Fix:* state the mathematical proposition in the chapter. Put
-contribution rules in the contributing part of the book, implementation state in its
-public execution record, and audit instructions in the agent-facing policy that governs
-the audit.
+enforced by the audit." *Fix:* state the mathematical proposition in the chapter. Put only
+the positive mathematical conventions a human contributor needs in the rendered
+contributing chapter. Agent threat-model rules and audit instructions stay in this file;
+implementation state stays in its execution record.
 
 ---
 
@@ -126,21 +226,24 @@ every object of $\mathcal C$ isomorphic to an object of $\mathcal D$ belongs to
 $\mathcal D$." "Structurally complete under sameness" is a mood; the definition is the
 work.
 
-**EV-2 — Carrier / "carries".** "carries" and "carrier" name a structure without naming the
-morphism that is the structure — hand-waving past the precision. *Banned:* "objects that
-carry both structures"; "an object together with a carried structure"; "the underlying set
-carries the operation." *Fix:* name the morphism or section — a representative of a
-subobject of $M$ is a monomorphism $f\colon N\hookrightarrow M$, and subobjects are
-isomorphism classes of such monomorphisms; a structure on $X$ is a chosen object in the
-fiber over $X$ of a specified forgetful functor $U\colon \mathcal S\to\mathcal C$; the
-underlying set is the value $U(X)$ of the forgetful functor. Name a monomorphism or
-inclusion directly; avoid "carried" even when the morphism is named. Banned outright in
+**EV-2 — Carrier / "carries".** "carries" and "carrier" suppress the data that constitute a
+structure. *Banned:* "objects that carry both structures"; "an object together with a
+carried structure"; "the underlying set carries the operation." *Fix:* name the
+operations, relations, and axioms, or specify the forgetful functor and the chosen object
+in its fiber. A representative of a subobject of $M$ is a monomorphism
+$f\colon N\hookrightarrow M$, and subobjects are isomorphism classes of such
+monomorphisms. A structure on $X$ is a chosen object in the fiber over $X$ of a specified
+forgetful functor $U\colon \mathcal S\to\mathcal C$; the underlying set is the value
+$U(X)$. Avoid "carried" even when the structure data have been named. Banned outright in
 the [AGENTS.md](../AGENTS.md) index.
 
-**EV-3 — Engineering collective nouns.** "package", "frame", "pipeline", "suite", "layer"
-gather mathematical objects under a software noun instead of naming them. *Banned:* "the
-discriminant package"; "the forms frame." *Fix:* "the discriminant construction and its
-exact sequences"; "the categories $\mathcal B_{R,W}$ and $\mathcal Q_{R,W}$."
+**EV-3 — Engineering collective nouns.** "package", "frame", "pipeline", "suite", "layer",
+and a vague "slice" gather mathematical objects under a process or software noun instead
+of naming them. *Banned:* "the discriminant package"; "the forms frame"; "the equality
+slice". *Fix:* "the discriminant construction and its exact sequences"; "the categories
+$\mathcal B_{R,W}$ and $\mathcal Q_{R,W}$"; the exact chapter, section, or mathematical
+construction meant. The standard slice category $\mathcal C/X$ remains admissible after
+it is defined; the failure is the undefined organizational use.
 
 **EV-4 — Vague hedges for precision.** "essentially", "basically", "morally", "roughly", "in
 some sense" used where an exact statement is owed. *Fix:* state it exactly, or, if a genuine
@@ -153,12 +256,14 @@ approximation is meant, name the sense ("up to isomorphism", "to first order").
 Colloquial or reinvented parlance in place of the standard notion, or of the definition the
 repo already fixes. The remediation is the established definition — cite it.
 
-**MA-1 — Reinvented established term.** A term the repo defines is used with a meaning from
-another notion. *Banned:* writing $a=b$ after constructing only an isomorphism
-$a\cong b$; calling a map a "classifier" without stating the universal property it
-satisfies. *Fix:* use the standard term and symbol. If a project definition conflicts
-with that meaning, repair the defining occurrence; do not propagate the conflict through
-later prose.
+**MA-1 — Prior substitution for the book's definition.** An agent writes the definition it
+recalls from training or an external source without reading the book's defining
+occurrence. The result may be standard mathematics and still contradict the internal
+logic of the book. *Banned:* writing $a=b$ after the book has constructed only an
+isomorphism $a\cong b$; calling a map a "classifier" without the universal property
+required at its defining occurrence. *Fix:* read and cite the book's anchor. If that
+definition conflicts with the literature, correct it at the defining occurrence and then
+repair its dependents; do not shadow it locally.
 
 **MA-2 — Coinage for a standard notion.** A private word stands in for a notion with a
 standard name. *Banned:* "cut" / "axiom cut" (→ full subcategory defined by a property, or
@@ -173,25 +278,26 @@ near-universal reading. *Banned:* "$\mathbf{Sh}_\Sigma$" for a diagram/functor c
 plain construction ($\operatorname{Fun}(\Sigma, \mathcal C)$).
 
 **MA-4 — Elegant variation.** The same object is renamed sentence to sentence to avoid
-repetition, so one notion acquires several names. *Fix:* repeat the exact term.
-(One-term-one-type is the [Language Style Guide](contributing/Mathematical-Language-Style-Guide.md)'s;
-the tell here is the reflex to vary the word.)
+repetition, so one notion acquires several names. *Fix:* repeat the exact term. The
+rendered [mathematical authoring
+conventions](contributing/Mathematical-Language-Style-Guide.md) require notation to retain
+its typed meaning; the agent tell here is the reflex to vary the word.
 
 **MA-5 — Borrowed technical term without a definition.** A word that carries a specific
 technical meaning (character, spectrum, kernel, index, module) is used loosely and left
 undefined, so a mathematician reads it as *the* technical term and hunts for a definition
 that is not there — it signals precision and delivers none, describing less than a plain
 word would. *Banned:* "the character of an axiom" (read as a group/representation character;
-no such notion is defined). *Fix:* use the defined notion (the *class* of $A$), or, if a new
-notion is genuinely meant, define it.
+no such notion is defined). *Fix:* state the truncation level of the homotopy fibers of
+the specified functor, or name the defined object property actually meant.
 
 **MA-6 — Cardinality label for an incidental count.** Naming a structure by how many things
 it has — "trichotomy", "dichotomy", "the three-fold", "$N$-fold" — asserts the count is
 mathematically load-bearing. Use it only when the argument turns on exactly that many cases
 (the *trichotomy law* of an ordered field, where $<, =, >$ is the content). *Banned:* "the
 stuff / structure / property trichotomy" — nothing turns on "three"; the classification is
-by fullness and faithfulness and extends to $k$-stuff. *Fix:* name by content ("the property
-/ structure / stuff classification"), not by tally.
+by fullness and faithfulness and, in higher categories, by the truncation level of the
+homotopy fibers. *Fix:* name the classification by content, not by tally.
 
 **MA-7 — Backwards or premature notation.** A symbol is introduced with `:=` pointing from
 the standard, primitive notation to the coinage, or coined notation is used before it is
@@ -265,82 +371,44 @@ real content, is to expand it into precise mathematics, then choose whether to d
 footnote or margin note (`reference-location: margin`) being the home for a genuine but
 secondary aside, never for padding.
 
-## Requirements
+## Agent verification obligations {#requirements}
 
-Properties the docs must satisfy are recorded here, not asserted inside the prose (PR-3).
-Each is auditable against the artifact; independent reality, not a sentence, determines
-whether one holds.
+The rendered [Mathematical authoring
+conventions](contributing/Mathematical-Language-Style-Guide.md) own the positive rules for
+types, chosen structure, higher-categorical primitives and space-level specializations,
+universal constructions, diagrams, and notation. Definition ownership, source transfer,
+and audit procedure are agent obligations:
 
-- **Definition before use.** A term *and every symbol* is defined before it is used
-  (including the universe $\mathcal U$), and chapters and definitions are ordered so that
-  dependencies precede dependents (what "dependency order" would have asserted).
-- **Models and derived constructions are named.** A weak higher category, mapping space,
-  homotopy type, truncation, limit, or completion is not determined by its name alone.
-  State the chosen model or universal property, the diagram and transition functors for a
-  limit, and the exact functor used for every derived construction. Do not make a
-  model-specific formula into an unqualified definition.
-- **Definitions and characterizations are distinct.** Define a notion from a cited source
-  before giving representable, Yoneda, mapping-space, or other detection criteria. A
-  characterization is stated and proved as a theorem with its hypotheses; it is not
-  silently promoted to the definition, and an arbitrary property of objects is not
-  transferred to representable functors without defining the corresponding functor
-  property.
-- **Classifier terminology states what is represented.** "Classifier", "classifying
-  object", "classifying category", and "universal family" are used only with the
-  represented functor or explicit universal property. A specified forgetful functor is
-  not called a classifier merely because its fibers record properties or structure.
-- **Definitions are corpus-grounded, never invented.** A definition, like a term (Style
-  Guide [P1](contributing/Mathematical-Language-Style-Guide.md#p1)), comes from the declared
-  corpus (Kerodon, HTT, the Stacks Project, nLab, standard texts) with a citation; a
-  plausible definition reconstructed from memory is a defect even when close. For an
-  ordinary category, the ordinary nerve is the simplicial set of composable chains. When
-  using simplicial categories to model $\infty$-categories, specify the homotopy coherent
-  nerve (Kerodon tag `00KS`); on an ordinary category regarded as a simplicial category
-  with discrete mapping spaces, it agrees with the ordinary nerve.
-- **A reduction is a lemma, not a definition.** Define the general construction; that it
-  restricts or reduces to a familiar special case is a remark. Do not present the special
-  case as the definition and the general construction as a generalization (Kerodon 002Y,
-  "Recovering a Category from its Nerve," is a lemma about the definition `00KS`).
-- **Everything checkable resolves.** Citations, cross-references, and anchor links resolve,
-  and rendered output is inspected — enforced by `just docs-check` and the fresh-context
-  audit, not by prose claiming correctness.
-- **Acyclic exposition order.** The chapter and section hierarchy places every
-  load-bearing definition, hypothesis, and construction before its first use. A forward
-  reference may point to a later example, proof, implementation note, or elaboration only
-  when the current statement is already meaningful without it. Moving prose does not
-  discharge this requirement until its symbols, anchors, and mathematical prerequisites
-  have been checked in the new order.
-- **One defining occurrence per fact.** A definition, ruling, or requirement has one anchored defining
-  occurrence and is cited elsewhere. A later use may repeat its established notation or
-  type signature when needed to parse the sentence; it may not present a second
-  definition, redraw the defining diagram as though new, or introduce a synonym. A worked
-  example must cite the defining occurrence and contribute an instance or consequence,
-  not a disguised restatement.
-- **Mathematics and project process occupy separate surfaces.** Mathematical chapters
-  contain definitions, constructions, examples, propositions, proofs, and mathematical
-  remarks. Contribution rules, editorial decisions, audit instructions, implementation
-  status, issue history, and remediation queues belong to their respective contributing,
-  agent-facing, or public execution surfaces (`PR-10`).
-- **Headings distinguish their contents.** Headings use sentence case and are unique
-  within a chapter. A definition, theorem, example, or callout title does not repeat its
-  immediately enclosing heading unless the block itself is the only content of that
-  section.
-- **Adjunctions are drawn, not named.** An adjunction $F \dashv G$ is written as the diagram
-  $\adj{\mathcal C}{\mathcal D}{F}{G}$ — the shared `\adj` macro in `docs/_mathjax-macros.html`,
-  which renders $\mathcal C$ and $\mathcal D$ with $F$ (right, on top) and $G$ (left, below) —
-  with the $\dashv$ stated, never only the prose "$F$ is left adjoint to $G$." Reusable
-  notation lives in that macro file, not re-spelled per use.
+- Read the complete defining occurrence and its prerequisites before writing a dependent
+  passage. A remembered external definition never substitutes for that read.
+- Use an external source to support or correct the book's defining occurrence, not to
+  introduce a second local definition.
+- Check the actual hierarchy for definition-before-use and one defining occurrence. Do
+  not certify either property in prose.
+- Check that composites, induced functors, inclusions, projections, and whiskered natural
+  transformations are derived from their declared constructions rather than introduced as
+  unrelated primitives. Natural transformations may be whiskered; functors are composed.
+- Compare every relocated destination against its source for definitions, hypotheses,
+  domains, codomains, diagrams, citations, examples, warnings, and stable anchors.
+- Keep agent prompts, audits, terminology controls, editorial status, and remediation
+  queues out of the rendered book. A rendered contribution page contains only the
+  conventions and mathematical information a human contributor needs.
+- Resolve citations, cross-references, and anchors; render and inspect the result through
+  the repository's declared documentation checks.
+- Use sentence-case, nonduplicate headings and the book's shared macros. Do not infer
+  correctness from formatting or a successful build.
+- Send every substantive rewritten artifact through the exact fresh-context audit
+  protocol after source comparison.
 
-Record a requirement here when one is introduced; do not let it re-enter the prose as a
-self-certification.
+These are agent obligations, not prose to copy into the book.
 
 ## Delegated rewrite contract
 
 Before assigning a chapter or section rewrite, the coordinator gives the writer the
 artifact itself, not a summary, together with:
 
-- this guide and the [Language style
-  guide](contributing/Mathematical-Language-Style-Guide.md), read in full;
+- this guide and the [mathematical authoring
+  conventions](contributing/Mathematical-Language-Style-Guide.md), read in full;
 - the approved chapter → section → subsection slice, including the mathematical purpose
   and prerequisites of each node;
 - the exact source files and passages whose mathematical content must be preserved;
