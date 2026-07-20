@@ -15,13 +15,12 @@ import csv
 import hashlib
 import json
 import re
-import shutil
-import textwrap
 import zipfile
 from collections import defaultdict
-from dataclasses import dataclass, asdict
+from collections.abc import Iterable
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 SOURCE_ROOT = Path("/mnt/data/sage109/src/sage/categories")
 DIST_ROOT = Path("/mnt/data/sage109")

@@ -2,7 +2,7 @@
 
 The reference for Sage's category framework: the categories, the axiom registry, and the functorial constructions.
 Sage constructs infinitely many category *instances* (parameterized, joined, axiom-refined, construction-lifted); the finite content below is the source-level vocabulary those instances are generated from.
-Consumers: the mapping work on [research#260](https://github.com/dzackgarza/research/issues/260) and the generating-graph record on [research#251](https://github.com/dzackgarza/research/issues/251); the project-side counterpart of this page is [Mathematical Definitions](../framework/Mathematical-Definitions.md).
+Consumers: the mapping work on [research#260](https://github.com/dzackgarza/research/issues/260) and the generating-graph record on [research#251](https://github.com/dzackgarza/research/issues/251); the project-side counterpart of this page is [Definitions](../framework/Mathematical-Definitions.md).
 
 ## Categories
 

@@ -1,7 +1,7 @@
 # Categorical Presentation — Principles
 
 Distilled from the ratified record on [#251](https://github.com/dzackgarza/research/issues/251) (2026-07-16/17). That record is a progression: later rulings supersede earlier artifacts, and this page carries only the surviving form, with supersession noted where a ruling replaced an earlier one.
-Execution artifacts (per-method mappings, generated graphs, the quarry ledger) remain on the issue and its PRs; vocabulary is governed by the [Mathematical Language Style Guide](Mathematical-Language-Style-Guide.md).
+Execution artifacts (per-method mappings, generated graphs, the quarry ledger) remain on the issue and its PRs; vocabulary is governed by the [Language Style Guide](Mathematical-Language-Style-Guide.md).
 
 ## The master principle: propositions become morphisms one level up {#sec-master-principle}
 
@@ -13,7 +13,9 @@ The whole framework is three moves — **classify, factor, lift** — applied un
 
 ## Classifiers; property / structure / stuff is computed, never declared {#sec-classifiers}
 
-The stuff / structure / property trichotomy and its computation from the classifier `ι_A : S_A → Cat` are @def-property-structure-stuff in the [Mathematical Framework](../framework/Mathematical-Framework.md). As an authoring rule it is *computed, never declared*: full + replete ⇒ property ("C has A" a proposition, uniqueness of the lift discharged once from fullness); faithful-not-full ⇒ structure (each lift a separate theorem-with-witness); general ⇒ stuff. A proof that C has A is a lift of the point `1 → Cat` selecting C through `ι_A` (the source is the terminal category, not a one-object full subcategory).
+The stuff / structure / property classification and its computation from the classifier `ι_A : S_A → Cat` are @def-property-structure-stuff in the [Framework](../framework/Mathematical-Framework.md).
+As an authoring rule it is *computed, never declared*: full + replete ⇒ property ("C has A" a proposition, uniqueness of the lift discharged once from fullness); faithful-not-full ⇒ structure (each lift a separate theorem-with-witness); general ⇒ stuff.
+A proof that C has A is a lift of the point `1 → Cat` selecting C through `ι_A` (the source is the terminal category, not a one-object full subcategory).
 Properties of categories (HasInitial, HasKernels, HasCokernels, HasFiniteProducts) get replete full subcategories of **Cat**; genuine structure (monoidal, preadditive/abelian in Mathlib's packaging) gets a forgetful 2-functor (`MonCat → Cat`), never a subcategory inclusion.
 Conflating the two cases was identified as the most consequential language error in the record.
 
@@ -21,9 +23,10 @@ Conflating the two cases was identified as the most consequential language error
 Every property-defined subcategory is replete (closed under isomorphism); a predicate not invariant under isomorphism may not define a subcategory.
 Conservativity is the minimal requirement on "axiomatic" forgetfuls: axioms may cut objects and add data, but must not create isomorphisms.
 
-## Ownership and transport are factorization, not doctrine {#sec-ownership-and-transport}
+## Declaration and pullback are factorization, not doctrine {#sec-declaration-pullback}
 
-The transport mechanism — a property `P` at `C` descends along a forgetful `U : C → B` iff it factors through `U`, and is then the pullback `C_P = U^{-1}(B_Q)` — is @def-transport-property. As an authoring rule it is a definition, not a rule with exceptions: **a property is declared once, at the terminal category through which it factors, and everywhere else it is the pullback** (Mathlib anchor: `ObjectProperty.inverseImage` / `FullSubcategory`). Failure of factorization is the counterexample, stated once: ℤ is finitely generated as a group but not as a monoid, so finite generation does not factor through the monoid forgetful.
+The descent mechanism — a property `P` at `C` descends along a forgetful `U : C → B` iff it factors through `U`, and is then the pullback `C_P = U^{-1}(B_Q)` — is @def-axiom-through-functor.
+As an authoring rule it is a definition, not a rule with exceptions: **a property is declared once, at the terminal category through which it factors, and everywhere else it is the pullback** (Mathlib anchor: `ObjectProperty.inverseImage` / `FullSubcategory`). Failure of factorization is the counterexample, stated once: ℤ is finitely generated as a group but not as a monoid, so finite generation does not factor through the monoid forgetful.
 
 The entire derived corpus of subcategories (finite sets, finite abelian groups, finite commutative rings, f.g. free modules, the lattice and discriminant-form categories) is the set of instances of one pullback square.
 A manually-declared subcategory that is derivable is a defect — extensional correctness does not excuse hand-instantiation.
@@ -37,6 +40,21 @@ The ring diamond (additive vs multiplicative underlying-set composites) is the s
 
 Parameterized families are declared at presheaf level, valued in R-Mod when their comparison identities require it (e.g. `polar ∘ diag = 2` does not parse for Set-valued presheaves); element categories, projections, and induced functors (pushforward in the value module, diag, polar, base change) are generated from presheaf-level natural transformations.
 
+## Draw the square; universal constructions are vertical {#sec-draw-the-square}
+
+A pullback is presented as its full cartesian square — both projections, the two maps they pull back, and the corner mark for the universal property — with the apex $A \times_C B$ a shorthand admissible once its defining square is drawn.
+The square records what the symbol drops: the classifier @def-axiom-classifier is the left leg of the square pulling the universal $u_A \colon E_A \to B_A$ back along $c_{\mathcal C}$, and $\mathcal C.A = \mathcal C \times_{B_A} E_A$ names that leg.
+
+The presentation is *vertical* in the sense of Grothendieck's relative geometry: a fibration, a classifier, or a universal family is a downward map, and its base changes are the squares sitting over it.
+The universal family over a moduli space $M$ is the vertical $U \to M$; a family over $S$ is the cartesian square whose right leg is $U \to M$ and whose base is the classifying map $S \to M$.
+The classifying map names the family; the square is the family, and reading it off the square keeps the fiber $U_s$, the projection, and the cartesian condition in view.
+
+Iterated pullbacks are glued squares — each base change a square sharing its right leg with the tower below — so a composite of base changes is a diagram whose faces commute on the page and whose comparison data stays visible, where a chain of fiber-product symbols would contract it away.
+The generation dictionary (@sec-named-categories) indexes each named category by the square it is the apex of: the squares are drawn, and the table abbreviates them.
+
+Two-dimensional constructions take two-dimensional typesetting: these diagrams are `tikzcd`, rendered by the `tikz` filter.
+Inline fiber-product notation is legal only as such a named shorthand — defined once against its square, then used for the apex where the surrounding morphisms are not in play.
+
 ## Level 2: comparisons are 2-cells, theorems are lifts {#sec-level-2}
 
 The relationships the project kept needing have no home at level 1; refusing level 2 forces faking them (e.g. `O(L) ↪ Aut(L)` drawn as an edge between fake objects).
@@ -49,7 +67,7 @@ In **Cat** as a 2-category:
 
 - **Parameters are indices**: a parameter is a variable in a functor category, so its coherence is automatic rather than legislated.
 
-Truncation is content, not decoration: set-level and groupoid-level constructions are not interchanged, and π₀ does not commute with homotopy pullbacks (see the genus ruling in [Settled Mathematical Rulings](../framework/Settled-Mathematical-Rulings.md)).
+Truncation is content, not decoration: set-level and groupoid-level constructions are not interchanged, and π₀ does not commute with homotopy pullbacks (see the genus ruling in [Settled Rulings](../framework/Settled-Mathematical-Rulings.md)).
 
 ## Name every section {#sec-name-every-section}
 
@@ -92,6 +110,8 @@ The disciplines above and their object-level consequences are named for referenc
 
 - **M5 — Naming scales with non-fullness.** Where a classifier is full, reference without naming is sound; where it is not, every consumer names its section (Name every section, above).
 
+- **M6 — Draw the square; universal constructions are vertical.** A pullback is presented as its full cartesian square, with the apex symbol $A \times_C B$ a shorthand for a square already drawn; a fibration or universal family is a vertical map and its base changes are the squares over it, typeset with `tikzcd` (Draw the square, above).
+
 - **H1 — Homological presentation** *(peer of M1).* A property is defined by the exact sequence it sits in and the invariants that sequence exposes, not by a condition on a single map ([Settled Rulings A5](../framework/Settled-Mathematical-Rulings.md#master-rulings)).
 
 **Object-conventions — what the mathematics is.**
@@ -101,7 +121,7 @@ The disciplines above and their object-level consequences are named for referenc
 
 - **O2 — The datum of a form is the $W$-valued form**, never the map to a dual (that is derived polarization) (@sec-forms).
 
-- **O3 — Predicates own at their factoring node; transport is pullback.** The domain of transport is properties of underlying data; finite generation is the boundary counterexample (Ownership and transport, above; [Settled Rulings A3](../framework/Settled-Mathematical-Rulings.md#master-rulings)).
+- **O3 — Predicates are defined at their factoring node; the pullback carries them up.** The domain is properties of underlying data; finite generation is the boundary counterexample (Declaration and pullback, above; [Settled Rulings A3](../framework/Settled-Mathematical-Rulings.md#master-rulings)).
 
 - **O4 — Implications are witnessed theorem edges, not nested definitions** (Level 2, above).
 

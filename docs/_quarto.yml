@@ -12,12 +12,20 @@ book:
   search: true
   chapters:
   - index.md
-  - part: Mathematical Framework
+  - part: Framework
     chapters:
+    - framework/Ambient-Setting.md
+    - framework/Loops-and-Suspension.md
+    - framework/Equality.md
     - framework/Mathematical-Framework.md
     - framework/Mathematical-Definitions.md
     - framework/Categorical-Foundations.md
+    - framework/Truncation-and-Classifiers.md
     - framework/Settled-Mathematical-Rulings.md
+    - framework/Elements-and-Containment.md
+    - framework/Identification.md
+    - framework/Distinguished-Functors.md
+    - framework/Generic-Elements.md
   - part: Sage
     chapters:
     - sage/Sage-Category-Framework-Inventory.md
@@ -33,6 +41,7 @@ book:
     - contributing/Categorical-Presentation-Principles.md
     - contributing/Design-Hazard-Ledger.md
     - contributing/Mathematical-Lexicon.md
+    - contributing/Written-Form-and-Evaluation.md
   - Roadmap.md
 bibliography:
 - references.bib
@@ -51,5 +60,66 @@ format:
     html-math-method: mathjax
     code-copy: true
     smooth-scroll: true
+    css: tikz-diagrams.css
+    include-before-body: _mathjax-macros.html
 filters:
+- custom-numbered-blocks
 - stacks-tags.lua
+- tikz
+tikz:
+  cache: true
+# Numbered amsthm-style environments (ute/custom-numbered-blocks).
+# One shared per-chapter counter (all kinds in group 'blocks') so a block is 'Kind N.M'
+# in a single sequence; quartothmlike = looks like native Quarto theorems.
+# Author: ::: {.Warning #w-foo}\n### Optional title\n... ::: ; reference: @w-foo.
+# CONSTRAINT: block labels must NOT start with Quarto-reserved prefixes
+# (def- thm- lem- cor- prp- cnj- exm- exr- fig- tbl- eq- sec- lst-) — Quarto would hijack them.
+# Migration of existing native #def-/#thm- blocks is deferred (relabel away from reserved prefixes).
+# Numbered amsthm-style environments (ute/custom-numbered-blocks).
+# One shared per-chapter counter (all kinds in group 'blocks') -> a block is 'Kind N.M' in one sequence;
+# quartothmlike appearance mimics native Quarto theorems.
+# Author: ::: {.Warning #w-foo}\n### Optional title\n... :::   Reference: \ref{w-foo} -> '2.9', \longref{w-foo} -> 'Warning 2.9'.
+# CONSTRAINT: labels must NOT start with Quarto-reserved prefixes (def- thm- lem- cor- prp- cnj- exm- exr- fig- tbl- eq- sec- lst-);
+# Quarto would hijack them. Migration of existing native #def-/#thm- blocks is deferred (relabel off reserved prefixes).
+custom-numbered-blocks:
+  appearances:
+    thmlike:
+      container: quartothmlike
+  groups:
+    blocks:
+      appearance: thmlike
+  classes:
+    Theorem:
+      group: blocks
+    Lemma:
+      group: blocks
+    Corollary:
+      group: blocks
+    Proposition:
+      group: blocks
+    Conjecture:
+      group: blocks
+    Definition:
+      group: blocks
+    Example:
+      group: blocks
+    Construction:
+      group: blocks
+    Notation:
+      group: blocks
+    Convention:
+      group: blocks
+    Exercise:
+      group: blocks
+    Problem:
+      group: blocks
+    Remark:
+      group: blocks
+    Warning:
+      group: blocks
+    Observation:
+      group: blocks
+    Note:
+      group: blocks
+    Claim:
+      group: blocks

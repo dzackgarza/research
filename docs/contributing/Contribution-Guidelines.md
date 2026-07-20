@@ -1,7 +1,7 @@
 # Contribution Guidelines
 
 Forward-facing workflow for contributing to the Lean/Sage alignment work.
-Doctrine lives in [Categorical Presentation Principles](Categorical-Presentation-Principles.md) and [Settled Mathematical Rulings](../framework/Settled-Mathematical-Rulings.md); architecture in the [Lean–Sage Integration Model](../lean/Lean-Sage-Integration-Model.md); vocabulary in the [Mathematical Language Style Guide](Mathematical-Language-Style-Guide.md).
+Doctrine lives in [Categorical Presentation Principles](Categorical-Presentation-Principles.md) and [Settled Rulings](../framework/Settled-Mathematical-Rulings.md); architecture in the [Lean–Sage Integration Model](../lean/Lean-Sage-Integration-Model.md); vocabulary in the [Language Style Guide](Mathematical-Language-Style-Guide.md).
 Each rule below guards one or more entries in the [Design Hazard Ledger](Design-Hazard-Ledger.md) (cited as H*n*).
 
 ## Derive first, admit declarations second {#sec-cg-derive-first-admit-declarations-second}
@@ -78,5 +78,5 @@ Fix or surface it before continuing (H15).
 
 ## Prose rules {#sec-cg-prose-rules}
 
-All mathematical prose — issue bodies, plan cards, docstrings, manifest text — follows the [Mathematical Language Style Guide](Mathematical-Language-Style-Guide.md): corpus-only vocabulary auditable by a working mathematician (H13), one term one type, typed notation, implementation vocabulary quarantined to the implementation map.
+All mathematical prose — issue bodies, plan cards, docstrings, manifest text — follows the [Language Style Guide](Mathematical-Language-Style-Guide.md): corpus-only vocabulary auditable by a working mathematician (H13), one term one type, typed notation, implementation vocabulary quarantined to the implementation map.
 Run the guide's audit hooks before shipping any prose artifact.

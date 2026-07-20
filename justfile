@@ -28,6 +28,36 @@ docs-bib:
 docs-check: docs-bib
     python3 scripts/docs_check.py
 
+# Fast check of one docs file: surfaces tikz-compile and pandoc/markdown syntax errors in seconds (no full-book link gate). e.g. `just docs-lint framework/Mathematical-Framework.md`
+docs-lint FILE: docs-bib
+    cd docs && uvx --from quarto-cli quarto render "{{FILE}}" --to html
+
+# Rename a docs cross-reference/anchor slug everywhere, then prove every reference still resolves. Rewrites {#slug} anchors, @slug crossrefs, and ](…#slug) link fragments in one hyphen-boundary-safe pass (a longer slug is never partially hit) and runs the docs gate. e.g. `just docs-rename-ref def-old-name def-new-name`
+docs-rename-ref OLD NEW:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    old="{{OLD}}"
+    new="{{NEW}}"
+    export old new
+    mapfile -t files < <(find docs -name '*.md' -not -path '*/_extensions/*')
+    if rg -q --pcre2 "\\{#\\Q${new}\\E(?=[ }])" "${files[@]}"; then
+        echo "docs-rename-ref: refusing — {#${new}} is already a defined anchor; choose a free name" >&2
+        exit 1
+    fi
+    n=$({ rg -c --pcre2 "(?<![-\\w])\\Q${old}\\E(?![-\\w])" "${files[@]}" || true; } | awk -F: '{s+=$2} END{print s+0}')
+    if [ "${n}" -eq 0 ]; then
+        echo "docs-rename-ref: no occurrences of '${old}' found" >&2
+        exit 1
+    fi
+    echo "docs-rename-ref: rewriting ${n} occurrence(s) of '${old}' → '${new}'"
+    perl -i -pe 's/(?<![-\w])\Q$ENV{old}\E(?![-\w])/$ENV{new}/g' "${files[@]}"
+    if just docs-check; then
+        echo "docs-rename-ref: done — every reference resolves"
+    else
+        echo "docs-rename-ref: docs gate FAILED after rename; inspect the report, or 'git checkout -- docs' to revert" >&2
+        exit 1
+    fi
+
 # Add an nLab citation to docs/refs-web.bib by scraping its canonical /cite page
 cite-nlab page:
     python3 scripts/cite_add.py nlab "{{page}}"
@@ -44,9 +74,9 @@ refs-web-refresh:
 graph:
     python3 scripts/build_graph.py
 
-# Serve the docs site locally with live reload
+# Serve the docs site locally with live reload (quarto provisioned via uvx)
 docs-preview: docs-bib
-    quarto preview docs --no-browser --port 7654
+    uvx --from quarto-cli quarto preview docs --no-browser --port 7654
 
 [private]
 _lock:

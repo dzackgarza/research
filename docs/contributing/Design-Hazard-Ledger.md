@@ -2,7 +2,7 @@
 
 A recorded ledger of hazards observed in this program's formalization and design work — each one actually occurred, was corrected, and now has a standing guard.
 Entries are forward-facing: the point of each row is the **guard** — the rule that makes the hazard detectable or inexpressible — not the history.
-New contributions are checked against the guards, which live in the [Contribution Guidelines](Contribution-Guidelines.md), [Categorical Presentation Principles](Categorical-Presentation-Principles.md), and the [Mathematical Language Style Guide](Mathematical-Language-Style-Guide.md).
+New contributions are checked against the guards, which live in the [Contribution Guidelines](Contribution-Guidelines.md), [Categorical Presentation Principles](Categorical-Presentation-Principles.md), and the [Language Style Guide](Mathematical-Language-Style-Guide.md).
 
 Provenance for all entries: the [#251](https://github.com/dzackgarza/research/issues/251) record (2026-07-16/17). One meta-observation covers the whole ledger: every corrected defect had the same form — *a bespoke invention should have been a named standard construction*.
 

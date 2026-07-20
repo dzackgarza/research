@@ -1,4 +1,4 @@
-# Mathematical Lexicon
+# Lexicon
 
 Each entry below is an admissible public noun. Definitions use earlier entries whenever
 possible, so the lexicon grows by refinement rather than by ad hoc aliases.

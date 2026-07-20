@@ -1,0 +1,14 @@
+/* Generated TikZ / tikz-cd diagrams.
+ *
+ * The tikz filter compiles each diagram to a tightly-cropped standalone SVG
+ * and stores it in pandoc's mediabag (rendered under `*_files/mediabag/`), so
+ * that path selects every generated diagram without per-diagram markup. The
+ * crop is at LaTeX point size, which displays small; scale the vector up to a
+ * readable width and center it. Aspect ratio is preserved (height: auto), so
+ * this does not distort taller multi-row diagrams. */
+img[src*="/mediabag/"] {
+  display: block;
+  margin: 1.5rem auto;
+  height: auto;
+  width: clamp(14rem, 45%, 100%);
+}

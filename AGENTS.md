@@ -56,6 +56,44 @@ index is only for proven repeat offenders. Full catalogue:
 `.agents/references/terminology-dictionary.md`; code-shape patterns:
 `.agents/references/slop-pattern-index.md`.
 
+# Docs prose policy (always-on)
+
+Prose in the docs book is governed by the writing guide, `docs/_writing-guide.md` — a
+non-rendered (leading `_`, so Quarto ignores it), citable policy index of banned prose
+patterns in three kinds, each with a concrete example and remediation for one-shot
+learning:
+
+- **Prose tells (`PR-*`)** — bad prose on its own terms; the fix is a rewrite.
+- **Evasion tells (`EV-*`)** — prose standing in for mathematical work not done; the fix is
+  the work (name the morphism, write the definition), never a nicer phrase. "carries" is
+  the type case (see the banned-language index above).
+- **Mathematical tells (`MA-*`)** — reinvented or colloquial parlance in place of the
+  standard notion or the established in-repo definition; the fix is to use the definition
+  and cite it (e.g. "equality" or "axiom" per priors instead of `@def-equality-of-objects`
+  / `@def-axiom-classifier`).
+
+**Check feedback for the pattern, not just the instance.** Before applying any writing
+correction, check whether it instantiates a recorded item. If so, fix it and cite the id.
+If it is a *new* pattern, record it in the guide — forward-facing, with an example and
+remediation — before or alongside fixing the one instance; a correction that fixes a
+sentence and leaves the pattern unrecorded will recur, and the guide is where a one-off
+correction graduates into policy an auditor applies everywhere. Run the index in the
+fresh-context audit (`.agents/references/mathematical-auditor-priming.md`) after every
+substantive docs edit, the same as the vocabulary pass. Requirements the docs must satisfy
+(definition-before-use, resolvable references) are *recorded* in the guide's Requirements
+section and audited against the artifact, never self-certified in prose (`PR-3`).
+
+# Docs workflow (always-on)
+
+Documentation work — the docs book under `docs/` — is **never externalized to GitHub issues or
+PRs**. It is developed directly: interactive work with the user and/or autonomous research,
+iterative refinement committed as each unit settles, and pushes typically **held until the user
+approves**. That approval normally follows an interactive pass rather than a PR review
+lifecycle — organization and coherence audits, re-readings, reviews, and reorganization of the
+accreted material, plus basic intelligent coherence checks. Do not open an issue or PR to plan,
+track, or hand off docs work, and do not treat the PR completion gate as applying to it; the
+issue-tree and milestone policy below governs implementation and research work, not the book.
+
 # Work-selection discipline (always-on)
 
 An output that cannot fail carries no information. Plans, schemas, id systems, plan
