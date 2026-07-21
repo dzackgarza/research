@@ -1,12 +1,8 @@
 export PYTHONDONTWRITEBYTECODE := "1"
 
-# Local fast path: instantiate the graph and recover DOT relations.
-# Pytest session autouse also rebuilds the SVG viewer (see tests/conftest.py).
+# Pytest session setup rebuilds the SVG viewer (see tests/conftest.py).
 test: viz
-	#!/usr/bin/env bash
-	set -euo pipefail
-	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
-	sage -python -m pytest tests/ -v --tb=short
+	@just -f ~/ai-review-ci/justfiles/sage.just -d . test
 
 # Global Sage QC; viewer rebuild is enforced by tests/conftest.py on collection.
 test-ci: viz
