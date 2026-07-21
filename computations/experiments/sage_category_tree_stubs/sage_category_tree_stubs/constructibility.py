@@ -451,9 +451,7 @@ def check_requests(
             # With an explicit `along=`, role selection is enough until full
             # path-equation certificates exist.
             if req.along is None:
-                collisions: set[tuple[str, str | None]] = sketch.get(
-                    "_path_collisions", set()
-                )
+                collisions: set[tuple[str, str | None]] = sketch.get("_path_collisions", set())
                 if any((m.target, m.role) in collisions for m in host_maps):
                     return ConstructibilityResult(
                         "AMBIGUOUS",
@@ -461,8 +459,7 @@ def check_requests(
                         certificate,
                         tuple(remaining),
                         tuple(sorted(maps)),
-                        (f"ambiguous path classes to {clf.host} for {req.classifier_id}; "
-                         "need path-equation certificate or along="),
+                        (f"ambiguous path classes to {clf.host} for {req.classifier_id}; need path-equation certificate or along="),
                     )
             support = min(host_maps, key=lambda m: len(m.edges))
             enabled.append((occ_id, req, support))

@@ -18,9 +18,7 @@
       "canonical_name": "Sets",
       "parameters": [],
       "definition": null,
-      "aliases": [
-        "Set"
-      ],
+      "aliases": ["Set"],
       "dot_vertex": "Sets",
       "provenance": "standard"
     },
@@ -30,9 +28,7 @@
       "canonical_name": "Magmas",
       "parameters": [],
       "definition": null,
-      "aliases": [
-        "Mag"
-      ],
+      "aliases": ["Mag"],
       "dot_vertex": "Magmas",
       "provenance": "standard"
     },
@@ -46,9 +42,7 @@
         "host": "cat.magmas",
         "classifier": "clf.magmas.additive"
       },
-      "aliases": [
-        "Magmas.Additive"
-      ],
+      "aliases": ["Magmas.Additive"],
       "dot_vertex": "Magmas.Additive",
       "provenance": "Sage AdditiveMagmas normalizes to Magmas.Additive (one-tower)"
     },
@@ -58,9 +52,7 @@
       "canonical_name": "Rings",
       "parameters": [],
       "definition": null,
-      "aliases": [
-        "Ring"
-      ],
+      "aliases": ["Ring"],
       "dot_vertex": "Rings",
       "provenance": "standard"
     },
@@ -90,9 +82,7 @@
       "canonical_name": "Fields",
       "parameters": [],
       "definition": null,
-      "aliases": [
-        "Field"
-      ],
+      "aliases": ["Field"],
       "dot_vertex": "Fields",
       "provenance": "standard"
     },
@@ -108,10 +98,7 @@
         }
       ],
       "definition": null,
-      "aliases": [
-        "R-Mod",
-        "Modules(R)"
-      ],
+      "aliases": ["R-Mod", "Modules(R)"],
       "dot_vertex": "Modules(R)",
       "provenance": "Modules(R) \u2243 left R-modules (Sage default)"
     },
@@ -130,10 +117,7 @@
         "operation": "primitive",
         "notes": "R-module with bilinear multiplication; no assoc/unit required"
       },
-      "aliases": [
-        "Algebras(R)",
-        "MagmaticAlgebras"
-      ],
+      "aliases": ["Algebras(R)", "MagmaticAlgebras"],
       "dot_vertex": "Algebras(R)",
       "provenance": "Sage MagmaticAlgebras"
     },
@@ -179,9 +163,7 @@
         }
       ],
       "definition": null,
-      "aliases": [
-        "Schemes(S)"
-      ],
+      "aliases": ["Schemes(S)"],
       "dot_vertex": "Schemes(S)",
       "provenance": "parameterized over base scheme S"
     },
@@ -197,9 +179,7 @@
         }
       ],
       "definition": null,
-      "aliases": [
-        "Coalgebras(R)"
-      ],
+      "aliases": ["Coalgebras(R)"],
       "dot_vertex": "Coalgebras(R)",
       "provenance": "standard"
     },
@@ -215,9 +195,7 @@
         }
       ],
       "definition": null,
-      "aliases": [
-        "Bialgebras(R)"
-      ],
+      "aliases": ["Bialgebras(R)"],
       "dot_vertex": "Bialgebras(R)",
       "provenance": "standard"
     },
@@ -233,9 +211,7 @@
         }
       ],
       "definition": null,
-      "aliases": [
-        "HopfAlgebras(R)"
-      ],
+      "aliases": ["HopfAlgebras(R)"],
       "dot_vertex": "HopfAlgebras(R)",
       "provenance": "standard"
     },
@@ -251,9 +227,7 @@
         }
       ],
       "definition": null,
-      "aliases": [
-        "LieAlgebras(R)"
-      ],
+      "aliases": ["LieAlgebras(R)"],
       "dot_vertex": "LieAlgebras(R)",
       "provenance": "standard"
     },
@@ -269,9 +243,7 @@
         }
       ],
       "definition": null,
-      "aliases": [
-        "Bimodules(R)"
-      ],
+      "aliases": ["Bimodules(R)"],
       "dot_vertex": "Bimodules(R)",
       "provenance": "(R,R)-bimodules; refines left and right modules"
     },
@@ -505,10 +477,7 @@
       "definition": {
         "operation": "classifier_tower",
         "base": "cat.magmas",
-        "classifiers": [
-          "clf.magmas.associative",
-          "clf.magmas.unital"
-        ]
+        "classifiers": ["clf.magmas.associative", "clf.magmas.unital"]
       },
       "aliases": [],
       "dot_vertex": "Monoids = Magmas.Associative.Unital",
@@ -522,11 +491,7 @@
       "definition": {
         "operation": "classifier_tower",
         "base": "cat.magmas",
-        "classifiers": [
-          "clf.magmas.associative",
-          "clf.magmas.unital",
-          "clf.magmas.inverse"
-        ]
+        "classifiers": ["clf.magmas.associative", "clf.magmas.unital", "clf.magmas.inverse"]
       },
       "aliases": [],
       "dot_vertex": "Groups = Magmas.Associative.Unital.Inverse",
@@ -572,10 +537,7 @@
       "definition": {
         "operation": "classifier_tower",
         "base": "cat.additive_magmas",
-        "classifiers": [
-          "clf.magmas.associative",
-          "clf.magmas.unital"
-        ],
+        "classifiers": ["clf.magmas.associative", "clf.magmas.unital"],
         "along": "additive_operation"
       },
       "aliases": [],
@@ -590,11 +552,7 @@
       "definition": {
         "operation": "classifier_tower",
         "base": "cat.additive_magmas",
-        "classifiers": [
-          "clf.magmas.associative",
-          "clf.magmas.unital",
-          "clf.magmas.inverse"
-        ],
+        "classifiers": ["clf.magmas.associative", "clf.magmas.unital", "clf.magmas.inverse"],
         "along": "additive_operation"
       },
       "aliases": [],
@@ -632,9 +590,7 @@
         "strictness": "pseudo",
         "display": "Rings.Commutative"
       },
-      "aliases": [
-        "CommRings"
-      ],
+      "aliases": ["CommRings"],
       "dot_vertex": "CommRings = Rings.Commutative",
       "provenance": "structured pullback; not Magmas.Commutative alone"
     },
@@ -680,9 +636,7 @@
         "host": "cat.commutative_rings",
         "classifier": "clf.comm_rings.gcd_domain"
       },
-      "aliases": [
-        "GcdDomains"
-      ],
+      "aliases": ["GcdDomains"],
       "dot_vertex": "GCDDomains = Rings.Commutative.GCDDomain",
       "provenance": "named composite"
     },
@@ -696,9 +650,7 @@
         "host": "cat.commutative_rings",
         "classifier": "clf.comm_rings.ufd"
       },
-      "aliases": [
-        "UniqueFactorizationDomains"
-      ],
+      "aliases": ["UniqueFactorizationDomains"],
       "dot_vertex": "UFDs = Rings.Commutative.UFD",
       "provenance": "named composite"
     },
@@ -712,9 +664,7 @@
         "host": "cat.commutative_rings",
         "classifier": "clf.comm_rings.pid"
       },
-      "aliases": [
-        "PrincipalIdealDomains"
-      ],
+      "aliases": ["PrincipalIdealDomains"],
       "dot_vertex": "PIDs = Rings.Commutative.PID",
       "provenance": "named composite"
     },
@@ -798,9 +748,7 @@
         "of": "cat.modules_r",
         "notes": "Sage LeftModules is the default Modules(R) presentation"
       },
-      "aliases": [
-        "LeftModules(R)"
-      ],
+      "aliases": ["LeftModules(R)"],
       "dot_vertex": "LeftModules(R)",
       "provenance": "identity with Modules(R)"
     },
@@ -823,9 +771,7 @@
         },
         "notes": "Not an identity with left modules; Mod-R \u2243 R^op-Mod under the opposite-ring substitution"
       },
-      "aliases": [
-        "RightModules(R)"
-      ],
+      "aliases": ["RightModules(R)"],
       "dot_vertex": "RightModules(R)",
       "provenance": "R^op specialization of Modules"
     },
@@ -870,9 +816,7 @@
         },
         "display": "Modules.OverField"
       },
-      "aliases": [
-        "VectorSpaces(K)"
-      ],
+      "aliases": ["VectorSpaces(K)"],
       "dot_vertex": "VectorSpaces(K) = Modules.OverField",
       "provenance": "Modules over a field; not a separate primitive"
     },
@@ -890,14 +834,9 @@
       "definition": {
         "operation": "classifier_tower",
         "base": "cat.algebras_r",
-        "classifiers": [
-          "clf.algebras.associative",
-          "clf.algebras.unital"
-        ]
+        "classifiers": ["clf.algebras.associative", "clf.algebras.unital"]
       },
-      "aliases": [
-        "Algebras"
-      ],
+      "aliases": ["Algebras"],
       "dot_vertex": "UnitalAlgebras = Algebras.Associative.Unital",
       "provenance": "Sage Algebras = associative unital; MagmaticAlgebras is the Wikipedia algebra"
     },
@@ -920,9 +859,7 @@
         "strictness": "pseudo",
         "display": "UnitalAlgebras.Commutative"
       },
-      "aliases": [
-        "CommAlgebras"
-      ],
+      "aliases": ["CommAlgebras"],
       "dot_vertex": "CommAlgebras = UnitalAlgebras.Commutative",
       "provenance": "named pullback"
     },
@@ -941,9 +878,7 @@
         "classifier_id": "clf.algebras_graded",
         "notes": null
       },
-      "aliases": [
-        "GradedAlgebras"
-      ],
+      "aliases": ["GradedAlgebras"],
       "dot_vertex": "Algebras(R).Graded",
       "provenance": "Algebras(R) \u00d7_Sets Sets.Graded"
     },
@@ -1335,10 +1270,7 @@
       "definition": {
         "operation": "classifier_tower",
         "base": "cat.sets",
-        "classifiers": [
-          "clf.sets_countable",
-          "clf.sets_infinite"
-        ],
+        "classifiers": ["clf.sets_countable", "clf.sets_infinite"],
         "display": "Sets.Countable.Infinite"
       },
       "aliases": [],
@@ -1488,11 +1420,7 @@
       "definition": {
         "operation": "classifier_tower",
         "base": "cat.int_bil_r",
-        "classifiers": [
-          "clf.int_bil_symmetric",
-          "clf.int_bil_r.nondegenerate",
-          "clf.int_bil_r.finite"
-        ],
+        "classifiers": ["clf.int_bil_symmetric", "clf.int_bil_r.nondegenerate", "clf.int_bil_r.finite"],
         "display": "\u222bBil.Symmetric.Nondegenerate.Finite"
       },
       "aliases": [],
@@ -1903,10 +1831,7 @@
       "definition": {
         "operation": "classifier_tower",
         "base": "cat.int_bil_r",
-        "classifiers": [
-          "clf.int_bil_symmetric",
-          "clf.int_bil_r.nondegenerate"
-        ],
+        "classifiers": ["clf.int_bil_symmetric", "clf.int_bil_r.nondegenerate"],
         "display": "\u222bBil_R(R).Symmetric.Nondegenerate"
       },
       "aliases": [],
@@ -2731,11 +2656,7 @@
       "definition": {
         "operation": "classifier_tower",
         "base": "cat.schemes_s",
-        "classifiers": [
-          "clf.schemes_integral",
-          "clf.schemes_separated",
-          "clf.schemes_finitetype"
-        ],
+        "classifiers": ["clf.schemes_integral", "clf.schemes_separated", "clf.schemes_finitetype"],
         "display": "Schemes.Integral.Separated.FiniteType"
       },
       "aliases": [],

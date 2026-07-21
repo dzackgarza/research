@@ -229,7 +229,7 @@ def mapped_native_instances(graph: DotGraph | None = None) -> dict[str, Category
             continue
         try:
             cat = native_instance(vertex, graph)
-        except (AttributeError, TypeError, ValueError):
+        except AttributeError, TypeError, ValueError:
             cat = None
         if cat is not None:
             out[vertex] = cat
