@@ -13,3 +13,7 @@ site/
 docs/_site/
 docs/.quarto/
 docs/references.bib
+
+# Lean / Lake (single workspace at repo root)
+.lake/
+**/lake-packages/

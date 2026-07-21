@@ -1,0 +1,35 @@
+Three-manifest STATUS
+=====================
+
+Observed (design/sage/observed.json)
+  Inventory census + runtime_probe (category_sample / super_categories).
+  Does not correct Sage; no property/structure/stuff.
+
+Normalized (design/normalized/manifest/ → semantic_seed)
+  Mathematical SSOT. Seed materializes every base/classifier named by the
+  authored sagecats ledger (`seed_authored_sync.py`).
+
+Correspondence (design/sage/mapping.yaml)
+  Primary SSOT: design/sage/authored/ (179 public rows).
+  Each row = normalized base + classifier applications; certificates from
+  finite-limit MapClosure. **179/179 public authored rows are
+  exact | constructible | presentation_alias | removed — zero unsupported,
+  zero MISSING_SEED.**
+
+Routes (design/routes/routes.yaml)
+  Empty; execution routing is separate from meaning.
+
+Open residuals
+--------------
+- PLAN-distributivity-two-structure-pullbacks — MagmasWithTwoOperations +
+  Distributive is seeded as an opaque host; full two-structure theory later.
+- PLAN-lean-category-expression-kernel — Lean IR (needs-human-input).
+- Observed composed towers / edge parity may still list non-authored gaps;
+  public ledger coverage is complete.
+
+CLI
+---
+  just manifests-probe | manifests | manifests-diff OLD
+  just audit manifests | manifests-parity
+  sage -python -m sage_category_tree_stubs.seed_authored_sync
+  just seed-dot

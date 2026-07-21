@@ -1,0 +1,1663 @@
+{
+  "description": "Hand DOT vertex label \u2192 stable graph id",
+  "hand_edges": [
+    {
+      "kind": "dotted",
+      "src": "CatObject.LocallySmall",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "dotted",
+      "src": "CatObject.Finite",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "dotted",
+      "src": "CatObject.Thin",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "dotted",
+      "src": "CatObject.Limits",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "dotted",
+      "src": "CatObject.Colimits",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "dotted",
+      "src": "CatObject.Products",
+      "tgt": "CatObject.Limits"
+    },
+    {
+      "kind": "dotted",
+      "src": "CatObject.Coproducts",
+      "tgt": "CatObject.Colimits"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.Monoidal",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "solid",
+      "src": "Groupoids",
+      "tgt": "Cat_1"
+    },
+    {
+      "kind": "solid",
+      "src": "Cat_1",
+      "tgt": "Cat_2"
+    },
+    {
+      "kind": "solid",
+      "src": "Cat_2",
+      "tgt": "Bicategories"
+    },
+    {
+      "kind": "solid",
+      "src": "Bicategories",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "solid",
+      "src": "TensorProducts = CatObject.Monoidal",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "solid",
+      "src": "DualObjects",
+      "tgt": "TensorProducts = CatObject.Monoidal"
+    },
+    {
+      "kind": "solid",
+      "src": "Arr(\u2212)",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "solid",
+      "src": "(\u2212)^op",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "solid",
+      "src": "Comma",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "solid",
+      "src": "Slices",
+      "tgt": "Comma"
+    },
+    {
+      "kind": "solid",
+      "src": "Coslices",
+      "tgt": "Comma"
+    },
+    {
+      "kind": "solid",
+      "src": "Subobjects",
+      "tgt": "Slices"
+    },
+    {
+      "kind": "solid",
+      "src": "Quotients",
+      "tgt": "Coslices"
+    },
+    {
+      "kind": "solid",
+      "src": "Subquotients",
+      "tgt": "Subobjects"
+    },
+    {
+      "kind": "solid",
+      "src": "Subquotients",
+      "tgt": "Quotients"
+    },
+    {
+      "kind": "solid",
+      "src": "IsomorphicObjects",
+      "tgt": "Arr(\u2212)"
+    },
+    {
+      "kind": "solid",
+      "src": "DiagramCategories",
+      "tgt": "FunctorCategories"
+    },
+    {
+      "kind": "solid",
+      "src": "FunctorCategories",
+      "tgt": "HomCategories"
+    },
+    {
+      "kind": "solid",
+      "src": "HomCategories",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "solid",
+      "src": "G-Objects(G)",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "solid",
+      "src": "FibredCategories",
+      "tgt": "Cat_1"
+    },
+    {
+      "kind": "solid",
+      "src": "GroupoidObjects",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "solid",
+      "src": "GroupoidObjects",
+      "tgt": "Groupoids"
+    },
+    {
+      "kind": "solid",
+      "src": "Torsors",
+      "tgt": "G-Objects(G)"
+    },
+    {
+      "kind": "solid",
+      "src": "Sites",
+      "tgt": "Cat_1"
+    },
+    {
+      "kind": "solid",
+      "src": "Presheaves",
+      "tgt": "FunctorCategories"
+    },
+    {
+      "kind": "solid",
+      "src": "Sheaves",
+      "tgt": "Presheaves"
+    },
+    {
+      "kind": "solid",
+      "src": "Topoi",
+      "tgt": "Sheaves"
+    },
+    {
+      "kind": "solid",
+      "src": "RingedSites",
+      "tgt": "Sites"
+    },
+    {
+      "kind": "solid",
+      "src": "RingedTopoi",
+      "tgt": "Topoi"
+    },
+    {
+      "kind": "solid",
+      "src": "Mod(O_X)",
+      "tgt": "RingedSites"
+    },
+    {
+      "kind": "solid",
+      "src": "Coh(X)",
+      "tgt": "Mod(O_X)"
+    },
+    {
+      "kind": "solid",
+      "src": "QCoh(X)",
+      "tgt": "Mod(O_X)"
+    },
+    {
+      "kind": "solid",
+      "src": "Sets",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "dotted",
+      "src": "Sets.Finite",
+      "tgt": "Sets"
+    },
+    {
+      "kind": "dotted",
+      "src": "Sets.Infinite",
+      "tgt": "Sets"
+    },
+    {
+      "kind": "dotted",
+      "src": "Sets.Countable",
+      "tgt": "Sets"
+    },
+    {
+      "kind": "dotted",
+      "src": "Sets.Uncountable",
+      "tgt": "Sets"
+    },
+    {
+      "kind": "dotted",
+      "src": "Sets.Graded",
+      "tgt": "Sets"
+    },
+    {
+      "kind": "solid",
+      "src": "Sets.Finite",
+      "tgt": "Sets.Countable"
+    },
+    {
+      "kind": "solid",
+      "src": "Sets.Uncountable",
+      "tgt": "Sets.Infinite"
+    },
+    {
+      "kind": "solid",
+      "src": "CountableInfiniteSets = Sets.Countable.Infinite",
+      "tgt": "Sets.Countable"
+    },
+    {
+      "kind": "solid",
+      "src": "CountableInfiniteSets = Sets.Countable.Infinite",
+      "tgt": "Sets.Infinite"
+    },
+    {
+      "kind": "solid",
+      "src": "Homsets",
+      "tgt": "HomCategories"
+    },
+    {
+      "kind": "solid",
+      "src": "Homsets",
+      "tgt": "Sets"
+    },
+    {
+      "kind": "solid",
+      "src": "TopologicalSpaces",
+      "tgt": "Sets"
+    },
+    {
+      "kind": "solid",
+      "src": "MetricSpaces",
+      "tgt": "TopologicalSpaces"
+    },
+    {
+      "kind": "solid",
+      "src": "Manifolds",
+      "tgt": "TopologicalSpaces"
+    },
+    {
+      "kind": "solid",
+      "src": "Manifolds",
+      "tgt": "RingedSpaces"
+    },
+    {
+      "kind": "dotted",
+      "src": "Manifolds.Smooth",
+      "tgt": "Manifolds"
+    },
+    {
+      "kind": "dotted",
+      "src": "Manifolds.PL",
+      "tgt": "Manifolds"
+    },
+    {
+      "kind": "solid",
+      "src": "RingedSpaces",
+      "tgt": "TopologicalSpaces"
+    },
+    {
+      "kind": "solid",
+      "src": "LocallyRingedSpaces",
+      "tgt": "RingedSpaces"
+    },
+    {
+      "kind": "solid",
+      "src": "StratifiedSpaces",
+      "tgt": "TopologicalSpaces"
+    },
+    {
+      "kind": "solid",
+      "src": "StratifiedSpaces",
+      "tgt": "SpecializationPosets"
+    },
+    {
+      "kind": "solid",
+      "src": "Mod(O_X)",
+      "tgt": "RingedSpaces"
+    },
+    {
+      "kind": "solid",
+      "src": "Cones",
+      "tgt": "TopologicalSpaces"
+    },
+    {
+      "kind": "solid",
+      "src": "Fans",
+      "tgt": "Cones"
+    },
+    {
+      "kind": "solid",
+      "src": "Polyhedra",
+      "tgt": "TopologicalSpaces"
+    },
+    {
+      "kind": "solid",
+      "src": "LatticePolytopes",
+      "tgt": "Polyhedra"
+    },
+    {
+      "kind": "solid",
+      "src": "RootSystems",
+      "tgt": "Cones"
+    },
+    {
+      "kind": "solid",
+      "src": "Graphs",
+      "tgt": "CatObject"
+    },
+    {
+      "kind": "dotted",
+      "src": "Graphs.Directed",
+      "tgt": "Graphs"
+    },
+    {
+      "kind": "solid",
+      "src": "StableGraphs",
+      "tgt": "Graphs"
+    },
+    {
+      "kind": "solid",
+      "src": "Posets",
+      "tgt": "CatObject.Thin"
+    },
+    {
+      "kind": "solid",
+      "src": "SpecializationPosets",
+      "tgt": "Posets"
+    },
+    {
+      "kind": "solid",
+      "src": "IncidenceCategories",
+      "tgt": "Cat_1"
+    },
+    {
+      "kind": "solid",
+      "src": "StableGraphs",
+      "tgt": "StratifiedSpaces"
+    },
+    {
+      "kind": "dotted",
+      "src": "Magmas.Additive",
+      "tgt": "Magmas"
+    },
+    {
+      "kind": "dotted",
+      "src": "Magmas.Multiplicative",
+      "tgt": "Magmas"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.Associative",
+      "tgt": "Magmas"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.Commutative",
+      "tgt": "Magmas"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.Unital",
+      "tgt": "Magmas"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.Inverse",
+      "tgt": "Magmas"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.FinitelyGenerated",
+      "tgt": "Magmas"
+    },
+    {
+      "kind": "solid",
+      "src": "Semigroups = Magmas.Associative",
+      "tgt": "Magmas"
+    },
+    {
+      "kind": "solid",
+      "src": "Monoids = Magmas.Associative.Unital",
+      "tgt": "Semigroups = Magmas.Associative"
+    },
+    {
+      "kind": "solid",
+      "src": "Groups = Magmas.Associative.Unital.Inverse",
+      "tgt": "Monoids = Magmas.Associative.Unital"
+    },
+    {
+      "kind": "solid",
+      "src": "AbelianGroups = Groups.Commutative",
+      "tgt": "Groups = Magmas.Associative.Unital.Inverse"
+    },
+    {
+      "kind": "solid",
+      "src": "FinitelyGeneratedGroups = Magmas.Associative.Unital.Inverse.FinitelyGenerated",
+      "tgt": "Groups = Magmas.Associative.Unital.Inverse"
+    },
+    {
+      "kind": "solid",
+      "src": "AdditiveSemigroups = Magmas.Additive.Associative",
+      "tgt": "Magmas.Additive"
+    },
+    {
+      "kind": "solid",
+      "src": "AdditiveMonoids = Magmas.Additive.Associative.Unital",
+      "tgt": "AdditiveSemigroups = Magmas.Additive.Associative"
+    },
+    {
+      "kind": "solid",
+      "src": "AdditiveGroups = Magmas.Additive.Associative.Unital.Inverse",
+      "tgt": "AdditiveMonoids = Magmas.Additive.Associative.Unital"
+    },
+    {
+      "kind": "solid",
+      "src": "AdditiveAbelianGroups = AdditiveGroups.Commutative",
+      "tgt": "AdditiveGroups = Magmas.Additive.Associative.Unital.Inverse"
+    },
+    {
+      "kind": "solid",
+      "src": "CoxeterGroups",
+      "tgt": "Groups = Magmas.Associative.Unital.Inverse"
+    },
+    {
+      "kind": "solid",
+      "src": "WeylGroups",
+      "tgt": "CoxeterGroups"
+    },
+    {
+      "kind": "solid",
+      "src": "ReflectionGroups",
+      "tgt": "Groups = Magmas.Associative.Unital.Inverse"
+    },
+    {
+      "kind": "solid",
+      "src": "WeylGroups",
+      "tgt": "ReflectionGroups"
+    },
+    {
+      "kind": "solid",
+      "src": "OrthogonalGroups",
+      "tgt": "Groups = Magmas.Associative.Unital.Inverse"
+    },
+    {
+      "kind": "solid",
+      "src": "IsometryGroups",
+      "tgt": "OrthogonalGroups"
+    },
+    {
+      "kind": "solid",
+      "src": "Pic",
+      "tgt": "AbelianGroups = Groups.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "Div",
+      "tgt": "AbelianGroups = Groups.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "NS",
+      "tgt": "AbelianGroups = Groups.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "Cycles",
+      "tgt": "AbelianGroups = Groups.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "ChowGroups",
+      "tgt": "AbelianGroups = Groups.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "HodgeStructures",
+      "tgt": "AdditiveAbelianGroups = AdditiveGroups.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "Magmas",
+      "tgt": "Sets"
+    },
+    {
+      "kind": "solid",
+      "src": "G-Objects(G)",
+      "tgt": "Groups = Magmas.Associative.Unital.Inverse"
+    },
+    {
+      "kind": "solid",
+      "src": "Semirings",
+      "tgt": "Monoids = Magmas.Associative.Unital"
+    },
+    {
+      "kind": "solid",
+      "src": "Semirings",
+      "tgt": "AdditiveMonoids = Magmas.Additive.Associative.Unital"
+    },
+    {
+      "kind": "solid",
+      "src": "Rngs",
+      "tgt": "Semigroups = Magmas.Associative"
+    },
+    {
+      "kind": "solid",
+      "src": "Rngs",
+      "tgt": "AdditiveAbelianGroups = AdditiveGroups.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "Rings",
+      "tgt": "Rngs"
+    },
+    {
+      "kind": "solid",
+      "src": "Rings",
+      "tgt": "Semirings"
+    },
+    {
+      "kind": "solid",
+      "src": "DivisionRings = Magmas.Inverse",
+      "tgt": "Rings"
+    },
+    {
+      "kind": "solid",
+      "src": "DivisionRings = Magmas.Inverse",
+      "tgt": "Domains = Rings.Domain"
+    },
+    {
+      "kind": "solid",
+      "src": "Fields",
+      "tgt": "DivisionRings = Magmas.Inverse"
+    },
+    {
+      "kind": "solid",
+      "src": "Fields",
+      "tgt": "EuclideanDomains = Rings.Commutative.Euclidean"
+    },
+    {
+      "kind": "solid",
+      "src": "CommRings = Rings.Commutative",
+      "tgt": "Rings"
+    },
+    {
+      "kind": "solid",
+      "src": "Domains = Rings.Domain",
+      "tgt": "Rings"
+    },
+    {
+      "kind": "solid",
+      "src": "IntegralDomains = Domains.Commutative",
+      "tgt": "Domains = Rings.Domain"
+    },
+    {
+      "kind": "solid",
+      "src": "IntegralDomains = Domains.Commutative",
+      "tgt": "CommRings = Rings.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "GCDDomains = Rings.Commutative.GCDDomain",
+      "tgt": "IntegralDomains = Domains.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "UFDs = Rings.Commutative.UFD",
+      "tgt": "GCDDomains = Rings.Commutative.GCDDomain"
+    },
+    {
+      "kind": "solid",
+      "src": "PIDs = Rings.Commutative.PID",
+      "tgt": "UFDs = Rings.Commutative.UFD"
+    },
+    {
+      "kind": "solid",
+      "src": "EuclideanDomains = Rings.Commutative.Euclidean",
+      "tgt": "PIDs = Rings.Commutative.PID"
+    },
+    {
+      "kind": "solid",
+      "src": "NoetherianCommRings = Rings.Commutative.Noetherian",
+      "tgt": "CommRings = Rings.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "FiniteRings = Rings.Finite",
+      "tgt": "Rings"
+    },
+    {
+      "kind": "solid",
+      "src": "FiniteRings = Rings.Finite",
+      "tgt": "Sets.Finite"
+    },
+    {
+      "kind": "solid",
+      "src": "FiniteFields = Fields.Finite",
+      "tgt": "Fields"
+    },
+    {
+      "kind": "solid",
+      "src": "FiniteFields = Fields.Finite",
+      "tgt": "Sets.Finite"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.Domain",
+      "tgt": "Rings"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.IntegralDomain",
+      "tgt": "Domains = Rings.Domain"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.GCDDomain",
+      "tgt": "IntegralDomains = Domains.Commutative"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.UFD",
+      "tgt": "IntegralDomains = Domains.Commutative"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.PID",
+      "tgt": "IntegralDomains = Domains.Commutative"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.Euclidean",
+      "tgt": "IntegralDomains = Domains.Commutative"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.Noetherian",
+      "tgt": "CommRings = Rings.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "CohomologyRings",
+      "tgt": "Rings"
+    },
+    {
+      "kind": "solid",
+      "src": "DeRhamCohomologyRings",
+      "tgt": "CohomologyRings"
+    },
+    {
+      "kind": "dotted",
+      "src": "Modules.Free",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Modules.Projective",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Modules.WithBasis",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Modules.WithGenerators",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Modules.FiniteRank",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Modules.FinitelyGenerated",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Modules.FinitelyPresented",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Modules.Torsion",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Modules.TorsionFree",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Modules.OverField",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "LeftModules(R)",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "RightModules(R)",
+      "tgt": "AdditiveAbelianGroups = AdditiveGroups.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "Modules(R)",
+      "tgt": "AdditiveAbelianGroups = AdditiveGroups.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "Bimodules(R)",
+      "tgt": "LeftModules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "Bimodules(R)",
+      "tgt": "RightModules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "VectorSpaces(K) = Modules.OverField",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "FreeModules = Modules.Free",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "ProjectiveModules = Modules.Projective",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "FreeModules = Modules.Free",
+      "tgt": "ProjectiveModules = Modules.Projective"
+    },
+    {
+      "kind": "solid",
+      "src": "ModulesWithBasis = Modules.WithBasis",
+      "tgt": "FreeModules = Modules.Free"
+    },
+    {
+      "kind": "solid",
+      "src": "ModulesWithGenerators = Modules.WithGenerators",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "FiniteRankModules = Modules.FiniteRank",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "FinitelyGeneratedModules = Modules.FinitelyGenerated",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "FinitelyPresentedModules = Modules.FinitelyPresented",
+      "tgt": "FinitelyGeneratedModules = Modules.FinitelyGenerated"
+    },
+    {
+      "kind": "solid",
+      "src": "VectorSpacesWithBasis = VectorSpaces.WithBasis",
+      "tgt": "VectorSpaces(K) = Modules.OverField"
+    },
+    {
+      "kind": "solid",
+      "src": "VectorSpacesWithBasis = VectorSpaces.WithBasis",
+      "tgt": "ModulesWithBasis = Modules.WithBasis"
+    },
+    {
+      "kind": "solid",
+      "src": "VectorFieldModules",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "TensorFieldModules",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "DiffFormModules",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "Mod(O_X)",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "Algebras(R)",
+      "tgt": "Magmas"
+    },
+    {
+      "kind": "solid",
+      "src": "Algebras(R)",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "Algebras(R)",
+      "tgt": "Rings"
+    },
+    {
+      "kind": "solid",
+      "src": "AssociativeAlgebras = Algebras.Associative",
+      "tgt": "Algebras(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "UnitalAlgebras = Algebras.Associative.Unital",
+      "tgt": "AssociativeAlgebras = Algebras.Associative"
+    },
+    {
+      "kind": "solid",
+      "src": "CommAlgebras = UnitalAlgebras.Commutative",
+      "tgt": "UnitalAlgebras = Algebras.Associative.Unital"
+    },
+    {
+      "kind": "solid",
+      "src": "CommAlgebras = UnitalAlgebras.Commutative",
+      "tgt": "CommRings = Rings.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "AlgebrasOverField = Algebras.OverField",
+      "tgt": "Algebras(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "AlgebrasOverField = Algebras.OverField",
+      "tgt": "VectorSpaces(K) = Modules.OverField"
+    },
+    {
+      "kind": "dotted",
+      "src": "ax.Differential",
+      "tgt": "Algebras(R)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Algebras(R).Graded",
+      "tgt": "Algebras(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "NonUnitalDGAs = Algebras.Differential",
+      "tgt": "Algebras(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "NonUnitalDGAs = Algebras.Differential",
+      "tgt": "Algebras(R).Graded"
+    },
+    {
+      "kind": "solid",
+      "src": "DGAs = UnitalAlgebras.Differential",
+      "tgt": "UnitalAlgebras = Algebras.Associative.Unital"
+    },
+    {
+      "kind": "solid",
+      "src": "DGAs = UnitalAlgebras.Differential",
+      "tgt": "Algebras(R).Graded"
+    },
+    {
+      "kind": "solid",
+      "src": "DGAs = UnitalAlgebras.Differential",
+      "tgt": "NonUnitalDGAs = Algebras.Differential"
+    },
+    {
+      "kind": "solid",
+      "src": "LieAlgebras(R)",
+      "tgt": "Algebras(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "CliffordAlgebras(R)",
+      "tgt": "UnitalAlgebras = Algebras.Associative.Unital"
+    },
+    {
+      "kind": "solid",
+      "src": "SymmetricAlgebras(R)",
+      "tgt": "CommAlgebras = UnitalAlgebras.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "ExteriorAlgebras(R)",
+      "tgt": "UnitalAlgebras = Algebras.Associative.Unital"
+    },
+    {
+      "kind": "solid",
+      "src": "ExteriorAlgebras(R)",
+      "tgt": "Algebras(R).Graded"
+    },
+    {
+      "kind": "solid",
+      "src": "TensorAlgebras(R)",
+      "tgt": "UnitalAlgebras = Algebras.Associative.Unital"
+    },
+    {
+      "kind": "solid",
+      "src": "Coalgebras(R)",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "Bialgebras(R)",
+      "tgt": "UnitalAlgebras = Algebras.Associative.Unital"
+    },
+    {
+      "kind": "solid",
+      "src": "Bialgebras(R)",
+      "tgt": "Coalgebras(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "HopfAlgebras(R)",
+      "tgt": "Bialgebras(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "C\u221eAlgebras(R)",
+      "tgt": "CommAlgebras = UnitalAlgebras.Commutative"
+    },
+    {
+      "kind": "solid",
+      "src": "DiffFormModules",
+      "tgt": "Sets.Graded"
+    },
+    {
+      "kind": "solid",
+      "src": "VectorFieldModules",
+      "tgt": "C\u221eAlgebras(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "TensorFieldModules",
+      "tgt": "C\u221eAlgebras(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "ChainComplexes(C)",
+      "tgt": "NonUnitalDGAs = Algebras.Differential"
+    },
+    {
+      "kind": "solid",
+      "src": "CochainComplexes(C)",
+      "tgt": "NonUnitalDGAs = Algebras.Differential"
+    },
+    {
+      "kind": "solid",
+      "src": "DeRhamComplexes",
+      "tgt": "CochainComplexes(C)"
+    },
+    {
+      "kind": "solid",
+      "src": "DeRhamComplexes",
+      "tgt": "DiffFormModules"
+    },
+    {
+      "kind": "solid",
+      "src": "Homology",
+      "tgt": "DGAs = UnitalAlgebras.Differential"
+    },
+    {
+      "kind": "solid",
+      "src": "Homology",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "solid",
+      "src": "CohomologyRings",
+      "tgt": "Homology"
+    },
+    {
+      "kind": "solid",
+      "src": "\u222bHom_R(\u2212,W)",
+      "tgt": "Modules(R)"
+    },
+    {
+      "kind": "dotted",
+      "src": "\u222bHom.Nondegenerate",
+      "tgt": "\u222bHom_R(\u2212,W)"
+    },
+    {
+      "kind": "dotted",
+      "src": "\u222bHom.Even",
+      "tgt": "\u222bHom_R(\u2212,W)"
+    },
+    {
+      "kind": "dotted",
+      "src": "\u222bHom.Odd",
+      "tgt": "\u222bHom_R(\u2212,W)"
+    },
+    {
+      "kind": "dotted",
+      "src": "\u222bHom.Unimodular",
+      "tgt": "\u222bHom_R(\u2212,W)"
+    },
+    {
+      "kind": "solid",
+      "src": "\u222bBil_R(W)",
+      "tgt": "\u222bHom_R(\u2212,W)"
+    },
+    {
+      "kind": "solid",
+      "src": "\u222bQuad_R(W)",
+      "tgt": "\u222bHom_R(\u2212,W)"
+    },
+    {
+      "kind": "solid",
+      "src": "\u222bHerm_R(W)",
+      "tgt": "\u222bHom_R(\u2212,W)"
+    },
+    {
+      "kind": "dotted",
+      "src": "\u222bBil.Symmetric",
+      "tgt": "\u222bBil_R(W)"
+    },
+    {
+      "kind": "dotted",
+      "src": "\u222bBil.SkewSymmetric",
+      "tgt": "\u222bBil_R(W)"
+    },
+    {
+      "kind": "dotted",
+      "src": "\u222bBil.Alternating",
+      "tgt": "\u222bBil.SkewSymmetric"
+    },
+    {
+      "kind": "solid",
+      "src": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate",
+      "tgt": "\u222bBil_R(W)"
+    },
+    {
+      "kind": "solid",
+      "src": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate",
+      "tgt": "ProjectiveModules = Modules.Projective"
+    },
+    {
+      "kind": "dotted",
+      "src": "Lat.Definite",
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+    },
+    {
+      "kind": "dotted",
+      "src": "Lat.PositiveDefinite",
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+    },
+    {
+      "kind": "dotted",
+      "src": "Lat.NegativeDefinite",
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+    },
+    {
+      "kind": "dotted",
+      "src": "Lat.Indefinite",
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+    },
+    {
+      "kind": "dotted",
+      "src": "Lat.Hyperbolic",
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+    },
+    {
+      "kind": "solid",
+      "src": "Lat.PositiveDefinite",
+      "tgt": "Lat.Definite"
+    },
+    {
+      "kind": "solid",
+      "src": "Lat.NegativeDefinite",
+      "tgt": "Lat.Definite"
+    },
+    {
+      "kind": "solid",
+      "src": "Lat.Hyperbolic",
+      "tgt": "Lat.Indefinite"
+    },
+    {
+      "kind": "solid",
+      "src": "RootLattices",
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+    },
+    {
+      "kind": "solid",
+      "src": "DiscBil = \u222bBil.Symmetric.Nondegenerate.Finite",
+      "tgt": "\u222bBil_R(W)"
+    },
+    {
+      "kind": "solid",
+      "src": "DiscBil = \u222bBil.Symmetric.Nondegenerate.Finite",
+      "tgt": "Sets.Finite"
+    },
+    {
+      "kind": "solid",
+      "src": "DiscQuad = \u222bQuad.Nondegenerate",
+      "tgt": "\u222bQuad_R(W)"
+    },
+    {
+      "kind": "solid",
+      "src": "Genera",
+      "tgt": "Sets.Finite"
+    },
+    {
+      "kind": "solid",
+      "src": "LatticeHomsets",
+      "tgt": "Homsets"
+    },
+    {
+      "kind": "solid",
+      "src": "LatticeHomsets",
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+    },
+    {
+      "kind": "solid",
+      "src": "IsometryGroups",
+      "tgt": "LatticeHomsets"
+    },
+    {
+      "kind": "solid",
+      "src": "OrthogonalGroups",
+      "tgt": "\u222bBil_R(W)"
+    },
+    {
+      "kind": "solid",
+      "src": "NS",
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+    },
+    {
+      "kind": "solid",
+      "src": "Schemes(S)",
+      "tgt": "LocallyRingedSpaces"
+    },
+    {
+      "kind": "dotted",
+      "src": "Schemes.Affine",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Schemes.Separated",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Schemes.Proper",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Schemes.Smooth",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Schemes.Unramified",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Schemes.\u00c9tale",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Schemes.Flat",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Schemes.Finite",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Schemes.Projective",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Schemes.LocallyFinitePresentation",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Schemes.Integral",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Schemes.FiniteType",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "dotted",
+      "src": "Schemes.RelativeDimension(n)",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "solid",
+      "src": "Varieties(K) = Schemes.Integral.Separated.FiniteType",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "solid",
+      "src": "Curves(K) = Schemes.RelativeDimension(1)",
+      "tgt": "Varieties(K) = Schemes.Integral.Separated.FiniteType"
+    },
+    {
+      "kind": "solid",
+      "src": "Surfaces(K) = Schemes.RelativeDimension(2)",
+      "tgt": "Varieties(K) = Schemes.Integral.Separated.FiniteType"
+    },
+    {
+      "kind": "solid",
+      "src": "Hypersurfaces(K)",
+      "tgt": "Varieties(K) = Schemes.Integral.Separated.FiniteType"
+    },
+    {
+      "kind": "solid",
+      "src": "CompleteIntersections(K)",
+      "tgt": "Varieties(K) = Schemes.Integral.Separated.FiniteType"
+    },
+    {
+      "kind": "solid",
+      "src": "ToricVarieties(K)",
+      "tgt": "Varieties(K) = Schemes.Integral.Separated.FiniteType"
+    },
+    {
+      "kind": "solid",
+      "src": "AlgebraicSpaces",
+      "tgt": "Schemes(S)"
+    },
+    {
+      "kind": "solid",
+      "src": "Manifolds.Smooth",
+      "tgt": "Varieties(K) = Schemes.Integral.Separated.FiniteType"
+    },
+    {
+      "kind": "solid",
+      "src": "DescentData",
+      "tgt": "FibredCategories"
+    },
+    {
+      "kind": "solid",
+      "src": "Prestacks",
+      "tgt": "FibredCategories"
+    },
+    {
+      "kind": "solid",
+      "src": "Stacks",
+      "tgt": "Prestacks"
+    },
+    {
+      "kind": "solid",
+      "src": "AlgebraicStacks",
+      "tgt": "Stacks"
+    },
+    {
+      "kind": "solid",
+      "src": "DeligneMumfordStacks",
+      "tgt": "AlgebraicStacks"
+    },
+    {
+      "kind": "solid",
+      "src": "ArtinStacks",
+      "tgt": "AlgebraicStacks"
+    },
+    {
+      "kind": "solid",
+      "src": "DeligneMumfordStacks",
+      "tgt": "ArtinStacks"
+    },
+    {
+      "kind": "solid",
+      "src": "QuotientStacks",
+      "tgt": "AlgebraicStacks"
+    },
+    {
+      "kind": "solid",
+      "src": "ClassifyingStacks",
+      "tgt": "QuotientStacks"
+    },
+    {
+      "kind": "solid",
+      "src": "QuotientStacks",
+      "tgt": "GroupoidObjects"
+    },
+    {
+      "kind": "solid",
+      "src": "QuotientStacks",
+      "tgt": "G-Objects(G)"
+    },
+    {
+      "kind": "solid",
+      "src": "Schemes(S)",
+      "tgt": "AlgebraicStacks"
+    },
+    {
+      "kind": "solid",
+      "src": "StratifiedSpaces",
+      "tgt": "DeligneMumfordStacks"
+    }
+  ],
+  "hand_vertices_without_seed": [],
+  "hand_vertices_without_seed_count": 0,
+  "map": {
+    "(\u2212)^op": "ctor.op",
+    "AbelianGroups": "cat.abelian_groups",
+    "AbelianGroups = Groups.Commutative": "cat.abelian_groups",
+    "AbelianVarieties(K)": "cat.abelianvarieties_k",
+    "AdditiveAbelianGroups": "cat.additive_abelian_groups",
+    "AdditiveAbelianGroups = AdditiveGroups.Commutative": "cat.additive_abelian_groups",
+    "AdditiveGroups": "cat.additive_groups",
+    "AdditiveGroups = Magmas.Additive.Associative.Unital.Inverse": "cat.additive_groups",
+    "AdditiveMonoids": "cat.additive_monoids",
+    "AdditiveMonoids = Magmas.Additive.Associative.Unital": "cat.additive_monoids",
+    "AdditiveSemigroups": "cat.additive_semigroups",
+    "AdditiveSemigroups = Magmas.Additive.Associative": "cat.additive_semigroups",
+    "AlgebraIdeals(A)": "cat.algebraideals_a",
+    "AlgebraicSpaces": "cat.algebraicspaces",
+    "AlgebraicStacks": "cat.algebraicstacks",
+    "Algebras(R)": "cat.algebras_r",
+    "Algebras(R).Graded": "cat.algebras_r.graded",
+    "AlgebrasOverField": "cat.algebras_over_field",
+    "AlgebrasOverField = Algebras.OverField": "cat.algebras_over_field",
+    "AmbientObjects": "cat.ambientobjects",
+    "Arr(\u2212)": "ctor.arr",
+    "ArtinStacks": "cat.artinstacks",
+    "AssociativeAlgebras": "cat.associativealgebras",
+    "AssociativeAlgebras = Algebras.Associative": "cat.associativealgebras",
+    "Bialgebras(R)": "cat.bialgebras_r",
+    "Bicategories": "cat.bicategories",
+    "Bimodules(R)": "cat.bimodules_r",
+    "CatObject": "cat.cat_object",
+    "CatObject.Colimits": "clf.catobject_colimits",
+    "CatObject.Coproducts": "clf.catobject_coproducts",
+    "CatObject.Finite": "clf.catobject_finite",
+    "CatObject.Limits": "clf.catobject_limits",
+    "CatObject.LocallySmall": "clf.catobject_locallysmall",
+    "CatObject.Products": "clf.catobject_products",
+    "CatObject.Thin": "clf.catobject_thin",
+    "Cat_1": "cat.cat_1",
+    "Cat_2": "cat.cat_2",
+    "ChainComplexes(C)": "cat.chaincomplexes",
+    "ChowGroups": "val.chowgroups",
+    "ClassifyingStacks": "cat.classifyingstacks",
+    "CliffordAlgebras(R)": "cat.cliffordalgebras",
+    "Coalgebras(R)": "cat.coalgebras_r",
+    "CochainComplexes(C)": "cat.cochaincomplexes",
+    "Coh(X)": "cat.coh",
+    "CohomologyRings": "val.cohomologyrings",
+    "CommAlgebras": "cat.commutative_algebras",
+    "CommAlgebras = UnitalAlgebras.Commutative": "cat.commutative_algebras",
+    "CommRings": "cat.commutative_rings",
+    "CommRings = Rings.Commutative": "cat.commutative_rings",
+    "Comma": "ctor.comma",
+    "CompleteIntersections(K)": "cat.completeintersections",
+    "ComplexReflectionGroups": "cat.complexreflectiongroups",
+    "Cones": "cat.cones",
+    "Coslices": "ctor.coslices",
+    "CountableInfiniteSets": "cat.countableinfinitesets",
+    "CountableInfiniteSets = Sets.Countable.Infinite": "cat.countableinfinitesets",
+    "CoxeterGroupAlgebras(R)": "cat.coxetergroupalgebras_r",
+    "CoxeterGroups": "cat.coxeter_groups",
+    "Crystals": "cat.crystals",
+    "Curves(K)": "cat.curves",
+    "Curves(K) = Schemes.RelativeDimension(1)": "cat.curves",
+    "Cycles": "val.cycles",
+    "C\u221eAlgebras(R)": "cat.cinftyalgebras",
+    "DGAs": "cat.dgas",
+    "DGAs = UnitalAlgebras.Differential": "cat.dgas",
+    "DeRhamCohomologyRings": "val.derhamcohomologyrings",
+    "DeRhamComplexes": "cat.derhamcomplexes",
+    "DeligneMumfordStacks": "cat.delignemumfordstacks",
+    "DescentData": "ctor.descentdata",
+    "DiagramCategories": "ctor.diagramcategories",
+    "DiffFormModules": "val.diffformmodules",
+    "DiscBil": "cat.discbil",
+    "DiscBil = \u222bBil.Symmetric.Nondegenerate.Finite": "cat.discbil",
+    "DiscQuad": "cat.discquad",
+    "DiscQuad = \u222bQuad.Nondegenerate": "cat.discquad",
+    "DiscreteValuationFields": "cat.discretevaluationfields",
+    "DiscreteValuationRings": "cat.discretevaluationrings",
+    "Div": "val.div",
+    "DivisionRings": "cat.division_rings",
+    "DivisionRings = Magmas.Inverse": "cat.division_rings",
+    "Domains": "cat.domains",
+    "Domains = Rings.Domain": "cat.domains",
+    "DrinfeldModules": "cat.drinfeldmodules_gamma_f_q_t_k",
+    "DualObjects": "cat.dualobjects",
+    "EuclideanDomains": "cat.euclidean_domains",
+    "EuclideanDomains = Rings.Commutative.Euclidean": "cat.euclidean_domains",
+    "ExteriorAlgebras(R)": "cat.exterioralgebras",
+    "Fans": "cat.fans",
+    "FibredCategories": "ctor.fibredcategories",
+    "Fields": "cat.fields",
+    "FiniteFields": "cat.finite_fields",
+    "FiniteFields = Fields.Finite": "cat.finite_fields",
+    "FiniteRankModules": "cat.finiterankmodules",
+    "FiniteRankModules = Modules.FiniteRank": "cat.finiterankmodules",
+    "FiniteRings": "cat.finite_rings",
+    "FiniteRings = Rings.Finite": "cat.finite_rings",
+    "FinitelyGeneratedGroups": "cat.finitelygeneratedgroups",
+    "FinitelyGeneratedGroups = Magmas.Associative.Unital.Inverse.FinitelyGenerated": "cat.finitelygeneratedgroups",
+    "FinitelyGeneratedModules": "cat.finitelygeneratedmodules",
+    "FinitelyGeneratedModules = Modules.FinitelyGenerated": "cat.finitelygeneratedmodules",
+    "FinitelyPresentedModules": "cat.finitelypresentedmodules",
+    "FinitelyPresentedModules = Modules.FinitelyPresented": "cat.finitelypresentedmodules",
+    "FreeModules": "cat.freemodules",
+    "FreeModules = Modules.Free": "cat.freemodules",
+    "FunctorCategories": "ctor.functorcategories",
+    "G-Objects(G)": "cat.g_objects",
+    "GCDDomains": "cat.gcd_domains",
+    "GCDDomains = Rings.Commutative.GCDDomain": "cat.gcd_domains",
+    "Genera": "val.genera",
+    "GeneralizedCoxeterGroups": "cat.generalizedcoxetergroups",
+    "Graphs": "cat.graphs",
+    "Graphs.Directed": "clf.graphs_directed",
+    "GroupAlgebras(R)": "cat.groupalgebras_r",
+    "GroupoidObjects": "ctor.groupoidobjects",
+    "Groupoids": "cat.groupoids",
+    "GroupoidsOn(G)": "cat.groupoidson_g",
+    "Groups": "cat.groups",
+    "Groups = Magmas.Associative.Unital.Inverse": "cat.groups",
+    "GroupsWithSimpleReflections": "cat.groupswithsimplereflections",
+    "HodgeStructures": "cat.hodgestructures",
+    "HomCategories": "ctor.homcategories",
+    "Homology": "cat.homology",
+    "Homsets": "cat.homsets",
+    "HopfAlgebras(R)": "cat.hopf_algebras_r",
+    "Hypersurfaces(K)": "cat.hypersurfaces",
+    "IncidenceCategories": "cat.incidencecategories",
+    "IntegralDomains": "cat.integral_domains",
+    "IntegralDomains = Domains.Commutative": "cat.integral_domains",
+    "IsometryGroups": "val.isometrygroups",
+    "IsomorphicObjects": "ctor.isomorphicobjects",
+    "KacMoodyAlgebras(R)": "cat.kacmoodyalgebras_r",
+    "LambdaBracketAlgebras(R)": "cat.lambdabracketalgebras_r",
+    "Lat.Definite": "clf.lat_definite",
+    "Lat.Hyperbolic": "clf.lat_hyperbolic",
+    "Lat.Indefinite": "clf.lat_indefinite",
+    "Lat.NegativeDefinite": "clf.lat_negativedefinite",
+    "Lat.PositiveDefinite": "clf.lat_positivedefinite",
+    "Lat_R": "cat.lat_r",
+    "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate": "cat.lat_r",
+    "LatticeHomsets": "cat.latticehomsets",
+    "LatticePolytopes": "cat.latticepolytopes",
+    "LatticePosets": "cat.latticeposets",
+    "LeftModules(R)": "cat.modules_r",
+    "LieAlgebras(R)": "cat.lie_algebras_r",
+    "LieConformalAlgebras(R)": "cat.lieconformalalgebras_r",
+    "LieGroups": "cat.liegroups",
+    "LocallyRingedSpaces": "cat.locallyringedspaces",
+    "LoopCrystals": "cat.loopcrystals",
+    "Magmas": "cat.magmas",
+    "Magmas.Additive": "cat.additive_magmas",
+    "Magmas.Multiplicative": "clf.magmas_multiplicative",
+    "MagmasWithTwoOperations": "cat.magmaswithtwooperations",
+    "Manifolds": "cat.manifolds",
+    "Manifolds.PL": "clf.manifolds_pl",
+    "Manifolds.Smooth": "clf.manifolds_smooth",
+    "MetricSpaces": "cat.metricspaces",
+    "Mod(O_X)": "cat.mod",
+    "Modules(R)": "cat.modules_r",
+    "Modules.FiniteRank": "clf.modules_finiterank",
+    "Modules.FinitelyGenerated": "clf.modules_finitelygenerated",
+    "Modules.FinitelyPresented": "clf.modules_finitelypresented",
+    "Modules.Free": "clf.modules_free",
+    "Modules.OverField": "clf.modules.over_field.domain",
+    "Modules.Projective": "clf.modules_projective",
+    "Modules.Torsion": "clf.modules_torsion",
+    "Modules.TorsionFree": "clf.modules_torsionfree",
+    "Modules.WithBasis": "clf.modules.with_basis.domain",
+    "Modules.WithGenerators": "clf.modules_withgenerators",
+    "ModulesWithBasis": "cat.modules_with_basis",
+    "ModulesWithBasis = Modules.WithBasis": "cat.modules_with_basis",
+    "ModulesWithGenerators": "cat.moduleswithgenerators",
+    "ModulesWithGenerators = Modules.WithGenerators": "cat.moduleswithgenerators",
+    "MonoidAlgebras(R)": "cat.monoidalgebras_r",
+    "Monoids": "cat.monoids",
+    "Monoids = Magmas.Associative.Unital": "cat.monoids",
+    "NS": "val.ns",
+    "NoetherianCommRings": "cat.noetheriancommrings",
+    "NoetherianCommRings = Rings.Commutative.Noetherian": "cat.noetheriancommrings",
+    "NonUnitalDGAs": "cat.nonunitaldgas",
+    "NonUnitalDGAs = Algebras.Differential": "cat.nonunitaldgas",
+    "OrthogonalGroups": "val.orthogonal_groups",
+    "PIDs": "cat.pids",
+    "PIDs = Rings.Commutative.PID": "cat.pids",
+    "PermutationGroups": "cat.permutationgroups",
+    "Pic": "val.pic",
+    "Polyhedra": "cat.polyhedra",
+    "Polyhedra(R)": "cat.polyhedra_r",
+    "Posets": "cat.posets",
+    "Presheaves": "cat.presheaves",
+    "Prestacks": "cat.prestacks",
+    "ProjectiveModules": "cat.projectivemodules",
+    "ProjectiveModules = Modules.Projective": "cat.projectivemodules",
+    "QCoh(X)": "cat.qcoh",
+    "QuotientStacks": "cat.quotientstacks",
+    "Quotients": "ctor.quotients",
+    "ReflectionGroups": "cat.reflectiongroups",
+    "RightModules(R)": "cat.right_modules_r",
+    "RingIdeals(R)": "cat.ringideals_r",
+    "RingedSites": "cat.ringedsites",
+    "RingedSpaces": "cat.ringedspaces",
+    "RingedTopoi": "cat.ringedtopoi",
+    "Rings": "cat.rings",
+    "Rings.Commutative": "clf.rings.commutative.domain",
+    "Rngs": "cat.rngs",
+    "RootLattices": "cat.rootlattices",
+    "RootSystems": "cat.rootsystems",
+    "Schemes(S)": "cat.schemes_s",
+    "Schemes(S).RelativeDimension(1)": "clf.schemes_s.relativedimension.domain",
+    "Schemes.Affine": "clf.schemes_affine",
+    "Schemes.Finite": "clf.schemes_finite",
+    "Schemes.FiniteType": "clf.schemes_finitetype",
+    "Schemes.Flat": "clf.schemes_flat",
+    "Schemes.Integral": "clf.schemes_integral",
+    "Schemes.LocallyFinitePresentation": "clf.schemes_locallyfinitepresentation",
+    "Schemes.Projective": "clf.schemes_projective",
+    "Schemes.Proper": "clf.schemes_proper",
+    "Schemes.RelativeDimension(n)": "clf.schemes_relativedimension",
+    "Schemes.Separated": "clf.schemes_separated",
+    "Schemes.Smooth": "clf.schemes_smooth",
+    "Schemes.Unramified": "clf.schemes_unramified",
+    "Schemes.\u00c9tale": "clf.schemes_etale",
+    "Semigroups": "cat.semigroups",
+    "Semigroups = Magmas.Associative": "cat.semigroups",
+    "Semirings": "cat.semirings",
+    "SemisimpleAlgebras(R)": "cat.semisimplealgebras_r",
+    "Sets": "cat.sets",
+    "Sets.Countable": "clf.sets_countable",
+    "Sets.Finite": "clf.sets.finite.domain",
+    "Sets.Graded": "clf.sets.graded.domain",
+    "Sets.Infinite": "clf.sets_infinite",
+    "Sets.Uncountable": "clf.sets_uncountable",
+    "SetsWithPartialMaps": "cat.setswithpartialmaps",
+    "Sheaves": "cat.sheaves",
+    "SimplicialComplexes": "cat.simplicialcomplexes",
+    "SimplicialSets": "cat.simplicialsets",
+    "Sites": "cat.sites",
+    "Slices": "ctor.slices",
+    "SpecializationPosets": "cat.specializationposets",
+    "StableGraphs": "cat.stablegraphs",
+    "Stacks": "cat.stacks",
+    "StratifiedSpaces": "cat.stratifiedspaces",
+    "Subobjects": "ctor.subobjects",
+    "Subquotients": "ctor.subquotients",
+    "SuperAlgebras(R)": "cat.superalgebras_r",
+    "SuperCrystals": "cat.supercrystals",
+    "Surfaces(K)": "cat.surfaces",
+    "Surfaces(K) = Schemes.RelativeDimension(2)": "cat.surfaces",
+    "SymmetricAlgebras(R)": "cat.symmetricalgebras",
+    "TensorAlgebras(R)": "cat.tensoralgebras",
+    "TensorFieldModules": "val.tensorfieldmodules",
+    "TensorProducts": "cat.tensorproducts",
+    "TensorProducts = CatObject.Monoidal": "cat.tensorproducts",
+    "Topoi": "cat.topoi",
+    "TopologicalSpaces": "cat.topologicalspaces",
+    "ToricVarieties(K)": "cat.toricvarieties",
+    "Torsors": "ctor.torsors",
+    "UFDs": "cat.ufds",
+    "UFDs = Rings.Commutative.UFD": "cat.ufds",
+    "UnitalAlgebras": "cat.unital_algebras",
+    "UnitalAlgebras = Algebras.Associative.Unital": "cat.unital_algebras",
+    "Varieties(K)": "cat.varieties",
+    "Varieties(K) = Schemes.Integral.Separated.FiniteType": "cat.varieties",
+    "VectorBundles(X,R)": "cat.vectorbundles_x_r",
+    "VectorFieldModules": "val.vectorfieldmodules",
+    "VectorSpaces(K)": "cat.vector_spaces_k",
+    "VectorSpaces(K) = Modules.OverField": "cat.vector_spaces_k",
+    "VectorSpacesWithBasis": "cat.vectorspaceswithbasis",
+    "VectorSpacesWithBasis = VectorSpaces.WithBasis": "cat.vectorspaceswithbasis",
+    "WeylGroups": "cat.weyl_groups",
+    "ax.Additive": "clf.magmas.additive.domain",
+    "ax.Associative": "clf.ax_associative",
+    "ax.Commutative": "clf.ax_commutative",
+    "ax.Differential": "clf.ax_differential",
+    "ax.Domain": "clf.ax_domain",
+    "ax.Euclidean": "clf.ax_euclidean",
+    "ax.FinitelyGenerated": "clf.ax_finitelygenerated",
+    "ax.GCDDomain": "clf.ax_gcddomain",
+    "ax.IntegralDomain": "clf.ax_integraldomain",
+    "ax.Inverse": "clf.ax_inverse",
+    "ax.Monoidal": "clf.ax_monoidal",
+    "ax.Noetherian": "clf.ax_noetherian",
+    "ax.PID": "clf.ax_pid",
+    "ax.UFD": "clf.ax_ufd",
+    "ax.Unital": "clf.ax_unital",
+    "\u222bBil.Alternating": "clf.int_bil_alternating",
+    "\u222bBil.SkewSymmetric": "clf.int_bil_skewsymmetric",
+    "\u222bBil.Symmetric": "clf.int_bil_symmetric",
+    "\u222bBil_R(W)": "cat.int_bil_r",
+    "\u222bBil_R(W).Finite": "clf.int_bil_r.finite.domain",
+    "\u222bBil_R(W).Nondegenerate": "clf.int_bil_r.nondegenerate.domain",
+    "\u222bHerm_R(W)": "cat.int_herm_r",
+    "\u222bHom.Even": "clf.int_hom_even",
+    "\u222bHom.Nondegenerate": "clf.int_hom_nondegenerate",
+    "\u222bHom.Odd": "clf.int_hom_odd",
+    "\u222bHom.Unimodular": "clf.int_hom_unimodular",
+    "\u222bHom_R(\u2212,W)": "cat.int_hom_r",
+    "\u222bQuad_R(W)": "cat.int_quad_r",
+    "\u222bQuad_R(W).Nondegenerate": "clf.int_quad_r.nondegenerate.domain"
+  },
+  "schemaVersion": "0.1.0"
+}

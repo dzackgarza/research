@@ -1,0 +1,5 @@
+manifest:
+  schema_version: 1
+  note: Execution routing is separate from category meaning. Populate when wiring
+    normalized operations to Sage methods.
+routes: []

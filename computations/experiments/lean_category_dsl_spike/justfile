@@ -1,11 +1,20 @@
 # Lean category-DSL spike.
 #
-# Two Lean projects, both pinned to leanprover/lean4:v4.32.0 + mathlib v4.32.0:
+# Lake / mathlib live at the **repository root** (not here):
+#   lean-toolchain, lakefile.toml, .lake/
 #
-#   .            LeanCategoryDslSpike — the finite-pair numbering lemma
-#   catdsl_poc/  CatDSL — the categorical DSL proof of concept
+# Surfaces (srcDir under root lakefile):
+#   NormalizedCategoryGraph — expression kernel + export (primary)
+#   LeanCategoryDslSpike/     finite-pair numbering lemma
+#   catdsl_poc/               CatDSL PoC (BFS registry — to be retired for hierarchy)
 #
-# Setup is elan, and it is not optional. Run `just setup` first.
+# From this directory, recipes `cd` to the repo root for lake. Prefer:
+#   just -f justfile setup|cache|build|test
+# or run the same targets from the repo root once a root justfile exists.
+
+spike_dir := justfile_directory()
+# Evaluated from the justfile directory (spike); resolves the monorepo root.
+repo_root := `git rev-parse --show-toplevel`
 
 # List available recipes
 default:
@@ -14,16 +23,8 @@ default:
 # Verify the toolchain is the official build (mathlib's cache depends on it)
 setup:
     #!/usr/bin/env bash
-    # Mathlib ships a BINARY cache keyed to the exact official toolchain build:
-    # Lake's traces include the Lean githash. A distro/AUR `lean` has a
-    # different githash, so the cache silently never applies and every build
-    # recompiles all ~7900 modules. The failure is invisible -- `cache get`
-    # "succeeds", the build "works", it is just permanently slow.
-    #
-    # Install per the Arch Wiki's Lean 4 section: AUR `elan-lean` -- NOT `elan`,
-    # which is the ELAN video-annotation tool. Remove any `lean` package so it
-    # cannot win the PATH. elan reads each project's lean-toolchain itself.
     set -euo pipefail
+    cd "{{repo_root}}"
     if ! command -v elan >/dev/null; then
       echo "elan not found. Install the AUR package 'elan-lean' (not 'elan')." >&2
       exit 1
@@ -41,28 +42,34 @@ setup:
       echo "MISMATCH -- not the official build; mathlib's cache will not apply." >&2
       exit 1
     fi
-    echo "ok: official toolchain, cache will apply"
+    echo "ok: official toolchain, cache will apply (repo-root Lake workspace)"
 
-# Fetch mathlib's prebuilt oleans for both projects
+# Fetch mathlib's prebuilt oleans (single root workspace)
 cache:
-    # The honesty check: if this is honoured, the builds below compile ZERO
-    # mathlib modules. Any `Built Mathlib.*` line means the cache was
-    # rejected -- re-run `just setup`.
-    lake exe cache get
-    cd catdsl_poc && lake exe cache get
+    cd "{{repo_root}}" && lake exe cache get
 
-# Build both libraries
+# Build all Lean libraries / export exes
 build:
-    lake build
-    cd catdsl_poc && lake build CatDSL
+    cd "{{repo_root}}" && lake build NormalizedCategoryGraph LeanCategoryDslSpike CatDSL ncg-export ncg-export-full
+
+# Regenerate Lean Spec + DOT sidecar from the Python semantic seed
+gen-seed:
+    python3 scripts/generate_seed_spec.py
+    python3 scripts/generate_sage_correspondence.py
+
+# Stage 7/9 gates against the Lean seed manifest
+ncg-check: gen-seed
+    python3 scripts/crosscheck_hand_dot.py
+    PYTHONPATH=../sage_category_tree_stubs sage -python scripts/ledger_check_from_lean_manifest.py
 
 # Run the proof surface: |L| = 4, the registry, the DSL syntax
-test: build
-    # lemma project  finite-pair numbering: number/unnumber form an Equiv
-    # CatDSL         |L| = 4, number (a,b) = 2a+b, nth inverts number, the
-    #                registry finding the F₂ path itself, and the surface
-    #                let/prefer/#via actually running
-    cd catdsl_poc && lake build CatDSLTest
+test: build ncg-check
+    #!/usr/bin/env bash
+    set -euo pipefail
+    root="{{repo_root}}"
+    "$root/.lake/build/bin/ncg-export" >/dev/null
+    "$root/.lake/build/bin/ncg-export-full" >/dev/null
+    cd "$root" && lake build CatDSLTest
 
 # Everything, from a cold checkout
 test-ci: setup cache test
@@ -71,11 +78,15 @@ test-ci: setup cache test
 axioms:
     #!/usr/bin/env bash
     set -euo pipefail
-    if rg -n 'sorry|admit' --glob '*.lean' LeanCategoryDslSpike catdsl_poc/CatDSL; then
+    root="{{repo_root}}"
+    spike="{{spike_dir}}"
+    if rg -n 'sorry|admit' --glob '*.lean' \
+        "$spike/NormalizedCategoryGraph" \
+        "$spike/LeanCategoryDslSpike" \
+        "$spike/catdsl_poc/CatDSL"; then
       echo "sorry/admit found above" >&2
       exit 1
     fi
-    cd catdsl_poc
     cat > /tmp/catdsl-axioms.lean <<'LEAN'
     import CatDSL.Example.F2Semantic
     open CatDSL.Example
@@ -84,9 +95,9 @@ axioms:
     #print axioms nth_table
     #print axioms nth_number_L
     LEAN
-    lake env lean /tmp/catdsl-axioms.lean
+    cd "$root" && lake env lean /tmp/catdsl-axioms.lean
     echo "expect only: propext, Classical.choice, Quot.sound"
 
-# Remove build artifacts (~20G); mathlib is re-fetched from cache, not rebuilt
+# Remove build artifacts; mathlib packages stay until `rm -rf {{repo_root}}/.lake`
 clean:
-    rm -rf .lake/build catdsl_poc/.lake/build
+    rm -rf "{{repo_root}}/.lake/build"

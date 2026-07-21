@@ -1,0 +1,16 @@
+Semantic seed status
+====================
+
+COMPLETE for the design-inventory contract:
+
+- Every DOT solid/named/axiom vertex has a seed entity (id + kind).
+- Every solid DOT edge has a preferred typed seed arrow.
+- Named joins use structured classifier_application / classifier_tower /
+  pullback definitions (no “Imported from DOT” leftovers).
+- correspondence.json targets are semantic_seed entity ids.
+- `just seed-dot` writes the presentation DOT from the seed (factory/viz).
+- Magmas.Additive is AdditiveMagmas → Sets; flat Magmas Additive is ax.Additive.
+- Named-join parsing uses longest-prefix hosts (Magmas.Additive.Associative).
+
+Property/structure/stuff is not stored on classifiers — compute from the leg.
+Aut/GL/Pic-style values remain construction_value aliases.

@@ -1,0 +1,7 @@
+Execution routes (optional)
+===========================
+
+routes.yaml separates “what category does this Sage name mean?” from
+“which Sage method implements this normalized operation?”.
+
+Empty until operation routing is wired.

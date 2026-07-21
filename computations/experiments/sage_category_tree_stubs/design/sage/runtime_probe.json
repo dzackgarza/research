@@ -1,0 +1,2237 @@
+{
+  "probe": {
+    "schema_version": 1,
+    "probe_version": "1.0.0",
+    "sage_version": "10.10.beta0",
+    "generated_at": "2026-07-20T19:57:59Z",
+    "python_version": "3.14.6",
+    "category_sample_count": 99,
+    "note": "Runtime axis from category_sample(). Parameterized categories appear via representative instances."
+  },
+  "instances": [
+    {
+      "repr": "Category of Coxeter groups",
+      "cls": "CoxeterGroups_with_category",
+      "cls_key": "CoxeterGroups",
+      "module": "sage.categories.coxeter_groups",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of generalized Coxeter groups",
+          "cls": "GeneralizedCoxeterGroups_with_category",
+          "cls_key": "GeneralizedCoxeterGroups",
+          "module": "sage.categories.generalized_coxeter_groups"
+        }
+      ],
+      "axioms": ["Associative", "Enumerated", "FinitelyGeneratedAsMagma", "Inverse", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of Dedekind domains",
+      "cls": "DedekindDomains_with_category",
+      "cls_key": "DedekindDomains",
+      "module": "sage.categories.dedekind_domains",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of integral domains",
+          "cls": "IntegralDomains_with_category",
+          "cls_key": "IntegralDomains",
+          "module": "sage.categories.integral_domains"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Commutative", "Distributive", "NoZeroDivisors", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of G-sets for Symmetric group of order 8! as a permutation group",
+      "cls": "GSets_with_category",
+      "cls_key": "GSets",
+      "module": "sage.categories.g_sets",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of sets",
+          "cls": "Sets_with_category",
+          "cls_key": "Sets",
+          "module": "sage.categories.sets_cat"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of Hecke modules over Rational Field",
+      "cls": "HeckeModules_with_category",
+      "cls_key": "HeckeModules",
+      "module": "sage.categories.hecke_modules",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of vector spaces with basis over Rational Field",
+          "cls": "VectorSpaces.WithBasis_with_category",
+          "cls_key": "VectorSpaces.WithBasis",
+          "module": "sage.categories.vector_spaces"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of Hopf algebras over Rational Field",
+      "cls": "HopfAlgebras_with_category",
+      "cls_key": "HopfAlgebras",
+      "module": "sage.categories.hopf_algebras",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of bialgebras over Rational Field",
+          "cls": "Bialgebras_with_category",
+          "cls_key": "Bialgebras",
+          "module": "sage.categories.bialgebras"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of Hopf algebras with basis over Rational Field",
+      "cls": "HopfAlgebrasWithBasis_with_category",
+      "cls_key": "HopfAlgebrasWithBasis",
+      "module": "sage.categories.hopf_algebras_with_basis",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of Hopf algebras over Rational Field",
+          "cls": "HopfAlgebras_with_category",
+          "cls_key": "HopfAlgebras",
+          "module": "sage.categories.hopf_algebras"
+        },
+        {
+          "repr": "Category of bialgebras with basis over Rational Field",
+          "cls": "BialgebrasWithBasis_with_category",
+          "cls_key": "BialgebrasWithBasis",
+          "module": "sage.categories.bialgebras_with_basis"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of Jacobians over Rational Field",
+      "cls": "Jacobians_with_category",
+      "cls_key": "Jacobians",
+      "module": "sage.categories.schemes",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of abelian varieties over Rational Field",
+          "cls": "AbelianVarieties_with_category",
+          "cls_key": "AbelianVarieties",
+          "module": "sage.categories.schemes"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of Lie algebras over Rational Field",
+      "cls": "LieAlgebras_with_category",
+      "cls_key": "LieAlgebras",
+      "module": "sage.categories.lie_algebras",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of vector spaces over Rational Field",
+          "cls": "VectorSpaces_with_category",
+          "cls_key": "VectorSpaces",
+          "module": "sage.categories.vector_spaces"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of Weyl groups",
+      "cls": "WeylGroups_with_category",
+      "cls_key": "WeylGroups",
+      "module": "sage.categories.weyl_groups",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of Coxeter groups",
+          "cls": "CoxeterGroups_with_category",
+          "cls_key": "CoxeterGroups",
+          "module": "sage.categories.coxeter_groups"
+        }
+      ],
+      "axioms": ["Associative", "Enumerated", "FinitelyGeneratedAsMagma", "Inverse", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of abelian varieties over Rational Field",
+      "cls": "AbelianVarieties_with_category",
+      "cls_key": "AbelianVarieties",
+      "module": "sage.categories.schemes",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of schemes over Rational Field",
+          "cls": "Schemes_over_base_with_category",
+          "cls_key": "Schemes_over_base",
+          "module": "sage.categories.schemes"
+        },
+        {
+          "repr": "Category of commutative additive groups",
+          "cls": "CommutativeAdditiveGroups_with_category",
+          "cls_key": "CommutativeAdditiveGroups",
+          "module": "sage.categories.commutative_additive_groups"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of additive magmas",
+      "cls": "AdditiveMagmas_with_category",
+      "cls_key": "AdditiveMagmas",
+      "module": "sage.categories.additive_magmas",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of sets",
+          "cls": "Sets_with_category",
+          "cls_key": "Sets",
+          "module": "sage.categories.sets_cat"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of affine Weyl groups",
+      "cls": "AffineWeylGroups_with_category",
+      "cls_key": "AffineWeylGroups",
+      "module": "sage.categories.affine_weyl_groups",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of infinite Weyl groups",
+          "cls": "JoinCategory_with_category",
+          "cls_key": "JoinCategory",
+          "module": "sage.categories.category"
+        }
+      ],
+      "axioms": ["Associative", "Enumerated", "FinitelyGeneratedAsMagma", "Infinite", "Inverse", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of algebra ideals in Univariate Polynomial Ring in x over Rational Field",
+      "cls": "AlgebraIdeals_with_category",
+      "cls_key": "AlgebraIdeals",
+      "module": "sage.categories.algebra_ideals",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of algebra modules over Univariate Polynomial Ring in x over Rational Field",
+          "cls": "AlgebraModules_with_category",
+          "cls_key": "AlgebraModules",
+          "module": "sage.categories.algebra_modules"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of algebra modules over Univariate Polynomial Ring in x over Rational Field",
+      "cls": "AlgebraModules_with_category",
+      "cls_key": "AlgebraModules",
+      "module": "sage.categories.algebra_modules",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of modules over Univariate Polynomial Ring in x over Rational Field",
+          "cls": "Modules_with_category",
+          "cls_key": "Modules",
+          "module": "sage.categories.modules"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of algebras over Rational Field",
+      "cls": "Algebras_with_category",
+      "cls_key": "Algebras",
+      "module": "sage.categories.algebras",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of rings",
+          "cls": "Rings_with_category",
+          "cls_key": "Rings",
+          "module": "sage.categories.rings"
+        },
+        {
+          "repr": "Category of associative algebras over Rational Field",
+          "cls": "AssociativeAlgebras_with_category",
+          "cls_key": "AssociativeAlgebras",
+          "module": "sage.categories.associative_algebras"
+        },
+        {
+          "repr": "Category of unital algebras over Rational Field",
+          "cls": "UnitalAlgebras_with_category",
+          "cls_key": "UnitalAlgebras",
+          "module": "sage.categories.unital_algebras"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of algebras with basis over Rational Field",
+      "cls": "AlgebrasWithBasis_with_category",
+      "cls_key": "AlgebrasWithBasis",
+      "module": "sage.categories.algebras_with_basis",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of algebras over Rational Field",
+          "cls": "Algebras_with_category",
+          "cls_key": "Algebras",
+          "module": "sage.categories.algebras"
+        },
+        {
+          "repr": "Category of unital algebras with basis over Rational Field",
+          "cls": "UnitalAlgebras.WithBasis_with_category",
+          "cls_key": "UnitalAlgebras.WithBasis",
+          "module": "sage.categories.unital_algebras"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of bialgebras over Rational Field",
+      "cls": "Bialgebras_with_category",
+      "cls_key": "Bialgebras",
+      "module": "sage.categories.bialgebras",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of algebras over Rational Field",
+          "cls": "Algebras_with_category",
+          "cls_key": "Algebras",
+          "module": "sage.categories.algebras"
+        },
+        {
+          "repr": "Category of coalgebras over Rational Field",
+          "cls": "Coalgebras_with_category",
+          "cls_key": "Coalgebras",
+          "module": "sage.categories.coalgebras"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of bialgebras with basis over Rational Field",
+      "cls": "BialgebrasWithBasis_with_category",
+      "cls_key": "BialgebrasWithBasis",
+      "module": "sage.categories.bialgebras_with_basis",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of algebras with basis over Rational Field",
+          "cls": "AlgebrasWithBasis_with_category",
+          "cls_key": "AlgebrasWithBasis",
+          "module": "sage.categories.algebras_with_basis"
+        },
+        {
+          "repr": "Category of bialgebras over Rational Field",
+          "cls": "Bialgebras_with_category",
+          "cls_key": "Bialgebras",
+          "module": "sage.categories.bialgebras"
+        },
+        {
+          "repr": "Category of coalgebras with basis over Rational Field",
+          "cls": "CoalgebrasWithBasis_with_category",
+          "cls_key": "CoalgebrasWithBasis",
+          "module": "sage.categories.coalgebras_with_basis"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of bimodules over Rational Field on the left and Real Field with 53 bits of precision on the right",
+      "cls": "Bimodules_with_category",
+      "cls_key": "Bimodules",
+      "module": "sage.categories.bimodules",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of left modules over Rational Field",
+          "cls": "LeftModules_with_category",
+          "cls_key": "LeftModules",
+          "module": "sage.categories.left_modules"
+        },
+        {
+          "repr": "Category of right modules over Real Field with 53 bits of precision",
+          "cls": "RightModules_with_category",
+          "cls_key": "RightModules",
+          "module": "sage.categories.right_modules"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of chain complexes over Rational Field",
+      "cls": "ChainComplexes_with_category",
+      "cls_key": "ChainComplexes",
+      "module": "sage.categories.chain_complexes",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of vector spaces over Rational Field",
+          "cls": "VectorSpaces_with_category",
+          "cls_key": "VectorSpaces",
+          "module": "sage.categories.vector_spaces"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of classical crystals",
+      "cls": "ClassicalCrystals_with_category",
+      "cls_key": "ClassicalCrystals",
+      "module": "sage.categories.classical_crystals",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of regular crystals",
+          "cls": "RegularCrystals_with_category",
+          "cls_key": "RegularCrystals",
+          "module": "sage.categories.regular_crystals"
+        },
+        {
+          "repr": "Category of finite crystals",
+          "cls": "FiniteCrystals_with_category",
+          "cls_key": "FiniteCrystals",
+          "module": "sage.categories.finite_crystals"
+        },
+        {
+          "repr": "Category of highest weight crystals",
+          "cls": "HighestWeightCrystals_with_category",
+          "cls_key": "HighestWeightCrystals",
+          "module": "sage.categories.highest_weight_crystals"
+        }
+      ],
+      "axioms": ["Enumerated", "Finite"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of coalgebras over Rational Field",
+      "cls": "Coalgebras_with_category",
+      "cls_key": "Coalgebras",
+      "module": "sage.categories.coalgebras",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of vector spaces over Rational Field",
+          "cls": "VectorSpaces_with_category",
+          "cls_key": "VectorSpaces",
+          "module": "sage.categories.vector_spaces"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of coalgebras with basis over Rational Field",
+      "cls": "CoalgebrasWithBasis_with_category",
+      "cls_key": "CoalgebrasWithBasis",
+      "module": "sage.categories.coalgebras_with_basis",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of vector spaces with basis over Rational Field",
+          "cls": "VectorSpaces.WithBasis_with_category",
+          "cls_key": "VectorSpaces.WithBasis",
+          "module": "sage.categories.vector_spaces"
+        },
+        {
+          "repr": "Category of coalgebras over Rational Field",
+          "cls": "Coalgebras_with_category",
+          "cls_key": "Coalgebras",
+          "module": "sage.categories.coalgebras"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of commutative additive groups",
+      "cls": "CommutativeAdditiveGroups_with_category",
+      "cls_key": "CommutativeAdditiveGroups",
+      "module": "sage.categories.commutative_additive_groups",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of additive groups",
+          "cls": "AdditiveGroups_with_category",
+          "cls_key": "AdditiveGroups",
+          "module": "sage.categories.additive_groups"
+        },
+        {
+          "repr": "Category of commutative additive monoids",
+          "cls": "CommutativeAdditiveMonoids_with_category",
+          "cls_key": "CommutativeAdditiveMonoids",
+          "module": "sage.categories.commutative_additive_monoids"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of commutative additive monoids",
+      "cls": "CommutativeAdditiveMonoids_with_category",
+      "cls_key": "CommutativeAdditiveMonoids",
+      "module": "sage.categories.commutative_additive_monoids",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of additive monoids",
+          "cls": "AdditiveMonoids_with_category",
+          "cls_key": "AdditiveMonoids",
+          "module": "sage.categories.additive_monoids"
+        },
+        {
+          "repr": "Category of commutative additive semigroups",
+          "cls": "CommutativeAdditiveSemigroups_with_category",
+          "cls_key": "CommutativeAdditiveSemigroups",
+          "module": "sage.categories.commutative_additive_semigroups"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of commutative additive semigroups",
+      "cls": "CommutativeAdditiveSemigroups_with_category",
+      "cls_key": "CommutativeAdditiveSemigroups",
+      "module": "sage.categories.commutative_additive_semigroups",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of additive commutative additive magmas",
+          "cls": "AdditiveMagmas.AdditiveCommutative_with_category",
+          "cls_key": "AdditiveMagmas.AdditiveCommutative",
+          "module": "sage.categories.additive_magmas"
+        },
+        {
+          "repr": "Category of additive semigroups",
+          "cls": "AdditiveSemigroups_with_category",
+          "cls_key": "AdditiveSemigroups",
+          "module": "sage.categories.additive_semigroups"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of commutative algebra ideals in Univariate Polynomial Ring in x over Rational Field",
+      "cls": "CommutativeAlgebraIdeals_with_category",
+      "cls_key": "CommutativeAlgebraIdeals",
+      "module": "sage.categories.commutative_algebra_ideals",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of algebra ideals in Univariate Polynomial Ring in x over Rational Field",
+          "cls": "AlgebraIdeals_with_category",
+          "cls_key": "AlgebraIdeals",
+          "module": "sage.categories.algebra_ideals"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of commutative algebras over Rational Field",
+      "cls": "CommutativeAlgebras_with_category",
+      "cls_key": "CommutativeAlgebras",
+      "module": "sage.categories.commutative_algebras",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of algebras over Rational Field",
+          "cls": "Algebras_with_category",
+          "cls_key": "Algebras",
+          "module": "sage.categories.algebras"
+        },
+        {
+          "repr": "Category of commutative rings",
+          "cls": "CommutativeRings_with_category",
+          "cls_key": "CommutativeRings",
+          "module": "sage.categories.commutative_rings"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Commutative", "Distributive", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of commutative ring ideals in Univariate Polynomial Ring in x over Rational Field",
+      "cls": "CommutativeRingIdeals_with_category",
+      "cls_key": "CommutativeRingIdeals",
+      "module": "sage.categories.commutative_ring_ideals",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of ring ideals in Univariate Polynomial Ring in x over Rational Field",
+          "cls": "RingIdeals_with_category",
+          "cls_key": "RingIdeals",
+          "module": "sage.categories.ring_ideals"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of commutative rings",
+      "cls": "CommutativeRings_with_category",
+      "cls_key": "CommutativeRings",
+      "module": "sage.categories.commutative_rings",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of rings",
+          "cls": "Rings_with_category",
+          "cls_key": "Rings",
+          "module": "sage.categories.rings"
+        },
+        {
+          "repr": "Category of commutative monoids",
+          "cls": "Monoids.Commutative_with_category",
+          "cls_key": "Monoids.Commutative",
+          "module": "sage.categories.monoids"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Commutative", "Distributive", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of complete discrete valuation fields",
+      "cls": "CompleteDiscreteValuationFields_with_category",
+      "cls_key": "CompleteDiscreteValuationFields",
+      "module": "sage.categories.complete_discrete_valuation",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of discrete valuation fields",
+          "cls": "DiscreteValuationFields_with_category",
+          "cls_key": "DiscreteValuationFields",
+          "module": "sage.categories.discrete_valuation"
+        }
+      ],
+      "axioms": [
+        "AdditiveAssociative",
+        "AdditiveCommutative",
+        "AdditiveInverse",
+        "AdditiveUnital",
+        "Associative",
+        "Commutative",
+        "Distributive",
+        "Division",
+        "NoZeroDivisors",
+        "Unital"
+      ],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of complete discrete valuation rings",
+      "cls": "CompleteDiscreteValuationRings_with_category",
+      "cls_key": "CompleteDiscreteValuationRings",
+      "module": "sage.categories.complete_discrete_valuation",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of discrete valuation rings",
+          "cls": "DiscreteValuationRings_with_category",
+          "cls_key": "DiscreteValuationRings",
+          "module": "sage.categories.discrete_valuation"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Commutative", "Distributive", "NoZeroDivisors", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of crystals",
+      "cls": "Crystals_with_category",
+      "cls_key": "Crystals",
+      "module": "sage.categories.crystals",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of enumerated sets",
+          "cls": "EnumeratedSets_with_category",
+          "cls_key": "EnumeratedSets",
+          "module": "sage.categories.enumerated_sets"
+        }
+      ],
+      "axioms": ["Enumerated"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of discrete valuation fields",
+      "cls": "DiscreteValuationFields_with_category",
+      "cls_key": "DiscreteValuationFields",
+      "module": "sage.categories.discrete_valuation",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of fields",
+          "cls": "Fields_with_category",
+          "cls_key": "Fields",
+          "module": "sage.categories.fields"
+        }
+      ],
+      "axioms": [
+        "AdditiveAssociative",
+        "AdditiveCommutative",
+        "AdditiveInverse",
+        "AdditiveUnital",
+        "Associative",
+        "Commutative",
+        "Distributive",
+        "Division",
+        "NoZeroDivisors",
+        "Unital"
+      ],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of discrete valuation rings",
+      "cls": "DiscreteValuationRings_with_category",
+      "cls_key": "DiscreteValuationRings",
+      "module": "sage.categories.discrete_valuation",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of euclidean domains",
+          "cls": "EuclideanDomains_with_category",
+          "cls_key": "EuclideanDomains",
+          "module": "sage.categories.euclidean_domains"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Commutative", "Distributive", "NoZeroDivisors", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of division rings",
+      "cls": "DivisionRings_with_category",
+      "cls_key": "DivisionRings",
+      "module": "sage.categories.division_rings",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of domains",
+          "cls": "Domains_with_category",
+          "cls_key": "Domains",
+          "module": "sage.categories.domains"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Division", "NoZeroDivisors", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of domains",
+      "cls": "Domains_with_category",
+      "cls_key": "Domains",
+      "module": "sage.categories.domains",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of rings",
+          "cls": "Rings_with_category",
+          "cls_key": "Rings",
+          "module": "sage.categories.rings"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "NoZeroDivisors", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of elements of Rational Field",
+      "cls": "Elements_with_category",
+      "cls_key": "Elements",
+      "module": "sage.categories.category_types",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of objects",
+          "cls": "Objects_with_category",
+          "cls_key": "Objects",
+          "module": "sage.categories.objects"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of enumerated sets",
+      "cls": "EnumeratedSets_with_category",
+      "cls_key": "EnumeratedSets",
+      "module": "sage.categories.enumerated_sets",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of sets",
+          "cls": "Sets_with_category",
+          "cls_key": "Sets",
+          "module": "sage.categories.sets_cat"
+        }
+      ],
+      "axioms": ["Enumerated"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of euclidean domains",
+      "cls": "EuclideanDomains_with_category",
+      "cls_key": "EuclideanDomains",
+      "module": "sage.categories.euclidean_domains",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of principal ideal domains",
+          "cls": "PrincipalIdealDomains_with_category",
+          "cls_key": "PrincipalIdealDomains",
+          "module": "sage.categories.principal_ideal_domains"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Commutative", "Distributive", "NoZeroDivisors", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of fields",
+      "cls": "Fields_with_category",
+      "cls_key": "Fields",
+      "module": "sage.categories.fields",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of euclidean domains",
+          "cls": "EuclideanDomains_with_category",
+          "cls_key": "EuclideanDomains",
+          "module": "sage.categories.euclidean_domains"
+        },
+        {
+          "repr": "Category of division rings",
+          "cls": "DivisionRings_with_category",
+          "cls_key": "DivisionRings",
+          "module": "sage.categories.division_rings"
+        },
+        {
+          "repr": "Category of noetherian rings",
+          "cls": "NoetherianRings_with_category",
+          "cls_key": "NoetherianRings",
+          "module": "sage.categories.noetherian_rings"
+        }
+      ],
+      "axioms": [
+        "AdditiveAssociative",
+        "AdditiveCommutative",
+        "AdditiveInverse",
+        "AdditiveUnital",
+        "Associative",
+        "Commutative",
+        "Distributive",
+        "Division",
+        "NoZeroDivisors",
+        "Unital"
+      ],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite Weyl groups",
+      "cls": "FiniteWeylGroups_with_category",
+      "cls_key": "FiniteWeylGroups",
+      "module": "sage.categories.finite_weyl_groups",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of finite Coxeter groups",
+          "cls": "FiniteCoxeterGroups_with_category",
+          "cls_key": "FiniteCoxeterGroups",
+          "module": "sage.categories.finite_coxeter_groups"
+        },
+        {
+          "repr": "Category of Weyl groups",
+          "cls": "WeylGroups_with_category",
+          "cls_key": "WeylGroups",
+          "module": "sage.categories.weyl_groups"
+        }
+      ],
+      "axioms": ["Associative", "Enumerated", "Finite", "FinitelyGeneratedAsMagma", "Inverse", "Unital", "WellGenerated"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite crystals",
+      "cls": "FiniteCrystals_with_category",
+      "cls_key": "FiniteCrystals",
+      "module": "sage.categories.finite_crystals",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of crystals",
+          "cls": "Crystals_with_category",
+          "cls_key": "Crystals",
+          "module": "sage.categories.crystals"
+        },
+        {
+          "repr": "Category of finite enumerated sets",
+          "cls": "FiniteEnumeratedSets_with_category",
+          "cls_key": "FiniteEnumeratedSets",
+          "module": "sage.categories.finite_enumerated_sets"
+        }
+      ],
+      "axioms": ["Enumerated", "Finite"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite dimensional Hopf algebras with basis over Rational Field",
+      "cls": "FiniteDimensionalHopfAlgebrasWithBasis_with_category",
+      "cls_key": "FiniteDimensionalHopfAlgebrasWithBasis",
+      "module": "sage.categories.finite_dimensional_hopf_algebras_with_basis",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of Hopf algebras with basis over Rational Field",
+          "cls": "HopfAlgebrasWithBasis_with_category",
+          "cls_key": "HopfAlgebrasWithBasis",
+          "module": "sage.categories.hopf_algebras_with_basis"
+        },
+        {
+          "repr": "Category of finite dimensional algebras with basis over Rational Field",
+          "cls": "FiniteDimensionalAlgebrasWithBasis_with_category",
+          "cls_key": "FiniteDimensionalAlgebrasWithBasis",
+          "module": "sage.categories.finite_dimensional_algebras_with_basis"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "FiniteDimensional", "Unital", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite dimensional algebras with basis over Rational Field",
+      "cls": "FiniteDimensionalAlgebrasWithBasis_with_category",
+      "cls_key": "FiniteDimensionalAlgebrasWithBasis",
+      "module": "sage.categories.finite_dimensional_algebras_with_basis",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of algebras with basis over Rational Field",
+          "cls": "AlgebrasWithBasis_with_category",
+          "cls_key": "AlgebrasWithBasis",
+          "module": "sage.categories.algebras_with_basis"
+        },
+        {
+          "repr": "Category of finite dimensional magmatic algebras with basis over Rational Field",
+          "cls": "MagmaticAlgebras.WithBasis.FiniteDimensional_with_category",
+          "cls_key": "MagmaticAlgebras.WithBasis.FiniteDimensional",
+          "module": "sage.categories.magmatic_algebras"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "FiniteDimensional", "Unital", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite dimensional vector spaces with basis over Rational Field",
+      "cls": "VectorSpaces.WithBasis.FiniteDimensional_with_category",
+      "cls_key": "VectorSpaces.WithBasis.FiniteDimensional",
+      "module": "sage.categories.vector_spaces",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of finite dimensional modules with basis over Rational Field",
+          "cls": "FiniteDimensionalModulesWithBasis_with_category",
+          "cls_key": "FiniteDimensionalModulesWithBasis",
+          "module": "sage.categories.finite_dimensional_modules_with_basis"
+        },
+        {
+          "repr": "Category of vector spaces with basis over Rational Field",
+          "cls": "VectorSpaces.WithBasis_with_category",
+          "cls_key": "VectorSpaces.WithBasis",
+          "module": "sage.categories.vector_spaces"
+        },
+        {
+          "repr": "Category of finite dimensional vector spaces over Rational Field",
+          "cls": "VectorSpaces.FiniteDimensional_with_category",
+          "cls_key": "VectorSpaces.FiniteDimensional",
+          "module": "sage.categories.vector_spaces"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "FiniteDimensional", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite enumerated fields",
+      "cls": "FiniteFields_with_category",
+      "cls_key": "FiniteFields",
+      "module": "sage.categories.finite_fields",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of fields",
+          "cls": "Fields_with_category",
+          "cls_key": "Fields",
+          "module": "sage.categories.fields"
+        },
+        {
+          "repr": "Category of finite commutative rings",
+          "cls": "CommutativeRings.Finite_with_category",
+          "cls_key": "CommutativeRings.Finite",
+          "module": "sage.categories.commutative_rings"
+        },
+        {
+          "repr": "Category of finite enumerated sets",
+          "cls": "FiniteEnumeratedSets_with_category",
+          "cls_key": "FiniteEnumeratedSets",
+          "module": "sage.categories.finite_enumerated_sets"
+        }
+      ],
+      "axioms": [
+        "AdditiveAssociative",
+        "AdditiveCommutative",
+        "AdditiveInverse",
+        "AdditiveUnital",
+        "Associative",
+        "Commutative",
+        "Distributive",
+        "Division",
+        "Enumerated",
+        "Finite",
+        "NoZeroDivisors",
+        "Unital"
+      ],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite enumerated permutation groups",
+      "cls": "FinitePermutationGroups_with_category",
+      "cls_key": "FinitePermutationGroups",
+      "module": "sage.categories.finite_permutation_groups",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of permutation groups",
+          "cls": "PermutationGroups_with_category",
+          "cls_key": "PermutationGroups",
+          "module": "sage.categories.permutation_groups"
+        },
+        {
+          "repr": "Category of finite groups",
+          "cls": "FiniteGroups_with_category",
+          "cls_key": "FiniteGroups",
+          "module": "sage.categories.finite_groups"
+        },
+        {
+          "repr": "Category of finite finitely generated semigroups",
+          "cls": "FinitelyGeneratedSemigroups.Finite_with_category",
+          "cls_key": "FinitelyGeneratedSemigroups.Finite",
+          "module": "sage.categories.finitely_generated_semigroups"
+        }
+      ],
+      "axioms": ["Associative", "Enumerated", "Finite", "FinitelyGeneratedAsMagma", "Inverse", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite enumerated sets",
+      "cls": "FiniteEnumeratedSets_with_category",
+      "cls_key": "FiniteEnumeratedSets",
+      "module": "sage.categories.finite_enumerated_sets",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of enumerated sets",
+          "cls": "EnumeratedSets_with_category",
+          "cls_key": "EnumeratedSets",
+          "module": "sage.categories.enumerated_sets"
+        },
+        {
+          "repr": "Category of finite sets",
+          "cls": "FiniteSets_with_category",
+          "cls_key": "FiniteSets",
+          "module": "sage.categories.finite_sets"
+        }
+      ],
+      "axioms": ["Enumerated", "Finite"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite groups",
+      "cls": "FiniteGroups_with_category",
+      "cls_key": "FiniteGroups",
+      "module": "sage.categories.finite_groups",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of finite monoids",
+          "cls": "FiniteMonoids_with_category",
+          "cls_key": "FiniteMonoids",
+          "module": "sage.categories.finite_monoids"
+        },
+        {
+          "repr": "Category of groups",
+          "cls": "Groups_with_category",
+          "cls_key": "Groups",
+          "module": "sage.categories.groups"
+        }
+      ],
+      "axioms": ["Associative", "Finite", "Inverse", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite lattice posets",
+      "cls": "FiniteLatticePosets_with_category",
+      "cls_key": "FiniteLatticePosets",
+      "module": "sage.categories.finite_lattice_posets",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of lattice posets",
+          "cls": "LatticePosets_with_category",
+          "cls_key": "LatticePosets",
+          "module": "sage.categories.lattice_posets"
+        },
+        {
+          "repr": "Category of finite posets",
+          "cls": "FinitePosets_with_category",
+          "cls_key": "FinitePosets",
+          "module": "sage.categories.finite_posets"
+        },
+        {
+          "repr": "Category of bounded posets",
+          "cls": "Posets.Bounded_with_category",
+          "cls_key": "Posets.Bounded",
+          "module": "sage.categories.posets"
+        }
+      ],
+      "axioms": ["Bounded", "Finite"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite monoids",
+      "cls": "FiniteMonoids_with_category",
+      "cls_key": "FiniteMonoids",
+      "module": "sage.categories.finite_monoids",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of monoids",
+          "cls": "Monoids_with_category",
+          "cls_key": "Monoids",
+          "module": "sage.categories.monoids"
+        },
+        {
+          "repr": "Category of finite semigroups",
+          "cls": "FiniteSemigroups_with_category",
+          "cls_key": "FiniteSemigroups",
+          "module": "sage.categories.finite_semigroups"
+        }
+      ],
+      "axioms": ["Associative", "Finite", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite posets",
+      "cls": "FinitePosets_with_category",
+      "cls_key": "FinitePosets",
+      "module": "sage.categories.finite_posets",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of posets",
+          "cls": "Posets_with_category",
+          "cls_key": "Posets",
+          "module": "sage.categories.posets"
+        },
+        {
+          "repr": "Category of finite sets",
+          "cls": "FiniteSets_with_category",
+          "cls_key": "FiniteSets",
+          "module": "sage.categories.finite_sets"
+        }
+      ],
+      "axioms": ["Finite"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite semigroups",
+      "cls": "FiniteSemigroups_with_category",
+      "cls_key": "FiniteSemigroups",
+      "module": "sage.categories.finite_semigroups",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of semigroups",
+          "cls": "Semigroups_with_category",
+          "cls_key": "Semigroups",
+          "module": "sage.categories.semigroups"
+        },
+        {
+          "repr": "Category of finite sets",
+          "cls": "FiniteSets_with_category",
+          "cls_key": "FiniteSets",
+          "module": "sage.categories.finite_sets"
+        }
+      ],
+      "axioms": ["Associative", "Finite"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of finite sets",
+      "cls": "FiniteSets_with_category",
+      "cls_key": "FiniteSets",
+      "module": "sage.categories.finite_sets",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of sets",
+          "cls": "Sets_with_category",
+          "cls_key": "Sets",
+          "module": "sage.categories.sets_cat"
+        }
+      ],
+      "axioms": ["Finite"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of function fields",
+      "cls": "FunctionFields_with_category",
+      "cls_key": "FunctionFields",
+      "module": "sage.categories.function_fields",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of fields",
+          "cls": "Fields_with_category",
+          "cls_key": "Fields",
+          "module": "sage.categories.fields"
+        }
+      ],
+      "axioms": [
+        "AdditiveAssociative",
+        "AdditiveCommutative",
+        "AdditiveInverse",
+        "AdditiveUnital",
+        "Associative",
+        "Commutative",
+        "Distributive",
+        "Division",
+        "NoZeroDivisors",
+        "Unital"
+      ],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of gcd domains",
+      "cls": "GcdDomains_with_category",
+      "cls_key": "GcdDomains",
+      "module": "sage.categories.gcd_domains",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of integral domains",
+          "cls": "IntegralDomains_with_category",
+          "cls_key": "IntegralDomains",
+          "module": "sage.categories.integral_domains"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Commutative", "Distributive", "NoZeroDivisors", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of graded Hopf algebras with basis over Rational Field",
+      "cls": "GradedHopfAlgebrasWithBasis_with_category",
+      "cls_key": "GradedHopfAlgebrasWithBasis",
+      "module": "sage.categories.graded_hopf_algebras_with_basis",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of filtered Hopf algebras with basis over Rational Field",
+          "cls": "FilteredHopfAlgebrasWithBasis_with_category",
+          "cls_key": "FilteredHopfAlgebrasWithBasis",
+          "module": "sage.categories.filtered_hopf_algebras_with_basis"
+        },
+        {
+          "repr": "Category of graded algebras with basis over Rational Field",
+          "cls": "GradedAlgebrasWithBasis_with_category",
+          "cls_key": "GradedAlgebrasWithBasis",
+          "module": "sage.categories.graded_algebras_with_basis"
+        },
+        {
+          "repr": "Category of graded coalgebras with basis over Rational Field",
+          "cls": "GradedCoalgebrasWithBasis_with_category",
+          "cls_key": "GradedCoalgebrasWithBasis",
+          "module": "sage.categories.graded_coalgebras_with_basis"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of graded algebras over Rational Field",
+      "cls": "GradedAlgebras_with_category",
+      "cls_key": "GradedAlgebras",
+      "module": "sage.categories.graded_algebras",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of filtered algebras over Rational Field",
+          "cls": "FilteredAlgebras_with_category",
+          "cls_key": "FilteredAlgebras",
+          "module": "sage.categories.filtered_algebras"
+        },
+        {
+          "repr": "Category of graded vector spaces over Rational Field",
+          "cls": "VectorSpaces.Graded_with_category",
+          "cls_key": "VectorSpaces.Graded",
+          "module": "sage.categories.vector_spaces"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of graded algebras with basis over Rational Field",
+      "cls": "GradedAlgebrasWithBasis_with_category",
+      "cls_key": "GradedAlgebrasWithBasis",
+      "module": "sage.categories.graded_algebras_with_basis",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of filtered algebras with basis over Rational Field",
+          "cls": "FilteredAlgebrasWithBasis_with_category",
+          "cls_key": "FilteredAlgebrasWithBasis",
+          "module": "sage.categories.filtered_algebras_with_basis"
+        },
+        {
+          "repr": "Category of graded algebras over Rational Field",
+          "cls": "GradedAlgebras_with_category",
+          "cls_key": "GradedAlgebras",
+          "module": "sage.categories.graded_algebras"
+        },
+        {
+          "repr": "Category of graded vector spaces with basis over Rational Field",
+          "cls": "VectorSpaces.WithBasis.Graded_with_category",
+          "cls_key": "VectorSpaces.WithBasis.Graded",
+          "module": "sage.categories.vector_spaces"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of graded coalgebras over Rational Field",
+      "cls": "GradedCoalgebras_with_category",
+      "cls_key": "GradedCoalgebras",
+      "module": "sage.categories.graded_coalgebras",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of graded vector spaces over Rational Field",
+          "cls": "VectorSpaces.Graded_with_category",
+          "cls_key": "VectorSpaces.Graded",
+          "module": "sage.categories.vector_spaces"
+        },
+        {
+          "repr": "Category of filtered coalgebras over Rational Field",
+          "cls": "Coalgebras.Filtered_with_category",
+          "cls_key": "Coalgebras.Filtered",
+          "module": "sage.categories.coalgebras"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of graded coalgebras with basis over Rational Field",
+      "cls": "GradedCoalgebrasWithBasis_with_category",
+      "cls_key": "GradedCoalgebrasWithBasis",
+      "module": "sage.categories.graded_coalgebras_with_basis",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of graded vector spaces with basis over Rational Field",
+          "cls": "VectorSpaces.WithBasis.Graded_with_category",
+          "cls_key": "VectorSpaces.WithBasis.Graded",
+          "module": "sage.categories.vector_spaces"
+        },
+        {
+          "repr": "Category of filtered coalgebras with basis over Rational Field",
+          "cls": "CoalgebrasWithBasis.Filtered_with_category",
+          "cls_key": "CoalgebrasWithBasis.Filtered",
+          "module": "sage.categories.coalgebras_with_basis"
+        },
+        {
+          "repr": "Category of graded coalgebras over Rational Field",
+          "cls": "GradedCoalgebras_with_category",
+          "cls_key": "GradedCoalgebras",
+          "module": "sage.categories.graded_coalgebras"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of graded vector spaces over Rational Field",
+      "cls": "VectorSpaces.Graded_with_category",
+      "cls_key": "VectorSpaces.Graded",
+      "module": "sage.categories.vector_spaces",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of graded modules over Rational Field",
+          "cls": "GradedModules_with_category",
+          "cls_key": "GradedModules",
+          "module": "sage.categories.graded_modules"
+        },
+        {
+          "repr": "Category of filtered vector spaces over Rational Field",
+          "cls": "VectorSpaces.Filtered_with_category",
+          "cls_key": "VectorSpaces.Filtered",
+          "module": "sage.categories.vector_spaces"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of graded vector spaces with basis over Rational Field",
+      "cls": "VectorSpaces.WithBasis.Graded_with_category",
+      "cls_key": "VectorSpaces.WithBasis.Graded",
+      "module": "sage.categories.vector_spaces",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of graded modules with basis over Rational Field",
+          "cls": "GradedModulesWithBasis_with_category",
+          "cls_key": "GradedModulesWithBasis",
+          "module": "sage.categories.graded_modules_with_basis"
+        },
+        {
+          "repr": "Category of filtered vector spaces with basis over Rational Field",
+          "cls": "VectorSpaces.WithBasis.Filtered_with_category",
+          "cls_key": "VectorSpaces.WithBasis.Filtered",
+          "module": "sage.categories.vector_spaces"
+        },
+        {
+          "repr": "Category of graded vector spaces over Rational Field",
+          "cls": "VectorSpaces.Graded_with_category",
+          "cls_key": "VectorSpaces.Graded",
+          "module": "sage.categories.vector_spaces"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of group algebras over Rational Field",
+      "cls": "GroupAlgebras_with_category",
+      "cls_key": "GroupAlgebras",
+      "module": "sage.categories.group_algebras",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of Hopf algebras with basis over Rational Field",
+          "cls": "HopfAlgebrasWithBasis_with_category",
+          "cls_key": "HopfAlgebrasWithBasis",
+          "module": "sage.categories.hopf_algebras_with_basis"
+        },
+        {
+          "repr": "Category of monoid algebras over Rational Field",
+          "cls": "Monoids.Algebras_with_category",
+          "cls_key": "Monoids.Algebras",
+          "module": "sage.categories.monoids"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of groups",
+      "cls": "Groups_with_category",
+      "cls_key": "Groups",
+      "module": "sage.categories.groups",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of monoids",
+          "cls": "Monoids_with_category",
+          "cls_key": "Monoids",
+          "module": "sage.categories.monoids"
+        },
+        {
+          "repr": "Category of inverse unital magmas",
+          "cls": "Magmas.Unital.Inverse_with_category",
+          "cls_key": "Magmas.Unital.Inverse",
+          "module": "sage.categories.magmas"
+        }
+      ],
+      "axioms": ["Associative", "Inverse", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of highest weight crystals",
+      "cls": "HighestWeightCrystals_with_category",
+      "cls_key": "HighestWeightCrystals",
+      "module": "sage.categories.highest_weight_crystals",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of crystals",
+          "cls": "Crystals_with_category",
+          "cls_key": "Crystals",
+          "module": "sage.categories.crystals"
+        }
+      ],
+      "axioms": ["Enumerated"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of infinite enumerated sets",
+      "cls": "InfiniteEnumeratedSets_with_category",
+      "cls_key": "InfiniteEnumeratedSets",
+      "module": "sage.categories.infinite_enumerated_sets",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of enumerated sets",
+          "cls": "EnumeratedSets_with_category",
+          "cls_key": "EnumeratedSets",
+          "module": "sage.categories.enumerated_sets"
+        },
+        {
+          "repr": "Category of infinite sets",
+          "cls": "Sets.Infinite_with_category",
+          "cls_key": "Sets.Infinite",
+          "module": "sage.categories.sets_cat"
+        }
+      ],
+      "axioms": ["Enumerated", "Infinite"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of integral domains",
+      "cls": "IntegralDomains_with_category",
+      "cls_key": "IntegralDomains",
+      "module": "sage.categories.integral_domains",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of domains",
+          "cls": "Domains_with_category",
+          "cls_key": "Domains",
+          "module": "sage.categories.domains"
+        },
+        {
+          "repr": "Category of commutative rings",
+          "cls": "CommutativeRings_with_category",
+          "cls_key": "CommutativeRings",
+          "module": "sage.categories.commutative_rings"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Commutative", "Distributive", "NoZeroDivisors", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of lattice posets",
+      "cls": "LatticePosets_with_category",
+      "cls_key": "LatticePosets",
+      "module": "sage.categories.lattice_posets",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of posets",
+          "cls": "Posets_with_category",
+          "cls_key": "Posets",
+          "module": "sage.categories.posets"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of left modules over Rational Field",
+      "cls": "LeftModules_with_category",
+      "cls_key": "LeftModules",
+      "module": "sage.categories.left_modules",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of commutative additive groups",
+          "cls": "CommutativeAdditiveGroups_with_category",
+          "cls_key": "CommutativeAdditiveGroups",
+          "module": "sage.categories.commutative_additive_groups"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of magmas",
+      "cls": "Magmas_with_category",
+      "cls_key": "Magmas",
+      "module": "sage.categories.magmas",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of sets",
+          "cls": "Sets_with_category",
+          "cls_key": "Sets",
+          "module": "sage.categories.sets_cat"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of matrix algebras over Rational Field",
+      "cls": "MatrixAlgebras_with_category",
+      "cls_key": "MatrixAlgebras",
+      "module": "sage.categories.matrix_algebras",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of algebras over Rational Field",
+          "cls": "Algebras_with_category",
+          "cls_key": "Algebras",
+          "module": "sage.categories.algebras"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of modular abelian varieties over Rational Field",
+      "cls": "ModularAbelianVarieties_with_category",
+      "cls_key": "ModularAbelianVarieties",
+      "module": "sage.categories.modular_abelian_varieties",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of sets",
+          "cls": "Sets_with_category",
+          "cls_key": "Sets",
+          "module": "sage.categories.sets_cat"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of monoids",
+      "cls": "Monoids_with_category",
+      "cls_key": "Monoids",
+      "module": "sage.categories.monoids",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of semigroups",
+          "cls": "Semigroups_with_category",
+          "cls_key": "Semigroups",
+          "module": "sage.categories.semigroups"
+        },
+        {
+          "repr": "Category of unital magmas",
+          "cls": "Magmas.Unital_with_category",
+          "cls_key": "Magmas.Unital",
+          "module": "sage.categories.magmas"
+        }
+      ],
+      "axioms": ["Associative", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of number fields",
+      "cls": "NumberFields_with_category",
+      "cls_key": "NumberFields",
+      "module": "sage.categories.number_fields",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of infinite fields",
+          "cls": "JoinCategory_with_category",
+          "cls_key": "JoinCategory",
+          "module": "sage.categories.category"
+        }
+      ],
+      "axioms": [
+        "AdditiveAssociative",
+        "AdditiveCommutative",
+        "AdditiveInverse",
+        "AdditiveUnital",
+        "Associative",
+        "Commutative",
+        "Distributive",
+        "Division",
+        "Infinite",
+        "NoZeroDivisors",
+        "Unital"
+      ],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of objects",
+      "cls": "Objects_with_category",
+      "cls_key": "Objects",
+      "module": "sage.categories.objects",
+      "kind": "category_instance",
+      "supers": [],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of partially ordered monoids",
+      "cls": "PartiallyOrderedMonoids_with_category",
+      "cls_key": "PartiallyOrderedMonoids",
+      "module": "sage.categories.partially_ordered_monoids",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of posets",
+          "cls": "Posets_with_category",
+          "cls_key": "Posets",
+          "module": "sage.categories.posets"
+        },
+        {
+          "repr": "Category of monoids",
+          "cls": "Monoids_with_category",
+          "cls_key": "Monoids",
+          "module": "sage.categories.monoids"
+        }
+      ],
+      "axioms": ["Associative", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of permutation groups",
+      "cls": "PermutationGroups_with_category",
+      "cls_key": "PermutationGroups",
+      "module": "sage.categories.permutation_groups",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of groups",
+          "cls": "Groups_with_category",
+          "cls_key": "Groups",
+          "module": "sage.categories.groups"
+        }
+      ],
+      "axioms": ["Associative", "Inverse", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of pointed sets",
+      "cls": "PointedSets_with_category",
+      "cls_key": "PointedSets",
+      "module": "sage.categories.pointed_sets",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of sets",
+          "cls": "Sets_with_category",
+          "cls_key": "Sets",
+          "module": "sage.categories.sets_cat"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of posets",
+      "cls": "Posets_with_category",
+      "cls_key": "Posets",
+      "module": "sage.categories.posets",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of sets",
+          "cls": "Sets_with_category",
+          "cls_key": "Sets",
+          "module": "sage.categories.sets_cat"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of principal ideal domains",
+      "cls": "PrincipalIdealDomains_with_category",
+      "cls_key": "PrincipalIdealDomains",
+      "module": "sage.categories.principal_ideal_domains",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of unique factorization domains",
+          "cls": "UniqueFactorizationDomains_with_category",
+          "cls_key": "UniqueFactorizationDomains",
+          "module": "sage.categories.unique_factorization_domains"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Commutative", "Distributive", "NoZeroDivisors", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of quotient fields",
+      "cls": "QuotientFields_with_category",
+      "cls_key": "QuotientFields",
+      "module": "sage.categories.quotient_fields",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of fields",
+          "cls": "Fields_with_category",
+          "cls_key": "Fields",
+          "module": "sage.categories.fields"
+        }
+      ],
+      "axioms": [
+        "AdditiveAssociative",
+        "AdditiveCommutative",
+        "AdditiveInverse",
+        "AdditiveUnital",
+        "Associative",
+        "Commutative",
+        "Distributive",
+        "Division",
+        "NoZeroDivisors",
+        "Unital"
+      ],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of regular crystals",
+      "cls": "RegularCrystals_with_category",
+      "cls_key": "RegularCrystals",
+      "module": "sage.categories.regular_crystals",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of crystals",
+          "cls": "Crystals_with_category",
+          "cls_key": "Crystals",
+          "module": "sage.categories.crystals"
+        }
+      ],
+      "axioms": ["Enumerated"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of right modules over Rational Field",
+      "cls": "RightModules_with_category",
+      "cls_key": "RightModules",
+      "module": "sage.categories.right_modules",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of commutative additive groups",
+          "cls": "CommutativeAdditiveGroups_with_category",
+          "cls_key": "CommutativeAdditiveGroups",
+          "module": "sage.categories.commutative_additive_groups"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of ring ideals in Univariate Polynomial Ring in x over Rational Field",
+      "cls": "RingIdeals_with_category",
+      "cls_key": "RingIdeals",
+      "module": "sage.categories.ring_ideals",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of modules over Univariate Polynomial Ring in x over Rational Field",
+          "cls": "Modules_with_category",
+          "cls_key": "Modules",
+          "module": "sage.categories.modules"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of rings",
+      "cls": "Rings_with_category",
+      "cls_key": "Rings",
+      "module": "sage.categories.rings",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of rngs",
+          "cls": "Rngs_with_category",
+          "cls_key": "Rngs",
+          "module": "sage.categories.rngs"
+        },
+        {
+          "repr": "Category of semirings",
+          "cls": "Semirings_with_category",
+          "cls_key": "Semirings",
+          "module": "sage.categories.semirings"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of rngs",
+      "cls": "Rngs_with_category",
+      "cls_key": "Rngs",
+      "module": "sage.categories.rngs",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of associative additive commutative additive associative additive unital distributive magmas and additive magmas",
+          "cls": "DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative_with_category",
+          "cls_key": "DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative",
+          "module": "sage.categories.distributive_magmas_and_additive_magmas"
+        },
+        {
+          "repr": "Category of commutative additive groups",
+          "cls": "CommutativeAdditiveGroups_with_category",
+          "cls_key": "CommutativeAdditiveGroups",
+          "module": "sage.categories.commutative_additive_groups"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of schemes",
+      "cls": "Schemes_with_category",
+      "cls_key": "Schemes",
+      "module": "sage.categories.schemes",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of sets",
+          "cls": "Sets_with_category",
+          "cls_key": "Sets",
+          "module": "sage.categories.sets_cat"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of semigroups",
+      "cls": "Semigroups_with_category",
+      "cls_key": "Semigroups",
+      "module": "sage.categories.semigroups",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of magmas",
+          "cls": "Magmas_with_category",
+          "cls_key": "Magmas",
+          "module": "sage.categories.magmas"
+        }
+      ],
+      "axioms": ["Associative"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of semirings",
+      "cls": "Semirings_with_category",
+      "cls_key": "Semirings",
+      "module": "sage.categories.semirings",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of associative additive commutative additive associative additive unital distributive magmas and additive magmas",
+          "cls": "DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative_with_category",
+          "cls_key": "DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative",
+          "module": "sage.categories.distributive_magmas_and_additive_magmas"
+        },
+        {
+          "repr": "Category of monoids",
+          "cls": "Monoids_with_category",
+          "cls_key": "Monoids",
+          "module": "sage.categories.monoids"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveUnital", "Associative", "Distributive", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of sets",
+      "cls": "Sets_with_category",
+      "cls_key": "Sets",
+      "module": "sage.categories.sets_cat",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of sets with partial maps",
+          "cls": "SetsWithPartialMaps_with_category",
+          "cls_key": "SetsWithPartialMaps",
+          "module": "sage.categories.sets_with_partial_maps"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of sets with grading",
+      "cls": "SetsWithGrading_with_category",
+      "cls_key": "SetsWithGrading",
+      "module": "sage.categories.sets_with_grading",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of sets",
+          "cls": "Sets_with_category",
+          "cls_key": "Sets",
+          "module": "sage.categories.sets_cat"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of sets with partial maps",
+      "cls": "SetsWithPartialMaps_with_category",
+      "cls_key": "SetsWithPartialMaps",
+      "module": "sage.categories.sets_with_partial_maps",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of objects",
+          "cls": "Objects_with_category",
+          "cls_key": "Objects",
+          "module": "sage.categories.objects"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of simplicial complexes",
+      "cls": "SimplicialComplexes_with_category",
+      "cls_key": "SimplicialComplexes",
+      "module": "sage.categories.simplicial_complexes",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of sets",
+          "cls": "Sets_with_category",
+          "cls_key": "Sets",
+          "module": "sage.categories.sets_cat"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of unique factorization domains",
+      "cls": "UniqueFactorizationDomains_with_category",
+      "cls_key": "UniqueFactorizationDomains",
+      "module": "sage.categories.unique_factorization_domains",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of gcd domains",
+          "cls": "GcdDomains_with_category",
+          "cls_key": "GcdDomains",
+          "module": "sage.categories.gcd_domains"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Commutative", "Distributive", "NoZeroDivisors", "Unital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of vector spaces over Rational Field",
+      "cls": "VectorSpaces_with_category",
+      "cls_key": "VectorSpaces",
+      "module": "sage.categories.vector_spaces",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of modules over Rational Field",
+          "cls": "Modules_with_category",
+          "cls_key": "Modules",
+          "module": "sage.categories.modules"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Category of vector spaces with basis over Rational Field",
+      "cls": "VectorSpaces.WithBasis_with_category",
+      "cls_key": "VectorSpaces.WithBasis",
+      "module": "sage.categories.vector_spaces",
+      "kind": "category_with_axiom",
+      "supers": [
+        {
+          "repr": "Category of modules with basis over Rational Field",
+          "cls": "ModulesWithBasis_with_category",
+          "cls_key": "ModulesWithBasis",
+          "module": "sage.categories.modules_with_basis"
+        },
+        {
+          "repr": "Category of vector spaces over Rational Field",
+          "cls": "VectorSpaces_with_category",
+          "cls_key": "VectorSpaces",
+          "module": "sage.categories.vector_spaces"
+        }
+      ],
+      "axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "WithBasis"],
+      "probe": "super_categories"
+    },
+    {
+      "repr": "Groupoid with underlying set Symmetric group of order 8! as a permutation group",
+      "cls": "Groupoid_with_category",
+      "cls_key": "Groupoid",
+      "module": "sage.categories.groupoid",
+      "kind": "category_instance",
+      "supers": [
+        {
+          "repr": "Category of sets",
+          "cls": "Sets_with_category",
+          "cls_key": "Sets",
+          "module": "sage.categories.sets_cat"
+        }
+      ],
+      "axioms": [],
+      "probe": "super_categories"
+    }
+  ],
+  "all_axioms": [
+    "Additive",
+    "AdditiveAssociative",
+    "AdditiveCommutative",
+    "AdditiveInverse",
+    "AdditiveUnital",
+    "Affine",
+    "AlmostComplex",
+    "Alternating",
+    "Analytic",
+    "Aperiodic",
+    "Associative",
+    "Blue",
+    "Bounded",
+    "Cellular",
+    "ChainGraded",
+    "Cocommutative",
+    "Colimits",
+    "Commutative",
+    "Compact",
+    "Complete",
+    "CongruenceUniform",
+    "Connected",
+    "Coproducts",
+    "Countable",
+    "Definite",
+    "Differentiable",
+    "Differential",
+    "Directed",
+    "Distributive",
+    "Division",
+    "Domain",
+    "Endset",
+    "Enumerated",
+    "Etale",
+    "Euclidean",
+    "Even",
+    "Extremal",
+    "Facade",
+    "Finite",
+    "FiniteDimensional",
+    "FiniteRank",
+    "FiniteType",
+    "FinitelyGenerated",
+    "FinitelyGeneratedAsLambdaBracketAlgebra",
+    "FinitelyGeneratedAsMagma",
+    "FinitelyPresented",
+    "Flat",
+    "Flying",
+    "Free",
+    "GCDDomain",
+    "Graded",
+    "HTrivial",
+    "Hyperbolic",
+    "Indefinite",
+    "Infinite",
+    "Integral",
+    "IntegralDomain",
+    "Inverse",
+    "Irreducible",
+    "JTrivial",
+    "LTrivial",
+    "Limits",
+    "LocallyFinitePresentation",
+    "LocallySmall",
+    "Monoidal",
+    "Multiplicative",
+    "NegativeDefinite",
+    "Nilpotent",
+    "NoZeroDivisors",
+    "Noetherian",
+    "Nondegenerate",
+    "Odd",
+    "OverField",
+    "PID",
+    "PL",
+    "Pointed",
+    "PositiveDefinite",
+    "Products",
+    "Projective",
+    "Proper",
+    "RTrivial",
+    "RelativeDimension",
+    "RelativeDimension_1",
+    "RelativeDimension_2",
+    "Semidistributive",
+    "Separated",
+    "SkewSymmetric",
+    "Smooth",
+    "Stone",
+    "Stratified",
+    "Supercocommutative",
+    "Supercommutative",
+    "Symmetric",
+    "Thin",
+    "Torsion",
+    "TorsionFree",
+    "Trim",
+    "UFD",
+    "Uncountable",
+    "Unimodular",
+    "Unital",
+    "Unramified",
+    "WellGenerated",
+    "WithBasis",
+    "WithGenerators"
+  ],
+  "constructions": {
+    "Algebras": ["sage.categories.algebra_functor.AlgebrasCategory"],
+    "CartesianProducts": ["sage.categories.cartesian_product.CartesianProductsCategory"],
+    "DualObjects": ["sage.categories.dual.DualObjectsCategory"],
+    "Filtered": ["sage.categories.filtered_modules.FilteredModulesCategory"],
+    "Graded": ["sage.categories.graded_modules.GradedModulesCategory"],
+    "Homsets": ["sage.categories.homsets.HomsetsCategory"],
+    "IsomorphicObjects": ["sage.categories.isomorphic_objects.IsomorphicObjectsCategory"],
+    "Metric": ["sage.categories.metric_spaces.MetricSpacesCategory"],
+    "Quotients": ["sage.categories.quotients.QuotientsCategory"],
+    "Realizations": ["sage.categories.realizations.RealizationsCategory"],
+    "SignedTensorProducts": ["sage.categories.signed_tensor.SignedTensorProductsCategory"],
+    "Subobjects": ["sage.categories.subobjects.SubobjectsCategory"],
+    "Subquotients": ["sage.categories.subquotients.SubquotientsCategory"],
+    "Super": ["sage.categories.super_modules.SuperModulesCategory"],
+    "TensorProducts": ["sage.categories.tensor.TensorProductsCategory"],
+    "Topological": ["sage.categories.topological_spaces.TopologicalSpacesCategory"],
+    "WithRealizations": ["sage.categories.with_realizations.WithRealizationsCategory"]
+  }
+}

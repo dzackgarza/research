@@ -52,7 +52,7 @@ out["namespace"] = names
 
 out["all_axioms"] = sorted(all_axioms)
 
-cons = {}
+cons: dict[str, list[str]] = {}
 stack = [FunctorialConstructionCategory]
 seen = set()
 while stack:
@@ -68,7 +68,7 @@ while stack:
 out["constructions"] = {k: sorted(v) for k, v in sorted(cons.items())}
 
 edges = set()
-todo = [Modules(ZZ)]
+todo: list[Category] = [Modules(ZZ)]
 visited = set()
 while todo:
     c = todo.pop()

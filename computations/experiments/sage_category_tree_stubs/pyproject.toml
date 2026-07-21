@@ -1,0 +1,18 @@
+[project]
+name = "sage-category-tree-stubs"
+version = "0.0.1"
+requires-python = ">=3.14"
+dependencies = [
+    "types-PyYAML",
+]
+
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "sage_category_tree_stubs" = "sage_category_tree_stubs" }
+packages = [
+    "sage_category_tree_stubs",
+    "sage_category_tree_stubs.clusters",
+]

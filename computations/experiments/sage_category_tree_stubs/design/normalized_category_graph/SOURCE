@@ -1,0 +1,8 @@
+Normalized category graph 𝒢.
+
+AUTHORITATIVE: semantic_seed/
+PRESENTATION:  category_parent_graph.dot  (GENERATED from seed via `just seed-dot`)
+               category_parent_graph.generated.dot  (same content)
+HAND ARCHIVE:  category_parent_graph.hand.dot  (pre-generation layout)
+
+After seed edits: `just seed-dot` (resets the factory cache).

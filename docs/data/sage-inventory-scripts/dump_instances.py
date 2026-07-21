@@ -19,7 +19,9 @@ from sage.categories.covariant_functorial_construction import (
 )
 
 insts = [x for x in gc.get_objects() if isinstance(x, Category)]
-seen, joins, kinds = set(), [], {}
+seen: set[str] = set()
+joins: list[dict[str, object]] = []
+kinds: dict[str, int] = {}
 for x in insts:
     r = str(x)
     if r in seen:
@@ -38,7 +40,7 @@ assert joins, "a full import constructs join categories"
 out = {
     "n_instances": len(seen),
     "kinds": kinds,
-    "joins": sorted(joins, key=lambda j: j["repr"]),
+    "joins": sorted(joins, key=lambda j: str(j["repr"])),
 }
 json.dump(out, open(sys.argv[1], "w"), indent=1)
 print("instances:", len(seen), "| kinds:", kinds, "| joins:", len(joins))

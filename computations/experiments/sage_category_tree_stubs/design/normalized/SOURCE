@@ -1,0 +1,7 @@
+Normalized graph manifest
+=========================
+
+manifest/ → ../normalized_category_graph/semantic_seed/
+
+Authoritative mathematical definitions (entities, classifiers, arrows).
+Sage correspondence refers to these ids; it must not duplicate pullbacks.

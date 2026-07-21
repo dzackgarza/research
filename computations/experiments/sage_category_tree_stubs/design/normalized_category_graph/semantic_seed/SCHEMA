@@ -1,0 +1,47 @@
+Typed semantic seed for 𝒢 (authoritative; DOT is presentation)
+================================================================
+
+Entity kinds (Node.kind):
+  category_family      — e.g. Sets, Magmas, Rings, Modules(R)
+  classifier_domain    — e.g. Sets.Finite as domain of ι_Finite
+  derived_category     — named pullback / composite (not a new primitive)
+  category_constructor — Arr(−), Slices, FunctorCategories, …
+  alias                — synonym of another entity (not a distinct object)
+  # Aut(L), Pic, OrthogonalGroups are NOT category_family nodes; see STATUS
+
+Arrow kinds (Arrow.kind):
+  forgetful
+  full_inclusion
+  classifier_leg          — ι_A : C.A → C
+  pullback_projection     — a cone leg of a pullback presentation
+  theorem_inclusion       — implication / theorem-witness inclusion
+  equivalence
+  construction            — associated / constructed functor (not supercategory)
+  parameter_dependency    — parameter lives in a category (NOT object forgetful)
+
+Classifier record fields:
+  id, name, host_id, domain_id, leg_arrow_id
+  transport: { along_functor_id, from_classifier_id } | null
+  # Do NOT store property|structure|stuff — compute from the leg.
+
+Derived definition (pullback):
+  operation: pullback
+  left: <forgetful or other functor id>
+  right: <classifier_leg arrow id or classifier id>
+  over: <base category id>
+  strictness: strict | pseudo
+  notes: …
+
+Derived definition (classifier tower / application):
+  operation: classifier_tower | classifier_application
+  base|host: <category id>
+  classifiers|classifier: <classifier id(s)>
+
+Derived definition (parameter substitution):
+  operation: parameter_substitution
+  of: <category_family id>
+  substitute: { param: expression }
+
+Sage mapping: design/sage_to_normalized_map/correspondence.json
+  sage_to_graph values are semantic_seed entity ids (target_kind).
+  Presentation vertices are entity.dot_vertex (resolved in sage_to_stub).

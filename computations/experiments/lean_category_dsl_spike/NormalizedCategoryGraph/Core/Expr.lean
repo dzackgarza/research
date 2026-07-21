@@ -1,0 +1,86 @@
+/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+import NormalizedCategoryGraph.Core.Ids
+
+/-!
+# Symbolic category and structural-map expressions
+
+Every declaration has (1) a categorical semantic term and (2) a normalized
+symbolic expression. Names are not semantic constructors: they point at
+expressions via the registry.
+-/
+
+namespace NormalizedCategoryGraph
+
+/-- Parameter expression for family applications (symbolic). -/
+inductive ParameterExpr
+  | atom (id : String)
+  | opposite (of : ParameterExpr)
+  deriving DecidableEq, Repr
+
+/-- Normalized symbolic category language. -/
+inductive CategoryExpr
+  | atom (id : CategoryId)
+  | familyApp (family : CategoryFamilyId) (args : Array ParameterExpr)
+  | classifierTotal (classifier : ClassifierId)
+  | refine (base : CategoryExpr) (classifier : ClassifierId) (route : Option RouteId)
+  | constructor (constructor : ConstructorId) (args : Array CategoryExpr)
+  | opaque (id : CategoryId)
+  | reference (id : CategoryId)
+  deriving Repr
+
+/-- Structural (generated) map expression. -/
+inductive StructuralMapExpr
+  | identity (category : CategoryExpr)
+  | baseProjection (refinement : RefinementId)
+  | classifierProjection (refinement : RefinementId)
+  | opaquePort (port : OpaquePortId)
+  | thmInclusion (thm : StructuralTheoremId)
+  | finiteLimitLift (cone : ConeCertificateId)
+  | compose (parts : Array StructuralMapExpr)
+  deriving Repr, Inhabited
+
+/-- How a named node relates to its expression body. -/
+inductive CategoryOrigin
+  | root
+  | atomicClassifierTotal
+  | derivedNamed
+  | constructorValue
+  | opaqueCategory
+  | alias
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Visibility for semantic vs presentation layers. -/
+inductive Visibility
+  /-- Present in semantic export and eligible for presentation. -/
+  | present
+  /-- Semantic-only (opaque hosts excluded from presentation). -/
+  | semanticOnly
+  /-- Explicitly excluded from presentation. -/
+  | presentationHidden
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Route selector for multi-port projection / refine. -/
+inductive RouteSelector
+  | none
+  | port (id : PortId)
+  | route (id : RouteId)
+  deriving DecidableEq, Repr, Inhabited
+
+namespace CategoryExpr
+
+instance : Inhabited CategoryExpr := ⟨.atom CategoryId.sets⟩
+
+/-- Convenience: refine without a route. -/
+def refine' (base : CategoryExpr) (classifier : ClassifierId) : CategoryExpr :=
+  .refine base classifier none
+
+/-- Convenience: atom. -/
+def ofId (id : CategoryId) : CategoryExpr :=
+  .atom id
+
+end CategoryExpr
+
+end NormalizedCategoryGraph

@@ -17,6 +17,9 @@ open CategoryTheory
 
 universe v u v' u'
 
+-- Twin levels are intentional for Cat packing.
+set_option linter.checkUnivs false
+
 /--
 A first-class category object.
 

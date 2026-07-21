@@ -15,13 +15,12 @@ import csv
 import hashlib
 import json
 import re
-import shutil
-import textwrap
 import zipfile
 from collections import defaultdict
-from dataclasses import dataclass, asdict
+from collections.abc import Iterable
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, cast
 
 SOURCE_ROOT = Path("/mnt/data/sage109/src/sage/categories")
 DIST_ROOT = Path("/mnt/data/sage109")
@@ -143,7 +142,7 @@ PUBLIC_WRAPPER_NAMES = {
     "MonoidAlgebras",
 }
 
-ALIASES = [
+ALIASES: list[dict[str, Any]] = [
     {
         "alias": "PartiallyOrderedSets",
         "canonical": "Posets",
@@ -423,7 +422,10 @@ for rec in all_class_records:
                     axiom_node = value.elts[1]
                     axiom = axiom_node.value if isinstance(axiom_node, ast.Constant) else unparse(axiom_node)
                     hardcoded_definitions[rec.category_id] = (unparse(value.elts[0]), str(axiom), stmt.lineno)
-            lazy = parse_lazy_import(stmt.value)
+            value = stmt.value
+            if value is None:
+                continue
+            lazy = parse_lazy_import(value)
             if lazy:
                 target_module, target_name = lazy
                 if target_module.startswith("sage.categories."):
@@ -555,7 +557,11 @@ def scan_category_method(
         expansion_parts.append(", ".join(f"{c}._with_axioms(...)" for c in with_axioms_calls))
     if recognized_calls:
         seen_calls: set[str] = set()
-        stable_calls = [c for c in recognized_calls if not (c in seen_calls or seen_calls.add(c))]
+        stable_calls: list[str] = []
+        for c in recognized_calls:
+            if c not in seen_calls:
+                seen_calls.add(c)
+                stable_calls.append(c)
         expansion_parts.append("calls " + ", ".join(f"{c}()" for c in stable_calls))
     expansion = "; ".join(expansion_parts)
 
@@ -690,7 +696,10 @@ def scan_category_class_body(
             for target in targets:
                 if not isinstance(target, ast.Name) or target.id.startswith("_"):
                     continue
-                lazy = parse_lazy_import(stmt.value)
+                value = stmt.value
+                if value is None:
+                    continue
+                lazy = parse_lazy_import(value)
                 if lazy:
                     target_module, target_name = lazy
                     feature_name = target.id
@@ -964,7 +973,12 @@ def syntactic_axiom_chain(category_id: str, stack: set[str] | None = None) -> li
     chain.append(definition["axiom"])
     # Stable unique sequence.
     seen: set[str] = set()
-    return [x for x in chain if not (x in seen or seen.add(x))]
+    unique: list[str] = []
+    for x in chain:
+        if x not in seen:
+            seen.add(x)
+            unique.append(x)
+    return unique
 
 # ---------------------------------------------------------------------------
 # Aggregate local features and build category rows
@@ -1283,7 +1297,7 @@ for alias in ALIASES:
         {
             **alias,
             "source": f"src/sage/categories/{alias['module']}.py:{alias['source_line']}",
-            "source_url": source_url(alias["module"], alias["source_line"]),
+            "source_url": source_url(str(alias["module"]), int(alias["source_line"])),
         }
     )
 write_csv(aliases_csv, alias_rows)
@@ -1497,7 +1511,7 @@ md.append(
                 r["alias"],
                 r["canonical"],
                 r["status"],
-                source_link(r["module"], r["source_line"]),
+                source_link(str(r["module"]), int(r["source_line"])),
             )
             for r in alias_rows
         ),
@@ -1544,7 +1558,7 @@ summary = {
     "version": VERSION,
     "commit": COMMIT,
     "sdist_sha256": SDIST_SHA256,
-    "counts": payload["metadata"]["counts"],
+    "counts": cast(dict[str, Any], payload["metadata"])["counts"],
     "files": [
         str(markdown_path),
         str(categories_csv),

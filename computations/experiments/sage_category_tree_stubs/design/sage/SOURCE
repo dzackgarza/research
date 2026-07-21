@@ -1,0 +1,23 @@
+Sage observation + correspondence
+=================================
+
+runtime_probe.json
+  GENERATED live dump (category_sample + super_categories).
+  Rebuild: `sage -python -m sage_category_tree_stubs.runtime_probe`
+  or `just manifests-probe`.
+
+observed.json
+  GENERATED empirical snapshot = inventory census ⊕ runtime probe.
+  Rebuild: `sage -python -m sage_category_tree_stubs.observed_build`
+  or via `just manifests` / `just manifests-probe`.
+  Does not correct Sage parents; does not store property/structure/stuff.
+
+mapping.yaml
+  REVIEWED Sage → normalized correspondence (+ auto unsupported rows
+  for unreviewed public categories / edges / axioms / constructions).
+  Targets are normalized ids only (cat.*, clf.*, …).
+  Pullback expressions live in design/normalized/manifest/, not here.
+  Every observed immediate-supercategory edge has exactly one disposition.
+
+correspondence.dot / observed_parents.dot / edge_dispositions.dot
+  GENERATED views from the join of the three manifests.

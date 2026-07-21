@@ -6,13 +6,21 @@ Everything claimed below is checked by `./scripts/check.sh`.
 
 ## Verify
 
+Lake lives at the **repository root** (see [`LEAN.md`](../../../../LEAN.md) and [`LAKE.md`](LAKE.md)).
+
 ```bash
-./scripts/check.sh
+# from repo root
+lake build CatDSL CatDSLTest
+
+# or from the spike
+just -f ../justfile build
+just -f ../justfile axioms
+./scripts/check.sh   # also cds to repo root
 ```
 
 Requires **elan** (AUR `elan-lean`), not a distro `lean`. Mathlib's cache is keyed to the exact official toolchain build, so any other Lean silently recompiles all ~7900 modules.
-elan reads `lean-toolchain` and fetches the right one.
-If `lake exe cache get` is honoured, no Mathlib module compiles.
+elan reads the root `lean-toolchain` and fetches the right one.
+If `lake exe cache get` (at repo root) is honoured, no Mathlib module compiles.
 
 ## What is verified
 

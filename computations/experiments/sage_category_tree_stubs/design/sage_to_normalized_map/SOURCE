@@ -1,0 +1,8 @@
+Sage → 𝒢 correspondence (versioned adapter table).
+
+Owned files:
+  correspondence.json
+    sage_to_graph, graph_to_sage, axiom_sage_to_graph, exceptions
+
+Python modules load this file; do not maintain a second hand list in Python.
+Not the Sage inventory; not the normalized DOT.

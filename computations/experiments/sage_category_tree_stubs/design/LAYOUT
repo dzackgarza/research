@@ -1,0 +1,77 @@
+# Three related manifests (Sage observation ≠ mathematics ≠ interpretation)
+# ========================================================================
+#
+#   observed Sage @ version v
+#   +  normalized graph 𝒢
+#   +  Sage → normalized correspondence
+#   →  generated Graphviz views
+#
+# Neither Sage nor correspondence duplicates normalized definitions.
+
+design/
+  schemas/                 # JSON Schema for the three manifests (+ routes)
+  normalized/
+    manifest/              # → semantic_seed/ (entities, classifiers, arrows)
+  sage/
+    runtime_probe.json     # GENERATED live category_sample / super_categories
+    observed.json          # GENERATED empirical snapshot (no math corrections)
+    mapping.yaml           # REVIEWED correspondence (categories/edges/axioms/…)
+    correspondence.dot     # GENERATED bipartite view
+    observed_parents.dot   # GENERATED raw Sage parent graph
+    edge_dispositions.dot  # GENERATED edges colored by disposition
+  routes/
+    routes.yaml            # optional execution routing (separate from meaning)
+  normalized_category_graph/   # presentation DOT + hand archive (legacy path)
+  sage_category_graph/         # inventory sources feeding observed.json
+  sage_to_normalized_map/      # legacy correspondence.json (loaded via mapping)
+
+Contracts
+---------
+1. Observed Sage
+   - Auto-extracted from pinned Sage source/runtime inventory.
+   - Records classes, parameters, immediate supercategories, axioms,
+     constructions, aliases — as Sage reports them.
+   - Does NOT classify property/structure/stuff; does NOT “fix” parents.
+
+2. Normalized graph
+   - Mathematical SSOT: category *expressions* (roots, refine, names) and
+     classifiers at least hosts.
+   - Ordinary hierarchy functors are **generated** (classifier legs +
+     projection composites by structural recursion), not hand-authored.
+   - Vault: decisions/category-expressions-generate-projection-hierarchy.
+   - Sage mapping refers to expression/named ids; edge checks expand from the
+     target’s projection spine.
+
+3. Correspondence
+   - Hand-authored/reviewed; mechanically validated against (1) and (2).
+   - category_mappings.relation ∈
+       {exact, presentation_alias, canonical_equivalence,
+        corrected_embedding, constructible, unsupported, removed}
+   - ``constructible``: Sage Base.A… is an ephemeral classifier tower over a
+     normalized base C (C must be a node; each Ai's host reachable from C).
+     The full C.A1.A2… need not be a literal named vertex of 𝒢.
+   - Every Sage immediate-supercategory edge needs a disposition
+       {preserved, subdivided, corrected, alias_artifact, unsupported}.
+   - axiom_mappings target clf.*; construction_mappings target con.*.
+
+4. Routes (optional)
+   - op.* → Sage method receivers; versioned separately from category meaning.
+
+Maintenance
+-----------
+Sage v → v+1:
+  1. just manifests-probe   # runtime_probe.json + observed.json + mapping.yaml
+  2. just manifests-diff path/to/observed-v.yaml   # structural diff
+  3. just audit manifests   # hygiene (edge dispositions complete)
+  4. just audit manifests-parity   # fails while unsupported rows remain
+  5. edit only affected mapping entries / version overlays
+  6. just seed-dot / just manifests
+Normalized graph changes only when mathematics changes.
+
+CLI
+---
+  just manifests-probe   live Sage dump + rebuild
+  just manifests         rebuild from existing probe/inventory
+  just manifests-diff X  diff observed X → current
+  just audit manifests
+  just audit manifests-parity

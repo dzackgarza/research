@@ -1,0 +1,61 @@
+export PYTHONDONTWRITEBYTECODE := "1"
+
+# Local fast path: instantiate the graph and recover DOT relations.
+# Pytest session autouse also rebuilds the SVG viewer (see tests/conftest.py).
+test: viz
+	#!/usr/bin/env bash
+	set -euo pipefail
+	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
+	sage -python -m pytest tests/ -v --tb=short
+
+# Global Sage QC; viewer rebuild is enforced by tests/conftest.py on collection.
+test-ci: viz
+	@just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
+
+# Rebuild presentation DOT from semantic seed (archives hand DOT once).
+seed-dot:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
+	sage -python -m sage_category_tree_stubs.seed_dot
+
+# Live Sage probe → observed + mapping + DOT views.
+manifests-probe:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
+	sage -python -m sage_category_tree_stubs.runtime_probe
+	sage -python -m sage_category_tree_stubs.mapping_build
+	sage -python -m sage_category_tree_stubs.join_views
+	sage -python -m sage_category_tree_stubs.manifests
+
+# Rebuild from existing runtime probe (or source-axis only if no probe).
+manifests:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
+	sage -python -m sage_category_tree_stubs.seed_authored_sync
+	sage -python -m sage_category_tree_stubs.mapping_build
+	sage -python -m sage_category_tree_stubs.join_views
+	sage -python -m sage_category_tree_stubs.manifests
+
+# Structural diff: just manifests-diff path/to/old-observed.json
+manifests-diff old:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
+	sage -python -m sage_category_tree_stubs.observed_diff "{{old}}"
+
+# Graph / stub observability (DOT-backed; no Sage category materialization).
+audit *args: viz
+	#!/usr/bin/env bash
+	set -euo pipefail
+	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
+	sage -python -m sage_category_tree_stubs.audit {{args}}
+
+# Rebuild the interactive SVG viewer served from sage_lattice_category_spike.
+viz:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
+	sage -python -c "from sage_category_tree_stubs.viz import rebuild_viewer; r=rebuild_viewer(); print(f\"rebuilt svg; open http://127.0.0.1:8766/category_parent_graph.html?v={r['cache_bust']}\")"
