@@ -73,6 +73,7 @@ def resolve_classifier_id(
     least_host: str | None,
     sketch: dict[str, Any],
     prefer_host: str | None = None,
+    required_host_id: str | None = None,
 ) -> str | None:
     """Resolve authored classifier id against the seed (id, then name+host)."""
     classifiers = sketch["classifiers"]
@@ -82,7 +83,10 @@ def resolve_classifier_id(
     if classifier_id == "clf.commutative" and "clf.magmas.commutative" in classifiers:
         return "clf.magmas.commutative"
     if classifier_id and classifier_id in classifiers:
-        return classifier_id
+        selected = classifiers[classifier_id]
+        if required_host_id is None or selected.host == required_host_id:
+            return classifier_id
+        return None
     # Host-specific finitely generated minted for Magmas/Semigroups
     if classifier_id == "clf.finitelygenerated" and prefer_host:
         for cand in (
@@ -115,7 +119,7 @@ def resolve_classifier_id(
     name = classifier_name or aliases.get(classifier_id or "")
     if not name:
         return None
-    cands = [c for c in classifiers.values() if c.name == name]
+    cands = [c for c in classifiers.values() if c.name == name and (required_host_id is None or c.host == required_host_id)]
     if not cands:
         return None
 

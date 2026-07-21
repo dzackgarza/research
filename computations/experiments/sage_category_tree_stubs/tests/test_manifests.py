@@ -223,6 +223,13 @@ def test_build_mapping_includes_finite_axiom_from_authored() -> None:
     assert finite[0]["least_normalized_host"] == "cat.sets"
 
 
+def test_axiom_classifier_resolution_respects_the_authored_least_host() -> None:
+    mapping = build_mapping()
+    by_name = {row["source_sage_name"]: row for row in mapping["axiom_mappings"]}
+    assert by_name["FinitelyGeneratedAsMagma"]["target"] == "clf.magmas.finitelygenerated"
+    assert by_name["FinitelyGeneratedAsLambdaBracketAlgebra"]["target"] == "clf.finitelygenerated_lambdabracket"
+
+
 def test_authored_public_ledger_fully_covered_and_constructible() -> None:
     """Every public authored Sage category is exact/constructible (no seed gaps)."""
     from sage_category_tree_stubs.authored_mapping import load_authored_manifest

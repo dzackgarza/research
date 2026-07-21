@@ -19,6 +19,7 @@ from .authored_mapping import (
     evaluate_authored_request,
     iter_public_authored_requests,
     load_authored_manifest,
+    resolve_classifier_id,
 )
 from .composed_identity import (
     build_dot_vertex_index,
@@ -79,6 +80,24 @@ def _host_name_to_cat_id(host: str | None) -> str | None:
         return None
     simple = host.split("(", 1)[0].strip()
     return f"cat.{_slug(simple)}"
+
+
+def _resolve_least_host_id(host: str | None, sketch: dict[str, Any]) -> str | None:
+    """Resolve an authored host label to one unambiguous normalized category ID."""
+    if not host:
+        return None
+    canonical_name = host.split("(", 1)[0].strip()
+    matches: list[str] = []
+    for entity in sketch["seed"].entities:
+        entity_id = entity.get("id")
+        if entity.get("canonical_name") == canonical_name and isinstance(entity_id, str):
+            matches.append(entity_id)
+    if len(matches) == 1:
+        return matches[0]
+    candidate = _host_name_to_cat_id(host)
+    if candidate in sketch["nodes"]:
+        return candidate
+    return None
 
 
 def build_mapping(
@@ -506,16 +525,25 @@ def build_mapping(
         known_axioms.add(name)
         clf_name = ax.get("normalized_classifier_or_disposition")
         host = ax.get("normalized_least_host")
-        target = None
-        if clf_name and isinstance(clf_name, str) and " " not in clf_name:
-            cands = [c for c in sketch["classifiers"].values() if c.name == clf_name]
-            target = cands[0].id if cands else None
+        host_id = _resolve_least_host_id(host, sketch)
+        target = (
+            resolve_classifier_id(
+                classifier_id=None,
+                classifier_name=clf_name,
+                least_host=host,
+                sketch=sketch,
+                prefer_host=host_id,
+                required_host_id=host_id,
+            )
+            if clf_name and isinstance(clf_name, str) and " " not in clf_name and host_id
+            else None
+        )
         axiom_mappings.append(
             {
                 "source": _sage_axiom_id(name),
                 "source_sage_name": name,
                 "target": target,
-                "least_normalized_host": _host_name_to_cat_id(host),
+                "least_normalized_host": host_id,
                 "sage_defining_hosts": ([ax["sage_declared_at"]] if ax.get("sage_declared_at") else []),
                 "transported_occurrences": [],
                 "disposition": ("rehosted" if ax.get("mapping_action") else ("exact" if target else "unsupported")),

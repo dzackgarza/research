@@ -10,24 +10,21 @@ manifest:
 category_mappings:
   - source: sage.category.finite_dimensional_bialgebras_with_basis_finitedimensionalbialgebraswithbasis
     source_sage_name: FiniteDimensionalBialgebrasWithBasis
-    target: cat.bialgebras_r
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: Bialgebras(R).WithBasis.FiniteRank
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.bialgebras_r
       classifiers:
         - clf.withbasis
         - clf.finiterank
       expression: Bialgebras(R).WithBasis.FiniteRank
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.withbasis#1
-          support_host: cat.modules_r
-        - occurrence: clf.finiterank#2
-          support_host: cat.modules_r
-      status: CONSTRUCTIBLE
+      detail: 'AMBIGUOUS: ambiguous path classes to cat.modules_r for clf.withbasis;
+        need path-equation certificate or along='
+      certificate: []
+      status: AMBIGUOUS
       authored_routes:
         - classifier: WithBasis
           support_route: structural_route:underlying_module
@@ -40,10 +37,12 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: ambiguous
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: ambiguous path classes to cat.modules_r for clf.withbasis; need path-equation
+        certificate or along=
   - source: sage.category.finite_dimensional_coalgebras_with_basis_finitedimensionalcoalgebraswithbasis
     source_sage_name: FiniteDimensionalCoalgebrasWithBasis
     target: cat.coalgebras_r
@@ -112,24 +111,21 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.graded_bialgebras_with_basis_gradedbialgebraswithbasis
     source_sage_name: GradedBialgebrasWithBasis
-    target: cat.bialgebras_r
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: Bialgebras(R).WithBasis.Graded
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.bialgebras_r
       classifiers:
         - clf.withbasis
         - clf.graded
       expression: Bialgebras(R).WithBasis.Graded
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.withbasis#1
-          support_host: cat.modules_r
-        - occurrence: clf.graded#2
-          support_host: cat.sets
-      status: CONSTRUCTIBLE
+      detail: 'AMBIGUOUS: ambiguous path classes to cat.modules_r for clf.withbasis;
+        need path-equation certificate or along='
+      certificate: []
+      status: AMBIGUOUS
       authored_routes:
         - classifier: WithBasis
           support_route: structural_route:underlying_module
@@ -142,10 +138,12 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: ambiguous
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: ambiguous path classes to cat.modules_r for clf.withbasis; need path-equation
+        certificate or along=
   - source: sage.category.graded_hopf_algebras_gradedhopfalgebras
     source_sage_name: GradedHopfAlgebras
     target: cat.hopfalgebras_r
@@ -233,21 +231,19 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.additive_groups_additivegroups
     source_sage_name: AdditiveGroups
-    target: cat.additive_groups
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: Groups.Additive
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.groups
       classifiers:
         - clf.magmas.additive
       expression: Groups.Additive
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.magmas.additive#1
-          support_host: cat.magmas
-      status: CONSTRUCTIBLE
+      detail: 'NOT_CONSTRUCTIBLE: no support map D→H_A for: clf.magmas.additive→cat.magmas'
+      certificate: []
+      status: NOT_CONSTRUCTIBLE
       authored_routes:
         - classifier: Additive
           support_route: operation_role:additive
@@ -257,10 +253,11 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: not-constructible
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: 'no support map D→H_A for: clf.magmas.additive→cat.magmas'
   - source: sage.category.additive_magmas_additivemagmas
     source_sage_name: AdditiveMagmas
     target: cat.additive_magmas
@@ -293,21 +290,19 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.additive_monoids_additivemonoids
     source_sage_name: AdditiveMonoids
-    target: cat.additive_monoids
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: Monoids.Additive
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.monoids
       classifiers:
         - clf.magmas.additive
       expression: Monoids.Additive
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.magmas.additive#1
-          support_host: cat.magmas
-      status: CONSTRUCTIBLE
+      detail: 'NOT_CONSTRUCTIBLE: no support map D→H_A for: clf.magmas.additive→cat.magmas'
+      certificate: []
+      status: NOT_CONSTRUCTIBLE
       authored_routes:
         - classifier: Additive
           support_route: operation_role:additive
@@ -317,27 +312,26 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: not-constructible
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: 'no support map D→H_A for: clf.magmas.additive→cat.magmas'
   - source: sage.category.additive_semigroups_additivesemigroups
     source_sage_name: AdditiveSemigroups
-    target: cat.additive_semigroups
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: Semigroups.Additive
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.semigroups
       classifiers:
         - clf.magmas.additive
       expression: Semigroups.Additive
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.magmas.additive#1
-          support_host: cat.magmas
-      status: CONSTRUCTIBLE
+      detail: 'NOT_CONSTRUCTIBLE: no support map D→H_A for: clf.magmas.additive→cat.magmas'
+      certificate: []
+      status: NOT_CONSTRUCTIBLE
       authored_routes:
         - classifier: Additive
           support_route: operation_role:additive
@@ -347,10 +341,11 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: not-constructible
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: 'no support map D→H_A for: clf.magmas.additive→cat.magmas'
   - source: sage.category.affine_weyl_groups_affineweylgroups
     source_sage_name: AffineWeylGroups
     target: cat.weylgroups
@@ -584,21 +579,20 @@ category_mappings:
       mapping_kind: exact named base
   - source: sage.category.bialgebras_with_basis_bialgebraswithbasis
     source_sage_name: BialgebrasWithBasis
-    target: cat.bialgebras_r
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: Bialgebras(R).WithBasis
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.bialgebras_r
       classifiers:
         - clf.withbasis
       expression: Bialgebras(R).WithBasis
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.withbasis#1
-          support_host: cat.modules_r
-      status: CONSTRUCTIBLE
+      detail: 'AMBIGUOUS: ambiguous path classes to cat.modules_r for clf.withbasis;
+        need path-equation certificate or along='
+      certificate: []
+      status: AMBIGUOUS
       authored_routes:
         - classifier: WithBasis
           support_route: structural_route:underlying_module
@@ -608,10 +602,12 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: ambiguous
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: ambiguous path classes to cat.modules_r for clf.withbasis; need path-equation
+        certificate or along=
   - source: sage.category.bimodules_bimodules
     source_sage_name: Bimodules
     target: cat.bimodules_r
@@ -749,24 +745,21 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.commutative_additive_groups_commutativeadditivegroups
     source_sage_name: CommutativeAdditiveGroups
-    target: cat.abelian_groups
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: AbelianGroups
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.groups
       classifiers:
         - clf.magmas.additive
         - clf.magmas.commutative
       expression: AbelianGroups
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.magmas.additive#1
-          support_host: cat.magmas
-        - occurrence: clf.magmas.commutative#2
-          support_host: cat.magmas
-      status: CONSTRUCTIBLE
+      detail: 'NOT_CONSTRUCTIBLE: no support map D→H_A for: clf.magmas.additive→cat.magmas,
+        clf.magmas.commutative→cat.magmas'
+      certificate: []
+      status: NOT_CONSTRUCTIBLE
       authored_routes:
         - classifier: Additive
           support_route: operation_role:additive
@@ -779,30 +772,28 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: not-constructible
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: 'no support map D→H_A for: clf.magmas.additive→cat.magmas, clf.magmas.commutative→cat.magmas'
   - source: sage.category.commutative_additive_monoids_commutativeadditivemonoids
     source_sage_name: CommutativeAdditiveMonoids
-    target: cat.additive_monoids
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: Monoids.Additive.Commutative
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.monoids
       classifiers:
         - clf.magmas.additive
         - clf.magmas.commutative
       expression: Monoids.Additive.Commutative
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.magmas.additive#1
-          support_host: cat.magmas
-        - occurrence: clf.magmas.commutative#2
-          support_host: cat.magmas
-      status: CONSTRUCTIBLE
+      detail: 'NOT_CONSTRUCTIBLE: no support map D→H_A for: clf.magmas.additive→cat.magmas,
+        clf.magmas.commutative→cat.magmas'
+      certificate: []
+      status: NOT_CONSTRUCTIBLE
       authored_routes:
         - classifier: Additive
           support_route: operation_role:additive
@@ -815,30 +806,28 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: not-constructible
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: 'no support map D→H_A for: clf.magmas.additive→cat.magmas, clf.magmas.commutative→cat.magmas'
   - source: sage.category.commutative_additive_semigroups_commutativeadditivesemigroups
     source_sage_name: CommutativeAdditiveSemigroups
-    target: cat.additive_semigroups
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: Semigroups.Additive.Commutative
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.semigroups
       classifiers:
         - clf.magmas.additive
         - clf.magmas.commutative
       expression: Semigroups.Additive.Commutative
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.magmas.additive#1
-          support_host: cat.magmas
-        - occurrence: clf.magmas.commutative#2
-          support_host: cat.magmas
-      status: CONSTRUCTIBLE
+      detail: 'NOT_CONSTRUCTIBLE: no support map D→H_A for: clf.magmas.additive→cat.magmas,
+        clf.magmas.commutative→cat.magmas'
+      certificate: []
+      status: NOT_CONSTRUCTIBLE
       authored_routes:
         - classifier: Additive
           support_route: operation_role:additive
@@ -851,10 +840,11 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: not-constructible
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: 'no support map D→H_A for: clf.magmas.additive→cat.magmas, clf.magmas.commutative→cat.magmas'
   - source: sage.category.commutative_algebra_ideals_commutativealgebraideals
     source_sage_name: CommutativeAlgebraIdeals
     target: cat.algebraideals_a
@@ -1578,24 +1568,21 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.filtered_hopf_algebras_with_basis_filteredhopfalgebraswithbasis
     source_sage_name: FilteredHopfAlgebrasWithBasis
-    target: cat.hopfalgebras_r
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: HopfAlgebras(R).WithBasis.Filtered
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.hopfalgebras_r
       classifiers:
         - clf.withbasis
         - clf.filtered
       expression: HopfAlgebras(R).WithBasis.Filtered
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.withbasis#1
-          support_host: cat.modules_r
-        - occurrence: clf.filtered#2
-          support_host: cat.modules_r
-      status: CONSTRUCTIBLE
+      detail: 'AMBIGUOUS: ambiguous path classes to cat.modules_r for clf.withbasis;
+        need path-equation certificate or along='
+      certificate: []
+      status: AMBIGUOUS
       authored_routes:
         - classifier: WithBasis
           support_route: structural_route:underlying_module
@@ -1608,10 +1595,12 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: ambiguous
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: ambiguous path classes to cat.modules_r for clf.withbasis; need path-equation
+        certificate or along=
   - source: sage.category.filtered_modules_filteredmodules
     source_sage_name: FilteredModules
     target: cat.modules_r
@@ -1848,24 +1837,21 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.finite_dimensional_hopf_algebras_with_basis_finitedimensionalhopfalgebraswithbasis
     source_sage_name: FiniteDimensionalHopfAlgebrasWithBasis
-    target: cat.hopfalgebras_r
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: HopfAlgebras(R).WithBasis.FiniteRank
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.hopfalgebras_r
       classifiers:
         - clf.withbasis
         - clf.finiterank
       expression: HopfAlgebras(R).WithBasis.FiniteRank
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.withbasis#1
-          support_host: cat.modules_r
-        - occurrence: clf.finiterank#2
-          support_host: cat.modules_r
-      status: CONSTRUCTIBLE
+      detail: 'AMBIGUOUS: ambiguous path classes to cat.modules_r for clf.withbasis;
+        need path-equation certificate or along='
+      certificate: []
+      status: AMBIGUOUS
       authored_routes:
         - classifier: WithBasis
           support_route: structural_route:underlying_module
@@ -1878,10 +1864,12 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: ambiguous
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: ambiguous path classes to cat.modules_r for clf.withbasis; need path-equation
+        certificate or along=
   - source: sage.category.finite_dimensional_lie_algebras_with_basis_finitedimensionalliealgebraswithbasis
     source_sage_name: FiniteDimensionalLieAlgebrasWithBasis
     target: cat.liealgebras_r
@@ -2712,24 +2700,21 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.graded_hopf_algebras_with_basis_gradedhopfalgebraswithbasis
     source_sage_name: GradedHopfAlgebrasWithBasis
-    target: cat.hopfalgebras_r
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: HopfAlgebras(R).WithBasis.Graded
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.hopfalgebras_r
       classifiers:
         - clf.withbasis
         - clf.graded
       expression: HopfAlgebras(R).WithBasis.Graded
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.withbasis#1
-          support_host: cat.modules_r
-        - occurrence: clf.graded#2
-          support_host: cat.sets
-      status: CONSTRUCTIBLE
+      detail: 'AMBIGUOUS: ambiguous path classes to cat.modules_r for clf.withbasis;
+        need path-equation certificate or along='
+      certificate: []
+      status: AMBIGUOUS
       authored_routes:
         - classifier: WithBasis
           support_route: structural_route:underlying_module
@@ -2742,10 +2727,12 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: ambiguous
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: ambiguous path classes to cat.modules_r for clf.withbasis; need path-equation
+        certificate or along=
   - source: sage.category.graded_lie_algebras_gradedliealgebras
     source_sage_name: GradedLieAlgebras
     target: cat.liealgebras_r
@@ -3156,21 +3143,20 @@ category_mappings:
       mapping_kind: exact named base
   - source: sage.category.hopf_algebras_with_basis_hopfalgebraswithbasis
     source_sage_name: HopfAlgebrasWithBasis
-    target: cat.hopfalgebras_r
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: HopfAlgebras(R).WithBasis
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.hopfalgebras_r
       classifiers:
         - clf.withbasis
       expression: HopfAlgebras(R).WithBasis
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.withbasis#1
-          support_host: cat.modules_r
-      status: CONSTRUCTIBLE
+      detail: 'AMBIGUOUS: ambiguous path classes to cat.modules_r for clf.withbasis;
+        need path-equation certificate or along='
+      certificate: []
+      status: AMBIGUOUS
       authored_routes:
         - classifier: WithBasis
           support_route: structural_route:underlying_module
@@ -3180,10 +3166,12 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: ambiguous
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: ambiguous path classes to cat.modules_r for clf.withbasis; need path-equation
+        certificate or along=
   - source: sage.category.infinite_enumerated_sets_infiniteenumeratedsets
     source_sage_name: InfiniteEnumeratedSets
     target: cat.sets
@@ -4947,24 +4935,21 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.super_hopf_algebras_with_basis_superhopfalgebraswithbasis
     source_sage_name: SuperHopfAlgebrasWithBasis
-    target: cat.hopfalgebras_r
-    relation: constructible
+    target: null
+    relation: unsupported
     normalized_reading: HopfAlgebras(R).WithBasis.Super
     construction:
       kind: finite_limit_constructibility
-      ok: true
+      ok: false
       base: cat.hopfalgebras_r
       classifiers:
         - clf.withbasis
         - clf.super
       expression: HopfAlgebras(R).WithBasis.Super
-      detail: all requested classifier occurrences discharged
-      certificate:
-        - occurrence: clf.withbasis#1
-          support_host: cat.modules_r
-        - occurrence: clf.super#2
-          support_host: cat.modules_r
-      status: CONSTRUCTIBLE
+      detail: 'AMBIGUOUS: ambiguous path classes to cat.modules_r for clf.withbasis;
+        need path-equation certificate or along='
+      certificate: []
+      status: AMBIGUOUS
       authored_routes:
         - classifier: WithBasis
           support_route: structural_route:underlying_module
@@ -4977,10 +4962,12 @@ category_mappings:
       until: null
     parameters: {}
     provenance:
-      status: authored-constructible
+      status: ambiguous
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+      note: ambiguous path classes to cat.modules_r for clf.withbasis; need path-equation
+        certificate or along=
   - source: sage.category.super_lie_conformal_algebras_superlieconformalalgebras
     source_sage_name: SuperLieConformalAlgebras
     target: cat.lieconformalalgebras_r
@@ -5867,14 +5854,9 @@ edge_mappings:
       sage_names:
         from: AdditiveGroups
         to: AdditiveMonoids
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.additive_groups
-      to_target: cat.additive_monoids
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.additive_magmas_additivemagmas
       to: sage.category.sets_cat_sets
@@ -5895,28 +5877,18 @@ edge_mappings:
       sage_names:
         from: AdditiveMonoids
         to: AdditiveSemigroups
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.additive_monoids
-      to_target: cat.additive_semigroups
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.additive_semigroups_additivesemigroups
       to: sage.category.additive_magmas_additivemagmas
       sage_names:
         from: AdditiveSemigroups
         to: AdditiveMagmas
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.additive_semigroups
-      to_target: cat.additive_magmas
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.affine_weyl_groups_affineweylgroups
       to: sage.category.category_joincategory
@@ -6076,42 +6048,27 @@ edge_mappings:
       sage_names:
         from: BialgebrasWithBasis
         to: AlgebrasWithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.bialgebras_r
-      to_target: cat.associativeunitalalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.bialgebras_with_basis_bialgebraswithbasis
       to: sage.category.bialgebras_bialgebras
       sage_names:
         from: BialgebrasWithBasis
         to: Bialgebras
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.bialgebras_r
-      to_target: cat.bialgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.bialgebras_with_basis_bialgebraswithbasis
       to: sage.category.coalgebras_with_basis_coalgebraswithbasis
       sage_names:
         from: BialgebrasWithBasis
         to: CoalgebrasWithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.bialgebras_r
-      to_target: cat.coalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.bimodules_bimodules
       to: sage.category.left_modules_leftmodules
@@ -6676,28 +6633,18 @@ edge_mappings:
       sage_names:
         from: FiniteDimensionalHopfAlgebrasWithBasis
         to: HopfAlgebrasWithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.hopfalgebras_r
-      to_target: cat.hopfalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.finite_dimensional_hopf_algebras_with_basis_finitedimensionalhopfalgebraswithbasis
       to: sage.category.finite_dimensional_algebras_with_basis_finitedimensionalalgebraswithbasis
       sage_names:
         from: FiniteDimensionalHopfAlgebrasWithBasis
         to: FiniteDimensionalAlgebrasWithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.hopfalgebras_r
-      to_target: cat.associativeunitalalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.finite_dimensional_modules_with_basis_finitedimensionalmoduleswithbasis
       to: sage.category.modules_with_basis_moduleswithbasis
@@ -7235,56 +7182,36 @@ edge_mappings:
       sage_names:
         from: GradedHopfAlgebrasWithBasis
         to: FilteredHopfAlgebrasWithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.hopfalgebras_r
-      to_target: cat.hopfalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.graded_hopf_algebras_with_basis_gradedhopfalgebraswithbasis
       to: sage.category.graded_algebras_with_basis_gradedalgebraswithbasis
       sage_names:
         from: GradedHopfAlgebrasWithBasis
         to: GradedAlgebrasWithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.hopfalgebras_r
-      to_target: cat.associativeunitalalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.graded_hopf_algebras_with_basis_gradedhopfalgebraswithbasis
       to: sage.category.graded_coalgebras_with_basis_gradedcoalgebraswithbasis
       sage_names:
         from: GradedHopfAlgebrasWithBasis
         to: GradedCoalgebrasWithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.hopfalgebras_r
-      to_target: cat.coalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.group_algebras_groupalgebras
       to: sage.category.hopf_algebras_with_basis_hopfalgebraswithbasis
       sage_names:
         from: GroupAlgebras
         to: HopfAlgebrasWithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.groupalgebras_r
-      to_target: cat.hopfalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.group_algebras_groupalgebras
       to: sage.category.with_axiom.monoids.algebras
@@ -7398,28 +7325,18 @@ edge_mappings:
       sage_names:
         from: HopfAlgebrasWithBasis
         to: HopfAlgebras
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.hopfalgebras_r
-      to_target: cat.hopfalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.hopf_algebras_with_basis_hopfalgebraswithbasis
       to: sage.category.bialgebras_with_basis_bialgebraswithbasis
       sage_names:
         from: HopfAlgebrasWithBasis
         to: BialgebrasWithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.hopfalgebras_r
-      to_target: cat.bialgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: No reviewed disposition yet
   - source_edge:
       from: sage.category.h_trivial_semigroups_htrivialsemigroups
       to: sage.category.semigroups_semigroups
@@ -8302,8 +8219,8 @@ axiom_mappings:
       port.
   - source: sage.axiom.additiveinverse
     source_sage_name: AdditiveInverse
-    target: clf.magmas.inverse
-    least_normalized_host: cat.magmas_unital
+    target: null
+    least_normalized_host: clf.magmas.unital.domain
     sage_defining_hosts:
       - AdditiveMagmas:AdditiveUnital.AdditiveInverse
     transported_occurrences: []
@@ -8366,7 +8283,7 @@ axiom_mappings:
   - source: sage.axiom.cellular
     source_sage_name: Cellular
     target: null
-    least_normalized_host: cat.associativeunitalalgebras
+    least_normalized_host: null
     sage_defining_hosts:
       - FiniteDimensionalAlgebrasWithBasis:Cellular
     transported_occurrences: []
@@ -8385,7 +8302,7 @@ axiom_mappings:
   - source: sage.axiom.cocommutative
     source_sage_name: Cocommutative
     target: null
-    least_normalized_host: cat.coalgebras
+    least_normalized_host: cat.coalgebras_r
     sage_defining_hosts:
       - Coalgebras:Cocommutative
     transported_occurrences: []
@@ -8432,7 +8349,7 @@ axiom_mappings:
   - source: sage.axiom.connected
     source_sage_name: Connected
     target: null
-    least_normalized_host: cat.varies_by_mathematical_host
+    least_normalized_host: null
     sage_defining_hosts:
       - Blahs:Connected
     transported_occurrences: []
@@ -8452,7 +8369,7 @@ axiom_mappings:
   - source: sage.axiom.distributive
     source_sage_name: Distributive
     target: null
-    least_normalized_host: cat.host_qualified
+    least_normalized_host: null
     sage_defining_hosts:
       - LatticePosets:Distributive
     transported_occurrences: []
@@ -8500,7 +8417,7 @@ axiom_mappings:
   - source: sage.axiom.facade
     source_sage_name: Facade
     target: null
-    least_normalized_host: cat.none
+    least_normalized_host: null
     sage_defining_hosts:
       - Sets:Facade
     transported_occurrences: []
@@ -8508,7 +8425,7 @@ axiom_mappings:
     note: Sage delegation/facade mechanism.
   - source: sage.axiom.finite
     source_sage_name: Finite
-    target: clf.sets.finite
+    target: clf.finite
     least_normalized_host: cat.sets
     sage_defining_hosts:
       - Sets:Finite
@@ -8518,7 +8435,7 @@ axiom_mappings:
   - source: sage.axiom.finitedimensional
     source_sage_name: FiniteDimensional
     target: clf.modules_finiterank
-    least_normalized_host: cat.modules
+    least_normalized_host: cat.modules_r
     sage_defining_hosts:
       - Blahs:FiniteDimensional
     transported_occurrences: []
@@ -8526,8 +8443,8 @@ axiom_mappings:
     note: Normalize module-relative finite dimensionality to FiniteRank; never to Sets.Finite.
   - source: sage.axiom.finitelygeneratedaslambdabracketalgebra
     source_sage_name: FinitelyGeneratedAsLambdaBracketAlgebra
-    target: clf.modules_finitelygenerated
-    least_normalized_host: cat.lambdabracketalgebras
+    target: clf.finitelygenerated_lambdabracket
+    least_normalized_host: cat.lambdabracketalgebras_r
     sage_defining_hosts:
       - LambdaBracketAlgebras:FinitelyGeneratedAsLambdaBracketAlgebra
     transported_occurrences: []
@@ -8535,7 +8452,7 @@ axiom_mappings:
     note: Finite generation in the Lambda-bracket signature.
   - source: sage.axiom.finitelygeneratedasmagma
     source_sage_name: FinitelyGeneratedAsMagma
-    target: clf.modules_finitelygenerated
+    target: clf.magmas.finitelygenerated
     least_normalized_host: cat.magmas
     sage_defining_hosts:
       - Magmas:FinitelyGeneratedAsMagma
@@ -8545,7 +8462,7 @@ axiom_mappings:
   - source: sage.axiom.finitelypresented
     source_sage_name: FinitelyPresented
     target: clf.modules_finitelypresented
-    least_normalized_host: cat.modules
+    least_normalized_host: cat.modules_r
     sage_defining_hosts:
       - Modules:FinitelyPresented
     transported_occurrences: []
@@ -8562,7 +8479,7 @@ axiom_mappings:
     note: Green H-relation is trivial.
   - source: sage.axiom.infinite
     source_sage_name: Infinite
-    target: clf.sets_infinite
+    target: clf.infinite
     least_normalized_host: cat.sets
     sage_defining_hosts:
       - FiniteSets:Infinite
@@ -8572,8 +8489,8 @@ axiom_mappings:
       artifact.
   - source: sage.axiom.inverse
     source_sage_name: Inverse
-    target: clf.magmas.inverse
-    least_normalized_host: cat.magmas_unital
+    target: null
+    least_normalized_host: clf.magmas.unital.domain
     sage_defining_hosts:
       - Magmas:Unital.Inverse
     transported_occurrences: []
@@ -8609,7 +8526,7 @@ axiom_mappings:
   - source: sage.axiom.nilpotent
     source_sage_name: Nilpotent
     target: clf.nilpotent
-    least_normalized_host: cat.liealgebras
+    least_normalized_host: cat.lie_algebras_r
     sage_defining_hosts:
       - LieAlgebras:Nilpotent
     transported_occurrences: []
@@ -8673,7 +8590,7 @@ axiom_mappings:
   - source: sage.axiom.stratified
     source_sage_name: Stratified
     target: null
-    least_normalized_host: cat.gradedliealgebras
+    least_normalized_host: null
     sage_defining_hosts:
       - GradedLieAlgebras:Stratified
     transported_occurrences: []
@@ -8682,7 +8599,7 @@ axiom_mappings:
   - source: sage.axiom.supercocommutative
     source_sage_name: Supercocommutative
     target: null
-    least_normalized_host: cat.coalgebras
+    least_normalized_host: cat.coalgebras_r
     sage_defining_hosts:
       - Coalgebras:Super.Supercocommutative
     transported_occurrences: []
@@ -8690,8 +8607,8 @@ axiom_mappings:
     note: Cocommutativity with the super sign rule.
   - source: sage.axiom.supercommutative
     source_sage_name: Supercommutative
-    target: clf.supercommutative
-    least_normalized_host: cat.associativeunitalalgebras
+    target: null
+    least_normalized_host: null
     sage_defining_hosts:
       - Algebras:Supercommutative
     transported_occurrences: []
@@ -8719,7 +8636,7 @@ axiom_mappings:
   - source: sage.axiom.wellgenerated
     source_sage_name: WellGenerated
     target: null
-    least_normalized_host: cat.complexreflectiongroups_finite
+    least_normalized_host: null
     sage_defining_hosts:
       - FiniteComplexReflectionGroups:WellGenerated
     transported_occurrences: []
@@ -8728,7 +8645,7 @@ axiom_mappings:
   - source: sage.axiom.withbasis
     source_sage_name: WithBasis
     target: clf.modules.with_basis
-    least_normalized_host: cat.modules
+    least_normalized_host: cat.modules_r
     sage_defining_hosts:
       - Modules:WithBasis
     transported_occurrences: []
