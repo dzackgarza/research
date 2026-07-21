@@ -322,21 +322,12 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/additive_groups.py"
       },
       "normalized": {
-        "base": "Groups",
-        "base_id": "cat.groups",
-        "classifier_applications": [
-          {
-            "order": 1,
-            "classifier": "Additive",
-            "classifier_id": "clf.additive",
-            "least_host": "Magmas",
-            "semantic_character": "role/presentation",
-            "support_route": "operation_role:additive"
-          }
-        ],
-        "target_expression": "Groups.Additive",
-        "target_id": "cat_expr.groups_additive",
-        "mapping_kind": "classifier refinement",
+        "base": "AdditiveGroups",
+        "base_id": "cat.additive_groups",
+        "classifier_applications": [],
+        "target_expression": "AdditiveGroups",
+        "target_id": "cat.additive_groups",
+        "mapping_kind": "exact named category",
         "target_visibility": "conventional named",
         "parameter_constraints": ""
       },
@@ -398,21 +389,12 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/additive_monoids.py"
       },
       "normalized": {
-        "base": "Monoids",
-        "base_id": "cat.monoids",
-        "classifier_applications": [
-          {
-            "order": 1,
-            "classifier": "Additive",
-            "classifier_id": "clf.additive",
-            "least_host": "Magmas",
-            "semantic_character": "role/presentation",
-            "support_route": "operation_role:additive"
-          }
-        ],
-        "target_expression": "Monoids.Additive",
-        "target_id": "cat_expr.monoids_additive",
-        "mapping_kind": "classifier refinement",
+        "base": "AdditiveMonoids",
+        "base_id": "cat.additive_monoids",
+        "classifier_applications": [],
+        "target_expression": "AdditiveMonoids",
+        "target_id": "cat.additive_monoids",
+        "mapping_kind": "exact named category",
         "target_visibility": "conventional named",
         "parameter_constraints": ""
       },
@@ -436,21 +418,12 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/additive_semigroups.py"
       },
       "normalized": {
-        "base": "Semigroups",
-        "base_id": "cat.semigroups",
-        "classifier_applications": [
-          {
-            "order": 1,
-            "classifier": "Additive",
-            "classifier_id": "clf.additive",
-            "least_host": "Magmas",
-            "semantic_character": "role/presentation",
-            "support_route": "operation_role:additive"
-          }
-        ],
-        "target_expression": "Semigroups.Additive",
-        "target_id": "cat_expr.semigroups_additive",
-        "mapping_kind": "classifier refinement",
+        "base": "AdditiveSemigroups",
+        "base_id": "cat.additive_semigroups",
+        "classifier_applications": [],
+        "target_expression": "AdditiveSemigroups",
+        "target_id": "cat.additive_semigroups",
+        "mapping_kind": "exact named category",
         "target_visibility": "conventional named",
         "parameter_constraints": ""
       },
@@ -957,29 +930,12 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/commutative_additive_groups.py"
       },
       "normalized": {
-        "base": "Groups",
-        "base_id": "cat.groups",
-        "classifier_applications": [
-          {
-            "order": 1,
-            "classifier": "Additive",
-            "classifier_id": "clf.additive",
-            "least_host": "Magmas",
-            "semantic_character": "role/presentation",
-            "support_route": "operation_role:additive"
-          },
-          {
-            "order": 2,
-            "classifier": "Commutative",
-            "classifier_id": "clf.commutative",
-            "least_host": "Magmas",
-            "semantic_character": "property",
-            "support_route": "operation_port:additive"
-          }
-        ],
-        "target_expression": "AbelianGroups",
-        "target_id": "cat_expr.abeliangroups",
-        "mapping_kind": "classifier refinement",
+        "base": "AdditiveAbelianGroups",
+        "base_id": "cat.additive_abelian_groups",
+        "classifier_applications": [],
+        "target_expression": "AdditiveAbelianGroups",
+        "target_id": "cat.additive_abelian_groups",
+        "mapping_kind": "exact named category",
         "target_visibility": "core named",
         "parameter_constraints": ""
       },
@@ -1003,29 +959,12 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/commutative_additive_monoids.py"
       },
       "normalized": {
-        "base": "Monoids",
-        "base_id": "cat.monoids",
-        "classifier_applications": [
-          {
-            "order": 1,
-            "classifier": "Additive",
-            "classifier_id": "clf.additive",
-            "least_host": "Magmas",
-            "semantic_character": "role/presentation",
-            "support_route": "operation_role:additive"
-          },
-          {
-            "order": 2,
-            "classifier": "Commutative",
-            "classifier_id": "clf.commutative",
-            "least_host": "Magmas",
-            "semantic_character": "property",
-            "support_route": "operation_port:additive"
-          }
-        ],
-        "target_expression": "Monoids.Additive.Commutative",
-        "target_id": "cat_expr.monoids_additive_commutative",
-        "mapping_kind": "classifier refinement",
+        "base": "AdditiveMonoids",
+        "base_id": "cat.additive_monoids",
+        "classifier_applications": [],
+        "target_expression": "AdditiveMonoids",
+        "target_id": "cat.additive_monoids",
+        "mapping_kind": "Sage alias",
         "target_visibility": "conventional named",
         "parameter_constraints": ""
       },
@@ -1049,29 +988,12 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/commutative_additive_semigroups.py"
       },
       "normalized": {
-        "base": "Semigroups",
-        "base_id": "cat.semigroups",
-        "classifier_applications": [
-          {
-            "order": 1,
-            "classifier": "Additive",
-            "classifier_id": "clf.additive",
-            "least_host": "Magmas",
-            "semantic_character": "role/presentation",
-            "support_route": "operation_role:additive"
-          },
-          {
-            "order": 2,
-            "classifier": "Commutative",
-            "classifier_id": "clf.commutative",
-            "least_host": "Magmas",
-            "semantic_character": "property",
-            "support_route": "operation_port:additive"
-          }
-        ],
-        "target_expression": "Semigroups.Additive.Commutative",
-        "target_id": "cat_expr.semigroups_additive_commutative",
-        "mapping_kind": "classifier refinement",
+        "base": "AdditiveSemigroups",
+        "base_id": "cat.additive_semigroups",
+        "classifier_applications": [],
+        "target_expression": "AdditiveSemigroups",
+        "target_id": "cat.additive_semigroups",
+        "mapping_kind": "Sage alias",
         "target_visibility": "conventional named",
         "parameter_constraints": ""
       },

@@ -49,7 +49,7 @@ def support_route_to_along(route: str | None) -> str | None:
     if "underlying_set" in text:
         return "underlying_set"
     if "underlying_module" in text:
-        return None
+        return "underlying_module"
     if "multiplicative" in text or "ring_multiplication" in text:
         return "multiplicative_operation"
     if "algebra_multiplication" in text:
