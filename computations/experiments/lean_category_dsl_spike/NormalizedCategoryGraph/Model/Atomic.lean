@@ -78,6 +78,8 @@ structure AtomicModel where
   algebra : AlgebraAtoms foundations
   modules : ModuleAtoms foundations algebra
   exceptional : ExceptionalAtoms foundations
+  /-- Realization-authored interpretation of named category atoms. -/
+  namedCategory : CategoryId → Option (ObjCat.{uObj, uHom}) := fun _ => none
 
 namespace Normalized
 

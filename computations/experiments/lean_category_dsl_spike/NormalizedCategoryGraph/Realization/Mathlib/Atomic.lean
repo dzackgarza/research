@@ -20,12 +20,34 @@ universe u
 
 set_option linter.checkUnivs false
 
-/-- The Mathlib realization of the atomic model. -/
-noncomputable def atomicModel : AtomicModel.{u + 1, u} where
+/-- Component realization, before named atom declarations are attached. -/
+noncomputable def atomicModelComponents : AtomicModel.{u + 1, u} where
   foundations := foundationAtoms
   algebra := algebraAtoms
   modules := moduleAtoms
   exceptional := exceptionalAtoms
+
+/-- Named atoms of the Mathlib realization. -/
+noncomputable def namedCategory (id : CategoryId) : Option (ObjCat.{u + 1, u}) :=
+  if id == CategoryId.sets then some (Normalized.Sets atomicModelComponents)
+  else if id == CategoryId.magmas then some (Normalized.Magmas atomicModelComponents)
+  else if id == CategoryId.semigroups then some (Normalized.Semigroups atomicModelComponents)
+  else if id == CategoryId.monoids then some (Normalized.Monoids atomicModelComponents)
+  else if id == CategoryId.groups then some (Normalized.Groups atomicModelComponents)
+  else if id == CategoryId.rings then some (Normalized.Rings atomicModelComponents)
+  else if id == CategoryId.commutativeRings then
+    some (Normalized.CommutativeRings atomicModelComponents)
+  else if id == CategoryId.divisionRings then some (Normalized.DivisionRings atomicModelComponents)
+  else if id == CategoryId.additiveMagmas then
+    some (Normalized.AdditiveMagmas atomicModelComponents)
+  else if id == CategoryId.magmasWithTwoOperations then
+    some (Normalized.MagmasWithTwoOperations atomicModelComponents)
+  else if id == CategoryId.crystals then some atomicModelComponents.exceptional.Crystals
+  else none
+
+/-- The Mathlib realization of the atomic model. -/
+noncomputable def atomicModel : AtomicModel.{u + 1, u} :=
+  { atomicModelComponents with namedCategory }
 
 /-- Concrete binding used to evaluate the specimen family expression over `ℤ`. -/
 def specimenRingBinding (id : RingParameterId) : Option RingCat.{0} :=

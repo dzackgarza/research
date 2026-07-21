@@ -20,22 +20,10 @@ open Normalized CategoryTheory
 
 universe uObj uHom
 
-/-- Interpret atoms of `M`. -/
+/-- Interpret a named atom using the realization-authored table. -/
 noncomputable def evalAtom (M : AtomicModel.{uObj, uHom}) (id : CategoryId) :
     Option (ObjCat.{uObj, uHom}) :=
-  if id == CategoryId.sets then some (Sets M)
-  else if id == CategoryId.magmas then some (Magmas M)
-  else if id == CategoryId.semigroups then some (Semigroups M)
-  else if id == CategoryId.monoids then some (Monoids M)
-  else if id == CategoryId.groups then some (Groups M)
-  else if id == CategoryId.rings then some (Rings M)
-  else if id == CategoryId.commutativeRings then some (CommutativeRings M)
-  else if id == CategoryId.divisionRings then some (DivisionRings M)
-  else if id == CategoryId.additiveMagmas then some (AdditiveMagmas M)
-  else if id == CategoryId.magmasWithTwoOperations then
-    some (MagmasWithTwoOperations M)
-  else if id == CategoryId.crystals then some M.exceptional.Crystals
-  else none
+  M.namedCategory id
 
 /-- Magmas-hosted classifiers. -/
 noncomputable def magmasClassifier (M : AtomicModel.{uObj, uHom}) (id : ClassifierId) :
