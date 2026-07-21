@@ -37,11 +37,11 @@ abbrev CommMagmaCat : Type (u + 1) :=
 
 /-- Magma with a designated two-sided unit. -/
 structure UnitalMagma where
-  carrier : Type u
-  mul : Mul carrier
-  one : One carrier
-  one_mul : ∀ a : carrier, (1 : carrier) * a = a
-  mul_one : ∀ a : carrier, a * (1 : carrier) = a
+  underlyingSet : Type u
+  mul : Mul underlyingSet
+  one : One underlyingSet
+  one_mul : ∀ a : underlyingSet, (1 : underlyingSet) * a = a
+  mul_one : ∀ a : underlyingSet, a * (1 : underlyingSet) = a
 
 attribute [instance] UnitalMagma.mul UnitalMagma.one
 
@@ -50,9 +50,9 @@ namespace UnitalMagma
 /-- Morphisms preserve multiplication and the unit. -/
 @[ext]
 structure Hom (A B : UnitalMagma.{u}) where
-  toFun : A.carrier → B.carrier
+  toFun : A.underlyingSet → B.underlyingSet
   map_mul : ∀ x y, toFun (x * y) = toFun x * toFun y
-  map_one : toFun (1 : A.carrier) = (1 : B.carrier)
+  map_one : toFun (1 : A.underlyingSet) = (1 : B.underlyingSet)
 
 instance : Category UnitalMagma.{u} where
   Hom := Hom
@@ -69,7 +69,7 @@ instance : Category UnitalMagma.{u} where
 
 /-- Forgetful to `MagmaCat`. -/
 def toMagmaCatFunctor : UnitalMagma.{u} ⥤ MagmaCat.{u} where
-  obj A := MagmaCat.of A.carrier
+  obj A := MagmaCat.of A.underlyingSet
   map {A B} f := MagmaCat.ofHom
     { toFun := f.toFun
       map_mul' := f.map_mul }

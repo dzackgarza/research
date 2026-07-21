@@ -12,7 +12,7 @@ import NormalizedCategoryGraph.Core.Ids
 Semantic definitions typecheck for every `M : AtomicModel`. The Mathlib
 instance is `Realization.Mathlib.atomicModel`.
 
-`MagmasWithTwoOperations` is the shared-carrier two-operation host (pullback over
+`MagmasWithTwoOperations` is the shared-underlying-set two-operation host (pullback over
 Sets). `Rings` is obtained by refining that host along additive group laws,
 multiplicative monoid laws, and distributivity — it is never definitionally the
 unrefined host.

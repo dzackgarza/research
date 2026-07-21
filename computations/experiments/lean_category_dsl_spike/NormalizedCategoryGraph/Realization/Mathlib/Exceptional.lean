@@ -46,7 +46,7 @@ noncomputable def multiplicativePort : MagmasWithTwoOperations ⟶ Magmas :=
 noncomputable def additivePort : MagmasWithTwoOperations ⟶ Magmas :=
   (CategoricalPullback.π₂ magmaForget magmaForget).toCatHom
 
-/-- Transport the second magma operation onto the first factor's carrier. -/
+/-- Transport the second magma operation onto the first factor's underlying set. -/
 noncomputable def addOnFst (x : CategoricalPullback magmaForget magmaForget) :
     x.fst → x.fst → x.fst := fun a b =>
   x.iso.inv (x.iso.hom a * x.iso.hom b)
@@ -70,35 +70,35 @@ noncomputable def distributive : Classifier MagmasWithTwoOperations where
     (ObjectProperty.ι
         (C := CategoricalPullback magmaForget magmaForget) IsDistributive).toCatHom
 
-/-- Underlying multiplicative carrier admits a `DivisionRing` structure.
+/-- Underlying multiplicative set admits a `DivisionRing` structure.
 This is a property classifier on the two-operation host; `Normalized.DivisionRings`
 reindexes it along Rings → MagmasWithTwoOperations. It is **not** Magmas.Inverse. -/
-def IsDivisionRingCarrier (x : CategoricalPullback magmaForget magmaForget) : Prop :=
+def IsDivisionRingUnderlyingSet (x : CategoricalPullback magmaForget magmaForget) : Prop :=
   Nonempty (DivisionRing x.fst)
 
 abbrev DivisionTwoOpCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory
-    (C := CategoricalPullback magmaForget magmaForget) IsDivisionRingCarrier
+    (C := CategoricalPullback magmaForget magmaForget) IsDivisionRingUnderlyingSet
 
 /-- Division classifier on `MagmasWithTwoOperations` (host for Rings.Division). -/
 noncomputable def division : Classifier MagmasWithTwoOperations where
   total := Cat.of DivisionTwoOpCat.{u}
   forget :=
     (ObjectProperty.ι
-        (C := CategoricalPullback magmaForget magmaForget) IsDivisionRingCarrier).toCatHom
+        (C := CategoricalPullback magmaForget magmaForget) IsDivisionRingUnderlyingSet).toCatHom
 
 /-- Combinatorial crystal: underlying set with Kashiwara operators. -/
 structure Crystal where
-  carrier : Type u
-  e : ℕ → carrier → Option carrier
-  f : ℕ → carrier → Option carrier
+  underlyingSet : Type u
+  e : ℕ → underlyingSet → Option underlyingSet
+  f : ℕ → underlyingSet → Option underlyingSet
 
 namespace Crystal
 
 /-- Morphisms are functions commuting with `e` and `f`. -/
 @[ext]
 structure Hom (X Y : Crystal.{u}) where
-  toFun : X.carrier → Y.carrier
+  toFun : X.underlyingSet → Y.underlyingSet
   map_e : ∀ i x, (X.e i x).map toFun = Y.e i (toFun x)
   map_f : ∀ i x, (X.f i x).map toFun = Y.f i (toFun x)
 
@@ -133,7 +133,7 @@ instance : Category Crystal.{u} where
 
 /-- Forgetful Crystal → Type. -/
 def forgetFunctor : Crystal.{u} ⥤ Type u where
-  obj X := X.carrier
+  obj X := X.underlyingSet
   map {X Y} f := TypeCat.ofHom f.toFun
 
 end Crystal
