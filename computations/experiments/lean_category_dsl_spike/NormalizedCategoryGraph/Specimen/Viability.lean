@@ -181,6 +181,19 @@ example :
       true := by
   native_decide
 
+/-! ## Syntactic equality after projection normalization -/
+
+example :
+    categoryExprEq specimenCtx (.atom ⟨"cat.crings"⟩)
+      (.atom CategoryId.commutativeRings) = true := by
+  native_decide
+
+example :
+    categoryExprEq specimenCtx
+      (.constructor ⟨"ctor.example"⟩ #[exprRings, exprGroups])
+      (.constructor ⟨"ctor.example"⟩ #[exprGroups, exprRings]) = false := by
+  native_decide
+
 /-! ## Registry snapshot (canonical CommRings; no CRings node) -/
 
 def specimenSnapshot : RegistrySnapshot where

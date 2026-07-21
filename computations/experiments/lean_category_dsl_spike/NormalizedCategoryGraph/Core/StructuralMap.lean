@@ -45,8 +45,7 @@ def categoryExprEq
     (ctx : ProjectionContext) (a b : CategoryExpr) : Bool :=
   let na := normalizeCategory ctx.hosts ctx.aliases a
   let nb := normalizeCategory ctx.hosts ctx.aliases b
-  -- structural DecidableEq is not derived (arrays); compare via Repr strings for the specimen
-  toString (repr na) == toString (repr nb)
+  na.syntacticEq nb
 
 /-- Unfold references / named atoms one step. -/
 def unfoldOnce (ctx : ProjectionContext) : CategoryExpr → CategoryExpr

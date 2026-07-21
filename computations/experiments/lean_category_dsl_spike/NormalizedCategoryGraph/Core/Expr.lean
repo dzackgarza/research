@@ -42,6 +42,21 @@ inductive StructuralMapExpr
   | compose (parts : Array StructuralMapExpr)
   deriving Repr, Inhabited
 
+/-- Syntactic equality of normalized category expressions, independent of rendered syntax. -/
+partial def CategoryExpr.syntacticEq : CategoryExpr → CategoryExpr → Bool
+  | .atom left, .atom right => left == right
+  | .familyApp leftFamily leftArgs, .familyApp rightFamily rightArgs =>
+      leftFamily == rightFamily && leftArgs == rightArgs
+  | .classifierTotal left, .classifierTotal right => left == right
+  | .refine leftBase leftClassifier leftRoute, .refine rightBase rightClassifier rightRoute =>
+      leftBase.syntacticEq rightBase && leftClassifier == rightClassifier && leftRoute == rightRoute
+  | .constructor leftConstructor leftArgs, .constructor rightConstructor rightArgs =>
+      leftConstructor == rightConstructor && leftArgs.size == rightArgs.size &&
+        (leftArgs.zipWith (·.syntacticEq ·) rightArgs).all id
+  | .opaque left, .opaque right => left == right
+  | .reference left, .reference right => left == right
+  | _, _ => false
+
 /-- How a named node relates to its expression body. -/
 inductive CategoryOrigin
   | root
