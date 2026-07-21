@@ -71,6 +71,7 @@ ncg-check-lean:
     lake build ncg-export ncg-export-full
     lake exe ncg-export >/dev/null
     lake exe ncg-export-full | python3 "{{spike_dir}}/scripts/ledger_check_from_lean_export.py"
+    "$root/.lake/build/bin/ncg-export-full" | python3 "{{spike_dir}}/scripts/ledger_check_from_lean_export.py"
 
 # Prefer Lean check; Python oracle remains available explicitly
 ncg-check: ncg-check-lean
