@@ -97,14 +97,30 @@ def magmasAssociative : ClassifierId := ⟨"clf.magmas.associative"⟩
 def magmasCommutative : ClassifierId := ⟨"clf.magmas.commutative"⟩
 def magmasUnital : ClassifierId := ⟨"clf.magmas.unital"⟩
 def magmasInverse : ClassifierId := ⟨"clf.magmas.inverse"⟩
+/-- Magmas.Additive — operation role/presentation on Magmas (one-tower). -/
+def magmasAdditive : ClassifierId := ⟨"clf.magmas.additive"⟩
+/-- Magmas.Multiplicative — dual role when both ops are in play. -/
+def magmasMultiplicative : ClassifierId := ⟨"clf.magmas.multiplicative"⟩
 def modulesFree : ClassifierId := ⟨"clf.modules_r.free"⟩
 def modulesFinitelyGenerated : ClassifierId := ⟨"clf.modules_r.finitely_generated"⟩
-/-- Finite rank — distinct from finitely generated; no Mathlib realization yet. -/
+/-- Finite free rank (admits a finite basis) — distinct from finitely generated. -/
 def modulesFiniteRank : ClassifierId := ⟨"clf.modules_r.finite_rank"⟩
 def m2oDistributive : ClassifierId := ⟨"clf.magmaswithtwooperations.distributive"⟩
 /-- Nonzero multiplicative invertibility on Rings — not Magmas.Inverse. -/
 def ringsDivision : ClassifierId := ⟨"clf.rings.division"⟩
 end ClassifierId
+
+namespace CategoryId
+def additiveMagmas : CategoryId := ⟨"cat.additive_magmas"⟩
+def additiveSemigroups : CategoryId := ⟨"cat.additive_semigroups"⟩
+def additiveMonoids : CategoryId := ⟨"cat.additive_monoids"⟩
+def additiveGroups : CategoryId := ⟨"cat.additive_groups"⟩
+end CategoryId
+
+namespace CategoryFamilyId
+def modules : CategoryFamilyId := ⟨"fam.modules"⟩
+instance : Inhabited CategoryFamilyId := ⟨modules⟩
+end CategoryFamilyId
 
 namespace PortId
 def additive : PortId := ⟨"port.additive"⟩

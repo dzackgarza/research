@@ -23,7 +23,8 @@ def specimenHosts : ClassifierHostTable where
     | ⟨"clf.sets.finite"⟩ | ⟨"clf.sets.graded"⟩ | ⟨"clf.sets.binary_operation"⟩ =>
         some CategoryId.sets
     | ⟨"clf.magmas.associative"⟩ | ⟨"clf.magmas.commutative"⟩
-    | ⟨"clf.magmas.unital"⟩ | ⟨"clf.magmas.inverse"⟩ =>
+    | ⟨"clf.magmas.unital"⟩ | ⟨"clf.magmas.inverse"⟩
+    | ⟨"clf.magmas.additive"⟩ | ⟨"clf.magmas.multiplicative"⟩ =>
         some CategoryId.magmas
     | ⟨"clf.magmaswithtwooperations.distributive"⟩ =>
         some CategoryId.magmasWithTwoOperations
@@ -49,6 +50,15 @@ def exprMonoids : CategoryExpr :=
   .refine exprSemigroups ClassifierId.magmasUnital none
 def exprGroups : CategoryExpr :=
   .refine exprMonoids ClassifierId.magmasInverse none
+/-- Magmas.Additive (one-tower role). -/
+def exprAdditiveMagmas : CategoryExpr :=
+  .refine exprMagmas ClassifierId.magmasAdditive none
+def exprAdditiveSemigroups : CategoryExpr :=
+  .refine exprAdditiveMagmas ClassifierId.magmasAssociative (some RouteId.additive)
+def exprAdditiveMonoids : CategoryExpr :=
+  .refine exprAdditiveSemigroups ClassifierId.magmasUnital (some RouteId.additive)
+def exprAdditiveGroups : CategoryExpr :=
+  .refine exprAdditiveMonoids ClassifierId.magmasInverse (some RouteId.additive)
 def exprMagmasWithTwoOperations : CategoryExpr :=
   .opaque CategoryId.magmasWithTwoOperations
 /-- Rings as the refined two-operation tower (not the unrefined host). -/
@@ -69,8 +79,15 @@ def exprDivisionRings : CategoryExpr :=
 def exprModules : CategoryExpr := .atom CategoryId.modulesR
 def exprFreeModules : CategoryExpr :=
   .refine exprModules ClassifierId.modulesFree none
+def exprFinitelyGeneratedModules : CategoryExpr :=
+  .refine exprModules ClassifierId.modulesFinitelyGenerated none
+def exprFiniteRankModules : CategoryExpr :=
+  .refine exprModules ClassifierId.modulesFiniteRank none
 def exprFiniteFreeModules : CategoryExpr :=
   .refine exprFreeModules ClassifierId.setsFinite none
+/-- Family application `Modules(R)` (args symbolic until interpreted). -/
+def exprModulesFamily : CategoryExpr :=
+  .familyApp CategoryFamilyId.modules #[]
 /-- Implicit unnamed target: constructible, not a named registry node. -/
 def exprRingsGradedFinite : CategoryExpr :=
   .refine
@@ -84,11 +101,17 @@ def specimenNamed : NamedExpressionTable where
     | ⟨"cat.semigroups"⟩ => some exprSemigroups
     | ⟨"cat.monoids"⟩ => some exprMonoids
     | ⟨"cat.groups"⟩ => some exprGroups
+    | ⟨"cat.additive_magmas"⟩ => some exprAdditiveMagmas
+    | ⟨"cat.additive_semigroups"⟩ => some exprAdditiveSemigroups
+    | ⟨"cat.additive_monoids"⟩ => some exprAdditiveMonoids
+    | ⟨"cat.additive_groups"⟩ => some exprAdditiveGroups
     | ⟨"cat.rings"⟩ => some exprRings
     | ⟨"cat.commutative_rings"⟩ => some exprCommRings
     | ⟨"cat.division_rings"⟩ => some exprDivisionRings
     | ⟨"cat.modules_r"⟩ => some exprModules
     | ⟨"cat.free_modules_r"⟩ => some exprFreeModules
+    | ⟨"cat.finitely_generated_modules_r"⟩ => some exprFinitelyGeneratedModules
+    | ⟨"cat.finite_rank_modules_r"⟩ => some exprFiniteRankModules
     | ⟨"cat.finite_free_modules_r"⟩ => some exprFiniteFreeModules
     | ⟨"cat.magmaswithtwooperations"⟩ => some exprMagmasWithTwoOperations
     | ⟨"cat.crystals"⟩ => some (.opaque CategoryId.crystals)
@@ -178,6 +201,18 @@ def specimenSnapshot : RegistrySnapshot where
     { id := CategoryId.groups, canonicalName := "Groups"
       declaration := "NormalizedCategoryGraph.Specimen.exprGroups"
       expression := exprGroups, origin := .derivedNamed, visibility := .present },
+    { id := CategoryId.additiveMagmas, canonicalName := "AdditiveMagmas"
+      declaration := "NormalizedCategoryGraph.Specimen.exprAdditiveMagmas"
+      expression := exprAdditiveMagmas, origin := .derivedNamed, visibility := .present },
+    { id := CategoryId.additiveSemigroups, canonicalName := "AdditiveSemigroups"
+      declaration := "NormalizedCategoryGraph.Specimen.exprAdditiveSemigroups"
+      expression := exprAdditiveSemigroups, origin := .derivedNamed, visibility := .present },
+    { id := CategoryId.additiveMonoids, canonicalName := "AdditiveMonoids"
+      declaration := "NormalizedCategoryGraph.Specimen.exprAdditiveMonoids"
+      expression := exprAdditiveMonoids, origin := .derivedNamed, visibility := .present },
+    { id := CategoryId.additiveGroups, canonicalName := "AdditiveGroups"
+      declaration := "NormalizedCategoryGraph.Specimen.exprAdditiveGroups"
+      expression := exprAdditiveGroups, origin := .derivedNamed, visibility := .present },
     { id := CategoryId.rings, canonicalName := "Rings"
       declaration := "NormalizedCategoryGraph.Specimen.exprRings"
       expression := exprRings, origin := .derivedNamed, visibility := .present },
@@ -190,6 +225,12 @@ def specimenSnapshot : RegistrySnapshot where
     { id := CategoryId.modulesR, canonicalName := "Modules(R)"
       declaration := "NormalizedCategoryGraph.Specimen.exprModules"
       expression := exprModules, origin := .root, visibility := .present },
+    { id := ⟨"cat.finitely_generated_modules_r"⟩, canonicalName := "FinitelyGeneratedModules(R)"
+      declaration := "NormalizedCategoryGraph.Specimen.exprFinitelyGeneratedModules"
+      expression := exprFinitelyGeneratedModules, origin := .derivedNamed, visibility := .present },
+    { id := ⟨"cat.finite_rank_modules_r"⟩, canonicalName := "FiniteRankModules(R)"
+      declaration := "NormalizedCategoryGraph.Specimen.exprFiniteRankModules"
+      expression := exprFiniteRankModules, origin := .derivedNamed, visibility := .present },
     { id := ⟨"cat.finite_free_modules_r"⟩, canonicalName := "FiniteFreeModules(R)"
       declaration := "NormalizedCategoryGraph.Specimen.exprFiniteFreeModules"
       expression := exprFiniteFreeModules, origin := .derivedNamed, visibility := .present },
@@ -217,9 +258,15 @@ def specimenSnapshot : RegistrySnapshot where
       declaration := "", hostId := CategoryId.magmas, visibility := .present },
     { id := ClassifierId.magmasInverse, canonicalName := "Inverse"
       declaration := "", hostId := CategoryId.magmas, visibility := .present },
+    { id := ClassifierId.magmasAdditive, canonicalName := "Additive"
+      declaration := "", hostId := CategoryId.magmas, visibility := .present },
+    { id := ClassifierId.magmasMultiplicative, canonicalName := "Multiplicative"
+      declaration := "", hostId := CategoryId.magmas, visibility := .present },
     { id := ClassifierId.modulesFree, canonicalName := "Free"
       declaration := "", hostId := CategoryId.modulesR, visibility := .present },
     { id := ClassifierId.modulesFinitelyGenerated, canonicalName := "FinitelyGenerated"
+      declaration := "", hostId := CategoryId.modulesR, visibility := .present },
+    { id := ClassifierId.modulesFiniteRank, canonicalName := "FiniteRank"
       declaration := "", hostId := CategoryId.modulesR, visibility := .present },
     { id := ClassifierId.m2oDistributive, canonicalName := "Distributive"
       declaration := "", hostId := CategoryId.magmasWithTwoOperations, visibility := .present },

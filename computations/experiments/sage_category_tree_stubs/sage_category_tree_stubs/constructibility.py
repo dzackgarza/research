@@ -131,6 +131,10 @@ class Constructibility:
 
 
 def _infer_role(arrow: dict[str, Any]) -> str | None:
+    """Deprecated fallback: scrape provenance/notes when authored ``role`` is absent.
+
+    Authored ``role`` / PortId on the arrow always wins via ``_arrow_role``.
+    """
     text = f"{arrow.get('provenance') or ''} {arrow.get('notes') or ''}".lower()
     if "multiplicative" in text or "nonzero mult" in text:
         return "multiplicative_operation"
@@ -141,6 +145,14 @@ def _infer_role(arrow: dict[str, Any]) -> str | None:
     if "underlying_set" in text:
         return "underlying_set"
     return None
+
+
+def _arrow_role(arrow: dict[str, Any]) -> str | None:
+    """Prefer authored ``role`` (PortId); fall back to deprecated prose inference."""
+    authored = arrow.get("role")
+    if isinstance(authored, str) and authored.strip():
+        return authored.strip()
+    return _infer_role(arrow)
 
 
 def build_sketch(seed: SemanticSeed | None = None) -> dict[str, Any]:
@@ -171,7 +183,7 @@ def build_sketch(seed: SemanticSeed | None = None) -> dict[str, Any]:
                 id=str(a["id"]),
                 source=str(src),
                 target=str(tgt),
-                role=_infer_role(a),
+                role=_arrow_role(a),
                 kind=str(kind),
                 origin="seed_arrow",
             )
@@ -215,7 +227,7 @@ def build_sketch(seed: SemanticSeed | None = None) -> dict[str, Any]:
                     str(left_fun),
                     str(left_arr["source"]),
                     str(left_arr["target"]),
-                    _infer_role(left_arr),
+                    _arrow_role(left_arr),
                     str(left_arr.get("kind") or "forgetful"),
                     "seed_arrow",
                 )
@@ -261,16 +273,27 @@ def map_closure(
     arrow_index: dict[str, Any] = sketch["arrow_index"]
 
     maps: dict[str, list[MapTerm]] = {}
+    # Equal-length inequivalent paths for (target, role) → AMBIGUOUS at use sites.
+    path_collisions: set[tuple[str, str | None]] = set()
 
     def add(term: MapTerm) -> bool:
-        """Keep one shortest representative per ``(target, role)`` class."""
+        """Keep one shortest representative per ``(target, role)`` class.
+
+        If an equal-length inequivalent path is seen, record a collision so
+        ``check_requests`` can return AMBIGUOUS instead of silently collapsing.
+        """
         bucket = maps.setdefault(term.target, [])
         for i, existing in enumerate(bucket):
             if existing.role != term.role:
                 continue
+            if term.edges == existing.edges:
+                return False
             if len(term.edges) < len(existing.edges):
                 bucket[i] = term
                 return True
+            if len(term.edges) > len(existing.edges):
+                return False
+            path_collisions.add((term.target, term.role))
             return False
         bucket.append(term)
         return True
@@ -309,6 +332,8 @@ def map_closure(
                     # Role of the lift follows the left factor (cospan left leg).
                     if add(MapTerm(pb.apex, f.edges + (lift_id,), f.role)):
                         changed = True
+    # Stash collisions for check_requests (same sketch dict is reused).
+    sketch["_path_collisions"] = path_collisions
     return maps
 
 
@@ -330,9 +355,9 @@ def _compose_edge(
     if arrow.get("source") != term.target:
         return None
     role = term.role
-    inferred = _infer_role(arrow)
-    if inferred is not None:
-        role = inferred
+    authored_or_inferred = _arrow_role(arrow)
+    if authored_or_inferred is not None:
+        role = authored_or_inferred
     return MapTerm(
         target=str(arrow["target"]),
         edges=term.edges + (edge_id,),
@@ -422,6 +447,23 @@ def check_requests(
                     )
             if not host_maps:
                 continue
+            # Path-class collisions matter when the role was not disambiguated.
+            # With an explicit `along=`, role selection is enough until full
+            # path-equation certificates exist.
+            if req.along is None:
+                collisions: set[tuple[str, str | None]] = sketch.get(
+                    "_path_collisions", set()
+                )
+                if any((m.target, m.role) in collisions for m in host_maps):
+                    return ConstructibilityResult(
+                        "AMBIGUOUS",
+                        base_id,
+                        certificate,
+                        tuple(remaining),
+                        tuple(sorted(maps)),
+                        (f"ambiguous path classes to {clf.host} for {req.classifier_id}; "
+                         "need path-equation certificate or along="),
+                    )
             support = min(host_maps, key=lambda m: len(m.edges))
             enabled.append((occ_id, req, support))
 
@@ -501,18 +543,16 @@ def requests_from_composed_cls_key(
 
     flat_steps = [ADDITIVE_AXIOM_TO_FLAT.get(s, s) for s in steps]
     base_id: str | None
+    additive_tower = False
 
-    # AdditiveMagmas.A… → Magmas with Additive + A… (flat Magmas packaging)
-    if sage_base == "AdditiveMagmas" or sage_base in ADDITIVE_BASE_TO_MAGMAS:
-        if sage_base == "AdditiveMagmas":
-            base_id = "cat.magmas"
-            flat_steps = ["Additive", *flat_steps]
-        else:
-            # Already an additive tower name — use additive base entity when known
-            path = ADDITIVE_BASE_TO_MAGMAS.get(sage_base, "")
-            base_id = _resolve_named_category(sage_base, sketch=sketch, sage_to_entity=sage_to_entity)
-            if base_id is None and path.startswith("Magmas.Additive"):
-                base_id = "cat.additive_magmas"
+    # AdditiveMagmas.* / AdditiveSemigroups.* → Magmas + Additive + flat laws
+    # (one-tower: never host on cat.additive_magmas with a duplicate classifier family).
+    if sage_base in ADDITIVE_BASE_TO_MAGMAS:
+        path = ADDITIVE_BASE_TO_MAGMAS[sage_base]
+        prefix = path.split(".")[1:]  # Additive[.Associative…]
+        flat_steps = [*prefix, *flat_steps]
+        base_id = "cat.magmas"
+        additive_tower = True
     else:
         base_id = _resolve_named_category(sage_base, sketch=sketch, sage_to_entity=sage_to_entity)
 
@@ -524,15 +564,16 @@ def requests_from_composed_cls_key(
         cands = [c for c in classifiers.values() if c.name == name]
         if not cands:
             return base_id, [], expression
-        # Prefer host matching current base when possible; else Magmas for Additive
+        # Prefer Magmas/Sets classifiers; never a deleted additive_magmas duplicate family.
         prefer_host = base_id
-        if name == "Additive":
+        if name == "Additive" or additive_tower:
             prefer_host = "cat.magmas"
         ranked = sorted(
             cands,
             key=lambda c: (
                 0 if c.host == prefer_host else 1,
                 0 if c.id.startswith("clf.magmas") or c.id.startswith("clf.sets") else 1,
+                0 if "additive_magmas" not in c.id else 2,
                 1 if "catobject" in c.id or c.id.startswith("clf.ax_") else 0,
                 c.id,
             ),
@@ -541,6 +582,8 @@ def requests_from_composed_cls_key(
         along = None
         if pick.host == "cat.magmas" and base_id == "cat.rings" and name == "Commutative":
             along = "multiplicative_operation"
+        elif additive_tower and pick.host == "cat.magmas" and name != "Additive":
+            along = "additive_operation"
         reqs.append(ClassifierRequest(pick.id, along=along, occurrence_id=f"{pick.id}#{i}"))
     return base_id, reqs, expression
 

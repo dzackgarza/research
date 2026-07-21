@@ -9,7 +9,9 @@ COMPLETE for the design-inventory contract:
   pullback definitions (no “Imported from DOT” leftovers).
 - correspondence.json targets are semantic_seed entity ids.
 - `just seed-dot` writes the presentation DOT from the seed (factory/viz).
-- Magmas.Additive is AdditiveMagmas → Sets; flat Magmas Additive is ax.Additive.
+- One-tower Magmas: AdditiveMagmas = Magmas.Additive via clf.magmas.additive;
+  additive semigroups/monoids/groups/abelian groups reuse Magmas law
+  classifiers with along=additive_operation (no clf.additive_magmas.* family).
 - Named-join parsing uses longest-prefix hosts (Magmas.Additive.Associative).
 
 Property/structure/stuff is not stored on classifiers — compute from the leg.

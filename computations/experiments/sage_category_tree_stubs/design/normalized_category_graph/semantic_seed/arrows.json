@@ -140,7 +140,7 @@
       "id": "arr.clf.abelianvariety",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_AbelianVariety : cat.schemes_s.AbelianVariety \u2192 cat.schemes_s",
+      "provenance": "ι_AbelianVariety : cat.schemes_s.AbelianVariety → cat.schemes_s",
       "source": "clf.abelianvariety.domain",
       "target": "cat.schemes_s"
     },
@@ -148,47 +148,15 @@
       "id": "arr.clf.additive",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Additive : cat.magmas.Additive \u2192 cat.magmas",
+      "provenance": "ι_Additive : cat.magmas.Additive → cat.magmas",
       "source": "clf.additive.domain",
       "target": "cat.magmas"
-    },
-    {
-      "id": "arr.clf.additive_magmas.associative",
-      "kind": "classifier_leg",
-      "preferred": true,
-      "provenance": null,
-      "source": "clf.additive_magmas.associative.domain",
-      "target": "cat.additive_magmas"
-    },
-    {
-      "id": "arr.clf.additive_magmas.commutative",
-      "kind": "classifier_leg",
-      "preferred": true,
-      "provenance": null,
-      "source": "clf.additive_magmas.commutative.domain",
-      "target": "cat.additive_magmas"
-    },
-    {
-      "id": "arr.clf.additive_magmas.inverse",
-      "kind": "classifier_leg",
-      "preferred": true,
-      "provenance": null,
-      "source": "clf.additive_magmas.inverse.domain",
-      "target": "cat.additive_magmas"
-    },
-    {
-      "id": "arr.clf.additive_magmas.unital",
-      "kind": "classifier_leg",
-      "preferred": true,
-      "provenance": null,
-      "source": "clf.additive_magmas.unital.domain",
-      "target": "cat.additive_magmas"
     },
     {
       "id": "arr.clf.affine",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Affine : cat.weylgroups.Affine \u2192 cat.weylgroups",
+      "provenance": "ι_Affine : cat.weylgroups.Affine → cat.weylgroups",
       "source": "clf.affine.domain",
       "target": "cat.weylgroups"
     },
@@ -228,7 +196,7 @@
       "id": "arr.clf.aperiodic",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Aperiodic : cat.semigroups.Aperiodic \u2192 cat.semigroups",
+      "provenance": "ι_Aperiodic : cat.semigroups.Aperiodic → cat.semigroups",
       "source": "clf.aperiodic.domain",
       "target": "cat.semigroups"
     },
@@ -236,7 +204,7 @@
       "id": "arr.clf.associative",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Associative : cat.magmas.Associative \u2192 cat.magmas",
+      "provenance": "ι_Associative : cat.magmas.Associative → cat.magmas",
       "source": "clf.associative.domain",
       "target": "cat.magmas"
     },
@@ -412,7 +380,7 @@
       "id": "arr.clf.classical",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Classical : cat.crystals.Classical \u2192 cat.crystals",
+      "provenance": "ι_Classical : cat.crystals.Classical → cat.crystals",
       "source": "clf.classical.domain",
       "target": "cat.crystals"
     },
@@ -452,7 +420,7 @@
       "id": "arr.clf.commutative",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Commutative : cat.magmas.Commutative \u2192 cat.magmas",
+      "provenance": "ι_Commutative : cat.magmas.Commutative → cat.magmas",
       "source": "clf.commutative.domain",
       "target": "cat.magmas"
     },
@@ -460,7 +428,7 @@
       "id": "arr.clf.compatiblepartialorder",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_CompatiblePartialOrder : cat.sets.CompatiblePartialOrder \u2192 cat.sets",
+      "provenance": "ι_CompatiblePartialOrder : cat.sets.CompatiblePartialOrder → cat.sets",
       "source": "clf.compatiblepartialorder.domain",
       "target": "cat.sets"
     },
@@ -468,7 +436,7 @@
       "id": "arr.clf.complete",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Complete : cat.metricspaces.Complete \u2192 cat.metricspaces",
+      "provenance": "ι_Complete : cat.metricspaces.Complete → cat.metricspaces",
       "source": "clf.complete.domain",
       "target": "cat.metricspaces"
     },
@@ -476,7 +444,7 @@
       "id": "arr.clf.complexanalytic",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_ComplexAnalytic : cat.manifolds.ComplexAnalytic \u2192 cat.manifolds",
+      "provenance": "ι_ComplexAnalytic : cat.manifolds.ComplexAnalytic → cat.manifolds",
       "source": "clf.complexanalytic.domain",
       "target": "cat.manifolds"
     },
@@ -484,7 +452,7 @@
       "id": "arr.clf.complexreflection",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_ComplexReflection : cat.groupswithsimplereflections.ComplexReflection \u2192 cat.groupswithsimplereflections",
+      "provenance": "ι_ComplexReflection : cat.groupswithsimplereflections.ComplexReflection → cat.groupswithsimplereflections",
       "source": "clf.complexreflection.domain",
       "target": "cat.groupswithsimplereflections"
     },
@@ -492,7 +460,7 @@
       "id": "arr.clf.coxeter",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Coxeter : cat.generalizedcoxetergroups.Coxeter \u2192 cat.generalizedcoxetergroups",
+      "provenance": "ι_Coxeter : cat.generalizedcoxetergroups.Coxeter → cat.generalizedcoxetergroups",
       "source": "clf.coxeter.domain",
       "target": "cat.generalizedcoxetergroups"
     },
@@ -500,7 +468,7 @@
       "id": "arr.clf.cwstructure",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_CWStructure : cat.sets.CWStructure \u2192 cat.sets",
+      "provenance": "ι_CWStructure : cat.sets.CWStructure → cat.sets",
       "source": "clf.cwstructure.domain",
       "target": "cat.sets"
     },
@@ -508,7 +476,7 @@
       "id": "arr.clf.dedekind",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Dedekind : cat.integraldomains.Dedekind \u2192 cat.integraldomains",
+      "provenance": "ι_Dedekind : cat.integraldomains.Dedekind → cat.integraldomains",
       "source": "clf.dedekind.domain",
       "target": "cat.integraldomains"
     },
@@ -516,7 +484,7 @@
       "id": "arr.clf.discretevaluation",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_DiscreteValuation : cat.fields.DiscreteValuation \u2192 cat.fields",
+      "provenance": "ι_DiscreteValuation : cat.fields.DiscreteValuation → cat.fields",
       "source": "clf.discretevaluation.domain",
       "target": "cat.fields"
     },
@@ -524,7 +492,7 @@
       "id": "arr.clf.distributive_lattice",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Distributive : cat.latticeposets.Distributive \u2192 cat.latticeposets",
+      "provenance": "ι_Distributive : cat.latticeposets.Distributive → cat.latticeposets",
       "source": "clf.distributive_lattice.domain",
       "target": "cat.latticeposets"
     },
@@ -532,7 +500,7 @@
       "id": "arr.clf.distributive_twooperations",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Distributive : cat.magmaswithtwooperations.Distributive \u2192 cat.magmaswithtwooperations",
+      "provenance": "ι_Distributive : cat.magmaswithtwooperations.Distributive → cat.magmaswithtwooperations",
       "source": "clf.distributive_twooperations.domain",
       "target": "cat.magmaswithtwooperations"
     },
@@ -540,7 +508,7 @@
       "id": "arr.clf.division",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Division : cat.rings.Division \u2192 cat.rings",
+      "provenance": "ι_Division : cat.rings.Division → cat.rings",
       "source": "clf.division.domain",
       "target": "cat.rings"
     },
@@ -548,7 +516,7 @@
       "id": "arr.clf.enumerated",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Enumerated : cat.sets.Enumerated \u2192 cat.sets",
+      "provenance": "ι_Enumerated : cat.sets.Enumerated → cat.sets",
       "source": "clf.enumerated.domain",
       "target": "cat.sets"
     },
@@ -556,7 +524,7 @@
       "id": "arr.clf.euclidean",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Euclidean : cat.integraldomains.Euclidean \u2192 cat.integraldomains",
+      "provenance": "ι_Euclidean : cat.integraldomains.Euclidean → cat.integraldomains",
       "source": "clf.euclidean.domain",
       "target": "cat.integraldomains"
     },
@@ -564,7 +532,7 @@
       "id": "arr.clf.faithfulpermutationaction",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_FaithfulPermutationAction : cat.groups.FaithfulPermutationAction \u2192 cat.groups",
+      "provenance": "ι_FaithfulPermutationAction : cat.groups.FaithfulPermutationAction → cat.groups",
       "source": "clf.faithfulpermutationaction.domain",
       "target": "cat.groups"
     },
@@ -572,7 +540,7 @@
       "id": "arr.clf.filtered",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Filtered : cat.modules_r.Filtered \u2192 cat.modules_r",
+      "provenance": "ι_Filtered : cat.modules_r.Filtered → cat.modules_r",
       "source": "clf.filtered.domain",
       "target": "cat.modules_r"
     },
@@ -580,7 +548,7 @@
       "id": "arr.clf.finite",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Finite : cat.sets.Finite \u2192 cat.sets",
+      "provenance": "ι_Finite : cat.sets.Finite → cat.sets",
       "source": "clf.finite.domain",
       "target": "cat.sets"
     },
@@ -588,7 +556,7 @@
       "id": "arr.clf.finiteextensionof_q",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_FiniteExtensionOf : cat.fields.FiniteExtensionOf \u2192 cat.fields",
+      "provenance": "ι_FiniteExtensionOf : cat.fields.FiniteExtensionOf → cat.fields",
       "source": "clf.finiteextensionof_q.domain",
       "target": "cat.fields"
     },
@@ -596,7 +564,7 @@
       "id": "arr.clf.finitelygenerated_lambdabracket",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_FinitelyGenerated : cat.lambdabracketalgebras_r.FinitelyGenerated \u2192 cat.lambdabracketalgebras_r",
+      "provenance": "ι_FinitelyGenerated : cat.lambdabracketalgebras_r.FinitelyGenerated → cat.lambdabracketalgebras_r",
       "source": "clf.finitelygenerated_lambdabracket.domain",
       "target": "cat.lambdabracketalgebras_r"
     },
@@ -604,7 +572,7 @@
       "id": "arr.clf.finiterank",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_FiniteRank : cat.modules_r.FiniteRank \u2192 cat.modules_r",
+      "provenance": "ι_FiniteRank : cat.modules_r.FiniteRank → cat.modules_r",
       "source": "clf.finiterank.domain",
       "target": "cat.modules_r"
     },
@@ -612,7 +580,7 @@
       "id": "arr.clf.fractionfieldpresentation",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_FractionFieldPresentation : cat.integral_domains.FractionFieldPresentation \u2192 cat.integral_domains",
+      "provenance": "ι_FractionFieldPresentation : cat.integral_domains.FractionFieldPresentation → cat.integral_domains",
       "source": "clf.fractionfieldpresentation.domain",
       "target": "cat.integral_domains"
     },
@@ -620,7 +588,7 @@
       "id": "arr.clf.functionfield",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_FunctionField : cat.fields.FunctionField \u2192 cat.fields",
+      "provenance": "ι_FunctionField : cat.fields.FunctionField → cat.fields",
       "source": "clf.functionfield.domain",
       "target": "cat.fields"
     },
@@ -628,7 +596,7 @@
       "id": "arr.clf.gaction",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_GAction : cat.sets.GAction \u2192 cat.sets",
+      "provenance": "ι_GAction : cat.sets.GAction → cat.sets",
       "source": "clf.gaction.domain",
       "target": "cat.sets"
     },
@@ -636,7 +604,7 @@
       "id": "arr.clf.gcd",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_GCD : cat.integraldomains.GCD \u2192 cat.integraldomains",
+      "provenance": "ι_GCD : cat.integraldomains.GCD → cat.integraldomains",
       "source": "clf.gcd.domain",
       "target": "cat.integraldomains"
     },
@@ -644,7 +612,7 @@
       "id": "arr.clf.generalizedcoxeter",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_GeneralizedCoxeter : cat.groupswithsimplereflections.GeneralizedCoxeter \u2192 cat.groupswithsimplereflections",
+      "provenance": "ι_GeneralizedCoxeter : cat.groupswithsimplereflections.GeneralizedCoxeter → cat.groupswithsimplereflections",
       "source": "clf.generalizedcoxeter.domain",
       "target": "cat.groupswithsimplereflections"
     },
@@ -652,7 +620,7 @@
       "id": "arr.clf.graded",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Graded : cat.sets.Graded \u2192 cat.sets",
+      "provenance": "ι_Graded : cat.sets.Graded → cat.sets",
       "source": "clf.graded.domain",
       "target": "cat.sets"
     },
@@ -684,7 +652,7 @@
       "id": "arr.clf.heckemodulestructure",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_HeckeModuleStructure : cat.modules_r.HeckeModuleStructure \u2192 cat.modules_r",
+      "provenance": "ι_HeckeModuleStructure : cat.modules_r.HeckeModuleStructure → cat.modules_r",
       "source": "clf.heckemodulestructure.domain",
       "target": "cat.modules_r"
     },
@@ -692,7 +660,7 @@
       "id": "arr.clf.highestweight",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_HighestWeight : cat.crystals.HighestWeight \u2192 cat.crystals",
+      "provenance": "ι_HighestWeight : cat.crystals.HighestWeight → cat.crystals",
       "source": "clf.highestweight.domain",
       "target": "cat.crystals"
     },
@@ -700,7 +668,7 @@
       "id": "arr.clf.htrivial",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_HTrivial : cat.semigroups.HTrivial \u2192 cat.semigroups",
+      "provenance": "ι_HTrivial : cat.semigroups.HTrivial → cat.semigroups",
       "source": "clf.htrivial.domain",
       "target": "cat.semigroups"
     },
@@ -708,7 +676,7 @@
       "id": "arr.clf.infinite",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Infinite : cat.sets.Infinite \u2192 cat.sets",
+      "provenance": "ι_Infinite : cat.sets.Infinite → cat.sets",
       "source": "clf.infinite.domain",
       "target": "cat.sets"
     },
@@ -796,7 +764,7 @@
       "id": "arr.clf.jacobian",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Jacobian : cat.abelianvarieties_k.Jacobian \u2192 cat.abelianvarieties_k",
+      "provenance": "ι_Jacobian : cat.abelianvarieties_k.Jacobian → cat.abelianvarieties_k",
       "source": "clf.jacobian.domain",
       "target": "cat.abelianvarieties_k"
     },
@@ -804,7 +772,7 @@
       "id": "arr.clf.jtrivial",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_JTrivial : cat.semigroups.JTrivial \u2192 cat.semigroups",
+      "provenance": "ι_JTrivial : cat.semigroups.JTrivial → cat.semigroups",
       "source": "clf.jtrivial.domain",
       "target": "cat.semigroups"
     },
@@ -812,7 +780,7 @@
       "id": "arr.clf.ka_hlerpackage",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_KahlerPackage : cat.algebras_r.KahlerPackage \u2192 cat.algebras_r",
+      "provenance": "ι_KahlerPackage : cat.algebras_r.KahlerPackage → cat.algebras_r",
       "source": "clf.ka_hlerpackage.domain",
       "target": "cat.algebras_r"
     },
@@ -820,7 +788,7 @@
       "id": "arr.clf.kirillovreshetikhin",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_KirillovReshetikhin : cat.loopcrystals.KirillovReshetikhin \u2192 cat.loopcrystals",
+      "provenance": "ι_KirillovReshetikhin : cat.loopcrystals.KirillovReshetikhin → cat.loopcrystals",
       "source": "clf.kirillovreshetikhin.domain",
       "target": "cat.loopcrystals"
     },
@@ -828,7 +796,7 @@
       "id": "arr.clf.lambdabracketalgebras_r.finitelygenerated",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_FinitelyGenerated : cat.lambdabracketalgebras_r.FinitelyGenerated \u2192 cat.lambdabracketalgebras_r",
+      "provenance": "ι_FinitelyGenerated : cat.lambdabracketalgebras_r.FinitelyGenerated → cat.lambdabracketalgebras_r",
       "source": "clf.lambdabracketalgebras_r.finitelygenerated.domain",
       "target": "cat.lambdabracketalgebras_r"
     },
@@ -876,7 +844,7 @@
       "id": "arr.clf.lattice",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Lattice : cat.posets.Lattice \u2192 cat.posets",
+      "provenance": "ι_Lattice : cat.posets.Lattice → cat.posets",
       "source": "clf.lattice.domain",
       "target": "cat.posets"
     },
@@ -884,7 +852,7 @@
       "id": "arr.clf.ltrivial",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_LTrivial : cat.semigroups.LTrivial \u2192 cat.semigroups",
+      "provenance": "ι_LTrivial : cat.semigroups.LTrivial → cat.semigroups",
       "source": "clf.ltrivial.domain",
       "target": "cat.semigroups"
     },
@@ -916,7 +884,7 @@
       "id": "arr.clf.magmas.finitelygenerated",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_FinitelyGenerated : cat.magmas.FinitelyGenerated \u2192 cat.magmas",
+      "provenance": "ι_FinitelyGenerated : cat.magmas.FinitelyGenerated → cat.magmas",
       "source": "clf.magmas.finitelygenerated.domain",
       "target": "cat.magmas"
     },
@@ -934,14 +902,6 @@
       "preferred": true,
       "provenance": null,
       "source": "clf.magmas.unital.domain",
-      "target": "cat.magmas"
-    },
-    {
-      "id": "arr.clf.magmas_additive",
-      "kind": "classifier_leg",
-      "preferred": false,
-      "provenance": "REJECTED as classifier_leg: Magmas.Additive is AdditiveMagmas (sibling of Magmas). Hand DOT still attaches Additive by dotted edge for stub axiom encoding; use arr.fun.additive_magmas_to_sets",
-      "source": "cat.additive_magmas",
       "target": "cat.magmas"
     },
     {
@@ -972,7 +932,7 @@
       "id": "arr.clf.matrixalgebra",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_MatrixAlgebra : cat.algebras_r.MatrixAlgebra \u2192 cat.algebras_r",
+      "provenance": "ι_MatrixAlgebra : cat.algebras_r.MatrixAlgebra → cat.algebras_r",
       "source": "clf.matrixalgebra.domain",
       "target": "cat.algebras_r"
     },
@@ -980,7 +940,7 @@
       "id": "arr.clf.metric",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Metric : cat.sets.Metric \u2192 cat.sets",
+      "provenance": "ι_Metric : cat.sets.Metric → cat.sets",
       "source": "clf.metric.domain",
       "target": "cat.sets"
     },
@@ -988,7 +948,7 @@
       "id": "arr.clf.modular",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Modular : cat.abelianvarieties_k.Modular \u2192 cat.abelianvarieties_k",
+      "provenance": "ι_Modular : cat.abelianvarieties_k.Modular → cat.abelianvarieties_k",
       "source": "clf.modular.domain",
       "target": "cat.abelianvarieties_k"
     },
@@ -1084,7 +1044,7 @@
       "id": "arr.clf.nilpotent",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Nilpotent : cat.lie_algebras_r.Nilpotent \u2192 cat.lie_algebras_r",
+      "provenance": "ι_Nilpotent : cat.lie_algebras_r.Nilpotent → cat.lie_algebras_r",
       "source": "clf.nilpotent.domain",
       "target": "cat.lie_algebras_r"
     },
@@ -1092,7 +1052,7 @@
       "id": "arr.clf.noetherian",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Noetherian : cat.commutativerings.Noetherian \u2192 cat.commutativerings",
+      "provenance": "ι_Noetherian : cat.commutativerings.Noetherian → cat.commutativerings",
       "source": "clf.noetherian.domain",
       "target": "cat.commutativerings"
     },
@@ -1100,7 +1060,7 @@
       "id": "arr.clf.nozerodivisors",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_NoZeroDivisors : cat.rings.NoZeroDivisors \u2192 cat.rings",
+      "provenance": "ι_NoZeroDivisors : cat.rings.NoZeroDivisors → cat.rings",
       "source": "clf.nozerodivisors.domain",
       "target": "cat.rings"
     },
@@ -1108,7 +1068,7 @@
       "id": "arr.clf.oremodulestructure_sigma_delta",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_OreModuleStructure : cat.modules_r.OreModuleStructure \u2192 cat.modules_r",
+      "provenance": "ι_OreModuleStructure : cat.modules_r.OreModuleStructure → cat.modules_r",
       "source": "clf.oremodulestructure_sigma_delta.domain",
       "target": "cat.modules_r"
     },
@@ -1116,7 +1076,7 @@
       "id": "arr.clf.pointed",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Pointed : cat.sets.Pointed \u2192 cat.sets",
+      "provenance": "ι_Pointed : cat.sets.Pointed → cat.sets",
       "source": "clf.pointed.domain",
       "target": "cat.sets"
     },
@@ -1124,7 +1084,7 @@
       "id": "arr.clf.principalideal",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_PrincipalIdeal : cat.integraldomains.PrincipalIdeal \u2192 cat.integraldomains",
+      "provenance": "ι_PrincipalIdeal : cat.integraldomains.PrincipalIdeal → cat.integraldomains",
       "source": "clf.principalideal.domain",
       "target": "cat.integraldomains"
     },
@@ -1132,7 +1092,7 @@
       "id": "arr.clf.quantumgrouprepresentation",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_QuantumGroupRepresentation : cat.modules_r.QuantumGroupRepresentation \u2192 cat.modules_r",
+      "provenance": "ι_QuantumGroupRepresentation : cat.modules_r.QuantumGroupRepresentation → cat.modules_r",
       "source": "clf.quantumgrouprepresentation.domain",
       "target": "cat.modules_r"
     },
@@ -1140,7 +1100,7 @@
       "id": "arr.clf.regular",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Regular : cat.crystals.Regular \u2192 cat.crystals",
+      "provenance": "ι_Regular : cat.crystals.Regular → cat.crystals",
       "source": "clf.regular.domain",
       "target": "cat.crystals"
     },
@@ -1164,7 +1124,7 @@
       "id": "arr.clf.rtrivial",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_RTrivial : cat.semigroups.RTrivial \u2192 cat.semigroups",
+      "provenance": "ι_RTrivial : cat.semigroups.RTrivial → cat.semigroups",
       "source": "clf.rtrivial.domain",
       "target": "cat.semigroups"
     },
@@ -1300,7 +1260,7 @@
       "id": "arr.clf.semigroups.finitelygenerated",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_FinitelyGenerated : cat.semigroups.FinitelyGenerated \u2192 cat.semigroups",
+      "provenance": "ι_FinitelyGenerated : cat.semigroups.FinitelyGenerated → cat.semigroups",
       "source": "clf.semigroups.finitelygenerated.domain",
       "target": "cat.semigroups"
     },
@@ -1316,7 +1276,7 @@
       "id": "arr.clf.semisimple",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Semisimple : cat.algebras_r.Semisimple \u2192 cat.algebras_r",
+      "provenance": "ι_Semisimple : cat.algebras_r.Semisimple → cat.algebras_r",
       "source": "clf.semisimple.domain",
       "target": "cat.algebras_r"
     },
@@ -1324,7 +1284,7 @@
       "id": "arr.clf.sets.finite",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Finite : Sets.Finite \u2192 Sets",
+      "provenance": "ι_Finite : Sets.Finite → Sets",
       "source": "clf.sets.finite.domain",
       "target": "cat.sets"
     },
@@ -1332,7 +1292,7 @@
       "id": "arr.clf.sets.graded",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Graded : Sets.Graded \u2192 Sets",
+      "provenance": "ι_Graded : Sets.Graded → Sets",
       "source": "clf.sets.graded.domain",
       "target": "cat.sets"
     },
@@ -1364,7 +1324,7 @@
       "id": "arr.clf.shephard",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Shephard : cat.groupswithsimplereflections.Shephard \u2192 cat.groupswithsimplereflections",
+      "provenance": "ι_Shephard : cat.groupswithsimplereflections.Shephard → cat.groupswithsimplereflections",
       "source": "clf.shephard.domain",
       "target": "cat.groupswithsimplereflections"
     },
@@ -1372,7 +1332,7 @@
       "id": "arr.clf.super",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Super : cat.modules_r.Super \u2192 cat.modules_r",
+      "provenance": "ι_Super : cat.modules_r.Super → cat.modules_r",
       "source": "clf.super.domain",
       "target": "cat.modules_r"
     },
@@ -1380,7 +1340,7 @@
       "id": "arr.clf.super_crystal",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Super : cat.crystals.Super \u2192 cat.crystals",
+      "provenance": "ι_Super : cat.crystals.Super → cat.crystals",
       "source": "clf.super_crystal.domain",
       "target": "cat.crystals"
     },
@@ -1388,7 +1348,7 @@
       "id": "arr.clf.supercommutative",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Supercommutative : cat.superalgebras_r.Supercommutative \u2192 cat.superalgebras_r",
+      "provenance": "ι_Supercommutative : cat.superalgebras_r.Supercommutative → cat.superalgebras_r",
       "source": "clf.supercommutative.domain",
       "target": "cat.superalgebras_r"
     },
@@ -1396,7 +1356,7 @@
       "id": "arr.clf.triangulardecomposition",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_TriangularDecomposition : cat.kacmoodyalgebras_r.TriangularDecomposition \u2192 cat.kacmoodyalgebras_r",
+      "provenance": "ι_TriangularDecomposition : cat.kacmoodyalgebras_r.TriangularDecomposition → cat.kacmoodyalgebras_r",
       "source": "clf.triangulardecomposition.domain",
       "target": "cat.kacmoodyalgebras_r"
     },
@@ -1404,7 +1364,7 @@
       "id": "arr.clf.uniquefactorization",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_UniqueFactorization : cat.integraldomains.UniqueFactorization \u2192 cat.integraldomains",
+      "provenance": "ι_UniqueFactorization : cat.integraldomains.UniqueFactorization → cat.integraldomains",
       "source": "clf.uniquefactorization.domain",
       "target": "cat.integraldomains"
     },
@@ -1412,7 +1372,7 @@
       "id": "arr.clf.unital",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Unital : cat.magmas.Unital \u2192 cat.magmas",
+      "provenance": "ι_Unital : cat.magmas.Unital → cat.magmas",
       "source": "clf.unital.domain",
       "target": "cat.magmas"
     },
@@ -1436,7 +1396,7 @@
       "id": "arr.clf.weyl",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_Weyl : cat.coxetergroups.Weyl \u2192 cat.coxetergroups",
+      "provenance": "ι_Weyl : cat.coxetergroups.Weyl → cat.coxetergroups",
       "source": "clf.weyl.domain",
       "target": "cat.coxetergroups"
     },
@@ -1444,7 +1404,7 @@
       "id": "arr.clf.withbasis",
       "kind": "classifier_leg",
       "preferred": true,
-      "provenance": "\u03b9_WithBasis : cat.modules_r.WithBasis \u2192 cat.modules_r",
+      "provenance": "ι_WithBasis : cat.modules_r.WithBasis → cat.modules_r",
       "source": "clf.withbasis.domain",
       "target": "cat.modules_r"
     },
@@ -1482,11 +1442,12 @@
     },
     {
       "id": "arr.dot.additivesemigroups__magmas_additive",
-      "kind": "pullback_projection",
+      "kind": "full_inclusion",
       "preferred": true,
-      "provenance": "dot_import",
+      "provenance": "Magmas.Additive.Associative → Magmas.Additive",
       "source": "cat.additive_semigroups",
-      "target": "cat.additive_magmas"
+      "target": "cat.additive_magmas",
+      "role": "additive_operation"
     },
     {
       "id": "arr.dot.algebraicspaces__schemes",
@@ -2899,10 +2860,11 @@
     {
       "id": "arr.fun.additive_magmas_to_sets",
       "kind": "forgetful",
-      "preferred": true,
-      "provenance": "sibling of Magmas; not Magmas.Additive \u2282 Magmas",
+      "preferred": false,
+      "provenance": "composite via Magmas; preferred inclusion is arr.incl.additive_magmas_to_magmas",
       "source": "cat.additive_magmas",
-      "target": "cat.sets"
+      "target": "cat.sets",
+      "role": "underlying_set"
     },
     {
       "id": "arr.fun.magmas_to_sets",
@@ -2910,7 +2872,8 @@
       "preferred": true,
       "provenance": "underlying set",
       "source": "cat.magmas",
-      "target": "cat.sets"
+      "target": "cat.sets",
+      "role": "underlying_set"
     },
     {
       "id": "arr.fun.sets_to_cat_object",
@@ -2950,7 +2913,8 @@
       "preferred": true,
       "provenance": "named classifier application",
       "source": "cat.semigroups",
-      "target": "cat.magmas"
+      "target": "cat.magmas",
+      "role": "multiplicative_operation"
     },
     {
       "id": "arr.incl.weyl_to_coxeter",
@@ -2972,7 +2936,7 @@
       "id": "arr.param.modules_r_base_ring",
       "kind": "parameter_dependency",
       "preferred": true,
-      "provenance": "parameter R \u2208 Rings",
+      "provenance": "parameter R ∈ Rings",
       "source": "cat.modules_r",
       "target": "cat.rings"
     },
@@ -2980,7 +2944,7 @@
       "id": "arr.param.vector_spaces_field",
       "kind": "parameter_dependency",
       "preferred": true,
-      "provenance": "parameter K \u2208 Fields; records R=K specialization",
+      "provenance": "parameter K ∈ Fields; records R=K specialization",
       "source": "cat.vector_spaces_k",
       "target": "cat.fields"
     },
@@ -3084,9 +3048,10 @@
       "id": "fun.additive_groups_to_additive_magmas",
       "kind": "forgetful",
       "preferred": true,
-      "provenance": null,
+      "provenance": "forget to Magmas.Additive",
       "source": "cat.additive_groups",
-      "target": "cat.additive_magmas"
+      "target": "cat.additive_magmas",
+      "role": "additive_operation"
     },
     {
       "id": "fun.algebraideals_a_to_modules_r",
@@ -3132,7 +3097,7 @@
       "id": "fun.bimodules_to_modules",
       "kind": "full_inclusion",
       "preferred": true,
-      "provenance": "\ud835\udca2: bimodules refine; Sage parent direction differs (ledger)",
+      "provenance": "𝒢: bimodules refine; Sage parent direction differs (ledger)",
       "source": "cat.bimodules_r",
       "target": "cat.modules_r"
     },
@@ -3270,7 +3235,8 @@
       "preferred": true,
       "provenance": "underlying multiplicative magma",
       "source": "cat.groups",
-      "target": "cat.magmas"
+      "target": "cat.magmas",
+      "role": "multiplicative_operation"
     },
     {
       "id": "fun.groupswithsimplereflections_to_groups",
@@ -3439,7 +3405,8 @@
       "preferred": false,
       "provenance": "nonzero multiplicative monoid of a ring; used in division-ring pullback",
       "source": "cat.rings",
-      "target": "cat.magmas"
+      "target": "cat.magmas",
+      "role": "multiplicative_operation"
     },
     {
       "id": "fun.rings_to_multiplicative_magmas",
@@ -3447,7 +3414,8 @@
       "preferred": true,
       "provenance": "multiplicative underlying magma",
       "source": "cat.rings",
-      "target": "cat.magmas"
+      "target": "cat.magmas",
+      "role": "multiplicative_operation"
     },
     {
       "id": "fun.rings_to_sets",
@@ -3512,7 +3480,8 @@
       "preferred": false,
       "provenance": "additive_operation",
       "source": "cat.magmaswithtwooperations",
-      "target": "cat.magmas"
+      "target": "cat.magmas",
+      "role": "additive_operation"
     },
     {
       "id": "fun.twoops_to_magmas_multiplicative",
@@ -3521,7 +3490,8 @@
       "preferred": true,
       "provenance": "multiplicative_operation",
       "source": "cat.magmaswithtwooperations",
-      "target": "cat.magmas"
+      "target": "cat.magmas",
+      "role": "multiplicative_operation"
     },
     {
       "id": "fun.unital_algebras_to_magmas",
@@ -3538,6 +3508,24 @@
       "provenance": "opaque interface: authored ledger base",
       "source": "cat.vectorbundles_x_r",
       "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.incl.additive_magmas_to_magmas",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "role": "additive_operation",
+      "provenance": "Magmas.Additive ⊂ Magmas (one-tower)",
+      "source": "cat.additive_magmas",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "fun.additive_groups_to_magmas",
+      "kind": "forgetful",
+      "preferred": true,
+      "role": "additive_operation",
+      "provenance": "underlying additive magma",
+      "source": "cat.additive_groups",
+      "target": "cat.magmas"
     }
   ],
   "kind": "normalized_semantic_seed.arrows",

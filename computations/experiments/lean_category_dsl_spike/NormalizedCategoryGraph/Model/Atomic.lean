@@ -38,6 +38,10 @@ structure AlgebraAtoms (F : FoundationAtoms.{uObj, uHom}) where
   commutative : Classifier F.binaryOperation.total
   unital : Classifier F.binaryOperation.total
   inverse : Classifier F.binaryOperation.total
+  /-- Operation-role Magmas.Additive (one-tower; not a second law family). -/
+  additive : Classifier F.binaryOperation.total
+  /-- Operation-role Magmas.Multiplicative. -/
+  multiplicative : Classifier F.binaryOperation.total
 
 /-- Module atoms: the family `R ↦ Modules(R)`, plus classifiers on fibres.
 
@@ -53,6 +57,8 @@ structure ModuleAtoms (F : FoundationAtoms.{uObj, uHom}) (_A : AlgebraAtoms F) w
   free : Classifier Modules
   /-- Finitely generated modules — not finite rank. -/
   finitelyGenerated : Classifier Modules
+  /-- Finite free rank (admits a finite basis). Distinct from finitely generated. -/
+  finiteRank : Classifier Modules
   modulesToSets : Modules ⟶ F.Sets
 
 /-- Exceptional hosts with typed ports. -/
@@ -90,6 +96,15 @@ def Semigroups : ObjCat := M.algebra.associative.total
 
 def semigroupsToMagmas : Semigroups M ⟶ Magmas M :=
   M.algebra.associative.forget
+
+/-- Magmas.Additive — one-tower additive presentation (role classifier). -/
+def AdditiveMagmas : ObjCat := M.algebra.additive.total
+
+def additiveMagmasToMagmas : AdditiveMagmas M ⟶ Magmas M :=
+  M.algebra.additive.forget
+
+/-- Magmas.Multiplicative — dual role classifier. -/
+def MultiplicativeMagmas : ObjCat := M.algebra.multiplicative.total
 
 /-- Monoids := Semigroups.Unital via reindex of Unital along Semigroups → Magmas. -/
 noncomputable def Monoids : ObjCat :=
@@ -240,6 +255,9 @@ def FreeModules : ObjCat := M.modules.free.total
 
 /-- Finitely generated modules (not finite-rank). -/
 def FinitelyGeneratedModules : ObjCat := M.modules.finitelyGenerated.total
+
+/-- Finite free rank modules (admits a finite basis). -/
+def FiniteRankModules : ObjCat := M.modules.finiteRank.total
 
 /-- `Modules(R).Free` refined by Sets.Finite along Free → Modules → Sets. -/
 noncomputable def FiniteFreeModules : ObjCat :=

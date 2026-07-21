@@ -343,7 +343,7 @@ digraph CategoryParents {
     "FiniteRings = Rings.Finite";
     "FiniteFields = Fields.Finite";
     // Multiplicative invertibility (nonzero) packaged onto Rings
-    "DivisionRings = Magmas.Inverse";
+    "DivisionRings = Rings.Division";
     node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
 
     node [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", fontcolor="#555555"];
@@ -360,9 +360,9 @@ digraph CategoryParents {
     Rngs -> "AdditiveAbelianGroups = AdditiveGroups.Commutative" [constraint=false];
     Rings -> Rngs;
     Rings -> Semirings [constraint=false];
-    "DivisionRings = Magmas.Inverse" -> Rings;
-    "DivisionRings = Magmas.Inverse" -> "Domains = Rings.Domain";
-    Fields -> "DivisionRings = Magmas.Inverse";
+    "DivisionRings = Rings.Division" -> Rings;
+    "DivisionRings = Rings.Division" -> "Domains = Rings.Domain";
+    Fields -> "DivisionRings = Rings.Division";
     Fields -> "EuclideanDomains = Rings.Commutative.Euclidean";
     "CommRings = Rings.Commutative" -> Rings;
     // Domains need not be commutative

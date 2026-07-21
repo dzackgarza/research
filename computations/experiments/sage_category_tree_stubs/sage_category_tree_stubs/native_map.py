@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, cast
+from typing import cast
 
 import sage.categories.all as _sage_categories
+from sage.categories.category import Category
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
@@ -17,9 +18,6 @@ from .slugs import axiom_method_name, is_parameterized, short_name
 
 # stub Magmas axiom → Sage Additive* name when walking the additive branch
 _STUB_TO_SAGE_ADDITIVE_AXIOM: dict[str, str] = {stub: sage for sage, stub in SAGE_AXIOM_TO_STUB.items()}
-
-if TYPE_CHECKING:
-    from sage.categories.category import Category
 
 # DOT id / short name → ``sage.categories.all`` export name.
 _CALLABLE_NAME: dict[str, str] = {
@@ -231,7 +229,7 @@ def mapped_native_instances(graph: DotGraph | None = None) -> dict[str, Category
             continue
         try:
             cat = native_instance(vertex, graph)
-        except AttributeError, TypeError, ValueError:
+        except (AttributeError, TypeError, ValueError):
             cat = None
         if cat is not None:
             out[vertex] = cat

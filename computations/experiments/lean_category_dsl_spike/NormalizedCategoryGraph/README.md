@@ -14,10 +14,12 @@ Lean foundation for the normalized category graph.
 | `DivisionRings` | `Rings.Division` via M2O division classifier (not Magmas.Inverse) |
 | `Unital` / `Inverse` | Structure classifiers (unit-/inv-preserving Homs), not `GrpCat` |
 | `Module.Finite` | Realizes **finitely generated**, not `FiniteRank` |
-| `ModulesFamily` | `RingCat` as base-ring category; fibre still provisional `ModuleCat ℤ` |
+| `FiniteRank` | Free with finite basis index (`IsFiniteRank`) — distinct from fg |
+| `ModulesFamily` / `ModulesOf` | `RingCat` + fibre at `R`; default fibre still `ModuleCat ℤ` |
+| Magmas one-tower | `Additive`/`Multiplicative` role classifiers; additive specimen tower |
 | `evalCategory` | Interprets atoms + Magmas/Modules/Sets/M2O refinements via pullback |
 | `ncg-export` | Lean specimen JSON |
-| `ncg-export-full` | `importModules` + `getRegistry` → `source: lean-registry` (no `SeedData`) |
+| `ncg-export-full` | Lean registry specimen JSON (**does not** read Python `SeedData`) |
 | Lean ledger gate | `ledger_check_from_lean_export.py` on exporter stdout (noncircular) |
 
 ## What is not true (withdrawn claims)

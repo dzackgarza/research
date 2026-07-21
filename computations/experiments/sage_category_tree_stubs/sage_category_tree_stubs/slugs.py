@@ -36,7 +36,7 @@ _SLUG_OVERRIDES: dict[str, str] = {
     "C∞Algebras(R)": "CInfinityAlgebras",
     "VectorSpaces(K)": "VectorSpaces",
     "VectorSpaces(K) = Modules.OverField": "VectorSpaces",
-    "DivisionRings = Magmas.Inverse": "DivisionRings",
+    "DivisionRings = Rings.Division": "DivisionRings",
     "Schemes(S)": "Schemes",
     "Varieties(K)": "Varieties",
     "Curves(K)": "Curves",

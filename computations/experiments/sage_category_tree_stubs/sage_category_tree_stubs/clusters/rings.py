@@ -23,7 +23,7 @@ NODES = [
     "NoetherianCommRings = Rings.Commutative.Noetherian",
     "FiniteRings = Rings.Finite",
     "FiniteFields = Fields.Finite",
-    "DivisionRings = Magmas.Inverse",
+    "DivisionRings = Rings.Division",
 ]
 AXIOMS = [
     ("Rings", "Domain"),
@@ -45,7 +45,7 @@ NAMED_JOINS = [
     "NoetherianCommRings = Rings.Commutative.Noetherian",
     "FiniteRings = Rings.Finite",
     "FiniteFields = Fields.Finite",
-    "DivisionRings = Magmas.Inverse",
+    "DivisionRings = Rings.Division",
 ]
 
 

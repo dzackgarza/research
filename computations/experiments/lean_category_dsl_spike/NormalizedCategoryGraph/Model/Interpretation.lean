@@ -32,6 +32,7 @@ noncomputable def evalAtom (M : AtomicModel.{uObj, uHom}) (id : CategoryId) :
   else if id == CategoryId.commutativeRings then some (CommutativeRings M)
   else if id == CategoryId.divisionRings then some (DivisionRings M)
   else if id == CategoryId.modulesR then some (Modules M)
+  else if id == CategoryId.additiveMagmas then some (AdditiveMagmas M)
   else if id == CategoryId.magmasWithTwoOperations then
     some (MagmasWithTwoOperations M)
   else if id == CategoryId.crystals then some M.exceptional.Crystals
@@ -44,6 +45,8 @@ noncomputable def magmasClassifier (M : AtomicModel.{uObj, uHom}) (id : Classifi
   else if id == ClassifierId.magmasCommutative then some M.algebra.commutative
   else if id == ClassifierId.magmasUnital then some M.algebra.unital
   else if id == ClassifierId.magmasInverse then some M.algebra.inverse
+  else if id == ClassifierId.magmasAdditive then some M.algebra.additive
+  else if id == ClassifierId.magmasMultiplicative then some M.algebra.multiplicative
   else none
 
 /-- Sets-hosted classifiers. -/
@@ -59,6 +62,7 @@ noncomputable def modulesClassifier (M : AtomicModel.{uObj, uHom}) (id : Classif
     Option (Classifier (Modules M)) :=
   if id == ClassifierId.modulesFree then some M.modules.free
   else if id == ClassifierId.modulesFinitelyGenerated then some M.modules.finitelyGenerated
+  else if id == ClassifierId.modulesFiniteRank then some M.modules.finiteRank
   else none
 
 /-- M2O-hosted classifiers. -/
@@ -83,6 +87,8 @@ noncomputable def forgetfulToMagmasAtom (M : AtomicModel.{uObj, uHom}) (id : Cat
     Option (ForgetfulToMagmas M) :=
   if id == CategoryId.magmas then
     some ⟨Magmas M, CategoryTheory.CategoryStruct.id (Magmas M)⟩
+  else if id == CategoryId.additiveMagmas then
+    some ⟨AdditiveMagmas M, additiveMagmasToMagmas M⟩
   else if id == CategoryId.semigroups then
     some ⟨Semigroups M, semigroupsToMagmas M⟩
   else if id == CategoryId.monoids then
@@ -241,7 +247,12 @@ noncomputable def evalCategory (M : AtomicModel.{uObj, uHom}) :
                             none
                       | _ => none
                   | none => none
-  | .familyApp _ _ => none
+  | .familyApp fam _args =>
+      if fam == CategoryFamilyId.modules then
+        -- Fibre at the provisional base ring until args are interpreted.
+        some (Modules M)
+      else
+        none
   | .constructor _ _ => none
 
 end NormalizedCategoryGraph

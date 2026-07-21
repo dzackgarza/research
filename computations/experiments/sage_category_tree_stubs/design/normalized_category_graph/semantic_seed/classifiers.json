@@ -57,42 +57,6 @@
       "notes": null
     },
     {
-      "id": "clf.additive_magmas.associative",
-      "name": "Associative",
-      "host_id": "cat.additive_magmas",
-      "domain_id": "clf.additive_magmas.associative.domain",
-      "leg_arrow_id": "arr.clf.additive_magmas.associative",
-      "transport": null,
-      "notes": null
-    },
-    {
-      "id": "clf.additive_magmas.unital",
-      "name": "Unital",
-      "host_id": "cat.additive_magmas",
-      "domain_id": "clf.additive_magmas.unital.domain",
-      "leg_arrow_id": "arr.clf.additive_magmas.unital",
-      "transport": null,
-      "notes": null
-    },
-    {
-      "id": "clf.additive_magmas.inverse",
-      "name": "Inverse",
-      "host_id": "cat.additive_magmas",
-      "domain_id": "clf.additive_magmas.inverse.domain",
-      "leg_arrow_id": "arr.clf.additive_magmas.inverse",
-      "transport": null,
-      "notes": null
-    },
-    {
-      "id": "clf.additive_magmas.commutative",
-      "name": "Commutative",
-      "host_id": "cat.additive_magmas",
-      "domain_id": "clf.additive_magmas.commutative.domain",
-      "leg_arrow_id": "arr.clf.additive_magmas.commutative",
-      "transport": null,
-      "notes": null
-    },
-    {
       "id": "clf.rings.domain",
       "name": "Domain",
       "host_id": "cat.rings",
@@ -320,15 +284,6 @@
       "host_id": "cat.lat_r",
       "domain_id": "clf.lat_positivedefinite",
       "leg_arrow_id": "arr.clf.lat_positivedefinite",
-      "transport": null,
-      "notes": "Imported from DOT axiom attachment"
-    },
-    {
-      "id": "clf.magmas_additive",
-      "name": "Additive",
-      "host_id": "cat.magmas",
-      "domain_id": "cat.additive_magmas",
-      "leg_arrow_id": "arr.clf.magmas_additive",
       "transport": null,
       "notes": "Imported from DOT axiom attachment"
     },
@@ -879,7 +834,7 @@
       "domain_id": "clf.magmas.additive.domain",
       "leg_arrow_id": "arr.clf.magmas.additive",
       "transport": null,
-      "notes": "Flat Magmas.Additive packaging; Magmas.Additive vertex is AdditiveMagmas"
+      "notes": "Magmas.Additive role/route; named join cat.additive_magmas"
     },
     {
       "id": "clf.abelianvariety",

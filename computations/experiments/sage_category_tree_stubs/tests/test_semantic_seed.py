@@ -46,12 +46,14 @@ def test_algebras_to_rings_is_parameter_dependency_not_forgetful() -> None:
     assert rejected and rejected[0]["preferred"] is False
 
 
-def test_division_rings_structured_pullback() -> None:
+def test_division_rings_are_rings_division() -> None:
     seed = load_semantic_seed()
     div = seed.entity_by_id()["cat.division_rings"]
-    assert div["definition"]["operation"] == "pullback"
-    assert div["definition"]["right"] == "clf.magmas.inverse"
-    assert "nonzero" in div["definition"]["notes"].lower()
+    assert div["definition"]["operation"] == "classifier_application"
+    assert div["definition"]["host"] == "cat.rings"
+    assert div["definition"]["classifier"] == "clf.division"
+    assert div["dot_vertex"] == "DivisionRings = Rings.Division"
+    assert div["definition"].get("classifier") != "clf.magmas.inverse"
 
 
 def test_finite_classifier_has_leg_and_graded_is_distinct_record() -> None:
@@ -130,10 +132,32 @@ def test_right_modules_are_opposite_ring_substitution() -> None:
     assert right["definition"]["substitute"]["R"] == "R^op"
 
 
-def test_additive_magmas_is_sibling_not_subcategory_of_magmas() -> None:
+def test_additive_magmas_is_magmas_additive_one_tower() -> None:
+    """AdditiveMagmas = Magmas.Additive ⊂ Magmas (not a Sets sibling root)."""
     seed = load_semantic_seed()
     add = seed.entity_by_id()["cat.additive_magmas"]
-    assert add["kind"] == "category_family"
+    assert add["kind"] == "derived_category"
+    assert add["definition"]["operation"] == "classifier_application"
+    assert add["definition"]["host"] == "cat.magmas"
+    assert add["definition"]["classifier"] == "clf.magmas.additive"
     preferred = [a for a in seed.arrows if a["source"] == "cat.additive_magmas" and a.get("preferred", True)]
-    assert any(a["target"] == "cat.sets" and a["kind"] == "forgetful" for a in preferred)
-    assert not any(a["target"] == "cat.magmas" for a in preferred)
+    assert any(a["target"] == "cat.magmas" for a in preferred)
+    assert not any(a["target"] == "cat.sets" and a.get("preferred", True) for a in preferred)
+
+    assert not any(c["id"].startswith("clf.additive_magmas.") for c in seed.classifiers)
+
+    # Additive tower reuses Magmas law classifiers with along=additive_operation.
+    for eid, clf in (
+        ("cat.additive_semigroups", "clf.magmas.associative"),
+        ("cat.additive_monoids", "clf.magmas.associative"),
+        ("cat.additive_groups", "clf.magmas.associative"),
+    ):
+        d = seed.entity_by_id()[eid]["definition"]
+        assert d.get("along") == "additive_operation"
+        clfs = d.get("classifiers") or [d.get("classifier")]
+        assert clf in clfs
+
+    ab = seed.entity_by_id()["cat.additive_abelian_groups"]["definition"]
+    assert ab["right"] == "clf.magmas.commutative"
+    assert ab["over"] == "cat.magmas"
+    assert ab.get("along") == "additive_operation"

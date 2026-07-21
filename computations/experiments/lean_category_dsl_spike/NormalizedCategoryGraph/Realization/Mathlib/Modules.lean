@@ -14,12 +14,13 @@ import NormalizedCategoryGraph.Realization.Mathlib.Algebra
 # Mathlib module atoms
 
 * `ModulesFamily` — `RingCat` as the category of base rings for `R ↦ Modules(R)`
-* Provisional fibre: `ModuleCat ℤ` (a specialization of the family, not the family)
+* `ModulesOf` — fibre at an arbitrary ring object
+* Provisional default fibre: `ModuleCat ℤ`
 
 * `free` — `Module.Free`
-* `finitelyGenerated` — `Module.Finite` (Mathlib's finitely generated modules)
-
-`FiniteRank` is **not** realized here: it is not `Module.Finite`.
+* `finitelyGenerated` — `Module.Finite`
+* `finiteRank` — free with a **finite** basis index. This is **not** `Module.Finite`:
+  finitely generated modules need not be free / finite-rank.
 -/
 
 namespace NormalizedCategoryGraph.Realization.Mathlib
@@ -34,6 +35,10 @@ set_option linter.checkUnivs false
 /-- Category of base rings for the family `R ↦ Modules(R)`. -/
 def ModulesFamily : ObjCat.{u + 1, u} := Cat.of RingCat.{u}
 
+/-- Fibre of `Modules(-)` at an arbitrary ring object. -/
+noncomputable def ModulesOf (R : RingCat.{u}) : ObjCat.{u + 1, u} :=
+  Cat.of (ModuleCat.{u} R)
+
 /-- Provisional fibre `Modules(ℤ)`. -/
 def Modules : ObjCat.{u + 1, u} := Cat.of (ModuleCat.{u} ℤ)
 
@@ -47,6 +52,14 @@ abbrev FinitelyGeneratedModuleCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory
     (C := ModuleCat.{u} ℤ) (fun M : ModuleCat.{u} ℤ => Module.Finite ℤ M)
 
+/-- Finite free rank: free with a finite basis index. Not `Module.Finite`. -/
+def IsFiniteRank (M : ModuleCat.{u} ℤ) : Prop :=
+  ∃ _ : Module.Free ℤ M, Finite (Module.Free.ChooseBasisIndex ℤ M)
+
+abbrev FiniteRankModuleCat : Type (u + 1) :=
+  ObjectProperty.FullSubcategory
+    (C := ModuleCat.{u} ℤ) IsFiniteRank
+
 /-- Free classifier on Modules. -/
 noncomputable def free : Classifier Modules where
   total := Cat.of FreeModuleCat.{u}
@@ -59,6 +72,11 @@ noncomputable def finitelyGenerated : Classifier Modules where
   forget := (ObjectProperty.ι
       (C := ModuleCat.{u} ℤ) (fun M : ModuleCat.{u} ℤ => Module.Finite ℤ M)).toCatHom
 
+/-- Finite free rank classifier. -/
+noncomputable def finiteRank : Classifier Modules where
+  total := Cat.of FiniteRankModuleCat.{u}
+  forget := (ObjectProperty.ι (C := ModuleCat.{u} ℤ) IsFiniteRank).toCatHom
+
 /-- Forgetful Modules → Sets. -/
 noncomputable def modulesToSets : Modules ⟶ Sets :=
   (forget (ModuleCat.{u} ℤ)).toCatHom
@@ -69,6 +87,7 @@ noncomputable def moduleAtoms : ModuleAtoms foundationAtoms algebraAtoms where
   Modules := Modules
   free := free
   finitelyGenerated := finitelyGenerated
+  finiteRank := finiteRank
   modulesToSets := modulesToSets
 
 end NormalizedCategoryGraph.Realization.Mathlib

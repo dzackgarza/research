@@ -37,7 +37,7 @@ AXIOMS = [
     ("Magmas", "Commutative"),
     ("Magmas", "Unital"),
     ("Magmas", "Inverse"),
-    ("Magmas", "Additive"),  # flat packaging via ax.Additive → Magmas
+    ("Magmas", "Additive"),  # Magmas.Additive = AdditiveMagmas (one-tower)
     ("Magmas", "Multiplicative"),
     ("Magmas", "FinitelyGenerated"),
     ("Magmas.Additive", "Associative"),

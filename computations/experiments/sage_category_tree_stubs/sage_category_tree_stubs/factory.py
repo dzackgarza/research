@@ -69,9 +69,9 @@ _HOST_ALIASES: dict[str, str] = {
 # flat axiom set (Additive / Multiplicative / Associative / …); no remapping.
 _ADDITIVE_AXIOM_MAP: dict[str, str] = {}
 
-# Vertices that look like Host.Axiom but are independent category families
-# (AdditiveMagmas is a sibling of Magmas under Sets, not Magmas.Additive ⊂ Magmas).
-_PLAIN_SIBLING_ROOTS: frozenset[str] = frozenset({"Magmas.Additive"})
+# Vertices that look like Host.Axiom but are independent category families.
+# Magmas.Additive is Magmas+Additive (one-tower), not a sibling root under Sets.
+_PLAIN_SIBLING_ROOTS: frozenset[str] = frozenset()
 
 # Domain ladder: Domains need not be commutative (parent = Rings).
 _DOMAIN_LADDER: tuple[tuple[str, str, str], ...] = (
@@ -124,7 +124,7 @@ class CategoryTreeFactory:
                 if cand in _PLAIN_SIBLING_ROOTS:
                     continue
                 nodes.add(cand)
-        # Sets.Finite, Lat.Definite, Cat.Thin, … (not Magmas.Additive — sibling root)
+        # Sets.Finite, Lat.Definite, Cat.Thin, … Magmas.Additive is Magmas+Additive
         candidates = set(self.graph.solid_nodes) | set(self.graph.axiom_labels)
         for node in candidates:
             if node in _PLAIN_SIBLING_ROOTS:

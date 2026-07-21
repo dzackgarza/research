@@ -73,12 +73,15 @@ def test_additive_commutative_is_constructible_tower() -> None:
     assert result.base_id == "cat.magmas"
     assert "clf.magmas.additive" in result.classifier_ids
     assert "clf.magmas.commutative" in result.classifier_ids
+    assert not any(cid.startswith("clf.additive_magmas.") for cid in result.classifier_ids)
 
     mapping = load_mapping()
     row = next(r for r in mapping["category_mappings"] if r.get("source_sage_name") == "AdditiveMagmas.AdditiveCommutative")
     assert row["relation"] == "constructible"
     assert row["normalized_reading"] == "Magmas.Additive.Commutative"
     assert row["construction"]["ok"] is True
+    assert "clf.magmas.commutative" in row["construction"]["classifiers"]
+    assert not any(c.startswith("clf.additive_magmas.") for c in row["construction"]["classifiers"])
 
 
 def test_finite_available_via_path_to_sets() -> None:

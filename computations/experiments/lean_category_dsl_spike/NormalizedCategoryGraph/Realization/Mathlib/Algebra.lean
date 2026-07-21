@@ -129,11 +129,23 @@ noncomputable def inverse : Classifier Magmas where
   total := Cat.of MagmaWithInv.{u}
   forget := MagmaWithInv.toMagmaCatFunctor.toCatHom
 
+/-- Magmas.Additive as a role classifier (identity on Magmas). One-tower. -/
+noncomputable def additive : Classifier Magmas where
+  total := Magmas
+  forget := 𝟙 Magmas
+
+/-- Magmas.Multiplicative as a role classifier (identity on Magmas). -/
+noncomputable def multiplicative : Classifier Magmas where
+  total := Magmas
+  forget := 𝟙 Magmas
+
 /-- Algebra atoms over the Mathlib foundations. -/
 noncomputable def algebraAtoms : AlgebraAtoms foundationAtoms where
   associative := associative
   commutative := commutative
   unital := unital
   inverse := inverse
+  additive := additive
+  multiplicative := multiplicative
 
 end NormalizedCategoryGraph.Realization.Mathlib

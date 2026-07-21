@@ -19,6 +19,11 @@ Arrow kinds (Arrow.kind):
   construction            — associated / constructed functor (not supercategory)
   parameter_dependency    — parameter lives in a category (NOT object forgetful)
 
+Optional authored arrow field:
+  role — PortId / operation route (additive_operation | multiplicative_operation |
+         underlying_set | …). Authored role wins over prose inference in the
+         constructibility checker.
+
 Classifier record fields:
   id, name, host_id, domain_id, leg_arrow_id
   transport: { along_functor_id, from_classifier_id } | null
@@ -30,12 +35,14 @@ Derived definition (pullback):
   right: <classifier_leg arrow id or classifier id>
   over: <base category id>
   strictness: strict | pseudo
+  along: <optional PortId / operation route>
   notes: …
 
 Derived definition (classifier tower / application):
   operation: classifier_tower | classifier_application
   base|host: <category id>
   classifiers|classifier: <classifier id(s)>
+  along: <optional PortId / operation route>
 
 Derived definition (parameter substitution):
   operation: parameter_substitution
