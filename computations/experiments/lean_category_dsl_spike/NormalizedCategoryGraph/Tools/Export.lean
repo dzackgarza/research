@@ -27,8 +27,8 @@ def main : IO UInt32 := do
   if nCRingsName != 0 then
     IO.eprintln "CRings must not appear as a category node"
     return 1
-  if !(project specimenCtx exprFiniteFreeModules exprSets .none).isSome then
-    IO.eprintln "project(FiniteFreeModules, Sets) failed"
+  if !(project specimenCtx exprFiniteRankModules exprSets .none).isSome then
+    IO.eprintln "project(FiniteRankModules, Sets) failed"
     return 1
   if !(project specimenCtx exprGroups exprMagmas .none).isSome then
     IO.eprintln "project(Groups, Magmas) failed"

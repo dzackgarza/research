@@ -87,6 +87,9 @@ def groups : CategoryId := ⟨"cat.groups"⟩
 def semigroups : CategoryId := ⟨"cat.semigroups"⟩
 def monoids : CategoryId := ⟨"cat.monoids"⟩
 def modulesR : CategoryId := ⟨"cat.modules_r"⟩
+def finitelyGeneratedModules : CategoryId := ⟨"cat.finitelygeneratedmodules"⟩
+def finiteRankModules : CategoryId := ⟨"cat.finiterankmodules"⟩
+def freeModules : CategoryId := ⟨"cat.freemodules"⟩
 def magmasWithTwoOperations : CategoryId := ⟨"cat.magmaswithtwooperations"⟩
 def crystals : CategoryId := ⟨"cat.crystals"⟩
 /-- DivisionRings := Rings.Division. -/
@@ -106,10 +109,10 @@ def magmasInverse : ClassifierId := ⟨"clf.magmas.inverse"⟩
 def magmasAdditive : ClassifierId := ⟨"clf.magmas.additive"⟩
 /-- Magmas.Multiplicative — dual role when both ops are in play. -/
 def magmasMultiplicative : ClassifierId := ⟨"clf.magmas.multiplicative"⟩
-def modulesFree : ClassifierId := ⟨"clf.modules_r.free"⟩
-def modulesFinitelyGenerated : ClassifierId := ⟨"clf.modules_r.finitely_generated"⟩
-/-- Finite free rank (admits a finite basis) — distinct from finitely generated. -/
-def modulesFiniteRank : ClassifierId := ⟨"clf.modules_r.finite_rank"⟩
+def modulesFree : ClassifierId := ⟨"clf.modules_free"⟩
+def modulesFinitelyGenerated : ClassifierId := ⟨"clf.modules_finitelygenerated"⟩
+/-- Finite rank — distinct from finitely generated. -/
+def modulesFiniteRank : ClassifierId := ⟨"clf.modules_finiterank"⟩
 def m2oDistributive : ClassifierId := ⟨"clf.magmaswithtwooperations.distributive"⟩
 /-- Nonzero multiplicative invertibility on Rings — not Magmas.Inverse. -/
 def ringsDivision : ClassifierId := ⟨"clf.division"⟩

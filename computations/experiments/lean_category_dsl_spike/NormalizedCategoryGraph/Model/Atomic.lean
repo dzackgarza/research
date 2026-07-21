@@ -266,12 +266,8 @@ def FreeModules (R : M.modules.RingObjects) : ObjCat := (M.modules.free R).total
 def FinitelyGeneratedModules (R : M.modules.RingObjects) : ObjCat :=
   (M.modules.finitelyGenerated R).total
 
-/-- Finite free rank modules (admits a finite basis). -/
+/-- Finite-rank modules, as supplied by the realization. -/
 def FiniteRankModules (R : M.modules.RingObjects) : ObjCat := (M.modules.finiteRank R).total
-
-/-- Finite free modules: free modules with a finite basis index. -/
-def FiniteFreeModules (R : M.modules.RingObjects) : ObjCat :=
-  FiniteRankModules M R
 
 end Normalized
 

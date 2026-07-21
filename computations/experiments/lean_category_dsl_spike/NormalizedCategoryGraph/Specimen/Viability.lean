@@ -31,8 +31,8 @@ def specimenHosts : ClassifierHostTable where
         some CategoryId.magmasWithTwoOperations
     | ⟨"clf.division"⟩ =>
         some CategoryId.rings
-    | ⟨"clf.modules_r.free"⟩ | ⟨"clf.modules_r.finitely_generated"⟩
-    | ⟨"clf.modules_r.finite_rank"⟩ =>
+    | ⟨"clf.modules_free"⟩ | ⟨"clf.modules_finitelygenerated"⟩
+    | ⟨"clf.modules_finiterank"⟩ =>
         some CategoryId.modulesR
     | _ => none
 
@@ -88,8 +88,6 @@ def exprFinitelyGeneratedModules : CategoryExpr :=
   .refine exprModules ClassifierId.modulesFinitelyGenerated none
 def exprFiniteRankModules : CategoryExpr :=
   .refine exprModules ClassifierId.modulesFiniteRank none
-def exprFiniteFreeModules : CategoryExpr :=
-  .refine exprModules ClassifierId.modulesFiniteRank none
 /-- Family application `Modules(R)` with its explicit ring parameter variable. -/
 def exprModulesFamily : CategoryExpr :=
   exprModules
@@ -114,10 +112,9 @@ def specimenNamed : NamedExpressionTable where
     | ⟨"cat.commutative_rings"⟩ => some exprCommRings
     | ⟨"cat.division_rings"⟩ => some exprDivisionRings
     | ⟨"cat.modules_r"⟩ => some exprModules
-    | ⟨"cat.free_modules_r"⟩ => some exprFreeModules
-    | ⟨"cat.finitely_generated_modules_r"⟩ => some exprFinitelyGeneratedModules
-    | ⟨"cat.finite_rank_modules_r"⟩ => some exprFiniteRankModules
-    | ⟨"cat.finite_free_modules_r"⟩ => some exprFiniteFreeModules
+    | ⟨"cat.freemodules"⟩ => some exprFreeModules
+    | ⟨"cat.finitelygeneratedmodules"⟩ => some exprFinitelyGeneratedModules
+    | ⟨"cat.finiterankmodules"⟩ => some exprFiniteRankModules
     | ⟨"cat.magmaswithtwooperations"⟩ => some exprMagmasWithTwoOperations
     | ⟨"cat.crystals"⟩ => some (.opaque CategoryId.crystals)
     | _ => none
@@ -187,7 +184,7 @@ example :
   native_decide
 
 example :
-    (project specimenCtx exprFiniteFreeModules exprSets .none).isSome = true := by
+    (project specimenCtx exprFiniteRankModules exprSets .none).isSome = true := by
   native_decide
 
 /-- Opaque two-operation host → Magmas along the multiplicative port.
@@ -270,15 +267,15 @@ def specimenSnapshot : RegistrySnapshot where
     { id := CategoryId.modulesR, canonicalName := "Modules(R)"
       declaration := `NormalizedCategoryGraph.Specimen.exprModules
       expression := exprModules, origin := .root, visibility := .present },
-    { id := ⟨"cat.finitely_generated_modules_r"⟩, canonicalName := "FinitelyGeneratedModules(R)"
+    { id := CategoryId.finitelyGeneratedModules, canonicalName := "FinitelyGeneratedModules(R)"
       declaration := `NormalizedCategoryGraph.Specimen.exprFinitelyGeneratedModules
       expression := exprFinitelyGeneratedModules, origin := .derivedNamed, visibility := .present },
-    { id := ⟨"cat.finite_rank_modules_r"⟩, canonicalName := "FiniteRankModules(R)"
+    { id := CategoryId.finiteRankModules, canonicalName := "FiniteRankModules(R)"
       declaration := `NormalizedCategoryGraph.Specimen.exprFiniteRankModules
       expression := exprFiniteRankModules, origin := .derivedNamed, visibility := .present },
-    { id := ⟨"cat.finite_free_modules_r"⟩, canonicalName := "FiniteFreeModules(R)"
-      declaration := `NormalizedCategoryGraph.Specimen.exprFiniteFreeModules
-      expression := exprFiniteFreeModules, origin := .derivedNamed, visibility := .present },
+    { id := CategoryId.freeModules, canonicalName := "FreeModules(R)"
+      declaration := `NormalizedCategoryGraph.Specimen.exprFreeModules
+      expression := exprFreeModules, origin := .derivedNamed, visibility := .present },
     { id := CategoryId.magmasWithTwoOperations, canonicalName := "MagmasWithTwoOperations"
       declaration := `NormalizedCategoryGraph.Specimen.exprMagmasWithTwoOperations
       expression := exprMagmasWithTwoOperations
