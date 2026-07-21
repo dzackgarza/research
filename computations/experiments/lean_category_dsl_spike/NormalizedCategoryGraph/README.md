@@ -23,9 +23,13 @@ Lean foundation for the normalized category graph.
 ## What is not true (withdrawn claims)
 
 - “Stages 1–10 complete”
+
 - “179/179 constructible **from Lean**” — Lean specimen is a vertical slice; full coverage is incomplete
+
 - Full Sage 179 bijection authored as Lean declarations
+
 - `FiniteRank` realized
+
 - `Modules(R)` as a fully threaded functor `Rings ⥤ Cat` at every call site
 
 ## Layers
