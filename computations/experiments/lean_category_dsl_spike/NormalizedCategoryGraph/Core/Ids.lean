@@ -112,7 +112,7 @@ def modulesFinitelyGenerated : ClassifierId := ⟨"clf.modules_r.finitely_genera
 def modulesFiniteRank : ClassifierId := ⟨"clf.modules_r.finite_rank"⟩
 def m2oDistributive : ClassifierId := ⟨"clf.magmaswithtwooperations.distributive"⟩
 /-- Nonzero multiplicative invertibility on Rings — not Magmas.Inverse. -/
-def ringsDivision : ClassifierId := ⟨"clf.rings.division"⟩
+def ringsDivision : ClassifierId := ⟨"clf.division"⟩
 end ClassifierId
 
 namespace CategoryId

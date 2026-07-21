@@ -29,7 +29,7 @@ def specimenHosts : ClassifierHostTable where
         some CategoryId.magmas
     | ⟨"clf.magmaswithtwooperations.distributive"⟩ =>
         some CategoryId.magmasWithTwoOperations
-    | ⟨"clf.rings.division"⟩ =>
+    | ⟨"clf.division"⟩ =>
         some CategoryId.rings
     | ⟨"clf.modules_r.free"⟩ | ⟨"clf.modules_r.finitely_generated"⟩
     | ⟨"clf.modules_r.finite_rank"⟩ =>
@@ -338,7 +338,7 @@ def specimenSnapshot : RegistrySnapshot where
       hostId := CategoryId.magmasWithTwoOperations, visibility := .present },
     { id := ClassifierId.ringsDivision, canonicalName := "Division"
       declaration := `NormalizedCategoryGraph.Realization.Mathlib.division
-      hostId := CategoryId.magmasWithTwoOperations, visibility := .present }
+      hostId := CategoryId.rings, visibility := .present }
   ]
   aliases := #[
     { id := AliasId.crings, spelling := "CRings"
