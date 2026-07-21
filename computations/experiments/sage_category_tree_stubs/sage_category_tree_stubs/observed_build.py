@@ -207,7 +207,7 @@ def build_observed_from_inventory(
             name = feat.get("feature_name")
             if name and name not in cat["defined_axioms"]:
                 cat["defined_axioms"].append(name)
-        elif feat.get("feature_type") == "functorial_construction":
+        elif feat.get("feature_type") in {"functorial construction", "functorial_construction"}:
             name = feat.get("feature_name")
             if name and name not in cat["defined_constructions"]:
                 cat["defined_constructions"].append(name)

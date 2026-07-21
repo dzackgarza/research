@@ -33,6 +33,7 @@ def test_observed_is_empirical_snapshot() -> None:
         assert "property" not in ax
         assert "structure" not in ax
         assert "stuff" not in ax
+    assert sum(len(cat["defined_constructions"]) for cat in obs["categories"]) > 0
 
 
 def test_composed_parents_resolve_to_ids() -> None:
