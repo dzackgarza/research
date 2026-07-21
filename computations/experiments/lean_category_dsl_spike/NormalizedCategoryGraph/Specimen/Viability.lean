@@ -85,9 +85,9 @@ def exprFiniteRankModules : CategoryExpr :=
   .refine exprModules ClassifierId.modulesFiniteRank none
 def exprFiniteFreeModules : CategoryExpr :=
   .refine exprFreeModules ClassifierId.setsFinite none
-/-- Family application `Modules(R)` (args symbolic until interpreted). -/
+/-- Family application `Modules(R)` with its bound ring parameter. -/
 def exprModulesFamily : CategoryExpr :=
-  .familyApp CategoryFamilyId.modules #[]
+  .familyApp CategoryFamilyId.modules #[.atom "R"]
 /-- Implicit unnamed target: constructible, not a named registry node. -/
 def exprRingsGradedFinite : CategoryExpr :=
   .refine
@@ -243,6 +243,14 @@ def specimenSnapshot : RegistrySnapshot where
       expression := .opaque CategoryId.crystals
       origin := .opaqueCategory, visibility := .semanticOnly }
   ]
+  categoryFamilies := #[
+    { id := CategoryFamilyId.modules
+      canonicalName := "Modules(R)"
+      declaration := "NormalizedCategoryGraph.Specimen.exprModulesFamily"
+      parameter := { name := "R", kind := .ringObject }
+      fibreDeclaration := "NormalizedCategoryGraph.Realization.Mathlib.ModulesOf"
+      transport := .restrictionOfScalarsContravariant }
+  ]
   classifiers := #[
     { id := ClassifierId.setsFinite, canonicalName := "Finite"
       declaration := "", hostId := CategoryId.sets, visibility := .present },
@@ -325,6 +333,14 @@ example :
 
 example :
     (specimenSnapshot.categories.filter (·.visibility == .semanticOnly)).size = 2 := by
+  native_decide
+
+example :
+    specimenSnapshot.categoryFamilies.size = 1 := by
+  native_decide
+
+example :
+    specimenSnapshot.categoryFamilies[0]!.parameter.kind = .ringObject := by
   native_decide
 
 end NormalizedCategoryGraph.Specimen

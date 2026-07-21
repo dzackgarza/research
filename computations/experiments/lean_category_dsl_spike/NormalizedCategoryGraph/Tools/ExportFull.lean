@@ -10,8 +10,8 @@ import Lean.Data.Json
 # Registry export (`ncg-export-full`)
 
 Emits JSON from the Lean specimen registry (the same rows
-`Specimen.Register` writes into `registryExt`). Compile-time `run_cmd`
-checks `getRegistry` is populated and matches the snapshot.
+`Specimen.Register` writes into `registryExt`). The executable reloads that
+module and serializes `getRegistry`; it does not serialize `specimenSnapshot`.
 
 Does **not** read the Python semantic seed / `Spec.SeedData`.
 -/
@@ -27,11 +27,40 @@ run_cmd
   if s.categories.size != NormalizedCategoryGraph.Specimen.specimenSnapshot.categories.size then
     throwError
       s!"getRegistry categories ({s.categories.size}) ≠ specimenSnapshot ({NormalizedCategoryGraph.Specimen.specimenSnapshot.categories.size})"
+  if s.categoryFamilies.size != NormalizedCategoryGraph.Specimen.specimenSnapshot.categoryFamilies.size then
+    throwError
+      s!"getRegistry category families ({s.categoryFamilies.size}) ≠ specimen snapshot ({NormalizedCategoryGraph.Specimen.specimenSnapshot.categoryFamilies.size})"
+  if !(s.categoryFamilies.any fun family =>
+      family.id == NormalizedCategoryGraph.CategoryFamilyId.modules) then
+    throwError "getRegistry is missing the registered Modules family"
+  let baseline := NormalizedCategoryGraph.Tools.snapshotManifestString
+    (s.snapshot "0.1.0-specimen")
+  let addedFamily : NormalizedCategoryGraph.CategoryFamilyEntry := {
+    id := ⟨"fam.registry-export-assertion"⟩
+    canonicalName := "RegistryExportAssertion(R)"
+    declaration := "NormalizedCategoryGraph.Tools.ExportFull"
+    parameter := { name := "R", kind := .ringObject }
+    fibreDeclaration := "NormalizedCategoryGraph.Realization.Mathlib.ModulesOf"
+    transport := .restrictionOfScalarsContravariant
+  }
+  let changed := NormalizedCategoryGraph.Tools.snapshotManifestString
+    ((NormalizedCategoryGraph.RegistryState.apply s (.categoryFamily addedFamily)).snapshot
+      "0.1.0-specimen")
+  if baseline == changed then
+    throwError "registry family registration did not change the exported manifest"
 
 namespace NormalizedCategoryGraph.Tools.ExportFull
 
 open NormalizedCategoryGraph
 open Tools
+
+/-- Reload the compiled registry extension; this is the exporter data source. -/
+def loadRegisteredSnapshot : IO RegistrySnapshot := do
+  Lean.initSearchPath (← Lean.findSysroot)
+  unsafe Lean.enableInitializersExecution
+  let env ← Lean.importModules #[{ module := `NormalizedCategoryGraph.Specimen.Register }] {}
+    (loadExts := true)
+  pure ((getRegistry env).snapshot "0.1.0-specimen")
 
 /-- Validate Lean-authored registry JSON. -/
 def validate (j : Json) : Except String Unit := do
@@ -53,10 +82,26 @@ def validate (j : Json) : Except String Unit := do
     let vis ← o.getObjValAs? String "visibility"
     if !vis.endsWith "semanticOnly" then
       throw s!"opaque host must be semanticOnly, got {vis}"
+  let families ← j.getObjValAs? (Array Json) "categoryFamilies"
+  if families.size != 1 then
+    throw s!"expected exactly one registered family in the specimen, got {families.size}"
+  let family := families[0]!
+  let familyId ← family.getObjValAs? String "id"
+  if familyId != "fam.modules" then
+    throw s!"expected the Modules family, got {familyId}"
+  let parameter ← family.getObjValAs? Json "parameter"
+  let parameterKind ← parameter.getObjValAs? String "kind"
+  if parameterKind != "RingCatObject" then
+    throw s!"Modules family parameter must be a RingCat object, got {parameterKind}"
+  let transport ← family.getObjValAs? String "transport"
+  if transport != "restrictionOfScalarsContravariant" then
+    throw s!"Modules family transport must be contravariant restriction of scalars, got {transport}"
   pure ()
 
 def run : IO UInt32 := do
-  match Json.parse specimenManifestJson with
+  let snapshot ← loadRegisteredSnapshot
+  let manifest := snapshotManifestString snapshot
+  match Json.parse manifest with
   | .error e =>
       IO.eprintln s!"JSON parse failed: {e}"
       return 1
@@ -66,7 +111,7 @@ def run : IO UInt32 := do
           IO.eprintln e
           return 1
       | .ok () =>
-          IO.println specimenManifestJson
+          IO.println manifest
           pure 0
 
 end NormalizedCategoryGraph.Tools.ExportFull

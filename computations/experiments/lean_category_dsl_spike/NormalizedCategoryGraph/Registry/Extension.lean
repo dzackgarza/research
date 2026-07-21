@@ -17,6 +17,7 @@ open Lean
 
 inductive RegistryEntry
   | category (e : NamedCategoryEntry)
+  | categoryFamily (e : CategoryFamilyEntry)
   | classifier (e : ClassifierEntry)
   | alias (e : AliasEntry)
   | opaque (e : OpaqueCategoryEntry)
@@ -24,6 +25,7 @@ inductive RegistryEntry
 
 structure RegistryState where
   categories : Array NamedCategoryEntry := #[]
+  categoryFamilies : Array CategoryFamilyEntry := #[]
   classifiers : Array ClassifierEntry := #[]
   aliases : Array AliasEntry := #[]
   opaqueCategories : Array OpaqueCategoryEntry := #[]
@@ -31,6 +33,7 @@ structure RegistryState where
 
 def RegistryState.apply : RegistryState → RegistryEntry → RegistryState
   | s, .category e => { s with categories := s.categories.push e }
+  | s, .categoryFamily e => { s with categoryFamilies := s.categoryFamilies.push e }
   | s, .classifier e => { s with classifiers := s.classifiers.push e }
   | s, .alias e => { s with aliases := s.aliases.push e }
   | s, .opaque e => { s with opaqueCategories := s.opaqueCategories.push e }
@@ -47,5 +50,15 @@ def getRegistry (env : Environment) : RegistryState :=
 
 def addRegistryEntry (e : RegistryEntry) : CoreM Unit := do
   modifyEnv (registryExt.addEntry · e)
+
+/-- Materialize the registered state for a Lean-authored export. -/
+def RegistryState.snapshot (state : RegistryState) (schemaVersion : String) : RegistrySnapshot where
+  schemaVersion
+  categories := state.categories
+  categoryFamilies := state.categoryFamilies
+  classifiers := state.classifiers
+  aliases := state.aliases
+  opaqueCategories := state.opaqueCategories
+  equivalences := #[]
 
 end NormalizedCategoryGraph

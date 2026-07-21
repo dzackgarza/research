@@ -35,9 +35,14 @@ set_option linter.checkUnivs false
 /-- Category of base rings for the family `R ↦ Modules(R)`. -/
 def ModulesFamily : ObjCat.{u + 1, u} := Cat.of RingCat.{u}
 
-/-- Fibre of `Modules(-)` at an arbitrary ring object. -/
+/-- Fibre of the parameterized family at an arbitrary ring object. -/
 noncomputable def ModulesOf (R : RingCat.{u}) : ObjCat.{u + 1, u} :=
   Cat.of (ModuleCat.{u} R)
+
+/-- The family value; this is not a covariant functor `RingCat ⥤ Cat`. -/
+noncomputable def modulesFamilyValue : RingCat.{u} → ObjCat.{u + 1, u} := ModulesOf
+
+example (R : RingCat.{u}) : modulesFamilyValue R = ModulesOf R := rfl
 
 /-- Provisional fibre `Modules(ℤ)`. -/
 def Modules : ObjCat.{u + 1, u} := Cat.of (ModuleCat.{u} ℤ)

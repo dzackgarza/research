@@ -21,6 +21,8 @@ run_cmd
   liftCoreM do
     for e in specimenSnapshot.categories do
       addRegistryEntry (.category e)
+    for e in specimenSnapshot.categoryFamilies do
+      addRegistryEntry (.categoryFamily e)
     for e in specimenSnapshot.classifiers do
       addRegistryEntry (.classifier e)
     for e in specimenSnapshot.aliases do

@@ -23,6 +23,38 @@ structure NamedCategoryEntry where
   visibility : Visibility
   deriving Repr, Inhabited
 
+/-- The sort of an explicitly bound category-family parameter. -/
+inductive CategoryFamilyParameterKind
+  | ringObject
+  deriving DecidableEq, Repr, Inhabited
+
+/-- How base-ring morphisms act on a family, when that action is known. -/
+inductive CategoryFamilyTransport
+  | restrictionOfScalarsContravariant
+  deriving DecidableEq, Repr, Inhabited
+
+/-- A bound parameter of a category family. -/
+structure CategoryFamilyParameter where
+  name : String
+  kind : CategoryFamilyParameterKind
+  deriving Repr, Inhabited
+
+/--
+A parameterized category family, distinct from any selected category node.
+
+`fibreDeclaration` names the Lean declaration that accepts the bound parameter
+and returns the corresponding category.  The registry records transport
+orientation separately: a family value does not assert covariance.
+-/
+structure CategoryFamilyEntry where
+  id : CategoryFamilyId
+  canonicalName : String
+  declaration : String
+  parameter : CategoryFamilyParameter
+  fibreDeclaration : String
+  transport : CategoryFamilyTransport
+  deriving Repr, Inhabited
+
 /-- Classifier registry row. -/
 structure ClassifierEntry where
   id : ClassifierId
@@ -69,6 +101,7 @@ structure PresentationEquivalenceEntry where
 structure RegistrySnapshot where
   schemaVersion : String
   categories : Array NamedCategoryEntry
+  categoryFamilies : Array CategoryFamilyEntry
   classifiers : Array ClassifierEntry
   aliases : Array AliasEntry
   opaqueCategories : Array OpaqueCategoryEntry
