@@ -30,9 +30,9 @@ Lean foundation for the normalized category graph.
 
 - Full Sage 179 bijection authored as Lean declarations
 
-- `FiniteRank` realized
+- `Modules(R)` as a fully threaded `Rings ⥤ Cat` functor at every call site (fibre witness `ModulesOf` exists; default fibre still `ℤ`)
 
-- `Modules(R)` as a fully threaded functor `Rings ⥤ Cat` at every call site
+- Full path-equation certificates in the Python constructibility engine (role `along=` + collision detection only)
 
 ## Layers
 
