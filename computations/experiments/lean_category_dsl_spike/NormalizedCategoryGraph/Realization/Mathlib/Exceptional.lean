@@ -70,11 +70,15 @@ noncomputable def distributive : Classifier MagmasWithTwoOperations where
     (ObjectProperty.ι
         (C := CategoricalPullback magmaForget magmaForget) IsDistributive).toCatHom
 
-/-- Underlying multiplicative set admits a `DivisionRing` structure.
+/-- The two operations carried by this object form a division ring.
 This is a property classifier on the two-operation host; `Normalized.DivisionRings`
 reindexes it along Rings → MagmasWithTwoOperations. It is **not** Magmas.Inverse. -/
 def IsDivisionRingUnderlyingSet (x : CategoricalPullback magmaForget magmaForget) : Prop :=
-  Nonempty (DivisionRing x.fst)
+  let mulOnFst : x.fst → x.fst → x.fst := (· * ·)
+  ∃ D : DivisionRing x.fst,
+    let _ : DivisionRing x.fst := D
+    (∀ a b : x.fst, a + b = addOnFst x a b) ∧
+      ∀ a b : x.fst, a * b = mulOnFst a b
 
 abbrev DivisionTwoOpCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory
