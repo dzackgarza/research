@@ -618,7 +618,7 @@ def check_constructibility(
 
 def constructibility_record(result: Constructibility) -> dict[str, Any]:
     return {
-        "kind": "finite_limit_constructibility",
+        "kind": "finite_limit_derivability",
         "ok": result.ok,
         "base": result.base_id,
         "classifiers": list(result.classifier_ids),

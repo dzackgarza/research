@@ -299,7 +299,7 @@ def authored_constructibility_record(
     """Certificate dict for mapping.yaml construction field."""
     if result.status == "EXACT_BASE":
         return {
-            "kind": "finite_limit_constructibility",
+            "kind": "finite_limit_derivability",
             "ok": True,
             "status": "EXACT_BASE",
             "base": result.base_id,
