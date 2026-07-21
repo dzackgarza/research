@@ -38,9 +38,9 @@ from dataclasses import dataclass
 from .dot_parse import DotGraph, Edge, parse_dot
 from .slugs import axiom_method_name, short_name
 
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Graph primitives
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 
 def _solid_parent_map(graph: DotGraph) -> dict[str, tuple[str, ...]]:
@@ -56,11 +56,7 @@ def resolve_vertex(node: str, graph: DotGraph | None = None) -> str:
     if node in graph.solid_nodes or node in graph.named_joins:
         return node
     matches = sorted(
-        (
-            n
-            for n in set(graph.solid_nodes) | set(graph.named_joins)
-            if short_name(n) == short_name(node) or short_name(n) == node
-        ),
+        (n for n in set(graph.solid_nodes) | set(graph.named_joins) if short_name(n) == short_name(node) or short_name(n) == node),
         key=str,
     )
     if len(matches) == 1:
@@ -88,9 +84,7 @@ def solid_ancestors(node: str, graph: DotGraph | None = None) -> tuple[str, ...]
     return tuple(order)
 
 
-def solid_ancestry_depth(
-    node: str, graph: DotGraph | None = None
-) -> dict[str, int]:
+def solid_ancestry_depth(node: str, graph: DotGraph | None = None) -> dict[str, int]:
     """Ancestor → shortest solid-path length from ``node`` (1 = immediate parent)."""
     graph = graph or parse_dot()
     node = resolve_vertex(node, graph)
@@ -132,9 +126,7 @@ def bedrock_vertices(graph: DotGraph | None = None) -> tuple[str, ...]:
     )
 
 
-def _forgetful_parents(
-    node: str, graph: DotGraph, parents: dict[str, tuple[str, ...]]
-) -> tuple[str, ...]:
+def _forgetful_parents(node: str, graph: DotGraph, parents: dict[str, tuple[str, ...]]) -> tuple[str, ...]:
     """Solid parents, plus the host of an axiom-refinement node (dotted attachment)."""
     out: list[str] = list(parents.get(node, ()))
     for edge in graph.declared_axiom_edges:
@@ -152,9 +144,7 @@ def _forgetful_parents(
     return tuple(dict.fromkeys(out))
 
 
-def paths_to_bedrock(
-    node: str, graph: DotGraph | None = None, *, limit: int = 256
-) -> tuple[tuple[str, ...], ...]:
+def paths_to_bedrock(node: str, graph: DotGraph | None = None, *, limit: int = 256) -> tuple[tuple[str, ...], ...]:
     """All simple forgetful paths from ``node`` down to a bedrock vertex.
 
     Follows solid child→parent edges; when a Host.Axiom refinement has no solid
@@ -188,9 +178,9 @@ def paths_to_bedrock(
     return tuple(paths)
 
 
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Axiom catalog
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 
 def _axiom_label(edge: Edge, graph: DotGraph) -> str:
@@ -206,9 +196,7 @@ def declared_axiom_hosts(
     hosts: dict[str, list[str]] = defaultdict(list)
     for edge in graph.declared_axiom_edges:
         hosts[_axiom_label(edge, graph)].append(edge.tgt)
-    return {
-        ax: tuple(sorted(dict.fromkeys(hs), key=str)) for ax, hs in hosts.items()
-    }
+    return {ax: tuple(sorted(dict.fromkeys(hs), key=str)) for ax, hs in hosts.items()}
 
 
 def all_axioms(graph: DotGraph | None = None) -> tuple[str, ...]:
@@ -216,9 +204,7 @@ def all_axioms(graph: DotGraph | None = None) -> tuple[str, ...]:
     return tuple(sorted(declared_axiom_hosts(graph)))
 
 
-def axiom_node_ids_for(
-    axiom: str, graph: DotGraph | None = None
-) -> tuple[str, ...]:
+def axiom_node_ids_for(axiom: str, graph: DotGraph | None = None) -> tuple[str, ...]:
     graph = graph or parse_dot()
     ax = axiom_method_name(axiom)
     nodes: list[str] = []
@@ -231,26 +217,18 @@ def axiom_node_ids_for(
     return tuple(sorted(dict.fromkeys(nodes), key=str))
 
 
-def named_joins_using_axiom(
-    axiom: str, graph: DotGraph | None = None
-) -> tuple[str, ...]:
+def named_joins_using_axiom(axiom: str, graph: DotGraph | None = None) -> tuple[str, ...]:
     graph = graph or parse_dot()
     ax = axiom_method_name(axiom)
     return tuple(
         sorted(
-            (
-                join
-                for join, (_host, path) in graph.named_joins.items()
-                if ax in {axiom_method_name(p) for p in path}
-            ),
+            (join for join, (_host, path) in graph.named_joins.items() if ax in {axiom_method_name(p) for p in path}),
             key=str,
         )
     )
 
 
-def first_defined_hosts(
-    axiom: str, graph: DotGraph | None = None
-) -> tuple[str, ...]:
+def first_defined_hosts(axiom: str, graph: DotGraph | None = None) -> tuple[str, ...]:
     """Declared hosts that do not sit above another declared host of the same name.
 
     If ``Finite`` is declared on both ``Sets`` and ``Schemes(S)``, and ``Sets``
@@ -269,9 +247,7 @@ def first_defined_hosts(
     return tuple(first)
 
 
-def redeclared_hosts(
-    axiom: str, graph: DotGraph | None = None
-) -> tuple[tuple[str, tuple[str, ...]], ...]:
+def redeclared_hosts(axiom: str, graph: DotGraph | None = None) -> tuple[tuple[str, tuple[str, ...]], ...]:
     """Hosts that re-declare ``axiom`` above a lower declared host of the same name.
 
     Each entry is ``(host, lower_declared_hosts_in_ancestry)``.
@@ -318,9 +294,7 @@ def axiom_siting(axiom: str, graph: DotGraph | None = None) -> AxiomSiting:
     lower_by_host: list[tuple[str, tuple[str, ...]]] = []
     for host in hosts:
         depths = solid_ancestry_depth(host, graph)
-        ordered = tuple(
-            anc for anc, _d in sorted(depths.items(), key=lambda kv: (kv[1], str(kv[0])))
-        )
+        ordered = tuple(anc for anc, _d in sorted(depths.items(), key=lambda kv: (kv[1], str(kv[0]))))
         lower_by_host.append((host, ordered))
     return AxiomSiting(
         axiom=ax,
@@ -339,16 +313,12 @@ def all_axiom_sitings(graph: DotGraph | None = None) -> dict[str, AxiomSiting]:
 
 
 def multi_hosted_axioms(graph: DotGraph | None = None) -> dict[str, tuple[str, ...]]:
-    return {
-        ax: hosts
-        for ax, hosts in declared_axiom_hosts(graph).items()
-        if len(hosts) > 1
-    }
+    return {ax: hosts for ax, hosts in declared_axiom_hosts(graph).items() if len(hosts) > 1}
 
 
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Per-category axiom views
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 
 @dataclass(frozen=True)
@@ -386,19 +356,13 @@ def axioms_attached(category: str, graph: DotGraph | None = None) -> tuple[str, 
     cat = resolve_vertex(category, graph)
     return tuple(
         sorted(
-            {
-                _axiom_label(e, graph)
-                for e in graph.declared_axiom_edges
-                if e.tgt == cat
-            },
+            {_axiom_label(e, graph) for e in graph.declared_axiom_edges if e.tgt == cat},
             key=str,
         )
     )
 
 
-def axioms_from_named_join(
-    category: str, graph: DotGraph | None = None
-) -> tuple[str, ...]:
+def axioms_from_named_join(category: str, graph: DotGraph | None = None) -> tuple[str, ...]:
     graph = graph or parse_dot()
     cat = resolve_vertex(category, graph)
     if cat not in graph.named_joins:
@@ -425,17 +389,13 @@ def axioms_inherited(category: str, graph: DotGraph | None = None) -> tuple[str,
     return tuple(sorted(inherited, key=str))
 
 
-def category_axiom_view(
-    category: str, graph: DotGraph | None = None
-) -> CategoryAxiomView:
+def category_axiom_view(category: str, graph: DotGraph | None = None) -> CategoryAxiomView:
     graph = graph or parse_dot()
     cat = resolve_vertex(category, graph)
     attached = axioms_attached(cat, graph)
     join_axs = axioms_from_named_join(cat, graph)
     inherited = axioms_inherited(cat, graph)
-    available = tuple(
-        sorted(set(attached) | set(join_axs) | set(inherited), key=str)
-    )
+    available = tuple(sorted(set(attached) | set(join_axs) | set(inherited), key=str))
 
     hosts = declared_axiom_hosts(graph)
     on_host: dict[str, set[str]] = defaultdict(set)
@@ -470,9 +430,9 @@ def axioms_on_host(host: str, graph: DotGraph | None = None) -> CategoryAxiomVie
     return category_axiom_view(host, graph)
 
 
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Hasse
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 
 def hasse_nonminimal_edges(graph: DotGraph | None = None) -> tuple[Edge, ...]:
@@ -498,9 +458,9 @@ def hasse_nonminimal_edges(graph: DotGraph | None = None) -> tuple[Edge, ...]:
     return tuple(out)
 
 
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Machine-readable dump
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 
 def audit_catalog(graph: DotGraph | None = None) -> dict[str, object]:
@@ -522,9 +482,7 @@ def audit_catalog(graph: DotGraph | None = None) -> dict[str, object]:
             ax: {
                 "first_defined_on": list(s.first_defined_on),
                 "declared_hosts": list(s.declared_hosts),
-                "redeclared_on": [
-                    {"host": h, "above": list(below)} for h, below in s.redeclared_on
-                ],
+                "redeclared_on": [{"host": h, "above": list(below)} for h, below in s.redeclared_on],
                 "named_joins": list(s.named_joins),
                 "axiom_nodes": list(s.axiom_node_ids),
             }
@@ -538,16 +496,14 @@ def audit_catalog(graph: DotGraph | None = None) -> dict[str, object]:
                 "available": list(v.available),
                 "bedrock_path_count": len(paths_to_bedrock(cat, graph)),
             }
-            for cat, v in (
-                (c, category_axiom_view(c, graph)) for c in categories
-            )
+            for cat, v in ((c, category_axiom_view(c, graph)) for c in categories)
         },
     }
 
 
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Formatting
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 
 def format_axioms_catalog(graph: DotGraph | None = None) -> str:
@@ -686,9 +642,9 @@ def format_ancestry(node: str, graph: DotGraph | None = None) -> str:
     return "\n".join(lines)
 
 
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # CLI
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 
 _COMMANDS = (
@@ -759,10 +715,7 @@ def _cli(argv: Iterable[str] | None = None) -> int:
         from .exceptions import EMBED_EXCEPTIONS
 
         for row in EMBED_EXCEPTIONS:
-            print(
-                f"{row.kind}\t{row.sage_name}\talias_of={row.alias_of}\t"
-                f"parent={row.sage_parent}\tstub={row.stub_vertex}\t{row.detail}"
-            )
+            print(f"{row.kind}\t{row.sage_name}\talias_of={row.alias_of}\tparent={row.sage_parent}\tstub={row.stub_vertex}\t{row.detail}")
         return 0
     if cmd == "naming":
         from .naming import format_naming_report, naming_report

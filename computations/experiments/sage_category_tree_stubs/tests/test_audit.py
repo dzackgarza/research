@@ -95,9 +95,7 @@ def test_cat_spine_and_monoidal_tensor_dual() -> None:
     assert "OverField" in fac.axiom_instance("Modules(R)", "OverField").axioms()
     assert fac.instance("VectorSpaces(K) = Modules.OverField").is_subcategory(mods)
     assert fac.instance("Algebras(R)").is_subcategory(fac.instance("Modules(R)"))
-    assert fac.instance("UnitalAlgebras = Algebras.Associative.Unital").is_subcategory(
-        fac.instance("Algebras(R)")
-    )
+    assert fac.instance("UnitalAlgebras = Algebras.Associative.Unital").is_subcategory(fac.instance("Algebras(R)"))
     assert fac.instance("DivisionRings = Magmas.Inverse").is_subcategory(fac.instance("Rings"))
     assert fac.instance("Manifolds.Smooth").is_subcategory(fac.instance("Manifolds"))
     alt = fac.axiom_instance("∫Bil.SkewSymmetric", "Alternating")

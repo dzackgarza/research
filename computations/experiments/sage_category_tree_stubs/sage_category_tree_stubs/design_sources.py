@@ -20,9 +20,7 @@ SAGE_OBSERVED_JSON = DESIGN_ROOT / "sage" / "observed.json"
 SAGE_MAPPING_YAML = DESIGN_ROOT / "sage" / "mapping.yaml"
 SAGE_RUNTIME_PROBE_JSON = DESIGN_ROOT / "sage" / "runtime_probe.json"
 SAGE_AUTHORED_DIR = DESIGN_ROOT / "sage" / "authored"
-SAGE_AUTHORED_MANIFEST = (
-    SAGE_AUTHORED_DIR / "sage_normalized_category_mapping_manifest.json"
-)
+SAGE_AUTHORED_MANIFEST = SAGE_AUTHORED_DIR / "sage_normalized_category_mapping_manifest.json"
 ROUTES_YAML = DESIGN_ROOT / "routes" / "routes.yaml"
 NORMALIZED_MANIFEST_DIR = DESIGN_ROOT / "normalized" / "manifest"
 
@@ -75,10 +73,6 @@ def load_correspondence() -> dict[str, Any]:
 def assert_design_sources_present() -> None:
     # runtime_probe is produced by `just manifests-probe`; optional until first probe.
     optional = {"design_root", "sage_runtime_probe", "sage_authored"}
-    missing = [
-        name
-        for name, path in design_paths().items()
-        if name not in optional and not path.exists()
-    ]
+    missing = [name for name, path in design_paths().items() if name not in optional and not path.exists()]
     if missing:
         raise FileNotFoundError(f"design sources missing: {missing}")

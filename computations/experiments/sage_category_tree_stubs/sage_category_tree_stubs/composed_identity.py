@@ -142,10 +142,7 @@ def make_composed_category_record(
             "steps": list(steps),
             "normalized_reading": normalized_reading(cls_key),
         },
-        "notes": (
-            "Empirical identity for Sage Base.Axiom(…) parent. "
-            "Character is not asserted here."
-        ),
+        "notes": ("Empirical identity for Sage Base.Axiom(…) parent. Character is not asserted here."),
     }
 
 

@@ -144,22 +144,14 @@ class CategoryTreeFactory:
         axiom_nodes = self._axiom_category_nodes()
         # 1. plain categories (non-named-join, non-axiom-refinement solid nodes)
         plain = sorted(
-            (
-                n
-                for n in self.graph.solid_nodes
-                if n not in self.graph.named_joins and n not in axiom_nodes
-            ),
+            (n for n in self.graph.solid_nodes if n not in self.graph.named_joins and n not in axiom_nodes),
             key=str,
         )
         pending = set(plain)
         while pending:
             progress = False
             for node in sorted(pending, key=str):
-                deps = [
-                    d
-                    for d in self._solid_parents_map.get(node, ())
-                    if d not in self.graph.named_joins and d not in axiom_nodes
-                ]
+                deps = [d for d in self._solid_parents_map.get(node, ()) if d not in self.graph.named_joins and d not in axiom_nodes]
                 if any(d in pending for d in deps):
                     continue
                 self._make_plain_category(node, self._solid_parents_map.get(node, ()))
@@ -218,9 +210,7 @@ class CategoryTreeFactory:
                 (),
             )
         for join_name, parent_join, axiom_name in _DOMAIN_LADDER:
-            parent_key = parent_join if parent_join in self.classes else self._resolve_host(
-                parent_join
-            )
+            parent_key = parent_join if parent_join in self.classes else self._resolve_host(parent_join)
             self._ensure_axiom_class(parent_key, axiom_name)
             parent_cls = self.classes[parent_key]
             parent_axioms = set(getattr(parent_cls, "_axiom_set", ()))
@@ -296,9 +286,7 @@ class CategoryTreeFactory:
                 axioms |= set(parent_axioms)
         if resolved == "Magmas.Additive" or resolved.startswith("Magmas.Additive."):
             axioms.add("Additive")
-        if resolved == "Magmas.Multiplicative" or resolved.startswith(
-            "Magmas.Multiplicative."
-        ):
+        if resolved == "Magmas.Multiplicative" or resolved.startswith("Magmas.Multiplicative."):
             axioms.add("Multiplicative")
         if path and path[0] == "Additive":
             axioms.add("Additive")
@@ -353,11 +341,7 @@ class CategoryTreeFactory:
             return axiom_set
 
         slug = class_slug(node)
-        base_cls: type = (
-            Category_over_base_ring
-            if is_parameterized(short_name(node)) or is_parameterized(node)
-            else Category
-        )
+        base_cls: type = Category_over_base_ring if is_parameterized(short_name(node)) or is_parameterized(node) else Category
         ns: dict[str, Any] = {
             "super_categories": super_categories,
             "axioms": axioms_method,
@@ -375,12 +359,8 @@ class CategoryTreeFactory:
         """Tag the vertex id and strip axiom-only ``super_categories`` edges."""
         import types
 
-        if vertex in self._axiom_category_nodes() and not self._solid_parents_map.get(
-            vertex
-        ):
-            object.__setattr__(
-                cat, "super_categories", types.MethodType(lambda self: [], cat)
-            )
+        if vertex in self._axiom_category_nodes() and not self._solid_parents_map.get(vertex):
+            object.__setattr__(cat, "super_categories", types.MethodType(lambda self: [], cat))
         setattr(cat, "_dot_vertex", vertex)
         return cat
 
@@ -562,12 +542,8 @@ class CategoryTreeFactory:
         canonical = node
         if node in _HOST_ALIASES:
             node = _HOST_ALIASES[node]
-        if node in self.graph.named_joins or short_name(node) in {
-            short_name(j) for j in self.graph.named_joins
-        }:
-            key = node if node in self.classes else next(
-                j for j in self.graph.named_joins if short_name(j) == short_name(node)
-            )
+        if node in self.graph.named_joins or short_name(node) in {short_name(j) for j in self.graph.named_joins}:
+            key = node if node in self.classes else next(j for j in self.graph.named_joins if short_name(j) == short_name(node))
             cls = self.classes[key]
             cat: Category
             if issubclass(cls, Category_over_base_ring):
@@ -585,18 +561,10 @@ class CategoryTreeFactory:
             raise KeyError(f"unknown category node {node!r}")
         cls = self.classes[key]
         cat_out: Category
-        if issubclass(cls, Category_over_base_ring) or issubclass(
-            cls, CategoryWithAxiom_over_base_ring
-        ):
+        if issubclass(cls, Category_over_base_ring) or issubclass(cls, CategoryWithAxiom_over_base_ring):
             cat_out = cast(
                 Category,
-                cls(
-                    self._default_base(
-                        node if is_parameterized(node) else (
-                            "∫Bil_R(W)" if key.startswith("Lat") or "Bil" in key else key
-                        )
-                    )
-                ),
+                cls(self._default_base(node if is_parameterized(node) else ("∫Bil_R(W)" if key.startswith("Lat") or "Bil" in key else key))),
             )
         else:
             cat_out = cast(Category, cls())

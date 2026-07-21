@@ -206,16 +206,8 @@ def build_sketch(seed: SemanticSeed | None = None) -> dict[str, Any]:
         L, R, B = str(left_arr["source"]), clf.total, str(over)
         left_proj = f"gen.proj.{e['id']}.left"
         right_proj = f"gen.proj.{e['id']}.right"
-        add_edge(
-            StructuralEdge(
-                left_proj, e["id"], L, None, "pullback_projection", "generated_projection"
-            )
-        )
-        add_edge(
-            StructuralEdge(
-                right_proj, e["id"], R, None, "pullback_projection", "generated_projection"
-            )
-        )
+        add_edge(StructuralEdge(left_proj, e["id"], L, None, "pullback_projection", "generated_projection"))
+        add_edge(StructuralEdge(right_proj, e["id"], R, None, "pullback_projection", "generated_projection"))
         # Ensure left_base exists as structural edge
         if str(left_fun) not in by_id and left_arr.get("kind") != "classifier_leg":
             add_edge(
@@ -302,9 +294,7 @@ def map_closure(
                 continue
             for f in left_maps:
                 for g in right_maps:
-                    if not _agree_to_base(
-                        f, pb.left_base, g, pb.right_base, by_id, arrow_index
-                    ):
+                    if not _agree_to_base(f, pb.left_base, g, pb.right_base, by_id, arrow_index):
                         continue
                     lift_id = f"lift.{pb.id}"
                     if lift_id not in by_id:
@@ -371,13 +361,7 @@ def _agree_to_base(
         return False
     if f_b.target != g_b.target:
         return False
-    if (
-        f_b.role is not None
-        and g_b.role is not None
-        and f_b.role != g_b.role
-        and "operation" in f_b.role
-        and "operation" in g_b.role
-    ):
+    if f_b.role is not None and g_b.role is not None and f_b.role != g_b.role and "operation" in f_b.role and "operation" in g_b.role:
         # Distinct operation ports whose composites land on the same node are
         # not automatically coherent (e.g. additive vs multiplicative to Magmas).
         return False
@@ -416,28 +400,13 @@ def check_requests(
             if req.along is not None:
                 if req.along == "additive_presentation":
                     # Additive role: drop multiplicative Magmas ports.
-                    host_maps = [
-                        m for m in host_maps if m.role != "multiplicative_operation"
-                    ]
+                    host_maps = [m for m in host_maps if m.role != "multiplicative_operation"]
                 elif req.along == "underlying_set":
-                    host_maps = [
-                        m
-                        for m in host_maps
-                        if m.role in (None, "underlying_set")
-                        or m.target == "cat.sets"
-                    ]
+                    host_maps = [m for m in host_maps if m.role in (None, "underlying_set") or m.target == "cat.sets"]
                 elif req.along == "additive_operation":
-                    host_maps = [
-                        m
-                        for m in host_maps
-                        if m.role in (None, "additive_operation")
-                    ]
+                    host_maps = [m for m in host_maps if m.role in (None, "additive_operation")]
                 elif req.along == "multiplicative_operation":
-                    host_maps = [
-                        m
-                        for m in host_maps
-                        if m.role in (None, "multiplicative_operation")
-                    ]
+                    host_maps = [m for m in host_maps if m.role in (None, "multiplicative_operation")]
                 else:
                     host_maps = [m for m in host_maps if m.role == req.along]
             else:
@@ -449,11 +418,7 @@ def check_requests(
                         certificate,
                         tuple(remaining),
                         tuple(sorted(maps)),
-                        (
-                            f"ambiguous structural routes to {clf.host} for "
-                            f"{req.classifier_id}; specify along= "
-                            f"(roles={sorted(map(str, roles))})"
-                        ),
+                        (f"ambiguous structural routes to {clf.host} for {req.classifier_id}; specify along= (roles={sorted(map(str, roles))})"),
                     )
             if not host_maps:
                 continue
@@ -545,15 +510,11 @@ def requests_from_composed_cls_key(
         else:
             # Already an additive tower name — use additive base entity when known
             path = ADDITIVE_BASE_TO_MAGMAS.get(sage_base, "")
-            base_id = _resolve_named_category(
-                sage_base, sketch=sketch, sage_to_entity=sage_to_entity
-            )
+            base_id = _resolve_named_category(sage_base, sketch=sketch, sage_to_entity=sage_to_entity)
             if base_id is None and path.startswith("Magmas.Additive"):
                 base_id = "cat.additive_magmas"
     else:
-        base_id = _resolve_named_category(
-            sage_base, sketch=sketch, sage_to_entity=sage_to_entity
-        )
+        base_id = _resolve_named_category(sage_base, sketch=sketch, sage_to_entity=sage_to_entity)
 
     if base_id is None:
         return None, [], expression
@@ -580,9 +541,7 @@ def requests_from_composed_cls_key(
         along = None
         if pick.host == "cat.magmas" and base_id == "cat.rings" and name == "Commutative":
             along = "multiplicative_operation"
-        reqs.append(
-            ClassifierRequest(pick.id, along=along, occurrence_id=f"{pick.id}#{i}")
-        )
+        reqs.append(ClassifierRequest(pick.id, along=along, occurrence_id=f"{pick.id}#{i}"))
     return base_id, reqs, expression
 
 
@@ -593,9 +552,7 @@ def check_constructibility(
     sage_to_entity: dict[str, str] | None = None,
 ) -> Constructibility:
     sketch = build_sketch(seed)
-    base_id, reqs, expression = requests_from_composed_cls_key(
-        cls_key, sketch=sketch, sage_to_entity=sage_to_entity
-    )
+    base_id, reqs, expression = requests_from_composed_cls_key(cls_key, sketch=sketch, sage_to_entity=sage_to_entity)
     if base_id is None or not reqs:
         return Constructibility(
             False,
@@ -623,9 +580,7 @@ def constructibility_record(result: Constructibility) -> dict[str, Any]:
         "classifiers": list(result.classifier_ids),
         "expression": result.expression,
         "detail": result.detail,
-        "certificate": [
-            {"occurrence": a, "support_host": b} for a, b in result.host_paths
-        ],
+        "certificate": [{"occurrence": a, "support_host": b} for a, b in result.host_paths],
     }
 
 
@@ -636,6 +591,4 @@ def resolve_base_entity(
     sage_to_entity: dict[str, str] | None = None,
 ) -> str | None:
     sketch = build_sketch(seed)
-    return _resolve_named_category(
-        sage_base, sketch=sketch, sage_to_entity=sage_to_entity or {}
-    )
+    return _resolve_named_category(sage_base, sketch=sketch, sage_to_entity=sage_to_entity or {})

@@ -121,7 +121,7 @@ def sage_axiom_digraph(
 
         try:
             refined = fac.axiom_instance(host, label)
-        except (AttributeError, KeyError):
+        except AttributeError, KeyError:
             continue
         if label not in refined.axioms():
             continue
@@ -207,16 +207,8 @@ def compare_solid_graphs(
     left = left or dot_solid_digraph()
     right = right or sage_solid_digraph()
     shared = set(left.vertices(sort=True)) & set(right.vertices(sort=True))
-    left_edges = {
-        (u, v)
-        for u, v, _ in left.edges(sort=True)
-        if u in shared and v in shared
-    }
-    right_edges = {
-        (u, v)
-        for u, v, _ in right.edges(sort=True)
-        if u in shared and v in shared
-    }
+    left_edges = {(u, v) for u, v, _ in left.edges(sort=True) if u in shared and v in shared}
+    right_edges = {(u, v) for u, v, _ in right.edges(sort=True) if u in shared and v in shared}
     left_sub = left.subgraph(shared)
     right_sub = right.subgraph(shared)
     return {
@@ -229,11 +221,7 @@ def compare_solid_graphs(
         f"{left_name}_is_subgraph_of_{right_name}": left_edges <= right_edges,
         f"{right_name}_is_subgraph_of_{left_name}": right_edges <= left_edges,
         "isomorphic_on_shared": left_sub.is_isomorphic(right_sub),
-        "isomorphic": (
-            left.is_isomorphic(right)
-            if set(left.vertices(sort=True)) == set(right.vertices(sort=True))
-            else left_sub.is_isomorphic(right_sub)
-        ),
+        "isomorphic": (left.is_isomorphic(right) if set(left.vertices(sort=True)) == set(right.vertices(sort=True)) else left_sub.is_isomorphic(right_sub)),
         "only_in_dot": left_edges - right_edges,
         "only_in_sage": right_edges - left_edges,
     }
@@ -251,11 +239,7 @@ def compare_axiom_graphs(
     right = right or sage_axiom_digraph()
 
     def labeled_incoming(G: DiGraph) -> set[tuple[str, object]]:
-        return {
-            (v, edge[2])
-            for v in G.vertices(sort=True)
-            for edge in G.incoming_edges(v, labels=True)
-        }
+        return {(v, edge[2]) for v in G.vertices(sort=True) for edge in G.incoming_edges(v, labels=True)}
 
     left_labeled = labeled_incoming(left)
     right_labeled = labeled_incoming(right)

@@ -75,11 +75,7 @@ def exceptions_by_kind() -> dict[ExceptionKind, tuple[SageEmbedException, ...]]:
 
 def alias_map() -> dict[str, str]:
     """Sage alias name → primary Sage semantic name."""
-    return {
-        row.sage_name: row.alias_of
-        for row in EMBED_EXCEPTIONS
-        if row.kind == "alias" and row.alias_of is not None
-    }
+    return {row.sage_name: row.alias_of for row in EMBED_EXCEPTIONS if row.kind == "alias" and row.alias_of is not None}
 
 
 def incorrect_parent_stub_edges() -> frozenset[tuple[str, str]]:

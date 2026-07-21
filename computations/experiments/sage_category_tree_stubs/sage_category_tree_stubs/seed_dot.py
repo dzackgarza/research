@@ -48,7 +48,7 @@ _ARROW_STYLE = {
 def re_needs_quote(s: str) -> bool:
     if not s:
         return True
-    if any(c in s for c in ' =()−∞∫^,."\'\\'):
+    if any(c in s for c in " =()−∞∫^,.\"'\\"):
         return True
     if not (s[0].isalpha() or s[0] == "_"):
         return True
@@ -127,11 +127,7 @@ def generate_dot_text(*, include_opaque: bool = False) -> str:
             vertex = e["dot_vertex"]
             fill = _KIND_FILL.get(kind, "#f7f7f7")
             color = _KIND_COLOR.get(kind, "#333333")
-            style = (
-                "rounded,filled,dotted"
-                if kind == "classifier_domain"
-                else "rounded,filled"
-            )
+            style = "rounded,filled,dotted" if kind == "classifier_domain" else "rounded,filled"
             attrs = [
                 f'style="{style}"',
                 f'fillcolor="{fill}"',
@@ -169,9 +165,7 @@ def generate_dot_text(*, include_opaque: bool = False) -> str:
         attr_parts = [f'kind="{a["kind"]}"', f'id="{a["id"]}"']
         if style:
             attr_parts.insert(0, style)
-        lines.append(
-            f"  {_dot_quote(src)} -> {_dot_quote(tgt)} [{', '.join(attr_parts)}];"
-        )
+        lines.append(f"  {_dot_quote(src)} -> {_dot_quote(tgt)} [{', '.join(attr_parts)}];")
 
     lines.append("}")
     lines.append("")

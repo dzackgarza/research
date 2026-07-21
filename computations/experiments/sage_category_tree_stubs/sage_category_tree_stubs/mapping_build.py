@@ -88,9 +88,7 @@ def build_mapping(
     authored: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     corr = correspondence or load_correspondence()
-    obs = observed or (
-        load_json(OBSERVED_PATH) if OBSERVED_PATH.is_file() else {"categories": []}
-    )
+    obs = observed or (load_json(OBSERVED_PATH) if OBSERVED_PATH.is_file() else {"categories": []})
     authored_manifest = authored or load_authored_manifest()
     obs_index = _observed_id_index(obs)
     obs_by_id = {c["id"]: c for c in obs.get("categories", [])}
@@ -120,14 +118,8 @@ def build_mapping(
                 )
             ] = row
 
-    corrected_names = {
-        obs_by_id[frm]["qualname"]
-        for (frm, _to), row in corrected_edges.items()
-        if frm in obs_by_id
-    } | {
-        row.get("sage_name")
-        for row in corr.get("exceptions", [])
-        if row.get("kind") == "incorrect_parent"
+    corrected_names = {obs_by_id[frm]["qualname"] for (frm, _to), row in corrected_edges.items() if frm in obs_by_id} | {
+        row.get("sage_name") for row in corr.get("exceptions", []) if row.get("kind") == "incorrect_parent"
     }
 
     seed = load_semantic_seed()
@@ -141,9 +133,7 @@ def build_mapping(
     # --- Primary: authored sagecats ledger (179 public) ---
     for req in iter_public_authored_requests(authored_manifest, sketch=sketch):
         authored_names.add(req.sage_name)
-        source_id = obs_index.get(
-            req.sage_name, f"sage.category.{_slug(req.sage_name)}"
-        )
+        source_id = obs_index.get(req.sage_name, f"sage.category.{_slug(req.sage_name)}")
         result = evaluate_authored_request(req, sketch=sketch)
         construction = authored_constructibility_record(req, result)
         apps = (req.raw.get("normalized") or {}).get("classifier_applications") or []
@@ -152,20 +142,13 @@ def build_mapping(
                 "classifier": a.get("classifier"),
                 "support_route": a.get("support_route"),
                 "along": next(
-                    (
-                        r.along
-                        for r in req.requests
-                        if r.occurrence_id
-                        and str(a.get("order")) in (r.occurrence_id.split("#")[-1:])
-                    ),
+                    (r.along for r in req.requests if r.occurrence_id and str(a.get("order")) in (r.occurrence_id.split("#")[-1:])),
                     None,
                 ),
             }
             for a in apps
         ]
-        named = seed_entity_for_reading(
-            req.target_expression, entity_by_dot=dot_idx
-        ) or sage_to_entity.get(req.sage_name)
+        named = seed_entity_for_reading(req.target_expression, entity_by_dot=dot_idx) or sage_to_entity.get(req.sage_name)
 
         kind = (req.mapping_kind or "").lower()
         if "alias" in kind:
@@ -254,9 +237,7 @@ def build_mapping(
         if sage_name not in alias_names and sage_name not in corrected_names:
             continue
         source_id = obs_index.get(sage_name, f"sage.category.{_slug(sage_name)}")
-        relation = _relation_for(
-            sage_name, aliases=alias_names, corrected=corrected_names
-        )
+        relation = _relation_for(sage_name, aliases=alias_names, corrected=corrected_names)
         category_mappings.append(
             {
                 "source": source_id,
@@ -286,12 +267,8 @@ def build_mapping(
             continue
         if cat["id"] in mapped_sources or qn in mapped_names:
             continue
-        reading = (composed_meta or {}).get("normalized_reading") or normalized_reading(
-            qn
-        )
-        constructibility = check_constructibility(
-            qn, seed=seed, sage_to_entity=sage_to_entity
-        )
+        reading = (composed_meta or {}).get("normalized_reading") or normalized_reading(qn)
+        constructibility = check_constructibility(qn, seed=seed, sage_to_entity=sage_to_entity)
         if constructibility.ok:
             category_mappings.append(
                 {
@@ -309,10 +286,7 @@ def build_mapping(
                     "provenance": {
                         "status": "constructible",
                         "source": "constructibility.check_constructibility",
-                        "note": (
-                            "Ephemeral C.A… over normalized base; not in the "
-                            "authored public ledger"
-                        ),
+                        "note": ("Ephemeral C.A… over normalized base; not in the authored public ledger"),
                     },
                 }
             )
@@ -404,16 +378,8 @@ def build_mapping(
 
     edge_mappings: list[dict[str, Any]] = []
     seen_edges: set[tuple[str, str]] = set()
-    cat_target = {
-        r["source"]: r.get("target")
-        for r in category_mappings
-        if r.get("relation") not in {"unsupported", "removed"}
-    }
-    alias_ids = {obs_index[n] for n in alias_names if n in obs_index} | {
-        r["source"]
-        for r in category_mappings
-        if r.get("relation") == "presentation_alias"
-    }
+    cat_target = {r["source"]: r.get("target") for r in category_mappings if r.get("relation") not in {"unsupported", "removed"}}
+    alias_ids = {obs_index[n] for n in alias_names if n in obs_index} | {r["source"] for r in category_mappings if r.get("relation") == "presentation_alias"}
 
     for cat in obs.get("categories", []):
         frm = cat["id"]
@@ -476,12 +442,7 @@ def build_mapping(
                     }
                 )
                 continue
-            if (
-                frm in cat_target
-                and to in cat_target
-                and cat_target[frm]
-                and cat_target[to]
-            ):
+            if frm in cat_target and to in cat_target and cat_target[frm] and cat_target[to]:
                 edge_mappings.append(
                     {
                         "source_edge": {
@@ -495,10 +456,7 @@ def build_mapping(
                             "path": [],
                             "from_target": cat_target[frm],
                             "to_target": cat_target[to],
-                            "note": (
-                                "Both endpoints reviewed; path ids pending "
-                                "functor census"
-                            ),
+                            "note": ("Both endpoints reviewed; path ids pending functor census"),
                         },
                         "reason": None,
                     }
@@ -558,15 +516,9 @@ def build_mapping(
                 "source_sage_name": name,
                 "target": target,
                 "least_normalized_host": _host_name_to_cat_id(host),
-                "sage_defining_hosts": (
-                    [ax["sage_declared_at"]] if ax.get("sage_declared_at") else []
-                ),
+                "sage_defining_hosts": ([ax["sage_declared_at"]] if ax.get("sage_declared_at") else []),
                 "transported_occurrences": [],
-                "disposition": (
-                    "rehosted"
-                    if ax.get("mapping_action")
-                    else ("exact" if target else "unsupported")
-                ),
+                "disposition": ("rehosted" if ax.get("mapping_action") else ("exact" if target else "unsupported")),
                 "note": ax.get("audit_note") or ax.get("mapping_action"),
             }
         )
@@ -588,11 +540,7 @@ def build_mapping(
         )
 
     construction_mappings: list[dict[str, Any]] = []
-    authored_cons = {
-        c.get("sage_construction"): c
-        for c in authored_manifest.get("sage_functorial_construction_crosswalk")
-        or []
-    }
+    authored_cons = {c.get("sage_construction"): c for c in authored_manifest.get("sage_functorial_construction_crosswalk") or []}
     for cons in obs.get("constructions", []):
         name = cons["name"]
         if name in authored_cons:
@@ -605,9 +553,7 @@ def build_mapping(
                     "relation": "authored_disposition",
                     "arity_map": cons.get("arity", "variadic"),
                     "parameter_map": {},
-                    "result_category_mapping": {
-                        "rule": row.get("normalized_disposition")
-                    },
+                    "result_category_mapping": {"rule": row.get("normalized_disposition")},
                     "note": row.get("audit_note"),
                 }
             )
@@ -645,9 +591,7 @@ def build_mapping(
             "sage_version_label": corr.get("version_label", "unknown"),
             "observed_ref": "design/sage/observed.json",
             "normalized_ref": "design/normalized/manifest/",
-            "authored_ref": (
-                "design/sage/authored/sage_normalized_category_mapping_manifest.json"
-            ),
+            "authored_ref": ("design/sage/authored/sage_normalized_category_mapping_manifest.json"),
             "note": (
                 "Interpretation layer. Public category rows come from the "
                 "authored sagecats ledger; constructibility certificates are "
@@ -684,10 +628,7 @@ def write_routes_stub(path: Path | None = None) -> Path:
     data = {
         "manifest": {
             "schema_version": 1,
-            "note": (
-                "Execution routing is separate from category meaning. "
-                "Populate when wiring normalized operations to Sage methods."
-            ),
+            "note": ("Execution routing is separate from category meaning. Populate when wiring normalized operations to Sage methods."),
         },
         "routes": [],
     }

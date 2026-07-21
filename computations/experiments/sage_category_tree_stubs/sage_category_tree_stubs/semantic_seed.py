@@ -48,11 +48,7 @@ class SemanticSeed:
         return {e["id"]: e for e in self.entities}
 
     def entities_with_dot_vertex(self) -> dict[str, dict[str, Any]]:
-        return {
-            e["dot_vertex"]: e
-            for e in self.entities
-            if e.get("dot_vertex")
-        }
+        return {e["dot_vertex"]: e for e in self.entities if e.get("dot_vertex")}
 
 
 def load_semantic_seed(path: Path | None = None) -> SemanticSeed:
@@ -81,9 +77,7 @@ def validate_seed(seed: SemanticSeed | None = None) -> list[SeedFinding]:
     ids = {e["id"] for e in seed.entities}
     for e in seed.entities:
         if e["kind"] not in ENTITY_KINDS:
-            findings.append(
-                SeedFinding("bad_entity_kind", e["id"], f"unknown kind {e['kind']!r}")
-            )
+            findings.append(SeedFinding("bad_entity_kind", e["id"], f"unknown kind {e['kind']!r}"))
         if e["kind"] == "derived_category":
             definition = e.get("definition") or {}
             if definition.get("operation") == "pullback":
@@ -106,9 +100,7 @@ def validate_seed(seed: SemanticSeed | None = None) -> list[SeedFinding]:
                 )
     for c in seed.classifiers:
         if c["host_id"] not in ids:
-            findings.append(
-                SeedFinding("dangling_host", c["id"], f"host {c['host_id']} missing")
-            )
+            findings.append(SeedFinding("dangling_host", c["id"], f"host {c['host_id']} missing"))
         if c.get("transport") and "property" in c:
             findings.append(
                 SeedFinding(
@@ -120,23 +112,15 @@ def validate_seed(seed: SemanticSeed | None = None) -> list[SeedFinding]:
     arrow_ids = {a["id"] for a in seed.arrows}
     for a in seed.arrows:
         if a["kind"] not in ARROW_KINDS:
-            findings.append(
-                SeedFinding("bad_arrow_kind", a["id"], f"unknown kind {a['kind']!r}")
-            )
+            findings.append(SeedFinding("bad_arrow_kind", a["id"], f"unknown kind {a['kind']!r}"))
         if a["source"] not in ids:
-            findings.append(
-                SeedFinding("dangling_arrow_source", a["id"], a["source"])
-            )
+            findings.append(SeedFinding("dangling_arrow_source", a["id"], a["source"]))
         if a["target"] not in ids:
-            findings.append(
-                SeedFinding("dangling_arrow_target", a["id"], a["target"])
-            )
+            findings.append(SeedFinding("dangling_arrow_target", a["id"], a["target"]))
     for c in seed.classifiers:
         leg = c.get("leg_arrow_id")
         if leg and leg not in arrow_ids:
-            findings.append(
-                SeedFinding("missing_classifier_leg", c["id"], f"leg {leg} absent")
-            )
+            findings.append(SeedFinding("missing_classifier_leg", c["id"], f"leg {leg} absent"))
     return findings
 
 
@@ -168,9 +152,7 @@ def seed_vs_dot_coverage(seed: SemanticSeed | None = None) -> list[SeedFinding]:
         vertex = e.get("dot_vertex")
         if not vertex:
             continue
-        if vertex not in universe and short_name(vertex) not in {
-            short_name(n) for n in universe
-        }:
+        if vertex not in universe and short_name(vertex) not in {short_name(n) for n in universe}:
             findings.append(
                 SeedFinding(
                     "dot_vertex_missing",
@@ -184,11 +166,7 @@ def seed_vs_dot_coverage(seed: SemanticSeed | None = None) -> list[SeedFinding]:
 def presentation_only_dot_vertices() -> list[str]:
     """Generated DOT solid/named/axiom vertices with no seed ``dot_vertex`` link."""
     seed = load_semantic_seed()
-    linked = {
-        e["dot_vertex"]
-        for e in seed.entities
-        if e.get("dot_vertex") and not _entity_is_opaque(e)
-    }
+    linked = {e["dot_vertex"] for e in seed.entities if e.get("dot_vertex") and not _entity_is_opaque(e)}
     linked_short = {short_name(v) for v in linked}
     graph = _semantic_presentation_graph()
     universe = set(graph.solid_nodes) | set(graph.named_joins) | set(graph.axiom_labels)
@@ -208,11 +186,7 @@ def solid_edges_missing_seed_arrows() -> list[tuple[str, str]]:
     """Solid generated-DOT edges with no preferred seed arrow between entities."""
     seed = load_semantic_seed()
     by_id = seed.entity_by_id()
-    by_dot = {
-        v: e
-        for v, e in seed.entities_with_dot_vertex().items()
-        if not _entity_is_opaque(e)
-    }
+    by_dot = {v: e for v, e in seed.entities_with_dot_vertex().items() if not _entity_is_opaque(e)}
     pairs: set[tuple[str, str]] = set()
     for a in seed.arrows:
         if not a.get("preferred", True):
@@ -269,9 +243,7 @@ def format_seed_report(
     findings: Iterable[SeedFinding] | None = None,
 ) -> str:
     seed = seed or load_semantic_seed()
-    findings = list(findings) if findings is not None else (
-        validate_seed(seed) + full_coverage_findings(seed)
-    )
+    findings = list(findings) if findings is not None else (validate_seed(seed) + full_coverage_findings(seed))
     lines = [
         "𝒢 semantic seed report (typed manifest; DOT is presentation)",
         f"  entities:     {len(seed.entities)}",
@@ -292,11 +264,7 @@ def format_seed_report(
         lines.append("Incomplete definitions (blocking mathematical claims):")
         for f in incomplete:
             lines.append(f"  {f.subject}: {f.detail}")
-    param = [
-        a
-        for a in seed.arrows
-        if a["kind"] == "parameter_dependency"
-    ]
+    param = [a for a in seed.arrows if a["kind"] == "parameter_dependency"]
     if param:
         lines.append("")
         lines.append("Parameter dependencies (not forgetfuls):")
@@ -306,10 +274,7 @@ def format_seed_report(
     edge_debt = solid_edges_missing_seed_arrows()
     if debt or edge_debt:
         lines.append("")
-        lines.append(
-            f"DOT presentation debt: {len(debt)} unseeded vertices, "
-            f"{len(edge_debt)} unseeded solid edges"
-        )
+        lines.append(f"DOT presentation debt: {len(debt)} unseeded vertices, {len(edge_debt)} unseeded solid edges")
         for vertex_name in debt[:12]:
             lines.append(f"  vertex: {vertex_name}")
         for src, tgt in edge_debt[:12]:

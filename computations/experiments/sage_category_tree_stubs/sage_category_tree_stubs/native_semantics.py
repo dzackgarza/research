@@ -37,7 +37,7 @@ def _has_directed_path(graph: DiGraph, src: str, tgt: str) -> bool:
     try:
         dist = graph.distance(src, tgt)
         return bool(dist < Infinity)
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         return False
 
 

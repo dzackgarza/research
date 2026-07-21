@@ -6,7 +6,7 @@ from sage.categories.category import Category
 
 from ._base import axiom, cat
 
-CLUSTER = 'Forms'
+CLUSTER = "Forms"
 NODES = [
     "∫Hom_R(−,W)",
     "∫Bil_R(W)",
@@ -36,7 +36,7 @@ AXIOMS = [
     ("Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate", "Indefinite"),
     ("Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate", "Hyperbolic"),
 ]
-NAMED_JOINS = ['Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate', 'DiscBil = ∫Bil.Symmetric.Nondegenerate.Finite', 'DiscQuad = ∫Quad.Nondegenerate']
+NAMED_JOINS = ["Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate", "DiscBil = ∫Bil.Symmetric.Nondegenerate.Finite", "DiscQuad = ∫Quad.Nondegenerate"]
 
 
 def categories() -> dict[str, Category]:

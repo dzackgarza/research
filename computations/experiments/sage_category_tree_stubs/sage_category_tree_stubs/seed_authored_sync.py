@@ -245,7 +245,6 @@ NEW_CLASSIFIERS: dict[str, tuple[str, str]] = {
     "clf.rtrivial": ("RTrivial", "cat.semigroups"),
     "clf.lattice": ("Lattice", "cat.posets"),
     "clf.complexanalytic": ("ComplexAnalytic", "cat.manifolds"),
-    "clf.discretevaluation": ("DiscreteValuation", "cat.fields"),
     "clf.finiteextensionof_q": ("FiniteExtensionOf", "cat.fields"),
     "clf.oremodulestructure_sigma_delta": ("OreModuleStructure", "cat.modules_r"),
     "clf.compatiblepartialorder": ("CompatiblePartialOrder", "cat.sets"),
@@ -475,10 +474,7 @@ def sync_seed_from_authored(*, manifest: dict[str, Any] | None = None) -> dict[s
             name, host = NEW_CLASSIFIERS[cid]
         else:
             # Try vocabulary
-            vocab = {
-                c["classifier"]: c
-                for c in manifest.get("normalized_classifier_vocabulary") or []
-            }
+            vocab = {c["classifier"]: c for c in manifest.get("normalized_classifier_vocabulary") or []}
             # cid like clf.enumerated → Enumerated
             guess = cid.removeprefix("clf.").replace("_", "")
             entry = None

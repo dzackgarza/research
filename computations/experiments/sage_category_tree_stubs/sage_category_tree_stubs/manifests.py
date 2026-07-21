@@ -114,9 +114,7 @@ def validate_three_manifests(
     for row in mapping.get("category_mappings", []):
         rel = row.get("relation")
         if rel not in CATEGORY_RELATIONS:
-            findings.append(
-                ManifestFinding("bad_relation", row.get("source", "?"), f"{rel!r}")
-            )
+            findings.append(ManifestFinding("bad_relation", row.get("source", "?"), f"{rel!r}"))
         source = row["source"]
         target = row.get("target")
         if source in targets_by_source:
@@ -129,9 +127,7 @@ def validate_three_manifests(
             )
         targets_by_source[source] = target
         if target and target not in seed_ids:
-            findings.append(
-                ManifestFinding("dangling_target", source, f"target {target} missing")
-            )
+            findings.append(ManifestFinding("dangling_target", source, f"target {target} missing"))
         if rel == "unsupported":
             findings.append(
                 ManifestFinding(
@@ -140,12 +136,16 @@ def validate_three_manifests(
                     "blocks full Sage parity claim",
                 )
             )
-        if rel not in {
-            "presentation_alias",
-            "removed",
-            "unsupported",
-            "constructible",
-        } and target:
+        if (
+            rel
+            not in {
+                "presentation_alias",
+                "removed",
+                "unsupported",
+                "constructible",
+            }
+            and target
+        ):
             non_alias_targets.setdefault(target, []).append(source)
 
     for target, sources in non_alias_targets.items():
@@ -235,9 +235,7 @@ def validate_three_manifests(
         src = row["source"]
         if src.startswith("sage.category.") and obs_ids and src not in obs_ids:
             sage_name = row.get("source_sage_name")
-            if sage_name and any(
-                c.get("qualname") == sage_name for c in observed["categories"]
-            ):
+            if sage_name and any(c.get("qualname") == sage_name for c in observed["categories"]):
                 findings.append(
                     ManifestFinding(
                         "source_id_mismatch",
@@ -267,14 +265,9 @@ def format_manifests_report(*, require_full_parity: bool = False) -> str:
         seed=seed,
         require_full_parity=True,
     )
-    n_imm = sum(
-        len(c.get("immediate_supercategories") or [])
-        for c in observed.get("categories", [])
-    )
+    n_imm = sum(len(c.get("immediate_supercategories") or []) for c in observed.get("categories", []))
     rels = Counter(r.get("relation") for r in mapping.get("category_mappings", []))
-    edge_disp = Counter(
-        r.get("disposition") for r in mapping.get("edge_mappings", [])
-    )
+    edge_disp = Counter(r.get("disposition") for r in mapping.get("edge_mappings", []))
     lines = [
         "Three-manifest report (observed + normalized + correspondence)",
         f"  observed categories: {len(observed.get('categories', []))}",
@@ -307,11 +300,7 @@ def format_manifests_report(*, require_full_parity: bool = False) -> str:
 
 
 def assert_manifest_files_present() -> None:
-    missing = [
-        p
-        for p in (OBSERVED_PATH, MAPPING_PATH, NORMALIZED_MANIFEST, SEMANTIC_SEED_DIR)
-        if not p.exists()
-    ]
+    missing = [p for p in (OBSERVED_PATH, MAPPING_PATH, NORMALIZED_MANIFEST, SEMANTIC_SEED_DIR) if not p.exists()]
     if missing:
         raise FileNotFoundError(f"manifest files missing: {missing}")
 

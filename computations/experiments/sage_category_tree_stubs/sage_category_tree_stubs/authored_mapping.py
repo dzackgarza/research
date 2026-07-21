@@ -90,9 +90,7 @@ def resolve_classifier_id(
             "clf.magmas.finitelygenerated",
             "clf.semigroups.finitelygenerated",
         ):
-            if cand in classifiers and (
-                prefer_host is None or classifiers[cand].host == prefer_host
-            ):
+            if cand in classifiers and (prefer_host is None or classifiers[cand].host == prefer_host):
                 return cand
         for c in classifiers.values():
             if c.name == "FinitelyGenerated" and c.host == prefer_host:
@@ -193,9 +191,7 @@ def authored_row_to_request(
     entity_ids = _entity_id_set(sketch)
     base_id: str | None = None
     if raw_base:
-        base_id = resolve_base_id(str(raw_base), entity_ids) or (
-            str(raw_base) if str(raw_base) in entity_ids else None
-        )
+        base_id = resolve_base_id(str(raw_base), entity_ids) or (str(raw_base) if str(raw_base) in entity_ids else None)
         if base_id is None and str(raw_base) in entity_ids:
             base_id = str(raw_base)
         if base_id is None:
@@ -328,10 +324,7 @@ def iter_public_authored_requests(
 ) -> list[AuthoredRequest]:
     manifest = manifest or load_authored_manifest()
     sketch = sketch or build_sketch()
-    return [
-        authored_row_to_request(row, sketch=sketch)
-        for row in manifest.get("category_mappings", [])
-    ]
+    return [authored_row_to_request(row, sketch=sketch) for row in manifest.get("category_mappings", [])]
 
 
 def evaluate_all_public(

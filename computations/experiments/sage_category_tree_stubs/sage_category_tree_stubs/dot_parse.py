@@ -107,9 +107,7 @@ def parse_dot(path: Path | None = None) -> DotGraph:
         if "->" in prefix:
             continue
         label_match = re.search(r'label="([^"]+)"', attrs)
-        axiom_labels[node_id] = (
-            label_match.group(1) if label_match else node_id.rsplit(".", 1)[-1]
-        )
+        axiom_labels[node_id] = label_match.group(1) if label_match else node_id.rsplit(".", 1)[-1]
 
     # Also collect bare axiom ids declared with dotted style in multi-line blocks:
     # after `node [style=...dotted...]` until the next `node [` reset.
@@ -124,9 +122,7 @@ def parse_dot(path: Path | None = None) -> DotGraph:
             node_id = match.group(1)
             if node_id not in axiom_labels:
                 label_m = re.search(r'label="([^"]+)"', line)
-                axiom_labels[node_id] = (
-                    label_m.group(1) if label_m else node_id.rsplit(".", 1)[-1]
-                )
+                axiom_labels[node_id] = label_m.group(1) if label_m else node_id.rsplit(".", 1)[-1]
         # label on same declaration: "id" [label="Foo"];
         for match in re.finditer(r'"([^"]+)"\s*\[\s*label="([^"]+)"\s*\]', line):
             axiom_labels[match.group(1)] = match.group(2)
@@ -149,9 +145,7 @@ def parse_dot(path: Path | None = None) -> DotGraph:
         if key in seen:
             continue
         seen.add(key)
-        edges.append(
-            Edge(src=src, tgt=tgt, dotted=dotted, style_dotted=style_dotted)
-        )
+        edges.append(Edge(src=src, tgt=tgt, dotted=dotted, style_dotted=style_dotted))
 
     # Named joins: longest dotted host prefix among known vertices
     # (Magmas.Additive.Associative → host Magmas.Additive, not Magmas).

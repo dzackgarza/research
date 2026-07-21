@@ -76,9 +76,7 @@ def dump_runtime_probe() -> dict[str, Any]:
             stack.append(sub)
             tag = sub.__dict__.get("_functor_category")
             if tag:
-                constructions.setdefault(str(tag), []).append(
-                    f"{sub.__module__}.{sub.__name__}"
-                )
+                constructions.setdefault(str(tag), []).append(f"{sub.__module__}.{sub.__name__}")
 
     return {
         "probe": {
@@ -88,16 +86,11 @@ def dump_runtime_probe() -> dict[str, Any]:
             "generated_at": now,
             "python_version": sys.version.split()[0],
             "category_sample_count": len(instances),
-            "note": (
-                "Runtime axis from category_sample(). "
-                "Parameterized categories appear via representative instances."
-            ),
+            "note": ("Runtime axis from category_sample(). Parameterized categories appear via representative instances."),
         },
         "instances": instances,
         "all_axioms": sorted(all_axioms),
-        "constructions": {
-            k: sorted(v) for k, v in sorted(constructions.items())
-        },
+        "constructions": {k: sorted(v) for k, v in sorted(constructions.items())},
     }
 
 
@@ -113,11 +106,7 @@ def main() -> int:
     path = write_runtime_probe()
     data = json.loads(path.read_text(encoding="utf-8"))
     n_edges = sum(len(i["supers"]) for i in data["instances"])
-    print(
-        f"wrote {path} "
-        f"(instances={len(data['instances'])} edges={n_edges} "
-        f"sage={data['probe']['sage_version']})"
-    )
+    print(f"wrote {path} (instances={len(data['instances'])} edges={n_edges} sage={data['probe']['sage_version']})")
     return 0
 
 

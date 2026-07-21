@@ -101,9 +101,7 @@ def build_observed_from_inventory(
     *,
     runtime_probe_path: Path | None = None,
 ) -> dict[str, Any]:
-    inv_path = inventory_path or (
-        SAGE_INVENTORY_DIR / "sagemath-10.9-category-inventory.json"
-    )
+    inv_path = inventory_path or (SAGE_INVENTORY_DIR / "sagemath-10.9-category-inventory.json")
     raw = inv_path.read_bytes()
     inventory = json.loads(raw.decode("utf-8"))
     meta = inventory["metadata"]
@@ -123,10 +121,7 @@ def build_observed_from_inventory(
             {
                 "id": cid,
                 "kind": kind,
-                "symbol": (
-                    f"sage.categories.{row['module'].replace('/', '.')}."
-                    f"{row['constructor']}"
-                ),
+                "symbol": (f"sage.categories.{row['module'].replace('/', '.')}.{row['constructor']}"),
                 "module": row["module"],
                 "qualname": row["constructor"],
                 "inventory_category_id": row["category_id"],
@@ -164,9 +159,7 @@ def build_observed_from_inventory(
         )
 
     by_qual: dict[str, dict[str, Any]] = {c["qualname"]: c for c in categories}
-    by_inv: dict[str, dict[str, Any]] = {
-        c["inventory_category_id"]: c for c in categories
-    }
+    by_inv: dict[str, dict[str, Any]] = {c["inventory_category_id"]: c for c in categories}
     by_id: dict[str, dict[str, Any]] = {c["id"]: c for c in categories}
 
     def ensure_composed(cls_key: str, *, repr_text: str | None = None) -> str:
@@ -241,10 +234,7 @@ def build_observed_from_inventory(
             "generated_categories": [],
             "implementation_symbols": [],
             "source": _parse_source(row.get("registry_source") or ""),
-            "notes": (
-                "Character (property/structure/stuff) is NOT asserted here; "
-                "compute from the normalized classifier leg."
-            ),
+            "notes": ("Character (property/structure/stuff) is NOT asserted here; compute from the normalized classifier leg."),
         }
         axioms.append(rec)
         axiom_by_name[name] = rec
@@ -259,9 +249,7 @@ def build_observed_from_inventory(
         base = by_inv.get(feat.get("category_id") or "")
         target_mod = feat.get("target_or_expansion") or ""
         result_short = target_mod.rsplit(".", 1)[-1] if target_mod else ""
-        result_id = resolve_name(result_short) or (
-            f"sage.category.{_slug(result_short)}" if result_short else None
-        )
+        result_id = resolve_name(result_short) or (f"sage.category.{_slug(result_short)}" if result_short else None)
         if base is None or result_id is None:
             continue
         ax["generated_categories"].append(
@@ -295,11 +283,7 @@ def build_observed_from_inventory(
                 "defining_categories": sorted(set(construction_defining)),
                 "generated_categories": [],
                 "source": _parse_source(row.get("implementation_source") or ""),
-                "named_result_categories": [
-                    p.strip()
-                    for p in (row.get("named_result_categories") or "").split(";")
-                    if p.strip()
-                ],
+                "named_result_categories": [p.strip() for p in (row.get("named_result_categories") or "").split(";") if p.strip()],
             }
         )
 
@@ -404,9 +388,7 @@ def build_observed_from_inventory(
         for cat in categories:
             if not cat["immediate_supercategories"] and cat["declared_supercategories"]:
                 cat["immediate_supercategories"] = [
-                    {**e, "origin": "source", "probe": "defining_relation"}
-                    for e in cat["declared_supercategories"]
-                    if e.get("target") or e.get("sage_name")
+                    {**e, "origin": "source", "probe": "defining_relation"} for e in cat["declared_supercategories"] if e.get("target") or e.get("sage_name")
                 ]
 
     sage_version = meta.get("sage_version")
@@ -425,17 +407,11 @@ def build_observed_from_inventory(
             "generated_at": now,
             "python_version": python_version or sys.version.split()[0],
             "inventory_sha256": hashlib.sha256(raw).hexdigest(),
-            "runtime_probe": str(probe_path.relative_to(DESIGN_ROOT))
-            if probe is not None
-            else None,
+            "runtime_probe": str(probe_path.relative_to(DESIGN_ROOT)) if probe is not None else None,
             "runtime_edge_count": runtime_edge_count if probe is not None else 0,
             "runtime_only_categories": len(runtime_only),
             "scope": meta.get("scope"),
-            "note": (
-                "Empirical snapshot. Runtime parents from super_categories() "
-                "when probe present; declared parents from defining_relation. "
-                "Does not correct Sage defects."
-            ),
+            "note": ("Empirical snapshot. Runtime parents from super_categories() when probe present; declared parents from defining_relation. Does not correct Sage defects."),
         },
         "categories": categories,
         "axioms": axioms,
@@ -456,9 +432,7 @@ def main() -> int:
     path = write_observed()
     data = load_json(path)
     m = data["manifest"]
-    n_imm = sum(
-        len(c.get("immediate_supercategories") or []) for c in data["categories"]
-    )
+    n_imm = sum(len(c.get("immediate_supercategories") or []) for c in data["categories"])
     print(
         f"wrote {path} "
         f"(categories={len(data['categories'])} "

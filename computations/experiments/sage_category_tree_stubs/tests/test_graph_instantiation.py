@@ -42,9 +42,7 @@ def test_solid_parent_edges_are_recoverable() -> None:
         parent = fac.instance(edge.tgt)
         if not child.is_subcategory(parent):
             failures.append((edge.src, edge.tgt, child, parent))
-    assert not failures, "\n".join(
-        f"{a} -> {b}: {c} not subcategory of {p}" for a, b, c, p in failures[:25]
-    )
+    assert not failures, "\n".join(f"{a} -> {b}: {c} not subcategory of {p}" for a, b, c, p in failures[:25])
 
 
 def test_axiom_edges_are_recoverable() -> None:
@@ -75,9 +73,7 @@ def test_named_joins_match_axiom_paths() -> None:
         # Magmas.Additive.* paths carry Additive as well as path axioms
         if (path and path[0] == "Additive") or short_name(host) == "Magmas.Additive":
             assert "Additive" in joined.axioms(), (join_name, joined.axioms())
-        if (path and path[0] == "Multiplicative") or short_name(
-            host
-        ) == "Magmas.Multiplicative":
+        if (path and path[0] == "Multiplicative") or short_name(host) == "Magmas.Multiplicative":
             assert "Multiplicative" in joined.axioms(), (join_name, joined.axioms())
 
 

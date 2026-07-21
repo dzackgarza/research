@@ -53,8 +53,6 @@ def rebuild_viewer(*, cache_bust: int | None = None) -> dict[str, Path | int]:
         count=1,
     )
     if n != 1:
-        raise RuntimeError(
-            f"{_SPIKE_HTML} missing category_parent_graph.svg?v=… fetch URL to bump"
-        )
+        raise RuntimeError(f"{_SPIKE_HTML} missing category_parent_graph.svg?v=… fetch URL to bump")
     _SPIKE_HTML.write_text(html, encoding="utf-8")
     return {"dot": _DOT, "svg": _SPIKE_SVG, "html": _SPIKE_HTML, "cache_bust": bust}

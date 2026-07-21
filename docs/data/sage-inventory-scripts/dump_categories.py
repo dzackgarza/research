@@ -10,6 +10,7 @@ Dumps, from the running Sage kernel (no hand lists):
 
 Run:  "$SAGE_BIN" -python dump_categories.py out.json
 """
+
 import json
 import sys
 
@@ -83,9 +84,14 @@ out["modules_ZZ_edges"] = sorted(edges)
 
 json.dump(out, open(sys.argv[1], "w"), indent=1)
 print(
-    "categories:", len(out["categories"]),
-    "| namespace names:", len(names),
-    "| axioms:", len(out["all_axioms"]),
-    "| construction kinds:", len(cons),
-    "| specimen edges:", len(edges),
+    "categories:",
+    len(out["categories"]),
+    "| namespace names:",
+    len(names),
+    "| axioms:",
+    len(out["all_axioms"]),
+    "| construction kinds:",
+    len(cons),
+    "| specimen edges:",
+    len(edges),
 )

@@ -7,6 +7,7 @@ instance alive after a full import, with special handling for joins
 
 Run:  "$SAGE_BIN" -python dump_instances.py instances.json
 """
+
 import gc
 import json
 import sys
@@ -27,12 +28,7 @@ for x in insts:
     if r in seen:
         continue
     seen.add(r)
-    k = (
-        "join" if isinstance(x, JoinCategory)
-        else "construction" if isinstance(x, FunctorialConstructionCategory)
-        else "axiom" if isinstance(x, CategoryWithAxiom)
-        else "plain"
-    )
+    k = "join" if isinstance(x, JoinCategory) else "construction" if isinstance(x, FunctorialConstructionCategory) else "axiom" if isinstance(x, CategoryWithAxiom) else "plain"
     kinds[k] = kinds.get(k, 0) + 1
     if k == "join":
         joins.append({"repr": r, "factors": sorted(str(s) for s in x.super_categories())})

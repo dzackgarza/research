@@ -40,17 +40,9 @@ def test_commutative_rings_is_structured_pullback() -> None:
 
 def test_algebras_to_rings_is_parameter_dependency_not_forgetful() -> None:
     seed = load_semantic_seed()
-    param = [
-        a
-        for a in seed.arrows
-        if a["id"] == "arr.param.algebras_r_base_ring"
-    ]
+    param = [a for a in seed.arrows if a["id"] == "arr.param.algebras_r_base_ring"]
     assert param and param[0]["kind"] == "parameter_dependency"
-    rejected = [
-        a
-        for a in seed.arrows
-        if a["id"] == "arr.warn.dot_algebras_to_rings_as_forgetful"
-    ]
+    rejected = [a for a in seed.arrows if a["id"] == "arr.warn.dot_algebras_to_rings_as_forgetful"]
     assert rejected and rejected[0]["preferred"] is False
 
 
@@ -68,9 +60,7 @@ def test_finite_classifier_has_leg_and_graded_is_distinct_record() -> None:
     assert by_clf["clf.sets.finite"]["leg_arrow_id"] == "arr.clf.sets.finite"
     assert by_clf["clf.sets.graded"]["host_id"] == "cat.sets"
     assert "property" not in by_clf["clf.sets.finite"]
-    assert by_clf["clf.algebras_r.graded"]["transport"]["from_classifier_id"] == (
-        "clf.sets.graded"
-    )
+    assert by_clf["clf.algebras_r.graded"]["transport"]["from_classifier_id"] == ("clf.sets.graded")
 
 
 def test_seed_dot_links_resolve() -> None:
@@ -99,11 +89,7 @@ def test_full_dot_vertex_and_solid_edge_coverage() -> None:
 
     assert presentation_only_dot_vertices() == []
     assert solid_edges_missing_seed_arrows() == []
-    assert not [
-        f
-        for f in full_coverage_findings()
-        if f.kind in {"unseeded_dot_vertex", "unseeded_solid_edge", "dot_vertex_missing"}
-    ]
+    assert not [f for f in full_coverage_findings() if f.kind in {"unseeded_dot_vertex", "unseeded_solid_edge", "dot_vertex_missing"}]
 
 
 def test_generated_dot_carries_semantic_attrs() -> None:
@@ -123,12 +109,7 @@ def test_generated_dot_carries_semantic_attrs() -> None:
 
 def test_no_named_join_import_leftovers() -> None:
     seed = load_semantic_seed()
-    leftovers = [
-        e["id"]
-        for e in seed.entities
-        if isinstance(e.get("definition"), dict)
-        and "Imported from DOT" in str(e["definition"].get("notes", ""))
-    ]
+    leftovers = [e["id"] for e in seed.entities if isinstance(e.get("definition"), dict) and "Imported from DOT" in str(e["definition"].get("notes", ""))]
     assert leftovers == []
 
 
@@ -153,10 +134,6 @@ def test_additive_magmas_is_sibling_not_subcategory_of_magmas() -> None:
     seed = load_semantic_seed()
     add = seed.entity_by_id()["cat.additive_magmas"]
     assert add["kind"] == "category_family"
-    preferred = [
-        a
-        for a in seed.arrows
-        if a["source"] == "cat.additive_magmas" and a.get("preferred", True)
-    ]
+    preferred = [a for a in seed.arrows if a["source"] == "cat.additive_magmas" and a.get("preferred", True)]
     assert any(a["target"] == "cat.sets" and a["kind"] == "forgetful" for a in preferred)
     assert not any(a["target"] == "cat.magmas" for a in preferred)

@@ -89,16 +89,10 @@ def _reviewed_axiom_map() -> dict[str, str]:
 SAGE_TO_ENTITY: dict[str, str] = _reviewed_sage_to_entity()
 
 # Sage short name → stub DOT vertex (presentation; used by embed / native).
-SAGE_TO_STUB: dict[str, str] = {
-    sage: _resolve_to_dot_vertex(entity_id)
-    for sage, entity_id in SAGE_TO_ENTITY.items()
-}
+SAGE_TO_STUB: dict[str, str] = {sage: _resolve_to_dot_vertex(entity_id) for sage, entity_id in SAGE_TO_ENTITY.items()}
 
 # Sage Additive* axiom name → stub Magmas axiom name (flat registry).
 SAGE_AXIOM_TO_STUB: dict[str, str] = _reviewed_axiom_map()
 
 # Stub DOT vertex → preferred Sage short name (for native_instance).
-STUB_TO_SAGE: dict[str, str] = {
-    _resolve_to_dot_vertex(entity_id): sage
-    for entity_id, sage in dict(_data["graph_to_sage"]).items()
-}
+STUB_TO_SAGE: dict[str, str] = {_resolve_to_dot_vertex(entity_id): sage for entity_id, sage in dict(_data["graph_to_sage"]).items()}

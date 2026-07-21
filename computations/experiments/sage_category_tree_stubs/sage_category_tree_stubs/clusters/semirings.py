@@ -6,8 +6,8 @@ from sage.categories.category import Category
 
 from ._base import axiom, cat
 
-CLUSTER = 'Semirings'
-NODES = ['Semirings']
+CLUSTER = "Semirings"
+NODES = ["Semirings"]
 AXIOMS: list[tuple[str, str]] = []
 NAMED_JOINS: list[str] = []
 

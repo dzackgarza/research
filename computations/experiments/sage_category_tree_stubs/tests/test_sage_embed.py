@@ -28,9 +28,7 @@ def test_alias_map_excludes_aliases_from_semantic_names() -> None:
 def test_ledger_has_incorrect_parent_for_modules_bimodules() -> None:
     edges = incorrect_parent_stub_edges()
     assert ("Modules(R)", "Bimodules(R)") in edges
-    assert any(
-        e.kind == "incorrect_parent" and e.sage_name == "Modules" for e in EMBED_EXCEPTIONS
-    )
+    assert any(e.kind == "incorrect_parent" and e.sage_name == "Modules" for e in EMBED_EXCEPTIONS)
 
 
 def test_graded_algebras_target_is_in_graph() -> None:
@@ -48,18 +46,14 @@ def test_embedding_report_no_magmatic_algebras_collapse_onto_graded() -> None:
     by_sage = {s: t for s, t in SAGE_TO_STUB.items() if s in semantic_sage_names()}
     assert by_sage["MagmaticAlgebras"] != by_sage["GradedAlgebras"]
     for collapse in report.collapses:
-        assert "MagmaticAlgebras" not in collapse.sage_names or "GradedAlgebras" not in (
-            collapse.sage_names
-        )
+        assert "MagmaticAlgebras" not in collapse.sage_names or "GradedAlgebras" not in (collapse.sage_names)
 
 
 def test_magmatic_and_unital_algebras_are_distinct_targets() -> None:
     assert SAGE_TO_STUB["MagmaticAlgebras"] == "Algebras(R)"
     assert SAGE_TO_STUB["Algebras"] == "UnitalAlgebras = Algebras.Associative.Unital"
     report = embedding_report()
-    assert ("MagmaticAlgebras", "Algebras(R)") not in [
-        (s, t) for s, t in report.missing_targets if s == "MagmaticAlgebras"
-    ]
+    assert ("MagmaticAlgebras", "Algebras(R)") not in [(s, t) for s, t in report.missing_targets if s == "MagmaticAlgebras"]
     assert vertex_in_graph("Algebras(R)")
     assert vertex_in_graph("UnitalAlgebras = Algebras.Associative.Unital")
 

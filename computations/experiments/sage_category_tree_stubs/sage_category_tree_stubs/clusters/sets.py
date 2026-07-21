@@ -6,7 +6,7 @@ from sage.categories.category import Category
 
 from ._base import axiom, cat
 
-CLUSTER = 'Sets'
+CLUSTER = "Sets"
 NODES = [
     "Sets",
     "Homsets",
@@ -16,8 +16,8 @@ NODES = [
     "Sets.Graded",
     "CountableInfiniteSets = Sets.Countable.Infinite",
 ]
-AXIOMS = [('Sets', 'Finite'), ('Sets', 'Infinite'), ('Sets', 'Countable'), ('Sets', 'Uncountable'), ('Sets', 'Graded')]
-NAMED_JOINS = ['CountableInfiniteSets = Sets.Countable.Infinite']
+AXIOMS = [("Sets", "Finite"), ("Sets", "Infinite"), ("Sets", "Countable"), ("Sets", "Uncountable"), ("Sets", "Graded")]
+NAMED_JOINS = ["CountableInfiniteSets = Sets.Countable.Infinite"]
 
 
 def categories() -> dict[str, Category]:

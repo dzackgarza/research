@@ -33,10 +33,7 @@ def test_finite_rings_and_fields_are_pullbacks_not_sets_finite() -> None:
     report = naming_report()
     blocking = [f for f in report.findings if f.kind == "wrong_definition_host"]
     assert not any("FiniteRings" in f.subject or "FiniteFields" in f.subject for f in blocking)
-    assert not any(
-        f.kind == "shared_classifier_collision" and f.subject == "Sets.Finite"
-        for f in report.findings
-    )
+    assert not any(f.kind == "shared_classifier_collision" and f.subject == "Sets.Finite" for f in report.findings)
 
 
 def test_algebra_classifiers_do_not_collide_with_magma_ladder() -> None:
@@ -47,9 +44,7 @@ def test_algebra_classifiers_do_not_collide_with_magma_ladder() -> None:
     assert by_name["DGAs"].classifier == "UnitalAlgebras.Differential"
     assert by_name["NonUnitalDGAs"].classifier == "Algebras.Differential"
     report = naming_report()
-    collisions = {
-        f.subject for f in report.findings if f.kind == "shared_classifier_collision"
-    }
+    collisions = {f.subject for f in report.findings if f.kind == "shared_classifier_collision"}
     assert "Magmas.Associative" not in collisions
     assert "Magmas.Associative.Unital" not in collisions
     assert "Algebras.Differential" not in collisions
@@ -64,11 +59,7 @@ def test_sage_alias_is_metadata_not_identity() -> None:
 
 def test_abelian_groups_uses_preferred_groups_commutative() -> None:
     report = naming_report()
-    expanded = [
-        f
-        for f in report.findings
-        if f.kind == "expanded_classifier" and "AbelianGroups" in f.subject
-    ]
+    expanded = [f for f in report.findings if f.kind == "expanded_classifier" and "AbelianGroups" in f.subject]
     assert not expanded
     by_name = {p.standard_name: p for p in presentations_from_graph()}
     assert by_name["AbelianGroups"].classifier == "Groups.Commutative"
@@ -78,11 +69,7 @@ def test_chosen_structure_classifiers_are_flagged_informationally() -> None:
     report = naming_report()
     kinds = {f.kind for f in report.findings}
     assert "chosen_structure_classifier" in kinds
-    graded = [
-        f
-        for f in report.findings
-        if f.kind == "chosen_structure_classifier" and "Graded" in (f.subject + str(f.observed))
-    ]
+    graded = [f for f in report.findings if f.kind == "chosen_structure_classifier" and "Graded" in (f.subject + str(f.observed))]
     assert graded
 
 

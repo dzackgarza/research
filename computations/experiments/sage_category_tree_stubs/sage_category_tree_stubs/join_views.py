@@ -21,9 +21,9 @@ def generate_correspondence_dot() -> str:
     lines = [
         "// GENERATED from observed + mapping + normalized ids",
         "digraph SageToNormalized {",
-        "  graph [rankdir=LR, labelloc=t, label=\"Sage → normalized correspondence\"];",
-        "  node [shape=box, style=\"rounded,filled\", fontname=\"Helvetica\", fontsize=9];",
-        '  edge [arrowsize=0.65];',
+        '  graph [rankdir=LR, labelloc=t, label="Sage → normalized correspondence"];',
+        '  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=9];',
+        "  edge [arrowsize=0.65];",
         "",
         "  subgraph cluster_sage {",
         '    label="observed Sage";',
@@ -41,19 +41,14 @@ def generate_correspondence_dot() -> str:
     for sid in sorted(used_sage):
         cat = obs_by_id.get(sid)
         label = (cat or {}).get("qualname") or sid
-        lines.append(
-            f'    "{sid}" [label="Sage: {label}", kind="sage_category", '
-            f'fillcolor="#ffe0b2"];'
-        )
+        lines.append(f'    "{sid}" [label="Sage: {label}", kind="sage_category", fillcolor="#ffe0b2"];')
     lines.append("  }")
     lines.append("")
     lines.append("  subgraph cluster_norm {")
     lines.append('    label="normalized";')
     lines.append('    style=filled; fillcolor="#e8f5e9";')
     for tid in sorted(used_norm):
-        lines.append(
-            f'    "{tid}" [label="{tid}", kind="normalized", fillcolor="#c8e6c9"];'
-        )
+        lines.append(f'    "{tid}" [label="{tid}", kind="normalized", fillcolor="#c8e6c9"];')
     lines.append("  }")
     lines.append("")
     for row in mapping.get("category_mappings", []):
@@ -62,10 +57,7 @@ def generate_correspondence_dot() -> str:
         if not tgt:
             continue
         rel = row.get("relation", "exact")
-        lines.append(
-            f'  "{src}" -> "{tgt}" '
-            f'[kind="normalizes_to", mapping="{rel}", style=dashed];'
-        )
+        lines.append(f'  "{src}" -> "{tgt}" [kind="normalizes_to", mapping="{rel}", style=dashed];')
     lines.append("}")
     lines.append("")
     return "\n".join(lines)
@@ -79,7 +71,7 @@ def generate_observed_parents_dot() -> str:
         "digraph ObservedSageParents {",
         '  graph [rankdir=BT, labelloc=t, label="Observed Sage immediate supercategories"];',
         '  node [shape=box, style="rounded,filled", fillcolor="#fff8e1", fontname="Helvetica", fontsize=9];',
-        '  edge [arrowsize=0.6];',
+        "  edge [arrowsize=0.6];",
     ]
     used: set[str] = set()
     edges: list[tuple[str, str]] = []
@@ -122,7 +114,7 @@ def generate_edge_dispositions_dot() -> str:
         "digraph SageEdgeDispositions {",
         '  graph [rankdir=BT, labelloc=t, label="Sage edges by disposition"];',
         '  node [shape=box, style="rounded,filled", fillcolor="#eceff1", fontname="Helvetica", fontsize=9];',
-        '  edge [arrowsize=0.6];',
+        "  edge [arrowsize=0.6];",
     ]
     used: set[str] = set()
     for row in mapping.get("edge_mappings", []):
@@ -141,9 +133,7 @@ def generate_edge_dispositions_dot() -> str:
             continue
         disp = row.get("disposition") or "unsupported"
         style = _DISP_STYLE.get(disp, _DISP_STYLE["unsupported"])
-        lines.append(
-            f'  "{frm}" -> "{to}" [disposition="{disp}", {style}];'
-        )
+        lines.append(f'  "{frm}" -> "{to}" [disposition="{disp}", {style}];')
     lines.append("}")
     lines.append("")
     return "\n".join(lines)

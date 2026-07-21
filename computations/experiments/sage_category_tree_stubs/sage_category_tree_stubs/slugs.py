@@ -33,7 +33,6 @@ _SLUG_OVERRIDES: dict[str, str] = {
     "SymmetricAlgebras(R)": "SymmetricAlgebras",
     "ExteriorAlgebras(R)": "ExteriorAlgebras",
     "TensorAlgebras(R)": "TensorAlgebras",
-    "C∞Algebras": "CInfinityAlgebras",
     "C∞Algebras(R)": "CInfinityAlgebras",
     "VectorSpaces(K)": "VectorSpaces",
     "VectorSpaces(K) = Modules.OverField": "VectorSpaces",

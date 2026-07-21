@@ -16,9 +16,7 @@ from .sage_to_stub import SAGE_AXIOM_TO_STUB, STUB_TO_SAGE
 from .slugs import axiom_method_name, is_parameterized, short_name
 
 # stub Magmas axiom → Sage Additive* name when walking the additive branch
-_STUB_TO_SAGE_ADDITIVE_AXIOM: dict[str, str] = {
-    stub: sage for sage, stub in SAGE_AXIOM_TO_STUB.items()
-}
+_STUB_TO_SAGE_ADDITIVE_AXIOM: dict[str, str] = {stub: sage for sage, stub in SAGE_AXIOM_TO_STUB.items()}
 
 if TYPE_CHECKING:
     from sage.categories.category import Category
@@ -138,22 +136,20 @@ def _instantiate(name: str, vertex: str) -> Category | None:
         if isinstance(base, tuple):
             return cls(*base)
         return cls(base)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         try:
             return cls(QQ)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             try:
                 return cls(ZZ)
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 return None
 
 
 def _walk_axiom_path(host: Category, path: tuple[str, ...], *, host_vertex: str) -> Category | None:
     """Walk a stub axiom path on a native Sage host (Additive* rename on Sage only)."""
     current = host
-    additive = host_vertex == "Magmas.Additive" or (
-        host_vertex == "Magmas" and path[:1] == ("Additive",)
-    )
+    additive = host_vertex == "Magmas.Additive" or (host_vertex == "Magmas" and path[:1] == ("Additive",))
     for axiom_name in path:
         raw = axiom_method_name(axiom_name)
         if raw == "Additive":
@@ -185,9 +181,7 @@ def native_instance(vertex: str, graph: DotGraph | None = None) -> Category | No
         return _instantiate(call, vertex)
 
     if vertex in graph.named_joins:
-        native_name = _NAMED_JOIN_NATIVE.get(vertex) or _NAMED_JOIN_NATIVE.get(
-            short_name(vertex)
-        )
+        native_name = _NAMED_JOIN_NATIVE.get(vertex) or _NAMED_JOIN_NATIVE.get(short_name(vertex))
         if native_name is not None:
             inst = _instantiate(native_name, vertex)
             if inst is not None:
@@ -237,7 +231,7 @@ def mapped_native_instances(graph: DotGraph | None = None) -> dict[str, Category
             continue
         try:
             cat = native_instance(vertex, graph)
-        except (AttributeError, TypeError, ValueError):
+        except AttributeError, TypeError, ValueError:
             cat = None
         if cat is not None:
             out[vertex] = cat
@@ -259,8 +253,4 @@ def undocumented_unmapped_vertices(graph: DotGraph | None = None) -> tuple[str, 
     """Vertices with no native map and not catalogued as research-only."""
     graph = graph or parse_dot()
     mapped = mapped_native_instances(graph)
-    return tuple(
-        v
-        for v in dot_vertices(graph)
-        if v not in mapped and v not in RESEARCH_ONLY_VERTICES
-    )
+    return tuple(v for v in dot_vertices(graph) if v not in mapped and v not in RESEARCH_ONLY_VERTICES)

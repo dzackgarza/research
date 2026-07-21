@@ -54,10 +54,7 @@ def test_additive_commutative_is_constructible_tower() -> None:
         check_requests,
     )
 
-    assert (
-        normalized_reading("AdditiveMagmas.AdditiveCommutative")
-        == "Magmas.Additive.Commutative"
-    )
+    assert normalized_reading("AdditiveMagmas.AdditiveCommutative") == "Magmas.Additive.Commutative"
     # Principled form: Magmas + {Additive, Commutative} — no named Magmas.Additive.Commutative node
     sketch = build_sketch()
     flat = check_requests(
@@ -78,11 +75,7 @@ def test_additive_commutative_is_constructible_tower() -> None:
     assert "clf.magmas.commutative" in result.classifier_ids
 
     mapping = load_mapping()
-    row = next(
-        r
-        for r in mapping["category_mappings"]
-        if r.get("source_sage_name") == "AdditiveMagmas.AdditiveCommutative"
-    )
+    row = next(r for r in mapping["category_mappings"] if r.get("source_sage_name") == "AdditiveMagmas.AdditiveCommutative")
     assert row["relation"] == "constructible"
     assert row["normalized_reading"] == "Magmas.Additive.Commutative"
     assert row["construction"]["ok"] is True
@@ -146,9 +139,7 @@ def test_mapping_targets_normalized_ids_only() -> None:
         if tgt is None:
             assert row["relation"] == "unsupported"
             continue
-        assert tgt.startswith("cat.") or tgt.startswith("clf.") or tgt.startswith(
-            "val."
-        )
+        assert tgt.startswith("cat.") or tgt.startswith("clf.") or tgt.startswith("val.")
 
 
 def test_mapping_does_not_restate_pullbacks() -> None:
@@ -223,9 +214,7 @@ def test_build_observed_deterministic_counts() -> None:
 
 def test_build_mapping_includes_finite_axiom_from_authored() -> None:
     mapping = build_mapping()
-    finite = [
-        r for r in mapping["axiom_mappings"] if r.get("source_sage_name") == "Finite"
-    ]
+    finite = [r for r in mapping["axiom_mappings"] if r.get("source_sage_name") == "Finite"]
     assert finite
     assert finite[0]["target"] == "clf.sets.finite"
     assert finite[0]["least_normalized_host"] == "cat.sets"
@@ -238,11 +227,7 @@ def test_authored_public_ledger_fully_covered_and_constructible() -> None:
     authored = load_authored_manifest()
     auth_names = {r["source"]["name"] for r in authored["category_mappings"]}
     mapping = load_mapping()
-    by_name = {
-        r["source_sage_name"]: r
-        for r in mapping["category_mappings"]
-        if r.get("source_sage_name") in auth_names
-    }
+    by_name = {r["source_sage_name"]: r for r in mapping["category_mappings"] if r.get("source_sage_name") in auth_names}
     assert set(by_name) == auth_names
     allowed_rel = {
         "exact",
@@ -273,11 +258,7 @@ def test_authored_specimens_constructible() -> None:
     assert crings["construction"]["ok"] is True
     assert "clf.magmas.commutative" in crings["construction"]["classifiers"]
     routes = crings["construction"].get("authored_routes") or []
-    assert any(
-        (r.get("support_route") or "").endswith("multiplicative")
-        or r.get("along") == "multiplicative_operation"
-        for r in routes
-    )
+    assert any((r.get("support_route") or "").endswith("multiplicative") or r.get("along") == "multiplicative_operation" for r in routes)
 
     finite_groups = by_name["FiniteGroups"]
     assert finite_groups["relation"] == "constructible"

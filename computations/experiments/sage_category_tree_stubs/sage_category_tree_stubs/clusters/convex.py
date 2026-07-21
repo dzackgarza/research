@@ -6,8 +6,8 @@ from sage.categories.category import Category
 
 from ._base import axiom, cat
 
-CLUSTER = 'Convex geometry'
-NODES = ['Cones', 'Fans', 'Polyhedra', 'LatticePolytopes', 'RootSystems']
+CLUSTER = "Convex geometry"
+NODES = ["Cones", "Fans", "Polyhedra", "LatticePolytopes", "RootSystems"]
 AXIOMS: list[tuple[str, str]] = []
 NAMED_JOINS: list[str] = []
 

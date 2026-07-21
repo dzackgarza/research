@@ -6,8 +6,8 @@ from sage.categories.category import Category
 
 from ._base import axiom, cat
 
-CLUSTER = 'Stacks'
-NODES = ['DescentData', 'Prestacks', 'Stacks', 'AlgebraicStacks', 'DeligneMumfordStacks', 'ArtinStacks', 'QuotientStacks', 'ClassifyingStacks']
+CLUSTER = "Stacks"
+NODES = ["DescentData", "Prestacks", "Stacks", "AlgebraicStacks", "DeligneMumfordStacks", "ArtinStacks", "QuotientStacks", "ClassifyingStacks"]
 AXIOMS: list[tuple[str, str]] = []
 NAMED_JOINS: list[str] = []
 

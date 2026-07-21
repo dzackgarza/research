@@ -96,8 +96,7 @@ def format_diff_report(diff: dict[str, Any]) -> str:
         f"  parent edge changes:{len(diff['immediate_supercategory_changes'])}",
         f"  axiom def changes:  {len(diff['defined_axiom_changes'])}",
         f"  axioms added:       {len(diff['axioms_added'])}",
-        f"  constructions +/-:  "
-        f"{len(diff['constructions_added'])}/{len(diff['constructions_removed'])}",
+        f"  constructions +/-:  {len(diff['constructions_added'])}/{len(diff['constructions_removed'])}",
     ]
     for key in (
         "categories_added",
@@ -116,10 +115,7 @@ def format_diff_report(diff: dict[str, Any]) -> str:
         if len(items) > 30:
             lines.append(f"  … ({len(items) - 30} more)")
     for row in (diff.get("immediate_supercategory_changes") or [])[:20]:
-        lines.append(
-            f"  parentΔ {row['qualname']}: "
-            f"+{len(row['added_edges'])} -{len(row['removed_edges'])}"
-        )
+        lines.append(f"  parentΔ {row['qualname']}: +{len(row['added_edges'])} -{len(row['removed_edges'])}")
     return "\n".join(lines)
 
 

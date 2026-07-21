@@ -21,9 +21,7 @@ def test_correspondence_routes_magmatic_and_unital_distinctly() -> None:
     assert corr.graph_vertex("MagmaticAlgebras") == "Algebras(R)"
     assert corr.graph_vertex("Algebras") == "UnitalAlgebras = Algebras.Associative.Unital"
     assert corr.graph_vertex("GradedAlgebras") == "Algebras(R).Graded"
-    assert corr.graph_vertex("CommutativeAdditiveSemigroups") == (
-        "AdditiveSemigroups = Magmas.Additive.Associative"
-    )
+    assert corr.graph_vertex("CommutativeAdditiveSemigroups") == ("AdditiveSemigroups = Magmas.Additive.Associative")
 
 
 def test_route_summary_mentions_alias() -> None:

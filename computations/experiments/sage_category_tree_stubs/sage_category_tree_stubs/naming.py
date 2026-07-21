@@ -24,9 +24,9 @@ from dataclasses import asdict, dataclass, field
 from .dot_parse import DotGraph, parse_dot
 from .slugs import short_name
 
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Layer model
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 
 @dataclass(frozen=True, slots=True)
@@ -179,11 +179,7 @@ def presentations_from_graph(graph: DotGraph | None = None) -> tuple[NamedPresen
 
 
 def identity_by_standard_name() -> dict[str, CategoryIdentity]:
-    return {
-        ident.standard_name: ident
-        for ident in CANONICAL_IDENTITIES
-        if ident.standard_name is not None
-    }
+    return {ident.standard_name: ident for ident in CANONICAL_IDENTITIES if ident.standard_name is not None}
 
 
 def identity_by_sage_alias() -> dict[str, CategoryIdentity]:
@@ -194,9 +190,9 @@ def identity_by_sage_alias() -> dict[str, CategoryIdentity]:
     return out
 
 
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Audits
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 
 @dataclass(frozen=True, slots=True)
@@ -265,8 +261,7 @@ def audit_definition_hosts(graph: DotGraph | None = None) -> list[NamingFinding]
                         f"on {required} (e.g. {required}.{pres.axioms[-1] if pres.axioms else 'A'}), "
                         f"not equated to a classifier on {pres.host}"
                     ),
-                    expected=f"{pres.standard_name} = {required}."
-                    + (".".join(pres.axioms) if pres.axioms else "A"),
+                    expected=f"{pres.standard_name} = {required}." + (".".join(pres.axioms) if pres.axioms else "A"),
                     observed=pres.classifier,
                 )
             )
@@ -323,10 +318,7 @@ def audit_canonical_presentations(graph: DotGraph | None = None) -> list[NamingF
                     NamingFinding(
                         kind="expanded_classifier",
                         subject=observed.vertex,
-                        detail=(
-                            "Definitionally ok; preferred public presentation is "
-                            f"{ident.classifier}"
-                        ),
+                        detail=(f"Definitionally ok; preferred public presentation is {ident.classifier}"),
                         expected=ident.classifier,
                         observed=observed.classifier,
                     )
@@ -348,10 +340,7 @@ def audit_forbidden_primitives(graph: DotGraph | None = None) -> list[NamingFind
                 NamingFinding(
                     kind="forbidden_primitive_species",
                     subject=node,
-                    detail=(
-                        f"{name} must be a standard name / alias of a pullback, "
-                        "not an independently declared solid species"
-                    ),
+                    detail=(f"{name} must be a standard name / alias of a pullback, not an independently declared solid species"),
                     expected=f"named join or alias → {_FORBIDDEN_EQUATION_HOSTS.get(name, 'Host.A')}",
                 )
             )
@@ -394,10 +383,7 @@ def audit_chosen_structure_labels(graph: DotGraph | None = None) -> list[NamingF
             NamingFinding(
                 kind="chosen_structure_classifier",
                 subject=node_id,
-                detail=(
-                    f"Classifier {label!r} denotes chosen structure/stuff "
-                    "(forgetful generally not full); not a Boolean property axiom"
-                ),
+                detail=(f"Classifier {label!r} denotes chosen structure/stuff (forgetful generally not full); not a Boolean property axiom"),
                 observed=label,
             )
         )
@@ -503,10 +489,7 @@ def _cli(argv: Iterable[str] | None = None) -> int:
     if cmd == "ledger":
         for ident in CANONICAL_IDENTITIES:
             aliases = ",".join(ident.sage_aliases) if ident.sage_aliases else "-"
-            print(
-                f"{ident.identity_id}\tname={ident.standard_name}\t"
-                f"clf={ident.classifier}\tsage_aliases={aliases}"
-            )
+            print(f"{ident.identity_id}\tname={ident.standard_name}\tclf={ident.classifier}\tsage_aliases={aliases}")
         return 0
     if cmd == "presentations":
         for p in presentations_from_graph():

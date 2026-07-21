@@ -37,9 +37,7 @@ from .sage_to_stub import (
 )
 
 # Label for the correspondence table; bump when maintaining parallel Sage versions.
-SAGE_CORRESPONDENCE_VERSION: str = str(
-    load_correspondence().get("version_label", "sage-dev-local")
-)
+SAGE_CORRESPONDENCE_VERSION: str = str(load_correspondence().get("version_label", "sage-dev-local"))
 
 
 @dataclass(frozen=True, slots=True)

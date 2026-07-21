@@ -6,9 +6,9 @@ from sage.categories.category import Category
 
 from ._base import axiom, cat
 
-CLUSTER = 'Graphs & posets'
-NODES = ['Graphs', 'StableGraphs', 'Posets', 'SpecializationPosets', 'IncidenceCategories']
-AXIOMS = [('Graphs', 'Directed')]
+CLUSTER = "Graphs & posets"
+NODES = ["Graphs", "StableGraphs", "Posets", "SpecializationPosets", "IncidenceCategories"]
+AXIOMS = [("Graphs", "Directed")]
 NAMED_JOINS: list[str] = []
 
 

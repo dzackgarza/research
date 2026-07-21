@@ -87,11 +87,7 @@ def semantic_sage_names() -> frozenset[str]:
 def marked_sage_image(graph: DotGraph | None = None) -> dict[str, str]:
     """Bijection candidates: semantic Sage name → stub target string."""
     aliases = alias_map()
-    return {
-        sage: target
-        for sage, target in SAGE_TO_STUB.items()
-        if sage not in aliases
-    }
+    return {sage: target for sage, target in SAGE_TO_STUB.items() if sage not in aliases}
 
 
 @dataclass(frozen=True, slots=True)
@@ -145,22 +141,12 @@ def embedding_report(graph: DotGraph | None = None) -> EmbeddingReport:
     by_target: dict[str, list[str]] = defaultdict(list)
     for sage, target in marked.items():
         by_target[target].append(sage)
-    collapses = tuple(
-        Collapse(stub_target=t, sage_names=tuple(sorted(names)))
-        for t, names in sorted(by_target.items())
-        if len(names) > 1
-    )
+    collapses = tuple(Collapse(stub_target=t, sage_names=tuple(sorted(names))) for t, names in sorted(by_target.items()) if len(names) > 1)
 
-    reverse_ok = set(SAGE_TO_STUB.values()) | {
-        SAGE_TO_STUB[a] for a in aliases if a in SAGE_TO_STUB
-    }
-    orphans = tuple(
-        sorted(k for k in STUB_TO_SAGE if k not in reverse_ok and k not in SAGE_TO_STUB.values())
-    )
+    reverse_ok = set(SAGE_TO_STUB.values()) | {SAGE_TO_STUB[a] for a in aliases if a in SAGE_TO_STUB}
+    orphans = tuple(sorted(k for k in STUB_TO_SAGE if k not in reverse_ok and k not in SAGE_TO_STUB.values()))
 
-    counts: dict[str, int] = {
-        kind: len(rows) for kind, rows in exceptions_by_kind().items()
-    }
+    counts: dict[str, int] = {kind: len(rows) for kind, rows in exceptions_by_kind().items()}
 
     return EmbeddingReport(
         semantic_sage_count=len(marked),
@@ -252,10 +238,7 @@ def format_embedding_report(report: EmbeddingReport) -> str:
             lines.append(f"  {c.stub_target} ← {', '.join(c.sage_names)}")
     if report.explained_incorrect_parents:
         lines.append("")
-        lines.append(
-            f"Ledger-explained native edges (incorrect_parent/composite): "
-            f"{len(report.explained_incorrect_parents)}"
-        )
+        lines.append(f"Ledger-explained native edges (incorrect_parent/composite): {len(report.explained_incorrect_parents)}")
     if report.unexplained_native_edges:
         lines.append("")
         lines.append("UNEXPLAINED native solid edges (no stub path, not in ledger):")
@@ -263,9 +246,7 @@ def format_embedding_report(report: EmbeddingReport) -> str:
             lines.append(f"  {u} → {v}")
     if report.stub_to_sage_orphans:
         lines.append("")
-        lines.append(
-            f"STUB_TO_SAGE orphans (informational): {len(report.stub_to_sage_orphans)}"
-        )
+        lines.append(f"STUB_TO_SAGE orphans (informational): {len(report.stub_to_sage_orphans)}")
     return "\n".join(lines)
 
 
@@ -273,9 +254,9 @@ def ledger_rows() -> tuple[SageEmbedException, ...]:
     return EMBED_EXCEPTIONS
 
 
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # CLI (also wired as ``just audit embed``)
-#══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 
 def _cli(argv: Iterable[str] | None = None) -> int:
@@ -289,11 +270,7 @@ def _cli(argv: Iterable[str] | None = None) -> int:
     cmd = args[0]
     if cmd == "ledger":
         for row in EMBED_EXCEPTIONS:
-            print(
-                f"{row.kind}\t{row.sage_name}\t"
-                f"alias_of={row.alias_of}\tparent={row.sage_parent}\t"
-                f"stub={row.stub_vertex}\t{row.detail}"
-            )
+            print(f"{row.kind}\t{row.sage_name}\talias_of={row.alias_of}\tparent={row.sage_parent}\tstub={row.stub_vertex}\t{row.detail}")
         return 0
     if cmd == "report":
         print(format_embedding_report(full_embedding_report()))
