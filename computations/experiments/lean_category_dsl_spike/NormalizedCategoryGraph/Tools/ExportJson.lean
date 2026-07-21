@@ -67,14 +67,14 @@ private def visibilityJson : Visibility → Json
 private def parameterKindJson : CategoryFamilyParameterKind → Json
   | .ringObject => "RingCatObject"
 
-private def transportJson : CategoryFamilyTransport → Json
+private def varianceJson : CategoryFamilyVariance → Json
   | .restrictionOfScalarsContravariant => "restrictionOfScalarsContravariant"
 
 private def categoryJson (e : NamedCategoryEntry) : Json :=
   object [
     ("id", e.id.raw),
     ("canonicalName", e.canonicalName),
-    ("declaration", e.declaration),
+    ("declaration", e.declaration.toString),
     ("origin", originJson e.origin),
     ("visibility", visibilityJson e.visibility),
     ("expression", categoryExprJson e.expression),
@@ -84,13 +84,13 @@ private def categoryFamilyJson (e : CategoryFamilyEntry) : Json :=
   object [
     ("id", e.id.raw),
     ("canonicalName", e.canonicalName),
-    ("declaration", e.declaration),
+    ("declaration", e.declaration.toString),
     ("parameter", object [
       ("name", e.parameter.name),
       ("kind", parameterKindJson e.parameter.kind),
     ]),
-    ("fibreDeclaration", e.fibreDeclaration),
-    ("transport", transportJson e.transport),
+    ("fibreDeclaration", e.fibreDeclaration.toString),
+    ("variance", varianceJson e.variance),
   ]
 
 private def aliasJson (e : AliasEntry) : Json :=
@@ -98,6 +98,7 @@ private def aliasJson (e : AliasEntry) : Json :=
     ("id", e.id.raw),
     ("spelling", e.spelling),
     ("aliasOf", e.aliasOf.raw),
+    ("declaration", e.declaration.toString),
   ]
 
 private def classifierJson (e : ClassifierEntry) : Json :=
@@ -105,11 +106,14 @@ private def classifierJson (e : ClassifierEntry) : Json :=
     ("id", e.id.raw),
     ("canonicalName", e.canonicalName),
     ("hostId", e.hostId.raw),
+    ("declaration", e.declaration.toString),
+    ("visibility", visibilityJson e.visibility),
   ]
 
 private def opaqueJson (e : OpaqueCategoryEntry) : Json :=
   object [
     ("id", e.id.raw),
+    ("declaration", e.declaration.toString),
     ("visibility", visibilityJson e.visibility),
     ("reason", e.reason),
     ("ports", .arr <| e.ports.map fun p => object [
@@ -117,7 +121,7 @@ private def opaqueJson (e : OpaqueCategoryEntry) : Json :=
       ("source", p.source.raw),
       ("target", p.target.raw),
       ("role", p.role.raw),
-      ("declaration", p.declaration),
+      ("declaration", p.declaration.toString),
       ("provenance", p.provenance),
     ]),
   ]

@@ -7,8 +7,9 @@ import NormalizedCategoryGraph.Core.Expr
 /-!
 # Registry entries
 
-Declaration names are stored as strings (stable export identity). Lean `Name`
-values are recovered at registration time by the command elaborator.
+Declaration names are stored as Lean `Name` values.  JSON serialization is a
+presentation concern; registration and environment lookup retain the checked
+identity.
 -/
 
 namespace NormalizedCategoryGraph
@@ -17,7 +18,7 @@ namespace NormalizedCategoryGraph
 structure NamedCategoryEntry where
   id : CategoryId
   canonicalName : String
-  declaration : String
+  declaration : Lean.Name
   expression : CategoryExpr
   origin : CategoryOrigin
   visibility : Visibility
@@ -28,8 +29,8 @@ inductive CategoryFamilyParameterKind
   | ringObject
   deriving DecidableEq, Repr, Inhabited
 
-/-- How base-ring morphisms act on a family, when that action is known. -/
-inductive CategoryFamilyTransport
+/-- Declared variance of a category family.  This does not assert a registered action on morphisms. -/
+inductive CategoryFamilyVariance
   | restrictionOfScalarsContravariant
   deriving DecidableEq, Repr, Inhabited
 
@@ -49,17 +50,17 @@ orientation separately: a family value does not assert covariance.
 structure CategoryFamilyEntry where
   id : CategoryFamilyId
   canonicalName : String
-  declaration : String
+  declaration : Lean.Name
   parameter : CategoryFamilyParameter
-  fibreDeclaration : String
-  transport : CategoryFamilyTransport
+  fibreDeclaration : Lean.Name
+  variance : CategoryFamilyVariance
   deriving Repr, Inhabited
 
 /-- Classifier registry row. -/
 structure ClassifierEntry where
   id : ClassifierId
   canonicalName : String
-  declaration : String
+  declaration : Lean.Name
   hostId : CategoryId
   visibility : Visibility
   deriving Repr, Inhabited
@@ -69,7 +70,7 @@ structure AliasEntry where
   id : AliasId
   spelling : String
   aliasOf : CategoryId
-  declaration : String
+  declaration : Lean.Name
   deriving Repr, Inhabited
 
 /-- Opaque category with typed structural ports. -/
@@ -78,13 +79,13 @@ structure StructuralPortEntry where
   source : CategoryId
   target : CategoryId
   role : PortId
-  declaration : String
+  declaration : Lean.Name
   provenance : String
   deriving Repr, Inhabited
 
 structure OpaqueCategoryEntry where
   id : CategoryId
-  declaration : String
+  declaration : Lean.Name
   ports : Array StructuralPortEntry
   reason : String
   visibility : Visibility
@@ -94,7 +95,7 @@ structure OpaqueCategoryEntry where
 structure PresentationEquivalenceEntry where
   source : CategoryId
   target : CategoryId
-  declaration : String
+  declaration : Lean.Name
   deriving Repr, Inhabited
 
 /-- Aggregate registry snapshot for export (specimen / compiled). -/
