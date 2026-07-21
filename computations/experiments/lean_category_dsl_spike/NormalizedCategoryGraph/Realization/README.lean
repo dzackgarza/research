@@ -12,7 +12,8 @@ Concrete consumers of Spec:
 
 * `Realization.Mathlib` — full `AtomicModel` (Sets, Finite, Graded, Magmas, algebra,
   modules, exceptional hosts)
-* `Realization.Sage` — Sage name ↔ stable-id correspondence certificates
+* `Realization.Sage` — typed correspondence interface; versioned Sage data remains
+  outside Lean source
 -/
 
 namespace NormalizedCategoryGraph.Realization

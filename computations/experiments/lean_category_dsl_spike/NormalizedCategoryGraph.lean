@@ -28,6 +28,5 @@ Mathlib and Sage realizations are **not** imported here — use
 `NormalizedCategoryGraph.Realization.Mathlib.Atomic` and
 `NormalizedCategoryGraph.Realization.Sage.Correspondence` as separate roots.
 
-The Python-generated `Spec.SeedData` is a migration artifact, not part of this
-root.
+This root contains no serialized Sage observation or correspondence data.
 -/

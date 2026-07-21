@@ -13,7 +13,7 @@ Emits JSON from the Lean specimen registry (the same rows
 `Specimen.Register` writes into `registryExt`). The executable reloads that
 module and serializes `getRegistry`; it does not serialize `specimenSnapshot`.
 
-Does **not** read the Python semantic seed / `Spec.SeedData`.
+Does **not** read Python semantic-seed artifacts.
 -/
 
 open Lean Elab Command

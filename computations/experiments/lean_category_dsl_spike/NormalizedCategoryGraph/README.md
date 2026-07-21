@@ -19,7 +19,7 @@ Lean foundation for the normalized category graph.
 | Magmas one-tower | `Additive`/`Multiplicative` role classifiers; additive specimen tower |
 | `evalCategory` | Interprets atoms + Magmas/Modules/Sets/M2O refinements via pullback |
 | `ncg-export` | Lean specimen JSON |
-| `ncg-export-full` | Lean registry specimen JSON (**does not** read Python `SeedData`) |
+| `ncg-export-full` | Lean registry specimen JSON (**does not** read Python semantic-seed data) |
 | Lean ledger gate | `ledger_check_from_lean_export.py` on exporter stdout (noncircular) |
 
 ## What is not true (withdrawn claims)
@@ -44,7 +44,7 @@ Lean foundation for the normalized category graph.
 | Registry | `Registry/` | Env extension + entry types |
 | Specimen | `Specimen/` | Lean-authored vertical slice + `Register` into env |
 | Tools | `Tools/` | `ncg-export`, `ncg-export-full` |
-| Spec | `Spec/` | Python migration dump (`SeedData`) — **not** export SSOT |
+| Spec | `Spec/` | Python migration manifest — **not** export SSOT and not compiled into Lean |
 | Realization | `Realization/` | Separate Mathlib / Sage roots |
 
 ## Commands

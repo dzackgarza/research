@@ -2,7 +2,7 @@
 """Noncircular Lean ledger gate.
 
 Consumes ``ncg-export-full`` JSON (stdin or ``--json PATH``). Rejects any
-payload that came from the Python semantic seed / ``Spec.SeedData``.
+payload that embeds a Python semantic-seed payload.
 
 This does **not** prove 179/179 constructibility. It proves that the Lean
 exporter is the check surface, and reports specimen coverage against the

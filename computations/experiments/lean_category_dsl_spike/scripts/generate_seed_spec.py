@@ -4,7 +4,6 @@
 Source of truth: sage_category_tree_stubs/design/normalized_category_graph/semantic_seed/
 Outputs:
   NormalizedCategoryGraph/Spec/seed_manifest.json
-  NormalizedCategoryGraph/Spec/SeedData.lean
   NormalizedCategoryGraph/Presentation/dot_graph_id_sidecar.json
 """
 
@@ -336,34 +335,6 @@ def main() -> int:
         json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
 
-    raw = json.dumps(manifest, separators=(",", ":"), sort_keys=True)
-    esc = raw.replace("\\", "\\\\").replace('"', '\\"')
-    lean_src = f"""/-
-Copyright (c) 2026 Dzack Garza. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
--/
-
-/-!
-# Generated seed specification (SSOT ingest)
-
-Do not edit by hand. Regenerate with:
-
-```
-python3 scripts/generate_seed_spec.py
-```
-
-Source: `sage_category_tree_stubs/design/normalized_category_graph/semantic_seed/`.
--/
-
-namespace NormalizedCategoryGraph.Spec
-
-/-- Full semantic seed as deterministic JSON (sorted keys). -/
-def seedManifestJson : String :=
-  "{esc}"
-
-end NormalizedCategoryGraph.Spec
-"""
-    (LEAN / "Spec/SeedData.lean").write_text(lean_src, encoding="utf-8")
     print(
         f"wrote Spec/seed_manifest.json ({len(categories)} cats, {len(classifiers)} clfs); "
         f"sidecar map={len(sidecar)}; hand unmapped={len(missing_hand)}"

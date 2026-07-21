@@ -52,23 +52,22 @@ cache:
 build:
     cd "{{repo_root}}" && lake build NormalizedCategoryGraph LeanCategoryDslSpike CatDSL ncg-export ncg-export-full
 
-# Regenerate Python migration Spec + DOT sidecar (oracle / comparison — not Lean SSOT)
+# Regenerate Python migration manifest + DOT sidecar (oracle / comparison — not Lean SSOT)
 gen-seed:
     python3 scripts/generate_seed_spec.py
-    python3 scripts/generate_sage_correspondence.py
 
 # Python-seed crosscheck + constructibility oracle (does NOT prove Lean authority)
 ncg-check-python-oracle: gen-seed
     python3 scripts/crosscheck_hand_dot.py
     PYTHONPATH=../sage_category_tree_stubs sage -python scripts/ledger_check_from_lean_manifest.py
 
-# Lean exporters must succeed without reading Spec/SeedData; ledger is noncircular
+# Lean exporters must succeed without Python semantic-seed data; ledger is noncircular
 ncg-check-lean:
     #!/usr/bin/env bash
     set -euo pipefail
     root="{{repo_root}}"
     cd "$root"
-    lake build ncg-export ncg-export-full
+    lake build NormalizedCategoryGraph.Realization.Sage.Correspondence ncg-export ncg-export-full
     lake exe ncg-export >/dev/null
     lake exe ncg-export-full | python3 "{{spike_dir}}/scripts/ledger_check_from_lean_export.py"
     "$root/.lake/build/bin/ncg-export-full" | python3 "{{spike_dir}}/scripts/ledger_check_from_lean_export.py"

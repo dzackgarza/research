@@ -37,6 +37,11 @@ structure ConstructorId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
+/-- Stable functor id. -/
+structure FunctorId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
 /-- Stable structural port id, e.g. `port.multiplicative`. -/
 structure PortId where
   raw : String
