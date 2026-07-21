@@ -7,10 +7,10 @@ that SVG leaves the browser on a stale drawing — every test session rebuilds i
 
 from __future__ import annotations
 
+import hashlib
 import re
 import shutil
 import subprocess
-import time
 from pathlib import Path
 
 _STUBS_ROOT = Path(__file__).resolve().parent.parent
@@ -44,7 +44,11 @@ def rebuild_viewer(*, cache_bust: int | None = None) -> dict[str, Path | int]:
         ["dot", "-Tsvg", str(_SPIKE_DOT), "-o", str(_SPIKE_SVG)],
         check=True,
     )
-    bust = int(time.time()) if cache_bust is None else cache_bust
+    bust = (
+        int.from_bytes(hashlib.sha256(_DOT.read_bytes()).digest()[:8], "big")
+        if cache_bust is None
+        else cache_bust
+    )
     html = _SPIKE_HTML.read_text(encoding="utf-8")
     html, n = re.subn(
         r"category_parent_graph\.svg\?v=\d+",

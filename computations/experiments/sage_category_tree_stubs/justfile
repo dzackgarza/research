@@ -1,5 +1,8 @@
 export PYTHONDONTWRITEBYTECODE := "1"
 
+# Materialize the tracked HTML viewer and its DOT-derived SVG.
+setup: viz
+
 # Pytest session setup rebuilds the SVG viewer (see tests/conftest.py).
 test: viz
 	@just -f ~/ai-review-ci/justfiles/sage.just -d . test

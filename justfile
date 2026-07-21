@@ -16,6 +16,10 @@ ai_review_ci_default_branch := "main"
 default:
     @just --list
 
+# Prepare generated local artifacts needed by the interactive category viewer.
+setup:
+    @just -f computations/experiments/sage_category_tree_stubs/justfile setup
+
 # Build the installable Sage research distribution
 build: _lock
     uv build
