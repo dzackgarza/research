@@ -16,7 +16,7 @@ namespace NormalizedCategoryGraph
 
 /-- Parameter expression for family applications (symbolic). -/
 inductive ParameterExpr
-  | atom (id : String)
+  | ringVariable (id : RingParameterId)
   | opposite (of : ParameterExpr)
   deriving DecidableEq, Repr
 

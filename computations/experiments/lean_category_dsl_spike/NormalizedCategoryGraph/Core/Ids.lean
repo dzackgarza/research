@@ -27,6 +27,11 @@ structure CategoryFamilyId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
+/-- Stable identity of a ring parameter variable in a category-family expression. -/
+structure RingParameterId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
 /-- Stable constructor id, e.g. `ctor.hom_categories`. -/
 structure ConstructorId where
   raw : String
@@ -121,6 +126,11 @@ namespace CategoryFamilyId
 def modules : CategoryFamilyId := ⟨"fam.modules"⟩
 instance : Inhabited CategoryFamilyId := ⟨modules⟩
 end CategoryFamilyId
+
+namespace RingParameterId
+def r : RingParameterId := ⟨"R"⟩
+instance : Inhabited RingParameterId := ⟨r⟩
+end RingParameterId
 
 namespace PortId
 def additive : PortId := ⟨"port.additive"⟩

@@ -31,7 +31,6 @@ noncomputable def evalAtom (M : AtomicModel.{uObj, uHom}) (id : CategoryId) :
   else if id == CategoryId.rings then some (Rings M)
   else if id == CategoryId.commutativeRings then some (CommutativeRings M)
   else if id == CategoryId.divisionRings then some (DivisionRings M)
-  else if id == CategoryId.modulesR then some (Modules M)
   else if id == CategoryId.additiveMagmas then some (AdditiveMagmas M)
   else if id == CategoryId.magmasWithTwoOperations then
     some (MagmasWithTwoOperations M)
@@ -58,11 +57,11 @@ noncomputable def setsClassifier (M : AtomicModel.{uObj, uHom}) (id : Classifier
   else none
 
 /-- Modules-hosted classifiers. -/
-noncomputable def modulesClassifier (M : AtomicModel.{uObj, uHom}) (id : ClassifierId) :
-    Option (Classifier (Modules M)) :=
-  if id == ClassifierId.modulesFree then some M.modules.free
-  else if id == ClassifierId.modulesFinitelyGenerated then some M.modules.finitelyGenerated
-  else if id == ClassifierId.modulesFiniteRank then some M.modules.finiteRank
+noncomputable def modulesClassifier (M : AtomicModel.{uObj, uHom})
+    (R : M.modules.RingObjects) (id : ClassifierId) : Option (Classifier (Modules M R)) :=
+  if id == ClassifierId.modulesFree then some (M.modules.free R)
+  else if id == ClassifierId.modulesFinitelyGenerated then some (M.modules.finitelyGenerated R)
+  else if id == ClassifierId.modulesFiniteRank then some (M.modules.finiteRank R)
   else none
 
 /-- M2O-hosted classifiers. -/
@@ -79,8 +78,9 @@ structure ForgetfulToMagmas (M : AtomicModel.{uObj, uHom}) where
 
 /-- A forgetful functor into `Modules`, with its domain. -/
 structure ForgetfulToModules (M : AtomicModel.{uObj, uHom}) where
+  ring : M.modules.RingObjects
   domain : ObjCat.{uObj, uHom}
-  forget : domain ⟶ Modules M
+  forget : domain ⟶ Modules M ring
 
 /-- Forgetful for named Magmas-tower atoms. -/
 noncomputable def forgetfulToMagmasAtom (M : AtomicModel.{uObj, uHom}) (id : CategoryId) :
@@ -125,29 +125,33 @@ noncomputable def forgetfulToMagmas (M : AtomicModel.{uObj, uHom}) :
       | _, _ => none
   | _ => none
 
-/-- Forgetful for the Modules atom. -/
-noncomputable def forgetfulToModulesAtom (M : AtomicModel.{uObj, uHom}) (id : CategoryId) :
-    Option (ForgetfulToModules M) :=
-  if id == CategoryId.modulesR then
-    some ⟨Modules M, CategoryTheory.CategoryStruct.id (Modules M)⟩
-  else
-    none
-
-/-- Forgetful from a Modules-hosted expression to `Modules`. -/
-noncomputable def forgetfulToModules (M : AtomicModel.{uObj, uHom}) :
+/-- Forgetful from a Modules-family expression to its selected fibre. -/
+noncomputable def forgetfulToModules (M : AtomicModel.{uObj, uHom})
+    (resolveRing : RingParameterId → Option M.modules.RingObjects) :
     CategoryExpr → Option (ForgetfulToModules M)
-  | .atom id => forgetfulToModulesAtom M id
+  | .familyApp family args =>
+      if family == CategoryFamilyId.modules && args.size == 1 then
+        match args[0]? with
+        | some parameter =>
+            match moduleParameter M resolveRing parameter with
+            | some R => some ⟨R, Modules M R, CategoryTheory.CategoryStruct.id (Modules M R)⟩
+            | none => none
+        | none => none
+      else none
   | .refine base clf _ =>
-      match modulesClassifier M clf, forgetfulToModules M base with
-      | some A, some Fbase =>
-          let R := Classifier.reindex Fbase.forget A
-          some ⟨R.total, R.baseProjection ≫ Fbase.forget⟩
-      | _, _ => none
-  | .reference id => forgetfulToModulesAtom M id
+      match forgetfulToModules M resolveRing base with
+      | some Fbase =>
+          match modulesClassifier M Fbase.ring clf with
+          | some A =>
+              let R := Classifier.reindex Fbase.forget A
+              some ⟨Fbase.ring, R.total, R.baseProjection ≫ Fbase.forget⟩
+          | none => none
+      | none => none
   | _ => none
 
 /-- Evaluate a category expression to an actual `ObjCat`. -/
-noncomputable def evalCategory (M : AtomicModel.{uObj, uHom}) :
+noncomputable def evalCategory (M : AtomicModel.{uObj, uHom})
+    (resolveRing : RingParameterId → Option M.modules.RingObjects) :
     CategoryExpr → Option (ObjCat.{uObj, uHom})
   | .atom id => evalAtom M id
   | .opaque id => evalAtom M id
@@ -159,12 +163,9 @@ noncomputable def evalCategory (M : AtomicModel.{uObj, uHom}) :
           match setsClassifier M id with
           | some A => some A.total
           | none =>
-              match modulesClassifier M id with
+              match m2oClassifier M id with
               | some A => some A.total
-              | none =>
-                  match m2oClassifier M id with
-                  | some A => some A.total
-                  | none => none
+              | none => none
   | .refine base clf route =>
       match magmasClassifier M clf with
       | some A =>
@@ -189,43 +190,42 @@ noncomputable def evalCategory (M : AtomicModel.{uObj, uHom}) :
                     none
               | _ => none
       | none =>
-          match modulesClassifier M clf with
-          | some A =>
-              match forgetfulToModules M base with
-              | some F => some (Classifier.reindex F.forget A).total
+          match forgetfulToModules M resolveRing base with
+          | some F =>
+              match modulesClassifier M F.ring clf with
+              | some A =>
+                  some (Classifier.reindex F.forget A).total
               | none => none
           | none =>
               match setsClassifier M clf with
               | some A =>
-                  match base with
-                  | .atom bid =>
-                      if bid == CategoryId.magmas then
-                        some (Classifier.reindex (magmasToSets M) A).total
-                      else if bid == CategoryId.modulesR then
-                        some (Classifier.reindex M.modules.modulesToSets A).total
-                      else if bid == CategoryId.sets then
-                        some
-                          (Classifier.reindex
-                            (CategoryTheory.CategoryStruct.id (Sets M)) A).total
-                      else
-                        none
-                  | .classifierTotal cid =>
-                      if cid == ClassifierId.setsBinaryOperation then
-                        some (Classifier.reindex (magmasToSets M) A).total
-                      else
-                        none
-                  | .refine .. =>
-                      match forgetfulToModules M base with
-                      | some Fm =>
-                          some
-                            (Classifier.reindex (Fm.forget ≫ M.modules.modulesToSets) A).total
-                      | none =>
+                  match forgetfulToModules M resolveRing base with
+                  | some Fm =>
+                      some
+                        (Classifier.reindex (Fm.forget ≫ M.modules.modulesToSets Fm.ring) A).total
+                  | none =>
+                      match base with
+                      | .atom bid =>
+                          if bid == CategoryId.magmas then
+                            some (Classifier.reindex (magmasToSets M) A).total
+                          else if bid == CategoryId.sets then
+                            some
+                              (Classifier.reindex
+                                (CategoryTheory.CategoryStruct.id (Sets M)) A).total
+                          else
+                            none
+                      | .classifierTotal cid =>
+                          if cid == ClassifierId.setsBinaryOperation then
+                            some (Classifier.reindex (magmasToSets M) A).total
+                          else
+                            none
+                      | .refine .. =>
                           match forgetfulToMagmas M base with
                           | some Fmag =>
                               some
                                 (Classifier.reindex (Fmag.forget ≫ magmasToSets M) A).total
                           | none => none
-                  | _ => none
+                      | _ => none
               | none =>
                   match m2oClassifier M clf with
                   | some A =>
@@ -247,12 +247,10 @@ noncomputable def evalCategory (M : AtomicModel.{uObj, uHom}) :
                             none
                       | _ => none
                   | none => none
-  | .familyApp fam _args =>
-      if fam == CategoryFamilyId.modules then
-        -- Fibre at the provisional base ring until args are interpreted.
-        some (Modules M)
-      else
-        none
+  | .familyApp family args =>
+      match forgetfulToModules M resolveRing (.familyApp family args) with
+      | some F => some F.domain
+      | none => none
   | .constructor _ _ => none
 
 end NormalizedCategoryGraph

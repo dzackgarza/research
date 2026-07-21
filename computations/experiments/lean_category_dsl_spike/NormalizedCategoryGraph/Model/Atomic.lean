@@ -3,6 +3,7 @@ Copyright (c) 2026 Dzack Garza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import NormalizedCategoryGraph.Core.CategoricalPullback
+import NormalizedCategoryGraph.Core.Expr
 import NormalizedCategoryGraph.Core.Ids
 
 /-!
@@ -43,23 +44,21 @@ structure AlgebraAtoms (F : FoundationAtoms.{uObj, uHom}) where
   /-- Operation-role Magmas.Multiplicative. -/
   multiplicative : Classifier F.binaryOperation.total
 
-/-- Module atoms: the family `R ↦ Modules(R)`, plus classifiers on fibres.
-
-`ModulesFamily` is the parameterized constructor (objects are rings). `Modules`
-is the fibre at a designated base ring used by the interpretation kernel until
-every call site threads an explicit ring parameter.
--/
+/-- Module atoms: the genuinely parameterized family `R ↦ Modules(R)` and
+classifiers on every fibre. -/
 structure ModuleAtoms (F : FoundationAtoms.{uObj, uHom}) (_A : AlgebraAtoms F) where
-  /-- Family `R ↦ Modules(R)` as a category of rings (objects = base rings). -/
-  ModulesFamily : ObjCat.{uObj, uHom}
-  /-- Fibre of `Modules(-)` at a designated base ring (provisional specialization). -/
-  Modules : ObjCat.{uObj, uHom}
-  free : Classifier Modules
+  /-- Parameter category for the module family. -/
+  RingObjects : ObjCat.{uObj, uHom}
+  /-- The category `Modules(R)` for a base-ring object `R`. -/
+  modules : RingObjects → ObjCat.{uObj, uHom}
+  /-- Opposite-ring substitution for right-module families. -/
+  oppositeRing : RingObjects → RingObjects
+  free : (R : RingObjects) → Classifier (modules R)
   /-- Finitely generated modules — not finite rank. -/
-  finitelyGenerated : Classifier Modules
+  finitelyGenerated : (R : RingObjects) → Classifier (modules R)
   /-- Finite free rank (admits a finite basis). Distinct from finitely generated. -/
-  finiteRank : Classifier Modules
-  modulesToSets : Modules ⟶ F.Sets
+  finiteRank : (R : RingObjects) → Classifier (modules R)
+  modulesToSets : (R : RingObjects) → modules R ⟶ F.Sets
 
 /-- Exceptional hosts with typed ports. -/
 structure ExceptionalAtoms (F : FoundationAtoms.{uObj, uHom}) where
@@ -246,23 +245,32 @@ noncomputable def DivisionRings : ObjCat :=
   let ringsToM2O := ringsToRngs M ≫ rngsToMulAssoc M ≫ m2oMulAssocToAddInv M ≫ m2oAddInvToM2O M
   (Classifier.reindex ringsToM2O M.exceptional.division).total
 
-/-- The family category whose objects are base rings for `Modules(-)`. -/
-def ModulesFamily : ObjCat := M.modules.ModulesFamily
+/-- The parameter category for `R ↦ Modules(R)`. -/
+def ModuleRingObjects : ObjCat := M.modules.RingObjects
 
-def Modules : ObjCat := M.modules.Modules
+/-- The fibre `Modules(R)`. -/
+def Modules (R : M.modules.RingObjects) : ObjCat := M.modules.modules R
 
-def FreeModules : ObjCat := M.modules.free.total
+/-- Interpret a typed parameter expression in an explicit variable environment. -/
+def moduleParameter (resolve : RingParameterId → Option M.modules.RingObjects)
+    (parameter : ParameterExpr) : Option M.modules.RingObjects :=
+  match parameter with
+  | .ringVariable id => resolve id
+  | .opposite parameter => M.modules.oppositeRing <$> moduleParameter resolve parameter
+
+def FreeModules (R : M.modules.RingObjects) : ObjCat := (M.modules.free R).total
 
 /-- Finitely generated modules (not finite-rank). -/
-def FinitelyGeneratedModules : ObjCat := M.modules.finitelyGenerated.total
+def FinitelyGeneratedModules (R : M.modules.RingObjects) : ObjCat :=
+  (M.modules.finitelyGenerated R).total
 
 /-- Finite free rank modules (admits a finite basis). -/
-def FiniteRankModules : ObjCat := M.modules.finiteRank.total
+def FiniteRankModules (R : M.modules.RingObjects) : ObjCat := (M.modules.finiteRank R).total
 
 /-- `Modules(R).Free` refined by Sets.Finite along Free → Modules → Sets. -/
-noncomputable def FiniteFreeModules : ObjCat :=
+noncomputable def FiniteFreeModules (R : M.modules.RingObjects) : ObjCat :=
   (Classifier.reindex
-      (M.modules.free.forget ≫ M.modules.modulesToSets)
+      ((M.modules.free R).forget ≫ M.modules.modulesToSets R)
       M.foundations.finite).total
 
 end Normalized

@@ -22,7 +22,7 @@ open Specimen
 private def object (fields : List (String × Json)) : Json := Json.mkObj fields
 
 private def parameterJson : ParameterExpr → Json
-  | .atom id => object [("tag", "atom"), ("id", id)]
+  | .ringVariable id => object [("tag", "ringVariable"), ("id", id.raw)]
   | .opposite p => object [("tag", "opposite"), ("of", parameterJson p)]
 
 private def categoryExprJson : CategoryExpr → Json

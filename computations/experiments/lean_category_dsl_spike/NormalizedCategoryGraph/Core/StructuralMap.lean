@@ -31,12 +31,23 @@ structure OpaquePortTable where
   port :
     CategoryId → CategoryId → RouteSelector → Option OpaquePortId
 
+/-- Registered projections from a parameterized category-family application. -/
+structure CategoryFamilyPortTable where
+  port :
+    CategoryFamilyId → Array ParameterExpr → CategoryExpr → RouteSelector → Option OpaquePortId
+
+/-- Typed arities of registered category-family applications. -/
+structure CategoryFamilySignatureTable where
+  arity : CategoryFamilyId → Option Nat
+
 /-- Classifier ownership + refinement ids for certificate references. -/
 structure ProjectionContext where
   hosts : ClassifierHostTable
   aliases : AliasTable
   named : NamedExpressionTable
   opaquePorts : OpaquePortTable
+  familyPorts : CategoryFamilyPortTable
+  familySignatures : CategoryFamilySignatureTable
   /-- Assign a stable refinement id for `(baseExpr, classifier, route)`. -/
   refinementId : CategoryExpr → ClassifierId → Option RouteId → RefinementId
 
@@ -127,8 +138,16 @@ partial def project
         | _ => none
     | .reference _ =>
         project ctx (unfoldOnce ctx srcN) tgtN route
-    | .familyApp .. | .constructor .. =>
-        -- constructor / family: only via named unfolding or opaque ports
-        none
+    | .familyApp family args =>
+        match ctx.familySignatures.arity family with
+        | some arity =>
+            if args.size == arity then
+              match ctx.familyPorts.port family args tgtN route with
+              | some port => some (.opaquePort port)
+              | none => none
+            else
+              none
+        | none => none
+    | .constructor .. => none
 
 end NormalizedCategoryGraph

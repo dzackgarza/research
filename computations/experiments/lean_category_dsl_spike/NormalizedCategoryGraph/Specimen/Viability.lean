@@ -76,7 +76,11 @@ def exprCommRings : CategoryExpr :=
 /-- DivisionRings := Rings.Division (not Magmas.Inverse). -/
 def exprDivisionRings : CategoryExpr :=
   .refine (.atom CategoryId.rings) ClassifierId.ringsDivision none
-def exprModules : CategoryExpr := .atom CategoryId.modulesR
+def exprModules : CategoryExpr :=
+  .familyApp CategoryFamilyId.modules #[.ringVariable RingParameterId.r]
+/-- Right modules are left modules over the opposite ring. -/
+def exprRightModules : CategoryExpr :=
+  .familyApp CategoryFamilyId.modules #[.opposite (.ringVariable RingParameterId.r)]
 def exprFreeModules : CategoryExpr :=
   .refine exprModules ClassifierId.modulesFree none
 def exprFinitelyGeneratedModules : CategoryExpr :=
@@ -85,9 +89,9 @@ def exprFiniteRankModules : CategoryExpr :=
   .refine exprModules ClassifierId.modulesFiniteRank none
 def exprFiniteFreeModules : CategoryExpr :=
   .refine exprFreeModules ClassifierId.setsFinite none
-/-- Family application `Modules(R)` with its bound ring parameter. -/
+/-- Family application `Modules(R)` with its explicit ring parameter variable. -/
 def exprModulesFamily : CategoryExpr :=
-  .familyApp CategoryFamilyId.modules #[.atom "R"]
+  exprModules
 /-- Implicit unnamed target: constructible, not a named registry node. -/
 def exprRingsGradedFinite : CategoryExpr :=
   .refine
@@ -133,11 +137,27 @@ def specimenOpaquePorts : OpaquePortTable where
         some ⟨"oport.crystals.sets"⟩
     | _, _, _ => none
 
+def specimenFamilyPorts : CategoryFamilyPortTable where
+  port
+    | family, _, .atom target, _ =>
+        if family == CategoryFamilyId.modules && target == CategoryId.sets then
+          some ⟨"oport.modules.sets"⟩
+        else
+          none
+    | _, _, _, _ => none
+
+def specimenFamilySignatures : CategoryFamilySignatureTable where
+  arity
+    | ⟨"fam.modules"⟩ => some 1
+    | _ => none
+
 def specimenCtx : ProjectionContext where
   hosts := specimenHosts
   aliases := specimenAliases
   named := specimenNamed
   opaquePorts := specimenOpaquePorts
+  familyPorts := specimenFamilyPorts
+  familySignatures := specimenFamilySignatures
   refinementId := fun base clf route =>
     let r := match route with
       | some rid => rid.raw
@@ -179,6 +199,17 @@ example :
 example :
     (project specimenCtx exprRingsGradedFinite (.atom CategoryId.rings) .none).isSome =
       true := by
+  native_decide
+
+example :
+    Option.isNone (project specimenCtx (.familyApp CategoryFamilyId.modules #[])
+      (.atom CategoryId.sets) .none) = true := by
+  native_decide
+
+example :
+    Option.isNone (project specimenCtx
+      (.familyApp CategoryFamilyId.modules #[.ringVariable RingParameterId.r, .ringVariable RingParameterId.r])
+      (.atom CategoryId.sets) .none) = true := by
   native_decide
 
 /-! ## Syntactic equality after projection normalization -/

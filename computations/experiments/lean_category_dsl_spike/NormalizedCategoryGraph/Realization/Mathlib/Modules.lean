@@ -6,6 +6,7 @@ import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import NormalizedCategoryGraph.Realization.Mathlib.Algebra
@@ -13,9 +14,8 @@ import NormalizedCategoryGraph.Realization.Mathlib.Algebra
 /-!
 # Mathlib module atoms
 
-* `ModulesFamily` — `RingCat` as the category of base rings for `R ↦ Modules(R)`
+* `RingObjects` — `RingCat` as the category of base rings for `R ↦ Modules(R)`
 * `ModulesOf` — fibre at an arbitrary ring object
-* Provisional default fibre: `ModuleCat ℤ`
 
 * `free` — `Module.Free`
 * `finitelyGenerated` — `Module.Finite`
@@ -33,7 +33,7 @@ universe u
 set_option linter.checkUnivs false
 
 /-- Category of base rings for the family `R ↦ Modules(R)`. -/
-def ModulesFamily : ObjCat.{u + 1, u} := Cat.of RingCat.{u}
+def RingObjects : ObjCat.{u + 1, u} := Cat.of RingCat.{u}
 
 /-- Fibre of the parameterized family at an arbitrary ring object. -/
 noncomputable def ModulesOf (R : RingCat.{u}) : ObjCat.{u + 1, u} :=
@@ -44,52 +44,61 @@ noncomputable def modulesFamilyValue : RingCat.{u} → ObjCat.{u + 1, u} := Modu
 
 example (R : RingCat.{u}) : modulesFamilyValue R = ModulesOf R := rfl
 
-/-- Provisional fibre `Modules(ℤ)`. -/
-def Modules : ObjCat.{u + 1, u} := Cat.of (ModuleCat.{u} ℤ)
+/-! ## Fibrewise classifiers -/
 
-/-- Free ℤ-modules. -/
-abbrev FreeModuleCat : Type (u + 1) :=
+/-- Free `R`-modules. -/
+abbrev FreeModuleCat (R : RingCat.{u}) : Type (u + 1) :=
   ObjectProperty.FullSubcategory
-    (C := ModuleCat.{u} ℤ) (fun M : ModuleCat.{u} ℤ => Module.Free ℤ M)
+    (C := ModuleCat.{u} R) (fun M : ModuleCat.{u} R => Module.Free R M)
 
-/-- Finitely generated ℤ-modules (`Module.Finite`). -/
-abbrev FinitelyGeneratedModuleCat : Type (u + 1) :=
+/-- Finitely generated `R`-modules (`Module.Finite`). -/
+abbrev FinitelyGeneratedModuleCat (R : RingCat.{u}) : Type (u + 1) :=
   ObjectProperty.FullSubcategory
-    (C := ModuleCat.{u} ℤ) (fun M : ModuleCat.{u} ℤ => Module.Finite ℤ M)
+    (C := ModuleCat.{u} R) (fun M : ModuleCat.{u} R => Module.Finite R M)
 
 /-- Finite free rank: free with a finite basis index. Not `Module.Finite`. -/
-def IsFiniteRank (M : ModuleCat.{u} ℤ) : Prop :=
-  ∃ _ : Module.Free ℤ M, Finite (Module.Free.ChooseBasisIndex ℤ M)
+def IsFiniteRank (R : RingCat.{u}) (M : ModuleCat.{u} R) : Prop :=
+  ∃ _ : Module.Free R M, Finite (Module.Free.ChooseBasisIndex R M)
 
-abbrev FiniteRankModuleCat : Type (u + 1) :=
+abbrev FiniteRankModuleCat (R : RingCat.{u}) : Type (u + 1) :=
   ObjectProperty.FullSubcategory
-    (C := ModuleCat.{u} ℤ) IsFiniteRank
+    (C := ModuleCat.{u} R) (IsFiniteRank R)
 
-/-- Free classifier on Modules. -/
-noncomputable def free : Classifier Modules where
-  total := Cat.of FreeModuleCat.{u}
+/-- Free classifier on `Modules(R)`. -/
+noncomputable def free (R : RingCat.{u}) : Classifier (ModulesOf R) where
+  total := Cat.of (FreeModuleCat R)
   forget := (ObjectProperty.ι
-      (C := ModuleCat.{u} ℤ) (fun M : ModuleCat.{u} ℤ => Module.Free ℤ M)).toCatHom
+      (C := ModuleCat.{u} R) (fun M : ModuleCat.{u} R => Module.Free R M)).toCatHom
 
 /-- Finitely-generated classifier (`Module.Finite`). Not finite rank. -/
-noncomputable def finitelyGenerated : Classifier Modules where
-  total := Cat.of FinitelyGeneratedModuleCat.{u}
+noncomputable def finitelyGenerated (R : RingCat.{u}) : Classifier (ModulesOf R) where
+  total := Cat.of (FinitelyGeneratedModuleCat R)
   forget := (ObjectProperty.ι
-      (C := ModuleCat.{u} ℤ) (fun M : ModuleCat.{u} ℤ => Module.Finite ℤ M)).toCatHom
+      (C := ModuleCat.{u} R) (fun M : ModuleCat.{u} R => Module.Finite R M)).toCatHom
 
 /-- Finite free rank classifier. -/
-noncomputable def finiteRank : Classifier Modules where
-  total := Cat.of FiniteRankModuleCat.{u}
-  forget := (ObjectProperty.ι (C := ModuleCat.{u} ℤ) IsFiniteRank).toCatHom
+noncomputable def finiteRank (R : RingCat.{u}) : Classifier (ModulesOf R) where
+  total := Cat.of (FiniteRankModuleCat R)
+  forget := (ObjectProperty.ι (C := ModuleCat.{u} R) (IsFiniteRank R)).toCatHom
 
-/-- Forgetful Modules → Sets. -/
-noncomputable def modulesToSets : Modules ⟶ Sets :=
-  (forget (ModuleCat.{u} ℤ)).toCatHom
+/-- Forgetful `Modules(R) → Sets`. -/
+noncomputable def modulesToSets (R : RingCat.{u}) : ModulesOf R ⟶ Sets :=
+  (forget (ModuleCat.{u} R)).toCatHom
+
+/-- Opposite-ring substitution for right-module family expressions. -/
+noncomputable def oppositeRing (R : RingCat.{u}) : RingCat.{u} := RingCat.of Rᵐᵒᵖ
+
+/-- Right `R`-modules, represented as left modules over the opposite ring. -/
+noncomputable def RightModulesOf (R : RingCat.{u}) : ObjCat.{u + 1, u} :=
+  ModulesOf (oppositeRing R)
+
+example (R : RingCat.{u}) : RightModulesOf R = ModulesOf (oppositeRing R) := rfl
 
 /-- Module atoms over Mathlib foundations + algebra. -/
 noncomputable def moduleAtoms : ModuleAtoms foundationAtoms algebraAtoms where
-  ModulesFamily := ModulesFamily
-  Modules := Modules
+  RingObjects := RingObjects
+  modules := ModulesOf
+  oppositeRing := oppositeRing
   free := free
   finitelyGenerated := finitelyGenerated
   finiteRank := finiteRank
