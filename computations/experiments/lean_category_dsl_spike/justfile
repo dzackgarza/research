@@ -52,17 +52,30 @@ cache:
 build:
     cd "{{repo_root}}" && lake build NormalizedCategoryGraph LeanCategoryDslSpike CatDSL ncg-export ncg-export-full
 
-# Regenerate Lean Spec + DOT sidecar from the Python semantic seed
+# Regenerate Python migration Spec + DOT sidecar (oracle / comparison — not Lean SSOT)
 gen-seed:
     python3 scripts/generate_seed_spec.py
     python3 scripts/generate_sage_correspondence.py
 
-# Stage 7/9 gates against the Lean seed manifest
-ncg-check: gen-seed
+# Python-seed crosscheck + constructibility oracle (does NOT prove Lean authority)
+ncg-check-python-oracle: gen-seed
     python3 scripts/crosscheck_hand_dot.py
     PYTHONPATH=../sage_category_tree_stubs sage -python scripts/ledger_check_from_lean_manifest.py
 
-# Run the proof surface: |L| = 4, the registry, the DSL syntax
+# Lean exporters must succeed without reading Spec/SeedData
+ncg-check-lean:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    root="{{repo_root}}"
+    cd "$root" && lake build ncg-export ncg-export-full
+    "$root/.lake/build/bin/ncg-export" >/dev/null
+    out="$("$root/.lake/build/bin/ncg-export-full")"
+    echo "$out" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d.get("source")=="lean-registry", d'
+
+# Prefer Lean check; Python oracle remains available explicitly
+ncg-check: ncg-check-lean
+
+# Run the proof surface: Lean build + Lean exporters (+ optional Python oracle)
 test: build ncg-check
     #!/usr/bin/env bash
     set -euo pipefail

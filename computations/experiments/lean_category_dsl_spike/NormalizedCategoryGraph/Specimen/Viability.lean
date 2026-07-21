@@ -25,7 +25,10 @@ def specimenHosts : ClassifierHostTable where
     | ⟨"clf.magmas.associative"⟩ | ⟨"clf.magmas.commutative"⟩
     | ⟨"clf.magmas.unital"⟩ | ⟨"clf.magmas.inverse"⟩ =>
         some CategoryId.magmas
-    | ⟨"clf.modules_r.free"⟩ | ⟨"clf.modules_r.finite_rank"⟩ =>
+    | ⟨"clf.magmaswithtwooperations.distributive"⟩ =>
+        some CategoryId.magmasWithTwoOperations
+    | ⟨"clf.modules_r.free"⟩ | ⟨"clf.modules_r.finitely_generated"⟩
+    | ⟨"clf.modules_r.finite_rank"⟩ =>
         some CategoryId.modulesR
     | _ => none
 
@@ -44,7 +47,18 @@ def exprMonoids : CategoryExpr :=
   .refine exprSemigroups ClassifierId.magmasUnital none
 def exprGroups : CategoryExpr :=
   .refine exprMonoids ClassifierId.magmasInverse none
-def exprRings : CategoryExpr := .opaque CategoryId.magmasWithTwoOperations
+def exprMagmasWithTwoOperations : CategoryExpr :=
+  .opaque CategoryId.magmasWithTwoOperations
+/-- Rings as the refined two-operation tower (not the unrefined host). -/
+def exprRings : CategoryExpr :=
+  let m2o := exprMagmasWithTwoOperations
+  let addAssoc := .refine m2o ClassifierId.magmasAssociative (some RouteId.additive)
+  let addComm := .refine addAssoc ClassifierId.magmasCommutative (some RouteId.additive)
+  let addUnital := .refine addComm ClassifierId.magmasUnital (some RouteId.additive)
+  let addInv := .refine addUnital ClassifierId.magmasInverse (some RouteId.additive)
+  let mulAssoc := .refine addInv ClassifierId.magmasAssociative (some RouteId.multiplicative)
+  let dist := .refine mulAssoc ClassifierId.m2oDistributive none
+  .refine dist ClassifierId.magmasUnital (some RouteId.multiplicative)
 def exprCommRings : CategoryExpr :=
   .refine (.atom CategoryId.rings) ClassifierId.magmasCommutative (some RouteId.multiplicative)
 def exprModules : CategoryExpr := .atom CategoryId.modulesR
@@ -70,7 +84,7 @@ def specimenNamed : NamedExpressionTable where
     | ⟨"cat.modules_r"⟩ => some exprModules
     | ⟨"cat.free_modules_r"⟩ => some exprFreeModules
     | ⟨"cat.finite_free_modules_r"⟩ => some exprFiniteFreeModules
-    | ⟨"cat.magmaswithtwooperations"⟩ => some (.opaque CategoryId.magmasWithTwoOperations)
+    | ⟨"cat.magmaswithtwooperations"⟩ => some exprMagmasWithTwoOperations
     | ⟨"cat.crystals"⟩ => some (.opaque CategoryId.crystals)
     | _ => none
 
@@ -129,7 +143,7 @@ example :
 /-- Opaque two-operation host → Magmas along the multiplicative port.
 Target is the named atom `cat.magmas` (not the classifier-total body). -/
 example :
-    (project specimenCtx exprRings (.atom CategoryId.magmas)
+    (project specimenCtx exprMagmasWithTwoOperations (.atom CategoryId.magmas)
       (.route RouteId.multiplicative)).isSome = true := by
   native_decide
 
@@ -160,7 +174,7 @@ def specimenSnapshot : RegistrySnapshot where
       expression := exprGroups, origin := .derivedNamed, visibility := .present },
     { id := CategoryId.rings, canonicalName := "Rings"
       declaration := "NormalizedCategoryGraph.Specimen.exprRings"
-      expression := exprRings, origin := .opaqueCategory, visibility := .present },
+      expression := exprRings, origin := .derivedNamed, visibility := .present },
     { id := CategoryId.commutativeRings, canonicalName := "CommutativeRings"
       declaration := "NormalizedCategoryGraph.Specimen.exprCommRings"
       expression := exprCommRings, origin := .derivedNamed, visibility := .present },
@@ -171,8 +185,8 @@ def specimenSnapshot : RegistrySnapshot where
       declaration := "NormalizedCategoryGraph.Specimen.exprFiniteFreeModules"
       expression := exprFiniteFreeModules, origin := .derivedNamed, visibility := .present },
     { id := CategoryId.magmasWithTwoOperations, canonicalName := "MagmasWithTwoOperations"
-      declaration := "NormalizedCategoryGraph.Specimen.exprRings"
-      expression := .opaque CategoryId.magmasWithTwoOperations
+      declaration := "NormalizedCategoryGraph.Specimen.exprMagmasWithTwoOperations"
+      expression := exprMagmasWithTwoOperations
       origin := .opaqueCategory, visibility := .semanticOnly },
     { id := CategoryId.crystals, canonicalName := "Crystals"
       declaration := "NormalizedCategoryGraph.Specimen.Crystals"

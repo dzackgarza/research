@@ -12,8 +12,13 @@ import NormalizedCategoryGraph.Realization.Mathlib.Algebra
 /-!
 # Mathlib module atoms
 
-`Modules` is `ModuleCat ℤ`. Free / finite-rank are full subcategories;
-`modulesToSets` is the concrete forgetful to `Type`.
+Provisional fibre: `ModuleCat ℤ`. This is a specialization of the intended
+family `R ↦ Modules(R)`, not the family itself.
+
+* `free` — `Module.Free`
+* `finitelyGenerated` — `Module.Finite` (Mathlib's finitely generated modules)
+
+`FiniteRank` is **not** realized here: it is not `Module.Finite`.
 -/
 
 namespace NormalizedCategoryGraph.Realization.Mathlib
@@ -25,7 +30,7 @@ universe u
 
 set_option linter.checkUnivs false
 
-/-- ℤ-modules. -/
+/-- Provisional fibre `Modules(ℤ)`. -/
 def Modules : ObjCat.{u + 1, u} := Cat.of (ModuleCat.{u} ℤ)
 
 /-- Free ℤ-modules. -/
@@ -33,8 +38,8 @@ abbrev FreeModuleCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory
     (C := ModuleCat.{u} ℤ) (fun M : ModuleCat.{u} ℤ => Module.Free ℤ M)
 
-/-- Finite ℤ-modules (`Module.Finite`). -/
-abbrev FiniteModuleCat : Type (u + 1) :=
+/-- Finitely generated ℤ-modules (`Module.Finite`). -/
+abbrev FinitelyGeneratedModuleCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory
     (C := ModuleCat.{u} ℤ) (fun M : ModuleCat.{u} ℤ => Module.Finite ℤ M)
 
@@ -44,9 +49,9 @@ noncomputable def free : Classifier Modules where
   forget := (ObjectProperty.ι
       (C := ModuleCat.{u} ℤ) (fun M : ModuleCat.{u} ℤ => Module.Free ℤ M)).toCatHom
 
-/-- Finite-rank classifier on Modules (finite as ℤ-module). -/
-noncomputable def finiteRank : Classifier Modules where
-  total := Cat.of FiniteModuleCat.{u}
+/-- Finitely-generated classifier (`Module.Finite`). Not finite rank. -/
+noncomputable def finitelyGenerated : Classifier Modules where
+  total := Cat.of FinitelyGeneratedModuleCat.{u}
   forget := (ObjectProperty.ι
       (C := ModuleCat.{u} ℤ) (fun M : ModuleCat.{u} ℤ => Module.Finite ℤ M)).toCatHom
 
@@ -58,7 +63,7 @@ noncomputable def modulesToSets : Modules ⟶ Sets :=
 noncomputable def moduleAtoms : ModuleAtoms foundationAtoms algebraAtoms where
   Modules := Modules
   free := free
-  finiteRank := finiteRank
+  finitelyGenerated := finitelyGenerated
   modulesToSets := modulesToSets
 
 end NormalizedCategoryGraph.Realization.Mathlib

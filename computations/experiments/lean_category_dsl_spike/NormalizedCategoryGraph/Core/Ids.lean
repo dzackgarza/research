@@ -96,7 +96,10 @@ def magmasCommutative : ClassifierId := ⟨"clf.magmas.commutative"⟩
 def magmasUnital : ClassifierId := ⟨"clf.magmas.unital"⟩
 def magmasInverse : ClassifierId := ⟨"clf.magmas.inverse"⟩
 def modulesFree : ClassifierId := ⟨"clf.modules_r.free"⟩
+def modulesFinitelyGenerated : ClassifierId := ⟨"clf.modules_r.finitely_generated"⟩
+/-- Finite rank — distinct from finitely generated; no Mathlib realization yet. -/
 def modulesFiniteRank : ClassifierId := ⟨"clf.modules_r.finite_rank"⟩
+def m2oDistributive : ClassifierId := ⟨"clf.magmaswithtwooperations.distributive"⟩
 end ClassifierId
 
 namespace PortId

@@ -5,39 +5,69 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import Mathlib.Algebra.Category.Semigrp.Basic
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
+import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.Types.Basic
 import NormalizedCategoryGraph.Realization.Mathlib.Foundation
 
 /-!
-# Exceptional opaque hosts
+# Exceptional hosts
 
-* `MagmasWithTwoOperations` — product of two magma categories (two operations,
-  no distributivity imposed), with multiplicative / additive ports the projections.
-* `Crystals` — combinatorial crystals as types equipped with Kashiwara operators
-  `eᵢ`, `fᵢ` (indexed by `ℕ`); morphisms commute with the operators.
+* `MagmasWithTwoOperations` — categorical pullback
+  `MagmaCat ×_{Type} MagmaCat` (two magma structures on one underlying set up to
+  the structural isomorphism). Not the cartesian product of two magma categories.
+* `distributive` — full subcategory of that pullback where the transported
+  operations satisfy left and right distributivity.
+* `Crystals` — combinatorial crystals as types with Kashiwara operators.
 -/
 
 namespace NormalizedCategoryGraph.Realization.Mathlib
 
-open CategoryTheory
+open CategoryTheory CategoryTheory.Limits
 open NormalizedCategoryGraph
 
 universe u
 
 set_option linter.checkUnivs false
 
-/-- Two-operation host before distributivity: a pair of magmas. -/
-def MagmasWithTwoOperations : ObjCat.{u + 1, u} :=
-  Cat.of (MagmaCat.{u} × MagmaCat.{u})
+/-- Forgetful functors used for the two-operation pullback. -/
+noncomputable abbrev magmaForget : MagmaCat.{u} ⥤ Type u := forget MagmaCat.{u}
 
-/-- Multiplicative port (first factor). -/
+/-- Two-operation host: Magmas ×_Sets Magmas (categorical pullback). -/
+noncomputable def MagmasWithTwoOperations : ObjCat.{u + 1, u} :=
+  Cat.of (CategoricalPullback magmaForget magmaForget)
+
+/-- Multiplicative port (first projection). -/
 noncomputable def multiplicativePort : MagmasWithTwoOperations ⟶ Magmas :=
-  (CategoryTheory.Prod.fst MagmaCat.{u} MagmaCat.{u}).toCatHom
+  (CategoricalPullback.π₁ magmaForget magmaForget).toCatHom
 
-/-- Additive port (second factor). -/
+/-- Additive port (second projection). -/
 noncomputable def additivePort : MagmasWithTwoOperations ⟶ Magmas :=
-  (CategoryTheory.Prod.snd MagmaCat.{u} MagmaCat.{u}).toCatHom
+  (CategoricalPullback.π₂ magmaForget magmaForget).toCatHom
+
+/-- Transport the second magma operation onto the first factor's carrier. -/
+noncomputable def addOnFst (x : CategoricalPullback magmaForget magmaForget) :
+    x.fst → x.fst → x.fst := fun a b =>
+  x.iso.inv (x.iso.hom a * x.iso.hom b)
+
+/-- Left and right distributivity of `*` over the transported `+`. -/
+def IsDistributive (x : CategoricalPullback magmaForget magmaForget) : Prop :=
+  (∀ a b c : x.fst,
+      a * addOnFst x b c = addOnFst x (a * b) (a * c)) ∧
+    (∀ a b c : x.fst,
+      addOnFst x b c * a = addOnFst x (b * a) (c * a))
+
+/-- Distributive two-operation objects as a full subcategory of the pullback. -/
+abbrev DistributiveTwoOpCat : Type (u + 1) :=
+  ObjectProperty.FullSubcategory
+    (C := CategoricalPullback magmaForget magmaForget) IsDistributive
+
+/-- Distributivity classifier on `MagmasWithTwoOperations`. -/
+noncomputable def distributive : Classifier MagmasWithTwoOperations where
+  total := Cat.of DistributiveTwoOpCat.{u}
+  forget :=
+    (ObjectProperty.ι
+        (C := CategoricalPullback magmaForget magmaForget) IsDistributive).toCatHom
 
 /-- Combinatorial crystal: underlying set with Kashiwara operators. -/
 structure Crystal where
@@ -102,6 +132,7 @@ noncomputable def exceptionalAtoms : ExceptionalAtoms foundationAtoms where
   MagmasWithTwoOperations := MagmasWithTwoOperations
   additivePort := additivePort
   multiplicativePort := multiplicativePort
+  distributive := distributive
   Crystals := Crystals
   crystalsToSets := crystalsToSets
 

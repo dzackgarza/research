@@ -29,7 +29,7 @@ noncomputable def atomicModel : AtomicModel.{u + 1, u} where
 /-- Normalized Magmas from the Mathlib model. -/
 example : Normalized.Magmas atomicModel = Magmas := rfl
 
-/-- Normalized Rings is the two-operation product host. -/
-example : Normalized.Rings atomicModel = MagmasWithTwoOperations := rfl
+/-- The two-operation host is the categorical pullback. -/
+example : Normalized.MagmasWithTwoOperations atomicModel = MagmasWithTwoOperations := rfl
 
 end NormalizedCategoryGraph.Realization.Mathlib

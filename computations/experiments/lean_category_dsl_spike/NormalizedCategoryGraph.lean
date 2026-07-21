@@ -11,15 +11,23 @@ import NormalizedCategoryGraph.Core.Expr
 import NormalizedCategoryGraph.Core.Normalize
 import NormalizedCategoryGraph.Core.StructuralMap
 import NormalizedCategoryGraph.Model.Atomic
+import NormalizedCategoryGraph.Model.Interpretation
 import NormalizedCategoryGraph.Registry.Entry
 import NormalizedCategoryGraph.Registry.Extension
 import NormalizedCategoryGraph.Presentation.Nodes
-import NormalizedCategoryGraph.Model.Interpretation
-import NormalizedCategoryGraph.ForMathlib.CategoricalPullback
 import NormalizedCategoryGraph.Categories.Algebra.Magmas
 import NormalizedCategoryGraph.Categories.Algebra.Rings
 import NormalizedCategoryGraph.Names.Standard
-import NormalizedCategoryGraph.Realization.Mathlib.Atomic
-import NormalizedCategoryGraph.Realization.Sage.Correspondence
 import NormalizedCategoryGraph.Specimen.Viability
-import NormalizedCategoryGraph.Spec.SeedData
+import NormalizedCategoryGraph.ForMathlib.CategoricalPullback
+
+/-!
+Standalone normalized graph root.
+
+Mathlib and Sage realizations are **not** imported here — use
+`NormalizedCategoryGraph.Realization.Mathlib.Atomic` and
+`NormalizedCategoryGraph.Realization.Sage.Correspondence` as separate roots.
+
+The Python-generated `Spec.SeedData` is a migration artifact, not part of this
+root.
+-/

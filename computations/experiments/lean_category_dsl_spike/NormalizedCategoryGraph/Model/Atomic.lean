@@ -10,6 +10,11 @@ import NormalizedCategoryGraph.Core.Ids
 
 Semantic definitions typecheck for every `M : AtomicModel`. The Mathlib
 instance is `Realization.Mathlib.atomicModel`.
+
+`MagmasWithTwoOperations` is the shared-carrier two-operation host (pullback over
+Sets). `Rings` is obtained by refining that host along additive group laws,
+multiplicative monoid laws, and distributivity — it is never definitionally the
+unrefined host.
 -/
 
 namespace NormalizedCategoryGraph
@@ -34,18 +39,24 @@ structure AlgebraAtoms (F : FoundationAtoms.{uObj, uHom}) where
   unital : Classifier F.binaryOperation.total
   inverse : Classifier F.binaryOperation.total
 
-/-- Module atoms. -/
+/-- Module atoms: a family parameterized by ring objects, plus classifiers on the
+generic fibre. The Mathlib realization specializes the fibre at `ℤ` until a
+full `Modules : Rings ⟶ Cat` is available. -/
 structure ModuleAtoms (F : FoundationAtoms.{uObj, uHom}) (_A : AlgebraAtoms F) where
+  /-- Fibre of `Modules(-)` at a designated base ring (provisional specialization). -/
   Modules : ObjCat.{uObj, uHom}
   free : Classifier Modules
-  finiteRank : Classifier Modules
+  /-- Finitely generated modules — not finite rank. -/
+  finitelyGenerated : Classifier Modules
   modulesToSets : Modules ⟶ F.Sets
 
-/-- Exceptional opaque hosts with typed ports. -/
+/-- Exceptional hosts with typed ports. -/
 structure ExceptionalAtoms (F : FoundationAtoms.{uObj, uHom}) where
   MagmasWithTwoOperations : ObjCat.{uObj, uHom}
   additivePort : MagmasWithTwoOperations ⟶ F.binaryOperation.total
   multiplicativePort : MagmasWithTwoOperations ⟶ F.binaryOperation.total
+  /-- Distributivity of the multiplicative magma over the additive magma. -/
+  distributive : Classifier MagmasWithTwoOperations
   Crystals : ObjCat.{uObj, uHom}
   crystalsToSets : Crystals ⟶ F.Sets
 
@@ -67,7 +78,7 @@ def Magmas : ObjCat.{uObj, uHom} := M.foundations.binaryOperation.total
 def magmasToSets : Magmas M ⟶ Sets M :=
   M.foundations.binaryOperation.forget
 
-/-- Semigroups := Magmas.Associative (exact-host → classifier total). -/
+/-- Semigroups := Magmas.Associative. -/
 def Semigroups : ObjCat := M.algebra.associative.total
 
 def semigroupsToMagmas : Semigroups M ⟶ Magmas M :=
@@ -87,24 +98,138 @@ noncomputable def Groups : ObjCat :=
       semigroupsToMagmas M
   (Classifier.reindex monoidsToMagmas M.algebra.inverse).total
 
-/-- Rings as the two-operation host (`MagmasWithTwoOperations`). -/
-def Rings : ObjCat := M.exceptional.MagmasWithTwoOperations
+/-- Two-operation host (pullback Magmas ×_Sets Magmas). -/
+def MagmasWithTwoOperations : ObjCat := M.exceptional.MagmasWithTwoOperations
 
-def ringsToMagmasMul : Rings M ⟶ Magmas M :=
+def m2oToMagmasMul : MagmasWithTwoOperations M ⟶ Magmas M :=
   M.exceptional.multiplicativePort
 
-def ringsToMagmasAdd : Rings M ⟶ Magmas M :=
+def m2oToMagmasAdd : MagmasWithTwoOperations M ⟶ Magmas M :=
   M.exceptional.additivePort
+
+/-! ### Rings tower
+
+Schematically:
+
+```
+Rngs := MagmasWithTwoOperations
+  .AdditiveAssociative.AdditiveCommutative.AdditiveUnital.AdditiveInverse
+  .MultiplicativeAssociative.Distributive
+Rings := Rngs.MultiplicativeUnital
+```
+
+each refinement a `Classifier.reindex` along the appropriate port.
+-/
+
+/-- Additive-associative two-operation objects. -/
+noncomputable def M2O.AdditiveAssociative : ObjCat :=
+  (Classifier.reindex (m2oToMagmasAdd M) M.algebra.associative).total
+
+noncomputable def m2oAddAssocToM2O :
+    M2O.AdditiveAssociative M ⟶ MagmasWithTwoOperations M :=
+  (Classifier.reindex (m2oToMagmasAdd M) M.algebra.associative).baseProjection
+
+/-- Then additive-commutative. -/
+noncomputable def M2O.AdditiveCommutative : ObjCat :=
+  let toMagmas := m2oAddAssocToM2O M ≫ m2oToMagmasAdd M
+  (Classifier.reindex toMagmas M.algebra.commutative).total
+
+noncomputable def m2oAddCommToAddAssoc :
+    M2O.AdditiveCommutative M ⟶ M2O.AdditiveAssociative M :=
+  let toMagmas := m2oAddAssocToM2O M ≫ m2oToMagmasAdd M
+  (Classifier.reindex toMagmas M.algebra.commutative).baseProjection
+
+/-- Then additive-unital. -/
+noncomputable def M2O.AdditiveUnital : ObjCat :=
+  let toMagmas :=
+    m2oAddCommToAddAssoc M ≫ m2oAddAssocToM2O M ≫ m2oToMagmasAdd M
+  (Classifier.reindex toMagmas M.algebra.unital).total
+
+noncomputable def m2oAddUnitalToAddComm :
+    M2O.AdditiveUnital M ⟶ M2O.AdditiveCommutative M :=
+  let toMagmas :=
+    m2oAddCommToAddAssoc M ≫ m2oAddAssocToM2O M ≫ m2oToMagmasAdd M
+  (Classifier.reindex toMagmas M.algebra.unital).baseProjection
+
+/-- Then additive-inverse (additive groups with a second magma). -/
+noncomputable def M2O.AdditiveInverse : ObjCat :=
+  let toMagmas :=
+    m2oAddUnitalToAddComm M ≫
+      m2oAddCommToAddAssoc M ≫ m2oAddAssocToM2O M ≫ m2oToMagmasAdd M
+  (Classifier.reindex toMagmas M.algebra.inverse).total
+
+noncomputable def m2oAddInvToAddUnital :
+    M2O.AdditiveInverse M ⟶ M2O.AdditiveUnital M :=
+  let toMagmas :=
+    m2oAddUnitalToAddComm M ≫
+      m2oAddCommToAddAssoc M ≫ m2oAddAssocToM2O M ≫ m2oToMagmasAdd M
+  (Classifier.reindex toMagmas M.algebra.inverse).baseProjection
+
+/-- Forget the additive tower back to M2O. -/
+noncomputable def m2oAddInvToM2O :
+    M2O.AdditiveInverse M ⟶ MagmasWithTwoOperations M :=
+  m2oAddInvToAddUnital M ≫
+    m2oAddUnitalToAddComm M ≫
+      m2oAddCommToAddAssoc M ≫ m2oAddAssocToM2O M
+
+/-- Then multiplicative-associative. -/
+noncomputable def M2O.MultiplicativeAssociative : ObjCat :=
+  let toMagmas := m2oAddInvToM2O M ≫ m2oToMagmasMul M
+  (Classifier.reindex toMagmas M.algebra.associative).total
+
+noncomputable def m2oMulAssocToAddInv :
+    M2O.MultiplicativeAssociative M ⟶ M2O.AdditiveInverse M :=
+  let toMagmas := m2oAddInvToM2O M ≫ m2oToMagmasMul M
+  (Classifier.reindex toMagmas M.algebra.associative).baseProjection
+
+/-- Then distributivity on the two-operation host (reindexed along the tower). -/
+noncomputable def Rngs : ObjCat :=
+  let toM2O := m2oMulAssocToAddInv M ≫ m2oAddInvToM2O M
+  (Classifier.reindex toM2O M.exceptional.distributive).total
+
+noncomputable def rngsToMulAssoc : Rngs M ⟶ M2O.MultiplicativeAssociative M :=
+  let toM2O := m2oMulAssocToAddInv M ≫ m2oAddInvToM2O M
+  (Classifier.reindex toM2O M.exceptional.distributive).baseProjection
+
+/-- Rings := Rngs.MultiplicativeUnital. -/
+noncomputable def Rings : ObjCat :=
+  let toMagmas :=
+    rngsToMulAssoc M ≫ m2oMulAssocToAddInv M ≫ m2oAddInvToM2O M ≫ m2oToMagmasMul M
+  (Classifier.reindex toMagmas M.algebra.unital).total
+
+noncomputable def ringsToRngs : Rings M ⟶ Rngs M :=
+  let toMagmas :=
+    rngsToMulAssoc M ≫ m2oMulAssocToAddInv M ≫ m2oAddInvToM2O M ≫ m2oToMagmasMul M
+  (Classifier.reindex toMagmas M.algebra.unital).baseProjection
+
+/-- Port Rings → Magmas along the multiplicative structure. -/
+noncomputable def ringsToMagmasMul : Rings M ⟶ Magmas M :=
+  ringsToRngs M ≫
+    rngsToMulAssoc M ≫
+      m2oMulAssocToAddInv M ≫ m2oAddInvToM2O M ≫ m2oToMagmasMul M
+
+/-- Port Rings → Magmas along the additive structure. -/
+noncomputable def ringsToMagmasAdd : Rings M ⟶ Magmas M :=
+  ringsToRngs M ≫
+    rngsToMulAssoc M ≫
+      m2oMulAssocToAddInv M ≫ m2oAddInvToM2O M ≫ m2oToMagmasAdd M
 
 /-- CommutativeRings := Rings.Commutative[via := multiplicative]. -/
 noncomputable def CommutativeRings : ObjCat :=
   (Classifier.reindex (ringsToMagmasMul M) M.algebra.commutative).total
 
+/-- DivisionRings := Rings.Division requires a dedicated Division classifier
+(invertibility of nonzero multiplicative elements). It is intentionally not
+defined as Magmas.Inverse, and not silently equated with Rings. -/
+
 def Modules : ObjCat := M.modules.Modules
 
 def FreeModules : ObjCat := M.modules.free.total
 
-/-- `Modules(R).Free.Finite` — Finite from Sets along Free → Modules → Sets. -/
+/-- Finitely generated modules (not finite-rank). -/
+def FinitelyGeneratedModules : ObjCat := M.modules.finitelyGenerated.total
+
+/-- `Modules(R).Free` refined by Sets.Finite along Free → Modules → Sets. -/
 noncomputable def FiniteFreeModules : ObjCat :=
   (Classifier.reindex
       (M.modules.free.forget ≫ M.modules.modulesToSets)
