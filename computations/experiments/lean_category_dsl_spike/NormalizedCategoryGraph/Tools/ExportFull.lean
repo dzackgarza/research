@@ -56,7 +56,8 @@ open Tools
 
 /-- Reload the compiled registry extension; this is the exporter data source. -/
 def loadRegisteredSnapshot : IO RegistrySnapshot := do
-  Lean.initSearchPath (← Lean.findSysroot)
+  let buildOleanRoot := (← IO.appDir).parent.get! / "lib" / "lean"
+  Lean.initSearchPath (← Lean.findSysroot) [buildOleanRoot]
   unsafe Lean.enableInitializersExecution
   let env ← Lean.importModules #[{ module := `NormalizedCategoryGraph.Specimen.Register }] {}
     (loadExts := true)
