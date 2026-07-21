@@ -1,9 +1,8 @@
 # Mathematical authoring conventions
 
-This chapter records the mathematical conventions needed to contribute coherent prose to
-the book: types, chosen structure, model choices, universal constructions, diagrams,
-notation, and the relation between a primitive construction and its familiar
-specializations.
+Contributions state mathematical types, chosen structures, model choices, universal
+constructions, diagrams, notation, and the relation between a primitive construction and
+its familiar specializations.
 
 ## Types and structure {#sec-types-and-structure}
 

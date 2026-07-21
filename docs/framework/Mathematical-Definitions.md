@@ -39,7 +39,7 @@ Each module property is a classifier over $\mathrm{Mod}_R$ (@def-axiom-classifie
 
 ## Axioms as subcategories; pullback {#sec-axioms}
 
-The axiom-classifier and property/structure machinery is the [Framework](Mathematical-Framework.md#sec-axiom-classifiers): an axiom is a classifier $\iota_A : \mathcal{C}.A \to \mathcal{C}$ (@def-axiom-classifier), in the property case a replete full subcategory cut out at the node where the property is defined; a property on a category is the pullback along a forgetful functor of one on the underlying data (@def-axiom-through-functor), defined at the highest node where it is well defined and pulled back below; and whether a lift is property or structure is computed from the classifier, never declared (@def-property-structure-stuff).
+The axiom-classifier and property/structure machinery is the [Framework](Truncation-and-Classifiers.md#sec-axiom-classifiers-general): an axiom is a classifier $\iota_A : \mathcal{C}.A \to \mathcal{C}$ (@def-axiom-classifier), in the property case a replete full subcategory cut out at the node where the property is defined; a property on a category is the pullback along a forgetful functor of one on the underlying data (@def-axiom-through-functor), defined at the highest node where it is well defined and pulled back below; and whether a lift is property or structure is computed from the classifier, never declared (@def-property-structure-stuff).
 This section applies that calculus to modules and forms; the two inclusions it needs beyond the generic machinery are:
 
 ::: {#def-derived-expressions}
@@ -118,7 +118,7 @@ requiring no freeness. The form is **nondegenerate** when $\tilde b$ is injectiv
 ::: {#def-orthogonal-sum}
 ## Orthogonal sum
 
-The form categories carry a symmetric monoidal structure, the **orthogonal sum**: $(M, b_M) \perp (N, b_N) = (M \oplus N,\, b_M \oplus b_N)$ with vanishing cross terms. Being a *structure* (not a property), it is a named section $\mathcal{B}_{R,W}^{(\perp)}$ ([P4](../contributing/Mathematical-Language-Style-Guide.md#p4)), consumed by the bitorsor composition of @def-isometry-groups and the adelic product of @sec-genus-sec, which reference the named lift rather than "the" monoidal structure.
+The form categories carry a symmetric monoidal structure, the **orthogonal sum**: $(M, b_M) \perp (N, b_N) = (M \oplus N,\, b_M \oplus b_N)$ with vanishing cross terms. Being a *structure* (not a property), it is a named section $\mathcal{B}_{R,W}^{(\perp)}$ ([chosen-structure convention](../contributing/Mathematical-Language-Style-Guide.md#convention-chosen-structure)), consumed by the bitorsor composition of @def-isometry-groups and the adelic product of @sec-genus-sec, which reference the named lift rather than "the" monoidal structure.
 :::
 
 *Seated rulings:* [the W-valued form is the defining datum](Settled-Mathematical-Rulings.md#forms-and-lattices) · [the total category and its variance](Settled-Mathematical-Rulings.md#forms-and-lattices) · [alternating vs skew-symmetric](Settled-Mathematical-Rulings.md#forms-and-lattices) · [nondegenerate is not unimodular](Settled-Mathematical-Rulings.md#forms-and-lattices).

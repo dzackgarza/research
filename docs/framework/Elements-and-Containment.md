@@ -1,111 +1,93 @@
-# Elements and Containment {#sec-elements-containment}
-
-Elementhood and containment are category-relative notions, and each is a definition, not a convention of reading: an element is a morphism from a corepresenting object, a subobject is a carried monomorphism, and set-level containment is containment of images under the distinguished underlying-set factorization.
-The statement $x \in C$ therefore has several inequivalent meanings, each defined below, and which one is in force is determined by what stands on the right-hand side: a category ($X \in \mathcal C$: an object), a classifier domain ($X \in \mathcal C.A$: a lift, per @prp-membership-proposition), or an object ($x \in X$: an element, per @def-element-functor and @def-generalized-element).
-Hom-objects are objects like any other: $f \in \operatorname{Hom}_{\mathcal C}(X, Y)$ is elementhood in the hom-set, and the arrow declarations $f \colon X \to Y$, $\alpha \colon F \Rightarrow G$ denote exactly this membership.
+# Elements, subobjects, and hypotheses {#sec-elements-containment}
 
 ## Elements {#sec-elements}
 
+For $X\in C$, a generalized element with domain $T$ is a morphism $T\to X$. If
+$F\colon C^{\mathrm{op}}\to\mathbf{Set}$ is a presheaf, an element
+$x\in F(T)$ is the object $(T,x)$ of $\operatorname{El}(F)$ defined in
+@def-category-of-elements.
+
 ::: {#def-element-functor}
-## Element functor
-
-Let $\mathcal C$ be a category of the base diagram with distinguished underlying-set
-factorization $U \colon \mathcal C \to \mathbf{Set}$
-([Framework](Mathematical-Framework.md#sec-base-graph)). When $U$ is corepresentable,
-its corepresenting object $P$ is part of the presentation of $\mathcal C$, via a
-specified natural isomorphism $U \cong \operatorname{Hom}_{\mathcal C}(P, -)$. An
-*element* of $X \in \mathcal C$ is a morphism $P \to X$; the notation $x \in X$ denotes
-exactly this, and every operation on elements is an operation on such morphisms.
-
-| $\mathcal C$ | corepresenting object $P$ |
-|---|---|
-| $\mathbf{Set}$ | the singleton $\ast$ |
-| $\mathbf{Grp}$ | $\mathbb Z$ |
-| $\operatorname{Mod}_R$ | $R$ |
-| $\mathbf{CommRing}$ | $\mathbb Z[x]$ |
+If a concrete functor $U\colon C\to\mathbf{Set}$ is corepresented by $P$, a specified
+natural isomorphism
+$$
+U\cong\operatorname{Hom}_C(P,-)
+$$
+identifies an element of $U(X)$ with a morphism $P\to X$. The corepresenting objects are
+a singleton for $\mathbf{Set}$, $\mathbb Z$ for $\mathbf{Grp}$, $R$ for
+$R\text{-}\mathbf{Mod}$, and $\mathbb Z[x]$ for $\mathbf{CommRing}$.
 :::
 
-The corepresenting object is declared, never derived from the terminal object: in $\mathbf{Grp}$ the trivial group is a zero object, so $\operatorname{Hom}_{\mathbf{Grp}}(1, G)$ is a singleton for every $G$, while the elements of $G$ are $\operatorname{Hom}_{\mathbf{Grp}}(\mathbb Z, G)$.
+An isomorphism-invariant property $P$ defines the replete full subcategory $C_P$ of
+objects satisfying $P$. A disjunction $P\lor Q$ defines the join of $C_P$ and $C_Q$ in
+the inclusion preorder (@def-join-diagram). Categories of objects with chosen structure
+are instead described by their forgetful functors.
 
-::: {#def-generalized-element}
-## Generalized element
-
-When the underlying-set factorization of $\mathcal C$ is not corepresentable by a
-single object — relative schemes are the standing example — an element of
-$X \in \mathcal C$ is a *generalized element* [@nlab:generalized_element]: an object $(T, \, x \in X(T))$ of
-the category of elements [@nlab:category_of_elements] of the functor of points of
-$X$. The
-statement $x \in X$ denotes a generalized element; $x \in X(T)$ names its stage. Every
-statement depending on a generalized element carries the stage it depends on. The
-points of the underlying topological space $|X|$ form a different object, reached by
-the underlying-space functor, and are written as membership in $|X|$.
-:::
-
-::: {#prp-membership-proposition}
-## Membership in a classifier is a proposition exactly in the property case
-
-For a classifier $\iota_A \colon \mathcal C.A \to \mathcal C$
-([Framework](Mathematical-Framework.md#sec-axiom-classifiers)), the statement
-$X \in \mathcal C.A$ — the point naming $X$ lifts through $\iota_A$ — is a proposition
-if and only if $A$ is a property: $\iota_A$ full and faithful, the fiber over each
-object empty or contractible. When $A$ is structure, the fiber is a groupoid of
-inequivalent lifts and a truth value is the wrong shape of answer: the content of
-"membership" is the fiber itself, presented through its named lifts
-([Style Guide P4](../contributing/Mathematical-Language-Style-Guide.md#sec-governing-principles)).
-:::
-
-Because there is no categorical union of classifiers ([Framework](Mathematical-Framework.md#sec-intersection)), there is no membership statement for a disjunction of axioms; case decompositions are handled at the level of statements ([Generic Elements](Generic-Elements.md#sec-case-decomposition)).
-
-## Containment {#sec-containment}
+## Subobjects {#sec-containment}
 
 ::: {#def-subobject-relation}
-## Subobject
-
-A *subobject* of $M \in \mathcal C$ is an object $N$ together with a carried
-monomorphism $N \to M$ in $\mathcal C$; the relation is written $N \le M$ and its
-content is the carried morphism, not a property of $N$ alone. Every operation on
-subobjects — primitivity, saturation, orthogonal complement — consumes the carried
-monomorphism. For a bare object $N$ with no carried monomorphism, $N \le M$ is not a
-statement; the neighboring existence question is @def-embedding-existence.
+A *subobject* of $M\in C$ is an isomorphism class of monomorphisms
+$i\colon N\hookrightarrow M$. A representative of the subobject is a specific
+monomorphism. Two representatives $i\colon N\hookrightarrow M$ and
+$i'\colon N'\hookrightarrow M$ define the same subobject when there is an isomorphism
+$u\colon N\xrightarrow{\sim}N'$ with $i=i'\circ u$ [@Mac94, I.5].
 :::
 
-::: {#def-underlying-containment}
-## Underlying containment
+A factorization from the subobject represented by $i\colon N\hookrightarrow M$ to the
+one represented by $j\colon P\hookrightarrow M$ is a morphism $f\colon N\to P$ with
+$i=j\circ f$.
 
-For $A$ and $B$ admitting a common base $\mathcal E$ — their Meet along distinguished
-factorizations ([Distinguished Functors](Distinguished-Functors.md#sec-resolution-site)) —
-the *underlying containment* $A \subseteq B$ is containment of the images of $A$ and
-$B$ under the composites to $\mathcal E$ followed by its underlying-set factorization.
-The relation is a statement about those images, and it is stated — and displayed —
-together with $\mathcal E$ and the factorizations used.
+The assertion that some monomorphism $A\to B$ exists is a proposition. A construction
+that uses an embedding names a particular monomorphism.
+
+::: {#exm-subobject-base-change}
+**Example.** Let $L$ be an integral lattice and $v\in L$. The inclusion
+$\mathbb Zv\hookrightarrow L$ represents a subobject of the underlying
+$\mathbb Z$-module. After base change, $\mathbb Rv\hookrightarrow
+L\otimes_{\mathbb Z}\mathbb R$ represents a subspace. These monomorphisms belong to
+different categories and are related by the base-change functor.
 :::
 
-::: {#def-embedding-existence}
-## Embedding existence
+## Comparison after a named functor
 
-The question "does a monomorphism $A \to B$ exist" is the nonemptiness of the relevant
-set of monomorphisms — in the isomorphism-onto-a-subobject form, nonemptiness of a
-torsor of isomorphisms [@nlab:torsor]. It is a genuine proposition with genuine
-obstructions (cardinality, rank, form invariants), and it is distinct from both
-@def-subobject-relation (which asserts carried data) and @def-underlying-containment.
-A negative answer contradicts no carried subobject elsewhere, and a positive answer
-yields a subobject only by naming a chosen monomorphism
-([Identification](Identification.md#sec-witnesses)).
+Let $F\colon C\to E$ and $G\colon D\to E$. A comparison between $X\in C$ and
+$Y\in D$ is made between $F(X)$ and $G(Y)$ in $E$. For modules, base change is written
+explicitly: a real line is compared with the real vector space
+$L\otimes_{\mathbb Z}\mathbb R$; the integral lattice $L$ remains an object of
+$\mathbb Z\text{-}\mathbf{Mod}$.
+
+## Solution functors {#sec-generic-solutions}
+
+::: {#def-generic-solution}
+Let $A,B\colon C^{\mathrm{op}}\to\mathbf{Set}$ be presheaves and let
+$\alpha,\beta\colon A\Rightarrow B$ be natural transformations. Their equalizer
+$$
+\operatorname{Sol}:=\operatorname{Eq}(\alpha,\beta)
+$$
+is the presheaf of solutions of the corresponding equations. If
+$\operatorname{Sol}\cong\operatorname{Hom}_C(-,X)$, the identity of $X$ determines its
+universal element. A "generic solution" is used only after this representability has been
+proved.
 :::
 
-## Well-formedness {#sec-containment-wf}
+## Hypotheses {#sec-hypotheses}
 
-A containment relation is defined only where its terms admit a common category along distinguished factorizations.
-Where none exists the expression is not a statement, and the defect is the absence of the factorization — a different failure from falsity, which requires evaluation in a named category.
-With $L \in \mathbf{Lat}_{\mathbb Z}$, $v \in L$, and the distinguished base change $-\otimes_{\mathbb Z}\mathbb R$:
+A theorem records every hypothesis needed for its conclusion. A hypothesis may be an
+object property, an equality of named morphisms, the existence of a limit, flatness, a
+characteristic restriction, or another stated proposition. A later construction that
+uses a witness names that witness instead of retaining only its existence.
 
-| expression | status |
-| --- | --- |
-| $v \in L$ | true — an element (@def-element-functor) |
-| $\mathbb Z v \le L$ | true with its carried inclusion — a rank-one subobject |
-| $\mathbb R v \le L$ | not a statement — $\mathbb R v$ is not an object of $\mathbf{Lat}_{\mathbb Z}$ |
-| $\mathbb R v \subseteq L$ | false, evaluated in $L \otimes \mathbb R$: the image of $L$ contains no line |
-| $\mathbb R v \le L \otimes \mathbb R$ | true with its carried inclusion of subspaces |
-| $\mathbb R_{\ge 0} v \in L \otimes \mathbb R$ | not a statement — a cone is not an element; $\mathbb R_{\ge 0} v$ is a polyhedral cone in the $\mathbb R$-vector space $L \otimes \mathbb R$ |
+## Disjunction and cases {#sec-case-decomposition}
 
-Evaluation after transport is governed by the single asymmetry of [Distinguished Functors](Distinguished-Functors.md#sec-statements-vs-constructions): a statement may be evaluated after passage along distinguished factorizations and then carries its category of evaluation; a construction never passes silently.
+For object properties $P$ and $Q$, the full subcategory defined by $P\lor Q$ is valid.
+A proof by cases consists of implications $P\Rightarrow R$ and $Q\Rightarrow R$ together
+with the hypothesis $P\lor Q$. For chosen structures, a coproduct or union of their
+domains does not automatically define a category of objects equipped with either
+structure; its morphisms and universal property must be specified.
+
+## Localization and descent {#sec-localization}
+
+Localization or completion is application of a named functor, such as
+$L\mapsto L\otimes_{\mathbb Z}\mathbb Z_p$. A statement proved for the image is a
+statement about that localized object. A conclusion about $L$ requires a stated descent
+or local-to-global theorem with its hypotheses.

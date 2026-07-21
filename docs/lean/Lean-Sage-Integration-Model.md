@@ -1,57 +1,48 @@
-# Lean–Sage Integration Model
+# Lean and Sage
 
-The ratified layering and working discipline for the alignment work, distilled from the [#251](https://github.com/dzackgarza/research/issues/251) record (2026-07-16/17; the A/B/C model is user-ratified and canonical).
-This page is the implementation map from the mathematical presentation to code — implementation vocabulary (manifest, conformance, dispatch, realization owner) is legal here and only here (style-guide [P6](../contributing/Mathematical-Language-Style-Guide.md#p6)).
+Lean and Sage realize different parts of the same mathematics. Lean states definitions,
+functoriality, coherence, and theorems. Sage supplies data representations and executable
+algorithms.
 
-## Layering {#sec-layering}
+## Mathematical boundary {#sec-layering}
 
-**Lean/Mathlib owns mathematical meaning** — definitions, hypotheses, functoriality, coherence, and proof status.
-**Sage owns executable realization** — representations, dispatch, method placement, runtime validation, algorithms.
-Neither side invents a second common ontology.
-The bridge is narrow: a generated manifest tying real Lean declarations to the facts Lean cannot verify itself (Sage realization owners, backend trust status, genuinely unresolved gaps).
-It never duplicates Lean's namespace, term language, or instance system in a parallel ID/reference/claim schema.
+Every implemented notion cites its definition in the theory chapters. Lean declarations
+formalize that definition or a stated specialization. Sage classes and methods realize
+the corresponding computation. An implementation name does not introduce a second
+mathematical definition.
 
-Lean is a **coherence engine, not a standardness oracle**: kernel checks, tethers, equivalences, and green builds establish internal consistency, never that the definitions model the intended mathematics.
-Only anchors into Mathlib and the literature can fail against the world — the anchors are the work.
+## Existing and missing formalizations {#sec-abc-model}
 
-## The A/B/C model — the DSL is a routing layer, never a definitional layer {#sec-abc-model}
+When Mathlib already contains the required construction, the project uses that
+declaration and records the comparison with the book's notation. When a standard result
+is absent, it is developed in `ForMathlib/` in a form suitable for upstream contribution.
+If a proof is not yet available, the statement and its hypotheses remain explicit; its
+proof status is reported with the declaration.
 
-The three mathematical registers a Sage category falls into — named-Mathlib-present, base-and-axioms-present (an iterated pullback), cross-tower-absent — are @sec-conversion-consequences in the [Framework](../framework/Mathematical-Framework.md); they are what the routing register below discharges.
-For every notion a contribution needs:
+The formalization distinguishes:
 
-- **(A) Mathlib provides it** → wrap/decorate slightly; the DSL holds only the declaration of how the object sits in its conservative functor graph (distinguished routes, realization owners, conformance).
-  The default and overwhelming majority (≈85–90% of surveyed rows).
+- definitions already present in Mathlib;
+- local statements intended for Mathlib;
+- cited theorems whose formal proofs remain open;
+- Sage computations whose correctness is checked by a separate theorem or certificate.
 
-- **(B) Mathlib lacks it** → make the honest upstream contribution by proxy in the shipped `ForMathlib/` layer — establish the category, its formal properties, its property-defined subcategories, and the needed functors — then **loop back to (A)**. The DSL never ends up holding the definition.
+## The `ForMathlib` boundary {#sec-formathlib-layer-contract}
 
-- **(C) escape hatch, user-approved only** → if (B) genuinely fails repeatedly: (B) with `sorry`s — statements still kernel-checked, proofs pending — isolated in a Synthetic layer, carrying a written account of why the sanctioned route failed.
-  Expected instances are sorry'd *statements of literature theorems* needed as hypotheses (the indefinite genus + spinor decision theorem; Nikulin surjectivity/uniqueness), not failed definitions.
+Files under `ForMathlib/` import Mathlib and state generally useful missing mathematics.
+Each declaration records the Mathlib location to which it is intended to move. Project
+modules may import these files; the reverse import is excluded so the formalization can be
+contributed upstream independently.
 
-**(C) is a queue, not a resting state.** Membership in `Synthetic/` *is* the queue annotation; the ideal end-state is `Synthetic/` empty.
-Two draining queues, one direction: Synthetic → ForMathlib → Mathlib.
+## The comparison manifest {#sec-registry-semantics}
 
-**The test for what moves to Lean:** any claim of the form "this square commutes / this family is natural / this is a limit / these two routes agree / this action is free and transitive" is proof-shaped.
-In Python it can only be spot-checked (a naturality check on three sample objects passes on many non-natural families), so its statement belongs in Lean; Sage keeps executable conformance.
+The comparison manifest links a Lean declaration to its Sage realization when such a
+realization exists. A row records the Lean name, the Sage owner, the comparison being
+claimed, and the proof or test that supports that claim. Missing analogues are reported
+only after searches of Mathlib's declarations and documentation.
 
-**Deferral is forbidden.** "Developed later" without an assignment violates the model: the disposition for missing theory is (B) statement-level definitions now, with (C)-queued proofs visible in the cop-out report — never an unassigned "later."
-Do not defer a foundational defect because remaining tasks are mechanical; exporting a malformed foundation multiplies the damage.
+## Proof and computation {#sec-cop-out-visibility}
 
-## The ForMathlib layer contract {#sec-formathlib-layer-contract}
-
-Per file: imports Mathlib only (mechanically gated); follows Mathlib's organization; names the intended upstream target per declaration; graduation = contribute upstream, then delete-and-realias locally.
-Prefer self-contained files — intra-ForMathlib imports couple graduation order (upstream PRs go per-file); note unavoidable coupling in the layer-contract docstring.
-
-Module layers, with import direction mechanically enforced: **Foundation** (thin Mathlib-facing facade — categories, functors, naturals, object properties, full subcategories are real Mathlib constructions, never a parallel categorical kernel or resolver), **ForMathlib** (upstream-destined missing theory), **Categories** (the corpus, derived from the standard presentation), **Manifest** (the narrow bridge).
-
-Cataloguing is mathematical research, not inventory transcription: the presentation is forward-looking toward schemes, sheaves, stacks, opposites, arrow categories, functor categories, hom-categories, coherence data, and 2-categorical constructions, expressed as real Lean declarations — the rejected alternative was administrative machinery (dimension tags, placement-sort enums, a bespoke concept-reference language).
-
-## Registry semantics {#sec-registry-semantics}
-
-The manifest's gap rows follow the recording discipline in [Contribution Guidelines](../contributing/Contribution-Guidelines.md#sec-cg-recording-a-gap): a `pending`/no-analog row is a negative claim about Mathlib, admissible only with search evidence.
-The standing prior the registry encodes: every notion here is standard mathematics with an upstream anchor at ingredient level — absence of a single prepackaged name is not a gap (compositional constructions count), and a wrong alias at the root of the single auditable source is poison where a pending row is honest.
-
-The per-contributor workflow — the authoring checkpoint, dictionary-first generation, Lean authoring rules, and correction handling — lives in the [Contribution Guidelines](../contributing/Contribution-Guidelines.md); the failure modes it guards are catalogued in the [Design Hazard Ledger](../contributing/Design-Hazard-Ledger.md).
-
-## Cop-out visibility {#sec-cop-out-visibility}
-
-A **report, never a gate**, makes every common Lean cop-out visible tree-wide: `sorry`/`admit` per declaration with queue annotation and no-go link; axioms beyond `propext`, `Classical.choice`, `Quot.sound`; `native_decide`; `unsafe`/`implemented_by`/ `extern`; `partial def`. The hard gate (exact axiom count, prohibited tokens) stays scoped to the non-Synthetic layers, red-on-violation; the report covers everything, so the (C) queue is always enumerable without blocking first-round work.
+Commutativity, naturality, universal properties, and equivalences are theorem statements.
+Finite examples may test an implementation, but they do not prove these statements. Sage
+results that admit compact certificates may be checked by Lean or by a separately
+specified certified procedure; otherwise their status remains computational.

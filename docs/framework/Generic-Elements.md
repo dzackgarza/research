@@ -42,7 +42,7 @@ When the relation is to be *consumed as data* rather than asserted — when late
 
 ## Case decomposition {#sec-case-decomposition}
 
-There is no categorical union of classifiers ([Framework](Mathematical-Framework.md#sec-intersection)), so "the $A$ case or the $B$ case" is not a membership statement about one object.
+There is no categorical union of classifiers ([Joins, meets, and closure](Joins-Meets-and-Closure.md#sec-join-meet)), so "the $A$ case or the $B$ case" is not a membership statement about one object.
 Case analysis is a family of implications: a stated decomposition of a classifier (the prime $2$ and the odd primes; a stratification by rank), one conditional statement per case (@sec-hypotheses), and the exhaustiveness of the decomposition as a proposition of its own — discharged or carried like any other hypothesis.
 Nothing is concluded from an undischarged decomposition.
 
