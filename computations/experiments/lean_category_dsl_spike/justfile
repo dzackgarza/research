@@ -62,15 +62,15 @@ ncg-check-python-oracle: gen-seed
     python3 scripts/crosscheck_hand_dot.py
     PYTHONPATH=../sage_category_tree_stubs sage -python scripts/ledger_check_from_lean_manifest.py
 
-# Lean exporters must succeed without reading Spec/SeedData
+# Lean exporters must succeed without reading Spec/SeedData; ledger is noncircular
 ncg-check-lean:
     #!/usr/bin/env bash
     set -euo pipefail
     root="{{repo_root}}"
-    cd "$root" && lake build ncg-export ncg-export-full
-    "$root/.lake/build/bin/ncg-export" >/dev/null
-    out="$("$root/.lake/build/bin/ncg-export-full")"
-    echo "$out" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d.get("source")=="lean-registry", d'
+    cd "$root"
+    lake build ncg-export ncg-export-full
+    lake exe ncg-export >/dev/null
+    lake exe ncg-export-full | python3 "{{spike_dir}}/scripts/ledger_check_from_lean_export.py"
 
 # Prefer Lean check; Python oracle remains available explicitly
 ncg-check: ncg-check-lean

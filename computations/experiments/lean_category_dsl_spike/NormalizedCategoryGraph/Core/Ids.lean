@@ -84,6 +84,8 @@ def monoids : CategoryId := ⟨"cat.monoids"⟩
 def modulesR : CategoryId := ⟨"cat.modules_r"⟩
 def magmasWithTwoOperations : CategoryId := ⟨"cat.magmaswithtwooperations"⟩
 def crystals : CategoryId := ⟨"cat.crystals"⟩
+/-- DivisionRings := Rings.Division. -/
+def divisionRings : CategoryId := ⟨"cat.division_rings"⟩
 end CategoryId
 
 namespace ClassifierId
@@ -100,6 +102,8 @@ def modulesFinitelyGenerated : ClassifierId := ⟨"clf.modules_r.finitely_genera
 /-- Finite rank — distinct from finitely generated; no Mathlib realization yet. -/
 def modulesFiniteRank : ClassifierId := ⟨"clf.modules_r.finite_rank"⟩
 def m2oDistributive : ClassifierId := ⟨"clf.magmaswithtwooperations.distributive"⟩
+/-- Nonzero multiplicative invertibility on Rings — not Magmas.Inverse. -/
+def ringsDivision : ClassifierId := ⟨"clf.rings.division"⟩
 end ClassifierId
 
 namespace PortId

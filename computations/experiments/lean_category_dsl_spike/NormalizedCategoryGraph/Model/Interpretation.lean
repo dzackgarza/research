@@ -30,6 +30,7 @@ noncomputable def evalAtom (M : AtomicModel.{uObj, uHom}) (id : CategoryId) :
   else if id == CategoryId.groups then some (Groups M)
   else if id == CategoryId.rings then some (Rings M)
   else if id == CategoryId.commutativeRings then some (CommutativeRings M)
+  else if id == CategoryId.divisionRings then some (DivisionRings M)
   else if id == CategoryId.modulesR then some (Modules M)
   else if id == CategoryId.magmasWithTwoOperations then
     some (MagmasWithTwoOperations M)
@@ -64,6 +65,7 @@ noncomputable def modulesClassifier (M : AtomicModel.{uObj, uHom}) (id : Classif
 noncomputable def m2oClassifier (M : AtomicModel.{uObj, uHom}) (id : ClassifierId) :
     Option (Classifier (MagmasWithTwoOperations M)) :=
   if id == ClassifierId.m2oDistributive then some M.exceptional.distributive
+  else if id == ClassifierId.ringsDivision then some M.exceptional.division
   else none
 
 /-- A forgetful functor into `Magmas`, with its domain. -/
@@ -229,6 +231,12 @@ noncomputable def evalCategory (M : AtomicModel.{uObj, uHom}) :
                                 (CategoryTheory.CategoryStruct.id
                                   (MagmasWithTwoOperations M))
                                 A).total
+                          else if bid == CategoryId.rings then
+                            let ringsToM2O :=
+                              ringsToRngs M ≫
+                                rngsToMulAssoc M ≫
+                                  m2oMulAssocToAddInv M ≫ m2oAddInvToM2O M
+                            some (Classifier.reindex ringsToM2O A).total
                           else
                             none
                       | _ => none

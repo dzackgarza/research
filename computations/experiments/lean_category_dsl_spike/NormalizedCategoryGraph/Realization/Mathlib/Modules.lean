@@ -3,6 +3,7 @@ Copyright (c) 2026 Dzack Garza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.CategoryTheory.Category.Cat
@@ -12,8 +13,8 @@ import NormalizedCategoryGraph.Realization.Mathlib.Algebra
 /-!
 # Mathlib module atoms
 
-Provisional fibre: `ModuleCat ℤ`. This is a specialization of the intended
-family `R ↦ Modules(R)`, not the family itself.
+* `ModulesFamily` — `RingCat` as the category of base rings for `R ↦ Modules(R)`
+* Provisional fibre: `ModuleCat ℤ` (a specialization of the family, not the family)
 
 * `free` — `Module.Free`
 * `finitelyGenerated` — `Module.Finite` (Mathlib's finitely generated modules)
@@ -29,6 +30,9 @@ open NormalizedCategoryGraph
 universe u
 
 set_option linter.checkUnivs false
+
+/-- Category of base rings for the family `R ↦ Modules(R)`. -/
+def ModulesFamily : ObjCat.{u + 1, u} := Cat.of RingCat.{u}
 
 /-- Provisional fibre `Modules(ℤ)`. -/
 def Modules : ObjCat.{u + 1, u} := Cat.of (ModuleCat.{u} ℤ)
@@ -61,6 +65,7 @@ noncomputable def modulesToSets : Modules ⟶ Sets :=
 
 /-- Module atoms over Mathlib foundations + algebra. -/
 noncomputable def moduleAtoms : ModuleAtoms foundationAtoms algebraAtoms where
+  ModulesFamily := ModulesFamily
   Modules := Modules
   free := free
   finitelyGenerated := finitelyGenerated

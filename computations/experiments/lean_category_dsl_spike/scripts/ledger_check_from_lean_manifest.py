@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Stage 9: recompute authored 179 ledger rows from the Lean seed manifest.
+"""Python-seed constructibility oracle (NOT Lean authority).
 
-Does not trust mapping.yaml status strings. Rebuilds the constructibility sketch
-from ``Spec/seed_manifest.json``'s embedded seed payload and evaluates every
-public authored row.
+Rebuilds the constructibility sketch from ``Spec/seed_manifest.json``'s embedded
+Python seed payload and evaluates every public authored row.
+
+This does **not** prove Lean categorical definitions. For the Lean exporter gate
+use ``ledger_check_from_lean_export.py``.
 """
 
 from __future__ import annotations

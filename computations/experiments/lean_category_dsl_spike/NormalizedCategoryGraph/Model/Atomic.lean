@@ -39,10 +39,15 @@ structure AlgebraAtoms (F : FoundationAtoms.{uObj, uHom}) where
   unital : Classifier F.binaryOperation.total
   inverse : Classifier F.binaryOperation.total
 
-/-- Module atoms: a family parameterized by ring objects, plus classifiers on the
-generic fibre. The Mathlib realization specializes the fibre at `ℤ` until a
-full `Modules : Rings ⟶ Cat` is available. -/
+/-- Module atoms: the family `R ↦ Modules(R)`, plus classifiers on fibres.
+
+`ModulesFamily` is the parameterized constructor (objects are rings). `Modules`
+is the fibre at a designated base ring used by the interpretation kernel until
+every call site threads an explicit ring parameter.
+-/
 structure ModuleAtoms (F : FoundationAtoms.{uObj, uHom}) (_A : AlgebraAtoms F) where
+  /-- Family `R ↦ Modules(R)` as a category of rings (objects = base rings). -/
+  ModulesFamily : ObjCat.{uObj, uHom}
   /-- Fibre of `Modules(-)` at a designated base ring (provisional specialization). -/
   Modules : ObjCat.{uObj, uHom}
   free : Classifier Modules
@@ -57,6 +62,8 @@ structure ExceptionalAtoms (F : FoundationAtoms.{uObj, uHom}) where
   multiplicativePort : MagmasWithTwoOperations ⟶ F.binaryOperation.total
   /-- Distributivity of the multiplicative magma over the additive magma. -/
   distributive : Classifier MagmasWithTwoOperations
+  /-- Division on the two-operation host (reindexed onto Rings). Not Magmas.Inverse. -/
+  division : Classifier MagmasWithTwoOperations
   Crystals : ObjCat.{uObj, uHom}
   crystalsToSets : Crystals ⟶ F.Sets
 
@@ -218,9 +225,14 @@ noncomputable def ringsToMagmasAdd : Rings M ⟶ Magmas M :=
 noncomputable def CommutativeRings : ObjCat :=
   (Classifier.reindex (ringsToMagmasMul M) M.algebra.commutative).total
 
-/-- DivisionRings := Rings.Division requires a dedicated Division classifier
-(invertibility of nonzero multiplicative elements). It is intentionally not
-defined as Magmas.Inverse, and not silently equated with Rings. -/
+/-- DivisionRings := Rings.Division — reindex the division classifier along
+Rings → MagmasWithTwoOperations. Not Magmas.Inverse. -/
+noncomputable def DivisionRings : ObjCat :=
+  let ringsToM2O := ringsToRngs M ≫ rngsToMulAssoc M ≫ m2oMulAssocToAddInv M ≫ m2oAddInvToM2O M
+  (Classifier.reindex ringsToM2O M.exceptional.division).total
+
+/-- The family category whose objects are base rings for `Modules(-)`. -/
+def ModulesFamily : ObjCat := M.modules.ModulesFamily
 
 def Modules : ObjCat := M.modules.Modules
 

@@ -27,6 +27,8 @@ def specimenHosts : ClassifierHostTable where
         some CategoryId.magmas
     | ⟨"clf.magmaswithtwooperations.distributive"⟩ =>
         some CategoryId.magmasWithTwoOperations
+    | ⟨"clf.rings.division"⟩ =>
+        some CategoryId.rings
     | ⟨"clf.modules_r.free"⟩ | ⟨"clf.modules_r.finitely_generated"⟩
     | ⟨"clf.modules_r.finite_rank"⟩ =>
         some CategoryId.modulesR
@@ -61,6 +63,9 @@ def exprRings : CategoryExpr :=
   .refine dist ClassifierId.magmasUnital (some RouteId.multiplicative)
 def exprCommRings : CategoryExpr :=
   .refine (.atom CategoryId.rings) ClassifierId.magmasCommutative (some RouteId.multiplicative)
+/-- DivisionRings := Rings.Division (not Magmas.Inverse). -/
+def exprDivisionRings : CategoryExpr :=
+  .refine (.atom CategoryId.rings) ClassifierId.ringsDivision none
 def exprModules : CategoryExpr := .atom CategoryId.modulesR
 def exprFreeModules : CategoryExpr :=
   .refine exprModules ClassifierId.modulesFree none
@@ -81,6 +86,7 @@ def specimenNamed : NamedExpressionTable where
     | ⟨"cat.groups"⟩ => some exprGroups
     | ⟨"cat.rings"⟩ => some exprRings
     | ⟨"cat.commutative_rings"⟩ => some exprCommRings
+    | ⟨"cat.division_rings"⟩ => some exprDivisionRings
     | ⟨"cat.modules_r"⟩ => some exprModules
     | ⟨"cat.free_modules_r"⟩ => some exprFreeModules
     | ⟨"cat.finite_free_modules_r"⟩ => some exprFiniteFreeModules
@@ -178,6 +184,9 @@ def specimenSnapshot : RegistrySnapshot where
     { id := CategoryId.commutativeRings, canonicalName := "CommutativeRings"
       declaration := "NormalizedCategoryGraph.Specimen.exprCommRings"
       expression := exprCommRings, origin := .derivedNamed, visibility := .present },
+    { id := CategoryId.divisionRings, canonicalName := "DivisionRings"
+      declaration := "NormalizedCategoryGraph.Specimen.exprDivisionRings"
+      expression := exprDivisionRings, origin := .derivedNamed, visibility := .present },
     { id := CategoryId.modulesR, canonicalName := "Modules(R)"
       declaration := "NormalizedCategoryGraph.Specimen.exprModules"
       expression := exprModules, origin := .root, visibility := .present },
@@ -209,7 +218,13 @@ def specimenSnapshot : RegistrySnapshot where
     { id := ClassifierId.magmasInverse, canonicalName := "Inverse"
       declaration := "", hostId := CategoryId.magmas, visibility := .present },
     { id := ClassifierId.modulesFree, canonicalName := "Free"
-      declaration := "", hostId := CategoryId.modulesR, visibility := .present }
+      declaration := "", hostId := CategoryId.modulesR, visibility := .present },
+    { id := ClassifierId.modulesFinitelyGenerated, canonicalName := "FinitelyGenerated"
+      declaration := "", hostId := CategoryId.modulesR, visibility := .present },
+    { id := ClassifierId.m2oDistributive, canonicalName := "Distributive"
+      declaration := "", hostId := CategoryId.magmasWithTwoOperations, visibility := .present },
+    { id := ClassifierId.ringsDivision, canonicalName := "Division"
+      declaration := "", hostId := CategoryId.rings, visibility := .present }
   ]
   aliases := #[
     { id := AliasId.crings, spelling := "CRings"

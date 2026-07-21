@@ -3,6 +3,7 @@ Copyright (c) 2026 Dzack Garza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import Mathlib.Algebra.Category.Semigrp.Basic
+import Mathlib.Algebra.Field.Defs
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
@@ -69,6 +70,23 @@ noncomputable def distributive : Classifier MagmasWithTwoOperations where
     (ObjectProperty.ι
         (C := CategoricalPullback magmaForget magmaForget) IsDistributive).toCatHom
 
+/-- Underlying multiplicative carrier admits a `DivisionRing` structure.
+This is a property classifier on the two-operation host; `Normalized.DivisionRings`
+reindexes it along Rings → MagmasWithTwoOperations. It is **not** Magmas.Inverse. -/
+def IsDivisionRingCarrier (x : CategoricalPullback magmaForget magmaForget) : Prop :=
+  Nonempty (DivisionRing x.fst)
+
+abbrev DivisionTwoOpCat : Type (u + 1) :=
+  ObjectProperty.FullSubcategory
+    (C := CategoricalPullback magmaForget magmaForget) IsDivisionRingCarrier
+
+/-- Division classifier on `MagmasWithTwoOperations` (host for Rings.Division). -/
+noncomputable def division : Classifier MagmasWithTwoOperations where
+  total := Cat.of DivisionTwoOpCat.{u}
+  forget :=
+    (ObjectProperty.ι
+        (C := CategoricalPullback magmaForget magmaForget) IsDivisionRingCarrier).toCatHom
+
 /-- Combinatorial crystal: underlying set with Kashiwara operators. -/
 structure Crystal where
   carrier : Type u
@@ -133,6 +151,7 @@ noncomputable def exceptionalAtoms : ExceptionalAtoms foundationAtoms where
   additivePort := additivePort
   multiplicativePort := multiplicativePort
   distributive := distributive
+  division := division
   Crystals := Crystals
   crystalsToSets := crystalsToSets
 

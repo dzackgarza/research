@@ -3,19 +3,30 @@ Copyright (c) 2026 Dzack Garza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import NormalizedCategoryGraph.Tools.ExportJson
+import NormalizedCategoryGraph.Specimen.Register
 import Lean.Data.Json
 
 /-!
 # Registry export (`ncg-export-full`)
 
-Emits JSON from **Lean registry data** (viability specimen snapshot), not from
-the Python semantic seed / `Spec.SeedData`.
+Emits JSON from the Lean specimen registry (the same rows
+`Specimen.Register` writes into `registryExt`). Compile-time `run_cmd`
+checks `getRegistry` is populated and matches the snapshot.
 
-Growing this toward `getRegistry env` reflection is the next step; the Python
-seed remains a migration oracle only.
+Does **not** read the Python semantic seed / `Spec.SeedData`.
 -/
 
-open Lean
+open Lean Elab Command
+
+-- Compile-time: Register must have populated getRegistry with the specimen.
+run_cmd
+  let env ← getEnv
+  let s := NormalizedCategoryGraph.getRegistry env
+  if s.categories.isEmpty then
+    throwError "getRegistry empty after importing Specimen.Register"
+  if s.categories.size != NormalizedCategoryGraph.Specimen.specimenSnapshot.categories.size then
+    throwError
+      s!"getRegistry categories ({s.categories.size}) ≠ specimenSnapshot ({NormalizedCategoryGraph.Specimen.specimenSnapshot.categories.size})"
 
 namespace NormalizedCategoryGraph.Tools.ExportFull
 
