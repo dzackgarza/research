@@ -14,6 +14,9 @@ The variance convention and the discrete-fibration projection in
 [@nlab:category_of_elements]. The Grothendieck construction is described in
 [@nlab:grothendieck_construction].
 
+The definition of an abelian category in @def-abelian-category and its kernel and
+cokernel criteria follow [@stacks-0109].
+
 ## Properties and chosen structure
 
 The fullness-and-faithfulness classification in @def-property-structure-stuff follows

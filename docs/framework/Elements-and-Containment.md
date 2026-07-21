@@ -1,4 +1,4 @@
-# Elements, subobjects, and hypotheses {#sec-elements-containment}
+# Elements, subobjects, and scalar extension {#sec-elements-containment}
 
 ## Elements {#sec-elements}
 
@@ -40,21 +40,11 @@ $i=j\circ f$.
 The assertion that some monomorphism $A\to B$ exists is a proposition. A construction
 that uses an embedding names a particular monomorphism.
 
-::: {#exm-subobject-base-change}
-**Example.** Let $L$ be an integral lattice and $v\in L$. The inclusion
-$\mathbb Zv\hookrightarrow L$ represents a subobject of the underlying
-$\mathbb Z$-module. After base change, $\mathbb Rv\hookrightarrow
-L\otimes_{\mathbb Z}\mathbb R$ represents a subspace. These monomorphisms belong to
-different categories and are related by the base-change functor.
-:::
-
 ## Comparison after a named functor
 
 Let $F\colon C\to E$ and $G\colon D\to E$. A comparison between $X\in C$ and
-$Y\in D$ is made between $F(X)$ and $G(Y)$ in $E$. For modules, base change is written
-explicitly: a real line is compared with the real vector space
-$L\otimes_{\mathbb Z}\mathbb R$; the integral lattice $L$ remains an object of
-$\mathbb Z\text{-}\mathbf{Mod}$.
+$Y\in D$ is made between $F(X)$ and $G(Y)$ in $E$. A relation or morphism involving
+the images is formed in $E$ and does not identify either source object with its image.
 
 ## Solution functors {#sec-generic-solutions}
 
@@ -66,16 +56,8 @@ $$
 $$
 is the presheaf of solutions of the corresponding equations. If
 $\operatorname{Sol}\cong\operatorname{Hom}_C(-,X)$, the identity of $X$ determines its
-universal element. A "generic solution" is used only after this representability has been
-proved.
+universal solution.
 :::
-
-## Hypotheses {#sec-hypotheses}
-
-A theorem records every hypothesis needed for its conclusion. A hypothesis may be an
-object property, an equality of named morphisms, the existence of a limit, flatness, a
-characteristic restriction, or another stated proposition. A later construction that
-uses a witness names that witness instead of retaining only its existence.
 
 ## Disjunction and cases {#sec-case-decomposition}
 
@@ -85,9 +67,18 @@ with the hypothesis $P\lor Q$. For chosen structures, a coproduct or union of th
 domains does not automatically define a category of objects equipped with either
 structure; its morphisms and universal property must be specified.
 
-## Localization and descent {#sec-localization}
+## Scalar extension, localization, and completion {#sec-localization}
 
-Localization or completion is application of a named functor, such as
-$L\mapsto L\otimes_{\mathbb Z}\mathbb Z_p$. A statement proved for the image is a
-statement about that localized object. A conclusion about $L$ requires a stated descent
-or local-to-global theorem with its hypotheses.
+Extension of scalars along $\mathbb Z\to\mathbb Z_{(p)}$ is localization at the prime
+ideal $(p)$. Extension of scalars along $\mathbb Z\to\mathbb Z_p$ sends a
+$\mathbb Z$-module $L$ to $L\otimes_{\mathbb Z}\mathbb Z_p$. If $L$ is finitely
+generated, the canonical map
+$$
+L\otimes_{\mathbb Z}\mathbb Z_p
+\longrightarrow
+\varprojlim_n L/p^nL
+$$
+is an isomorphism, so this scalar extension computes the $p$-adic completion of $L$.
+Without the finite-generation hypothesis, scalar extension and completion are distinct
+constructions. A conclusion about $L$ from either image requires a stated descent or
+local-to-global theorem with its hypotheses.

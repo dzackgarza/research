@@ -7,8 +7,33 @@
  * readable width and center it. Aspect ratio is preserved (height: auto), so
  * this does not distort taller multi-row diagrams. */
 img[src*="/mediabag/"] {
+  box-sizing: border-box;
   display: block;
   margin: 1.5rem auto;
   height: auto;
-  width: clamp(14rem, 45%, 100%);
+  width: clamp(18rem, 65%, 100%);
+}
+
+body.quarto-dark img[src*="/mediabag/"] {
+  background: #fff;
+  padding: 0.75rem;
+}
+
+/* Keep long display equations inside the reading column on narrow screens. */
+mjx-container[display="true"] {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Bibliography entries may expose a DOI as one uninterrupted link. */
+#refs a {
+  overflow-wrap: anywhere;
+}
+
+/* Generated reference tables can be wider than the reading column. */
+main table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
 }

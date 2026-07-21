@@ -1,48 +1,47 @@
-# Lean and Sage
+# Lean and Sage realizations
 
-Lean and Sage realize different parts of the same mathematics. Lean states definitions,
-functoriality, coherence, and theorems. Sage supplies data representations and executable
-algorithms.
+Lean and Sage realize different parts of the mathematics defined in the theory chapters.
+The current repository contains a Sage parity implementation and a separate Lean proof of
+concept.
 
 ## Mathematical boundary {#sec-layering}
 
-Every implemented notion cites its definition in the theory chapters. Lean declarations
-formalize that definition or a stated specialization. Sage classes and methods realize
-the corresponding computation. An implementation name does not introduce a second
-mathematical definition.
+A realization cites the defining occurrence of each category, functor, form, or invariant
+that it implements. Lean declarations formalize that definition or a stated
+specialization. Sage classes and methods implement the corresponding exact computation.
+A comparison requires an explicit mathematical statement relating the named Lean
+declaration and Sage operation.
 
-## Existing and missing formalizations {#sec-abc-model}
+## Sage parity implementation {#sec-sage-parity-realization}
 
-When Mathlib already contains the required construction, the project uses that
-declaration and records the comparison with the book's notation. When a standard result
-is absent, it is developed in `ForMathlib/` in a form suitable for upstream contribution.
-If a proof is not yet available, the statement and its hypotheses remain explicit; its
-proof status is reported with the declaration.
+The maintained base experiment is
+`computations/experiments/sage_lattice_category_spike`. Its public facade is
+`lattice_categories.py`; its packages implement algebraic objects, forms, morphisms, and
+lattice constructions. The generated
+[SageMath category framework reference](../sage/Sage-Category-Framework-Inventory.md)
+and [Sage category class catalogue](../sage/Sage-Category-Classes.md) describe the pinned
+Sage reference surface used for parity comparisons.
 
-The formalization distinguishes:
+## Lean proof of concept {#sec-lean-realization}
 
-- definitions already present in Mathlib;
-- local statements intended for Mathlib;
-- cited theorems whose formal proofs remain open;
-- Sage computations whose correctness is checked by a separate theorem or certificate.
+The experiment in `computations/experiments/lean_category_dsl_spike/catdsl_poc` uses
+Mathlib's category theory. It defines bundled categories for its finite-field example,
+registers distinguished functors, and elaborates object and view commands into ordinary
+Lean declarations. [Lean categorical DSL proof of concept](Categorical-DSL.md) records
+the implemented commands and their current limits.
 
-## The `ForMathlib` boundary {#sec-formathlib-layer-contract}
+## Comparison claims {#sec-registry-semantics}
 
-Files under `ForMathlib/` import Mathlib and state generally useful missing mathematics.
-Each declaration records the Mathlib location to which it is intended to move. Project
-modules may import these files; the reverse import is excluded so the formalization can be
-contributed upstream independently.
-
-## The comparison manifest {#sec-registry-semantics}
-
-The comparison manifest links a Lean declaration to its Sage realization when such a
-realization exists. A row records the Lean name, the Sage owner, the comparison being
-claimed, and the proof or test that supports that claim. Missing analogues are reported
-only after searches of Mathlib's declarations and documentation.
+A comparison between the two realizations names the Lean declaration, the Sage operation,
+the mathematical statement relating them, and evidence for that statement. The
+mathematical statement may assert equality of exact outputs, compatibility with a
+specified functor, or agreement after a named normalization. The category and functor
+diagram records the categories and functors involved. Each comparison requires separate
+evidence.
 
 ## Proof and computation {#sec-cop-out-visibility}
 
 Commutativity, naturality, universal properties, and equivalences are theorem statements.
-Finite examples may test an implementation, but they do not prove these statements. Sage
-results that admit compact certificates may be checked by Lean or by a separately
-specified certified procedure; otherwise their status remains computational.
+Finite examples test an implementation but do not prove those statements. A Sage result
+with a compact certificate may be checked by Lean or by another specified certified
+procedure. A result without such a check remains a computation.

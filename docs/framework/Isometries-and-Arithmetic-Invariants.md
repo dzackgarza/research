@@ -29,7 +29,8 @@ $$
 $$
 If $L$ is even and indefinite and
 $\operatorname{rank}(L)\geq\ell(A_L)+2$, where $\ell(A_L)$ is the minimum number of
-generators of $A_L$, Nikulin's surjectivity theorem applies [@Nik80].
+generators of $A_L$, the homomorphism $O(L)\to O(A_L,q_L)$ is surjective
+[@Nik80].
 :::
 
 ## Matrix realizations
@@ -40,10 +41,16 @@ $$
 O(L)=\{g\in\operatorname{GL}_n(R)\mid g^{\mathsf T}Bg=B\}.
 $$
 Changing the basis conjugates this subgroup. For a finite module with mixed invariant
-factors, its automorphism group is a quotient of the congruence-type matrix group
-preserving a chosen presentation. For a homocyclic module
-$(\mathbb Z/d\mathbb Z)^n$, it embeds in
-$\operatorname{GL}_n(\mathbb Z/d\mathbb Z)$.
+factors, choose a decomposition
+$A=\bigoplus_{i=1}^r\mathbb Z/d_i\mathbb Z$. An endomorphism is a matrix
+$(a_{ij})$ in which $a_{ij}$ represents a homomorphism
+$\mathbb Z/d_j\mathbb Z\to\mathbb Z/d_i\mathbb Z$, equivalently
+$d_j a_{ij}=0$ in $\mathbb Z/d_i\mathbb Z$; the automorphisms are exactly the
+invertible endomorphisms in this matrix ring. In the homocyclic case this gives
+$$
+\operatorname{Aut}\bigl((\mathbb Z/d\mathbb Z)^n\bigr)
+\cong\operatorname{GL}_n(\mathbb Z/d\mathbb Z).
+$$
 :::
 
 ## Index
@@ -68,15 +75,14 @@ $$
 $$
 with the notation and local factors of [@MM09, Thm. V.5.1]. The last group measures the
 failure of the discriminant representation to be surjective. It is distinct from
-$O^+(L)=\ker(\det)$.
+$\operatorname{SO}(L)=\ker(\det)$.
 :::
 
 ::: {#def-genus}
 ## Genus {#sec-genus-sec}
 
 Two integral lattices lie in the same genus if they are isometric over $\mathbb R$ and
-over $\mathbb Z_p$ for every prime $p$. Equivalently, their images have the same
-component under the local-profile map
+over $\mathbb Z_p$ for every prime $p$. Extension of scalars induces the map
 $$
 \pi_0(\mathbf{Lat}_{\mathbb Z}^{\simeq})
 \longrightarrow
@@ -85,7 +91,7 @@ $$
 \times\prod_p\mathbf{Lat}_{\mathbb Z_p}^{\simeq}
 \right).
 $$
-The genus of $L$ is the fiber of this map over the local profile of $L$. It is a
-pointed set containing $[L]$. Its relation to the components of the homotopy fiber is
-governed by the exact sequence in @sec-pi0-fiber.
+The genus of $L$ is the fiber of this map over the image of $[L]$. It is a pointed set
+containing $[L]$. Its relation to the components of the homotopy fiber is governed by
+the exact sequence in @sec-pi0-fiber.
 :::

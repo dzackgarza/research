@@ -13,7 +13,7 @@ natural transformations, object properties, chosen structures, invariants, secti
 obstructions. An obstruction is a specified class or map together with a theorem stating
 whether its vanishing is necessary, sufficient, or equivalent to the stated lifting or
 extension problem under the given hypotheses. A set-valued isomorphism invariant has the form
-$\pi_0(\operatorname{Core}(\mathcal C))\to S$; a functorial invariant with a richer
+$\pi_0(\mathcal C^{\simeq})\to S$; a functorial invariant with a richer
 codomain states that codomain and its functoriality.
 
 []{#convention-property-and-structure}
@@ -32,6 +32,12 @@ monoidal structures on modules. For a commutative ring $R$, these are
 $(R\text{-}\mathbf{Mod},\otimes_R,R)$ and
 $(R\text{-}\mathbf{Mod},\oplus,0)$. Over a noncommutative ring, state the applicable
 bimodule or left- or right-module setting.
+
+[]{#convention-hypotheses-and-witnesses}
+**State hypotheses and name witnesses.** A theorem states every object property,
+characteristic restriction, limit assumption, flatness assumption, and equality of
+named morphisms used in its conclusion. If a construction uses a basis, embedding,
+section, presentation, or other witness, name that witness in the construction.
 
 []{#convention-typed-notation}
 **Use notation with its typed meaning.** Literal equality, isomorphism, and
@@ -74,6 +80,10 @@ remark after the general construction, not the definition of that construction.
   convention.
 - A comparison between functors is a natural transformation or another specified 2-cell.
   A morphism between objects remains a morphism in the stated category.
+- Every arrow in a diagram names a functor, natural transformation, or map with the
+  displayed source and target. A construction defined only on cores is drawn from the
+  cores, and an invariant on isomorphism classes is drawn as a map from $\pi_0$.
+  Membership of an object in a category is not drawn as a functor between categories.
 - A theorem that a functor lands in a replete full subcategory is a proved factorization
   through its inclusion. Other landing statements name their actual codomain.
 

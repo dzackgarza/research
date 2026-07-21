@@ -67,12 +67,16 @@ exactly the $D\in\mathcal D$ for which $F(D)$ satisfies the stated property.
 A functor $H\colon\mathcal C^{\mathrm{op}}\to\mathcal S$ is *represented* by
 $B\in\mathcal C$ when there is a natural equivalence
 $$
-H(-)\simeq\operatorname{Map}_{\mathcal C}(-,B).
+\eta\colon H(-)\simeq\operatorname{Map}_{\mathcal C}(-,B).
 $$
-Only then is $B$ called a classifying object for $H$. If a family $p\colon E\to B$
-has the property that every family of the specified kind over $X$ is, up to the stated
-equivalence, the pullback of $p$ along a map $X\to B$, then $p$ is a universal family.
-The represented functor and the equivalence are part of the statement.
+Only then is $B$ called a classifying object for $H$.
+
+Suppose $H(X)$ is the space of families of a specified kind over $X$. The *universal
+family* $p\colon E\to B$ is the family corresponding under $\eta_B^{-1}$ to
+$\operatorname{id}_B$. Naturality identifies pullback of $p$ along
+$f\colon X\to B$ with the family corresponding to $f$. Thus the equivalence $\eta$
+records existence, equivalences between presentations, and automorphisms of families;
+mere existence of some pullback presentation is not a universal property.
 :::
 
 **Remark.** A property, equation, or forgetful functor acquires classifying terminology

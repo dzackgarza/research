@@ -670,8 +670,9 @@ lists the joins constructed during a full import ($\wedge$ denotes the meet).
 Eight of the 84 joins print under a computed standard name. The remaining 76 print as
 bare `Join of ...` expressions and are metric or topological meets with algebraic
 categories: 39 metric and 37 topological.
-The `Topological` and `Metric` constructions have a declared nested class only at
-`Groups`, which accounts for the unnamed topological and metric combinations.
+The `Topological` construction has a declared nested class only at `Groups`; the
+`Metric` construction has none. This accounts for the unnamed topological and metric
+combinations.
 
 A join can also expose missing theorem inclusions in Sage's subcategory lattice. For
 example, `ZZ.category()` retains Dedekind-domain and noetherian-ring factors because
@@ -688,99 +689,96 @@ declare a nested construction class. `Groups.Topological` makes
 declaration. Other metric and topological combinations therefore retain their bare join
 expressions.
 
-The third column supplies a mathematical description for each meet. Sage itself prints
-the bare join. Descriptions follow Sage's declared `Groups.Topological` case: for example,
-a topological group is interpreted as a group with continuous operations. Sage category
-membership declares these axioms but does not verify them. A superscript D marks a
-systematic description for an intermediate class that lacks an established name;
-unmarked entries use standard or standard-compositional names.
+The table records the exact Sage join and its factors. Except where Sage declares a named
+construction class, no further mathematical name or compatibility between a metric or
+topology and the algebraic operations is asserted.
 
-| join category (Sage) | factors | standard name (project-assigned) |
-| --- | --- | --- |
-| Join of Category of Dedekind domains and Category of euclidean domains and Category of noetherian rings and Category of infinite enumerated sets and Category of metric spaces | Dedekind domains ∧ euclidean domains ∧ infinite enumerated sets ∧ metric spaces ∧ noetherian rings | infinite enumerated metric euclidean domains *(Dedekind/noetherian factors redundant — defect 1)* |
-| Join of Category of additive associative distributive magmas and additive magmas and Category of metric spaces | additive associative distributive magmas and additive magmas ∧ metric spaces | metric distributive (·,+)-magmas with associative +ᴰ |
-| Join of Category of additive associative distributive magmas and additive magmas and Category of topological spaces | additive associative distributive magmas and additive magmas ∧ topological spaces | topological distributive (·,+)-magmas with associative +ᴰ |
-| Join of Category of additive commutative additive associative additive unital distributive magmas and additive magmas and Category of metric spaces | additive commutative additive associative additive unital distributive magmas and additive magmas ∧ metric spaces | metric distributive (·,+)-magmas with commutative monoid +ᴰ |
-| Join of Category of additive commutative additive associative additive unital distributive magmas and additive magmas and Category of topological spaces | additive commutative additive associative additive unital distributive magmas and additive magmas ∧ topological spaces | topological distributive (·,+)-magmas with commutative monoid +ᴰ |
-| Join of Category of additive commutative additive associative distributive magmas and additive magmas and Category of metric spaces | additive commutative additive associative distributive magmas and additive magmas ∧ metric spaces | metric distributive (·,+)-magmas with commutative associative +ᴰ |
-| Join of Category of additive commutative additive associative distributive magmas and additive magmas and Category of topological spaces | additive commutative additive associative distributive magmas and additive magmas ∧ topological spaces | topological distributive (·,+)-magmas with commutative associative +ᴰ |
-| Join of Category of additive commutative additive magmas and Category of metric spaces | additive commutative additive magmas ∧ metric spaces | metric commutative additive magmas |
-| Join of Category of additive commutative additive magmas and Category of topological spaces | additive commutative additive magmas ∧ topological spaces | topological commutative additive magmas |
-| Join of Category of additive groups and Category of metric spaces | additive groups ∧ metric spaces | metric additive groups |
-| Join of Category of additive groups and Category of topological spaces | additive groups ∧ topological spaces | topological additive groups |
-| Join of Category of additive inverse additive unital additive magmas and Category of metric spaces | additive inverse additive unital additive magmas ∧ metric spaces | metric additive magmas with zero and negationᴰ |
-| Join of Category of additive inverse additive unital additive magmas and Category of topological spaces | additive inverse additive unital additive magmas ∧ topological spaces | topological additive magmas with zero and negationᴰ |
-| Join of Category of additive magmas and Category of metric spaces | additive magmas ∧ metric spaces | metric additive magmas |
-| Join of Category of additive magmas and Category of topological spaces | additive magmas ∧ topological spaces | topological additive magmas |
-| Join of Category of additive monoids and Category of metric spaces | additive monoids ∧ metric spaces | metric additive monoids |
-| Join of Category of additive monoids and Category of topological spaces | additive monoids ∧ topological spaces | topological additive monoids |
-| Join of Category of additive semigroups and Category of metric spaces | additive semigroups ∧ metric spaces | metric additive semigroups |
-| Join of Category of additive semigroups and Category of topological spaces | additive semigroups ∧ topological spaces | topological additive semigroups |
-| Join of Category of additive unital additive magmas and Category of metric spaces | additive unital additive magmas ∧ metric spaces | metric additive magmas with zeroᴰ |
-| Join of Category of additive unital additive magmas and Category of topological spaces | additive unital additive magmas ∧ topological spaces | topological additive magmas with zeroᴰ |
-| Join of Category of associative additive commutative additive associative additive unital distributive magmas and additive magmas and Category of metric spaces | associative additive commutative additive associative additive unital distributive magmas and additive magmas ∧ metric spaces | metric nonunital semirings |
-| Join of Category of associative additive commutative additive associative additive unital distributive magmas and additive magmas and Category of topological spaces | associative additive commutative additive associative additive unital distributive magmas and additive magmas ∧ topological spaces | topological nonunital semirings |
-| Join of Category of commutative additive groups and Category of metric spaces | commutative additive groups ∧ metric spaces | metric abelian groups (additive) |
-| Join of Category of commutative additive groups and Category of topological spaces | commutative additive groups ∧ topological spaces | topological abelian groups (additive) |
-| Join of Category of commutative additive monoids and Category of metric spaces | commutative additive monoids ∧ metric spaces | metric commutative additive monoids |
-| Join of Category of commutative additive monoids and Category of topological spaces | commutative additive monoids ∧ topological spaces | topological commutative additive monoids |
-| Join of Category of commutative additive semigroups and Category of metric spaces | commutative additive semigroups ∧ metric spaces | metric commutative additive semigroups |
-| Join of Category of commutative additive semigroups and Category of topological spaces | commutative additive semigroups ∧ topological spaces | topological commutative additive semigroups |
-| Join of Category of commutative magmas and Category of metric spaces | commutative magmas ∧ metric spaces | metric commutative magmas |
-| Join of Category of commutative magmas and Category of topological spaces | commutative magmas ∧ topological spaces | topological commutative magmas |
-| Join of Category of commutative monoids and Category of metric spaces | commutative monoids ∧ metric spaces | metric commutative monoids |
-| Join of Category of commutative monoids and Category of topological spaces | commutative monoids ∧ topological spaces | topological commutative monoids |
-| Join of Category of commutative rings and Category of metric spaces | commutative rings ∧ metric spaces | metric commutative rings |
-| Join of Category of commutative rings and Category of topological spaces | commutative rings ∧ topological spaces | topological commutative rings |
-| Join of Category of distributive magmas and additive magmas and Category of metric spaces | distributive magmas and additive magmas ∧ metric spaces | metric distributive (·,+)-magmasᴰ |
-| Join of Category of distributive magmas and additive magmas and Category of topological spaces | distributive magmas and additive magmas ∧ topological spaces | topological distributive (·,+)-magmasᴰ |
-| Join of Category of division rings and Category of metric spaces | division rings ∧ metric spaces | metric division rings |
-| Join of Category of division rings and Category of topological spaces | division rings ∧ topological spaces | topological division rings |
-| Join of Category of domains and Category of metric spaces | domains ∧ metric spaces | metric domains |
-| Join of Category of domains and Category of topological spaces | domains ∧ topological spaces | topological domains |
-| Join of Category of euclidean domains and Category of metric spaces | euclidean domains ∧ metric spaces | metric euclidean domains |
-| Join of Category of euclidean domains and Category of topological spaces | euclidean domains ∧ topological spaces | topological euclidean domains |
-| Join of Category of fields and Category of metric spaces | fields ∧ metric spaces | metric fields |
-| Join of Category of fields and Category of topological spaces | fields ∧ topological spaces | topological fields |
-| Join of Category of gcd domains and Category of metric spaces | gcd domains ∧ metric spaces | metric GCD domains |
-| Join of Category of gcd domains and Category of topological spaces | gcd domains ∧ topological spaces | topological GCD domains |
-| Join of Category of integral domains and Category of metric spaces | integral domains ∧ metric spaces | metric integral domains |
-| Join of Category of integral domains and Category of topological spaces | integral domains ∧ topological spaces | topological integral domains |
-| Join of Category of magmas and Category of additive magmas and Category of metric spaces | additive magmas ∧ magmas ∧ metric spaces | metric (·,+)-magmasᴰ *(same content as the named class MagmasAndAdditiveMagmas)* |
-| Join of Category of magmas and Category of additive magmas and Category of topological spaces | additive magmas ∧ magmas ∧ topological spaces | topological (·,+)-magmasᴰ *(same content as the named class MagmasAndAdditiveMagmas)* |
-| Join of Category of magmas and Category of metric spaces | magmas ∧ metric spaces | metric magmas |
-| Join of Category of magmas and Category of topological spaces | magmas ∧ topological spaces | topological magmas |
-| Join of Category of magmas and additive magmas and Category of metric spaces | magmas and additive magmas ∧ metric spaces | metric (·,+)-magmasᴰ |
-| Join of Category of magmas and additive magmas and Category of topological spaces | magmas and additive magmas ∧ topological spaces | topological (·,+)-magmasᴰ |
-| Join of Category of monoids and Category of metric spaces | metric spaces ∧ monoids | metric monoids |
-| Join of Category of monoids and Category of topological spaces | monoids ∧ topological spaces | topological monoids |
-| Join of Category of noetherian rings and Category of metric spaces | metric spaces ∧ noetherian rings | metric noetherian rings |
-| Join of Category of noetherian rings and Category of topological spaces | noetherian rings ∧ topological spaces | topological noetherian rings |
-| Join of Category of number fields and Category of quotient fields and Category of metric spaces | metric spaces ∧ number fields ∧ quotient fields | metric number fields *(realized as fraction fields)* |
-| Join of Category of principal ideal domains and Category of metric spaces | metric spaces ∧ principal ideal domains | metric principal ideal domains |
-| Join of Category of principal ideal domains and Category of topological spaces | principal ideal domains ∧ topological spaces | topological principal ideal domains |
-| Join of Category of quotient fields and Category of metric spaces | metric spaces ∧ quotient fields | metric fields realized as fraction fieldsᴰ *(Sage-specific category)* |
-| Join of Category of quotient fields and Category of topological spaces | quotient fields ∧ topological spaces | topological fields realized as fraction fieldsᴰ *(Sage-specific category)* |
-| Join of Category of rings and Category of metric spaces | metric spaces ∧ rings | metric rings |
-| Join of Category of rings and Category of topological spaces | rings ∧ topological spaces | topological rings |
-| Join of Category of rngs and Category of metric spaces | metric spaces ∧ rngs | metric rngs |
-| Join of Category of rngs and Category of topological spaces | rngs ∧ topological spaces | topological rngs |
-| Join of Category of semigroups and Category of metric spaces | metric spaces ∧ semigroups | metric semigroups |
-| Join of Category of semigroups and Category of topological spaces | semigroups ∧ topological spaces | topological semigroups |
-| Join of Category of semirings and Category of metric spaces | metric spaces ∧ semirings | metric semirings |
-| Join of Category of semirings and Category of topological spaces | semirings ∧ topological spaces | topological semirings |
-| Join of Category of unique factorization domains and Category of metric spaces | metric spaces ∧ unique factorization domains | metric unique factorization domains |
-| Join of Category of unique factorization domains and Category of topological spaces | topological spaces ∧ unique factorization domains | topological unique factorization domains |
-| Join of Category of unital magmas and Category of metric spaces | metric spaces ∧ unital magmas | metric unital magmas |
-| Join of Category of unital magmas and Category of topological spaces | topological spaces ∧ unital magmas | topological unital magmas |
-| commutative semirings | commutative monoids ∧ semirings | — (named by Sage) |
-| enumerated metric spaces | enumerated sets ∧ metric spaces | — (named by Sage) |
-| enumerated topological spaces | enumerated sets ∧ topological spaces | — (named by Sage) |
-| infinite enumerated metric spaces | infinite enumerated sets ∧ metric spaces | — (named by Sage) |
-| infinite enumerated topological spaces | infinite enumerated sets ∧ topological spaces | — (named by Sage) |
-| infinite fields | fields ∧ infinite sets | — (named by Sage) |
-| infinite metric spaces | infinite sets ∧ metric spaces | — (named by Sage) |
-| infinite topological spaces | infinite sets ∧ topological spaces | — (named by Sage) |
+| join category (Sage) | factors |
+| --- | --- |
+| Join of Category of Dedekind domains and Category of euclidean domains and Category of noetherian rings and Category of infinite enumerated sets and Category of metric spaces | Dedekind domains ∧ euclidean domains ∧ infinite enumerated sets ∧ metric spaces ∧ noetherian rings |
+| Join of Category of additive associative distributive magmas and additive magmas and Category of metric spaces | additive associative distributive magmas and additive magmas ∧ metric spaces |
+| Join of Category of additive associative distributive magmas and additive magmas and Category of topological spaces | additive associative distributive magmas and additive magmas ∧ topological spaces |
+| Join of Category of additive commutative additive associative additive unital distributive magmas and additive magmas and Category of metric spaces | additive commutative additive associative additive unital distributive magmas and additive magmas ∧ metric spaces |
+| Join of Category of additive commutative additive associative additive unital distributive magmas and additive magmas and Category of topological spaces | additive commutative additive associative additive unital distributive magmas and additive magmas ∧ topological spaces |
+| Join of Category of additive commutative additive associative distributive magmas and additive magmas and Category of metric spaces | additive commutative additive associative distributive magmas and additive magmas ∧ metric spaces |
+| Join of Category of additive commutative additive associative distributive magmas and additive magmas and Category of topological spaces | additive commutative additive associative distributive magmas and additive magmas ∧ topological spaces |
+| Join of Category of additive commutative additive magmas and Category of metric spaces | additive commutative additive magmas ∧ metric spaces |
+| Join of Category of additive commutative additive magmas and Category of topological spaces | additive commutative additive magmas ∧ topological spaces |
+| Join of Category of additive groups and Category of metric spaces | additive groups ∧ metric spaces |
+| Join of Category of additive groups and Category of topological spaces | additive groups ∧ topological spaces |
+| Join of Category of additive inverse additive unital additive magmas and Category of metric spaces | additive inverse additive unital additive magmas ∧ metric spaces |
+| Join of Category of additive inverse additive unital additive magmas and Category of topological spaces | additive inverse additive unital additive magmas ∧ topological spaces |
+| Join of Category of additive magmas and Category of metric spaces | additive magmas ∧ metric spaces |
+| Join of Category of additive magmas and Category of topological spaces | additive magmas ∧ topological spaces |
+| Join of Category of additive monoids and Category of metric spaces | additive monoids ∧ metric spaces |
+| Join of Category of additive monoids and Category of topological spaces | additive monoids ∧ topological spaces |
+| Join of Category of additive semigroups and Category of metric spaces | additive semigroups ∧ metric spaces |
+| Join of Category of additive semigroups and Category of topological spaces | additive semigroups ∧ topological spaces |
+| Join of Category of additive unital additive magmas and Category of metric spaces | additive unital additive magmas ∧ metric spaces |
+| Join of Category of additive unital additive magmas and Category of topological spaces | additive unital additive magmas ∧ topological spaces |
+| Join of Category of associative additive commutative additive associative additive unital distributive magmas and additive magmas and Category of metric spaces | associative additive commutative additive associative additive unital distributive magmas and additive magmas ∧ metric spaces |
+| Join of Category of associative additive commutative additive associative additive unital distributive magmas and additive magmas and Category of topological spaces | associative additive commutative additive associative additive unital distributive magmas and additive magmas ∧ topological spaces |
+| Join of Category of commutative additive groups and Category of metric spaces | commutative additive groups ∧ metric spaces |
+| Join of Category of commutative additive groups and Category of topological spaces | commutative additive groups ∧ topological spaces |
+| Join of Category of commutative additive monoids and Category of metric spaces | commutative additive monoids ∧ metric spaces |
+| Join of Category of commutative additive monoids and Category of topological spaces | commutative additive monoids ∧ topological spaces |
+| Join of Category of commutative additive semigroups and Category of metric spaces | commutative additive semigroups ∧ metric spaces |
+| Join of Category of commutative additive semigroups and Category of topological spaces | commutative additive semigroups ∧ topological spaces |
+| Join of Category of commutative magmas and Category of metric spaces | commutative magmas ∧ metric spaces |
+| Join of Category of commutative magmas and Category of topological spaces | commutative magmas ∧ topological spaces |
+| Join of Category of commutative monoids and Category of metric spaces | commutative monoids ∧ metric spaces |
+| Join of Category of commutative monoids and Category of topological spaces | commutative monoids ∧ topological spaces |
+| Join of Category of commutative rings and Category of metric spaces | commutative rings ∧ metric spaces |
+| Join of Category of commutative rings and Category of topological spaces | commutative rings ∧ topological spaces |
+| Join of Category of distributive magmas and additive magmas and Category of metric spaces | distributive magmas and additive magmas ∧ metric spaces |
+| Join of Category of distributive magmas and additive magmas and Category of topological spaces | distributive magmas and additive magmas ∧ topological spaces |
+| Join of Category of division rings and Category of metric spaces | division rings ∧ metric spaces |
+| Join of Category of division rings and Category of topological spaces | division rings ∧ topological spaces |
+| Join of Category of domains and Category of metric spaces | domains ∧ metric spaces |
+| Join of Category of domains and Category of topological spaces | domains ∧ topological spaces |
+| Join of Category of euclidean domains and Category of metric spaces | euclidean domains ∧ metric spaces |
+| Join of Category of euclidean domains and Category of topological spaces | euclidean domains ∧ topological spaces |
+| Join of Category of fields and Category of metric spaces | fields ∧ metric spaces |
+| Join of Category of fields and Category of topological spaces | fields ∧ topological spaces |
+| Join of Category of gcd domains and Category of metric spaces | gcd domains ∧ metric spaces |
+| Join of Category of gcd domains and Category of topological spaces | gcd domains ∧ topological spaces |
+| Join of Category of integral domains and Category of metric spaces | integral domains ∧ metric spaces |
+| Join of Category of integral domains and Category of topological spaces | integral domains ∧ topological spaces |
+| Join of Category of magmas and Category of additive magmas and Category of metric spaces | additive magmas ∧ magmas ∧ metric spaces |
+| Join of Category of magmas and Category of additive magmas and Category of topological spaces | additive magmas ∧ magmas ∧ topological spaces |
+| Join of Category of magmas and Category of metric spaces | magmas ∧ metric spaces |
+| Join of Category of magmas and Category of topological spaces | magmas ∧ topological spaces |
+| Join of Category of magmas and additive magmas and Category of metric spaces | magmas and additive magmas ∧ metric spaces |
+| Join of Category of magmas and additive magmas and Category of topological spaces | magmas and additive magmas ∧ topological spaces |
+| Join of Category of monoids and Category of metric spaces | metric spaces ∧ monoids |
+| Join of Category of monoids and Category of topological spaces | monoids ∧ topological spaces |
+| Join of Category of noetherian rings and Category of metric spaces | metric spaces ∧ noetherian rings |
+| Join of Category of noetherian rings and Category of topological spaces | noetherian rings ∧ topological spaces |
+| Join of Category of number fields and Category of quotient fields and Category of metric spaces | metric spaces ∧ number fields ∧ quotient fields |
+| Join of Category of principal ideal domains and Category of metric spaces | metric spaces ∧ principal ideal domains |
+| Join of Category of principal ideal domains and Category of topological spaces | principal ideal domains ∧ topological spaces |
+| Join of Category of quotient fields and Category of metric spaces | metric spaces ∧ quotient fields |
+| Join of Category of quotient fields and Category of topological spaces | quotient fields ∧ topological spaces |
+| Join of Category of rings and Category of metric spaces | metric spaces ∧ rings |
+| Join of Category of rings and Category of topological spaces | rings ∧ topological spaces |
+| Join of Category of rngs and Category of metric spaces | metric spaces ∧ rngs |
+| Join of Category of rngs and Category of topological spaces | rngs ∧ topological spaces |
+| Join of Category of semigroups and Category of metric spaces | metric spaces ∧ semigroups |
+| Join of Category of semigroups and Category of topological spaces | semigroups ∧ topological spaces |
+| Join of Category of semirings and Category of metric spaces | metric spaces ∧ semirings |
+| Join of Category of semirings and Category of topological spaces | semirings ∧ topological spaces |
+| Join of Category of unique factorization domains and Category of metric spaces | metric spaces ∧ unique factorization domains |
+| Join of Category of unique factorization domains and Category of topological spaces | topological spaces ∧ unique factorization domains |
+| Join of Category of unital magmas and Category of metric spaces | metric spaces ∧ unital magmas |
+| Join of Category of unital magmas and Category of topological spaces | topological spaces ∧ unital magmas |
+| commutative semirings | commutative monoids ∧ semirings |
+| enumerated metric spaces | enumerated sets ∧ metric spaces |
+| enumerated topological spaces | enumerated sets ∧ topological spaces |
+| infinite enumerated metric spaces | infinite enumerated sets ∧ metric spaces |
+| infinite enumerated topological spaces | infinite enumerated sets ∧ topological spaces |
+| infinite fields | fields ∧ infinite sets |
+| infinite metric spaces | infinite sets ∧ metric spaces |
+| infinite topological spaces | infinite sets ∧ topological spaces |
 
 ## Remaining framework classes (3)
 

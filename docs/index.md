@@ -13,20 +13,21 @@ The theory chapters are:
 4. [Equivalences and witnesses](framework/Identification.md)
 5. [Properties, structures, and classifying constructions](framework/Truncation-and-Classifiers.md)
 6. [Algebraic categories from operations](framework/Mathematical-Framework.md)
-7. [Joins, meets, and closure](framework/Joins-Meets-and-Closure.md)
-8. [Distinguished functors and comparison](framework/Distinguished-Functors.md)
-9. [Elements, subobjects, and hypotheses](framework/Elements-and-Containment.md)
-10. [Modules and form categories](framework/Modules-and-Forms.md)
-11. [Lattices and discriminant forms](framework/Lattices-and-Discriminant-Forms.md)
-12. [Isometries and arithmetic invariants](framework/Isometries-and-Arithmetic-Invariants.md)
+7. [Modules and base change](framework/Modules-and-Forms.md)
+8. [Joins, meets, and closure](framework/Joins-Meets-and-Closure.md)
+9. [Distinguished functors and comparison](framework/Distinguished-Functors.md)
+10. [Elements, subobjects, and scalar extension](framework/Elements-and-Containment.md)
+11. [Bilinear and quadratic forms](framework/Bilinear-and-Quadratic-Forms.md)
+12. [Lattices and discriminant forms](framework/Lattices-and-Discriminant-Forms.md)
+13. [Isometries and arithmetic invariants](framework/Isometries-and-Arithmetic-Invariants.md)
 
 ## Realizations
 
-- [Sage category framework reference](sage/Sage-Category-Framework-Inventory.md)
-- [Sage category classes](sage/Sage-Category-Classes.md)
 - [Lean and Sage](lean/Lean-Sage-Integration-Model.md)
 - [Category and functor diagram](lean/Category-Graph.md)
-- [Written form and evaluation](contributing/Written-Form-and-Evaluation.md)
+- [Sage category framework reference](sage/Sage-Category-Framework-Inventory.md)
+- [Sage category classes](sage/Sage-Category-Classes.md)
+- [Lean categorical DSL proof of concept](lean/Categorical-DSL.md)
 
 ## Authoring and reference
 

@@ -105,8 +105,11 @@ equivalent to $\Delta^0$; a category with a terminal object is the standard exam
 
 Let $C$ be an $\infty$-category. An object $X\in C$ is *$n$-truncated* if
 $\operatorname{Map}_C(Y,X)$ is an $n$-truncated space for every $Y\in C$. A morphism
-$f\colon X\to Y$ is $n$-truncated if each of its homotopy fibers is an $n$-truncated
-space [@Lur26].
+$f\colon X\to Y$ is $n$-truncated if, for every $Z\in C$, the induced map
+$$
+\operatorname{Map}_C(Z,X)\longrightarrow\operatorname{Map}_C(Z,Y)
+$$
+is an $n$-truncated map of spaces [@Lur26].
 
 For a space $S$, this specializes to the usual condition
 $\pi_k(S,s)=0$ for $k>n$. When the inclusion of $n$-truncated objects admits a left

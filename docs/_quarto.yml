@@ -23,21 +23,22 @@ book:
       chapters:
         - framework/Truncation-and-Classifiers.md
         - framework/Mathematical-Framework.md
+        - framework/Modules-and-Forms.md
         - framework/Joins-Meets-and-Closure.md
         - framework/Distinguished-Functors.md
         - framework/Elements-and-Containment.md
     - part: Forms and lattices
       chapters:
-        - framework/Modules-and-Forms.md
+        - framework/Bilinear-and-Quadratic-Forms.md
         - framework/Lattices-and-Discriminant-Forms.md
         - framework/Isometries-and-Arithmetic-Invariants.md
     - part: Realizations
       chapters:
-        - sage/Sage-Category-Framework-Inventory.md
-        - sage/Sage-Category-Classes.md
         - lean/Lean-Sage-Integration-Model.md
         - lean/Category-Graph.md
-        - contributing/Written-Form-and-Evaluation.md
+        - sage/Sage-Category-Framework-Inventory.md
+        - sage/Sage-Category-Classes.md
+        - lean/Categorical-DSL.md
     - part: Authoring and reference
       chapters:
         - contributing/Mathematical-Language-Style-Guide.md
@@ -67,13 +68,6 @@ filters:
   - tikz
 tikz:
   cache: true
-# Numbered amsthm-style environments (ute/custom-numbered-blocks).
-# One shared per-chapter counter (all kinds in group 'blocks') so a block is 'Kind N.M'
-# in a single sequence; quartothmlike = looks like native Quarto theorems.
-# Author: ::: {.Warning #w-foo}\n### Optional title\n... ::: ; reference: @w-foo.
-# CONSTRAINT: block labels must NOT start with Quarto-reserved prefixes
-# (def- thm- lem- cor- prp- cnj- exm- exr- fig- tbl- eq- sec- lst-) — Quarto would hijack them.
-# Migration of existing native #def-/#thm- blocks is deferred (relabel away from reserved prefixes).
 # Numbered amsthm-style environments (ute/custom-numbered-blocks).
 # One shared per-chapter counter (all kinds in group 'blocks') -> a block is 'Kind N.M' in one sequence;
 # quartothmlike appearance mimics native Quarto theorems.

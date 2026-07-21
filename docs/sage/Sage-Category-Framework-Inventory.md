@@ -5,7 +5,8 @@ functorial category constructions. Parameterized categories, joins, refinements 
 axioms, and functorial constructions produce further category instances at runtime.
 The mathematical categories represented here are defined in
 [Algebraic categories from operations](../framework/Mathematical-Framework.md),
-[Modules and form categories](../framework/Modules-and-Forms.md), and
+[Modules and base change](../framework/Modules-and-Forms.md),
+[Bilinear and quadratic forms](../framework/Bilinear-and-Quadratic-Forms.md), and
 [Lattices and discriminant forms](../framework/Lattices-and-Discriminant-Forms.md).
 
 ## Categories
@@ -20,8 +21,8 @@ its module, role, defining axiom chain, and source permalink. It also records th
 classes and the 130 category instances constructed by a full import, including the 84
 join categories and their factors.
 
-The route from `Modules(ZZ)` to `Objects()` passes through `Sets()` and
-`SetsWithPartialMaps()`. The `super_categories()` functors on this route are:
+The chain of declared superclass relations from `Modules(ZZ)` to `Objects()` passes
+through `Sets()` and `SetsWithPartialMaps()`:
 
 ```
     Category of additive commutative additive magmas  →  Category of additive magmas
@@ -50,9 +51,12 @@ The route from `Modules(ZZ)` to `Objects()` passes through `Sets()` and
 
 ## Axiom registry (51)
 
-Axioms refine a category into a full subcategory (`C._with_axiom(A)`); the registry is
-global. The implementation site is the class in which the axiom is declared. Named
-classes are predefined subcategory classes reached by adjoining that axiom.
+The method `C._with_axiom(A)` is Sage's implementation mechanism for adjoining a
+registered axiom, and the registry is global. The resulting category is not uniformly a
+mathematical replete full subcategory: some entries model isomorphism-invariant object
+properties, `WithBasis` records chosen data, and `Facade` and `Endset` control framework
+behavior. The implementation site is the class in which the entry is declared. Named
+classes are predefined category classes reached through this mechanism.
 
 | axiom | status | implementation site | named subcategory classes |
 | --- | --- | --- | --- |
@@ -118,7 +122,7 @@ classes are predefined subcategory classes reached by adjoining that axiom.
 
 - Finite generation is structure-relative in Sage's own naming (`FinitelyGeneratedAsMagma`, `FinitelyGeneratedAsLambdaBracketAlgebra`).
 
-- `WithBasis` records a chosen presentation. `Facade` and `Endset` serve framework
+- `WithBasis` records a chosen basis. `Facade` and `Endset` serve framework
   bookkeeping roles.
 
 ## Known discrepancies in Sage 10.9 {#sec-sage-discrepancies}
@@ -129,7 +133,7 @@ the mathematical hierarchy and Sage's declarations.
 1. **Missing theorem inclusions in the subcategory lattice.** `PrincipalIdealDomains().is_subcategory(DedekindDomains())` and `…is_subcategory(NoetherianRings())` are both `False` (kernel-verified), though every PID is a Dedekind domain and noetherian; Sage does know `EuclideanDomains ⊂ PrincipalIdealDomains`. Consequence: `ZZ.category()` is the uncollapsed five-factor join *Dedekind ∧ euclidean ∧ noetherian ∧ infinite enumerated ∧ metric* whose algebraic part is mathematically just euclidean domains.
 
 2. **The topological/metric naming gap.** The `Topological` construction has a declared nested class only at `Groups` (`groups.py:654`, "Category of topological groups"); `Metric` at none.
-   All 76 bare joins constructed at import are Metric/Topological meets with the algebraic towers — topological additive groups, metric monoids, topological semirings, … — standard objects Sage builds but cannot name (join table in [Sage Category Classes](Sage-Category-Classes.md)).
+   All 76 bare joins constructed at import are intersections of a metric or topological Sage category with categories in the algebraic towers. The join factors alone do not assert compatibility between the topology or metric and the algebraic operations (join table in [Sage Category Classes](Sage-Category-Classes.md)).
 
 3. **Construction declarations were not duplicated across the towers.** The additive tower received copies of the four magma axioms but not the `Topological` declaration, so `Groups().Topological()` is named while `AdditiveGroups().Topological()` is a bare join.
 

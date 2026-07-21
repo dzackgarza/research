@@ -42,10 +42,10 @@ object. Its universal property differs from the least-upper-bound property of th
 ## Closure under specified operations
 
 Suppose a family of operations on subcategories has been specified. The closure of a
-family $\{A_i\}$ is the intersection of all replete full subcategories containing every
-$A_i$ and closed under those operations, when this collection is small enough for the
-intersection to be formed. The operations and the required closure conditions are part
-of the definition.
+family $\{A_i\}$ is the meet in $\operatorname{RFull}(C)$ of all replete full
+subcategories containing every $A_i$ and closed under those operations. Since $C$ is
+$\mathcal U$-small, this collection is a $\mathcal U$-set. The operations and the
+required closure conditions are part of the definition.
 
 ## Categories of structured objects
 

@@ -32,12 +32,12 @@ Parity establishes a reliable computational reference. Extensions then generaliz
 that reference and state every new hypothesis, codomain, and normalization explicitly.
 Results that specialize to Sage's setting are compared with the parity implementation.
 
-## Notebook proofs
+## Notebook verification
 
 High-level notebooks exercise the public interface by reproducing published lattice
 arguments. The intended examples include results of Nikulin, Sterk,
 Dolgachev--Kondō, and the Enriques-moduli literature. A notebook records its mathematical
 source, hypotheses, input construction, and the observable conclusion it reproduces.
 
-The downstream research objective is the Coble and Enriques moduli program described in
-`projects/lattice-research/GOAL.md`.
+The downstream research objective is exact computational support for the Coble and
+Enriques moduli program.

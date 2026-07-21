@@ -42,6 +42,18 @@ $U\colon C\to\mathbf{Set}$. The set $U(X)$ is the underlying set of $X$. Any fur
 underlying-set construction is stated as a factorization through this functor.
 :::
 
+::: {#def-abelian-category}
+## Abelian categories
+
+An *abelian category* is an additive category in which every morphism has a kernel and
+a cokernel and, for every morphism $f$, the canonical map
+$$
+\operatorname{Coim}(f)\longrightarrow\operatorname{Im}(f)
+$$
+is an isomorphism [@stacks-0109]. In an abelian category, a morphism is monic exactly
+when its kernel is zero and epic exactly when its cokernel is zero.
+:::
+
 ## Arrow and functor categories
 
 For an ordinary category $C$, the arrow category is
@@ -90,11 +102,6 @@ covariant functors.
 
 For every presheaf $F\colon C^{\mathrm{op}}\to\mathbf{Set}$, use the category of
 elements and discrete-fibration convention of @def-category-of-elements.
-In particular,
-$$
-\mathcal B_{R,W}=\operatorname{El}(\operatorname{Bil}_{R,W}),
-\qquad
-\mathcal Q_{R,W}=\operatorname{El}(\operatorname{Quad}_{R,W}),
-$$
-with projections to $R\text{-}\mathbf{Mod}$ and no additional opposite category.
+Thus the projection $\operatorname{El}(F)\to C$ is a discrete fibration; no additional
+opposite category is taken after forming $\operatorname{El}(F)$.
 :::

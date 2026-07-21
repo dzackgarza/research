@@ -100,7 +100,7 @@ input, not vocabulary for the book.
 | realization functor | the actual functor with source and target; use *forgetful functor* only when structure is forgotten and *realization* only for a defined realization construction |
 | witness-level datum | the chosen basis, enumeration, presentation, section, or other auxiliary datum |
 | free or torsion fiber | for a named functor $F\colon\mathcal D\to\mathcal C$, the full subcategory of $\mathcal D$ on objects mapped into the specified free or torsion full subcategory of $\mathcal C$; add finiteness only when it is a hypothesis |
-| unified O | $\operatorname{Aut}\colon\operatorname{Core}(\mathcal C)\to\mathbf{Grp}$, with $O(X):=\operatorname{Aut}(X)$ as an instance |
+| unified O | for an ordinary category $\mathcal C$, $\operatorname{Aut}\colon\mathcal C^{\simeq}\to\mathbf{Grp}$, with $O(X):=\operatorname{Aut}(X)$ as an instance |
 | homsets-as-parents | the hom-bifunctor, the core groupoid, or $\operatorname{Iso}_{\mathcal C}(X,Y)$, which is a bitorsor under $\operatorname{Aut}(Y)$ on the left and $\operatorname{Aut}(X)$ on the right when $X\cong Y$ |
 | residue | the missing definition or unformalized theorem |
 | gap row | a documented missing formalization; this already has a precise implementation meaning |
@@ -313,9 +313,8 @@ $A \times_C B$, or a universal family named only by its classifying map $S \to M
 of the cartesian square that records the projections and the universal property. *Banned:*
 "the family is the base change $S \times_M U$"; "$S \to M$ classifies the family" as the
 whole of it. *Fix:* draw the square (`tikzcd`) with both legs and the corner mark, and use
-fiber-product notation only as a named shorthand for the apex once its square is drawn — the
-vertical-presentation convention, [Categorical Presentation Principles
-M6](contributing/Categorical-Presentation-Principles.md#sec-draw-the-square).
+fiber-product notation only as a named shorthand for the apex once its square is drawn —
+the [universal-construction convention](contributing/Mathematical-Language-Style-Guide.md#universal-constructions-and-diagrams).
 
 **MA-9 — Colloquial "ownership" for a mathematical relation.** "owns", "owned at", and
 "ownership" replace the relation that should be stated. *Banned:* "commutativity is owned
@@ -332,6 +331,15 @@ property is stated. *Banned:* "$u_A\colon E_A\to B_A$ is the axiom classifier" w
 description of the objects it classifies or the equivalence it represents. *Fix:* state
 the property or structure directly. If a classifying object or fibration exists, state
 its universal property and call a change along a functor the pullback family.
+
+**MA-11 — An arrow without a typed map.** A diagram connects mathematical nouns because
+they are related in the author's head, without naming a functor, natural transformation,
+or map having the displayed source and target. *Banned:* an object-to-category edge for
+membership; a discriminant arrow from the full lattice category when the construction is
+functorial only on its core; an unlabeled edge whose direction could mean either inclusion
+or forgetting structure. *Fix:* write the actual source, target, and arrow label. Replace
+membership by prose, restrict a construction to its stated domain, and display a
+set-valued invariant as a map from $\pi_0$.
 
 ---
 
@@ -390,11 +398,15 @@ and audit procedure are agent obligations:
   unrelated primitives. Natural transformations may be whiskered; functors are composed.
 - Compare every relocated destination against its source for definitions, hypotheses,
   domains, codomains, diagrams, citations, examples, warnings, and stable anchors.
+- Check every realization claim against the current implementation or generated data.
+  State the implemented boundary separately from proposed extensions.
 - Keep agent prompts, audits, terminology controls, editorial status, and remediation
   queues out of the rendered book. A rendered contribution page contains only the
   conventions and mathematical information a human contributor needs.
 - Resolve citations, cross-references, and anchors; render and inspect the result through
   the repository's declared documentation checks.
+- When a diagram fails, render that diagram in isolation and read the first TeX
+  diagnostic. A later converter failure is downstream evidence, not the cause.
 - Use sentence-case, nonduplicate headings and the book's shared macros. Do not infer
   correctness from formatting or a successful build.
 - Send every substantive rewritten artifact through the exact fresh-context audit
