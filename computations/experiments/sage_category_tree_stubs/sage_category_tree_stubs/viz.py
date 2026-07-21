@@ -44,11 +44,7 @@ def rebuild_viewer(*, cache_bust: int | None = None) -> dict[str, Path | int]:
         ["dot", "-Tsvg", str(_SPIKE_DOT), "-o", str(_SPIKE_SVG)],
         check=True,
     )
-    bust = (
-        int.from_bytes(hashlib.sha256(_DOT.read_bytes()).digest()[:8], "big")
-        if cache_bust is None
-        else cache_bust
-    )
+    bust = int.from_bytes(hashlib.sha256(_DOT.read_bytes()).digest()[:8], "big") if cache_bust is None else cache_bust
     html = _SPIKE_HTML.read_text(encoding="utf-8")
     html, n = re.subn(
         r"category_parent_graph\.svg\?v=\d+",
