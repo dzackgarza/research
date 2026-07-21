@@ -78,6 +78,10 @@ def resolve_classifier_id(
     """Resolve authored classifier id against the seed (id, then name+host)."""
     classifiers = sketch["classifiers"]
     # Prefer mature Magmas.Additive over a bare authored clf.additive id.
+    if classifier_id == "clf.finite":
+        return "clf.sets.finite"
+    if classifier_name == "Finite" and prefer_host == "cat.sets":
+        return "clf.sets.finite"
     if classifier_id == "clf.additive" and "clf.magmas.additive" in classifiers:
         return "clf.magmas.additive"
     if classifier_id == "clf.commutative" and "clf.magmas.commutative" in classifiers:
