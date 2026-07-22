@@ -96,6 +96,8 @@ namespace CategoryId
 def sets : CategoryId := ⟨"cat.sets"⟩
 instance : Inhabited CategoryId := ⟨sets⟩
 def magmas : CategoryId := ⟨"cat.magmas"⟩
+/-- Semantic host for inverse laws; not a separately audited Sage public target. -/
+def unitalMagmas : CategoryId := ⟨"cat.unital_magmas"⟩
 def rings : CategoryId := ⟨"cat.rings"⟩
 def commutativeRings : CategoryId := ⟨"cat.commutative_rings"⟩
 def groups : CategoryId := ⟨"cat.groups"⟩

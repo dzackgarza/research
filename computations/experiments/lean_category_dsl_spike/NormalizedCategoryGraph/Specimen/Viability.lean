@@ -3,6 +3,7 @@ Copyright (c) 2026 Dzack Garza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import NormalizedCategoryGraph.Core.StructuralMap
+import NormalizedCategoryGraph.Categories.Algebra.Rings
 import NormalizedCategoryGraph.ForMathlib.CategoricalPullback
 import NormalizedCategoryGraph.Registry.Entry
 import NormalizedCategoryGraph.Realization.Mathlib.Atomic
@@ -25,9 +26,10 @@ def specimenHosts : ClassifierHostTable where
     | ⟨"clf.sets.finite"⟩ | ⟨"clf.sets.graded"⟩ | ⟨"clf.sets.binary_operation"⟩ =>
         some CategoryId.sets
     | ⟨"clf.magmas.associative"⟩ | ⟨"clf.magmas.commutative"⟩
-    | ⟨"clf.magmas.unital"⟩ | ⟨"clf.magmas.inverse"⟩
+    | ⟨"clf.magmas.unital"⟩
     | ⟨"clf.magmas.additive"⟩ | ⟨"clf.magmas.multiplicative"⟩ =>
         some CategoryId.magmas
+    | ⟨"clf.magmas.inverse"⟩ => some CategoryId.unitalMagmas
     | ⟨"clf.magmaswithtwooperations.distributive"⟩ =>
         some CategoryId.magmasWithTwoOperations
     | ⟨"clf.division"⟩ =>
@@ -155,7 +157,7 @@ example :
       (Normalized.Sets Realization.Mathlib.atomicModel)).isSome = true := by
   simp [EvaluatedFunctor.pullbackCategory]
 
-def exprMagmas : CategoryExpr := .classifierTotal ClassifierId.setsBinaryOperation
+def exprMagmas : CategoryExpr := Categories.Algebra.Magmas.Magmas
 
 /-- The binary-operation classifier realizes the registered Magmas node. -/
 noncomputable def specimenMagmasRealization :
@@ -165,8 +167,7 @@ noncomputable def specimenMagmasRealization :
   refine ⟨Normalized.Magmas Realization.Mathlib.atomicModel, ?_, CategoryTheory.Equivalence.refl⟩
   rfl
 
-def exprSemigroups : CategoryExpr :=
-  .refine exprMagmas ClassifierId.magmasAssociative none
+def exprSemigroups : CategoryExpr := Categories.Algebra.Magmas.Semigroups
 
 /-- The evaluator's identity reindex is equivalent to the authored Semigroups category. -/
 noncomputable def specimenSemigroupsRealization :
@@ -175,15 +176,28 @@ noncomputable def specimenSemigroupsRealization :
       exprSemigroups (Normalized.Semigroups Realization.Mathlib.atomicModel) := by
   let A := Realization.Mathlib.atomicModel.algebra.associative
   refine ⟨(Classifier.reindex (CategoryTheory.CategoryStruct.id _) A).total, ?_, ?_⟩
-  · simp [evalCategory, exprSemigroups, exprMagmas, magmasClassifier, forgetfulToMagmas,
+  · have inverse : ClassifierId.magmasAssociative ≠ ClassifierId.magmasInverse := by decide
+    simp [evalCategory, exprSemigroups, Categories.Algebra.Magmas.Semigroups,
+      Categories.Algebra.Magmas.Magmas, Categories.Algebra.Magmas.Associative,
+      magmasClassifier, forgetfulToMagmas,
       Normalized.Magmas, Realization.Mathlib.atomicModel,
-      Realization.Mathlib.atomicModelComponents, A]
+      Realization.Mathlib.atomicModelComponents, A, inverse]
   · exact (ForMathlib.reindexIdIso A).equiv
 
-def exprMonoids : CategoryExpr :=
-  .refine exprSemigroups ClassifierId.magmasUnital none
-def exprGroups : CategoryExpr :=
-  .refine exprMonoids ClassifierId.magmasInverse none
+def exprMonoids : CategoryExpr := Categories.Algebra.Magmas.Monoids
+def exprGroups : CategoryExpr := Categories.Algebra.Magmas.Groups
+
+/-- The Groups expression evaluates through the unital-magma inverse classifier. -/
+example :
+    (evalCategory Realization.Mathlib.atomicModel.{0} Realization.Mathlib.specimenRingBinding
+      (FunctorSemantics.empty _) exprGroups).isSome = true := by
+  simp [evalCategory, exprGroups,
+    Categories.Algebra.Magmas.Groups, Categories.Algebra.Magmas.Monoids,
+    Categories.Algebra.Magmas.Semigroups, Categories.Algebra.Magmas.Magmas,
+    Categories.Algebra.Magmas.Associative, Categories.Algebra.Magmas.Unital,
+    Categories.Algebra.Magmas.Inverse, magmasClassifier, forgetfulToMagmas,
+    forgetfulToUnitalMagma, Realization.Mathlib.atomicModel,
+    Realization.Mathlib.atomicModelComponents]
 
 /-- Magmas.Additive (one-tower role). -/
 def exprAdditiveMagmas : CategoryExpr :=
@@ -195,7 +209,7 @@ def exprAdditiveMonoids : CategoryExpr :=
 def exprAdditiveGroups : CategoryExpr :=
   .refine exprAdditiveMonoids ClassifierId.magmasInverse (some RouteId.additive)
 def exprMagmasWithTwoOperations : CategoryExpr :=
-  .opaque CategoryId.magmasWithTwoOperations
+  Categories.Algebra.Rings.MagmasWithTwoOperations
 
 /-- The opaque two-operation host is realized by its declared Mathlib category. -/
 noncomputable def specimenMagmasWithTwoOperationsRealization :
@@ -208,17 +222,8 @@ noncomputable def specimenMagmasWithTwoOperationsRealization :
   rfl
 
 /-- Rings as the refined two-operation tower (not the unrefined host). -/
-def exprRings : CategoryExpr :=
-  let m2o := exprMagmasWithTwoOperations
-  let addAssoc := .refine m2o ClassifierId.magmasAssociative (some RouteId.additive)
-  let addComm := .refine addAssoc ClassifierId.magmasCommutative (some RouteId.additive)
-  let addUnital := .refine addComm ClassifierId.magmasUnital (some RouteId.additive)
-  let addInv := .refine addUnital ClassifierId.magmasInverse (some RouteId.additive)
-  let mulAssoc := .refine addInv ClassifierId.magmasAssociative (some RouteId.multiplicative)
-  let dist := .refine mulAssoc ClassifierId.m2oDistributive none
-  .refine dist ClassifierId.magmasUnital (some RouteId.multiplicative)
-def exprCommRings : CategoryExpr :=
-  .refine (.atom CategoryId.rings) ClassifierId.magmasCommutative (some RouteId.multiplicative)
+def exprRings : CategoryExpr := Categories.Algebra.Rings.Rings
+def exprCommRings : CategoryExpr := Categories.Algebra.Rings.CommutativeRings
 /-- DivisionRings := Rings.Division (not Magmas.Inverse). -/
 def exprDivisionRings : CategoryExpr :=
   .refine (.atom CategoryId.rings) ClassifierId.ringsDivision none

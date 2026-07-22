@@ -194,7 +194,7 @@ private def theoremInclusionJson (e : TheoremInclusionEntry) : Json :=
     ("sourcePosition", e.sourcePosition),
   ]
 
-private def presentationJson (e : PresentationEntry) : Json :=
+private def presentationJson (e : PresentationMetadataEntry) : Json :=
   object [
     ("id", e.id.raw),
     ("category", e.category.raw),

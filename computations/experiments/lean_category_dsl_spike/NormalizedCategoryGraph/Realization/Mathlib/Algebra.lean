@@ -16,9 +16,8 @@ import NormalizedCategoryGraph.Realization.Mathlib.Foundation
 * Commutative — full subcategory of commutative magmas (property)
 * Unital — magmas with a designated unit and **unit-preserving** morphisms
   (structure: faithful, not full)
-* Inverse — magmas with an involutive inverse operation and inverse-preserving
-  morphisms (structure: faithful, not full). Does **not** force associativity
-  or a unit (so it is not `GrpCat → MagmaCat`).
+* Inverse — unital magmas with an inverse operation satisfying both inverse laws,
+  with inverse- and unit-preserving morphisms.
 -/
 
 namespace NormalizedCategoryGraph.Realization.Mathlib
@@ -76,37 +75,79 @@ def toMagmaCatFunctor : UnitalMagma.{u} ⥤ MagmaCat.{u} where
 
 end UnitalMagma
 
-/-- Magma with an involutive inverse operation (no unit/associativity required). -/
-structure MagmaWithInv where
-  toMagma : MagmaCat.{u}
-  inv : toMagma → toMagma
-  inv_inv : ∀ x : toMagma, inv (inv x) = x
+/-- A unital magma with two-sided inverse equations. -/
+structure UnitalMagmaWithInv where
+  toUnitalMagma : UnitalMagma.{u}
+  inv : toUnitalMagma.underlyingSet → toUnitalMagma.underlyingSet
+  mul_inv : ∀ x : toUnitalMagma.underlyingSet, x * inv x = 1
+  inv_mul : ∀ x : toUnitalMagma.underlyingSet, inv x * x = 1
 
-namespace MagmaWithInv
+namespace UnitalMagmaWithInv
 
-/-- Morphisms are magma morphisms that commute with `inv`. -/
+/-- Morphisms preserve multiplication, the chosen unit, and inverse. -/
 @[ext]
-structure Hom (A B : MagmaWithInv.{u}) where
-  toHom : A.toMagma ⟶ B.toMagma
-  map_inv : ∀ x : A.toMagma, (ConcreteCategory.hom toHom) (A.inv x) = B.inv ((ConcreteCategory.hom toHom) x)
+structure Hom (A B : UnitalMagmaWithInv.{u}) where
+  toHom : A.toUnitalMagma ⟶ B.toUnitalMagma
+  map_inv : ∀ x : A.toUnitalMagma.underlyingSet,
+    toHom.toFun (A.inv x) = B.inv (toHom.toFun x)
 
-instance : Category MagmaWithInv.{u} where
+instance : Category UnitalMagmaWithInv.{u} where
   Hom := Hom
   id A :=
-    { toHom := 𝟙 A.toMagma
-      map_inv := by intro x; simp }
+    { toHom := 𝟙 A.toUnitalMagma
+      map_inv := by intro x; rfl }
   comp {A B C} f g :=
     { toHom := f.toHom ≫ g.toHom
       map_inv := by
         intro x
-        simp [f.map_inv, g.map_inv] }
+        change g.toHom.toFun (f.toHom.toFun (A.inv x)) = _
+        rw [f.map_inv, g.map_inv]
+        rfl }
 
-/-- Forgetful to `MagmaCat`. -/
-def toMagmaCatFunctor : MagmaWithInv.{u} ⥤ MagmaCat.{u} where
-  obj A := A.toMagma
+ /-- Forgetful to the selected unital-magma host. -/
+def toUnitalMagmaFunctor : UnitalMagmaWithInv.{u} ⥤ UnitalMagma.{u} where
+  obj A := A.toUnitalMagma
   map {A B} f := f.toHom
 
-end MagmaWithInv
+end UnitalMagmaWithInv
+
+/-- Operation-role wrapper for the additive presentation of a magma. -/
+structure AdditiveMagma where
+  toMagma : MagmaCat.{u}
+
+namespace AdditiveMagma
+
+abbrev Hom (A B : AdditiveMagma.{u}) := A.toMagma ⟶ B.toMagma
+
+instance : Category AdditiveMagma.{u} where
+  Hom := Hom
+  id A := 𝟙 A.toMagma
+  comp f g := f ≫ g
+
+def toMagmaCatFunctor : AdditiveMagma.{u} ⥤ MagmaCat.{u} where
+  obj A := A.toMagma
+  map f := f
+
+end AdditiveMagma
+
+/-- Operation-role wrapper for the multiplicative presentation of a magma. -/
+structure MultiplicativeMagma where
+  toMagma : MagmaCat.{u}
+
+namespace MultiplicativeMagma
+
+abbrev Hom (A B : MultiplicativeMagma.{u}) := A.toMagma ⟶ B.toMagma
+
+instance : Category MultiplicativeMagma.{u} where
+  Hom := Hom
+  id A := 𝟙 A.toMagma
+  comp f g := f ≫ g
+
+def toMagmaCatFunctor : MultiplicativeMagma.{u} ⥤ MagmaCat.{u} where
+  obj A := A.toMagma
+  map f := f
+
+end MultiplicativeMagma
 
 /-- Associative classifier. -/
 noncomputable def associative : Classifier Magmas where
@@ -124,20 +165,23 @@ noncomputable def unital : Classifier Magmas where
   total := Cat.of UnitalMagma.{u}
   forget := UnitalMagma.toMagmaCatFunctor.toCatHom
 
-/-- Inverse classifier: involutive inverse, not `GrpCat`. -/
-noncomputable def inverse : Classifier Magmas where
-  total := Cat.of MagmaWithInv.{u}
-  forget := MagmaWithInv.toMagmaCatFunctor.toCatHom
+/-- The named host category for inverse laws. -/
+noncomputable def UnitalMagmas : ObjCat := unital.total
 
-/-- Magmas.Additive as a role classifier (identity on Magmas). One-tower. -/
+/-- Inverse classifier on unital magmas, with both group inverse equations. -/
+noncomputable def inverse : Classifier unital.total where
+  total := Cat.of UnitalMagmaWithInv.{u}
+  forget := UnitalMagmaWithInv.toUnitalMagmaFunctor.toCatHom
+
+/-- Magmas.Additive retains the operation role in its categorical objects. -/
 noncomputable def additive : Classifier Magmas where
-  total := Magmas
-  forget := 𝟙 Magmas
+  total := Cat.of AdditiveMagma.{u}
+  forget := AdditiveMagma.toMagmaCatFunctor.toCatHom
 
-/-- Magmas.Multiplicative as a role classifier (identity on Magmas). -/
+/-- Magmas.Multiplicative retains the operation role in its categorical objects. -/
 noncomputable def multiplicative : Classifier Magmas where
-  total := Magmas
-  forget := 𝟙 Magmas
+  total := Cat.of MultiplicativeMagma.{u}
+  forget := MultiplicativeMagma.toMagmaCatFunctor.toCatHom
 
 /-- Algebra atoms over the Mathlib foundations. -/
 noncomputable def algebraAtoms : AlgebraAtoms foundationAtoms where

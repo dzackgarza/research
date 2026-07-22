@@ -18,7 +18,6 @@ import NormalizedCategoryGraph.Presentation.Nodes
 import NormalizedCategoryGraph.Categories.Algebra.Magmas
 import NormalizedCategoryGraph.Categories.Algebra.Rings
 import NormalizedCategoryGraph.Names.Standard
-import NormalizedCategoryGraph.Specimen.Viability
 import NormalizedCategoryGraph.ForMathlib.CategoricalPullback
 
 /-!

@@ -31,6 +31,12 @@ normalized_registry .category
     origin := .atomicClassifierTotal, visibility := .present }
 
 normalized_registry .category
+  { id := CategoryId.unitalMagmas, canonicalName := "UnitalMagmas"
+    declaration := `NormalizedCategoryGraph.Realization.Mathlib.UnitalMagmas
+    expression := .classifierTotal ClassifierId.magmasUnital
+    origin := .atomicClassifierTotal, visibility := .semanticOnly }
+
+normalized_registry .category
   { id := CategoryId.semigroups, canonicalName := "Semigroups"
     declaration := `NormalizedCategoryGraph.Normalized.Semigroups
     expression := exprSemigroups
@@ -156,7 +162,7 @@ normalized_registry .classifier
 normalized_registry .classifier
   { id := ClassifierId.magmasInverse, canonicalName := "Inverse"
     declaration := `NormalizedCategoryGraph.Realization.Mathlib.inverse
-    hostId := CategoryId.magmas, visibility := .present }
+    hostId := CategoryId.unitalMagmas, visibility := .present }
 
 normalized_registry .classifier
   { id := ClassifierId.magmasAdditive, canonicalName := "Additive"

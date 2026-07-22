@@ -30,7 +30,7 @@ inductive RegistryEntry
   | theoremInclusion (e : TheoremInclusionEntry)
   | alias (e : AliasEntry)
   | opaque (e : OpaqueCategoryEntry)
-  | presentation (e : PresentationEntry)
+  | presentation (e : PresentationMetadataEntry)
   deriving Repr
 
 /-- Stable identifier represented by a heterogeneous registry entry. -/
@@ -72,7 +72,7 @@ structure RegistryState where
   theoremInclusions : Array TheoremInclusionEntry := #[]
   aliases : Array AliasEntry := #[]
   opaqueCategories : Array OpaqueCategoryEntry := #[]
-  presentations : Array PresentationEntry := #[]
+  presentations : Array PresentationMetadataEntry := #[]
   deriving Inhabited
 
 /-- Registered functor lookup by stable ID. -/

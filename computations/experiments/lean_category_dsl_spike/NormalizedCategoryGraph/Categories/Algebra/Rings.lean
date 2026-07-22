@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import NormalizedCategoryGraph.Categories.Algebra.Magmas
 import NormalizedCategoryGraph.Core.Ids
-import NormalizedCategoryGraph.Specimen.Viability
 
 /-!
 # Rings cluster
@@ -17,25 +16,23 @@ multiplicative port.
 namespace NormalizedCategoryGraph.Categories.Algebra.Rings
 
 open NormalizedCategoryGraph
-open Specimen
 open Categories.Algebra.Magmas
 
-/-- Rings as the opaque two-operation host (pending distributivity theory). -/
-def Rings : CategoryExpr := exprRings
+/-- The two-operation host is intentionally opaque at this presentation layer. -/
+def MagmasWithTwoOperations : CategoryExpr := .opaque CategoryId.magmasWithTwoOperations
+
+/-- Rings are the refined two-operation tower. -/
+def Rings : CategoryExpr :=
+  let addAssoc := .refine MagmasWithTwoOperations Associative (some RouteId.additive)
+  let addComm := .refine addAssoc Commutative (some RouteId.additive)
+  let addUnital := .refine addComm Unital (some RouteId.additive)
+  let addInv := .refine addUnital Inverse (some RouteId.additive)
+  let mulAssoc := .refine addInv Associative (some RouteId.multiplicative)
+  let dist := .refine mulAssoc ClassifierId.m2oDistributive none
+  .refine dist Unital (some RouteId.multiplicative)
 
 /-- CommutativeRings := Rings.Commutative[via := multiplicative]. -/
-def CommutativeRings : CategoryExpr := exprCommRings
-
-/-- Multiplicative port (not additive). Target is the named atom `cat.magmas`. -/
-example :
-    (project specimenCtx Rings (.atom CategoryId.magmas)
-      (.route RouteId.multiplicative)).isSome = true := by
-  native_decide
-
-/-- Additive port is a distinct route. -/
-example :
-    (project specimenCtx Rings (.atom CategoryId.magmas)
-      (.route RouteId.additive)).isSome = true := by
-  native_decide
+def CommutativeRings : CategoryExpr :=
+  .refine (.atom CategoryId.rings) Commutative (some RouteId.multiplicative)
 
 end NormalizedCategoryGraph.Categories.Algebra.Rings

@@ -98,7 +98,6 @@ noncomputable def magmasClassifier (M : AtomicModel.{uObj, uHom}) (id : Classifi
   if id == ClassifierId.magmasAssociative then some M.algebra.associative
   else if id == ClassifierId.magmasCommutative then some M.algebra.commutative
   else if id == ClassifierId.magmasUnital then some M.algebra.unital
-  else if id == ClassifierId.magmasInverse then some M.algebra.inverse
   else if id == ClassifierId.magmasAdditive then some M.algebra.additive
   else if id == ClassifierId.magmasMultiplicative then some M.algebra.multiplicative
   else none
@@ -131,6 +130,11 @@ structure ForgetfulToMagmas (M : AtomicModel.{uObj, uHom}) where
   domain : ObjCat.{uObj, uHom}
   forget : domain ⟶ Magmas M
 
+/-- A forgetful functor into the host where inverse laws are imposed. -/
+structure ForgetfulToUnitalMagma (M : AtomicModel.{uObj, uHom}) where
+  domain : ObjCat.{uObj, uHom}
+  forget : domain ⟶ M.algebra.unital.total
+
 /-- A forgetful functor into `Modules`, with its domain. -/
 structure ForgetfulToModules (M : AtomicModel.{uObj, uHom}) where
   ring : M.modules.RingObjects
@@ -152,13 +156,10 @@ noncomputable def forgetfulToMagmasAtom (M : AtomicModel.{uObj, uHom}) (id : Cat
         (Classifier.reindex (semigroupsToMagmas M) M.algebra.unital).baseProjection ≫
           semigroupsToMagmas M⟩
   else if id == CategoryId.groups then
-    let monoidsToMagmas :=
-      (Classifier.reindex (semigroupsToMagmas M) M.algebra.unital).baseProjection ≫
-        semigroupsToMagmas M
+    let inverseReindex := Classifier.reindex (monoidsToUnitalMagma M) M.algebra.inverse
     some
       ⟨Groups M,
-        (Classifier.reindex monoidsToMagmas M.algebra.inverse).baseProjection ≫
-          monoidsToMagmas⟩
+        inverseReindex.baseProjection ≫ monoidsToUnitalMagma M ≫ M.algebra.unital.forget⟩
   else
     none
 
@@ -178,6 +179,23 @@ noncomputable def forgetfulToMagmas (M : AtomicModel.{uObj, uHom}) :
           let R := Classifier.reindex Fbase.forget A
           some ⟨R.total, R.baseProjection ≫ Fbase.forget⟩
       | _, _ => none
+  | _ => none
+
+/-- Resolve a normalized expression to the unital-magma host for inverse laws. -/
+noncomputable def forgetfulToUnitalMagma (M : AtomicModel.{uObj, uHom}) :
+    CategoryExpr → Option (ForgetfulToUnitalMagma M)
+  | .atom id =>
+      if id == CategoryId.monoids then
+        some ⟨Monoids M, monoidsToUnitalMagma M⟩
+      else none
+  | .refine base classifier _ =>
+      if classifier == ClassifierId.magmasUnital then
+        match forgetfulToMagmas M base with
+        | some evaluated =>
+            let reindexed := Classifier.reindex evaluated.forget M.algebra.unital
+            some ⟨reindexed.total, reindexed.axiomProjection⟩
+        | none => none
+      else none
   | _ => none
 
 /-- Forgetful from a Modules-family expression to its selected fibre. -/
@@ -224,6 +242,11 @@ noncomputable def evalClassifier (M : AtomicModel.{uObj, uHom})
       let classifier := divisionOnRings M
       some ⟨Rings M, classifier.total, classifier.forget⟩
     else none
+  else if id == ClassifierId.magmasInverse then
+    match forgetfulToUnitalMagma M host with
+    | some _ =>
+        some ⟨M.algebra.unital.total, M.algebra.inverse.total, M.algebra.inverse.forget⟩
+    | none => none
   else
     match magmasClassifier M id with
     | some classifier => some ⟨Magmas M, classifier.total, classifier.forget⟩
@@ -264,7 +287,11 @@ noncomputable def evalCategory (M : AtomicModel.{uObj, uHom})
                 | some A => some A.total
                 | none => none
   | .refine base clf route =>
-      match magmasClassifier M clf with
+      if clf == ClassifierId.magmasInverse then
+        match forgetfulToUnitalMagma M base with
+        | some F => some (Classifier.reindex F.forget M.algebra.inverse).total
+        | none => none
+      else match magmasClassifier M clf with
       | some A =>
           match forgetfulToMagmas M base with
           | some F => some (Classifier.reindex F.forget A).total

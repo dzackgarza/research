@@ -38,7 +38,8 @@ structure AlgebraAtoms (F : FoundationAtoms.{uObj, uHom}) where
   associative : Classifier F.binaryOperation.total
   commutative : Classifier F.binaryOperation.total
   unital : Classifier F.binaryOperation.total
-  inverse : Classifier F.binaryOperation.total
+  /-- Inversion is imposed relative to an already selected unit. -/
+  inverse : Classifier unital.total
   /-- Operation-role Magmas.Additive (one-tower; not a second law family). -/
   additive : Classifier F.binaryOperation.total
   /-- Operation-role Magmas.Multiplicative. -/
@@ -122,12 +123,15 @@ noncomputable def additiveMonoidsToAdditiveSemigroups :
   let toMagmas := additiveSemigroupsToAdditiveMagmas M ≫ additiveMagmasToMagmas M
   (Classifier.reindex toMagmas M.algebra.unital).baseProjection
 
+/-- The chosen additive unit, viewed in the unital-magma classifier host. -/
+noncomputable def additiveMonoidsToUnitalMagma :
+    AdditiveMonoids M ⟶ M.algebra.unital.total :=
+  let toMagmas := additiveSemigroupsToAdditiveMagmas M ≫ additiveMagmasToMagmas M
+  (Classifier.reindex toMagmas M.algebra.unital).axiomProjection
+
 /-- Additive groups: inverse-bearing additive monoids. -/
 noncomputable def AdditiveGroups : ObjCat :=
-  let toMagmas :=
-    additiveMonoidsToAdditiveSemigroups M ≫
-      additiveSemigroupsToAdditiveMagmas M ≫ additiveMagmasToMagmas M
-  (Classifier.reindex toMagmas M.algebra.inverse).total
+  (Classifier.reindex (additiveMonoidsToUnitalMagma M) M.algebra.inverse).total
 
 /-- Magmas.Multiplicative — dual role classifier. -/
 def MultiplicativeMagmas : ObjCat := M.algebra.multiplicative.total
@@ -139,12 +143,13 @@ noncomputable def Monoids : ObjCat :=
 noncomputable def monoidsToSemigroups : Monoids M ⟶ Semigroups M :=
   (Classifier.reindex (semigroupsToMagmas M) M.algebra.unital).baseProjection
 
+/-- The monoid's chosen unit, viewed in the unital-magma classifier host. -/
+noncomputable def monoidsToUnitalMagma : Monoids M ⟶ M.algebra.unital.total :=
+  (Classifier.reindex (semigroupsToMagmas M) M.algebra.unital).axiomProjection
+
 /-- Groups := Monoids.Inverse. -/
 noncomputable def Groups : ObjCat :=
-  let monoidsToMagmas :=
-    (Classifier.reindex (semigroupsToMagmas M) M.algebra.unital).baseProjection ≫
-      semigroupsToMagmas M
-  (Classifier.reindex monoidsToMagmas M.algebra.inverse).total
+  (Classifier.reindex (monoidsToUnitalMagma M) M.algebra.inverse).total
 
 /-- Two-operation host (pullback Magmas ×_Sets Magmas). -/
 def MagmasWithTwoOperations : ObjCat := M.exceptional.MagmasWithTwoOperations
@@ -199,19 +204,20 @@ noncomputable def m2oAddUnitalToAddComm :
     m2oAddCommToAddAssoc M ≫ m2oAddAssocToM2O M ≫ m2oToMagmasAdd M
   (Classifier.reindex toMagmas M.algebra.unital).baseProjection
 
+/-- The additive unit of the two-operation tower in the inverse classifier host. -/
+noncomputable def m2oAddUnitalToUnitalMagma :
+    M2O.AdditiveUnital M ⟶ M.algebra.unital.total :=
+  let toMagmas :=
+    m2oAddCommToAddAssoc M ≫ m2oAddAssocToM2O M ≫ m2oToMagmasAdd M
+  (Classifier.reindex toMagmas M.algebra.unital).axiomProjection
+
 /-- Then additive-inverse (additive groups with a second magma). -/
 noncomputable def M2O.AdditiveInverse : ObjCat :=
-  let toMagmas :=
-    m2oAddUnitalToAddComm M ≫
-      m2oAddCommToAddAssoc M ≫ m2oAddAssocToM2O M ≫ m2oToMagmasAdd M
-  (Classifier.reindex toMagmas M.algebra.inverse).total
+  (Classifier.reindex (m2oAddUnitalToUnitalMagma M) M.algebra.inverse).total
 
 noncomputable def m2oAddInvToAddUnital :
     M2O.AdditiveInverse M ⟶ M2O.AdditiveUnital M :=
-  let toMagmas :=
-    m2oAddUnitalToAddComm M ≫
-      m2oAddCommToAddAssoc M ≫ m2oAddAssocToM2O M ≫ m2oToMagmasAdd M
-  (Classifier.reindex toMagmas M.algebra.inverse).baseProjection
+  (Classifier.reindex (m2oAddUnitalToUnitalMagma M) M.algebra.inverse).baseProjection
 
 /-- Forget the additive tower back to M2O. -/
 noncomputable def m2oAddInvToM2O :

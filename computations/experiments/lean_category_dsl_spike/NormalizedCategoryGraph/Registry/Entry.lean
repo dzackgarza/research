@@ -172,7 +172,7 @@ structure PresentationEquivalenceEntry where
   deriving Repr, Inhabited
 
 /-- Curated presentation metadata; it does not alter semantic registry entries. -/
-structure PresentationEntry where
+structure PresentationMetadataEntry where
   id : PresentationId
   category : CategoryId
   declaration : Lean.Name
@@ -194,7 +194,7 @@ structure RegistrySnapshot where
   aliases : Array AliasEntry
   opaqueCategories : Array OpaqueCategoryEntry
   equivalences : Array PresentationEquivalenceEntry
-  presentations : Array PresentationEntry
+  presentations : Array PresentationMetadataEntry
   deriving Repr, Inhabited
 
 end NormalizedCategoryGraph

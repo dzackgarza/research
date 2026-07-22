@@ -31,6 +31,7 @@ noncomputable def atomicModelComponents : AtomicModel.{u + 1, u} where
 noncomputable def namedCategory (id : CategoryId) : Option (ObjCat.{u + 1, u}) :=
   if id == CategoryId.sets then some (Normalized.Sets atomicModelComponents)
   else if id == CategoryId.magmas then some (Normalized.Magmas atomicModelComponents)
+  else if id == CategoryId.unitalMagmas then some (UnitalMagmas)
   else if id == CategoryId.semigroups then some (Normalized.Semigroups atomicModelComponents)
   else if id == CategoryId.monoids then some (Normalized.Monoids atomicModelComponents)
   else if id == CategoryId.groups then some (Normalized.Groups atomicModelComponents)
