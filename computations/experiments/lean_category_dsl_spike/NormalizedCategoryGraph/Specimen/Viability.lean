@@ -53,6 +53,63 @@ noncomputable def specimenSetsIdentity :
 
 /-- Its typed symbolic counterpart. -/
 def exprSetsIdentity : FunctorExpr exprSets exprSets := .identity exprSets
+
+/-- The actual semantic binding for the registered Sets identity functor. -/
+noncomputable def specimenFunctorSemantics :
+    FunctorSemantics Realization.Mathlib.atomicModel.{0} where
+  named id :=
+    if id == FunctorId.mk "fun.sets.identity" then
+      some ⟨Normalized.Sets Realization.Mathlib.atomicModel, Normalized.Sets Realization.Mathlib.atomicModel,
+        specimenSetsIdentity⟩
+    else none
+  refinement _ := none
+  opaquePort _ := none
+  theoremInclusion _ := none
+  finiteLimitLift _ := none
+  constructorMap _ := none
+
+/-- A genuine categorical pullback of the two registered identity functors on Sets. -/
+def exprSetsIdentityPullback : CategoryExpr :=
+  .pullback (FunctorId.mk "fun.sets.identity") (FunctorId.mk "fun.sets.identity") exprSets
+
+/-- The registry-reference form evaluates through the same actual functor binding. -/
+def exprRegisteredSetsIdentity : FunctorExpr exprSets exprSets :=
+  .named (FunctorId.mk "fun.sets.identity")
+
+example :
+    (evalCategory Realization.Mathlib.atomicModel.{0} Realization.Mathlib.specimenRingBinding
+      specimenFunctorSemantics exprSetsIdentityPullback).isSome = true := by
+  simp [evalCategory, exprSetsIdentityPullback, exprSets, specimenFunctorSemantics,
+    EvaluatedFunctor.pullbackCategory]
+
+example :
+    (evalFunctor Realization.Mathlib.atomicModel.{0} Realization.Mathlib.specimenRingBinding
+      specimenFunctorSemantics exprRegisteredSetsIdentity).isSome = true := by
+  simp [evalFunctor, validateFunctor, evalCategory, exprSets, exprRegisteredSetsIdentity,
+    specimenFunctorSemantics]
+
+example :
+    (evalClassifier Realization.Mathlib.atomicModel.{0} Realization.Mathlib.specimenRingBinding
+      exprSets ClassifierId.setsFinite).isSome = true := by
+  have associative : ClassifierId.setsFinite ≠ ClassifierId.magmasAssociative := by decide
+  have commutative : ClassifierId.setsFinite ≠ ClassifierId.magmasCommutative := by decide
+  have unital : ClassifierId.setsFinite ≠ ClassifierId.magmasUnital := by decide
+  have inverse : ClassifierId.setsFinite ≠ ClassifierId.magmasInverse := by decide
+  have additive : ClassifierId.setsFinite ≠ ClassifierId.magmasAdditive := by decide
+  have multiplicative : ClassifierId.setsFinite ≠ ClassifierId.magmasMultiplicative := by decide
+  simp [evalClassifier, magmasClassifier, setsClassifier, associative, commutative, unital,
+    inverse, additive, multiplicative]
+
+example :
+    (EvaluatedFunctor.pullbackCategory
+      (M := Realization.Mathlib.atomicModel)
+      ⟨Normalized.Sets Realization.Mathlib.atomicModel, Normalized.Sets Realization.Mathlib.atomicModel,
+        specimenSetsIdentity⟩
+      ⟨Normalized.Sets Realization.Mathlib.atomicModel, Normalized.Sets Realization.Mathlib.atomicModel,
+        specimenSetsIdentity⟩
+      (Normalized.Sets Realization.Mathlib.atomicModel)).isSome = true := by
+  simp [EvaluatedFunctor.pullbackCategory]
+
 def exprMagmas : CategoryExpr := .classifierTotal ClassifierId.setsBinaryOperation
 def exprSemigroups : CategoryExpr :=
   .refine exprMagmas ClassifierId.magmasAssociative none

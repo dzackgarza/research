@@ -20,6 +20,73 @@ open Normalized CategoryTheory
 
 universe uObj uHom
 
+/-- An interpreted functor between two concrete category objects. -/
+structure EvaluatedFunctor (M : AtomicModel.{uObj, uHom}) where
+  source : ObjCat.{uObj, uHom}
+  target : ObjCat.{uObj, uHom}
+  functor : source ⟶ target
+
+/-- The two structural projections of an interpreted refinement. -/
+structure EvaluatedRefinement (M : AtomicModel.{uObj, uHom}) where
+  refined : ObjCat.{uObj, uHom}
+  base : ObjCat.{uObj, uHom}
+  classifierTotal : ObjCat.{uObj, uHom}
+  baseProjection : refined ⟶ base
+  classifierProjection : refined ⟶ classifierTotal
+
+/--
+Semantic bindings for declaration-backed structural maps.
+
+The registry keeps stable IDs and elaborated declarations; an atomic model supplies
+their actual functors.  This is deliberately a semantic boundary: a `Lean.Name`
+cannot be reflected into a value of an arbitrary functor type at run time.
+-/
+structure FunctorSemantics (M : AtomicModel.{uObj, uHom}) where
+  named : FunctorId → Option (EvaluatedFunctor M)
+  refinement : RefinementId → Option (EvaluatedRefinement M)
+  opaquePort : OpaquePortId → Option (EvaluatedFunctor M)
+  theoremInclusion : StructuralTheoremId → Option (EvaluatedFunctor M)
+  finiteLimitLift : ConeCertificateId → Option (EvaluatedFunctor M)
+  constructorMap : ConstructorId → Option (EvaluatedFunctor M)
+
+/-- The empty semantic environment evaluates only functors generated internally. -/
+def FunctorSemantics.empty (M : AtomicModel.{uObj, uHom}) : FunctorSemantics M where
+  named _ := none
+  refinement _ := none
+  opaquePort _ := none
+  theoremInclusion _ := none
+  finiteLimitLift _ := none
+  constructorMap _ := none
+
+/-- Form the category-level pullback when both functors have the chosen codomain. -/
+noncomputable def EvaluatedFunctor.pullbackCategory (left right : EvaluatedFunctor M)
+    (over : ObjCat.{uObj, uHom}) : Option (ObjCat.{uObj, uHom}) := by
+  classical
+  rcases left with ⟨leftSource, leftTarget, leftFunctor⟩
+  rcases right with ⟨rightSource, rightTarget, rightFunctor⟩
+  by_cases leftOver : leftTarget = over
+  · subst over
+    by_cases rightOver : rightTarget = leftTarget
+    · subst rightTarget
+      exact
+        some
+          (Cat.of
+            (CategoryTheory.Limits.CategoricalPullback
+              leftFunctor.toFunctor rightFunctor.toFunctor))
+    · exact none
+  · exact none
+
+/-- Compose interpreted functors only after their concrete middle categories agree. -/
+noncomputable def EvaluatedFunctor.compose (left right : EvaluatedFunctor M) :
+    Option (EvaluatedFunctor M) := by
+  classical
+  rcases left with ⟨leftSource, leftTarget, leftFunctor⟩
+  rcases right with ⟨rightSource, rightTarget, rightFunctor⟩
+  by_cases middle : leftTarget = rightSource
+  · subst rightSource
+    exact some ⟨leftSource, rightTarget, leftFunctor ≫ rightFunctor⟩
+  · exact none
+
 /-- Interpret a named atom using the realization-authored table. -/
 noncomputable def evalAtom (M : AtomicModel.{uObj, uHom}) (id : CategoryId) :
     Option (ObjCat.{uObj, uHom}) :=
@@ -137,9 +204,43 @@ noncomputable def forgetfulToModules (M : AtomicModel.{uObj, uHom})
       | none => none
   | _ => none
 
+/-- A classifier together with the actual category and forgetful functor it denotes. -/
+structure EvaluatedClassifier (M : AtomicModel.{uObj, uHom}) where
+  host : ObjCat.{uObj, uHom}
+  total : ObjCat.{uObj, uHom}
+  forget : total ⟶ host
+
+/--
+Evaluate a classifier identifier to its categorical classifier object.
+
+The host expression determines the ring fibre for module classifiers.  The remaining
+classifier namespaces have a unique host in an atomic model.
+-/
+noncomputable def evalClassifier (M : AtomicModel.{uObj, uHom})
+    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (host : CategoryExpr) (id : ClassifierId) : Option (EvaluatedClassifier M) :=
+  match magmasClassifier M id with
+  | some classifier => some ⟨Magmas M, classifier.total, classifier.forget⟩
+  | none =>
+      match setsClassifier M id with
+      | some classifier => some ⟨Sets M, classifier.total, classifier.forget⟩
+      | none =>
+          match m2oClassifier M id with
+          | some classifier =>
+              some ⟨MagmasWithTwoOperations M, classifier.total, classifier.forget⟩
+          | none =>
+              match forgetfulToModules M resolveRing host with
+              | some evaluatedHost =>
+                  match modulesClassifier M evaluatedHost.ring id with
+                  | some classifier =>
+                      some ⟨Modules M evaluatedHost.ring, classifier.total, classifier.forget⟩
+                  | none => none
+              | none => none
+
 /-- Evaluate a category expression to an actual `ObjCat`. -/
 noncomputable def evalCategory (M : AtomicModel.{uObj, uHom})
-    (resolveRing : RingParameterId → Option M.modules.RingObjects) :
+    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (semantics : FunctorSemantics M) :
     CategoryExpr → Option (ObjCat.{uObj, uHom})
   | .atom id => evalAtom M id
   | .opaque id => evalAtom M id
@@ -239,7 +340,86 @@ noncomputable def evalCategory (M : AtomicModel.{uObj, uHom})
       match forgetfulToModules M resolveRing (.familyApp family args) with
       | some F => some F.domain
       | none => none
-  | .pullback _ _ _ => none
+  | .pullback leftId rightId over =>
+      match semantics.named leftId, semantics.named rightId,
+          evalCategory M resolveRing semantics over with
+      | some left, some right, some evaluatedOver => left.pullbackCategory right evaluatedOver
+      | _, _, _ => none
   | .constructor _ _ => none
+
+/-- Evaluate an expression that contains no declaration-backed functor references. -/
+noncomputable def evalCategoryWithoutFunctors (M : AtomicModel.{uObj, uHom})
+    (resolveRing : RingParameterId → Option M.modules.RingObjects) :
+    CategoryExpr → Option (ObjCat.{uObj, uHom}) :=
+  evalCategory M resolveRing (.empty M)
+
+/-- Retain a semantic functor only when its concrete endpoints realize the indexed expressions. -/
+noncomputable def validateFunctor (M : AtomicModel.{uObj, uHom})
+    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (semantics : FunctorSemantics M) (source target : CategoryExpr)
+    (candidate : Option (EvaluatedFunctor M)) : Option (EvaluatedFunctor M) := by
+  classical
+  rcases candidate with (_ | ⟨actualSource, actualTarget, map⟩)
+  · exact none
+  match evalCategory M resolveRing semantics source, evalCategory M resolveRing semantics target with
+  | some expectedSource, some expectedTarget =>
+      by_cases sourceMatch : actualSource = expectedSource
+      · subst actualSource
+        by_cases targetMatch : actualTarget = expectedTarget
+        · subst actualTarget
+          exact some ⟨expectedSource, expectedTarget, map⟩
+        · exact none
+      · exact none
+  | _, _ => exact none
+
+/-- Evaluate a typed functor expression using its actual semantic bindings. -/
+noncomputable def evalFunctor (M : AtomicModel.{uObj, uHom})
+    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (semantics : FunctorSemantics M) {source target : CategoryExpr} :
+    FunctorExpr source target → Option (EvaluatedFunctor M)
+  | .identity category =>
+      match evalCategory M resolveRing semantics category with
+      | some evaluated => some ⟨evaluated, evaluated, CategoryTheory.CategoryStruct.id evaluated⟩
+      | none => none
+  | .named id => validateFunctor M resolveRing semantics source target (semantics.named id)
+  | .baseProjection (.mk refinementId _ _ _) =>
+      validateFunctor M resolveRing semantics source target <|
+        (semantics.refinement refinementId).map fun value =>
+          ⟨value.refined, value.base, value.baseProjection⟩
+  | .classifierProjection (.mk refinementId _ _ _) =>
+      validateFunctor M resolveRing semantics source target <|
+        (semantics.refinement refinementId).map fun value =>
+          ⟨value.refined, value.classifierTotal, value.classifierProjection⟩
+  | .opaquePort port => validateFunctor M resolveRing semantics source target (semantics.opaquePort port)
+  | .theoremInclusion theoremId =>
+      validateFunctor M resolveRing semantics source target (semantics.theoremInclusion theoremId)
+  | .finiteLimitLift cone =>
+      validateFunctor M resolveRing semantics source target (semantics.finiteLimitLift cone)
+  | .constructorMap constructor =>
+      validateFunctor M resolveRing semantics source target (semantics.constructorMap constructor)
+  | .compose first second =>
+      match evalFunctor M resolveRing semantics first, evalFunctor M resolveRing semantics second with
+      | some evaluatedFirst, some evaluatedSecond =>
+          validateFunctor M resolveRing semantics source target (evaluatedFirst.compose evaluatedSecond)
+      | _, _ => none
+
+/-- Evaluate a legacy structural-map expression through the same semantic bindings. -/
+noncomputable def evalStructuralMap (M : AtomicModel.{uObj, uHom})
+    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (semantics : FunctorSemantics M) : StructuralMapExpr → Option (EvaluatedFunctor M)
+  | .identity category =>
+      match evalCategory M resolveRing semantics category with
+      | some evaluated => some ⟨evaluated, evaluated, CategoryTheory.CategoryStruct.id evaluated⟩
+      | none => none
+  | .baseProjection refinementId =>
+      (semantics.refinement refinementId).map fun value =>
+        ⟨value.refined, value.base, value.baseProjection⟩
+  | .classifierProjection refinementId =>
+      (semantics.refinement refinementId).map fun value =>
+        ⟨value.refined, value.classifierTotal, value.classifierProjection⟩
+  | .opaquePort port => semantics.opaquePort port
+  | .thmInclusion theoremId => semantics.theoremInclusion theoremId
+  | .finiteLimitLift cone => semantics.finiteLimitLift cone
+  | .compose _ => none
 
 end NormalizedCategoryGraph

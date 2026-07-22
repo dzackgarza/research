@@ -49,29 +49,33 @@ noncomputable def namedCategory (id : CategoryId) : Option (ObjCat.{u + 1, u}) :
 noncomputable def atomicModel : AtomicModel.{u + 1, u} :=
   { atomicModelComponents with namedCategory }
 
+@[simp] theorem evalAtom_sets :
+    evalAtom atomicModel CategoryId.sets = some (Normalized.Sets atomicModel) := rfl
+
 /-- Concrete binding used to evaluate the specimen family expression over `ℤ`. -/
 def specimenRingBinding (id : RingParameterId) : Option RingCat.{0} :=
   if id == RingParameterId.r then some (RingCat.of ℤ) else none
 
 example :
-    (evalCategory atomicModel.{0} specimenRingBinding
+    (evalCategory atomicModel.{0} specimenRingBinding (.empty atomicModel)
       (.familyApp CategoryFamilyId.modules #[.ringVariable RingParameterId.r])).isSome = true := by
-  simp [evalCategory, forgetfulToModules, Normalized.moduleParameter, specimenRingBinding]
+  simp [evalCategory, forgetfulToModules,
+    Normalized.moduleParameter, specimenRingBinding]
 
 example :
-    (evalCategory atomicModel.{0} specimenRingBinding
+    (evalCategory atomicModel.{0} specimenRingBinding (.empty atomicModel)
       (.familyApp CategoryFamilyId.modules #[.opposite (.ringVariable RingParameterId.r)])).isSome =
       true := by
   change (some (Normalized.Modules atomicModel (oppositeRing (RingCat.of ℤ)))).isSome = true
   rfl
 
 example :
-    (evalCategory atomicModel.{0} specimenRingBinding
+    (evalCategory atomicModel.{0} specimenRingBinding (.empty atomicModel)
       (.familyApp CategoryFamilyId.modules #[])).isNone = true := by
   simp [evalCategory, forgetfulToModules]
 
 example :
-    (evalCategory atomicModel.{0} specimenRingBinding
+    (evalCategory atomicModel.{0} specimenRingBinding (.empty atomicModel)
       (.familyApp CategoryFamilyId.modules
         #[.ringVariable RingParameterId.r, .ringVariable RingParameterId.r])).isNone = true := by
   simp [evalCategory, forgetfulToModules]
