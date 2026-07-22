@@ -44,6 +44,15 @@ def specimenAliases : AliasTable where
 /-! ## Named expressions (canonical bodies) -/
 
 def exprSets : CategoryExpr := .atom CategoryId.sets
+
+/-- The actual identity functor on the realized Sets specimen. -/
+noncomputable def specimenSetsIdentity :
+    Normalized.Sets Realization.Mathlib.atomicModel.{0} ⟶
+      Normalized.Sets Realization.Mathlib.atomicModel.{0} :=
+  CategoryTheory.CategoryStruct.id _
+
+/-- Its typed symbolic counterpart. -/
+def exprSetsIdentity : FunctorExpr exprSets exprSets := .identity exprSets
 def exprMagmas : CategoryExpr := .classifierTotal ClassifierId.setsBinaryOperation
 def exprSemigroups : CategoryExpr :=
   .refine exprMagmas ClassifierId.magmasAssociative none
@@ -337,6 +346,24 @@ def specimenSnapshot : RegistrySnapshot where
       declaration := `NormalizedCategoryGraph.Realization.Mathlib.division
       hostId := CategoryId.rings, visibility := .present }
   ]
+  functors := #[
+    { id := ⟨"fun.sets.identity"⟩
+      canonicalName := "id_Sets"
+      source := exprSets
+      target := exprSets
+      declaration := `NormalizedCategoryGraph.Specimen.specimenSetsIdentity
+      expression := exprSetsIdentity
+      role := .generatedStructural
+      admissibility := .generated
+      port := none
+      origin := "identity"
+      coherenceClass := none
+      preferredPresentation := false }
+  ]
+  constructors := #[]
+  finiteLimitCones := #[]
+  coherences := #[]
+  theoremInclusions := #[]
   aliases := #[
     { id := AliasId.crings, spelling := "CRings"
       aliasOf := CategoryId.commutativeRings
@@ -375,6 +402,7 @@ def specimenSnapshot : RegistrySnapshot where
       visibility := .semanticOnly }
   ]
   equivalences := #[]
+  presentations := #[]
 
 /-- Spelling convenience; registry records aliasOf, not a second category. -/
 abbrev CRings := CategoryId.commutativeRings
@@ -397,6 +425,10 @@ example :
 
 example :
     specimenSnapshot.categoryFamilies[0]!.parameter.kind = .ringObject := by
+  native_decide
+
+example :
+    specimenSnapshot.functors.size = 1 := by
   native_decide
 
 end NormalizedCategoryGraph.Specimen

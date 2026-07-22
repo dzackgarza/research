@@ -77,6 +77,16 @@ structure ConeCertificateId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
+/-- Stable coherence-witness id. -/
+structure CoherenceId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable presentation-overlay id. -/
+structure PresentationId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
 /-- Stable cluster id for presentation overlay only. -/
 structure ClusterId where
   raw : String

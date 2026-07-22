@@ -47,6 +47,7 @@ partial def normalizeCategory
   | .reference id => .reference (aliases.canonicalize id)
   | .familyApp f args => .familyApp f args
   | .classifierTotal c => .classifierTotal c
+  | .pullback left right over => .pullback left right (normalizeCategory hosts aliases over)
   | .constructor k args =>
       .constructor k (args.map (normalizeCategory hosts aliases))
   | .refine base clf route =>

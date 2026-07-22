@@ -33,10 +33,15 @@ run_cmd
   if !(s.categoryFamilies.any fun family =>
       family.id == NormalizedCategoryGraph.CategoryFamilyId.modules) then
     throwError "getRegistry is missing the registered Modules family"
+  if s.functors.size != NormalizedCategoryGraph.Specimen.specimenSnapshot.functors.size then
+    throwError
+      s!"getRegistry functors ({s.functors.size}) ≠ specimen snapshot ({NormalizedCategoryGraph.Specimen.specimenSnapshot.functors.size})"
   let baseline := NormalizedCategoryGraph.Tools.snapshotManifestString
     (s.snapshot "0.1.0-specimen")
   if !baseline.contains "fam.modules" then
     throwError "registered Modules family is absent from the exported manifest"
+  if !baseline.contains "fun.sets.identity" then
+    throwError "registered Sets identity functor is absent from the exported manifest"
 
 namespace NormalizedCategoryGraph.Tools.ExportFull
 
@@ -69,6 +74,17 @@ def validate (j : Json) : Except String Unit := do
     throw s!"expected source=lean-registry, got {source}"
   let cats ← j.getObjValAs? (Array Json) "categories"
   let aliases ← j.getObjValAs? (Array Json) "aliases"
+  let functors ← j.getObjValAs? (Array Json) "functors"
+  if functors.size != 1 then
+    throw s!"expected one registered specimen functor, got {functors.size}"
+  let functor := functors[0]!
+  let functorId ← functor.getObjValAs? String "id"
+  if functorId != "fun.sets.identity" then
+    throw s!"expected Sets identity functor, got {functorId}"
+  let expression ← functor.getObjValAs? Json "expression"
+  let expressionTag ← expression.getObjValAs? String "tag"
+  if expressionTag != "identity" then
+    throw s!"expected identity expression for Sets identity functor, got {expressionTag}"
   let names := cats.filterMap fun c => (c.getObjValAs? String "canonicalName").toOption
   for a in aliases do
     let spelling ← a.getObjValAs? String "spelling"

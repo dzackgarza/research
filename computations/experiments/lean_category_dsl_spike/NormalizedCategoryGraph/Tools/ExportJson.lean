@@ -42,6 +42,13 @@ private def categoryExprJson : CategoryExpr → Json
         ("classifier", classifier.raw),
         ("route", match route with | some r => r.raw | none => Json.null),
       ]
+  | .pullback left right over =>
+      object [
+        ("tag", "pullback"),
+        ("left", left.raw),
+        ("right", right.raw),
+        ("over", categoryExprJson over),
+      ]
   | .constructor constructor args =>
       object [
         ("tag", "constructor"),
@@ -69,6 +76,33 @@ private def parameterKindJson : CategoryFamilyParameterKind → Json
 
 private def varianceJson : CategoryFamilyVariance → Json
   | .restrictionOfScalarsContravariant => "restrictionOfScalarsContravariant"
+
+private def functorRoleJson : FunctorRole → Json
+  | .generatedStructural => "generatedStructural"
+  | .opaqueStructuralPort => "opaqueStructuralPort"
+  | .theoremBacked => "theoremBacked"
+  | .finiteLimit => "finiteLimit"
+  | .constructorAction => "constructorAction"
+  | .presentationOnly => "presentationOnly"
+
+private def admissibilityJson : StructuralAdmissibility → Json
+  | .generated => "generated"
+  | .declared => "declared"
+  | .excluded => "excluded"
+
+private def functorExprJson {source target : CategoryExpr} : FunctorExpr source target → Json
+  | .identity category => object [("tag", "identity"), ("category", categoryExprJson category)]
+  | .named id => object [("tag", "named"), ("id", id.raw)]
+  | .baseProjection (.mk id _ _ _) => object [("tag", "baseProjection"), ("id", id.raw)]
+  | .classifierProjection (.mk id _ _ _) =>
+      object [("tag", "classifierProjection"), ("id", id.raw)]
+  | .opaquePort id => object [("tag", "opaquePort"), ("id", id.raw)]
+  | .theoremInclusion id => object [("tag", "theoremInclusion"), ("id", id.raw)]
+  | .finiteLimitLift id => object [("tag", "finiteLimitLift"), ("id", id.raw)]
+  | .constructorMap id => object [("tag", "constructorMap"), ("id", id.raw)]
+  | .compose first second =>
+      object [("tag", "compose"), ("first", functorExprJson first),
+        ("second", functorExprJson second)]
 
 private def categoryJson (e : NamedCategoryEntry) : Json :=
   object [
@@ -110,6 +144,65 @@ private def classifierJson (e : ClassifierEntry) : Json :=
     ("visibility", visibilityJson e.visibility),
   ]
 
+private def functorJson (e : FunctorEntry) : Json :=
+  object [
+    ("id", e.id.raw),
+    ("canonicalName", e.canonicalName),
+    ("source", categoryExprJson e.source),
+    ("target", categoryExprJson e.target),
+    ("declaration", e.declaration.toString),
+    ("expression", functorExprJson e.expression),
+    ("role", functorRoleJson e.role),
+    ("admissibility", admissibilityJson e.admissibility),
+    ("port", match e.port with | some port => port.raw | none => Json.null),
+    ("origin", e.origin),
+    ("coherenceClass", match e.coherenceClass with | some id => id.raw | none => Json.null),
+    ("preferredPresentation", e.preferredPresentation),
+  ]
+
+private def constructorJson (e : ConstructorEntry) : Json :=
+  object [
+    ("id", e.id.raw),
+    ("canonicalName", e.canonicalName),
+    ("declaration", e.declaration.toString),
+    ("sourcePosition", e.sourcePosition),
+  ]
+
+private def finiteLimitConeJson (e : FiniteLimitConeEntry) : Json :=
+  object [
+    ("id", e.id.raw),
+    ("apex", categoryExprJson e.apex),
+    ("declaration", e.declaration.toString),
+    ("sourcePosition", e.sourcePosition),
+  ]
+
+private def coherenceJson (e : CoherenceEntry) : Json :=
+  object [
+    ("id", e.id.raw),
+    ("source", e.source.raw),
+    ("target", e.target.raw),
+    ("declaration", e.declaration.toString),
+    ("sourcePosition", e.sourcePosition),
+  ]
+
+private def theoremInclusionJson (e : TheoremInclusionEntry) : Json :=
+  object [
+    ("id", e.id.raw),
+    ("source", categoryExprJson e.source),
+    ("target", categoryExprJson e.target),
+    ("declaration", e.declaration.toString),
+    ("sourcePosition", e.sourcePosition),
+  ]
+
+private def presentationJson (e : PresentationEntry) : Json :=
+  object [
+    ("id", e.id.raw),
+    ("category", e.category.raw),
+    ("declaration", e.declaration.toString),
+    ("visibility", visibilityJson e.visibility),
+    ("sourcePosition", e.sourcePosition),
+  ]
+
 private def opaqueJson (e : OpaqueCategoryEntry) : Json :=
   object [
     ("id", e.id.raw),
@@ -131,21 +224,30 @@ def snapshotManifestJson (snap : RegistrySnapshot) : Json :=
   let cats := snap.categories.qsort (fun a b => a.id.raw < b.id.raw)
   let families := snap.categoryFamilies.qsort (fun a b => a.id.raw < b.id.raw)
   let clfs := snap.classifiers.qsort (fun a b => a.id.raw < b.id.raw)
+  let functors := snap.functors.qsort (fun a b => a.id.raw < b.id.raw)
+  let constructors := snap.constructors.qsort (fun a b => a.id.raw < b.id.raw)
+  let cones := snap.finiteLimitCones.qsort (fun a b => a.id.raw < b.id.raw)
+  let coherences := snap.coherences.qsort (fun a b => a.id.raw < b.id.raw)
+  let inclusions := snap.theoremInclusions.qsort (fun a b => a.id.raw < b.id.raw)
   let als := snap.aliases.qsort (fun a b => a.id.raw < b.id.raw)
   let ops := snap.opaqueCategories.qsort (fun a b => a.id.raw < b.id.raw)
+  let presentations := snap.presentations.qsort (fun a b => a.id.raw < b.id.raw)
   object [
     ("schemaVersion", snap.schemaVersion),
     ("universes", object []),
     ("categories", .arr (cats.map categoryJson)),
     ("classifiers", .arr (clfs.map classifierJson)),
+    ("functors", .arr (functors.map functorJson)),
+    ("constructors", .arr (constructors.map constructorJson)),
+    ("finiteLimitCones", .arr (cones.map finiteLimitConeJson)),
+    ("coherences", .arr (coherences.map coherenceJson)),
+    ("theoremInclusions", .arr (inclusions.map theoremInclusionJson)),
     ("aliases", .arr (als.map aliasJson)),
     ("opaqueCategories", .arr (ops.map opaqueJson)),
     ("categoryFamilies", .arr (families.map categoryFamilyJson)),
     ("namedExpressions", .arr #[]),
     ("structuralPorts", .arr #[]),
-    ("theoremInclusions", .arr #[]),
-    ("coherences", .arr #[]),
-    ("presentationDispositions", .arr #[]),
+    ("presentationDispositions", .arr (presentations.map presentationJson)),
     ("source", "lean-registry"),
   ]
 

@@ -148,6 +148,6 @@ partial def project
             else
               none
         | none => none
-    | .constructor .. => none
+    | .pullback .. | .constructor .. => none
 
 end NormalizedCategoryGraph

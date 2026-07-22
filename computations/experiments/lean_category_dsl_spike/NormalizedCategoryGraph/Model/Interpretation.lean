@@ -239,6 +239,7 @@ noncomputable def evalCategory (M : AtomicModel.{uObj, uHom})
       match forgetfulToModules M resolveRing (.familyApp family args) with
       | some F => some F.domain
       | none => none
+  | .pullback _ _ _ => none
   | .constructor _ _ => none
 
 end NormalizedCategoryGraph

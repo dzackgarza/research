@@ -26,12 +26,41 @@ inductive CategoryExpr
   | familyApp (family : CategoryFamilyId) (args : Array ParameterExpr)
   | classifierTotal (classifier : ClassifierId)
   | refine (base : CategoryExpr) (classifier : ClassifierId) (route : Option RouteId)
+  /-- Pullback legs are typed functor declarations resolved from the registry. -/
+  | pullback (left right : FunctorId) (over : CategoryExpr)
   | constructor (constructor : ConstructorId) (args : Array CategoryExpr)
   | opaque (id : CategoryId)
   | reference (id : CategoryId)
   deriving Repr
 
-/-- Structural (generated) map expression. -/
+/-- A refinement occurrence with source, base, and classifier-total indices. -/
+inductive RefinementExpr : CategoryExpr → CategoryExpr → CategoryExpr → Type
+  | mk (id : RefinementId) (base : CategoryExpr) (classifier : ClassifierId)
+      (route : Option RouteId) :
+      RefinementExpr (.refine base classifier route) base (.classifierTotal classifier)
+  deriving Repr
+
+/--
+Typed symbolic functor language.  Composition is legal only when the middle
+category is literally shared by the two legs.
+-/
+inductive FunctorExpr : CategoryExpr → CategoryExpr → Type
+  | identity (category : CategoryExpr) : FunctorExpr category category
+  | named {source target : CategoryExpr} (id : FunctorId) : FunctorExpr source target
+  | baseProjection {refined base total : CategoryExpr}
+      (refinement : RefinementExpr refined base total) : FunctorExpr refined base
+  | classifierProjection {refined base total : CategoryExpr}
+      (refinement : RefinementExpr refined base total) : FunctorExpr refined total
+  | opaquePort {source target : CategoryExpr} (port : OpaquePortId) : FunctorExpr source target
+  | theoremInclusion {source target : CategoryExpr} (theoremId : StructuralTheoremId) :
+      FunctorExpr source target
+  | finiteLimitLift {source target : CategoryExpr} (cone : ConeCertificateId) : FunctorExpr source target
+  | constructorMap {source target : CategoryExpr} (constructor : ConstructorId) : FunctorExpr source target
+  | compose {source middle target : CategoryExpr} (first : FunctorExpr source middle)
+      (second : FunctorExpr middle target) : FunctorExpr source target
+  deriving Repr
+
+/-- Legacy unindexed projection syntax, retained while `project` is migrated to `FunctorExpr`. -/
 inductive StructuralMapExpr
   | identity (category : CategoryExpr)
   | baseProjection (refinement : RefinementId)
@@ -50,6 +79,9 @@ partial def CategoryExpr.syntacticEq : CategoryExpr → CategoryExpr → Bool
   | .classifierTotal left, .classifierTotal right => left == right
   | .refine leftBase leftClassifier leftRoute, .refine rightBase rightClassifier rightRoute =>
       leftBase.syntacticEq rightBase && leftClassifier == rightClassifier && leftRoute == rightRoute
+  | .pullback leftLeg rightLeg leftOver, .pullback rightLeftLeg rightRightLeg rightOver =>
+      leftLeg == rightLeftLeg && rightLeg == rightRightLeg &&
+        leftOver.syntacticEq rightOver
   | .constructor leftConstructor leftArgs, .constructor rightConstructor rightArgs =>
       leftConstructor == rightConstructor && leftArgs.size == rightArgs.size &&
         (leftArgs.zipWith (·.syntacticEq ·) rightArgs).all id
