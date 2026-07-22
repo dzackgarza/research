@@ -68,7 +68,7 @@ inductive StructuralMapExpr
   | opaquePort (port : OpaquePortId)
   | thmInclusion (thm : StructuralTheoremId)
   | finiteLimitLift (cone : ConeCertificateId)
-  | compose (parts : Array StructuralMapExpr)
+  | compose (first second : StructuralMapExpr)
   deriving Repr, Inhabited
 
 /-- Syntactic equality of normalized category expressions, independent of rendered syntax. -/

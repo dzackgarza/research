@@ -18,8 +18,7 @@ Lean foundation for the normalized category graph.
 | `ModulesFamily` / `ModulesOf` | `RingCat` + fibre at `R`; default fibre still `ModuleCat ℤ` |
 | Magmas one-tower | `Additive`/`Multiplicative` role classifiers; additive specimen tower |
 | `evalCategory` | Interprets atoms + Magmas/Modules/Sets/M2O refinements via pullback |
-| `ncg-export` | Lean specimen JSON |
-| `ncg-export-full` | Lean registry specimen JSON (**does not** read Python semantic-seed data) |
+| `ncg-export-full` | Lean registry JSON (**does not** read Python semantic-seed data) |
 | Lean ledger gate | `ledger_check_from_lean_export.py` on exporter stdout (noncircular) |
 
 ## What is not true (withdrawn claims)
@@ -43,15 +42,14 @@ Lean foundation for the normalized category graph.
 | Categories | `Categories/Algebra/` | Magmas / Rings symbolic ownership |
 | Registry | `Registry/` | Env extension + entry types |
 | Specimen | `Specimen/` | Lean-authored vertical slice + `Register` into env |
-| Tools | `Tools/` | `ncg-export`, `ncg-export-full` |
+| Tools | `Tools/` | `ncg-export-full` |
 | Spec | `Spec/` | Python migration manifest — **not** export SSOT and not compiled into Lean |
 | Realization | `Realization/` | Separate Mathlib / Sage roots |
 
 ## Commands
 
 ```bash
-lake build NormalizedCategoryGraph ncg-export ncg-export-full
-./.lake/build/bin/ncg-export            # viability specimen JSON
+lake build NormalizedCategoryGraph ncg-export-full
 ./.lake/build/bin/ncg-export-full | python3 scripts/ledger_check_from_lean_export.py
 # Python seed tooling (oracle / migration — not Lean authority):
 python3 scripts/generate_seed_spec.py

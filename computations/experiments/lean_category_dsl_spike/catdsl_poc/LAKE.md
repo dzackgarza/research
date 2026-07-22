@@ -13,7 +13,7 @@ The repository root owns:
 Build from the repo root:
 
 ```bash
-lake build NormalizedCategoryGraph CatDSL ncg-export ncg-export-full
+lake build NormalizedCategoryGraph CatDSL ncg-export-full
 lake exe cache get
 ```
 

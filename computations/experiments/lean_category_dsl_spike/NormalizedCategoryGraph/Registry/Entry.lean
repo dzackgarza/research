@@ -20,6 +20,8 @@ structure NamedCategoryEntry where
   canonicalName : String
   declaration : Lean.Name
   expression : CategoryExpr
+  /-- Optional elaborated witness tying this expression to the declared category. -/
+  realization : Option Lean.Name := none
   origin : CategoryOrigin
   visibility : Visibility
   deriving Repr, Inhabited

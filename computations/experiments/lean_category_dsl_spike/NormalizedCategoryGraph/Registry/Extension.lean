@@ -3,6 +3,8 @@ Copyright (c) 2026 Dzack Garza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import NormalizedCategoryGraph.Registry.Entry
+import NormalizedCategoryGraph.Core.Classifier
+import NormalizedCategoryGraph.Model.Interpretation
 import Lean
 
 /-!
@@ -14,6 +16,8 @@ import Lean
 namespace NormalizedCategoryGraph
 
 open Lean
+open Lean Meta
+open Lean Elab Command
 
 inductive RegistryEntry
   | category (e : NamedCategoryEntry)
@@ -45,7 +49,7 @@ def RegistryEntry.stableId : RegistryEntry → String
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def RegistryEntry.declarations : RegistryEntry → Array Name
-  | .category e => #[e.declaration]
+  | .category e => #[e.declaration] ++ e.realization.toArray
   | .categoryFamily e => #[e.declaration, e.fibreDeclaration]
   | .classifier e => #[e.declaration]
   | .functor e => #[e.declaration]
@@ -215,6 +219,82 @@ def addRegistryEntry (e : RegistryEntry) : CoreM Unit := do
     if (env.find? declaration).isNone then
       throwError "registry entry {e.stableId} refers to unknown declaration {declaration}"
   modifyEnv (registryExt.addEntry · e)
+
+/-- The result type of a declaration after exposing all of its parameters. -/
+private def declarationResultType (declaration : Name) : MetaM Expr := do
+  let info ← getConstInfo declaration
+  forallTelescopeReducing info.type fun _ result => pure result
+
+/-- Require a declaration to return an actual category object. -/
+private def ensureCategoryDeclaration (declaration : Name) : MetaM Unit := do
+  let result ← declarationResultType declaration
+  unless result.isConstOf ``NormalizedCategoryGraph.ObjCat do
+    throwError "registry declaration {declaration} must return ObjCat, but returns {result}"
+
+/-- Require an optional category-realization declaration to have the typed witness form. -/
+private def ensureCategoryRealization (realization : Name) : MetaM Unit := do
+  let result ← declarationResultType realization
+  unless result.isAppOfArity ``NormalizedCategoryGraph.CategoryRealization 5 do
+    throwError
+      "registry realization {realization} must return CategoryRealization ..., but returns {result}"
+
+/-- Require a declaration to return a classifier after its parameters are supplied. -/
+private def ensureClassifierDeclaration (declaration : Name) : MetaM Unit := do
+  let result ← declarationResultType declaration
+  unless result.isAppOfArity ``NormalizedCategoryGraph.Classifier 1 do
+    throwError "registry declaration {declaration} must return Classifier _, but returns {result}"
+
+/-- Require a declaration to elaborate to an actual functor between categories. -/
+private def ensureFunctorDeclaration (declaration : Name) : MetaM Unit := do
+  let result ← whnf (← declarationResultType declaration)
+  unless result.isAppOfArity ``CategoryTheory.Functor 4 ||
+      result.isAppOfArity ``CategoryTheory.Cat.Hom 2 do
+    throwError
+      "registry declaration {declaration} must return a categorical functor, but returns {result}"
+
+/-- Inspect declaration types before atomically persisting a registry entry. -/
+def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
+  match entry with
+  | .category e => do
+      ensureCategoryDeclaration e.declaration
+      if let some realization := e.realization then
+        ensureCategoryRealization realization
+  | .categoryFamily e => do
+      ensureCategoryDeclaration e.declaration
+      ensureCategoryDeclaration e.fibreDeclaration
+  | .classifier e => ensureClassifierDeclaration e.declaration
+  | .functor e => ensureFunctorDeclaration e.declaration
+  | .constructor e => ensureFunctorDeclaration e.declaration
+  | .finiteLimitCone _ => pure ()
+  | .coherence _ => pure ()
+  | .theoremInclusion e => ensureFunctorDeclaration e.declaration
+  | .alias _ => pure ()
+  | .opaque e => do
+      ensureCategoryDeclaration e.declaration
+      for port in e.ports do
+        ensureFunctorDeclaration port.declaration
+  | .presentation _ => pure ()
+
+/-- Validate the elaborated declaration and persist exactly one registry entry. -/
+def addRegistryEntryChecked (entry : RegistryEntry) : MetaM Unit := do
+  validateRegistryEntryDeclaration entry
+  addRegistryEntry entry
+
+/--
+Atomically elaborate and register one authored registry declaration.
+
+The command is deliberately entry-by-entry: an imported module contributes its own
+declarations directly to the persistent environment extension instead of assembling a
+second in-memory manifest and replaying it later.
+-/
+syntax (name := normalizedRegistryEntry) "normalized_registry " term : command
+
+elab_rules : command
+  | `(normalized_registry $entry) => do
+      let command ← `(run_cmd
+        liftTermElabM do
+          addRegistryEntryChecked $entry)
+      elabCommand command
 
 /-- Materialize the registered state for a Lean-authored export. -/
 def RegistryState.snapshot (state : RegistryState) (schemaVersion : String) : RegistrySnapshot where

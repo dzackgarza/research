@@ -3,6 +3,7 @@ Copyright (c) 2026 Dzack Garza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import NormalizedCategoryGraph.Core.StructuralMap
+import NormalizedCategoryGraph.ForMathlib.CategoricalPullback
 import NormalizedCategoryGraph.Registry.Entry
 import NormalizedCategoryGraph.Realization.Mathlib.Atomic
 
@@ -54,6 +55,14 @@ noncomputable def specimenSetsIdentity :
 /-- Its typed symbolic counterpart. -/
 def exprSetsIdentity : FunctorExpr exprSets exprSets := .identity exprSets
 
+/-- The actual Sets declaration is certified against the symbolic node it realizes. -/
+noncomputable def specimenSetsRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprSets (Normalized.Sets Realization.Mathlib.atomicModel) := by
+  refine ⟨Normalized.Sets Realization.Mathlib.atomicModel, ?_, CategoryTheory.Equivalence.refl⟩
+  exact Realization.Mathlib.evalAtom_sets
+
 /-- The actual semantic binding for the registered Sets identity functor. -/
 noncomputable def specimenFunctorSemantics :
     FunctorSemantics Realization.Mathlib.atomicModel.{0} where
@@ -67,6 +76,17 @@ noncomputable def specimenFunctorSemantics :
   theoremInclusion _ := none
   finiteLimitLift _ := none
   constructorMap _ := none
+
+/-- The actual Sets identity is certified against its typed symbolic functor. -/
+theorem specimenSetsIdentityRealization :
+    FunctorRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding specimenFunctorSemantics
+      exprSetsIdentity
+      ⟨Normalized.Sets Realization.Mathlib.atomicModel,
+        Normalized.Sets Realization.Mathlib.atomicModel, specimenSetsIdentity⟩ := by
+  constructor
+  simp [evalFunctor, exprSetsIdentity, exprSets, specimenFunctorSemantics,
+    specimenSetsIdentity, evalCategory, Realization.Mathlib.evalAtom_sets]
 
 /-- A genuine categorical pullback of the two registered identity functors on Sets. -/
 def exprSetsIdentityPullback : CategoryExpr :=
@@ -89,6 +109,12 @@ example :
     specimenFunctorSemantics]
 
 example :
+    (evalStructuralMap Realization.Mathlib.atomicModel.{0} Realization.Mathlib.specimenRingBinding
+      specimenFunctorSemantics (.compose (.identity exprSets) (.identity exprSets))).isSome = true := by
+  simp [evalStructuralMap, evalCategory, exprSets, specimenFunctorSemantics,
+    EvaluatedFunctor.compose]
+
+example :
     (evalClassifier Realization.Mathlib.atomicModel.{0} Realization.Mathlib.specimenRingBinding
       exprSets ClassifierId.setsFinite).isSome = true := by
   have associative : ClassifierId.setsFinite ≠ ClassifierId.magmasAssociative := by decide
@@ -97,8 +123,27 @@ example :
   have inverse : ClassifierId.setsFinite ≠ ClassifierId.magmasInverse := by decide
   have additive : ClassifierId.setsFinite ≠ ClassifierId.magmasAdditive := by decide
   have multiplicative : ClassifierId.setsFinite ≠ ClassifierId.magmasMultiplicative := by decide
+  have division : ClassifierId.setsFinite ≠ ClassifierId.ringsDivision := by decide
   simp [evalClassifier, magmasClassifier, setsClassifier, associative, commutative, unital,
-    inverse, additive, multiplicative]
+    inverse, additive, multiplicative, division]
+
+/-- The Finite classifier is certified on its actual Sets host. -/
+theorem specimenFiniteClassifierRealization :
+    ClassifierRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding exprSets ClassifierId.setsFinite
+      ⟨Normalized.Sets Realization.Mathlib.atomicModel,
+        Realization.Mathlib.atomicModel.foundations.finite.total,
+        Realization.Mathlib.atomicModel.foundations.finite.forget⟩ := by
+  constructor
+  have associative : ClassifierId.setsFinite ≠ ClassifierId.magmasAssociative := by decide
+  have commutative : ClassifierId.setsFinite ≠ ClassifierId.magmasCommutative := by decide
+  have unital : ClassifierId.setsFinite ≠ ClassifierId.magmasUnital := by decide
+  have inverse : ClassifierId.setsFinite ≠ ClassifierId.magmasInverse := by decide
+  have additive : ClassifierId.setsFinite ≠ ClassifierId.magmasAdditive := by decide
+  have multiplicative : ClassifierId.setsFinite ≠ ClassifierId.magmasMultiplicative := by decide
+  have division : ClassifierId.setsFinite ≠ ClassifierId.ringsDivision := by decide
+  simp [evalClassifier, magmasClassifier, setsClassifier, associative, commutative,
+    unital, inverse, additive, multiplicative, division]
 
 example :
     (EvaluatedFunctor.pullbackCategory
@@ -111,12 +156,35 @@ example :
   simp [EvaluatedFunctor.pullbackCategory]
 
 def exprMagmas : CategoryExpr := .classifierTotal ClassifierId.setsBinaryOperation
+
+/-- The binary-operation classifier realizes the registered Magmas node. -/
+noncomputable def specimenMagmasRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprMagmas (Normalized.Magmas Realization.Mathlib.atomicModel) := by
+  refine ⟨Normalized.Magmas Realization.Mathlib.atomicModel, ?_, CategoryTheory.Equivalence.refl⟩
+  rfl
+
 def exprSemigroups : CategoryExpr :=
   .refine exprMagmas ClassifierId.magmasAssociative none
+
+/-- The evaluator's identity reindex is equivalent to the authored Semigroups category. -/
+noncomputable def specimenSemigroupsRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprSemigroups (Normalized.Semigroups Realization.Mathlib.atomicModel) := by
+  let A := Realization.Mathlib.atomicModel.algebra.associative
+  refine ⟨(Classifier.reindex (CategoryTheory.CategoryStruct.id _) A).total, ?_, ?_⟩
+  · simp [evalCategory, exprSemigroups, exprMagmas, magmasClassifier, forgetfulToMagmas,
+      Normalized.Magmas, Realization.Mathlib.atomicModel,
+      Realization.Mathlib.atomicModelComponents, A]
+  · exact (ForMathlib.reindexIdIso A).equiv
+
 def exprMonoids : CategoryExpr :=
   .refine exprSemigroups ClassifierId.magmasUnital none
 def exprGroups : CategoryExpr :=
   .refine exprMonoids ClassifierId.magmasInverse none
+
 /-- Magmas.Additive (one-tower role). -/
 def exprAdditiveMagmas : CategoryExpr :=
   .refine exprMagmas ClassifierId.magmasAdditive none
@@ -128,6 +196,17 @@ def exprAdditiveGroups : CategoryExpr :=
   .refine exprAdditiveMonoids ClassifierId.magmasInverse (some RouteId.additive)
 def exprMagmasWithTwoOperations : CategoryExpr :=
   .opaque CategoryId.magmasWithTwoOperations
+
+/-- The opaque two-operation host is realized by its declared Mathlib category. -/
+noncomputable def specimenMagmasWithTwoOperationsRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprMagmasWithTwoOperations
+      (Normalized.MagmasWithTwoOperations Realization.Mathlib.atomicModel) := by
+  refine ⟨Normalized.MagmasWithTwoOperations Realization.Mathlib.atomicModel, ?_,
+    CategoryTheory.Equivalence.refl⟩
+  rfl
+
 /-- Rings as the refined two-operation tower (not the unrefined host). -/
 def exprRings : CategoryExpr :=
   let m2o := exprMagmasWithTwoOperations
@@ -289,203 +368,7 @@ example :
       (.constructor ⟨"ctor.example"⟩ #[exprGroups, exprRings]) = false := by
   native_decide
 
-/-! ## Registry snapshot (canonical CommRings; no CRings node) -/
-
-def specimenSnapshot : RegistrySnapshot where
-  schemaVersion := "0.1.0-specimen"
-  categories := #[
-    { id := CategoryId.sets, canonicalName := "Sets"
-      declaration := `NormalizedCategoryGraph.Specimen.exprSets
-      expression := exprSets, origin := .root, visibility := .present },
-    { id := CategoryId.magmas, canonicalName := "Magmas"
-      declaration := `NormalizedCategoryGraph.Specimen.exprMagmas
-      expression := exprMagmas, origin := .atomicClassifierTotal, visibility := .present },
-    { id := CategoryId.semigroups, canonicalName := "Semigroups"
-      declaration := `NormalizedCategoryGraph.Specimen.exprSemigroups
-      expression := exprSemigroups, origin := .derivedNamed, visibility := .present },
-    { id := CategoryId.monoids, canonicalName := "Monoids"
-      declaration := `NormalizedCategoryGraph.Specimen.exprMonoids
-      expression := exprMonoids, origin := .derivedNamed, visibility := .present },
-    { id := CategoryId.groups, canonicalName := "Groups"
-      declaration := `NormalizedCategoryGraph.Specimen.exprGroups
-      expression := exprGroups, origin := .derivedNamed, visibility := .present },
-    { id := CategoryId.additiveMagmas, canonicalName := "AdditiveMagmas"
-      declaration := `NormalizedCategoryGraph.Specimen.exprAdditiveMagmas
-      expression := exprAdditiveMagmas, origin := .derivedNamed, visibility := .present },
-    { id := CategoryId.additiveSemigroups, canonicalName := "AdditiveSemigroups"
-      declaration := `NormalizedCategoryGraph.Specimen.exprAdditiveSemigroups
-      expression := exprAdditiveSemigroups, origin := .derivedNamed, visibility := .present },
-    { id := CategoryId.additiveMonoids, canonicalName := "AdditiveMonoids"
-      declaration := `NormalizedCategoryGraph.Specimen.exprAdditiveMonoids
-      expression := exprAdditiveMonoids, origin := .derivedNamed, visibility := .present },
-    { id := CategoryId.additiveGroups, canonicalName := "AdditiveGroups"
-      declaration := `NormalizedCategoryGraph.Specimen.exprAdditiveGroups
-      expression := exprAdditiveGroups, origin := .derivedNamed, visibility := .present },
-    { id := CategoryId.rings, canonicalName := "Rings"
-      declaration := `NormalizedCategoryGraph.Specimen.exprRings
-      expression := exprRings, origin := .derivedNamed, visibility := .present },
-    { id := CategoryId.commutativeRings, canonicalName := "CommutativeRings"
-      declaration := `NormalizedCategoryGraph.Specimen.exprCommRings
-      expression := exprCommRings, origin := .derivedNamed, visibility := .present },
-    { id := CategoryId.divisionRings, canonicalName := "DivisionRings"
-      declaration := `NormalizedCategoryGraph.Specimen.exprDivisionRings
-      expression := exprDivisionRings, origin := .derivedNamed, visibility := .present },
-    { id := CategoryId.modulesR, canonicalName := "Modules(R)"
-      declaration := `NormalizedCategoryGraph.Specimen.exprModules
-      expression := exprModules, origin := .root, visibility := .present },
-    { id := CategoryId.finitelyGeneratedModules, canonicalName := "FinitelyGeneratedModules(R)"
-      declaration := `NormalizedCategoryGraph.Specimen.exprFinitelyGeneratedModules
-      expression := exprFinitelyGeneratedModules, origin := .derivedNamed, visibility := .present },
-    { id := CategoryId.finiteRankModules, canonicalName := "FiniteRankModules(R)"
-      declaration := `NormalizedCategoryGraph.Specimen.exprFiniteRankModules
-      expression := exprFiniteRankModules, origin := .derivedNamed, visibility := .present },
-    { id := CategoryId.freeModules, canonicalName := "FreeModules(R)"
-      declaration := `NormalizedCategoryGraph.Specimen.exprFreeModules
-      expression := exprFreeModules, origin := .derivedNamed, visibility := .present },
-    { id := CategoryId.magmasWithTwoOperations, canonicalName := "MagmasWithTwoOperations"
-      declaration := `NormalizedCategoryGraph.Specimen.exprMagmasWithTwoOperations
-      expression := exprMagmasWithTwoOperations
-      origin := .opaqueCategory, visibility := .semanticOnly },
-    { id := CategoryId.crystals, canonicalName := "Crystals"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.Crystals
-      expression := .opaque CategoryId.crystals
-      origin := .opaqueCategory, visibility := .semanticOnly }
-  ]
-  categoryFamilies := #[
-    { id := CategoryFamilyId.modules
-      canonicalName := "Modules(R)"
-      declaration := `NormalizedCategoryGraph.Specimen.exprModulesFamily
-      parameter := { name := "R", kind := .ringObject }
-      fibreDeclaration := `NormalizedCategoryGraph.Realization.Mathlib.ModulesOf
-      variance := .restrictionOfScalarsContravariant }
-  ]
-  classifiers := #[
-    { id := ClassifierId.setsFinite, canonicalName := "Finite"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.finite
-      hostId := CategoryId.sets, visibility := .present },
-    { id := ClassifierId.setsGraded, canonicalName := "Graded"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.graded
-      hostId := CategoryId.sets, visibility := .present },
-    { id := ClassifierId.setsBinaryOperation, canonicalName := "BinaryOperation"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.binaryOperation
-      hostId := CategoryId.sets, visibility := .present },
-    { id := ClassifierId.magmasAssociative, canonicalName := "Associative"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.associative
-      hostId := CategoryId.magmas, visibility := .present },
-    { id := ClassifierId.magmasCommutative, canonicalName := "Commutative"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.commutative
-      hostId := CategoryId.magmas, visibility := .present },
-    { id := ClassifierId.magmasUnital, canonicalName := "Unital"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.unital
-      hostId := CategoryId.magmas, visibility := .present },
-    { id := ClassifierId.magmasInverse, canonicalName := "Inverse"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.inverse
-      hostId := CategoryId.magmas, visibility := .present },
-    { id := ClassifierId.magmasAdditive, canonicalName := "Additive"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.additive
-      hostId := CategoryId.magmas, visibility := .present },
-    { id := ClassifierId.magmasMultiplicative, canonicalName := "Multiplicative"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.multiplicative
-      hostId := CategoryId.magmas, visibility := .present },
-    { id := ClassifierId.modulesFree, canonicalName := "Free"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.free
-      hostId := CategoryId.modulesR, visibility := .present },
-    { id := ClassifierId.modulesFinitelyGenerated, canonicalName := "FinitelyGenerated"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.finitelyGenerated
-      hostId := CategoryId.modulesR, visibility := .present },
-    { id := ClassifierId.modulesFiniteRank, canonicalName := "FiniteRank"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.finiteRank
-      hostId := CategoryId.modulesR, visibility := .present },
-    { id := ClassifierId.m2oDistributive, canonicalName := "Distributive"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.distributive
-      hostId := CategoryId.magmasWithTwoOperations, visibility := .present },
-    { id := ClassifierId.ringsDivision, canonicalName := "Division"
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.division
-      hostId := CategoryId.rings, visibility := .present }
-  ]
-  functors := #[
-    { id := ⟨"fun.sets.identity"⟩
-      canonicalName := "id_Sets"
-      source := exprSets
-      target := exprSets
-      declaration := `NormalizedCategoryGraph.Specimen.specimenSetsIdentity
-      expression := exprSetsIdentity
-      role := .generatedStructural
-      admissibility := .generated
-      port := none
-      origin := "identity"
-      coherenceClass := none
-      preferredPresentation := false }
-  ]
-  constructors := #[]
-  finiteLimitCones := #[]
-  coherences := #[]
-  theoremInclusions := #[]
-  aliases := #[
-    { id := AliasId.crings, spelling := "CRings"
-      aliasOf := CategoryId.commutativeRings
-      declaration := `NormalizedCategoryGraph.Specimen.CRings }
-  ]
-  opaqueCategories := #[
-    { id := CategoryId.magmasWithTwoOperations
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.MagmasWithTwoOperations
-      ports := #[
-        { id := ⟨"oport.m2o.multiplicative"⟩
-          source := CategoryId.magmasWithTwoOperations
-          target := CategoryId.magmas
-          role := PortId.multiplicative
-          declaration := `NormalizedCategoryGraph.Realization.Mathlib.multiplicativePort
-          provenance := "authored ledger opaque interface" },
-        { id := ⟨"oport.m2o.additive"⟩
-          source := CategoryId.magmasWithTwoOperations
-          target := CategoryId.magmas
-          role := PortId.additive
-          declaration := `NormalizedCategoryGraph.Realization.Mathlib.additivePort
-          provenance := "authored ledger opaque interface" }
-      ]
-      reason := "two-operation host (MagmasWithTwoOperations); distributivity is a separate classifier"
-      visibility := .semanticOnly },
-    { id := CategoryId.crystals
-      declaration := `NormalizedCategoryGraph.Realization.Mathlib.Crystals
-      ports := #[
-        { id := ⟨"oport.crystals.sets"⟩
-          source := CategoryId.crystals
-          target := CategoryId.sets
-          role := PortId.underlyingSet
-          declaration := `NormalizedCategoryGraph.Realization.Mathlib.crystalsToSets
-          provenance := "authored ledger opaque interface" }
-      ]
-      reason := "exceptional combinatorial host (Crystal with Kashiwara operators)"
-      visibility := .semanticOnly }
-  ]
-  equivalences := #[]
-  presentations := #[]
-
 /-- Spelling convenience; registry records aliasOf, not a second category. -/
 abbrev CRings := CategoryId.commutativeRings
-
-example :
-    (specimenSnapshot.categories.filter (·.id == CategoryId.commutativeRings)).size = 1 := by
-  native_decide
-
-example :
-    (specimenSnapshot.categories.filter (·.canonicalName == "CRings")).size = 0 := by
-  native_decide
-
-example :
-    (specimenSnapshot.categories.filter (·.visibility == .semanticOnly)).size = 2 := by
-  native_decide
-
-example :
-    specimenSnapshot.categoryFamilies.size = 1 := by
-  native_decide
-
-example :
-    specimenSnapshot.categoryFamilies[0]!.parameter.kind = .ringObject := by
-  native_decide
-
-example :
-    specimenSnapshot.functors.size = 1 := by
-  native_decide
 
 end NormalizedCategoryGraph.Specimen

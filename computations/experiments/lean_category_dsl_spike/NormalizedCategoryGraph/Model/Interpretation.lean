@@ -219,23 +219,29 @@ classifier namespaces have a unique host in an atomic model.
 noncomputable def evalClassifier (M : AtomicModel.{uObj, uHom})
     (resolveRing : RingParameterId → Option M.modules.RingObjects)
     (host : CategoryExpr) (id : ClassifierId) : Option (EvaluatedClassifier M) :=
-  match magmasClassifier M id with
-  | some classifier => some ⟨Magmas M, classifier.total, classifier.forget⟩
-  | none =>
-      match setsClassifier M id with
-      | some classifier => some ⟨Sets M, classifier.total, classifier.forget⟩
-      | none =>
-          match m2oClassifier M id with
-          | some classifier =>
-              some ⟨MagmasWithTwoOperations M, classifier.total, classifier.forget⟩
-          | none =>
-              match forgetfulToModules M resolveRing host with
-              | some evaluatedHost =>
-                  match modulesClassifier M evaluatedHost.ring id with
-                  | some classifier =>
-                      some ⟨Modules M evaluatedHost.ring, classifier.total, classifier.forget⟩
-                  | none => none
-              | none => none
+  if id == ClassifierId.ringsDivision then
+    if host.syntacticEq (.atom CategoryId.rings) then
+      let classifier := divisionOnRings M
+      some ⟨Rings M, classifier.total, classifier.forget⟩
+    else none
+  else
+    match magmasClassifier M id with
+    | some classifier => some ⟨Magmas M, classifier.total, classifier.forget⟩
+    | none =>
+        match setsClassifier M id with
+        | some classifier => some ⟨Sets M, classifier.total, classifier.forget⟩
+        | none =>
+            match m2oClassifier M id with
+            | some classifier =>
+                some ⟨MagmasWithTwoOperations M, classifier.total, classifier.forget⟩
+            | none =>
+                match forgetfulToModules M resolveRing host with
+                | some evaluatedHost =>
+                    match modulesClassifier M evaluatedHost.ring id with
+                    | some classifier =>
+                        some ⟨Modules M evaluatedHost.ring, classifier.total, classifier.forget⟩
+                    | none => none
+                | none => none
 
 /-- Evaluate a category expression to an actual `ObjCat`. -/
 noncomputable def evalCategory (M : AtomicModel.{uObj, uHom})
@@ -246,15 +252,17 @@ noncomputable def evalCategory (M : AtomicModel.{uObj, uHom})
   | .opaque id => evalAtom M id
   | .reference id => evalAtom M id
   | .classifierTotal id =>
-      match magmasClassifier M id with
-      | some A => some A.total
-      | none =>
-          match setsClassifier M id with
-          | some A => some A.total
-          | none =>
-              match m2oClassifier M id with
-              | some A => some A.total
-              | none => none
+      if id == ClassifierId.ringsDivision then some (divisionOnRings M).total
+      else
+        match magmasClassifier M id with
+        | some A => some A.total
+        | none =>
+            match setsClassifier M id with
+            | some A => some A.total
+            | none =>
+                match m2oClassifier M id with
+                | some A => some A.total
+                | none => none
   | .refine base clf route =>
       match magmasClassifier M clf with
       | some A =>
@@ -420,6 +428,46 @@ noncomputable def evalStructuralMap (M : AtomicModel.{uObj, uHom})
   | .opaquePort port => semantics.opaquePort port
   | .thmInclusion theoremId => semantics.theoremInclusion theoremId
   | .finiteLimitLift cone => semantics.finiteLimitLift cone
-  | .compose _ => none
+  | .compose first second =>
+      match evalStructuralMap M resolveRing semantics first,
+          evalStructuralMap M resolveRing semantics second with
+      | some evaluatedFirst, some evaluatedSecond => evaluatedFirst.compose evaluatedSecond
+      | _, _ => none
+
+/--
+An elaborated category declaration together with an evaluated expression and their
+categorical equivalence in a fixed semantic model.
+
+Registry rows will cite declarations of this type rather than independently asserting
+that a `Lean.Name` and a `CategoryExpr` describe the same category.
+-/
+structure CategoryRealization (M : AtomicModel.{uObj, uHom})
+    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (semantics : FunctorSemantics M) (expression : CategoryExpr)
+    (category : ObjCat.{uObj, uHom}) where
+  evaluated : ObjCat.{uObj, uHom}
+  evaluates : evalCategory M resolveRing semantics expression = some evaluated
+  equivalence : evaluated ≌ category
+
+/--
+An elaborated classifier declaration together with its evaluated host, total category,
+and forgetful functor.  The indexed expression rules out host metadata detached from the
+actual classifier.
+-/
+structure ClassifierRealization (M : AtomicModel.{uObj, uHom})
+    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (host : CategoryExpr) (identifier : ClassifierId)
+    (classifier : EvaluatedClassifier M) : Prop where
+  realizes : evalClassifier M resolveRing host identifier = some classifier
+
+/--
+An elaborated functor declaration whose concrete endpoints and map realize its typed
+symbolic expression.
+-/
+structure FunctorRealization (M : AtomicModel.{uObj, uHom})
+    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (semantics : FunctorSemantics M) {source target : CategoryExpr}
+    (expression : FunctorExpr source target) (functor : EvaluatedFunctor M) : Prop where
+  realizes : evalFunctor M resolveRing semantics expression = some functor
 
 end NormalizedCategoryGraph

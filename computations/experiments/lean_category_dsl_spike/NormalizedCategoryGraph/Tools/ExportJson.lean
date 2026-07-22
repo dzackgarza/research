@@ -255,8 +255,4 @@ def snapshotManifestJson (snap : RegistrySnapshot) : Json :=
 def snapshotManifestString (snap : RegistrySnapshot) : String :=
   (snapshotManifestJson snap).compress
 
-/-- Lean specimen registry JSON (authoritative for the specimen exporter). -/
-def specimenManifestJson : String :=
-  snapshotManifestString specimenSnapshot
-
 end NormalizedCategoryGraph.Tools

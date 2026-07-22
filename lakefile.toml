@@ -8,7 +8,6 @@ defaultTargets = [
   "NormalizedCategoryGraph",
   "LeanCategoryDslSpike",
   "CatDSL",
-  "ncg-export",
   "ncg-export-full",
 ]
 
@@ -37,12 +36,6 @@ roots = [
   "CatDSL.Example.RegistryTest",
   "CatDSL.Example.SurfaceTest",
 ]
-
-[[lean_exe]]
-name = "ncg-export"
-srcDir = "computations/experiments/lean_category_dsl_spike"
-root = "NormalizedCategoryGraph.Tools.Export"
-supportInterpreter = true
 
 [[lean_exe]]
 name = "ncg-export-full"

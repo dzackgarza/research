@@ -86,7 +86,7 @@ partial def project
           some π
         else
           match project ctx base tgtN route with
-          | some rest => some (normalizeMap (.compose #[π, rest]))
+          | some rest => some (normalizeMap (.compose π rest))
           | none => none
     | .classifierTotal clf =>
         -- total(A) projects to host(A) via the classifier leg
@@ -100,7 +100,7 @@ partial def project
               some π
             else
               match project ctx hostE tgtN route with
-              | some rest => some (normalizeMap (.compose #[π, rest]))
+              | some rest => some (normalizeMap (.compose π rest))
               | none => none
     | .atom id =>
         let id' := ctx.aliases.canonicalize id

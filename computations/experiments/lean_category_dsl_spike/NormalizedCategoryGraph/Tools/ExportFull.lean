@@ -9,9 +9,8 @@ import Lean.Data.Json
 /-!
 # Registry export (`ncg-export-full`)
 
-Emits JSON from the Lean specimen registry (the same rows
-`Specimen.Register` writes into `registryExt`). The executable reloads that
-module and serializes `getRegistry`; it does not serialize `specimenSnapshot`.
+Emits JSON from the Lean registry. The executable reloads the module that owns
+the viability declarations and serializes its persistent environment extension.
 
 Does **not** read Python semantic-seed artifacts.
 -/
@@ -24,18 +23,13 @@ run_cmd
   let s := NormalizedCategoryGraph.getRegistry env
   if s.categories.isEmpty then
     throwError "getRegistry empty after importing Specimen.Register"
-  if s.categories.size != NormalizedCategoryGraph.Specimen.specimenSnapshot.categories.size then
-    throwError
-      s!"getRegistry categories ({s.categories.size}) ≠ specimenSnapshot ({NormalizedCategoryGraph.Specimen.specimenSnapshot.categories.size})"
-  if s.categoryFamilies.size != NormalizedCategoryGraph.Specimen.specimenSnapshot.categoryFamilies.size then
-    throwError
-      s!"getRegistry category families ({s.categoryFamilies.size}) ≠ specimen snapshot ({NormalizedCategoryGraph.Specimen.specimenSnapshot.categoryFamilies.size})"
+  if !(s.categories.any fun category => category.id == NormalizedCategoryGraph.CategoryId.sets) then
+    throwError "getRegistry is missing the registered Sets category"
   if !(s.categoryFamilies.any fun family =>
       family.id == NormalizedCategoryGraph.CategoryFamilyId.modules) then
     throwError "getRegistry is missing the registered Modules family"
-  if s.functors.size != NormalizedCategoryGraph.Specimen.specimenSnapshot.functors.size then
-    throwError
-      s!"getRegistry functors ({s.functors.size}) ≠ specimen snapshot ({NormalizedCategoryGraph.Specimen.specimenSnapshot.functors.size})"
+  if !(s.functors.any fun functor => functor.id == ⟨"fun.sets.identity"⟩) then
+    throwError "getRegistry is missing the registered Sets identity functor"
   let baseline := NormalizedCategoryGraph.Tools.snapshotManifestString
     (s.snapshot "0.1.0-specimen")
   if !baseline.contains "fam.modules" then
@@ -75,9 +69,9 @@ def validate (j : Json) : Except String Unit := do
   let cats ← j.getObjValAs? (Array Json) "categories"
   let aliases ← j.getObjValAs? (Array Json) "aliases"
   let functors ← j.getObjValAs? (Array Json) "functors"
-  if functors.size != 1 then
-    throw s!"expected one registered specimen functor, got {functors.size}"
-  let functor := functors[0]!
+  let some functor := functors.find? fun candidate =>
+    (candidate.getObjValAs? String "id").toOption == some "fun.sets.identity"
+    | throw "registered Sets identity functor is absent"
   let functorId ← functor.getObjValAs? String "id"
   if functorId != "fun.sets.identity" then
     throw s!"expected Sets identity functor, got {functorId}"
@@ -96,9 +90,9 @@ def validate (j : Json) : Except String Unit := do
     if !vis.endsWith "semanticOnly" then
       throw s!"opaque host must be semanticOnly, got {vis}"
   let families ← j.getObjValAs? (Array Json) "categoryFamilies"
-  if families.size != 1 then
-    throw s!"expected exactly one registered family in the specimen, got {families.size}"
-  let family := families[0]!
+  let some family := families.find? fun candidate =>
+    (candidate.getObjValAs? String "id").toOption == some "fam.modules"
+    | throw "registered Modules family is absent"
   let familyId ← family.getObjValAs? String "id"
   if familyId != "fam.modules" then
     throw s!"expected the Modules family, got {familyId}"

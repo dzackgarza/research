@@ -104,6 +104,31 @@ def AdditiveMagmas : ObjCat := M.algebra.additive.total
 def additiveMagmasToMagmas : AdditiveMagmas M ⟶ Magmas M :=
   M.algebra.additive.forget
 
+/-- Additive semigroups: associative Magmas in the additive role. -/
+noncomputable def AdditiveSemigroups : ObjCat :=
+  (Classifier.reindex (additiveMagmasToMagmas M) M.algebra.associative).total
+
+noncomputable def additiveSemigroupsToAdditiveMagmas :
+    AdditiveSemigroups M ⟶ AdditiveMagmas M :=
+  (Classifier.reindex (additiveMagmasToMagmas M) M.algebra.associative).baseProjection
+
+/-- Additive monoids: unital additive semigroups. -/
+noncomputable def AdditiveMonoids : ObjCat :=
+  let toMagmas := additiveSemigroupsToAdditiveMagmas M ≫ additiveMagmasToMagmas M
+  (Classifier.reindex toMagmas M.algebra.unital).total
+
+noncomputable def additiveMonoidsToAdditiveSemigroups :
+    AdditiveMonoids M ⟶ AdditiveSemigroups M :=
+  let toMagmas := additiveSemigroupsToAdditiveMagmas M ≫ additiveMagmasToMagmas M
+  (Classifier.reindex toMagmas M.algebra.unital).baseProjection
+
+/-- Additive groups: inverse-bearing additive monoids. -/
+noncomputable def AdditiveGroups : ObjCat :=
+  let toMagmas :=
+    additiveMonoidsToAdditiveSemigroups M ≫
+      additiveSemigroupsToAdditiveMagmas M ≫ additiveMagmasToMagmas M
+  (Classifier.reindex toMagmas M.algebra.inverse).total
+
 /-- Magmas.Multiplicative — dual role classifier. -/
 def MultiplicativeMagmas : ObjCat := M.algebra.multiplicative.total
 
@@ -243,9 +268,13 @@ noncomputable def CommutativeRings : ObjCat :=
 
 /-- DivisionRings := Rings.Division — reindex the division classifier along
 Rings → MagmasWithTwoOperations. Not Magmas.Inverse. -/
+noncomputable def divisionOnRings : Classifier (Rings M) :=
+  let ringsToM2O :=
+    ringsToRngs M ≫ rngsToMulAssoc M ≫ m2oMulAssocToAddInv M ≫ m2oAddInvToM2O M
+  (Classifier.reindex ringsToM2O M.exceptional.division).asClassifier
+
 noncomputable def DivisionRings : ObjCat :=
-  let ringsToM2O := ringsToRngs M ≫ rngsToMulAssoc M ≫ m2oMulAssocToAddInv M ≫ m2oAddInvToM2O M
-  (Classifier.reindex ringsToM2O M.exceptional.division).total
+  (divisionOnRings M).total
 
 /-- The parameter category for `R ↦ Modules(R)`. -/
 def ModuleRingObjects : ObjCat := M.modules.RingObjects

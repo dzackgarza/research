@@ -50,7 +50,11 @@ cache:
 
 # Build all Lean libraries / export exes
 build:
-    cd "{{repo_root}}" && lake build NormalizedCategoryGraph LeanCategoryDslSpike CatDSL ncg-export ncg-export-full
+    cd "{{repo_root}}" && lake build NormalizedCategoryGraph LeanCategoryDslSpike CatDSL ncg-export-full
+
+[private]
+_ncg-module module:
+    cd "{{repo_root}}" && lake build +{{module}}
 
 # Regenerate Python migration manifest + DOT sidecar (oracle / comparison — not Lean SSOT)
 gen-seed:
@@ -67,8 +71,7 @@ ncg-check-lean:
     set -euo pipefail
     root="{{repo_root}}"
     cd "$root"
-    lake build NormalizedCategoryGraph.Realization.Sage.Correspondence ncg-export ncg-export-full
-    lake exe ncg-export >/dev/null
+    lake build NormalizedCategoryGraph.Realization.Sage.Correspondence ncg-export-full
     lake exe ncg-export-full | python3 "{{spike_dir}}/scripts/ledger_check_from_lean_export.py"
     "$root/.lake/build/bin/ncg-export-full" | python3 "{{spike_dir}}/scripts/ledger_check_from_lean_export.py"
 
@@ -80,7 +83,6 @@ test: build ncg-check
     #!/usr/bin/env bash
     set -euo pipefail
     root="{{repo_root}}"
-    "$root/.lake/build/bin/ncg-export" >/dev/null
     "$root/.lake/build/bin/ncg-export-full" >/dev/null
     cd "$root" && lake build CatDSLTest
 

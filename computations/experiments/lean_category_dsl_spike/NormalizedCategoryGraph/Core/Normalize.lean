@@ -68,14 +68,11 @@ partial def normalizeCategory
 
 /-- Normalize a structural map expression (drop empties / singletons). -/
 partial def normalizeMap : StructuralMapExpr → StructuralMapExpr
-  | .compose parts =>
-      let parts' := parts.map normalizeMap |>.filter fun
-        | .identity _ => false
-        | _ => true
-      match parts'.size with
-      | 0 => .compose #[]
-      | 1 => parts'[0]!
-      | _ => .compose parts'
+  | .compose first second =>
+      match normalizeMap first, normalizeMap second with
+      | .identity _, rest => rest
+      | first, .identity _ => first
+      | first, second => .compose first second
   | e => e
 
 /-- After alias canonicalization, equal source/target is identity (no edge). -/
