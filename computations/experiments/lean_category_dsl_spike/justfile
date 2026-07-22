@@ -89,29 +89,13 @@ test: build ncg-check
 # Everything, from a cold checkout
 test-ci: setup cache test
 
-# Audit the proofs: no sorry, standard axioms only
+# Target-private implementation consumed by ai-review-ci's shared Lean recipe.
+_lean-axiom-audit:
+    cd "{{repo_root}}" && lake env lean "{{spike_dir}}/LeanAxiomAudit.lean"
+
+# Run the shared kernel-axiom audit directly when inspecting Lean work.
 axioms:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    root="{{repo_root}}"
-    spike="{{spike_dir}}"
-    if rg -n 'sorry|admit' --glob '*.lean' \
-        "$spike/NormalizedCategoryGraph" \
-        "$spike/LeanCategoryDslSpike" \
-        "$spike/catdsl_poc/CatDSL"; then
-      echo "sorry/admit found above" >&2
-      exit 1
-    fi
-    cat > /tmp/catdsl-axioms.lean <<'LEAN'
-    import CatDSL.Example.F2Semantic
-    open CatDSL.Example
-    #print axioms card_L
-    #print axioms number_table
-    #print axioms nth_table
-    #print axioms nth_number_L
-    LEAN
-    cd "$root" && lake env lean /tmp/catdsl-axioms.lean
-    echo "expect only: propext, Classical.choice, Quot.sound"
+    @just -f ~/ai-review-ci/justfiles/lean.just -d "{{repo_root}}" lean-axiom-audit
 
 # Remove build artifacts; mathlib packages stay until `rm -rf {{repo_root}}/.lake`
 clean:
