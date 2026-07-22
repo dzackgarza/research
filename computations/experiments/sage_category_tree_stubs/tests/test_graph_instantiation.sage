@@ -3,7 +3,7 @@ r"""Every solid DOT node instantiates; solid and axiom edges are recoverable."""
 from sage_category_tree_stubs.dot_parse import parse_dot
 from sage_category_tree_stubs.factory import _DOMAIN_LADDER, factory
 from sage_category_tree_stubs.registry import instantiate_all
-from sage_category_tree_stubs.slugs import axiom_method_name, short_name
+from sage_category_tree_stubs.slugs import axiom_method_name, is_parameterized, short_name
 
 
 def test_every_solid_node_and_named_join_instantiates() -> None:
@@ -39,7 +39,14 @@ def test_solid_parent_edges_are_recoverable() -> None:
     failures = []
     for edge in fac.graph.solid_edges:
         child = fac.instance(edge.src)
-        parent = fac.instance(edge.tgt)
+        # A parameterized parent must be taken at the child's parameter: over its
+        # own default base it is a different category, and the inclusion asserted
+        # by the edge is the one at a shared base.
+        child_base = getattr(child, "base_ring", None)
+        parent = fac.instance(
+            edge.tgt,
+            base=child_base() if callable(child_base) and is_parameterized(edge.tgt) else None,
+        )
         if not child.is_subcategory(parent):
             failures.append((edge.src, edge.tgt, child, parent))
     assert not failures, "\n".join(f"{a} -> {b}: {c} not subcategory of {p}" for a, b, c, p in failures[:25])
@@ -123,3 +130,24 @@ def test_axiom_multidigraph_matches_dot() -> None:
     result = compare_axiom_graphs()
     assert result["only_in_dot"] == set(), f"DOT-only axiom edges: {result['only_in_dot']}"
     assert result["only_in_sage"] == set(), f"Sage-only axiom edges: {result['only_in_sage']}"
+
+
+def test_over_field_named_joins_are_built_over_a_field() -> None:
+    """The base ring comes from the join vertex, not from its resolved host.
+
+    ``VectorSpaces(K) = Modules.OverField`` is hosted by ``Modules(R)``; taking the
+    base from the host builds the vector-space stub over ZZ, which is not a field.
+    """
+    fac = factory()
+    fac.build()
+    over_field_joins = [j for j in fac.graph.named_joins if "OverField" in j]
+    assert over_field_joins, "no OverField named joins in the graph"
+    checked = 0
+    for join in over_field_joins:
+        base_ring = getattr(fac.instance(join), "base_ring", None)
+        if not callable(base_ring):
+            continue
+        base = base_ring()
+        checked += 1
+        assert base.is_field(), f"{join} built over non-field base {base}"
+    assert checked, "no OverField join exposed a base ring to check"

@@ -330,7 +330,14 @@ class CategoryTreeFactory:
                     host, ax = parent.split(".", 1)
                     cat = factory.axiom_instance(host, ax)
                 else:
-                    cat = factory.instance(parent)
+                    # A parameterized parent is taken over this category's own base:
+                    # ``VectorSpaces(QQ)`` sits over ``Modules(QQ)``, not over the
+                    # parent vertex's default ``Modules(ZZ)``.
+                    own_base = getattr(self, "base_ring", None)
+                    cat = factory.instance(
+                        parent,
+                        base=own_base() if callable(own_base) and is_parameterized(parent) else None,
+                    )
                 key = id(cat)
                 if key not in seen:
                     seen.add(key)
@@ -524,7 +531,14 @@ class CategoryTreeFactory:
         return cls
 
     def _default_base(self, node: str) -> object:
-        name = short_name(node)
+        # ``OverField`` is the refinement that fixes the base, so it decides the
+        # ring wherever it appears — including joins whose short name is not in the
+        # table below.
+        if "OverField" in node:
+            return QQ
+        # Named joins carry their parameter (``VectorSpaces(K) = Modules.OverField``
+        # → ``VectorSpaces(K)``); the table is keyed by the unparameterized name.
+        name = short_name(node).split("(", 1)[0].strip()
         if name in {
             "VectorSpaces",
             "Varieties",
@@ -537,7 +551,13 @@ class CategoryTreeFactory:
             return QQ
         return ZZ
 
-    def instance(self, node: str) -> Category:
+    def instance(self, node: str, base: object | None = None) -> Category:
+        """Materialize ``node``; ``base`` overrides the vertex's default base ring.
+
+        Comparing a parameterized edge such as ``VectorSpaces(K) → Modules(R)``
+        requires both endpoints at the same parameter — instantiating each at its
+        own default compares vector spaces over one ring with modules over another.
+        """
         self.build()
         canonical = node
         if node in _HOST_ALIASES:
@@ -547,9 +567,11 @@ class CategoryTreeFactory:
             cls = self.classes[key]
             cat: Category
             if issubclass(cls, Category_over_base_ring):
-                host, _path = self.graph.named_joins[key]
-                host_res = self._resolve_host(host)
-                cat = cast(Category, cls(self._default_base(host_res)))
+                # The base comes from the join vertex, not its host: the host of
+                # ``VectorSpaces(K) = Modules.OverField`` is ``Modules(R)``, whose
+                # default base is ZZ, which would build the vector-space stub over
+                # the integers.
+                cat = cast(Category, cls(self._default_base(key) if base is None else base))
             else:
                 cat = cast(Category, cls())
             return self._finalize_category(cat, key)
@@ -564,7 +586,7 @@ class CategoryTreeFactory:
         if issubclass(cls, Category_over_base_ring) or issubclass(cls, CategoryWithAxiom_over_base_ring):
             cat_out = cast(
                 Category,
-                cls(self._default_base(node if is_parameterized(node) else ("∫Bil_R(W)" if key.startswith("Lat") or "Bil" in key else key))),
+                cls(self._default_base(node if is_parameterized(node) else ("∫Bil_R(W)" if key.startswith("Lat") or "Bil" in key else key)) if base is None else base),
             )
         else:
             cat_out = cast(Category, cls())

@@ -299,3 +299,25 @@ def test_join_view_dots_exist() -> None:
         "edge_dispositions.dot",
     ):
         assert (sage / name).is_file(), name
+
+
+def test_preserved_edges_carry_a_derived_structural_path() -> None:
+    """``preserved`` asserts a normalized route, so the route must be present.
+
+    Emitting ``preserved`` with ``path: []`` lets full edge coverage be reported
+    from endpoint mapping alone, with no path ever derived.
+    """
+    mapping = build_mapping()
+    preserved = [
+        e for e in mapping["edge_mappings"] if e["disposition"] == "preserved"
+    ]
+    assert preserved, "no preserved edges to check"
+    for edge in preserved:
+        normalized = edge["normalized"]
+        src, dst = normalized["from_target"], normalized["to_target"]
+        if src == dst:
+            continue
+        assert normalized["path"], (
+            f"{edge['source_edge']['from']} -> {edge['source_edge']['to']} is "
+            f"preserved but records no structural path from {src} to {dst}"
+        )

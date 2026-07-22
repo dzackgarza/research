@@ -93,7 +93,11 @@ def test_cat_spine_and_monoidal_tensor_dual() -> None:
     assert fac.instance("LeftModules(R)").is_subcategory(mods)
     assert fac.instance("Bimodules(R)").is_subcategory(fac.instance("LeftModules(R)"))
     assert "OverField" in fac.axiom_instance("Modules(R)", "OverField").axioms()
-    assert fac.instance("VectorSpaces(K) = Modules.OverField").is_subcategory(mods)
+    # Vector spaces are modules over the *same* field, not over the default ZZ base.
+    vs = fac.instance("VectorSpaces(K) = Modules.OverField")
+    assert vs.base_ring().is_field()
+    assert vs.is_subcategory(fac.instance("Modules(R)", base=vs.base_ring()))
+    assert not vs.is_subcategory(mods)
     assert fac.instance("Algebras(R)").is_subcategory(fac.instance("Modules(R)"))
     assert fac.instance("UnitalAlgebras = Algebras.Associative.Unital").is_subcategory(fac.instance("Algebras(R)"))
     assert fac.instance("DivisionRings = Rings.Division").is_subcategory(fac.instance("Rings"))

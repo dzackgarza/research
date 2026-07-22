@@ -71,6 +71,56 @@ def _relation_for(
     return "exact"
 
 
+# Arrow kinds that compose into a structure-forgetting route. ``construction`` is
+# excluded: a functorial construction is not a leg of a forgetful path.
+_FORGETFUL_ARROW_KINDS = frozenset({"forgetful", "full_inclusion", "classifier_leg", "pullback_projection"})
+
+
+def _forgetful_adjacency(seed: Any) -> dict[str, list[tuple[str, str]]]:
+    """Successors reachable by one structure-forgetting step, as (target, arrow id).
+
+    ``equivalence`` arrows are alias identifications, so they are traversable in
+    both directions; every other admitted kind points from the richer category to
+    the poorer one and is traversed forward only.
+    """
+    adj: dict[str, list[tuple[str, str]]] = {}
+    for arrow in seed.arrows:
+        kind = arrow.get("kind")
+        src, tgt, aid = arrow.get("source"), arrow.get("target"), arrow.get("id")
+        if not src or not tgt or not aid:
+            continue
+        if kind in _FORGETFUL_ARROW_KINDS:
+            adj.setdefault(src, []).append((tgt, aid))
+        elif kind == "equivalence":
+            adj.setdefault(src, []).append((tgt, aid))
+            adj.setdefault(tgt, []).append((src, aid))
+    return adj
+
+
+def _forgetful_path(adj: dict[str, list[tuple[str, str]]], source: str, target: str) -> list[str] | None:
+    """Shortest structural route source→target as arrow ids, or None if there is none.
+
+    A same-endpoint request is the empty route; every other result names at least
+    one real arrow, so an empty ``path`` can never stand in for an unproved one.
+    """
+    if source == target:
+        return []
+    seen = {source}
+    frontier: list[tuple[str, list[str]]] = [(source, [])]
+    while frontier:
+        nxt: list[tuple[str, list[str]]] = []
+        for node, route in frontier:
+            for succ, aid in adj.get(node, ()):
+                if succ in seen:
+                    continue
+                if succ == target:
+                    return [*route, aid]
+                seen.add(succ)
+                nxt.append((succ, [*route, aid]))
+        frontier = nxt
+    return None
+
+
 def _edge_key(frm: str, to: str) -> tuple[str, str]:
     return (frm, to)
 
@@ -399,6 +449,7 @@ def build_mapping(
     seen_edges: set[tuple[str, str]] = set()
     cat_target = {r["source"]: r.get("target") for r in category_mappings if r.get("relation") not in {"unsupported", "removed"}}
     alias_ids = {obs_index[n] for n in alias_names if n in obs_index} | {r["source"] for r in category_mappings if r.get("relation") == "presentation_alias"}
+    forgetful_adj = _forgetful_adjacency(seed)
 
     for cat in obs.get("categories", []):
         frm = cat["id"]
@@ -462,6 +513,30 @@ def build_mapping(
                 )
                 continue
             if frm in cat_target and to in cat_target and cat_target[frm] and cat_target[to]:
+                src_target, dst_target = str(cat_target[frm]), str(cat_target[to])
+                path = _forgetful_path(forgetful_adj, src_target, dst_target)
+                if path is None:
+                    # Both endpoints are reviewed, but no structural route composes
+                    # between them. Reporting `preserved` here would claim a
+                    # normalized path that was never derived.
+                    edge_mappings.append(
+                        {
+                            "source_edge": {
+                                "from": frm,
+                                "to": to,
+                                "sage_names": {"from": sage_from, "to": sage_to_short},
+                            },
+                            "disposition": "unsupported",
+                            "normalized": None,
+                            "reason": (
+                                "Both endpoints are mapped but no structural route "
+                                f"composes from {src_target} to {dst_target}; the "
+                                "normalized graph is missing a forgetful, inclusion, "
+                                "classifier-leg, or pullback-projection arrow between them"
+                            ),
+                        }
+                    )
+                    continue
                 edge_mappings.append(
                     {
                         "source_edge": {
@@ -472,10 +547,9 @@ def build_mapping(
                         "disposition": "preserved",
                         "normalized": {
                             "kind": "forgetful",
-                            "path": [],
-                            "from_target": cat_target[frm],
-                            "to_target": cat_target[to],
-                            "note": ("Both endpoints reviewed; path ids pending functor census"),
+                            "path": path,
+                            "from_target": src_target,
+                            "to_target": dst_target,
                         },
                         "reason": None,
                     }
