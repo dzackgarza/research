@@ -22,7 +22,7 @@ F_{\Nod, 2} &= ???
 \end{aligned}
 $$
 
-where $T_{\dP}$ is described in [@AEGS23]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$.
+where $T_{\dP}$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$.
 We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$, which implies that there is a birational isomorphism $F_{\Co} \birational \cH_{-2}/\Orth(T_\En)$.
 
 # GIT Discussion
@@ -43,24 +43,29 @@ means that there should be 3 conditions imposed upon the configuration
 of 10 points.
 These 3 conditions are precisely the _discriminant
 conditions_ described in [@Cob19 §2, Prop. (10)].
+Letting $D$ be the corresponding discriminant locus, we can identify $F_{\Co}$
+as an open subset of $\qty{ (\PP^2)^{10} \sm D }/\PGL_3$ at the level of coarse
+moduli spaces.
 :::
 
 # Horikawa model
 
 ::: {.remark}
 
-Alternatively, Horikawa [@Hor78] and more recently [@AEGS23] consider
+Alternatively, Horikawa [@Hor77] and more recently [@AEGS25] consider
 the following: let $Y\da \PP^1\times \PP^1$ and define an involution
 $\tau(x,y) \da (-x,-y)$.
 Letting $B\in\abs{-2K_Y}^\tau$ be a
 $\tau$-invariant anti-bicanonical curve in $Y$, if $B$ passes through a
 $\tau$-fixed point $x,y\in \ts{0, \pm \infty}$, then the corresponding
-double branched cover branched over $B$ is a K3 surface $X$ with $A_1$
-singularities and involution $\iota_{\dP}$, and the quotient
-$Z\da X/\gens{\iota}$ is a Coble surface.
+double branched cover branched over $B$ is a nodal K3 surface $X$ with $A_1$
+singularities and covering involution $\iota_{\dP}$ such that
+$Y = X/\gens{\iota_{\dP}}$.
+Letting $\iota_{\En}$ be a lift of $\tau$, the quotient
+$Z\da X/\gens{\iota_{\En}}$ is a Coble surface.
 The case in which $B$ does not
 pass through a $\tau$-invariant point yields an Enriques surface $Z$,
-and an analysis of the corresponding moduli is carried out in [@AEGS23].
+and an analysis of the corresponding moduli is carried out in [@AEGS25].
 
 It is well-known that there consequently exists a Coble surface $S$ and
 a blowdown $S\to X/\iota$ along the strict transform of $B$.
@@ -120,3 +125,20 @@ Alternatively, this follows immediately from the mirror move $S\leadsto T$ of [@
 We obtain $F_\Co$ as an open subset of the period domain $D_{T_\Co}/\Orth(T_\Co)$, a normal quasiprojective variety of dimension 9, by [@DK13 Prop. 3.2] and an application of the Torelli theorem for algebraic K3 surfaces from [@PS71]. We note that [@DK13] shows that $F_\Co$ is rational by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics in $\PP^2$.
 
 # KSBA Spaces
+
+::: {.remark}
+
+By \cref{lem:locally_closed_embedding_BB}, there are morphisms
+$\overline{F_{\Co}}^{\bb} \to \overline{F_{\En}}^{\bb}$ and
+$\overline{F_{\Co}}^{\bb} \to \overline{F_{(2,2,0)}}^{\bb}$ which induce
+correspondences between the boundary cusps.
+:::
+
+::: {.remark}
+
+We set up the moduli space of KSBA stable pairs for Coble surfaces, possibly
+using the ramification divisor of the K3 involution (which is in this case not
+fixed-point free).
+The above embeddings should allow us to take closures of stable pairs in
+already existing moduli spaces.
+:::

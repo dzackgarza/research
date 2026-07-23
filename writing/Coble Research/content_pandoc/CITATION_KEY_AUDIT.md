@@ -1,0 +1,72 @@
+# Citation key audit — monograph consolidation
+
+Every citation-key change made while consolidating "Coble Paper Draft" and
+"Coble Research" into `content_pandoc/`, with its evidence class.
+The build bibliography is `~/zotero_global.bib` (symlinked as `global.bib`),
+supplemented by `../coble_supplement.bib`.
+
+Evidence classes:
+
+- **A — collision or exact-work match.** The project's own inline bibliography
+  (`content_latex/main.tex`, `\begin{thebibliography}`) or `CoblePaper.bib`
+  pins the key to a specific work (author+title+venue); the global bib holds
+  that exact work under a different key, and in the collision cases holds a
+  *different* work under the original key. Not remapping would cite the wrong
+  paper.
+- **B — twin restoration.** The pandoc port's automated key migration replaced
+  a citation with an unrelated key; the LaTeX twin of the identical sentence
+  preserves the original citation. The change restores the author's original.
+- **C — version/edition drift.** The work is certain, but the global bib holds
+  a later version/edition than the one the locators were written against.
+  **Cited section/lemma/page numbers need verification against the published
+  versions.**
+- **D — judgment call.** The two serializations disagree or a key was
+  overloaded; resolution chosen by content, flagged for author review.
+
+| old key | new key | class | evidence |
+|---|---|---|---|
+| `Nik79` (this project) | `Nik80` | A | Project bibitem = *Integer symmetric bilinear forms…* (Izv. 43, 1979). Global `Nik80` = that work; global `Nik79` = *Finite groups of automorphisms of Kählerian K3 surfaces* (different paper). |
+| `nikulin1979integer-symmetric` | `Nik80` | A | Same work, BBT-style key. |
+| `Hor78` (this project), `Hor78b` | `Hor77` | A | Project bibitem = *On the periods of Enriques surfaces. II*, Math. Ann. **235** (1978). Global `Hor77` = Periods II; global `Hor78` = Periods I. |
+| `Sha81` (this project) | `Sha81a` | A | Project bibitem = Shah, *Projective degenerations of Enriques' surfaces*, Math. Ann. **256**. Global `Sha81` = *Degenerations of K3 surfaces of degree 4* (different paper). |
+| `Kol23` (this project) | `Kol23a` | A | Project bibitem = Kollár, *Families of varieties of general type*, Cambridge Tracts 231. Global `Kol23` = Kollár's Coble obituary. |
+| `AD19` | `AD18` | A | Project bibitem = Allcock–Dolgachev, *The tetrahedron and automorphisms of Enriques and Coble surfaces of Hessian type*, arXiv:1809.07819 (2018). Global `AD18` exact. |
+| `AE22nonsympinv` | `AE22` | A | CoblePaper.bib entry = Alexeev–Engel nonsymplectic-involution paper; global `AE22` exact. |
+| `alexeev2023compact` | `AE23` | A | Project bibitem [AE23] = *Compact moduli of K3 surfaces*, Ann. of Math. 198 (2023); global `AE23` exact. |
+| `alexeev2021nonsymplectic` | `AEH24` | A | Project bibitem [AEH21] = Alexeev–Engel–Han; global `AEH24` = the same authors' nonsymplectic-automorphism paper (published retitle *Complete*→*Compact*). No locators cited. |
+| `alexeevCompactificationsModuliElliptic2023`, `alexeev2022compactifications-moduli` | `ABE22` | A | Alexeev–Brunyate–Engel, *…elliptic K3…: stable pair and toroidal*, Geom. Topol. 26 (2022); global `ABE22` exact. |
+| `kiernan1972satake-compactification` | `KK72` | A | Kiernan–Kobayashi, Invent. Math. 16 (1972); exact. |
+| `PSS71` | `PS71` | A | Piatetski-Shapiro–Shafarevich Torelli for K3 (1971); exact. |
+| `kollar1988threefolds-and-deformations` | `KS88` | A | Kollár–Shepherd-Barron 1988; exact title in key and entry. |
+| `deligne1969the-irreducibility-of-the-space` | `DM69` | A | Deligne–Mumford 1969; exact. |
+| `knudsen1976the-projectivity-of-the-moduli` | `KM76` | A | Knudsen–Mumford, Projectivity I; exact. |
+| `knudsen1983the-projectivity-of-the-moduli23` | `Knu83` | A | Knudsen, Projectivity II,III; global `Knu83` covers II,III (`Knu83a` = III alone). |
+| `namikawa1976a-new-compactification-of-the-siegel1` | `Nam76` | A | Namikawa, new compactification of Siegel space I (1976); exact. |
+| `alexeev1999on-mumfords-construction` | `AN99` | A | Alexeev–Nakamura 1999; exact. |
+| `looijenga1985semi-toric` | `Loo85` | A | Looijenga, *Semi-toric partial compactifications I* (1985); exact. |
+| `scattone1987on-the-compactification-of-moduli` | `Sca87` | A | Scattone 1987; exact. |
+| `vinberg1985hyperbolic-groups` | `Vin85` | A | Vinberg, *Hyperbolic groups of reflections* (1985); exact. |
+| `dolgachev2013the-rationality` | `DK13` | A | Dolgachev–Kondō rationality of Coble/nodal-Enriques moduli; exact. |
+| `DM19` | `DM20` | A | Project bibitem = Dolgachev–Markushevich, *Lagrangian tens of planes…* arXiv:1906.01445; global `DM20` exact. (Where the *text* instead meant the unpublished Dolgachev lecture note, the URL footnote from the LaTeX source is used instead of any key.) |
+| `Ols04` (flowerpot citations) | `Mor81` | B | LaTeX twin of the identical sentences cites `Mor81`; the section is titled "Morrison's degenerations"; Lem 7.1/7.2 and Cor 6.2 type (i.b) are Morrison 1981 content. Global `Ols04` (Olsson, period spaces) retained nowhere flowerpots are claimed. |
+| `Oda85` | `Cob29` | B | LaTeX twin: "first studied in \cite{Cob19}, \cite{Cob29}". |
+| `AS15` (Hurwitz-formula cite) | `AD18` | B | LaTeX twin cites `AD19` (= `AD18`, class A above). |
+| `Dol12` (Geometric.md §5.1) | `Dol17` | B | LaTeX twin (`040_Geometric.tex`) cites `\cite[§5.1]{Dol17}` (Salem numbers). |
+| IAS stub cite list | `AEGS25; AE22; AE23; AET23; AB21` | B | LaTeX twin (`050_IAS.tex`) cites AEGS23, AE22, AE23, AET23, AB21; the pandoc stub had duplicated AEGS23 and substituted `Ols12` for `AB21`. |
+| `AEGS23` | `AEGS25` | C | Same work (Alexeev–Engel–Garza–Schaffler), arXiv:2312.03638 → published *Compact Moduli of Enriques Surfaces of Degree 2* (2025). **Verify locators: Lem. 2.4, Rmk. 4.12, cusp-correspondence §§.** |
+| `EnriquesOne`, `CDL24` | `CDL25` | C | Cossec–Dolgachev–Liedtke, *Enriques Surfaces I*, 2024 draft → published. **Verify locators: Def. 5.4.3, Eqn. 5.3.1, Table 5.1 (p. 553), Cor. 5.9.10, Prop. 5.46, Thm. 5.8.2, Rem. 5.9.12, p. 561, Ch. 5 §6.** |
+| `EnriquesTwo`, `DK24` | `DK25` | C | Dolgachev–Kondō, *Enriques Surfaces II*, 2024 draft → published. **Verify locators: Prop. 9.1.1, 9.1.4, 9.1.5, 9.1.8, Ex. 9.1.7, Prop. 9.13, §3 (via Nue16 sentence), Table 5.1 uses.** |
+| `AMRT75` | `AMRT10` | C | Ash–Mumford–Rapoport–Tai, 1975 → 2010 second edition. Cited without locators. |
+| `Nue16` | `Nue15` | C | Nuer, *Unirationality…*; single global entry. **Verify locators: §3, p. 8.** |
+| `CD12` disambiguation | `CD12` vs `CDL25` | D | The LaTeX bibliography overloads `CD12` (Cantat–Dolgachev paper AND the CDL book share the key). Split per reference: §1.4 (Cremona special), §3.1 (Coble surfaces / genus computation) → `CD12`; Def. 5.4.3 / Eqn. 5.3.1 / Table 5.1 / 5.8–5.9.x / p. 561 → `CDL25`. |
+| Halphen `Prop. 3.1` | `CDL25` | D | LaTeX cites overloaded `CD12`; the later pandoc pass chose `CDL25`; kept the author's latest choice. Plausible alternative: `DZ99`. |
+
+Works with no global-bib entry — added to `../coble_supplement.bib` (should
+migrate to Zotero): `CD89` (Cossec–Dolgachev, Enriques Surfaces I, 1989 ed.),
+`Nik79b` (Nikulin, quotient-groups/2-reflections), `Mum65` (GIT), `Ale96`
+(M_{g,n}(W) for surfaces), `Ale02` (complete moduli, semiabelian action).
+
+**Unresolved**: `BHO+11` (Severi variety $V_{6,10}$ claim in
+`Rational_Sextic_Calculations.md`). No entry exists in either project
+bibliography or the global bib; possibly a fabricated citation from an earlier
+agent pass. Left in place so it fails visibly at build time.

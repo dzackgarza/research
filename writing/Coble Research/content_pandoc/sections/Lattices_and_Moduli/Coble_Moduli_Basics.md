@@ -20,7 +20,7 @@ satisfying $C^2 = -4$, and by [@Nue15 p. 8] is thus a Coble surface $S$.
 :::: {.remark}
 
 Separately, one can construct a Hodge-theoretic period domain directly using
-lattice theory [@DM19].
+lattice theory.[^coble-note-2]
 Write $\abs{-2K_S} = \ts{C}$ where $C = C_1 + \cdots + C_n$
 has $n$ irreducible components.
 By adjunction and the genus formula, $C_i\cong \PP^1$ and $C_i^2 = -4$, so
@@ -32,9 +32,7 @@ of $n$ smooth rational curves.
 Generally the rank of $\Pic(X)$ is $r=10+n$ and $\ell = 12-n$, and
 $K_S^2 = 9 - \abs{\Sigma}$.
 
-```include
-
-```
+See \cref{tbl:coble-lattices}.
 
 The case of interest to us is $n=1$, and thus the lattice
 $M = (11, 11, 1) = A_1 \oplus E_{10}(2)$ and its complement $N$ in the K3
@@ -48,9 +46,11 @@ As described in [@DZ99], the double cover $\pi: X\to S$ realizes $X$ as a
 degeneration of a K3 cover of an Enriques surface, which thus describes a family
 of K3s equipped with a nonsymplectic involution as studied in
 [@AE22] and a corresponding family of Enriques surfaces as studied
-in [@AEGS23].
+in [@AEGS25].
 It seems that these degenerations correspond to the (weakly projective)
-**flowerpot** degenerations of [@Ols04], and I conjecture that the corresponding
+**flowerpot** degenerations of [@Mor81], and I conjecture that the corresponding
 Kulikov models correspond to integral-affine discs (as opposed to spheres or
 real projective spaces).
 :::
+
+[^coble-note-2]: An unpublished note of Dolgachev: <https://homepage.mi-ras.ru/~prokhoro/conf/isk20/Dolgachev.pdf>
