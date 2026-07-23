@@ -87,6 +87,26 @@ corrections deep).
   `global/traps/hard-problem-artifact-drift`). Meaningful work can be embarrassing;
   process noise cannot.
 
+- **A class is defined by a positive fact about its members, never by an absence.**
+  Fifth graduation, and the one this repo keeps paying for: buckets named
+  `unsupported`, `pending`, `removed`, `not mathematics`, `no destination`,
+  `excluded`, `compatibility host` are parking lots for analysis not yet done, and
+  they read as rulings. Before a disposition vocabulary, exclusion class, or count
+  ranges over items, answer **one named member** mathematically and state the fact
+  that puts it there. If the only thing shared by a class's members is that nobody
+  looked, it is not a class. Corollary: never invent a disposition token *while
+  correcting* a miscount — that is bucketing to fix bucketing.
+- **The skipped analysis is usually undergraduate.** Reaching for machinery is not
+  proportional to difficulty; it is a substitute for two minutes of thought. Observed
+  2026-07-23: `Sets().Facade()` was parked as an engineering shim after the parking
+  note itself said "it is a subobject"; `Objects()` got a *newly minted node* rather
+  than the observation that an object of `C` is a point `* -> C`; Sage's `Modules(R)`
+  was chased through two rounds of prose string-matching when
+  `Modules(R).super_categories() == [Bimodules(R,R)]` was in the first probe's output.
+  Bimodules, restriction along the diagonal, forgetting an action, `R^op` — this is
+  undergraduate algebra, and it was displaced by a five-token disposition vocabulary
+  over a C3 linearization.
+
 Work-shape catalogue with this repo's exemplars and the meaningful-vs-noise litmus:
 `.agents/references/displacement-pattern-index.md` (D1–D6). These are review criteria
 for plans and completion claims alike — the Review Guidelines below guard completion
