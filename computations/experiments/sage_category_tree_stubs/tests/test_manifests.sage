@@ -427,3 +427,34 @@ def test_axiom_classifiers_are_not_duplicated_across_ids() -> None:
     for key, ids in seen.items():
         if len(ids) > 1 and len(targets.intersection(ids)) > 1:
             raise AssertionError(f"axiom surface resolves {key} to several ids: {ids}")
+
+
+def test_committed_artifacts_match_a_fresh_build() -> None:
+    """Regenerating must not change the committed artifacts.
+
+    A generated artifact that always differs from its generator cannot be trusted:
+    a stale one looks exactly like a fresh one, so a checked-in mapping can claim
+    coverage the current code no longer produces.
+    """
+    import json
+
+    from sage_category_tree_stubs.design_sources import DESIGN_ROOT, load_json
+    from sage_category_tree_stubs.observed_build import build_observed_from_inventory
+
+    committed = load_json(DESIGN_ROOT / "sage" / "observed.json")
+    fresh = build_observed_from_inventory()
+    assert committed["manifest"]["generated_at"] == fresh["manifest"]["generated_at"], (
+        "observed.json is not reproducible: its timestamp moves on every rebuild"
+    )
+    assert json.dumps(committed, sort_keys=True) == json.dumps(fresh, sort_keys=True), (
+        "committed observed.json differs from a fresh build of the pinned inventory"
+    )
+
+    live = build_mapping()
+    committed_mapping = load_mapping()
+    assert committed_mapping["edge_mappings"] == live["edge_mappings"], (
+        "committed mapping.yaml edge dispositions differ from a fresh build"
+    )
+    assert committed_mapping["axiom_mappings"] == live["axiom_mappings"], (
+        "committed mapping.yaml axiom dispositions differ from a fresh build"
+    )

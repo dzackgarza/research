@@ -38,7 +38,7 @@ manifests:
 	sage -python -m sage_category_tree_stubs.requirement_manifest
 	sage -python -m sage_category_tree_stubs.join_views
 	sage -python -m sage_category_tree_stubs.manifests
-	@just -f {{justfile()}} _normalize-generated
+	just -f "{{justfile()}}" _normalize-generated
 
 # Generated JSON/YAML must land in the same shape the commit hook's prettier pass
 # produces, or every rebuild is a diff and the artifacts can never be gated on
