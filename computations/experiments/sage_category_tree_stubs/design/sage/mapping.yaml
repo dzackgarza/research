@@ -1786,9 +1786,9 @@ category_mappings:
       since: sage-dev-local
       until: null
     parameters:
-      constraints: 'R : CommutativeRings'
+      constraints: 'R : Rings'
       bindings:
-        R: cat.commutative_rings
+        R: cat.rings
       resolved: true
     provenance:
       status: authored-constructible
@@ -1826,9 +1826,9 @@ category_mappings:
       since: sage-dev-local
       until: null
     parameters:
-      constraints: 'R : CommutativeRings'
+      constraints: 'R : Rings'
       bindings:
-        R: cat.commutative_rings
+        R: cat.rings
       resolved: true
     provenance:
       status: authored-constructible
@@ -2131,9 +2131,9 @@ category_mappings:
       since: sage-dev-local
       until: null
     parameters:
-      constraints: 'R : CommutativeRings'
+      constraints: 'R : Rings'
       bindings:
-        R: cat.commutative_rings
+        R: cat.rings
       resolved: true
     provenance:
       status: authored-constructible
@@ -3150,9 +3150,9 @@ category_mappings:
       since: sage-dev-local
       until: null
     parameters:
-      constraints: 'R : CommutativeRings'
+      constraints: 'R : Rings'
       bindings:
-        R: cat.commutative_rings
+        R: cat.rings
       resolved: true
     provenance:
       status: authored-constructible
@@ -3190,9 +3190,9 @@ category_mappings:
       since: sage-dev-local
       until: null
     parameters:
-      constraints: 'R : CommutativeRings'
+      constraints: 'R : Rings'
       bindings:
-        R: cat.commutative_rings
+        R: cat.rings
       resolved: true
     provenance:
       status: authored-constructible
@@ -4400,9 +4400,9 @@ category_mappings:
       since: sage-dev-local
       until: null
     parameters:
-      constraints: 'R : CommutativeRings'
+      constraints: 'R : Rings'
       bindings:
-        R: cat.commutative_rings
+        R: cat.rings
       resolved: true
     provenance:
       status: authored-exact
@@ -4435,9 +4435,9 @@ category_mappings:
       since: sage-dev-local
       until: null
     parameters:
-      constraints: 'R : CommutativeRings'
+      constraints: 'R : Rings'
       bindings:
-        R: cat.commutative_rings
+        R: cat.rings
       resolved: true
     provenance:
       status: authored-constructible
@@ -5576,9 +5576,9 @@ category_mappings:
       since: sage-dev-local
       until: null
     parameters:
-      constraints: 'R : CommutativeRings'
+      constraints: 'R : Rings'
       bindings:
-        R: cat.commutative_rings
+        R: cat.rings
       resolved: true
     provenance:
       status: authored-constructible
@@ -5616,9 +5616,9 @@ category_mappings:
       since: sage-dev-local
       until: null
     parameters:
-      constraints: 'R : CommutativeRings'
+      constraints: 'R : Rings'
       bindings:
-        R: cat.commutative_rings
+        R: cat.rings
       resolved: true
     provenance:
       status: authored-constructible

@@ -449,5 +449,10 @@ def test_parameter_constraints_are_compared_by_identifier() -> None:
 
     s = sigma()
     assert s["Modules"].parameters == s["GradedModules"].parameters
-    assert s["LeftModules"].parameters != s["Modules"].parameters
+    # Modules and LeftModules separate on the expression -- Bimodules(R,R) against
+    # Modules(R) -- so they take the same parameter and are still distinct destinations.
+    assert s["LeftModules"] != s["Modules"]
+    assert s["LeftModules"].parameters == s["Modules"].parameters
+    # RingIdeals is the live parameter case: one expression, two destinations.
+    assert s["RingIdeals"].expression == s["CommutativeRingIdeals"].expression
     assert s["RingIdeals"].parameters != s["CommutativeRingIdeals"].parameters

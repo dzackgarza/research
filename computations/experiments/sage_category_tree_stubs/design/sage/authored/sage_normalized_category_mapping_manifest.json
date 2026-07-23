@@ -1984,7 +1984,7 @@
         "target_id": "cat_expr.bimodules_r_r_filtered",
         "mapping_kind": "classifier refinement",
         "target_visibility": "conventional named",
-        "parameter_constraints": "R : CommutativeRings"
+        "parameter_constraints": "R : Rings"
       },
       "audit": {
         "confidence": "high",
@@ -2030,7 +2030,7 @@
         "target_id": "cat_expr.bimodules_r_r_withbasis_filtered",
         "mapping_kind": "classifier refinement",
         "target_visibility": "implicit refinement",
-        "parameter_constraints": "R : CommutativeRings"
+        "parameter_constraints": "R : Rings"
       },
       "audit": {
         "confidence": "high",
@@ -2382,7 +2382,7 @@
         "target_id": "cat_expr.bimodules_r_r_withbasis_finiterank",
         "mapping_kind": "classifier refinement",
         "target_visibility": "conventional named",
-        "parameter_constraints": "R : CommutativeRings"
+        "parameter_constraints": "R : Rings"
       },
       "audit": {
         "confidence": "high",
@@ -3544,7 +3544,7 @@
         "target_id": "cat_expr.bimodules_r_r_graded",
         "mapping_kind": "classifier refinement",
         "target_visibility": "conventional named",
-        "parameter_constraints": "R : CommutativeRings"
+        "parameter_constraints": "R : Rings"
       },
       "audit": {
         "confidence": "high",
@@ -3590,7 +3590,7 @@
         "target_id": "cat_expr.bimodules_r_r_withbasis_graded",
         "mapping_kind": "classifier refinement",
         "target_visibility": "implicit refinement",
-        "parameter_constraints": "R : CommutativeRings"
+        "parameter_constraints": "R : Rings"
       },
       "audit": {
         "confidence": "high",
@@ -4899,7 +4899,7 @@
         "target_id": "cat_expr.bimodules_r_r",
         "mapping_kind": "exact named base",
         "target_visibility": "core named",
-        "parameter_constraints": "R : CommutativeRings"
+        "parameter_constraints": "R : Rings"
       },
       "audit": {
         "confidence": "high",
@@ -4907,8 +4907,8 @@
         "recommend_explicit_target": "yes",
         "base_in_current_dot": "present",
         "current_dot_match": "Bimodules(R,R)",
-        "note": "Sage states this outright: modules.py defines an object of Modules(R) as 'a left and right R-module over a commutative ring R' with r*(x*s) = (r*x)*s, and Modules(R).super_categories() == [Bimodules(R,R)]. R commutative is Sage's own hypothesis. Not R-Mod: forgetting the right action is neither an equivalence nor full even for commutative R (Foundations Prop 92.1).",
-        "exception_or_ambiguity": "Sage's own TODO records that some code 'possibly assumes' M is a symmetric bimodule, r*x = x*r -- the central bimodules of Foundations Def 92.2, a proper full subcategory the category does not require. So the unsafe object is a NON-central bimodule over a commutative ring, which Modules(R) admits and parts of Sage then miscompute: k[x] with the right action twisted by x -> x+1 is a member and is no left module in disguise. The same assumption is what lets Sage speak of 'the' underlying module of a Modules(R) object; the WithBasis/Graded/Super/Filtered refinements below transport along the left forgetful functor U_L (Def 87.1) and inherit this caveat."
+        "note": "Sage declares it: Modules(R).super_categories() == [Bimodules(R,R)], and the declaration is honoured for noncommutative R. Verified on A = MatrixSpace(QQ,2) with r = [[0,1],[0,0]], s = [[0,0],[1,0]], m = s*B['x'] in CombinatorialFreeModule(A,['x']): r*m has coefficient r*s, m*r has coefficient s*r, these differ, and the bimodule law (r*m)*s == r*(m*s) holds. The two actions are independent, which is what an (R,R)-bimodule is; centrality is a separate condition (Foundations Def 92.2). Not R-Mod: forgetting the right action is neither an equivalence nor full (Prop 92.1).",
+        "exception_or_ambiguity": "The parameter is Rings, not CommutativeRings. modules.py's opening sentence says 'over a commutative ring R', but its own TODO asks to 'make sure that non commutative rings are properly supported by all the code, and advertise it' -- so the sentence is a hedge about untested code coverage, not the definition of the category, and the declared structure is what the code actually implements. Reliability is a FIBER question, per implementation, not a constraint on the destination: over A = MatrixSpace(QQ,2), CombinatorialFreeModule(A,['x']) and A-as-a-module-over-itself are honest (A,A)-bimodules, while FreeModule(A,1) raises TypeError on both r*m and m*r and warns 'Sage does not have a concept of left/right and both sided modules'. Sage's TODO also records that some code 'possibly assumes' a symmetric bimodule (the central bimodules of Def 92.2) -- again a per-implementation audit note, never a second destination."
       }
     },
     {
@@ -4937,7 +4937,7 @@
         "target_id": "cat_expr.bimodules_r_r_withbasis",
         "mapping_kind": "classifier refinement",
         "target_visibility": "conventional named",
-        "parameter_constraints": "R : CommutativeRings"
+        "parameter_constraints": "R : Rings"
       },
       "audit": {
         "confidence": "high",
@@ -6181,7 +6181,7 @@
         "target_id": "cat_expr.bimodules_r_r_super",
         "mapping_kind": "classifier refinement",
         "target_visibility": "conventional named",
-        "parameter_constraints": "R : CommutativeRings"
+        "parameter_constraints": "R : Rings"
       },
       "audit": {
         "confidence": "high",
@@ -6227,7 +6227,7 @@
         "target_id": "cat_expr.bimodules_r_r_withbasis_super",
         "mapping_kind": "classifier refinement",
         "target_visibility": "implicit refinement",
-        "parameter_constraints": "R : CommutativeRings"
+        "parameter_constraints": "R : Rings"
       },
       "audit": {
         "confidence": "high",

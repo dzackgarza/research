@@ -150,28 +150,38 @@ to say whether Sage's algorithms are **safe for your object**. Mapping a Sage ca
 what its name suggests, or to what it "should" have meant, hands a user algorithms that
 quietly change their object.
 
-Read what the source *states* before deriving what it must mean. A derivation from a
-declaration is a reconstruction; the docstring is the thing itself, and where they
-disagree the derivation is wrong.
+**Run it.** Neither a docstring nor a declaration is the last word on what a program does,
+and a *derivation* from either is a reconstruction. When a claim about Sage's behaviour is
+cheap to execute — and it almost always is — execute it, on an input that can distinguish
+the hypotheses. A probe that cannot fail proves nothing: testing a right action on a basis
+element with coefficient `1` confirms `m·r = r·m` no matter which action is implemented.
 
-The standing example. `sage/categories/modules.py` defines an object of `Modules(R)` as
-"a left and right `R`-module over a commutative ring `R`" with `r*(x*s) = (r*x)*s`, and
-`Modules(R).super_categories() == [Bimodules(R,R)]` says the same thing. So
-`rho(Modules) = Bimodules(R,R)` at `R : CommutativeRings` — Sage's own stated hypothesis,
-not a charity imposed from outside — and not `R-Mod`, because forgetting the right action
-is not an equivalence even for commutative `R` (Foundations Prop 92.1): `k[x]` with the
-right action twisted by `x ↦ x+1` is a member of Sage's `Modules(k[x])` that is no left
-module in disguise. `LeftModules(R)` is the genuinely one-sided category, and reading it
-as `R-Mod` adds nothing, since a left module is canonically an `(R,ℤ)`-bimodule with no
-choice involved (Cor 90.2).
+The standing example, and the two ways it went wrong. `Modules(R).super_categories() ==
+[Bimodules(R,R)]`, so `rho(Modules) = Bimodules(R,R)` at **`R : Rings`**. Not `R-Mod`:
+forgetting the right action is neither an equivalence nor full (Foundations Prop 92.1).
+`LeftModules(R)` is the genuinely one-sided category, and reading it as `R-Mod` adds
+nothing, since a left module is canonically an `(R,ℤ)`-bimodule with no choice involved
+(Cor 90.2).
 
-The hazard sits one level in and points the opposite way from the obvious guess. Sage's
-own TODO records that some code "possibly assumes" `M` is a *symmetric* bimodule,
-`r*x = x*r` — the central bimodules of Foundations Def 92.2, a proper full subcategory
-membership in which the category does not require. So the unsafe object is a non-central
-bimodule over a *commutative* ring, which `Modules(R)` admits and parts of Sage then
-miscompute. rho records the declared destination; a centrality assumption inside the
-implementation is an audit note attached to it, never a second destination.
+The first error was *deriving* from the declaration — "only one action is stored, so
+`m·r := r·m`, and the bimodule law forces commutativity". False: over
+`A = MatrixSpace(QQ,2)`, `m = s·B['x']` in `CombinatorialFreeModule(A,['x'])` has
+`r*m = (rs)·B['x']` and `m*r = (sr)·B['x']`, which differ, with the bimodule law holding.
+The second error was then over-correcting to the docstring's "over a commutative ring `R`"
+and pinning `R : CommutativeRings` onto the destination. Also wrong: an `(R,R)`-bimodule
+has two *independent* actions constrained only by `(rm)r' = r(mr')`, so it needs no
+commutativity, and Sage's own TODO asks to "make sure that non commutative rings are
+properly supported by all the code" — that sentence is a hedge about untested coverage,
+not a definition.
+
+Reliability is a **fiber** question, never a constraint on the destination. rho says what
+the category means; which Sage parents can actually serve an object of it is separate and
+per-implementation. Over that same matrix ring, `CombinatorialFreeModule` and the regular
+module are honest `(A,A)`-bimodules, while `FreeModule(A,1)` raises `TypeError` on both
+`r*m` and `m*r` and warns that it "does not have a concept of left/right and both sided
+modules". Sage's TODO likewise records that some code "possibly assumes" a symmetric
+bimodule — the central bimodules of Def 92.2. All of that is an audit note on the row,
+never a second destination and never a narrower parameter.
 
 What Sage does *not* settle: whether two of its categories model the same platonic
 category (compare **normalized targets**, never Sage's `==`), whether a join it printed is
