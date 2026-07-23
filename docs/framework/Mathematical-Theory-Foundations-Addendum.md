@@ -720,7 +720,7 @@ Applying the strong symmetric monoidal functor \(F_R\) gives a cocommutative coa
 \qquad
 \varepsilon([x])=1.
 \]
-Thus every distinguished basis vector is group-like.
+For every \(x\in X\), the canonical generator \([x]\) is group-like.
 
 This coalgebra structure is additional to the free-module adjunction but is canonically induced by the cartesian comonoid structure of a set.
 
@@ -775,16 +775,16 @@ Let \(B\) be a bialgebra. An element \(b\in B\) is **group-like** if
 \]
 The group-like elements form a monoid
 \[
-\operatorname{Gpl}(B).
+G(B).
 \]
 A bialgebra homomorphism preserves group-like elements, so this defines a functor
 \[
-\operatorname{Gpl}:\mathbf{Bialg}_R\longrightarrow\mathbf{Mon}.
+G:\mathbf{Bialg}_R\longrightarrow\mathbf{Mon}.
 \]
 
-For a Hopf algebra \(H\), the antipode supplies inverses, so \(\operatorname{Gpl}(H)\) is a group and
+For a Hopf algebra \(H\), the antipode supplies inverses, so \(G(H)\) is a group and
 \[
-\operatorname{Gpl}:\mathbf{HopfAlg}_R\longrightarrow\mathbf{Grp}.
+G:\mathbf{HopfAlg}_R\longrightarrow\mathbf{Grp}.
 \]
 
 ### Theorem 13.4 (Monoid algebra adjunction to the multiplicative monoid) {#thm-monoid-algebra-adjunction-algebra}
@@ -815,16 +815,16 @@ There is an adjunction
 R[-]:\mathbf{Mon}
 \rightleftarrows
 \mathbf{Bialg}_R:
-\operatorname{Gpl}.
+G.
 \]
 Equivalently,
 \[
 \operatorname{Hom}_{\mathbf{Bialg}_R}(R[M],B)
 \cong
-\operatorname{Hom}_{\mathbf{Mon}}(M,\operatorname{Gpl}(B)).
+\operatorname{Hom}_{\mathbf{Mon}}(M,G(B)).
 \]
 
-**Proof.** A bialgebra homomorphism \(\phi:R[M]\to B\) is determined by the elements \(\phi([m])\). Coalgebra compatibility makes these elements group-like, and algebra compatibility makes the assignment \(m\mapsto\phi([m])\) a monoid homomorphism. Conversely, a monoid homomorphism \(M\to\operatorname{Gpl}(B)\) extends uniquely by \(R\)-linearity to an algebra homomorphism \(R[M]\to B\), and the group-like identities imply compatibility with comultiplication and counit. \(\square\)
+**Proof.** A bialgebra homomorphism \(\phi:R[M]\to B\) is determined by the elements \(\phi([m])\). Coalgebra compatibility makes these elements group-like, and algebra compatibility makes the assignment \(m\mapsto\phi([m])\) a monoid homomorphism. Conversely, a monoid homomorphism \(M\toG(B)\) extends uniquely by \(R\)-linearity to an algebra homomorphism \(R[M]\to B\), and the group-like identities imply compatibility with comultiplication and counit. \(\square\)
 
 ### Corollary 13.6 (Group algebra adjunctions) {#cor-group-algebra-adjunctions}
 
@@ -833,7 +833,7 @@ There is an adjunction
 R[-]:\mathbf{Grp}
 \rightleftarrows
 \mathbf{HopfAlg}_R:
-\operatorname{Gpl}.
+G.
 \]
 
 After forgetting the coalgebra structure, the group algebra functor
@@ -857,65 +857,89 @@ R\text{-}\mathbf{Mod}.
 \]
 The monoid-algebra adjunction does not follow merely by precomposing \(F_R\dashv U_R\) with \(\mathbf{Mon}\to\mathbf{Set}\). It follows from the lifted multiplication, coalgebra structure, and the separate universal properties of Theorems 13.4 and 13.5.
 
-## 14. Multiplicative bases of group-like elements
+## 14. The essential image of the monoid algebra functor
 
-### Definition 14.1 (Multiplicative basis of group-like elements) {#def-multiplicative-group-like-basis}
+The adjunction of Theorem 13.5 supplies the intrinsic recognition maps.  No condition on a chosen basis is taken as a primitive definition of a monoid algebra.
 
-Let \(B\) be an \(R\)-bialgebra equipped with a basis
+### Proposition 14.1 (Unit of the monoid-algebra adjunction) {#prop-monoid-algebra-unit}
+
+For a monoid \(M\), the unit of the adjunction
 \[
-\beta:X\longrightarrow B.
+\eta_M:M\longrightarrow G(R[M])
 \]
-The basis is a **multiplicative basis of group-like elements** if:
-
-1. every \(\beta(x)\) is group-like;
-2. there is an element \(e\in X\) with \(\beta(e)=1_B\);
-3. for every \(x,y\in X\), there is a unique \(z\in X\) such that
-   \[
-   \beta(x)\beta(y)=\beta(z).
-   \]
-
-These conditions make \(X\) a monoid, and the based linear isomorphism
+is the monoid homomorphism
 \[
-R[X]\longrightarrow B,
+m\longmapsto [m].
+\]
+
+Let
+\[
+x=\sum_{m\in M}a_m[m]\in R[M]
+\]
+have finite support.  Then \(x\) is group-like if and only if
+\[
+a_m^2=a_m,
 \qquad
-[x]\longmapsto\beta(x)
+a_ma_n=0\quad(m\ne n),
+\qquad
+\sum_m a_m=1.
+\]
+
+**Proof.** Comparing coefficients in
+\[
+\Delta(x)=x\otimes x
+\]
+gives the idempotence and orthogonality relations, while \(\varepsilon(x)=1\) gives the final equality.  Conversely these identities imply the two group-like equations. \(\square\)
+
+### Corollary 14.2 (Connected base ring) {#cor-monoid-algebra-connected-base}
+
+Assume that \(R\ne0\) and that \(R\) has no idempotents other than \(0\) and \(1\), equivalently that \(\operatorname{Spec}R\) is connected.  Then
+\[
+\eta_M:M\overset{\sim}{\longrightarrow}G(R[M])
+\]
+is an isomorphism for every monoid \(M\).  Consequently
+\[
+R[-]:\mathbf{Mon}\longrightarrow\mathbf{Bialg}_R
+\]
+is fully faithful.
+
+**Proof.** Proposition 14.1 expresses a group-like element as a finite partition of \(1\) by pairwise orthogonal idempotents indexed by elements of \(M\).  Under the stated hypothesis exactly one coefficient is \(1\), and all others are \(0\).  The full-faithfulness statement follows because the unit of the adjunction is an isomorphism. \(\square\)
+
+### Theorem 14.3 (Recognition by the counit) {#thm-monoid-algebra-counit}
+
+Under the hypotheses of Corollary 14.2, a bialgebra \(B\) belongs to the essential image of the monoid algebra functor if and only if the counit
+\[
+\epsilon_B:R[G(B)]\longrightarrow B
 \]
 is an isomorphism of bialgebras.
 
-### Theorem 14.2 (Based monoid algebras) {#thm-based-monoid-algebras}
+**Proof.** For an adjunction with fully faithful left adjoint, the essential image of the left adjoint is precisely the full replete subcategory on the objects for which the counit is an equivalence. \(\square\)
 
-Let \(\mathbf{Bialg}^{\mathrm{mgb}}_R\) denote the category whose objects are bialgebras equipped with a multiplicative basis of group-like elements and whose morphisms preserve the distinguished bases. Then
+### Remark 14.4 (Arbitrary base rings) {#rem-monoid-algebra-arbitrary-base}
+
+If \(R\) has nontrivial idempotents, Proposition 14.1 shows that \(R[M]\) can have group-like elements other than the canonical generators \([m]\).  The unit \(M\to G(R[M])\) need not be an isomorphism, so the monoid algebra functor need not be fully faithful as a functor to all \(R\)-bialgebras, and the counit criterion of Theorem 14.3 is no longer an intrinsic characterization of its essential image.
+
+In this generality the definition remains
 \[
-R[-]:\mathbf{Mon}\overset{\sim}{\longrightarrow}
-\mathbf{Bialg}^{\mathrm{mgb}}_R
+\operatorname{EssIm}\bigl(R[-]:\mathbf{Mon}\to\mathbf{Bialg}_R\bigr).
 \]
-is an equivalence.
-
-**Proof sketch.** Definition 14.1 reconstructs a monoid from every object of \(\mathbf{Bialg}^{\mathrm{mgb}}_R\), and the displayed based bialgebra isomorphism identifies the object with its monoid algebra. Basis-preserving bialgebra maps are exactly the linear extensions of monoid homomorphisms. \(\square\)
-
-### Corollary 14.3 (Essential image with basis-preserving morphisms) {#cor-monoid-algebra-essential-image}
-
-Let \(\mathbf{Bialg}^{\mathrm{basis,pr}}_R\) be the category of bialgebras equipped with a chosen basis and **basis-preserving** bialgebra homomorphisms. The essential image of
+A chosen presentation of \(B\) as a monoid algebra is standardly the data of a monoid \(M\) and a bialgebra isomorphism
 \[
-R[-]:\mathbf{Mon}\longrightarrow
-\mathbf{Bialg}^{\mathrm{basis,pr}}_R
+R[M]\overset{\sim}{\longrightarrow}B.
 \]
-is the replete full subcategory on objects whose distinguished basis is multiplicative and group-like. By Theorem 14.2, the corestriction to this essential image is an equivalence.
+If a target category retains the canonical basis of \(R[M]\), the isomorphism is required to respect that chosen basis.  This is presentation data attached to the monoid algebra construction, not a separately named class of bialgebras defined by adjectives about a basis.
 
-### Remark 14.4 (Arbitrary morphisms forget the distinguished presentation)
+### Remark 14.5 (The canonical basis) {#rem-monoid-algebra-canonical-basis}
 
-Suppose instead that bialgebras equipped with a basis are allowed arbitrary bialgebra homomorphisms, with no requirement that a morphism preserve the basis. Then equivalences in the target need not preserve the distinguished basis. Its essential image therefore consists of objects whose **underlying bialgebra** is isomorphic to a monoid algebra; it cannot in general be characterized by a property of the displayed basis.
-
-The category of monoids, the category of bialgebras equipped with a multiplicative group-like basis and basis-preserving maps, and the full essential image inside a category with arbitrary bialgebra maps are three different categories. They may be compared, but they are not definitionally identified.
-
-### Remark 14.5 (Why “all basis elements are group-like” is insufficient)
-
-The condition that every distinguished basis element is group-like does not, over an arbitrary commutative base ring, by itself assert that products of basis elements are basis elements or that the unit is a basis element. Those closure conditions must be included or proved under additional hypotheses.
-
-Moreover, monoid algebras over rings with nontrivial idempotents can have group-like elements not belonging to the canonical basis. Consequently, one must not infer full faithfulness of the monoid algebra functor in the category of all bialgebras merely from the group-like formula.
-
-The safe object-level characterization is the explicit multiplicative group-like basis of Definition 14.1.
-
+The monoid algebra \(R[M]\) has its standard \(R\)-basis \(([m])_{m\in M}\).  The formulas
+\[
+[m][n]=[mn],
+\qquad
+\Delta([m])=[m]\otimes[m],
+\qquad
+\varepsilon([m])=1
+\]
+are consequences of the monoid algebra and canonical coalgebra constructions.  They may be used to compare Sage's chosen-basis presentation with the intrinsic functor \(R[-]\), but they do not supply a replacement definition of “monoid algebra.”
 ***
 
 # Part VI. Functors induced by strong monoidal functors
@@ -1007,7 +1031,7 @@ The following cases are standard:
 
 | source category | functor | mathematically natural codomain |
 |---|---|---|
-| \(\mathbf{Set}\) | \(X\mapsto R^{(X)}\) | free \(R\)-modules with their canonical bases; canonically also coalgebras with group-like basis |
+| \(\mathbf{Set}\) | \(X\mapsto R^{(X)}\) | free \(R\)-modules with their canonical bases; after applying the diagonal, canonical cocommutative coalgebras |
 | magmas | bilinear extension of multiplication | \(R\)-modules with a bilinear binary operation and chosen basis |
 | semigroups | semigroup algebra | associative nonunital \(R\)-algebras with chosen basis, together with the induced coalgebra when retained |
 | monoids | monoid algebra \(M\mapsto R[M]\) | bialgebras with chosen basis |
@@ -1018,7 +1042,7 @@ Each row is a distinct functor or a restriction of a named functor. The table do
 
 ### Remark 16.4 (Set algebras)
 
-For \(\mathcal C=\mathbf{Set}\), Sage's output is a free \(R\)-module on a set with canonical basis and canonical group-like coalgebra structure. It is not an associative \(R\)-algebra unless the set has first been equipped with a suitable multiplication.
+For \(\mathcal C=\mathbf{Set}\), Sage's output is a free \(R\)-module on a set with its canonical basis. Applying the diagonal of the set gives the canonical cocommutative coalgebra structure of Definition 12.2. It is not an associative \(R\)-algebra unless the set has first been equipped with a suitable multiplication.
 
 Therefore
 \[
@@ -1028,13 +1052,16 @@ must not be normalized to \(\mathbf{Alg}_R\). The minimal codomain justified by 
 
 ### Remark 16.5 (Monoid algebras)
 
-For \(\mathcal C=\mathbf{Mon}\), the normalized functor is
+For \(\mathcal C=\mathbf{Mon}\), the normalized functor is the monoid algebra functor
 \[
-R[-]:\mathbf{Mon}\longrightarrow\mathbf{Bialg}^{\mathrm{basis}}_R.
+R[-]:\mathbf{Mon}\longrightarrow\mathbf{Bialg}_R.
 \]
-If morphisms in the target preserve the distinguished basis, Corollary 14.3 characterizes the essential image. If the target admits arbitrary bialgebra maps, the essential image only records that the underlying bialgebra is isomorphic to a monoid algebra; the canonical monoid basis remains presentation data carried by the source functor or by the category of chosen presentations.
+Its category of values is the essential image of this functor. If \(R\ne0\) and \(\operatorname{Spec}R\) is connected, Theorem 14.3 characterizes that essential image by the counit
+\[
+R[G(B)]\longrightarrow B.
+\]
 
-In either convention, the weaker phrase “bialgebras whose basis elements are group-like” should be replaced by “bialgebras equipped with a multiplicative basis of group-like elements,” unless the omitted closure properties have separately been proved from stated hypotheses.
+When Sage retains a chosen basis, this is additional presentation data: an object is exhibited by a monoid \(M\) and an isomorphism from the standard monoid algebra \(R[M]\), respecting the chosen basis when the morphism convention requires it. No adjective-defined class of bases is introduced as a substitute for the monoid algebra construction.
 
 ## 17. Codomains and essential images
 
@@ -1042,7 +1069,7 @@ In either convention, the weaker phrase “bialgebras whose basis elements are g
 
 The codomain of a functor is part of its definition. For example,
 \[
-R[-]:\mathbf{Mon}\to\mathbf{Bialg}^{\mathrm{basis}}_R
+R[-]:\mathbf{Mon}\to\mathbf{Bialg}_R
 \]
 already states where every value lives.
 
@@ -1050,7 +1077,7 @@ A named category of values may additionally be defined as the essential image
 \[
 \operatorname{EssIm}(R[-])
 \hookrightarrow
-\mathbf{Bialg}^{\mathrm{basis}}_R.
+\mathbf{Bialg}_R.
 \]
 The essential image is not a substitute for the functor or its codomain; it is a property-like refinement of the codomain.
 
@@ -1129,7 +1156,7 @@ The Sage correspondence should replace any undifferentiated description of `C.Al
 4. the codomain of that lift;
 5. optionally, the essential image and a theorem characterizing it.
 
-For monoids, the required objects are the monoid algebra functor, the group-like-elements functor, their adjunction, and the classifier of a multiplicative group-like basis.
+For monoids, the required objects are the monoid algebra functor, the functor of group-like elements, their adjunction, the essential-image factorization, and—under the connected-base hypothesis—the counit recognition theorem of Theorem 14.3.
 
 ### Amendment 18.6 (Prohibited ambiguous substitutions)
 
@@ -1140,7 +1167,7 @@ The following substitutions are invalid:
 - “algebra objects in \(\mathcal C\)” for Sage's `C.Algebras(R)`;
 - “essential image” for the source category of a construction;
 - “restriction” without specifying precomposition, corestriction, inverse image, restriction of an adjunction, or restriction of scalars;
-- “all basis elements are group-like” for “the basis is multiplicative and group-like” without a theorem supplying the missing closure conditions.
+- a condition phrased only in terms of a chosen basis as a definition of “monoid algebra”; use the functor \(R[-]\), its essential image, or an explicit isomorphism \(R[M]\simeq B\).
 
 ***
 
