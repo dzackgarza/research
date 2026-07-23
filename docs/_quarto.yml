@@ -18,6 +18,7 @@ book:
         - framework/Mathematical-Definitions.md
         - framework/Categorical-Foundations.md
         - framework/Mathematical-Theory-Foundations.md
+        - framework/Mathematical-Theory-Foundations-Addendum.md
         - framework/Settled-Mathematical-Rulings.md
     - part: Sage
       chapters:
