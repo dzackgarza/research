@@ -87,6 +87,16 @@ corrections deep).
   `global/traps/hard-problem-artifact-drift`). Meaningful work can be embarrassing;
   process noise cannot.
 
+- **Ground in the foundations before analysing, not in a bucket.** The mathematics this
+  repo needs is written down: `docs/framework/Mathematical-Theory-Foundations.md`. When
+  an entity resists placement, the failure is almost never that the mathematics is hard
+  — it is that the question got silently reclassified from "what is this?" into "what
+  disposition does this get?". That reclassification happens *before* deliberation, so
+  no rule firing during deliberation catches it, and re-reading this line will not help.
+  The mechanical trigger is therefore the artifact, not the feeling: **any row about to
+  receive a disposition instead of a destination is a row whose mathematics has not been
+  done.** Look it up in the foundations; if it is genuinely absent there, that absence is
+  the finding and the bridge has discovered a requirement (§40–43).
 - **A class is defined by a positive fact about its members, never by an absence.**
   Fifth graduation, and the one this repo keeps paying for: buckets named
   `unsupported`, `pending`, `removed`, `not mathematics`, `no destination`,

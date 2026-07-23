@@ -2,41 +2,42 @@ project:
   type: book
   output-dir: _site
   resources:
-  - data/**
-  - lean/category-graph.html
-  - lean/category-graph.dot
+    - data/**
+    - lean/category-graph.html
+    - lean/category-graph.dot
 book:
   title: Lattice Research
   repo-url: https://github.com/dzackgarza/research
   site-url: https://dzackgarza.github.io/research/
   search: true
   chapters:
-  - index.md
-  - part: Mathematical Framework
-    chapters:
-    - framework/Mathematical-Framework.md
-    - framework/Mathematical-Definitions.md
-    - framework/Categorical-Foundations.md
-    - framework/Settled-Mathematical-Rulings.md
-  - part: Sage
-    chapters:
-    - sage/Sage-Category-Framework-Inventory.md
-    - sage/Sage-Category-Classes.md
-  - part: Lean
-    chapters:
-    - lean/Lean-Sage-Integration-Model.md
-    - lean/Category-Graph.md
-  - part: Contributing
-    chapters:
-    - contributing/Contribution-Guidelines.md
-    - contributing/Mathematical-Language-Style-Guide.md
-    - contributing/Categorical-Presentation-Principles.md
-    - contributing/Design-Hazard-Ledger.md
-    - contributing/Mathematical-Lexicon.md
-  - Roadmap.md
+    - index.md
+    - part: Mathematical Framework
+      chapters:
+        - framework/Mathematical-Framework.md
+        - framework/Mathematical-Definitions.md
+        - framework/Categorical-Foundations.md
+        - framework/Mathematical-Theory-Foundations.md
+        - framework/Settled-Mathematical-Rulings.md
+    - part: Sage
+      chapters:
+        - sage/Sage-Category-Framework-Inventory.md
+        - sage/Sage-Category-Classes.md
+    - part: Lean
+      chapters:
+        - lean/Lean-Sage-Integration-Model.md
+        - lean/Category-Graph.md
+    - part: Contributing
+      chapters:
+        - contributing/Contribution-Guidelines.md
+        - contributing/Mathematical-Language-Style-Guide.md
+        - contributing/Categorical-Presentation-Principles.md
+        - contributing/Design-Hazard-Ledger.md
+        - contributing/Mathematical-Lexicon.md
+    - Roadmap.md
 bibliography:
-- references.bib
-- refs-web.bib
+  - references.bib
+  - refs-web.bib
 link-citations: true
 number-sections: true
 crossref:
@@ -52,4 +53,4 @@ format:
     code-copy: true
     smooth-scroll: true
 filters:
-- stacks-tags.lua
+  - stacks-tags.lua
