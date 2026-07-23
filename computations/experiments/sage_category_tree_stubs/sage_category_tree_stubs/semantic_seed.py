@@ -34,6 +34,12 @@ ARROW_KINDS = frozenset(
         "equivalence",
         "construction",
         "parameter_dependency",
+        # Addendum Def 1.1: an adjunction is a pair. A left adjoint is recorded as its own
+        # arrow carrying the right adjoint it is paired with, because Conv 17.1 makes the
+        # codomain part of the functor's definition and Def 2.2 makes the free objects the
+        # essential image of the left adjoint -- none of which a bare forgetful arrow says.
+        "left_adjoint",
+        "right_adjoint",
     }
 )
 

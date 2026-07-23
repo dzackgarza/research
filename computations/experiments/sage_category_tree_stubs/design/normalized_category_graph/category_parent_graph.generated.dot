@@ -572,4 +572,16 @@ digraph CategoryParents {
   "Bimodules(K,K) = Bimodules(R,R).OverField" -> "Bimodules(R,R)" [kind="full_inclusion", id="arr.dot.bimodulesfield__bimodulesdiagonal"];
   "VectorSpaces(K) = Modules.OverField" -> "Bimodules(K,K) = Bimodules(R,R).OverField" [kind="full_inclusion", id="fun.vectorspaces_central_section"];
   "AlgebrasOverField = Algebras.OverField" -> "Bimodules(K,K) = Bimodules(R,R).OverField" [kind="forgetful", id="fun.algebras_over_field_to_bimodules"];
+  Sets -> "Monoids = Magmas.Associative.Unital" [kind="left_adjoint", id="fun.free.monoid"];
+  Sets -> "Groups = Magmas.Associative.Unital.Inverse" [kind="left_adjoint", id="fun.free.group"];
+  Sets -> "AdditiveAbelianGroups = AdditiveGroups.Commutative" [kind="left_adjoint", id="fun.free.abelian_group"];
+  Sets -> "Modules(R)" [kind="left_adjoint", id="fun.free.module_r"];
+  "Modules(R)" -> "UnitalAlgebras = Algebras.Associative.Unital" [kind="left_adjoint", id="fun.tensor_algebra"];
+  Sets -> "UnitalAlgebras = Algebras.Associative.Unital" [kind="left_adjoint", id="fun.free.associative_algebra_set"];
+  "Modules(R)" -> "CommAlgebras = UnitalAlgebras.Commutative" [kind="left_adjoint", id="fun.symmetric_algebra"];
+  Sets -> "CommAlgebras = UnitalAlgebras.Commutative" [kind="left_adjoint", id="fun.free.commutative_algebra_set"];
+  "Monoids = Magmas.Associative.Unital" -> "Bialgebras(R)" [kind="left_adjoint", id="fun.monoid_algebra"];
+  "Groups = Magmas.Associative.Unital.Inverse" -> "HopfAlgebras(R)" [kind="left_adjoint", id="fun.group_algebra"];
+  "Bialgebras(R)" -> "Monoids = Magmas.Associative.Unital" [kind="right_adjoint", id="fun.grouplike_elements"];
+  "HopfAlgebras(R)" -> "Groups = Magmas.Associative.Unital.Inverse" [kind="right_adjoint", id="fun.grouplike_elements_hopf"];
 }

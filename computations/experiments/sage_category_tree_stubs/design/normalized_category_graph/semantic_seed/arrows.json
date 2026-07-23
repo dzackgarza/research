@@ -3670,6 +3670,117 @@
       "kind": "forgetful",
       "preferred": true,
       "provenance": "a K-algebra is a (K,K)-bimodule through its structure map to the centre (Def 13.9)"
+    },
+    {
+      "id": "fun.free.monoid",
+      "source": "cat.sets",
+      "target": "cat.monoids",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "free monoid functor (addendum Def 8.1); left adjoint to the underlying set of a monoid",
+      "essential_image": "free monoids"
+    },
+    {
+      "id": "fun.free.group",
+      "source": "cat.sets",
+      "target": "cat.groups",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "free group functor (addendum Def 8.1); left adjoint to the underlying set of a group",
+      "essential_image": "free groups"
+    },
+    {
+      "id": "fun.free.abelian_group",
+      "source": "cat.sets",
+      "target": "cat.additive_abelian_groups",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "free abelian group functor (addendum Def 8.2)",
+      "essential_image": "free abelian groups"
+    },
+    {
+      "id": "fun.free.module_r",
+      "source": "cat.sets",
+      "target": "cat.modules_r",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "free left R-module functor F_R, X |-> R^(X) (addendum Def 9.1); Hom_R(R^(X),M) = Map(X,U_R M)",
+      "adjoint_to": "fun.modules_to_sets",
+      "essential_image": "the free R-modules (Cor 9.2); the restriction to FinSet has the finite free modules as its image"
+    },
+    {
+      "id": "fun.tensor_algebra",
+      "source": "cat.modules_r",
+      "target": "cat.unital_algebras",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "tensor algebra functor (addendum Def 10.1); left adjoint to the underlying module of an associative unital R-algebra",
+      "essential_image": "tensor algebras"
+    },
+    {
+      "id": "fun.free.associative_algebra_set",
+      "source": "cat.sets",
+      "target": "cat.unital_algebras",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "free associative R-algebra on a set, X |-> R<X> (addendum Def 10.2)",
+      "essential_image": "free associative R-algebras"
+    },
+    {
+      "id": "fun.symmetric_algebra",
+      "source": "cat.modules_r",
+      "target": "cat.commutative_algebras",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "symmetric algebra functor (addendum Def 10.3); left adjoint to the underlying module of a commutative R-algebra",
+      "essential_image": "symmetric algebras"
+    },
+    {
+      "id": "fun.free.commutative_algebra_set",
+      "source": "cat.sets",
+      "target": "cat.commutative_algebras",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "free commutative R-algebra on a set, X |-> R[X] (addendum Def 10.3)",
+      "essential_image": "free commutative R-algebras"
+    },
+    {
+      "id": "fun.monoid_algebra",
+      "source": "cat.monoids",
+      "target": "cat.bialgebras_r",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "monoid algebra functor R[-] (addendum Def 13.1); left adjoint to the group-like-elements functor (Thm 13.5), unit eta_M : M -> G(R[M]), m |-> [m] (Prop 14.1)",
+      "adjoint_to": "fun.grouplike_elements",
+      "essential_image": "EssIm(R[-]); when Spec R is connected the unit is an isomorphism, R[-] is fully faithful, and B is in the image iff the counit R[G(B)] -> B is an isomorphism (Cor 14.2, Thm 14.3)"
+    },
+    {
+      "id": "fun.group_algebra",
+      "source": "cat.groups",
+      "target": "cat.hopf_algebras_r",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "group algebra functor R[-] (addendum Def 13.2); left adjoint to group-like elements of a Hopf algebra (Cor 13.6)",
+      "adjoint_to": "fun.grouplike_elements_hopf",
+      "essential_image": "EssIm(R[-]) on Hopf algebras"
+    },
+    {
+      "id": "fun.grouplike_elements",
+      "source": "cat.bialgebras_r",
+      "target": "cat.monoids",
+      "kind": "right_adjoint",
+      "preferred": true,
+      "provenance": "group-like elements G(B) = {b : Delta b = b (x) b, epsilon b = 1} (addendum Def 13.3); right adjoint to the monoid algebra functor",
+      "adjoint_to": "fun.monoid_algebra"
+    },
+    {
+      "id": "fun.grouplike_elements_hopf",
+      "source": "cat.hopf_algebras_r",
+      "target": "cat.groups",
+      "kind": "right_adjoint",
+      "preferred": true,
+      "provenance": "group-like elements of a Hopf algebra; the antipode supplies inverses so G(H) is a group (addendum Def 13.3)",
+      "adjoint_to": "fun.group_algebra"
     }
   ],
   "kind": "normalized_semantic_seed.arrows",
