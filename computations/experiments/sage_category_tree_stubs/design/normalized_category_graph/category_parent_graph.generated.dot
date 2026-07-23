@@ -111,6 +111,7 @@ digraph CategoryParents {
   "Algebras(R).Graded" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.algebras_r.graded", kind="derived_category"];
   "AlgebrasOverField = Algebras.OverField" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.algebras_over_field", kind="derived_category"];
   "AssociativeAlgebras = Algebras.Associative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.associativealgebras", kind="derived_category"];
+  "BiAct(R,S)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.biact_r_s", kind="derived_category"];
   "Bimodules(K,K) = Bimodules(R,R).OverField" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.bimodules_k_k", kind="derived_category"];
   "Bimodules(R,R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.bimodules_r_r", kind="derived_category"];
   "CommAlgebras = UnitalAlgebras.Commutative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.commutative_algebras", kind="derived_category"];
@@ -584,4 +585,7 @@ digraph CategoryParents {
   "Groups = Magmas.Associative.Unital.Inverse" -> "HopfAlgebras(R)" [kind="left_adjoint", id="fun.group_algebra"];
   "Bialgebras(R)" -> "Monoids = Magmas.Associative.Unital" [kind="right_adjoint", id="fun.grouplike_elements"];
   "HopfAlgebras(R)" -> "Groups = Magmas.Associative.Unital.Inverse" [kind="right_adjoint", id="fun.grouplike_elements_hopf"];
+  "BiAct(R,S)" -> "Modules(R)" [kind="pullback_projection", id="arr.proj.biact__modules"];
+  "BiAct(R,S)" -> "RightModules(R)" [kind="pullback_projection", id="arr.proj.biact__rightmodules"];
+  "Bimodules(R,S)" -> "BiAct(R,S)" [style=dotted, kind="classifier_leg", id="arr.clf.biact.commutation"];
 }

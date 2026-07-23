@@ -286,6 +286,35 @@
       "provenance": "dot_import"
     },
     {
+      "id": "cat.biact_r_s",
+      "kind": "derived_category",
+      "canonical_name": "BiAct",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        },
+        {
+          "name": "S",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
+      "definition": {
+        "operation": "pullback",
+        "left": "arr.dot.modules__additiveabeliangroups",
+        "right_functor": "arr.dot.rightmodules__additiveabeliangroups",
+        "over": "cat.additive_abelian_groups",
+        "strictness": "homotopy",
+        "display": "R-Mod x^h_Ab Mod-S",
+        "notes": "Foundations Def 85.2: an abelian group with a left R-action and a right S-action, plus the comparison identifying the two underlying additive groups. No commutation is imposed. Both legs are underlying-additive-group functors, so this is a functor-functor pullback, not the functor-against-classifier shape used elsewhere."
+      },
+      "aliases": ["BiAct(R,S)"],
+      "dot_vertex": "BiAct(R,S)",
+      "provenance": "Foundations Def 85.2; the two actions are structure and their coexistence is this pullback"
+    },
+    {
       "id": "cat.bimodules_r_s",
       "kind": "category_family",
       "canonical_name": "Bimodules",
@@ -304,7 +333,7 @@
       "definition": null,
       "aliases": ["Bimodules(R,S)"],
       "dot_vertex": "Bimodules(R,S)",
-      "provenance": "Foundations Def 13.8 / 85.1: two actions on one additive group; Bimodules(R,R) is this family at equal parameters, not a separate node"
+      "provenance": "Foundations Def 13.8 / 85.1. Derived, not primitive: it is the commutation locus inside BiAct(R,S) (Def 85.2, Def 85.3) -- two actions are structure, their commutation a property. Bimodules(R,R) is this family at equal parameters, not a separate node."
     },
     {
       "id": "cat.bimodules_r_r",

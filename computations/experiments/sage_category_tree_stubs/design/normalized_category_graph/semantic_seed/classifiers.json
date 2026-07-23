@@ -1582,6 +1582,15 @@
       "leg_arrow_id": "arr.clf.topologicalspaces.compact",
       "transport": null,
       "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.biact.commutation",
+      "name": "Commutation",
+      "host_id": "cat.biact_r_s",
+      "domain_id": "cat.bimodules_r_s",
+      "leg_arrow_id": "arr.clf.biact.commutation",
+      "transport": null,
+      "notes": "Foundations Def 85.3: on an object of BiAct(R,S) the two composites R (x) M (x) S -> M, r(x)m(x)s |-> (rm)s and r(x)m(x)s |-> r(ms), agree. A PROPERTY classifier -- the full replete locus is _R Bimod_S. So the two actions are structure and their commutation is an additional diagrammatic property, not part of the data."
     }
   ]
 }

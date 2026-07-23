@@ -3781,6 +3781,30 @@
       "preferred": true,
       "provenance": "group-like elements of a Hopf algebra; the antipode supplies inverses so G(H) is a group (addendum Def 13.3)",
       "adjoint_to": "fun.group_algebra"
+    },
+    {
+      "id": "arr.proj.biact__modules",
+      "source": "cat.biact_r_s",
+      "target": "cat.modules_r",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "projection of the Def 85.2 pullback; forgets the right S-action"
+    },
+    {
+      "id": "arr.proj.biact__rightmodules",
+      "source": "cat.biact_r_s",
+      "target": "cat.right_modules_r",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "projection of the Def 85.2 pullback; forgets the left R-action"
+    },
+    {
+      "id": "arr.clf.biact.commutation",
+      "source": "cat.bimodules_r_s",
+      "target": "cat.biact_r_s",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_Commutation : BiAct(R,S).Commutation -> BiAct(R,S) (Def 85.3)"
     }
   ],
   "kind": "normalized_semantic_seed.arrows",
