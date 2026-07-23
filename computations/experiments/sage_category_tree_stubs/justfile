@@ -35,10 +35,13 @@ manifests:
 	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
 	sage -python -m sage_category_tree_stubs.seed_authored_sync
 	sage -python -m sage_category_tree_stubs.mapping_build
-	sage -python -m sage_category_tree_stubs.requirement_manifest
 	sage -python -m sage_category_tree_stubs.join_views
 	sage -python -m sage_category_tree_stubs.manifests
 	sage -python -m sage_category_tree_stubs.capability
+	just -f "{{justfile()}}" _normalize-generated
+	# The requirement manifest records the ledger's content hash, so it is extracted
+	# after normalization -- otherwise it pins a hash the commit hook then invalidates.
+	sage -python -m sage_category_tree_stubs.requirement_manifest
 	just -f "{{justfile()}}" _normalize-generated
 
 # Generated JSON/YAML must land in the same shape the commit hook's prettier pass
@@ -52,6 +55,7 @@ _normalize-generated:
 	  --config ~/ai-review-ci/tool-configs/prettier-global.json \
 	  design/normalized_category_graph/semantic_seed/*.json \
 	  design/sage/observed.json design/sage/mapping.yaml \
+	  design/sage/authored/sage_normalized_category_mapping_manifest.json \
 	  design/sage/authored/lean_requirement_manifest.json \
 	  ../lean_category_dsl_spike/NormalizedCategoryGraph/Spec/seed_manifest.json \
 	  ../lean_category_dsl_spike/NormalizedCategoryGraph/Presentation/dot_graph_id_sidecar.json

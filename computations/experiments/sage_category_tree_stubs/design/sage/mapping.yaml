@@ -38,7 +38,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -74,7 +75,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -104,7 +106,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -140,7 +143,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -170,7 +174,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -194,7 +199,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -225,7 +231,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'K : Fields'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -249,7 +256,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -280,7 +288,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -304,7 +313,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -329,7 +339,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -360,7 +371,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -384,7 +396,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'A : AssociativeUnitalAlgebras(R)'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -409,7 +422,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'A : CommutativeAlgebras(R)'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -446,7 +460,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -476,7 +491,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -506,7 +522,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -536,7 +553,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -560,7 +578,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -591,7 +610,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -615,7 +635,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R,S : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -640,7 +661,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'C : additive/abelian category; degree convention parameter'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -671,7 +693,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -695,7 +718,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -726,7 +750,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -750,7 +775,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -760,53 +786,65 @@ category_mappings:
   - source: sage.category.commutative_additive_monoids_commutativeadditivemonoids
     source_sage_name: CommutativeAdditiveMonoids
     target: cat.additive_monoids
-    relation: presentation_alias
-    normalized_reading: AdditiveMonoids
+    relation: constructible
+    normalized_reading: AdditiveMonoids.Commutative
     construction:
       kind: finite_limit_derivability
       ok: true
-      status: EXACT_BASE
       base: cat.additive_monoids
-      classifiers: []
-      expression: AdditiveMonoids
-      detail: base-only mapping; named seed entity
-      certificate: []
-      authored_routes: []
+      classifiers:
+        - clf.magmas.commutative
+      expression: AdditiveMonoids.Commutative
+      detail: all requested classifier occurrences discharged
+      certificate:
+        - occurrence: clf.magmas.commutative#1
+          support_host: cat.magmas
+      status: CONSTRUCTIBLE
+      authored_routes:
+        - classifier: Commutative
+          support_route: operation_port:additive
+          along: additive_operation
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
-      status: authored-exact
-      source: design/sage/authored/
+      status: authored-constructible
+      source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
-      mapping_kind: Sage alias
   - source: sage.category.commutative_additive_semigroups_commutativeadditivesemigroups
     source_sage_name: CommutativeAdditiveSemigroups
     target: cat.additive_semigroups
-    relation: presentation_alias
-    normalized_reading: AdditiveSemigroups
+    relation: constructible
+    normalized_reading: AdditiveSemigroups.Commutative
     construction:
       kind: finite_limit_derivability
       ok: true
-      status: EXACT_BASE
       base: cat.additive_semigroups
-      classifiers: []
-      expression: AdditiveSemigroups
-      detail: base-only mapping; named seed entity
-      certificate: []
-      authored_routes: []
+      classifiers:
+        - clf.magmas.commutative
+      expression: AdditiveSemigroups.Commutative
+      detail: all requested classifier occurrences discharged
+      certificate:
+        - occurrence: clf.magmas.commutative#1
+          support_host: cat.magmas
+      status: CONSTRUCTIBLE
+      authored_routes:
+        - classifier: Commutative
+          support_route: operation_port:additive
+          along: additive_operation
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
-      status: authored-exact
-      source: design/sage/authored/
+      status: authored-constructible
+      source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
-      mapping_kind: Sage alias
   - source: sage.category.commutative_algebra_ideals_commutativealgebraideals
     source_sage_name: CommutativeAlgebraIdeals
     target: cat.algebraideals_a
@@ -825,7 +863,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'A : CommutativeAlgebras(R)'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -856,7 +895,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -880,7 +920,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : CommutativeRings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -911,7 +952,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -941,7 +983,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -971,7 +1014,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1001,7 +1045,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1025,7 +1070,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -1050,7 +1096,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -1081,7 +1128,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1105,7 +1153,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -1136,7 +1185,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1166,7 +1216,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1196,7 +1247,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1226,7 +1278,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1256,7 +1309,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1286,7 +1340,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1316,7 +1371,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1340,7 +1396,9 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: finite field F_q, function ring F_q[T], field K, and base morphism
+        γ
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -1371,7 +1429,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1401,7 +1460,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1425,7 +1485,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -1456,7 +1517,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1486,7 +1548,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1522,7 +1585,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1558,7 +1622,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1588,7 +1653,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : CommutativeRings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1624,7 +1690,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : CommutativeRings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1654,7 +1721,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1684,7 +1752,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1714,7 +1783,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1750,7 +1820,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1792,7 +1863,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1828,7 +1900,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1864,7 +1937,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1900,7 +1974,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : CommutativeRings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1942,7 +2017,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -1978,7 +2054,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2014,7 +2091,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2044,7 +2122,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2074,7 +2153,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2104,7 +2184,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2134,7 +2215,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2164,7 +2246,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2194,7 +2277,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2224,7 +2308,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2254,7 +2339,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2284,7 +2370,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2314,7 +2401,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2344,7 +2432,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2374,7 +2463,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2404,7 +2494,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2434,7 +2525,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: Sage leaves the constant field implicit
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2464,7 +2556,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'G : Groups'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2494,7 +2587,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2524,7 +2618,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2554,7 +2649,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2590,7 +2686,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2620,7 +2717,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2656,7 +2754,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2692,7 +2791,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2722,7 +2822,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2758,7 +2859,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2788,7 +2890,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2818,7 +2921,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : CommutativeRings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2854,7 +2958,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : CommutativeRings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -2878,7 +2983,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -2903,7 +3009,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -2928,7 +3035,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'G : Sets (Sage usually supplies a group)'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -2953,7 +3061,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -2984,7 +3093,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3020,7 +3130,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : CommutativeRings; object-dependent level/anemic Hecke action'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3050,7 +3161,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3074,7 +3186,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'C : category'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3099,7 +3212,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3130,7 +3244,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3166,7 +3281,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3196,7 +3312,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3226,7 +3343,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3250,7 +3368,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3299,7 +3418,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings (Sage examples use QQ)'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3329,7 +3449,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3353,7 +3474,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3384,7 +3506,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3414,7 +3537,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3444,7 +3568,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3468,7 +3593,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3493,7 +3619,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3524,7 +3651,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3548,7 +3676,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3579,7 +3708,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3603,7 +3733,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3634,7 +3765,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3658,7 +3790,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3689,7 +3822,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3713,7 +3847,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3738,7 +3873,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3763,7 +3899,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3794,7 +3931,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3818,7 +3956,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3849,7 +3988,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'K : Fields'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3879,7 +4019,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3909,7 +4050,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'K : Fields'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3933,7 +4075,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : CommutativeRings (intended Sage semantics)'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -3964,7 +4107,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : CommutativeRings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -3988,7 +4132,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4019,7 +4164,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4049,7 +4195,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4073,7 +4220,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4104,7 +4252,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : CommutativeRings; σ endomorphism and/or σ-derivation δ'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4134,7 +4283,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4164,7 +4314,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4194,7 +4345,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4218,7 +4370,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: R typically ZZ, QQ, RR, or an ordered coefficient ring
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4243,7 +4396,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4274,7 +4428,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4304,7 +4459,9 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : CommutativeRings/Fields; quantum-group/root datum parameters
+        are part of the representation structure'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4334,7 +4491,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4364,7 +4522,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4394,7 +4553,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4424,7 +4584,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4448,7 +4609,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4473,7 +4635,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4498,7 +4661,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4523,7 +4687,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4554,7 +4719,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'K : Fields'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4578,7 +4744,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: base scheme S (absolute case allowed)
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4603,7 +4770,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4628,7 +4796,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4659,7 +4828,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4683,7 +4853,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4714,7 +4885,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4738,7 +4910,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4775,7 +4948,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4799,7 +4973,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4824,7 +4999,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -4855,7 +5031,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4891,7 +5068,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4927,7 +5105,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4957,7 +5136,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -4987,7 +5167,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : CommutativeRings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -5023,7 +5204,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : CommutativeRings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -5053,7 +5235,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -5083,7 +5266,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -5107,7 +5291,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -5138,7 +5323,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -5168,7 +5354,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -5198,7 +5385,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'R : Rings'
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -5222,7 +5410,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: base space/scheme X and scalar data R
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -5247,7 +5436,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: 'K : Fields'
     provenance:
       status: authored-exact
       source: design/sage/authored/
@@ -5278,7 +5468,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: authored-constructible
       source: design/sage/authored/ + constructibility
@@ -5303,7 +5494,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5327,7 +5519,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5354,7 +5547,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5378,7 +5572,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5399,7 +5594,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: not-constructible
       source: constructibility.check_constructibility
@@ -5420,7 +5616,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: not-constructible
       source: constructibility.check_constructibility
@@ -5441,7 +5638,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: not-constructible
       source: constructibility.check_constructibility
@@ -5465,7 +5663,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5486,7 +5685,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: not-constructible
       source: constructibility.check_constructibility
@@ -5510,7 +5710,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5534,7 +5735,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5561,7 +5763,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5585,7 +5788,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5606,7 +5810,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: not-constructible
       source: constructibility.check_constructibility
@@ -5630,7 +5835,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5657,7 +5863,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5678,7 +5885,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: not-constructible
       source: constructibility.check_constructibility
@@ -5705,7 +5913,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5729,7 +5938,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5753,7 +5963,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: constructible
       source: constructibility.check_constructibility
@@ -5774,7 +5985,8 @@ category_mappings:
     sage_versions:
       since: sage-dev-local
       until: null
-    parameters: {}
+    parameters:
+      constraints: ''
     provenance:
       status: not-constructible
       source: constructibility.check_constructibility

@@ -4,8 +4,8 @@
   "authority": "Interface demand only. This manifest records which stable identifiers a released registry must resolve for this repository to evaluate its rows. It is not an authority for generic Lean definitions.",
   "source": {
     "path": "design/sage/authored/sage_normalized_category_mapping_manifest.json",
-    "sha256": "3a8bc29612f231059ec324ef66fdb472d9c6228dfa86fbca6aa061788e6cb330",
-    "git_commit": "4028c07af0e8fa0c2fbe411f1a2a342c980c527f-dirty",
+    "sha256": "ddc37ce48d9d9e37922500da6bfbea13a71183d8a4b9b8a3d3ed0eb27e2c021a",
+    "git_commit": "60d94bda298dd381636bb136e028bf48671e5ac1-dirty",
     "ledger_schema_version": "0.4-draft",
     "sage_source_commit": "686dc1a8d420c2e0aabadd4f602d9a0aa4690c50"
   },
@@ -26,25 +26,25 @@
   "requirements": [
     {
       "kind": "alias",
-      "stable_id": "cat.additive_monoids",
-      "display": "AdditiveMonoids",
+      "stable_id": "cat_expr.additivemonoids_commutative",
+      "display": "AdditiveMonoids.Commutative",
       "demanded_by": ["CommutativeAdditiveMonoids"],
       "occurrences": [
         {
           "mapping_kind": "Sage alias",
-          "target_visibility": "conventional named"
+          "target_visibility": "implicit refinement"
         }
       ]
     },
     {
       "kind": "alias",
-      "stable_id": "cat.additive_semigroups",
-      "display": "AdditiveSemigroups",
+      "stable_id": "cat_expr.additivesemigroups_commutative",
+      "display": "AdditiveSemigroups.Commutative",
       "demanded_by": ["CommutativeAdditiveSemigroups"],
       "occurrences": [
         {
           "mapping_kind": "Sage alias",
-          "target_visibility": "conventional named"
+          "target_visibility": "implicit refinement"
         }
       ]
     },
@@ -1052,8 +1052,14 @@
       "kind": "classifier",
       "stable_id": "clf.commutative",
       "display": "Commutative",
-      "demanded_by": ["CommutativeAlgebras", "CommutativeRings", "Fields", "IntegralDomains"],
+      "demanded_by": ["CommutativeAdditiveMonoids", "CommutativeAdditiveSemigroups", "CommutativeAlgebras", "CommutativeRings", "Fields", "IntegralDomains"],
       "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Magmas",
+          "support_route": "operation_port:additive",
+          "semantic_character": "property"
+        },
         {
           "order": 1,
           "least_host": "Magmas",

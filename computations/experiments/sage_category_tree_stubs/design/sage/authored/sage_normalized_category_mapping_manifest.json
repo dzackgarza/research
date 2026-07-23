@@ -961,11 +961,20 @@
       "normalized": {
         "base": "AdditiveMonoids",
         "base_id": "cat.additive_monoids",
-        "classifier_applications": [],
-        "target_expression": "AdditiveMonoids",
-        "target_id": "cat.additive_monoids",
+        "classifier_applications": [
+          {
+            "order": 1,
+            "classifier": "Commutative",
+            "classifier_id": "clf.commutative",
+            "least_host": "Magmas",
+            "semantic_character": "property",
+            "support_route": "operation_port:additive"
+          }
+        ],
+        "target_expression": "AdditiveMonoids.Commutative",
+        "target_id": "cat_expr.additivemonoids_commutative",
         "mapping_kind": "Sage alias",
-        "target_visibility": "conventional named",
+        "target_visibility": "implicit refinement",
         "parameter_constraints": ""
       },
       "audit": {
@@ -974,7 +983,7 @@
         "recommend_explicit_target": "yes — named derived alias",
         "base_in_current_dot": "present as named derived node",
         "current_dot_match": "Monoids = Magmas.Associative.Unital",
-        "note": "",
+        "note": "Commutativity of the additive operation, so the Commutative classifier on Magmas applied along the additive operation port -- the same shape as CommutativeRings, which routes through the multiplicative port. Mapping this to the bare additive monoid would place its methods in the fiber over AdditiveMonoids, offering them for objects whose operation is not commutative.",
         "exception_or_ambiguity": ""
       }
     },
@@ -990,11 +999,20 @@
       "normalized": {
         "base": "AdditiveSemigroups",
         "base_id": "cat.additive_semigroups",
-        "classifier_applications": [],
-        "target_expression": "AdditiveSemigroups",
-        "target_id": "cat.additive_semigroups",
+        "classifier_applications": [
+          {
+            "order": 1,
+            "classifier": "Commutative",
+            "classifier_id": "clf.commutative",
+            "least_host": "Magmas",
+            "semantic_character": "property",
+            "support_route": "operation_port:additive"
+          }
+        ],
+        "target_expression": "AdditiveSemigroups.Commutative",
+        "target_id": "cat_expr.additivesemigroups_commutative",
         "mapping_kind": "Sage alias",
-        "target_visibility": "conventional named",
+        "target_visibility": "implicit refinement",
         "parameter_constraints": ""
       },
       "audit": {
@@ -1003,7 +1021,7 @@
         "recommend_explicit_target": "yes — named derived alias",
         "base_in_current_dot": "present as named derived node",
         "current_dot_match": "Semigroups = Magmas.Associative",
-        "note": "",
+        "note": "Commutativity of the additive operation, so the Commutative classifier on Magmas applied along the additive operation port -- the same shape as CommutativeRings, which routes through the multiplicative port. Mapping this to the bare additive monoid would place its methods in the fiber over AdditiveSemigroups, offering them for objects whose operation is not commutative.",
         "exception_or_ambiguity": ""
       }
     },

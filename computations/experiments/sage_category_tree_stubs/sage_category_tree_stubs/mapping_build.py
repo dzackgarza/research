@@ -206,7 +206,7 @@ def build_mapping(
                         "since": corr.get("version_label"),
                         "until": None,
                     },
-                    "parameters": {},
+                    "parameters": {"constraints": req.parameter_constraints or ""},
                     "provenance": {
                         "status": "authored-exact",
                         "source": "design/sage/authored/",
@@ -231,7 +231,7 @@ def build_mapping(
                         "since": corr.get("version_label"),
                         "until": None,
                     },
-                    "parameters": {},
+                    "parameters": {"constraints": req.parameter_constraints or ""},
                     "provenance": {
                         "status": "authored-constructible",
                         "source": "design/sage/authored/ + constructibility",
@@ -254,7 +254,7 @@ def build_mapping(
                     "since": corr.get("version_label"),
                     "until": None,
                 },
-                "parameters": {},
+                "parameters": {"constraints": req.parameter_constraints or ""},
                 "provenance": {
                     "status": result.status.lower().replace("_", "-"),
                     "source": "design/sage/authored/ + constructibility",
@@ -283,7 +283,7 @@ def build_mapping(
                     "since": corr.get("version_label"),
                     "until": None,
                 },
-                "parameters": {},
+                "parameters": {"constraints": req.parameter_constraints or ""},
                 "provenance": {
                     "status": "ledger",
                     "source": "correspondence.json exceptions",
@@ -317,7 +317,7 @@ def build_mapping(
                         "since": corr.get("version_label"),
                         "until": None,
                     },
-                    "parameters": {},
+                    "parameters": {"constraints": req.parameter_constraints or ""},
                     "provenance": {
                         "status": "constructible",
                         "source": "constructibility.check_constructibility",
@@ -339,7 +339,7 @@ def build_mapping(
                         "since": corr.get("version_label"),
                         "until": None,
                     },
-                    "parameters": {},
+                    "parameters": {"constraints": req.parameter_constraints or ""},
                     "provenance": {
                         "status": "composed-named",
                         "source": "seed dot_vertex match",
@@ -360,7 +360,7 @@ def build_mapping(
                     "since": corr.get("version_label"),
                     "until": None,
                 },
-                "parameters": {},
+                "parameters": {"constraints": req.parameter_constraints or ""},
                 "provenance": {
                     "status": "not-constructible",
                     "source": "constructibility.check_constructibility",
@@ -387,7 +387,7 @@ def build_mapping(
                     "since": corr.get("version_label"),
                     "until": None,
                 },
-                "parameters": {},
+                "parameters": {"constraints": req.parameter_constraints or ""},
                 "provenance": {
                     "status": "pending",
                     "source": "auto-from-observed",

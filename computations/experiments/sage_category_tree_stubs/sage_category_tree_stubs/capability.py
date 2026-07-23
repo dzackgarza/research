@@ -30,7 +30,7 @@ something inheritance supplies.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, NamedTuple
 
 from .mapping_build import build_mapping
 
@@ -42,7 +42,23 @@ _NOT_MATHEMATICS = "removed"
 _GAP = "unsupported"
 
 
-def sigma(mapping: dict[str, Any] | None = None) -> dict[str, str]:
+class Destination(NamedTuple):
+    """A constructible normalized category.
+
+    A family applied at different parameters gives different categories, so the
+    parameter constraint is part of the identity: `RingIdeals(R)` at `R : Rings` and
+    at `R : CommutativeRings` are not the same destination, and ideals of an
+    arbitrary ring must not receive the commutative ring's algorithms.
+    """
+
+    expression: str
+    parameters: str = ""
+
+    def __str__(self) -> str:
+        return f"{self.expression} [{self.parameters}]" if self.parameters else self.expression
+
+
+def sigma(mapping: dict[str, Any] | None = None) -> dict[str, Destination]:
     """Sage category name -> the normalized category it implements.
 
     Keyed on the authored target *expression*, not on its base. The base of
@@ -59,14 +75,20 @@ def sigma(mapping: dict[str, Any] | None = None) -> dict[str, str]:
     mathematics accumulates.
     """
     m = mapping or build_mapping()
-    out: dict[str, str] = {}
+    out: dict[str, Destination] = {}
     for row in m["category_mappings"]:
         if row.get("relation") in {_GAP, _NOT_MATHEMATICS}:
             continue
         expression = row.get("normalized_reading")
         name = row.get("source_sage_name")
-        if expression and name:
-            out[str(name)] = str(expression)
+        if not (expression and name):
+            continue
+        # A family applied at different parameters is different categories.
+        # `RingIdeals(R)` at `R : Rings` and at `R : CommutativeRings` share an
+        # expression and are not the same destination: ideals of a commutative ring
+        # admit algorithms that ideals of an arbitrary ring do not.
+        constraint = str((row.get("parameters") or {}).get("constraints") or "")
+        out[str(name)] = Destination(str(expression), constraint)
     return out
 
 
@@ -80,15 +102,15 @@ def excluded_as_non_mathematical(mapping: dict[str, Any] | None = None) -> dict[
     }
 
 
-def fibers(mapping: dict[str, Any] | None = None) -> dict[str, list[str]]:
+def fibers(mapping: dict[str, Any] | None = None) -> dict[Destination, list[str]]:
     """Normalized category -> the Sage implementations that land on it."""
-    out: dict[str, list[str]] = {}
-    for name, expression in sigma(mapping).items():
-        out.setdefault(expression, []).append(name)
+    out: dict[Destination, list[str]] = {}
+    for name, destination in sigma(mapping).items():
+        out.setdefault(destination, []).append(name)
     return {k: sorted(v) for k, v in sorted(out.items())}
 
 
-def refinement_chain(expression: str) -> list[str]:
+def refinement_chain(destination: Destination) -> list[Destination]:
     """An expression and the expressions it refines, longest first.
 
     ``Modules(R).Graded.Finite`` refines ``Modules(R).Graded`` refines ``Modules(R)``.
@@ -101,11 +123,11 @@ def refinement_chain(expression: str) -> list[str]:
     including them requires deciding what a canonical functor is when several exist,
     which is a coherence question and not a reachability one.
     """
-    parts = expression.split(".")
-    return [".".join(parts[: i + 1]) for i in range(len(parts) - 1, -1, -1)]
+    parts = destination.expression.split(".")
+    return [Destination(".".join(parts[: i + 1]), destination.parameters) for i in range(len(parts) - 1, -1, -1)]
 
 
-def providers_for(expression: str, mapping: dict[str, Any] | None = None) -> dict[str, list[str]]:
+def providers_for(destination: Destination, mapping: dict[str, Any] | None = None) -> dict[Destination, list[str]]:
     """Sage implementations usable for an object of ``expression``.
 
     Returns the fiber over the expression and over each category it refines, since an
@@ -114,7 +136,7 @@ def providers_for(expression: str, mapping: dict[str, Any] | None = None) -> dic
     consulted.
     """
     fib = fibers(mapping)
-    return {step: fib[step] for step in refinement_chain(expression) if step in fib}
+    return {step: fib[step] for step in refinement_chain(destination) if step in fib}
 
 
 def coverage_report(mapping: dict[str, Any] | None = None) -> str:

@@ -319,8 +319,8 @@ digraph SageToNormalized {
   "sage.category.coalgebras_coalgebras" -> "cat.coalgebras_r" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.coalgebras_with_basis_coalgebraswithbasis" -> "cat.coalgebras_r" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.commutative_additive_groups_commutativeadditivegroups" -> "cat.additive_abelian_groups" [kind="normalizes_to", mapping="exact", style=dashed];
-  "sage.category.commutative_additive_monoids_commutativeadditivemonoids" -> "cat.additive_monoids" [kind="normalizes_to", mapping="presentation_alias", style=dashed];
-  "sage.category.commutative_additive_semigroups_commutativeadditivesemigroups" -> "cat.additive_semigroups" [kind="normalizes_to", mapping="presentation_alias", style=dashed];
+  "sage.category.commutative_additive_monoids_commutativeadditivemonoids" -> "cat.additive_monoids" [kind="normalizes_to", mapping="constructible", style=dashed];
+  "sage.category.commutative_additive_semigroups_commutativeadditivesemigroups" -> "cat.additive_semigroups" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.commutative_algebra_ideals_commutativealgebraideals" -> "cat.algebraideals_a" [kind="normalizes_to", mapping="presentation_alias", style=dashed];
   "sage.category.commutative_algebras_commutativealgebras" -> "cat.commutative_algebras" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.commutative_ring_ideals_commutativeringideals" -> "cat.ringideals_r" [kind="normalizes_to", mapping="presentation_alias", style=dashed];
