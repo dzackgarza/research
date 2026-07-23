@@ -508,13 +508,13 @@ digraph CategoryParents {
   "Schemes(S)" -> LocallyRingedSpaces [kind="forgetful", id="arr.dot.schemes__locallyringedspaces"];
   Semirings -> "AdditiveMonoids = Magmas.Additive.Associative.Unital" [kind="forgetful", id="arr.dot.semirings__additivemonoids"];
   Semirings -> "Monoids = Magmas.Associative.Unital" [kind="forgetful", id="arr.dot.semirings__monoids"];
-  Sheaves -> Presheaves [kind="forgetful", id="arr.dot.sheaves__presheaves"];
+  Sheaves -> Presheaves [kind="full_inclusion", id="arr.dot.sheaves__presheaves"];
   Sites -> Cat_1 [kind="forgetful", id="arr.dot.sites__cat_1"];
   Slices -> Comma [color="#6a1b9a", kind="construction", id="arr.dot.slices__comma"];
   SpecializationPosets -> Posets [kind="forgetful", id="arr.dot.specializationposets__posets"];
   StableGraphs -> Graphs [kind="forgetful", id="arr.dot.stablegraphs__graphs"];
   StableGraphs -> StratifiedSpaces [kind="forgetful", id="arr.dot.stablegraphs__stratifiedspaces"];
-  Stacks -> Prestacks [kind="forgetful", id="arr.dot.stacks__prestacks"];
+  Stacks -> Prestacks [kind="full_inclusion", id="arr.dot.stacks__prestacks"];
   StratifiedSpaces -> DeligneMumfordStacks [kind="forgetful", id="arr.dot.stratifiedspaces__delignemumfordstacks"];
   StratifiedSpaces -> SpecializationPosets [color="#6a1b9a", kind="construction", id="arr.dot.stratifiedspaces__specializationposets"];
   StratifiedSpaces -> TopologicalSpaces [kind="forgetful", id="arr.dot.stratifiedspaces__topologicalspaces"];
@@ -614,4 +614,6 @@ digraph CategoryParents {
   "CatObject.Preadditive" -> CatObject [style=dotted, kind="classifier_leg", id="arr.clf.catobject_preadditive"];
   "CatObject.Additive" -> CatObject [style=dotted, kind="classifier_leg", id="arr.clf.catobject_additive"];
   "CatObject.Abelian" -> CatObject [style=dotted, kind="classifier_leg", id="arr.clf.catobject_abelian"];
+  Presheaves -> Sheaves [kind="left_adjoint", id="fun.sheafification"];
+  Prestacks -> Stacks [kind="left_adjoint", id="fun.stackification"];
 }

@@ -2595,9 +2595,9 @@
     },
     {
       "id": "arr.dot.sheaves__presheaves",
-      "kind": "forgetful",
+      "kind": "full_inclusion",
       "preferred": true,
-      "provenance": "dot_import",
+      "provenance": "Thm 8.1: the inclusion of sheaves into presheaves is full and replete and is the RIGHT adjoint of the reflective localization",
       "source": "cat.sheaves",
       "target": "cat.presheaves"
     },
@@ -2643,9 +2643,9 @@
     },
     {
       "id": "arr.dot.stacks__prestacks",
-      "kind": "forgetful",
+      "kind": "full_inclusion",
       "preferred": true,
-      "provenance": "dot_import",
+      "provenance": "Thm 9.1: the inclusion of stacks into prestacks is fully faithful and admits stackification as its left adjoint",
       "source": "cat.stacks",
       "target": "cat.prestacks"
     },
@@ -3678,10 +3678,17 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "free monoid functor (addendum Def 8.1); left adjoint to the underlying set of a monoid",
-      "essential_image": "free monoids",
       "adjunction": {
         "existence_only": true,
         "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "free monoids",
+        "corestriction": "fun.free.monoid.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.free.monoid, fully faithful and replete into cat.monoids (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
       }
     },
     {
@@ -3691,10 +3698,17 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "free group functor (addendum Def 8.1); left adjoint to the underlying set of a group",
-      "essential_image": "free groups",
       "adjunction": {
         "existence_only": true,
         "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "free groups",
+        "corestriction": "fun.free.group.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.free.group, fully faithful and replete into cat.groups (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
       }
     },
     {
@@ -3704,10 +3718,17 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "free abelian group functor (addendum Def 8.2)",
-      "essential_image": "free abelian groups",
       "adjunction": {
         "existence_only": true,
         "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "free abelian groups",
+        "corestriction": "fun.free.abelian_group.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.free.abelian_group, fully faithful and replete into cat.additive_abelian_groups (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
       }
     },
     {
@@ -3717,12 +3738,19 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "free left R-module functor F_R, X |-> R^(X) (addendum Def 9.1); Hom_R(R^(X),M) = Map(X,U_R M)",
-      "essential_image": "the free R-modules (Cor 9.2); the restriction to FinSet has the finite free modules as its image",
       "adjunction": {
         "adjunction_id": "adj.free_module",
         "unit": "eta_X : X -> U_R F_R(X), the insertion of the basis",
         "counit": "epsilon_M : R^(U_R M) -> M",
         "recognition": "NONE. Rmk 5.3: for an arbitrary free-forgetful adjunction the left adjoint need not be fully faithful, so the counit does not recognize free objects -- a free module is not usually recovered from the free module on its entire underlying set. Freeness is the essential image (Cor 9.2), recognized by the inhabitedness of Pres_{F_R}(M), not by the counit."
+      },
+      "essential_image_factorization": {
+        "objects": "the free R-modules; the restriction along FinSet -> Set has the finite free modules as its image (add. Cor 9.2)",
+        "corestriction": "fun.free.module_r.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.free.module_r, fully faithful and replete into cat.modules_r (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
       }
     },
     {
@@ -3732,10 +3760,17 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "tensor algebra functor (addendum Def 10.1); left adjoint to the underlying module of an associative unital R-algebra",
-      "essential_image": "tensor algebras",
       "adjunction": {
         "existence_only": true,
         "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "tensor algebras",
+        "corestriction": "fun.tensor_algebra.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.tensor_algebra, fully faithful and replete into cat.unital_algebras (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
       }
     },
     {
@@ -3745,10 +3780,17 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "free associative R-algebra on a set, X |-> R<X> (addendum Def 10.2)",
-      "essential_image": "free associative R-algebras",
       "adjunction": {
         "existence_only": true,
         "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "free associative R-algebras",
+        "corestriction": "fun.free.associative_algebra_set.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.free.associative_algebra_set, fully faithful and replete into cat.unital_algebras (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
       }
     },
     {
@@ -3758,10 +3800,17 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "symmetric algebra functor (addendum Def 10.3); left adjoint to the underlying module of a commutative R-algebra",
-      "essential_image": "symmetric algebras",
       "adjunction": {
         "existence_only": true,
         "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "symmetric algebras",
+        "corestriction": "fun.symmetric_algebra.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.symmetric_algebra, fully faithful and replete into cat.commutative_algebras (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
       }
     },
     {
@@ -3771,10 +3820,17 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "free commutative R-algebra on a set, X |-> R[X] (addendum Def 10.3)",
-      "essential_image": "free commutative R-algebras",
       "adjunction": {
         "existence_only": true,
         "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "free commutative R-algebras",
+        "corestriction": "fun.free.commutative_algebra_set.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.free.commutative_algebra_set, fully faithful and replete into cat.commutative_algebras (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
       }
     },
     {
@@ -3784,12 +3840,19 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "monoid algebra functor R[-] (addendum Def 13.1); left adjoint to the group-like-elements functor (Thm 13.5), unit eta_M : M -> G(R[M]), m |-> [m] (Prop 14.1)",
-      "essential_image": "EssIm(R[-]); when Spec R is connected the unit is an isomorphism, R[-] is fully faithful, and B is in the image iff the counit R[G(B)] -> B is an isomorphism (Cor 14.2, Thm 14.3)",
       "adjunction": {
         "adjunction_id": "adj.monoid_algebra",
         "unit": "eta_M : M -> G(R[M]), m |-> [m]",
         "counit": "epsilon_B : R[G(B)] -> B, [g] |-> g, the unique bialgebra morphism extending the inclusion of group-like elements (Thm 7.1)",
         "recognition": "Cor 7.4: over a base with Spec R connected the left adjoint is fully faithful (Thm 7.3), so its essential image is CORREFLECTIVE and the COUNIT recognizes it -- an instance of Prop 5.1. The connected-base hypothesis proves full faithfulness; it is not part of the definition of the essential image."
+      },
+      "essential_image_factorization": {
+        "objects": "coreflective over a connected base (Cor 7.4)",
+        "corestriction": "fun.monoid_algebra.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.monoid_algebra, fully faithful and replete into cat.bialgebras_r (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
       }
     },
     {
@@ -3799,12 +3862,19 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "group algebra functor R[-] (addendum Def 13.2); left adjoint to group-like elements of a Hopf algebra (Cor 13.6)",
-      "essential_image": "EssIm(R[-]) on Hopf algebras",
       "adjunction": {
         "adjunction_id": "adj.group_algebra",
         "unit": "eta_G : G -> Grouplike(R[G])",
         "counit": "epsilon_H : R[Grouplike(H)] -> H",
         "recognition": "as for the monoid algebra, under the same connected-base hypothesis (Cor 7.4)"
+      },
+      "essential_image_factorization": {
+        "objects": "coreflective over a connected base (Cor 7.4)",
+        "corestriction": "fun.group_algebra.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.group_algebra, fully faithful and replete into cat.hopf_algebras_r (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
       }
     },
     {
@@ -3893,7 +3963,15 @@
       "target": "cat.bil_coord_n_r",
       "kind": "construction",
       "preferred": true,
-      "provenance": "Gram constructor (Foundations Def 21.3): G |-> (R^n, its standard basis, b_G(x,y) = x^T G y). Half of a named EQUIVALENCE with the inverse G_ij = b(e_i,e_j); after restricting to SymMat_n(R)^nd it lands in coordinatized lattices. It constructs coordinatized forms in general and is not the ontology of the named root lattices (Rmk 21.4)."
+      "provenance": "Gram constructor (Foundations Def 21.3): G |-> (R^n, its standard basis, b_G(x,y) = x^T G y). Half of a named EQUIVALENCE with the inverse G_ij = b(e_i,e_j); after restricting to SymMat_n(R)^nd it lands in coordinatized lattices. It constructs coordinatized forms in general and is not the ontology of the named root lattices (Rmk 21.4).",
+      "essential_image_factorization": {
+        "objects": "coordinatized forms of rank n arising from a symmetric matrix",
+        "corestriction": "fun.gram_n.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.gram_n, fully faithful and replete into cat.bil_coord_n_r (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
+      }
     },
     {
       "id": "arr.proj.bil_coord__int_bil",
@@ -3966,6 +4044,39 @@
       "provenance": "iota_Abelian : CatObject.Abelian -> CatObject (Def 14.1)",
       "source": "clf.catobject_abelian",
       "target": "cat.cat_object"
+    },
+    {
+      "id": "fun.sheafification",
+      "source": "cat.presheaves",
+      "target": "cat.sheaves",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "sheafification a_J, a LEFT EXACT left adjoint to the inclusion (add-II Thm 8.1)",
+      "adjunction": {
+        "adjunction_id": "adj.sheafification",
+        "unit": "F -> i_J a_J F, the localization morphism",
+        "counit": "a_J i_J -> id_Sh, an equivalence",
+        "recognition": "REFLECTIVE (Conv 14.3): the inclusion is the fully faithful RIGHT adjoint, so the UNIT recognizes -- a presheaf is a sheaf iff its unit is an equivalence (Prop 5.2, Def 6.1). Dual to the monoid-algebra case, which is coreflective and recognized by its counit; Conv 14.3 forbids one unqualified phrase for both.",
+        "localization_class": "the J-local equivalences, f with a_J(f) an equivalence (Def 8.2); sheafification exhibits Sh as the localization of PSh at that class"
+      },
+      "essential_image_factorization": {
+        "objects": "the J-local presheaves, i.e. the sheaves",
+        "note": "Cor 8.3: a colimit of sheaves is the reflector applied to the presheaf colimit -- composition with the reflector, not a separate colimit construction (Prop 6.4)."
+      }
+    },
+    {
+      "id": "fun.stackification",
+      "source": "cat.prestacks",
+      "target": "cat.stacks",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "stackification a_J^st (add-II Thm 9.1); the same reflective-localization construction as sheafification applied to space-valued presheaves",
+      "adjunction": {
+        "adjunction_id": "adj.stackification",
+        "unit": "P -> its stackification; a prestack is already a stack precisely when this is an equivalence",
+        "counit": "an equivalence on stacks",
+        "recognition": "REFLECTIVE, as for sheafification (Conv 14.3). Rmk 9.2: these are named instances of reflective localization, and must not be represented by unrelated axioms or by a bare containment claim. Stacks in groupoids come from the appropriate truncation."
+      }
     }
   ],
   "kind": "normalized_semantic_seed.arrows",

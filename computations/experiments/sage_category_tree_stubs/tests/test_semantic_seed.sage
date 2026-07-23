@@ -266,6 +266,8 @@ _DOC_SPECIFIED_FUNCTORS = [
     ("add. Def 13.2 group algebra R[-]", "fun.group_algebra"),
     ("add. Def 13.3 group-like elements", "fun.grouplike_elements"),
     ("Def 21.3  Gram constructor", "fun.gram_n"),
+    ("add-II Thm 8.1  sheafification", "fun.sheafification"),
+    ("add-II Thm 9.1  stackification", "fun.stackification"),
 ]
 
 
@@ -294,3 +296,33 @@ def test_classifier_semantic_character_matches_the_doc() -> None:
         elif character is not None and by_id[cid].get("semantic_character") != character:
             wrong.append(f"{cite} -> {cid} is {by_id[cid].get('semantic_character')!r}, doc says {character!r}")
     assert not wrong, wrong
+
+
+def test_adjunctions_that_use_a_unit_name_a_chosen_lift() -> None:
+    """Conv 1.7: a bare "these are adjoint" is insufficient once a unit or counit is used.
+
+    Thm 1.5 makes mere existence property-like, so existence_only is a legitimate record;
+    what is prohibited is naming a unit, counit or recognition map without a chosen lift.
+    """
+    seed = load_semantic_seed()
+    bad = []
+    for a in seed.arrows:
+        assert "adjoint_to" not in a, f"{a['id']} still carries the bare relation Conv 1.7 rejects"
+        if a.get("kind") not in {"left_adjoint", "right_adjoint"}:
+            continue
+        adj = a.get("adjunction")
+        if not adj:
+            bad.append(f"{a['id']} is an adjoint with no adjunction record")
+        elif not adj.get("existence_only") and not adj.get("role"):
+            if not (adj.get("adjunction_id") and adj.get("unit") and adj.get("counit")):
+                bad.append(f"{a['id']} names no chosen lift with both cells")
+    assert not bad, bad
+
+
+def test_recognition_is_claimed_only_where_it_is_proved() -> None:
+    """Rmk 5.3: a free-forgetful counit does not recognize free objects in general."""
+    seed = load_semantic_seed()
+    by = {a["id"]: a for a in seed.arrows}
+    assert "NONE" in by["fun.free.module_r"]["adjunction"]["recognition"]
+    assert "CORREFLECTIVE" in by["fun.monoid_algebra"]["adjunction"]["recognition"]
+    assert "REFLECTIVE" in by["fun.sheafification"]["adjunction"]["recognition"]
