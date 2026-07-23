@@ -3678,7 +3678,11 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "free monoid functor (addendum Def 8.1); left adjoint to the underlying set of a monoid",
-      "essential_image": "free monoids"
+      "essential_image": "free monoids",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      }
     },
     {
       "id": "fun.free.group",
@@ -3687,7 +3691,11 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "free group functor (addendum Def 8.1); left adjoint to the underlying set of a group",
-      "essential_image": "free groups"
+      "essential_image": "free groups",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      }
     },
     {
       "id": "fun.free.abelian_group",
@@ -3696,7 +3704,11 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "free abelian group functor (addendum Def 8.2)",
-      "essential_image": "free abelian groups"
+      "essential_image": "free abelian groups",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      }
     },
     {
       "id": "fun.free.module_r",
@@ -3705,8 +3717,13 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "free left R-module functor F_R, X |-> R^(X) (addendum Def 9.1); Hom_R(R^(X),M) = Map(X,U_R M)",
-      "adjoint_to": "fun.modules_to_sets",
-      "essential_image": "the free R-modules (Cor 9.2); the restriction to FinSet has the finite free modules as its image"
+      "essential_image": "the free R-modules (Cor 9.2); the restriction to FinSet has the finite free modules as its image",
+      "adjunction": {
+        "adjunction_id": "adj.free_module",
+        "unit": "eta_X : X -> U_R F_R(X), the insertion of the basis",
+        "counit": "epsilon_M : R^(U_R M) -> M",
+        "recognition": "NONE. Rmk 5.3: for an arbitrary free-forgetful adjunction the left adjoint need not be fully faithful, so the counit does not recognize free objects -- a free module is not usually recovered from the free module on its entire underlying set. Freeness is the essential image (Cor 9.2), recognized by the inhabitedness of Pres_{F_R}(M), not by the counit."
+      }
     },
     {
       "id": "fun.tensor_algebra",
@@ -3715,7 +3732,11 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "tensor algebra functor (addendum Def 10.1); left adjoint to the underlying module of an associative unital R-algebra",
-      "essential_image": "tensor algebras"
+      "essential_image": "tensor algebras",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      }
     },
     {
       "id": "fun.free.associative_algebra_set",
@@ -3724,7 +3745,11 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "free associative R-algebra on a set, X |-> R<X> (addendum Def 10.2)",
-      "essential_image": "free associative R-algebras"
+      "essential_image": "free associative R-algebras",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      }
     },
     {
       "id": "fun.symmetric_algebra",
@@ -3733,7 +3758,11 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "symmetric algebra functor (addendum Def 10.3); left adjoint to the underlying module of a commutative R-algebra",
-      "essential_image": "symmetric algebras"
+      "essential_image": "symmetric algebras",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      }
     },
     {
       "id": "fun.free.commutative_algebra_set",
@@ -3742,7 +3771,11 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "free commutative R-algebra on a set, X |-> R[X] (addendum Def 10.3)",
-      "essential_image": "free commutative R-algebras"
+      "essential_image": "free commutative R-algebras",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      }
     },
     {
       "id": "fun.monoid_algebra",
@@ -3751,8 +3784,13 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "monoid algebra functor R[-] (addendum Def 13.1); left adjoint to the group-like-elements functor (Thm 13.5), unit eta_M : M -> G(R[M]), m |-> [m] (Prop 14.1)",
-      "adjoint_to": "fun.grouplike_elements",
-      "essential_image": "EssIm(R[-]); when Spec R is connected the unit is an isomorphism, R[-] is fully faithful, and B is in the image iff the counit R[G(B)] -> B is an isomorphism (Cor 14.2, Thm 14.3)"
+      "essential_image": "EssIm(R[-]); when Spec R is connected the unit is an isomorphism, R[-] is fully faithful, and B is in the image iff the counit R[G(B)] -> B is an isomorphism (Cor 14.2, Thm 14.3)",
+      "adjunction": {
+        "adjunction_id": "adj.monoid_algebra",
+        "unit": "eta_M : M -> G(R[M]), m |-> [m]",
+        "counit": "epsilon_B : R[G(B)] -> B, [g] |-> g, the unique bialgebra morphism extending the inclusion of group-like elements (Thm 7.1)",
+        "recognition": "Cor 7.4: over a base with Spec R connected the left adjoint is fully faithful (Thm 7.3), so its essential image is CORREFLECTIVE and the COUNIT recognizes it -- an instance of Prop 5.1. The connected-base hypothesis proves full faithfulness; it is not part of the definition of the essential image."
+      }
     },
     {
       "id": "fun.group_algebra",
@@ -3761,8 +3799,13 @@
       "kind": "left_adjoint",
       "preferred": true,
       "provenance": "group algebra functor R[-] (addendum Def 13.2); left adjoint to group-like elements of a Hopf algebra (Cor 13.6)",
-      "adjoint_to": "fun.grouplike_elements_hopf",
-      "essential_image": "EssIm(R[-]) on Hopf algebras"
+      "essential_image": "EssIm(R[-]) on Hopf algebras",
+      "adjunction": {
+        "adjunction_id": "adj.group_algebra",
+        "unit": "eta_G : G -> Grouplike(R[G])",
+        "counit": "epsilon_H : R[Grouplike(H)] -> H",
+        "recognition": "as for the monoid algebra, under the same connected-base hypothesis (Cor 7.4)"
+      }
     },
     {
       "id": "fun.grouplike_elements",
@@ -3771,7 +3814,10 @@
       "kind": "right_adjoint",
       "preferred": true,
       "provenance": "group-like elements G(B) = {b : Delta b = b (x) b, epsilon b = 1} (addendum Def 13.3); right adjoint to the monoid algebra functor",
-      "adjoint_to": "fun.monoid_algebra"
+      "adjunction": {
+        "adjunction_id": "adj.monoid_algebra",
+        "role": "right adjoint of the chosen lift; see the left adjoint's record"
+      }
     },
     {
       "id": "fun.grouplike_elements_hopf",
@@ -3780,7 +3826,10 @@
       "kind": "right_adjoint",
       "preferred": true,
       "provenance": "group-like elements of a Hopf algebra; the antipode supplies inverses so G(H) is a group (addendum Def 13.3)",
-      "adjoint_to": "fun.group_algebra"
+      "adjunction": {
+        "adjunction_id": "adj.group_algebra",
+        "role": "right adjoint of the chosen lift; see the left adjoint's record"
+      }
     },
     {
       "id": "arr.proj.biact__modules",

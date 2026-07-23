@@ -66,18 +66,22 @@ _CONSTRUCTION_VALUE_TARGETS: dict[str, dict[str, str]] = {
         "free_module_composite": "F_R U : Mon -> Modules(R), the free R-module on the underlying set (Def 16.2)",
         "lift": "R[-] : Mon -> Bialgebras(R).WithBasis (Def 13.1, Def 16.3)",
         "essential_image": (
-            "theorem obligation, not recorded as the destination (Conv 17.4), and recognized "
-            "by the adjunction rather than by any condition on a basis. R[-] is left adjoint "
-            "to the group-like-elements functor G (Thm 13.5), with unit eta_M : M -> G(R[M]), "
-            "m |-> [m] (Prop 14.1). A finitely supported x = sum a_m [m] is group-like iff the "
-            "a_m are orthogonal idempotents summing to 1, so when Spec R is connected eta is an "
-            "isomorphism, R[-] is fully faithful, and B lies in the essential image iff the "
-            "counit R[G(B)] -> B is an isomorphism of bialgebras (Cor 14.2, Thm 14.3). Over a "
-            "base with nontrivial idempotents R[M] acquires group-likes beyond the canonical "
-            "[m], the unit need not be iso, and the counit test stops being intrinsic; the "
-            "essential image is then the definition itself and a presentation is an explicit "
-            "isomorphism R[M] = B (Rmk 14.4). Amendment 18.6: never define monoid algebra by a "
-            "condition on a chosen basis."
+            "theorem obligation, not the destination (Conv 13.3), and CORREFLECTIVE -- Conv 14.3 "
+            "forbids describing this and the reflective case by the same unqualified phrase. "
+            "R[-] is the fully faithful left adjoint, so its COUNIT recognizes the image "
+            "(Prop 5.1, Cor 7.4); sheafification is the dual case, where an inclusion is the "
+            "fully faithful right adjoint and the unit recognizes local objects. Chosen "
+            "adjunction: unit eta_M : M -> G(R[M]), m |-> [m]; counit epsilon_B : R[G(B)] -> B, "
+            "the unique bialgebra morphism extending the inclusion of group-like elements "
+            "(Thm 7.1). A finitely supported x = sum a_m [m] is group-like iff the a_m are "
+            "orthogonal idempotents summing to 1 (Prop 7.2), so for R nonzero with Spec R "
+            "connected the unit is an isomorphism and R[-] is fully faithful (Thm 7.3), whence "
+            "B is in the image iff epsilon_B is an isomorphism (Cor 7.4). That hypothesis "
+            "proves full faithfulness; it is NOT part of the definition of the essential image. "
+            "Over a base with nontrivial idempotents the image stays well defined and a chosen "
+            "presentation is a pair (M, phi : R[M] = B) (Rmk 7.5). Rmk 7.6: this concerns "
+            "arbitrary bialgebra morphisms -- restricting to basis-preserving maps changes the "
+            "codomain and the theorems must be reproved there."
         ),
     },
 }
