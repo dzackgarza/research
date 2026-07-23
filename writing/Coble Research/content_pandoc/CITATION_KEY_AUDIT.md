@@ -115,3 +115,33 @@ extractions attached to the live Zotero items (the authoritative texts).
 - **BHO+11**: full-text search of the entire library (Severi variety, V_{6,10},
   nodal sextics) finds no B/H/O 2011 candidate; the work is not in Zotero.
   Still unresolved, still deliberately un-built.
+
+## The `CD12` collision, settled
+
+`CD12` is live in Zotero (`PMC33V8M`, BBT key `CD12`) = Cantat–Dolgachev,
+*Rational surfaces with a large group of automorphisms*.
+"Overloaded" referred to `content_latex/main.tex`, which defined the key twice:
+`\bibitem[CD12]{CD12}` (Cantat–Dolgachev) and `\bibitem[CDL24]{CD12}`
+(Cossec–Dolgachev–Liedtke, *Enriques Surfaces I*).
+The likely cause: the book draft was hosted as `~idolga/CD12.pdf`, so `CD12`
+also reads naturally as "Cossec–Dolgachev 2012". The pandoc port resolved every
+`CD12` to `CDL24` on that reading.
+
+Adjudicated against both extractions:
+
+| content | CD12 (Cantat–Dolgachev) | CDL25 (Enriques Surfaces I) | site resolves to |
+|---|---|---|---|
+| §1.4 heading | "Cremona special point sets" | "Cohomological Invariants" | **CD12** |
+| "Cremona special" in text | section + main theorem | 0 (1 hit, in its bibliography) | **CD12** |
+| "From Coble to Halphen surfaces" | §3.1, with the $p_a(C)$ computation | 0 | **CD12** |
+| blowdown lemma | Prop. 3.1, verbatim | 0 ("Halphen surface of index 2": 0) | **CD12** |
+| Halphen pencil/surface of index $m$ | — | present (defined in text) | **CDL25** (Ch. 5 §6) |
+| Def. 5.4.3, Eqn. 5.3.1, Table 5.1, Prop. 5.46, Thm. 5.8.2, Cor. 5.9.10, Thm. 5.9.8, p. 561 | — | present | **CDL25** |
+
+**The LaTeX bibliography never worked.** Its build artifacts show zero
+`\bibcite` entries in `main.aux` and 66 undefined-citation warnings, including
+all four `CD12` sites. The inline `\bibitem` list was never build-validated, so
+"the LaTeX twin cites X" is evidence of intent only — which is precisely why the
+two sites where it was wrong (AS15, Dol12) had to be caught by extraction text.
+This monograph is the first version of the document with a resolving
+bibliography.
