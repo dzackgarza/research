@@ -150,13 +150,28 @@ to say whether Sage's algorithms are **safe for your object**. Mapping a Sage ca
 what its name suggests, or to what it "should" have meant, hands a user algorithms that
 quietly change their object.
 
-The standing example. `Modules(R)` declaring `Bimodules(R,R)` has operational consequences:
-only one action is stored, so `m·r := r·m`, and the bimodule law `(rm)r' = r(mr')` becomes
-`r'(rm) = r(r'm)` — commutativity, silently imposed, without complaint for a matrix ring.
-That is what Sage encodes, so `rho(Modules) = Bimodules(R,R)`, not `R-Mod`. Sage's
-genuinely left-module category is `LeftModules(R)`. Route a left module over a
-noncommutative ring into `Modules(R)` and Sage assumes commutativity; the mapping is
-precise exactly so that this is visible beforehand.
+Read what the source *states* before deriving what it must mean. A derivation from a
+declaration is a reconstruction; the docstring is the thing itself, and where they
+disagree the derivation is wrong.
+
+The standing example. `sage/categories/modules.py` defines an object of `Modules(R)` as
+"a left and right `R`-module over a commutative ring `R`" with `r*(x*s) = (r*x)*s`, and
+`Modules(R).super_categories() == [Bimodules(R,R)]` says the same thing. So
+`rho(Modules) = Bimodules(R,R)` at `R : CommutativeRings` — Sage's own stated hypothesis,
+not a charity imposed from outside — and not `R-Mod`, because forgetting the right action
+is not an equivalence even for commutative `R` (Foundations Prop 92.1): `k[x]` with the
+right action twisted by `x ↦ x+1` is a member of Sage's `Modules(k[x])` that is no left
+module in disguise. `LeftModules(R)` is the genuinely one-sided category, and reading it
+as `R-Mod` adds nothing, since a left module is canonically an `(R,ℤ)`-bimodule with no
+choice involved (Cor 90.2).
+
+The hazard sits one level in and points the opposite way from the obvious guess. Sage's
+own TODO records that some code "possibly assumes" `M` is a *symmetric* bimodule,
+`r*x = x*r` — the central bimodules of Foundations Def 92.2, a proper full subcategory
+membership in which the category does not require. So the unsafe object is a non-central
+bimodule over a *commutative* ring, which `Modules(R)` admits and parts of Sage then
+miscompute. rho records the declared destination; a centrality assumption inside the
+implementation is an audit note attached to it, never a second destination.
 
 What Sage does *not* settle: whether two of its categories model the same platonic
 category (compare **normalized targets**, never Sage's `==`), whether a join it printed is

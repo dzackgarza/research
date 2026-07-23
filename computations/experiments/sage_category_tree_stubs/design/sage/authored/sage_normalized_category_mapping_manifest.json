@@ -781,9 +781,9 @@
         "confidence": "high",
         "review_status": "proposed; source-audited",
         "recommend_explicit_target": "yes",
-        "base_in_current_dot": "present; parameter signature incomplete",
-        "current_dot_match": "Bimodules(R)",
-        "note": "",
+        "base_in_current_dot": "present",
+        "current_dot_match": "Bimodules(R,S)",
+        "note": "Sage requires the actions to commute ('r*(x*s) = (r*x)*s'), so this is the genuine bimodule category, not the two-unconstrained-actions category BiAct(R,S) of Foundations Def 85.2. Its two super_categories are the projections U_L, U_R (Def 87.1), not inclusions.",
         "exception_or_ambiguity": ""
       }
     },
@@ -1968,8 +1968,8 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/filtered_modules.py"
       },
       "normalized": {
-        "base": "Modules(R)",
-        "base_id": "cat.modules_r",
+        "base": "Bimodules(R,R)",
+        "base_id": "cat.bimodules_r_r",
         "classifier_applications": [
           {
             "order": 1,
@@ -1980,8 +1980,8 @@
             "support_route": "structural_route:underlying_module"
           }
         ],
-        "target_expression": "Modules(R).Filtered",
-        "target_id": "cat_expr.modules_r_filtered",
+        "target_expression": "Bimodules(R,R).Filtered",
+        "target_id": "cat_expr.bimodules_r_r_filtered",
         "mapping_kind": "classifier refinement",
         "target_visibility": "conventional named",
         "parameter_constraints": "R : CommutativeRings"
@@ -1991,7 +1991,7 @@
         "review_status": "proposed; source-audited",
         "recommend_explicit_target": "yes — named derived alias",
         "base_in_current_dot": "present",
-        "current_dot_match": "Modules(R)",
+        "current_dot_match": "Bimodules(R,R)",
         "note": "",
         "exception_or_ambiguity": ""
       }
@@ -2006,8 +2006,8 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/filtered_modules_with_basis.py"
       },
       "normalized": {
-        "base": "Modules(R)",
-        "base_id": "cat.modules_r",
+        "base": "Bimodules(R,R)",
+        "base_id": "cat.bimodules_r_r",
         "classifier_applications": [
           {
             "order": 1,
@@ -2026,8 +2026,8 @@
             "support_route": "structural_route:underlying_module"
           }
         ],
-        "target_expression": "Modules(R).WithBasis.Filtered",
-        "target_id": "cat_expr.modules_r_withbasis_filtered",
+        "target_expression": "Bimodules(R,R).WithBasis.Filtered",
+        "target_id": "cat_expr.bimodules_r_r_withbasis_filtered",
         "mapping_kind": "classifier refinement",
         "target_visibility": "implicit refinement",
         "parameter_constraints": "R : CommutativeRings"
@@ -2037,7 +2037,7 @@
         "review_status": "proposed; source-audited",
         "recommend_explicit_target": "no — keep as implicit expression unless reused",
         "base_in_current_dot": "present",
-        "current_dot_match": "Modules(R)",
+        "current_dot_match": "Bimodules(R,R)",
         "note": "",
         "exception_or_ambiguity": ""
       }
@@ -2358,8 +2358,8 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/finite_dimensional_modules_with_basis.py"
       },
       "normalized": {
-        "base": "Modules(R)",
-        "base_id": "cat.modules_r",
+        "base": "Bimodules(R,R)",
+        "base_id": "cat.bimodules_r_r",
         "classifier_applications": [
           {
             "order": 1,
@@ -2378,8 +2378,8 @@
             "support_route": "structural_route:underlying_module"
           }
         ],
-        "target_expression": "Modules(R).WithBasis.FiniteRank",
-        "target_id": "cat_expr.modules_r_withbasis_finiterank",
+        "target_expression": "Bimodules(R,R).WithBasis.FiniteRank",
+        "target_id": "cat_expr.bimodules_r_r_withbasis_finiterank",
         "mapping_kind": "classifier refinement",
         "target_visibility": "conventional named",
         "parameter_constraints": "R : CommutativeRings"
@@ -2389,7 +2389,7 @@
         "review_status": "proposed; source-audited",
         "recommend_explicit_target": "yes — named derived alias",
         "base_in_current_dot": "present",
-        "current_dot_match": "Modules(R)",
+        "current_dot_match": "Bimodules(R,R)",
         "note": "Sage permits R=ZZ; its FiniteDimensional axiom therefore means finite rank relative to the module structure, not vector-space dimension.",
         "exception_or_ambiguity": ""
       }
@@ -3528,8 +3528,8 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/graded_modules.py"
       },
       "normalized": {
-        "base": "Modules(R)",
-        "base_id": "cat.modules_r",
+        "base": "Bimodules(R,R)",
+        "base_id": "cat.bimodules_r_r",
         "classifier_applications": [
           {
             "order": 1,
@@ -3540,8 +3540,8 @@
             "support_route": "structural_route:underlying_set"
           }
         ],
-        "target_expression": "Modules(R).Graded",
-        "target_id": "cat_expr.modules_r_graded",
+        "target_expression": "Bimodules(R,R).Graded",
+        "target_id": "cat_expr.bimodules_r_r_graded",
         "mapping_kind": "classifier refinement",
         "target_visibility": "conventional named",
         "parameter_constraints": "R : CommutativeRings"
@@ -3551,7 +3551,7 @@
         "review_status": "proposed; source-audited",
         "recommend_explicit_target": "yes — named derived alias",
         "base_in_current_dot": "present",
-        "current_dot_match": "Modules(R)",
+        "current_dot_match": "Bimodules(R,R)",
         "note": "",
         "exception_or_ambiguity": ""
       }
@@ -3566,8 +3566,8 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/graded_modules_with_basis.py"
       },
       "normalized": {
-        "base": "Modules(R)",
-        "base_id": "cat.modules_r",
+        "base": "Bimodules(R,R)",
+        "base_id": "cat.bimodules_r_r",
         "classifier_applications": [
           {
             "order": 1,
@@ -3586,8 +3586,8 @@
             "support_route": "structural_route:underlying_set"
           }
         ],
-        "target_expression": "Modules(R).WithBasis.Graded",
-        "target_id": "cat_expr.modules_r_withbasis_graded",
+        "target_expression": "Bimodules(R,R).WithBasis.Graded",
+        "target_id": "cat_expr.bimodules_r_r_withbasis_graded",
         "mapping_kind": "classifier refinement",
         "target_visibility": "implicit refinement",
         "parameter_constraints": "R : CommutativeRings"
@@ -3597,7 +3597,7 @@
         "review_status": "proposed; source-audited",
         "recommend_explicit_target": "no — keep as implicit expression unless reused",
         "base_in_current_dot": "present",
-        "current_dot_match": "Modules(R)",
+        "current_dot_match": "Bimodules(R,R)",
         "note": "",
         "exception_or_ambiguity": ""
       }
@@ -4348,8 +4348,8 @@
         "recommend_explicit_target": "yes — canonical family already required",
         "base_in_current_dot": "present",
         "current_dot_match": "Modules(R)",
-        "note": "Normalized Modules(R) denotes left R-modules; Sage's LeftModules is an explicit spelling of that standard category.",
-        "exception_or_ambiguity": ""
+        "note": "Normalized Modules(R) is R-Mod, left modules (Foundations Def 13.1); Sage's LeftModules is that category, and reading it so adds nothing, since a left module is canonically an (R,Z)-bimodule with no choice involved (Cor 90.2). Sage's Modules is NOT this category.",
+        "exception_or_ambiguity": "left_modules.py says 'over an rng (ring not necessarily with unit)', which the code never enforces and which Bimodules.__init__ contradicts by requiring Rings(). The parameter sort is recorded as Rings on the enforced behaviour, not the docstring."
       }
     },
     {
@@ -4892,23 +4892,23 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/modules.py"
       },
       "normalized": {
-        "base": "Modules(R)",
-        "base_id": "cat.modules_r",
+        "base": "Bimodules(R,R)",
+        "base_id": "cat.bimodules_r_r",
         "classifier_applications": [],
-        "target_expression": "Modules(R)",
-        "target_id": "cat_expr.modules_r",
-        "mapping_kind": "exact intended named base",
+        "target_expression": "Bimodules(R,R)",
+        "target_id": "cat_expr.bimodules_r_r",
+        "mapping_kind": "exact named base",
         "target_visibility": "core named",
-        "parameter_constraints": "R : CommutativeRings (intended Sage semantics)"
+        "parameter_constraints": "R : CommutativeRings"
       },
       "audit": {
-        "confidence": "review",
+        "confidence": "high",
         "review_status": "proposed; source-audited",
         "recommend_explicit_target": "yes",
         "base_in_current_dot": "present",
-        "current_dot_match": "Modules(R)",
-        "note": "Map to the ordinary category of left R-modules when R is commutative (the intended/common Sage use). Sage's source models symmetric (R,R)-bimodules and explicitly warns that noncommutative semantics are unsettled.",
-        "exception_or_ambiguity": "For noncommutative R, Sage Modules(R) is not a reliable synonym for normalized left Modules(R); the adapter must inspect/limit the parameter or map to the appropriate symmetric-bimodule refinement."
+        "current_dot_match": "Bimodules(R,R)",
+        "note": "Sage states this outright: modules.py defines an object of Modules(R) as 'a left and right R-module over a commutative ring R' with r*(x*s) = (r*x)*s, and Modules(R).super_categories() == [Bimodules(R,R)]. R commutative is Sage's own hypothesis. Not R-Mod: forgetting the right action is neither an equivalence nor full even for commutative R (Foundations Prop 92.1).",
+        "exception_or_ambiguity": "Sage's own TODO records that some code 'possibly assumes' M is a symmetric bimodule, r*x = x*r -- the central bimodules of Foundations Def 92.2, a proper full subcategory the category does not require. So the unsafe object is a NON-central bimodule over a commutative ring, which Modules(R) admits and parts of Sage then miscompute: k[x] with the right action twisted by x -> x+1 is a member and is no left module in disguise. The same assumption is what lets Sage speak of 'the' underlying module of a Modules(R) object; the WithBasis/Graded/Super/Filtered refinements below transport along the left forgetful functor U_L (Def 87.1) and inherit this caveat."
       }
     },
     {
@@ -4921,8 +4921,8 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/modules_with_basis.py"
       },
       "normalized": {
-        "base": "Modules(R)",
-        "base_id": "cat.modules_r",
+        "base": "Bimodules(R,R)",
+        "base_id": "cat.bimodules_r_r",
         "classifier_applications": [
           {
             "order": 1,
@@ -4933,8 +4933,8 @@
             "support_route": "structural_route:underlying_module"
           }
         ],
-        "target_expression": "Modules(R).WithBasis",
-        "target_id": "cat_expr.modules_r_withbasis",
+        "target_expression": "Bimodules(R,R).WithBasis",
+        "target_id": "cat_expr.bimodules_r_r_withbasis",
         "mapping_kind": "classifier refinement",
         "target_visibility": "conventional named",
         "parameter_constraints": "R : CommutativeRings"
@@ -4944,7 +4944,7 @@
         "review_status": "proposed; source-audited",
         "recommend_explicit_target": "yes — named derived alias",
         "base_in_current_dot": "present",
-        "current_dot_match": "Modules(R)",
+        "current_dot_match": "Bimodules(R,R)",
         "note": "WithBasis is chosen basis data.",
         "exception_or_ambiguity": ""
       }
@@ -5537,7 +5537,7 @@
         "base_in_current_dot": "present",
         "current_dot_match": "Modules(R)",
         "note": "Right R-modules are left modules over the opposite ring; no parallel primitive module species is needed.",
-        "exception_or_ambiguity": ""
+        "exception_or_ambiguity": "Mod-R := R^op-Mod is a definition (Foundations Def 13.1), not a functor induced by the opposite-ring involution: no side-changing functor exists from that involution alone (Prop 91.1). Same rng-versus-Rings docstring divergence as LeftModules."
       }
     },
     {
@@ -6165,8 +6165,8 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/super_modules.py"
       },
       "normalized": {
-        "base": "Modules(R)",
-        "base_id": "cat.modules_r",
+        "base": "Bimodules(R,R)",
+        "base_id": "cat.bimodules_r_r",
         "classifier_applications": [
           {
             "order": 1,
@@ -6177,8 +6177,8 @@
             "support_route": "structural_route:underlying_module"
           }
         ],
-        "target_expression": "Modules(R).Super",
-        "target_id": "cat_expr.modules_r_super",
+        "target_expression": "Bimodules(R,R).Super",
+        "target_id": "cat_expr.bimodules_r_r_super",
         "mapping_kind": "classifier refinement",
         "target_visibility": "conventional named",
         "parameter_constraints": "R : CommutativeRings"
@@ -6188,7 +6188,7 @@
         "review_status": "proposed; source-audited",
         "recommend_explicit_target": "yes — named derived alias",
         "base_in_current_dot": "present",
-        "current_dot_match": "Modules(R)",
+        "current_dot_match": "Bimodules(R,R)",
         "note": "Super is the Z/2-graded specialization/construction.",
         "exception_or_ambiguity": ""
       }
@@ -6203,8 +6203,8 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/super_modules_with_basis.py"
       },
       "normalized": {
-        "base": "Modules(R)",
-        "base_id": "cat.modules_r",
+        "base": "Bimodules(R,R)",
+        "base_id": "cat.bimodules_r_r",
         "classifier_applications": [
           {
             "order": 1,
@@ -6223,8 +6223,8 @@
             "support_route": "structural_route:underlying_module"
           }
         ],
-        "target_expression": "Modules(R).WithBasis.Super",
-        "target_id": "cat_expr.modules_r_withbasis_super",
+        "target_expression": "Bimodules(R,R).WithBasis.Super",
+        "target_id": "cat_expr.bimodules_r_r_withbasis_super",
         "mapping_kind": "classifier refinement",
         "target_visibility": "implicit refinement",
         "parameter_constraints": "R : CommutativeRings"
@@ -6234,7 +6234,7 @@
         "review_status": "proposed; source-audited",
         "recommend_explicit_target": "no — keep as implicit expression unless reused",
         "base_in_current_dot": "present",
-        "current_dot_match": "Modules(R)",
+        "current_dot_match": "Bimodules(R,R)",
         "note": "",
         "exception_or_ambiguity": ""
       }
@@ -6509,7 +6509,7 @@
         "base_in_current_dot": "present",
         "current_dot_match": "Modules(R)",
         "note": "VectorSpaces(K) is the standard name for Modules(K) when the scalar ring is a field.",
-        "exception_or_ambiguity": ""
+        "exception_or_ambiguity": "OPEN, not settled by this pass. vector_spaces.py's docstring says 'the category of (abstract) vector spaces over a given field', but its super_categories() is [Modules(K, dispatch=False)], and Sage's Modules is Bimodules(R,R). Unlike Modules, where docstring and declaration agree, here they disagree, so the destination is either VectorSpaces(K) as recorded or Bimodules(K,K) at K a field. Falsifiable specimen: K = Q(i) with the right action twisted by conjugation is a (K,K)-bimodule and no vector space; whether a Sage parent can present it decides the row. See issue #292."
       }
     },
     {

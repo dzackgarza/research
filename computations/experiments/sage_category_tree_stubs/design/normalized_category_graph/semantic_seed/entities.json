@@ -286,8 +286,29 @@
       "provenance": "dot_import"
     },
     {
-      "id": "cat.bimodules_r",
+      "id": "cat.bimodules_r_s",
       "kind": "category_family",
+      "canonical_name": "Bimodules",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        },
+        {
+          "name": "S",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
+      "definition": null,
+      "aliases": ["Bimodules(R,S)"],
+      "dot_vertex": "Bimodules(R,S)",
+      "provenance": "Foundations Def 13.8 / 85.1: two actions on one additive group; Bimodules(R,R) is this family at equal parameters, not a separate node"
+    },
+    {
+      "id": "cat.bimodules_r_r",
+      "kind": "derived_category",
       "canonical_name": "Bimodules",
       "parameters": [
         {
@@ -296,24 +317,17 @@
           "variance": "contravariant_in_ring"
         }
       ],
-      "definition": null,
-      "aliases": ["Bimodules(R)"],
-      "dot_vertex": "Bimodules(R)",
-      "provenance": "(R,R)-bimodules; refines left and right modules"
-    },
-    {
-      "id": "cat.bimodules_r_s",
-      "kind": "alias",
-      "canonical_name": "bimodules_r_s",
-      "parameters": [],
       "definition": {
-        "operation": "same_as",
-        "of": "cat.bimodules_r",
-        "notes": "authored ledger base_id spelling alias"
+        "operation": "parameter_substitution",
+        "of": "cat.bimodules_r_s",
+        "substitute": {
+          "S": "R"
+        },
+        "notes": "the bimodule family on the diagonal; forgetting either action to Modules(R) is neither an equivalence nor full (Foundations Prop 92.1)"
       },
-      "aliases": [],
-      "dot_vertex": "Bimodules(R)",
-      "provenance": "authored sagecats ledger"
+      "aliases": ["Bimodules(R,R)"],
+      "dot_vertex": "Bimodules(R,R)",
+      "provenance": "Foundations Prop 92.1; destination of Sage's Modules(R)"
     },
     {
       "id": "cat.cat_1",
@@ -1372,7 +1386,7 @@
       "definition": {
         "operation": "same_as",
         "of": "cat.modules_r",
-        "notes": "Sage LeftModules is the default Modules(R) presentation"
+        "notes": "LeftModules(R) is the explicit spelling of normalized Modules(R) = R-Mod (Foundations Def 13.1). Sage's LeftModules is the one-sided category; Sage's Modules is not."
       },
       "aliases": ["LeftModules(R)"],
       "dot_vertex": "LeftModules(R)",
@@ -1552,7 +1566,7 @@
       "definition": null,
       "aliases": ["R-Mod", "Modules(R)"],
       "dot_vertex": "Modules(R)",
-      "provenance": "Modules(R) ≃ left R-modules (Sage default)"
+      "provenance": "Foundations Def 13.1: R-Mod is primitive (left modules); Cor 90.2 identifies it with (R,Z)-bimodules, no choice involved. Not Sage's Modules(R), which is Bimodules(R,R)."
     },
     {
       "id": "cat.modules_rop",

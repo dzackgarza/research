@@ -4,19 +4,19 @@
   "authority": "Interface demand only. This manifest records which stable identifiers a released registry must resolve for this repository to evaluate its rows. It is not an authority for generic Lean definitions.",
   "source": {
     "path": "design/sage/authored/sage_normalized_category_mapping_manifest.json",
-    "sha256": "ddc37ce48d9d9e37922500da6bfbea13a71183d8a4b9b8a3d3ed0eb27e2c021a",
-    "git_commit": "ef034c7846e5469bf613dc03ad8cc650d9e6830f",
+    "sha256": "91b4e30a1105d9b3c923f8a18dbd337de5c8fbf955ad0a71f6ab87fb43a34205",
+    "git_commit": "ef034c7846e5469bf613dc03ad8cc650d9e6830f-dirty",
     "ledger_schema_version": "0.4-draft",
     "sage_source_commit": "686dc1a8d420c2e0aabadd4f602d9a0aa4690c50"
   },
   "coverage": {
     "public_rows": 179,
     "distinct_sage_sources": 179,
-    "requirements": 320,
+    "requirements": 321,
     "unstated_demands": 17,
     "by_kind": {
       "alias": 6,
-      "category": 71,
+      "category": 72,
       "classifier": 65,
       "coherence": 4,
       "finite_limit_cone": 1,
@@ -221,6 +221,27 @@
       "occurrences": [
         {
           "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.bimodules_r_r",
+      "display": "Bimodules(R,R)",
+      "demanded_by": [
+        "FilteredModules",
+        "FilteredModulesWithBasis",
+        "FiniteDimensionalModulesWithBasis",
+        "GradedModules",
+        "GradedModulesWithBasis",
+        "Modules",
+        "ModulesWithBasis",
+        "SuperModules",
+        "SuperModulesWithBasis"
+      ],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : CommutativeRings"
         }
       ]
     },
@@ -638,33 +659,13 @@
       "kind": "category",
       "stable_id": "cat.modules_r",
       "display": "Modules(R)",
-      "demanded_by": [
-        "FilteredModules",
-        "FilteredModulesWithBasis",
-        "FiniteDimensionalModulesWithBasis",
-        "GradedModules",
-        "GradedModulesWithBasis",
-        "HeckeModules",
-        "LeftModules",
-        "Modules",
-        "ModulesWithBasis",
-        "OreModules",
-        "QuantumGroupRepresentations",
-        "SuperModules",
-        "SuperModulesWithBasis"
-      ],
+      "demanded_by": ["HeckeModules", "LeftModules", "OreModules", "QuantumGroupRepresentations"],
       "occurrences": [
-        {
-          "parameter_constraints": "R : CommutativeRings"
-        },
         {
           "parameter_constraints": "R : CommutativeRings; object-dependent level/anemic Hecke action"
         },
         {
           "parameter_constraints": "R : Rings"
-        },
-        {
-          "parameter_constraints": "R : CommutativeRings (intended Sage semantics)"
         },
         {
           "parameter_constraints": "R : CommutativeRings; σ endomorphism and/or σ-derivation δ"
@@ -2354,6 +2355,114 @@
     },
     {
       "kind": "target_expression",
+      "stable_id": "cat_expr.bimodules_r_r",
+      "display": "Bimodules(R,R)",
+      "demanded_by": ["Modules"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bimodules_r_r_filtered",
+      "display": "Bimodules(R,R).Filtered",
+      "demanded_by": ["FilteredModules"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bimodules_r_r_graded",
+      "display": "Bimodules(R,R).Graded",
+      "demanded_by": ["GradedModules"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bimodules_r_r_super",
+      "display": "Bimodules(R,R).Super",
+      "demanded_by": ["SuperModules"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bimodules_r_r_withbasis",
+      "display": "Bimodules(R,R).WithBasis",
+      "demanded_by": ["ModulesWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bimodules_r_r_withbasis_filtered",
+      "display": "Bimodules(R,R).WithBasis.Filtered",
+      "demanded_by": ["FilteredModulesWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bimodules_r_r_withbasis_finiterank",
+      "display": "Bimodules(R,R).WithBasis.FiniteRank",
+      "demanded_by": ["FiniteDimensionalModulesWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bimodules_r_r_withbasis_graded",
+      "display": "Bimodules(R,R).WithBasis.Graded",
+      "demanded_by": ["GradedModulesWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bimodules_r_r_withbasis_super",
+      "display": "Bimodules(R,R).WithBasis.Super",
+      "demanded_by": ["SuperModulesWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
       "stable_id": "cat_expr.bimodules_r_s",
       "display": "Bimodules(R,S)",
       "demanded_by": ["Bimodules"],
@@ -3357,114 +3466,6 @@
         {
           "mapping_kind": "classifier refinement",
           "target_visibility": "domain named"
-        }
-      ]
-    },
-    {
-      "kind": "target_expression",
-      "stable_id": "cat_expr.modules_r",
-      "display": "Modules(R)",
-      "demanded_by": ["Modules"],
-      "occurrences": [
-        {
-          "mapping_kind": "exact intended named base",
-          "target_visibility": "core named"
-        }
-      ]
-    },
-    {
-      "kind": "target_expression",
-      "stable_id": "cat_expr.modules_r_filtered",
-      "display": "Modules(R).Filtered",
-      "demanded_by": ["FilteredModules"],
-      "occurrences": [
-        {
-          "mapping_kind": "classifier refinement",
-          "target_visibility": "conventional named"
-        }
-      ]
-    },
-    {
-      "kind": "target_expression",
-      "stable_id": "cat_expr.modules_r_graded",
-      "display": "Modules(R).Graded",
-      "demanded_by": ["GradedModules"],
-      "occurrences": [
-        {
-          "mapping_kind": "classifier refinement",
-          "target_visibility": "conventional named"
-        }
-      ]
-    },
-    {
-      "kind": "target_expression",
-      "stable_id": "cat_expr.modules_r_super",
-      "display": "Modules(R).Super",
-      "demanded_by": ["SuperModules"],
-      "occurrences": [
-        {
-          "mapping_kind": "classifier refinement",
-          "target_visibility": "conventional named"
-        }
-      ]
-    },
-    {
-      "kind": "target_expression",
-      "stable_id": "cat_expr.modules_r_withbasis",
-      "display": "Modules(R).WithBasis",
-      "demanded_by": ["ModulesWithBasis"],
-      "occurrences": [
-        {
-          "mapping_kind": "classifier refinement",
-          "target_visibility": "conventional named"
-        }
-      ]
-    },
-    {
-      "kind": "target_expression",
-      "stable_id": "cat_expr.modules_r_withbasis_filtered",
-      "display": "Modules(R).WithBasis.Filtered",
-      "demanded_by": ["FilteredModulesWithBasis"],
-      "occurrences": [
-        {
-          "mapping_kind": "classifier refinement",
-          "target_visibility": "implicit refinement"
-        }
-      ]
-    },
-    {
-      "kind": "target_expression",
-      "stable_id": "cat_expr.modules_r_withbasis_finiterank",
-      "display": "Modules(R).WithBasis.FiniteRank",
-      "demanded_by": ["FiniteDimensionalModulesWithBasis"],
-      "occurrences": [
-        {
-          "mapping_kind": "classifier refinement",
-          "target_visibility": "conventional named"
-        }
-      ]
-    },
-    {
-      "kind": "target_expression",
-      "stable_id": "cat_expr.modules_r_withbasis_graded",
-      "display": "Modules(R).WithBasis.Graded",
-      "demanded_by": ["GradedModulesWithBasis"],
-      "occurrences": [
-        {
-          "mapping_kind": "classifier refinement",
-          "target_visibility": "implicit refinement"
-        }
-      ]
-    },
-    {
-      "kind": "target_expression",
-      "stable_id": "cat_expr.modules_r_withbasis_super",
-      "display": "Modules(R).WithBasis.Super",
-      "demanded_by": ["SuperModulesWithBasis"],
-      "occurrences": [
-        {
-          "mapping_kind": "classifier refinement",
-          "target_visibility": "implicit refinement"
         }
       ]
     },

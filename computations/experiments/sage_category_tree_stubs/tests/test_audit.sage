@@ -91,7 +91,8 @@ def test_cat_spine_and_monoidal_tensor_dual() -> None:
     assert not fac.instance("FibredCategories").is_subcategory(fac.instance("Groupoids"))
     mods = fac.instance("Modules(R)")
     assert fac.instance("LeftModules(R)").is_subcategory(mods)
-    assert fac.instance("Bimodules(R)").is_subcategory(fac.instance("LeftModules(R)"))
+    assert fac.instance("Bimodules(R,S)").is_subcategory(fac.instance("LeftModules(R)"))
+    assert fac.instance("Bimodules(R,R)").is_subcategory(fac.instance("Bimodules(R,S)"))
     assert "OverField" in fac.axiom_instance("Modules(R)", "OverField").axioms()
     # Vector spaces are modules over the *same* field, not over the default ZZ base.
     vs = fac.instance("VectorSpaces(K) = Modules.OverField")

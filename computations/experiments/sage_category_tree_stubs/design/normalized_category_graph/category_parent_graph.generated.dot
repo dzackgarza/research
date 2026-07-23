@@ -30,7 +30,7 @@ digraph CategoryParents {
   ArtinStacks [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", id="cat.artinstacks", kind="category_family"];
   "Bialgebras(R)" [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", id="cat.bialgebras_r", kind="category_family"];
   Bicategories [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", id="cat.bicategories", kind="category_family"];
-  "Bimodules(R)" [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", id="cat.bimodules_r", kind="category_family"];
+  "Bimodules(R,S)" [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", id="cat.bimodules_r_s", kind="category_family"];
   CatObject [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", id="cat.cat_object", kind="category_family"];
   Cat_1 [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", id="cat.cat_1", kind="category_family"];
   Cat_2 [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", id="cat.cat_2", kind="category_family"];
@@ -111,6 +111,7 @@ digraph CategoryParents {
   "Algebras(R).Graded" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.algebras_r.graded", kind="derived_category"];
   "AlgebrasOverField = Algebras.OverField" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.algebras_over_field", kind="derived_category"];
   "AssociativeAlgebras = Algebras.Associative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.associativealgebras", kind="derived_category"];
+  "Bimodules(R,R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.bimodules_r_r", kind="derived_category"];
   "CommAlgebras = UnitalAlgebras.Commutative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.commutative_algebras", kind="derived_category"];
   "CommRings = Rings.Commutative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.commutative_rings", kind="derived_category"];
   "CountableInfiniteSets = Sets.Countable.Infinite" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.countableinfinitesets", kind="derived_category"];
@@ -242,7 +243,6 @@ digraph CategoryParents {
 
   // --- alias ---
   "AlgebrasOverField = Algebras.OverField" [style="rounded,filled", fillcolor="#fce4ec", color="#880e4f", id="cat.associativeunitalalgebras_k", kind="alias"];
-  "Bimodules(R)" [style="rounded,filled", fillcolor="#fce4ec", color="#880e4f", id="cat.bimodules_r_s", kind="alias"];
   "ChainComplexes(C)" [style="rounded,filled", fillcolor="#fce4ec", color="#880e4f", id="cat.chaincomplexes_c", kind="alias"];
   ChowGroups [style="rounded,filled", fillcolor="#fce4ec", color="#880e4f", id="val.chowgroups", kind="alias"];
   CohomologyRings [style="rounded,filled", fillcolor="#fce4ec", color="#880e4f", id="val.cohomologyrings", kind="alias"];
@@ -361,8 +361,8 @@ digraph CategoryParents {
   "Bialgebras(R)" -> "Coalgebras(R)" [kind="forgetful", id="arr.dot.bialgebras__coalgebras"];
   "Bialgebras(R)" -> "UnitalAlgebras = Algebras.Associative.Unital" [kind="forgetful", id="arr.dot.bialgebras__unitalalgebras"];
   Bicategories -> CatObject [kind="forgetful", id="arr.dot.bicategories__catobject"];
-  "Bimodules(R)" -> "LeftModules(R)" [kind="forgetful", id="arr.dot.bimodules__leftmodules"];
-  "Bimodules(R)" -> "RightModules(R)" [kind="forgetful", id="arr.dot.bimodules__rightmodules"];
+  "Bimodules(R,S)" -> "LeftModules(R)" [kind="forgetful", id="arr.dot.bimodules__leftmodules"];
+  "Bimodules(R,S)" -> "RightModules(R)" [kind="forgetful", id="arr.dot.bimodules__rightmodules"];
   Cat_1 -> Cat_2 [kind="forgetful", id="arr.dot.cat_1__cat_2"];
   Cat_2 -> Bicategories [kind="forgetful", id="arr.dot.cat_2__bicategories"];
   "ChainComplexes(C)" -> "NonUnitalDGAs = Algebras.Differential" [kind="forgetful", id="arr.dot.chaincomplexes__nonunitaldgas"];
@@ -480,7 +480,7 @@ digraph CategoryParents {
   QuotientStacks -> "G-Objects(G)" [kind="forgetful", id="arr.dot.quotientstacks__g_objects"];
   QuotientStacks -> GroupoidObjects [kind="forgetful", id="arr.dot.quotientstacks__groupoidobjects"];
   ReflectionGroups -> "Groups = Magmas.Associative.Unital.Inverse" [kind="forgetful", id="arr.dot.reflectiongroups__groups"];
-  "RightModules(R)" -> "AdditiveAbelianGroups = AdditiveGroups.Commutative" [kind="full_inclusion", id="arr.dot.rightmodules__additiveabeliangroups"];
+  "RightModules(R)" -> "AdditiveAbelianGroups = AdditiveGroups.Commutative" [kind="forgetful", id="arr.dot.rightmodules__additiveabeliangroups"];
   RingedSites -> Sites [kind="forgetful", id="arr.dot.ringedsites__sites"];
   RingedSpaces -> TopologicalSpaces [kind="forgetful", id="arr.dot.ringedspaces__topologicalspaces"];
   RingedTopoi -> Topoi [kind="forgetful", id="arr.dot.ringedtopoi__topoi"];
@@ -550,7 +550,6 @@ digraph CategoryParents {
   "Algebras(R)" -> "Modules(R)" [kind="forgetful", id="fun.algebras_to_modules"];
   "Algebras(R)" -> Sets [kind="forgetful", id="fun.algebras_to_sets"];
   "Bialgebras(R)" -> "Algebras(R)" [kind="forgetful", id="fun.bialgebras_to_algebras"];
-  "Bimodules(R)" -> "Modules(R)" [kind="full_inclusion", id="fun.bimodules_to_modules"];
   "Coalgebras(R)" -> "Modules(R)" [kind="forgetful", id="fun.coalgebras_to_modules"];
   "Domains = Rings.Domain" -> Rings [kind="full_inclusion", id="fun.domains_to_rings"];
   Fields -> Sets [kind="forgetful", id="fun.fields_to_sets"];
@@ -567,4 +566,5 @@ digraph CategoryParents {
   "UnitalAlgebras = Algebras.Associative.Unital" -> Magmas [kind="forgetful", id="fun.unital_algebras_to_magmas"];
   "Magmas.Additive" -> Magmas [kind="full_inclusion", id="arr.incl.additive_magmas_to_magmas"];
   "AdditiveGroups = Magmas.Additive.Associative.Unital.Inverse" -> Magmas [kind="forgetful", id="fun.additive_groups_to_magmas"];
+  "Bimodules(R,R)" -> "Bimodules(R,S)" [kind="full_inclusion", id="arr.dot.bimodulesdiagonal__bimodules"];
 }

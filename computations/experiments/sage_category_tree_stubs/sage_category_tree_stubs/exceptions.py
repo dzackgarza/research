@@ -94,8 +94,6 @@ def incorrect_parent_stub_edges() -> frozenset[tuple[str, str]]:
             vs = SAGE_TO_STUB.get("VectorSpaces")
             if vs:
                 out.add((child, vs))
-        if row.sage_name == "Modules" and row.sage_parent == "Bimodules":
-            out.add(("Modules(R)", "Bimodules(R)"))
         # FreeModules / ModulesWithBasis are stub named joins, not SAGE_TO_STUB keys
         if row.stub_vertex and row.sage_parent == "VectorSpaces":
             vs = SAGE_TO_STUB.get("VectorSpaces")

@@ -32,7 +32,7 @@ _HOST_ALIASES: dict[str, str] = {
     "Modules": "Modules(R)",
     "LeftModules": "LeftModules(R)",
     "RightModules": "RightModules(R)",
-    "Bimodules": "Bimodules(R)",
+    "Bimodules": "Bimodules(R,S)",
     "Rings": "Rings",
     "Fields": "Fields",
     "Algebras": "Algebras(R)",

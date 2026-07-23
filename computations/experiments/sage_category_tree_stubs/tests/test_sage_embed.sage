@@ -25,10 +25,19 @@ def test_alias_map_excludes_aliases_from_semantic_names() -> None:
     assert "Algebras" in semantic
 
 
-def test_ledger_has_incorrect_parent_for_modules_bimodules() -> None:
-    edges = incorrect_parent_stub_edges()
-    assert ("Modules(R)", "Bimodules(R)") in edges
-    assert any(e.kind == "incorrect_parent" and e.sage_name == "Modules" for e in EMBED_EXCEPTIONS)
+def test_sage_modules_lands_on_the_bimodule_diagonal() -> None:
+    """Sage's ``Modules`` parents under ``Bimodules``, and that is its meaning.
+
+    ``modules.py`` defines an object of ``Modules(R)`` as "a left and right
+    ``R``-module over a commutative ring ``R``", so the parent edge is Sage
+    stating what the category is, not an incorrect parent. Sage's one-sided
+    category is ``LeftModules``, and the two must not share a destination.
+    """
+    assert SAGE_TO_STUB["Modules"] == "Bimodules(R,R)"
+    assert SAGE_TO_STUB["LeftModules"] == "LeftModules(R)"
+    assert SAGE_TO_STUB["Bimodules"] == "Bimodules(R,S)"
+    assert SAGE_TO_STUB["Modules"] != SAGE_TO_STUB["LeftModules"]
+    assert not any(e.kind == "incorrect_parent" and e.sage_name == "Modules" for e in EMBED_EXCEPTIONS)
 
 
 def test_graded_algebras_target_is_in_graph() -> None:

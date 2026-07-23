@@ -399,11 +399,13 @@ digraph CategoryParents {
     style=filled; fillcolor="#fdebd0"; color="#b9770e";
     node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
 
-    // Modules(R) ≃ left R-modules (Sage default), not (R,R)-bimodules
+    // Modules(R) = left R-modules (Foundations Def 13.1). Sage's Modules(R) is NOT
+    // this vertex: it is Bimodules(R,R) (modules.py; see the sagecats ledger).
     "Modules(R)" [fillcolor="#f9e79f", penwidth=2];
     "LeftModules(R)";
     "RightModules(R)";
-    "Bimodules(R)";
+    "Bimodules(R,S)";
+    "Bimodules(R,R)";
     VectorFieldModules; TensorFieldModules; DiffFormModules;
 
     node [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", fontcolor="#000000", penwidth=1.5];
@@ -446,8 +448,9 @@ digraph CategoryParents {
     "LeftModules(R)" -> "Modules(R)";
     "RightModules(R)" -> "AdditiveAbelianGroups = AdditiveGroups.Commutative";
     "Modules(R)" -> "AdditiveAbelianGroups = AdditiveGroups.Commutative";
-    "Bimodules(R)" -> "LeftModules(R)";
-    "Bimodules(R)" -> "RightModules(R)";
+    "Bimodules(R,R)" -> "Bimodules(R,S)";
+    "Bimodules(R,S)" -> "LeftModules(R)";
+    "Bimodules(R,S)" -> "RightModules(R)";
     "VectorSpaces(K) = Modules.OverField" -> "Modules(R)";
     "FreeModules = Modules.Free" -> "Modules(R)";
     "ProjectiveModules = Modules.Projective" -> "Modules(R)";

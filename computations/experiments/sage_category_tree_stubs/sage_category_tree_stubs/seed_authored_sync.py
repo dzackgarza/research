@@ -32,7 +32,6 @@ BASE_ID_ALIASES: dict[str, str] = {
     "cat.commutativerings": "cat.commutative_rings",
     "cat.coxetergroups": "cat.coxeter_groups",
     "cat.weylgroups": "cat.weyl_groups",
-    "cat.bimodules_r_s": "cat.bimodules_r",
     "cat.modules_rop": "cat.right_modules_r",
     "cat.modules_a": "cat.modules_r",
     "cat.modules_k": "cat.vector_spaces_k",

@@ -27,12 +27,11 @@
     "EuclideanDomains": "cat.euclidean_domains",
     "DivisionRings": "cat.division_rings",
     "Fields": "cat.fields",
-    "Modules": "cat.modules_r",
+    "Modules": "cat.bimodules_r_r",
     "LeftModules": "cat.left_modules_r",
     "RightModules": "cat.right_modules_r",
-    "Bimodules": "cat.bimodules_r",
+    "Bimodules": "cat.bimodules_r_s",
     "VectorSpaces": "cat.vector_spaces_k",
-    "ModulesWithBasis": "cat.modules_with_basis",
     "MagmaticAlgebras": "cat.algebras_r",
     "Algebras": "cat.unital_algebras",
     "LieAlgebras": "cat.lie_algebras_r",
@@ -70,12 +69,10 @@
     "cat.euclidean_domains": "EuclideanDomains",
     "cat.division_rings": "DivisionRings",
     "cat.fields": "Fields",
-    "cat.modules_r": "Modules",
+    "cat.modules_r": "LeftModules",
     "cat.left_modules_r": "LeftModules",
     "cat.right_modules_r": "RightModules",
-    "cat.bimodules_r": "Bimodules",
     "cat.vector_spaces_k": "VectorSpaces",
-    "cat.modules_with_basis": "ModulesWithBasis",
     "cat.algebras_r": "MagmaticAlgebras",
     "cat.unital_algebras": "Algebras",
     "cat.lie_algebras_r": "LieAlgebras",
@@ -90,7 +87,9 @@
     "cat.weyl_groups": "WeylGroups",
     "cat.posets": "Posets",
     "cat.algebras_over_field": "MagmaticAlgebras",
-    "cat.additive_abelian_groups": "CommutativeAdditiveGroups"
+    "cat.additive_abelian_groups": "CommutativeAdditiveGroups",
+    "cat.bimodules_r_r": "Modules",
+    "cat.bimodules_r_s": "Bimodules"
   },
   "axiom_sage_to_graph": {
     "AdditiveAssociative": "Associative",
@@ -154,14 +153,6 @@
       "alias_of": null,
       "stub_vertex": "Coalgebras(R)",
       "sage_parent": "VectorSpaces"
-    },
-    {
-      "kind": "incorrect_parent",
-      "sage_name": "Modules",
-      "detail": "Sage parents Modules under Bimodules; 𝒢 has Modules(R)≃left modules, Bimodules refining Left and Right",
-      "alias_of": null,
-      "stub_vertex": "Modules(R)",
-      "sage_parent": "Bimodules"
     },
     {
       "kind": "incorrect_parent",

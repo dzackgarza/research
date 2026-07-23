@@ -17,14 +17,6 @@
       "target": "cat.unital_algebras"
     },
     {
-      "id": "arr.alias.bimodules_r_s",
-      "kind": "equivalence",
-      "preferred": true,
-      "provenance": "authored base_id alias",
-      "source": "cat.bimodules_r_s",
-      "target": "cat.bimodules_r"
-    },
-    {
       "id": "arr.alias.chaincomplexes_c",
       "kind": "equivalence",
       "preferred": true,
@@ -1541,16 +1533,16 @@
       "id": "arr.dot.bimodules__leftmodules",
       "kind": "forgetful",
       "preferred": true,
-      "provenance": "dot_import",
-      "source": "cat.bimodules_r",
+      "provenance": "Foundations Def 87.1: forgetting one action",
+      "source": "cat.bimodules_r_s",
       "target": "cat.left_modules_r"
     },
     {
       "id": "arr.dot.bimodules__rightmodules",
       "kind": "forgetful",
       "preferred": true,
-      "provenance": "dot_import",
-      "source": "cat.bimodules_r",
+      "provenance": "Foundations Def 87.1: forgetting one action",
+      "source": "cat.bimodules_r_s",
       "target": "cat.right_modules_r"
     },
     {
@@ -2491,7 +2483,7 @@
     },
     {
       "id": "arr.dot.rightmodules__additiveabeliangroups",
-      "kind": "full_inclusion",
+      "kind": "forgetful",
       "preferred": true,
       "provenance": "dot_import",
       "source": "cat.right_modules_r",
@@ -3086,14 +3078,6 @@
       "target": "cat.algebras_r"
     },
     {
-      "id": "fun.bimodules_to_modules",
-      "kind": "full_inclusion",
-      "preferred": true,
-      "provenance": "𝒢: bimodules refine; Sage parent direction differs (ledger)",
-      "source": "cat.bimodules_r",
-      "target": "cat.modules_r"
-    },
-    {
       "id": "fun.coalgebras_to_modules",
       "kind": "forgetful",
       "preferred": true,
@@ -3646,6 +3630,14 @@
       "kind": "classifier_leg",
       "preferred": true,
       "provenance": "ι_Compact : cat.topologicalspaces.Compact → cat.topologicalspaces"
+    },
+    {
+      "id": "arr.dot.bimodulesdiagonal__bimodules",
+      "source": "cat.bimodules_r_r",
+      "target": "cat.bimodules_r_s",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "the (R,S)-bimodules with S = R"
     }
   ],
   "kind": "normalized_semantic_seed.arrows",

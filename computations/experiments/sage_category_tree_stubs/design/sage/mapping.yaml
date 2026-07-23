@@ -672,7 +672,7 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.bimodules_bimodules
     source_sage_name: Bimodules
-    target: cat.bimodules_r
+    target: cat.bimodules_r_s
     relation: exact
     normalized_reading: Bimodules(R,S)
     construction:
@@ -1763,16 +1763,16 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.filtered_modules_filteredmodules
     source_sage_name: FilteredModules
-    target: cat.modules_r
+    target: cat.bimodules_r_r
     relation: constructible
-    normalized_reading: Modules(R).Filtered
+    normalized_reading: Bimodules(R,R).Filtered
     construction:
       kind: finite_limit_derivability
       ok: true
-      base: cat.modules_r
+      base: cat.bimodules_r_r
       classifiers:
         - clf.filtered
-      expression: Modules(R).Filtered
+      expression: Bimodules(R,R).Filtered
       detail: all requested classifier occurrences discharged
       certificate:
         - occurrence: clf.filtered#1
@@ -1797,17 +1797,17 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.filtered_modules_with_basis_filteredmoduleswithbasis
     source_sage_name: FilteredModulesWithBasis
-    target: cat.modules_r
+    target: cat.bimodules_r_r
     relation: constructible
-    normalized_reading: Modules(R).WithBasis.Filtered
+    normalized_reading: Bimodules(R,R).WithBasis.Filtered
     construction:
       kind: finite_limit_derivability
       ok: true
-      base: cat.modules_r
+      base: cat.bimodules_r_r
       classifiers:
         - clf.withbasis
         - clf.filtered
-      expression: Modules(R).WithBasis.Filtered
+      expression: Bimodules(R,R).WithBasis.Filtered
       detail: all requested classifier occurrences discharged
       certificate:
         - occurrence: clf.withbasis#1
@@ -2102,17 +2102,17 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.finite_dimensional_modules_with_basis_finitedimensionalmoduleswithbasis
     source_sage_name: FiniteDimensionalModulesWithBasis
-    target: cat.modules_r
+    target: cat.bimodules_r_r
     relation: constructible
-    normalized_reading: Modules(R).WithBasis.FiniteRank
+    normalized_reading: Bimodules(R,R).WithBasis.FiniteRank
     construction:
       kind: finite_limit_derivability
       ok: true
-      base: cat.modules_r
+      base: cat.bimodules_r_r
       classifiers:
         - clf.withbasis
         - clf.finiterank
-      expression: Modules(R).WithBasis.FiniteRank
+      expression: Bimodules(R,R).WithBasis.FiniteRank
       detail: all requested classifier occurrences discharged
       certificate:
         - occurrence: clf.withbasis#1
@@ -3127,16 +3127,16 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.graded_modules_gradedmodules
     source_sage_name: GradedModules
-    target: cat.modules_r
+    target: cat.bimodules_r_r
     relation: constructible
-    normalized_reading: Modules(R).Graded
+    normalized_reading: Bimodules(R,R).Graded
     construction:
       kind: finite_limit_derivability
       ok: true
-      base: cat.modules_r
+      base: cat.bimodules_r_r
       classifiers:
         - clf.graded
-      expression: Modules(R).Graded
+      expression: Bimodules(R,R).Graded
       detail: all requested classifier occurrences discharged
       certificate:
         - occurrence: clf.graded#1
@@ -3161,17 +3161,17 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.graded_modules_with_basis_gradedmoduleswithbasis
     source_sage_name: GradedModulesWithBasis
-    target: cat.modules_r
+    target: cat.bimodules_r_r
     relation: constructible
-    normalized_reading: Modules(R).WithBasis.Graded
+    normalized_reading: Bimodules(R,R).WithBasis.Graded
     construction:
       kind: finite_limit_derivability
       ok: true
-      base: cat.modules_r
+      base: cat.bimodules_r_r
       classifiers:
         - clf.withbasis
         - clf.graded
-      expression: Modules(R).WithBasis.Graded
+      expression: Bimodules(R,R).WithBasis.Graded
       detail: all requested classifier occurrences discharged
       certificate:
         - occurrence: clf.withbasis#1
@@ -4383,16 +4383,16 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.modules_modules
     source_sage_name: Modules
-    target: cat.modules_r
+    target: cat.bimodules_r_r
     relation: exact
-    normalized_reading: Modules(R)
+    normalized_reading: Bimodules(R,R)
     construction:
       kind: finite_limit_derivability
       ok: true
       status: EXACT_BASE
-      base: cat.modules_r
+      base: cat.bimodules_r_r
       classifiers: []
-      expression: Modules(R)
+      expression: Bimodules(R,R)
       detail: base-only mapping; named seed entity
       certificate: []
       authored_routes: []
@@ -4400,28 +4400,28 @@ category_mappings:
       since: sage-dev-local
       until: null
     parameters:
-      constraints: 'R : CommutativeRings (intended Sage semantics)'
+      constraints: 'R : CommutativeRings'
       bindings:
         R: cat.commutative_rings
       resolved: true
     provenance:
       status: authored-exact
       source: design/sage/authored/
-      confidence: review
+      confidence: high
       review_status: proposed; source-audited
-      mapping_kind: exact intended named base
+      mapping_kind: exact named base
   - source: sage.category.modules_with_basis_moduleswithbasis
     source_sage_name: ModulesWithBasis
-    target: cat.modules_with_basis
+    target: cat.bimodules_r_r
     relation: constructible
-    normalized_reading: Modules(R).WithBasis
+    normalized_reading: Bimodules(R,R).WithBasis
     construction:
       kind: finite_limit_derivability
       ok: true
-      base: cat.modules_r
+      base: cat.bimodules_r_r
       classifiers:
         - clf.withbasis
-      expression: Modules(R).WithBasis
+      expression: Bimodules(R,R).WithBasis
       detail: all requested classifier occurrences discharged
       certificate:
         - occurrence: clf.withbasis#1
@@ -5553,16 +5553,16 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.super_modules_supermodules
     source_sage_name: SuperModules
-    target: cat.modules_r
+    target: cat.bimodules_r_r
     relation: constructible
-    normalized_reading: Modules(R).Super
+    normalized_reading: Bimodules(R,R).Super
     construction:
       kind: finite_limit_derivability
       ok: true
-      base: cat.modules_r
+      base: cat.bimodules_r_r
       classifiers:
         - clf.super
-      expression: Modules(R).Super
+      expression: Bimodules(R,R).Super
       detail: all requested classifier occurrences discharged
       certificate:
         - occurrence: clf.super#1
@@ -5587,17 +5587,17 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.super_modules_with_basis_supermoduleswithbasis
     source_sage_name: SuperModulesWithBasis
-    target: cat.modules_r
+    target: cat.bimodules_r_r
     relation: constructible
-    normalized_reading: Modules(R).WithBasis.Super
+    normalized_reading: Bimodules(R,R).WithBasis.Super
     construction:
       kind: finite_limit_derivability
       ok: true
-      base: cat.modules_r
+      base: cat.bimodules_r_r
       classifiers:
         - clf.withbasis
         - clf.super
-      expression: Modules(R).WithBasis.Super
+      expression: Bimodules(R,R).WithBasis.Super
       detail: all requested classifier occurrences discharged
       certificate:
         - occurrence: clf.withbasis#1
