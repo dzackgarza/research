@@ -10,16 +10,23 @@ Run:  "$SAGE_BIN" -python dump_instances.py instances.json
 import gc
 import json
 import sys
+from typing import Any
 
 import sage.categories.all  # noqa: F401
-from sage.categories.category import Category, JoinCategory
+import sage.categories.category as _category_module
+from sage.categories.category import Category
 from sage.categories.category_with_axiom import CategoryWithAxiom
 from sage.categories.covariant_functorial_construction import (
     FunctorialConstructionCategory,
 )
 
+# JoinCategory exists at runtime but is invisible to static analysis of sage.
+JoinCategory = getattr(_category_module, "JoinCategory")
+
 insts = [x for x in gc.get_objects() if isinstance(x, Category)]
-seen, joins, kinds = set(), [], {}
+seen: set[str] = set()
+joins: list[dict[str, Any]] = []
+kinds: dict[str, int] = {}
 for x in insts:
     r = str(x)
     if r in seen:

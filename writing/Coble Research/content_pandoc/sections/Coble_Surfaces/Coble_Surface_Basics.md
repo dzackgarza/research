@@ -2,7 +2,7 @@
 
 ::: {.remark}
 
-Following [@DM19 §5.1], a **Coble surface** is a smooth projective rational
+Following [@DM20 §5.1], a **Coble surface** is a smooth projective rational
 surface with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S} \neq \emptyset$.
 Such surfaces were first studied in [@Cob19], [@Oda85], and were ultimately
 classified in [@DZ99].
@@ -10,7 +10,7 @@ We say $S$ is **terminal of K3 type** if $\abs{-2K_S}$ contains a smooth[^1]
 divisor $C = C_1 + \cdots + C_{n}$, the disjoint union of $n$ reduced smooth
 rational curves $C_i$ satisfying $C_i^2 = -4$[^2], and thus
 $C_i C_j = -4\delta_{ij}$.
-The $C_i$ are referred to as the _boundary components_ of $S$.
+The $C_i$ are referred to as the *boundary components* of $S$.
 One can show $n = -K_S^2$ and $n\leq 10$.
 :::
 

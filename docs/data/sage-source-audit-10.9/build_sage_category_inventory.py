@@ -20,7 +20,7 @@ from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
 
 SOURCE_ROOT = Path("/mnt/data/sage109/src/sage/categories")
 DIST_ROOT = Path("/mnt/data/sage109")
@@ -142,7 +142,15 @@ PUBLIC_WRAPPER_NAMES = {
     "MonoidAlgebras",
 }
 
-ALIASES = [
+class AliasRecord(TypedDict):
+    alias: str
+    canonical: str
+    module: str
+    source_line: int
+    status: str
+
+
+ALIASES: list[AliasRecord] = [
     {
         "alias": "PartiallyOrderedSets",
         "canonical": "Posets",
@@ -422,7 +430,7 @@ for rec in all_class_records:
                     axiom_node = value.elts[1]
                     axiom = axiom_node.value if isinstance(axiom_node, ast.Constant) else unparse(axiom_node)
                     hardcoded_definitions[rec.category_id] = (unparse(value.elts[0]), str(axiom), stmt.lineno)
-            lazy = parse_lazy_import(stmt.value)
+            lazy = parse_lazy_import(stmt.value) if stmt.value is not None else None
             if lazy:
                 target_module, target_name = lazy
                 if target_module.startswith("sage.categories."):
@@ -554,7 +562,11 @@ def scan_category_method(
         expansion_parts.append(", ".join(f"{c}._with_axioms(...)" for c in with_axioms_calls))
     if recognized_calls:
         seen_calls: set[str] = set()
-        stable_calls = [c for c in recognized_calls if not (c in seen_calls or seen_calls.add(c))]
+        stable_calls: list[str] = []
+        for c in recognized_calls:
+            if c not in seen_calls:
+                seen_calls.add(c)
+                stable_calls.append(c)
         expansion_parts.append("calls " + ", ".join(f"{c}()" for c in stable_calls))
     expansion = "; ".join(expansion_parts)
 
@@ -689,7 +701,7 @@ def scan_category_class_body(
             for target in targets:
                 if not isinstance(target, ast.Name) or target.id.startswith("_"):
                     continue
-                lazy = parse_lazy_import(stmt.value)
+                lazy = parse_lazy_import(stmt.value) if stmt.value is not None else None
                 if lazy:
                     target_module, target_name = lazy
                     feature_name = target.id
@@ -963,7 +975,12 @@ def syntactic_axiom_chain(category_id: str, stack: set[str] | None = None) -> li
     chain.append(definition["axiom"])
     # Stable unique sequence.
     seen: set[str] = set()
-    return [x for x in chain if not (x in seen or seen.add(x))]
+    unique_chain: list[str] = []
+    for x in chain:
+        if x not in seen:
+            seen.add(x)
+            unique_chain.append(x)
+    return unique_chain
 
 # ---------------------------------------------------------------------------
 # Aggregate local features and build category rows
@@ -1287,7 +1304,7 @@ for alias in ALIASES:
     )
 write_csv(aliases_csv, alias_rows)
 
-payload = {
+payload: dict[str, Any] = {
     "metadata": {
         "sage_version": VERSION,
         "sage_commit": COMMIT,
@@ -1498,7 +1515,7 @@ md.append(
                 r["status"],
                 source_link(r["module"], r["source_line"]),
             )
-            for r in alias_rows
+            for r in ALIASES
         ),
     )
 )
