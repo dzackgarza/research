@@ -61,8 +61,8 @@ _HOST_ALIASES: dict[str, str] = {
     "Schemes": "Schemes(S)",
     "Manifolds": "Manifolds",
     # Lat.* axiom nodes in the DOT sit on Lat_R
-    "Lat": "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate",
-    "Lat_R": "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate",
+    "Lat": "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate",
+    "Lat_R": "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate",
 }
 
 # Sage forked AdditiveMagmas + AdditiveAssociative names. Stub Magmas uses a

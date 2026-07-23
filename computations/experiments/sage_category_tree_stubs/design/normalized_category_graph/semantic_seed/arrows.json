@@ -4132,6 +4132,30 @@
       "kind": "pullback_projection",
       "preferred": true,
       "provenance": "the Arr(D^~) leg of the Def 3.1 comma pullback; p_F is evaluation at the target, and its fibres are the presentation spaces"
+    },
+    {
+      "id": "arr.clf.int_bil_r.radical_free",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_RadicalFree : ∫Bil.RadicalFree -> ∫Bil (Def 18.3 / Rmk 18.4)",
+      "source": "clf.int_bil_r.radical_free.domain",
+      "target": "cat.int_bil_r"
+    },
+    {
+      "id": "arr.clf.int_bil_r.perfect",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_Perfect : ∫Bil.Perfect -> ∫Bil (Def 18.3 / Rmk 18.4)",
+      "source": "clf.int_bil_r.perfect.domain",
+      "target": "cat.int_bil_r"
+    },
+    {
+      "id": "arr.clf.int_bil_r.generically_nondegenerate",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_GenericallyNondegenerate : ∫Bil.GenericallyNondegenerate -> ∫Bil (Def 18.3 / Rmk 18.4)",
+      "source": "clf.int_bil_r.generically_nondegenerate.domain",
+      "target": "cat.int_bil_r"
     }
   ],
   "kind": "normalized_semantic_seed.arrows",

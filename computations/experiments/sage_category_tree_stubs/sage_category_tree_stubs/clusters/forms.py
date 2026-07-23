@@ -15,10 +15,10 @@ NODES = [
     "Genera",
     "LatticeHomsets",
     "RootLattices",
-    "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate",
+    "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate",
     "Lat.Definite",
     "Lat.Indefinite",
-    "DiscBil = ∫Bil.Symmetric.Nondegenerate.Finite",
+    "DiscBil = ∫Bil.Symmetric.Perfect.Finite",
     "DiscQuad = ∫Quad.Nondegenerate",
     "∫Bil.SkewSymmetric",
 ]
@@ -30,13 +30,13 @@ AXIOMS = [
     ("∫Bil_R(W)", "Symmetric"),
     ("∫Bil_R(W)", "SkewSymmetric"),
     ("∫Bil.SkewSymmetric", "Alternating"),
-    ("Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate", "Definite"),
-    ("Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate", "PositiveDefinite"),
-    ("Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate", "NegativeDefinite"),
-    ("Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate", "Indefinite"),
-    ("Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate", "Hyperbolic"),
+    ("Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate", "Definite"),
+    ("Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate", "PositiveDefinite"),
+    ("Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate", "NegativeDefinite"),
+    ("Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate", "Indefinite"),
+    ("Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate", "Hyperbolic"),
 ]
-NAMED_JOINS = ["Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate", "DiscBil = ∫Bil.Symmetric.Nondegenerate.Finite", "DiscQuad = ∫Quad.Nondegenerate"]
+NAMED_JOINS = ["Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate", "DiscBil = ∫Bil.Symmetric.Perfect.Finite", "DiscQuad = ∫Quad.Nondegenerate"]
 
 
 def categories() -> dict[str, Category]:

@@ -247,6 +247,15 @@ _DOC_SPECIFIED_ENTITIES = [
     ("add-II Def 11.1 Alg_O(V)", "cat.alg_o_v"),
 ]
 
+# Rmk 18.4: "nondegenerate" covers trivial radical, injective adjoint, perfect pairing, and
+# nondegeneracy after extension to the fraction field. The report always names the precise
+# condition, so a shared classifier between two of them is a defect, not a shorthand.
+_PRECISE_FORM_CONDITIONS = [
+    ("Def 18.3  radical-free: rad = 0", "clf.int_bil_r.radical_free"),
+    ("Def 18.3  perfect: b~ an isomorphism", "clf.int_bil_r.perfect"),
+    ("Rmk 18.4  generically nondegenerate", "clf.int_bil_r.generically_nondegenerate"),
+]
+
 _DOC_SPECIFIED_CLASSIFIERS = [
     ("Def 14.1  preadditive is chosen structure", "clf.catobject_preadditive", "chosen structure"),
     ("Def 14.1  additive, relative to it", "clf.catobject_additive", "property relative to Preadditive"),
@@ -330,3 +339,25 @@ def test_recognition_is_claimed_only_where_it_is_proved() -> None:
     assert "NONE" in by["fun.free.module_r"]["adjunction"]["recognition"]
     assert "CORREFLECTIVE" in by["fun.monoid_algebra"]["adjunction"]["recognition"]
     assert "REFLECTIVE" in by["fun.sheafification"]["adjunction"]["recognition"]
+
+
+def test_lattice_and_discriminant_do_not_share_a_nondegeneracy_condition() -> None:
+    """Def 19.2 asks for generic nondegeneracy; Def 25.3 asks for a perfect pairing.
+
+    Prop 25.2 calls the second the finite-length torsion *counterpart* of the first, which is
+    precisely a statement that they are different conditions. One classifier serving both is
+    the ambiguity Rmk 18.4 exists to forbid.
+    """
+    seed = load_semantic_seed()
+    by = {c["id"]: c for c in seed.classifiers}
+    for cite, cid in _PRECISE_FORM_CONDITIONS:
+        assert cid in by, f"{cite} -> {cid} absent"
+
+    ents = {e["id"]: e for e in seed.entities}
+    lat = ents["cat.lat_r"]["definition"]["classifiers"]
+    disc = ents["cat.discbil"]["definition"]["classifiers"]
+    assert "clf.int_bil_r.generically_nondegenerate" in lat, lat
+    assert "clf.int_bil_r.perfect" in disc, disc
+    assert not (set(lat) & set(disc) & {"clf.int_bil_r.nondegenerate"}), (
+        "Lat_R and DiscBil share the ambiguous nondegeneracy classifier"
+    )

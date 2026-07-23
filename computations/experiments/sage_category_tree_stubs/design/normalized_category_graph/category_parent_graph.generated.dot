@@ -124,7 +124,7 @@ digraph CategoryParents {
   "CountableInfiniteSets = Sets.Countable.Infinite" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.countableinfinitesets", kind="derived_category"];
   "Curves(K) = Schemes.RelativeDimension(1)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.curves", kind="derived_category"];
   "DGAs = UnitalAlgebras.Differential" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.dgas", kind="derived_category"];
-  "DiscBil = ∫Bil.Symmetric.Nondegenerate.Finite" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.discbil", kind="derived_category"];
+  "DiscBil = ∫Bil.Symmetric.Perfect.Finite" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.discbil", kind="derived_category"];
   "DiscQuad = ∫Quad.Nondegenerate" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.discquad", kind="derived_category"];
   "DivisionRings = Rings.Division" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.division_rings", kind="derived_category"];
   "Domains = Rings.Domain" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.domains", kind="derived_category"];
@@ -141,7 +141,7 @@ digraph CategoryParents {
   "GenFrame_n(R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.genframe_n_r", kind="derived_category"];
   "Groups = Magmas.Associative.Unital.Inverse" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.groups", kind="derived_category"];
   "IntegralDomains = Domains.Commutative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.integral_domains", kind="derived_category"];
-  "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.lat_r", kind="derived_category"];
+  "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.lat_r", kind="derived_category"];
   "Magmas.Additive" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.additive_magmas", kind="derived_category"];
   "ModulesWithBasis = Bimodules(R,R).WithBasis" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.modules_with_basis", kind="derived_category"];
   "ModulesWithGenerators = Modules.WithGenerators" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.moduleswithgenerators", kind="derived_category"];
@@ -249,6 +249,9 @@ digraph CategoryParents {
   "ax.UFD" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.ax_ufd", kind="classifier_domain", label="UFD"];
   "ax.Unital" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.ax_unital", kind="classifier_domain", label="Unital"];
   "∫Bil.Alternating" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.int_bil_alternating", kind="classifier_domain", label="Alternating"];
+  "∫Bil.GenericallyNondegenerate" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.int_bil_r.generically_nondegenerate.domain", kind="classifier_domain", label="GenericallyNondegenerate"];
+  "∫Bil.Perfect" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.int_bil_r.perfect.domain", kind="classifier_domain", label="Perfect"];
+  "∫Bil.RadicalFree" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.int_bil_r.radical_free.domain", kind="classifier_domain", label="RadicalFree"];
   "∫Bil.SkewSymmetric" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.int_bil_skewsymmetric", kind="classifier_domain", label="SkewSymmetric"];
   "∫Bil.Symmetric" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.int_bil_symmetric", kind="classifier_domain", label="Symmetric"];
   "∫Bil_R(W).Finite" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.int_bil_r.finite.domain", kind="classifier_domain", label="Finite"];
@@ -325,11 +328,11 @@ digraph CategoryParents {
   "∫Hom.Odd" -> "∫Hom_R(−,W)" [style=dotted, kind="classifier_leg", id="arr.clf.int_hom_odd"];
   "∫Hom.Unimodular" -> "∫Hom_R(−,W)" [style=dotted, kind="classifier_leg", id="arr.clf.int_hom_unimodular"];
   "∫Quad_R(W).Nondegenerate" -> "∫Quad_R(W)" [style=dotted, kind="classifier_leg", id="arr.clf.int_quad_r_nondegenerate"];
-  "Lat.Definite" -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [style=dotted, kind="classifier_leg", id="arr.clf.lat_definite"];
-  "Lat.Hyperbolic" -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [style=dotted, kind="classifier_leg", id="arr.clf.lat_hyperbolic"];
-  "Lat.Indefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [style=dotted, kind="classifier_leg", id="arr.clf.lat_indefinite"];
-  "Lat.NegativeDefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [style=dotted, kind="classifier_leg", id="arr.clf.lat_negativedefinite"];
-  "Lat.PositiveDefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [style=dotted, kind="classifier_leg", id="arr.clf.lat_positivedefinite"];
+  "Lat.Definite" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted, kind="classifier_leg", id="arr.clf.lat_definite"];
+  "Lat.Hyperbolic" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted, kind="classifier_leg", id="arr.clf.lat_hyperbolic"];
+  "Lat.Indefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted, kind="classifier_leg", id="arr.clf.lat_indefinite"];
+  "Lat.NegativeDefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted, kind="classifier_leg", id="arr.clf.lat_negativedefinite"];
+  "Lat.PositiveDefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted, kind="classifier_leg", id="arr.clf.lat_positivedefinite"];
   "Magmas.Multiplicative" -> Magmas [style=dotted, kind="classifier_leg", id="arr.clf.magmas_multiplicative"];
   "Manifolds.PL" -> Manifolds [style=dotted, kind="classifier_leg", id="arr.clf.manifolds_pl"];
   "Manifolds.Smooth" -> Manifolds [style=dotted, kind="classifier_leg", id="arr.clf.manifolds_smooth"];
@@ -415,8 +418,8 @@ digraph CategoryParents {
   DiagramCategories -> FunctorCategories [color="#6a1b9a", kind="construction", id="arr.dot.diagramcategories__functorcategories"];
   DiffFormModules -> "Modules(R)" [color="#6a1b9a", kind="construction", id="arr.dot.diffformmodules__modules"];
   DiffFormModules -> "Sets.Graded" [color="#6a1b9a", kind="construction", id="arr.dot.diffformmodules__sets_graded"];
-  "DiscBil = ∫Bil.Symmetric.Nondegenerate.Finite" -> "∫Bil_R(W)" [kind="full_inclusion", id="arr.dot.discbil__int_bil_r"];
-  "DiscBil = ∫Bil.Symmetric.Nondegenerate.Finite" -> "Sets.Finite" [kind="pullback_projection", id="arr.dot.discbil__sets_finite"];
+  "DiscBil = ∫Bil.Symmetric.Perfect.Finite" -> "∫Bil_R(W)" [kind="full_inclusion", id="arr.dot.discbil__int_bil_r"];
+  "DiscBil = ∫Bil.Symmetric.Perfect.Finite" -> "Sets.Finite" [kind="pullback_projection", id="arr.dot.discbil__sets_finite"];
   "DiscQuad = ∫Quad.Nondegenerate" -> "∫Quad_R(W)" [kind="full_inclusion", id="arr.dot.discquad__int_quad_r"];
   Div -> "AbelianGroups = Groups.Commutative" [color="#6a1b9a", kind="construction", id="arr.dot.div__abeliangroups"];
   "DivisionRings = Rings.Division" -> "Domains = Rings.Domain" [kind="full_inclusion", id="arr.dot.divisionrings__domains"];
@@ -461,10 +464,10 @@ digraph CategoryParents {
   IsometryGroups -> LatticeHomsets [color="#6a1b9a", kind="construction", id="arr.dot.isometrygroups__latticehomsets"];
   IsometryGroups -> OrthogonalGroups [color="#6a1b9a", kind="construction", id="arr.dot.isometrygroups__orthogonalgroups"];
   IsomorphicObjects -> "Arr(−)" [color="#6a1b9a", kind="construction", id="arr.dot.isomorphicobjects__arr"];
-  "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" -> "∫Bil_R(W)" [kind="full_inclusion", id="arr.dot.lat_r__int_bil_r"];
-  "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" -> "ProjectiveModules = Modules.Projective" [kind="full_inclusion", id="arr.dot.lat_r__projectivemodules"];
+  "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" -> "∫Bil_R(W)" [kind="full_inclusion", id="arr.dot.lat_r__int_bil_r"];
+  "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" -> "ProjectiveModules = Modules.Projective" [kind="full_inclusion", id="arr.dot.lat_r__projectivemodules"];
   LatticeHomsets -> Homsets [kind="forgetful", id="arr.dot.latticehomsets__homsets"];
-  LatticeHomsets -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [kind="forgetful", id="arr.dot.latticehomsets__lat_r"];
+  LatticeHomsets -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [kind="forgetful", id="arr.dot.latticehomsets__lat_r"];
   LatticePolytopes -> Polyhedra [kind="forgetful", id="arr.dot.latticepolytopes__polyhedra"];
   LocallyRingedSpaces -> RingedSpaces [kind="forgetful", id="arr.dot.locallyringedspaces__ringedspaces"];
   Manifolds -> RingedSpaces [kind="forgetful", id="arr.dot.manifolds__ringedspaces"];
@@ -481,7 +484,7 @@ digraph CategoryParents {
   "NonUnitalDGAs = Algebras.Differential" -> "Algebras(R)" [kind="full_inclusion", id="arr.dot.nonunitaldgas__algebras"];
   "NonUnitalDGAs = Algebras.Differential" -> "Algebras(R).Graded" [kind="pullback_projection", id="arr.dot.nonunitaldgas__algebras_graded"];
   NS -> "AbelianGroups = Groups.Commutative" [color="#6a1b9a", kind="construction", id="arr.dot.ns__abeliangroups"];
-  NS -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [color="#6a1b9a", kind="construction", id="arr.dot.ns__lat_r"];
+  NS -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [color="#6a1b9a", kind="construction", id="arr.dot.ns__lat_r"];
   "(−)^op" -> CatObject [color="#6a1b9a", kind="construction", id="arr.dot.op__catobject"];
   OrthogonalGroups -> "Groups = Magmas.Associative.Unital.Inverse" [color="#6a1b9a", kind="construction", id="arr.dot.orthogonalgroups__groups"];
   OrthogonalGroups -> "∫Bil_R(W)" [color="#6a1b9a", kind="construction", id="arr.dot.orthogonalgroups__int_bil_r"];
@@ -506,7 +509,7 @@ digraph CategoryParents {
   Rings -> Semirings [kind="forgetful", id="arr.dot.rings__semirings"];
   Rngs -> "AdditiveAbelianGroups = AdditiveGroups.Commutative" [kind="forgetful", id="arr.dot.rngs__additiveabeliangroups"];
   Rngs -> "Semigroups = Magmas.Associative" [kind="forgetful", id="arr.dot.rngs__semigroups"];
-  RootLattices -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [kind="forgetful", id="arr.dot.rootlattices__lat_r"];
+  RootLattices -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [kind="forgetful", id="arr.dot.rootlattices__lat_r"];
   RootSystems -> Cones [kind="forgetful", id="arr.dot.rootsystems__cones"];
   "Schemes(S)" -> AlgebraicStacks [kind="forgetful", id="arr.dot.schemes__algebraicstacks"];
   "Schemes(S)" -> LocallyRingedSpaces [kind="forgetful", id="arr.dot.schemes__locallyringedspaces"];
@@ -614,7 +617,7 @@ digraph CategoryParents {
   EmbeddedRootRealizations -> RootBasis_Gamma [kind="forgetful", id="arr.root.embedded__rootbasis_gamma"];
   RootBasis_Gamma -> RootBasis_S [kind="full_inclusion", id="arr.root.rootbasis_gamma__rootbasis_s"];
   RootBasis_S -> RootFrame_S [kind="full_inclusion", id="arr.root.rootbasis_s__rootframe_s"];
-  RootFrame_S -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [kind="forgetful", id="arr.root.rootframe_s__lat"];
+  RootFrame_S -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [kind="forgetful", id="arr.root.rootframe_s__lat"];
   "CatObject.Preadditive" -> CatObject [style=dotted, kind="classifier_leg", id="arr.clf.catobject_preadditive"];
   "CatObject.Additive" -> CatObject [style=dotted, kind="classifier_leg", id="arr.clf.catobject_additive"];
   "CatObject.Abelian" -> CatObject [style=dotted, kind="classifier_leg", id="arr.clf.catobject_abelian"];
@@ -624,4 +627,7 @@ digraph CategoryParents {
   AdmissibleOperadicAmbients -> "Alg_O(V)" [kind="left_adjoint", id="fun.free_operadic_algebra"];
   "Adj(−)" -> "Arr(−)" [kind="forgetful", id="arr.adj.ev_f"];
   "Pres(−)" -> "Arr(−)" [kind="pullback_projection", id="arr.pres.projection"];
+  "∫Bil.RadicalFree" -> "∫Bil_R(W)" [style=dotted, kind="classifier_leg", id="arr.clf.int_bil_r.radical_free"];
+  "∫Bil.Perfect" -> "∫Bil_R(W)" [style=dotted, kind="classifier_leg", id="arr.clf.int_bil_r.perfect"];
+  "∫Bil.GenericallyNondegenerate" -> "∫Bil_R(W)" [style=dotted, kind="classifier_leg", id="arr.clf.int_bil_r.generically_nondegenerate"];
 }

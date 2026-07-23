@@ -589,8 +589,8 @@ digraph CategoryParents {
       node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
 
       node [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", fontcolor="#000000", penwidth=1.5];
-      "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate";
-      "DiscBil = ∫Bil.Symmetric.Nondegenerate.Finite";
+      "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate";
+      "DiscBil = ∫Bil.Symmetric.Perfect.Finite";
       node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
 
       RootLattices;
@@ -634,28 +634,28 @@ digraph CategoryParents {
     // Alternating ⇒ SkewSymmetric (equiv. in char ≠ 2)
     "∫Bil.Alternating" -> "∫Bil.SkewSymmetric" [style=dotted];
 
-    "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" -> "∫Bil_R(W)";
-    "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" -> "ProjectiveModules = Modules.Projective" [constraint=false];
-    "Lat.Definite" -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [style=dotted];
-    "Lat.PositiveDefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [style=dotted];
-    "Lat.NegativeDefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [style=dotted];
-    "Lat.Indefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [style=dotted];
-    "Lat.Hyperbolic" -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [style=dotted];
+    "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" -> "∫Bil_R(W)";
+    "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" -> "ProjectiveModules = Modules.Projective" [constraint=false];
+    "Lat.Definite" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted];
+    "Lat.PositiveDefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted];
+    "Lat.NegativeDefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted];
+    "Lat.Indefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted];
+    "Lat.Hyperbolic" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted];
     "Lat.PositiveDefinite" -> "Lat.Definite";
     "Lat.NegativeDefinite" -> "Lat.Definite";
     "Lat.Hyperbolic" -> "Lat.Indefinite";
-    RootLattices -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate";
+    RootLattices -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate";
 
-    "DiscBil = ∫Bil.Symmetric.Nondegenerate.Finite" -> "∫Bil_R(W)";
-    "DiscBil = ∫Bil.Symmetric.Nondegenerate.Finite" -> "Sets.Finite" [constraint=false];
+    "DiscBil = ∫Bil.Symmetric.Perfect.Finite" -> "∫Bil_R(W)";
+    "DiscBil = ∫Bil.Symmetric.Perfect.Finite" -> "Sets.Finite" [constraint=false];
     "DiscQuad = ∫Quad.Nondegenerate" -> "∫Quad_R(W)";
 
     Genera -> "Sets.Finite" [constraint=false];
     LatticeHomsets -> Homsets [constraint=false];
-    LatticeHomsets -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate";
+    LatticeHomsets -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate";
     IsometryGroups -> LatticeHomsets [constraint=false];
     OrthogonalGroups -> "∫Bil_R(W)" [constraint=false];
-    NS -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [constraint=false];
+    NS -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [constraint=false];
   }
 
   //══════════════════════════════════════════════════════════════

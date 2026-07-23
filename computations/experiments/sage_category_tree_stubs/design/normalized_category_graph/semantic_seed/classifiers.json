@@ -750,7 +750,7 @@
       "domain_id": "clf.int_bil_r.nondegenerate.domain",
       "leg_arrow_id": "arr.clf.int_bil_r_nondegenerate",
       "transport": null,
-      "notes": "refined from named-join path"
+      "notes": "AMBIGUOUS BY ITSELF (Rmk 18.4). Retained only for rows that have not yet been assigned a precise condition; Lat_R now uses GenericallyNondegenerate and DiscBil uses Perfect. Any new use must name which of trivial radical, injective adjoint, perfect pairing, or generic nondegeneracy it means."
     },
     {
       "id": "clf.int_bil_r.finite",
@@ -1627,6 +1627,36 @@
       "transport": null,
       "semantic_character": "property relative to Preadditive",
       "notes": "Foundations Def 14.1: kernels and cokernels with every mono and epi normal. 'Being abelian is a property' is always understood relative to the additive enrichment that makes the axioms meaningful."
+    },
+    {
+      "id": "clf.int_bil_r.radical_free",
+      "name": "RadicalFree",
+      "host_id": "cat.int_bil_r",
+      "domain_id": "clf.int_bil_r.radical_free.domain",
+      "leg_arrow_id": "arr.clf.int_bil_r.radical_free",
+      "transport": null,
+      "semantic_character": "property",
+      "notes": "Foundations Def 18.3: rad(M,b) = ker(b~) = 0. Also called separating. Weaker than perfect."
+    },
+    {
+      "id": "clf.int_bil_r.perfect",
+      "name": "Perfect",
+      "host_id": "cat.int_bil_r",
+      "domain_id": "clf.int_bil_r.perfect.domain",
+      "leg_arrow_id": "arr.clf.int_bil_r.perfect",
+      "transport": null,
+      "semantic_character": "property",
+      "notes": "Foundations Def 18.3: b~ is an ISOMORPHISM, equivalently rad(M,b) = 0 AND Def(M,b) = coker(b~) = 0. For an integral lattice perfectness is also called unimodularity. Strictly stronger than radical-free, and conflating the two deletes the defect module that carries discriminant theory (Def 18.2)."
+    },
+    {
+      "id": "clf.int_bil_r.generically_nondegenerate",
+      "name": "GenericallyNondegenerate",
+      "host_id": "cat.int_bil_r",
+      "domain_id": "clf.int_bil_r.generically_nondegenerate.domain",
+      "leg_arrow_id": "arr.clf.int_bil_r.generically_nondegenerate",
+      "transport": null,
+      "semantic_character": "property",
+      "notes": "Foundations Rmk 18.4, the precise condition named for the arithmetic lattice category: nondegenerate after extending scalars to the fraction field. This is Def 19.2 condition 3, and Prop 25.2 calls perfectness of a discriminant pairing its finite-length torsion COUNTERPART -- counterparts, not the same condition."
     }
   ]
 }

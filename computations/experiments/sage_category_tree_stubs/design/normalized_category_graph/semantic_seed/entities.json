@@ -750,12 +750,12 @@
       "definition": {
         "operation": "classifier_tower",
         "base": "cat.int_bil_r",
-        "classifiers": ["clf.int_bil_symmetric", "clf.int_bil_r.nondegenerate", "clf.int_bil_r.finite"],
-        "display": "∫Bil.Symmetric.Nondegenerate.Finite"
+        "classifiers": ["clf.int_bil_symmetric", "clf.int_bil_r.perfect", "clf.int_bil_r.finite"],
+        "display": "∫Bil.Symmetric.Perfect.Finite"
       },
       "aliases": [],
-      "dot_vertex": "DiscBil = ∫Bil.Symmetric.Nondegenerate.Finite",
-      "provenance": "dot_import"
+      "dot_vertex": "DiscBil = ∫Bil.Symmetric.Perfect.Finite",
+      "provenance": "Foundations Def 25.3: finitely generated torsion modules with a symmetric PERFECT pairing into K/R. Prop 25.2: perfectness here is the finite-length torsion counterpart of generic nondegeneracy for a lattice, not the same condition, so it must not share a classifier with Lat_R."
     },
     {
       "id": "cat.discquad",
@@ -1441,12 +1441,12 @@
       "definition": {
         "operation": "classifier_tower",
         "base": "cat.int_bil_r",
-        "classifiers": ["clf.int_bil_symmetric", "clf.int_bil_r.nondegenerate"],
-        "display": "∫Bil_R(R).Symmetric.Nondegenerate"
+        "classifiers": ["clf.int_bil_symmetric", "clf.int_bil_r.generically_nondegenerate"],
+        "display": "∫Bil_R(R).Symmetric.GenericallyNondegenerate"
       },
       "aliases": [],
-      "dot_vertex": "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate",
-      "provenance": "dot_import"
+      "dot_vertex": "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate",
+      "provenance": "Foundations Def 19.2: a finite projective R-module with a symmetric form whose scalar extension to the fraction field is nondegenerate. Rmk 18.4 names that precise condition generically nondegenerate; the bare word covers four inequivalent conditions."
     },
     {
       "id": "cat.latticehomsets",
@@ -5239,6 +5239,42 @@
       "aliases": ["Pres(−)"],
       "dot_vertex": "Pres(−)",
       "provenance": "add-II Def 3.1; the standard comma construction on cores, named only because its projection is used"
+    },
+    {
+      "id": "clf.int_bil_r.radical_free.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "∫Bil.RadicalFree",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.int_bil_r.radical_free"
+      },
+      "aliases": [],
+      "dot_vertex": "∫Bil.RadicalFree",
+      "provenance": "Foundations Def 18.3 / Rmk 18.4"
+    },
+    {
+      "id": "clf.int_bil_r.perfect.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "∫Bil.Perfect",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.int_bil_r.perfect"
+      },
+      "aliases": [],
+      "dot_vertex": "∫Bil.Perfect",
+      "provenance": "Foundations Def 18.3 / Rmk 18.4"
+    },
+    {
+      "id": "clf.int_bil_r.generically_nondegenerate.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "∫Bil.GenericallyNondegenerate",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.int_bil_r.generically_nondegenerate"
+      },
+      "aliases": [],
+      "dot_vertex": "∫Bil.GenericallyNondegenerate",
+      "provenance": "Foundations Def 18.3 / Rmk 18.4"
     }
   ]
 }
