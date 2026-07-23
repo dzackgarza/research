@@ -108,6 +108,8 @@ digraph CategoryParents {
   "AdditiveGroups = Magmas.Additive.Associative.Unital.Inverse" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.additive_groups", kind="derived_category"];
   "AdditiveMonoids = Magmas.Additive.Associative.Unital" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.additive_monoids", kind="derived_category"];
   "AdditiveSemigroups = Magmas.Additive.Associative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.additive_semigroups", kind="derived_category"];
+  AdmissibleOperadicAmbients [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.admissible_operadic_ambient", kind="derived_category"];
+  "Alg_O(V)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.alg_o_v", kind="derived_category"];
   "Algebras(R).Graded" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.algebras_r.graded", kind="derived_category"];
   "AlgebrasOverField = Algebras.OverField" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.algebras_over_field", kind="derived_category"];
   "AssociativeAlgebras = Algebras.Associative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.associativealgebras", kind="derived_category"];
@@ -616,4 +618,6 @@ digraph CategoryParents {
   "CatObject.Abelian" -> CatObject [style=dotted, kind="classifier_leg", id="arr.clf.catobject_abelian"];
   Presheaves -> Sheaves [kind="left_adjoint", id="fun.sheafification"];
   Prestacks -> Stacks [kind="left_adjoint", id="fun.stackification"];
+  "Alg_O(V)" -> AdmissibleOperadicAmbients [kind="right_adjoint", id="fun.operadic_forgetful"];
+  AdmissibleOperadicAmbients -> "Alg_O(V)" [kind="left_adjoint", id="fun.free_operadic_algebra"];
 }

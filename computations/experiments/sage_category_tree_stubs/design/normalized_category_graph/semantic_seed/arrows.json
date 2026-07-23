@@ -4077,6 +4077,37 @@
         "counit": "an equivalence on stacks",
         "recognition": "REFLECTIVE, as for sheafification (Conv 14.3). Rmk 9.2: these are named instances of reflective localization, and must not be represented by unrelated axioms or by a bare containment claim. Stacks in groupoids come from the appropriate truncation."
       }
+    },
+    {
+      "id": "fun.operadic_forgetful",
+      "source": "cat.alg_o_v",
+      "target": "cat.admissible_operadic_ambient",
+      "kind": "right_adjoint",
+      "preferred": true,
+      "provenance": "U_O, the operadic forgetful functor (add-II Def 11.1)",
+      "adjunction": {
+        "adjunction_id": "adj.free_operadic",
+        "role": "right adjoint of the chosen lift; see fun.free_operadic_algebra"
+      }
+    },
+    {
+      "id": "fun.free_operadic_algebra",
+      "source": "cat.admissible_operadic_ambient",
+      "target": "cat.alg_o_v",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "Free_O, left adjoint to the operadic forgetful functor (add-II Thm 11.2)",
+      "adjunction": {
+        "adjunction_id": "adj.free_operadic",
+        "unit": "eta_X : X -> U_O Free_O(X)",
+        "counit": "epsilon_A : Free_O(U_O A) -> A",
+        "recognition": "NONE claimed. Rmk 5.3 applies as to any free-forgetful adjunction: the left adjoint need not be fully faithful, so the counit does not recognize free algebras. A chosen free presentation of A is a point of Pres_{Free_O}(A) (Thm 11.2)."
+      },
+      "essential_image_factorization": {
+        "objects": "the free O-algebras",
+        "not_identified_with_source": "Rmk 11.3: monadicity of U_O identifies Alg_O(V) with algebras for the monad U_O Free_O; it does not identify all O-algebras with the essential image of Free_O.",
+        "note": "Rmk 11.4: tensor-power and coinvariants formulae for the underlying object are comparison or computation theorems under stated colimit hypotheses, never the definition of the free-algebra functor."
+      }
     }
   ],
   "kind": "normalized_semantic_seed.arrows",

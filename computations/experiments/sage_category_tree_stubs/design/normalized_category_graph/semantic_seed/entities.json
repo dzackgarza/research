@@ -5145,6 +5145,58 @@
       "aliases": [],
       "dot_vertex": "CatObject.Abelian",
       "provenance": "Foundations Def 14.1"
+    },
+    {
+      "id": "cat.admissible_operadic_ambient",
+      "kind": "derived_category",
+      "canonical_name": "AdmissibleOperadicAmbient",
+      "parameters": [
+        {
+          "name": "O",
+          "sort": "cat.sets",
+          "variance": "infinity_operad"
+        },
+        {
+          "name": "V",
+          "sort": "cat.cat_object",
+          "variance": "admissible_operadic_ambient"
+        }
+      ],
+      "definition": {
+        "operation": "locus",
+        "of": "cat.cat_object",
+        "condition": "presentable symmetric monoidal, tensor preserving colimits separately in each variable, and O such that free O-algebras exist",
+        "notes": "add-II Def 11.1. These hypotheses are part of every theorem below and cannot be replaced by a bare assertion (Prop 12.4)."
+      },
+      "aliases": ["AdmissibleOperadicAmbients"],
+      "dot_vertex": "AdmissibleOperadicAmbients",
+      "provenance": "add-II Def 11.1"
+    },
+    {
+      "id": "cat.alg_o_v",
+      "kind": "derived_category",
+      "canonical_name": "AlgebrasOverOperad",
+      "parameters": [
+        {
+          "name": "O",
+          "sort": "cat.sets",
+          "variance": "infinity_operad"
+        },
+        {
+          "name": "V",
+          "sort": "cat.cat_object",
+          "variance": "admissible_operadic_ambient"
+        }
+      ],
+      "definition": {
+        "operation": "operadic_algebra_objects",
+        "operad": "O",
+        "ambient": "V",
+        "notes": "add-II Def 11.1: the O-algebra objects of V. Rmk 11.3: under standard hypotheses U_O is monadic, which identifies Alg_O(V) with algebras for the monad U_O Free_O -- it does NOT identify all O-algebras with the essential image of the free functor."
+      },
+      "aliases": ["Alg_O(V)"],
+      "dot_vertex": "Alg_O(V)",
+      "provenance": "add-II Def 11.1; all algebra objects, not the free ones"
     }
   ]
 }
