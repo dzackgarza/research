@@ -219,3 +219,78 @@ def test_lean_seed_structural_ports_have_present_endpoints() -> None:
     assert ports, "no structural ports exported"
     dangling = [p["id"] for p in ports if p["source"] not in present or p["target"] not in present]
     assert not dangling, f"structural ports with absent endpoints: {dangling[:5]}"
+
+
+# The foundations documents specify the normalized side: they name their constructions
+# individually and say those "have different domains, codomains, universal properties, and
+# essential images" and "are not instances of an additional unnamed construction". The seed
+# is therefore checkable against them, rather than accreted from whatever Sage declares.
+# Each row is a doc citation and the seed id that carries it. Adding a row is how an audited
+# construction gets recorded; removing one has to fail.
+_DOC_SPECIFIED_ENTITIES = [
+    ("Def 13.1  R-Mod", "cat.modules_r"),
+    ("Def 13.1  Mod-R := R^op-Mod", "cat.right_modules_r"),
+    ("Def 13.5  GenFrame_n(R)", "cat.genframe_n_r"),
+    ("Def 13.5  BasisFrame_n(R)", "cat.basisframe_n_r"),
+    ("Def 13.6  Coord_n(R)", "cat.coord_n_r"),
+    ("Def 13.8/85.1  Bimodules(R,S)", "cat.bimodules_r_s"),
+    ("Def 21.2  SymMat_n(R)", "cat.symmat_n_r"),
+    ("Def 21.3  coordinatized bilinear forms", "cat.bil_coord_n_r"),
+    ("Def 68.5  RootFrame_S", "cat.rootframe_s"),
+    ("Def 68.5  RootBasis_S", "cat.rootbasis_s"),
+    ("Def 68.5  RootBasis_Gamma", "cat.rootbasis_gamma"),
+    ("Def 68.5  embedded root realizations", "cat.embeddedrootrealization"),
+    ("Def 85.2  BiAct(R,S)", "cat.biact_r_s"),
+]
+
+_DOC_SPECIFIED_CLASSIFIERS = [
+    ("Def 14.1  preadditive is chosen structure", "clf.catobject_preadditive", "chosen structure"),
+    ("Def 14.1  additive, relative to it", "clf.catobject_additive", "property relative to Preadditive"),
+    ("Def 14.1  abelian, relative to it", "clf.catobject_abelian", "property relative to Preadditive"),
+    ("Def 14.2  monoidal structure, several lifts per category", "clf.ax_monoidal", "chosen structure"),
+    ("Rmk 14.4  existence of limits is property-like", "clf.catobject_limits", "property"),
+    ("Def 85.3  commutation is a property on BiAct", "clf.biact.commutation", None),
+]
+
+# Addendum: "The constructions treated in this addendum are named individually."
+_DOC_SPECIFIED_FUNCTORS = [
+    ("add. Def 8.1  free monoid", "fun.free.monoid"),
+    ("add. Def 8.1  free group", "fun.free.group"),
+    ("add. Def 8.2  free abelian group", "fun.free.abelian_group"),
+    ("add. Def 9.1  free left R-module F_R", "fun.free.module_r"),
+    ("add. Def 10.1 tensor algebra", "fun.tensor_algebra"),
+    ("add. Def 10.2 free associative R-algebra on a set", "fun.free.associative_algebra_set"),
+    ("add. Def 10.3 symmetric algebra", "fun.symmetric_algebra"),
+    ("add. Def 10.3 free commutative R-algebra on a set", "fun.free.commutative_algebra_set"),
+    ("add. Def 13.1 monoid algebra R[-]", "fun.monoid_algebra"),
+    ("add. Def 13.2 group algebra R[-]", "fun.group_algebra"),
+    ("add. Def 13.3 group-like elements", "fun.grouplike_elements"),
+    ("Def 21.3  Gram constructor", "fun.gram_n"),
+]
+
+
+def test_seed_carries_the_categories_the_doc_specifies() -> None:
+    seed = load_semantic_seed()
+    ids = {e["id"] for e in seed.entities}
+    missing = [f"{cite} -> {eid}" for cite, eid in _DOC_SPECIFIED_ENTITIES if eid not in ids]
+    assert not missing, f"doc-specified categories absent from the seed: {missing}"
+
+
+def test_seed_carries_the_functors_the_doc_names_individually() -> None:
+    seed = load_semantic_seed()
+    ids = {a["id"] for a in seed.arrows}
+    missing = [f"{cite} -> {aid}" for cite, aid in _DOC_SPECIFIED_FUNCTORS if aid not in ids]
+    assert not missing, f"doc-named functors absent from the seed: {missing}"
+
+
+def test_classifier_semantic_character_matches_the_doc() -> None:
+    """Rmk 14.4: these are distinguished by the classifying fibre, not an informal label."""
+    seed = load_semantic_seed()
+    by_id = {c["id"]: c for c in seed.classifiers}
+    wrong = []
+    for cite, cid, character in _DOC_SPECIFIED_CLASSIFIERS:
+        if cid not in by_id:
+            wrong.append(f"{cite} -> {cid} absent")
+        elif character is not None and by_id[cid].get("semantic_character") != character:
+            wrong.append(f"{cite} -> {cid} is {by_id[cid].get('semantic_character')!r}, doc says {character!r}")
+    assert not wrong, wrong
