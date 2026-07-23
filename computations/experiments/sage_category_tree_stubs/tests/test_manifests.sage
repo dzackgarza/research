@@ -169,10 +169,26 @@ def test_validate_three_manifests_hygiene_clean() -> None:
     assert findings == [], findings
 
 
-def test_parity_mode_reports_unsupported() -> None:
+def test_parity_mode_reports_what_blocks_a_parity_claim() -> None:
+    """Parity mode surfaces every unsupported kind, including ones now at zero.
+
+    No category mapping is unsupported any more, so asserting one exists would be
+    asserting that a defect survives. The mechanism is still worth a test, so it gets a
+    synthetic row that must be reported.
+    """
     findings = validate_three_manifests(require_full_parity=True)
     kinds = {f.kind for f in findings}
-    assert "unsupported_mapping" in kinds
+    assert "unsupported_axiom" in kinds
+    assert "unsupported_construction" in kinds
+    assert "unsupported_mapping" not in kinds, "a category mapping regressed to unsupported"
+
+    mapping = dict(load_mapping())
+    mapping["category_mappings"] = [
+        *mapping["category_mappings"],
+        {"source": "sage.category.synthetic", "source_sage_name": "Synthetic", "target": None, "relation": "unsupported"},
+    ]
+    seeded = validate_three_manifests(mapping=mapping, require_full_parity=True)
+    assert any(f.kind == "unsupported_mapping" and f.subject == "sage.category.synthetic" for f in seeded)
 
 
 def test_format_manifests_report() -> None:

@@ -48,6 +48,36 @@ _CONSTRUCTION_TARGETS: dict[str, tuple[str, str]] = {
 }
 
 
+# Amendment 18.5: a value of Sage's ``Algebras`` construction must be recorded as the
+# chosen structural functor to Set, the composite free R-module functor, the lift the
+# selected structure induces, and that lift's codomain. Def 16.3 tabulates the standard
+# cases; only the monoid row is observed in this Sage version.
+#
+# Convention 17.1 puts the codomain first: it is part of the functor's definition and
+# already says where every value lives. The essential image is a separate refinement
+# carrying a theorem obligation (Conv 17.4), so it is recorded as prose and never as the
+# destination. Amendment 18.6 forbids both "algebra objects in C" for this construction
+# and "all basis elements are group-like" for a multiplicative group-like basis.
+_CONSTRUCTION_VALUE_TARGETS: dict[str, dict[str, str]] = {
+    "Monoids.Algebras": {
+        "target_expression": "Bialgebras(R).WithBasis",
+        "base_id": "cat.bialgebras_r",
+        "structural_functor": "U : Mon -> Set",
+        "free_module_composite": "F_R U : Mon -> Modules(R), the free R-module on the underlying set (Def 16.2)",
+        "lift": "R[-] : Mon -> Bialgebras(R).WithBasis (Def 13.1, Def 16.3)",
+        "essential_image": (
+            "theorem obligation, not recorded as the destination (Conv 17.4). With "
+            "basis-preserving morphisms it is the objects whose distinguished basis is a "
+            "MULTIPLICATIVE basis of group-like elements (Def 14.1, Cor 14.3) -- the closure "
+            "conditions 1 in X and beta(x)beta(y) in beta(X) are part of the definition and do "
+            "not follow from group-likeness alone (Rmk 14.5). With arbitrary bialgebra maps it "
+            "records only that the underlying bialgebra is isomorphic to a monoid algebra and "
+            "admits no characterization by the displayed basis (Rmk 14.4)."
+        ),
+    },
+}
+
+
 def _observed_id_index(observed: dict[str, Any]) -> dict[str, str]:
     out: dict[str, str] = {}
     for cat in observed.get("categories", []):
@@ -406,6 +436,30 @@ def build_mapping(
         if cat["id"] in mapped_sources or qn in mapped_names:
             continue
         reading = (composed_meta or {}).get("normalized_reading") or normalized_reading(qn)
+        value_target = _CONSTRUCTION_VALUE_TARGETS.get(qn)
+        if value_target:
+            category_mappings.append(
+                {
+                    "source": cat["id"],
+                    "source_sage_name": qn,
+                    "target": value_target["base_id"],
+                    # The destination is an expression over this base, as for every other
+                    # X.WithBasis row; "exact" would claim the value category IS the base.
+                    "relation": "constructible",
+                    "normalized_reading": value_target["target_expression"],
+                    "sage_versions": {"since": corr.get("version_label"), "until": None},
+                    "parameters": _resolve_parameter_binding("R : CommutativeRings", sketch),
+                    "provenance": {
+                        "status": "construction_value",
+                        "source": "Foundations addendum Amendment 18.5 / Def 16.3",
+                        "structural_functor": value_target["structural_functor"],
+                        "free_module_composite": value_target["free_module_composite"],
+                        "lift": value_target["lift"],
+                        "essential_image": value_target["essential_image"],
+                    },
+                }
+            )
+            continue
         constructibility = check_constructibility(qn, seed=seed, sage_to_entity=sage_to_entity, sage_to_composed=sage_to_composed)
         if constructibility.ok:
             category_mappings.append(

@@ -6366,30 +6366,31 @@ category_mappings:
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.monoids.algebras
     source_sage_name: Monoids.Algebras
-    target: null
-    relation: unsupported
-    normalized_reading: Monoids.Algebras
-    construction:
-      kind: finite_limit_derivability
-      ok: false
-      base: null
-      classifiers: []
-      expression: Monoids.Algebras
-      detail: functorial construction 'Algebras', not a classifier refinement; destination
-        is a functor image (#283)
-      certificate: []
+    target: cat.bialgebras_r
+    relation: constructible
+    normalized_reading: Bialgebras(R).WithBasis
     sage_versions:
       since: sage-dev-local
       until: null
     parameters:
-      constraints: ''
-      bindings: {}
+      constraints: 'R : CommutativeRings'
+      bindings:
+        R: cat.commutative_rings
       resolved: true
     provenance:
-      status: not-constructible
-      source: constructibility.check_constructibility
-      note: functorial construction 'Algebras', not a classifier refinement; destination
-        is a functor image (#283)
+      status: construction_value
+      source: Foundations addendum Amendment 18.5 / Def 16.3
+      structural_functor: 'U : Mon -> Set'
+      free_module_composite: 'F_R U : Mon -> Modules(R), the free R-module on the underlying
+        set (Def 16.2)'
+      lift: 'R[-] : Mon -> Bialgebras(R).WithBasis (Def 13.1, Def 16.3)'
+      essential_image: theorem obligation, not recorded as the destination (Conv 17.4).
+        With basis-preserving morphisms it is the objects whose distinguished basis
+        is a MULTIPLICATIVE basis of group-like elements (Def 14.1, Cor 14.3) -- the
+        closure conditions 1 in X and beta(x)beta(y) in beta(X) are part of the definition
+        and do not follow from group-likeness alone (Rmk 14.5). With arbitrary bialgebra
+        maps it records only that the underlying bialgebra is isomorphic to a monoid
+        algebra and admits no characterization by the displayed basis (Rmk 14.4).
   - source: sage.category.with_axiom.magmas.unital.inverse
     source_sage_name: Magmas.Unital.Inverse
     target: cat.magmas
