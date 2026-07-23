@@ -21,10 +21,34 @@ LEAN = SPIKE / "NormalizedCategoryGraph"
 HAND = STUBS / "design/normalized_category_graph/category_parent_graph.hand.dot"
 
 
-def expr_of(e: dict) -> dict:
+
+def _leg_functor_id(leg: str | None, leg_by_classifier: dict[str, str]) -> str:
+    """The FunctorId naming a pullback leg.
+
+    A leg given as a classifier id is the classifier's forgetful leg; a leg with no
+    known arrow is an error rather than a category reference, because silently
+    emitting one produces an expression no evaluator can resolve.
+    """
+    if not leg:
+        raise ValueError("pullback leg is missing")
+    if leg.startswith("fun."):
+        return leg
+    if leg.startswith("clf."):
+        arrow = leg_by_classifier.get(leg)
+        if not arrow:
+            raise ValueError(f"classifier leg {leg} has no classifier_leg arrow in the seed")
+        return arrow
+    raise ValueError(f"pullback leg {leg} is neither a functor nor a classifier")
+
+
+def expr_of(e: dict, leg_by_classifier: dict[str, str] | None = None) -> dict:
+    leg_by_classifier = leg_by_classifier or {}
     d = e.get("definition") or {}
-    if e["kind"] == "alias" or d.get("operation") == "same_as":
-        target = d.get("same_as") or d.get("of") or d.get("target")
+    # Spelling aliases only. A construction value is an alias by `kind` but its
+    # `of` names the construction's functor, so routing it here emitted a category
+    # reference to a `fun.*` id; it falls through to the construction_value branch.
+    if d.get("operation") == "same_as":
+        target = d.get("same_as") or d.get("target")
         return {"tag": "reference", "id": target or e["id"]}
     if d.get("opaque"):
         return {"tag": "opaque", "id": e["id"]}
@@ -43,14 +67,15 @@ def expr_of(e: dict) -> dict:
             base = {"tag": "refine", "base": base, "classifier": clf, "route": None}
         return base
     if op == "pullback":
+        # CategoryExpr.pullback takes two FunctorIds and a CategoryExpr. Emitting the
+        # legs as category references made a typed importer look for categories named
+        # `fun.*` and `clf.*`, which do not exist. A classifier leg is named by the
+        # arrow that carries it, so resolve the classifier to that arrow.
         return {
-            "tag": "constructor",
-            "constructor": "pullback",
-            "args": [
-                {"tag": "reference", "id": d.get("left")},
-                {"tag": "reference", "id": d.get("right")},
-                {"tag": "reference", "id": d.get("over")},
-            ],
+            "tag": "pullback",
+            "left": _leg_functor_id(d.get("left"), leg_by_classifier),
+            "right": _leg_functor_id(d.get("right"), leg_by_classifier),
+            "over": {"tag": "reference", "id": d.get("over")},
         }
     if op == "parameter_substitution":
         return {
@@ -171,6 +196,13 @@ def main() -> int:
     clfs = clfs_raw["classifiers"] if isinstance(clfs_raw, dict) else clfs_raw
     arrows_raw = json.loads((SEED / "arrows.json").read_text())
     arrows = arrows_raw["arrows"] if isinstance(arrows_raw, dict) else arrows_raw
+    # A classifier's forgetful leg is named by its classifier_leg arrow; pullback
+    # expressions cite that FunctorId rather than the classifier id.
+    leg_by_classifier = {
+        str(a["source"]).removesuffix(".domain"): str(a["id"])
+        for a in arrows
+        if a.get("kind") == "classifier_leg"
+    }
 
     sidecar: dict[str, str] = {}
     # Prefer canonical (non-alias) entities when several share a DOT vertex.
@@ -239,7 +271,7 @@ def main() -> int:
                 "id": e["id"],
                 "canonicalName": e.get("canonical_name") or e["id"],
                 "declaration": e["id"],
-                "expression": expr_of(e),
+                "expression": expr_of(e, leg_by_classifier),
                 "origin": origin_of(e),
                 "visibility": visibility_of(e),
                 "kind": e["kind"],
@@ -290,6 +322,8 @@ def main() -> int:
         for c in sorted(clfs, key=lambda x: x["id"])
     ]
 
+    # Alias rows are keyed `alias.*`; arrows cite the underlying `cat.*` declaration.
+    alias_only_ids = {a["declaration"] for a in aliases}
     structural = []
     for a in sorted(arrows, key=lambda x: x["id"]):
         if not a.get("preferred", True):
@@ -305,6 +339,11 @@ def main() -> int:
             "parameter_dependency",
             "equivalence",
         }:
+            continue
+        # Alias-only entities are recorded in `aliases`, not `categories`, so a
+        # structural port touching one has an endpoint absent from the manifest.
+        # Exporting it anyway gives consumers dangling structural maps.
+        if a["source"] in alias_only_ids or a["target"] in alias_only_ids:
             continue
         structural.append(
             {

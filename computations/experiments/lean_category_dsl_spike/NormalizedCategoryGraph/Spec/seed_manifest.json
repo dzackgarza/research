@@ -109,22 +109,13 @@
       "declaration": "cat.abelian_groups",
       "dotVertex": "AbelianGroups = Groups.Commutative",
       "expression": {
-        "args": [
-          {
-            "id": "fun.groups_to_magmas",
-            "tag": "reference"
-          },
-          {
-            "id": "clf.magmas.commutative",
-            "tag": "reference"
-          },
-          {
-            "id": "cat.magmas",
-            "tag": "reference"
-          }
-        ],
-        "constructor": "pullback",
-        "tag": "constructor"
+        "left": "fun.groups_to_magmas",
+        "over": {
+          "id": "cat.magmas",
+          "tag": "reference"
+        },
+        "right": "arr.clf.magmas.commutative",
+        "tag": "pullback"
       },
       "id": "cat.abelian_groups",
       "kind": "derived_category",
@@ -149,22 +140,13 @@
       "declaration": "cat.additive_abelian_groups",
       "dotVertex": "AdditiveAbelianGroups = AdditiveGroups.Commutative",
       "expression": {
-        "args": [
-          {
-            "id": "fun.additive_groups_to_magmas",
-            "tag": "reference"
-          },
-          {
-            "id": "clf.magmas.commutative",
-            "tag": "reference"
-          },
-          {
-            "id": "cat.magmas",
-            "tag": "reference"
-          }
-        ],
-        "constructor": "pullback",
-        "tag": "constructor"
+        "left": "fun.additive_groups_to_magmas",
+        "over": {
+          "id": "cat.magmas",
+          "tag": "reference"
+        },
+        "right": "arr.clf.magmas.commutative",
+        "tag": "pullback"
       },
       "id": "cat.additive_abelian_groups",
       "kind": "derived_category",
@@ -546,22 +528,13 @@
       "declaration": "cat.commutative_algebras",
       "dotVertex": "CommAlgebras = UnitalAlgebras.Commutative",
       "expression": {
-        "args": [
-          {
-            "id": "fun.unital_algebras_to_magmas",
-            "tag": "reference"
-          },
-          {
-            "id": "clf.magmas.commutative",
-            "tag": "reference"
-          },
-          {
-            "id": "cat.magmas",
-            "tag": "reference"
-          }
-        ],
-        "constructor": "pullback",
-        "tag": "constructor"
+        "left": "fun.unital_algebras_to_magmas",
+        "over": {
+          "id": "cat.magmas",
+          "tag": "reference"
+        },
+        "right": "arr.clf.magmas.commutative",
+        "tag": "pullback"
       },
       "id": "cat.commutative_algebras",
       "kind": "derived_category",
@@ -573,22 +546,13 @@
       "declaration": "cat.commutative_rings",
       "dotVertex": "CommRings = Rings.Commutative",
       "expression": {
-        "args": [
-          {
-            "id": "fun.rings_to_multiplicative_magmas",
-            "tag": "reference"
-          },
-          {
-            "id": "clf.magmas.commutative",
-            "tag": "reference"
-          },
-          {
-            "id": "cat.magmas",
-            "tag": "reference"
-          }
-        ],
-        "constructor": "pullback",
-        "tag": "constructor"
+        "left": "fun.rings_to_multiplicative_magmas",
+        "over": {
+          "id": "cat.magmas",
+          "tag": "reference"
+        },
+        "right": "arr.clf.magmas.commutative",
+        "tag": "pullback"
       },
       "id": "cat.commutative_rings",
       "kind": "derived_category",
@@ -954,22 +918,13 @@
       "declaration": "cat.finite_fields",
       "dotVertex": "FiniteFields = Fields.Finite",
       "expression": {
-        "args": [
-          {
-            "id": "fun.fields_to_sets",
-            "tag": "reference"
-          },
-          {
-            "id": "clf.sets.finite",
-            "tag": "reference"
-          },
-          {
-            "id": "cat.sets",
-            "tag": "reference"
-          }
-        ],
-        "constructor": "pullback",
-        "tag": "constructor"
+        "left": "fun.fields_to_sets",
+        "over": {
+          "id": "cat.sets",
+          "tag": "reference"
+        },
+        "right": "arr.clf.sets.finite",
+        "tag": "pullback"
       },
       "id": "cat.finite_fields",
       "kind": "derived_category",
@@ -981,22 +936,13 @@
       "declaration": "cat.finite_rings",
       "dotVertex": "FiniteRings = Rings.Finite",
       "expression": {
-        "args": [
-          {
-            "id": "fun.rings_to_sets",
-            "tag": "reference"
-          },
-          {
-            "id": "clf.sets.finite",
-            "tag": "reference"
-          },
-          {
-            "id": "cat.sets",
-            "tag": "reference"
-          }
-        ],
-        "constructor": "pullback",
-        "tag": "constructor"
+        "left": "fun.rings_to_sets",
+        "over": {
+          "id": "cat.sets",
+          "tag": "reference"
+        },
+        "right": "arr.clf.sets.finite",
+        "tag": "pullback"
       },
       "id": "cat.finite_rings",
       "kind": "derived_category",
@@ -1365,22 +1311,13 @@
       "declaration": "cat.integral_domains",
       "dotVertex": "IntegralDomains = Domains.Commutative",
       "expression": {
-        "args": [
-          {
-            "id": "fun.domains_to_rings",
-            "tag": "reference"
-          },
-          {
-            "id": "clf.magmas.commutative",
-            "tag": "reference"
-          },
-          {
-            "id": "cat.magmas",
-            "tag": "reference"
-          }
-        ],
-        "constructor": "pullback",
-        "tag": "constructor"
+        "left": "fun.domains_to_rings",
+        "over": {
+          "id": "cat.magmas",
+          "tag": "reference"
+        },
+        "right": "arr.clf.magmas.commutative",
+        "tag": "pullback"
       },
       "id": "cat.integral_domains",
       "kind": "derived_category",
@@ -4724,8 +4661,9 @@
       "declaration": "val.chowgroups",
       "dotVertex": "ChowGroups",
       "expression": {
-        "id": "val.chowgroups",
-        "tag": "reference"
+        "args": [],
+        "constructor": "construction_value",
+        "tag": "constructor"
       },
       "id": "val.chowgroups",
       "kind": "alias",
@@ -4737,8 +4675,9 @@
       "declaration": "val.cohomologyrings",
       "dotVertex": "CohomologyRings",
       "expression": {
-        "id": "val.cohomologyrings",
-        "tag": "reference"
+        "args": [],
+        "constructor": "construction_value",
+        "tag": "constructor"
       },
       "id": "val.cohomologyrings",
       "kind": "alias",
@@ -4750,8 +4689,9 @@
       "declaration": "val.cycles",
       "dotVertex": "Cycles",
       "expression": {
-        "id": "val.cycles",
-        "tag": "reference"
+        "args": [],
+        "constructor": "construction_value",
+        "tag": "constructor"
       },
       "id": "val.cycles",
       "kind": "alias",
@@ -4763,8 +4703,9 @@
       "declaration": "val.derhamcohomologyrings",
       "dotVertex": "DeRhamCohomologyRings",
       "expression": {
-        "id": "val.derhamcohomologyrings",
-        "tag": "reference"
+        "args": [],
+        "constructor": "construction_value",
+        "tag": "constructor"
       },
       "id": "val.derhamcohomologyrings",
       "kind": "alias",
@@ -4776,8 +4717,9 @@
       "declaration": "val.diffformmodules",
       "dotVertex": "DiffFormModules",
       "expression": {
-        "id": "val.diffformmodules",
-        "tag": "reference"
+        "args": [],
+        "constructor": "construction_value",
+        "tag": "constructor"
       },
       "id": "val.diffformmodules",
       "kind": "alias",
@@ -4789,8 +4731,9 @@
       "declaration": "val.div",
       "dotVertex": "Div",
       "expression": {
-        "id": "val.div",
-        "tag": "reference"
+        "args": [],
+        "constructor": "construction_value",
+        "tag": "constructor"
       },
       "id": "val.div",
       "kind": "alias",
@@ -4802,8 +4745,9 @@
       "declaration": "val.genera",
       "dotVertex": "Genera",
       "expression": {
-        "id": "val.genera",
-        "tag": "reference"
+        "args": [],
+        "constructor": "construction_value",
+        "tag": "constructor"
       },
       "id": "val.genera",
       "kind": "alias",
@@ -4815,8 +4759,9 @@
       "declaration": "val.isometrygroups",
       "dotVertex": "IsometryGroups",
       "expression": {
-        "id": "val.isometrygroups",
-        "tag": "reference"
+        "args": [],
+        "constructor": "construction_value",
+        "tag": "constructor"
       },
       "id": "val.isometrygroups",
       "kind": "alias",
@@ -4828,8 +4773,9 @@
       "declaration": "val.ns",
       "dotVertex": "NS",
       "expression": {
-        "id": "val.ns",
-        "tag": "reference"
+        "args": [],
+        "constructor": "construction_value",
+        "tag": "constructor"
       },
       "id": "val.ns",
       "kind": "alias",
@@ -4841,8 +4787,9 @@
       "declaration": "val.orthogonal_groups",
       "dotVertex": "OrthogonalGroups",
       "expression": {
-        "id": "fun.automorphism_group",
-        "tag": "reference"
+        "args": [],
+        "constructor": "construction_value",
+        "tag": "constructor"
       },
       "id": "val.orthogonal_groups",
       "kind": "alias",
@@ -4854,8 +4801,9 @@
       "declaration": "val.pic",
       "dotVertex": "Pic",
       "expression": {
-        "id": "val.pic",
-        "tag": "reference"
+        "args": [],
+        "constructor": "construction_value",
+        "tag": "constructor"
       },
       "id": "val.pic",
       "kind": "alias",
@@ -4867,8 +4815,9 @@
       "declaration": "val.tensorfieldmodules",
       "dotVertex": "TensorFieldModules",
       "expression": {
-        "id": "val.tensorfieldmodules",
-        "tag": "reference"
+        "args": [],
+        "constructor": "construction_value",
+        "tag": "constructor"
       },
       "id": "val.tensorfieldmodules",
       "kind": "alias",
@@ -4880,8 +4829,9 @@
       "declaration": "val.vectorfieldmodules",
       "dotVertex": "VectorFieldModules",
       "expression": {
-        "id": "val.vectorfieldmodules",
-        "tag": "reference"
+        "args": [],
+        "constructor": "construction_value",
+        "tag": "constructor"
       },
       "id": "val.vectorfieldmodules",
       "kind": "alias",
@@ -16528,125 +16478,6 @@
   },
   "structuralPorts": [
     {
-      "id": "arr.alias.associativeunitalalgebras_k",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.associativeunitalalgebras_k",
-      "target": "cat.algebras_over_field"
-    },
-    {
-      "id": "arr.alias.associativeunitalalgebras_r",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.associativeunitalalgebras_r",
-      "target": "cat.unital_algebras"
-    },
-    {
-      "id": "arr.alias.bimodules_r_s",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.bimodules_r_s",
-      "target": "cat.bimodules_r"
-    },
-    {
-      "id": "arr.alias.chaincomplexes_c",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.chaincomplexes_c",
-      "target": "cat.chaincomplexes"
-    },
-    {
-      "id": "arr.alias.commutativerings",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.commutativerings",
-      "target": "cat.commutative_rings"
-    },
-    {
-      "id": "arr.alias.coxetergroups",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.coxetergroups",
-      "target": "cat.coxeter_groups"
-    },
-    {
-      "id": "arr.alias.divisionrings",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.divisionrings",
-      "target": "cat.division_rings"
-    },
-    {
-      "id": "arr.alias.homsets_c",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.homsets_c",
-      "target": "cat.homsets"
-    },
-    {
-      "id": "arr.alias.hopfalgebras_r",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.hopfalgebras_r",
-      "target": "cat.hopf_algebras_r"
-    },
-    {
-      "id": "arr.alias.integraldomains",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.integraldomains",
-      "target": "cat.integral_domains"
-    },
-    {
-      "id": "arr.alias.left_modules",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.left_modules_r",
-      "target": "cat.modules_r"
-    },
-    {
-      "id": "arr.alias.liealgebras_r",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.liealgebras_r",
-      "target": "cat.lie_algebras_r"
-    },
-    {
-      "id": "arr.alias.modules_a",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.modules_a",
-      "target": "cat.modules_r"
-    },
-    {
-      "id": "arr.alias.modules_k",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.modules_k",
-      "target": "cat.vector_spaces_k"
-    },
-    {
-      "id": "arr.alias.modules_rop",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.modules_rop",
-      "target": "cat.right_modules_r"
-    },
-    {
-      "id": "arr.alias.schemes_k",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.schemes_k",
-      "target": "cat.schemes_s"
-    },
-    {
-      "id": "arr.alias.weylgroups",
-      "kind": "equivalence",
-      "role": null,
-      "source": "cat.weylgroups",
-      "target": "cat.weyl_groups"
-    },
-    {
       "id": "arr.clf.abelianvariety",
       "kind": "classifier_leg",
       "role": null,
@@ -16659,13 +16490,6 @@
       "role": null,
       "source": "clf.additive.domain",
       "target": "cat.magmas"
-    },
-    {
-      "id": "arr.clf.affine",
-      "kind": "classifier_leg",
-      "role": null,
-      "source": "clf.affine.domain",
-      "target": "cat.weylgroups"
     },
     {
       "id": "arr.clf.algebras.associative",
@@ -16941,13 +16765,6 @@
       "target": "cat.sets"
     },
     {
-      "id": "arr.clf.dedekind",
-      "kind": "classifier_leg",
-      "role": null,
-      "source": "clf.dedekind.domain",
-      "target": "cat.integraldomains"
-    },
-    {
       "id": "arr.clf.discretevaluation",
       "kind": "classifier_leg",
       "role": null,
@@ -16981,13 +16798,6 @@
       "role": null,
       "source": "clf.enumerated.domain",
       "target": "cat.sets"
-    },
-    {
-      "id": "arr.clf.euclidean",
-      "kind": "classifier_leg",
-      "role": null,
-      "source": "clf.euclidean.domain",
-      "target": "cat.integraldomains"
     },
     {
       "id": "arr.clf.faithfulpermutationaction",
@@ -17051,13 +16861,6 @@
       "role": null,
       "source": "clf.gaction.domain",
       "target": "cat.sets"
-    },
-    {
-      "id": "arr.clf.gcd",
-      "kind": "classifier_leg",
-      "role": null,
-      "source": "clf.gcd.domain",
-      "target": "cat.integraldomains"
     },
     {
       "id": "arr.clf.generalizedcoxeter",
@@ -17445,13 +17248,6 @@
       "target": "cat.lie_algebras_r"
     },
     {
-      "id": "arr.clf.noetherian",
-      "kind": "classifier_leg",
-      "role": null,
-      "source": "clf.noetherian.domain",
-      "target": "cat.commutativerings"
-    },
-    {
       "id": "arr.clf.nozerodivisors",
       "kind": "classifier_leg",
       "role": null,
@@ -17471,13 +17267,6 @@
       "role": null,
       "source": "clf.pointed.domain",
       "target": "cat.sets"
-    },
-    {
-      "id": "arr.clf.principalideal",
-      "kind": "classifier_leg",
-      "role": null,
-      "source": "clf.principalideal.domain",
-      "target": "cat.integraldomains"
     },
     {
       "id": "arr.clf.quantumgrouprepresentation",
@@ -17718,13 +17507,6 @@
       "target": "cat.kacmoodyalgebras_r"
     },
     {
-      "id": "arr.clf.uniquefactorization",
-      "kind": "classifier_leg",
-      "role": null,
-      "source": "clf.uniquefactorization.domain",
-      "target": "cat.integraldomains"
-    },
-    {
       "id": "arr.clf.unital",
       "kind": "classifier_leg",
       "role": null,
@@ -17744,13 +17526,6 @@
       "role": null,
       "source": "clf.vector_spaces_k.withbasis.domain",
       "target": "cat.vector_spaces_k"
-    },
-    {
-      "id": "arr.clf.weyl",
-      "kind": "classifier_leg",
-      "role": null,
-      "source": "clf.weyl.domain",
-      "target": "cat.coxetergroups"
     },
     {
       "id": "arr.clf.withbasis",
@@ -17870,13 +17645,6 @@
       "role": null,
       "source": "cat.bicategories",
       "target": "cat.cat_object"
-    },
-    {
-      "id": "arr.dot.bimodules__leftmodules",
-      "kind": "forgetful",
-      "role": null,
-      "source": "cat.bimodules_r",
-      "target": "cat.left_modules_r"
     },
     {
       "id": "arr.dot.bimodules__rightmodules",
@@ -19361,13 +19129,6 @@
       "role": null,
       "source": "cat.hopf_algebras_r",
       "target": "cat.bialgebras_r"
-    },
-    {
-      "id": "fun.integral_domains_to_fields",
-      "kind": "forgetful",
-      "role": null,
-      "source": "cat.integraldomains",
-      "target": "cat.fields"
     },
     {
       "id": "fun.kacmoodyalgebras_r_to_lie_algebras_r",

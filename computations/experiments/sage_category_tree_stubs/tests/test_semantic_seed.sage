@@ -161,3 +161,53 @@ def test_additive_magmas_is_magmas_additive_one_tower() -> None:
     assert ab["right"] == "clf.magmas.commutative"
     assert ab["over"] == "cat.magmas"
     assert ab.get("along") == "additive_operation"
+
+
+def _lean_seed_manifest() -> dict:
+    import json
+    from pathlib import Path
+
+    from sage_category_tree_stubs.design_sources import DESIGN_ROOT
+
+    path = (
+        DESIGN_ROOT.parent.parent
+        / "lean_category_dsl_spike"
+        / "NormalizedCategoryGraph"
+        / "Spec"
+        / "seed_manifest.json"
+    )
+    assert path.is_file(), path
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def test_lean_seed_has_no_functor_or_classifier_in_category_position() -> None:
+    """``CategoryExpr.reference`` holds a ``CategoryId``.
+
+    Emitting a ``fun.*`` or ``clf.*`` id there makes a typed importer search for a
+    category that does not exist instead of reading a pullback or a construction.
+    """
+    manifest = _lean_seed_manifest()
+    found: list[str] = []
+
+    def walk(node: object) -> None:
+        if isinstance(node, dict):
+            if node.get("tag") == "reference" and str(node.get("id", "")).startswith(("fun.", "clf.")):
+                found.append(str(node["id"]))
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value)
+
+    walk(manifest)
+    assert not found, f"non-category ids in category-reference position: {sorted(set(found))}"
+
+
+def test_lean_seed_structural_ports_have_present_endpoints() -> None:
+    """A port whose endpoint is not a manifest category is a dangling structural map."""
+    manifest = _lean_seed_manifest()
+    present = {c["id"] for c in manifest["categories"]} | {o["id"] for o in manifest["opaqueCategories"]}
+    ports = manifest["structuralPorts"]
+    assert ports, "no structural ports exported"
+    dangling = [p["id"] for p in ports if p["source"] not in present or p["target"] not in present]
+    assert not dangling, f"structural ports with absent endpoints: {dangling[:5]}"
