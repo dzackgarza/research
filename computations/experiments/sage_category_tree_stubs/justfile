@@ -38,6 +38,22 @@ manifests:
 	sage -python -m sage_category_tree_stubs.requirement_manifest
 	sage -python -m sage_category_tree_stubs.join_views
 	sage -python -m sage_category_tree_stubs.manifests
+	@just -f {{justfile()}} _normalize-generated
+
+# Generated JSON/YAML must land in the same shape the commit hook's prettier pass
+# produces, or every rebuild is a diff and the artifacts can never be gated on
+# reproducibility.
+[private]
+_normalize-generated:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	npx -y prettier --write --log-level warn \
+	  --config ~/ai-review-ci/tool-configs/prettier-global.json \
+	  design/normalized_category_graph/semantic_seed/*.json \
+	  design/sage/observed.json design/sage/mapping.yaml \
+	  design/sage/authored/lean_requirement_manifest.json \
+	  ../lean_category_dsl_spike/NormalizedCategoryGraph/Spec/seed_manifest.json \
+	  ../lean_category_dsl_spike/NormalizedCategoryGraph/Presentation/dot_graph_id_sidecar.json
 
 # Structural diff: just manifests-diff path/to/old-observed.json
 manifests-diff old:

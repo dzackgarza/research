@@ -9,7 +9,6 @@ import hashlib
 import json
 import re
 import sys
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -105,12 +104,18 @@ def build_observed_from_inventory(
     raw = inv_path.read_bytes()
     inventory = json.loads(raw.decode("utf-8"))
     meta = inventory["metadata"]
-    now = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     probe_path = runtime_probe_path or RUNTIME_PROBE_PATH
     probe: dict[str, Any] | None = None
     if probe_path.is_file():
         probe = load_json(probe_path)
+
+    # This snapshot is a deterministic reading of the pinned inventory and probe, so
+    # it dates the observation it derives from rather than the moment of derivation.
+    # Stamping the clock here made every rebuild a diff and put the artifact
+    # permanently out of reach of a "regeneration leaves the tree clean" gate.
+    observed_at = (probe or {}).get("probe", {}).get("generated_at") or meta.get("generated_at")
+    assert observed_at, f"neither {probe_path.name} nor the inventory metadata dates the observation; refusing to stamp the current time into a derived artifact"
 
     categories: list[dict[str, Any]] = []
     for row in inventory["categories"]:
@@ -404,7 +409,7 @@ def build_observed_from_inventory(
             "sage_version": sage_version,
             "sage_git_commit": sage_commit,
             "extractor_version": EXTRACTOR_VERSION,
-            "generated_at": now,
+            "generated_at": observed_at,
             "python_version": python_version or sys.version.split()[0],
             "inventory_sha256": hashlib.sha256(raw).hexdigest(),
             "runtime_probe": str(probe_path.relative_to(DESIGN_ROOT)) if probe is not None else None,

@@ -4,7 +4,7 @@
     "sage_version": "10.10.beta0",
     "sage_git_commit": "686dc1a8d420c2e0aabadd4f602d9a0aa4690c50",
     "extractor_version": "1.2.0",
-    "generated_at": "2026-07-21T23:36:36Z",
+    "generated_at": "2026-07-20T19:57:59Z",
     "python_version": "3.14.6",
     "inventory_sha256": "49c82b62f9de410a516a3777d54f3b723750de7f97c78b276d303636ab9ffaf3",
     "runtime_probe": "sage/runtime_probe.json",
@@ -153,9 +153,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "CartesianProducts"
-      ],
+      "defined_constructions": ["CartesianProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -187,10 +185,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Realizations",
-        "WithRealizations"
-      ],
+      "defined_constructions": ["Realizations", "WithRealizations"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -753,9 +748,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Super"
-      ],
+      "defined_constructions": ["Super"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -1107,9 +1100,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "SignedTensorProducts"
-      ],
+      "defined_constructions": ["SignedTensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -1237,9 +1228,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "TensorProducts"
-      ],
+      "defined_constructions": ["TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -1559,19 +1548,10 @@
           "repr": "Category of commutative additive groups"
         }
       ],
-      "defined_axioms": [
-        "Endset"
-      ],
+      "defined_axioms": ["Endset"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
-      "defined_constructions": [
-        "Homsets"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "defined_constructions": ["Homsets"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -1618,15 +1598,10 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "AdditiveCommutative",
-        "Finite"
-      ],
+      "defined_axioms": ["AdditiveCommutative", "Finite"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Algebras"
-      ],
+      "defined_constructions": ["Algebras"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -1674,20 +1649,10 @@
           "repr": "Category of sets"
         }
       ],
-      "defined_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveUnital",
-        "AdditiveInverse"
-      ],
+      "defined_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveUnital", "AdditiveInverse"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Algebras",
-        "CartesianProducts",
-        "Homsets",
-        "WithRealizations"
-      ],
+      "defined_constructions": ["Algebras", "CartesianProducts", "Homsets", "WithRealizations"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -1734,15 +1699,10 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "AdditiveCommutative",
-        "AdditiveInverse"
-      ],
+      "defined_axioms": ["AdditiveCommutative", "AdditiveInverse"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Homsets"
-      ],
+      "defined_constructions": ["Homsets"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -1789,17 +1749,10 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "AdditiveCommutative",
-        "AdditiveUnital"
-      ],
+      "defined_axioms": ["AdditiveCommutative", "AdditiveUnital"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Algebras",
-        "CartesianProducts",
-        "Homsets"
-      ],
+      "defined_constructions": ["Algebras", "CartesianProducts", "Homsets"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -1849,14 +1802,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Associative",
-        "Enumerated",
-        "FinitelyGeneratedAsMagma",
-        "Infinite",
-        "Inverse",
-        "Unital"
-      ],
+      "satisfied_axioms": ["Associative", "Enumerated", "FinitelyGeneratedAsMagma", "Infinite", "Inverse", "Unital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -1907,12 +1853,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -1963,12 +1904,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -2058,30 +1994,10 @@
           "repr": "Category of unital algebras over Rational Field"
         }
       ],
-      "defined_axioms": [
-        "Commutative",
-        "Supercommutative",
-        "WithBasis"
-      ],
+      "defined_axioms": ["Commutative", "Supercommutative", "WithBasis"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "Unital"
-      ],
-      "defined_constructions": [
-        "CartesianProducts",
-        "DualObjects",
-        "Filtered",
-        "Graded",
-        "Quotients",
-        "Super",
-        "TensorProducts"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital"],
+      "defined_constructions": ["CartesianProducts", "DualObjects", "Filtered", "Graded", "Quotients", "Super", "TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -2154,27 +2070,10 @@
           "repr": "Category of unital algebras with basis over Rational Field"
         }
       ],
-      "defined_axioms": [
-        "FiniteDimensional"
-      ],
+      "defined_axioms": ["FiniteDimensional"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "Unital",
-        "WithBasis"
-      ],
-      "defined_constructions": [
-        "CartesianProducts",
-        "Filtered",
-        "Graded",
-        "Super",
-        "TensorProducts"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital", "WithBasis"],
+      "defined_constructions": ["CartesianProducts", "Filtered", "Graded", "Super", "TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -2271,9 +2170,7 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Unital"
-      ],
+      "defined_axioms": ["Unital"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -2340,22 +2237,10 @@
           "repr": "Category of coalgebras over Rational Field"
         }
       ],
-      "defined_axioms": [
-        "WithBasis"
-      ],
+      "defined_axioms": ["WithBasis"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "Unital"
-      ],
-      "defined_constructions": [
-        "Super"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital"],
+      "defined_constructions": ["Super"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -2446,16 +2331,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "Unital",
-        "WithBasis"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital", "WithBasis"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -2522,12 +2398,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -2578,12 +2449,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -2666,13 +2532,8 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Enumerated",
-        "Finite"
-      ],
-      "defined_constructions": [
-        "TensorProducts"
-      ],
+      "satisfied_axioms": ["Enumerated", "Finite"],
+      "defined_constructions": ["TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -2720,27 +2581,10 @@
           "repr": "Category of vector spaces over Rational Field"
         }
       ],
-      "defined_axioms": [
-        "Cocommutative",
-        "Supercocommutative",
-        "WithBasis"
-      ],
+      "defined_axioms": ["Cocommutative", "Supercocommutative", "WithBasis"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
-      "defined_constructions": [
-        "DualObjects",
-        "Filtered",
-        "Graded",
-        "Realizations",
-        "Super",
-        "TensorProducts",
-        "WithRealizations"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "defined_constructions": ["DualObjects", "Filtered", "Graded", "Realizations", "Super", "TensorProducts", "WithRealizations"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -2815,18 +2659,8 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "WithBasis"
-      ],
-      "defined_constructions": [
-        "Filtered",
-        "Graded",
-        "Super"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "WithBasis"],
+      "defined_constructions": ["Filtered", "Graded", "Super"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -2901,16 +2735,8 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
-      "defined_constructions": [
-        "Algebras",
-        "CartesianProducts"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "defined_constructions": ["Algebras", "CartesianProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -2985,11 +2811,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveUnital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveUnital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -3065,10 +2887,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -3119,12 +2938,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -3200,19 +3014,8 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Commutative",
-        "Distributive",
-        "Unital"
-      ],
-      "defined_constructions": [
-        "TensorProducts"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Commutative", "Distributive", "Unital"],
+      "defined_constructions": ["TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -3262,12 +3065,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -3341,23 +3139,10 @@
           "repr": "Category of commutative monoids"
         }
       ],
-      "defined_axioms": [
-        "Finite"
-      ],
+      "defined_axioms": ["Finite"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Commutative",
-        "Distributive",
-        "Unital"
-      ],
-      "defined_constructions": [
-        "CartesianProducts"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Commutative", "Distributive", "Unital"],
+      "defined_constructions": ["CartesianProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -3541,9 +3326,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Finite"
-      ],
+      "defined_axioms": ["Finite"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -3575,9 +3358,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Irreducible"
-      ],
+      "defined_axioms": ["Irreducible"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -3660,20 +3441,10 @@
           "repr": "Category of generalized Coxeter groups"
         }
       ],
-      "defined_axioms": [
-        "Finite"
-      ],
+      "defined_axioms": ["Finite"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Associative",
-        "Enumerated",
-        "FinitelyGeneratedAsMagma",
-        "Inverse",
-        "Unital"
-      ],
-      "defined_constructions": [
-        "Algebras"
-      ],
+      "satisfied_axioms": ["Associative", "Enumerated", "FinitelyGeneratedAsMagma", "Inverse", "Unital"],
+      "defined_constructions": ["Algebras"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -3721,16 +3492,10 @@
           "repr": "Category of enumerated sets"
         }
       ],
-      "defined_axioms": [
-        "Finite"
-      ],
+      "defined_axioms": ["Finite"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Enumerated"
-      ],
-      "defined_constructions": [
-        "TensorProducts"
-      ],
+      "satisfied_axioms": ["Enumerated"],
+      "defined_constructions": ["TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -3759,11 +3524,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Connected",
-        "Finite",
-        "FiniteDimensional"
-      ],
+      "defined_axioms": ["Connected", "Finite", "FiniteDimensional"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -3979,9 +3740,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Finite"
-      ],
+      "defined_axioms": ["Finite"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -4031,19 +3790,10 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveUnital",
-        "Associative",
-        "AdditiveInverse",
-        "Unital"
-      ],
+      "defined_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveUnital", "Associative", "AdditiveInverse", "Unital"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "CartesianProducts"
-      ],
+      "defined_constructions": ["CartesianProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -4100,9 +3850,7 @@
           "repr": "Category of domains"
         }
       ],
-      "defined_axioms": [
-        "Commutative"
-      ],
+      "defined_axioms": ["Commutative"],
       "available_axioms": [],
       "satisfied_axioms": [
         "AdditiveAssociative",
@@ -4172,20 +3920,9 @@
           "repr": "Category of rings"
         }
       ],
-      "defined_axioms": [
-        "Commutative"
-      ],
+      "defined_axioms": ["Commutative"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "NoZeroDivisors",
-        "Unital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "NoZeroDivisors", "Unital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -4218,9 +3955,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Homsets"
-      ],
+      "defined_constructions": ["Homsets"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -4277,17 +4012,10 @@
           "repr": "Category of sets"
         }
       ],
-      "defined_axioms": [
-        "Finite",
-        "Infinite"
-      ],
+      "defined_axioms": ["Finite", "Infinite"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Enumerated"
-      ],
-      "defined_constructions": [
-        "CartesianProducts"
-      ],
+      "satisfied_axioms": ["Enumerated"],
+      "defined_constructions": ["CartesianProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -4487,9 +4215,7 @@
           "repr": "Category of noetherian rings"
         }
       ],
-      "defined_axioms": [
-        "Finite"
-      ],
+      "defined_axioms": ["Finite"],
       "available_axioms": [],
       "satisfied_axioms": [
         "AdditiveAssociative",
@@ -4596,14 +4322,10 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Connected"
-      ],
+      "defined_axioms": ["Connected"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "WithRealizations"
-      ],
+      "defined_constructions": ["WithRealizations"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -4632,9 +4354,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Connected"
-      ],
+      "defined_axioms": ["Connected"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -4666,14 +4386,10 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "FiniteDimensional"
-      ],
+      "defined_axioms": ["FiniteDimensional"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Subobjects"
-      ],
+      "defined_constructions": ["Subobjects"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -4720,10 +4436,7 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Irreducible",
-        "WellGenerated"
-      ],
+      "defined_axioms": ["Irreducible", "WellGenerated"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -4851,13 +4564,8 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Enumerated",
-        "Finite"
-      ],
-      "defined_constructions": [
-        "TensorProducts"
-      ],
+      "satisfied_axioms": ["Enumerated", "Finite"],
+      "defined_constructions": ["TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -4930,9 +4638,7 @@
           "repr": "Category of finite dimensional magmatic algebras with basis over Rational Field"
         }
       ],
-      "defined_axioms": [
-        "Cellular"
-      ],
+      "defined_axioms": ["Cellular"],
       "available_axioms": [],
       "satisfied_axioms": [
         "AdditiveAssociative",
@@ -4945,9 +4651,7 @@
         "Unital",
         "WithBasis"
       ],
-      "defined_constructions": [
-        "TensorProducts"
-      ],
+      "defined_constructions": ["TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -4994,9 +4698,7 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Stratified"
-      ],
+      "defined_axioms": ["Stratified"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -5114,14 +4816,10 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Nilpotent"
-      ],
+      "defined_axioms": ["Nilpotent"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Subobjects"
-      ],
+      "defined_constructions": ["Subobjects"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -5168,15 +4866,10 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Endset"
-      ],
+      "defined_axioms": ["Endset"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Homsets",
-        "TensorProducts"
-      ],
+      "defined_constructions": ["Homsets", "TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -5237,9 +4930,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Commutative"
-      ],
+      "defined_axioms": ["Commutative"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -5317,14 +5008,8 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Enumerated",
-        "Finite"
-      ],
-      "defined_constructions": [
-        "CartesianProducts",
-        "IsomorphicObjects"
-      ],
+      "satisfied_axioms": ["Enumerated", "Finite"],
+      "defined_constructions": ["CartesianProducts", "IsomorphicObjects"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -5504,15 +5189,8 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Associative",
-        "Finite",
-        "Inverse",
-        "Unital"
-      ],
-      "defined_constructions": [
-        "Algebras"
-      ],
+      "satisfied_axioms": ["Associative", "Finite", "Inverse", "Unital"],
+      "defined_constructions": ["Algebras"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -5603,10 +5281,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Bounded",
-        "Finite"
-      ],
+      "satisfied_axioms": ["Bounded", "Finite"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -5657,9 +5332,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Graded"
-      ],
+      "defined_constructions": ["Graded"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -5709,10 +5382,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Graded",
-        "Super"
-      ],
+      "defined_constructions": ["Graded", "Super"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -5809,9 +5479,7 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Finite"
-      ],
+      "defined_axioms": ["Finite"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -5889,11 +5557,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Associative",
-        "Finite",
-        "Unital"
-      ],
+      "satisfied_axioms": ["Associative", "Finite", "Unital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -5985,14 +5649,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Associative",
-        "Enumerated",
-        "Finite",
-        "FinitelyGeneratedAsMagma",
-        "Inverse",
-        "Unital"
-      ],
+      "satisfied_axioms": ["Associative", "Enumerated", "Finite", "FinitelyGeneratedAsMagma", "Inverse", "Unital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -6068,9 +5725,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Finite"
-      ],
+      "satisfied_axioms": ["Finite"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -6146,10 +5801,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Associative",
-        "Finite"
-      ],
+      "satisfied_axioms": ["Associative", "Finite"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -6207,17 +5859,10 @@
           "repr": "Category of sets"
         }
       ],
-      "defined_axioms": [
-        "Infinite"
-      ],
+      "defined_axioms": ["Infinite"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Finite"
-      ],
-      "defined_constructions": [
-        "Algebras",
-        "Subquotients"
-      ],
+      "satisfied_axioms": ["Finite"],
+      "defined_constructions": ["Algebras", "Subquotients"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -6292,15 +5937,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Associative",
-        "Enumerated",
-        "Finite",
-        "FinitelyGeneratedAsMagma",
-        "Inverse",
-        "Unital",
-        "WellGenerated"
-      ],
+      "satisfied_axioms": ["Associative", "Enumerated", "Finite", "FinitelyGeneratedAsMagma", "Inverse", "Unital", "WellGenerated"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -6453,9 +6090,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Finite"
-      ],
+      "defined_axioms": ["Finite"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -6524,18 +6159,8 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "Unital"
-      ],
-      "defined_constructions": [
-        "SignedTensorProducts"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital"],
+      "defined_constructions": ["SignedTensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -6615,23 +6240,10 @@
           "repr": "Category of graded vector spaces with basis over Rational Field"
         }
       ],
-      "defined_axioms": [
-        "FiniteDimensional"
-      ],
+      "defined_axioms": ["FiniteDimensional"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "Unital",
-        "WithBasis"
-      ],
-      "defined_constructions": [
-        "SignedTensorProducts"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital", "WithBasis"],
+      "defined_constructions": ["SignedTensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -6697,15 +6309,8 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
-      "defined_constructions": [
-        "SignedTensorProducts"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "defined_constructions": ["SignedTensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -6787,16 +6392,8 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "WithBasis"
-      ],
-      "defined_constructions": [
-        "SignedTensorProducts"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "WithBasis"],
+      "defined_constructions": ["SignedTensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -6876,23 +6473,10 @@
           "repr": "Category of graded coalgebras with basis over Rational Field"
         }
       ],
-      "defined_axioms": [
-        "Connected"
-      ],
+      "defined_axioms": ["Connected"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "Unital",
-        "WithBasis"
-      ],
-      "defined_constructions": [
-        "WithRealizations"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital", "WithBasis"],
+      "defined_constructions": ["WithRealizations"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -6921,10 +6505,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Stratified",
-        "FiniteDimensional"
-      ],
+      "defined_axioms": ["Stratified", "FiniteDimensional"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -6956,9 +6537,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "FiniteDimensional"
-      ],
+      "defined_axioms": ["FiniteDimensional"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -7057,9 +6636,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Quotients"
-      ],
+      "defined_constructions": ["Quotients"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -7088,9 +6665,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Connected"
-      ],
+      "defined_axioms": ["Connected"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -7159,16 +6734,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "Unital",
-        "WithBasis"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital", "WithBasis"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -7293,21 +6859,10 @@
           "repr": "Category of inverse unital magmas"
         }
       ],
-      "defined_axioms": [
-        "Commutative",
-        "Finite"
-      ],
+      "defined_axioms": ["Commutative", "Finite"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Associative",
-        "Inverse",
-        "Unital"
-      ],
-      "defined_constructions": [
-        "Algebras",
-        "CartesianProducts",
-        "Topological"
-      ],
+      "satisfied_axioms": ["Associative", "Inverse", "Unital"],
+      "defined_constructions": ["Algebras", "CartesianProducts", "Topological"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -7408,16 +6963,8 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "WithBasis"
-      ],
-      "defined_constructions": [
-        "Homsets"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "WithBasis"],
+      "defined_constructions": ["Homsets"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -7467,12 +7014,8 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Enumerated"
-      ],
-      "defined_constructions": [
-        "TensorProducts"
-      ],
+      "satisfied_axioms": ["Enumerated"],
+      "defined_constructions": ["TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -7501,9 +7044,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Endset"
-      ],
+      "defined_axioms": ["Endset"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -7554,24 +7095,10 @@
           "repr": "Category of bialgebras over Rational Field"
         }
       ],
-      "defined_axioms": [
-        "WithBasis"
-      ],
+      "defined_axioms": ["WithBasis"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "Unital"
-      ],
-      "defined_constructions": [
-        "Realizations",
-        "Super",
-        "TensorProducts"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital"],
+      "defined_constructions": ["Realizations", "Super", "TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -7644,26 +7171,10 @@
           "repr": "Category of bialgebras with basis over Rational Field"
         }
       ],
-      "defined_axioms": [
-        "FiniteDimensional"
-      ],
+      "defined_axioms": ["FiniteDimensional"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "Unital",
-        "WithBasis"
-      ],
-      "defined_constructions": [
-        "Filtered",
-        "Graded",
-        "Super",
-        "TensorProducts"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital", "WithBasis"],
+      "defined_constructions": ["Filtered", "Graded", "Super", "TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -7788,10 +7299,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Enumerated",
-        "Infinite"
-      ],
+      "satisfied_axioms": ["Enumerated", "Infinite"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -7928,12 +7436,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -8080,9 +7583,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "TensorProducts"
-      ],
+      "defined_constructions": ["TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -8111,10 +7612,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "FinitelyGeneratedAsLambdaBracketAlgebra",
-        "WithBasis"
-      ],
+      "defined_axioms": ["FinitelyGeneratedAsLambdaBracketAlgebra", "WithBasis"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -8164,14 +7662,10 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "FinitelyGeneratedAsLambdaBracketAlgebra"
-      ],
+      "defined_axioms": ["FinitelyGeneratedAsLambdaBracketAlgebra"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Graded"
-      ],
+      "defined_constructions": ["Graded"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -8219,16 +7713,7 @@
           "repr": "Category of posets"
         }
       ],
-      "defined_axioms": [
-        "ChainGraded",
-        "CongruenceUniform",
-        "Distributive",
-        "Extremal",
-        "Finite",
-        "Semidistributive",
-        "Stone",
-        "Trim"
-      ],
+      "defined_axioms": ["ChainGraded", "CongruenceUniform", "Distributive", "Extremal", "Finite", "Semidistributive", "Stone", "Trim"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -8281,12 +7766,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -8335,21 +7815,10 @@
           "repr": "Category of vector spaces over Rational Field"
         }
       ],
-      "defined_axioms": [
-        "FiniteDimensional",
-        "WithBasis",
-        "Nilpotent"
-      ],
+      "defined_axioms": ["FiniteDimensional", "WithBasis", "Nilpotent"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
-      "defined_constructions": [
-        "Graded"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "defined_constructions": ["Graded"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -8399,9 +7868,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Graded"
-      ],
+      "defined_constructions": ["Graded"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -8430,16 +7897,10 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "FinitelyGeneratedAsLambdaBracketAlgebra",
-        "WithBasis"
-      ],
+      "defined_axioms": ["FinitelyGeneratedAsLambdaBracketAlgebra", "WithBasis"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Graded",
-        "Super"
-      ],
+      "defined_constructions": ["Graded", "Super"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -8486,15 +7947,10 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "FinitelyGeneratedAsLambdaBracketAlgebra"
-      ],
+      "defined_axioms": ["FinitelyGeneratedAsLambdaBracketAlgebra"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Graded",
-        "Super"
-      ],
+      "defined_constructions": ["Graded", "Super"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -8656,23 +8112,10 @@
           "repr": "Category of sets"
         }
       ],
-      "defined_axioms": [
-        "Associative",
-        "Commutative",
-        "Distributive",
-        "FinitelyGeneratedAsMagma",
-        "JTrivial",
-        "Unital",
-        "Inverse"
-      ],
+      "defined_axioms": ["Associative", "Commutative", "Distributive", "FinitelyGeneratedAsMagma", "JTrivial", "Unital", "Inverse"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Algebras",
-        "CartesianProducts",
-        "Realizations",
-        "Subquotients"
-      ],
+      "defined_constructions": ["Algebras", "CartesianProducts", "Realizations", "Subquotients"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -8701,14 +8144,10 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Distributive"
-      ],
+      "defined_axioms": ["Distributive"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "CartesianProducts"
-      ],
+      "defined_constructions": ["CartesianProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -8737,12 +8176,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Associative",
-        "Unital",
-        "WithBasis",
-        "FiniteDimensional"
-      ],
+      "defined_axioms": ["Associative", "Unital", "WithBasis", "FiniteDimensional"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -8774,14 +8208,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "AlmostComplex",
-        "Analytic",
-        "Connected",
-        "Differentiable",
-        "FiniteDimensional",
-        "Smooth"
-      ],
+      "defined_axioms": ["AlmostComplex", "Analytic", "Connected", "Differentiable", "FiniteDimensional", "Smooth"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -8834,15 +8261,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "Unital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -8872,16 +8291,10 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Complete"
-      ],
+      "defined_axioms": ["Complete"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "CartesianProducts",
-        "Homsets",
-        "WithRealizations"
-      ],
+      "defined_constructions": ["CartesianProducts", "Homsets", "WithRealizations"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -8929,14 +8342,10 @@
           "repr": "Category of sets"
         }
       ],
-      "defined_axioms": [
-        "Endset"
-      ],
+      "defined_axioms": ["Endset"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Homsets"
-      ],
+      "defined_constructions": ["Homsets"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -8965,23 +8374,10 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "FiniteDimensional",
-        "FinitelyPresented",
-        "Endset",
-        "WithBasis"
-      ],
+      "defined_axioms": ["FiniteDimensional", "FinitelyPresented", "Endset", "WithBasis"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "CartesianProducts",
-        "DualObjects",
-        "Filtered",
-        "TensorProducts",
-        "Graded",
-        "Homsets",
-        "Super"
-      ],
+      "defined_constructions": ["CartesianProducts", "DualObjects", "Filtered", "TensorProducts", "Graded", "Homsets", "Super"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -9028,20 +8424,10 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "FiniteDimensional"
-      ],
+      "defined_axioms": ["FiniteDimensional"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "CartesianProducts",
-        "DualObjects",
-        "Filtered",
-        "Graded",
-        "Homsets",
-        "Super",
-        "TensorProducts"
-      ],
+      "defined_constructions": ["CartesianProducts", "DualObjects", "Filtered", "Graded", "Homsets", "Super", "TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -9114,22 +8500,10 @@
           "repr": "Category of unital magmas"
         }
       ],
-      "defined_axioms": [
-        "Commutative",
-        "Finite",
-        "Inverse"
-      ],
+      "defined_axioms": ["Commutative", "Finite", "Inverse"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Associative",
-        "Unital"
-      ],
-      "defined_constructions": [
-        "Algebras",
-        "CartesianProducts",
-        "Subquotients",
-        "WithRealizations"
-      ],
+      "satisfied_axioms": ["Associative", "Unital"],
+      "defined_constructions": ["Algebras", "CartesianProducts", "Subquotients", "WithRealizations"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -9257,9 +8631,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Homsets"
-      ],
+      "defined_constructions": ["Homsets"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -9357,10 +8729,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Associative",
-        "Unital"
-      ],
+      "satisfied_axioms": ["Associative", "Unital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -9409,15 +8778,9 @@
           "repr": "Category of groups"
         }
       ],
-      "defined_axioms": [
-        "Finite"
-      ],
+      "defined_axioms": ["Finite"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Associative",
-        "Inverse",
-        "Unital"
-      ],
+      "satisfied_axioms": ["Associative", "Inverse", "Unital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -9549,10 +8912,7 @@
           "repr": "Category of sets"
         }
       ],
-      "defined_axioms": [
-        "Bounded",
-        "Finite"
-      ],
+      "defined_axioms": ["Bounded", "Finite"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -9645,14 +9005,10 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "WithBasis"
-      ],
+      "defined_axioms": ["WithBasis"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "TensorProducts"
-      ],
+      "defined_constructions": ["TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -9764,12 +9120,8 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Enumerated"
-      ],
-      "defined_constructions": [
-        "TensorProducts"
-      ],
+      "satisfied_axioms": ["Enumerated"],
+      "defined_constructions": ["TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -9833,9 +9185,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "TensorProducts"
-      ],
+      "defined_constructions": ["TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -9885,12 +9235,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -9941,12 +9286,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -10020,21 +9360,9 @@
           "repr": "Category of semirings"
         }
       ],
-      "defined_axioms": [
-        "Commutative",
-        "Division",
-        "NoZeroDivisors"
-      ],
+      "defined_axioms": ["Commutative", "Division", "NoZeroDivisors"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "Unital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive", "Unital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -10099,18 +9427,9 @@
           "repr": "Category of commutative additive groups"
         }
       ],
-      "defined_axioms": [
-        "Unital"
-      ],
+      "defined_axioms": ["Unital"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "Associative", "Distributive"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -10269,26 +9588,10 @@
           "repr": "Category of magmas"
         }
       ],
-      "defined_axioms": [
-        "Aperiodic",
-        "Finite",
-        "FinitelyGeneratedAsMagma",
-        "HTrivial",
-        "JTrivial",
-        "LTrivial",
-        "RTrivial",
-        "Unital"
-      ],
+      "defined_axioms": ["Aperiodic", "Finite", "FinitelyGeneratedAsMagma", "HTrivial", "JTrivial", "LTrivial", "RTrivial", "Unital"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Associative"
-      ],
-      "defined_constructions": [
-        "Algebras",
-        "CartesianProducts",
-        "Quotients",
-        "Subquotients"
-      ],
+      "satisfied_axioms": ["Associative"],
+      "defined_constructions": ["Algebras", "CartesianProducts", "Quotients", "Subquotients"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -10354,14 +9657,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveUnital",
-        "Associative",
-        "Distributive",
-        "Unital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveUnital", "Associative", "Distributive", "Unital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -10391,10 +9687,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "FiniteDimensional",
-        "WithBasis"
-      ],
+      "defined_axioms": ["FiniteDimensional", "WithBasis"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -10445,12 +9738,7 @@
           "repr": "Category of sets with partial maps"
         }
       ],
-      "defined_axioms": [
-        "Enumerated",
-        "Facade",
-        "Finite",
-        "Infinite"
-      ],
+      "defined_axioms": ["Enumerated", "Facade", "Finite", "Infinite"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [
@@ -10646,10 +9934,7 @@
           "repr": "Category of sets"
         }
       ],
-      "defined_axioms": [
-        "Connected",
-        "Finite"
-      ],
+      "defined_axioms": ["Connected", "Finite"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -10681,16 +9966,10 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Finite",
-        "Endset",
-        "Pointed"
-      ],
+      "defined_axioms": ["Finite", "Endset", "Pointed"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Homsets"
-      ],
+      "defined_constructions": ["Homsets"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -10719,14 +9998,10 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Supercommutative"
-      ],
+      "defined_axioms": ["Supercommutative"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "SignedTensorProducts"
-      ],
+      "defined_constructions": ["SignedTensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -10758,9 +10033,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "SignedTensorProducts"
-      ],
+      "defined_constructions": ["SignedTensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -10807,14 +10080,10 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "WithBasis"
-      ],
+      "defined_axioms": ["WithBasis"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "SignedTensorProducts"
-      ],
+      "defined_constructions": ["SignedTensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -10843,14 +10112,10 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Finite"
-      ],
+      "defined_axioms": ["Finite"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "TensorProducts"
-      ],
+      "defined_constructions": ["TensorProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -10914,9 +10179,7 @@
       "defined_axioms": [],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "Graded"
-      ],
+      "defined_constructions": ["Graded"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -11009,15 +10272,10 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Compact",
-        "Connected"
-      ],
+      "defined_axioms": ["Compact", "Connected"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "CartesianProducts"
-      ],
+      "defined_constructions": ["CartesianProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -11046,9 +10304,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "FiniteDimensional"
-      ],
+      "defined_axioms": ["FiniteDimensional"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -11159,14 +10415,10 @@
         }
       ],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "WithBasis"
-      ],
+      "defined_axioms": ["WithBasis"],
       "available_axioms": [],
       "satisfied_axioms": [],
-      "defined_constructions": [
-        "CartesianProducts"
-      ],
+      "defined_constructions": ["CartesianProducts"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -11195,10 +10447,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Differentiable",
-        "Smooth"
-      ],
+      "defined_axioms": ["Differentiable", "Smooth"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -11249,24 +10498,10 @@
           "repr": "Category of modules over Rational Field"
         }
       ],
-      "defined_axioms": [
-        "FiniteDimensional",
-        "WithBasis"
-      ],
+      "defined_axioms": ["FiniteDimensional", "WithBasis"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
-      "defined_constructions": [
-        "CartesianProducts",
-        "DualObjects",
-        "Filtered",
-        "TensorProducts",
-        "Graded"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
+      "defined_constructions": ["CartesianProducts", "DualObjects", "Filtered", "TensorProducts", "Graded"],
       "available_constructions": [],
       "aliases": [],
       "deprecated_aliases": [],
@@ -11314,17 +10549,9 @@
           "repr": "Category of Coxeter groups"
         }
       ],
-      "defined_axioms": [
-        "Finite"
-      ],
+      "defined_axioms": ["Finite"],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Associative",
-        "Enumerated",
-        "FinitelyGeneratedAsMagma",
-        "Inverse",
-        "Unital"
-      ],
+      "satisfied_axioms": ["Associative", "Enumerated", "FinitelyGeneratedAsMagma", "Inverse", "Unital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -11386,14 +10613,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Blue",
-        "Commutative",
-        "Connected",
-        "FiniteDimensional",
-        "Flying",
-        "Unital"
-      ],
+      "defined_axioms": ["Blue", "Commutative", "Connected", "FiniteDimensional", "Flying", "Unital"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -11425,13 +10645,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Commutative",
-        "Facade",
-        "Finite",
-        "FiniteDimensional",
-        "Unital"
-      ],
+      "defined_axioms": ["Commutative", "Facade", "Finite", "FiniteDimensional", "Unital"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -11463,13 +10677,7 @@
       "immediate_supercategories": [],
       "declared_supercategories": [],
       "observed_supercategories": [],
-      "defined_axioms": [
-        "Commutative",
-        "Facade",
-        "Finite",
-        "FiniteDimensional",
-        "Unital"
-      ],
+      "defined_axioms": ["Commutative", "Facade", "Finite", "FiniteDimensional", "Unital"],
       "available_axioms": [],
       "satisfied_axioms": [],
       "defined_constructions": [],
@@ -11537,13 +10745,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "WithBasis"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "WithBasis"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -11551,9 +10753,7 @@
       "defining_relation": null,
       "composed": {
         "base": "VectorSpaces",
-        "steps": [
-          "WithBasis"
-        ],
+        "steps": ["WithBasis"],
         "normalized_reading": "VectorSpaces.WithBasis"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -11582,9 +10782,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "WithBasis"
-      ],
+      "satisfied_axioms": ["WithBasis"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -11592,9 +10790,7 @@
       "defining_relation": null,
       "composed": {
         "base": "UnitalAlgebras",
-        "steps": [
-          "WithBasis"
-        ],
+        "steps": ["WithBasis"],
         "normalized_reading": "UnitalAlgebras.WithBasis"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -11623,9 +10819,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveCommutative"
-      ],
+      "satisfied_axioms": ["AdditiveCommutative"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -11633,9 +10827,7 @@
       "defining_relation": null,
       "composed": {
         "base": "AdditiveMagmas",
-        "steps": [
-          "AdditiveCommutative"
-        ],
+        "steps": ["AdditiveCommutative"],
         "normalized_reading": "Magmas.Additive.Commutative"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -11664,9 +10856,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Commutative"
-      ],
+      "satisfied_axioms": ["Commutative"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -11674,9 +10864,7 @@
       "defining_relation": null,
       "composed": {
         "base": "Monoids",
-        "steps": [
-          "Commutative"
-        ],
+        "steps": ["Commutative"],
         "normalized_reading": "Monoids.Commutative"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -11705,10 +10893,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "WithBasis",
-        "FiniteDimensional"
-      ],
+      "satisfied_axioms": ["WithBasis", "FiniteDimensional"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -11716,10 +10901,7 @@
       "defining_relation": null,
       "composed": {
         "base": "MagmaticAlgebras",
-        "steps": [
-          "WithBasis",
-          "FiniteDimensional"
-        ],
+        "steps": ["WithBasis", "FiniteDimensional"],
         "normalized_reading": "MagmaticAlgebras.WithBasis.FiniteDimensional"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -11748,9 +10930,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "FiniteDimensional"
-      ],
+      "satisfied_axioms": ["FiniteDimensional"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -11758,9 +10938,7 @@
       "defining_relation": null,
       "composed": {
         "base": "VectorSpaces",
-        "steps": [
-          "FiniteDimensional"
-        ],
+        "steps": ["FiniteDimensional"],
         "normalized_reading": "VectorSpaces.FiniteDimensional"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -11839,14 +11017,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "FiniteDimensional",
-        "WithBasis"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "FiniteDimensional", "WithBasis"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -11854,10 +11025,7 @@
       "defining_relation": null,
       "composed": {
         "base": "VectorSpaces",
-        "steps": [
-          "WithBasis",
-          "FiniteDimensional"
-        ],
+        "steps": ["WithBasis", "FiniteDimensional"],
         "normalized_reading": "VectorSpaces.WithBasis.FiniteDimensional"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -11886,9 +11054,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Finite"
-      ],
+      "satisfied_axioms": ["Finite"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -11896,9 +11062,7 @@
       "defining_relation": null,
       "composed": {
         "base": "CommutativeRings",
-        "steps": [
-          "Finite"
-        ],
+        "steps": ["Finite"],
         "normalized_reading": "CommutativeRings.Finite"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -11927,9 +11091,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Finite"
-      ],
+      "satisfied_axioms": ["Finite"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -11937,9 +11099,7 @@
       "defining_relation": null,
       "composed": {
         "base": "FinitelyGeneratedSemigroups",
-        "steps": [
-          "Finite"
-        ],
+        "steps": ["Finite"],
         "normalized_reading": "FinitelyGeneratedSemigroups.Finite"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -11968,9 +11128,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Bounded"
-      ],
+      "satisfied_axioms": ["Bounded"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -11978,9 +11136,7 @@
       "defining_relation": null,
       "composed": {
         "base": "Posets",
-        "steps": [
-          "Bounded"
-        ],
+        "steps": ["Bounded"],
         "normalized_reading": "Posets.Bounded"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -12043,12 +11199,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -12056,9 +11207,7 @@
       "defining_relation": null,
       "composed": {
         "base": "VectorSpaces",
-        "steps": [
-          "Graded"
-        ],
+        "steps": ["Graded"],
         "normalized_reading": "VectorSpaces.Graded"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -12137,13 +11286,7 @@
       ],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveInverse",
-        "AdditiveUnital",
-        "WithBasis"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveInverse", "AdditiveUnital", "WithBasis"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -12151,10 +11294,7 @@
       "defining_relation": null,
       "composed": {
         "base": "VectorSpaces",
-        "steps": [
-          "WithBasis",
-          "Graded"
-        ],
+        "steps": ["WithBasis", "Graded"],
         "normalized_reading": "VectorSpaces.WithBasis.Graded"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -12183,9 +11323,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Filtered"
-      ],
+      "satisfied_axioms": ["Filtered"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -12193,9 +11331,7 @@
       "defining_relation": null,
       "composed": {
         "base": "Coalgebras",
-        "steps": [
-          "Filtered"
-        ],
+        "steps": ["Filtered"],
         "normalized_reading": "Coalgebras.Filtered"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -12224,9 +11360,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Filtered"
-      ],
+      "satisfied_axioms": ["Filtered"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -12234,9 +11368,7 @@
       "defining_relation": null,
       "composed": {
         "base": "CoalgebrasWithBasis",
-        "steps": [
-          "Filtered"
-        ],
+        "steps": ["Filtered"],
         "normalized_reading": "CoalgebrasWithBasis.Filtered"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -12265,9 +11397,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Filtered"
-      ],
+      "satisfied_axioms": ["Filtered"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -12275,9 +11405,7 @@
       "defining_relation": null,
       "composed": {
         "base": "VectorSpaces",
-        "steps": [
-          "Filtered"
-        ],
+        "steps": ["Filtered"],
         "normalized_reading": "VectorSpaces.Filtered"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -12306,10 +11434,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "WithBasis",
-        "Filtered"
-      ],
+      "satisfied_axioms": ["WithBasis", "Filtered"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -12317,10 +11442,7 @@
       "defining_relation": null,
       "composed": {
         "base": "VectorSpaces",
-        "steps": [
-          "WithBasis",
-          "Filtered"
-        ],
+        "steps": ["WithBasis", "Filtered"],
         "normalized_reading": "VectorSpaces.WithBasis.Filtered"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -12349,9 +11471,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Algebras"
-      ],
+      "satisfied_axioms": ["Algebras"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -12359,9 +11479,7 @@
       "defining_relation": null,
       "composed": {
         "base": "Monoids",
-        "steps": [
-          "Algebras"
-        ],
+        "steps": ["Algebras"],
         "normalized_reading": "Monoids.Algebras"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -12390,10 +11508,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Unital",
-        "Inverse"
-      ],
+      "satisfied_axioms": ["Unital", "Inverse"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -12401,10 +11516,7 @@
       "defining_relation": null,
       "composed": {
         "base": "Magmas",
-        "steps": [
-          "Unital",
-          "Inverse"
-        ],
+        "steps": ["Unital", "Inverse"],
         "normalized_reading": "Magmas.Unital.Inverse"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -12433,9 +11545,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Infinite"
-      ],
+      "satisfied_axioms": ["Infinite"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -12443,9 +11553,7 @@
       "defining_relation": null,
       "composed": {
         "base": "Sets",
-        "steps": [
-          "Infinite"
-        ],
+        "steps": ["Infinite"],
         "normalized_reading": "Sets.Infinite"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -12474,9 +11582,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "Unital"
-      ],
+      "satisfied_axioms": ["Unital"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -12484,9 +11590,7 @@
       "defining_relation": null,
       "composed": {
         "base": "Magmas",
-        "steps": [
-          "Unital"
-        ],
+        "steps": ["Unital"],
         "normalized_reading": "Magmas.Unital"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -12515,12 +11619,7 @@
       "observed_supercategories": [],
       "defined_axioms": [],
       "available_axioms": [],
-      "satisfied_axioms": [
-        "AdditiveAssociative",
-        "AdditiveCommutative",
-        "AdditiveUnital",
-        "Associative"
-      ],
+      "satisfied_axioms": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveUnital", "Associative"],
       "defined_constructions": [],
       "available_constructions": [],
       "aliases": [],
@@ -12528,12 +11627,7 @@
       "defining_relation": null,
       "composed": {
         "base": "DistributiveMagmasAndAdditiveMagmas",
-        "steps": [
-          "AdditiveAssociative",
-          "AdditiveCommutative",
-          "AdditiveUnital",
-          "Associative"
-        ],
+        "steps": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveUnital", "Associative"],
         "normalized_reading": "DistributiveMagmasAndAdditiveMagmas.Associative.Commutative.Unital.Associative"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
@@ -12739,10 +11833,7 @@
       "id": "sage.axiom.finitelygeneratedasmagma",
       "name": "FinitelyGeneratedAsMagma",
       "status": "production",
-      "defining_categories": [
-        "sage.category.finitely_generated_magmas_finitelygeneratedmagmas",
-        "sage.category.finitely_generated_semigroups_finitelygeneratedsemigroups"
-      ],
+      "defining_categories": ["sage.category.finitely_generated_magmas_finitelygeneratedmagmas", "sage.category.finitely_generated_semigroups_finitelygeneratedsemigroups"],
       "generated_categories": [
         {
           "base": "sage.category.magmas_magmas",
@@ -12822,9 +11913,7 @@
       "id": "sage.axiom.facade",
       "name": "Facade",
       "status": "production",
-      "defining_categories": [
-        "sage.category.facade_sets_facadesets"
-      ],
+      "defining_categories": ["sage.category.facade_sets_facadesets"],
       "generated_categories": [
         {
           "base": "sage.category.category_with_axiom_dummyobjectsoverbasering",
@@ -13023,9 +12112,7 @@
       "id": "sage.axiom.infinite",
       "name": "Infinite",
       "status": "production",
-      "defining_categories": [
-        "sage.category.infinite_enumerated_sets_infiniteenumeratedsets"
-      ],
+      "defining_categories": ["sage.category.infinite_enumerated_sets_infiniteenumeratedsets"],
       "generated_categories": [
         {
           "base": "sage.category.enumerated_sets_enumeratedsets",
@@ -13055,9 +12142,7 @@
       "id": "sage.axiom.enumerated",
       "name": "Enumerated",
       "status": "production",
-      "defining_categories": [
-        "sage.category.enumerated_sets_enumeratedsets"
-      ],
+      "defining_categories": ["sage.category.enumerated_sets_enumeratedsets"],
       "generated_categories": [
         {
           "base": "sage.category.sets_cat_sets",
@@ -13107,9 +12192,7 @@
       "id": "sage.axiom.nilpotent",
       "name": "Nilpotent",
       "status": "production",
-      "defining_categories": [
-        "sage.category.finite_dimensional_nilpotent_lie_algebras_with_basis_finitedimensionalnilpotentliealgebraswithbasis"
-      ],
+      "defining_categories": ["sage.category.finite_dimensional_nilpotent_lie_algebras_with_basis_finitedimensionalnilpotentliealgebraswithbasis"],
       "generated_categories": [
         {
           "base": "sage.category.finite_dimensional_lie_algebras_with_basis_finitedimensionalliealgebraswithbasis",
@@ -13585,9 +12668,7 @@
       "id": "sage.axiom.supercommutative",
       "name": "Supercommutative",
       "status": "production",
-      "defining_categories": [
-        "sage.category.supercommutative_algebras_supercommutativealgebras"
-      ],
+      "defining_categories": ["sage.category.supercommutative_algebras_supercommutativealgebras"],
       "generated_categories": [
         {
           "base": "sage.category.algebras_algebras",
@@ -13762,10 +12843,7 @@
       "id": "sage.axiom.associative",
       "name": "Associative",
       "status": "production",
-      "defining_categories": [
-        "sage.category.associative_algebras_associativealgebras",
-        "sage.category.semigroups_semigroups"
-      ],
+      "defining_categories": ["sage.category.associative_algebras_associativealgebras", "sage.category.semigroups_semigroups"],
       "generated_categories": [
         {
           "base": "sage.category.distributive_magmas_and_additive_magmas_distributivemagmasandadditivemagmas",
@@ -13800,9 +12878,7 @@
       "id": "sage.axiom.inverse",
       "name": "Inverse",
       "status": "production",
-      "defining_categories": [
-        "sage.category.groups_groups"
-      ],
+      "defining_categories": ["sage.category.groups_groups"],
       "generated_categories": [
         {
           "base": "sage.category.magmas_magmas",
@@ -13918,9 +12994,7 @@
       "id": "sage.axiom.division",
       "name": "Division",
       "status": "production",
-      "defining_categories": [
-        "sage.category.division_rings_divisionrings"
-      ],
+      "defining_categories": ["sage.category.division_rings_divisionrings"],
       "generated_categories": [
         {
           "base": "sage.category.rings_rings",
@@ -13945,9 +13019,7 @@
       "id": "sage.axiom.nozerodivisors",
       "name": "NoZeroDivisors",
       "status": "production",
-      "defining_categories": [
-        "sage.category.domains_domains"
-      ],
+      "defining_categories": ["sage.category.domains_domains"],
       "generated_categories": [
         {
           "base": "sage.category.rings_rings",
@@ -14046,9 +13118,7 @@
       "id": "sage.axiom.additiveassociative",
       "name": "AdditiveAssociative",
       "status": "production",
-      "defining_categories": [
-        "sage.category.additive_semigroups_additivesemigroups"
-      ],
+      "defining_categories": ["sage.category.additive_semigroups_additivesemigroups"],
       "generated_categories": [
         {
           "base": "sage.category.additive_magmas_additivemagmas",
@@ -14078,10 +13148,7 @@
       "id": "sage.axiom.additiveinverse",
       "name": "AdditiveInverse",
       "status": "production",
-      "defining_categories": [
-        "sage.category.additive_groups_additivegroups",
-        "sage.category.rngs_rngs"
-      ],
+      "defining_categories": ["sage.category.additive_groups_additivegroups", "sage.category.rngs_rngs"],
       "generated_categories": [
         {
           "base": "sage.category.additive_magmas_additivemagmas",
@@ -14116,9 +13183,7 @@
       "id": "sage.axiom.additiveunital",
       "name": "AdditiveUnital",
       "status": "production",
-      "defining_categories": [
-        "sage.category.additive_monoids_additivemonoids"
-      ],
+      "defining_categories": ["sage.category.additive_monoids_additivemonoids"],
       "generated_categories": [
         {
           "base": "sage.category.additive_magmas_additivemagmas",
@@ -14253,9 +13318,7 @@
       "id": "sage.axiom.chaingraded",
       "name": "ChainGraded",
       "status": "production",
-      "defining_categories": [
-        "sage.category.lattice_posets_distributivelattices"
-      ],
+      "defining_categories": ["sage.category.lattice_posets_distributivelattices"],
       "generated_categories": [
         {
           "base": "sage.category.lattice_posets_latticeposets",
@@ -14285,9 +13348,7 @@
       "id": "sage.axiom.distributive",
       "name": "Distributive",
       "status": "production",
-      "defining_categories": [
-        "sage.category.distributive_magmas_and_additive_magmas_distributivemagmasandadditivemagmas"
-      ],
+      "defining_categories": ["sage.category.distributive_magmas_and_additive_magmas_distributivemagmasandadditivemagmas"],
       "generated_categories": [
         {
           "base": "sage.category.lattice_posets_latticeposets",
@@ -14452,9 +13513,7 @@
       "id": "sage.axiom.htrivial",
       "name": "HTrivial",
       "status": "production",
-      "defining_categories": [
-        "sage.category.h_trivial_semigroups_htrivialsemigroups"
-      ],
+      "defining_categories": ["sage.category.h_trivial_semigroups_htrivialsemigroups"],
       "generated_categories": [
         {
           "base": "sage.category.semigroups_semigroups",
@@ -14479,9 +13538,7 @@
       "id": "sage.axiom.aperiodic",
       "name": "Aperiodic",
       "status": "production",
-      "defining_categories": [
-        "sage.category.aperiodic_semigroups_aperiodicsemigroups"
-      ],
+      "defining_categories": ["sage.category.aperiodic_semigroups_aperiodicsemigroups"],
       "generated_categories": [
         {
           "base": "sage.category.semigroups_semigroups",
@@ -14506,9 +13563,7 @@
       "id": "sage.axiom.ltrivial",
       "name": "LTrivial",
       "status": "production",
-      "defining_categories": [
-        "sage.category.l_trivial_semigroups_ltrivialsemigroups"
-      ],
+      "defining_categories": ["sage.category.l_trivial_semigroups_ltrivialsemigroups"],
       "generated_categories": [
         {
           "base": "sage.category.semigroups_semigroups",
@@ -14533,9 +13588,7 @@
       "id": "sage.axiom.rtrivial",
       "name": "RTrivial",
       "status": "production",
-      "defining_categories": [
-        "sage.category.r_trivial_semigroups_rtrivialsemigroups"
-      ],
+      "defining_categories": ["sage.category.r_trivial_semigroups_rtrivialsemigroups"],
       "generated_categories": [
         {
           "base": "sage.category.semigroups_semigroups",
@@ -14560,9 +13613,7 @@
       "id": "sage.axiom.jtrivial",
       "name": "JTrivial",
       "status": "production",
-      "defining_categories": [
-        "sage.category.j_trivial_semigroups_jtrivialsemigroups"
-      ],
+      "defining_categories": ["sage.category.j_trivial_semigroups_jtrivialsemigroups"],
       "generated_categories": [
         {
           "base": "sage.category.magmas_magmas",
@@ -14602,19 +13653,14 @@
       "arity": "variadic",
       "sage_variance": "covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.sets_cat_sets"
-      ],
+      "defining_categories": ["sage.category.sets_cat_sets"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/algebra_functor.py",
         "line_start": 668,
         "content_hash": null
       },
-      "named_result_categories": [
-        "coxeter_group_algebras.CoxeterGroupAlgebras",
-        "group_algebras.GroupAlgebras"
-      ]
+      "named_result_categories": ["coxeter_group_algebras.CoxeterGroupAlgebras", "group_algebras.GroupAlgebras"]
     },
     {
       "id": "sage.construction.cartesianproducts",
@@ -14623,9 +13669,7 @@
       "arity": "variadic",
       "sage_variance": "covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.sets_cat_sets"
-      ],
+      "defining_categories": ["sage.category.sets_cat_sets"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/cartesian_product.py",
@@ -14641,9 +13685,7 @@
       "arity": "variadic",
       "sage_variance": "covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.modules_modules"
-      ],
+      "defining_categories": ["sage.category.modules_modules"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/dual.py",
@@ -14659,9 +13701,7 @@
       "arity": "variadic",
       "sage_variance": "regressive covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.modules_modules"
-      ],
+      "defining_categories": ["sage.category.modules_modules"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/filtered_modules.py",
@@ -14683,9 +13723,7 @@
       "arity": "variadic",
       "sage_variance": "regressive covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.modules_modules"
-      ],
+      "defining_categories": ["sage.category.modules_modules"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/graded_modules.py",
@@ -14716,18 +13754,14 @@
       "arity": "variadic",
       "sage_variance": "general/specialized functorial",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.objects_objects"
-      ],
+      "defining_categories": ["sage.category.objects_objects"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/homsets.py",
         "line_start": 20,
         "content_hash": null
       },
-      "named_result_categories": [
-        "homsets.HomsetsOf"
-      ]
+      "named_result_categories": ["homsets.HomsetsOf"]
     },
     {
       "id": "sage.construction.isomorphicobjects",
@@ -14736,9 +13770,7 @@
       "arity": "variadic",
       "sage_variance": "regressive covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.sets_cat_sets"
-      ],
+      "defining_categories": ["sage.category.sets_cat_sets"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/isomorphic_objects.py",
@@ -14754,18 +13786,14 @@
       "arity": "variadic",
       "sage_variance": "regressive covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.sets_cat_sets"
-      ],
+      "defining_categories": ["sage.category.sets_cat_sets"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/metric_spaces.py",
         "line_start": 22,
         "content_hash": null
       },
-      "named_result_categories": [
-        "metric_spaces.MetricSpaces"
-      ]
+      "named_result_categories": ["metric_spaces.MetricSpaces"]
     },
     {
       "id": "sage.construction.quotients",
@@ -14774,9 +13802,7 @@
       "arity": "variadic",
       "sage_variance": "regressive covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.sets_cat_sets"
-      ],
+      "defining_categories": ["sage.category.sets_cat_sets"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/quotients.py",
@@ -14792,9 +13818,7 @@
       "arity": "variadic",
       "sage_variance": "regressive covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.category_category"
-      ],
+      "defining_categories": ["sage.category.category_category"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/realizations.py",
@@ -14810,10 +13834,7 @@
       "arity": "variadic",
       "sage_variance": "covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.graded_algebras_gradedalgebras",
-        "sage.category.graded_coalgebras_gradedcoalgebras"
-      ],
+      "defining_categories": ["sage.category.graded_algebras_gradedalgebras", "sage.category.graded_coalgebras_gradedcoalgebras"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/signed_tensor.py",
@@ -14829,9 +13850,7 @@
       "arity": "variadic",
       "sage_variance": "regressive covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.sets_cat_sets"
-      ],
+      "defining_categories": ["sage.category.sets_cat_sets"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/subobjects.py",
@@ -14847,9 +13866,7 @@
       "arity": "variadic",
       "sage_variance": "regressive covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.sets_cat_sets"
-      ],
+      "defining_categories": ["sage.category.sets_cat_sets"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/subquotients.py",
@@ -14865,9 +13882,7 @@
       "arity": "variadic",
       "sage_variance": "covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.modules_modules"
-      ],
+      "defining_categories": ["sage.category.modules_modules"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/super_modules.py",
@@ -14890,10 +13905,7 @@
       "arity": "variadic",
       "sage_variance": "covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.crystals_crystals",
-        "sage.category.modules_modules"
-      ],
+      "defining_categories": ["sage.category.crystals_crystals", "sage.category.modules_modules"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/tensor.py",
@@ -14909,18 +13921,14 @@
       "arity": "variadic",
       "sage_variance": "regressive covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.sets_cat_sets"
-      ],
+      "defining_categories": ["sage.category.sets_cat_sets"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/topological_spaces.py",
         "line_start": 20,
         "content_hash": null
       },
-      "named_result_categories": [
-        "topological_spaces.TopologicalSpaces"
-      ]
+      "named_result_categories": ["topological_spaces.TopologicalSpaces"]
     },
     {
       "id": "sage.construction.withrealizations",
@@ -14929,9 +13937,7 @@
       "arity": "variadic",
       "sage_variance": "regressive covariant",
       "sage_regressive": false,
-      "defining_categories": [
-        "sage.category.category_category"
-      ],
+      "defining_categories": ["sage.category.category_category"],
       "generated_categories": [],
       "source": {
         "path": "src/sage/categories/with_realizations.py",

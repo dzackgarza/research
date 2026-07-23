@@ -1821,9 +1821,7 @@
       "declaration": "cat.right_modules_r",
       "dotVertex": "RightModules(R)",
       "expression": {
-        "args": [
-          "{'R': 'R^op'}"
-        ],
+        "args": ["{'R': 'R^op'}"],
         "family": "cat.modules_r",
         "tag": "familyApp"
       },
@@ -11804,9 +11802,7 @@
         "provenance": "bedrock terminal of the preferred parent spine"
       },
       {
-        "aliases": [
-          "Set"
-        ],
+        "aliases": ["Set"],
         "canonical_name": "Sets",
         "definition": null,
         "dot_vertex": "Sets",
@@ -11816,9 +11812,7 @@
         "provenance": "standard"
       },
       {
-        "aliases": [
-          "Mag"
-        ],
+        "aliases": ["Mag"],
         "canonical_name": "Magmas",
         "definition": null,
         "dot_vertex": "Magmas",
@@ -11828,9 +11822,7 @@
         "provenance": "standard"
       },
       {
-        "aliases": [
-          "Magmas.Additive"
-        ],
+        "aliases": ["Magmas.Additive"],
         "canonical_name": "AdditiveMagmas",
         "definition": {
           "classifier": "clf.magmas.additive",
@@ -11844,9 +11836,7 @@
         "provenance": "Sage AdditiveMagmas normalizes to Magmas.Additive (one-tower)"
       },
       {
-        "aliases": [
-          "Ring"
-        ],
+        "aliases": ["Ring"],
         "canonical_name": "Rings",
         "definition": null,
         "dot_vertex": "Rings",
@@ -11876,9 +11866,7 @@
         "provenance": "standard"
       },
       {
-        "aliases": [
-          "Field"
-        ],
+        "aliases": ["Field"],
         "canonical_name": "Fields",
         "definition": null,
         "dot_vertex": "Fields",
@@ -11888,10 +11876,7 @@
         "provenance": "standard"
       },
       {
-        "aliases": [
-          "R-Mod",
-          "Modules(R)"
-        ],
+        "aliases": ["R-Mod", "Modules(R)"],
         "canonical_name": "Modules",
         "definition": null,
         "dot_vertex": "Modules(R)",
@@ -11907,10 +11892,7 @@
         "provenance": "Modules(R) \u2243 left R-modules (Sage default)"
       },
       {
-        "aliases": [
-          "Algebras(R)",
-          "MagmaticAlgebras"
-        ],
+        "aliases": ["Algebras(R)", "MagmaticAlgebras"],
         "canonical_name": "Algebras",
         "definition": {
           "notes": "R-module with bilinear multiplication; no assoc/unit required",
@@ -11959,9 +11941,7 @@
         "provenance": "standard"
       },
       {
-        "aliases": [
-          "Schemes(S)"
-        ],
+        "aliases": ["Schemes(S)"],
         "canonical_name": "Schemes",
         "definition": null,
         "dot_vertex": "Schemes(S)",
@@ -11977,9 +11957,7 @@
         "provenance": "parameterized over base scheme S"
       },
       {
-        "aliases": [
-          "Coalgebras(R)"
-        ],
+        "aliases": ["Coalgebras(R)"],
         "canonical_name": "Coalgebras",
         "definition": null,
         "dot_vertex": "Coalgebras(R)",
@@ -11995,9 +11973,7 @@
         "provenance": "standard"
       },
       {
-        "aliases": [
-          "Bialgebras(R)"
-        ],
+        "aliases": ["Bialgebras(R)"],
         "canonical_name": "Bialgebras",
         "definition": null,
         "dot_vertex": "Bialgebras(R)",
@@ -12013,9 +11989,7 @@
         "provenance": "standard"
       },
       {
-        "aliases": [
-          "HopfAlgebras(R)"
-        ],
+        "aliases": ["HopfAlgebras(R)"],
         "canonical_name": "HopfAlgebras",
         "definition": null,
         "dot_vertex": "HopfAlgebras(R)",
@@ -12031,9 +12005,7 @@
         "provenance": "standard"
       },
       {
-        "aliases": [
-          "LieAlgebras(R)"
-        ],
+        "aliases": ["LieAlgebras(R)"],
         "canonical_name": "LieAlgebras",
         "definition": null,
         "dot_vertex": "LieAlgebras(R)",
@@ -12049,9 +12021,7 @@
         "provenance": "standard"
       },
       {
-        "aliases": [
-          "Bimodules(R)"
-        ],
+        "aliases": ["Bimodules(R)"],
         "canonical_name": "Bimodules",
         "definition": null,
         "dot_vertex": "Bimodules(R)",
@@ -12293,10 +12263,7 @@
         "canonical_name": "Monoids",
         "definition": {
           "base": "cat.magmas",
-          "classifiers": [
-            "clf.magmas.associative",
-            "clf.magmas.unital"
-          ],
+          "classifiers": ["clf.magmas.associative", "clf.magmas.unital"],
           "operation": "classifier_tower"
         },
         "dot_vertex": "Monoids = Magmas.Associative.Unital",
@@ -12310,11 +12277,7 @@
         "canonical_name": "Groups",
         "definition": {
           "base": "cat.magmas",
-          "classifiers": [
-            "clf.magmas.associative",
-            "clf.magmas.unital",
-            "clf.magmas.inverse"
-          ],
+          "classifiers": ["clf.magmas.associative", "clf.magmas.unital", "clf.magmas.inverse"],
           "operation": "classifier_tower"
         },
         "dot_vertex": "Groups = Magmas.Associative.Unital.Inverse",
@@ -12361,10 +12324,7 @@
         "definition": {
           "along": "additive_operation",
           "base": "cat.additive_magmas",
-          "classifiers": [
-            "clf.magmas.associative",
-            "clf.magmas.unital"
-          ],
+          "classifiers": ["clf.magmas.associative", "clf.magmas.unital"],
           "operation": "classifier_tower"
         },
         "dot_vertex": "AdditiveMonoids = Magmas.Additive.Associative.Unital",
@@ -12379,11 +12339,7 @@
         "definition": {
           "along": "additive_operation",
           "base": "cat.additive_magmas",
-          "classifiers": [
-            "clf.magmas.associative",
-            "clf.magmas.unital",
-            "clf.magmas.inverse"
-          ],
+          "classifiers": ["clf.magmas.associative", "clf.magmas.unital", "clf.magmas.inverse"],
           "operation": "classifier_tower"
         },
         "dot_vertex": "AdditiveGroups = Magmas.Additive.Associative.Unital.Inverse",
@@ -12411,9 +12367,7 @@
         "provenance": "AdditiveGroups \u00d7_Mag Magmas.Commutative along additive_operation"
       },
       {
-        "aliases": [
-          "CommRings"
-        ],
+        "aliases": ["CommRings"],
         "canonical_name": "CommutativeRings",
         "definition": {
           "display": "Rings.Commutative",
@@ -12462,9 +12416,7 @@
         "provenance": "named pullback"
       },
       {
-        "aliases": [
-          "GcdDomains"
-        ],
+        "aliases": ["GcdDomains"],
         "canonical_name": "GCDDomains",
         "definition": {
           "classifier": "clf.comm_rings.gcd_domain",
@@ -12478,9 +12430,7 @@
         "provenance": "named composite"
       },
       {
-        "aliases": [
-          "UniqueFactorizationDomains"
-        ],
+        "aliases": ["UniqueFactorizationDomains"],
         "canonical_name": "UFDs",
         "definition": {
           "classifier": "clf.comm_rings.ufd",
@@ -12494,9 +12444,7 @@
         "provenance": "named composite"
       },
       {
-        "aliases": [
-          "PrincipalIdealDomains"
-        ],
+        "aliases": ["PrincipalIdealDomains"],
         "canonical_name": "PIDs",
         "definition": {
           "classifier": "clf.comm_rings.pid",
@@ -12574,9 +12522,7 @@
         "provenance": "PR #278 review: DivisionRings = Rings.Division"
       },
       {
-        "aliases": [
-          "LeftModules(R)"
-        ],
+        "aliases": ["LeftModules(R)"],
         "canonical_name": "LeftModules",
         "definition": {
           "notes": "Sage LeftModules is the default Modules(R) presentation",
@@ -12596,9 +12542,7 @@
         "provenance": "identity with Modules(R)"
       },
       {
-        "aliases": [
-          "RightModules(R)"
-        ],
+        "aliases": ["RightModules(R)"],
         "canonical_name": "RightModules",
         "definition": {
           "notes": "Not an identity with left modules; Mod-R \u2243 R^op-Mod under the opposite-ring substitution",
@@ -12641,9 +12585,7 @@
         "provenance": "named composite"
       },
       {
-        "aliases": [
-          "VectorSpaces(K)"
-        ],
+        "aliases": ["VectorSpaces(K)"],
         "canonical_name": "VectorSpaces",
         "definition": {
           "classifier": "clf.modules.over_field",
@@ -12668,16 +12610,11 @@
         "provenance": "Modules over a field; not a separate primitive"
       },
       {
-        "aliases": [
-          "Algebras"
-        ],
+        "aliases": ["Algebras"],
         "canonical_name": "UnitalAlgebras",
         "definition": {
           "base": "cat.algebras_r",
-          "classifiers": [
-            "clf.algebras.associative",
-            "clf.algebras.unital"
-          ],
+          "classifiers": ["clf.algebras.associative", "clf.algebras.unital"],
           "operation": "classifier_tower"
         },
         "dot_vertex": "UnitalAlgebras = Algebras.Associative.Unital",
@@ -12693,9 +12630,7 @@
         "provenance": "Sage Algebras = associative unital; MagmaticAlgebras is the Wikipedia algebra"
       },
       {
-        "aliases": [
-          "CommAlgebras"
-        ],
+        "aliases": ["CommAlgebras"],
         "canonical_name": "CommutativeAlgebras",
         "definition": {
           "display": "UnitalAlgebras.Commutative",
@@ -12718,9 +12653,7 @@
         "provenance": "named pullback"
       },
       {
-        "aliases": [
-          "GradedAlgebras"
-        ],
+        "aliases": ["GradedAlgebras"],
         "canonical_name": "Algebras.Graded",
         "definition": {
           "classifier_id": "clf.algebras_graded",
@@ -13123,10 +13056,7 @@
         "canonical_name": "CountableInfiniteSets",
         "definition": {
           "base": "cat.sets",
-          "classifiers": [
-            "clf.sets_countable",
-            "clf.sets_infinite"
-          ],
+          "classifiers": ["clf.sets_countable", "clf.sets_infinite"],
           "display": "Sets.Countable.Infinite",
           "operation": "classifier_tower"
         },
@@ -13276,11 +13206,7 @@
         "canonical_name": "DiscBil",
         "definition": {
           "base": "cat.int_bil_r",
-          "classifiers": [
-            "clf.int_bil_symmetric",
-            "clf.int_bil_r.nondegenerate",
-            "clf.int_bil_r.finite"
-          ],
+          "classifiers": ["clf.int_bil_symmetric", "clf.int_bil_r.nondegenerate", "clf.int_bil_r.finite"],
           "display": "\u222bBil.Symmetric.Nondegenerate.Finite",
           "operation": "classifier_tower"
         },
@@ -13685,10 +13611,7 @@
         "canonical_name": "Lat_R",
         "definition": {
           "base": "cat.int_bil_r",
-          "classifiers": [
-            "clf.int_bil_symmetric",
-            "clf.int_bil_r.nondegenerate"
-          ],
+          "classifiers": ["clf.int_bil_symmetric", "clf.int_bil_r.nondegenerate"],
           "display": "\u222bBil_R(R).Symmetric.Nondegenerate",
           "operation": "classifier_tower"
         },
@@ -14513,11 +14436,7 @@
         "canonical_name": "Varieties(K)",
         "definition": {
           "base": "cat.schemes_s",
-          "classifiers": [
-            "clf.schemes_integral",
-            "clf.schemes_separated",
-            "clf.schemes_finitetype"
-          ],
+          "classifiers": ["clf.schemes_integral", "clf.schemes_separated", "clf.schemes_finitetype"],
           "display": "Schemes.Integral.Separated.FiniteType",
           "operation": "classifier_tower"
         },
