@@ -190,7 +190,7 @@ digraph SageNormalizedMapping {
     base_90aabdd36413 [label="AbelianVarieties(K)", shape=ellipse, style=filled, fillcolor="#dcfce7"];
     base_813bcc11933c [label="AlgebraIdeals(A)", shape=ellipse, style=filled, fillcolor="#ede9fe"];
     base_c6d7ad49fdf0 [label="Algebras(R)", shape=ellipse, style=filled, fillcolor="#dcfce7"];
-    base_6ec920ed081b [label="AmbientObjects", shape=ellipse, style=filled, fillcolor="#fce7f3"];
+    base_6ec920ed081b [label="SageBackendObjects", shape=ellipse, style=filled, fillcolor="#fce7f3"];
     base_c991fcc977fa [label="AssociativeUnitalAlgebras(K)", shape=ellipse, style=filled, fillcolor="#dcfce7"];
     base_d2472086daa0 [label="AssociativeUnitalAlgebras(R)", shape=ellipse, style=filled, fillcolor="#dcfce7"];
     base_36857a148b10 [label="Bialgebras(R)", shape=ellipse, style=filled, fillcolor="#dcfce7"];
@@ -390,7 +390,7 @@ digraph SageNormalizedMapping {
   sage_56e588a86d02 -> base_56e588a86d02 [label="exact / named construction", style=solid, color="#475569", tooltip="Monoids ↦ Monoids"];
   sage_084de703e1be -> base_3d8da0fd6136 [label="Noetherian", style=solid, color="#475569", tooltip="NoetherianRings ↦ NoetherianCommutativeRings"];
   sage_dda7395e5d4b -> base_e8b685271238 [label="FiniteExtensionOf(Q)", style=solid, color="#475569", tooltip="NumberFields ↦ NumberFields"];
-  sage_72a83add2c5e -> base_6ec920ed081b [label="exact / named construction", style=solid, color="#475569", tooltip="Objects ↦ AmbientObjects"];
+  sage_72a83add2c5e -> base_6ec920ed081b [label="exact / named construction", style=solid, color="#475569", tooltip="Objects ↦ SageBackendObjects"];
   sage_9b6151949138 -> base_c37b69ac263a [label="OreModuleStructure(σ,δ)", style=solid, color="#475569", tooltip="OreModules ↦ OreModules(R,σ,δ)"];
   sage_8d1c6be44055 -> base_56e588a86d02 [label="CompatiblePartialOrder", style=solid, color="#475569", tooltip="PartiallyOrderedMonoids ↦ PartiallyOrderedMonoids"];
   sage_d201f1533e6e -> base_ae9629f4ebb8 [label="FaithfulPermutationAction", style=solid, color="#475569", tooltip="PermutationGroups ↦ PermutationGroups"];

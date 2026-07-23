@@ -1559,7 +1559,7 @@
         "recommend_explicit_target": "yes — named derived alias",
         "base_in_current_dot": "absent or not yet reconciled",
         "current_dot_match": "",
-        "note": "Transparent exceptional host for a carrier with distinguished additive and multiplicative binary operations; synthetically Magmas.Additive ×_Sets Magmas.Multiplicative.",
+        "note": "Transparent exceptional host for an underlying set with distinguished additive and multiplicative binary operations; synthetically Magmas.Additive ×_Sets Magmas.Multiplicative.",
         "exception_or_ambiguity": "No universally dominant short noun exists; use a transparent descriptive name because this pullback is the least host of distributivity."
       }
     },
@@ -4654,7 +4654,7 @@
         "recommend_explicit_target": "yes",
         "base_in_current_dot": "absent or not yet reconciled",
         "current_dot_match": "",
-        "note": "Transparent exceptional host for a carrier with distinguished additive and multiplicative binary operations; synthetically Magmas.Additive ×_Sets Magmas.Multiplicative.",
+        "note": "Transparent exceptional host for an underlying set with distinguished additive and multiplicative binary operations; synthetically Magmas.Additive ×_Sets Magmas.Multiplicative.",
         "exception_or_ambiguity": "No universally dominant short noun exists; use a transparent descriptive name because this pullback is the least host of distributivity."
       }
     },
@@ -5044,11 +5044,11 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/objects.py"
       },
       "normalized": {
-        "base": "AmbientObjects",
-        "base_id": "cat.ambientobjects",
+        "base": "SageBackendObjects",
+        "base_id": "cat.sagebackendobjects",
         "classifier_applications": [],
-        "target_expression": "AmbientObjects",
-        "target_id": "cat_expr.ambientobjects",
+        "target_expression": "SageBackendObjects",
+        "target_id": "cat_expr.sagebackendobjects",
         "mapping_kind": "backend ambient exception",
         "target_visibility": "backend-only compatibility",
         "parameter_constraints": ""
@@ -6561,7 +6561,7 @@
       "audit_rationale": "Familiar category or parameterized family in ordinary mathematical usage."
     },
     {
-      "normalized_base": "AmbientObjects",
+      "normalized_base": "SageBackendObjects",
       "used_by_rows": 1,
       "classification": "backend-only exception",
       "explicit_node_or_family_required": "compatibility-layer symbol only",
@@ -7432,7 +7432,7 @@
       "least_host": "Sets",
       "character": "property",
       "current_dot_status": "present as Sets.Finite",
-      "audit_note": "Finite underlying carrier, literally pulled back from Sets.",
+      "audit_note": "Finite underlying set, literally pulled back from Sets.",
       "source_scope": "used by public-category ledger"
     },
     {
@@ -8376,7 +8376,7 @@
       "normalized_least_host": "SimplicialSets",
       "mapping_action": "direct; do not confuse with PointedSets",
       "semantic_character": "chosen structure",
-      "audit_note": "A pointed simplicial set is a pointed object of the simplicial-set category, not merely a simplicial set whose one underlying carrier is pointed.",
+      "audit_note": "A pointed simplicial set is a pointed object of the simplicial-set category, not merely a simplicial set whose one underlying set is pointed.",
       "source_url": "https://dzackgarza.github.io/research/sage/Sage-Category-Framework-Inventory.html#axiom-registry-51"
     },
     {
@@ -9214,7 +9214,7 @@
       "topic": "Sage Objects()",
       "affected_rows": "Objects",
       "finding": "Universal backend object fallback, not a standard small mathematical category.",
-      "normalized_resolution": "Keep AmbientObjects only in the Sage compatibility layer; do not conflate it with Cat or use it as an ordinary mathematical classifier host.",
+      "normalized_resolution": "Keep SageBackendObjects only in the Sage compatibility layer; do not conflate it with Cat or use it as an ordinary mathematical classifier host.",
       "severity": "architectural exception",
       "source_url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/objects.py"
     },

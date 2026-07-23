@@ -4057,16 +4057,16 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.objects_objects
     source_sage_name: Objects
-    target: cat.ambientobjects
+    target: cat.sagebackendobjects
     relation: removed
-    normalized_reading: AmbientObjects
+    normalized_reading: SageBackendObjects
     construction:
       kind: finite_limit_derivability
       ok: true
       status: EXACT_BASE
-      base: cat.ambientobjects
+      base: cat.sagebackendobjects
       classifiers: []
-      expression: AmbientObjects
+      expression: SageBackendObjects
       detail: base-only mapping; named seed entity
       certificate: []
       authored_routes: []
@@ -5822,10 +5822,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.additivegroups__additivemonoids
       from_target: cat.additive_groups
       to_target: cat.additive_monoids
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.additive_magmas_additivemagmas
@@ -5836,10 +5836,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.fun.additive_magmas_to_sets
       from_target: cat.additive_magmas
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.additive_monoids_additivemonoids
@@ -5850,10 +5850,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.additivemonoids__additivesemigroups
       from_target: cat.additive_monoids
       to_target: cat.additive_semigroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.additive_semigroups_additivesemigroups
@@ -5864,10 +5864,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.additivesemigroups__magmas_additive
       from_target: cat.additive_semigroups
       to_target: cat.additive_magmas
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.affine_weyl_groups_affineweylgroups
@@ -5905,10 +5905,12 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.unitalalgebras__associativealgebras
+        - arr.dot.associativealgebras__algebras
+        - arr.warn.dot_algebras_to_rings_as_forgetful
       from_target: cat.unital_algebras
       to_target: cat.rings
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.algebras_algebras
@@ -5919,10 +5921,11 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.unitalalgebras__associativealgebras
+        - arr.dot.associativealgebras__algebras
       from_target: cat.unital_algebras
       to_target: cat.algebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.algebras_algebras
@@ -5933,10 +5936,11 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.unitalalgebras__associativealgebras
+        - arr.dot.associativealgebras__algebras
       from_target: cat.unital_algebras
       to_target: cat.algebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.algebras_with_basis_algebraswithbasis
@@ -5947,10 +5951,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.alias.associativeunitalalgebras_r
       from_target: cat.associativeunitalalgebras_r
       to_target: cat.unital_algebras
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.algebras_with_basis_algebraswithbasis
@@ -5961,10 +5965,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.alias.associativeunitalalgebras_r
       from_target: cat.associativeunitalalgebras_r
       to_target: cat.unital_algebras
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.aperiodic_semigroups_aperiodicsemigroups
@@ -5978,7 +5982,6 @@ edge_mappings:
       path: []
       from_target: cat.semigroups
       to_target: cat.semigroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.associative_algebras_associativealgebras
@@ -5992,7 +5995,6 @@ edge_mappings:
       path: []
       from_target: cat.algebras_r
       to_target: cat.algebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.bialgebras_bialgebras
@@ -6003,10 +6005,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.bialgebras__unitalalgebras
       from_target: cat.bialgebras_r
       to_target: cat.unital_algebras
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.bialgebras_bialgebras
@@ -6017,10 +6019,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.bialgebras__coalgebras
       from_target: cat.bialgebras_r
       to_target: cat.coalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.bialgebras_with_basis_bialgebraswithbasis
@@ -6031,10 +6033,11 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.bialgebras__unitalalgebras
+        - arr.alias.associativeunitalalgebras_r
       from_target: cat.bialgebras_r
       to_target: cat.associativeunitalalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.bialgebras_with_basis_bialgebraswithbasis
@@ -6048,7 +6051,6 @@ edge_mappings:
       path: []
       from_target: cat.bialgebras_r
       to_target: cat.bialgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.bialgebras_with_basis_bialgebraswithbasis
@@ -6059,10 +6061,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.bialgebras__coalgebras
       from_target: cat.bialgebras_r
       to_target: cat.coalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.bimodules_bimodules
@@ -6082,10 +6084,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.bimodules__rightmodules
       from_target: cat.bimodules_r
       to_target: cat.right_modules_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.chain_complexes_chaincomplexes
@@ -6093,14 +6095,11 @@ edge_mappings:
       sage_names:
         from: ChainComplexes
         to: VectorSpaces
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.chaincomplexes_c
-      to_target: cat.vector_spaces_k
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.chaincomplexes_c
+      to cat.vector_spaces_k; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.classical_crystals_classicalcrystals
       to: sage.category.regular_crystals_regularcrystals
@@ -6113,7 +6112,6 @@ edge_mappings:
       path: []
       from_target: cat.crystals
       to_target: cat.crystals
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.classical_crystals_classicalcrystals
@@ -6127,7 +6125,6 @@ edge_mappings:
       path: []
       from_target: cat.crystals
       to_target: cat.crystals
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.classical_crystals_classicalcrystals
@@ -6141,7 +6138,6 @@ edge_mappings:
       path: []
       from_target: cat.crystals
       to_target: cat.crystals
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.coalgebras_coalgebras
@@ -6160,14 +6156,11 @@ edge_mappings:
       sage_names:
         from: CoalgebrasWithBasis
         to: VectorSpaces.WithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.coalgebras_r
-      to_target: cat.vector_spaces_k
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.coalgebras_r
+      to cat.vector_spaces_k; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.coalgebras_with_basis_coalgebraswithbasis
       to: sage.category.coalgebras_coalgebras
@@ -6180,7 +6173,6 @@ edge_mappings:
       path: []
       from_target: cat.coalgebras_r
       to_target: cat.coalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.commutative_additive_groups_commutativeadditivegroups
@@ -6254,10 +6246,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.commalgebras__unitalalgebras
       from_target: cat.commutative_algebras
       to_target: cat.unital_algebras
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.commutative_algebras_commutativealgebras
@@ -6268,10 +6260,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.commalgebras__commrings
       from_target: cat.commutative_algebras
       to_target: cat.commutative_rings
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.commutative_ring_ideals_commutativeringideals
@@ -6291,10 +6283,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.pb.comm_rings_to_rings
       from_target: cat.commutative_rings
       to_target: cat.rings
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.commutative_rings_commutativerings
@@ -6305,10 +6297,12 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.pb.comm_rings_to_rings
+        - arr.dot.rings__semirings
+        - arr.dot.semirings__monoids
       from_target: cat.commutative_rings
       to_target: cat.monoids
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.complete_discrete_valuation_completediscretevaluationfields
@@ -6322,7 +6316,6 @@ edge_mappings:
       path: []
       from_target: cat.discretevaluationfields
       to_target: cat.discretevaluationfields
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.complete_discrete_valuation_completediscretevaluationrings
@@ -6336,7 +6329,6 @@ edge_mappings:
       path: []
       from_target: cat.discretevaluationrings
       to_target: cat.discretevaluationrings
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.coxeter_groups_coxetergroups
@@ -6344,14 +6336,11 @@ edge_mappings:
       sage_names:
         from: CoxeterGroups
         to: GeneralizedCoxeterGroups
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.coxetergroups
-      to_target: cat.generalizedcoxetergroups
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.coxetergroups
+      to cat.generalizedcoxetergroups; the normalized graph is missing a forgetful,
+      inclusion, classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.crystals_crystals
       to: sage.category.enumerated_sets_enumeratedsets
@@ -6361,10 +6350,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.crystals_to_sets
       from_target: cat.crystals
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.dedekind_domains_dedekinddomains
@@ -6375,10 +6364,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.alias.integraldomains
       from_target: cat.integraldomains
       to_target: cat.integral_domains
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.discrete_valuation_discretevaluationfields
@@ -6389,10 +6378,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.discretevaluationfields_to_fields
       from_target: cat.discretevaluationfields
       to_target: cat.fields
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.discrete_valuation_discretevaluationrings
@@ -6403,10 +6392,11 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.dvr_to_fields
+        - arr.dot.fields__euclideandomains
       from_target: cat.discretevaluationrings
       to_target: cat.euclidean_domains
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.distributive_magmas_and_additive_magmas_distributivemagmasandadditivemagmas
@@ -6420,7 +6410,6 @@ edge_mappings:
       path: []
       from_target: cat.magmaswithtwooperations
       to_target: cat.magmaswithtwooperations
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.division_rings_divisionrings
@@ -6431,10 +6420,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.divisionrings__domains
       from_target: cat.division_rings
       to_target: cat.domains
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.domains_domains
@@ -6445,10 +6434,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.domains_to_rings
       from_target: cat.domains
       to_target: cat.rings
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.enumerated_sets_enumeratedsets
@@ -6462,7 +6451,6 @@ edge_mappings:
       path: []
       from_target: cat.sets
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.euclidean_domains_euclideandomains
@@ -6473,10 +6461,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.euclideandomains__pids
       from_target: cat.euclidean_domains
       to_target: cat.pids
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.facade_sets_facadesets
@@ -6496,10 +6484,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.fields__euclideandomains
       from_target: cat.fields
       to_target: cat.euclidean_domains
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.fields_fields
@@ -6510,10 +6498,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.fields__divisionrings
       from_target: cat.fields
       to_target: cat.division_rings
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.fields_fields
@@ -6524,10 +6512,16 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.fields__euclideandomains
+        - arr.dot.euclideandomains__pids
+        - arr.dot.pids__ufds
+        - arr.dot.ufds__gcddomains
+        - arr.dot.gcddomains__integraldomains
+        - arr.dot.integraldomains__commrings
+        - arr.alias.commutativerings
       from_target: cat.fields
       to_target: cat.commutativerings
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_complex_reflection_groups_finitecomplexreflectiongroups
@@ -6541,7 +6535,6 @@ edge_mappings:
       path: []
       from_target: cat.complexreflectiongroups
       to_target: cat.complexreflectiongroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_coxeter_groups_finitecoxetergroups
@@ -6555,7 +6548,6 @@ edge_mappings:
       path: []
       from_target: cat.coxetergroups
       to_target: cat.coxetergroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_crystals_finitecrystals
@@ -6569,7 +6561,6 @@ edge_mappings:
       path: []
       from_target: cat.crystals
       to_target: cat.crystals
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_crystals_finitecrystals
@@ -6580,10 +6571,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.crystals_to_sets
       from_target: cat.crystals
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_dimensional_algebras_with_basis_finitedimensionalalgebraswithbasis
@@ -6597,7 +6588,6 @@ edge_mappings:
       path: []
       from_target: cat.associativeunitalalgebras_r
       to_target: cat.associativeunitalalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_dimensional_algebras_with_basis_finitedimensionalalgebraswithbasis
@@ -6620,7 +6610,6 @@ edge_mappings:
       path: []
       from_target: cat.liealgebras_r
       to_target: cat.liealgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_dimensional_hopf_algebras_with_basis_finitedimensionalhopfalgebraswithbasis
@@ -6634,7 +6623,6 @@ edge_mappings:
       path: []
       from_target: cat.hopfalgebras_r
       to_target: cat.hopfalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_dimensional_hopf_algebras_with_basis_finitedimensionalhopfalgebraswithbasis
@@ -6645,10 +6633,13 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.alias.hopfalgebras_r
+        - fun.hopf_to_bialgebras
+        - arr.dot.bialgebras__unitalalgebras
+        - arr.alias.associativeunitalalgebras_r
       from_target: cat.hopfalgebras_r
       to_target: cat.associativeunitalalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_dimensional_modules_with_basis_finitedimensionalmoduleswithbasis
@@ -6656,14 +6647,11 @@ edge_mappings:
       sage_names:
         from: FiniteDimensionalModulesWithBasis
         to: ModulesWithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.modules_r
-      to_target: cat.modules_with_basis
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.modules_r
+      to cat.modules_with_basis; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.finite_enumerated_sets_finiteenumeratedsets
       to: sage.category.enumerated_sets_enumeratedsets
@@ -6676,7 +6664,6 @@ edge_mappings:
       path: []
       from_target: cat.sets
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_enumerated_sets_finiteenumeratedsets
@@ -6684,14 +6671,11 @@ edge_mappings:
       sage_names:
         from: FiniteEnumeratedSets
         to: FiniteSets
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.sets
-      to_target: clf.sets.finite.domain
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.sets
+      to clf.sets.finite.domain; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.finite_fields_finitefields
       to: sage.category.fields_fields
@@ -6701,10 +6685,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.pb.finite_fields_to_fields
       from_target: cat.finite_fields
       to_target: cat.fields
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_fields_finitefields
@@ -6715,10 +6699,16 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.pb.finite_fields_to_fields
+        - arr.dot.fields__euclideandomains
+        - arr.dot.euclideandomains__pids
+        - arr.dot.pids__ufds
+        - arr.dot.ufds__gcddomains
+        - arr.dot.gcddomains__integraldomains
+        - arr.dot.integraldomains__commrings
       from_target: cat.finite_fields
       to_target: cat.commutative_rings
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_fields_finitefields
@@ -6729,10 +6719,11 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.pb.finite_fields_to_fields
+        - fun.fields_to_sets
       from_target: cat.finite_fields
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_groups_finitegroups
@@ -6743,10 +6734,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.incl.groups_to_monoids
       from_target: cat.groups
       to_target: cat.monoids
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_groups_finitegroups
@@ -6760,7 +6751,6 @@ edge_mappings:
       path: []
       from_target: cat.groups
       to_target: cat.groups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_lattice_posets_finitelatticeposets
@@ -6774,7 +6764,6 @@ edge_mappings:
       path: []
       from_target: cat.latticeposets
       to_target: cat.latticeposets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_lattice_posets_finitelatticeposets
@@ -6785,10 +6774,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.latticeposets_to_posets
       from_target: cat.latticeposets
       to_target: cat.posets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_lattice_posets_finitelatticeposets
@@ -6811,7 +6800,6 @@ edge_mappings:
       path: []
       from_target: cat.lambdabracketalgebras_r
       to_target: cat.lambdabracketalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finitely_generated_lie_conformal_algebras_finitelygeneratedlieconformalalgebras
@@ -6825,7 +6813,6 @@ edge_mappings:
       path: []
       from_target: cat.lieconformalalgebras_r
       to_target: cat.lieconformalalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finitely_generated_magmas_finitelygeneratedmagmas
@@ -6839,7 +6826,6 @@ edge_mappings:
       path: []
       from_target: cat.magmas
       to_target: cat.magmas
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finitely_generated_semigroups_finitelygeneratedsemigroups
@@ -6853,7 +6839,6 @@ edge_mappings:
       path: []
       from_target: cat.semigroups
       to_target: cat.semigroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_monoids_finitemonoids
@@ -6867,7 +6852,6 @@ edge_mappings:
       path: []
       from_target: cat.monoids
       to_target: cat.monoids
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_monoids_finitemonoids
@@ -6878,10 +6862,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.incl.monoids_to_semigroups
       from_target: cat.monoids
       to_target: cat.semigroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_permutation_groups_finitepermutationgroups
@@ -6895,7 +6879,6 @@ edge_mappings:
       path: []
       from_target: cat.permutationgroups
       to_target: cat.permutationgroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_permutation_groups_finitepermutationgroups
@@ -6906,10 +6889,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.permutationgroups_to_groups
       from_target: cat.permutationgroups
       to_target: cat.groups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_permutation_groups_finitepermutationgroups
@@ -6932,7 +6915,6 @@ edge_mappings:
       path: []
       from_target: cat.posets
       to_target: cat.posets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_posets_finiteposets
@@ -6940,14 +6922,11 @@ edge_mappings:
       sage_names:
         from: FinitePosets
         to: FiniteSets
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.posets
-      to_target: clf.sets.finite.domain
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.posets
+      to clf.sets.finite.domain; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.finite_semigroups_finitesemigroups
       to: sage.category.semigroups_semigroups
@@ -6960,7 +6939,6 @@ edge_mappings:
       path: []
       from_target: cat.semigroups
       to_target: cat.semigroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_semigroups_finitesemigroups
@@ -6968,14 +6946,11 @@ edge_mappings:
       sage_names:
         from: FiniteSemigroups
         to: FiniteSets
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.semigroups
-      to_target: clf.sets.finite.domain
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.semigroups
+      to clf.sets.finite.domain; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.finite_sets_finitesets
       to: sage.category.sets_cat_sets
@@ -6985,10 +6960,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.clf.sets.finite
       from_target: clf.sets.finite.domain
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_weyl_groups_finiteweylgroups
@@ -6999,10 +6974,12 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.alias.weylgroups
+        - arr.incl.weyl_to_coxeter
+        - arr.alias.coxetergroups
       from_target: cat.weylgroups
       to_target: cat.coxetergroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.finite_weyl_groups_finiteweylgroups
@@ -7016,7 +6993,6 @@ edge_mappings:
       path: []
       from_target: cat.weylgroups
       to_target: cat.weylgroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.function_fields_functionfields
@@ -7030,7 +7006,6 @@ edge_mappings:
       path: []
       from_target: cat.fields
       to_target: cat.fields
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.gcd_domains_gcddomains
@@ -7041,10 +7016,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.gcddomains__integraldomains
       from_target: cat.gcd_domains
       to_target: cat.integral_domains
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.graded_algebras_gradedalgebras
@@ -7052,28 +7027,22 @@ edge_mappings:
       sage_names:
         from: GradedAlgebras
         to: FilteredAlgebras
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.algebras_r.graded
-      to_target: cat.associativeunitalalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.algebras_r.graded
+      to cat.associativeunitalalgebras_r; the normalized graph is missing a forgetful,
+      inclusion, classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.graded_algebras_gradedalgebras
       to: sage.category.with_axiom.vectorspaces.graded
       sage_names:
         from: GradedAlgebras
         to: VectorSpaces.Graded
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.algebras_r.graded
-      to_target: cat.vector_spaces_k
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.algebras_r.graded
+      to cat.vector_spaces_k; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.graded_algebras_with_basis_gradedalgebraswithbasis
       to: sage.category.filtered_algebras_with_basis_filteredalgebraswithbasis
@@ -7086,7 +7055,6 @@ edge_mappings:
       path: []
       from_target: cat.associativeunitalalgebras_r
       to_target: cat.associativeunitalalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.graded_algebras_with_basis_gradedalgebraswithbasis
@@ -7094,42 +7062,33 @@ edge_mappings:
       sage_names:
         from: GradedAlgebrasWithBasis
         to: GradedAlgebras
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.associativeunitalalgebras_r
-      to_target: cat.algebras_r.graded
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.associativeunitalalgebras_r
+      to cat.algebras_r.graded; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.graded_algebras_with_basis_gradedalgebraswithbasis
       to: sage.category.with_axiom.vectorspaces.withbasis.graded
       sage_names:
         from: GradedAlgebrasWithBasis
         to: VectorSpaces.WithBasis.Graded
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.associativeunitalalgebras_r
-      to_target: cat.vector_spaces_k
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.associativeunitalalgebras_r
+      to cat.vector_spaces_k; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.graded_coalgebras_gradedcoalgebras
       to: sage.category.with_axiom.vectorspaces.graded
       sage_names:
         from: GradedCoalgebras
         to: VectorSpaces.Graded
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.coalgebras_r
-      to_target: cat.vector_spaces_k
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.coalgebras_r
+      to cat.vector_spaces_k; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.graded_coalgebras_gradedcoalgebras
       to: sage.category.with_axiom.coalgebras.filtered
@@ -7142,7 +7101,6 @@ edge_mappings:
       path: []
       from_target: cat.coalgebras_r
       to_target: cat.coalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.graded_coalgebras_with_basis_gradedcoalgebraswithbasis
@@ -7150,14 +7108,11 @@ edge_mappings:
       sage_names:
         from: GradedCoalgebrasWithBasis
         to: VectorSpaces.WithBasis.Graded
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.coalgebras_r
-      to_target: cat.vector_spaces_k
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.coalgebras_r
+      to cat.vector_spaces_k; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.graded_coalgebras_with_basis_gradedcoalgebraswithbasis
       to: sage.category.with_axiom.coalgebraswithbasis.filtered
@@ -7179,7 +7134,6 @@ edge_mappings:
       path: []
       from_target: cat.coalgebras_r
       to_target: cat.coalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.graded_hopf_algebras_with_basis_gradedhopfalgebraswithbasis
@@ -7193,7 +7147,6 @@ edge_mappings:
       path: []
       from_target: cat.hopfalgebras_r
       to_target: cat.hopfalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.graded_hopf_algebras_with_basis_gradedhopfalgebraswithbasis
@@ -7204,10 +7157,13 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.alias.hopfalgebras_r
+        - fun.hopf_to_bialgebras
+        - arr.dot.bialgebras__unitalalgebras
+        - arr.alias.associativeunitalalgebras_r
       from_target: cat.hopfalgebras_r
       to_target: cat.associativeunitalalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.graded_hopf_algebras_with_basis_gradedhopfalgebraswithbasis
@@ -7218,10 +7174,12 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.alias.hopfalgebras_r
+        - fun.hopf_to_bialgebras
+        - arr.dot.bialgebras__coalgebras
       from_target: cat.hopfalgebras_r
       to_target: cat.coalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.group_algebras_groupalgebras
@@ -7229,14 +7187,11 @@ edge_mappings:
       sage_names:
         from: GroupAlgebras
         to: HopfAlgebrasWithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.groupalgebras_r
-      to_target: cat.hopfalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.groupalgebras_r
+      to cat.hopfalgebras_r; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.group_algebras_groupalgebras
       to: sage.category.with_axiom.monoids.algebras
@@ -7255,10 +7210,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.groupoidson_g_to_sets
       from_target: cat.groupoidson_g
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.groups_groups
@@ -7269,10 +7224,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.incl.groups_to_monoids
       from_target: cat.groups
       to_target: cat.monoids
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.groups_groups
@@ -7283,10 +7238,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.groups_to_magmas
       from_target: cat.groups
       to_target: cat.magmas
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.g_sets_gsets
@@ -7300,7 +7255,6 @@ edge_mappings:
       path: []
       from_target: cat.sets
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.hecke_modules_heckemodules
@@ -7308,14 +7262,11 @@ edge_mappings:
       sage_names:
         from: HeckeModules
         to: VectorSpaces.WithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.modules_r
-      to_target: cat.vector_spaces_k
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.modules_r
+      to cat.vector_spaces_k; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.highest_weight_crystals_highestweightcrystals
       to: sage.category.crystals_crystals
@@ -7328,7 +7279,6 @@ edge_mappings:
       path: []
       from_target: cat.crystals
       to_target: cat.crystals
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.hopf_algebras_hopfalgebras
@@ -7339,10 +7289,11 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.alias.hopfalgebras_r
+        - fun.hopf_to_bialgebras
       from_target: cat.hopfalgebras_r
       to_target: cat.bialgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.hopf_algebras_with_basis_hopfalgebraswithbasis
@@ -7356,7 +7307,6 @@ edge_mappings:
       path: []
       from_target: cat.hopfalgebras_r
       to_target: cat.hopfalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.hopf_algebras_with_basis_hopfalgebraswithbasis
@@ -7367,10 +7317,11 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.alias.hopfalgebras_r
+        - fun.hopf_to_bialgebras
       from_target: cat.hopfalgebras_r
       to_target: cat.bialgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.h_trivial_semigroups_htrivialsemigroups
@@ -7384,7 +7335,6 @@ edge_mappings:
       path: []
       from_target: cat.semigroups
       to_target: cat.semigroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.infinite_enumerated_sets_infiniteenumeratedsets
@@ -7398,7 +7348,6 @@ edge_mappings:
       path: []
       from_target: cat.sets
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.infinite_enumerated_sets_infiniteenumeratedsets
@@ -7412,7 +7361,6 @@ edge_mappings:
       path: []
       from_target: cat.sets
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.integral_domains_integraldomains
@@ -7423,10 +7371,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.integraldomains__domains
       from_target: cat.integral_domains
       to_target: cat.domains
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.integral_domains_integraldomains
@@ -7437,10 +7385,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.integraldomains__commrings
       from_target: cat.integral_domains
       to_target: cat.commutative_rings
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.schemes_jacobians
@@ -7454,7 +7402,6 @@ edge_mappings:
       path: []
       from_target: cat.abelianvarieties_k
       to_target: cat.abelianvarieties_k
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.j_trivial_semigroups_jtrivialsemigroups
@@ -7468,7 +7415,6 @@ edge_mappings:
       path: []
       from_target: cat.semigroups
       to_target: cat.semigroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.lambda_bracket_algebras_with_basis_lambdabracketalgebraswithbasis
@@ -7482,7 +7428,6 @@ edge_mappings:
       path: []
       from_target: cat.lambdabracketalgebras_r
       to_target: cat.lambdabracketalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.lattice_posets_latticeposets
@@ -7493,10 +7438,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.latticeposets_to_posets
       from_target: cat.latticeposets
       to_target: cat.posets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.left_modules_leftmodules
@@ -7530,7 +7475,6 @@ edge_mappings:
       path: []
       from_target: cat.liealgebras_r
       to_target: cat.liealgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.lie_conformal_algebras_with_basis_lieconformalalgebraswithbasis
@@ -7544,7 +7488,6 @@ edge_mappings:
       path: []
       from_target: cat.lieconformalalgebras_r
       to_target: cat.lieconformalalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.l_trivial_semigroups_ltrivialsemigroups
@@ -7558,7 +7501,6 @@ edge_mappings:
       path: []
       from_target: cat.semigroups
       to_target: cat.semigroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.magmas_magmas
@@ -7569,10 +7511,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.fun.magmas_to_sets
       from_target: cat.magmas
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.matrix_algebras_matrixalgebras
@@ -7580,14 +7522,11 @@ edge_mappings:
       sage_names:
         from: MatrixAlgebras
         to: Algebras
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.associativeunitalalgebras_k
-      to_target: cat.unital_algebras
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.associativeunitalalgebras_k
+      to cat.unital_algebras; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.modular_abelian_varieties_modularabelianvarieties
       to: sage.category.sets_cat_sets
@@ -7597,10 +7536,14 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.abelianvarieties_k_to_schemes_s
+        - arr.dot.schemes__locallyringedspaces
+        - arr.dot.locallyringedspaces__ringedspaces
+        - arr.dot.ringedspaces__topologicalspaces
+        - arr.dot.topologicalspaces__sets
       from_target: cat.abelianvarieties_k
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.modules_with_basis_moduleswithbasis
@@ -7611,10 +7554,12 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.moduleswithbasis__freemodules
+        - arr.dot.freemodules__modules
+        - arr.alias.modules_a
       from_target: cat.modules_with_basis
       to_target: cat.modules_a
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.monoids_monoids
@@ -7625,10 +7570,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.incl.monoids_to_semigroups
       from_target: cat.monoids
       to_target: cat.semigroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.monoids_monoids
@@ -7639,10 +7584,11 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.incl.monoids_to_semigroups
+        - arr.incl.semigroups_to_magmas
       from_target: cat.monoids
       to_target: cat.magmas
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.number_fields_numberfields
@@ -7659,14 +7605,11 @@ edge_mappings:
       sage_names:
         from: PartiallyOrderedMonoids
         to: Posets
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.monoids
-      to_target: cat.posets
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.monoids
+      to cat.posets; the normalized graph is missing a forgetful, inclusion, classifier-leg,
+      or pullback-projection arrow between them
   - source_edge:
       from: sage.category.partially_ordered_monoids_partiallyorderedmonoids
       to: sage.category.monoids_monoids
@@ -7679,7 +7622,6 @@ edge_mappings:
       path: []
       from_target: cat.monoids
       to_target: cat.monoids
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.permutation_groups_permutationgroups
@@ -7690,10 +7632,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.permutationgroups_to_groups
       from_target: cat.permutationgroups
       to_target: cat.groups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.pointed_sets_pointedsets
@@ -7707,7 +7649,6 @@ edge_mappings:
       path: []
       from_target: cat.sets
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.posets_posets
@@ -7730,10 +7671,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.pids__ufds
       from_target: cat.pids
       to_target: cat.ufds
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.quotient_fields_quotientfields
@@ -7747,7 +7688,6 @@ edge_mappings:
       path: []
       from_target: cat.fields
       to_target: cat.fields
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.regular_crystals_regularcrystals
@@ -7761,7 +7701,6 @@ edge_mappings:
       path: []
       from_target: cat.crystals
       to_target: cat.crystals
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.right_modules_rightmodules
@@ -7781,10 +7720,11 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.ringideals_r_to_modules_r
+        - arr.alias.modules_a
       from_target: cat.ringideals_r
       to_target: cat.modules_a
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.rings_rings
@@ -7795,10 +7735,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.rings__rngs
       from_target: cat.rings
       to_target: cat.rngs
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.rings_rings
@@ -7809,10 +7749,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.rings__semirings
       from_target: cat.rings
       to_target: cat.semirings
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.rngs_rngs
@@ -7844,7 +7784,6 @@ edge_mappings:
       path: []
       from_target: cat.semigroups
       to_target: cat.semigroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.schemes_schemes
@@ -7855,10 +7794,14 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.alias.schemes_k
+        - arr.dot.schemes__locallyringedspaces
+        - arr.dot.locallyringedspaces__ringedspaces
+        - arr.dot.ringedspaces__topologicalspaces
+        - arr.dot.topologicalspaces__sets
       from_target: cat.schemes_k
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.semigroups_semigroups
@@ -7869,10 +7812,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.incl.semigroups_to_magmas
       from_target: cat.semigroups
       to_target: cat.magmas
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.semirings_semirings
@@ -7892,10 +7835,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.semirings__monoids
       from_target: cat.semirings
       to_target: cat.monoids
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.sets_cat_sets
@@ -7903,14 +7846,11 @@ edge_mappings:
       sage_names:
         from: Sets
         to: SetsWithPartialMaps
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.sets
-      to_target: cat.setswithpartialmaps
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.sets
+      to cat.setswithpartialmaps; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.sets_with_grading_setswithgrading
       to: sage.category.sets_cat_sets
@@ -7920,10 +7860,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.clf.sets.graded
       from_target: clf.sets.graded.domain
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.sets_with_partial_maps_setswithpartialmaps
@@ -7943,10 +7883,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.simplicialcomplexes_to_sets
       from_target: cat.simplicialcomplexes
       to_target: cat.sets
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.supercommutative_algebras_supercommutativealgebras
@@ -7954,14 +7894,11 @@ edge_mappings:
       sage_names:
         from: SupercommutativeAlgebras
         to: SuperAlgebras
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.superalgebras_r
-      to_target: cat.associativeunitalalgebras_r
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.superalgebras_r
+      to cat.associativeunitalalgebras_r; the normalized graph is missing a forgetful,
+      inclusion, classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.unique_factorization_domains_uniquefactorizationdomains
       to: sage.category.gcd_domains_gcddomains
@@ -7971,10 +7908,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.ufds__gcddomains
       from_target: cat.ufds
       to_target: cat.gcd_domains
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.unital_algebras_unitalalgebras
@@ -7988,7 +7925,6 @@ edge_mappings:
       path: []
       from_target: cat.algebras_r
       to_target: cat.algebras_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.vector_spaces_vectorspaces
@@ -7999,10 +7935,11 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.vectorspaces__modules
+        - arr.alias.modules_a
       from_target: cat.vector_spaces_k
       to_target: cat.modules_a
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.weyl_groups_weylgroups
@@ -8013,10 +7950,12 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.alias.weylgroups
+        - arr.incl.weyl_to_coxeter
+        - arr.alias.coxetergroups
       from_target: cat.weylgroups
       to_target: cat.coxetergroups
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.with_axiom.vectorspaces.withbasis
@@ -8024,14 +7963,11 @@ edge_mappings:
       sage_names:
         from: VectorSpaces.WithBasis
         to: ModulesWithBasis
-    disposition: preserved
-    normalized:
-      kind: forgetful
-      path: []
-      from_target: cat.vector_spaces_k
-      to_target: cat.modules_with_basis
-      note: Both endpoints reviewed; path ids pending functor census
-    reason: null
+    disposition: unsupported
+    normalized: null
+    reason: Both endpoints are mapped but no structural route composes from cat.vector_spaces_k
+      to cat.modules_with_basis; the normalized graph is missing a forgetful, inclusion,
+      classifier-leg, or pullback-projection arrow between them
   - source_edge:
       from: sage.category.with_axiom.vectorspaces.withbasis
       to: sage.category.vector_spaces_vectorspaces
@@ -8044,7 +7980,6 @@ edge_mappings:
       path: []
       from_target: cat.vector_spaces_k
       to_target: cat.vector_spaces_k
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.with_axiom.vectorspaces.withbasis.finitedimensional
@@ -8082,10 +8017,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.vectorspaces__modules
       from_target: cat.vector_spaces_k
       to_target: cat.modules_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.with_axiom.vectorspaces.graded
@@ -8099,7 +8034,6 @@ edge_mappings:
       path: []
       from_target: cat.vector_spaces_k
       to_target: cat.vector_spaces_k
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.with_axiom.vectorspaces.withbasis.graded
@@ -8110,10 +8044,10 @@ edge_mappings:
     disposition: preserved
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - arr.dot.vectorspaces__modules
       from_target: cat.vector_spaces_k
       to_target: cat.modules_r
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.with_axiom.vectorspaces.withbasis.graded
@@ -8127,7 +8061,6 @@ edge_mappings:
       path: []
       from_target: cat.vector_spaces_k
       to_target: cat.vector_spaces_k
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.with_axiom.vectorspaces.withbasis.graded
@@ -8141,7 +8074,6 @@ edge_mappings:
       path: []
       from_target: cat.vector_spaces_k
       to_target: cat.vector_spaces_k
-      note: Both endpoints reviewed; path ids pending functor census
     reason: null
   - source_edge:
       from: sage.category.magmatic_algebras_magmaticalgebras
@@ -8585,7 +8517,7 @@ axiom_mappings:
     transported_occurrences: []
     disposition: rehosted
     note: A pointed simplicial set is a pointed object of the simplicial-set category,
-      not merely a simplicial set whose one underlying carrier is pointed.
+      not merely a simplicial set whose one underlying set is pointed.
   - source: sage.axiom.rtrivial
     source_sage_name: RTrivial
     target: clf.rtrivial

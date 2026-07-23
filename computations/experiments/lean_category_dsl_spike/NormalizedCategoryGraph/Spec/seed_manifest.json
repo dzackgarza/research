@@ -151,15 +151,15 @@
       "expression": {
         "args": [
           {
-            "id": "fun.additive_groups_to_additive_magmas",
+            "id": "fun.additive_groups_to_magmas",
             "tag": "reference"
           },
           {
-            "id": "clf.additive_magmas.commutative",
+            "id": "clf.magmas.commutative",
             "tag": "reference"
           },
           {
-            "id": "cat.additive_magmas",
+            "id": "cat.magmas",
             "tag": "reference"
           }
         ],
@@ -182,15 +182,15 @@
               "id": "cat.additive_magmas",
               "tag": "reference"
             },
-            "classifier": "clf.additive_magmas.associative",
+            "classifier": "clf.magmas.associative",
             "route": null,
             "tag": "refine"
           },
-          "classifier": "clf.additive_magmas.unital",
+          "classifier": "clf.magmas.unital",
           "route": null,
           "tag": "refine"
         },
-        "classifier": "clf.additive_magmas.inverse",
+        "classifier": "clf.magmas.inverse",
         "route": null,
         "tag": "refine"
       },
@@ -204,11 +204,16 @@
       "declaration": "cat.additive_magmas",
       "dotVertex": "Magmas.Additive",
       "expression": {
-        "id": "cat.additive_magmas",
-        "tag": "atom"
+        "base": {
+          "id": "cat.magmas",
+          "tag": "reference"
+        },
+        "classifier": "clf.magmas.additive",
+        "route": null,
+        "tag": "refine"
       },
       "id": "cat.additive_magmas",
-      "kind": "category_family",
+      "kind": "derived_category",
       "origin": "derivedNamed",
       "visibility": "present"
     },
@@ -222,11 +227,11 @@
             "id": "cat.additive_magmas",
             "tag": "reference"
           },
-          "classifier": "clf.additive_magmas.associative",
+          "classifier": "clf.magmas.associative",
           "route": null,
           "tag": "refine"
         },
-        "classifier": "clf.additive_magmas.unital",
+        "classifier": "clf.magmas.unital",
         "route": null,
         "tag": "refine"
       },
@@ -244,7 +249,7 @@
           "id": "cat.additive_magmas",
           "tag": "reference"
         },
-        "classifier": "clf.additive_magmas.associative",
+        "classifier": "clf.magmas.associative",
         "route": null,
         "tag": "refine"
       },
@@ -335,19 +340,6 @@
       "kind": "derived_category",
       "origin": "derivedNamed",
       "visibility": "present"
-    },
-    {
-      "canonicalName": "AmbientObjects",
-      "declaration": "cat.ambientobjects",
-      "dotVertex": "AmbientObjects",
-      "expression": {
-        "id": "cat.ambientobjects",
-        "tag": "opaque"
-      },
-      "id": "cat.ambientobjects",
-      "kind": "category_family",
-      "origin": "opaqueCategory",
-      "visibility": "semanticOnly"
     },
     {
       "canonicalName": "ArtinStacks",
@@ -841,24 +833,15 @@
     {
       "canonicalName": "DivisionRings",
       "declaration": "cat.division_rings",
-      "dotVertex": "DivisionRings = Magmas.Inverse",
+      "dotVertex": "DivisionRings = Rings.Division",
       "expression": {
-        "args": [
-          {
-            "id": "fun.rings_nonzero_mult_monoid_to_magmas",
-            "tag": "reference"
-          },
-          {
-            "id": "clf.magmas.inverse",
-            "tag": "reference"
-          },
-          {
-            "id": "cat.magmas",
-            "tag": "reference"
-          }
-        ],
-        "constructor": "pullback",
-        "tag": "constructor"
+        "base": {
+          "id": "cat.rings",
+          "tag": "reference"
+        },
+        "classifier": "clf.division",
+        "route": null,
+        "tag": "refine"
       },
       "id": "cat.division_rings",
       "kind": "derived_category",
@@ -1901,7 +1884,9 @@
       "declaration": "cat.right_modules_r",
       "dotVertex": "RightModules(R)",
       "expression": {
-        "args": ["{'R': 'R^op'}"],
+        "args": [
+          "{'R': 'R^op'}"
+        ],
         "family": "cat.modules_r",
         "tag": "familyApp"
       },
@@ -2013,6 +1998,19 @@
       "kind": "category_family",
       "origin": "root",
       "visibility": "present"
+    },
+    {
+      "canonicalName": "SageBackendObjects",
+      "declaration": "cat.sagebackendobjects",
+      "dotVertex": "SageBackendObjects",
+      "expression": {
+        "id": "cat.sagebackendobjects",
+        "tag": "opaque"
+      },
+      "id": "cat.sagebackendobjects",
+      "kind": "category_family",
+      "origin": "opaqueCategory",
+      "visibility": "semanticOnly"
     },
     {
       "canonicalName": "Schemes",
@@ -2481,58 +2479,6 @@
         "tag": "classifierTotal"
       },
       "id": "clf.additive.domain",
-      "kind": "classifier_domain",
-      "origin": "atomicClassifierTotal",
-      "visibility": "present"
-    },
-    {
-      "canonicalName": "AdditiveMagmas.Associative",
-      "declaration": "clf.additive_magmas.associative.domain",
-      "dotVertex": null,
-      "expression": {
-        "classifier": "clf.additive_magmas.associative",
-        "tag": "classifierTotal"
-      },
-      "id": "clf.additive_magmas.associative.domain",
-      "kind": "classifier_domain",
-      "origin": "atomicClassifierTotal",
-      "visibility": "present"
-    },
-    {
-      "canonicalName": "AdditiveMagmas.Commutative",
-      "declaration": "clf.additive_magmas.commutative.domain",
-      "dotVertex": null,
-      "expression": {
-        "classifier": "clf.additive_magmas.commutative",
-        "tag": "classifierTotal"
-      },
-      "id": "clf.additive_magmas.commutative.domain",
-      "kind": "classifier_domain",
-      "origin": "atomicClassifierTotal",
-      "visibility": "present"
-    },
-    {
-      "canonicalName": "AdditiveMagmas.Inverse",
-      "declaration": "clf.additive_magmas.inverse.domain",
-      "dotVertex": null,
-      "expression": {
-        "classifier": "clf.additive_magmas.inverse",
-        "tag": "classifierTotal"
-      },
-      "id": "clf.additive_magmas.inverse.domain",
-      "kind": "classifier_domain",
-      "origin": "atomicClassifierTotal",
-      "visibility": "present"
-    },
-    {
-      "canonicalName": "AdditiveMagmas.Unital",
-      "declaration": "clf.additive_magmas.unital.domain",
-      "dotVertex": null,
-      "expression": {
-        "classifier": "clf.additive_magmas.unital",
-        "tag": "classifierTotal"
-      },
-      "id": "clf.additive_magmas.unital.domain",
       "kind": "classifier_domain",
       "origin": "atomicClassifierTotal",
       "visibility": "present"
@@ -3669,9 +3615,9 @@
       "visibility": "present"
     },
     {
-      "canonicalName": "ax.Additive",
+      "canonicalName": "Magmas.Additive",
       "declaration": "clf.magmas.additive.domain",
-      "dotVertex": "ax.Additive",
+      "dotVertex": null,
       "expression": {
         "classifier": "clf.magmas.additive",
         "tag": "classifierTotal"
@@ -4964,42 +4910,6 @@
       "visibility": "present"
     },
     {
-      "canonicalName": "Associative",
-      "declaration": "clf.additive_magmas.associative",
-      "domainId": "clf.additive_magmas.associative.domain",
-      "hostId": "cat.additive_magmas",
-      "id": "clf.additive_magmas.associative",
-      "legArrowId": "arr.clf.additive_magmas.associative",
-      "visibility": "present"
-    },
-    {
-      "canonicalName": "Commutative",
-      "declaration": "clf.additive_magmas.commutative",
-      "domainId": "clf.additive_magmas.commutative.domain",
-      "hostId": "cat.additive_magmas",
-      "id": "clf.additive_magmas.commutative",
-      "legArrowId": "arr.clf.additive_magmas.commutative",
-      "visibility": "present"
-    },
-    {
-      "canonicalName": "Inverse",
-      "declaration": "clf.additive_magmas.inverse",
-      "domainId": "clf.additive_magmas.inverse.domain",
-      "hostId": "cat.additive_magmas",
-      "id": "clf.additive_magmas.inverse",
-      "legArrowId": "arr.clf.additive_magmas.inverse",
-      "visibility": "present"
-    },
-    {
-      "canonicalName": "Unital",
-      "declaration": "clf.additive_magmas.unital",
-      "domainId": "clf.additive_magmas.unital.domain",
-      "hostId": "cat.additive_magmas",
-      "id": "clf.additive_magmas.unital",
-      "legArrowId": "arr.clf.additive_magmas.unital",
-      "visibility": "present"
-    },
-    {
       "canonicalName": "Affine",
       "declaration": "clf.affine",
       "domainId": "clf.affine.domain",
@@ -5846,15 +5756,6 @@
       "visibility": "present"
     },
     {
-      "canonicalName": "Additive",
-      "declaration": "clf.magmas_additive",
-      "domainId": "cat.additive_magmas",
-      "hostId": "cat.magmas",
-      "id": "clf.magmas_additive",
-      "legArrowId": "arr.clf.magmas_additive",
-      "visibility": "present"
-    },
-    {
       "canonicalName": "Multiplicative",
       "declaration": "clf.magmas_multiplicative",
       "domainId": "clf.magmas_multiplicative",
@@ -6458,22 +6359,6 @@
       "visibility": "semanticOnly"
     },
     {
-      "declaration": "cat.ambientobjects",
-      "id": "cat.ambientobjects",
-      "ports": [
-        {
-          "declaration": "fun.ambientobjects_to_sets",
-          "id": "oport.cat.ambientobjects.cat.sets",
-          "provenance": "forgetful",
-          "role": "structural",
-          "source": "cat.ambientobjects",
-          "target": "cat.sets"
-        }
-      ],
-      "reason": "compatibility-layer host only; not ordinary mathematics",
-      "visibility": "semanticOnly"
-    },
-    {
       "declaration": "cat.complexreflectiongroups",
       "id": "cat.complexreflectiongroups",
       "ports": [
@@ -6785,7 +6670,7 @@
           "declaration": "fun.twoops_to_magmas_multiplicative",
           "id": "oport.cat.magmaswithtwooperations.cat.magmas",
           "provenance": "forgetful",
-          "role": "structural",
+          "role": "multiplicative_operation",
           "source": "cat.magmaswithtwooperations",
           "target": "cat.magmas"
         }
@@ -6855,6 +6740,22 @@
         }
       ],
       "reason": "authored ledger base",
+      "visibility": "semanticOnly"
+    },
+    {
+      "declaration": "cat.sagebackendobjects",
+      "id": "cat.sagebackendobjects",
+      "ports": [
+        {
+          "declaration": "fun.sagebackendobjects_to_sets",
+          "id": "oport.cat.sagebackendobjects.cat.sets",
+          "provenance": "forgetful",
+          "role": "structural",
+          "source": "cat.sagebackendobjects",
+          "target": "cat.sets"
+        }
+      ],
+      "reason": "compatibility-layer host only; not ordinary mathematics",
       "visibility": "semanticOnly"
     },
     {
@@ -7125,38 +7026,6 @@
         "provenance": "\u03b9_Additive : cat.magmas.Additive \u2192 cat.magmas",
         "source": "clf.additive.domain",
         "target": "cat.magmas"
-      },
-      {
-        "id": "arr.clf.additive_magmas.associative",
-        "kind": "classifier_leg",
-        "preferred": true,
-        "provenance": null,
-        "source": "clf.additive_magmas.associative.domain",
-        "target": "cat.additive_magmas"
-      },
-      {
-        "id": "arr.clf.additive_magmas.commutative",
-        "kind": "classifier_leg",
-        "preferred": true,
-        "provenance": null,
-        "source": "clf.additive_magmas.commutative.domain",
-        "target": "cat.additive_magmas"
-      },
-      {
-        "id": "arr.clf.additive_magmas.inverse",
-        "kind": "classifier_leg",
-        "preferred": true,
-        "provenance": null,
-        "source": "clf.additive_magmas.inverse.domain",
-        "target": "cat.additive_magmas"
-      },
-      {
-        "id": "arr.clf.additive_magmas.unital",
-        "kind": "classifier_leg",
-        "preferred": true,
-        "provenance": null,
-        "source": "clf.additive_magmas.unital.domain",
-        "target": "cat.additive_magmas"
       },
       {
         "id": "arr.clf.affine",
@@ -7911,14 +7780,6 @@
         "target": "cat.magmas"
       },
       {
-        "id": "arr.clf.magmas_additive",
-        "kind": "classifier_leg",
-        "preferred": false,
-        "provenance": "REJECTED as classifier_leg: Magmas.Additive is AdditiveMagmas (sibling of Magmas). Hand DOT still attaches Additive by dotted edge for stub axiom encoding; use arr.fun.additive_magmas_to_sets",
-        "source": "cat.additive_magmas",
-        "target": "cat.magmas"
-      },
-      {
         "id": "arr.clf.magmas_multiplicative",
         "kind": "classifier_leg",
         "preferred": true,
@@ -8456,9 +8317,10 @@
       },
       {
         "id": "arr.dot.additivesemigroups__magmas_additive",
-        "kind": "pullback_projection",
+        "kind": "full_inclusion",
         "preferred": true,
-        "provenance": "dot_import",
+        "provenance": "Magmas.Additive.Associative \u2192 Magmas.Additive",
+        "role": "additive_operation",
         "source": "cat.additive_semigroups",
         "target": "cat.additive_magmas"
       },
@@ -9873,8 +9735,9 @@
       {
         "id": "arr.fun.additive_magmas_to_sets",
         "kind": "forgetful",
-        "preferred": true,
-        "provenance": "sibling of Magmas; not Magmas.Additive \u2282 Magmas",
+        "preferred": false,
+        "provenance": "composite via Magmas; preferred inclusion is arr.incl.additive_magmas_to_magmas",
+        "role": "underlying_set",
         "source": "cat.additive_magmas",
         "target": "cat.sets"
       },
@@ -9883,6 +9746,7 @@
         "kind": "forgetful",
         "preferred": true,
         "provenance": "underlying set",
+        "role": "underlying_set",
         "source": "cat.magmas",
         "target": "cat.sets"
       },
@@ -9923,6 +9787,7 @@
         "kind": "full_inclusion",
         "preferred": true,
         "provenance": "named classifier application",
+        "role": "multiplicative_operation",
         "source": "cat.semigroups",
         "target": "cat.magmas"
       },
@@ -10058,7 +9923,8 @@
         "id": "fun.additive_groups_to_additive_magmas",
         "kind": "forgetful",
         "preferred": true,
-        "provenance": null,
+        "provenance": "forget to Magmas.Additive",
+        "role": "additive_operation",
         "source": "cat.additive_groups",
         "target": "cat.additive_magmas"
       },
@@ -10087,11 +9953,11 @@
         "target": "cat.sets"
       },
       {
-        "id": "fun.ambientobjects_to_sets",
+        "id": "fun.sagebackendobjects_to_sets",
         "kind": "forgetful",
         "preferred": true,
         "provenance": "opaque interface: compatibility-layer host only; not ordinary mathematics",
-        "source": "cat.ambientobjects",
+        "source": "cat.sagebackendobjects",
         "target": "cat.sets"
       },
       {
@@ -10243,6 +10109,7 @@
         "kind": "forgetful",
         "preferred": true,
         "provenance": "underlying multiplicative magma",
+        "role": "multiplicative_operation",
         "source": "cat.groups",
         "target": "cat.magmas"
       },
@@ -10412,6 +10279,7 @@
         "kind": "forgetful",
         "preferred": false,
         "provenance": "nonzero multiplicative monoid of a ring; used in division-ring pullback",
+        "role": "multiplicative_operation",
         "source": "cat.rings",
         "target": "cat.magmas"
       },
@@ -10420,6 +10288,7 @@
         "kind": "forgetful",
         "preferred": true,
         "provenance": "multiplicative underlying magma",
+        "role": "multiplicative_operation",
         "source": "cat.rings",
         "target": "cat.magmas"
       },
@@ -10485,6 +10354,7 @@
         "notes": "additive_operation",
         "preferred": false,
         "provenance": "additive_operation",
+        "role": "additive_operation",
         "source": "cat.magmaswithtwooperations",
         "target": "cat.magmas"
       },
@@ -10494,6 +10364,7 @@
         "notes": "multiplicative_operation",
         "preferred": true,
         "provenance": "multiplicative_operation",
+        "role": "multiplicative_operation",
         "source": "cat.magmaswithtwooperations",
         "target": "cat.magmas"
       },
@@ -10512,6 +10383,24 @@
         "provenance": "opaque interface: authored ledger base",
         "source": "cat.vectorbundles_x_r",
         "target": "cat.modules_r"
+      },
+      {
+        "id": "arr.incl.additive_magmas_to_magmas",
+        "kind": "full_inclusion",
+        "preferred": true,
+        "provenance": "Magmas.Additive \u2282 Magmas (one-tower)",
+        "role": "additive_operation",
+        "source": "cat.additive_magmas",
+        "target": "cat.magmas"
+      },
+      {
+        "id": "fun.additive_groups_to_magmas",
+        "kind": "forgetful",
+        "preferred": true,
+        "provenance": "underlying additive magma",
+        "role": "additive_operation",
+        "source": "cat.additive_groups",
+        "target": "cat.magmas"
       }
     ],
     "classifiers": [
@@ -10565,42 +10454,6 @@
         "host_id": "cat.magmas",
         "id": "clf.magmas.commutative",
         "leg_arrow_id": "arr.clf.magmas.commutative",
-        "name": "Commutative",
-        "notes": null,
-        "transport": null
-      },
-      {
-        "domain_id": "clf.additive_magmas.associative.domain",
-        "host_id": "cat.additive_magmas",
-        "id": "clf.additive_magmas.associative",
-        "leg_arrow_id": "arr.clf.additive_magmas.associative",
-        "name": "Associative",
-        "notes": null,
-        "transport": null
-      },
-      {
-        "domain_id": "clf.additive_magmas.unital.domain",
-        "host_id": "cat.additive_magmas",
-        "id": "clf.additive_magmas.unital",
-        "leg_arrow_id": "arr.clf.additive_magmas.unital",
-        "name": "Unital",
-        "notes": null,
-        "transport": null
-      },
-      {
-        "domain_id": "clf.additive_magmas.inverse.domain",
-        "host_id": "cat.additive_magmas",
-        "id": "clf.additive_magmas.inverse",
-        "leg_arrow_id": "arr.clf.additive_magmas.inverse",
-        "name": "Inverse",
-        "notes": null,
-        "transport": null
-      },
-      {
-        "domain_id": "clf.additive_magmas.commutative.domain",
-        "host_id": "cat.additive_magmas",
-        "id": "clf.additive_magmas.commutative",
-        "leg_arrow_id": "arr.clf.additive_magmas.commutative",
         "name": "Commutative",
         "notes": null,
         "transport": null
@@ -10833,15 +10686,6 @@
         "id": "clf.lat_positivedefinite",
         "leg_arrow_id": "arr.clf.lat_positivedefinite",
         "name": "PositiveDefinite",
-        "notes": "Imported from DOT axiom attachment",
-        "transport": null
-      },
-      {
-        "domain_id": "cat.additive_magmas",
-        "host_id": "cat.magmas",
-        "id": "clf.magmas_additive",
-        "leg_arrow_id": "arr.clf.magmas_additive",
-        "name": "Additive",
         "notes": "Imported from DOT axiom attachment",
         "transport": null
       },
@@ -11391,7 +11235,7 @@
         "id": "clf.magmas.additive",
         "leg_arrow_id": "arr.clf.magmas.additive",
         "name": "Additive",
-        "notes": "Flat Magmas.Additive packaging; Magmas.Additive vertex is AdditiveMagmas",
+        "notes": "Magmas.Additive role/route; named join cat.additive_magmas",
         "transport": null
       },
       {
@@ -12010,7 +11854,9 @@
         "provenance": "bedrock terminal of the preferred parent spine"
       },
       {
-        "aliases": ["Set"],
+        "aliases": [
+          "Set"
+        ],
         "canonical_name": "Sets",
         "definition": null,
         "dot_vertex": "Sets",
@@ -12020,7 +11866,9 @@
         "provenance": "standard"
       },
       {
-        "aliases": ["Mag"],
+        "aliases": [
+          "Mag"
+        ],
         "canonical_name": "Magmas",
         "definition": null,
         "dot_vertex": "Magmas",
@@ -12030,20 +11878,25 @@
         "provenance": "standard"
       },
       {
-        "aliases": ["Magmas.Additive"],
+        "aliases": [
+          "Magmas.Additive"
+        ],
         "canonical_name": "AdditiveMagmas",
         "definition": {
-          "classifier_id": "clf.magmas_additive",
-          "notes": "Sibling of Magmas (additive binary op), not Magmas.Additive as subcategory of Magmas"
+          "classifier": "clf.magmas.additive",
+          "host": "cat.magmas",
+          "operation": "classifier_application"
         },
         "dot_vertex": "Magmas.Additive",
         "id": "cat.additive_magmas",
-        "kind": "category_family",
+        "kind": "derived_category",
         "parameters": [],
-        "provenance": "Sage AdditiveMagmas; forgetful to Sets; not subcategory of Magmas"
+        "provenance": "Sage AdditiveMagmas normalizes to Magmas.Additive (one-tower)"
       },
       {
-        "aliases": ["Ring"],
+        "aliases": [
+          "Ring"
+        ],
         "canonical_name": "Rings",
         "definition": null,
         "dot_vertex": "Rings",
@@ -12073,7 +11926,9 @@
         "provenance": "standard"
       },
       {
-        "aliases": ["Field"],
+        "aliases": [
+          "Field"
+        ],
         "canonical_name": "Fields",
         "definition": null,
         "dot_vertex": "Fields",
@@ -12083,7 +11938,10 @@
         "provenance": "standard"
       },
       {
-        "aliases": ["R-Mod", "Modules(R)"],
+        "aliases": [
+          "R-Mod",
+          "Modules(R)"
+        ],
         "canonical_name": "Modules",
         "definition": null,
         "dot_vertex": "Modules(R)",
@@ -12099,7 +11957,10 @@
         "provenance": "Modules(R) \u2243 left R-modules (Sage default)"
       },
       {
-        "aliases": ["Algebras(R)", "MagmaticAlgebras"],
+        "aliases": [
+          "Algebras(R)",
+          "MagmaticAlgebras"
+        ],
         "canonical_name": "Algebras",
         "definition": {
           "notes": "R-module with bilinear multiplication; no assoc/unit required",
@@ -12148,7 +12009,9 @@
         "provenance": "standard"
       },
       {
-        "aliases": ["Schemes(S)"],
+        "aliases": [
+          "Schemes(S)"
+        ],
         "canonical_name": "Schemes",
         "definition": null,
         "dot_vertex": "Schemes(S)",
@@ -12164,7 +12027,9 @@
         "provenance": "parameterized over base scheme S"
       },
       {
-        "aliases": ["Coalgebras(R)"],
+        "aliases": [
+          "Coalgebras(R)"
+        ],
         "canonical_name": "Coalgebras",
         "definition": null,
         "dot_vertex": "Coalgebras(R)",
@@ -12180,7 +12045,9 @@
         "provenance": "standard"
       },
       {
-        "aliases": ["Bialgebras(R)"],
+        "aliases": [
+          "Bialgebras(R)"
+        ],
         "canonical_name": "Bialgebras",
         "definition": null,
         "dot_vertex": "Bialgebras(R)",
@@ -12196,7 +12063,9 @@
         "provenance": "standard"
       },
       {
-        "aliases": ["HopfAlgebras(R)"],
+        "aliases": [
+          "HopfAlgebras(R)"
+        ],
         "canonical_name": "HopfAlgebras",
         "definition": null,
         "dot_vertex": "HopfAlgebras(R)",
@@ -12212,7 +12081,9 @@
         "provenance": "standard"
       },
       {
-        "aliases": ["LieAlgebras(R)"],
+        "aliases": [
+          "LieAlgebras(R)"
+        ],
         "canonical_name": "LieAlgebras",
         "definition": null,
         "dot_vertex": "LieAlgebras(R)",
@@ -12228,7 +12099,9 @@
         "provenance": "standard"
       },
       {
-        "aliases": ["Bimodules(R)"],
+        "aliases": [
+          "Bimodules(R)"
+        ],
         "canonical_name": "Bimodules",
         "definition": null,
         "dot_vertex": "Bimodules(R)",
@@ -12316,54 +12189,6 @@
         "kind": "classifier_domain",
         "parameters": [],
         "provenance": "least host Magmas"
-      },
-      {
-        "aliases": [],
-        "canonical_name": "AdditiveMagmas.Associative",
-        "definition": {
-          "classifier_id": "clf.additive_magmas.associative"
-        },
-        "dot_vertex": null,
-        "id": "clf.additive_magmas.associative.domain",
-        "kind": "classifier_domain",
-        "parameters": [],
-        "provenance": "least host AdditiveMagmas"
-      },
-      {
-        "aliases": [],
-        "canonical_name": "AdditiveMagmas.Unital",
-        "definition": {
-          "classifier_id": "clf.additive_magmas.unital"
-        },
-        "dot_vertex": null,
-        "id": "clf.additive_magmas.unital.domain",
-        "kind": "classifier_domain",
-        "parameters": [],
-        "provenance": "least host AdditiveMagmas"
-      },
-      {
-        "aliases": [],
-        "canonical_name": "AdditiveMagmas.Inverse",
-        "definition": {
-          "classifier_id": "clf.additive_magmas.inverse"
-        },
-        "dot_vertex": null,
-        "id": "clf.additive_magmas.inverse.domain",
-        "kind": "classifier_domain",
-        "parameters": [],
-        "provenance": "least host AdditiveMagmas"
-      },
-      {
-        "aliases": [],
-        "canonical_name": "AdditiveMagmas.Commutative",
-        "definition": {
-          "classifier_id": "clf.additive_magmas.commutative"
-        },
-        "dot_vertex": null,
-        "id": "clf.additive_magmas.commutative.domain",
-        "kind": "classifier_domain",
-        "parameters": [],
-        "provenance": "least host AdditiveMagmas"
       },
       {
         "aliases": [],
@@ -12518,7 +12343,10 @@
         "canonical_name": "Monoids",
         "definition": {
           "base": "cat.magmas",
-          "classifiers": ["clf.magmas.associative", "clf.magmas.unital"],
+          "classifiers": [
+            "clf.magmas.associative",
+            "clf.magmas.unital"
+          ],
           "operation": "classifier_tower"
         },
         "dot_vertex": "Monoids = Magmas.Associative.Unital",
@@ -12532,7 +12360,11 @@
         "canonical_name": "Groups",
         "definition": {
           "base": "cat.magmas",
-          "classifiers": ["clf.magmas.associative", "clf.magmas.unital", "clf.magmas.inverse"],
+          "classifiers": [
+            "clf.magmas.associative",
+            "clf.magmas.unital",
+            "clf.magmas.inverse"
+          ],
           "operation": "classifier_tower"
         },
         "dot_vertex": "Groups = Magmas.Associative.Unital.Inverse",
@@ -12562,7 +12394,8 @@
         "aliases": [],
         "canonical_name": "AdditiveSemigroups",
         "definition": {
-          "classifier": "clf.additive_magmas.associative",
+          "along": "additive_operation",
+          "classifier": "clf.magmas.associative",
           "host": "cat.additive_magmas",
           "operation": "classifier_application"
         },
@@ -12570,55 +12403,67 @@
         "id": "cat.additive_semigroups",
         "kind": "derived_category",
         "parameters": [],
-        "provenance": "named composite"
+        "provenance": "Magmas.Additive.Associative (Magmas Associative along additive_operation)"
       },
       {
         "aliases": [],
         "canonical_name": "AdditiveMonoids",
         "definition": {
+          "along": "additive_operation",
           "base": "cat.additive_magmas",
-          "classifiers": ["clf.additive_magmas.associative", "clf.additive_magmas.unital"],
+          "classifiers": [
+            "clf.magmas.associative",
+            "clf.magmas.unital"
+          ],
           "operation": "classifier_tower"
         },
         "dot_vertex": "AdditiveMonoids = Magmas.Additive.Associative.Unital",
         "id": "cat.additive_monoids",
         "kind": "derived_category",
         "parameters": [],
-        "provenance": "named composite"
+        "provenance": "Magmas.Additive.Associative.Unital"
       },
       {
         "aliases": [],
         "canonical_name": "AdditiveGroups",
         "definition": {
+          "along": "additive_operation",
           "base": "cat.additive_magmas",
-          "classifiers": ["clf.additive_magmas.associative", "clf.additive_magmas.unital", "clf.additive_magmas.inverse"],
+          "classifiers": [
+            "clf.magmas.associative",
+            "clf.magmas.unital",
+            "clf.magmas.inverse"
+          ],
           "operation": "classifier_tower"
         },
         "dot_vertex": "AdditiveGroups = Magmas.Additive.Associative.Unital.Inverse",
         "id": "cat.additive_groups",
         "kind": "derived_category",
         "parameters": [],
-        "provenance": "named composite"
+        "provenance": "Magmas.Additive.Associative.Unital.Inverse"
       },
       {
         "aliases": [],
         "canonical_name": "AdditiveAbelianGroups",
         "definition": {
+          "along": "additive_operation",
           "display": "AdditiveGroups.Commutative",
-          "left": "fun.additive_groups_to_additive_magmas",
+          "left": "fun.additive_groups_to_magmas",
           "operation": "pullback",
-          "over": "cat.additive_magmas",
-          "right": "clf.additive_magmas.commutative",
+          "over": "cat.magmas",
+          "right": "clf.magmas.commutative",
           "strictness": "pseudo"
         },
         "dot_vertex": "AdditiveAbelianGroups = AdditiveGroups.Commutative",
         "id": "cat.additive_abelian_groups",
         "kind": "derived_category",
         "parameters": [],
-        "provenance": "named composite"
+        "provenance": "AdditiveGroups \u00d7_Mag Magmas.Commutative along additive_operation"
       },
       {
-        "aliases": ["CommRings"],
+        "aliases": [
+          "CommRings"
+        ],
         "canonical_name": "CommutativeRings",
         "definition": {
           "display": "Rings.Commutative",
@@ -12667,7 +12512,9 @@
         "provenance": "named pullback"
       },
       {
-        "aliases": ["GcdDomains"],
+        "aliases": [
+          "GcdDomains"
+        ],
         "canonical_name": "GCDDomains",
         "definition": {
           "classifier": "clf.comm_rings.gcd_domain",
@@ -12681,7 +12528,9 @@
         "provenance": "named composite"
       },
       {
-        "aliases": ["UniqueFactorizationDomains"],
+        "aliases": [
+          "UniqueFactorizationDomains"
+        ],
         "canonical_name": "UFDs",
         "definition": {
           "classifier": "clf.comm_rings.ufd",
@@ -12695,7 +12544,9 @@
         "provenance": "named composite"
       },
       {
-        "aliases": ["PrincipalIdealDomains"],
+        "aliases": [
+          "PrincipalIdealDomains"
+        ],
         "canonical_name": "PIDs",
         "definition": {
           "classifier": "clf.comm_rings.pid",
@@ -12760,23 +12611,22 @@
         "aliases": [],
         "canonical_name": "DivisionRings",
         "definition": {
-          "display": "Rings with nonzero multiplicative monoid a group",
-          "left": "fun.rings_nonzero_mult_monoid_to_magmas",
-          "notes": "Division ring = unital ring with 1\u22600 whose nonzero elements form a group under multiplication. Requires the nonzero-multiplicative-monoid forgetful (not yet a first-class seeded functor id beyond this arrow placeholder). DOT Magmas.Inverse alone is insufficient.",
-          "operation": "pullback",
-          "over": "cat.magmas",
-          "right": "clf.magmas.inverse",
-          "strictness": "pseudo",
-          "witness": "standard"
+          "classifier": "clf.division",
+          "display": "Rings.Division",
+          "host": "cat.rings",
+          "notes": "DivisionRings := Rings.Division (nonzero multiplicative invertibility). Not Magmas.Inverse.",
+          "operation": "classifier_application"
         },
-        "dot_vertex": "DivisionRings = Magmas.Inverse",
+        "dot_vertex": "DivisionRings = Rings.Division",
         "id": "cat.division_rings",
         "kind": "derived_category",
         "parameters": [],
-        "provenance": "audit finding: incomplete structured definition"
+        "provenance": "PR #278 review: DivisionRings = Rings.Division"
       },
       {
-        "aliases": ["LeftModules(R)"],
+        "aliases": [
+          "LeftModules(R)"
+        ],
         "canonical_name": "LeftModules",
         "definition": {
           "notes": "Sage LeftModules is the default Modules(R) presentation",
@@ -12796,7 +12646,9 @@
         "provenance": "identity with Modules(R)"
       },
       {
-        "aliases": ["RightModules(R)"],
+        "aliases": [
+          "RightModules(R)"
+        ],
         "canonical_name": "RightModules",
         "definition": {
           "notes": "Not an identity with left modules; Mod-R \u2243 R^op-Mod under the opposite-ring substitution",
@@ -12839,7 +12691,9 @@
         "provenance": "named composite"
       },
       {
-        "aliases": ["VectorSpaces(K)"],
+        "aliases": [
+          "VectorSpaces(K)"
+        ],
         "canonical_name": "VectorSpaces",
         "definition": {
           "classifier": "clf.modules.over_field",
@@ -12864,11 +12718,16 @@
         "provenance": "Modules over a field; not a separate primitive"
       },
       {
-        "aliases": ["Algebras"],
+        "aliases": [
+          "Algebras"
+        ],
         "canonical_name": "UnitalAlgebras",
         "definition": {
           "base": "cat.algebras_r",
-          "classifiers": ["clf.algebras.associative", "clf.algebras.unital"],
+          "classifiers": [
+            "clf.algebras.associative",
+            "clf.algebras.unital"
+          ],
           "operation": "classifier_tower"
         },
         "dot_vertex": "UnitalAlgebras = Algebras.Associative.Unital",
@@ -12884,7 +12743,9 @@
         "provenance": "Sage Algebras = associative unital; MagmaticAlgebras is the Wikipedia algebra"
       },
       {
-        "aliases": ["CommAlgebras"],
+        "aliases": [
+          "CommAlgebras"
+        ],
         "canonical_name": "CommutativeAlgebras",
         "definition": {
           "display": "UnitalAlgebras.Commutative",
@@ -12907,7 +12768,9 @@
         "provenance": "named pullback"
       },
       {
-        "aliases": ["GradedAlgebras"],
+        "aliases": [
+          "GradedAlgebras"
+        ],
         "canonical_name": "Algebras.Graded",
         "definition": {
           "classifier_id": "clf.algebras_graded",
@@ -13310,7 +13173,10 @@
         "canonical_name": "CountableInfiniteSets",
         "definition": {
           "base": "cat.sets",
-          "classifiers": ["clf.sets_countable", "clf.sets_infinite"],
+          "classifiers": [
+            "clf.sets_countable",
+            "clf.sets_infinite"
+          ],
           "display": "Sets.Countable.Infinite",
           "operation": "classifier_tower"
         },
@@ -13460,7 +13326,11 @@
         "canonical_name": "DiscBil",
         "definition": {
           "base": "cat.int_bil_r",
-          "classifiers": ["clf.int_bil_symmetric", "clf.int_bil_r.nondegenerate", "clf.int_bil_r.finite"],
+          "classifiers": [
+            "clf.int_bil_symmetric",
+            "clf.int_bil_r.nondegenerate",
+            "clf.int_bil_r.finite"
+          ],
           "display": "\u222bBil.Symmetric.Nondegenerate.Finite",
           "operation": "classifier_tower"
         },
@@ -13865,7 +13735,10 @@
         "canonical_name": "Lat_R",
         "definition": {
           "base": "cat.int_bil_r",
-          "classifiers": ["clf.int_bil_symmetric", "clf.int_bil_r.nondegenerate"],
+          "classifiers": [
+            "clf.int_bil_symmetric",
+            "clf.int_bil_r.nondegenerate"
+          ],
           "display": "\u222bBil_R(R).Symmetric.Nondegenerate",
           "operation": "classifier_tower"
         },
@@ -14690,7 +14563,11 @@
         "canonical_name": "Varieties(K)",
         "definition": {
           "base": "cat.schemes_s",
-          "classifiers": ["clf.schemes_integral", "clf.schemes_separated", "clf.schemes_finitetype"],
+          "classifiers": [
+            "clf.schemes_integral",
+            "clf.schemes_separated",
+            "clf.schemes_finitetype"
+          ],
           "display": "Schemes.Integral.Separated.FiniteType",
           "operation": "classifier_tower"
         },
@@ -15205,15 +15082,15 @@
       },
       {
         "aliases": [],
-        "canonical_name": "ax.Additive",
+        "canonical_name": "Magmas.Additive",
         "definition": {
           "classifier_id": "clf.magmas.additive"
         },
-        "dot_vertex": "ax.Additive",
+        "dot_vertex": null,
         "id": "clf.magmas.additive.domain",
         "kind": "classifier_domain",
         "parameters": [],
-        "provenance": "flat Magmas Additive axiom (distinct from AdditiveMagmas sibling cat.additive_magmas)"
+        "provenance": "least host Magmas; named join is cat.additive_magmas"
       },
       {
         "aliases": [],
@@ -15293,9 +15170,10 @@
           "of": "cat.division_rings",
           "operation": "same_as"
         },
-        "dot_vertex": "DivisionRings = Magmas.Inverse",
+        "dot_vertex": "DivisionRings = Rings.Division",
         "id": "cat.divisionrings",
         "kind": "alias",
+        "notes": "",
         "parameters": [],
         "provenance": "authored sagecats ledger"
       },
@@ -15804,13 +15682,13 @@
       },
       {
         "aliases": [],
-        "canonical_name": "AmbientObjects",
+        "canonical_name": "SageBackendObjects",
         "definition": {
           "notes": "compatibility-layer host only; not ordinary mathematics",
           "opaque": true
         },
-        "dot_vertex": "AmbientObjects",
-        "id": "cat.ambientobjects",
+        "dot_vertex": "SageBackendObjects",
+        "id": "cat.sagebackendobjects",
         "kind": "category_family",
         "parameters": [],
         "provenance": "authored sagecats ledger"
@@ -16781,34 +16659,6 @@
       "role": null,
       "source": "clf.additive.domain",
       "target": "cat.magmas"
-    },
-    {
-      "id": "arr.clf.additive_magmas.associative",
-      "kind": "classifier_leg",
-      "role": null,
-      "source": "clf.additive_magmas.associative.domain",
-      "target": "cat.additive_magmas"
-    },
-    {
-      "id": "arr.clf.additive_magmas.commutative",
-      "kind": "classifier_leg",
-      "role": null,
-      "source": "clf.additive_magmas.commutative.domain",
-      "target": "cat.additive_magmas"
-    },
-    {
-      "id": "arr.clf.additive_magmas.inverse",
-      "kind": "classifier_leg",
-      "role": null,
-      "source": "clf.additive_magmas.inverse.domain",
-      "target": "cat.additive_magmas"
-    },
-    {
-      "id": "arr.clf.additive_magmas.unital",
-      "kind": "classifier_leg",
-      "role": null,
-      "source": "clf.additive_magmas.unital.domain",
-      "target": "cat.additive_magmas"
     },
     {
       "id": "arr.clf.affine",
@@ -17939,8 +17789,8 @@
     },
     {
       "id": "arr.dot.additivesemigroups__magmas_additive",
-      "kind": "pullback_projection",
-      "role": null,
+      "kind": "full_inclusion",
+      "role": "additive_operation",
       "source": "cat.additive_semigroups",
       "target": "cat.additive_magmas"
     },
@@ -19177,16 +19027,9 @@
       "target": "cat.reflectiongroups"
     },
     {
-      "id": "arr.fun.additive_magmas_to_sets",
-      "kind": "forgetful",
-      "role": null,
-      "source": "cat.additive_magmas",
-      "target": "cat.sets"
-    },
-    {
       "id": "arr.fun.magmas_to_sets",
       "kind": "forgetful",
-      "role": null,
+      "role": "underlying_set",
       "source": "cat.magmas",
       "target": "cat.sets"
     },
@@ -19196,6 +19039,13 @@
       "role": null,
       "source": "cat.sets",
       "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.incl.additive_magmas_to_magmas",
+      "kind": "full_inclusion",
+      "role": "additive_operation",
+      "source": "cat.additive_magmas",
+      "target": "cat.magmas"
     },
     {
       "id": "arr.incl.fields_to_rings",
@@ -19221,7 +19071,7 @@
     {
       "id": "arr.incl.semigroups_to_magmas",
       "kind": "full_inclusion",
-      "role": null,
+      "role": "multiplicative_operation",
       "source": "cat.semigroups",
       "target": "cat.magmas"
     },
@@ -19333,9 +19183,16 @@
     {
       "id": "fun.additive_groups_to_additive_magmas",
       "kind": "forgetful",
-      "role": null,
+      "role": "additive_operation",
       "source": "cat.additive_groups",
       "target": "cat.additive_magmas"
+    },
+    {
+      "id": "fun.additive_groups_to_magmas",
+      "kind": "forgetful",
+      "role": "additive_operation",
+      "source": "cat.additive_groups",
+      "target": "cat.magmas"
     },
     {
       "id": "fun.algebraideals_a_to_modules_r",
@@ -19356,13 +19213,6 @@
       "kind": "forgetful",
       "role": null,
       "source": "cat.algebras_r",
-      "target": "cat.sets"
-    },
-    {
-      "id": "fun.ambientobjects_to_sets",
-      "kind": "forgetful",
-      "role": null,
-      "source": "cat.ambientobjects",
       "target": "cat.sets"
     },
     {
@@ -19494,7 +19344,7 @@
     {
       "id": "fun.groups_to_magmas",
       "kind": "forgetful",
-      "role": null,
+      "role": "multiplicative_operation",
       "source": "cat.groups",
       "target": "cat.magmas"
     },
@@ -19641,7 +19491,7 @@
     {
       "id": "fun.rings_to_multiplicative_magmas",
       "kind": "forgetful",
-      "role": null,
+      "role": "multiplicative_operation",
       "source": "cat.rings",
       "target": "cat.magmas"
     },
@@ -19650,6 +19500,13 @@
       "kind": "forgetful",
       "role": null,
       "source": "cat.rings",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.sagebackendobjects_to_sets",
+      "kind": "forgetful",
+      "role": null,
+      "source": "cat.sagebackendobjects",
       "target": "cat.sets"
     },
     {
@@ -19697,7 +19554,7 @@
     {
       "id": "fun.twoops_to_magmas_multiplicative",
       "kind": "forgetful",
-      "role": null,
+      "role": "multiplicative_operation",
       "source": "cat.magmaswithtwooperations",
       "target": "cat.magmas"
     },

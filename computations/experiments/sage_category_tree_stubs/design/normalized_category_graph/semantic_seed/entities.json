@@ -100,7 +100,7 @@
       "definition": null,
       "aliases": ["R-Mod", "Modules(R)"],
       "dot_vertex": "Modules(R)",
-      "provenance": "Modules(R) \u2243 left R-modules (Sage default)"
+      "provenance": "Modules(R) ≃ left R-modules (Sage default)"
     },
     {
       "id": "cat.algebras_r",
@@ -512,7 +512,7 @@
       },
       "aliases": [],
       "dot_vertex": "AbelianGroups = Groups.Commutative",
-      "provenance": "Groups \u00d7_Mag Magmas.Commutative"
+      "provenance": "Groups ×_Mag Magmas.Commutative"
     },
     {
       "id": "cat.additive_semigroups",
@@ -575,7 +575,7 @@
       },
       "aliases": [],
       "dot_vertex": "AdditiveAbelianGroups = AdditiveGroups.Commutative",
-      "provenance": "AdditiveGroups \u00d7_Mag Magmas.Commutative along additive_operation"
+      "provenance": "AdditiveGroups ×_Mag Magmas.Commutative along additive_operation"
     },
     {
       "id": "cat.commutative_rings",
@@ -769,7 +769,7 @@
         "substitute": {
           "R": "R^op"
         },
-        "notes": "Not an identity with left modules; Mod-R \u2243 R^op-Mod under the opposite-ring substitution"
+        "notes": "Not an identity with left modules; Mod-R ≃ R^op-Mod under the opposite-ring substitution"
       },
       "aliases": ["RightModules(R)"],
       "dot_vertex": "RightModules(R)",
@@ -880,7 +880,7 @@
       },
       "aliases": ["GradedAlgebras"],
       "dot_vertex": "Algebras(R).Graded",
-      "provenance": "Algebras(R) \u00d7_Sets Sets.Graded"
+      "provenance": "Algebras(R) ×_Sets Sets.Graded"
     },
     {
       "id": "cat.algebras_over_field",
@@ -938,13 +938,13 @@
     {
       "id": "ctor.op",
       "kind": "category_constructor",
-      "canonical_name": "(\u2212)^op",
+      "canonical_name": "(−)^op",
       "parameters": [],
       "definition": {
         "operation": "category_constructor"
       },
       "aliases": [],
-      "dot_vertex": "(\u2212)^op",
+      "dot_vertex": "(−)^op",
       "provenance": "dot_import"
     },
     {
@@ -970,13 +970,13 @@
     {
       "id": "ctor.arr",
       "kind": "category_constructor",
-      "canonical_name": "Arr(\u2212)",
+      "canonical_name": "Arr(−)",
       "parameters": [],
       "definition": {
         "operation": "category_constructor"
       },
       "aliases": [],
-      "dot_vertex": "Arr(\u2212)",
+      "dot_vertex": "Arr(−)",
       "provenance": "dot_import"
     },
     {
@@ -1314,7 +1314,7 @@
     {
       "id": "cat.cinftyalgebras",
       "kind": "category_family",
-      "canonical_name": "C\u221eAlgebras(R)",
+      "canonical_name": "C∞Algebras(R)",
       "parameters": [
         {
           "name": "R",
@@ -1324,7 +1324,7 @@
       ],
       "definition": null,
       "aliases": [],
-      "dot_vertex": "C\u221eAlgebras(R)",
+      "dot_vertex": "C∞Algebras(R)",
       "provenance": "dot_import"
     },
     {
@@ -1421,10 +1421,10 @@
         "operation": "classifier_tower",
         "base": "cat.int_bil_r",
         "classifiers": ["clf.int_bil_symmetric", "clf.int_bil_r.nondegenerate", "clf.int_bil_r.finite"],
-        "display": "\u222bBil.Symmetric.Nondegenerate.Finite"
+        "display": "∫Bil.Symmetric.Nondegenerate.Finite"
       },
       "aliases": [],
-      "dot_vertex": "DiscBil = \u222bBil.Symmetric.Nondegenerate.Finite",
+      "dot_vertex": "DiscBil = ∫Bil.Symmetric.Nondegenerate.Finite",
       "provenance": "dot_import"
     },
     {
@@ -1436,10 +1436,10 @@
         "operation": "classifier_application",
         "host": "cat.int_quad_r",
         "classifier": "clf.int_quad_r.nondegenerate",
-        "display": "\u222bQuad.Nondegenerate"
+        "display": "∫Quad.Nondegenerate"
       },
       "aliases": [],
-      "dot_vertex": "DiscQuad = \u222bQuad.Nondegenerate",
+      "dot_vertex": "DiscQuad = ∫Quad.Nondegenerate",
       "provenance": "dot_import"
     },
     {
@@ -1832,10 +1832,10 @@
         "operation": "classifier_tower",
         "base": "cat.int_bil_r",
         "classifiers": ["clf.int_bil_symmetric", "clf.int_bil_r.nondegenerate"],
-        "display": "\u222bBil_R(R).Symmetric.Nondegenerate"
+        "display": "∫Bil_R(R).Symmetric.Nondegenerate"
       },
       "aliases": [],
-      "dot_vertex": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate",
+      "dot_vertex": "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate",
       "provenance": "dot_import"
     },
     {
@@ -2372,13 +2372,13 @@
     {
       "id": "clf.schemes_etale",
       "kind": "classifier_domain",
-      "canonical_name": "Schemes.\u00c9tale",
+      "canonical_name": "Schemes.Étale",
       "parameters": [],
       "definition": {
         "classifier_id": "clf.schemes_etale"
       },
       "aliases": [],
-      "dot_vertex": "Schemes.\u00c9tale",
+      "dot_vertex": "Schemes.Étale",
       "provenance": "dot_import"
     },
     {
@@ -2862,43 +2862,43 @@
     {
       "id": "clf.int_bil_alternating",
       "kind": "classifier_domain",
-      "canonical_name": "\u222bBil.Alternating",
+      "canonical_name": "∫Bil.Alternating",
       "parameters": [],
       "definition": {
         "classifier_id": "clf.int_bil_alternating"
       },
       "aliases": [],
-      "dot_vertex": "\u222bBil.Alternating",
+      "dot_vertex": "∫Bil.Alternating",
       "provenance": "dot_import"
     },
     {
       "id": "clf.int_bil_skewsymmetric",
       "kind": "classifier_domain",
-      "canonical_name": "\u222bBil.SkewSymmetric",
+      "canonical_name": "∫Bil.SkewSymmetric",
       "parameters": [],
       "definition": {
         "classifier_id": "clf.int_bil_skewsymmetric"
       },
       "aliases": [],
-      "dot_vertex": "\u222bBil.SkewSymmetric",
+      "dot_vertex": "∫Bil.SkewSymmetric",
       "provenance": "dot_import"
     },
     {
       "id": "clf.int_bil_symmetric",
       "kind": "classifier_domain",
-      "canonical_name": "\u222bBil.Symmetric",
+      "canonical_name": "∫Bil.Symmetric",
       "parameters": [],
       "definition": {
         "classifier_id": "clf.int_bil_symmetric"
       },
       "aliases": [],
-      "dot_vertex": "\u222bBil.Symmetric",
+      "dot_vertex": "∫Bil.Symmetric",
       "provenance": "dot_import"
     },
     {
       "id": "cat.int_bil_r",
       "kind": "category_family",
-      "canonical_name": "\u222bBil_R(W)",
+      "canonical_name": "∫Bil_R(W)",
       "parameters": [
         {
           "name": "R",
@@ -2913,13 +2913,13 @@
       ],
       "definition": null,
       "aliases": [],
-      "dot_vertex": "\u222bBil_R(W)",
+      "dot_vertex": "∫Bil_R(W)",
       "provenance": "dot_import"
     },
     {
       "id": "cat.int_herm_r",
       "kind": "category_family",
-      "canonical_name": "\u222bHerm_R(W)",
+      "canonical_name": "∫Herm_R(W)",
       "parameters": [
         {
           "name": "R",
@@ -2934,71 +2934,71 @@
       ],
       "definition": null,
       "aliases": [],
-      "dot_vertex": "\u222bHerm_R(W)",
+      "dot_vertex": "∫Herm_R(W)",
       "provenance": "dot_import"
     },
     {
       "id": "clf.int_hom_even",
       "kind": "classifier_domain",
-      "canonical_name": "\u222bHom.Even",
+      "canonical_name": "∫Hom.Even",
       "parameters": [],
       "definition": {
         "classifier_id": "clf.int_hom_even"
       },
       "aliases": [],
-      "dot_vertex": "\u222bHom.Even",
+      "dot_vertex": "∫Hom.Even",
       "provenance": "dot_import"
     },
     {
       "id": "clf.int_hom_nondegenerate",
       "kind": "classifier_domain",
-      "canonical_name": "\u222bHom.Nondegenerate",
+      "canonical_name": "∫Hom.Nondegenerate",
       "parameters": [],
       "definition": {
         "classifier_id": "clf.int_hom_nondegenerate"
       },
       "aliases": [],
-      "dot_vertex": "\u222bHom.Nondegenerate",
+      "dot_vertex": "∫Hom.Nondegenerate",
       "provenance": "dot_import"
     },
     {
       "id": "clf.int_hom_odd",
       "kind": "classifier_domain",
-      "canonical_name": "\u222bHom.Odd",
+      "canonical_name": "∫Hom.Odd",
       "parameters": [],
       "definition": {
         "classifier_id": "clf.int_hom_odd"
       },
       "aliases": [],
-      "dot_vertex": "\u222bHom.Odd",
+      "dot_vertex": "∫Hom.Odd",
       "provenance": "dot_import"
     },
     {
       "id": "clf.int_hom_unimodular",
       "kind": "classifier_domain",
-      "canonical_name": "\u222bHom.Unimodular",
+      "canonical_name": "∫Hom.Unimodular",
       "parameters": [],
       "definition": {
         "classifier_id": "clf.int_hom_unimodular"
       },
       "aliases": [],
-      "dot_vertex": "\u222bHom.Unimodular",
+      "dot_vertex": "∫Hom.Unimodular",
       "provenance": "dot_import"
     },
     {
       "id": "cat.int_hom_r",
       "kind": "category_family",
-      "canonical_name": "\u222bHom_R(\u2212,W)",
+      "canonical_name": "∫Hom_R(−,W)",
       "parameters": [],
       "definition": null,
       "aliases": [],
-      "dot_vertex": "\u222bHom_R(\u2212,W)",
+      "dot_vertex": "∫Hom_R(−,W)",
       "provenance": "dot_import"
     },
     {
       "id": "cat.int_quad_r",
       "kind": "category_family",
-      "canonical_name": "\u222bQuad_R(W)",
+      "canonical_name": "∫Quad_R(W)",
       "parameters": [
         {
           "name": "R",
@@ -3013,7 +3013,7 @@
       ],
       "definition": null,
       "aliases": [],
-      "dot_vertex": "\u222bQuad_R(W)",
+      "dot_vertex": "∫Quad_R(W)",
       "provenance": "dot_import"
     },
     {
@@ -3043,37 +3043,37 @@
     {
       "id": "clf.int_bil_r.nondegenerate.domain",
       "kind": "classifier_domain",
-      "canonical_name": "\u222bBil_R(W).Nondegenerate",
+      "canonical_name": "∫Bil_R(W).Nondegenerate",
       "parameters": [],
       "definition": {
         "classifier_id": "clf.int_bil_r.nondegenerate"
       },
       "aliases": [],
-      "dot_vertex": "\u222bBil_R(W).Nondegenerate",
+      "dot_vertex": "∫Bil_R(W).Nondegenerate",
       "provenance": "refined from named-join path"
     },
     {
       "id": "clf.int_bil_r.finite.domain",
       "kind": "classifier_domain",
-      "canonical_name": "\u222bBil_R(W).Finite",
+      "canonical_name": "∫Bil_R(W).Finite",
       "parameters": [],
       "definition": {
         "classifier_id": "clf.int_bil_r.finite"
       },
       "aliases": [],
-      "dot_vertex": "\u222bBil_R(W).Finite",
+      "dot_vertex": "∫Bil_R(W).Finite",
       "provenance": "refined from named-join path"
     },
     {
       "id": "clf.int_quad_r.nondegenerate.domain",
       "kind": "classifier_domain",
-      "canonical_name": "\u222bQuad_R(W).Nondegenerate",
+      "canonical_name": "∫Quad_R(W).Nondegenerate",
       "parameters": [],
       "definition": {
         "classifier_id": "clf.int_quad_r.nondegenerate"
       },
       "aliases": [],
-      "dot_vertex": "\u222bQuad_R(W).Nondegenerate",
+      "dot_vertex": "∫Quad_R(W).Nondegenerate",
       "provenance": "refined from named-join path"
     },
     {
@@ -3761,16 +3761,16 @@
       "provenance": "authored sagecats ledger"
     },
     {
-      "id": "cat.ambientobjects",
+      "id": "cat.sagebackendobjects",
       "kind": "category_family",
-      "canonical_name": "AmbientObjects",
+      "canonical_name": "SageBackendObjects",
       "parameters": [],
       "definition": {
         "notes": "compatibility-layer host only; not ordinary mathematics",
         "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "AmbientObjects",
+      "dot_vertex": "SageBackendObjects",
       "provenance": "authored sagecats ledger"
     },
     {

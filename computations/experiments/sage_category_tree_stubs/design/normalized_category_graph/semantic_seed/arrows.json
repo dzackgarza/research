@@ -3078,11 +3078,11 @@
       "target": "cat.sets"
     },
     {
-      "id": "fun.ambientobjects_to_sets",
+      "id": "fun.sagebackendobjects_to_sets",
       "kind": "forgetful",
       "preferred": true,
       "provenance": "opaque interface: compatibility-layer host only; not ordinary mathematics",
-      "source": "cat.ambientobjects",
+      "source": "cat.sagebackendobjects",
       "target": "cat.sets"
     },
     {

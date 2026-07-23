@@ -198,9 +198,9 @@ OPAQUE_BASES: dict[str, tuple[str, str, str, str]] = {
         "cat.sets",
         "provisional fiber; authored ledger",
     ),
-    "cat.ambientobjects": (
-        "AmbientObjects",
-        "AmbientObjects",
+    "cat.sagebackendobjects": (
+        "SageBackendObjects",
+        "SageBackendObjects",
         "cat.sets",
         "compatibility-layer host only; not ordinary mathematics",
     ),

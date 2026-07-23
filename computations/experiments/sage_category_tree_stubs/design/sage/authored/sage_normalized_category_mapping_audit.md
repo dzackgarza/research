@@ -58,6 +58,6 @@ The constructibility checker derives canonical support maps from the normalized 
 
 All ordinary bases are either standard categories/families (`Sets`, `Rings`, `Modules(R)`, `Crystals`, `Schemes(S)`, etc.) or standard construction-defined categories (`Homsets(C)`, `ChainComplexes(C)`, ideals, group algebras).
 The only deliberate descriptive hosts are `MagmasWithTwoOperations` and `GroupsWithSimpleReflections`; both are required as least classifier hosts and are defined by transparent mathematical data.
-`AmbientObjects` is compatibility-only, and `GroupoidsOn(G)` is provisional.
+`SageBackendObjects` is compatibility-only, and `GroupoidsOn(G)` is provisional.
 
 See the workbook and JSON manifest for row-level sources, route selectors, classifier hosts, current-DOT status, and exception notes.
