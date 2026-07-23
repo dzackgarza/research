@@ -15,7 +15,7 @@ $C_i C_j = -4\delta_{ij}$.
 We refer to $C$ as the *anti-bicanonical curve* of $S$, and note that
 $K_S\cdot C_i = -2$.
 The $C_i$ are referred to as the *boundary components* of $S$.
-One can show $n = -K_S^2$ and $n\leq 10$, c.f. [@DK25 Prop. 9.1.5].
+One can show $n = -K_S^2$ and $n\leq 10$, c.f. [@DK25 Cor. 9.1.5].
 :::
 
 ::: {.remark}

@@ -22,7 +22,7 @@ F_{\Nod, 2} &= ???
 \end{aligned}
 $$
 
-where $T_{\dP}$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$.
+where $T_{\dP}$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of \cref{lem:primitive_embedding_eta}.
 \todo[inline]{Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.}
 We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$, which implies that there is a birational isomorphism $F_{\Co} \birational \cH_{-2}/\Orth(T_\En)$.
 
@@ -82,7 +82,12 @@ By passing to the K3 cover, one can embed $F_\Co$ into an arithmetic quotient of
 Let $\lkt = U^3 \oplus E_8^2$ be the canonical K3 lattice.
 We recall that for any primitively embedded lattice $S\injects \lkt$, letting $T \da S^{\perp \lkt}$, there is a Hodge-theoretic description of the coarse moduli space $F_S$ of $S$-polarized K3 surfaces given by $$F_S \da D_T/\Orth(T)^*$$
 
-where $\Orth(T)^* \da \ker\qty{\Orth(T) \to \Orth(q_T)}$.
+where $\Orth(T)^* \da \ker\qty{\Orth(T) \to \Orth(q_T)}$ and $D_T$ is a connected component of
+
+$$
+\Omega_T \da \ts{[v]\in \PP(T_\CC) \st v^2=0,\, v\bar v > 0}
+.
+$$
 Letting $E_{10} \da U \oplus E_8$, one can similarly consider the Enriques lattices $S_\En := E_{10}(2)$ with $T_\En = U \oplus E_{10}(2)$.
 Letting
 

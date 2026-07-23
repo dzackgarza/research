@@ -6,9 +6,9 @@ Following [@AEGS25], a **Kulikov model** is a $K$-trivial semistable model
 $\cX \to (C, 0)$ of a degeneration of K3 surfaces over a pointed curve $C$.
 For each such degeneration, one can define the dual complex of the central
 fiber $\Gamma(\cX_0)$.
-For Type II degenerations of K3 surfaces, this yields an integral affine $S^2$
-with singularities of total charge $24$, and for Type III the dual complex is
-an interval $\bD^1$.
+For Type II degenerations of K3 surfaces the dual complex is an interval
+$\bD^1$, and for Type III it is an integral affine $S^2$ with singularities of
+total charge $24$.
 The additional data of an integral affine polarization
 $R_{\mathrm{IA}} \subset \Gamma(\cX_0)$ describes the KSBA stable limit of a
 degeneration $(\cX^*, \varepsilon \cR^*)$.
