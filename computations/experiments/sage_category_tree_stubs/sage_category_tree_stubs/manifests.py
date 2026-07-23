@@ -28,16 +28,6 @@ CATEGORY_RELATIONS = frozenset(
         "removed",
     }
 )
-EDGE_DISPOSITIONS = frozenset(
-    {
-        "preserved",
-        "subdivided",
-        "corrected",
-        "alias_artifact",
-        "unsupported",
-    }
-)
-
 AXIOM_DISPOSITIONS = frozenset(
     {
         "exact",
@@ -58,16 +48,12 @@ HYGIENE_KINDS = frozenset(
         "target_collision",
         "duplicate_source",
         "bad_relation",
-        "bad_edge_disposition",
-        "missing_edge_disposition",
-        "duplicate_edge_disposition",
         "source_id_mismatch",
     }
 )
 PARITY_KINDS = frozenset(
     {
         "unsupported_mapping",
-        "unsupported_edge",
         "unsupported_axiom",
         "unsupported_construction",
     }
@@ -109,7 +95,7 @@ def validate_three_manifests(
     seed: Any | None = None,
     require_full_parity: bool = False,
 ) -> list[ManifestFinding]:
-    """Bijection / relation / edge-disposition checks.
+    """Bijection, relation, axiom and construction checks.
 
     Hygiene findings always returned. Parity findings (``unsupported_*``)
     are included when ``require_full_parity`` is true — they must fail a
@@ -171,59 +157,6 @@ def validate_three_manifests(
                     f"non-alias sources {sources}",
                 )
             )
-
-    # Every observed immediate edge must have exactly one disposition
-    observed_edges: set[tuple[str, str]] = set()
-    for cat in observed.get("categories", []):
-        frm = cat["id"]
-        for edge in cat.get("immediate_supercategories") or []:
-            to = edge.get("target")
-            if not to:
-                continue
-            observed_edges.add((frm, to))
-
-    mapped_edges: dict[tuple[str, str], str] = {}
-    for row in mapping.get("edge_mappings", []):
-        se = row.get("source_edge") or {}
-        frm, to = se.get("from"), se.get("to")
-        if not frm or not to:
-            continue
-        key = (frm, to)
-        if key in mapped_edges:
-            findings.append(
-                ManifestFinding(
-                    "duplicate_edge_disposition",
-                    f"{frm}->{to}",
-                    f"{mapped_edges[key]} and {row.get('disposition')}",
-                )
-            )
-        mapped_edges[key] = row.get("disposition") or ""
-        disp = row.get("disposition")
-        if disp not in EDGE_DISPOSITIONS:
-            findings.append(
-                ManifestFinding(
-                    "bad_edge_disposition",
-                    f"{frm}->{to}",
-                    f"{disp!r}",
-                )
-            )
-        if disp == "unsupported":
-            findings.append(
-                ManifestFinding(
-                    "unsupported_edge",
-                    f"{frm}->{to}",
-                    "blocks full Sage parity claim",
-                )
-            )
-
-    for frm, to in sorted(observed_edges - set(mapped_edges)):
-        findings.append(
-            ManifestFinding(
-                "missing_edge_disposition",
-                f"{frm}->{to}",
-                "every observed immediate supercategory edge needs a disposition",
-            )
-        )
 
     for row in mapping.get("axiom_mappings", []):
         disp = row.get("disposition")
@@ -288,7 +221,6 @@ def format_manifests_report(*, require_full_parity: bool = False) -> str:
     )
     n_imm = sum(len(c.get("immediate_supercategories") or []) for c in observed.get("categories", []))
     rels = Counter(r.get("relation") for r in mapping.get("category_mappings", []))
-    edge_disp = Counter(r.get("disposition") for r in mapping.get("edge_mappings", []))
     lines = [
         "Three-manifest report (observed + normalized + correspondence)",
         f"  observed categories: {len(observed.get('categories', []))}",
@@ -297,7 +229,6 @@ def format_manifests_report(*, require_full_parity: bool = False) -> str:
         f"  immediate edges:     {n_imm}",
         f"  normalized entities: {len(seed.entities)}",
         f"  category mappings:   {len(mapping.get('category_mappings', []))}",
-        f"  edge mappings:       {len(mapping.get('edge_mappings', []))}",
         f"  axiom mappings:      {len(mapping.get('axiom_mappings', []))}",
         f"  construction maps:   {len(mapping.get('construction_mappings', []))}",
         f"  hygiene findings:    {len(findings)}",
@@ -314,9 +245,6 @@ def format_manifests_report(*, require_full_parity: bool = False) -> str:
     lines.append("Category mapping relations:")
     for rel, n in sorted(rels.items(), key=lambda x: (-x[1], x[0] or "")):
         lines.append(f"  {rel}: {n}")
-    lines.append("Edge dispositions:")
-    for disp, n in sorted(edge_disp.items(), key=lambda x: (-x[1], x[0] or "")):
-        lines.append(f"  {disp}: {n}")
     return "\n".join(lines)
 
 

@@ -10,7 +10,6 @@ from .seed_dot import generate_dot_text, write_generated_dot
 
 CORRESPONDENCE_DOT = DESIGN_ROOT / "sage" / "correspondence.dot"
 SAGE_RAW_DOT = DESIGN_ROOT / "sage" / "observed_parents.dot"
-EDGE_OVERLAY_DOT = DESIGN_ROOT / "sage" / "edge_dispositions.dot"
 
 
 def generate_correspondence_dot() -> str:
@@ -104,41 +103,6 @@ _DISP_STYLE = {
 }
 
 
-def generate_edge_dispositions_dot() -> str:
-    """Observed Sage edges colored by correspondence disposition."""
-    mapping = load_mapping()
-    observed = load_observed()
-    by_id = {c["id"]: c for c in observed.get("categories", [])}
-    lines = [
-        "// GENERATED from mapping edge_mappings dispositions",
-        "digraph SageEdgeDispositions {",
-        '  graph [rankdir=BT, labelloc=t, label="Sage edges by disposition"];',
-        '  node [shape=box, style="rounded,filled", fillcolor="#eceff1", fontname="Helvetica", fontsize=9];',
-        "  edge [arrowsize=0.6];",
-    ]
-    used: set[str] = set()
-    for row in mapping.get("edge_mappings", []):
-        se = row.get("source_edge") or {}
-        frm, to = se.get("from"), se.get("to")
-        if frm and to:
-            used.add(frm)
-            used.add(to)
-    for sid in sorted(used):
-        label = (by_id.get(sid) or {}).get("qualname") or sid
-        lines.append(f'  "{sid}" [label="{label}"];')
-    for row in mapping.get("edge_mappings", []):
-        se = row.get("source_edge") or {}
-        frm, to = se.get("from"), se.get("to")
-        if not frm or not to:
-            continue
-        disp = row.get("disposition") or "unsupported"
-        style = _DISP_STYLE.get(disp, _DISP_STYLE["unsupported"])
-        lines.append(f'  "{frm}" -> "{to}" [disposition="{disp}", {style}];')
-    lines.append("}")
-    lines.append("")
-    return "\n".join(lines)
-
-
 def write_correspondence_dot(path: Path | None = None) -> Path:
     dest = path or CORRESPONDENCE_DOT
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -153,20 +117,12 @@ def write_observed_parents_dot(path: Path | None = None) -> Path:
     return dest
 
 
-def write_edge_dispositions_dot(path: Path | None = None) -> Path:
-    dest = path or EDGE_OVERLAY_DOT
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text(generate_edge_dispositions_dot(), encoding="utf-8")
-    return dest
-
-
 def write_all_views() -> dict[str, Path]:
     """Regenerate normalized + correspondence + observed parent DOTs."""
     return {
         "normalized": write_generated_dot(also_presentation=False),
         "correspondence": write_correspondence_dot(),
         "observed_parents": write_observed_parents_dot(),
-        "edge_dispositions": write_edge_dispositions_dot(),
     }
 
 

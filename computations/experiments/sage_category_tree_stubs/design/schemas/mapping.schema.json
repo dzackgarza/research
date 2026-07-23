@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "sage-to-normalized-mapping.schema.json",
-  "title": "Sage → normalized correspondence",
+  "title": "Sage \u2192 normalized correspondence",
   "type": "object",
   "required": ["manifest", "category_mappings"],
   "properties": {
@@ -9,10 +9,18 @@
       "type": "object",
       "required": ["schema_version", "sage_version_label"],
       "properties": {
-        "schema_version": { "type": "integer" },
-        "sage_version_label": { "type": "string" },
-        "observed_ref": { "type": "string" },
-        "normalized_ref": { "type": "string" }
+        "schema_version": {
+          "type": "integer"
+        },
+        "sage_version_label": {
+          "type": "string"
+        },
+        "observed_ref": {
+          "type": "string"
+        },
+        "normalized_ref": {
+          "type": "string"
+        }
       }
     },
     "category_mappings": {
@@ -21,38 +29,33 @@
         "type": "object",
         "required": ["source", "target", "relation"],
         "properties": {
-          "source": { "type": "string" },
-          "target": { "type": ["string", "null"] },
+          "source": {
+            "type": "string"
+          },
+          "target": {
+            "type": ["string", "null"]
+          },
           "relation": {
             "type": "string",
             "enum": ["exact", "presentation_alias", "canonical_equivalence", "corrected_embedding", "constructible", "unsupported", "removed"]
           },
-          "sage_versions": { "type": "object" },
-          "parameters": { "type": "object" },
-          "provenance": { "type": "object" }
+          "sage_versions": {
+            "type": "object"
+          },
+          "parameters": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          }
         }
       }
     },
-    "edge_mappings": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["source_edge", "disposition"],
-        "properties": {
-          "source_edge": {
-            "type": "object",
-            "required": ["from", "to"]
-          },
-          "normalized": { "type": "object" },
-          "disposition": {
-            "type": "string",
-            "enum": ["preserved", "subdivided", "corrected", "alias_artifact", "unsupported"]
-          },
-          "reason": { "type": ["string", "null"] }
-        }
-      }
+    "axiom_mappings": {
+      "type": "array"
     },
-    "axiom_mappings": { "type": "array" },
-    "construction_mappings": { "type": "array" }
+    "construction_mappings": {
+      "type": "array"
+    }
   }
 }

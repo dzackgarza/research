@@ -152,34 +152,6 @@ def test_mapping_does_not_restate_pullbacks() -> None:
     assert "left: fun." not in text
 
 
-def test_every_observed_edge_has_disposition() -> None:
-    obs = load_observed()
-    mapping = load_mapping()
-    mapped = {
-        (r["source_edge"]["from"], r["source_edge"]["to"])
-        for r in mapping.get("edge_mappings", [])
-        if r.get("source_edge", {}).get("from") and r.get("source_edge", {}).get("to")
-    }
-    for cat in obs["categories"]:
-        for edge in cat.get("immediate_supercategories") or []:
-            to = edge.get("target")
-            if not to:
-                continue
-            assert (cat["id"], to) in mapped, (cat["qualname"], to)
-
-
-def test_edge_dispositions_are_closed() -> None:
-    mapping = load_mapping()
-    for row in mapping.get("edge_mappings", []):
-        assert row["disposition"] in {
-            "preserved",
-            "subdivided",
-            "corrected",
-            "alias_artifact",
-            "unsupported",
-        }
-
-
 def test_axiom_and_construction_census_mapped() -> None:
     obs = load_observed()
     mapping = load_mapping()
@@ -199,14 +171,14 @@ def test_validate_three_manifests_hygiene_clean() -> None:
 def test_parity_mode_reports_unsupported() -> None:
     findings = validate_three_manifests(require_full_parity=True)
     kinds = {f.kind for f in findings}
-    assert "unsupported_mapping" in kinds or "unsupported_edge" in kinds
+    assert "unsupported_mapping" in kinds
 
 
 def test_format_manifests_report() -> None:
     text = format_manifests_report()
     assert "observed categories" in text
     assert "category mappings" in text
-    assert "Edge dispositions" in text
+    assert "Category mapping relations" in text
 
 
 def test_build_observed_deterministic_counts() -> None:
@@ -296,51 +268,8 @@ def test_join_view_dots_exist() -> None:
     for name in (
         "correspondence.dot",
         "observed_parents.dot",
-        "edge_dispositions.dot",
-    ):
+            ):
         assert (sage / name).is_file(), name
-
-
-def test_no_edge_asserts_a_route_it_did_not_derive() -> None:
-    """Any ``normalized`` block on an edge must name the arrows it composed.
-
-    A ``forgetful`` with an empty path claims a normalized route between two
-    distinct targets that was never computed.
-    """
-    mapping = build_mapping()
-    for edge in mapping["edge_mappings"]:
-        normalized = edge["normalized"]
-        if normalized is None:
-            continue
-        src, dst = normalized["from_target"], normalized["to_target"]
-        if src == dst:
-            continue
-        assert normalized["path"], (
-            f"{edge['source_edge']['from']} -> {edge['source_edge']['to']} "
-            f"({edge['disposition']}) asserts a route from {src} to {dst} with no arrows"
-        )
-
-
-def test_preserved_edges_carry_a_derived_structural_path() -> None:
-    """``preserved`` asserts a normalized route, so the route must be present.
-
-    Emitting ``preserved`` with ``path: []`` lets full edge coverage be reported
-    from endpoint mapping alone, with no path ever derived.
-    """
-    mapping = build_mapping()
-    preserved = [
-        e for e in mapping["edge_mappings"] if e["disposition"] == "preserved"
-    ]
-    assert preserved, "no preserved edges to check"
-    for edge in preserved:
-        normalized = edge["normalized"]
-        src, dst = normalized["from_target"], normalized["to_target"]
-        if src == dst:
-            continue
-        assert normalized["path"], (
-            f"{edge['source_edge']['from']} -> {edge['source_edge']['to']} is "
-            f"preserved but records no structural path from {src} to {dst}"
-        )
 
 
 def test_requirement_manifest_matches_the_live_ledger() -> None:
@@ -452,9 +381,53 @@ def test_committed_artifacts_match_a_fresh_build() -> None:
 
     live = build_mapping()
     committed_mapping = load_mapping()
-    assert committed_mapping["edge_mappings"] == live["edge_mappings"], (
-        "committed mapping.yaml edge dispositions differ from a fresh build"
+    assert committed_mapping["category_mappings"] == live["category_mappings"], (
+        "committed mapping.yaml category mappings differ from a fresh build"
     )
     assert committed_mapping["axiom_mappings"] == live["axiom_mappings"], (
         "committed mapping.yaml axiom dispositions differ from a fresh build"
+    )
+
+
+def test_sigma_excludes_categories_that_are_not_mathematics() -> None:
+    """A dispatch mechanism implements no category and can serve no DSL object.
+
+    `Sets().Facade()` is the standing case: a facade parent is one whose elements are
+    not instances of its own element class, so the category collects parents by how
+    they represent elements. Giving it a destination would put element-construction
+    plumbing in the fiber over `Sets`, offering it as an algorithm for any set.
+    """
+    from sage_category_tree_stubs.capability import excluded_as_non_mathematical, sigma
+
+    s = sigma()
+    excluded = excluded_as_non_mathematical()
+    assert "FacadeSets" in excluded, "Facade is a representation mechanism, not a category"
+    assert "Objects" in excluded, "Sage Objects() is a universal backend fallback"
+    for name in excluded:
+        assert name not in s, f"{name} is excluded yet still has a destination"
+
+
+def test_providers_run_along_forgetting_only() -> None:
+    """An object gets algorithms from what it forgets to, never from a refinement.
+
+    A graded module is a module and may use module algorithms. A plain module is not
+    graded and gets nothing from `GradedModules`; making it graded is an explicit lift,
+    not something inheritance supplies.
+    """
+    from sage_category_tree_stubs.capability import providers_for, sigma
+
+    s = sigma()
+    graded = s.get("GradedModules")
+    assert graded, "GradedModules has no destination"
+    plain = s.get("Modules")
+    assert plain, "Modules has no destination"
+    assert graded != plain, f"GradedModules and Modules share destination {graded}"
+
+    for_graded = providers_for(graded)
+    assert any("GradedModules" in v for v in for_graded.values())
+    assert any("Modules" in v for v in for_graded.values()), "graded module cannot reach module algorithms"
+
+    for_plain = providers_for(plain)
+    assert not any("GradedModules" in v for v in for_plain.values()), (
+        "a plain module was offered graded-module algorithms"
     )

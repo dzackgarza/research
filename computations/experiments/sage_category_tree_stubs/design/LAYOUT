@@ -18,7 +18,7 @@ design/
     mapping.yaml           # REVIEWED correspondence (categories/edges/axioms/…)
     correspondence.dot     # GENERATED bipartite view
     observed_parents.dot   # GENERATED raw Sage parent graph
-    edge_dispositions.dot  # GENERATED edges colored by disposition
+
   routes/
     routes.yaml            # optional execution routing (separate from meaning)
   normalized_category_graph/   # presentation DOT + hand archive (legacy path)

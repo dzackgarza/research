@@ -71,81 +71,6 @@ def _relation_for(
     return "exact"
 
 
-# Arrow kinds that compose into a structure-forgetting route. ``construction`` is
-# excluded: a functorial construction is not a leg of a forgetful path.
-_FORGETFUL_ARROW_KINDS = frozenset({"forgetful", "full_inclusion", "classifier_leg", "pullback_projection"})
-
-
-def _forgetful_adjacency(seed: Any) -> dict[str, list[tuple[str, str]]]:
-    """Successors reachable by one structure-forgetting step, as (target, arrow id).
-
-    ``equivalence`` arrows are alias identifications, so they are traversable in
-    both directions; every other admitted kind points from the richer category to
-    the poorer one and is traversed forward only.
-    """
-    adj: dict[str, list[tuple[str, str]]] = {}
-    for arrow in seed.arrows:
-        kind = arrow.get("kind")
-        src, tgt, aid = arrow.get("source"), arrow.get("target"), arrow.get("id")
-        if not src or not tgt or not aid:
-            continue
-        if kind in _FORGETFUL_ARROW_KINDS:
-            adj.setdefault(src, []).append((tgt, aid))
-        elif kind == "equivalence":
-            adj.setdefault(src, []).append((tgt, aid))
-            adj.setdefault(tgt, []).append((src, aid))
-    return adj
-
-
-def _forgetful_path(adj: dict[str, list[tuple[str, str]]], source: str, target: str) -> list[str] | None:
-    """Shortest structural route source→target as arrow ids, or None if there is none.
-
-    A same-endpoint request is the empty route; every other result names at least
-    one real arrow, so an empty ``path`` can never stand in for an unproved one.
-    """
-    if source == target:
-        return []
-    seen = {source}
-    frontier: list[tuple[str, list[str]]] = [(source, [])]
-    while frontier:
-        nxt: list[tuple[str, list[str]]] = []
-        for node, route in frontier:
-            for succ, aid in adj.get(node, ()):
-                if succ in seen:
-                    continue
-                if succ == target:
-                    return [*route, aid]
-                seen.add(succ)
-                nxt.append((succ, [*route, aid]))
-        frontier = nxt
-    return None
-
-
-def _normalized_route(
-    adj: dict[str, list[tuple[str, str]]],
-    cat_target: dict[str, Any],
-    frm: str,
-    to: str,
-) -> dict[str, Any] | None:
-    """The derived forgetful route between two mapped endpoints, or None.
-
-    Returning None where no route composes keeps every ``normalized`` block backed
-    by real arrows; a ``forgetful`` with an empty path asserts a route that was
-    never derived.
-    """
-    src, dst = cat_target.get(frm), cat_target.get(to)
-    if not src or not dst:
-        return None
-    path = _forgetful_path(adj, str(src), str(dst))
-    if path is None:
-        return None
-    return {"kind": "forgetful", "path": path, "from_target": str(src), "to_target": str(dst)}
-
-
-def _edge_key(frm: str, to: str) -> tuple[str, str]:
-    return (frm, to)
-
-
 def _host_name_to_cat_id(host: str | None) -> str | None:
     if not host:
         return None
@@ -213,7 +138,6 @@ def build_mapping(
 
     alias_names: set[str] = set()
     corrected_edges: dict[tuple[str, str], dict[str, Any]] = {}
-    subdivided_edges: dict[tuple[str, str], dict[str, Any]] = {}
 
     for row in corr.get("exceptions", []):
         kind = row.get("kind")
@@ -223,13 +147,6 @@ def build_mapping(
             alias_names.add(sage)
         elif kind == "incorrect_parent" and sage and parent:
             corrected_edges[
-                (
-                    obs_index.get(sage, f"sage.category.{_slug(sage)}"),
-                    obs_index.get(parent, f"sage.category.{_slug(parent)}"),
-                )
-            ] = row
-        elif kind == "composite_edge" and sage and parent:
-            subdivided_edges[
                 (
                     obs_index.get(sage, f"sage.category.{_slug(sage)}"),
                     obs_index.get(parent, f"sage.category.{_slug(parent)}"),
@@ -494,151 +411,6 @@ def build_mapping(
             }
         )
 
-    edge_mappings: list[dict[str, Any]] = []
-    seen_edges: set[tuple[str, str]] = set()
-    cat_target = {r["source"]: r.get("target") for r in category_mappings if r.get("relation") not in {"unsupported", "removed"}}
-    alias_ids = {obs_index[n] for n in alias_names if n in obs_index} | {r["source"] for r in category_mappings if r.get("relation") == "presentation_alias"}
-    forgetful_adj = _forgetful_adjacency(seed)
-
-    for cat in obs.get("categories", []):
-        frm = cat["id"]
-        for edge in cat.get("immediate_supercategories") or []:
-            to = edge.get("target")
-            sage_to_name = edge.get("sage_name")
-            if not to and sage_to_name:
-                to = obs_index.get(sage_to_name, f"sage.category.{_slug(sage_to_name)}")
-            if not to:
-                continue
-            key = _edge_key(frm, to)
-            if key in seen_edges:
-                continue
-            seen_edges.add(key)
-
-            sage_from = cat.get("qualname")
-            sage_to_short = sage_to_name or (obs_by_id.get(to) or {}).get("qualname")
-
-            if key in corrected_edges:
-                row = corrected_edges[key]
-                edge_mappings.append(
-                    {
-                        "source_edge": {
-                            "from": frm,
-                            "to": to,
-                            "sage_names": {"from": sage_from, "to": sage_to_short},
-                        },
-                        "disposition": "corrected",
-                        "normalized": _normalized_route(forgetful_adj, cat_target, frm, to),
-                        "reason": row.get("detail"),
-                    }
-                )
-                continue
-            if key in subdivided_edges:
-                row = subdivided_edges[key]
-                edge_mappings.append(
-                    {
-                        "source_edge": {
-                            "from": frm,
-                            "to": to,
-                            "sage_names": {"from": sage_from, "to": sage_to_short},
-                        },
-                        "disposition": "subdivided",
-                        "normalized": _normalized_route(forgetful_adj, cat_target, frm, to),
-                        "reason": row.get("detail"),
-                    }
-                )
-                continue
-            if frm in alias_ids or to in alias_ids:
-                edge_mappings.append(
-                    {
-                        "source_edge": {
-                            "from": frm,
-                            "to": to,
-                            "sage_names": {"from": sage_from, "to": sage_to_short},
-                        },
-                        "disposition": "alias_artifact",
-                        "normalized": None,
-                        "reason": "Endpoint is a presentation alias",
-                    }
-                )
-                continue
-            if frm in cat_target and to in cat_target and cat_target[frm] and cat_target[to]:
-                src_target, dst_target = str(cat_target[frm]), str(cat_target[to])
-                path = _forgetful_path(forgetful_adj, src_target, dst_target)
-                if path is None:
-                    # Both endpoints are reviewed, but no structural route composes
-                    # between them. Reporting `preserved` here would claim a
-                    # normalized path that was never derived.
-                    edge_mappings.append(
-                        {
-                            "source_edge": {
-                                "from": frm,
-                                "to": to,
-                                "sage_names": {"from": sage_from, "to": sage_to_short},
-                            },
-                            "disposition": "unsupported",
-                            "normalized": None,
-                            "reason": (
-                                "Both endpoints are mapped but no structural route "
-                                f"composes from {src_target} to {dst_target}; the "
-                                "normalized graph is missing a forgetful, inclusion, "
-                                "classifier-leg, or pullback-projection arrow between them"
-                            ),
-                        }
-                    )
-                    continue
-                edge_mappings.append(
-                    {
-                        "source_edge": {
-                            "from": frm,
-                            "to": to,
-                            "sage_names": {"from": sage_from, "to": sage_to_short},
-                        },
-                        "disposition": "preserved",
-                        "normalized": {
-                            "kind": "forgetful",
-                            "path": path,
-                            "from_target": src_target,
-                            "to_target": dst_target,
-                        },
-                        "reason": None,
-                    }
-                )
-                continue
-            edge_mappings.append(
-                {
-                    "source_edge": {
-                        "from": frm,
-                        "to": to,
-                        "sage_names": {"from": sage_from, "to": sage_to_short},
-                    },
-                    "disposition": "unsupported",
-                    "normalized": None,
-                    "reason": "No reviewed disposition yet",
-                }
-            )
-
-    for key, row in {**corrected_edges, **subdivided_edges}.items():
-        if key in seen_edges:
-            continue
-        frm, to = key
-        disp = "corrected" if key in corrected_edges else "subdivided"
-        edge_mappings.append(
-            {
-                "source_edge": {
-                    "from": frm,
-                    "to": to,
-                    "sage_names": {
-                        "from": row.get("sage_name"),
-                        "to": row.get("sage_parent"),
-                    },
-                },
-                "disposition": disp,
-                "normalized": _normalized_route(forgetful_adj, cat_target, frm, to),
-                "reason": row.get("detail"),
-                "note": "ledger-only; not present in current observed immediate edges",
-            }
-        )
-
     axiom_mappings: list[dict[str, Any]] = []
     known_axioms: set[str] = set()
     for ax in authored_manifest.get("sage_axiom_crosswalk") or []:
@@ -751,7 +523,6 @@ def build_mapping(
             ),
         },
         "category_mappings": category_mappings,
-        "edge_mappings": edge_mappings,
         "axiom_mappings": axiom_mappings,
         "construction_mappings": construction_mappings,
         "nonpublic_dispositions": nonpublic_dispositions,
@@ -800,7 +571,6 @@ def main() -> int:
     print(
         f"wrote {mpath} "
         f"(categories={len(data['category_mappings'])} "
-        f"edges={len(data['edge_mappings'])} "
         f"axioms={len(data['axiom_mappings'])} "
         f"constructions={len(data['construction_mappings'])} "
         f"nonpublic={len(data.get('nonpublic_dispositions') or [])})"

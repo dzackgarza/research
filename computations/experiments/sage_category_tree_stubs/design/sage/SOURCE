@@ -19,5 +19,5 @@ mapping.yaml
   Pullback expressions live in design/normalized/manifest/, not here.
   Every observed immediate-supercategory edge has exactly one disposition.
 
-correspondence.dot / observed_parents.dot / edge_dispositions.dot
+correspondence.dot / observed_parents.dot
   GENERATED views from the join of the three manifests.
