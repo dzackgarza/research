@@ -35,6 +35,7 @@ manifests:
 	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
 	sage -python -m sage_category_tree_stubs.seed_authored_sync
 	sage -python -m sage_category_tree_stubs.mapping_build
+	sage -python -m sage_category_tree_stubs.requirement_manifest
 	sage -python -m sage_category_tree_stubs.join_views
 	sage -python -m sage_category_tree_stubs.manifests
 

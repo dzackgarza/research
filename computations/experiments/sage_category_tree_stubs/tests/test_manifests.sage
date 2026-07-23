@@ -321,3 +321,45 @@ def test_preserved_edges_carry_a_derived_structural_path() -> None:
             f"{edge['source_edge']['from']} -> {edge['source_edge']['to']} is "
             f"preserved but records no structural path from {src} to {dst}"
         )
+
+
+def test_requirement_manifest_matches_the_live_ledger() -> None:
+    """The committed demand must be the ledger's demand.
+
+    A stale manifest is worse than none: lean-lattices would validate a release
+    against requirements this ledger no longer states.
+    """
+    from sage_category_tree_stubs.requirement_manifest import check_requirement_manifest
+
+    assert check_requirement_manifest() == []
+
+
+def test_requirement_extraction_rejects_an_incomplete_ledger() -> None:
+    """A row that lost its classifier host must fail extraction, not drop silently."""
+    import copy
+
+    from sage_category_tree_stubs.requirement_manifest import (
+        StaleExtractionError,
+        _category_mapping_requirements,
+        build_requirement_manifest,
+    )
+
+    ledger = build_requirement_manifest()
+    assert ledger["coverage"]["public_rows"] == 179
+    assert ledger["coverage"]["requirements"] > 0
+
+    row = {
+        "source": {"name": "Fixture"},
+        "normalized": {
+            "base_id": "cat.sets",
+            "classifier_applications": [{"order": 1, "classifier_id": "clf.sets.finite"}],
+            "target_expression": "Sets.Finite",
+            "target_id": "cat_expr.sets_finite",
+        },
+    }
+    try:
+        _category_mapping_requirements(copy.deepcopy(row))
+    except StaleExtractionError as exc:
+        assert "least host" in str(exc)
+    else:
+        raise AssertionError("a classifier application with no least host was accepted")

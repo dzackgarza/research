@@ -1,0 +1,4228 @@
+{
+  "schema_version": 1,
+  "title": "Lean CategoryGraph interface demand extracted from the authored Sage ledger",
+  "authority": "Interface demand only. This manifest records which stable identifiers a released registry must resolve for this repository to evaluate its rows. It is not an authority for generic Lean definitions.",
+  "source": {
+    "path": "design/sage/authored/sage_normalized_category_mapping_manifest.json",
+    "sha256": "fa1e53966c0e4c534ae2defa5c1b7d7dd65e421401306a75ebd5e5039c68a048",
+    "git_commit": "4028c07af0e8fa0c2fbe411f1a2a342c980c527f",
+    "ledger_schema_version": "0.4-draft",
+    "sage_source_commit": "686dc1a8d420c2e0aabadd4f602d9a0aa4690c50"
+  },
+  "coverage": {
+    "public_rows": 179,
+    "distinct_sage_sources": 179,
+    "requirements": 318,
+    "unstated_demands": 17,
+    "by_kind": {
+      "alias": 6,
+      "category": 70,
+      "classifier": 65,
+      "coherence": 4,
+      "finite_limit_cone": 1,
+      "target_expression": 172
+    }
+  },
+  "requirements": [
+    {
+      "kind": "alias",
+      "stable_id": "cat.additive_monoids",
+      "display": "AdditiveMonoids",
+      "demanded_by": ["CommutativeAdditiveMonoids"],
+      "occurrences": [
+        {
+          "mapping_kind": "Sage alias",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "alias",
+      "stable_id": "cat.additive_semigroups",
+      "display": "AdditiveSemigroups",
+      "demanded_by": ["CommutativeAdditiveSemigroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "Sage alias",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "alias",
+      "stable_id": "cat_expr.algebraideals_a",
+      "display": "AlgebraIdeals(A)",
+      "demanded_by": ["CommutativeAlgebraIdeals"],
+      "occurrences": [
+        {
+          "mapping_kind": "parameter-restricted presentation alias",
+          "target_visibility": "presentation alias"
+        }
+      ]
+    },
+    {
+      "kind": "alias",
+      "stable_id": "cat_expr.modules_a",
+      "display": "Modules(A)",
+      "demanded_by": ["AlgebraModules"],
+      "occurrences": [
+        {
+          "mapping_kind": "parameter-restricted presentation alias",
+          "target_visibility": "presentation alias"
+        }
+      ]
+    },
+    {
+      "kind": "alias",
+      "stable_id": "cat_expr.modules_r",
+      "display": "Modules(R)",
+      "demanded_by": ["LeftModules"],
+      "occurrences": [
+        {
+          "mapping_kind": "presentation alias",
+          "target_visibility": "named base"
+        }
+      ]
+    },
+    {
+      "kind": "alias",
+      "stable_id": "cat_expr.ringideals_r",
+      "display": "RingIdeals(R)",
+      "demanded_by": ["CommutativeRingIdeals"],
+      "occurrences": [
+        {
+          "mapping_kind": "parameter-restricted presentation alias",
+          "target_visibility": "presentation alias"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.abelianvarieties_k",
+      "display": "AbelianVarieties(K)",
+      "demanded_by": ["ModularAbelianVarieties", "Jacobians"],
+      "occurrences": [
+        {
+          "parameter_constraints": "K : Fields"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.additive_abelian_groups",
+      "display": "AdditiveAbelianGroups",
+      "demanded_by": ["CommutativeAdditiveGroups"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.additive_groups",
+      "display": "AdditiveGroups",
+      "demanded_by": ["AdditiveGroups"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.additive_monoids",
+      "display": "AdditiveMonoids",
+      "demanded_by": ["AdditiveMonoids", "CommutativeAdditiveMonoids"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.additive_semigroups",
+      "display": "AdditiveSemigroups",
+      "demanded_by": ["AdditiveSemigroups", "CommutativeAdditiveSemigroups"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.algebraideals_a",
+      "display": "AlgebraIdeals(A)",
+      "demanded_by": ["AlgebraIdeals", "CommutativeAlgebraIdeals"],
+      "occurrences": [
+        {
+          "parameter_constraints": "A : AssociativeUnitalAlgebras(R)"
+        },
+        {
+          "parameter_constraints": "A : CommutativeAlgebras(R)"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.algebras_r",
+      "display": "Algebras(R)",
+      "demanded_by": ["Algebras", "AssociativeAlgebras", "MagmaticAlgebras", "UnitalAlgebras"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.associativeunitalalgebras_k",
+      "display": "AssociativeUnitalAlgebras(K)",
+      "demanded_by": ["MatrixAlgebras"],
+      "occurrences": [
+        {
+          "parameter_constraints": "K : Fields"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.associativeunitalalgebras_r",
+      "display": "AssociativeUnitalAlgebras(R)",
+      "demanded_by": [
+        "AlgebrasWithBasis",
+        "CommutativeAlgebras",
+        "FilteredAlgebras",
+        "FilteredAlgebrasWithBasis",
+        "FiniteDimensionalAlgebrasWithBasis",
+        "GradedAlgebras",
+        "GradedAlgebrasWithBasis",
+        "KahlerAlgebras",
+        "SemisimpleAlgebras",
+        "SuperAlgebras",
+        "SuperAlgebrasWithBasis"
+      ],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        },
+        {
+          "parameter_constraints": "R : Rings (Sage examples use QQ)"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.bialgebras_r",
+      "display": "Bialgebras(R)",
+      "demanded_by": ["FiniteDimensionalBialgebrasWithBasis", "GradedBialgebras", "GradedBialgebrasWithBasis", "Bialgebras", "BialgebrasWithBasis"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.bimodules_r_s",
+      "display": "Bimodules(R,S)",
+      "demanded_by": ["Bimodules"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R,S : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.chaincomplexes_c",
+      "display": "ChainComplexes(C)",
+      "demanded_by": ["ChainComplexes"],
+      "occurrences": [
+        {
+          "parameter_constraints": "C : additive/abelian category; degree convention parameter"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.coalgebras_r",
+      "display": "Coalgebras(R)",
+      "demanded_by": ["FiniteDimensionalCoalgebrasWithBasis", "Coalgebras", "CoalgebrasWithBasis", "GradedCoalgebras", "GradedCoalgebrasWithBasis"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.commutativerings",
+      "display": "CommutativeRings",
+      "demanded_by": ["NoetherianRings"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.complexreflectiongroups",
+      "display": "ComplexReflectionGroups",
+      "demanded_by": ["FiniteComplexReflectionGroups"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.coxetergroupalgebras_r",
+      "display": "CoxeterGroupAlgebras(R)",
+      "demanded_by": ["CoxeterGroupAlgebras"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.coxetergroups",
+      "display": "CoxeterGroups",
+      "demanded_by": ["FiniteCoxeterGroups", "WeylGroups"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.crystals",
+      "display": "Crystals",
+      "demanded_by": ["ClassicalCrystals", "Crystals", "FiniteCrystals", "HighestWeightCrystals", "RegularCrystals", "SuperCrystals"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.discretevaluationfields",
+      "display": "DiscreteValuationFields",
+      "demanded_by": ["CompleteDiscreteValuationFields"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.discretevaluationrings",
+      "display": "DiscreteValuationRings",
+      "demanded_by": ["CompleteDiscreteValuationRings"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.divisionrings",
+      "display": "DivisionRings",
+      "demanded_by": ["Fields"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.domains",
+      "display": "Domains",
+      "demanded_by": ["IntegralDomains"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.drinfeldmodules_gamma_f_q_t_k",
+      "display": "DrinfeldModules(γ : F_q[T] → K)",
+      "demanded_by": ["DrinfeldModules"],
+      "occurrences": [
+        {
+          "parameter_constraints": "finite field F_q, function ring F_q[T], field K, and base morphism γ"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.fields",
+      "display": "Fields",
+      "demanded_by": ["DiscreteValuationFields", "FiniteFields", "FunctionFields", "NumberFields", "QuotientFields"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        },
+        {
+          "parameter_constraints": "Sage leaves the constant field implicit"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.generalizedcoxetergroups",
+      "display": "GeneralizedCoxeterGroups",
+      "demanded_by": ["CoxeterGroups", "ShephardGroups"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.graphs",
+      "display": "Graphs",
+      "demanded_by": ["Graphs"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.groupalgebras_r",
+      "display": "GroupAlgebras(R)",
+      "demanded_by": ["GroupAlgebras"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.groupoidson_g",
+      "display": "GroupoidsOn(G)",
+      "demanded_by": ["Groupoid"],
+      "occurrences": [
+        {
+          "parameter_constraints": "G : Sets (Sage usually supplies a group)"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.groups",
+      "display": "Groups",
+      "demanded_by": ["FiniteGroups", "Groups", "PermutationGroups"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.groupswithsimplereflections",
+      "display": "GroupsWithSimpleReflections",
+      "demanded_by": ["ComplexReflectionGroups", "ComplexReflectionOrGeneralizedCoxeterGroups", "GeneralizedCoxeterGroups"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.homsets_c",
+      "display": "Homsets(C)",
+      "demanded_by": ["Homsets"],
+      "occurrences": [
+        {
+          "parameter_constraints": "C : category"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.hopfalgebras_r",
+      "display": "HopfAlgebras(R)",
+      "demanded_by": [
+        "GradedHopfAlgebras",
+        "FilteredHopfAlgebrasWithBasis",
+        "FiniteDimensionalHopfAlgebrasWithBasis",
+        "GradedHopfAlgebrasWithBasis",
+        "HopfAlgebras",
+        "HopfAlgebrasWithBasis",
+        "SuperHopfAlgebrasWithBasis"
+      ],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.integraldomains",
+      "display": "IntegralDomains",
+      "demanded_by": ["DedekindDomains", "DiscreteValuationRings", "EuclideanDomains", "GcdDomains", "PrincipalIdealDomains", "UniqueFactorizationDomains"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.kacmoodyalgebras_r",
+      "display": "KacMoodyAlgebras(R)",
+      "demanded_by": ["KacMoodyAlgebras", "TriangularKacMoodyAlgebras"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.lambdabracketalgebras_r",
+      "display": "LambdaBracketAlgebras(R)",
+      "demanded_by": ["FinitelyGeneratedLambdaBracketAlgebras", "LambdaBracketAlgebras", "LambdaBracketAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.latticeposets",
+      "display": "LatticePosets",
+      "demanded_by": ["FiniteLatticePosets", "DistributiveLattices"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.liealgebras_r",
+      "display": "LieAlgebras(R)",
+      "demanded_by": [
+        "FiniteDimensionalGradedLieAlgebrasWithBasis",
+        "FiniteDimensionalLieAlgebrasWithBasis",
+        "FiniteDimensionalNilpotentLieAlgebrasWithBasis",
+        "GradedLieAlgebras",
+        "GradedLieAlgebrasWithBasis",
+        "LieAlgebras",
+        "LieAlgebrasWithBasis"
+      ],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.lieconformalalgebras_r",
+      "display": "LieConformalAlgebras(R)",
+      "demanded_by": [
+        "FinitelyGeneratedLieConformalAlgebras",
+        "GradedLieConformalAlgebras",
+        "LieConformalAlgebras",
+        "LieConformalAlgebrasWithBasis",
+        "SuperLieConformalAlgebras"
+      ],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.liegroups",
+      "display": "LieGroups",
+      "demanded_by": ["LieGroups"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.loopcrystals",
+      "display": "LoopCrystals",
+      "demanded_by": ["KirillovReshetikhinCrystals", "LoopCrystals", "RegularLoopCrystals"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.magmas",
+      "display": "Magmas",
+      "demanded_by": ["AdditiveMagmas", "FinitelyGeneratedMagmas", "Magmas"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.magmaswithtwooperations",
+      "display": "MagmasWithTwoOperations",
+      "demanded_by": ["DistributiveMagmasAndAdditiveMagmas", "MagmasAndAdditiveMagmas"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.manifolds",
+      "display": "Manifolds",
+      "demanded_by": ["ComplexManifolds", "Manifolds"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.modules_a",
+      "display": "Modules(A)",
+      "demanded_by": ["AlgebraModules"],
+      "occurrences": [
+        {
+          "parameter_constraints": "A : CommutativeAlgebras(R)"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.modules_k",
+      "display": "Modules(K)",
+      "demanded_by": ["VectorSpaces"],
+      "occurrences": [
+        {
+          "parameter_constraints": "K : Fields"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.modules_r",
+      "display": "Modules(R)",
+      "demanded_by": [
+        "FilteredModules",
+        "FilteredModulesWithBasis",
+        "FiniteDimensionalModulesWithBasis",
+        "GradedModules",
+        "GradedModulesWithBasis",
+        "HeckeModules",
+        "LeftModules",
+        "Modules",
+        "ModulesWithBasis",
+        "OreModules",
+        "QuantumGroupRepresentations",
+        "SuperModules",
+        "SuperModulesWithBasis"
+      ],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : CommutativeRings"
+        },
+        {
+          "parameter_constraints": "R : CommutativeRings; object-dependent level/anemic Hecke action"
+        },
+        {
+          "parameter_constraints": "R : Rings"
+        },
+        {
+          "parameter_constraints": "R : CommutativeRings (intended Sage semantics)"
+        },
+        {
+          "parameter_constraints": "R : CommutativeRings; σ endomorphism and/or σ-derivation δ"
+        },
+        {
+          "parameter_constraints": "R : CommutativeRings/Fields; quantum-group/root datum parameters are part of the representation structure"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.modules_rop",
+      "display": "Modules(Rᵒᵖ)",
+      "demanded_by": ["RightModules"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.monoidalgebras_r",
+      "display": "MonoidAlgebras(R)",
+      "demanded_by": ["MonoidAlgebras"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.monoids",
+      "display": "Monoids",
+      "demanded_by": ["FiniteMonoids", "Monoids", "PartiallyOrderedMonoids"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.permutationgroups",
+      "display": "PermutationGroups",
+      "demanded_by": ["FinitePermutationGroups"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.polyhedra_r",
+      "display": "Polyhedra(R)",
+      "demanded_by": ["PolyhedralSets"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R typically ZZ, QQ, RR, or an ordered coefficient ring"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.posets",
+      "display": "Posets",
+      "demanded_by": ["FinitePosets", "LatticePosets", "Posets"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.ringideals_r",
+      "display": "RingIdeals(R)",
+      "demanded_by": ["CommutativeRingIdeals", "RingIdeals"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : CommutativeRings"
+        },
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.rings",
+      "display": "Rings",
+      "demanded_by": ["CommutativeRings", "DivisionRings", "Domains", "Rings"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.rngs",
+      "display": "Rngs",
+      "demanded_by": ["Rngs"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.sagebackendobjects",
+      "display": "SageBackendObjects",
+      "demanded_by": ["Objects"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.schemes_k",
+      "display": "Schemes(K)",
+      "demanded_by": ["AbelianVarieties"],
+      "occurrences": [
+        {
+          "parameter_constraints": "K : Fields"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.schemes_s",
+      "display": "Schemes(S)",
+      "demanded_by": ["Schemes"],
+      "occurrences": [
+        {
+          "parameter_constraints": "base scheme S (absolute case allowed)"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.semigroups",
+      "display": "Semigroups",
+      "demanded_by": [
+        "AperiodicSemigroups",
+        "FiniteSemigroups",
+        "FinitelyGeneratedSemigroups",
+        "HTrivialSemigroups",
+        "JTrivialSemigroups",
+        "LTrivialSemigroups",
+        "RTrivialSemigroups",
+        "Semigroups"
+      ],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.semirings",
+      "display": "Semirings",
+      "demanded_by": ["Semirings"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.semisimplealgebras_r",
+      "display": "SemisimpleAlgebras(R)",
+      "demanded_by": ["FiniteDimensionalSemisimpleAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.sets",
+      "display": "Sets",
+      "demanded_by": ["EnumeratedSets", "FacadeSets", "FiniteEnumeratedSets", "FiniteSets", "GSets", "InfiniteEnumeratedSets", "PointedSets", "Sets", "SetsWithGrading"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        },
+        {
+          "parameter_constraints": "G : Groups"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.setswithpartialmaps",
+      "display": "SetsWithPartialMaps",
+      "demanded_by": ["SetsWithPartialMaps"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.simplicialcomplexes",
+      "display": "SimplicialComplexes",
+      "demanded_by": ["SimplicialComplexes"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.simplicialsets",
+      "display": "SimplicialSets",
+      "demanded_by": ["SimplicialSets"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.superalgebras_r",
+      "display": "SuperAlgebras(R)",
+      "demanded_by": ["SupercommutativeAlgebras"],
+      "occurrences": [
+        {
+          "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.supercrystals",
+      "display": "SuperCrystals",
+      "demanded_by": ["RegularSuperCrystals"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.topologicalspaces",
+      "display": "TopologicalSpaces",
+      "demanded_by": ["CWComplexes", "MetricSpaces", "TopologicalSpaces"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.vectorbundles_x_r",
+      "display": "VectorBundles(X,R)",
+      "demanded_by": ["VectorBundles"],
+      "occurrences": [
+        {
+          "parameter_constraints": "base space/scheme X and scalar data R"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.weylgroups",
+      "display": "WeylGroups",
+      "demanded_by": ["AffineWeylGroups", "FiniteWeylGroups"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.abelianvariety",
+      "display": "AbelianVariety",
+      "demanded_by": ["AbelianVarieties"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Schemes(K)",
+          "support_route": null,
+          "semantic_character": "structured property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.additive",
+      "display": "Additive",
+      "demanded_by": ["AdditiveMagmas"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Magmas",
+          "support_route": "operation_role:additive",
+          "semantic_character": "role/presentation"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.affine",
+      "display": "Affine",
+      "demanded_by": ["AffineWeylGroups"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "WeylGroups",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.aperiodic",
+      "display": "Aperiodic",
+      "demanded_by": ["AperiodicSemigroups"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Semigroups",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.associative",
+      "display": "Associative",
+      "demanded_by": ["Algebras", "AssociativeAlgebras"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Magmas",
+          "support_route": "operation_port:algebra_multiplication",
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.classical",
+      "display": "Classical",
+      "demanded_by": ["ClassicalCrystals"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Crystals",
+          "support_route": null,
+          "semantic_character": "property/typed structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.commutative",
+      "display": "Commutative",
+      "demanded_by": ["CommutativeAlgebras", "CommutativeRings", "Fields", "IntegralDomains"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Magmas",
+          "support_route": "operation_port:multiplicative",
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.compatiblepartialorder",
+      "display": "CompatiblePartialOrder",
+      "demanded_by": ["PartiallyOrderedMonoids"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Monoids",
+          "support_route": null,
+          "semantic_character": "chosen structure plus compatibility laws"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.complete",
+      "display": "Complete",
+      "demanded_by": ["CompleteDiscreteValuationFields", "CompleteDiscreteValuationRings"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "MetricSpaces",
+          "support_route": "structural_route:valuation_metric",
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.complexanalytic",
+      "display": "ComplexAnalytic",
+      "demanded_by": ["ComplexManifolds"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Manifolds",
+          "support_route": null,
+          "semantic_character": "chosen structure plus integrability"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.complexreflection",
+      "display": "ComplexReflection",
+      "demanded_by": ["ComplexReflectionGroups"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "GroupsWithSimpleReflections",
+          "support_route": null,
+          "semantic_character": "property/representation structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.coxeter",
+      "display": "Coxeter",
+      "demanded_by": ["CoxeterGroups"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "GeneralizedCoxeterGroups",
+          "support_route": null,
+          "semantic_character": "property/presentation"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.cwstructure",
+      "display": "CWStructure",
+      "demanded_by": ["CWComplexes"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "TopologicalSpaces",
+          "support_route": null,
+          "semantic_character": "chosen structure plus laws"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.dedekind",
+      "display": "Dedekind",
+      "demanded_by": ["DedekindDomains"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "IntegralDomains",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.discretevaluation",
+      "display": "DiscreteValuation",
+      "demanded_by": ["DiscreteValuationFields", "DiscreteValuationRings"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "IntegralDomains / Fields",
+          "support_route": null,
+          "semantic_character": "property plus usable valuation structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.distributive_lattice",
+      "display": "Distributive@Lattice",
+      "demanded_by": ["DistributiveLattices"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "LatticePosets",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.distributive_twooperations",
+      "display": "Distributive@TwoOperations",
+      "demanded_by": ["DistributiveMagmasAndAdditiveMagmas"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "MagmasWithTwoOperations",
+          "support_route": null,
+          "semantic_character": "compatibility property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.division",
+      "display": "Division",
+      "demanded_by": ["DivisionRings"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Rings",
+          "support_route": "operation_port:ring_multiplication",
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.enumerated",
+      "display": "Enumerated",
+      "demanded_by": ["EnumeratedSets", "FiniteEnumeratedSets", "InfiniteEnumeratedSets"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Sets",
+          "support_route": "structural_route:underlying_set",
+          "semantic_character": "chosen computational structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.euclidean",
+      "display": "Euclidean",
+      "demanded_by": ["EuclideanDomains"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "IntegralDomains",
+          "support_route": null,
+          "semantic_character": "property plus Euclidean-function witness policy"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.faithfulpermutationaction",
+      "display": "FaithfulPermutationAction",
+      "demanded_by": ["PermutationGroups"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Groups",
+          "support_route": "structural_route:underlying_set",
+          "semantic_character": "chosen faithful action"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.filtered",
+      "display": "Filtered",
+      "demanded_by": ["FilteredAlgebras", "FilteredAlgebrasWithBasis", "FilteredHopfAlgebrasWithBasis", "FilteredModules", "FilteredModulesWithBasis"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Modules(R)",
+          "support_route": "structural_route:underlying_module",
+          "semantic_character": "chosen structure"
+        },
+        {
+          "order": 2,
+          "least_host": "Modules(R)",
+          "support_route": "structural_route:underlying_module",
+          "semantic_character": "chosen structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.finite",
+      "display": "Finite",
+      "demanded_by": [
+        "FiniteComplexReflectionGroups",
+        "FiniteCoxeterGroups",
+        "FiniteCrystals",
+        "FiniteEnumeratedSets",
+        "FiniteFields",
+        "FiniteGroups",
+        "FiniteLatticePosets",
+        "FiniteMonoids",
+        "FinitePermutationGroups",
+        "FinitePosets",
+        "FiniteSemigroups",
+        "FiniteSets",
+        "FiniteWeylGroups",
+        "ShephardGroups"
+      ],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Sets",
+          "support_route": "structural_route:underlying_set",
+          "semantic_character": "property"
+        },
+        {
+          "order": 2,
+          "least_host": "Sets",
+          "support_route": "structural_route:underlying_set",
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.finiteextensionof_q",
+      "display": "FiniteExtensionOf(Q)",
+      "demanded_by": ["NumberFields"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Fields",
+          "support_route": null,
+          "semantic_character": "property with fixed base embedding"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.finitelygenerated",
+      "display": "FinitelyGenerated",
+      "demanded_by": ["FinitelyGeneratedLambdaBracketAlgebras", "FinitelyGeneratedMagmas", "FinitelyGeneratedSemigroups"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "signature-specific algebraic host",
+          "support_route": "structural_route:classifier_host_signature",
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.finitelygenerated_lambdabracket",
+      "display": "FinitelyGenerated@LambdaBracket",
+      "demanded_by": ["FinitelyGeneratedLieConformalAlgebras"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "LambdaBracketAlgebras(R)",
+          "support_route": "structural_route:lambda_bracket_algebra",
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.finiterank",
+      "display": "FiniteRank",
+      "demanded_by": [
+        "FiniteDimensionalBialgebrasWithBasis",
+        "FiniteDimensionalCoalgebrasWithBasis",
+        "FiniteDimensionalAlgebrasWithBasis",
+        "FiniteDimensionalGradedLieAlgebrasWithBasis",
+        "FiniteDimensionalHopfAlgebrasWithBasis",
+        "FiniteDimensionalLieAlgebrasWithBasis",
+        "FiniteDimensionalModulesWithBasis",
+        "FiniteDimensionalNilpotentLieAlgebrasWithBasis",
+        "FiniteDimensionalSemisimpleAlgebrasWithBasis",
+        "KahlerAlgebras"
+      ],
+      "occurrences": [
+        {
+          "order": 2,
+          "least_host": "Modules(R)",
+          "support_route": "structural_route:underlying_module",
+          "semantic_character": "property"
+        },
+        {
+          "order": 3,
+          "least_host": "Modules(R)",
+          "support_route": "structural_route:underlying_module",
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.fractionfieldpresentation",
+      "display": "FractionFieldPresentation",
+      "demanded_by": ["QuotientFields"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Fields",
+          "support_route": null,
+          "semantic_character": "presentation structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.functionfield",
+      "display": "FunctionField",
+      "demanded_by": ["FunctionFields"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Fields",
+          "support_route": null,
+          "semantic_character": "property/presentation"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.gaction",
+      "display": "GAction",
+      "demanded_by": ["GSets"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Sets",
+          "support_route": "structural_route:underlying_set",
+          "semantic_character": "chosen structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.gcd",
+      "display": "GCD",
+      "demanded_by": ["GcdDomains"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "IntegralDomains",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.generalizedcoxeter",
+      "display": "GeneralizedCoxeter",
+      "demanded_by": ["GeneralizedCoxeterGroups"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "GroupsWithSimpleReflections",
+          "support_route": null,
+          "semantic_character": "property/presentation"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.graded",
+      "display": "Graded",
+      "demanded_by": [
+        "GradedBialgebras",
+        "GradedBialgebrasWithBasis",
+        "GradedHopfAlgebras",
+        "FiniteDimensionalGradedLieAlgebrasWithBasis",
+        "GradedAlgebras",
+        "GradedAlgebrasWithBasis",
+        "GradedCoalgebras",
+        "GradedCoalgebrasWithBasis",
+        "GradedHopfAlgebrasWithBasis",
+        "GradedLieAlgebras",
+        "GradedLieAlgebrasWithBasis",
+        "GradedLieConformalAlgebras",
+        "GradedModules",
+        "GradedModulesWithBasis",
+        "KahlerAlgebras",
+        "SetsWithGrading"
+      ],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Sets",
+          "support_route": "structural_route:underlying_set",
+          "semantic_character": "chosen structure"
+        },
+        {
+          "order": 2,
+          "least_host": "Sets",
+          "support_route": "structural_route:underlying_set",
+          "semantic_character": "chosen structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.heckemodulestructure",
+      "display": "HeckeModuleStructure",
+      "demanded_by": ["HeckeModules"],
+      "occurrences": [
+        {
+          "order": 2,
+          "least_host": "ModulesWithBasis(R)",
+          "support_route": null,
+          "semantic_character": "chosen action structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.highestweight",
+      "display": "HighestWeight",
+      "demanded_by": ["HighestWeightCrystals"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Crystals",
+          "support_route": null,
+          "semantic_character": "property/structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.htrivial",
+      "display": "HTrivial",
+      "demanded_by": ["HTrivialSemigroups"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Semigroups",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.infinite",
+      "display": "Infinite",
+      "demanded_by": ["InfiniteEnumeratedSets"],
+      "occurrences": [
+        {
+          "order": 2,
+          "least_host": "Sets",
+          "support_route": "structural_route:underlying_set",
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.jacobian",
+      "display": "Jacobian",
+      "demanded_by": ["Jacobians"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "AbelianVarieties(K)",
+          "support_route": null,
+          "semantic_character": "property plus source-curve presentation"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.jtrivial",
+      "display": "JTrivial",
+      "demanded_by": ["JTrivialSemigroups"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Semigroups",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.ka_hlerpackage",
+      "display": "KählerPackage",
+      "demanded_by": ["KahlerAlgebras"],
+      "occurrences": [
+        {
+          "order": 4,
+          "least_host": "GradedAlgebrasWithBasis(R).FiniteRank",
+          "support_route": null,
+          "semantic_character": "compound mathematical property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.kirillovreshetikhin",
+      "display": "KirillovReshetikhin",
+      "demanded_by": ["KirillovReshetikhinCrystals"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "LoopCrystals",
+          "support_route": null,
+          "semantic_character": "specialist property/type"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.lattice",
+      "display": "Lattice",
+      "demanded_by": ["LatticePosets"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Posets",
+          "support_route": null,
+          "semantic_character": "property plus induced operations"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.ltrivial",
+      "display": "LTrivial",
+      "demanded_by": ["LTrivialSemigroups"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Semigroups",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.matrixalgebra",
+      "display": "MatrixAlgebra",
+      "demanded_by": ["MatrixAlgebras"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "AssociativeUnitalAlgebras(K)",
+          "support_route": null,
+          "semantic_character": "property/presentation"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.metric",
+      "display": "Metric",
+      "demanded_by": ["MetricSpaces"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "TopologicalSpaces",
+          "support_route": null,
+          "semantic_character": "chosen structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.modular",
+      "display": "Modular",
+      "demanded_by": ["ModularAbelianVarieties"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "AbelianVarieties(K)",
+          "support_route": null,
+          "semantic_character": "arithmetic-geometric property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.nilpotent",
+      "display": "Nilpotent",
+      "demanded_by": ["FiniteDimensionalNilpotentLieAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "order": 3,
+          "least_host": "LieAlgebras(R)",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.noetherian",
+      "display": "Noetherian",
+      "demanded_by": ["NoetherianRings"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "CommutativeRings",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.nozerodivisors",
+      "display": "NoZeroDivisors",
+      "demanded_by": ["Domains"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Rings",
+          "support_route": "operation_port:ring_multiplication",
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.oremodulestructure_sigma_delta",
+      "display": "OreModuleStructure(σ,δ)",
+      "demanded_by": ["OreModules"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Modules(R)",
+          "support_route": null,
+          "semantic_character": "chosen semilinear/action structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.pointed",
+      "display": "Pointed",
+      "demanded_by": ["PointedSets"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Sets",
+          "support_route": "structural_route:underlying_set",
+          "semantic_character": "chosen structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.principalideal",
+      "display": "PrincipalIdeal",
+      "demanded_by": ["PrincipalIdealDomains"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "IntegralDomains",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.quantumgrouprepresentation",
+      "display": "QuantumGroupRepresentation",
+      "demanded_by": ["QuantumGroupRepresentations"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Modules(R)",
+          "support_route": null,
+          "semantic_character": "chosen action structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.regular",
+      "display": "Regular",
+      "demanded_by": ["RegularLoopCrystals", "RegularCrystals", "RegularSuperCrystals"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Crystals",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.rtrivial",
+      "display": "RTrivial",
+      "demanded_by": ["RTrivialSemigroups"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Semigroups",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.semisimple",
+      "display": "Semisimple",
+      "demanded_by": ["SemisimpleAlgebras"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "AssociativeUnitalAlgebras(R)",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.shephard",
+      "display": "Shephard",
+      "demanded_by": ["ShephardGroups"],
+      "occurrences": [
+        {
+          "order": 2,
+          "least_host": "GeneralizedCoxeterGroups.Finite",
+          "support_route": null,
+          "semantic_character": "property/type"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.super",
+      "display": "Super",
+      "demanded_by": ["SuperAlgebras", "SuperAlgebrasWithBasis", "SuperHopfAlgebrasWithBasis", "SuperLieConformalAlgebras", "SuperModules", "SuperModulesWithBasis"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Modules(R)",
+          "support_route": "structural_route:underlying_module",
+          "semantic_character": "chosen structure"
+        },
+        {
+          "order": 2,
+          "least_host": "Modules(R)",
+          "support_route": "structural_route:underlying_module",
+          "semantic_character": "chosen structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.super_crystal",
+      "display": "Super@Crystal",
+      "demanded_by": ["SuperCrystals"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Crystals",
+          "support_route": null,
+          "semantic_character": "specialist structure"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.supercommutative",
+      "display": "Supercommutative",
+      "demanded_by": ["SupercommutativeAlgebras"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "SuperAlgebras(R)",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.triangulardecomposition",
+      "display": "TriangularDecomposition",
+      "demanded_by": ["TriangularKacMoodyAlgebras"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "KacMoodyAlgebras(R)",
+          "support_route": null,
+          "semantic_character": "chosen structure/property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.uniquefactorization",
+      "display": "UniqueFactorization",
+      "demanded_by": ["UniqueFactorizationDomains"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "IntegralDomains",
+          "support_route": null,
+          "semantic_character": "property"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.unital",
+      "display": "Unital",
+      "demanded_by": ["Algebras", "UnitalAlgebras"],
+      "occurrences": [
+        {
+          "order": 2,
+          "least_host": "Magmas",
+          "support_route": "operation_port:algebra_multiplication",
+          "semantic_character": "chosen structure/property classifier"
+        },
+        {
+          "order": 1,
+          "least_host": "Magmas",
+          "support_route": "operation_port:algebra_multiplication",
+          "semantic_character": "chosen structure/property classifier"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.weyl",
+      "display": "Weyl",
+      "demanded_by": ["WeylGroups"],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "CoxeterGroups",
+          "support_route": null,
+          "semantic_character": "property/type"
+        }
+      ]
+    },
+    {
+      "kind": "classifier",
+      "stable_id": "clf.withbasis",
+      "display": "WithBasis",
+      "demanded_by": [
+        "FiniteDimensionalBialgebrasWithBasis",
+        "FiniteDimensionalCoalgebrasWithBasis",
+        "GradedBialgebrasWithBasis",
+        "AlgebrasWithBasis",
+        "BialgebrasWithBasis",
+        "CoalgebrasWithBasis",
+        "FilteredAlgebrasWithBasis",
+        "FilteredHopfAlgebrasWithBasis",
+        "FilteredModulesWithBasis",
+        "FiniteDimensionalAlgebrasWithBasis",
+        "FiniteDimensionalGradedLieAlgebrasWithBasis",
+        "FiniteDimensionalHopfAlgebrasWithBasis",
+        "FiniteDimensionalLieAlgebrasWithBasis",
+        "FiniteDimensionalModulesWithBasis",
+        "FiniteDimensionalNilpotentLieAlgebrasWithBasis",
+        "FiniteDimensionalSemisimpleAlgebrasWithBasis",
+        "GradedAlgebrasWithBasis",
+        "GradedCoalgebrasWithBasis",
+        "GradedHopfAlgebrasWithBasis",
+        "GradedLieAlgebrasWithBasis",
+        "GradedModulesWithBasis",
+        "HeckeModules",
+        "HopfAlgebrasWithBasis",
+        "KahlerAlgebras",
+        "LambdaBracketAlgebrasWithBasis",
+        "LieAlgebrasWithBasis",
+        "LieConformalAlgebrasWithBasis",
+        "ModulesWithBasis",
+        "SuperAlgebrasWithBasis",
+        "SuperHopfAlgebrasWithBasis",
+        "SuperModulesWithBasis"
+      ],
+      "occurrences": [
+        {
+          "order": 1,
+          "least_host": "Modules(R)",
+          "support_route": "structural_route:underlying_module",
+          "semantic_character": "chosen structure"
+        }
+      ]
+    },
+    {
+      "kind": "coherence",
+      "stable_id": "coherence.distributivelattices_implementation",
+      "display": "DistributiveLattices implementation",
+      "demanded_by": ["audit_exceptions"],
+      "occurrences": [
+        {
+          "resolution": "Use LatticePosets.Distributive@Lattice as the definition; record the Sage implementation route as a backend discrepancy.",
+          "affected_rows": "DistributiveLattices"
+        }
+      ]
+    },
+    {
+      "kind": "coherence",
+      "stable_id": "coherence.divisionrings",
+      "display": "DivisionRings",
+      "demanded_by": ["audit_exceptions"],
+      "occurrences": [
+        {
+          "resolution": "Attach Division at Rings; define DivisionRings := Rings.Division and Fields := DivisionRings.Commutative.",
+          "affected_rows": "DivisionRings; Fields"
+        }
+      ]
+    },
+    {
+      "kind": "coherence",
+      "stable_id": "coherence.modules_r_handedness",
+      "display": "Modules(R) handedness",
+      "demanded_by": ["audit_exceptions"],
+      "occurrences": [
+        {
+          "resolution": "Let normalized Modules(R) mean left R-modules. Map Sage LeftModules(R) to Modules(R), RightModules(R) to Modules(Rᵒᵖ), and Bimodules(R,S) to the standard bimodule family. Map Sage Modules(R) directly only in its reliable commutative/symmetric regime; review noncommutative instances.",
+          "affected_rows": "Modules and module-derived categories"
+        }
+      ]
+    },
+    {
+      "kind": "coherence",
+      "stable_id": "coherence.one_magma_theory_two_operation_roles",
+      "display": "One magma theory, two operation roles",
+      "demanded_by": ["audit_exceptions"],
+      "occurrences": [
+        {
+          "resolution": "Use one Magmas host; Additive is a role/presentation classifier. Preserve route/port data when an object has two operations.",
+          "affected_rows": "AdditiveMagmas and all additive variants"
+        }
+      ]
+    },
+    {
+      "kind": "finite_limit_cone",
+      "stable_id": "cat_expr.magmaswithtwooperations",
+      "display": "MagmasWithTwoOperations",
+      "demanded_by": ["normalized_base_inventory"],
+      "occurrences": [
+        {
+          "audit_rationale": "Named pullback of additive- and multiplicative-role magma structures over Sets; required as the least host of distributivity.",
+          "used_by_rows": 2,
+          "dot_status": "absent; required least classifier host"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat.additive_abelian_groups",
+      "display": "AdditiveAbelianGroups",
+      "demanded_by": ["CommutativeAdditiveGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named category",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat.additive_groups",
+      "display": "AdditiveGroups",
+      "demanded_by": ["AdditiveGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named category",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat.additive_monoids",
+      "display": "AdditiveMonoids",
+      "demanded_by": ["AdditiveMonoids"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named category",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat.additive_semigroups",
+      "display": "AdditiveSemigroups",
+      "demanded_by": ["AdditiveSemigroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named category",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.abelianvarieties_k",
+      "display": "AbelianVarieties(K)",
+      "demanded_by": ["AbelianVarieties"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.affineweylgroups",
+      "display": "AffineWeylGroups",
+      "demanded_by": ["AffineWeylGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.algebraideals_a",
+      "display": "AlgebraIdeals(A)",
+      "demanded_by": ["AlgebraIdeals"],
+      "occurrences": [
+        {
+          "mapping_kind": "construction-defined named category",
+          "target_visibility": "construction named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.algebras_r",
+      "display": "Algebras(R)",
+      "demanded_by": ["MagmaticAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact normalized base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.algebras_r_associative",
+      "display": "Algebras(R).Associative",
+      "demanded_by": ["AssociativeAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.algebras_r_unital",
+      "display": "Algebras(R).Unital",
+      "demanded_by": ["UnitalAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.associativeunitalalgebras_r",
+      "display": "AssociativeUnitalAlgebras(R)",
+      "demanded_by": ["Algebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.associativeunitalalgebras_r_filtered",
+      "display": "AssociativeUnitalAlgebras(R).Filtered",
+      "demanded_by": ["FilteredAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.associativeunitalalgebras_r_graded",
+      "display": "AssociativeUnitalAlgebras(R).Graded",
+      "demanded_by": ["GradedAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.associativeunitalalgebras_r_super",
+      "display": "AssociativeUnitalAlgebras(R).Super",
+      "demanded_by": ["SuperAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.associativeunitalalgebras_r_withbasis",
+      "display": "AssociativeUnitalAlgebras(R).WithBasis",
+      "demanded_by": ["AlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.associativeunitalalgebras_r_withbasis_filtered",
+      "display": "AssociativeUnitalAlgebras(R).WithBasis.Filtered",
+      "demanded_by": ["FilteredAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.associativeunitalalgebras_r_withbasis_finiterank",
+      "display": "AssociativeUnitalAlgebras(R).WithBasis.FiniteRank",
+      "demanded_by": ["FiniteDimensionalAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.associativeunitalalgebras_r_withbasis_graded",
+      "display": "AssociativeUnitalAlgebras(R).WithBasis.Graded",
+      "demanded_by": ["GradedAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.associativeunitalalgebras_r_withbasis_graded_finiterank_ka_hlerpackage",
+      "display": "AssociativeUnitalAlgebras(R).WithBasis.Graded.FiniteRank.KählerPackage",
+      "demanded_by": ["KahlerAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "iterated classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.associativeunitalalgebras_r_withbasis_super",
+      "display": "AssociativeUnitalAlgebras(R).WithBasis.Super",
+      "demanded_by": ["SuperAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bialgebras_r",
+      "display": "Bialgebras(R)",
+      "demanded_by": ["Bialgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bialgebras_r_graded",
+      "display": "Bialgebras(R).Graded",
+      "demanded_by": ["GradedBialgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "wrapper refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bialgebras_r_withbasis",
+      "display": "Bialgebras(R).WithBasis",
+      "demanded_by": ["BialgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bialgebras_r_withbasis_finiterank",
+      "display": "Bialgebras(R).WithBasis.FiniteRank",
+      "demanded_by": ["FiniteDimensionalBialgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "wrapper refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bialgebras_r_withbasis_graded",
+      "display": "Bialgebras(R).WithBasis.Graded",
+      "demanded_by": ["GradedBialgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "wrapper refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bimodules_r_s",
+      "display": "Bimodules(R,S)",
+      "demanded_by": ["Bimodules"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.chaincomplexes_c",
+      "display": "ChainComplexes(C)",
+      "demanded_by": ["ChainComplexes"],
+      "occurrences": [
+        {
+          "mapping_kind": "construction-defined named category",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.classicalcrystals",
+      "display": "ClassicalCrystals",
+      "demanded_by": ["ClassicalCrystals"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.coalgebras_r",
+      "display": "Coalgebras(R)",
+      "demanded_by": ["Coalgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.coalgebras_r_graded",
+      "display": "Coalgebras(R).Graded",
+      "demanded_by": ["GradedCoalgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.coalgebras_r_withbasis",
+      "display": "Coalgebras(R).WithBasis",
+      "demanded_by": ["CoalgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.coalgebras_r_withbasis_finiterank",
+      "display": "Coalgebras(R).WithBasis.FiniteRank",
+      "demanded_by": ["FiniteDimensionalCoalgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "wrapper refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.coalgebras_r_withbasis_graded",
+      "display": "Coalgebras(R).WithBasis.Graded",
+      "demanded_by": ["GradedCoalgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.commutativealgebras_r",
+      "display": "CommutativeAlgebras(R)",
+      "demanded_by": ["CommutativeAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.commutativerings",
+      "display": "CommutativeRings",
+      "demanded_by": ["CommutativeRings"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.completediscretevaluationfields",
+      "display": "CompleteDiscreteValuationFields",
+      "demanded_by": ["CompleteDiscreteValuationFields"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.completediscretevaluationrings",
+      "display": "CompleteDiscreteValuationRings",
+      "demanded_by": ["CompleteDiscreteValuationRings"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.complexmanifolds",
+      "display": "ComplexManifolds",
+      "demanded_by": ["ComplexManifolds"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.complexreflectiongroups",
+      "display": "ComplexReflectionGroups",
+      "demanded_by": ["ComplexReflectionGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.complexreflectiongroups_finite",
+      "display": "ComplexReflectionGroups.Finite",
+      "demanded_by": ["FiniteComplexReflectionGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.coxetergroupalgebras_r",
+      "display": "CoxeterGroupAlgebras(R)",
+      "demanded_by": ["CoxeterGroupAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "construction-defined named category",
+          "target_visibility": "construction named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.coxetergroups",
+      "display": "CoxeterGroups",
+      "demanded_by": ["CoxeterGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.coxetergroups_finite",
+      "display": "CoxeterGroups.Finite",
+      "demanded_by": ["FiniteCoxeterGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.crystals",
+      "display": "Crystals",
+      "demanded_by": ["Crystals"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.crystals_finite",
+      "display": "Crystals.Finite",
+      "demanded_by": ["FiniteCrystals"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.cwcomplexes",
+      "display": "CWComplexes",
+      "demanded_by": ["CWComplexes"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.dedekinddomains",
+      "display": "DedekindDomains",
+      "demanded_by": ["DedekindDomains"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.discretevaluationfields",
+      "display": "DiscreteValuationFields",
+      "demanded_by": ["DiscreteValuationFields"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.discretevaluationrings",
+      "display": "DiscreteValuationRings",
+      "demanded_by": ["DiscreteValuationRings"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.distributivelattices",
+      "display": "DistributiveLattices",
+      "demanded_by": ["DistributiveLattices"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.divisionrings",
+      "display": "DivisionRings",
+      "demanded_by": ["DivisionRings"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.domains",
+      "display": "Domains",
+      "demanded_by": ["Domains"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.drinfeldmodules_gamma_f_q_t_k",
+      "display": "DrinfeldModules(γ : F_q[T] → K)",
+      "demanded_by": ["DrinfeldModules"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact parameterized named base",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.euclideandomains",
+      "display": "EuclideanDomains",
+      "demanded_by": ["EuclideanDomains"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.fields",
+      "display": "Fields",
+      "demanded_by": ["Fields"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.finitefields",
+      "display": "FiniteFields",
+      "demanded_by": ["FiniteFields"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.fractionfields",
+      "display": "FractionFields",
+      "demanded_by": ["QuotientFields"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "construction named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.functionfields",
+      "display": "FunctionFields",
+      "demanded_by": ["FunctionFields"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.g_sets_g",
+      "display": "G-Sets(G)",
+      "demanded_by": ["GSets"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.gcddomains",
+      "display": "GCDDomains",
+      "demanded_by": ["GcdDomains"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.generalizedcoxetergroups",
+      "display": "GeneralizedCoxeterGroups",
+      "demanded_by": ["GeneralizedCoxeterGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.graphs",
+      "display": "Graphs",
+      "demanded_by": ["Graphs"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.groupalgebras_r",
+      "display": "GroupAlgebras(R)",
+      "demanded_by": ["GroupAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "construction-defined named category",
+          "target_visibility": "construction named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.groupoidson_g",
+      "display": "GroupoidsOn(G)",
+      "demanded_by": ["Groupoid"],
+      "occurrences": [
+        {
+          "mapping_kind": "exceptional parameterized fiber",
+          "target_visibility": "exception named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.groups",
+      "display": "Groups",
+      "demanded_by": ["Groups"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.groups_finite",
+      "display": "Groups.Finite",
+      "demanded_by": ["FiniteGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.groupswithsimplereflections",
+      "display": "GroupsWithSimpleReflections",
+      "demanded_by": ["ComplexReflectionOrGeneralizedCoxeterGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "exceptional explicit compatibility host",
+          "target_visibility": "exception named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.heckemodules_r",
+      "display": "HeckeModules(R)",
+      "demanded_by": ["HeckeModules"],
+      "occurrences": [
+        {
+          "mapping_kind": "structured refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.highestweightcrystals",
+      "display": "HighestWeightCrystals",
+      "demanded_by": ["HighestWeightCrystals"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.homsets_c",
+      "display": "Homsets(C)",
+      "demanded_by": ["Homsets"],
+      "occurrences": [
+        {
+          "mapping_kind": "construction-defined named category",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.hopfalgebras_r",
+      "display": "HopfAlgebras(R)",
+      "demanded_by": ["HopfAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.hopfalgebras_r_graded",
+      "display": "HopfAlgebras(R).Graded",
+      "demanded_by": ["GradedHopfAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "wrapper refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.hopfalgebras_r_withbasis",
+      "display": "HopfAlgebras(R).WithBasis",
+      "demanded_by": ["HopfAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.hopfalgebras_r_withbasis_filtered",
+      "display": "HopfAlgebras(R).WithBasis.Filtered",
+      "demanded_by": ["FilteredHopfAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.hopfalgebras_r_withbasis_finiterank",
+      "display": "HopfAlgebras(R).WithBasis.FiniteRank",
+      "demanded_by": ["FiniteDimensionalHopfAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.hopfalgebras_r_withbasis_graded",
+      "display": "HopfAlgebras(R).WithBasis.Graded",
+      "demanded_by": ["GradedHopfAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.hopfalgebras_r_withbasis_super",
+      "display": "HopfAlgebras(R).WithBasis.Super",
+      "demanded_by": ["SuperHopfAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.integraldomains",
+      "display": "IntegralDomains",
+      "demanded_by": ["IntegralDomains"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.jacobians_k",
+      "display": "Jacobians(K)",
+      "demanded_by": ["Jacobians"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.kacmoodyalgebras_r",
+      "display": "KacMoodyAlgebras(R)",
+      "demanded_by": ["KacMoodyAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.kirillovreshetikhincrystals",
+      "display": "KirillovReshetikhinCrystals",
+      "demanded_by": ["KirillovReshetikhinCrystals"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.lambdabracketalgebras_r",
+      "display": "LambdaBracketAlgebras(R)",
+      "demanded_by": ["LambdaBracketAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.lambdabracketalgebras_r_finitelygenerated",
+      "display": "LambdaBracketAlgebras(R).FinitelyGenerated",
+      "demanded_by": ["FinitelyGeneratedLambdaBracketAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.lambdabracketalgebras_r_withbasis",
+      "display": "LambdaBracketAlgebras(R).WithBasis",
+      "demanded_by": ["LambdaBracketAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.latticeposets",
+      "display": "LatticePosets",
+      "demanded_by": ["LatticePosets"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.latticeposets_finite",
+      "display": "LatticePosets.Finite",
+      "demanded_by": ["FiniteLatticePosets"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.liealgebras_r",
+      "display": "LieAlgebras(R)",
+      "demanded_by": ["LieAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.liealgebras_r_graded",
+      "display": "LieAlgebras(R).Graded",
+      "demanded_by": ["GradedLieAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.liealgebras_r_withbasis",
+      "display": "LieAlgebras(R).WithBasis",
+      "demanded_by": ["LieAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.liealgebras_r_withbasis_finiterank",
+      "display": "LieAlgebras(R).WithBasis.FiniteRank",
+      "demanded_by": ["FiniteDimensionalLieAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.liealgebras_r_withbasis_finiterank_nilpotent",
+      "display": "LieAlgebras(R).WithBasis.FiniteRank.Nilpotent",
+      "demanded_by": ["FiniteDimensionalNilpotentLieAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.liealgebras_r_withbasis_graded",
+      "display": "LieAlgebras(R).WithBasis.Graded",
+      "demanded_by": ["GradedLieAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.liealgebras_r_withbasis_graded_finiterank",
+      "display": "LieAlgebras(R).WithBasis.Graded.FiniteRank",
+      "demanded_by": ["FiniteDimensionalGradedLieAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.lieconformalalgebras_r",
+      "display": "LieConformalAlgebras(R)",
+      "demanded_by": ["LieConformalAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.lieconformalalgebras_r_finitelygenerated_lambdabracket",
+      "display": "LieConformalAlgebras(R).FinitelyGenerated@LambdaBracket",
+      "demanded_by": ["FinitelyGeneratedLieConformalAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.lieconformalalgebras_r_graded",
+      "display": "LieConformalAlgebras(R).Graded",
+      "demanded_by": ["GradedLieConformalAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.lieconformalalgebras_r_super",
+      "display": "LieConformalAlgebras(R).Super",
+      "demanded_by": ["SuperLieConformalAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.lieconformalalgebras_r_withbasis",
+      "display": "LieConformalAlgebras(R).WithBasis",
+      "demanded_by": ["LieConformalAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.liegroups",
+      "display": "LieGroups",
+      "demanded_by": ["LieGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact compatibility host",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.loopcrystals",
+      "display": "LoopCrystals",
+      "demanded_by": ["LoopCrystals"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.magmas",
+      "display": "Magmas",
+      "demanded_by": ["Magmas"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.magmas_additive",
+      "display": "Magmas.Additive",
+      "demanded_by": ["AdditiveMagmas"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.magmas_finitelygenerated",
+      "display": "Magmas.FinitelyGenerated",
+      "demanded_by": ["FinitelyGeneratedMagmas"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.magmaswithtwooperations",
+      "display": "MagmasWithTwoOperations",
+      "demanded_by": ["MagmasAndAdditiveMagmas"],
+      "occurrences": [
+        {
+          "mapping_kind": "named pullback host",
+          "target_visibility": "exception named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.magmaswithtwooperations_distributive",
+      "display": "MagmasWithTwoOperations.Distributive",
+      "demanded_by": ["DistributiveMagmasAndAdditiveMagmas"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.manifolds",
+      "display": "Manifolds",
+      "demanded_by": ["Manifolds"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.matrixalgebras_k",
+      "display": "MatrixAlgebras(K)",
+      "demanded_by": ["MatrixAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.metricspaces",
+      "display": "MetricSpaces",
+      "demanded_by": ["MetricSpaces"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.modularabelianvarieties_k",
+      "display": "ModularAbelianVarieties(K)",
+      "demanded_by": ["ModularAbelianVarieties"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.modules_r",
+      "display": "Modules(R)",
+      "demanded_by": ["Modules"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact intended named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.modules_r_filtered",
+      "display": "Modules(R).Filtered",
+      "demanded_by": ["FilteredModules"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.modules_r_graded",
+      "display": "Modules(R).Graded",
+      "demanded_by": ["GradedModules"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.modules_r_super",
+      "display": "Modules(R).Super",
+      "demanded_by": ["SuperModules"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.modules_r_withbasis",
+      "display": "Modules(R).WithBasis",
+      "demanded_by": ["ModulesWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.modules_r_withbasis_filtered",
+      "display": "Modules(R).WithBasis.Filtered",
+      "demanded_by": ["FilteredModulesWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.modules_r_withbasis_finiterank",
+      "display": "Modules(R).WithBasis.FiniteRank",
+      "demanded_by": ["FiniteDimensionalModulesWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.modules_r_withbasis_graded",
+      "display": "Modules(R).WithBasis.Graded",
+      "demanded_by": ["GradedModulesWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.modules_r_withbasis_super",
+      "display": "Modules(R).WithBasis.Super",
+      "demanded_by": ["SuperModulesWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.modules_rop",
+      "display": "Modules(Rᵒᵖ)",
+      "demanded_by": ["RightModules"],
+      "occurrences": [
+        {
+          "mapping_kind": "parameter transform",
+          "target_visibility": "named family application"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.monoidalgebras_r",
+      "display": "MonoidAlgebras(R)",
+      "demanded_by": ["MonoidAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "construction-defined named category",
+          "target_visibility": "construction named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.monoids",
+      "display": "Monoids",
+      "demanded_by": ["Monoids"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.monoids_finite",
+      "display": "Monoids.Finite",
+      "demanded_by": ["FiniteMonoids"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.noetheriancommutativerings",
+      "display": "NoetherianCommutativeRings",
+      "demanded_by": ["NoetherianRings"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.numberfields",
+      "display": "NumberFields",
+      "demanded_by": ["NumberFields"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.oremodules_r_sigma_delta",
+      "display": "OreModules(R,σ,δ)",
+      "demanded_by": ["OreModules"],
+      "occurrences": [
+        {
+          "mapping_kind": "structured refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.partiallyorderedmonoids",
+      "display": "PartiallyOrderedMonoids",
+      "demanded_by": ["PartiallyOrderedMonoids"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.permutationgroups",
+      "display": "PermutationGroups",
+      "demanded_by": ["PermutationGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.permutationgroups_finite",
+      "display": "PermutationGroups.Finite",
+      "demanded_by": ["FinitePermutationGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.pids",
+      "display": "PIDs",
+      "demanded_by": ["PrincipalIdealDomains"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.polyhedra_r",
+      "display": "Polyhedra(R)",
+      "demanded_by": ["PolyhedralSets"],
+      "occurrences": [
+        {
+          "mapping_kind": "standard name normalization",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.posets",
+      "display": "Posets",
+      "demanded_by": ["Posets"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.posets_finite",
+      "display": "Posets.Finite",
+      "demanded_by": ["FinitePosets"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.quantumgrouprepresentations_r",
+      "display": "QuantumGroupRepresentations(R)",
+      "demanded_by": ["QuantumGroupRepresentations"],
+      "occurrences": [
+        {
+          "mapping_kind": "structured refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.regularcrystals",
+      "display": "RegularCrystals",
+      "demanded_by": ["RegularCrystals"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.regularloopcrystals",
+      "display": "RegularLoopCrystals",
+      "demanded_by": ["RegularLoopCrystals"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.regularsupercrystals",
+      "display": "RegularSuperCrystals",
+      "demanded_by": ["RegularSuperCrystals"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.ringideals_r",
+      "display": "RingIdeals(R)",
+      "demanded_by": ["RingIdeals"],
+      "occurrences": [
+        {
+          "mapping_kind": "construction-defined named category",
+          "target_visibility": "construction named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.rings",
+      "display": "Rings",
+      "demanded_by": ["Rings"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.rngs",
+      "display": "Rngs",
+      "demanded_by": ["Rngs"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.sagebackendobjects",
+      "display": "SageBackendObjects",
+      "demanded_by": ["Objects"],
+      "occurrences": [
+        {
+          "mapping_kind": "backend ambient exception",
+          "target_visibility": "backend-only compatibility"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.schemes_s",
+      "display": "Schemes(S)",
+      "demanded_by": ["Schemes"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.semigroups",
+      "display": "Semigroups",
+      "demanded_by": ["Semigroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.semigroups_aperiodic",
+      "display": "Semigroups.Aperiodic",
+      "demanded_by": ["AperiodicSemigroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.semigroups_finite",
+      "display": "Semigroups.Finite",
+      "demanded_by": ["FiniteSemigroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.semigroups_finitelygenerated",
+      "display": "Semigroups.FinitelyGenerated",
+      "demanded_by": ["FinitelyGeneratedSemigroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.semigroups_htrivial",
+      "display": "Semigroups.HTrivial",
+      "demanded_by": ["HTrivialSemigroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.semigroups_jtrivial",
+      "display": "Semigroups.JTrivial",
+      "demanded_by": ["JTrivialSemigroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.semigroups_ltrivial",
+      "display": "Semigroups.LTrivial",
+      "demanded_by": ["LTrivialSemigroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.semigroups_rtrivial",
+      "display": "Semigroups.RTrivial",
+      "demanded_by": ["RTrivialSemigroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.semirings",
+      "display": "Semirings",
+      "demanded_by": ["Semirings"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.semisimplealgebras_r",
+      "display": "SemisimpleAlgebras(R)",
+      "demanded_by": ["SemisimpleAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.semisimplealgebras_r_withbasis_finiterank",
+      "display": "SemisimpleAlgebras(R).WithBasis.FiniteRank",
+      "demanded_by": ["FiniteDimensionalSemisimpleAlgebrasWithBasis"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.sets",
+      "display": "Sets",
+      "demanded_by": ["FacadeSets", "Sets"],
+      "occurrences": [
+        {
+          "mapping_kind": "backend engineering exclusion",
+          "target_visibility": "backend-only compatibility"
+        },
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.sets_enumerated",
+      "display": "Sets.Enumerated",
+      "demanded_by": ["EnumeratedSets"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.sets_enumerated_finite",
+      "display": "Sets.Enumerated.Finite",
+      "demanded_by": ["FiniteEnumeratedSets"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.sets_enumerated_infinite",
+      "display": "Sets.Enumerated.Infinite",
+      "demanded_by": ["InfiniteEnumeratedSets"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.sets_finite",
+      "display": "Sets.Finite",
+      "demanded_by": ["FiniteSets"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.sets_graded",
+      "display": "Sets.Graded",
+      "demanded_by": ["SetsWithGrading"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.sets_pointed",
+      "display": "Sets.Pointed",
+      "demanded_by": ["PointedSets"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.setswithpartialmaps",
+      "display": "SetsWithPartialMaps",
+      "demanded_by": ["SetsWithPartialMaps"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.shephardgroups",
+      "display": "ShephardGroups",
+      "demanded_by": ["ShephardGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.simplicialcomplexes",
+      "display": "SimplicialComplexes",
+      "demanded_by": ["SimplicialComplexes"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.simplicialsets",
+      "display": "SimplicialSets",
+      "demanded_by": ["SimplicialSets"],
+      "occurrences": [
+        {
+          "mapping_kind": "construction-defined named category",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.supercommutativealgebras_r",
+      "display": "SupercommutativeAlgebras(R)",
+      "demanded_by": ["SupercommutativeAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.supercrystals",
+      "display": "SuperCrystals",
+      "demanded_by": ["SuperCrystals"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.topologicalspaces",
+      "display": "TopologicalSpaces",
+      "demanded_by": ["TopologicalSpaces"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.triangularkacmoodyalgebras_r",
+      "display": "TriangularKacMoodyAlgebras(R)",
+      "demanded_by": ["TriangularKacMoodyAlgebras"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.ufds",
+      "display": "UFDs",
+      "demanded_by": ["UniqueFactorizationDomains"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.vectorbundles_x_r",
+      "display": "VectorBundles(X,R)",
+      "demanded_by": ["VectorBundles"],
+      "occurrences": [
+        {
+          "mapping_kind": "exact named base",
+          "target_visibility": "domain named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.vectorspaces_k",
+      "display": "VectorSpaces(K)",
+      "demanded_by": ["VectorSpaces"],
+      "occurrences": [
+        {
+          "mapping_kind": "parameter specialization",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.weylgroups",
+      "display": "WeylGroups",
+      "demanded_by": ["WeylGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "core named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.weylgroups_finite",
+      "display": "WeylGroups.Finite",
+      "demanded_by": ["FiniteWeylGroups"],
+      "occurrences": [
+        {
+          "mapping_kind": "classifier refinement",
+          "target_visibility": "conventional named"
+        }
+      ]
+    }
+  ],
+  "unstated_demands": [
+    {
+      "kind": "constructor",
+      "sage_construction": "Algebras",
+      "sage_flavor": "covariant",
+      "normalized_disposition": "Monoid/group algebra construction R[−]",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "CartesianProducts",
+      "sage_flavor": "covariant",
+      "normalized_disposition": "Cartesian-product object construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "DualObjects",
+      "sage_flavor": "covariant",
+      "normalized_disposition": "Dual-object construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "Filtered",
+      "sage_flavor": "regressive covariant",
+      "normalized_disposition": "Filtered-object classifier/construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "Graded",
+      "sage_flavor": "regressive covariant",
+      "normalized_disposition": "Grading classifier/construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "Homsets",
+      "sage_flavor": "general/specialized functorial",
+      "normalized_disposition": "Hom/C-homset construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "IsomorphicObjects",
+      "sage_flavor": "regressive covariant",
+      "normalized_disposition": "isomorphism-closure / Core-π₀ construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "Metric",
+      "sage_flavor": "regressive covariant",
+      "normalized_disposition": "Metric-structure classifier/construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "Quotients",
+      "sage_flavor": "regressive covariant",
+      "normalized_disposition": "quotient-object construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "Realizations",
+      "sage_flavor": "regressive covariant",
+      "normalized_disposition": "realization/presentation construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "SignedTensorProducts",
+      "sage_flavor": "covariant",
+      "normalized_disposition": "signed/super tensor-product construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "Subobjects",
+      "sage_flavor": "regressive covariant",
+      "normalized_disposition": "subobject construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "Subquotients",
+      "sage_flavor": "regressive covariant",
+      "normalized_disposition": "subquotient construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "Super",
+      "sage_flavor": "covariant",
+      "normalized_disposition": "super/Z₂-graded structure construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "TensorProducts",
+      "sage_flavor": "covariant",
+      "normalized_disposition": "tensor-product object construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "Topological",
+      "sage_flavor": "regressive covariant",
+      "normalized_disposition": "topology classifier/construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    },
+    {
+      "kind": "constructor",
+      "sage_construction": "WithRealizations",
+      "sage_flavor": "regressive covariant",
+      "normalized_disposition": "object-with-realizations construction",
+      "missing": "no stable normalized constructor id in the authored ledger"
+    }
+  ]
+}
