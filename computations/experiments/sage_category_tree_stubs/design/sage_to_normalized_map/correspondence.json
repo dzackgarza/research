@@ -72,7 +72,6 @@
     "cat.modules_r": "LeftModules",
     "cat.left_modules_r": "LeftModules",
     "cat.right_modules_r": "RightModules",
-    "cat.vector_spaces_k": "VectorSpaces",
     "cat.algebras_r": "MagmaticAlgebras",
     "cat.unital_algebras": "Algebras",
     "cat.lie_algebras_r": "LieAlgebras",
@@ -89,7 +88,8 @@
     "cat.algebras_over_field": "MagmaticAlgebras",
     "cat.additive_abelian_groups": "CommutativeAdditiveGroups",
     "cat.bimodules_r_r": "Modules",
-    "cat.bimodules_r_s": "Bimodules"
+    "cat.bimodules_r_s": "Bimodules",
+    "cat.vector_spaces_k": "VectorSpaces"
   },
   "axiom_sage_to_graph": {
     "AdditiveAssociative": "Associative",

@@ -4349,7 +4349,7 @@
         "base_in_current_dot": "present",
         "current_dot_match": "Modules(R)",
         "note": "Normalized Modules(R) is R-Mod, left modules (Foundations Def 13.1); Sage's LeftModules is that category, and reading it so adds nothing, since a left module is canonically an (R,Z)-bimodule with no choice involved (Cor 90.2). Sage's Modules is NOT this category.",
-        "exception_or_ambiguity": "left_modules.py says 'over an rng (ring not necessarily with unit)', which the code never enforces and which Bimodules.__init__ contradicts by requiring Rings(). The parameter sort is recorded as Rings on the enforced behaviour, not the docstring."
+        "exception_or_ambiguity": "The 'over an rng (ring not necessarily with unit)' docstring is refuted by the code: Sage has a Rngs() category with Rings() a proper subcategory of it, and LeftModules(Rngs()) raises ValueError('base must be a ring or a subcategory of Rings()'). Bimodules rejects it identically. R : Rings is enforced, not merely assumed."
       }
     },
     {
@@ -5537,7 +5537,7 @@
         "base_in_current_dot": "present",
         "current_dot_match": "Modules(R)",
         "note": "Right R-modules are left modules over the opposite ring; no parallel primitive module species is needed.",
-        "exception_or_ambiguity": "Mod-R := R^op-Mod is a definition (Foundations Def 13.1), not a functor induced by the opposite-ring involution: no side-changing functor exists from that involution alone (Prop 91.1). Same rng-versus-Rings docstring divergence as LeftModules."
+        "exception_or_ambiguity": "Mod-R := R^op-Mod is a definition (Foundations Def 13.1), not a functor induced by the opposite-ring involution: no side-changing functor follows from that involution alone (Prop 91.1). The 'over an rng (ring not necessarily with unit)' docstring is refuted by the code: Sage has a Rngs() category with Rings() a proper subcategory of it, and RightModules(Rngs()) raises ValueError('base must be a ring or a subcategory of Rings()'). Bimodules rejects it identically. R : Rings is enforced, not merely assumed."
       }
     },
     {
@@ -6503,13 +6503,13 @@
         "parameter_constraints": "K : Fields"
       },
       "audit": {
-        "confidence": "high",
+        "confidence": "review",
         "review_status": "proposed; source-audited",
         "recommend_explicit_target": "yes",
         "base_in_current_dot": "present",
         "current_dot_match": "Modules(R)",
         "note": "VectorSpaces(K) is the standard name for Modules(K) when the scalar ring is a field.",
-        "exception_or_ambiguity": "OPEN, not settled by this pass. vector_spaces.py's docstring says 'the category of (abstract) vector spaces over a given field', but its super_categories() is [Modules(K, dispatch=False)], and Sage's Modules is Bimodules(R,R). Unlike Modules, where docstring and declaration agree, here they disagree, so the destination is either VectorSpaces(K) as recorded or Bimodules(K,K) at K a field. Falsifiable specimen: K = Q(i) with the right action twisted by conjugation is a (K,K)-bimodule and no vector space; whether a Sage parent can present it decides the row. See issue #292."
+        "exception_or_ambiguity": "KNOWN WRONG, blocked rather than fixed; see issue #292. The evidence says the destination is Bimodules(K,K) at K : Fields: VectorSpaces(K).super_categories() == [Modules(K, dispatch=False)], its axiom set is identical to Modules(K)'s, and additional_structure() is None, so it adds nothing to a category whose destination is Bimodules(R,R). Nothing imposes centrality; K = Q(i) with right action m*r := m*conj(r) is a non-central (K,K)-bimodule that Sage's linear algebra would silently treat as central. Retargeting is blocked on 𝒢, not on Sage: Sage's solid edges AlgebrasOverField -> VectorSpaces and VectorSpacesWithBasis -> VectorSpaces then have no path in 𝒢, because 𝒢 has no route from the module/algebra side to the bimodule side. The two arrows that would supply it are real mathematics -- the central section c_R (Def 92.2) and an R-algebra as an (R,R)-bimodule via its structure map to the centre (Def 13.9) -- but adding c_R as a solid parent edge breaks 17 tests, because in this graph a solid edge drops structure and c_R adds it. Expressing a section is an open design question for the arrow set."
       }
     },
     {

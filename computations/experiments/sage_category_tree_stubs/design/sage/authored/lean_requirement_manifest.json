@@ -4,8 +4,8 @@
   "authority": "Interface demand only. This manifest records which stable identifiers a released registry must resolve for this repository to evaluate its rows. It is not an authority for generic Lean definitions.",
   "source": {
     "path": "design/sage/authored/sage_normalized_category_mapping_manifest.json",
-    "sha256": "6fb94069d0c65d3ba95eacb7e7bc6abf98e8c8325aedb9839949041cebe20338",
-    "git_commit": "a4e4ce29505e58fddeb6c4e3b9e0a85cadcae401-dirty",
+    "sha256": "a705c5740fca0cd8f73c6d883548a99114d95546d18be721ff6f70276066db03",
+    "git_commit": "a8be3421c39f7aa527196be5350b57b0f16e4f35-dirty",
     "ledger_schema_version": "0.4-draft",
     "sage_source_commit": "686dc1a8d420c2e0aabadd4f602d9a0aa4690c50"
   },

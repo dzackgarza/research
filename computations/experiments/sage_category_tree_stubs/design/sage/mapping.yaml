@@ -5875,7 +5875,7 @@ category_mappings:
     provenance:
       status: authored-exact
       source: design/sage/authored/
-      confidence: high
+      confidence: review
       review_status: proposed; source-audited
       mapping_kind: parameter specialization
   - source: sage.category.weyl_groups_weylgroups
