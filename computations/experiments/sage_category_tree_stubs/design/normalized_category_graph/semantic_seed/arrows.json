@@ -3893,6 +3893,30 @@
       "kind": "forgetful",
       "preferred": true,
       "provenance": "discard the root basis; the Grothendieck projection of Def 68.5. A named ADE lattice is the image here of a chosen point upstairs (Construction 68.6), and Thm 68.7 makes that image independent of the standard realization chosen."
+    },
+    {
+      "id": "arr.clf.catobject_preadditive",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_Preadditive : CatObject.Preadditive -> CatObject (Def 14.1)",
+      "source": "clf.catobject_preadditive",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.clf.catobject_additive",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_Additive : CatObject.Additive -> CatObject (Def 14.1)",
+      "source": "clf.catobject_additive",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.clf.catobject_abelian",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_Abelian : CatObject.Abelian -> CatObject (Def 14.1)",
+      "source": "clf.catobject_abelian",
+      "target": "cat.cat_object"
     }
   ],
   "kind": "normalized_semantic_seed.arrows",

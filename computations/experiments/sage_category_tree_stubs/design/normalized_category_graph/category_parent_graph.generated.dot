@@ -181,11 +181,14 @@ digraph CategoryParents {
   Torsors [style="rounded,filled", fillcolor="#e3f2fd", color="#1565c0", id="ctor.torsors", kind="category_constructor"];
 
   // --- classifier_domain ---
+  "CatObject.Abelian" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.catobject_abelian", kind="classifier_domain", label="Abelian"];
+  "CatObject.Additive" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.catobject_additive", kind="classifier_domain", label="Additive"];
   "CatObject.Colimits" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.catobject_colimits", kind="classifier_domain", label="Colimits"];
   "CatObject.Coproducts" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.catobject_coproducts", kind="classifier_domain", label="Coproducts"];
   "CatObject.Finite" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.catobject_finite", kind="classifier_domain", label="Finite"];
   "CatObject.Limits" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.catobject_limits", kind="classifier_domain", label="Limits"];
   "CatObject.LocallySmall" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.catobject_locallysmall", kind="classifier_domain", label="LocallySmall"];
+  "CatObject.Preadditive" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.catobject_preadditive", kind="classifier_domain", label="Preadditive"];
   "CatObject.Products" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.catobject_products", kind="classifier_domain", label="Products"];
   "CatObject.Thin" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.catobject_thin", kind="classifier_domain", label="Thin"];
   "Graphs.Directed" [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", id="clf.graphs_directed", kind="classifier_domain", label="Directed"];
@@ -608,4 +611,7 @@ digraph CategoryParents {
   RootBasis_Gamma -> RootBasis_S [kind="full_inclusion", id="arr.root.rootbasis_gamma__rootbasis_s"];
   RootBasis_S -> RootFrame_S [kind="full_inclusion", id="arr.root.rootbasis_s__rootframe_s"];
   RootFrame_S -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [kind="forgetful", id="arr.root.rootframe_s__lat"];
+  "CatObject.Preadditive" -> CatObject [style=dotted, kind="classifier_leg", id="arr.clf.catobject_preadditive"];
+  "CatObject.Additive" -> CatObject [style=dotted, kind="classifier_leg", id="arr.clf.catobject_additive"];
+  "CatObject.Abelian" -> CatObject [style=dotted, kind="classifier_leg", id="arr.clf.catobject_abelian"];
 }

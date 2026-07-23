@@ -5109,6 +5109,42 @@
       "aliases": [],
       "dot_vertex": "VectorFieldModules",
       "provenance": "dot_import"
+    },
+    {
+      "id": "clf.catobject_preadditive",
+      "kind": "classifier_domain",
+      "canonical_name": "CatObject.Preadditive",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.catobject_preadditive"
+      },
+      "aliases": [],
+      "dot_vertex": "CatObject.Preadditive",
+      "provenance": "Foundations Def 14.1"
+    },
+    {
+      "id": "clf.catobject_additive",
+      "kind": "classifier_domain",
+      "canonical_name": "CatObject.Additive",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.catobject_additive"
+      },
+      "aliases": [],
+      "dot_vertex": "CatObject.Additive",
+      "provenance": "Foundations Def 14.1"
+    },
+    {
+      "id": "clf.catobject_abelian",
+      "kind": "classifier_domain",
+      "canonical_name": "CatObject.Abelian",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.catobject_abelian"
+      },
+      "aliases": [],
+      "dot_vertex": "CatObject.Abelian",
+      "provenance": "Foundations Def 14.1"
     }
   ]
 }

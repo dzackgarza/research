@@ -177,7 +177,8 @@
       "domain_id": "clf.catobject_colimits",
       "leg_arrow_id": "arr.clf.catobject_colimits",
       "transport": null,
-      "notes": "Imported from DOT axiom attachment"
+      "notes": "Foundations Rmk 14.4; existence, not choice.",
+      "semantic_character": "property"
     },
     {
       "id": "clf.catobject_coproducts",
@@ -195,7 +196,8 @@
       "domain_id": "clf.catobject_finite",
       "leg_arrow_id": "arr.clf.catobject_finite",
       "transport": null,
-      "notes": "Imported from DOT axiom attachment"
+      "notes": "Foundations Rmk 14.4.",
+      "semantic_character": "property"
     },
     {
       "id": "clf.catobject_limits",
@@ -204,7 +206,8 @@
       "domain_id": "clf.catobject_limits",
       "leg_arrow_id": "arr.clf.catobject_limits",
       "transport": null,
-      "notes": "Imported from DOT axiom attachment"
+      "notes": "Foundations Rmk 14.4: existence of limits is property-like. CHOSEN limits are a different, structure-like classifier with nontrivial fibres; if a consumer needs a choice it must say so.",
+      "semantic_character": "property"
     },
     {
       "id": "clf.catobject_locallysmall",
@@ -213,7 +216,8 @@
       "domain_id": "clf.catobject_locallysmall",
       "leg_arrow_id": "arr.clf.catobject_locallysmall",
       "transport": null,
-      "notes": "Imported from DOT axiom attachment"
+      "notes": "Foundations Rmk 14.4.",
+      "semantic_character": "property"
     },
     {
       "id": "clf.catobject_products",
@@ -231,7 +235,8 @@
       "domain_id": "clf.catobject_thin",
       "leg_arrow_id": "arr.clf.catobject_thin",
       "transport": null,
-      "notes": "Imported from DOT axiom attachment"
+      "notes": "Foundations Rmk 14.4.",
+      "semantic_character": "property"
     },
     {
       "id": "clf.graphs_directed",
@@ -618,7 +623,8 @@
       "domain_id": "clf.ax_monoidal",
       "leg_arrow_id": "arr.clf.ax_monoidal",
       "transport": null,
-      "notes": "Imported from DOT axiom attachment"
+      "notes": "Foundations Def 14.2: MonCat -> Cat. The fibre over a fixed category can contain SEVERAL inequivalent monoidal structures, so a consumer must name the chosen lift -- (x)_R or (+) on R-Mod are different lifts of the same category. Unnamed structure-reference is the standing lift-ambiguity hazard.",
+      "semantic_character": "chosen structure"
     },
     {
       "id": "clf.ax_noetherian",
@@ -1591,6 +1597,36 @@
       "leg_arrow_id": "arr.clf.biact.commutation",
       "transport": null,
       "notes": "Foundations Def 85.3: on an object of BiAct(R,S) the two composites R (x) M (x) S -> M, r(x)m(x)s |-> (rm)s and r(x)m(x)s |-> r(ms), agree. A PROPERTY classifier -- the full replete locus is _R Bimod_S. So the two actions are structure and their commutation is an additional diagrammatic property, not part of the data."
+    },
+    {
+      "id": "clf.catobject_preadditive",
+      "name": "Preadditive",
+      "host_id": "cat.cat_object",
+      "domain_id": "clf.catobject_preadditive",
+      "leg_arrow_id": "arr.clf.catobject_preadditive",
+      "transport": null,
+      "semantic_character": "chosen structure",
+      "notes": "Foundations Def 14.1: a preadditive category is enriched in abelian groups, and the forgetful map from categories with a CHOSEN preadditive structure is a structure classifier."
+    },
+    {
+      "id": "clf.catobject_additive",
+      "name": "Additive",
+      "host_id": "cat.cat_object",
+      "domain_id": "clf.catobject_additive",
+      "leg_arrow_id": "arr.clf.catobject_additive",
+      "transport": null,
+      "semantic_character": "property relative to Preadditive",
+      "notes": "Foundations Def 14.1: finite biproducts, a limit condition stated RELATIVE to a chosen preadditive structure."
+    },
+    {
+      "id": "clf.catobject_abelian",
+      "name": "Abelian",
+      "host_id": "cat.cat_object",
+      "domain_id": "clf.catobject_abelian",
+      "leg_arrow_id": "arr.clf.catobject_abelian",
+      "transport": null,
+      "semantic_character": "property relative to Preadditive",
+      "notes": "Foundations Def 14.1: kernels and cokernels with every mono and epi normal. 'Being abelian is a property' is always understood relative to the additive enrichment that makes the axioms meaningful."
     }
   ]
 }
