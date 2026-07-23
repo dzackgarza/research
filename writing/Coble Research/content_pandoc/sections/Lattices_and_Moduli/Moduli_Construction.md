@@ -28,7 +28,7 @@ We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$
 
 # GIT Discussion
 
-::: {.remark}
+::: {.remark title="GIT construction"}
 
 Following [@DK13], by varying the coefficients of $p_i$ in the planar blowup
 construction, one can construct $F_\Co$ as a locally closed subvariety of
@@ -51,7 +51,7 @@ moduli spaces.
 
 # Horikawa model
 
-::: {.remark}
+::: {.remark title="Horikawa's construction"}
 
 Alternatively, Horikawa [@Hor77] and more recently [@AEGS25] consider
 the following: let $Y\da \PP^1\times \PP^1$ and define an involution

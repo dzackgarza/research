@@ -26,7 +26,7 @@ Thus
 $g = 0$ if and only if $k = 10$.
 :::
 
-::: {.remark ref="rmk:severi-sextics"}
+::: {.remark ref="rmk:severi-sextics" title="Severi varieties and degenerate sextics"}
 
 We note that an
 arbitrary rational irreducible sextic need not have exactly ten
@@ -48,7 +48,7 @@ unnodal Coble surface construction specifically requires a sextic from
 the generic, 10-$A_1$ locus.
 :::
 
-::: {.remark}
+::: {.remark title="Canonical class of Cobles"}
 
 Let $W\subset \PP^2$ be a generic irreducible rational sextic with ten $A_1$ singularities.
 The classical Coble surfaces $S$, first constructed
@@ -91,7 +91,7 @@ $$
 yielding $C\sim -2K_S$.
 :::
 
-::: {.remark}
+::: {.remark title="Invariants of antibicanonical curves"}
 
 By [@CD12 §3.1], if $S$ is Coble surface of K3 type with $n=1$ boundary
 components and $C \in \abs{-2K_S}$ is an irreducible curve, then

@@ -1,6 +1,6 @@
 # Basics of Coble surfaces
 
-::: {.remark}
+::: {.remark title="On defining Cobles"}
 
 For the general theory of Coble surfaces, we refer to [@CDL25; @DK25], along
 with [@DM20; @DZ99; @DK13; @CD89; @CD12; @Dol17].
@@ -18,7 +18,7 @@ The $C_i$ are referred to as the *boundary components* of $S$.
 One can show $n = -K_S^2$ and $n\leq 10$, c.f. [@DK25 Cor. 9.1.5].
 :::
 
-::: {.remark}
+::: {.remark title="Cobles as blowups"}
 
 Such a Coble surface $S$ can be shown to be a _basic rational surface_
 [@Dol17 §5.1], i.e. it admits a birational morphism to $\pi: S\to \PP^2$ which
@@ -51,7 +51,7 @@ longer a Coble surface, or equivalently if $S$ does not admit a birational but
 not biregular morphism onto another Coble surface.
 :::
 
-::: {.remark}
+::: {.remark title="On the importance of Cobles"}
 
 Following [@CD12 §1.4], a point set
 $\mathcal{P}=\ts{p_{1}, \ldots, p_{n}}$ of $\PP^{2}$ is called

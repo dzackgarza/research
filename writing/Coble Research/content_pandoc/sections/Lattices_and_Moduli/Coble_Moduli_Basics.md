@@ -1,6 +1,6 @@
 # Moduli
 
-::: {.remark}
+::: {.remark title="Coble moduli as a divisor in Enriques moduli"}
 
 For each $1\leq n \leq 10$, there is a moduli space of Coble surfaces with $n$
 boundary components.
@@ -17,7 +17,7 @@ quartic singularity whose resolution is an irreducible smooth rational curve $C$
 satisfying $C^2 = -4$, and by [@Nue15 p. 8] is thus a Coble surface $S$.
 :::
 
-:::: {.remark}
+:::: {.remark title="Hodge/lattice theoretic moduli"}
 
 Separately, one can construct a Hodge-theoretic period domain directly using
 lattice theory.[^coble-note-2]
@@ -40,7 +40,7 @@ lattice will be used to construct a period domain quotiented by an appropriate
 arithmetic subgroup, producing the coarse moduli space of interest.
 ::::
 
-::: {.remark}
+::: {.remark title="On nonsymplectic involutions"}
 
 As described in [@DZ99], the double cover $\pi: X\to S$ realizes $X$ as a
 degeneration of a K3 cover of an Enriques surface, which thus describes a family
@@ -52,5 +52,7 @@ It seems that these degenerations correspond to the (weakly projective)
 Kulikov models correspond to integral-affine discs (as opposed to spheres or
 real projective spaces).
 :::
+
+\todo[inline]{For introduction, need to say more about how the nonsymplectic involution machinery is being used in this particular case?}
 
 [^coble-note-2]: An unpublished note of Dolgachev: <https://homepage.mi-ras.ru/~prokhoro/conf/isk20/Dolgachev.pdf>
