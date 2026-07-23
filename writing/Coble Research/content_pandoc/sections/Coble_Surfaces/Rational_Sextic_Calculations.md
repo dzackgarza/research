@@ -82,7 +82,7 @@ nonsymplectic involution $\iota$ which preserves $\NS(X)$.
 Thus if $S$ is of K3 type, then the universal double cover $f: X\to S$ is a
 singular normal K3 surface $X$ at worst $A_1$ singularities which is naturally
 equipped with a nonsymplectic involution $\iota$.
-Moreover, by the proof of [@AD18 Lem. 2.2], a Hurwitz-type formula yields
+Moreover, by the proof of [@AS15 Lem. 2.2], a Hurwitz-type formula yields
 
 $$
 0 = 2K_X = 2\qty{ f^*(K_S) + \sum_{k=1}^{10} E_k } = f^*(2K_S + C)
@@ -93,7 +93,7 @@ yielding $C\sim -2K_S$.
 
 ::: {.remark}
 
-By [@CD12 §3.1], if $S$ is Coble surface of K3 type with $n=1$ boundary
+By [@CDL25 §3.1], if $S$ is Coble surface of K3 type with $n=1$ boundary
 components and $C \in \abs{-2K_S}$ is an irreducible curve, then
 
 $$

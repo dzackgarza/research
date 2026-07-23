@@ -43,5 +43,5 @@ The following is a combinatorial representation of a Kulikov model for Sterk 2.
 
 ::: {.remark}
 
-We leverage the theory of [@AEGS25; @AE22; @AE23; @AET23; @AB21].
+We leverage the theory of [@AEGS25; @AE22; @AE23; @AET23; @ABE22].
 :::
