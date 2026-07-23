@@ -34,7 +34,7 @@ singularities, nor must its singularities be $A_1$ singularities.
 The
 condition $g=0$ merely requires that the sum of the $\delta$-invariants
 of its singularities equals 10. The locus of rational $A_1$-singular
-sextics forms a Severi variety $V_{6,10}$ [@BHO+11] whose
+sextics forms a Severi variety $V_{6,10}$ [@BHO+12] whose
 generic element has precisely 10 $A_1$ singularities.
 However,
 $V_{6,10}$ contains lower-dimensional strata parametrizing rational

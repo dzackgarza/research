@@ -66,8 +66,19 @@ The two serializations of this project disagree at several sites; the standing r
 
 Works with no global-bib entry — added to `../coble_supplement.bib` (should migrate to Zotero): `CD89` (Cossec–Dolgachev, Enriques Surfaces I, 1989 ed.), `Nik79b` (Nikulin, quotient-groups/2-reflections), `Mum65` (GIT), `Ale96` (M_{g,n}(W) for surfaces), `Ale02` (complete moduli, semiabelian action).
 
-**Unresolved**: `BHO+11` (Severi variety $V_{6,10}$ claim in `Rational_Sextic_Calculations.md`). knowledge/papers/BHO+11.md confirms the key is *intended* as a real Severi-variety reference, but records no actual title or authors (its title field is the key itself), and no entry exists in any bibliography.
-The work's identity remains unrecorded; left citing `BHO+11` so it fails visibly at build time.
+**`BHO+11` → `BHO+12`, RESOLVED** (class C, year drift). The work is
+Blekherman–Hauenstein–Ottem–Ranestad–Sturmfels, *Algebraic boundaries of
+Hilbert's SOS cones*, arXiv:1107.1846 (July **2011**) → Compositio Math. 148
+(**2012**), doi 10.1112/S0010437X12000437; live Zotero `GJZ44LJI`, BBT key
+`BHO+12`.
+The alphabetic key encodes the arXiv year, the Zotero key the published year —
+the same drift as the AEGS/CDL/DK rows, which is why a key-string search
+missed it.
+Its Theorem 2 is exactly the cited claim: the Severi variety of rational plane
+sextics, whose general member has exactly 10 nodes (and those 10 nodes
+uniquely determine the curve — directly relevant to the Coble construction).
+Note the paper writes this variety $\mathcal{S}_{6,0}$; the monograph's
+$V_{6,10}$ is our own $(d,\delta)$ notation.
 
 **Provenance corrections after first full build**: `Ale96` and `Ale02` already exist in the global bib (the earlier absence check was defeated by brace-laden titles); the supplement copies were removed as duplicates.
 Note the global `Ale96` is Alexeev, *Log canonical singularities and complete moduli of stable pairs* (alg-geom/9608013) — a sibling 1996 Alexeev paper to the *Moduli spaces $M_{g,n}(W)$ for surfaces* (Trento) paper the draft's key named.
