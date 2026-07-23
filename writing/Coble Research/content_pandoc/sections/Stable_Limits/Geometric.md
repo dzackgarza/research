@@ -1,6 +1,6 @@
 ::: {.remark}
 
-Following [@Dol12 §5.1], Coble surfaces can be obtained by degenerating
+Following [@Dol17 §5.1], Coble surfaces can be obtained by degenerating
 $(X, \tau)$ a K3 with a fixed-point-free involution to a K3 surface
 $(X_0, \tau_0)$ where the fixed locus of $\tau_0$ is a smooth rational curve.
 The resulting quotient $X_0/\tau_0$ is a Coble surface.

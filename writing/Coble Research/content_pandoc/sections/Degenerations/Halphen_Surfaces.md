@@ -31,7 +31,7 @@ indicates that the moduli space of general Halphen surfaces of index 2 has
 dimension 9.
 :::
 
-The following is [@CDL25 Prop. 3.1]:
+The following is [@CD12 Prop. 3.1]:
 
 ::: {.lemma ref="lem:coble_halphen_blowdown" title="Cobles to Halphens"}
 

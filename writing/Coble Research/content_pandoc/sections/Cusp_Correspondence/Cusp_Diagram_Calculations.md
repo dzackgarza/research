@@ -47,7 +47,7 @@ For an isotropic plane $J$, we denote the divisibilities of the constituent gene
 By [@CDL25 Prop. 5.46], there is an open embedding $F_{(11, 11, 1)} \injects F_{(10,10,0)}$, i.e. $F_\Co \injects F_\En$, realizing $F_\Co$ as the coarse space of marked Coble surfaces with $n=1$, where $n$ is the number of boundary components in $C = C_1 + \cdots + C_n$.
 The image is an open subset of a closed irreducible subset of $\cH_{-2}/\Gamma_\En$.
 By [@CDL25 Thm. 5.8.2], the coarse space of $F_\Co$ is a rational variety, and since $F_\En$ is quasiprojective, so too is $F_\Co$.
-Moreover, $\partial \overline{F_{\En}}^{\mathrm{BB}}$ consists of $F_{\Co}$ and two modular curves $X$ and $X_0(2)$ by [@CDL25 Rem.5.9.12], and the closure of $\cH_{-2}$ contains the modular curve $X$.
+Moreover, $\partial \overline{F_{\En}}^{\mathrm{BB}}$ consists of $F_{\Co}$ and two modular curves $X$ and $X_0(2)$ by [@CDL25 Thm. 5.9.8], and the closure of $\cH_{-2}$ contains the modular curve $X$.
 
 ::: {.remark}
 

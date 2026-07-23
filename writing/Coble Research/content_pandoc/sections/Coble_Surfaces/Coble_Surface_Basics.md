@@ -77,6 +77,6 @@ special Halphen and Coble surfaces are precisely the unnodal ones.
     This follows from an application of the genus formula: $$p_{a}(C)=1+\frac{1}{2}\qty{ C^{2} + C \cdot K_S }=1+K_S^{2}=0,$$
 
     and so $C$ is a smooth rational curve satisfying $C^2 = 4K_S^2 = -4$ since $K_S^2 = -1$.
-    This is [@CDL25 §3.1].
+    This is [@CD12 §3.1].
 
-[^3]: By the proof of [@DK25 Prop 9.13].
+[^3]: By the proof of [@DK25 Prop. 9.1.3].

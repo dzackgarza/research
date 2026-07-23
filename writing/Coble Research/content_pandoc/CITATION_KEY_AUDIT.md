@@ -47,25 +47,21 @@ Evidence classes:
 | `EnriquesTwo`, `DK24` | `DK25` | C | Dolgachev–Kondō, *Enriques Surfaces II*, 2024 draft → published. **Verify locators: Prop. 9.1.1, 9.1.4, 9.1.5, 9.1.8, Ex. 9.1.7, Prop. 9.13, §3 (via Nue16 sentence), Table 5.1 uses.** |
 | `AMRT75` | `AMRT10` | C | Ash–Mumford–Rapoport–Tai, 1975 → 2010 second edition. Cited without locators. |
 | `Nue16` | `Nue15` | C | Nuer, *Unirationality…*; single global entry. **Verify locators: §3, p. 8.** |
-| Halphen `Prop. 3.1` | `CDL25` | D | LaTeX cites overloaded `CD12`; the later pandoc pass chose `CDL25`; kept the author's latest choice. Plausible alternative: `DZ99`. |
+| Halphen blowdown `Prop. 3.1` | `CDL25` | `CD12` | **VERIFIED**: CD12 extraction, Proposition 3.1 is the blowdown statement verbatim (index-2 Halphen; proper transform of the fiber; unique singular point). Not `CDL25`, not `DZ99`. |
 
 ## Whole-work substitutions, per instance
 
-Every site where the *cited work* changed relative to the pandoc corpus, with
-its evidence. The two serializations of this project disagree at several
-sites; the standing rule after review: **where content is decisive, the
-decisive reading wins; where it is not, the later (pandoc) serialization wins
-and the disagreement is recorded here** — earlier unilateral overrides in the
-non-decisive class have been reverted.
+Every site where the *cited work* changed relative to the pandoc corpus, with its evidence.
+The two serializations of this project disagree at several sites; the standing rule after review: **where content is decisive, the decisive reading wins; where it is not, the later (pandoc) serialization wins and the disagreement is recorded here** — earlier unilateral overrides in the non-decisive class have been reverted.
 
 | file, site | pandoc had | now | evidence, status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Morrison_Flowerpot ×3, Coble_Moduli_Basics ×1 (flowerpot claims) | `Ols04` | `Mor81` | Decisive: section titled "Morrison's degenerations"; Lem 7.1/7.2, Cor 6.2 type (i.b), and the flowerpot terminology are Morrison 1981; LaTeX twin cites `Mor81`; knowledge stub Mor81.md exists. (Ols04.md also exists — Olsson is a real project reference, just not for flowerpots.) |
 | Coble_Surface_Basics ×2 ("first studied in") | `Oda85` | `Cob29` | Decisive: LaTeX twin cites Cob29; no Oda85 stub exists; Coble surfaces were first studied by Coble (1919/1929). |
 | Coble_Surface_Basics ×2 (Cremona special, §1.4 + "In [X] it is proved") | `CDL24` | `CD12` | Decisive: "Cremona special" is Cantat–Dolgachev's coinage and the unnodal-Halphen-or-Coble theorem is that paper's main result; both keys existed in the corpus vocabulary (stubs for each), so this is a content call, but a strong one. |
-| Coble_Surface_Basics fn. + Rational_Sextic (genus formula "§3.1") | `CDL24` | `CDL25` | Non-decisive between the CD12 paper's §3.1 and the book; LaTeX said overloaded `CD12`. **Reverted to the book** (the later serialization's choice, version-normalized). Initially overridden to `CD12`; that override was retracted. |
-| Rational_Sextic (Hurwitz formula, Lem. 2.2) | `AS15` | `AS15` (kept) | LaTeX says `AD19` (Allcock–Dolgachev); pandoc + knowledge stub AS15.md say Artebani–Sarti. Non-decisive from content; later serialization + stub win. **My initial change to `AD18` was reverted.** Disagreement open: check which paper's Lem. 2.2 carries the Hurwitz-type formula. |
-| Geometric ("§5.1" degeneration remark) | `Dol12` | `Dol12` (kept) | LaTeX says `Dol17` (Salem numbers); pandoc + stub say Classical Algebraic Geometry. Non-decisive; later serialization + stub win. **My initial change to `Dol17` was reverted.** Disagreement open. |
+| Coble_Surface_Basics fn. + Rational_Sextic (genus formula "§3.1") | `CDL24` | `CD12` | **VERIFIED**: CD12's extraction has "3.1. From Coble to Halphen surfaces" opening with the p_a(C) computation. |
+| Rational_Sextic (Hurwitz formula, Lem. 2.2) | `AS15` | `AD18` | **VERIFIED**: AD18's Lemma 2.2 proof contains the display 0 = 2K_X = 2(f*(K_S)+E) = f*(2K_S+C) verbatim; AS15 has no own Lemma 2.2 (only a citation to its ref [21]). The LaTeX (`AD19`) was right; the pandoc key and its knowledge stub were wrong. |
+| Geometric ("§5.1" degeneration remark) | `Dol12` | `Dol17` | **VERIFIED**: Dol17 §5 = "Hyperbolic automorphisms of Coble surfaces", §5.1 = "Coble rational surfaces", containing the degenerating-involution passage verbatim. LaTeX right, pandoc + stub wrong. |
 | IAS citation list | `AEGS23; AE22; AEGS23; AET23; Ols12` | `AEGS25; AE22; AE23; AET23; ABE22` | The literal duplication of AEGS23 marks the pandoc list as corrupted; LaTeX list (AEGS23, AE22, AE23, AET23, AB21) adopted with AB21 = ABE22 per the collision row above and AEGS23 = AEGS25 (class C). `Ols12` appears in no serialization's bibliography. |
 
 Works with no global-bib entry — added to `../coble_supplement.bib` (should migrate to Zotero): `CD89` (Cossec–Dolgachev, Enriques Surfaces I, 1989 ed.), `Nik79b` (Nikulin, quotient-groups/2-reflections), `Mum65` (GIT), `Ale96` (M_{g,n}(W) for surfaces), `Ale02` (complete moduli, semiabelian action).
@@ -78,3 +74,33 @@ Note the global `Ale96` is Alexeev, *Log canonical singularities and complete mo
 Both are standard KSBA citations; if the Trento paper is specifically intended, add it to Zotero and re-point.
 
 **Uncited works from the LaTeX inline bibliography** (curated but never cited in the text; not carried into the monograph's reference list): EF21, Eng18, Kul77, Ste91, Sym02 (`sterk1991…`, `symington2003…`), AT21 (`alexeev17ade-surfaces`), YZZ25. All except AT21 and YZZ25 exist in the global bib under those keys and can be cited directly when the Stable Limits sections are written.
+
+## Verified against full-text extractions (live Zotero, 2026-07-23)
+
+All disputes above and the class-C locators were checked against the markdown
+extractions attached to the live Zotero items (the authoritative texts).
+
+- **Confirmed verbatim sources**: AD18 Lem. 2.2 (Hurwitz display), Dol17 §5.1,
+  CD12 §1.4 ("Cremona special point sets") and §3.1 ("From Coble to Halphen
+  surfaces", including Prop. 3.1 = the blowdown lemma), DM20 §5.1 (the Coble
+  definition, under "Degree 10 polarizations"), Cob19 §2 ("The Discriminant
+  Conditions"), Mor81 (flower pot, Cor. 6.2 types, Lem. 7.1), Sha81a appendix
+  (the flower/stalk/pot paragraph verbatim), KK72 Thm. 2 (extension to
+  compactifications), Nue15 (ODP-degeneration passage), Nik80 (1.5.2/3.6.x),
+  AE22 (Thm. 5.10, Prop. 5.5, Lem. 5.9, Prop. 5.13), AEGS25 (Lem. 2.4 unique
+  embedding chain; Rmk. 4.12 Morrison comparison).
+- **Renumbered in published versions (corrected in text)**: draft `DK24
+  Prop. 9.13` -> published `DK25 Prop. 9.1.3` (terminal Coble of K3 type is
+  basic rational, verbatim); draft `CDL24 Rem. 5.9.12` -> published `CDL25
+  Thm. 5.9.8` (boundary of the Enriques Baily-Borel = Coble divisor + the two
+  modular curves X_0(2), X). `CDL25 Cor. 5.9.10`, `Thm. 5.8.2`, `Prop. 5.46`,
+  `Def. 5.4.3`, `Eqn. 5.3.1`, `Table 5.1`, and `DK25 9.1.1/9.1.4/9.1.5/
+  9.1.7/9.1.8` all present in the published books.
+- **Method correction**: the knowledge/papers stubs record the pandoc port's
+  *intended* key per site, not ground truth — at two sites (AS15, Dol12) the
+  stub-backed key was wrong and the LaTeX right; at others (Hor78 = Periods II,
+  Nik79 = ISBF, AB21 = ABE) the stubs correctly witness collisions. Only the
+  extraction texts decide.
+- **BHO+11**: full-text search of the entire library (Severi variety, V_{6,10},
+  nodal sextics) finds no B/H/O 2011 candidate; the work is not in Zotero.
+  Still unresolved, still deliberately un-built.
