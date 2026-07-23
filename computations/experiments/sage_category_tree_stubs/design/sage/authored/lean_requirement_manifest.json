@@ -4,23 +4,23 @@
   "authority": "Interface demand only. This manifest records which stable identifiers a released registry must resolve for this repository to evaluate its rows. It is not an authority for generic Lean definitions.",
   "source": {
     "path": "design/sage/authored/sage_normalized_category_mapping_manifest.json",
-    "sha256": "fa1e53966c0e4c534ae2defa5c1b7d7dd65e421401306a75ebd5e5039c68a048",
-    "git_commit": "4028c07af0e8fa0c2fbe411f1a2a342c980c527f",
+    "sha256": "3a8bc29612f231059ec324ef66fdb472d9c6228dfa86fbca6aa061788e6cb330",
+    "git_commit": "4028c07af0e8fa0c2fbe411f1a2a342c980c527f-dirty",
     "ledger_schema_version": "0.4-draft",
     "sage_source_commit": "686dc1a8d420c2e0aabadd4f602d9a0aa4690c50"
   },
   "coverage": {
     "public_rows": 179,
     "distinct_sage_sources": 179,
-    "requirements": 318,
+    "requirements": 320,
     "unstated_demands": 17,
     "by_kind": {
       "alias": 6,
-      "category": 70,
+      "category": 71,
       "classifier": 65,
       "coherence": 4,
       "finite_limit_cone": 1,
-      "target_expression": 172
+      "target_expression": 173
     }
   },
   "requirements": [
@@ -778,17 +778,6 @@
     },
     {
       "kind": "category",
-      "stable_id": "cat.sagebackendobjects",
-      "display": "SageBackendObjects",
-      "demanded_by": ["Objects"],
-      "occurrences": [
-        {
-          "parameter_constraints": null
-        }
-      ]
-    },
-    {
-      "kind": "category",
       "stable_id": "cat.schemes_k",
       "display": "Schemes(K)",
       "demanded_by": ["AbelianVarieties"],
@@ -855,7 +844,7 @@
       "kind": "category",
       "stable_id": "cat.sets",
       "display": "Sets",
-      "demanded_by": ["EnumeratedSets", "FacadeSets", "FiniteEnumeratedSets", "FiniteSets", "GSets", "InfiniteEnumeratedSets", "PointedSets", "Sets", "SetsWithGrading"],
+      "demanded_by": ["EnumeratedSets", "FiniteEnumeratedSets", "FiniteSets", "GSets", "InfiniteEnumeratedSets", "PointedSets", "Sets", "SetsWithGrading"],
       "occurrences": [
         {
           "parameter_constraints": null
@@ -947,6 +936,28 @@
       "stable_id": "cat.weylgroups",
       "display": "WeylGroups",
       "demanded_by": ["AffineWeylGroups", "FiniteWeylGroups"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "val.coslices_cat_1",
+      "display": "Coslices(Cat_1)",
+      "demanded_by": ["Objects"],
+      "occurrences": [
+        {
+          "parameter_constraints": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "val.subobjects_sets",
+      "display": "Subobjects(Sets)",
+      "demanded_by": ["FacadeSets"],
       "occurrences": [
         {
           "parameter_constraints": null
@@ -2834,8 +2845,8 @@
       "demanded_by": ["ComplexReflectionOrGeneralizedCoxeterGroups"],
       "occurrences": [
         {
-          "mapping_kind": "exceptional explicit compatibility host",
-          "target_visibility": "exception named"
+          "mapping_kind": "exact named category",
+          "target_visibility": "core named"
         }
       ]
     },
@@ -3218,7 +3229,7 @@
       "demanded_by": ["LieGroups"],
       "occurrences": [
         {
-          "mapping_kind": "exact compatibility host",
+          "mapping_kind": "exact named category",
           "target_visibility": "core named"
         }
       ]
@@ -3705,18 +3716,6 @@
     },
     {
       "kind": "target_expression",
-      "stable_id": "cat_expr.sagebackendobjects",
-      "display": "SageBackendObjects",
-      "demanded_by": ["Objects"],
-      "occurrences": [
-        {
-          "mapping_kind": "backend ambient exception",
-          "target_visibility": "backend-only compatibility"
-        }
-      ]
-    },
-    {
-      "kind": "target_expression",
       "stable_id": "cat_expr.schemes_s",
       "display": "Schemes(S)",
       "demanded_by": ["Schemes"],
@@ -3863,12 +3862,8 @@
       "kind": "target_expression",
       "stable_id": "cat_expr.sets",
       "display": "Sets",
-      "demanded_by": ["FacadeSets", "Sets"],
+      "demanded_by": ["Sets"],
       "occurrences": [
-        {
-          "mapping_kind": "backend engineering exclusion",
-          "target_visibility": "backend-only compatibility"
-        },
         {
           "mapping_kind": "exact named base",
           "target_visibility": "core named"
@@ -4100,6 +4095,30 @@
         {
           "mapping_kind": "classifier refinement",
           "target_visibility": "conventional named"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "val.coslices_cat_1",
+      "display": "Coslices(Cat_1)",
+      "demanded_by": ["Objects"],
+      "occurrences": [
+        {
+          "mapping_kind": "named construction",
+          "target_visibility": "implicit construction"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "val.subobjects_sets",
+      "display": "Subobjects(Sets)",
+      "demanded_by": ["FacadeSets"],
+      "occurrences": [
+        {
+          "mapping_kind": "named construction",
+          "target_visibility": "implicit construction"
         }
       ]
     }

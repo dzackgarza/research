@@ -1269,8 +1269,8 @@
         "classifier_applications": [],
         "target_expression": "GroupsWithSimpleReflections",
         "target_id": "cat_expr.groupswithsimplereflections",
-        "mapping_kind": "exceptional explicit compatibility host",
-        "target_visibility": "exception named",
+        "mapping_kind": "exact named category",
+        "target_visibility": "core named",
         "parameter_constraints": ""
       },
       "audit": {
@@ -1279,8 +1279,8 @@
         "recommend_explicit_target": "yes",
         "base_in_current_dot": "absent; required exceptional host",
         "current_dot_match": "",
-        "note": "Intended objects are finitely generated groups with a distinguished finite simple-reflection system and its induced reflection data.",
-        "exception_or_ambiguity": "Sage explicitly states that no general mathematical theory currently unifies complex reflection groups and generalized Coxeter groups; the class exists to factor common code. Retain a descriptive host rather than pretending this is a standard species."
+        "note": "Not a disjunction. ComplexReflectionGroups and GeneralizedCoxeterGroups each have this as their only super_category, so it is their common generalization: groups carrying a distinguished generating set of reflections. Sage's 'Or' names the join in its lattice; the mathematics is the shared structure.",
+        "exception_or_ambiguity": ""
       }
     },
     {
@@ -1753,13 +1753,13 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/facade_sets.py"
       },
       "normalized": {
-        "base": "Sets",
-        "base_id": "cat.sets",
+        "base": "Subobjects(Sets)",
+        "base_id": "val.subobjects_sets",
         "classifier_applications": [],
-        "target_expression": "Sets",
-        "target_id": "cat_expr.sets",
-        "mapping_kind": "backend engineering exclusion",
-        "target_visibility": "backend-only compatibility",
+        "target_expression": "Subobjects(Sets)",
+        "target_id": "val.subobjects_sets",
+        "mapping_kind": "named construction",
+        "target_visibility": "implicit construction",
         "parameter_constraints": ""
       },
       "audit": {
@@ -1768,8 +1768,8 @@
         "recommend_explicit_target": "no — compatibility metadata only",
         "base_in_current_dot": "present",
         "current_dot_match": "Sets",
-        "note": "",
-        "exception_or_ambiguity": "Facade is a Sage implementation/delegation flag, not a mathematical predicate or structure. Record as backend metadata, not a normalized classifier."
+        "note": "A facade parent declares the parents its elements actually inhabit, so it carries a family of monomorphisms in Sets. Sage's two documented shapes are both such families and differ only in direction: choice='subset' is P -> Q (the positive-integer monoid inside ZZ), choice='union' is Q_i -> P with P their join (the integers completed by +-infinity). Both are objects of Subobjects(Sets), the full subcategory of Arr(Sets) on monomorphisms; the union case adds that P is the join of the declared subobjects.",
+        "exception_or_ambiguity": "Sage's facade_for names the codomain in the subset case and the domains in the union case; the direction is not recorded in the category."
       }
     },
     {
@@ -4483,7 +4483,7 @@
         "classifier_applications": [],
         "target_expression": "LieGroups",
         "target_id": "cat_expr.liegroups",
-        "mapping_kind": "exact compatibility host",
+        "mapping_kind": "exact named category",
         "target_visibility": "core named",
         "parameter_constraints": ""
       },
@@ -4493,7 +4493,7 @@
         "recommend_explicit_target": "yes",
         "base_in_current_dot": "absent",
         "current_dot_match": "",
-        "note": "A group object compatible with smooth/analytic manifold structure; retain explicitly rather than forcing a premature single pullback presentation.",
+        "note": "A group object in smooth or analytic manifolds. Real mathematics, not a compatibility host: excluding it makes Sage's Lie group algorithms unreachable from any DSL object.",
         "exception_or_ambiguity": ""
       }
     },
@@ -5044,13 +5044,13 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/objects.py"
       },
       "normalized": {
-        "base": "SageBackendObjects",
-        "base_id": "cat.sagebackendobjects",
+        "base": "Coslices(Cat_1)",
+        "base_id": "val.coslices_cat_1",
         "classifier_applications": [],
-        "target_expression": "SageBackendObjects",
-        "target_id": "cat_expr.sagebackendobjects",
-        "mapping_kind": "backend ambient exception",
-        "target_visibility": "backend-only compatibility",
+        "target_expression": "Coslices(Cat_1)",
+        "target_id": "val.coslices_cat_1",
+        "mapping_kind": "named construction",
+        "target_visibility": "implicit construction",
         "parameter_constraints": ""
       },
       "audit": {
@@ -5059,8 +5059,8 @@
         "recommend_explicit_target": "no — compatibility metadata only",
         "base_in_current_dot": "compatibility-only; do not add as ordinary mathematical node",
         "current_dot_match": "",
-        "note": "",
-        "exception_or_ambiguity": "Sage's Objects() contains every backend object and has no honest small mathematical analogue. Do not identify it with Cat."
+        "note": "An object of a category C is a point * -> C, so 'being an object of some category' is membership in the coslice under the terminal category. Sage's Objects() is the top of its hierarchy and collects exactly the parents qua objects with no further structure. Its own ParentMethods are currently near-empty, so its fiber contributes little today; that is an empirical fact about Sage, not a reason to leave it without a destination.",
+        "exception_or_ambiguity": ""
       }
     },
     {
@@ -9213,16 +9213,16 @@
     {
       "topic": "Sage Objects()",
       "affected_rows": "Objects",
-      "finding": "Universal backend object fallback, not a standard small mathematical category.",
-      "normalized_resolution": "Keep SageBackendObjects only in the Sage compatibility layer; do not conflate it with Cat or use it as an ordinary mathematical classifier host.",
+      "finding": "Sage's top category, collecting parents qua objects with no further structure.",
+      "normalized_resolution": "Map Objects to Coslices(Cat_1): an object of C is a point * -> C. Do not mint a backend host to receive it.",
       "severity": "architectural exception",
       "source_url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/objects.py"
     },
     {
       "topic": "Facade",
       "affected_rows": "FacadeSets",
-      "finding": "Facade is an implementation/delegation mechanism.",
-      "normalized_resolution": "Map the mathematical category to Sets and retain Facade as backend metadata; no normalized Facade classifier.",
+      "finding": "Facade is Sage's element-representation mechanism; the parents it applies to are subobjects in Sets.",
+      "normalized_resolution": "Map FacadeSets to Subobjects(Sets); retain the facade flag as backend metadata. No normalized Facade classifier.",
       "severity": "engineering-only",
       "source_url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/facade_sets.py"
     },

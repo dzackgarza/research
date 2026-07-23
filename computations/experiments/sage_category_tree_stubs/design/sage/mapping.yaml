@@ -1010,7 +1010,7 @@ category_mappings:
   - source: sage.category.complex_reflection_or_generalized_coxeter_groups_complexreflectionorgeneralizedcoxetergroups
     source_sage_name: ComplexReflectionOrGeneralizedCoxeterGroups
     target: cat.groupswithsimplereflections
-    relation: removed
+    relation: exact
     normalized_reading: GroupsWithSimpleReflections
     construction:
       kind: finite_limit_derivability
@@ -1031,7 +1031,7 @@ category_mappings:
       source: design/sage/authored/
       confidence: high
       review_status: proposed; source-audited
-      mapping_kind: exceptional explicit compatibility host
+      mapping_kind: exact named category
   - source: sage.category.coxeter_group_algebras_coxetergroupalgebras
     source_sage_name: CoxeterGroupAlgebras
     target: cat.coxetergroupalgebras_r
@@ -1409,16 +1409,16 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.facade_sets_facadesets
     source_sage_name: FacadeSets
-    target: cat.sets
-    relation: removed
-    normalized_reading: Sets
+    target: val.subobjects_sets
+    relation: exact
+    normalized_reading: Subobjects(Sets)
     construction:
       kind: finite_limit_derivability
       ok: true
       status: EXACT_BASE
-      base: cat.sets
+      base: val.subobjects_sets
       classifiers: []
-      expression: Sets
+      expression: Subobjects(Sets)
       detail: base-only mapping; named seed entity
       certificate: []
       authored_routes: []
@@ -1431,7 +1431,7 @@ category_mappings:
       source: design/sage/authored/
       confidence: high
       review_status: proposed; source-audited
-      mapping_kind: backend engineering exclusion
+      mapping_kind: named construction
   - source: sage.category.fields_fields
     source_sage_name: Fields
     target: cat.fields
@@ -3452,7 +3452,7 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.left_modules_leftmodules
     source_sage_name: LeftModules
-    target: cat.modules_a
+    target: cat.modules_r
     relation: presentation_alias
     normalized_reading: Modules(R)
     construction:
@@ -3588,7 +3588,7 @@ category_mappings:
   - source: sage.category.lie_groups_liegroups
     source_sage_name: LieGroups
     target: cat.liegroups
-    relation: removed
+    relation: exact
     normalized_reading: LieGroups
     construction:
       kind: finite_limit_derivability
@@ -3609,7 +3609,7 @@ category_mappings:
       source: design/sage/authored/
       confidence: high
       review_status: proposed; source-audited
-      mapping_kind: exact compatibility host
+      mapping_kind: exact named category
   - source: sage.category.loop_crystals_kirillovreshetikhincrystals
     source_sage_name: KirillovReshetikhinCrystals
     target: cat.loopcrystals
@@ -3917,7 +3917,7 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.modules_modules
     source_sage_name: Modules
-    target: cat.modules_a
+    target: cat.modules_r
     relation: exact
     normalized_reading: Modules(R)
     construction:
@@ -4057,16 +4057,16 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.objects_objects
     source_sage_name: Objects
-    target: cat.sagebackendobjects
-    relation: removed
-    normalized_reading: SageBackendObjects
+    target: val.coslices_cat_1
+    relation: exact
+    normalized_reading: Coslices(Cat_1)
     construction:
       kind: finite_limit_derivability
       ok: true
       status: EXACT_BASE
-      base: cat.sagebackendobjects
+      base: val.coslices_cat_1
       classifiers: []
-      expression: SageBackendObjects
+      expression: Coslices(Cat_1)
       detail: base-only mapping; named seed entity
       certificate: []
       authored_routes: []
@@ -4079,7 +4079,7 @@ category_mappings:
       source: design/sage/authored/
       confidence: high
       review_status: proposed; source-audited
-      mapping_kind: backend ambient exception
+      mapping_kind: named construction
   - source: sage.category.ore_modules_oremodules
     source_sage_name: OreModules
     target: cat.modules_r
@@ -4562,7 +4562,7 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.schemes_schemes
     source_sage_name: Schemes
-    target: cat.schemes_k
+    target: cat.schemes_s
     relation: exact
     normalized_reading: Schemes(S)
     construction:
@@ -5231,7 +5231,7 @@ category_mappings:
       mapping_kind: exact named base
   - source: sage.category.vector_spaces_vectorspaces
     source_sage_name: VectorSpaces
-    target: cat.vector_spaces_k
+    target: cat.modules_k
     relation: exact
     normalized_reading: VectorSpaces(K)
     construction:

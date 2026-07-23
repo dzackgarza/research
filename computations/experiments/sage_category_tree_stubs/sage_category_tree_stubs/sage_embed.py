@@ -75,6 +75,22 @@ def vertex_in_graph(vertex: str, graph: DotGraph | None = None) -> bool:
             label = graph.axiom_labels.get(edge.src, edge.src.rsplit(".", 1)[-1])
             if axiom_method_name(label) == ax_name:
                 return True
+    # A destination may be a constructible category with no name and therefore no
+    # vertex: the bridge's job includes discovering which constructions must exist
+    # normalized, and `Subobjects(Sets)` is such a discovery. The DOT is a curated
+    # presentation, so absence from it is not absence from the graph. A seed-declared
+    # construction value counts as declared; anything not in the seed still fails.
+    return _is_declared_construction_value(vertex)
+
+
+def _is_declared_construction_value(vertex: str) -> bool:
+    from .semantic_seed import load_semantic_seed
+
+    for entity in load_semantic_seed().entities:
+        if entity.get("id") != vertex and entity.get("canonical_name") != vertex:
+            continue
+        definition = entity.get("definition") or {}
+        return bool(definition.get("operation") == "construction_value")
     return False
 
 

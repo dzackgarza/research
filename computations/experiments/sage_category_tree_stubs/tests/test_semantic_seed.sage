@@ -121,6 +121,14 @@ def test_correspondence_targets_are_seed_entity_ids() -> None:
     for sage, entity_id in SAGE_TO_ENTITY.items():
         assert entity_id in ids, (sage, entity_id)
         entity = seed.entity_by_id()[entity_id]
+        definition = entity.get("definition") or {}
+        if definition.get("operation") == "construction_value":
+            # A destination may be a constructible category with no name, hence no
+            # vertex in the curated presentation: `FacadeSets` lands in
+            # `Subobjects(Sets)`. Requiring a drawn vertex would force every discovered
+            # construction to be named before it could be a target.
+            assert entity.get("dot_vertex") is None, (sage, entity_id)
+            continue
         assert entity.get("dot_vertex")
         assert SAGE_TO_STUB[sage] == entity["dot_vertex"]
 

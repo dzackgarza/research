@@ -198,12 +198,6 @@ OPAQUE_BASES: dict[str, tuple[str, str, str, str]] = {
         "cat.sets",
         "provisional fiber; authored ledger",
     ),
-    "cat.sagebackendobjects": (
-        "SageBackendObjects",
-        "SageBackendObjects",
-        "cat.sets",
-        "compatibility-layer host only; not ordinary mathematics",
-    ),
     "cat.polyhedra_r": (
         "Polyhedra",
         "Polyhedra(R)",

@@ -389,22 +389,25 @@ def test_committed_artifacts_match_a_fresh_build() -> None:
     )
 
 
-def test_sigma_excludes_categories_that_are_not_mathematics() -> None:
-    """A dispatch mechanism implements no category and can serve no DSL object.
+def test_no_sage_category_is_excluded_as_non_mathematical() -> None:
+    """Every named Sage category has a destination.
 
-    `Sets().Facade()` is the standing case: a facade parent is one whose elements are
-    not instances of its own element class, so the category collects parents by how
-    they represent elements. Giving it a destination would put element-construction
-    plumbing in the fiber over `Sets`, offering it as an algorithm for any set.
+    Each entry once parked here turned out to have a formalization that was simply
+    not looked for: a facade parent declares monomorphisms in Sets and lands in
+    `Subobjects(Sets)`; `Objects()` is the coslice under the terminal category, since
+    an object of C is a point `* -> C`; `LieGroups` and the reflection/Coxeter join are
+    ordinary mathematics behind awkward Sage names. An exclusion bucket that can be
+    filled silently is where unfound mathematics accumulates, so it stays empty and
+    adding to it requires stating why no destination exists.
     """
     from sage_category_tree_stubs.capability import excluded_as_non_mathematical, sigma
 
+    assert excluded_as_non_mathematical() == {}
     s = sigma()
-    excluded = excluded_as_non_mathematical()
-    assert "FacadeSets" in excluded, "Facade is a representation mechanism, not a category"
-    assert "Objects" in excluded, "Sage Objects() is a universal backend fallback"
-    for name in excluded:
-        assert name not in s, f"{name} is excluded yet still has a destination"
+    for name in ("FacadeSets", "Objects", "LieGroups", "ComplexReflectionOrGeneralizedCoxeterGroups"):
+        assert s.get(name), f"{name} has no destination"
+    assert s["FacadeSets"] == "Subobjects(Sets)"
+    assert s["Objects"] == "Coslices(Cat_1)"
 
 
 def test_providers_run_along_forgetting_only() -> None:

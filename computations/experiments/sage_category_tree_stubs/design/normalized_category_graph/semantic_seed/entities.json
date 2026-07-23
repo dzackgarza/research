@@ -3,501 +3,6 @@
   "schema": "SCHEMA",
   "entities": [
     {
-      "id": "cat.cat_object",
-      "kind": "category_family",
-      "canonical_name": "CatObject",
-      "parameters": [],
-      "definition": null,
-      "aliases": [],
-      "dot_vertex": "CatObject",
-      "provenance": "bedrock terminal of the preferred parent spine"
-    },
-    {
-      "id": "cat.sets",
-      "kind": "category_family",
-      "canonical_name": "Sets",
-      "parameters": [],
-      "definition": null,
-      "aliases": ["Set"],
-      "dot_vertex": "Sets",
-      "provenance": "standard"
-    },
-    {
-      "id": "cat.magmas",
-      "kind": "category_family",
-      "canonical_name": "Magmas",
-      "parameters": [],
-      "definition": null,
-      "aliases": ["Mag"],
-      "dot_vertex": "Magmas",
-      "provenance": "standard"
-    },
-    {
-      "id": "cat.additive_magmas",
-      "kind": "derived_category",
-      "canonical_name": "AdditiveMagmas",
-      "parameters": [],
-      "definition": {
-        "operation": "classifier_application",
-        "host": "cat.magmas",
-        "classifier": "clf.magmas.additive"
-      },
-      "aliases": ["Magmas.Additive"],
-      "dot_vertex": "Magmas.Additive",
-      "provenance": "Sage AdditiveMagmas normalizes to Magmas.Additive (one-tower)"
-    },
-    {
-      "id": "cat.rings",
-      "kind": "category_family",
-      "canonical_name": "Rings",
-      "parameters": [],
-      "definition": null,
-      "aliases": ["Ring"],
-      "dot_vertex": "Rings",
-      "provenance": "standard"
-    },
-    {
-      "id": "cat.rngs",
-      "kind": "category_family",
-      "canonical_name": "Rngs",
-      "parameters": [],
-      "definition": null,
-      "aliases": [],
-      "dot_vertex": "Rngs",
-      "provenance": "rings without unit"
-    },
-    {
-      "id": "cat.semirings",
-      "kind": "category_family",
-      "canonical_name": "Semirings",
-      "parameters": [],
-      "definition": null,
-      "aliases": [],
-      "dot_vertex": "Semirings",
-      "provenance": "standard"
-    },
-    {
-      "id": "cat.fields",
-      "kind": "category_family",
-      "canonical_name": "Fields",
-      "parameters": [],
-      "definition": null,
-      "aliases": ["Field"],
-      "dot_vertex": "Fields",
-      "provenance": "standard"
-    },
-    {
-      "id": "cat.modules_r",
-      "kind": "category_family",
-      "canonical_name": "Modules",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
-      "definition": null,
-      "aliases": ["R-Mod", "Modules(R)"],
-      "dot_vertex": "Modules(R)",
-      "provenance": "Modules(R) ≃ left R-modules (Sage default)"
-    },
-    {
-      "id": "cat.algebras_r",
-      "kind": "category_family",
-      "canonical_name": "Algebras",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
-      "definition": {
-        "operation": "primitive",
-        "notes": "R-module with bilinear multiplication; no assoc/unit required"
-      },
-      "aliases": ["Algebras(R)", "MagmaticAlgebras"],
-      "dot_vertex": "Algebras(R)",
-      "provenance": "Sage MagmaticAlgebras"
-    },
-    {
-      "id": "cat.posets",
-      "kind": "category_family",
-      "canonical_name": "Posets",
-      "parameters": [],
-      "definition": null,
-      "aliases": [],
-      "dot_vertex": "Posets",
-      "provenance": "standard"
-    },
-    {
-      "id": "cat.coxeter_groups",
-      "kind": "category_family",
-      "canonical_name": "CoxeterGroups",
-      "parameters": [],
-      "definition": null,
-      "aliases": [],
-      "dot_vertex": "CoxeterGroups",
-      "provenance": "standard"
-    },
-    {
-      "id": "cat.weyl_groups",
-      "kind": "category_family",
-      "canonical_name": "WeylGroups",
-      "parameters": [],
-      "definition": null,
-      "aliases": [],
-      "dot_vertex": "WeylGroups",
-      "provenance": "standard"
-    },
-    {
-      "id": "cat.schemes_s",
-      "kind": "category_family",
-      "canonical_name": "Schemes",
-      "parameters": [
-        {
-          "name": "S",
-          "sort": "cat.schemes_s",
-          "variance": "slice_parameter"
-        }
-      ],
-      "definition": null,
-      "aliases": ["Schemes(S)"],
-      "dot_vertex": "Schemes(S)",
-      "provenance": "parameterized over base scheme S"
-    },
-    {
-      "id": "cat.coalgebras_r",
-      "kind": "category_family",
-      "canonical_name": "Coalgebras",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
-      "definition": null,
-      "aliases": ["Coalgebras(R)"],
-      "dot_vertex": "Coalgebras(R)",
-      "provenance": "standard"
-    },
-    {
-      "id": "cat.bialgebras_r",
-      "kind": "category_family",
-      "canonical_name": "Bialgebras",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
-      "definition": null,
-      "aliases": ["Bialgebras(R)"],
-      "dot_vertex": "Bialgebras(R)",
-      "provenance": "standard"
-    },
-    {
-      "id": "cat.hopf_algebras_r",
-      "kind": "category_family",
-      "canonical_name": "HopfAlgebras",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
-      "definition": null,
-      "aliases": ["HopfAlgebras(R)"],
-      "dot_vertex": "HopfAlgebras(R)",
-      "provenance": "standard"
-    },
-    {
-      "id": "cat.lie_algebras_r",
-      "kind": "category_family",
-      "canonical_name": "LieAlgebras",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
-      "definition": null,
-      "aliases": ["LieAlgebras(R)"],
-      "dot_vertex": "LieAlgebras(R)",
-      "provenance": "standard"
-    },
-    {
-      "id": "cat.bimodules_r",
-      "kind": "category_family",
-      "canonical_name": "Bimodules",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
-      "definition": null,
-      "aliases": ["Bimodules(R)"],
-      "dot_vertex": "Bimodules(R)",
-      "provenance": "(R,R)-bimodules; refines left and right modules"
-    },
-    {
-      "id": "clf.sets.finite.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Sets.Finite",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.sets.finite",
-        "notes": null
-      },
-      "aliases": [],
-      "dot_vertex": "Sets.Finite",
-      "provenance": "least host Sets"
-    },
-    {
-      "id": "clf.sets.graded.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Sets.Graded",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.sets.graded",
-        "notes": null
-      },
-      "aliases": [],
-      "dot_vertex": "Sets.Graded",
-      "provenance": "least host Sets; chosen grading (structure), not Boolean"
-    },
-    {
-      "id": "clf.magmas.associative.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Magmas.Associative",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.magmas.associative"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "least host Magmas"
-    },
-    {
-      "id": "clf.magmas.unital.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Magmas.Unital",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.magmas.unital"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "least host Magmas"
-    },
-    {
-      "id": "clf.magmas.inverse.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Magmas.Inverse",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.magmas.inverse"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "least host Magmas"
-    },
-    {
-      "id": "clf.magmas.commutative.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Magmas.Commutative",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.magmas.commutative"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "least host Magmas"
-    },
-    {
-      "id": "clf.rings.domain.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Rings.Domain",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.rings.domain"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "no nonzero zero-divisors"
-    },
-    {
-      "id": "clf.modules.with_basis.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Modules.WithBasis",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.modules.with_basis",
-        "notes": null
-      },
-      "aliases": [],
-      "dot_vertex": "Modules.WithBasis",
-      "provenance": "least host Modules"
-    },
-    {
-      "id": "clf.modules.over_field.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Modules.OverField",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.modules.over_field",
-        "notes": null
-      },
-      "aliases": [],
-      "dot_vertex": "Modules.OverField",
-      "provenance": "least host Modules"
-    },
-    {
-      "id": "clf.algebras.associative.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Algebras.Associative",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.algebras.associative"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "least host Algebras(R)"
-    },
-    {
-      "id": "clf.algebras.unital.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Algebras.Unital",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.algebras.unital"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "least host Algebras(R)"
-    },
-    {
-      "id": "clf.algebras.commutative.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Algebras.Commutative",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.algebras.commutative"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "least host Algebras(R)"
-    },
-    {
-      "id": "clf.comm_rings.gcd_domain.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "CommutativeRings.GCDDomain",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.comm_rings.gcd_domain"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "on CommRings"
-    },
-    {
-      "id": "clf.comm_rings.ufd.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "CommutativeRings.UFD",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.comm_rings.ufd"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "on CommRings"
-    },
-    {
-      "id": "clf.comm_rings.pid.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "CommutativeRings.PID",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.comm_rings.pid"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "on CommRings"
-    },
-    {
-      "id": "clf.comm_rings.euclidean.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "CommutativeRings.Euclidean",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.comm_rings.euclidean"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "on CommRings"
-    },
-    {
-      "id": "clf.groups.commutative.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Groups.Commutative",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.groups.commutative"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "transported Commutative"
-    },
-    {
-      "id": "cat.semigroups",
-      "kind": "derived_category",
-      "canonical_name": "Semigroups",
-      "parameters": [],
-      "definition": {
-        "operation": "classifier_application",
-        "host": "cat.magmas",
-        "classifier": "clf.magmas.associative"
-      },
-      "aliases": [],
-      "dot_vertex": "Semigroups = Magmas.Associative",
-      "provenance": "named composite"
-    },
-    {
-      "id": "cat.monoids",
-      "kind": "derived_category",
-      "canonical_name": "Monoids",
-      "parameters": [],
-      "definition": {
-        "operation": "classifier_tower",
-        "base": "cat.magmas",
-        "classifiers": ["clf.magmas.associative", "clf.magmas.unital"]
-      },
-      "aliases": [],
-      "dot_vertex": "Monoids = Magmas.Associative.Unital",
-      "provenance": "named composite"
-    },
-    {
-      "id": "cat.groups",
-      "kind": "derived_category",
-      "canonical_name": "Groups",
-      "parameters": [],
-      "definition": {
-        "operation": "classifier_tower",
-        "base": "cat.magmas",
-        "classifiers": ["clf.magmas.associative", "clf.magmas.unital", "clf.magmas.inverse"]
-      },
-      "aliases": [],
-      "dot_vertex": "Groups = Magmas.Associative.Unital.Inverse",
-      "provenance": "named composite"
-    },
-    {
       "id": "cat.abelian_groups",
       "kind": "derived_category",
       "canonical_name": "AbelianGroups",
@@ -515,49 +20,17 @@
       "provenance": "Groups ×_Mag Magmas.Commutative"
     },
     {
-      "id": "cat.additive_semigroups",
-      "kind": "derived_category",
-      "canonical_name": "AdditiveSemigroups",
+      "id": "cat.abelianvarieties_k",
+      "kind": "category_family",
+      "canonical_name": "AbelianVarieties",
       "parameters": [],
       "definition": {
-        "operation": "classifier_application",
-        "host": "cat.additive_magmas",
-        "classifier": "clf.magmas.associative",
-        "along": "additive_operation"
+        "notes": "authored ledger base",
+        "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "AdditiveSemigroups = Magmas.Additive.Associative",
-      "provenance": "Magmas.Additive.Associative (Magmas Associative along additive_operation)"
-    },
-    {
-      "id": "cat.additive_monoids",
-      "kind": "derived_category",
-      "canonical_name": "AdditiveMonoids",
-      "parameters": [],
-      "definition": {
-        "operation": "classifier_tower",
-        "base": "cat.additive_magmas",
-        "classifiers": ["clf.magmas.associative", "clf.magmas.unital"],
-        "along": "additive_operation"
-      },
-      "aliases": [],
-      "dot_vertex": "AdditiveMonoids = Magmas.Additive.Associative.Unital",
-      "provenance": "Magmas.Additive.Associative.Unital"
-    },
-    {
-      "id": "cat.additive_groups",
-      "kind": "derived_category",
-      "canonical_name": "AdditiveGroups",
-      "parameters": [],
-      "definition": {
-        "operation": "classifier_tower",
-        "base": "cat.additive_magmas",
-        "classifiers": ["clf.magmas.associative", "clf.magmas.unital", "clf.magmas.inverse"],
-        "along": "additive_operation"
-      },
-      "aliases": [],
-      "dot_vertex": "AdditiveGroups = Magmas.Additive.Associative.Unital.Inverse",
-      "provenance": "Magmas.Additive.Associative.Unital.Inverse"
+      "dot_vertex": "AbelianVarieties(K)",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.additive_abelian_groups",
@@ -578,309 +51,96 @@
       "provenance": "AdditiveGroups ×_Mag Magmas.Commutative along additive_operation"
     },
     {
-      "id": "cat.commutative_rings",
+      "id": "cat.additive_groups",
       "kind": "derived_category",
-      "canonical_name": "CommutativeRings",
+      "canonical_name": "AdditiveGroups",
       "parameters": [],
-      "definition": {
-        "operation": "pullback",
-        "left": "fun.rings_to_multiplicative_magmas",
-        "right": "clf.magmas.commutative",
-        "over": "cat.magmas",
-        "strictness": "pseudo",
-        "display": "Rings.Commutative"
-      },
-      "aliases": ["CommRings"],
-      "dot_vertex": "CommRings = Rings.Commutative",
-      "provenance": "structured pullback; not Magmas.Commutative alone"
-    },
-    {
-      "id": "cat.domains",
-      "kind": "derived_category",
-      "canonical_name": "Domains",
-      "parameters": [],
-      "definition": {
-        "operation": "classifier_application",
-        "host": "cat.rings",
-        "classifier": "clf.rings.domain"
-      },
-      "aliases": [],
-      "dot_vertex": "Domains = Rings.Domain",
-      "provenance": "need not be commutative"
-    },
-    {
-      "id": "cat.integral_domains",
-      "kind": "derived_category",
-      "canonical_name": "IntegralDomains",
-      "parameters": [],
-      "definition": {
-        "operation": "pullback",
-        "left": "fun.domains_to_rings",
-        "right": "clf.magmas.commutative",
-        "over": "cat.magmas",
-        "strictness": "pseudo",
-        "display": "Domains.Commutative",
-        "notes": "Distinct presentation from Domains; relation to ax.IntegralDomain not settled in seed"
-      },
-      "aliases": [],
-      "dot_vertex": "IntegralDomains = Domains.Commutative",
-      "provenance": "named pullback"
-    },
-    {
-      "id": "cat.gcd_domains",
-      "kind": "derived_category",
-      "canonical_name": "GCDDomains",
-      "parameters": [],
-      "definition": {
-        "operation": "classifier_application",
-        "host": "cat.commutative_rings",
-        "classifier": "clf.comm_rings.gcd_domain"
-      },
-      "aliases": ["GcdDomains"],
-      "dot_vertex": "GCDDomains = Rings.Commutative.GCDDomain",
-      "provenance": "named composite"
-    },
-    {
-      "id": "cat.ufds",
-      "kind": "derived_category",
-      "canonical_name": "UFDs",
-      "parameters": [],
-      "definition": {
-        "operation": "classifier_application",
-        "host": "cat.commutative_rings",
-        "classifier": "clf.comm_rings.ufd"
-      },
-      "aliases": ["UniqueFactorizationDomains"],
-      "dot_vertex": "UFDs = Rings.Commutative.UFD",
-      "provenance": "named composite"
-    },
-    {
-      "id": "cat.pids",
-      "kind": "derived_category",
-      "canonical_name": "PIDs",
-      "parameters": [],
-      "definition": {
-        "operation": "classifier_application",
-        "host": "cat.commutative_rings",
-        "classifier": "clf.comm_rings.pid"
-      },
-      "aliases": ["PrincipalIdealDomains"],
-      "dot_vertex": "PIDs = Rings.Commutative.PID",
-      "provenance": "named composite"
-    },
-    {
-      "id": "cat.euclidean_domains",
-      "kind": "derived_category",
-      "canonical_name": "EuclideanDomains",
-      "parameters": [],
-      "definition": {
-        "operation": "classifier_application",
-        "host": "cat.commutative_rings",
-        "classifier": "clf.comm_rings.euclidean"
-      },
-      "aliases": [],
-      "dot_vertex": "EuclideanDomains = Rings.Commutative.Euclidean",
-      "provenance": "named composite"
-    },
-    {
-      "id": "cat.finite_rings",
-      "kind": "derived_category",
-      "canonical_name": "FiniteRings",
-      "parameters": [],
-      "definition": {
-        "operation": "pullback",
-        "left": "fun.rings_to_sets",
-        "right": "clf.sets.finite",
-        "over": "cat.sets",
-        "strictness": "strict",
-        "display": "Rings.Finite"
-      },
-      "aliases": [],
-      "dot_vertex": "FiniteRings = Rings.Finite",
-      "provenance": "transport of Sets.Finite"
-    },
-    {
-      "id": "cat.finite_fields",
-      "kind": "derived_category",
-      "canonical_name": "FiniteFields",
-      "parameters": [],
-      "definition": {
-        "operation": "pullback",
-        "left": "fun.fields_to_sets",
-        "right": "clf.sets.finite",
-        "over": "cat.sets",
-        "strictness": "strict",
-        "display": "Fields.Finite"
-      },
-      "aliases": [],
-      "dot_vertex": "FiniteFields = Fields.Finite",
-      "provenance": "transport of Sets.Finite"
-    },
-    {
-      "id": "cat.division_rings",
-      "kind": "derived_category",
-      "canonical_name": "DivisionRings",
-      "parameters": [],
-      "definition": {
-        "operation": "classifier_application",
-        "host": "cat.rings",
-        "classifier": "clf.division",
-        "display": "Rings.Division",
-        "notes": "DivisionRings := Rings.Division (nonzero multiplicative invertibility). Not Magmas.Inverse."
-      },
-      "aliases": [],
-      "dot_vertex": "DivisionRings = Rings.Division",
-      "provenance": "PR #278 review: DivisionRings = Rings.Division"
-    },
-    {
-      "id": "cat.left_modules_r",
-      "kind": "alias",
-      "canonical_name": "LeftModules",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.modules_r",
-        "notes": "Sage LeftModules is the default Modules(R) presentation"
-      },
-      "aliases": ["LeftModules(R)"],
-      "dot_vertex": "LeftModules(R)",
-      "provenance": "identity with Modules(R)"
-    },
-    {
-      "id": "cat.right_modules_r",
-      "kind": "derived_category",
-      "canonical_name": "RightModules",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
-      "definition": {
-        "operation": "parameter_substitution",
-        "of": "cat.modules_r",
-        "substitute": {
-          "R": "R^op"
-        },
-        "notes": "Not an identity with left modules; Mod-R ≃ R^op-Mod under the opposite-ring substitution"
-      },
-      "aliases": ["RightModules(R)"],
-      "dot_vertex": "RightModules(R)",
-      "provenance": "R^op specialization of Modules"
-    },
-    {
-      "id": "cat.modules_with_basis",
-      "kind": "derived_category",
-      "canonical_name": "ModulesWithBasis",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
-      "definition": {
-        "operation": "classifier_application",
-        "host": "cat.modules_r",
-        "classifier": "clf.modules.with_basis"
-      },
-      "aliases": [],
-      "dot_vertex": "ModulesWithBasis = Modules.WithBasis",
-      "provenance": "named composite"
-    },
-    {
-      "id": "cat.vector_spaces_k",
-      "kind": "derived_category",
-      "canonical_name": "VectorSpaces",
-      "parameters": [
-        {
-          "name": "K",
-          "sort": "cat.fields",
-          "variance": "contravariant_in_field"
-        }
-      ],
-      "definition": {
-        "operation": "classifier_application",
-        "host": "cat.modules_r",
-        "classifier": "clf.modules.over_field",
-        "parameter_specialization": {
-          "R": "K",
-          "K_sort": "cat.fields"
-        },
-        "display": "Modules.OverField"
-      },
-      "aliases": ["VectorSpaces(K)"],
-      "dot_vertex": "VectorSpaces(K) = Modules.OverField",
-      "provenance": "Modules over a field; not a separate primitive"
-    },
-    {
-      "id": "cat.unital_algebras",
-      "kind": "derived_category",
-      "canonical_name": "UnitalAlgebras",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
       "definition": {
         "operation": "classifier_tower",
-        "base": "cat.algebras_r",
-        "classifiers": ["clf.algebras.associative", "clf.algebras.unital"]
+        "base": "cat.additive_magmas",
+        "classifiers": ["clf.magmas.associative", "clf.magmas.unital", "clf.magmas.inverse"],
+        "along": "additive_operation"
       },
-      "aliases": ["Algebras"],
-      "dot_vertex": "UnitalAlgebras = Algebras.Associative.Unital",
-      "provenance": "Sage Algebras = associative unital; MagmaticAlgebras is the Wikipedia algebra"
+      "aliases": [],
+      "dot_vertex": "AdditiveGroups = Magmas.Additive.Associative.Unital.Inverse",
+      "provenance": "Magmas.Additive.Associative.Unital.Inverse"
     },
     {
-      "id": "cat.commutative_algebras",
+      "id": "cat.additive_magmas",
       "kind": "derived_category",
-      "canonical_name": "CommutativeAlgebras",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
+      "canonical_name": "AdditiveMagmas",
+      "parameters": [],
       "definition": {
-        "operation": "pullback",
-        "left": "fun.unital_algebras_to_magmas",
-        "right": "clf.magmas.commutative",
-        "over": "cat.magmas",
-        "strictness": "pseudo",
-        "display": "UnitalAlgebras.Commutative"
+        "operation": "classifier_application",
+        "host": "cat.magmas",
+        "classifier": "clf.magmas.additive"
       },
-      "aliases": ["CommAlgebras"],
-      "dot_vertex": "CommAlgebras = UnitalAlgebras.Commutative",
-      "provenance": "named pullback"
+      "aliases": ["Magmas.Additive"],
+      "dot_vertex": "Magmas.Additive",
+      "provenance": "Sage AdditiveMagmas normalizes to Magmas.Additive (one-tower)"
     },
     {
-      "id": "cat.algebras_r.graded",
+      "id": "cat.additive_monoids",
       "kind": "derived_category",
-      "canonical_name": "Algebras.Graded",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
+      "canonical_name": "AdditiveMonoids",
+      "parameters": [],
       "definition": {
-        "classifier_id": "clf.algebras_graded",
-        "notes": null
+        "operation": "classifier_tower",
+        "base": "cat.additive_magmas",
+        "classifiers": ["clf.magmas.associative", "clf.magmas.unital"],
+        "along": "additive_operation"
       },
-      "aliases": ["GradedAlgebras"],
-      "dot_vertex": "Algebras(R).Graded",
-      "provenance": "Algebras(R) ×_Sets Sets.Graded"
+      "aliases": [],
+      "dot_vertex": "AdditiveMonoids = Magmas.Additive.Associative.Unital",
+      "provenance": "Magmas.Additive.Associative.Unital"
+    },
+    {
+      "id": "cat.additive_semigroups",
+      "kind": "derived_category",
+      "canonical_name": "AdditiveSemigroups",
+      "parameters": [],
+      "definition": {
+        "operation": "classifier_application",
+        "host": "cat.additive_magmas",
+        "classifier": "clf.magmas.associative",
+        "along": "additive_operation"
+      },
+      "aliases": [],
+      "dot_vertex": "AdditiveSemigroups = Magmas.Additive.Associative",
+      "provenance": "Magmas.Additive.Associative (Magmas Associative along additive_operation)"
+    },
+    {
+      "id": "cat.algebraicspaces",
+      "kind": "category_family",
+      "canonical_name": "AlgebraicSpaces",
+      "parameters": [],
+      "definition": null,
+      "aliases": [],
+      "dot_vertex": "AlgebraicSpaces",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "cat.algebraicstacks",
+      "kind": "category_family",
+      "canonical_name": "AlgebraicStacks",
+      "parameters": [],
+      "definition": null,
+      "aliases": [],
+      "dot_vertex": "AlgebraicStacks",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "cat.algebraideals_a",
+      "kind": "category_family",
+      "canonical_name": "AlgebraIdeals",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "AlgebraIdeals(A)",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.algebras_over_field",
@@ -909,75 +169,42 @@
       "provenance": "reverse-map vertex; MagmaticAlgebras correspondence via field base"
     },
     {
-      "id": "val.orthogonal_groups",
-      "kind": "alias",
-      "canonical_name": "OrthogonalGroups",
-      "parameters": [],
-      "definition": {
-        "operation": "construction_value",
-        "of": "fun.automorphism_group",
-        "notes": "Value of a generic Aut construction; not a first-class category node"
-      },
-      "aliases": [],
-      "dot_vertex": "OrthogonalGroups",
-      "provenance": "settled rulings: Aut/GL values are not category-graph species"
-    },
-    {
-      "id": "val.pic",
-      "kind": "alias",
-      "canonical_name": "Pic",
-      "parameters": [],
-      "definition": {
-        "operation": "construction_value",
-        "notes": "Object-associated construction (Picard group), not a category family"
-      },
-      "aliases": [],
-      "dot_vertex": "Pic",
-      "provenance": "audit finding"
-    },
-    {
-      "id": "ctor.op",
-      "kind": "category_constructor",
-      "canonical_name": "(−)^op",
-      "parameters": [],
-      "definition": {
-        "operation": "category_constructor"
-      },
-      "aliases": [],
-      "dot_vertex": "(−)^op",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "cat.algebraicspaces",
+      "id": "cat.algebras_r",
       "kind": "category_family",
-      "canonical_name": "AlgebraicSpaces",
-      "parameters": [],
-      "definition": null,
-      "aliases": [],
-      "dot_vertex": "AlgebraicSpaces",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "cat.algebraicstacks",
-      "kind": "category_family",
-      "canonical_name": "AlgebraicStacks",
-      "parameters": [],
-      "definition": null,
-      "aliases": [],
-      "dot_vertex": "AlgebraicStacks",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "ctor.arr",
-      "kind": "category_constructor",
-      "canonical_name": "Arr(−)",
-      "parameters": [],
+      "canonical_name": "Algebras",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
       "definition": {
-        "operation": "category_constructor"
+        "operation": "primitive",
+        "notes": "R-module with bilinear multiplication; no assoc/unit required"
       },
-      "aliases": [],
-      "dot_vertex": "Arr(−)",
-      "provenance": "dot_import"
+      "aliases": ["Algebras(R)", "MagmaticAlgebras"],
+      "dot_vertex": "Algebras(R)",
+      "provenance": "Sage MagmaticAlgebras"
+    },
+    {
+      "id": "cat.algebras_r.graded",
+      "kind": "derived_category",
+      "canonical_name": "Algebras.Graded",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
+      "definition": {
+        "classifier_id": "clf.algebras_graded",
+        "notes": null
+      },
+      "aliases": ["GradedAlgebras"],
+      "dot_vertex": "Algebras(R).Graded",
+      "provenance": "Algebras(R) ×_Sets Sets.Graded"
     },
     {
       "id": "cat.artinstacks",
@@ -1005,6 +232,50 @@
       "provenance": "dot_import"
     },
     {
+      "id": "cat.associativeunitalalgebras_k",
+      "kind": "alias",
+      "canonical_name": "associativeunitalalgebras_k",
+      "parameters": [],
+      "definition": {
+        "operation": "same_as",
+        "of": "cat.algebras_over_field",
+        "notes": "authored ledger base_id spelling alias"
+      },
+      "aliases": [],
+      "dot_vertex": "AlgebrasOverField = Algebras.OverField",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.associativeunitalalgebras_r",
+      "kind": "alias",
+      "canonical_name": "associativeunitalalgebras_r",
+      "parameters": [],
+      "definition": {
+        "operation": "same_as",
+        "of": "cat.unital_algebras",
+        "notes": "authored ledger base_id spelling alias"
+      },
+      "aliases": [],
+      "dot_vertex": "UnitalAlgebras = Algebras.Associative.Unital",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.bialgebras_r",
+      "kind": "category_family",
+      "canonical_name": "Bialgebras",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
+      "definition": null,
+      "aliases": ["Bialgebras(R)"],
+      "dot_vertex": "Bialgebras(R)",
+      "provenance": "standard"
+    },
+    {
       "id": "cat.bicategories",
       "kind": "category_family",
       "canonical_name": "Bicategories",
@@ -1015,88 +286,34 @@
       "provenance": "dot_import"
     },
     {
-      "id": "clf.catobject_colimits",
-      "kind": "classifier_domain",
-      "canonical_name": "CatObject.Colimits",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.catobject_colimits"
-      },
-      "aliases": [],
-      "dot_vertex": "CatObject.Colimits",
-      "provenance": "dot_import"
+      "id": "cat.bimodules_r",
+      "kind": "category_family",
+      "canonical_name": "Bimodules",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
+      "definition": null,
+      "aliases": ["Bimodules(R)"],
+      "dot_vertex": "Bimodules(R)",
+      "provenance": "(R,R)-bimodules; refines left and right modules"
     },
     {
-      "id": "clf.catobject_coproducts",
-      "kind": "classifier_domain",
-      "canonical_name": "CatObject.Coproducts",
+      "id": "cat.bimodules_r_s",
+      "kind": "alias",
+      "canonical_name": "bimodules_r_s",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.catobject_coproducts"
+        "operation": "same_as",
+        "of": "cat.bimodules_r",
+        "notes": "authored ledger base_id spelling alias"
       },
       "aliases": [],
-      "dot_vertex": "CatObject.Coproducts",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.catobject_finite",
-      "kind": "classifier_domain",
-      "canonical_name": "CatObject.Finite",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.catobject_finite"
-      },
-      "aliases": [],
-      "dot_vertex": "CatObject.Finite",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.catobject_limits",
-      "kind": "classifier_domain",
-      "canonical_name": "CatObject.Limits",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.catobject_limits"
-      },
-      "aliases": [],
-      "dot_vertex": "CatObject.Limits",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.catobject_locallysmall",
-      "kind": "classifier_domain",
-      "canonical_name": "CatObject.LocallySmall",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.catobject_locallysmall"
-      },
-      "aliases": [],
-      "dot_vertex": "CatObject.LocallySmall",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.catobject_products",
-      "kind": "classifier_domain",
-      "canonical_name": "CatObject.Products",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.catobject_products"
-      },
-      "aliases": [],
-      "dot_vertex": "CatObject.Products",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.catobject_thin",
-      "kind": "classifier_domain",
-      "canonical_name": "CatObject.Thin",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.catobject_thin"
-      },
-      "aliases": [],
-      "dot_vertex": "CatObject.Thin",
-      "provenance": "dot_import"
+      "dot_vertex": "Bimodules(R)",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.cat_1",
@@ -1119,6 +336,16 @@
       "provenance": "dot_import"
     },
     {
+      "id": "cat.cat_object",
+      "kind": "category_family",
+      "canonical_name": "CatObject",
+      "parameters": [],
+      "definition": null,
+      "aliases": [],
+      "dot_vertex": "CatObject",
+      "provenance": "bedrock terminal of the preferred parent spine"
+    },
+    {
       "id": "cat.chaincomplexes",
       "kind": "category_family",
       "canonical_name": "ChainComplexes(C)",
@@ -1135,16 +362,33 @@
       "provenance": "dot_import"
     },
     {
-      "id": "val.chowgroups",
+      "id": "cat.chaincomplexes_c",
       "kind": "alias",
-      "canonical_name": "ChowGroups",
+      "canonical_name": "chaincomplexes_c",
       "parameters": [],
       "definition": {
-        "operation": "construction_value",
-        "notes": "Value of a construction / object-associated functor; not a category_family node"
+        "operation": "same_as",
+        "of": "cat.chaincomplexes",
+        "notes": "authored ledger base_id spelling alias"
       },
       "aliases": [],
-      "dot_vertex": "ChowGroups",
+      "dot_vertex": "ChainComplexes(C)",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.cinftyalgebras",
+      "kind": "category_family",
+      "canonical_name": "C∞Algebras(R)",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
+      "definition": null,
+      "aliases": [],
+      "dot_vertex": "C∞Algebras(R)",
       "provenance": "dot_import"
     },
     {
@@ -1174,6 +418,22 @@
       "provenance": "dot_import"
     },
     {
+      "id": "cat.coalgebras_r",
+      "kind": "category_family",
+      "canonical_name": "Coalgebras",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
+      "definition": null,
+      "aliases": ["Coalgebras(R)"],
+      "dot_vertex": "Coalgebras(R)",
+      "provenance": "standard"
+    },
+    {
       "id": "cat.cochaincomplexes",
       "kind": "category_family",
       "canonical_name": "CochainComplexes(C)",
@@ -1200,29 +460,58 @@
       "provenance": "dot_import"
     },
     {
-      "id": "val.cohomologyrings",
-      "kind": "alias",
-      "canonical_name": "CohomologyRings",
-      "parameters": [],
+      "id": "cat.commutative_algebras",
+      "kind": "derived_category",
+      "canonical_name": "CommutativeAlgebras",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
       "definition": {
-        "operation": "construction_value",
-        "notes": "Value of a construction / object-associated functor; not a category_family node"
+        "operation": "pullback",
+        "left": "fun.unital_algebras_to_magmas",
+        "right": "clf.magmas.commutative",
+        "over": "cat.magmas",
+        "strictness": "pseudo",
+        "display": "UnitalAlgebras.Commutative"
       },
-      "aliases": [],
-      "dot_vertex": "CohomologyRings",
-      "provenance": "dot_import"
+      "aliases": ["CommAlgebras"],
+      "dot_vertex": "CommAlgebras = UnitalAlgebras.Commutative",
+      "provenance": "named pullback"
     },
     {
-      "id": "ctor.comma",
-      "kind": "category_constructor",
-      "canonical_name": "Comma",
+      "id": "cat.commutative_rings",
+      "kind": "derived_category",
+      "canonical_name": "CommutativeRings",
       "parameters": [],
       "definition": {
-        "operation": "category_constructor"
+        "operation": "pullback",
+        "left": "fun.rings_to_multiplicative_magmas",
+        "right": "clf.magmas.commutative",
+        "over": "cat.magmas",
+        "strictness": "pseudo",
+        "display": "Rings.Commutative"
+      },
+      "aliases": ["CommRings"],
+      "dot_vertex": "CommRings = Rings.Commutative",
+      "provenance": "structured pullback; not Magmas.Commutative alone"
+    },
+    {
+      "id": "cat.commutativerings",
+      "kind": "alias",
+      "canonical_name": "commutativerings",
+      "parameters": [],
+      "definition": {
+        "operation": "same_as",
+        "of": "cat.commutative_rings",
+        "notes": "authored ledger base_id spelling alias"
       },
       "aliases": [],
-      "dot_vertex": "Comma",
-      "provenance": "dot_import"
+      "dot_vertex": "CommRings = Rings.Commutative",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.completeintersections",
@@ -1241,6 +530,19 @@
       "provenance": "dot_import"
     },
     {
+      "id": "cat.complexreflectiongroups",
+      "kind": "category_family",
+      "canonical_name": "ComplexReflectionGroups",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "ComplexReflectionGroups",
+      "provenance": "authored sagecats ledger"
+    },
+    {
       "id": "cat.cones",
       "kind": "category_family",
       "canonical_name": "Cones",
@@ -1248,18 +550,6 @@
       "definition": null,
       "aliases": [],
       "dot_vertex": "Cones",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "ctor.coslices",
-      "kind": "category_constructor",
-      "canonical_name": "Coslices",
-      "parameters": [],
-      "definition": {
-        "operation": "category_constructor"
-      },
-      "aliases": [],
-      "dot_vertex": "Coslices",
       "provenance": "dot_import"
     },
     {
@@ -1276,6 +566,56 @@
       "aliases": [],
       "dot_vertex": "CountableInfiniteSets = Sets.Countable.Infinite",
       "provenance": "dot_import"
+    },
+    {
+      "id": "cat.coxeter_groups",
+      "kind": "category_family",
+      "canonical_name": "CoxeterGroups",
+      "parameters": [],
+      "definition": null,
+      "aliases": [],
+      "dot_vertex": "CoxeterGroups",
+      "provenance": "standard"
+    },
+    {
+      "id": "cat.coxetergroupalgebras_r",
+      "kind": "category_family",
+      "canonical_name": "CoxeterGroupAlgebras",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "CoxeterGroupAlgebras(R)",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.coxetergroups",
+      "kind": "alias",
+      "canonical_name": "coxetergroups",
+      "parameters": [],
+      "definition": {
+        "operation": "same_as",
+        "of": "cat.coxeter_groups",
+        "notes": "authored ledger base_id spelling alias"
+      },
+      "aliases": [],
+      "dot_vertex": "CoxeterGroups",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.crystals",
+      "kind": "category_family",
+      "canonical_name": "Crystals",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "Crystals",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.curves",
@@ -1299,32 +639,23 @@
       "provenance": "dot_import"
     },
     {
-      "id": "val.cycles",
-      "kind": "alias",
-      "canonical_name": "Cycles",
+      "id": "cat.delignemumfordstacks",
+      "kind": "category_family",
+      "canonical_name": "DeligneMumfordStacks",
       "parameters": [],
-      "definition": {
-        "operation": "construction_value",
-        "notes": "Value of a construction / object-associated functor; not a category_family node"
-      },
+      "definition": null,
       "aliases": [],
-      "dot_vertex": "Cycles",
+      "dot_vertex": "DeligneMumfordStacks",
       "provenance": "dot_import"
     },
     {
-      "id": "cat.cinftyalgebras",
+      "id": "cat.derhamcomplexes",
       "kind": "category_family",
-      "canonical_name": "C∞Algebras(R)",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        }
-      ],
+      "canonical_name": "DeRhamComplexes",
+      "parameters": [],
       "definition": null,
       "aliases": [],
-      "dot_vertex": "C∞Algebras(R)",
+      "dot_vertex": "DeRhamComplexes",
       "provenance": "dot_import"
     },
     {
@@ -1340,76 +671,6 @@
       },
       "aliases": [],
       "dot_vertex": "DGAs = UnitalAlgebras.Differential",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "val.derhamcohomologyrings",
-      "kind": "alias",
-      "canonical_name": "DeRhamCohomologyRings",
-      "parameters": [],
-      "definition": {
-        "operation": "construction_value",
-        "notes": "Value of a construction / object-associated functor; not a category_family node"
-      },
-      "aliases": [],
-      "dot_vertex": "DeRhamCohomologyRings",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "cat.derhamcomplexes",
-      "kind": "category_family",
-      "canonical_name": "DeRhamComplexes",
-      "parameters": [],
-      "definition": null,
-      "aliases": [],
-      "dot_vertex": "DeRhamComplexes",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "cat.delignemumfordstacks",
-      "kind": "category_family",
-      "canonical_name": "DeligneMumfordStacks",
-      "parameters": [],
-      "definition": null,
-      "aliases": [],
-      "dot_vertex": "DeligneMumfordStacks",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "ctor.descentdata",
-      "kind": "category_constructor",
-      "canonical_name": "DescentData",
-      "parameters": [],
-      "definition": {
-        "operation": "category_constructor"
-      },
-      "aliases": [],
-      "dot_vertex": "DescentData",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "ctor.diagramcategories",
-      "kind": "category_constructor",
-      "canonical_name": "DiagramCategories",
-      "parameters": [],
-      "definition": {
-        "operation": "category_constructor"
-      },
-      "aliases": [],
-      "dot_vertex": "DiagramCategories",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "val.diffformmodules",
-      "kind": "alias",
-      "canonical_name": "DiffFormModules",
-      "parameters": [],
-      "definition": {
-        "operation": "construction_value",
-        "notes": "Value of a construction / object-associated functor; not a category_family node"
-      },
-      "aliases": [],
-      "dot_vertex": "DiffFormModules",
       "provenance": "dot_import"
     },
     {
@@ -1443,17 +704,88 @@
       "provenance": "dot_import"
     },
     {
-      "id": "val.div",
-      "kind": "alias",
-      "canonical_name": "Div",
+      "id": "cat.discretevaluationfields",
+      "kind": "category_family",
+      "canonical_name": "DiscreteValuationFields",
       "parameters": [],
       "definition": {
-        "operation": "construction_value",
-        "notes": "Value of a construction / object-associated functor; not a category_family node"
+        "notes": "authored ledger base",
+        "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "Div",
-      "provenance": "dot_import"
+      "dot_vertex": "DiscreteValuationFields",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.discretevaluationrings",
+      "kind": "category_family",
+      "canonical_name": "DiscreteValuationRings",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "DiscreteValuationRings",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.division_rings",
+      "kind": "derived_category",
+      "canonical_name": "DivisionRings",
+      "parameters": [],
+      "definition": {
+        "operation": "classifier_application",
+        "host": "cat.rings",
+        "classifier": "clf.division",
+        "display": "Rings.Division",
+        "notes": "DivisionRings := Rings.Division (nonzero multiplicative invertibility). Not Magmas.Inverse."
+      },
+      "aliases": [],
+      "dot_vertex": "DivisionRings = Rings.Division",
+      "provenance": "PR #278 review: DivisionRings = Rings.Division"
+    },
+    {
+      "id": "cat.divisionrings",
+      "kind": "alias",
+      "canonical_name": "divisionrings",
+      "parameters": [],
+      "definition": {
+        "operation": "same_as",
+        "of": "cat.division_rings",
+        "notes": "authored ledger base_id spelling alias"
+      },
+      "aliases": [],
+      "dot_vertex": "DivisionRings = Rings.Division",
+      "provenance": "authored sagecats ledger",
+      "notes": ""
+    },
+    {
+      "id": "cat.domains",
+      "kind": "derived_category",
+      "canonical_name": "Domains",
+      "parameters": [],
+      "definition": {
+        "operation": "classifier_application",
+        "host": "cat.rings",
+        "classifier": "clf.rings.domain"
+      },
+      "aliases": [],
+      "dot_vertex": "Domains = Rings.Domain",
+      "provenance": "need not be commutative"
+    },
+    {
+      "id": "cat.drinfeldmodules_gamma_f_q_t_k",
+      "kind": "category_family",
+      "canonical_name": "DrinfeldModules",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "DrinfeldModules",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.dualobjects",
@@ -1464,6 +796,20 @@
       "aliases": [],
       "dot_vertex": "DualObjects",
       "provenance": "dot_import"
+    },
+    {
+      "id": "cat.euclidean_domains",
+      "kind": "derived_category",
+      "canonical_name": "EuclideanDomains",
+      "parameters": [],
+      "definition": {
+        "operation": "classifier_application",
+        "host": "cat.commutative_rings",
+        "classifier": "clf.comm_rings.euclidean"
+      },
+      "aliases": [],
+      "dot_vertex": "EuclideanDomains = Rings.Commutative.Euclidean",
+      "provenance": "named composite"
     },
     {
       "id": "cat.exterioralgebras",
@@ -1492,31 +838,48 @@
       "provenance": "dot_import"
     },
     {
-      "id": "ctor.fibredcategories",
-      "kind": "category_constructor",
-      "canonical_name": "FibredCategories",
+      "id": "cat.fields",
+      "kind": "category_family",
+      "canonical_name": "Fields",
       "parameters": [],
-      "definition": {
-        "operation": "category_constructor"
-      },
-      "aliases": [],
-      "dot_vertex": "FibredCategories",
-      "provenance": "dot_import"
+      "definition": null,
+      "aliases": ["Field"],
+      "dot_vertex": "Fields",
+      "provenance": "standard"
     },
     {
-      "id": "cat.finiterankmodules",
+      "id": "cat.finite_fields",
       "kind": "derived_category",
-      "canonical_name": "FiniteRankModules",
+      "canonical_name": "FiniteFields",
       "parameters": [],
       "definition": {
-        "operation": "classifier_application",
-        "host": "cat.modules_r",
-        "classifier": "clf.modules_finiterank",
-        "display": "Modules.FiniteRank"
+        "operation": "pullback",
+        "left": "fun.fields_to_sets",
+        "right": "clf.sets.finite",
+        "over": "cat.sets",
+        "strictness": "strict",
+        "display": "Fields.Finite"
       },
       "aliases": [],
-      "dot_vertex": "FiniteRankModules = Modules.FiniteRank",
-      "provenance": "dot_import"
+      "dot_vertex": "FiniteFields = Fields.Finite",
+      "provenance": "transport of Sets.Finite"
+    },
+    {
+      "id": "cat.finite_rings",
+      "kind": "derived_category",
+      "canonical_name": "FiniteRings",
+      "parameters": [],
+      "definition": {
+        "operation": "pullback",
+        "left": "fun.rings_to_sets",
+        "right": "clf.sets.finite",
+        "over": "cat.sets",
+        "strictness": "strict",
+        "display": "Rings.Finite"
+      },
+      "aliases": [],
+      "dot_vertex": "FiniteRings = Rings.Finite",
+      "provenance": "transport of Sets.Finite"
     },
     {
       "id": "cat.finitelygeneratedgroups",
@@ -1565,6 +928,21 @@
       "provenance": "dot_import"
     },
     {
+      "id": "cat.finiterankmodules",
+      "kind": "derived_category",
+      "canonical_name": "FiniteRankModules",
+      "parameters": [],
+      "definition": {
+        "operation": "classifier_application",
+        "host": "cat.modules_r",
+        "classifier": "clf.modules_finiterank",
+        "display": "Modules.FiniteRank"
+      },
+      "aliases": [],
+      "dot_vertex": "FiniteRankModules = Modules.FiniteRank",
+      "provenance": "dot_import"
+    },
+    {
       "id": "cat.freemodules",
       "kind": "derived_category",
       "canonical_name": "FreeModules",
@@ -1577,18 +955,6 @@
       },
       "aliases": [],
       "dot_vertex": "FreeModules = Modules.Free",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "ctor.functorcategories",
-      "kind": "category_constructor",
-      "canonical_name": "FunctorCategories",
-      "parameters": [],
-      "definition": {
-        "operation": "category_constructor"
-      },
-      "aliases": [],
-      "dot_vertex": "FunctorCategories",
       "provenance": "dot_import"
     },
     {
@@ -1608,17 +974,31 @@
       "provenance": "dot_import"
     },
     {
-      "id": "val.genera",
-      "kind": "alias",
-      "canonical_name": "Genera",
+      "id": "cat.gcd_domains",
+      "kind": "derived_category",
+      "canonical_name": "GCDDomains",
       "parameters": [],
       "definition": {
-        "operation": "construction_value",
-        "notes": "Value of a construction / object-associated functor; not a category_family node"
+        "operation": "classifier_application",
+        "host": "cat.commutative_rings",
+        "classifier": "clf.comm_rings.gcd_domain"
+      },
+      "aliases": ["GcdDomains"],
+      "dot_vertex": "GCDDomains = Rings.Commutative.GCDDomain",
+      "provenance": "named composite"
+    },
+    {
+      "id": "cat.generalizedcoxetergroups",
+      "kind": "category_family",
+      "canonical_name": "GeneralizedCoxeterGroups",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "Genera",
-      "provenance": "dot_import"
+      "dot_vertex": "GeneralizedCoxeterGroups",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.graphs",
@@ -1631,28 +1011,17 @@
       "provenance": "dot_import"
     },
     {
-      "id": "clf.graphs_directed",
-      "kind": "classifier_domain",
-      "canonical_name": "Graphs.Directed",
+      "id": "cat.groupalgebras_r",
+      "kind": "category_family",
+      "canonical_name": "GroupAlgebras",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.graphs_directed"
+        "notes": "authored ledger base",
+        "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "Graphs.Directed",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "ctor.groupoidobjects",
-      "kind": "category_constructor",
-      "canonical_name": "GroupoidObjects",
-      "parameters": [],
-      "definition": {
-        "operation": "category_constructor"
-      },
-      "aliases": [],
-      "dot_vertex": "GroupoidObjects",
-      "provenance": "dot_import"
+      "dot_vertex": "GroupAlgebras(R)",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.groupoids",
@@ -1665,6 +1034,46 @@
       "provenance": "dot_import"
     },
     {
+      "id": "cat.groupoidson_g",
+      "kind": "category_family",
+      "canonical_name": "GroupoidsOn",
+      "parameters": [],
+      "definition": {
+        "notes": "provisional fiber; authored ledger",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "GroupoidsOn(G)",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.groups",
+      "kind": "derived_category",
+      "canonical_name": "Groups",
+      "parameters": [],
+      "definition": {
+        "operation": "classifier_tower",
+        "base": "cat.magmas",
+        "classifiers": ["clf.magmas.associative", "clf.magmas.unital", "clf.magmas.inverse"]
+      },
+      "aliases": [],
+      "dot_vertex": "Groups = Magmas.Associative.Unital.Inverse",
+      "provenance": "named composite"
+    },
+    {
+      "id": "cat.groupswithsimplereflections",
+      "kind": "category_family",
+      "canonical_name": "GroupsWithSimpleReflections",
+      "parameters": [],
+      "definition": {
+        "notes": "exceptional common-data host for reflection/Coxeter package",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "GroupsWithSimpleReflections",
+      "provenance": "authored sagecats ledger"
+    },
+    {
       "id": "cat.hodgestructures",
       "kind": "category_family",
       "canonical_name": "HodgeStructures",
@@ -1672,18 +1081,6 @@
       "definition": null,
       "aliases": [],
       "dot_vertex": "HodgeStructures",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "ctor.homcategories",
-      "kind": "category_constructor",
-      "canonical_name": "HomCategories",
-      "parameters": [],
-      "definition": {
-        "operation": "category_constructor"
-      },
-      "aliases": [],
-      "dot_vertex": "HomCategories",
       "provenance": "dot_import"
     },
     {
@@ -1705,6 +1102,50 @@
       "aliases": [],
       "dot_vertex": "Homsets",
       "provenance": "dot_import"
+    },
+    {
+      "id": "cat.homsets_c",
+      "kind": "alias",
+      "canonical_name": "homsets_c",
+      "parameters": [],
+      "definition": {
+        "operation": "same_as",
+        "of": "cat.homsets",
+        "notes": "authored ledger base_id spelling alias"
+      },
+      "aliases": [],
+      "dot_vertex": "Homsets",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.hopf_algebras_r",
+      "kind": "category_family",
+      "canonical_name": "HopfAlgebras",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
+      "definition": null,
+      "aliases": ["HopfAlgebras(R)"],
+      "dot_vertex": "HopfAlgebras(R)",
+      "provenance": "standard"
+    },
+    {
+      "id": "cat.hopfalgebras_r",
+      "kind": "alias",
+      "canonical_name": "hopfalgebras_r",
+      "parameters": [],
+      "definition": {
+        "operation": "same_as",
+        "of": "cat.hopf_algebras_r",
+        "notes": "authored ledger base_id spelling alias"
+      },
+      "aliases": [],
+      "dot_vertex": "HopfAlgebras(R)",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.hypersurfaces",
@@ -1733,89 +1174,135 @@
       "provenance": "dot_import"
     },
     {
-      "id": "val.isometrygroups",
+      "id": "cat.int_bil_r",
+      "kind": "category_family",
+      "canonical_name": "∫Bil_R(W)",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        },
+        {
+          "name": "W",
+          "sort": "cat.modules_r",
+          "variance": "parameter"
+        }
+      ],
+      "definition": null,
+      "aliases": [],
+      "dot_vertex": "∫Bil_R(W)",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "cat.int_herm_r",
+      "kind": "category_family",
+      "canonical_name": "∫Herm_R(W)",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        },
+        {
+          "name": "W",
+          "sort": "cat.modules_r",
+          "variance": "parameter"
+        }
+      ],
+      "definition": null,
+      "aliases": [],
+      "dot_vertex": "∫Herm_R(W)",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "cat.int_hom_r",
+      "kind": "category_family",
+      "canonical_name": "∫Hom_R(−,W)",
+      "parameters": [],
+      "definition": null,
+      "aliases": [],
+      "dot_vertex": "∫Hom_R(−,W)",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "cat.int_quad_r",
+      "kind": "category_family",
+      "canonical_name": "∫Quad_R(W)",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        },
+        {
+          "name": "W",
+          "sort": "cat.modules_r",
+          "variance": "parameter"
+        }
+      ],
+      "definition": null,
+      "aliases": [],
+      "dot_vertex": "∫Quad_R(W)",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "cat.integral_domains",
+      "kind": "derived_category",
+      "canonical_name": "IntegralDomains",
+      "parameters": [],
+      "definition": {
+        "operation": "pullback",
+        "left": "fun.domains_to_rings",
+        "right": "clf.magmas.commutative",
+        "over": "cat.magmas",
+        "strictness": "pseudo",
+        "display": "Domains.Commutative",
+        "notes": "Distinct presentation from Domains; relation to ax.IntegralDomain not settled in seed"
+      },
+      "aliases": [],
+      "dot_vertex": "IntegralDomains = Domains.Commutative",
+      "provenance": "named pullback"
+    },
+    {
+      "id": "cat.integraldomains",
       "kind": "alias",
-      "canonical_name": "IsometryGroups",
+      "canonical_name": "integraldomains",
       "parameters": [],
       "definition": {
-        "operation": "construction_value",
-        "notes": "Value of a construction / object-associated functor; not a category_family node"
+        "operation": "same_as",
+        "of": "cat.integral_domains",
+        "notes": "authored ledger base_id spelling alias"
       },
       "aliases": [],
-      "dot_vertex": "IsometryGroups",
-      "provenance": "dot_import"
+      "dot_vertex": "IntegralDomains = Domains.Commutative",
+      "provenance": "authored sagecats ledger"
     },
     {
-      "id": "ctor.isomorphicobjects",
-      "kind": "category_constructor",
-      "canonical_name": "IsomorphicObjects",
+      "id": "cat.kacmoodyalgebras_r",
+      "kind": "category_family",
+      "canonical_name": "KacMoodyAlgebras",
       "parameters": [],
       "definition": {
-        "operation": "category_constructor"
+        "notes": "authored ledger base",
+        "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "IsomorphicObjects",
-      "provenance": "dot_import"
+      "dot_vertex": "KacMoodyAlgebras(R)",
+      "provenance": "authored sagecats ledger"
     },
     {
-      "id": "clf.lat_definite",
-      "kind": "classifier_domain",
-      "canonical_name": "Lat.Definite",
+      "id": "cat.lambdabracketalgebras_r",
+      "kind": "category_family",
+      "canonical_name": "LambdaBracketAlgebras",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.lat_definite"
+        "notes": "authored ledger base",
+        "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "Lat.Definite",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.lat_hyperbolic",
-      "kind": "classifier_domain",
-      "canonical_name": "Lat.Hyperbolic",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.lat_hyperbolic"
-      },
-      "aliases": [],
-      "dot_vertex": "Lat.Hyperbolic",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.lat_indefinite",
-      "kind": "classifier_domain",
-      "canonical_name": "Lat.Indefinite",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.lat_indefinite"
-      },
-      "aliases": [],
-      "dot_vertex": "Lat.Indefinite",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.lat_negativedefinite",
-      "kind": "classifier_domain",
-      "canonical_name": "Lat.NegativeDefinite",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.lat_negativedefinite"
-      },
-      "aliases": [],
-      "dot_vertex": "Lat.NegativeDefinite",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.lat_positivedefinite",
-      "kind": "classifier_domain",
-      "canonical_name": "Lat.PositiveDefinite",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.lat_positivedefinite"
-      },
-      "aliases": [],
-      "dot_vertex": "Lat.PositiveDefinite",
-      "provenance": "dot_import"
+      "dot_vertex": "LambdaBracketAlgebras(R)",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.lat_r",
@@ -1859,6 +1346,95 @@
       "provenance": "dot_import"
     },
     {
+      "id": "cat.latticeposets",
+      "kind": "category_family",
+      "canonical_name": "LatticePosets",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "LatticePosets",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.left_modules_r",
+      "kind": "alias",
+      "canonical_name": "LeftModules",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
+      "definition": {
+        "operation": "same_as",
+        "of": "cat.modules_r",
+        "notes": "Sage LeftModules is the default Modules(R) presentation"
+      },
+      "aliases": ["LeftModules(R)"],
+      "dot_vertex": "LeftModules(R)",
+      "provenance": "identity with Modules(R)"
+    },
+    {
+      "id": "cat.lie_algebras_r",
+      "kind": "category_family",
+      "canonical_name": "LieAlgebras",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
+      "definition": null,
+      "aliases": ["LieAlgebras(R)"],
+      "dot_vertex": "LieAlgebras(R)",
+      "provenance": "standard"
+    },
+    {
+      "id": "cat.liealgebras_r",
+      "kind": "alias",
+      "canonical_name": "liealgebras_r",
+      "parameters": [],
+      "definition": {
+        "operation": "same_as",
+        "of": "cat.lie_algebras_r",
+        "notes": "authored ledger base_id spelling alias"
+      },
+      "aliases": [],
+      "dot_vertex": "LieAlgebras(R)",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.lieconformalalgebras_r",
+      "kind": "category_family",
+      "canonical_name": "LieConformalAlgebras",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "LieConformalAlgebras(R)",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.liegroups",
+      "kind": "category_family",
+      "canonical_name": "LieGroups",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "LieGroups",
+      "provenance": "authored sagecats ledger"
+    },
+    {
       "id": "cat.locallyringedspaces",
       "kind": "category_family",
       "canonical_name": "LocallyRingedSpaces",
@@ -1869,16 +1445,40 @@
       "provenance": "dot_import"
     },
     {
-      "id": "clf.magmas_multiplicative",
-      "kind": "classifier_domain",
-      "canonical_name": "Magmas.Multiplicative",
+      "id": "cat.loopcrystals",
+      "kind": "category_family",
+      "canonical_name": "LoopCrystals",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.magmas_multiplicative"
+        "notes": "authored ledger base",
+        "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "Magmas.Multiplicative",
-      "provenance": "dot_import"
+      "dot_vertex": "LoopCrystals",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.magmas",
+      "kind": "category_family",
+      "canonical_name": "Magmas",
+      "parameters": [],
+      "definition": null,
+      "aliases": ["Mag"],
+      "dot_vertex": "Magmas",
+      "provenance": "standard"
+    },
+    {
+      "id": "cat.magmaswithtwooperations",
+      "kind": "category_family",
+      "canonical_name": "MagmasWithTwoOperations",
+      "parameters": [],
+      "definition": {
+        "notes": "least host for two-operation distributivity",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "MagmasWithTwoOperations",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.manifolds",
@@ -1888,30 +1488,6 @@
       "definition": null,
       "aliases": [],
       "dot_vertex": "Manifolds",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.manifolds_pl",
-      "kind": "classifier_domain",
-      "canonical_name": "Manifolds.PL",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.manifolds_pl"
-      },
-      "aliases": [],
-      "dot_vertex": "Manifolds.PL",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.manifolds_smooth",
-      "kind": "classifier_domain",
-      "canonical_name": "Manifolds.Smooth",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.manifolds_smooth"
-      },
-      "aliases": [],
-      "dot_vertex": "Manifolds.Smooth",
       "provenance": "dot_import"
     },
     {
@@ -1935,100 +1511,82 @@
       "provenance": "dot_import"
     },
     {
-      "id": "clf.modules_finiterank",
-      "kind": "classifier_domain",
-      "canonical_name": "Modules.FiniteRank",
+      "id": "cat.modules_a",
+      "kind": "alias",
+      "canonical_name": "modules_a",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.modules_finiterank"
+        "operation": "same_as",
+        "of": "cat.modules_r",
+        "notes": "authored ledger base_id spelling alias"
       },
       "aliases": [],
-      "dot_vertex": "Modules.FiniteRank",
-      "provenance": "dot_import"
+      "dot_vertex": "Modules(R)",
+      "provenance": "authored sagecats ledger"
     },
     {
-      "id": "clf.modules_finitelygenerated",
-      "kind": "classifier_domain",
-      "canonical_name": "Modules.FinitelyGenerated",
+      "id": "cat.modules_k",
+      "kind": "alias",
+      "canonical_name": "modules_k",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.modules_finitelygenerated"
+        "operation": "same_as",
+        "of": "cat.vector_spaces_k",
+        "notes": "authored ledger base_id spelling alias"
       },
       "aliases": [],
-      "dot_vertex": "Modules.FinitelyGenerated",
-      "provenance": "dot_import"
+      "dot_vertex": "VectorSpaces(K) = Modules.OverField",
+      "provenance": "authored sagecats ledger"
     },
     {
-      "id": "clf.modules_finitelypresented",
-      "kind": "classifier_domain",
-      "canonical_name": "Modules.FinitelyPresented",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.modules_finitelypresented"
-      },
-      "aliases": [],
-      "dot_vertex": "Modules.FinitelyPresented",
-      "provenance": "dot_import"
+      "id": "cat.modules_r",
+      "kind": "category_family",
+      "canonical_name": "Modules",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
+      "definition": null,
+      "aliases": ["R-Mod", "Modules(R)"],
+      "dot_vertex": "Modules(R)",
+      "provenance": "Modules(R) ≃ left R-modules (Sage default)"
     },
     {
-      "id": "clf.modules_free",
-      "kind": "classifier_domain",
-      "canonical_name": "Modules.Free",
+      "id": "cat.modules_rop",
+      "kind": "alias",
+      "canonical_name": "modules_rop",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.modules_free"
+        "operation": "same_as",
+        "of": "cat.right_modules_r",
+        "notes": "authored ledger base_id spelling alias"
       },
       "aliases": [],
-      "dot_vertex": "Modules.Free",
-      "provenance": "dot_import"
+      "dot_vertex": "RightModules(R)",
+      "provenance": "authored sagecats ledger"
     },
     {
-      "id": "clf.modules_projective",
-      "kind": "classifier_domain",
-      "canonical_name": "Modules.Projective",
-      "parameters": [],
+      "id": "cat.modules_with_basis",
+      "kind": "derived_category",
+      "canonical_name": "ModulesWithBasis",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
       "definition": {
-        "classifier_id": "clf.modules_projective"
+        "operation": "classifier_application",
+        "host": "cat.modules_r",
+        "classifier": "clf.modules.with_basis"
       },
       "aliases": [],
-      "dot_vertex": "Modules.Projective",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.modules_torsion",
-      "kind": "classifier_domain",
-      "canonical_name": "Modules.Torsion",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.modules_torsion"
-      },
-      "aliases": [],
-      "dot_vertex": "Modules.Torsion",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.modules_torsionfree",
-      "kind": "classifier_domain",
-      "canonical_name": "Modules.TorsionFree",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.modules_torsionfree"
-      },
-      "aliases": [],
-      "dot_vertex": "Modules.TorsionFree",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.modules_withgenerators",
-      "kind": "classifier_domain",
-      "canonical_name": "Modules.WithGenerators",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.modules_withgenerators"
-      },
-      "aliases": [],
-      "dot_vertex": "Modules.WithGenerators",
-      "provenance": "dot_import"
+      "dot_vertex": "ModulesWithBasis = Modules.WithBasis",
+      "provenance": "named composite"
     },
     {
       "id": "cat.moduleswithgenerators",
@@ -2046,17 +1604,31 @@
       "provenance": "dot_import"
     },
     {
-      "id": "val.ns",
-      "kind": "alias",
-      "canonical_name": "NS",
+      "id": "cat.monoidalgebras_r",
+      "kind": "category_family",
+      "canonical_name": "MonoidAlgebras",
       "parameters": [],
       "definition": {
-        "operation": "construction_value",
-        "notes": "Value of a construction / object-associated functor; not a category_family node"
+        "notes": "authored ledger base",
+        "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "NS",
-      "provenance": "dot_import"
+      "dot_vertex": "MonoidAlgebras(R)",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.monoids",
+      "kind": "derived_category",
+      "canonical_name": "Monoids",
+      "parameters": [],
+      "definition": {
+        "operation": "classifier_tower",
+        "base": "cat.magmas",
+        "classifiers": ["clf.magmas.associative", "clf.magmas.unital"]
+      },
+      "aliases": [],
+      "dot_vertex": "Monoids = Magmas.Associative.Unital",
+      "provenance": "named composite"
     },
     {
       "id": "cat.noetheriancommrings",
@@ -2089,6 +1661,33 @@
       "provenance": "dot_import"
     },
     {
+      "id": "cat.permutationgroups",
+      "kind": "category_family",
+      "canonical_name": "PermutationGroups",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "PermutationGroups",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.pids",
+      "kind": "derived_category",
+      "canonical_name": "PIDs",
+      "parameters": [],
+      "definition": {
+        "operation": "classifier_application",
+        "host": "cat.commutative_rings",
+        "classifier": "clf.comm_rings.pid"
+      },
+      "aliases": ["PrincipalIdealDomains"],
+      "dot_vertex": "PIDs = Rings.Commutative.PID",
+      "provenance": "named composite"
+    },
+    {
       "id": "cat.polyhedra",
       "kind": "category_family",
       "canonical_name": "Polyhedra",
@@ -2097,6 +1696,29 @@
       "aliases": [],
       "dot_vertex": "Polyhedra",
       "provenance": "dot_import"
+    },
+    {
+      "id": "cat.polyhedra_r",
+      "kind": "category_family",
+      "canonical_name": "Polyhedra",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "Polyhedra(R)",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.posets",
+      "kind": "category_family",
+      "canonical_name": "Posets",
+      "parameters": [],
+      "definition": null,
+      "aliases": [],
+      "dot_vertex": "Posets",
+      "provenance": "standard"
     },
     {
       "id": "cat.presheaves",
@@ -2154,18 +1776,6 @@
       "provenance": "dot_import"
     },
     {
-      "id": "ctor.quotients",
-      "kind": "category_constructor",
-      "canonical_name": "Quotients",
-      "parameters": [],
-      "definition": {
-        "operation": "category_constructor"
-      },
-      "aliases": [],
-      "dot_vertex": "Quotients",
-      "provenance": "dot_import"
-    },
-    {
       "id": "cat.reflectiongroups",
       "kind": "category_family",
       "canonical_name": "ReflectionGroups",
@@ -2174,6 +1784,29 @@
       "aliases": [],
       "dot_vertex": "ReflectionGroups",
       "provenance": "dot_import"
+    },
+    {
+      "id": "cat.right_modules_r",
+      "kind": "derived_category",
+      "canonical_name": "RightModules",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
+      "definition": {
+        "operation": "parameter_substitution",
+        "of": "cat.modules_r",
+        "substitute": {
+          "R": "R^op"
+        },
+        "notes": "Not an identity with left modules; Mod-R ≃ R^op-Mod under the opposite-ring substitution"
+      },
+      "aliases": ["RightModules(R)"],
+      "dot_vertex": "RightModules(R)",
+      "provenance": "R^op specialization of Modules"
     },
     {
       "id": "cat.ringedsites",
@@ -2206,6 +1839,39 @@
       "provenance": "dot_import"
     },
     {
+      "id": "cat.ringideals_r",
+      "kind": "category_family",
+      "canonical_name": "RingIdeals",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "RingIdeals(R)",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.rings",
+      "kind": "category_family",
+      "canonical_name": "Rings",
+      "parameters": [],
+      "definition": null,
+      "aliases": ["Ring"],
+      "dot_vertex": "Rings",
+      "provenance": "standard"
+    },
+    {
+      "id": "cat.rngs",
+      "kind": "category_family",
+      "canonical_name": "Rngs",
+      "parameters": [],
+      "definition": null,
+      "aliases": [],
+      "dot_vertex": "Rngs",
+      "provenance": "rings without unit"
+    },
+    {
       "id": "cat.rootlattices",
       "kind": "category_family",
       "canonical_name": "RootLattices",
@@ -2226,196 +1892,94 @@
       "provenance": "dot_import"
     },
     {
-      "id": "clf.schemes_affine",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.Affine",
+      "id": "cat.schemes_k",
+      "kind": "alias",
+      "canonical_name": "schemes_k",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.schemes_affine"
+        "operation": "same_as",
+        "of": "cat.schemes_s",
+        "notes": "authored ledger base_id spelling alias"
       },
       "aliases": [],
-      "dot_vertex": "Schemes.Affine",
-      "provenance": "dot_import"
+      "dot_vertex": "Schemes(S)",
+      "provenance": "authored sagecats ledger"
     },
     {
-      "id": "clf.schemes_finite",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.Finite",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.schemes_finite"
-      },
-      "aliases": [],
-      "dot_vertex": "Schemes.Finite",
-      "provenance": "dot_import"
+      "id": "cat.schemes_s",
+      "kind": "category_family",
+      "canonical_name": "Schemes",
+      "parameters": [
+        {
+          "name": "S",
+          "sort": "cat.schemes_s",
+          "variance": "slice_parameter"
+        }
+      ],
+      "definition": null,
+      "aliases": ["Schemes(S)"],
+      "dot_vertex": "Schemes(S)",
+      "provenance": "parameterized over base scheme S"
     },
     {
-      "id": "clf.schemes_finitetype",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.FiniteType",
+      "id": "cat.semigroups",
+      "kind": "derived_category",
+      "canonical_name": "Semigroups",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.schemes_finitetype"
+        "operation": "classifier_application",
+        "host": "cat.magmas",
+        "classifier": "clf.magmas.associative"
       },
       "aliases": [],
-      "dot_vertex": "Schemes.FiniteType",
-      "provenance": "dot_import"
+      "dot_vertex": "Semigroups = Magmas.Associative",
+      "provenance": "named composite"
     },
     {
-      "id": "clf.schemes_flat",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.Flat",
+      "id": "cat.semirings",
+      "kind": "category_family",
+      "canonical_name": "Semirings",
       "parameters": [],
-      "definition": {
-        "classifier_id": "clf.schemes_flat"
-      },
+      "definition": null,
       "aliases": [],
-      "dot_vertex": "Schemes.Flat",
-      "provenance": "dot_import"
+      "dot_vertex": "Semirings",
+      "provenance": "standard"
     },
     {
-      "id": "clf.schemes_integral",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.Integral",
+      "id": "cat.semisimplealgebras_r",
+      "kind": "category_family",
+      "canonical_name": "SemisimpleAlgebras",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.schemes_integral"
+        "notes": "authored ledger base",
+        "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "Schemes.Integral",
-      "provenance": "dot_import"
+      "dot_vertex": "SemisimpleAlgebras(R)",
+      "provenance": "authored sagecats ledger"
     },
     {
-      "id": "clf.schemes_locallyfinitepresentation",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.LocallyFinitePresentation",
+      "id": "cat.sets",
+      "kind": "category_family",
+      "canonical_name": "Sets",
       "parameters": [],
-      "definition": {
-        "classifier_id": "clf.schemes_locallyfinitepresentation"
-      },
-      "aliases": [],
-      "dot_vertex": "Schemes.LocallyFinitePresentation",
-      "provenance": "dot_import"
+      "definition": null,
+      "aliases": ["Set"],
+      "dot_vertex": "Sets",
+      "provenance": "standard"
     },
     {
-      "id": "clf.schemes_projective",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.Projective",
+      "id": "cat.setswithpartialmaps",
+      "kind": "category_family",
+      "canonical_name": "SetsWithPartialMaps",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.schemes_projective"
+        "notes": "authored ledger base",
+        "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "Schemes.Projective",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.schemes_proper",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.Proper",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.schemes_proper"
-      },
-      "aliases": [],
-      "dot_vertex": "Schemes.Proper",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.schemes_relativedimension",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.RelativeDimension(n)",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.schemes_relativedimension"
-      },
-      "aliases": [],
-      "dot_vertex": "Schemes.RelativeDimension(n)",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.schemes_separated",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.Separated",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.schemes_separated"
-      },
-      "aliases": [],
-      "dot_vertex": "Schemes.Separated",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.schemes_smooth",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.Smooth",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.schemes_smooth"
-      },
-      "aliases": [],
-      "dot_vertex": "Schemes.Smooth",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.schemes_unramified",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.Unramified",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.schemes_unramified"
-      },
-      "aliases": [],
-      "dot_vertex": "Schemes.Unramified",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.schemes_etale",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.Étale",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.schemes_etale"
-      },
-      "aliases": [],
-      "dot_vertex": "Schemes.Étale",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.sets_countable",
-      "kind": "classifier_domain",
-      "canonical_name": "Sets.Countable",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.sets_countable"
-      },
-      "aliases": [],
-      "dot_vertex": "Sets.Countable",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.sets_infinite",
-      "kind": "classifier_domain",
-      "canonical_name": "Sets.Infinite",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.sets_infinite"
-      },
-      "aliases": [],
-      "dot_vertex": "Sets.Infinite",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.sets_uncountable",
-      "kind": "classifier_domain",
-      "canonical_name": "Sets.Uncountable",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.sets_uncountable"
-      },
-      "aliases": [],
-      "dot_vertex": "Sets.Uncountable",
-      "provenance": "dot_import"
+      "dot_vertex": "SetsWithPartialMaps",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.sheaves",
@@ -2428,6 +1992,32 @@
       "provenance": "dot_import"
     },
     {
+      "id": "cat.simplicialcomplexes",
+      "kind": "category_family",
+      "canonical_name": "SimplicialComplexes",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "SimplicialComplexes",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "cat.simplicialsets",
+      "kind": "category_family",
+      "canonical_name": "SimplicialSets",
+      "parameters": [],
+      "definition": {
+        "notes": "authored ledger base",
+        "opaque": true
+      },
+      "aliases": [],
+      "dot_vertex": "SimplicialSets",
+      "provenance": "authored sagecats ledger"
+    },
+    {
       "id": "cat.sites",
       "kind": "category_family",
       "canonical_name": "Sites",
@@ -2435,18 +2025,6 @@
       "definition": null,
       "aliases": [],
       "dot_vertex": "Sites",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "ctor.slices",
-      "kind": "category_constructor",
-      "canonical_name": "Slices",
-      "parameters": [],
-      "definition": {
-        "operation": "category_constructor"
-      },
-      "aliases": [],
-      "dot_vertex": "Slices",
       "provenance": "dot_import"
     },
     {
@@ -2490,28 +2068,30 @@
       "provenance": "dot_import"
     },
     {
-      "id": "ctor.subobjects",
-      "kind": "category_constructor",
-      "canonical_name": "Subobjects",
+      "id": "cat.superalgebras_r",
+      "kind": "category_family",
+      "canonical_name": "SuperAlgebras",
       "parameters": [],
       "definition": {
-        "operation": "category_constructor"
+        "notes": "authored ledger base",
+        "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "Subobjects",
-      "provenance": "dot_import"
+      "dot_vertex": "SuperAlgebras(R)",
+      "provenance": "authored sagecats ledger"
     },
     {
-      "id": "ctor.subquotients",
-      "kind": "category_constructor",
-      "canonical_name": "Subquotients",
+      "id": "cat.supercrystals",
+      "kind": "category_family",
+      "canonical_name": "SuperCrystals",
       "parameters": [],
       "definition": {
-        "operation": "category_constructor"
+        "notes": "authored ledger base",
+        "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "Subquotients",
-      "provenance": "dot_import"
+      "dot_vertex": "SuperCrystals",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.surfaces",
@@ -2567,19 +2147,6 @@
       "provenance": "dot_import"
     },
     {
-      "id": "val.tensorfieldmodules",
-      "kind": "alias",
-      "canonical_name": "TensorFieldModules",
-      "parameters": [],
-      "definition": {
-        "operation": "construction_value",
-        "notes": "Value of a construction / object-associated functor; not a category_family node"
-      },
-      "aliases": [],
-      "dot_vertex": "TensorFieldModules",
-      "provenance": "dot_import"
-    },
-    {
       "id": "cat.tensorproducts",
       "kind": "derived_category",
       "canonical_name": "TensorProducts",
@@ -2631,16 +2198,38 @@
       "provenance": "dot_import"
     },
     {
-      "id": "ctor.torsors",
-      "kind": "category_constructor",
-      "canonical_name": "Torsors",
+      "id": "cat.ufds",
+      "kind": "derived_category",
+      "canonical_name": "UFDs",
       "parameters": [],
       "definition": {
-        "operation": "category_constructor"
+        "operation": "classifier_application",
+        "host": "cat.commutative_rings",
+        "classifier": "clf.comm_rings.ufd"
       },
-      "aliases": [],
-      "dot_vertex": "Torsors",
-      "provenance": "dot_import"
+      "aliases": ["UniqueFactorizationDomains"],
+      "dot_vertex": "UFDs = Rings.Commutative.UFD",
+      "provenance": "named composite"
+    },
+    {
+      "id": "cat.unital_algebras",
+      "kind": "derived_category",
+      "canonical_name": "UnitalAlgebras",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        }
+      ],
+      "definition": {
+        "operation": "classifier_tower",
+        "base": "cat.algebras_r",
+        "classifiers": ["clf.algebras.associative", "clf.algebras.unital"]
+      },
+      "aliases": ["Algebras"],
+      "dot_vertex": "UnitalAlgebras = Algebras.Associative.Unital",
+      "provenance": "Sage Algebras = associative unital; MagmaticAlgebras is the Wikipedia algebra"
     },
     {
       "id": "cat.varieties",
@@ -2664,17 +2253,42 @@
       "provenance": "dot_import"
     },
     {
-      "id": "val.vectorfieldmodules",
-      "kind": "alias",
-      "canonical_name": "VectorFieldModules",
+      "id": "cat.vector_spaces_k",
+      "kind": "derived_category",
+      "canonical_name": "VectorSpaces",
+      "parameters": [
+        {
+          "name": "K",
+          "sort": "cat.fields",
+          "variance": "contravariant_in_field"
+        }
+      ],
+      "definition": {
+        "operation": "classifier_application",
+        "host": "cat.modules_r",
+        "classifier": "clf.modules.over_field",
+        "parameter_specialization": {
+          "R": "K",
+          "K_sort": "cat.fields"
+        },
+        "display": "Modules.OverField"
+      },
+      "aliases": ["VectorSpaces(K)"],
+      "dot_vertex": "VectorSpaces(K) = Modules.OverField",
+      "provenance": "Modules over a field; not a separate primitive"
+    },
+    {
+      "id": "cat.vectorbundles_x_r",
+      "kind": "category_family",
+      "canonical_name": "VectorBundles",
       "parameters": [],
       "definition": {
-        "operation": "construction_value",
-        "notes": "Value of a construction / object-associated functor; not a category_family node"
+        "notes": "authored ledger base",
+        "opaque": true
       },
       "aliases": [],
-      "dot_vertex": "VectorFieldModules",
-      "provenance": "dot_import"
+      "dot_vertex": "VectorBundles(X,R)",
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "cat.vectorspaceswithbasis",
@@ -2690,6 +2304,126 @@
       "aliases": [],
       "dot_vertex": "VectorSpacesWithBasis = VectorSpaces.WithBasis",
       "provenance": "dot_import"
+    },
+    {
+      "id": "cat.weyl_groups",
+      "kind": "category_family",
+      "canonical_name": "WeylGroups",
+      "parameters": [],
+      "definition": null,
+      "aliases": [],
+      "dot_vertex": "WeylGroups",
+      "provenance": "standard"
+    },
+    {
+      "id": "cat.weylgroups",
+      "kind": "alias",
+      "canonical_name": "weylgroups",
+      "parameters": [],
+      "definition": {
+        "operation": "same_as",
+        "of": "cat.weyl_groups",
+        "notes": "authored ledger base_id spelling alias"
+      },
+      "aliases": [],
+      "dot_vertex": "WeylGroups",
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.abelianvariety.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "AbelianVariety@cat.schemes_s",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.abelianvariety"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.additive.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Additive@cat.magmas",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.additive"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.affine.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Affine@cat.weylgroups",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.affine"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.algebras.associative.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Algebras.Associative",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.algebras.associative"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "least host Algebras(R)"
+    },
+    {
+      "id": "clf.algebras.commutative.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Algebras.Commutative",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.algebras.commutative"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "least host Algebras(R)"
+    },
+    {
+      "id": "clf.algebras.unital.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Algebras.Unital",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.algebras.unital"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "least host Algebras(R)"
+    },
+    {
+      "id": "clf.aperiodic.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Aperiodic@cat.semigroups",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.aperiodic"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.associative.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Associative@cat.magmas",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.associative"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
     },
     {
       "id": "clf.ax_associative",
@@ -2860,991 +2594,88 @@
       "provenance": "dot_import"
     },
     {
-      "id": "clf.int_bil_alternating",
+      "id": "clf.catobject_colimits",
       "kind": "classifier_domain",
-      "canonical_name": "∫Bil.Alternating",
+      "canonical_name": "CatObject.Colimits",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.int_bil_alternating"
+        "classifier_id": "clf.catobject_colimits"
       },
       "aliases": [],
-      "dot_vertex": "∫Bil.Alternating",
+      "dot_vertex": "CatObject.Colimits",
       "provenance": "dot_import"
     },
     {
-      "id": "clf.int_bil_skewsymmetric",
+      "id": "clf.catobject_coproducts",
       "kind": "classifier_domain",
-      "canonical_name": "∫Bil.SkewSymmetric",
+      "canonical_name": "CatObject.Coproducts",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.int_bil_skewsymmetric"
+        "classifier_id": "clf.catobject_coproducts"
       },
       "aliases": [],
-      "dot_vertex": "∫Bil.SkewSymmetric",
+      "dot_vertex": "CatObject.Coproducts",
       "provenance": "dot_import"
     },
     {
-      "id": "clf.int_bil_symmetric",
+      "id": "clf.catobject_finite",
       "kind": "classifier_domain",
-      "canonical_name": "∫Bil.Symmetric",
+      "canonical_name": "CatObject.Finite",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.int_bil_symmetric"
+        "classifier_id": "clf.catobject_finite"
       },
       "aliases": [],
-      "dot_vertex": "∫Bil.Symmetric",
+      "dot_vertex": "CatObject.Finite",
       "provenance": "dot_import"
     },
     {
-      "id": "cat.int_bil_r",
-      "kind": "category_family",
-      "canonical_name": "∫Bil_R(W)",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        },
-        {
-          "name": "W",
-          "sort": "cat.modules_r",
-          "variance": "parameter"
-        }
-      ],
-      "definition": null,
+      "id": "clf.catobject_limits",
+      "kind": "classifier_domain",
+      "canonical_name": "CatObject.Limits",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.catobject_limits"
+      },
       "aliases": [],
-      "dot_vertex": "∫Bil_R(W)",
+      "dot_vertex": "CatObject.Limits",
       "provenance": "dot_import"
     },
     {
-      "id": "cat.int_herm_r",
-      "kind": "category_family",
-      "canonical_name": "∫Herm_R(W)",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        },
-        {
-          "name": "W",
-          "sort": "cat.modules_r",
-          "variance": "parameter"
-        }
-      ],
-      "definition": null,
+      "id": "clf.catobject_locallysmall",
+      "kind": "classifier_domain",
+      "canonical_name": "CatObject.LocallySmall",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.catobject_locallysmall"
+      },
       "aliases": [],
-      "dot_vertex": "∫Herm_R(W)",
+      "dot_vertex": "CatObject.LocallySmall",
       "provenance": "dot_import"
     },
     {
-      "id": "clf.int_hom_even",
+      "id": "clf.catobject_products",
       "kind": "classifier_domain",
-      "canonical_name": "∫Hom.Even",
+      "canonical_name": "CatObject.Products",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.int_hom_even"
+        "classifier_id": "clf.catobject_products"
       },
       "aliases": [],
-      "dot_vertex": "∫Hom.Even",
+      "dot_vertex": "CatObject.Products",
       "provenance": "dot_import"
     },
     {
-      "id": "clf.int_hom_nondegenerate",
+      "id": "clf.catobject_thin",
       "kind": "classifier_domain",
-      "canonical_name": "∫Hom.Nondegenerate",
+      "canonical_name": "CatObject.Thin",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.int_hom_nondegenerate"
+        "classifier_id": "clf.catobject_thin"
       },
       "aliases": [],
-      "dot_vertex": "∫Hom.Nondegenerate",
+      "dot_vertex": "CatObject.Thin",
       "provenance": "dot_import"
-    },
-    {
-      "id": "clf.int_hom_odd",
-      "kind": "classifier_domain",
-      "canonical_name": "∫Hom.Odd",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.int_hom_odd"
-      },
-      "aliases": [],
-      "dot_vertex": "∫Hom.Odd",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.int_hom_unimodular",
-      "kind": "classifier_domain",
-      "canonical_name": "∫Hom.Unimodular",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.int_hom_unimodular"
-      },
-      "aliases": [],
-      "dot_vertex": "∫Hom.Unimodular",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "cat.int_hom_r",
-      "kind": "category_family",
-      "canonical_name": "∫Hom_R(−,W)",
-      "parameters": [],
-      "definition": null,
-      "aliases": [],
-      "dot_vertex": "∫Hom_R(−,W)",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "cat.int_quad_r",
-      "kind": "category_family",
-      "canonical_name": "∫Quad_R(W)",
-      "parameters": [
-        {
-          "name": "R",
-          "sort": "cat.rings",
-          "variance": "contravariant_in_ring"
-        },
-        {
-          "name": "W",
-          "sort": "cat.modules_r",
-          "variance": "parameter"
-        }
-      ],
-      "definition": null,
-      "aliases": [],
-      "dot_vertex": "∫Quad_R(W)",
-      "provenance": "dot_import"
-    },
-    {
-      "id": "clf.schemes_s.relativedimension.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.RelativeDimension(1)",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.schemes_s.relativedimension"
-      },
-      "aliases": [],
-      "dot_vertex": "Schemes(S).RelativeDimension(1)",
-      "provenance": "refined from named-join path"
-    },
-    {
-      "id": "clf.unital_algebras.differential.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "UnitalAlgebras.Differential",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.unital_algebras.differential"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "refined from named-join path"
-    },
-    {
-      "id": "clf.int_bil_r.nondegenerate.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "∫Bil_R(W).Nondegenerate",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.int_bil_r.nondegenerate"
-      },
-      "aliases": [],
-      "dot_vertex": "∫Bil_R(W).Nondegenerate",
-      "provenance": "refined from named-join path"
-    },
-    {
-      "id": "clf.int_bil_r.finite.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "∫Bil_R(W).Finite",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.int_bil_r.finite"
-      },
-      "aliases": [],
-      "dot_vertex": "∫Bil_R(W).Finite",
-      "provenance": "refined from named-join path"
-    },
-    {
-      "id": "clf.int_quad_r.nondegenerate.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "∫Quad_R(W).Nondegenerate",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.int_quad_r.nondegenerate"
-      },
-      "aliases": [],
-      "dot_vertex": "∫Quad_R(W).Nondegenerate",
-      "provenance": "refined from named-join path"
-    },
-    {
-      "id": "clf.semigroups.unital.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Semigroups.Unital",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.semigroups.unital"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "refined from named-join path"
-    },
-    {
-      "id": "clf.monoids.inverse.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Monoids.Inverse",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.monoids.inverse"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "refined from named-join path"
-    },
-    {
-      "id": "clf.groups.finitelygenerated.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Groups.FinitelyGenerated",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.groups.finitelygenerated"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "refined from named-join path"
-    },
-    {
-      "id": "clf.rings.commutative.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Rings.Commutative",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.rings.commutative"
-      },
-      "aliases": [],
-      "dot_vertex": "Rings.Commutative",
-      "provenance": "refined from named-join path"
-    },
-    {
-      "id": "clf.vector_spaces_k.withbasis.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "VectorSpaces.WithBasis",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.vector_spaces_k.withbasis"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "refined from named-join path"
-    },
-    {
-      "id": "clf.schemes.relative_dimension_1.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.RelativeDimension(1)",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.schemes.relative_dimension_1"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "schemes relative dimension"
-    },
-    {
-      "id": "clf.schemes.relative_dimension_2.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Schemes.RelativeDimension(2)",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.schemes.relative_dimension_2"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "schemes relative dimension"
-    },
-    {
-      "id": "clf.magmas.additive.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Magmas.Additive",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.magmas.additive"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "least host Magmas; named join is cat.additive_magmas"
-    },
-    {
-      "id": "cat.associativeunitalalgebras_k",
-      "kind": "alias",
-      "canonical_name": "associativeunitalalgebras_k",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.algebras_over_field",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "AlgebrasOverField = Algebras.OverField",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.associativeunitalalgebras_r",
-      "kind": "alias",
-      "canonical_name": "associativeunitalalgebras_r",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.unital_algebras",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "UnitalAlgebras = Algebras.Associative.Unital",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.bimodules_r_s",
-      "kind": "alias",
-      "canonical_name": "bimodules_r_s",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.bimodules_r",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "Bimodules(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.commutativerings",
-      "kind": "alias",
-      "canonical_name": "commutativerings",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.commutative_rings",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "CommRings = Rings.Commutative",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.coxetergroups",
-      "kind": "alias",
-      "canonical_name": "coxetergroups",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.coxeter_groups",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "CoxeterGroups",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.divisionrings",
-      "kind": "alias",
-      "canonical_name": "divisionrings",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.division_rings",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "DivisionRings = Rings.Division",
-      "provenance": "authored sagecats ledger",
-      "notes": ""
-    },
-    {
-      "id": "cat.homsets_c",
-      "kind": "alias",
-      "canonical_name": "homsets_c",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.homsets",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "Homsets",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.hopfalgebras_r",
-      "kind": "alias",
-      "canonical_name": "hopfalgebras_r",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.hopf_algebras_r",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "HopfAlgebras(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.integraldomains",
-      "kind": "alias",
-      "canonical_name": "integraldomains",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.integral_domains",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "IntegralDomains = Domains.Commutative",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.liealgebras_r",
-      "kind": "alias",
-      "canonical_name": "liealgebras_r",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.lie_algebras_r",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "LieAlgebras(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.modules_a",
-      "kind": "alias",
-      "canonical_name": "modules_a",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.modules_r",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "Modules(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.modules_k",
-      "kind": "alias",
-      "canonical_name": "modules_k",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.vector_spaces_k",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "VectorSpaces(K) = Modules.OverField",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.modules_rop",
-      "kind": "alias",
-      "canonical_name": "modules_rop",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.right_modules_r",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "RightModules(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.schemes_k",
-      "kind": "alias",
-      "canonical_name": "schemes_k",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.schemes_s",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "Schemes(S)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.weylgroups",
-      "kind": "alias",
-      "canonical_name": "weylgroups",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.weyl_groups",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "WeylGroups",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.crystals",
-      "kind": "category_family",
-      "canonical_name": "Crystals",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "Crystals",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.loopcrystals",
-      "kind": "category_family",
-      "canonical_name": "LoopCrystals",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "LoopCrystals",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.supercrystals",
-      "kind": "category_family",
-      "canonical_name": "SuperCrystals",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "SuperCrystals",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.magmaswithtwooperations",
-      "kind": "category_family",
-      "canonical_name": "MagmasWithTwoOperations",
-      "parameters": [],
-      "definition": {
-        "notes": "least host for two-operation distributivity",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "MagmasWithTwoOperations",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.groupswithsimplereflections",
-      "kind": "category_family",
-      "canonical_name": "GroupsWithSimpleReflections",
-      "parameters": [],
-      "definition": {
-        "notes": "exceptional common-data host for reflection/Coxeter package",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "GroupsWithSimpleReflections",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.generalizedcoxetergroups",
-      "kind": "category_family",
-      "canonical_name": "GeneralizedCoxeterGroups",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "GeneralizedCoxeterGroups",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.complexreflectiongroups",
-      "kind": "category_family",
-      "canonical_name": "ComplexReflectionGroups",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "ComplexReflectionGroups",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.permutationgroups",
-      "kind": "category_family",
-      "canonical_name": "PermutationGroups",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "PermutationGroups",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.liegroups",
-      "kind": "category_family",
-      "canonical_name": "LieGroups",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "LieGroups",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.lieconformalalgebras_r",
-      "kind": "category_family",
-      "canonical_name": "LieConformalAlgebras",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "LieConformalAlgebras(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.lambdabracketalgebras_r",
-      "kind": "category_family",
-      "canonical_name": "LambdaBracketAlgebras",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "LambdaBracketAlgebras(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.kacmoodyalgebras_r",
-      "kind": "category_family",
-      "canonical_name": "KacMoodyAlgebras",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "KacMoodyAlgebras(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.monoidalgebras_r",
-      "kind": "category_family",
-      "canonical_name": "MonoidAlgebras",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "MonoidAlgebras(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.groupalgebras_r",
-      "kind": "category_family",
-      "canonical_name": "GroupAlgebras",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "GroupAlgebras(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.coxetergroupalgebras_r",
-      "kind": "category_family",
-      "canonical_name": "CoxeterGroupAlgebras",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "CoxeterGroupAlgebras(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.semisimplealgebras_r",
-      "kind": "category_family",
-      "canonical_name": "SemisimpleAlgebras",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "SemisimpleAlgebras(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.superalgebras_r",
-      "kind": "category_family",
-      "canonical_name": "SuperAlgebras",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "SuperAlgebras(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.algebraideals_a",
-      "kind": "category_family",
-      "canonical_name": "AlgebraIdeals",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "AlgebraIdeals(A)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.ringideals_r",
-      "kind": "category_family",
-      "canonical_name": "RingIdeals",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "RingIdeals(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.discretevaluationrings",
-      "kind": "category_family",
-      "canonical_name": "DiscreteValuationRings",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "DiscreteValuationRings",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.discretevaluationfields",
-      "kind": "category_family",
-      "canonical_name": "DiscreteValuationFields",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "DiscreteValuationFields",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.abelianvarieties_k",
-      "kind": "category_family",
-      "canonical_name": "AbelianVarieties",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "AbelianVarieties(K)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.latticeposets",
-      "kind": "category_family",
-      "canonical_name": "LatticePosets",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "LatticePosets",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.setswithpartialmaps",
-      "kind": "category_family",
-      "canonical_name": "SetsWithPartialMaps",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "SetsWithPartialMaps",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.simplicialcomplexes",
-      "kind": "category_family",
-      "canonical_name": "SimplicialComplexes",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "SimplicialComplexes",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.simplicialsets",
-      "kind": "category_family",
-      "canonical_name": "SimplicialSets",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "SimplicialSets",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.vectorbundles_x_r",
-      "kind": "category_family",
-      "canonical_name": "VectorBundles",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "VectorBundles(X,R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.drinfeldmodules_gamma_f_q_t_k",
-      "kind": "category_family",
-      "canonical_name": "DrinfeldModules",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "DrinfeldModules",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.groupoidson_g",
-      "kind": "category_family",
-      "canonical_name": "GroupoidsOn",
-      "parameters": [],
-      "definition": {
-        "notes": "provisional fiber; authored ledger",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "GroupoidsOn(G)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.sagebackendobjects",
-      "kind": "category_family",
-      "canonical_name": "SageBackendObjects",
-      "parameters": [],
-      "definition": {
-        "notes": "compatibility-layer host only; not ordinary mathematics",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "SageBackendObjects",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.polyhedra_r",
-      "kind": "category_family",
-      "canonical_name": "Polyhedra",
-      "parameters": [],
-      "definition": {
-        "notes": "authored ledger base",
-        "opaque": true
-      },
-      "aliases": [],
-      "dot_vertex": "Polyhedra(R)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.abelianvariety.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "AbelianVariety@cat.schemes_s",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.abelianvariety"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.additive.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Additive@cat.magmas",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.additive"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.affine.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Affine@cat.weylgroups",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.affine"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.aperiodic.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Aperiodic@cat.semigroups",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.aperiodic"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.associative.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Associative@cat.magmas",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.associative"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
     },
     {
       "id": "clf.classical.domain",
@@ -3857,6 +2688,66 @@
       "aliases": [],
       "dot_vertex": null,
       "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.coalgebras_r.cocommutative.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Cocommutative@cat.coalgebras_r",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.coalgebras_r.cocommutative"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.comm_rings.euclidean.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "CommutativeRings.Euclidean",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.comm_rings.euclidean"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "on CommRings"
+    },
+    {
+      "id": "clf.comm_rings.gcd_domain.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "CommutativeRings.GCDDomain",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.comm_rings.gcd_domain"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "on CommRings"
+    },
+    {
+      "id": "clf.comm_rings.pid.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "CommutativeRings.PID",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.comm_rings.pid"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "on CommRings"
+    },
+    {
+      "id": "clf.comm_rings.ufd.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "CommutativeRings.UFD",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.comm_rings.ufd"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "on CommRings"
     },
     {
       "id": "clf.commutative.domain",
@@ -3967,6 +2858,30 @@
       "provenance": "authored sagecats ledger"
     },
     {
+      "id": "clf.distributive_lattice.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Distributive@cat.latticeposets",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.distributive_lattice"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.distributive_twooperations.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Distributive@cat.magmaswithtwooperations",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.distributive_twooperations"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
       "id": "clf.division.domain",
       "kind": "classifier_domain",
       "canonical_name": "Division@cat.rings",
@@ -4045,6 +2960,18 @@
       "parameters": [],
       "definition": {
         "classifier_id": "clf.finiteextensionof_q"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.finitelygenerated_lambdabracket.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "FinitelyGenerated@cat.lambdabracketalgebras_r",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.finitelygenerated_lambdabracket"
       },
       "aliases": [],
       "dot_vertex": null,
@@ -4135,6 +3062,54 @@
       "provenance": "authored sagecats ledger"
     },
     {
+      "id": "clf.graphs_directed",
+      "kind": "classifier_domain",
+      "canonical_name": "Graphs.Directed",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.graphs_directed"
+      },
+      "aliases": [],
+      "dot_vertex": "Graphs.Directed",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.groups.commutative.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Groups.Commutative",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.groups.commutative"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "transported Commutative"
+    },
+    {
+      "id": "clf.groups.finitelygenerated.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Groups.FinitelyGenerated",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.groups.finitelygenerated"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "refined from named-join path"
+    },
+    {
+      "id": "clf.groupswithsimplereflections.irreducible.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Irreducible@cat.groupswithsimplereflections",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.groupswithsimplereflections.irreducible"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
       "id": "clf.heckemodulestructure.domain",
       "kind": "classifier_domain",
       "canonical_name": "HeckeModuleStructure@cat.modules_r",
@@ -4183,294 +3158,124 @@
       "provenance": "authored sagecats ledger"
     },
     {
-      "id": "clf.jtrivial.domain",
+      "id": "clf.int_bil_alternating",
       "kind": "classifier_domain",
-      "canonical_name": "JTrivial@cat.semigroups",
+      "canonical_name": "∫Bil.Alternating",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.jtrivial"
+        "classifier_id": "clf.int_bil_alternating"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "∫Bil.Alternating",
+      "provenance": "dot_import"
     },
     {
-      "id": "clf.kirillovreshetikhin.domain",
+      "id": "clf.int_bil_r.finite.domain",
       "kind": "classifier_domain",
-      "canonical_name": "KirillovReshetikhin@cat.loopcrystals",
+      "canonical_name": "∫Bil_R(W).Finite",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.kirillovreshetikhin"
+        "classifier_id": "clf.int_bil_r.finite"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "∫Bil_R(W).Finite",
+      "provenance": "refined from named-join path"
     },
     {
-      "id": "clf.lattice.domain",
+      "id": "clf.int_bil_r.nondegenerate.domain",
       "kind": "classifier_domain",
-      "canonical_name": "Lattice@cat.posets",
+      "canonical_name": "∫Bil_R(W).Nondegenerate",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.lattice"
+        "classifier_id": "clf.int_bil_r.nondegenerate"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "∫Bil_R(W).Nondegenerate",
+      "provenance": "refined from named-join path"
     },
     {
-      "id": "clf.ltrivial.domain",
+      "id": "clf.int_bil_skewsymmetric",
       "kind": "classifier_domain",
-      "canonical_name": "LTrivial@cat.semigroups",
+      "canonical_name": "∫Bil.SkewSymmetric",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.ltrivial"
+        "classifier_id": "clf.int_bil_skewsymmetric"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "∫Bil.SkewSymmetric",
+      "provenance": "dot_import"
     },
     {
-      "id": "clf.magmas.finitelygenerated.domain",
+      "id": "clf.int_bil_symmetric",
       "kind": "classifier_domain",
-      "canonical_name": "FinitelyGenerated@cat.magmas",
+      "canonical_name": "∫Bil.Symmetric",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.magmas.finitelygenerated"
+        "classifier_id": "clf.int_bil_symmetric"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "∫Bil.Symmetric",
+      "provenance": "dot_import"
     },
     {
-      "id": "clf.metric.domain",
+      "id": "clf.int_hom_even",
       "kind": "classifier_domain",
-      "canonical_name": "Metric@cat.sets",
+      "canonical_name": "∫Hom.Even",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.metric"
+        "classifier_id": "clf.int_hom_even"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "∫Hom.Even",
+      "provenance": "dot_import"
     },
     {
-      "id": "clf.noetherian.domain",
+      "id": "clf.int_hom_nondegenerate",
       "kind": "classifier_domain",
-      "canonical_name": "Noetherian@cat.commutativerings",
+      "canonical_name": "∫Hom.Nondegenerate",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.noetherian"
+        "classifier_id": "clf.int_hom_nondegenerate"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "∫Hom.Nondegenerate",
+      "provenance": "dot_import"
     },
     {
-      "id": "clf.nozerodivisors.domain",
+      "id": "clf.int_hom_odd",
       "kind": "classifier_domain",
-      "canonical_name": "NoZeroDivisors@cat.rings",
+      "canonical_name": "∫Hom.Odd",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.nozerodivisors"
+        "classifier_id": "clf.int_hom_odd"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "∫Hom.Odd",
+      "provenance": "dot_import"
     },
     {
-      "id": "clf.oremodulestructure_sigma_delta.domain",
+      "id": "clf.int_hom_unimodular",
       "kind": "classifier_domain",
-      "canonical_name": "OreModuleStructure@cat.modules_r",
+      "canonical_name": "∫Hom.Unimodular",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.oremodulestructure_sigma_delta"
+        "classifier_id": "clf.int_hom_unimodular"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "∫Hom.Unimodular",
+      "provenance": "dot_import"
     },
     {
-      "id": "clf.pointed.domain",
+      "id": "clf.int_quad_r.nondegenerate.domain",
       "kind": "classifier_domain",
-      "canonical_name": "Pointed@cat.sets",
+      "canonical_name": "∫Quad_R(W).Nondegenerate",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.pointed"
+        "classifier_id": "clf.int_quad_r.nondegenerate"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.principalideal.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "PrincipalIdeal@cat.integraldomains",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.principalideal"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.quantumgrouprepresentation.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "QuantumGroupRepresentation@cat.modules_r",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.quantumgrouprepresentation"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.regular.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Regular@cat.crystals",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.regular"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.rtrivial.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "RTrivial@cat.semigroups",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.rtrivial"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.semigroups.finitelygenerated.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "FinitelyGenerated@cat.semigroups",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.semigroups.finitelygenerated"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.super.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Super@cat.modules_r",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.super"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.uniquefactorization.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "UniqueFactorization@cat.integraldomains",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.uniquefactorization"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.unital.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Unital@cat.magmas",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.unital"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.weyl.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Weyl@cat.coxetergroups",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.weyl"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.withbasis.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "WithBasis@cat.modules_r",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.withbasis"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "cat.chaincomplexes_c",
-      "kind": "alias",
-      "canonical_name": "chaincomplexes_c",
-      "parameters": [],
-      "definition": {
-        "operation": "same_as",
-        "of": "cat.chaincomplexes",
-        "notes": "authored ledger base_id spelling alias"
-      },
-      "aliases": [],
-      "dot_vertex": "ChainComplexes(C)",
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.distributive_lattice.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Distributive@cat.latticeposets",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.distributive_lattice"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.distributive_twooperations.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Distributive@cat.magmaswithtwooperations",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.distributive_twooperations"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.finitelygenerated_lambdabracket.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "FinitelyGenerated@cat.lambdabracketalgebras_r",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.finitelygenerated_lambdabracket"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "∫Quad_R(W).Nondegenerate",
+      "provenance": "refined from named-join path"
     },
     {
       "id": "clf.jacobian.domain",
@@ -4479,6 +3284,18 @@
       "parameters": [],
       "definition": {
         "classifier_id": "clf.jacobian"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.jtrivial.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "JTrivial@cat.semigroups",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.jtrivial"
       },
       "aliases": [],
       "dot_vertex": null,
@@ -4497,6 +3314,18 @@
       "provenance": "authored sagecats ledger"
     },
     {
+      "id": "clf.kirillovreshetikhin.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "KirillovReshetikhin@cat.loopcrystals",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.kirillovreshetikhin"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
       "id": "clf.lambdabracketalgebras_r.finitelygenerated.domain",
       "kind": "classifier_domain",
       "canonical_name": "FinitelyGenerated@cat.lambdabracketalgebras_r",
@@ -4509,120 +3338,72 @@
       "provenance": "authored sagecats ledger"
     },
     {
-      "id": "clf.matrixalgebra.domain",
+      "id": "clf.lat_definite",
       "kind": "classifier_domain",
-      "canonical_name": "MatrixAlgebra@cat.algebras_r",
+      "canonical_name": "Lat.Definite",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.matrixalgebra"
+        "classifier_id": "clf.lat_definite"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "Lat.Definite",
+      "provenance": "dot_import"
     },
     {
-      "id": "clf.modular.domain",
+      "id": "clf.lat_hyperbolic",
       "kind": "classifier_domain",
-      "canonical_name": "Modular@cat.abelianvarieties_k",
+      "canonical_name": "Lat.Hyperbolic",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.modular"
+        "classifier_id": "clf.lat_hyperbolic"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "Lat.Hyperbolic",
+      "provenance": "dot_import"
     },
     {
-      "id": "clf.nilpotent.domain",
+      "id": "clf.lat_indefinite",
       "kind": "classifier_domain",
-      "canonical_name": "Nilpotent@cat.lie_algebras_r",
+      "canonical_name": "Lat.Indefinite",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.nilpotent"
+        "classifier_id": "clf.lat_indefinite"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "Lat.Indefinite",
+      "provenance": "dot_import"
     },
     {
-      "id": "clf.semisimple.domain",
+      "id": "clf.lat_negativedefinite",
       "kind": "classifier_domain",
-      "canonical_name": "Semisimple@cat.algebras_r",
+      "canonical_name": "Lat.NegativeDefinite",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.semisimple"
+        "classifier_id": "clf.lat_negativedefinite"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "Lat.NegativeDefinite",
+      "provenance": "dot_import"
     },
     {
-      "id": "clf.shephard.domain",
+      "id": "clf.lat_positivedefinite",
       "kind": "classifier_domain",
-      "canonical_name": "Shephard@cat.groupswithsimplereflections",
+      "canonical_name": "Lat.PositiveDefinite",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.shephard"
+        "classifier_id": "clf.lat_positivedefinite"
       },
       "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
+      "dot_vertex": "Lat.PositiveDefinite",
+      "provenance": "dot_import"
     },
     {
-      "id": "clf.super_crystal.domain",
+      "id": "clf.lattice.domain",
       "kind": "classifier_domain",
-      "canonical_name": "Super@cat.crystals",
+      "canonical_name": "Lattice@cat.posets",
       "parameters": [],
       "definition": {
-        "classifier_id": "clf.super_crystal"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.supercommutative.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Supercommutative@cat.superalgebras_r",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.supercommutative"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.triangulardecomposition.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "TriangularDecomposition@cat.kacmoodyalgebras_r",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.triangulardecomposition"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.coalgebras_r.cocommutative.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Cocommutative@cat.coalgebras_r",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.coalgebras_r.cocommutative"
-      },
-      "aliases": [],
-      "dot_vertex": null,
-      "provenance": "authored sagecats ledger"
-    },
-    {
-      "id": "clf.groupswithsimplereflections.irreducible.domain",
-      "kind": "classifier_domain",
-      "canonical_name": "Irreducible@cat.groupswithsimplereflections",
-      "parameters": [],
-      "definition": {
-        "classifier_id": "clf.groupswithsimplereflections.irreducible"
+        "classifier_id": "clf.lattice"
       },
       "aliases": [],
       "dot_vertex": null,
@@ -4713,6 +3494,90 @@
       "provenance": "authored sagecats ledger"
     },
     {
+      "id": "clf.ltrivial.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "LTrivial@cat.semigroups",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.ltrivial"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.magmas.additive.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Magmas.Additive",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.magmas.additive"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "least host Magmas; named join is cat.additive_magmas"
+    },
+    {
+      "id": "clf.magmas.associative.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Magmas.Associative",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.magmas.associative"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "least host Magmas"
+    },
+    {
+      "id": "clf.magmas.commutative.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Magmas.Commutative",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.magmas.commutative"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "least host Magmas"
+    },
+    {
+      "id": "clf.magmas.finitelygenerated.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "FinitelyGenerated@cat.magmas",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.magmas.finitelygenerated"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.magmas.inverse.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Magmas.Inverse",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.magmas.inverse"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "least host Magmas"
+    },
+    {
+      "id": "clf.magmas.unital.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Magmas.Unital",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.magmas.unital"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "least host Magmas"
+    },
+    {
       "id": "clf.magmas.unital.inverse.domain",
       "kind": "classifier_domain",
       "canonical_name": "Inverse@clf.magmas.unital.domain",
@@ -4723,6 +3588,18 @@
       "aliases": [],
       "dot_vertex": null,
       "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.magmas_multiplicative",
+      "kind": "classifier_domain",
+      "canonical_name": "Magmas.Multiplicative",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.magmas_multiplicative"
+      },
+      "aliases": [],
+      "dot_vertex": "Magmas.Multiplicative",
+      "provenance": "dot_import"
     },
     {
       "id": "clf.manifolds.almostcomplex.domain",
@@ -4761,12 +3638,640 @@
       "provenance": "authored sagecats ledger"
     },
     {
+      "id": "clf.manifolds_pl",
+      "kind": "classifier_domain",
+      "canonical_name": "Manifolds.PL",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.manifolds_pl"
+      },
+      "aliases": [],
+      "dot_vertex": "Manifolds.PL",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.manifolds_smooth",
+      "kind": "classifier_domain",
+      "canonical_name": "Manifolds.Smooth",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.manifolds_smooth"
+      },
+      "aliases": [],
+      "dot_vertex": "Manifolds.Smooth",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.matrixalgebra.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "MatrixAlgebra@cat.algebras_r",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.matrixalgebra"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.metric.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Metric@cat.sets",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.metric"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.modular.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Modular@cat.abelianvarieties_k",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.modular"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.modules.over_field.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Modules.OverField",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.modules.over_field",
+        "notes": null
+      },
+      "aliases": [],
+      "dot_vertex": "Modules.OverField",
+      "provenance": "least host Modules"
+    },
+    {
+      "id": "clf.modules.with_basis.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Modules.WithBasis",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.modules.with_basis",
+        "notes": null
+      },
+      "aliases": [],
+      "dot_vertex": "Modules.WithBasis",
+      "provenance": "least host Modules"
+    },
+    {
+      "id": "clf.modules_finitelygenerated",
+      "kind": "classifier_domain",
+      "canonical_name": "Modules.FinitelyGenerated",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.modules_finitelygenerated"
+      },
+      "aliases": [],
+      "dot_vertex": "Modules.FinitelyGenerated",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.modules_finitelypresented",
+      "kind": "classifier_domain",
+      "canonical_name": "Modules.FinitelyPresented",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.modules_finitelypresented"
+      },
+      "aliases": [],
+      "dot_vertex": "Modules.FinitelyPresented",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.modules_finiterank",
+      "kind": "classifier_domain",
+      "canonical_name": "Modules.FiniteRank",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.modules_finiterank"
+      },
+      "aliases": [],
+      "dot_vertex": "Modules.FiniteRank",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.modules_free",
+      "kind": "classifier_domain",
+      "canonical_name": "Modules.Free",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.modules_free"
+      },
+      "aliases": [],
+      "dot_vertex": "Modules.Free",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.modules_projective",
+      "kind": "classifier_domain",
+      "canonical_name": "Modules.Projective",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.modules_projective"
+      },
+      "aliases": [],
+      "dot_vertex": "Modules.Projective",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.modules_torsion",
+      "kind": "classifier_domain",
+      "canonical_name": "Modules.Torsion",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.modules_torsion"
+      },
+      "aliases": [],
+      "dot_vertex": "Modules.Torsion",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.modules_torsionfree",
+      "kind": "classifier_domain",
+      "canonical_name": "Modules.TorsionFree",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.modules_torsionfree"
+      },
+      "aliases": [],
+      "dot_vertex": "Modules.TorsionFree",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.modules_withgenerators",
+      "kind": "classifier_domain",
+      "canonical_name": "Modules.WithGenerators",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.modules_withgenerators"
+      },
+      "aliases": [],
+      "dot_vertex": "Modules.WithGenerators",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.monoids.inverse.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Monoids.Inverse",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.monoids.inverse"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "refined from named-join path"
+    },
+    {
+      "id": "clf.nilpotent.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Nilpotent@cat.lie_algebras_r",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.nilpotent"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.noetherian.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Noetherian@cat.commutativerings",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.noetherian"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.nozerodivisors.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "NoZeroDivisors@cat.rings",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.nozerodivisors"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.oremodulestructure_sigma_delta.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "OreModuleStructure@cat.modules_r",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.oremodulestructure_sigma_delta"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.pointed.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Pointed@cat.sets",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.pointed"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
       "id": "clf.posets.bounded.domain",
       "kind": "classifier_domain",
       "canonical_name": "Bounded@cat.posets",
       "parameters": [],
       "definition": {
         "classifier_id": "clf.posets.bounded"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.principalideal.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "PrincipalIdeal@cat.integraldomains",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.principalideal"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.quantumgrouprepresentation.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "QuantumGroupRepresentation@cat.modules_r",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.quantumgrouprepresentation"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.regular.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Regular@cat.crystals",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.regular"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.rings.commutative.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Rings.Commutative",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.rings.commutative"
+      },
+      "aliases": [],
+      "dot_vertex": "Rings.Commutative",
+      "provenance": "refined from named-join path"
+    },
+    {
+      "id": "clf.rings.domain.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Rings.Domain",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.rings.domain"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "no nonzero zero-divisors"
+    },
+    {
+      "id": "clf.rtrivial.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "RTrivial@cat.semigroups",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.rtrivial"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.schemes.relative_dimension_1.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.RelativeDimension(1)",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes.relative_dimension_1"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "schemes relative dimension"
+    },
+    {
+      "id": "clf.schemes.relative_dimension_2.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.RelativeDimension(2)",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes.relative_dimension_2"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "schemes relative dimension"
+    },
+    {
+      "id": "clf.schemes_affine",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.Affine",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_affine"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes.Affine",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.schemes_etale",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.Étale",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_etale"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes.Étale",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.schemes_finite",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.Finite",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_finite"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes.Finite",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.schemes_finitetype",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.FiniteType",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_finitetype"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes.FiniteType",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.schemes_flat",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.Flat",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_flat"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes.Flat",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.schemes_integral",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.Integral",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_integral"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes.Integral",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.schemes_locallyfinitepresentation",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.LocallyFinitePresentation",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_locallyfinitepresentation"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes.LocallyFinitePresentation",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.schemes_projective",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.Projective",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_projective"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes.Projective",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.schemes_proper",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.Proper",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_proper"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes.Proper",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.schemes_relativedimension",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.RelativeDimension(n)",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_relativedimension"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes.RelativeDimension(n)",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.schemes_s.relativedimension.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.RelativeDimension(1)",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_s.relativedimension"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes(S).RelativeDimension(1)",
+      "provenance": "refined from named-join path"
+    },
+    {
+      "id": "clf.schemes_separated",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.Separated",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_separated"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes.Separated",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.schemes_smooth",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.Smooth",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_smooth"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes.Smooth",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.schemes_unramified",
+      "kind": "classifier_domain",
+      "canonical_name": "Schemes.Unramified",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.schemes_unramified"
+      },
+      "aliases": [],
+      "dot_vertex": "Schemes.Unramified",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.semigroups.finitelygenerated.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "FinitelyGenerated@cat.semigroups",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.semigroups.finitelygenerated"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.semigroups.unital.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Semigroups.Unital",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.semigroups.unital"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "refined from named-join path"
+    },
+    {
+      "id": "clf.semisimple.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Semisimple@cat.algebras_r",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.semisimple"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.sets.finite.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Sets.Finite",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.sets.finite",
+        "notes": null
+      },
+      "aliases": [],
+      "dot_vertex": "Sets.Finite",
+      "provenance": "least host Sets"
+    },
+    {
+      "id": "clf.sets.graded.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Sets.Graded",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.sets.graded",
+        "notes": null
+      },
+      "aliases": [],
+      "dot_vertex": "Sets.Graded",
+      "provenance": "least host Sets; chosen grading (structure), not Boolean"
+    },
+    {
+      "id": "clf.sets_countable",
+      "kind": "classifier_domain",
+      "canonical_name": "Sets.Countable",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.sets_countable"
+      },
+      "aliases": [],
+      "dot_vertex": "Sets.Countable",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.sets_infinite",
+      "kind": "classifier_domain",
+      "canonical_name": "Sets.Infinite",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.sets_infinite"
+      },
+      "aliases": [],
+      "dot_vertex": "Sets.Infinite",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.sets_uncountable",
+      "kind": "classifier_domain",
+      "canonical_name": "Sets.Uncountable",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.sets_uncountable"
+      },
+      "aliases": [],
+      "dot_vertex": "Sets.Uncountable",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "clf.shephard.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Shephard@cat.groupswithsimplereflections",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.shephard"
       },
       "aliases": [],
       "dot_vertex": null,
@@ -4785,6 +4290,42 @@
       "provenance": "authored sagecats ledger"
     },
     {
+      "id": "clf.super.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Super@cat.modules_r",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.super"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.super_crystal.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Super@cat.crystals",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.super_crystal"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.supercommutative.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Supercommutative@cat.superalgebras_r",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.supercommutative"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
       "id": "clf.topologicalspaces.compact.domain",
       "kind": "classifier_domain",
       "canonical_name": "Compact@cat.topologicalspaces",
@@ -4795,6 +4336,482 @@
       "aliases": [],
       "dot_vertex": null,
       "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.triangulardecomposition.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "TriangularDecomposition@cat.kacmoodyalgebras_r",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.triangulardecomposition"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.uniquefactorization.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "UniqueFactorization@cat.integraldomains",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.uniquefactorization"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.unital.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Unital@cat.magmas",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.unital"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.unital_algebras.differential.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "UnitalAlgebras.Differential",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.unital_algebras.differential"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "refined from named-join path"
+    },
+    {
+      "id": "clf.vector_spaces_k.withbasis.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "VectorSpaces.WithBasis",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.vector_spaces_k.withbasis"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "refined from named-join path"
+    },
+    {
+      "id": "clf.weyl.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Weyl@cat.coxetergroups",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.weyl"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.withbasis.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "WithBasis@cat.modules_r",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.withbasis"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "ctor.arr",
+      "kind": "category_constructor",
+      "canonical_name": "Arr(−)",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "Arr(−)",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.comma",
+      "kind": "category_constructor",
+      "canonical_name": "Comma",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "Comma",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.coslices",
+      "kind": "category_constructor",
+      "canonical_name": "Coslices",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "Coslices",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.descentdata",
+      "kind": "category_constructor",
+      "canonical_name": "DescentData",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "DescentData",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.diagramcategories",
+      "kind": "category_constructor",
+      "canonical_name": "DiagramCategories",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "DiagramCategories",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.fibredcategories",
+      "kind": "category_constructor",
+      "canonical_name": "FibredCategories",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "FibredCategories",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.functorcategories",
+      "kind": "category_constructor",
+      "canonical_name": "FunctorCategories",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "FunctorCategories",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.groupoidobjects",
+      "kind": "category_constructor",
+      "canonical_name": "GroupoidObjects",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "GroupoidObjects",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.homcategories",
+      "kind": "category_constructor",
+      "canonical_name": "HomCategories",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "HomCategories",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.isomorphicobjects",
+      "kind": "category_constructor",
+      "canonical_name": "IsomorphicObjects",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "IsomorphicObjects",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.op",
+      "kind": "category_constructor",
+      "canonical_name": "(−)^op",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "(−)^op",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.quotients",
+      "kind": "category_constructor",
+      "canonical_name": "Quotients",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "Quotients",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.slices",
+      "kind": "category_constructor",
+      "canonical_name": "Slices",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "Slices",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.subobjects",
+      "kind": "category_constructor",
+      "canonical_name": "Subobjects",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "Subobjects",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.subquotients",
+      "kind": "category_constructor",
+      "canonical_name": "Subquotients",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "Subquotients",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "ctor.torsors",
+      "kind": "category_constructor",
+      "canonical_name": "Torsors",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor"
+      },
+      "aliases": [],
+      "dot_vertex": "Torsors",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "val.chowgroups",
+      "kind": "alias",
+      "canonical_name": "ChowGroups",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "notes": "Value of a construction / object-associated functor; not a category_family node"
+      },
+      "aliases": [],
+      "dot_vertex": "ChowGroups",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "val.cohomologyrings",
+      "kind": "alias",
+      "canonical_name": "CohomologyRings",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "notes": "Value of a construction / object-associated functor; not a category_family node"
+      },
+      "aliases": [],
+      "dot_vertex": "CohomologyRings",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "val.coslices_cat_1",
+      "kind": "alias",
+      "canonical_name": "Coslices(Cat_1)",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "of": "ctor.coslices",
+        "argument": "cat.cat_1",
+        "notes": "Value of the Coslices construction at Cat_1: an object of a category C is a point * -> C. Typed as a construction_value because the seed has no entity kind for a constructed category; Lean's CategoryExpr.constructor is the right shape."
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "val.cycles",
+      "kind": "alias",
+      "canonical_name": "Cycles",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "notes": "Value of a construction / object-associated functor; not a category_family node"
+      },
+      "aliases": [],
+      "dot_vertex": "Cycles",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "val.derhamcohomologyrings",
+      "kind": "alias",
+      "canonical_name": "DeRhamCohomologyRings",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "notes": "Value of a construction / object-associated functor; not a category_family node"
+      },
+      "aliases": [],
+      "dot_vertex": "DeRhamCohomologyRings",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "val.diffformmodules",
+      "kind": "alias",
+      "canonical_name": "DiffFormModules",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "notes": "Value of a construction / object-associated functor; not a category_family node"
+      },
+      "aliases": [],
+      "dot_vertex": "DiffFormModules",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "val.div",
+      "kind": "alias",
+      "canonical_name": "Div",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "notes": "Value of a construction / object-associated functor; not a category_family node"
+      },
+      "aliases": [],
+      "dot_vertex": "Div",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "val.genera",
+      "kind": "alias",
+      "canonical_name": "Genera",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "notes": "Value of a construction / object-associated functor; not a category_family node"
+      },
+      "aliases": [],
+      "dot_vertex": "Genera",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "val.isometrygroups",
+      "kind": "alias",
+      "canonical_name": "IsometryGroups",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "notes": "Value of a construction / object-associated functor; not a category_family node"
+      },
+      "aliases": [],
+      "dot_vertex": "IsometryGroups",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "val.ns",
+      "kind": "alias",
+      "canonical_name": "NS",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "notes": "Value of a construction / object-associated functor; not a category_family node"
+      },
+      "aliases": [],
+      "dot_vertex": "NS",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "val.orthogonal_groups",
+      "kind": "alias",
+      "canonical_name": "OrthogonalGroups",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "of": "fun.automorphism_group",
+        "notes": "Value of a generic Aut construction; not a first-class category node"
+      },
+      "aliases": [],
+      "dot_vertex": "OrthogonalGroups",
+      "provenance": "settled rulings: Aut/GL values are not category-graph species"
+    },
+    {
+      "id": "val.pic",
+      "kind": "alias",
+      "canonical_name": "Pic",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "notes": "Object-associated construction (Picard group), not a category family"
+      },
+      "aliases": [],
+      "dot_vertex": "Pic",
+      "provenance": "audit finding"
+    },
+    {
+      "id": "val.subobjects_sets",
+      "kind": "alias",
+      "canonical_name": "Subobjects(Sets)",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "of": "ctor.subobjects",
+        "argument": "cat.sets",
+        "notes": "Value of the Subobjects construction at Sets: the full subcategory of Arr(Sets) on monomorphisms. Typed as a construction_value because the seed has no entity kind for a constructed category; Lean's CategoryExpr.constructor is the right shape."
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "val.tensorfieldmodules",
+      "kind": "alias",
+      "canonical_name": "TensorFieldModules",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "notes": "Value of a construction / object-associated functor; not a category_family node"
+      },
+      "aliases": [],
+      "dot_vertex": "TensorFieldModules",
+      "provenance": "dot_import"
+    },
+    {
+      "id": "val.vectorfieldmodules",
+      "kind": "alias",
+      "canonical_name": "VectorFieldModules",
+      "parameters": [],
+      "definition": {
+        "operation": "construction_value",
+        "notes": "Value of a construction / object-associated functor; not a category_family node"
+      },
+      "aliases": [],
+      "dot_vertex": "VectorFieldModules",
+      "provenance": "dot_import"
     }
   ]
 }

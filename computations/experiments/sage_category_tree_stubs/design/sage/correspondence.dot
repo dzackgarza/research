@@ -258,6 +258,7 @@ digraph SageToNormalized {
     "cat.manifolds" [label="cat.manifolds", kind="normalized", fillcolor="#c8e6c9"];
     "cat.metricspaces" [label="cat.metricspaces", kind="normalized", fillcolor="#c8e6c9"];
     "cat.modules_a" [label="cat.modules_a", kind="normalized", fillcolor="#c8e6c9"];
+    "cat.modules_k" [label="cat.modules_k", kind="normalized", fillcolor="#c8e6c9"];
     "cat.modules_r" [label="cat.modules_r", kind="normalized", fillcolor="#c8e6c9"];
     "cat.modules_with_basis" [label="cat.modules_with_basis", kind="normalized", fillcolor="#c8e6c9"];
     "cat.monoidalgebras_r" [label="cat.monoidalgebras_r", kind="normalized", fillcolor="#c8e6c9"];
@@ -270,8 +271,7 @@ digraph SageToNormalized {
     "cat.ringideals_r" [label="cat.ringideals_r", kind="normalized", fillcolor="#c8e6c9"];
     "cat.rings" [label="cat.rings", kind="normalized", fillcolor="#c8e6c9"];
     "cat.rngs" [label="cat.rngs", kind="normalized", fillcolor="#c8e6c9"];
-    "cat.sagebackendobjects" [label="cat.sagebackendobjects", kind="normalized", fillcolor="#c8e6c9"];
-    "cat.schemes_k" [label="cat.schemes_k", kind="normalized", fillcolor="#c8e6c9"];
+    "cat.schemes_s" [label="cat.schemes_s", kind="normalized", fillcolor="#c8e6c9"];
     "cat.semigroups" [label="cat.semigroups", kind="normalized", fillcolor="#c8e6c9"];
     "cat.semirings" [label="cat.semirings", kind="normalized", fillcolor="#c8e6c9"];
     "cat.semisimplealgebras_r" [label="cat.semisimplealgebras_r", kind="normalized", fillcolor="#c8e6c9"];
@@ -289,6 +289,8 @@ digraph SageToNormalized {
     "cat.weylgroups" [label="cat.weylgroups", kind="normalized", fillcolor="#c8e6c9"];
     "clf.sets.finite.domain" [label="clf.sets.finite.domain", kind="normalized", fillcolor="#c8e6c9"];
     "clf.sets.graded.domain" [label="clf.sets.graded.domain", kind="normalized", fillcolor="#c8e6c9"];
+    "val.coslices_cat_1" [label="val.coslices_cat_1", kind="normalized", fillcolor="#c8e6c9"];
+    "val.subobjects_sets" [label="val.subobjects_sets", kind="normalized", fillcolor="#c8e6c9"];
   }
 
   "sage.category.finite_dimensional_bialgebras_with_basis_finitedimensionalbialgebraswithbasis" -> "cat.bialgebras_r" [kind="normalizes_to", mapping="constructible", style=dashed];
@@ -326,7 +328,7 @@ digraph SageToNormalized {
   "sage.category.complete_discrete_valuation_completediscretevaluationfields" -> "cat.discretevaluationfields" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.complete_discrete_valuation_completediscretevaluationrings" -> "cat.discretevaluationrings" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.complex_reflection_groups_complexreflectiongroups" -> "cat.complexreflectiongroups" [kind="normalizes_to", mapping="constructible", style=dashed];
-  "sage.category.complex_reflection_or_generalized_coxeter_groups_complexreflectionorgeneralizedcoxetergroups" -> "cat.groupswithsimplereflections" [kind="normalizes_to", mapping="removed", style=dashed];
+  "sage.category.complex_reflection_or_generalized_coxeter_groups_complexreflectionorgeneralizedcoxetergroups" -> "cat.groupswithsimplereflections" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.coxeter_group_algebras_coxetergroupalgebras" -> "cat.coxetergroupalgebras_r" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.coxeter_groups_coxetergroups" -> "cat.coxetergroups" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.crystals_crystals" -> "cat.crystals" [kind="normalizes_to", mapping="exact", style=dashed];
@@ -340,7 +342,7 @@ digraph SageToNormalized {
   "sage.category.drinfeld_modules_drinfeldmodules" -> "cat.drinfeldmodules_gamma_f_q_t_k" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.enumerated_sets_enumeratedsets" -> "cat.sets" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.euclidean_domains_euclideandomains" -> "cat.euclidean_domains" [kind="normalizes_to", mapping="constructible", style=dashed];
-  "sage.category.facade_sets_facadesets" -> "cat.sets" [kind="normalizes_to", mapping="removed", style=dashed];
+  "sage.category.facade_sets_facadesets" -> "val.subobjects_sets" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.fields_fields" -> "cat.fields" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.filtered_algebras_filteredalgebras" -> "cat.associativeunitalalgebras_r" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.filtered_algebras_with_basis_filteredalgebraswithbasis" -> "cat.associativeunitalalgebras_r" [kind="normalizes_to", mapping="constructible", style=dashed];
@@ -405,12 +407,12 @@ digraph SageToNormalized {
   "sage.category.lambda_bracket_algebras_with_basis_lambdabracketalgebraswithbasis" -> "cat.lambdabracketalgebras_r" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.lattice_posets_distributivelattices" -> "cat.latticeposets" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.lattice_posets_latticeposets" -> "cat.latticeposets" [kind="normalizes_to", mapping="constructible", style=dashed];
-  "sage.category.left_modules_leftmodules" -> "cat.modules_a" [kind="normalizes_to", mapping="presentation_alias", style=dashed];
+  "sage.category.left_modules_leftmodules" -> "cat.modules_r" [kind="normalizes_to", mapping="presentation_alias", style=dashed];
   "sage.category.lie_algebras_liealgebras" -> "cat.liealgebras_r" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.lie_algebras_with_basis_liealgebraswithbasis" -> "cat.liealgebras_r" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.lie_conformal_algebras_lieconformalalgebras" -> "cat.lieconformalalgebras_r" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.lie_conformal_algebras_with_basis_lieconformalalgebraswithbasis" -> "cat.lieconformalalgebras_r" [kind="normalizes_to", mapping="constructible", style=dashed];
-  "sage.category.lie_groups_liegroups" -> "cat.liegroups" [kind="normalizes_to", mapping="removed", style=dashed];
+  "sage.category.lie_groups_liegroups" -> "cat.liegroups" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.loop_crystals_kirillovreshetikhincrystals" -> "cat.loopcrystals" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.loop_crystals_loopcrystals" -> "cat.loopcrystals" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.loop_crystals_regularloopcrystals" -> "cat.loopcrystals" [kind="normalizes_to", mapping="constructible", style=dashed];
@@ -422,12 +424,12 @@ digraph SageToNormalized {
   "sage.category.matrix_algebras_matrixalgebras" -> "cat.associativeunitalalgebras_k" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.metric_spaces_metricspaces" -> "cat.metricspaces" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.modular_abelian_varieties_modularabelianvarieties" -> "cat.abelianvarieties_k" [kind="normalizes_to", mapping="constructible", style=dashed];
-  "sage.category.modules_modules" -> "cat.modules_a" [kind="normalizes_to", mapping="exact", style=dashed];
+  "sage.category.modules_modules" -> "cat.modules_r" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.modules_with_basis_moduleswithbasis" -> "cat.modules_with_basis" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.monoids_monoids" -> "cat.monoids" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.noetherian_rings_noetherianrings" -> "cat.commutativerings" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.number_fields_numberfields" -> "cat.fields" [kind="normalizes_to", mapping="constructible", style=dashed];
-  "sage.category.objects_objects" -> "cat.sagebackendobjects" [kind="normalizes_to", mapping="removed", style=dashed];
+  "sage.category.objects_objects" -> "val.coslices_cat_1" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.ore_modules_oremodules" -> "cat.modules_r" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.partially_ordered_monoids_partiallyorderedmonoids" -> "cat.monoids" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.permutation_groups_permutationgroups" -> "cat.permutationgroups" [kind="normalizes_to", mapping="constructible", style=dashed];
@@ -445,7 +447,7 @@ digraph SageToNormalized {
   "sage.category.rings_rings" -> "cat.rings" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.rngs_rngs" -> "cat.rngs" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.schemes_jacobians" -> "cat.abelianvarieties_k" [kind="normalizes_to", mapping="constructible", style=dashed];
-  "sage.category.schemes_schemes" -> "cat.schemes_k" [kind="normalizes_to", mapping="exact", style=dashed];
+  "sage.category.schemes_schemes" -> "cat.schemes_s" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.semigroups_semigroups" -> "cat.semigroups" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.semirings_semirings" -> "cat.semirings" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.semisimple_algebras_semisimplealgebras" -> "cat.semisimplealgebras_r" [kind="normalizes_to", mapping="constructible", style=dashed];
@@ -468,7 +470,7 @@ digraph SageToNormalized {
   "sage.category.unique_factorization_domains_uniquefactorizationdomains" -> "cat.ufds" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.unital_algebras_unitalalgebras" -> "cat.algebras_r" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.vector_bundles_vectorbundles" -> "cat.vectorbundles_x_r" [kind="normalizes_to", mapping="exact", style=dashed];
-  "sage.category.vector_spaces_vectorspaces" -> "cat.vector_spaces_k" [kind="normalizes_to", mapping="exact", style=dashed];
+  "sage.category.vector_spaces_vectorspaces" -> "cat.modules_k" [kind="normalizes_to", mapping="exact", style=dashed];
   "sage.category.weyl_groups_weylgroups" -> "cat.weylgroups" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.vectorspaces.withbasis" -> "cat.vector_spaces_k" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.unitalalgebras.withbasis" -> "cat.unital_algebras" [kind="normalizes_to", mapping="constructible", style=dashed];

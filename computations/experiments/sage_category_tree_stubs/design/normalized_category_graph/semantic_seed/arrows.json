@@ -3078,14 +3078,6 @@
       "target": "cat.sets"
     },
     {
-      "id": "fun.sagebackendobjects_to_sets",
-      "kind": "forgetful",
-      "preferred": true,
-      "provenance": "opaque interface: compatibility-layer host only; not ordinary mathematics",
-      "source": "cat.sagebackendobjects",
-      "target": "cat.sets"
-    },
-    {
       "id": "fun.bialgebras_to_algebras",
       "kind": "forgetful",
       "preferred": true,

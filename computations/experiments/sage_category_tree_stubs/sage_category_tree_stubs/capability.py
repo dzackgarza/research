@@ -49,13 +49,14 @@ def sigma(mapping: dict[str, Any] | None = None) -> dict[str, str]:
     ``GradedModules`` is ``Modules(R)``; keying there would record that the
     implementation lands somewhere over modules but not which category it serves.
 
-    Sage categories the ledger rules non-mathematical are excluded rather than given a
-    destination. ``Sets().Facade()`` is the standing example: a facade parent is one
-    whose elements are not instances of its own element class, so the category is a
-    dispatch bucket whose methods are element-construction and coercion plumbing.
-    There is no category of facade sets to implement. Where an individual facade parent
-    carries mathematical content it is a subobject -- a monomorphism into the parent
-    its elements actually inhabit -- which is data on that object, not a category.
+    Sage categories the ledger rules non-mathematical would be excluded rather than
+    given a destination, but that set is currently empty and should stay so. Every
+    entry once parked there had a formalization that had simply not been looked for:
+    a facade parent declares the parents its elements inhabit, which is a family of
+    monomorphisms, so ``Sets().Facade()`` lands in ``Subobjects(Sets)``; ``Objects()``
+    is the coslice under the terminal category, because an object of ``C`` is a point
+    ``* -> C``. An exclusion bucket that can be filled silently is where unfound
+    mathematics accumulates.
     """
     m = mapping or build_mapping()
     out: dict[str, str] = {}
