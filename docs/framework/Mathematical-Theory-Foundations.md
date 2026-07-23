@@ -22,7 +22,11 @@ The conversations form a derivation record rather than a linear manuscript. Many
 - that pointwise constructions such as \(O(L)\) should be primitive nodes;
 - that a theorem such as “alternating implies skew-symmetric” should be encoded by nesting one definition inside another;
 - that the genus is obtained by applying \(\pi_0\) to a homotopy fiber;
-- that the algebraic-geometric sign convention takes \(E_8\) positive definite.
+- that the algebraic-geometric sign convention takes \(E_8\) positive definite;
+- that the negative-definite ADE lattices are defined by negated Cartan matrices rather than constructed from root realizations;
+- that a morphism of generated or presented modules is defined by a matrix, rather than represented by a compatible matrix lift that descends;
+- that the opposite-ring involution alone yields a functor from left modules to right modules, or that an \((R,\mathbb Z)\)-bimodule carries a noncontractible choice of \(\mathbb Z\)-action;
+- that the functors forgetting one bimodule action are natural for simultaneous extension of scalars in both rings; they are natural for restriction and only lax for extension.
 
 The settled framework is instead organized by a small number of standard constructions: higher categories, mapping categories, arrow and diagram categories, homotopy limits, classifiers, lifts, categories of elements where an actual functor is present, exact sequences, cores, automorphism groups, and standard geometric categories. The report uses the mathematical vocabulary of higher category theory, homotopy theory, algebra, arithmetic lattices, and algebraic geometry. No terminology from programming-language theory, implementation architecture, or proof-assistant internals is needed for the mathematical account.
 
@@ -798,6 +802,12 @@ R^{\mathrm{op}}\text{-}\mathbf{Mod}
 \]
 is recorded as an equivalence, not as an equality of categories.
 
+For general \(R\), no side-changing functor
+\(R\text{-}\mathbf{Mod}\to R^{\mathrm{op}}\text{-}\mathbf{Mod}\) is supplied by the
+opposite-ring involution alone; such a functor requires a chosen anti-homomorphism, and an
+equivalence a chosen anti-isomorphism (Proposition 91.1). The commutative case above is the
+canonical special instance (Corollary 91.2).
+
 ### Definition 13.2 (The total family of modules) {#def-total-module-family}
 
 Let \(\mathbf{Ring}^{\simeq}\) be the core of the category of rings. Extension of scalars along ring isomorphisms gives a functor
@@ -812,7 +822,7 @@ Its Grothendieck construction is the category of pairs \((R,M)\), with \(M\) an 
 \[
 \int_{R\in\mathbf{Ring}^{\simeq}}R\text{-}\mathbf{Mod}.
 \]
-More generally, allowing arbitrary ring homomorphisms requires a choice of variance: restriction of scalars is contravariant in the ring, while extension of scalars is covariant and pseudofunctorial. The chosen variance must be stated whenever the total family is used.
+More generally, allowing arbitrary ring homomorphisms requires a choice of variance: restriction of scalars is contravariant in the ring, while extension of scalars is covariant and pseudofunctorial. The chosen variance must be stated whenever the total family is used. The two variances unstraighten to a cocartesian and a cartesian fibration over \(\mathbf{Ring}\) respectively; the precise four module-family functors and their total categories are Proposition 83.4 and Section 84, and the bimodule analogue over \(\mathbf{Ring}\times\mathbf{Ring}\) is Section 86.
 
 ### Definition 13.3 (Regular module section) {#def-regular-module}
 
@@ -863,12 +873,23 @@ framed basis is a chosen isomorphism from a standard free module. Morphisms pres
 chosen frame. The projections to \(R\text{-}\mathbf{Mod}\) are the canonical comma-category
 projections.
 
+These fixed-source comma categories are the **strict frame-preserving** categories. They are
+one of three distinct morphism conventions for modules with chosen generators: abstract
+module maps (Definition 73.3), chosen free lifts (Definition 73.4), and strictly
+frame-preserving maps as here. Strict frame preservation is the special case of a free lift
+in which the upper map is the identity; see Remark 73.5. The general descent theory of
+matrices through generating presentations is Section 74.
+
 ### Definition 13.6 (Coordinatized modules) {#def-coordinatized-module}
 
 There is a second standard category with the same objects as
 \(\operatorname{BasisFrame}_n(R)\): a morphism from \((M,e)\) to \((N,f)\) is an
-arbitrary \(R\)-linear map \(M\to N\), recorded by its matrix relative to the two chosen
-bases. Call this category \(\operatorname{Coord}_n(R)\).
+arbitrary \(R\)-linear map \(M\to N\). Call this category \(\operatorname{Coord}_n(R)\).
+
+The morphism is the abstract linear map; its matrix relative to the two chosen bases is a
+derived representative, obtained by evaluating the bases. That every abstract morphism of
+based free modules corresponds to exactly one matrix is the basis-case comparison theorem,
+Corollary 74.5 — the kernel-zero special case of general matrix descent, not a definition.
 
 The two categories answer different questions.
 
@@ -895,6 +916,12 @@ is inhabited. Thus freeness is a property, whereas a basis is structure. A categ
 coordinatized modules is useful for matrix calculus but should not be substituted for the
 basis-frame classifier.
 
+The same property-versus-structure pattern governs the whole finiteness hierarchy: finite
+generation is the truncation of the classifier of chosen generating presentations
+(Definition 73.6), finite presentation of chosen finite presentations (Definition 75.4), and
+the \(FP_n\) conditions of chosen partial finite projective resolutions (Definition 76.3).
+Sections 73--77 develop this uniform theory and the accompanying descent of matrices.
+
 The conversations used “based,” “with generators,” and “with basis” in several provisional
 senses. This report therefore names the morphism convention whenever it matters.
 
@@ -909,11 +936,32 @@ Write
 \[
 {}_R\mathbf{Bimod}_S
 \]
-for the category of bimodules and bilinear maps. It has structural functors to
-\(R\text{-}\mathbf{Mod}\) and to \(S^{\mathrm{op}}\text{-}\mathbf{Mod}\), and the two
-underlying additive-group functors are canonically equivalent. Under the usual centrality
-hypotheses, bimodules may be identified with modules over
-\(R\otimes S^{\mathrm{op}}\).
+for the category of bimodules and bimodule homomorphisms: a morphism is a unary additive
+map preserving both actions, not a “bilinear map.” The two actions are structure, their
+coexistence on one additive group is the homotopy pullback
+\(\mathbf{BiAct}(R,S)=R\text{-}\mathbf{Mod}\times^h_{\mathbf{Ab}}S^{\mathrm{op}}\text{-}\mathbf{Mod}\),
+and their commutation is an additional property classifier (Definitions 85.2--85.3). There
+is an unconditional canonical equivalence
+\[
+{}_R\mathbf{Bimod}_S
+\simeq
+(R\otimes_{\mathbb Z}S^{\mathrm{op}})\text{-}\mathbf{Mod}
+\]
+(Proposition 85.4); no centrality hypothesis is required.
+
+The forgetful functors to \(R\text{-}\mathbf{Mod}\) and \(S^{\mathrm{op}}\text{-}\mathbf{Mod}\)
+have canonically equivalent underlying additive-group composites (Proposition 87.2). They
+are natural for restriction of scalars and only lax for simultaneous extension of scalars
+(Theorem 88.1, Proposition 89.1). Extension and restriction of scalars for bimodules, their
+adjunction, and the cocartesian and cartesian total families over
+\(\mathbf{Ring}\times\mathbf{Ring}\) are Section 86. A unital \(\mathbb Z\)-action is
+unique — the structure fiber over a fixed module is a singleton (Proposition 90.1.2) — so
+\({}_R\mathbf{Bimod}_{\mathbb Z}\simeq R\text{-}\mathbf{Mod}\) canonically
+(Corollary 90.2); an \((R,R)\)-bimodule is an \(R\)-module with an additional commuting
+action, not an \(R\)-module (Proposition 92.1). Intrinsically, bimodules are the
+\(1\)-morphisms of the Morita \((\infty,2)\)-category, whose hom categories from and to the
+monoidal unit \(\mathbb Z\) recover the left and right module categories
+(Definition 93.1, Proposition 93.2).
 
 ### Definition 13.9 (Algebras over a commutative ring) {#def-algebra-category}
 
@@ -1378,6 +1426,12 @@ A^{\mathsf T}HA=G.
 \]
 Restricting to matrices nondegenerate over \(K\) gives \(\mathbf{SymMat}_n(R)^{\operatorname{nd}}\).
 
+This matrix category is explicitly a skeletal coordinate presentation of the category of
+symmetric forms on the standard free module \(R^n\); it is not a second kind of mathematical
+object. Its comparison with the category of coordinatized forms is the named equivalence of
+Definition 21.3, whose morphisms are abstract form-preserving linear maps with matrices
+obtained by applying the chosen source and target bases (Corollary 74.5).
+
 ### Definition 21.3 (Gram constructor) {#def-gram-constructor}
 
 Define the category of coordinatized bilinear forms by
@@ -1405,7 +1459,16 @@ Conversely, a coordinatized form \((L,b,e_1,\ldots,e_n)\) determines its Gram ma
 \[
 G_{ij}=b(e_i,e_j).
 \]
-These constructions give the usual equivalence between coordinatized bilinear forms of rank \(n\) and Gram matrices, with arbitrary form-preserving maps represented by their matrices. The basis-preserving framed category has a different, stricter morphism convention.
+These constructions give a named equivalence theorem between coordinatized bilinear forms of
+rank \(n\) and Gram matrices. The morphisms of the coordinatized category are abstract
+form-preserving linear maps; a matrix is obtained from a morphism by applying the chosen
+source and target bases, and represents it by the basis-case comparison of Corollary 74.5.
+The basis-preserving framed category has a different, stricter morphism convention.
+
+For the named ADE lattices the Gram constructor is used only after the root-presentation
+Gram matrix has been derived from a chosen root realization, and its output is compared to
+the root lattice by Theorem 72.2. It constructs coordinatized forms in general; it is not
+the ontology of the named root lattices.
 
 ### Remark 21.4 (Intrinsic object versus constructor)
 
@@ -1457,21 +1520,33 @@ The rank-one lattice \(\langle a\rangle\) has Gram matrix \([a]\). The hyperboli
 
 ### Definition 23.2 (ADE root lattices) {#def-ade-lattices}
 
-The project adopts the algebraic-geometric convention that all simply-laced ADE root lattices are **negative definite**. Thus
-\[
-A_n=-C_{A_n},
-\quad
-D_n=-C_{D_n},
-\quad
-E_6=-C_{E_6},
-\quad
-E_7=-C_{E_7},
-\quad
-E_8=-C_{E_8},
-\]
-where \(C_\Gamma\) is the corresponding Cartan matrix.
+The project adopts the algebraic-geometric convention that all simply-laced ADE root
+lattices are **negative definite**. A named ADE lattice is the root lattice of a chosen
+standard root realization (Construction 68.6): the intrinsic lattice is the integral span of
+the roots with the restricted ambient form, after the negative sign convention. The root
+basis and the ambient embedding are additional data, and the Gram matrix is derived from the
+chosen root basis (Definition 69.2). The construction order is fixed by Convention 72.3.
 
-In particular, \(E_8\) denotes the negative-definite even unimodular lattice of rank \(8\). Its positive-definite sign reversal is \(-E_8\).
+The standard realizations are those of Section 71:
+\[
+A_n\subset I_{n+1}^-,
+\qquad
+D_n\subset I_n^-,
+\qquad
+E_8\subset\mathbb Q^8
+\]
+with integral-or-half-integral coordinates and even coordinate sum for \(E_8\), and
+\(E_7,E_6\) the orthogonal-complement root sublattices of \(E_8\) from Definition 71.4. Bare
+ADE names denote these negative-definite lattices (Convention 71.5).
+
+In particular, \(E_8\) denotes the negative-definite even unimodular lattice of rank \(8\).
+Its positive-definite sign reversal is \(-E_8\).
+
+The lattices are **not** defined by their Cartan matrices. The equality \(G_\Delta=-C_\Delta\)
+of a simple-root Gram matrix with the negated Cartan matrix in simply-laced type is the
+derived comparison theorem of Proposition 70.2, valid only after a simple-root basis,
+normalization, and sign convention have been chosen; Cartan matrices have no role in the
+primary construction (Convention 70.4).
 
 ### Definition 23.3 (Even unimodular indefinite lattices) {#def-IIpq}
 
@@ -3872,8 +3947,13 @@ model remains genuinely unselected is marked as a parameter or unresolved choice
 
 The derivation record contains statements that were later rejected, including several
 1-categorical operation classifiers, synthetic axiom lattices, mutually exclusive
-property/structure labels, a positive-definite \(E_8\) convention, and a homotopy-fiber
-definition of genus.  They are not alternative conventions of this report.
+property/structure labels, a positive-definite \(E_8\) convention, a homotopy-fiber
+definition of genus, a Cartan-matrix definition of the ADE lattices, a matrix
+definition of morphisms of presented modules, an involution-induced side-changing functor
+for modules, bimodule morphisms described as bilinear maps, and an extension-side
+naturality claim for the bimodule forgetful functors.  They are not alternative
+conventions of this report.  The lattice and matrix statements are corrected by Parts XIV
+and XV; the module and bimodule statements by Parts XVIII--XXIII.
 
 ## 64. Settled mathematical conventions
 
@@ -3939,9 +4019,14 @@ and bilinearize to twice the \(\mathbb Q/\mathbb Z\)-valued discriminant pairing
 
 ### Convention 64.11 (Functorial domains)
 
-Discriminants are functorial on isometry cores; Gram matrices on coordinatized objects;
-index on subgroup inclusions; enumeration on enumerated objects.  These domains are part of
-the definitions.
+Discriminants are functorial on isometry cores; index on subgroup inclusions; enumeration
+on enumerated objects.  These domains are part of the definitions.
+
+Gram matrices are evaluations on chosen frames.  Matrices of morphisms are evaluations on
+chosen free coordinates.  For quotient or presented objects, a matrix represents a lift on
+free modules and descends only under the kernel or chain conditions of the presentation
+(Sections 74 and 78).  The intrinsic morphism is the descended map or homotopy class, not
+the matrix.
 
 ### Convention 64.12 (Homological presentation)
 
@@ -3955,6 +4040,25 @@ A Sage category is mapped to a genuine category, a registered axiom name to a ge
 classifier arrow, a Sage `JoinCategory` claim to a finite-limit comparison theorem, and a
 Sage meet claim to a full-diagram colimit comparison theorem.  No label computation is
 accepted as a mathematical proof.
+
+### Convention 64.14 (Property versus chosen presentation)
+
+Finite generation, finite presentation, \(FP_n\), and perfectness are properties.  A
+generating frame, finite presentation, projective resolution, basis, root basis, or ambient
+embedding is chosen structure.  Each property is obtained by truncating the corresponding
+category of choices.
+
+### Convention 64.15 (Presentation descent)
+
+A morphism between presented objects is defined abstractly.  Free-level matrices are
+representatives.  Descent conditions, quotient relations, and chain homotopies are
+theorem-level structures that compare representatives with intrinsic hom-spaces.
+
+### Convention 64.16 (Derived semantic ceiling)
+
+For homological constructions, the intrinsic semantic object is the appropriate stable or
+derived \(\infty\)-category.  Chain complexes and resolutions are standard presentations and
+computational models.  Their use never changes the intrinsic object being studied.
 
 ## 65. Choices that remain parameters
 
@@ -4067,6 +4171,2211 @@ They are not an exhaustive bibliography.
 - Ash--Mumford--Rapoport--Tai and standard texts on toroidal compactifications.
 - Kollár--Mori and Kollár on singularities, the minimal model program, and stable pairs.
 
+### Root realizations, presentations, and descent
+
+- Bourbaki, *Groupes et algèbres de Lie*, Chapters IV--VI, and Humphreys, *Reflection Groups
+  and Coxeter Groups*, for root systems, simple roots, root lattices, Cartan matrices, and the
+  finite ADE classification; the root-pairing literature summarized in Mathlib's
+  `LinearAlgebra.RootSystem` development.
+- Conway--Sloane, *Sphere Packings, Lattices and Groups*, for the coordinate realizations of
+  \(A_n,D_n,E_6,E_7,E_8\); standard tables in Bourbaki.
+- Stacks Project, Section 10.5, “Finite modules and finitely presented modules,” for finite
+  generation and finite presentation.
+- Weibel, *An Introduction to Homological Algebra*, and the Stacks Project chapters on
+  projective resolutions and derived categories, for complexes, homotopy categories, and the
+  comparison theorem.
+- Lurie, *Higher Algebra*, and Kerodon, for stable \(\infty\)-categories, module categories,
+  perfect objects, and operadic algebras.
+
+### Modules, bimodules, and Morita theory
+
+- Kerodon, Chapter 5, for straightening, unstraightening, and the module cocartesian
+  fibration.
+- Lurie, *Higher Algebra*, for module \(\infty\)-categories and relative tensor products.
+- Haugseng, *The Higher Morita Category of \(E_n\)-Algebras*, for the Morita
+  \((\infty,2)\)-category.
+- The Stacks Project sections on bimodules, tensor products, and derived tensor products.
+
+***
+
+# Part XIV. Intrinsic lattices, root realizations, and numerical matrices
+
+This part and the three that follow develop the corrected theory of root realizations,
+presentations, and matrix descent. They replace the superseded Cartan-matrix construction of
+the ADE lattices and supply the descent theory referred to by Definitions 13.5--13.7,
+Definitions 21.2--21.3, Definition 23.2, and Convention 64.11. Two principles govern the
+material. First, intrinsic objects precede presentations: a named ADE lattice is first an
+intrinsic lattice obtained from a root realization, and an embedding, a simple-root basis, its
+coordinate matrix, its Gram matrix, and its Cartan matrix are successive additional or derived
+data. Second, matrices live on free objects and descend: for modules given by generators or
+presentations, matrices represent lifts on free modules, induce abstract module maps only
+after satisfying a descent condition, and different matrices may represent the same abstract
+morphism.
+
+## 67. Ambient quadratic modules
+
+### Definition 67.1 (Standard odd unimodular lattice) {#def-odd-unimodular-lattice}
+
+For integers \(p,q\ge 0\), let
+\[
+I_{p,q}:=\mathbb Z^{p+q}
+\]
+with symmetric bilinear form
+\[
+(x,y)_{p,q}
+=
+\sum_{i=1}^{p}x_i y_i-
+\sum_{i=p+1}^{p+q}x_i y_i.
+\]
+Thus \(I_{p,q}\) is the standard **odd** unimodular lattice of signature \((p,q)\). Write
+\[
+I_N^+:=I_{N,0},
+\qquad
+I_N^-:=I_{0,N}.
+\]
+
+### Definition 67.2 (Ambient quadratic realization) {#def-ambient-quadratic-realization}
+
+Let \((L,b_L)\) be an integral lattice. An **ambient quadratic realization** of \(L\) is an isometric embedding
+\[
+i:(L,b_L)\hookrightarrow (J,b_J)
+\]
+into another integral lattice, or more generally an isometric embedding
+\[
+i:L\hookrightarrow V
+\]
+into a rational quadratic space \((V,b_V)\), such that \(b_V\) is integral on \(i(L)\).
+
+The ambient object \(J\) or \(V\), the embedding \(i\), and any coordinates on the ambient object are additional data. They are not part of the definition of an intrinsic lattice.
+
+### Remark 67.3 (No uniform rank-preserving embedding into \(I_{p,q}\))
+
+There is no uniform convention under which every ADE lattice of rank \(r\) is defined by an isometric embedding into \(I_{r,0}\) or \(I_{0,r}\).
+
+- The standard coordinate realization of \(A_n\) has rank \(n\) but lies naturally in \(I_{n+1}^+\), as the sum-zero sublattice.
+- The standard realization of \(D_n\) lies in \(I_n^+\).
+- The \(E_8\) lattice is the even unimodular lattice \(II_{8,0}\), not the odd lattice \(I_{8,0}\). In its standard Euclidean coordinate realization it contains half-integral vectors.
+
+In particular, an isometric full-rank embedding \(E_8\hookrightarrow I_{8,0}\) cannot exist. Indeed, its image would have finite index \(d\), so
+\[
+\det(E_8)=d^2\det(I_{8,0}).
+\]
+Both determinants are \(1\), hence \(d=1\), which would identify the even lattice \(E_8\) with the odd lattice \(I_{8,0}\), a contradiction.
+
+Consequently the correct uniform datum is an embedding into a **specified ambient quadratic module**, not necessarily a standard odd unimodular lattice of the same rank.
+
+## 68. Roots and root lattices
+
+### Definition 68.1 (Root of an integral lattice) {#def-root-of-integral-lattice}
+
+Let \((L,b)\) be a nondegenerate integral lattice. A **root of norm \(-2\)** is an element \(r\in L\) satisfying
+\[
+b(r,r)=-2
+\]
+for which the reflection
+\[
+s_r(x):=x-\frac{2b(x,r)}{b(r,r)}r=x+b(x,r)r
+\]
+preserves \(L\).
+
+For an integral lattice, the final condition is automatic for a vector of norm \(-2\), since \(b(x,r)\in\mathbb Z\).
+
+### Definition 68.2 (Root system in a quadratic space) {#def-root-system-quadratic-space}
+
+Let \(V\) be a finite-dimensional rational or real quadratic space. A finite subset
+\[
+\Phi\subset V\setminus\{0\}
+\]
+is a reduced crystallographic **root system** if it spans \(V\), is stable under the reflections \(s_\alpha\), contains no scalar multiples of a root other than \(\pm\alpha\), and satisfies the usual integrality condition
+\[
+\frac{2(\beta,\alpha)}{(\alpha,\alpha)}\in\mathbb Z
+\qquad
+(\alpha,\beta\in\Phi).
+\]
+
+Compare Definition 60.2, which axiomatizes root systems inside an integral lattice; the present definition works in the ambient quadratic space.
+
+A **simple system** or **base** is a subset \(\Delta\subseteq\Phi\) which is a basis of \(V\) and with respect to which every root is an integral linear combination whose coefficients have one sign.
+
+### Definition 68.3 (Root lattice) {#def-root-lattice}
+
+The **root lattice** of \(\Phi\) is
+\[
+Q(\Phi):=\mathbb Z\Phi\subset V
+\]
+with the restricted bilinear form. If \(\Delta\) is a simple system, then
+\[
+Q(\Phi)=\mathbb Z\Delta,
+\]
+and \(\Delta\) is a \(\mathbb Z\)-basis of the root lattice.
+
+Under the algebraic-geometric sign convention used by the project, the Euclidean form is multiplied by \(-1\), so all finite ADE root lattices are negative definite and their roots have norm \(-2\).
+
+### Definition 68.4 (Root presentation) {#def-root-presentation}
+
+Let \((J,b_J)\) be an ambient integral lattice or rational quadratic space, let \(S\) be a finite set, and let
+\[
+\rho:S\longrightarrow J
+\]
+be a family of vectors. Write
+\[
+F_S:=\mathbb Z^{(S)}
+\]
+for the free module on \(S\), and let
+\[
+u_\rho:F_S\longrightarrow J,
+\qquad
+[e_s]\longmapsto \rho(s)
+\]
+be the induced map.
+
+The **lattice generated by the root presentation** is
+\[
+L_\rho:=\operatorname{im}(u_\rho)
+\]
+with the restricted form. The presentation is:
+
+- a **root frame** if every \(\rho(s)\) is a root;
+- a **root basis** if \(u_\rho:F_S\to L_\rho\) is an isomorphism;
+- a **simple-root presentation** if the family is the ordered image of a simple system of a root system;
+- an **embedded root presentation** if the inclusion \(L_\rho\hookrightarrow J\) is retained as part of the datum.
+
+The forgetful sequence is therefore
+\[
+\{
+\text{embedded simple-root presentations}
+\}
+\longrightarrow
+\{
+\text{lattices with a chosen root basis}
+\}
+\longrightarrow
+\mathbf{Lat}_{\mathbb Z}.
+\]
+Neither arrow is generally an equivalence: the first forgets an ambient realization and the second forgets the root basis.
+
+### Definition 68.5 (Categories of root frames and embedded root realizations) {#def-root-frame-categories}
+
+Fix a finite indexing set \(S\). Let
+\[
+\mathbf{RootFrame}_S
+\longrightarrow
+\mathbf{Lat}_{\mathbb Z}
+\]
+be the Grothendieck construction whose fiber over \(L\) is the groupoid of \(S\)-indexed root
+frames in \(L\). Concretely, an object is \((L,\rho)\), and a morphism
+\[
+(L,\rho)\longrightarrow(L',\rho')
+\]
+is an isometry \(f:L\to L'\) satisfying \(f\rho=\rho'\).
+
+Let
+\[
+\mathbf{RootBasis}_S
+\longrightarrow
+\mathbf{RootFrame}_S
+\]
+be the locus on which \(u_\rho:\mathbb Z^{(S)}\to L\) is an isomorphism. For a fixed finite
+Dynkin type \(\Gamma\) on \(S\), let
+\[
+\mathbf{RootBasis}_\Gamma
+\longrightarrow
+\mathbf{RootBasis}_S
+\]
+be the locus on which the root frame is a simple system of type \(\Gamma\).
+
+An **embedded root realization** is an object of the corresponding locus in the arrow category
+\[
+\operatorname{Ar}(\mathbf{Lat}_{\mathbb Z})
+\]
+consisting of an isometric embedding \(i:L\hookrightarrow J\) together with a root basis on
+\(L\), or equivalently its image in \(J\). The forgetful functors discard, successively, the
+ambient embedding, the root basis, and the type certificate.
+
+These are ordinary mathematical classifier categories. A named ADE construction is a chosen
+point of an embedded-root-realization category followed by these forgetful functors.
+
+### Construction 68.6 (Named root lattice from a presentation) {#construction-named-root-lattice}
+
+A named ADE lattice is constructed by specifying a cited root realization
+\[
+(J_\Gamma,\Phi_\Gamma,\Delta_\Gamma)
+\]
+of the required Dynkin type \(\Gamma\), forming
+\[
+L_\Gamma:=Q(\Phi_\Gamma)=\mathbb Z\Delta_\Gamma,
+\]
+and then applying the negative sign convention to the form.
+
+The intrinsic named lattice is the image in \(\mathbf{Lat}_{\mathbb Z}\). The ambient realization and ordered simple roots may be retained in enhanced categories when a later construction uses them.
+
+### Theorem 68.7 (Independence of the standard realization) {#thm-standard-realization-independence}
+
+Any two irreducible reduced crystallographic root systems of the same finite ADE type give isometric root lattices after the same normalization and sign choice.
+
+This is a classification theorem of finite root systems. It is the comparison theorem that licenses the use of a convenient standard coordinate realization; it is not part of the definition of an arbitrary lattice.
+
+## 69. Gram matrices and coordinate matrices
+
+### Definition 69.1 (Coordinate matrix of a root frame) {#def-coordinate-matrix-root-frame}
+
+Suppose the ambient lattice \(J\) has an ordered basis \(e=(e_1,\ldots,e_N)\), and the root frame is ordered as
+\[
+\Delta=(\alpha_1,\ldots,\alpha_r).
+\]
+The **coordinate matrix** of \(\Delta\) in \(e\) is the \(N\times r\) matrix \(R_\Delta\) whose \(j\)-th column is the coordinate vector of \(\alpha_j\).
+
+This matrix records the embedding of the free module on the roots into the ambient free module. It is not the Gram matrix.
+
+### Definition 69.2 (Gram matrix of a frame) {#def-gram-matrix-frame}
+
+For a lattice \((L,b)\) with ordered frame \(v=(v_1,\ldots,v_r)\), its **Gram matrix** is
+\[
+G_v=(b(v_i,v_j))_{i,j}.
+\]
+If \(v\) is a basis, \(G_v\) is the matrix of the adjoint map
+\[
+\widetilde b:L\longrightarrow L^*
+\]
+relative to the basis \(v\) and its dual basis.
+
+### Proposition 69.3 (Gram matrix from an ambient realization) {#prop-gram-from-ambient}
+
+Let \(B_J\) be the matrix of the ambient form on \(J\) in the basis \(e\). Then
+\[
+\boxed{
+G_\Delta=R_\Delta^{\mathsf T}B_JR_\Delta.
+}
+\]
+
+Thus the Gram matrix is derived from:
+
+1. the ambient quadratic form;
+2. the chosen root vectors; and
+3. the chosen ordering of those vectors.
+
+It neither determines nor remembers the ambient embedding by itself.
+
+### Remark 69.4 (A Gram matrix is not an embedded realization)
+
+Two embeddings of an abstract lattice can induce the same Gram matrix on a chosen basis. Conversely, a Gram matrix constructs a coordinatized abstract lattice on \(\mathbb Z^r\), but does not supply an embedding of that lattice into a separately specified ambient lattice. The ambient coordinate matrix \(R_\Delta\), together with the equation
+\[
+R_\Delta^{\mathsf T}B_JR_\Delta=G_\Delta,
+\]
+is the additional realization datum.
+
+## 70. Cartan matrices are derived root--coroot data
+
+### Definition 70.1 (Cartan matrix) {#def-cartan-matrix}
+
+Let \(\Delta=(\alpha_1,\ldots,\alpha_r)\) be a simple system, with coroots
+\[
+\alpha_j^\vee:=\frac{2\alpha_j}{(\alpha_j,\alpha_j)}.
+\]
+The **Cartan matrix** is
+\[
+C_\Delta=(\langle\alpha_i,\alpha_j^\vee\rangle)_{i,j}
+=
+\left(
+\frac{2(\alpha_i,\alpha_j)}{(\alpha_j,\alpha_j)}
+\right)_{i,j}.
+\]
+
+Intrinsically this is the matrix of the root--coroot pairing after choosing the simple-root and simple-coroot bases. Equivalently, it is the matrix of a homomorphism from the root lattice to the dual of the coroot lattice after those bases are chosen.
+
+It is not, in general, the Gram matrix of a symmetric form on the root lattice. In nonsimply-laced types it is generally nonsymmetric.
+
+### Proposition 70.2 (Simply-laced comparison) {#prop-simply-laced-comparison}
+
+Suppose all simple roots have Euclidean squared length \(2\). Then
+\[
+C_\Delta=G_\Delta
+\]
+for the positive-definite Euclidean form. With the project's negative-definite form \(b=-(\ ,\ )\),
+\[
+\boxed{G_\Delta=-C_\Delta.}
+\]
+
+**Proof.** Equal root lengths make \(\alpha_j^\vee=\alpha_j\) in the positive normalization, so the root--coroot pairing is the inner product. Negating the form negates the Gram matrix while leaving the conventional Cartan entries \(2,-1,0\) unchanged. \(\square\)
+
+### Remark 70.3 (Logical status of the comparison)
+
+The equality \(G_\Delta=-C_\Delta\) in finite simply-laced type is not the definition of an ADE lattice. It is a derived comparison theorem after a simple-root basis, normalization, and sign convention have been chosen.
+
+Nor is it an accidental numerical coincidence: it follows formally from equality of root lengths and the root--coroot formula. The error in the superseded form of Definition 23.2 was not the numerical equality; it was promoting this derived equality to the primary construction of the lattice.
+
+### Convention 70.4 (Cartan matrices in this project) {#conv-cartan-matrices}
+
+Cartan matrices have no role in the primary construction of named lattices, in the input to a Gram constructor, or in the definition of the lattice category. They may appear only as optional derived root-theoretic comparisons after the root realization and the Gram matrix have already been defined.
+
+A formalization may omit Cartan matrices from the named-lattice modules entirely.
+
+## 71. Standard negative-definite ADE realizations
+
+The following coordinate models give canonical convenient points of the corresponding root-presentation categories. Other cited standard models are compared to them by isometry.
+
+### Definition 71.1 (The lattice \(A_n^-\)) {#def-lattice-an-neg}
+
+For \(n\ge1\), let
+\[
+A_n^-:=
+\left\{
+(x_1,\ldots,x_{n+1})\in\mathbb Z^{n+1}
+\ \middle|\
+\sum_{i=1}^{n+1}x_i=0
+\right\}
+\]
+with the negative of the standard Euclidean form. The inclusion
+\[
+A_n^-\hookrightarrow I_{n+1}^-
+\]
+is part of its standard embedded realization.
+
+A standard simple-root basis is
+\[
+\alpha_i=e_i-e_{i+1},
+\qquad 1\le i\le n.
+\]
+The Gram matrix in this basis has diagonal entries \(-2\), adjacent entries \(1\), and all other entries \(0\).
+
+### Definition 71.2 (The lattice \(D_n^-\)) {#def-lattice-dn-neg}
+
+For \(n\ge4\), let
+\[
+D_n^-:=
+\left\{
+(x_1,\ldots,x_n)\in\mathbb Z^n
+\ \middle|\
+\sum_{i=1}^n x_i\in2\mathbb Z
+\right\}
+\]
+with the negative Euclidean form. It is a sublattice of \(I_n^-\).
+
+One may take
+\[
+\alpha_i=e_i-e_{i+1}
+\quad(1\le i<n),
+\qquad
+\alpha_n=e_{n-1}+e_n,
+\]
+with the usual adjustment of indexing at the branching vertex.
+
+### Definition 71.3 (The lattice \(E_8^-\)) {#def-lattice-e8-neg}
+
+Let
+\[
+E_8^+
+:=
+\left\{
+ x=(x_i)\in
+ \mathbb Z^8\cup(\mathbb Z+\tfrac12)^8
+ \ \middle|\
+ \sum_{i=1}^8x_i\in2\mathbb Z
+\right\}
+\subset\mathbb Q^8
+\]
+with the standard Euclidean form, and define
+\[
+E_8^-:=-E_8^+
+\]
+by negating the form.
+
+This is the even unimodular rank-eight lattice. It is not the even-coordinate sublattice of \(\mathbb Z^8\); that integral-coordinate sublattice is \(D_8\). Rather,
+\[
+E_8^+=D_8+\mathbb Z\cdot\tfrac12(1,1,1,1,1,1,1,1)
+\]
+inside \(\mathbb Q^8\), with the standard parity convention.
+
+### Definition 71.4 (The lattices \(E_7^-\) and \(E_6^-\)) {#def-lattices-e7-e6-neg}
+
+Inside the standard \(E_8^+\) realization, set
+\[
+u=e_1-e_2,
+\qquad
+v=e_2-e_3.
+\]
+Then \(u,v\) are adjacent roots spanning a copy of \(A_2\). Define
+\[
+E_7^+:=u^\perp\cap E_8^+,
+\qquad
+E_6^+:=(\mathbb Zu+\mathbb Zv)^\perp\cap E_8^+,
+\]
+and negate the forms to obtain \(E_7^-\) and \(E_6^-\).
+
+The assertions that these have root-system types \(E_7\) and \(E_6\), and that alternate standard choices give isometric lattices, are comparison theorems.
+
+### Convention 71.5 (Bare ADE notation) {#conv-bare-ade-notation}
+
+In the project,
+\[
+A_n:=A_n^-,
+\quad
+D_n:=D_n^-,
+\quad
+E_6:=E_6^-,
+\quad
+E_7:=E_7^-,
+\quad
+E_8:=E_8^-.
+\]
+Thus
+\[
+\Lambda_{K3}=U^{\perp3}\perp E_8^{\perp2}.
+\]
+
+## 72. Relation to the Gram constructor
+
+### Construction 72.1 (The general Gram constructor remains valid) {#construction-gram-constructor-role}
+
+For a symmetric matrix \(G\in\operatorname{Mat}_r(R)\), the Gram constructor of Definition 21.3 produces the coordinatized form
+\[
+(R^r,b_G,e_1,\ldots,e_r),
+\qquad
+b_G(x,y)=x^{\mathsf T}Gy.
+\]
+This is a general construction of coordinatized forms. It remains useful and mathematically correct.
+
+### Theorem 72.2 (Root presentation--Gram comparison) {#thm-root-gram-comparison}
+
+Let \((L,\Delta)\) be a lattice with ordered root basis \(\Delta=(\alpha_1,\ldots,\alpha_r)\), and let \(G_\Delta\) be its Gram matrix. The basis isomorphism
+\[
+\mathbb Z^r\overset{\sim}{\longrightarrow}L,
+\qquad
+e_i\longmapsto\alpha_i
+\]
+is an isometry
+\[
+\operatorname{Gram}_r(G_\Delta)
+\overset{\sim}{\longrightarrow}
+(L,\Delta)
+\]
+in the category of coordinatized lattices.
+
+After forgetting coordinates, it gives an isometry of intrinsic lattices.
+
+### Convention 72.3 (Named ADE construction order) {#conv-ade-construction-order}
+
+For a named ADE lattice the order of construction is:
+
+1. specify the standard root realization;
+2. take the integral span of its roots or simple roots;
+3. obtain the intrinsic lattice by restriction of the ambient form;
+4. choose a simple-root basis when coordinates are required;
+5. derive its Gram matrix;
+6. optionally compare that Gram matrix with the Cartan matrix in simply-laced type; and
+7. optionally compare the intrinsic lattice with the output of the general Gram constructor.
+
+The reverse order is not used as the mathematical definition of the named lattice.
+
+***
+
+# Part XV. Generators, presentations, and matrix descent
+
+## 73. Finite generation as property and chosen generators as structure
+
+### Definition 73.1 (Finite free modules) {#def-finite-free-modules}
+
+Let \(R\) be a ring. Write
+\[
+F_n:=R^n.
+\]
+The standard basis of \(F_n\) identifies abstract linear maps by the canonical isomorphism
+\[
+\boxed{
+\operatorname{Hom}_R(F_n,F_m)
+\simeq
+\operatorname{Mat}_{m\times n}(R).
+}
+\]
+
+The left side is primary. The right side is its coordinate realization.
+
+### Definition 73.2 (Chosen finite generating presentation) {#def-generating-presentation}
+
+A **finite generating presentation** of an \(R\)-module \(M\) is a surjection
+\[
+q:F_n\twoheadrightarrow M
+\]
+for some \(n\ge0\).
+
+The elements \(q(e_1),\ldots,q(e_n)\) are the chosen ordered generators. Conversely, an ordered generating family defines such a surjection.
+
+### Definition 73.3 (Generated modules with abstract morphisms) {#def-genpres-abs}
+
+Let
+\[
+\operatorname{GenPres}^{\mathrm{abs}}(R)
+\]
+be the category whose objects are finite generating presentations
+\[
+q:F_n\twoheadrightarrow M,
+\]
+and whose morphisms
+\[
+(q:F_n\twoheadrightarrow M)
+\longrightarrow
+(r:F_m\twoheadrightarrow N)
+\]
+are the completely general abstract module maps
+\[
+f:M\longrightarrow N.
+\]
+No condition is imposed on \(f\) by the chosen generators. Identities and composition are those of
+\(R\text{-}\mathbf{Mod}\).
+
+This is the analogue, for generating presentations, of the coordinatized-basis category of
+Definition 13.6: presentations are retained on objects so that a morphism can be represented
+and computed, but the morphism itself is the abstract map of modules.
+
+The projection
+\[
+U_{\mathrm{abs}}:
+\operatorname{GenPres}^{\mathrm{abs}}(R)
+\longrightarrow
+R\text{-}\mathbf{Mod}
+\]
+is the identity on morphisms and forgets the chosen presentation on objects.
+
+### Definition 73.4 (Free-lift category) {#def-genpres-lift}
+
+Let
+\[
+\operatorname{GenPres}^{\mathrm{lift}}(R)
+\]
+be the full locus in the arrow category
+\[
+\operatorname{Ar}(R\text{-}\mathbf{Mod})
+\]
+on the epimorphisms
+\[
+q:F_n\twoheadrightarrow M
+\]
+with finite standard free source.
+
+A morphism from \(q:F_n\twoheadrightarrow M\) to \(r:F_m\twoheadrightarrow N\) is a commutative square
+\[
+\begin{CD}
+F_n @>{A}>> F_m\\
+@V{q}VV @VV{r}V\\
+M @>{f}>> N.
+\end{CD}
+\]
+The upper map \(A\) is a chosen free lift of the abstract lower map \(f\).
+
+There is a functor
+\[
+\Pi:
+\operatorname{GenPres}^{\mathrm{lift}}(R)
+\longrightarrow
+\operatorname{GenPres}^{\mathrm{abs}}(R)
+\]
+which is the identity on objects and sends \((A,f)\) to \(f\). The matrix-descent theorem below
+describes this functor on every hom-space.
+
+### Remark 73.5 (Strict frame preservation is a further restriction)
+
+The fixed-source comma category
+\[
+(F_n\downarrow R\text{-}\mathbf{Mod})
+\]
+of Definition 13.5 uses morphisms \(f\) satisfying \(fq=r\). It is the special case of the lift category in which the
+upper map is fixed to be \(1_{F_n}\), and hence requires equal frame size. It classifies strictly
+frame-preserving maps.
+
+The three morphism conventions must be distinguished:
+
+1. abstract maps \(f:M\to N\) in \(\operatorname{GenPres}^{\mathrm{abs}}(R)\);
+2. chosen free lifts \((A,f)\) in \(\operatorname{GenPres}^{\mathrm{lift}}(R)\); and
+3. strictly frame-preserving maps in the fixed-source comma category.
+
+Matrices describe the second convention. The first is the intrinsic hom-space.
+
+### Definition 73.6 (Finite generation property) {#def-finite-generation-property}
+
+The module \(M\) is **finitely generated** if the fiber over \(M\) of the object projection
+\[
+\operatorname{GenPres}^{\mathrm{lift}}(R)
+\longrightarrow
+R\text{-}\mathbf{Mod}
+\]
+is inhabited. Equivalently,
+\[
+M\text{ is finitely generated}
+\quad\Longleftrightarrow\quad
+\exists n\;\exists q:F_n\twoheadrightarrow M.
+\]
+
+Categorically, the finite-generation property is the \((-1)\)-truncation of the classifier of
+chosen finite generating presentations. A chosen generating family is a point of the untruncated
+fiber; finite generation remembers only its existence.
+
+This is the required distinction:
+\[
+\boxed{
+\text{finitely generated}
+\ne
+\text{finitely generated with chosen generators}.
+}
+\]
+
+## 74. Descent of matrices through generating presentations
+
+Let
+\[
+q:F_n\twoheadrightarrow M,
+\qquad
+r:F_m\twoheadrightarrow N
+\]
+be finite generating presentations, and set
+\[
+K_q:=\ker(q),
+\qquad
+K_r:=\ker(r).
+\]
+
+### Definition 74.1 (Compatible free lift) {#def-compatible-free-lift}
+
+A linear map
+\[
+A:F_n\longrightarrow F_m
+\]
+is **compatible with the presentations** if
+\[
+A(K_q)\subseteq K_r.
+\]
+Write
+\[
+\operatorname{Comp}(q,r)
+:=
+\{A\in\operatorname{Hom}_R(F_n,F_m)\mid A(K_q)\subseteq K_r\}.
+\]
+
+Under standard bases, \(\operatorname{Comp}(q,r)\) is a submodule of
+\[
+\operatorname{Mat}_{m\times n}(R).
+\]
+
+### Proposition 74.2 (Descent criterion) {#prop-descent-criterion}
+
+A map \(A:F_n\to F_m\) induces a unique map
+\[
+\overline A:M\longrightarrow N
+\]
+satisfying
+\[
+\overline A\,q=rA
+\]
+if and only if
+\[
+A(K_q)\subseteq K_r.
+\]
+
+**Proof.** The composite \(rA\) factors through the quotient \(F_n/K_q\simeq M\) exactly when it vanishes on \(K_q\), equivalently when \(A(K_q)\subseteq\ker(r)=K_r\). Uniqueness follows from surjectivity of \(q\). \(\square\)
+
+### Theorem 74.3 (Matrix-descent exact sequence) {#thm-matrix-descent}
+
+There is a natural short exact sequence of \(R\)-modules
+\[
+\boxed{
+0
+\longrightarrow
+\operatorname{Hom}_R(F_n,K_r)
+\longrightarrow
+\operatorname{Comp}(q,r)
+\xrightarrow{\;\operatorname{desc}\;}
+\operatorname{Hom}_R(M,N)
+\longrightarrow
+0.
+}
+\]
+
+The first map is postcomposition with the inclusion \(K_r\hookrightarrow F_m\), and \(\operatorname{desc}(A)=\overline A\).
+
+**Proof sketch.** Proposition 74.2 defines the middle map. Given \(f:M\to N\), the composite \(fq:F_n\to N\) lifts through the surjection \(r:F_m\twoheadrightarrow N\), since \(F_n\) is projective. Any such lift automatically preserves the kernels and hence descends to \(f\). The kernel consists exactly of maps whose image lies in \(K_r\). \(\square\)
+
+### Corollary 74.4 (Precise matrix semantics) {#cor-matrix-semantics}
+
+After choosing standard bases:
+
+1. not every matrix \(A\in\operatorname{Mat}_{m\times n}(R)\) descends;
+2. a matrix descends exactly when it preserves the relation submodules;
+3. every abstract morphism \(M\to N\) is represented by at least one compatible matrix; and
+4. two compatible matrices represent the same morphism exactly when their difference has image in \(K_r\).
+
+Thus matrices form a space of representatives of abstract morphisms, not the definition of those morphisms.
+
+### Corollary 74.5 (Basis case) {#cor-matrix-descent-basis-case}
+
+If \(q:F_n\overset\sim\to M\) and \(r:F_m\overset\sim\to N\) are basis frames, then
+\[
+K_q=K_r=0,
+\]
+so Theorem 74.3 reduces to the canonical isomorphism
+\[
+\operatorname{Hom}_R(M,N)
+\simeq
+\operatorname{Hom}_R(F_n,F_m)
+\simeq
+\operatorname{Mat}_{m\times n}(R).
+\]
+
+The coordinate description of morphisms of based free modules in Definition 13.6 is therefore the kernel-zero special case of general matrix descent.
+
+## 75. Finite presentations
+
+### Definition 75.1 (Chosen finite presentation) {#def-finite-presentation}
+
+A **finite presentation** of an \(R\)-module \(M\) is an exact sequence
+\[
+F_m
+\xrightarrow{d_M}
+F_n
+\xrightarrow{q_M}
+M
+\longrightarrow0.
+\]
+It consists of chosen generators together with chosen finite generators for the module of relations.
+
+### Definition 75.2 (Finite-presentation objects and abstract morphisms) {#def-finpres-abs}
+
+Let
+\[
+\operatorname{FinPres}^{\mathrm{abs}}(R)
+\]
+be the category whose objects are exact diagrams
+\[
+F_m\xrightarrow{d_M}F_n\xrightarrow{q_M}M\longrightarrow0
+\]
+with \(m,n<\infty\), and whose morphisms are the completely general abstract module maps
+\[
+f:M\longrightarrow N.
+\]
+The chosen presentations are retained on objects, but no lift is built into the definition of an
+abstract morphism.
+
+### Definition 75.3 (Lifted morphisms of finite presentations) {#def-finpres-lift}
+
+Let \(J_{\mathrm{pres}}\) be the diagram shape
+\[
+2\longrightarrow1\longrightarrow0.
+\]
+The category
+\[
+\operatorname{FinPres}^{\mathrm{lift}}(R)
+\]
+is the exactness locus in the corresponding diagram category whose objects are the same finite
+presentations. A morphism is a natural transformation, equivalently a commutative diagram
+\[
+\begin{CD}
+F_m @>{d_M}>> F_n @>{q_M}>> M @>>> 0\\
+@V{A_1}VV @V{A_0}VV @V{f}VV \\
+F_{m'} @>{d_N}>> F_{n'} @>{q_N}>> N @>>> 0.
+\end{CD}
+\]
+
+There is an identity-on-objects functor
+\[
+\operatorname{FinPres}^{\mathrm{lift}}(R)
+\longrightarrow
+\operatorname{FinPres}^{\mathrm{abs}}(R)
+\]
+forgetting \(A_1,A_0\). The maps \(A_1,A_0\) have matrix realizations after the standard free
+bases are used; \(f\) is the abstract module morphism they present.
+
+### Definition 75.4 (Finite presentation property) {#def-finite-presentation-property}
+
+The module \(M\) is **finitely presented** if the fiber of
+\[
+\operatorname{FinPres}^{\mathrm{lift}}(R)
+\longrightarrow
+R\text{-}\mathbf{Mod},
+\qquad
+(F_m\to F_n\to M)\longmapsto M,
+\]
+is inhabited.
+
+Equivalently,
+\[
+M\text{ is finitely presented}
+\quad\Longleftrightarrow\quad
+\exists m,n\;
+F_m\to F_n\to M\to0
+\text{ exact}.
+\]
+
+Again, a chosen finite presentation is structure; finite presentation is its propositional truncation.
+
+### Proposition 75.5 (Lifting a morphism to finite presentations) {#prop-presentation-lift}
+
+Let finite presentations of \(M\) and \(N\) be fixed. Every module map
+\[
+f:M\longrightarrow N
+\]
+admits a morphism of presentation diagrams lifting \(f\).
+
+**Proof sketch.** Lift \(fq_M:F_n\to N\) through \(q_N:F_{n'}\twoheadrightarrow N\) using projectivity of \(F_n\), obtaining \(A_0\). The composite \(A_0d_M\) lands in \(\ker q_N=\operatorname{im}d_N\), and projectivity of \(F_m\) lifts it through \(d_N\), producing \(A_1\). \(\square\)
+
+### Remark 75.6 (Nonuniqueness at the presentation level)
+
+The lift in Proposition 75.5 is not canonical. A two-term finite presentation does not by itself provide the complete homotopy relation that identifies all lifts of the same abstract morphism. That relation is naturally expressed after extending the presentations to projective resolutions.
+
+## 76. Partial resolutions and the \(FP_n\) hierarchy
+
+### Definition 76.1 (Augmented chain complex) {#def-augmented-chain-complex}
+
+An **augmented chain complex over \(M\)** is a sequence
+\[
+\cdots
+\longrightarrow
+P_2
+\xrightarrow{d_2}
+P_1
+\xrightarrow{d_1}
+P_0
+\xrightarrow{\epsilon}
+M
+\longrightarrow0
+\]
+with
+\[
+d_i d_{i+1}=0,
+\qquad
+\epsilon d_1=0.
+\]
+It is a **resolution** if the augmented sequence is exact.
+
+### Definition 76.2 (Free and projective resolution) {#def-projective-resolution}
+
+A resolution is:
+
+- **free** if every \(P_i\) is free;
+- **projective** if every \(P_i\) is projective;
+- **finite in degree \(i\)** if \(P_i\) is finitely generated;
+- **finite free in degree \(i\)** if \(P_i\) is finite-rank free.
+
+A chosen resolution is a point of a category of exact augmented complexes. It is additional data, not an intrinsic replacement for \(M\).
+
+### Definition 76.3 (Modules of type \(FP_n\)) {#def-fp-n}
+
+For \(n\ge0\), an \(R\)-module \(M\) is of type \(FP_n\) if it admits a projective resolution
+\[
+\cdots\to P_1\to P_0\to M\to0
+\]
+in which \(P_i\) is finitely generated for \(0\le i\le n\).
+
+Under the standard module conventions,
+\[
+FP_0=\text{finitely generated},
+\qquad
+FP_1=\text{finitely presented}.
+\]
+The property \(FP_n\) is the propositional truncation of the category of chosen partial finite projective resolutions through degree \(n\).
+
+### Remark 76.4 (A generating surjection does not canonically determine a resolution)
+
+A surjection
+\[
+P_0\twoheadrightarrow M
+\]
+determines its kernel \(K_1\), but it does not canonically choose a free or projective module \(P_1\) mapping onto \(K_1\). To continue, one chooses a surjection
+\[
+P_1\twoheadrightarrow K_1,
+\]
+then repeats with its kernel.
+
+Thus a generating frame can be extended to a free resolution when enough free objects and the required choices are available, but the extension is not implicit or canonical. The iterated syzygies and the choices of their generators are part of the resolution datum.
+
+### Remark 76.5 (A chain complex is not a DGA)
+
+A chain complex carries only additive and differential data. A differential graded algebra is a chain complex equipped with an associative multiplication and unit compatible with the differential. In the symmetric monoidal category of chain complexes,
+\[
+\mathbf{DGA}_R
+=
+\operatorname{Alg}_{E_1}(\operatorname{Ch}(R)).
+\]
+
+DGAs become relevant when the presentation or resolution must carry multiplicative structure. They are not required for the general theory of module generators, relations, or projective resolutions.
+
+## 77. The chain-complex construction as a categorical functor
+
+### Definition 77.1 (Chain-complex functor) {#def-chain-complex-functor}
+
+Let \(\mathbf{AddCat}\) denote the higher category of additive categories, additive functors, and their higher transformations. The assignment
+\[
+\mathcal A
+\longmapsto
+\operatorname{Ch}(\mathcal A)
+\]
+extends degreewise to a functor
+\[
+\operatorname{Ch}:
+\mathbf{AddCat}
+\longrightarrow
+\mathbf{AddCat}.
+\]
+
+It is not defined on an arbitrary category without additive structure, because the equation \(d^2=0\) uses zero morphisms and addition of morphisms.
+
+### Definition 77.2 (Termwise properties and lifted complex structure) {#def-termwise-classifier}
+
+Let
+\[
+p:\mathcal A.P\longrightarrow\mathcal A
+\]
+be a classifier over an additive category.
+
+If \(p\) is a property classifier represented by a replete full additive subcategory, then for a
+set of degrees \(S\subseteq\mathbb Z\) the condition that a complex \(K\) have \(P\) in every
+degree of \(S\) is the homotopy intersection of the pullbacks
+\[
+\operatorname{ev}_i^*p
+\qquad(i\in S),
+\]
+where
+\[
+\operatorname{ev}_i:
+\operatorname{Ch}(\mathcal A)
+\longrightarrow
+\mathcal A
+\]
+is degree evaluation. For \(S=\mathbb Z\), this is the category of complexes whose terms all lie
+in \(\mathcal A.P\).
+
+If \(p\) carries nontrivial structure, termwise lifts alone do not ensure that the differentials
+preserve that structure. When \(\mathcal A.P\) is additive and \(p\) is additive, the correct
+classifier is instead
+\[
+\operatorname{Ch}(p):
+\operatorname{Ch}(\mathcal A.P)
+\longrightarrow
+\operatorname{Ch}(\mathcal A),
+\]
+or the corresponding homotopy pullback of the whole complex diagram. This retains the lifted
+differentials and their compatibility data.
+
+### Definition 77.3 (Resolution classifier) {#def-resolution-classifier}
+
+Let \(\operatorname{AugCh}(R)\) be the category of augmented chain complexes of \(R\)-modules. The category of projective resolutions is the intersection of:
+
+1. the exactness classifier for the augmented complex;
+2. the termwise projective classifier in all nonnegative degrees.
+
+The category of finite free resolutions through degree \(n\) is obtained by additionally imposing finite freeness in degrees \(0,\ldots,n\).
+
+The projection to the augmentation target
+\[
+\operatorname{Res}_R
+\longrightarrow
+R\text{-}\mathbf{Mod}
+\]
+is the classifier whose fiber over \(M\) is the category of chosen resolutions of \(M\).
+
+### Remark 77.4 (Finite generation and finite presentation as truncations of one theory)
+
+Finite generation, finite presentation, \(FP_n\), and \(FP_\infty\) are successive truncations of the resolution theory:
+
+- finite generation inspects a finite free degree-zero object and surjective augmentation;
+- finite presentation also controls the first syzygy by a finite free degree-one object;
+- \(FP_n\) controls finite projective objects through degree \(n\);
+- a chosen resolution retains the entire untruncated diagram and its morphisms.
+
+This is the uniform theory of which the finiteness notions of Section 13 are the truncations.
+
+## 78. Comparison theorem and matrix complexes
+
+### Theorem 78.1 (Comparison theorem for projective resolutions) {#thm-resolution-comparison}
+
+Let
+\[
+P_\bullet\twoheadrightarrow M,
+\qquad
+Q_\bullet\twoheadrightarrow N
+\]
+be projective resolutions. Every module morphism
+\[
+f:M\longrightarrow N
+\]
+lifts to a chain map
+\[
+F_\bullet:P_\bullet\longrightarrow Q_\bullet,
+\]
+and any two chain maps lifting the same \(f\) are chain homotopic.
+
+Consequently,
+\[
+\boxed{
+\operatorname{Hom}_R(M,N)
+\simeq
+\operatorname{Hom}_{K(R)}(P_\bullet,Q_\bullet),
+}
+\]
+where the right side consists of augmentation-compatible chain maps modulo chain homotopy.
+
+This is the full generalization of the degree-zero matrix-descent theorem.
+
+### Definition 78.2 (Matrix representative of a chain map) {#def-matrix-chain-map}
+
+Suppose each \(P_i\) and \(Q_i\) is equipped with a finite basis. A chain map is represented degreewise by matrices
+\[
+A_i:P_i\longrightarrow Q_i
+\]
+satisfying
+\[
+d_QA_i=A_{i-1}d_P.
+\]
+A chain homotopy from \(A\) to \(B\) is represented by matrices \(H_i:P_i\to Q_{i+1}\) satisfying
+\[
+A-B=d_QH+Hd_P.
+\]
+
+Thus morphisms in the homotopy or derived category are represented by matrix complexes modulo the homotopy relation. The matrices are representatives on chosen free resolutions; the abstract morphisms are the resulting homotopy classes.
+
+### Corollary 78.3 (No category of “matrix morphisms” is foundational) {#cor-no-matrix-category}
+
+A matrix category may be used as a skeletal presentation of standard finite free modules or of based finite free complexes. The foundational categories retain abstract linear maps or chain maps. Equivalences with matrix presentations are named comparison theorems.
+
+***
+
+# Part XVI. Stable and derived formulation
+
+## 79. Derived module categories
+
+### Definition 79.1 (Derived \(\infty\)-category of a ring) {#def-derived-category-ring}
+
+Let \(R\) be an ordinary ring. Let \(W\) be the class of quasi-isomorphisms of chain complexes of \(R\)-modules. The derived \(\infty\)-category is
+\[
+\mathcal D(R)
+:=
+N_{\mathrm{dg}}(\operatorname{Ch}(R))[W^{-1}],
+\]
+or any equivalent stable \(\infty\)-categorical model.
+
+For an ordinary ring this is equivalent to the stable \(\infty\)-category of modules over the Eilenberg--Mac Lane \(E_1\)-ring \(HR\). For an \(E_1\)-ring spectrum \(A\), the intrinsic replacement is directly
+\[
+\operatorname{Mod}_A.
+\]
+
+### Remark 79.2 (The derived category is the semantic object)
+
+Chain complexes, projective resolutions, injective resolutions, and cofibrant replacements are presentations of objects and morphisms in the derived category. They are indispensable computational models, but the intrinsic object is the point of the stable \(\infty\)-category.
+
+Accordingly, a derived implementation should expose the stable object while retaining the chosen resolution as a lift through a presentation classifier.
+
+### Definition 79.3 (Perfect object) {#def-perfect-object}
+
+An object \(P\in\mathcal D(R)\) is **perfect** if it is compact. For an ordinary ring, the perfect objects are precisely those represented by bounded complexes of finitely generated projective modules.
+
+A chosen bounded finite-projective complex is a presentation of a perfect object. Perfectness is the corresponding intrinsic property.
+
+### Remark 79.4 (Finite presentation is not perfectness)
+
+A finitely presented module, regarded as an object of the heart of the standard \(t\)-structure on \(\mathcal D(R)\), need not be perfect. Perfectness requires a bounded finite-projective resolution, not merely a finite presentation.
+
+The hierarchy must therefore retain the distinctions
+\[
+\text{finite generation},
+\quad
+\text{finite presentation},
+\quad
+FP_n,
+\quad
+\text{perfectness}.
+\]
+
+## 80. Derived presentations and cells
+
+### Definition 80.1 (Presentation category over a stable \(\infty\)-category) {#def-cellular-presentation}
+
+Let \(\mathcal C\) be a presentable stable \(\infty\)-category and let \(\mathcal G\subseteq\mathcal C\) be a selected class of compact or projective generators. A **cellular presentation** of \(X\in\mathcal C\) is a chosen filtered or simplicial resolution of \(X\) whose stages are assembled from objects of \(\mathcal G\) by the permitted finite sums, shifts, and cofibers.
+
+The category of such presentations maps to \(\mathcal C\) by geometric realization or totalization. Its fiber over \(X\) is the moduli category of chosen presentations of \(X\).
+
+This is the derived analogue of the category of finite free presentations of an ordinary module.
+
+### Remark 80.2 (Classical chain complexes as one model)
+
+The classical chain-complex functor is an appropriate concrete model for ordinary modules and additive categories. It should not be promoted to a variance-free functor on every object of the ambient \((\infty,2)\)-category.
+
+The general semantic layer is stable or derived. A chosen dg, model-categorical, spectral, or simplicial presentation is additional mathematical data whose comparison with the stable object is a theorem.
+
+### Definition 80.3 (DG algebras and derived algebra objects) {#def-dga-derived-algebra}
+
+For an ordinary commutative ring \(R\), a differential graded associative algebra is an \(E_1\)-algebra object in the monoidal category of chain complexes:
+\[
+\mathbf{DGA}_R
+=
+\operatorname{Alg}_{E_1}(\operatorname{Ch}(R)).
+\]
+After localization, the intrinsic derived notion is an \(E_1\)-algebra in \(\mathcal D(R)\) or an \(E_1\)-ring spectrum. Commutative derived algebras are governed by the corresponding \(E_\infty\)-operad.
+
+This operadic construction is used only when multiplicative structure is actually part of the object.
+
+***
+
+# Part XVII. Categorical synthesis of presentations
+
+## 81. One presentation calculus
+
+The root-lattice correction and the matrix-descent correction are instances of the same categorical pattern.
+
+### Principle 81.1 (Free source, relation object, and descent) {#principle-presentation-descent}
+
+A presentation of an object \(X\) consists of:
+
+1. a free, projective, or otherwise controlled source \(P\);
+2. a morphism \(P\to X\), often an epimorphism;
+3. the kernel, relation object, or higher syzygies governing descent; and
+4. an exact or homotopy-coherent diagram recording these data.
+
+A coordinate matrix describes a morphism between the controlled free sources. It represents a morphism between the presented objects precisely when it respects the relation objects. The quotient by changes through the target relations, or by chain homotopy in a full resolution, produces the intrinsic morphism.
+
+### Example 81.2 (Root presentation)
+
+For an ordered simple-root system \(\Delta\), the free source is
+\[
+\mathbb Z^{(\Delta)}.
+\]
+The map to the ambient quadratic module sends basis elements to roots. When \(\Delta\) is a simple-root basis, the kernel vanishes, so the Gram matrix gives a complete coordinate description of the intrinsic root lattice. The ambient embedding remains additional data.
+
+### Example 81.3 (Generated module)
+
+For a generating presentation \(F_n\twoheadrightarrow M\), the relation object is \(K_q\). A matrix \(F_n\to F_m\) descends precisely when it sends \(K_q\) into \(K_r\). The quotient exact sequence of Theorem 74.3 gives the intrinsic hom-space.
+
+### Example 81.4 (Projective resolution)
+
+For a projective resolution, the relation data continue through every syzygy. Degreewise matrices define a chain map; the chain-map equations enforce descent at every stage; chain homotopy identifies representatives of the same derived morphism.
+
+### Principle 81.5 (No presentation artifact is promoted) {#principle-no-promotion}
+
+The following are never promoted to intrinsic definitions when a lower-level construction exists:
+
+- a Cartan matrix in place of a root realization;
+- a Gram matrix in place of a lattice with a chosen basis;
+- a matrix in place of an abstract linear map;
+- a two-term presentation in place of a module;
+- a projective resolution in place of a derived object;
+- a chain complex in place of a DGA when multiplication is required; or
+- a DGA in place of its derived \(E_1\)-algebra object.
+
+Each presentation is retained when computations require it, and its comparison with the intrinsic object is a named theorem.
+
+***
+
+# Part XVIII. Conventions and scalar change for modules
+
+This part and the five that follow develop the corrected theory of module and bimodule
+families, scalar change, and Morita 2-geometry. They replace the superseded form of
+Definition 13.8 and make precise the variance warning of Definition 13.2: the assignment
+\(R\mapsto R\text{-}\mathbf{Mod}\) has two standard variances, covariant extension of
+scalars and contravariant restriction of scalars, whose unstraightenings are respectively
+cocartesian and cartesian fibrations; the same distinction governs bimodules over
+\(\mathbf{Ring}\times\mathbf{Ring}\). The fiberwise functors forgetting one bimodule
+action are natural for restriction of scalars but only lax or oplax for simultaneous
+extension. The intrinsic higher-categorical home is the Morita
+\((\infty,2)\)-category, in which rings are objects, bimodules are 1-morphisms,
+composition is relative tensor product, and left and right module categories are the hom
+\(\infty\)-categories from and to the monoidal unit \(\mathbb Z\).
+
+## 82. Rings and the opposite involution
+
+### Definition 82.1 (The category of rings) {#def-ring-category}
+
+Let \(\mathbf{Ring}\) denote the category of associative unital rings and unital ring homomorphisms. We use the same symbol for its image in \(\mathbf{Cat}_\infty\).
+
+### Definition 82.2 (Opposite-ring involution) {#def-opposite-ring-involution}
+
+The **opposite-ring functor** is the involutive equivalence
+\[
+(-)^{\mathrm{op}}:\mathbf{Ring}\longrightarrow\mathbf{Ring},
+\qquad
+R\longmapsto R^{\mathrm{op}},
+\qquad
+f\longmapsto f^{\mathrm{op}}.
+\]
+There is a canonical equivalence
+\[
+(R^{\mathrm{op}})^{\mathrm{op}}\simeq R.
+\]
+
+### Remark 82.3 (A functor is not a family of arrows to its values)
+
+The functor \((-)^{\mathrm{op}}\) does not supply a morphism
+\[
+R\longrightarrow R^{\mathrm{op}}
+\]
+for every ring \(R\). Such a family would be additional data, namely a natural transformation from the identity functor to the opposite-ring functor. For a fixed ring, a homomorphism \(R\to R^{\mathrm{op}}\) is an anti-homomorphism of the underlying ring, and an isomorphism \(R\simeq R^{\mathrm{op}}\) is an anti-isomorphism.
+
+## 83. Left and right modules
+
+### Convention 83.1 (One module convention) {#conv-left-module-convention}
+
+The notation
+\[
+R\text{-}\mathbf{Mod}
+\]
+always denotes the category of **left** \(R\)-modules and \(R\)-linear maps.
+
+The category of right \(R\)-modules is defined by
+\[
+\mathbf{Mod}\text{-}R
+:=
+R^{\mathrm{op}}\text{-}\mathbf{Mod}.
+\]
+Thus right modules are not a second primitive family; they are left modules over the opposite ring. This restates the convention of Definition 13.1.
+
+### Definition 83.2 (Extension and restriction of scalars: left modules) {#def-scalar-change-left}
+
+Let \(f:R\to S\) be a ring homomorphism. Regard \(S\) as an \((S,R)\)-bimodule by left multiplication and by the right action
+\[
+s\cdot r:=s f(r).
+\]
+Define
+\[
+f_!^L:R\text{-}\mathbf{Mod}\longrightarrow S\text{-}\mathbf{Mod},
+\qquad
+M\longmapsto {}_S S_R\otimes_R M.
+\]
+This is **extension of scalars**.
+
+Define
+\[
+f^{*L}:S\text{-}\mathbf{Mod}\longrightarrow R\text{-}\mathbf{Mod}
+\]
+by restricting the left action along \(f\). There is an adjunction
+\[
+f_!^L\dashv f^{*L}.
+\]
+
+### Definition 83.3 (Extension and restriction of scalars: right modules) {#def-scalar-change-right}
+
+For a right \(R\)-module \(N\), define
+\[
+f_!^R(N):=N\otimes_R {}_R S_S,
+\]
+a right \(S\)-module. Restriction along \(f\) defines
+\[
+f^{*R}:\mathbf{Mod}\text{-}S\longrightarrow\mathbf{Mod}\text{-}R,
+\]
+and
+\[
+f_!^R\dashv f^{*R}.
+\]
+
+### Proposition 83.4 (The four module-family functors) {#prop-module-family-functors}
+
+Scalar change defines coherent functors
+\[
+\mathbf{LMod}_!: \mathbf{Ring}\longrightarrow\mathbf{Cat}_\infty,
+\qquad
+R\longmapsto R\text{-}\mathbf{Mod},
+\qquad
+f\longmapsto f_!^L,
+\]
+\[
+\mathbf{LMod}^{*}: \mathbf{Ring}^{\mathrm{op}}\longrightarrow\mathbf{Cat}_\infty,
+\qquad
+f^{\mathrm{op}}\longmapsto f^{*L},
+\]
+\[
+\mathbf{RMod}_!: \mathbf{Ring}\longrightarrow\mathbf{Cat}_\infty,
+\qquad
+R\longmapsto\mathbf{Mod}\text{-}R,
+\qquad
+f\longmapsto f_!^R,
+\]
+and
+\[
+\mathbf{RMod}^{*}: \mathbf{Ring}^{\mathrm{op}}\longrightarrow\mathbf{Cat}_\infty,
+\qquad
+f^{\mathrm{op}}\longmapsto f^{*R}.
+\]
+Moreover,
+\[
+\mathbf{RMod}_!\simeq \mathbf{LMod}_!\circ(-)^{\mathrm{op}},
+\qquad
+\mathbf{RMod}^{*}\simeq \mathbf{LMod}^{*}\circ(-)^{\mathrm{op}}
+\]
+after applying the canonical equivalence between right \(R\)-modules and left \(R^{\mathrm{op}}\)-modules.
+
+### Remark 83.5 (Coherence rather than strict equality)
+
+For composable homomorphisms \(R\xrightarrow f S\xrightarrow g T\), there is a canonical equivalence
+\[
+T\otimes_S(S\otimes_R M)\simeq T\otimes_RM,
+\]
+not a preferred literal equality. The functor to \(\mathbf{Cat}_\infty\) records these associativity equivalences and their higher coherence. This is the basic example motivating the Grothendieck construction of module categories.
+
+## 84. Grothendieck constructions of module families
+
+### Definition 84.1 (Cocartesian total category of left modules) {#def-lmod-cocartesian}
+
+Let
+\[
+\pi_L^!:
+\int\mathbf{LMod}_!
+\longrightarrow
+\mathbf{Ring}
+\]
+be the unstraightening of \(\mathbf{LMod}_!\). It is a cocartesian fibration.
+
+An object of \(\int\mathbf{LMod}_!\) is a pair \((R,M)\), where \(M\) is a left \(R\)-module. A morphism over \(f:R\to S\) can be represented equivalently as
+\[
+\varphi:S\otimes_RM\longrightarrow N
+\]
+in \(S\text{-}\mathbf{Mod}\), or as an additive map
+\[
+\widetilde\varphi:M\longrightarrow N
+\]
+satisfying
+\[
+\widetilde\varphi(rm)=f(r)\widetilde\varphi(m).
+\]
+The cocartesian morphism with source \((R,M)\) over \(f\) has target \((S,S\otimes_RM)\).
+
+### Definition 84.2 (Cartesian total category of left modules) {#def-lmod-cartesian}
+
+Let
+\[
+\pi_L^*:
+\int\mathbf{LMod}^{*}
+\longrightarrow
+\mathbf{Ring}
+\]
+be the unstraightening of the contravariant restriction functor. It is a cartesian fibration. Its cartesian transport along \(f:R\to S\) is
+\[
+f^{*L}:S\text{-}\mathbf{Mod}\longrightarrow R\text{-}\mathbf{Mod}.
+\]
+
+The analogous constructions are denoted
+\[
+\pi_R^!:
+\int\mathbf{RMod}_!\to\mathbf{Ring},
+\qquad
+\pi_R^*:
+\int\mathbf{RMod}^{*}\to\mathbf{Ring}.
+\]
+
+### Proposition 84.3 (Fibers over points) {#prop-module-family-fibers}
+
+Let \(\iota_R:*\to\mathbf{Ring}\) be the point classifying \(R\). Then
+\[
+*\times^h_{\mathbf{Ring}}\int\mathbf{LMod}_!
+\simeq
+(\pi_L^!)^{-1}(R)
+\simeq
+R\text{-}\mathbf{Mod},
+\]
+and similarly for the cartesian total category and for right modules.
+
+The fiber is independent of whether extension or restriction is chosen for transport; the choice changes the morphisms between different fibers, not the fiber over a fixed ring.
+
+### Remark 84.4 (Terminology)
+
+The Grothendieck construction is the total category \(\int\mathbf{LMod}\), not the individual category \(R\text{-}\mathbf{Mod}\). The latter is a fiber of the former. This makes precise the variance warning of Definition 13.2.
+
+***
+
+# Part XIX. Bimodule categories and their total families
+
+## 85. Bimodules as compatible pairs of actions
+
+### Definition 85.1 (Bimodule) {#def-bimodule-actions}
+
+Let \(R,S\) be rings. An **\((R,S)\)-bimodule** is an abelian group \(M\) equipped with a left \(R\)-action and a right \(S\)-action satisfying
+\[
+(rm)s=r(ms)
+\qquad
+(r\in R,\ m\in M,\ s\in S).
+\]
+A morphism of \((R,S)\)-bimodules is an additive map preserving both actions. Write
+\[
+{}_R\mathbf{Bimod}_S
+\]
+for the resulting category.
+
+The phrase “bilinear map” is not used for a morphism in this category: a bimodule homomorphism is a unary additive map linear for both actions.
+
+### Definition 85.2 (The category of two unconstrained actions) {#def-biact}
+
+Let
+\[
+U_R:R\text{-}\mathbf{Mod}\to\mathbf{Ab},
+\qquad
+U_S:\mathbf{Mod}\text{-}S\to\mathbf{Ab}
+\]
+be the underlying-additive-group functors. Define
+\[
+\mathbf{BiAct}(R,S)
+:=
+R\text{-}\mathbf{Mod}
+\times^h_{\mathbf{Ab}}
+\mathbf{Mod}\text{-}S.
+\]
+An object is an abelian group equipped with a left \(R\)-action and a right \(S\)-action, together with the comparison identifying the two underlying additive groups. No commutation of the actions is imposed.
+
+### Definition 85.3 (Commutation classifier) {#def-commutation-classifier}
+
+On an object of \(\mathbf{BiAct}(R,S)\), the two composites
+\[
+R\otimes_{\mathbb Z}M\otimes_{\mathbb Z}S
+\rightrightarrows
+M
+\]
+are
+\[
+r\otimes m\otimes s\longmapsto (rm)s,
+\qquad
+r\otimes m\otimes s\longmapsto r(ms).
+\]
+The full replete locus on which these maps agree is \({}_R\mathbf{Bimod}_S\). Hence there is a property classifier
+\[
+{}_R\mathbf{Bimod}_S
+\longrightarrow
+\mathbf{BiAct}(R,S).
+\]
+
+Thus the two actions are structure, their coexistence on one additive group is a pullback of structure classifiers, and their commutation is an additional diagrammatic property.
+
+### Proposition 85.4 (Enveloping-ring description) {#prop-enveloping-ring}
+
+There is a canonical equivalence
+\[
+{}_R\mathbf{Bimod}_S
+\simeq
+(R\otimes_{\mathbb Z}S^{\mathrm{op}})\text{-}\mathbf{Mod}.
+\]
+The left action of \(R\otimes S^{\mathrm{op}}\) is
+\[
+(r\otimes s^{\mathrm{op}})m:=rms.
+\]
+Conversely, restricting an \(R\otimes S^{\mathrm{op}}\)-action along the two canonical ring maps gives commuting left \(R\)- and right \(S\)-actions.
+
+No additional centrality hypothesis is required for ordinary unital rings over \(\mathbb Z\).
+
+## 86. Scalar change for bimodules
+
+### Definition 86.1 (Simultaneous extension of scalars) {#def-bimodule-extension}
+
+Let \(f:R\to R'\) and \(g:S\to S'\). Define
+\[
+(f,g)_!:{}_R\mathbf{Bimod}_S
+\longrightarrow
+{}_{R'}\mathbf{Bimod}_{S'}
+\]
+by
+\[
+(f,g)_!M
+:=
+{}_{R'}R'_R\otimes_R M\otimes_S{}_SS'_{S'}.
+\]
+Equivalently,
+\[
+(f,g)_!M=R'\otimes_RM\otimes_SS'.
+\]
+
+### Definition 86.2 (Simultaneous restriction of scalars) {#def-bimodule-restriction}
+
+For \(N\in{}_{R'}\mathbf{Bimod}_{S'}\), define
+\[
+(f,g)^*N\in{}_R\mathbf{Bimod}_S
+\]
+by
+\[
+r\cdot n\cdot s:=f(r)n g(s).
+\]
+There is an adjunction
+\[
+(f,g)_!\dashv(f,g)^*.
+\]
+
+### Proposition 86.3 (Bimodule-family functors) {#prop-bimodule-family-functors}
+
+The constructions above define coherent functors
+\[
+\mathbf{BiMod}_!:
+\mathbf{Ring}\times\mathbf{Ring}
+\longrightarrow
+\mathbf{Cat}_\infty,
+\qquad
+(R,S)\longmapsto{}_R\mathbf{Bimod}_S,
+\]
+and
+\[
+\mathbf{BiMod}^{*}:
+(\mathbf{Ring}\times\mathbf{Ring})^{\mathrm{op}}
+\longrightarrow
+\mathbf{Cat}_\infty.
+\]
+Their unstraightenings are respectively a cocartesian fibration
+\[
+\pi_{\mathrm{Bi}}^!:
+\int\mathbf{BiMod}_!
+\longrightarrow
+\mathbf{Ring}\times\mathbf{Ring}
+\]
+and a cartesian fibration
+\[
+\pi_{\mathrm{Bi}}^*:
+\int\mathbf{BiMod}^{*}
+\longrightarrow
+\mathbf{Ring}\times\mathbf{Ring}.
+\]
+
+### Definition 86.4 (Morphisms in the cocartesian total category) {#def-bimodule-cocartesian-morphisms}
+
+An object of \(\int\mathbf{BiMod}_!\) is a triple \((R,S,M)\). A morphism
+\[
+(R,S,M)\longrightarrow(R',S',N)
+\]
+over \((f,g)\) may be represented by a bimodule map
+\[
+R'\otimes_RM\otimes_SS'
+\longrightarrow
+N
+\]
+in \({}_{R'}\mathbf{Bimod}_{S'}\). By adjunction, it is equivalently an \((R,S)\)-bimodule map
+\[
+M\longrightarrow(f,g)^*N.
+\]
+
+A morphism is cocartesian precisely when the displayed map from the simultaneous extension of scalars to its target is an equivalence.
+
+### Proposition 86.5 (Fibers of the bimodule total category) {#prop-bimodule-fibers}
+
+For the point
+\[
+\iota_{R,S}:*\longrightarrow\mathbf{Ring}\times\mathbf{Ring},
+\qquad
+*\longmapsto(R,S),
+\]
+there are canonical equivalences
+\[
+*\times^h_{\mathbf{Ring}\times\mathbf{Ring}}
+\int\mathbf{BiMod}_!
+\simeq
+{}_R\mathbf{Bimod}_S
+\]
+and
+\[
+*\times^h_{\mathbf{Ring}\times\mathbf{Ring}}
+\int\mathbf{BiMod}^{*}
+\simeq
+{}_R\mathbf{Bimod}_S.
+\]
+
+***
+
+# Part XX. Forgetting one action and the variance obstruction
+
+## 87. Fiberwise forgetful functors
+
+### Definition 87.1 (Forgetting the right or left action) {#def-forget-one-action}
+
+For each pair \((R,S)\), define
+\[
+U_L^{R,S}:{}_R\mathbf{Bimod}_S
+\longrightarrow
+R\text{-}\mathbf{Mod}
+\]
+by forgetting the right \(S\)-action, and
+\[
+U_R^{R,S}:{}_R\mathbf{Bimod}_S
+\longrightarrow
+\mathbf{Mod}\text{-}S
+=
+S^{\mathrm{op}}\text{-}\mathbf{Mod}
+\]
+by forgetting the left \(R\)-action.
+
+Equivalently, under Proposition 85.4 these are restriction-of-scalars functors along
+\[
+R\longrightarrow R\otimes S^{\mathrm{op}},
+\qquad
+r\longmapsto r\otimes1,
+\]
+and
+\[
+S^{\mathrm{op}}\longrightarrow R\otimes S^{\mathrm{op}},
+\qquad
+s^{\mathrm{op}}\longmapsto1\otimes s^{\mathrm{op}}.
+\]
+
+### Proposition 87.2 (The additive-group square) {#prop-additive-group-square}
+
+The two composites to \(\mathbf{Ab}\) are canonically equivalent:
+\[
+\begin{CD}
+{}_R\mathbf{Bimod}_S @>{U_L^{R,S}}>> R\text{-}\mathbf{Mod}\\
+@V{U_R^{R,S}}VV @VV{U_{\mathrm{add}}^R}V\\
+\mathbf{Mod}\text{-}S @>{U_{\mathrm{add}}^S}>> \mathbf{Ab}.
+\end{CD}
+\]
+The comparison \(2\)-cell identifies both routes with the underlying abelian group of the bimodule.
+
+This square does not by itself define bimodules: its homotopy pullback is \(\mathbf{BiAct}(R,S)\), and the commutation of the two actions remains an additional property as in Definition 85.3.
+
+## 88. Naturality for restriction of scalars
+
+### Theorem 88.1 (Forgetful transformations on the restriction side) {#thm-restriction-naturality}
+
+Let
+\[
+p_1,p_2:\mathbf{Ring}\times\mathbf{Ring}\longrightarrow\mathbf{Ring}
+\]
+be the projections. The fiberwise forgetful functors assemble into natural transformations
+\[
+U_L^*:
+\mathbf{BiMod}^{*}
+\Longrightarrow
+\mathbf{LMod}^{*}\circ p_1^{\mathrm{op}},
+\]
+\[
+U_R^*:
+\mathbf{BiMod}^{*}
+\Longrightarrow
+\mathbf{RMod}^{*}\circ p_2^{\mathrm{op}}.
+\]
+
+For \((f,g):(R,S)\to(R',S')\), the naturality equivalences are
+\[
+U_L^{R,S}\bigl((f,g)^*N\bigr)
+\simeq
+f^{*L}\bigl(U_L^{R',S'}N\bigr),
+\]
+\[
+U_R^{R,S}\bigl((f,g)^*N\bigr)
+\simeq
+g^{*R}\bigl(U_R^{R',S'}N\bigr).
+\]
+They follow by forgetting one of the two restricted actions.
+
+### Corollary 88.2 (Morphisms of cartesian fibrations) {#cor-cartesian-fibration-morphisms}
+
+Under straightening--unstraightening, Theorem 88.1 yields cartesian-edge-preserving functors
+\[
+\int\mathbf{BiMod}^{*}
+\longrightarrow
+p_1^*\!\left(\int\mathbf{LMod}^{*}\right)
+\]
+and
+\[
+\int\mathbf{BiMod}^{*}
+\longrightarrow
+p_2^*\!\left(\int\mathbf{RMod}^{*}\right)
+\]
+over \(\mathbf{Ring}\times\mathbf{Ring}\). Composing with the base-change projections gives the familiar squares over \(p_1\) and \(p_2\).
+
+Thus the strict \(2\)-morphism-level organization proposed for the forgetful projections is correct on the restriction-of-scalars side.
+
+## 89. Failure of pseudonaturality for simultaneous extension
+
+### Proposition 89.1 (The proposed covariant natural transformation does not exist) {#prop-extension-nonnaturality}
+
+In general, the functors \(U_L^{R,S}\) do not assemble into a pseudonatural transformation
+\[
+\mathbf{BiMod}_!
+\Longrightarrow
+\mathbf{LMod}_!\circ p_1.
+\]
+Indeed, for \((f,g):(R,S)\to(R',S')\), the two relevant objects are
+\[
+f_!^L\bigl(U_L^{R,S}M\bigr)
+=
+R'\otimes_RM
+\]
+and
+\[
+U_L^{R',S'}\bigl((f,g)_!M\bigr)
+=
+R'\otimes_RM\otimes_SS'.
+\]
+They are not generally equivalent.
+
+For example, take
+\[
+R=R'=S=\mathbb Z,
+\qquad
+S'=\mathbb Z/2,
+\qquad
+f=\operatorname{id},
+\qquad
+M=\mathbb Z.
+\]
+Then the first route gives \(\mathbb Z\), while the second gives \(\mathbb Z/2\).
+
+The analogous claim for \(U_R\) also fails when the left ring is changed.
+
+### Corollary 89.2 (No morphism of cocartesian fibrations) {#cor-no-cocartesian-morphism}
+
+There is a functor on the total categories which forgets an action and lies over \(p_1\) or \(p_2\), but it does not preserve all cocartesian edges. Hence it is not a morphism of cocartesian fibrations and does not correspond to a natural transformation of the covariant straightened functors.
+
+For an arrow \((\operatorname{id}_R,g)\), a cocartesian bimodule edge
+\[
+M\longrightarrow M\otimes_SS'
+\]
+would have to map to a cocartesian edge over the identity of \(R\). Such an edge must be an equivalence in the fiber \(R\text{-}\mathbf{Mod}\), which is false in general.
+
+### Definition 89.3 (The covariant comparison cell) {#def-covariant-comparison-cell}
+
+There is nevertheless a canonical comparison map
+\[
+f_!^LU_L^{R,S}(M)
+\longrightarrow
+U_L^{R',S'}(f,g)_!M,
+\]
+namely
+\[
+R'\otimes_RM
+\longrightarrow
+R'\otimes_RM\otimes_SS',
+\qquad
+x\longmapsto x\otimes1.
+\]
+Likewise,
+\[
+g_!^RU_R^{R,S}(M)
+\longrightarrow
+U_R^{R',S'}(f,g)_!M.
+\]
+These comparison maps are generally noninvertible. They define a lax or oplax transformation according to the selected convention; the displayed direction is the mathematical datum and should always be written explicitly.
+
+### Proposition 89.4 (Mixed variance restores pseudonaturality) {#prop-mixed-variance}
+
+There are mixed-variance functors
+\[
+\mathbf{BiMod}_{!,*}:
+\mathbf{Ring}\times\mathbf{Ring}^{\mathrm{op}}
+\longrightarrow
+\mathbf{Cat}_\infty
+\]
+and
+\[
+\mathbf{BiMod}_{*,!}:
+\mathbf{Ring}^{\mathrm{op}}\times\mathbf{Ring}
+\longrightarrow
+\mathbf{Cat}_\infty,
+\]
+where the first extends the left scalar and restricts the right scalar, while the second restricts the left scalar and extends the right scalar.
+
+Then forgetting the right action is pseudonatural for \(\mathbf{BiMod}_{!,*}\), and forgetting the left action is pseudonatural for \(\mathbf{BiMod}_{*,!}\). This is the covariant formulation appropriate when one wishes to preserve one chosen module leg exactly.
+
+***
+
+# Part XXI. The unit ring, opposite rings, and diagonal bimodules
+
+## 90. The monoidal unit \(\mathbb Z\)
+
+### Theorem 90.1 (A \(\mathbb Z\)-action is unique) {#thm-z-action-unique}
+
+For every abelian group \(M\), there is a unique unital right \(\mathbb Z\)-module structure, given by
+\[
+m\cdot n:=nm.
+\]
+Likewise there is a unique unital left \(\mathbb Z\)-module structure.
+
+**Proof.** Unitality forces \(m\cdot1=m\). Additivity in the scalar then forces
+\[
+m\cdot n=m\cdot(1+\cdots+1)=nm
+\]
+for \(n\ge0\), and the negative integers are forced by additive inverses. \(\square\)
+
+### Lemma 90.1.1 (Negation does not twist the integer action) {#lem-negation-no-twist}
+
+The map
+\[
+\tau:\mathbb Z\longrightarrow\mathbb Z,
+\qquad
+\tau(n)=-n,
+\]
+is an automorphism of the underlying additive group, but it is not a ring homomorphism. Indeed,
+\[
+\tau(1)=-1\ne1
+\]
+under the unital convention, and even without invoking preservation of the unit,
+\[
+\tau(1\cdot1)=-1
+\qquad\text{whereas}\qquad
+\tau(1)\tau(1)=1.
+\]
+Consequently, precomposing a right \(\mathbb Z\)-action with \(\tau\) does not produce another module action. Explicitly, the proposed formula
+\[
+m\star n:=m\cdot(-n)
+\]
+violates the unit axiom, since \(m\star1=-m\) rather than \(m\). If \(-m=m\) for every \(m\), then the proposed action coincides with the canonical action and still does not give a distinct point of the structure space.
+
+More generally, every ring endomorphism of \(\mathbb Z\) is the identity. This follows either from initiality of \(\mathbb Z\) in unital rings or directly from
+\[
+\varphi(n)=n\varphi(1)=n.
+\]
+
+### Proposition 90.1.2 (The fiber over a fixed left module) {#prop-z-action-fiber}
+
+Let
+\[
+F:{}_R\mathbf{Bimod}_{\mathbb Z}\longrightarrow R\text{-}\mathbf{Mod}
+\]
+forget the right \(\mathbb Z\)-action. For a fixed left \(R\)-module \(M\), the strict fiber of \(F\) over \(M\) is the terminal category. Equivalently, its homotopy fiber is a contractible discrete space.
+
+Indeed, a compatible right action on \(M\) is the same as a unital ring homomorphism
+\[
+\mathbb Z^{\mathrm{op}}
+\longrightarrow
+\operatorname{End}_R(M).
+\]
+Since \(\mathbb Z^{\mathrm{op}}=\mathbb Z\) is initial, this mapping set has exactly one element, namely
+\[
+n\longmapsto n\,\operatorname{id}_M.
+\]
+The forgetful functor is faithful, so the fiber has no nonidentity morphisms. Hence contractibility here is stronger than mere uniqueness up to unspecified equivalence: the action map itself is unique.
+
+### Remark 90.1.3 (Contractibility versus strict uniqueness)
+
+For a general classifier, a contractible homotopy fiber means that its objects form a nonempty space with a contractible space of coherent identifications; it need not mean that all raw presentations are definitionally equal. In the present case the fiber is \(0\)-truncated, because an action on a fixed module is ordinary algebraic data and the forgetful functor is faithful. A contractible \(0\)-truncated space is a singleton. Thus the general homotopical statement and the elementary uniqueness theorem agree exactly here.
+
+### Corollary 90.2 (Modules as unit-ended bimodules) {#cor-unit-ended-bimodules}
+
+There are canonical equivalences
+\[
+{}_R\mathbf{Bimod}_{\mathbb Z}
+\simeq
+R\text{-}\mathbf{Mod}
+\]
+and
+\[
+{}_{\mathbb Z}\mathbf{Bimod}_S
+\simeq
+\mathbf{Mod}\text{-}S
+=
+S^{\mathrm{op}}\text{-}\mathbf{Mod}.
+\]
+Equivalently, by Proposition 85.4,
+\[
+R\otimes\mathbb Z^{\mathrm{op}}\simeq R,
+\qquad
+\mathbb Z\otimes S^{\mathrm{op}}\simeq S^{\mathrm{op}}.
+\]
+
+Thus \((R,\mathbb Z)\)-bimodules may formally record a right \(\mathbb Z\)-action, but this field carries no additional mathematical choice: over each fixed left \(R\)-module the structure fiber is a singleton. The forgetful functor is therefore an equivalence, not merely a functor equipped with a preferred section.
+
+### Proposition 90.3 (Initiality and the extension--restriction adjunction) {#prop-unit-extension-restriction}
+
+Let \(\eta_S:\mathbb Z\to S\) be the unique unital ring homomorphism. Extension and restriction in the right scalar give an adjunction
+\[
+-\otimes_{\mathbb Z}S:
+{}_R\mathbf{Bimod}_{\mathbb Z}
+\rightleftarrows
+{}_R\mathbf{Bimod}_S
+:
+\eta_S^*.
+\]
+Under Corollary 90.2, the right adjoint is precisely
+\[
+U_L^{R,S}:{}_R\mathbf{Bimod}_S\to R\text{-}\mathbf{Mod}.
+\]
+The left adjoint freely adjoins a right \(S\)-action:
+\[
+M\longmapsto M\otimes_{\mathbb Z}S.
+\]
+
+Similarly, forgetting the left \(R\)-action is restriction along \(\mathbb Z\to R\), and its left adjoint freely adjoins the left action.
+
+### Remark 90.4 (The ordinary and spectral units must not be conflated)
+
+The preceding equivalence is a theorem about ordinary unital rings and ordinary modules, regarded inside \(\mathbf{Cat}_\infty\) through their nerves. In a different symmetric monoidal \(\infty\)-category, the analogous statement uses the initial \(E_1\)-algebra, equivalently the monoidal unit under the standard hypotheses. For spectra this role is played by the sphere spectrum \(\mathbb S\), not by \(H\mathbb Z\). Thus one must not transfer the ordinary formula
+\[
+{}_R\mathbf{Bimod}_{\mathbb Z}\simeq R\text{-}\mathbf{Mod}
+\]
+verbatim to spectral algebra by replacing \(\mathbb Z\) with \(H\mathbb Z\). The correct unit-ended statement there is formulated with \(\mathbb S\).
+
+## 91. Left modules versus right modules
+
+### Proposition 91.1 (No side-changing functor from the opposite involution alone) {#prop-no-side-change}
+
+The opposite-ring functor does not canonically define a functor
+\[
+R\text{-}\mathbf{Mod}
+\longrightarrow
+R^{\mathrm{op}}\text{-}\mathbf{Mod}.
+\]
+A chosen ring homomorphism
+\[
+\sigma:R\longrightarrow R^{\mathrm{op}}
+\]
+induces an extension-of-scalars functor
+\[
+\sigma_!:R\text{-}\mathbf{Mod}
+\longrightarrow
+R^{\mathrm{op}}\text{-}\mathbf{Mod}.
+\]
+Dually, a chosen ring homomorphism
+\[
+\tau:R^{\mathrm{op}}\longrightarrow R
+\]
+induces a restriction-of-scalars functor
+\[
+\tau^*:R\text{-}\mathbf{Mod}
+\longrightarrow
+R^{\mathrm{op}}\text{-}\mathbf{Mod}.
+\]
+Either datum is anti-multiplicative when regarded as a map on the underlying ring. If \(\sigma\) or \(\tau\) is an isomorphism, the induced side-changing functor is an equivalence. No such map is supplied merely by the existence of the object-level involution \(R\mapsto R^{\mathrm{op}}\).
+
+### Corollary 91.2 (Commutative rings) {#cor-commutative-side-change}
+
+If \(R\) is commutative, the identity map identifies \(R\simeq R^{\mathrm{op}}\), and there is a canonical equivalence
+\[
+R\text{-}\mathbf{Mod}
+\simeq
+R^{\mathrm{op}}\text{-}\mathbf{Mod}.
+\]
+This is the special case in which left and right module categories may be identified without naming additional data.
+
+### Remark 91.3 (A ring homomorphism does not produce \(S\)-left-to-right conversion)
+
+A homomorphism \(f:R\to S\) produces extension and restriction functors between the left module categories of \(R\) and \(S\), and separately between the right module categories. It does not produce a canonical functor
+\[
+S\text{-}\mathbf{Mod}
+\longrightarrow
+S^{\mathrm{op}}\text{-}\mathbf{Mod}.
+\]
+Such a functor again requires anti-multiplicative data on \(S\).
+
+## 92. \((R,R)\)-bimodules
+
+### Proposition 92.1 (An \((R,R)\)-bimodule is additional structure) {#prop-rr-bimodule-structure}
+
+The forgetful functor
+\[
+U_L^{R,R}:{}_R\mathbf{Bimod}_R\to R\text{-}\mathbf{Mod}
+\]
+is not generally an equivalence. Its fiber over a left module \(M\) is the moduli of right \(R\)-actions on \(M\) commuting with the left action. In ordinary algebra, such an action is equivalently a ring homomorphism
+\[
+R^{\mathrm{op}}
+\longrightarrow
+\operatorname{End}_R(M).
+\]
+
+### Definition 92.2 (Central bimodule over a commutative ring) {#def-central-bimodule}
+
+Suppose \(R\) is commutative. An \((R,R)\)-bimodule \(M\) is **central** if
+\[
+rm=mr
+\qquad
+(r\in R,\ m\in M).
+\]
+Every left \(R\)-module has a canonical central bimodule structure by setting \(mr:=rm\). This defines a fully faithful functor
+\[
+c_R:R\text{-}\mathbf{Mod}
+\longrightarrow
+{}_R\mathbf{Bimod}_R
+\]
+whose essential image is the central bimodules. It is a section of \(U_L^{R,R}\); after the canonical equivalence between left and right modules for commutative \(R\), it also supplies a section of \(U_R^{R,R}\). It is not essentially surjective onto all \((R,R)\)-bimodules.
+
+***
+
+# Part XXII. The Morita \((\infty,2)\)-category
+
+## 93. Rings and bimodules as a higher category
+
+### Definition 93.1 (Morita \((\infty,2)\)-category) {#def-morita-category}
+
+Let \(\mathbf{Mor}_{\mathbb Z}\) denote the Morita \((\infty,2)\)-category of associative unital rings. Its:
+
+1. objects are rings;
+2. \(1\)-morphisms \(S\to R\) are \((R,S)\)-bimodules;
+3. \(2\)-morphisms are bimodule homomorphisms, with their higher homotopies in the derived or spectral setting;
+4. composition is relative tensor product:
+   \[
+   {}_R M_S\circ{}_S N_T
+   :=
+   {}_R(M\otimes_SN)_T;
+   \]
+5. identity \(1\)-morphism of \(R\) is the regular bimodule \({}_RR_R\).
+
+With this orientation,
+\[
+\operatorname{Map}_{\mathbf{Mor}_{\mathbb Z}}(S,R)
+\simeq
+{}_R\mathbf{Bimod}_S.
+\]
+
+Associativity and unitality hold up to the standard coherent equivalences of relative tensor product. Haugseng's higher Morita construction gives the corresponding \((\infty,2)\)-category for \(E_1\)-algebras in a monoidal \(\infty\)-category.
+
+### Proposition 93.2 (Module categories as hom categories from the unit) {#prop-modules-as-homs}
+
+The monoidal unit is \(\mathbb Z\). Corollary 90.2 becomes
+\[
+R\text{-}\mathbf{Mod}
+\simeq
+\operatorname{Map}_{\mathbf{Mor}_{\mathbb Z}}(\mathbb Z,R),
+\]
+\[
+\mathbf{Mod}\text{-}R
+\simeq
+\operatorname{Map}_{\mathbf{Mor}_{\mathbb Z}}(R,\mathbb Z).
+\]
+Thus left and right module categories are not unrelated families attached externally to rings. They are the incoming and outgoing hom \(\infty\)-categories at the monoidal unit in the Morita \((\infty,2)\)-category.
+
+## 94. Ring homomorphisms as companion and conjoint bimodules
+
+### Definition 94.1 (The two bimodules attached to a ring map) {#def-companion-conjoint}
+
+Let \(f:R\to S\). Define
+\[
+{}_SS_R
+\]
+using the regular left \(S\)-action and right \(R\)-action through \(f\), and define
+\[
+{}_RS_S
+\]
+using the left \(R\)-action through \(f\) and regular right \(S\)-action.
+
+In \(\mathbf{Mor}_{\mathbb Z}\), these are \(1\)-morphisms
+\[
+F_f:R\longrightarrow S,
+\qquad
+G_f:S\longrightarrow R.
+\]
+
+### Proposition 94.2 (Adjunction in the Morita category) {#prop-morita-adjunction}
+
+There is an adjunction
+\[
+F_f\dashv G_f.
+\]
+The unit is the bimodule map
+\[
+{}_RR_R
+\longrightarrow
+{}_RS_S\otimes_S{}_SS_R
+\simeq
+{}_RS_R
+\]
+induced by \(f\), and the counit is multiplication
+\[
+{}_SS_R\otimes_R{}_RS_S
+\simeq
+{}_S(S\otimes_RS)_S
+\longrightarrow
+{}_SS_S.
+\]
+The triangle identities are the associativity and unitality identities for tensor product and multiplication.
+
+### Corollary 94.3 (Extension and restriction from Morita composition) {#cor-scalar-change-morita}
+
+Postcomposition on hom categories from \(\mathbb Z\) gives
+\[
+R\text{-}\mathbf{Mod}
+\longrightarrow
+S\text{-}\mathbf{Mod},
+\qquad
+M\longmapsto{}_SS_R\otimes_RM,
+\]
+which is extension of scalars.
+
+Postcomposition with \(G_f\) gives
+\[
+S\text{-}\mathbf{Mod}
+\longrightarrow
+R\text{-}\mathbf{Mod},
+\qquad
+N\longmapsto{}_RS_S\otimes_SN,
+\]
+which is restriction of scalars. The unit and counit \(2\)-morphisms of Proposition 94.2 induce the ordinary extension--restriction adjunction.
+
+The analogous statement on hom categories into \(\mathbb Z\) gives scalar change for right modules.
+
+### Remark 94.4 (The relevant triangles)
+
+The triangles associated to a ring homomorphism are not triangles
+\[
+{}_R\mathbf{Bimod}_S,
+\quad
+R\text{-}\mathbf{Mod},
+\quad
+S\text{-}\mathbf{Mod}
+\]
+connected by a hypothetical left-to-right conversion. They are the adjunction triangles of the companion and conjoint bimodules \({}_SS_R\) and \({}_RS_S\) in the Morita \((\infty,2)\)-category. Their fillers are the unit and counit bimodule maps.
+
+## 95. Relation to the bifunctorial Grothendieck construction
+
+### Remark 95.1 (Two complementary organizations)
+
+There are two related but distinct mathematical organizations.
+
+1. The functor
+   \[
+   \mathbf{BiMod}_!:\mathbf{Ring}\times\mathbf{Ring}\to\mathbf{Cat}_\infty
+   \]
+   organizes **base change of both endpoint rings** and unstraightens to a cocartesian fibration.
+2. The Morita \((\infty,2)\)-category organizes bimodules as **morphisms between rings**, with relative tensor product as composition.
+
+The first records how hom categories vary under ring homomorphisms. The second records the composition law internal to the collection of rings and bimodules. Neither replaces the other.
+
+### Remark 95.2 (Hom bifunctor and variance)
+
+The genuine hom bifunctor of the Morita category is
+\[
+\operatorname{Map}_{\mathbf{Mor}_{\mathbb Z}}(-,-):
+\mathbf{Mor}_{\mathbb Z}^{\mathrm{op}}\times
+\mathbf{Mor}_{\mathbb Z}
+\longrightarrow
+\mathbf{Cat}_\infty.
+\]
+Our notation satisfies
+\[
+{}_R\mathbf{Bimod}_S
+\simeq
+\operatorname{Map}_{\mathbf{Mor}_{\mathbb Z}}(S,R).
+\]
+This contravariant--covariant variance is the intrinsic variance of a hom object. The separately defined covariant functor \(\mathbf{BiMod}_!\) is a base-change construction obtained from extension of scalars in both endpoint rings.
+
+### Theorem 95.3 (Correct form of the proposed \(2\)-morphism principle) {#thm-two-morphism-principle}
+
+Most of the module and bimodule diagrammatics are indeed generated at the level of higher morphisms, provided the variance is fixed correctly:
+
+1. restriction-of-scalars gives natural transformations
+   \[
+   U_L^*,U_R^*
+   \]
+   and therefore morphisms of cartesian fibrations;
+2. simultaneous extension gives noninvertible comparison \(2\)-cells, hence lax or oplax transformations rather than pseudonatural transformations;
+3. the equality of the two underlying additive groups is an invertible \(2\)-cell;
+4. a ring map gives companion and conjoint bimodules, whose unit and counit are \(2\)-morphisms in the Morita category;
+5. after unstraightening and pullback along points, these global higher morphisms recover the familiar fiberwise forgetful functors, scalar-change functors, and adjunctions.
+
+Thus the proposed organizing principle is correct after replacing the undifferentiated phrase “a \(2\)-morphism between \(\mathbf{BiMod}\) and \(\mathbf{Mod}\)” by the exact one of:
+
+- a pseudonatural transformation with restriction variance;
+- a lax comparison with extension variance;
+- a morphism of cartesian or cocartesian fibrations, with preservation of the distinguished edges stated;
+- or a \(2\)-morphism in the Morita \((\infty,2)\)-category.
+
+***
+
+# Part XXIII. Derived and spectral form
+
+## 96. Relative tensor products in a monoidal \(\infty\)-category
+
+### Definition 96.1 (General ambient) {#def-morita-general-ambient}
+
+Let \(\mathcal V\) be a presentable symmetric monoidal \(\infty\)-category whose tensor product preserves colimits separately in each variable. Replace ordinary rings by \(E_1\)-algebras in \(\mathcal V\). For \(A,B\in\operatorname{Alg}_{E_1}(\mathcal V)\), let
+\[
+{}_A\mathbf{Bimod}_B(\mathcal V)
+\]
+be the \(\infty\)-category of \((A,B)\)-bimodule objects.
+
+Relative tensor product gives composition, and the resulting higher Morita category has the same formal structure as Part XXII.
+
+### Example 96.2 (Ordinary and spectral rings)
+
+- For \(\mathcal V=\mathbf{Ab}\), one recovers ordinary rings and ordinary bimodules.
+- For \(\mathcal V=\mathbf{Sp}\), one obtains \(E_1\)-ring spectra and module spectra.
+- The Eilenberg--Mac Lane functor sends an ordinary ring \(R\) to \(HR\) and identifies the derived \(\infty\)-category of \(R\)-modules with the appropriate module \(\infty\)-category over \(HR\).
+
+### Remark 96.3 (Derived scalar change)
+
+All tensor products in the derived or spectral setting are relative tensor products in the ambient \(\infty\)-category. No separate projective-resolution choice appears in the intrinsic definition. Chain complexes and resolutions are presentations used to compute these relative tensor products.
+
 ***
 
 # Concluding formulation
@@ -4091,3 +6400,98 @@ present in the same diagram.
 This is the complete ontology presently supported by the conversations.  Further research
 should extend it by standard mathematical definitions and comparison theorems, not by adding
 a second informal taxonomy beside it.
+
+The presentation calculus of Parts XIV--XVII fixes the corrected hierarchy
+\[
+\boxed{
+\begin{gathered}
+\text{root realization}
+\longrightarrow
+\text{intrinsic root lattice}
+\longrightarrow
+\text{chosen root basis}
+\longrightarrow
+\text{Gram matrix},
+\\[2mm]
+\text{root--coroot pairing}
+\longrightarrow
+\text{Cartan matrix},
+\\[2mm]
+\text{chosen free presentation}
+\longrightarrow
+\text{matrix lifts}
+\longrightarrow
+\text{descent modulo relations}
+\longrightarrow
+\text{abstract morphism},
+\\[2mm]
+\text{chosen projective resolution}
+\longrightarrow
+\text{matrix chain maps}
+\longrightarrow
+\text{chain homotopy class}
+\longrightarrow
+\text{derived morphism}.
+\end{gathered}
+}
+\]
+
+Every arrow forgets data or applies a comparison theorem.  No object on the right is
+substituted definitionally for the object on its left.
+
+The module and bimodule geometry of Parts XVIII--XXIII fixes the corrected hierarchy
+\[
+\boxed{
+\begin{gathered}
+\mathbf{Ring}
+\xrightarrow{\mathbf{LMod}_!,\,\mathbf{RMod}_!}
+\mathbf{Cat}_\infty,
+\qquad
+\mathbf{Ring}^{\mathrm{op}}
+\xrightarrow{\mathbf{LMod}^{*},\,\mathbf{RMod}^{*}}
+\mathbf{Cat}_\infty,
+\\[2mm]
+\mathbf{Ring}\times\mathbf{Ring}
+\xrightarrow{\mathbf{BiMod}_!}
+\mathbf{Cat}_\infty,
+\qquad
+(\mathbf{Ring}\times\mathbf{Ring})^{\mathrm{op}}
+\xrightarrow{\mathbf{BiMod}^{*}}
+\mathbf{Cat}_\infty,
+\\[2mm]
+\text{unstraightening}
+\Longrightarrow
+\text{cocartesian or cartesian total categories},
+\qquad
+\text{point pullback}
+\Longrightarrow
+\text{fixed-ring fibers},
+\\[2mm]
+{}_R\mathbf{Bimod}_S
+\longrightarrow
+R\text{-}\mathbf{Mod}
+\times^h_{\mathbf{Ab}}
+S^{\mathrm{op}}\text{-}\mathbf{Mod}
+\quad
+\text{with commuting actions imposed},
+\\[2mm]
+R\text{-}\mathbf{Mod}
+\simeq
+\operatorname{Map}_{\mathbf{Mor}_{\mathbb Z}}(\mathbb Z,R),
+\qquad
+S^{\mathrm{op}}\text{-}\mathbf{Mod}
+\simeq
+\operatorname{Map}_{\mathbf{Mor}_{\mathbb Z}}(S,\mathbb Z),
+\\[2mm]
+{}_R\mathbf{Bimod}_S
+\simeq
+\operatorname{Map}_{\mathbf{Mor}_{\mathbb Z}}(S,R).
+\end{gathered}
+}
+\]
+
+The Grothendieck-construction picture controls variation in the endpoint rings.  The Morita
+picture controls composition of bimodules.  The natural transformations between the
+corresponding functors, together with the unit and counit \(2\)-morphisms attached to ring
+homomorphisms, generate the required module and bimodule diagrams without identifying
+mathematically distinct categories.
