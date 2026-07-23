@@ -1,0 +1,18 @@
+linkReferences: true
+nameInLink: true
+autoSectionLabels: true
+secPrefix:
+  - "Section"
+  - "Sections"
+eqnPrefix:
+  - "Equation"
+  - "Equations"
+tblPrefix:
+  - "Table"
+  - "Tables"
+figPrefix:
+  - "Figure"
+  - "Figures"
+lstPrefix:
+  - "Listing"
+  - "Listings"
