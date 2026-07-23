@@ -96,7 +96,8 @@ $$
 ,
 $$
 
-one can thus present
+be the union of the hyperplane sections cut out by the vectors $\delta$ of norm
+$-2d$, as in \cref{fig:period-domain-hyperplanes}, one can thus present
 
 $$
 \begin{aligned}
@@ -107,6 +108,8 @@ F_{\Nod} &= \qty{\cH_{-4} \setminus \cH_{-2}} / \Orth(T_\En)
 $$
 
 where surfaces along the divisor $\cH_{-2}$ in $F_\En$ correspond precisely to Coble surfaces and those along $\cH_{-4}\setminus \cH_{-2}$ correspond to Enriques surfaces with $A_1$ singularities.
+
+![The period domain $D_{T_\En}$ together with the hyperplanes $v_i^{\perp}$ cut out by vectors $v_i$ of fixed negative norm. The Coble surfaces are precisely the periods lying on the hyperplanes of $\cH_{-2}$.](rendered/fig_type_iv_hsd.svg){#fig:period-domain-hyperplanes width=45%}
 
 Alternatively, one can construct the period domain for $F_\Co$ directly.
 Following [@DK13 Prop. 3.1] almost verbatim, let $S$ be the blowup of $\PP^2$ along 10 $A_1$ singularities of a rational sextic curve $C$.
