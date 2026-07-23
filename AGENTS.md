@@ -136,6 +136,35 @@ spawn a subagent primed verbatim with
 never a summary. Checkpoint after any correction, before issue bodies or plan cards
 ship, and before committing lexicon/manifest/typing surfaces.
 
+# Sage bridge: what rho records (always-on)
+
+**Sage is the authority on what Sage encodes — that is an empirical question about a
+program. Sage is not an authority on mathematics — sameness, join exactness, coherence.**
+Taking "Sage is not the arbiter" as license to override what Sage encodes is exactly
+backwards, and it flips answers.
+
+`rho` maps a Sage category to the normalized category it *encodes*, read off its
+declarations and behaviour. A declaration that looks like a bug is still content for the
+destination whenever it changes what the implementation computes with, because rho exists
+to say whether Sage's algorithms are **safe for your object**. Mapping a Sage category to
+what its name suggests, or to what it "should" have meant, hands a user algorithms that
+quietly change their object.
+
+The standing example. `Modules(R)` declaring `Bimodules(R,R)` has operational consequences:
+only one action is stored, so `m·r := r·m`, and the bimodule law `(rm)r' = r(mr')` becomes
+`r'(rm) = r(r'm)` — commutativity, silently imposed, without complaint for a matrix ring.
+That is what Sage encodes, so `rho(Modules) = Bimodules(R,R)`, not `R-Mod`. Sage's
+genuinely left-module category is `LeftModules(R)`. Route a left module over a
+noncommutative ring into `Modules(R)` and Sage assumes commutativity; the mapping is
+precise exactly so that this is visible beforehand.
+
+What Sage does *not* settle: whether two of its categories model the same platonic
+category (compare **normalized targets**, never Sage's `==`), whether a join it printed is
+exact (Foundations Def 42.2), and whether its hierarchy is coherent — it is neither sound
+nor complete, so `==`, `super_categories()` and `is_subcategory()` test nothing. Verified
+catalogue: `.agents/references/reading-sage-gotchas.md`. Mathematics:
+`docs/framework/Mathematical-Theory-Foundations.md` Part VIII (§40–43) and §13.
+
 # Repository layout
 
 Top-level directories (this is a navigational map; each tree owns its own README/AGENTS.md):
