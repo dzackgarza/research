@@ -6493,23 +6493,23 @@
         "url": "https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/vector_spaces.py"
       },
       "normalized": {
-        "base": "Modules(K)",
-        "base_id": "cat.modules_k",
+        "base": "Bimodules(R,R)",
+        "base_id": "cat.bimodules_k_k",
         "classifier_applications": [],
-        "target_expression": "VectorSpaces(K)",
-        "target_id": "cat_expr.vectorspaces_k",
+        "target_expression": "Bimodules(K,K)",
+        "target_id": "cat_expr.bimodules_k_k",
         "mapping_kind": "parameter specialization",
         "target_visibility": "core named",
         "parameter_constraints": "K : Fields"
       },
       "audit": {
-        "confidence": "review",
+        "confidence": "high",
         "review_status": "proposed; source-audited",
         "recommend_explicit_target": "yes",
         "base_in_current_dot": "present",
-        "current_dot_match": "Modules(R)",
-        "note": "VectorSpaces(K) is the standard name for Modules(K) when the scalar ring is a field.",
-        "exception_or_ambiguity": "KNOWN WRONG, blocked rather than fixed; see issue #292. The evidence says the destination is Bimodules(K,K) at K : Fields: VectorSpaces(K).super_categories() == [Modules(K, dispatch=False)], its axiom set is identical to Modules(K)'s, and additional_structure() is None, so it adds nothing to a category whose destination is Bimodules(R,R). Nothing imposes centrality; K = Q(i) with right action m*r := m*conj(r) is a non-central (K,K)-bimodule that Sage's linear algebra would silently treat as central. Retargeting is blocked on 𝒢, not on Sage: Sage's solid edges AlgebrasOverField -> VectorSpaces and VectorSpacesWithBasis -> VectorSpaces then have no path in 𝒢, because 𝒢 has no route from the module/algebra side to the bimodule side. The two arrows that would supply it are real mathematics -- the central section c_R (Def 92.2) and an R-algebra as an (R,R)-bimodule via its structure map to the centre (Def 13.9) -- but adding c_R as a solid parent edge breaks 17 tests, because in this graph a solid edge drops structure and c_R adds it. Expressing a section is an open design question for the arrow set."
+        "current_dot_match": "Bimodules(K,K) = Bimodules(R,R).OverField",
+        "note": "VectorSpaces(K).super_categories() == [Modules(K, dispatch=False)], with axiom set identical to Modules(K)'s and additional_structure() None -- it adds nothing to a category whose destination is Bimodules(R,R), and nothing imposes centrality. Not K-Vect: by Prop 85.4 this is (K tensor_ZZ K)-Mod. For K = QQ(i), K tensor_QQ K = K[x]/(x^2+1) splits into two factors, so it is Vect_K x Vect_K, indexed by Gal(K/QQ). The collapse to Vect_K happens exactly for prime fields.",
+        "exception_or_ambiguity": "Name and docstring say 'vector spaces' while the structure says the bimodule diagonal at a field; the declaration decides. K-Vect sits inside as the central bimodules via c_K (Def 92.2), which is where Sage's own constructions land, since one coefficient multiplication serves both sides."
       }
     },
     {

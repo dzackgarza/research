@@ -4,8 +4,8 @@
   "authority": "Interface demand only. This manifest records which stable identifiers a released registry must resolve for this repository to evaluate its rows. It is not an authority for generic Lean definitions.",
   "source": {
     "path": "design/sage/authored/sage_normalized_category_mapping_manifest.json",
-    "sha256": "a705c5740fca0cd8f73c6d883548a99114d95546d18be721ff6f70276066db03",
-    "git_commit": "a8be3421c39f7aa527196be5350b57b0f16e4f35-dirty",
+    "sha256": "4fc42974f738af6c2d2611792ada7d8a45b501f7182fd17fa00862bc246c7df1",
+    "git_commit": "b43f549de07ee92d617bf196ecb8364c950271b1-dirty",
     "ledger_schema_version": "0.4-draft",
     "sage_source_commit": "686dc1a8d420c2e0aabadd4f602d9a0aa4690c50"
   },
@@ -221,6 +221,17 @@
       "occurrences": [
         {
           "parameter_constraints": "R : Rings"
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "stable_id": "cat.bimodules_k_k",
+      "display": "Bimodules(R,R)",
+      "demanded_by": ["VectorSpaces"],
+      "occurrences": [
+        {
+          "parameter_constraints": "K : Fields"
         }
       ]
     },
@@ -641,17 +652,6 @@
       "occurrences": [
         {
           "parameter_constraints": "A : CommutativeAlgebras(R)"
-        }
-      ]
-    },
-    {
-      "kind": "category",
-      "stable_id": "cat.modules_k",
-      "display": "Modules(K)",
-      "demanded_by": ["VectorSpaces"],
-      "occurrences": [
-        {
-          "parameter_constraints": "K : Fields"
         }
       ]
     },
@@ -2350,6 +2350,18 @@
         {
           "mapping_kind": "wrapper refinement",
           "target_visibility": "implicit refinement"
+        }
+      ]
+    },
+    {
+      "kind": "target_expression",
+      "stable_id": "cat_expr.bimodules_k_k",
+      "display": "Bimodules(K,K)",
+      "demanded_by": ["VectorSpaces"],
+      "occurrences": [
+        {
+          "mapping_kind": "parameter specialization",
+          "target_visibility": "core named"
         }
       ]
     },
@@ -4066,18 +4078,6 @@
         {
           "mapping_kind": "exact named base",
           "target_visibility": "domain named"
-        }
-      ]
-    },
-    {
-      "kind": "target_expression",
-      "stable_id": "cat_expr.vectorspaces_k",
-      "display": "VectorSpaces(K)",
-      "demanded_by": ["VectorSpaces"],
-      "occurrences": [
-        {
-          "mapping_kind": "parameter specialization",
-          "target_visibility": "core named"
         }
       ]
     },

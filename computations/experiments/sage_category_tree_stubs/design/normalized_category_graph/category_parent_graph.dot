@@ -409,9 +409,10 @@ digraph CategoryParents {
     VectorFieldModules; TensorFieldModules; DiffFormModules;
 
     node [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", fontcolor="#000000", penwidth=1.5];
+    "Bimodules(K,K) = Bimodules(R,R).OverField";
     "FreeModules = Modules.Free";
     "ProjectiveModules = Modules.Projective";
-    "ModulesWithBasis = Modules.WithBasis";
+    "ModulesWithBasis = Bimodules(R,R).WithBasis";
     "ModulesWithGenerators = Modules.WithGenerators";
     "FiniteRankModules = Modules.FiniteRank";
     "FinitelyGeneratedModules = Modules.FinitelyGenerated";
@@ -449,19 +450,23 @@ digraph CategoryParents {
     "RightModules(R)" -> "AdditiveAbelianGroups = AdditiveGroups.Commutative";
     "Modules(R)" -> "AdditiveAbelianGroups = AdditiveGroups.Commutative";
     "Bimodules(R,R)" -> "Bimodules(R,S)";
+    "Algebras(R)" -> "Bimodules(R,R)";
+    "Bimodules(K,K) = Bimodules(R,R).OverField" -> "Bimodules(R,R)";
+    "VectorSpaces(K) = Modules.OverField" -> "Bimodules(K,K) = Bimodules(R,R).OverField";
+    "AlgebrasOverField = Algebras.OverField" -> "Bimodules(K,K) = Bimodules(R,R).OverField";
     "Bimodules(R,S)" -> "LeftModules(R)";
     "Bimodules(R,S)" -> "RightModules(R)";
     "VectorSpaces(K) = Modules.OverField" -> "Modules(R)";
     "FreeModules = Modules.Free" -> "Modules(R)";
     "ProjectiveModules = Modules.Projective" -> "Modules(R)";
     "FreeModules = Modules.Free" -> "ProjectiveModules = Modules.Projective";
-    "ModulesWithBasis = Modules.WithBasis" -> "FreeModules = Modules.Free";
+    "ModulesWithBasis = Bimodules(R,R).WithBasis" -> "FreeModules = Modules.Free";
     "ModulesWithGenerators = Modules.WithGenerators" -> "Modules(R)";
     "FiniteRankModules = Modules.FiniteRank" -> "Modules(R)";
     "FinitelyGeneratedModules = Modules.FinitelyGenerated" -> "Modules(R)";
     "FinitelyPresentedModules = Modules.FinitelyPresented" -> "FinitelyGeneratedModules = Modules.FinitelyGenerated";
     "VectorSpacesWithBasis = VectorSpaces.WithBasis" -> "VectorSpaces(K) = Modules.OverField";
-    "VectorSpacesWithBasis = VectorSpaces.WithBasis" -> "ModulesWithBasis = Modules.WithBasis";
+    "VectorSpacesWithBasis = VectorSpaces.WithBasis" -> "ModulesWithBasis = Bimodules(R,R).WithBasis";
     VectorFieldModules -> "Modules(R)";
     TensorFieldModules -> "Modules(R)";
     DiffFormModules -> "Modules(R)";

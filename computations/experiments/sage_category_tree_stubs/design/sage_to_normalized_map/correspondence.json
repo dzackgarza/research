@@ -31,7 +31,7 @@
     "LeftModules": "cat.left_modules_r",
     "RightModules": "cat.right_modules_r",
     "Bimodules": "cat.bimodules_r_s",
-    "VectorSpaces": "cat.vector_spaces_k",
+    "VectorSpaces": "cat.bimodules_k_k",
     "MagmaticAlgebras": "cat.algebras_r",
     "Algebras": "cat.unital_algebras",
     "LieAlgebras": "cat.lie_algebras_r",
@@ -44,7 +44,8 @@
     "Schemes": "cat.schemes_s",
     "CoxeterGroups": "cat.coxeter_groups",
     "WeylGroups": "cat.weyl_groups",
-    "Posets": "cat.posets"
+    "Posets": "cat.posets",
+    "ModulesWithBasis": "cat.modules_with_basis"
   },
   "graph_to_sage": {
     "cat.magmas": "Magmas",
@@ -89,7 +90,8 @@
     "cat.additive_abelian_groups": "CommutativeAdditiveGroups",
     "cat.bimodules_r_r": "Modules",
     "cat.bimodules_r_s": "Bimodules",
-    "cat.vector_spaces_k": "VectorSpaces"
+    "cat.bimodules_k_k": "VectorSpaces",
+    "cat.modules_with_basis": "ModulesWithBasis"
   },
   "axiom_sage_to_graph": {
     "AdditiveAssociative": "Associative",

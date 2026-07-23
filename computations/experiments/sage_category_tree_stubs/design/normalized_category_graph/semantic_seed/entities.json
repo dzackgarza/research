@@ -330,6 +330,32 @@
       "provenance": "Foundations Prop 92.1; destination of Sage's Modules(R)"
     },
     {
+      "id": "cat.bimodules_k_k",
+      "kind": "derived_category",
+      "canonical_name": "Bimodules",
+      "parameters": [
+        {
+          "name": "K",
+          "sort": "cat.fields",
+          "variance": "contravariant_in_field"
+        }
+      ],
+      "definition": {
+        "operation": "classifier_application",
+        "host": "cat.bimodules_r_r",
+        "classifier": "clf.modules.over_field",
+        "parameter_specialization": {
+          "R": "K",
+          "K_sort": "cat.fields"
+        },
+        "display": "Bimodules(R,R).OverField",
+        "notes": "not VectorSpaces(K): by Prop 85.4 this is (K tensor_ZZ K)-Mod, which is K only for a prime field"
+      },
+      "aliases": ["Bimodules(K,K)"],
+      "dot_vertex": "Bimodules(K,K) = Bimodules(R,R).OverField",
+      "provenance": "the bimodule diagonal over a field; destination of Sage's VectorSpaces"
+    },
+    {
       "id": "cat.cat_1",
       "kind": "category_family",
       "canonical_name": "Cat_1",
@@ -1595,11 +1621,12 @@
       ],
       "definition": {
         "operation": "classifier_application",
-        "host": "cat.modules_r",
-        "classifier": "clf.modules.with_basis"
+        "host": "cat.bimodules_r_r",
+        "classifier": "clf.modules.with_basis",
+        "notes": "WithBasis is the basis-frame comma category over R-Mod (Def 13.5), so on a bimodule it is the pullback of BasisFrame along the left projection U_L"
       },
       "aliases": [],
-      "dot_vertex": "ModulesWithBasis = Modules.WithBasis",
+      "dot_vertex": "ModulesWithBasis = Bimodules(R,R).WithBasis",
       "provenance": "named composite"
     },
     {

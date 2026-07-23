@@ -30,6 +30,7 @@ _BASE_RING: dict[str, object] = {
     "RightModules(R)": ZZ,
     "Bimodules(R,S)": (ZZ, ZZ),
     "Bimodules(R,R)": (ZZ, ZZ),
+    "Bimodules(K,K) = Bimodules(R,R).OverField": (QQ, QQ),
     "VectorSpaces(K) = Modules.OverField": QQ,
     "Algebras(R)": QQ,
     "AlgebrasOverField = Algebras.OverField": QQ,

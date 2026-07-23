@@ -111,6 +111,7 @@ digraph CategoryParents {
   "Algebras(R).Graded" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.algebras_r.graded", kind="derived_category"];
   "AlgebrasOverField = Algebras.OverField" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.algebras_over_field", kind="derived_category"];
   "AssociativeAlgebras = Algebras.Associative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.associativealgebras", kind="derived_category"];
+  "Bimodules(K,K) = Bimodules(R,R).OverField" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.bimodules_k_k", kind="derived_category"];
   "Bimodules(R,R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.bimodules_r_r", kind="derived_category"];
   "CommAlgebras = UnitalAlgebras.Commutative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.commutative_algebras", kind="derived_category"];
   "CommRings = Rings.Commutative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.commutative_rings", kind="derived_category"];
@@ -134,7 +135,7 @@ digraph CategoryParents {
   "IntegralDomains = Domains.Commutative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.integral_domains", kind="derived_category"];
   "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.lat_r", kind="derived_category"];
   "Magmas.Additive" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.additive_magmas", kind="derived_category"];
-  "ModulesWithBasis = Modules.WithBasis" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.modules_with_basis", kind="derived_category"];
+  "ModulesWithBasis = Bimodules(R,R).WithBasis" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.modules_with_basis", kind="derived_category"];
   "ModulesWithGenerators = Modules.WithGenerators" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.moduleswithgenerators", kind="derived_category"];
   "Monoids = Magmas.Associative.Unital" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.monoids", kind="derived_category"];
   "NoetherianCommRings = Rings.Commutative.Noetherian" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.noetheriancommrings", kind="derived_category"];
@@ -457,7 +458,7 @@ digraph CategoryParents {
   "Mod(O_X)" -> RingedSites [kind="forgetful", id="arr.dot.mod__ringedsites"];
   "Mod(O_X)" -> RingedSpaces [kind="forgetful", id="arr.dot.mod__ringedspaces"];
   "Modules(R)" -> "AdditiveAbelianGroups = AdditiveGroups.Commutative" [kind="forgetful", id="arr.dot.modules__additiveabeliangroups"];
-  "ModulesWithBasis = Modules.WithBasis" -> "FreeModules = Modules.Free" [kind="full_inclusion", id="arr.dot.moduleswithbasis__freemodules"];
+  "ModulesWithBasis = Bimodules(R,R).WithBasis" -> "FreeModules = Modules.Free" [kind="full_inclusion", id="arr.dot.moduleswithbasis__freemodules"];
   "ModulesWithGenerators = Modules.WithGenerators" -> "Modules(R)" [kind="full_inclusion", id="arr.dot.moduleswithgenerators__modules"];
   "NoetherianCommRings = Rings.Commutative.Noetherian" -> "CommRings = Rings.Commutative" [kind="full_inclusion", id="arr.dot.noetheriancommrings__commrings"];
   "NonUnitalDGAs = Algebras.Differential" -> "Algebras(R)" [kind="full_inclusion", id="arr.dot.nonunitaldgas__algebras"];
@@ -523,7 +524,7 @@ digraph CategoryParents {
   VectorFieldModules -> "C∞Algebras(R)" [color="#6a1b9a", kind="construction", id="arr.dot.vectorfieldmodules__cinftyalgebras"];
   VectorFieldModules -> "Modules(R)" [color="#6a1b9a", kind="construction", id="arr.dot.vectorfieldmodules__modules"];
   "VectorSpaces(K) = Modules.OverField" -> "Modules(R)" [kind="full_inclusion", id="arr.dot.vectorspaces__modules"];
-  "VectorSpacesWithBasis = VectorSpaces.WithBasis" -> "ModulesWithBasis = Modules.WithBasis" [kind="full_inclusion", id="arr.dot.vectorspaceswithbasis__moduleswithbasis"];
+  "VectorSpacesWithBasis = VectorSpaces.WithBasis" -> "ModulesWithBasis = Bimodules(R,R).WithBasis" [kind="full_inclusion", id="arr.dot.vectorspaceswithbasis__moduleswithbasis"];
   "VectorSpacesWithBasis = VectorSpaces.WithBasis" -> "VectorSpaces(K) = Modules.OverField" [kind="full_inclusion", id="arr.dot.vectorspaceswithbasis__vectorspaces"];
   WeylGroups -> ReflectionGroups [kind="forgetful", id="arr.dot.weylgroups__reflectiongroups"];
   Magmas -> Sets [kind="forgetful", id="arr.fun.magmas_to_sets"];
@@ -567,4 +568,8 @@ digraph CategoryParents {
   "Magmas.Additive" -> Magmas [kind="full_inclusion", id="arr.incl.additive_magmas_to_magmas"];
   "AdditiveGroups = Magmas.Additive.Associative.Unital.Inverse" -> Magmas [kind="forgetful", id="fun.additive_groups_to_magmas"];
   "Bimodules(R,R)" -> "Bimodules(R,S)" [kind="full_inclusion", id="arr.dot.bimodulesdiagonal__bimodules"];
+  "Algebras(R)" -> "Bimodules(R,R)" [kind="forgetful", id="fun.algebras_to_bimodules"];
+  "Bimodules(K,K) = Bimodules(R,R).OverField" -> "Bimodules(R,R)" [kind="full_inclusion", id="arr.dot.bimodulesfield__bimodulesdiagonal"];
+  "VectorSpaces(K) = Modules.OverField" -> "Bimodules(K,K) = Bimodules(R,R).OverField" [kind="full_inclusion", id="fun.vectorspaces_central_section"];
+  "AlgebrasOverField = Algebras.OverField" -> "Bimodules(K,K) = Bimodules(R,R).OverField" [kind="forgetful", id="fun.algebras_over_field_to_bimodules"];
 }

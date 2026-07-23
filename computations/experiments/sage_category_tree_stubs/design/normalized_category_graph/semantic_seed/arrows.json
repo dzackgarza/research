@@ -3638,6 +3638,38 @@
       "kind": "full_inclusion",
       "preferred": true,
       "provenance": "the (R,S)-bimodules with S = R"
+    },
+    {
+      "id": "fun.algebras_to_bimodules",
+      "source": "cat.algebras_r",
+      "target": "cat.bimodules_r_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "an R-algebra is an (R,R)-bimodule through its structure map to the centre (Foundations Def 13.9)"
+    },
+    {
+      "id": "arr.dot.bimodulesfield__bimodulesdiagonal",
+      "source": "cat.bimodules_k_k",
+      "target": "cat.bimodules_r_r",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "the bimodule diagonal at a field base"
+    },
+    {
+      "id": "fun.vectorspaces_central_section",
+      "source": "cat.vector_spaces_k",
+      "target": "cat.bimodules_k_k",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "c_K (Foundations Def 92.2): a field is commutative, so mr := rm is fully faithful onto the central bimodules and a section of the left projection"
+    },
+    {
+      "id": "fun.algebras_over_field_to_bimodules",
+      "source": "cat.algebras_over_field",
+      "target": "cat.bimodules_k_k",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "a K-algebra is a (K,K)-bimodule through its structure map to the centre (Def 13.9)"
     }
   ],
   "kind": "normalized_semantic_seed.arrows",

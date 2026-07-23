@@ -4412,7 +4412,7 @@ category_mappings:
       mapping_kind: exact named base
   - source: sage.category.modules_with_basis_moduleswithbasis
     source_sage_name: ModulesWithBasis
-    target: cat.bimodules_r_r
+    target: cat.modules_with_basis
     relation: constructible
     normalized_reading: Bimodules(R,R).WithBasis
     construction:
@@ -5851,16 +5851,16 @@ category_mappings:
       mapping_kind: exact named base
   - source: sage.category.vector_spaces_vectorspaces
     source_sage_name: VectorSpaces
-    target: cat.modules_k
+    target: cat.bimodules_k_k
     relation: exact
-    normalized_reading: VectorSpaces(K)
+    normalized_reading: Bimodules(K,K)
     construction:
       kind: finite_limit_derivability
       ok: true
       status: EXACT_BASE
-      base: cat.modules_k
+      base: cat.bimodules_k_k
       classifiers: []
-      expression: VectorSpaces(K)
+      expression: Bimodules(K,K)
       detail: base-only mapping; named seed entity
       certificate: []
       authored_routes: []
@@ -5875,7 +5875,7 @@ category_mappings:
     provenance:
       status: authored-exact
       source: design/sage/authored/
-      confidence: review
+      confidence: high
       review_status: proposed; source-audited
       mapping_kind: parameter specialization
   - source: sage.category.weyl_groups_weylgroups
@@ -5913,20 +5913,20 @@ category_mappings:
       review_status: proposed; source-audited
   - source: sage.category.with_axiom.vectorspaces.withbasis
     source_sage_name: VectorSpaces.WithBasis
-    target: cat.vector_spaces_k
+    target: cat.bimodules_k_k
     relation: constructible
     normalized_reading: VectorSpaces.WithBasis
     construction:
       kind: finite_limit_derivability
       ok: true
-      base: cat.vector_spaces_k
+      base: cat.bimodules_k_k
       classifiers:
-        - clf.vector_spaces_k.withbasis
+        - clf.modules.with_basis
       expression: VectorSpaces.WithBasis
       detail: all requested classifier occurrences discharged
       certificate:
-        - occurrence: clf.vector_spaces_k.withbasis#0
-          support_host: cat.vector_spaces_k
+        - occurrence: clf.modules.with_basis#0
+          support_host: cat.modules_r
     sage_versions:
       since: sage-dev-local
       until: null
@@ -6054,7 +6054,7 @@ category_mappings:
     construction:
       kind: finite_limit_derivability
       ok: false
-      base: cat.vector_spaces_k
+      base: cat.bimodules_k_k
       classifiers: []
       expression: VectorSpaces.FiniteDimensional
       detail: could not parse base/classifiers for constructibility
@@ -6078,7 +6078,7 @@ category_mappings:
     construction:
       kind: finite_limit_derivability
       ok: false
-      base: cat.vector_spaces_k
+      base: cat.bimodules_k_k
       classifiers: []
       expression: VectorSpaces.WithBasis.FiniteDimensional
       detail: could not parse base/classifiers for constructibility
@@ -6174,13 +6174,13 @@ category_mappings:
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.vectorspaces.graded
     source_sage_name: VectorSpaces.Graded
-    target: cat.vector_spaces_k
+    target: cat.bimodules_k_k
     relation: constructible
     normalized_reading: VectorSpaces.Graded
     construction:
       kind: finite_limit_derivability
       ok: true
-      base: cat.vector_spaces_k
+      base: cat.bimodules_k_k
       classifiers:
         - clf.sets.graded
       expression: VectorSpaces.Graded
@@ -6201,21 +6201,21 @@ category_mappings:
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.vectorspaces.withbasis.graded
     source_sage_name: VectorSpaces.WithBasis.Graded
-    target: cat.vector_spaces_k
+    target: cat.bimodules_k_k
     relation: constructible
     normalized_reading: VectorSpaces.WithBasis.Graded
     construction:
       kind: finite_limit_derivability
       ok: true
-      base: cat.vector_spaces_k
+      base: cat.bimodules_k_k
       classifiers:
-        - clf.vector_spaces_k.withbasis
+        - clf.modules.with_basis
         - clf.sets.graded
       expression: VectorSpaces.WithBasis.Graded
       detail: all requested classifier occurrences discharged
       certificate:
-        - occurrence: clf.vector_spaces_k.withbasis#0
-          support_host: cat.vector_spaces_k
+        - occurrence: clf.modules.with_basis#0
+          support_host: cat.modules_r
         - occurrence: clf.sets.graded#1
           support_host: cat.sets
     sage_versions:
@@ -6282,13 +6282,13 @@ category_mappings:
       note: could not parse base/classifiers for constructibility
   - source: sage.category.with_axiom.vectorspaces.filtered
     source_sage_name: VectorSpaces.Filtered
-    target: cat.vector_spaces_k
+    target: cat.bimodules_k_k
     relation: constructible
     normalized_reading: VectorSpaces.Filtered
     construction:
       kind: finite_limit_derivability
       ok: true
-      base: cat.vector_spaces_k
+      base: cat.bimodules_k_k
       classifiers:
         - clf.filtered
       expression: VectorSpaces.Filtered
@@ -6309,21 +6309,21 @@ category_mappings:
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.vectorspaces.withbasis.filtered
     source_sage_name: VectorSpaces.WithBasis.Filtered
-    target: cat.vector_spaces_k
+    target: cat.bimodules_k_k
     relation: constructible
     normalized_reading: VectorSpaces.WithBasis.Filtered
     construction:
       kind: finite_limit_derivability
       ok: true
-      base: cat.vector_spaces_k
+      base: cat.bimodules_k_k
       classifiers:
-        - clf.vector_spaces_k.withbasis
+        - clf.modules.with_basis
         - clf.filtered
       expression: VectorSpaces.WithBasis.Filtered
       detail: all requested classifier occurrences discharged
       certificate:
-        - occurrence: clf.vector_spaces_k.withbasis#0
-          support_host: cat.vector_spaces_k
+        - occurrence: clf.modules.with_basis#0
+          support_host: cat.modules_r
         - occurrence: clf.filtered#1
           support_host: cat.modules_r
     sage_versions:

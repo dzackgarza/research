@@ -238,7 +238,7 @@
     }
 
     async function main() {
-      const res = await fetch("category_parent_graph.svg?v=16368065227055624803");
+      const res = await fetch("category_parent_graph.svg?v=11386347743142553538");
       if (!res.ok) throw new Error(`Failed to load SVG (${res.status})`);
       const svgText = await res.text();
       viewport.innerHTML = svgText;
