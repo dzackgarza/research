@@ -2074,6 +2074,101 @@
       "provenance": "rings without unit"
     },
     {
+      "id": "cat.rootframe_s",
+      "kind": "derived_category",
+      "canonical_name": "RootFrame",
+      "parameters": [
+        {
+          "name": "S",
+          "sort": "cat.sets",
+          "variance": "finite_index_set"
+        }
+      ],
+      "definition": {
+        "operation": "grothendieck_construction",
+        "over": "cat.lat_r",
+        "fiber": "the groupoid of S-indexed root frames in L",
+        "notes": "Foundations Def 68.5: objects (L, rho); a morphism (L,rho) -> (L',rho') is an isometry f with f rho = rho'."
+      },
+      "aliases": ["RootFrame_S"],
+      "dot_vertex": "RootFrame_S",
+      "provenance": "Foundations Def 68.5; a chosen root frame is structure over the intrinsic lattice"
+    },
+    {
+      "id": "cat.rootbasis_s",
+      "kind": "derived_category",
+      "canonical_name": "RootBasis",
+      "parameters": [
+        {
+          "name": "S",
+          "sort": "cat.sets",
+          "variance": "finite_index_set"
+        }
+      ],
+      "definition": {
+        "operation": "locus",
+        "of": "cat.rootframe_s",
+        "condition": "u_rho : Z^(S) -> L is an isomorphism",
+        "notes": "Foundations Def 68.5"
+      },
+      "aliases": ["RootBasis_S"],
+      "dot_vertex": "RootBasis_S",
+      "provenance": "Foundations Def 68.5; the frame is a basis"
+    },
+    {
+      "id": "cat.rootbasis_gamma",
+      "kind": "derived_category",
+      "canonical_name": "RootBasisOfType",
+      "parameters": [
+        {
+          "name": "S",
+          "sort": "cat.sets",
+          "variance": "finite_index_set"
+        },
+        {
+          "name": "Gamma",
+          "sort": "cat.sets",
+          "variance": "dynkin_type"
+        }
+      ],
+      "definition": {
+        "operation": "locus",
+        "of": "cat.rootbasis_s",
+        "condition": "the root frame is a simple system of type Gamma",
+        "notes": "Foundations Def 68.5; the type certificate"
+      },
+      "aliases": ["RootBasis_Gamma"],
+      "dot_vertex": "RootBasis_Gamma",
+      "provenance": "Foundations Def 68.5; a fixed finite Dynkin type on S"
+    },
+    {
+      "id": "cat.embeddedrootrealization",
+      "kind": "derived_category",
+      "canonical_name": "EmbeddedRootRealization",
+      "parameters": [
+        {
+          "name": "S",
+          "sort": "cat.sets",
+          "variance": "finite_index_set"
+        },
+        {
+          "name": "Gamma",
+          "sort": "cat.sets",
+          "variance": "dynkin_type"
+        }
+      ],
+      "definition": {
+        "operation": "locus",
+        "of": "ctor.arr",
+        "at": "cat.lat_r",
+        "condition": "an isometric embedding i : L -> J together with a root basis on L, equivalently its image in J",
+        "notes": "Foundations Def 68.5: a locus in Ar(Lat_Z). A named ADE construction is a chosen point here followed by the forgetful functors that discard, successively, the ambient embedding, the root basis, and the type certificate (Construction 68.6)."
+      },
+      "aliases": ["EmbeddedRootRealizations"],
+      "dot_vertex": "EmbeddedRootRealizations",
+      "provenance": "Foundations Def 68.5; ordinary classifier categories, not a bespoke mechanism"
+    },
+    {
       "id": "cat.rootlattices",
       "kind": "category_family",
       "canonical_name": "RootLattices",

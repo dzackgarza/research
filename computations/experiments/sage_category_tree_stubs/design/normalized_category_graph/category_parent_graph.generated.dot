@@ -126,6 +126,7 @@ digraph CategoryParents {
   "DiscQuad = ∫Quad.Nondegenerate" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.discquad", kind="derived_category"];
   "DivisionRings = Rings.Division" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.division_rings", kind="derived_category"];
   "Domains = Rings.Domain" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.domains", kind="derived_category"];
+  EmbeddedRootRealizations [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.embeddedrootrealization", kind="derived_category"];
   "EuclideanDomains = Rings.Commutative.Euclidean" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.euclidean_domains", kind="derived_category"];
   "FiniteFields = Fields.Finite" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.finite_fields", kind="derived_category"];
   "FiniteRankModules = Modules.FiniteRank" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.finiterankmodules", kind="derived_category"];
@@ -148,6 +149,9 @@ digraph CategoryParents {
   "PIDs = Rings.Commutative.PID" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.pids", kind="derived_category"];
   "ProjectiveModules = Modules.Projective" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.projectivemodules", kind="derived_category"];
   "RightModules(R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.right_modules_r", kind="derived_category"];
+  RootBasis_Gamma [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.rootbasis_gamma", kind="derived_category"];
+  RootBasis_S [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.rootbasis_s", kind="derived_category"];
+  RootFrame_S [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.rootframe_s", kind="derived_category"];
   "Semigroups = Magmas.Associative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.semigroups", kind="derived_category"];
   "Surfaces(K) = Schemes.RelativeDimension(2)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.surfaces", kind="derived_category"];
   "SymMat_n(R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.symmat_n_r", kind="derived_category"];
@@ -600,4 +604,8 @@ digraph CategoryParents {
   "SymMat_n(R)" -> "Bil^coord_n(R) = Bil x^h_{R-Mod} Coord_n(R)" [color="#6a1b9a", kind="construction", id="fun.gram_n"];
   "Bil^coord_n(R) = Bil x^h_{R-Mod} Coord_n(R)" -> "∫Bil_R(W)" [kind="pullback_projection", id="arr.proj.bil_coord__int_bil"];
   "Bil^coord_n(R) = Bil x^h_{R-Mod} Coord_n(R)" -> "Coord_n(R)" [kind="pullback_projection", id="arr.proj.bil_coord__coord"];
+  EmbeddedRootRealizations -> RootBasis_Gamma [kind="forgetful", id="arr.root.embedded__rootbasis_gamma"];
+  RootBasis_Gamma -> RootBasis_S [kind="full_inclusion", id="arr.root.rootbasis_gamma__rootbasis_s"];
+  RootBasis_S -> RootFrame_S [kind="full_inclusion", id="arr.root.rootbasis_s__rootframe_s"];
+  RootFrame_S -> "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [kind="forgetful", id="arr.root.rootframe_s__lat"];
 }

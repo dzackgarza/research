@@ -3861,6 +3861,38 @@
       "kind": "pullback_projection",
       "preferred": true,
       "provenance": "forget the form (Def 21.3)"
+    },
+    {
+      "id": "arr.root.embedded__rootbasis_gamma",
+      "source": "cat.embeddedrootrealization",
+      "target": "cat.rootbasis_gamma",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "discard the ambient embedding (Def 68.5)"
+    },
+    {
+      "id": "arr.root.rootbasis_gamma__rootbasis_s",
+      "source": "cat.rootbasis_gamma",
+      "target": "cat.rootbasis_s",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "discard the type certificate (Def 68.5)"
+    },
+    {
+      "id": "arr.root.rootbasis_s__rootframe_s",
+      "source": "cat.rootbasis_s",
+      "target": "cat.rootframe_s",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "the locus where u_rho is an isomorphism (Def 68.5)"
+    },
+    {
+      "id": "arr.root.rootframe_s__lat",
+      "source": "cat.rootframe_s",
+      "target": "cat.lat_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "discard the root basis; the Grothendieck projection of Def 68.5. A named ADE lattice is the image here of a chosen point upstairs (Construction 68.6), and Thm 68.7 makes that image independent of the standard realization chosen."
     }
   ],
   "kind": "normalized_semantic_seed.arrows",
