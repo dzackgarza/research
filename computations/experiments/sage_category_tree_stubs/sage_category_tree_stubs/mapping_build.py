@@ -121,6 +121,27 @@ def _forgetful_path(adj: dict[str, list[tuple[str, str]]], source: str, target: 
     return None
 
 
+def _normalized_route(
+    adj: dict[str, list[tuple[str, str]]],
+    cat_target: dict[str, Any],
+    frm: str,
+    to: str,
+) -> dict[str, Any] | None:
+    """The derived forgetful route between two mapped endpoints, or None.
+
+    Returning None where no route composes keeps every ``normalized`` block backed
+    by real arrows; a ``forgetful`` with an empty path asserts a route that was
+    never derived.
+    """
+    src, dst = cat_target.get(frm), cat_target.get(to)
+    if not src or not dst:
+        return None
+    path = _forgetful_path(adj, str(src), str(dst))
+    if path is None:
+        return None
+    return {"kind": "forgetful", "path": path, "from_target": str(src), "to_target": str(dst)}
+
+
 def _edge_key(frm: str, to: str) -> tuple[str, str]:
     return (frm, to)
 
@@ -478,7 +499,7 @@ def build_mapping(
                             "sage_names": {"from": sage_from, "to": sage_to_short},
                         },
                         "disposition": "corrected",
-                        "normalized": {"kind": "forgetful", "path": []},
+                        "normalized": _normalized_route(forgetful_adj, cat_target, frm, to),
                         "reason": row.get("detail"),
                     }
                 )
@@ -493,7 +514,7 @@ def build_mapping(
                             "sage_names": {"from": sage_from, "to": sage_to_short},
                         },
                         "disposition": "subdivided",
-                        "normalized": {"kind": "forgetful", "path": []},
+                        "normalized": _normalized_route(forgetful_adj, cat_target, frm, to),
                         "reason": row.get("detail"),
                     }
                 )
@@ -584,7 +605,7 @@ def build_mapping(
                     },
                 },
                 "disposition": disp,
-                "normalized": {"kind": "forgetful", "path": []},
+                "normalized": _normalized_route(forgetful_adj, cat_target, frm, to),
                 "reason": row.get("detail"),
                 "note": "ledger-only; not present in current observed immediate edges",
             }

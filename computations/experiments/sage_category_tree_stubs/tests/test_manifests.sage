@@ -301,6 +301,26 @@ def test_join_view_dots_exist() -> None:
         assert (sage / name).is_file(), name
 
 
+def test_no_edge_asserts_a_route_it_did_not_derive() -> None:
+    """Any ``normalized`` block on an edge must name the arrows it composed.
+
+    A ``forgetful`` with an empty path claims a normalized route between two
+    distinct targets that was never computed.
+    """
+    mapping = build_mapping()
+    for edge in mapping["edge_mappings"]:
+        normalized = edge["normalized"]
+        if normalized is None:
+            continue
+        src, dst = normalized["from_target"], normalized["to_target"]
+        if src == dst:
+            continue
+        assert normalized["path"], (
+            f"{edge['source_edge']['from']} -> {edge['source_edge']['to']} "
+            f"({edge['disposition']}) asserts a route from {src} to {dst} with no arrows"
+        )
+
+
 def test_preserved_edges_carry_a_derived_structural_path() -> None:
     """``preserved`` asserts a normalized route, so the route must be present.
 

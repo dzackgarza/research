@@ -6146,9 +6146,7 @@ edge_mappings:
         from: Coalgebras
         to: VectorSpaces
     disposition: corrected
-    normalized:
-      kind: forgetful
-      path: []
+    normalized: null
     reason: Sage often parents Coalgebras under VectorSpaces; 𝒢 uses Coalgebras(R)→Modules(R)
   - source_edge:
       from: sage.category.coalgebras_with_basis_coalgebraswithbasis
@@ -7459,9 +7457,7 @@ edge_mappings:
         from: LieAlgebras
         to: VectorSpaces
     disposition: corrected
-    normalized:
-      kind: forgetful
-      path: []
+    normalized: null
     reason: Sage often parents LieAlgebras under VectorSpaces; 𝒢 uses LieAlgebras(R)→Algebras(R)
   - source_edge:
       from: sage.category.lie_algebras_with_basis_liealgebraswithbasis
@@ -7659,7 +7655,10 @@ edge_mappings:
     disposition: subdivided
     normalized:
       kind: forgetful
-      path: []
+      path:
+        - fun.posets_to_sets
+      from_target: cat.posets
+      to_target: cat.sets
     reason: Native solidifies Posets → Sets; stub path is Posets → Magmas.Additive →
       … → Sets
   - source_edge:
@@ -8082,9 +8081,7 @@ edge_mappings:
         from: MagmaticAlgebras
         to: VectorSpaces
     disposition: corrected
-    normalized:
-      kind: forgetful
-      path: []
+    normalized: null
     reason: Sage parents MagmaticAlgebras under VectorSpaces when base is a field; 𝒢
       parents Algebras(R) under Modules(R)
     note: ledger-only; not present in current observed immediate edges
@@ -8095,9 +8092,7 @@ edge_mappings:
         from: Modules
         to: Bimodules
     disposition: corrected
-    normalized:
-      kind: forgetful
-      path: []
+    normalized: null
     reason: Sage parents Modules under Bimodules; 𝒢 has Modules(R)≃left modules, Bimodules
       refining Left and Right
     note: ledger-only; not present in current observed immediate edges
@@ -8108,9 +8103,7 @@ edge_mappings:
         from: FreeModules
         to: VectorSpaces
     disposition: corrected
-    normalized:
-      kind: forgetful
-      path: []
+    normalized: null
     reason: Sage may parent free modules under VectorSpaces; 𝒢 uses Modules.Free
     note: ledger-only; not present in current observed immediate edges
   - source_edge:
@@ -8120,9 +8113,7 @@ edge_mappings:
         from: ModulesWithBasis
         to: VectorSpaces
     disposition: corrected
-    normalized:
-      kind: forgetful
-      path: []
+    normalized: null
     reason: Sage may parent ModulesWithBasis under VectorSpaces; 𝒢 uses Modules.WithBasis
     note: ledger-only; not present in current observed immediate edges
   - source_edge:
@@ -8132,9 +8123,7 @@ edge_mappings:
         from: Sets.Finite
         to: Sets
     disposition: subdivided
-    normalized:
-      kind: forgetful
-      path: []
+    normalized: null
     reason: Native solidifies Sets.Finite → Sets; stub attaches Finite by axiom edge
     note: ledger-only; not present in current observed immediate edges
   - source_edge:
@@ -8147,6 +8136,8 @@ edge_mappings:
     normalized:
       kind: forgetful
       path: []
+      from_target: cat.sets
+      to_target: cat.sets
     reason: Native solidifies Sets.Infinite → Sets; stub attaches Infinite by axiom
       edge
     note: ledger-only; not present in current observed immediate edges
@@ -8157,9 +8148,7 @@ edge_mappings:
         from: Magmas.Additive
         to: Sets
     disposition: subdivided
-    normalized:
-      kind: forgetful
-      path: []
+    normalized: null
     reason: Native solidifies Magmas.Additive → Sets; stub attaches Additive by axiom
       edge
     note: ledger-only; not present in current observed immediate edges
