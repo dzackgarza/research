@@ -23,6 +23,7 @@ from .composed_identity import (
     ADDITIVE_AXIOM_TO_FLAT,
     ADDITIVE_BASE_TO_MAGMAS,
     CONSTRUCTION_TAGS,
+    TWO_OPERATION_BASES,
     is_composed_cls_key,
     normalized_reading,
     parse_composed,
@@ -554,12 +555,20 @@ def requests_from_composed_cls_key(
 
     # Additive* flattens only under an additive base; elsewhere the prefix is the
     # operation role and dropping it collides the additive and multiplicative laws.
+    step_roles: list[str | None]
     if sage_base in ADDITIVE_BASE_TO_MAGMAS:
         flat_steps = [ADDITIVE_AXIOM_TO_FLAT.get(s, rename_step(s)) for s in steps]
+        step_roles = [None] * len(flat_steps)
+    elif sage_base in TWO_OPERATION_BASES:
+        # Two operations: the prefix names which one the law is asserted of (Def 12.2).
+        flat_steps = [ADDITIVE_AXIOM_TO_FLAT.get(s, rename_step(s)) for s in steps]
+        step_roles = ["additive_operation" if s in ADDITIVE_AXIOM_TO_FLAT else "multiplicative_operation" for s in steps]
     else:
         flat_steps = [rename_step(s) for s in steps]
+        step_roles = [None] * len(flat_steps)
     base_id: str | None
     additive_tower = False
+    head_from_base: tuple[str, ...] = ()
 
     # AdditiveMagmas.* / AdditiveSemigroups.* → Magmas + Additive + flat laws
     # (one-tower: never host on cat.additive_magmas with a duplicate classifier family).
@@ -567,12 +576,15 @@ def requests_from_composed_cls_key(
         path = ADDITIVE_BASE_TO_MAGMAS[sage_base]
         prefix = path.split(".")[1:]  # Additive[.Associative…]
         flat_steps = [*prefix, *flat_steps]
+        step_roles = [*([None] * len(prefix)), *step_roles]
         base_id = "cat.magmas"
         additive_tower = True
+    elif sage_base in TWO_OPERATION_BASES:
+        base_id, head_from_base = TWO_OPERATION_BASES[sage_base]
     else:
         base_id = _resolve_named_category(sage_base, sketch=sketch, sage_to_entity=sage_to_entity)
 
-    head_classifiers: tuple[str, ...] = ()
+    head_classifiers: tuple[str, ...] = head_from_base
     if base_id is None and sage_base in sage_to_composed:
         base_id, head_classifiers = sage_to_composed[sage_base]
 
@@ -599,8 +611,10 @@ def requests_from_composed_cls_key(
             ),
         )
         pick = ranked[0]
-        along = None
-        if pick.host == "cat.magmas" and base_id == "cat.rings" and name == "Commutative":
+        along = step_roles[i]
+        if along is not None:
+            pass
+        elif pick.host == "cat.magmas" and base_id == "cat.rings" and name == "Commutative":
             along = "multiplicative_operation"
         elif additive_tower and pick.host == "cat.magmas" and name != "Additive":
             along = "additive_operation"
@@ -618,13 +632,16 @@ def check_constructibility(
     sketch = build_sketch(seed)
     base_id, reqs, expression = requests_from_composed_cls_key(cls_key, sketch=sketch, sage_to_entity=sage_to_entity, sage_to_composed=sage_to_composed)
     if base_id is None or not reqs:
-        return Constructibility(
-            False,
-            base_id,
-            (),
-            expression,
-            "could not parse base/classifiers for constructibility",
+        # A construction tag is declined by design, not unparsed: Monoids.Algebras is the
+        # monoid-algebra functor R[M], whose destination is the image of a functor and not
+        # a refinement of its source. Those are issue #283, not gaps in this checker.
+        _base, steps = parse_composed(cls_key)
+        detail = (
+            f"functorial construction {steps[-1]!r}, not a classifier refinement; destination is a functor image (#283)"
+            if steps and steps[-1] in CONSTRUCTION_TAGS
+            else "could not parse base/classifiers for constructibility"
         )
+        return Constructibility(False, base_id, (), expression, detail)
     result = check_requests(base_id, reqs, sketch=sketch)
     return Constructibility(
         ok=result.ok,

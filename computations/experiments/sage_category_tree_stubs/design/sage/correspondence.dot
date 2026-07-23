@@ -190,6 +190,7 @@ digraph SageToNormalized {
     "sage.category.with_axiom.coalgebras.filtered" [label="Sage: Coalgebras.Filtered", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.coalgebraswithbasis.filtered" [label="Sage: CoalgebrasWithBasis.Filtered", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.commutativerings.finite" [label="Sage: CommutativeRings.Finite", kind="sage_category", fillcolor="#ffe0b2"];
+    "sage.category.with_axiom.distributivemagmasandadditivemagmas.additiveassociative.additivecommutative.additiveunital.associative" [label="Sage: DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.finitelygeneratedsemigroups.finite" [label="Sage: FinitelyGeneratedSemigroups.Finite", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.magmas.unital" [label="Sage: Magmas.Unital", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.magmas.unital.inverse" [label="Sage: Magmas.Unital.Inverse", kind="sage_category", fillcolor="#ffe0b2"];
@@ -496,4 +497,5 @@ digraph SageToNormalized {
   "sage.category.with_axiom.magmas.unital.inverse" -> "cat.magmas" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.sets.infinite" -> "cat.sets" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.magmas.unital" -> "cat.magmas" [kind="normalizes_to", mapping="constructible", style=dashed];
+  "sage.category.with_axiom.distributivemagmasandadditivemagmas.additiveassociative.additivecommutative.additiveunital.associative" -> "cat.magmaswithtwooperations" [kind="normalizes_to", mapping="constructible", style=dashed];
 }

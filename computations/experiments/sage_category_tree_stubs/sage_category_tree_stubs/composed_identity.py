@@ -38,6 +38,20 @@ ADDITIVE_BASE_TO_MAGMAS: dict[str, str] = {
     "CommutativeAdditiveGroups": "AdditiveGroups.Commutative",
 }
 
+# Sage bases carrying two operations → (normalized host, leading classifiers).
+# Def 12.2: associativity, commutativity, units and inverses are defined once and
+# transported to each role component, so an ``Additive*`` step is that classifier applied
+# along the additive port and a bare step is the same classifier along the multiplicative
+# one. Rmk 12.5: rngs, semirings and the unnamed towers between them are this host with
+# classifiers omitted — variations of one construction, never new nodes.
+TWO_OPERATION_BASES: dict[str, tuple[str, tuple[str, ...]]] = {
+    "DistributiveMagmasAndAdditiveMagmas": (
+        "cat.magmaswithtwooperations",
+        ("clf.distributive_twooperations",),
+    ),
+}
+
+
 # Functorial construction tags (not axioms) appearing in dotted cls keys.
 CONSTRUCTION_TAGS: frozenset[str] = frozenset(
     {

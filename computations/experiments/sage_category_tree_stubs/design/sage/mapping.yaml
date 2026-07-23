@@ -6375,7 +6375,8 @@ category_mappings:
       base: null
       classifiers: []
       expression: Monoids.Algebras
-      detail: could not parse base/classifiers for constructibility
+      detail: functorial construction 'Algebras', not a classifier refinement; destination
+        is a functor image (#283)
       certificate: []
     sage_versions:
       since: sage-dev-local
@@ -6387,7 +6388,8 @@ category_mappings:
     provenance:
       status: not-constructible
       source: constructibility.check_constructibility
-      note: could not parse base/classifiers for constructibility
+      note: functorial construction 'Algebras', not a classifier refinement; destination
+        is a functor image (#283)
   - source: sage.category.with_axiom.magmas.unital.inverse
     source_sage_name: Magmas.Unital.Inverse
     target: cat.magmas
@@ -6474,17 +6476,32 @@ category_mappings:
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.distributivemagmasandadditivemagmas.additiveassociative.additivecommutative.additiveunital.associative
     source_sage_name: DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative
-    target: null
-    relation: unsupported
+    target: cat.magmaswithtwooperations
+    relation: constructible
     normalized_reading: DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative
     construction:
       kind: finite_limit_derivability
-      ok: false
+      ok: true
       base: cat.magmaswithtwooperations
-      classifiers: []
+      classifiers:
+        - clf.distributive_twooperations
+        - clf.magmas.associative
+        - clf.magmas.commutative
+        - clf.magmas.unital
+        - clf.magmas.associative
       expression: DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative
-      detail: could not parse base/classifiers for constructibility
-      certificate: []
+      detail: all requested classifier occurrences discharged
+      certificate:
+        - occurrence: clf.distributive_twooperations#head0
+          support_host: cat.magmaswithtwooperations
+        - occurrence: clf.magmas.associative#0
+          support_host: cat.magmas
+        - occurrence: clf.magmas.commutative#1
+          support_host: cat.magmas
+        - occurrence: clf.magmas.unital#2
+          support_host: cat.magmas
+        - occurrence: clf.magmas.associative#3
+          support_host: cat.magmas
     sage_versions:
       since: sage-dev-local
       until: null
@@ -6493,9 +6510,9 @@ category_mappings:
       bindings: {}
       resolved: true
     provenance:
-      status: not-constructible
+      status: constructible
       source: constructibility.check_constructibility
-      note: could not parse base/classifiers for constructibility
+      note: Ephemeral C.A… over normalized base; not in the authored public ledger
 axiom_mappings:
   - source: sage.axiom.additiveassociative
     source_sage_name: AdditiveAssociative
