@@ -33,7 +33,7 @@ dimension 9.
 
 The following is [@CDL25 Prop. 3.1]:
 
-::: {#lem:coble_halphen_blowdown .lemma title"Cobles to Halphens"}
+::: {.lemma ref="lem:coble_halphen_blowdown" title="Cobles to Halphens"}
 
 Let $X$ be a Coble surface and $\pi_{E}: X \to Y$ be the blowing down of
 a (-1)-curve E.
@@ -48,7 +48,6 @@ Then
 Conversely, the blow-up of a singular point of an irreducible non-multiple fiber
 of a Halphen surface of index 2 is a Coble surface.
 :::
-See @lem:coble_halphen_blowdown.
 
 ::: {.remark}
 
@@ -58,7 +57,7 @@ with $n$ boundary components and the various moduli spaces of index 2 Halphen
 pencils on the $g=0$ line of Nikulin's triangle diagram of 2-elementary
 lattices.
 Regarding the coarse spaces as period domains attached to lattices, the lattices
-match up precisely; see @tbl:coble-lattices.
+match up precisely; see \cref{tbl:coble-lattices}.
 Applications of mirror moves indicate that the cusp diagrams would
 correspondingly coincide as well.
 :::

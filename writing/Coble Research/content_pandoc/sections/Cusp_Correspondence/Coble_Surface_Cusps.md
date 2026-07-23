@@ -4,7 +4,7 @@ Applying the mirror moves from \cref{sec:mirror-moves}, we obtain the cusp diagr
 
 ![Cusp diagram for $F_\Co = F_{(11, 11, 1)}$ where $T_\Co = \gens{2} \oplus E_{10}(2)$.](rendered/fig_Cusp_Diagram_Co.svg){#fig:coble-cusps}
 
-The corresponding Coxeter diagrams are computed in [@AN06] and [@AEGS23], and shown in \cref{fig:coble-coxeter-diagrams}. Only the maximal parabolic subdiagrams of $(9, 9, 1)$ are relevant when determining 1-cusps, and these are shown in \cref{fig:coble-cusp-9-9-1-parabolics}.
+The corresponding Coxeter diagrams are computed in [@AN06] and [@AEGS25], and shown in \cref{fig:coble-coxeter-diagrams}. Only the maximal parabolic subdiagrams of $(9, 9, 1)$ are relevant when determining 1-cusps, and these are shown in \cref{fig:coble-cusp-9-9-1-parabolics}.
 
 ![The Coxeter diagram $G_{(9,9,1)_1} = G_{\gens{2} \oplus E_8(2)}$.](rendered/fig_Coxeter_Diagram_Co_9_9_1.svg){#fig:coble-coxeter-diagrams}
 

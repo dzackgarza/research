@@ -22,6 +22,10 @@ Table \ref{tab:dynkin-diagrams-table} is a table of (labeled) classical and affi
 
 * * *
 
+![Mirror moves for the Enriques lattices.](rendered/fig_Mirror_Move_En_Lattices.svg){#fig:appendix-mirror-moves-enriques}
+
+* * *
+
 ![Geometric cusp correspondence (Coble)](rendered/fig_Mirror_Move_Co_Lattices.svg){#fig:appendix-2}
 
 * * *
