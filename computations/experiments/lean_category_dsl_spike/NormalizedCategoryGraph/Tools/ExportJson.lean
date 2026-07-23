@@ -164,6 +164,10 @@ private def constructorJson (e : ConstructorEntry) : Json :=
   object [
     ("id", e.id.raw),
     ("canonicalName", e.canonicalName),
+    -- `addRegistryEntry` validates these endpoints, so dropping them left importers
+    -- unable to reconstruct or type-check a constructor from the exported graph.
+    ("source", categoryExprJson e.source),
+    ("target", categoryExprJson e.target),
     ("declaration", e.declaration.toString),
     ("sourcePosition", e.sourcePosition),
   ]
