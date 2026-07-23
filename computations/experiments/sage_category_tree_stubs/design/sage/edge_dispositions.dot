@@ -244,7 +244,7 @@ digraph SageEdgeDispositions {
   "sage.category.finite_groups_finitegroups" -> "sage.category.groups_groups" [disposition="preserved", color="#2e7d32", style=solid];
   "sage.category.finite_lattice_posets_finitelatticeposets" -> "sage.category.lattice_posets_latticeposets" [disposition="preserved", color="#2e7d32", style=solid];
   "sage.category.finite_lattice_posets_finitelatticeposets" -> "sage.category.finite_posets_finiteposets" [disposition="preserved", color="#2e7d32", style=solid];
-  "sage.category.finite_lattice_posets_finitelatticeposets" -> "sage.category.with_axiom.posets.bounded" [disposition="unsupported", color="#9e9e9e", style=dashed];
+  "sage.category.finite_lattice_posets_finitelatticeposets" -> "sage.category.with_axiom.posets.bounded" [disposition="preserved", color="#2e7d32", style=solid];
   "sage.category.finitely_generated_lambda_bracket_algebras_finitelygeneratedlambdabracketalgebras" -> "sage.category.lambda_bracket_algebras_lambdabracketalgebras" [disposition="preserved", color="#2e7d32", style=solid];
   "sage.category.finitely_generated_lie_conformal_algebras_finitelygeneratedlieconformalalgebras" -> "sage.category.lie_conformal_algebras_lieconformalalgebras" [disposition="preserved", color="#2e7d32", style=solid];
   "sage.category.finitely_generated_magmas_finitelygeneratedmagmas" -> "sage.category.magmas_magmas" [disposition="preserved", color="#2e7d32", style=solid];

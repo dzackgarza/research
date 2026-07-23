@@ -383,3 +383,47 @@ def test_requirement_extraction_rejects_an_incomplete_ledger() -> None:
         assert "least host" in str(exc)
     else:
         raise AssertionError("a classifier application with no least host was accepted")
+
+
+def test_axiom_dispositions_separate_rulings_from_gaps() -> None:
+    """A decided exclusion is a ruling, not a missing capability.
+
+    The crosswalk records, per axiom, whether a normalized classifier is owed:
+    doctest-only tokens, engineering-only mechanisms, construction-owned axioms
+    and deliberately un-globalized tokens are settled. Counting them as pending
+    inflates the parity gap with work nobody intends to do.
+    """
+    from sage_category_tree_stubs.manifests import AXIOM_DISPOSITIONS
+
+    mapping = build_mapping()
+    rows = {r["source_sage_name"]: r for r in mapping["axiom_mappings"]}
+
+    for row in mapping["axiom_mappings"]:
+        assert row["disposition"] in AXIOM_DISPOSITIONS, row
+
+    assert rows["Facade"]["disposition"] == "excluded_engineering"
+    assert rows["Blue"]["disposition"] == "excluded_test_only"
+    assert rows["Flying"]["disposition"] == "excluded_test_only"
+    assert rows["Endset"]["disposition"] == "construction_owned"
+    assert rows["Connected"]["disposition"] == "split_by_host"
+
+
+def test_axiom_classifiers_are_not_duplicated_across_ids() -> None:
+    """Minting a host-qualified id for a classifier the seed already hosts would
+    split one piece of mathematics across two stable ids."""
+    from sage_category_tree_stubs.design_sources import DESIGN_ROOT
+    from sage_category_tree_stubs.design_sources import load_json
+
+    classifiers = load_json(
+        DESIGN_ROOT / "normalized_category_graph" / "semantic_seed" / "classifiers.json"
+    )["classifiers"]
+    seen: dict[tuple[str, str], list[str]] = {}
+    for c in classifiers:
+        key = (str(c["name"]).lower(), str(c.get("host_id")))
+        seen.setdefault(key, []).append(c["id"])
+
+    mapping = build_mapping()
+    targets = {r["target"] for r in mapping["axiom_mappings"] if r.get("target")}
+    for key, ids in seen.items():
+        if len(ids) > 1 and len(targets.intersection(ids)) > 1:
+            raise AssertionError(f"axiom surface resolves {key} to several ids: {ids}")

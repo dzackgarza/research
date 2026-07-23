@@ -4603,6 +4603,198 @@
       "aliases": [],
       "dot_vertex": null,
       "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.coalgebras_r.cocommutative.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Cocommutative@cat.coalgebras_r",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.coalgebras_r.cocommutative"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.groupswithsimplereflections.irreducible.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Irreducible@cat.groupswithsimplereflections",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.groupswithsimplereflections.irreducible"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.chaingraded.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "ChainGraded@cat.latticeposets",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.latticeposets.chaingraded"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.congruenceuniform.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "CongruenceUniform@cat.latticeposets",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.latticeposets.congruenceuniform"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.extremal.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Extremal@cat.latticeposets",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.latticeposets.extremal"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.semidistributive.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Semidistributive@cat.latticeposets",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.latticeposets.semidistributive"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.stone.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Stone@cat.latticeposets",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.latticeposets.stone"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.trim.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Trim@cat.latticeposets",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.latticeposets.trim"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.liealgebras_r.nilpotent.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Nilpotent@cat.liealgebras_r",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.liealgebras_r.nilpotent"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.magmas.unital.inverse.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Inverse@clf.magmas.unital.domain",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.magmas.unital.inverse"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.manifolds.almostcomplex.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "AlmostComplex@cat.manifolds",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.manifolds.almostcomplex"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.manifolds.analytic.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Analytic@cat.manifolds",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.manifolds.analytic"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.manifolds.differentiable.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Differentiable@cat.manifolds",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.manifolds.differentiable"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.posets.bounded.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Bounded@cat.posets",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.posets.bounded"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.simplicialsets.pointedobject.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "PointedObject@cat.simplicialsets",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.simplicialsets.pointedobject"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.topologicalspaces.compact.domain",
+      "kind": "classifier_domain",
+      "canonical_name": "Compact@cat.topologicalspaces",
+      "parameters": [],
+      "definition": {
+        "classifier_id": "clf.topologicalspaces.compact"
+      },
+      "aliases": [],
+      "dot_vertex": null,
+      "provenance": "authored sagecats ledger"
     }
   ]
 }

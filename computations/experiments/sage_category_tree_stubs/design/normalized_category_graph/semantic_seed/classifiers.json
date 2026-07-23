@@ -1438,6 +1438,150 @@
       "leg_arrow_id": "arr.clf.triangulardecomposition",
       "transport": null,
       "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.coalgebras_r.cocommutative",
+      "name": "Cocommutative",
+      "host_id": "cat.coalgebras_r",
+      "domain_id": "clf.coalgebras_r.cocommutative.domain",
+      "leg_arrow_id": "arr.clf.coalgebras_r.cocommutative",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.groupswithsimplereflections.irreducible",
+      "name": "Irreducible",
+      "host_id": "cat.groupswithsimplereflections",
+      "domain_id": "clf.groupswithsimplereflections.irreducible.domain",
+      "leg_arrow_id": "arr.clf.groupswithsimplereflections.irreducible",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.chaingraded",
+      "name": "ChainGraded",
+      "host_id": "cat.latticeposets",
+      "domain_id": "clf.latticeposets.chaingraded.domain",
+      "leg_arrow_id": "arr.clf.latticeposets.chaingraded",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.congruenceuniform",
+      "name": "CongruenceUniform",
+      "host_id": "cat.latticeposets",
+      "domain_id": "clf.latticeposets.congruenceuniform.domain",
+      "leg_arrow_id": "arr.clf.latticeposets.congruenceuniform",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.extremal",
+      "name": "Extremal",
+      "host_id": "cat.latticeposets",
+      "domain_id": "clf.latticeposets.extremal.domain",
+      "leg_arrow_id": "arr.clf.latticeposets.extremal",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.semidistributive",
+      "name": "Semidistributive",
+      "host_id": "cat.latticeposets",
+      "domain_id": "clf.latticeposets.semidistributive.domain",
+      "leg_arrow_id": "arr.clf.latticeposets.semidistributive",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.stone",
+      "name": "Stone",
+      "host_id": "cat.latticeposets",
+      "domain_id": "clf.latticeposets.stone.domain",
+      "leg_arrow_id": "arr.clf.latticeposets.stone",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.trim",
+      "name": "Trim",
+      "host_id": "cat.latticeposets",
+      "domain_id": "clf.latticeposets.trim.domain",
+      "leg_arrow_id": "arr.clf.latticeposets.trim",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.liealgebras_r.nilpotent",
+      "name": "Nilpotent",
+      "host_id": "cat.liealgebras_r",
+      "domain_id": "clf.liealgebras_r.nilpotent.domain",
+      "leg_arrow_id": "arr.clf.liealgebras_r.nilpotent",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.magmas.unital.inverse",
+      "name": "Inverse",
+      "host_id": "clf.magmas.unital.domain",
+      "domain_id": "clf.magmas.unital.inverse.domain",
+      "leg_arrow_id": "arr.clf.magmas.unital.inverse",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.manifolds.almostcomplex",
+      "name": "AlmostComplex",
+      "host_id": "cat.manifolds",
+      "domain_id": "clf.manifolds.almostcomplex.domain",
+      "leg_arrow_id": "arr.clf.manifolds.almostcomplex",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.manifolds.analytic",
+      "name": "Analytic",
+      "host_id": "cat.manifolds",
+      "domain_id": "clf.manifolds.analytic.domain",
+      "leg_arrow_id": "arr.clf.manifolds.analytic",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.manifolds.differentiable",
+      "name": "Differentiable",
+      "host_id": "cat.manifolds",
+      "domain_id": "clf.manifolds.differentiable.domain",
+      "leg_arrow_id": "arr.clf.manifolds.differentiable",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.posets.bounded",
+      "name": "Bounded",
+      "host_id": "cat.posets",
+      "domain_id": "clf.posets.bounded.domain",
+      "leg_arrow_id": "arr.clf.posets.bounded",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.simplicialsets.pointedobject",
+      "name": "PointedObject",
+      "host_id": "cat.simplicialsets",
+      "domain_id": "clf.simplicialsets.pointedobject.domain",
+      "leg_arrow_id": "arr.clf.simplicialsets.pointedobject",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.topologicalspaces.compact",
+      "name": "Compact",
+      "host_id": "cat.topologicalspaces",
+      "domain_id": "clf.topologicalspaces.compact.domain",
+      "leg_arrow_id": "arr.clf.topologicalspaces.compact",
+      "transport": null,
+      "notes": "authored sagecats ledger"
     }
   ]
 }

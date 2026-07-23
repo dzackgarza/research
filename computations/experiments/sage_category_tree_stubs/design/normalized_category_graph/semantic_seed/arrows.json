@@ -3526,6 +3526,134 @@
       "provenance": "underlying additive magma",
       "source": "cat.additive_groups",
       "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.coalgebras_r.cocommutative",
+      "source": "clf.coalgebras_r.cocommutative.domain",
+      "target": "cat.coalgebras_r",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Cocommutative : cat.coalgebras_r.Cocommutative → cat.coalgebras_r"
+    },
+    {
+      "id": "arr.clf.groupswithsimplereflections.irreducible",
+      "source": "clf.groupswithsimplereflections.irreducible.domain",
+      "target": "cat.groupswithsimplereflections",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Irreducible : cat.groupswithsimplereflections.Irreducible → cat.groupswithsimplereflections"
+    },
+    {
+      "id": "arr.clf.latticeposets.chaingraded",
+      "source": "clf.latticeposets.chaingraded.domain",
+      "target": "cat.latticeposets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_ChainGraded : cat.latticeposets.ChainGraded → cat.latticeposets"
+    },
+    {
+      "id": "arr.clf.latticeposets.congruenceuniform",
+      "source": "clf.latticeposets.congruenceuniform.domain",
+      "target": "cat.latticeposets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_CongruenceUniform : cat.latticeposets.CongruenceUniform → cat.latticeposets"
+    },
+    {
+      "id": "arr.clf.latticeposets.extremal",
+      "source": "clf.latticeposets.extremal.domain",
+      "target": "cat.latticeposets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Extremal : cat.latticeposets.Extremal → cat.latticeposets"
+    },
+    {
+      "id": "arr.clf.latticeposets.semidistributive",
+      "source": "clf.latticeposets.semidistributive.domain",
+      "target": "cat.latticeposets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Semidistributive : cat.latticeposets.Semidistributive → cat.latticeposets"
+    },
+    {
+      "id": "arr.clf.latticeposets.stone",
+      "source": "clf.latticeposets.stone.domain",
+      "target": "cat.latticeposets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Stone : cat.latticeposets.Stone → cat.latticeposets"
+    },
+    {
+      "id": "arr.clf.latticeposets.trim",
+      "source": "clf.latticeposets.trim.domain",
+      "target": "cat.latticeposets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Trim : cat.latticeposets.Trim → cat.latticeposets"
+    },
+    {
+      "id": "arr.clf.liealgebras_r.nilpotent",
+      "source": "clf.liealgebras_r.nilpotent.domain",
+      "target": "cat.liealgebras_r",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Nilpotent : cat.liealgebras_r.Nilpotent → cat.liealgebras_r"
+    },
+    {
+      "id": "arr.clf.magmas.unital.inverse",
+      "source": "clf.magmas.unital.inverse.domain",
+      "target": "clf.magmas.unital.domain",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Inverse : clf.magmas.unital.domain.Inverse → clf.magmas.unital.domain"
+    },
+    {
+      "id": "arr.clf.manifolds.almostcomplex",
+      "source": "clf.manifolds.almostcomplex.domain",
+      "target": "cat.manifolds",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_AlmostComplex : cat.manifolds.AlmostComplex → cat.manifolds"
+    },
+    {
+      "id": "arr.clf.manifolds.analytic",
+      "source": "clf.manifolds.analytic.domain",
+      "target": "cat.manifolds",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Analytic : cat.manifolds.Analytic → cat.manifolds"
+    },
+    {
+      "id": "arr.clf.manifolds.differentiable",
+      "source": "clf.manifolds.differentiable.domain",
+      "target": "cat.manifolds",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Differentiable : cat.manifolds.Differentiable → cat.manifolds"
+    },
+    {
+      "id": "arr.clf.posets.bounded",
+      "source": "clf.posets.bounded.domain",
+      "target": "cat.posets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Bounded : cat.posets.Bounded → cat.posets"
+    },
+    {
+      "id": "arr.clf.simplicialsets.pointedobject",
+      "source": "clf.simplicialsets.pointedobject.domain",
+      "target": "cat.simplicialsets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_PointedObject : cat.simplicialsets.PointedObject → cat.simplicialsets"
+    },
+    {
+      "id": "arr.clf.topologicalspaces.compact",
+      "source": "clf.topologicalspaces.compact.domain",
+      "target": "cat.topologicalspaces",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Compact : cat.topologicalspaces.Compact → cat.topologicalspaces"
     }
   ],
   "kind": "normalized_semantic_seed.arrows",

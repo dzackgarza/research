@@ -38,8 +38,22 @@ EDGE_DISPOSITIONS = frozenset(
     }
 )
 
+AXIOM_DISPOSITIONS = frozenset(
+    {
+        "exact",
+        "rehosted",
+        "unsupported",
+        # Settled rulings from the authored crosswalk, not pending work.
+        "excluded_test_only",
+        "excluded_engineering",
+        "construction_owned",
+        "split_by_host",
+    }
+)
+
 HYGIENE_KINDS = frozenset(
     {
+        "bad_axiom_disposition",
         "dangling_target",
         "target_collision",
         "duplicate_source",
@@ -212,7 +226,14 @@ def validate_three_manifests(
         )
 
     for row in mapping.get("axiom_mappings", []):
-        if row.get("disposition") == "unsupported" or row.get("target") is None:
+        disp = row.get("disposition")
+        if disp not in AXIOM_DISPOSITIONS:
+            findings.append(ManifestFinding("bad_axiom_disposition", row.get("source", "?"), f"{disp!r}"))
+        # A decided exclusion, a construction-owned axiom, and a token the ledger
+        # deliberately refused to globalize are all settled: absence of a classifier
+        # is the ruling, not a missing capability. Only a row owed a classifier the
+        # seed cannot supply is a parity gap.
+        if disp == "unsupported":
             findings.append(
                 ManifestFinding(
                     "unsupported_axiom",

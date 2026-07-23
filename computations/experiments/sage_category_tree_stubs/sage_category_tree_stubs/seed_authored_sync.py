@@ -294,6 +294,64 @@ def resolve_base_id(authored_id: str, entity_ids: set[str]) -> str | None:
     return None
 
 
+# Crosswalk actions that rule out a classifier rather than name one.
+_NON_CLASSIFIER_ACTIONS: frozenset[str] = frozenset(
+    {
+        "exclude",
+        "exclude from normalized mathematics",
+        "construction metadata, not classifier",
+        "split overloaded registry token",
+    }
+)
+
+
+def _authored_host_id(host_display: str, entity_ids: set[str]) -> str | None:
+    """Resolve a crosswalk least-host display to a seed entity id.
+
+    Hosts are written either as a plain family (``Manifolds``, ``Coalgebras(R)``) or
+    as a refinement path (``Coalgebras(R).Super``). A refinement path names the total
+    category of its last classifier, so it resolves only when that classifier's
+    domain is already seeded; returning None keeps the row an honest gap instead of
+    silently attaching the classifier to the wrong host.
+    """
+    head, _, tail = host_display.partition(".")
+    base = head.split("(", 1)[0].strip().lower().replace(" ", "_")
+    candidate = f"cat.{base}"
+    resolved = resolve_base_id(candidate, entity_ids) or BASE_ID_ALIASES.get(candidate, candidate)
+    for alt in (resolved, f"{resolved}_r", f"{resolved}_s", f"{resolved}_k"):
+        if alt in entity_ids:
+            resolved = alt
+            break
+    else:
+        return None
+    if not tail:
+        return resolved
+    for part in tail.split("."):
+        domain = f"clf.{resolved.removeprefix('cat.')}.{part.lower()}.domain"
+        if domain not in entity_ids:
+            return None
+        resolved = domain
+    return resolved
+
+
+def _axiom_classifier_id(classifier_name: str, host_id: str) -> str:
+    """Host-qualified classifier id, so one Sage token never spans two hosts."""
+    host = host_id.removeprefix("cat.").removesuffix(".domain").replace("clf.", "")
+    return f"clf.{host}.{classifier_name.lower()}"
+
+
+def _existing_classifier_id(classifier_name: str, host_id: str, classifiers: list[dict[str, Any]]) -> str | None:
+    """A seeded classifier of this name already hosted here, if there is one."""
+    wanted = classifier_name.lower()
+    for c in classifiers:
+        if str(c.get("name") or "").lower() != wanted:
+            continue
+        if c.get("host_id") == host_id or c.get("host") == host_id:
+            cid = c.get("id")
+            return str(cid) if cid else None
+    return None
+
+
 def sync_seed_from_authored(*, manifest: dict[str, Any] | None = None) -> dict[str, int]:
     """Append missing entities/classifiers/arrows; return counts added."""
     manifest = manifest or load_authored_manifest()
@@ -461,6 +519,35 @@ def sync_seed_from_authored(*, manifest: dict[str, Any] | None = None) -> dict[s
             cid = app.get("classifier_id")
             if cid:
                 needed_clfs.add(str(cid))
+
+    # The axiom crosswalk names a classifier and its least host for every Sage axiom
+    # the ledger rules is owed one. Those are demands on the seed exactly as the
+    # category rows' classifiers are; omitting them left the axiom surface reporting
+    # a pending classifier for a decision the ledger had already made.
+    for ax in manifest.get("sage_axiom_crosswalk") or []:
+        if str(ax.get("mapping_action") or "").strip() in _NON_CLASSIFIER_ACTIONS:
+            continue
+        if str(ax.get("sage_status") or "").startswith("test-only"):
+            continue
+        clf_name = ax.get("normalized_classifier_or_disposition")
+        host_disp = ax.get("normalized_least_host")
+        if not clf_name or not host_disp:
+            continue
+        # A prose disposition is a ruling, not a classifier name.
+        if " " in str(clf_name) or " " in str(host_disp):
+            continue
+        host_id = _authored_host_id(str(host_disp), entity_ids)
+        if host_id is None:
+            continue
+        # Reuse the classifier the seed already carries for this name on this host.
+        # Minting a host-qualified id unconditionally would duplicate the same
+        # mathematics under two ids -- exactly the `clf.division` /
+        # `clf.rings.division` split this project has already had to repair.
+        existing = _existing_classifier_id(str(clf_name), host_id, classifiers)
+        cid = existing or _axiom_classifier_id(str(clf_name), host_id)
+        if cid not in clf_ids:
+            NEW_CLASSIFIERS.setdefault(cid, (str(clf_name), host_id))
+        needed_clfs.add(cid)
 
     # Map generic authored ids to host-specific ones when we minted them
     clf_aliases = {

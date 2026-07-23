@@ -171,6 +171,34 @@ def _resolve_least_host_id(host: str | None, sketch: dict[str, Any]) -> str | No
     return None
 
 
+# The authored crosswalk already records, per axiom, whether a normalized classifier
+# is owed at all. Reading those fields keeps a decided exclusion from being reported
+# as a missing capability, and keeps a genuinely undecided row visible as one.
+_AXIOM_ACTION_DISPOSITIONS: dict[str, str] = {
+    "exclude": "excluded_test_only",
+    "exclude from normalized mathematics": "excluded_engineering",
+    "construction metadata, not classifier": "construction_owned",
+    "split overloaded registry token": "split_by_host",
+}
+
+
+def _axiom_disposition(ax: dict[str, Any], target: str | None) -> str:
+    """The disposition the ledger states for one Sage axiom.
+
+    ``unsupported`` is reserved for rows the ledger says are owed a classifier and
+    that the seed cannot supply; a decided exclusion is not a gap, and a token the
+    ledger deliberately refused to globalize is not one either.
+    """
+    if str(ax.get("sage_status") or "").startswith("test-only"):
+        return "excluded_test_only"
+    decided = _AXIOM_ACTION_DISPOSITIONS.get(str(ax.get("mapping_action") or "").strip())
+    if decided:
+        return decided
+    if target:
+        return "rehosted" if ax.get("mapping_action") else "exact"
+    return "unsupported"
+
+
 def build_mapping(
     *,
     correspondence: dict[str, Any] | None = None,
@@ -641,7 +669,7 @@ def build_mapping(
                 "least_normalized_host": host_id,
                 "sage_defining_hosts": ([ax["sage_declared_at"]] if ax.get("sage_declared_at") else []),
                 "transported_occurrences": [],
-                "disposition": ("rehosted" if ax.get("mapping_action") else ("exact" if target else "unsupported")),
+                "disposition": _axiom_disposition(ax, target),
                 "note": ax.get("audit_note") or ax.get("mapping_action"),
             }
         )

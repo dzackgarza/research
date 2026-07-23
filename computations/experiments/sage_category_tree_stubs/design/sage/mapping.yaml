@@ -5493,25 +5493,28 @@ category_mappings:
       note: could not parse base/classifiers for constructibility
   - source: sage.category.with_axiom.posets.bounded
     source_sage_name: Posets.Bounded
-    target: null
-    relation: unsupported
+    target: cat.posets
+    relation: constructible
     normalized_reading: Posets.Bounded
     construction:
       kind: finite_limit_derivability
-      ok: false
+      ok: true
       base: cat.posets
-      classifiers: []
+      classifiers:
+        - clf.posets.bounded
       expression: Posets.Bounded
-      detail: could not parse base/classifiers for constructibility
-      certificate: []
+      detail: all requested classifier occurrences discharged
+      certificate:
+        - occurrence: clf.posets.bounded#0
+          support_host: cat.posets
     sage_versions:
       since: sage-dev-local
       until: null
     parameters: {}
     provenance:
-      status: not-constructible
+      status: constructible
       source: constructibility.check_constructibility
-      note: could not parse base/classifiers for constructibility
+      note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.vectorspaces.graded
     source_sage_name: VectorSpaces.Graded
     target: cat.vector_spaces_k
@@ -6783,9 +6786,14 @@ edge_mappings:
       sage_names:
         from: FiniteLatticePosets
         to: Posets.Bounded
-    disposition: unsupported
-    normalized: null
-    reason: No reviewed disposition yet
+    disposition: preserved
+    normalized:
+      kind: forgetful
+      path:
+        - fun.latticeposets_to_posets
+      from_target: cat.latticeposets
+      to_target: cat.posets
+    reason: null
   - source_edge:
       from: sage.category.finitely_generated_lambda_bracket_algebras_finitelygeneratedlambdabracketalgebras
       to: sage.category.lambda_bracket_algebras_lambdabracketalgebras
@@ -8175,7 +8183,7 @@ axiom_mappings:
       port.
   - source: sage.axiom.additiveinverse
     source_sage_name: AdditiveInverse
-    target: null
+    target: clf.magmas.unital.inverse
     least_normalized_host: clf.magmas.unital.domain
     sage_defining_hosts:
       - AdditiveMagmas:AdditiveUnital.AdditiveInverse
@@ -8193,7 +8201,7 @@ axiom_mappings:
     note: Normalize to Unital on the additive operation port.
   - source: sage.axiom.almostcomplex
     source_sage_name: AlmostComplex
-    target: null
+    target: clf.manifolds.almostcomplex
     least_normalized_host: cat.manifolds
     sage_defining_hosts:
       - Manifolds:AlmostComplex
@@ -8202,7 +8210,7 @@ axiom_mappings:
     note: Almost-complex structure on a manifold.
   - source: sage.axiom.analytic
     source_sage_name: Analytic
-    target: null
+    target: clf.manifolds.analytic
     least_normalized_host: cat.manifolds
     sage_defining_hosts:
       - Manifolds:Analytic
@@ -8229,7 +8237,7 @@ axiom_mappings:
     note: Ordinary associativity of the selected magma operation.
   - source: sage.axiom.bounded
     source_sage_name: Bounded
-    target: null
+    target: clf.posets.bounded
     least_normalized_host: cat.posets
     sage_defining_hosts:
       - Posets:Bounded
@@ -8243,12 +8251,12 @@ axiom_mappings:
     sage_defining_hosts:
       - FiniteDimensionalAlgebrasWithBasis:Cellular
     transported_occurrences: []
-    disposition: rehosted
+    disposition: unsupported
     note: Cellular algebra package; exact choice-vs-property semantics should follow
       the intended cell datum.
   - source: sage.axiom.chaingraded
     source_sage_name: ChainGraded
-    target: null
+    target: clf.latticeposets.chaingraded
     least_normalized_host: cat.latticeposets
     sage_defining_hosts:
       - LatticePosets:ChainGraded
@@ -8257,7 +8265,7 @@ axiom_mappings:
     note: All maximal chains have the same length.
   - source: sage.axiom.cocommutative
     source_sage_name: Cocommutative
-    target: null
+    target: clf.coalgebras_r.cocommutative
     least_normalized_host: cat.coalgebras_r
     sage_defining_hosts:
       - Coalgebras:Cocommutative
@@ -8277,7 +8285,7 @@ axiom_mappings:
       one magma structure.
   - source: sage.axiom.compact
     source_sage_name: Compact
-    target: null
+    target: clf.topologicalspaces.compact
     least_normalized_host: cat.topologicalspaces
     sage_defining_hosts:
       - TopologicalSpaces:Compact
@@ -8295,7 +8303,7 @@ axiom_mappings:
     note: Metric completeness. Valued rings/fields use their valuation-metric port.
   - source: sage.axiom.congruenceuniform
     source_sage_name: CongruenceUniform
-    target: null
+    target: clf.latticeposets.congruenceuniform
     least_normalized_host: cat.latticeposets
     sage_defining_hosts:
       - LatticePosets:CongruenceUniform
@@ -8309,13 +8317,13 @@ axiom_mappings:
     sage_defining_hosts:
       - Blahs:Connected
     transported_occurrences: []
-    disposition: rehosted
+    disposition: split_by_host
     note: Sage uses the unqualified word in several unrelated theories (topological
       spaces, graphs/CW objects, graded Hopf algebras, filtered objects). Do not introduce
       one global Connected classifier; qualify each occurrence by host.
   - source: sage.axiom.differentiable
     source_sage_name: Differentiable
-    target: null
+    target: clf.manifolds.differentiable
     least_normalized_host: cat.manifolds
     sage_defining_hosts:
       - Manifolds:Differentiable
@@ -8329,7 +8337,7 @@ axiom_mappings:
     sage_defining_hosts:
       - LatticePosets:Distributive
     transported_occurrences: []
-    disposition: rehosted
+    disposition: split_by_host
     note: Lattice distributivity and ring-style distributivity are different classifiers.
       The latter is hosted on MagmasWithTwoOperations.
   - source: sage.axiom.division
@@ -8349,7 +8357,7 @@ axiom_mappings:
     sage_defining_hosts:
       - Homsets:Endset
     transported_occurrences: []
-    disposition: rehosted
+    disposition: construction_owned
     note: Endsets are diagonal Hom objects; algebraic structure on an endomorphism object
       is recorded by the relevant construction/functors, not a global axiom.
   - source: sage.axiom.enumerated
@@ -8363,7 +8371,7 @@ axiom_mappings:
     note: An explicit enumeration interface/structure, not mere countability.
   - source: sage.axiom.extremal
     source_sage_name: Extremal
-    target: null
+    target: clf.latticeposets.extremal
     least_normalized_host: cat.latticeposets
     sage_defining_hosts:
       - LatticePosets:Extremal
@@ -8377,7 +8385,7 @@ axiom_mappings:
     sage_defining_hosts:
       - Sets:Facade
     transported_occurrences: []
-    disposition: rehosted
+    disposition: excluded_engineering
     note: Sage delegation/facade mechanism.
   - source: sage.axiom.finite
     source_sage_name: Finite
@@ -8445,7 +8453,7 @@ axiom_mappings:
       artifact.
   - source: sage.axiom.inverse
     source_sage_name: Inverse
-    target: null
+    target: clf.magmas.unital.inverse
     least_normalized_host: clf.magmas.unital.domain
     sage_defining_hosts:
       - Magmas:Unital.Inverse
@@ -8454,7 +8462,7 @@ axiom_mappings:
     note: Inverse operation/law on a unital magma.
   - source: sage.axiom.irreducible
     source_sage_name: Irreducible
-    target: null
+    target: clf.groupswithsimplereflections.irreducible
     least_normalized_host: cat.groupswithsimplereflections
     sage_defining_hosts:
       - ComplexReflectionOrGeneralizedCoxeterGroups:Irreducible
@@ -8499,7 +8507,7 @@ axiom_mappings:
     note: Ring-specific no-zero-divisors condition.
   - source: sage.axiom.pointed
     source_sage_name: Pointed
-    target: null
+    target: clf.simplicialsets.pointedobject
     least_normalized_host: cat.simplicialsets
     sage_defining_hosts:
       - SimplicialSets:Pointed
@@ -8518,7 +8526,7 @@ axiom_mappings:
     note: Green R-relation is trivial.
   - source: sage.axiom.semidistributive
     source_sage_name: Semidistributive
-    target: null
+    target: clf.latticeposets.semidistributive
     least_normalized_host: cat.latticeposets
     sage_defining_hosts:
       - LatticePosets:Semidistributive
@@ -8536,7 +8544,7 @@ axiom_mappings:
     note: Smooth manifold regularity.
   - source: sage.axiom.stone
     source_sage_name: Stone
-    target: null
+    target: clf.latticeposets.stone
     least_normalized_host: cat.latticeposets
     sage_defining_hosts:
       - LatticePosets:Stone
@@ -8550,7 +8558,7 @@ axiom_mappings:
     sage_defining_hosts:
       - GradedLieAlgebras:Stratified
     transported_occurrences: []
-    disposition: rehosted
+    disposition: unsupported
     note: Stratification of a graded Lie algebra.
   - source: sage.axiom.supercocommutative
     source_sage_name: Supercocommutative
@@ -8559,7 +8567,7 @@ axiom_mappings:
     sage_defining_hosts:
       - Coalgebras:Super.Supercocommutative
     transported_occurrences: []
-    disposition: rehosted
+    disposition: unsupported
     note: Cocommutativity with the super sign rule.
   - source: sage.axiom.supercommutative
     source_sage_name: Supercommutative
@@ -8568,11 +8576,11 @@ axiom_mappings:
     sage_defining_hosts:
       - Algebras:Supercommutative
     transported_occurrences: []
-    disposition: rehosted
+    disposition: unsupported
     note: Commutativity with the super sign rule.
   - source: sage.axiom.trim
     source_sage_name: Trim
-    target: null
+    target: clf.latticeposets.trim
     least_normalized_host: cat.latticeposets
     sage_defining_hosts:
       - LatticePosets:Trim
@@ -8596,7 +8604,7 @@ axiom_mappings:
     sage_defining_hosts:
       - FiniteComplexReflectionGroups:WellGenerated
     transported_occurrences: []
-    disposition: rehosted
+    disposition: unsupported
     note: Well-generated complex reflection group.
   - source: sage.axiom.withbasis
     source_sage_name: WithBasis
@@ -8614,7 +8622,7 @@ axiom_mappings:
     sage_defining_hosts:
       - Blahs:Blue
     transported_occurrences: []
-    disposition: rehosted
+    disposition: excluded_test_only
     note: Doctest-only registry token.
   - source: sage.axiom.flying
     source_sage_name: Flying
@@ -8623,7 +8631,7 @@ axiom_mappings:
     sage_defining_hosts:
       - Blahs:Flying
     transported_occurrences: []
-    disposition: rehosted
+    disposition: excluded_test_only
     note: Doctest-only registry token.
 construction_mappings:
   - source: sage.construction.algebras
