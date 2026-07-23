@@ -5197,6 +5197,48 @@
       "aliases": ["Alg_O(V)"],
       "dot_vertex": "Alg_O(V)",
       "provenance": "add-II Def 11.1; all algebra objects, not the free ones"
+    },
+    {
+      "id": "cat.walking_adjunction",
+      "kind": "derived_category",
+      "canonical_name": "WalkingAdjunction",
+      "parameters": [],
+      "definition": {
+        "operation": "generated_2_category",
+        "generators": "objects 0,1; f : 0 -> 1; u : 1 -> 0; eta : id_0 => uf; epsilon : fu => id_1",
+        "relations": "the triangle coherences together with all higher coherences forced by the universal property",
+        "notes": "add-II Def 1.1. A morphism of (infinity,2)-categories out of it selects an adjunction."
+      },
+      "aliases": ["WalkingAdjunction", "Adj (walking)"],
+      "provenance": "add-II Def 1.1; the single mathematical home for units, counits and triangle coherences. Deliberately carries no dot_vertex: the parent graph presents categories and the structural functors between them, and this is an INDEXING SHAPE in (infinity,2)-Cat, used as the domain of the functor category Adj(K) = Fun(WalkingAdjunction, K). It has no structural functor to or from any category in the graph, and inventing one to make it a vertex would encode a relation that does not exist."
+    },
+    {
+      "id": "ctor.adj",
+      "kind": "category_constructor",
+      "canonical_name": "Adj",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor",
+        "formula": "Adj(K) := Fun_{(inf,2)}(WalkingAdjunction, K)",
+        "notes": "add-II Def 1.2. An object is C, D, F : C -> D, U : D -> C, a unit, a counit and coherent triangle data. Evaluation on the generating 1-cells gives ev_F, ev_U into Arr(K); evaluation on the generating 2-cells gives the unit and counit as points of the appropriate mapping categories. So the unit and counit are NOT separate primitives (Def 1.2), and the chosen adjunction structures on a fixed pair (F,U) are the homotopy fibre of (ev_F, ev_U) (Def 1.3). RAdj(F) and LAdj(U) are the fibres of Def 1.4, empty or contractible by Thm 1.5, which is why existence is property-like while a chosen lift is data."
+      },
+      "aliases": ["Adj(−)"],
+      "dot_vertex": "Adj(−)",
+      "provenance": "add-II Def 1.2; the target of every named chosen adjunction lift required by Conv 1.7"
+    },
+    {
+      "id": "ctor.pres",
+      "kind": "category_constructor",
+      "canonical_name": "Pres",
+      "parameters": [],
+      "definition": {
+        "operation": "category_constructor",
+        "formula": "Pres(F) := C^~ x^h_{D^~, F^~, ev_0} Arr(D^~), with p_F : Pres(F) -> D^~ evaluating at the target",
+        "notes": "add-II Def 3.1. An object is (X, Y, phi) with phi : F(X) ~-> Y. Prop 3.3: X |-> (X, F(X), id) is an EQUIVALENCE from C^~, so this is not a new total object -- its value is the target projection p_F, whose fibres Pres_F(Y) are the chosen-presentation spaces (Prop 3.2). Membership in the essential image is the propositional truncation of Pres_F(Y). Conv 13.1: C, EssIm(F) and the fibres of p_F are never identified without the relevant comparison theorem."
+      },
+      "aliases": ["Pres(−)"],
+      "dot_vertex": "Pres(−)",
+      "provenance": "add-II Def 3.1; the standard comma construction on cores, named only because its projection is used"
     }
   ]
 }

@@ -4108,6 +4108,30 @@
         "not_identified_with_source": "Rmk 11.3: monadicity of U_O identifies Alg_O(V) with algebras for the monad U_O Free_O; it does not identify all O-algebras with the essential image of Free_O.",
         "note": "Rmk 11.4: tensor-power and coinvariants formulae for the underlying object are comparison or computation theorems under stated colimit hypotheses, never the definition of the free-algebra functor."
       }
+    },
+    {
+      "id": "arr.adj.ev_f",
+      "source": "ctor.adj",
+      "target": "ctor.arr",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "ev_F : Adj(K) -> Arr(K), evaluation on the generating left adjoint (add-II Def 1.2)"
+    },
+    {
+      "id": "arr.adj.ev_u",
+      "source": "ctor.adj",
+      "target": "ctor.arr",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "ev_U : Adj(K) -> Arr(K), evaluation on the generating right adjoint (add-II Def 1.2)"
+    },
+    {
+      "id": "arr.pres.projection",
+      "source": "ctor.pres",
+      "target": "ctor.arr",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "the Arr(D^~) leg of the Def 3.1 comma pullback; p_F is evaluation at the target, and its fibres are the presentation spaces"
     }
   ],
   "kind": "normalized_semantic_seed.arrows",

@@ -241,6 +241,10 @@ _DOC_SPECIFIED_ENTITIES = [
     ("Def 68.5  RootBasis_Gamma", "cat.rootbasis_gamma"),
     ("Def 68.5  embedded root realizations", "cat.embeddedrootrealization"),
     ("Def 85.2  BiAct(R,S)", "cat.biact_r_s"),
+    ("add-II Def 1.1  walking adjunction", "cat.walking_adjunction"),
+    ("add-II Def 1.2  Adj(K) = Fun(Adj_walking, K)", "ctor.adj"),
+    ("add-II Def 3.1  Pres(F)", "ctor.pres"),
+    ("add-II Def 11.1 Alg_O(V)", "cat.alg_o_v"),
 ]
 
 _DOC_SPECIFIED_CLASSIFIERS = [

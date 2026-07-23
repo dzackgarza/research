@@ -166,6 +166,7 @@ digraph CategoryParents {
 
   // --- category_constructor ---
   "(−)^op" [style="rounded,filled", fillcolor="#e3f2fd", color="#1565c0", id="ctor.op", kind="category_constructor"];
+  "Adj(−)" [style="rounded,filled", fillcolor="#e3f2fd", color="#1565c0", id="ctor.adj", kind="category_constructor"];
   "Arr(−)" [style="rounded,filled", fillcolor="#e3f2fd", color="#1565c0", id="ctor.arr", kind="category_constructor"];
   Comma [style="rounded,filled", fillcolor="#e3f2fd", color="#1565c0", id="ctor.comma", kind="category_constructor"];
   Coslices [style="rounded,filled", fillcolor="#e3f2fd", color="#1565c0", id="ctor.coslices", kind="category_constructor"];
@@ -176,6 +177,7 @@ digraph CategoryParents {
   GroupoidObjects [style="rounded,filled", fillcolor="#e3f2fd", color="#1565c0", id="ctor.groupoidobjects", kind="category_constructor"];
   HomCategories [style="rounded,filled", fillcolor="#e3f2fd", color="#1565c0", id="ctor.homcategories", kind="category_constructor"];
   IsomorphicObjects [style="rounded,filled", fillcolor="#e3f2fd", color="#1565c0", id="ctor.isomorphicobjects", kind="category_constructor"];
+  "Pres(−)" [style="rounded,filled", fillcolor="#e3f2fd", color="#1565c0", id="ctor.pres", kind="category_constructor"];
   Quotients [style="rounded,filled", fillcolor="#e3f2fd", color="#1565c0", id="ctor.quotients", kind="category_constructor"];
   Slices [style="rounded,filled", fillcolor="#e3f2fd", color="#1565c0", id="ctor.slices", kind="category_constructor"];
   Subobjects [style="rounded,filled", fillcolor="#e3f2fd", color="#1565c0", id="ctor.subobjects", kind="category_constructor"];
@@ -620,4 +622,6 @@ digraph CategoryParents {
   Prestacks -> Stacks [kind="left_adjoint", id="fun.stackification"];
   "Alg_O(V)" -> AdmissibleOperadicAmbients [kind="right_adjoint", id="fun.operadic_forgetful"];
   AdmissibleOperadicAmbients -> "Alg_O(V)" [kind="left_adjoint", id="fun.free_operadic_algebra"];
+  "Adj(−)" -> "Arr(−)" [kind="forgetful", id="arr.adj.ev_f"];
+  "Pres(−)" -> "Arr(−)" [kind="pullback_projection", id="arr.pres.projection"];
 }
