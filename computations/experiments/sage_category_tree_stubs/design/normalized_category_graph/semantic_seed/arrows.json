@@ -3837,6 +3837,30 @@
       "kind": "forgetful",
       "preferred": true,
       "provenance": "forget the chosen basis (Def 13.6); freeness is the truncation of the existence of such a lift (Rmk 13.7)"
+    },
+    {
+      "id": "fun.gram_n",
+      "source": "cat.symmat_n_r",
+      "target": "cat.bil_coord_n_r",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "Gram constructor (Foundations Def 21.3): G |-> (R^n, its standard basis, b_G(x,y) = x^T G y). Half of a named EQUIVALENCE with the inverse G_ij = b(e_i,e_j); after restricting to SymMat_n(R)^nd it lands in coordinatized lattices. It constructs coordinatized forms in general and is not the ontology of the named root lattices (Rmk 21.4)."
+    },
+    {
+      "id": "arr.proj.bil_coord__int_bil",
+      "source": "cat.bil_coord_n_r",
+      "target": "cat.int_bil_r",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "forget the coordinates (Def 21.3)"
+    },
+    {
+      "id": "arr.proj.bil_coord__coord",
+      "source": "cat.bil_coord_n_r",
+      "target": "cat.coord_n_r",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "forget the form (Def 21.3)"
     }
   ],
   "kind": "normalized_semantic_seed.arrows",

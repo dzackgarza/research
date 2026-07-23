@@ -1243,6 +1243,60 @@
       "provenance": "dot_import"
     },
     {
+      "id": "cat.symmat_n_r",
+      "kind": "derived_category",
+      "canonical_name": "SymMat",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        },
+        {
+          "name": "n",
+          "sort": "cat.sets",
+          "variance": "discrete_rank"
+        }
+      ],
+      "definition": {
+        "operation": "matrix_presentation",
+        "objects": "symmetric G in Mat_n(R)",
+        "morphisms": "A : G -> H with A^T H A = G",
+        "notes": "Foundations Def 21.2. A skeletal COORDINATE PRESENTATION of the symmetric forms on the standard free module R^n -- explicitly not a second kind of mathematical object. Restricting to matrices nondegenerate over K gives SymMat_n(R)^nd."
+      },
+      "aliases": ["SymMat_n(R)"],
+      "dot_vertex": "SymMat_n(R)",
+      "provenance": "Foundations Def 21.2; presentation, compared to the intrinsic forms by the Def 21.3 equivalence"
+    },
+    {
+      "id": "cat.bil_coord_n_r",
+      "kind": "derived_category",
+      "canonical_name": "BilCoord",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        },
+        {
+          "name": "n",
+          "sort": "cat.sets",
+          "variance": "discrete_rank"
+        }
+      ],
+      "definition": {
+        "operation": "pullback",
+        "left": "cat.int_bil_r",
+        "right_functor": "arr.frame.coord__modules",
+        "over": "cat.modules_r",
+        "strictness": "homotopy",
+        "notes": "Foundations Def 21.3: coordinatized bilinear forms. Morphisms are abstract form-preserving linear maps; a matrix is obtained from a morphism by applying the chosen source and target bases (Cor 74.5), not by being the morphism."
+      },
+      "aliases": ["Bil^coord_n(R)"],
+      "dot_vertex": "Bil^coord_n(R) = Bil x^h_{R-Mod} Coord_n(R)",
+      "provenance": "Foundations Def 21.3; the codomain of the Gram constructor"
+    },
+    {
       "id": "cat.int_bil_r",
       "kind": "category_family",
       "canonical_name": "∫Bil_R(W)",

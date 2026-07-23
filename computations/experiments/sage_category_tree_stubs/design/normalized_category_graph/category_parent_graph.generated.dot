@@ -113,6 +113,7 @@ digraph CategoryParents {
   "AssociativeAlgebras = Algebras.Associative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.associativealgebras", kind="derived_category"];
   "BasisFrame_n(R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.basisframe_n_r", kind="derived_category"];
   "BiAct(R,S)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.biact_r_s", kind="derived_category"];
+  "Bil^coord_n(R) = Bil x^h_{R-Mod} Coord_n(R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.bil_coord_n_r", kind="derived_category"];
   "Bimodules(K,K) = Bimodules(R,R).OverField" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.bimodules_k_k", kind="derived_category"];
   "Bimodules(R,R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.bimodules_r_r", kind="derived_category"];
   "CommAlgebras = UnitalAlgebras.Commutative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.commutative_algebras", kind="derived_category"];
@@ -149,6 +150,7 @@ digraph CategoryParents {
   "RightModules(R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.right_modules_r", kind="derived_category"];
   "Semigroups = Magmas.Associative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.semigroups", kind="derived_category"];
   "Surfaces(K) = Schemes.RelativeDimension(2)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.surfaces", kind="derived_category"];
+  "SymMat_n(R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.symmat_n_r", kind="derived_category"];
   "TensorProducts = CatObject.Monoidal" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.tensorproducts", kind="derived_category"];
   "UFDs = Rings.Commutative.UFD" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.ufds", kind="derived_category"];
   "UnitalAlgebras = Algebras.Associative.Unital" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.unital_algebras", kind="derived_category"];
@@ -595,4 +597,7 @@ digraph CategoryParents {
   "BasisFrame_n(R)" -> "Coord_n(R)" [kind="forgetful", id="arr.frame.basisframe__coord"];
   "GenFrame_n(R)" -> "Modules(R)" [kind="forgetful", id="arr.frame.genframe__modules"];
   "Coord_n(R)" -> "Modules(R)" [kind="forgetful", id="arr.frame.coord__modules"];
+  "SymMat_n(R)" -> "Bil^coord_n(R) = Bil x^h_{R-Mod} Coord_n(R)" [color="#6a1b9a", kind="construction", id="fun.gram_n"];
+  "Bil^coord_n(R) = Bil x^h_{R-Mod} Coord_n(R)" -> "∫Bil_R(W)" [kind="pullback_projection", id="arr.proj.bil_coord__int_bil"];
+  "Bil^coord_n(R) = Bil x^h_{R-Mod} Coord_n(R)" -> "Coord_n(R)" [kind="pullback_projection", id="arr.proj.bil_coord__coord"];
 }
