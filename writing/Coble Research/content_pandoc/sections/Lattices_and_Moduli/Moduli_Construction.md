@@ -4,9 +4,9 @@ We summarize the relevant moduli spaces:
 
 $$
 \begin{aligned}
-F_\En &= \bD(T_\En)/\Orth(T_\En) &
+F_\En &= \bD(T_\En)/\Orth(T_\En)^* &
 F_{\En, 2} &= \bD(T_\En)/\Gamma_{\En, 2} \\
-F_\Co &= \bD(T_\Co) / \Orth(T_\Co) &
+F_\Co &= \bD(T_\Co) / \Orth(T_\Co)^* &
 F_{\Co, 2} &= \bD(T_\Co)/\Gamma_{\Co, 2}
 \end{aligned}
 $$
@@ -17,13 +17,14 @@ $$
 \begin{aligned}
 \Gamma_{\En, 2} &= \Orth(T_\En) \intersect \Orth(T_\dP) \subseteq \Orth(\lkt) \\
 \Gamma_{\Co, 2} &= \mathrm{Stab}_{\Orth(T_\En)}(T_\Co) \subseteq \Orth(T_\En) \\
-F_{\Nod} &= \bD(T_\Nod)/\Orth(T_\Nod) \\
+F_{\Nod} &= \bD(T_\Nod)/\Orth(T_\Nod)^* \\
 F_{\Nod, 2} &= ???
 \end{aligned}
 $$
 
 where $T_{\dP}$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of \cref{lem:primitive_embedding_eta}.
 \todo[inline]{Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.}
+\todo[inline]{The unpolarized presentations above quotient by the stable orthogonal group $\Orth(T)^* = \ker(\Orth(T)\to\Orth(q_T))$, matching the general Hodge-theoretic statement below. The introduction (\S1) currently defines $\Gamma_\Co \da \Orth(T_\Co)$ (the full group) --- decide which is intended and reconcile the two.}
 We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$, which implies that there is a birational isomorphism $F_{\Co} \birational \cH_{-2}/\Orth(T_\En)$.
 
 # GIT Discussion
@@ -101,9 +102,9 @@ $-2d$, as in \cref{fig:period-domain-hyperplanes}, one can thus present
 
 $$
 \begin{aligned}
-F_{\En} &= \qty{D_{T_\En} \setminus \cH_{-2}} / \Orth(T_\En) \\
-F_{\Co} &= \cH_{-2} / \Orth(T_\En) \\
-F_{\Nod} &= \qty{\cH_{-4} \setminus \cH_{-2}} / \Orth(T_\En)
+F_{\En} &= \qty{D_{T_\En} \setminus \cH_{-2}} / \Orth(T_\En)^* \\
+F_{\Co} &= \cH_{-2} / \Orth(T_\En)^* \\
+F_{\Nod} &= \qty{\cH_{-4} \setminus \cH_{-2}} / \Orth(T_\En)^*
 \end{aligned}
 $$
 

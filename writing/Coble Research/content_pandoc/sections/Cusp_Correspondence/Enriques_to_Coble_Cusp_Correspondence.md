@@ -215,9 +215,11 @@ Then
 $$
 \begin{aligned}
 \tilde w_1^{\perp T_\dP}/\tilde w_1 &\cong (18, 0, 0)_1 \cong U \oplus E_8^2 \\
-\tilde w_2^{\perp T_\dP}/\tilde w_2 &\cong (16, 0, 0)_0 \cong E_8^2
+\tilde w_2^{\perp T_\dP}/\tilde w_2 &\cong (16, 0, 0)_0 \overset{?}{\cong} E_8^2
 \end{aligned}
 $$
+
+\todo[inline]{The identification $(16,0,0)_0 \cong E_8^2$ is not yet verified: the invariants $(r,a,\delta) = (16,0,0)$ do not determine the isometry class, since the even negative-definite unimodular lattices of rank $16$ are exactly $E_8^{\oplus 2}$ and $D_{16}^+$. Ruling out $D_{16}^+$ requires an argument that $\tilde w_2^{\perp T_\dP}/\tilde w_2$ inherits the $E_8 \oplus E_8$ splitting of $T_\dP = U \oplus U(2) \oplus E_8^2$.}
 
 Thus the embedding $F_\Co \injects F_{(2,2,0)}$ induces
 the following maps on cusps:
