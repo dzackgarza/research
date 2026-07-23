@@ -6024,17 +6024,23 @@ category_mappings:
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.magmaticalgebras.withbasis.finitedimensional
     source_sage_name: MagmaticAlgebras.WithBasis.FiniteDimensional
-    target: null
-    relation: unsupported
-    normalized_reading: MagmaticAlgebras.WithBasis.FiniteDimensional
+    target: cat.algebras_r
+    relation: constructible
+    normalized_reading: MagmaticAlgebras.WithBasis.FiniteRank
     construction:
       kind: finite_limit_derivability
-      ok: false
+      ok: true
       base: cat.algebras_r
-      classifiers: []
-      expression: MagmaticAlgebras.WithBasis.FiniteDimensional
-      detail: could not parse base/classifiers for constructibility
-      certificate: []
+      classifiers:
+        - clf.modules.with_basis
+        - clf.finiterank
+      expression: MagmaticAlgebras.WithBasis.FiniteRank
+      detail: all requested classifier occurrences discharged
+      certificate:
+        - occurrence: clf.modules.with_basis#0
+          support_host: cat.modules_r
+        - occurrence: clf.finiterank#1
+          support_host: cat.modules_r
     sage_versions:
       since: sage-dev-local
       until: null
@@ -6043,22 +6049,25 @@ category_mappings:
       bindings: {}
       resolved: true
     provenance:
-      status: not-constructible
+      status: constructible
       source: constructibility.check_constructibility
-      note: could not parse base/classifiers for constructibility
+      note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.vectorspaces.finitedimensional
     source_sage_name: VectorSpaces.FiniteDimensional
-    target: null
-    relation: unsupported
-    normalized_reading: VectorSpaces.FiniteDimensional
+    target: cat.bimodules_k_k
+    relation: constructible
+    normalized_reading: VectorSpaces.FiniteRank
     construction:
       kind: finite_limit_derivability
-      ok: false
+      ok: true
       base: cat.bimodules_k_k
-      classifiers: []
-      expression: VectorSpaces.FiniteDimensional
-      detail: could not parse base/classifiers for constructibility
-      certificate: []
+      classifiers:
+        - clf.finiterank
+      expression: VectorSpaces.FiniteRank
+      detail: all requested classifier occurrences discharged
+      certificate:
+        - occurrence: clf.finiterank#0
+          support_host: cat.modules_r
     sage_versions:
       since: sage-dev-local
       until: null
@@ -6067,22 +6076,28 @@ category_mappings:
       bindings: {}
       resolved: true
     provenance:
-      status: not-constructible
+      status: constructible
       source: constructibility.check_constructibility
-      note: could not parse base/classifiers for constructibility
+      note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.vectorspaces.withbasis.finitedimensional
     source_sage_name: VectorSpaces.WithBasis.FiniteDimensional
-    target: null
-    relation: unsupported
-    normalized_reading: VectorSpaces.WithBasis.FiniteDimensional
+    target: cat.bimodules_k_k
+    relation: constructible
+    normalized_reading: VectorSpaces.WithBasis.FiniteRank
     construction:
       kind: finite_limit_derivability
-      ok: false
+      ok: true
       base: cat.bimodules_k_k
-      classifiers: []
-      expression: VectorSpaces.WithBasis.FiniteDimensional
-      detail: could not parse base/classifiers for constructibility
-      certificate: []
+      classifiers:
+        - clf.modules.with_basis
+        - clf.finiterank
+      expression: VectorSpaces.WithBasis.FiniteRank
+      detail: all requested classifier occurrences discharged
+      certificate:
+        - occurrence: clf.modules.with_basis#0
+          support_host: cat.modules_r
+        - occurrence: clf.finiterank#1
+          support_host: cat.modules_r
     sage_versions:
       since: sage-dev-local
       until: null
@@ -6091,9 +6106,9 @@ category_mappings:
       bindings: {}
       resolved: true
     provenance:
-      status: not-constructible
+      status: constructible
       source: constructibility.check_constructibility
-      note: could not parse base/classifiers for constructibility
+      note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.commutativerings.finite
     source_sage_name: CommutativeRings.Finite
     target: cat.commutative_rings
@@ -6123,17 +6138,23 @@ category_mappings:
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.finitelygeneratedsemigroups.finite
     source_sage_name: FinitelyGeneratedSemigroups.Finite
-    target: null
-    relation: unsupported
+    target: cat.semigroups
+    relation: constructible
     normalized_reading: FinitelyGeneratedSemigroups.Finite
     construction:
       kind: finite_limit_derivability
-      ok: false
-      base: null
-      classifiers: []
+      ok: true
+      base: cat.semigroups
+      classifiers:
+        - clf.semigroups.finitelygenerated
+        - clf.sets.finite
       expression: FinitelyGeneratedSemigroups.Finite
-      detail: could not parse base/classifiers for constructibility
-      certificate: []
+      detail: all requested classifier occurrences discharged
+      certificate:
+        - occurrence: clf.semigroups.finitelygenerated#head0
+          support_host: cat.semigroups
+        - occurrence: clf.sets.finite#0
+          support_host: cat.sets
     sage_versions:
       since: sage-dev-local
       until: null
@@ -6142,9 +6163,9 @@ category_mappings:
       bindings: {}
       resolved: true
     provenance:
-      status: not-constructible
+      status: constructible
       source: constructibility.check_constructibility
-      note: could not parse base/classifiers for constructibility
+      note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.posets.bounded
     source_sage_name: Posets.Bounded
     target: cat.posets
@@ -6258,17 +6279,23 @@ category_mappings:
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.coalgebraswithbasis.filtered
     source_sage_name: CoalgebrasWithBasis.Filtered
-    target: null
-    relation: unsupported
+    target: cat.coalgebras_r
+    relation: constructible
     normalized_reading: CoalgebrasWithBasis.Filtered
     construction:
       kind: finite_limit_derivability
-      ok: false
-      base: null
-      classifiers: []
+      ok: true
+      base: cat.coalgebras_r
+      classifiers:
+        - clf.withbasis
+        - clf.filtered
       expression: CoalgebrasWithBasis.Filtered
-      detail: could not parse base/classifiers for constructibility
-      certificate: []
+      detail: all requested classifier occurrences discharged
+      certificate:
+        - occurrence: clf.withbasis#head0
+          support_host: cat.modules_r
+        - occurrence: clf.filtered#0
+          support_host: cat.modules_r
     sage_versions:
       since: sage-dev-local
       until: null
@@ -6277,9 +6304,9 @@ category_mappings:
       bindings: {}
       resolved: true
     provenance:
-      status: not-constructible
+      status: constructible
       source: constructibility.check_constructibility
-      note: could not parse base/classifiers for constructibility
+      note: Ephemeral C.A… over normalized base; not in the authored public ledger
   - source: sage.category.with_axiom.vectorspaces.filtered
     source_sage_name: VectorSpaces.Filtered
     target: cat.bimodules_k_k
@@ -6449,13 +6476,13 @@ category_mappings:
     source_sage_name: DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative
     target: null
     relation: unsupported
-    normalized_reading: DistributiveMagmasAndAdditiveMagmas.Associative.Commutative.Unital.Associative
+    normalized_reading: DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative
     construction:
       kind: finite_limit_derivability
       ok: false
-      base: null
+      base: cat.magmaswithtwooperations
       classifiers: []
-      expression: DistributiveMagmasAndAdditiveMagmas.Associative.Commutative.Unital.Associative
+      expression: DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative
       detail: could not parse base/classifiers for constructibility
       certificate: []
     sage_versions:

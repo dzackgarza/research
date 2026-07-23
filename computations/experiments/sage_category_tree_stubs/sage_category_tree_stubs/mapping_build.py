@@ -238,6 +238,33 @@ def build_mapping(
     dot_idx = build_dot_vertex_index(list(seed.entities))
     sage_to_entity = dict(corr.get("sage_to_graph", {}))
 
+    # A dotted head may itself be a named Sage category with a composed destination:
+    # CoalgebrasWithBasis is Coalgebras(R).WithBasis. Record base plus the head's own
+    # classifiers so CoalgebrasWithBasis.Filtered resolves instead of reading as a gap.
+    sage_to_composed: dict[str, tuple[str, tuple[str, ...]]] = {}
+    for row in authored_manifest.get("category_mappings") or []:
+        normalized = row.get("normalized") or {}
+        base = normalized.get("base_id")
+        apps = normalized.get("classifier_applications") or []
+        name = (row.get("source") or {}).get("name")
+        if not (name and base and apps):
+            continue
+        # Authored ids carry legacy spellings; resolve_classifier_id is the single place
+        # that knows them (clf.finitelygenerated -> the host-qualified classifier).
+        resolved = [
+            resolve_classifier_id(
+                classifier_id=a.get("classifier_id"),
+                classifier_name=a.get("classifier"),
+                least_host=a.get("least_host"),
+                sketch=sketch,
+                prefer_host=str(base),
+            )
+            for a in sorted(apps, key=lambda a: a.get("order") or 0)
+        ]
+        ids = tuple(str(c) for c in resolved if c)
+        if ids and len(ids) == len(resolved):
+            sage_to_composed[str(name)] = (str(base), ids)
+
     category_mappings: list[dict[str, Any]] = []
     authored_names: set[str] = set()
 
@@ -379,7 +406,7 @@ def build_mapping(
         if cat["id"] in mapped_sources or qn in mapped_names:
             continue
         reading = (composed_meta or {}).get("normalized_reading") or normalized_reading(qn)
-        constructibility = check_constructibility(qn, seed=seed, sage_to_entity=sage_to_entity)
+        constructibility = check_constructibility(qn, seed=seed, sage_to_entity=sage_to_entity, sage_to_composed=sage_to_composed)
         if constructibility.ok:
             category_mappings.append(
                 {

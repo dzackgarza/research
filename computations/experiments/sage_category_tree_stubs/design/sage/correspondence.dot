@@ -188,17 +188,22 @@ digraph SageToNormalized {
     "sage.category.weyl_groups_weylgroups" [label="Sage: WeylGroups", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.additivemagmas.additivecommutative" [label="Sage: AdditiveMagmas.AdditiveCommutative", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.coalgebras.filtered" [label="Sage: Coalgebras.Filtered", kind="sage_category", fillcolor="#ffe0b2"];
+    "sage.category.with_axiom.coalgebraswithbasis.filtered" [label="Sage: CoalgebrasWithBasis.Filtered", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.commutativerings.finite" [label="Sage: CommutativeRings.Finite", kind="sage_category", fillcolor="#ffe0b2"];
+    "sage.category.with_axiom.finitelygeneratedsemigroups.finite" [label="Sage: FinitelyGeneratedSemigroups.Finite", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.magmas.unital" [label="Sage: Magmas.Unital", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.magmas.unital.inverse" [label="Sage: Magmas.Unital.Inverse", kind="sage_category", fillcolor="#ffe0b2"];
+    "sage.category.with_axiom.magmaticalgebras.withbasis.finitedimensional" [label="Sage: MagmaticAlgebras.WithBasis.FiniteDimensional", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.monoids.commutative" [label="Sage: Monoids.Commutative", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.posets.bounded" [label="Sage: Posets.Bounded", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.sets.infinite" [label="Sage: Sets.Infinite", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.unitalalgebras.withbasis" [label="Sage: UnitalAlgebras.WithBasis", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.vectorspaces.filtered" [label="Sage: VectorSpaces.Filtered", kind="sage_category", fillcolor="#ffe0b2"];
+    "sage.category.with_axiom.vectorspaces.finitedimensional" [label="Sage: VectorSpaces.FiniteDimensional", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.vectorspaces.graded" [label="Sage: VectorSpaces.Graded", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.vectorspaces.withbasis" [label="Sage: VectorSpaces.WithBasis", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.vectorspaces.withbasis.filtered" [label="Sage: VectorSpaces.WithBasis.Filtered", kind="sage_category", fillcolor="#ffe0b2"];
+    "sage.category.with_axiom.vectorspaces.withbasis.finitedimensional" [label="Sage: VectorSpaces.WithBasis.FiniteDimensional", kind="sage_category", fillcolor="#ffe0b2"];
     "sage.category.with_axiom.vectorspaces.withbasis.graded" [label="Sage: VectorSpaces.WithBasis.Graded", kind="sage_category", fillcolor="#ffe0b2"];
   }
 
@@ -476,11 +481,16 @@ digraph SageToNormalized {
   "sage.category.with_axiom.unitalalgebras.withbasis" -> "cat.unital_algebras" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.additivemagmas.additivecommutative" -> "cat.magmas" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.monoids.commutative" -> "cat.monoids" [kind="normalizes_to", mapping="constructible", style=dashed];
+  "sage.category.with_axiom.magmaticalgebras.withbasis.finitedimensional" -> "cat.algebras_r" [kind="normalizes_to", mapping="constructible", style=dashed];
+  "sage.category.with_axiom.vectorspaces.finitedimensional" -> "cat.bimodules_k_k" [kind="normalizes_to", mapping="constructible", style=dashed];
+  "sage.category.with_axiom.vectorspaces.withbasis.finitedimensional" -> "cat.bimodules_k_k" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.commutativerings.finite" -> "cat.commutative_rings" [kind="normalizes_to", mapping="constructible", style=dashed];
+  "sage.category.with_axiom.finitelygeneratedsemigroups.finite" -> "cat.semigroups" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.posets.bounded" -> "cat.posets" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.vectorspaces.graded" -> "cat.bimodules_k_k" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.vectorspaces.withbasis.graded" -> "cat.bimodules_k_k" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.coalgebras.filtered" -> "cat.coalgebras_r" [kind="normalizes_to", mapping="constructible", style=dashed];
+  "sage.category.with_axiom.coalgebraswithbasis.filtered" -> "cat.coalgebras_r" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.vectorspaces.filtered" -> "cat.bimodules_k_k" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.vectorspaces.withbasis.filtered" -> "cat.bimodules_k_k" [kind="normalizes_to", mapping="constructible", style=dashed];
   "sage.category.with_axiom.magmas.unital.inverse" -> "cat.magmas" [kind="normalizes_to", mapping="constructible", style=dashed];

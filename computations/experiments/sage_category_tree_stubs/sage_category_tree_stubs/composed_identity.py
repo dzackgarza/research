@@ -19,6 +19,14 @@ ADDITIVE_AXIOM_TO_FLAT: dict[str, str] = {
     "AdditiveCommutative": "Commutative",
 }
 
+# Sage axiom name → the normalized classifier that names the same condition.
+# Sage's FiniteDimensional is module-relative, so the condition it states is finite rank;
+# the authored ledger already normalizes every FiniteDimensional* row that way.
+SAGE_AXIOM_TO_CLASSIFIER: dict[str, str] = {
+    "FiniteDimensional": "FiniteRank",
+}
+
+
 # Named additive bases → Magmas.Additive… classifier prefixes.
 ADDITIVE_BASE_TO_MAGMAS: dict[str, str] = {
     "AdditiveMagmas": "Magmas.Additive",
@@ -69,6 +77,17 @@ def parse_composed(cls_key: str) -> tuple[str, tuple[str, ...]]:
     return parts[0], parts[1:]
 
 
+def rename_step(step: str) -> str:
+    """Sage axiom name → normalized classifier name, operation role preserved.
+
+    ``Additive*`` is flattened only by :func:`normalized_reading` and only under an
+    additive base, where there is one operation and it is the additive one. On a base
+    with two operations the prefix is the operation role, and dropping it collides the
+    additive and multiplicative forms of the same law.
+    """
+    return SAGE_AXIOM_TO_CLASSIFIER.get(step, step)
+
+
 def normalized_reading(cls_key: str) -> str:
     """Classifier-style reading under flat Magmas Additive* rehosting.
 
@@ -80,12 +99,10 @@ def normalized_reading(cls_key: str) -> str:
     if base in ADDITIVE_BASE_TO_MAGMAS:
         path = ADDITIVE_BASE_TO_MAGMAS[base]
         for step in steps:
-            path = f"{path}.{ADDITIVE_AXIOM_TO_FLAT.get(step, step)}"
+            path = f"{path}.{ADDITIVE_AXIOM_TO_FLAT.get(step, rename_step(step))}"
         return path
-    out = [base]
-    for step in steps:
-        out.append(ADDITIVE_AXIOM_TO_FLAT.get(step, step))
-    return ".".join(out)
+    # Not an additive base: the Additive prefix carries the operation role and stays.
+    return ".".join([base, *(rename_step(s) for s in steps)])
 
 
 def composed_kind(cls_key: str) -> str:

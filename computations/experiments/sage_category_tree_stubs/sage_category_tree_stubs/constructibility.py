@@ -26,6 +26,7 @@ from .composed_identity import (
     is_composed_cls_key,
     normalized_reading,
     parse_composed,
+    rename_step,
 )
 from .semantic_seed import SemanticSeed, load_semantic_seed
 
@@ -531,9 +532,18 @@ def requests_from_composed_cls_key(
     *,
     sketch: dict[str, Any] | None = None,
     sage_to_entity: dict[str, str] | None = None,
+    sage_to_composed: dict[str, tuple[str, tuple[str, ...]]] | None = None,
 ) -> tuple[str | None, list[ClassifierRequest], str]:
+    """Base and classifier requests for a dotted Sage cls key.
+
+    ``sage_to_composed`` lets a dotted head that is itself a named Sage category with a
+    composed destination expand to that destination: ``CoalgebrasWithBasis`` is
+    ``Coalgebras(R).WithBasis``, so ``CoalgebrasWithBasis.Filtered`` is that base with
+    the head's own classifiers in front of ``Filtered``.
+    """
     sketch = sketch or build_sketch()
     sage_to_entity = sage_to_entity or {}
+    sage_to_composed = sage_to_composed or {}
     classifiers: dict[str, ClassifierRec] = sketch["classifiers"]
     expression = normalized_reading(cls_key)
     if not is_composed_cls_key(cls_key):
@@ -542,7 +552,12 @@ def requests_from_composed_cls_key(
     if not steps or steps[-1] in CONSTRUCTION_TAGS:
         return None, [], expression
 
-    flat_steps = [ADDITIVE_AXIOM_TO_FLAT.get(s, s) for s in steps]
+    # Additive* flattens only under an additive base; elsewhere the prefix is the
+    # operation role and dropping it collides the additive and multiplicative laws.
+    if sage_base in ADDITIVE_BASE_TO_MAGMAS:
+        flat_steps = [ADDITIVE_AXIOM_TO_FLAT.get(s, rename_step(s)) for s in steps]
+    else:
+        flat_steps = [rename_step(s) for s in steps]
     base_id: str | None
     additive_tower = False
 
@@ -557,10 +572,14 @@ def requests_from_composed_cls_key(
     else:
         base_id = _resolve_named_category(sage_base, sketch=sketch, sage_to_entity=sage_to_entity)
 
+    head_classifiers: tuple[str, ...] = ()
+    if base_id is None and sage_base in sage_to_composed:
+        base_id, head_classifiers = sage_to_composed[sage_base]
+
     if base_id is None:
         return None, [], expression
 
-    reqs: list[ClassifierRequest] = []
+    reqs: list[ClassifierRequest] = [ClassifierRequest(cid, occurrence_id=f"{cid}#head{i}") for i, cid in enumerate(head_classifiers)]
     for i, name in enumerate(flat_steps):
         cands = [c for c in classifiers.values() if c.name == name]
         if not cands:
@@ -594,9 +613,10 @@ def check_constructibility(
     *,
     seed: SemanticSeed | None = None,
     sage_to_entity: dict[str, str] | None = None,
+    sage_to_composed: dict[str, tuple[str, tuple[str, ...]]] | None = None,
 ) -> Constructibility:
     sketch = build_sketch(seed)
-    base_id, reqs, expression = requests_from_composed_cls_key(cls_key, sketch=sketch, sage_to_entity=sage_to_entity)
+    base_id, reqs, expression = requests_from_composed_cls_key(cls_key, sketch=sketch, sage_to_entity=sage_to_entity, sage_to_composed=sage_to_composed)
     if base_id is None or not reqs:
         return Constructibility(
             False,

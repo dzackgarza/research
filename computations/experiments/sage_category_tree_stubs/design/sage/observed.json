@@ -10902,7 +10902,7 @@
       "composed": {
         "base": "MagmaticAlgebras",
         "steps": ["WithBasis", "FiniteDimensional"],
-        "normalized_reading": "MagmaticAlgebras.WithBasis.FiniteDimensional"
+        "normalized_reading": "MagmaticAlgebras.WithBasis.FiniteRank"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
     },
@@ -10939,7 +10939,7 @@
       "composed": {
         "base": "VectorSpaces",
         "steps": ["FiniteDimensional"],
-        "normalized_reading": "VectorSpaces.FiniteDimensional"
+        "normalized_reading": "VectorSpaces.FiniteRank"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
     },
@@ -11026,7 +11026,7 @@
       "composed": {
         "base": "VectorSpaces",
         "steps": ["WithBasis", "FiniteDimensional"],
-        "normalized_reading": "VectorSpaces.WithBasis.FiniteDimensional"
+        "normalized_reading": "VectorSpaces.WithBasis.FiniteRank"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
     },
@@ -11628,7 +11628,7 @@
       "composed": {
         "base": "DistributiveMagmasAndAdditiveMagmas",
         "steps": ["AdditiveAssociative", "AdditiveCommutative", "AdditiveUnital", "Associative"],
-        "normalized_reading": "DistributiveMagmasAndAdditiveMagmas.Associative.Commutative.Unital.Associative"
+        "normalized_reading": "DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative"
       },
       "notes": "Empirical identity for Sage Base.Axiom(\u2026) parent. Character is not asserted here."
     }
