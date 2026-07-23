@@ -12,11 +12,16 @@ total charge $24$.
 The additional data of an integral affine polarization
 $R_{\mathrm{IA}} \subset \Gamma(\cX_0)$ describes the KSBA stable limit of a
 degeneration $(\cX^*, \varepsilon \cR^*)$.
+The geometry of such a degeneration is depicted in \cref{fig:moduli-degeneration}:
+the family $\cX$ is fibred over a curve $C$ in the moduli space $\cM$, and the
+stable limit is the fiber over the point where $C$ meets the boundary.
 For Enriques (and hence Coble) surfaces, we take the corresponding dlt models
 $\cZ \da \cX/\iota_{\En}$ and half-divisor models
 $(\cZ, \cR_{\cZ}) \da (\cX, \cR)/\iota_{\En}$ where $\cX \to (C, 0)$ and
 $(\cX, \cR)$ are Kulikov and divisor models of their K3 covers.
 :::
+
+![A one-parameter family $\cX \to C$ of surfaces over a curve $C \subseteq \cM$ in the moduli space, with fibers $\cX_0$ and $\cX_t$ over interior points and the limit $\cX_\infty$ over the boundary point $\infty$.](rendered/moduli_space_degeneration.svg){#fig:moduli-degeneration width=48%}
 
 ::: {.remark}
 
