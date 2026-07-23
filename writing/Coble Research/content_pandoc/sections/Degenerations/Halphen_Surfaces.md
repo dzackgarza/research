@@ -16,7 +16,7 @@ isomorphic to one of the following:
 - A blowup of a Halphen surface of index 2 at one singular point of a single
   simple reduced fibre of type $\tilde A_n$ where $n\geq 8$
 
-This is used in [@DK25 Prop. 9.1.5] to show that $K_S^2 \geq -10$, and
+This is used in [@DK25 Cor. 9.1.5] to show that $K_S^2 \geq -10$, and
 since $K_S^2 = -n$, this shows that such Coble surfaces have at most ten
 boundary components.
 
@@ -28,7 +28,7 @@ One can find a cubic $V(f_3)$ passing through nine of them and form a pencil
 $V(\lambda f_6 + \mu f_3^2)$ such that the minimal resolution of its basepoints
 is a Halphen surface of index 2. The proof of [@DK25 Prop. 9.1.8]
 indicates that the moduli space of general Halphen surfaces of index 2 has
-dimension 9.
+dimension 9.\todo{Attribution unverified: Prop. 9.1.8 as published computes $h^1(\Theta_{V/k}) = 10+2n$; neither it nor its proof mentions the dimension of Halphen moduli. Locate the intended source.}
 :::
 
 The following is [@CD12 Prop. 3.1]:

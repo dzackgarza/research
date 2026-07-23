@@ -145,3 +145,29 @@ all four `CD12` sites. The inline `\bibitem` list was never build-validated, so
 two sites where it was wrong (AS15, Dol12) had to be caught by extraction text.
 This monograph is the first version of the document with a resolving
 bibliography.
+
+## Locator verification by content (not string presence)
+
+The first locator pass used `grep -c`, which proves a string occurs, not that
+the numbered statement says what is attributed to it. Redone by reading each
+statement:
+
+| citation | published statement | verdict |
+|---|---|---|
+| `CD12 §1.4` | "Cremona special … if $n \geq 9$ and $\mathrm{Aut}(X)^*$ has finite index in $W_X$"; *unnodal* defined; "unnodal sets form an open Zariski subset … Cremona special Halphen and Coble surfaces are exactly the unnodal ones" | ✅ verbatim |
+| `CD12` classification | **Main Theorem**: $\mathcal P$ unnodal and ($n=9$ Halphen) or ($n=10$ Coble) or ($n\geq10$, char $>0$, Harbourne) | ✅ — the monograph's *complex* restriction is what excludes the Harbourne case |
+| `CD12 §3.1` | "$p_a(C) = 1+\frac12(C^2+C\cdot K_X) = 1+K_X^2 = 0$. Thus $C$ is a smooth rational curve with $C^2 = 4K_X^2 = -4$" | ✅ character-for-character |
+| `CD12 Prop. 3.1` | blowdown to index-2 Halphen, three bullets + converse | ✅ verbatim |
+| `CDL25 Def. 5.4.3` | the Coble definition, and the following paragraph gives the $(-2)$-curve preimages, "ramification divisor … described by (5.3.1), where $g=0$ and $k=n-1$", and $r=10+n$, $l=12-n$ | ✅ — validates the joint `Def. 5.4.3, Eqn. 5.3.1` citation and the lattice-table attribution |
+| `CDL25 Prop. 5.46` → **`Prop. 5.4.6`** | "admits an open embedding into $\mathcal K3_{E_{10}(2)}$ … coarse moduli space of marked Coble surfaces with $n=1$" | ✅ content exact; **locator renumbered**, corrected in text |
+| `CDL25 Thm. 5.8.2` | "The moduli space of nodal Enriques surfaces … and … Coble surfaces of K3 type $M_{Cob}$ are rational varieties" | ✅ |
+| `CDL25 Cor. 5.9.10` | "the boundary has a unique zero-dimensional component and a unique one-dimensional component, which is isomorphic to the modular curve $X$" | ✅ |
+| `DK25 Prop. 9.1.1` | "the canonical cover $X$ is a K3 surface" | ✅ |
+| `DK25 Prop. 9.1.4` | terminal Coble of K3 type = blowup of index-1 or index-2 Halphen at fiber singular points | ✅ |
+| `DK25 Prop. 9.1.5` → **`Cor. 9.1.5`** | "$K_V^2 \geq -10$. In particular, the number $n$ … is at most 10" | ✅ content exact; **statement type wrong**, corrected in text |
+| `DK25 Ex. 9.1.7` | "If we choose nine of them … $V(\lambda F_6 + \mu F_3^2)$ is a Halphen pencil of index 2. The minimal resolution of its base points is a Halphen surface of index 2." | ✅ verbatim |
+| `DK25 Prop. 9.1.8` | computes $h^1(\Theta_{V/\Bbbk}) = 10+2n$ | ❌ **does not support** the attributed claim that its proof "indicates that the moduli space of general Halphen surfaces of index 2 has dimension 9" — no Halphen/moduli/dimension statement in it or its proof. Flagged with a `\todo` at the site; needs the intended source. |
+
+Independent corroboration of the DK25 renumbering: CDL25 itself cross-references
+"**Proposition 9.1.3 in Volume II**" for basic-rationality — the same statement
+the draft cited as "Prop 9.13".

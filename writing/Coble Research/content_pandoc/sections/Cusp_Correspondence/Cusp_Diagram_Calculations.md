@@ -44,7 +44,7 @@ Calculations verify that $v_0^2 = v_1^2 = 0$, that $v_1 \in v_0^{\perp T_{\Co}}/
 We further note that $\div_{T_{\Co}}(v_0) = \div_{T_{\Co}}(v_1) = 2$, which will be an important invariant for establishing a correspondence to cusps of other moduli spaces.
 For an isotropic plane $J$, we denote the divisibilities of the constituent generating vectors as a tuple $(d_1, d_2)$, and in this convention we have $\div_{T_{\Co}}(v_0, v_1) = (2, 2)$.
 
-By [@CDL25 Prop. 5.46], there is an open embedding $F_{(11, 11, 1)} \injects F_{(10,10,0)}$, i.e. $F_\Co \injects F_\En$, realizing $F_\Co$ as the coarse space of marked Coble surfaces with $n=1$, where $n$ is the number of boundary components in $C = C_1 + \cdots + C_n$.
+By [@CDL25 Prop. 5.4.6], there is an open embedding $F_{(11, 11, 1)} \injects F_{(10,10,0)}$, i.e. $F_\Co \injects F_\En$, realizing $F_\Co$ as the coarse space of marked Coble surfaces with $n=1$, where $n$ is the number of boundary components in $C = C_1 + \cdots + C_n$.
 The image is an open subset of a closed irreducible subset of $\cH_{-2}/\Gamma_\En$.
 By [@CDL25 Thm. 5.8.2], the coarse space of $F_\Co$ is a rational variety, and since $F_\En$ is quasiprojective, so too is $F_\Co$.
 Moreover, $\partial \overline{F_{\En}}^{\mathrm{BB}}$ consists of $F_{\Co}$ and two modular curves $X$ and $X_0(2)$ by [@CDL25 Thm. 5.9.8], and the closure of $\cH_{-2}$ contains the modular curve $X$.
