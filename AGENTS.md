@@ -190,6 +190,13 @@ nor complete, so `==`, `super_categories()` and `is_subcategory()` test nothing.
 catalogue: `.agents/references/reading-sage-gotchas.md`. Mathematics:
 `docs/framework/Mathematical-Theory-Foundations.md` Part VIII (§40–43) and §13.
 
+The module neighbourhood is settled end to end — destinations, the `Bimodules(R,S)`
+primitive and its diagonal, `U_L`/`U_R`, `c_R`, algebras as bimodules, `WithBasis` as a
+comma category — in `.agents/decisions/the-module-neighbourhood-settled.md`. Read it before
+touching a module row. Its headline is the one that catches people: `Bimodules(K,K)` is
+**not** `Vect_K`, because `_K Bimod_K ≃ (K ⊗_ℤ K)-Mod` (Prop 85.4) and that is `K` only for
+a prime field.
+
 # Repository layout
 
 Top-level directories (this is a navigational map; each tree owns its own README/AGENTS.md):
