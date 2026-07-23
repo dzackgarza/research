@@ -10,7 +10,7 @@ For Type II degenerations of K3 surfaces, this yields an integral affine $S^2$
 with singularities of total charge $24$, and for Type III the dual complex is
 an interval $\bD^1$.
 The additional data of an integral affine polarization
-$R_{\IA} \subset \Gamma(\cX_0)$ describes the KSBA stable limit of a
+$R_{\mathrm{IA}} \subset \Gamma(\cX_0)$ describes the KSBA stable limit of a
 degeneration $(\cX^*, \varepsilon \cR^*)$.
 For Enriques (and hence Coble) surfaces, we take the corresponding dlt models
 $\cZ \da \cX/\iota_{\En}$ and half-divisor models

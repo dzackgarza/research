@@ -16,7 +16,7 @@ We have the following divisibilities in various lattices:
 | 4          | $2e' + f' + \overline{\alpha}_1$ | 2                      | 1                                |
 | 5          | $2e + 2f + \overline{\alpha}_1$  | 2                      | 1                                |
 
-: Isotropic vectors in $F_{\En, 2}$ and their divisibilities. {#tbl:sterk-cusp-divisibilities}
+: Isotropic vectors in $F_{\En, 2}$ and their divisibilities.\label{tbl:sterk-cusp-divisibilities}
 :::
 
 ::: {.remark}

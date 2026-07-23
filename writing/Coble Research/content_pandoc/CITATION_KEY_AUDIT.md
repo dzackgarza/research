@@ -1,30 +1,23 @@
 # Citation key audit — monograph consolidation
 
-Every citation-key change made while consolidating "Coble Paper Draft" and
-"Coble Research" into `content_pandoc/`, with its evidence class.
-The build bibliography is `~/zotero_global.bib` (symlinked as `global.bib`),
-supplemented by `../coble_supplement.bib`.
+Every citation-key change made while consolidating "Coble Paper Draft" and "Coble Research" into `content_pandoc/`, with its evidence class.
+The build bibliography is `~/zotero_global.bib` (symlinked as `global.bib`), supplemented by `../coble_supplement.bib`.
 
 Evidence classes:
 
-- **A — collision or exact-work match.** The project's own inline bibliography
-  (`content_latex/main.tex`, `\begin{thebibliography}`) or `CoblePaper.bib`
-  pins the key to a specific work (author+title+venue); the global bib holds
-  that exact work under a different key, and in the collision cases holds a
-  *different* work under the original key. Not remapping would cite the wrong
-  paper.
-- **B — twin restoration.** The pandoc port's automated key migration replaced
-  a citation with an unrelated key; the LaTeX twin of the identical sentence
-  preserves the original citation. The change restores the author's original.
-- **C — version/edition drift.** The work is certain, but the global bib holds
-  a later version/edition than the one the locators were written against.
-  **Cited section/lemma/page numbers need verification against the published
-  versions.**
-- **D — judgment call.** The two serializations disagree or a key was
-  overloaded; resolution chosen by content, flagged for author review.
+- **A — collision or exact-work match.** The project's own inline bibliography (`content_latex/main.tex`, `\begin{thebibliography}`) or `CoblePaper.bib` pins the key to a specific work (author+title+venue); the global bib holds that exact work under a different key, and in the collision cases holds a *different* work under the original key.
+  Not remapping would cite the wrong paper.
+
+- **B — twin restoration.** The pandoc port's automated key migration replaced a citation with an unrelated key; the LaTeX twin of the identical sentence preserves the original citation.
+  The change restores the author's original.
+
+- **C — version/edition drift.** The work is certain, but the global bib holds a later version/edition than the one the locators were written against.
+  **Cited section/lemma/page numbers need verification against the published versions.**
+
+- **D — judgment call.** The two serializations disagree or a key was overloaded; resolution chosen by content, flagged for author review.
 
 | old key | new key | class | evidence |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `Nik79` (this project) | `Nik80` | A | Project bibitem = *Integer symmetric bilinear forms…* (Izv. 43, 1979). Global `Nik80` = that work; global `Nik79` = *Finite groups of automorphisms of Kählerian K3 surfaces* (different paper). |
 | `nikulin1979integer-symmetric` | `Nik80` | A | Same work, BBT-style key. |
 | `Hor78` (this project), `Hor78b` | `Hor77` | A | Project bibitem = *On the periods of Enriques surfaces. II*, Math. Ann. **235** (1978). Global `Hor77` = Periods II; global `Hor78` = Periods I. |
@@ -61,12 +54,24 @@ Evidence classes:
 | `CD12` disambiguation | `CD12` vs `CDL25` | D | The LaTeX bibliography overloads `CD12` (Cantat–Dolgachev paper AND the CDL book share the key). Split per reference: §1.4 (Cremona special), §3.1 (Coble surfaces / genus computation) → `CD12`; Def. 5.4.3 / Eqn. 5.3.1 / Table 5.1 / 5.8–5.9.x / p. 561 → `CDL25`. |
 | Halphen `Prop. 3.1` | `CDL25` | D | LaTeX cites overloaded `CD12`; the later pandoc pass chose `CDL25`; kept the author's latest choice. Plausible alternative: `DZ99`. |
 
-Works with no global-bib entry — added to `../coble_supplement.bib` (should
-migrate to Zotero): `CD89` (Cossec–Dolgachev, Enriques Surfaces I, 1989 ed.),
-`Nik79b` (Nikulin, quotient-groups/2-reflections), `Mum65` (GIT), `Ale96`
-(M_{g,n}(W) for surfaces), `Ale02` (complete moduli, semiabelian action).
+Works with no global-bib entry — added to `../coble_supplement.bib` (should migrate to Zotero): `CD89` (Cossec–Dolgachev, Enriques Surfaces I, 1989 ed.), `Nik79b` (Nikulin, quotient-groups/2-reflections), `Mum65` (GIT), `Ale96` (M_{g,n}(W) for surfaces), `Ale02` (complete moduli, semiabelian action).
 
-**Unresolved**: `BHO+11` (Severi variety $V_{6,10}$ claim in
-`Rational_Sextic_Calculations.md`). No entry exists in either project
-bibliography or the global bib; possibly a fabricated citation from an earlier
-agent pass. Left in place so it fails visibly at build time.
+**Unresolved**: `BHO+11` (Severi variety $V_{6,10}$ claim in `Rational_Sextic_Calculations.md`). No entry exists in either project bibliography or the global bib; possibly a fabricated citation from an earlier agent pass.
+Left in place so it fails visibly at build time.
+
+**Provenance corrections after first full build**: `Ale96` and `Ale02` already
+exist in the global bib (the earlier absence check was defeated by brace-laden
+titles); the supplement copies were removed as duplicates.
+Note the global `Ale96` is Alexeev, *Log canonical singularities and complete
+moduli of stable pairs* (alg-geom/9608013) — a sibling 1996 Alexeev paper to
+the *Moduli spaces $M_{g,n}(W)$ for surfaces* (Trento) paper the draft's key
+named.
+Both are standard KSBA citations; if the Trento paper is specifically intended,
+add it to Zotero and re-point.
+
+**Uncited works from the LaTeX inline bibliography** (curated but never cited
+in the text; not carried into the monograph's reference list): EF21, Eng18,
+Kul77, Ste91, Sym02 (`sterk1991…`, `symington2003…`), AT21
+(`alexeev17ade-surfaces`), YZZ25.
+All except AT21 and YZZ25 exist in the global bib under those keys and can be
+cited directly when the Stable Limits sections are written.

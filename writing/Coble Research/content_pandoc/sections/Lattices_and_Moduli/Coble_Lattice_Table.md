@@ -26,7 +26,7 @@ $K_S^2 = 9 - \abs{\Sigma} = -n$.
 | 9   | 18             | -9                   | $(19,3,1)$           | $\mathrm{E}_{10} \oplus \mathrm{D}_{8} \oplus \mathrm{A}_{1}$                     | $\latI_{2,1}(2)$           |
 | 10  | 19             | -10                  | $(20,2,1)$           | $\mathrm{E}_{10} \oplus \mathrm{D}_{10}$                                          | $\latI_{2,0}(2)$           |
 
-: Table of Coble lattices {#tbl:coble-lattices}
+: Table of Coble lattices\label{tbl:coble-lattices}
 
 This table is reproduced in [@CDL25 Table 5.1, p.553].
 The fixed point locus is described by [@CDL25 Eqn. 5.3.1]:

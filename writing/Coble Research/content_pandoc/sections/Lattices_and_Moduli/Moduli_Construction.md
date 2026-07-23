@@ -23,6 +23,7 @@ F_{\Nod, 2} &= ???
 $$
 
 where $T_{\dP}$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$.
+\todo[inline]{Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.}
 We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$, which implies that there is a birational isomorphism $F_{\Co} \birational \cH_{-2}/\Orth(T_\En)$.
 
 # GIT Discussion

@@ -37,6 +37,7 @@ It is easily verified that the Coxeter diagram $G_{(9,9,1)_1}$ at $v_0$ has prec
 We note that by [@AE22 §5], such isotropic vectors are unique up to $\Orth(T_\Co)$, and so we can choose representatives:
 
 - $v_0 = e'$,
+
 - $v_1 = 2h + \alpha_1 + \alpha_2$.
 
 Calculations verify that $v_0^2 = v_1^2 = 0$, that $v_1 \in v_0^{\perp T_{\Co}}/\gens{v_0}$, and that $v_0v_1 = 0$, and thus $J \da \gens{v_0, v_1}$ is an admissible choice of an isotropic plane.
@@ -57,7 +58,7 @@ We note the divisibilities of the $v_i$ under various lattice embeddings:
 | $v_0$        | $e'$                       | 2                        | 2                        | 2                        |
 | $v_1$        | $2h + \alpha_1 + \alpha_2$ | 2                        | 2                        | 1                        |
 
-: Divisibilities of the isotropic vectors $v_0, v_1$ under the embeddings of $T_{\Co}$. {#tbl:coble-vector-divisibilities}
+: Divisibilities of the isotropic vectors $v_0, v_1$ under the embeddings of $T_{\Co}$.\label{tbl:coble-vector-divisibilities}
 
 More concisely:
 
@@ -67,7 +68,7 @@ More concisely:
 | $T_{\En}$ | $e'$           | $2e + 2f + \alpha_1 + \alpha_2$                                    | $(2, 2)$     |
 | $T_{\dP}$ | $e'$           | $2e + 2f + \alpha_1 + \tilde\alpha_1 + \alpha_2 + \tilde \alpha_2$ | $(2, 1)$     |
 
-: Images of the isotropic vectors of $T_{\Co}$ and their divisibilities. {#tbl:coble-cusp-divisibilities}
+: Images of the isotropic vectors of $T_{\Co}$ and their divisibilities.\label{tbl:coble-cusp-divisibilities}
 
 The divisibilities in $T_{\dP}$ can be seen as follows: the image of $v_0$ in $T_{\dP}$ is $e'\in U(2)$ and $e'f' = 2$, while $\div_{T_{\dP}}(v_1) = 1$ follows from the fact that $v_1\alpha_3 = 1$.
 :::
