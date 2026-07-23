@@ -111,11 +111,13 @@ digraph CategoryParents {
   "Algebras(R).Graded" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.algebras_r.graded", kind="derived_category"];
   "AlgebrasOverField = Algebras.OverField" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.algebras_over_field", kind="derived_category"];
   "AssociativeAlgebras = Algebras.Associative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.associativealgebras", kind="derived_category"];
+  "BasisFrame_n(R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.basisframe_n_r", kind="derived_category"];
   "BiAct(R,S)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.biact_r_s", kind="derived_category"];
   "Bimodules(K,K) = Bimodules(R,R).OverField" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.bimodules_k_k", kind="derived_category"];
   "Bimodules(R,R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.bimodules_r_r", kind="derived_category"];
   "CommAlgebras = UnitalAlgebras.Commutative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.commutative_algebras", kind="derived_category"];
   "CommRings = Rings.Commutative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.commutative_rings", kind="derived_category"];
+  "Coord_n(R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.coord_n_r", kind="derived_category"];
   "CountableInfiniteSets = Sets.Countable.Infinite" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.countableinfinitesets", kind="derived_category"];
   "Curves(K) = Schemes.RelativeDimension(1)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.curves", kind="derived_category"];
   "DGAs = UnitalAlgebras.Differential" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.dgas", kind="derived_category"];
@@ -132,6 +134,7 @@ digraph CategoryParents {
   "FinitelyPresentedModules = Modules.FinitelyPresented" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.finitelypresentedmodules", kind="derived_category"];
   "FreeModules = Modules.Free" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.freemodules", kind="derived_category"];
   "GCDDomains = Rings.Commutative.GCDDomain" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.gcd_domains", kind="derived_category"];
+  "GenFrame_n(R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.genframe_n_r", kind="derived_category"];
   "Groups = Magmas.Associative.Unital.Inverse" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.groups", kind="derived_category"];
   "IntegralDomains = Domains.Commutative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.integral_domains", kind="derived_category"];
   "Lat_R = ∫Bil_R(R).Symmetric.Nondegenerate" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.lat_r", kind="derived_category"];
@@ -588,4 +591,8 @@ digraph CategoryParents {
   "BiAct(R,S)" -> "Modules(R)" [kind="pullback_projection", id="arr.proj.biact__modules"];
   "BiAct(R,S)" -> "RightModules(R)" [kind="pullback_projection", id="arr.proj.biact__rightmodules"];
   "Bimodules(R,S)" -> "BiAct(R,S)" [style=dotted, kind="classifier_leg", id="arr.clf.biact.commutation"];
+  "BasisFrame_n(R)" -> "GenFrame_n(R)" [kind="full_inclusion", id="arr.frame.basisframe__genframe"];
+  "BasisFrame_n(R)" -> "Coord_n(R)" [kind="forgetful", id="arr.frame.basisframe__coord"];
+  "GenFrame_n(R)" -> "Modules(R)" [kind="forgetful", id="arr.frame.genframe__modules"];
+  "Coord_n(R)" -> "Modules(R)" [kind="forgetful", id="arr.frame.coord__modules"];
 }

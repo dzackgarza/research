@@ -3805,6 +3805,38 @@
       "kind": "classifier_leg",
       "preferred": true,
       "provenance": "iota_Commutation : BiAct(R,S).Commutation -> BiAct(R,S) (Def 85.3)"
+    },
+    {
+      "id": "arr.frame.basisframe__genframe",
+      "source": "cat.basisframe_n_r",
+      "target": "cat.genframe_n_r",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "an isomorphism is in particular a surjection (Def 13.5)"
+    },
+    {
+      "id": "arr.frame.basisframe__coord",
+      "source": "cat.basisframe_n_r",
+      "target": "cat.coord_n_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "Foundations Def 13.6: faithful and identity on objects, widening strictly frame-preserving maps to arbitrary linear maps. The two categories are NOT identified -- Rmk 9.3 makes them case 2 and case 1, and case 2 is equivalent to Set."
+    },
+    {
+      "id": "arr.frame.genframe__modules",
+      "source": "cat.genframe_n_r",
+      "target": "cat.modules_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "comma-category projection (M,s) |-> M (Def 13.5)"
+    },
+    {
+      "id": "arr.frame.coord__modules",
+      "source": "cat.coord_n_r",
+      "target": "cat.modules_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "forget the chosen basis (Def 13.6); freeness is the truncation of the existence of such a lift (Rmk 13.7)"
     }
   ],
   "kind": "normalized_semantic_seed.arrows",

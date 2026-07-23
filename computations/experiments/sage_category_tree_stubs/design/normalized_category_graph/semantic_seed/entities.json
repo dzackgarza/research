@@ -1638,6 +1638,84 @@
       "provenance": "authored sagecats ledger"
     },
     {
+      "id": "cat.genframe_n_r",
+      "kind": "derived_category",
+      "canonical_name": "GenFrame",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        },
+        {
+          "name": "n",
+          "sort": "cat.sets",
+          "variance": "discrete_rank"
+        }
+      ],
+      "definition": {
+        "operation": "comma_locus",
+        "of": "(R^n down R-Mod)",
+        "locus": "s surjective",
+        "notes": "Foundations Def 13.5: objects (M,s) with s : R^n -> M surjective; morphisms preserve the chosen frame. A chosen generating family, not a property."
+      },
+      "aliases": ["GenFrame_n(R)"],
+      "dot_vertex": "GenFrame_n(R)",
+      "provenance": "Foundations Def 13.5; chosen finite generating presentation as structure"
+    },
+    {
+      "id": "cat.basisframe_n_r",
+      "kind": "derived_category",
+      "canonical_name": "BasisFrame",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        },
+        {
+          "name": "n",
+          "sort": "cat.sets",
+          "variance": "discrete_rank"
+        }
+      ],
+      "definition": {
+        "operation": "comma_locus",
+        "of": "(R^n down R-Mod)",
+        "locus": "s an isomorphism",
+        "notes": "Foundations Def 13.5: objects (M,s) with s : R^n -> M an isomorphism, morphisms STRICTLY frame-preserving (fs = t). Rmk 9.3 case 2, which makes this category equivalent to Set."
+      },
+      "aliases": ["BasisFrame_n(R)"],
+      "dot_vertex": "BasisFrame_n(R)",
+      "provenance": "Foundations Def 13.5; a chosen basis with basis-preserving morphisms"
+    },
+    {
+      "id": "cat.coord_n_r",
+      "kind": "derived_category",
+      "canonical_name": "Coord",
+      "parameters": [
+        {
+          "name": "R",
+          "sort": "cat.rings",
+          "variance": "contravariant_in_ring"
+        },
+        {
+          "name": "n",
+          "sort": "cat.sets",
+          "variance": "discrete_rank"
+        }
+      ],
+      "definition": {
+        "operation": "same_objects_new_morphisms",
+        "of": "cat.basisframe_n_r",
+        "morphisms": "arbitrary R-linear maps",
+        "notes": "Foundations Def 13.6: the same objects as BasisFrame_n(R) but arbitrary R-linear maps. The morphism is the abstract linear map; its matrix relative to the two chosen bases is a derived representative (Cor 74.5). Rmk 9.3 case 1, and the convention Sage's ModulesWithBasis uses."
+      },
+      "aliases": ["Coord_n(R)"],
+      "dot_vertex": "Coord_n(R)",
+      "provenance": "Foundations Def 13.6; the category for matrix calculus and change of coordinates"
+    },
+    {
       "id": "cat.modules_with_basis",
       "kind": "derived_category",
       "canonical_name": "ModulesWithBasis",
