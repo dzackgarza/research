@@ -2838,7 +2838,7 @@ The following table summarizes the present mathematical status.
 | $S_{\mathrm{Co}}$ and reflection twist | established as lattice calculations | @sec:reflection-twist |
 | Labeled embedding uniqueness | required theorem | @sec:labeled-lattice-data |
 | Degree-$2$ class is quasipolarized on $\widetilde V$ | established | @sec:resolved-diagram |
-| $|-2K_{\widetilde V}|=\{C\}$ generically | established | @sec:anti-bicanonical |
+| $\lvert-2K_{\widetilde V}\rvert=\{C\}$ generically | established | @sec:anti-bicanonical |
 | Stable divisor $R^\sharp$ and numerical formulas | established on the projective one-node locus | @sec:ramification-divisor |
 | Open KSBA pair $(V^\sharp,\epsilon R^\sharp)$ | established fiberwise on the general locus | @sec:canonical-contraction |
 | Direct moduli equivalence in families | required theorem | @sec:singular-moduli |

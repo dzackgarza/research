@@ -2,17 +2,17 @@ linkReferences: true
 nameInLink: true
 autoSectionLabels: true
 secPrefix:
-  - "Section"
-  - "Sections"
+  - 'Section'
+  - 'Sections'
 eqnPrefix:
-  - "Equation"
-  - "Equations"
+  - 'Equation'
+  - 'Equations'
 tblPrefix:
-  - "Table"
-  - "Tables"
+  - 'Table'
+  - 'Tables'
 figPrefix:
-  - "Figure"
-  - "Figures"
+  - 'Figure'
+  - 'Figures'
 lstPrefix:
-  - "Listing"
-  - "Listings"
+  - 'Listing'
+  - 'Listings'

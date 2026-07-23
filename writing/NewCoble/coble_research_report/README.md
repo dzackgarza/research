@@ -1,8 +1,6 @@
 # Building the research report
 
-The source is `coble_heegner_research_report.md`.  It uses ordinary Pandoc
-Markdown, citation keys from `coble_references.bib`, fenced-div identifiers,
-and Pandoc-crossref section/table/equation labels.
+The source is `coble_heegner_research_report.md`.  It uses ordinary Pandoc Markdown, citation keys from `coble_references.bib`, fenced-div identifiers, and Pandoc-crossref section/table/equation labels.
 
 A typical PDF build is:
 
@@ -28,6 +26,5 @@ pandoc coble_heegner_research_report.md \
   -o coble_heegner_research_report.html
 ```
 
-The report is a research ontology and proof program.  Statements labeled
-`Required theorem`, `Required lemma`, or `Problem` are deliberately not
-presented as established results.
+The report is a research ontology and proof program.
+Statements labeled `Required theorem`, `Required lemma`, or `Problem` are deliberately not presented as established results.
