@@ -66,6 +66,7 @@ projective variety.
 For $F_{2d}$ and related lattice-polarized moduli spaces $F_S$ of K3 surfaces,
 the boundary of the compactification consists of a configuration of 0-cusps
 (points) and 1-cusps (curves), see [@Sca87].
+See \cref{fig:baily-borel-schematic}.
 By [@AMRT10], there additionally exist infinitely many toroidal
 compactifications described by a choice of fans at each cuspidal point of the
 Baily-Borel compactification.
@@ -107,6 +108,10 @@ compactification $\overline{F_\Co}$ for a suitably chosen divisor, and indeed
 this is what we do in this paper.
 To this end, we prove the following:
 :::
+
+![Schematic of a Baily--Borel compactification: the shaded arithmetic quotient together with the boundary strata adjoined at its cusps.](rendered/baily_borel_schematic.svg){#fig:baily-borel-schematic width=70%}
+
+\todo[inline]{This schematic is carried over from the earlier draft, where it was drawn but never captioned; the caption above describes only what is drawn. Confirm what the two components and the interior lens are intended to denote.}
 
 ![A fundamental polyhedron $P$ for the Weyl group of a hyperbolic lattice acting on the positive cone $\cC$, together with its images under the reflections in the walls of $P$; the Coxeter fan is the resulting decomposition of $\cC$. Such a polyhedron is computed by Vinberg's algorithm [@Vin75 §1].](rendered/hyperbolic_cone_fundamental_domain.svg){#fig:coxeter-fan-cone width=55%}
 

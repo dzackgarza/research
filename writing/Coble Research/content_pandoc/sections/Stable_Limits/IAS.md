@@ -46,6 +46,22 @@ The following is a combinatorial representation of a Kulikov model for Sterk 2.
 ![A combinatorial Kulikov model for Sterk 2.](rendered/ias_sterk2_kulikov_model.svg){#fig:ias-sterk2-kulikov-model}
 :::
 
+## The Sterk 2 integral affine structure
+
+\todo[inline]{The figures below were drawn for this construction but their accompanying text has not been written; they are collected here so that the artwork is not orphaned. Each caption states only what the picture shows.}
+
+![An integral affine structure for Sterk 2 drawn in the plane: five integral affine singularities are marked $\times$, solid segments carry the triangulation and dashed segments the boundary of the region.](rendered/sterk2_ias_singularities.svg){#fig:sterk2-ias width=52%}
+
+![The disc slice $B(\lambda)$ of the inverted cone, with the outward rays at its boundary points.](rendered/fig_ias2_construction.svg){#fig:ias2-disc-slice width=58%}
+
+![The integral affine disc $\bD^2$.](rendered/fig_ias2_disc.svg){#fig:ias2-disc width=28%}
+
+![A triangulated integral affine polytope with its charge distribution, in the directions $(2,2)$ and $(3,-3)$.](rendered/fig_geometric_degeneration.svg){#fig:geometric-degeneration width=52%}
+
+![The same polytope after Symington surgeries, marked in red along the boundary.](rendered/fig_symington_16gon.svg){#fig:symington-16gon width=52%}
+
+![The $16$-gon with its boundary lines $\ell_1, \ell_{16}, \dots, \ell_{21}$ labelled.](rendered/fig_16gon_full.svg){#fig:16gon-full width=42%}
+
 ::: {.remark}
 
 We leverage the theory of [@AEGS25; @AE22; @AE23; @AET23; @ABE22].

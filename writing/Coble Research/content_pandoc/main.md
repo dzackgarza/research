@@ -5,7 +5,7 @@ author:
   - name: D. Zack Garza
     address: Department of Mathematics, University of Georgia, Athens GA 30602, USA
     email: zack@uga.edu
-abstract: "We describe a modular KSBA stable pair compactification of the moduli space of Coble surfaces, and compare it to semitoroidal compactifications of the corresponding period domain. We describe the KSBA stable limits in terms of integral affine structures."
+abstract: "We describe a modular KSBA stable pair compactification of the moduli space of Coble surfaces and compare it to a semitoroidal compactification of the corresponding period domain. We further describe KSBA stable limits in terms of integral affine structures."
 include-auto: true
 header-includes:
   - \usepackage{dynkin-diagrams}
