@@ -130,6 +130,7 @@ digraph CategoryParents {
   "Domains = Rings.Domain" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.domains", kind="derived_category"];
   EmbeddedRootRealizations [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.embeddedrootrealization", kind="derived_category"];
   "EuclideanDomains = Rings.Commutative.Euclidean" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.euclidean_domains", kind="derived_category"];
+  "FineModuli = ModuliProblems.Representable" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.fine_moduli", kind="derived_category"];
   "FiniteFields = Fields.Finite" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.finite_fields", kind="derived_category"];
   "FiniteRankModules = Modules.FiniteRank" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.finiterankmodules", kind="derived_category"];
   "FiniteRings = Rings.Finite" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.finite_rings", kind="derived_category"];
@@ -141,13 +142,16 @@ digraph CategoryParents {
   "GenFrame_n(R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.genframe_n_r", kind="derived_category"];
   "Groups = Magmas.Associative.Unital.Inverse" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.groups", kind="derived_category"];
   "IntegralDomains = Domains.Commutative" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.integral_domains", kind="derived_category"];
+  IsotropicSubgroups [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.isotropic_subgroups", kind="derived_category"];
   "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.lat_r", kind="derived_category"];
   "Magmas.Additive" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.additive_magmas", kind="derived_category"];
   "ModulesWithBasis = Bimodules(R,R).WithBasis" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.modules_with_basis", kind="derived_category"];
   "ModulesWithGenerators = Modules.WithGenerators" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.moduleswithgenerators", kind="derived_category"];
+  ModuliProblems [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.moduli_problems", kind="derived_category"];
   "Monoids = Magmas.Associative.Unital" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.monoids", kind="derived_category"];
   "NoetherianCommRings = Rings.Commutative.Noetherian" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.noetheriancommrings", kind="derived_category"];
   "NonUnitalDGAs = Algebras.Differential" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.nonunitaldgas", kind="derived_category"];
+  Overlattices [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.overlattices_l", kind="derived_category"];
   "PIDs = Rings.Commutative.PID" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.pids", kind="derived_category"];
   "ProjectiveModules = Modules.Projective" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.projectivemodules", kind="derived_category"];
   "RightModules(R)" [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", id="cat.right_modules_r", kind="derived_category"];
@@ -630,4 +634,8 @@ digraph CategoryParents {
   "∫Bil.RadicalFree" -> "∫Bil_R(W)" [style=dotted, kind="classifier_leg", id="arr.clf.int_bil_r.radical_free"];
   "∫Bil.Perfect" -> "∫Bil_R(W)" [style=dotted, kind="classifier_leg", id="arr.clf.int_bil_r.perfect"];
   "∫Bil.GenericallyNondegenerate" -> "∫Bil_R(W)" [style=dotted, kind="classifier_leg", id="arr.clf.int_bil_r.generically_nondegenerate"];
+  Overlattices -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [kind="forgetful", id="arr.overlattices__lat"];
+  IsotropicSubgroups -> "DiscQuad = ∫Quad.Nondegenerate" [kind="forgetful", id="arr.isotropicsubgroups__discquad"];
+  ModuliProblems -> Prestacks [dir=both, kind="equivalence", id="arr.alias.moduli_problems"];
+  "FineModuli = ModuliProblems.Representable" -> ModuliProblems [kind="full_inclusion", id="arr.fine_moduli__moduli"];
 }

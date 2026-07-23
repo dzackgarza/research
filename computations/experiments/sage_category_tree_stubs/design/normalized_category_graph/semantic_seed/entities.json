@@ -904,7 +904,7 @@
       "definition": null,
       "aliases": [],
       "dot_vertex": "Fans",
-      "provenance": "dot_import"
+      "provenance": "dot_import | Foundations Def 58.5 records 'semifan' as explicitly NOT a primitive of the report: no single standard definition was fixed, and any later use must state which face, intersection, local-finiteness and group-invariance axioms are imposed. Its absence from the seed is therefore a documented decision, not a gap."
     },
     {
       "id": "cat.fields",
@@ -5275,6 +5275,67 @@
       "aliases": [],
       "dot_vertex": "∫Bil.GenericallyNondegenerate",
       "provenance": "Foundations Def 18.3 / Rmk 18.4"
+    },
+    {
+      "id": "cat.overlattices_l",
+      "kind": "derived_category",
+      "canonical_name": "Overlattices",
+      "parameters": [],
+      "definition": {
+        "operation": "locus",
+        "of": "ctor.arr",
+        "at": "cat.lat_r",
+        "condition": "an integral inclusion L <= L' <= L^# with L'/L finite; even if the restricted form on L' is even",
+        "notes": "Foundations Def 27.1. Explicitly a locus in Ar(Lat_Z), or a category over L whose morphisms are isometries compatible with the inclusions. Construction 27.3 builds L_H from a subgroup H of A_L; Thm 27.4 is the classical correspondence with isotropic subgroups and is a THEOREM, not part of the definition."
+      },
+      "aliases": ["Overlattices"],
+      "dot_vertex": "Overlattices",
+      "provenance": "Foundations Def 27.1; a locus in the arrow category of lattices"
+    },
+    {
+      "id": "cat.isotropic_subgroups",
+      "kind": "derived_category",
+      "canonical_name": "IsotropicSubgroups",
+      "parameters": [],
+      "definition": {
+        "operation": "locus",
+        "of": "cat.subobjects",
+        "at": "cat.discquad",
+        "condition": "H <= A with q|_H = 0 (for a bilinear discriminant form, b|_{HxH} = 0)",
+        "notes": "Foundations Def 27.2. Subgroup-hood is a carried inclusion morphism (a subobject), not a bare-object property; the isotropy condition cuts out the locus. Gluing (Constr 27.6) forms the graph of an anti-isometry, isotropic for q_1 (+) q_2, and the corresponding overlattice -- a theorem built from Thm 27.4, again not definitional."
+      },
+      "aliases": ["IsotropicSubgroups"],
+      "dot_vertex": "IsotropicSubgroups",
+      "provenance": "Foundations Def 27.2; the isotropy locus among discriminant-form subobjects"
+    },
+    {
+      "id": "cat.moduli_problems",
+      "kind": "derived_category",
+      "canonical_name": "ModuliProblems",
+      "parameters": [],
+      "definition": {
+        "operation": "same_as",
+        "of": "cat.prestacks",
+        "notes": "Foundations Def 35.1: a moduli problem on a site is a pseudofunctor C^op -> Grpd, invariantly a stack of spaces after imposing descent -- i.e. a prestack, and a stack once it satisfies descent. An object of M(T) is a family over T and pullback is base change. Named for its use; the underlying category is the prestack one."
+      },
+      "aliases": ["ModuliProblems"],
+      "dot_vertex": "ModuliProblems",
+      "provenance": "Foundations Def 35.1; a prestack, viewed as a moduli problem"
+    },
+    {
+      "id": "cat.fine_moduli",
+      "kind": "derived_category",
+      "canonical_name": "FineModuli",
+      "parameters": [],
+      "definition": {
+        "operation": "locus",
+        "of": "cat.moduli_problems",
+        "condition": "M ~ h_M is representable; the identity point of h_M(M) is the universal family",
+        "notes": "Foundations Def 35.2. Fine representability is a property of a moduli problem, not a separate kind of object."
+      },
+      "aliases": ["FineModuli"],
+      "dot_vertex": "FineModuli = ModuliProblems.Representable",
+      "provenance": "Foundations Def 35.2; the representable locus"
     }
   ]
 }

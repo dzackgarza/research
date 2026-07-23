@@ -4156,6 +4156,38 @@
       "provenance": "iota_GenericallyNondegenerate : ∫Bil.GenericallyNondegenerate -> ∫Bil (Def 18.3 / Rmk 18.4)",
       "source": "clf.int_bil_r.generically_nondegenerate.domain",
       "target": "cat.int_bil_r"
+    },
+    {
+      "id": "arr.overlattices__lat",
+      "source": "cat.overlattices_l",
+      "target": "cat.lat_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "the target of the inclusion, L' (Def 27.1); the ambient L is the source of the arrow"
+    },
+    {
+      "id": "arr.isotropicsubgroups__discquad",
+      "source": "cat.isotropic_subgroups",
+      "target": "cat.discquad",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "the ambient discriminant form (A,q) (Def 27.2)"
+    },
+    {
+      "id": "arr.alias.moduli_problems",
+      "source": "cat.moduli_problems",
+      "target": "cat.prestacks",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "a moduli problem is a prestack (Def 35.1)"
+    },
+    {
+      "id": "arr.fine_moduli__moduli",
+      "source": "cat.fine_moduli",
+      "target": "cat.moduli_problems",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "the representable locus (Def 35.2)"
     }
   ],
   "kind": "normalized_semantic_seed.arrows",
