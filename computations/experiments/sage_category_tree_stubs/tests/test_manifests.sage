@@ -429,17 +429,25 @@ def test_a_refinement_never_grants_algorithms_to_its_base() -> None:
         assert "GradedModules" not in names, "a plain module was offered graded-module algorithms"
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "research#291: parameter constraints are prose, so `R : CommutativeRings` and "
-        "`R : CommutativeRings (intended Sage semantics)` compare unequal and a graded "
-        "module cannot be recognised as a module. Conservative: under-reports providers, "
-        "never over-reports."
-    ),
-)
 def test_a_refinement_reaches_its_base() -> None:
+    """A graded module is a module, so it may use module algorithms.
+
+    This holds only because parameters are compared by canonical entity id: the two
+    rows spell the parameter category `R : CommutativeRings` and
+    `R : CommutativeRings (intended Sage semantics)`, and resolve through the alias
+    `cat.commutativerings` to `cat.commutative_rings`.
+    """
     from sage_category_tree_stubs.capability import providers_for, sigma
 
     graded = sigma()["GradedModules"]
     assert any("Modules" in names for names in providers_for(graded).values())
+
+
+def test_parameter_constraints_are_compared_by_identifier() -> None:
+    """Destinations must not be split or merged on the spelling of a constraint."""
+    from sage_category_tree_stubs.capability import sigma
+
+    s = sigma()
+    assert s["Modules"].parameters == s["GradedModules"].parameters
+    assert s["LeftModules"].parameters != s["Modules"].parameters
+    assert s["RingIdeals"].parameters != s["CommutativeRingIdeals"].parameters

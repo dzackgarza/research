@@ -5,7 +5,7 @@
   "source": {
     "path": "design/sage/authored/sage_normalized_category_mapping_manifest.json",
     "sha256": "ddc37ce48d9d9e37922500da6bfbea13a71183d8a4b9b8a3d3ed0eb27e2c021a",
-    "git_commit": "60d94bda298dd381636bb136e028bf48671e5ac1-dirty",
+    "git_commit": "ef034c7846e5469bf613dc03ad8cc650d9e6830f",
     "ledger_schema_version": "0.4-draft",
     "sage_source_commit": "686dc1a8d420c2e0aabadd4f602d9a0aa4690c50"
   },

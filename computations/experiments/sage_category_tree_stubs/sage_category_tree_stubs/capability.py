@@ -87,8 +87,15 @@ def sigma(mapping: dict[str, Any] | None = None) -> dict[str, Destination]:
         # `RingIdeals(R)` at `R : Rings` and at `R : CommutativeRings` share an
         # expression and are not the same destination: ideals of a commutative ring
         # admit algorithms that ideals of an arbitrary ring do not.
-        constraint = str((row.get("parameters") or {}).get("constraints") or "")
-        out[str(name)] = Destination(str(expression), constraint)
+        params = row.get("parameters") or {}
+        if params.get("resolved"):
+            # Compare parameters by identifier, never by spelling.
+            key = ";".join(f"{k}={v}" for k, v in sorted((params.get("bindings") or {}).items()))
+        else:
+            # Unresolved: keyed by the Sage source so it cannot silently merge with
+            # or split from another destination on the strength of prose.
+            key = f"unresolved:{name}"
+        out[str(name)] = Destination(str(expression), key)
     return out
 
 

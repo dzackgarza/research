@@ -30,6 +30,7 @@ from .composed_identity import (
 from .constructibility import build_sketch, check_constructibility, constructibility_record
 from .design_sources import DESIGN_ROOT, load_correspondence, load_json
 from .observed_build import OBSERVED_PATH, _sage_axiom_id, _slug
+from .seed_authored_sync import BASE_ID_ALIASES, resolve_base_id
 from .semantic_seed import load_semantic_seed
 
 MAPPING_PATH = DESIGN_ROOT / "sage" / "mapping.yaml"
@@ -124,6 +125,81 @@ def _axiom_disposition(ax: dict[str, Any], target: str | None) -> str:
     return "unsupported"
 
 
+def _resolve_parameter_binding(constraint: str | None, sketch: dict[str, Any]) -> dict[str, Any]:
+    """Type an authored parameter constraint against the seed.
+
+    A family applied at different parameters is different categories, so the
+    constraint is part of a destination's identity and must be compared by
+    identifier rather than by spelling: `R : CommutativeRings` and
+    `R : CommutativeRings (intended Sage semantics)` are the same parameter category
+    written two ways, and string comparison makes them different destinations.
+
+    Only a constraint whose target resolves to a seed entity is typed. Anything else
+    -- prose asides, several pieces of parameter data, an implicit constant field --
+    is left unresolved with its text retained, because guessing which category was
+    meant would silently identify or separate destinations on no evidence.
+    """
+    text = (constraint or "").strip()
+    if not text:
+        return {"constraints": "", "bindings": {}, "resolved": True}
+
+    by_name: dict[str, str] = {}
+    for entity in sketch["seed"].entities:
+        eid = entity.get("id")
+        if not isinstance(eid, str):
+            continue
+        for key in (entity.get("canonical_name"), *(entity.get("aliases") or [])):
+            if isinstance(key, str):
+                by_name.setdefault(key, eid)
+
+    names, _, target = text.partition(":")
+    target = target.strip()
+    resolved_id = by_name.get(target)
+    if resolved_id is None and target.endswith(")") and "(" in target:
+        # `CommutativeAlgebras(R)` is the application spelling of a family the seed
+        # declares with parameter R. Matching it to that family is the family's own
+        # syntax, not an inference about which category was meant.
+        head, _, args = target.partition("(")
+        arity = len([a for a in args.rstrip(")").split(",") if a.strip()])
+        for entity in sketch["seed"].entities:
+            if entity.get("canonical_name") != head.strip():
+                continue
+            if len(entity.get("parameters") or []) == arity and isinstance(entity.get("id"), str):
+                resolved_id = str(entity["id"])
+                break
+    if resolved_id is None:
+        # Fall back to the ledger's established base-id identifications rather than
+        # minting a new one: `AssociativeUnitalAlgebras` is already identified with
+        # `cat.unital_algebras` there.
+        head = target.partition("(")[0].strip()
+        candidate = _host_name_to_cat_id(head)
+        if candidate:
+            entity_ids = {e["id"] for e in sketch["seed"].entities if isinstance(e.get("id"), str)}
+            settled = resolve_base_id(candidate, entity_ids) or BASE_ID_ALIASES.get(candidate)
+            if settled in entity_ids:
+                resolved_id = str(settled)
+    if not resolved_id or not target:
+        return {"constraints": text, "bindings": {}, "resolved": False}
+    # Follow spelling aliases to the canonical entity: `cat.commutativerings` and
+    # `cat.commutative_rings` are one category, and comparing the two ids would split
+    # a destination exactly as comparing the two prose spellings did.
+    seen: set[str] = set()
+    while resolved_id not in seen:
+        seen.add(resolved_id)
+        entity = next((e for e in sketch["seed"].entities if e.get("id") == resolved_id), None)
+        definition = (entity or {}).get("definition") or {}
+        if definition.get("operation") != "same_as":
+            break
+        nxt = definition.get("same_as") or definition.get("of") or definition.get("target")
+        if not isinstance(nxt, str):
+            break
+        resolved_id = nxt
+    bindings = {n.strip(): resolved_id for n in names.split(",") if n.strip()}
+    if not bindings:
+        return {"constraints": text, "bindings": {}, "resolved": False}
+    return {"constraints": text, "bindings": bindings, "resolved": True}
+
+
 def build_mapping(
     *,
     correspondence: dict[str, Any] | None = None,
@@ -206,7 +282,7 @@ def build_mapping(
                         "since": corr.get("version_label"),
                         "until": None,
                     },
-                    "parameters": {"constraints": req.parameter_constraints or ""},
+                    "parameters": _resolve_parameter_binding(req.parameter_constraints, sketch),
                     "provenance": {
                         "status": "authored-exact",
                         "source": "design/sage/authored/",
@@ -231,7 +307,7 @@ def build_mapping(
                         "since": corr.get("version_label"),
                         "until": None,
                     },
-                    "parameters": {"constraints": req.parameter_constraints or ""},
+                    "parameters": _resolve_parameter_binding(req.parameter_constraints, sketch),
                     "provenance": {
                         "status": "authored-constructible",
                         "source": "design/sage/authored/ + constructibility",
@@ -254,7 +330,7 @@ def build_mapping(
                     "since": corr.get("version_label"),
                     "until": None,
                 },
-                "parameters": {"constraints": req.parameter_constraints or ""},
+                "parameters": _resolve_parameter_binding(req.parameter_constraints, sketch),
                 "provenance": {
                     "status": result.status.lower().replace("_", "-"),
                     "source": "design/sage/authored/ + constructibility",
@@ -283,7 +359,7 @@ def build_mapping(
                     "since": corr.get("version_label"),
                     "until": None,
                 },
-                "parameters": {"constraints": req.parameter_constraints or ""},
+                "parameters": _resolve_parameter_binding(req.parameter_constraints, sketch),
                 "provenance": {
                     "status": "ledger",
                     "source": "correspondence.json exceptions",
@@ -317,7 +393,7 @@ def build_mapping(
                         "since": corr.get("version_label"),
                         "until": None,
                     },
-                    "parameters": {"constraints": req.parameter_constraints or ""},
+                    "parameters": _resolve_parameter_binding(req.parameter_constraints, sketch),
                     "provenance": {
                         "status": "constructible",
                         "source": "constructibility.check_constructibility",
@@ -339,7 +415,7 @@ def build_mapping(
                         "since": corr.get("version_label"),
                         "until": None,
                     },
-                    "parameters": {"constraints": req.parameter_constraints or ""},
+                    "parameters": _resolve_parameter_binding(req.parameter_constraints, sketch),
                     "provenance": {
                         "status": "composed-named",
                         "source": "seed dot_vertex match",
@@ -360,7 +436,7 @@ def build_mapping(
                     "since": corr.get("version_label"),
                     "until": None,
                 },
-                "parameters": {"constraints": req.parameter_constraints or ""},
+                "parameters": _resolve_parameter_binding(req.parameter_constraints, sketch),
                 "provenance": {
                     "status": "not-constructible",
                     "source": "constructibility.check_constructibility",
@@ -387,7 +463,7 @@ def build_mapping(
                     "since": corr.get("version_label"),
                     "until": None,
                 },
-                "parameters": {"constraints": req.parameter_constraints or ""},
+                "parameters": _resolve_parameter_binding(req.parameter_constraints, sketch),
                 "provenance": {
                     "status": "pending",
                     "source": "auto-from-observed",
