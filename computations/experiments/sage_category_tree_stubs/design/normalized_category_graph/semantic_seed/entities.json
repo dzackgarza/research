@@ -995,7 +995,7 @@
       },
       "aliases": [],
       "dot_vertex": "FreeModules = Modules.Free",
-      "provenance": "dot_import"
+      "provenance": "essential image of the free R-module functor F_R (addendum Def 9.1, Cor 9.2); freeness is a property, a basis is structure (Rmk 13.7)"
     },
     {
       "id": "cat.g_objects",
@@ -1627,7 +1627,7 @@
       },
       "aliases": [],
       "dot_vertex": "ModulesWithBasis = Bimodules(R,R).WithBasis",
-      "provenance": "named composite"
+      "provenance": "named composite | Morphisms are arbitrary R-linear maps (addendum Rmk 9.3 case 1): the chosen basis is structure on objects and imposes no condition on maps. 'Modules with basis' never determines its morphisms, and the two conventions give different categories -- case 2, basis-preserving maps, is equivalent to Set. Sage is case 1, checked: in CombinatorialFreeModule(QQ,['a','b']) the map a |-> 2*W['x'], b |-> 0 sends basis vectors to non-basis vectors and is a morphism of the category."
     },
     {
       "id": "cat.moduleswithgenerators",
@@ -2344,7 +2344,7 @@
       },
       "aliases": [],
       "dot_vertex": "VectorSpacesWithBasis = VectorSpaces.WithBasis",
-      "provenance": "dot_import"
+      "provenance": "dot_import | Morphisms are arbitrary R-linear maps (addendum Rmk 9.3 case 1): the chosen basis is structure on objects and imposes no condition on maps. 'Modules with basis' never determines its morphisms, and the two conventions give different categories -- case 2, basis-preserving maps, is equivalent to Set. Sage is case 1, checked: in CombinatorialFreeModule(QQ,['a','b']) the map a |-> 2*W['x'], b |-> 0 sends basis vectors to non-basis vectors and is a morphism of the category."
     },
     {
       "id": "cat.weyl_groups",

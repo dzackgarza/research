@@ -72,7 +72,7 @@
       "domain_id": "clf.modules.with_basis.domain",
       "leg_arrow_id": "arr.clf.modules.with_basis",
       "transport": null,
-      "notes": null
+      "notes": "Morphisms are arbitrary R-linear maps (addendum Rmk 9.3 case 1): the chosen basis is structure on objects and imposes no condition on maps. 'Modules with basis' never determines its morphisms, and the two conventions give different categories -- case 2, basis-preserving maps, is equivalent to Set. Sage is case 1, checked: in CombinatorialFreeModule(QQ,['a','b']) the map a |-> 2*W['x'], b |-> 0 sends basis vectors to non-basis vectors and is a morphism of the category."
     },
     {
       "id": "clf.modules.over_field",
@@ -348,7 +348,7 @@
       "domain_id": "clf.modules_free",
       "leg_arrow_id": "arr.clf.modules_free",
       "transport": null,
-      "notes": "Imported from DOT axiom attachment"
+      "notes": "Freeness is the essential image of the free R-module functor F_R (addendum Def 9.1, Cor 9.2), equivalently the propositional truncation of the existence of a chosen basis (Rmk 13.7) -- hence a property classifier, not structure. The finite restriction F_R|FinSet has the finite free modules as its image."
     },
     {
       "id": "clf.modules_projective",
@@ -807,7 +807,7 @@
       "domain_id": "clf.vector_spaces_k.withbasis.domain",
       "leg_arrow_id": "arr.clf.vector_spaces_k_withbasis",
       "transport": null,
-      "notes": "refined from named-join path"
+      "notes": "refined from named-join path | Morphisms are arbitrary R-linear maps (addendum Rmk 9.3 case 1): the chosen basis is structure on objects and imposes no condition on maps. 'Modules with basis' never determines its morphisms, and the two conventions give different categories -- case 2, basis-preserving maps, is equivalent to Set. Sage is case 1, checked: in CombinatorialFreeModule(QQ,['a','b']) the map a |-> 2*W['x'], b |-> 0 sends basis vectors to non-basis vectors and is a morphism of the category."
     },
     {
       "id": "clf.schemes.relative_dimension_1",
@@ -1311,7 +1311,7 @@
       "domain_id": "clf.withbasis.domain",
       "leg_arrow_id": "arr.clf.withbasis",
       "transport": null,
-      "notes": "authored sagecats ledger"
+      "notes": "authored sagecats ledger | Morphisms are arbitrary R-linear maps (addendum Rmk 9.3 case 1): the chosen basis is structure on objects and imposes no condition on maps. 'Modules with basis' never determines its morphisms, and the two conventions give different categories -- case 2, basis-preserving maps, is equivalent to Set. Sage is case 1, checked: in CombinatorialFreeModule(QQ,['a','b']) the map a |-> 2*W['x'], b |-> 0 sends basis vectors to non-basis vectors and is a morphism of the category."
     },
     {
       "id": "clf.distributive_lattice",
