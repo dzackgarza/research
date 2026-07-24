@@ -462,6 +462,7 @@ digraph CategoryParents {
   "∫Bil_R(W)" -> "∫Hom_R(−,W)" [kind="forgetful", id="arr.dot.int_bil_r__int_hom_r"];
   "∫Herm_R(W)" -> "∫Hom_R(−,W)" [kind="forgetful", id="arr.dot.int_herm_r__int_hom_r"];
   "∫Hom_R(−,W)" -> "Modules(R)" [kind="forgetful", id="arr.dot.int_hom_r__modules"];
+  "∫Bil_R(W)" -> "Modules(R)" [kind="forgetful", id="arr.dot.int_bil_r__modules"];
   "∫Quad_R(W)" -> "∫Hom_R(−,W)" [kind="forgetful", id="arr.dot.int_quad_r__int_hom_r"];
   "IntegralDomains = Domains.Commutative" -> "CommRings = Rings.Commutative" [kind="full_inclusion", id="arr.dot.integraldomains__commrings"];
   "IntegralDomains = Domains.Commutative" -> "Domains = Rings.Domain" [kind="full_inclusion", id="arr.dot.integraldomains__domains"];

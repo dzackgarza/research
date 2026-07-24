@@ -1083,38 +1083,38 @@
     },
     {
       "kind": "solid",
-      "src": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate",
+      "src": "Lat_R = \u222bBil_R(R).Symmetric.GenericallyNondegenerate",
       "tgt": "\u222bBil_R(W)"
     },
     {
       "kind": "solid",
-      "src": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate",
+      "src": "Lat_R = \u222bBil_R(R).Symmetric.GenericallyNondegenerate",
       "tgt": "ProjectiveModules = Modules.Projective"
     },
     {
       "kind": "dotted",
       "src": "Lat.Definite",
-      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.GenericallyNondegenerate"
     },
     {
       "kind": "dotted",
       "src": "Lat.PositiveDefinite",
-      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.GenericallyNondegenerate"
     },
     {
       "kind": "dotted",
       "src": "Lat.NegativeDefinite",
-      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.GenericallyNondegenerate"
     },
     {
       "kind": "dotted",
       "src": "Lat.Indefinite",
-      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.GenericallyNondegenerate"
     },
     {
       "kind": "dotted",
       "src": "Lat.Hyperbolic",
-      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.GenericallyNondegenerate"
     },
     {
       "kind": "solid",
@@ -1134,16 +1134,16 @@
     {
       "kind": "solid",
       "src": "RootLattices",
-      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.GenericallyNondegenerate"
     },
     {
       "kind": "solid",
-      "src": "DiscBil = \u222bBil.Symmetric.Nondegenerate.Finite",
+      "src": "DiscBil = \u222bBil.Symmetric.Perfect.Finite",
       "tgt": "\u222bBil_R(W)"
     },
     {
       "kind": "solid",
-      "src": "DiscBil = \u222bBil.Symmetric.Nondegenerate.Finite",
+      "src": "DiscBil = \u222bBil.Symmetric.Perfect.Finite",
       "tgt": "Sets.Finite"
     },
     {
@@ -1164,7 +1164,7 @@
     {
       "kind": "solid",
       "src": "LatticeHomsets",
-      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.GenericallyNondegenerate"
     },
     {
       "kind": "solid",
@@ -1179,7 +1179,7 @@
     {
       "kind": "solid",
       "src": "NS",
-      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate"
+      "tgt": "Lat_R = \u222bBil_R(R).Symmetric.GenericallyNondegenerate"
     },
     {
       "kind": "solid",
@@ -1357,8 +1357,11 @@
       "tgt": "DeligneMumfordStacks"
     }
   ],
-  "hand_vertices_without_seed": [],
-  "hand_vertices_without_seed_count": 0,
+  "hand_vertices_without_seed": [
+    "Bimodules(R)",
+    "ModulesWithBasis = Modules.WithBasis"
+  ],
+  "hand_vertices_without_seed_count": 2,
   "map": {
     "(\u2212)^op": "ctor.op",
     "AbelianGroups": "cat.abelian_groups",
@@ -1372,6 +1375,9 @@
     "AdditiveMonoids = Magmas.Additive.Associative.Unital": "cat.additive_monoids",
     "AdditiveSemigroups": "cat.additive_semigroups",
     "AdditiveSemigroups = Magmas.Additive.Associative": "cat.additive_semigroups",
+    "Adj(\u2212)": "ctor.adj",
+    "AdmissibleOperadicAmbients": "cat.admissible_operadic_ambient",
+    "Alg_O(V)": "cat.alg_o_v",
     "AlgebraIdeals(A)": "cat.algebraideals_a",
     "AlgebraicSpaces": "cat.algebraicspaces",
     "AlgebraicStacks": "cat.algebraicstacks",
@@ -1383,15 +1389,25 @@
     "ArtinStacks": "cat.artinstacks",
     "AssociativeAlgebras": "cat.associativealgebras",
     "AssociativeAlgebras = Algebras.Associative": "cat.associativealgebras",
+    "BasisFrame_n(R)": "cat.basisframe_n_r",
+    "BiAct(R,S)": "cat.biact_r_s",
     "Bialgebras(R)": "cat.bialgebras_r",
     "Bicategories": "cat.bicategories",
-    "Bimodules(R)": "cat.bimodules_r",
+    "Bil^coord_n(R)": "cat.bil_coord_n_r",
+    "Bil^coord_n(R) = Bil x^h_{R-Mod} Coord_n(R)": "cat.bil_coord_n_r",
+    "Bimodules(K,K)": "cat.bimodules_k_k",
+    "Bimodules(K,K) = Bimodules(R,R).OverField": "cat.bimodules_k_k",
+    "Bimodules(R,R)": "cat.bimodules_r_r",
+    "Bimodules(R,S)": "cat.bimodules_r_s",
     "CatObject": "cat.cat_object",
+    "CatObject.Abelian": "clf.catobject_abelian",
+    "CatObject.Additive": "clf.catobject_additive",
     "CatObject.Colimits": "clf.catobject_colimits",
     "CatObject.Coproducts": "clf.catobject_coproducts",
     "CatObject.Finite": "clf.catobject_finite",
     "CatObject.Limits": "clf.catobject_limits",
     "CatObject.LocallySmall": "clf.catobject_locallysmall",
+    "CatObject.Preadditive": "clf.catobject_preadditive",
     "CatObject.Products": "clf.catobject_products",
     "CatObject.Thin": "clf.catobject_thin",
     "Cat_1": "cat.cat_1",
@@ -1412,6 +1428,7 @@
     "CompleteIntersections(K)": "cat.completeintersections",
     "ComplexReflectionGroups": "cat.complexreflectiongroups",
     "Cones": "cat.cones",
+    "Coord_n(R)": "cat.coord_n_r",
     "Coslices": "ctor.coslices",
     "CountableInfiniteSets": "cat.countableinfinitesets",
     "CountableInfiniteSets = Sets.Countable.Infinite": "cat.countableinfinitesets",
@@ -1431,7 +1448,7 @@
     "DiagramCategories": "ctor.diagramcategories",
     "DiffFormModules": "val.diffformmodules",
     "DiscBil": "cat.discbil",
-    "DiscBil = \u222bBil.Symmetric.Nondegenerate.Finite": "cat.discbil",
+    "DiscBil = \u222bBil.Symmetric.Perfect.Finite": "cat.discbil",
     "DiscQuad": "cat.discquad",
     "DiscQuad = \u222bQuad.Nondegenerate": "cat.discquad",
     "DiscreteValuationFields": "cat.discretevaluationfields",
@@ -1443,12 +1460,15 @@
     "Domains = Rings.Domain": "cat.domains",
     "DrinfeldModules": "cat.drinfeldmodules_gamma_f_q_t_k",
     "DualObjects": "cat.dualobjects",
+    "EmbeddedRootRealizations": "cat.embeddedrootrealization",
     "EuclideanDomains": "cat.euclidean_domains",
     "EuclideanDomains = Rings.Commutative.Euclidean": "cat.euclidean_domains",
     "ExteriorAlgebras(R)": "cat.exterioralgebras",
     "Fans": "cat.fans",
     "FibredCategories": "ctor.fibredcategories",
     "Fields": "cat.fields",
+    "FineModuli": "cat.fine_moduli",
+    "FineModuli = ModuliProblems.Representable": "cat.fine_moduli",
     "FiniteFields": "cat.finite_fields",
     "FiniteFields = Fields.Finite": "cat.finite_fields",
     "FiniteRankModules": "cat.finiterankmodules",
@@ -1467,6 +1487,7 @@
     "G-Objects(G)": "cat.g_objects",
     "GCDDomains": "cat.gcd_domains",
     "GCDDomains = Rings.Commutative.GCDDomain": "cat.gcd_domains",
+    "GenFrame_n(R)": "cat.genframe_n_r",
     "Genera": "val.genera",
     "GeneralizedCoxeterGroups": "cat.generalizedcoxetergroups",
     "Graphs": "cat.graphs",
@@ -1489,6 +1510,7 @@
     "IntegralDomains = Domains.Commutative": "cat.integral_domains",
     "IsometryGroups": "val.isometrygroups",
     "IsomorphicObjects": "ctor.isomorphicobjects",
+    "IsotropicSubgroups": "cat.isotropic_subgroups",
     "KacMoodyAlgebras(R)": "cat.kacmoodyalgebras_r",
     "LambdaBracketAlgebras(R)": "cat.lambdabracketalgebras_r",
     "Lat.Definite": "clf.lat_definite",
@@ -1497,7 +1519,7 @@
     "Lat.NegativeDefinite": "clf.lat_negativedefinite",
     "Lat.PositiveDefinite": "clf.lat_positivedefinite",
     "Lat_R": "cat.lat_r",
-    "Lat_R = \u222bBil_R(R).Symmetric.Nondegenerate": "cat.lat_r",
+    "Lat_R = \u222bBil_R(R).Symmetric.GenericallyNondegenerate": "cat.lat_r",
     "LatticeHomsets": "cat.latticehomsets",
     "LatticePolytopes": "cat.latticepolytopes",
     "LatticePosets": "cat.latticeposets",
@@ -1528,9 +1550,10 @@
     "Modules.WithBasis": "clf.modules.with_basis.domain",
     "Modules.WithGenerators": "clf.modules_withgenerators",
     "ModulesWithBasis": "cat.modules_with_basis",
-    "ModulesWithBasis = Modules.WithBasis": "cat.modules_with_basis",
+    "ModulesWithBasis = Bimodules(R,R).WithBasis": "cat.modules_with_basis",
     "ModulesWithGenerators": "cat.moduleswithgenerators",
     "ModulesWithGenerators = Modules.WithGenerators": "cat.moduleswithgenerators",
+    "ModuliProblems": "cat.prestacks",
     "MonoidAlgebras(R)": "cat.monoidalgebras_r",
     "Monoids": "cat.monoids",
     "Monoids = Magmas.Associative.Unital": "cat.monoids",
@@ -1540,6 +1563,7 @@
     "NonUnitalDGAs": "cat.nonunitaldgas",
     "NonUnitalDGAs = Algebras.Differential": "cat.nonunitaldgas",
     "OrthogonalGroups": "val.orthogonal_groups",
+    "Overlattices": "cat.overlattices_l",
     "PIDs": "cat.pids",
     "PIDs = Rings.Commutative.PID": "cat.pids",
     "PermutationGroups": "cat.permutationgroups",
@@ -1547,6 +1571,7 @@
     "Polyhedra": "cat.polyhedra",
     "Polyhedra(R)": "cat.polyhedra_r",
     "Posets": "cat.posets",
+    "Pres(\u2212)": "ctor.pres",
     "Presheaves": "cat.presheaves",
     "Prestacks": "cat.prestacks",
     "ProjectiveModules": "cat.projectivemodules",
@@ -1563,9 +1588,11 @@
     "Rings": "cat.rings",
     "Rings.Commutative": "clf.rings.commutative.domain",
     "Rngs": "cat.rngs",
+    "RootBasis_Gamma": "cat.rootbasis_gamma",
+    "RootBasis_S": "cat.rootbasis_s",
+    "RootFrame_S": "cat.rootframe_s",
     "RootLattices": "cat.rootlattices",
     "RootSystems": "cat.rootsystems",
-    "SageBackendObjects": "cat.sagebackendobjects",
     "Schemes(S)": "cat.schemes_s",
     "Schemes(S).RelativeDimension(1)": "clf.schemes_s.relativedimension.domain",
     "Schemes.Affine": "clf.schemes_affine",
@@ -1607,6 +1634,7 @@
     "SuperCrystals": "cat.supercrystals",
     "Surfaces(K)": "cat.surfaces",
     "Surfaces(K) = Schemes.RelativeDimension(2)": "cat.surfaces",
+    "SymMat_n(R)": "cat.symmat_n_r",
     "SymmetricAlgebras(R)": "cat.symmetricalgebras",
     "TensorAlgebras(R)": "cat.tensoralgebras",
     "TensorFieldModules": "val.tensorfieldmodules",
@@ -1644,6 +1672,9 @@
     "ax.UFD": "clf.ax_ufd",
     "ax.Unital": "clf.ax_unital",
     "\u222bBil.Alternating": "clf.int_bil_alternating",
+    "\u222bBil.GenericallyNondegenerate": "clf.int_bil_r.generically_nondegenerate.domain",
+    "\u222bBil.Perfect": "clf.int_bil_r.perfect.domain",
+    "\u222bBil.RadicalFree": "clf.int_bil_r.radical_free.domain",
     "\u222bBil.SkewSymmetric": "clf.int_bil_skewsymmetric",
     "\u222bBil.Symmetric": "clf.int_bil_symmetric",
     "\u222bBil_R(W)": "cat.int_bil_r",

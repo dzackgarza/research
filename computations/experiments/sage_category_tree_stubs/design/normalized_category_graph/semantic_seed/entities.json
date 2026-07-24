@@ -1286,7 +1286,7 @@
       ],
       "definition": {
         "operation": "pullback",
-        "left": "cat.int_bil_r",
+        "left": "arr.dot.int_bil_r__modules",
         "right_functor": "arr.frame.coord__modules",
         "over": "cat.modules_r",
         "strictness": "homotopy",

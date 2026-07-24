@@ -22,12 +22,15 @@ HAND = STUBS / "design/normalized_category_graph/category_parent_graph.hand.dot"
 
 
 
-def _leg_functor_id(leg: str | None, leg_by_classifier: dict[str, str]) -> str:
+def _leg_functor_id(leg: str | None, leg_by_classifier: dict[str, str], arrow_ids: frozenset[str]) -> str:
     """The FunctorId naming a pullback leg.
 
-    A leg given as a classifier id is the classifier's forgetful leg; a leg with no
-    known arrow is an error rather than a category reference, because silently
-    emitting one produces an expression no evaluator can resolve.
+    A leg given as a classifier id is the classifier's forgetful leg; a leg given as a
+    functor id (``fun.*``) or a structural arrow id (``arr.*``) names that functor
+    directly, as in a functor-functor pullback (e.g. BiAct(R,S), Def 85.2, whose two legs
+    are underlying-additive-group forgetful functors). A leg with no known arrow is an
+    error rather than a category reference, because silently emitting one produces an
+    expression no evaluator can resolve.
     """
     if not leg:
         raise ValueError("pullback leg is missing")
@@ -38,11 +41,16 @@ def _leg_functor_id(leg: str | None, leg_by_classifier: dict[str, str]) -> str:
         if not arrow:
             raise ValueError(f"classifier leg {leg} has no classifier_leg arrow in the seed")
         return arrow
-    raise ValueError(f"pullback leg {leg} is neither a functor nor a classifier")
+    if leg.startswith("arr."):
+        if leg not in arrow_ids:
+            raise ValueError(f"pullback leg {leg} names no arrow in the seed")
+        return leg
+    raise ValueError(f"pullback leg {leg} is neither a functor, classifier, nor arrow")
 
 
-def expr_of(e: dict, leg_by_classifier: dict[str, str] | None = None) -> dict:
+def expr_of(e: dict, leg_by_classifier: dict[str, str] | None = None, arrow_ids: frozenset[str] | None = None) -> dict:
     leg_by_classifier = leg_by_classifier or {}
+    arrow_ids = arrow_ids or frozenset()
     d = e.get("definition") or {}
     # Spelling aliases only. A construction value is an alias by `kind` but its
     # `of` names the construction's functor, so routing it here emitted a category
@@ -71,10 +79,12 @@ def expr_of(e: dict, leg_by_classifier: dict[str, str] | None = None) -> dict:
         # legs as category references made a typed importer look for categories named
         # `fun.*` and `clf.*`, which do not exist. A classifier leg is named by the
         # arrow that carries it, so resolve the classifier to that arrow.
+        # Two FunctorId legs plus an over-category. The right leg is spelled `right` for a
+        # functor-against-classifier pullback and `right_functor` for a functor-functor one.
         return {
             "tag": "pullback",
-            "left": _leg_functor_id(d.get("left"), leg_by_classifier),
-            "right": _leg_functor_id(d.get("right"), leg_by_classifier),
+            "left": _leg_functor_id(d.get("left") or d.get("left_functor"), leg_by_classifier, arrow_ids),
+            "right": _leg_functor_id(d.get("right") or d.get("right_functor"), leg_by_classifier, arrow_ids),
             "over": {"tag": "reference", "id": d.get("over")},
         }
     if op == "parameter_substitution":
@@ -203,6 +213,7 @@ def main() -> int:
         for a in arrows
         if a.get("kind") == "classifier_leg"
     }
+    arrow_ids = frozenset(str(a["id"]) for a in arrows)
 
     sidecar: dict[str, str] = {}
     # Prefer canonical (non-alias) entities when several share a DOT vertex.
@@ -271,7 +282,7 @@ def main() -> int:
                 "id": e["id"],
                 "canonicalName": e.get("canonical_name") or e["id"],
                 "declaration": e["id"],
-                "expression": expr_of(e, leg_by_classifier),
+                "expression": expr_of(e, leg_by_classifier, arrow_ids),
                 "origin": origin_of(e),
                 "visibility": visibility_of(e),
                 "kind": e["kind"],

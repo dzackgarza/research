@@ -2140,6 +2140,14 @@
       "target": "cat.modules_r"
     },
     {
+      "id": "arr.dot.int_bil_r__modules",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "Def 21.3: the underlying-module functor of a bilinear form; the left leg of the coordinatized-form pullback cat.bil_coord_n_r (glued with the coord frame over their shared underlying module).",
+      "source": "cat.int_bil_r",
+      "target": "cat.modules_r"
+    },
+    {
       "id": "arr.dot.int_quad_r__int_hom_r",
       "kind": "forgetful",
       "preferred": true,
