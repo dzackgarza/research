@@ -84,15 +84,15 @@ sending a module to its $W$-valued bilinear forms, respectively quadratic maps, 
 The total form categories are the categories of elements of these presheaves,
 
 $$
-\mathcal{B}_{R,W} \;=\; \operatorname{El}\!\big(\operatorname{Bil}_{R,W}\big),
+\mathcal{B}_{R,W} \;=\; \int_{\mathrm{Mod}_R}\!\big(\operatorname{Bil}_{R,W}\big),
 \qquad
-\mathcal{Q}_{R,W} \;=\; \operatorname{El}\!\big(\operatorname{Quad}_{R,W}\big),
+\mathcal{Q}_{R,W} \;=\; \int_{\mathrm{Mod}_R}\!\big(\operatorname{Quad}_{R,W}\big),
 $$
 
 with covariant projection $\pi : \mathcal{B}_{R,W} \to \mathrm{Mod}_R$.
 A morphism $(M, b_M) \to (N, b_N)$ is a module map $f : M \to N$ with $f^{*} b_N = b_M$ — an underlying map in the same direction as $\pi$, pulling the target form back to the source.
 The defining datum is always the $W$-valued form; the map-to-dual picture appears only as the derived polarization of @def-polarization.
-The convention for $\operatorname{El}$ — the standard category of elements of a presheaf, with **no** $(-)^{\mathrm{op}}$ — is fixed, and shown to be forced, in @sec-el.
+The convention for $\int_C F$ — the standard category of elements of a presheaf, with **no** $(-)^{\mathrm{op}}$ — is fixed, and shown to be forced, in @sec-el.
 :::
 
 ::: {#def-form-axioms}
@@ -395,7 +395,7 @@ If the genus *groupoid* is wanted, it is the classical adelic double coset with 
 
 The generation calculus uses a fixed small set of category-level constructors, each a standard construction applied — never a new notion:
 
-- $\operatorname{El}$ — the category of elements (Grothendieck construction) of a presheaf, generating the form categories of @sec-forms;
+- $\int_C F$ — the category of elements (Grothendieck construction) of a presheaf, generating the form categories of @sec-forms;
 
 - $\operatorname{Core}$ — the maximal subgroupoid, generating isometry groupoids (@sec-isometry) and the domains of core-sited functors (@sec-discriminant, @sec-genus-sec);
 

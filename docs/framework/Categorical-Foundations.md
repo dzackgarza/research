@@ -7,11 +7,11 @@ Core and groupoid completion are defined in @def-core.
 ## Category of elements
 
 Let $F\colon C^{\mathrm{op}}\to\mathbf{Set}$ be a presheaf.
-Its *category of elements* $\operatorname{El}(F)$ has objects $(c,x)$ with $x\in F(c)$.
+Its *category of elements* $\int_C F$ has objects $(c,x)$ with $x\in F(c)$.
 A morphism $(c,x)\to(d,y)$ is a morphism $f\colon c\to d$ satisfying $F(f)(y)=x$.
 The projection
 $$
-p_F\colon\operatorname{El}(F)\longrightarrow C,\qquad(c,x)\longmapsto c,
+p_F\colon\int_C F\longrightarrow C,\qquad(c,x)\longmapsto c,
 $$
 is a discrete fibration [@nlab:category_of_elements; @Rie16, §2.4]. For a covariant functor $C\to\mathbf{Set}$ the corresponding projection is a discrete opfibration.
 :::
@@ -75,15 +75,15 @@ Consequently, the fiber of $\pi_0(E)\to\pi_0(B)$ need not equal $\pi_0(F)$ [@May
 ## Generalized elements and representability
 
 A *generalized element* of $X\in C$ with domain $T$ is a morphism $T\to X$.
-For a presheaf $F\colon C^{\mathrm{op}}\to\mathbf{Set}$, an element $x\in F(T)$ is an object $(T,x)$ of $\operatorname{El}(F)$.
+For a presheaf $F\colon C^{\mathrm{op}}\to\mathbf{Set}$, an element $x\in F(T)$ is an object $(T,x)$ of $\int_C F$.
 
 The presheaf $F$ is representable if there is an object $X$ and a natural isomorphism $F\cong\operatorname{Hom}_C(-,X)$.
 Under this isomorphism, $\operatorname{id}_X$ corresponds to the universal element.
 The dual convention applies to corepresentable covariant functors.
 
 ::: {#def-el-convention}
-## The $\operatorname{El}$ convention {#sec-el}
+## The $\int_C F$ convention {#sec-el}
 
 For every presheaf $F\colon C^{\mathrm{op}}\to\mathbf{Set}$, use the category of elements and discrete-fibration convention of @def-category-of-elements.
-Thus the projection $\operatorname{El}(F)\to C$ is a discrete fibration; no additional opposite category is taken after forming $\operatorname{El}(F)$.
+Thus the projection $\int_C F\to C$ is a discrete fibration; no additional opposite category is taken after forming $\int_C F$.
 :::

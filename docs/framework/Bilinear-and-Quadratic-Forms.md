@@ -29,9 +29,9 @@ Pullback defines the presheaf $\operatorname{Quad}_{R,W}\colon(R\text{-}\mathbf{
 Let $U\colon R\text{-}\mathbf{Mod}\to\mathbf{Set}$ be the forgetful functor.
 Define
 $$
-\mathcal B_{R,W}=\operatorname{El}(U\circ\operatorname{Bil}_{R,W}),
+\mathcal B_{R,W}=\int_{R\text{-}\mathbf{Mod}}(U\circ\operatorname{Bil}_{R,W}),
 \qquad
-\mathcal Q_{R,W}=\operatorname{El}(U\circ\operatorname{Quad}_{R,W}).
+\mathcal Q_{R,W}=\int_{R\text{-}\mathbf{Mod}}(U\circ\operatorname{Quad}_{R,W}).
 $$
 An object of $\mathcal B_{R,W}$ is a pair $(M,b)$.
 A morphism $(M,b_M)\to(N,b_N)$ is an $R$-linear map $f\colon M\to N$ satisfying $f^*b_N=b_M$.
