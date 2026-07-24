@@ -29,13 +29,15 @@ R(L) \da \ts{ v\in L \mid v^2 = 2 }
 .
 $$
 A **simple root system** $\Phi(L)\subseteq R(L)$ is a subset of roots
-$\ts{\alpha_i}$ such that $\ZZ_{\geq 0}\,\Phi(L) = R(L)$; that is, every
-$v\in R(L)$ can be written as
+$\ts{\alpha_i}$ such that every root $v\in R(L)$ is either a nonnegative
+integer combination or a nonpositive integer combination of the $\alpha_i$ ---
+the **positive** and **negative** roots respectively; that is,
 $$
-v = \sum_{\alpha_i\in \Phi(L)} c_i \alpha_i,
-\qquad c_i \in \ZZ_{\geq 0}
-.
+R(L) = \ZZ_{\geq 0}\,\Phi(L) \;\sqcup\; \ZZ_{\leq 0}\,\Phi(L)
+,
 $$
+so every $v\in R(L)$ can be written as $v = \sum_{\alpha_i\in \Phi(L)} c_i \alpha_i$
+with all $c_i\in \ZZ_{\geq 0}$ or all $c_i\in \ZZ_{\leq 0}$.
 The elements of $\Phi(L)$ are the **simple roots**.
 Any simple root system spans a sublattice $\ZZ\Phi(L)\injects L$, and we say $L$
 is a **root lattice** if this inclusion has index $1$, i.e. $L = \ZZ\Phi(L)$.
@@ -69,8 +71,7 @@ off-diagonal entries record the intersections of simple roots.
 
 ## The $ADE$ lattices
 
-The simply-laced root lattices $A_n$, $D_n$, $E_n$ have a single root length and
-are the ones that occur in the lattice theory of $K3$ and Coble surfaces.
+The simply-laced root lattices $A_n$, $D_n$, $E_n$ have a single root length and are the ones that occur in the lattice theory of $K3$ and Coble surfaces.
 
 ::: {.definition ref="def:lattice-An"}
 
@@ -165,7 +166,7 @@ roots, of two kinds:
 
 Indeed $\binom{8}{2}\cdot 4 = 112$ and $2^{8-1} = 128$, giving $240$ in total.
 There are $8$ simple roots comprising $\Phi(E_8)$, and the Weyl group $W(E_8)$
-acts transitively on $\Phi(E_8)$.
+acts transitively on the root set $R(E_8)$.
 :::
 
 ::: {.theorem ref="thm:E8-characterization"}
@@ -186,9 +187,7 @@ unimodularity transparent.
 
 ## Non-simply-laced root systems
 
-The following root systems carry two root lengths and so are not root lattices
-in the sense of \cref{def:root-lattice}; we record them for completeness in the
-Euclidean model.
+The following root systems carry two root lengths and so are not root lattices in the sense of \cref{def:root-lattice}; we record them for completeness in the Euclidean model.
 
 ::: {.definition ref="def:root-system-Bn-Cn"}
 
@@ -245,8 +244,7 @@ $$
 
 ## The plus construction and $D_8^+ \cong E_8$
 
-The realization of $E_8$ in \cref{def:lattice-En} is an instance of a general
-overlattice construction for the $D_n$ family.
+The realization of $E_8$ in \cref{def:lattice-En} is an instance of a general overlattice construction for the $D_n$ family.
 
 ::: {.definition ref="def:plus-construction"}
 
@@ -269,17 +267,23 @@ each obtained by adjoining one half-integer coset to $D_n$.
 
 ::: {.theorem ref="thm:plus-construction"}
 
-Let $D_n^{\pm}$ be the overlattices of \cref{def:plus-construction}.
+Let $D_n^+ = D_n\cup(v_+ + D_n)$ with $v_+ = \tfrac12(1,\dots,1)$ be the
+overlattice of \cref{def:plus-construction}.
 
-1.  If $n$ is odd, there are isometries
-    $D_n^+ \cong D_n^- \cong D_n\dual$.
+1.  $D_n^+$ is a lattice if and only if $n$ is even.
+    For $n$ odd, $2v_+ = (1,\dots,1)\notin D_n$ --- equivalently $[v_+]$ has
+    order $4$ in $A_{D_n}\cong\ZZ/4\ZZ$ --- so the coset union is not closed
+    under addition and is not a lattice.
 
-2.  If $n$ is even, then $D_n^+ \not\cong D_n^-$, and each contains $D_n$ as a
-    sublattice of index $2$.
+2.  For $n$ even, $D_n^+$ contains $D_n$ as a sublattice of index $2$ and has
+    determinant $1$.
 
-3.  Both $D_n^+$ and $D_n^-$ are unimodular, and they are even integral lattices
-    if and only if $n\equiv 0 \pmod 8$.
-    For $n = 8$ one has $D_8^+ \cong E_8$.
+3.  $D_n^+$ is an integral lattice (hence unimodular) if and only if
+    $4\mid n$, and is even if and only if $8\mid n$.
+    For $n\equiv 2\pmod 4$ the lattice $D_n^+$ has determinant $1$ but is
+    non-integral, since $v_+^2 = n/4\notin\ZZ$.
+
+4.  In particular $D_8^+ \cong E_8$ is the even unimodular lattice of rank $8$.
 :::
 
 ::: {.remark}

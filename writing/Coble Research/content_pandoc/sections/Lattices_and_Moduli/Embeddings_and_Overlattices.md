@@ -231,7 +231,7 @@ embedding is thus determined by the gluing data $(H_S, H_T, \gamma)$.
 Comparing discriminants across the overlattice $L$ of $S\oplus T$ gives the
 **discriminant formula**
 $$
-\abs{\operatorname{disc} T} = \frac{\abs{\operatorname{disc} L}\cdot\abs{\operatorname{disc} S}}{\abs{H}^2},
+\abs{\operatorname{disc} T} = \frac{\abs{\operatorname{disc} L}\cdot\abs{H}^2}{\abs{\operatorname{disc} S}},
 \qquad H\da H_L,
 $$
 recovering, when $L$ is unimodular, the statement that
@@ -262,7 +262,7 @@ $$
 L \cong S\oplus T
 .
 $$
-Moreover, if $S$ is unimodular then $T$ is unimodular as well.
+Moreover, if $L$ is unimodular then $T$ is unimodular as well.
 :::
 
 ::: {.proof}
@@ -336,10 +336,29 @@ The sublattice $P\da\gens{e, w}$ has Gram matrix
 $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ of determinant $-1$, hence
 $P$ is a rank-$2$ unimodular sublattice, and it is primitive since a unimodular
 sublattice is saturated by \cref{prop:primitive-characterization}.
+The isometry type of $P$ is governed by the parity of $k = w^2$: the Gram
+matrix $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ gives $P\cong U$ when $k$ is
+even and $P\cong\latI_{1, 1}$ (the odd rank-$2$ unimodular hyperbolic lattice)
+when $k$ is odd.
+We adjust $w$ within its coset to realize the parity dictated by $L$; note that
+adding to $w$ any vector of $\gens{e}^{\perp L}$ preserves $\beta_L(e, w) = 1$.
+
 If $L$ is even then $k = w^2$ is even; replacing $w$ by $w - \tfrac{k}{2}e$
-leaves $\beta_L(e, w) = 1$ unchanged and makes $w^2 = 0$, so $P\cong U$.
-If $L$ is odd, $P\cong\latI_{1, 1}$ (an odd rank-$2$ unimodular hyperbolic
-lattice).
+(and $e\in\gens{e}^{\perp L}$ since $e^2 = 0$) leaves $\beta_L(e, w) = 1$
+unchanged and makes $w^2 = 0$, so $P\cong U$.
+
+If $L$ is odd we arrange $w^2$ to be odd, so that $P\cong\latI_{1, 1}$.
+Every $x\in L$ satisfies $x - \beta_L(e, x)\,w\in\gens{e}^{\perp L}$, so
+$L = \gens{e}^{\perp L} + \ZZ w$.
+Were $\gens{e}^{\perp L}$ to consist entirely of even-norm vectors and $w^2$
+even, every $x = y + mw$ ($y\in\gens{e}^{\perp L}$) would have
+$x^2 = y^2 + 2m\,\beta_L(y, w) + m^2 w^2$ even, forcing $L$ even --- contrary to
+hypothesis.
+Hence either $w^2$ is already odd, or $\gens{e}^{\perp L}$ contains a vector $u$
+of odd norm; in the latter case replace $w$ by $w + u$, which preserves
+$\beta_L(e, w) = 1$ and gives $(w + u)^2 = w^2 + 2\beta_L(w, u) + u^2$ odd.
+Either way $k = w^2$ is odd and $P\cong\latI_{1, 1}$.
+
 Since $P$ is unimodular, \cref{prop:unimodular-splits} gives
 $L\cong P\oplus P^{\perp L}$.
 :::

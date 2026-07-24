@@ -62,8 +62,7 @@ bilinear module $(L, \beta_q)$ via its polar form of \cref{def:quadratic-form}.
 
 ::: {.lemma ref="lem:even-lattice-bijection"}
 
-The two constructions of \cref{lem:bilinear-quadratic-correspondence} restrict
-to a bijection between even symmetric integral bilinear forms on $L$ and
+There is a bijection between even symmetric integral bilinear forms on $L$ and
 integral quadratic forms on $L$:
 $$
 \ts{ \beta\in \Sym^2_\ZZ(L\dual) \mid \beta \text{ is even} }
@@ -74,7 +73,12 @@ $$
 under which a bilinear form $\beta$ is sent to
 $q(v) \da \tfrac{1}{2}\beta(v, v)$, and a quadratic form $q$ is sent to its
 polar form $\beta_q$.
-Equivalently, the polar form of any integral quadratic form is an even
+Note that this forward map $\beta\mapsto\tfrac{1}{2}\beta(v,v)$ differs by the
+factor $\tfrac{1}{2}$ from the map $\beta\mapsto q_\beta(v) = \beta(v,v)$ of
+\cref{lem:bilinear-quadratic-correspondence}, so this bijection is a distinct
+construction rather than a restriction of that lemma; only the backward
+(polar-form) direction is shared.
+Concretely, the polar form of any integral quadratic form is an even
 symmetric integral bilinear form, and conversely every even symmetric integral
 bilinear form $\beta$ is the polar form of the integral quadratic form
 $q(v) \da \tfrac{1}{2}\beta(v, v)$.
@@ -119,10 +123,15 @@ polar form is a torsion bilinear form.
 The discriminant group $A_L$ of the Lattice Theory section is a finite, hence
 finitely generated torsion, $\ZZ$-module, so its associated forms are instances
 of this notion.
-The two conventions for the target of the quadratic form,
-$\QQ/\ZZ$ and $\QQ/2\ZZ$, correspond under the isomorphism
-$\QQ/\ZZ \xrightarrow{\ \sim\ } \QQ/2\ZZ$ induced by multiplication by $2$; the
-Lattice Theory section uses the $\QQ/2\ZZ$ normalization for $q_L$.
+We record the discriminant data as two separate forms: the discriminant
+quadratic form $q_L\colon A_L\to\QQ/2\ZZ$ (matching the $\QQ/2\ZZ$ normalization
+of the Lattice Theory section) and the discriminant bilinear form
+$b_L\colon A_L\times A_L\to\QQ/\ZZ$.
+These share the numerator $\beta(\tilde x,\tilde y)$ read modulo different
+lattices; the diagonal $q_L(\bar x) = \beta(\tilde x,\tilde x)\bmod 2\ZZ$
+reduces to $b_L(\bar x,\bar x) = \beta(\tilde x,\tilde x)\bmod\ZZ$ under the
+natural surjection $\QQ/2\ZZ\twoheadrightarrow\QQ/\ZZ$, not under any
+multiplication-by-$2$ isomorphism.
 :::
 
 ## The discriminant bilinear and quadratic forms
@@ -143,39 +152,45 @@ $$
 computed on any lifts $x, y\in L\dual$ of $\bar x, \bar y$.
 Its associated **discriminant quadratic form** is
 $$
-q_{A_L}(\bar x) \da \beta(x, x) \bmod \ZZ \in \QQ/\ZZ
+q_L(\bar x) \da \beta(x, x) \bmod 2\ZZ \in \QQ/2\ZZ
 ,
 $$
-for any lift $x$ of $\bar x$; under the $\QQ/2\ZZ$ normalization this is the
-form $q_L$ recalled from the Lattice Theory section.
+for any lift $x$ of $\bar x$; this is the $\QQ/2\ZZ$-valued form $q_L$ recalled
+from the Lattice Theory section.
+Reducing modulo $\ZZ$ recovers the diagonal of $b_L$, i.e.
+$q_L(\bar x)\bmod\ZZ = b_L(\bar x,\bar x)$, via the surjection
+$\QQ/2\ZZ\twoheadrightarrow\QQ/\ZZ$.
 The **orthogonal group** $\Orth(A_L)$ is the group of automorphisms of $A_L$
-preserving $q_{A_L}$.
+preserving $q_L$.
 The **length** $\ell(L)$ of $L$ is the minimal number of generators of the
 abelian group $A_L$.
 :::
 
 ::: {.remark}
 
-Both $b_L$ and $q_{A_L}$ are well defined: replacing a lift $x$ by $x + m$ with
-$m\in L$ changes $\beta(x, y)$ by $\beta(m, y)\in\ZZ$ and changes $\beta(x, x)$
-by $\beta(2x, m) + \beta(m, m)\in 2\ZZ \subseteq \ZZ$, since $\beta(L\dual, L)
-\subseteq\ZZ$ and $L$ is even.
+Both $b_L$ and $q_L$ are well defined: replacing a lift $x$ by $x + m$ with
+$m\in L$ changes $\beta(x, y)$ by $\beta(m, y)\in\ZZ$ (so $b_L$ is well defined
+modulo $\ZZ$) and changes $\beta(x, x)$ by
+$\beta(2x, m) + \beta(m, m)\in 2\ZZ$ (so $q_L$ is well defined modulo $2\ZZ$),
+since $\beta(L\dual, L)\subseteq\ZZ$ and $L$ is even.
 These forms are Nikulin's discriminant forms [@Nik80].
 :::
 
 ::: {.proposition ref="prop:discriminant-nondegenerate"}
 
-The discriminant forms $b_L$ and $q_{A_L}$ of a nondegenerate lattice $L$ are
+The discriminant forms $b_L$ and $q_L$ of a nondegenerate lattice $L$ are
 themselves nondegenerate, meaning that $b_L(\bar x, \,\cdot\,) = 0$ in
 $\Hom(A_L, \QQ/\ZZ)$ implies $\bar x = 0$.
-For any $\bar x, \bar y\in A_L$ the bilinear and quadratic forms are related by
+For any $\bar x, \bar y\in A_L$ the $\QQ/\ZZ$-valued bilinear form is recovered
+from the $\QQ/2\ZZ$-valued quadratic form by
 $$
 b_L(\bar x, \bar y)
-= \tfrac{1}{2}\left( q_{A_L}(\bar x + \bar y) - q_{A_L}(\bar x) - q_{A_L}(\bar y) \right)
+= \tfrac{1}{2}\left( q_L(\bar x + \bar y) - q_L(\bar x) - q_L(\bar y) \right)
 ,
 $$
-where multiplication by $\tfrac{1}{2}$ is interpreted through the isomorphism
-$\QQ/2\ZZ \xrightarrow{\ \sim\ } \QQ/\ZZ$.
+where the bracketed difference lies in $\QQ/2\ZZ$ and equals
+$2\beta(\tilde x, \tilde y)\bmod 2\ZZ$; halving this even representative yields a
+well-defined element $\beta(\tilde x, \tilde y)\bmod\ZZ$ of $\QQ/\ZZ$.
 :::
 
 ::: {.proof}
@@ -269,8 +284,9 @@ $\abs{\operatorname{cl}(L)}$.
 
 ::: {.remark}
 
-For indefinite even lattices $L$ one typically expects the class number to be
-$1$, so that the genus determines the isometry class [@CS10].
+For indefinite even lattices $L$ of rank $\geq 3$ the class number is $1$, so
+that the genus determines the isometry class; this is Eichler's theorem on the
+spinor genus of indefinite forms (see [@CS10] for a general reference).
 For definite lattices the situation is reversed: class number $1$ is
 comparatively rare.
 :::
