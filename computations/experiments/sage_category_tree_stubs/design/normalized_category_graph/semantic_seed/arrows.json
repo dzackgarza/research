@@ -139,6 +139,7 @@
     {
       "id": "arr.clf.additive",
       "kind": "classifier_leg",
+      "role": "additive_operation",
       "preferred": true,
       "provenance": "ι_Additive : cat.magmas.Additive → cat.magmas",
       "source": "clf.additive.domain",
@@ -851,6 +852,7 @@
     {
       "id": "arr.clf.magmas.additive",
       "kind": "classifier_leg",
+      "role": "additive_operation",
       "preferred": true,
       "provenance": "flat Magmas Additive",
       "source": "clf.magmas.additive.domain",

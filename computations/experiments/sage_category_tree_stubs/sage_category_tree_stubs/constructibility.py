@@ -11,6 +11,14 @@ constructs a categorical pullback object.
 
 Governing doctrine: ``category-expressions-generate-projection-hierarchy``;
 algorithm: 2026-07-21 finite-limit derivability directive.
+
+**This module's verdict is a diagnostic, never semantic evidence** (decision record 3
+§3). Deciding derivability in a formal graph is a search over a sketch, not a proof: the
+route it returns is a shortest-representative heuristic, not a certified route equality
+(which needs an equality or natural-isomorphism certificate). Callers must treat a
+``CONSTRUCTIBLE`` verdict as an *observed-Sage-approximation* candidate, not as
+``exact-constructed``; the authoritative comparison status is assigned separately with a
+proof/obligation id.
 """
 
 from __future__ import annotations
@@ -58,7 +66,6 @@ class ClassifierRec:
     total: str
     leg_id: str
     name: str
-    idempotent: bool = True
 
 
 @dataclass(frozen=True, slots=True)
@@ -132,31 +139,31 @@ class Constructibility:
     host_paths: tuple[tuple[str, str], ...] = ()
 
 
-def _infer_role(arrow: dict[str, Any]) -> str | None:
-    """Deprecated fallback: scrape provenance/notes when authored ``role`` is absent.
-
-    Authored ``role`` / PortId on the arrow always wins via ``_arrow_role``.
-    """
-    text = f"{arrow.get('provenance') or ''} {arrow.get('notes') or ''}".lower()
-    if "multiplicative" in text or "nonzero mult" in text:
-        return "multiplicative_operation"
-    if "additive" in text and ("magma" in text or "operation" in text):
-        return "additive_operation"
-    if arrow.get("target") == "cat.sets":
-        return "underlying_set"
-    if arrow.get("target") == "cat.modules_r":
-        return "underlying_module"
-    if "underlying_set" in text:
-        return "underlying_set"
-    return None
+# A forgetful into a canonical underlying-object node carries that route's role,
+# determined by the typed target node — not by any text. Operation-role ports
+# (additive/multiplicative) are never structural; they are authored on the arrow.
+_UNDERLYING_ROLE_BY_TARGET: dict[str, str] = {
+    "cat.sets": "underlying_set",
+    "cat.modules_r": "underlying_module",
+}
 
 
 def _arrow_role(arrow: dict[str, Any]) -> str | None:
-    """Prefer authored ``role`` (PortId); fall back to deprecated prose inference."""
+    """The arrow's operation-role port (PortId), or ``None``.
+
+    Roles are typed authored data (decision record 3 §3): the earlier fallback that
+    scraped ``provenance``/``notes`` *prose* for "additive"/"multiplicative"/"underlying"
+    is removed. Authored ``role`` wins; otherwise the only role assigned is the structural
+    underlying-route role read from the typed **target** node (a forgetful into
+    ``cat.sets``/``cat.modules_r`` is the underlying-set/-module route). No text is read.
+    """
     authored = arrow.get("role")
     if isinstance(authored, str) and authored.strip():
         return authored.strip()
-    return _infer_role(arrow)
+    target = arrow.get("target")
+    if isinstance(target, str):
+        return _UNDERLYING_ROLE_BY_TARGET.get(target)
+    return None
 
 
 def build_sketch(seed: SemanticSeed | None = None) -> dict[str, Any]:
@@ -283,8 +290,11 @@ def map_closure(
     def add(term: MapTerm) -> bool:
         """Keep one shortest representative per ``(target, role)`` class.
 
-        If an equal-length inequivalent path is seen, record a collision so
-        ``check_requests`` can return AMBIGUOUS instead of silently collapsing.
+        This is a diagnostic shortest-representative heuristic, not a certified route
+        equality (decision record 3 §3): route equality requires an equality or
+        natural-isomorphism certificate this checker does not construct. Equal-length
+        inequivalent paths are recorded as a collision so ``check_requests`` returns
+        AMBIGUOUS instead of silently collapsing them.
         """
         bucket = maps.setdefault(term.target, [])
         for i, existing in enumerate(bucket):
