@@ -95,14 +95,14 @@ for _axiom_name in _FORM_AXIOMS:
         all_axioms.add(_axiom_name)
 
 
-def _own_methods(carrier: type) -> type:
+def _own_methods(cls: type) -> type:
     r"""Sage's category framework injects only a ParentMethods class's OWN
     attributes and warns when the class has a superclass (inherited names are
     never copied). The domain-algebra classes subclass their base class for the
     static type hierarchy, so hand Sage a derived view holding exactly that
     class's own delta — projected mechanically, never written by hand."""
-    delta = {name: value for name, value in vars(carrier).items() if not name.startswith("__")}
-    delta["__doc__"] = carrier.__doc__
+    delta = {name: value for name, value in vars(cls).items() if not name.startswith("__")}
+    delta["__doc__"] = cls.__doc__
     return type("ParentMethods", (), delta)
 
 

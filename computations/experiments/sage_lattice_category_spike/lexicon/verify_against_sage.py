@@ -146,14 +146,14 @@ def _verify_class(
         base_obj = _resolve(base_name, tree, module)
         if isinstance(real, type) and isinstance(base_obj, type) and not issubclass(real, base_obj):
             _fail(problems, f"{qualname}: not a subclass of stub base {base_name}")
-    carriers: list[object] = [real]
+    candidates: list[object] = [real]
     if qualname in representatives:
-        carriers += representatives[qualname]
+        candidates += representatives[qualname]
     for item in node.body:
         if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            if any((item.name in dir(carrier)) for carrier in carriers):
+            if any((item.name in dir(candidate)) for candidate in candidates):
                 checked += 1
-            elif item.name == "__iter__" and any(_legacy_iterable(carrier) for carrier in carriers if not isinstance(carrier, type)):
+            elif item.name == "__iter__" and any(_legacy_iterable(candidate) for candidate in candidates if not isinstance(candidate, type)):
                 # Sage vectors iterate through the legacy __getitem__/__len__
                 # protocol; the claim is verified by actually iterating a
                 # representative instance.

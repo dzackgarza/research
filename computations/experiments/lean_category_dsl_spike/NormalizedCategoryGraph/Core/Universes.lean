@@ -21,10 +21,10 @@ universe uObj uHom uMetaObj uMetaHom
 -- Twin levels are intentional for Cat packing; they only appear jointly.
 set_option linter.checkUnivs false
 
-/-- Ambient bundle for ordinary categories (Sets, Magmas, Rings, …). -/
+/-- The universe of ordinary categories (Sets, Magmas, Rings, …). -/
 abbrev ObjCat := CategoryTheory.Cat.{uHom, max uObj uHom}
 
-/-- Ambient bundle one stratum above: categories of categories. -/
+/-- The universe one stratum above: categories of categories. -/
 abbrev MetaCat := CategoryTheory.Cat.{uMetaHom, max uMetaObj uMetaHom}
 
 end NormalizedCategoryGraph

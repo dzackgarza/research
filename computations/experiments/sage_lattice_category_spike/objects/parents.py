@@ -868,7 +868,7 @@ if TYPE_CHECKING:
     # The enumeration/reduction kernels and the root-provenance mixin are never
     # instantiated alone: each is composed with a concrete SyntheticLattice at
     # T1, so inside their bodies ``self`` really is a SyntheticLattice. For type
-    # checking we declare that host; at runtime the base stays the domain carrier
+    # checking we declare that host; at runtime the base stays the domain object
     # whose ParentMethods delta Sage installs.
     _PositiveDefiniteSelf = SyntheticNondegenerateLattice
     _DefiniteSelf = SyntheticNondegenerateLattice
