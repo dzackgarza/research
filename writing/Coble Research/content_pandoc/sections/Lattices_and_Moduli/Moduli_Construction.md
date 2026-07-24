@@ -4,9 +4,9 @@ We summarize the relevant moduli spaces:
 
 $$
 \begin{aligned}
-F_\En &= \bD(T_\En)/\Orth(T_\En)^* &
+F_\En &= \bD(T_\En)/\Orth^+(T_\En)^* &
 F_{\En, 2} &= \bD(T_\En)/\Gamma_{\En, 2} \\
-F_\Co &= \bD(T_\Co) / \Orth(T_\Co)^* &
+F_\Co &= \bD(T_\Co) / \Orth^+(T_\Co)^* &
 F_{\Co, 2} &= \bD(T_\Co)/\Gamma_{\Co, 2}
 \end{aligned}
 $$
@@ -17,15 +17,14 @@ $$
 \begin{aligned}
 \Gamma_{\En, 2} &= \Orth(T_\En) \intersect \Orth(T_\dP) \subseteq \Orth(\lkt) \\
 \Gamma_{\Co, 2} &= \mathrm{Stab}_{\Orth(T_\En)}(T_\Co) \subseteq \Orth(T_\En) \\
-F_{\Nod} &= \bD(T_\Nod)/\Orth(T_\Nod)^* \\
+F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^* \\
 F_{\Nod, 2} &= ???
 \end{aligned}
 $$
 
 where $T_{\dP}$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of \cref{lem:primitive_embedding_eta}.
 \todo[inline]{Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.}
-\todo[inline]{The unpolarized presentations above quotient by the stable orthogonal group $\Orth(T)^* = \ker(\Orth(T)\to\Orth(q_T))$, matching the general Hodge-theoretic statement below. The introduction (\S1) currently defines $\Gamma_\Co \da \Orth(T_\Co)$ (the full group) --- decide which is intended and reconcile the two.}
-We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$, which implies that there is a birational isomorphism $F_{\Co} \birational \cH_{-2}/\Orth(T_\En)$.
+We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$, which implies that there is a birational isomorphism $F_{\Co} \birational \cH_{-2}/\Orth^+(T_\En)^*$.
 
 # GIT Discussion
 
@@ -81,9 +80,9 @@ unpolarized Enriques surfaces.
 
 By passing to the K3 cover, one can embed $F_\Co$ into an arithmetic quotient of a 9-dimensional Hermitian symmetric domain of type $\rm{IV}$.
 Let $\lkt = U^3 \oplus E_8^2$ be the canonical K3 lattice.
-We recall that for any primitively embedded lattice $S\injects \lkt$, letting $T \da S^{\perp \lkt}$, there is a Hodge-theoretic description of the coarse moduli space $F_S$ of $S$-polarized K3 surfaces given by $$F_S \da D_T/\Orth(T)^*$$
+We recall that for any primitively embedded lattice $S\injects \lkt$, letting $T \da S^{\perp \lkt}$, there is a Hodge-theoretic description of the coarse moduli space $F_S$ of $S$-polarized K3 surfaces given by $$F_S \da D_T/\Orth^+(T)^*$$
 
-where $\Orth(T)^* \da \ker\qty{\Orth(T) \to \Orth(q_T)}$ and $D_T$ is a connected component of
+where $\Orth^+(T)^* \da \Orth^+(T) \intersect \ker\qty{\Orth(T) \to \Orth(q_T)}$, the group $\Orth^+(T)$ is the index-two subgroup of $\Orth(T)$ preserving the component $D_T$, and $D_T$ is a connected component of
 
 $$
 \Omega_T \da \ts{[v]\in \PP(T_\CC) \st v^2=0,\, v\bar v > 0}
@@ -102,9 +101,9 @@ $-2d$, as in \cref{fig:period-domain-hyperplanes}, one can thus present
 
 $$
 \begin{aligned}
-F_{\En} &= \qty{D_{T_\En} \setminus \cH_{-2}} / \Orth(T_\En)^* \\
-F_{\Co} &= \cH_{-2} / \Orth(T_\En)^* \\
-F_{\Nod} &= \qty{\cH_{-4} \setminus \cH_{-2}} / \Orth(T_\En)^*
+F_{\En} &= \qty{D_{T_\En} \setminus \cH_{-2}} / \Orth^+(T_\En)^* \\
+F_{\Co} &= \cH_{-2} / \Orth^+(T_\En)^* \\
+F_{\Nod} &= \qty{\cH_{-4} \setminus \cH_{-2}} / \Orth^+(T_\En)^*
 \end{aligned}
 $$
 
@@ -132,7 +131,7 @@ T_\Co \da S_\Co^{\perp \lkt} = (11, 11, 1)_2 \cong \gens{2} \oplus E_{10}(2)
 $$
 
 Alternatively, this follows immediately from the mirror move $S\leadsto T$ of [@AE22 Thm. 5.10] applied to $S_\Co =(11, 11, 1)_1$.
-We obtain $F_\Co$ as an open subset of the period domain $D_{T_\Co}/\Orth(T_\Co)$, a normal quasiprojective variety of dimension 9, by [@DK13 Prop. 3.2] and an application of the Torelli theorem for algebraic K3 surfaces from [@PS71]. We note that [@DK13] shows that $F_\Co$ is rational by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics in $\PP^2$.
+We obtain $F_\Co$ as an open subset of the period domain $D_{T_\Co}/\Orth^+(T_\Co)^*$, a normal quasiprojective variety of dimension 9, by [@DK13 Prop. 3.2] and an application of the Torelli theorem for algebraic K3 surfaces from [@PS71]. We note that [@DK13] shows that $F_\Co$ is rational by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics in $\PP^2$.
 
 # KSBA Spaces
 

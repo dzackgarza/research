@@ -98,7 +98,15 @@ We write $\Orth(L)$ for the group of lattice automorphisms of $L$, denoted the
 automorphisms of the discriminant group $A_L$ which preserve the quadratic
 form.
 There is a natural group homomorphism $\Orth(L)\to\Orth(q_L)$, the kernel is
-denoted $\tilde \Orth(L)$.
+denoted $\tilde \Orth(L)$, equivalently written $\Orth(L)^*$; we call it the
+**stable orthogonal group**.
+When $L$ has signature $(2, n)$, the associated period domain $\Omega_L$ has two
+connected components interchanged by complex conjugation, and we write
+$\Orth^+(L)$ for the index-two subgroup of $\Orth(L)$ preserving each component
+(equivalently, preserving the orientation of the positive-definite part, i.e.
+those isometries of real spinor norm $+1$).
+We write $\Orth^+(L)^* \da \Orth^+(L)\intersect \tilde\Orth(L)$ for the
+intersection, which is the arithmetic group acting on a single component $D_L$.
 :::
 
 ::: {.remark title="Orthogonal complements"}

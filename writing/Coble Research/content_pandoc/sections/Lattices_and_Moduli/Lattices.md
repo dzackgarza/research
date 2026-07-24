@@ -108,7 +108,7 @@ $F_{\Co}$ is the normalization of a closed subvariety of $F_{\En}$.
 ::: {.proof}
 
 It suffices to show that
-$D(T_{\Co})/\Orth(T_{\Co}) \to D(T_{\En})/\Orth(T_{\En})$ is a finite morphism
+$D(T_{\Co})/\Orth^+(T_{\Co})^* \to D(T_{\En})/\Orth^+(T_{\En})^*$ is a finite morphism
 which is generically injective.
 The lattice embedding $T_{\Co}\injects T_{\En}$ induces an injective morphism
 $D(T_{\Co}) \injects D(T_{\En})$.

@@ -93,8 +93,9 @@ critically, advances in integral affine geometry and mirror symmetry.
 
 The moduli space $F_\Co$ of Coble surfaces with $n=1$ boundary components admits
 a Hodge-theoretic period domain description of the form $D(T_\Co)/\Gamma_\Co$
-where $T_\Co$ is a fixed lattice and $\Gamma_\Co \da \Orth(T_\Co)$ is its
-orthogonal group.
+where $T_\Co$ is a fixed lattice and $\Gamma_\Co \da \Orth^+(T_\Co)^*$ is the
+stable orthogonal group preserving the period domain component (an arithmetic
+subgroup of finite index in $\Orth(T_\Co)$).
 Its Baily-Borel compactification $\overline{F_{\Co}}^{\bb}$ contains only one
 0-cusp $p_0$, and thus the combinatorial data of a semitoroidal compactification
 is determined by a single $\Gamma_\Co\dash$invariant semifan associated to a
