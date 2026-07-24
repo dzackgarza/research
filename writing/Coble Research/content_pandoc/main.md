@@ -50,5 +50,13 @@ content_pandoc/sections/Results_F_En_2/_index.md
 ```
 
 ```include
+content_pandoc/sections/Open_Problems/_index.md
+```
+
+```include
 content_pandoc/sections/Appendix_Reference/_index.md
+```
+
+```include
+content_pandoc/sections/Extracted_References/_index.md
 ```
