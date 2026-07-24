@@ -18,6 +18,10 @@ content_pandoc/sections/Introduction/_index.md
 ```
 
 ```include
+content_pandoc/sections/Surfaces_and_Moduli/_index.md
+```
+
+```include
 content_pandoc/sections/Coble_Surfaces/_index.md
 ```
 
