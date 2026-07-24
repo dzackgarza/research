@@ -18631,7 +18631,7 @@
         "aliases": ["Alg_O(V)"],
         "canonical_name": "AlgebrasOverOperad",
         "definition": {
-          "ambient": "V",
+          "monoidal_category": "V",
           "notes": "add-II Def 11.1: the O-algebra objects of V. Rmk 11.3: under standard hypotheses U_O is monadic, which identifies Alg_O(V) with algebras for the monad U_O Free_O -- it does NOT identify all O-algebras with the essential image of the free functor.",
           "operad": "O",
           "operation": "operadic_algebra_objects"
