@@ -12,7 +12,6 @@ book:
   search: true
   chapters:
     - index.md
-    - Roadmap.md
     - part: Foundations
       chapters:
         - framework/Higher-Categories-and-Universes.md
@@ -43,6 +42,7 @@ book:
       chapters:
         - contributing/Mathematical-Language-Style-Guide.md
         - framework/Mathematical-Sources.md
+    - Roadmap.md
 bibliography:
   - references.bib
   - refs-web.bib
@@ -63,6 +63,7 @@ format:
     css: tikz-diagrams.css
     include-before-body: _mathjax-macros.html
 filters:
+  - book-toc
   - custom-numbered-blocks
   - stacks-tags.lua
   - tikz
