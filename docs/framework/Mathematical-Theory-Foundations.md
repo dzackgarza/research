@@ -4041,6 +4041,14 @@ classifier arrow, a Sage `JoinCategory` claim to a finite-limit comparison theor
 Sage meet claim to a full-diagram colimit comparison theorem.  No label computation is
 accepted as a mathematical proof.
 
+The normalized *meet* is defined as the colimit of the full realized diagram, and that
+vocabulary is settled; what a Sage meet asserts is only a *meet datum* — a cocone from the
+parent graph with a canonical comparison \(\mathrm{Meet}_{\mathbf{Cat}}(I) \to \rho(M_I)\),
+exact exactly when that comparison is an equivalence.  A `JoinCategory` claim is exact only
+with an equivalence \(J_{\mathrm{Sage}} \simeq J_{\mathrm{norm}}\).  The comparison, not the
+colimit, is the obligation; a non-exact meet or join datum is recorded on its bridge record
+as *observed-Sage-approximation*, never as an exact status.
+
 ### Convention 64.14 (Property versus chosen presentation)
 
 Finite generation, finite presentation, \(FP_n\), and perfectness are properties.  A
