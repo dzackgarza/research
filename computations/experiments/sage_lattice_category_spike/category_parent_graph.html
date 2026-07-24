@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Category parent graph</title>
+  <style>
+    :root {
+      --bg: #1a1d23;
+      --panel: #252830;
+      --text: #e8eaed;
+      --muted: #9aa0a6;
+      --accent: #7cb3ff;
+      --hit: #ffd666;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font: 14px/1.4 system-ui, sans-serif;
+      overflow: hidden;
+    }
+    header {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 10px 14px;
+      background: var(--panel);
+      border-bottom: 1px solid #3a3f4b;
+      z-index: 2;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    header .hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    #search {
+      flex: 1 1 220px;
+      min-width: 180px;
+      max-width: 420px;
+      padding: 7px 10px;
+      border: 1px solid #3a3f4b;
+      border-radius: 6px;
+      background: #12141a;
+      color: var(--text);
+      outline: none;
+    }
+    #search:focus { border-color: var(--accent); }
+    button {
+      padding: 7px 12px;
+      border: 1px solid #3a3f4b;
+      border-radius: 6px;
+      background: #12141a;
+      color: var(--text);
+      cursor: pointer;
+    }
+    button:hover { border-color: var(--accent); }
+    #status {
+      color: var(--muted);
+      font-size: 12px;
+      margin-left: auto;
+    }
+    #viewport {
+      position: absolute;
+      inset: 52px 0 0 0;
+      overflow: hidden;
+      background: #fff;
+    }
+    #viewport svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    /* Highlight matched nodes */
+    #viewport svg .node.search-hit polygon,
+    #viewport svg .node.search-hit ellipse,
+    #viewport svg .node.search-hit path {
+      stroke: #e6a700 !important;
+      stroke-width: 3px !important;
+      filter: drop-shadow(0 0 4px rgba(230, 167, 0, 0.85));
+    }
+    #viewport svg .node.search-hit text {
+      font-weight: 700 !important;
+      fill: #000 !important;
+    }
+    #viewport svg .node.search-dim {
+      opacity: 0.18;
+    }
+    #sidebar {
+      position: absolute;
+      top: 62px;
+      right: 12px;
+      width: min(340px, 40vw);
+      max-height: calc(100% - 84px);
+      overflow: auto;
+      background: rgba(37, 40, 48, 0.96);
+      border: 1px solid #3a3f4b;
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: none;
+      z-index: 3;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+    #sidebar h2 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+    #sidebar ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 12px;
+    }
+    #sidebar li {
+      margin: 2px 0;
+      cursor: pointer;
+    }
+    #sidebar li:hover { color: var(--hit); }
+    @media (max-width: 600px) {
+      header {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding: 8px 12px;
+      }
+      header h1,
+      #search {
+        grid-column: 1 / -1;
+      }
+      #search {
+        min-width: 0;
+        max-width: none;
+        width: 100%;
+      }
+      header .hint,
+      #status {
+        display: none;
+      }
+      #viewport {
+        inset: 128px 0 0 0;
+      }
+      #sidebar {
+        top: 140px;
+        width: calc(100vw - 24px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Category parent graph</h1>
+    <input id="search" type="search" placeholder="Filter nodes (e.g. Stack, Lattices, Sets)…" autocomplete="off" />
+    <button type="button" id="fit">Fit</button>
+    <button type="button" id="reset">Reset zoom</button>
+    <button type="button" id="clear">Clear filter</button>
+    <span class="hint">scroll = zoom · drag = pan · click node = focus</span>
+    <span id="status">Loading…</span>
+  </header>
+  <div id="viewport"></div>
+  <aside id="sidebar">
+    <h2 id="side-title">Matches</h2>
+    <ul id="side-list"></ul>
+  </aside>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    const statusEl = document.getElementById("status");
+    const viewport = document.getElementById("viewport");
+    const searchEl = document.getElementById("search");
+    const sidebar = document.getElementById("sidebar");
+    const sideList = document.getElementById("side-list");
+    const sideTitle = document.getElementById("side-title");
+
+    let panZoom = null;
+    let nodes = [];
+
+    function nodeLabel(node) {
+      const texts = [...node.querySelectorAll("text")].map((t) => t.textContent.trim()).filter(Boolean);
+      return texts.join(" / ") || node.id || "(unnamed)";
+    }
+
+    function centerOnNode(node) {
+      if (!panZoom) return;
+      const bb = node.getBBox();
+      const sizes = panZoom.getSizes();
+      const midX = bb.x + bb.width / 2;
+      const midY = bb.y + bb.height / 2;
+      const zoom = Math.min(
+        (sizes.width * 0.45) / Math.max(bb.width, 1),
+        (sizes.height * 0.45) / Math.max(bb.height, 1),
+        4
+      );
+      panZoom.zoom(Math.max(zoom, 0.4));
+      // After zoom, pan so node center is in view center.
+      const s = panZoom.getSizes();
+      const realZoom = s.realZoom;
+      panZoom.pan({
+        x: s.width / 2 - midX * realZoom,
+        y: s.height / 2 - midY * realZoom,
+      });
+    }
+
+    function applyFilter(query) {
+      const q = query.trim().toLowerCase();
+      nodes.forEach((n) => n.classList.remove("search-hit", "search-dim"));
+      sideList.innerHTML = "";
+
+      if (!q) {
+        sidebar.style.display = "none";
+        statusEl.textContent = `${nodes.length} nodes`;
+        return;
+      }
+
+      const hits = nodes.filter((n) => nodeLabel(n).toLowerCase().includes(q));
+      nodes.forEach((n) => {
+        if (hits.includes(n)) n.classList.add("search-hit");
+        else n.classList.add("search-dim");
+      });
+
+      sideTitle.textContent = `${hits.length} match${hits.length === 1 ? "" : "es"}`;
+      hits.slice(0, 80).forEach((n) => {
+        const li = document.createElement("li");
+        li.textContent = nodeLabel(n);
+        li.addEventListener("click", () => centerOnNode(n));
+        sideList.appendChild(li);
+      });
+      sidebar.style.display = "block";
+      statusEl.textContent = `${hits.length} / ${nodes.length} nodes`;
+      if (hits.length === 1) centerOnNode(hits[0]);
+    }
+
+    async function main() {
+      const res = await fetch("category_parent_graph.svg?v=11104517415276517813");
+      if (!res.ok) throw new Error(`Failed to load SVG (${res.status})`);
+      const svgText = await res.text();
+      viewport.innerHTML = svgText;
+      const svg = viewport.querySelector("svg");
+      if (!svg) throw new Error("No <svg> in file");
+      svg.removeAttribute("width");
+      svg.removeAttribute("height");
+      svg.style.width = "100%";
+      svg.style.height = "100%";
+
+      nodes = [...svg.querySelectorAll("g.node")];
+      nodes.forEach((n) => {
+        n.style.cursor = "pointer";
+        n.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          searchEl.value = nodeLabel(n).split("\n")[0].split("/")[0].trim();
+          applyFilter(searchEl.value);
+          centerOnNode(n);
+        });
+      });
+
+      panZoom = svgPanZoom(svg, {
+        zoomEnabled: true,
+        controlIconsEnabled: true,
+        fit: true,
+        center: true,
+        minZoom: 0.05,
+        maxZoom: 20,
+        zoomScaleSensitivity: 0.35,
+      });
+
+      statusEl.textContent = `${nodes.length} nodes — pan/zoom ready`;
+    }
+
+    document.getElementById("fit").addEventListener("click", () => panZoom && panZoom.fit() && panZoom.center());
+    document.getElementById("reset").addEventListener("click", () => {
+      if (!panZoom) return;
+      panZoom.resetZoom();
+      panZoom.center();
+    });
+    document.getElementById("clear").addEventListener("click", () => {
+      searchEl.value = "";
+      applyFilter("");
+      if (panZoom) { panZoom.fit(); panZoom.center(); }
+    });
+    searchEl.addEventListener("input", () => applyFilter(searchEl.value));
+
+    main().catch((err) => {
+      statusEl.textContent = String(err);
+      console.error(err);
+    });
+  </script>
+</body>
+</html>

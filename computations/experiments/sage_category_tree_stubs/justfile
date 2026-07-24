@@ -1,0 +1,82 @@
+export PYTHONDONTWRITEBYTECODE := "1"
+
+# Materialize the tracked HTML viewer and its DOT-derived SVG.
+setup: viz
+
+# Pytest session setup rebuilds the SVG viewer (see tests/conftest.py).
+test: viz
+	@just -f ~/ai-review-ci/justfiles/sage.just -d . test
+
+# Global Sage QC; viewer rebuild is enforced by tests/conftest.py on collection.
+test-ci: viz
+	@just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
+
+# Rebuild presentation DOT from semantic seed (archives hand DOT once).
+seed-dot:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
+	sage -python -m sage_category_tree_stubs.seed_dot
+
+# Live Sage probe → observed + mapping + DOT views.
+manifests-probe:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
+	sage -python -m sage_category_tree_stubs.runtime_probe
+	sage -python -m sage_category_tree_stubs.mapping_build
+	sage -python -m sage_category_tree_stubs.join_views
+	sage -python -m sage_category_tree_stubs.manifests
+
+# Rebuild from existing runtime probe (or source-axis only if no probe).
+manifests:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
+	sage -python -m sage_category_tree_stubs.seed_authored_sync
+	sage -python -m sage_category_tree_stubs.mapping_build
+	sage -python -m sage_category_tree_stubs.join_views
+	sage -python -m sage_category_tree_stubs.manifests
+	sage -python -m sage_category_tree_stubs.capability
+	just -f "{{justfile()}}" _normalize-generated
+	# The requirement manifest records the ledger's content hash, so it is extracted
+	# after normalization -- otherwise it pins a hash the commit hook then invalidates.
+	sage -python -m sage_category_tree_stubs.requirement_manifest
+	just -f "{{justfile()}}" _normalize-generated
+
+# Generated JSON/YAML must land in the same shape the commit hook's prettier pass
+# produces, or every rebuild is a diff and the artifacts can never be gated on
+# reproducibility.
+[private]
+_normalize-generated:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	npx -y prettier --write --log-level warn \
+	  --config ~/ai-review-ci/tool-configs/prettier-global.json \
+	  design/normalized_category_graph/semantic_seed/*.json \
+	  design/sage/observed.json design/sage/mapping.yaml \
+	  design/sage/authored/sage_normalized_category_mapping_manifest.json \
+	  design/sage/authored/lean_requirement_manifest.json \
+	  ../lean_category_dsl_spike/NormalizedCategoryGraph/Spec/seed_manifest.json \
+	  ../lean_category_dsl_spike/NormalizedCategoryGraph/Presentation/dot_graph_id_sidecar.json
+
+# Structural diff: just manifests-diff path/to/old-observed.json
+manifests-diff old:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
+	sage -python -m sage_category_tree_stubs.observed_diff "{{old}}"
+
+# Graph / stub observability (DOT-backed; no Sage category materialization).
+audit *args: viz
+	#!/usr/bin/env bash
+	set -euo pipefail
+	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
+	sage -python -m sage_category_tree_stubs.audit {{args}}
+
+# Rebuild the interactive SVG viewer served from sage_lattice_category_spike.
+viz:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	export PYTHONPATH="$(pwd)/..:${PYTHONPATH:-}"
+	sage -python -c "from sage_category_tree_stubs.viz import rebuild_viewer; r=rebuild_viewer(); print(f\"rebuilt svg; open http://127.0.0.1:8766/category_parent_graph.html?v={r['cache_bust']}\")"

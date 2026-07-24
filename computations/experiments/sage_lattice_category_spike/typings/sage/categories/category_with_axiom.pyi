@@ -1,4 +1,5 @@
 # Repo-scoped stubs; see lexicon/README.md.
+from collections.abc import Iterator
 from typing import Any
 
 from sage.categories.category import Category
@@ -16,6 +17,7 @@ class CategoryWithAxiom_over_base_ring(Category_over_base_ring):
 class _AxiomSet:
     def __contains__(self, name: str) -> bool: ...
     def add(self, name: str) -> None: ...
+    def __iter__(self) -> Iterator[str]: ...
 
 all_axioms: _AxiomSet
 

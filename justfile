@@ -16,6 +16,10 @@ ai_review_ci_default_branch := "main"
 default:
     @just --list
 
+# Prepare generated local artifacts needed by the interactive category viewer.
+setup:
+    @just -f computations/experiments/sage_category_tree_stubs/justfile setup
+
 # Build the installable Sage research distribution
 build: _lock
     uv build
@@ -52,6 +56,9 @@ docs-preview: docs-bib
 _lock:
     uv lock
 
+_lean-axiom-audit:
+    @just -f computations/experiments/lean_category_dsl_spike/justfile _lean-axiom-audit
+
 # Run commit-tier SageMath QC through the central implementation
 test-commit:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-commit
@@ -59,10 +66,12 @@ test-commit:
 # Run push-tier SageMath QC through the central implementation
 test-push:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-push
+    @just -f ~/ai-review-ci/justfiles/lean.just -d . lean-axiom-audit
 
 # Run CI acceptance QC through the central implementation
 test-ci:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
+    @just -f ~/ai-review-ci/justfiles/lean.just -d . lean-axiom-audit
 
 # Review calibration (submodule) — delegate to review-calibration/justfile.
 # Requires the submodule: git submodule update --init review-calibration

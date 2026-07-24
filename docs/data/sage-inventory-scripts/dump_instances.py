@@ -7,6 +7,7 @@ instance alive after a full import, with special handling for joins
 
 Run:  "$SAGE_BIN" -python dump_instances.py instances.json
 """
+
 import gc
 import json
 import sys
@@ -19,18 +20,15 @@ from sage.categories.covariant_functorial_construction import (
 )
 
 insts = [x for x in gc.get_objects() if isinstance(x, Category)]
-seen, joins, kinds = set(), [], {}
+seen: set[str] = set()
+joins: list[dict[str, object]] = []
+kinds: dict[str, int] = {}
 for x in insts:
     r = str(x)
     if r in seen:
         continue
     seen.add(r)
-    k = (
-        "join" if isinstance(x, JoinCategory)
-        else "construction" if isinstance(x, FunctorialConstructionCategory)
-        else "axiom" if isinstance(x, CategoryWithAxiom)
-        else "plain"
-    )
+    k = "join" if isinstance(x, JoinCategory) else "construction" if isinstance(x, FunctorialConstructionCategory) else "axiom" if isinstance(x, CategoryWithAxiom) else "plain"
     kinds[k] = kinds.get(k, 0) + 1
     if k == "join":
         joins.append({"repr": r, "factors": sorted(str(s) for s in x.super_categories())})
@@ -38,7 +36,7 @@ assert joins, "a full import constructs join categories"
 out = {
     "n_instances": len(seen),
     "kinds": kinds,
-    "joins": sorted(joins, key=lambda j: j["repr"]),
+    "joins": sorted(joins, key=lambda j: str(j["repr"])),
 }
 json.dump(out, open(sys.argv[1], "w"), indent=1)
 print("instances:", len(seen), "| kinds:", kinds, "| joins:", len(joins))

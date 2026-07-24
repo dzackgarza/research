@@ -1,0 +1,750 @@
+// Category parent graph (child → parent = supercategory).
+//
+// Node classes:
+//   1. Categories — solid boxes
+//   2. Atomic axioms — short dotted label on most general host; dotted edge
+//   3. Named joins — green "Name = C.A1.A2…" when a conventional name packages
+//      axioms from farther up the hierarchy
+//
+// Forms: ∫Hom_R(−,W) hosts shared form axioms; Bil ‖ Quad ‖ Herm are children.
+// Render: dot -Tsvg category_parent_graph.dot -o category_parent_graph.svg
+
+digraph CategoryParents {
+  graph [
+    rankdir=BT
+    labelloc=t
+    label="Category parents (child → parent)"
+    fontsize=15
+    fontname="Helvetica"
+    nodesep=0.32
+    ranksep=0.55
+    compound=true
+    newrank=true
+    splines=true
+  ];
+  node [
+    shape=box
+    style="rounded,filled"
+    fontname="Helvetica"
+    fontsize=9
+    fillcolor="#f7f7f7"
+    color="#333333"
+  ];
+  edge [color="#444444", arrowsize=0.65];
+
+  // Named-join default (overridden locally where needed)
+  // fillcolor="#e8f5e9" color="#1b5e20"
+
+  //══════════════════════════════════════════════════════════════
+  // CatObject + sites/sheaves
+  //══════════════════════════════════════════════════════════════
+  subgraph cluster_cat {
+    label="CatObject";
+    style=filled; fillcolor="#e8eaf6"; color="#3f51b5";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    CatObject [fillcolor="#c5cae9", penwidth=2.5];
+    // Cat_1 = ordinary 1-categories; Cat_2 = (2,1)-categories
+    Cat_1; Cat_2;
+    Groupoids [fillcolor="#c5cae9", penwidth=2];
+    Bicategories;
+    "Arr(−)"; "(−)^op";
+    Comma; Slices; Coslices;
+    // slice/coslice constructions (a subobject is a mono A→B in a slice)
+    Subobjects; Quotients; Subquotients; IsomorphicObjects;
+    DiagramCategories; FunctorCategories; HomCategories;
+    "G-Objects(G)"; FibredCategories; GroupoidObjects; Torsors;
+    Sites; Presheaves; Sheaves; Topoi;
+    RingedSites; RingedTopoi;
+    "Mod(O_X)"; "Coh(X)"; "QCoh(X)";
+
+    node [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", fontcolor="#000000", penwidth=1.5];
+    "TensorProducts = CatObject.Monoidal";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+    DualObjects;
+
+    node [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", fontcolor="#555555"];
+    // Nested-cat + (co)limit axioms on CatObject
+    "CatObject.LocallySmall" [label="LocallySmall"];
+    "CatObject.Finite" [label="Finite"];
+    "CatObject.Thin" [label="Thin"];
+    "CatObject.Limits" [label="Limits"];
+    "CatObject.Colimits" [label="Colimits"];
+    "CatObject.Products" [label="Products"];
+    "CatObject.Coproducts" [label="Coproducts"];
+    "ax.Monoidal" [label="Monoidal"];
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    "CatObject.LocallySmall" -> CatObject [style=dotted];
+    "CatObject.Finite" -> CatObject [style=dotted];
+    "CatObject.Thin" -> CatObject [style=dotted];
+    "CatObject.Limits" -> CatObject [style=dotted];
+    "CatObject.Colimits" -> CatObject [style=dotted];
+    // Products/Coproducts organize under (co)limits
+    "CatObject.Products" -> "CatObject.Limits" [style=dotted];
+    "CatObject.Coproducts" -> "CatObject.Colimits" [style=dotted];
+    "ax.Monoidal" -> CatObject [style=dotted];
+
+    Groupoids -> Cat_1;
+    Cat_1 -> Cat_2;
+    Cat_2 -> Bicategories;
+    Bicategories -> CatObject;
+    "TensorProducts = CatObject.Monoidal" -> CatObject;
+    DualObjects -> "TensorProducts = CatObject.Monoidal";
+    "Arr(−)" -> CatObject;
+    "(−)^op" -> CatObject;
+    Comma -> CatObject;
+    Slices -> Comma;
+    Coslices -> Comma;
+    Subobjects -> Slices;
+    Quotients -> Coslices;
+    Subquotients -> Subobjects;
+    Subquotients -> Quotients;
+    IsomorphicObjects -> "Arr(−)";
+    DiagramCategories -> FunctorCategories;
+    FunctorCategories -> HomCategories;
+    HomCategories -> CatObject;
+    "G-Objects(G)" -> CatObject;
+    // Fibred categories over an arbitrary base category (not only groupoids)
+    FibredCategories -> Cat_1;
+    GroupoidObjects -> CatObject;
+    GroupoidObjects -> Groupoids;
+    Torsors -> "G-Objects(G)";
+    Sites -> Cat_1;
+    Presheaves -> FunctorCategories;
+    Sheaves -> Presheaves;
+    Topoi -> Sheaves;
+    RingedSites -> Sites;
+    RingedTopoi -> Topoi;
+    "Mod(O_X)" -> RingedSites;
+    "Coh(X)" -> "Mod(O_X)";
+    "QCoh(X)" -> "Mod(O_X)";
+  }
+
+  //══════════════════════════════════════════════════════════════
+  // Sets
+  //══════════════════════════════════════════════════════════════
+  subgraph cluster_sets {
+    label="Sets";
+    style=filled; fillcolor="#eef6ff"; color="#6a8caf";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    Sets [fillcolor="#cfe2f3", penwidth=2];
+    Homsets;
+
+    node [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", fontcolor="#000000", penwidth=1.5];
+    "CountableInfiniteSets = Sets.Countable.Infinite";
+
+    node [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", fontcolor="#555555"];
+    "Sets.Finite" [label="Finite"];
+    "Sets.Infinite" [label="Infinite"];
+    "Sets.Countable" [label="Countable"];
+    "Sets.Uncountable" [label="Uncountable"];
+    "Sets.Graded" [label="Graded"];
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    Sets -> CatObject [constraint=false];
+    "Sets.Finite" -> Sets [style=dotted];
+    "Sets.Infinite" -> Sets [style=dotted];
+    "Sets.Countable" -> Sets [style=dotted];
+    "Sets.Uncountable" -> Sets [style=dotted];
+    "Sets.Graded" -> Sets [style=dotted];
+    "Sets.Finite" -> "Sets.Countable";
+    "Sets.Uncountable" -> "Sets.Infinite";
+    "CountableInfiniteSets = Sets.Countable.Infinite" -> "Sets.Countable";
+    "CountableInfiniteSets = Sets.Countable.Infinite" -> "Sets.Infinite";
+    Homsets -> HomCategories [constraint=false];
+    Homsets -> Sets;
+  }
+
+  //══════════════════════════════════════════════════════════════
+  // Spaces
+  //══════════════════════════════════════════════════════════════
+  subgraph cluster_spaces {
+    label="Spaces";
+    style=filled; fillcolor="#e8f8f5"; color="#0e6655";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    TopologicalSpaces [fillcolor="#d5f5e3", penwidth=2];
+    MetricSpaces;
+    Manifolds;
+    RingedSpaces [fillcolor="#d5f5e3", penwidth=2];
+    LocallyRingedSpaces [fillcolor="#d5f5e3", penwidth=2];
+    StratifiedSpaces;
+
+    node [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", fontcolor="#555555"];
+    "Manifolds.Smooth" [label="Smooth"];
+    "Manifolds.PL" [label="PL"];
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    TopologicalSpaces -> Sets [constraint=false];
+    MetricSpaces -> TopologicalSpaces;
+    Manifolds -> TopologicalSpaces;
+    Manifolds -> RingedSpaces [constraint=false];
+    "Manifolds.Smooth" -> Manifolds [style=dotted];
+    "Manifolds.PL" -> Manifolds [style=dotted];
+    RingedSpaces -> TopologicalSpaces;
+    LocallyRingedSpaces -> RingedSpaces;
+    StratifiedSpaces -> TopologicalSpaces;
+    StratifiedSpaces -> SpecializationPosets [constraint=false];
+    "Mod(O_X)" -> RingedSpaces [constraint=false];
+  }
+
+  //══════════════════════════════════════════════════════════════
+  // Convex geometry
+  //══════════════════════════════════════════════════════════════
+  subgraph cluster_convex {
+    label="Convex geometry";
+    style=filled; fillcolor="#eafaf1"; color="#1e8449";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    Cones; Fans; Polyhedra; LatticePolytopes; RootSystems;
+    Cones -> TopologicalSpaces [constraint=false];
+    Fans -> Cones;
+    Polyhedra -> TopologicalSpaces [constraint=false];
+    LatticePolytopes -> Polyhedra;
+    RootSystems -> Cones;
+  }
+
+  //══════════════════════════════════════════════════════════════
+  // Graphs & posets
+  //══════════════════════════════════════════════════════════════
+  subgraph cluster_graphs {
+    label="Graphs & posets";
+    style=filled; fillcolor="#fef9e7"; color="#b7950b";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    Graphs [fillcolor="#f9e79f", penwidth=2];
+    StableGraphs; Posets [fillcolor="#f9e79f", penwidth=2];
+    SpecializationPosets; IncidenceCategories;
+
+    node [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", fontcolor="#555555"];
+    "Graphs.Directed" [label="Directed"];
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    Graphs -> CatObject [constraint=false];
+    "Graphs.Directed" -> Graphs [style=dotted];
+    StableGraphs -> Graphs;
+    Posets -> "CatObject.Thin" [constraint=false];
+    SpecializationPosets -> Posets;
+    IncidenceCategories -> Cat_1 [constraint=false];
+    StableGraphs -> StratifiedSpaces [constraint=false];
+  }
+
+  //══════════════════════════════════════════════════════════════
+  // Magmas
+  //══════════════════════════════════════════════════════════════
+  subgraph cluster_magmas {
+    label="Magmas";
+    style=filled; fillcolor="#fff5e6"; color="#c49a6c";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    Magmas [fillcolor="#fce5cd", penwidth=2];
+
+    // named joins (axioms from Magmas)
+    node [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", fontcolor="#000000", penwidth=1.5];
+    "Semigroups = Magmas.Associative";
+    "Monoids = Magmas.Associative.Unital";
+    "Groups = Magmas.Associative.Unital.Inverse";
+    "AbelianGroups = Groups.Commutative";
+    "FinitelyGeneratedGroups = Magmas.Associative.Unital.Inverse.FinitelyGenerated";
+    "AdditiveSemigroups = Magmas.Additive.Associative";
+    "AdditiveMonoids = Magmas.Additive.Associative.Unital";
+    "AdditiveGroups = Magmas.Additive.Associative.Unital.Inverse";
+    "AdditiveAbelianGroups = AdditiveGroups.Commutative";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    CoxeterGroups; WeylGroups; ReflectionGroups;
+    OrthogonalGroups; IsometryGroups;
+    Pic; Div; NS; Cycles; ChowGroups; HodgeStructures;
+
+    // Flat Magmas axiom set: Additive/Multiplicative select the operation;
+    // Associative/Unital/Inverse/Commutative hang on Magmas itself (not re-hosted).
+    node [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", fontcolor="#555555"];
+    "Magmas.Additive" [label="Additive"];
+    "Magmas.Multiplicative" [label="Multiplicative"];
+    "ax.Associative" [label="Associative"];
+    "ax.Commutative" [label="Commutative"];
+    "ax.Unital" [label="Unital"];
+    "ax.Inverse" [label="Inverse"];
+    "ax.FinitelyGenerated" [label="FinitelyGenerated"];
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    "Magmas.Additive" -> Magmas [style=dotted];
+    "Magmas.Multiplicative" -> Magmas [style=dotted];
+    "ax.Associative" -> Magmas [style=dotted];
+    "ax.Commutative" -> Magmas [style=dotted];
+    "ax.Unital" -> Magmas [style=dotted];
+    "ax.Inverse" -> Magmas [style=dotted];
+    "ax.FinitelyGenerated" -> Magmas [style=dotted];
+
+    // Hasse: each named join factors through the previous rung
+    "Semigroups = Magmas.Associative" -> Magmas;
+    "Monoids = Magmas.Associative.Unital" -> "Semigroups = Magmas.Associative";
+    "Groups = Magmas.Associative.Unital.Inverse" -> "Monoids = Magmas.Associative.Unital";
+    "AbelianGroups = Groups.Commutative" -> "Groups = Magmas.Associative.Unital.Inverse";
+    "FinitelyGeneratedGroups = Magmas.Associative.Unital.Inverse.FinitelyGenerated" -> "Groups = Magmas.Associative.Unital.Inverse";
+    "AdditiveSemigroups = Magmas.Additive.Associative" -> "Magmas.Additive";
+    "AdditiveMonoids = Magmas.Additive.Associative.Unital" -> "AdditiveSemigroups = Magmas.Additive.Associative";
+    "AdditiveGroups = Magmas.Additive.Associative.Unital.Inverse" -> "AdditiveMonoids = Magmas.Additive.Associative.Unital";
+    "AdditiveAbelianGroups = AdditiveGroups.Commutative" -> "AdditiveGroups = Magmas.Additive.Associative.Unital.Inverse";
+
+    CoxeterGroups -> "Groups = Magmas.Associative.Unital.Inverse";
+    WeylGroups -> CoxeterGroups;
+    ReflectionGroups -> "Groups = Magmas.Associative.Unital.Inverse";
+    WeylGroups -> ReflectionGroups;
+    OrthogonalGroups -> "Groups = Magmas.Associative.Unital.Inverse";
+    IsometryGroups -> OrthogonalGroups;
+    Pic -> "AbelianGroups = Groups.Commutative";
+    Div -> "AbelianGroups = Groups.Commutative";
+    NS -> "AbelianGroups = Groups.Commutative";
+    Cycles -> "AbelianGroups = Groups.Commutative";
+    ChowGroups -> "AbelianGroups = Groups.Commutative";
+    HodgeStructures -> "AdditiveAbelianGroups = AdditiveGroups.Commutative";
+    Magmas -> Sets [constraint=false];
+    "G-Objects(G)" -> "Groups = Magmas.Associative.Unital.Inverse" [constraint=false];
+  }
+
+  //══════════════════════════════════════════════════════════════
+  // Semirings
+  //══════════════════════════════════════════════════════════════
+  subgraph cluster_semirings {
+    label="Semirings";
+    style=filled; fillcolor="#f5eef8"; color="#7d3c98";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+    Semirings [fillcolor="#e8daef", penwidth=2];
+    Semirings -> "Monoids = Magmas.Associative.Unital" [constraint=false];
+    Semirings -> "AdditiveMonoids = Magmas.Additive.Associative.Unital" [constraint=false];
+  }
+
+  //══════════════════════════════════════════════════════════════
+  // Rings
+  //══════════════════════════════════════════════════════════════
+  subgraph cluster_rings {
+    label="Rings";
+    style=filled; fillcolor="#f4ecf7"; color="#8e7cc3";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    Rngs; Rings [fillcolor="#d7bde2", penwidth=2];
+    Fields;
+    CohomologyRings [fillcolor="#d7bde2", penwidth=2];
+    DeRhamCohomologyRings;
+
+    node [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", fontcolor="#000000", penwidth=1.5];
+    "CommRings = Rings.Commutative";
+    "Domains = Rings.Domain";
+    "IntegralDomains = Domains.Commutative";
+    "GCDDomains = Rings.Commutative.GCDDomain";
+    "UFDs = Rings.Commutative.UFD";
+    "PIDs = Rings.Commutative.PID";
+    "EuclideanDomains = Rings.Commutative.Euclidean";
+    "NoetherianCommRings = Rings.Commutative.Noetherian";
+    // Finite lives on Sets; FiniteRings/Fields are pullbacks Rings.Finite / Fields.Finite
+    "FiniteRings = Rings.Finite";
+    "FiniteFields = Fields.Finite";
+    // Multiplicative invertibility (nonzero) packaged onto Rings
+    "DivisionRings = Rings.Division";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    node [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", fontcolor="#555555"];
+    "ax.Domain" [label="Domain"];
+    "ax.IntegralDomain" [label="IntegralDomain"];
+    "ax.GCDDomain" [label="GCDDomain"];
+    "ax.UFD" [label="UFD"];
+    "ax.PID" [label="PID"];
+    "ax.Euclidean" [label="Euclidean"];
+    "ax.Noetherian" [label="Noetherian"];
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    Rngs -> "Semigroups = Magmas.Associative" [constraint=false];
+    Rngs -> "AdditiveAbelianGroups = AdditiveGroups.Commutative" [constraint=false];
+    Rings -> Rngs;
+    Rings -> Semirings [constraint=false];
+    "DivisionRings = Rings.Division" -> Rings;
+    "DivisionRings = Rings.Division" -> "Domains = Rings.Domain";
+    Fields -> "DivisionRings = Rings.Division";
+    Fields -> "EuclideanDomains = Rings.Commutative.Euclidean";
+    "CommRings = Rings.Commutative" -> Rings;
+    // Domains need not be commutative
+    "Domains = Rings.Domain" -> Rings;
+    "IntegralDomains = Domains.Commutative" -> "Domains = Rings.Domain";
+    "IntegralDomains = Domains.Commutative" -> "CommRings = Rings.Commutative";
+    "GCDDomains = Rings.Commutative.GCDDomain" -> "IntegralDomains = Domains.Commutative";
+    "UFDs = Rings.Commutative.UFD" -> "GCDDomains = Rings.Commutative.GCDDomain";
+    "PIDs = Rings.Commutative.PID" -> "UFDs = Rings.Commutative.UFD";
+    "EuclideanDomains = Rings.Commutative.Euclidean" -> "PIDs = Rings.Commutative.PID";
+    "NoetherianCommRings = Rings.Commutative.Noetherian" -> "CommRings = Rings.Commutative";
+    "FiniteRings = Rings.Finite" -> Rings;
+    "FiniteRings = Rings.Finite" -> "Sets.Finite";
+    "FiniteFields = Fields.Finite" -> Fields;
+    "FiniteFields = Fields.Finite" -> "Sets.Finite";
+
+    "ax.Domain" -> Rings [style=dotted];
+    "ax.IntegralDomain" -> "Domains = Rings.Domain" [style=dotted];
+    "ax.GCDDomain" -> "IntegralDomains = Domains.Commutative" [style=dotted];
+    "ax.UFD" -> "IntegralDomains = Domains.Commutative" [style=dotted];
+    "ax.PID" -> "IntegralDomains = Domains.Commutative" [style=dotted];
+    "ax.Euclidean" -> "IntegralDomains = Domains.Commutative" [style=dotted];
+    "ax.Noetherian" -> "CommRings = Rings.Commutative" [style=dotted];
+
+    CohomologyRings -> Rings;
+    DeRhamCohomologyRings -> CohomologyRings;
+  }
+
+  //══════════════════════════════════════════════════════════════
+  // Modules — Left / Right / Bi are categories, not axioms
+  //══════════════════════════════════════════════════════════════
+  subgraph cluster_modules {
+    label="Modules";
+    style=filled; fillcolor="#fdebd0"; color="#b9770e";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    // Modules(R) = left R-modules (Foundations Def 13.1). Sage's Modules(R) is NOT
+    // this vertex: it is Bimodules(R,R) (modules.py; see the sagecats ledger).
+    "Modules(R)" [fillcolor="#f9e79f", penwidth=2];
+    "LeftModules(R)";
+    "RightModules(R)";
+    "Bimodules(R,S)";
+    "Bimodules(R,R)";
+    VectorFieldModules; TensorFieldModules; DiffFormModules;
+
+    node [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", fontcolor="#000000", penwidth=1.5];
+    "Bimodules(K,K) = Bimodules(R,R).OverField";
+    "FreeModules = Modules.Free";
+    "ProjectiveModules = Modules.Projective";
+    "ModulesWithBasis = Bimodules(R,R).WithBasis";
+    "ModulesWithGenerators = Modules.WithGenerators";
+    "FiniteRankModules = Modules.FiniteRank";
+    "FinitelyGeneratedModules = Modules.FinitelyGenerated";
+    "FinitelyPresentedModules = Modules.FinitelyPresented";
+    "VectorSpaces(K) = Modules.OverField";
+    "VectorSpacesWithBasis = VectorSpaces.WithBasis";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    node [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", fontcolor="#555555"];
+    "Modules.Free" [label="Free"];
+    "Modules.Projective" [label="Projective"];
+    "Modules.WithBasis" [label="WithBasis"];
+    "Modules.WithGenerators" [label="WithGenerators"];
+    "Modules.FiniteRank" [label="FiniteRank"];
+    "Modules.FinitelyGenerated" [label="FinitelyGenerated"];
+    "Modules.FinitelyPresented" [label="FinitelyPresented"];
+    "Modules.Torsion" [label="Torsion"];
+    "Modules.TorsionFree" [label="TorsionFree"];
+    "Modules.OverField" [label="OverField"];
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    "Modules.Free" -> "Modules(R)" [style=dotted];
+    "Modules.Projective" -> "Modules(R)" [style=dotted];
+    "Modules.WithBasis" -> "Modules(R)" [style=dotted];
+    "Modules.WithGenerators" -> "Modules(R)" [style=dotted];
+    "Modules.FiniteRank" -> "Modules(R)" [style=dotted];
+    "Modules.FinitelyGenerated" -> "Modules(R)" [style=dotted];
+    "Modules.FinitelyPresented" -> "Modules(R)" [style=dotted];
+    "Modules.Torsion" -> "Modules(R)" [style=dotted];
+    "Modules.TorsionFree" -> "Modules(R)" [style=dotted];
+    "Modules.OverField" -> "Modules(R)" [style=dotted];
+
+    // LeftModules is the explicit synonym for Modules(R); RightModules is the opposite action
+    "LeftModules(R)" -> "Modules(R)";
+    "RightModules(R)" -> "AdditiveAbelianGroups = AdditiveGroups.Commutative";
+    "Modules(R)" -> "AdditiveAbelianGroups = AdditiveGroups.Commutative";
+    "Bimodules(R,R)" -> "Bimodules(R,S)";
+    "Algebras(R)" -> "Bimodules(R,R)";
+    "Bimodules(K,K) = Bimodules(R,R).OverField" -> "Bimodules(R,R)";
+    "VectorSpaces(K) = Modules.OverField" -> "Bimodules(K,K) = Bimodules(R,R).OverField";
+    "AlgebrasOverField = Algebras.OverField" -> "Bimodules(K,K) = Bimodules(R,R).OverField";
+    "Bimodules(R,S)" -> "LeftModules(R)";
+    "Bimodules(R,S)" -> "RightModules(R)";
+    "VectorSpaces(K) = Modules.OverField" -> "Modules(R)";
+    "FreeModules = Modules.Free" -> "Modules(R)";
+    "ProjectiveModules = Modules.Projective" -> "Modules(R)";
+    "FreeModules = Modules.Free" -> "ProjectiveModules = Modules.Projective";
+    "ModulesWithBasis = Bimodules(R,R).WithBasis" -> "FreeModules = Modules.Free";
+    "ModulesWithGenerators = Modules.WithGenerators" -> "Modules(R)";
+    "FiniteRankModules = Modules.FiniteRank" -> "Modules(R)";
+    "FinitelyGeneratedModules = Modules.FinitelyGenerated" -> "Modules(R)";
+    "FinitelyPresentedModules = Modules.FinitelyPresented" -> "FinitelyGeneratedModules = Modules.FinitelyGenerated";
+    "VectorSpacesWithBasis = VectorSpaces.WithBasis" -> "VectorSpaces(K) = Modules.OverField";
+    "VectorSpacesWithBasis = VectorSpaces.WithBasis" -> "ModulesWithBasis = Bimodules(R,R).WithBasis";
+    VectorFieldModules -> "Modules(R)";
+    TensorFieldModules -> "Modules(R)";
+    DiffFormModules -> "Modules(R)";
+    "Mod(O_X)" -> "Modules(R)" [constraint=false];
+  }
+
+  //══════════════════════════════════════════════════════════════
+  // Algebras(R) = module with bilinear product (no assoc/unit). Sage MagmaticAlgebras → here;
+  // Sage Algebras → UnitalAlgebras = Algebras.Associative.Unital
+  //══════════════════════════════════════════════════════════════
+  subgraph cluster_algebras {
+    label="Algebras";
+    style=filled; fillcolor="#fdedec"; color="#c0392b";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    "Algebras(R)" [fillcolor="#f5b7b1", penwidth=2];
+    "LieAlgebras(R)"; "CliffordAlgebras(R)";
+    "SymmetricAlgebras(R)"; "ExteriorAlgebras(R)"; "TensorAlgebras(R)";
+    "HopfAlgebras(R)"; "Coalgebras(R)"; "Bialgebras(R)";
+    "C∞Algebras(R)";
+    "ChainComplexes(C)" [fillcolor="#aed6f1", penwidth=2];
+    "CochainComplexes(C)";
+    DeRhamComplexes;
+    Homology;
+
+    node [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", fontcolor="#000000", penwidth=1.5];
+    // Associative/Unital transported onto Algebras(R) (pullbacks of Magmas classifiers)
+    "AssociativeAlgebras = Algebras.Associative";
+    "UnitalAlgebras = Algebras.Associative.Unital";
+    "CommAlgebras = UnitalAlgebras.Commutative";
+    "NonUnitalDGAs = Algebras.Differential";
+    "DGAs = UnitalAlgebras.Differential";
+    "AlgebrasOverField = Algebras.OverField";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    node [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", fontcolor="#555555"];
+    "ax.Differential" [label="Differential"];
+    // Graded least-host is Sets; Algebras(R).Graded is the pullback transport
+    "Algebras(R).Graded" [label="Graded"];
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    "Algebras(R)" -> Magmas [constraint=false];
+    "Algebras(R)" -> "Modules(R)" [constraint=false];
+    "Algebras(R)" -> Rings [constraint=false];
+    "AssociativeAlgebras = Algebras.Associative" -> "Algebras(R)";
+    "UnitalAlgebras = Algebras.Associative.Unital" -> "AssociativeAlgebras = Algebras.Associative";
+    "CommAlgebras = UnitalAlgebras.Commutative" -> "UnitalAlgebras = Algebras.Associative.Unital";
+    "CommAlgebras = UnitalAlgebras.Commutative" -> "CommRings = Rings.Commutative" [constraint=false];
+    "AlgebrasOverField = Algebras.OverField" -> "Algebras(R)";
+    "AlgebrasOverField = Algebras.OverField" -> "VectorSpaces(K) = Modules.OverField" [constraint=false];
+    "ax.Differential" -> "Algebras(R)" [style=dotted];
+    "Algebras(R).Graded" -> "Algebras(R)" [style=dotted];
+    "NonUnitalDGAs = Algebras.Differential" -> "Algebras(R)";
+    "NonUnitalDGAs = Algebras.Differential" -> "Algebras(R).Graded";
+    "DGAs = UnitalAlgebras.Differential" -> "UnitalAlgebras = Algebras.Associative.Unital";
+    "DGAs = UnitalAlgebras.Differential" -> "Algebras(R).Graded";
+    "DGAs = UnitalAlgebras.Differential" -> "NonUnitalDGAs = Algebras.Differential";
+    "LieAlgebras(R)" -> "Algebras(R)";
+    "CliffordAlgebras(R)" -> "UnitalAlgebras = Algebras.Associative.Unital";
+    "SymmetricAlgebras(R)" -> "CommAlgebras = UnitalAlgebras.Commutative";
+    "ExteriorAlgebras(R)" -> "UnitalAlgebras = Algebras.Associative.Unital";
+    "ExteriorAlgebras(R)" -> "Algebras(R).Graded";
+    "TensorAlgebras(R)" -> "UnitalAlgebras = Algebras.Associative.Unital";
+    "Coalgebras(R)" -> "Modules(R)" [constraint=false];
+    "Bialgebras(R)" -> "UnitalAlgebras = Algebras.Associative.Unital";
+    "Bialgebras(R)" -> "Coalgebras(R)";
+    "HopfAlgebras(R)" -> "Bialgebras(R)";
+    "C∞Algebras(R)" -> "CommAlgebras = UnitalAlgebras.Commutative";
+    DiffFormModules -> "Sets.Graded" [constraint=false];
+    VectorFieldModules -> "C∞Algebras(R)" [constraint=false];
+    TensorFieldModules -> "C∞Algebras(R)" [constraint=false];
+
+    "ChainComplexes(C)" -> "NonUnitalDGAs = Algebras.Differential";
+    "CochainComplexes(C)" -> "NonUnitalDGAs = Algebras.Differential";
+    DeRhamComplexes -> "CochainComplexes(C)";
+    DeRhamComplexes -> DiffFormModules [constraint=false];
+    Homology -> "DGAs = UnitalAlgebras.Differential";
+    Homology -> "Modules(R)" [constraint=false];
+    CohomologyRings -> Homology [constraint=false];
+  }
+
+  //══════════════════════════════════════════════════════════════
+  // Forms — ∫Hom_R(−,W) parent; Bil ‖ Quad ‖ Herm children
+  //══════════════════════════════════════════════════════════════
+  subgraph cluster_forms {
+    label="Forms — ∫Hom_R(−, W)";
+    style=filled; fillcolor="#fdf2e9"; color="#a04000";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    "∫Hom_R(−,W)" [fillcolor="#f5cba7", penwidth=2.5];
+    Genera [fillcolor="#f5cba7", penwidth=2];
+    LatticeHomsets;
+
+    // shared form axioms on ∫Hom (incl. Unimodular = Perfect)
+    node [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", fontcolor="#555555"];
+    "∫Hom.Nondegenerate" [label="Nondegenerate"];
+    "∫Hom.Even" [label="Even"];
+    "∫Hom.Odd" [label="Odd"];
+    "∫Hom.Unimodular" [label="Unimodular"];
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    "∫Hom_R(−,W)" -> "Modules(R)" [constraint=false];
+    "∫Hom.Nondegenerate" -> "∫Hom_R(−,W)" [style=dotted];
+    "∫Hom.Even" -> "∫Hom_R(−,W)" [style=dotted];
+    "∫Hom.Odd" -> "∫Hom_R(−,W)" [style=dotted];
+    "∫Hom.Unimodular" -> "∫Hom_R(−,W)" [style=dotted];
+
+    //—— Bil ——
+    subgraph cluster_bil {
+      label="∫Bil_R(W)";
+      style=filled; fillcolor="#fdebd0"; color="#af601a";
+      node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+      "∫Bil_R(W)" [fillcolor="#f5cba7", penwidth=2];
+
+      node [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", fontcolor="#555555"];
+      "∫Bil.Symmetric" [label="Symmetric"];
+      "∫Bil.SkewSymmetric" [label="SkewSymmetric"];
+      "∫Bil.Alternating" [label="Alternating"];
+      node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+      node [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", fontcolor="#000000", penwidth=1.5];
+      "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate";
+      "DiscBil = ∫Bil.Symmetric.Perfect.Finite";
+      node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+      RootLattices;
+
+      node [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", fontcolor="#555555"];
+      "Lat.Definite" [label="Definite"];
+      "Lat.PositiveDefinite" [label="PositiveDefinite"];
+      "Lat.NegativeDefinite" [label="NegativeDefinite"];
+      "Lat.Indefinite" [label="Indefinite"];
+      "Lat.Hyperbolic" [label="Hyperbolic"];
+      node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+    }
+
+    //—— Quad ——
+    subgraph cluster_quad {
+      label="∫Quad_R(W)";
+      style=filled; fillcolor="#fdebd0"; color="#af601a";
+      node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+      "∫Quad_R(W)" [fillcolor="#f5cba7", penwidth=2];
+
+      node [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", fontcolor="#000000", penwidth=1.5];
+      "DiscQuad = ∫Quad.Nondegenerate";
+      node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+    }
+
+    //—— Herm ——
+    subgraph cluster_herm {
+      label="∫Herm_R(W)";
+      style=filled; fillcolor="#fdebd0"; color="#af601a";
+      node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+      "∫Herm_R(W)" [fillcolor="#f5cba7", penwidth=2];
+    }
+
+    "∫Bil_R(W)" -> "∫Hom_R(−,W)";
+    "∫Quad_R(W)" -> "∫Hom_R(−,W)";
+    "∫Herm_R(W)" -> "∫Hom_R(−,W)";
+
+    "∫Bil.Symmetric" -> "∫Bil_R(W)" [style=dotted];
+    "∫Bil.SkewSymmetric" -> "∫Bil_R(W)" [style=dotted];
+    // Alternating ⇒ SkewSymmetric (equiv. in char ≠ 2)
+    "∫Bil.Alternating" -> "∫Bil.SkewSymmetric" [style=dotted];
+
+    "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" -> "∫Bil_R(W)";
+    "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" -> "ProjectiveModules = Modules.Projective" [constraint=false];
+    "Lat.Definite" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted];
+    "Lat.PositiveDefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted];
+    "Lat.NegativeDefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted];
+    "Lat.Indefinite" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted];
+    "Lat.Hyperbolic" -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [style=dotted];
+    "Lat.PositiveDefinite" -> "Lat.Definite";
+    "Lat.NegativeDefinite" -> "Lat.Definite";
+    "Lat.Hyperbolic" -> "Lat.Indefinite";
+    RootLattices -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate";
+
+    "DiscBil = ∫Bil.Symmetric.Perfect.Finite" -> "∫Bil_R(W)";
+    "DiscBil = ∫Bil.Symmetric.Perfect.Finite" -> "Sets.Finite" [constraint=false];
+    "DiscQuad = ∫Quad.Nondegenerate" -> "∫Quad_R(W)";
+
+    Genera -> "Sets.Finite" [constraint=false];
+    LatticeHomsets -> Homsets [constraint=false];
+    LatticeHomsets -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate";
+    IsometryGroups -> LatticeHomsets [constraint=false];
+    OrthogonalGroups -> "∫Bil_R(W)" [constraint=false];
+    NS -> "Lat_R = ∫Bil_R(R).Symmetric.GenericallyNondegenerate" [constraint=false];
+  }
+
+  //══════════════════════════════════════════════════════════════
+  // Schemes
+  //══════════════════════════════════════════════════════════════
+  subgraph cluster_schemes {
+    label="Schemes";
+    style=filled; fillcolor="#fef9e7"; color="#9a7d0a";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    "Schemes(S)" [fillcolor="#f9e79f", penwidth=2.5];
+    "Hypersurfaces(K)"; "CompleteIntersections(K)"; "ToricVarieties(K)";
+    AlgebraicSpaces [fillcolor="#f9e79f", penwidth=2];
+
+    node [style="rounded,filled", fillcolor="#e8f5e9", color="#1b5e20", fontcolor="#000000", penwidth=1.5];
+    // Varieties = integral + separated + finite type (over a field via (K))
+    "Varieties(K) = Schemes.Integral.Separated.FiniteType" [fillcolor="#f9e79f", penwidth=2];
+    "Curves(K) = Schemes.RelativeDimension(1)";
+    "Surfaces(K) = Schemes.RelativeDimension(2)";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    node [style="rounded,filled,dotted", fillcolor="#fffef5", color="#888888", fontcolor="#555555"];
+    "Schemes.Affine" [label="Affine"];
+    "Schemes.Separated" [label="Separated"];
+    "Schemes.Proper" [label="Proper"];
+    "Schemes.Smooth" [label="Smooth"];
+    "Schemes.Unramified" [label="Unramified"];
+    "Schemes.Étale" [label="Étale"];
+    "Schemes.Flat" [label="Flat"];
+    "Schemes.Finite" [label="Finite"];
+    "Schemes.Projective" [label="Projective"];
+    "Schemes.LocallyFinitePresentation" [label="LocallyFinitePresentation"];
+    "Schemes.Integral" [label="Integral"];
+    "Schemes.FiniteType" [label="FiniteType"];
+    // RelativeDimension(n): parameterized axiom (Curves n=1, Surfaces n=2, …)
+    "Schemes.RelativeDimension(n)" [label="RelativeDimension(n)"];
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    "Schemes(S)" -> LocallyRingedSpaces [constraint=false];
+    "Schemes.Affine" -> "Schemes(S)" [style=dotted];
+    "Schemes.Separated" -> "Schemes(S)" [style=dotted];
+    "Schemes.Proper" -> "Schemes(S)" [style=dotted];
+    "Schemes.Smooth" -> "Schemes(S)" [style=dotted];
+    "Schemes.Unramified" -> "Schemes(S)" [style=dotted];
+    "Schemes.Étale" -> "Schemes(S)" [style=dotted];
+    "Schemes.Flat" -> "Schemes(S)" [style=dotted];
+    "Schemes.Finite" -> "Schemes(S)" [style=dotted];
+    "Schemes.Projective" -> "Schemes(S)" [style=dotted];
+    "Schemes.LocallyFinitePresentation" -> "Schemes(S)" [style=dotted];
+    "Schemes.Integral" -> "Schemes(S)" [style=dotted];
+    "Schemes.FiniteType" -> "Schemes(S)" [style=dotted];
+    "Schemes.RelativeDimension(n)" -> "Schemes(S)" [style=dotted];
+    "Varieties(K) = Schemes.Integral.Separated.FiniteType" -> "Schemes(S)";
+    "Curves(K) = Schemes.RelativeDimension(1)" -> "Varieties(K) = Schemes.Integral.Separated.FiniteType";
+    "Surfaces(K) = Schemes.RelativeDimension(2)" -> "Varieties(K) = Schemes.Integral.Separated.FiniteType";
+    "Hypersurfaces(K)" -> "Varieties(K) = Schemes.Integral.Separated.FiniteType";
+    "CompleteIntersections(K)" -> "Varieties(K) = Schemes.Integral.Separated.FiniteType";
+    "ToricVarieties(K)" -> "Varieties(K) = Schemes.Integral.Separated.FiniteType";
+    AlgebraicSpaces -> "Schemes(S)";
+    "Manifolds.Smooth" -> "Varieties(K) = Schemes.Integral.Separated.FiniteType" [constraint=false];
+  }
+
+  //══════════════════════════════════════════════════════════════
+  // Stacks
+  //══════════════════════════════════════════════════════════════
+  subgraph cluster_stacks {
+    label="Stacks";
+    style=filled; fillcolor="#f5eef8"; color="#6c3483";
+    node [style="rounded,filled", fillcolor="#f7f7f7", color="#333333", fontcolor="#000000"];
+
+    DescentData; Prestacks;
+    Stacks [fillcolor="#d7bde2", penwidth=2.5];
+    AlgebraicStacks [fillcolor="#d7bde2", penwidth=2];
+    DeligneMumfordStacks [fillcolor="#d7bde2", penwidth=2];
+    ArtinStacks [fillcolor="#d7bde2", penwidth=2];
+    QuotientStacks; ClassifyingStacks;
+
+    DescentData -> FibredCategories [constraint=false];
+    Prestacks -> FibredCategories [constraint=false];
+    Stacks -> Prestacks;
+    AlgebraicStacks -> Stacks;
+    DeligneMumfordStacks -> AlgebraicStacks;
+    ArtinStacks -> AlgebraicStacks;
+    DeligneMumfordStacks -> ArtinStacks;
+    QuotientStacks -> AlgebraicStacks;
+    ClassifyingStacks -> QuotientStacks;
+    QuotientStacks -> GroupoidObjects [constraint=false];
+    QuotientStacks -> "G-Objects(G)" [constraint=false];
+    "Schemes(S)" -> AlgebraicStacks [constraint=false];
+    StratifiedSpaces -> DeligneMumfordStacks [constraint=false];
+  }
+}

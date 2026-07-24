@@ -208,7 +208,9 @@ class NaturalIsomorphism(lexicon.NaturalIsomorphism):
     ) -> None:
         parallel = source.domain() == target.domain() and source.codomain() == target.codomain()
         assert parallel, f"natural transformations require parallel functors; found {source.domain()} -> {source.codomain()} and {target.domain()} -> {target.codomain()}"
-        assert inverse_components is not None, "a natural isomorphism declares its inverse components at construction; a component family with no declared inverse is a natural transformation, not an isomorphism"
+        assert inverse_components is not None, (
+            "a natural isomorphism declares its inverse components at construction; a component family with no declared inverse is a natural transformation, not an isomorphism"
+        )
         self._source = source
         self._target = target
         self._components = components

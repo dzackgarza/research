@@ -41,7 +41,8 @@ The module properties the program pulls back are declared as replete full subcat
 
 ## Axioms as subcategories; transport {#sec-axioms}
 
-The axiom-classifier, transport, and property/structure machinery is the [Mathematical Framework](Mathematical-Framework.md#sec-axiom-classifiers): an axiom is a classifier $\iota_A : \mathcal{C}.A \to \mathcal{C}$ (@def-axiom-classifier), in the property case a replete full subcategory cut out at the node that owns the property; a property transports by pullback along a forgetful functor (@def-transport-property), declared at the highest node where it is well defined and pulled back below; and whether a lift is property or structure is computed from the classifier, never declared (@def-property-structure-stuff). This section applies that calculus to modules and forms; the two inclusions it needs beyond the generic machinery are:
+The axiom-classifier, transport, and property/structure machinery is the [Mathematical Framework](Mathematical-Framework.md#sec-axiom-classifiers): an axiom is a classifier $\iota_A : \mathcal{C}.A \to \mathcal{C}$ (@def-axiom-classifier), in the property case a replete full subcategory cut out at the node that owns the property; a property transports by pullback along a forgetful functor (@def-transport-property), declared at the highest node where it is well defined and pulled back below; and whether a lift is property or structure is computed from the classifier, never declared (@def-property-structure-stuff).
+This section applies that calculus to modules and forms; the two inclusions it needs beyond the generic machinery are:
 
 ::: {#def-derived-expressions}
 ## Derived expressions
@@ -55,7 +56,8 @@ Categories built from declared axioms by intersection, pullback, and the constru
 Inclusions such as $\mathrm{PID} \subset \mathrm{UFD} \subset \mathrm{Dom}$ are full subcategory inclusions whose witness is a theorem rather than a defining axiom; they are recorded as such.
 :::
 
-*Seated rulings:* the calculus itself is in [Categorical Presentation Principles](../contributing/Categorical-Presentation-Principles.md); [relation kinds are not fungible](Settled-Mathematical-Rulings.md#relation-kinds-are-not-fungible). The **abelian** boundary case — additive enrichment is property-like (membership a property), while the exact functors carrying the discriminant machinery are a non-full class (a structure a consumer names) — is developed in [Categorical Foundations](Categorical-Foundations.md#sec-constructions).
+*Seated rulings:* the calculus itself is in [Categorical Presentation Principles](../contributing/Categorical-Presentation-Principles.md); [relation kinds are not fungible](Settled-Mathematical-Rulings.md#relation-kinds-are-not-fungible).
+The **abelian** boundary case — additive enrichment is property-like (membership a property), while the exact functors carrying the discriminant machinery are a non-full class (a structure a consumer names) — is developed in [Categorical Foundations](Categorical-Foundations.md#sec-constructions).
 
 ## Bilinear and quadratic form categories {#sec-forms}
 

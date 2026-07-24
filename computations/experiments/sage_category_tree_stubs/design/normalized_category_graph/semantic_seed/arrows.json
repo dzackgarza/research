@@ -1,0 +1,4205 @@
+{
+  "arrows": [
+    {
+      "id": "arr.alias.associativeunitalalgebras_k",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.associativeunitalalgebras_k",
+      "target": "cat.algebras_over_field"
+    },
+    {
+      "id": "arr.alias.associativeunitalalgebras_r",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.associativeunitalalgebras_r",
+      "target": "cat.unital_algebras"
+    },
+    {
+      "id": "arr.alias.chaincomplexes_c",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.chaincomplexes_c",
+      "target": "cat.chaincomplexes"
+    },
+    {
+      "id": "arr.alias.commutativerings",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.commutativerings",
+      "target": "cat.commutative_rings"
+    },
+    {
+      "id": "arr.alias.coxetergroups",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.coxetergroups",
+      "target": "cat.coxeter_groups"
+    },
+    {
+      "id": "arr.alias.divisionrings",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.divisionrings",
+      "target": "cat.division_rings"
+    },
+    {
+      "id": "arr.alias.homsets_c",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.homsets_c",
+      "target": "cat.homsets"
+    },
+    {
+      "id": "arr.alias.hopfalgebras_r",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.hopfalgebras_r",
+      "target": "cat.hopf_algebras_r"
+    },
+    {
+      "id": "arr.alias.integraldomains",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.integraldomains",
+      "target": "cat.integral_domains"
+    },
+    {
+      "id": "arr.alias.left_modules",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "definitional identity of presentations",
+      "source": "cat.left_modules_r",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.alias.liealgebras_r",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.liealgebras_r",
+      "target": "cat.lie_algebras_r"
+    },
+    {
+      "id": "arr.alias.modules_a",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.modules_a",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.alias.modules_k",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.modules_k",
+      "target": "cat.vector_spaces_k"
+    },
+    {
+      "id": "arr.alias.modules_rop",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.modules_rop",
+      "target": "cat.right_modules_r"
+    },
+    {
+      "id": "arr.alias.schemes_k",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.schemes_k",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.alias.weylgroups",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "authored base_id alias",
+      "source": "cat.weylgroups",
+      "target": "cat.weyl_groups"
+    },
+    {
+      "id": "arr.clf.abelianvariety",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_AbelianVariety : cat.schemes_s.AbelianVariety → cat.schemes_s",
+      "source": "clf.abelianvariety.domain",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.additive",
+      "kind": "classifier_leg",
+      "role": "additive_operation",
+      "preferred": true,
+      "provenance": "ι_Additive : cat.magmas.Additive → cat.magmas",
+      "source": "clf.additive.domain",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.affine",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Affine : cat.weylgroups.Affine → cat.weylgroups",
+      "source": "clf.affine.domain",
+      "target": "cat.weylgroups"
+    },
+    {
+      "id": "arr.clf.algebras.associative",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.algebras.associative.domain",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "arr.clf.algebras.commutative",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.algebras.commutative.domain",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "arr.clf.algebras.unital",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.algebras.unital.domain",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "arr.clf.algebras_r.graded",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "transported Graded",
+      "source": "cat.algebras_r.graded",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "arr.clf.aperiodic",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Aperiodic : cat.semigroups.Aperiodic → cat.semigroups",
+      "source": "clf.aperiodic.domain",
+      "target": "cat.semigroups"
+    },
+    {
+      "id": "arr.clf.associative",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Associative : cat.magmas.Associative → cat.magmas",
+      "source": "clf.associative.domain",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.ax_associative",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_associative",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.ax_commutative",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_commutative",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.ax_differential",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_differential",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "arr.clf.ax_domain",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_domain",
+      "target": "cat.rings"
+    },
+    {
+      "id": "arr.clf.ax_euclidean",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_euclidean",
+      "target": "cat.integral_domains"
+    },
+    {
+      "id": "arr.clf.ax_finitelygenerated",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_finitelygenerated",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.ax_gcddomain",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_gcddomain",
+      "target": "cat.integral_domains"
+    },
+    {
+      "id": "arr.clf.ax_integraldomain",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_integraldomain",
+      "target": "cat.domains"
+    },
+    {
+      "id": "arr.clf.ax_inverse",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_inverse",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.ax_monoidal",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_monoidal",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.clf.ax_noetherian",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_noetherian",
+      "target": "cat.commutative_rings"
+    },
+    {
+      "id": "arr.clf.ax_pid",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_pid",
+      "target": "cat.integral_domains"
+    },
+    {
+      "id": "arr.clf.ax_ufd",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_ufd",
+      "target": "cat.integral_domains"
+    },
+    {
+      "id": "arr.clf.ax_unital",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.ax_unital",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.catobject_colimits",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.catobject_colimits",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.clf.catobject_coproducts",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.catobject_coproducts",
+      "target": "clf.catobject_colimits"
+    },
+    {
+      "id": "arr.clf.catobject_finite",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.catobject_finite",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.clf.catobject_limits",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.catobject_limits",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.clf.catobject_locallysmall",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.catobject_locallysmall",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.clf.catobject_products",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.catobject_products",
+      "target": "clf.catobject_limits"
+    },
+    {
+      "id": "arr.clf.catobject_thin",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.catobject_thin",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.clf.classical",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Classical : cat.crystals.Classical → cat.crystals",
+      "source": "clf.classical.domain",
+      "target": "cat.crystals"
+    },
+    {
+      "id": "arr.clf.comm_rings.euclidean",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.comm_rings.euclidean.domain",
+      "target": "cat.commutative_rings"
+    },
+    {
+      "id": "arr.clf.comm_rings.gcd_domain",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.comm_rings.gcd_domain.domain",
+      "target": "cat.commutative_rings"
+    },
+    {
+      "id": "arr.clf.comm_rings.pid",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.comm_rings.pid.domain",
+      "target": "cat.commutative_rings"
+    },
+    {
+      "id": "arr.clf.comm_rings.ufd",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.comm_rings.ufd.domain",
+      "target": "cat.commutative_rings"
+    },
+    {
+      "id": "arr.clf.commutative",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Commutative : cat.magmas.Commutative → cat.magmas",
+      "source": "clf.commutative.domain",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.compatiblepartialorder",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_CompatiblePartialOrder : cat.sets.CompatiblePartialOrder → cat.sets",
+      "source": "clf.compatiblepartialorder.domain",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.complete",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Complete : cat.metricspaces.Complete → cat.metricspaces",
+      "source": "clf.complete.domain",
+      "target": "cat.metricspaces"
+    },
+    {
+      "id": "arr.clf.complexanalytic",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_ComplexAnalytic : cat.manifolds.ComplexAnalytic → cat.manifolds",
+      "source": "clf.complexanalytic.domain",
+      "target": "cat.manifolds"
+    },
+    {
+      "id": "arr.clf.complexreflection",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_ComplexReflection : cat.groupswithsimplereflections.ComplexReflection → cat.groupswithsimplereflections",
+      "source": "clf.complexreflection.domain",
+      "target": "cat.groupswithsimplereflections"
+    },
+    {
+      "id": "arr.clf.coxeter",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Coxeter : cat.generalizedcoxetergroups.Coxeter → cat.generalizedcoxetergroups",
+      "source": "clf.coxeter.domain",
+      "target": "cat.generalizedcoxetergroups"
+    },
+    {
+      "id": "arr.clf.cwstructure",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_CWStructure : cat.sets.CWStructure → cat.sets",
+      "source": "clf.cwstructure.domain",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.dedekind",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Dedekind : cat.integraldomains.Dedekind → cat.integraldomains",
+      "source": "clf.dedekind.domain",
+      "target": "cat.integraldomains"
+    },
+    {
+      "id": "arr.clf.discretevaluation",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_DiscreteValuation : cat.fields.DiscreteValuation → cat.fields",
+      "source": "clf.discretevaluation.domain",
+      "target": "cat.fields"
+    },
+    {
+      "id": "arr.clf.distributive_lattice",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Distributive : cat.latticeposets.Distributive → cat.latticeposets",
+      "source": "clf.distributive_lattice.domain",
+      "target": "cat.latticeposets"
+    },
+    {
+      "id": "arr.clf.distributive_twooperations",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Distributive : cat.magmaswithtwooperations.Distributive → cat.magmaswithtwooperations",
+      "source": "clf.distributive_twooperations.domain",
+      "target": "cat.magmaswithtwooperations"
+    },
+    {
+      "id": "arr.clf.division",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Division : cat.rings.Division → cat.rings",
+      "source": "clf.division.domain",
+      "target": "cat.rings"
+    },
+    {
+      "id": "arr.clf.enumerated",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Enumerated : cat.sets.Enumerated → cat.sets",
+      "source": "clf.enumerated.domain",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.euclidean",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Euclidean : cat.integraldomains.Euclidean → cat.integraldomains",
+      "source": "clf.euclidean.domain",
+      "target": "cat.integraldomains"
+    },
+    {
+      "id": "arr.clf.faithfulpermutationaction",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_FaithfulPermutationAction : cat.groups.FaithfulPermutationAction → cat.groups",
+      "source": "clf.faithfulpermutationaction.domain",
+      "target": "cat.groups"
+    },
+    {
+      "id": "arr.clf.filtered",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Filtered : cat.modules_r.Filtered → cat.modules_r",
+      "source": "clf.filtered.domain",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.finite",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Finite : cat.sets.Finite → cat.sets",
+      "source": "clf.finite.domain",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.finiteextensionof_q",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_FiniteExtensionOf : cat.fields.FiniteExtensionOf → cat.fields",
+      "source": "clf.finiteextensionof_q.domain",
+      "target": "cat.fields"
+    },
+    {
+      "id": "arr.clf.finitelygenerated_lambdabracket",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_FinitelyGenerated : cat.lambdabracketalgebras_r.FinitelyGenerated → cat.lambdabracketalgebras_r",
+      "source": "clf.finitelygenerated_lambdabracket.domain",
+      "target": "cat.lambdabracketalgebras_r"
+    },
+    {
+      "id": "arr.clf.finiterank",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_FiniteRank : cat.modules_r.FiniteRank → cat.modules_r",
+      "source": "clf.finiterank.domain",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.fractionfieldpresentation",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_FractionFieldPresentation : cat.integral_domains.FractionFieldPresentation → cat.integral_domains",
+      "source": "clf.fractionfieldpresentation.domain",
+      "target": "cat.integral_domains"
+    },
+    {
+      "id": "arr.clf.functionfield",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_FunctionField : cat.fields.FunctionField → cat.fields",
+      "source": "clf.functionfield.domain",
+      "target": "cat.fields"
+    },
+    {
+      "id": "arr.clf.gaction",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_GAction : cat.sets.GAction → cat.sets",
+      "source": "clf.gaction.domain",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.gcd",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_GCD : cat.integraldomains.GCD → cat.integraldomains",
+      "source": "clf.gcd.domain",
+      "target": "cat.integraldomains"
+    },
+    {
+      "id": "arr.clf.generalizedcoxeter",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_GeneralizedCoxeter : cat.groupswithsimplereflections.GeneralizedCoxeter → cat.groupswithsimplereflections",
+      "source": "clf.generalizedcoxeter.domain",
+      "target": "cat.groupswithsimplereflections"
+    },
+    {
+      "id": "arr.clf.graded",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Graded : cat.sets.Graded → cat.sets",
+      "source": "clf.graded.domain",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.graphs_directed",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.graphs_directed",
+      "target": "cat.graphs"
+    },
+    {
+      "id": "arr.clf.groups.commutative",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.groups.commutative.domain",
+      "target": "cat.groups"
+    },
+    {
+      "id": "arr.clf.groups_finitelygenerated",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "refined from named-join path",
+      "source": "clf.groups.finitelygenerated.domain",
+      "target": "cat.groups"
+    },
+    {
+      "id": "arr.clf.heckemodulestructure",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_HeckeModuleStructure : cat.modules_r.HeckeModuleStructure → cat.modules_r",
+      "source": "clf.heckemodulestructure.domain",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.highestweight",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_HighestWeight : cat.crystals.HighestWeight → cat.crystals",
+      "source": "clf.highestweight.domain",
+      "target": "cat.crystals"
+    },
+    {
+      "id": "arr.clf.htrivial",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_HTrivial : cat.semigroups.HTrivial → cat.semigroups",
+      "source": "clf.htrivial.domain",
+      "target": "cat.semigroups"
+    },
+    {
+      "id": "arr.clf.infinite",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Infinite : cat.sets.Infinite → cat.sets",
+      "source": "clf.infinite.domain",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.int_bil_alternating",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.int_bil_alternating",
+      "target": "clf.int_bil_skewsymmetric"
+    },
+    {
+      "id": "arr.clf.int_bil_r_finite",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "refined from named-join path",
+      "source": "clf.int_bil_r.finite.domain",
+      "target": "cat.int_bil_r"
+    },
+    {
+      "id": "arr.clf.int_bil_r_nondegenerate",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "refined from named-join path",
+      "source": "clf.int_bil_r.nondegenerate.domain",
+      "target": "cat.int_bil_r"
+    },
+    {
+      "id": "arr.clf.int_bil_skewsymmetric",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.int_bil_skewsymmetric",
+      "target": "cat.int_bil_r"
+    },
+    {
+      "id": "arr.clf.int_bil_symmetric",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.int_bil_symmetric",
+      "target": "cat.int_bil_r"
+    },
+    {
+      "id": "arr.clf.int_hom_even",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.int_hom_even",
+      "target": "cat.int_hom_r"
+    },
+    {
+      "id": "arr.clf.int_hom_nondegenerate",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.int_hom_nondegenerate",
+      "target": "cat.int_hom_r"
+    },
+    {
+      "id": "arr.clf.int_hom_odd",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.int_hom_odd",
+      "target": "cat.int_hom_r"
+    },
+    {
+      "id": "arr.clf.int_hom_unimodular",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.int_hom_unimodular",
+      "target": "cat.int_hom_r"
+    },
+    {
+      "id": "arr.clf.int_quad_r_nondegenerate",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "refined from named-join path",
+      "source": "clf.int_quad_r.nondegenerate.domain",
+      "target": "cat.int_quad_r"
+    },
+    {
+      "id": "arr.clf.jacobian",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Jacobian : cat.abelianvarieties_k.Jacobian → cat.abelianvarieties_k",
+      "source": "clf.jacobian.domain",
+      "target": "cat.abelianvarieties_k"
+    },
+    {
+      "id": "arr.clf.jtrivial",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_JTrivial : cat.semigroups.JTrivial → cat.semigroups",
+      "source": "clf.jtrivial.domain",
+      "target": "cat.semigroups"
+    },
+    {
+      "id": "arr.clf.ka_hlerpackage",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_KahlerPackage : cat.algebras_r.KahlerPackage → cat.algebras_r",
+      "source": "clf.ka_hlerpackage.domain",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "arr.clf.kirillovreshetikhin",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_KirillovReshetikhin : cat.loopcrystals.KirillovReshetikhin → cat.loopcrystals",
+      "source": "clf.kirillovreshetikhin.domain",
+      "target": "cat.loopcrystals"
+    },
+    {
+      "id": "arr.clf.lambdabracketalgebras_r.finitelygenerated",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_FinitelyGenerated : cat.lambdabracketalgebras_r.FinitelyGenerated → cat.lambdabracketalgebras_r",
+      "source": "clf.lambdabracketalgebras_r.finitelygenerated.domain",
+      "target": "cat.lambdabracketalgebras_r"
+    },
+    {
+      "id": "arr.clf.lat_definite",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.lat_definite",
+      "target": "cat.lat_r"
+    },
+    {
+      "id": "arr.clf.lat_hyperbolic",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.lat_hyperbolic",
+      "target": "cat.lat_r"
+    },
+    {
+      "id": "arr.clf.lat_indefinite",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.lat_indefinite",
+      "target": "cat.lat_r"
+    },
+    {
+      "id": "arr.clf.lat_negativedefinite",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.lat_negativedefinite",
+      "target": "cat.lat_r"
+    },
+    {
+      "id": "arr.clf.lat_positivedefinite",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.lat_positivedefinite",
+      "target": "cat.lat_r"
+    },
+    {
+      "id": "arr.clf.lattice",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Lattice : cat.posets.Lattice → cat.posets",
+      "source": "clf.lattice.domain",
+      "target": "cat.posets"
+    },
+    {
+      "id": "arr.clf.ltrivial",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_LTrivial : cat.semigroups.LTrivial → cat.semigroups",
+      "source": "clf.ltrivial.domain",
+      "target": "cat.semigroups"
+    },
+    {
+      "id": "arr.clf.magmas.additive",
+      "kind": "classifier_leg",
+      "role": "additive_operation",
+      "preferred": true,
+      "provenance": "flat Magmas Additive",
+      "source": "clf.magmas.additive.domain",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.magmas.associative",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.magmas.associative.domain",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.magmas.commutative",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.magmas.commutative.domain",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.magmas.finitelygenerated",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_FinitelyGenerated : cat.magmas.FinitelyGenerated → cat.magmas",
+      "source": "clf.magmas.finitelygenerated.domain",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.magmas.inverse",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.magmas.inverse.domain",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.magmas.unital",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.magmas.unital.domain",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.magmas_multiplicative",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.magmas_multiplicative",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.manifolds_pl",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.manifolds_pl",
+      "target": "cat.manifolds"
+    },
+    {
+      "id": "arr.clf.manifolds_smooth",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.manifolds_smooth",
+      "target": "cat.manifolds"
+    },
+    {
+      "id": "arr.clf.matrixalgebra",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_MatrixAlgebra : cat.algebras_r.MatrixAlgebra → cat.algebras_r",
+      "source": "clf.matrixalgebra.domain",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "arr.clf.metric",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Metric : cat.sets.Metric → cat.sets",
+      "source": "clf.metric.domain",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.modular",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Modular : cat.abelianvarieties_k.Modular → cat.abelianvarieties_k",
+      "source": "clf.modular.domain",
+      "target": "cat.abelianvarieties_k"
+    },
+    {
+      "id": "arr.clf.modules.over_field",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.modules.over_field.domain",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.modules.with_basis",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.modules.with_basis.domain",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.modules_finitelygenerated",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.modules_finitelygenerated",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.modules_finitelypresented",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.modules_finitelypresented",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.modules_finiterank",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.modules_finiterank",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.modules_free",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.modules_free",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.modules_projective",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.modules_projective",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.modules_torsion",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.modules_torsion",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.modules_torsionfree",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.modules_torsionfree",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.modules_withgenerators",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.modules_withgenerators",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.monoids_inverse",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "refined from named-join path",
+      "source": "clf.monoids.inverse.domain",
+      "target": "cat.monoids"
+    },
+    {
+      "id": "arr.clf.nilpotent",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Nilpotent : cat.lie_algebras_r.Nilpotent → cat.lie_algebras_r",
+      "source": "clf.nilpotent.domain",
+      "target": "cat.lie_algebras_r"
+    },
+    {
+      "id": "arr.clf.noetherian",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Noetherian : cat.commutativerings.Noetherian → cat.commutativerings",
+      "source": "clf.noetherian.domain",
+      "target": "cat.commutativerings"
+    },
+    {
+      "id": "arr.clf.nozerodivisors",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_NoZeroDivisors : cat.rings.NoZeroDivisors → cat.rings",
+      "source": "clf.nozerodivisors.domain",
+      "target": "cat.rings"
+    },
+    {
+      "id": "arr.clf.oremodulestructure_sigma_delta",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_OreModuleStructure : cat.modules_r.OreModuleStructure → cat.modules_r",
+      "source": "clf.oremodulestructure_sigma_delta.domain",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.pointed",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Pointed : cat.sets.Pointed → cat.sets",
+      "source": "clf.pointed.domain",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.principalideal",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_PrincipalIdeal : cat.integraldomains.PrincipalIdeal → cat.integraldomains",
+      "source": "clf.principalideal.domain",
+      "target": "cat.integraldomains"
+    },
+    {
+      "id": "arr.clf.quantumgrouprepresentation",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_QuantumGroupRepresentation : cat.modules_r.QuantumGroupRepresentation → cat.modules_r",
+      "source": "clf.quantumgrouprepresentation.domain",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.regular",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Regular : cat.crystals.Regular → cat.crystals",
+      "source": "clf.regular.domain",
+      "target": "cat.crystals"
+    },
+    {
+      "id": "arr.clf.rings.domain",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.rings.domain.domain",
+      "target": "cat.rings"
+    },
+    {
+      "id": "arr.clf.rings_commutative",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "refined from named-join path",
+      "source": "clf.rings.commutative.domain",
+      "target": "cat.rings"
+    },
+    {
+      "id": "arr.clf.rtrivial",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_RTrivial : cat.semigroups.RTrivial → cat.semigroups",
+      "source": "clf.rtrivial.domain",
+      "target": "cat.semigroups"
+    },
+    {
+      "id": "arr.clf.schemes.relative_dimension_1",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.schemes.relative_dimension_1.domain",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes.relative_dimension_2",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": null,
+      "source": "clf.schemes.relative_dimension_2.domain",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_affine",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.schemes_affine",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_etale",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.schemes_etale",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_finite",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.schemes_finite",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_finitetype",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.schemes_finitetype",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_flat",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.schemes_flat",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_integral",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.schemes_integral",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_locallyfinitepresentation",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.schemes_locallyfinitepresentation",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_projective",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.schemes_projective",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_proper",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.schemes_proper",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_relativedimension",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.schemes_relativedimension",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_s_relativedimension",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "refined from named-join path",
+      "source": "clf.schemes_s.relativedimension.domain",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_separated",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.schemes_separated",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_smooth",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.schemes_smooth",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.schemes_unramified",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.schemes_unramified",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.clf.semigroups.finitelygenerated",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_FinitelyGenerated : cat.semigroups.FinitelyGenerated → cat.semigroups",
+      "source": "clf.semigroups.finitelygenerated.domain",
+      "target": "cat.semigroups"
+    },
+    {
+      "id": "arr.clf.semigroups_unital",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "refined from named-join path",
+      "source": "clf.semigroups.unital.domain",
+      "target": "cat.semigroups"
+    },
+    {
+      "id": "arr.clf.semisimple",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Semisimple : cat.algebras_r.Semisimple → cat.algebras_r",
+      "source": "clf.semisimple.domain",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "arr.clf.sets.finite",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Finite : Sets.Finite → Sets",
+      "source": "clf.sets.finite.domain",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.sets.graded",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Graded : Sets.Graded → Sets",
+      "source": "clf.sets.graded.domain",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.sets_countable",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.sets_countable",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.sets_infinite",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.sets_infinite",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.sets_uncountable",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "dot_import axiom",
+      "source": "clf.sets_uncountable",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.clf.shephard",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Shephard : cat.groupswithsimplereflections.Shephard → cat.groupswithsimplereflections",
+      "source": "clf.shephard.domain",
+      "target": "cat.groupswithsimplereflections"
+    },
+    {
+      "id": "arr.clf.super",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Super : cat.modules_r.Super → cat.modules_r",
+      "source": "clf.super.domain",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.clf.super_crystal",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Super : cat.crystals.Super → cat.crystals",
+      "source": "clf.super_crystal.domain",
+      "target": "cat.crystals"
+    },
+    {
+      "id": "arr.clf.supercommutative",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Supercommutative : cat.superalgebras_r.Supercommutative → cat.superalgebras_r",
+      "source": "clf.supercommutative.domain",
+      "target": "cat.superalgebras_r"
+    },
+    {
+      "id": "arr.clf.triangulardecomposition",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_TriangularDecomposition : cat.kacmoodyalgebras_r.TriangularDecomposition → cat.kacmoodyalgebras_r",
+      "source": "clf.triangulardecomposition.domain",
+      "target": "cat.kacmoodyalgebras_r"
+    },
+    {
+      "id": "arr.clf.uniquefactorization",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_UniqueFactorization : cat.integraldomains.UniqueFactorization → cat.integraldomains",
+      "source": "clf.uniquefactorization.domain",
+      "target": "cat.integraldomains"
+    },
+    {
+      "id": "arr.clf.unital",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Unital : cat.magmas.Unital → cat.magmas",
+      "source": "clf.unital.domain",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.unital_algebras_differential",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "refined from named-join path",
+      "source": "clf.unital_algebras.differential.domain",
+      "target": "cat.unital_algebras"
+    },
+    {
+      "id": "arr.clf.vector_spaces_k_withbasis",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "refined from named-join path",
+      "source": "clf.vector_spaces_k.withbasis.domain",
+      "target": "cat.vector_spaces_k"
+    },
+    {
+      "id": "arr.clf.weyl",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Weyl : cat.coxetergroups.Weyl → cat.coxetergroups",
+      "source": "clf.weyl.domain",
+      "target": "cat.coxetergroups"
+    },
+    {
+      "id": "arr.clf.withbasis",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_WithBasis : cat.modules_r.WithBasis → cat.modules_r",
+      "source": "clf.withbasis.domain",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.abeliangroups__groups",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.abelian_groups",
+      "target": "cat.groups"
+    },
+    {
+      "id": "arr.dot.additiveabeliangroups__additivegroups",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.additive_abelian_groups",
+      "target": "cat.additive_groups"
+    },
+    {
+      "id": "arr.dot.additivegroups__additivemonoids",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.additive_groups",
+      "target": "cat.additive_monoids"
+    },
+    {
+      "id": "arr.dot.additivemonoids__additivesemigroups",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.additive_monoids",
+      "target": "cat.additive_semigroups"
+    },
+    {
+      "id": "arr.dot.additivesemigroups__magmas_additive",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "Magmas.Additive.Associative → Magmas.Additive",
+      "source": "cat.additive_semigroups",
+      "target": "cat.additive_magmas",
+      "role": "additive_operation"
+    },
+    {
+      "id": "arr.dot.algebraicspaces__schemes",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.algebraicspaces",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.dot.algebraicstacks__stacks",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.algebraicstacks",
+      "target": "cat.stacks"
+    },
+    {
+      "id": "arr.dot.algebras__magmas",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.algebras_r",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.dot.algebrasoverfield__algebras",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.algebras_over_field",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "arr.dot.algebrasoverfield__vectorspaces",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.algebras_over_field",
+      "target": "cat.vector_spaces_k"
+    },
+    {
+      "id": "arr.dot.arr__catobject",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.arr",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.dot.artinstacks__algebraicstacks",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.artinstacks",
+      "target": "cat.algebraicstacks"
+    },
+    {
+      "id": "arr.dot.associativealgebras__algebras",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.associativealgebras",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "arr.dot.bialgebras__coalgebras",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.bialgebras_r",
+      "target": "cat.coalgebras_r"
+    },
+    {
+      "id": "arr.dot.bialgebras__unitalalgebras",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.bialgebras_r",
+      "target": "cat.unital_algebras"
+    },
+    {
+      "id": "arr.dot.bicategories__catobject",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.bicategories",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.dot.bimodules__leftmodules",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "Foundations Def 87.1: forgetting one action",
+      "source": "cat.bimodules_r_s",
+      "target": "cat.left_modules_r"
+    },
+    {
+      "id": "arr.dot.bimodules__rightmodules",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "Foundations Def 87.1: forgetting one action",
+      "source": "cat.bimodules_r_s",
+      "target": "cat.right_modules_r"
+    },
+    {
+      "id": "arr.dot.cat_1__cat_2",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.cat_1",
+      "target": "cat.cat_2"
+    },
+    {
+      "id": "arr.dot.cat_2__bicategories",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.cat_2",
+      "target": "cat.bicategories"
+    },
+    {
+      "id": "arr.dot.chaincomplexes__nonunitaldgas",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.chaincomplexes",
+      "target": "cat.nonunitaldgas"
+    },
+    {
+      "id": "arr.dot.chowgroups__abeliangroups",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.chowgroups",
+      "target": "cat.abelian_groups"
+    },
+    {
+      "id": "arr.dot.cinftyalgebras__commalgebras",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.cinftyalgebras",
+      "target": "cat.commutative_algebras"
+    },
+    {
+      "id": "arr.dot.classifyingstacks__quotientstacks",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.classifyingstacks",
+      "target": "cat.quotientstacks"
+    },
+    {
+      "id": "arr.dot.cliffordalgebras__unitalalgebras",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.cliffordalgebras",
+      "target": "cat.unital_algebras"
+    },
+    {
+      "id": "arr.dot.cochaincomplexes__nonunitaldgas",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.cochaincomplexes",
+      "target": "cat.nonunitaldgas"
+    },
+    {
+      "id": "arr.dot.coh__mod",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.coh",
+      "target": "cat.mod"
+    },
+    {
+      "id": "arr.dot.cohomologyrings__homology",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.cohomologyrings",
+      "target": "cat.homology"
+    },
+    {
+      "id": "arr.dot.cohomologyrings__rings",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.cohomologyrings",
+      "target": "cat.rings"
+    },
+    {
+      "id": "arr.dot.comma__catobject",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.comma",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.dot.commalgebras__commrings",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.commutative_algebras",
+      "target": "cat.commutative_rings"
+    },
+    {
+      "id": "arr.dot.commalgebras__unitalalgebras",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.commutative_algebras",
+      "target": "cat.unital_algebras"
+    },
+    {
+      "id": "arr.dot.completeintersections__varieties",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.completeintersections",
+      "target": "cat.varieties"
+    },
+    {
+      "id": "arr.dot.cones__topologicalspaces",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.cones",
+      "target": "cat.topologicalspaces"
+    },
+    {
+      "id": "arr.dot.coslices__comma",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.coslices",
+      "target": "ctor.comma"
+    },
+    {
+      "id": "arr.dot.countableinfinitesets__sets_countable",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.countableinfinitesets",
+      "target": "clf.sets_countable"
+    },
+    {
+      "id": "arr.dot.countableinfinitesets__sets_infinite",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.countableinfinitesets",
+      "target": "clf.sets_infinite"
+    },
+    {
+      "id": "arr.dot.coxetergroups__groups",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.coxeter_groups",
+      "target": "cat.groups"
+    },
+    {
+      "id": "arr.dot.curves__varieties",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.curves",
+      "target": "cat.varieties"
+    },
+    {
+      "id": "arr.dot.cycles__abeliangroups",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.cycles",
+      "target": "cat.abelian_groups"
+    },
+    {
+      "id": "arr.dot.delignemumfordstacks__algebraicstacks",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.delignemumfordstacks",
+      "target": "cat.algebraicstacks"
+    },
+    {
+      "id": "arr.dot.delignemumfordstacks__artinstacks",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.delignemumfordstacks",
+      "target": "cat.artinstacks"
+    },
+    {
+      "id": "arr.dot.derhamcohomologyrings__cohomologyrings",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.derhamcohomologyrings",
+      "target": "val.cohomologyrings"
+    },
+    {
+      "id": "arr.dot.derhamcomplexes__cochaincomplexes",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.derhamcomplexes",
+      "target": "cat.cochaincomplexes"
+    },
+    {
+      "id": "arr.dot.derhamcomplexes__diffformmodules",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.derhamcomplexes",
+      "target": "val.diffformmodules"
+    },
+    {
+      "id": "arr.dot.descentdata__fibredcategories",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.descentdata",
+      "target": "ctor.fibredcategories"
+    },
+    {
+      "id": "arr.dot.dgas__algebras_graded",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.dgas",
+      "target": "cat.algebras_r.graded"
+    },
+    {
+      "id": "arr.dot.dgas__nonunitaldgas",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.dgas",
+      "target": "cat.nonunitaldgas"
+    },
+    {
+      "id": "arr.dot.dgas__unitalalgebras",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.dgas",
+      "target": "cat.unital_algebras"
+    },
+    {
+      "id": "arr.dot.diagramcategories__functorcategories",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.diagramcategories",
+      "target": "ctor.functorcategories"
+    },
+    {
+      "id": "arr.dot.diffformmodules__modules",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.diffformmodules",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.diffformmodules__sets_graded",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.diffformmodules",
+      "target": "clf.sets.graded.domain"
+    },
+    {
+      "id": "arr.dot.discbil__int_bil_r",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.discbil",
+      "target": "cat.int_bil_r"
+    },
+    {
+      "id": "arr.dot.discbil__sets_finite",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.discbil",
+      "target": "clf.sets.finite.domain"
+    },
+    {
+      "id": "arr.dot.discquad__int_quad_r",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.discquad",
+      "target": "cat.int_quad_r"
+    },
+    {
+      "id": "arr.dot.div__abeliangroups",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.div",
+      "target": "cat.abelian_groups"
+    },
+    {
+      "id": "arr.dot.divisionrings__domains",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.division_rings",
+      "target": "cat.domains"
+    },
+    {
+      "id": "arr.dot.divisionrings__rings",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.division_rings",
+      "target": "cat.rings"
+    },
+    {
+      "id": "arr.dot.dualobjects__tensorproducts",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.dualobjects",
+      "target": "cat.tensorproducts"
+    },
+    {
+      "id": "arr.dot.euclideandomains__pids",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.euclidean_domains",
+      "target": "cat.pids"
+    },
+    {
+      "id": "arr.dot.exterioralgebras__algebras_graded",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.exterioralgebras",
+      "target": "cat.algebras_r.graded"
+    },
+    {
+      "id": "arr.dot.exterioralgebras__unitalalgebras",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.exterioralgebras",
+      "target": "cat.unital_algebras"
+    },
+    {
+      "id": "arr.dot.fans__cones",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.fans",
+      "target": "cat.cones"
+    },
+    {
+      "id": "arr.dot.fibredcategories__cat_1",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.fibredcategories",
+      "target": "cat.cat_1"
+    },
+    {
+      "id": "arr.dot.fields__divisionrings",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.fields",
+      "target": "cat.division_rings"
+    },
+    {
+      "id": "arr.dot.fields__euclideandomains",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.fields",
+      "target": "cat.euclidean_domains"
+    },
+    {
+      "id": "arr.dot.finitelygeneratedgroups__groups",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.finitelygeneratedgroups",
+      "target": "cat.groups"
+    },
+    {
+      "id": "arr.dot.finitelygeneratedmodules__modules",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.finitelygeneratedmodules",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.finitelypresentedmodules__finitelygeneratedmodules",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.finitelypresentedmodules",
+      "target": "cat.finitelygeneratedmodules"
+    },
+    {
+      "id": "arr.dot.finiterankmodules__modules",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.finiterankmodules",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.freemodules__modules",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.freemodules",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.freemodules__projectivemodules",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.freemodules",
+      "target": "cat.projectivemodules"
+    },
+    {
+      "id": "arr.dot.functorcategories__homcategories",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.functorcategories",
+      "target": "ctor.homcategories"
+    },
+    {
+      "id": "arr.dot.g_objects__catobject",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.g_objects",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.dot.g_objects__groups",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.g_objects",
+      "target": "cat.groups"
+    },
+    {
+      "id": "arr.dot.gcddomains__integraldomains",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.gcd_domains",
+      "target": "cat.integral_domains"
+    },
+    {
+      "id": "arr.dot.genera__sets_finite",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.genera",
+      "target": "clf.sets.finite.domain"
+    },
+    {
+      "id": "arr.dot.graphs__catobject",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.graphs",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.dot.groupoidobjects__catobject",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.groupoidobjects",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.dot.groupoidobjects__groupoids",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.groupoidobjects",
+      "target": "cat.groupoids"
+    },
+    {
+      "id": "arr.dot.groupoids__cat_1",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.groupoids",
+      "target": "cat.cat_1"
+    },
+    {
+      "id": "arr.dot.hodgestructures__additiveabeliangroups",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.hodgestructures",
+      "target": "cat.additive_abelian_groups"
+    },
+    {
+      "id": "arr.dot.homcategories__catobject",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.homcategories",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.dot.homology__dgas",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.homology",
+      "target": "cat.dgas"
+    },
+    {
+      "id": "arr.dot.homology__modules",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.homology",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.homsets__homcategories",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.homsets",
+      "target": "ctor.homcategories"
+    },
+    {
+      "id": "arr.dot.homsets__sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.homsets",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.dot.hypersurfaces__varieties",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.hypersurfaces",
+      "target": "cat.varieties"
+    },
+    {
+      "id": "arr.dot.incidencecategories__cat_1",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.incidencecategories",
+      "target": "cat.cat_1"
+    },
+    {
+      "id": "arr.dot.int_bil_r__int_hom_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.int_bil_r",
+      "target": "cat.int_hom_r"
+    },
+    {
+      "id": "arr.dot.int_herm_r__int_hom_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.int_herm_r",
+      "target": "cat.int_hom_r"
+    },
+    {
+      "id": "arr.dot.int_hom_r__modules",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.int_hom_r",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.int_bil_r__modules",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "Def 21.3: the underlying-module functor of a bilinear form; the left leg of the coordinatized-form pullback cat.bil_coord_n_r (glued with the coord frame over their shared underlying module).",
+      "source": "cat.int_bil_r",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.int_quad_r__int_hom_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.int_quad_r",
+      "target": "cat.int_hom_r"
+    },
+    {
+      "id": "arr.dot.integraldomains__commrings",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.integral_domains",
+      "target": "cat.commutative_rings"
+    },
+    {
+      "id": "arr.dot.integraldomains__domains",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.integral_domains",
+      "target": "cat.domains"
+    },
+    {
+      "id": "arr.dot.isometrygroups__latticehomsets",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.isometrygroups",
+      "target": "cat.latticehomsets"
+    },
+    {
+      "id": "arr.dot.isometrygroups__orthogonalgroups",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.isometrygroups",
+      "target": "val.orthogonal_groups"
+    },
+    {
+      "id": "arr.dot.isomorphicobjects__arr",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.isomorphicobjects",
+      "target": "ctor.arr"
+    },
+    {
+      "id": "arr.dot.lat_r__int_bil_r",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.lat_r",
+      "target": "cat.int_bil_r"
+    },
+    {
+      "id": "arr.dot.lat_r__projectivemodules",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.lat_r",
+      "target": "cat.projectivemodules"
+    },
+    {
+      "id": "arr.dot.latticehomsets__homsets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.latticehomsets",
+      "target": "cat.homsets"
+    },
+    {
+      "id": "arr.dot.latticehomsets__lat_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.latticehomsets",
+      "target": "cat.lat_r"
+    },
+    {
+      "id": "arr.dot.latticepolytopes__polyhedra",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.latticepolytopes",
+      "target": "cat.polyhedra"
+    },
+    {
+      "id": "arr.dot.locallyringedspaces__ringedspaces",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.locallyringedspaces",
+      "target": "cat.ringedspaces"
+    },
+    {
+      "id": "arr.dot.manifolds__ringedspaces",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.manifolds",
+      "target": "cat.ringedspaces"
+    },
+    {
+      "id": "arr.dot.manifolds__topologicalspaces",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.manifolds",
+      "target": "cat.topologicalspaces"
+    },
+    {
+      "id": "arr.dot.manifolds_smooth__varieties",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "hand DOT solid parent; smooth manifolds compare to varieties",
+      "source": "clf.manifolds_smooth",
+      "target": "cat.varieties"
+    },
+    {
+      "id": "arr.dot.metricspaces__topologicalspaces",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.metricspaces",
+      "target": "cat.topologicalspaces"
+    },
+    {
+      "id": "arr.dot.mod__modules",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.mod",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.mod__ringedsites",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.mod",
+      "target": "cat.ringedsites"
+    },
+    {
+      "id": "arr.dot.mod__ringedspaces",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.mod",
+      "target": "cat.ringedspaces"
+    },
+    {
+      "id": "arr.dot.modules__additiveabeliangroups",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.modules_r",
+      "target": "cat.additive_abelian_groups"
+    },
+    {
+      "id": "arr.dot.moduleswithbasis__freemodules",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.modules_with_basis",
+      "target": "cat.freemodules"
+    },
+    {
+      "id": "arr.dot.moduleswithgenerators__modules",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.moduleswithgenerators",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.noetheriancommrings__commrings",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.noetheriancommrings",
+      "target": "cat.commutative_rings"
+    },
+    {
+      "id": "arr.dot.nonunitaldgas__algebras",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.nonunitaldgas",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "arr.dot.nonunitaldgas__algebras_graded",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.nonunitaldgas",
+      "target": "cat.algebras_r.graded"
+    },
+    {
+      "id": "arr.dot.ns__abeliangroups",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.ns",
+      "target": "cat.abelian_groups"
+    },
+    {
+      "id": "arr.dot.ns__lat_r",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.ns",
+      "target": "cat.lat_r"
+    },
+    {
+      "id": "arr.dot.op__catobject",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.op",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.dot.orthogonalgroups__groups",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.orthogonal_groups",
+      "target": "cat.groups"
+    },
+    {
+      "id": "arr.dot.orthogonalgroups__int_bil_r",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.orthogonal_groups",
+      "target": "cat.int_bil_r"
+    },
+    {
+      "id": "arr.dot.pic__abeliangroups",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.pic",
+      "target": "cat.abelian_groups"
+    },
+    {
+      "id": "arr.dot.pids__ufds",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.pids",
+      "target": "cat.ufds"
+    },
+    {
+      "id": "arr.dot.polyhedra__topologicalspaces",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.polyhedra",
+      "target": "cat.topologicalspaces"
+    },
+    {
+      "id": "arr.dot.posets__catobject_thin",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.posets",
+      "target": "clf.catobject_thin"
+    },
+    {
+      "id": "arr.dot.presheaves__functorcategories",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.presheaves",
+      "target": "ctor.functorcategories"
+    },
+    {
+      "id": "arr.dot.prestacks__fibredcategories",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.prestacks",
+      "target": "ctor.fibredcategories"
+    },
+    {
+      "id": "arr.dot.projectivemodules__modules",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.projectivemodules",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.qcoh__mod",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.qcoh",
+      "target": "cat.mod"
+    },
+    {
+      "id": "arr.dot.quotients__coslices",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.quotients",
+      "target": "ctor.coslices"
+    },
+    {
+      "id": "arr.dot.quotientstacks__algebraicstacks",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.quotientstacks",
+      "target": "cat.algebraicstacks"
+    },
+    {
+      "id": "arr.dot.quotientstacks__g_objects",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.quotientstacks",
+      "target": "cat.g_objects"
+    },
+    {
+      "id": "arr.dot.quotientstacks__groupoidobjects",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.quotientstacks",
+      "target": "ctor.groupoidobjects"
+    },
+    {
+      "id": "arr.dot.reflectiongroups__groups",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.reflectiongroups",
+      "target": "cat.groups"
+    },
+    {
+      "id": "arr.dot.rightmodules__additiveabeliangroups",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.right_modules_r",
+      "target": "cat.additive_abelian_groups"
+    },
+    {
+      "id": "arr.dot.ringedsites__sites",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.ringedsites",
+      "target": "cat.sites"
+    },
+    {
+      "id": "arr.dot.ringedspaces__topologicalspaces",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.ringedspaces",
+      "target": "cat.topologicalspaces"
+    },
+    {
+      "id": "arr.dot.ringedtopoi__topoi",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.ringedtopoi",
+      "target": "cat.topoi"
+    },
+    {
+      "id": "arr.dot.rings__rngs",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.rings",
+      "target": "cat.rngs"
+    },
+    {
+      "id": "arr.dot.rings__semirings",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.rings",
+      "target": "cat.semirings"
+    },
+    {
+      "id": "arr.dot.rngs__additiveabeliangroups",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.rngs",
+      "target": "cat.additive_abelian_groups"
+    },
+    {
+      "id": "arr.dot.rngs__semigroups",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.rngs",
+      "target": "cat.semigroups"
+    },
+    {
+      "id": "arr.dot.rootlattices__lat_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.rootlattices",
+      "target": "cat.lat_r"
+    },
+    {
+      "id": "arr.dot.rootsystems__cones",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.rootsystems",
+      "target": "cat.cones"
+    },
+    {
+      "id": "arr.dot.schemes__algebraicstacks",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.schemes_s",
+      "target": "cat.algebraicstacks"
+    },
+    {
+      "id": "arr.dot.schemes__locallyringedspaces",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.schemes_s",
+      "target": "cat.locallyringedspaces"
+    },
+    {
+      "id": "arr.dot.semirings__additivemonoids",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.semirings",
+      "target": "cat.additive_monoids"
+    },
+    {
+      "id": "arr.dot.semirings__monoids",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.semirings",
+      "target": "cat.monoids"
+    },
+    {
+      "id": "arr.dot.sheaves__presheaves",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "Thm 8.1: the inclusion of sheaves into presheaves is full and replete and is the RIGHT adjoint of the reflective localization",
+      "source": "cat.sheaves",
+      "target": "cat.presheaves"
+    },
+    {
+      "id": "arr.dot.sites__cat_1",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.sites",
+      "target": "cat.cat_1"
+    },
+    {
+      "id": "arr.dot.slices__comma",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.slices",
+      "target": "ctor.comma"
+    },
+    {
+      "id": "arr.dot.specializationposets__posets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.specializationposets",
+      "target": "cat.posets"
+    },
+    {
+      "id": "arr.dot.stablegraphs__graphs",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.stablegraphs",
+      "target": "cat.graphs"
+    },
+    {
+      "id": "arr.dot.stablegraphs__stratifiedspaces",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.stablegraphs",
+      "target": "cat.stratifiedspaces"
+    },
+    {
+      "id": "arr.dot.stacks__prestacks",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "Thm 9.1: the inclusion of stacks into prestacks is fully faithful and admits stackification as its left adjoint",
+      "source": "cat.stacks",
+      "target": "cat.prestacks"
+    },
+    {
+      "id": "arr.dot.stratifiedspaces__delignemumfordstacks",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.stratifiedspaces",
+      "target": "cat.delignemumfordstacks"
+    },
+    {
+      "id": "arr.dot.stratifiedspaces__specializationposets",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.stratifiedspaces",
+      "target": "cat.specializationposets"
+    },
+    {
+      "id": "arr.dot.stratifiedspaces__topologicalspaces",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.stratifiedspaces",
+      "target": "cat.topologicalspaces"
+    },
+    {
+      "id": "arr.dot.subobjects__slices",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.subobjects",
+      "target": "ctor.slices"
+    },
+    {
+      "id": "arr.dot.subquotients__quotients",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.subquotients",
+      "target": "ctor.quotients"
+    },
+    {
+      "id": "arr.dot.subquotients__subobjects",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.subquotients",
+      "target": "ctor.subobjects"
+    },
+    {
+      "id": "arr.dot.surfaces__varieties",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.surfaces",
+      "target": "cat.varieties"
+    },
+    {
+      "id": "arr.dot.symmetricalgebras__commalgebras",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.symmetricalgebras",
+      "target": "cat.commutative_algebras"
+    },
+    {
+      "id": "arr.dot.tensoralgebras__unitalalgebras",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.tensoralgebras",
+      "target": "cat.unital_algebras"
+    },
+    {
+      "id": "arr.dot.tensorfieldmodules__cinftyalgebras",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.tensorfieldmodules",
+      "target": "cat.cinftyalgebras"
+    },
+    {
+      "id": "arr.dot.tensorfieldmodules__modules",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.tensorfieldmodules",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.tensorproducts__catobject",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.tensorproducts",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.dot.topoi__sheaves",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.topoi",
+      "target": "cat.sheaves"
+    },
+    {
+      "id": "arr.dot.topologicalspaces__sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.topologicalspaces",
+      "target": "cat.sets"
+    },
+    {
+      "id": "arr.dot.toricvarieties__varieties",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.toricvarieties",
+      "target": "cat.varieties"
+    },
+    {
+      "id": "arr.dot.torsors__g_objects",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "ctor.torsors",
+      "target": "cat.g_objects"
+    },
+    {
+      "id": "arr.dot.ufds__gcddomains",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.ufds",
+      "target": "cat.gcd_domains"
+    },
+    {
+      "id": "arr.dot.unitalalgebras__associativealgebras",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.unital_algebras",
+      "target": "cat.associativealgebras"
+    },
+    {
+      "id": "arr.dot.varieties__schemes",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.varieties",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "arr.dot.vectorfieldmodules__cinftyalgebras",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.vectorfieldmodules",
+      "target": "cat.cinftyalgebras"
+    },
+    {
+      "id": "arr.dot.vectorfieldmodules__modules",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "val.vectorfieldmodules",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.vectorspaces__modules",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.vector_spaces_k",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.dot.vectorspaceswithbasis__moduleswithbasis",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.vectorspaceswithbasis",
+      "target": "cat.modules_with_basis"
+    },
+    {
+      "id": "arr.dot.vectorspaceswithbasis__vectorspaces",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.vectorspaceswithbasis",
+      "target": "cat.vector_spaces_k"
+    },
+    {
+      "id": "arr.dot.weylgroups__reflectiongroups",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "dot_import",
+      "source": "cat.weyl_groups",
+      "target": "cat.reflectiongroups"
+    },
+    {
+      "id": "arr.fun.additive_magmas_to_sets",
+      "kind": "forgetful",
+      "preferred": false,
+      "provenance": "composite via Magmas; preferred inclusion is arr.incl.additive_magmas_to_magmas",
+      "source": "cat.additive_magmas",
+      "target": "cat.sets",
+      "role": "underlying_set"
+    },
+    {
+      "id": "arr.fun.magmas_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "underlying set",
+      "source": "cat.magmas",
+      "target": "cat.sets",
+      "role": "underlying_set"
+    },
+    {
+      "id": "arr.fun.sets_to_cat_object",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "spine",
+      "source": "cat.sets",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.incl.fields_to_rings",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.fields",
+      "target": "cat.rings"
+    },
+    {
+      "id": "arr.incl.groups_to_monoids",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.groups",
+      "target": "cat.monoids"
+    },
+    {
+      "id": "arr.incl.monoids_to_semigroups",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.monoids",
+      "target": "cat.semigroups"
+    },
+    {
+      "id": "arr.incl.semigroups_to_magmas",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "named classifier application",
+      "source": "cat.semigroups",
+      "target": "cat.magmas",
+      "role": "multiplicative_operation"
+    },
+    {
+      "id": "arr.incl.weyl_to_coxeter",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.weyl_groups",
+      "target": "cat.coxeter_groups"
+    },
+    {
+      "id": "arr.param.algebras_r_base_ring",
+      "kind": "parameter_dependency",
+      "preferred": true,
+      "provenance": "DOT Algebras(R)->Rings is NOT object-forgetful; R lies in Rings",
+      "source": "cat.algebras_r",
+      "target": "cat.rings"
+    },
+    {
+      "id": "arr.param.modules_r_base_ring",
+      "kind": "parameter_dependency",
+      "preferred": true,
+      "provenance": "parameter R ∈ Rings",
+      "source": "cat.modules_r",
+      "target": "cat.rings"
+    },
+    {
+      "id": "arr.param.vector_spaces_field",
+      "kind": "parameter_dependency",
+      "preferred": true,
+      "provenance": "parameter K ∈ Fields; records R=K specialization",
+      "source": "cat.vector_spaces_k",
+      "target": "cat.fields"
+    },
+    {
+      "id": "arr.pb.comm_rings_to_rings",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.commutative_rings",
+      "target": "cat.rings"
+    },
+    {
+      "id": "arr.pb.finite_fields_to_fields",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.finite_fields",
+      "target": "cat.fields"
+    },
+    {
+      "id": "arr.pb.finite_fields_to_sets_finite",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.finite_fields",
+      "target": "clf.sets.finite.domain"
+    },
+    {
+      "id": "arr.pb.finite_rings_to_rings",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "pullback cone leg",
+      "source": "cat.finite_rings",
+      "target": "cat.rings"
+    },
+    {
+      "id": "arr.pb.finite_rings_to_sets_finite",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "other pullback cone leg",
+      "source": "cat.finite_rings",
+      "target": "clf.sets.finite.domain"
+    },
+    {
+      "id": "arr.thm.lat_hyperbolic_implies_indefinite",
+      "kind": "theorem_inclusion",
+      "preferred": true,
+      "provenance": "hyperbolic lattices are indefinite",
+      "source": "clf.lat_hyperbolic",
+      "target": "clf.lat_indefinite"
+    },
+    {
+      "id": "arr.thm.lat_negative_definite",
+      "kind": "theorem_inclusion",
+      "preferred": true,
+      "provenance": "definite implies from signature",
+      "source": "clf.lat_negativedefinite",
+      "target": "clf.lat_definite"
+    },
+    {
+      "id": "arr.thm.lat_positive_definite",
+      "kind": "theorem_inclusion",
+      "preferred": true,
+      "provenance": "definite implies from signature",
+      "source": "clf.lat_positivedefinite",
+      "target": "clf.lat_definite"
+    },
+    {
+      "id": "arr.thm.sets_finite_implies_countable",
+      "kind": "theorem_inclusion",
+      "preferred": true,
+      "provenance": "finite sets are countable",
+      "source": "clf.sets.finite.domain",
+      "target": "clf.sets_countable"
+    },
+    {
+      "id": "arr.thm.sets_uncountable_implies_infinite",
+      "kind": "theorem_inclusion",
+      "preferred": true,
+      "provenance": "uncountable sets are infinite",
+      "source": "clf.sets_uncountable",
+      "target": "clf.sets_infinite"
+    },
+    {
+      "id": "arr.warn.dot_algebras_to_rings_as_forgetful",
+      "kind": "forgetful",
+      "preferred": false,
+      "provenance": "REJECTED interpretation of DOT Algebras(R)->Rings; use arr.param.algebras_r_base_ring",
+      "source": "cat.algebras_r",
+      "target": "cat.rings"
+    },
+    {
+      "id": "fun.abelianvarieties_k_to_schemes_s",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.abelianvarieties_k",
+      "target": "cat.schemes_s"
+    },
+    {
+      "id": "fun.additive_groups_to_additive_magmas",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "forget to Magmas.Additive",
+      "source": "cat.additive_groups",
+      "target": "cat.additive_magmas",
+      "role": "additive_operation"
+    },
+    {
+      "id": "fun.algebraideals_a_to_modules_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.algebraideals_a",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "fun.algebras_to_modules",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "forget multiplication",
+      "source": "cat.algebras_r",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "fun.algebras_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "via modules / sets",
+      "source": "cat.algebras_r",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.bialgebras_to_algebras",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.bialgebras_r",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "fun.coalgebras_to_modules",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.coalgebras_r",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "fun.complexreflectiongroups_to_groupswithsimplereflections",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.complexreflectiongroups",
+      "target": "cat.groupswithsimplereflections"
+    },
+    {
+      "id": "fun.coxetergroupalgebras_r_to_algebras_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.coxetergroupalgebras_r",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "fun.crystals_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.crystals",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.discretevaluationfields_to_fields",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.discretevaluationfields",
+      "target": "cat.fields"
+    },
+    {
+      "id": "fun.discretevaluationrings_to_integral_domains",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.discretevaluationrings",
+      "target": "cat.integral_domains"
+    },
+    {
+      "id": "fun.domains_to_rings",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.domains",
+      "target": "cat.rings"
+    },
+    {
+      "id": "fun.drinfeldmodules_gamma_f_q_t_k_to_modules_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.drinfeldmodules_gamma_f_q_t_k",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "fun.dvf_to_fields",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "authored ledger structural interface",
+      "source": "cat.discretevaluationfields",
+      "target": "cat.fields"
+    },
+    {
+      "id": "fun.dvf_to_metricspaces",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "authored ledger structural interface",
+      "source": "cat.discretevaluationfields",
+      "target": "cat.metricspaces"
+    },
+    {
+      "id": "fun.dvr_to_fields",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "authored ledger structural interface",
+      "source": "cat.discretevaluationrings",
+      "target": "cat.fields"
+    },
+    {
+      "id": "fun.dvr_to_metricspaces",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "authored ledger structural interface",
+      "source": "cat.discretevaluationrings",
+      "target": "cat.metricspaces"
+    },
+    {
+      "id": "fun.fields_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.fields",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.generalizedcoxetergroups_to_groupswithsimplereflections",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.generalizedcoxetergroups",
+      "target": "cat.groupswithsimplereflections"
+    },
+    {
+      "id": "fun.groupalgebras_r_to_algebras_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.groupalgebras_r",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "fun.groupoidson_g_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: provisional fiber; authored ledger",
+      "source": "cat.groupoidson_g",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.groups_to_magmas",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "underlying multiplicative magma",
+      "source": "cat.groups",
+      "target": "cat.magmas",
+      "role": "multiplicative_operation"
+    },
+    {
+      "id": "fun.groupswithsimplereflections_to_groups",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: exceptional common-data host for reflection/Coxeter package",
+      "source": "cat.groupswithsimplereflections",
+      "target": "cat.groups"
+    },
+    {
+      "id": "fun.hopf_to_bialgebras",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.hopf_algebras_r",
+      "target": "cat.bialgebras_r"
+    },
+    {
+      "id": "fun.integral_domains_to_fields",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "authored ledger structural interface",
+      "source": "cat.integraldomains",
+      "target": "cat.fields"
+    },
+    {
+      "id": "fun.kacmoodyalgebras_r_to_lie_algebras_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.kacmoodyalgebras_r",
+      "target": "cat.lie_algebras_r"
+    },
+    {
+      "id": "fun.lambdabracketalgebras_r_to_modules_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.lambdabracketalgebras_r",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "fun.latticeposets_to_posets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.latticeposets",
+      "target": "cat.posets"
+    },
+    {
+      "id": "fun.lie_to_algebras",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.lie_algebras_r",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "fun.lieconformal_to_lambdabracket",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "authored ledger structural interface",
+      "source": "cat.lieconformalalgebras_r",
+      "target": "cat.lambdabracketalgebras_r"
+    },
+    {
+      "id": "fun.lieconformalalgebras_r_to_modules_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.lieconformalalgebras_r",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "fun.liegroups_to_groups",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.liegroups",
+      "target": "cat.groups"
+    },
+    {
+      "id": "fun.loopcrystals_to_crystals",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.loopcrystals",
+      "target": "cat.crystals"
+    },
+    {
+      "id": "fun.magmaswithtwooperations_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: least host for two-operation distributivity",
+      "source": "cat.magmaswithtwooperations",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.manifolds_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: host for complex-analytic structure",
+      "source": "cat.manifolds",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.metricspaces_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: host for Complete classifier",
+      "source": "cat.metricspaces",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.modules_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.modules_r",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.monoidalgebras_r_to_algebras_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.monoidalgebras_r",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "fun.permutationgroups_to_groups",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.permutationgroups",
+      "target": "cat.groups"
+    },
+    {
+      "id": "fun.polyhedra_r_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.polyhedra_r",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.posets_to_sets",
+      "kind": "forgetful",
+      "notes": "underlying_set",
+      "preferred": true,
+      "provenance": "underlying set of a poset",
+      "source": "cat.posets",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.ringideals_r_to_modules_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.ringideals_r",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "fun.rings_nonzero_mult_monoid_to_magmas",
+      "kind": "forgetful",
+      "preferred": false,
+      "provenance": "nonzero multiplicative monoid of a ring; used in division-ring pullback",
+      "source": "cat.rings",
+      "target": "cat.magmas",
+      "role": "multiplicative_operation"
+    },
+    {
+      "id": "fun.rings_to_multiplicative_magmas",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "multiplicative underlying magma",
+      "source": "cat.rings",
+      "target": "cat.magmas",
+      "role": "multiplicative_operation"
+    },
+    {
+      "id": "fun.rings_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "composite via magmas; preferred presentation may factor",
+      "source": "cat.rings",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.semisimplealgebras_r_to_algebras_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.semisimplealgebras_r",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "fun.setswithpartialmaps_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.setswithpartialmaps",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.simplicialcomplexes_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.simplicialcomplexes",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.simplicialsets_to_sets",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.simplicialsets",
+      "target": "cat.sets"
+    },
+    {
+      "id": "fun.superalgebras_r_to_algebras_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.superalgebras_r",
+      "target": "cat.algebras_r"
+    },
+    {
+      "id": "fun.supercrystals_to_crystals",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.supercrystals",
+      "target": "cat.crystals"
+    },
+    {
+      "id": "fun.twoops_to_magmas_additive",
+      "kind": "forgetful",
+      "notes": "additive_operation",
+      "preferred": false,
+      "provenance": "additive_operation",
+      "source": "cat.magmaswithtwooperations",
+      "target": "cat.magmas",
+      "role": "additive_operation"
+    },
+    {
+      "id": "fun.twoops_to_magmas_multiplicative",
+      "kind": "forgetful",
+      "notes": "multiplicative_operation",
+      "preferred": true,
+      "provenance": "multiplicative_operation",
+      "source": "cat.magmaswithtwooperations",
+      "target": "cat.magmas",
+      "role": "multiplicative_operation"
+    },
+    {
+      "id": "fun.unital_algebras_to_magmas",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": null,
+      "source": "cat.unital_algebras",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "fun.vectorbundles_x_r_to_modules_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "opaque interface: authored ledger base",
+      "source": "cat.vectorbundles_x_r",
+      "target": "cat.modules_r"
+    },
+    {
+      "id": "arr.incl.additive_magmas_to_magmas",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "role": "additive_operation",
+      "provenance": "Magmas.Additive ⊂ Magmas (one-tower)",
+      "source": "cat.additive_magmas",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "fun.additive_groups_to_magmas",
+      "kind": "forgetful",
+      "preferred": true,
+      "role": "additive_operation",
+      "provenance": "underlying additive magma",
+      "source": "cat.additive_groups",
+      "target": "cat.magmas"
+    },
+    {
+      "id": "arr.clf.coalgebras_r.cocommutative",
+      "source": "clf.coalgebras_r.cocommutative.domain",
+      "target": "cat.coalgebras_r",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Cocommutative : cat.coalgebras_r.Cocommutative → cat.coalgebras_r"
+    },
+    {
+      "id": "arr.clf.groupswithsimplereflections.irreducible",
+      "source": "clf.groupswithsimplereflections.irreducible.domain",
+      "target": "cat.groupswithsimplereflections",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Irreducible : cat.groupswithsimplereflections.Irreducible → cat.groupswithsimplereflections"
+    },
+    {
+      "id": "arr.clf.latticeposets.chaingraded",
+      "source": "clf.latticeposets.chaingraded.domain",
+      "target": "cat.latticeposets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_ChainGraded : cat.latticeposets.ChainGraded → cat.latticeposets"
+    },
+    {
+      "id": "arr.clf.latticeposets.congruenceuniform",
+      "source": "clf.latticeposets.congruenceuniform.domain",
+      "target": "cat.latticeposets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_CongruenceUniform : cat.latticeposets.CongruenceUniform → cat.latticeposets"
+    },
+    {
+      "id": "arr.clf.latticeposets.extremal",
+      "source": "clf.latticeposets.extremal.domain",
+      "target": "cat.latticeposets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Extremal : cat.latticeposets.Extremal → cat.latticeposets"
+    },
+    {
+      "id": "arr.clf.latticeposets.semidistributive",
+      "source": "clf.latticeposets.semidistributive.domain",
+      "target": "cat.latticeposets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Semidistributive : cat.latticeposets.Semidistributive → cat.latticeposets"
+    },
+    {
+      "id": "arr.clf.latticeposets.stone",
+      "source": "clf.latticeposets.stone.domain",
+      "target": "cat.latticeposets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Stone : cat.latticeposets.Stone → cat.latticeposets"
+    },
+    {
+      "id": "arr.clf.latticeposets.trim",
+      "source": "clf.latticeposets.trim.domain",
+      "target": "cat.latticeposets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Trim : cat.latticeposets.Trim → cat.latticeposets"
+    },
+    {
+      "id": "arr.clf.liealgebras_r.nilpotent",
+      "source": "clf.liealgebras_r.nilpotent.domain",
+      "target": "cat.liealgebras_r",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Nilpotent : cat.liealgebras_r.Nilpotent → cat.liealgebras_r"
+    },
+    {
+      "id": "arr.clf.magmas.unital.inverse",
+      "source": "clf.magmas.unital.inverse.domain",
+      "target": "clf.magmas.unital.domain",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Inverse : clf.magmas.unital.domain.Inverse → clf.magmas.unital.domain"
+    },
+    {
+      "id": "arr.clf.manifolds.almostcomplex",
+      "source": "clf.manifolds.almostcomplex.domain",
+      "target": "cat.manifolds",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_AlmostComplex : cat.manifolds.AlmostComplex → cat.manifolds"
+    },
+    {
+      "id": "arr.clf.manifolds.analytic",
+      "source": "clf.manifolds.analytic.domain",
+      "target": "cat.manifolds",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Analytic : cat.manifolds.Analytic → cat.manifolds"
+    },
+    {
+      "id": "arr.clf.manifolds.differentiable",
+      "source": "clf.manifolds.differentiable.domain",
+      "target": "cat.manifolds",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Differentiable : cat.manifolds.Differentiable → cat.manifolds"
+    },
+    {
+      "id": "arr.clf.posets.bounded",
+      "source": "clf.posets.bounded.domain",
+      "target": "cat.posets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Bounded : cat.posets.Bounded → cat.posets"
+    },
+    {
+      "id": "arr.clf.simplicialsets.pointedobject",
+      "source": "clf.simplicialsets.pointedobject.domain",
+      "target": "cat.simplicialsets",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_PointedObject : cat.simplicialsets.PointedObject → cat.simplicialsets"
+    },
+    {
+      "id": "arr.clf.topologicalspaces.compact",
+      "source": "clf.topologicalspaces.compact.domain",
+      "target": "cat.topologicalspaces",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "ι_Compact : cat.topologicalspaces.Compact → cat.topologicalspaces"
+    },
+    {
+      "id": "arr.dot.bimodulesdiagonal__bimodules",
+      "source": "cat.bimodules_r_r",
+      "target": "cat.bimodules_r_s",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "the (R,S)-bimodules with S = R"
+    },
+    {
+      "id": "fun.algebras_to_bimodules",
+      "source": "cat.algebras_r",
+      "target": "cat.bimodules_r_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "an R-algebra is an (R,R)-bimodule through its structure map to the centre (Foundations Def 13.9)"
+    },
+    {
+      "id": "arr.dot.bimodulesfield__bimodulesdiagonal",
+      "source": "cat.bimodules_k_k",
+      "target": "cat.bimodules_r_r",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "the bimodule diagonal at a field base"
+    },
+    {
+      "id": "fun.vectorspaces_central_section",
+      "source": "cat.vector_spaces_k",
+      "target": "cat.bimodules_k_k",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "c_K (Foundations Def 92.2): a field is commutative, so mr := rm is fully faithful onto the central bimodules and a section of the left projection"
+    },
+    {
+      "id": "fun.algebras_over_field_to_bimodules",
+      "source": "cat.algebras_over_field",
+      "target": "cat.bimodules_k_k",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "a K-algebra is a (K,K)-bimodule through its structure map to the centre (Def 13.9)"
+    },
+    {
+      "id": "fun.free.monoid",
+      "source": "cat.sets",
+      "target": "cat.monoids",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "free monoid functor (addendum Def 8.1); left adjoint to the underlying set of a monoid",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "free monoids",
+        "corestriction": "fun.free.monoid.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.free.monoid, fully faithful and replete into cat.monoids (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
+      }
+    },
+    {
+      "id": "fun.free.group",
+      "source": "cat.sets",
+      "target": "cat.groups",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "free group functor (addendum Def 8.1); left adjoint to the underlying set of a group",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "free groups",
+        "corestriction": "fun.free.group.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.free.group, fully faithful and replete into cat.groups (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
+      }
+    },
+    {
+      "id": "fun.free.abelian_group",
+      "source": "cat.sets",
+      "target": "cat.additive_abelian_groups",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "free abelian group functor (addendum Def 8.2)",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "free abelian groups",
+        "corestriction": "fun.free.abelian_group.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.free.abelian_group, fully faithful and replete into cat.additive_abelian_groups (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
+      }
+    },
+    {
+      "id": "fun.free.module_r",
+      "source": "cat.sets",
+      "target": "cat.modules_r",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "free left R-module functor F_R, X |-> R^(X) (addendum Def 9.1); Hom_R(R^(X),M) = Map(X,U_R M)",
+      "adjunction": {
+        "adjunction_id": "adj.free_module",
+        "unit": "eta_X : X -> U_R F_R(X), the insertion of the basis",
+        "counit": "epsilon_M : R^(U_R M) -> M",
+        "recognition": "NONE. Rmk 5.3: for an arbitrary free-forgetful adjunction the left adjoint need not be fully faithful, so the counit does not recognize free objects -- a free module is not usually recovered from the free module on its entire underlying set. Freeness is the essential image (Cor 9.2), recognized by the inhabitedness of Pres_{F_R}(M), not by the counit."
+      },
+      "essential_image_factorization": {
+        "objects": "the free R-modules; the restriction along FinSet -> Set has the finite free modules as its image (add. Cor 9.2)",
+        "corestriction": "fun.free.module_r.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.free.module_r, fully faithful and replete into cat.modules_r (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
+      }
+    },
+    {
+      "id": "fun.tensor_algebra",
+      "source": "cat.modules_r",
+      "target": "cat.unital_algebras",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "tensor algebra functor (addendum Def 10.1); left adjoint to the underlying module of an associative unital R-algebra",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "tensor algebras",
+        "corestriction": "fun.tensor_algebra.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.tensor_algebra, fully faithful and replete into cat.unital_algebras (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
+      }
+    },
+    {
+      "id": "fun.free.associative_algebra_set",
+      "source": "cat.sets",
+      "target": "cat.unital_algebras",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "free associative R-algebra on a set, X |-> R<X> (addendum Def 10.2)",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "free associative R-algebras",
+        "corestriction": "fun.free.associative_algebra_set.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.free.associative_algebra_set, fully faithful and replete into cat.unital_algebras (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
+      }
+    },
+    {
+      "id": "fun.symmetric_algebra",
+      "source": "cat.modules_r",
+      "target": "cat.commutative_algebras",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "symmetric algebra functor (addendum Def 10.3); left adjoint to the underlying module of a commutative R-algebra",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "symmetric algebras",
+        "corestriction": "fun.symmetric_algebra.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.symmetric_algebra, fully faithful and replete into cat.commutative_algebras (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
+      }
+    },
+    {
+      "id": "fun.free.commutative_algebra_set",
+      "source": "cat.sets",
+      "target": "cat.commutative_algebras",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "free commutative R-algebra on a set, X |-> R[X] (addendum Def 10.3)",
+      "adjunction": {
+        "existence_only": true,
+        "notes": "Thm 1.5: RAdj/LAdj is empty or contractible, so having an adjoint is property-like and may be recorded by truncation. No unit or counit is used here yet; Conv 1.7 requires a named chosen lift before one is."
+      },
+      "essential_image_factorization": {
+        "objects": "free commutative R-algebras",
+        "corestriction": "fun.free.commutative_algebra_set.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.free.commutative_algebra_set, fully faithful and replete into cat.commutative_algebras (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
+      }
+    },
+    {
+      "id": "fun.monoid_algebra",
+      "source": "cat.monoids",
+      "target": "cat.bialgebras_r",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "monoid algebra functor R[-] (addendum Def 13.1); left adjoint to the group-like-elements functor (Thm 13.5), unit eta_M : M -> G(R[M]), m |-> [m] (Prop 14.1)",
+      "adjunction": {
+        "adjunction_id": "adj.monoid_algebra",
+        "unit": "eta_M : M -> G(R[M]), m |-> [m]",
+        "counit": "epsilon_B : R[G(B)] -> B, [g] |-> g, the unique bialgebra morphism extending the inclusion of group-like elements (Thm 7.1)",
+        "recognition": "Cor 7.4: over a base with Spec R connected the left adjoint is fully faithful (Thm 7.3), so its essential image is CORREFLECTIVE and the COUNIT recognizes it -- an instance of Prop 5.1. The connected-base hypothesis proves full faithfulness; it is not part of the definition of the essential image."
+      },
+      "essential_image_factorization": {
+        "objects": "coreflective over a connected base (Cor 7.4)",
+        "corestriction": "fun.monoid_algebra.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.monoid_algebra, fully faithful and replete into cat.bialgebras_r (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
+      }
+    },
+    {
+      "id": "fun.group_algebra",
+      "source": "cat.groups",
+      "target": "cat.hopf_algebras_r",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "group algebra functor R[-] (addendum Def 13.2); left adjoint to group-like elements of a Hopf algebra (Cor 13.6)",
+      "adjunction": {
+        "adjunction_id": "adj.group_algebra",
+        "unit": "eta_G : G -> Grouplike(R[G])",
+        "counit": "epsilon_H : R[Grouplike(H)] -> H",
+        "recognition": "as for the monoid algebra, under the same connected-base hypothesis (Cor 7.4)"
+      },
+      "essential_image_factorization": {
+        "objects": "coreflective over a connected base (Cor 7.4)",
+        "corestriction": "fun.group_algebra.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.group_algebra, fully faithful and replete into cat.hopf_algebras_r (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
+      }
+    },
+    {
+      "id": "fun.grouplike_elements",
+      "source": "cat.bialgebras_r",
+      "target": "cat.monoids",
+      "kind": "right_adjoint",
+      "preferred": true,
+      "provenance": "group-like elements G(B) = {b : Delta b = b (x) b, epsilon b = 1} (addendum Def 13.3); right adjoint to the monoid algebra functor",
+      "adjunction": {
+        "adjunction_id": "adj.monoid_algebra",
+        "role": "right adjoint of the chosen lift; see the left adjoint's record"
+      }
+    },
+    {
+      "id": "fun.grouplike_elements_hopf",
+      "source": "cat.hopf_algebras_r",
+      "target": "cat.groups",
+      "kind": "right_adjoint",
+      "preferred": true,
+      "provenance": "group-like elements of a Hopf algebra; the antipode supplies inverses so G(H) is a group (addendum Def 13.3)",
+      "adjunction": {
+        "adjunction_id": "adj.group_algebra",
+        "role": "right adjoint of the chosen lift; see the left adjoint's record"
+      }
+    },
+    {
+      "id": "arr.proj.biact__modules",
+      "source": "cat.biact_r_s",
+      "target": "cat.modules_r",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "projection of the Def 85.2 pullback; forgets the right S-action"
+    },
+    {
+      "id": "arr.proj.biact__rightmodules",
+      "source": "cat.biact_r_s",
+      "target": "cat.right_modules_r",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "projection of the Def 85.2 pullback; forgets the left R-action"
+    },
+    {
+      "id": "arr.clf.biact.commutation",
+      "source": "cat.bimodules_r_s",
+      "target": "cat.biact_r_s",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_Commutation : BiAct(R,S).Commutation -> BiAct(R,S) (Def 85.3)"
+    },
+    {
+      "id": "arr.frame.basisframe__genframe",
+      "source": "cat.basisframe_n_r",
+      "target": "cat.genframe_n_r",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "an isomorphism is in particular a surjection (Def 13.5)"
+    },
+    {
+      "id": "arr.frame.basisframe__coord",
+      "source": "cat.basisframe_n_r",
+      "target": "cat.coord_n_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "Foundations Def 13.6: faithful and identity on objects, widening strictly frame-preserving maps to arbitrary linear maps. The two categories are NOT identified -- Rmk 9.3 makes them case 2 and case 1, and case 2 is equivalent to Set."
+    },
+    {
+      "id": "arr.frame.genframe__modules",
+      "source": "cat.genframe_n_r",
+      "target": "cat.modules_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "comma-category projection (M,s) |-> M (Def 13.5)"
+    },
+    {
+      "id": "arr.frame.coord__modules",
+      "source": "cat.coord_n_r",
+      "target": "cat.modules_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "forget the chosen basis (Def 13.6); freeness is the truncation of the existence of such a lift (Rmk 13.7)"
+    },
+    {
+      "id": "fun.gram_n",
+      "source": "cat.symmat_n_r",
+      "target": "cat.bil_coord_n_r",
+      "kind": "construction",
+      "preferred": true,
+      "provenance": "Gram constructor (Foundations Def 21.3): G |-> (R^n, its standard basis, b_G(x,y) = x^T G y). Half of a named EQUIVALENCE with the inverse G_ij = b(e_i,e_j); after restricting to SymMat_n(R)^nd it lands in coordinatized lattices. It constructs coordinatized forms in general and is not the ontology of the named root lattices (Rmk 21.4).",
+      "essential_image_factorization": {
+        "objects": "coordinatized forms of rank n arising from a symmetric matrix",
+        "corestriction": "fun.gram_n.ess, essentially surjective onto the image (Prop 2.2)",
+        "inclusion": "j.fun.gram_n, fully faithful and replete into cat.bil_coord_n_r (Prop 2.2)",
+        "presentation_fiber": "Pres_F(Y) = hofib_Y(p_F); membership in the image is its propositional truncation (Prop 3.2)",
+        "morphism_convention_of_codomain": "as recorded on the codomain entity; Conv 13.2 makes this part of the statement, and Rmk 4.2 shows a faithful non-full change of ambient alters the image category",
+        "not_identified_with_source": "Conv 13.1 / Rmk 3.4: the source, the essential image and a presentation fibre answer different questions. Equality with the source needs full faithfulness (Prop 2.2)."
+      }
+    },
+    {
+      "id": "arr.proj.bil_coord__int_bil",
+      "source": "cat.bil_coord_n_r",
+      "target": "cat.int_bil_r",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "forget the coordinates (Def 21.3)"
+    },
+    {
+      "id": "arr.proj.bil_coord__coord",
+      "source": "cat.bil_coord_n_r",
+      "target": "cat.coord_n_r",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "forget the form (Def 21.3)"
+    },
+    {
+      "id": "arr.root.embedded__rootbasis_gamma",
+      "source": "cat.embeddedrootrealization",
+      "target": "cat.rootbasis_gamma",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "discard the ambient embedding (Def 68.5)"
+    },
+    {
+      "id": "arr.root.rootbasis_gamma__rootbasis_s",
+      "source": "cat.rootbasis_gamma",
+      "target": "cat.rootbasis_s",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "discard the type certificate (Def 68.5)"
+    },
+    {
+      "id": "arr.root.rootbasis_s__rootframe_s",
+      "source": "cat.rootbasis_s",
+      "target": "cat.rootframe_s",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "the locus where u_rho is an isomorphism (Def 68.5)"
+    },
+    {
+      "id": "arr.root.rootframe_s__lat",
+      "source": "cat.rootframe_s",
+      "target": "cat.lat_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "discard the root basis; the Grothendieck projection of Def 68.5. A named ADE lattice is the image here of a chosen point upstairs (Construction 68.6), and Thm 68.7 makes that image independent of the standard realization chosen."
+    },
+    {
+      "id": "arr.clf.catobject_preadditive",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_Preadditive : CatObject.Preadditive -> CatObject (Def 14.1)",
+      "source": "clf.catobject_preadditive",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.clf.catobject_additive",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_Additive : CatObject.Additive -> CatObject (Def 14.1)",
+      "source": "clf.catobject_additive",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "arr.clf.catobject_abelian",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_Abelian : CatObject.Abelian -> CatObject (Def 14.1)",
+      "source": "clf.catobject_abelian",
+      "target": "cat.cat_object"
+    },
+    {
+      "id": "fun.sheafification",
+      "source": "cat.presheaves",
+      "target": "cat.sheaves",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "sheafification a_J, a LEFT EXACT left adjoint to the inclusion (add-II Thm 8.1)",
+      "adjunction": {
+        "adjunction_id": "adj.sheafification",
+        "unit": "F -> i_J a_J F, the localization morphism",
+        "counit": "a_J i_J -> id_Sh, an equivalence",
+        "recognition": "REFLECTIVE (Conv 14.3): the inclusion is the fully faithful RIGHT adjoint, so the UNIT recognizes -- a presheaf is a sheaf iff its unit is an equivalence (Prop 5.2, Def 6.1). Dual to the monoid-algebra case, which is coreflective and recognized by its counit; Conv 14.3 forbids one unqualified phrase for both.",
+        "localization_class": "the J-local equivalences, f with a_J(f) an equivalence (Def 8.2); sheafification exhibits Sh as the localization of PSh at that class"
+      },
+      "essential_image_factorization": {
+        "objects": "the J-local presheaves, i.e. the sheaves",
+        "note": "Cor 8.3: a colimit of sheaves is the reflector applied to the presheaf colimit -- composition with the reflector, not a separate colimit construction (Prop 6.4)."
+      }
+    },
+    {
+      "id": "fun.stackification",
+      "source": "cat.prestacks",
+      "target": "cat.stacks",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "stackification a_J^st (add-II Thm 9.1); the same reflective-localization construction as sheafification applied to space-valued presheaves",
+      "adjunction": {
+        "adjunction_id": "adj.stackification",
+        "unit": "P -> its stackification; a prestack is already a stack precisely when this is an equivalence",
+        "counit": "an equivalence on stacks",
+        "recognition": "REFLECTIVE, as for sheafification (Conv 14.3). Rmk 9.2: these are named instances of reflective localization, and must not be represented by unrelated axioms or by a bare containment claim. Stacks in groupoids come from the appropriate truncation."
+      }
+    },
+    {
+      "id": "fun.operadic_forgetful",
+      "source": "cat.alg_o_v",
+      "target": "cat.admissible_operadic_ambient",
+      "kind": "right_adjoint",
+      "preferred": true,
+      "provenance": "U_O, the operadic forgetful functor (add-II Def 11.1)",
+      "adjunction": {
+        "adjunction_id": "adj.free_operadic",
+        "role": "right adjoint of the chosen lift; see fun.free_operadic_algebra"
+      }
+    },
+    {
+      "id": "fun.free_operadic_algebra",
+      "source": "cat.admissible_operadic_ambient",
+      "target": "cat.alg_o_v",
+      "kind": "left_adjoint",
+      "preferred": true,
+      "provenance": "Free_O, left adjoint to the operadic forgetful functor (add-II Thm 11.2)",
+      "adjunction": {
+        "adjunction_id": "adj.free_operadic",
+        "unit": "eta_X : X -> U_O Free_O(X)",
+        "counit": "epsilon_A : Free_O(U_O A) -> A",
+        "recognition": "NONE claimed. Rmk 5.3 applies as to any free-forgetful adjunction: the left adjoint need not be fully faithful, so the counit does not recognize free algebras. A chosen free presentation of A is a point of Pres_{Free_O}(A) (Thm 11.2)."
+      },
+      "essential_image_factorization": {
+        "objects": "the free O-algebras",
+        "not_identified_with_source": "Rmk 11.3: monadicity of U_O identifies Alg_O(V) with algebras for the monad U_O Free_O; it does not identify all O-algebras with the essential image of Free_O.",
+        "note": "Rmk 11.4: tensor-power and coinvariants formulae for the underlying object are comparison or computation theorems under stated colimit hypotheses, never the definition of the free-algebra functor."
+      }
+    },
+    {
+      "id": "arr.adj.ev_f",
+      "source": "ctor.adj",
+      "target": "ctor.arr",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "ev_F : Adj(K) -> Arr(K), evaluation on the generating left adjoint (add-II Def 1.2)"
+    },
+    {
+      "id": "arr.adj.ev_u",
+      "source": "ctor.adj",
+      "target": "ctor.arr",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "ev_U : Adj(K) -> Arr(K), evaluation on the generating right adjoint (add-II Def 1.2)"
+    },
+    {
+      "id": "arr.pres.projection",
+      "source": "ctor.pres",
+      "target": "ctor.arr",
+      "kind": "pullback_projection",
+      "preferred": true,
+      "provenance": "the Arr(D^~) leg of the Def 3.1 comma pullback; p_F is evaluation at the target, and its fibres are the presentation spaces"
+    },
+    {
+      "id": "arr.clf.int_bil_r.radical_free",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_RadicalFree : ∫Bil.RadicalFree -> ∫Bil (Def 18.3 / Rmk 18.4)",
+      "source": "clf.int_bil_r.radical_free.domain",
+      "target": "cat.int_bil_r"
+    },
+    {
+      "id": "arr.clf.int_bil_r.perfect",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_Perfect : ∫Bil.Perfect -> ∫Bil (Def 18.3 / Rmk 18.4)",
+      "source": "clf.int_bil_r.perfect.domain",
+      "target": "cat.int_bil_r"
+    },
+    {
+      "id": "arr.clf.int_bil_r.generically_nondegenerate",
+      "kind": "classifier_leg",
+      "preferred": true,
+      "provenance": "iota_GenericallyNondegenerate : ∫Bil.GenericallyNondegenerate -> ∫Bil (Def 18.3 / Rmk 18.4)",
+      "source": "clf.int_bil_r.generically_nondegenerate.domain",
+      "target": "cat.int_bil_r"
+    },
+    {
+      "id": "arr.overlattices__lat",
+      "source": "cat.overlattices_l",
+      "target": "cat.lat_r",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "the target of the inclusion, L' (Def 27.1); the ambient L is the source of the arrow"
+    },
+    {
+      "id": "arr.isotropicsubgroups__discquad",
+      "source": "cat.isotropic_subgroups",
+      "target": "cat.discquad",
+      "kind": "forgetful",
+      "preferred": true,
+      "provenance": "the ambient discriminant form (A,q) (Def 27.2)"
+    },
+    {
+      "id": "arr.alias.moduli_problems",
+      "source": "cat.moduli_problems",
+      "target": "cat.prestacks",
+      "kind": "equivalence",
+      "preferred": true,
+      "provenance": "a moduli problem is a prestack (Def 35.1)"
+    },
+    {
+      "id": "arr.fine_moduli__moduli",
+      "source": "cat.fine_moduli",
+      "target": "cat.moduli_problems",
+      "kind": "full_inclusion",
+      "preferred": true,
+      "provenance": "the representable locus (Def 35.2)"
+    }
+  ],
+  "kind": "normalized_semantic_seed.arrows",
+  "schema": "SCHEMA"
+}

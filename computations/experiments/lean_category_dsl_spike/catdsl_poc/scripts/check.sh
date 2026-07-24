@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Verify the project from a clean checkout.
+# Verify CatDSL from a clean checkout.
 #
-# Requires elan (AUR `elan-lean`), NOT a distro `lean`: Mathlib's cache is
-# keyed to the exact official toolchain build, so any other Lean silently
-# recompiles all ~7900 modules. elan reads `lean-toolchain` and fetches the
-# right one automatically.
+# Lake / mathlib live at the repository root (not this directory).
+# Requires elan (AUR `elan-lean`), NOT a distro `lean`.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
 
 lake exe cache get      # if this is honoured, no Mathlib module is compiled
 lake build CatDSL       # the library

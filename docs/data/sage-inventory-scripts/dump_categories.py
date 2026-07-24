@@ -10,6 +10,7 @@ Dumps, from the running Sage kernel (no hand lists):
 
 Run:  "$SAGE_BIN" -python dump_categories.py out.json
 """
+
 import json
 import sys
 
@@ -52,7 +53,7 @@ out["namespace"] = names
 
 out["all_axioms"] = sorted(all_axioms)
 
-cons = {}
+cons: dict[str, list[str]] = {}
 stack = [FunctorialConstructionCategory]
 seen = set()
 while stack:
@@ -68,7 +69,7 @@ while stack:
 out["constructions"] = {k: sorted(v) for k, v in sorted(cons.items())}
 
 edges = set()
-todo = [Modules(ZZ)]
+todo: list[Category] = [Modules(ZZ)]
 visited = set()
 while todo:
     c = todo.pop()
@@ -83,9 +84,14 @@ out["modules_ZZ_edges"] = sorted(edges)
 
 json.dump(out, open(sys.argv[1], "w"), indent=1)
 print(
-    "categories:", len(out["categories"]),
-    "| namespace names:", len(names),
-    "| axioms:", len(out["all_axioms"]),
-    "| construction kinds:", len(cons),
-    "| specimen edges:", len(edges),
+    "categories:",
+    len(out["categories"]),
+    "| namespace names:",
+    len(names),
+    "| axioms:",
+    len(out["all_axioms"]),
+    "| construction kinds:",
+    len(cons),
+    "| specimen edges:",
+    len(edges),
 )

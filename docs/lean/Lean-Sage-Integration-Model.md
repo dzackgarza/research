@@ -16,7 +16,8 @@ Only anchors into Mathlib and the literature can fail against the world — the 
 
 ## The A/B/C model — the DSL is a routing layer, never a definitional layer {#sec-abc-model}
 
-The three mathematical registers a Sage category falls into — named-Mathlib-present, base-and-axioms-present (an iterated pullback), cross-tower-absent — are @sec-conversion-consequences in the [Mathematical Framework](../framework/Mathematical-Framework.md); they are what the routing register below discharges. For every notion a contribution needs:
+The three mathematical registers a Sage category falls into — named-Mathlib-present, base-and-axioms-present (an iterated pullback), cross-tower-absent — are @sec-conversion-consequences in the [Mathematical Framework](../framework/Mathematical-Framework.md); they are what the routing register below discharges.
+For every notion a contribution needs:
 
 - **(A) Mathlib provides it** → wrap/decorate slightly; the DSL holds only the declaration of how the object sits in its conservative functor graph (distinguished routes, realization owners, conformance).
   The default and overwhelming majority (≈85–90% of surveyed rows).

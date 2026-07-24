@@ -1,0 +1,1662 @@
+{
+  "kind": "normalized_semantic_seed.classifiers",
+  "schema": "SCHEMA",
+  "classifiers": [
+    {
+      "id": "clf.sets.finite",
+      "name": "Finite",
+      "host_id": "cat.sets",
+      "domain_id": "clf.sets.finite.domain",
+      "leg_arrow_id": "arr.clf.sets.finite",
+      "transport": null,
+      "notes": "Character (property vs structure) computed from the leg, not stored"
+    },
+    {
+      "id": "clf.sets.graded",
+      "name": "Graded",
+      "host_id": "cat.sets",
+      "domain_id": "clf.sets.graded.domain",
+      "leg_arrow_id": "arr.clf.sets.graded",
+      "transport": null,
+      "notes": "Chosen grading data; forgetful generally not full"
+    },
+    {
+      "id": "clf.magmas.associative",
+      "name": "Associative",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.magmas.associative.domain",
+      "leg_arrow_id": "arr.clf.magmas.associative",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.magmas.unital",
+      "name": "Unital",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.magmas.unital.domain",
+      "leg_arrow_id": "arr.clf.magmas.unital",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.magmas.inverse",
+      "name": "Inverse",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.magmas.inverse.domain",
+      "leg_arrow_id": "arr.clf.magmas.inverse",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.magmas.commutative",
+      "name": "Commutative",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.magmas.commutative.domain",
+      "leg_arrow_id": "arr.clf.magmas.commutative",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.rings.domain",
+      "name": "Domain",
+      "host_id": "cat.rings",
+      "domain_id": "clf.rings.domain.domain",
+      "leg_arrow_id": "arr.clf.rings.domain",
+      "transport": null,
+      "notes": "Domain ≠ IntegralDomain; need not be commutative"
+    },
+    {
+      "id": "clf.modules.with_basis",
+      "name": "WithBasis",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.modules.with_basis.domain",
+      "leg_arrow_id": "arr.clf.modules.with_basis",
+      "transport": null,
+      "notes": "Morphisms are arbitrary R-linear maps (addendum Rmk 9.3 case 1): the chosen basis is structure on objects and imposes no condition on maps. 'Modules with basis' never determines its morphisms, and the two conventions give different categories -- case 2, basis-preserving maps, is equivalent to Set. Sage is case 1, checked: in CombinatorialFreeModule(QQ,['a','b']) the map a |-> 2*W['x'], b |-> 0 sends basis vectors to non-basis vectors and is a morphism of the category."
+    },
+    {
+      "id": "clf.modules.over_field",
+      "name": "OverField",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.modules.over_field.domain",
+      "leg_arrow_id": "arr.clf.modules.over_field",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.algebras.associative",
+      "name": "Associative",
+      "host_id": "cat.algebras_r",
+      "domain_id": "clf.algebras.associative.domain",
+      "leg_arrow_id": "arr.clf.algebras.associative",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.algebras.unital",
+      "name": "Unital",
+      "host_id": "cat.algebras_r",
+      "domain_id": "clf.algebras.unital.domain",
+      "leg_arrow_id": "arr.clf.algebras.unital",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.algebras.commutative",
+      "name": "Commutative",
+      "host_id": "cat.algebras_r",
+      "domain_id": "clf.algebras.commutative.domain",
+      "leg_arrow_id": "arr.clf.algebras.commutative",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.comm_rings.gcd_domain",
+      "name": "GCDDomain",
+      "host_id": "cat.commutative_rings",
+      "domain_id": "clf.comm_rings.gcd_domain.domain",
+      "leg_arrow_id": "arr.clf.comm_rings.gcd_domain",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.comm_rings.ufd",
+      "name": "UFD",
+      "host_id": "cat.commutative_rings",
+      "domain_id": "clf.comm_rings.ufd.domain",
+      "leg_arrow_id": "arr.clf.comm_rings.ufd",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.comm_rings.pid",
+      "name": "PID",
+      "host_id": "cat.commutative_rings",
+      "domain_id": "clf.comm_rings.pid.domain",
+      "leg_arrow_id": "arr.clf.comm_rings.pid",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.comm_rings.euclidean",
+      "name": "Euclidean",
+      "host_id": "cat.commutative_rings",
+      "domain_id": "clf.comm_rings.euclidean.domain",
+      "leg_arrow_id": "arr.clf.comm_rings.euclidean",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.groups.commutative",
+      "name": "Commutative",
+      "host_id": "cat.groups",
+      "domain_id": "clf.groups.commutative.domain",
+      "leg_arrow_id": "arr.clf.groups.commutative",
+      "transport": {
+        "along_functor_id": "fun.groups_to_magmas",
+        "from_classifier_id": "clf.magmas.commutative"
+      },
+      "notes": null
+    },
+    {
+      "id": "clf.algebras_r.graded",
+      "name": "Graded",
+      "host_id": "cat.algebras_r",
+      "domain_id": "cat.algebras_r.graded",
+      "leg_arrow_id": "arr.clf.algebras_r.graded",
+      "transport": {
+        "along_functor_id": "fun.algebras_to_sets",
+        "from_classifier_id": "clf.sets.graded"
+      },
+      "notes": "Same classifier transported by pullback"
+    },
+    {
+      "id": "clf.catobject_colimits",
+      "name": "Colimits",
+      "host_id": "cat.cat_object",
+      "domain_id": "clf.catobject_colimits",
+      "leg_arrow_id": "arr.clf.catobject_colimits",
+      "transport": null,
+      "notes": "Foundations Rmk 14.4; existence, not choice.",
+      "semantic_character": "property"
+    },
+    {
+      "id": "clf.catobject_coproducts",
+      "name": "Coproducts",
+      "host_id": "clf.catobject_colimits",
+      "domain_id": "clf.catobject_coproducts",
+      "leg_arrow_id": "arr.clf.catobject_coproducts",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.catobject_finite",
+      "name": "Finite",
+      "host_id": "cat.cat_object",
+      "domain_id": "clf.catobject_finite",
+      "leg_arrow_id": "arr.clf.catobject_finite",
+      "transport": null,
+      "notes": "Foundations Rmk 14.4.",
+      "semantic_character": "property"
+    },
+    {
+      "id": "clf.catobject_limits",
+      "name": "Limits",
+      "host_id": "cat.cat_object",
+      "domain_id": "clf.catobject_limits",
+      "leg_arrow_id": "arr.clf.catobject_limits",
+      "transport": null,
+      "notes": "Foundations Rmk 14.4: existence of limits is property-like. CHOSEN limits are a different, structure-like classifier with nontrivial fibres; if a consumer needs a choice it must say so.",
+      "semantic_character": "property"
+    },
+    {
+      "id": "clf.catobject_locallysmall",
+      "name": "LocallySmall",
+      "host_id": "cat.cat_object",
+      "domain_id": "clf.catobject_locallysmall",
+      "leg_arrow_id": "arr.clf.catobject_locallysmall",
+      "transport": null,
+      "notes": "Foundations Rmk 14.4.",
+      "semantic_character": "property"
+    },
+    {
+      "id": "clf.catobject_products",
+      "name": "Products",
+      "host_id": "clf.catobject_limits",
+      "domain_id": "clf.catobject_products",
+      "leg_arrow_id": "arr.clf.catobject_products",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.catobject_thin",
+      "name": "Thin",
+      "host_id": "cat.cat_object",
+      "domain_id": "clf.catobject_thin",
+      "leg_arrow_id": "arr.clf.catobject_thin",
+      "transport": null,
+      "notes": "Foundations Rmk 14.4.",
+      "semantic_character": "property"
+    },
+    {
+      "id": "clf.graphs_directed",
+      "name": "Directed",
+      "host_id": "cat.graphs",
+      "domain_id": "clf.graphs_directed",
+      "leg_arrow_id": "arr.clf.graphs_directed",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.lat_definite",
+      "name": "Definite",
+      "host_id": "cat.lat_r",
+      "domain_id": "clf.lat_definite",
+      "leg_arrow_id": "arr.clf.lat_definite",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.lat_hyperbolic",
+      "name": "Hyperbolic",
+      "host_id": "cat.lat_r",
+      "domain_id": "clf.lat_hyperbolic",
+      "leg_arrow_id": "arr.clf.lat_hyperbolic",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.lat_indefinite",
+      "name": "Indefinite",
+      "host_id": "cat.lat_r",
+      "domain_id": "clf.lat_indefinite",
+      "leg_arrow_id": "arr.clf.lat_indefinite",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.lat_negativedefinite",
+      "name": "NegativeDefinite",
+      "host_id": "cat.lat_r",
+      "domain_id": "clf.lat_negativedefinite",
+      "leg_arrow_id": "arr.clf.lat_negativedefinite",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.lat_positivedefinite",
+      "name": "PositiveDefinite",
+      "host_id": "cat.lat_r",
+      "domain_id": "clf.lat_positivedefinite",
+      "leg_arrow_id": "arr.clf.lat_positivedefinite",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.magmas_multiplicative",
+      "name": "Multiplicative",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.magmas_multiplicative",
+      "leg_arrow_id": "arr.clf.magmas_multiplicative",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.manifolds_pl",
+      "name": "PL",
+      "host_id": "cat.manifolds",
+      "domain_id": "clf.manifolds_pl",
+      "leg_arrow_id": "arr.clf.manifolds_pl",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.manifolds_smooth",
+      "name": "Smooth",
+      "host_id": "cat.manifolds",
+      "domain_id": "clf.manifolds_smooth",
+      "leg_arrow_id": "arr.clf.manifolds_smooth",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.modules_finiterank",
+      "name": "FiniteRank",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.modules_finiterank",
+      "leg_arrow_id": "arr.clf.modules_finiterank",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.modules_finitelygenerated",
+      "name": "FinitelyGenerated",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.modules_finitelygenerated",
+      "leg_arrow_id": "arr.clf.modules_finitelygenerated",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.modules_finitelypresented",
+      "name": "FinitelyPresented",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.modules_finitelypresented",
+      "leg_arrow_id": "arr.clf.modules_finitelypresented",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.modules_free",
+      "name": "Free",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.modules_free",
+      "leg_arrow_id": "arr.clf.modules_free",
+      "transport": null,
+      "notes": "Freeness is the essential image of the free R-module functor F_R (addendum Def 9.1, Cor 9.2), equivalently the propositional truncation of the existence of a chosen basis (Rmk 13.7) -- hence a property classifier, not structure. The finite restriction F_R|FinSet has the finite free modules as its image."
+    },
+    {
+      "id": "clf.modules_projective",
+      "name": "Projective",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.modules_projective",
+      "leg_arrow_id": "arr.clf.modules_projective",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.modules_torsion",
+      "name": "Torsion",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.modules_torsion",
+      "leg_arrow_id": "arr.clf.modules_torsion",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.modules_torsionfree",
+      "name": "TorsionFree",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.modules_torsionfree",
+      "leg_arrow_id": "arr.clf.modules_torsionfree",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.modules_withgenerators",
+      "name": "WithGenerators",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.modules_withgenerators",
+      "leg_arrow_id": "arr.clf.modules_withgenerators",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_affine",
+      "name": "Affine",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_affine",
+      "leg_arrow_id": "arr.clf.schemes_affine",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_finite",
+      "name": "Finite",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_finite",
+      "leg_arrow_id": "arr.clf.schemes_finite",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_finitetype",
+      "name": "FiniteType",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_finitetype",
+      "leg_arrow_id": "arr.clf.schemes_finitetype",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_flat",
+      "name": "Flat",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_flat",
+      "leg_arrow_id": "arr.clf.schemes_flat",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_integral",
+      "name": "Integral",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_integral",
+      "leg_arrow_id": "arr.clf.schemes_integral",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_locallyfinitepresentation",
+      "name": "LocallyFinitePresentation",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_locallyfinitepresentation",
+      "leg_arrow_id": "arr.clf.schemes_locallyfinitepresentation",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_projective",
+      "name": "Projective",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_projective",
+      "leg_arrow_id": "arr.clf.schemes_projective",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_proper",
+      "name": "Proper",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_proper",
+      "leg_arrow_id": "arr.clf.schemes_proper",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_relativedimension",
+      "name": "RelativeDimension(n)",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_relativedimension",
+      "leg_arrow_id": "arr.clf.schemes_relativedimension",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_separated",
+      "name": "Separated",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_separated",
+      "leg_arrow_id": "arr.clf.schemes_separated",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_smooth",
+      "name": "Smooth",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_smooth",
+      "leg_arrow_id": "arr.clf.schemes_smooth",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_unramified",
+      "name": "Unramified",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_unramified",
+      "leg_arrow_id": "arr.clf.schemes_unramified",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_etale",
+      "name": "Étale",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_etale",
+      "leg_arrow_id": "arr.clf.schemes_etale",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.sets_countable",
+      "name": "Countable",
+      "host_id": "cat.sets",
+      "domain_id": "clf.sets_countable",
+      "leg_arrow_id": "arr.clf.sets_countable",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.sets_infinite",
+      "name": "Infinite",
+      "host_id": "cat.sets",
+      "domain_id": "clf.sets_infinite",
+      "leg_arrow_id": "arr.clf.sets_infinite",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.sets_uncountable",
+      "name": "Uncountable",
+      "host_id": "cat.sets",
+      "domain_id": "clf.sets_uncountable",
+      "leg_arrow_id": "arr.clf.sets_uncountable",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.ax_associative",
+      "name": "Associative",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.ax_associative",
+      "leg_arrow_id": "arr.clf.ax_associative",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.ax_commutative",
+      "name": "Commutative",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.ax_commutative",
+      "leg_arrow_id": "arr.clf.ax_commutative",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.ax_differential",
+      "name": "Differential",
+      "host_id": "cat.algebras_r",
+      "domain_id": "clf.ax_differential",
+      "leg_arrow_id": "arr.clf.ax_differential",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.ax_domain",
+      "name": "Domain",
+      "host_id": "cat.rings",
+      "domain_id": "clf.ax_domain",
+      "leg_arrow_id": "arr.clf.ax_domain",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.ax_euclidean",
+      "name": "Euclidean",
+      "host_id": "cat.integral_domains",
+      "domain_id": "clf.ax_euclidean",
+      "leg_arrow_id": "arr.clf.ax_euclidean",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.ax_finitelygenerated",
+      "name": "FinitelyGenerated",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.ax_finitelygenerated",
+      "leg_arrow_id": "arr.clf.ax_finitelygenerated",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.ax_gcddomain",
+      "name": "GCDDomain",
+      "host_id": "cat.integral_domains",
+      "domain_id": "clf.ax_gcddomain",
+      "leg_arrow_id": "arr.clf.ax_gcddomain",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.ax_integraldomain",
+      "name": "IntegralDomain",
+      "host_id": "cat.domains",
+      "domain_id": "clf.ax_integraldomain",
+      "leg_arrow_id": "arr.clf.ax_integraldomain",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.ax_inverse",
+      "name": "Inverse",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.ax_inverse",
+      "leg_arrow_id": "arr.clf.ax_inverse",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.ax_monoidal",
+      "name": "Monoidal",
+      "host_id": "cat.cat_object",
+      "domain_id": "clf.ax_monoidal",
+      "leg_arrow_id": "arr.clf.ax_monoidal",
+      "transport": null,
+      "notes": "Foundations Def 14.2: MonCat -> Cat. The fibre over a fixed category can contain SEVERAL inequivalent monoidal structures, so a consumer must name the chosen lift -- (x)_R or (+) on R-Mod are different lifts of the same category. Unnamed structure-reference is the standing lift-ambiguity hazard.",
+      "semantic_character": "chosen structure"
+    },
+    {
+      "id": "clf.ax_noetherian",
+      "name": "Noetherian",
+      "host_id": "cat.commutative_rings",
+      "domain_id": "clf.ax_noetherian",
+      "leg_arrow_id": "arr.clf.ax_noetherian",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.ax_pid",
+      "name": "PID",
+      "host_id": "cat.integral_domains",
+      "domain_id": "clf.ax_pid",
+      "leg_arrow_id": "arr.clf.ax_pid",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.ax_ufd",
+      "name": "UFD",
+      "host_id": "cat.integral_domains",
+      "domain_id": "clf.ax_ufd",
+      "leg_arrow_id": "arr.clf.ax_ufd",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.ax_unital",
+      "name": "Unital",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.ax_unital",
+      "leg_arrow_id": "arr.clf.ax_unital",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.int_bil_alternating",
+      "name": "Alternating",
+      "host_id": "clf.int_bil_skewsymmetric",
+      "domain_id": "clf.int_bil_alternating",
+      "leg_arrow_id": "arr.clf.int_bil_alternating",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.int_bil_skewsymmetric",
+      "name": "SkewSymmetric",
+      "host_id": "cat.int_bil_r",
+      "domain_id": "clf.int_bil_skewsymmetric",
+      "leg_arrow_id": "arr.clf.int_bil_skewsymmetric",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.int_bil_symmetric",
+      "name": "Symmetric",
+      "host_id": "cat.int_bil_r",
+      "domain_id": "clf.int_bil_symmetric",
+      "leg_arrow_id": "arr.clf.int_bil_symmetric",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.int_hom_even",
+      "name": "Even",
+      "host_id": "cat.int_hom_r",
+      "domain_id": "clf.int_hom_even",
+      "leg_arrow_id": "arr.clf.int_hom_even",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.int_hom_nondegenerate",
+      "name": "Nondegenerate",
+      "host_id": "cat.int_hom_r",
+      "domain_id": "clf.int_hom_nondegenerate",
+      "leg_arrow_id": "arr.clf.int_hom_nondegenerate",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.int_hom_odd",
+      "name": "Odd",
+      "host_id": "cat.int_hom_r",
+      "domain_id": "clf.int_hom_odd",
+      "leg_arrow_id": "arr.clf.int_hom_odd",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.int_hom_unimodular",
+      "name": "Unimodular",
+      "host_id": "cat.int_hom_r",
+      "domain_id": "clf.int_hom_unimodular",
+      "leg_arrow_id": "arr.clf.int_hom_unimodular",
+      "transport": null,
+      "notes": "Imported from DOT axiom attachment"
+    },
+    {
+      "id": "clf.schemes_s.relativedimension",
+      "name": "RelativeDimension(1)",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes_s.relativedimension.domain",
+      "leg_arrow_id": "arr.clf.schemes_s_relativedimension",
+      "transport": null,
+      "notes": "refined from named-join path"
+    },
+    {
+      "id": "clf.unital_algebras.differential",
+      "name": "Differential",
+      "host_id": "cat.unital_algebras",
+      "domain_id": "clf.unital_algebras.differential.domain",
+      "leg_arrow_id": "arr.clf.unital_algebras_differential",
+      "transport": null,
+      "notes": "refined from named-join path"
+    },
+    {
+      "id": "clf.int_bil_r.nondegenerate",
+      "name": "Nondegenerate",
+      "host_id": "cat.int_bil_r",
+      "domain_id": "clf.int_bil_r.nondegenerate.domain",
+      "leg_arrow_id": "arr.clf.int_bil_r_nondegenerate",
+      "transport": null,
+      "notes": "AMBIGUOUS BY ITSELF (Rmk 18.4). Retained only for rows that have not yet been assigned a precise condition; Lat_R now uses GenericallyNondegenerate and DiscBil uses Perfect. Any new use must name which of trivial radical, injective adjoint, perfect pairing, or generic nondegeneracy it means."
+    },
+    {
+      "id": "clf.int_bil_r.finite",
+      "name": "Finite",
+      "host_id": "cat.int_bil_r",
+      "domain_id": "clf.int_bil_r.finite.domain",
+      "leg_arrow_id": "arr.clf.int_bil_r_finite",
+      "transport": null,
+      "notes": "refined from named-join path"
+    },
+    {
+      "id": "clf.int_quad_r.nondegenerate",
+      "name": "Nondegenerate",
+      "host_id": "cat.int_quad_r",
+      "domain_id": "clf.int_quad_r.nondegenerate.domain",
+      "leg_arrow_id": "arr.clf.int_quad_r_nondegenerate",
+      "transport": null,
+      "notes": "refined from named-join path"
+    },
+    {
+      "id": "clf.semigroups.unital",
+      "name": "Unital",
+      "host_id": "cat.semigroups",
+      "domain_id": "clf.semigroups.unital.domain",
+      "leg_arrow_id": "arr.clf.semigroups_unital",
+      "transport": null,
+      "notes": "refined from named-join path"
+    },
+    {
+      "id": "clf.monoids.inverse",
+      "name": "Inverse",
+      "host_id": "cat.monoids",
+      "domain_id": "clf.monoids.inverse.domain",
+      "leg_arrow_id": "arr.clf.monoids_inverse",
+      "transport": null,
+      "notes": "refined from named-join path"
+    },
+    {
+      "id": "clf.groups.finitelygenerated",
+      "name": "FinitelyGenerated",
+      "host_id": "cat.groups",
+      "domain_id": "clf.groups.finitelygenerated.domain",
+      "leg_arrow_id": "arr.clf.groups_finitelygenerated",
+      "transport": null,
+      "notes": "refined from named-join path"
+    },
+    {
+      "id": "clf.rings.commutative",
+      "name": "Commutative",
+      "host_id": "cat.rings",
+      "domain_id": "clf.rings.commutative.domain",
+      "leg_arrow_id": "arr.clf.rings_commutative",
+      "transport": null,
+      "notes": "refined from named-join path"
+    },
+    {
+      "id": "clf.vector_spaces_k.withbasis",
+      "name": "WithBasis",
+      "host_id": "cat.vector_spaces_k",
+      "domain_id": "clf.vector_spaces_k.withbasis.domain",
+      "leg_arrow_id": "arr.clf.vector_spaces_k_withbasis",
+      "transport": null,
+      "notes": "refined from named-join path | Morphisms are arbitrary R-linear maps (addendum Rmk 9.3 case 1): the chosen basis is structure on objects and imposes no condition on maps. 'Modules with basis' never determines its morphisms, and the two conventions give different categories -- case 2, basis-preserving maps, is equivalent to Set. Sage is case 1, checked: in CombinatorialFreeModule(QQ,['a','b']) the map a |-> 2*W['x'], b |-> 0 sends basis vectors to non-basis vectors and is a morphism of the category."
+    },
+    {
+      "id": "clf.schemes.relative_dimension_1",
+      "name": "RelativeDimension(1)",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes.relative_dimension_1.domain",
+      "leg_arrow_id": "arr.clf.schemes.relative_dimension_1",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.schemes.relative_dimension_2",
+      "name": "RelativeDimension(2)",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.schemes.relative_dimension_2.domain",
+      "leg_arrow_id": "arr.clf.schemes.relative_dimension_2",
+      "transport": null,
+      "notes": null
+    },
+    {
+      "id": "clf.magmas.additive",
+      "name": "Additive",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.magmas.additive.domain",
+      "leg_arrow_id": "arr.clf.magmas.additive",
+      "transport": null,
+      "notes": "Magmas.Additive role/route; named join cat.additive_magmas"
+    },
+    {
+      "id": "clf.abelianvariety",
+      "name": "AbelianVariety",
+      "host_id": "cat.schemes_s",
+      "domain_id": "clf.abelianvariety.domain",
+      "leg_arrow_id": "arr.clf.abelianvariety",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.additive",
+      "name": "Additive",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.additive.domain",
+      "leg_arrow_id": "arr.clf.additive",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.affine",
+      "name": "Affine",
+      "host_id": "cat.weylgroups",
+      "domain_id": "clf.affine.domain",
+      "leg_arrow_id": "arr.clf.affine",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.aperiodic",
+      "name": "Aperiodic",
+      "host_id": "cat.semigroups",
+      "domain_id": "clf.aperiodic.domain",
+      "leg_arrow_id": "arr.clf.aperiodic",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.associative",
+      "name": "Associative",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.associative.domain",
+      "leg_arrow_id": "arr.clf.associative",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.classical",
+      "name": "Classical",
+      "host_id": "cat.crystals",
+      "domain_id": "clf.classical.domain",
+      "leg_arrow_id": "arr.clf.classical",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.commutative",
+      "name": "Commutative",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.commutative.domain",
+      "leg_arrow_id": "arr.clf.commutative",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.compatiblepartialorder",
+      "name": "CompatiblePartialOrder",
+      "host_id": "cat.sets",
+      "domain_id": "clf.compatiblepartialorder.domain",
+      "leg_arrow_id": "arr.clf.compatiblepartialorder",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.complete",
+      "name": "Complete",
+      "host_id": "cat.metricspaces",
+      "domain_id": "clf.complete.domain",
+      "leg_arrow_id": "arr.clf.complete",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.complexanalytic",
+      "name": "ComplexAnalytic",
+      "host_id": "cat.manifolds",
+      "domain_id": "clf.complexanalytic.domain",
+      "leg_arrow_id": "arr.clf.complexanalytic",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.complexreflection",
+      "name": "ComplexReflection",
+      "host_id": "cat.groupswithsimplereflections",
+      "domain_id": "clf.complexreflection.domain",
+      "leg_arrow_id": "arr.clf.complexreflection",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.coxeter",
+      "name": "Coxeter",
+      "host_id": "cat.generalizedcoxetergroups",
+      "domain_id": "clf.coxeter.domain",
+      "leg_arrow_id": "arr.clf.coxeter",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.cwstructure",
+      "name": "CWStructure",
+      "host_id": "cat.sets",
+      "domain_id": "clf.cwstructure.domain",
+      "leg_arrow_id": "arr.clf.cwstructure",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.dedekind",
+      "name": "Dedekind",
+      "host_id": "cat.integraldomains",
+      "domain_id": "clf.dedekind.domain",
+      "leg_arrow_id": "arr.clf.dedekind",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.discretevaluation",
+      "name": "DiscreteValuation",
+      "host_id": "cat.fields",
+      "domain_id": "clf.discretevaluation.domain",
+      "leg_arrow_id": "arr.clf.discretevaluation",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.division",
+      "name": "Division",
+      "host_id": "cat.rings",
+      "domain_id": "clf.division.domain",
+      "leg_arrow_id": "arr.clf.division",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.enumerated",
+      "name": "Enumerated",
+      "host_id": "cat.sets",
+      "domain_id": "clf.enumerated.domain",
+      "leg_arrow_id": "arr.clf.enumerated",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.euclidean",
+      "name": "Euclidean",
+      "host_id": "cat.integraldomains",
+      "domain_id": "clf.euclidean.domain",
+      "leg_arrow_id": "arr.clf.euclidean",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.faithfulpermutationaction",
+      "name": "FaithfulPermutationAction",
+      "host_id": "cat.groups",
+      "domain_id": "clf.faithfulpermutationaction.domain",
+      "leg_arrow_id": "arr.clf.faithfulpermutationaction",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.filtered",
+      "name": "Filtered",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.filtered.domain",
+      "leg_arrow_id": "arr.clf.filtered",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.finite",
+      "name": "Finite",
+      "host_id": "cat.sets",
+      "domain_id": "clf.finite.domain",
+      "leg_arrow_id": "arr.clf.finite",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.finiteextensionof_q",
+      "name": "FiniteExtensionOf",
+      "host_id": "cat.fields",
+      "domain_id": "clf.finiteextensionof_q.domain",
+      "leg_arrow_id": "arr.clf.finiteextensionof_q",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.finiterank",
+      "name": "FiniteRank",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.finiterank.domain",
+      "leg_arrow_id": "arr.clf.finiterank",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.fractionfieldpresentation",
+      "name": "FractionFieldPresentation",
+      "host_id": "cat.integral_domains",
+      "domain_id": "clf.fractionfieldpresentation.domain",
+      "leg_arrow_id": "arr.clf.fractionfieldpresentation",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.functionfield",
+      "name": "FunctionField",
+      "host_id": "cat.fields",
+      "domain_id": "clf.functionfield.domain",
+      "leg_arrow_id": "arr.clf.functionfield",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.gaction",
+      "name": "GAction",
+      "host_id": "cat.sets",
+      "domain_id": "clf.gaction.domain",
+      "leg_arrow_id": "arr.clf.gaction",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.gcd",
+      "name": "GCD",
+      "host_id": "cat.integraldomains",
+      "domain_id": "clf.gcd.domain",
+      "leg_arrow_id": "arr.clf.gcd",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.generalizedcoxeter",
+      "name": "GeneralizedCoxeter",
+      "host_id": "cat.groupswithsimplereflections",
+      "domain_id": "clf.generalizedcoxeter.domain",
+      "leg_arrow_id": "arr.clf.generalizedcoxeter",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.graded",
+      "name": "Graded",
+      "host_id": "cat.sets",
+      "domain_id": "clf.graded.domain",
+      "leg_arrow_id": "arr.clf.graded",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.heckemodulestructure",
+      "name": "HeckeModuleStructure",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.heckemodulestructure.domain",
+      "leg_arrow_id": "arr.clf.heckemodulestructure",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.highestweight",
+      "name": "HighestWeight",
+      "host_id": "cat.crystals",
+      "domain_id": "clf.highestweight.domain",
+      "leg_arrow_id": "arr.clf.highestweight",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.htrivial",
+      "name": "HTrivial",
+      "host_id": "cat.semigroups",
+      "domain_id": "clf.htrivial.domain",
+      "leg_arrow_id": "arr.clf.htrivial",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.infinite",
+      "name": "Infinite",
+      "host_id": "cat.sets",
+      "domain_id": "clf.infinite.domain",
+      "leg_arrow_id": "arr.clf.infinite",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.jtrivial",
+      "name": "JTrivial",
+      "host_id": "cat.semigroups",
+      "domain_id": "clf.jtrivial.domain",
+      "leg_arrow_id": "arr.clf.jtrivial",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.kirillovreshetikhin",
+      "name": "KirillovReshetikhin",
+      "host_id": "cat.loopcrystals",
+      "domain_id": "clf.kirillovreshetikhin.domain",
+      "leg_arrow_id": "arr.clf.kirillovreshetikhin",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.lattice",
+      "name": "Lattice",
+      "host_id": "cat.posets",
+      "domain_id": "clf.lattice.domain",
+      "leg_arrow_id": "arr.clf.lattice",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.ltrivial",
+      "name": "LTrivial",
+      "host_id": "cat.semigroups",
+      "domain_id": "clf.ltrivial.domain",
+      "leg_arrow_id": "arr.clf.ltrivial",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.magmas.finitelygenerated",
+      "name": "FinitelyGenerated",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.magmas.finitelygenerated.domain",
+      "leg_arrow_id": "arr.clf.magmas.finitelygenerated",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.metric",
+      "name": "Metric",
+      "host_id": "cat.sets",
+      "domain_id": "clf.metric.domain",
+      "leg_arrow_id": "arr.clf.metric",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.noetherian",
+      "name": "Noetherian",
+      "host_id": "cat.commutativerings",
+      "domain_id": "clf.noetherian.domain",
+      "leg_arrow_id": "arr.clf.noetherian",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.nozerodivisors",
+      "name": "NoZeroDivisors",
+      "host_id": "cat.rings",
+      "domain_id": "clf.nozerodivisors.domain",
+      "leg_arrow_id": "arr.clf.nozerodivisors",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.oremodulestructure_sigma_delta",
+      "name": "OreModuleStructure",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.oremodulestructure_sigma_delta.domain",
+      "leg_arrow_id": "arr.clf.oremodulestructure_sigma_delta",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.pointed",
+      "name": "Pointed",
+      "host_id": "cat.sets",
+      "domain_id": "clf.pointed.domain",
+      "leg_arrow_id": "arr.clf.pointed",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.principalideal",
+      "name": "PrincipalIdeal",
+      "host_id": "cat.integraldomains",
+      "domain_id": "clf.principalideal.domain",
+      "leg_arrow_id": "arr.clf.principalideal",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.quantumgrouprepresentation",
+      "name": "QuantumGroupRepresentation",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.quantumgrouprepresentation.domain",
+      "leg_arrow_id": "arr.clf.quantumgrouprepresentation",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.regular",
+      "name": "Regular",
+      "host_id": "cat.crystals",
+      "domain_id": "clf.regular.domain",
+      "leg_arrow_id": "arr.clf.regular",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.rtrivial",
+      "name": "RTrivial",
+      "host_id": "cat.semigroups",
+      "domain_id": "clf.rtrivial.domain",
+      "leg_arrow_id": "arr.clf.rtrivial",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.semigroups.finitelygenerated",
+      "name": "FinitelyGenerated",
+      "host_id": "cat.semigroups",
+      "domain_id": "clf.semigroups.finitelygenerated.domain",
+      "leg_arrow_id": "arr.clf.semigroups.finitelygenerated",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.super",
+      "name": "Super",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.super.domain",
+      "leg_arrow_id": "arr.clf.super",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.uniquefactorization",
+      "name": "UniqueFactorization",
+      "host_id": "cat.integraldomains",
+      "domain_id": "clf.uniquefactorization.domain",
+      "leg_arrow_id": "arr.clf.uniquefactorization",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.unital",
+      "name": "Unital",
+      "host_id": "cat.magmas",
+      "domain_id": "clf.unital.domain",
+      "leg_arrow_id": "arr.clf.unital",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.weyl",
+      "name": "Weyl",
+      "host_id": "cat.coxetergroups",
+      "domain_id": "clf.weyl.domain",
+      "leg_arrow_id": "arr.clf.weyl",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.withbasis",
+      "name": "WithBasis",
+      "host_id": "cat.modules_r",
+      "domain_id": "clf.withbasis.domain",
+      "leg_arrow_id": "arr.clf.withbasis",
+      "transport": null,
+      "notes": "authored sagecats ledger | Morphisms are arbitrary R-linear maps (addendum Rmk 9.3 case 1): the chosen basis is structure on objects and imposes no condition on maps. 'Modules with basis' never determines its morphisms, and the two conventions give different categories -- case 2, basis-preserving maps, is equivalent to Set. Sage is case 1, checked: in CombinatorialFreeModule(QQ,['a','b']) the map a |-> 2*W['x'], b |-> 0 sends basis vectors to non-basis vectors and is a morphism of the category."
+    },
+    {
+      "id": "clf.distributive_lattice",
+      "name": "Distributive",
+      "host_id": "cat.latticeposets",
+      "domain_id": "clf.distributive_lattice.domain",
+      "leg_arrow_id": "arr.clf.distributive_lattice",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.distributive_twooperations",
+      "name": "Distributive",
+      "host_id": "cat.magmaswithtwooperations",
+      "domain_id": "clf.distributive_twooperations.domain",
+      "leg_arrow_id": "arr.clf.distributive_twooperations",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.finitelygenerated_lambdabracket",
+      "name": "FinitelyGenerated",
+      "host_id": "cat.lambdabracketalgebras_r",
+      "domain_id": "clf.finitelygenerated_lambdabracket.domain",
+      "leg_arrow_id": "arr.clf.finitelygenerated_lambdabracket",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.jacobian",
+      "name": "Jacobian",
+      "host_id": "cat.abelianvarieties_k",
+      "domain_id": "clf.jacobian.domain",
+      "leg_arrow_id": "arr.clf.jacobian",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.ka_hlerpackage",
+      "name": "KahlerPackage",
+      "host_id": "cat.algebras_r",
+      "domain_id": "clf.ka_hlerpackage.domain",
+      "leg_arrow_id": "arr.clf.ka_hlerpackage",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.lambdabracketalgebras_r.finitelygenerated",
+      "name": "FinitelyGenerated",
+      "host_id": "cat.lambdabracketalgebras_r",
+      "domain_id": "clf.lambdabracketalgebras_r.finitelygenerated.domain",
+      "leg_arrow_id": "arr.clf.lambdabracketalgebras_r.finitelygenerated",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.matrixalgebra",
+      "name": "MatrixAlgebra",
+      "host_id": "cat.algebras_r",
+      "domain_id": "clf.matrixalgebra.domain",
+      "leg_arrow_id": "arr.clf.matrixalgebra",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.modular",
+      "name": "Modular",
+      "host_id": "cat.abelianvarieties_k",
+      "domain_id": "clf.modular.domain",
+      "leg_arrow_id": "arr.clf.modular",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.nilpotent",
+      "name": "Nilpotent",
+      "host_id": "cat.lie_algebras_r",
+      "domain_id": "clf.nilpotent.domain",
+      "leg_arrow_id": "arr.clf.nilpotent",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.semisimple",
+      "name": "Semisimple",
+      "host_id": "cat.algebras_r",
+      "domain_id": "clf.semisimple.domain",
+      "leg_arrow_id": "arr.clf.semisimple",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.shephard",
+      "name": "Shephard",
+      "host_id": "cat.groupswithsimplereflections",
+      "domain_id": "clf.shephard.domain",
+      "leg_arrow_id": "arr.clf.shephard",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.super_crystal",
+      "name": "Super",
+      "host_id": "cat.crystals",
+      "domain_id": "clf.super_crystal.domain",
+      "leg_arrow_id": "arr.clf.super_crystal",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.supercommutative",
+      "name": "Supercommutative",
+      "host_id": "cat.superalgebras_r",
+      "domain_id": "clf.supercommutative.domain",
+      "leg_arrow_id": "arr.clf.supercommutative",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.triangulardecomposition",
+      "name": "TriangularDecomposition",
+      "host_id": "cat.kacmoodyalgebras_r",
+      "domain_id": "clf.triangulardecomposition.domain",
+      "leg_arrow_id": "arr.clf.triangulardecomposition",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.coalgebras_r.cocommutative",
+      "name": "Cocommutative",
+      "host_id": "cat.coalgebras_r",
+      "domain_id": "clf.coalgebras_r.cocommutative.domain",
+      "leg_arrow_id": "arr.clf.coalgebras_r.cocommutative",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.groupswithsimplereflections.irreducible",
+      "name": "Irreducible",
+      "host_id": "cat.groupswithsimplereflections",
+      "domain_id": "clf.groupswithsimplereflections.irreducible.domain",
+      "leg_arrow_id": "arr.clf.groupswithsimplereflections.irreducible",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.chaingraded",
+      "name": "ChainGraded",
+      "host_id": "cat.latticeposets",
+      "domain_id": "clf.latticeposets.chaingraded.domain",
+      "leg_arrow_id": "arr.clf.latticeposets.chaingraded",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.congruenceuniform",
+      "name": "CongruenceUniform",
+      "host_id": "cat.latticeposets",
+      "domain_id": "clf.latticeposets.congruenceuniform.domain",
+      "leg_arrow_id": "arr.clf.latticeposets.congruenceuniform",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.extremal",
+      "name": "Extremal",
+      "host_id": "cat.latticeposets",
+      "domain_id": "clf.latticeposets.extremal.domain",
+      "leg_arrow_id": "arr.clf.latticeposets.extremal",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.semidistributive",
+      "name": "Semidistributive",
+      "host_id": "cat.latticeposets",
+      "domain_id": "clf.latticeposets.semidistributive.domain",
+      "leg_arrow_id": "arr.clf.latticeposets.semidistributive",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.stone",
+      "name": "Stone",
+      "host_id": "cat.latticeposets",
+      "domain_id": "clf.latticeposets.stone.domain",
+      "leg_arrow_id": "arr.clf.latticeposets.stone",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.latticeposets.trim",
+      "name": "Trim",
+      "host_id": "cat.latticeposets",
+      "domain_id": "clf.latticeposets.trim.domain",
+      "leg_arrow_id": "arr.clf.latticeposets.trim",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.liealgebras_r.nilpotent",
+      "name": "Nilpotent",
+      "host_id": "cat.liealgebras_r",
+      "domain_id": "clf.liealgebras_r.nilpotent.domain",
+      "leg_arrow_id": "arr.clf.liealgebras_r.nilpotent",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.magmas.unital.inverse",
+      "name": "Inverse",
+      "host_id": "clf.magmas.unital.domain",
+      "domain_id": "clf.magmas.unital.inverse.domain",
+      "leg_arrow_id": "arr.clf.magmas.unital.inverse",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.manifolds.almostcomplex",
+      "name": "AlmostComplex",
+      "host_id": "cat.manifolds",
+      "domain_id": "clf.manifolds.almostcomplex.domain",
+      "leg_arrow_id": "arr.clf.manifolds.almostcomplex",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.manifolds.analytic",
+      "name": "Analytic",
+      "host_id": "cat.manifolds",
+      "domain_id": "clf.manifolds.analytic.domain",
+      "leg_arrow_id": "arr.clf.manifolds.analytic",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.manifolds.differentiable",
+      "name": "Differentiable",
+      "host_id": "cat.manifolds",
+      "domain_id": "clf.manifolds.differentiable.domain",
+      "leg_arrow_id": "arr.clf.manifolds.differentiable",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.posets.bounded",
+      "name": "Bounded",
+      "host_id": "cat.posets",
+      "domain_id": "clf.posets.bounded.domain",
+      "leg_arrow_id": "arr.clf.posets.bounded",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.simplicialsets.pointedobject",
+      "name": "PointedObject",
+      "host_id": "cat.simplicialsets",
+      "domain_id": "clf.simplicialsets.pointedobject.domain",
+      "leg_arrow_id": "arr.clf.simplicialsets.pointedobject",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.topologicalspaces.compact",
+      "name": "Compact",
+      "host_id": "cat.topologicalspaces",
+      "domain_id": "clf.topologicalspaces.compact.domain",
+      "leg_arrow_id": "arr.clf.topologicalspaces.compact",
+      "transport": null,
+      "notes": "authored sagecats ledger"
+    },
+    {
+      "id": "clf.biact.commutation",
+      "name": "Commutation",
+      "host_id": "cat.biact_r_s",
+      "domain_id": "cat.bimodules_r_s",
+      "leg_arrow_id": "arr.clf.biact.commutation",
+      "transport": null,
+      "notes": "Foundations Def 85.3: on an object of BiAct(R,S) the two composites R (x) M (x) S -> M, r(x)m(x)s |-> (rm)s and r(x)m(x)s |-> r(ms), agree. A PROPERTY classifier -- the full replete locus is _R Bimod_S. So the two actions are structure and their commutation is an additional diagrammatic property, not part of the data."
+    },
+    {
+      "id": "clf.catobject_preadditive",
+      "name": "Preadditive",
+      "host_id": "cat.cat_object",
+      "domain_id": "clf.catobject_preadditive",
+      "leg_arrow_id": "arr.clf.catobject_preadditive",
+      "transport": null,
+      "semantic_character": "chosen structure",
+      "notes": "Foundations Def 14.1: a preadditive category is enriched in abelian groups, and the forgetful map from categories with a CHOSEN preadditive structure is a structure classifier."
+    },
+    {
+      "id": "clf.catobject_additive",
+      "name": "Additive",
+      "host_id": "cat.cat_object",
+      "domain_id": "clf.catobject_additive",
+      "leg_arrow_id": "arr.clf.catobject_additive",
+      "transport": null,
+      "semantic_character": "property relative to Preadditive",
+      "notes": "Foundations Def 14.1: finite biproducts, a limit condition stated RELATIVE to a chosen preadditive structure."
+    },
+    {
+      "id": "clf.catobject_abelian",
+      "name": "Abelian",
+      "host_id": "cat.cat_object",
+      "domain_id": "clf.catobject_abelian",
+      "leg_arrow_id": "arr.clf.catobject_abelian",
+      "transport": null,
+      "semantic_character": "property relative to Preadditive",
+      "notes": "Foundations Def 14.1: kernels and cokernels with every mono and epi normal. 'Being abelian is a property' is always understood relative to the additive enrichment that makes the axioms meaningful."
+    },
+    {
+      "id": "clf.int_bil_r.radical_free",
+      "name": "RadicalFree",
+      "host_id": "cat.int_bil_r",
+      "domain_id": "clf.int_bil_r.radical_free.domain",
+      "leg_arrow_id": "arr.clf.int_bil_r.radical_free",
+      "transport": null,
+      "semantic_character": "property",
+      "notes": "Foundations Def 18.3: rad(M,b) = ker(b~) = 0. Also called separating. Weaker than perfect."
+    },
+    {
+      "id": "clf.int_bil_r.perfect",
+      "name": "Perfect",
+      "host_id": "cat.int_bil_r",
+      "domain_id": "clf.int_bil_r.perfect.domain",
+      "leg_arrow_id": "arr.clf.int_bil_r.perfect",
+      "transport": null,
+      "semantic_character": "property",
+      "notes": "Foundations Def 18.3: b~ is an ISOMORPHISM, equivalently rad(M,b) = 0 AND Def(M,b) = coker(b~) = 0. For an integral lattice perfectness is also called unimodularity. Strictly stronger than radical-free, and conflating the two deletes the defect module that carries discriminant theory (Def 18.2)."
+    },
+    {
+      "id": "clf.int_bil_r.generically_nondegenerate",
+      "name": "GenericallyNondegenerate",
+      "host_id": "cat.int_bil_r",
+      "domain_id": "clf.int_bil_r.generically_nondegenerate.domain",
+      "leg_arrow_id": "arr.clf.int_bil_r.generically_nondegenerate",
+      "transport": null,
+      "semantic_character": "property",
+      "notes": "Foundations Rmk 18.4, the precise condition named for the arithmetic lattice category: nondegenerate after extending scalars to the fraction field. This is Def 19.2 condition 3, and Prop 25.2 calls perfectness of a discriminant pairing its finite-length torsion COUNTERPART -- counterparts, not the same condition."
+    }
+  ]
+}

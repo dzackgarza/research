@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sage-to-normalized-mapping.schema.json",
+  "title": "Sage \u2192 normalized correspondence",
+  "type": "object",
+  "required": ["manifest", "category_mappings"],
+  "properties": {
+    "manifest": {
+      "type": "object",
+      "required": ["schema_version", "sage_version_label"],
+      "properties": {
+        "schema_version": {
+          "type": "integer"
+        },
+        "sage_version_label": {
+          "type": "string"
+        },
+        "observed_ref": {
+          "type": "string"
+        },
+        "normalized_ref": {
+          "type": "string"
+        }
+      }
+    },
+    "category_mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "target", "relation"],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "target": {
+            "type": ["string", "null"]
+          },
+          "relation": {
+            "type": "string",
+            "enum": ["exact", "presentation_alias", "canonical_equivalence", "corrected_embedding", "constructible", "unsupported", "removed"]
+          },
+          "sage_versions": {
+            "type": "object"
+          },
+          "parameters": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "axiom_mappings": {
+      "type": "array"
+    },
+    "construction_mappings": {
+      "type": "array"
+    }
+  }
+}

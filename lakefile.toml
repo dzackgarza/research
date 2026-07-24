@@ -1,0 +1,44 @@
+# Single Lean workspace for this repository.
+# All lake / elan / mathlib state lives at the repo root (.lake/).
+# Do not add nested lakefile / lean-toolchain / .lake trees under experiments.
+
+name = "research"
+version = "0.1.0"
+defaultTargets = [
+  "NormalizedCategoryGraph",
+  "LeanCategoryDslSpike",
+  "CatDSL",
+  "ncg-export-full",
+]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "v4.32.0"
+
+[[lean_lib]]
+name = "NormalizedCategoryGraph"
+srcDir = "computations/experiments/lean_category_dsl_spike"
+
+[[lean_lib]]
+name = "LeanCategoryDslSpike"
+srcDir = "computations/experiments/lean_category_dsl_spike"
+
+[[lean_lib]]
+name = "CatDSL"
+srcDir = "computations/experiments/lean_category_dsl_spike/catdsl_poc"
+
+[[lean_lib]]
+name = "CatDSLTest"
+srcDir = "computations/experiments/lean_category_dsl_spike/catdsl_poc"
+roots = [
+  "CatDSL.Example.F2Semantic",
+  "CatDSL.Example.RegistryTest",
+  "CatDSL.Example.SurfaceTest",
+]
+
+[[lean_exe]]
+name = "ncg-export-full"
+srcDir = "computations/experiments/lean_category_dsl_spike"
+root = "NormalizedCategoryGraph.Tools.ExportFull"
+supportInterpreter = true

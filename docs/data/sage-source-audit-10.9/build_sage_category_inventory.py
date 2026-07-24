@@ -15,13 +15,12 @@ import csv
 import hashlib
 import json
 import re
-import shutil
-import textwrap
 import zipfile
 from collections import defaultdict
-from dataclasses import dataclass, asdict
+from collections.abc import Iterable
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, cast
 
 SOURCE_ROOT = Path("/mnt/data/sage109/src/sage/categories")
 DIST_ROOT = Path("/mnt/data/sage109")
@@ -143,7 +142,7 @@ PUBLIC_WRAPPER_NAMES = {
     "MonoidAlgebras",
 }
 
-ALIASES = [
+ALIASES: list[dict[str, Any]] = [
     {
         "alias": "PartiallyOrderedSets",
         "canonical": "Posets",
@@ -318,9 +317,7 @@ while changed:
             category_class_names.add(rec.name)
             changed = True
 
-category_class_ids = {
-    cid for cid, rec in top_classes.items() if rec.name in category_class_names
-}
+category_class_ids = {cid for cid, rec in top_classes.items() if rec.name in category_class_names}
 
 
 def top_class_is_descendant(category_id: str, targets: set[str], seen: set[str] | None = None) -> bool:
@@ -423,7 +420,10 @@ for rec in all_class_records:
                     axiom_node = value.elts[1]
                     axiom = axiom_node.value if isinstance(axiom_node, ast.Constant) else unparse(axiom_node)
                     hardcoded_definitions[rec.category_id] = (unparse(value.elts[0]), str(axiom), stmt.lineno)
-            lazy = parse_lazy_import(stmt.value)
+            value = stmt.value
+            if value is None:
+                continue
+            lazy = parse_lazy_import(value)
             if lazy:
                 target_module, target_name = lazy
                 if target_module.startswith("sage.categories."):
@@ -555,7 +555,11 @@ def scan_category_method(
         expansion_parts.append(", ".join(f"{c}._with_axioms(...)" for c in with_axioms_calls))
     if recognized_calls:
         seen_calls: set[str] = set()
-        stable_calls = [c for c in recognized_calls if not (c in seen_calls or seen_calls.add(c))]
+        stable_calls: list[str] = []
+        for c in recognized_calls:
+            if c not in seen_calls:
+                seen_calls.add(c)
+                stable_calls.append(c)
         expansion_parts.append("calls " + ", ".join(f"{c}()" for c in stable_calls))
     expansion = "; ".join(expansion_parts)
 
@@ -627,11 +631,7 @@ def scan_subcategory_methods(
                         target_or_expansion=f"_with_axiom({axiom_name})",
                         module=module,
                         source_line=stmt.lineno,
-                        notes=(
-                            "The public method name differs from the registered axiom name."
-                            if target.id != axiom_name
-                            else ""
-                        ),
+                        notes=("The public method name differs from the registered axiom name." if target.id != axiom_name else ""),
                     )
                 )
                 continue
@@ -690,7 +690,10 @@ def scan_category_class_body(
             for target in targets:
                 if not isinstance(target, ast.Name) or target.id.startswith("_"):
                     continue
-                lazy = parse_lazy_import(stmt.value)
+                value = stmt.value
+                if value is None:
+                    continue
+                lazy = parse_lazy_import(value)
                 if lazy:
                     target_module, target_name = lazy
                     feature_name = target.id
@@ -964,7 +967,13 @@ def syntactic_axiom_chain(category_id: str, stack: set[str] | None = None) -> li
     chain.append(definition["axiom"])
     # Stable unique sequence.
     seen: set[str] = set()
-    return [x for x in chain if not (x in seen or seen.add(x))]
+    unique: list[str] = []
+    for x in chain:
+        if x not in seen:
+            seen.add(x)
+            unique.append(x)
+    return unique
+
 
 # ---------------------------------------------------------------------------
 # Aggregate local features and build category rows
@@ -977,11 +986,7 @@ for feature in features:
 
 def aggregate_feature_paths(category_id: str, feature_type: str) -> str:
     vals = sorted(
-        {
-            f.relative_path
-            for f in features_by_category.get(category_id, [])
-            if f.feature_type == feature_type
-        },
+        {f.relative_path for f in features_by_category.get(category_id, []) if f.feature_type == feature_type},
         key=lambda s: (s.count("."), s.lower(), s),
     )
     return "; ".join(vals)
@@ -989,11 +994,7 @@ def aggregate_feature_paths(category_id: str, feature_type: str) -> str:
 
 def aggregate_other_paths(category_id: str) -> str:
     vals = sorted(
-        {
-            f.relative_path
-            for f in features_by_category.get(category_id, [])
-            if f.feature_type in {"other category", "derived category shorthand"}
-        },
+        {f.relative_path for f in features_by_category.get(category_id, []) if f.feature_type in {"other category", "derived category shorthand"}},
         key=lambda s: (s.count("."), s.lower(), s),
     )
     return "; ".join(vals)
@@ -1012,9 +1013,7 @@ for category_id in sorted(category_class_ids, key=lambda cid: (top_classes[cid].
     rec = top_classes[category_id]
     definition = direct_definition(category_id)
     bindings = incoming_bindings.get(category_id, [])
-    bound_as = "; ".join(
-        sorted({f"{b['source_path']}.{b['attribute']}" for b in bindings})
-    )
+    bound_as = "; ".join(sorted({f"{b['source_path']}.{b['attribute']}" for b in bindings}))
     relation = ""
     if definition["axiom"]:
         relation = f"{definition['base']} + axiom {definition['axiom']}"
@@ -1026,8 +1025,7 @@ for category_id in sorted(category_class_ids, key=lambda cid: (top_classes[cid].
     notes: list[str] = []
     if category_id == "lattice_posets.DistributiveLattices":
         notes.append(
-            "The public shorthand LatticePosets().Distributive() expands to Trim then ChainGraded; "
-            "the implementation class is bound at LatticePosets.Trim.ChainGraded."
+            "The public shorthand LatticePosets().Distributive() expands to Trim then ChainGraded; the implementation class is bound at LatticePosets.Trim.ChainGraded."
         )
     if category_id == "facade_sets.FacadeSets":
         notes.append("The base/axiom relation is inferred by Sage's documented category-name heuristic.")
@@ -1100,22 +1098,12 @@ axiom_rows: list[dict[str, Any]] = []
 for registry in axiom_registry:
     name = registry["axiom"]
     decls = [f for f in features if f.feature_type == "axiom" and f.feature_name == name]
-    interface_sites = sorted(
-        {f"{f.category_id}:{f.relative_path}" for f in decls if f.declaration_kind in {"subcategory interface method", "subcategory API alias"}}
-    )
+    interface_sites = sorted({f"{f.category_id}:{f.relative_path}" for f in decls if f.declaration_kind in {"subcategory interface method", "subcategory API alias"}})
     implementation_sites = sorted(
-        {
-            f"{f.category_id}:{f.relative_path} [{f.declaration_kind}]"
-            for f in decls
-            if f.declaration_kind not in {"subcategory interface method", "subcategory API alias"}
-        }
+        {f"{f.category_id}:{f.relative_path} [{f.declaration_kind}]" for f in decls if f.declaration_kind not in {"subcategory interface method", "subcategory API alias"}}
     )
     expansions = sorted(
-        {
-            f"{f.category_id}:{f.relative_path} -> {f.target_or_expansion}"
-            for f in decls
-            if f.target_or_expansion and f.declaration_kind == "subcategory interface method"
-        }
+        {f"{f.category_id}:{f.relative_path} -> {f.target_or_expansion}" for f in decls if f.target_or_expansion and f.declaration_kind == "subcategory interface method"}
     )
     axiom_rows.append(
         {
@@ -1158,23 +1146,9 @@ for name in FUNCTORS:
     category_helpers = [h for h in helpers if h["is_category_class"]]
     selected = category_helpers[0] if category_helpers else helpers[0]
     decls = [f for f in features if f.feature_type == "functorial construction" and f.feature_name == name]
-    interface_sites = sorted(
-        {f"{f.category_id}:{f.relative_path}" for f in decls if is_functor_interface_declaration(f)}
-    )
-    implementation_sites = sorted(
-        {
-            f"{f.category_id}:{f.relative_path} [{f.declaration_kind}]"
-            for f in decls
-            if not is_functor_interface_declaration(f)
-        }
-    )
-    result_categories = sorted(
-        {
-            row["category_id"]
-            for row in category_rows
-            if row["defining_functorial_construction"] == name
-        }
-    )
+    interface_sites = sorted({f"{f.category_id}:{f.relative_path}" for f in decls if is_functor_interface_declaration(f)})
+    implementation_sites = sorted({f"{f.category_id}:{f.relative_path} [{f.declaration_kind}]" for f in decls if not is_functor_interface_declaration(f)})
+    result_categories = sorted({row["category_id"] for row in category_rows if row["defining_functorial_construction"] == name})
     functor_rows.append(
         {
             "construction": name,
@@ -1184,9 +1158,7 @@ for name in FUNCTORS:
             "implementation_source_url": source_url(selected["module"], selected["line"]),
             "implementation_module": selected["module"],
             "implementation_line": selected["line"],
-            "other_classes_with_same_functor_tag": "; ".join(
-                sorted(h["class_id"] for h in helpers if h["class_id"] != selected["class_id"])
-            ),
+            "other_classes_with_same_functor_tag": "; ".join(sorted(h["class_id"] for h in helpers if h["class_id"] != selected["class_id"])),
             "interface_declarations": "; ".join(interface_sites),
             "specialized_implementation_declarations": "; ".join(implementation_sites),
             "named_result_categories": "; ".join(result_categories),
@@ -1283,7 +1255,7 @@ for alias in ALIASES:
         {
             **alias,
             "source": f"src/sage/categories/{alias['module']}.py:{alias['source_line']}",
-            "source_url": source_url(alias["module"], alias["source_line"]),
+            "source_url": source_url(str(alias["module"]), int(alias["source_line"])),
         }
     )
 write_csv(aliases_csv, alias_rows)
@@ -1293,7 +1265,10 @@ payload = {
         "sage_version": VERSION,
         "sage_commit": COMMIT,
         "sdist_sha256": SDIST_SHA256,
-        "scope": "Named category classes and category-valued wrapper constructors in src/sage/categories, including sage.categories.examples, plus source-declared axioms and functorial constructions.",
+        "scope": (
+            "Named category classes and category-valued wrapper constructors in src/sage/categories, "
+            "including sage.categories.examples, plus source-declared axioms and functorial constructions."
+        ),
         "counts": {
             "public_named_category_classes": public_class_count,
             "public_category_wrapper_constructors": public_wrapper_count,
@@ -1335,8 +1310,7 @@ md: list[str] = []
 md.append(f"# SageMath {VERSION}: complete source inventory of categories, axioms, and functorial constructions")
 md.append("")
 md.append(
-    f"**Revision.** SageMath `{VERSION}`, commit [`{COMMIT}`](https://github.com/sagemath/sage/commit/{COMMIT}). "
-    f"The audited source distribution has SHA-256 `{SDIST_SHA256}`."
+    f"**Revision.** SageMath `{VERSION}`, commit [`{COMMIT}`](https://github.com/sagemath/sage/commit/{COMMIT}). The audited source distribution has SHA-256 `{SDIST_SHA256}`."
 )
 md.append("")
 md.append("## Scope and interpretation")
@@ -1427,7 +1401,16 @@ md.append("")
 public_rows = [r for r in category_rows if r["role"] == "public named category class"]
 md.append(
     md_table(
-        ["Category class", "Module", "Defining relation", "Syntactic defining axioms", "Local axiom paths", "Local functorial-construction paths", "Other local category paths", "Source"],
+        [
+            "Category class",
+            "Module",
+            "Defining relation",
+            "Syntactic defining axioms",
+            "Local axiom paths",
+            "Local functorial-construction paths",
+            "Other local category paths",
+            "Source",
+        ],
         (
             (
                 r["constructor"],
@@ -1465,10 +1448,7 @@ md.append(
 md.append("")
 md.append("## Framework/helper, test-only, and example-only category classes")
 md.append("")
-aux_rows = [
-    r for r in category_rows
-    if r["role"] in {"framework/helper category class", "test-only category class", "example-only category class"}
-]
+aux_rows = [r for r in category_rows if r["role"] in {"framework/helper category class", "test-only category class", "example-only category class"}]
 md.append(
     md_table(
         ["Category class", "Role", "Module", "Bases", "Local axiom paths", "Local functorial paths", "Source"],
@@ -1497,7 +1477,7 @@ md.append(
                 r["alias"],
                 r["canonical"],
                 r["status"],
-                source_link(r["module"], r["source_line"]),
+                source_link(str(r["module"]), int(r["source_line"])),
             )
             for r in alias_rows
         ),
@@ -1544,7 +1524,7 @@ summary = {
     "version": VERSION,
     "commit": COMMIT,
     "sdist_sha256": SDIST_SHA256,
-    "counts": payload["metadata"]["counts"],
+    "counts": cast(dict[str, Any], payload["metadata"])["counts"],
     "files": [
         str(markdown_path),
         str(categories_csv),

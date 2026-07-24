@@ -278,7 +278,7 @@ def test_is_genus_respects_gauss_milgram_signature_congruence_nikulin_1_3_3():
     A2 = lc.Lattice("A2(-1)")
     q = A2.discriminant_group()
 
-    # cheap basics of the carrier lattice
+    # cheap basics of the lattice
     assert A2.rank() == 2 and A2.determinant() == 3
     assert A2.is_even() and A2.signature_pair() == (2, 0)
     assert tuple(q.invariants()) == (3,)  # discriminant group C_3

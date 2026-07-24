@@ -1,0 +1,8 @@
+Sage category graph (static census).
+
+Owned files:
+  inventory/           → docs/data/sage-source-audit-10.9 (CSV/JSON + generator)
+  inventory_scripts/   → docs/data/sage-inventory-scripts (runtime dumps)
+  nodes.json           → extracted node list for tooling
+
+Not the normalized graph; not the correspondence map.

@@ -87,6 +87,36 @@ corrections deep).
   `global/traps/hard-problem-artifact-drift`). Meaningful work can be embarrassing;
   process noise cannot.
 
+- **Ground in the foundations before analysing, not in a bucket.** The mathematics this
+  repo needs is written down: `docs/framework/Mathematical-Theory-Foundations.md`. When
+  an entity resists placement, the failure is almost never that the mathematics is hard
+  — it is that the question got silently reclassified from "what is this?" into "what
+  disposition does this get?". That reclassification happens *before* deliberation, so
+  no rule firing during deliberation catches it, and re-reading this line will not help.
+  The mechanical trigger is therefore the artifact, not the feeling: **any row about to
+  receive a disposition instead of a destination is a row whose mathematics has not been
+  done.** Look it up in the foundations; if it is genuinely absent there, that absence is
+  the finding and the bridge has discovered a requirement (§40–43).
+- **A class is defined by a positive fact about its members, never by an absence.**
+  Fifth graduation, and the one this repo keeps paying for: buckets named
+  `unsupported`, `pending`, `removed`, `not mathematics`, `no destination`,
+  `excluded`, `compatibility host` are parking lots for analysis not yet done, and
+  they read as rulings. Before a disposition vocabulary, exclusion class, or count
+  ranges over items, answer **one named member** mathematically and state the fact
+  that puts it there. If the only thing shared by a class's members is that nobody
+  looked, it is not a class. Corollary: never invent a disposition token *while
+  correcting* a miscount — that is bucketing to fix bucketing.
+- **The skipped analysis is usually undergraduate.** Reaching for machinery is not
+  proportional to difficulty; it is a substitute for two minutes of thought. Observed
+  2026-07-23: `Sets().Facade()` was parked as an engineering shim after the parking
+  note itself said "it is a subobject"; `Objects()` got a *newly minted node* rather
+  than the observation that an object of `C` is a point `* -> C`; Sage's `Modules(R)`
+  was chased through two rounds of prose string-matching when
+  `Modules(R).super_categories() == [Bimodules(R,R)]` was in the first probe's output.
+  Bimodules, restriction along the diagonal, forgetting an action, `R^op` — this is
+  undergraduate algebra, and it was displaced by a five-token disposition vocabulary
+  over a C3 linearization.
+
 Work-shape catalogue with this repo's exemplars and the meaningful-vs-noise litmus:
 `.agents/references/displacement-pattern-index.md` (D1–D6). These are review criteria
 for plans and completion claims alike — the Review Guidelines below guard completion
@@ -105,6 +135,67 @@ spawn a subagent primed verbatim with
 `.agents/references/mathematical-auditor-priming.md` and hand it the artifact itself,
 never a summary. Checkpoint after any correction, before issue bodies or plan cards
 ship, and before committing lexicon/manifest/typing surfaces.
+
+# Sage bridge: what rho records (always-on)
+
+**Sage is the authority on what Sage encodes — that is an empirical question about a
+program. Sage is not an authority on mathematics — sameness, join exactness, coherence.**
+Taking "Sage is not the arbiter" as license to override what Sage encodes is exactly
+backwards, and it flips answers.
+
+`rho` maps a Sage category to the normalized category it *encodes*, read off its
+declarations and behaviour. A declaration that looks like a bug is still content for the
+destination whenever it changes what the implementation computes with, because rho exists
+to say whether Sage's algorithms are **safe for your object**. Mapping a Sage category to
+what its name suggests, or to what it "should" have meant, hands a user algorithms that
+quietly change their object.
+
+**Run it.** Neither a docstring nor a declaration is the last word on what a program does,
+and a *derivation* from either is a reconstruction. When a claim about Sage's behaviour is
+cheap to execute — and it almost always is — execute it, on an input that can distinguish
+the hypotheses. A probe that cannot fail proves nothing: testing a right action on a basis
+element with coefficient `1` confirms `m·r = r·m` no matter which action is implemented.
+
+The standing example, and the two ways it went wrong. `Modules(R).super_categories() ==
+[Bimodules(R,R)]`, so `rho(Modules) = Bimodules(R,R)` at **`R : Rings`**. Not `R-Mod`:
+forgetting the right action is neither an equivalence nor full (Foundations Prop 92.1).
+`LeftModules(R)` is the genuinely one-sided category, and reading it as `R-Mod` adds
+nothing, since a left module is canonically an `(R,ℤ)`-bimodule with no choice involved
+(Cor 90.2).
+
+The first error was *deriving* from the declaration — "only one action is stored, so
+`m·r := r·m`, and the bimodule law forces commutativity". False: over
+`A = MatrixSpace(QQ,2)`, `m = s·B['x']` in `CombinatorialFreeModule(A,['x'])` has
+`r*m = (rs)·B['x']` and `m*r = (sr)·B['x']`, which differ, with the bimodule law holding.
+The second error was then over-correcting to the docstring's "over a commutative ring `R`"
+and pinning `R : CommutativeRings` onto the destination. Also wrong: an `(R,R)`-bimodule
+has two *independent* actions constrained only by `(rm)r' = r(mr')`, so it needs no
+commutativity, and Sage's own TODO asks to "make sure that non commutative rings are
+properly supported by all the code" — that sentence is a hedge about untested coverage,
+not a definition.
+
+Reliability is a **fiber** question, never a constraint on the destination. rho says what
+the category means; which Sage parents can actually serve an object of it is separate and
+per-implementation. Over that same matrix ring, `CombinatorialFreeModule` and the regular
+module are honest `(A,A)`-bimodules, while `FreeModule(A,1)` raises `TypeError` on both
+`r*m` and `m*r` and warns that it "does not have a concept of left/right and both sided
+modules". Sage's TODO likewise records that some code "possibly assumes" a symmetric
+bimodule — the central bimodules of Def 92.2. All of that is an audit note on the row,
+never a second destination and never a narrower parameter.
+
+What Sage does *not* settle: whether two of its categories model the same platonic
+category (compare **normalized targets**, never Sage's `==`), whether a join it printed is
+exact (Foundations Def 42.2), and whether its hierarchy is coherent — it is neither sound
+nor complete, so `==`, `super_categories()` and `is_subcategory()` test nothing. Verified
+catalogue: `.agents/references/reading-sage-gotchas.md`. Mathematics:
+`docs/framework/Mathematical-Theory-Foundations.md` Part VIII (§40–43) and §13.
+
+The module neighbourhood is settled end to end — destinations, the `Bimodules(R,S)`
+primitive and its diagonal, `U_L`/`U_R`, `c_R`, algebras as bimodules, `WithBasis` as a
+comma category — in `.agents/decisions/the-module-neighbourhood-settled.md`. Read it before
+touching a module row. Its headline is the one that catches people: `Bimodules(K,K)` is
+**not** `Vect_K`, because `_K Bimod_K ≃ (K ⊗_ℤ K)-Mod` (Prop 85.4) and that is `K` only for
+a prime field.
 
 # Repository layout
 
