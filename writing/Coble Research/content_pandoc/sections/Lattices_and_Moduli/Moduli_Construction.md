@@ -26,6 +26,10 @@ where $T_{\dP}$ is described in [@AEGS25]. Note that we implicitly use the embed
 \todo[inline]{Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.}
 We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$, which implies that there is a birational isomorphism $F_{\Co} \birational \cH_{-2}/\Orth^+(T_\En)^*$.
 
+![The tower of moduli spaces relating the degree-$2$ numerically polarized Coble and Enriques moduli $F_{\Co,2}, F_{\En,2}$, their unpolarized quotients $F_\Co, F_\En$, and the degree-$(2,2,0)$ K3 moduli space $F_{(2,2,0)} \injects F_4$. The map $F_{\Co,2} \to F_\Co$ marked $?$ is not yet determined (cf. the remark on $\Gamma_{\Co,2}$ above).](rendered/fig_moduli_tower.png){#fig:moduli-tower}
+
+\todo{\Cref{fig:moduli-tower} is migrated as a raster talk figure; it should be redrawn as a native \texttt{tikzcd} diagram and its casing reconciled with the surrounding notation ($F_{\Co,2}$ vs.\ the figure's $F_{co,2}$). The $?$-map $F_{\Co,2}\to F_\Co$ encodes the open question flagged above.}
+
 # GIT Discussion
 
 ::: {.remark title="GIT construction"}

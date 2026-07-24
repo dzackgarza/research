@@ -45,6 +45,10 @@ $$
 Restricting $\Psi$ to its scheme-theoretic image $X$ yields a finite, birational map from the normal variety $F_{\En, 2}$ to $X$, which by Zariski's Main Theorem exhibits $F_{\En, 2}$ as the normalization of $X$.
 :::
 
+![The induced correspondence of Baily--Borel boundaries under $\Psi\colon F_{\En, 2}\to F_{(2,2,0)}$: the cusps of $\overline{F_{\En, 2}}^{\bb}$ (top) map to the cusps of $\overline{F_{(2,2,0)}}^{\bb}$ (bottom).](rendered/fig_bb_boundary_correspondence.png){#fig:bb-boundary-correspondence}
+
+\todo{\Cref{fig:bb-boundary-correspondence} is migrated as a raster talk figure; its cusp labels ($2,12,13,14,245$ and $2,12\mathrm{A},12\mathrm{B},1\mathrm{A},1\mathrm{B}$) are Sterk's talk numbering and should be reconciled with the five-cusp enumeration of \cref{ex:fen2_five_cusps} and redrawn as a native TikZ figure.}
+
 ## The five $0$-cusps
 
 ::: {.example ref="ex:fen2_five_cusps" title="The five $0$-cusps of $\overline{F_{\En, 2}}$"}
