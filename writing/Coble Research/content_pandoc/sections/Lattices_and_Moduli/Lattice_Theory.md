@@ -1,4 +1,4 @@
-# Lattice Theory
+# Lattice Theory {#sec:lattice-theory}
 
 ::: {.remark}
 

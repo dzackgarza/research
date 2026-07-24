@@ -5,6 +5,26 @@ Lattice_Theory.md
 ```
 
 ```include
+Root_Systems.md
+```
+
+```include
+Discriminant_Forms_and_Genus.md
+```
+
+```include
+Embeddings_and_Overlattices.md
+```
+
+```include
+Special_Lattices.md
+```
+
+```include
+Invariant_and_Coinvariant_Lattices.md
+```
+
+```include
 Lattices.md
 ```
 
