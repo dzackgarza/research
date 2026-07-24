@@ -129,7 +129,7 @@ def test_rings_commutative_requires_multiplicative_route() -> None:
 
 def test_mapping_targets_normalized_ids_only() -> None:
     mapping = load_mapping()
-    assert mapping["manifest"]["schema_version"] == 1
+    assert mapping["manifest"]["schema_version"] == 2
     for row in mapping["category_mappings"]:
         assert row["relation"] in {
             "exact",
@@ -263,6 +263,43 @@ def test_authored_specimens_constructible() -> None:
     finite_groups = by_name["FiniteGroups"]
     assert finite_groups["relation"] == "constructible"
     assert finite_groups["construction"]["ok"] is True
+
+
+def test_bridge_records_carry_dr3_63_schema_without_laundering() -> None:
+    """Every category mapping carries the decision-record-3 §6.3 bridge-record schema,
+    and no row is laundered into an exact/proven status: there is no realization or
+    certificate evidence in-tree (it is gated on the pinned lean-lattices#4 release),
+    so `lean_semantic_category` is null and every observed correspondence keeps a
+    standing realization obligation."""
+    ladder = {
+        "exact-Mathlib",
+        "exact-constructed",
+        "proven-presentation-equivalence",
+        "alias",
+        "observed-Sage-approximation",
+        "not-yet-realized",
+        "removed",
+    }
+    mapping = load_mapping()
+    rows = mapping["category_mappings"]
+    # Positive count first: a vacuous pass on an empty surface must fail here.
+    n_obligation = sum(1 for r in rows if r.get("comparison_status") in ("observed-Sage-approximation", "not-yet-realized"))
+    assert n_obligation > 0, "expected observed/not-yet-realized rows carrying obligations"
+
+    for r in rows:
+        cs = r.get("comparison_status")
+        assert cs in ladder, (r.get("source"), cs)
+        # No in-tree realization => no exact/proven status may be claimed.
+        assert not str(cs).startswith("exact"), (r.get("source"), "exact status without a pinned-release realization")
+        assert cs != "proven-presentation-equivalence", r.get("source")
+        assert "lean_semantic_category" in r and r["lean_semantic_category"] is None, r.get("source")
+        assert "backend_capabilities" in r
+        assert "pinned_sage_version" in r
+        if cs in ("observed-Sage-approximation", "not-yet-realized"):
+            # The obligation is never laundered away.
+            assert r.get("proof_obligation_id"), (r.get("source"), cs)
+        elif cs in ("alias", "removed"):
+            assert r.get("proof_obligation_id") is None, (r.get("source"), cs)
 
 
 def test_authored_nonpublic_dispositions_present() -> None:

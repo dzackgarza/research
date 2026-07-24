@@ -111,6 +111,62 @@ def _relation_for(
     return "exact"
 
 
+# --- decision record 3 §6.3 bridge-record schema -----------------------------------
+# `relation` is the *diagnostic* disposition — the finite-limit constructibility verdict
+# and the name/alias observation; DR3 §3 forbids treating it as semantic evidence.
+# `comparison_status` is the authoritative §6.3 status. With no realization or certificate
+# evidence in-tree (that is gated on the pinned lean-lattices#4 release), no row can be
+# exact-Mathlib / exact-constructed / proven-presentation-equivalence: every observed
+# correspondence is `observed-Sage-approximation` with a standing realization obligation,
+# every gap is `not-yet-realized` (an obligation that stays open), and a name alias is
+# `alias`. The exact/proven statuses become assignable only when the pinned release is
+# consumed (the WS-8 surface (c), blocked on lean-lattices#4).
+_DIAGNOSTIC_TO_COMPARISON_STATUS: dict[str, str] = {
+    "exact": "observed-Sage-approximation",
+    "constructible": "observed-Sage-approximation",
+    "corrected_embedding": "observed-Sage-approximation",
+    "authored_disposition": "observed-Sage-approximation",
+    "presentation_alias": "alias",
+    "unsupported": "not-yet-realized",
+    "removed": "removed",
+}
+
+# The §6.3 comparison-status ladder. `removed` is an out-of-ladder version-provenance
+# disposition (the Sage category no longer exists), not a realization state.
+_COMPARISON_STATUSES: frozenset[str] = frozenset(
+    {
+        "exact-Mathlib",
+        "exact-constructed",
+        "proven-presentation-equivalence",
+        "alias",
+        "observed-Sage-approximation",
+        "not-yet-realized",
+        "removed",
+    }
+)
+
+
+def _attach_bridge_record_schema(rows: list[dict[str, Any]]) -> None:
+    """Attach the DR3 §6.3 bridge-record schema to each category mapping row.
+
+    Adds the authoritative comparison status and its companion fields alongside the
+    existing diagnostic ``relation``. No row is assigned an exact/proven status: the Lean
+    realization and any certificate come from the pinned lean-lattices#4 release, which is
+    not consumed here, so ``lean_semantic_category`` is null and every observed row carries
+    a standing realization obligation. ``not-yet-realized`` obligations never lapse into a
+    realized status without that evidence.
+    """
+    for r in rows:
+        disposition = r.get("relation")
+        key = disposition if isinstance(disposition, str) else ""
+        status = _DIAGNOSTIC_TO_COMPARISON_STATUS.get(key, "observed-Sage-approximation")
+        r["comparison_status"] = status
+        r["lean_semantic_category"] = None
+        r["proof_obligation_id"] = None if status in ("alias", "removed") else f"obl.realize.{r['source']}"
+        r.setdefault("backend_capabilities", [])
+        r["pinned_sage_version"] = (r.get("sage_versions") or {}).get("since")
+
+
 def _host_name_to_cat_id(host: str | None) -> str | None:
     if not host:
         return None
@@ -674,18 +730,23 @@ def build_mapping(
                 }
             )
 
+    _attach_bridge_record_schema(category_mappings)
+
     return {
         "manifest": {
-            "schema_version": 1,
+            "schema_version": 2,
             "sage_version_label": corr.get("version_label", "unknown"),
             "observed_ref": "design/sage/observed.json",
             "normalized_ref": "design/normalized/manifest/",
             "authored_ref": ("design/sage/authored/sage_normalized_category_mapping_manifest.json"),
             "note": (
-                "Interpretation layer. Public category rows come from the "
-                "authored sagecats ledger; constructibility certificates are "
-                "finite-limit checker outputs. unsupported rows block a full "
-                "Sage-parity claim (often missing seed bases/classifiers)."
+                "Interpretation layer. Each category row carries the DR3 §6.3 bridge-record "
+                "schema: `comparison_status` is the authoritative status; `relation` and the "
+                "constructibility certificate are the DR3 §3 *diagnostic* disposition, never "
+                "semantic evidence. With no in-tree realization (gated on the pinned "
+                "lean-lattices#4 release) every observed row is `observed-Sage-approximation` "
+                "with a `proof_obligation_id`, gaps are `not-yet-realized`, and "
+                "`lean_semantic_category` is null until the release is consumed."
             ),
         },
         "category_mappings": category_mappings,

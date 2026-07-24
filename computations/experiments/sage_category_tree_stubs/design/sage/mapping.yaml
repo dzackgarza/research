@@ -1,12 +1,16 @@
 manifest:
-  schema_version: 1
+  schema_version: 2
   sage_version_label: sage-dev-local
   observed_ref: design/sage/observed.json
   normalized_ref: design/normalized/manifest/
   authored_ref: design/sage/authored/sage_normalized_category_mapping_manifest.json
-  note: Interpretation layer. Public category rows come from the authored sagecats
-    ledger; constructibility certificates are finite-limit checker outputs. unsupported
-    rows block a full Sage-parity claim (often missing seed bases/classifiers).
+  note: 'Interpretation layer. Each category row carries the DR3 §6.3 bridge-record
+    schema: `comparison_status` is the authoritative status; `relation` and the constructibility
+    certificate are the DR3 §3 *diagnostic* disposition, never semantic evidence.
+    With no in-tree realization (gated on the pinned lean-lattices#4 release) every
+    observed row is `observed-Sage-approximation` with a `proof_obligation_id`, gaps
+    are `not-yet-realized`, and `lean_semantic_category` is null until the release
+    is consumed.'
 category_mappings:
   - source: sage.category.finite_dimensional_bialgebras_with_basis_finitedimensionalbialgebraswithbasis
     source_sage_name: FiniteDimensionalBialgebrasWithBasis
@@ -48,6 +52,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_dimensional_bialgebras_with_basis_finitedimensionalbialgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_dimensional_coalgebras_with_basis_finitedimensionalcoalgebraswithbasis
     source_sage_name: FiniteDimensionalCoalgebrasWithBasis
     target: cat.coalgebras_r
@@ -88,6 +97,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_dimensional_coalgebras_with_basis_finitedimensionalcoalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graded_bialgebras_gradedbialgebras
     source_sage_name: GradedBialgebras
     target: cat.bialgebras_r
@@ -122,6 +136,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graded_bialgebras_gradedbialgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graded_bialgebras_with_basis_gradedbialgebraswithbasis
     source_sage_name: GradedBialgebrasWithBasis
     target: cat.bialgebras_r
@@ -162,6 +181,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graded_bialgebras_with_basis_gradedbialgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graded_hopf_algebras_gradedhopfalgebras
     source_sage_name: GradedHopfAlgebras
     target: cat.hopfalgebras_r
@@ -196,6 +220,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graded_hopf_algebras_gradedhopfalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.monoid_algebras_monoidalgebras
     source_sage_name: MonoidAlgebras
     target: cat.monoidalgebras_r
@@ -225,6 +254,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: construction-defined named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.monoid_algebras_monoidalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.schemes_abelianvarieties
     source_sage_name: AbelianVarieties
     target: cat.abelianvarieties_k
@@ -259,6 +293,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.schemes_abelianvarieties
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.additive_groups_additivegroups
     source_sage_name: AdditiveGroups
     target: cat.additive_groups
@@ -287,6 +326,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.additive_groups_additivegroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.additive_magmas_additivemagmas
     source_sage_name: AdditiveMagmas
     target: cat.additive_magmas
@@ -320,6 +364,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.additive_magmas_additivemagmas
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.additive_monoids_additivemonoids
     source_sage_name: AdditiveMonoids
     target: cat.additive_monoids
@@ -348,6 +397,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.additive_monoids_additivemonoids
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.additive_semigroups_additivesemigroups
     source_sage_name: AdditiveSemigroups
     target: cat.additive_semigroups
@@ -376,6 +430,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.additive_semigroups_additivesemigroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.affine_weyl_groups_affineweylgroups
     source_sage_name: AffineWeylGroups
     target: cat.weylgroups
@@ -409,6 +468,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.affine_weyl_groups_affineweylgroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.algebra_ideals_algebraideals
     source_sage_name: AlgebraIdeals
     target: cat.algebraideals_a
@@ -437,6 +501,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: construction-defined named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.algebra_ideals_algebraideals
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.algebra_modules_algebramodules
     source_sage_name: AlgebraModules
     target: cat.modules_a
@@ -466,6 +535,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: parameter-restricted presentation alias
+    comparison_status: alias
+    lean_semantic_category: null
+    proof_obligation_id: null
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.algebras_algebras
     source_sage_name: Algebras
     target: cat.unital_algebras
@@ -506,6 +580,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.algebras_algebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.algebras_with_basis_algebraswithbasis
     source_sage_name: AlgebrasWithBasis
     target: cat.associativeunitalalgebras_r
@@ -540,6 +619,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.algebras_with_basis_algebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.aperiodic_semigroups_aperiodicsemigroups
     source_sage_name: AperiodicSemigroups
     target: cat.semigroups
@@ -573,6 +657,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.aperiodic_semigroups_aperiodicsemigroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.associative_algebras_associativealgebras
     source_sage_name: AssociativeAlgebras
     target: cat.algebras_r
@@ -607,6 +696,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.associative_algebras_associativealgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.bialgebras_bialgebras
     source_sage_name: Bialgebras
     target: cat.bialgebras_r
@@ -636,6 +730,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.bialgebras_bialgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.bialgebras_with_basis_bialgebraswithbasis
     source_sage_name: BialgebrasWithBasis
     target: cat.bialgebras_r
@@ -670,6 +769,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.bialgebras_with_basis_bialgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.bimodules_bimodules
     source_sage_name: Bimodules
     target: cat.bimodules_r_s
@@ -700,6 +804,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.bimodules_bimodules
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.chain_complexes_chaincomplexes
     source_sage_name: ChainComplexes
     target: cat.chaincomplexes_c
@@ -728,6 +837,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: construction-defined named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.chain_complexes_chaincomplexes
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.classical_crystals_classicalcrystals
     source_sage_name: ClassicalCrystals
     target: cat.crystals
@@ -761,6 +875,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.classical_crystals_classicalcrystals
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.coalgebras_coalgebras
     source_sage_name: Coalgebras
     target: cat.coalgebras_r
@@ -790,6 +909,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.coalgebras_coalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.coalgebras_with_basis_coalgebraswithbasis
     source_sage_name: CoalgebrasWithBasis
     target: cat.coalgebras_r
@@ -824,6 +948,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.coalgebras_with_basis_coalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.commutative_additive_groups_commutativeadditivegroups
     source_sage_name: CommutativeAdditiveGroups
     target: cat.additive_abelian_groups
@@ -852,6 +981,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.commutative_additive_groups_commutativeadditivegroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.commutative_additive_monoids_commutativeadditivemonoids
     source_sage_name: CommutativeAdditiveMonoids
     target: cat.additive_monoids
@@ -885,6 +1019,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.commutative_additive_monoids_commutativeadditivemonoids
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.commutative_additive_semigroups_commutativeadditivesemigroups
     source_sage_name: CommutativeAdditiveSemigroups
     target: cat.additive_semigroups
@@ -918,6 +1057,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.commutative_additive_semigroups_commutativeadditivesemigroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.commutative_algebra_ideals_commutativealgebraideals
     source_sage_name: CommutativeAlgebraIdeals
     target: cat.algebraideals_a
@@ -947,6 +1091,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: parameter-restricted presentation alias
+    comparison_status: alias
+    lean_semantic_category: null
+    proof_obligation_id: null
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.commutative_algebras_commutativealgebras
     source_sage_name: CommutativeAlgebras
     target: cat.commutative_algebras
@@ -981,6 +1130,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.commutative_algebras_commutativealgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.commutative_ring_ideals_commutativeringideals
     source_sage_name: CommutativeRingIdeals
     target: cat.ringideals_r
@@ -1010,6 +1164,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: parameter-restricted presentation alias
+    comparison_status: alias
+    lean_semantic_category: null
+    proof_obligation_id: null
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.commutative_rings_commutativerings
     source_sage_name: CommutativeRings
     target: cat.commutative_rings
@@ -1043,6 +1202,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.commutative_rings_commutativerings
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.complete_discrete_valuation_completediscretevaluationfields
     source_sage_name: CompleteDiscreteValuationFields
     target: cat.discretevaluationfields
@@ -1076,6 +1240,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.complete_discrete_valuation_completediscretevaluationfields
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.complete_discrete_valuation_completediscretevaluationrings
     source_sage_name: CompleteDiscreteValuationRings
     target: cat.discretevaluationrings
@@ -1109,6 +1278,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.complete_discrete_valuation_completediscretevaluationrings
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.complex_reflection_groups_complexreflectiongroups
     source_sage_name: ComplexReflectionGroups
     target: cat.complexreflectiongroups
@@ -1142,6 +1316,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.complex_reflection_groups_complexreflectiongroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.complex_reflection_or_generalized_coxeter_groups_complexreflectionorgeneralizedcoxetergroups
     source_sage_name: ComplexReflectionOrGeneralizedCoxeterGroups
     target: cat.groupswithsimplereflections
@@ -1170,6 +1349,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.complex_reflection_or_generalized_coxeter_groups_complexreflectionorgeneralizedcoxetergroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.coxeter_group_algebras_coxetergroupalgebras
     source_sage_name: CoxeterGroupAlgebras
     target: cat.coxetergroupalgebras_r
@@ -1199,6 +1383,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: construction-defined named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.coxeter_group_algebras_coxetergroupalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.coxeter_groups_coxetergroups
     source_sage_name: CoxeterGroups
     target: cat.coxetergroups
@@ -1232,6 +1421,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.coxeter_groups_coxetergroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.crystals_crystals
     source_sage_name: Crystals
     target: cat.crystals
@@ -1260,6 +1454,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.crystals_crystals
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.cw_complexes_cwcomplexes
     source_sage_name: CWComplexes
     target: cat.topologicalspaces
@@ -1293,6 +1492,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.cw_complexes_cwcomplexes
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.dedekind_domains_dedekinddomains
     source_sage_name: DedekindDomains
     target: cat.integraldomains
@@ -1326,6 +1530,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.dedekind_domains_dedekinddomains
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.discrete_valuation_discretevaluationfields
     source_sage_name: DiscreteValuationFields
     target: cat.discretevaluationfields
@@ -1359,6 +1568,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.discrete_valuation_discretevaluationfields
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.discrete_valuation_discretevaluationrings
     source_sage_name: DiscreteValuationRings
     target: cat.discretevaluationrings
@@ -1392,6 +1606,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.discrete_valuation_discretevaluationrings
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.distributive_magmas_and_additive_magmas_distributivemagmasandadditivemagmas
     source_sage_name: DistributiveMagmasAndAdditiveMagmas
     target: cat.magmaswithtwooperations
@@ -1425,6 +1644,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.distributive_magmas_and_additive_magmas_distributivemagmasandadditivemagmas
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.division_rings_divisionrings
     source_sage_name: DivisionRings
     target: cat.division_rings
@@ -1458,6 +1682,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.division_rings_divisionrings
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.domains_domains
     source_sage_name: Domains
     target: cat.domains
@@ -1491,6 +1720,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.domains_domains
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.drinfeld_modules_drinfeldmodules
     source_sage_name: DrinfeldModules
     target: cat.drinfeldmodules_gamma_f_q_t_k
@@ -1520,6 +1754,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact parameterized named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.drinfeld_modules_drinfeldmodules
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.enumerated_sets_enumeratedsets
     source_sage_name: EnumeratedSets
     target: cat.sets
@@ -1553,6 +1792,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.enumerated_sets_enumeratedsets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.euclidean_domains_euclideandomains
     source_sage_name: EuclideanDomains
     target: cat.euclidean_domains
@@ -1586,6 +1830,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.euclidean_domains_euclideandomains
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.facade_sets_facadesets
     source_sage_name: FacadeSets
     target: val.subobjects_sets
@@ -1614,6 +1863,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: named construction
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.facade_sets_facadesets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.fields_fields
     source_sage_name: Fields
     target: cat.fields
@@ -1647,6 +1901,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.fields_fields
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.filtered_algebras_filteredalgebras
     source_sage_name: FilteredAlgebras
     target: cat.associativeunitalalgebras_r
@@ -1681,6 +1940,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.filtered_algebras_filteredalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.filtered_algebras_with_basis_filteredalgebraswithbasis
     source_sage_name: FilteredAlgebrasWithBasis
     target: cat.associativeunitalalgebras_r
@@ -1721,6 +1985,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.filtered_algebras_with_basis_filteredalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.filtered_hopf_algebras_with_basis_filteredhopfalgebraswithbasis
     source_sage_name: FilteredHopfAlgebrasWithBasis
     target: cat.hopfalgebras_r
@@ -1761,6 +2030,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.filtered_hopf_algebras_with_basis_filteredhopfalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.filtered_modules_filteredmodules
     source_sage_name: FilteredModules
     target: cat.bimodules_r_r
@@ -1795,6 +2069,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.filtered_modules_filteredmodules
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.filtered_modules_with_basis_filteredmoduleswithbasis
     source_sage_name: FilteredModulesWithBasis
     target: cat.bimodules_r_r
@@ -1835,6 +2114,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.filtered_modules_with_basis_filteredmoduleswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_complex_reflection_groups_finitecomplexreflectiongroups
     source_sage_name: FiniteComplexReflectionGroups
     target: cat.complexreflectiongroups
@@ -1868,6 +2152,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_complex_reflection_groups_finitecomplexreflectiongroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_coxeter_groups_finitecoxetergroups
     source_sage_name: FiniteCoxeterGroups
     target: cat.coxetergroups
@@ -1901,6 +2190,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_coxeter_groups_finitecoxetergroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_crystals_finitecrystals
     source_sage_name: FiniteCrystals
     target: cat.crystals
@@ -1934,6 +2228,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_crystals_finitecrystals
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_dimensional_algebras_with_basis_finitedimensionalalgebraswithbasis
     source_sage_name: FiniteDimensionalAlgebrasWithBasis
     target: cat.associativeunitalalgebras_r
@@ -1974,6 +2273,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_dimensional_algebras_with_basis_finitedimensionalalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_dimensional_graded_lie_algebras_with_basis_finitedimensionalgradedliealgebraswithbasis
     source_sage_name: FiniteDimensionalGradedLieAlgebrasWithBasis
     target: cat.liealgebras_r
@@ -2020,6 +2324,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_dimensional_graded_lie_algebras_with_basis_finitedimensionalgradedliealgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_dimensional_hopf_algebras_with_basis_finitedimensionalhopfalgebraswithbasis
     source_sage_name: FiniteDimensionalHopfAlgebrasWithBasis
     target: cat.hopfalgebras_r
@@ -2060,6 +2369,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_dimensional_hopf_algebras_with_basis_finitedimensionalhopfalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_dimensional_lie_algebras_with_basis_finitedimensionalliealgebraswithbasis
     source_sage_name: FiniteDimensionalLieAlgebrasWithBasis
     target: cat.liealgebras_r
@@ -2100,6 +2414,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_dimensional_lie_algebras_with_basis_finitedimensionalliealgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_dimensional_modules_with_basis_finitedimensionalmoduleswithbasis
     source_sage_name: FiniteDimensionalModulesWithBasis
     target: cat.bimodules_r_r
@@ -2140,6 +2459,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_dimensional_modules_with_basis_finitedimensionalmoduleswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_dimensional_nilpotent_lie_algebras_with_basis_finitedimensionalnilpotentliealgebraswithbasis
     source_sage_name: FiniteDimensionalNilpotentLieAlgebrasWithBasis
     target: cat.liealgebras_r
@@ -2186,6 +2510,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_dimensional_nilpotent_lie_algebras_with_basis_finitedimensionalnilpotentliealgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_dimensional_semisimple_algebras_with_basis_finitedimensionalsemisimplealgebraswithbasis
     source_sage_name: FiniteDimensionalSemisimpleAlgebrasWithBasis
     target: cat.semisimplealgebras_r
@@ -2226,6 +2555,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_dimensional_semisimple_algebras_with_basis_finitedimensionalsemisimplealgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_enumerated_sets_finiteenumeratedsets
     source_sage_name: FiniteEnumeratedSets
     target: cat.sets
@@ -2265,6 +2599,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_enumerated_sets_finiteenumeratedsets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_fields_finitefields
     source_sage_name: FiniteFields
     target: cat.finite_fields
@@ -2298,6 +2637,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_fields_finitefields
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_groups_finitegroups
     source_sage_name: FiniteGroups
     target: cat.groups
@@ -2331,6 +2675,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_groups_finitegroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_lattice_posets_finitelatticeposets
     source_sage_name: FiniteLatticePosets
     target: cat.latticeposets
@@ -2364,6 +2713,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_lattice_posets_finitelatticeposets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_monoids_finitemonoids
     source_sage_name: FiniteMonoids
     target: cat.monoids
@@ -2397,6 +2751,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_monoids_finitemonoids
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_permutation_groups_finitepermutationgroups
     source_sage_name: FinitePermutationGroups
     target: cat.permutationgroups
@@ -2430,6 +2789,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_permutation_groups_finitepermutationgroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_posets_finiteposets
     source_sage_name: FinitePosets
     target: cat.posets
@@ -2463,6 +2827,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_posets_finiteposets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_semigroups_finitesemigroups
     source_sage_name: FiniteSemigroups
     target: cat.semigroups
@@ -2496,6 +2865,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_semigroups_finitesemigroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_sets_finitesets
     source_sage_name: FiniteSets
     target: clf.sets.finite.domain
@@ -2529,6 +2903,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_sets_finitesets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finite_weyl_groups_finiteweylgroups
     source_sage_name: FiniteWeylGroups
     target: cat.weylgroups
@@ -2562,6 +2941,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finite_weyl_groups_finiteweylgroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finitely_generated_lambda_bracket_algebras_finitelygeneratedlambdabracketalgebras
     source_sage_name: FinitelyGeneratedLambdaBracketAlgebras
     target: cat.lambdabracketalgebras_r
@@ -2596,6 +2980,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finitely_generated_lambda_bracket_algebras_finitelygeneratedlambdabracketalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finitely_generated_lie_conformal_algebras_finitelygeneratedlieconformalalgebras
     source_sage_name: FinitelyGeneratedLieConformalAlgebras
     target: cat.lieconformalalgebras_r
@@ -2630,6 +3019,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finitely_generated_lie_conformal_algebras_finitelygeneratedlieconformalalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finitely_generated_magmas_finitelygeneratedmagmas
     source_sage_name: FinitelyGeneratedMagmas
     target: cat.magmas
@@ -2663,6 +3057,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finitely_generated_magmas_finitelygeneratedmagmas
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.finitely_generated_semigroups_finitelygeneratedsemigroups
     source_sage_name: FinitelyGeneratedSemigroups
     target: cat.semigroups
@@ -2696,6 +3095,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.finitely_generated_semigroups_finitelygeneratedsemigroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.function_fields_functionfields
     source_sage_name: FunctionFields
     target: cat.fields
@@ -2729,6 +3133,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: medium
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.function_fields_functionfields
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.g_sets_gsets
     source_sage_name: GSets
     target: cat.sets
@@ -2763,6 +3172,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.g_sets_gsets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.gcd_domains_gcddomains
     source_sage_name: GcdDomains
     target: cat.gcd_domains
@@ -2796,6 +3210,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.gcd_domains_gcddomains
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.generalized_coxeter_groups_generalizedcoxetergroups
     source_sage_name: GeneralizedCoxeterGroups
     target: cat.generalizedcoxetergroups
@@ -2829,6 +3248,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.generalized_coxeter_groups_generalizedcoxetergroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graded_algebras_gradedalgebras
     source_sage_name: GradedAlgebras
     target: cat.algebras_r.graded
@@ -2863,6 +3287,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graded_algebras_gradedalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graded_algebras_with_basis_gradedalgebraswithbasis
     source_sage_name: GradedAlgebrasWithBasis
     target: cat.associativeunitalalgebras_r
@@ -2903,6 +3332,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graded_algebras_with_basis_gradedalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graded_coalgebras_gradedcoalgebras
     source_sage_name: GradedCoalgebras
     target: cat.coalgebras_r
@@ -2937,6 +3371,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graded_coalgebras_gradedcoalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graded_coalgebras_with_basis_gradedcoalgebraswithbasis
     source_sage_name: GradedCoalgebrasWithBasis
     target: cat.coalgebras_r
@@ -2977,6 +3416,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graded_coalgebras_with_basis_gradedcoalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graded_hopf_algebras_with_basis_gradedhopfalgebraswithbasis
     source_sage_name: GradedHopfAlgebrasWithBasis
     target: cat.hopfalgebras_r
@@ -3017,6 +3461,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graded_hopf_algebras_with_basis_gradedhopfalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graded_lie_algebras_gradedliealgebras
     source_sage_name: GradedLieAlgebras
     target: cat.liealgebras_r
@@ -3051,6 +3500,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graded_lie_algebras_gradedliealgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graded_lie_algebras_with_basis_gradedliealgebraswithbasis
     source_sage_name: GradedLieAlgebrasWithBasis
     target: cat.liealgebras_r
@@ -3091,6 +3545,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graded_lie_algebras_with_basis_gradedliealgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graded_lie_conformal_algebras_gradedlieconformalalgebras
     source_sage_name: GradedLieConformalAlgebras
     target: cat.lieconformalalgebras_r
@@ -3125,6 +3584,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graded_lie_conformal_algebras_gradedlieconformalalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graded_modules_gradedmodules
     source_sage_name: GradedModules
     target: cat.bimodules_r_r
@@ -3159,6 +3623,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graded_modules_gradedmodules
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graded_modules_with_basis_gradedmoduleswithbasis
     source_sage_name: GradedModulesWithBasis
     target: cat.bimodules_r_r
@@ -3199,6 +3668,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graded_modules_with_basis_gradedmoduleswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.graphs_graphs
     source_sage_name: Graphs
     target: cat.graphs
@@ -3227,6 +3701,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.graphs_graphs
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.group_algebras_groupalgebras
     source_sage_name: GroupAlgebras
     target: cat.groupalgebras_r
@@ -3256,6 +3735,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: construction-defined named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.group_algebras_groupalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.groupoid_groupoid
     source_sage_name: Groupoid
     target: cat.groupoidson_g
@@ -3285,6 +3769,11 @@ category_mappings:
       confidence: review
       review_status: proposed; source-audited
       mapping_kind: exceptional parameterized fiber
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.groupoid_groupoid
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.groups_groups
     source_sage_name: Groups
     target: cat.groups
@@ -3313,6 +3802,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.groups_groups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.h_trivial_semigroups_htrivialsemigroups
     source_sage_name: HTrivialSemigroups
     target: cat.semigroups
@@ -3346,6 +3840,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.h_trivial_semigroups_htrivialsemigroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.hecke_modules_heckemodules
     source_sage_name: HeckeModules
     target: cat.modules_r
@@ -3385,6 +3884,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.hecke_modules_heckemodules
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.highest_weight_crystals_highestweightcrystals
     source_sage_name: HighestWeightCrystals
     target: cat.crystals
@@ -3418,6 +3922,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.highest_weight_crystals_highestweightcrystals
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.homsets_homsets
     source_sage_name: Homsets
     target: cat.homsets_c
@@ -3446,6 +3955,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: construction-defined named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.homsets_homsets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.hopf_algebras_hopfalgebras
     source_sage_name: HopfAlgebras
     target: cat.hopfalgebras_r
@@ -3475,6 +3989,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.hopf_algebras_hopfalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.hopf_algebras_with_basis_hopfalgebraswithbasis
     source_sage_name: HopfAlgebrasWithBasis
     target: cat.hopfalgebras_r
@@ -3509,6 +4028,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.hopf_algebras_with_basis_hopfalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.infinite_enumerated_sets_infiniteenumeratedsets
     source_sage_name: InfiniteEnumeratedSets
     target: cat.sets
@@ -3548,6 +4072,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.infinite_enumerated_sets_infiniteenumeratedsets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.integral_domains_integraldomains
     source_sage_name: IntegralDomains
     target: cat.integral_domains
@@ -3581,6 +4110,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.integral_domains_integraldomains
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.j_trivial_semigroups_jtrivialsemigroups
     source_sage_name: JTrivialSemigroups
     target: cat.semigroups
@@ -3614,6 +4148,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.j_trivial_semigroups_jtrivialsemigroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.kac_moody_algebras_kacmoodyalgebras
     source_sage_name: KacMoodyAlgebras
     target: cat.kacmoodyalgebras_r
@@ -3643,6 +4182,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.kac_moody_algebras_kacmoodyalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.kahler_algebras_kahleralgebras
     source_sage_name: KahlerAlgebras
     target: cat.associativeunitalalgebras_r
@@ -3695,6 +4239,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: medium
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.kahler_algebras_kahleralgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.l_trivial_semigroups_ltrivialsemigroups
     source_sage_name: LTrivialSemigroups
     target: cat.semigroups
@@ -3728,6 +4277,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.l_trivial_semigroups_ltrivialsemigroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.lambda_bracket_algebras_lambdabracketalgebras
     source_sage_name: LambdaBracketAlgebras
     target: cat.lambdabracketalgebras_r
@@ -3757,6 +4311,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.lambda_bracket_algebras_lambdabracketalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.lambda_bracket_algebras_with_basis_lambdabracketalgebraswithbasis
     source_sage_name: LambdaBracketAlgebrasWithBasis
     target: cat.lambdabracketalgebras_r
@@ -3791,6 +4350,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.lambda_bracket_algebras_with_basis_lambdabracketalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.lattice_posets_distributivelattices
     source_sage_name: DistributiveLattices
     target: cat.latticeposets
@@ -3824,6 +4388,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.lattice_posets_distributivelattices
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.lattice_posets_latticeposets
     source_sage_name: LatticePosets
     target: cat.latticeposets
@@ -3857,6 +4426,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.lattice_posets_latticeposets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.left_modules_leftmodules
     source_sage_name: LeftModules
     target: cat.modules_r
@@ -3886,6 +4460,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: presentation alias
+    comparison_status: alias
+    lean_semantic_category: null
+    proof_obligation_id: null
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.lie_algebras_liealgebras
     source_sage_name: LieAlgebras
     target: cat.liealgebras_r
@@ -3915,6 +4494,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.lie_algebras_liealgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.lie_algebras_with_basis_liealgebraswithbasis
     source_sage_name: LieAlgebrasWithBasis
     target: cat.liealgebras_r
@@ -3949,6 +4533,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.lie_algebras_with_basis_liealgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.lie_conformal_algebras_lieconformalalgebras
     source_sage_name: LieConformalAlgebras
     target: cat.lieconformalalgebras_r
@@ -3978,6 +4567,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.lie_conformal_algebras_lieconformalalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.lie_conformal_algebras_with_basis_lieconformalalgebraswithbasis
     source_sage_name: LieConformalAlgebrasWithBasis
     target: cat.lieconformalalgebras_r
@@ -4012,6 +4606,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.lie_conformal_algebras_with_basis_lieconformalalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.lie_groups_liegroups
     source_sage_name: LieGroups
     target: cat.liegroups
@@ -4040,6 +4639,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.lie_groups_liegroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.loop_crystals_kirillovreshetikhincrystals
     source_sage_name: KirillovReshetikhinCrystals
     target: cat.loopcrystals
@@ -4073,6 +4677,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.loop_crystals_kirillovreshetikhincrystals
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.loop_crystals_loopcrystals
     source_sage_name: LoopCrystals
     target: cat.loopcrystals
@@ -4101,6 +4710,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.loop_crystals_loopcrystals
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.loop_crystals_regularloopcrystals
     source_sage_name: RegularLoopCrystals
     target: cat.loopcrystals
@@ -4134,6 +4748,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.loop_crystals_regularloopcrystals
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.magmas_magmas
     source_sage_name: Magmas
     target: cat.magmas
@@ -4162,6 +4781,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.magmas_magmas
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.magmas_and_additive_magmas_magmasandadditivemagmas
     source_sage_name: MagmasAndAdditiveMagmas
     target: cat.magmaswithtwooperations
@@ -4190,6 +4814,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: named pullback host
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.magmas_and_additive_magmas_magmasandadditivemagmas
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.magmatic_algebras_magmaticalgebras
     source_sage_name: MagmaticAlgebras
     target: cat.algebras_r
@@ -4219,6 +4848,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact normalized base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.magmatic_algebras_magmaticalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.manifolds_complexmanifolds
     source_sage_name: ComplexManifolds
     target: cat.manifolds
@@ -4252,6 +4886,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.manifolds_complexmanifolds
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.manifolds_manifolds
     source_sage_name: Manifolds
     target: cat.manifolds
@@ -4280,6 +4919,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.manifolds_manifolds
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.matrix_algebras_matrixalgebras
     source_sage_name: MatrixAlgebras
     target: cat.associativeunitalalgebras_k
@@ -4314,6 +4958,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: medium
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.matrix_algebras_matrixalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.metric_spaces_metricspaces
     source_sage_name: MetricSpaces
     target: cat.metricspaces
@@ -4347,6 +4996,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.metric_spaces_metricspaces
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.modular_abelian_varieties_modularabelianvarieties
     source_sage_name: ModularAbelianVarieties
     target: cat.abelianvarieties_k
@@ -4381,6 +5035,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.modular_abelian_varieties_modularabelianvarieties
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.modules_modules
     source_sage_name: Modules
     target: cat.bimodules_r_r
@@ -4410,6 +5069,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.modules_modules
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.modules_with_basis_moduleswithbasis
     source_sage_name: ModulesWithBasis
     target: cat.modules_with_basis
@@ -4444,6 +5108,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.modules_with_basis_moduleswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.monoids_monoids
     source_sage_name: Monoids
     target: cat.monoids
@@ -4472,6 +5141,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.monoids_monoids
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.noetherian_rings_noetherianrings
     source_sage_name: NoetherianRings
     target: cat.commutativerings
@@ -4505,6 +5179,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.noetherian_rings_noetherianrings
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.number_fields_numberfields
     source_sage_name: NumberFields
     target: cat.fields
@@ -4538,6 +5217,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.number_fields_numberfields
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.objects_objects
     source_sage_name: Objects
     target: val.coslices_cat_1
@@ -4566,6 +5250,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: named construction
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.objects_objects
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.ore_modules_oremodules
     source_sage_name: OreModules
     target: cat.modules_r
@@ -4599,6 +5288,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.ore_modules_oremodules
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.partially_ordered_monoids_partiallyorderedmonoids
     source_sage_name: PartiallyOrderedMonoids
     target: cat.monoids
@@ -4632,6 +5326,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.partially_ordered_monoids_partiallyorderedmonoids
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.permutation_groups_permutationgroups
     source_sage_name: PermutationGroups
     target: cat.permutationgroups
@@ -4665,6 +5364,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.permutation_groups_permutationgroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.pointed_sets_pointedsets
     source_sage_name: PointedSets
     target: cat.sets
@@ -4698,6 +5402,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.pointed_sets_pointedsets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.polyhedra_polyhedralsets
     source_sage_name: PolyhedralSets
     target: cat.polyhedra_r
@@ -4726,6 +5435,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: standard name normalization
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.polyhedra_polyhedralsets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.posets_posets
     source_sage_name: Posets
     target: cat.posets
@@ -4754,6 +5468,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.posets_posets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.principal_ideal_domains_principalidealdomains
     source_sage_name: PrincipalIdealDomains
     target: cat.pids
@@ -4787,6 +5506,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.principal_ideal_domains_principalidealdomains
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.quantum_group_representations_quantumgrouprepresentations
     source_sage_name: QuantumGroupRepresentations
     target: cat.modules_r
@@ -4821,6 +5545,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.quantum_group_representations_quantumgrouprepresentations
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.quotient_fields_quotientfields
     source_sage_name: QuotientFields
     target: cat.fields
@@ -4854,6 +5583,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.quotient_fields_quotientfields
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.r_trivial_semigroups_rtrivialsemigroups
     source_sage_name: RTrivialSemigroups
     target: cat.semigroups
@@ -4887,6 +5621,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.r_trivial_semigroups_rtrivialsemigroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.regular_crystals_regularcrystals
     source_sage_name: RegularCrystals
     target: cat.crystals
@@ -4920,6 +5659,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.regular_crystals_regularcrystals
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.regular_supercrystals_regularsupercrystals
     source_sage_name: RegularSuperCrystals
     target: cat.supercrystals
@@ -4953,6 +5697,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.regular_supercrystals_regularsupercrystals
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.right_modules_rightmodules
     source_sage_name: RightModules
     target: cat.right_modules_r
@@ -4982,6 +5731,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: parameter transform
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.right_modules_rightmodules
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.ring_ideals_ringideals
     source_sage_name: RingIdeals
     target: cat.ringideals_r
@@ -5011,6 +5765,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: construction-defined named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.ring_ideals_ringideals
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.rings_rings
     source_sage_name: Rings
     target: cat.rings
@@ -5039,6 +5798,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.rings_rings
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.rngs_rngs
     source_sage_name: Rngs
     target: cat.rngs
@@ -5067,6 +5831,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.rngs_rngs
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.schemes_jacobians
     source_sage_name: Jacobians
     target: cat.abelianvarieties_k
@@ -5101,6 +5870,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.schemes_jacobians
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.schemes_schemes
     source_sage_name: Schemes
     target: cat.schemes_s
@@ -5129,6 +5903,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.schemes_schemes
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.semigroups_semigroups
     source_sage_name: Semigroups
     target: cat.semigroups
@@ -5157,6 +5936,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.semigroups_semigroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.semirings_semirings
     source_sage_name: Semirings
     target: cat.semirings
@@ -5185,6 +5969,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.semirings_semirings
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.semisimple_algebras_semisimplealgebras
     source_sage_name: SemisimpleAlgebras
     target: cat.semisimplealgebras_r
@@ -5219,6 +6008,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.semisimple_algebras_semisimplealgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.sets_cat_sets
     source_sage_name: Sets
     target: cat.sets
@@ -5247,6 +6041,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.sets_cat_sets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.sets_with_grading_setswithgrading
     source_sage_name: SetsWithGrading
     target: clf.sets.graded.domain
@@ -5280,6 +6079,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.sets_with_grading_setswithgrading
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.sets_with_partial_maps_setswithpartialmaps
     source_sage_name: SetsWithPartialMaps
     target: cat.setswithpartialmaps
@@ -5308,6 +6112,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.sets_with_partial_maps_setswithpartialmaps
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.shephard_groups_shephardgroups
     source_sage_name: ShephardGroups
     target: cat.generalizedcoxetergroups
@@ -5347,6 +6156,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.shephard_groups_shephardgroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.simplicial_complexes_simplicialcomplexes
     source_sage_name: SimplicialComplexes
     target: cat.simplicialcomplexes
@@ -5375,6 +6189,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.simplicial_complexes_simplicialcomplexes
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.simplicial_sets_simplicialsets
     source_sage_name: SimplicialSets
     target: cat.simplicialsets
@@ -5403,6 +6222,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: construction-defined named category
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.simplicial_sets_simplicialsets
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.super_algebras_superalgebras
     source_sage_name: SuperAlgebras
     target: cat.associativeunitalalgebras_r
@@ -5437,6 +6261,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.super_algebras_superalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.super_algebras_with_basis_superalgebraswithbasis
     source_sage_name: SuperAlgebrasWithBasis
     target: cat.associativeunitalalgebras_r
@@ -5477,6 +6306,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.super_algebras_with_basis_superalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.super_hopf_algebras_with_basis_superhopfalgebraswithbasis
     source_sage_name: SuperHopfAlgebrasWithBasis
     target: cat.hopfalgebras_r
@@ -5517,6 +6351,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.super_hopf_algebras_with_basis_superhopfalgebraswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.super_lie_conformal_algebras_superlieconformalalgebras
     source_sage_name: SuperLieConformalAlgebras
     target: cat.lieconformalalgebras_r
@@ -5551,6 +6390,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.super_lie_conformal_algebras_superlieconformalalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.super_modules_supermodules
     source_sage_name: SuperModules
     target: cat.bimodules_r_r
@@ -5585,6 +6429,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.super_modules_supermodules
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.super_modules_with_basis_supermoduleswithbasis
     source_sage_name: SuperModulesWithBasis
     target: cat.bimodules_r_r
@@ -5625,6 +6474,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.super_modules_with_basis_supermoduleswithbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.supercommutative_algebras_supercommutativealgebras
     source_sage_name: SupercommutativeAlgebras
     target: cat.superalgebras_r
@@ -5659,6 +6513,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.supercommutative_algebras_supercommutativealgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.supercrystals_supercrystals
     source_sage_name: SuperCrystals
     target: cat.supercrystals
@@ -5692,6 +6551,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.supercrystals_supercrystals
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.topological_spaces_topologicalspaces
     source_sage_name: TopologicalSpaces
     target: cat.topologicalspaces
@@ -5720,6 +6584,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.topological_spaces_topologicalspaces
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.triangular_kac_moody_algebras_triangularkacmoodyalgebras
     source_sage_name: TriangularKacMoodyAlgebras
     target: cat.kacmoodyalgebras_r
@@ -5754,6 +6623,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.triangular_kac_moody_algebras_triangularkacmoodyalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.unique_factorization_domains_uniquefactorizationdomains
     source_sage_name: UniqueFactorizationDomains
     target: cat.ufds
@@ -5787,6 +6661,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.unique_factorization_domains_uniquefactorizationdomains
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.unital_algebras_unitalalgebras
     source_sage_name: UnitalAlgebras
     target: cat.algebras_r
@@ -5821,6 +6700,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.unital_algebras_unitalalgebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.vector_bundles_vectorbundles
     source_sage_name: VectorBundles
     target: cat.vectorbundles_x_r
@@ -5849,6 +6733,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: exact named base
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.vector_bundles_vectorbundles
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.vector_spaces_vectorspaces
     source_sage_name: VectorSpaces
     target: cat.bimodules_k_k
@@ -5878,6 +6767,11 @@ category_mappings:
       confidence: high
       review_status: proposed; source-audited
       mapping_kind: parameter specialization
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.vector_spaces_vectorspaces
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.weyl_groups_weylgroups
     source_sage_name: WeylGroups
     target: cat.weylgroups
@@ -5911,6 +6805,11 @@ category_mappings:
       source: design/sage/authored/ + constructibility
       confidence: high
       review_status: proposed; source-audited
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.weyl_groups_weylgroups
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.vectorspaces.withbasis
     source_sage_name: VectorSpaces.WithBasis
     target: cat.bimodules_k_k
@@ -5938,6 +6837,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.vectorspaces.withbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.unitalalgebras.withbasis
     source_sage_name: UnitalAlgebras.WithBasis
     target: cat.unital_algebras
@@ -5965,6 +6869,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.unitalalgebras.withbasis
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.additivemagmas.additivecommutative
     source_sage_name: AdditiveMagmas.AdditiveCommutative
     target: cat.magmas
@@ -5995,6 +6904,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.additivemagmas.additivecommutative
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.monoids.commutative
     source_sage_name: Monoids.Commutative
     target: cat.monoids
@@ -6022,6 +6936,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.monoids.commutative
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.magmaticalgebras.withbasis.finitedimensional
     source_sage_name: MagmaticAlgebras.WithBasis.FiniteDimensional
     target: cat.algebras_r
@@ -6052,6 +6971,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.magmaticalgebras.withbasis.finitedimensional
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.vectorspaces.finitedimensional
     source_sage_name: VectorSpaces.FiniteDimensional
     target: cat.bimodules_k_k
@@ -6079,6 +7003,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.vectorspaces.finitedimensional
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.vectorspaces.withbasis.finitedimensional
     source_sage_name: VectorSpaces.WithBasis.FiniteDimensional
     target: cat.bimodules_k_k
@@ -6109,6 +7038,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.vectorspaces.withbasis.finitedimensional
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.commutativerings.finite
     source_sage_name: CommutativeRings.Finite
     target: cat.commutative_rings
@@ -6136,6 +7070,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.commutativerings.finite
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.finitelygeneratedsemigroups.finite
     source_sage_name: FinitelyGeneratedSemigroups.Finite
     target: cat.semigroups
@@ -6166,6 +7105,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.finitelygeneratedsemigroups.finite
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.posets.bounded
     source_sage_name: Posets.Bounded
     target: cat.posets
@@ -6193,6 +7137,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.posets.bounded
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.vectorspaces.graded
     source_sage_name: VectorSpaces.Graded
     target: cat.bimodules_k_k
@@ -6220,6 +7169,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.vectorspaces.graded
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.vectorspaces.withbasis.graded
     source_sage_name: VectorSpaces.WithBasis.Graded
     target: cat.bimodules_k_k
@@ -6250,6 +7204,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.vectorspaces.withbasis.graded
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.coalgebras.filtered
     source_sage_name: Coalgebras.Filtered
     target: cat.coalgebras_r
@@ -6277,6 +7236,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.coalgebras.filtered
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.coalgebraswithbasis.filtered
     source_sage_name: CoalgebrasWithBasis.Filtered
     target: cat.coalgebras_r
@@ -6307,6 +7271,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.coalgebraswithbasis.filtered
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.vectorspaces.filtered
     source_sage_name: VectorSpaces.Filtered
     target: cat.bimodules_k_k
@@ -6334,6 +7303,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.vectorspaces.filtered
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.vectorspaces.withbasis.filtered
     source_sage_name: VectorSpaces.WithBasis.Filtered
     target: cat.bimodules_k_k
@@ -6364,6 +7338,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.vectorspaces.withbasis.filtered
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.monoids.algebras
     source_sage_name: Monoids.Algebras
     target: cat.bialgebras_r
@@ -6400,6 +7379,11 @@ category_mappings:
         and a chosen presentation is a pair (M, phi : R[M] = B) (Rmk 7.5). Rmk 7.6:
         this concerns arbitrary bialgebra morphisms -- restricting to basis-preserving
         maps changes the codomain and the theorems must be reproved there.'
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.monoids.algebras
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.magmas.unital.inverse
     source_sage_name: Magmas.Unital.Inverse
     target: cat.magmas
@@ -6430,6 +7414,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.magmas.unital.inverse
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.sets.infinite
     source_sage_name: Sets.Infinite
     target: cat.sets
@@ -6457,6 +7446,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.sets.infinite
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.magmas.unital
     source_sage_name: Magmas.Unital
     target: cat.magmas
@@ -6484,6 +7478,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.magmas.unital
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
   - source: sage.category.with_axiom.distributivemagmasandadditivemagmas.additiveassociative.additivecommutative.additiveunital.associative
     source_sage_name: DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative
     target: cat.magmaswithtwooperations
@@ -6523,6 +7522,11 @@ category_mappings:
       status: constructible
       source: constructibility.check_constructibility
       note: Ephemeral C.A… over normalized base; not in the authored public ledger
+    comparison_status: observed-Sage-approximation
+    lean_semantic_category: null
+    proof_obligation_id: obl.realize.sage.category.with_axiom.distributivemagmasandadditivemagmas.additiveassociative.additivecommutative.additiveunital.associative
+    backend_capabilities: []
+    pinned_sage_version: sage-dev-local
 axiom_mappings:
   - source: sage.axiom.additiveassociative
     source_sage_name: AdditiveAssociative
