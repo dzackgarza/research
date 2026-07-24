@@ -32,15 +32,22 @@ structure CategoryCorrespondence where
   observed : SageCategoryId
   normalized : CategoryExpr
 
-/-- A functor reference whose source and target expressions are part of its type. -/
-structure StructuralTransport (source target : CategoryExpr) where
-  functor : FunctorId
+/-- **Observation record** (decision record 3 §4). A reference to a Sage functor
+*claimed* to transport `source` to `target`, carrying only its `FunctorId` — not the
+functor itself, nor a proof that it realizes `source → target` or performs the rehosting.
+The type parameters record the claimed endpoints; the agreement is an obligation, not
+evidence. The proof-carrying alternative indexes this by a normalized declaration
+imported from lean-lattices (blocked on the pinned release, dzackgarza/lean-lattices#4). -/
+structure ObservedTransport (source target : CategoryExpr) where
+  observedFunctor : FunctorId
 
 /-- Rehosting disposition for a Sage axiom whose defining host differs from its
-normalized least host. -/
+normalized least host. `identical` carries a genuine proof `source = target`;
+`transported` is an observation record (see `ObservedTransport`) whose agreement is an
+obligation, not a proof. -/
 inductive AxiomRehosting (source target : CategoryExpr)
   | identical (witness : source = target)
-  | transported (map : StructuralTransport source target)
+  | transported (map : ObservedTransport source target)
 
 /-- A Sage axiom observation interpreted as one normalized classifier, with the
 host comparison and transport needed to make that interpretation explicit. -/
