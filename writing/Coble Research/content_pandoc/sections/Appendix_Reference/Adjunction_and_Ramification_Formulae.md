@@ -10,7 +10,7 @@ K_Y = f^* K_X + (\codim_V(X) - 1)E
     .
 $$
 
-Note that if $X$ is a surface and $V$ is a divisor, this recovers
+Note that if $X$ is a surface and $V$ is a point, this recovers
 $$K_Y = f^* K_X + E.$$
 :::
 
