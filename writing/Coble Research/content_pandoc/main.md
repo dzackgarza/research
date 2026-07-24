@@ -26,6 +26,10 @@ content_pandoc/sections/Lattices_and_Moduli/_index.md
 ```
 
 ```include
+content_pandoc/sections/Compactifications/_index.md
+```
+
+```include
 content_pandoc/sections/Degenerations/_index.md
 ```
 
