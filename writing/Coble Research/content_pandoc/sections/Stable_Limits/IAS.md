@@ -21,6 +21,31 @@ $(\cZ, \cR_{\cZ}) \da (\cX, \cR)/\iota_{\En}$ where $\cX \to (C, 0)$ and
 $(\cX, \cR)$ are Kulikov and divisor models of their K3 covers.
 :::
 
+::: {.definition ref="def:singular_ias"}
+
+The dual complex $\Gamma(\cX_0)$ of a Type III Kulikov model carries a canonical
+*singular integral affine structure*: away from a finite singular set its charts
+map to $\RR^2$ with transition functions in $\operatorname{GL}_2(\bZ) \ltimes \RR^2$,
+and its singularities correspond to the components of positive charge, the
+non-toric anticanonical pairs.
+The total charge is $24$, which constrains the number and type of singularities;
+for instance one may have $24$ singularities of type $I_1$.
+:::
+
+::: {.definition ref="def:symington_polytope"}
+
+Given a monodromy invariant $\lambda$ with barycentric coordinates
+$\ell_i = \lambda \cdot \alpha_i$, the *Symington polytope* $P(\lambda)$ is the
+integral affine polygon determined by these coordinates [@Sym02].
+Gluing two copies along their boundary,
+$$
+B(\lambda) = P(\lambda) \cup P(\lambda)^{\mathrm{op}},
+$$
+produces the integral affine sphere realizing the dual complex $\Gamma(\cX_0)$; the
+equator along which the two copies are glued supports the integral affine
+polarization $R_{\mathrm{IA}}$ [@AE23].
+:::
+
 ![A one-parameter family $\cX \to C$ of surfaces over a curve $C \subseteq \cM$ in the moduli space, with fibers $\cX_0$ and $\cX_t$ over interior points and the limit $\cX_\infty$ over the boundary point $\infty$.](rendered/moduli_space_degeneration.svg){#fig:moduli-degeneration width=48%}
 
 ::: {.remark}
@@ -65,4 +90,44 @@ The following is a combinatorial representation of a Kulikov model for Sterk 2.
 ::: {.remark}
 
 We leverage the theory of [@AEGS25; @AE22; @AE23; @AET23; @ABE22].
+:::
+
+## Marked-root structures for the Coble locus
+
+::: {.remark}
+
+For Enriques and Coble surfaces the integral affine data is built on the K3 cover
+first and only then folded downstairs.
+One starts from the K3 monodromy (Coxeter) data behind the integral affine sphere,
+imposes the Coble condition by marking a root $r$ of zero length,
+$$
+\lambda \cdot r = 0,
+$$
+and only afterwards passes to the folded Enriques data and the Coble hyperplane.
+The marked root records the vanishing cycle producing the node on the K3 cover; it
+is what distinguishes the Coble integral affine structure from an ordinary Enriques
+boundary structure.
+:::
+
+::: {.question ref="que:equivariant_triangulation"}
+
+Does there exist an equivariant triangulation of the integral affine sphere
+compatible with the marked root $r$?
+Absent such a triangulation, the marked-root prescription remains a construction
+principle rather than a finished combinatorial model.
+:::
+
+::: {.remark}
+
+Under the cusp correspondence, the Coble $0$-cusp corresponds to Sterk cusp $2$,
+realized as the folding of the cusp $(18,0,0)_1$ by the horizontal symmetry of its
+Coxeter diagram [@AEGS25].
+The associated integral affine and Kulikov models are therefore of *disc* type,
+matching the folding involution of Sterk $2$; the Coble boundary is expected to
+produce disc-type integral affine structures rather than sphere- or
+$\mathbf{RP}^2$-type limits, in agreement with the flowerpot degenerations of
+Morrison [@Mor81; @AEGS25].
+The combinatorial disc-type model of \cref{fig:ias-sterk2-kulikov-model} and the
+integral affine structure for Sterk $2$ of \cref{fig:sterk2-ias} illustrate this
+case.
 :::
