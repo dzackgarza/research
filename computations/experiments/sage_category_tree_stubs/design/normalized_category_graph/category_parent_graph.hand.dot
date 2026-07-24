@@ -1,3 +1,17 @@
+// ============================================================================
+// ARCHIVED — requirements inventory (decision record 3 §5). Frozen: no further
+// manual repair. The live typed views are generated from the proof-carrying
+// registry (semantic_seed + the DR3 §6.3 bridge records); this hand snapshot is
+// kept only as a record of intent, never as a source of mathematical truth.
+// Known errors recorded by the audit (DR3 §5), corrected in the generated
+// registry, NOT here:
+//   - FinitelyGenerated hosted on magmas (ℤ is f.g. as a group, not as a monoid);
+//   - Lat_R drawn as an informal join;
+//   - DiscQuad missing its value group, finiteness, and bilinearization;
+//   - orthogonal groups drawn as parent edges;
+//   - the manifold → variety edge.
+// ============================================================================
+//
 // Category parent graph (child → parent = supercategory).
 //
 // Node classes:

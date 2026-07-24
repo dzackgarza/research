@@ -7,6 +7,13 @@
 #   →  generated Graphviz views
 #
 # Neither Sage nor correspondence duplicates normalized definitions.
+#
+# Decision record 3 §6: the generated Graphviz views (correspondence.dot,
+# observed_parents.dot, category_parent_graph.{dot,svg,html}) and any large
+# snapshot are NON-AUTHORITATIVE — CI artifacts / review attachments, never a
+# coequal source of mathematical truth. Truth is the normalized SSOT
+# (semantic_seed/) and the DR3 §6.3 bridge records; the hand parent DOT is an
+# archived requirements inventory (see category_parent_graph.hand.dot), frozen.
 
 design/
   schemas/                 # JSON Schema for the three manifests (+ routes)
