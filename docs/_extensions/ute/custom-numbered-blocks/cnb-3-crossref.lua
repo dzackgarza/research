@@ -273,9 +273,9 @@ local writexref = function(filename)
   
   local xrjson = quarto.json.encode(strippedxref)
   local file = io.open(filename,"w")
-  
-  if file ~= nil then 
-    file:write(xrjson) 
+
+  if file ~= nil then
+    file:write(xrjson)
     file:close()
  -- end
   --[[

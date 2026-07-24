@@ -13,26 +13,33 @@ Notation carries claims: $\hookrightarrow$ asserts a replete full subcategory.
 ::: {#def-modules-over-ring}
 ## Modules over a ring
 
-For a ring $A$ — not necessarily commutative — $\mathrm{Mod}_A$ is the category of left $A$-modules. The opposite-ring involution $(-)^{\mathrm{op}}\colon \mathbf{Ring} \to \mathbf{Ring}$ (with $(A^{\mathrm{op}})^{\mathrm{op}} = A$) is what relates left and right modules: a right $A$-module is a left $A^{\mathrm{op}}$-module, so right $A$-modules are $\mathrm{Mod}_{A^{\mathrm{op}}}$. An $(A,B)$-bimodule forgets to a left $A$-module and to a right $B$-module,
+For a ring $A$ — not necessarily commutative — $\mathrm{Mod}_A$ is the category of left $A$-modules.
+The opposite-ring involution $(-)^{\mathrm{op}}\colon \mathbf{Ring} \to \mathbf{Ring}$ (with $(A^{\mathrm{op}})^{\mathrm{op}} = A$) is what relates left and right modules: a right $A$-module is a left $A^{\mathrm{op}}$-module, so right $A$-modules are $\mathrm{Mod}_{A^{\mathrm{op}}}$.
+An $(A,B)$-bimodule forgets to a left $A$-module and to a right $B$-module,
 
 $$
 \mathrm{Mod}_A \xleftarrow{\;U_L\;} {}_{A}\mathrm{BiMod}_B \xrightarrow{\;U_R\;} \mathrm{Mod}_{B^{\mathrm{op}}}.
 $$
 
-$\mathrm{Mod}_A \simeq \mathrm{Mod}_{A^{\mathrm{op}}}$ exactly when $A \cong A^{\mathrm{op}}$ in $\mathbf{Ring}$. For commutative $A$ — the standing case for $R$ — the involution fixes $A$ ($A^{\mathrm{op}} = A$, the isomorphism the identity), so the two agree and the $A = B$ bimodule span commutes as a triangle. Which relation is meant — equality, isomorphism, or equivalence — is fixed by the ambient convention of the [Framework](Mathematical-Framework.md), not restated here.
+$\mathrm{Mod}_A \simeq \mathrm{Mod}_{A^{\mathrm{op}}}$ exactly when $A \cong A^{\mathrm{op}}$ in $\mathbf{Ring}$.
+For commutative $A$ — the standing case for $R$ — the involution fixes $A$ ($A^{\mathrm{op}} = A$, the isomorphism the identity), so the two agree and the $A = B$ bimodule span commutes as a triangle.
+Which relation is meant — equality, isomorphism, or equivalence — is fixed by the ambient convention of the [Framework](Mathematical-Framework.md), not restated here.
 :::
 
 ::: {#def-tower}
 ## The tower
 
 The algebraic tower is generated from magmas by four subcategory inclusions — associativity, commutativity, unitality, inverses — with monoids, groups, and abelian groups arising as categorical intersections (@def-classifier-intersection), never as new declarations.
-The abelian landing is equivalent to $\mathrm{Mod}_{\mathbb{Z}}$, the fibre over $\mathbb{Z}$ of the Grothendieck construction $\textstyle\int \mathrm{Mod}_{-} \to \mathbf{Ring}$ of the module functor $\mathrm{Mod}_{-}\colon \mathbf{Ring} \to \mathbf{Cat}_1$ (sending a ring map $A \to A'$ to base change $A' \otimes_A -$) — so "the $\mathbb{Z}$ fibre" is exactly $\mathrm{Mod}_{-}$ evaluated at $\mathbb{Z}$ [@nlab:grothendieck_construction], the construction pinned in [Categorical Foundations](Categorical-Foundations.md#sec-constructions). With $\mathbb{Z}$ initial in $\mathbf{Ring}$, base change along the unique $\mathbb{Z} \to R$ is $\mathrm{Mod}_{\mathbb{Z}} \to \mathrm{Mod}_R$.
+The abelian landing is equivalent to $\mathrm{Mod}_{\mathbb{Z}}$, the fibre over $\mathbb{Z}$ of the Grothendieck construction $\textstyle\int \mathrm{Mod}_{-} \to \mathbf{Ring}$ of the module functor $\mathrm{Mod}_{-}\colon \mathbf{Ring} \to \mathbf{Cat}_1$ (sending a ring map $A \to A'$ to base change $A' \otimes_A -$) — so "the $\mathbb{Z}$ fibre" is exactly $\mathrm{Mod}_{-}$ evaluated at $\mathbb{Z}$ [@nlab:grothendieck_construction], the construction pinned in [Categorical Foundations](Categorical-Foundations.md#sec-constructions).
+With $\mathbb{Z}$ initial in $\mathbf{Ring}$, base change along the unique $\mathbb{Z} \to R$ is $\mathrm{Mod}_{\mathbb{Z}} \to \mathrm{Mod}_R$.
 :::
 
 ::: {#def-module-subcategories}
 ## Module subcategories
 
-Each module property is a classifier over $\mathrm{Mod}_R$ (@def-axiom-classifier): a full inclusion $\iota_A\colon (\mathrm{Mod}_R).A \hookrightarrow \mathrm{Mod}_R$ cut out by the property's content — $\iota_{\mathrm{free}}$ (admits a basis, $M \cong R^{(I)}$), $\iota_{\mathrm{proj}}$ (a retract of a free module), $\iota_{\mathrm{fg}}$ (admits a surjection $R^{n} \twoheadrightarrow M$), $\iota_{\mathrm{tors}}$, and $\iota_{\mathrm{tf}}$. Each axiom is isomorphism-invariant, so each classifier is a *property* (@def-property-structure-stuff), and $\mathrm{free} \subseteq \mathrm{proj}$ is theorem-witnessed (@def-theorem-witness), not axiomatic. But these axioms refer to the $R$-action, so they do not factor through the forgetful to $\mathbf{Set}$ and are not pullbacks from it (@def-axiom-through-functor, [A3](Settled-Mathematical-Rulings.md#a3)): each has classifying category $\mathrm{Mod}_R$ and is pulled back along $\pi$ below, never re-declared.
+Each module property is a classifier over $\mathrm{Mod}_R$ (@def-axiom-classifier): a full inclusion $\iota_A\colon (\mathrm{Mod}_R).A \hookrightarrow \mathrm{Mod}_R$ cut out by the property's content — $\iota_{\mathrm{free}}$ (admits a basis, $M \cong R^{(I)}$), $\iota_{\mathrm{proj}}$ (a retract of a free module), $\iota_{\mathrm{fg}}$ (admits a surjection $R^{n} \twoheadrightarrow M$), $\iota_{\mathrm{tors}}$, and $\iota_{\mathrm{tf}}$.
+Each axiom is isomorphism-invariant, so each classifier is a *property* (@def-property-structure-stuff), and $\mathrm{free} \subseteq \mathrm{proj}$ is theorem-witnessed (@def-theorem-witness), not axiomatic.
+But these axioms refer to the $R$-action, so they do not factor through the forgetful to $\mathbf{Set}$ and are not pullbacks from it (@def-axiom-through-functor, [A3](Settled-Mathematical-Rulings.md#a3)): each has classifying category $\mathrm{Mod}_R$ and is pulled back along $\pi$ below, never re-declared.
 :::
 
 *Seated rulings:* [left/right modules are distinct categories](Settled-Mathematical-Rulings.md#invariants-and-their-evaluation).
@@ -112,13 +119,15 @@ $$
 \tilde b : M \longrightarrow \operatorname{Hom}_R(M, W),
 $$
 
-requiring no freeness. The form is **nondegenerate** when $\tilde b$ is injective and **perfect (unimodular)** when $\tilde b$ is an isomorphism.
+requiring no freeness.
+The form is **nondegenerate** when $\tilde b$ is injective and **perfect (unimodular)** when $\tilde b$ is an isomorphism.
 :::
 
 ::: {#def-orthogonal-sum}
 ## Orthogonal sum
 
-The form categories carry a symmetric monoidal structure, the **orthogonal sum**: $(M, b_M) \perp (N, b_N) = (M \oplus N,\, b_M \oplus b_N)$ with vanishing cross terms. Being a *structure* (not a property), it is a named section $\mathcal{B}_{R,W}^{(\perp)}$ ([chosen-structure convention](../contributing/Mathematical-Language-Style-Guide.md#convention-chosen-structure)), consumed by the bitorsor composition of @def-isometry-groups and the adelic product of @sec-genus-sec, which reference the named lift rather than "the" monoidal structure.
+The form categories carry a symmetric monoidal structure, the **orthogonal sum**: $(M, b_M) \perp (N, b_N) = (M \oplus N,\, b_M \oplus b_N)$ with vanishing cross terms.
+Being a *structure* (not a property), it is a named section $\mathcal{B}_{R,W}^{(\perp)}$ ([chosen-structure convention](../contributing/Mathematical-Language-Style-Guide.md#convention-chosen-structure)), consumed by the bitorsor composition of @def-isometry-groups and the adelic product of @sec-genus-sec, which reference the named lift rather than "the" monoidal structure.
 :::
 
 *Seated rulings:* [the W-valued form is the defining datum](Settled-Mathematical-Rulings.md#forms-and-lattices) · [the total category and its variance](Settled-Mathematical-Rulings.md#forms-and-lattices) · [alternating vs skew-symmetric](Settled-Mathematical-Rulings.md#forms-and-lattices) · [nondegenerate is not unimodular](Settled-Mathematical-Rulings.md#forms-and-lattices).
@@ -190,7 +199,8 @@ $$
 \mathbf{DiscBil}_{\mathbb{Z}} \;=\; \mathcal{B}_{\mathbb{Z},\, \mathbb{Q}/\mathbb{Z}}\big[\, \mathrm{Symmetric} \wedge \mathrm{Nondegenerate} \wedge (U \circ \pi)^{*}(\mathrm{Finite}) \,\big],
 $$
 
-the finiteness axiom pulled back from sets through the underlying-set functor (@def-axiom-through-functor). In general the torsion fiber takes $W = K/R$, and the same expression defines $\mathbf{DiscBil}_R$ — the codomain of the @def-discriminant discriminant functor for general $R$, not only $\mathbb{Z}$.
+the finiteness axiom pulled back from sets through the underlying-set functor (@def-axiom-through-functor).
+In general the torsion fiber takes $W = K/R$, and the same expression defines $\mathbf{DiscBil}_R$ — the codomain of the @def-discriminant discriminant functor for general $R$, not only $\mathbb{Z}$.
 :::
 
 ::: {#def-discquad}
@@ -226,7 +236,10 @@ $$
 \operatorname{rad}(L) := \ker \tilde b, \qquad A_L := \operatorname{coker} \tilde b .
 $$
 
-$b$ is **nondegenerate** $:\!\iff \operatorname{rad}(L) = 0$; $b$ is **perfect (unimodular)** $:\!\iff \tilde b$ is an isomorphism, i.e. $\operatorname{rad}(L) = 0$ *and* $A_L = 0$. Thus $\operatorname{rad}(L)$ is the obstruction to nondegeneracy, and — once it vanishes — $A_L$ is the remaining obstruction to unimodularity. Neither condition is a property read off the object; each is the vanishing of a carried object. The radical sequence names both witnesses at once (here $W = R$; in general $L^* = \operatorname{Hom}(L, W)$):
+$b$ is **nondegenerate** $:\!\iff \operatorname{rad}(L) = 0$; $b$ is **perfect (unimodular)** $:\!\iff \tilde b$ is an isomorphism, i.e. $\operatorname{rad}(L) = 0$ *and* $A_L = 0$.
+Thus $\operatorname{rad}(L)$ is the obstruction to nondegeneracy, and — once it vanishes — $A_L$ is the remaining obstruction to unimodularity.
+Neither condition is a property read off the object; each is the vanishing of a carried object.
+The radical sequence names both witnesses at once (here $W = R$; in general $L^* = \operatorname{Hom}(L, W)$):
 
 $$
 0 \to \operatorname{rad}(L) \to L \xrightarrow{\ \tilde b\ } L^* \to A_L \to 0 .
@@ -236,13 +249,15 @@ $$
 ::: {#thm-localization-les}
 ## The localization long exact sequence
 
-The base-change map $L \to L \otimes_R K$ is the truncation of $L \otimes_R (-)$ applied to $0 \to R \to K \to K/R \to 0$. Since $K$ is flat ($\operatorname{Tor}_1^R(L, K) = 0$), the sequence continues to
+The base-change map $L \to L \otimes_R K$ is the truncation of $L \otimes_R (-)$ applied to $0 \to R \to K \to K/R \to 0$.
+Since $K$ is flat ($\operatorname{Tor}_1^R(L, K) = 0$), the sequence continues to
 
 $$
 0 \to \operatorname{Tor}_1^R(L,\, K/R) \to L \to L \otimes_R K \to L \otimes_R (K/R) \to 0,
 $$
 
-with the identification $\operatorname{Tor}_1^R(L, K/R) \cong T(L)$, the torsion submodule. For a lattice ($L$ f.g. projective, hence torsion-free) it collapses to $0 \to L \to L_K \to L \otimes (K/R) \to 0$.
+with the identification $\operatorname{Tor}_1^R(L, K/R) \cong T(L)$, the torsion submodule.
+For a lattice ($L$ f.g. projective, hence torsion-free) it collapses to $0 \to L \to L_K \to L \otimes (K/R) \to 0$.
 :::
 
 ::: {#def-metric-dual}
@@ -260,7 +275,8 @@ $$
 \beta := \tilde b_K|_{L^{\#}} : L^{\#} \to L^*, \qquad x \mapsto b_K(x, -)|_L
 $$
 
-is the restriction of $\tilde b_K$. The obstruction to $\beta$ (equivalently to $\tilde b_K$) being an isomorphism is the object
+is the restriction of $\tilde b_K$.
+The obstruction to $\beta$ (equivalently to $\tilde b_K$) being an isomorphism is the object
 
 $$
 \operatorname{rad}(L_K) = \ker \tilde b_K = \operatorname{rad}(L) \otimes_R K,
@@ -325,7 +341,8 @@ $$
 O(L) \longrightarrow O(A_L, q_{A_L}),
 $$
 
-the **discriminant representation**. Its kernel is the **stable orthogonal group** $\widetilde O(L) := \ker\big(O(L) \to O(A_L, q_{A_L})\big)$ — named as a kernel in this sequence, not as "the isometries acting trivially." Surjectivity is *not* automatic: when it holds it is Nikulin's theorem under hypotheses (indefinite, $\operatorname{rank} L \ge \ell(A_L) + 2$), and in general the cokernel is the Miranda–Morrison genus / spinor-genus obstruction.
+the **discriminant representation**. Its kernel is the **stable orthogonal group** $\widetilde O(L) := \ker\big(O(L) \to O(A_L, q_{A_L})\big)$ — named as a kernel in this sequence, not as "the isometries acting trivially."
+Surjectivity is *not* automatic: when it holds it is Nikulin's theorem under hypotheses (indefinite, $\operatorname{rank} L \ge \ell(A_L) + 2$), and in general the cokernel is the Miranda–Morrison genus / spinor-genus obstruction.
 :::
 
 ::: {#prp-matrix-realizations}

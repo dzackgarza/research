@@ -1,28 +1,26 @@
 # Lattices and discriminant forms {#sec-lattices-discriminant}
 
-Let $R$ be a Dedekind domain with fraction field $K$. The main case is
-$R=\mathbb Z$ and $K=\mathbb Q$.
+Let $R$ be a Dedekind domain with fraction field $K$.
+The main case is $R=\mathbb Z$ and $K=\mathbb Q$.
 
 ::: {#def-lattice}
 ## Lattices
 
-An $R$-*lattice* is a finitely generated projective $R$-module $L$ equipped with a
-symmetric bilinear form $b\colon L\times L\to R$ whose adjoint map
+An $R$-*lattice* is a finitely generated projective $R$-module $L$ equipped with a symmetric bilinear form $b\colon L\times L\to R$ whose adjoint map
 $$
 b^\sharp\colon L\longrightarrow L^*:=\operatorname{Hom}_R(L,R)
 $$
-is injective. The category $\mathbf{Lat}_R$ is the replete full subcategory of
-$\mathcal B_{R,R}$ on these objects [@Nik80].
+is injective.
+The category $\mathbf{Lat}_R$ is the replete full subcategory of $\mathcal B_{R,R}$ on these objects [@Nik80].
 
-**Remark.** Positive definiteness and unimodularity are additional properties. Freeness
-holds over a principal ideal domain; a basis is chosen data.
+**Remark.** Positive definiteness and unimodularity are additional properties.
+Freeness holds over a principal ideal domain; a basis is chosen data.
 :::
 
 ::: {#exm-subobject-base-change}
-**Example.** Let $L$ be an integral lattice and let $0\ne v\in L$. The inclusion
-$\mathbb Zv\hookrightarrow L$ represents a subobject of the underlying
-$\mathbb Z$-module. Since $\mathbb R$ is flat over $\mathbb Z$, extension of scalars
-from @def-module-base-change gives the monomorphism
+**Example.** Let $L$ be an integral lattice and let $0\ne v\in L$.
+The inclusion $\mathbb Zv\hookrightarrow L$ represents a subobject of the underlying $\mathbb Z$-module.
+Since $\mathbb R$ is flat over $\mathbb Z$, extension of scalars from @def-module-base-change gives the monomorphism
 $$
 \mathbb Rv\hookrightarrow L\otimes_{\mathbb Z}\mathbb R.
 $$
@@ -32,27 +30,26 @@ The two monomorphisms represent subobjects in different module categories.
 ::: {#def-unimodular}
 ## Unimodular lattices
 
-A lattice is *unimodular* if $b^\sharp$ is an isomorphism. The unimodular lattices form
-a replete full subcategory $\mathbf{Unimod}_R\subseteq\mathbf{Lat}_R$.
+A lattice is *unimodular* if $b^\sharp$ is an isomorphism.
+The unimodular lattices form a replete full subcategory $\mathbf{Unimod}_R\subseteq\mathbf{Lat}_R$.
 :::
 
 ::: {#def-even-lattice}
 ## Even lattices
 
-A $\mathbb Z$-lattice is *even* if $b(x,x)\in2\mathbb Z$ for every $x\in L$. The even
-lattices form a replete full subcategory
-$\mathbf{EvenLat}_{\mathbb Z}\subseteq\mathbf{Lat}_{\mathbb Z}$.
+A $\mathbb Z$-lattice is *even* if $b(x,x)\in2\mathbb Z$ for every $x\in L$.
+The even lattices form a replete full subcategory $\mathbf{EvenLat}_{\mathbb Z}\subseteq\mathbf{Lat}_{\mathbb Z}$.
 :::
 
 ::: {#def-metric-dual}
 ## Dual lattice
 
-Extend $b$ to $b_K$ on $L_K=L\otimes_RK$. The dual lattice is
+Extend $b$ to $b_K$ on $L_K=L\otimes_RK$.
+The dual lattice is
 $$
 L^\#=\{x\in L_K\mid b_K(x,L)\subseteq R\}.
 $$
-Nondegeneracy identifies $L^\#$ with $L^*$ through
-$x\mapsto b_K(x,-)|_L$, and $L\subseteq L^\#$.
+Nondegeneracy identifies $L^\#$ with $L^*$ through $x\mapsto b_K(x,-)|_L$, and $L\subseteq L^\#$.
 :::
 
 ::: {#def-discriminant}
@@ -74,25 +71,20 @@ q_L\colon A_L\longrightarrow\mathbb Q/2\mathbb Z,
 \qquad
 q_L(x+L)=b_{\mathbb Q}(x,x)+2\mathbb Z.
 $$
-The evenness hypothesis makes this formula independent of the representative
-[@Nik80].
+The evenness hypothesis makes this formula independent of the representative [@Nik80].
 :::
 
 ::: {#def-discbil}
 ## Discriminant bilinear forms
 
-Let $\mathbf{DiscBil}_{\mathbb Z}$ be the replete full subcategory of
-$\mathcal B_{\mathbb Z,\mathbb Q/\mathbb Z}$ on finite abelian groups equipped with
-nondegenerate symmetric bilinear forms.
+Let $\mathbf{DiscBil}_{\mathbb Z}$ be the replete full subcategory of $\mathcal B_{\mathbb Z,\mathbb Q/\mathbb Z}$ on finite abelian groups equipped with nondegenerate symmetric bilinear forms.
 :::
 
 ::: {#def-discquad}
 ## Discriminant quadratic forms
 
-Let $\mathbf{DiscQuad}_{\mathbb Z}$ be the category of finite abelian groups with
-$\mathbb Q/2\mathbb Z$-valued quadratic forms whose bilinearizations lie in
-$\mathbf{DiscBil}_{\mathbb Z}$. Its morphisms are group homomorphisms that preserve the
-quadratic forms.
+Let $\mathbf{DiscQuad}_{\mathbb Z}$ be the category of finite abelian groups with $\mathbb Q/2\mathbb Z$-valued quadratic forms whose bilinearizations lie in $\mathbf{DiscBil}_{\mathbb Z}$.
+Its morphisms are group homomorphisms that preserve the quadratic forms.
 :::
 
 The discriminant construction defines functors
@@ -113,8 +105,8 @@ $$
 \qquad
 \operatorname{disc}(L)=\operatorname{coker}(b^\sharp).
 $$
-Then $b$ is nondegenerate exactly when $\operatorname{rad}(L)=0$, and it is perfect
-exactly when both kernel and cokernel vanish. The exact sequence is
+Then $b$ is nondegenerate exactly when $\operatorname{rad}(L)=0$, and it is perfect exactly when both kernel and cokernel vanish.
+The exact sequence is
 $$
 0\longrightarrow\operatorname{rad}(L)\longrightarrow L
 \xrightarrow{b^\sharp}L^*\longrightarrow\operatorname{disc}(L)
@@ -145,8 +137,7 @@ The second sequence is exact because $L$ is projective.
 :::
 
 ::: {#thm-double-complex}
-For nondegenerate $L$, the extension $b_K^\sharp$ is an isomorphism and the form gives
-the commutative diagram
+For nondegenerate $L$, the extension $b_K^\sharp$ is an isomorphism and the form gives the commutative diagram
 
 ```{.tikz}
 %%| filename: discriminant-comparison
@@ -176,5 +167,5 @@ $$
 $$
 :::
 
-These functors send an isometry of lattices to its induced isometry of discriminant
-forms. They are used in the next chapter.
+These functors send an isometry of lattices to its induced isometry of discriminant forms.
+They are used in the next chapter.

@@ -8,15 +8,10 @@ None is an evaluation policy; each is a definition or a convention of ordinary m
 ::: {#def-generic-solution}
 ## Generic solution
 
-A defining equation denotes its *generic solution*: the distinguished element of the
-object the equation presents. The generic cube root of $2$ is the class of $x$ in
-$\mathbb Q[x]/(x^3 - 2)$; the generic root of a monic separable polynomial is an
-element of its étale algebra. Because the generic solution is a single element, its
-occurrences are correlated: for $z$ the generic cube root, $z \cdot z^{-1} = 1$ and
-$z^3 = 2$ identically. The individual values are the images of the generic solution
-under the embeddings of the presented object ($\mathbb Q[x]/(x^3-2) \to \mathbb C$,
-three of them); the *set* of values is the image of the generic solution under all
-embeddings — a different object, produced by a different question.
+A defining equation denotes its *generic solution*: the distinguished element of the object the equation presents.
+The generic cube root of $2$ is the class of $x$ in $\mathbb Q[x]/(x^3 - 2)$; the generic root of a monic separable polynomial is an element of its étale algebra.
+Because the generic solution is a single element, its occurrences are correlated: for $z$ the generic cube root, $z \cdot z^{-1} = 1$ and $z^3 = 2$ identically.
+The individual values are the images of the generic solution under the embeddings of the presented object ($\mathbb Q[x]/(x^3-2) \to \mathbb C$, three of them); the *set* of values is the image of the generic solution under all embeddings — a different object, produced by a different question.
 :::
 
 A single value is obtained only by naming a morphism out of the presented object:

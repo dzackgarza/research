@@ -1,10 +1,9 @@
 # Sage category classes
 
 The SageMath 10.9 source at pinned commit `686dc1a` supplies the rows in this catalogue.
-Each row gives a source-linked class name, module, role, and syntactic defining axiom
-chain or construction. The last column marks classes loaded by the SageMath 10.10.beta0
-runtime walk. The registry and construction summary is in the
-[SageMath category framework reference](Sage-Category-Framework-Inventory.md).
+Each row gives a source-linked class name, module, role, and syntactic defining axiom chain or construction.
+The last column marks classes loaded by the SageMath 10.10.beta0 runtime walk.
+The registry and construction summary is in the [SageMath category framework reference](Sage-Category-Framework-Inventory.md).
 
 | category | module | role | defined by | loaded at 10.10 |
 | --- | --- | --- | --- | --- |
@@ -231,8 +230,7 @@ runtime walk. The registry and construction summary is in the
 | [`DummyObjectsOverBaseRing`](https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/category_with_axiom.py#L2793) | `category_with_axiom` | test-only | — | ✓ |
 | [`TestObjects`](https://github.com/sagemath/sage/blob/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50/src/sage/categories/category_with_axiom.py#L2753) | `category_with_axiom` | test-only | — | ✓ |
 
-The SageMath 10.10.beta0 runtime walk loads 678 category classes: source-declared named
-classes, axiom-generated classes, construction-generated classes, and framework classes.
+The SageMath 10.10.beta0 runtime walk loads 678 category classes: source-declared named classes, axiom-generated classes, construction-generated classes, and framework classes.
 
 ## Axiom-generated classes (209)
 
@@ -659,39 +657,32 @@ Nested `FunctorialConstructionCategory` classes — per-category implementations
 
 ## Category instances constructed at import (130)
 
-Sage operates on category *instances*. A full import constructs 130 distinct instances:
-14 plain, 30 axiom-refined, 2 construction-derived, and 84 joins. It also synthesizes
-166 dynamic `<Base>_with_category` implementation classes.
+Sage operates on category *instances*. A full import constructs 130 distinct instances: 14 plain, 30 axiom-refined, 2 construction-derived, and 84 joins.
+It also synthesizes 166 dynamic `<Base>_with_category` implementation classes.
 
 ### Join categories (84)
 
-Sage joins are meets in its category lattice: they intersect their factors. The table
-lists the joins constructed during a full import ($\wedge$ denotes the meet).
-Eight of the 84 joins print under a computed standard name. The remaining 76 print as
-bare `Join of ...` expressions and are metric or topological meets with algebraic
-categories: 39 metric and 37 topological.
-The `Topological` construction has a declared nested class only at `Groups`; the
-`Metric` construction has none. This accounts for the unnamed topological and metric
-combinations.
+Sage joins are meets in its category lattice: they intersect their factors.
+The table lists the joins constructed during a full import ($\wedge$ denotes the meet).
+Eight of the 84 joins print under a computed standard name.
+The remaining 76 print as bare `Join of ...` expressions and are metric or topological meets with algebraic categories: 39 metric and 37 topological.
+The `Topological` construction has a declared nested class only at `Groups`; the `Metric` construction has none.
+This accounts for the unnamed topological and metric combinations.
 
-A join can also expose missing theorem inclusions in Sage's subcategory lattice. For
-example, `ZZ.category()` retains Dedekind-domain and noetherian-ring factors because
-Sage reports both `PID ⊂ DedekindDomains` and `PID ⊂ NoetherianRings` as false. The
-algebraic meet is nevertheless the category of Euclidean domains. Related cases appear
-under [Known discrepancies in Sage 10.9](Sage-Category-Framework-Inventory.md#sec-sage-discrepancies).
+A join can also expose missing theorem inclusions in Sage's subcategory lattice.
+For example, `ZZ.category()` retains Dedekind-domain and noetherian-ring factors because Sage reports both `PID ⊂ DedekindDomains` and `PID ⊂ NoetherianRings` as false.
+The algebraic meet is nevertheless the category of Euclidean domains.
+Related cases appear under [Known discrepancies in Sage 10.9](Sage-Category-Framework-Inventory.md#sec-sage-discrepancies).
 
-Two mechanisms determine the printed name. An axiom join over one base receives a name
-from `JoinCategory._repr_object_names`; for example, adjoining finiteness and
-commutativity to groups prints as "finite commutative groups". A category may instead
-declare a nested construction class. `Groups.Topological` makes
-`Groups().Topological()` print as "Category of topological groups". This nested
-`Topological` declaration occurs for `Groups`; this Sage version has no nested `Metric`
-declaration. Other metric and topological combinations therefore retain their bare join
-expressions.
+Two mechanisms determine the printed name.
+An axiom join over one base receives a name from `JoinCategory._repr_object_names`; for example, adjoining finiteness and commutativity to groups prints as "finite commutative groups".
+A category may instead declare a nested construction class.
+`Groups.Topological` makes `Groups().Topological()` print as "Category of topological groups".
+This nested `Topological` declaration occurs for `Groups`; this Sage version has no nested `Metric` declaration.
+Other metric and topological combinations therefore retain their bare join expressions.
 
-The table records the exact Sage join and its factors. Except where Sage declares a named
-construction class, no further mathematical name or compatibility between a metric or
-topology and the algebraic operations is asserted.
+The table records the exact Sage join and its factors.
+Except where Sage declares a named construction class, no further mathematical name or compatibility between a metric or topology and the algebraic operations is asserted.
 
 | join category (Sage) | factors |
 | --- | --- |

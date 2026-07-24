@@ -123,8 +123,7 @@ One cycle:
 6. **Resolve** — `annotate resolve` tags the batch acted via the Hypothesis API, dropping it from the open set (`annotate status` shows open vs. acted).
    Commit the doc edits alongside the already-committed ledger so git history anchors each note to the state it landed against.
 
-7. **Reopen** — `annotate wait` again for the next window (with `notifyOnExit: true`).
-   Back to step 2.
+7. **Reopen** — `annotate wait` again for the next window (with `notifyOnExit: true`). Back to step 2.
 
 # Work-selection discipline (always-on)
 

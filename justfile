@@ -76,6 +76,11 @@ graph:
 
 # Serve the docs site locally with live reload (quarto provisioned via uvx)
 docs-preview: docs-bib
+    # ponytail: two previews on the same dir cross-trigger each other's watchers
+    # (each renders output back into docs/) → endless ~10s reload loop. Kill any
+    # stale instance first so this always replaces rather than duplicates.
+    -pkill -f 'quarto preview docs --no-browser --port 7654'
+    @sleep 1
     uvx --from quarto-cli quarto preview docs --no-browser --port 7654
 
 [private]
