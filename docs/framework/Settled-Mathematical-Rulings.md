@@ -1,9 +1,9 @@
-# Settled Mathematical Rulings
+# Settled Rulings
 
 Rulings ratified through the [#251](https://github.com/dzackgarza/research/issues/251) record (2026-07-16/17), stated once in their final superseding form.
 Where a ruling replaced an earlier one, the supersession is recorded — the record is a progression, and earlier phrasings on the issue are not authoritative.
-Every ruling is **seated** under a definition in [Mathematical Definitions](Mathematical-Definitions.md): the definition states the object, the ruling states the settled choice about it.
-Vocabulary follows the [Mathematical Language Style Guide](../contributing/Mathematical-Language-Style-Guide.md).
+Every ruling is **seated** under a definition in [Definitions](Mathematical-Definitions.md): the definition states the object, the ruling states the settled choice about it.
+Vocabulary follows the [Language Style Guide](../contributing/Mathematical-Language-Style-Guide.md).
 
 ## Master rulings {#sec-master-rulings}
 
@@ -29,10 +29,10 @@ Its five instances are one defect:
 []{#a2}**A2 — No first-class instance of a generic.** *Seat: @sec-isometry.* Any first-class treatment — a node, a bespoke definition, special-cased notation — of an instance of a generic construction is a defect (the object-as-node instance of [A1](#a1), made explicit because it recurred most).
 $O(L) = \operatorname{Aut}(L)$, $GL(M) = \operatorname{Aut}_{\mathrm{Mod}}(M)$, Galois and unit groups, $\pi_1$: each is a value of a functor, interrogated through the functor, never declared.
 
-[]{#a3}**A3 — Transport is legal only through the forgetful.** *Seat: @def-transport-property.* A property transports by pullback (@def-transport-property) exactly when it is a property of the underlying data the functor sees — i.e. it factors through the forgetful functor.
+[]{#a3}**A3 — Pullback of a property is legal only through the forgetful.** *Seat: @def-axiom-through-functor.* A property on a category is the pullback (@def-axiom-through-functor) of one on the underlying data exactly when it factors through the forgetful functor that data comes from.
 Properties of the underlying set or module (finite, torsion-free) pull back freely; structure-relative ones do not and are declared per node.
 **Boundary counterexample:** finite generation.
-The same abelian group $\mathbb Q$ is finitely generated as a $\mathbb Q$-module (rank one) and *not* as a $\mathbb Z$-module (it needs $\{1/n\}$); generation depends on the available operations, so it does not factor through the underlying set (Sage records this as `FinitelyGeneratedAsMagma`, never a bare `FinitelyGenerated`) and is owned at each structured node.
+The same abelian group $\mathbb Q$ is finitely generated as a $\mathbb Q$-module (rank one) and *not* as a $\mathbb Z$-module (it needs $\{1/n\}$); generation depends on the available operations, so it does not factor through the underlying set (Sage records this as `FinitelyGeneratedAsMagma`, never a bare `FinitelyGenerated`) and is based at each structured node.
 
 []{#a4}**A4 — Everything up to equivalence.** *Seat: @sec-pullback-cat.* All categorical statements are up to equivalence; strict equalities of categories are never asserted, and each canonical equivalence carries a named witness ($\mathbf{Ab} \simeq \mathrm{Mod}_{\mathbb Z}$, $\mathrm{Mod}_R \simeq \mathrm{Mod}_{R^{\mathrm{op}}}$). This premise is *why* the isofibration/pseudo-pullback correction (@sec-pullback-cat) is not optional: strict pullbacks are equivalence-invariant only along isofibrations, so "up to equivalence" forces the machinery.
 
@@ -72,14 +72,14 @@ The integral sign is the Grothendieck construction, not an end or coend.
 The earlier working presheaf that baked symmetry into the construction is superseded.
 
 **Alternating vs skew-symmetric.** *Seat: @sec-forms.* $\mathrm{Alternating} \subseteq \mathrm{SkewSymmetric}$ holds unconditionally (polarize $b(x{+}x',\, x{+}x') = 0$); the converse holds exactly when multiplication by $2$ on $W$ is injective (injectivity suffices — invertibility was overkill).
-Both predicates are owned at the bilinear category; the implication is a generated inclusion with the polarization identity as witness.
+Both predicates are based at the bilinear category; the implication is a generated inclusion with the polarization identity as witness.
 *Supersession:* the intermediate "correction" that nested the alternating definition inside the skew subcategory was rejected — it baked a theorem into a definition and diverged from the Mathlib anchor (`IsAlt` is defined on bilinear maps directly).
 
 **Bilinear and quadratic are parallel hierarchies.** *Seat: @sec-polarization-functors.* $\operatorname{diag} : \mathrm{SymBil} \to \mathcal{Q}$ ($b \mapsto q(x) = b(x,x)$) and $\operatorname{polar} : \mathcal{Q} \to \mathrm{SymBil}$ satisfy $\operatorname{polar} \circ \operatorname{diag} = 2$ and $\operatorname{diag} \circ \operatorname{polar} = 2$; they are equivalences only when $2$ is invertible on $W$.
 On the torsion side $W = \mathbb{Q}/\mathbb{Z}$ has $2$-torsion — exactly where even discriminant forms live — so the two hierarchies are genuinely parallel, related by the polarization functors, with equivalences only under hypotheses.
 `QuadraticModuleCat` is the Mathlib anchor for the quadratic side, never the definition of lattice morphisms.
 *Supersession:* earlier mapping rows identifying lattice hom-sets with `QuadraticMap.Isometry` are wrong identifications.
-Even lattices / quadratic discriminant forms arise by **pullback along the bilinearization functor**, not as an "even cut" of bilinear objects — the same one mechanism used twice.
+Even lattices / quadratic discriminant forms arise by **pullback along the bilinearization functor**, not by restricting bilinear objects to the even ones — the same one mechanism used twice.
 
 **Derived categories are expressions, never declared.** *Seat: @sec-derived.* In final form:
 
@@ -96,9 +96,9 @@ $$
 $\mathbf{DiscQuad}_{\mathbb{Z}}$ is the pullback of $\mathbf{DiscBil}_{\mathbb{Z}}$ along bilinearization.
 The AG negative-definite convention ($A_n$ negative-definite) is a normalization on objects, not a change of category.
 
-## The discriminant construction and the exact-sequence package {#sec-discriminant-package}
+## The discriminant construction and its exact sequences {#sec-discriminant-sequences}
 
-[]{#the-discriminant-construction-and-the-exact-sequence-package}
+[]{#the-discriminant-construction-and-its-exact-sequences}
 
 *Seat: @sec-discriminant.*
 
@@ -156,7 +156,7 @@ If the groupoid is wanted, it is the classical adelic double coset with restrict
 The 1-truncation is the content; higher-categorical machinery deployed decoratively silently changes the object.
 
 **Left and right modules are distinct categories.** *Seat: @sec-module-categories.* Right $R$-modules are modules over $R^{\mathrm{op}}$ — a different category, with the commutative-case identification carried by a canonical functor (a hypothesis-bearing equivalence with a natural-isomorphism witness), not an equality.
-$\mathrm{Mod}_R$, $\mathrm{Mod}_{R^{\mathrm{op}}}$, and ${}_{R}\mathrm{BiMod}_S$ are distinct objects of the presentation; there is one parameterized module family, and "right modules" is not a separate primitive kind.
+$\mathrm{Mod}_R$, $\mathrm{Mod}_{R^{\mathrm{op}}}$, and ${}_{R}\mathrm{BiMod}_S \simeq \mathrm{Mod}_{R \otimes_{\mathbb{Z}} S^{\mathrm{op}}}$ are distinct categories, each a value of the module functor $\mathrm{Mod}_{(-)}\colon \mathbf{Ring} \to \mathbf{Cat}_1$ (whose Grothendieck construction is the module (op)fibration over $\mathbf{Ring}$); right $R$-modules are its value at $R^{\mathrm{op}}$, not a separately declared category.
 
 ## Relation kinds are not fungible {#sec-relation-kinds}
 

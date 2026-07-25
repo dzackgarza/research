@@ -2,41 +2,50 @@ project:
   type: book
   output-dir: _site
   resources:
-  - data/**
-  - lean/category-graph.html
-  - lean/category-graph.dot
+    - data/**
+    - lean/category-graph.html
+    - lean/category-graph.dot
 book:
   title: Lattice Research
   repo-url: https://github.com/dzackgarza/research
   site-url: https://dzackgarza.github.io/research/
   search: true
   chapters:
-  - index.md
-  - part: Mathematical Framework
-    chapters:
-    - framework/Mathematical-Framework.md
-    - framework/Mathematical-Definitions.md
-    - framework/Categorical-Foundations.md
-    - framework/Settled-Mathematical-Rulings.md
-  - part: Sage
-    chapters:
-    - sage/Sage-Category-Framework-Inventory.md
-    - sage/Sage-Category-Classes.md
-  - part: Lean
-    chapters:
-    - lean/Lean-Sage-Integration-Model.md
-    - lean/Category-Graph.md
-  - part: Contributing
-    chapters:
-    - contributing/Contribution-Guidelines.md
-    - contributing/Mathematical-Language-Style-Guide.md
-    - contributing/Categorical-Presentation-Principles.md
-    - contributing/Design-Hazard-Ledger.md
-    - contributing/Mathematical-Lexicon.md
-  - Roadmap.md
+    - index.md
+    - part: Foundations
+      chapters:
+        - framework/Higher-Categories-and-Universes.md
+        - framework/Categorical-Foundations.md
+        - framework/Loops-and-Suspension.md
+        - framework/Identification.md
+    - part: Properties, structures, and algebra
+      chapters:
+        - framework/Truncation-and-Classifiers.md
+        - framework/Mathematical-Framework.md
+        - framework/Modules-and-Forms.md
+        - framework/Joins-Meets-and-Closure.md
+        - framework/Distinguished-Functors.md
+        - framework/Elements-and-Containment.md
+    - part: Forms and lattices
+      chapters:
+        - framework/Bilinear-and-Quadratic-Forms.md
+        - framework/Lattices-and-Discriminant-Forms.md
+        - framework/Isometries-and-Arithmetic-Invariants.md
+    - part: Realizations
+      chapters:
+        - lean/Lean-Sage-Integration-Model.md
+        - lean/Category-Graph.md
+        - sage/Sage-Category-Framework-Inventory.md
+        - sage/Sage-Category-Classes.md
+        - lean/Categorical-DSL.md
+    - part: Authoring and reference
+      chapters:
+        - contributing/Mathematical-Language-Style-Guide.md
+        - framework/Mathematical-Sources.md
+    - Roadmap.md
 bibliography:
-- references.bib
-- refs-web.bib
+  - references.bib
+  - refs-web.bib
 link-citations: true
 number-sections: true
 crossref:
@@ -51,5 +60,60 @@ format:
     html-math-method: mathjax
     code-copy: true
     smooth-scroll: true
+    css: tikz-diagrams.css
+    include-before-body: _mathjax-macros.html
 filters:
-- stacks-tags.lua
+  - book-toc
+  - custom-numbered-blocks
+  - stacks-tags.lua
+  - tikz
+tikz:
+  cache: true
+# Numbered amsthm-style environments (ute/custom-numbered-blocks).
+# One shared per-chapter counter (all kinds in group 'blocks') -> a block is 'Kind N.M' in one sequence;
+# quartothmlike appearance mimics native Quarto theorems.
+# Author: ::: {.Warning #w-foo}\n### Optional title\n... :::   Reference: \ref{w-foo} -> '2.9', \longref{w-foo} -> 'Warning 2.9'.
+# CONSTRAINT: labels must NOT start with Quarto-reserved prefixes (def- thm- lem- cor- prp- cnj- exm- exr- fig- tbl- eq- sec- lst-);
+# Quarto would hijack them. Migration of existing native #def-/#thm- blocks is deferred (relabel off reserved prefixes).
+custom-numbered-blocks:
+  appearances:
+    thmlike:
+      container: quartothmlike
+  groups:
+    blocks:
+      appearance: thmlike
+  classes:
+    Theorem:
+      group: blocks
+    Lemma:
+      group: blocks
+    Corollary:
+      group: blocks
+    Proposition:
+      group: blocks
+    Conjecture:
+      group: blocks
+    Definition:
+      group: blocks
+    Example:
+      group: blocks
+    Construction:
+      group: blocks
+    Notation:
+      group: blocks
+    Convention:
+      group: blocks
+    Exercise:
+      group: blocks
+    Problem:
+      group: blocks
+    Remark:
+      group: blocks
+    Warning:
+      group: blocks
+    Observation:
+      group: blocks
+    Note:
+      group: blocks
+    Claim:
+      group: blocks

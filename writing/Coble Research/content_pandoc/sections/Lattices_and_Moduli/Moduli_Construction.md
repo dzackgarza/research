@@ -4,9 +4,9 @@ We summarize the relevant moduli spaces:
 
 $$
 \begin{aligned}
-F_\En &= \bD(T_\En)/\Orth(T_\En) &
+F_\En &= \bD(T_\En)/\Orth^+(T_\En)^* &
 F_{\En, 2} &= \bD(T_\En)/\Gamma_{\En, 2} \\
-F_\Co &= \bD(T_\Co) / \Orth(T_\Co) &
+F_\Co &= \bD(T_\Co) / \Orth^+(T_\Co)^* &
 F_{\Co, 2} &= \bD(T_\Co)/\Gamma_{\Co, 2}
 \end{aligned}
 $$
@@ -17,17 +17,22 @@ $$
 \begin{aligned}
 \Gamma_{\En, 2} &= \Orth(T_\En) \intersect \Orth(T_\dP) \subseteq \Orth(\lkt) \\
 \Gamma_{\Co, 2} &= \mathrm{Stab}_{\Orth(T_\En)}(T_\Co) \subseteq \Orth(T_\En) \\
-F_{\Nod} &= \bD(T_\Nod)/\Orth(T_\Nod) \\
+F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^* \\
 F_{\Nod, 2} &= ???
 \end{aligned}
 $$
 
-where $T_{\dP}$ is described in [@AEGS23]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$.
-We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$, which implies that there is a birational isomorphism $F_{\Co} \birational \cH_{-2}/\Orth(T_\En)$.
+where $T_{\dP}$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of \cref{lem:primitive_embedding_eta}.
+\todo[inline]{Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.}
+We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$, which implies that there is a birational isomorphism $F_{\Co} \birational \cH_{-2}/\Orth^+(T_\En)^*$.
+
+![The tower of moduli spaces relating the degree-$2$ numerically polarized Coble and Enriques moduli $F_{\Co,2}, F_{\En,2}$, their unpolarized quotients $F_\Co, F_\En$, and the degree-$(2,2,0)$ K3 moduli space $F_{(2,2,0)} \injects F_4$. The map $F_{\Co,2} \to F_\Co$ marked $?$ is not yet determined (cf. the remark on $\Gamma_{\Co,2}$ above).](rendered/fig_moduli_tower.png){#fig:moduli-tower}
+
+\todo{\Cref{fig:moduli-tower} is migrated as a raster talk figure; it should be redrawn as a native \texttt{tikzcd} diagram and its casing reconciled with the surrounding notation ($F_{\Co,2}$ vs.\ the figure's $F_{co,2}$). The $?$-map $F_{\Co,2}\to F_\Co$ encodes the open question flagged above.}
 
 # GIT Discussion
 
-::: {.remark}
+::: {.remark title="GIT construction"}
 
 Following [@DK13], by varying the coefficients of $p_i$ in the planar blowup
 construction, one can construct $F_\Co$ as a locally closed subvariety of
@@ -43,24 +48,29 @@ means that there should be 3 conditions imposed upon the configuration
 of 10 points.
 These 3 conditions are precisely the _discriminant
 conditions_ described in [@Cob19 §2, Prop. (10)].
+Letting $D$ be the corresponding discriminant locus, we can identify $F_{\Co}$
+as an open subset of $\qty{ (\PP^2)^{10} \sm D }/\PGL_3$ at the level of coarse
+moduli spaces.
 :::
 
 # Horikawa model
 
-::: {.remark}
+::: {.remark title="Horikawa's construction"}
 
-Alternatively, Horikawa [@Hor78] and more recently [@AEGS23] consider
+Alternatively, Horikawa [@Hor77] and more recently [@AEGS25] consider
 the following: let $Y\da \PP^1\times \PP^1$ and define an involution
 $\tau(x,y) \da (-x,-y)$.
 Letting $B\in\abs{-2K_Y}^\tau$ be a
 $\tau$-invariant anti-bicanonical curve in $Y$, if $B$ passes through a
 $\tau$-fixed point $x,y\in \ts{0, \pm \infty}$, then the corresponding
-double branched cover branched over $B$ is a K3 surface $X$ with $A_1$
-singularities and involution $\iota_{\dP}$, and the quotient
-$Z\da X/\gens{\iota}$ is a Coble surface.
+double branched cover branched over $B$ is a nodal K3 surface $X$ with $A_1$
+singularities and covering involution $\iota_{\dP}$ such that
+$Y = X/\gens{\iota_{\dP}}$.
+Letting $\iota_{\En}$ be a lift of $\tau$, the quotient
+$Z\da X/\gens{\iota_{\En}}$ is a Coble surface.
 The case in which $B$ does not
 pass through a $\tau$-invariant point yields an Enriques surface $Z$,
-and an analysis of the corresponding moduli is carried out in [@AEGS23].
+and an analysis of the corresponding moduli is carried out in [@AEGS25].
 
 It is well-known that there consequently exists a Coble surface $S$ and
 a blowdown $S\to X/\iota$ along the strict transform of $B$.
@@ -74,9 +84,14 @@ unpolarized Enriques surfaces.
 
 By passing to the K3 cover, one can embed $F_\Co$ into an arithmetic quotient of a 9-dimensional Hermitian symmetric domain of type $\rm{IV}$.
 Let $\lkt = U^3 \oplus E_8^2$ be the canonical K3 lattice.
-We recall that for any primitively embedded lattice $S\injects \lkt$, letting $T \da S^{\perp \lkt}$, there is a Hodge-theoretic description of the coarse moduli space $F_S$ of $S$-polarized K3 surfaces given by $$F_S \da D_T/\Orth(T)^*$$
+We recall that for any primitively embedded lattice $S\injects \lkt$, letting $T \da S^{\perp \lkt}$, there is a Hodge-theoretic description of the coarse moduli space $F_S$ of $S$-polarized K3 surfaces given by $$F_S \da D_T/\Orth^+(T)^*$$
 
-where $\Orth(T)^* \da \ker\qty{\Orth(T) \to \Orth(q_T)}$.
+where $\Orth^+(T)^* \da \Orth^+(T) \intersect \ker\qty{\Orth(T) \to \Orth(q_T)}$, the group $\Orth^+(T)$ is the index-two subgroup of $\Orth(T)$ preserving the component $D_T$, and $D_T$ is a connected component of
+
+$$
+\Omega_T \da \ts{[v]\in \PP(T_\CC) \st v^2=0,\, v\bar v > 0}
+.
+$$
 Letting $E_{10} \da U \oplus E_8$, one can similarly consider the Enriques lattices $S_\En := E_{10}(2)$ with $T_\En = U \oplus E_{10}(2)$.
 Letting
 
@@ -85,17 +100,20 @@ $$
 ,
 $$
 
-one can thus present
+be the union of the hyperplane sections cut out by the vectors $\delta$ of norm
+$-2d$, as in \cref{fig:period-domain-hyperplanes}, one can thus present
 
 $$
 \begin{aligned}
-F_{\En} &= \qty{D_{T_\En} \setminus \cH_{-2}} / \Orth(T_\En) \\
-F_{\Co} &= \cH_{-2} / \Orth(T_\En) \\
-F_{\Nod} &= \qty{\cH_{-4} \setminus \cH_{-2}} / \Orth(T_\En)
+F_{\En} &= \qty{D_{T_\En} \setminus \cH_{-2}} / \Orth^+(T_\En)^* \\
+F_{\Co} &= \cH_{-2} / \Orth^+(T_\En)^* \\
+F_{\Nod} &= \qty{\cH_{-4} \setminus \cH_{-2}} / \Orth^+(T_\En)^*
 \end{aligned}
 $$
 
 where surfaces along the divisor $\cH_{-2}$ in $F_\En$ correspond precisely to Coble surfaces and those along $\cH_{-4}\setminus \cH_{-2}$ correspond to Enriques surfaces with $A_1$ singularities.
+
+![The period domain $D_{T_\En}$ together with the hyperplanes $v_i^{\perp}$ cut out by vectors $v_i$ of fixed negative norm. The Coble surfaces are precisely the periods lying on the hyperplanes of $\cH_{-2}$.](rendered/fig_type_iv_hsd.svg){#fig:period-domain-hyperplanes width=45%}
 
 Alternatively, one can construct the period domain for $F_\Co$ directly.
 Following [@DK13 Prop. 3.1] almost verbatim, let $S$ be the blowup of $\PP^2$ along 10 $A_1$ singularities of a rational sextic curve $C$.
@@ -117,6 +135,23 @@ T_\Co \da S_\Co^{\perp \lkt} = (11, 11, 1)_2 \cong \gens{2} \oplus E_{10}(2)
 $$
 
 Alternatively, this follows immediately from the mirror move $S\leadsto T$ of [@AE22 Thm. 5.10] applied to $S_\Co =(11, 11, 1)_1$.
-We obtain $F_\Co$ as an open subset of the period domain $D_{T_\Co}/\Orth(T_\Co)$, a normal quasiprojective variety of dimension 9, by [@DK13 Prop. 3.2] and an application of the Torelli theorem for algebraic K3 surfaces from [@PS71]. We note that [@DK13] shows that $F_\Co$ is rational by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics in $\PP^2$.
+We obtain $F_\Co$ as an open subset of the period domain $D_{T_\Co}/\Orth^+(T_\Co)^*$, a normal quasiprojective variety of dimension 9, by [@DK13 Prop. 3.2] and an application of the Torelli theorem for algebraic K3 surfaces from [@PS71]. We note that [@DK13] shows that $F_\Co$ is rational by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics in $\PP^2$.
 
 # KSBA Spaces
+
+::: {.remark}
+
+By \cref{lem:locally_closed_embedding_BB}, there are morphisms
+$\overline{F_{\Co}}^{\bb} \to \overline{F_{\En}}^{\bb}$ and
+$\overline{F_{\Co}}^{\bb} \to \overline{F_{(2,2,0)}}^{\bb}$ which induce
+correspondences between the boundary cusps.
+:::
+
+::: {.remark}
+
+We set up the moduli space of KSBA stable pairs for Coble surfaces, possibly
+using the ramification divisor of the K3 involution (which is in this case not
+fixed-point free).
+The above embeddings should allow us to take closures of stable pairs in
+already existing moduli spaces.
+:::

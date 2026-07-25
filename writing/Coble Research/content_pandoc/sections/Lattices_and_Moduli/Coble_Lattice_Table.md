@@ -1,6 +1,6 @@
 # Coble lattices
 
-The following can be found in an unpublished note of Dolgachev [@DM19].
+The following can be found in an unpublished note of Dolgachev.[^coble-note]
 Write
 $\abs{-2K_S} = \ts{C}$ where $C = C_1 + \cdots + C_n$ has $n$ irreducible
 components.
@@ -26,10 +26,10 @@ $K_S^2 = 9 - \abs{\Sigma} = -n$.
 | 9   | 18             | -9                   | $(19,3,1)$           | $\mathrm{E}_{10} \oplus \mathrm{D}_{8} \oplus \mathrm{A}_{1}$                     | $\latI_{2,1}(2)$           |
 | 10  | 19             | -10                  | $(20,2,1)$           | $\mathrm{E}_{10} \oplus \mathrm{D}_{10}$                                          | $\latI_{2,0}(2)$           |
 
-\label{table:coble-lattices}
+: Table of Coble lattices\label{tbl:coble-lattices}
 
-This table is reproduced in [@CDL24 Table 5.1, p.553].
-The fixed point locus is described by [@CDL24 Eqn. 5.3.1]:
+This table is reproduced in [@CDL25 Table 5.1, p.553].
+The fixed point locus is described by [@CDL25 Eqn. 5.3.1]:
 
 $$
 X^{g}=\left\{\begin{array}{ll}
@@ -42,4 +42,6 @@ $$
 where $C^{(g)}$ denotes a curve of genus $g \geq 0$, $R_{i}$ are disjoint $(-2)$-curves, and
 $$g=\frac{1}{2}(22-r-l), \quad k=\frac{1}{2}(r-l).$$
 
-The ramification divisor for the involution on the K3 cover is described by $g=0$ and $k=n-1$ by [@CDL24 Def. 5.4.3].
+The ramification divisor for the involution on the K3 cover is described by $g=0$ and $k=n-1$ by [@CDL25 Def. 5.4.3].
+
+[^coble-note]: <https://homepage.mi-ras.ru/~prokhoro/conf/isk20/Dolgachev.pdf>

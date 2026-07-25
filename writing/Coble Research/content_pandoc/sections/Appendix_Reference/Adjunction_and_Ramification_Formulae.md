@@ -10,14 +10,12 @@ K_Y = f^* K_X + (\codim_V(X) - 1)E
     .
 $$
 
-Note that if $X$ is a surface and $V$ is a divisor, this recovers
-$$K_Y = f^* K_X + E.$$
+Note that if $X$ is a surface and $V$ is a point, this recovers $$K_Y = f^* K_X + E.$$
 :::
 
 ::: {.remark}
 
-Let $f: Y\to X$ be a branched cover with branch locus $B$ and ramification locus
-$R$.
+Let $f: Y\to X$ be a branched cover with branch locus $B$ and ramification locus $R$.
 Then
 
 $$

@@ -12,5 +12,4 @@
 |  9  |           18           |   -9    |     $(19, 3, 1)$     |           $E_{10} \oplus D_8 \oplus A_1$           |      $I^{2,1}(2)$      |
 | 10  |           19           |   -10   |     $(20, 2, 1)$     |               $E_{10} \oplus D_{10}$               | $(2\rangle^{\oplus 2}$ |
 
-: Lattices $M$ and $N$ associated to moduli of Coble surfaces with $n$ boundary components.
-\label{table:coble-lattices}
+: Lattices $M$ and $N$ associated to moduli of Coble surfaces with $n$ boundary components. {#tbl:coble-lattices}

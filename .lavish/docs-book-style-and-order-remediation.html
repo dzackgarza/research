@@ -1,0 +1,1704 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documentation book remediation — plan review</title>
+  <link id="bootswatch-theme" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist/cosmo/bootstrap.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    :where(.row, .d-flex, .grid) > * { min-width: 0; }
+    :where(p, h1, h2, h3, h4, li, dd, blockquote, figcaption, td, th, code, .badge) {
+      overflow-wrap: anywhere;
+    }
+    :root {
+      --review-accent: #6f42c1;
+      --review-accent-soft: rgba(111, 66, 193, 0.12);
+      --review-rule: rgba(127, 127, 127, 0.24);
+    }
+    html { scroll-padding-top: 5.5rem; }
+    body { min-height: 100vh; }
+    .review-shell .row { margin-inline: 0; }
+    .review-navbar {
+      backdrop-filter: blur(14px);
+      background: color-mix(in srgb, var(--bs-body-bg) 88%, transparent);
+      border-bottom: 1px solid var(--review-rule);
+    }
+    .review-shell { max-width: 1600px; }
+    .review-hero { border-bottom: 1px solid var(--review-rule); border-radius: 0 !important; padding: 1rem 0 2.5rem !important; }
+    .review-hero h1 { font-size: clamp(2.15rem, 5vw, 3.5rem); line-height: 1.12; letter-spacing: -0.02em; }
+    .review-eyebrow {
+      color: var(--review-accent);
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .review-stat { background: transparent; border-radius: 0 !important; padding-inline: 0 !important; }
+    .review-stat strong { display: block; font-size: clamp(1.55rem, 3vw, 2.35rem); line-height: 1; }
+    .review-stat span { color: var(--bs-secondary-color); font-size: 0.875rem; }
+    .review-decision { border: 1px solid var(--review-rule); border-top: 0.28rem solid var(--bs-warning); box-shadow: none !important; }
+    .review-decision .form-check { padding: 0.8rem 0.9rem 0.8rem 2.2rem; border-radius: 0.4rem; }
+    .review-decision .form-check:has(input:checked) { background: var(--review-accent-soft); }
+    .review-part-card { height: 100%; border: 0; border-radius: 0; box-shadow: none !important; background: transparent; }
+    .review-part-card .card-body { border-top: 1px solid var(--review-rule); padding-inline: 0; }
+    .review-part-card ol { margin-bottom: 0; padding-left: 1.2rem; }
+    .review-part-card li + li { margin-top: 0.32rem; }
+    .review-flow { min-height: 22rem; overflow-x: auto; }
+    .review-flow svg { min-width: 760px; }
+    .review-sidebar { top: 5.25rem; max-height: calc(100vh - 6.25rem); overflow: auto; }
+    .review-sidebar ul { padding-left: 1rem; }
+    .review-sidebar li { margin: 0.38rem 0; }
+    .review-sidebar a { color: var(--bs-secondary-color); text-decoration: none; }
+    .review-sidebar a { overflow-wrap: anywhere; }
+    .review-sidebar a:hover { color: var(--review-accent); text-decoration: underline; }
+    .plan-document { font-size: 1rem; line-height: 1.68; }
+    .plan-document > h1 { font-size: 2rem; margin-top: 0; }
+    .plan-document h2 {
+      border-bottom: 1px solid var(--review-rule);
+      margin-top: 3rem;
+      padding-bottom: 0.45rem;
+    }
+    .plan-document h3 { margin-top: 2.1rem; }
+    .plan-document blockquote {
+      border-left: 0.3rem solid var(--review-accent);
+      color: var(--bs-secondary-color);
+      margin-left: 0;
+      padding: 0.35rem 0 0.35rem 1rem;
+    }
+    .plan-document code { color: color-mix(in srgb, var(--review-accent) 72%, var(--bs-body-color)); }
+    .plan-document .table-responsive { margin: 1.25rem 0 1.75rem; }
+    .plan-document th { white-space: nowrap; }
+    .plan-document li + li { margin-top: 0.28rem; }
+    .review-source-note { color: var(--bs-secondary-color); font-size: 0.875rem; }
+    .badge { font-size: 0.875rem; }
+    #theme-toggle { min-height: 44px; min-width: 44px; }
+    #execution-order, #full-plan > .card { border: 0; border-radius: 0; box-shadow: none !important; }
+    #execution-order .card-body, #full-plan > .card > .card-body { padding-inline: 0 !important; }
+    @media (max-width: 991.98px) {
+      .review-sidebar { max-height: none; }
+      .review-toc-column { display: none; }
+      .review-flow svg { min-width: 680px; }
+    }
+    @media print {
+      .review-navbar, .review-decision, .review-sidebar { display: none !important; }
+      .review-hero { background: none; }
+      .col-lg-9 { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar review-navbar sticky-top">
+    <div class="container-fluid review-shell px-3 px-lg-4">
+      <span class="navbar-brand mb-0 h1">Documentation book remediation</span>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge text-bg-warning">Needs approval</span>
+        <button id="theme-toggle" class="btn btn-sm btn-outline-secondary" type="button" aria-label="Toggle light and dark themes">Dark</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container-fluid review-shell px-3 px-lg-4 py-4 py-lg-5">
+    <section class="review-hero mb-4" id="review-start">
+      <div class="row g-4 align-items-end">
+        <div class="col-xl-8">
+          <div class="review-eyebrow mb-2">Private workstream plan · review surface</div>
+          <h1 class="display-5 fw-bold mb-3">Rebuild the book around mathematical prerequisites</h1>
+          <p class="lead mb-3">Approve or amend the proposed chapter tree before any mathematical rewrite begins. The full vault-owned plan appears below this review overview.</p>
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge rounded-pill text-bg-primary">One definition owner</span>
+            <span class="badge rounded-pill text-bg-primary">Source-preserving transfer</span>
+            <span class="badge rounded-pill text-bg-primary">Human/agent policy split</span>
+            <span class="badge rounded-pill text-bg-primary">Hook bypass for docs</span>
+          </div>
+        </div>
+        <div class="col-xl-4">
+          <p class="review-source-note mb-1">Authoritative source</p>
+          <code>PLAN-docs-book-style-and-order-remediation</code>
+          <p class="review-source-note mt-2 mb-0">Checkpoint <code>574c2c6</code> · 2026-07-20</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="row g-3 mb-4" aria-label="Plan scale">
+      <div class="col-6 col-lg-3"><div class="review-stat p-3 h-100"><strong>24</strong><span>current rendered pages mapped</span></div></div>
+      <div class="col-6 col-lg-3"><div class="review-stat p-3 h-100"><strong>21</strong><span>proposed rendered pages</span></div></div>
+      <div class="col-6 col-lg-3"><div class="review-stat p-3 h-100"><strong>7</strong><span>mathematical contradictions block rewrites</span></div></div>
+      <div class="col-6 col-lg-3"><div class="review-stat p-3 h-100"><strong>6</strong><span>bounded execution and review roles</span></div></div>
+    </section>
+
+    <section class="card review-decision shadow-sm mb-5" id="decision">
+      <div class="card-body p-4">
+        <div class="row g-4 align-items-start">
+          <div class="col-lg-5">
+            <div class="review-eyebrow mb-2">Decision required</div>
+            <h2 class="h3">Is this the right book tree?</h2>
+            <p class="mb-0 text-body-secondary">Choose a disposition, add any bounded condition, then queue it. You can also annotate any chapter, dependency, or source-map row directly.</p>
+          </div>
+          <div class="col-lg-7">
+            <form data-lavish-question="docs-book-plan-approval" onsubmit="queuePlanDecision(event)">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="planDecision" id="decision-approve" value="Approve the proposed hierarchy and private remediation plan as written">
+                <label class="form-check-label fw-semibold" for="decision-approve">Approve as written</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="planDecision" id="decision-annotate" value="Approve after applying the annotations and conditions queued in this review">
+                <label class="form-check-label fw-semibold" for="decision-annotate">Approve after annotated changes</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="planDecision" id="decision-reframe" value="Do not approve; revise the proposed hierarchy before any rewrite begins">
+                <label class="form-check-label fw-semibold" for="decision-reframe">Revise the hierarchy first</label>
+              </div>
+              <label class="form-label mt-3" for="decision-note">Condition or rationale (optional)</label>
+              <textarea class="form-control" id="decision-note" name="decisionNote" rows="3" placeholder="Name the chapter, dependency, audience boundary, or stop rule that must change."></textarea>
+              <div class="d-flex flex-wrap gap-2 align-items-center mt-3">
+                <button type="submit" class="btn btn-primary">Queue plan decision</button>
+                <span id="decision-status" class="small text-body-secondary" role="status">Selection remains local until queued.</span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-5" id="target-tree">
+      <div class="mb-3">
+        <div class="review-eyebrow mb-2">Proposed organization</div>
+        <h2 class="h2">Six parts, twenty-one pages</h2>
+        <p class="text-body-secondary">The sequence moves from primitive higher-categorical constructions to algebra, lattice mathematics, computational realizations, and finally the two human-facing authoring/reference pages.</p>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6 col-xl-4"><article class="card review-part-card shadow-sm"><div class="card-body"><h3 class="h5">Orientation <span class="badge text-bg-secondary ms-1">2</span></h3><ol><li>Home</li><li>Project roadmap</li></ol></div></article></div>
+        <div class="col-md-6 col-xl-4"><article class="card review-part-card shadow-sm"><div class="card-body"><h3 class="h5">Foundations <span class="badge text-bg-secondary ms-1">4</span></h3><ol><li>Higher categories and universes</li><li>Categorical constructions</li><li>Loops and suspension</li><li>Equivalences and witnesses</li></ol></div></article></div>
+        <div class="col-md-6 col-xl-4"><article class="card review-part-card shadow-sm"><div class="card-body"><h3 class="h5">Properties, structures, and algebraic categories <span class="badge text-bg-secondary ms-1">5</span></h3><ol><li>Properties, structures, and classifying constructions</li><li>Algebraic categories from operations</li><li>Joins, meets, and closure</li><li>Distinguished functors and comparison</li><li>Elements, subobjects, and hypotheses</li></ol></div></article></div>
+        <div class="col-md-6 col-xl-4"><article class="card review-part-card shadow-sm"><div class="card-body"><h3 class="h5">Forms and lattices <span class="badge text-bg-secondary ms-1">3</span></h3><ol><li>Modules and form categories</li><li>Lattices and discriminant forms</li><li>Isometries and arithmetic invariants</li></ol></div></article></div>
+        <div class="col-md-6 col-xl-4"><article class="card review-part-card shadow-sm"><div class="card-body"><h3 class="h5">Realizations <span class="badge text-bg-secondary ms-1">5</span></h3><ol><li>SageMath category framework</li><li>Generated SageMath category catalogue</li><li>Lean–Sage realization</li><li>Syntax and evaluation</li><li>Category diagram</li></ol></div></article></div>
+        <div class="col-md-6 col-xl-4"><article class="card review-part-card shadow-sm"><div class="card-body"><h3 class="h5">Authoring and mathematical reference <span class="badge text-bg-secondary ms-1">2</span></h3><ol><li>Mathematical authoring conventions</li><li>Mathematical decisions and sources</li></ol></div></article></div>
+      </div>
+    </section>
+
+    <section class="card mb-5" id="execution-order">
+      <div class="card-body p-4">
+        <div class="review-eyebrow mb-2">Dependency order</div>
+        <h2 class="h2">No rewrite crosses an unresolved prerequisite</h2>
+        <p class="text-body-secondary">Read-only extraction may begin early. Mathematical destinations become final only after all seven contradictions have sources, hypotheses, resolutions, defining anchors, and dependent-passage lists.</p>
+        <div class="review-flow">
+          <pre class="mermaid">
+flowchart TD
+  A["Approve hierarchy"] --> B["Adjudicate 7 contradictions"]
+  A --> X["Read-only source extraction"]
+  B --> M["Fix the 24-page source map"]
+  X --> M
+  M --> F["Rebuild Foundations"]
+  F --> P["Rebuild properties, structures, and algebra"]
+  P --> L["Rebuild forms and lattices"]
+  L --> R["Regroup realizations and human-facing reference"]
+  R --> I["Integrate navigation and references"]
+  I --> V["Render, inspect, and audit the complete book"]
+  classDef gate fill:#6f42c1,color:#fff,stroke:#4c2a85,stroke-width:2px;
+  classDef read fill:#e9ecef,color:#212529,stroke:#6c757d;
+  class A,B,M,V gate;
+  class X read;
+          </pre>
+        </div>
+      </div>
+    </section>
+
+    <div class="row g-4 align-items-start">
+      <aside class="col-lg-3 order-2 order-lg-1 review-toc-column">
+        <div class="card shadow-sm sticky-lg-top review-sidebar">
+          <div class="card-body">
+            <div class="review-eyebrow mb-2">Full-plan index</div>
+            <ul>
+            <li><a
+            href="#documentation-book-style-and-order-remediation"
+            id="toc-documentation-book-style-and-order-remediation">Documentation
+            book style and order remediation</a>
+            <ul>
+            <li><a href="#purpose-observable-result"
+            id="toc-purpose-observable-result">Purpose / observable
+            result</a></li>
+            <li><a href="#scope" id="toc-scope">Scope</a></li>
+            <li><a href="#invariants"
+            id="toc-invariants">Invariants</a></li>
+            <li><a href="#sources-and-current-state"
+            id="toc-sources-and-current-state">Sources and current
+            state</a></li>
+            <li><a href="#proposed-book-hierarchy"
+            id="toc-proposed-book-hierarchy">Proposed book hierarchy</a>
+            <ul>
+            <li><a href="#orientation"
+            id="toc-orientation">Orientation</a></li>
+            <li><a href="#foundations"
+            id="toc-foundations">Foundations</a></li>
+            <li><a
+            href="#properties-structures-and-algebraic-categories"
+            id="toc-properties-structures-and-algebraic-categories">Properties,
+            structures, and algebraic categories</a></li>
+            <li><a href="#forms-and-lattices"
+            id="toc-forms-and-lattices">Forms and lattices</a></li>
+            <li><a href="#realizations"
+            id="toc-realizations">Realizations</a></li>
+            <li><a href="#authoring-and-mathematical-reference"
+            id="toc-authoring-and-mathematical-reference">Authoring and
+            mathematical reference</a></li>
+            </ul></li>
+            <li><a href="#source-to-destination-map"
+            id="toc-source-to-destination-map">Source-to-destination
+            map</a></li>
+            <li><a href="#execution-graph"
+            id="toc-execution-graph">Execution graph</a></li>
+            <li><a href="#workstreams"
+            id="toc-workstreams">Workstreams</a>
+            <ul>
+            <li><a
+            href="#mathematical-adjudication-seven-contradictions"
+            id="toc-mathematical-adjudication-seven-contradictions">Mathematical
+            adjudication (seven contradictions)</a></li>
+            <li><a
+            href="#source-preservation-map-twenty-four-rendered-pages"
+            id="toc-source-preservation-map-twenty-four-rendered-pages">Source
+            preservation map (twenty-four rendered pages)</a></li>
+            <li><a href="#foundations-rewrite-four-target-chapters"
+            id="toc-foundations-rewrite-four-target-chapters">Foundations
+            rewrite (four target chapters)</a></li>
+            <li><a
+            href="#property-structure-and-algebra-rewrite-five-target-chapters"
+            id="toc-property-structure-and-algebra-rewrite-five-target-chapters">Property,
+            structure, and algebra rewrite (five target
+            chapters)</a></li>
+            <li><a
+            href="#forms-and-lattices-rewrite-three-target-chapters"
+            id="toc-forms-and-lattices-rewrite-three-target-chapters">Forms
+            and lattices rewrite (three target chapters)</a></li>
+            <li><a
+            href="#realizations-and-authoringreference-regrouping-seven-target-chapters"
+            id="toc-realizations-and-authoringreference-regrouping-seven-target-chapters">Realizations
+            and authoring/reference regrouping (seven target
+            chapters)</a></li>
+            <li><a
+            href="#integration-and-rendered-verification-whole-book"
+            id="toc-integration-and-rendered-verification-whole-book">Integration
+            and rendered verification (whole book)</a></li>
+            </ul></li>
+            <li><a href="#agent-priming-and-routing"
+            id="toc-agent-priming-and-routing">Agent priming and
+            routing</a></li>
+            <li><a href="#risks-recovery-stop-rules"
+            id="toc-risks-recovery-stop-rules">Risks / recovery / stop
+            rules</a></li>
+            <li><a href="#progress" id="toc-progress">Progress</a></li>
+            <li><a href="#surprises-and-discoveries"
+            id="toc-surprises-and-discoveries">Surprises and
+            discoveries</a></li>
+            <li><a href="#decision-log" id="toc-decision-log">Decision
+            log</a></li>
+            <li><a href="#outcomes-and-retrospective"
+            id="toc-outcomes-and-retrospective">Outcomes and
+            retrospective</a></li>
+            <li><a href="#revision-notes"
+            id="toc-revision-notes">Revision notes</a></li>
+            </ul></li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+      <section class="col-lg-9 order-1 order-lg-2" id="full-plan">
+        <div class="card">
+          <div class="card-body p-4 p-xl-5">
+            <div class="d-flex flex-wrap justify-content-between gap-2 align-items-center mb-4">
+              <div>
+                <div class="review-eyebrow mb-2">Authoritative plan content</div>
+                <h2 class="h2 mb-0">Full plan source</h2>
+              </div>
+              <span class="badge text-bg-light border">Annotate any exact passage</span>
+            </div>
+            <article class="plan-document">
+              <h1
+              id="documentation-book-style-and-order-remediation">Documentation
+              book style and order remediation</h1>
+              <blockquote>
+              <p>Tier: workstream / organizational Parent:
+              <code>FEATURE-documentation-book</code> / private
+              agent-memory Public execution surface: none</p>
+              </blockquote>
+              <h2 id="purpose-observable-result">Purpose / observable
+              result</h2>
+              <ul>
+              <li>The rendered documentation has a chapter, section, and
+              subsection order in which every load-bearing mathematical
+              notion precedes its first use.</li>
+              <li>Each definition and ruling has one defining
+              occurrence; later chapters cite it rather than restating
+              or contradicting it.</li>
+              <li>Mathematical chapters contain mathematics. Rendered
+              authoring and reference pages contain only mathematical
+              conventions and information a human contributor needs.
+              Agent audit instructions, terminology controls, and
+              delegation policy remain in non-rendered agent-facing
+              files; editorial history and implementation status use
+              their own surfaces.</li>
+              <li>The current twenty-four rendered pages are accounted
+              for through preservation, merge, split, relocation, or
+              explicit retirement after semantic transfer.</li>
+              </ul>
+              <p>The current book is insufficient because its order
+              contains forward dependencies, several notions have
+              incompatible definitions in different chapters, large
+              chapters combine unrelated levels of the theory, and
+              process prose interrupts mathematical exposition.</p>
+              <p>Completion is observable when the approved hierarchy is
+              rendered, every source proposition has a disposition, all
+              references resolve, independent auditors find no
+              unresolved style or invented-language violations, and
+              inspected page images show a coherent book at wide and
+              narrow viewports.</p>
+              <h2 id="scope">Scope</h2>
+              <ul>
+              <li>Included:
+              <ul>
+              <li><code>docs/index.md</code>,
+              <code>docs/Roadmap.md</code>, and every rendered chapter
+              named in <code>docs/_quarto.yml</code>;</li>
+              <li>the chapter/section/subsection hierarchy;</li>
+              <li>source-preserving merges, splits, relocations, and
+              rewrites;</li>
+              <li>correction of the mathematical contradictions listed
+              below;</li>
+              <li>cross-reference, citation, heading, navigation, and
+              rendered-output verification;</li>
+              <li>agent handoffs needed to perform non-overlapping
+              chapter work.</li>
+              </ul></li>
+              <li>Excluded:
+              <ul>
+              <li>source code, tests, generated Sage inventories, Lean
+              declarations, and the category diagram data;</li>
+              <li>new mathematical features not already required to make
+              the current exposition correct;</li>
+              <li>redesign of the site theme or component system.</li>
+              </ul></li>
+              <li>Preserved behavior:
+              <ul>
+              <li>source-backed mathematical statements, hypotheses,
+              codomains, diagrams, examples, citations, warnings, and
+              stable anchors;</li>
+              <li>the generated Sage catalogues and interactive category
+              diagram as reference surfaces;</li>
+              <li>roadmap links to the live project state, without
+              copying that state into the book.</li>
+              </ul></li>
+              <li>Constraints and prohibitions:
+              <ul>
+              <li>every delegated agent reads
+              <code>docs/_writing-guide.md</code> as agent-only audit
+              policy and
+              <code>docs/contributing/Mathematical-Language-Style-Guide.md</code>
+              as the positive mathematical conventions for the rendered
+              book;</li>
+              <li>never copy an agent pattern catalogue, terminology
+              control, audit instruction, or delegation contract into a
+              rendered page;</li>
+              <li>never use a summary in place of the source chapter
+              being transferred;</li>
+              <li>do not resolve a contradiction by deleting one side
+              without establishing the mathematical result and
+              preserving any distinct content;</li>
+              <li>do not introduce a second definition to make a
+              relocated section self-contained;</li>
+              <li>do not edit <code>_quarto.yml</code> until all target
+              chapters and stable anchors exist;</li>
+              <li>documentation-only commits use the user-directed hook
+              bypass and stage only the intended documentation
+              files.</li>
+              </ul></li>
+              </ul>
+              <h2 id="invariants">Invariants</h2>
+              <ul>
+              <li>The hierarchy is a topological order of mathematical
+              prerequisites.</li>
+              <li>A forward reference is permitted only for a proof,
+              example, implementation note, or elaboration that is not
+              needed to understand the current statement.</li>
+              <li>Definitions have one anchored defining occurrence.
+              Local reminders may repeat notation or a type signature,
+              not the definition.</li>
+              <li>The same symbol has the same type and meaning
+              everywhere.</li>
+              <li>Mathematical choices are supported by the declared
+              literature; plausible reconstructions from memory are
+              inadmissible.</li>
+              <li>A move or split preserves all source propositions
+              until a source-to-destination comparison proves their
+              disposition.</li>
+              <li>No rendered page contains agent threat-model rules,
+              audit procedure, prompt contracts, or terminology
+              blacklists. Human-facing contribution pages contain only
+              positive mathematical and editorial conventions.</li>
+              <li>Existing unrelated worktree changes remain
+              untouched.</li>
+              </ul>
+              <h2 id="sources-and-current-state">Sources and current
+              state</h2>
+              <ul>
+              <li>Governing policy is split by audience:
+              <ul>
+              <li><code>docs/_writing-guide.md</code> is non-rendered
+              agent writing and audit policy;</li>
+              <li><code>docs/contributing/Mathematical-Language-Style-Guide.md</code>
+              is the rendered mathematical authoring guide for human
+              contributors;</li>
+              <li><code>.agents/references/mathematical-auditor-priming.md</code>
+              is agent-only audit procedure.</li>
+              </ul></li>
+              <li>Book configuration: <code>docs/_quarto.yml</code>
+              currently renders twenty-four pages: the home page, twelve
+              framework chapters, two Sage chapters, two Lean chapters,
+              six contributing chapters, and the roadmap.</li>
+              <li>Source history: merged PR #274 performed the four-part
+              move and introduced the current framework chapter
+              sequence. It is historical context, not an execution
+              surface for this repair.</li>
+              <li>Relevant current contradictions:
+              <ul>
+              <li><code>framework/Ambient-Setting.md</code> and
+              <code>framework/Categorical-Foundations.md</code> do not
+              name a model of higher categories and assign the
+              right-adjoint role inconsistently between core,
+              groupoid-completion, and homotopy-type constructions;</li>
+              <li><code>framework/Mathematical-Framework.md</code>,
+              <code>framework/Categorical-Foundations.md</code>, and
+              <code>framework/Truncation-and-Classifiers.md</code>
+              disagree on the variance and fibration/opfibration
+              convention for the category of elements;</li>
+              <li>several chapters call arbitrary forgetful functors
+              “axiom classifiers” without stating a represented functor
+              or universal property, and the policy files previously
+              called a family attached to every axiom a “universal
+              fibration”;</li>
+              <li><code>framework/Mathematical-Definitions.md</code>
+              presents unitality as a subcategory inclusion while
+              <code>framework/Mathematical-Framework.md</code> presents
+              a unit as chosen structure with a faithful, non-full
+              forgetful functor;</li>
+              <li><code>framework/Equality.md</code> uses the undefined
+              project symbol “Way” and claims a Lean reduction before
+              the proposed universe and its structure maps are
+              defined;</li>
+              <li><code>framework/Generic-Elements.md</code> turns a
+              limitation on unions of categories of specified structures
+              into a blanket prohibition that also excludes disjunctions
+              of object properties;</li>
+              <li><code>framework/Mathematical-Framework.md</code> and
+              <code>framework/Distinguished-Functors.md</code> use the
+              project terms “Join”, “Meet”, and “least-common-category”
+              before specifying the preorder or universal property in
+              which those constructions exist.</li>
+              </ul></li>
+              <li>Ordering failures include forward dependencies on the
+              category of elements, the definition of a diagram as a
+              functor from an indexing category, modules over a ring,
+              and the <code>El</code> convention.</li>
+              <li>Repetition includes truncation, categories of
+              elements, the phrase “axiom classifiers”, and the
+              property/structure/stuff classification across several
+              chapters.</li>
+              <li>Exact duplicate headings occur in the current
+              framework chapter sequence and identification page; title
+              case, emoji headings, self-narration, self-certification,
+              and negative parallelism recur across the book.</li>
+              <li>The rendered mathematical authoring guide has been
+              separated from the non-rendered agent writing and audit
+              guide. Existing rendered pages still cite the retired
+              P1–P6 labels, the Class A/B/C taxonomy, and the
+              replacement dictionary. P1, P1b, the taxonomy, and the
+              dictionary move to non-rendered agent policy; the genuine
+              mathematical content formerly labeled P2–P6 now has
+              descriptive anchors. Every dependent link must move to the
+              appropriate mathematical anchor or leave the rendered book
+              with its agent-facing passage; compatibility labels must
+              not republish the old mixed policy.</li>
+              <li>The fresh language audit found repeated uses of the
+              recorded replacement terms in mathematical prose:
+              “carried” subobjects in
+              <code>Elements-and-Containment.md</code>; “cut” for
+              property-defined full subcategories across the framework
+              and contributing pages; categories and functors called
+              “nodes” and “edges”; the project-local “spine” and
+              “seat/seated” relations; “home” or “ownership” in place of
+              a domain or defining category; and “corpus” or “ontology”
+              in place of the specified categorical presentation. The
+              source-preservation map must inventory every occurrence
+              before the corresponding pages are rewritten.</li>
+              <li>Unknowns that block rewriting, but not this
+              organizational plan:
+              <ul>
+              <li>source-grounded resolutions of the seven
+              contradictions above;</li>
+              <li>whether the proposed equality predicate has a standard
+              definition worth preserving;</li>
+              <li>which stable anchors external readers already use and
+              therefore require aliases or a documented redirect during
+              the move.</li>
+              </ul></li>
+              </ul>
+              <h2 id="proposed-book-hierarchy">Proposed book
+              hierarchy</h2>
+              <p>This hierarchy is the first reviewable result. Section
+              names are provisional; their mathematical purpose and
+              prerequisite order are not.</p>
+              <h3 id="orientation">Orientation</h3>
+              <ul>
+              <li><strong>Home</strong> — <code>index.md</code>
+              <ul>
+              <li>mathematical scope of the project;</li>
+              <li>navigation to the theory, realizations, reference
+              material, and contribution policy;</li>
+              <li>link to live execution state without reproducing its
+              status.</li>
+              </ul></li>
+              <li><strong>Project roadmap</strong> —
+              <code>Roadmap.md</code>
+              <ul>
+              <li>Sage-parity track;</li>
+              <li>fork and extension track;</li>
+              <li>relation between the tracks;</li>
+              <li>notebook-based user-story proof;</li>
+              <li>no emoji headings, live status tables, or claims of
+              completeness.</li>
+              </ul></li>
+              </ul>
+              <h3 id="foundations">Foundations</h3>
+              <ul>
+              <li><strong>Higher categories and universes</strong>
+              <ul>
+              <li>universe and smallness;</li>
+              <li>the chosen model of higher categories and its
+              source;</li>
+              <li>the category of higher categories supplied by that
+              model;</li>
+              <li>internal hom, cells, and hom-objects as defined in
+              that model;</li>
+              <li>mapping spaces as supplied by the chosen model;</li>
+              <li>ordinary categories and the exact relation to the
+              higher-categorical model;</li>
+              <li>literal equality, isomorphisms in an ordinary
+              category, and equivalences in the chosen
+              higher-categorical model, with distinct types;</li>
+              <li>initial, terminal, and contractible objects;</li>
+              <li>truncation in the chosen model.</li>
+              </ul></li>
+              <li><strong>Categorical constructions</strong>
+              <ul>
+              <li>core, groupoid completion, and classifying space as
+              distinct constructions, citing the equality and
+              equivalence definitions;</li>
+              <li>arrow category and functor categories;</li>
+              <li>category of elements, with one variance convention and
+              its corresponding fibration statement;</li>
+              <li>strict and pseudo-pullbacks, isofibrations, and the
+              condition under which they coincide up to
+              equivalence;</li>
+              <li>zero-truncation, connected components, and fiber
+              sequences;</li>
+              <li>generalized elements as morphisms from A to X;
+              representing objects for representable functors and
+              corepresenting objects for corepresentable functors, with
+              variance and sources stated;</li>
+              <li>the <code>El</code> notation as shorthand for the
+              already-defined construction.</li>
+              </ul></li>
+              <li><strong>Loops and suspension</strong>
+              <ul>
+              <li>base change and cobase change;</li>
+              <li>the chosen interval object, its endpoint maps, and its
+              stated axioms;</li>
+              <li>loops and hom-objects;</li>
+              <li>spheres and suspension;</li>
+              <li>deloopings;</li>
+              <li>every loop/suspension adjunction preserved from the
+              source, each drawn;</li>
+              <li>the loop and suspension constructions needed by the
+              following chapter, using the already-defined
+              fiber-sequence construction.</li>
+              </ul></li>
+              <li><strong>Equivalences and witnesses</strong>
+              <ul>
+              <li>the space or groupoid of equivalences supplied by the
+              chosen model, citing the mapping-space definition;</li>
+              <li>isomorphisms as data and the set or space of
+              isomorphisms; when nonempty, its specified left, right, or
+              bitorsor structure under the relevant automorphism
+              groups;</li>
+              <li>contractibility of a specified witness space or
+              groupoid only when established;</li>
+              <li>a specified isomorphism, equivalence, or natural
+              isomorphism used for comparison;</li>
+              <li>the image of a witness after applying a functor;</li>
+              <li>consequences of the preceding loop and suspension
+              constructions and the already-defined fiber-sequence
+              construction;</li>
+              <li>any proposed universe <span
+              class="math-inline">U</span> and maps into <span
+              class="math-inline">U</span> only after a corpus-grounded
+              definition;</li>
+              <li>Lean-specific reduction moved to the Lean realization
+              chapter.</li>
+              </ul></li>
+              </ul>
+              <h3
+              id="properties-structures-and-algebraic-categories">Properties,
+              structures, and algebraic categories</h3>
+              <ul>
+              <li><strong>Properties, structures, and classifying
+              constructions</strong>
+              <ul>
+              <li>element projections by reference to the
+              category-of-elements definition;</li>
+              <li>specified forgetful functors from categories of
+              structured objects;</li>
+              <li>the property / structure / stuff classification, with
+              fullness, faithfulness, and repleteness stated
+              separately;</li>
+              <li>classifying objects or fibrations only where a
+              represented functor or universal property has been
+              established;</li>
+              <li>pullback of a specified family along a named
+              functor;</li>
+              <li>in a category with finite products, n-ary operations
+              on X as morphisms from its n-fold product to X, forming
+              the cartesian endomorphism operad;</li>
+              <li>equations as equalities of parallel terms or
+              commutative diagrams, with coherence 2-cells named
+              separately;</li>
+              <li>the specified operad and its coherence axioms, or a
+              source-defined tower of operads with every object and
+              transition morphism named;</li>
+              <li>strict and finite cases as reductions, not
+              definitions.</li>
+              </ul></li>
+              <li><strong>Algebraic categories from operations</strong>
+              <ul>
+              <li>the category of algebras for a signature with one
+              n-ary operation;</li>
+              <li>magmas and binary operations;</li>
+              <li>associativity and commutativity as equations;</li>
+              <li>semigroups;</li>
+              <li>units as chosen structure and monoids;</li>
+              <li>inverses and groups;</li>
+              <li>rings as algebras for the signature with constants 0
+              and 1, addition, negation, and multiplication, subject to
+              the ring identities;</li>
+              <li>the resulting forgetful diagram and named
+              pullbacks.</li>
+              </ul></li>
+              <li><strong>Joins, meets, and closure</strong>
+              <ul>
+              <li>pullbacks of specified full-subcategory inclusions,
+              with the diagram, hypotheses, and universal property;</li>
+              <li>the replete full subcategory generated by named source
+              categories under an explicit list of closure operations,
+              with its universal property; omit the construction if the
+              sources do not establish those data;</li>
+              <li>connectivity and weak contractibility hypotheses;</li>
+              <li>join and meet only in a specified preorder, with their
+              distinct universal properties and existence hypotheses;
+              categorical limits or colimits are named separately;</li>
+              <li>consequences for the Lean and Sage realizations, with
+              implementation-specific names confined to those
+              realization pages.</li>
+              </ul></li>
+              <li><strong>Distinguished functors and comparison</strong>
+              <ul>
+              <li>specified factorizations <span class="math-inline">F =
+              G ∘ H</span>, with the source and target of every
+              functor;</li>
+              <li>parallel functors and comparison 2-cells;</li>
+              <li>comparison after factorization through a specified
+              common target;</li>
+              <li>statements about where a construction lands versus the
+              construction itself;</li>
+              <li>applications of the already-defined inverse-image and
+              specified-family pullback constructions;</li>
+              <li>comparison through the meet only in the specified
+              preorder, with its universal property and existence
+              hypotheses; if a categorical limit or colimit is intended,
+              name it separately.</li>
+              </ul></li>
+              <li><strong>Elements, subobjects, and hypotheses</strong>
+              <ul>
+              <li>the category-of-elements projection functors and
+              generalized elements already defined in Foundations;</li>
+              <li>membership in the full subcategory spanned by objects
+              satisfying the stated property, and the property/structure
+              distinction;</li>
+              <li>subobjects and existence of a monomorphism
+              representing the specified subobject;</li>
+              <li>specified subobject inclusions and factorizations
+              between their named monomorphisms;</li>
+              <li>the functor sending a test object to the set or space
+              of solutions over it, with domain, codomain, and its
+              defining equalizer stated; a universal element appears
+              only after representability is established;</li>
+              <li>hypotheses as explicit categorical data;</li>
+              <li>property disjunctions and case decomposition;</li>
+              <li>localization and descent.</li>
+              </ul></li>
+              </ul>
+              <h3 id="forms-and-lattices">Forms and lattices</h3>
+              <ul>
+              <li><strong>Modules and form categories</strong>
+              <ul>
+              <li>module categories over a ring and the composable
+              sequence of specified forgetful functors;</li>
+              <li>the full subcategories of finitely generated
+              projective and free modules; any additional finiteness
+              condition only after the source states whether it means
+              finite as a set, finite length, or finitely
+              generated;</li>
+              <li>the full subcategory of torsion modules only after
+              fixing a base domain or a specified torsion theory;</li>
+              <li>bilinear and quadratic form presheaves;</li>
+              <li>their categories of elements, citing the definition in
+              Foundations;</li>
+              <li>the full subcategory of the Grothendieck construction
+              spanned by forms satisfying each stated property;</li>
+              <li>polarization and its functoriality;</li>
+              <li>orthogonal sums.</li>
+              </ul></li>
+              <li><strong>Lattices and discriminant forms</strong>
+              <ul>
+              <li>nondegenerate lattices;</li>
+              <li>unimodular and even lattices;</li>
+              <li>dual lattices;</li>
+              <li>the discriminant bilinear form with its codomain, and,
+              for an even lattice, the discriminant quadratic form with
+              its codomain and evenness hypothesis;</li>
+              <li>the discriminant construction and exact
+              sequences;</li>
+              <li>nondegeneracy as vanishing of the radical and
+              unimodularity as invertibility of the adjoint map to the
+              dual module;</li>
+              <li>localization and the double complex where they are
+              mathematically required.</li>
+              </ul></li>
+              <li><strong>Isometries and arithmetic invariants</strong>
+              <ul>
+              <li>the core of a form category, citing the defining
+              construction in Foundations, and the resulting isometry
+              groupoid;</li>
+              <li>automorphism groups as instances of the general
+              automorphism construction;</li>
+              <li>the discriminant representation;</li>
+              <li>matrix realizations as chosen presentations;</li>
+              <li>index and its hypotheses;</li>
+              <li>the Miranda–Morrison sequence;</li>
+              <li>genus as the fiber of the induced map on connected
+              components for the specified localization map, citing
+              <code>def-genus</code>;</li>
+              <li>constructors relocated to the Sage realization
+              pages.</li>
+              </ul></li>
+              </ul>
+              <h3 id="realizations">Realizations</h3>
+              <ul>
+              <li><strong>SageMath category framework</strong>
+              <ul>
+              <li>navigation-level explanation of the Sage category
+              mechanism;</li>
+              <li>category, axiom, and functorial-construction
+              inventories;</li>
+              <li>source-grounded defects and gaps;</li>
+              <li>provenance of generated data.</li>
+              </ul></li>
+              <li><strong>Generated SageMath category catalogue</strong>
+              <ul>
+              <li>source-linked category classes;</li>
+              <li>axiom-generated classes;</li>
+              <li>construction-generated classes;</li>
+              <li>import-time instances;</li>
+              <li>no manually maintained interpretation layered over
+              generated facts.</li>
+              </ul></li>
+              <li><strong>Lean–Sage realization</strong>
+              <ul>
+              <li>mathematical declarations versus executable
+              representations;</li>
+              <li>the A/B/C boundary in implementation language;</li>
+              <li>the <code>ForMathlib</code> boundary;</li>
+              <li>missing formalizations and their evidence;</li>
+              <li>the supported equality reduction, if the Foundations
+              definition permits it.</li>
+              </ul></li>
+              <li><strong>Syntax and evaluation</strong>
+              <ul>
+              <li>concrete syntax;</li>
+              <li>abstract syntax trees or terms and their mathematical
+              meaning;</li>
+              <li>evaluation;</li>
+              <li>documents;</li>
+              <li>status, provenance, and certification.</li>
+              </ul></li>
+              <li><strong>Category diagram</strong>
+              <ul>
+              <li>the interactive diagram;</li>
+              <li>the editable diagram source;</li>
+              <li>a legend that distinguishes categories, functors, and
+              comparison 2-cells.</li>
+              </ul></li>
+              </ul>
+              <h3 id="authoring-and-mathematical-reference">Authoring
+              and mathematical reference</h3>
+              <ul>
+              <li><strong>Mathematical authoring conventions</strong>
+              <ul>
+              <li>universes, domains, codomains, and chosen structure
+              stated explicitly;</li>
+              <li>primitive constructions in the chosen higher-category
+              model, followed by cited specialization or comparison
+              theorems in spaces;</li>
+              <li>property, structure, and chosen-data language
+              determined by the forgetful functor;</li>
+              <li>typed notation, universal properties, and diagram
+              conventions;</li>
+              <li>no agent pattern catalogue, replacement blacklist,
+              audit hook, internal-definition enforcement rule, or
+              self-audit history.</li>
+              </ul></li>
+              <li><strong>Mathematical decisions and sources</strong>
+              <ul>
+              <li>mathematical choices whose rationale a reader or human
+              contributor needs;</li>
+              <li>links from those decisions to current definitions and
+              sources;</li>
+              <li>supersession history without restating
+              definitions;</li>
+              <li>no agent threat model, design-hazard catalogue, audit
+              history, remediation queue, or implementation status.</li>
+              </ul></li>
+              </ul>
+              <p><code>framework/Settled-Mathematical-Rulings.md</code>
+              is therefore decomposed: its mathematical claims move to
+              their single defining occurrences, while rationale and
+              supersession history move to the final reference chapter.
+              <code>framework/Mathematical-Framework.md</code> splits
+              across the three classifier/algebra chapters.
+              <code>framework/Mathematical-Definitions.md</code> splits
+              across the three forms-and-lattices chapters.</p>
+              <h2 id="source-to-destination-map">Source-to-destination
+              map</h2>
+              <table>
+              <colgroup>
+              <col style="width: 50%" />
+              <col style="width: 50%" />
+              </colgroup>
+              <thead>
+              <tr>
+              <th>Current source</th>
+              <th>Target</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+              <td><code>index.md</code></td>
+              <td>Home</td>
+              </tr>
+              <tr>
+              <td><code>framework/Ambient-Setting.md</code></td>
+              <td>Higher categories and universes</td>
+              </tr>
+              <tr>
+              <td><code>framework/Loops-and-Suspension.md</code></td>
+              <td>Loops and suspension</td>
+              </tr>
+              <tr>
+              <td><code>framework/Equality.md</code></td>
+              <td>Equivalences and witnesses, merged with
+              <code>framework/Identification.md</code></td>
+              </tr>
+              <tr>
+              <td><code>framework/Mathematical-Framework.md</code></td>
+              <td>Split among Properties, structures, and classifying
+              constructions; Algebraic categories from operations; and
+              Joins, meets, and closure</td>
+              </tr>
+              <tr>
+              <td><code>framework/Mathematical-Definitions.md</code></td>
+              <td>Split among Modules and form categories; Lattices and
+              discriminant forms; and Isometries and arithmetic
+              invariants</td>
+              </tr>
+              <tr>
+              <td><code>framework/Categorical-Foundations.md</code></td>
+              <td>Categorical constructions</td>
+              </tr>
+              <tr>
+              <td><code>framework/Truncation-and-Classifiers.md</code></td>
+              <td>Split between Higher categories and universes and
+              Properties, structures, and classifying constructions</td>
+              </tr>
+              <tr>
+              <td><code>framework/Settled-Mathematical-Rulings.md</code></td>
+              <td>Split between the relevant single defining chapters
+              and Mathematical decisions and sources</td>
+              </tr>
+              <tr>
+              <td><code>framework/Elements-and-Containment.md</code></td>
+              <td>Elements, subobjects, and hypotheses, merged with
+              <code>framework/Generic-Elements.md</code></td>
+              </tr>
+              <tr>
+              <td><code>framework/Identification.md</code></td>
+              <td>Equivalences and witnesses, merged with
+              <code>framework/Equality.md</code></td>
+              </tr>
+              <tr>
+              <td><code>framework/Distinguished-Functors.md</code></td>
+              <td>Distinguished functors and comparison</td>
+              </tr>
+              <tr>
+              <td><code>framework/Generic-Elements.md</code></td>
+              <td>Elements, subobjects, and hypotheses, merged with
+              <code>framework/Elements-and-Containment.md</code></td>
+              </tr>
+              <tr>
+              <td><code>sage/Sage-Category-Framework-Inventory.md</code></td>
+              <td>SageMath category framework</td>
+              </tr>
+              <tr>
+              <td><code>sage/Sage-Category-Classes.md</code></td>
+              <td>Generated SageMath category catalogue</td>
+              </tr>
+              <tr>
+              <td><code>lean/Lean-Sage-Integration-Model.md</code></td>
+              <td>Lean–Sage realization</td>
+              </tr>
+              <tr>
+              <td><code>lean/Category-Graph.md</code></td>
+              <td>Category diagram</td>
+              </tr>
+              <tr>
+              <td><code>contributing/Contribution-Guidelines.md</code></td>
+              <td>Remove from the rendered book after transferring human
+              mathematical-authoring content to Mathematical authoring
+              conventions, Lean-specific content to the Lean
+              realization, and agent controls to non-rendered
+              policy</td>
+              </tr>
+              <tr>
+              <td><code>contributing/Mathematical-Language-Style-Guide.md</code></td>
+              <td>Mathematical authoring conventions</td>
+              </tr>
+              <tr>
+              <td><code>contributing/Categorical-Presentation-Principles.md</code></td>
+              <td>Remove after transferring universal constructions and
+              diagram conventions to Foundations or Mathematical
+              authoring conventions and agent generation/audit rules to
+              non-rendered policy</td>
+              </tr>
+              <tr>
+              <td><code>contributing/Design-Hazard-Ledger.md</code></td>
+              <td>Remove from the rendered book after transferring any
+              mathematical residue to its defining chapter and agent
+              controls to non-rendered policy</td>
+              </tr>
+              <tr>
+              <td><code>contributing/Mathematical-Lexicon.md</code></td>
+              <td>Remove after transferring mathematical definitions to
+              their defining chapters, implementation contracts to
+              Realizations, and terminology admission controls to
+              non-rendered policy</td>
+              </tr>
+              <tr>
+              <td><code>contributing/Written-Form-and-Evaluation.md</code></td>
+              <td>Syntax and evaluation</td>
+              </tr>
+              <tr>
+              <td><code>Roadmap.md</code></td>
+              <td>Project roadmap</td>
+              </tr>
+              </tbody>
+              </table>
+              <p>These twenty-four rows account for every current
+              <code>_quarto.yml</code> entry. Four sources split across
+              mathematical targets, two source pairs merge, and four
+              rendered agent-control or mixed-purpose pages retire only
+              after their mathematical content, implementation content,
+              and agent controls have reached the correct
+              destinations.</p>
+              <h2 id="execution-graph">Execution graph</h2>
+              <ul>
+              <li>Stacked prerequisites:
+              <ul>
+              <li>approve this hierarchy;</li>
+              <li>adjudicate all seven mathematical contradictions; each
+              requires a corpus source, exact hypotheses, a selected
+              resolution, one defining anchor, and a list of dependent
+              passages;</li>
+              <li>complete the source-to-destination proposition
+              map;</li>
+              <li>rebuild Foundations;</li>
+              <li>rebuild Properties, structures, and algebraic
+              categories;</li>
+              <li>rebuild Forms and lattices;</li>
+              <li>integrate Realizations and the two authoring/reference
+              pages;</li>
+              <li>update navigation and run whole-book
+              verification.</li>
+              </ul></li>
+              <li>Parallel workstreams:
+              <ul>
+              <li>read-only source extraction may begin before
+              adjudication, but its mathematical destination map cannot
+              be finalized while any of the seven contradictions is
+              unresolved;</li>
+              <li>after the proposition map is fixed, the Realizations
+              and authoring/reference rewrite may proceed alongside
+              Foundations only for passages that do not depend on a
+              disputed definition;</li>
+              <li>builders editing mathematical chapters do not run in
+              parallel across a prerequisite boundary: Higher categories
+              → Categorical constructions → Loops → Equivalences and
+              witnesses; Foundations → Properties → Algebra → Joins and
+              meets → Distinguished functors → Elements and subobjects →
+              Modules → Lattices → Isometries;</li>
+              <li>independent auditors may run alongside read-only
+              source mapping, but never edit.</li>
+              </ul></li>
+              <li>Integration points:
+              <ul>
+              <li>definition and anchor map shared by every
+              builder;</li>
+              <li>one integration agent controls
+              <code>_quarto.yml</code>, <code>index.md</code>,
+              <code>Roadmap.md</code>, and global cross-reference
+              changes;</li>
+              <li>source-to-destination comparison is completed before
+              an old chapter is removed.</li>
+              </ul></li>
+              <li>Handoff contracts:
+              <ul>
+              <li>extractor hands the coordinator a proposition map,
+              contradiction list, citations, anchors, and unresolved
+              questions; it does not rewrite prose;</li>
+              <li>builder receives only the approved target slice, exact
+              source material, definition map, policy files, and
+              non-goals;</li>
+              <li>reviewer receives the rewritten pages and source map,
+              not the builder’s summary;</li>
+              <li>integrator receives reviewed pages and may change
+              navigation only after all expected targets exist.</li>
+              </ul></li>
+              </ul>
+              <h2 id="workstreams">Workstreams</h2>
+              <h3
+              id="mathematical-adjudication-seven-contradictions">Mathematical
+              adjudication (seven contradictions)</h3>
+              <ul>
+              <li>Items / how to enumerate: the seven contradictions
+              listed in Sources and current state.</li>
+              <li>Shared remediation shape: find the standard
+              definitions in the declared corpus, record the selected
+              statement and its hypotheses, and identify the single
+              defining chapter.</li>
+              <li>Criteria and tie-breakers:
+              <ul>
+              <li>name a standard higher-category model and use its
+              definitions consistently;</li>
+              <li>distinguish variance conventions explicitly rather
+              than blending them;</li>
+              <li>reserve classifying terminology for a stated
+              represented functor or universal property;</li>
+              <li>chosen structure is not a property or full
+              subcategory;</li>
+              <li>an undefined equality predicate is removed from the
+              main exposition until it has a source and definition;</li>
+              <li>distinguish disjunction of object properties from a
+              union of non-full structure families;</li>
+              <li>use Join or Meet only after specifying the order or
+              category and proving existence.</li>
+              </ul></li>
+              <li>Shared acceptance: each contradiction has one
+              source-backed resolution, one defining occurrence, and a
+              list of dependent passages to rewrite.</li>
+              <li>Executor note: do not select a resolution by prose
+              fluency. Any unresolved or ungrounded contradiction blocks
+              the final proposition map and every mathematical rewrite;
+              leave the conflicting source passages unchanged and
+              stop.</li>
+              <li>Parent outcome served: makes the proposed order
+              mathematically executable.</li>
+              </ul>
+              <h3
+              id="source-preservation-map-twenty-four-rendered-pages">Source
+              preservation map (twenty-four rendered pages)</h3>
+              <ul>
+              <li>Items / how to enumerate: every chapter entry in
+              <code>docs/_quarto.yml</code> at the approved
+              revision.</li>
+              <li>Shared remediation shape: extract definitions,
+              propositions, hypotheses, diagrams, examples, citations,
+              anchors, and process-only passages; assign each to the
+              proposed hierarchy.</li>
+              <li>Criteria and tie-breakers:
+              <ul>
+              <li>preserve mathematical content by proposition, not by
+              paragraph position;</li>
+              <li>map repeated facts to one defining occurrence and list
+              the references that replace duplicates;</li>
+              <li>positive information a human contributor needs moves
+              to Mathematical authoring conventions or the relevant
+              realization page;</li>
+              <li>agent threat controls, terminology rules, audits,
+              prompts, and delegation contracts move to non-rendered
+              agent policy;</li>
+              <li>live or editorial status moves to its owning execution
+              surface;</li>
+              <li>a contradiction remains visible until the adjudication
+              workstream resolves it.</li>
+              </ul></li>
+              <li>Shared acceptance: every source heading and
+              load-bearing paragraph has a target, correction, or
+              justified retirement; no chapter can disappear through an
+              unmapped file deletion.</li>
+              <li>Executor note: use freeform prose organized by source
+              page and target chapter, not a classifier or generated
+              status system.</li>
+              <li>Parent outcome served: prevents semantic loss during
+              reorganization.</li>
+              </ul>
+              <h3
+              id="foundations-rewrite-four-target-chapters">Foundations
+              rewrite (four target chapters)</h3>
+              <ul>
+              <li>Items / how to enumerate: Higher categories and
+              universes; Categorical constructions; Loops and
+              suspension; Equivalences and witnesses.</li>
+              <li>Shared remediation shape: rebuild each chapter in
+              prerequisite order from the approved proposition map,
+              retaining stable anchors where their meaning
+              survives.</li>
+              <li>Criteria and tie-breakers:
+              <ul>
+              <li>definitions precede internal constructions and
+              detection theorems;</li>
+              <li>category of elements has one definition and variance
+              convention;</li>
+              <li>mapping spaces, core, and homotopy type are not
+              conflated;</li>
+              <li>the loop and suspension constructions and the earlier
+              fiber-sequence definition precede their use in the witness
+              chapter;</li>
+              <li>Lean-specific claims remain in the realization
+              part.</li>
+              </ul></li>
+              <li>Shared acceptance: a reader can parse every definition
+              without a forward mathematical dependency; the four
+              chapters pass source comparison and independent
+              audit.</li>
+              <li>Executor note: each chapter’s review note records
+              preserved anchors and unresolved source conflicts.</li>
+              <li>Parent outcome served: supplies the prerequisites for
+              every later mathematical part.</li>
+              </ul>
+              <h3
+              id="property-structure-and-algebra-rewrite-five-target-chapters">Property,
+              structure, and algebra rewrite (five target chapters)</h3>
+              <ul>
+              <li>Items / how to enumerate: Properties, structures, and
+              classifying constructions; Algebraic categories from
+              operations; Joins, meets, and closure; Distinguished
+              functors and comparison; Elements, subobjects, and
+              hypotheses.</li>
+              <li>Shared remediation shape: split the current framework
+              chapter sequence by mathematical level, replace duplicate
+              definitions with references, and integrate related small
+              chapters.</li>
+              <li>Criteria and tie-breakers:
+              <ul>
+              <li>forgetful functors, fiber conditions, classifying
+              universal properties, and pullback families are defined
+              once;</li>
+              <li>unit and inverse data are treated according to their
+              actual forgetful functors;</li>
+              <li>examples instantiate the calculus rather than
+              restating it;</li>
+              <li>object-property disjunctions and categories of objects
+              with specified structure remain distinct;</li>
+              <li>exact duplicate headings are eliminated.</li>
+              </ul></li>
+              <li>Shared acceptance: the dependency gates are explicit
+              and observed: Properties follows Foundations; Algebra
+              follows Properties; Joins and meets follows Algebra;
+              Distinguished functors follows the relevant meet
+              constructions; Elements and subobjects follows the
+              specified factorization anchors it uses. Every chapter has
+              unique headings and preserves the mapped property,
+              structure, and algebra propositions.</li>
+              <li>Executor note: record each removed duplicate with the
+              anchor that replaces it.</li>
+              <li>Parent outcome served: provides a coherent calculus
+              for the lattice chapters.</li>
+              </ul>
+              <h3
+              id="forms-and-lattices-rewrite-three-target-chapters">Forms
+              and lattices rewrite (three target chapters)</h3>
+              <ul>
+              <li>Items / how to enumerate: Modules and form categories;
+              Lattices and discriminant forms; Isometries and arithmetic
+              invariants.</li>
+              <li>Shared remediation shape: divide the current
+              definitions chapter by mathematical dependency and
+              integrate settled mathematical choices at their defining
+              occurrences.</li>
+              <li>Criteria and tie-breakers:
+              <ul>
+              <li>form categories cite the category-of-elements
+              definition;</li>
+              <li>nondegenerate, unimodular, and even remain
+              distinct;</li>
+              <li>every sequence carries hypotheses and named maps;</li>
+              <li>invariants state their domain, codomain, and
+              dependence on chosen presentations;</li>
+              <li>provenance history does not interrupt exposition.</li>
+              </ul></li>
+              <li>Shared acceptance: Modules follows the completed
+              property, algebra, comparison, and subobject chapters;
+              Lattices follows Modules; Isometries follows Lattices.
+              Builders do not cross these gates. Source comparison
+              accounts for every current definition, sequence, and
+              example.</li>
+              <li>Executor note: preserve citation and diagram
+              provenance while consolidating repeats.</li>
+              <li>Parent outcome served: presents the project’s actual
+              lattice mathematics in dependency order.</li>
+              </ul>
+              <h3
+              id="realizations-and-authoringreference-regrouping-seven-target-chapters">Realizations
+              and authoring/reference regrouping (seven target
+              chapters)</h3>
+              <ul>
+              <li>Items / how to enumerate: five Realizations chapters,
+              Mathematical authoring conventions, and Mathematical
+              decisions and sources.</li>
+              <li>Shared remediation shape: separate generated
+              inventories, implementation explanation, positive
+              mathematical authoring conventions, and human-readable
+              mathematical rationale; retire the four rendered pages
+              whose primary purpose is agent control after exact
+              transfer of their genuine residue.</li>
+              <li>Criteria and tie-breakers:
+              <ul>
+              <li>generated catalogues remain generated and
+              source-linked;</li>
+              <li>implementation terms do not enter mathematical
+              chapters;</li>
+              <li>the rendered authoring guide states only positive
+              conventions needed to write the mathematics, while agent
+              threats, terminology controls, audits, and handoff
+              contracts remain in non-rendered agent policy;</li>
+              <li>the mathematical decisions page contains only
+              rationale a reader or human contributor needs, with links
+              to current definitions and sources;</li>
+              <li>pages whose purpose is to counter agent failure leave
+              the rendered navigation after any genuine mathematical
+              residue is transferred;</li>
+              <li>historical mathematical decisions link to current
+              definitions without repeating them;</li>
+              <li>roadmap content remains orientation, not a completion
+              ledger.</li>
+              </ul></li>
+              <li>Shared acceptance: each rendered page has one audience
+              and purpose, title and headings use sentence case, and no
+              rendered page reproduces live execution state or
+              agent-facing control policy. The leading-underscore
+              writing guide remains outside the book.</li>
+              <li>Executor note: preserve generated data and
+              human-readable mathematical rationale; route author
+              instructions by audience rather than preserving a rendered
+              contribution-policy chapter.</li>
+              <li>Parent outcome served: leaves the mathematical
+              sequence uninterrupted while retaining the implementation
+              and policy material readers need.</li>
+              </ul>
+              <h3
+              id="integration-and-rendered-verification-whole-book">Integration
+              and rendered verification (whole book)</h3>
+              <ul>
+              <li>Items / how to enumerate: the approved target
+              chapters, <code>_quarto.yml</code>, all moved anchors, all
+              internal links, citations, and the site at wide and narrow
+              viewports.</li>
+              <li>Shared remediation shape: update navigation once,
+              replace moved references, render the complete book, and
+              inspect the actual pages.</li>
+              <li>Criteria and tie-breakers:
+              <ul>
+              <li>preserve stable anchors when their referent is
+              unchanged;</li>
+              <li>use redirects or explicit aliases only for real
+              external-link compatibility, never as a second
+              definition;</li>
+              <li>repair the defining occurrence before repairing
+              dependent prose;</li>
+              <li>visual defects are judged from page images, not DOM
+              measurements.</li>
+              </ul></li>
+              <li>Shared acceptance:
+              <ul>
+              <li><code>just docs-check</code> passes on the complete
+              target tree;</li>
+              <li>citations, cross-references, and anchors resolve;</li>
+              <li>no exact duplicate headings occur within a
+              chapter;</li>
+              <li>fresh-context policy and mathematical-language audits
+              have no unresolved finding;</li>
+              <li>wide and narrow page images show usable navigation,
+              readable mathematics, no overflow, and no broken diagrams
+              or assets.</li>
+              </ul></li>
+              <li>Executor note: record only unresolved defects and
+              their page/anchor locations; passing command logs are
+              receipts, not prose for the book.</li>
+              <li>Parent outcome served: proves the reorganized book
+              works as a rendered documentation site.</li>
+              </ul>
+              <h2 id="agent-priming-and-routing">Agent priming and
+              routing</h2>
+              <p>Every delegated role except the fresh
+              mathematical-language auditor receives a common prompt
+              packet, in this order:</p>
+              <ul>
+              <li>the named role, exact output, and file ownership;</li>
+              <li><code>docs/_writing-guide.md</code> as the agent-only
+              threat model and audit policy,
+              <code>docs/contributing/Mathematical-Language-Style-Guide.md</code>
+              as the human-facing positive mathematical conventions, and
+              the governing repository instructions, with an explicit
+              requirement to read each in full and never merge their
+              audiences;</li>
+              <li>the approved target chapter/section/subsection slice
+              and its prerequisite gate;</li>
+              <li>exact source files and passages supplied as artifacts
+              rather than summaries;</li>
+              <li>the definition and anchor map, including passages that
+              must become references rather than definitions;</li>
+              <li>the source, hypotheses, selected resolution, defining
+              anchor, and dependent-passage list for every relevant
+              contradiction; an unresolved entry removes edit
+              authority;</li>
+              <li>non-goals, adjacent files the role may not edit, and
+              the files owned by other roles;</li>
+              <li>acceptance evidence specific to the role, including
+              the required semantic comparison or independent audit
+              handoff.</li>
+              </ul>
+              <p>The role-specific additions are:</p>
+              <table>
+              <colgroup>
+              <col style="width: 33%" />
+              <col style="width: 33%" />
+              <col style="width: 33%" />
+              </colgroup>
+              <thead>
+              <tr>
+              <th>Role</th>
+              <th>Exact input and output</th>
+              <th>Acceptance and non-goals</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+              <td>Extractor</td>
+              <td>All twenty-four source files from the exact map;
+              produce the definition, proposition, hypothesis, diagram,
+              example, citation, anchor, and process-prose
+              inventory</td>
+              <td>Read-only; every source heading and load-bearing
+              passage has a disposition, and every contradiction remains
+              marked</td>
+              </tr>
+              <tr>
+              <td>Mathematical adjudicator</td>
+              <td>The exact conflicting passages and declared corpus
+              sources; produce the source, hypotheses, selected
+              resolution, defining anchor, and dependent-passage list
+              for one contradiction</td>
+              <td>Read-only; no prose redesign, and inability to
+              establish any field triggers the hard stop</td>
+              </tr>
+              <tr>
+              <td>Part builder</td>
+              <td>One approved target slice, its exact mapped sources,
+              definition anchors, and completed adjudications</td>
+              <td>Edit only owned target files; preserve or justify
+              every mapped item, resolve references, and hand the source
+              comparison to a reviewer; never edit navigation</td>
+              </tr>
+              <tr>
+              <td>Source-comparison reviewer</td>
+              <td>Rewritten pages, original source files, proposition
+              map, anchors, and adjudication records</td>
+              <td>Read-only; report exact lost or altered mathematics
+              and do not accept a render or builder report as semantic
+              evidence</td>
+              </tr>
+              <tr>
+              <td>Integrator</td>
+              <td>The complete set of reviewed targets, preserved-anchor
+              list, and exact ownership of <code>_quarto.yml</code>,
+              <code>index.md</code>, <code>Roadmap.md</code>, and global
+              references</td>
+              <td>Edit only those integration files; verify page
+              inventory, navigation, links, citations, and anchors
+              without introducing definitions</td>
+              </tr>
+              <tr>
+              <td>Rendered-output reviewer</td>
+              <td>The complete rendered site, required wide and narrow
+              viewport list, and expected diagrams/assets for every
+              target page</td>
+              <td>Read-only; capture and inspect page images for
+              navigation, typography, overflow, mathematics, diagrams,
+              and assets; source and logs are receipts only</td>
+              </tr>
+              </tbody>
+              </table>
+              <p>The fresh mathematical-language auditor is not
+              assembled from this table. The coordinator sends exactly
+              the verbatim prompt from
+              <code>.agents/references/mathematical-auditor-priming.md</code>
+              and the rewritten artifact or its path. No guide, role
+              note, summary, prior finding, acceptance suffix, or other
+              packet is added.</p>
+              <p>Every common-role prompt, excluding the fresh
+              mathematical-language auditor, forbids feature-level
+              replanning, policy restatement inside mathematical
+              chapters, and a completion claim based only on changed
+              files, command success, or a render. Broad repository
+              exploration stops after the named source pass unless the
+              exact acceptance question cannot be answered from the
+              supplied artifacts. The fresh auditor receives no packet
+              or suffix beyond the verbatim priming prompt and the
+              artifact or its path.</p>
+              <p>No builder reviews its own work. If a reviewer rejects
+              a part, the original builder receives the evidence and
+              revises the same files before integration.</p>
+              <h2 id="risks-recovery-stop-rules">Risks / recovery / stop
+              rules</h2>
+              <ul>
+              <li>Risks:
+              <ul>
+              <li>a merge silently loses a hypothesis, diagram leg,
+              citation, or example;</li>
+              <li>a builder redefines a prerequisite to make its chapter
+              locally fluent;</li>
+              <li>stable cross-reference anchors change meaning during
+              the move;</li>
+              <li>unresolved mathematical contradictions are replaced by
+              polished prose;</li>
+              <li>the integrator edits navigation before target files
+              stabilize and creates avoidable reference churn;</li>
+              <li>the existing noisy worktree causes an agent to
+              overwrite unrelated documentation.</li>
+              </ul></li>
+              <li>Recovery path:
+              <ul>
+              <li>use checkpoint <code>b0ba69f</code> for the pre-policy
+              baseline;</li>
+              <li>compare each rewritten destination against the current
+              source before retiring a page;</li>
+              <li>revert only agent-owned documentation changes through
+              a new correcting commit; never restore or discard unknown
+              worktree changes;</li>
+              <li>keep unresolved mathematical content in the source
+              page until its destination and correctness are
+              established.</li>
+              </ul></li>
+              <li>Stop and ask when:
+              <ul>
+              <li>any of the seven contradictions lacks a corpus source,
+              exact hypotheses, a selected resolution, one defining
+              anchor, or a dependent-passage list; downstream mapping
+              and mathematical rewrites remain blocked;</li>
+              <li>two authoritative sources support incompatible
+              definitions and the choice changes downstream
+              mathematics;</li>
+              <li>a source passage cannot be classified as mathematics,
+              durable rationale, or live status without changing its
+              meaning;</li>
+              <li>preserving an external anchor would require two active
+              definitions;</li>
+              <li>an assigned file overlaps unknown or concurrently
+              changing user work;</li>
+              <li>a proposed hierarchy change would add mathematics not
+              present in the approved scope.</li>
+              </ul></li>
+              </ul>
+              <h2 id="progress">Progress</h2>
+              <ul class="task-list">
+              <li><label><input type="checkbox" checked="" />Checkpoint
+              the two policy files before editing — commit
+              <code>b0ba69f</code>.</label></li>
+              <li><label><input type="checkbox" checked="" />Commit the
+              initial audited policy corrections — commit
+              <code>fa26301</code>.</label></li>
+              <li><label><input type="checkbox" checked="" />Separate
+              rendered mathematical conventions from non-rendered agent
+              controls, audit both audience routing and mathematical
+              terminology, and commit the correction — commit
+              <code>45e4f9f</code>.</label></li>
+              <li><label><input type="checkbox" />Obtain approval for
+              the proposed hierarchy and private remediation
+              plan.</label></li>
+              <li><label><input type="checkbox" />Resolve the seven
+              mathematical contradictions with corpus
+              sources.</label></li>
+              <li><label><input type="checkbox" />Complete the
+              source-preservation map for all twenty-four rendered
+              pages.</label></li>
+              <li><label><input type="checkbox" />Rewrite and review
+              Foundations.</label></li>
+              <li><label><input type="checkbox" />Rewrite and review
+              Properties, structures, and algebraic
+              categories.</label></li>
+              <li><label><input type="checkbox" />Rewrite and review
+              Forms and lattices.</label></li>
+              <li><label><input type="checkbox" />Regroup and review
+              Realizations and authoring/reference pages.</label></li>
+              <li><label><input type="checkbox" />Integrate navigation
+              and references.</label></li>
+              <li><label><input type="checkbox" />Render, inspect,
+              audit, and commit the complete documentation
+              repair.</label></li>
+              </ul>
+              <h2 id="surprises-and-discoveries">Surprises and
+              discoveries</h2>
+              <ul>
+              <li>Observation: the repository-wide hook cannot
+              checkpoint the two documentation policy files while
+              unrelated in-progress code fails the global commit gate.
+              Evidence: the attempted checkpoint reached existing
+              Semgrep, Ruff, and mypy failures in files outside this
+              task. Consequence for the plan: documentation-only commits
+              follow the user’s explicit hook bypass and stage only the
+              intended documentation paths.</li>
+              <li>Observation: the previous four-part reorganization
+              claims one framework source but the current working tree
+              contains repeated and contradictory definitions across
+              that part. Evidence: the seven contradictions and repeated
+              definition families listed above. Consequence for the
+              plan: definition mapping and mathematical adjudication
+              precede chapter rewriting.</li>
+              </ul>
+              <h2 id="decision-log">Decision log</h2>
+              <ul>
+              <li>Decision: the proposed hierarchy, not a generic task
+              list, is the first reviewable planning result. Rationale:
+              chapter boundaries and prerequisite order determine which
+              rewrites are independent and which definition each writer
+              may cite. Date/author: 2026-07-20, user and Codex.</li>
+              <li>Decision: source preservation and mathematical
+              adjudication precede builders. Rationale: moving prose
+              before fixing the definition map would spread
+              contradictions and make semantic loss difficult to detect.
+              Date/author: 2026-07-20, Codex.</li>
+              </ul>
+              <h2 id="outcomes-and-retrospective">Outcomes and
+              retrospective</h2>
+              <ul>
+              <li>Achieved: not yet; this plan awaits approval.</li>
+              <li>Remaining: every execution workstream above.</li>
+              <li>Lessons: record after execution, not before it.</li>
+              </ul>
+              <h2 id="revision-notes">Revision notes</h2>
+              <ul>
+              <li>2026-07-20: initial private workstream plan, including
+              the proposed chapter, section, and subsection hierarchy
+              and agent-specific handoff requirements.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const themeLink = document.getElementById('bootswatch-theme');
+    const themeButton = document.getElementById('theme-toggle');
+    const lightTheme = 'https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist/cosmo/bootstrap.min.css';
+    const darkTheme = 'https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist/darkly/bootstrap.min.css';
+
+    function applyTheme(mode) {
+      document.documentElement.dataset.bsTheme = mode;
+      themeLink.href = mode === 'dark' ? darkTheme : lightTheme;
+      themeButton.textContent = mode === 'dark' ? 'Light' : 'Dark';
+      document.dispatchEvent(new CustomEvent('review-theme-change'));
+    }
+
+    const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    applyTheme(preferredTheme);
+    themeButton.addEventListener('click', () => applyTheme(document.documentElement.dataset.bsTheme === 'dark' ? 'light' : 'dark'));
+
+    document.querySelectorAll('.plan-document table').forEach((table) => {
+      table.classList.add('table', 'table-striped', 'table-hover', 'align-middle');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'table-responsive';
+      table.parentNode.insertBefore(wrapper, table);
+      wrapper.appendChild(table);
+    });
+
+    function queuePlanDecision(event) {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const data = new FormData(form);
+      const decision = data.get('planDecision');
+      const note = String(data.get('decisionNote') || '').trim();
+      const status = document.getElementById('decision-status');
+      if (!decision) {
+        status.textContent = 'Select a disposition before queuing.';
+        status.className = 'small text-danger';
+        return;
+      }
+      const prompt = note ? decision + '. Condition or rationale: ' + note : decision + '.';
+      if (window.lavish && typeof window.lavish.queuePrompt === 'function') {
+        window.lavish.queuePrompt(prompt, {
+          tag: 'plan-decision',
+          text: decision,
+          element: form,
+          queueKey: 'docs-book-plan-approval',
+          data: { question: 'docs-book-plan-approval', decision, note }
+        });
+        status.textContent = 'Decision queued. Use Send to Agent when your review is ready.';
+        status.className = 'small text-success';
+      } else {
+        status.textContent = 'Open this page through Lavish to queue the decision.';
+        status.className = 'small text-warning';
+      }
+    }
+  </script>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.15.0/dist/mermaid.esm.min.mjs';
+    const diagrams = [...document.querySelectorAll('.mermaid')].map((element) => ({ element, source: element.textContent }));
+    let rendering = false;
+
+    async function renderDiagrams() {
+      if (rendering) return;
+      rendering = true;
+      const theme = document.documentElement.dataset.bsTheme === 'dark' ? 'dark' : 'default';
+      mermaid.initialize({ startOnLoad: false, theme, securityLevel: 'strict' });
+      for (const diagram of diagrams) {
+        diagram.element.removeAttribute('data-processed');
+        diagram.element.textContent = diagram.source;
+      }
+      await mermaid.run({ nodes: diagrams.map((diagram) => diagram.element) });
+      rendering = false;
+    }
+
+    if (document.readyState === 'complete') await renderDiagrams();
+    else window.addEventListener('load', renderDiagrams, { once: true });
+    document.addEventListener('review-theme-change', renderDiagrams);
+  </script>
+</body>
+</html>

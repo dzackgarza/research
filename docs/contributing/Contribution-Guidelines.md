@@ -1,7 +1,7 @@
 # Contribution Guidelines
 
 Forward-facing workflow for contributing to the Lean/Sage alignment work.
-Doctrine lives in [Categorical Presentation Principles](Categorical-Presentation-Principles.md) and [Settled Mathematical Rulings](../framework/Settled-Mathematical-Rulings.md); architecture in the [Lean–Sage Integration Model](../lean/Lean-Sage-Integration-Model.md); vocabulary in the [Mathematical Language Style Guide](Mathematical-Language-Style-Guide.md).
+Doctrine lives in [Categorical Presentation Principles](Categorical-Presentation-Principles.md) and [Settled Rulings](../framework/Settled-Mathematical-Rulings.md); architecture in the [Lean–Sage Integration Model](../lean/Lean-Sage-Integration-Model.md); vocabulary in the [Language Style Guide](Mathematical-Language-Style-Guide.md).
 Each rule below guards one or more entries in the [Design Hazard Ledger](Design-Hazard-Ledger.md) (cited as H*n*).
 
 ## Derive first, admit declarations second {#sec-cg-derive-first-admit-declarations-second}
@@ -13,7 +13,7 @@ Never start from an existing declaration and search for mathematics to justify i
 
 Before any field, method, type, or category is introduced, state:
 
-- its **typed signature** — functor, natural transformation, object property, invariant on the core, or n-ary operation with typed source (style guide [P2](Mathematical-Language-Style-Guide.md#p2));
+- its **typed signature** — functor, natural transformation, object property, invariant on the core, or n-ary operation with typed source ([mathematical-type convention](Mathematical-Language-Style-Guide.md#convention-mathematical-type));
 
 - its **mathematical home** — the category it is defined on, with structured objects reaching it through canonical functors, never re-declaring it;
 
@@ -72,11 +72,11 @@ Fix or surface it before continuing (H15).
 
 2. **Prove by bundled transport.** When a datum lifts to a bundled structure (`LinearEquiv`, `Iso`, `Equiv`), derive properties from its API in one word — never componentwise re-proofs.
 
-3. **Mathlib names are anchors, not prose** (style guide [P1b](Mathematical-Language-Style-Guide.md#p1b)): code-formatted in identification columns only.
+3. **Mathlib names are anchors, not prose** ([mathematics-before-realization convention](Mathematical-Language-Style-Guide.md#convention-mathematics-before-realization)): code-formatted in identification columns only.
 
 4. **Cop-outs stay visible.** `sorry`/`admit`, extra axioms, `native_decide`, `unsafe`/`implemented_by`, `partial def` are enumerated by the tree-wide report; the hard gate applies outside the Synthetic layer.
 
 ## Prose rules {#sec-cg-prose-rules}
 
-All mathematical prose — issue bodies, plan cards, docstrings, manifest text — follows the [Mathematical Language Style Guide](Mathematical-Language-Style-Guide.md): corpus-only vocabulary auditable by a working mathematician (H13), one term one type, typed notation, implementation vocabulary quarantined to the implementation map.
+All mathematical prose — issue bodies, plan cards, docstrings, manifest text — follows the [Language Style Guide](Mathematical-Language-Style-Guide.md): corpus-only vocabulary auditable by a working mathematician (H13), one term one type, typed notation, implementation vocabulary quarantined to the implementation map.
 Run the guide's audit hooks before shipping any prose artifact.

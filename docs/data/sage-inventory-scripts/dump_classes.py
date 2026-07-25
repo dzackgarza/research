@@ -9,6 +9,7 @@ exported-namespace membership (axis 1) and category_sample() instances
 
 Run:  "$SAGE_BIN" -python dump_classes.py classes.json
 """
+
 import importlib
 import json
 import pkgutil
@@ -16,6 +17,11 @@ import sys
 
 import sage.categories
 import sage.categories.all  # noqa: F401
+from sage.categories.category import Category
+from sage.categories.category_with_axiom import CategoryWithAxiom
+from sage.categories.covariant_functorial_construction import (
+    FunctorialConstructionCategory,
+)
 
 failures = {}
 for m in pkgutil.iter_modules(sage.categories.__path__, "sage.categories."):
@@ -23,12 +29,6 @@ for m in pkgutil.iter_modules(sage.categories.__path__, "sage.categories."):
         importlib.import_module(m.name)
     except Exception as e:  # record, never skip silently
         failures[m.name] = f"{type(e).__name__}: {e}"
-
-from sage.categories.category import Category
-from sage.categories.category_with_axiom import CategoryWithAxiom
-from sage.categories.covariant_functorial_construction import (
-    FunctorialConstructionCategory,
-)
 
 rows = []
 seen = set()

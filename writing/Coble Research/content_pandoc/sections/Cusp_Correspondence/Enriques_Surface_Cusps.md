@@ -1,8 +1,12 @@
 # Enriques cusps
 
-We recall from [@AEGS23] the cusp diagram for $F_\En$, the moduli space of unpolarized Enriques surfaces, in \cref{fig:enriques-cusps} and the corresponding Coxeter diagrams in \cref{fig:enriques-coxeter-diagrams}.
+We recall from [@AEGS25] the cusp diagram for $F_\En$, the moduli space of unpolarized Enriques surfaces, in \cref{fig:enriques-cusps} and the corresponding Coxeter diagrams in \cref{fig:enriques-coxeter-diagrams}.
 
 ![Cusp diagram for $F_\En = F_{(10, 10, 0)}$ corresponding to $T_\En = U \oplus E_{10}(2)$.](rendered/fig_Cusp_Diagram_En.svg){#fig:enriques-cusps}
+
+This can be recovered using the mirror move algorithm:
+
+![The mirror moves for $S_{\En} = (10,10,0)_1$.](rendered/mirror_moves_enriques_simplified.svg){#fig:mirror-moves-enriques-simplified}
 
 ![Coxeter diagrams $G_{(10, 10, 0)_1} = G_{E_{10}(2)}$ and $G_{(10, 8, 0)_1} = G_{U \oplus E_8(2)}$.](rendered/fig_Coxeter_Diagrams_En_10_10_0_10_8_0.svg){#fig:enriques-coxeter-diagrams}
 

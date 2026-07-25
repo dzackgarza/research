@@ -3,6 +3,18 @@
   "packagesDir": ".lake/packages",
   "packages": [
     {
+      "url": "https://github.com/Paper-Proof/paperproof.git",
+      "type": "git",
+      "subDir": "lean",
+      "scope": "",
+      "rev": "f610d3db77dfaa32766b1f77bb6c464a28de1393",
+      "name": "Paperproof",
+      "manifestFile": "lake-manifest.json",
+      "inputRev": "main",
+      "inherited": false,
+      "configFile": "lakefile.lean"
+    },
+    {
       "url": "https://github.com/leanprover-community/mathlib4",
       "type": "git",
       "subDir": null,

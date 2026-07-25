@@ -1,17 +1,18 @@
-# SageMath Category Framework Reference
+# SageMath category framework reference
 
-The reference for Sage's category framework: the categories, the axiom registry, and the functorial constructions.
-Sage constructs infinitely many category *instances* (parameterized, joined, axiom-refined, construction-lifted); the finite content below is the source-level vocabulary those instances are generated from.
-Consumers: the mapping work on [research#260](https://github.com/dzackgarza/research/issues/260) and the generating-graph record on [research#251](https://github.com/dzackgarza/research/issues/251); the project-side counterpart of this page is [Mathematical Definitions](../framework/Mathematical-Definitions.md).
+Sage's category framework defines category classes, a global axiom registry, and functorial category constructions.
+Parameterized categories, joins, refinements by axioms, and functorial constructions produce further category instances at runtime.
+The mathematical categories represented here are defined in [Algebraic categories from operations](../framework/Mathematical-Framework.md), [Modules and base change](../framework/Modules-and-Forms.md), [Bilinear and quadratic forms](../framework/Bilinear-and-Quadratic-Forms.md), and [Lattices and discriminant forms](../framework/Lattices-and-Discriminant-Forms.md).
 
 ## Categories
 
-222 category classes and wrapper constructors are defined in `sage.categories` (1 example-only; 38 framework/helper; 6 public category-valued wrapper constructor; 173 public named; 4 test-only).
+The pinned `sage.categories` source defines 222 category classes and wrapper constructors: 1 example-only class, 38 framework helpers, 6 public category-valued wrapper constructors, 173 public named classes, and 4 test-only classes.
 At runtime the framework generates further classes from these: 209 axiom-generated and 200 construction-generated classes among the 678 loaded in a full-import session.
 
-The full catalogue is **[Sage Category Classes](Sage-Category-Classes.md)**: every named category with its module, role, defining axiom chain, and source permalink, followed by the complete runtime population — every axiom-generated, construction-generated, and framework class with its generating axiom or construction, and the semantic instance layer: the 130 category instances a full import constructs, including all 84 join categories (meets in the category lattice) with their factors.
+The [Sage category classes](Sage-Category-Classes.md) catalogue records each class with its module, role, defining axiom chain, and source permalink.
+It also records the runtime classes and the 130 category instances constructed by a full import, including the 84 join categories and their factors.
 
-The hierarchy bottoms out at `Objects()` through `SetsWithPartialMaps()`, not at `Sets()`. Reference chain from `Modules(ZZ)` (complete `super_categories()` edge set):
+The chain of declared superclass relations from `Modules(ZZ)` to `Objects()` passes through `Sets()` and `SetsWithPartialMaps()`:
 
 ```
     Category of additive commutative additive magmas  →  Category of additive magmas
@@ -40,10 +41,12 @@ The hierarchy bottoms out at `Objects()` through `SetsWithPartialMaps()`, not at
 
 ## Axiom registry (51)
 
-Axioms refine a category into a full subcategory (`C._with_axiom(A)`); the registry is global and closed.
-"Declared at" is the interface site — the category owning the axiom's meaning; named classes are premade subcategory classes reached by that axiom.
+The method `C._with_axiom(A)` is Sage's implementation mechanism for adjoining a registered axiom, and the registry is global.
+The resulting category is not uniformly a mathematical replete full subcategory: some entries model isomorphism-invariant object properties, `WithBasis` records chosen data, and `Facade` and `Endset` control framework behavior.
+The implementation site is the class in which the entry is declared.
+Named classes are predefined category classes reached through this mechanism.
 
-| axiom | status | declared at | named subcategory classes |
+| axiom | status | implementation site | named subcategory classes |
 | --- | --- | --- | --- |
 | `AdditiveAssociative` | production | `additive_magmas.AdditiveMagmas:AdditiveAssociative` | `AdditiveSemigroups` |
 | `AdditiveCommutative` | production | `additive_magmas.AdditiveMagmas:AdditiveCommutative` | `CommutativeAdditiveGroups`, `CommutativeAdditiveMonoids`, `CommutativeAdditiveSemigroups` |
@@ -97,37 +100,37 @@ Axioms refine a category into a full subcategory (`C._with_axiom(A)`); the regis
 | `Blue` | test-only placeholder | `category_with_axiom.Blahs:Blue` | — |
 | `Flying` | test-only placeholder | `category_with_axiom.Blahs:Flying` | — |
 
-Reading notes (design facts):
+### Mathematical interpretation
 
 - The `Additive*` family duplicates the multiplicative axiom family across Sage's two operation towers; mathematically there is one magma-axiom family.
 
-- Ring refinements (`Noetherian`, `Principal`, `UniqueFactorization`, `Euclidean`, `Gcd`, `Dedekind`) are **not** axioms — Sage implements them as plain category classes.
+- Sage implements the ring refinements `Noetherian`, `Principal`, `UniqueFactorization`, `Euclidean`, `Gcd`, and `Dedekind` as plain category classes outside the axiom registry.
 
 - Finite generation is structure-relative in Sage's own naming (`FinitelyGeneratedAsMagma`, `FinitelyGeneratedAsLambdaBracketAlgebra`).
 
-- `WithBasis` is presentation-witness data, not a mathematical property; `Facade` and `Endset` are framework bookkeeping.
+- `WithBasis` records a chosen basis.
+  `Facade` and `Endset` serve framework bookkeeping roles.
 
-## Defects and gaps (kernel-verified)
+## Known discrepancies in Sage 10.9 {#sec-sage-discrepancies}
 
-Findings about the upstream framework discovered while building this reference, each verified against the running kernel or the pinned source.
-Candidate upstream reports; recorded here so the mapping work on [research#260](https://github.com/dzackgarza/research/issues/260) treats them as "mathematics present, declaration absent," never as missing mathematics.
+The pinned source and a running Sage kernel exhibit the following discrepancies between the mathematical hierarchy and Sage's declarations.
 
-1. **Missing theorem edges in the subcategory lattice.** `PrincipalIdealDomains().is_subcategory(DedekindDomains())` and `…is_subcategory(NoetherianRings())` are both `False` (kernel-verified), though every PID is a Dedekind domain and noetherian; Sage does know `EuclideanDomains ⊂ PrincipalIdealDomains`. Consequence: `ZZ.category()` is the uncollapsed five-factor join *Dedekind ∧ euclidean ∧ noetherian ∧ infinite enumerated ∧ metric* whose algebraic part is mathematically just euclidean domains.
-   (The project's generating graph gains the missing `PID ⊂ Dedekind` theorem-witness inclusion as a pending delta on [research#251](https://github.com/dzackgarza/research/issues/251).)
+1. **Missing theorem inclusions in the subcategory lattice.** `PrincipalIdealDomains().is_subcategory(DedekindDomains())` and `…is_subcategory(NoetherianRings())` are both `False` (kernel-verified), though every PID is a Dedekind domain and noetherian; Sage does know `EuclideanDomains ⊂ PrincipalIdealDomains`. Consequence: `ZZ.category()` is the uncollapsed five-factor join *Dedekind ∧ euclidean ∧ noetherian ∧ infinite enumerated ∧ metric* whose algebraic part is mathematically just euclidean domains.
 
 2. **The topological/metric naming gap.** The `Topological` construction has a declared nested class only at `Groups` (`groups.py:654`, "Category of topological groups"); `Metric` at none.
-   All 76 bare joins constructed at import are Metric/Topological meets with the algebraic towers — topological additive groups, metric monoids, topological semirings, … — standard objects Sage builds but cannot name (join table in [Sage Category Classes](Sage-Category-Classes.md)).
+   All 76 bare joins constructed at import are intersections of a metric or topological Sage category with categories in the algebraic towers.
+   The join factors alone do not assert compatibility between the topology or metric and the algebraic operations (join table in [Sage Category Classes](Sage-Category-Classes.md)).
 
 3. **Construction declarations were not duplicated across the towers.** The additive tower received copies of the four magma axioms but not the `Topological` declaration, so `Groups().Topological()` is named while `AdditiveGroups().Topological()` is a bare join.
 
-4. **No `Countable`/`Uncountable` axiom exists upstream** — countability is not expressible in the registry; [research#65](https://github.com/dzackgarza/research/issues/65) owns these axioms project-side.
+4. **The registry has no `Countable` or `Uncountable` axiom.** Countability is not expressible through `_with_axiom` in this Sage version.
 
-5. **Doctest fixtures live in the production registry.** `Blue` and `Flying` are test-only axioms registered in the same global `all_axioms` as the mathematical ones — enumeration must disposition, never copy.
+5. **Doctest fixtures occur in the global registry.** `Blue` and `Flying` are test-only axioms registered in the same `all_axioms` collection as the mathematical axioms.
 
 ## Functorial constructions (17)
 
 Constructions lift a category to a category of constructed objects.
-Covariant constructions add structure ( `C.CartesianProducts()` ); regressive ones change the base category (`Graded`, `Filtered`, `Super`, `Metric`, `Topological`) — the same species as the project's constructors (El, Core, π₀), never axioms.
+Covariant constructions add structure, as in `C.CartesianProducts()`. Regressive constructions change the base category, as in `Graded`, `Filtered`, `Super`, `Metric`, and `Topological`. Both are distinct from refinements by axioms.
 
 | construction | flavor | implementation class | named result categories |
 | --- | --- | --- | --- |
@@ -149,13 +152,11 @@ Covariant constructions add structure ( `C.CartesianProducts()` ); regressive on
 | `Topological` | regressive covariant | `TopologicalSpacesCategory` | `TopologicalSpaces` |
 | `WithRealizations` | regressive covariant | `WithRealizationsCategory` | — |
 
-## Provenance
+## Versions and source data
 
-Two independent enumeration axes, cross-checked 2026-07-18; their 51-axiom and 17-construction registries are **identical**:
+Source analysis and a runtime enumeration were compared on 2026-07-18. Both yielded 51 axioms and 17 functorial constructions:
 
 - **Source axis** — AST audit of the SageMath 10.9 distribution (pinned commit [`686dc1a`](https://github.com/sagemath/sage/commit/686dc1a8d420c2e0aabadd4f602d9a0aa4690c50), dist SHA-256 recorded in the artifacts).
   Raw data and the deterministic generator are tracked in the repository under [`data/sage-source-audit-10.9/`](../data/sage-source-audit-10.9/) ([categories](../data/sage-source-audit-10.9/sagemath-10.9-categories.csv), [axioms](../data/sage-source-audit-10.9/sagemath-10.9-axioms.csv), [constructions](../data/sage-source-audit-10.9/sagemath-10.9-functorial-constructions.csv), [feature declarations](../data/sage-source-audit-10.9/sagemath-10.9-category-feature-declarations.csv), [aliases](../data/sage-source-audit-10.9/sagemath-10.9-category-aliases.csv), [combined JSON](../data/sage-source-audit-10.9/sagemath-10.9-category-inventory.json), [generator](../data/sage-source-audit-10.9/build_sage_category_inventory.py)).
 
 - **Runtime axis** — full class walk, registry dump, and instance enumeration of the running kernel (SageMath 10.10.beta0), scripts tracked under [`data/sage-inventory-scripts/`](../data/sage-inventory-scripts/) ([dump_categories.py](../data/sage-inventory-scripts/dump_categories.py), [dump_classes.py](../data/sage-inventory-scripts/dump_classes.py), [dump_instances.py](../data/sage-inventory-scripts/dump_instances.py)).
-
-To refresh after a kernel upgrade: rerun the runtime scripts, diff, update the tables here and in [Sage Category Classes](Sage-Category-Classes.md), and note the new version in this section.

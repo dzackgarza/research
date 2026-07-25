@@ -8,23 +8,25 @@ Renders the book and fails (nonzero exit) on any data-integrity defect:
                                  unresolved ref as `?sec-x`, no `@`)
   3. broken cross-page anchor links — `[t](Page.md#anchor)` whose anchor id is absent
 
-Quarto binary from $QUARTO (default `quarto`). Run: `just docs-check`.
+Quarto command from $QUARTO (default `uvx --from quarto-cli quarto`).
+Run: `just docs-check`.
 """
 import os
 import re
+import shlex
 import subprocess
 import sys
 from pathlib import Path
 
 DOCS = Path("docs")
 SITE = DOCS / "_site"
-QUARTO = os.environ.get("QUARTO", "quarto")
+QUARTO = shlex.split(os.environ.get("QUARTO", "uvx --from quarto-cli quarto"))
 
 failures: list[str] = []
 
 # --- render, capturing warnings -------------------------------------------------
 proc = subprocess.run(
-    [QUARTO, "render", str(DOCS)],
+    [*QUARTO, "render", str(DOCS)],
     capture_output=True, text=True,
 )
 log = proc.stdout + proc.stderr

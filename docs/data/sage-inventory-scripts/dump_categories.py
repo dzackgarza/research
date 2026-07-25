@@ -10,12 +10,14 @@ Dumps, from the running Sage kernel (no hand lists):
 
 Run:  "$SAGE_BIN" -python dump_categories.py out.json
 """
+
 import json
 import sys
 
 import sage.categories.all as A  # force-load every category module
-from sage.categories.category import Category, category_sample
-from sage.categories.category_with_axiom import all_axioms
+import sage.categories.category as _category_module
+import sage.categories.category_with_axiom as _cwa_module
+from sage.categories.category import Category
 from sage.categories.covariant_functorial_construction import (
     FunctorialConstructionCategory,
 )
@@ -23,6 +25,11 @@ from sage.categories.modules import Modules
 from sage.categories.objects import Objects
 from sage.rings.integer_ring import ZZ
 from sage.version import version
+
+# category_sample and all_axioms exist at runtime but are invisible to static
+# analysis of sage.
+category_sample = getattr(_category_module, "category_sample")
+all_axioms = getattr(_cwa_module, "all_axioms")
 
 out = {"sage_version": version}
 
@@ -50,9 +57,9 @@ for n in sorted(dir(A)):
         names.append({"name": n, "kind": "callable"})
 out["namespace"] = names
 
-out["all_axioms"] = sorted(all_axioms)
+out["all_axioms"] = sorted(str(a) for a in all_axioms)
 
-cons = {}
+cons: dict[str, list[str]] = {}
 stack = [FunctorialConstructionCategory]
 seen = set()
 while stack:
@@ -68,7 +75,7 @@ while stack:
 out["constructions"] = {k: sorted(v) for k, v in sorted(cons.items())}
 
 edges = set()
-todo = [Modules(ZZ)]
+todo: list[Category] = [Modules(ZZ)]
 visited = set()
 while todo:
     c = todo.pop()
@@ -83,9 +90,14 @@ out["modules_ZZ_edges"] = sorted(edges)
 
 json.dump(out, open(sys.argv[1], "w"), indent=1)
 print(
-    "categories:", len(out["categories"]),
-    "| namespace names:", len(names),
-    "| axioms:", len(out["all_axioms"]),
-    "| construction kinds:", len(cons),
-    "| specimen edges:", len(edges),
+    "categories:",
+    len(out["categories"]),
+    "| namespace names:",
+    len(names),
+    "| axioms:",
+    len(out["all_axioms"]),
+    "| construction kinds:",
+    len(cons),
+    "| specimen edges:",
+    len(edges),
 )

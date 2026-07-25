@@ -1,8 +1,8 @@
-# Mathematical Definitions
+# Definitions
 
-The dependency tree of the program's mathematical objects, stated as definitions in standard language.
-Every settled design ruling is **seated** under one of these definitions: the definition says what the object *is*; the [Settled Mathematical Rulings](Settled-Mathematical-Rulings.md) say which choices about it are closed, with their supersession trails.
-The generation calculus (classify, factor, lift; property vs structure; transport as factorization) is owned by [Categorical Presentation Principles](../contributing/Categorical-Presentation-Principles.md); vocabulary is governed by the [Mathematical Language Style Guide](../contributing/Mathematical-Language-Style-Guide.md); Sage's actual category framework is enumerated in the [Sage Category Framework Inventory](../sage/Sage-Category-Framework-Inventory.md).
+The dependency tree of the program's objects, stated as definitions in standard language.
+Every settled design ruling is **seated** under one of these definitions: the definition says what the object *is*; the [Settled Rulings](Settled-Mathematical-Rulings.md) say which choices about it are closed, with their supersession trails.
+The generation calculus (classify, factor, lift; property vs structure; transport as factorization) is owned by [Categorical Presentation Principles](../contributing/Categorical-Presentation-Principles.md); vocabulary is governed by the [Language Style Guide](../contributing/Mathematical-Language-Style-Guide.md); Sage's actual category framework is enumerated in the [Sage Category Framework Inventory](../sage/Sage-Category-Framework-Inventory.md).
 Provenance for everything here is the [#251](https://github.com/dzackgarza/research/issues/251) record.
 
 Throughout, $R$ is a commutative ring — the arithmetic fibers take $R$ a PID or Dedekind domain with fraction field $K$ — and $W$ is an $R$-module, the **value module** of a form.
@@ -10,38 +10,44 @@ Notation carries claims: $\hookrightarrow$ asserts a replete full subcategory.
 
 ## Module categories {#sec-module-categories}
 
-::: {#def-module-family}
-## One module family
+::: {#def-modules-over-ring}
+## Modules over a ring
 
-For a ring $A$, $\mathrm{Mod}_A$ is the category of left $A$-modules.
-Right $R$-modules are $\mathrm{Mod}_{R^{\mathrm{op}}}$ — the same parameterized family at a different ring, never a separate primitive kind.
-Bimodules carry two forgetful functors
+For a ring $A$ — not necessarily commutative — $\mathrm{Mod}_A$ is the category of left $A$-modules.
+The opposite-ring involution $(-)^{\mathrm{op}}\colon \mathbf{Ring} \to \mathbf{Ring}$ (with $(A^{\mathrm{op}})^{\mathrm{op}} = A$) is what relates left and right modules: a right $A$-module is a left $A^{\mathrm{op}}$-module, so right $A$-modules are $\mathrm{Mod}_{A^{\mathrm{op}}}$.
+An $(A,B)$-bimodule forgets to a left $A$-module and to a right $B$-module,
 
 $$
-\mathrm{Mod}_R \xleftarrow{\;U_L\;} {}_{R}\mathrm{BiMod}_S \xrightarrow{\;U_R\;} \mathrm{Mod}_{S^{\mathrm{op}}},
+\mathrm{Mod}_A \xleftarrow{\;U_L\;} {}_{A}\mathrm{BiMod}_B \xrightarrow{\;U_R\;} \mathrm{Mod}_{B^{\mathrm{op}}}.
 $$
 
-and for commutative $R$ the identification $\mathrm{Mod}_R \simeq \mathrm{Mod}_{R^{\mathrm{op}}}$ is a hypothesis-bearing equivalence witnessed by a natural isomorphism, not an equality.
+$\mathrm{Mod}_A \simeq \mathrm{Mod}_{A^{\mathrm{op}}}$ exactly when $A \cong A^{\mathrm{op}}$ in $\mathbf{Ring}$.
+For commutative $A$ — the standing case for $R$ — the involution fixes $A$ ($A^{\mathrm{op}} = A$, the isomorphism the identity), so the two agree and the $A = B$ bimodule span commutes as a triangle.
+Which relation is meant — equality, isomorphism, or equivalence — is fixed by the ambient convention of the [Framework](Mathematical-Framework.md), not restated here.
 :::
 
 ::: {#def-tower}
 ## The tower
 
-The algebraic tower is generated from magmas by four subcategory inclusions — associativity, commutativity, unitality, inverses — with monoids, groups, and abelian groups arising as intersections, never as new declarations.
-The abelian landing is *equivalent to* the $\mathbb{Z}$-fiber of the module family — $\mathbf{Ab} \simeq \mathrm{Mod}_{\mathbb{Z}}$, a canonical equivalence with a named witness, not an identity — and $\mathbb{Z}$ initial in rings gives base change $\mathrm{Mod}_{\mathbb{Z}} \to \mathrm{Mod}_R$ along the unique $\mathbb{Z} \to R$.
+The algebraic tower is generated from magmas by four subcategory inclusions — associativity, commutativity, unitality, inverses — with monoids, groups, and abelian groups arising as categorical intersections (@def-classifier-intersection), never as new declarations.
+The abelian landing is equivalent to $\mathrm{Mod}_{\mathbb{Z}}$, the fibre over $\mathbb{Z}$ of the Grothendieck construction $\textstyle\int \mathrm{Mod}_{-} \to \mathbf{Ring}$ of the module functor $\mathrm{Mod}_{-}\colon \mathbf{Ring} \to \mathbf{Cat}_1$ (sending a ring map $A \to A'$ to base change $A' \otimes_A -$) — so "the $\mathbb{Z}$ fibre" is exactly $\mathrm{Mod}_{-}$ evaluated at $\mathbb{Z}$ [@nlab:grothendieck_construction], the construction pinned in [Categorical Foundations](Categorical-Foundations.md#sec-constructions).
+With $\mathbb{Z}$ initial in $\mathbf{Ring}$, base change along the unique $\mathbb{Z} \to R$ is $\mathrm{Mod}_{\mathbb{Z}} \to \mathrm{Mod}_R$.
 :::
 
 ::: {#def-module-subcategories}
 ## Module subcategories
 
-The module properties the program pulls back are declared as replete full subcategories of $\mathrm{Mod}_R$: **free** $\subseteq$ **projective** (the inclusion a theorem), **finitely generated**, **torsion**, and **torsion-free**. These are *structure-relative* — they do not factor through the underlying set (Rulings [A3](Settled-Mathematical-Rulings.md#a3)) — so they are owned here and only pulled back along $\pi$ below, never re-declared.
+Each module property is a classifier over $\mathrm{Mod}_R$ (@def-axiom-classifier): a full inclusion $\iota_A\colon (\mathrm{Mod}_R).A \hookrightarrow \mathrm{Mod}_R$ cut out by the property's content — $\iota_{\mathrm{free}}$ (admits a basis, $M \cong R^{(I)}$), $\iota_{\mathrm{proj}}$ (a retract of a free module), $\iota_{\mathrm{fg}}$ (admits a surjection $R^{n} \twoheadrightarrow M$), $\iota_{\mathrm{tors}}$, and $\iota_{\mathrm{tf}}$.
+Each axiom is isomorphism-invariant, so each classifier is a *property* (@def-property-structure-stuff), and $\mathrm{free} \subseteq \mathrm{proj}$ is theorem-witnessed (@def-theorem-witness), not axiomatic.
+But these axioms refer to the $R$-action, so they do not factor through the forgetful to $\mathbf{Set}$ and are not pullbacks from it (@def-axiom-through-functor, [A3](Settled-Mathematical-Rulings.md#a3)): each has classifying category $\mathrm{Mod}_R$ and is pulled back along $\pi$ below, never re-declared.
 :::
 
 *Seated rulings:* [left/right modules are distinct categories](Settled-Mathematical-Rulings.md#invariants-and-their-evaluation).
 
-## Axioms as subcategories; transport {#sec-axioms}
+## Axioms as subcategories; pullback {#sec-axioms}
 
-The axiom-classifier, transport, and property/structure machinery is the [Mathematical Framework](Mathematical-Framework.md#sec-axiom-classifiers): an axiom is a classifier $\iota_A : \mathcal{C}.A \to \mathcal{C}$ (@def-axiom-classifier), in the property case a replete full subcategory cut out at the node that owns the property; a property transports by pullback along a forgetful functor (@def-transport-property), declared at the highest node where it is well defined and pulled back below; and whether a lift is property or structure is computed from the classifier, never declared (@def-property-structure-stuff). This section applies that calculus to modules and forms; the two inclusions it needs beyond the generic machinery are:
+The axiom-classifier and property/structure machinery is the [Framework](Truncation-and-Classifiers.md#sec-axiom-classifiers-general): an axiom is a classifier $\iota_A : \mathcal{C}.A \to \mathcal{C}$ (@def-axiom-classifier), in the property case a replete full subcategory cut out at the node where the property is defined; a property on a category is the pullback along a forgetful functor of one on the underlying data (@def-axiom-through-functor), defined at the highest node where it is well defined and pulled back below; and whether a lift is property or structure is computed from the classifier, never declared (@def-property-structure-stuff).
+This section applies that calculus to modules and forms; the two inclusions it needs beyond the generic machinery are:
 
 ::: {#def-derived-expressions}
 ## Derived expressions
@@ -55,14 +61,15 @@ Categories built from declared axioms by intersection, pullback, and the constru
 Inclusions such as $\mathrm{PID} \subset \mathrm{UFD} \subset \mathrm{Dom}$ are full subcategory inclusions whose witness is a theorem rather than a defining axiom; they are recorded as such.
 :::
 
-*Seated rulings:* the calculus itself is in [Categorical Presentation Principles](../contributing/Categorical-Presentation-Principles.md); [relation kinds are not fungible](Settled-Mathematical-Rulings.md#relation-kinds-are-not-fungible). The **abelian** boundary case — additive enrichment is property-like (membership a property), while the exact functors carrying the discriminant machinery are a non-full class (a structure a consumer names) — is developed in [Categorical Foundations](Categorical-Foundations.md#sec-constructions).
+*Seated rulings:* the calculus itself is in [Categorical Presentation Principles](../contributing/Categorical-Presentation-Principles.md); [relation kinds are not fungible](Settled-Mathematical-Rulings.md#relation-kinds-are-not-fungible).
+The **abelian** boundary case — additive enrichment is property-like (membership a property), while the exact functors carrying the discriminant machinery are a non-full class (a structure a consumer names) — is developed in [Categorical Foundations](Categorical-Foundations.md#sec-constructions).
 
 ## Bilinear and quadratic form categories {#sec-forms}
 
 ::: {#def-form-presheaves}
 ## The presheaves
 
-The two generating objects of the forms frame are the presheaves
+The two generating objects of the form categories are the presheaves
 
 $$
 \operatorname{Bil}_{R,W},\ \operatorname{Quad}_{R,W} \;:\; \mathrm{Mod}_R^{\mathrm{op}} \longrightarrow \mathbf{Set},
@@ -77,15 +84,15 @@ sending a module to its $W$-valued bilinear forms, respectively quadratic maps, 
 The total form categories are the categories of elements of these presheaves,
 
 $$
-\mathcal{B}_{R,W} \;=\; \operatorname{El}\!\big(\operatorname{Bil}_{R,W}\big),
+\mathcal{B}_{R,W} \;=\; \int_{\mathrm{Mod}_R}\!\big(\operatorname{Bil}_{R,W}\big),
 \qquad
-\mathcal{Q}_{R,W} \;=\; \operatorname{El}\!\big(\operatorname{Quad}_{R,W}\big),
+\mathcal{Q}_{R,W} \;=\; \int_{\mathrm{Mod}_R}\!\big(\operatorname{Quad}_{R,W}\big),
 $$
 
 with covariant projection $\pi : \mathcal{B}_{R,W} \to \mathrm{Mod}_R$.
 A morphism $(M, b_M) \to (N, b_N)$ is a module map $f : M \to N$ with $f^{*} b_N = b_M$ — an underlying map in the same direction as $\pi$, pulling the target form back to the source.
 The defining datum is always the $W$-valued form; the map-to-dual picture appears only as the derived polarization of @def-polarization.
-The convention for $\operatorname{El}$ — the standard category of elements of a presheaf, with **no** $(-)^{\mathrm{op}}$ — is fixed, and shown to be forced, in @sec-el.
+The convention for $\int_C F$ — the standard category of elements of a presheaf, with **no** $(-)^{\mathrm{op}}$ — is fixed, and shown to be forced, in @sec-el.
 :::
 
 ::: {#def-form-axioms}
@@ -112,13 +119,15 @@ $$
 \tilde b : M \longrightarrow \operatorname{Hom}_R(M, W),
 $$
 
-requiring no freeness. The form is **nondegenerate** when $\tilde b$ is injective and **perfect (unimodular)** when $\tilde b$ is an isomorphism.
+requiring no freeness.
+The form is **nondegenerate** when $\tilde b$ is injective and **perfect (unimodular)** when $\tilde b$ is an isomorphism.
 :::
 
 ::: {#def-orthogonal-sum}
 ## Orthogonal sum
 
-The form categories carry a symmetric monoidal structure, the **orthogonal sum**: $(M, b_M) \perp (N, b_N) = (M \oplus N,\, b_M \oplus b_N)$ with vanishing cross terms. Being a *structure* (not a property), it is a named section $\mathcal{B}_{R,W}^{(\perp)}$ ([P4](../contributing/Mathematical-Language-Style-Guide.md#p4)), consumed by the bitorsor composition of @def-isometry-groups and the adelic product of @sec-genus-sec, which reference the named lift rather than "the" monoidal structure.
+The form categories carry a symmetric monoidal structure, the **orthogonal sum**: $(M, b_M) \perp (N, b_N) = (M \oplus N,\, b_M \oplus b_N)$ with vanishing cross terms.
+Being a *structure* (not a property), it is a named section $\mathcal{B}_{R,W}^{(\perp)}$ ([chosen-structure convention](../contributing/Mathematical-Language-Style-Guide.md#convention-chosen-structure)), consumed by the bitorsor composition of @def-isometry-groups and the adelic product of @sec-genus-sec, which reference the named lift rather than "the" monoidal structure.
 :::
 
 *Seated rulings:* [the W-valued form is the defining datum](Settled-Mathematical-Rulings.md#forms-and-lattices) · [the total category and its variance](Settled-Mathematical-Rulings.md#forms-and-lattices) · [alternating vs skew-symmetric](Settled-Mathematical-Rulings.md#forms-and-lattices) · [nondegenerate is not unimodular](Settled-Mathematical-Rulings.md#forms-and-lattices).
@@ -158,7 +167,7 @@ composes the generic polarization with pushforward along $\mathbb{Q}/2\mathbb{Z}
 
 ## Derived arithmetic categories {#sec-derived}
 
-All of the program's headline categories are expressions in the frame above (@def-derived-expressions); none is declared.
+All of the program's headline categories are expressions built from the objects and functors above (@def-derived-expressions); none is declared.
 
 ::: {#def-lattice}
 ## Lattices
@@ -190,18 +199,19 @@ $$
 \mathbf{DiscBil}_{\mathbb{Z}} \;=\; \mathcal{B}_{\mathbb{Z},\, \mathbb{Q}/\mathbb{Z}}\big[\, \mathrm{Symmetric} \wedge \mathrm{Nondegenerate} \wedge (U \circ \pi)^{*}(\mathrm{Finite}) \,\big],
 $$
 
-the finiteness axiom pulled back from sets through the underlying-set functor (@def-transport-property). In general the torsion fiber takes $W = K/R$, and the same expression defines $\mathbf{DiscBil}_R$ — the codomain of the @def-discriminant discriminant functor for general $R$, not only $\mathbb{Z}$.
+the finiteness axiom pulled back from sets through the underlying-set functor (@def-axiom-through-functor).
+In general the torsion fiber takes $W = K/R$, and the same expression defines $\mathbf{DiscBil}_R$ — the codomain of the @def-discriminant discriminant functor for general $R$, not only $\mathbb{Z}$.
 :::
 
 ::: {#def-discquad}
 ## Discriminant quadratic forms
 
-The quadratic discriminant category is the pullback of $\mathbf{DiscBil}_{\mathbb{Z}}$ along the bilinearization $\beta$ of @sec-polarization-functors — quadratic objects whose bilinearization is a discriminant form, **not** an even cut of bilinear objects.
+The quadratic discriminant category is the pullback of $\mathbf{DiscBil}_{\mathbb{Z}}$ along the bilinearization $\beta$ of @sec-polarization-functors — quadratic objects whose bilinearization is a discriminant form, **not** a restriction of bilinear objects to the even ones.
 :::
 
 *Seated rulings:* [derived categories are expressions, never declared](Settled-Mathematical-Rulings.md#forms-and-lattices).
 
-## The discriminant construction and the exact-sequence package {#sec-discriminant}
+## The discriminant construction and its exact sequences {#sec-discriminant}
 
 ::: {#def-discriminant}
 ## Discriminant form of a lattice
@@ -226,7 +236,10 @@ $$
 \operatorname{rad}(L) := \ker \tilde b, \qquad A_L := \operatorname{coker} \tilde b .
 $$
 
-$b$ is **nondegenerate** $:\!\iff \operatorname{rad}(L) = 0$; $b$ is **perfect (unimodular)** $:\!\iff \tilde b$ is an isomorphism, i.e. $\operatorname{rad}(L) = 0$ *and* $A_L = 0$. Thus $\operatorname{rad}(L)$ is the obstruction to nondegeneracy, and — once it vanishes — $A_L$ is the remaining obstruction to unimodularity. Neither condition is a property read off the object; each is the vanishing of a carried object. The radical sequence names both witnesses at once (here $W = R$; in general $L^* = \operatorname{Hom}(L, W)$):
+$b$ is **nondegenerate** $:\!\iff \operatorname{rad}(L) = 0$; $b$ is **perfect (unimodular)** $:\!\iff \tilde b$ is an isomorphism, i.e. $\operatorname{rad}(L) = 0$ *and* $A_L = 0$.
+Thus $\operatorname{rad}(L)$ is the obstruction to nondegeneracy, and — once it vanishes — $A_L$ is the remaining obstruction to unimodularity.
+Neither condition is a property read off the object; each is the vanishing of a carried object.
+The radical sequence names both witnesses at once (here $W = R$; in general $L^* = \operatorname{Hom}(L, W)$):
 
 $$
 0 \to \operatorname{rad}(L) \to L \xrightarrow{\ \tilde b\ } L^* \to A_L \to 0 .
@@ -236,13 +249,15 @@ $$
 ::: {#thm-localization-les}
 ## The localization long exact sequence
 
-The base-change map $L \to L \otimes_R K$ is the truncation of $L \otimes_R (-)$ applied to $0 \to R \to K \to K/R \to 0$. Since $K$ is flat ($\operatorname{Tor}_1^R(L, K) = 0$), the sequence continues to
+The base-change map $L \to L \otimes_R K$ is the truncation of $L \otimes_R (-)$ applied to $0 \to R \to K \to K/R \to 0$.
+Since $K$ is flat ($\operatorname{Tor}_1^R(L, K) = 0$), the sequence continues to
 
 $$
 0 \to \operatorname{Tor}_1^R(L,\, K/R) \to L \to L \otimes_R K \to L \otimes_R (K/R) \to 0,
 $$
 
-with the identification $\operatorname{Tor}_1^R(L, K/R) \cong T(L)$, the torsion submodule. For a lattice ($L$ f.g. projective, hence torsion-free) it collapses to $0 \to L \to L_K \to L \otimes (K/R) \to 0$.
+with the identification $\operatorname{Tor}_1^R(L, K/R) \cong T(L)$, the torsion submodule.
+For a lattice ($L$ f.g. projective, hence torsion-free) it collapses to $0 \to L \to L_K \to L \otimes (K/R) \to 0$.
 :::
 
 ::: {#def-metric-dual}
@@ -260,7 +275,8 @@ $$
 \beta := \tilde b_K|_{L^{\#}} : L^{\#} \to L^*, \qquad x \mapsto b_K(x, -)|_L
 $$
 
-is the restriction of $\tilde b_K$. The obstruction to $\beta$ (equivalently to $\tilde b_K$) being an isomorphism is the object
+is the restriction of $\tilde b_K$.
+The obstruction to $\beta$ (equivalently to $\tilde b_K$) being an isomorphism is the object
 
 $$
 \operatorname{rad}(L_K) = \ker \tilde b_K = \operatorname{rad}(L) \otimes_R K,
@@ -297,7 +313,7 @@ $$
 These are kernel-checked diagram lemmas, never re-encoded informally: the two witnesses of @def-two-witnesses, the localization LES, and this comparison are the highest-drift-risk material in the program.
 :::
 
-*Seated rulings:* [the discriminant construction and the exact-sequence package](Settled-Mathematical-Rulings.md#the-discriminant-construction-and-the-exact-sequence-package).
+*Seated rulings:* [the discriminant construction and its exact sequences](Settled-Mathematical-Rulings.md#the-discriminant-construction-and-its-exact-sequences).
 
 ## Isometry groupoids and automorphism groups {#sec-isometry}
 
@@ -325,7 +341,8 @@ $$
 O(L) \longrightarrow O(A_L, q_{A_L}),
 $$
 
-the **discriminant representation**. Its kernel is the **stable orthogonal group** $\widetilde O(L) := \ker\big(O(L) \to O(A_L, q_{A_L})\big)$ — named as a kernel in this sequence, not as "the isometries acting trivially." Surjectivity is *not* automatic: when it holds it is Nikulin's theorem under hypotheses (indefinite, $\operatorname{rank} L \ge \ell(A_L) + 2$), and in general the cokernel is the Miranda–Morrison genus / spinor-genus obstruction.
+the **discriminant representation**. Its kernel is the **stable orthogonal group** $\widetilde O(L) := \ker\big(O(L) \to O(A_L, q_{A_L})\big)$ — named as a kernel in this sequence, not as "the isometries acting trivially."
+Surjectivity is *not* automatic: when it holds it is Nikulin's theorem under hypotheses (indefinite, $\operatorname{rank} L \ge \ell(A_L) + 2$), and in general the cokernel is the Miranda–Morrison genus / spinor-genus obstruction.
 :::
 
 ::: {#prp-matrix-realizations}
@@ -378,13 +395,13 @@ If the genus *groupoid* is wanted, it is the classical adelic double coset with 
 
 The generation calculus uses a fixed small set of category-level constructors, each a standard construction applied — never a new notion:
 
-- $\operatorname{El}$ — the category of elements (Grothendieck construction) of a presheaf, generating the form categories of @sec-forms;
+- $\int_C F$ — the category of elements (Grothendieck construction) of a presheaf, generating the form categories of @sec-forms;
 
 - $\operatorname{Core}$ — the maximal subgroupoid, generating isometry groupoids (@sec-isometry) and the domains of core-sited functors (@sec-discriminant, @sec-genus-sec);
 
 - $\pi_0$ — connected components, landing invariants at the set level (@sec-genus-sec);
 
-- pullback of a replete full subcategory along a functor — the transport rule (@def-transport-property);
+- pullback of a replete full subcategory along a functor (@def-axiom-through-functor);
 
 - intersection of replete full subcategories — derived nodes (@def-derived-expressions).
 

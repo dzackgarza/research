@@ -1,13 +1,19 @@
-# The category graph
+# Category and functor diagram
 
-The planning-stage **manifest** of the intended category hierarchy: nodes are categories, edges the preferred forgetful/inclusion functors, and the boxes are the towers of @sec-base-graph — sets & bedrock, the magma tower, rings, modules, forms, and the $\mathbf{Cat}_1$ meta layer. It records the names and relationships the [Lean–Sage Integration Model](Lean-Sage-Integration-Model.md) is built against; at this stage it is hand-authored, and later Lean implementations are checked for conformance to it.
+The diagram displays the sequence of categories, functors, and invariant maps from modules through form categories and integral lattices to discriminant and genus invariants.
+Every arrow is labeled by its functor or map.
+The discriminant construction is shown on category cores, and genus is the fiber of the displayed map on isometry classes over the image of a lattice class.
+The exhaustive Sage runtime hierarchy is recorded separately in the [SageMath category framework reference](../sage/Sage-Category-Framework-Inventory.md).
 
-The source of truth is a GraphViz manifest, [`category-graph.dot`](category-graph.dot) — a plain-text, machine-parseable record of the nodes, clusters, and edges. `just graph` renders it (`dot -Tsvg`) and injects the result into the pan/zoom view below; the SVG is derived output, so edits happen in the `.dot`. Later, a Lean → manifest exporter can emit the same file from the CatDSL declarations ([#251](https://github.com/dzackgarza/research/issues/251)), closing the loop from Lean source to graph.
+The editable source is [`category-graph.dot`](category-graph.dot).
+The command `just graph` renders the SVG and inserts it into the interactive view below.
+A displayed category, functor, or map refers to its mathematical definition in the theory chapters; the GraphViz identifier is only its implementation label.
 
 ```{=html}
-<iframe src="category-graph.html" title="Interactive category and functor graph"
+<iframe src="category-graph.html" title="Interactive category and functor diagram"
         style="width:100%;height:78vh;border:1px solid var(--bs-border-color,#e5e7eb);border-radius:8px"
         loading="lazy"></iframe>
 ```
 
-[Open the graph fullscreen](category-graph.html) &middot; scroll to zoom, drag to pan.
+[Open the diagram fullscreen](category-graph.html).
+Scroll to zoom and drag to pan.

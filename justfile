@@ -28,6 +28,36 @@ docs-bib:
 docs-check: docs-bib
     python3 scripts/docs_check.py
 
+# Fast check of one docs file: surfaces tikz-compile and pandoc/markdown syntax errors in seconds (no full-book link gate). e.g. `just docs-lint framework/Mathematical-Framework.md`
+docs-lint FILE: docs-bib
+    cd docs && uvx --from quarto-cli quarto render "{{FILE}}" --to html
+
+# Rename a docs cross-reference/anchor slug everywhere, then prove every reference still resolves. Rewrites {#slug} anchors, @slug crossrefs, and ](…#slug) link fragments in one hyphen-boundary-safe pass (a longer slug is never partially hit) and runs the docs gate. e.g. `just docs-rename-ref def-old-name def-new-name`
+docs-rename-ref OLD NEW:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    old="{{OLD}}"
+    new="{{NEW}}"
+    export old new
+    mapfile -t files < <(find docs -name '*.md' -not -path '*/_extensions/*')
+    if rg -q --pcre2 "\\{#\\Q${new}\\E(?=[ }])" "${files[@]}"; then
+        echo "docs-rename-ref: refusing — {#${new}} is already a defined anchor; choose a free name" >&2
+        exit 1
+    fi
+    n=$({ rg -c --pcre2 "(?<![-\\w])\\Q${old}\\E(?![-\\w])" "${files[@]}" || true; } | awk -F: '{s+=$2} END{print s+0}')
+    if [ "${n}" -eq 0 ]; then
+        echo "docs-rename-ref: no occurrences of '${old}' found" >&2
+        exit 1
+    fi
+    echo "docs-rename-ref: rewriting ${n} occurrence(s) of '${old}' → '${new}'"
+    perl -i -pe 's/(?<![-\w])\Q$ENV{old}\E(?![-\w])/$ENV{new}/g' "${files[@]}"
+    if just docs-check; then
+        echo "docs-rename-ref: done — every reference resolves"
+    else
+        echo "docs-rename-ref: docs gate FAILED after rename; inspect the report, or 'git checkout -- docs' to revert" >&2
+        exit 1
+    fi
+
 # Add an nLab citation to docs/refs-web.bib by scraping its canonical /cite page
 cite-nlab page:
     python3 scripts/cite_add.py nlab "{{page}}"
@@ -44,9 +74,66 @@ refs-web-refresh:
 graph:
     python3 scripts/build_graph.py
 
-# Serve the docs site locally with live reload
+# Serve the docs site locally with live reload (quarto provisioned via uvx)
 docs-preview: docs-bib
-    quarto preview docs --no-browser --port 7654
+    # ponytail: two previews on the same dir cross-trigger each other's watchers
+    # (each renders output back into docs/) → endless ~10s reload loop. Kill any
+    # stale instance first so this always replaces rather than duplicates.
+    -pkill -f 'quarto preview docs --no-browser --port 7654'
+    @sleep 1
+    uvx --from quarto-cli quarto preview docs --no-browser --port 7654
+
+# Link sage-init.sage as Sage's startup file (${DOT_SAGE:-~/.sage}/init.sage), giving every Sage process — terminal REPL and every Jupyter kernel — implicit LaTeX rendering of cell results. Idempotent, and refuses to replace anything it did not create.
+sage-init-install:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source="{{justfile_directory()}}/sage-init.sage"
+    target="${DOT_SAGE:-$HOME/.sage}/init.sage"
+    [ -f "${source}" ] || { echo "sage-init-install: missing ${source}" >&2; exit 1; }
+    mkdir -p "$(dirname "${target}")"
+    if [ -L "${target}" ]; then
+        current="$(readlink -f "${target}")"
+        if [ "${current}" = "$(readlink -f "${source}")" ]; then
+            echo "sage-init-install: already installed (${target})"
+            exit 0
+        fi
+        echo "sage-init-install: refusing — ${target} is a symlink to ${current}, not to ${source}" >&2
+        echo "sage-init-install: remove it yourself if that link is stale" >&2
+        exit 1
+    fi
+    if [ -e "${target}" ]; then
+        echo "sage-init-install: refusing — ${target} already exists and is not a symlink" >&2
+        echo "sage-init-install: it is not ours to replace; move it aside, then rerun" >&2
+        exit 1
+    fi
+    ln -s "${source}" "${target}"
+    echo "sage-init-install: linked ${target} -> ${source}"
+    echo "sage-init-install: restart running kernels to pick it up"
+
+# Prove the installed startup file actually typesets in a real Sage kernel
+sage-init-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    "$(just --evaluate sage_bin 2>/dev/null || echo "${SAGE_BIN:-sage}")" --python - <<'PY'
+    from jupyter_client.manager import start_new_kernel
+
+    km, kc = start_new_kernel(kernel_name="sagemath")
+    try:
+        results = {}
+        for label, code in [("typeset", "R.<t> = QQ[]; t^2 + 1"), ("plain", "'a plain string'")]:
+            got = {}
+            kc.execute_interactive(
+                code, timeout=180,
+                output_hook=lambda m: got.update(m["content"]["data"])
+                if m["msg_type"] in ("execute_result", "display_data") else None)
+            results[label] = got
+        assert results["typeset"].get("text/latex"), "Sage object did not render as LaTeX"
+        assert not results["plain"].get("text/latex"), "plain string was typeset; it should not be"
+        print("sage-init-check: ok — Sage objects typeset, plain text left alone")
+    finally:
+        kc.stop_channels()
+        km.shutdown_kernel()
+    PY
 
 [private]
 _lock:

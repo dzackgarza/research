@@ -7,30 +7,33 @@ instance alive after a full import, with special handling for joins
 
 Run:  "$SAGE_BIN" -python dump_instances.py instances.json
 """
+
 import gc
 import json
 import sys
+from typing import Any
 
 import sage.categories.all  # noqa: F401
-from sage.categories.category import Category, JoinCategory
+import sage.categories.category as _category_module
+from sage.categories.category import Category
 from sage.categories.category_with_axiom import CategoryWithAxiom
 from sage.categories.covariant_functorial_construction import (
     FunctorialConstructionCategory,
 )
 
+# JoinCategory exists at runtime but is invisible to static analysis of sage.
+JoinCategory = getattr(_category_module, "JoinCategory")
+
 insts = [x for x in gc.get_objects() if isinstance(x, Category)]
-seen, joins, kinds = set(), [], {}
+seen: set[str] = set()
+joins: list[dict[str, Any]] = []
+kinds: dict[str, int] = {}
 for x in insts:
     r = str(x)
     if r in seen:
         continue
     seen.add(r)
-    k = (
-        "join" if isinstance(x, JoinCategory)
-        else "construction" if isinstance(x, FunctorialConstructionCategory)
-        else "axiom" if isinstance(x, CategoryWithAxiom)
-        else "plain"
-    )
+    k = "join" if isinstance(x, JoinCategory) else "construction" if isinstance(x, FunctorialConstructionCategory) else "axiom" if isinstance(x, CategoryWithAxiom) else "plain"
     kinds[k] = kinds.get(k, 0) + 1
     if k == "join":
         joins.append({"repr": r, "factors": sorted(str(s) for s in x.super_categories())})
