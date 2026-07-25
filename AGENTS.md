@@ -71,6 +71,11 @@ If it is a *new* pattern, record it in the guide — forward-facing, with an exa
 Run the index in the fresh-context audit (`.agents/references/mathematical-auditor-priming.md`) after every substantive docs edit, the same as the vocabulary pass.
 Requirements the docs must satisfy (definition-before-use, resolvable references) are *recorded* in the guide's Requirements section and audited against the artifact, never self-certified in prose (`PR-3`).
 
+**Never write a definition or insert a citation from memory.** Before writing or editing any definition, open and read an actual source — the theory docs, the book's existing defining occurrence, the cited reference, or the upstream text — and transcribe from it.
+A definition recalled from training is a fabrication risk; a citation key recalled from memory is a fabrication risk (it may not exist in the bib file, or may point at the wrong entry).
+Verify the source exists and the citation key resolves before committing.
+This rule overrides any pressure to "just write it" — an unverified definition or citation is worse than a TODO placeholder.
+
 # Docs workflow (always-on)
 
 Documentation work — the docs book under `docs/` — is **never externalized to GitHub issues or PRs**. It is developed directly: interactive work with the user and/or autonomous research, iterative refinement committed as each unit settles, and pushes typically **held until the user approves**. That approval normally follows an interactive pass rather than a PR review lifecycle — organization and coherence audits, re-readings, reviews, and reorganization of the accreted material, plus basic intelligent coherence checks.
@@ -156,11 +161,54 @@ Checkpoint after any correction, before issue bodies or plan cards ship, and bef
 Top-level directories (this is a navigational map; each tree owns its own README/AGENTS.md):
 
 - **`computations/`** — the working computational corpus.
-  Its `experiments/` subtree holds the **spikes** (see the lineage note below and *QC integration for spikes*). Other subdirs are task-specific: `components/` (reusable computation pieces, e.g. the `coxeter-vinberg/` prototypes), `coxiter/` (CoxIter tool integration), `lattice-orbits/`, `enriques-moduli/` + `enriques-paper-artifacts/` (Enriques-surface moduli work), `notebooks/` (Jupyter), `scripts/` (one-off and exploratory scripts — **the only `scripts/` dir; it is QC-exempt**, and is where exploratory code is relocated to de-scope it from the strict gates), `reports/` (generated output).
+  Its `experiments/` subtree holds the **spikes** (see the lineage note below and *QC integration for spikes*). Other subdirs are task-specific: `vendor/` (third-party code — see below), `coxiter/` (CoxIter tool integration), `lattice-orbits/`, `enriques-moduli/` + `enriques-paper-artifacts/` (Enriques-surface moduli work), `notebooks/` (**the user's plane — see below**), `scripts/` (one-off and exploratory scripts — **the only `scripts/` dir; it is QC-exempt**, and is where exploratory code is relocated to de-scope it from the strict gates; holds `components/`, the reusable computation pieces such as the `coxeter-vinberg/` prototypes, relocated here in `746595e`), `reports/` (generated output).
 
 - **`src/`** — the installable package (`dzack_research`). Deliberately thin: right now it is the public Sage import surface re-exporting the maintained spikes (`lattice`, `feature`), covered by `tests/`. **Migration criterion:** code lives in a spike until it has matured past spike status and is usable for real research — demonstrated by *shipped, tested, high-level notebooks* that do actual work with it.
   Only then does it migrate here, and the move is the semantic statement that it is meant to be shared and reused.
   Do not promote code into `src/` because it looks finished; promote it when a notebook proves a researcher can use it.
+
+- **`computations/notebooks/`** — **the user's audit and control plane, not agent work.** It is the JupyterLab `root_dir`. It is not subject to QC, to layout conventions, to naming or taxonomy rules, or to agent tidying: no agent proposes reorganizing it, splitting it, imposing folder schemes on it, or holding its contents to the standards that govern `src/` and the spikes.
+  Agents write here only when explicitly asked.
+  What agents *may* do is make things reachable from it — see the symlinks below.
+
+  Reachability is by symlink, verified working through the live server (list, open, save, delete all round-trip to the real path, no restart needed):
+
+  - `archive/` → `archives/notebooks/` — the retired notebooks, still live reference material
+
+  - `spike-demos/` → `computations/experiments/sage_lattice_category_spike/notebooks/`
+
+  Symlinking is preferred over moving: the originals stay in the tree that owns them (archive stays QC-exempt, spike demos stay beside the spike whose test suite runs them), while the control plane can see everything.
+
+  **Implicit typesetting:** a bare `X` at the end of a cell renders as LaTeX when Sage can genuinely typeset `X`, so `show()` is not needed for ordinary inspection.
+  Explicit `show()` still works and is still worth writing where the intent is presentation rather than inspection.
+
+  The source of that behaviour is **`sage-init.sage` at the repo root** — tracked here, because it is part of how this repo's notebooks are meant to read.
+  It becomes active only by being linked to Sage's startup file:
+
+  ```
+  just sage-init-install   # links ${DOT_SAGE:-~/.sage}/init.sage -> sage-init.sage
+  just sage-init-check     # proves in a real kernel that Sage objects typeset and plain text does not
+  ```
+
+  `sage-init-install` is idempotent and refuses to replace anything it did not create, including a symlink pointing elsewhere — a pre-existing `init.sage` is never clobbered.
+  Sage reads that one file for the terminal REPL *and* every Jupyter kernel, so installing it once covers both with nothing to remember per notebook.
+
+  It is deliberately *not* `%display latex`, which also typesets strings, numpy arrays and opaque objects into unreadable character-by-character fallbacks; the file's own header comment records the measurements behind that choice.
+  Being a tracked `.sage` file it is in Sage QC scope: it passes `_sage-syntax` (the commit tier) and draws no vulture findings.
+
+- **`computations/vendor/`** — **third-party code you did not write.** Clone or drop external scripts here and they are importable from every Sage process (CLI, `sage -python`, every Jupyter kernel) with no restart and no registration; see its README. Contents are gitignored, and `vendor` is already a globally QC-excluded directory name, so external code never enters the gates.
+  Nothing authored here ever graduates — write your own code in a spike.
+
+**How code becomes importable in a Sage notebook.** One rule per kind, no bespoke path plumbing:
+
+| Kind | Home | Made importable by |
+| --- | --- | --- |
+| External, published | — | `sage -pip install <pkg>` (or `sage -pip install "<name> @ git+<url>"` when it has no PyPI wheel, as `ore_algebra` does) |
+| External, unpackaged | `computations/vendor/` | drop it there; `dzack_research.preamble.vendor` puts it on the path, called from `sage-init.sage` (interactive sessions; non-interactive callers call `vendor.activate()`) |
+| Ours, spike | `computations/experiments/<name>_spike/` | `sage -pip install --no-deps -e <spike-dir>` (already done for both spikes; edits are live) |
+| Ours, graduated | `src/dzack_research/` | `sage -pip install --no-deps -e .` (already done; edits are live) |
+
+Editable installs point at the working tree, so a rebuilt or reinstalled Sage is the only thing that breaks them — re-run the two `-e` installs and check the vendor path with `sage -c 'import _vendor_selfcheck'`.
 
 - **`tests/`** — tests for the `src/` package surface only.
   Spike tests live in each spike's own `tests/` tree.
@@ -250,7 +298,7 @@ Create `computations/experiments/<spike_name>/` with:
 
 2. **`pyproject.toml`** — minimal `[project]` with `name`, `version`, and `requires-python = ">=3.14"` (QC installs the spike editable for mypy).
 
-3. **Package importability** — the spike directory is a package (`__init__.py`); the repo `.envrc` already puts `computations/experiments` on `PYTHONPATH`, so `import <spike_name>` works in Sage, tests, and notebooks with no per-spike setup.
+3. **Package importability** — the spike directory is a package (`__init__.py`). For shells and tests the repo `.envrc` puts `computations/experiments` on `PYTHONPATH`. **Notebook kernels do not inherit that** — the systemd unit runs `direnv exec /home/dzack`, which loads `~/.envrc`, not the repo's. Kernels get the spikes from `sage -pip install --no-deps -e <spike-dir>`, which is the durable mechanism; see the importability table under *Repository layout*. A new spike needs that one install, once.
 
 4. **Tests as `.sage` files** (`tests/**/test_*.sage`) so the Sage preparser converts integer literals to `Integer`/`Rational` before pytest collects them.
    Never commit generated `*.sage.py` preparse artifacts — they are gitignored; QC preparses into a tempdir itself.

@@ -83,6 +83,58 @@ docs-preview: docs-bib
     @sleep 1
     uvx --from quarto-cli quarto preview docs --no-browser --port 7654
 
+# Link sage-init.sage as Sage's startup file (${DOT_SAGE:-~/.sage}/init.sage), giving every Sage process — terminal REPL and every Jupyter kernel — implicit LaTeX rendering of cell results. Idempotent, and refuses to replace anything it did not create.
+sage-init-install:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source="{{justfile_directory()}}/sage-init.sage"
+    target="${DOT_SAGE:-$HOME/.sage}/init.sage"
+    [ -f "${source}" ] || { echo "sage-init-install: missing ${source}" >&2; exit 1; }
+    mkdir -p "$(dirname "${target}")"
+    if [ -L "${target}" ]; then
+        current="$(readlink -f "${target}")"
+        if [ "${current}" = "$(readlink -f "${source}")" ]; then
+            echo "sage-init-install: already installed (${target})"
+            exit 0
+        fi
+        echo "sage-init-install: refusing — ${target} is a symlink to ${current}, not to ${source}" >&2
+        echo "sage-init-install: remove it yourself if that link is stale" >&2
+        exit 1
+    fi
+    if [ -e "${target}" ]; then
+        echo "sage-init-install: refusing — ${target} already exists and is not a symlink" >&2
+        echo "sage-init-install: it is not ours to replace; move it aside, then rerun" >&2
+        exit 1
+    fi
+    ln -s "${source}" "${target}"
+    echo "sage-init-install: linked ${target} -> ${source}"
+    echo "sage-init-install: restart running kernels to pick it up"
+
+# Prove the installed startup file actually typesets in a real Sage kernel
+sage-init-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    "$(just --evaluate sage_bin 2>/dev/null || echo "${SAGE_BIN:-sage}")" --python - <<'PY'
+    from jupyter_client.manager import start_new_kernel
+
+    km, kc = start_new_kernel(kernel_name="sagemath")
+    try:
+        results = {}
+        for label, code in [("typeset", "R.<t> = QQ[]; t^2 + 1"), ("plain", "'a plain string'")]:
+            got = {}
+            kc.execute_interactive(
+                code, timeout=180,
+                output_hook=lambda m: got.update(m["content"]["data"])
+                if m["msg_type"] in ("execute_result", "display_data") else None)
+            results[label] = got
+        assert results["typeset"].get("text/latex"), "Sage object did not render as LaTeX"
+        assert not results["plain"].get("text/latex"), "plain string was typeset; it should not be"
+        print("sage-init-check: ok — Sage objects typeset, plain text left alone")
+    finally:
+        kc.stop_channels()
+        km.shutdown_kernel()
+    PY
+
 [private]
 _lock:
     uv lock

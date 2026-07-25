@@ -44,7 +44,10 @@ just -f computations/experiments/sage_lattice_feature_spike/justfile test
 
 - `computations/`: scratchpad code, notebooks, named computation threads, generated artifacts, and reusable components.
 
-- `computations/components/`: code factored out of computations for reuse inside this repo.
+- `computations/scripts/components/`: code factored out of computations for reuse inside this repo.
+
+- `computations/vendor/`: third-party code, cloned or dropped in; importable from every Sage process.
+  See `AGENTS.md` for how each kind of code becomes importable.
 
 - `notes/`: human mathematical notes, paper notes, findings, extraction plans, and computation notes.
 
