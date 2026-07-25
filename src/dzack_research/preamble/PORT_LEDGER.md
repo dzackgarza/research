@@ -233,3 +233,50 @@ a gated assertion, or a terse annotation is a finding until shown otherwise. Two
 errors in this port came from violating it: `s4_12` dropped as "dead code" when it is
 a cusp, and `A1^8 *` read as a hedge when the asterisk denotes an overlattice
 construction.
+
+
+---
+
+## Review record — PR #297
+
+Filed per instruction: review feedback on this port is recorded here rather than
+actioned inline.
+
+**Outcome: no review was produced.** Both required checks reached a terminal state
+within seconds of the PR opening, and neither generated findings:
+
+| Check | Conclusion | Meaning |
+|---|---|---|
+| `cubic · AI code reviewer` | **NEUTRAL** (`skipping`) | The required reviewer declined to review this PR. No comments, no findings. |
+| `GitGuardian Security Checks` | SUCCESS | No secrets detected. |
+
+Reviews: none. Inline review comments: none. The single issue comment is from
+`gemini-code-assist[bot]` and is a service notice, not a review: *"The consumer
+version of Gemini Code Assist on GitHub has been sunset. All code review activity has
+officially ceased."*
+
+So this port merged **without any external review having examined it**. That is a fact
+about the merge, not a clean bill of health. `cubic` being the branch ruleset's
+required check while returning NEUTRAL means the gate was satisfied by a non-review;
+the merge used `--admin` to override it.
+
+### Outstanding self-identified issues, carried past the merge
+
+These were found during the port and are unresolved. They were listed in the PR body
+and are restated here so the ledger is the single place to look:
+
+1. `_mypy` has never been run against `src/dzack_research/preamble/`. The commit gate's
+   type-check tier is unverified for this tree.
+2. `e_perp_mod_e` is implemented twice — as a free function in `predicates.py` and as a
+   method in `patches/lattice_methods.py`. One notion, two implementations.
+3. `predicates.py` re-declares as free functions notions the lattice spike sites as
+   methods on the lattice object, which the repo's own doctrine forbids. Each needs a
+   siting decision against `lexicon/INVENTORY.md`.
+4. `AGENTS.md` carried uncommitted modifications predating this work that could not be
+   separated from the port's own edits.
+5. The full commit gate (`just test-commit`) has not been run end to end; the two
+   `.sage` test files were exercised via `sage -c load(...)`.
+6. The Sterk root-count discrepancy remains open: both independent implementations
+   recorded in the source find ~10 roots plus 1-2 ideal vertices where Sterk publishes
+   10-14. `s4_12` being isotropic in a case recorded as having 2 ideal vertices is the
+   concrete lead.
