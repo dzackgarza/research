@@ -337,8 +337,24 @@ _original_direct_sum: Any = None
 
 
 def _direct_sum(self: Any, *others: Any, names: Any = None, **kwargs: Any) -> Any:
-    r"""Call ``direct_sum`` and apply an optional ``names=`` specification."""
-    result = _original_direct_sum(self, *others, **kwargs)
+    r"""Call ``direct_sum``, set block subdivisions, and apply an optional ``names=`` spec."""
+    if not others:
+        return self if names is None else _apply_names(self, names)
+
+    result = self
+    ranks = [self.rank()]
+    for other in others:
+        ranks.append(other.rank())
+        result = _original_direct_sum(result, other, **kwargs)
+
+    if len(ranks) > 1:
+        boundaries: list[int] = []
+        accum = 0
+        for r in ranks[:-1]:
+            accum += r
+            boundaries.append(accum)
+        result.gram_matrix().subdivide(boundaries, boundaries)
+
     return result if names is None else _apply_names(result, names)
 
 

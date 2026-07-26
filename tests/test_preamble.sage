@@ -384,6 +384,16 @@ def test_lattice_latex_representation():
         patches.uninstall("lattice_methods")
 
 
+def test_direct_sum_subdivides_gram_matrix():
+    catalogue, _, _, patches, _, _ = _preamble()
+    patches.install("lattice_methods")
+    try:
+        direct_sum_lattice = catalogue.U.direct_sum(catalogue.E8)
+        assert direct_sum_lattice.gram_matrix().subdivisions() == ([2], [2])
+    finally:
+        patches.uninstall("lattice_methods")
+
+
 def test_run_vin_negates_roots_when_it_twists():
     """The source typo (``do_twist`` set, ``doTwist`` tested) disabled this branch."""
     catalogue, _, _, patches, _, _ = _preamble()
