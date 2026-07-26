@@ -342,18 +342,15 @@ def _direct_sum(self: Any, *others: Any, names: Any = None, **kwargs: Any) -> An
         return self if names is None else _apply_names(self, names)
 
     result = self
-    ranks = [self.rank()]
     for other in others:
-        ranks.append(other.rank())
+        left_subdivs = result.gram_matrix().subdivisions()[0] or ()
+        left_rank = result.rank()
+        right_subdivs = other.gram_matrix().subdivisions()[0] or ()
+
         result = _original_direct_sum(result, other, **kwargs)
 
-    if len(ranks) > 1:
-        boundaries: list[int] = []
-        accum = 0
-        for r in ranks[:-1]:
-            accum += r
-            boundaries.append(accum)
-        result.gram_matrix().subdivide(boundaries, boundaries)
+        combined = list(left_subdivs) + [left_rank] + [left_rank + s for s in right_subdivs]
+        result.gram_matrix().subdivide(combined, combined)
 
     return result if names is None else _apply_names(result, names)
 
@@ -362,9 +359,32 @@ _original_twist: Any = None
 
 
 def _twist(self: Any, *args: Any, names: Any = None, **kwargs: Any) -> Any:
-    r"""``twist`` accepting ``names=``, for ``L.<...> = M.twist(2)``."""
+    r"""``twist`` preserving block subdivisions and accepting ``names=``."""
+    subdivs = self.gram_matrix().subdivisions()
     result = _original_twist(self, *args, **kwargs)
+    if subdivs != ([], []):
+        result.gram_matrix().subdivide(*subdivs)
     return result if names is None else _apply_names(result, names)
+
+
+def _refresh_catalogue_subdivisions(cat: Any) -> None:
+    _subdiv_map = {
+        "E10": ([2], [2]),
+        "E10_2": ([2], [2]),
+        "LK3": ([2, 4, 6, 14], [2, 4, 6, 14]),
+        "TdP": ([2, 4, 6, 14], [2, 4, 6, 14]),
+        "TEn": ([2], [2]),
+        "Tco": ([1], [1]),
+        "Sco": ([1], [1]),
+        "LpNik": ([2, 4, 6], [2, 4, 6]),
+        "L_20_2_0": ([2, 4, 6, 14], [2, 4, 6, 14]),
+        "LK3_2": ([1, 3, 5, 13], [1, 3, 5, 13]),
+        "LK3_4": ([1, 3, 5, 13], [1, 3, 5, 13]),
+    }
+    for name, subdivs in _subdiv_map.items():
+        obj = getattr(cat, name, None)
+        if obj is not None and hasattr(obj, "gram_matrix"):
+            obj.gram_matrix().subdivide(*subdivs)
 
 
 _CLASS_ATTRS = {
@@ -414,6 +434,7 @@ def install() -> None:
     for name, attribute in _CLASS_ATTRS.items():
         setattr(target, name, attribute)
 
+    import sys
     import sage.all
     import sage.modules.free_quadratic_module_integer_symmetric as module
 
@@ -421,6 +442,9 @@ def install() -> None:
         _original_integral_lattice = module.IntegralLattice
     module.IntegralLattice = _patched_integral_lattice
     sage.all.IntegralLattice = _patched_integral_lattice
+
+    if "dzack_research.preamble.catalogue" in sys.modules:
+        _refresh_catalogue_subdivisions(sys.modules["dzack_research.preamble.catalogue"])
 
 
 def uninstall() -> None:

@@ -390,6 +390,8 @@ def test_direct_sum_subdivides_gram_matrix():
     try:
         direct_sum_lattice = catalogue.U.direct_sum(catalogue.E8)
         assert direct_sum_lattice.gram_matrix().subdivisions() == ([2], [2])
+        assert catalogue.LK3.gram_matrix().subdivisions() == ([2, 4, 6, 14], [2, 4, 6, 14])
+        assert catalogue.LK3_2d(3).gram_matrix().subdivisions() == ([1, 3, 5, 13], [1, 3, 5, 13])
     finally:
         patches.uninstall("lattice_methods")
 
