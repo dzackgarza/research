@@ -388,7 +388,7 @@ def _latex_(self: Any) -> str:
         \end{array}\right) \\
         &A_L \cong 0 \in \mathrm{Groups} \quad \text{(Invariant factor decomposition)} \\
         &A_L \cong 0 \in \mathrm{Groups} \quad \text{(Primary decomposition)} \\
-        &G_{q_{A_L}} = ()
+        &G_{q_{A_L}} = () \in \mathrm{Mat}_{0}(\mathbb{Q}/2\mathbb{Z})
         \end{aligned}
         sage: patches.uninstall("lattice_methods")
     """
@@ -407,15 +407,34 @@ def _latex_(self: Any) -> str:
     prim_str = _format_primary_decomp_latex(A_disc)
     gram_q_latex = _primary_gram_matrix_latex(A_disc)
 
+    n_disc = A_disc.gram_matrix_quadratic().nrows()
     return (
         f"\\begin{{aligned}}\n"
         f"&L \\in \\mathrm{{Lattices}}(\\ZZ), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc} \\\\\n"
         f"&G_L = {gram_latex} \\\\\n"
         f"&A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Invariant factor decomposition)}} \\\\\n"
         f"&A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Primary decomposition)}} \\\\\n"
-        f"&G_{{q_{{A_L}}}} = {gram_q_latex}\n"
+        f"&G_{{q_{{A_L}}}} = {gram_q_latex} \\in \\mathrm{{Mat}}_{{{n_disc}}}(\\mathbb{{Q}}/2\\mathbb{{Z}})\n"
         f"\\end{{aligned}}"
     )
+
+
+_original_torsion_latex: Any = None
+
+
+def _patched_torsion_latex(self: Any) -> str:
+    r"""Return LaTeX representation for a discriminant group TorsionQuadraticModule."""
+    invs = self.invariants()
+    n = self.gram_matrix_quadratic().nrows()
+    inv_str = _format_invariant_factor_latex(invs)
+    prim_str = _format_primary_decomp_latex(self)
+    gram_q_latex = _primary_gram_matrix_latex(self)
+
+    line1 = f"&A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Invariant factor decomposition)}} \\\\"
+    line2 = f"&A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Primary decomposition)}} \\\\"
+    line3 = f"&G_{{q_{{A_L}}}} = {gram_q_latex} \\in \\mathrm{{Mat}}_{{{n}}}(\\mathbb{{Q}}/2\\mathbb{{Z}})"
+
+    return f"\\begin{{aligned}}\n{line1}\n{line2}\n{line3}\n\\end{{aligned}}"
 
 
 def _expand_ellipsis_names(names: tuple[str, ...]) -> tuple[str, ...]:
@@ -833,7 +852,7 @@ def install() -> None:
         sage: patches.uninstall("lattice_methods")
     """
     global _original_integral_lattice, _original_direct_sum, _original_twist, _original_call, _original_gens
-    global _original_torsion_gram_q, _original_torsion_gram_b, _original_normal_form
+    global _original_torsion_gram_q, _original_torsion_gram_b, _original_normal_form, _original_torsion_latex
 
     target = _lattice_class()
     if _original_direct_sum is None:
@@ -857,10 +876,13 @@ def install() -> None:
         _original_torsion_gram_b = TorsionQuadraticModule.gram_matrix_bilinear.f
     if _original_normal_form is None:
         _original_normal_form = TorsionQuadraticModule.normal_form
+    if _original_torsion_latex is None and hasattr(TorsionQuadraticModule, "_latex_"):
+        _original_torsion_latex = TorsionQuadraticModule._latex_
 
     TorsionQuadraticModule.gram_matrix_quadratic = cached_method(_patched_torsion_gram_matrix_quadratic)
     TorsionQuadraticModule.gram_matrix_bilinear = cached_method(_patched_torsion_gram_matrix_bilinear)
     TorsionQuadraticModule.normal_form = _patched_normal_form
+    TorsionQuadraticModule._latex_ = _patched_torsion_latex
 
     for name in _METHODS:
         attribute = globals()[name]
@@ -911,6 +933,8 @@ def uninstall() -> None:
         TorsionQuadraticModule.gram_matrix_bilinear = cached_method(_original_torsion_gram_b)
         if _original_normal_form is not None:
             TorsionQuadraticModule.normal_form = _original_normal_form
+        if _original_torsion_latex is not None:
+            TorsionQuadraticModule._latex_ = _original_torsion_latex
 
     if _original_integral_lattice is not None:
         import sage.all
