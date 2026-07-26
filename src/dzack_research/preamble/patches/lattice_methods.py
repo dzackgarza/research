@@ -321,21 +321,53 @@ def set_zero_dots(enabled: bool = True) -> None:
     ZERO_DOTS = bool(enabled)
 
 
-def _format_disc_group_latex(invariants: tuple[int, ...]) -> str:
-    r"""Format invariant factors into LaTeX string like ``(\mathbb{Z}/2\mathbb{Z})^2 \oplus \mathbb{Z}/3\mathbb{Z}``."""
+def _format_invariant_factor_latex(invariants: tuple[int, ...]) -> str:
+    r"""Format invariant factors into LaTeX string like ``\mathbb{Z}/2\mathbb{Z} \oplus \mathbb{Z}/6\mathbb{Z}``."""
     if not invariants:
         return "0"
-    from collections import Counter
+    return " \\oplus ".join(f"\\mathbb{{Z}}/{d}\\mathbb{{Z}}" for d in invariants)
 
-    counts = Counter(invariants)
+
+def _format_primary_decomp_latex(A_disc: Any) -> str:
+    r"""Format primary decomposition into LaTeX string like ``(\mathbb{Z}/2\mathbb{Z})^2 \oplus \mathbb{Z}/3\mathbb{Z}``."""
+    invs = A_disc.invariants()
+    if not invs:
+        return "0"
+    from collections import Counter
+    from sage.arith.misc import factor
+
+    primes = sorted(set(f for n in invs for f, _ in factor(n)))
+    all_powers: list[int] = []
+    for p in primes:
+        all_powers.extend(A_disc.primary_part(p).invariants())
+    counts = Counter(all_powers)
     parts = []
-    for n in sorted(counts):
-        m = counts[n]
+    for power in sorted(counts):
+        m = counts[power]
         if m == 1:
-            parts.append(f"\\mathbb{{Z}}/{n}\\mathbb{{Z}}")
+            parts.append(f"\\mathbb{{Z}}/{power}\\mathbb{{Z}}")
         else:
-            parts.append(f"(\\mathbb{{Z}}/{n}\\mathbb{{Z}})^{{{m}}}")
+            parts.append(f"(\\mathbb{{Z}}/{power}\\mathbb{{Z}})^{{{m}}}")
     return " \\oplus ".join(parts)
+
+
+def _primary_gram_matrix_latex(A_disc: Any) -> str:
+    r"""Return LaTeX of primary decomposition block-diagonal quadratic Gram matrix."""
+    invs = A_disc.invariants()
+    if not invs:
+        return "()"
+    import re
+    from sage.arith.misc import factor
+    from sage.matrix.constructor import block_diagonal_matrix
+    from sage.misc.latex import latex
+
+    primes = sorted(set(f for n in invs for f, _ in factor(n)))
+    matrices = [A_disc.primary_part(p).gram_matrix_quadratic() for p in primes]
+    blk_mat = block_diagonal_matrix(matrices)
+    gram_str = str(latex(blk_mat))
+    if ZERO_DOTS:
+        gram_str = re.sub(r"\b0\b", lambda m: r"\cdot", gram_str)
+    return gram_str
 
 
 def _latex_(self: Any) -> str:
@@ -353,7 +385,9 @@ def _latex_(self: Any) -> str:
         \cdot & 1 \\
         1 & \cdot
         \end{array}\right) \\
-        &A_L \cong 0, \quad G_{q_{A_L}} = ()
+        &A_L \cong 0 \in \mathrm{Groups} \\
+        &A_L \cong 0 \in \mathrm{Groups} \\
+        &G_{q_{A_L}} = ()
         \end{aligned}
         sage: patches.uninstall("lattice_methods")
     """
@@ -368,18 +402,17 @@ def _latex_(self: Any) -> str:
         gram_latex = re.sub(r"\b0\b", lambda m: r"\cdot", gram_latex)
 
     A_disc = self.discriminant_group()
-    invs = A_disc.invariants()
-    disc_group_str = _format_disc_group_latex(invs)
-    gram_q_latex = str(latex(A_disc.gram_matrix_quadratic()))
-    if ZERO_DOTS:
-        gram_q_latex = re.sub(r"\b0\b", lambda m: r"\cdot", gram_q_latex)
-    disc_line = f"&A_L \\cong {disc_group_str}, \\quad G_{{q_{{A_L}}}} = {gram_q_latex}"
+    inv_str = _format_invariant_factor_latex(A_disc.invariants())
+    prim_str = _format_primary_decomp_latex(A_disc)
+    gram_q_latex = _primary_gram_matrix_latex(A_disc)
 
     return (
         f"\\begin{{aligned}}\n"
         f"&L \\in \\mathrm{{Lattices}}(\\ZZ), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc} \\\\\n"
         f"&G_L = {gram_latex} \\\\\n"
-        f"{disc_line}\n"
+        f"&A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\\\\n"
+        f"&A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\\\\n"
+        f"&G_{{q_{{A_L}}}} = {gram_q_latex}\n"
         f"\\end{{aligned}}"
     )
 
