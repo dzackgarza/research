@@ -51,7 +51,6 @@ p\colon
 \mathbf{Cat}_\infty.
 $$
 For a higher category $C\colon *\to\mathbf{Cat}_\infty$, define $\int_C C$ by the cartesian square
-$$
 \begin{tikzcd}
 \int_C C
   \arrow[r]
@@ -66,7 +65,6 @@ $$
 &
 \mathbf{Cat}_\infty .
 \end{tikzcd}
-$$
 The fiber equivalence gives $\int_C C\simeq C$.
 An object of $C$ is a point
 $$
@@ -133,7 +131,6 @@ $$
 \Omega_xX:=*\times_X*.
 $$
 For a higher category $A$, define its suspension by the pushout
-$$
 \begin{tikzcd}
 A
   \arrow[r]
@@ -148,7 +145,6 @@ A
 &
 \Sigma A.
 \end{tikzcd}
-$$
 The two coprojections $*\to\Sigma A$ make $\Sigma A$ bipointed.
 :::
 
@@ -176,7 +172,6 @@ $$
 B_{01}\dashv\Omega_{01}.
 $$
 For $A\colon *\to\mathbf{Cat}_\infty$, the bipointed higher category $B_{01}A$ has distinguished objects $0,1$ and hom-objects displayed by
-$$
 \begin{tikzcd}[column sep=huge]
 0
   \arrow[r, bend left=18, "A"]
@@ -186,7 +181,6 @@ $$
   \arrow[l, bend left=18, "\varnothing"]
   \arrow[loop right, "*"] .
 \end{tikzcd}
-$$
 Composition is given by the identity actions on $A$ and the unique morphisms from $\varnothing$.
 The suspension $\Sigma A$ is the pushout in @def-bicomplete-cat-infinity. The object $B_{01}A$ is characterized by the adjunction $B_{01}\dashv\Omega_{01}$.
 :::
@@ -226,13 +220,12 @@ $$
 \int_C C\times\int_C C.
 $$
 For points $x,y\colon*\to\int_C C$, the hom-object $[x,y]_C$ is equivalently the cartesian fiber
-$$
 \begin{tikzcd}
-[x,y]_C
+{[x,y]_C}
   \arrow[r]
   \arrow[d]
 &
-[[1],C]
+{[[1],C]}
   \arrow[d, "{(s^*,t^*)}"]
 \\
 *
@@ -241,7 +234,6 @@ $$
 &
 \int_C C\times\int_C C.
 \end{tikzcd}
-$$
 Its underlying mapping type is
 $$
 \operatorname{Map}_C(x,y):=\Pi_\infty[x,y]_C.
@@ -330,7 +322,6 @@ $$
 \mathbf{Cat}_\infty.
 $$
 An *$n$-category structure* on a higher category $C\colon*\to\mathbf{Cat}_\infty$ is a lift
-$$
 \begin{tikzcd}
 &
 \mathbf{Cat}_n
@@ -342,7 +333,6 @@ $$
 &
 \mathbf{Cat}_\infty
 \end{tikzcd}
-$$
 together with a specified equivalence $\iota_n\circ\widetilde C\simeq C$.
 
 For $n\geq0$, a second construction begins with the full replete subcategory $\mathbf{Cat}_n^{\mathrm{loc}}\subseteq\mathbf{Cat}_\infty$ on the locally $(n-1)$-truncated higher categories [@Lur26, Tag 05EA].

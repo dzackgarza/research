@@ -20,6 +20,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          tinytex: true
+      - name: Provision shared Pandoc filters
+        run: git clone --depth 1 https://github.com/dzackgarza/pandoc-config "$HOME/.pandoc"
+      - name: Install TikZ rendering dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes pdf2svg poppler-utils
+          tlmgr install \
+            bookmark \
+            centernot \
+            dynkin-diagrams \
+            enumitem \
+            esint \
+            import \
+            mathrsfs \
+            mathtools \
+            microtype \
+            pgfplots \
+            slashed \
+            standalone \
+            stmaryrd \
+            subcaption \
+            tikz-cd \
+            was \
+            xypic
       - name: Fetch shared bibliography
         run: curl -sSL https://raw.githubusercontent.com/dzackgarza/pandoc-config/main/bib/references.bib
           -o docs/references.bib
