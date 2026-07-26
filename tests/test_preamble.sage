@@ -371,16 +371,25 @@ def test_twist_accepts_names():
 
 def test_lattice_latex_representation():
     catalogue, _, _, patches, _, _ = _preamble()
+    from dzack_research.preamble.patches import lattice_methods
+
     patches.install("lattice_methods")
     try:
         from sage.misc.latex import latex
+
         u_latex = str(latex(catalogue.U))
         assert r"L \in \mathrm{Lattices}(\ZZ)" in u_latex
         assert r"\mathrm{rk}(L) = 2" in u_latex
         assert r"\mathrm{sig}(L) = (1, 1)" in u_latex
         assert r"\mathrm{disc}(L) = -1" in u_latex
-        assert r"G_L =" in u_latex
+        assert r"\cdot" in u_latex
+
+        lattice_methods.set_zero_dots(False)
+        u_latex_no_dots = str(latex(catalogue.U))
+        assert r"\cdot" not in u_latex_no_dots
+        assert "0" in u_latex_no_dots
     finally:
+        lattice_methods.set_zero_dots(True)
         patches.uninstall("lattice_methods")
 
 

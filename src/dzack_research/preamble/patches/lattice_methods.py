@@ -233,6 +233,15 @@ def is_isometric(self: Any, other: Any) -> bool:
     return bool(self.genus() == other.genus())
 
 
+ZERO_DOTS: bool = True
+
+
+def set_zero_dots(enabled: bool = True) -> None:
+    """Toggle replacing 0 entries with \\cdot in lattice LaTeX output."""
+    global ZERO_DOTS
+    ZERO_DOTS = bool(enabled)
+
+
 def _latex_(self: Any) -> str:
     r"""Return multi-line LaTeX representation with category, rank, signature, discriminant, and Gram matrix.
 
@@ -245,18 +254,21 @@ def _latex_(self: Any) -> str:
         \begin{aligned}
         &L \in \mathrm{Lattices}(\ZZ), \quad \mathrm{rk}(L) = 2, \quad \mathrm{sig}(L) = (1, 1), \quad \mathrm{disc}(L) = -1 \\
         &G_L = \left(\begin{array}{rr}
-        0 & 1 \\
-        1 & 0
+        \cdot & 1 \\
+        1 & \cdot
         \end{array}\right)
         \end{aligned}
         sage: patches.uninstall("lattice_methods")
     """
+    import re
     from sage.misc.latex import latex
 
     rank = self.rank()
     pos, neg = self.signature_pair()
     disc = self.gram_matrix().det()
-    gram_latex = latex(self.gram_matrix())
+    gram_latex = str(latex(self.gram_matrix()))
+    if ZERO_DOTS:
+        gram_latex = re.sub(r"\b0\b", lambda m: r"\cdot", gram_latex)
     return (
         f"\\begin{{aligned}}\n"
         f"&L \\in \\mathrm{{Lattices}}(\\ZZ), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc} \\\\\n"
