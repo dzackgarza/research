@@ -321,34 +321,40 @@ def set_zero_dots(enabled: bool = True) -> None:
     ZERO_DOTS = bool(enabled)
 
 
-def _format_invariant_factor_latex(invariants: tuple[int, ...]) -> str:
-    r"""Format invariant factors into LaTeX string like ``\mathbb{Z}/2\mathbb{Z} \oplus \mathbb{Z}/6\mathbb{Z}``."""
-    if not invariants:
+def _format_cyclic_group_latex(orders: tuple[int, ...]) -> str:
+    r"""Format a sequence of cyclic group orders using ``C_n^m`` notation."""
+    if not orders:
         return "0"
-    return " \\oplus ".join(f"\\mathbb{{Z}}/{d}\\mathbb{{Z}}" for d in invariants)
+    from collections import Counter
+
+    counts = Counter(orders)
+    parts = []
+    for n in sorted(counts):
+        m = counts[n]
+        if m == 1:
+            parts.append(f"C_{{{n}}}")
+        else:
+            parts.append(f"C_{{{n}}}^{{{m}}}")
+    return " \\oplus ".join(parts)
+
+
+def _format_invariant_factor_latex(invariants: tuple[int, ...]) -> str:
+    r"""Format invariant factors into LaTeX string using ``C_n^m`` notation."""
+    return _format_cyclic_group_latex(invariants)
 
 
 def _format_primary_decomp_latex(A_disc: Any) -> str:
-    r"""Format primary decomposition into LaTeX string like ``(\mathbb{Z}/2\mathbb{Z})^2 \oplus \mathbb{Z}/3\mathbb{Z}``."""
+    r"""Format primary decomposition into LaTeX string using ``C_n^m`` notation."""
     invs = A_disc.invariants()
     if not invs:
         return "0"
-    from collections import Counter
     from sage.arith.misc import factor
 
     primes = sorted(set(f for n in invs for f, _ in factor(n)))
     all_powers: list[int] = []
     for p in primes:
         all_powers.extend(A_disc.primary_part(p).invariants())
-    counts = Counter(all_powers)
-    parts = []
-    for power in sorted(counts):
-        m = counts[power]
-        if m == 1:
-            parts.append(f"\\mathbb{{Z}}/{power}\\mathbb{{Z}}")
-        else:
-            parts.append(f"(\\mathbb{{Z}}/{power}\\mathbb{{Z}})^{{{m}}}")
-    return " \\oplus ".join(parts)
+    return _format_cyclic_group_latex(tuple(all_powers))
 
 
 def _primary_gram_matrix_latex(A_disc: Any) -> str:
