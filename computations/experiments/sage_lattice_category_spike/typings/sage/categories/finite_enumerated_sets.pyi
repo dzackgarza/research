@@ -1,0 +1,3 @@
+from sage.categories.category_with_axiom import CategoryWithAxiom
+
+class FiniteEnumeratedSets(CategoryWithAxiom): ...

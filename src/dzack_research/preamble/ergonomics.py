@@ -1,9 +1,12 @@
-r"""Interactive-session ergonomics: the non-mathematical half of the old init.sage.
+r"""Small interactive Sage helpers.
 
-Nothing here has a mathematical home, which is exactly why it can live in a
-module of its own without violating naming doctrine. It owns one question --
-what a fresh interactive namespace contains -- and answers nothing about
-lattices.
+EXAMPLES::
+
+    sage: from dzack_research.preamble.ergonomics import lmap, lzip
+    sage: lmap(lambda x: x^2, [1, 2, 3])
+    [1, 4, 9]
+    sage: lzip([1, 2], ["a", "b"])
+    [(1, 'a'), (2, 'b')]
 """
 
 from __future__ import annotations
@@ -13,49 +16,43 @@ from typing import Any
 
 
 def lmap[T, U](f: Callable[[T], U], ls: Iterable[T]) -> list[U]:
-    """``list(map(f, ls))``. Carried over from the old init.sage verbatim."""
+    """Return ``map(f, ls)`` as a list."""
     return list(map(f, ls))
 
 
 def lzip(*iterables: Iterable[Any]) -> list[tuple[Any, ...]]:
-    """``list(zip(*iterables))``. Carried over from the old init.sage verbatim."""
+    """Return ``zip(*iterables)`` as a list."""
     return list(zip(*iterables))
 
 
 def to_var_names(s: str) -> list[str]:
-    """Split a comma-separated generator-name string into stripped names.
+    """Split a comma-separated list of generator names.
 
-    The old init.sage used this to feed generator lists; kept because notebooks
-    still write basis names as one string.
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.ergonomics import to_var_names
+        sage: to_var_names("e, f, a1")
+        ['e', 'f', 'a1']
     """
     return [x.replace(" ", "").strip() for x in s.split(",")]
 
 
 def enable_implicit_multiplication() -> None:
-    """Turn on Sage's implicit multiplication preparsing (``2x`` for ``2*x``).
-
-    Separate from :func:`install` because it changes how *source* is read, which
-    is a bigger commitment than adding names to a namespace: it can turn a typo
-    into a valid expression. Off unless asked for.
-    """
+    """Enable Sage's implicit multiplication preparsing."""
     from sage.repl.preparse import implicit_multiplication
 
     implicit_multiplication(True)
 
 
 def load_gap_package_manager() -> None:
-    """Load GAP's ``PackageManager``, as old init.sage line 19 did at startup.
-
-    Separate and opt-in: it reaches into a GAP subprocess, which is a slow and
-    failure-prone thing to do unconditionally when starting a kernel.
-    """
+    """Load GAP's ``PackageManager`` package."""
     from sage.libs.gap.libgap import libgap
 
     libgap.LoadPackage("PackageManager")
 
 
 def enable_red_traceback_highlight() -> None:
-    """Highlight the current frame in tracebacks on red, as the old init.sage did."""
+    """Highlight the current traceback frame in red."""
     import IPython.core.ultratb
 
     IPython.core.ultratb.VerboseTB._tb_highlight = "bg:ansired"

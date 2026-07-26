@@ -8,10 +8,12 @@ this module fixes.
 
 from __future__ import annotations
 
+from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.geometry.polyhedron.base import Polyhedron_base as Polyhedron
 from sage.graphs.graph import Graph
 
 __all__ = [
+    "CoxeterMatrix",
     "Graph",
     "Polygon",
     "Polyhedron",

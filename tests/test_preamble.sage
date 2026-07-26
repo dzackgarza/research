@@ -383,12 +383,14 @@ def test_lattice_latex_representation():
         assert r"\mathrm{sig}(L) = (1, 1)" in u_latex
         assert r"\mathrm{disc}(L) = -1" in u_latex
         assert r"\cdot" in u_latex
-        assert r"A_L = \mathbb{Z}^{2} / G_L \mathbb{Z}^{2} \in \mathrm{Groups} \quad \text{(Dual basis presentation)}" in u_latex
+        assert r"A_L = \langle e_{1}, e_{2} \mid" in u_latex
+        assert r"\text{(Dual basis presentation)}" in u_latex
         assert r"A_L \cong 0 \in \mathrm{Groups}" in u_latex
         assert r"G_{q_{A_L}} = ()" in u_latex
 
         a2_latex = str(latex(catalogue.root_lattice("A", 2)))
-        assert r"A_L = \mathbb{Z}^{2} / G_L \mathbb{Z}^{2} \in \mathrm{Groups} \quad \text{(Dual basis presentation)}" in a2_latex
+        assert r"A_L = \langle e_{1}, e_{2} \mid" in a2_latex
+        assert r"\text{(Dual basis presentation)}" in a2_latex
         assert r"A_L \cong C_{3} \in \mathrm{Groups}" in a2_latex
         assert r"G_{q_{A_L}} =" in a2_latex
 
@@ -406,7 +408,10 @@ def test_lattice_latex_representation():
 
         lattice_methods.set_zero_dots(False)
         u_latex_no_dots = str(latex(catalogue.U))
-        assert r"\cdot" not in u_latex_no_dots
+        # Only the Gram matrix line should be affected by zero dots;
+        # the FP group LaTeX always uses \cdot for multiplication.
+        gram_line = [l for l in u_latex_no_dots.split('\n') if 'G_L =' in l][0]
+        assert r"\cdot" not in gram_line
         assert "0" in u_latex_no_dots
     finally:
         lattice_methods.set_zero_dots(True)

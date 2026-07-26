@@ -401,7 +401,7 @@ def _latex_(self: Any) -> str:
         \cdot & 1 \\
         1 & \cdot
         \end{array}\right) \\
-        &A_L = \mathbb{Z}^{2} / G_L \mathbb{Z}^{2} \in \mathrm{Groups} \quad \text{(Dual basis presentation)} \\
+        &A_L = \langle e_{1}, e_{2} \mid e_{1}\cdot e_{2}\cdot e_{1}^{-1}\cdot e_{2}^{-1} , e_{2} , e_{1}\rangle \in \mathrm{Groups} \quad \text{(Dual basis presentation)} \\
         &A_L \cong 0 \in \mathrm{Groups} \quad \text{(Invariant factor decomposition)} \\
         &A_L \cong 0 \in \mathrm{Groups} \quad \text{(Primary decomposition)} \\
         &G_{q_{A_L}} = () \in \mathrm{Mat}_{0}(\mathbb{Q}/2\mathbb{Z})
@@ -436,34 +436,57 @@ def _latex_(self: Any) -> str:
     return "\n".join(header_lines + A_lines + [r"\end{aligned}"])
 
 
-_original_torsion_latex: Any = None
+# THEORY OF DISCRIMINANT GROUP PRESENTATION:
+# For an integral lattice L with basis B_L = (e_1, ..., e_r) and Gram matrix G_L,
+# the dual lattice L* has dual basis B_L* = (e_1*, ..., e_r*) defined by b(e_i*, e_j) = delta_ij.
+# The inclusion homomorphism f: L -> L* sends e_i \mapsto \sum_{j=1}^r (G_L)_{ji} e_j*.
+# Hence, the matrix of f relative to bases B_L and B_L* is EXACTLY G_L: [f]_{B_L -> B_L*} = G_L.
+# The discriminant group A_L = coker(f) = L* / f(L) is presented on the nose as:
+#     A_L = < e_1*, ..., e_r* | \sum_j (G_L)_{ji} e_j* = 0 > = Z^r / G_L Z^r
+# Thus, G_L is the relation matrix on the dual basis generators [e_1*], ..., [e_r*].
 
 
-def _format_dual_presentation_latex(A_disc: Any) -> str:
-    r"""Return LaTeX representation of literal dual basis quotient presentation A_L = ZZ^r / G_L ZZ^r."""
-    L = getattr(getattr(A_disc, "_W", None), "ambient_module", lambda: None)()
-    if L is not None and hasattr(L, "rank"):
-        r = L.rank()
-        if r == 0:
-            return "0"
-        return f"\\mathbb{{Z}}^{{{r}}} / G_L \\mathbb{{Z}}^{{{r}}}"
-    invs = A_disc.invariants()
-    if not invs:
-        return "0"
-    k = len(invs)
-    return f"\\mathbb{{Z}}^{{{k}}} / D \\mathbb{{Z}}^{{{k}}}"
+def _finitely_presented_group(self: Any) -> Any:
+    r"""Return a Sage-native FinitelyPresentedGroup representing A_L on the dual basis."""
+    L = getattr(getattr(self, "_W", None), "ambient_module", lambda: None)()
+    if L is not None and hasattr(L, "gram_matrix"):
+        G_L = L.gram_matrix()
+    else:
+        G_L = self.gram_matrix_quadratic()
+    r = G_L.nrows()
+    from sage.groups.free_group import FreeGroup
+    from sage.misc.misc_c import prod
+
+    if r == 0:
+        F = FreeGroup(0, "e")
+        return F.quotient([])
+
+    names = [f"e{i+1}" for i in range(r)]
+    F = FreeGroup(names)
+    gens = F.gens()
+    rels = []
+    for i in range(r):
+        for j in range(i + 1, r):
+            rels.append(gens[i] * gens[j] * gens[i] ** -1 * gens[j] ** -1)
+    for k in range(r):
+        word = prod(gens[j] ** int(G_L[j, k]) for j in range(r))
+        rels.append(word)
+    return F.quotient(rels)
 
 
 def _patched_torsion_latex(self: Any) -> str:
     r"""Return LaTeX representation for a discriminant group TorsionQuadraticModule."""
+    from sage.misc.latex import latex
+
     invs = self.invariants()
     n = self.gram_matrix_quadratic().nrows()
-    dual_str = _format_dual_presentation_latex(self)
+    fp_group = self.finitely_presented_group()
+    fp_latex = str(latex(fp_group))
     inv_str = _format_invariant_factor_latex(invs)
     prim_str = _format_primary_decomp_latex(self)
     gram_q_latex = _primary_gram_matrix_latex(self)
 
-    line1 = f"&A_L = {dual_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Dual basis presentation)}} \\\\"
+    line1 = f"&A_L = {fp_latex} \\in \\mathrm{{Groups}} \\quad \\text{{(Dual basis presentation)}} \\\\"
     line2 = f"&A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Invariant factor decomposition)}} \\\\"
     line3 = f"&A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Primary decomposition)}} \\\\"
     line4 = f"&G_{{q_{{A_L}}}} = {gram_q_latex} \\in \\mathrm{{Mat}}_{{{n}}}(\\mathbb{{Q}}/2\\mathbb{{Z}})"
@@ -831,6 +854,7 @@ def _compute_disc_gram_subdivisions(A_disc: Any) -> list[int]:
 _original_torsion_gram_q: Any = None
 _original_torsion_gram_b: Any = None
 _original_normal_form: Any = None
+_original_torsion_latex: Any = None
 
 
 def _patched_normal_form(self: Any, *args: Any, **kwargs: Any) -> Any:
@@ -917,6 +941,7 @@ def install() -> None:
     TorsionQuadraticModule.gram_matrix_bilinear = cached_method(_patched_torsion_gram_matrix_bilinear)
     TorsionQuadraticModule.normal_form = _patched_normal_form
     TorsionQuadraticModule._latex_ = _patched_torsion_latex
+    TorsionQuadraticModule.finitely_presented_group = _finitely_presented_group
 
     for name in _METHODS:
         attribute = globals()[name]
@@ -969,6 +994,11 @@ def uninstall() -> None:
             TorsionQuadraticModule.normal_form = _original_normal_form
         if _original_torsion_latex is not None:
             TorsionQuadraticModule._latex_ = _original_torsion_latex
+        if hasattr(TorsionQuadraticModule, "finitely_presented_group"):
+            try:
+                delattr(TorsionQuadraticModule, "finitely_presented_group")
+            except AttributeError:
+                pass
 
     if _original_integral_lattice is not None:
         import sage.all

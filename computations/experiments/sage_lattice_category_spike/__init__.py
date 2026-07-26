@@ -2,7 +2,11 @@
 # live before any lattice object is built; re-exports resolve from this namespace.
 from . import sage_patches  # noqa: F401
 from .lattice_categories import (
+    CoxeterDiagramHomset,
+    CoxeterDiagramMorphism,
+    CoxeterDiagrams,
     DiscriminantForms,
+    FiniteCoxeterDiagram,
     Genera,
     IntegralLatticeGluing,
     Lattice,
@@ -27,6 +31,9 @@ from .lattice_categories import (
 )
 
 __all__ = [
+    "CoxeterDiagramHomset",
+    "CoxeterDiagramMorphism",
+    "CoxeterDiagrams",
     "DiscriminantForms",
     "Genera",
     "IntegralLatticeGluing",
@@ -35,18 +42,19 @@ __all__ = [
     "LatticeMorphism",
     "LatticeSimilarity",
     "Lattices",
-    "SyntheticDiscriminantAction",
     "SyntheticBilinearDiscriminantForm",
-    "SyntheticQuadraticDiscriminantForm",
-    "SyntheticSourcedDiscriminantForm",
-    "SyntheticGenus",
+    "SyntheticDiscriminantAction",
     "SyntheticDiscriminantGroupElement",
     "SyntheticDiscriminantSubgroup",
-    "SyntheticOrthogonalGroup",
+    "SyntheticGenus",
     "SyntheticIsometryGroup",
     "SyntheticIsometrySubgroup",
     "SyntheticLattice",
     "SyntheticLatticeElement",
     "SyntheticLatticeFromGram",
+    "SyntheticOrthogonalGroup",
+    "SyntheticQuadraticDiscriminantForm",
+    "SyntheticSourcedDiscriminantForm",
     "TorsionQuadraticForm",
+    "FiniteCoxeterDiagram",
 ]

@@ -1,22 +1,17 @@
-r"""The interactive preamble: what a fresh Sage session gets, and how to toggle it.
+r"""Install the interactive Sage session helpers.
 
-``sage-init.sage`` at the repo root is a thin caller; the decisions live here so
-they can be changed, tested and reviewed without touching machine state. Import
-this package from a notebook to get the same session a REPL gets.
+EXAMPLES::
 
-Every stanza of :func:`install` is a keyword you can turn off, because the old
-init.sage's failure mode was that it was all-or-nothing: one broken import at the
-top cost you the whole namespace.
-
-Monkeypatches are NOT installed by default and are not part of this package's
-import side effects -- see :mod:`dzack_research.preamble.patches`.
+    sage: from dzack_research.preamble import install
+    sage: install(vendor_paths=False, red_tracebacks=False)
+    {}
 """
 
 from __future__ import annotations
 
-from . import ergonomics, vendor
+from . import ergonomics, fixtures, vendor
 
-__all__ = ["ergonomics", "install", "vendor"]
+__all__ = ["ergonomics", "fixtures", "install", "vendor"]
 
 
 def install(
@@ -26,14 +21,13 @@ def install(
     implicit_multiplication: bool = False,
     gap_package_manager: bool = False,
 ) -> dict[str, object]:
-    """Apply the session preamble; return a report of what was actually done.
+    """Install selected helpers and report each applied helper.
 
-    The report is the point: a preamble that silently half-applies is the thing
-    the old init.sage got wrong, so every stanza states its outcome and a caller
-    can assert on it.
+    EXAMPLES::
 
-    ``implicit_multiplication`` defaults off -- it rewrites how source is parsed,
-    which is not something to inherit by surprise.
+        sage: from dzack_research.preamble import install
+        sage: install(vendor_paths=False, red_tracebacks=False)
+        {}
     """
     report: dict[str, object] = {}
 

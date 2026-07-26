@@ -169,6 +169,8 @@ Missing-but-named (declared contracts whose types the audit shows are wrong or p
 | `Polyhedron` | convex polyhedron (Voronoi cells, fundamental chambers) | alias | `sage.geometry.polyhedron.base.Polyhedron_base` |
 | `Polygon` | 2-dimensional polytope | alias of `Polyhedron` (dimension is the constructor's contract) | same |
 | `Graph` | finite (undirected) graph — Coxeter/Dynkin diagrams, root graphs | alias | `sage.graphs.graph.Graph` |
+| `CoxeterMatrix` | matrix \((m_{st})\) of a Coxeter system | alias | `sage.combinat.root_system.coxeter_matrix.CoxeterMatrix` |
+| `CoxeterDiagram` | graph of a Coxeter matrix; a Sage parent whose elements are the Coxeter generators | owned class | `objects/coxeter.py`; `Graph` is its computational representation |
 
 Note the annotation defect this fixes: `objects/parents.py` annotates `voronoi_cell` with the *constructor function* `sage.geometry.polyhedron.constructor.Polyhedron` used as a type.
 The lexicon noun is the class of its values.

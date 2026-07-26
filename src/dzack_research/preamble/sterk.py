@@ -1,26 +1,10 @@
-r"""Sterk's five root configurations in $L_{20,2,0} = U \oplus U(2) \oplus E_8^2$.
+r"""Sterk root configurations in $U\oplus U(2)\oplus E_8^2$.
 
-Ported from the Sterk section of the old init.sage. Two things about that source
-made a naive transcription unsafe, and both are handled here by *not* reusing names:
+EXAMPLES::
 
-**The ``w`` rebinding.** Line 400 bound ``w1..w8``, ``w1t..w8t`` to the columns of
-$G^{-1}$, i.e. the dual basis. Lines 465-483 then rebound ``w1..w19`` to the
-$(18,0,0)$ root vectors -- and line 472 read the old meaning to define the new one
-(``w8 = w8 + e``). The file is only correct when executed strictly in order. Here the
-dual vectors are ``DUAL[...]`` and the roots are ``roots_18_0_0()``, so no name ever
-means two things.
-
-**The ``a`` rebinding.** Line 399 bound ``e, f, ep, fp, a1..a8, a1t..a8t`` to the
-$L_{20,2,0}$ basis; line 592 rebound ``e, f, ep, fp, a1..a8`` to the *$T_{En}$* basis
-for the later ``sterks1/2/3`` lists. Those are different lattices of different rank,
-so the two halves of the section are not in the same coordinates. This module ports
-the $L_{20,2,0}$ half -- the one the ``Sterk_roots`` dict is built from. See
-:data:`NOT_PORTED` for the rest.
-
-Everything is carried as coordinate vectors over $\mathbf{Q}$ with the form applied
-as $x^{T} G y$: the configurations mix basis vectors with dual vectors, so they do not
-all live in the lattice itself, and pretending otherwise would force spurious
-coercions.
+    sage: from dzack_research.preamble.sterk import sterk_roots
+    sage: {name: len(roots) for name, roots in sterk_roots().items()}
+    {'Sterk_1': 12, 'Sterk_2': 10, 'Sterk_3': 12, 'Sterk_4': 11, 'Sterk_5': 14}
 """
 
 from __future__ import annotations
@@ -32,9 +16,30 @@ from sage.modules.free_module_element import vector
 from sage.rings.rational_field import QQ
 
 from . import catalogue
+from .fixtures import (
+    COMPUTED_ROOT_COUNTS,
+    RECORDED_ROOT_MATRIX_ROWS,
+    STERK_PUBLISHED,
+    STERK_ROOT_COUNTS,
+)
+from .fixtures import (
+    L20_BASIS_NAMES as _BASIS_NAMES,
+)
+from .fixtures import (
+    L20_DUAL_NAMES as _DUAL_NAMES,
+)
+from .fixtures import (
+    TEN_BASIS_NAMES as _TEN_BASIS_NAMES,
+)
+from .fixtures import (
+    TEN_DUAL_NAMES as _TEN_DUAL_NAMES,
+)
 
 __all__ = [
+    "COMPUTED_ROOT_COUNTS",
     "NOT_PORTED",
+    "RECORDED_ROOT_MATRIX_ROWS",
+    "STERK_PUBLISHED",
     "STERK_ROOT_COUNTS",
     "bilinear_form",
     "gram",
@@ -44,101 +49,50 @@ __all__ = [
     "roots_18_2_0",
     "sterk_roots",
     "sterks_in_ten",
-    "RECORDED_ROOT_MATRIX_ROWS",
 ]
 
-#: Root counts per case. These match the old file's section headers ("Sterk 1: 12
-#: roots"), but a comment is not an oracle: the counts are independently justified by
-#: :func:`sterk_roots`, which asserts every listed vector has root norm -2 or -4. The
-#: one vector that disagreed with a header turned out to be isotropic, not a missing
-#: root -- see :func:`isotropic_vectors`.
-STERK_ROOT_COUNTS: dict[str, int] = {
-    "Sterk_1": 12,
-    "Sterk_2": 10,
-    "Sterk_3": 12,
-    "Sterk_4": 11,
-    "Sterk_5": 14,
-}
-
-#: Sterk's published root counts, broken down by norm, exactly as the old file's
-#: annotations record them ("Sterk had 12: 12x -4 roots").
-STERK_PUBLISHED: dict[str, dict[str, int]] = {
-    "Sterk_1": {"total": 12, "norm_-4": 12, "norm_-2": 0},
-    "Sterk_2": {"total": 10, "norm_-4": 9, "norm_-2": 1},
-    "Sterk_3": {"total": 12, "norm_-4": 10, "norm_-2": 2},
-    "Sterk_4": {"total": 11, "norm_-4": 9, "norm_-2": 2},
-    "Sterk_5": {"total": 14, "norm_-4": 10, "norm_-2": 4},
-}
-
-#: Results of two *independent* computational runs recorded in the old file (lines
-#: 720-855) as explicit coordinate matrices, with timings and ideal-vertex counts.
-#: This is an open discrepancy, not settled bookkeeping: both implementations find
-#: about ten roots where Sterk publishes more, and both report ideal vertices --
-#: cusps -- separately from roots.
-#:
-#: The distinction matters and is the same one that resolved ``s4_12``: an ideal
-#: vertex is an isotropic vector, a cusp of the hyperbolic polyhedron, not a facet.
-#: ``s4_12`` is isotropic and Sterk 4 is recorded as having 2 ideal vertices, so it
-#: is plausibly one of them -- a check worth doing rather than a conclusion.
-#:
-#: The source annotates Sterk 2 "Almost exactly matches Sterk."
-COMPUTED_ROOT_COUNTS: dict[str, dict[str, Any]] = {
-    "Sterk_1": {"julia": 9, "vinal": 10, "ideal_vertices": 1},
-    "Sterk_2": {"julia": 10, "vinal": 10, "ideal_vertices": 2},
-    "Sterk_3": {"julia": 10, "vinal": 10, "ideal_vertices": 2},
-    "Sterk_4": {"julia": 10, "vinal": 10, "ideal_vertices": 2},
-    "Sterk_5": {"julia": 10, "vinal": 10, "ideal_vertices": 2},
-}
-
-#: Nothing from the Sterk section remains unported. ``sterks1``/``sterks2``/
-#: ``sterks3`` are :func:`sterks_in_ten`; the commented ``sterks4``/``sterks5`` and the
-#: ``tilde_*`` change of basis (old lines 630-664) are alternative derivations of the
-#: same configurations, superseded by :func:`sterk5_in_U_E8_2` which the source itself
-#: kept as live code.
 NOT_PORTED: tuple[str, ...] = ()
-
-_BASIS_NAMES = ["e", "f", "ep", "fp"] + [f"a{i}" for i in range(1, 9)] + [f"a{i}t" for i in range(1, 9)]
-_DUAL_NAMES = ["eb", "fb", "epb", "fpb"] + [f"w{i}" for i in range(1, 9)] + [f"w{i}t" for i in range(1, 9)]
 
 
 def gram() -> Any:
-    r"""Gram matrix of $L_{20,2,0} = U \oplus U(2) \oplus E_8^2$."""
+    r"""Return the Gram matrix of $U\oplus U(2)\oplus E_8^2$."""
     return catalogue.L_20_2_0.gram_matrix()
 
 
 def _frames() -> tuple[dict[str, Any], dict[str, Any]]:
-    """The basis and its dual, as coordinate vectors over QQ."""
+    """Return the basis and dual basis over ``QQ``."""
     matrix_gram = gram().change_ring(QQ)
     size = matrix_gram.ncols()
     assert size == 20, f"expected rank 20, got {size}"
 
-    basis = {name: vector(QQ, [1 if j == i else 0 for j in range(size)]) for i, name in enumerate(_BASIS_NAMES)}
+    basis = {
+        name: vector(QQ, [1 if j == i else 0 for j in range(size)])
+        for i, name in enumerate(_BASIS_NAMES)
+    }
     dual = dict(zip(_DUAL_NAMES, matrix_gram.inverse().columns(), strict=True))
 
-    # The defining property of the dual frame, asserted rather than trusted: the old
-    # file obtained it as the columns of the inverse Gram matrix without checking.
     for i, basis_name in enumerate(_BASIS_NAMES):
         for j, dual_name in enumerate(_DUAL_NAMES):
             expected = 1 if i == j else 0
-            assert bilinear_form(basis[basis_name], dual[dual_name]) == expected, f"dual frame is wrong: <{basis_name}, {dual_name}> != {expected}"
+            assert bilinear_form(basis[basis_name], dual[dual_name]) == expected, (
+                f"dual basis is wrong: <{basis_name}, {dual_name}> != {expected}"
+            )
     return basis, dual
 
 
 def bilinear_form(left: Any, right: Any) -> Any:
-    r"""$\langle x, y\rangle = x^{T} G y$, for vectors in $L \otimes \mathbf{Q}$.
-
-    The old file called ``L_20_2_0.b(v22, x)`` for this; Sage's integral lattices have
-    no ``b`` method, so that call site was dead like several others in the file.
-    """
+    r"""Return $\langle x,y\rangle=x^TGy$."""
     return left * gram().change_ring(QQ) * right
 
 
 def roots_18_2_0() -> dict[str, Any]:
-    r"""The 22 root vectors $v_1, \ldots, v_{22}$ for $(18, 2, 0)$.
+    r"""Return the root vectors $v_1,\ldots,v_{22}$.
 
-    Built from the basis and the *dual* frame, exactly as old lines 435-458 -- before
-    the ``w`` rebinding, so ``w1``, ``w2``, ``w8``, ``w1t``, ``w2t``, ``w8t`` here are
-    the dual vectors.
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.sterk import roots_18_2_0
+        sage: len(roots_18_2_0())
+        22
     """
     b, d = _frames()
     v = {
@@ -170,12 +124,13 @@ def roots_18_2_0() -> dict[str, Any]:
 
 
 def roots_18_0_0() -> dict[str, Any]:
-    r"""The 19 root vectors $w_1, \ldots, w_{19}$ for $(18, 0, 0)$.
+    r"""Return the root vectors $w_1,\ldots,w_{19}$.
 
-    Old lines 465-483. ``w8`` is the case the rebinding made delicate: the source
-    wrote ``w8 = w8 + e``, whose right-hand side is the *dual* vector ``w8``, so the
-    root is $w_8^{\vee} + e$. ``w10 = w8t + e`` reads ``w8t``, which the rebinding
-    never touched, so it is the dual vector too.
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.sterk import roots_18_0_0
+        sage: len(roots_18_0_0())
+        19
     """
     b, d = _frames()
     w = {
@@ -204,20 +159,14 @@ def roots_18_0_0() -> dict[str, Any]:
 
 
 def sterk_roots() -> dict[str, tuple[Any, ...]]:
-    r"""The five Sterk root configurations, with their counts asserted.
+    r"""Return the five Sterk root configurations.
 
-    Cases 1, 3, 4, 5 are built from the $(18,2,0)$ roots; case 2 from $(18,0,0)$.
+    EXAMPLES::
 
-    Two source details preserved deliberately:
-
-    - Sterk 4's ``s4_12 = v22 + v21`` (old line 559) is omitted from the root list at
-      line 561, and that omission is correct on mathematical grounds, not because the
-      line is dead: its norm is **0**, so it is not a root. See
-      :func:`isotropic_vectors`, which keeps it.
-    - Sterk 3's last two entries apply the involution
-      $x \mapsto x + \tfrac{1}{2}\langle v_{22}, x\rangle v_{22}$ via the old
-      ``inv``/``wa`` lambdas, whose commented alternatives read ``v22 + 2*v20`` and
-      ``v22 + 2*v18``. The lambda form is used, and the comments' claim is asserted.
+        sage: from dzack_research.preamble.sterk import sterk_roots
+        sage: roots = sterk_roots()
+        sage: len(roots["Sterk_4"])
+        11
     """
     v = roots_18_2_0()
     w = roots_18_0_0()
@@ -301,34 +250,41 @@ def sterk_roots() -> dict[str, tuple[Any, ...]]:
     }
 
     for name, roots in configurations.items():
-        assert len(roots) == STERK_ROOT_COUNTS[name], f"{name}: source header says {STERK_ROOT_COUNTS[name]} roots, built {len(roots)}"
-        # The transcription check that actually bites: a root has norm -2 or -4 in
-        # this repo's negative-definite convention, and a mistyped coordinate in any
-        # of these ~60 vectors would almost certainly land outside that set.
+        assert len(roots) == STERK_ROOT_COUNTS[name], (
+            f"{name}: expected {STERK_ROOT_COUNTS[name]} roots, built {len(roots)}"
+        )
         for index, root in enumerate(roots, start=1):
             norm = bilinear_form(root, root)
-            assert norm in (-2, -4), f"{name} root {index} has norm {norm}; roots must have norm -2 or -4"
-    assert involute(v["v20"]) == v["v22"] + 2 * v["v20"], "Sterk 3: the involution disagrees with the source's commented form v22 + 2*v20"
-    assert involute(v["v18"]) == v["v22"] + 2 * v["v18"], "Sterk 3: the involution disagrees with the source's commented form v22 + 2*v18"
+            assert norm in (-2, -4), (
+                f"{name} root {index} has norm {norm}; roots must have norm -2 or -4"
+            )
+    assert involute(v["v20"]) == v["v22"] + 2 * v["v20"], (
+        "Sterk 3: the involution does not equal v22 + 2*v20"
+    )
+    assert involute(v["v18"]) == v["v22"] + 2 * v["v18"], (
+        "Sterk 3: the involution does not equal v22 + 2*v18"
+    )
     return configurations
 
 
-_TEN_BASIS_NAMES = ["e", "f", "ep", "fp"] + [f"a{i}" for i in range(1, 9)]
-_TEN_DUAL_NAMES = ["ed", "fd", "epd", "fpd"] + [f"w{i}" for i in range(1, 9)]
-
-
 def ten_frames() -> tuple[dict[str, Any], dict[str, Any], Any]:
-    r"""The named basis and dual frame of $T_{En} = U \oplus E_{10}(2)$.
+    r"""Return the named basis, dual basis, and Gram matrix of $T_{En}$.
 
-    Old lines 326-335, where the source wrote the basis with Sage's ellipsis
-    generator syntax and took ``TEn.dual_basis()``. This is the blocking dependency
-    for everything in the Enriques half of the file.
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.sterk import ten_frames
+        sage: basis, dual, G = ten_frames()
+        sage: (len(basis), len(dual), G.nrows())
+        (12, 12, 12)
     """
     matrix_gram = catalogue.TEn.gram_matrix().change_ring(QQ)
     size = matrix_gram.ncols()
     assert size == 12, f"TEn should have rank 12, got {size}"
 
-    basis = {name: vector(QQ, [1 if j == i else 0 for j in range(size)]) for i, name in enumerate(_TEN_BASIS_NAMES)}
+    basis = {
+        name: vector(QQ, [1 if j == i else 0 for j in range(size)])
+        for i, name in enumerate(_TEN_BASIS_NAMES)
+    }
     dual = dict(zip(_TEN_DUAL_NAMES, matrix_gram.inverse().columns(), strict=True))
 
     def form(left: Any, right: Any) -> Any:
@@ -337,22 +293,20 @@ def ten_frames() -> tuple[dict[str, Any], dict[str, Any], Any]:
     for i, basis_name in enumerate(_TEN_BASIS_NAMES):
         for j, dual_name in enumerate(_TEN_DUAL_NAMES):
             expected = 1 if i == j else 0
-            assert form(basis[basis_name], dual[dual_name]) == expected, f"TEn dual frame is wrong: <{basis_name}, {dual_name}> != {expected}"
+            assert form(basis[basis_name], dual[dual_name]) == expected, (
+                f"TEn dual basis is wrong: <{basis_name}, {dual_name}> != {expected}"
+            )
     return basis, dual, matrix_gram
 
 
-def generating_isotropic_vectors() -> dict[str, Any]:
-    r"""The five isotropic vectors of $T_{En}$ that generate the Sterk cases.
+def selected_isotropic_vectors() -> dict[str, Any]:
+    r"""Return the five selected isotropic vectors in $T_{En}$.
 
-    Old lines 337-352 -- the derivation the root configurations come from, and the
-    answer to *why there are five Sterk cases*:
+    EXAMPLES::
 
-    $$\text{Sterk}_j := e_j^{\perp} / \langle e_j \rangle, \qquad j = 1, \ldots, 5.$$
-
-    The source labels ``omega = 2*w8`` a "Square 4 vector" and ``alpha = 2*w1`` a
-    "Square 8 vector". Those labels are checkable, and are asserted here -- they also
-    confirm the basis ordering, since ``E10 = U @ E8`` and ``E8 @ U`` give isomorphic
-    lattices whose coordinates disagree.
+        sage: from dzack_research.preamble.sterk import selected_isotropic_vectors
+        sage: len(selected_isotropic_vectors())
+        5
     """
     basis, dual, matrix_gram = ten_frames()
 
@@ -361,8 +315,12 @@ def generating_isotropic_vectors() -> dict[str, Any]:
 
     omega = 2 * dual["w8"]
     alpha = 2 * dual["w1"]
-    assert abs(form(omega, omega)) == 4, f"source calls omega a square-4 vector; it has norm {form(omega, omega)}"
-    assert abs(form(alpha, alpha)) == 8, f"source calls alpha a square-8 vector; it has norm {form(alpha, alpha)}"
+    assert abs(form(omega, omega)) == 4, (
+        f"omega must have absolute norm 4, got {form(omega, omega)}"
+    )
+    assert abs(form(alpha, alpha)) == 8, (
+        f"alpha must have absolute norm 8, got {form(alpha, alpha)}"
+    )
 
     e, f, ep, fp = basis["e"], basis["f"], basis["ep"], basis["fp"]
     vectors = {
@@ -374,20 +332,19 @@ def generating_isotropic_vectors() -> dict[str, Any]:
     }
     for name, vector_ in vectors.items():
         norm = form(vector_, vector_)
-        assert norm == 0, f"{name} generator must be isotropic, has norm {norm}"
+        assert norm == 0, f"{name} selected vector must be isotropic, has norm {norm}"
     assert len(vectors) == 5, "there are five Sterk cases, one per isotropic vector"
     return vectors
 
 
 def diagonal_embedding_images() -> dict[str, Any]:
-    r"""$a_i' = a_i + \tilde a_i$ and $w_i' = w_i + \tilde w_i$ in $L_{20,2,0}$.
+    r"""Return the diagonal images $a_i'$ and $w_i'$.
 
-    Old lines 406-422, computed and then never used. The source's comment states what
-    they are: *"The primes are the image of the diagonal embedding from $E_8(2)$"* --
-    the two $E_8$ summands of $L_{20,2,0}$ mapped in diagonally.
+    EXAMPLES::
 
-    That claim is checkable and is asserted: the span of the eight $a_i'$ is isometric
-    to $E_8(2)$.
+        sage: from dzack_research.preamble.sterk import diagonal_embedding_images
+        sage: len(diagonal_embedding_images())
+        16
     """
     basis, dual = _frames()
     images = {f"a{i}p": basis[f"a{i}"] + basis[f"a{i}t"] for i in range(1, 9)}
@@ -396,21 +353,21 @@ def diagonal_embedding_images() -> dict[str, Any]:
     a_primes = [images[f"a{i}p"] for i in range(1, 9)]
     induced = matrix(QQ, [[bilinear_form(x, y) for y in a_primes] for x in a_primes])
     expected = catalogue.E8_2.gram_matrix().change_ring(QQ)
-    assert induced == expected, "the a_i' do not span E8(2); the source's diagonal-embedding claim fails"
+    assert induced == expected, (
+        "the diagonal images a_i' do not have the Gram matrix of E8(2)"
+    )
     return images
 
 
 def sterk5_in_U_E8_2() -> tuple[Any, tuple[Any, ...]]:
-    r"""Sterk 5's configuration inside $U \oplus E_8(2)$, from ``getSterk5()``.
+    r"""Return the Sterk 5 configuration in $U\oplus E_8(2)$.
 
-    Old lines 666-680: live code, a second presentation of the Sterk 5 case in a
-    rank-10 lattice rather than the rank-20 $L_{20,2,0}$ used by :func:`sterk_roots`.
-    Returns the lattice and its 14 vectors, in the source's order, which the commented
-    label list at line 682 gives as::
+    EXAMPLES::
 
-        a2, a4, a5, a6, a7, a8, a8d, a10, a11, a12, a13, a14, a1, a9
-
-    Fourteen vectors, matching Sterk 5's published count.
+        sage: from dzack_research.preamble.sterk import sterk5_in_U_E8_2
+        sage: lattice, roots = sterk5_in_U_E8_2()
+        sage: (lattice.rank(), len(roots))
+        (10, 14)
     """
     lattice = catalogue.U.direct_sum(catalogue.E8_2)
     gram_matrix = lattice.gram_matrix().change_ring(QQ)
@@ -452,30 +409,26 @@ def sterk5_in_U_E8_2() -> tuple[Any, tuple[Any, ...]]:
         return left * gram_matrix * right
 
     norms = [form(v, v) for v in vectors]
-    assert all(n in (-2, -4) for n in norms), f"getSterk5 vectors must be roots; norms are {sorted(set(norms))}"
+    assert all(n in (-2, -4) for n in norms), (
+        f"getSterk5 vectors must be roots; norms are {sorted(set(norms))}"
+    )
     return lattice, vectors
 
 
 def sterks_in_ten() -> dict[str, tuple[Any, ...]]:
-    r"""``sterks1``, ``sterks2``, ``sterks3`` in $T_{En}$ coordinates (old lines 585-628).
+    r"""Return three root configurations in $T_{En}$ coordinates.
 
-    A second family of configurations, in $T_{En}$ rather than $L_{20,2,0}$. Three
-    details of the source are load-bearing and easy to lose:
+    EXAMPLES::
 
-    - **The dual scaling differs between blocks.** ``sterks1``/``sterks2`` take their
-      dual vectors from the columns of $2G^{-1}$ (the source's ``dualize`` lambda);
-      ``sterks3`` re-derives them from $G^{-1}$ (old line 611). Using one scaling
-      throughout silently changes every ``a_i d`` vector.
-    - ``a9``..``a13`` are **rebound between blocks**, so each configuration must be
-      built before the next block's assignments happen.
-    - The lists were written ``[a1, ..., a12]`` with an ellipsis in a *list literal*,
-      which Sage does not expand for lattice elements; the ranges are spelled out here.
+        sage: from dzack_research.preamble.sterk import sterks_in_ten
+        sage: [len(roots) for roots in sterks_in_ten().values()]
+        [12, 10, 12]
     """
     basis, _, matrix_gram = ten_frames()
     e, f, ep, fp = basis["e"], basis["f"], basis["ep"], basis["fp"]
     a = {i: basis[f"a{i}"] for i in range(1, 9)}
 
-    # sterks1 / sterks2: dual frame scaled by 2, per the source's ``dualize`` lambda.
+    # The first two configurations use columns of 2G^-1.
     doubled = (2 * matrix_gram.inverse()).columns()
     ad2 = {i: doubled[i + 3] for i in range(1, 9)}
 
@@ -487,7 +440,7 @@ def sterks_in_ten() -> dict[str, tuple[Any, ...]]:
     )
     sterks2 = tuple(a[i] for i in range(1, 9)) + (ad2[8] + 2 * f, e - f)
 
-    # sterks3: dual frame NOT scaled (old line 611 re-derives from Ginv).
+    # The third configuration uses columns of G^-1.
     plain = matrix_gram.inverse().columns()
     ad1 = {i: plain[i + 3] for i in range(1, 9)}
 
@@ -506,45 +459,27 @@ def sterks_in_ten() -> dict[str, tuple[Any, ...]]:
     return configurations
 
 
-#: The explicit rank-10 root matrix recorded at old lines 845-861, kept as data. The
-#: source gives no lattice for it beyond its position in the file, next to the
-#: ``IIPQ(1,17)`` citation, so it is not interpreted here -- only preserved.
-RECORDED_ROOT_MATRIX_ROWS: tuple[tuple[int, ...], ...] = (
-    (0, 0, 0, 0, 0, 0, 0, 0, 0, -1),
-    (0, 2, 0, 0, -2, -1, -4, -3, -2, -1),
-    (1, -1, 0, 0, 0, 0, 0, 0, 0, 0),
-    (4, 4, 0, 0, -10, -5, -21, -17, -13, -9),
-    (-6, -6, 1, 0, 16, 7, 31, 25, 19, 13),
-)
-
-
 def isotropic_vectors() -> dict[str, Any]:
-    r"""Isotropic vectors the source computed alongside the root configurations.
+    r"""Return the recorded isotropic vectors.
 
-    ``s4_12 = v_{22} + v_{21}`` (old line 559) was computed and then left out of the
-    Sterk 4 list at line 561. That is not an oversight and not dead code: its norm is
-    $0$, so it is not a root -- the roots in these configurations have norm $-2$ or
-    $-4$. An isotropic vector in the closure of the fundamental cone is a **cusp**, an
-    ideal vertex of the hyperbolic polyhedron, which is a different kind of object
-    from a facet and so has no place in a root list.
+    EXAMPLES::
 
-    It is recorded here because the source recorded it. The old file was as much a
-    log of what was computed as a library, and a vector the author derived is a
-    finding whether or not a later list used it.
-
-    Note also that $v_{21}$ and $v_{22}$ appear as separate *roots* in Sterk 1
-    (``s1_10``, ``s1_11``) and Sterk 5 (``s5_13``, ``s5_14``); it is specifically
-    their sum, formed only in the Sterk 4 block, that is isotropic.
+        sage: from dzack_research.preamble.sterk import bilinear_form, isotropic_vectors
+        sage: v = isotropic_vectors()["s4_12"]
+        sage: bilinear_form(v, v)
+        0
     """
     v = roots_18_2_0()
     vectors = {"s4_12": v["v22"] + v["v21"]}
 
     for name, vector_ in vectors.items():
         norm = bilinear_form(vector_, vector_)
-        assert norm == 0, f"{name} was recorded as isotropic but has norm {norm}; if this changes, it may be a root and the Sterk 4 count needs revisiting"
+        assert norm == 0, (
+            f"{name} was recorded as isotropic but has norm {norm}; if this changes, it may be a root and the Sterk 4 count needs revisiting"
+        )
     return vectors
 
 
 def gram_of(roots: tuple[Any, ...]) -> Any:
-    """Gram matrix of a root configuration, for feeding the Coxeter diagram."""
+    """Return the Gram matrix of a root configuration."""
     return matrix(QQ, [[bilinear_form(x, y) for y in roots] for x in roots])
