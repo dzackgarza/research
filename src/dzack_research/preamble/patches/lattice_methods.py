@@ -109,12 +109,14 @@ def q(self: Any, x: Any) -> Any:
 
 def b(self: Any, x: Any, y: Any) -> Any:
     r"""Return the pairing $\langle x,y\rangle=x^TGy$."""
-    from sage.rings.rational_field import QQ
-
-    gram = self.gram_matrix().change_ring(QQ)
-    left = x.value if hasattr(x, "value") else getattr(x, "vector", lambda: x)()
-    right = y.value if hasattr(y, "value") else getattr(y, "vector", lambda: y)()
-    return left * gram * right
+    gram = self.gram_matrix()
+    left = getattr(x, "value", x)
+    right = getattr(y, "value", y)
+    if callable(left):
+        left = left()
+    if callable(right):
+        right = right()
+    return (left * gram).dot_product(right)
 
 
 def div(self: Any, x: Any) -> Any:
@@ -436,8 +438,12 @@ class LatticeElement(ModuleElement):
         ModuleElement.__init__(self, parent)
         if isinstance(value, LatticeElement):
             self.value = value.value
+        elif isinstance(value, Vector):
+            self.value = value
+        elif hasattr(parent, "ambient"):
+            self.value = parent.ambient()(value)
         else:
-            self.value = parent.ambient()(value) if hasattr(parent, "ambient") else value
+            self.value = value
 
     def _repr_(self) -> str:
         return repr(self.value)
@@ -490,6 +496,9 @@ class LatticeElement(ModuleElement):
         return self.parent()(self.value * other)
 
     def __rmul__(self, other: Any) -> Any:
+        if isinstance(other, (LatticeElement, Vector)):
+            vec_other = other.value if isinstance(other, LatticeElement) else other
+            return self.parent().b(vec_other, self.value)
         return self.parent()(other * self.value)
 
     def __pow__(self, exp: Any, mod: Any = None) -> Any:
@@ -501,6 +510,15 @@ class LatticeElement(ModuleElement):
         if isinstance(other, LatticeElement):
             return self.value == other.value
         return self.value == other
+
+    def div(self) -> Any:
+        return self.parent().div(self)
+
+    def q(self) -> Any:
+        return self.parent().q(self)
+
+    def b(self, other: Any) -> Any:
+        return self.parent().b(self, other)
 
 
 def _patched_call(self: Any, *args: Any, **kwargs: Any) -> Any:
