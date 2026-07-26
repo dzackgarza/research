@@ -109,14 +109,9 @@ def q(self: Any, x: Any) -> Any:
 
 def b(self: Any, x: Any, y: Any) -> Any:
     r"""Return the pairing $\langle x,y\rangle=x^TGy$."""
-    gram = self.gram_matrix()
-    left = getattr(x, "value", x)
-    right = getattr(y, "value", y)
-    if callable(left):
-        left = left()
-    if callable(right):
-        right = right()
-    return (left * gram).dot_product(right)
+    vx = getattr(x, "value", x)
+    vy = getattr(y, "value", y)
+    return (vx * self.gram_matrix()).dot_product(vy)
 
 
 def div(self: Any, x: Any) -> Any:
@@ -130,9 +125,7 @@ def div(self: Any, x: Any) -> Any:
 
 def dual_basis(self: Any) -> Any:
     r"""Return the columns of $G^{-1}$ as the dual basis."""
-    from sage.rings.rational_field import QQ
-
-    gram = self.gram_matrix().change_ring(QQ)
+    gram = self.gram_matrix()
     columns = gram.inverse().columns()
     for i, basis_vector in enumerate(self.basis()):
         for j, dual_vector in enumerate(columns):
@@ -180,11 +173,95 @@ def I_perp_mod_I(self: Any, vectors: Any) -> Any:
     quotient = perp / isotropic
 
     lifts = [generator.lift() for generator in quotient.gens()]
-    induced = matrix(ZZ, [[(u * gram * v) for v in lifts] for u in lifts])
-    assert induced.is_symmetric(), "induced form is not symmetric"
-    if induced.nrows() == 0:
-        return induced
-    return IntegralLattice(induced)
+    sub_basis = [
+        self.element_class(self, sum(coeff * base for coeff, base in zip(lift, self.basis())))
+        for lift in lifts
+    ]
+    return sub_basis
+
+
+from sage.structure.element import Matrix, ModuleElement, Vector
+
+_original_call: Any = None
+_original_gens: Any = None
+
+
+class LatticeElement(ModuleElement):
+    r"""Wrapper for lattice elements that implements bilinear pairing as multiplication.
+
+    Multiplication ``v * w`` computes ``b(v, w)``, ``v * v`` computes ``q(v)``,
+    and exponentiation ``v ** 2`` or ``v ^ 2`` computes ``q(v)``.
+    """
+
+    def __init__(self, parent: Any, value: Any) -> None:
+        ModuleElement.__init__(self, parent)
+        if hasattr(value, "value"):
+            self.value = value.value
+        elif isinstance(value, Vector):
+            self.value = value
+        elif hasattr(parent, "ambient"):
+            self.value = parent.ambient()(value)
+        else:
+            self.value = value
+
+    def _repr_(self) -> str:
+        return repr(self.value)
+
+    def _latex_(self) -> str:
+        from sage.misc.latex import latex
+
+        return str(latex(self.value))
+
+    def list(self) -> list:
+        return list(self.value)
+
+    def _vector_(self, R: Any = None) -> Any:
+        if R is not None:
+            return self.value.change_ring(R)
+        return self.value
+
+    def __iter__(self) -> Any:
+        return iter(self.value)
+
+    def __getitem__(self, i: Any) -> Any:
+        return self.value[i]
+
+    def __len__(self) -> int:
+        return len(self.value)
+
+    def __add__(self, other: Any) -> Any:
+        v_other = other.value if hasattr(other, "value") else other
+        return self.parent()(self.value + v_other)
+
+    def __radd__(self, other: Any) -> Any:
+        return self.__add__(other)
+
+    def __sub__(self, other: Any) -> Any:
+        v_other = other.value if hasattr(other, "value") else other
+        return self.parent()(self.value - v_other)
+
+    def __rsub__(self, other: Any) -> Any:
+        v_other = other.value if hasattr(other, "value") else other
+        return self.parent()(v_other - self.value)
+
+    def __neg__(self) -> Any:
+        return self.parent()(-self.value)
+
+    def __mul__(self, other: Any) -> Any:
+        if isinstance(other, Matrix):
+            return self.value * other
+        if isinstance(other, (LatticeElement, Vector)):
+            vec_other = other.value if hasattr(other, "value") else other
+            return self.parent().b(self.value, vec_other)
+        return self.parent()(self.value * other)
+
+    def __rmul__(self, other: Any) -> Any:
+        if isinstance(other, Matrix):
+            return other * self.value
+        if isinstance(other, (LatticeElement, Vector)):
+            vec_other = other.value if hasattr(other, "value") else other
+            return self.parent().b(vec_other, self.value)
+        return self.parent()(other * self.value)
 
 
 def e_perp_mod_e(self: Any, vector_: Any) -> Any:
