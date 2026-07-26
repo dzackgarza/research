@@ -1,21 +1,12 @@
-r"""Lattice methods the old init.sage called but Sage does not provide.
+r"""Install additional methods on Sage integral lattices.
 
-The old init.sage was written against a fork of Sage carrying heavy modifications to
-the lattice machinery. This module re-supplies that surface, inferred from how the
-source used it: ``q``, ``b``, ``div``, ``dual_basis``, ``e_perp_mod_e``,
-``I_perp_mod_I``, ``is_isometric``, ``to_lin_comb_generators``, ``sublattices``, the
-``names=`` constructor keyword behind the ``L.<...>`` generator sugar, and ``@``/``**``
-as direct sum and power. None of it exists in upstream Sage, so every one of those
-call sites raised on this machine -- most visibly the block of theorem statements at
-old lines 365-388, which could never have run.
+EXAMPLES::
 
-Same placement caveat as ``predicates.py``: the lattice spike is where these notions
-belong, sited on the lattice object through the lexicon rather than bolted onto
-Sage's class from outside. This is the interim surface that makes the source's own
-claims checkable; it is not the destination.
-
-``predicates.e_perp_mod_e`` is the free-function form of the single-vector case;
-:func:`I_perp_mod_I` here is the general one and the two agree by construction.
+    sage: from dzack_research.preamble import catalogue, patches
+    sage: patches.install("lattice_methods")
+    sage: catalogue.U.q(catalogue.U.gens()[0])
+    0
+    sage: patches.uninstall("lattice_methods")
 """
 
 from __future__ import annotations
@@ -33,17 +24,12 @@ _METHODS = (
     "with_names",
     "to_lin_comb_generators",
     "sublattices",
+    "_latex_",
 )
 
 
 def _expand_names(spec: str, rank: int) -> tuple[str, ...]:
-    r"""Expand a basis-name spec into exactly ``rank`` names.
-
-    Accepts ``"a1..a8"`` (a range) or ``"e, f, ep, fp"`` (an explicit list), or a
-    mixture: ``"e, f, a1..a8"``. This is the programmatic form; the generator syntax
-    ``L.<a1, ..., a8> = IntegralLattice(...)`` is wired up too and expands the same
-    way. See ``tests/test_lattice_generator_syntax.sage``.
-    """
+    r"""Expand indexed ranges in a basis-name specification."""
     import re
 
     names: list[str] = []
@@ -58,34 +44,30 @@ def _expand_names(spec: str, rank: int) -> tuple[str, ...]:
             assert re.fullmatch(r"[A-Za-z_]\w*", piece), f"not a valid name: {piece!r}"
             names.append(piece)
 
-    assert len(names) == rank, f"spec {spec!r} gives {len(names)} names but the lattice has rank {rank}"
+    assert len(names) == rank, (
+        f"spec {spec!r} gives {len(names)} names but the lattice has rank {rank}"
+    )
     assert len(set(names)) == len(names), f"duplicate names in {spec!r}"
     return tuple(names)
 
 
 def with_names(self: Any, spec: str) -> Any:
-    r"""Attach basis names to this lattice and return it, for readable notation.
+    r"""Attach basis names and return the lattice.
 
-    The programmatic twin of ``L.<e1, ..., en> = IntegralLattice(...)``, which this
-    patch also makes work: it supplies the ``names=`` keyword the preparser emits and
-    expands the ellipsis range that Sage leaves as a literal ``'Ellipsis'``.
+    EXAMPLES::
 
-        L = IntegralLattice("E8").with_names("a1..a8")
-        L.inject_variables()      # a1, ..., a8 now in scope
-
-    The rank check is the point: a spec whose length disagrees with the rank fails
-    loudly, where the Sage sugar would have silently given three generators.
+        sage: from dzack_research.preamble import catalogue, patches
+        sage: patches.install("lattice_methods")
+        sage: catalogue.E8.with_names("a1..a8").variable_names()
+        ('a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8')
+        sage: patches.uninstall("lattice_methods")
     """
     self._assign_names(_expand_names(spec, self.rank()))
     return self
 
 
 def to_lin_comb_generators(self: Any, element: Any) -> str:
-    r"""Write an element as a linear combination of the named basis.
-
-    ``run_vin`` used this to label roots. Requires names to have been assigned; says
-    so rather than inventing indices.
-    """
+    r"""Return an element as a linear combination of the named basis."""
     names = self.variable_names()
     coordinates = self.coordinate_vector(element)
     assert len(names) == len(coordinates), "name count does not match the rank"
@@ -104,11 +86,7 @@ def to_lin_comb_generators(self: Any, element: Any) -> str:
 
 
 def sublattices(self: Any) -> dict:
-    r"""A per-instance dict for recording named sublattices.
-
-    Old line 358 does ``TEn.sublattices.update({...})``, which needs the attribute to
-    already exist. Created lazily on first access.
-    """
+    r"""Return the per-instance dictionary of named sublattices."""
     existing = self.__dict__.get("_sublattices")
     if existing is None:
         existing = {}
@@ -130,11 +108,7 @@ def q(self: Any, x: Any) -> Any:
 
 
 def b(self: Any, x: Any, y: Any) -> Any:
-    r"""The bilinear form $\langle x, y\rangle = x^{T} G y$.
-
-    Accepts either lattice elements or plain coordinate vectors, because the source's
-    configurations mix basis vectors with dual vectors and the latter are rational.
-    """
+    r"""Return the pairing $\langle x,y\rangle=x^TGy$."""
     from sage.rings.rational_field import QQ
 
     gram = self.gram_matrix().change_ring(QQ)
@@ -144,12 +118,7 @@ def b(self: Any, x: Any, y: Any) -> Any:
 
 
 def div(self: Any, x: Any) -> Any:
-    r"""The divisor of $x$: the positive generator of $\{\langle x, y\rangle : y \in L\}$.
-
-    Old lines 366, 373, 386 assert ``div(e) == 1``, ``div(ep) == 2``, ``div(vp) == 2``.
-    Computed as the gcd of the pairings of $x$ against a basis, which generates that
-    ideal because pairing is linear.
-    """
+    r"""Return the positive generator of $\{\langle x,y\rangle:y\in L\}$."""
     from sage.arith.misc import gcd
 
     pairings = [self.b(x, basis_vector) for basis_vector in self.basis()]
@@ -159,11 +128,7 @@ def div(self: Any, x: Any) -> Any:
 
 
 def dual_basis(self: Any) -> Any:
-    r"""Columns of $G^{-1}$: the frame dual to the given basis.
-
-    Asserts the defining property $\langle b_i, d_j\rangle = \delta_{ij}$, which the
-    source took on faith when it wrote ``Gram.inverse().columns()``.
-    """
+    r"""Return the columns of $G^{-1}$ as the dual basis."""
     from sage.rings.rational_field import QQ
 
     gram = self.gram_matrix().change_ring(QQ)
@@ -171,18 +136,22 @@ def dual_basis(self: Any) -> Any:
     for i, basis_vector in enumerate(self.basis()):
         for j, dual_vector in enumerate(columns):
             expected = 1 if i == j else 0
-            assert self.b(basis_vector, dual_vector) == expected, f"dual basis is wrong at ({i}, {j})"
+            assert self.b(basis_vector, dual_vector) == expected, (
+                f"dual basis is wrong at ({i}, {j})"
+            )
     return columns
 
 
 def I_perp_mod_I(self: Any, vectors: Any) -> Any:
-    r"""$I^{\perp} / I$ for an isotropic sublattice $I = \langle vectors\rangle$.
+    r"""Return $I^\perp/I$ for the isotropic sublattice spanned by ``vectors``.
 
-    The general form of ``e_perp_mod_e``. Old lines 378 and 384 call it on pairs.
+    EXAMPLES::
 
-    Taken at module level: an isotropic $I$ satisfies $I \subseteq I^{\perp}$, so
-    $I^{\perp}$ is always a degenerate lattice and Sage refuses to build one. Only the
-    quotient is nondegenerate.
+        sage: from dzack_research.preamble import catalogue, patches
+        sage: patches.install("lattice_methods")
+        sage: catalogue.U.I_perp_mod_I([catalogue.U.gens()[0]])
+        []
+        sage: patches.uninstall("lattice_methods")
     """
     from sage.matrix.constructor import matrix
     from sage.modules.free_module import FreeModule
@@ -197,13 +166,15 @@ def I_perp_mod_I(self: Any, vectors: Any) -> Any:
     for i, left in enumerate(coordinate_rows):
         for j, right in enumerate(coordinate_rows):
             pairing = self.b(left, right)
-            assert pairing == 0, f"I must be isotropic: <v{i}, v{j}> = {pairing}, expected 0"
+            assert pairing == 0, (
+                f"I must be isotropic: <v{i}, v{j}> = {pairing}, expected 0"
+            )
 
     gram = self.gram_matrix()
-    ambient = FreeModule(ZZ, self.rank())
+    free_module = FreeModule(ZZ, self.rank())
     pairing_matrix = matrix(ZZ, [gram * row for row in coordinate_rows])
-    perp = ambient.submodule(pairing_matrix.right_kernel().basis())
-    isotropic = ambient.submodule(coordinate_rows)
+    perp = free_module.submodule(pairing_matrix.right_kernel().basis())
+    isotropic = free_module.submodule(coordinate_rows)
     quotient = perp / isotropic
 
     lifts = [generator.lift() for generator in quotient.gens()]
@@ -220,17 +191,15 @@ def e_perp_mod_e(self: Any, vector_: Any) -> Any:
 
 
 def is_isometric(self: Any, other: Any) -> bool:
-    r"""Whether two integral lattices are isometric.
+    r"""Return whether two integral lattices are isometric.
 
-    Rank and signature are checked first as cheap necessary conditions. Beyond that
-    the two cases are genuinely different, and this does not pretend otherwise:
+    EXAMPLES::
 
-    - **Definite**: decided exactly, via Sage's ``QuadraticForm`` global equivalence.
-    - **Indefinite**: compared by *genus*. Genus equality is necessary always, and is
-      also sufficient for indefinite lattices of rank at least 3 by Eichler's strong
-      approximation theorem -- so the answer is exact there. For indefinite rank 2 it
-      is not sufficient, and this asserts rather than returning a value it cannot
-      justify.
+        sage: from dzack_research.preamble import catalogue, patches
+        sage: patches.install("lattice_methods")
+        sage: catalogue.E8.is_isometric(catalogue.E8)
+        True
+        sage: patches.uninstall("lattice_methods")
     """
     from sage.quadratic_forms.quadratic_form import QuadraticForm
 
@@ -254,7 +223,9 @@ def is_isometric(self: Any, other: Any) -> bool:
 
         def _binary(lattice: Any) -> Any:
             gram = lattice.gram_matrix()
-            assert gram[0, 0] % 2 == 0 and gram[1, 1] % 2 == 0, "binary form conversion needs an even lattice"
+            assert gram[0, 0] % 2 == 0 and gram[1, 1] % 2 == 0, (
+                "binary form conversion needs an even lattice"
+            )
             return BinaryQF([gram[0, 0] // 2, gram[0, 1], gram[1, 1] // 2])
 
         return bool(_binary(self).is_equivalent(_binary(other)))
@@ -262,15 +233,39 @@ def is_isometric(self: Any, other: Any) -> bool:
     return bool(self.genus() == other.genus())
 
 
-def _expand_ellipsis_names(names: tuple[str, ...]) -> tuple[str, ...]:
-    r"""Expand ``('a1', 'Ellipsis', 'a8')`` into ``('a1', 'a2', ..., 'a8')``.
+def _latex_(self: Any) -> str:
+    r"""Return multi-line LaTeX representation with base ring, rank, signature, and Gram matrix.
 
-    Sage's preparser turns ``L.<a1,...,a8>`` into a ``names`` tuple whose middle entry
-    is the literal string ``'Ellipsis'``; it does not expand the range itself. Nothing
-    in Sage attaches meaning to that slot, so it is free to hijack -- which is what
-    makes ``L.<a1, ..., a8> = IntegralLattice(...)`` deliverable as real sugar rather
-    than a trap.
+    EXAMPLES::
+
+        sage: from dzack_research.preamble import catalogue, patches
+        sage: patches.install("lattice_methods")
+        sage: from sage.misc.latex import latex
+        sage: print(latex(catalogue.U))
+        \begin{aligned}
+        &\text{Lattice over }\ZZ, \quad \mathrm{rk}(L) = 2, \quad \mathrm{sig}(L) = (1, 1) \\
+        &G_L = \left(\begin{array}{rr}
+        0 & 1 \\
+        1 & 0
+        \end{array}\right)
+        \end{aligned}
+        sage: patches.uninstall("lattice_methods")
     """
+    from sage.misc.latex import latex
+
+    rank = self.rank()
+    pos, neg = self.signature_pair()
+    gram_latex = latex(self.gram_matrix())
+    return (
+        f"\\begin{{aligned}}\n"
+        f"&\\text{{Lattice over }}\\ZZ, \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}) \\\\\n"
+        f"&G_L = {gram_latex}\n"
+        f"\\end{{aligned}}"
+    )
+
+
+def _expand_ellipsis_names(names: tuple[str, ...]) -> tuple[str, ...]:
+    r"""Expand ``('a1','Ellipsis','a8')`` through ``'a8'``."""
     import re
 
     expanded: list[str] = []
@@ -278,12 +273,18 @@ def _expand_ellipsis_names(names: tuple[str, ...]) -> tuple[str, ...]:
         if name != "Ellipsis":
             expanded.append(name)
             continue
-        assert 0 < index < len(names) - 1, f"'...' needs a name on each side; got {names}"
+        assert 0 < index < len(names) - 1, (
+            f"'...' needs a name on each side; got {names}"
+        )
         before, after = expanded[-1], names[index + 1]
         left = re.fullmatch(r"([A-Za-z_]+)(\d+)", before)
         right = re.fullmatch(r"([A-Za-z_]+)(\d+)", after)
-        assert left and right, f"'...' needs indexed names either side: {before}, {after}"
-        assert left.group(1) == right.group(1), f"'...' between different stems: {before} and {after}"
+        assert left and right, (
+            f"'...' needs indexed names either side: {before}, {after}"
+        )
+        assert left.group(1) == right.group(1), (
+            f"'...' between different stems: {before} and {after}"
+        )
         start, stop = int(left.group(2)), int(right.group(2))
         assert stop > start, f"'...' range does not ascend: {before}..{after}"
         expanded.extend(f"{left.group(1)}{i}" for i in range(start + 1, stop))
@@ -291,25 +292,21 @@ def _expand_ellipsis_names(names: tuple[str, ...]) -> tuple[str, ...]:
 
 
 def _first_ngens(self: Any, count: int) -> tuple[Any, ...]:
-    r"""Return generators matching the *declared* slots, not the first ``count``.
-
-    With ``L.<a1, ..., a8>`` the preparser emits ``(a1, Ellipsis, a8,) =
-    L._first_ngens(3)``. Sage's default would bind ``a8`` to the *third* generator.
-    This maps each declared slot to the generator that actually bears that name, so
-    ``a8`` is the eighth, and the ``Ellipsis`` slot receives the builtin, which
-    nothing reads.
-    """
+    r"""Return generators matching the declared name slots."""
     generators = self.gens()
     spec = getattr(self, "_ellipsis_spec", None)
     if spec is None or len(spec) != count:
         return tuple(generators[:count])
 
     names = list(self.variable_names())
-    return tuple(Ellipsis if slot == "Ellipsis" else generators[names.index(slot)] for slot in spec)
+    return tuple(
+        Ellipsis if slot == "Ellipsis" else generators[names.index(slot)]
+        for slot in spec
+    )
 
 
 def _matmul(self: Any, other: Any) -> Any:
-    r"""``L @ M`` as the orthogonal direct sum, the old init.sage's notation."""
+    r"""Return ``L @ M`` as the orthogonal direct sum."""
     return self.direct_sum(other)
 
 
@@ -327,7 +324,9 @@ def _apply_names(lattice: Any, names: Any) -> Any:
     """Expand a declared name tuple onto a lattice, checking it against the rank."""
     declared = tuple(names)
     expanded = _expand_ellipsis_names(declared)
-    assert len(expanded) == lattice.rank(), f"{declared} expands to {len(expanded)} names but the lattice has rank {lattice.rank()}"
+    assert len(expanded) == lattice.rank(), (
+        f"{declared} expands to {len(expanded)} names but the lattice has rank {lattice.rank()}"
+    )
     lattice._assign_names(expanded)
     lattice._ellipsis_spec = declared
     return lattice
@@ -337,12 +336,7 @@ _original_direct_sum: Any = None
 
 
 def _direct_sum(self: Any, *others: Any, names: Any = None, **kwargs: Any) -> Any:
-    r"""``direct_sum`` accepting ``names=``.
-
-    Needed because the preparser appends the keyword to the *last call* of the
-    right-hand side, so ``L.<e,f,a1,...,a8> = U.direct_sum(E8)`` sends ``names`` here
-    rather than to the ``IntegralLattice`` constructor.
-    """
+    r"""Call ``direct_sum`` and apply an optional ``names=`` specification."""
     result = _original_direct_sum(self, *others, **kwargs)
     return result if names is None else _apply_names(result, names)
 
@@ -377,13 +371,15 @@ def _patched_integral_lattice(*args: Any, names: Any = None, **kwargs: Any) -> A
 
 
 def install() -> None:
-    """Attach every method and the constructor keyword, asserting each one took.
+    """Install the lattice methods and constructor support.
 
-    **Known limitation:** patching rebinds ``IntegralLattice`` in ``sage.all`` and in
-    its defining module. Interactive use resolves the name at call time, so the sugar
-    works there. A module that did ``from ... import IntegralLattice`` *before*
-    installing keeps the original reference and sees no patch -- import lazily, or
-    install first.
+    EXAMPLES::
+
+        sage: from dzack_research.preamble import patches
+        sage: patches.install("lattice_methods")
+        sage: "lattice_methods" in patches.installed()
+        True
+        sage: patches.uninstall("lattice_methods")
     """
     global _original_integral_lattice, _original_direct_sum, _original_twist
 
@@ -411,7 +407,7 @@ def install() -> None:
 
 
 def uninstall() -> None:
-    """Detach them all, restoring Sage's own surface."""
+    """Restore Sage's original lattice classes and constructor."""
     target = _lattice_class()
     for name in (*_METHODS, *_CLASS_ATTRS):
         if hasattr(target, name):

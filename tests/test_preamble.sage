@@ -122,13 +122,13 @@ def test_s4_12_is_isotropic_not_a_root():
     assert sterk.bilinear_form(value, value) == 0
 
 
-def test_five_generating_isotropic_vectors():
+def test_five_selected_isotropic_vectors():
     """Why there are five Sterk cases."""
     sterk = _preamble()[5]
-    generators = sterk.generating_isotropic_vectors()
-    assert len(generators) == 5
+    selected_vectors = sterk.selected_isotropic_vectors()
+    assert len(selected_vectors) == 5
     _, _, gram = sterk.ten_frames()
-    for name, vector_ in generators.items():
+    for name, vector_ in selected_vectors.items():
         assert vector_ * gram * vector_ == 0, f"{name} is not isotropic"
 
 
@@ -260,10 +260,15 @@ def test_definiteness_predicates():
     assert not predicates.is_elliptic(catalogue.U)
 
 
-def test_coxeter_round_trip():
-    catalogue, coxeter, _, _, _, _ = _preamble()
-    graph = coxeter.matrix_to_quiver(catalogue.E8.gram_matrix())
-    assert coxeter.graph_to_matrix(graph) == catalogue.E8.gram_matrix()
+def test_coxeter_diagram_uses_the_owned_sage_parent():
+    _, coxeter, _, _, _, _ = _preamble()
+    from dzack_research import lattice
+
+    root_lattice = lattice.Lattice("E8")
+    diagram = root_lattice.coxeter_diagram()
+
+    assert diagram.category().is_subcategory(coxeter.CoxeterDiagrams())
+    assert diagram.coxeter_matrix() == CoxeterMatrix(["E", 8])
 
 
 def test_diagram_layouts_match_root_counts():
@@ -313,7 +318,7 @@ def test_sterks1_and_sterks3_use_different_dual_scalings():
     _, _, gram = sterk.ten_frames()
     doubled = (2 * gram.inverse()).columns()
     plain = gram.inverse().columns()
-    assert doubled[4] == 2 * plain[4], "the two dual frames must differ by a factor 2"
+    assert doubled[4] == 2 * plain[4], "the two dual bases must differ by a factor 2"
 
 
 def test_recorded_root_matrix_is_preserved():
@@ -364,6 +369,20 @@ def test_twist_accepts_names():
         patches.uninstall("lattice_methods")
 
 
+def test_lattice_latex_representation():
+    catalogue, _, _, patches, _, _ = _preamble()
+    patches.install("lattice_methods")
+    try:
+        from sage.misc.latex import latex
+        u_latex = str(latex(catalogue.U))
+        assert r"Lattice over" in u_latex
+        assert r"\mathrm{rk}(L) = 2" in u_latex
+        assert r"\mathrm{sig}(L) = (1, 1)" in u_latex
+        assert r"G_L =" in u_latex
+    finally:
+        patches.uninstall("lattice_methods")
+
+
 def test_run_vin_negates_roots_when_it_twists():
     """The source typo (``do_twist`` set, ``doTwist`` tested) disabled this branch."""
     catalogue, _, _, patches, _, _ = _preamble()
@@ -405,3 +424,36 @@ def test_install_reports_every_stanza_it_ran():
     assert "vendor_paths" in report
     assert "red_tracebacks" not in report
     assert "gap_package_manager" not in report
+
+
+def test_julia_preamble_calls_oscar_with_a_sage_matrix():
+    from dzack_research.preamble import julia as julia_preamble
+
+    gram = julia_preamble.BONDS["bond1"]
+    assert julia_preamble.oscar_call("rank", gram) == 2
+
+    julia_preamble.julia.set("_preamble_round_trip", gram)
+    converted_back = julia_preamble.julia.get_sage("_preamble_round_trip")
+    assert converted_back == gram
+    assert converted_back.base_ring() is gram.base_ring()
+
+
+def test_static_preamble_data_has_one_fixture_owner():
+    from dzack_research.preamble import catalogue, coxeter, fixtures, involutions, sterk
+    from dzack_research.preamble import julia as julia_preamble
+
+    assert julia_preamble.BONDS is fixtures.BONDS
+    assert coxeter.DIAGRAM_CONVENTION is fixtures.DIAGRAM_CONVENTION
+    assert coxeter.CROSS_CHECK_RECIPES is fixtures.CROSS_CHECK_RECIPES
+    assert coxeter.STERK_POSITIONS is fixtures.STERK_POSITIONS
+    assert coxeter.STERK_ROOT_COUNTS is fixtures.STERK_ROOT_COUNTS
+    assert involutions.BASIS_NAMES is fixtures.K3_BASIS_NAMES
+    assert sterk.STERK_ROOT_COUNTS is fixtures.STERK_ROOT_COUNTS
+    assert sterk.STERK_PUBLISHED is fixtures.STERK_PUBLISHED
+    assert sterk.COMPUTED_ROOT_COUNTS is fixtures.COMPUTED_ROOT_COUNTS
+    assert sterk.RECORDED_ROOT_MATRIX_ROWS is fixtures.RECORDED_ROOT_MATRIX_ROWS
+    assert catalogue.RECORDED_RESULTS is fixtures.RECORDED_RESULTS
+    assert catalogue.CITATIONS is fixtures.CITATIONS
+    assert catalogue.TWO_ELEMENTARY_8_6_0_INVARIANTS is fixtures.TWO_ELEMENTARY_8_6_0_INVARIANTS
+    assert catalogue.TWO_ELEMENTARY_BUILDING_BLOCKS is fixtures.TWO_ELEMENTARY_BUILDING_BLOCKS
+    assert catalogue.UNBUILT_TWO_ELEMENTARY is fixtures.UNBUILT_TWO_ELEMENTARY
