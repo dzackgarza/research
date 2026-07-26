@@ -95,7 +95,21 @@ For a functor
 $$
 F\colon B\longrightarrow\mathbf{Cat}_{\infty,\infty},
 $$
-define $\int_BF\to B$ by pulling back $p_{\mathcal V}$ along $F$.
+define $\int_BF\to B$ by the cartesian square
+\begin{tikzcd}
+\displaystyle\int_BF
+  \arrow[r]
+  \arrow[d, "q_F"']
+&
+\widetilde{\mathbf{Cat}}_{\infty,\infty}
+  \arrow[d, "p_{\mathcal V}"]
+\\
+B
+  \arrow[r, "F"']
+  \arrow[ru, phantom, very near start, "\lrcorner"]
+&
+\mathbf{Cat}_{\infty,\infty}.
+\end{tikzcd}
 For a point $b\colon *\to B$, the fiber of $\int_BF\to B$ over $b$ is $\int_* (F\circ b)$.
 A point of the family $F$ over $b$ is a point
 $$
