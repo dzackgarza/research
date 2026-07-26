@@ -1,7 +1,7 @@
 # Higher categories and universes {#sec-higher-categories-universes}
 
 ::: {#def-universe}
-## Universe fibrations
+## Universe and decoded objects
 
 Work in an external cartesian closed $(\infty,\infty)$-category $\mathcal K$ with pullbacks and terminal object $*$.
 Fix a monoidal closed $(\infty,\infty)$-category $\mathcal U$ internal to $\mathcal K$, and use its canonical self-enrichment.
@@ -9,69 +9,200 @@ Fix a universe fibration
 $$
 p_{\mathcal U}\colon\widetilde{\mathcal U}\longrightarrow\mathcal U.
 $$
-For a functor $F\colon B\to\mathcal U$, its category of elements is the cartesian pullback
+A morphism $q\colon E\to B$ in $\mathcal K$ is *$\mathcal U$-small* if there is an arrow $\chi_q\colon B\to\mathcal U$ and a cartesian square
 \begin{tikzcd}
-\displaystyle\int_BF
-  \arrow[r]
-  \arrow[d, "q_F"']
+E
+  \arrow[r, "\widetilde\chi_q"]
+  \arrow[d, "q"']
 &
 \widetilde{\mathcal U}
   \arrow[d, "p_{\mathcal U}"]
 \\
 B
+  \arrow[r, "\chi_q"']
+  \arrow[ru, phantom, very near start, "\lrcorner"]
+&
+\mathcal U.
+\end{tikzcd}
+The universe fibration classifies these morphisms: base change induces an equivalence of higher categories
+$$
+[B,\mathcal U]_{\mathcal K}
+\simeq
+\mathcal K^{\mathcal U\text{-small}}_{/B},
+$$
+where the right-hand side is the replete full higher subcategory of $\mathcal K_{/B}$ on the $\mathcal U$-small morphisms.
+
+For a point $h_A\colon *\to\mathcal U$, define its decoded object by the cartesian square
+\begin{tikzcd}
+A:=\displaystyle\int_*h_A
+  \arrow[r, "\widetilde h_A"]
+  \arrow[d, "!_A"']
+&
+\widetilde{\mathcal U}
+  \arrow[d, "p_{\mathcal U}"]
+\\
+*
+  \arrow[r, "h_A"']
+  \arrow[ru, phantom, very near start, "\lrcorner"]
+&
+\mathcal U.
+\end{tikzcd}
+Assume that these pullbacks extend to a decoding functor
+$$
+\operatorname{Dec}_{\mathcal U}\colon\mathcal U\longrightarrow\mathcal K,
+\qquad
+\operatorname{Dec}_{\mathcal U}(h_A)=A,
+$$
+which preserves the base-change squares used below.
+An object of the internal category $\mathcal U$ is specified by a point $b\colon *\to\mathcal U$; below the same symbol $b$ denotes that internal object, while $\operatorname{Dec}_{\mathcal U}(b)$ denotes its external decoding in $\mathcal K$.
+A point of $A$ is a $1$-cell $a\colon *\to A$ in $\mathcal K$.
+
+For points $x,y\colon *\to\mathcal U$, the self-enriched hom functor supplies a classifying point
+$$
+h_{[x,y]_{\mathcal U}}:=[-,-]_{\mathcal U}(x,y)\colon *\longrightarrow\mathcal U.
+$$
+Its external decoding, denoted $[x,y]_{\mathcal U}$, is defined by the cartesian square
+\begin{tikzcd}
+{\displaystyle [x,y]_{\mathcal U}:=\int_*h_{[x,y]_{\mathcal U}}}
+  \arrow[r, "\widetilde h_{[x,y]_{\mathcal U}}"]
+  \arrow[d, "!_{[x,y]_{\mathcal U}}"']
+&
+\widetilde{\mathcal U}
+  \arrow[d, "p_{\mathcal U}"]
+\\
+*
+  \arrow[r, "h_{[x,y]_{\mathcal U}}"']
+  \arrow[ru, phantom, very near start, "\lrcorner"]
+&
+\mathcal U.
+\end{tikzcd}
+The size convention, the universe fibration, and the decoding functor are interpreted in the fixed external category $\mathcal K$.
+:::
+
+::: {#def-family-classifier}
+## Families and classifiers
+
+For points $b,c\colon *\to\mathcal U$, a *family over $b$* is a $1$-cell
+$$
+G\colon c\longrightarrow b
+$$
+in $\mathcal U$.
+Equivalently, it is a point $g\colon *\to[c,b]_{\mathcal U}$.
+Writing $B:=\operatorname{Dec}_{\mathcal U}(b)$ and $C:=\operatorname{Dec}_{\mathcal U}(c)$, its decoded arrow is
+$$
+G^{\sharp}:=\operatorname{Dec}_{\mathcal U}(G)\colon C\longrightarrow B.
+$$
+Let $\mathcal M$ be a replete class of $1$-cells in $\mathcal U$ that is stable under base change.
+An *$\mathcal M$-family over $b$* is a family $G\colon c\to b$ that belongs to $\mathcal M$.
+Write $\mathcal M(b)$ for the replete full higher subcategory of $\mathcal U_{/b}$ on the $\mathcal M$-families.
+
+A *classifier for $\mathcal M$* is a $1$-cell
+$$
+p_{\mathcal M}\colon e_{\mathcal M}\longrightarrow b_{\mathcal M}
+$$
+for which base change induces an equivalence
+$$
+[b,b_{\mathcal M}]_{\mathcal U}
+\simeq
+\mathcal M(b)
+$$
+naturally in $b$.
+Explicitly, an $\mathcal M$-family $G\colon c\to b$ corresponds to a classifying $1$-cell $F\colon b\to b_{\mathcal M}$ and a cartesian square in $\mathcal U$
+\begin{tikzcd}
+c
+  \arrow[r, "\widetilde F"]
+  \arrow[d, "G"']
+&
+e_{\mathcal M}
+  \arrow[d, "p_{\mathcal M}"]
+\\
+b
   \arrow[r, "F"']
   \arrow[ru, phantom, very near start, "\lrcorner"]
 &
-\mathcal U .
+b_{\mathcal M}.
 \end{tikzcd}
-A morphism over $B$ is $\mathcal U$-small if it is equivalent over $B$ to $q_F$ for some $F\colon B\to\mathcal U$.
-The fibration $p_{\mathcal U}$ classifies these morphisms: base change induces an equivalence from $[B,\mathcal U]_{\mathcal K}$ to the replete full subcategory of $\mathcal K_{/B}$ on the $\mathcal U$-small morphisms.
-For a point $h_A\colon *\to\mathcal U$, write
-$$
-A:=\int_*h_A.
-$$
-A point of the decoded object $A$ is a functor $a\colon *\to A$.
-For points $x,y\colon *\to\mathcal U$, the self-enriched hom functor supplies a classifying point
-$$
-h_{[x,y]_{\mathcal U}}:=[-,-]_{\mathcal U}\circ(x,y)\colon *\longrightarrow\mathcal U,
-$$
-and its decoded internal hom-object is
-$$
-[x,y]_{\mathcal U}:=\int_*h_{[x,y]_{\mathcal U}}.
-$$
-The same definition applies to every decoded object, while a point of $\mathcal U$ is a functor $a\colon *\to\mathcal U$ in $\mathcal K$.
-The size convention and the universe fibration are interpreted in the fixed external category $\mathcal K$.
+The representing equivalence includes arrows and all higher cells between families, not only the existence of $F$.
 :::
 
 ::: {#def-higher-category}
 ## The category of higher categories
 
-Choose a point
+Let $\mathcal M_{\mathrm{cocart}}$ be the replete base-change-stable class of $1$-cells $G$ in $\mathcal U$ for which $\operatorname{Dec}_{\mathcal U}(G)$ is a $\mathcal U$-small cocartesian fibration in $\mathcal K$.
+Assume that it has a classifier
 $$
-h_{\mathcal V}\colon *\longrightarrow\mathcal U
+p_{\mathcal M_{\mathrm{cocart}}}\colon
+e_{\mathcal M_{\mathrm{cocart}}}
+\longrightarrow
+b_{\mathcal M_{\mathrm{cocart}}}.
 $$
-and write
+Use the classifier objects as the internal codes
+$$
+h_{\mathbf{Cat}_{\infty,\infty}}
+:=b_{\mathcal M_{\mathrm{cocart}}},
+\qquad
+h_{\widetilde{\mathbf{Cat}}_{\infty,\infty}}
+:=e_{\mathcal M_{\mathrm{cocart}}}.
+$$
+Define their external decodings by
 $$
 \mathbf{Cat}_{\infty,\infty}
+:=\operatorname{Dec}_{\mathcal U}(b_{\mathcal M_{\mathrm{cocart}}}),
+\qquad
+\widetilde{\mathbf{Cat}}_{\infty,\infty}
+:=\operatorname{Dec}_{\mathcal U}(e_{\mathcal M_{\mathrm{cocart}}}).
+$$
+These decodings are exhibited by the cartesian squares
+\begin{tikzcd}
+\mathbf{Cat}_{\infty,\infty}
+  \arrow[r, "\widetilde h_{\mathbf{Cat}_{\infty,\infty}}"]
+  \arrow[d, "!_{\mathbf{Cat}_{\infty,\infty}}"']
+&
+\widetilde{\mathcal U}
+  \arrow[d, "p_{\mathcal U}"]
+\\
+*
+  \arrow[r, "h_{\mathbf{Cat}_{\infty,\infty}}"']
+  \arrow[ru, phantom, very near start, "\lrcorner"]
+&
+\mathcal U
+\end{tikzcd}
+and
+\begin{tikzcd}
+\widetilde{\mathbf{Cat}}_{\infty,\infty}
+  \arrow[r, "\widetilde h_{\widetilde{\mathbf{Cat}}_{\infty,\infty}}"]
+  \arrow[d, "!_{\widetilde{\mathbf{Cat}}_{\infty,\infty}}"']
+&
+\widetilde{\mathcal U}
+  \arrow[d, "p_{\mathcal U}"]
+\\
+*
+  \arrow[r, "h_{\widetilde{\mathbf{Cat}}_{\infty,\infty}}"']
+  \arrow[ru, phantom, very near start, "\lrcorner"]
+&
+\mathcal U.
+\end{tikzcd}
+Decode the universal classifier to obtain
+$$
+p_{\mathcal V}
 :=
-\int_*h_{\mathcal V}.
-$$
-Equip $\mathbf{Cat}_{\infty,\infty}$ with a universe fibration
-$$
-p_{\mathcal V}\colon
+\operatorname{Dec}_{\mathcal U}(p_{\mathcal M_{\mathrm{cocart}}})
+\colon
 \widetilde{\mathbf{Cat}}_{\infty,\infty}
 \longrightarrow
 \mathbf{Cat}_{\infty,\infty}.
 $$
+The representing equivalence determines $h_{\mathbf{Cat}_{\infty,\infty}}$, and hence $\mathbf{Cat}_{\infty,\infty}$, up to equivalence as the classifier of small cocartesian families.
+
 A higher category is a point
 $$
 h_C\colon *\longrightarrow\mathbf{Cat}_{\infty,\infty}.
 $$
-Its decoded higher category is the category of elements
+Its decoded higher category is defined by the cartesian square
 \begin{tikzcd}
 C:=\displaystyle\int_*h_C
-  \arrow[r]
-  \arrow[d]
+  \arrow[r, "\widetilde h_C"]
+  \arrow[d, "!_C"']
 &
 \widetilde{\mathbf{Cat}}_{\infty,\infty}
   \arrow[d, "p_{\mathcal V}"]
@@ -82,40 +213,56 @@ C:=\displaystyle\int_*h_C
 &
 \mathbf{Cat}_{\infty,\infty}.
 \end{tikzcd}
-An object of $C$ is a point
-$$
-x\colon *\longrightarrow C.
-$$
+An object of $C$ is a point $x\colon *\to C$.
+When $C=\mathbf{Cat}_{\infty,\infty}$, such a point is itself the classifying point of a higher category, which is decoded by the same pullback.
+More generally, a functor $R\colon C\to\mathbf{Cat}_{\infty,\infty}$ sends a point $x\colon *\to C$ to the classifying point $R\circ x$ of a higher category.
 :::
 
 ::: {#def-grothendieck-construction}
-## Families and their points
+## Categorical families and categories of elements
 
-For a functor
+Let $G\colon c\to b$ be a family in $\mathcal U$, and write
 $$
-F\colon B\longrightarrow\mathbf{Cat}_{\infty,\infty},
+C:=\operatorname{Dec}_{\mathcal U}(c),
+\qquad
+B:=\operatorname{Dec}_{\mathcal U}(b),
+\qquad
+G^{\sharp}:=\operatorname{Dec}_{\mathcal U}(G)\colon C\to B.
 $$
-define $\int_BF\to B$ by the cartesian square
+It is an $\mathcal M_{\mathrm{cocart}}$-family precisely when it corresponds to a classifying $1$-cell
+$$
+F\colon b\longrightarrow b_{\mathcal M_{\mathrm{cocart}}}.
+$$
+Write
+$$
+F^{\sharp}:=\operatorname{Dec}_{\mathcal U}(F)
+\colon B\longrightarrow\mathbf{Cat}_{\infty,\infty}.
+$$
+Define its category of elements by the cartesian square
 \begin{tikzcd}
-\displaystyle\int_BF
-  \arrow[r]
-  \arrow[d, "q_F"']
+\displaystyle\int_BF^{\sharp}
+  \arrow[r, "\widetilde F^{\sharp}"]
+  \arrow[d, "q_{F^{\sharp}}"']
 &
 \widetilde{\mathbf{Cat}}_{\infty,\infty}
   \arrow[d, "p_{\mathcal V}"]
 \\
 B
-  \arrow[r, "F"']
+  \arrow[r, "F^{\sharp}"']
   \arrow[ru, phantom, very near start, "\lrcorner"]
 &
 \mathbf{Cat}_{\infty,\infty}.
 \end{tikzcd}
-For a point $b\colon *\to B$, the fiber of $\int_BF\to B$ over $b$ is $\int_* (F\circ b)$.
-A point of the family $F$ over $b$ is a point
+Decoding the classifier square identifies $G^{\sharp}$ with $q_{F^{\sharp}}$ over $B$, and hence identifies
 $$
-x\colon *\longrightarrow\int_*(F\circ b).
+C\simeq_B\int_BF^{\sharp}.
 $$
-For $B=*$ and $F=h_C$, this recovers the points $x\colon *\to C$ of @def-higher-category [@nlab:grothendieck_construction].
+For a point $s\colon *\to B$, the fiber over $s$ is $\int_*(F^{\sharp}\circ s)$.
+A point of the family over $s$ is a point
+$$
+x\colon *\longrightarrow\int_*(F^{\sharp}\circ s).
+$$
+For $B=*$ and $F^{\sharp}=h_C$, this recovers the points $x\colon *\to C$ of @def-higher-category [@nlab:grothendieck_construction].
 :::
 
 ::: {#def-internal-hom}
