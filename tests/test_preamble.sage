@@ -393,6 +393,9 @@ def test_lattice_latex_representation():
         a2_disc = catalogue.root_lattice("A", 2).discriminant_group().gram_matrix_quadratic()
         assert a2_disc.subdivisions() == ([], [])
 
+        ten_latex = str(latex(catalogue.TEn))
+        assert r"\mathrm{disc}(L) = 1024 = 2^{10}" in ten_latex
+
         ten_disc = catalogue.TEn.discriminant_group().gram_matrix_quadratic()
         assert ten_disc.subdivisions() == ([2], [2])
 

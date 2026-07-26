@@ -371,6 +371,21 @@ def _primary_gram_matrix_latex(A_disc: Any) -> str:
     return gram_str
 
 
+def _format_disc_latex(disc: Any) -> str:
+    r"""Format discriminant with prime factorization in LaTeX."""
+    d = int(disc)
+    if d in (-1, 0, 1):
+        return str(d)
+    from sage.arith.misc import factor
+    from sage.misc.latex import latex
+
+    f = factor(d)
+    f_latex = str(latex(f))
+    if f_latex == str(d):
+        return str(d)
+    return f"{d} = {f_latex}"
+
+
 def _latex_(self: Any) -> str:
     r"""Return multi-line LaTeX representation with category, rank, signature, discriminant, Gram matrix, and discriminant group.
 
@@ -398,6 +413,7 @@ def _latex_(self: Any) -> str:
     rank = self.rank()
     pos, neg = self.signature_pair()
     disc = self.gram_matrix().det()
+    disc_latex = _format_disc_latex(disc)
     gram_latex = str(latex(self.gram_matrix()))
     if ZERO_DOTS:
         gram_latex = re.sub(r"\b0\b", lambda m: r"\cdot", gram_latex)
@@ -410,7 +426,7 @@ def _latex_(self: Any) -> str:
     n_disc = A_disc.gram_matrix_quadratic().nrows()
     return (
         f"\\begin{{aligned}}\n"
-        f"&L \\in \\mathrm{{Lattices}}(\\ZZ), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc} \\\\\n"
+        f"&L \\in \\mathrm{{Lattices}}(\\ZZ), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc_latex} \\\\\n"
         f"&G_L = {gram_latex} \\\\\n"
         f"&A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Invariant factor decomposition)}} \\\\\n"
         f"&A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Primary decomposition)}} \\\\\n"
