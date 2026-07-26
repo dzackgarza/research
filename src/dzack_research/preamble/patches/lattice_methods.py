@@ -234,7 +234,7 @@ def is_isometric(self: Any, other: Any) -> bool:
 
 
 def _latex_(self: Any) -> str:
-    r"""Return multi-line LaTeX representation with base ring, rank, signature, discriminant, and Gram matrix.
+    r"""Return multi-line LaTeX representation with category, rank, signature, discriminant, and Gram matrix.
 
     EXAMPLES::
 
@@ -243,7 +243,7 @@ def _latex_(self: Any) -> str:
         sage: from sage.misc.latex import latex
         sage: print(latex(catalogue.U))
         \begin{aligned}
-        &\text{Lattice over }\ZZ, \quad \mathrm{rk}(L) = 2, \quad \mathrm{sig}(L) = (1, 1), \quad \mathrm{disc}(L) = -1 \\
+        &L \in \mathrm{Lattices}(\ZZ), \quad \mathrm{rk}(L) = 2, \quad \mathrm{sig}(L) = (1, 1), \quad \mathrm{disc}(L) = -1 \\
         &G_L = \left(\begin{array}{rr}
         0 & 1 \\
         1 & 0
@@ -259,7 +259,7 @@ def _latex_(self: Any) -> str:
     gram_latex = latex(self.gram_matrix())
     return (
         f"\\begin{{aligned}}\n"
-        f"&\\text{{Lattice over }}\\ZZ, \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc} \\\\\n"
+        f"&L \\in \\mathrm{{Lattices}}(\\ZZ), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc} \\\\\n"
         f"&G_L = {gram_latex}\n"
         f"\\end{{aligned}}"
     )

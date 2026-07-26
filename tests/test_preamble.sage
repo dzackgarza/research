@@ -375,7 +375,7 @@ def test_lattice_latex_representation():
     try:
         from sage.misc.latex import latex
         u_latex = str(latex(catalogue.U))
-        assert r"Lattice over" in u_latex
+        assert r"L \in \mathrm{Lattices}(\ZZ)" in u_latex
         assert r"\mathrm{rk}(L) = 2" in u_latex
         assert r"\mathrm{sig}(L) = (1, 1)" in u_latex
         assert r"\mathrm{disc}(L) = -1" in u_latex
