@@ -321,8 +321,25 @@ def set_zero_dots(enabled: bool = True) -> None:
     ZERO_DOTS = bool(enabled)
 
 
+def _format_disc_group_latex(invariants: tuple[int, ...]) -> str:
+    r"""Format invariant factors into LaTeX string like ``(\mathbb{Z}/2\mathbb{Z})^2 \oplus \mathbb{Z}/3\mathbb{Z}``."""
+    if not invariants:
+        return "0"
+    from collections import Counter
+
+    counts = Counter(invariants)
+    parts = []
+    for n in sorted(counts):
+        m = counts[n]
+        if m == 1:
+            parts.append(f"\\mathbb{{Z}}/{n}\\mathbb{{Z}}")
+        else:
+            parts.append(f"(\\mathbb{{Z}}/{n}\\mathbb{{Z}})^{{{m}}}")
+    return " \\oplus ".join(parts)
+
+
 def _latex_(self: Any) -> str:
-    r"""Return multi-line LaTeX representation with category, rank, signature, discriminant, and Gram matrix.
+    r"""Return multi-line LaTeX representation with category, rank, signature, discriminant, Gram matrix, and discriminant group.
 
     EXAMPLES::
 
@@ -335,7 +352,8 @@ def _latex_(self: Any) -> str:
         &G_L = \left(\begin{array}{rr}
         \cdot & 1 \\
         1 & \cdot
-        \end{array}\right)
+        \end{array}\right) \\
+        &A_L \cong 0
         \end{aligned}
         sage: patches.uninstall("lattice_methods")
     """
@@ -348,10 +366,23 @@ def _latex_(self: Any) -> str:
     gram_latex = str(latex(self.gram_matrix()))
     if ZERO_DOTS:
         gram_latex = re.sub(r"\b0\b", lambda m: r"\cdot", gram_latex)
+
+    A_disc = self.discriminant_group()
+    invs = A_disc.invariants()
+    disc_group_str = _format_disc_group_latex(invs)
+    if invs:
+        gram_q_latex = str(latex(A_disc.gram_matrix_quadratic()))
+        if ZERO_DOTS:
+            gram_q_latex = re.sub(r"\b0\b", lambda m: r"\cdot", gram_q_latex)
+        disc_line = f"&A_L \\cong {disc_group_str}, \\quad G_{{q_{{A_L}}}} = {gram_q_latex}"
+    else:
+        disc_line = f"&A_L \\cong {disc_group_str}"
+
     return (
         f"\\begin{{aligned}}\n"
         f"&L \\in \\mathrm{{Lattices}}(\\ZZ), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc} \\\\\n"
-        f"&G_L = {gram_latex}\n"
+        f"&G_L = {gram_latex} \\\\\n"
+        f"{disc_line}\n"
         f"\\end{{aligned}}"
     )
 

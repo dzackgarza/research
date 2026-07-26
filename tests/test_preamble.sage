@@ -383,6 +383,11 @@ def test_lattice_latex_representation():
         assert r"\mathrm{sig}(L) = (1, 1)" in u_latex
         assert r"\mathrm{disc}(L) = -1" in u_latex
         assert r"\cdot" in u_latex
+        assert r"A_L \cong 0" in u_latex
+
+        a2_latex = str(latex(catalogue.root_lattice("A", 2)))
+        assert r"A_L \cong \mathbb{Z}/3\mathbb{Z}" in a2_latex
+        assert r"G_{q_{A_L}} =" in a2_latex
 
         lattice_methods.set_zero_dots(False)
         u_latex_no_dots = str(latex(catalogue.U))
