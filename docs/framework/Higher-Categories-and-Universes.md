@@ -329,8 +329,21 @@ $$
 \mathbf{Cat}_n\longrightarrow\cdots\longrightarrow
 \mathbf{Cat}_\infty.
 $$
-A higher category $C$ is an $n$-category when its point factors through $\iota_n$.
-Points of $\mathbf{Cat}_1$ are ordinary categories.
+An *$n$-category structure* on a higher category $C\colon*\to\mathbf{Cat}_\infty$ is a lift
+$$
+\begin{tikzcd}
+&
+\mathbf{Cat}_n
+  \arrow[d, "\iota_n"]
+\\
+*
+  \arrow[ur, "\widetilde C"]
+  \arrow[r, "C"']
+&
+\mathbf{Cat}_\infty
+\end{tikzcd}
+$$
+together with a specified equivalence $\iota_n\circ\widetilde C\simeq C$.
 
 For $n\geq0$, a second construction begins with the full replete subcategory $\mathbf{Cat}_n^{\mathrm{loc}}\subseteq\mathbf{Cat}_\infty$ on the locally $(n-1)$-truncated higher categories [@Lur26, Tag 05EA].
 Its inclusion supplies $\iota_n$ after an equivalence $\mathbf{Cat}_n^{\mathrm{loc}}\simeq\mathbf{Cat}_n$ has been established.
@@ -348,11 +361,12 @@ These objects are the $n$-truncated morphisms $C\to D$ internal to the mapping h
 ::: {#def-ordinary-category-specialization}
 ## Ordinary categories
 
-An ordinary category is a point
+An *ordinary-category structure* on a higher category $C\colon*\to\mathbf{Cat}_\infty$ is a $1$-category structure on $C$: a point
 $$
-C\colon*\longrightarrow\mathbf{Cat}_1.
+\widetilde C\colon*\longrightarrow\mathbf{Cat}_1
 $$
-Its image as a higher category is $\iota_1C\colon*\to\mathbf{Cat}_\infty$.
+together with a specified equivalence $\iota_1\circ\widetilde C\simeq C$.
+An ordinary category may be presented by the point $\widetilde C$; its underlying higher category is $\iota_1\circ\widetilde C$.
 :::
 
 ::: {#def-equality-of-objects}
