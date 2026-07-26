@@ -363,14 +363,9 @@ def _primary_gram_matrix_latex(A_disc: Any) -> str:
     if not invs:
         return "()"
     import re
-    from sage.arith.misc import factor
-    from sage.matrix.constructor import block_diagonal_matrix
     from sage.misc.latex import latex
 
-    primes = sorted(set(f for n in invs for f, _ in factor(n)))
-    matrices = [A_disc.primary_part(p).gram_matrix_quadratic() for p in primes]
-    blk_mat = block_diagonal_matrix(matrices)
-    gram_str = str(latex(blk_mat))
+    gram_str = str(latex(A_disc.gram_matrix_quadratic()))
     if ZERO_DOTS:
         gram_str = re.sub(r"\b0\b", lambda m: r"\cdot", gram_str)
     return gram_str
@@ -676,6 +671,48 @@ def _patched_gens(self: Any, *args: Any, **kwargs: Any) -> Any:
     return tuple(LatticeElement(self, v) for v in _original_gens(self, *args, **kwargs))
 
 
+_original_torsion_gram_q: Any = None
+_original_torsion_gram_b: Any = None
+
+
+def _patched_torsion_gram_matrix_quadratic(self: Any) -> Any:
+    r"""Return block-diagonal quadratic Gram matrix partitioned by primary components."""
+    invs = self.invariants()
+    if not invs:
+        from sage.matrix.constructor import matrix
+        from sage.rings.rational_field import QQ
+
+        return matrix(QQ, 0, 0)
+    from sage.arith.misc import factor
+
+    primes = sorted(set(f for n in invs for f, _ in factor(n)))
+    if len(primes) <= 1:
+        return _original_torsion_gram_q(self)
+    from sage.matrix.constructor import block_diagonal_matrix
+
+    mats = [_original_torsion_gram_q(self.primary_part(p)) for p in primes]
+    return block_diagonal_matrix(mats)
+
+
+def _patched_torsion_gram_matrix_bilinear(self: Any) -> Any:
+    r"""Return block-diagonal bilinear Gram matrix partitioned by primary components."""
+    invs = self.invariants()
+    if not invs:
+        from sage.matrix.constructor import matrix
+        from sage.rings.rational_field import QQ
+
+        return matrix(QQ, 0, 0)
+    from sage.arith.misc import factor
+
+    primes = sorted(set(f for n in invs for f, _ in factor(n)))
+    if len(primes) <= 1:
+        return _original_torsion_gram_b(self)
+    from sage.matrix.constructor import block_diagonal_matrix
+
+    mats = [_original_torsion_gram_b(self.primary_part(p)) for p in primes]
+    return block_diagonal_matrix(mats)
+
+
 def install() -> None:
     """Install the lattice methods and constructor support.
 
@@ -688,6 +725,7 @@ def install() -> None:
         sage: patches.uninstall("lattice_methods")
     """
     global _original_integral_lattice, _original_direct_sum, _original_twist, _original_call, _original_gens
+    global _original_torsion_gram_q, _original_torsion_gram_b
 
     target = _lattice_class()
     if _original_direct_sum is None:
@@ -701,6 +739,17 @@ def install() -> None:
 
     target.__call__ = _patched_call
     target.gens = _patched_gens
+
+    from sage.misc.cachefunc import cached_method
+    from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
+
+    if _original_torsion_gram_q is None:
+        _original_torsion_gram_q = TorsionQuadraticModule.gram_matrix_quadratic.f
+    if _original_torsion_gram_b is None:
+        _original_torsion_gram_b = TorsionQuadraticModule.gram_matrix_bilinear.f
+
+    TorsionQuadraticModule.gram_matrix_quadratic = cached_method(_patched_torsion_gram_matrix_quadratic)
+    TorsionQuadraticModule.gram_matrix_bilinear = cached_method(_patched_torsion_gram_matrix_bilinear)
 
     for name in _METHODS:
         attribute = globals()[name]
@@ -742,6 +791,13 @@ def uninstall() -> None:
         target.__call__ = _original_call
     if _original_gens is not None:
         target.gens = _original_gens
+
+    if _original_torsion_gram_q is not None and _original_torsion_gram_b is not None:
+        from sage.misc.cachefunc import cached_method
+        from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
+
+        TorsionQuadraticModule.gram_matrix_quadratic = cached_method(_original_torsion_gram_q)
+        TorsionQuadraticModule.gram_matrix_bilinear = cached_method(_original_torsion_gram_b)
 
     if _original_integral_lattice is not None:
         import sage.all
