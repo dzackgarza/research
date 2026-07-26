@@ -122,6 +122,11 @@ One cycle:
    (`pull` does the same for an already-open session; `slice`+`record` capture ad-hoc notes made outside a session.)
 
 5. **Act (agent)** — read the batch / ledger.
+   **Discuss before editing.** An annotation identifies a concern; it is not an implementation instruction.
+   Before changing any artifact, discuss the intended update with the user and obtain explicit approval.
+   For mathematical feedback, establish the correct theory and the source that states it before proposing prose.
+   Do not make a reflexive local correction from the quoted span or from memory: confirm that the proposed change fits the document's global mathematical story.
+
    Each entry's `uri` (`localhost:7654/Roadmap.html`) plus the normalized `TextQuoteSelector.exact` pin the exact source span → map to `docs/Roadmap.md` and apply the edit.
    Hot-reload re-renders each touched page live: the tight edit → one reload → look cycle.
 

@@ -22,11 +22,19 @@ For a pseudofunctor $F\colon C^{\mathrm{op}}\to\mathbf{Cat}$, the Grothendieck c
 The category of elements is its $\mathbf{Set}$-valued special case [@nlab:grothendieck_construction]. A general forgetful functor need not arise from a category of elements; later chapters specify each forgetful functor directly.
 
 ::: {#def-subcategory}
-## Full and replete subcategories
+## Subobjects, full and replete subcategories
 
-A subcategory $D\subseteq C$ is *full* if $\operatorname{Hom}_D(X,Y)=\operatorname{Hom}_C(X,Y)$ for all objects $X,Y$ of $D$.
-It is *replete* if every object of $C$ isomorphic to an object of $D$ is itself an object of $D$.
-Thus an isomorphism-invariant property of objects of $C$ defines a replete full subcategory [@stacks-001D; @nlab:replete_subcategory].
+A *subobject* of $Y\in\mathcal C$ is a monomorphism $m:X\to Y$ in $\mathcal C$; the datum is the arrow $m$, not merely the domain $X$ [@Lur26, Tag 04VD]. Equivalently, $m$ is a subterminal object of the slice $\mathcal C_{/Y}$, and if the relevant pullback exists, $m$ is monic exactly when the diagonal $\Delta_m:X\to X\times_Y X$ is an equivalence.
+
+For ordinary $\mathbf{Cat}$, a functor $F:\mathcal A\to\mathcal B$ is monic if and only if it is injective on objects and faithful; hence subobjects in $\mathbf{Cat}$ are ordinary subcategories, up to isomorphism over the parent.
+In $\operatorname{Cat}_\infty$, a monomorphism must also contain every equivalence between objects in its image, so not every ordinary subcategory remains a subobject after passing to $\operatorname{Cat}_\infty$.
+
+A *full subcategory* $\mathcal D\subseteq\mathcal C$ is the special case where $m$ is fully faithful: a collection of objects of $\mathcal C$ with mapping spaces inherited from $\mathcal C$,
+$$
+\operatorname{Map}_{\mathcal D}(x,y)\simeq\operatorname{Map}_{\mathcal C}(x,y).
+$$
+It is *replete* if every object of $\mathcal C$ equivalent to an object of $\mathcal D$ also belongs to $\mathcal D$.
+An isomorphism-invariant property of objects of $\mathcal C$ defines a replete full subcategory [@stacks-001D; @nlab:replete_subcategory].
 :::
 
 ::: {#def-concrete-category}
@@ -49,9 +57,9 @@ is an isomorphism [@stacks-0109]. In an abelian category, a morphism is monic ex
 
 ## Arrow and functor categories
 
-For an ordinary category $C$, the arrow category is $\operatorname{Fun}([1],C)$.
+For an ordinary category $C$, the arrow category is $[[1],C]$.
 Evaluation at the source and target gives a functor to $C\times C$.
-Functor categories and arrow categories in $\mathbf{Cat}_\infty$ are the quasicategories defined in @def-internal-hom.
+Internal homs and arrow categories in $\mathbf{Cat}_\infty$ are defined in @def-internal-hom and @def-mapping-spaces.
 
 ## Pseudo-pullbacks {#sec-pullback-cat}
 

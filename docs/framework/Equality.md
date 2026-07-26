@@ -12,16 +12,19 @@ The right notion sits between, and it must be compatible with reflexivity, $a = 
 
 ## The identification space {#sec-identification-space}
 
-Work in the ambient $\mathbf{Cat}_\omega$ ([Framework](Ambient-Setting.md#sec-ambient)); the subcategory, quotient, and fiber constructions below are its [suspension–loop–fiber calculus](Loops-and-Suspension.md).
-For objects $C, D$ write
+Work in $\mathbf{Cat}_\infty$ ([Higher categories and universes](Higher-Categories-and-Universes.md#def-infinity-category-universe)); the subcategory, quotient, and fiber constructions below use its [suspension–loop–fiber calculus](Loops-and-Suspension.md).
+For objects $C,D$, the internal hom
 $$
-[C, D] := \operatorname{Fun}(C, D) \in \mathbf{Cat}_\omega
+[C,D]\in\mathbf{Cat}_\infty
 $$
-for the internal hom ([Framework](Ambient-Setting.md#def-internal-hom)), and let
+
+is defined in @def-internal-hom.
+Let
 $$
 \operatorname{Eq}(C, D) \hookrightarrow [C, D]
 $$
-be the full $\infty$-subcategory spanned by the *equivalences* $F \colon C \to D$ ([Framework](Ambient-Setting.md#def-equality-of-objects)). It retains every higher natural transformation between such functors — it is neither the core nor a truncation.
+be the full $\infty$-subcategory spanned by the *equivalences* $F \colon C \to D$ (@def-equality-of-objects).
+It retains every higher natural transformation between such functors — it is neither the core nor a truncation.
 Inside it,
 $$
 \operatorname{Way}(C, D) \hookrightarrow \operatorname{Eq}(C, D)
@@ -52,14 +55,14 @@ Equality thus means: there is an essentially unique $\operatorname{Aut}(C)$–$\
 
 ## Over an equality-bearing universe {#sec-equality-universe}
 
-Which identifications *count* is fixed by placing the objects over a universe $U$, with $p_C \colon C \to U$ and $p_D \colon D \to U$, and taking $\operatorname{Way}(C, D)$ to be the equivalences in the slice $\mathbf{Cat}_\omega / U$ — those lifting $\operatorname{id}_U$, rather than arbitrary equivalences of $\mathbf{Cat}_\omega$.
+Which identifications *count* is fixed by placing the objects over a universe $U$, with $p_C \colon C \to U$ and $p_D \colon D \to U$, and taking $\operatorname{Way}(C, D)$ to be the equivalences in the slice $\mathbf{Cat}_\infty / U$ — those lifting $\operatorname{id}_U$, rather than arbitrary equivalences of $\mathbf{Cat}_\infty$.
 This is what lets $C \simeq D$ hold while $C \ne D$: the equivalence need not lift the identity of $U$.
 
 *Open.* A fully canonical construction of $U$, and hence of $\operatorname{Way}$, is not settled; the orbit-and-reflexivity predicate above is conditional on that subcategory.
 
 ## The reduction to Lean {#sec-equality-reduction}
 
-Type theory is a shadow of higher-category theory: the homotopy-type functor $\Pi_\infty \colon \mathbf{Cat}_\omega \to \mathcal S = \mathbf{Types}$ ([Framework](Ambient-Setting.md#def-mapping-spaces)) strictly loses data.
+Type theory is a shadow of higher-category theory: the homotopy-type functor $\Pi_\infty \colon \mathbf{Cat}_\infty \to \mathcal S = \mathbf{Types}$ (@def-core) strictly loses data.
 The framework is therefore developed synthetically — in $\infty$-categories, not committed to a model such as simplicial sets and Kan complexes — and the encodable notions are recovered by applying that functor.
-The equality above is then *relaxed*: for the $1$-categorical work that is almost all of the program (sets, rings, modules, algebras, lattices — all of SageCat), it truncates to Lean's propositional or definitional equality ([Framework](Ambient-Setting.md#def-equality-of-objects)), so that $\sqrt 2 = \sqrt{1 + 1}$ holds without an infinite tower of coherence obligations.
+The equality above is then *relaxed*: for the $1$-categorical work that is almost all of the program (sets, rings, modules, algebras, lattices — all of SageCat), it truncates to Lean's propositional or definitional equality (@def-equality-of-objects), so that $\sqrt 2 = \sqrt{1 + 1}$ holds without an infinite tower of coherence obligations.
 The full notion is recorded here so that its truncation is a deliberate concession rather than an accident; where it will bite is the identification of points carrying nontrivial automorphisms — inertia or stabilizers on a stack.

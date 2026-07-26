@@ -1,117 +1,198 @@
 # Higher categories and universes {#sec-higher-categories-universes}
 
 ::: {#def-universe}
-## Universe and smallness
+## The universe
 
-Fix a Grothendieck universe $\mathcal U$.
-Sets, categories, and simplicial sets are *small* when their data lie in $\mathcal U$.
-A construction indexed by all $\mathcal U$-small objects is formed in a larger universe.
+Fix an axiomatic higher universe $\mathcal U$, regarded as an $(\infty,2)$-category, with terminal object $*$.
+The category of higher categories is a point
+$$
+\mathbf{Cat}_\infty\colon *\longrightarrow\mathcal U.
+$$
+All categories considered below are small relative to $\mathcal U$.
 :::
 
 ::: {#def-infinity-category-universe}
-## The chosen model of higher categories
+## The truncation tower
 
-A higher category is modeled by a quasicategory: a simplicial set with fillers for every inner horn.
-Write $\mathbf{Cat}_{\infty,\mathcal U}$ for the $\infty$-category of $\mathcal U$-small quasicategories and $\mathcal S_{\mathcal U}$ for its full subcategory of Kan complexes [@Lur26, Tag 003A].
-
-Ordinary categories enter through the ordinary nerve $N\colon\mathbf{Cat}_{\mathcal U}\to\mathbf{Cat}_{\infty,\mathcal U}$.
-When a chapter uses only ordinary categories, its pullbacks and functor categories are formed in the 2-category $\mathbf{Cat}_{\mathcal U}$ of small categories, functors, and natural transformations.
+Fix truncation functors forming a tower in $\mathcal U$:
+$$
+\mathbf{Cat}_{-2}\longrightarrow
+\mathbf{Cat}_{-1}\longrightarrow
+\mathbf{Cat}_0\longrightarrow
+\mathbf{Cat}_1\longrightarrow\cdots\longrightarrow
+\mathbf{Cat}_n\longrightarrow\cdots\longrightarrow
+\mathbf{Cat}_\infty.
+$$
+A higher category is a point
+$$
+C\colon *\longrightarrow\mathbf{Cat}_\infty.
+$$
+It is an $n$-category when this point factors through $\mathbf{Cat}_n$.
+In particular, points of $\mathbf{Cat}_1$ represent ordinary categories.
 :::
 
-::: {#def-core}
-## Core and groupoid completion
+::: {#def-objects-of-category}
+## Objects of a category
 
-For an $\infty$-category $C$, its *core* $C^{\simeq}$ is the maximal Kan complex in $C$.
-The functor
+For a category $C\colon *\to\mathbf{Cat}_\infty$, an object of $C$ is a point
 $$
-(-)^{\simeq}\colon\mathbf{Cat}_\infty\longrightarrow\mathcal S
+X\colon *\longrightarrow\int_C C.
 $$
-is right adjoint to the inclusion $\mathcal S\hookrightarrow\mathbf{Cat}_\infty$.
-
-The *groupoid completion* $C^{\mathrm{gpd}}$ is the value of the left adjoint to the same inclusion.
-For an ordinary category $A$, its classifying space is
-$$
-B A:=|N A|\simeq (N A)^{\mathrm{gpd}}.
-$$
-The core retains the invertible morphisms of $C$.
-Groupoid completion formally inverts every morphism [@Lur26].
+The canonical projection from the category of elements exhibits $X$ itself as a point of $\mathbf{Cat}_\infty$; thus every object is a higher category, possibly one factoring through a discrete stage of the truncation tower.
 :::
 
 ::: {#def-internal-hom}
-## Functor categories
+## Internal hom
 
-For $C,D\in\mathbf{Cat}_{\infty,\mathcal U}$, the quasicategory $\operatorname{Fun}(C,D)$ is characterized by
+The point $\mathbf{Cat}_\infty$ is cartesian closed.
+Its internal hom is written
 $$
-\operatorname{Hom}_{\mathbf{sSet}}(K,\operatorname{Fun}(C,D))
-\cong
-\operatorname{Hom}_{\mathbf{sSet}}(K\times C,D).
+[-,-]\colon
+\mathbf{Cat}_\infty^{\mathrm{op}}\times\mathbf{Cat}_\infty
+\longrightarrow\mathbf{Cat}_\infty.
 $$
-Its objects are functors $C\to D$, its 1-simplices are natural transformations, and its higher simplices encode higher coherences.
-Thus $\mathbf{Cat}_{\infty,\mathcal U}$ is cartesian closed [@Lur26].
+For higher categories $A,C,D$, there is a natural equivalence
+$$
+[A\times C,D]\simeq[A,[C,D]].
+$$
+The objects of $[C,D]$ are morphisms $C\to D$; its higher morphisms are the transformations between them.
 :::
 
-::: {#def-mapping-spaces}
-## Mapping spaces
+::: {#def-core}
+## Underlying homotopy type
 
-The *mapping space* between two small $\infty$-categories is
+Let $\mathcal S=\mathbf{Types}$ and let
 $$
-\operatorname{Map}_{\mathbf{Cat}_\infty}(C,D)
-:=\operatorname{Fun}(C,D)^{\simeq},
+i\colon\mathcal S\hookrightarrow\mathbf{Cat}_\infty
 $$
-the maximal Kan complex in the functor quasicategory.
-For objects $x,y\in C$, the mapping space $\operatorname{Map}_C(x,y)$ is the homotopy fiber over $(x,y)$ of
+include homotopy types as higher groupoids.
+Assume that this inclusion has a left adjoint
 $$
-\operatorname{Fun}(\Delta^1,C)^{\simeq}\longrightarrow
-C^{\simeq}\times C^{\simeq}.
+\Pi_\infty\colon\mathbf{Cat}_\infty\longrightarrow\mathcal S,
+\qquad
+\Pi_\infty\dashv i.
 $$
-This construction uses the core $(-)^{\simeq}$ from @def-core.
-The left-adjoint groupoid-completion functor plays a different role.
+The type $\Pi_\infty C$ is obtained from $C$ by inverting every morphism.
+No relation between $\Pi_\infty$ and a core construction is assumed here.
+:::
+
+::: {#def-bicomplete-cat-infinity}
+## Initial and terminal categories
+
+The higher category $\mathbf{Cat}_\infty$ has an initial object $\varnothing$ and a terminal object $*$, and it is bicomplete.
+For a pointed higher category $(X,x)$, where $x\colon *\to X$ in $\mathbf{Cat}_\infty$, define
+$$
+\Omega_xX:=*\times_X*.
+$$
+For a higher category $A$, define its suspension by
+$$
+\Sigma A:=*\amalg_A*.
+$$
+The two coprojections make $\Sigma A$ bipointed.
+:::
+
+::: {#def-directed-delooping}
+## The $B_{01}$ construction
+
+Let $\mathbf{Cat}_\infty^{\partial}$ be the higher category of bipointed higher categories $(X;x_0,x_1)$.
+Define the endpoint hom functor by
+$$
+\Omega_{01}(X;x_0,x_1):=[x_0,x_1]_X.
+$$
+For $A\in\mathbf{Cat}_\infty$, define $B_{01}A$ to have two objects $0,1$ and hom-objects
+$$
+[0,0]_{B_{01}A}=*,\qquad
+[1,1]_{B_{01}A}=*,\qquad
+[0,1]_{B_{01}A}=A,\qquad
+[1,0]_{B_{01}A}=\varnothing.
+$$
+Composition is determined by the two identity actions on $A$ and the unique maps from $\varnothing$.
+There is an adjunction
+$$
+B_{01}\dashv\Omega_{01}.
+$$
 :::
 
 ::: {#def-cells}
-## Arrows and higher simplices
+## Walking arrows and strings
 
-The arrow $\infty$-category of $C$ is $\operatorname{Arr}(C)=\operatorname{Fun}(\Delta^1,C)$.
-Evaluation at the two vertices gives
+Define the walking object and walking arrow by
 $$
-(s,t)\colon\operatorname{Arr}(C)\longrightarrow C\times C.
+[0]:=*,
+\qquad
+[1]:=B_{01}*.
 $$
-A 1-simplex of $C$ is a morphism.
-Higher simplices encode composable strings, composites, and their coherences in the quasicategory model.
+Write $s,t\colon[0]\to[1]$ for its two objects.
+For $n\geq2$, define
+$$
+[n]:=
+\underbrace{[1]\amalg_{[0]}[1]\amalg_{[0]}\cdots\amalg_{[0]}[1]}_{n\text{ copies}},
+$$
+where each pushout identifies the target of one copy with the source of the next.
+The objects $[[n],C]$ classify coherent strings of $n$ composable arrows in $C$.
+The cosimplicial structure belongs to the walking categories $[n]$; the category $C$ remains a point of $\mathbf{Cat}_\infty$.
+:::
+
+::: {#def-mapping-spaces}
+## Arrows and mapping types
+
+For a higher category $C$, define
+$$
+\operatorname{Arr}(C):=[[1],C].
+$$
+Precomposition with $s$ and $t$ gives
+$$
+(s^*,t^*)\colon[[1],C]\longrightarrow
+\int_C C\times\int_C C.
+$$
+For objects $x,y\colon*\to\int_C C$, their hom-category is the fiber
+$$
+[x,y]_C:=
+*\times_{\int_C C\times\int_C C}[[1],C]
+$$
+over $(x,y)$.
+Its underlying homotopy type is
+$$
+\operatorname{Map}_C(x,y):=\Pi_\infty[x,y]_C.
+$$
+Likewise,
+$$
+\operatorname{Map}_{\mathbf{Cat}_\infty}(C,D):=\Pi_\infty[C,D].
+$$
 :::
 
 ::: {#def-initial-terminal}
 ## Initial, terminal, and contractible objects
 
-An object $t\in C$ is terminal if $\operatorname{Map}_C(x,t)$ is contractible for every $x\in C$.
-An object $i\in C$ is initial if $\operatorname{Map}_C(i,x)$ is contractible for every $x\in C$.
-
-An $\infty$-category is *categorically contractible* when it is equivalent to $\Delta^0$.
-Its groupoid completion may be contractible without the category being equivalent to $\Delta^0$; a category with a terminal object is the standard example.
+An object $t\colon*\to\int_C C$ is terminal if $\operatorname{Map}_C(x,t)$ is contractible for every $x\colon*\to\int_C C$.
+An object $i\colon*\to\int_C C$ is initial if $\operatorname{Map}_C(i,x)$ is contractible for every $x\colon*\to\int_C C$.
+A higher category is *contractible* when it is equivalent to $*$.
 :::
 
 ::: {#def-truncated}
 ## Truncated objects and morphisms
 
-Let $C$ be an $\infty$-category.
-An object $X\in C$ is *$n$-truncated* if $\operatorname{Map}_C(Y,X)$ is an $n$-truncated space for every $Y\in C$.
-A morphism $f\colon X\to Y$ is $n$-truncated if, for every $Z\in C$, the induced map
+Let $C$ be a higher category.
+An object $X\colon*\to\int_C C$ is *$n$-truncated* if $\operatorname{Map}_C(Y,X)$ is an $n$-truncated type for every $Y\colon*\to\int_C C$.
+A morphism $f\colon X\to Y$ is $n$-truncated if, for every $Z\colon*\to\int_C C$, the induced map
 $$
 \operatorname{Map}_C(Z,X)\longrightarrow\operatorname{Map}_C(Z,Y)
 $$
-is an $n$-truncated map of spaces [@Lur26].
+is an $n$-truncated map of types.
 
-For a space $S$, this specializes to the usual condition $\pi_k(S,s)=0$ for $k>n$.
-When the inclusion of $n$-truncated objects admits a left adjoint, that adjoint is denoted $\tau_{\le n}$.
-A $(-2)$-truncated space is contractible, a $(-1)$-truncated space is empty or contractible, and a $0$-truncated space is equivalent to a discrete space.
+For a type $S$, this specializes to $\pi_k(S,s)=0$ for $k>n$.
+When the inclusion of $n$-truncated objects admits a left adjoint, denote that adjoint by $\tau_{\le n}$.
+A $(-2)$-truncated type is contractible, a $(-1)$-truncated type is empty or contractible, and a $0$-truncated type is equivalent to a discrete type.
 :::
 
 ::: {#def-ordinary-category-specialization}
-## Ordinary categories as a specialization
+## Ordinary categories
 
-The nerve of an ordinary category has discrete mapping spaces.
-A functor between ordinary categories is an equivalence precisely when its nerve is an equivalence in $\mathbf{Cat}_{\infty,\mathcal U}$.
-The ordinary category, its nerve, and its groupoid completion remain distinct objects.
+An ordinary category is a point
+$$
+C\colon*\longrightarrow\mathbf{Cat}_1.
+$$
+Its image in $\mathbf{Cat}_\infty$ is obtained through the truncation tower.
 :::
 
 ::: {#def-equality-of-objects}
@@ -119,9 +200,9 @@ The ordinary category, its nerve, and its groupoid completion remain distinct ob
 
 Literal equality is equality in the underlying set or formal language in which an object is presented.
 An isomorphism in an ordinary category is a morphism with a two-sided inverse.
-A morphism in an $\infty$-category is an equivalence when it becomes invertible in the homotopy category [@Lur26, Tag 01DQ].
+An equivalence in a higher category is a morphism admitting an inverse up to coherent higher equivalence.
 
-The notation $a=b$, $a\cong b$, and $a\simeq b$ records these three different claims.
+The notation $a=b$, $a\cong b$, and $a\simeq b$ records these three claims.
 No univalence principle is assumed.
 Chosen comparison maps are treated in [Equivalences and witnesses](Identification.md).
 :::
