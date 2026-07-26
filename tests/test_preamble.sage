@@ -378,6 +378,7 @@ def test_lattice_latex_representation():
         assert r"Lattice over" in u_latex
         assert r"\mathrm{rk}(L) = 2" in u_latex
         assert r"\mathrm{sig}(L) = (1, 1)" in u_latex
+        assert r"\mathrm{disc}(L) = -1" in u_latex
         assert r"G_L =" in u_latex
     finally:
         patches.uninstall("lattice_methods")
