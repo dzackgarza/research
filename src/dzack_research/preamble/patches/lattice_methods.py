@@ -552,8 +552,9 @@ _original_integral_lattice: Any = None
 
 
 def _patched_integral_lattice(*args: Any, names: Any = None, **kwargs: Any) -> Any:
-    """``IntegralLattice`` accepting the ``names=`` keyword the preparser emits."""
+    """``IntegralLattice`` post-init running block decomposition on G_L."""
     lattice = _original_integral_lattice(*args, **kwargs)
+    _compute_lattice_gram_subdivisions(lattice)
     if names is None:
         return lattice
 
@@ -671,11 +672,11 @@ def _patched_gens(self: Any, *args: Any, **kwargs: Any) -> Any:
     return tuple(LatticeElement(self, v) for v in _original_gens(self, *args, **kwargs))
 
 
-def _block_subdivide_matrix(G: Any) -> Any:
-    r"""Subdivide a symmetric Gram matrix into its connected orthogonal blocks."""
+def _detect_matrix_connected_cuts(G: Any) -> list[int]:
+    r"""Find diagonal block cuts of a symmetric matrix via connected components."""
     n = G.nrows()
     if n <= 1:
-        return G
+        return []
     import networkx as nx
 
     adj: dict[int, list[int]] = {i: [] for i in range(n)}
@@ -689,18 +690,78 @@ def _block_subdivide_matrix(G: Any) -> Any:
     components.sort(key=lambda c: c[0])
     indices = [i for c in components for i in c]
     if indices != list(range(n)):
-        return G
+        return []
     sizes = [len(c) for c in components]
     cuts: list[int] = []
     curr = 0
     for s in sizes[:-1]:
         curr += s
         cuts.append(curr)
+    return cuts
+
+
+def _compute_lattice_gram_subdivisions(L: Any) -> list[int]:
+    r"""Return or detect block cuts for a lattice's Gram matrix."""
+    gram = L.gram_matrix()
+    subdivs = gram.subdivisions()[0]
+    if subdivs:
+        return list(subdivs)
+    cuts = _detect_matrix_connected_cuts(gram)
     if cuts:
-        G_copy = G.parent()(G)
-        G_copy.subdivide(cuts, cuts)
-        return G_copy
-    return G
+        if gram.is_immutable():
+            from copy import copy
+
+            gram = copy(gram)
+            try:
+                L._gram_matrix = gram
+            except AttributeError:
+                pass
+        gram.subdivide(cuts, cuts)
+    return cuts
+
+
+def _compute_disc_gram_subdivisions(A_disc: Any) -> list[int]:
+    r"""Compute induced discriminant group Gram matrix block cuts from L's block decomposition."""
+    raw_disc_gram = _original_torsion_gram_q(A_disc)
+    if raw_disc_gram.nrows() == 0:
+        return []
+
+    L = getattr(getattr(A_disc, "_W", None), "ambient_module", lambda: None)()
+    if L is None or not hasattr(L, "gram_matrix"):
+        return _detect_matrix_connected_cuts(raw_disc_gram)
+
+    L_cuts = _compute_lattice_gram_subdivisions(L)
+    if not L_cuts:
+        return _detect_matrix_connected_cuts(raw_disc_gram)
+
+    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+
+    r = L.rank()
+    gram = L.gram_matrix()
+    slice_starts = [0] + L_cuts
+    slice_ends = L_cuts + [r]
+
+    all_disc_cuts: list[int] = []
+    curr_offset = 0
+
+    for start, end in zip(slice_starts, slice_ends):
+        sub_gram = gram.submatrix(start, start, end - start, end - start)
+        sub_L = IntegralLattice(sub_gram)
+        sub_A = sub_L.discriminant_group()
+        sub_disc_gram = _original_torsion_gram_q(sub_A)
+        sub_k = len(sub_A.gens())
+
+        if sub_k > 0:
+            internal_cuts = _detect_matrix_connected_cuts(sub_disc_gram)
+            for ic in internal_cuts:
+                all_disc_cuts.append(curr_offset + ic)
+            curr_offset += sub_k
+            all_disc_cuts.append(curr_offset)
+
+    if all_disc_cuts and all_disc_cuts[-1] == raw_disc_gram.nrows():
+        all_disc_cuts.pop()
+
+    return sorted(list(set(all_disc_cuts)))
 
 
 _original_torsion_gram_q: Any = None
@@ -708,7 +769,7 @@ _original_torsion_gram_b: Any = None
 
 
 def _patched_torsion_gram_matrix_quadratic(self: Any) -> Any:
-    r"""Return literal quadratic Gram matrix of self.gens() with orthogonal block subdivisions."""
+    r"""Return literal quadratic Gram matrix of self.gens() with induced block subdivisions."""
     invs = self.invariants()
     if not invs:
         from sage.matrix.constructor import matrix
@@ -716,11 +777,16 @@ def _patched_torsion_gram_matrix_quadratic(self: Any) -> Any:
 
         return matrix(QQ, 0, 0)
     raw_gram = _original_torsion_gram_q(self)
-    return _block_subdivide_matrix(raw_gram)
+    cuts = _compute_disc_gram_subdivisions(self)
+    if cuts:
+        G_copy = raw_gram.parent()(raw_gram)
+        G_copy.subdivide(cuts, cuts)
+        return G_copy
+    return raw_gram
 
 
 def _patched_torsion_gram_matrix_bilinear(self: Any) -> Any:
-    r"""Return literal bilinear Gram matrix of self.gens() with orthogonal block subdivisions."""
+    r"""Return literal bilinear Gram matrix of self.gens() with induced block subdivisions."""
     invs = self.invariants()
     if not invs:
         from sage.matrix.constructor import matrix
@@ -728,7 +794,12 @@ def _patched_torsion_gram_matrix_bilinear(self: Any) -> Any:
 
         return matrix(QQ, 0, 0)
     raw_gram = _original_torsion_gram_b(self)
-    return _block_subdivide_matrix(raw_gram)
+    cuts = _compute_disc_gram_subdivisions(self)
+    if cuts:
+        G_copy = raw_gram.parent()(raw_gram)
+        G_copy.subdivide(cuts, cuts)
+        return G_copy
+    return raw_gram
 
 
 def install() -> None:
