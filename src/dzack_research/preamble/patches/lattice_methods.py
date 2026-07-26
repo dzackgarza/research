@@ -671,46 +671,80 @@ def _patched_gens(self: Any, *args: Any, **kwargs: Any) -> Any:
     return tuple(LatticeElement(self, v) for v in _original_gens(self, *args, **kwargs))
 
 
+def _block_subdivide_matrix(G: Any) -> Any:
+    r"""Subdivide a symmetric Gram matrix into its connected orthogonal blocks."""
+    n = G.nrows()
+    if n <= 1:
+        return G
+    import networkx as nx
+
+    adj: dict[int, list[int]] = {i: [] for i in range(n)}
+    for i in range(n):
+        for j in range(i + 1, n):
+            if G[i, j] != 0:
+                adj[i].append(j)
+                adj[j].append(i)
+    graph = nx.Graph(adj)
+    components = [sorted(list(c)) for c in nx.connected_components(graph)]
+    components.sort(key=lambda c: c[0])
+    indices = [i for c in components for i in c]
+    if indices != list(range(n)):
+        return G
+    sizes = [len(c) for c in components]
+    cuts: list[int] = []
+    curr = 0
+    for s in sizes[:-1]:
+        curr += s
+        cuts.append(curr)
+    if cuts:
+        G_copy = G.parent()(G)
+        G_copy.subdivide(cuts, cuts)
+        return G_copy
+    return G
+
+
 _original_torsion_gram_q: Any = None
 _original_torsion_gram_b: Any = None
+_in_nf_q: bool = False
+_in_nf_b: bool = False
 
 
 def _patched_torsion_gram_matrix_quadratic(self: Any) -> Any:
-    r"""Return block-diagonal quadratic Gram matrix partitioned by primary components."""
+    r"""Return block-diagonal quadratic Gram matrix in canonical normal form basis with block subdivisions."""
+    global _in_nf_q
     invs = self.invariants()
     if not invs:
         from sage.matrix.constructor import matrix
         from sage.rings.rational_field import QQ
 
         return matrix(QQ, 0, 0)
-    from sage.arith.misc import factor
-
-    primes = sorted(set(f for n in invs for f, _ in factor(n)))
-    if len(primes) <= 1:
-        return _original_torsion_gram_q(self)
-    from sage.matrix.constructor import block_diagonal_matrix
-
-    mats = [_original_torsion_gram_q(self.primary_part(p)) for p in primes]
-    return block_diagonal_matrix(mats)
+    if _in_nf_q:
+        return _block_subdivide_matrix(_original_torsion_gram_q(self))
+    _in_nf_q = True
+    try:
+        norm = self.normal_form()
+        return _block_subdivide_matrix(_original_torsion_gram_q(norm))
+    finally:
+        _in_nf_q = False
 
 
 def _patched_torsion_gram_matrix_bilinear(self: Any) -> Any:
-    r"""Return block-diagonal bilinear Gram matrix partitioned by primary components."""
+    r"""Return block-diagonal bilinear Gram matrix in canonical normal form basis with block subdivisions."""
+    global _in_nf_b
     invs = self.invariants()
     if not invs:
         from sage.matrix.constructor import matrix
         from sage.rings.rational_field import QQ
 
         return matrix(QQ, 0, 0)
-    from sage.arith.misc import factor
-
-    primes = sorted(set(f for n in invs for f, _ in factor(n)))
-    if len(primes) <= 1:
-        return _original_torsion_gram_b(self)
-    from sage.matrix.constructor import block_diagonal_matrix
-
-    mats = [_original_torsion_gram_b(self.primary_part(p)) for p in primes]
-    return block_diagonal_matrix(mats)
+    if _in_nf_b:
+        return _block_subdivide_matrix(_original_torsion_gram_b(self))
+    _in_nf_b = True
+    try:
+        norm = self.normal_form()
+        return _block_subdivide_matrix(_original_torsion_gram_b(norm))
+    finally:
+        _in_nf_b = False
 
 
 def install() -> None:
