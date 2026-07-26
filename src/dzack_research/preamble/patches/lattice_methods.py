@@ -401,6 +401,7 @@ def _latex_(self: Any) -> str:
         \cdot & 1 \\
         1 & \cdot
         \end{array}\right) \\
+        &A_L = \mathbb{Z}^{2} / G_L \mathbb{Z}^{2} \in \mathrm{Groups} \quad \text{(Dual basis presentation)} \\
         &A_L \cong 0 \in \mathrm{Groups} \quad \text{(Invariant factor decomposition)} \\
         &A_L \cong 0 \in \mathrm{Groups} \quad \text{(Primary decomposition)} \\
         &G_{q_{A_L}} = () \in \mathrm{Mat}_{0}(\mathbb{Q}/2\mathbb{Z})
@@ -438,19 +439,36 @@ def _latex_(self: Any) -> str:
 _original_torsion_latex: Any = None
 
 
+def _format_dual_presentation_latex(A_disc: Any) -> str:
+    r"""Return LaTeX representation of literal dual basis quotient presentation A_L = ZZ^r / G_L ZZ^r."""
+    L = getattr(getattr(A_disc, "_W", None), "ambient_module", lambda: None)()
+    if L is not None and hasattr(L, "rank"):
+        r = L.rank()
+        if r == 0:
+            return "0"
+        return f"\\mathbb{{Z}}^{{{r}}} / G_L \\mathbb{{Z}}^{{{r}}}"
+    invs = A_disc.invariants()
+    if not invs:
+        return "0"
+    k = len(invs)
+    return f"\\mathbb{{Z}}^{{{k}}} / D \\mathbb{{Z}}^{{{k}}}"
+
+
 def _patched_torsion_latex(self: Any) -> str:
     r"""Return LaTeX representation for a discriminant group TorsionQuadraticModule."""
     invs = self.invariants()
     n = self.gram_matrix_quadratic().nrows()
+    dual_str = _format_dual_presentation_latex(self)
     inv_str = _format_invariant_factor_latex(invs)
     prim_str = _format_primary_decomp_latex(self)
     gram_q_latex = _primary_gram_matrix_latex(self)
 
-    line1 = f"&A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Invariant factor decomposition)}} \\\\"
-    line2 = f"&A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Primary decomposition)}} \\\\"
-    line3 = f"&G_{{q_{{A_L}}}} = {gram_q_latex} \\in \\mathrm{{Mat}}_{{{n}}}(\\mathbb{{Q}}/2\\mathbb{{Z}})"
+    line1 = f"&A_L = {dual_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Dual basis presentation)}} \\\\"
+    line2 = f"&A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Invariant factor decomposition)}} \\\\"
+    line3 = f"&A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Primary decomposition)}} \\\\"
+    line4 = f"&G_{{q_{{A_L}}}} = {gram_q_latex} \\in \\mathrm{{Mat}}_{{{n}}}(\\mathbb{{Q}}/2\\mathbb{{Z}})"
 
-    return f"\\begin{{aligned}}\n{line1}\n{line2}\n{line3}\n\\end{{aligned}}"
+    return f"\\begin{{aligned}}\n{line1}\n{line2}\n{line3}\n{line4}\n\\end{{aligned}}"
 
 
 def _expand_ellipsis_names(names: tuple[str, ...]) -> tuple[str, ...]:
