@@ -405,6 +405,22 @@ def test_direct_sum_subdivides_gram_matrix():
         patches.uninstall("lattice_methods")
 
 
+def test_lattice_element_multiplication_and_exponentiation():
+    catalogue, _, _, patches, _, _ = _preamble()
+    patches.install("lattice_methods")
+    try:
+        a2 = catalogue.root_lattice("A", 2)
+        alpha1, alpha2 = a2.gens()
+        assert alpha1 * alpha1 == -2
+        assert alpha1 * alpha2 == 1
+        assert alpha1 ** 2 == -2
+        assert alpha1 ^ 2 == -2
+        assert (alpha1 + alpha2) ^ 2 == -2
+        assert (alpha1 + 2 * alpha2) * (alpha1 - alpha2) == 3
+    finally:
+        patches.uninstall("lattice_methods")
+
+
 def test_run_vin_negates_roots_when_it_twists():
     """The source typo (``do_twist`` set, ``doTwist`` tested) disabled this branch."""
     catalogue, _, _, patches, _, _ = _preamble()

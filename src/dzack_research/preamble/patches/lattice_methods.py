@@ -112,8 +112,8 @@ def b(self: Any, x: Any, y: Any) -> Any:
     from sage.rings.rational_field import QQ
 
     gram = self.gram_matrix().change_ring(QQ)
-    left = getattr(x, "vector", lambda: x)()
-    right = getattr(y, "vector", lambda: y)()
+    left = x.value if hasattr(x, "value") else getattr(x, "vector", lambda: x)()
+    right = y.value if hasattr(y, "value") else getattr(y, "vector", lambda: y)()
     return left * gram * right
 
 
@@ -123,8 +123,7 @@ def div(self: Any, x: Any) -> Any:
 
     pairings = [self.b(x, basis_vector) for basis_vector in self.basis()]
     value = gcd(pairings)
-    assert value >= 0, f"divisor should be non-negative, got {value}"
-    return value
+    return abs(value)
 
 
 def dual_basis(self: Any) -> Any:
@@ -160,7 +159,8 @@ def I_perp_mod_I(self: Any, vectors: Any) -> Any:
 
     coordinate_rows = []
     for vector_ in vectors:
-        coordinates = self.coordinate_vector(vector_).change_ring(ZZ)
+        vec_unwrapped = vector_.value if hasattr(vector_, "value") else vector_
+        coordinates = self.coordinate_vector(vec_unwrapped).change_ring(ZZ)
         coordinate_rows.append(coordinates)
 
     for i, left in enumerate(coordinate_rows):
@@ -419,6 +419,101 @@ def _patched_integral_lattice(*args: Any, names: Any = None, **kwargs: Any) -> A
     return _apply_names(lattice, names)
 
 
+from sage.structure.element import ModuleElement, Vector
+
+_original_call: Any = None
+_original_gens: Any = None
+
+
+class LatticeElement(ModuleElement):
+    r"""Wrapper for lattice elements that implements bilinear pairing as multiplication.
+
+    Multiplication ``v * w`` computes ``b(v, w)``, ``v * v`` computes ``q(v)``,
+    and exponentiation ``v ** 2`` or ``v ^ 2`` computes ``q(v)``.
+    """
+
+    def __init__(self, parent: Any, value: Any) -> None:
+        ModuleElement.__init__(self, parent)
+        if isinstance(value, LatticeElement):
+            self.value = value.value
+        else:
+            self.value = parent.ambient()(value) if hasattr(parent, "ambient") else value
+
+    def _repr_(self) -> str:
+        return repr(self.value)
+
+    def _latex_(self) -> str:
+        from sage.misc.latex import latex
+
+        return str(latex(self.value))
+
+    def list(self) -> list:
+        return list(self.value)
+
+    def _vector_(self, R: Any = None) -> Any:
+        if R is not None:
+            return self.value.change_ring(R)
+        return self.value
+
+    def __iter__(self) -> Any:
+        return iter(self.value)
+
+    def __getitem__(self, i: Any) -> Any:
+        return self.value[i]
+
+    def __len__(self) -> int:
+        return len(self.value)
+
+    def __add__(self, other: Any) -> Any:
+        if isinstance(other, LatticeElement):
+            return self.parent()(self.value + other.value)
+        return self.parent()(self.value + other)
+
+    def __radd__(self, other: Any) -> Any:
+        return self.__add__(other)
+
+    def __sub__(self, other: Any) -> Any:
+        if isinstance(other, LatticeElement):
+            return self.parent()(self.value - other.value)
+        return self.parent()(self.value - other)
+
+    def __rsub__(self, other: Any) -> Any:
+        return self.parent()(other - self.value)
+
+    def __neg__(self) -> Any:
+        return self.parent()(-self.value)
+
+    def __mul__(self, other: Any) -> Any:
+        if isinstance(other, (LatticeElement, Vector)):
+            vec_other = other.value if isinstance(other, LatticeElement) else other
+            return self.parent().b(self.value, vec_other)
+        return self.parent()(self.value * other)
+
+    def __rmul__(self, other: Any) -> Any:
+        return self.parent()(other * self.value)
+
+    def __pow__(self, exp: Any, mod: Any = None) -> Any:
+        if exp == 2:
+            return self.parent().q(self.value)
+        raise NotImplementedError(f"exponent {exp} not supported for lattice elements")
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, LatticeElement):
+            return self.value == other.value
+        return self.value == other
+
+
+def _patched_call(self: Any, *args: Any, **kwargs: Any) -> Any:
+    res = _original_call(self, *args, **kwargs)
+    if isinstance(res, Vector) and not isinstance(res, LatticeElement):
+        return LatticeElement(self, res)
+    return res
+
+
+def _patched_gens(self: Any, *args: Any, **kwargs: Any) -> Any:
+    return tuple(LatticeElement(self, v) for v in _original_gens(self, *args, **kwargs))
+
+
 def install() -> None:
     """Install the lattice methods and constructor support.
 
@@ -430,13 +525,21 @@ def install() -> None:
         True
         sage: patches.uninstall("lattice_methods")
     """
-    global _original_integral_lattice, _original_direct_sum, _original_twist
+    global _original_integral_lattice, _original_direct_sum, _original_twist, _original_call, _original_gens
 
     target = _lattice_class()
     if _original_direct_sum is None:
         _original_direct_sum = target.direct_sum
     if _original_twist is None:
         _original_twist = target.twist
+    if _original_call is None:
+        _original_call = target.__call__
+    if _original_gens is None:
+        _original_gens = target.gens
+
+    target.__call__ = _patched_call
+    target.gens = _patched_gens
+
     for name in _METHODS:
         attribute = globals()[name]
         if name == "sublattices":
@@ -473,6 +576,10 @@ def uninstall() -> None:
         target.direct_sum = _original_direct_sum
     if _original_twist is not None:
         target.twist = _original_twist
+    if _original_call is not None:
+        target.__call__ = _original_call
+    if _original_gens is not None:
+        target.gens = _original_gens
 
     if _original_integral_lattice is not None:
         import sage.all
