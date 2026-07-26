@@ -697,7 +697,7 @@ def _detect_matrix_connected_cuts(G: Any) -> list[int]:
     for s in sizes[:-1]:
         curr += s
         cuts.append(curr)
-    return cuts
+    return [c for c in cuts if 0 < c < n]
 
 
 def _compute_lattice_gram_subdivisions(L: Any) -> list[int]:
@@ -720,52 +720,71 @@ def _compute_lattice_gram_subdivisions(L: Any) -> list[int]:
     return cuts
 
 
+_in_disc_subdiv_computation: bool = False
+
+
 def _compute_disc_gram_subdivisions(A_disc: Any) -> list[int]:
     r"""Compute induced discriminant group Gram matrix block cuts from L's block decomposition."""
-    raw_disc_gram = _original_torsion_gram_q(A_disc)
-    if raw_disc_gram.nrows() == 0:
+    global _in_disc_subdiv_computation
+    if _in_disc_subdiv_computation:
         return []
+    _in_disc_subdiv_computation = True
+    try:
+        raw_disc_gram = _original_torsion_gram_q(A_disc)
+        n = raw_disc_gram.nrows()
+        if n == 0:
+            return []
 
-    L = getattr(getattr(A_disc, "_W", None), "ambient_module", lambda: None)()
-    if L is None or not hasattr(L, "gram_matrix"):
-        return _detect_matrix_connected_cuts(raw_disc_gram)
+        if getattr(A_disc, "_is_normal_form", False):
+            return _detect_matrix_connected_cuts(raw_disc_gram)
 
-    L_cuts = _compute_lattice_gram_subdivisions(L)
-    if not L_cuts:
-        return _detect_matrix_connected_cuts(raw_disc_gram)
+        L = getattr(getattr(A_disc, "_W", None), "ambient_module", lambda: None)()
+        if L is None or not hasattr(L, "gram_matrix"):
+            return _detect_matrix_connected_cuts(raw_disc_gram)
 
-    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+        L_cuts = _compute_lattice_gram_subdivisions(L)
+        if not L_cuts:
+            return _detect_matrix_connected_cuts(raw_disc_gram)
 
-    r = L.rank()
-    gram = L.gram_matrix()
-    slice_starts = [0] + L_cuts
-    slice_ends = L_cuts + [r]
+        from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 
-    all_disc_cuts: list[int] = []
-    curr_offset = 0
+        r = L.rank()
+        gram = L.gram_matrix()
+        slice_starts = [0] + L_cuts
+        slice_ends = L_cuts + [r]
 
-    for start, end in zip(slice_starts, slice_ends):
-        sub_gram = gram.submatrix(start, start, end - start, end - start)
-        sub_L = IntegralLattice(sub_gram)
-        sub_A = sub_L.discriminant_group()
-        sub_disc_gram = _original_torsion_gram_q(sub_A)
-        sub_k = len(sub_A.gens())
+        all_disc_cuts: list[int] = []
+        curr_offset = 0
 
-        if sub_k > 0:
-            internal_cuts = _detect_matrix_connected_cuts(sub_disc_gram)
-            for ic in internal_cuts:
-                all_disc_cuts.append(curr_offset + ic)
-            curr_offset += sub_k
-            all_disc_cuts.append(curr_offset)
+        for start, end in zip(slice_starts, slice_ends):
+            sub_gram = gram.submatrix(start, start, end - start, end - start)
+            sub_L = IntegralLattice(sub_gram)
+            sub_A = sub_L.discriminant_group()
+            sub_disc_gram = _original_torsion_gram_q(sub_A)
+            sub_k = len(sub_A.gens())
 
-    if all_disc_cuts and all_disc_cuts[-1] == raw_disc_gram.nrows():
-        all_disc_cuts.pop()
+            if sub_k > 0:
+                internal_cuts = _detect_matrix_connected_cuts(sub_disc_gram)
+                for ic in internal_cuts:
+                    all_disc_cuts.append(curr_offset + ic)
+                curr_offset += sub_k
+                all_disc_cuts.append(curr_offset)
 
-    return sorted(list(set(all_disc_cuts)))
+        return sorted(list(set(c for c in all_disc_cuts if 0 < c < n)))
+    finally:
+        _in_disc_subdiv_computation = False
 
 
 _original_torsion_gram_q: Any = None
 _original_torsion_gram_b: Any = None
+_original_normal_form: Any = None
+
+
+def _patched_normal_form(self: Any, *args: Any, **kwargs: Any) -> Any:
+    r"""``normal_form`` returning a TorsionQuadraticModule marked as normal form."""
+    norm = _original_normal_form(self, *args, **kwargs)
+    setattr(norm, "_is_normal_form", True)
+    return norm
 
 
 def _patched_torsion_gram_matrix_quadratic(self: Any) -> Any:
@@ -814,7 +833,7 @@ def install() -> None:
         sage: patches.uninstall("lattice_methods")
     """
     global _original_integral_lattice, _original_direct_sum, _original_twist, _original_call, _original_gens
-    global _original_torsion_gram_q, _original_torsion_gram_b
+    global _original_torsion_gram_q, _original_torsion_gram_b, _original_normal_form
 
     target = _lattice_class()
     if _original_direct_sum is None:
@@ -836,9 +855,12 @@ def install() -> None:
         _original_torsion_gram_q = TorsionQuadraticModule.gram_matrix_quadratic.f
     if _original_torsion_gram_b is None:
         _original_torsion_gram_b = TorsionQuadraticModule.gram_matrix_bilinear.f
+    if _original_normal_form is None:
+        _original_normal_form = TorsionQuadraticModule.normal_form
 
     TorsionQuadraticModule.gram_matrix_quadratic = cached_method(_patched_torsion_gram_matrix_quadratic)
     TorsionQuadraticModule.gram_matrix_bilinear = cached_method(_patched_torsion_gram_matrix_bilinear)
+    TorsionQuadraticModule.normal_form = _patched_normal_form
 
     for name in _METHODS:
         attribute = globals()[name]
@@ -887,6 +909,8 @@ def uninstall() -> None:
 
         TorsionQuadraticModule.gram_matrix_quadratic = cached_method(_original_torsion_gram_q)
         TorsionQuadraticModule.gram_matrix_bilinear = cached_method(_original_torsion_gram_b)
+        if _original_normal_form is not None:
+            TorsionQuadraticModule.normal_form = _original_normal_form
 
     if _original_integral_lattice is not None:
         import sage.all
