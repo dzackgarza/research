@@ -353,7 +353,7 @@ def _latex_(self: Any) -> str:
         \cdot & 1 \\
         1 & \cdot
         \end{array}\right) \\
-        &A_L \cong 0
+        &A_L \cong 0, \quad G_{q_{A_L}} = ()
         \end{aligned}
         sage: patches.uninstall("lattice_methods")
     """
@@ -370,13 +370,10 @@ def _latex_(self: Any) -> str:
     A_disc = self.discriminant_group()
     invs = A_disc.invariants()
     disc_group_str = _format_disc_group_latex(invs)
-    if invs:
-        gram_q_latex = str(latex(A_disc.gram_matrix_quadratic()))
-        if ZERO_DOTS:
-            gram_q_latex = re.sub(r"\b0\b", lambda m: r"\cdot", gram_q_latex)
-        disc_line = f"&A_L \\cong {disc_group_str}, \\quad G_{{q_{{A_L}}}} = {gram_q_latex}"
-    else:
-        disc_line = f"&A_L \\cong {disc_group_str}"
+    gram_q_latex = str(latex(A_disc.gram_matrix_quadratic()))
+    if ZERO_DOTS:
+        gram_q_latex = re.sub(r"\b0\b", lambda m: r"\cdot", gram_q_latex)
+    disc_line = f"&A_L \\cong {disc_group_str}, \\quad G_{{q_{{A_L}}}} = {gram_q_latex}"
 
     return (
         f"\\begin{{aligned}}\n"
