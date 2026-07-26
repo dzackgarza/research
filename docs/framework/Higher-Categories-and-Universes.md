@@ -1,104 +1,224 @@
 # Higher categories and universes {#sec-higher-categories-universes}
 
 ::: {#def-universe}
-## The universe
+## Universe fibrations
 
-Fix an axiomatic $(\infty,2)$-category $\mathcal U$, called the universe of the theory, with terminal object $*$.
-The higher category of higher categories is a chosen object of $\mathcal U$, hence a point
+Work in an external cartesian closed $(\infty,\infty)$-category $\mathcal K$ with pullbacks and terminal object $*$.
+Fix a monoidal closed $(\infty,\infty)$-category $\mathcal U$ internal to $\mathcal K$, and use its canonical self-enrichment.
+Fix a universe fibration
 $$
-\mathbf{Cat}_\infty\colon *\longrightarrow\mathcal U.
+p_{\mathcal U}\colon\widetilde{\mathcal U}\longrightarrow\mathcal U.
 $$
-All categories below are small relative to $\mathcal U$.
+For a functor $F\colon B\to\mathcal U$, its category of elements is the cartesian pullback
+\begin{tikzcd}
+\displaystyle\int_BF
+  \arrow[r]
+  \arrow[d, "q_F"']
+&
+\widetilde{\mathcal U}
+  \arrow[d, "p_{\mathcal U}"]
+\\
+B
+  \arrow[r, "F"']
+  \arrow[ru, phantom, very near start, "\lrcorner"]
+&
+\mathcal U .
+\end{tikzcd}
+A morphism over $B$ is $\mathcal U$-small if it is equivalent over $B$ to $q_F$ for some $F\colon B\to\mathcal U$.
+The fibration $p_{\mathcal U}$ classifies these morphisms: base change induces an equivalence from $[B,\mathcal U]_{\mathcal K}$ to the replete full subcategory of $\mathcal K_{/B}$ on the $\mathcal U$-small morphisms.
+For a point $h_A\colon *\to\mathcal U$, write
+$$
+A:=\int_*h_A.
+$$
+A point of the decoded object $A$ is a functor $a\colon *\to A$.
+For points $x,y\colon *\to\mathcal U$, the self-enriched hom functor supplies a classifying point
+$$
+h_{[x,y]_{\mathcal U}}:=[-,-]_{\mathcal U}\circ(x,y)\colon *\longrightarrow\mathcal U,
+$$
+and its decoded internal hom-object is
+$$
+[x,y]_{\mathcal U}:=\int_*h_{[x,y]_{\mathcal U}}.
+$$
+The same definition applies to every decoded object, while a point of $\mathcal U$ is a functor $a\colon *\to\mathcal U$ in $\mathcal K$.
+The size convention and the universe fibration are interpreted in the fixed external category $\mathcal K$.
 :::
 
 ::: {#def-higher-category}
-## Higher categories
+## The category of higher categories
 
+Choose a point
+$$
+h_{\mathcal V}\colon *\longrightarrow\mathcal U
+$$
+and write
+$$
+\mathbf{Cat}_{\infty,\infty}
+:=
+\int_*h_{\mathcal V}.
+$$
+Equip $\mathbf{Cat}_{\infty,\infty}$ with a universe fibration
+$$
+p_{\mathcal V}\colon
+\widetilde{\mathbf{Cat}}_{\infty,\infty}
+\longrightarrow
+\mathbf{Cat}_{\infty,\infty}.
+$$
 A higher category is a point
 $$
-C\colon *\longrightarrow\mathbf{Cat}_\infty.
+h_C\colon *\longrightarrow\mathbf{Cat}_{\infty,\infty}.
 $$
-For higher categories $C$ and $D$, a morphism $F\colon C\to D$ is a $2$-morphism in $\mathcal U$ between the corresponding points.
+Its decoded higher category is the category of elements
+\begin{tikzcd}
+C:=\displaystyle\int_*h_C
+  \arrow[r]
+  \arrow[d]
+&
+\widetilde{\mathbf{Cat}}_{\infty,\infty}
+  \arrow[d, "p_{\mathcal V}"]
+\\
+*
+  \arrow[r, "h_C"']
+  \arrow[ru, phantom, very near start, "\lrcorner"]
+&
+\mathbf{Cat}_{\infty,\infty}.
+\end{tikzcd}
+An object of $C$ is a point
+$$
+x\colon *\longrightarrow C.
+$$
+:::
+
+::: {#def-grothendieck-construction}
+## Families and their points
+
+For a functor
+$$
+F\colon B\longrightarrow\mathbf{Cat}_{\infty,\infty},
+$$
+define $\int_BF\to B$ by pulling back $p_{\mathcal V}$ along $F$.
+For a point $b\colon *\to B$, the fiber of $\int_BF\to B$ over $b$ is $\int_* (F\circ b)$.
+A point of the family $F$ over $b$ is a point
+$$
+x\colon *\longrightarrow\int_*(F\circ b).
+$$
+For $B=*$ and $F=h_C$, this recovers the points $x\colon *\to C$ of @def-higher-category [@nlab:grothendieck_construction].
+:::
+
+::: {#def-internal-hom}
+## Local hom-objects
+
+For every decoded higher category $C$ and points $x,y\colon *\to C$, fix a classifying point
+$$
+h_{[x,y]_C}\colon
+*
+\longrightarrow
+\mathbf{Cat}_{\infty,\infty}
+$$
+and write
+$$
+[x,y]_C:=\int_*h_{[x,y]_C}.
+$$
+These hom-objects form a bifunctor
+$$
+[-,-]_C\colon
+C^{\mathrm{op}}\times C
+\longrightarrow
+\mathbf{Cat}_{\infty,\infty}.
+$$
+Its value at $(x,y)$ is the classifying point $h_{[x,y]_C}$.
+They have identity points
+$$
+\operatorname{id}_x\colon *\longrightarrow[x,x]_C
+$$
+and composition functors
+$$
+[y,z]_C\times[x,y]_C
+\longrightarrow
+[x,z]_C.
+$$
+The associativity and unit cells and their higher coherences are part of the $(\infty,\infty)$-categorical structure.
+
+For higher categories classified by $h_C,h_D\colon *\to\mathbf{Cat}_{\infty,\infty}$, let
+$$
+h_{[C,D]_{\mathbf{Cat}_{\infty,\infty}}}
+:=
+[-,-]_{\mathbf{Cat}_{\infty,\infty}}\circ(h_C,h_D)
+\colon *\longrightarrow\mathbf{Cat}_{\infty,\infty}
+$$
+be the classifying point supplied by the local hom bifunctor, and write
+$$
+[C,D]_{\mathbf{Cat}_{\infty,\infty}}
+:=
+\int_*h_{[C,D]_{\mathbf{Cat}_{\infty,\infty}}}
+$$
+for the decoded functor higher category. Its points are functors $C\to D$.
+For higher categories $A,C,D$, closedness gives
+$$
+[A\times C,D]_{\mathbf{Cat}_{\infty,\infty}}
+\simeq
+[A,[C,D]_{\mathbf{Cat}_{\infty,\infty}}]_{\mathbf{Cat}_{\infty,\infty}}.
+$$
+:::
+
+::: {#def-cells}
+## Higher cells
+
+A $0$-cell of $C$ is a point $x\colon *\to C$.
+For $0$-cells $x,y$, a $1$-cell is a point
+$$
+f\colon *\longrightarrow[x,y]_C.
+$$
+For parallel $1$-cells $f,g$, a $2$-cell is a point
+$$
+\alpha\colon
+*
+\longrightarrow
+[f,g]_{[x,y]_C}.
+$$
+For parallel $2$-cells $\alpha,\beta$, a $3$-cell is a point
+$$
+\Gamma\colon
+*
+\longrightarrow
+[\alpha,\beta]_{[f,g]_{[x,y]_C}}.
+$$
+Iterating the same point and local hom-object constructions defines all higher cells.
 :::
 
 ::: {#def-equivalence-of-categories}
 ## Equivalences
 
-A morphism $F\colon C\to D$ is an *equivalence* if there is a morphism $G\colon D\to C$ and invertible $2$-morphisms
+A *structure of reversibility* is a family $\mathscr R$ of positive-dimensional cells in the iterated hom-objects such that, for every cell
 $$
-G\circ F\Longrightarrow\operatorname{id}_C,
+f\colon *\longrightarrow[x,y]_C
+$$
+in $\mathscr R$, there is a cell
+$$
+g\colon *\longrightarrow[y,x]_C
+$$
+in $\mathscr R$ and cells
+$$
+\eta\colon
+*
+\longrightarrow
+[g\circ f,\operatorname{id}_x]_{[x,x]_C},
 \qquad
-F\circ G\Longrightarrow\operatorname{id}_D.
+\epsilon\colon
+*
+\longrightarrow
+[f\circ g,\operatorname{id}_y]_{[y,y]_C}
+$$
+in $\mathscr R$.
+A cell is *invertible* if it belongs to a structure of reversibility [@OR23, Definition 1.5.1].
+
+An equivalence between higher categories $C$ and $D$ is an invertible point
+$$
+F\colon
+*
+\longrightarrow
+[C,D]_{\mathbf{Cat}_{\infty,\infty}}.
 $$
 Write $C\simeq D$ when such an equivalence has been chosen.
-:::
-
-::: {#def-grothendieck-construction}
-## Grothendieck constructions and objects
-
-For a morphism $F\colon C\to\mathbf{Cat}_\infty$, assume its cocartesian Grothendieck construction exists in $\mathcal U$:
-$$
-q_F\colon\int_{c\in C}F(c)\longrightarrow C.
-$$
-Its fiber over a point $c\colon *\to C$ is equivalent to $F(c)$.
-This defines the notation $\int_C F$ [@nlab:grothendieck_construction].
-
-Apply this construction to the identity morphism of $\mathbf{Cat}_\infty$:
-$$
-p\colon
-\int_{\mathbf{Cat}_\infty}\mathbf{Cat}_\infty
-\longrightarrow
-\mathbf{Cat}_\infty.
-$$
-For a higher category $C\colon *\to\mathbf{Cat}_\infty$, define $\int_C C$ by the cartesian square
-\begin{tikzcd}
-\int_C C
-  \arrow[r]
-  \arrow[d]
-&
-\int_{\mathbf{Cat}_\infty}\mathbf{Cat}_\infty
-  \arrow[d, "p"]
-\\
-*
-  \arrow[r, "C"']
-  \arrow[ru, phantom, very near start, "\lrcorner"]
-&
-\mathbf{Cat}_\infty .
-\end{tikzcd}
-The fiber equivalence gives $\int_C C\simeq C$.
-An object of $C$ is a point
-$$
-x\colon *\longrightarrow\int_C C.
-$$
-:::
-
-::: {#def-internal-hom}
-## Internal homs
-
-The higher category $\mathbf{Cat}_\infty$ is cartesian closed.
-Its internal hom is written
-$$
-[-,-]\colon
-\mathbf{Cat}_\infty^{\mathrm{op}}\times\mathbf{Cat}_\infty
-\longrightarrow\mathbf{Cat}_\infty.
-$$
-For higher categories $A,C,D$, there is a natural equivalence
-$$
-[A\times C,D]\simeq[A,[C,D]].
-$$
-A point of $[C,D]$ is a morphism $C\to D$; its higher morphisms are transformations and their higher transformations.
-
-For each higher category $C$, assume a hom-object bifunctor
-$$
-[-,-]_C\colon
-(\int_C C)^{\mathrm{op}}\times\int_C C
-\longrightarrow\mathbf{Cat}_\infty.
-$$
-For points $x,y\colon *\to\int_C C$, its value is the point
-$$
-[x,y]_C\colon *\longrightarrow\mathbf{Cat}_\infty.
-$$
-Its endpoint-fiber presentation is given in @def-mapping-spaces.
 :::
 
 ::: {#def-core}
@@ -106,7 +226,7 @@ Its endpoint-fiber presentation is given in @def-mapping-spaces.
 
 Let $\mathcal S=\mathbf{Types}$ and let
 $$
-i\colon\mathcal S\hookrightarrow\mathbf{Cat}_\infty
+i\colon\mathcal S\hookrightarrow\mathbf{Cat}_{\infty,\infty}
 $$
 be the full inclusion of groupoidal higher categories.
 Assume the adjunctions
@@ -115,7 +235,7 @@ $$
 $$
 The left adjoint
 $$
-\Pi_\infty\colon\mathbf{Cat}_\infty\longrightarrow\mathcal S
+\Pi_\infty\colon\mathbf{Cat}_{\infty,\infty}\longrightarrow\mathcal S
 $$
 is the underlying homotopy type obtained by inverting every morphism.
 The right adjoint $C\mapsto C^\simeq$ is the core obtained by retaining every object and only the equivalences [@Lur26, Tags 01DQ and 02F5].
@@ -125,8 +245,8 @@ The right adjoint $C\mapsto C^\simeq$ is the core obtained by retaining every ob
 ::: {#def-bicomplete-cat-infinity}
 ## Limits, loops, and suspensions
 
-The higher category $\mathbf{Cat}_\infty$ has an initial object $\varnothing$ and a terminal object $*$, and it is bicomplete.
-For a pointed higher category $(X,x)$, where $x\colon *\to\int_X X\simeq X$, define
+The higher category $\mathbf{Cat}_{\infty,\infty}$ has an initial object $\varnothing$ and a terminal object $*$, and it is bicomplete.
+For a pointed higher category $(X,x)$, where $x\colon *\to X$, define
 $$
 \Omega_xX:=*\times_X*.
 $$
@@ -153,7 +273,7 @@ The two coprojections $*\to\Sigma A$ make $\Sigma A$ bipointed.
 
 The higher category of bipointed higher categories is the comma category
 $$
-((*\amalg *)\downarrow\operatorname{id}_{\mathbf{Cat}_\infty}).
+((*\amalg *)\downarrow\operatorname{id}_{\mathbf{Cat}_{\infty,\infty}}).
 $$
 Its objects are morphisms
 $$
@@ -162,8 +282,8 @@ $$
 The endpoint hom functor is
 $$
 \Omega_{01}\colon
-((*\amalg *)\downarrow\operatorname{id}_{\mathbf{Cat}_\infty})
-\longrightarrow\mathbf{Cat}_\infty,
+((*\amalg *)\downarrow\operatorname{id}_{\mathbf{Cat}_{\infty,\infty}})
+\longrightarrow\mathbf{Cat}_{\infty,\infty},
 \qquad
 (X;x_0,x_1)\longmapsto[x_0,x_1]_X.
 $$
@@ -171,7 +291,7 @@ Assume that $\Omega_{01}$ has a left adjoint
 $$
 B_{01}\dashv\Omega_{01}.
 $$
-For $A\colon *\to\mathbf{Cat}_\infty$, the bipointed higher category $B_{01}A$ has distinguished objects $0,1$ and hom-objects displayed by
+For a higher category $A=\int_*h_A$, the bipointed higher category $B_{01}A$ has distinguished objects $0,1$ and hom-objects displayed by
 \begin{tikzcd}[column sep=huge]
 0
   \arrow[r, bend left=18, "A"]
@@ -185,7 +305,7 @@ Composition is given by the identity actions on $A$ and the unique morphisms fro
 The suspension $\Sigma A$ is the pushout in @def-bicomplete-cat-infinity. The object $B_{01}A$ is characterized by the adjunction $B_{01}\dashv\Omega_{01}$.
 :::
 
-::: {#def-cells}
+::: {#def-walking-arrow}
 ## Walking arrows and ordinal categories
 
 Define
@@ -201,38 +321,41 @@ $$
 \underbrace{[1]\amalg_{[0]}[1]\amalg_{[0]}\cdots\amalg_{[0]}[1]}_{n\text{ copies}},
 $$
 where each pushout identifies the target of one copy with the source of the next.
-For a higher category $C$, the internal hom $[[n],C]$ is the higher category of morphisms $[n]\to C$ and their higher transformations.
+For a higher category $C$, the hom-object
+$$
+[[n],C]_{\mathbf{Cat}_{\infty,\infty}}
+$$
+is the higher category of functors $[n]\to C$ and their higher cells.
 :::
 
 ::: {#def-mapping-spaces}
-## Arrows and mapping types
+## Walking-arrow presentation and mapping types
 
-For a higher category $C$, define
-$$
-\operatorname{Arr}(C):=[[1],C].
-$$
 Precomposition with $s$ and $t$ gives
 $$
-(s^*,t^*)\colon[[1],C]
+(s^*,t^*)\colon
+[[1],C]_{\mathbf{Cat}_{\infty,\infty}}
 \longrightarrow
-[[0],C]\times[[0],C]
+[[0],C]_{\mathbf{Cat}_{\infty,\infty}}
+\times
+[[0],C]_{\mathbf{Cat}_{\infty,\infty}}
 \simeq
-\int_C C\times\int_C C.
+C\times C.
 $$
-For points $x,y\colon*\to\int_C C$, the hom-object $[x,y]_C$ is equivalently the cartesian fiber
+For points $x,y\colon*\to C$, the local hom-object $[x,y]_C$ is the cartesian fiber
 \begin{tikzcd}
 {[x,y]_C}
   \arrow[r]
   \arrow[d]
 &
-{[[1],C]}
+{[[1],C]_{\mathbf{Cat}_{\infty,\infty}}}
   \arrow[d, "{(s^*,t^*)}"]
 \\
 *
   \arrow[r, "{(x,y)}"']
   \arrow[ru, phantom, very near start, "\lrcorner"]
 &
-\int_C C\times\int_C C.
+C\times C.
 \end{tikzcd}
 Its underlying mapping type is
 $$
@@ -240,15 +363,17 @@ $$
 $$
 Likewise,
 $$
-\operatorname{Map}_{\mathbf{Cat}_\infty}(C,D):=\Pi_\infty[C,D].
+\operatorname{Map}_{\mathbf{Cat}_{\infty,\infty}}(C,D)
+:=
+\Pi_\infty[C,D]_{\mathbf{Cat}_{\infty,\infty}}.
 $$
 :::
 
 ::: {#def-initial-terminal}
 ## Initial, terminal, and contractible objects
 
-An object $t\colon*\to\int_C C$ is terminal if $\operatorname{Map}_C(x,t)$ is contractible for every $x\colon*\to\int_C C$.
-An object $i\colon*\to\int_C C$ is initial if $\operatorname{Map}_C(i,x)$ is contractible for every $x\colon*\to\int_C C$.
+An object $t\colon*\to C$ is terminal if $\operatorname{Map}_C(x,t)$ is contractible for every $x\colon*\to C$.
+An object $i\colon*\to C$ is initial if $\operatorname{Map}_C(i,x)$ is contractible for every $x\colon*\to C$.
 A higher category is *contractible* when it is equivalent to $*$.
 :::
 
@@ -256,11 +381,11 @@ A higher category is *contractible* when it is equivalent to $*$.
 ## Truncated objects and morphisms
 
 Let $C$ be a higher category.
-For an integer $n\geq-2$, an object $X\colon*\to\int_C C$ is *$n$-truncated* if $\operatorname{Map}_C(Y,X)$ is an $n$-truncated type for every $Y\colon*\to\int_C C$.
+For an integer $n\geq-2$, an object $X\colon*\to C$ is *$n$-truncated* if $\operatorname{Map}_C(Y,X)$ is an $n$-truncated type for every $Y\colon*\to C$.
 The $(-2)$-truncated objects are the terminal objects.
 
-For an object $Y\colon*\to\int_C C$, write $C_{/Y}:=(\operatorname{id}_C\downarrow Y)$ for the slice. A morphism $f\colon X\to Y$ is *$n$-truncated* if it is an $n$-truncated object of $C_{/Y}$.
-Equivalently, for every $Z\colon*\to\int_C C$ and every point of $\operatorname{Map}_C(Z,Y)$, the corresponding fiber of
+For an object $Y\colon*\to C$, write $C_{/Y}:=(\operatorname{id}_C\downarrow Y)$ for the slice. A morphism $f\colon X\to Y$ is *$n$-truncated* if it is an $n$-truncated object of $C_{/Y}$.
+Equivalently, for every $Z\colon*\to C$ and every point of $\operatorname{Map}_C(Z,Y)$, the corresponding fiber of
 $$
 \operatorname{Map}_C(Z,X)
 \longrightarrow
@@ -287,21 +412,30 @@ When the inclusion of $n$-truncated objects of $C$ is reflective, write its refl
 
 For each integer $n\geq-2$, assume an idempotent truncation endomorphism
 $$
-T_{\leq n}\colon\mathbf{Cat}_\infty\longrightarrow\mathbf{Cat}_\infty.
+T_{\leq n}\colon
+\mathbf{Cat}_{\infty,\infty}
+\longrightarrow
+\mathbf{Cat}_{\infty,\infty}.
 $$
 Define
 $$
 \mathbf{Cat}_n
 :=\operatorname{EssIm}(T_{\leq n})
-=:T_{\leq n}\mathbf{Cat}_\infty.
+=:T_{\leq n}\mathbf{Cat}_{\infty,\infty}.
 $$
 Let
 $$
-\iota_n\colon\mathbf{Cat}_n\longrightarrow\mathbf{Cat}_\infty
+\iota_n\colon
+\mathbf{Cat}_n
+\longrightarrow
+\mathbf{Cat}_{\infty,\infty}
 $$
 be the full inclusion, and write
 $$
-\tau_{\leq n}\colon\mathbf{Cat}_\infty\longrightarrow\mathbf{Cat}_n
+\tau_{\leq n}\colon
+\mathbf{Cat}_{\infty,\infty}
+\longrightarrow
+\mathbf{Cat}_n
 $$
 for the corestriction of $T_{\leq n}$ to its essential image.
 Assume
@@ -319,31 +453,39 @@ $$
 \mathbf{Cat}_0\longrightarrow
 \mathbf{Cat}_1\longrightarrow\cdots\longrightarrow
 \mathbf{Cat}_n\longrightarrow\cdots\longrightarrow
-\mathbf{Cat}_\infty.
+\mathbf{Cat}_{\infty,\infty}.
 $$
-An *$n$-category structure* on a higher category $C\colon*\to\mathbf{Cat}_\infty$ is a lift
+An *$n$-category structure* on a higher category $C=\int_*h_C$ is a lift
 \begin{tikzcd}
 &
 \mathbf{Cat}_n
   \arrow[d, "\iota_n"]
 \\
 *
-  \arrow[ur, "\widetilde C"]
-  \arrow[r, "C"']
+  \arrow[ur, "\widetilde h_C"]
+  \arrow[r, "h_C"']
 &
-\mathbf{Cat}_\infty
+\mathbf{Cat}_{\infty,\infty}
 \end{tikzcd}
-together with a specified equivalence $\iota_n\circ\widetilde C\simeq C$.
+together with a specified equivalence $\iota_n\circ\widetilde h_C\simeq h_C$.
 
-For $n\geq0$, a second construction begins with the full replete subcategory $\mathbf{Cat}_n^{\mathrm{loc}}\subseteq\mathbf{Cat}_\infty$ on the locally $(n-1)$-truncated higher categories [@Lur26, Tag 05EA].
+For $n\geq0$, a second construction begins with the full replete subcategory
+$$
+\mathbf{Cat}_n^{\mathrm{loc}}
+\subseteq
+\mathbf{Cat}_{\infty,\infty}
+$$
+on the locally $(n-1)$-truncated higher categories [@Lur26, Tag 05EA].
 Its inclusion supplies $\iota_n$ after an equivalence $\mathbf{Cat}_n^{\mathrm{loc}}\simeq\mathbf{Cat}_n$ has been established.
 Its left and right adjoints, when they exist, supply $\tau_{\leq n}$ and $\tau_{\leq n}^{\mathrm R}$.
 
 For higher categories $C,D$, define
 $$
-[C,D]^{\leq n}\hookrightarrow[C,D]
+[C,D]_{\mathbf{Cat}_{\infty,\infty}}^{\leq n}
+\hookrightarrow
+[C,D]_{\mathbf{Cat}_{\infty,\infty}}
 $$
-to be the full replete subcategory on the $n$-truncated objects of $[C,D]$.
+to be the full replete subcategory on the $n$-truncated objects of $[C,D]_{\mathbf{Cat}_{\infty,\infty}}$.
 These objects are the $n$-truncated morphisms $C\to D$ internal to the mapping higher category.
 :::
 
@@ -351,12 +493,12 @@ These objects are the $n$-truncated morphisms $C\to D$ internal to the mapping h
 ::: {#def-ordinary-category-specialization}
 ## Ordinary categories
 
-An *ordinary-category structure* on a higher category $C\colon*\to\mathbf{Cat}_\infty$ is a $1$-category structure on $C$: a point
+An *ordinary-category structure* on a higher category $C=\int_*h_C$ is a $1$-category structure on $C$: a point
 $$
-\widetilde C\colon*\longrightarrow\mathbf{Cat}_1
+\widetilde h_C\colon*\longrightarrow\mathbf{Cat}_1
 $$
-together with a specified equivalence $\iota_1\circ\widetilde C\simeq C$.
-An ordinary category may be presented by the point $\widetilde C$; its underlying higher category is $\iota_1\circ\widetilde C$.
+together with a specified equivalence $\iota_1\circ\widetilde h_C\simeq h_C$.
+An ordinary category may be presented by the point $\widetilde h_C$; its underlying higher category is decoded from $\iota_1\circ\widetilde h_C$.
 :::
 
 ::: {#def-equality-of-objects}

@@ -26,8 +26,8 @@ The category of elements is its $\mathbf{Set}$-valued special case [@nlab:grothe
 
 A *subobject* of $Y\in\mathcal C$ is a monomorphism $m:X\to Y$ in $\mathcal C$; the datum is the arrow $m$, not merely the domain $X$ [@Lur26, Tag 04VD]. Equivalently, $m$ is a subterminal object of the slice $\mathcal C_{/Y}$, and if the relevant pullback exists, $m$ is monic exactly when the diagonal $\Delta_m:X\to X\times_Y X$ is an equivalence.
 
-For ordinary $\mathbf{Cat}$, a functor $F:\mathcal A\to\mathcal B$ is monic if and only if it is injective on objects and faithful; hence subobjects in $\mathbf{Cat}$ are ordinary subcategories, up to isomorphism over the parent.
-In $\operatorname{Cat}_\infty$, a monomorphism must also contain every equivalence between objects in its image, so not every ordinary subcategory remains a subobject after passing to $\operatorname{Cat}_\infty$.
+For ordinary $\mathbf{Cat}$, a functor $F:\mathcal A\to\mathcal B$ is monic if and only if it is injective on objects and faithful; hence subobjects in $\mathbf{Cat}$ are ordinary subcategories, up to isomorphism over $\mathcal B$.
+In $\operatorname{Cat}_{\infty,\infty}$, a monomorphism must also contain every equivalence between objects in its image, so not every ordinary subcategory remains a subobject after passing to $\operatorname{Cat}_{\infty,\infty}$.
 
 A *full subcategory* $\mathcal D\subseteq\mathcal C$ is the special case where $m$ is fully faithful: a collection of objects of $\mathcal C$ with mapping spaces inherited from $\mathcal C$,
 $$
@@ -59,7 +59,7 @@ is an isomorphism [@stacks-0109]. In an abelian category, a morphism is monic ex
 
 For an ordinary category $C$, the arrow category is $[[1],C]$.
 Evaluation at the source and target gives a functor to $C\times C$.
-Internal homs and arrow categories in $\mathbf{Cat}_\infty$ are defined in @def-internal-hom and @def-mapping-spaces.
+Local hom-objects and walking-arrow categories in $\mathbf{Cat}_{\infty,\infty}$ are defined in @def-internal-hom and @def-mapping-spaces.
 
 ## Pseudo-pullbacks {#sec-pullback-cat}
 
