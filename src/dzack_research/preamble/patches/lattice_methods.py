@@ -419,20 +419,20 @@ def _latex_(self: Any) -> str:
         gram_latex = re.sub(r"\b0\b", lambda m: r"\cdot", gram_latex)
 
     A_disc = self.discriminant_group()
-    inv_str = _format_invariant_factor_latex(A_disc.invariants())
-    prim_str = _format_primary_decomp_latex(A_disc)
-    gram_q_latex = _primary_gram_matrix_latex(A_disc)
+    A_latex = str(latex(A_disc))
+    A_lines = [
+        line
+        for line in A_latex.splitlines()
+        if line and not line.startswith(r"\begin{aligned}") and not line.startswith(r"\end{aligned}")
+    ]
 
-    n_disc = A_disc.gram_matrix_quadratic().nrows()
-    return (
-        f"\\begin{{aligned}}\n"
-        f"&L \\in \\mathrm{{Lattices}}(\\ZZ), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc_latex} \\\\\n"
-        f"&G_L = {gram_latex} \\\\\n"
-        f"&A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Invariant factor decomposition)}} \\\\\n"
-        f"&A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Primary decomposition)}} \\\\\n"
-        f"&G_{{q_{{A_L}}}} = {gram_q_latex} \\in \\mathrm{{Mat}}_{{{n_disc}}}(\\mathbb{{Q}}/2\\mathbb{{Z}})\n"
-        f"\\end{{aligned}}"
-    )
+    header_lines = [
+        r"\begin{aligned}",
+        f"&L \\in \\mathrm{{Lattices}}(\\ZZ), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc_latex} \\\\",
+        f"&G_L = {gram_latex} \\\\",
+    ]
+
+    return "\n".join(header_lines + A_lines + [r"\end{aligned}"])
 
 
 _original_torsion_latex: Any = None
