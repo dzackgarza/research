@@ -705,46 +705,30 @@ def _block_subdivide_matrix(G: Any) -> Any:
 
 _original_torsion_gram_q: Any = None
 _original_torsion_gram_b: Any = None
-_in_nf_q: bool = False
-_in_nf_b: bool = False
 
 
 def _patched_torsion_gram_matrix_quadratic(self: Any) -> Any:
-    r"""Return block-diagonal quadratic Gram matrix in canonical normal form basis with block subdivisions."""
-    global _in_nf_q
+    r"""Return literal quadratic Gram matrix of self.gens() with orthogonal block subdivisions."""
     invs = self.invariants()
     if not invs:
         from sage.matrix.constructor import matrix
         from sage.rings.rational_field import QQ
 
         return matrix(QQ, 0, 0)
-    if _in_nf_q:
-        return _block_subdivide_matrix(_original_torsion_gram_q(self))
-    _in_nf_q = True
-    try:
-        norm = self.normal_form()
-        return _block_subdivide_matrix(_original_torsion_gram_q(norm))
-    finally:
-        _in_nf_q = False
+    raw_gram = _original_torsion_gram_q(self)
+    return _block_subdivide_matrix(raw_gram)
 
 
 def _patched_torsion_gram_matrix_bilinear(self: Any) -> Any:
-    r"""Return block-diagonal bilinear Gram matrix in canonical normal form basis with block subdivisions."""
-    global _in_nf_b
+    r"""Return literal bilinear Gram matrix of self.gens() with orthogonal block subdivisions."""
     invs = self.invariants()
     if not invs:
         from sage.matrix.constructor import matrix
         from sage.rings.rational_field import QQ
 
         return matrix(QQ, 0, 0)
-    if _in_nf_b:
-        return _block_subdivide_matrix(_original_torsion_gram_b(self))
-    _in_nf_b = True
-    try:
-        norm = self.normal_form()
-        return _block_subdivide_matrix(_original_torsion_gram_b(norm))
-    finally:
-        _in_nf_b = False
+    raw_gram = _original_torsion_gram_b(self)
+    return _block_subdivide_matrix(raw_gram)
 
 
 def install() -> None:

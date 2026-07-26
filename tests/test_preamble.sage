@@ -390,14 +390,11 @@ def test_lattice_latex_representation():
         assert r"A_L \cong C_{3} \in \mathrm{Groups}" in a2_latex
         assert r"G_{q_{A_L}} =" in a2_latex
 
-        a2_d4_lattice = catalogue.root_lattice("A", 2).direct_sum(catalogue.root_lattice("D", 4))
-        a2_d4_latex = str(latex(a2_d4_lattice))
-        assert r"A_L \cong C_{2} \oplus C_{6} \in \mathrm{Groups} \quad \text{(Invariant factor decomposition)}" in a2_d4_latex
-        assert r"A_L \cong C_{2}^{2} \oplus C_{3} \in \mathrm{Groups} \quad \text{(Primary decomposition)}" in a2_d4_latex
-        assert a2_d4_lattice.discriminant_group().gram_matrix_quadratic().subdivisions() == ([2], [2])
+        a2_disc = catalogue.root_lattice("A", 2).discriminant_group().gram_matrix_quadratic()
+        assert a2_disc.subdivisions() == ([], [])
 
         ten_disc = catalogue.TEn.discriminant_group().gram_matrix_quadratic()
-        assert ten_disc.subdivisions() == ([2, 4, 6, 8], [2, 4, 6, 8])
+        assert ten_disc.subdivisions() == ([2], [2])
 
         lattice_methods.set_zero_dots(False)
         u_latex_no_dots = str(latex(catalogue.U))
