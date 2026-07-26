@@ -385,8 +385,8 @@ def _latex_(self: Any) -> str:
         \cdot & 1 \\
         1 & \cdot
         \end{array}\right) \\
-        &A_L \cong 0 \in \mathrm{Groups} \\
-        &A_L \cong 0 \in \mathrm{Groups} \\
+        &A_L \cong 0 \in \mathrm{Groups} \quad \text{(Invariant factor decomposition)} \\
+        &A_L \cong 0 \in \mathrm{Groups} \quad \text{(Primary decomposition)} \\
         &G_{q_{A_L}} = ()
         \end{aligned}
         sage: patches.uninstall("lattice_methods")
@@ -410,8 +410,8 @@ def _latex_(self: Any) -> str:
         f"\\begin{{aligned}}\n"
         f"&L \\in \\mathrm{{Lattices}}(\\ZZ), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc} \\\\\n"
         f"&G_L = {gram_latex} \\\\\n"
-        f"&A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\\\\n"
-        f"&A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\\\\n"
+        f"&A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Invariant factor decomposition)}} \\\\\n"
+        f"&A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Primary decomposition)}} \\\\\n"
         f"&G_{{q_{{A_L}}}} = {gram_q_latex}\n"
         f"\\end{{aligned}}"
     )
