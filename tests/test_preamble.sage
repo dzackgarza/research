@@ -417,7 +417,7 @@ def test_lattice_latex_representation():
         patches.uninstall("lattice_methods")
 
 
-def test_named_lattice_latex_has_balanced_environments():
+def test_catalogue_latex_fits_mathjax_and_has_balanced_environments():
     import re
 
     catalogue, _, _, patches, _, _ = _preamble()
@@ -425,8 +425,12 @@ def test_named_lattice_latex_has_balanced_environments():
     try:
         from sage.misc.latex import latex
 
-        for name, lattice in (("U", catalogue.U), ("E8", catalogue.E8)):
+        for name, lattice in catalogue.namespace().items():
             rendered = str(latex(lattice))
+            assert len(rendered.encode()) <= 5 * 1024, (
+                f"{name} exceeds MathJax's default 5 KiB maxBuffer: "
+                f"{len(rendered.encode())} bytes"
+            )
             stack = []
             for action, environment in re.findall(
                 r"\\(begin|end)\{([^{}]+)\}", rendered
