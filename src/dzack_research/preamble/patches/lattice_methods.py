@@ -514,17 +514,21 @@ def _patched_torsion_latex(self: Any) -> str:
     prim_str = _format_primary_decomp_latex(self)
     gram_q_latex = _primary_gram_matrix_latex(self)
 
-    is_compact_fp = fp_latex.startswith(r"\text{Generators: }")
-    if is_compact_fp:
-        line1 = f"A_L = {fp_latex}"
-        line2 = f"A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Invariant factor decomposition)}} \\\\"
-        line3 = f"A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Primary decomposition)}} \\\\"
-        line4 = f"G_{{q_{{A_L}}}} = {gram_q_latex} \\in \\mathrm{{Mat}}_{{{n}}}(\\mathbb{{Q}}/2\\mathbb{{Z}})"
-    else:
-        line1 = f"A_L = {fp_latex} \\in \\mathrm{{Groups}} \\quad \\text{{(Dual basis presentation)}} \\\\"
-        line2 = f"A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Invariant factor decomposition)}} \\\\"
-        line3 = f"A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Primary decomposition)}} \\\\"
-        line4 = f"G_{{q_{{A_L}}}} = {gram_q_latex} \\in \\mathrm{{Mat}}_{{{n}}}(\\mathbb{{Q}}/2\\mathbb{{Z}})"
+    line1 = (
+        f"A_L = {fp_latex} \\in \\mathrm{{Groups}} \\quad \\text{{(Finite presentation)}} \\\\"
+    )
+    line2 = (
+        f"A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad "
+        "\\text{{(Invariant factor decomposition)}} \\\\"
+    )
+    line3 = (
+        f"A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad "
+        "\\text{{(Primary decomposition)}} \\\\"
+    )
+    line4 = (
+        f"G_{{q_{{A_L}}}} = {gram_q_latex} \\in "
+        f"\\mathrm{{Mat}}_{{{n}}}(\\mathbb{{Q}}/2\\mathbb{{Z}})"
+    )
 
     return "\\begin{gathered}\n" + "\n".join([line1, line2, line3, line4]) + "\n\\end{gathered}"
 
@@ -893,87 +897,195 @@ _original_torsion_latex: Any = None
 _original_finitely_presented_group_latex: Any = None
 
 
-_FP_LATEX_INLINE_MAX_GENERATORS = 12
-_FP_LATEX_INLINE_MAX_RELATORS = 40
-_FP_LATEX_TABLE_MAX_GENERATORS = 30
-_FP_LATEX_TABLE_MAX_RELATIONS = 60
-_FP_LATEX_MAX_RELATION_TEXT_LEN = 80
-_FP_LATEX_NO_TRUNCATE_ENV = "DZACK_FP_LATEX_NO_TRUNCATE"
+_FP_LATEX_INLINE_WIDTH = 110
+_FP_LATEX_STACKED_WIDTH = 220
 
 
-def _fp_latex_truncate_enabled() -> bool:
-    import os
-
-    value = os.environ.get(_FP_LATEX_NO_TRUNCATE_ENV, "").strip().lower()
-    return value not in {"1", "true", "yes", "on"}
-
-
-def _should_compact_finitely_presented_latex(group: Any) -> bool:
-    from sage.misc.latex import latex
-
-    relations = tuple(group.relations())
-    if group.ngens() > _FP_LATEX_INLINE_MAX_GENERATORS:
-        return True
-    if len(relations) > _FP_LATEX_INLINE_MAX_RELATORS:
-        return True
-    max_len = max((len(str(latex(rel))) for rel in relations), default=0)
-    if max_len > _FP_LATEX_MAX_RELATION_TEXT_LEN:
-        return True
-    return False
+def _fp_group_generator_names(group: Any) -> tuple[str, ...]:
+    names = getattr(group, "variable_names", lambda: None)()
+    if not names:
+        names = [str(gen) for gen in group.gens()]
+    return tuple(str(name) for name in names)
 
 
-def _format_finite_presentation_generators_latex(group: Any) -> str:
-    from sage.misc.latex import latex
+def _fp_format_generator_name(name: str) -> str:
+    import re
 
-    names = tuple(str(latex(gen)) for gen in group.gens())
-    if not _fp_latex_truncate_enabled() or len(names) <= _FP_LATEX_TABLE_MAX_GENERATORS:
-        return ", ".join(names)
-
-    shown = names[:_FP_LATEX_TABLE_MAX_GENERATORS]
-    more = len(names) - len(shown)
-    return f"{', '.join(shown)}, \\dots, \\text{{and {more} more}}"
+    match = re.fullmatch(r"([A-Za-z]+)(\d+)", name)
+    if match:
+        stem, index = match.groups()
+        return f"{stem}_{{{index}}}"
+    return name.replace("_", "\\_")
 
 
-def _format_finite_presentation_relation_rows_latex(group: Any) -> str:
-    from sage.misc.latex import latex
-
-    relations = tuple(group.relations())
-    if not relations:
-        return "&\\text{(trivial)}\\\\"
-
-    rel_texts = tuple(str(latex(rel)) for rel in relations)
-    max_rows = (
-        len(rel_texts)
-        if not _fp_latex_truncate_enabled()
-        else _FP_LATEX_TABLE_MAX_RELATIONS
+def _fp_parse_syllables_from_reduced_word(raw: Any) -> tuple[tuple[int, int], ...]:
+    if not raw:
+        return ()
+    syllables: list[tuple[int, int]] = []
+    for item in tuple(raw):
+        value = int(item)
+        if value == 0:
+            continue
+        idx = abs(value) - 1
+        exp = 1 if value > 0 else -1
+        if syllables and syllables[-1][0] == idx and (syllables[-1][1] >= 0) == (exp >= 0):
+            syllables[-1] = (idx, syllables[-1][1] + exp)
+        else:
+            syllables.append((idx, exp))
+    return tuple(
+        (idx, exp) for idx, exp in syllables
+        if exp != 0
     )
-    shown = rel_texts[:min(len(rel_texts), max_rows)]
-    rows = [f"R_{{{index}}} &= {rel}" for index, rel in enumerate(shown, start=1)]
-
-    if len(rel_texts) > len(shown):
-        rows.append("&\\vdots")
-        rows.append(f"&\\text{{... and {len(rel_texts) - len(shown)} more}}")
-
-    if not rows:
-        return "\\text{(trivial)}\\\\"
-
-    return "\\\\\n        ".join(rows) + "\\\\"
 
 
-def _format_finite_presentation_summary_latex(group: Any) -> str:
+def _fp_parse_syllables_from_group_syllables(
+    group: Any, raw: Any
+) -> tuple[tuple[int, int], ...]:
+    if not raw:
+        return ()
+    generators = tuple(group.gens())
+    syllables: list[tuple[int, int]] = []
+    for item in tuple(raw):
+        if isinstance(item, int):
+            return _fp_parse_syllables_from_reduced_word((item,))
+
+        if isinstance(item, (list, tuple)) and len(item) == 2:
+            gen, exp = item
+            if isinstance(gen, int):
+                if len(generators) and 0 <= gen < len(generators):
+                    idx = gen
+                elif len(generators) and 1 <= gen <= len(generators):
+                    idx = gen - 1
+                else:
+                    idx = gen - 1
+            else:
+                try:
+                    idx = gen.index()
+                    if len(generators) and idx == -1:
+                        raise ValueError
+                    if len(generators) and 0 <= idx < len(generators):
+                        pass
+                    elif len(generators) and 1 <= idx <= len(generators):
+                        idx -= 1
+                except Exception:
+                    if gen in generators:
+                        idx = generators.index(gen)
+                    else:
+                        try:
+                            int_val = int(gen)
+                            if len(generators) and 0 <= int_val < len(generators):
+                                idx = int_val
+                            elif len(generators) and 1 <= int_val <= len(generators):
+                                idx = int_val - 1
+                            else:
+                                raise ValueError
+                        except Exception as exc:
+                            raise TypeError(
+                                f"unrecognized syllable generator {gen!r}"
+                            ) from exc
+            exp_int = int(exp)
+            if exp_int == 0:
+                continue
+            if syllables and syllables[-1][0] == idx and (syllables[-1][1] >= 0) == (exp_int >= 0):
+                syllables[-1] = (idx, syllables[-1][1] + exp_int)
+            else:
+                syllables.append((idx, exp_int))
+            continue
+
+        raise TypeError(f"unrecognized syllable item {item!r}")
+    return tuple((idx, exp) for idx, exp in syllables if exp != 0)
+
+
+def _fp_relation_syllables(group: Any, word: Any) -> tuple[tuple[int, int], ...]:
+    if hasattr(word, "syllables"):
+        try:
+            return _fp_parse_syllables_from_group_syllables(group, word.syllables())
+        except Exception:
+            pass
+    if hasattr(word, "tietze") and hasattr(word, "exponent"):
+        try:
+            return _fp_parse_syllables_from_group_syllables(group, word.tietze())
+        except Exception:
+            pass
+    if hasattr(word, "reduced_word"):
+        try:
+            return _fp_parse_syllables_from_reduced_word(word.reduced_word())
+        except Exception:
+            pass
+    return ()
+
+
+def _fp_format_word_latex(group: Any, word: Any) -> str:
+    generator_names = tuple(_fp_format_generator_name(name) for name in _fp_group_generator_names(group))
+    if not generator_names:
+        return "1"
+
+    syllables = _fp_relation_syllables(group, word)
+    if not syllables:
+        return "1"
+
+    parts: list[str] = []
+    for raw_index, raw_exponent in syllables:
+        if raw_index < 0 or raw_index >= len(generator_names):
+            continue
+        gen = generator_names[raw_index]
+        if raw_exponent == 1:
+            parts.append(gen)
+        elif raw_exponent == -1:
+            parts.append(f"{gen}^{{-1}}")
+        else:
+            parts.append(f"{gen}^{{{raw_exponent}}}")
+
+    return "".join(parts) if parts else "1"
+
+
+def _fp_relation_rows_latex(group: Any) -> tuple[str, ...]:
+    return tuple(
+        f"R_{{{index}}}: {_fp_format_word_latex(group, relation)} = 1"
+        for index, relation in enumerate(tuple(group.relations()), start=1)
+    )
+
+
+def _fp_format_finite_presentation_latex(group: Any) -> str:
+    gens = tuple(_fp_format_generator_name(name) for name in _fp_group_generator_names(group))
+    relations = _fp_relation_rows_latex(group)
+    gens_text = ", ".join(gens) if gens else "1"
+    rel_text = ", ".join(relations) if relations else ""
+
+    inline_text = f"\\langle {gens_text} \\,\\mid\\, {rel_text} \\rangle"
+    if not relations:
+        return f"\\langle {gens_text} \\rangle"
+    if len(inline_text) <= _FP_LATEX_INLINE_WIDTH:
+        return inline_text
+
+    stacked_rows = "\\\\\n".join(f"{row}" for row in relations)
+    if len(stacked_rows) + len(gens_text) <= _FP_LATEX_STACKED_WIDTH:
+        return (
+            "\\langle "
+            f"{gens_text} \\,\\mid\\,\\\\\n"
+            "\\begin{aligned}\n"
+            f"{{{stacked_rows}}}\n"
+            "\\end{aligned} \\rangle"
+        )
+
+    table_rows = "\\\\\n".join(
+        f"R_{{{index}}} & = {_fp_format_word_latex(group, relation)} = 1"
+        for index, relation in enumerate(tuple(group.relations()), start=1)
+    )
+    if not table_rows:
+        return f"\\langle {gens_text} \\rangle"
     return (
-        f"\\text{{Generators: }}{_format_finite_presentation_generators_latex(group)}\\\\\n"
-        "\\text{Relations:}\\\\\n"
-        "\\begin{aligned}\n"
-        f"        {_format_finite_presentation_relation_rows_latex(group)}\n"
-        "        \\end{aligned}"
+        "\\begin{gathered}\n"
+        f"\\text{{Generators: }} {gens_text} \\\\\n"
+        "\\begin{array}{rl}\n"
+        f"{table_rows}\\\\\n"
+        "\\end{array}\n"
+        "\\end{gathered}"
     )
 
 
 def _patched_finitely_presented_group_latex(group: Any) -> str:
-    if not _should_compact_finitely_presented_latex(group):
-        return str(_original_finitely_presented_group_latex(group))
-    return _format_finite_presentation_summary_latex(group)
+    return _fp_format_finite_presentation_latex(group)
 
 
 def _patched_normal_form(self: Any, *args: Any, **kwargs: Any) -> Any:
