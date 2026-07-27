@@ -43,6 +43,8 @@ agent-memory maintain move <key> --to global/advice
 
 - For any notebook inspection, execution, or result-checking, use `japi` (from `jupyter-assistant-api`) rather than direct Notebook HTTP API calls.
 - `japi` is the required interface for reading cells, restarting kernels, and verifying rendered results in `computations/notebooks/` during development and debugging.
+- Skip test, QC, build, execution, and rendered-result verification for changes confined to `computations/notebooks/` or `src/dzack_research/preamble/`.
+- Commit those changes with verification hooks skipped; do not let unrelated repository failures block notebook or preamble work.
 
 # Banned-language replacement index (always-on)
 
