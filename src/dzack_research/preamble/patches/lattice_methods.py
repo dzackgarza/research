@@ -899,8 +899,10 @@ _original_finitely_presented_group_latex: Any = None
 
 
 _FP_LAYOUT_INLINE_WIDTH = 150
-_FP_LAYOUT_STACKED_WIDTH = 220
+_FP_LAYOUT_STACKED_GENERATOR_WIDTH = 220
 _FP_LAYOUT_STACKED_REL_WIDTH = 180
+_FP_LAYOUT_STACKED_RELATION_AREA_BUDGET = 900
+_FP_LAYOUT_STACKED_RELATION_COUNT_BUDGET = 12
 _FP_LAYOUT_EXPANDED_GENERATOR_WIDTH = 90
 
 
@@ -971,10 +973,20 @@ def _fp_format_word_latex(group: Any, word: Any) -> str:
     return "".join(parts) if parts else "1"
 
 
-def _fp_relation_equation_rows(group: Any) -> tuple[str, ...]:
+def _fp_relation_word_rows(
+    group: Any, relations: tuple[Any, ...]
+) -> tuple[str, ...]:
     return tuple(
-        f"R_{{{index}}} &: {_fp_format_word_latex(group, relation)} = 1"
-        for index, relation in enumerate(tuple(group.relations()), start=1)
+        _fp_format_word_latex(group, relation) for relation in relations
+    )
+
+
+def _fp_relation_equation_rows(
+    relation_words: tuple[str, ...]
+) -> tuple[str, ...]:
+    return tuple(
+        f"R_{{{index}}} &: {word} = 1"
+        for index, word in enumerate(relation_words, start=1)
     )
 
 
@@ -989,7 +1001,8 @@ def _fp_pack_rows(items: tuple[str, ...], width: int, separator: str) -> tuple[s
         if len(candidate) <= width:
             current = candidate
             continue
-        lines.append(current)
+        if current:
+            lines.append(current)
         current = item
     lines.append(current)
     return tuple(lines)
@@ -997,8 +1010,9 @@ def _fp_pack_rows(items: tuple[str, ...], width: int, separator: str) -> tuple[s
 
 def _fp_format_finite_presentation_latex(group: Any) -> str:
     gens = tuple(_fp_format_generator_name(name) for name in _fp_group_generator_names(group))
-    rel_eq_rows = _fp_relation_equation_rows(group)
-    rel_words = tuple(_fp_format_word_latex(group, rel) for rel in tuple(group.relations()))
+    relations = tuple(group.relations())
+    rel_words = _fp_relation_word_rows(group, relations)
+    rel_eq_rows = _fp_relation_equation_rows(rel_words)
     gens_text = ", ".join(gens)
     rels_text = ", ".join(rel_words)
 
@@ -1019,11 +1033,15 @@ def _fp_format_finite_presentation_latex(group: Any) -> str:
 
     max_generator_width = len(gens_text)
     max_relation_width = max((len(row) for row in rel_eq_rows), default=0)
+    max_relation_count = len(rel_eq_rows)
+    relation_area = sum(len(row) for row in rel_eq_rows)
     if len(inline_text) <= _FP_LAYOUT_INLINE_WIDTH:
         return inline_text
     if (
-        max_generator_width <= _FP_LAYOUT_STACKED_WIDTH
+        max_generator_width <= _FP_LAYOUT_STACKED_GENERATOR_WIDTH
         and max_relation_width <= _FP_LAYOUT_STACKED_REL_WIDTH
+        and max_relation_count <= _FP_LAYOUT_STACKED_RELATION_COUNT_BUDGET
+        and relation_area <= _FP_LAYOUT_STACKED_RELATION_AREA_BUDGET
     ):
         stacked_rows = "\\\\\n".join(rel_eq_rows)
         return (
@@ -1039,19 +1057,16 @@ def _fp_format_finite_presentation_latex(group: Any) -> str:
     if not gen_lines:
         gen_lines = ("\\,\\,",)
 
-    packed_generator_rows = (
-        "\\text{Generators:} "
-        + gen_lines[0]
-        + "".join(f"\\\\\n\\quad {line}" for line in gen_lines[1:])
-    )
-
-    relation_rows = "\\\\\n".join(rel_eq_rows)
-
     return (
         "\\begin{gathered}\n"
-        f"{packed_generator_rows}\\\\\n"
-        "\\begin{array}{rl}\n"
-        f"{relation_rows}\\\\\n"
+        "\\begin{array}{ll}\n"
+        "\\text{Generators:} & "
+        + gen_lines[0]
+        + "".join(f"\\\\\n & {line}" for line in gen_lines[1:])
+        + "\\\\\n"
+        "\\text{Relations:} & \\begin{aligned}\n"
+        f"{'\\\\\n'.join(rel_eq_rows)}\n"
+        "\\end{aligned}\\\\\n"
         "\\end{array}\n"
         "\\end{gathered}"
     )
