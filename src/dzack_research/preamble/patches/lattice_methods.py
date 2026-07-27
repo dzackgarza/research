@@ -396,7 +396,7 @@ def _latex_(self: Any) -> str:
         sage: from sage.misc.latex import latex
         sage: print(latex(catalogue.U))
         \begin{gathered}
-        L \in \mathrm{Lattices}(\ZZ), \quad \mathrm{rk}(L) = 2, \quad \mathrm{sig}(L) = (1, 1), \quad \mathrm{disc}(L) = -1 \\
+        L \in \mathrm{Lattices}(\mathbb{Z}), \quad \mathrm{rk}(L) = 2, \quad \mathrm{sig}(L) = (1, 1), \quad \mathrm{disc}(L) = -1 \\
         G_L = \left(\begin{array}{rr}
         \cdot & 1 \\
         1 & \cdot
@@ -435,7 +435,7 @@ def _latex_(self: Any) -> str:
 
     header_lines = [
         r"\begin{gathered}",
-        f"L \\in \\mathrm{{Lattices}}(\\ZZ), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc_latex} \\\\",
+        f"L \\in \\mathrm{{Lattices}}(\\mathbb{{Z}}), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc_latex} \\\\",
         f"G_L = {gram_latex} \\\\",
     ]
 
@@ -483,7 +483,8 @@ def _finitely_presented_group(self: Any) -> Any:
 
 
 def _format_dual_presentation_latex(A_disc: Any) -> str:
-    r"""Return compact LaTeX for the dual basis presentation A_L = ZZ^r / G_L ZZ^r.
+    r"""Return compact LaTeX for the dual basis presentation
+    A_L = \mathbb{Z}^r / G_L \mathbb{Z}^r.
 
     The finitely presented group object is available via ``A_disc.finitely_presented_group()``
     for programmatic inspection, but its ``_latex_()`` output is too verbose for display
@@ -897,15 +898,14 @@ _original_torsion_latex: Any = None
 _original_finitely_presented_group_latex: Any = None
 
 
-_FP_LATEX_INLINE_WIDTH = 110
-_FP_LATEX_STACKED_WIDTH = 220
+_FP_LAYOUT_INLINE_WIDTH = 150
+_FP_LAYOUT_STACKED_WIDTH = 220
+_FP_LAYOUT_STACKED_REL_WIDTH = 180
+_FP_LAYOUT_EXPANDED_GENERATOR_WIDTH = 90
 
 
 def _fp_group_generator_names(group: Any) -> tuple[str, ...]:
-    names = getattr(group, "variable_names", lambda: None)()
-    if not names:
-        names = [str(gen) for gen in group.gens()]
-    return tuple(str(name) for name in names)
+    return tuple(str(name) for name in group.variable_names())
 
 
 def _fp_format_generator_name(name: str) -> str:
@@ -918,105 +918,39 @@ def _fp_format_generator_name(name: str) -> str:
     return name.replace("_", "\\_")
 
 
-def _fp_parse_syllables_from_reduced_word(raw: Any) -> tuple[tuple[int, int], ...]:
-    if not raw:
-        return ()
+def _fp_relation_syllables(group: Any, word: Any) -> tuple[tuple[int, int], ...]:
+    names = _fp_group_generator_names(group)
+    index_count = len(names)
+    raw_tietze = word.Tietze()
+    assert isinstance(raw_tietze, (tuple, list)), (
+        "group word must expose integer Tietze words "
+        f"when rendering finitely presented relations; got {type(word)!r}"
+    )
     syllables: list[tuple[int, int]] = []
-    for item in tuple(raw):
+    for item in tuple(raw_tietze):
         value = int(item)
         if value == 0:
             continue
-        idx = abs(value) - 1
-        exp = 1 if value > 0 else -1
-        if syllables and syllables[-1][0] == idx and (syllables[-1][1] >= 0) == (exp >= 0):
-            syllables[-1] = (idx, syllables[-1][1] + exp)
+        index = abs(value) - 1
+        assert 0 <= index < index_count, (
+            "relation generator index out of range while rendering "
+            f"finitely presented relation; index={index}, "
+            f"n_gens={index_count}, raw_tietze={raw_tietze!r}"
+        )
+        exponent = 1 if value > 0 else -1
+        if syllables and syllables[-1][0] == index:
+            syllables[-1] = (index, syllables[-1][1] + exponent)
+            if syllables[-1][1] == 0:
+                del syllables[-1]
         else:
-            syllables.append((idx, exp))
-    return tuple(
-        (idx, exp) for idx, exp in syllables
-        if exp != 0
-    )
-
-
-def _fp_parse_syllables_from_group_syllables(
-    group: Any, raw: Any
-) -> tuple[tuple[int, int], ...]:
-    if not raw:
-        return ()
-    generators = tuple(group.gens())
-    syllables: list[tuple[int, int]] = []
-    for item in tuple(raw):
-        if isinstance(item, int):
-            return _fp_parse_syllables_from_reduced_word((item,))
-
-        if isinstance(item, (list, tuple)) and len(item) == 2:
-            gen, exp = item
-            if isinstance(gen, int):
-                if len(generators) and 0 <= gen < len(generators):
-                    idx = gen
-                elif len(generators) and 1 <= gen <= len(generators):
-                    idx = gen - 1
-                else:
-                    idx = gen - 1
-            else:
-                try:
-                    idx = gen.index()
-                    if len(generators) and idx == -1:
-                        raise ValueError
-                    if len(generators) and 0 <= idx < len(generators):
-                        pass
-                    elif len(generators) and 1 <= idx <= len(generators):
-                        idx -= 1
-                except Exception:
-                    if gen in generators:
-                        idx = generators.index(gen)
-                    else:
-                        try:
-                            int_val = int(gen)
-                            if len(generators) and 0 <= int_val < len(generators):
-                                idx = int_val
-                            elif len(generators) and 1 <= int_val <= len(generators):
-                                idx = int_val - 1
-                            else:
-                                raise ValueError
-                        except Exception as exc:
-                            raise TypeError(
-                                f"unrecognized syllable generator {gen!r}"
-                            ) from exc
-            exp_int = int(exp)
-            if exp_int == 0:
-                continue
-            if syllables and syllables[-1][0] == idx and (syllables[-1][1] >= 0) == (exp_int >= 0):
-                syllables[-1] = (idx, syllables[-1][1] + exp_int)
-            else:
-                syllables.append((idx, exp_int))
-            continue
-
-        raise TypeError(f"unrecognized syllable item {item!r}")
-    return tuple((idx, exp) for idx, exp in syllables if exp != 0)
-
-
-def _fp_relation_syllables(group: Any, word: Any) -> tuple[tuple[int, int], ...]:
-    if hasattr(word, "syllables"):
-        try:
-            return _fp_parse_syllables_from_group_syllables(group, word.syllables())
-        except Exception:
-            pass
-    if hasattr(word, "tietze") and hasattr(word, "exponent"):
-        try:
-            return _fp_parse_syllables_from_group_syllables(group, word.tietze())
-        except Exception:
-            pass
-    if hasattr(word, "reduced_word"):
-        try:
-            return _fp_parse_syllables_from_reduced_word(word.reduced_word())
-        except Exception:
-            pass
-    return ()
+            syllables.append((index, exponent))
+    return tuple(syllables)
 
 
 def _fp_format_word_latex(group: Any, word: Any) -> str:
-    generator_names = tuple(_fp_format_generator_name(name) for name in _fp_group_generator_names(group))
+    generator_names = tuple(
+        _fp_format_generator_name(name) for name in _fp_group_generator_names(group)
+    )
     if not generator_names:
         return "1"
 
@@ -1026,8 +960,6 @@ def _fp_format_word_latex(group: Any, word: Any) -> str:
 
     parts: list[str] = []
     for raw_index, raw_exponent in syllables:
-        if raw_index < 0 or raw_index >= len(generator_names):
-            continue
         gen = generator_names[raw_index]
         if raw_exponent == 1:
             parts.append(gen)
@@ -1039,46 +971,87 @@ def _fp_format_word_latex(group: Any, word: Any) -> str:
     return "".join(parts) if parts else "1"
 
 
-def _fp_relation_rows_latex(group: Any) -> tuple[str, ...]:
+def _fp_relation_equation_rows(group: Any) -> tuple[str, ...]:
     return tuple(
-        f"R_{{{index}}}: {_fp_format_word_latex(group, relation)} = 1"
+        f"R_{{{index}}} &: {_fp_format_word_latex(group, relation)} = 1"
         for index, relation in enumerate(tuple(group.relations()), start=1)
     )
+
+
+def _fp_pack_rows(items: tuple[str, ...], width: int, separator: str) -> tuple[str, ...]:
+    if not items:
+        return ()
+
+    lines: list[str] = []
+    current = ""
+    for item in items:
+        candidate = item if not current else f"{current}{separator}{item}"
+        if len(candidate) <= width:
+            current = candidate
+            continue
+        lines.append(current)
+        current = item
+    lines.append(current)
+    return tuple(lines)
 
 
 def _fp_format_finite_presentation_latex(group: Any) -> str:
     gens = tuple(_fp_format_generator_name(name) for name in _fp_group_generator_names(group))
-    relations = _fp_relation_rows_latex(group)
-    gens_text = ", ".join(gens) if gens else "1"
-    rel_text = ", ".join(relations) if relations else ""
+    rel_eq_rows = _fp_relation_equation_rows(group)
+    rel_words = tuple(_fp_format_word_latex(group, rel) for rel in tuple(group.relations()))
+    gens_text = ", ".join(gens)
+    rels_text = ", ".join(rel_words)
 
-    inline_text = f"\\langle {gens_text} \\,\\mid\\, {rel_text} \\rangle"
-    if not relations:
-        return f"\\langle {gens_text} \\rangle"
-    if len(inline_text) <= _FP_LATEX_INLINE_WIDTH:
-        return inline_text
-
-    stacked_rows = "\\\\\n".join(f"{row}" for row in relations)
-    if len(stacked_rows) + len(gens_text) <= _FP_LATEX_STACKED_WIDTH:
+    inline_text = (
+        "\\left\\langle "
+        f"{gens_text} \\;\\middle|\\; {rels_text} "
+        "\\right\\rangle"
+    )
+    empty_relations = not rel_words
+    if empty_relations:
+        if not gens:
+            return "\\left\\langle \\;\\middle|\\; \\right\\rangle"
         return (
-            "\\langle "
-            f"{gens_text} \\,\\mid\\,\\\\\n"
-            "\\begin{aligned}\n"
-            f"{{{stacked_rows}}}\n"
-            "\\end{aligned} \\rangle"
+            "\\left\\langle "
+            f"{gens_text} \\;\\middle|\\; "
+            "\\right\\rangle"
         )
 
-    table_rows = "\\\\\n".join(
-        f"R_{{{index}}} & = {_fp_format_word_latex(group, relation)} = 1"
-        for index, relation in enumerate(tuple(group.relations()), start=1)
+    max_generator_width = len(gens_text)
+    max_relation_width = max((len(row) for row in rel_eq_rows), default=0)
+    if len(inline_text) <= _FP_LAYOUT_INLINE_WIDTH:
+        return inline_text
+    if (
+        max_generator_width <= _FP_LAYOUT_STACKED_WIDTH
+        and max_relation_width <= _FP_LAYOUT_STACKED_REL_WIDTH
+    ):
+        stacked_rows = "\\\\\n".join(rel_eq_rows)
+        return (
+            "\\left\\langle "
+            f"{gens_text} \\;\\middle|\\; "
+            "\\begin{aligned}\n"
+            f"{stacked_rows}\n"
+            "\\end{aligned} "
+            "\\right\\rangle"
+        )
+
+    gen_lines = _fp_pack_rows(gens, _FP_LAYOUT_EXPANDED_GENERATOR_WIDTH, ", ")
+    if not gen_lines:
+        gen_lines = ("\\,\\,",)
+
+    packed_generator_rows = (
+        "\\text{Generators:} "
+        + gen_lines[0]
+        + "".join(f"\\\\\n\\quad {line}" for line in gen_lines[1:])
     )
-    if not table_rows:
-        return f"\\langle {gens_text} \\rangle"
+
+    relation_rows = "\\\\\n".join(rel_eq_rows)
+
     return (
         "\\begin{gathered}\n"
-        f"\\text{{Generators: }} {gens_text} \\\\\n"
+        f"{packed_generator_rows}\\\\\n"
         "\\begin{array}{rl}\n"
-        f"{table_rows}\\\\\n"
+        f"{relation_rows}\\\\\n"
         "\\end{array}\n"
         "\\end{gathered}"
     )
