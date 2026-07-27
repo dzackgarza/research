@@ -378,19 +378,19 @@ def test_lattice_latex_representation():
         from sage.misc.latex import latex
 
         u_latex = str(latex(catalogue.U))
-        assert r"L \in \mathrm{Lattices}(\ZZ)" in u_latex
+        assert r"L \in \mathrm{Lattices}(\mathbb{Z})" in u_latex
         assert r"\mathrm{rk}(L) = 2" in u_latex
         assert r"\mathrm{sig}(L) = (1, 1)" in u_latex
         assert r"\mathrm{disc}(L) = -1" in u_latex
         assert r"\cdot" in u_latex
-        assert r"A_L = \langle e_{1}, e_{2} \mid" in u_latex
-        assert r"\text{(Dual basis presentation)}" in u_latex
+        assert r"A_L = \left\langle e_{1}, e_{2} \;\middle|\;" in u_latex
+        assert r"\text{(Finite presentation)}" in u_latex
         assert r"A_L \cong 0 \in \mathrm{Groups}" in u_latex
         assert r"G_{q_{A_L}} = ()" in u_latex
 
         a2_latex = str(latex(catalogue.root_lattice("A", 2)))
-        assert r"A_L = \langle e_{1}, e_{2} \mid" in a2_latex
-        assert r"\text{(Dual basis presentation)}" in a2_latex
+        assert r"A_L = \left\langle e_{1}, e_{2} \;\middle|\;" in a2_latex
+        assert r"\text{(Finite presentation)}" in a2_latex
         assert r"A_L \cong C_{3} \in \mathrm{Groups}" in a2_latex
         assert r"G_{q_{A_L}} =" in a2_latex
 
@@ -408,13 +408,43 @@ def test_lattice_latex_representation():
 
         lattice_methods.set_zero_dots(False)
         u_latex_no_dots = str(latex(catalogue.U))
-        # Only the Gram matrix line should be affected by zero dots;
-        # the FP group LaTeX always uses \cdot for multiplication.
+        # Only the Gram matrix line should be affected by zero dots.
         gram_line = [l for l in u_latex_no_dots.split('\n') if 'G_L =' in l][0]
         assert r"\cdot" not in gram_line
         assert "0" in u_latex_no_dots
     finally:
         lattice_methods.set_zero_dots(True)
+        patches.uninstall("lattice_methods")
+
+
+def test_named_lattice_latex_has_balanced_environments():
+    import re
+
+    catalogue, _, _, patches, _, _ = _preamble()
+    patches.install("lattice_methods")
+    try:
+        from sage.misc.latex import latex
+
+        for name, lattice in (("U", catalogue.U), ("E8", catalogue.E8)):
+            rendered = str(latex(lattice))
+            stack = []
+            for action, environment in re.findall(
+                r"\\(begin|end)\{([^{}]+)\}", rendered
+            ):
+                if action == "begin":
+                    stack.append(environment)
+                    continue
+                assert stack, (
+                    f"{name} closes {environment!r} without opening it:\n{rendered}"
+                )
+                opened = stack.pop()
+                assert opened == environment, (
+                    f"{name} opens {opened!r} but closes {environment!r}:\n{rendered}"
+                )
+            assert not stack, (
+                f"{name} leaves LaTeX environments open: {stack!r}\n{rendered}"
+            )
+    finally:
         patches.uninstall("lattice_methods")
 
 

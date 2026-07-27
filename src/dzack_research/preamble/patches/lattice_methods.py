@@ -421,17 +421,14 @@ def _latex_(self: Any) -> str:
 
     A_disc = self.discriminant_group()
     A_latex = str(latex(A_disc))
-    A_lines = []
-    for line in A_latex.splitlines():
-        if not line:
-            continue
-        stripped = line.strip()
-        if stripped.startswith(r"\begin{gathered}") or stripped.startswith(r"\end{gathered}"):
-            continue
-        if stripped.startswith(r"\begin{aligned}") or stripped.startswith(r"\end{aligned}"):
-            A_lines.append(line)
-            continue
-        A_lines.append(line)
+    A_lines = [line for line in A_latex.splitlines() if line]
+    assert A_lines[0].strip() == r"\begin{gathered}", (
+        "discriminant-group LaTeX must begin with gathered"
+    )
+    assert A_lines[-1].strip() == r"\end{gathered}", (
+        "discriminant-group LaTeX must end with gathered"
+    )
+    A_lines = A_lines[1:-1]
 
     header_lines = [
         r"\begin{gathered}",
