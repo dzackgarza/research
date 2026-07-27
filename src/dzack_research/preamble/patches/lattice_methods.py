@@ -395,17 +395,17 @@ def _latex_(self: Any) -> str:
         sage: patches.install("lattice_methods")
         sage: from sage.misc.latex import latex
         sage: print(latex(catalogue.U))
-        \begin{aligned}
-        &L \in \mathrm{Lattices}(\ZZ), \quad \mathrm{rk}(L) = 2, \quad \mathrm{sig}(L) = (1, 1), \quad \mathrm{disc}(L) = -1 \\
-        &G_L = \left(\begin{array}{rr}
+        \begin{gathered}
+        L \in \mathrm{Lattices}(\ZZ), \quad \mathrm{rk}(L) = 2, \quad \mathrm{sig}(L) = (1, 1), \quad \mathrm{disc}(L) = -1 \\
+        G_L = \left(\begin{array}{rr}
         \cdot & 1 \\
         1 & \cdot
         \end{array}\right) \\
-        &A_L = \langle e_{1}, e_{2} \mid e_{1}\cdot e_{2}\cdot e_{1}^{-1}\cdot e_{2}^{-1} , e_{2} , e_{1}\rangle \in \mathrm{Groups} \quad \text{(Dual basis presentation)} \\
-        &A_L \cong 0 \in \mathrm{Groups} \quad \text{(Invariant factor decomposition)} \\
-        &A_L \cong 0 \in \mathrm{Groups} \quad \text{(Primary decomposition)} \\
-        &G_{q_{A_L}} = () \in \mathrm{Mat}_{0}(\mathbb{Q}/2\mathbb{Z})
-        \end{aligned}
+        A_L = \langle e_{1}, e_{2} \mid e_{1}\cdot e_{2}\cdot e_{1}^{-1}\cdot e_{2}^{-1} , e_{2} , e_{1}\rangle \in \mathrm{Groups} \quad \text{(Dual basis presentation)} \\
+        A_L \cong 0 \in \mathrm{Groups} \quad \text{(Invariant factor decomposition)} \\
+        A_L \cong 0 \in \mathrm{Groups} \quad \text{(Primary decomposition)} \\
+        G_{q_{A_L}} = () \in \mathrm{Mat}_{0}(\mathbb{Q}/2\mathbb{Z})
+        \end{gathered}
         sage: patches.uninstall("lattice_methods")
     """
     import re
@@ -421,19 +421,25 @@ def _latex_(self: Any) -> str:
 
     A_disc = self.discriminant_group()
     A_latex = str(latex(A_disc))
-    A_lines = [
-        line
-        for line in A_latex.splitlines()
-        if line and not line.startswith(r"\begin{aligned}") and not line.startswith(r"\end{aligned}")
-    ]
+    A_lines = []
+    for line in A_latex.splitlines():
+        if not line:
+            continue
+        stripped = line.strip()
+        if stripped.startswith(r"\begin{gathered}") or stripped.startswith(r"\end{gathered}"):
+            continue
+        if stripped.startswith(r"\begin{aligned}") or stripped.startswith(r"\end{aligned}"):
+            A_lines.append(line)
+            continue
+        A_lines.append(line)
 
     header_lines = [
-        r"\begin{aligned}",
-        f"&L \\in \\mathrm{{Lattices}}(\\ZZ), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc_latex} \\\\",
-        f"&G_L = {gram_latex} \\\\",
+        r"\begin{gathered}",
+        f"L \\in \\mathrm{{Lattices}}(\\ZZ), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), \\quad \\mathrm{{disc}}(L) = {disc_latex} \\\\",
+        f"G_L = {gram_latex} \\\\",
     ]
 
-    return "\n".join(header_lines + A_lines + [r"\end{aligned}"])
+    return "\n".join(header_lines + A_lines + [r"\end{gathered}"])
 
 
 # THEORY OF DISCRIMINANT GROUP PRESENTATION:
@@ -471,7 +477,30 @@ def _finitely_presented_group(self: Any) -> Any:
     for k in range(r):
         word = prod(gens[j] ** int(G_L[j, k]) for j in range(r))
         rels.append(word)
-    return F.quotient(rels)
+    group = F.quotient(rels)
+    group._dzack_relation_summary = f"\\mathbb{{Z}}^{{{r}}} / G_L \\mathbb{{Z}}^{{{r}}}"
+    return group
+
+
+def _format_dual_presentation_latex(A_disc: Any) -> str:
+    r"""Return compact LaTeX for the dual basis presentation A_L = ZZ^r / G_L ZZ^r.
+
+    The finitely presented group object is available via ``A_disc.finitely_presented_group()``
+    for programmatic inspection, but its ``_latex_()`` output is too verbose for display
+    (O(r^2) commutator relations alone).  The compact matrix-quotient notation is the
+    standard way to present an abelian group given by a relation matrix.
+    """
+    L = getattr(getattr(A_disc, "_W", None), "ambient_module", lambda: None)()
+    if L is not None and hasattr(L, "rank"):
+        r = L.rank()
+        if r == 0:
+            return "0"
+        return f"\\mathbb{{Z}}^{{{r}}} / G_L \\mathbb{{Z}}^{{{r}}}"
+    invs = A_disc.invariants()
+    if not invs:
+        return "0"
+    k = len(invs)
+    return f"\\mathbb{{Z}}^{{{k}}} / D \\mathbb{{Z}}^{{{k}}}"
 
 
 def _patched_torsion_latex(self: Any) -> str:
@@ -480,18 +509,24 @@ def _patched_torsion_latex(self: Any) -> str:
 
     invs = self.invariants()
     n = self.gram_matrix_quadratic().nrows()
-    fp_group = self.finitely_presented_group()
-    fp_latex = str(latex(fp_group))
+    fp_latex = str(latex(self.finitely_presented_group()))
     inv_str = _format_invariant_factor_latex(invs)
     prim_str = _format_primary_decomp_latex(self)
     gram_q_latex = _primary_gram_matrix_latex(self)
 
-    line1 = f"&A_L = {fp_latex} \\in \\mathrm{{Groups}} \\quad \\text{{(Dual basis presentation)}} \\\\"
-    line2 = f"&A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Invariant factor decomposition)}} \\\\"
-    line3 = f"&A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Primary decomposition)}} \\\\"
-    line4 = f"&G_{{q_{{A_L}}}} = {gram_q_latex} \\in \\mathrm{{Mat}}_{{{n}}}(\\mathbb{{Q}}/2\\mathbb{{Z}})"
+    is_compact_fp = fp_latex.startswith(r"\text{Generators: }")
+    if is_compact_fp:
+        line1 = f"A_L = {fp_latex}"
+        line2 = f"A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Invariant factor decomposition)}} \\\\"
+        line3 = f"A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Primary decomposition)}} \\\\"
+        line4 = f"G_{{q_{{A_L}}}} = {gram_q_latex} \\in \\mathrm{{Mat}}_{{{n}}}(\\mathbb{{Q}}/2\\mathbb{{Z}})"
+    else:
+        line1 = f"A_L = {fp_latex} \\in \\mathrm{{Groups}} \\quad \\text{{(Dual basis presentation)}} \\\\"
+        line2 = f"A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Invariant factor decomposition)}} \\\\"
+        line3 = f"A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad \\text{{(Primary decomposition)}} \\\\"
+        line4 = f"G_{{q_{{A_L}}}} = {gram_q_latex} \\in \\mathrm{{Mat}}_{{{n}}}(\\mathbb{{Q}}/2\\mathbb{{Z}})"
 
-    return f"\\begin{{aligned}}\n{line1}\n{line2}\n{line3}\n{line4}\n\\end{{aligned}}"
+    return "\\begin{gathered}\n" + "\n".join([line1, line2, line3, line4]) + "\n\\end{gathered}"
 
 
 def _expand_ellipsis_names(names: tuple[str, ...]) -> tuple[str, ...]:
@@ -855,6 +890,90 @@ _original_torsion_gram_q: Any = None
 _original_torsion_gram_b: Any = None
 _original_normal_form: Any = None
 _original_torsion_latex: Any = None
+_original_finitely_presented_group_latex: Any = None
+
+
+_FP_LATEX_INLINE_MAX_GENERATORS = 12
+_FP_LATEX_INLINE_MAX_RELATORS = 40
+_FP_LATEX_TABLE_MAX_GENERATORS = 30
+_FP_LATEX_TABLE_MAX_RELATIONS = 60
+_FP_LATEX_MAX_RELATION_TEXT_LEN = 80
+_FP_LATEX_NO_TRUNCATE_ENV = "DZACK_FP_LATEX_NO_TRUNCATE"
+
+
+def _fp_latex_truncate_enabled() -> bool:
+    import os
+
+    value = os.environ.get(_FP_LATEX_NO_TRUNCATE_ENV, "").strip().lower()
+    return value not in {"1", "true", "yes", "on"}
+
+
+def _should_compact_finitely_presented_latex(group: Any) -> bool:
+    from sage.misc.latex import latex
+
+    relations = tuple(group.relations())
+    if group.ngens() > _FP_LATEX_INLINE_MAX_GENERATORS:
+        return True
+    if len(relations) > _FP_LATEX_INLINE_MAX_RELATORS:
+        return True
+    max_len = max((len(str(latex(rel))) for rel in relations), default=0)
+    if max_len > _FP_LATEX_MAX_RELATION_TEXT_LEN:
+        return True
+    return False
+
+
+def _format_finite_presentation_generators_latex(group: Any) -> str:
+    from sage.misc.latex import latex
+
+    names = tuple(str(latex(gen)) for gen in group.gens())
+    if not _fp_latex_truncate_enabled() or len(names) <= _FP_LATEX_TABLE_MAX_GENERATORS:
+        return ", ".join(names)
+
+    shown = names[:_FP_LATEX_TABLE_MAX_GENERATORS]
+    more = len(names) - len(shown)
+    return f"{', '.join(shown)}, \\dots, \\text{{and {more} more}}"
+
+
+def _format_finite_presentation_relation_rows_latex(group: Any) -> str:
+    from sage.misc.latex import latex
+
+    relations = tuple(group.relations())
+    if not relations:
+        return "&\\text{(trivial)}\\\\"
+
+    rel_texts = tuple(str(latex(rel)) for rel in relations)
+    max_rows = (
+        len(rel_texts)
+        if not _fp_latex_truncate_enabled()
+        else _FP_LATEX_TABLE_MAX_RELATIONS
+    )
+    shown = rel_texts[:min(len(rel_texts), max_rows)]
+    rows = [f"R_{{{index}}} &= {rel}" for index, rel in enumerate(shown, start=1)]
+
+    if len(rel_texts) > len(shown):
+        rows.append("&\\vdots")
+        rows.append(f"&\\text{{... and {len(rel_texts) - len(shown)} more}}")
+
+    if not rows:
+        return "\\text{(trivial)}\\\\"
+
+    return "\\\\\n        ".join(rows) + "\\\\"
+
+
+def _format_finite_presentation_summary_latex(group: Any) -> str:
+    return (
+        f"\\text{{Generators: }}{_format_finite_presentation_generators_latex(group)}\\\\\n"
+        "\\text{Relations:}\\\\\n"
+        "\\begin{aligned}\n"
+        f"        {_format_finite_presentation_relation_rows_latex(group)}\n"
+        "        \\end{aligned}"
+    )
+
+
+def _patched_finitely_presented_group_latex(group: Any) -> str:
+    if not _should_compact_finitely_presented_latex(group):
+        return str(_original_finitely_presented_group_latex(group))
+    return _format_finite_presentation_summary_latex(group)
 
 
 def _patched_normal_form(self: Any, *args: Any, **kwargs: Any) -> Any:
@@ -911,6 +1030,7 @@ def install() -> None:
     """
     global _original_integral_lattice, _original_direct_sum, _original_twist, _original_call, _original_gens
     global _original_torsion_gram_q, _original_torsion_gram_b, _original_normal_form, _original_torsion_latex
+    global _original_finitely_presented_group_latex
 
     target = _lattice_class()
     if _original_direct_sum is None:
@@ -924,6 +1044,12 @@ def install() -> None:
 
     target.__call__ = _patched_call
     target.gens = _patched_gens
+
+    from sage.groups.finitely_presented import FinitelyPresentedGroup
+    if _original_finitely_presented_group_latex is None:
+        _original_finitely_presented_group_latex = FinitelyPresentedGroup._latex_
+
+    FinitelyPresentedGroup._latex_ = _patched_finitely_presented_group_latex
 
     from sage.misc.cachefunc import cached_method
     from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
@@ -983,6 +1109,9 @@ def uninstall() -> None:
         target.__call__ = _original_call
     if _original_gens is not None:
         target.gens = _original_gens
+    from sage.groups.finitely_presented import FinitelyPresentedGroup
+    if _original_finitely_presented_group_latex is not None:
+        FinitelyPresentedGroup._latex_ = _original_finitely_presented_group_latex
 
     if _original_torsion_gram_q is not None and _original_torsion_gram_b is not None:
         from sage.misc.cachefunc import cached_method
