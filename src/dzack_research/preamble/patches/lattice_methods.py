@@ -401,7 +401,7 @@ def _latex_(self: Any) -> str:
         \cdot & 1 \\
         1 & \cdot
         \end{array}\right) \\
-        A_L = \langle e_{1}, e_{2} \mid e_{1}\cdot e_{2}\cdot e_{1}^{-1}\cdot e_{2}^{-1} , e_{2} , e_{1}\rangle \in \mathrm{Groups} \quad \text{(Dual basis presentation)} \\
+        A_L = \left\langle e_{1}, e_{2} \;\\middle|\\; e_{1}e_{2}e_{1}^{-1}e_{2}^{-1}, e_{2}, e_{1} \right\rangle \in \mathrm{Groups} \quad \text{(Dual basis presentation)} \\
         A_L \cong 0 \in \mathrm{Groups} \quad \text{(Invariant factor decomposition)} \\
         A_L \cong 0 \in \mathrm{Groups} \quad \text{(Primary decomposition)} \\
         G_{q_{A_L}} = () \in \mathrm{Mat}_{0}(\mathbb{Q}/2\mathbb{Z})
