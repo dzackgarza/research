@@ -904,6 +904,9 @@ _FP_LAYOUT_STACKED_REL_WIDTH = 180
 _FP_LAYOUT_STACKED_RELATION_AREA_BUDGET = 900
 _FP_LAYOUT_STACKED_RELATION_COUNT_BUDGET = 12
 _FP_LAYOUT_EXPANDED_GENERATOR_WIDTH = 90
+_FP_LAYOUT_EXPANDED_RELATION_SOURCE_BUDGET = 180
+_FP_LAYOUT_EXPANDED_COLUMN_GAP_BUDGET = 12
+_FP_LAYOUT_EXPANDED_MAX_COLUMNS = 4
 
 
 def _fp_group_generator_names(group: Any) -> tuple[str, ...]:
@@ -1008,6 +1011,37 @@ def _fp_pack_rows(items: tuple[str, ...], width: int, separator: str) -> tuple[s
     return tuple(lines)
 
 
+def _fp_relation_table_latex(relation_rows: tuple[str, ...]) -> str:
+    widest_relation = max(len(row) for row in relation_rows)
+    column_count = max(
+        1,
+        min(
+            _FP_LAYOUT_EXPANDED_MAX_COLUMNS,
+            len(relation_rows),
+            (
+                _FP_LAYOUT_EXPANDED_RELATION_SOURCE_BUDGET
+                + _FP_LAYOUT_EXPANDED_COLUMN_GAP_BUDGET
+            )
+            // (widest_relation + _FP_LAYOUT_EXPANDED_COLUMN_GAP_BUDGET),
+        ),
+    )
+    table_rows = tuple(
+        relation_rows[index : index + column_count]
+        for index in range(0, len(relation_rows), column_count)
+    )
+    column_spec = "@{\\qquad}".join("rl" for _ in range(column_count))
+    rendered_rows = []
+    for row in table_rows:
+        cells = [cell.replace(" &:", " & :") for cell in row]
+        cells.extend(" & " for _ in range(column_count - len(cells)))
+        rendered_rows.append(" & ".join(cells))
+    return (
+        f"\\begin{{array}}{{{column_spec}}}\n"
+        + "\\\\\n".join(rendered_rows)
+        + "\n\\end{array}"
+    )
+
+
 def _fp_format_finite_presentation_latex(group: Any) -> str:
     gens = tuple(_fp_format_generator_name(name) for name in _fp_group_generator_names(group))
     relations = tuple(group.relations())
@@ -1057,17 +1091,16 @@ def _fp_format_finite_presentation_latex(group: Any) -> str:
     if not gen_lines:
         gen_lines = ("\\,\\,",)
 
+    generator_rows = "\\\\\n".join(gen_lines)
+    relation_table = _fp_relation_table_latex(rel_eq_rows)
     return (
         "\\begin{gathered}\n"
-        "\\begin{array}{ll}\n"
-        "\\text{Generators:} & "
-        + gen_lines[0]
-        + "".join(f"\\\\\n & {line}" for line in gen_lines[1:])
-        + "\\\\\n"
-        "\\text{Relations:} & \\begin{aligned}\n"
-        f"{'\\\\\n'.join(rel_eq_rows)}\n"
-        "\\end{aligned}\\\\\n"
-        "\\end{array}\n"
+        "\\text{Generators:}\\\\[0.25em]\n"
+        "\\begin{gathered}\n"
+        f"{generator_rows}\n"
+        "\\end{gathered}\\\\[0.75em]\n"
+        "\\text{Relations:}\\\\[0.25em]\n"
+        f"{relation_table}\n"
         "\\end{gathered}"
     )
 
