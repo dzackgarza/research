@@ -959,6 +959,16 @@ def _fp_format_word_latex(group: Any, word: Any) -> str:
     syllables = _fp_relation_syllables(group, word)
     if not syllables:
         return "1"
+    if (
+        len(syllables) == 4
+        and syllables[0][1] == 1
+        and syllables[1][1] == 1
+        and syllables[2] == (syllables[0][0], -1)
+        and syllables[3] == (syllables[1][0], -1)
+    ):
+        left = generator_names[syllables[0][0]]
+        right = generator_names[syllables[1][0]]
+        return f"[{left}, {right}]"
 
     parts: list[str] = []
     for raw_index, raw_exponent in syllables:
@@ -978,15 +988,6 @@ def _fp_relation_word_rows(
 ) -> tuple[str, ...]:
     return tuple(
         _fp_format_word_latex(group, relation) for relation in relations
-    )
-
-
-def _fp_relation_equation_rows(
-    relation_words: tuple[str, ...]
-) -> tuple[str, ...]:
-    return tuple(
-        f"R_{{{index}}} &: {word} = 1"
-        for index, word in enumerate(relation_words, start=1)
     )
 
 
@@ -1026,11 +1027,11 @@ def _fp_relation_table_latex(relation_rows: tuple[str, ...]) -> str:
         relation_rows[index : index + column_count]
         for index in range(0, len(relation_rows), column_count)
     )
-    column_spec = "@{\\qquad}".join("rl" for _ in range(column_count))
+    column_spec = "@{\\qquad}".join("l" for _ in range(column_count))
     rendered_rows = []
     for row in table_rows:
-        cells = [cell.replace(" &:", " & :") for cell in row]
-        cells.extend(" & " for _ in range(column_count - len(cells)))
+        cells = list(row)
+        cells.extend("" for _ in range(column_count - len(cells)))
         rendered_rows.append(" & ".join(cells))
     return (
         f"\\begin{{array}}{{{column_spec}}}\n"
@@ -1043,7 +1044,6 @@ def _fp_format_finite_presentation_latex(group: Any) -> str:
     gens = tuple(_fp_format_generator_name(name) for name in _fp_group_generator_names(group))
     relations = tuple(group.relations())
     rel_words = _fp_relation_word_rows(group, relations)
-    rel_eq_rows = _fp_relation_equation_rows(rel_words)
     gens_text = ", ".join(gens)
     rels_text = ", ".join(rel_words)
 
@@ -1063,9 +1063,9 @@ def _fp_format_finite_presentation_latex(group: Any) -> str:
         )
 
     max_generator_width = len(gens_text)
-    max_relation_width = max((len(row) for row in rel_eq_rows), default=0)
-    max_relation_count = len(rel_eq_rows)
-    relation_area = sum(len(row) for row in rel_eq_rows)
+    max_relation_width = max((len(row) for row in rel_words), default=0)
+    max_relation_count = len(rel_words)
+    relation_area = sum(len(row) for row in rel_words)
     if len(inline_text) <= _FP_LAYOUT_INLINE_WIDTH:
         return inline_text
     if (
@@ -1074,7 +1074,7 @@ def _fp_format_finite_presentation_latex(group: Any) -> str:
         and max_relation_count <= _FP_LAYOUT_STACKED_RELATION_COUNT_BUDGET
         and relation_area <= _FP_LAYOUT_STACKED_RELATION_AREA_BUDGET
     ):
-        stacked_rows = "\\\\\n".join(rel_eq_rows)
+        stacked_rows = "\\\\\n".join(rel_words)
         return (
             "\\left\\langle "
             f"{gens_text} \\;\\middle|\\; "
@@ -1089,7 +1089,7 @@ def _fp_format_finite_presentation_latex(group: Any) -> str:
         gen_lines = ("\\,\\,",)
 
     generator_rows = "\\\\\n".join(gen_lines)
-    relation_table = _fp_relation_table_latex(rel_eq_rows)
+    relation_table = _fp_relation_table_latex(rel_words)
     return (
         "\\begin{gathered}\n"
         "\\text{Generators:}\\\\[0.25em]\n"
