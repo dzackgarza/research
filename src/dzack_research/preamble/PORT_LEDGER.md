@@ -37,11 +37,11 @@ Status: every region is `PORTED`. The per-region table below records where each 
 
 ## 179–190 — LK3 named basis
 
-`to_var_names`, `LK3.<v1,v2,u1,u2,up1,up2,e1,...,e8,ep1,...,ep8>`, `inject_variables()`. PORTED → `catalogue.LK3`, `involutions.BASIS_NAMES`, and the generator sugar itself in `patches.lattice_methods` (the `names=` keyword and the `Ellipsis` hijack).
+`to_var_names`, `LK3.<v1,v2,u1,u2,up1,up2,e1,...,e8,ep1,...,ep8>`, `inject_variables()`. PORTED → `catalogue.LK3`, `fixtures.K3_BASIS_NAMES`, and the generator sugar itself on `IntegralLattices` (the `names=` keyword and the `Ellipsis` hijack).
 
 ## 192–224 — the three involutions
 
-`I_dP`, `I_En`, `I_Nik` as `LK3.hom([...])`. PORTED → `involutions.py`, with `I² = id` and `IᵀGI = G` asserted.
+`I_dP`, `I_En`, `I_Nik` as `LK3.hom([...])`. PORTED → `catalogue` (`I_*` / `involution`): explicit `{e_i: image}` on the named LK3 basis via `LK3.Aut(...)`; eigenlattices via `LK3.invariant_lattice` / `coinvariant_lattice`.
 Their six eigenlattices reproduce the six named literature lattices — the strongest cross-check in the port, between two constructions that never touched.
 
 ## 227–295 — Sterk diagram layouts
@@ -85,7 +85,7 @@ PORTED → `tests/test_preamble.sage::test_source_claim_block_holds`. **All eigh
 ## 392–485 — L_20_2_0 frames and root vectors
 
 Basis/dual binding, the `a*p`/`w*p` diagonal-embedding images, `v1..v22`, `w1..w19`. PORTED → `sterk.roots_18_2_0()`, `sterk.roots_18_0_0()`, with the `w` rebinding resolved and root norms asserted.
-`a1p..a8p`, `w1p..w8p` (lines 406–422) PORTED → `sterk.diagonal_embedding_images()`, asserting the source's claim that the `a_i'` span `E8(2)`.
+`a1p..a8p`, `w1p..w8p` (lines 406–422) PORTED → `Lattices.Embeddings.E8_2_into_TdP` (and `Sterk.diagonal_embedding` as alias), asserting the source's claim that the `a_i'` span `E8(2)`. The full chain $T_{\mathrm{Co}}\hookrightarrow T_{\mathrm{En}}\hookrightarrow T_{\mathrm{dP}}\hookrightarrow\Lambda_{K3}$ is `Lattices.Embeddings`.
 
 ## 487–581 — the five Sterk configurations
 
@@ -114,7 +114,7 @@ Arrow points from -4 to -2
 
 ## 720–855 — independent computation results ⚠️
 
-PORTED → `sterk.COMPUTED_ROOT_COUNTS` and `STERK_PUBLISHED`. Explicit coordinate matrices from *two independent implementations*, with a discrepancy log against Sterk's published counts:
+PORTED → `fixtures.COMPUTED_ROOT_COUNTS` and `fixtures.STERK_PUBLISHED` (re-exported from `sterk`). Explicit coordinate matrices from *two independent implementations*, with a discrepancy log against Sterk's published counts:
 
 | Recorded | Source comment |
 | --- | --- |
@@ -127,7 +127,7 @@ Lines 756–855 are read; the table below is the complete discrepancy record.
 
 ## 858–878 — degree-2d K3 lattices and citations
 
-`LK3_2`, `LK3_4`, `LK3_2d(d)`; `I^2d(LK3)/O(LK3) = {h}, h^⊥ = LK3_2d`; `J^⊥/J = A17, D10+E7, E8²+A1, D16+A1`; `num_facets = 19 (mod W)`, `num_rays = 82 (mod W)` for `IIPQ(1,17)`; arXiv 2002.07127 p.12 and 1903.09742 p.22. PORTED → `catalogue.LK3_2d`, `RECORDED_RESULTS`, `CITATIONS`. Lines 845–861: the explicit 10-dimensional root matrix → `sterk.RECORDED_ROOT_MATRIX_ROWS`, preserved as data.
+`LK3_2`, `LK3_4`, `LK3_2d(d)`; `I^2d(LK3)/O(LK3) = {h}, h^⊥ = LK3_2d`; `J^⊥/J = A17, D10+E7, E8²+A1, D16+A1`; `num_facets = 19 (mod W)`, `num_rays = 82 (mod W)` for `IIPQ(1,17)`; arXiv 2002.07127 p.12 and 1903.09742 p.22. PORTED → `catalogue.LK3_2d`, `fixtures.RECORDED_RESULTS`, `fixtures.CITATIONS`. Lines 845–861: the explicit 10-dimensional root matrix → `fixtures.RECORDED_ROOT_MATRIX_ROWS`, preserved as data.
 
 ## 882–989 — diagrams, run_vin, Julia bridge, predicates
 
@@ -157,10 +157,10 @@ Lines 756–855 are read; the table below is the complete discrepancy record.
 | Five generating isotropic vectors (§343–352) | `sterk.generating_isotropic_vectors()` | all isotropic; `omega` square-4 and `alpha` square-8 labels assert |
 | **The claim block (§365–388)** | executed via the patch | **all 8 claims pass, first execution ever** |
 | `(8,6,0)` table entry | `catalogue.TWO_ELEMENTARY_8_6_0_INVARIANTS` | rank 8, sig (0,8), det 64 = index-2 overlattice of `A1^8` (@AE22) |
-| Three involutions (§192–224) | `involutions.py` | `I² = id`, `IᵀGI = G`; **six eigenlattices match the six named lattices** |
+| Three involutions (§192–224) | `catalogue.involution` / `LK3.Aut` | `I² = id`, `IᵀGI = G`; **six eigenlattices match the six named lattices** |
 | Diagram legend (§713–717) | `coxeter.DIAGRAM_CONVENTION` | — |
 | `root_intersection_matrix` (§300–318) | `coxeter.root_intersection_matrix` | the source's own validator |
-| Computed-vs-published counts (§720–855) | `sterk.COMPUTED_ROOT_COUNTS`, `STERK_PUBLISHED` | ported norms match Sterk on all 5 |
+| Computed-vs-published counts (§720–855) | `fixtures.COMPUTED_ROOT_COUNTS`, `fixtures.STERK_PUBLISHED` | ported norms match Sterk on all 5 |
 | Diagonal embedding images (§406–422) | `sterk.diagonal_embedding_images()` | span of `a_i'` **is** `E8(2)`, as the comment claimed |
 | `getSterk5()` (§666–680) | `sterk.sterk5_in_U_E8_2()` | 14 roots, 10×−4 + 4×−2, matches Sterk 5 |
 | Building-block dictionary (§92–101) | `catalogue.TWO_ELEMENTARY_BUILDING_BLOCKS` | — |
@@ -176,7 +176,7 @@ Lines 756–855 are read; the table below is the complete discrepancy record.
 | `get_isotrop_type` (§111–121) | `patches.vinberg.get_isotrop_type` | source composition was ill-typed (quotient passed to `orthogonal_complement`) |
 | `to_lin_comb_generators`, `sublattices`, `twist(names=)` | `patches.lattice_methods` | fork surface, now wired |
 | `libgap.LoadPackage` (§19) | `ergonomics.load_gap_package_manager` | opt-in `install()` stanza |
-| Explicit root matrix (§845–861) | `sterk.RECORDED_ROOT_MATRIX_ROWS` | preserved as data, uninterpreted |
+| Explicit root matrix (§845–861) | `fixtures.RECORDED_ROOT_MATRIX_ROWS` | preserved as data, uninterpreted |
 | `L.<...>` sugar, `@`, `**` | `patches.lattice_methods` | the fork's preparser surface, incl. the `Ellipsis` hijack |
 
 ### Status: the source is fully ported
@@ -225,13 +225,18 @@ They were listed in the PR body and are restated here so the ledger is the singl
 
 1. `_mypy` has never been run against `src/dzack_research/preamble/`. The commit gate's type-check tier is unverified for this tree.
 
-2. `e_perp_mod_e` is implemented twice — as a free function in `predicates.py` and as a method in `patches/lattice_methods.py`. One notion, two implementations.
+2. ~~`e_perp_mod_e` is implemented twice~~ — resolved: lives only on
+   `IntegralLattices.ElementMethods` / `ParentMethods.I_perp_mod_I` (returns the
+   induced integral lattice). Free-function `predicates.e_perp_mod_e` removed.
 
-3. `predicates.py` re-declares as free functions notions the lattice spike sites as methods on the lattice object, which the repo's own doctrine forbids.
-   Each needs a siting decision against `lexicon/INVENTORY.md`.
+3. ~~`predicates.py` re-declares as free functions~~ — resolved: predicates are
+   `IntegralLattices.ParentMethods`; `predicates.py` is thin wrappers only.
 
 4. `AGENTS.md` carried uncommitted modifications predating this work that could not be separated from the port's own edits.
 
 5. The full commit gate (`just test-commit`) has not been run end to end; the two `.sage` test files were exercised via `sage -c load(...)`.
 
-6. The Sterk root-count discrepancy remains open: both independent implementations recorded in the source find ~10 roots plus 1-2 ideal vertices where Sterk publishes 10-14. `s4_12` being isotropic in a case recorded as having 2 ideal vertices is the concrete lead.
+6. The Sterk root-count discrepancy remains open: both independent implementations recorded in the source find ~10 roots plus 1-2 ideal vertices where Sterk publishes 10–14. `s4_12` being isotropic in a case recorded as having 2 ideal vertices is the concrete lead.
+
+7. `patches/` retired — lattice/vinberg APIs live in `categories/`. Ledger rows
+   that still say `patches.*` mean the categories now.

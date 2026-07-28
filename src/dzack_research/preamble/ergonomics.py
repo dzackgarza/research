@@ -1,4 +1,8 @@
-r"""Small interactive Sage helpers.
+r"""Interactive Sage session defaults and small helpers.
+
+Importing this module enables the interactive defaults (same as the old
+``init.sage`` stanzas). ``sage-init.sage`` imports it so notebooks and the
+REPL get them without calling anything.
 
 EXAMPLES::
 
@@ -13,6 +17,16 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from typing import Any
+
+import IPython.core.ultratb
+from sage.libs.gap.libgap import libgap
+from sage.repl.preparse import implicit_multiplication
+
+__all__ = ["lmap", "lzip", "to_var_names"]
+
+implicit_multiplication(True)
+libgap.LoadPackage("PackageManager")
+IPython.core.ultratb.VerboseTB._tb_highlight = "bg:ansired"
 
 
 def lmap[T, U](f: Callable[[T], U], ls: Iterable[T]) -> list[U]:
@@ -35,24 +49,3 @@ def to_var_names(s: str) -> list[str]:
         ['e', 'f', 'a1']
     """
     return [x.replace(" ", "").strip() for x in s.split(",")]
-
-
-def enable_implicit_multiplication() -> None:
-    """Enable Sage's implicit multiplication preparsing."""
-    from sage.repl.preparse import implicit_multiplication
-
-    implicit_multiplication(True)
-
-
-def load_gap_package_manager() -> None:
-    """Load GAP's ``PackageManager`` package."""
-    from sage.libs.gap.libgap import libgap
-
-    libgap.LoadPackage("PackageManager")
-
-
-def enable_red_traceback_highlight() -> None:
-    """Highlight the current traceback frame in red."""
-    import IPython.core.ultratb
-
-    IPython.core.ultratb.VerboseTB._tb_highlight = "bg:ansired"

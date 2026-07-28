@@ -1,0 +1,33 @@
+[33m@jupyterlab/core-meta was not found in node_modules, so a network download will be used as a fallback. To avoid this, add @jupyter/builder as a devDependency instead of @jupyterlab/builder.
+ [0m
+Building extension in .
+Traceback (most recent call last):
+
+  File "/home/dzack/gitclones/sage-dev-allopts/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/jupyter_builder/debug_log_file_mixin.py", line 50, in debug_logging
+    yield
+
+  File "/home/dzack/gitclones/sage-dev-allopts/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/jupyter_builder/base_extension_app.py", line 53, in start
+    self.run_task()
+    ~~~~~~~~~~~~~^^
+
+  File "/home/dzack/gitclones/sage-dev-allopts/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/jupyter_builder/extension_commands/build.py", line 61, in run_task
+    build_labextension(
+    ~~~~~~~~~~~~~~~~~~^
+        self.extra_args[0],
+        ^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+        core_path=self.core_path or None,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+
+  File "/home/dzack/gitclones/sage-dev-allopts/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/jupyter_builder/federated_extensions.py", line 240, in build_labextension
+    builder, marker_pkg = _ensure_builder(ext_path, core_package_file)
+                          ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/home/dzack/gitclones/sage-dev-allopts/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/jupyter_builder/federated_extensions.py", line 383, in _ensure_builder
+    raise ValueError(msg)
+
+ValueError: Could not find @jupyter/builder
+
+Exiting application: lab

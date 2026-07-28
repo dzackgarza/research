@@ -25,7 +25,6 @@ __all__ = [
     "COXETER_WHITE",
     "CROSS_CHECK_RECIPES",
     "DIAGRAM_CONVENTION",
-    "INVOLUTION_IMAGES",
     "K3_BASIS_NAMES",
     "L20_BASIS_NAMES",
     "L20_DUAL_NAMES",
@@ -170,24 +169,6 @@ K3_BASIS_NAMES: tuple[str, ...] = (
     + tuple(f"e{i}" for i in range(1, 9))
     + tuple(f"ep{i}" for i in range(1, 9))
 )
-
-INVOLUTION_IMAGES: dict[str, tuple[tuple[str, int], ...]] = {
-    "I_dP": tuple(
-        [("v1", -1), ("v2", -1), ("up1", 1), ("up2", 1), ("u1", 1), ("u2", 1)]
-        + [(f"e{i}", -1) for i in range(1, 9)]
-        + [(f"ep{i}", -1) for i in range(1, 9)]
-    ),
-    "I_En": tuple(
-        [("v1", -1), ("v2", -1), ("up1", 1), ("up2", 1), ("u1", 1), ("u2", 1)]
-        + [(f"ep{i}", 1) for i in range(1, 9)]
-        + [(f"e{i}", 1) for i in range(1, 9)]
-    ),
-    "I_Nik": tuple(
-        [("v1", 1), ("v2", 1), ("u1", 1), ("u2", 1), ("up1", 1), ("up2", 1)]
-        + [(f"ep{i}", -1) for i in range(1, 9)]
-        + [(f"e{i}", -1) for i in range(1, 9)]
-    ),
-}
 
 L20_BASIS_NAMES: tuple[str, ...] = tuple(
     ["e", "f", "ep", "fp"]

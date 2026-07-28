@@ -432,3 +432,226 @@ Do not make the reader excavate the missing work from beneath praise, context-se
 
 Nuance belongs in the evidence and blocker analysis, not in softening the completion standard.
 The review should make it easy to finish the work, not easy to feel satisfied with less than the original contract required.
+
+# Mathematical Sage API discipline (always-on)
+
+These rules govern preamble, spike, and any Sage-facing API in this repo.
+They are the generative constraints behind repeated corrections (override-refine, catalogue namespaces, Hom/Aut construction, session ergonomics).
+A design that violates them is wrong even when it “works.”
+
+**In one line:** write Sage as if the category and the catalogue *are* the theory — idiomatic constructions, one ontological home, no second layer between the mathematician and the object — and delete anything whose only job is to mediate, rename, wrap, or reassure.
+
+## 1. The category is the only extension point
+
+Methods belong on refined categories (`ParentMethods` / `ElementMethods` / `MorphismMethods`).
+This repo’s override-refine puts the new subcategory’s methods first in the MRO so owned methods win over concrete class methods; that is what makes monkey-patches, module `__getattr__`, and “hack around Cython/Hom” unnecessary.
+
+If Sage’s interface is wrong or incomplete, **own it in the category and replace it**.
+Workarounds (`without_element_wrap`, ad-hoc `L.isometry(matrix)`, freestanding patch modules) mean ownership was refused.
+
+The mechanism is boring and total: one general refine helper, plus post-init hooks on **classes** (not constructor wrappers) so new categories install themselves.
+New capability = new category content, not a new installation strategy.
+Element Cython types get a thin façade so `ElementMethods` (including dunders) can override; do not escalate that into a parallel object model.
+
+See the addendum below for the refine pattern; prefer override-refine from `dzack_research.preamble.refine` over raw `_refine_category_` when owned methods must precede concrete class methods.
+
+## 2. API shape is dictated by the mathematics
+
+Reject APIs that are software-coherent but mathematically incoherent.
+
+- Named literature objects (e.g. a K3 involution) are **catalogue data**, not methods of every lattice of that type.
+- Operations of an object under structure (e.g. eigenlattices under a group action) live on that object’s category methods — or as thin sugar on the morphism — not in a freestanding feature file.
+- An isometry is a **Hom/Aut element**. Construct it the way morphisms are constructed (generator images `{g: image}`); the matrix is a derived view (`to_matrix`), not the definition.
+- Algebraic operations use native protocols (`L + M`, `sum([...])`, `L ** n` for n-fold sum). Do not invent `_oplus` or force chains of `.direct_sum` when `+` is the monoidal operation.
+
+If the call site would not be written at a Sage prompt while doing the math, the API is wrong.
+
+## 3. Ontological placement — one home
+
+Every entity has exactly one kind of home:
+
+| Kind | Home |
+| --- | --- |
+| Behavior of a class of objects | category methods on the refined category |
+| Named specimens / literature tables | one catalogue namespace (e.g. `Lattices`) |
+| Session defaults (implicit multiplication, traceback colour, …) | import-time effect of loading the init/ergonomics module |
+
+Freestanding files, string registries, factory functions, module `__getattr__`, and dual module-level aliases of the same object are symptoms of placement by accident of authorship, not by what the entity is.
+
+Named lookup is by attribute (`Lattices.U`).
+Keys that are mathematics stay typed (`Lattices.TwoElementary[8, 8, 0]` for Nikulin $(r,a,\delta)$), never stringified tuples.
+Put such tables on the namespace that owns the specimens.
+
+Prefer **one clean export** for a catalogue surface: import `Lattices`, use `Lattices.…`. Do not re-export every attribute at module level.
+
+## 4. One source of truth, stated once, inline
+
+Construction **is** the definition.
+Define values inline in the namespace class body (or a helper called from that body while dependencies are in scope).
+Do not spread a definition across “empty container → later assignment → `globals().update` → string lookup → re-export.”
+Do not construct after the class and patch attributes on afterward — that means the class body was not the definition.
+
+An alias is object identity (`SEn is E10_2`), not a gram-matrix equality check in production code.
+If identity matters, assert `is` in a test.
+
+## 5. Hostility to non-semantic indirection
+
+Delete anything that can be removed without changing what a mathematician can say or compute:
+
+- wrap-then-call (`enable_X` → `install()` → `enable_X` → real call)
+- catch-and-rethrow the same exception kind with a different message
+- dict façades that reimplement `.items()` / `.keys()`
+- re-exports of the same object under a second name
+- import-time asserts that restate what construction already entails
+- tests of “conflict scenarios” instead of tests of the intended dispatch or mathematical claim
+- catalogue factories that re-verify primitives on every lookup (`is_involution` belongs on the morphism)
+
+Ceremony is a bug: it creates a second, softer API that agents will use instead of the real one.
+This is the same discipline as work-selection (above): an artifact that cannot fail carries no information.
+
+## 6. Generality over local cleverness
+
+When blocked, do not add a special case for this object.
+Strengthen the general interface (element façade, Aut constructor, `+` / `sum`, override-refine) so the special case disappears.
+Ask “why does this freestanding file/function exist?” — if it has no mathematical referent, delete it and place the content in the category or catalogue.
+
+## 7. Tests certify the intended contract
+
+Tests falsify the mathematical or dispatch claim: refined methods win over class methods; this alias is the same parent; this Aut is an involution; this table entry is that named lattice.
+They do not exercise scaffolding, reassure about naming conflicts, or re-encode construction as gram-matrix comparisons.
+
+Predicates that are part of the theory (`is_involution`, eigenlattice functors, …) are methods on the owned category interfaces, not side conditions in catalogue loaders.
+
+# Addendum: installing methods on Sage objects via category refinement
+
+This addendum is the **mechanism** for §1 above (category as extension point).
+For preamble and owned APIs, use override-refine (`dzack_research.preamble.refine.refine`) and post-init hooks on classes; do not introduce monkey-patches or constructor-only installation paths for new work.
+
+Sage objects (parents, elements, morphisms) carry methods through their **category's dynamic MRO**.
+A category defines `ParentMethods`, `ElementMethods`, and `SubcategoryMethods` inner classes;
+any parent whose category (or join of categories) includes that category gains those methods automatically.
+
+**The correct way to install new methods on existing Sage objects** — in exploratory notebooks,
+preamble files, or a spike's initialization — is:
+
+1. **Define a category** that declares `ParentMethods`, `ElementMethods`, or both.
+2. **Route objects into that category** by post-init hooks on the relevant **classes** (preferred), calling override-refine so owned methods precede concrete class methods.
+
+This is **not monkey-patching**. You are not replacing methods on a class;
+you are telling Sage that certain instances belong to a more refined category,
+and Sage's own dynamic dispatch makes the methods available.
+
+## Canonical pattern
+
+```python
+from sage.categories.category_with_axiom import CategoryWithAxiom_singleton
+
+class _MyCustomCategory(CategoryWithAxiom):
+    """A custom category whose methods apply to refined objects."""
+
+    def super_categories(self):
+        return [SomeBaseCategory()]
+
+    class ParentMethods:
+        """Methods available on every parent refined into this category."""
+
+        def my_method(self):
+            return ...
+
+    class ElementMethods:
+        """Methods available on elements of parents refined into this category."""
+
+        def my_element_method(self):
+            return ...
+
+
+# Post-init: refine specific objects into the category
+def install():
+    cat = _MyCustomCategory()
+    for obj in target_objects:
+        obj._refine_category_(cat)
+```
+
+## Codebase examples
+
+| File | Category | Target objects | Entry point |
+| --- | --- | --- | --- |
+| `archives/lattice-research/src/sage_patches/ring_base_category.py` | `_ModuleBaseRings` (custom) | `ZZ`, `QQ`, `RR`, `CC`, `QQbar`, `Zp(p)`, `GF(p)` | `_install_module_base_rings()` — iterates well-known singletons |
+| `archives/lattice-research/src/sage_patches/ideal_submodule.py` | `Modules(ring)` (existing Sage category) | Ideals produced by `Ring.ideal()` | `_module_aware_ideal()` — intercepts the constructor and refines each result |
+| `archives/lattice-research/src/sage_patches/fraction_quotients.py` | `Modules(ZZ)` (existing) | `QQ / ZZ`, `QQ / (n*ZZ)` | `__truediv__` patch on `RationalField` + direct refinement of two specific instances |
+| `archives/lattice-research/src/sage_patches/module_enrichment.py` | `Modules(R)` (existing) | Direct sums, quotients of free modules | `_ensure_module_refinement()` — called inside patched `direct_sum` and `quotient` |
+
+## Variants
+
+### A. Define a custom category + batch post-init (preferred)
+
+Used in `ring_base_category.py`. Best when you know the target objects at import time:
+they are singletons (like `ZZ`) or produced by a small set of constructors.
+
+```python
+class _MyMethods(CategoryWithAxiom):
+    class ParentMethods:
+        def utility(self): ...
+
+def install():
+    for obj in [ring1, ring2, ...]:
+        obj._refine_category_(_MyMethods())
+```
+
+### B. Constructor interceptor (archive / last resort)
+
+Used historically in `ideal_submodule.py` and `fraction_quotients.py`.
+Prefer class post-init hooks (§1) for new work.
+Only intercept a constructor when objects cannot be caught after `__init__` and a class hook is impossible.
+
+```python
+def _intercept_constructor(self, *args):
+    result = _native_constructor(self, *args)
+    refine(result, MyCategory())  # override-refine when owned methods must win
+    return result
+```
+
+### C. Mid-construction refinement
+
+Used in `module_enrichment.py`. The refinement happens *inside* a method that already
+creates the object, so no interception is needed — just add `_refine_category_` before returning.
+
+## Rules of thumb
+
+- **Category owns the methods.** The method implementation lives in `ParentMethods` or
+  `ElementMethods`, not inline in the post-init code. The post-init only routes the object in.
+
+- **Override-refine when owning an interface.** Use `refine` from the preamble so the new
+  subcategory precedes the concrete class in the MRO; bare `_refine_category_` alone leaves
+  class methods ahead of category methods (Sage’s default), which is wrong for overrides.
+
+- **Hook classes, not constructors**, for new installations. Post-init on the Sage class is
+  the default; constructor interception is archive/last-resort (Variant B).
+
+- **Use existing Sage categories when possible.** If you just need an object to be recognized
+  as an `R`-module, refine into `Modules(R)` rather than defining a new category.
+  Define a new category only when you have method implementations that no existing category provides.
+
+- **Do not monkey-patch class methods.** If you find yourself writing
+  `SomeSageClass.my_method = lambda ...`, stop and write a category instead.
+  Monkey-patching breaks for subclasses, is non-composable, and bypasses Sage's MRO.
+
+- **Do not store method implementations on the parent class itself.**
+  The parent class (`IntegerRing_class`, `MatrixSpace`, etc.) is Sage's compiled code;
+  the category's `ParentMethods` is where new methods belong.
+
+- **`_refine_category_` joins.** It calls `self._init_category_(self.category().join(Cat))`, so
+  the object keeps all its existing category memberships and gains the new one.
+  Calling it multiple times is safe. Override-refine still performs that join, then rebuilds
+  `__class__` so owned methods win.
+
+- **`@final` guards override.** If a method in `ParentMethods` should not be overridden by
+  a more specific category in the join, mark it `@final`.
+
+## What this is not
+
+This pattern is specifically for **retroactive method installation** — adding capabilities to
+objects that already exist at import time or are created by Sage's existing constructors.
+It is not a replacement for defining a proper category hierarchy from scratch;
+it is the bridge between Sage's compiled algebra and this repo's semantic needs during
+exploratory and spike work.
