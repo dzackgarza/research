@@ -177,6 +177,14 @@ class Lattices:
 # arXiv:2208.10383 Fig. 1.  Plain root-lattice entries from Table 2 supply
 # additional hyperbolic models via ``U`` or ``U(2)`` direct sums.  Starred
 # glued-overlattice entries are intentionally not encoded here.
+#
+# Classification check used by this catalogue: Nikulin's uniqueness theorem is
+# for indefinite even 2-elementary lattices.  Thus a candidate below is the
+# unique isometry class once the full lattice, not just the Table 2 definite
+# root piece, is verified to have signature $(1,r-1)$ and invariants
+# $(r,a,\delta)$ matching its key.  Definite Table 2 root pieces alone are not
+# uniqueness certificates; a definite genus may contain multiple isometry
+# classes.
 TwoElementary = {
         (1, 1, 1): Lattices.Z.twist(2),
         (2, 0, 0): Lattices.U,
