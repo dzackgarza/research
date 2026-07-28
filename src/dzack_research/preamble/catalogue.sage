@@ -302,12 +302,24 @@ def _rank_one_negative(scale):
 
 
 # Alexeev--Engel Table 2: even negative-definite 2-elementary lattices
-# appearing at 1-cusps, keyed by the listed $(r,a,\delta)$ invariants.
-# For starred rows, the listed glue vectors are representatives of totally
-# isotropic subgroups $H \subset A_R$ selected by the discriminant-form
-# construction: $|A_{\overline R}| = |A_R|/|H|^2$, the resulting lattice has
-# the keyed invariants, and its $(-2)$-root sublattice has the displayed
-# untwisted ADE type.  The vectors are not parsed from the AE labels.
+# appearing at 1-cusps, keyed by the table's own $(r,a,\delta)$ invariants.
+#
+# Theory: if an even overlattice $\overline R$ of an even lattice $R$ is
+# obtained by gluing, the gluing datum is a totally isotropic subgroup
+# $H \subset A_R$ of the discriminant quadratic module.  Then
+# $A_{\overline R} \simeq H^\perp/H$, so
+# $|A_{\overline R}| = |A_R|/|H|^2$.  The subgroup $H$ is not part of AE's
+# table data and need not be unique.  The row determines the lattice only up
+# to isometry, by the displayed root sublattice $R$ together with the listed
+# $(r,a,\delta)$ invariants.
+#
+# Production method for the starred rows: enumerate totally isotropic
+# subgroups $H \subset A_R$ of the forced order, construct the corresponding
+# overlattices, keep those with the keyed invariants and the displayed
+# $(-2)$-root sublattice, and verify that all surviving choices are isometric
+# via the exact positive-definite form test on $-\mathrm{Gram}$.  The vectors
+# below are one representative choice from that single isometry class; they
+# are not parsed from the AE labels.
 NegativeDefTwoElementary = {
         (0, 0, 0): [IntegralLattice(matrix(ZZ, 0, 0, []))],
         (1, 1, 1): [Lattices.A1],
