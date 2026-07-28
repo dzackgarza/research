@@ -505,7 +505,7 @@ def test_two_elementary_table_is_nikulins_75():
         filled += 1
         assert lattice.rank() == rank, f"{(rank, a, delta)}: rank {lattice.rank()}"
         assert lattice.signature_pair() == (1, rank - 1), (rank, a, delta)
-    assert filled == 41
+    assert filled == 73
 
 
 def test_two_elementary_filled_entries_match_nikulin_invariants():
