@@ -189,7 +189,7 @@ TwoElementary = {
         (1, 1, 1): Lattices.Z.twist(2),
         (2, 0, 0): Lattices.U,
         (2, 2, 0): Lattices.U_2,
-        (2, 2, 1): None,
+        (2, 2, 1): Lattices.Z.twist(2) @ Lattices.Z.twist(-2),
         (3, 1, 1): Lattices.U @ Lattices.A1,
         (3, 3, 1): Lattices.U_2 @ Lattices.A1,
         (4, 2, 1): Lattices.U @ Lattices.A1**2,
@@ -260,7 +260,7 @@ TwoElementary = {
         (18, 4, 1): Lattices.U_2 @ Lattices.E8 @ Lattices.E7 @ Lattices.A1,
         (19, 1, 1): Lattices.U @ Lattices.E8**2 @ Lattices.A1,
         (19, 3, 1): Lattices.U_2 @ Lattices.E8**2 @ Lattices.A1,
-        (20, 2, 1): None,
+        (20, 2, 1): Lattices.U @ Lattices.E8**2 @ Lattices.A1**2,
 }
 
 
