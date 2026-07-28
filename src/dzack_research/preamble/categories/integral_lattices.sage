@@ -25,13 +25,11 @@ EXAMPLES::
     sage: from dzack_research.preamble import catalogue
     sage: from dzack_research.preamble.categories import IntegralLattices
     sage: from dzack_research.preamble.refine import refine
-    sage: L = catalogue.Lattices.U
+    sage: L = Lattices.U
     sage: refine(L, IntegralLattices())
     sage: L.q(L.gens()[0])
     0
 """
-
-from __future__ import annotations
 
 import re
 from typing import Any
@@ -50,7 +48,6 @@ from sage.modules.free_quadratic_module_integer_symmetric import (
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Vector
-
 
 class SummandBlock:
     r"""Handle for one orthogonal summand inside a direct-sum lattice.
@@ -130,7 +127,6 @@ class SummandBlock:
         label = self._name if self._name is not None else f"[{self._start}:{self._start + self._rank}]"
         return f"SummandBlock({label}, rank={self._rank})"
 
-
 def _block_gens(part: Any) -> tuple:
     """Ambient generators from a :class:`SummandBlock` or an equal-length sequence."""
     if isinstance(part, SummandBlock):
@@ -140,7 +136,6 @@ def _block_gens(part: Any) -> tuple:
     raise TypeError(
         f"block combination expects SummandBlock or sequence, got {type(part)!r}"
     )
-
 
 def _block_combine(left: Any, right: Any, sign: int) -> Any:
     """Gen-wise ``left[i] + sign * right[i]`` for equal-rank block images."""
@@ -156,7 +151,6 @@ def _block_combine(left: Any, right: Any, sign: int) -> Any:
     )
     return tuple(left_gens[i] + sign * right_gens[i] for i in range(len(left_gens)))
 
-
 def _summand_records(lattice: Any) -> list[dict[str, Any]]:
     """Ordered summand metadata; a non-sum is a single full-rank record."""
     existing = getattr(lattice, "_preamble_summands", None)
@@ -170,7 +164,6 @@ def _summand_records(lattice: Any) -> list[dict[str, Any]]:
             "name": None,
         }
     ]
-
 
 def _attach_summand_records(
     result: Any,
@@ -199,7 +192,6 @@ def _attach_summand_records(
             rec["name"] = name
     result._preamble_summands = records
 
-
 def expand_block_hom_dict(domain: Any, mapping: dict) -> list:
     r"""Expand a Hom/Aut dict with block keys/values to ordered generator images.
 
@@ -207,8 +199,6 @@ def expand_block_hom_dict(domain: Any, mapping: dict) -> list:
     be ambient elements, equal-rank blocks, equal-rank block sums
     (``b2 + b3``), or sequences of ambient elements (including ``-block``).
     """
-    from dzack_research.preamble.refine import unwrap
-
     images: dict[Any, Any] = {}
     for key, val in mapping.items():
         if isinstance(key, SummandBlock):
@@ -248,12 +238,10 @@ def expand_block_hom_dict(domain: Any, mapping: dict) -> list:
         ordered.append(images[key])
     return ordered
 
-
 # Keep a reference to Sage's native direct_sum so we can call it from inside
 # the category without depending on any patches that may replace it.
 _native_direct_sum = FreeQuadraticModule_integer_symmetric.direct_sum
 _native_twist = FreeQuadraticModule_integer_symmetric.twist
-
 
 class IntegralLattices(Category):
     r"""Category of integral lattices with enriched computational methods.
@@ -315,8 +303,6 @@ class IntegralLattices(Category):
 
         def I_perp_mod_I(self: Any, vectors: Any) -> Any:
             r"""Return $I^\perp / I$ as an integral lattice with the induced form."""
-            from dzack_research.preamble.refine import without_element_wrap
-
             from sage.modules.free_quadratic_module_integer_symmetric import (
                 IntegralLattice,
             )
@@ -396,9 +382,6 @@ class IntegralLattices(Category):
             from sage.rings.infinity import Infinity
             from sage.rings.rational_field import QQ
 
-            from dzack_research.preamble.refine import without_element_wrap
-
-            # discriminant_group walks ``basis()`` through FreeModule arithmetic;
             # keep native Cython vectors for that path.
             with without_element_wrap():
                 disc = self.discriminant_group()
@@ -414,6 +397,16 @@ class IntegralLattices(Category):
         def delta(self: Any) -> Integer:
             r"""Return Nikulin's invariant $\delta\in\{0,1\}$."""
             return Integer(0) if self.is_coeven() else Integer(1)
+
+        def is_p_elementary(self: Any, p: Any) -> bool:
+            r"""Return whether the discriminant group $A_L$ is elementary abelian of exponent $p$.
+
+            Defers to :meth:`DiscriminantQuadraticModules.ParentMethods.is_p_elementary`
+            on ``self.discriminant_group()``.
+            """
+            with without_element_wrap():
+                disc = self.discriminant_group()
+            return bool(disc.is_p_elementary(p))
 
         def is_elliptic(self: Any) -> bool:
             """Return whether the lattice is negative definite."""
@@ -431,7 +424,7 @@ class IntegralLattices(Category):
             EXAMPLES::
 
                 sage: from dzack_research.preamble import catalogue
-                sage: catalogue.Lattices.E8.with_names("a1..a8").variable_names()
+                sage: Lattices.E8.with_names("a1..a8").variable_names()
                 ('a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8')
             """
             self._assign_names(_expand_names(spec, self.rank()))
@@ -465,15 +458,11 @@ class IntegralLattices(Category):
         # ---- generators (wrap Cython vectors at the API boundary) ----
 
         def gens(self: Any, *args: Any, **kwargs: Any) -> Any:
-            from dzack_research.preamble.refine import wrap_element
-
             native = super(IntegralLattices.ParentMethods, self).gens(*args, **kwargs)
             wrapped = [wrap_element(self, g) for g in native]
             return type(native)(wrapped) if not isinstance(native, list) else wrapped
 
         def basis(self: Any, *args: Any, **kwargs: Any) -> Any:
-            from dzack_research.preamble.refine import wrap_element
-
             native = super(IntegralLattices.ParentMethods, self).basis(*args, **kwargs)
             # Preserve the native container type: Sage internals (e.g.
             # discriminant_group) concatenate ``basis()`` with lists.
@@ -482,12 +471,6 @@ class IntegralLattices(Category):
 
         def __call__(self: Any, *args: Any, **kwargs: Any) -> Any:
             """Construct a lattice element on the owned facade interface."""
-            from dzack_research.preamble.refine import (
-                _WRAP_DEPTH,
-                unwrap,
-                wrap_element,
-            )
-
             if _WRAP_DEPTH:
                 return super(IntegralLattices.ParentMethods, self).__call__(
                     *args, **kwargs
@@ -510,8 +493,6 @@ class IntegralLattices(Category):
             Run the native coordinate computation with wrapping suppressed so the
             basis stays native for the duration of the call.
             """
-            from dzack_research.preamble.refine import without_element_wrap
-
             with without_element_wrap():
                 return super(IntegralLattices.ParentMethods, self).coordinate_vector(
                     _unwrap(v), *args, **kwargs
@@ -535,8 +516,6 @@ class IntegralLattices(Category):
             Nested sums flatten to a top-level ordered summand list.  Optional
             ``block_names`` labels the resulting blocks for :meth:`summands`.
             """
-            from dzack_research.preamble.refine import without_element_wrap
-
             if not others:
                 return self
 
@@ -584,8 +563,6 @@ class IntegralLattices(Category):
 
         def twist(self: Any, *args: Any, names: Any = None, **kwargs: Any) -> Any:
             r"""Twisted (sign-flipped) lattice, preserving Gram-matrix subdivisions."""
-            from dzack_research.preamble.refine import without_element_wrap
-
             subdivs = self.gram_matrix().subdivisions()
             with without_element_wrap():
                 result = _native_twist(self, *args, **kwargs)
@@ -609,10 +586,6 @@ class IntegralLattices(Category):
             Application bypasses Sage ``Map`` coercion (which SIGSEGVs once
             lattices are facade-refined) and uses coordinates × matrix.
             """
-            from dzack_research.preamble.refine import refine, without_element_wrap
-
-            from .lattice_homomorphisms import LatticeHomomorphisms
-
             with without_element_wrap():
                 hom = super(IntegralLattices.ParentMethods, self).Hom(
                     *args, **kwargs
@@ -626,10 +599,6 @@ class IntegralLattices(Category):
             ``L.Aut()({e: image, ...})`` / ``L.Aut()([images...])`` /
             ``L.Aut()(matrix)``.  Isometry is checked on ``morphism.to_matrix()``.
             """
-            from dzack_research.preamble.refine import refine, without_element_wrap
-
-            from .lattice_isometries import LatticeIsometries
-
             cached = self.__dict__.get("_preamble_Aut")
             if cached is not None:
                 return cached
@@ -732,13 +701,15 @@ class IntegralLattices(Category):
                 return self
             return NotImplemented
 
-        def __pow__(self: Any, exponent: Any) -> Any:
+        def __pow__(self: Any, exponent: Any, names: Any = None) -> Any:
             r"""``L ** n`` as the ``n``-fold orthogonal direct sum."""
             n = int(exponent)
             assert n >= 1, f"lattice power needs a positive exponent, got {exponent}"
             result = self
             for _ in range(n - 1):
                 result = result.direct_sum(self)
+            if names is not None:
+                result = _apply_names(result, names)
             return result
 
         # ---- LaTeX ----
@@ -834,28 +805,21 @@ class IntegralLattices(Category):
             r"""$e^\perp / \langle e \rangle$ for a single isotropic $e$."""
             return self.parent().I_perp_mod_I([self])
 
-
 # ---- helper utilities ----
 
 _ZERO_DOTS: bool = True
-
 
 def set_zero_dots(enabled: bool = True) -> None:
     r"""Toggle replacing 0 entries with $\cdot$ in lattice LaTeX."""
     global _ZERO_DOTS
     _ZERO_DOTS = bool(enabled)
 
-
 def _zero_dots() -> bool:
     return _ZERO_DOTS
 
-
 def _unwrap(x: Any) -> Any:
     r"""Unwrap an element facade if present; otherwise return ``x``."""
-    from dzack_research.preamble.refine import unwrap
-
     return unwrap(x)
-
 
 def _element_add(left: Any, right: Any, sign: int) -> Any:
     """Add/subtract lattice elements coordinate-wise, returning a lattice element.
@@ -890,7 +854,6 @@ def _element_add(left: Any, right: Any, sign: int) -> Any:
             pass
     return result
 
-
 def _expand_names(spec: str, rank: int) -> tuple[str, ...]:
     r"""Expand indexed ranges in a basis-name specification."""
     names: list[str] = []
@@ -910,7 +873,6 @@ def _expand_names(spec: str, rank: int) -> tuple[str, ...]:
     assert len(set(names)) == rank, f"duplicate names in {spec!r}"
     return tuple(names)
 
-
 def _expand_ellipsis_names(names: tuple[str, ...]) -> tuple[str, ...]:
     r"""Expand ``('a1','Ellipsis','a8')`` through ``'a8'``."""
     expanded: list[str] = []
@@ -922,17 +884,18 @@ def _expand_ellipsis_names(names: tuple[str, ...]) -> tuple[str, ...]:
             f"'...' needs a name on each side; got {names}"
         )
         before, after = expanded[-1], names[i + 1]
-        left = re.fullmatch(r"([A-Za-z_]+)(\d+)", before)
-        right = re.fullmatch(r"([A-Za-z_]+)(\d+)", after)
+        # Allow an alphabetic suffix so ``a1t, ..., a8t`` expands.
+        left = re.fullmatch(r"([A-Za-z_]+)(\d+)([A-Za-z_]*)", before)
+        right = re.fullmatch(r"([A-Za-z_]+)(\d+)([A-Za-z_]*)", after)
         assert left and right, f"'...' needs indexed names: {before}, {after}"
-        assert left.group(1) == right.group(1), (
+        assert left.group(1) == right.group(1) and left.group(3) == right.group(3), (
             f"'...' between different stems: {before} and {after}"
         )
         start, stop = int(left.group(2)), int(right.group(2))
         assert stop > start, f"'...' range does not ascend: {before}..{after}"
-        expanded.extend(f"{left.group(1)}{i}" for i in range(start + 1, stop))
+        stem, suffix = left.group(1), left.group(3)
+        expanded.extend(f"{stem}{i}{suffix}" for i in range(start + 1, stop))
     return tuple(expanded)
-
 
 def _apply_names(lattice: Any, names: Any) -> Any:
     r"""Expand a declared name tuple onto a lattice, checking rank."""
@@ -944,7 +907,6 @@ def _apply_names(lattice: Any, names: Any) -> Any:
     lattice._assign_names(expanded)
     lattice._ellipsis_spec = declared
     return lattice
-
 
 def _subdivide_gram(L: Any, *cuts: Any) -> None:
     r"""Subdivide a lattice's Gram matrix, handling immutability."""
@@ -958,7 +920,6 @@ def _subdivide_gram(L: Any, *cuts: Any) -> None:
         except AttributeError:
             pass
     gram.subdivide(*cuts)
-
 
 def _detect_matrix_connected_cuts(G: Any) -> list[int]:
     r"""Detect connected-component cuts in a matrix graph for block subdivision.
@@ -992,7 +953,6 @@ def _detect_matrix_connected_cuts(G: Any) -> list[int]:
         cuts.append(cur)
     return [c for c in cuts if 0 < c < n]
 
-
 def compute_lattice_gram_subdivisions(L: Any) -> list[int]:
     r"""Module-level helper: detect and apply Gram-matrix block subdivisions.
 
@@ -1016,7 +976,6 @@ def compute_lattice_gram_subdivisions(L: Any) -> list[int]:
         gram.subdivide(cuts, cuts)
     return cuts
 
-
 def _format_disc_latex(disc: int) -> str:
     r"""Format discriminant with prime factorization in LaTeX."""
     from sage.arith.misc import factor
@@ -1027,9 +986,7 @@ def _format_disc_latex(disc: int) -> str:
     f_latex = str(_latex_fn(f))
     return f"{disc} = {f_latex}" if f_latex != str(disc) else str(disc)
 
-
 # ---- lattice-specific refinement lifecycle ----
-
 
 def _action_matrices(action: Any) -> list[Any]:
     """Normalize a group action to a list of integer matrices."""
@@ -1044,44 +1001,43 @@ def _action_matrices(action: Any) -> list[Any]:
         return matrices
     return [matrix(ZZ, action)]
 
-
 def refine_one_lattice(lattice: Any) -> None:
     r"""Refine a single integral lattice into the appropriate categories.
 
     Always refines into ``IntegralLattices``.  If signature is ``(n, 1)``,
     also joins ``HyperbolicLattices``.
     """
-    from dzack_research.preamble.refine import refine
-
-    from .hyperbolic_lattices import HyperbolicLattices
-
     refine(lattice, IntegralLattices())
     pos, neg = lattice.signature_pair()
     if pos > 0 and neg > 0 and min(pos, neg) == 1:
         refine(lattice, HyperbolicLattices())
 
-
 def _after_lattice_init(lattice: Any) -> None:
     compute_lattice_gram_subdivisions(lattice)
-
 
 def _is_hyperbolic(lattice: Any) -> bool:
     pos, neg = lattice.signature_pair()
     return pos > 0 and neg > 0 and min(pos, neg) == 1
 
+_INTEGRAL_LATTICES_INSTALLED = False
 
-_INSTALLED = False
+
+_NATIVE_INTEGRAL_LATTICE = IntegralLattice
 
 
-def install() -> None:
-    """Hook post-init on integral-lattice classes (not constructors)."""
-    global _INSTALLED
-    if _INSTALLED:
+def _integral_lattice_with_names(*args: Any, names: Any = None, **kwargs: Any) -> Any:
+    r"""``IntegralLattice(..., names=(...))`` for ``L.<gens> = IntegralLattice(...)``."""
+    lattice = _NATIVE_INTEGRAL_LATTICE(*args, **kwargs)
+    if names is not None:
+        lattice = _apply_names(lattice, names)
+    return lattice
+
+
+def install_integral_lattices() -> None:
+    """Hook post-init and enable ``IntegralLattice(..., names=)`` generator sugar."""
+    global _INTEGRAL_LATTICES_INSTALLED
+    if _INTEGRAL_LATTICES_INSTALLED:
         return
-
-    from dzack_research.preamble.refine import hook_post_init
-
-    from .hyperbolic_lattices import HyperbolicLattices
 
     hook_post_init(
         FreeQuadraticModule_integer_symmetric,
@@ -1094,17 +1050,19 @@ def install() -> None:
         predicate=_is_hyperbolic,
     )
 
-    # Retroactively refine catalogue lattices created before hooks ran.
-    import sys
+    # Sage's preparser emits ``IntegralLattice(..., names=(...))`` for
+    # ``L.<gens> = IntegralLattice(...)``.  Install that keyword on the live
+    # factory (module + lazy ``sage.all`` binding) so catalogue construction
+    # after this call can use the idiomatic generator assignment.
+    import sage.modules.free_quadratic_module_integer_symmetric as _fqmis
 
-    if "dzack_research.preamble.catalogue" in sys.modules:
-        cat = sys.modules["dzack_research.preamble.catalogue"]
-        lattices_ns = getattr(cat, "Lattices", None)
-        if lattices_ns is not None:
-            for name, lattice in vars(lattices_ns).items():
-                if name.startswith("_") or not hasattr(lattice, "gram_matrix"):
-                    continue
-                refine_one_lattice(lattice)
-                compute_lattice_gram_subdivisions(lattice)
+    _fqmis.IntegralLattice = _integral_lattice_with_names
+    try:
+        import sage.all as _sage_all
 
-    _INSTALLED = True
+        _sage_all.IntegralLattice = _integral_lattice_with_names
+    except Exception:
+        pass
+    globals()["IntegralLattice"] = _integral_lattice_with_names
+
+    _INTEGRAL_LATTICES_INSTALLED = True
