@@ -22,16 +22,33 @@
 
 ## Session preamble ##########################################################
 #
-# Vendor import paths and interactive ergonomics live in the repo, in
+# Vendor import paths and category hooks live in the repo, in
 # dzack_research.preamble, NOT in a hand-placed .pth inside Sage's venv: a .pth
 # there is untracked, unreviewable, and destroyed by any Sage rebuild. The
 # package is pip-installed editable (`just sage-init-install` documents the
 # wiring), so it follows the working tree.
 #
-# Toggle stanzas by editing this call. implicit_multiplication is off by default
-# because it changes how source is parsed, not just what names exist.
+# Interactive defaults (implicit multiplication, red tracebacks, GAP
+# PackageManager) apply when ergonomics is imported — which install() does.
+# Star-import session surfaces so new public names appear without editing this
+# file; each module's ``__all__`` is the allowlist.
 
 from dzack_research.preamble import install as _install_preamble
+from dzack_research.preamble.catalogue import *
+from dzack_research.preamble.ergonomics import *
+from dzack_research.preamble.fixtures import (
+    CROSS_CHECK_RECIPES,
+    DIAGRAM_CONVENTION,
+    STERK_POSITIONS,
+    STERK_ROOT_COUNTS,
+)
+from dzack_research.preamble.sterk import *
+from sage_lattice_category_spike import (
+    CoxeterDiagramHomset,
+    CoxeterDiagramMorphism,
+    CoxeterDiagrams,
+    FiniteCoxeterDiagram,
+)
 
 _preamble_report = _install_preamble()
 

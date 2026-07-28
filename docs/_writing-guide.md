@@ -249,6 +249,15 @@ it is defined; the failure is the undefined organizational use.
 some sense" used where an exact statement is owed. *Fix:* state it exactly, or, if a genuine
 approximation is meant, name the sense ("up to isomorphism", "to first order").
 
+**EV-5 — Universal construction left in prose.** A construction defined by a pullback,
+pushout, or another universal square is abbreviated as “obtained by pulling back” or an
+equivalent prose instruction. *Banned:* “Define $E\to X$ by pulling back
+$p\colon U\to B$ along $f\colon X\to B$.” *Fix:* draw the actual commutative square,
+label every morphism, mark it cartesian or cocartesian, and name the resulting object and
+structure morphism in the diagram. The prose may state the universal property after the
+diagram; it never replaces the diagram.
+
+
 ---
 
 ## Mathematical tells (`MA-*`)

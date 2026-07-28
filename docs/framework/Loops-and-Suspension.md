@@ -86,12 +86,13 @@ In pointed spaces these are the usual loop-space and reduced-suspension construc
 
 ## Arrow categories and path spaces {#sec-interval-presentations}
 
-For an $\infty$-category $C$, evaluation gives
+For a higher category $C$, evaluation at the endpoints of the constructed walking arrow gives
 $$
-\operatorname{Fun}(\Delta^1,C)\longrightarrow C\times C.
+[[1],C]\longrightarrow C\times C.
 $$
-After taking cores, the homotopy fiber over $(x,y)$ is $\operatorname{Map}_C(x,y)$.
-The fiber over $(x,x)$ is the space of endomorphisms of $x$; its union of equivalence components is the automorphism space of $x$.
+
+The fiber over $(x,y)$ is the hom-category $[x,y]_C$; applying $\Pi_\infty$ gives $\operatorname{Map}_C(x,y)$.
+The fiber over $(x,x)$ is the endomorphism category of $x$, and its full subcategory on the invertible objects is the automorphism category of $x$.
 
 ## The suspension-loop adjunction {#sec-adjunctions}
 

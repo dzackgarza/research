@@ -6,6 +6,7 @@ from typing_extensions import Self
 
 from sage.graphs.graph_plot import GraphPlot
 from sage.groups.perm_gps.permgroup import PermutationGroup_generic
+from sage.plot.graphics import Graphics
 
 type GraphOption = (
     bool
@@ -42,6 +43,7 @@ class Graph:
         sort: bool = ...,
     ) -> Sequence[GraphEdge]: ...
     def graphplot(self, **options: GraphOption) -> GraphPlot: ...
+    def plot(self, **options: Any) -> Graphics: ...
     def automorphism_group(
         self,
         partition: Sequence[Sequence[Hashable]] | None = ...,

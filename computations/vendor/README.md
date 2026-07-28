@@ -54,9 +54,8 @@ Check the mechanism:
   (`src/sage/vinal.py:61`) calls `M.adjoint()`, removed from Sage in favour of
   `adjugate()`:
 
-      sage -c 'from dzack_research.preamble import patches; patches.install("vinberg");
-               from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice;
-               IntegralLattice("H").vinberg_algorithm()'
+      sage -c 'from dzack_research.preamble import catalogue;
+               catalogue.Lattices.U.direct_sum(catalogue.Lattices.E8).vinberg_algorithm()'
       # AttributeError: 'Matrix_integer_dense' object has no attribute 'adjoint'
 
   Unfixed on purpose: patching the working copy would be invisible to git and lost

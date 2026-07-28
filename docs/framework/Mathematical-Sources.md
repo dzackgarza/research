@@ -2,7 +2,9 @@
 
 ## Higher categories
 
-Quasicategories, functor quasicategories, equivalences, cores, groupoid completion, and truncated objects are treated in Kerodon [@Lur26]. The ordinary categorical specializations use [@Mac94]. The corresponding definitions are @def-infinity-category-universe, @def-internal-hom, @def-core, and @def-truncated.
+The category tower, internal hom, and adjunctions in @def-infinity-category-universe, @def-internal-hom, and @def-core are axioms of the framework.
+Kerodon [@Lur26] supplies model-specific comparison results for quasicategories, cores, groupoid completion, equivalences, and truncated objects.
+The ordinary categorical specialization uses [@Mac94].
 
 ## Categories of elements
 

@@ -6,6 +6,7 @@ dependencies = [
     "haystack-ai>=2.31.0",
     "pandoc-config @ https://github.com/dzackgarza/pandoc-config/archive/b567314b56b11326fdba05041afdccd11adee5b3.tar.gz",
     "python-dotenv>=1.2.2",
+    "sage-julia-bridge @ https://github.com/dzackgarza/sage-julia-bridge/archive/21d579a14b4b28420b1ca823a354237f507c2f94.tar.gz",
     "sage-lattice-category-spike==0.0.1",
     "sage-lattice-feature-spike==0.1.0",
     "streamlit>=1.59.2",

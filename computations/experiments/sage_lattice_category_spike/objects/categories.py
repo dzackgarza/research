@@ -166,7 +166,7 @@ class Lattices(CatObject, Category_over_base_ring):
         # construction provenance (section 1.3), never detected from the Gram
         RootGenerated = axiom("RootGenerated")
 
-    ParentMethods = Lattice
+    ParentMethods = _own_methods(Lattice)
 
     ElementMethods = LatticeElement
 

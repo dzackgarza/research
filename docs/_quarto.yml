@@ -66,9 +66,11 @@ filters:
   - book-toc
   - custom-numbered-blocks
   - stacks-tags.lua
+  - pandoc-tikzcd.lua
   - tikz
 tikz:
   cache: true
+  svg-engine: pdftocairo
 # Numbered amsthm-style environments (ute/custom-numbered-blocks).
 # One shared per-chapter counter (all kinds in group 'blocks') -> a block is 'Kind N.M' in one sequence;
 # quartothmlike appearance mimics native Quarto theorems.

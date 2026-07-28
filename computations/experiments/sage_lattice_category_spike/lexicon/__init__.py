@@ -10,6 +10,7 @@ from ..algebra.domain_algebra import (
     BilinearDiscriminantForm,
     CategoryMorphism,
     CategoryObject,
+    CoxeterDiagram,
     DefiniteLattice,
     DiscriminantAction,
     DiscriminantForm,
@@ -85,7 +86,7 @@ from .foundations import (
     SignaturePair,
     SymbolicExpression,
 )
-from .geometry import Graph, Polygon, Polyhedron
+from .geometry import CoxeterMatrix, Graph, Polygon, Polyhedron
 from .interop import (
     SageCartanMatrix,
     SageCategory,
@@ -136,6 +137,7 @@ __all__ = [
     "Vector",
     "VectorSpace",
     # geometry
+    "CoxeterMatrix",
     "Graph",
     "Polygon",
     "Polyhedron",
@@ -143,6 +145,7 @@ __all__ = [
     "BilinearDiscriminantForm",
     "CategoryMorphism",
     "CategoryObject",
+    "CoxeterDiagram",
     "DefiniteLattice",
     "DiscriminantAction",
     "DiscriminantForm",
