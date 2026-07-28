@@ -41,13 +41,21 @@ from sage.matrix.constructor import matrix
 from sage.matrix.special import identity_matrix
 from sage.misc.latex import latex as _latex_fn
 from sage.modules.free_module import FreeModule
+import sage.modules.free_quadratic_module_integer_symmetric as _sage_fqmis
 from sage.modules.free_quadratic_module_integer_symmetric import (
     FreeQuadraticModule_integer_symmetric,
-    IntegralLattice,
 )
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Vector
+
+SageIntegralLattice = _sage_fqmis.IntegralLattice
+SageIntegralLattice = getattr(
+    SageIntegralLattice,
+    "_preamble_native_integral_lattice",
+    SageIntegralLattice,
+)
+IntegralLattice = SageIntegralLattice
 
 class SummandBlock:
     r"""Handle for one orthogonal summand inside a direct-sum lattice.
@@ -1022,19 +1030,19 @@ def _is_hyperbolic(lattice: Any) -> bool:
 _INTEGRAL_LATTICES_INSTALLED = False
 
 
-_NATIVE_INTEGRAL_LATTICE = IntegralLattice
-
-
 def _integral_lattice_with_names(*args: Any, names: Any = None, **kwargs: Any) -> Any:
     r"""``IntegralLattice(..., names=(...))`` for ``L.<gens> = IntegralLattice(...)``."""
-    lattice = _NATIVE_INTEGRAL_LATTICE(*args, **kwargs)
+    lattice = SageIntegralLattice(*args, **kwargs)
     if names is not None:
         lattice = _apply_names(lattice, names)
     return lattice
 
 
+_integral_lattice_with_names._preamble_native_integral_lattice = SageIntegralLattice
+
+
 def install_integral_lattices() -> None:
-    """Hook post-init and enable ``IntegralLattice(..., names=)`` generator sugar."""
+    """Hook post-init and shadow ``IntegralLattice`` with the preamble constructor."""
     global _INTEGRAL_LATTICES_INSTALLED
     if _INTEGRAL_LATTICES_INSTALLED:
         return
@@ -1050,19 +1058,10 @@ def install_integral_lattices() -> None:
         predicate=_is_hyperbolic,
     )
 
-    # Sage's preparser emits ``IntegralLattice(..., names=(...))`` for
-    # ``L.<gens> = IntegralLattice(...)``.  Install that keyword on the live
-    # factory (module + lazy ``sage.all`` binding) so catalogue construction
-    # after this call can use the idiomatic generator assignment.
-    import sage.modules.free_quadratic_module_integer_symmetric as _fqmis
+    _sage_fqmis.IntegralLattice = _integral_lattice_with_names
+    import sage.all as _sage_all
 
-    _fqmis.IntegralLattice = _integral_lattice_with_names
-    try:
-        import sage.all as _sage_all
-
-        _sage_all.IntegralLattice = _integral_lattice_with_names
-    except Exception:
-        pass
+    _sage_all.IntegralLattice = _integral_lattice_with_names
     globals()["IntegralLattice"] = _integral_lattice_with_names
 
     _INTEGRAL_LATTICES_INSTALLED = True
