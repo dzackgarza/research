@@ -44,12 +44,11 @@ class LatticeIsometries(Category):
 
             with without_element_wrap():
                 if isinstance(x, dict):
-                    images = {unwrap(src): unwrap(dst) for src, dst in x.items()}
-                    ordered = []
-                    for gen in domain.gens():
-                        key = unwrap(gen)
-                        assert key in images, f"missing image for generator {gen}"
-                        ordered.append(images[key])
+                    from dzack_research.preamble.categories.integral_lattices import (
+                        expand_block_hom_dict,
+                    )
+
+                    ordered = expand_block_hom_dict(domain, x)
                     morphism = super().__call__(ordered, *args, **kwargs)  # type: ignore[misc]
                 elif isinstance(x, (list, tuple)) and x and not hasattr(x, "nrows"):
                     morphism = super().__call__(  # type: ignore[misc]
@@ -143,3 +142,7 @@ class LatticeIsometries(Category):
         def coinvariant_lattice(self: Any) -> Any:
             r"""Return the coinvariant lattice via the domain lattice."""
             return self.domain().coinvariant_lattice(self)
+
+        def coinvariant_inclusion(self: Any) -> Any:
+            r"""Return the coinvariant inclusion via the domain lattice."""
+            return self.domain().coinvariant_inclusion(self)

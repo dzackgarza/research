@@ -9,7 +9,9 @@ Refine any integral lattice parent into this category to gain::
     _first_ngens(count)         # generator sugar for ``L.<...> = ...``
     twist(*, names=...)         # twisted copy with optional naming
     __matmul__, __pow__, direct_sum   # orthogonal direct sums with subdivisions
-    Aut(), invariant_lattice(action), coinvariant_lattice(action)
+    summands()                  # block handles for direct-sum summands
+    Aut(), invariant_lattice(action), coinvariant_lattice(action),
+    coinvariant_inclusion(action)
 
 Elements gain::
 
@@ -41,20 +43,216 @@ from sage.matrix.constructor import matrix
 from sage.matrix.special import identity_matrix
 from sage.misc.latex import latex as _latex_fn
 from sage.modules.free_module import FreeModule
-from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+from sage.modules.free_quadratic_module_integer_symmetric import (
+    FreeQuadraticModule_integer_symmetric,
+    IntegralLattice,
+)
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Vector
 
+
+class SummandBlock:
+    r"""Handle for one orthogonal summand inside a direct-sum lattice.
+
+    Indexing and :meth:`gens` return ambient elements of the sum.
+    As a Hom/Aut image of another equal-rank block, the handle expands to a
+    generator-wise map.  Equal-rank block sums place a domain block diagonally::
+
+        {a1: b1, a2: b2 + b3}   # block columns of the Hom matrix
+
+    so ``b2 + b3`` is the sequence ``(b2[i] + b3[i])_i`` (the lattice map
+    \(N(2)\hookrightarrow N\oplus N\) when the forms match).
+    """
+
+    __slots__ = ("_ambient", "_lattice", "_start", "_rank", "_name")
+
+    def __init__(
+        self,
+        ambient: Any,
+        lattice: Any,
+        start: int,
+        rank: int,
+        name: str | None = None,
+    ) -> None:
+        self._ambient = ambient
+        self._lattice = lattice
+        self._start = int(start)
+        self._rank = int(rank)
+        self._name = name
+
+    @property
+    def lattice(self) -> Any:
+        """The abstract summand lattice."""
+        return self._lattice
+
+    @property
+    def ambient(self) -> Any:
+        """The direct-sum lattice containing this block."""
+        return self._ambient
+
+    @property
+    def inclusion(self) -> Any:
+        """The inclusion Hom ``summand → ambient``."""
+        gens = list(self._ambient.gens())[self._start : self._start + self._rank]
+        return self._lattice.Hom(self._ambient)(gens)
+
+    def gens(self) -> tuple:
+        """Ambient generators spanning this block."""
+        return tuple(self._ambient.gens()[self._start : self._start + self._rank])
+
+    def __getitem__(self, index: int) -> Any:
+        return self.gens()[index]
+
+    def __len__(self) -> int:
+        return self._rank
+
+    def __neg__(self) -> tuple:
+        return tuple(-g for g in self.gens())
+
+    def __add__(self, other: Any) -> Any:
+        """Equal-rank gen-wise sum of blocks (or of a prior sum sequence)."""
+        return _block_combine(self, other, 1)
+
+    def __radd__(self, other: Any) -> Any:
+        """Support ``(b1 + b2) + b3`` when the left operand is already a sequence."""
+        return _block_combine(other, self, 1)
+
+    def __sub__(self, other: Any) -> Any:
+        """Equal-rank gen-wise difference of blocks (or of a prior sum sequence)."""
+        return _block_combine(self, other, -1)
+
+    def __rsub__(self, other: Any) -> Any:
+        """Support ``seq - block`` when the left operand is already a sequence."""
+        return _block_combine(other, self, -1)
+
+    def __repr__(self) -> str:
+        label = self._name if self._name is not None else f"[{self._start}:{self._start + self._rank}]"
+        return f"SummandBlock({label}, rank={self._rank})"
+
+
+def _block_gens(part: Any) -> tuple:
+    """Ambient generators from a :class:`SummandBlock` or an equal-length sequence."""
+    if isinstance(part, SummandBlock):
+        return part.gens()
+    if isinstance(part, (list, tuple)) and not hasattr(part, "parent"):
+        return tuple(part)
+    raise TypeError(
+        f"block combination expects SummandBlock or sequence, got {type(part)!r}"
+    )
+
+
+def _block_combine(left: Any, right: Any, sign: int) -> Any:
+    """Gen-wise ``left[i] + sign * right[i]`` for equal-rank block images."""
+    if left is None or right is None:
+        return NotImplemented
+    try:
+        left_gens = _block_gens(left)
+        right_gens = _block_gens(right)
+    except TypeError:
+        return NotImplemented
+    assert len(left_gens) == len(right_gens), (
+        f"block ranks differ: {len(left_gens)} vs {len(right_gens)}"
+    )
+    return tuple(left_gens[i] + sign * right_gens[i] for i in range(len(left_gens)))
+
+
+def _summand_records(lattice: Any) -> list[dict[str, Any]]:
+    """Ordered summand metadata; a non-sum is a single full-rank record."""
+    existing = getattr(lattice, "_preamble_summands", None)
+    if existing is not None:
+        return [dict(rec) for rec in existing]
+    return [
+        {
+            "lattice": lattice,
+            "start": 0,
+            "rank": int(lattice.rank()),
+            "name": None,
+        }
+    ]
+
+
+def _attach_summand_records(
+    result: Any,
+    left: Any,
+    right: Any,
+    left_rank: int,
+    block_names: Any = None,
+) -> None:
+    """Store flattened summand records on ``result`` after ``left ⊕ right``."""
+    records = _summand_records(left)
+    for rec in _summand_records(right):
+        records.append(
+            {
+                "lattice": rec["lattice"],
+                "start": left_rank + int(rec["start"]),
+                "rank": int(rec["rank"]),
+                "name": rec.get("name"),
+            }
+        )
+    if block_names is not None:
+        names = tuple(block_names)
+        assert len(names) == len(records), (
+            f"block_names length {len(names)} != number of summands {len(records)}"
+        )
+        for rec, name in zip(records, names):
+            rec["name"] = name
+    result._preamble_summands = records
+
+
+def expand_block_hom_dict(domain: Any, mapping: dict) -> list:
+    r"""Expand a Hom/Aut dict with block keys/values to ordered generator images.
+
+    Keys may be :class:`SummandBlock` handles or ambient generators.  Values may
+    be ambient elements, equal-rank blocks, equal-rank block sums
+    (``b2 + b3``), or sequences of ambient elements (including ``-block``).
+    """
+    from dzack_research.preamble.refine import unwrap
+
+    images: dict[Any, Any] = {}
+    for key, val in mapping.items():
+        if isinstance(key, SummandBlock):
+            src_gens = key.gens()
+            if isinstance(val, SummandBlock):
+                dst_gens = val.gens()
+                assert len(src_gens) == len(dst_gens), (
+                    f"block ranks differ: {len(src_gens)} vs {len(dst_gens)}"
+                )
+                for src, dst in zip(src_gens, dst_gens):
+                    images[unwrap(src)] = unwrap(dst)
+            elif isinstance(val, (list, tuple)) and not hasattr(val, "parent"):
+                assert len(val) == len(src_gens), (
+                    f"image sequence length {len(val)} != block rank {len(src_gens)}"
+                )
+                for src, dst in zip(src_gens, val):
+                    images[unwrap(src)] = unwrap(dst)
+            else:
+                assert len(src_gens) == 1, (
+                    "non-block Hom image requires a rank-1 source block "
+                    f"(got rank {len(src_gens)})"
+                )
+                images[unwrap(src_gens[0])] = unwrap(val)
+        else:
+            if isinstance(val, SummandBlock):
+                assert len(val) == 1, (
+                    "generator key with block value requires a rank-1 block"
+                )
+                images[unwrap(key)] = unwrap(val[0])
+            else:
+                images[unwrap(key)] = unwrap(val)
+
+    ordered = []
+    for gen in domain.gens():
+        key = unwrap(gen)
+        assert key in images, f"missing image for generator {gen}"
+        ordered.append(images[key])
+    return ordered
+
+
 # Keep a reference to Sage's native direct_sum so we can call it from inside
 # the category without depending on any patches that may replace it.
-from sage.modules.free_quadratic_module_integer_symmetric import (
-    FreeQuadraticModule_integer_symmetric,
-)
 _native_direct_sum = FreeQuadraticModule_integer_symmetric.direct_sum
 _native_twist = FreeQuadraticModule_integer_symmetric.twist
-
-
 
 
 class IntegralLattices(Category):
@@ -325,21 +523,33 @@ class IntegralLattices(Category):
 
         # ---- orthogonal direct sum / twist ----
 
-        def direct_sum(self: Any, *others: Any, names: Any = None, **kwargs: Any) -> Any:
-            r"""Orthogonal direct sum preserving Gram-matrix subdivisions."""
+        def direct_sum(
+            self: Any,
+            *others: Any,
+            names: Any = None,
+            block_names: Any = None,
+            **kwargs: Any,
+        ) -> Any:
+            r"""Orthogonal direct sum preserving Gram subdivisions and summand blocks.
+
+            Nested sums flatten to a top-level ordered summand list.  Optional
+            ``block_names`` labels the resulting blocks for :meth:`summands`.
+            """
             from dzack_research.preamble.refine import without_element_wrap
 
             if not others:
                 return self
 
             result = self
-            for other in others:
-                left_subdivs = result.gram_matrix().subdivisions()[0] or ()
-                left_rank = result.rank()
+            n_others = len(others)
+            for index, other in enumerate(others):
+                left = result
+                left_subdivs = left.gram_matrix().subdivisions()[0] or ()
+                left_rank = left.rank()
                 right_subdivs = other.gram_matrix().subdivisions()[0] or ()
 
                 with without_element_wrap():
-                    result = _native_direct_sum(result, other, **kwargs)
+                    result = _native_direct_sum(left, other, **kwargs)
                 refine_one_lattice(result)
 
                 combined = (
@@ -348,10 +558,29 @@ class IntegralLattices(Category):
                     + [left_rank + s for s in right_subdivs]
                 )
                 _subdivide_gram(result, combined)
+                names_here = block_names if index == n_others - 1 else None
+                _attach_summand_records(result, left, other, left_rank, names_here)
 
             if names is not None:
                 result = _apply_names(result, names)
             return result
+
+        def summands(self: Any) -> tuple:
+            r"""Return ordered :class:`SummandBlock` handles for this direct sum.
+
+            A lattice that is not a recorded direct sum yields a single block
+            covering the whole lattice.
+            """
+            return tuple(
+                SummandBlock(
+                    self,
+                    rec["lattice"],
+                    rec["start"],
+                    rec["rank"],
+                    rec.get("name"),
+                )
+                for rec in _summand_records(self)
+            )
 
         def twist(self: Any, *args: Any, names: Any = None, **kwargs: Any) -> Any:
             r"""Twisted (sign-flipped) lattice, preserving Gram-matrix subdivisions."""
@@ -420,22 +649,8 @@ class IntegralLattices(Category):
             """
             return self._induced_lattice(self._invariant_coordinate_basis(action))
 
-        def coinvariant_lattice(self: Any, action: Any) -> Any:
-            r"""Return the coinvariant lattice of a group action on $L$.
-
-            For a single involution $I$, this is $\ker(I+\mathrm{id})$.
-            For a general finite orthogonal action it is $(L^G)^\perp$ with
-            the induced form.
-            """
-            mats = _action_matrices(action)
-            if (
-                len(mats) == 1
-                and mats[0] * mats[0] == identity_matrix(ZZ, mats[0].nrows())
-            ):
-                size = mats[0].nrows()
-                basis = (mats[0] + identity_matrix(ZZ, size)).right_kernel().basis()
-                return self._induced_lattice(basis)
-
+        def _coinvariant_coordinate_basis(self: Any, action: Any) -> list[Any]:
+            r"""Return a $\ZZ$-basis of the coinvariant sublattice $(L^G)^{\perp L}$."""
             inv_basis = self._invariant_coordinate_basis(action)
             gram = self.gram_matrix()
             free = FreeModule(ZZ, self.rank())
@@ -444,7 +659,18 @@ class IntegralLattices(Category):
                 perp = free.submodule(pairing.right_kernel().basis())
             else:
                 perp = free
-            return self._induced_lattice(perp.basis())
+            return list(perp.basis())
+
+        def coinvariant_lattice(self: Any, action: Any) -> Any:
+            r"""Return the coinvariant sublattice $(L^G)^{\perp L}$ with induced form."""
+            return self._induced_lattice(self._coinvariant_coordinate_basis(action))
+
+        def coinvariant_inclusion(self: Any, action: Any) -> Any:
+            r"""Return the primitive inclusion $(L^G)^{\perp L}\hookrightarrow L$."""
+            basis = self._coinvariant_coordinate_basis(action)
+            coinvariant = self._induced_lattice(basis)
+            images = [self(list(row)) for row in basis]
+            return coinvariant.Hom(self)(images)
 
         def _invariant_coordinate_basis(self: Any, action: Any) -> list[Any]:
             """Return a ZZ-basis of $\\bigcap_g \\ker(g-\\mathrm{id})$."""

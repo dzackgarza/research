@@ -522,6 +522,16 @@ They do not exercise scaffolding, reassure about naming conflicts, or re-encode 
 
 Predicates that are part of the theory (`is_involution`, eigenlattice functors, …) are methods on the owned category interfaces, not side conditions in catalogue loaders.
 
+## 8. Block Hom spelling, eigenlattices, and catalogue hygiene
+
+Rules distilled from preamble work on direct-sum coordinates, embeddings, and coinvariant lattices (2026-07).
+
+**Block Hom spelling.** A Hom/Aut between orthogonal direct sums is a block matrix: the $j$-th block column is the image of the $j$-th domain summand. Prefer block dicts via `L.summands()` — `{a1: b1, a2: b2 + b3}` — over flat generator-image lists when the mathematics is blockwise. Equal-rank block sums (`b2 + b3`) are gen-wise placement into multiple target blocks (the diagonal $N(2)\hookrightarrow N\oplus N$, not $N\to N\oplus N$). Name morphisms by their true domain; ergonomic sugar must not invent the wrong morphism type.
+
+**Eigenlattices and inclusions are computed on the lattice.** Invariant/coinvariant lattices and primitive inclusions (`invariant_lattice`, `coinvariant_lattice`, `coinvariant_inclusion`) are category methods on `IntegralLattices`; the coinvariant is $(L^G)^{\perp L}$. Catalogue must not ship helpers that take a named lattice plus an involution and assert kernel rank or Gram agreement — that certifies a guess, it does not construct. Named literature embeddings *use* the generic interface; they do not reimplement it.
+
+**Catalogue is specimens plus nested namespaces, not ceremony.** Call `categories.install()` before building catalogue lattices; no manual `refine_one_lattice`. No `_with_names`, `_involutions`, `_embeddings`, or similar factories around one-liners or class bodies. Nested `Involutions` / `Embeddings` belong in the `Lattices` class body (populate empty nested classes in that body when Python scoping requires it); no post-hoc `__qualname__` patching or `Lattices.X = …` assignment after the class is built. Once the principled block or coinvariant API exists, catalogue entries use it everywhere — flat lists or kernel-basis shortcuts left “because they still work” are drift.
+
 # Addendum: installing methods on Sage objects via category refinement
 
 This addendum is the **mechanism** for §1 above (category as extension point).

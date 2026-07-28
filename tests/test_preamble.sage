@@ -573,6 +573,52 @@ def test_embedding_chain_TCo_TEn_TdP_LK3():
         assert unwrap(E.TEn_into_TdP(ten[4 + i])) == unwrap(E.E8_2_into_TdP(gen))
 
 
+def test_block_hom_Z2_U2_into_U_U2():
+    r"""Block Hom spelling: $\langle 2\rangle\oplus U(2)\to U\oplus U(2)$, $h\mapsto e+f$."""
+    from dzack_research.preamble.refine import unwrap
+
+    catalogue, _, _ = _preamble()
+    Lcat = catalogue.Lattices
+    domain = Lcat.Z_2 + Lcat.U_2
+    codomain = Lcat.U + Lcat.U_2
+    z1, z2 = domain.summands()
+    w1, w2 = codomain.summands()
+    phi = domain.Hom(codomain)({z1: w1[0] + w1[1], z2: w2})
+    assert phi.matrix().dimensions() == (3, 4)
+    e, f = codomain.gens()[0], codomain.gens()[1]
+    assert unwrap(phi(domain.gens()[0])) == unwrap(e + f)
+    for i in range(2):
+        assert unwrap(phi(domain.gens()[1 + i])) == unwrap(codomain.gens()[2 + i])
+    # Same matrix as the flat generator-image spelling.
+    flat = domain.Hom(codomain)([e + f] + list(codomain.gens()[2:]))
+    assert phi.matrix() == flat.matrix()
+
+
+def test_block_hom_sum_of_blocks_diagonal():
+    r"""Block Hom columns: ``{a1: b1, a2: b2 + b3}`` is id ⊕ diagonal $U(2)\hookrightarrow U\oplus U$."""
+    from dzack_research.preamble.refine import unwrap
+
+    catalogue, _, _ = _preamble()
+    Lcat = catalogue.Lattices
+    domain = Lcat.U + Lcat.U_2
+    codomain = Lcat.U + Lcat.U + Lcat.U
+    a1, a2 = domain.summands()
+    b1, b2, b3 = codomain.summands()
+    phi = domain.Hom(codomain)({a1: b1, a2: b2 + b3})
+    assert phi.matrix().dimensions() == (4, 6)
+    for i in range(2):
+        assert unwrap(phi(a1[i])) == unwrap(b1[i])
+        assert unwrap(phi(a2[i])) == unwrap(b2[i] + b3[i])
+    for x in domain.gens():
+        for y in domain.gens():
+            assert domain.b(x, y) == codomain.b(phi(x), phi(y))
+    # Same as an explicit gen-wise diagonal sequence.
+    flat = domain.Hom(codomain)(
+        list(b1.gens()) + [b2[i] + b3[i] for i in range(2)]
+    )
+    assert phi.matrix() == flat.matrix()
+
+
 # --------------------------------------------------------------------------
 # involutions
 # --------------------------------------------------------------------------

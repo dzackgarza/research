@@ -43,5 +43,6 @@ def install() -> None:
     _install_discriminant()
 
 
-# Hooks are registered by ``preamble.install()`` or an explicit ``categories.install()``.
-# Do not auto-hook on import: building the catalogue under live hooks must be deliberate.
+# ``catalogue`` calls ``categories.install()`` before constructing lattices so
+# post-init hooks refine them; ``preamble.install()`` is idempotent and also
+# activates vendor paths.

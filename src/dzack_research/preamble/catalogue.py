@@ -27,16 +27,19 @@ from __future__ import annotations
 from typing import Any
 
 from sage.matrix.constructor import matrix
-from sage.matrix.special import diagonal_matrix, identity_matrix
+from sage.matrix.special import diagonal_matrix
 from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 from sage.rings.integer_ring import ZZ
 
-from .categories.integral_lattices import refine_one_lattice
+from . import categories
 from .fixtures import (
     K3_BASIS_NAMES,
     L20_BASIS_NAMES,
     TEN_BASIS_NAMES,
 )
+
+# Post-init hooks refine every ``IntegralLattice`` before the catalogue body runs.
+categories.install()
 
 __all__ = ["Lattices"]
 
@@ -48,9 +51,7 @@ def _root_lattice(
 ) -> Any:
     """Return the negative-definite root lattice of the given type."""
     assert kind in {"A", "D", "E"}, f"unknown root system family {kind!r}"
-    lattice = IntegralLattice(f"{kind}{rank}")
-    refine_one_lattice(lattice)
-    lattice = lattice.twist(-1)
+    lattice = IntegralLattice(f"{kind}{rank}").twist(-1)
     if names is not None:
         lattice._assign_names(names)
     return lattice
@@ -59,142 +60,16 @@ def _root_lattice(
 def _IPQ(p: int, q: int) -> Any:
     r"""Return the odd unimodular lattice $I_{p,q}$."""
     assert p >= 0 and q >= 0 and p + q > 0, f"empty signature ({p}, {q})"
-    lattice = IntegralLattice(diagonal_matrix(ZZ, [1] * p + [-1] * q))
-    refine_one_lattice(lattice)
-    return lattice
+    return IntegralLattice(diagonal_matrix(ZZ, [1] * p + [-1] * q))
 
 
-def _integral(data: Any) -> Any:
-    lattice = IntegralLattice(data)
-    refine_one_lattice(lattice)
-    return lattice
-
-
-def _with_names(lattice: Any, names: tuple[str, ...]) -> Any:
-    lattice._assign_names(names)
-    return lattice
-
-
-def _involutions(LK3: Any) -> type:
-    """Named automorphisms of ``LK3`` as a namespace class."""
-    gens = tuple(LK3.gens())
-    assert len(gens) == len(K3_BASIS_NAMES) == 22
-    v1, v2, u1, u2, up1, up2, *rest = gens
-    e, ep = rest[:8], rest[8:]
-
-    class Involutions:
-        I_dP = LK3.Aut()(
-            {
-                v1: -v1,
-                v2: -v2,
-                u1: up1,
-                u2: up2,
-                up1: u1,
-                up2: u2,
-                **{ei: -ei for ei in e},
-                **{epi: -epi for epi in ep},
-            }
-        )
-        I_En = LK3.Aut()(
-            {
-                v1: -v1,
-                v2: -v2,
-                u1: up1,
-                u2: up2,
-                up1: u1,
-                up2: u2,
-                **{ei: epi for ei, epi in zip(e, ep, strict=True)},
-                **{epi: ei for ei, epi in zip(e, ep, strict=True)},
-            }
-        )
-        I_Nik = LK3.Aut()(
-            {
-                v1: v1,
-                v2: v2,
-                u1: u1,
-                u2: u2,
-                up1: up1,
-                up2: up2,
-                **{ei: -epi for ei, epi in zip(e, ep, strict=True)},
-                **{epi: -ei for ei, epi in zip(e, ep, strict=True)},
-            }
-        )
-
-    Involutions.__qualname__ = "Lattices.Involutions"
-    Involutions.__name__ = "Involutions"
-    return Involutions
-
-
-def _coinvariant_inclusion(LK3: Any, involution: Any, domain: Any) -> Any:
-    r"""Return the inclusion of ``domain`` as the $-1$-eigenspace of ``involution``.
-
-    The default right-kernel basis of $I+\mathrm{id}$ induces exactly the Gram
-    matrix of ``domain`` (the named $T_{\mathrm{En}}$ / $T_{\mathrm{dP}}$), so
-    generator $i$ maps to that basis vector in $\Lambda_{K3}$.
-    """
-    mat = involution.matrix()
-    size = LK3.rank()
-    basis = list((mat + identity_matrix(ZZ, size)).right_kernel().basis())
-    assert len(basis) == domain.rank(), (
-        f"coinvariant rank {len(basis)} != domain rank {domain.rank()}"
-    )
-    images = [LK3(list(row)) for row in basis]
-    return domain.Hom(LK3)(images)
-
-
-def _embeddings(
-    Tco: Any,
-    TEn: Any,
-    TdP: Any,
-    E8_2: Any,
-    LK3: Any,
-    involutions: type,
-) -> type:
-    r"""Primitive embeddings $T_{\mathrm{Co}}\hookrightarrow T_{\mathrm{En}}
-    \hookrightarrow T_{\mathrm{dP}}\hookrightarrow\Lambda_{K3}$.
-
-    Generator images follow the source / AEGS diagonal and
-    ``lem:sequence_of_embeddings``: $(h,x,y)\mapsto(\tilde e+\tilde f,x,y,y)$.
-    """
-    # $T_{\mathrm{En}}=U\oplus U(2)\oplus E_8(2)$, $T_{\mathrm{dP}}=U\oplus U(2)\oplus E_8^2$.
-    ten = list(TEn.gens())
-    tdp = list(TdP.gens())
-    assert len(ten) == 12 and len(tdp) == 20
-    # id on $U\oplus U(2)$; $a_i\mapsto a_i+a_i^t$ on the $E_8(2)$ summand.
-    ten_into_tdp_images = tdp[:4] + [tdp[i] + tdp[i + 8] for i in range(4, 12)]
-    e8_diag_images = [tdp[i] + tdp[i + 8] for i in range(4, 12)]
-
-    # $T_{\mathrm{Co}}=\langle 2\rangle\oplus E_{10}(2)\hookrightarrow T_{\mathrm{En}}$:
-    # $h\mapsto e+f$, then the $E_{10}(2)$ summand identically.
-    tco = list(Tco.gens())
-    assert len(tco) == 11
-    e, f = ten[0], ten[1]
-    tco_into_ten_images = [e + f] + ten[2:]
-
-    class Embeddings:
-        E8_2_into_TdP = E8_2.Hom(TdP)(e8_diag_images)
-        TCo_into_TEn = Tco.Hom(TEn)(tco_into_ten_images)
-        TEn_into_TdP = TEn.Hom(TdP)(ten_into_tdp_images)
-        TEn_into_LK3 = _coinvariant_inclusion(LK3, involutions.I_En, TEn)
-        TdP_into_LK3 = _coinvariant_inclusion(LK3, involutions.I_dP, TdP)
-
-    for name, morph in (
-        ("E8_2_into_TdP", Embeddings.E8_2_into_TdP),
-        ("TCo_into_TEn", Embeddings.TCo_into_TEn),
-        ("TEn_into_TdP", Embeddings.TEn_into_TdP),
-        ("TEn_into_LK3", Embeddings.TEn_into_LK3),
-        ("TdP_into_LK3", Embeddings.TdP_into_LK3),
-    ):
-        domain, codomain = morph.domain(), morph.codomain()
-        for x in domain.gens():
-            for y in domain.gens():
-                assert domain.b(x, y) == codomain.b(morph(x), morph(y)), (
-                    f"{name} does not preserve the form on generators"
-                )
-
-    Embeddings.__qualname__ = "Lattices.Embeddings"
-    Embeddings.__name__ = "Embeddings"
-    return Embeddings
+def _assert_form_preserving(name: str, morph: Any) -> None:
+    domain, codomain = morph.domain(), morph.codomain()
+    for x in domain.gens():
+        for y in domain.gens():
+            assert domain.b(x, y) == codomain.b(morph(x), morph(y)), (
+                f"{name} does not preserve the form on generators"
+            )
 
 
 class Lattices:
@@ -222,9 +97,9 @@ class Lattices:
         (12, 20)
     """
 
-    Z = _integral(matrix(ZZ, [1]))
+    Z = IntegralLattice(matrix(ZZ, [1]))
     Z_2 = Z.twist(2)
-    H = _integral("H")
+    H = IntegralLattice("H")
     H_2 = H.twist(2)
     U = H  # hyperbolic plane; both names were in use
     U_2 = H_2
@@ -236,22 +111,60 @@ class Lattices:
     E10 = U + E8
     E10_2 = E10.twist(2)
     # The K3 lattice $U^3 \oplus E_8^2$.
-    LK3 = _with_names(U**3 + E8**2, K3_BASIS_NAMES)
+    LK3 = U**3 + E8**2
+    LK3._assign_names(K3_BASIS_NAMES)
     Sdp = U_2
-    # AEGS bases: $T_{\mathrm{dP}}\cong U\oplus U(2)\oplus E_8^2$, $T_{\mathrm{En}}\cong U\oplus E_{10}(2)$.
-    TdP = _with_names(U + U_2 + E8**2, L20_BASIS_NAMES)
+    # Fine summands: $U\oplus U(2)\oplus E_8(2)$ and $U\oplus U(2)\oplus E_8^2$.
+    TdP = U + U_2 + E8**2
+    TdP._assign_names(L20_BASIS_NAMES)
     SEn = E10_2
-    TEn = _with_names(U + E10_2, TEN_BASIS_NAMES)
-    Tco = Z_2 + E10_2
-    Sco = Z_2.twist(-1) + E10_2
+    TEn = U + U_2 + E8_2
+    TEn._assign_names(TEN_BASIS_NAMES)
+    Tco = Z_2 + U_2 + E8_2
+    Sco = Z_2.twist(-1) + U_2 + E8_2
     LpNik = U**3 + E8_2
     LmNik = E8_2
     #: Historical alias for $T_{\mathrm{dP}}$ (same object).
     L_20_2_0 = TdP
     LK3_2 = Z.twist(-2) + U**2 + E8**2
     LK3_4 = Z.twist(-4) + U**2 + E8**2
-    Involutions = _involutions(LK3)
-    Embeddings = _embeddings(Tco, TEn, TdP, E8_2, LK3, Involutions)
+
+    # $\Lambda_{K3}=U\oplus U\oplus U\oplus E_8\oplus E_8$; block handles for Aut/Hom.
+    _v, _uu, _up, _ea, _ep = LK3.summands()
+    _c1, _c2, _c3 = Tco.summands()
+    _e1, _e2, _e3 = TEn.summands()
+    _d1, _d2, _d3, _d4 = TdP.summands()
+    (_e8,) = E8_2.summands()
+
+    class Involutions:
+        r"""Named automorphisms of $\Lambda_{K3}$ as block Aut maps."""
+
+    Involutions.I_dP = LK3.Aut()(
+        {_v: -_v, _uu: _up, _up: _uu, _ea: -_ea, _ep: -_ep}
+    )
+    Involutions.I_En = LK3.Aut()(
+        {_v: -_v, _uu: _up, _up: _uu, _ea: _ep, _ep: _ea}
+    )
+    Involutions.I_Nik = LK3.Aut()(
+        {_v: _v, _uu: _uu, _up: _up, _ea: -_ep, _ep: -_ea}
+    )
+
+    class Embeddings:
+        r"""Primitive embeddings
+        $T_{\mathrm{Co}}\hookrightarrow T_{\mathrm{En}}
+        \hookrightarrow T_{\mathrm{dP}}\hookrightarrow\Lambda_{K3}$.
+
+        Block Hom columns: $(h,x,y)\mapsto(\tilde e+\tilde f,x,y,y)$, and
+        $E_8(2)\hookrightarrow E_8\oplus E_8$ by $a_i\mapsto a_i+a_i^t$.
+        """
+
+    Embeddings.E8_2_into_TdP = E8_2.Hom(TdP)({_e8: _d3 + _d4})
+    Embeddings.TCo_into_TEn = Tco.Hom(TEn)(
+        {_c1: _e1[0] + _e1[1], _c2: _e2, _c3: _e3}
+    )
+    Embeddings.TEn_into_TdP = TEn.Hom(TdP)({_e1: _d1, _e2: _d2, _e3: _d3 + _d4})
+    Embeddings.TEn_into_LK3 = LK3.coinvariant_inclusion(Involutions.I_En)
+    Embeddings.TdP_into_LK3 = LK3.coinvariant_inclusion(Involutions.I_dP)
 
     #: Indexed by Nikulin invariants $(r, a, \delta)$.
     TwoElementary = {
@@ -289,3 +202,15 @@ class Lattices:
         names.update({f"A{n}": _root_lattice("A", n) for n in range(1, 22)})
         names.update({f"D{n}": _root_lattice("D", n) for n in range(2, 23)})
         return names
+
+
+for _name, _morph in (
+    ("E8_2_into_TdP", Lattices.Embeddings.E8_2_into_TdP),
+    ("TCo_into_TEn", Lattices.Embeddings.TCo_into_TEn),
+    ("TEn_into_TdP", Lattices.Embeddings.TEn_into_TdP),
+    ("TEn_into_LK3", Lattices.Embeddings.TEn_into_LK3),
+    ("TdP_into_LK3", Lattices.Embeddings.TdP_into_LK3),
+):
+    _assert_form_preserving(_name, _morph)
+
+del _name, _morph
