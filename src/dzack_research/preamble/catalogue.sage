@@ -303,6 +303,11 @@ def _rank_one_negative(scale):
 
 # Alexeev--Engel Table 2: even negative-definite 2-elementary lattices
 # appearing at 1-cusps, keyed by the listed $(r,a,\delta)$ invariants.
+# For starred rows, the listed glue vectors are representatives of totally
+# isotropic subgroups $H \subset A_R$ selected by the discriminant-form
+# construction: $|A_{\overline R}| = |A_R|/|H|^2$, the resulting lattice has
+# the keyed invariants, and its $(-2)$-root sublattice has the displayed
+# untwisted ADE type.  The vectors are not parsed from the AE labels.
 NegativeDefTwoElementary = {
         (0, 0, 0): [IntegralLattice(matrix(ZZ, 0, 0, []))],
         (1, 1, 1): [Lattices.A1],
@@ -339,7 +344,7 @@ NegativeDefTwoElementary = {
         (9, 7, 1): [
             _glue(
                 Lattices.A1**9,
-                (0, 0, 0, 0, 0, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2),
+                (0, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
             Lattices.A1**5 @ Lattices.D4,
         ],
@@ -354,7 +359,7 @@ NegativeDefTwoElementary = {
             Lattices.D4**2 @ Lattices.A1**2,  # AE label: D_4^2 A_1^2*
             _glue(
                 Lattices.A1**6 @ Lattices.D4,
-                (QQ(1) / 2, -QQ(1) / 2, 0, 0, 0, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2),
+                (1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 0, 0, 1 / 2, 1 / 2),
             ),
             Lattices.D6 @ Lattices.A1**4,
         ],
@@ -362,11 +367,11 @@ NegativeDefTwoElementary = {
             Lattices.D4 @ Lattices.A1**6,  # AE label: D_4 A_1^6*
             _glue(
                 Lattices.A1**10,
-                (0, 0, 0, 0, 0, 0, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2),
+                (0, 0, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
             _glue(
                 Lattices.A3 @ Lattices.E7.twist(2),
-                (QQ(1) / 2, 1, -QQ(1) / 2, 0, QQ(1) / 2, 0, 0, QQ(1) / 2, 0, -QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2),
             ),
         ],
         (11, 3, 1): [
@@ -380,33 +385,33 @@ NegativeDefTwoElementary = {
             Lattices.E7 @ Lattices.A1**4,
             _glue(
                 Lattices.D6 @ Lattices.A1**5,
-                (0, 0, 0, 0, 0, 0, 0, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
         ],
         (11, 7, 1): [
             Lattices.D6 @ Lattices.A1**5,
             _glue(
                 Lattices.A1**7 @ Lattices.D4,
-                (QQ(1) / 2, -QQ(1) / 2, 0, 0, 0, 0, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2),
+                (0, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 0, 0, 1 / 2, 1 / 2),
             ),
             Lattices.D4**2 @ Lattices.A1**3,
             _glue(
                 Lattices.A5 @ Lattices.E6.twist(2),
-                (QQ(1) / 3, QQ(2) / 3, 1, QQ(4) / 3, -QQ(1) / 3, QQ(1) / 3, 0, -QQ(1) / 3, 0, QQ(1) / 3, -QQ(1) / 3),
+                (1 / 3, 2 / 3, 0, 1 / 3, 2 / 3, 1 / 3, 0, 2 / 3, 0, 1 / 3, 2 / 3),
             ),
         ],
         (12, 2, 0): [Lattices.E8 @ Lattices.D4, Lattices.D12],
         (12, 4, 0): [
             _glue(
                 Lattices.E7 @ Lattices.A1**5,
-                (0, -QQ(1) / 2, 0, 0, -QQ(1) / 2, 0, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2),
+                (0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
             Lattices.D8 @ Lattices.D4,
         ],
         (12, 4, 1): [
             _glue(
                 Lattices.D8 @ Lattices.A1**4,
-                (-QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, 0, 0, 0, 0),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
             Lattices.E8 @ Lattices.A1**4,
             Lattices.D6**2,
@@ -417,29 +422,28 @@ NegativeDefTwoElementary = {
             Lattices.D4**3,
             _glue(
                 Lattices.E6 @ Lattices.E6.twist(2),
-                (-QQ(2) / 3, 0, -QQ(4) / 3, 0, -QQ(2) / 3, QQ(2) / 3, QQ(1) / 3, 0, -QQ(1) / 3, 0, QQ(1) / 3, QQ(2) / 3),
+                (1 / 3, 0, 2 / 3, 0, 1 / 3, 2 / 3, 1 / 3, 0, 2 / 3, 0, 1 / 3, 2 / 3),
             ),
             _glue(
                 Lattices.D6 @ Lattices.A1**6,
-                (-1, 0, -1, 0, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2),
+                (0, 0, 0, 0, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
         ],
         (12, 6, 1): [
             _glue(
                 Lattices.D6 @ Lattices.A1**6,
-                (0, 0, 0, 0, 0, 0, 0, 0, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
             Lattices.E7 @ Lattices.A1**5,
             _glue(
                 Lattices.D4**2 @ Lattices.A1**4,
-                (0, 0, 0, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, 0, 0, QQ(1) / 2, QQ(1) / 2),
+                (0, 0, 1 / 2, 1 / 2, 0, 0, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
             Lattices.D8 @ Lattices.A1**4,
             Lattices.D6 @ Lattices.D4 @ Lattices.A1**2,
             _glue(
                 Lattices.A7 @ Lattices.D5.twist(2),
-                (0, 0, 0, 0, 0, 0, 0, -1, 0, -1, -QQ(1) / 2, QQ(1) / 2),
-                (-QQ(1) / 2, -1, -QQ(3) / 2, -2, -QQ(5) / 2, -3, QQ(1) / 2, -1, 0, -1, -QQ(1) / 2, QQ(1) / 2),
+                (3 / 4, 1 / 2, 1 / 4, 0, 3 / 4, 1 / 2, 1 / 4, 1 / 2, 0, 1 / 2, 1 / 4, 3 / 4),
             ),
         ],
         (13, 3, 1): [
@@ -448,7 +452,7 @@ NegativeDefTwoElementary = {
             Lattices.E8 @ Lattices.D4 @ Lattices.A1,
             _glue(
                 Lattices.D10 @ Lattices.A1**3,
-                (-QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
         ],
         (13, 5, 1): [
@@ -457,27 +461,27 @@ NegativeDefTwoElementary = {
             Lattices.D6**2 @ Lattices.A1,
             _glue(
                 Lattices.E7 @ Lattices.A1**6,
-                (0, 0, 0, 0, 0, 0, 0, 0, 0, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2),
+                (0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
             _glue(
                 Lattices.D6 @ Lattices.D4 @ Lattices.A1**3,
-                (0, 0, 0, 0, 0, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, 0, QQ(1) / 2, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
             Lattices.D10 @ Lattices.A1**3,
             Lattices.E8 @ Lattices.A1**5,
             _glue(
                 Lattices.D8 @ Lattices.A1**5,
-                (0, 0, 0, 0, 0, 0, 0, 0, 0, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
             _glue(
                 Lattices.A9 @ Lattices.A4.twist(2),
-                (-QQ(2) / 5, -QQ(4) / 5, -QQ(6) / 5, -QQ(8) / 5, -2, -QQ(12) / 5, -QQ(14) / 5, -QQ(16) / 5, QQ(2) / 5, -QQ(1) / 5, QQ(3) / 5, QQ(2) / 5, QQ(1) / 5),
+                (3 / 5, 1 / 5, 4 / 5, 2 / 5, 0, 3 / 5, 1 / 5, 4 / 5, 2 / 5, 1 / 5, 2 / 5, 3 / 5, 4 / 5),
             ),
         ],
         (14, 2, 1): [
             _glue(
                 Lattices.D12 @ Lattices.A1**2,
-                (-QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 1 / 2),
             ),
             Lattices.D14,
             Lattices.E8 @ Lattices.D6,
@@ -486,36 +490,35 @@ NegativeDefTwoElementary = {
         (14, 4, 1): [
             _glue(
                 Lattices.D6**2 @ Lattices.A1**2,
-                (0, 0, 0, 0, 0, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, 0, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 1 / 2),
             ),
             Lattices.E8 @ Lattices.D4 @ Lattices.A1**2,
             Lattices.E7 @ Lattices.D6 @ Lattices.A1,
             _glue(
                 Lattices.D10 @ Lattices.A1**4,
-                (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 1 / 2, 1 / 2),
             ),
             _glue(
                 Lattices.D8 @ Lattices.D4 @ Lattices.A1**2,
-                (0, 0, 0, 0, 0, 0, 0, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, QQ(1) / 2, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
             _glue(
                 Lattices.E7 @ Lattices.D4 @ Lattices.A1**3,
-                (0, 0, 0, 0, 0, 0, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, 0, QQ(1) / 2, QQ(1) / 2),
+                (0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 1 / 2, 1 / 2, 1 / 2),
             ),
             Lattices.D12 @ Lattices.A1**2,
             Lattices.D10 @ Lattices.D4,
             Lattices.D8 @ Lattices.D6,
             _glue(
                 Lattices.A11 @ (Lattices.A2 @ Lattices.A1).twist(2),
-                (QQ(3) / 2, 3, QQ(9) / 2, 6, QQ(15) / 2, 9, QQ(21) / 2, 12, QQ(27) / 2, 15, -QQ(3) / 2, 1, -1, -QQ(3) / 2),
-                (QQ(4) / 3, QQ(8) / 3, 4, QQ(16) / 3, QQ(20) / 3, 8, QQ(28) / 3, QQ(32) / 3, 12, QQ(40) / 3, -QQ(4) / 3, QQ(2) / 3, -QQ(2) / 3, -1),
+                (1 / 6, 1 / 3, 1 / 2, 2 / 3, 5 / 6, 0, 1 / 6, 1 / 3, 1 / 2, 2 / 3, 5 / 6, 1 / 3, 2 / 3, 1 / 2),
             ),
         ],
         (15, 1, 1): [
             Lattices.E8 @ Lattices.E7,
             _glue(
                 Lattices.D14 @ Lattices.A1,
-                (-QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2),
             ),
         ],
         (15, 3, 1): [
@@ -525,90 +528,86 @@ NegativeDefTwoElementary = {
             Lattices.E8 @ Lattices.D6 @ Lattices.A1,
             _glue(
                 Lattices.D12 @ Lattices.A1**3,
-                (-QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, 0, QQ(1) / 2, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 1 / 2),
             ),
             _glue(
                 Lattices.D10 @ Lattices.D4 @ Lattices.A1,
-                (QQ(1) / 2, 0, QQ(1) / 2, 0, QQ(1) / 2, 0, QQ(1) / 2, 0, 0, -QQ(1) / 2, -QQ(1) / 2, 0, 0, QQ(1) / 2, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 1 / 2),
             ),
             _glue(
                 Lattices.D8 @ Lattices.D6 @ Lattices.A1,
-                (0, 0, 0, 0, 0, 0, 0, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2),
             ),
             _glue(
                 Lattices.E7 @ Lattices.D6 @ Lattices.A1**2,
-                (0, 0, 0, 0, 0, 0, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, 0, QQ(1) / 2),
+                (0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 1 / 2),
             ),
             # AE label: A_{13} A_1(2)**
             _glue(
                 Lattices.A13 @ Lattices.A1.twist(2) @ _rank_one_negative(14),
-                (-3, -6, -9, -12, -15, -18, -21, -24, -27, -30, -33, -36, 3, QQ(7) / 2, QQ(1) / 2),
-                (-QQ(18) / 7, -QQ(36) / 7, -QQ(54) / 7, -QQ(72) / 7, -QQ(90) / 7, -QQ(108) / 7, -18, -QQ(144) / 7, -QQ(162) / 7, -QQ(180) / 7, -QQ(198) / 7, -QQ(216) / 7, QQ(18) / 7, 3, QQ(6) / 7),
+                (4 / 7, 1 / 7, 5 / 7, 2 / 7, 6 / 7, 3 / 7, 0, 4 / 7, 1 / 7, 5 / 7, 2 / 7, 6 / 7, 3 / 7, 1 / 2, 5 / 14),
             ),
         ],
         (16, 0, 0): [
             Lattices.E8**2,
             _glue(
                 Lattices.D16,
-                (-QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2),
             ),
         ],
         (16, 2, 0): [
             _glue(
                 Lattices.D8**2,
-                (0, 0, 0, 0, 0, 0, 0, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2),
             ),
             _glue(
                 Lattices.E7**2 @ Lattices.A1**2,
-                (0, QQ(1) / 2, 0, 0, QQ(1) / 2, 0, -QQ(1) / 2, 0, QQ(1) / 2, 0, 0, QQ(1) / 2, 0, -QQ(1) / 2, QQ(1) / 2, QQ(1) / 2),
+                (0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 1 / 2, 1 / 2),
             ),
             Lattices.E8 @ Lattices.D8,
             _glue(
                 Lattices.D12 @ Lattices.D4,
-                (QQ(1) / 2, 0, QQ(1) / 2, 0, QQ(1) / 2, 0, QQ(1) / 2, 0, QQ(1) / 2, 0, 0, -QQ(1) / 2, -QQ(1) / 2, 0, 0, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2),
             ),
             Lattices.D16,
             _glue(
                 Lattices.A15 @ Lattices.A1.twist(2),
-                (QQ(1) / 2, 1, QQ(3) / 2, 2, QQ(5) / 2, 3, QQ(7) / 2, 4, QQ(9) / 2, 5, QQ(11) / 2, 6, QQ(13) / 2, 7, -QQ(1) / 2, 0),
-                (QQ(1) / 4, QQ(1) / 2, QQ(3) / 4, 1, QQ(5) / 4, QQ(3) / 2, QQ(7) / 4, 2, QQ(9) / 4, QQ(5) / 2, QQ(11) / 4, 3, QQ(13) / 4, QQ(7) / 2, -QQ(1) / 4, QQ(1) / 2),
+                (3 / 4, 1 / 2, 1 / 4, 0, 3 / 4, 1 / 2, 1 / 4, 0, 3 / 4, 1 / 2, 1 / 4, 0, 3 / 4, 1 / 2, 1 / 4, 1 / 2),
             ),
         ],
         (16, 2, 1): [
             Lattices.E8 @ Lattices.E7 @ Lattices.A1,
             _glue(
                 Lattices.D8 @ Lattices.E7 @ Lattices.A1,
-                (QQ(1) / 2, 0, QQ(1) / 2, 0, QQ(1) / 2, 0, 0, -QQ(1) / 2, 0, 0, 0, 0, 0, 0, 0, 0),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 1 / 2),
             ),
             _glue(
                 Lattices.D10 @ Lattices.D6,
-                (QQ(1) / 2, 0, QQ(1) / 2, 0, QQ(1) / 2, 0, QQ(1) / 2, 0, 0, -QQ(1) / 2, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2),
             ),
             _glue(
                 Lattices.D14 @ Lattices.A1**2,
-                (-QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, 0, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2),
             ),
             # AE label: A_{15}**
             _glue(
                 Lattices.A15 @ _rank_one_negative(8),
-                (-QQ(1) / 2, -1, -QQ(3) / 2, -2, -QQ(5) / 2, -3, -QQ(7) / 2, -4, -QQ(9) / 2, -5, -QQ(11) / 2, -6, -QQ(13) / 2, -7, QQ(1) / 2, QQ(1) / 2),
-                (-QQ(3) / 4, -QQ(3) / 2, -QQ(9) / 4, -3, -QQ(15) / 4, -QQ(9) / 2, -QQ(21) / 4, -6, -QQ(27) / 4, -QQ(15) / 2, -QQ(33) / 4, -9, -QQ(39) / 4, -QQ(21) / 2, QQ(3) / 4, QQ(3) / 4),
-                (-QQ(5) / 8, -QQ(5) / 4, -QQ(15) / 8, -QQ(5) / 2, -QQ(25) / 8, -QQ(15) / 4, -QQ(35) / 8, -5, -QQ(45) / 8, -QQ(25) / 4, -QQ(55) / 8, -QQ(15) / 2, -QQ(65) / 8, -QQ(35) / 4, QQ(5) / 8, QQ(1) / 8),
+                (7 / 8, 3 / 4, 5 / 8, 1 / 2, 3 / 8, 1 / 4, 1 / 8, 0, 7 / 8, 3 / 4, 5 / 8, 1 / 2, 3 / 8, 1 / 4, 1 / 8, 3 / 8),
             ),
         ],
         (17, 1, 1): [
             Lattices.E8**2 @ Lattices.A1,
             _glue(
                 Lattices.D16 @ Lattices.A1,
-                (-QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, QQ(1) / 2, 0),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0),
             ),
             _glue(
                 Lattices.D10 @ Lattices.E7,
-                (QQ(1) / 2, 0, QQ(1) / 2, 0, QQ(1) / 2, 0, QQ(1) / 2, 0, 0, -QQ(1) / 2, 0, -QQ(1) / 2, 0, 0, -QQ(1) / 2, 0, QQ(1) / 2),
+                (1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2),
             ),
             _glue(
                 Lattices.A17,
-                (-QQ(2) / 3, -QQ(4) / 3, -2, -QQ(8) / 3, -QQ(10) / 3, -4, -QQ(14) / 3, -QQ(16) / 3, -6, -QQ(20) / 3, -QQ(22) / 3, -8, -QQ(26) / 3, -QQ(28) / 3, -10, -QQ(32) / 3, QQ(2) / 3),
+                (2 / 3, 1 / 3, 0, 2 / 3, 1 / 3, 0, 2 / 3, 1 / 3, 0, 2 / 3, 1 / 3, 0, 2 / 3, 1 / 3, 0, 2 / 3, 1 / 3),
             ),
         ],
 }
