@@ -29,6 +29,14 @@ import IPython.core.ultratb
 from sage.libs.gap.libgap import libgap
 from sage.repl.preparse import implicit_multiplication
 
+Σ = sum
+Π = prod
+
+ℤ = ZZ
+ℚ = QQ
+ℝ = RR
+ℂ = CC
+
 # This file *is* the startup file (via symlink). Sibling scripts live next to it.
 _PREAMBLE = Path(os.environ["SAGE_STARTUP_FILE"]).resolve().parent
 
