@@ -1,4 +1,4 @@
-r"""Finitely presented torsion modules."""
+r"""Finitely presented groups."""
 
 from typing import Any
 
@@ -24,9 +24,7 @@ class FinitelyPresentedGroups(Category):
         return "finitely presented groups"
 
     def super_categories(self) -> list:
-        from sage.categories.groups import Groups
-
-        return [Groups()]
+        return [OwnedGroups()]
 
     class ParentMethods:
         def _latex_(self: Any) -> str:
@@ -184,16 +182,16 @@ def _fp_format_finite_presentation_latex(group: Any) -> str:
     )
 
 
-_FGP_TORSIONMODULE_INSTALLED = False
+_FINITELY_PRESENTED_GROUPS_INSTALLED = False
 
 
-def install_fgp_torsionmodule() -> None:
+def install_finitely_presented_groups() -> None:
     """Hook post-init on finitely presented groups."""
-    global _FGP_TORSIONMODULE_INSTALLED
-    if _FGP_TORSIONMODULE_INSTALLED:
+    global _FINITELY_PRESENTED_GROUPS_INSTALLED
+    if _FINITELY_PRESENTED_GROUPS_INSTALLED:
         return
 
     from sage.groups.finitely_presented import FinitelyPresentedGroup
 
     hook_post_init(FinitelyPresentedGroup, FinitelyPresentedGroups())
-    _FGP_TORSIONMODULE_INSTALLED = True
+    _FINITELY_PRESENTED_GROUPS_INSTALLED = True

@@ -50,6 +50,8 @@ def _ensure_preamble():
             sys.path.append(vendor_entry)
     load(str(p / "refine.sage"))
     load(str(p / "categories/gram_matrices.sage"))
+    load(str(p / "categories/group/groups.sage"))
+    load(str(p / "categories/group/finitely_presented_groups.sage"))
     load(str(p / "categories/integrallattice/integral_lattices.sage"))
     load(str(p / "categories/integrallattice/subobjects.sage"))
     load(str(p / "categories/integrallattice/direct_sum_objects.sage"))
@@ -58,11 +60,10 @@ def _ensure_preamble():
     load(str(p / "categories/coxeter_diagrams.sage"))
     load(str(p / "categories/integrallattice/hyperbolic_lattices.sage"))
     load(str(p / "categories/torsionform/torsion_modules_with_form.sage"))
-    load(str(p / "categories/torsionform/fgptorsionmodule.sage"))
     load(str(p / "categories/torsionform/discriminant_bilinear_modules.sage"))
     load(str(p / "categories/torsionform/discriminant_quadratic_modules.sage"))
     install_integral_lattices()
-    install_fgp_torsionmodule()
+    install_finitely_presented_groups()
     install_discriminant_groups()
     activate()
     load(str(p / "utilities.py"))
@@ -1073,7 +1074,7 @@ def test_get_isotropic_type_classifies():
 def test_install_hooks_are_idempotent():
     _ensure_preamble()
     install_integral_lattices()
-    install_fgp_torsionmodule()
+    install_finitely_presented_groups()
     install_discriminant_groups()
     assert Lattices.U.rank() == 2
 
@@ -1094,9 +1095,8 @@ def test_lattices_install_binds_specimens_and_lk3_generators():
 
 def test_julia_preamble_calls_oscar_with_a_sage_matrix():
     _ensure_preamble()
-    from sage_lattice_category_spike import CoxeterDiagrams
 
-    gram = CoxeterDiagrams.minimal_edge_gram_matrices()["single"]
+    gram = CoxeterDiagrams.minimal_edge_lattices()["single"].gram_matrix()
     assert julia.call("rank", gram) == 2
     julia.set("_preamble_round_trip", gram)
     converted_back = julia.get_sage("_preamble_round_trip")

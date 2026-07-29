@@ -60,6 +60,8 @@ for _vendor_root in _vendor_import_roots(_VENDOR_DIR):
 
 load(str(_PREAMBLE / "refine.sage"))
 load(str(_PREAMBLE / "categories/gram_matrices.sage"))
+load(str(_PREAMBLE / "categories/group/groups.sage"))
+load(str(_PREAMBLE / "categories/group/finitely_presented_groups.sage"))
 load(str(_PREAMBLE / "categories/integrallattice/integral_lattices.sage"))
 load(str(_PREAMBLE / "categories/integrallattice/subobjects.sage"))
 load(str(_PREAMBLE / "categories/integrallattice/direct_sum_objects.sage"))
@@ -68,12 +70,11 @@ load(str(_PREAMBLE / "categories/lattice_isometries.sage"))
 load(str(_PREAMBLE / "categories/coxeter_diagrams.sage"))
 load(str(_PREAMBLE / "categories/integrallattice/hyperbolic_lattices.sage"))
 load(str(_PREAMBLE / "categories/torsionform/torsion_modules_with_form.sage"))
-load(str(_PREAMBLE / "categories/torsionform/fgptorsionmodule.sage"))
 load(str(_PREAMBLE / "categories/torsionform/discriminant_bilinear_modules.sage"))
 load(str(_PREAMBLE / "categories/torsionform/discriminant_quadratic_modules.sage"))
 
 install_integral_lattices()
-install_fgp_torsionmodule()
+install_finitely_presented_groups()
 install_discriminant_groups()
 activate()
 

@@ -4,7 +4,6 @@ from typing import Any
 
 from sage.arith.misc import factor
 from sage.categories.category import Category
-from sage.categories.sets_cat import Sets
 from sage.misc.latex import latex as _latex_fn
 
 
@@ -16,7 +15,7 @@ class TorsionModulesWithForm(Category):
         return "torsion modules with form"
 
     def super_categories(self) -> list:
-        return [Sets()]
+        return [OwnedFiniteGroups()]
 
     class ParentMethods:
         r"""Methods shared by bilinear and quadratic discriminant modules."""
@@ -49,7 +48,10 @@ class TorsionModulesWithForm(Category):
             r"""Return the underlying finite abelian group in invariant-factor form."""
             from sage.groups.abelian_gps.abelian_group import AbelianGroup
 
-            return AbelianGroup(list(self.invariants()))
+            return refine(
+                AbelianGroup(list(self.invariants())),
+                OwnedFiniteGroups(),
+            )
 
         def is_p_elementary(self: Any, p: Any) -> bool:
             r"""Return whether the underlying group is elementary abelian of exponent \(p\)."""

@@ -62,30 +62,29 @@ class CoxeterDiagrams(Category):
         return [FiniteEnumeratedSets()]
 
     @staticmethod
-    def minimal_edge_gram_matrices() -> dict[str, Any]:
-        r"""Return rank-two Gram matrices for minimal Coxeter edge specimens.
-
-        Each matrix is the Gram matrix of two generators whose pairings realize
-        one of the Coxeter edge types used by the diagram code.  These are
-        examples of rank-two lattices, not fixture data.
-        """
-        return {
-            "single": matrix(ZZ, 2, [2, -1, -1, 2]),
-            "double": matrix(ZZ, 2, [2, -1, -1, 1]),
-            "triple": matrix(ZZ, 2, [6, -3, -3, 2]),
-            "heavy_oriented": matrix(ZZ, 2, [4, -2, -2, 1]),
-            "heavy_unoriented": matrix(ZZ, 2, [1, -1, -1, 1]),
-        }
-
-    @staticmethod
     def minimal_edge_lattices() -> dict[str, Any]:
         r"""Return minimal rank-two lattices realizing Coxeter edge specimens."""
         return {
-            name: IntegralLattice(
-                gram,
+            "single": IntegralLattice(
+                matrix(ZZ, 2, [2, -1, -1, 2]),
                 names=("r1", "r2"),
-            )
-            for name, gram in CoxeterDiagrams.minimal_edge_gram_matrices().items()
+            ),
+            "double": IntegralLattice(
+                matrix(ZZ, 2, [2, -1, -1, 1]),
+                names=("r1", "r2"),
+            ),
+            "triple": IntegralLattice(
+                matrix(ZZ, 2, [6, -3, -3, 2]),
+                names=("r1", "r2"),
+            ),
+            "heavy_oriented": IntegralLattice(
+                matrix(ZZ, 2, [4, -2, -2, 1]),
+                names=("r1", "r2"),
+            ),
+            "heavy_unoriented": IntegralLattice(
+                matrix(ZZ, 2, [1, -1, -1, 1]),
+                names=("r1", "r2"),
+            ),
         }
 
     def from_coxeter_matrix(
@@ -293,6 +292,13 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
 
     def graph(self) -> Graph:
         return self._coxeter_matrix.coxeter_graph()
+
+    def Aut(self) -> Any:
+        r"""Return the finite group of Coxeter-diagram automorphisms."""
+        return refine(
+            self.graph().automorphism_group(edge_labels=True),
+            OwnedFiniteGroups(),
+        )
 
     def drawing_conventions(self) -> dict[str, str]:
         r"""Return the node, edge, and self-loop drawing conventions.

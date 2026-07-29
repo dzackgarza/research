@@ -260,6 +260,8 @@ _OWNED_CATEGORY_NAMES = frozenset(
         "HyperbolicLattices",
         "LatticeHomomorphisms",
         "LatticeIsometries",
+        "OwnedGroups",
+        "OwnedFiniteGroups",
         "TorsionModulesWithForm",
         "DiscriminantBilinearModules",
         "DiscriminantQuadraticModules",
