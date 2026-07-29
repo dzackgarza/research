@@ -9,8 +9,6 @@ Invariant / coinvariant lattices live on the lattice
 morphisms delegate to their domain.
 """
 
-from __future__ import annotations
-
 from typing import Any
 
 from sage.categories.category import Category
@@ -18,7 +16,6 @@ from sage.categories.modules import Modules
 from sage.matrix.constructor import matrix
 from sage.matrix.special import identity_matrix
 from sage.rings.integer_ring import ZZ
-
 
 class LatticeIsometries(Category):
     r"""Isometries of integral lattices (as Hom morphisms / Aut elements)."""
@@ -36,19 +33,17 @@ class LatticeIsometries(Category):
         r"""Homset methods: element construction is the isometry constructor."""
 
         def __call__(self: Any, x: Any, *args: Any, **kwargs: Any) -> Any:
-            """Construct an isometry from ``{generator: image}``, images, or a matrix."""
-            from dzack_research.preamble.refine import unwrap, without_element_wrap
+            r"""Construct an isometry from images or a matrix.
 
+            For a chosen direct sum, a dictionary may specify images of entire
+            summand subobjects.
+            """
             domain = self.domain()
             codomain = self.codomain()
 
             with without_element_wrap():
                 if isinstance(x, dict):
-                    from dzack_research.preamble.categories.integral_lattices import (
-                        expand_block_hom_dict,
-                    )
-
-                    ordered = expand_block_hom_dict(domain, x)
+                    ordered = _hom_images_from_dict(domain, x)
                     morphism = super().__call__(ordered, *args, **kwargs)  # type: ignore[misc]
                 elif isinstance(x, (list, tuple)) and x and not hasattr(x, "nrows"):
                     morphism = super().__call__(  # type: ignore[misc]

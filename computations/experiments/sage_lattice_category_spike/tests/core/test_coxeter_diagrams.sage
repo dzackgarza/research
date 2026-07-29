@@ -2,9 +2,9 @@ r"""Coxeter diagrams as finite Sage parents."""
 
 import pytest
 
-from sage.all import CoxeterMatrix, TestSuite
+from sage.all import CoxeterMatrix, TestSuite, matrix, ZZ
 
-from sage_lattice_category_spike import CoxeterDiagrams, FiniteCoxeterDiagram, Lattice
+from sage_lattice_category_spike import CoxeterDiagrams, FiniteCoxeterDiagram, Lattice, Lattices
 
 
 def test_root_generated_lattice_constructs_its_diagram_as_a_sage_parent():
@@ -39,6 +39,48 @@ def test_parent_constructs_a_diagram_from_its_coxeter_matrix():
 
     assert diagram.coxeter_matrix() == matrix
     assert list(diagram.graph().edges(sort=True)) == [(1, 2, 3), (2, 3, 4)]
+
+
+def test_rooted_diagram_records_roots_intersections_layout_and_tikz():
+    r"""A rooted diagram stores the lattice roots behind a non-simply-laced edge."""
+    lattice = Lattices(ZZ).from_gram_matrix(
+        matrix(ZZ, [[-4, 2], [2, -2]]),
+        label="B2",
+        names=("r", "s"),
+    )
+    r, s = lattice.gens()
+
+    diagram = FiniteCoxeterDiagram.from_lattice_roots(
+        lattice,
+        (r, s),
+        names=("r", "s"),
+        positions={0: (0, 0), 1: (2, 0)},
+    )
+
+    assert diagram.source_lattice() is lattice
+    assert diagram.roots() == (r, s)
+    assert diagram.root_intersection_matrix() == matrix(ZZ, [[-4, 2], [2, -2]])
+    assert diagram.coxeter_matrix() == CoxeterMatrix([[1, 4], [4, 1]], index_set=(0, 1))
+    assert list(diagram.root_intersection_graph().edges(sort=True)) == [
+        (0, 0, -4),
+        (0, 1, 2),
+        (1, 1, -2),
+    ]
+    assert diagram.preferred_positions() == {0: (0, 0), 1: (2, 0)}
+
+    tikz = diagram.tikz()
+    assert "coxeter double" in tikz
+    assert "(v0) -- (v1)" in tikz
+    assert "(v0) -- (v0)" not in tikz
+    assert "(v1) -- (v1)" not in tikz
+    assert "fill=white" in tikz
+    assert "fill=black" in tikz
+
+    subdiagram = diagram.subdiagram([diagram.vertex(1)])
+    assert subdiagram.source_lattice() is lattice
+    assert subdiagram.roots() == (s,)
+    assert subdiagram.root_intersection_matrix() == matrix(ZZ, [[-2]])
+    assert subdiagram.preferred_positions() == {1: (2, 0)}
 
 
 def test_morphisms_preserve_the_full_coxeter_matrix_and_compose():

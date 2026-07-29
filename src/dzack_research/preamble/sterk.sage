@@ -3,10 +3,10 @@ r"""Sterk's five $0$-cusps for degree-$2$ polarized Enriques moduli.
 Sterk classifies the Baily--Borel $0$-cusps by $\mathrm{O}$-orbits of
 primitive isotropic vectors in $T_{\mathrm{En}}$.  Coordinates and dual
 generators are those of the named catalogue lattices
-(:attr:`~catalogue.Lattices.TdP`, :attr:`~catalogue.Lattices.TEn`); the
+(:attr:`~Lattices.TdP`, :attr:`~Lattices.TEn`); the
 embedding chain
 $T_{\mathrm{Co}}\hookrightarrow T_{\mathrm{En}}\hookrightarrow T_{\mathrm{dP}}
-\hookrightarrow\Lambda_{K3}$ lives on :attr:`catalogue.Lattices.Embeddings`.
+\hookrightarrow\Lambda_{K3}$ lives on :attr:`Embeddings`.
 
 EXAMPLES::
 
@@ -15,61 +15,116 @@ EXAMPLES::
     {'Sterk_1': 12, 'Sterk_2': 10, 'Sterk_3': 12, 'Sterk_4': 11, 'Sterk_5': 14}
 """
 
-from __future__ import annotations
-
 from typing import Any
 
 from sage.rings.rational_field import QQ
+from sage_lattice_category_spike import FiniteCoxeterDiagram
 
-from . import catalogue
-from .fixtures import (
-    COMPUTED_ROOT_COUNTS,
-    L20_DUAL_NAMES,
-    RECORDED_ROOT_MATRIX_ROWS,
-    STERK_PUBLISHED,
-    STERK_ROOT_COUNTS,
-    TEN_DUAL_NAMES,
-)
-from .refine import without_element_wrap
-
-#: Empty: the research-log Sterk section is fully ported.
 NOT_PORTED: tuple[str, ...] = ()
 
 __all__ = [
-    "COMPUTED_ROOT_COUNTS",
     "NOT_PORTED",
-    "RECORDED_ROOT_MATRIX_ROWS",
-    "STERK_PUBLISHED",
-    "STERK_ROOT_COUNTS",
     "Sterk",
 ]
+
+_STERK_DIAGRAM_LAYOUTS: dict[str, dict[int, list[float]]] = {
+    "Sterk_1": {
+        0: [0, 0],
+        1: [4, 0],
+        2: [8, 0],
+        3: [8, -4],
+        4: [8, -8],
+        5: [4, -8],
+        6: [0, -8],
+        7: [0, -4],
+        8: [2, -6],
+        9: [3.25, -4.75],
+        10: [4.5, -3.5],
+        11: [6, -2],
+    },
+    "Sterk_2": {
+        0: [0, 0],
+        1: [-4, 0],
+        2: [-8, 0],
+        3: [-7, 4],
+        4: [-6, 8],
+        5: [-5, 12],
+        6: [-4, 16],
+        7: [-3, 20],
+        8: [-2, 24],
+        9: [-2, 6],
+    },
+    "Sterk_3": {
+        0: [0, -4],
+        1: [0, 4],
+        2: [0, 8],
+        3: [0, 12],
+        4: [0, 16],
+        5: [4, 16],
+        6: [8, 16],
+        7: [12, 16],
+        8: [20, 16],
+        9: [4, 12],
+        10: [6, 2],
+        11: [14, 10],
+    },
+    "Sterk_4": {
+        0: [0, 0],
+        1: [0, 4],
+        2: [0, 8],
+        3: [4, 8],
+        4: [8, 8],
+        5: [12, 8],
+        6: [16, 8],
+        7: [16, 4],
+        8: [16, 0],
+        9: [4, 4],
+        10: [12, 4],
+    },
+    "Sterk_5": {
+        0: [0, 0],
+        1: [10, 0],
+        2: [20, 0],
+        3: [20, -10],
+        4: [20, -20],
+        5: [10, -20],
+        6: [0, -20],
+        7: [0, -10],
+        8: [4, -4],
+        9: [16, -4],
+        10: [16, -16],
+        11: [4, -16],
+        12: [8, -8],
+        13: [8, -12],
+    },
+}
 
 
 def _named_basis(lattice: Any) -> dict[str, Any]:
     return dict(zip(lattice.variable_names(), lattice.gens(), strict=True))
 
 
-def _named_dual(lattice: Any, dual_names: tuple[str, ...]) -> dict[str, Any]:
-    return dict(zip(dual_names, lattice.dual_basis(), strict=True))
-
-
 class Sterk:
     r"""Sterk cusp root configurations recovered from the research log.
 
     Embeddings of the Coble/Enriques/del Pezzo chain are
-    :attr:`catalogue.Lattices.Embeddings`, not methods here.
+    :attr:`Embeddings`, not methods here.
     """
 
     @staticmethod
     def roots_18_2_0() -> dict[str, Any]:
         r"""Return the $22$ generating vectors $v_1,\ldots,v_{22}$ in $T_{\mathrm{dP}}$."""
-        TdP = catalogue.Lattices.TdP
+        TdP = Lattices.TdP
         with without_element_wrap():
             b = _named_basis(TdP)
-            d = _named_dual(TdP, L20_DUAL_NAMES)
+            (
+                eb, fb, epb, fpb,
+                w1, w2, w3, w4, w5, w6, w7, w8,
+                w1t, w2t, w3t, w4t, w5t, w6t, w7t, w8t,
+            ) = TdP.dual_basis()
             v = {
                 "v1": b["a8t"],
-                "v2": b["ep"] + b["fp"] + d["w1"] + d["w8t"],
+                "v2": b["ep"] + b["fp"] + w1 + w8t,
                 "v3": b["a1"],
                 "v4": b["a3"],
                 "v5": b["a4"],
@@ -77,19 +132,19 @@ class Sterk:
                 "v7": b["a6"],
                 "v8": b["a7"],
                 "v9": b["a8"],
-                "v10": b["ep"] + b["fp"] + d["w8"] + d["w1t"],
+                "v10": b["ep"] + b["fp"] + w8 + w1t,
                 "v11": b["a1t"],
                 "v12": b["a3t"],
                 "v13": b["a4t"],
                 "v14": b["a5t"],
                 "v15": b["a6t"],
                 "v16": b["a7t"],
-                "v17": b["ep"] + d["w8t"],
+                "v17": b["ep"] + w8t,
                 "v18": b["a2"],
-                "v19": b["ep"] + d["w8"],
+                "v19": b["ep"] + w8,
                 "v20": b["a2t"],
                 "v21": b["fp"] - b["ep"],
-                "v22": 5 * b["ep"] + 3 * b["fp"] + 2 * d["w2"] + 2 * d["w2t"],
+                "v22": 5 * b["ep"] + 3 * b["fp"] + 2 * w2 + 2 * w2t,
             }
         assert len(v) == 22
         return v
@@ -97,10 +152,14 @@ class Sterk:
     @staticmethod
     def roots_18_0_0() -> dict[str, Any]:
         r"""Return the $19$ generating vectors $w_1,\ldots,w_{19}$ in $T_{\mathrm{dP}}$."""
-        TdP = catalogue.Lattices.TdP
+        TdP = Lattices.TdP
         with without_element_wrap():
             b = _named_basis(TdP)
-            d = _named_dual(TdP, L20_DUAL_NAMES)
+            (
+                eb, fb, epb, fpb,
+                w1, w2, w3, w4, w5, w6, w7, w8,
+                w1t, w2t, w3t, w4t, w5t, w6t, w7t, w8t,
+            ) = TdP.dual_basis()
             w = {
                 "w1": b["a1"],
                 "w2": b["a3"],
@@ -109,9 +168,9 @@ class Sterk:
                 "w5": b["a6"],
                 "w6": b["a7"],
                 "w7": b["a8"],
-                "w8": b["e"] + d["w8"],
+                "w8": b["e"] + w8,
                 "w9": b["f"] - b["e"],
-                "w10": b["e"] + d["w8t"],
+                "w10": b["e"] + w8t,
                 "w11": b["a8t"],
                 "w12": b["a7t"],
                 "w13": b["a6t"],
@@ -135,7 +194,7 @@ class Sterk:
             sage: len(Sterk.sterk_roots()["Sterk_4"])
             11
         """
-        TdP = catalogue.Lattices.TdP
+        TdP = Lattices.TdP
         v = Sterk.roots_18_2_0()
         w = Sterk.roots_18_0_0()
 
@@ -219,9 +278,6 @@ class Sterk:
             }
 
         for name, roots in configurations.items():
-            assert len(roots) == STERK_ROOT_COUNTS[name], (
-                f"{name}: expected {STERK_ROOT_COUNTS[name]} roots, built {len(roots)}"
-            )
             for index, root in enumerate(roots, start=1):
                 norm = TdP.b(root, root)
                 assert norm in (-2, -4), (
@@ -234,12 +290,12 @@ class Sterk:
     @staticmethod
     def selected_isotropic_vectors() -> dict[str, Any]:
         r"""Return Sterk's five generating isotropic lines in $T_{\mathrm{En}}$."""
-        TEn = catalogue.Lattices.TEn
+        TEn = Lattices.TEn
         with without_element_wrap():
             b = _named_basis(TEn)
-            d = _named_dual(TEn, TEN_DUAL_NAMES)
-            omega = 2 * d["w8"]
-            alpha = 2 * d["w1"]
+            ed, fd, epd, fpd, w1, w2, w3, w4, w5, w6, w7, w8 = TEn.dual_basis()
+            omega = 2 * w8
+            alpha = 2 * w1
             assert abs(TEn.b(omega, omega)) == 4
             assert abs(TEn.b(alpha, alpha)) == 8
             e, f, ep, fp = b["e"], b["f"], b["ep"], b["fp"]
@@ -258,14 +314,14 @@ class Sterk:
     def diagonal_embedding() -> Any:
         r"""Return $E_8(2)\hookrightarrow T_{\mathrm{dP}}$ (AEGS diagonal).
 
-        Alias of :attr:`catalogue.Lattices.Embeddings.E8_2_into_TdP`.
+        Alias of :attr:`Embeddings.E8_2_into_TdP`.
         """
-        return catalogue.Lattices.Embeddings.E8_2_into_TdP
+        return Embeddings.E8_2_into_TdP
 
     @staticmethod
     def sterk5_in_U_E8_2() -> tuple[Any, tuple[Any, ...]]:
         r"""Return Sterk $5$'s $14$ roots inside $U\oplus E_8(2)$."""
-        lattice = catalogue.Lattices.U.direct_sum(catalogue.Lattices.E8_2)
+        lattice = Lattices.U.direct_sum(Lattices.E8_2)
         with without_element_wrap():
             gens = list(lattice.gens())
             e, f = gens[0], gens[1]
@@ -297,7 +353,7 @@ class Sterk:
     @staticmethod
     def sterks_in_ten() -> dict[str, tuple[Any, ...]]:
         r"""Return Sterk configurations $1$–$3$ in $T_{\mathrm{En}}$ coordinates."""
-        TEn = catalogue.Lattices.TEn
+        TEn = Lattices.TEn
         with without_element_wrap():
             b = _named_basis(TEn)
             e, f, ep, fp = b["e"], b["f"], b["ep"], b["fp"]
@@ -325,9 +381,33 @@ class Sterk:
     @staticmethod
     def isotropic_vectors() -> dict[str, Any]:
         r"""Return the recorded isotropic cusp $s_{4,12}=v_{22}+v_{21}$."""
-        TdP = catalogue.Lattices.TdP
+        TdP = Lattices.TdP
         v = Sterk.roots_18_2_0()
         with without_element_wrap():
             s = v["v22"] + v["v21"]
         assert TdP.b(s, s) == 0
         return {"s4_12": s}
+
+
+def _sterk_diagram(name: str, roots: tuple[Any, ...]) -> Any:
+    r"""Construct one named Sterk diagram from actual roots in ``Lattices.TdP``."""
+    rooted = tuple(Lattices.TdP(root) for root in roots)
+    positions = {
+        index: tuple(coordinates)
+        for index, coordinates in _STERK_DIAGRAM_LAYOUTS[name].items()
+    }
+    return FiniteCoxeterDiagram.from_lattice_roots(
+        Lattices.TdP,
+        rooted,
+        names=tuple(f"r_{{{index + 1}}}" for index in range(len(rooted))),
+        positions=positions,
+    )
+
+
+_STERK_ROOTS = Sterk.sterk_roots()
+
+SterkDiagrams.Sterk_1 = _sterk_diagram("Sterk_1", _STERK_ROOTS["Sterk_1"])
+SterkDiagrams.Sterk_2 = _sterk_diagram("Sterk_2", _STERK_ROOTS["Sterk_2"])
+SterkDiagrams.Sterk_3 = _sterk_diagram("Sterk_3", _STERK_ROOTS["Sterk_3"])
+SterkDiagrams.Sterk_4 = _sterk_diagram("Sterk_4", _STERK_ROOTS["Sterk_4"])
+SterkDiagrams.Sterk_5 = _sterk_diagram("Sterk_5", _STERK_ROOTS["Sterk_5"])

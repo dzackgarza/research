@@ -25,12 +25,12 @@ EXAMPLES::
     0
 """
 
-from __future__ import annotations
-
 from typing import Any, Callable
 
 from sage.categories.morphism import Morphism
 from sage.cpython.type import can_assign_class
+from sage.modules.free_module_element import FreeModuleElement
+from sage.rings.integer_ring import ZZ
 from sage.structure.category_object import CategoryObject
 from sage.structure.dynamic_class import dynamic_class
 from sage.structure.element import Element, ModuleElement
@@ -52,7 +52,6 @@ _ORIGINAL_INIT: dict[type, Any] = {}
 _AFTER: dict[type, list[Callable[[Any], None]]] = {}
 _WRAP_DEPTH = 0
 
-
 class without_element_wrap:
     """Context manager: disable facade wrapping (for native Sage constructors)."""
 
@@ -65,13 +64,11 @@ class without_element_wrap:
         global _WRAP_DEPTH
         _WRAP_DEPTH -= 1
 
-
 def unwrap(x: Any) -> Any:
     """Return the native value inside a preamble facade, else ``x``."""
     if isinstance(x, (ElementFacade, MorphismFacade)):
         return object.__getattribute__(x, "_value")
     return getattr(x, "_value", x) if getattr(x, "_preamble_facade", False) else x
-
 
 class ElementFacade(ModuleElement):
     r"""Python facade around a Cython Sage element.
@@ -96,18 +93,14 @@ class ElementFacade(ModuleElement):
                 value = only
             elif isinstance(only, Element) and only.parent() is parent:
                 value = native_type(parent, unwrap(only))
+            elif isinstance(only, (list, tuple, FreeModuleElement)):
+                entries = [ZZ(c) for c in only]
+                assert len(entries) == parent.rank(), (
+                    f"expected {parent.rank()} coordinates, got {len(entries)}"
+                )
+                value = native_type(parent, entries)
             else:
-                # Coordinate sequences / foreign vectors: build from entries.
-                from sage.rings.integer_ring import ZZ
-
-                try:
-                    entries = [ZZ(c) for c in only]
-                except (TypeError, ValueError):
-                    entries = None
-                if entries is not None and len(entries) == parent.rank():
-                    value = native_type(parent, entries)
-                else:
-                    value = native_type(parent, *args, **kwargs)
+                value = native_type(parent, *args, **kwargs)
         else:
             value = native_type(parent, *args, **kwargs)
 
@@ -161,7 +154,6 @@ class ElementFacade(ModuleElement):
 
     def __ne__(self, other: Any) -> bool:
         return bool(self.__richcmp__(other, 3))
-
 
 class MorphismFacade(Morphism):
     r"""Python facade around a Cython Sage morphism.
@@ -229,13 +221,11 @@ class MorphismFacade(Morphism):
     def __ne__(self, other: Any) -> bool:
         return bool(self.__richcmp__(other, 3))
 
-
 class _HomWrapParentMethods:
     """Wrap Homset ``__call__`` output in the morphism facade when installed."""
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         return wrap_morphism(self, super().__call__(*args, **kwargs))  # type: ignore[misc]
-
 
 def _concrete_base(obj: Any) -> type:
     """Return the non-dynamic concrete class Sage would use as ``__base__``."""
@@ -263,20 +253,34 @@ def _concrete_base(obj: Any) -> type:
         return candidate
     raise TypeError(f"cannot find concrete base for {cls!r}")
 
+_OWNED_CATEGORY_NAMES = frozenset(
+    {
+        "IntegralLattices",
+        "DirectSumObjects",
+        "HyperbolicLattices",
+        "LatticeHomomorphisms",
+        "LatticeIsometries",
+        "TorsionModulesWithForm",
+        "DiscriminantBilinearModules",
+        "DiscriminantQuadraticModules",
+        "FinitelyPresentedGroups",
+    }
+)
+
 
 def _preamble_mixins(category: Any, attr: str) -> tuple[type, ...]:
     """Collect preamble ``ParentMethods`` / ``ElementMethods`` / ``MorphismMethods``."""
     mixins: list[type] = []
     for cat in category.all_super_categories(proper=False):
+        name = type(cat).__name__
+        if not any(name == owned or name.startswith(owned + "_") for owned in _OWNED_CATEGORY_NAMES):
+            continue
         nested = getattr(type(cat), attr, None)
         if nested is None:
-            continue
-        if not getattr(nested, "__module__", "").startswith("dzack_research.preamble"):
             continue
         if nested not in mixins:
             mixins.append(nested)
     return tuple(mixins)
-
 
 def _method_mixins(category: Any, attr: str) -> tuple[type, ...]:
     """Preamble mixins if present; otherwise the category's own nested methods class."""
@@ -288,12 +292,10 @@ def _method_mixins(category: Any, attr: str) -> tuple[type, ...]:
         return (nested,)
     return ()
 
-
 def _is_homset(obj: Any) -> bool:
     from sage.categories.homset import Homset
 
     return isinstance(obj, Homset)
-
 
 def _rebuild_parent_class(obj: Any, category: Any) -> None:
     if not can_assign_class(obj):
@@ -318,7 +320,6 @@ def _rebuild_parent_class(obj: Any, category: Any) -> None:
     new_cls._preamble_concrete = concrete
     obj.__class__ = new_cls
 
-
 def _rebuild_element_class(parent: Any, category: Any) -> None:
     """Install element-method override without breaking Cython construction.
 
@@ -326,22 +327,16 @@ def _rebuild_element_class(parent: Any, category: Any) -> None:
     Cython elements keep the native ``element_class`` for constructors/coercion
     and gain ``_preamble_element_class = (*ElementMethods, ElementFacade)``.
     """
-    try:
-        native = parent.Element
-    except AttributeError:
-        return
+    native = parent.Element
 
     mixins = _method_mixins(category, "ElementMethods")
     if not mixins:
         return
 
     for key in ("element_class", "_abstract_element_class"):
-        try:
-            del parent.__dict__[key]
-        except (AttributeError, KeyError):
-            pass
+        parent.__dict__.pop(key, None)
 
-    if getattr(native, "__dictoffset__", 1) != 0:
+    if native.__dictoffset__ != 0:
         parent.element_class = dynamic_class(
             f"{type(parent).__name__}.element_class",
             (*mixins, native),
@@ -361,24 +356,15 @@ def _rebuild_element_class(parent: Any, category: Any) -> None:
     facade.__richcmp__ = ElementFacade.__richcmp__
     parent._preamble_element_class = facade
 
-
-def _native_morphism_type(hom: Any) -> type | None:
-    native = getattr(hom, "Element", None)
-    if isinstance(native, type):
-        return native
-    try:
-        return type(hom.an_element())
-    except Exception:
-        try:
-            return type(hom.identity())
-        except Exception:
-            return None
-
+def _native_morphism_type(hom: Any) -> type:
+    native = hom.Element
+    assert isinstance(native, type), f"{hom} has no morphism element class"
+    return native
 
 def _install_morphism_facade(hom: Any, mixins: tuple[type, ...], native: type) -> type:
     """Install ``_preamble_morphism_class`` on ``hom``; return the facade class."""
     existing = getattr(hom, "_preamble_morphism_class", None)
-    if existing is not None and getattr(existing, "_native_morphism_type", None) is native:
+    if existing is not None and existing._native_morphism_type is native:
         return existing
 
     facade = dynamic_class(
@@ -390,7 +376,6 @@ def _install_morphism_facade(hom: Any, mixins: tuple[type, ...], native: type) -
     facade._preamble_facade = True
     hom._preamble_morphism_class = facade
     return facade
-
 
 def _rebuild_morphism_class(hom: Any, category: Any) -> None:
     """Install morphism-method override without breaking Cython construction.
@@ -407,10 +392,7 @@ def _rebuild_morphism_class(hom: Any, category: Any) -> None:
         return
 
     native = _native_morphism_type(hom)
-    if native is None:
-        return
-
-    if getattr(native, "__dictoffset__", 1) != 0:
+    if native.__dictoffset__ != 0:
         # Heap morphisms: MorphismMethods before native, still via facade wrap so
         # Hom construction stays untouched (same boundary rule as Cython elements).
         facade = dynamic_class(
@@ -424,7 +406,6 @@ def _rebuild_morphism_class(hom: Any, category: Any) -> None:
         return
 
     _install_morphism_facade(hom, mixins, native)
-
 
 def _refine_morphism(obj: Any, category: Any) -> Any:
     """Refine a morphism: assign class when possible, else wrap in a facade."""
@@ -462,7 +443,6 @@ def _refine_morphism(obj: Any, category: Any) -> Any:
         new_parent_cls._preamble_concrete = concrete
         parent.__class__ = new_parent_cls
     return wrap_morphism(parent, obj)
-
 
 def refine(obj: Any, category: Any) -> Any:
     r"""Refine ``obj`` so ``category``'s methods precede concrete class methods.
@@ -520,7 +500,6 @@ def refine(obj: Any, category: Any) -> Any:
         obj.__class__ = new_cls
     return obj
 
-
 def wrap_element(parent: Any, value: Any) -> Any:
     """Wrap ``value`` in the preamble element facade when one is installed."""
     if value is None or _WRAP_DEPTH:
@@ -535,7 +514,6 @@ def wrap_element(parent: Any, value: Any) -> Any:
     if isinstance(value, facade_cls):
         return value
     return facade_cls(parent, unwrap(value))
-
 
 def wrap_morphism(hom: Any, value: Any) -> Any:
     """Wrap ``value`` in the preamble morphism facade when one is installed.
@@ -573,7 +551,6 @@ def wrap_morphism(hom: Any, value: Any) -> Any:
         return value
 
     return facade_cls(hom, unwrap(value))
-
 
 def hook_post_init(
     cls: type,
@@ -616,7 +593,6 @@ def hook_post_init(
         _AFTER.setdefault(cls, [])
         if after not in _AFTER[cls]:
             _AFTER[cls].append(after)
-
 
 def hooked_classes() -> tuple[type, ...]:
     """Return classes with a preamble post-init hook."""

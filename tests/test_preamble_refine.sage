@@ -11,6 +11,37 @@ construction, wrap at the API boundary in a facade whose MRO puts
 """
 
 
+def _ensure_preamble():
+    if "Lattices" in globals():
+        return
+    from pathlib import Path
+    import dzack_research
+
+    p = Path(dzack_research.__file__).resolve().parent / "preamble"
+    load(str(p / "vendor.sage"))
+    load(str(p / "refine.sage"))
+    load(str(p / "categories/gram_matrices.sage"))
+    load(str(p / "categories/integrallattice/integral_lattices.sage"))
+    load(str(p / "categories/integrallattice/subobjects.sage"))
+    load(str(p / "categories/integrallattice/direct_sum_objects.sage"))
+    load(str(p / "categories/lattice_homomorphisms.sage"))
+    load(str(p / "categories/lattice_isometries.sage"))
+    load(str(p / "categories/integrallattice/hyperbolic_lattices.sage"))
+    load(str(p / "categories/torsionform/torsion_modules_with_form.sage"))
+    load(str(p / "categories/torsionform/fgptorsionmodule.sage"))
+    load(str(p / "categories/torsionform/discriminant_bilinear_modules.sage"))
+    load(str(p / "categories/torsionform/discriminant_quadratic_modules.sage"))
+    install_integral_lattices()
+    install_fgp_torsionmodule()
+    install_discriminant_groups()
+    activate()
+    load(str(p / "ergonomics.sage"))
+    load(str(p / "fixtures.sage"))
+    load(str(p / "catalogue.sage"))
+    load(str(p / "sterk.sage"))
+    Lattices.install(globals())
+
+
 def _hyperbolic_lattice():
     from sage.matrix.constructor import matrix
     from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
@@ -20,9 +51,7 @@ def _hyperbolic_lattice():
 
 
 def _refined_lattice():
-    from dzack_research.preamble.categories import IntegralLattices
-    from dzack_research.preamble.refine import refine
-
+    _ensure_preamble()
     lattice = _hyperbolic_lattice()
     refine(lattice, IntegralLattices())
     return lattice
@@ -85,8 +114,6 @@ def test_facade_compares_to_native_without_coercion_recursion():
     Native-on-the-left still hits Cython same-parent cast of the facade —
     compare via unwrap on that side, or put the facade on the left.
     """
-    from dzack_research.preamble.refine import unwrap
-
     lattice = _refined_lattice()
     facade = lattice.gens()[0]
     native = unwrap(facade)
@@ -98,11 +125,9 @@ def test_facade_compares_to_native_without_coercion_recursion():
 
 def test_unequal_rank_hom_from_generator_images():
     """An embedding is an m×n matrix; Hom(list-of-images) must build it."""
-    from dzack_research.preamble import catalogue, install
-
-    install(vendor_paths=False)
-    E = catalogue.Lattices.E8_2
-    TdP = catalogue.Lattices.TdP
+    _ensure_preamble()
+    E = Lattices.E8_2
+    TdP = Lattices.TdP
     images = []
     for i in range(8):
         coeffs = [0] * 20
@@ -111,13 +136,12 @@ def test_unequal_rank_hom_from_generator_images():
         images.append(TdP(coeffs))
     phi = E.Hom(TdP)(images)
     assert phi.matrix().dimensions() == (8, 20)
-    # Apply must work: an embedding is an m×n matrix acting on coordinates.
     assert phi(E.gens()[0]) == images[0]
     assert phi(E.gens()[3]) == images[3]
 
 
 def test_cython_morphism_methods_come_from_refined_category():
-    from dzack_research.preamble.refine import MorphismFacade, refine, without_element_wrap
+    _ensure_preamble()
     from sage.rings.integer_ring import ZZ
 
     with without_element_wrap():
@@ -132,7 +156,7 @@ def test_cython_morphism_methods_come_from_refined_category():
 
 
 def test_heap_morphism_methods_come_from_refined_category():
-    from dzack_research.preamble.refine import refine
+    _ensure_preamble()
     from sage.modules.free_module import FreeModule
     from sage.rings.integer_ring import ZZ
 
@@ -145,7 +169,7 @@ def test_heap_morphism_methods_come_from_refined_category():
 
 
 def test_hom_refine_produces_morphisms_from_refined_category():
-    from dzack_research.preamble.refine import MorphismFacade, refine
+    _ensure_preamble()
     from sage.rings.integer_ring import ZZ
 
     hom = ZZ.Hom(ZZ)
@@ -158,11 +182,8 @@ def test_hom_refine_produces_morphisms_from_refined_category():
 
 
 def test_install_hooks_refine_parents_and_elements():
-    from dzack_research.preamble import catalogue
-    from dzack_research.preamble import install
-
-    install()
-    lattice = catalogue.Lattices.U
+    _ensure_preamble()
+    lattice = Lattices.U
     assert type(lattice).direct_sum.__qualname__ == "IntegralLattices.ParentMethods.direct_sum"
     element = lattice.gens()[0]
     assert type(element).__mul__.__qualname__ == "IntegralLattices.ElementMethods.__mul__"

@@ -21,31 +21,62 @@ def _ensure_preamble():
     if "Lattices" in globals():
         return
     from pathlib import Path
+    import sys
     import dzack_research
 
     global _PREAMBLE
     _PREAMBLE = Path(dzack_research.__file__).resolve().parent / "preamble"
     p = _PREAMBLE
-    load(str(p / "vendor.sage"))
+    vendor_dir = p.parents[2] / "computations" / "vendor"
+    assert vendor_dir.is_dir(), f"vendor directory is missing: {vendor_dir}"
+    vendor_roots = {vendor_dir}
+    for path in vendor_dir.rglob("*"):
+        if not path.is_dir():
+            continue
+        relative_parts = path.relative_to(vendor_dir).parts
+        if any(part.startswith(".") or part == "__pycache__" for part in relative_parts):
+            continue
+        children = tuple(path.iterdir())
+        exposes_loose_module = any(child.is_file() and child.suffix == ".py" for child in children)
+        exposes_package = any(
+            child.is_dir() and (child / "__init__.py").is_file()
+            for child in children
+        )
+        if exposes_loose_module or exposes_package:
+            vendor_roots.add(path)
+    for vendor_root in sorted(vendor_roots):
+        vendor_entry = str(vendor_root)
+        if vendor_entry not in sys.path:
+            sys.path.append(vendor_entry)
     load(str(p / "refine.sage"))
-    load(str(p / "categories/integral_lattices.sage"))
+    load(str(p / "categories/gram_matrices.sage"))
+    load(str(p / "categories/integrallattice/integral_lattices.sage"))
+    load(str(p / "categories/integrallattice/subobjects.sage"))
+    load(str(p / "categories/integrallattice/direct_sum_objects.sage"))
     load(str(p / "categories/lattice_homomorphisms.sage"))
     load(str(p / "categories/lattice_isometries.sage"))
-    load(str(p / "categories/hyperbolic_lattices.sage"))
-    load(str(p / "categories/discriminant_groups.sage"))
+    load(str(p / "categories/integrallattice/hyperbolic_lattices.sage"))
+    load(str(p / "categories/torsionform/torsion_modules_with_form.sage"))
+    load(str(p / "categories/torsionform/fgptorsionmodule.sage"))
+    load(str(p / "categories/torsionform/discriminant_bilinear_modules.sage"))
+    load(str(p / "categories/torsionform/discriminant_quadratic_modules.sage"))
     install_integral_lattices()
+    install_fgp_torsionmodule()
     install_discriminant_groups()
     activate()
     load(str(p / "ergonomics.sage"))
-    load(str(p / "fixtures.sage"))
     load(str(p / "catalogue.sage"))
     load(str(p / "sterk.sage"))
-    load(str(p / "julia.sage"))
+    from sage_julia_bridge import JuliaHandle, julia
+
+    globals()["JuliaHandle"] = JuliaHandle
+    globals()["julia"] = julia
+    julia.eval("using Oscar")
     Lattices.install(globals())
 
 
 def _preamble():
-    """Compatibility shim: (catalogue-ns, fixtures-ns, Sterk)."""
+    """Compatibility shim: (catalogue-ns, legacy-empty-ns, Sterk)."""
     import types
 
     _ensure_preamble()
@@ -53,18 +84,10 @@ def _preamble():
         Lattices=Lattices,
         Embeddings=Embeddings,
         Involutions=Involutions,
+        SterkDiagrams=SterkDiagrams,
         TwoElementary=TwoElementary,
     )
-    fixtures = types.SimpleNamespace(
-        BONDS=BONDS,
-        STERK_ROOT_COUNTS=STERK_ROOT_COUNTS,
-        STERK_PUBLISHED=STERK_PUBLISHED,
-        COMPUTED_ROOT_COUNTS=COMPUTED_ROOT_COUNTS,
-        RECORDED_ROOT_MATRIX_ROWS=RECORDED_ROOT_MATRIX_ROWS,
-        CROSS_CHECK_RECIPES=CROSS_CHECK_RECIPES,
-        DIAGRAM_CONVENTION=DIAGRAM_CONVENTION,
-        STERK_POSITIONS=STERK_POSITIONS,
-    )
+    fixtures = types.SimpleNamespace()
     return catalogue, fixtures, Sterk
 
 
@@ -562,14 +585,22 @@ def test_two_elementary_named_entries_are_identical_to_catalogue_lattices():
 # sterk
 # --------------------------------------------------------------------------
 
+_STERK_PUBLISHED_NORM_COUNTS = {
+    "Sterk_1": {"total": 12, "norm_-4": 12, "norm_-2": 0},
+    "Sterk_2": {"total": 10, "norm_-4": 9, "norm_-2": 1},
+    "Sterk_3": {"total": 12, "norm_-4": 10, "norm_-2": 2},
+    "Sterk_4": {"total": 11, "norm_-4": 9, "norm_-2": 2},
+    "Sterk_5": {"total": 14, "norm_-4": 10, "norm_-2": 4},
+}
+
 
 def test_sterk_configurations_match_published_norm_breakdown():
     """The external oracle: Sterk's counts *by norm*, not just totals."""
-    catalogue, fixtures, sterk = _preamble()
+    catalogue, _, sterk = _preamble()
     TdP = catalogue.Lattices.TdP
     configurations = sterk.sterk_roots()
     for name, roots in configurations.items():
-        published = STERK_PUBLISHED[name]
+        published = _STERK_PUBLISHED_NORM_COUNTS[name]
         minus_four = sum(1 for r in roots if TdP.b(r, r) == -4)
         minus_two = sum(1 for r in roots if TdP.b(r, r) == -2)
         assert len(roots) == published["total"], name
@@ -606,13 +637,13 @@ def test_five_selected_isotropic_vectors():
 
 def test_getsterk5_reproduces_sterk_5_from_a_different_lattice():
     """Rank 10 here versus rank 20 in ``sterk_roots`` -- independent presentations."""
-    _, fixtures, sterk = _preamble()
+    _, _, sterk = _preamble()
     lattice, vectors = sterk.sterk5_in_U_E8_2()
     assert lattice.rank() == 10
     assert len(vectors) == 14
     minus_four = sum(1 for v in vectors if lattice.b(v, v) == -4)
     minus_two = sum(1 for v in vectors if lattice.b(v, v) == -2)
-    published = STERK_PUBLISHED["Sterk_5"]
+    published = _STERK_PUBLISHED_NORM_COUNTS["Sterk_5"]
     assert (minus_four, minus_two) == (published["norm_-4"], published["norm_-2"])
 
 
@@ -775,14 +806,16 @@ def test_source_claim_block_holds():
 
 def test_the_8_6_0_lattice_has_its_recorded_invariants():
     """The entry recovered from the claim block; an index-2 overlattice of A1^8."""
-    catalogue, fixtures, _ = _preamble()
+    catalogue, _, _ = _preamble()
     TEn = catalogue.Lattices.TEn
     basis, dual = TEn.basis(), TEn.dual_basis()
-    quotient = TEn.I_perp_mod_I([basis[2], 2 * basis[0] + 2 * basis[1] + 2 * dual[4]])
-    recorded = fixtures.TWO_ELEMENTARY_8_6_0_INVARIANTS
-    assert quotient.rank() == recorded["rank"]
-    assert quotient.signature_pair() == recorded["signature_pair"]
-    assert quotient.gram_matrix().det() == recorded["determinant"]
+    quotient = TEn.I_perp_mod_I([
+        basis[2],
+        2 * basis[0] + 2 * basis[1] + 2 * dual[4],
+    ])
+    assert quotient.rank() == 8
+    assert quotient.signature_pair() == (0, 8)
+    assert quotient.gram_matrix().det() == 64
 
 
 # --------------------------------------------------------------------------
@@ -822,13 +855,16 @@ def test_coxeter_diagram_uses_the_owned_sage_parent():
 
 
 def test_diagram_layouts_match_root_counts():
-    _, fixtures, _ = _preamble()
-    for name, positions in fixtures.STERK_POSITIONS.items():
-        assert len(positions) == STERK_ROOT_COUNTS[name], name
+    catalogue, _, _ = _preamble()
+    assert len(catalogue.SterkDiagrams.Sterk_1.preferred_positions()) == 12
+    assert len(catalogue.SterkDiagrams.Sterk_2.preferred_positions()) == 10
+    assert len(catalogue.SterkDiagrams.Sterk_3.preferred_positions()) == 12
+    assert len(catalogue.SterkDiagrams.Sterk_4.preferred_positions()) == 11
+    assert len(catalogue.SterkDiagrams.Sterk_5.preferred_positions()) == 14
 
 
 # --------------------------------------------------------------------------
-# newly ported surface: sterks1/2/3, run_vin, get_isotrop_type, patch methods
+# newly ported surface: sterks1/2/3, vinberg_algorithm, get_isotrop_type, patch methods
 # --------------------------------------------------------------------------
 
 
@@ -858,13 +894,6 @@ def test_sterks1_and_sterks3_use_different_dual_scalings():
     assert configs["sterks1"][9] != 2 * ep + dual[11]
     # index 8 of sterks3 is 2*fp+2*ad1[8] with ad1 = dual
     assert configs["sterks3"][8] == 2 * fp + 2 * dual[11]
-
-
-def test_recorded_root_matrix_is_preserved():
-    _, fixtures, _ = _preamble()
-    rows = RECORDED_ROOT_MATRIX_ROWS
-    assert len(rows) == 5
-    assert all(len(row) == 10 for row in rows)
 
 
 def test_nothing_from_the_sterk_section_is_unported():
@@ -994,35 +1023,56 @@ def test_lattice_element_multiplication_and_exponentiation():
     assert (alpha1 + 2 * alpha2) * (alpha1 - alpha2) == 3
 
 
-def test_run_vin_negates_roots_when_it_twists():
+def test_vinberg_algorithm_negates_roots_when_it_twists():
     """The source typo (``do_twist`` set, ``doTwist`` tested) disabled this branch."""
     _ensure_preamble()
-    
+
     catalogue, _, _ = _preamble()
     d4 = catalogue.Lattices.root_lattice("D", 4).twist(-1)
     lattice = catalogue.Lattices.U.direct_sum(d4).with_names("e, f, a1..a4")
     refine(lattice, HyperbolicLattices())
-    result = lattice.run_vin()
-    assert len(result.roots) == 6, len(result.roots)
-    assert result.root_names is not None
+    roots = lattice.vinberg_algorithm()
+    root_names = [lattice.to_lin_comb_generators(root) for root in roots]
+    assert len(roots) == 6, len(roots)
     # Twisting happened, so the roots come back negated -- the branch the typo
     # made unreachable.
-    assert any(name.startswith("-") for name in result.root_names), result.root_names
+    assert any(name.startswith("-") for name in root_names), root_names
 
 
 def test_get_isotrop_type_classifies():
     _ensure_preamble()
-    
+    import pytest
+
     catalogue, _, _ = _preamble()
-    lattice = catalogue.Lattices.U.direct_sum(catalogue.Lattices.U)
-    refine(lattice, HyperbolicLattices())
-    verdict = lattice.get_isotrop_type(lattice.gens()[0])
-    assert verdict in ("Odd", "Even ordinary", "Even characteristic", "Not found.")
+    odd = catalogue.Lattices.U.direct_sum(catalogue.Lattices.U)
+    refine(odd, HyperbolicLattices())
+    assert odd.get_isotrop_type(odd.gens()[0]) == "Odd"
+    with pytest.raises(AssertionError):
+        odd.get_isotrop_type(vector(ZZ, [1, 0, 0, 0]))
+
+    ordinary = catalogue.Lattices.U_2
+    refine(ordinary, HyperbolicLattices())
+    ordinary_class = ordinary.project_to_discriminant_group(
+        ordinary.dual_lattice_element((1 / 2, 0))
+    )
+    assert not ordinary_class.is_characteristic()
+    assert ordinary.get_isotrop_type(ordinary.gens()[0]) == "Even ordinary"
+
+    characteristic = catalogue.Lattices.IPQ(1, 1).twist(2)
+    refine(characteristic, HyperbolicLattices())
+    characteristic_class = characteristic.project_to_discriminant_group(
+        characteristic.dual_lattice_element((1 / 2, 1 / 2))
+    )
+    assert characteristic_class.is_characteristic()
+    assert characteristic.get_isotrop_type(
+        characteristic.gens()[0] + characteristic.gens()[1]
+    ) == "Even characteristic"
 
 
 def test_install_hooks_are_idempotent():
     _ensure_preamble()
     install_integral_lattices()
+    install_fgp_torsionmodule()
     install_discriminant_groups()
     assert Lattices.U.rank() == 2
 
@@ -1043,17 +1093,11 @@ def test_lattices_install_binds_specimens_and_lk3_generators():
 
 def test_julia_preamble_calls_oscar_with_a_sage_matrix():
     _ensure_preamble()
-    gram = BONDS["bond1"]
-    assert oscar_call("rank", gram) == 2
+    from sage_lattice_category_spike import CoxeterDiagrams
+
+    gram = CoxeterDiagrams.minimal_edge_gram_matrices()["single"]
+    assert julia.call("rank", gram) == 2
     julia.set("_preamble_round_trip", gram)
     converted_back = julia.get_sage("_preamble_round_trip")
     assert converted_back == gram
     assert converted_back.base_ring() is gram.base_ring()
-
-
-def test_static_preamble_data_has_one_fixture_owner():
-    """Ledger constants live in fixtures.sage; Sterk/Lattices do not rebind them."""
-    _ensure_preamble()
-    assert not hasattr(Sterk, "STERK_ROOT_COUNTS")
-    assert not hasattr(Lattices, "RECORDED_RESULTS")
-    assert not hasattr(Lattices, "CITATIONS")

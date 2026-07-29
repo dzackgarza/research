@@ -9,7 +9,6 @@ Refine any integral lattice parent into this category to gain::
     _first_ngens(count)         # generator sugar for ``L.<...> = ...``
     twist(*, names=...)         # twisted copy with optional naming
     __add__, __pow__, direct_sum      # orthogonal direct sums with subdivisions
-    summands()                  # block handles for direct-sum summands
     Aut(), invariant_lattice(action), coinvariant_lattice(action),
     coinvariant_inclusion(action)
 
@@ -58,195 +57,6 @@ SageIntegralLattice = getattr(
 )
 IntegralLattice = SageIntegralLattice
 
-class SummandBlock:
-    r"""Handle for one orthogonal summand inside a direct-sum lattice.
-
-    Indexing and :meth:`gens` return ambient elements of the sum.
-    As a Hom/Aut image of another equal-rank block, the handle expands to a
-    generator-wise map.  Equal-rank block sums place a domain block diagonally::
-
-        {a1: b1, a2: b2 + b3}   # block columns of the Hom matrix
-
-    so ``b2 + b3`` is the sequence ``(b2[i] + b3[i])_i`` (the lattice map
-    \(N(2)\hookrightarrow N\oplus N\) when the forms match).
-    """
-
-    __slots__ = ("_ambient", "_lattice", "_start", "_rank", "_name")
-
-    def __init__(
-        self,
-        ambient: Any,
-        lattice: Any,
-        start: int,
-        rank: int,
-        name: str | None = None,
-    ) -> None:
-        self._ambient = ambient
-        self._lattice = lattice
-        self._start = int(start)
-        self._rank = int(rank)
-        self._name = name
-
-    @property
-    def lattice(self) -> Any:
-        """The abstract summand lattice."""
-        return self._lattice
-
-    @property
-    def ambient(self) -> Any:
-        """The direct-sum lattice containing this block."""
-        return self._ambient
-
-    @property
-    def inclusion(self) -> Any:
-        """The inclusion Hom ``summand → ambient``."""
-        gens = list(self._ambient.gens())[self._start : self._start + self._rank]
-        return self._lattice.Hom(self._ambient)(gens)
-
-    def gens(self) -> tuple:
-        """Ambient generators spanning this block."""
-        return tuple(self._ambient.gens()[self._start : self._start + self._rank])
-
-    def __getitem__(self, index: int) -> Any:
-        return self.gens()[index]
-
-    def __len__(self) -> int:
-        return self._rank
-
-    def __neg__(self) -> tuple:
-        return tuple(-g for g in self.gens())
-
-    def __add__(self, other: Any) -> Any:
-        """Equal-rank gen-wise sum of blocks (or of a prior sum sequence)."""
-        return _block_combine(self, other, 1)
-
-    def __radd__(self, other: Any) -> Any:
-        """Support ``(b1 + b2) + b3`` when the left operand is already a sequence."""
-        return _block_combine(other, self, 1)
-
-    def __sub__(self, other: Any) -> Any:
-        """Equal-rank gen-wise difference of blocks (or of a prior sum sequence)."""
-        return _block_combine(self, other, -1)
-
-    def __rsub__(self, other: Any) -> Any:
-        """Support ``seq - block`` when the left operand is already a sequence."""
-        return _block_combine(other, self, -1)
-
-    def __repr__(self) -> str:
-        label = self._name if self._name is not None else f"[{self._start}:{self._start + self._rank}]"
-        return f"SummandBlock({label}, rank={self._rank})"
-
-def _block_gens(part: Any) -> tuple:
-    """Ambient generators from a :class:`SummandBlock` or an equal-length sequence."""
-    if isinstance(part, SummandBlock):
-        return part.gens()
-    if isinstance(part, (list, tuple)) and not hasattr(part, "parent"):
-        return tuple(part)
-    raise TypeError(
-        f"block combination expects SummandBlock or sequence, got {type(part)!r}"
-    )
-
-def _block_combine(left: Any, right: Any, sign: int) -> Any:
-    """Gen-wise ``left[i] + sign * right[i]`` for equal-rank block images."""
-    if left is None or right is None:
-        return NotImplemented
-    try:
-        left_gens = _block_gens(left)
-        right_gens = _block_gens(right)
-    except TypeError:
-        return NotImplemented
-    assert len(left_gens) == len(right_gens), (
-        f"block ranks differ: {len(left_gens)} vs {len(right_gens)}"
-    )
-    return tuple(left_gens[i] + sign * right_gens[i] for i in range(len(left_gens)))
-
-def _summand_records(lattice: Any) -> list[dict[str, Any]]:
-    """Ordered summand metadata; a non-sum is a single full-rank record."""
-    existing = getattr(lattice, "_preamble_summands", None)
-    if existing is not None:
-        return [dict(rec) for rec in existing]
-    return [
-        {
-            "lattice": lattice,
-            "start": 0,
-            "rank": int(lattice.rank()),
-            "name": None,
-        }
-    ]
-
-def _attach_summand_records(
-    result: Any,
-    left: Any,
-    right: Any,
-    left_rank: int,
-    block_names: Any = None,
-) -> None:
-    """Store flattened summand records on ``result`` after ``left ⊕ right``."""
-    records = _summand_records(left)
-    for rec in _summand_records(right):
-        records.append(
-            {
-                "lattice": rec["lattice"],
-                "start": left_rank + int(rec["start"]),
-                "rank": int(rec["rank"]),
-                "name": rec.get("name"),
-            }
-        )
-    if block_names is not None:
-        names = tuple(block_names)
-        assert len(names) == len(records), (
-            f"block_names length {len(names)} != number of summands {len(records)}"
-        )
-        for rec, name in zip(records, names):
-            rec["name"] = name
-    result._preamble_summands = records
-
-def expand_block_hom_dict(domain: Any, mapping: dict) -> list:
-    r"""Expand a Hom/Aut dict with block keys/values to ordered generator images.
-
-    Keys may be :class:`SummandBlock` handles or ambient generators.  Values may
-    be ambient elements, equal-rank blocks, equal-rank block sums
-    (``b2 + b3``), or sequences of ambient elements (including ``-block``).
-    """
-    images: dict[Any, Any] = {}
-    for key, val in mapping.items():
-        if isinstance(key, SummandBlock):
-            src_gens = key.gens()
-            if isinstance(val, SummandBlock):
-                dst_gens = val.gens()
-                assert len(src_gens) == len(dst_gens), (
-                    f"block ranks differ: {len(src_gens)} vs {len(dst_gens)}"
-                )
-                for src, dst in zip(src_gens, dst_gens):
-                    images[unwrap(src)] = unwrap(dst)
-            elif isinstance(val, (list, tuple)) and not hasattr(val, "parent"):
-                assert len(val) == len(src_gens), (
-                    f"image sequence length {len(val)} != block rank {len(src_gens)}"
-                )
-                for src, dst in zip(src_gens, val):
-                    images[unwrap(src)] = unwrap(dst)
-            else:
-                assert len(src_gens) == 1, (
-                    "non-block Hom image requires a rank-1 source block "
-                    f"(got rank {len(src_gens)})"
-                )
-                images[unwrap(src_gens[0])] = unwrap(val)
-        else:
-            if isinstance(val, SummandBlock):
-                assert len(val) == 1, (
-                    "generator key with block value requires a rank-1 block"
-                )
-                images[unwrap(key)] = unwrap(val[0])
-            else:
-                images[unwrap(key)] = unwrap(val)
-
-    ordered = []
-    for gen in domain.gens():
-        key = unwrap(gen)
-        assert key in images, f"missing image for generator {gen}"
-        ordered.append(images[key])
-    return ordered
-
 # Keep a reference to Sage's native direct_sum so we can call it from inside
 # the category without depending on any patches that may replace it.
 _native_direct_sum = FreeQuadraticModule_integer_symmetric.direct_sum
@@ -291,13 +101,41 @@ class IntegralLattices(Category):
             pairings = [self.b(x, v) for v in self.basis()]
             return abs(gcd(pairings))
 
+        def get_isotropic_type(self: Any, isotropic_element: Any) -> str:
+            r"""Classify an isotropic element by the type of $e^\perp / e$.
+
+            The method is defined for elements of every integral lattice. It
+            returns ``"Odd"``, ``"Even ordinary"``, ``"Even characteristic"``,
+            or ``"Not found."`` when the quotient has another isometry type.
+            """
+            assert getattr(isotropic_element, "parent", lambda: None)() is self, (
+                "get_isotropic_type expects an element of this lattice"
+            )
+            assert self.q(isotropic_element) == 0, (
+                f"expected an isotropic element, got square {self.q(isotropic_element)}"
+            )
+
+            from dzack_research.preamble import catalogue
+
+            quotient = self.I_perp_mod_I([isotropic_element])
+            if not hasattr(quotient, "is_isometric") or quotient.rank() == 0:
+                return "Not found."
+            if quotient.is_isometric(catalogue.Lattices.U):
+                return "Odd"
+            if quotient.is_isometric(catalogue.Lattices.U_2):
+                return "Even ordinary"
+            if quotient.is_isometric(catalogue.Lattices.IPQ(1, 1).twist(2)):
+                return "Even characteristic"
+            return "Not found."
+
         # ---- dual basis ----
 
         def dual_basis(self: Any) -> Any:
             r"""Return the columns of $G^{-1}$ as the dual basis.
 
             These lie in $L\\otimes\\mathbb{Q}$, not necessarily in $L$, so they
-            are returned as ambient vectors (not lattice-element facades).
+            are returned as vectors in the base-changed parent, not as
+            lattice-element facades.
             """
             columns = self.gram_matrix().inverse().columns()
             for i, v in enumerate(self.basis()):
@@ -658,20 +496,14 @@ class IntegralLattices(Category):
             self: Any,
             *others: Any,
             names: Any = None,
-            block_names: Any = None,
             **kwargs: Any,
         ) -> Any:
-            r"""Orthogonal direct sum preserving Gram subdivisions and summand blocks.
-
-            Nested sums flatten to a top-level ordered summand list.  Optional
-            ``block_names`` labels the resulting blocks for :meth:`summands`.
-            """
+            r"""Construct an orthogonal direct sum with its ordered subobjects."""
             if not others:
                 return self
 
             result = self
-            n_others = len(others)
-            for index, other in enumerate(others):
+            for other in others:
                 left = result
                 left_subdivs = left.gram_matrix().subdivisions()[0] or ()
                 left_rank = left.rank()
@@ -687,29 +519,43 @@ class IntegralLattices(Category):
                     + [left_rank + s for s in right_subdivs]
                 )
                 _subdivide_gram(result, combined)
-                names_here = block_names if index == n_others - 1 else None
-                _attach_summand_records(result, left, other, left_rank, names_here)
-
-            if names is not None:
-                result = _apply_names(result, names)
-            return result
-
-        def summands(self: Any) -> tuple:
-            r"""Return ordered :class:`SummandBlock` handles for this direct sum.
-
-            A lattice that is not a recorded direct sum yields a single block
-            covering the whole lattice.
-            """
-            return tuple(
-                SummandBlock(
-                    self,
-                    rec["lattice"],
-                    rec["start"],
-                    rec["rank"],
-                    rec.get("name"),
+                left_subobjects = (
+                    left.summands()
+                    if left in DirectSumObjects()
+                    else (Subobject(left.Hom(left)(left.gens())),)
                 )
-                for rec in _summand_records(self)
-            )
+                right_subobjects = (
+                    other.summands()
+                    if other in DirectSumObjects()
+                    else (Subobject(other.Hom(other)(other.gens())),)
+                )
+                left_embedding = left.Hom(result)(result.gens()[:left_rank])
+                right_embedding = other.Hom(result)(result.gens()[left_rank:])
+                subobjects = [
+                    Subobject(
+                        subobject.embedding().domain().Hom(result)(
+                            [
+                                left_embedding(image)
+                                for image in subobject.embedded_gens()
+                            ]
+                        )
+                    )
+                    for subobject in left_subobjects
+                ] + [
+                    Subobject(
+                        subobject.embedding().domain().Hom(result)(
+                            [
+                                right_embedding(image)
+                                for image in subobject.embedded_gens()
+                            ]
+                        )
+                    )
+                    for subobject in right_subobjects
+                ]
+                result._summands = tuple(subobjects)
+                refine(result, [result.category(), DirectSumObjects()])
+
+            return _apply_names(result, names) if names is not None else result
 
         def twist(self: Any, *args: Any, names: Any = None, **kwargs: Any) -> Any:
             r"""Twisted (sign-flipped) lattice, preserving Gram-matrix subdivisions."""
@@ -722,10 +568,6 @@ class IntegralLattices(Category):
             if names is not None:
                 result = _apply_names(result, names)
             return result
-
-        def _compute_lattice_gram_subdivisions(self: Any) -> list[int]:
-            r"""Detect and apply Gram-matrix block subdivisions from connected components."""
-            return compute_lattice_gram_subdivisions(self)
 
         # ---- morphisms / automorphisms ----
 
@@ -955,6 +797,7 @@ class IntegralLattices(Category):
             r"""$e^\perp / \langle e \rangle$ for a single isotropic $e$."""
             return self.parent().I_perp_mod_I([self])
 
+
 # ---- helper utilities ----
 
 _ZERO_DOTS: bool = True
@@ -990,32 +833,19 @@ def _element_add(left: Any, right: Any, sign: int) -> Any:
     Arithmetic runs on native vectors; the parent constructor re-wraps.
     """
     from sage.modules.free_module_element import vector
-    from sage.rings.rational_field import QQ
+    from sage.structure.element import Element
 
-    if left is None:
+    if isinstance(left, (int, Integer)) and left == 0:
+        return right if sign == 1 else -right
+    if not isinstance(left, Element) or not isinstance(right, Element):
         return NotImplemented
-    try:
-        left_coords = vector(QQ, list(_unwrap(left)))
-    except (TypeError, ValueError, AttributeError):
+    parent = left.parent()
+    if right.parent() is not parent:
         return NotImplemented
 
-    if right is None:
-        result = sign * left_coords
-        parent = left.parent()
-    else:
-        try:
-            right_coords = vector(QQ, list(_unwrap(right)))
-        except (TypeError, ValueError, AttributeError):
-            return NotImplemented
-        result = left_coords + sign * right_coords
-        parent = left.parent() if hasattr(left, "parent") else right.parent()
-
-    if all(QQ(x).denominator() == 1 for x in result):
-        try:
-            return parent([ZZ(x) for x in result])
-        except (TypeError, ValueError, ArithmeticError):
-            pass
-    return result
+    left_coords = vector(ZZ, list(_unwrap(left)))
+    right_coords = vector(ZZ, list(_unwrap(right)))
+    return parent(left_coords + sign * right_coords)
 
 def _expand_names(spec: str, rank: int) -> tuple[str, ...]:
     r"""Expand indexed ranges in a basis-name specification."""
@@ -1078,66 +908,17 @@ def _subdivide_gram(L: Any, *cuts: Any) -> None:
         from copy import copy
 
         gram = copy(gram)
-        try:
-            L._gram_matrix = gram
-        except AttributeError:
-            pass
+        L._gram_matrix = gram
     gram.subdivide(*cuts)
 
-def _detect_matrix_connected_cuts(G: Any) -> list[int]:
-    r"""Detect connected-component cuts in a matrix graph for block subdivision.
-
-    Uses networkx (if available) to find connected components of the
-    adjacency graph defined by nonzero entries.
-    """
-    n = G.nrows()
-    if n <= 1:
-        return []
-    try:
-        import networkx as nx
-    except ImportError:
-        return []
-    adj = {i: [] for i in range(n)}
-    for i in range(n):
-        for j in range(i + 1, n):
-            if G[i, j] != 0:
-                adj[i].append(j)
-                adj[j].append(i)
-    graph = nx.Graph(adj)
-    comps = sorted(
-        [sorted(c) for c in nx.connected_components(graph)],
-        key=lambda c: c[0],
-    )
-    if [i for c in comps for i in c] != list(range(n)):
-        return []
-    cuts, cur = [], 0
-    for s in (len(c) for c in comps[:-1]):
-        cur += s
-        cuts.append(cur)
-    return [c for c in cuts if 0 < c < n]
-
-def compute_lattice_gram_subdivisions(L: Any) -> list[int]:
-    r"""Module-level helper: detect and apply Gram-matrix block subdivisions.
-
-    Can be called before a lattice is refined into a category, so it lives
-    at module level rather than in ``ParentMethods``.
-    """
+def _subdivide_lattice_gram_matrix(L: Any) -> None:
     gram = L.gram_matrix()
-    subdivs = gram.subdivisions()[0]
-    if subdivs:
-        return list(subdivs)
-    cuts = _detect_matrix_connected_cuts(gram)
-    if cuts:
-        if gram.is_immutable():
-            from copy import copy
+    if gram.subdivisions()[0]:
+        return
 
-            gram = copy(gram)
-            try:
-                L._gram_matrix = gram
-            except AttributeError:
-                pass
-        gram.subdivide(cuts, cuts)
-    return cuts
+    cuts = _matrix_connected_component_cuts(gram)
+    if cuts:
+        _subdivide_gram(L, cuts, cuts)
 
 def _format_disc_latex(disc: int) -> str:
     r"""Format discriminant with prime factorization in LaTeX."""
@@ -1176,7 +957,7 @@ def refine_one_lattice(lattice: Any) -> None:
         refine(lattice, HyperbolicLattices())
 
 def _after_lattice_init(lattice: Any) -> None:
-    compute_lattice_gram_subdivisions(lattice)
+    _subdivide_lattice_gram_matrix(lattice)
 
 def _is_hyperbolic(lattice: Any) -> bool:
     pos, neg = lattice.signature_pair()

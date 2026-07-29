@@ -1,135 +1,57 @@
-r"""``DiscriminantQuadraticModules`` — discriminant groups of integral lattices.
-
-Refine a ``TorsionQuadraticModule`` into this category to gain::
-
-    gram_matrix_quadratic()    # with induced block subdivisions
-    gram_matrix_bilinear()     # with induced block subdivisions
-    normal_form()              # marking result as normal form
-    _latex_()                  # multi-line display
-    finitely_presented_group() # Sage-native FinitelyPresentedGroup
-
-EXAMPLES::
-
-    sage: from dzack_research.preamble import catalogue
-    sage: from dzack_research.preamble.categories import DiscriminantQuadraticModules
-    sage: A = catalogue.Lattices.U.discriminant_group()
-    sage: A._refine_category_(DiscriminantQuadraticModules())
-"""
-
-from __future__ import annotations
+r"""Finite torsion modules equipped with a bilinear or quadratic form."""
 
 from typing import Any
 
 from sage.arith.misc import factor
 from sage.categories.category import Category
 from sage.categories.sets_cat import Sets
-from sage.matrix.constructor import matrix
 from sage.misc.latex import latex as _latex_fn
-from sage.rings.integer_ring import ZZ
-
-from .integral_lattices import _zero_dots
 
 
-class DiscriminantQuadraticModules(Category):
-    r"""Category of discriminant quadratic modules (discriminant groups of integral lattices).
-
-    Provides enriched Gram matrix methods with block subdivisions inherited from
-    the parent lattice, improved LaTeX display, and a finitely presented group
-    constructor.
-    """
+class TorsionModulesWithForm(Category):
+    r"""Category of finite torsion modules equipped with a form."""
 
     @classmethod
     def _repr_object_names(cls) -> str:
-        return "discriminant quadratic modules"
+        return "torsion modules with form"
 
     def super_categories(self) -> list:
         return [Sets()]
 
     class ParentMethods:
-        r"""Methods available on discriminant groups refined into this category."""
+        r"""Methods shared by bilinear and quadratic discriminant modules."""
 
-        def gram_matrix_quadratic(self: Any) -> Any:
-            r"""Return the quadratic Gram matrix with induced block subdivisions."""
-            _ensure_native_refs()
-            invs = self.invariants()
-            if not invs:
-                return matrix(ZZ, 0, 0)
+        def as_finitely_presented_group(self: Any) -> Any:
+            r"""Return a Sage-native ``FinitelyPresentedGroup`` representing $A_L$."""
+            return _torsion_module_as_finitely_presented_group(self)
 
-            raw = _native_gram_q(self)
-            cuts = _compute_disc_subdivisions(self)
-            if cuts:
-                G = raw.parent()(raw)
-                G.subdivide(cuts, cuts)
-                return G
-            return raw
+        def abelian_group(self: Any) -> Any:
+            r"""Return the underlying finite abelian group in invariant-factor form."""
+            from sage.groups.abelian_gps.abelian_group import AbelianGroup
 
-        def gram_matrix_bilinear(self: Any) -> Any:
-            r"""Return the bilinear Gram matrix with induced block subdivisions."""
-            _ensure_native_refs()
-            invs = self.invariants()
-            if not invs:
-                return matrix(ZZ, 0, 0)
+            return AbelianGroup(list(self.invariants()))
 
-            raw = _native_gram_b(self)
-            cuts = _compute_disc_subdivisions(self)
-            if cuts:
-                G = raw.parent()(raw)
-                G.subdivide(cuts, cuts)
-                return G
-            return raw
+        def is_p_elementary(self: Any, p: Any) -> bool:
+            r"""Return whether the underlying group is elementary abelian of exponent \(p\)."""
+            from sage.rings.integer_ring import ZZ
 
-        def normal_form(self: Any, *args: Any, **kwargs: Any) -> Any:
-            r"""Return the normal form, marked as such."""
-            _ensure_native_refs()
-            norm = _native_normal_form(self, *args, **kwargs)
-            norm._is_normal_form = True
-            return norm
-
-        def finitely_presented_group(self: Any) -> Any:
-            r"""Return a Sage-native ``FinitelyPresentedGroup`` representing $A_L$.
-
-            The presentation is $\mathbb{Z}^r / G_L \mathbb{Z}^r$ where $G_L$ is
-            the relation matrix (the Gram matrix of $L$).
-            """
-            L = getattr(getattr(self, "_W", None), "ambient_module", lambda: None)()
-            if L is not None and hasattr(L, "gram_matrix"):
-                G = L.gram_matrix()
-            else:
-                G = self.gram_matrix_quadratic()
-            r = G.nrows()
-            from sage.groups.free_group import FreeGroup
-            from sage.misc.misc_c import prod
-
-            if r == 0:
-                F = FreeGroup(0, "e")
-                return F.quotient([])
-
-            names = [f"e{i+1}" for i in range(r)]
-            F = FreeGroup(names)
-            gens = F.gens()
-            rels = []
-            for i in range(r):
-                for j in range(i + 1, r):
-                    rels.append(gens[i] * gens[j] * gens[i] ** -1 * gens[j] ** -1)
-            for k in range(r):
-                word = prod(gens[j] ** int(G[j, k]) for j in range(r))
-                rels.append(word)
-            group = F.quotient(rels)
-            return group
+            p = ZZ(p)
+            assert p.is_prime(), f"p must be prime, got {p}"
+            G = self.abelian_group().permutation_group()
+            if not G.is_elementary_abelian():
+                return False
+            return G.order() == 1 or G.exponent() == p
 
         def _latex_(self: Any) -> str:
-            r"""Return multi-line LaTeX for the discriminant group.
-
-            Shows: finite presentation, invariant factor decomposition,
-            primary decomposition, and quadratic Gram matrix.
-            """
+            r"""Return multi-line LaTeX for the torsion module and its form."""
             invs = self.invariants()
-            n = self.gram_matrix_quadratic().nrows()
+            n = self.gram_matrix().nrows()
 
-            fp_latex = str(_latex_fn(self.finitely_presented_group()))
+            fp_latex = str(_latex_fn(self.as_finitely_presented_group()))
             inv_str = _format_invariant_factor_latex(invs)
-            prim_str = _format_primary_decomp_latex(self)
-            gram_q_latex = _primary_gram_matrix_latex(self)
+            prim_str = _format_primary_decomp_latex(invs)
+            gram_latex = _form_gram_matrix_latex(self)
+            label = self._form_matrix_latex_label()
 
             line1 = (
                 f"A_L = {fp_latex} \\in \\mathrm{{Groups}} \\quad "
@@ -144,8 +66,8 @@ class DiscriminantQuadraticModules(Category):
                 "\\text{(Primary decomposition)} \\\\"
             )
             line4 = (
-                f"G_{{q_{{A_L}}}} = {gram_q_latex} \\in "
-                f"\\mathrm{{Mat}}_{{{n}}}(\\mathbb{{Q}}/2\\mathbb{{Z}})"
+                f"{label} = {gram_latex} \\in "
+                f"\\mathrm{{Mat}}_{{{n}}}({self._form_matrix_latex_codomain()})"
             )
 
             return (
@@ -154,41 +76,104 @@ class DiscriminantQuadraticModules(Category):
                 + "\n\\end{gathered}"
             )
 
+        def _form_matrix_latex_label(self: Any) -> str:
+            r"""Return the LaTeX label for this form's Gram matrix."""
+            return "G_{A_L}"
 
-# ---- internal helpers ----
-
-_native_gram_q: Any = None
-_native_gram_b: Any = None
-_native_normal_form: Any = None
-_refs_ensured: bool = False
-
-
-def _ensure_native_refs() -> None:
-    r"""Capture references to native Sage methods on first use."""
-    global _native_gram_q, _native_gram_b, _native_normal_form, _refs_ensured
-    if _refs_ensured:
-        return
-    from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
-
-    _native_gram_q = TorsionQuadraticModule.gram_matrix_quadratic.f
-    _native_gram_b = TorsionQuadraticModule.gram_matrix_bilinear.f
-    _native_normal_form = TorsionQuadraticModule.normal_form
-    _refs_ensured = True
+        def _form_matrix_latex_codomain(self: Any) -> str:
+            r"""Return the LaTeX codomain for this form's Gram matrix entries."""
+            return "\\mathbb{Q}/\\mathbb{Z}"
 
 
-def _compute_disc_subdivisions(A_disc: Any) -> list[int]:
-    r"""Compute discriminant Gram matrix block cuts from the lattice's block decomposition."""
-    raw = _native_gram_q(A_disc)
+def _torsion_module_as_finitely_presented_group(module: Any) -> Any:
+    r"""Return a finite presentation for the underlying discriminant group."""
+    L = module.source_lattice()
+    G = L.gram_matrix()
+    r = G.nrows()
+    from sage.groups.free_group import FreeGroup
+    from sage.misc.misc_c import prod
+
+    if r == 0:
+        F = FreeGroup(0, "e")
+        return F.quotient([])
+
+    names = [f"e{i+1}" for i in range(r)]
+    F = FreeGroup(names)
+    gens = F.gens()
+    rels = []
+    for i in range(r):
+        for j in range(i + 1, r):
+            rels.append(gens[i] * gens[j] * (gens[i] ^ -1) * (gens[j] ^ -1))
+    for k in range(r):
+        word = prod((gens[j] ^ int(G[j, k])) for j in range(r))
+        rels.append(word)
+    return F.quotient(rels)
+
+
+def _format_cyclic_group_latex(orders: tuple[int, ...]) -> str:
+    r"""Format cyclic group orders as ``C_n^m``."""
+    if not orders:
+        return "0"
+    from collections import Counter
+
+    counts = Counter(orders)
+    parts = []
+    for n in sorted(counts):
+        m = counts[n]
+        if m == 1:
+            parts.append(f"C_{{{n}}}")
+        else:
+            parts.append(f"C_{{{n}}}^{{{m}}}")
+    return " \\oplus ".join(parts)
+
+
+def _format_invariant_factor_latex(invariants: tuple[int, ...]) -> str:
+    r"""Format invariant factors as ``C_n^m``."""
+    return _format_cyclic_group_latex(invariants)
+
+
+def _format_primary_decomp_latex(invariants: tuple[int, ...]) -> str:
+    r"""Format the primary decomposition implied by invariant factors."""
+    if not invariants:
+        return "0"
+    primary_orders: list[int] = []
+    for n in invariants:
+        primary_orders.extend(int(p) ** int(e) for p, e in factor(n))
+    return _format_cyclic_group_latex(tuple(primary_orders))
+
+
+def _form_gram_matrix_latex(module: Any) -> str:
+    r"""Return LaTeX for a form Gram matrix."""
+    import re
+
+    if not module.invariants():
+        return "()"
+    gram_str = str(_latex_fn(module.gram_matrix()))
+    zero_dots = globals().get("_zero_dots", lambda: False)
+    if zero_dots():
+        gram_str = re.sub(r"\b0\b", lambda m: r"\cdot", gram_str)
+    return gram_str
+
+
+def subdivide_form_gram_matrix(module: Any) -> None:
+    r"""Partition ``module``'s Gram matrix once and replace ``gram_matrix``."""
+    raw = module.gram_matrix()
+    cuts = _form_gram_matrix_cuts(module, raw)
+    if cuts:
+        G = raw.parent()(raw)
+        G.subdivide(cuts, cuts)
+    else:
+        G = raw
+    module.gram_matrix = lambda: G
+
+
+def _form_gram_matrix_cuts(module: Any, raw: Any) -> list[int]:
+    r"""Compute form Gram matrix block cuts from the source lattice decomposition."""
     n = raw.nrows()
     if n == 0:
         return []
 
-    if getattr(A_disc, "_is_normal_form", False):
-        return _detect_matrix_connected_cuts(raw)
-
-    L = getattr(getattr(A_disc, "_W", None), "ambient_module", lambda: None)()
-    if L is None or not hasattr(L, "gram_matrix"):
-        return _detect_matrix_connected_cuts(raw)
+    L = module.source_lattice()
 
     L_cuts = L.gram_matrix().subdivisions()[0]
     if not L_cuts:
@@ -206,7 +191,9 @@ def _compute_disc_subdivisions(A_disc: Any) -> list[int]:
     for start, end in zip(starts, ends):
         sub_g = gram.submatrix(start, start, end - start, end - start)
         sub_A = IntegralLattice(sub_g).discriminant_group()
-        sub_raw = _native_gram_q(sub_A)
+        from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
+
+        sub_raw = TorsionQuadraticModule.gram_matrix_quadratic.f(sub_A)
         k = sub_raw.nrows()
         if k > 0:
             internal = _detect_matrix_connected_cuts(sub_raw)
@@ -247,54 +234,7 @@ def _detect_matrix_connected_cuts(G: Any) -> list[int]:
     return [c for c in cuts if 0 < c < n]
 
 
-def _format_cyclic_group_latex(orders: tuple[int, ...]) -> str:
-    r"""Format cyclic group orders as ``C_n^m``."""
-    if not orders:
-        return "0"
-    from collections import Counter
-
-    counts = Counter(orders)
-    parts = []
-    for n in sorted(counts):
-        m = counts[n]
-        if m == 1:
-            parts.append(f"C_{{{n}}}")
-        else:
-            parts.append(f"C_{{{n}}}^{{{m}}}")
-    return " \\oplus ".join(parts)
-
-
-def _format_invariant_factor_latex(invariants: tuple[int, ...]) -> str:
-    r"""Format invariant factors as ``C_n^m``."""
-    return _format_cyclic_group_latex(invariants)
-
-
-def _format_primary_decomp_latex(A_disc: Any) -> str:
-    r"""Format primary decomposition as ``C_n^m``."""
-    invs = A_disc.invariants()
-    if not invs:
-        return "0"
-    primes = sorted(set(f for n in invs for f, _ in factor(n)))
-    all_powers: list[int] = []
-    for p in primes:
-        all_powers.extend(A_disc.primary_part(p).invariants())
-    return _format_cyclic_group_latex(tuple(all_powers))
-
-
-def _primary_gram_matrix_latex(A_disc: Any) -> str:
-    r"""Return LaTeX of primary decomposition block-diagonal Gram matrix."""
-    import re
-
-    invs = A_disc.invariants()
-    if not invs:
-        return "()"
-    gram_str = str(_latex_fn(A_disc.gram_matrix_quadratic()))
-    if _zero_dots():
-        gram_str = re.sub(r"\b0\b", lambda m: r"\cdot", gram_str)
-    return gram_str
-
-
-# ---- FinitelyPresentedGroup compact LaTeX (used by discriminant groups) ----
+# ---- FinitelyPresentedGroup compact LaTeX ----
 
 _FP_LAYOUT_INLINE_WIDTH = 150
 _FP_LAYOUT_STACKED_GENERATOR_WIDTH = 220
@@ -313,6 +253,7 @@ def _fp_group_generator_names(group: Any) -> tuple[str, ...]:
 
 def _fp_format_generator_name(name: str) -> str:
     import re
+
     match = re.fullmatch(r"([A-Za-z]+)(\d+)", name)
     if match:
         stem, idx = match.groups()
@@ -383,9 +324,6 @@ def _fp_pack_rows(items: tuple[str, ...], width: int, sep: str) -> tuple[str, ..
     return tuple(lines)
 
 
-# ---- FinitelyPresentedGroup compact LaTeX as a category ----
-
-
 class FinitelyPresentedGroups(Category):
     r"""Finitely presented groups with compact multi-line LaTeX."""
 
@@ -422,22 +360,11 @@ def _fp_relation_table_latex(rows: tuple[str, ...]) -> str:
     for row in grouped:
         cells = list(row) + [""] * (cols - len(row))
         rendered.append(" & ".join(cells))
-    return (
-        f"\\begin{{array}}{{{colspec}}}\n"
-        + "\\\\\n".join(rendered)
-        + "\n\\end{array}"
-    )
+    return f"\\begin{{array}}{{{colspec}}}\n" + "\\\\\n".join(rendered) + "\n\\end{array}"
 
 
 def _fp_format_finite_presentation_latex(group: Any) -> str:
-    r"""Render a ``FinitelyPresentedGroup`` as compact LaTeX.
-
-    Selects layout based on complexity:
-
-    - inline for small presentations (<= 150 chars)
-    - stacked aligned for moderate sizes
-    - expanded table for large presentations
-    """
+    r"""Render a ``FinitelyPresentedGroup`` as compact LaTeX."""
     gens = tuple(_fp_format_generator_name(n) for n in _fp_group_generator_names(group))
     rels = tuple(group.relations())
     rel_words = _fp_relation_word_rows(group, rels)
@@ -480,24 +407,3 @@ def _fp_format_finite_presentation_latex(group: Any) -> str:
         f"{table}\n"
         "\\end{gathered}"
     )
-
-
-# ---- install: post-init hooks only ----
-
-_INSTALLED = False
-
-
-def install() -> None:
-    """Hook post-init on torsion quadratic modules and FP groups."""
-    global _INSTALLED
-    if _INSTALLED:
-        return
-
-    from sage.groups.finitely_presented import FinitelyPresentedGroup
-    from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
-
-    from dzack_research.preamble.refine import hook_post_init
-
-    hook_post_init(TorsionQuadraticModule, DiscriminantQuadraticModules())
-    hook_post_init(FinitelyPresentedGroup, FinitelyPresentedGroups())
-    _INSTALLED = True

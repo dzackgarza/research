@@ -23,7 +23,14 @@ from sage.modules.free_quadratic_module_integer_symmetric import (
 )
 from sage.rings.integer_ring import ZZ
 
-__all__ = ["Embeddings", "Involutions", "Lattices", "NegativeDefTwoElementary", "TwoElementary"]
+__all__ = [
+    "Embeddings",
+    "Involutions",
+    "Lattices",
+    "NegativeDefTwoElementary",
+    "SterkDiagrams",
+    "TwoElementary",
+]
 
 
 class Lattices:
@@ -129,18 +136,8 @@ class Lattices:
         return Lattices.Z.twist(-2 * degree) + Lattices.U^2 + Lattices.E8^2
 
     @classmethod
-    def install(cls, scope=None):
+    def install(cls, scope):
         r"""Bind catalogue specimens and named generators into *scope*."""
-        if scope is None:
-            import inspect
-
-            frame = inspect.currentframe()
-            try:
-                assert frame is not None and frame.f_back is not None
-                scope = frame.f_back.f_globals
-            finally:
-                del frame
-
         for name, obj in vars(cls).items():
             if isinstance(obj, FreeQuadraticModule_integer_symmetric):
                 scope[name] = obj
@@ -173,6 +170,15 @@ class Lattices:
             w1t=w1t, w2t=w2t, w3t=w3t, w4t=w4t,
             w5t=w5t, w6t=w6t, w7t=w7t, w8t=w8t,
         )
+
+
+class SterkDiagrams:
+    r"""Catalogue namespace for Sterk's five rooted Coxeter diagrams.
+
+    ``sterk.sage`` attaches ``Sterk_1`` through ``Sterk_5`` after defining the
+    root expressions.  This mirrors :class:`Lattices`: users access named
+    objects as attributes rather than asking a function to build a lookup.
+    """
 
 
 # Nikulin's 75 even indefinite 2-elementary lattices of signature $(1,r-1)$,
@@ -465,13 +471,37 @@ NegativeDefTwoElementary = {
 
 
 class Involutions:
-    r"""Named automorphisms of $\Lambda_{K3}$ as block Aut maps."""
+    r"""Named automorphisms of $\Lambda_{K3}$ from its direct-sum decomposition."""
 
     v, uu, up, ea, ep = Lattices.LK3.summands()
 
-    I_dP = Lattices.LK3.Aut()({v: -v, uu: up, up: uu, ea: -ea, ep: -ep})
-    I_En = Lattices.LK3.Aut()({v: -v, uu: up, up: uu, ea: ep, ep: ea})
-    I_Nik = Lattices.LK3.Aut()({v: v, uu: uu, up: up, ea: -ep, ep: -ea})
+    I_dP = Lattices.LK3.Aut()(
+        {
+            v: tuple(-image for image in v.embedded_gens()),
+            uu: up,
+            up: uu,
+            ea: tuple(-image for image in ea.embedded_gens()),
+            ep: tuple(-image for image in ep.embedded_gens()),
+        }
+    )
+    I_En = Lattices.LK3.Aut()(
+        {
+            v: tuple(-image for image in v.embedded_gens()),
+            uu: up,
+            up: uu,
+            ea: ep,
+            ep: ea,
+        }
+    )
+    I_Nik = Lattices.LK3.Aut()(
+        {
+            v: v,
+            uu: uu,
+            up: up,
+            ea: tuple(-image for image in ep.embedded_gens()),
+            ep: tuple(-image for image in ea.embedded_gens()),
+        }
+    )
 
 
 class Embeddings:
@@ -483,12 +513,28 @@ class Embeddings:
     c1, c2, c3 = Lattices.Tco.summands()
     e1, e2, e3 = Lattices.TEn.summands()
     d1, d2, d3, d4 = Lattices.TdP.summands()
-    (e8,) = Lattices.E8_2.summands()
-
-    E8_2_into_TdP = Lattices.E8_2.Hom(Lattices.TdP)({e8: d3 + d4})
-    TCo_into_TEn = Lattices.Tco.Hom(Lattices.TEn)(
-        {c1: e1[0] + e1[1], c2: e2, c3: e3}
+    E8_2_into_TdP = Lattices.E8_2.Hom(Lattices.TdP)(
+        tuple(
+            left + right
+            for left, right in zip(d3.embedded_gens(), d4.embedded_gens())
+        )
     )
-    TEn_into_TdP = Lattices.TEn.Hom(Lattices.TdP)({e1: d1, e2: d2, e3: d3 + d4})
+    TCo_into_TEn = Lattices.Tco.Hom(Lattices.TEn)(
+        {
+            c1: e1.embedded_gens()[0] + e1.embedded_gens()[1],
+            c2: e2,
+            c3: e3,
+        }
+    )
+    TEn_into_TdP = Lattices.TEn.Hom(Lattices.TdP)(
+        {
+            e1: d1,
+            e2: d2,
+            e3: tuple(
+                left + right
+                for left, right in zip(d3.embedded_gens(), d4.embedded_gens())
+            ),
+        }
+    )
     TEn_into_LK3 = Lattices.LK3.coinvariant_inclusion(Involutions.I_En)
     TdP_into_LK3 = Lattices.LK3.coinvariant_inclusion(Involutions.I_dP)

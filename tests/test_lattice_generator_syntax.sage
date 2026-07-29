@@ -24,9 +24,28 @@ Findings these tests encode, each verified against this Sage:
    and ``__pow__``, applied through category refinement.
 """
 
-# Activate the IntegralLattice constructor hook at import time (replaces
-# IntegralLattice in sage.all so that names=, __matmul__, __pow__ all work).
-import dzack_research.preamble.categories.integral_lattices  # noqa: F401
+# Category hooks: load mathematical preamble scripts (not notebook init.sage).
+from pathlib import Path
+import dzack_research
+
+_p = Path(dzack_research.__file__).resolve().parent / "preamble"
+load(str(_p / "vendor.sage"))
+load(str(_p / "refine.sage"))
+load(str(_p / "categories/gram_matrices.sage"))
+load(str(_p / "categories/integrallattice/integral_lattices.sage"))
+load(str(_p / "categories/integrallattice/subobjects.sage"))
+load(str(_p / "categories/integrallattice/direct_sum_objects.sage"))
+load(str(_p / "categories/lattice_homomorphisms.sage"))
+load(str(_p / "categories/lattice_isometries.sage"))
+load(str(_p / "categories/integrallattice/hyperbolic_lattices.sage"))
+load(str(_p / "categories/torsionform/torsion_modules_with_form.sage"))
+load(str(_p / "categories/torsionform/fgptorsionmodule.sage"))
+load(str(_p / "categories/torsionform/discriminant_bilinear_modules.sage"))
+load(str(_p / "categories/torsionform/discriminant_quadratic_modules.sage"))
+install_integral_lattices()
+install_fgp_torsionmodule()
+install_discriminant_groups()
+activate()
 
 
 def _lattice_constructor():
@@ -115,9 +134,7 @@ def test_pow_is_repeated_direct_sum():
     # Sage's E8 is POSITIVE definite; this repo's convention is negative definite,
     # so the K3 lattice must be built from the twisted E8 to get signature (3,19).
     # Rank alone would not have caught the flipped convention.
-    from dzack_research.preamble import catalogue
-
-    k3 = IntegralLattice("H") ** 3 @ catalogue.Lattices.E8 ** 2
+    k3 = IntegralLattice("H") ** 3 @ Lattices.E8 ** 2
     assert k3.rank() == 22, k3.rank()
     assert k3.signature_pair() == (3, 19), k3.signature_pair()
 
@@ -144,4 +161,3 @@ def test_named_lattice_helper_rejects_a_count_mismatch():
         assert "8" in str(error) and "5" in str(error), str(error)
     else:
         raise AssertionError("a 5-name range on a rank-8 lattice should fail")
-
