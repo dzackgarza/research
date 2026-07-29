@@ -2,8 +2,7 @@ r"""Coxeter diagrams as Sage parents.
 
 EXAMPLES::
 
-    sage: from sage_lattice_category_spike import CoxeterDiagrams, Lattice
-    sage: diagram = Lattice("A3").coxeter_diagram()
+    sage: diagram = CoxeterDiagrams().from_cartan_type(["A", 3])
     sage: diagram.category().is_subcategory(CoxeterDiagrams().Finite())
     True
     sage: diagram.coxeter_matrix()
@@ -25,17 +24,36 @@ from sage.matrix.constructor import matrix
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
+from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
+from sage.graphs.graph import Graph
 from sage.structure.category_object import normalize_names
 from sage.structure.element_wrapper import ElementWrapper
 from sage.structure.parent import Parent
 
-from ..lexicon import CartanType, CoxeterDiagram, CoxeterMatrix, Graph
-from .categories import own_methods
-from .functors import CatObject
+COXETER_NEGATIVE_FOUR_NODE_COLOR = "#F8F9FE"
+COXETER_NEGATIVE_TWO_NODE_COLOR = "#BFC9CA"
+COXETER_NODE_COLORS = {
+    ZZ(-4): COXETER_NEGATIVE_FOUR_NODE_COLOR,
+    ZZ(-2): COXETER_NEGATIVE_TWO_NODE_COLOR,
+}
+COXETER_DRAWING_CONVENTIONS = (
+    ("square -4 root", f"white node, fill {COXETER_NEGATIVE_FOUR_NODE_COLOR}"),
+    ("square -2 root", f"black node, fill {COXETER_NEGATIVE_TWO_NODE_COLOR}"),
+    ("root squares", "stored as self-loops in root_intersection_graph(), omitted from TikZ"),
+    ("single edge", "Coxeter exponent 3"),
+    ("double edge", "Coxeter exponent 4"),
+    ("triple edge", "Coxeter exponent 6"),
+)
 
 
-class CoxeterDiagrams(CatObject, Category):
-    r"""Finite Coxeter diagrams and Coxeter-matrix-preserving maps."""
+class CoxeterDiagrams(Category):
+    r"""Finite Coxeter diagrams and Coxeter-matrix-preserving maps.
+
+    Rooted diagrams use the drawing convention documented on
+    :class:`FiniteCoxeterDiagram`: square ``-4`` roots are white nodes, square
+    ``-2`` roots are black nodes, root squares are stored as self-loops in the
+    root-intersection graph, and the TikZ renderer omits those self-loops.
+    """
 
     def _repr_object_names(self) -> str:
         return "finite Coxeter diagrams"
@@ -43,7 +61,32 @@ class CoxeterDiagrams(CatObject, Category):
     def super_categories(self) -> list[Category]:
         return [FiniteEnumeratedSets()]
 
-    ParentMethods = own_methods(CoxeterDiagram)
+    @staticmethod
+    def minimal_edge_gram_matrices() -> dict[str, Any]:
+        r"""Return rank-two Gram matrices for minimal Coxeter edge specimens.
+
+        Each matrix is the Gram matrix of two generators whose pairings realize
+        one of the Coxeter edge types used by the diagram code.  These are
+        examples of rank-two lattices, not fixture data.
+        """
+        return {
+            "single": matrix(ZZ, 2, [2, -1, -1, 2]),
+            "double": matrix(ZZ, 2, [2, -1, -1, 1]),
+            "triple": matrix(ZZ, 2, [6, -3, -3, 2]),
+            "heavy_oriented": matrix(ZZ, 2, [4, -2, -2, 1]),
+            "heavy_unoriented": matrix(ZZ, 2, [1, -1, -1, 1]),
+        }
+
+    @staticmethod
+    def minimal_edge_lattices() -> dict[str, Any]:
+        r"""Return minimal rank-two lattices realizing Coxeter edge specimens."""
+        return {
+            name: IntegralLattice(
+                gram,
+                names=("r1", "r2"),
+            )
+            for name, gram in CoxeterDiagrams.minimal_edge_gram_matrices().items()
+        }
 
     def from_coxeter_matrix(
         self,
@@ -55,7 +98,7 @@ class CoxeterDiagrams(CatObject, Category):
 
     def from_cartan_type(
         self,
-        cartan_type: CartanType,
+        cartan_type: Any,
         names: Sequence[str] | str | None = None,
     ) -> FiniteCoxeterDiagram:
         r"""Construct the diagram of a crystallographic Cartan type."""
@@ -76,10 +119,30 @@ else:
     CoxeterDiagramParent = Parent
 
 
-class FiniteCoxeterDiagram(CoxeterDiagram, CoxeterDiagramParent):
-    r"""A finite Coxeter diagram whose elements are its vertices."""
+class FiniteCoxeterDiagram(CoxeterDiagramParent):
+    r"""A finite Coxeter diagram whose elements are its vertices.
+
+    A diagram may be rooted: its vertices carry actual roots in a source
+    lattice, a full root-intersection matrix, and preferred plotting
+    coordinates.  The rooted drawing convention is part of the object API:
+
+    * square ``-4`` roots are white nodes, with fill
+      ``COXETER_NEGATIVE_FOUR_NODE_COLOR`` = ``#F8F9FE``;
+    * square ``-2`` roots are black nodes, with fill
+      ``COXETER_NEGATIVE_TWO_NODE_COLOR`` = ``#BFC9CA``;
+    * diagonal terms ``r_i^2`` are stored as self-loops by
+      :meth:`root_intersection_graph`;
+    * TikZ output omits self-loops and renders edges from the Coxeter
+      exponents: single for ``3``, double for ``4``, triple for ``6``.
+
+    Use :meth:`drawing_conventions`, :meth:`node_color`, :meth:`roots`,
+    :meth:`root_intersection_matrix`, and :meth:`preferred_positions` to extract
+    the packaged data from a diagram object.
+    """
 
     Element = CoxeterVertex
+    negative_four_node_color = COXETER_NEGATIVE_FOUR_NODE_COLOR
+    negative_two_node_color = COXETER_NEGATIVE_TWO_NODE_COLOR
 
     if TYPE_CHECKING:
         element_class: ClassVar[type[CoxeterVertex]]
@@ -88,32 +151,19 @@ class FiniteCoxeterDiagram(CoxeterDiagram, CoxeterDiagramParent):
         self,
         coxeter_matrix: CoxeterMatrix,
         names: Sequence[str] | str | None = None,
-        source_lattice: Any | None = None,
-        roots: Sequence[Any] | None = None,
+        root_subobject: Subobject | None = None,
         positions: Mapping[Hashable, Sequence[object]] | None = None,
-        root_intersection_matrix: Sequence[Sequence[object]] | None = None,
     ) -> None:
         self._coxeter_matrix = CoxeterMatrix(coxeter_matrix)
         self._index_set = tuple(self._coxeter_matrix.index_set())
         rank = len(self._index_set)
         if names is None:
             names = tuple(f"s_{i}" for i in self._index_set)
-        if roots is not None:
-            assert source_lattice is not None, "roots require their source lattice"
-            assert len(roots) == rank, f"a rooted Coxeter diagram needs one root for every vertex; rank={rank}, roots={len(roots)}"
-            assert all(root.parent() is source_lattice for root in roots), (
-                "diagram roots must be elements of the declared source lattice, not coordinate rows"
+        if root_subobject is not None:
+            assert root_subobject.embedding().domain().rank() == rank, (
+                "a rooted Coxeter diagram needs one root for every vertex"
             )
-        if root_intersection_matrix is not None:
-            root_intersections = tuple(tuple(ZZ(entry) for entry in row) for row in root_intersection_matrix)
-            assert len(root_intersections) == rank and all(len(row) == rank for row in root_intersections), (
-                f"root intersection matrix must be {rank} by {rank}; found={root_intersections!r}"
-            )
-        else:
-            root_intersections = None
-        self._source_lattice = source_lattice
-        self._roots = None if roots is None else tuple(roots)
-        self._root_intersection_matrix = root_intersections
+        self._root_subobject = root_subobject
         self._preferred_positions = _normalize_positions(self._index_set, positions)
         self._computed_positions: dict[Hashable, tuple[Any, Any]] | None = None
         Parent.__init__(
@@ -125,47 +175,51 @@ class FiniteCoxeterDiagram(CoxeterDiagram, CoxeterDiagramParent):
     @classmethod
     def from_cartan_type(
         cls,
-        cartan_type: CartanType,
+        cartan_type: Any,
         names: Sequence[str] | str | None = None,
     ) -> FiniteCoxeterDiagram:
         r"""Construct the diagram of a crystallographic Cartan type."""
         return cls(CoxeterMatrix(cartan_type), names=names)
 
     @classmethod
-    def from_lattice_roots(
+    def from_roots(
         cls,
-        source_lattice: Any,
         roots: Sequence[Any],
         names: Sequence[str] | str | None = None,
         positions: Mapping[Hashable, Sequence[object]] | None = None,
         index_set: Sequence[Hashable] | None = None,
     ) -> FiniteCoxeterDiagram:
-        r"""Construct the diagram determined by actual roots in a lattice.
-
-        The roots must already be elements of ``source_lattice``.  This method
-        reads their bilinear pairings, records the full intersection matrix
-        including diagonal squares, and derives the Coxeter exponents from the
-        rank-two reflection angles.
-        """
+        r"""Construct the diagram and root subobject determined by ``roots``."""
         roots = tuple(roots)
+        assert roots, "a rooted Coxeter diagram needs at least one root"
         rank = len(roots)
+        realization = roots[0].parent()
+        assert all(root.parent() is realization for root in roots), (
+            "all diagram roots must belong to the same lattice"
+        )
         if index_set is None:
             index_set = tuple(range(rank))
         else:
             index_set = tuple(index_set)
         assert len(index_set) == rank, f"index set must have one entry per root; index_set={index_set!r}, roots={rank}"
-        assert all(root.parent() is source_lattice for root in roots), (
-            "diagram roots must be elements of the declared source lattice, not coordinate rows"
+        if names is None:
+            names = tuple(f"s_{i}" for i in index_set)
+        normalized_names = normalize_names(rank, names)
+        intersections = tuple(
+            tuple(ZZ(realization.b(left, right)) for right in roots)
+            for left in roots
         )
-        intersections = tuple(tuple(ZZ(source_lattice.b(left, right)) for right in roots) for left in roots)
         entries = [[ZZ.one() if i == j else _coxeter_exponent(intersections[i][i], intersections[j][j], intersections[i][j]) for j in range(rank)] for i in range(rank)]
+        root_lattice = IntegralLattice(
+            matrix(ZZ, intersections),
+            names=normalized_names,
+        )
+        root_subobject = Subobject(root_lattice.Hom(realization)(roots))
         return cls(
             CoxeterMatrix(entries, index_set=index_set),
-            names=names,
-            source_lattice=source_lattice,
-            roots=roots,
+            names=normalized_names,
+            root_subobject=root_subobject,
             positions=positions,
-            root_intersection_matrix=intersections,
         )
 
     def _Hom_(
@@ -192,7 +246,7 @@ class FiniteCoxeterDiagram(CoxeterDiagram, CoxeterDiagramParent):
             and self._index_set == other._index_set
             and self._matrix_entries() == other._matrix_entries()
             and self.variable_names() == other.variable_names()
-            and self._root_intersection_matrix == other._root_intersection_matrix
+            and self._root_subobject == other._root_subobject
             and self._preferred_positions == other._preferred_positions
         )
 
@@ -202,7 +256,7 @@ class FiniteCoxeterDiagram(CoxeterDiagram, CoxeterDiagramParent):
                 self._index_set,
                 self._matrix_entries(),
                 self.variable_names(),
-                self._root_intersection_matrix,
+                self._root_subobject,
                 None if self._preferred_positions is None else tuple(sorted(self._preferred_positions.items())),
             )
         )
@@ -240,15 +294,38 @@ class FiniteCoxeterDiagram(CoxeterDiagram, CoxeterDiagramParent):
     def graph(self) -> Graph:
         return self._coxeter_matrix.coxeter_graph()
 
-    def source_lattice(self) -> Any:
-        r"""Return the lattice whose elements label the diagram vertices."""
-        assert self._source_lattice is not None, "this Coxeter diagram has no stored source lattice"
-        return self._source_lattice
+    def drawing_conventions(self) -> dict[str, str]:
+        r"""Return the node, edge, and self-loop drawing conventions.
+
+        The conventions are attached to the Coxeter diagram object rather than
+        to the Sterk fixture data.  In particular, a rooted Sterk object
+        contains its root squares, its preferred positions, and the colors used
+        by :meth:`tikz`.
+        """
+        return dict(COXETER_DRAWING_CONVENTIONS)
+
+    def root_subobject(self) -> Subobject:
+        r"""Return the root lattice together with its embedding."""
+        assert self._root_subobject is not None, (
+            "this Coxeter diagram is not realized by roots"
+        )
+        return self._root_subobject
+
+    def root_lattice(self) -> Any:
+        r"""Return the abstract lattice generated by the diagram roots."""
+        return self.root_subobject().embedding().domain()
+
+    def root_embedding(self) -> Any:
+        r"""Return the embedding of the root lattice into its realization."""
+        return self.root_subobject().embedding()
+
+    def embedding_codomain(self) -> Any:
+        r"""Return the lattice in which the diagram roots are realized."""
+        return self.root_subobject().embedding_codomain()
 
     def roots(self) -> tuple[Any, ...]:
-        r"""Return the root element attached to each vertex."""
-        assert self._roots is not None, "this Coxeter diagram has no stored roots"
-        return self._roots
+        r"""Return the roots realizing the diagram vertices."""
+        return self.root_subobject().embedded_gens()
 
     def root(self, vertex: Hashable) -> Any:
         r"""Return the root element attached to ``vertex``."""
@@ -256,12 +333,16 @@ class FiniteCoxeterDiagram(CoxeterDiagram, CoxeterDiagramParent):
         return self.roots()[self._index_set.index(vertex)]
 
     def root_intersection_matrix(self) -> Any:
-        r"""Return the matrix ``(r_i . r_j)`` for the stored roots."""
-        assert self._root_intersection_matrix is not None, "this Coxeter diagram has no stored root intersection matrix"
-        return matrix(ZZ, self._root_intersection_matrix)
+        r"""Return the Gram matrix of the abstract root lattice."""
+        return self.root_lattice().gram_matrix()
 
     def root_intersection_graph(self) -> Graph:
-        r"""Return the root graph, with loop labels recording root squares."""
+        r"""Return the root graph, with loop labels recording root squares.
+
+        The loops are data: a loop label is the diagonal term ``r_i^2``.  They
+        are not rendered by :meth:`tikz`, which draws only Coxeter edges between
+        distinct vertices.
+        """
         intersections = self.root_intersection_matrix()
         graph = Graph(loops=True)
         graph_add = cast(Any, graph)
@@ -283,24 +364,40 @@ class FiniteCoxeterDiagram(CoxeterDiagram, CoxeterDiagramParent):
             self._computed_positions = {vertex: (coordinates[0], coordinates[1]) for vertex, coordinates in layout.items()}
         return dict(self._computed_positions)
 
+    def node_color(self, vertex: Hashable) -> str:
+        r"""Return the TikZ fill color for ``vertex`` from its root square.
+
+        Square ``-4`` roots use ``#F8F9FE``; square ``-2`` roots use
+        ``#BFC9CA``.  The color is extractable from the object because it is a
+        convention of rooted Coxeter diagrams, not a Sterk fixture.
+        """
+        vertex = self._element_constructor_(vertex).value
+        index = self._index_set.index(vertex)
+        norm = self.root_intersection_matrix()[index, index]
+        assert norm in COXETER_NODE_COLORS, f"no Coxeter node color is defined for square {norm}"
+        return COXETER_NODE_COLORS[norm]
+
     def subdiagram(self, vertices: Iterable[Hashable]) -> FiniteCoxeterDiagram:
         selected = tuple(self._element_constructor_(vertex).value for vertex in vertices)
         assert len(selected) == len(set(selected)), f"an induced subdiagram requires distinct vertices; vertices={selected!r}"
         entries = [[self._coxeter_matrix[left, right] for right in selected] for left in selected]
         names = tuple(self.variable_names()[self._index_set.index(vertex)] for vertex in selected)
-        roots = None if self._roots is None else tuple(self._roots[self._index_set.index(vertex)] for vertex in selected)
         positions = None if self._preferred_positions is None else {vertex: self._preferred_positions[vertex] for vertex in selected}
-        intersections = None
-        if self._root_intersection_matrix is not None:
-            indices = tuple(self._index_set.index(vertex) for vertex in selected)
-            intersections = tuple(tuple(self._root_intersection_matrix[i][j] for j in indices) for i in indices)
+        if self._root_subobject is not None:
+            roots = tuple(
+                self.roots()[self._index_set.index(vertex)]
+                for vertex in selected
+            )
+            return FiniteCoxeterDiagram.from_roots(
+                roots,
+                names=names,
+                positions=positions,
+                index_set=selected,
+            )
         return FiniteCoxeterDiagram(
             CoxeterMatrix(entries, index_set=selected),
             names=names,
-            source_lattice=self._source_lattice,
-            roots=roots,
             positions=positions,
-            root_intersection_matrix=intersections,
         )
 
     def plot(self, **options: object) -> object:
@@ -313,12 +410,22 @@ class FiniteCoxeterDiagram(CoxeterDiagram, CoxeterDiagramParent):
         return self.graph().plot(**plot_options)
 
     def tikz(self, positions: Mapping[Hashable, Sequence[object]] | None = None, scale: object = 1) -> str:
-        r"""Return TikZ code for the diagram, omitting root-square loops."""
+        r"""Return TikZ code for the rooted Coxeter diagram.
+
+        Root squares determine node fills: square ``-4`` roots use
+        ``#F8F9FE`` and square ``-2`` roots use ``#BFC9CA``.  The
+        root-intersection graph stores those squares as self-loops, but TikZ
+        deliberately omits the loops and draws only edges between distinct
+        vertices: single, double, or triple according to Coxeter exponent
+        ``3``, ``4``, or ``6``.
+        """
         selected_positions = _normalize_positions(self._index_set, positions) if positions is not None else self.preferred_positions()
         assert selected_positions is not None
         intersections = self.root_intersection_matrix()
         lines = [
             rf"\begin{{tikzpicture}}[scale={scale}]",
+            r"\definecolor{coxeterNegativeFour}{HTML}{F8F9FE}",
+            r"\definecolor{coxeterNegativeTwo}{HTML}{BFC9CA}",
             r"\tikzset{coxeter node/.style={circle,draw,minimum size=6mm,inner sep=0pt}}",
             r"\tikzset{coxeter double/.style={double,double distance=1.4pt}}",
             r"\tikzset{coxeter triple/.style={double,double distance=2.6pt,postaction={draw}}}",
@@ -336,7 +443,7 @@ class FiniteCoxeterDiagram(CoxeterDiagram, CoxeterDiagramParent):
         for i, vertex in enumerate(self._index_set):
             x, y = selected_positions[vertex]
             norm = intersections[i, i]
-            fill = "black" if norm == -2 else "white"
+            fill = _tikz_node_color(norm)
             text = "white" if norm == -2 else "black"
             label = self.variable_names()[i]
             lines.append(
@@ -382,6 +489,14 @@ def _tikz_edge_style(left_norm: object, right_norm: object, pairing: object) -> 
     if exponent == 6:
         return "coxeter triple"
     assert False, f"TikZ export only renders finite nontrivial Coxeter edges; exponent={exponent}"
+
+
+def _tikz_node_color(norm: object) -> str:
+    norm = ZZ(norm)
+    assert norm in COXETER_NODE_COLORS, f"no Coxeter node color is defined for square {norm}"
+    if norm == -4:
+        return "coxeterNegativeFour"
+    return "coxeterNegativeTwo"
 
 
 def _tikz_node_name(vertex: Hashable) -> str:

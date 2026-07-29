@@ -25,17 +25,17 @@ from .forms.discriminant_forms import (
 )
 from .morphisms.homsets import LatticeHomset, LatticeMorphism, LatticeSimilarity
 from .morphisms.isometry_groups import SyntheticIsometryGroup, SyntheticIsometrySubgroup
-from .objects.categories import DiscriminantForms, Genera, Lattices
+from .objects.categories import (
+    BilinearDiscriminantForms,
+    DiscriminantForms,
+    Genera,
+    Lattices,
+    QuadraticDiscriminantForms,
+)
 from .objects.constructors import (
     IntegralLatticeGluing,
     Lattice,
     SyntheticLatticeFromGram,
-)
-from .objects.coxeter import (
-    CoxeterDiagramHomset,
-    CoxeterDiagramMorphism,
-    CoxeterDiagrams,
-    FiniteCoxeterDiagram,
 )
 from .objects.elements import SyntheticLatticeElement
 from .objects.functors import LatticeBaseChangeFunctor
@@ -57,9 +57,7 @@ def Hom(
 
 
 __all__ = [
-    "CoxeterDiagrams",
-    "CoxeterDiagramHomset",
-    "CoxeterDiagramMorphism",
+    "BilinearDiscriminantForms",
     "DiscriminantForms",
     "Genera",
     "Hom",
@@ -70,6 +68,7 @@ __all__ = [
     "LatticeMorphism",
     "LatticeSimilarity",
     "Lattices",
+    "QuadraticDiscriminantForms",
     "SyntheticBilinearDiscriminantForm",
     "SyntheticDiscriminantAction",
     "SyntheticDiscriminantGroupElement",
@@ -83,6 +82,5 @@ __all__ = [
     "SyntheticOrthogonalGroup",
     "SyntheticQuadraticDiscriminantForm",
     "SyntheticSourcedDiscriminantForm",
-    "FiniteCoxeterDiagram",
     "TorsionQuadraticForm",
 ]

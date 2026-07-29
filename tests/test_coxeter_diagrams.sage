@@ -4,13 +4,25 @@ import pytest
 
 from sage.all import CoxeterMatrix, TestSuite, matrix, ZZ
 
-from sage_lattice_category_spike import CoxeterDiagrams, FiniteCoxeterDiagram, Lattice, Lattices
+from pathlib import Path
+import dzack_research
+
+_p = Path(dzack_research.__file__).resolve().parent / "preamble"
+load(str(_p / "refine.sage"))
+load(str(_p / "categories/gram_matrices.sage"))
+load(str(_p / "categories/integrallattice/integral_lattices.sage"))
+load(str(_p / "categories/integrallattice/subobjects.sage"))
+load(str(_p / "categories/integrallattice/direct_sum_objects.sage"))
+load(str(_p / "categories/lattice_homomorphisms.sage"))
+load(str(_p / "categories/lattice_isometries.sage"))
+load(str(_p / "categories/coxeter_diagrams.sage"))
+install_integral_lattices()
+activate()
 
 
-def test_root_generated_lattice_constructs_its_diagram_as_a_sage_parent():
-    r"""The $A_4$ lattice constructs its Coxeter diagram as a Sage parent."""
-    lattice = Lattice("A4")
-    diagram = lattice.coxeter_diagram()
+def test_cartan_type_constructs_its_diagram_as_a_sage_parent():
+    r"""The Cartan type $A_4$ constructs its Coxeter diagram as a Sage parent."""
+    diagram = CoxeterDiagrams().from_cartan_type(["A", 4])
 
     assert diagram.category().is_subcategory(CoxeterDiagrams())
     assert diagram.coxeter_matrix() == CoxeterMatrix(["A", 4])
@@ -24,7 +36,7 @@ def test_root_generated_lattice_constructs_its_diagram_as_a_sage_parent():
 
 def test_induced_subdiagram_recovers_the_standard_a3_diagram():
     r"""The first three simple roots of $A_4$ induce the $A_3$ diagram."""
-    diagram = Lattice("A4").coxeter_diagram()
+    diagram = CoxeterDiagrams().from_cartan_type(["A", 4])
 
     subdiagram = diagram.subdiagram([diagram.vertex(i) for i in range(3)])
 
@@ -43,21 +55,18 @@ def test_parent_constructs_a_diagram_from_its_coxeter_matrix():
 
 def test_rooted_diagram_records_roots_intersections_layout_and_tikz():
     r"""A rooted diagram stores the lattice roots behind a non-simply-laced edge."""
-    lattice = Lattices(ZZ).from_gram_matrix(
-        matrix(ZZ, [[-4, 2], [2, -2]]),
-        label="B2",
-        names=("r", "s"),
-    )
+    lattice = IntegralLattice(matrix(ZZ, [[-4, 2], [2, -2]]), names=("r", "s"))
     r, s = lattice.gens()
 
-    diagram = FiniteCoxeterDiagram.from_lattice_roots(
-        lattice,
+    diagram = FiniteCoxeterDiagram.from_roots(
         (r, s),
         names=("r", "s"),
         positions={0: (0, 0), 1: (2, 0)},
     )
 
-    assert diagram.source_lattice() is lattice
+    assert diagram.embedding_codomain() is lattice
+    assert diagram.root_lattice().gram_matrix() == lattice.gram_matrix()
+    assert diagram.root_embedding()(diagram.root_lattice().gens()[0]) == r
     assert diagram.roots() == (r, s)
     assert diagram.root_intersection_matrix() == matrix(ZZ, [[-4, 2], [2, -2]])
     assert diagram.coxeter_matrix() == CoxeterMatrix([[1, 4], [4, 1]], index_set=(0, 1))
@@ -67,17 +76,22 @@ def test_rooted_diagram_records_roots_intersections_layout_and_tikz():
         (1, 1, -2),
     ]
     assert diagram.preferred_positions() == {0: (0, 0), 1: (2, 0)}
+    assert diagram.node_color(0) == "#F8F9FE"
+    assert diagram.node_color(1) == "#BFC9CA"
+    assert diagram.drawing_conventions()["root squares"] == (
+        "stored as self-loops in root_intersection_graph(), omitted from TikZ"
+    )
 
     tikz = diagram.tikz()
     assert "coxeter double" in tikz
+    assert "coxeterNegativeFour" in tikz
+    assert "coxeterNegativeTwo" in tikz
     assert "(v0) -- (v1)" in tikz
     assert "(v0) -- (v0)" not in tikz
     assert "(v1) -- (v1)" not in tikz
-    assert "fill=white" in tikz
-    assert "fill=black" in tikz
 
     subdiagram = diagram.subdiagram([diagram.vertex(1)])
-    assert subdiagram.source_lattice() is lattice
+    assert subdiagram.embedding_codomain() is lattice
     assert subdiagram.roots() == (s,)
     assert subdiagram.root_intersection_matrix() == matrix(ZZ, [[-2]])
     assert subdiagram.preferred_positions() == {1: (2, 0)}

@@ -35,7 +35,6 @@ from ..algebra.arithmetic import as_square_qq_matrix, signature_pair
 from ..lexicon import (
     BaseRing,
     CartanType,
-    CoxeterDiagram,
     DefiniteLattice,
     DiscriminantFormElement,
     DiscriminantSubgroup,
@@ -1260,14 +1259,6 @@ class _RootGeneratedProvenance(_RootGeneratedSelf):
         assert self._cartan_type != "composite", "a direct sum of root lattices has no single Cartan type; use irreducible_root_components()"
         assert self._cartan_type is not None and not isinstance(self._cartan_type, str), f"the root-provenance certificate must be a Cartan datum; found={self._cartan_type!r}"
         return self._cartan_type
-
-    def coxeter_diagram(self) -> CoxeterDiagram:
-        from .coxeter import FiniteCoxeterDiagram
-
-        return FiniteCoxeterDiagram.from_cartan_type(
-            self.cartan_type(),
-            names=self.variable_names(),
-        )
 
     def bourbaki_embedding(self) -> LatticeMorphism:
         r"""The canonical embedding into the unimodular lattice ``I_{0,m}`` (or

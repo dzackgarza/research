@@ -25,6 +25,10 @@ from pathlib import Path
 import os
 import sys
 
+import IPython.core.ultratb
+from sage.libs.gap.libgap import libgap
+from sage.repl.preparse import implicit_multiplication
+
 # This file *is* the startup file (via symlink). Sibling scripts live next to it.
 _PREAMBLE = Path(os.environ["SAGE_STARTUP_FILE"]).resolve().parent
 
@@ -61,6 +65,7 @@ load(str(_PREAMBLE / "categories/integrallattice/subobjects.sage"))
 load(str(_PREAMBLE / "categories/integrallattice/direct_sum_objects.sage"))
 load(str(_PREAMBLE / "categories/lattice_homomorphisms.sage"))
 load(str(_PREAMBLE / "categories/lattice_isometries.sage"))
+load(str(_PREAMBLE / "categories/coxeter_diagrams.sage"))
 load(str(_PREAMBLE / "categories/integrallattice/hyperbolic_lattices.sage"))
 load(str(_PREAMBLE / "categories/torsionform/torsion_modules_with_form.sage"))
 load(str(_PREAMBLE / "categories/torsionform/fgptorsionmodule.sage"))
@@ -72,7 +77,11 @@ install_fgp_torsionmodule()
 install_discriminant_groups()
 activate()
 
-load(str(_PREAMBLE / "ergonomics.sage"))
+implicit_multiplication(True)
+libgap.LoadPackage("PackageManager")
+IPython.core.ultratb.VerboseTB._tb_highlight = "bg:ansired"
+
+load(str(_PREAMBLE / "utilities.py"))
 load(str(_PREAMBLE / "catalogue.sage"))
 load(str(_PREAMBLE / "sterk.sage"))
 

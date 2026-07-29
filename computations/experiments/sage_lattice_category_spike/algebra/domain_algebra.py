@@ -54,7 +54,7 @@ runtime realizations live in the concrete modules.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Hashable, Iterable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 
 if TYPE_CHECKING:
@@ -82,7 +82,7 @@ if TYPE_CHECKING:
         SignaturePair,
         SymbolicExpression,
     )
-    from ..lexicon.geometry import CoxeterMatrix, Graph, Polyhedron
+    from ..lexicon.geometry import Polyhedron
     from ..lexicon.interop import SageCategory, SageInfinity, SageLocalGenusSymbol
     from ..morphisms.homsets import Subobject
 
@@ -121,7 +121,6 @@ __all__ = [
     "FunctorSpace",
     "NaturalIsomorphism",
     "TwistFunctor",
-    "CoxeterDiagram",
     # lattice vocabulary
     "Lattice",
     "NondegenerateLattice",
@@ -227,19 +226,6 @@ class CategoryMorphism:
 
     @abstract_method
     def codomain(self) -> CategoryObject: ...
-
-
-class CoxeterDiagram(CategoryObject):
-    r"""The diagram of a Coxeter system."""
-
-    @abstract_method
-    def coxeter_matrix(self) -> CoxeterMatrix: ...
-
-    @abstract_method
-    def graph(self) -> Graph: ...
-
-    @abstract_method
-    def subdiagram(self, generators: Iterable[Hashable]) -> CoxeterDiagram: ...
 
 
 # ---------------------------------------------------------------------------
@@ -798,10 +784,6 @@ class RootGeneratedLattice(Lattice):
 
     @abstract_method
     def irreducible_root_components(self) -> tuple[RootGeneratedLattice, ...]: ...
-
-    @abstract_method
-    def coxeter_diagram(self) -> CoxeterDiagram: ...
-
 
 # ---------------------------------------------------------------------------
 # Morphisms
@@ -1509,7 +1491,12 @@ class BilinearDiscriminantForm(FiniteAbelianGroup):
     def b(self, left: DiscriminantFormElement, right: DiscriminantFormElement) -> ExactScalar: ...
 
     @abstract_method
-    def gram_matrix_bilinear(self) -> GramMatrix: ...
+    def gram_matrix(self) -> GramMatrix:
+        """The Gram matrix of this bilinear form."""
+
+    @abstract_method
+    def gram_matrix_bilinear(self) -> GramMatrix:
+        """Compatibility spelling for the bilinear form matrix."""
 
     @abstract_method
     def value_module(self) -> ValueModule: ...
@@ -1568,7 +1555,15 @@ class QuadraticDiscriminantForm(BilinearDiscriminantForm):
     def q(self, element: DiscriminantFormElement) -> ExactScalar: ...
 
     @abstract_method
-    def gram_matrix_quadratic(self) -> GramMatrix: ...
+    def gram_matrix(self) -> GramMatrix:
+        """The Gram matrix of this quadratic form."""
+
+    @abstract_method
+    def gram_matrix_quadratic(self) -> GramMatrix:
+        """Compatibility spelling for the quadratic form matrix."""
+
+    @abstract_method
+    def associated_bilinear_form(self) -> BilinearDiscriminantForm: ...
 
     @abstract_method
     def value_module_qf(self) -> ValueModule: ...

@@ -55,6 +55,7 @@ def _ensure_preamble():
     load(str(p / "categories/integrallattice/direct_sum_objects.sage"))
     load(str(p / "categories/lattice_homomorphisms.sage"))
     load(str(p / "categories/lattice_isometries.sage"))
+    load(str(p / "categories/coxeter_diagrams.sage"))
     load(str(p / "categories/integrallattice/hyperbolic_lattices.sage"))
     load(str(p / "categories/torsionform/torsion_modules_with_form.sage"))
     load(str(p / "categories/torsionform/fgptorsionmodule.sage"))
@@ -64,7 +65,7 @@ def _ensure_preamble():
     install_fgp_torsionmodule()
     install_discriminant_groups()
     activate()
-    load(str(p / "ergonomics.sage"))
+    load(str(p / "utilities.py"))
     load(str(p / "catalogue.sage"))
     load(str(p / "sterk.sage"))
     from sage_julia_bridge import JuliaHandle, julia
@@ -864,7 +865,7 @@ def test_diagram_layouts_match_root_counts():
 
 
 # --------------------------------------------------------------------------
-# newly ported surface: sterks1/2/3, vinberg_algorithm, get_isotrop_type, patch methods
+# newly ported surface: sterks1/2/3, vinberg_algorithm, get_isotropic_type, patch methods
 # --------------------------------------------------------------------------
 
 
@@ -1039,32 +1040,32 @@ def test_vinberg_algorithm_negates_roots_when_it_twists():
     assert any(name.startswith("-") for name in root_names), root_names
 
 
-def test_get_isotrop_type_classifies():
+def test_get_isotropic_type_classifies():
     _ensure_preamble()
     import pytest
 
     catalogue, _, _ = _preamble()
     odd = catalogue.Lattices.U.direct_sum(catalogue.Lattices.U)
-    refine(odd, HyperbolicLattices())
-    assert odd.get_isotrop_type(odd.gens()[0]) == "Odd"
+    refine(odd, IntegralLattices())
+    assert odd.get_isotropic_type(odd.gens()[0]) == "Odd"
     with pytest.raises(AssertionError):
-        odd.get_isotrop_type(vector(ZZ, [1, 0, 0, 0]))
+        odd.get_isotropic_type(vector(ZZ, [1, 0, 0, 0]))
 
     ordinary = catalogue.Lattices.U_2
-    refine(ordinary, HyperbolicLattices())
+    refine(ordinary, IntegralLattices())
     ordinary_class = ordinary.project_to_discriminant_group(
         ordinary.dual_lattice_element((1 / 2, 0))
     )
     assert not ordinary_class.is_characteristic()
-    assert ordinary.get_isotrop_type(ordinary.gens()[0]) == "Even ordinary"
+    assert ordinary.get_isotropic_type(ordinary.gens()[0]) == "Even ordinary"
 
     characteristic = catalogue.Lattices.IPQ(1, 1).twist(2)
-    refine(characteristic, HyperbolicLattices())
+    refine(characteristic, IntegralLattices())
     characteristic_class = characteristic.project_to_discriminant_group(
         characteristic.dual_lattice_element((1 / 2, 1 / 2))
     )
     assert characteristic_class.is_characteristic()
-    assert characteristic.get_isotrop_type(
+    assert characteristic.get_isotropic_type(
         characteristic.gens()[0] + characteristic.gens()[1]
     ) == "Even characteristic"
 

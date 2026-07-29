@@ -18,13 +18,12 @@ EXAMPLES::
 from typing import Any
 
 from sage.rings.rational_field import QQ
-from sage_lattice_category_spike import FiniteCoxeterDiagram
-
 NOT_PORTED: tuple[str, ...] = ()
 
 __all__ = [
     "NOT_PORTED",
     "Sterk",
+    "SterkDiagrams",
 ]
 
 _STERK_DIAGRAM_LAYOUTS: dict[str, dict[int, list[float]]] = {
@@ -396,8 +395,7 @@ def _sterk_diagram(name: str, roots: tuple[Any, ...]) -> Any:
         index: tuple(coordinates)
         for index, coordinates in _STERK_DIAGRAM_LAYOUTS[name].items()
     }
-    return FiniteCoxeterDiagram.from_lattice_roots(
-        Lattices.TdP,
+    return FiniteCoxeterDiagram.from_roots(
         rooted,
         names=tuple(f"r_{{{index + 1}}}" for index in range(len(rooted))),
         positions=positions,
@@ -406,8 +404,12 @@ def _sterk_diagram(name: str, roots: tuple[Any, ...]) -> Any:
 
 _STERK_ROOTS = Sterk.sterk_roots()
 
-SterkDiagrams.Sterk_1 = _sterk_diagram("Sterk_1", _STERK_ROOTS["Sterk_1"])
-SterkDiagrams.Sterk_2 = _sterk_diagram("Sterk_2", _STERK_ROOTS["Sterk_2"])
-SterkDiagrams.Sterk_3 = _sterk_diagram("Sterk_3", _STERK_ROOTS["Sterk_3"])
-SterkDiagrams.Sterk_4 = _sterk_diagram("Sterk_4", _STERK_ROOTS["Sterk_4"])
-SterkDiagrams.Sterk_5 = _sterk_diagram("Sterk_5", _STERK_ROOTS["Sterk_5"])
+
+class SterkDiagrams:
+    r"""Sterk's five rooted Coxeter diagrams."""
+
+    Sterk_1 = _sterk_diagram("Sterk_1", _STERK_ROOTS["Sterk_1"])
+    Sterk_2 = _sterk_diagram("Sterk_2", _STERK_ROOTS["Sterk_2"])
+    Sterk_3 = _sterk_diagram("Sterk_3", _STERK_ROOTS["Sterk_3"])
+    Sterk_4 = _sterk_diagram("Sterk_4", _STERK_ROOTS["Sterk_4"])
+    Sterk_5 = _sterk_diagram("Sterk_5", _STERK_ROOTS["Sterk_5"])

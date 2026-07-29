@@ -28,7 +28,6 @@ __all__ = [
     "Involutions",
     "Lattices",
     "NegativeDefTwoElementary",
-    "SterkDiagrams",
     "TwoElementary",
 ]
 
@@ -135,6 +134,11 @@ class Lattices:
         assert degree >= 1, f"degree must be positive, got {degree}"
         return Lattices.Z.twist(-2 * degree) + Lattices.U^2 + Lattices.E8^2
 
+    @staticmethod
+    def rank_one_negative(scale):
+        r"""Return the rank-one lattice \(\langle-2\,\mathrm{scale}\rangle\)."""
+        return Lattices.Z.twist(-2 * scale)
+
     @classmethod
     def install(cls, scope):
         r"""Bind catalogue specimens and named generators into *scope*."""
@@ -170,15 +174,6 @@ class Lattices:
             w1t=w1t, w2t=w2t, w3t=w3t, w4t=w4t,
             w5t=w5t, w6t=w6t, w7t=w7t, w8t=w8t,
         )
-
-
-class SterkDiagrams:
-    r"""Catalogue namespace for Sterk's five rooted Coxeter diagrams.
-
-    ``sterk.sage`` attaches ``Sterk_1`` through ``Sterk_5`` after defining the
-    root expressions.  This mirrors :class:`Lattices`: users access named
-    objects as attributes rather than asking a function to build a lookup.
-    """
 
 
 # Nikulin's 75 even indefinite 2-elementary lattices of signature $(1,r-1)$,
@@ -271,11 +266,6 @@ TwoElementary = {
         (19, 3, 1): Lattices.U_2 + Lattices.E8^2 + Lattices.A1,
         (20, 2, 1): Lattices.U + Lattices.E8^2 + Lattices.A1^2,
 }
-
-
-def _rank_one_negative(scale):
-    r"""Return the rank-one lattice $\langle -2\,\mathrm{scale}\rangle$."""
-    return IntegralLattice(matrix(ZZ, [[-2 * scale]]))
 
 
 # Alexeev--Engel Table 2: even negative-definite 2-elementary lattices
@@ -439,7 +429,7 @@ NegativeDefTwoElementary = {
             (_L := Lattices.D8 + Lattices.D6 + Lattices.A1).glue(_L.project_to_discriminant_group(_L.dual_lattice_element((1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2)))),
             (_L := Lattices.E7 + Lattices.D6 + Lattices.A1^2).glue(_L.project_to_discriminant_group(_L.dual_lattice_element((0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 1 / 2)))),
             # AE label: A_{13} A_1(2)^
-            (_L := Lattices.A13 + Lattices.A1.twist(2) + _rank_one_negative(14)).glue(_L.project_to_discriminant_group(_L.dual_lattice_element((4 / 7, 1 / 7, 5 / 7, 2 / 7, 6 / 7, 3 / 7, 0, 4 / 7, 1 / 7, 5 / 7, 2 / 7, 6 / 7, 3 / 7, 1 / 2, 5 / 14)))),
+            (_L := Lattices.A13 + Lattices.A1.twist(2) + Lattices.rank_one_negative(14)).glue(_L.project_to_discriminant_group(_L.dual_lattice_element((4 / 7, 1 / 7, 5 / 7, 2 / 7, 6 / 7, 3 / 7, 0, 4 / 7, 1 / 7, 5 / 7, 2 / 7, 6 / 7, 3 / 7, 1 / 2, 5 / 14)))),
         ],
         (16, 0, 0): [
             Lattices.E8^2,
@@ -459,7 +449,7 @@ NegativeDefTwoElementary = {
             (_L := Lattices.D10 + Lattices.D6).glue(_L.project_to_discriminant_group(_L.dual_lattice_element((1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2)))),
             (_L := Lattices.D14 + Lattices.A1^2).glue(_L.project_to_discriminant_group(_L.dual_lattice_element((1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 1 / 2, 0, 0, 1 / 2, 0, 1 / 2)))),
             # AE label: A_{15}^
-            (_L := Lattices.A15 + _rank_one_negative(8)).glue(_L.project_to_discriminant_group(_L.dual_lattice_element((7 / 8, 3 / 4, 5 / 8, 1 / 2, 3 / 8, 1 / 4, 1 / 8, 0, 7 / 8, 3 / 4, 5 / 8, 1 / 2, 3 / 8, 1 / 4, 1 / 8, 3 / 8)))),
+            (_L := Lattices.A15 + Lattices.rank_one_negative(8)).glue(_L.project_to_discriminant_group(_L.dual_lattice_element((7 / 8, 3 / 4, 5 / 8, 1 / 2, 3 / 8, 1 / 4, 1 / 8, 0, 7 / 8, 3 / 4, 5 / 8, 1 / 2, 3 / 8, 1 / 4, 1 / 8, 3 / 8)))),
         ],
         (17, 1, 1): [
             Lattices.E8^2 + Lattices.A1,
