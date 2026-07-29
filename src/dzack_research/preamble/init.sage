@@ -76,7 +76,6 @@ load(str(_PREAMBLE / "categories/torsionform/discriminant_quadratic_modules.sage
 install_integral_lattices()
 install_finitely_presented_groups()
 install_discriminant_groups()
-activate()
 
 implicit_multiplication(True)
 libgap.LoadPackage("PackageManager")
@@ -91,13 +90,6 @@ Lattices.install(globals())
 from sage_julia_bridge import JuliaHandle, julia
 
 julia.eval("using Oscar")
-
-from sage_lattice_category_spike import (
-    CoxeterDiagramHomset,
-    CoxeterDiagramMorphism,
-    CoxeterDiagrams,
-    FiniteCoxeterDiagram,
-)
 
 ## Implicit typesetting #######################################################
 
