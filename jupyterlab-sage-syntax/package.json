@@ -1,0 +1,37 @@
+{
+  "name": "@dzack/jupyterlab-sage-syntax",
+  "version": "0.1.0",
+  "description": "Register Sage source files for CodeMirror syntax highlighting in JupyterLab.",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "sage",
+    "codemirror"
+  ],
+  "files": [
+    "lib/**/*",
+    "schema/**/*",
+    "style/**/*",
+    "static/**/*",
+    "package.json"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf lib tsconfig.tsbuildinfo"
+  },
+  "dependencies": {
+    "@codemirror/language": "^6.10.0",
+    "@jupyterlab/application": "^4.6.0",
+    "@jupyterlab/codemirror": "^4.6.0"
+  },
+  "devDependencies": {
+    "rimraf": "~5.0.5",
+    "typescript": "~5.9.3"
+  },
+  "jupyterlab": {
+    "extension": true
+  }
+}
