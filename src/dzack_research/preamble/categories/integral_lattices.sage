@@ -390,6 +390,13 @@ class IntegralLattices(Category):
             )
             return projection(element)
 
+        def divided_discriminant_class(self: Any, element: Any) -> Any:
+            r"""Return the discriminant element represented by $e/\operatorname{div}(e)$."""
+            assert element in self, "divided_discriminant_class expects an element of this lattice"
+            divisibility = self.div(element)
+            dual_element = self.dual_embedding()(element) / QQ(divisibility)
+            return self.discriminant_projection()(dual_element)
+
         def glue(self: Any, *elements: Any) -> Any:
             r"""Return the even overlattice glued along discriminant elements.
 
@@ -500,7 +507,7 @@ class IntegralLattices(Category):
                 d = disc.annihilator().gen()
                 primary_multiplier = d.prime_to_m_part(s)
                 disc = disc.submodule([primary_multiplier * gen for gen in disc.gens()])
-            disc._source_lattice = self
+            disc.source_lattice = lambda: self
             disc._dual_module = disc.V()
             disc._dual_generators = tuple(disc._dual_module.gens())
             rank = self.rank()
@@ -515,6 +522,7 @@ class IntegralLattices(Category):
             )
             disc._projection_from_dual = disc.quotient_map()
             refine(disc, DiscriminantQuadraticModules())
+            subdivide_form_gram_matrix(disc)
             if ZZ(s) == 0:
                 self._preamble_discriminant_group = disc
             return disc
@@ -895,6 +903,10 @@ class IntegralLattices(Category):
         def div(self: Any) -> Any:
             r"""Return the divisibility of this vector."""
             return self.parent().div(self)
+
+        def is_primitive(self: Any) -> bool:
+            r"""Return whether this vector is primitive in its lattice."""
+            return abs(gcd(list(self.parent().coordinate_vector(self)))) == 1
 
         def __mul__(self: Any, other: Any) -> Any:
             r"""``v * w`` -> bilinear pairing; ``v * n`` -> scalar multiplication."""
