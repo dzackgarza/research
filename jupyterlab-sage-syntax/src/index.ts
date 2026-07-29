@@ -3,6 +3,7 @@ import type {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
+import { Dialog, showDialog } from '@jupyterlab/apputils';
 import { IEditorLanguageRegistry } from '@jupyterlab/codemirror';
 
 /**
@@ -12,7 +13,7 @@ import { IEditorLanguageRegistry } from '@jupyterlab/codemirror';
  * filename extension. Upstream JupyterLab registers Python for py/pyw, but not
  * Sage's sage extension, so Sage source files fall through to text/plain.
  */
-const plugin: JupyterFrontEndPlugin<void> = {
+const syntaxPlugin: JupyterFrontEndPlugin<void> = {
   id: '@dzack/jupyterlab-sage-syntax:plugin',
   description: 'Use Python-family CodeMirror highlighting for Sage source files.',
   autoStart: true,
@@ -38,4 +39,114 @@ const plugin: JupyterFrontEndPlugin<void> = {
   }
 };
 
-export default plugin;
+/**
+ * Reload clean file-editor documents when their on-disk model changes.
+ *
+ * If the open editor is dirty, show the standard JupyterLab confirmation dialog
+ * before replacing the editor contents with the version on disk.
+ */
+const autoReloadPlugin: JupyterFrontEndPlugin<void> = {
+  id: '@dzack/jupyterlab-sage-syntax:auto-reload',
+  description: 'Reload file-editor documents when their on-disk file changes.',
+  autoStart: true,
+  activate: (app: JupyterFrontEnd) => {
+    app.docRegistry.addWidgetExtension('Editor', {
+      createNew: (_widget, context) => {
+        const intervalMs = 1000;
+        let isDisposed = false;
+        let isChecking = false;
+        let promptOpen = false;
+        let lastKnownModified = context.contentsModel?.last_modified ?? null;
+        let lastPromptedModified: string | null = null;
+
+        context.fileChanged.connect((_sender, model) => {
+          lastKnownModified = model.last_modified;
+          lastPromptedModified = null;
+        });
+
+        const checkForDiskChange = async (): Promise<void> => {
+          if (isDisposed || isChecking || !context.isReady) {
+            return;
+          }
+
+          isChecking = true;
+          try {
+            await context.ready;
+            if (isDisposed) {
+              return;
+            }
+
+            const latest = await app.serviceManager.contents.get(context.path, {
+              content: false
+            });
+            const latestModified = latest.last_modified;
+            if (!latestModified || latestModified === lastKnownModified) {
+              return;
+            }
+
+            if (!context.model.dirty) {
+              await context.revert();
+              lastKnownModified =
+                context.contentsModel?.last_modified ?? latestModified;
+              lastPromptedModified = null;
+              return;
+            }
+
+            if (promptOpen || lastPromptedModified === latestModified) {
+              return;
+            }
+
+            promptOpen = true;
+            lastPromptedModified = latestModified;
+            const result = await showDialog({
+              title: 'File Changed on Disk',
+              body: `"${context.path}" changed on disk. Reload from disk and discard unsaved editor changes?`,
+              buttons: [
+                Dialog.cancelButton({ label: 'Keep Editing' }),
+                Dialog.warnButton({
+                  label: 'Reload from Disk',
+                  actions: ['reload']
+                })
+              ]
+            });
+            promptOpen = false;
+
+            if (isDisposed) {
+              return;
+            }
+            if (result.button.actions.includes('reload')) {
+              await context.revert();
+              lastKnownModified =
+                context.contentsModel?.last_modified ?? latestModified;
+              lastPromptedModified = null;
+            }
+          } catch (error) {
+            promptOpen = false;
+            console.warn('Unable to check file for on-disk changes.', error);
+          } finally {
+            isChecking = false;
+          }
+        };
+
+        const timer = window.setInterval(() => {
+          void checkForDiskChange();
+        }, intervalMs);
+
+        return {
+          get isDisposed() {
+            return isDisposed;
+          },
+          dispose: () => {
+            if (isDisposed) {
+              return;
+            }
+            isDisposed = true;
+            window.clearInterval(timer);
+          }
+        };
+      }
+    });
+  }
+};
+
+export default [syntaxPlugin, autoReloadPlugin];
