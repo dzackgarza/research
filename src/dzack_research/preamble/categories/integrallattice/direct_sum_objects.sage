@@ -44,18 +44,17 @@ def _expand_direct_sum_hom_dict(domain: Any, mapping: dict) -> list:
                 f"{len(source_images)} != {len(target_images)}"
             )
             for source_image, target_image in zip(source_images, target_images):
-            images[unwrap(source_image)] = unwrap(target_image)
+                images[source_image] = target_image
         else:
             if isinstance(target, Subobject):
                 assert target.embedding().domain().rank() == 1, (
                     "a generator can map to a subobject only when its rank is 1"
                 )
                 target = target.embedded_gens()[0]
-            images[unwrap(source)] = unwrap(target)
+            images[source] = target
 
     ordered = []
     for generator in domain.gens():
-        key = unwrap(generator)
-        assert key in images, f"missing image for generator {generator}"
-        ordered.append(images[key])
+        assert generator in images, f"missing image for generator {generator}"
+        ordered.append(images[generator])
     return ordered

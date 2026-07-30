@@ -3,6 +3,10 @@ r"""Finitely presented groups."""
 from typing import Any
 
 from sage.categories.category import Category
+from sage.groups.finitely_presented import (
+    FinitelyPresentedGroup,
+    FinitelyPresentedGroupElement,
+)
 
 
 _FP_LAYOUT_INLINE_WIDTH = 150
@@ -14,6 +18,30 @@ _FP_LAYOUT_EXPANDED_GENERATOR_WIDTH = 90
 _FP_LAYOUT_EXPANDED_RELATION_SOURCE_BUDGET = 180
 _FP_LAYOUT_EXPANDED_COLUMN_GAP_BUDGET = 12
 _FP_LAYOUT_EXPANDED_MAX_COLUMNS = 4
+
+
+class OwnedFinitelyPresentedGroupElement(FinitelyPresentedGroupElement):
+    r"""An element of a finitely presented group owned by the preamble."""
+
+
+class OwnedFinitelyPresentedGroup(FinitelyPresentedGroup):
+    r"""A finitely presented group in :class:`FinitelyPresentedGroups`.
+
+    The owned parent type; the behaviour is the category's.
+    """
+
+    Element = OwnedFinitelyPresentedGroupElement
+
+
+def _own_fp_group_types(group: Any) -> None:
+    r"""Claim the owned parent and element types before refine reads them."""
+    from sage.cpython.type import can_assign_class
+
+    if isinstance(group, OwnedFinitelyPresentedGroup):
+        return
+    assert can_assign_class(group), f"cannot own the type of {type(group).__name__}"
+    group.__class__ = OwnedFinitelyPresentedGroup
+    group.Element = OwnedFinitelyPresentedGroupElement
 
 
 class FinitelyPresentedGroups(Category):
@@ -191,7 +219,9 @@ def install_finitely_presented_groups() -> None:
     if _FINITELY_PRESENTED_GROUPS_INSTALLED:
         return
 
-    from sage.groups.finitely_presented import FinitelyPresentedGroup
-
-    hook_post_init(FinitelyPresentedGroup, FinitelyPresentedGroups())
+    hook_post_init(
+        FinitelyPresentedGroup,
+        FinitelyPresentedGroups(),
+        before=_own_fp_group_types,
+    )
     _FINITELY_PRESENTED_GROUPS_INSTALLED = True

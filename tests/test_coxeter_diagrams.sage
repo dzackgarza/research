@@ -8,16 +8,7 @@ from pathlib import Path
 import dzack_research
 
 _p = Path(dzack_research.__file__).resolve().parent / "preamble"
-load(str(_p / "refine.sage"))
-load(str(_p / "categories/gram_matrices.sage"))
-load(str(_p / "categories/integrallattice/integral_lattices.sage"))
-load(str(_p / "categories/integrallattice/subobjects.sage"))
-load(str(_p / "categories/integrallattice/direct_sum_objects.sage"))
-load(str(_p / "categories/lattice_homomorphisms.sage"))
-load(str(_p / "categories/lattice_isometries.sage"))
-load(str(_p / "categories/coxeter_diagrams.sage"))
-install_integral_lattices()
-activate()
+load(str(_p / "install.sage"))
 
 
 def test_cartan_type_constructs_its_diagram_as_a_sage_parent():

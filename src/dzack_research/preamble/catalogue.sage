@@ -117,10 +117,17 @@ class Lattices:
     L_20_2_0 = TdP
 
     @staticmethod
-    def root_lattice(kind, rank):
-        """Return the negative-definite root lattice of the given type."""
+    def root_lattice(kind, rank, names=None):
+        """Return the negative-definite root lattice of the given type.
+
+        With ``names`` (the ``L.<gens> = ...`` sugar) a fresh lattice is
+        constructed and named — naming must never rename the shared
+        catalogue specimen.
+        """
         assert kind in {"A", "D", "E"}, f"unknown root system family {kind!r}"
-        return getattr(Lattices, f"{kind}{rank}")
+        if names is None:
+            return getattr(Lattices, f"{kind}{rank}")
+        return _apply_names(IntegralLattice(f"{kind}{rank}").twist(-1), names)
 
     @staticmethod
     def IPQ(p, q):
@@ -138,6 +145,15 @@ class Lattices:
     def rank_one_negative(scale):
         r"""Return the rank-one lattice \(\langle-2\,\mathrm{scale}\rangle\)."""
         return Lattices.Z.twist(-2 * scale)
+
+    @classmethod
+    def namespace(cls) -> dict:
+        r"""Return the named lattice specimens as a ``{name: lattice}`` dict."""
+        return {
+            name: obj
+            for name, obj in vars(cls).items()
+            if isinstance(obj, FreeQuadraticModule_integer_symmetric)
+        }
 
     @classmethod
     def install(cls, scope):
@@ -174,6 +190,32 @@ class Lattices:
             w1t=w1t, w2t=w2t, w3t=w3t, w4t=w4t,
             w5t=w5t, w6t=w6t, w7t=w7t, w8t=w8t,
         )
+
+
+# Names for the blocks a decomposition can actually produce.  Matching is Gram
+# equality, so only indecomposable lattices belong here: everything else splits
+# on construction and is named through its own summands.
+#
+# $I_{p,q}$ and $II_{p,q}$ take priority, but they contribute only these two
+# entries.  Both families are unique only when indefinite, and an indefinite
+# unimodular lattice decomposes ($I_{p,q}=\langle1\rangle^p\oplus\langle-1\rangle^q$,
+# and $II_{p,q}\cong U^a\oplus E_8^b$ by Milnor), so it never reaches a block.
+# What survives is rank one, and registering it here is what makes the twist
+# search print $\langle-2\rangle$ as $I_{0,1}(2)$.
+register_indecomposable("I_{1,0}", Lattices.IPQ(1, 0))
+register_indecomposable("I_{0,1}", Lattices.IPQ(0, 1))
+
+# $A_1$ and $D_2$ are deliberately not searched: $A_1$ is $I_{0,1}(2)$, and
+# $D_2$ is $\langle-2\rangle^2$, which decomposes before any lookup runs.
+# $U$ and $E_8$ are $II_{1,1}$ and $II_{0,8}$, but keep their own names, which
+# say more than the signature does.
+for _rank in range(2, 22):
+    register_indecomposable(f"A_{{{_rank}}}", Lattices.root_lattice("A", _rank))
+for _rank in range(3, 23):
+    register_indecomposable(f"D_{{{_rank}}}", Lattices.root_lattice("D", _rank))
+for _rank in (6, 7, 8):
+    register_indecomposable(f"E_{{{_rank}}}", Lattices.root_lattice("E", _rank))
+register_indecomposable("U", Lattices.U)
 
 
 # Nikulin's 75 even indefinite 2-elementary lattices of signature $(1,r-1)$,

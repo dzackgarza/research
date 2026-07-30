@@ -12,10 +12,10 @@ Status: every region is `PORTED`. The per-region table below records where each 
 
 | Lines | Content | Status |
 | --- | --- | --- |
-| 1–17 | stdlib/IPython/numpy/pandas imports; `sys.path.append` to `~/gitclones/vinal` | PORTED → `vendor.py`, `ergonomics.py` |
-| 19 | `libgap.LoadPackage("PackageManager")` | PORTED → `ergonomics.load_gap_package_manager`, opt-in `install()` stanza |
+| 1–17 | stdlib/IPython/numpy/pandas imports; `sys.path.append` to `~/gitclones/vinal` | PORTED → `vendor.py`, `init.sage` |
+| 19 | `libgap.LoadPackage("PackageManager")` | PORTED → `init.sage` startup |
 | 22–23 | `do_tests = False` toggle | PORTED — the block it gated now runs unconditionally in `tests/test_preamble.sage` |
-| 26–33 | `lmap`, `lzip`, traceback colour | PORTED → `ergonomics.py` |
+| 26–33 | `lmap`, `lzip`, traceback colour | PORTED → `init.sage` startup |
 | 39–48 | `vinberg_algorithm` + `setattr` | PORTED → `patches/vinberg.py` (opt-in) |
 
 ## 53–110 — lattice zoo
@@ -31,7 +31,7 @@ Status: every region is `PORTED`. The per-region table below records where each 
 | Lines | Content | Status |
 | --- | --- | --- |
 | 103–109 | `is_coeven`/`is_coodd` reading `L.delta` | DROPPED — circular with `delta_comp` and shadowed by line 985; recorded in `predicates.py` docstring |
-| 111–121 | `get_isotrop_type` | PORTED → `patches.vinberg.get_isotrop_type`; the source composition was ill-typed (quotient passed to `orthogonal_complement`) |
+| 111–121 | `get_isotropic_type` | PORTED → integral-lattice category; the source composition was ill-typed (quotient passed to `orthogonal_complement`) |
 | 124–126 | `two_elem_building_blocks` using `IPQ` | PORTED → `catalogue.IPQ` plus `TWO_ELEMENTARY_BUILDING_BLOCKS` |
 | 130–175 | `two_elementary_lattices` | PORTED → `catalogue.two_elementary_lattices()`, 12 entries with rank assertions; `(8,6,0)` resolved by computation as an index-2 overlattice of `A1^8` (@AE22) → `TWO_ELEMENTARY_8_6_0_INVARIANTS` |
 
@@ -129,14 +129,14 @@ Lines 756–855 are read; the table below is the complete discrepancy record.
 
 `LK3_2`, `LK3_4`, `LK3_2d(d)`; `I^2d(LK3)/O(LK3) = {h}, h^⊥ = LK3_2d`; `J^⊥/J = A17, D10+E7, E8²+A1, D16+A1`; `num_facets = 19 (mod W)`, `num_rays = 82 (mod W)` for `IIPQ(1,17)`; arXiv 2002.07127 p.12 and 1903.09742 p.22. PORTED → `catalogue.LK3_2d`, `fixtures.RECORDED_RESULTS`, `fixtures.CITATIONS`. Lines 845–861: the explicit 10-dimensional root matrix → `fixtures.RECORDED_ROOT_MATRIX_ROWS`, preserved as data.
 
-## 882–989 — diagrams, run_vin, Julia bridge, predicates
+## 882–989 — diagrams, Vinberg algorithm, Julia bridge, predicates
 
 | Lines | Content | Status |
 | --- | --- | --- |
 | 882–908 | `Coxeter_Diagram` | PORTED → `coxeter.coxeter_diagram` |
 | 910–927 | `plot_coxeter_diagram` | PORTED → `coxeter.plot_coxeter_diagram` |
 | 930–940 | commented `CoxeterMatrix`/`WeylGroup`/`RootSystem`/`DynkinDiagram` recipes | PORTED → `coxeter.CROSS_CHECK_RECIPES` |
-| 943–960 | `run_vin(L)` with twist handling and `root_names` | PORTED → `patches.vinberg.run_vin`; source typo `do_twist`/`doTwist` disabled the negation branch — fixed |
+| 943–960 | Vinberg root enumeration with twist handling | PORTED → `categories.HyperbolicLattices.ParentMethods.vinberg_algorithm`; source typo `do_twist`/`doTwist` disabled the negation branch — fixed |
 | 963–967 | bond matrices | PORTED → `julia.BONDS` |
 | 973–974 | `mat_to_julia_str` | PORTED → `julia.matrix_to_julia_literal` |
 | 985–989 | `is_coeven`, `delta_comp` (live definitions) | PORTED → `predicates.py`, rewritten from the definition after both source versions proved dead |
@@ -172,10 +172,10 @@ Lines 756–855 are read; the table below is the complete discrepancy record.
 | Item | Where | Note |
 | --- | --- | --- |
 | `sterks1/2/3` (§585–628) | `sterk.sterks_in_ten()` | the two blocks use **different dual scalings**: `2*G⁻¹` then `G⁻¹` |
-| `run_vin` (§943–960) | `patches.vinberg.run_vin` | source typo `do_twist`/`doTwist` disabled the negation branch — fixed |
-| `get_isotrop_type` (§111–121) | `patches.vinberg.get_isotrop_type` | source composition was ill-typed (quotient passed to `orthogonal_complement`) |
+| Vinberg root enumeration (§943–960) | `categories.HyperbolicLattices.ParentMethods.vinberg_algorithm` | source typo `do_twist`/`doTwist` disabled the negation branch — fixed |
+| `get_isotropic_type` (§111–121) | integral-lattice category | source composition was ill-typed (quotient passed to `orthogonal_complement`) |
 | `to_lin_comb_generators`, `sublattices`, `twist(names=)` | `patches.lattice_methods` | fork surface, now wired |
-| `libgap.LoadPackage` (§19) | `ergonomics.load_gap_package_manager` | opt-in `install()` stanza |
+| `libgap.LoadPackage` (§19) | `init.sage` startup | loaded with the Sage session |
 | Explicit root matrix (§845–861) | `fixtures.RECORDED_ROOT_MATRIX_ROWS` | preserved as data, uninterpreted |
 | `L.<...>` sugar, `@`, `**` | `patches.lattice_methods` | the fork's preparser surface, incl. the `Ellipsis` hijack |
 

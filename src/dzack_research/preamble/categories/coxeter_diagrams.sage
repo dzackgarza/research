@@ -11,8 +11,6 @@ EXAMPLES::
     [2 3 1]
 """
 
-from __future__ import annotations
-
 from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
@@ -21,11 +19,13 @@ from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
 from sage.matrix.constructor import matrix
+from sage.rings.infinity import infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.graphs.graph import Graph
+from sage.modules.free_quadratic_module import FreeQuadraticModule
 from sage.structure.category_object import normalize_names
 from sage.structure.element_wrapper import ElementWrapper
 from sage.structure.parent import Parent
@@ -43,6 +43,8 @@ COXETER_DRAWING_CONVENTIONS = (
     ("single edge", "Coxeter exponent 3"),
     ("double edge", "Coxeter exponent 4"),
     ("triple edge", "Coxeter exponent 6"),
+    ("thick edge", "Coxeter bond ∞, parallel mirrors: b(v,w)² = v²w²"),
+    ("dashed edge", "Coxeter bond ∞, divergent mirrors: b(v,w)² > v²w²"),
 )
 
 
@@ -63,26 +65,59 @@ class CoxeterDiagrams(Category):
 
     @staticmethod
     def minimal_edge_lattices() -> dict[str, Any]:
-        r"""Return minimal rank-two lattices realizing Coxeter edge specimens."""
+        r"""Return minimal rank-two realizations of the Coxeter edges that occur.
+
+        The diagrams here come from fundamental domains of (usually hyperbolic)
+        reflection groups, so every vertex is the mirror of a root and the
+        roots have norm $-2$ or $-4$.  That pins the edge: with
+        $t=b(r_1,r_2)^2/q(r_1)q(r_2)=\cos^2(\pi/m)$, and pairings against a
+        norm $-4$ root even because its divisibility is, the whole list is
+
+        =============  =========  =====  =========================
+        $q_1,q_2$      $b$        $t$    edge
+        =============  =========  =====  =========================
+        $-2,-2$        $0$        $0$    none, $m=2$
+        $-2,-2$        $1$        $1/4$  single, $m=3$
+        $-2,-4$        $2$        $1/2$  double, $m=4$
+        $-2,-2$        $2$        $1$    parallel, $m=\infty$
+        $-2,-2$        $\geq 3$   $>1$   ultraparallel
+        =============  =========  =====  =========================
+
+        **There is no triple edge.**  $m=6$ needs $t=3/4$, so $4b^2=3q_1q_2$;
+        with $q_1q_2\in\{4,8,16\}$ that asks for $b^2\in\{3,6,12\}$ and none is
+        a square.  In general $m=6$ forces the two norms to differ by a factor
+        of three up to squares -- smallest even case $\langle-2,-6\rangle$ with
+        $b=3$, which is $G_2$ -- and a norm $-6$ root needs divisibility $3$ or
+        $6$, which $-2$ and $-4$ roots do not produce.  So the crystallographic
+        restriction tightens from $m\in\{2,3,4,6\}$ to $m\in\{2,3,4\}$ here;
+        $m=5$ is out separately, $\cos^2(\pi/5)$ being irrational.
+
+        ``parallel`` is degenerate and has to be: $t=1$ is the parabolic
+        boundary, where the mirrors meet at infinity.  It is therefore a
+        ``FreeQuadraticModule`` rather than a lattice.  ``ultraparallel`` is
+        indefinite but nondegenerate -- the mirrors diverge -- and is a lattice
+        like the rest.
+        """
+        from sage.modules.free_quadratic_module import FreeQuadraticModule
+
         return {
+            "orthogonal": IntegralLattice(
+                matrix(ZZ, 2, [-2, 0, 0, -2]),
+                names=("r1", "r2"),
+            ),
             "single": IntegralLattice(
-                matrix(ZZ, 2, [2, -1, -1, 2]),
+                matrix(ZZ, 2, [-2, 1, 1, -2]),
                 names=("r1", "r2"),
             ),
             "double": IntegralLattice(
-                matrix(ZZ, 2, [2, -1, -1, 1]),
+                matrix(ZZ, 2, [-2, 2, 2, -4]),
                 names=("r1", "r2"),
             ),
-            "triple": IntegralLattice(
-                matrix(ZZ, 2, [6, -3, -3, 2]),
-                names=("r1", "r2"),
+            "parallel": FreeQuadraticModule(
+                ZZ, 2, inner_product_matrix=matrix(ZZ, 2, [-2, 2, 2, -2])
             ),
-            "heavy_oriented": IntegralLattice(
-                matrix(ZZ, 2, [4, -2, -2, 1]),
-                names=("r1", "r2"),
-            ),
-            "heavy_unoriented": IntegralLattice(
-                matrix(ZZ, 2, [1, -1, -1, 1]),
+            "ultraparallel": IntegralLattice(
+                matrix(ZZ, 2, [-2, 3, 3, -2]),
                 names=("r1", "r2"),
             ),
         }
@@ -204,16 +239,19 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         if names is None:
             names = tuple(f"s_{i}" for i in index_set)
         normalized_names = normalize_names(rank, names)
-        intersections = tuple(
-            tuple(ZZ(realization.b(left, right)) for right in roots)
-            for left in roots
-        )
-        entries = [[ZZ.one() if i == j else _coxeter_exponent(intersections[i][i], intersections[j][j], intersections[i][j]) for j in range(rank)] for i in range(rank)]
-        root_lattice = IntegralLattice(
-            matrix(ZZ, intersections),
-            names=normalized_names,
-        )
-        root_subobject = Subobject(root_lattice.Hom(realization)(roots))
+        gram = realization.gram_of(roots)
+        entries = [[ZZ.one() if i == j else _coxeter_exponent(gram[i, i], gram[j, j], gram[i, j]) for j in range(rank)] for i in range(rank)]
+        if gram.det() != 0:
+            root_module = IntegralLattice(gram, names=normalized_names)
+            homset = root_module.Hom(realization)
+        else:
+            # Coxeter bonds m=∞ (parallel/divergent mirrors) make the root
+            # span degenerate: it is a free quadratic module, not an integral
+            # lattice.  Its homset still gets the owned form-checked,
+            # coercion-free construction.
+            root_module = FreeQuadraticModule(ZZ, rank, inner_product_matrix=gram)
+            homset = refine(root_module.Hom(realization), LatticeHomomorphisms())
+        root_subobject = Subobject(homset(roots))
         return cls(
             CoxeterMatrix(entries, index_set=index_set),
             names=normalized_names,
@@ -435,6 +473,8 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
             r"\tikzset{coxeter node/.style={circle,draw,minimum size=6mm,inner sep=0pt}}",
             r"\tikzset{coxeter double/.style={double,double distance=1.4pt}}",
             r"\tikzset{coxeter triple/.style={double,double distance=2.6pt,postaction={draw}}}",
+            r"\tikzset{coxeter parallel/.style={line width=1.6pt}}",
+            r"\tikzset{coxeter divergent/.style={dashed}}",
         ]
         for i, left in enumerate(self._index_set):
             for j in range(i + 1, len(self._index_set)):
@@ -477,10 +517,19 @@ def _normalize_positions(
     return normalized
 
 
-def _coxeter_exponent(left_norm: object, right_norm: object, pairing: object) -> Integer:
+def _coxeter_exponent(left_norm: object, right_norm: object, pairing: object) -> object:
+    r"""Coxeter bond $m$ of a rank-two root pair.
+
+    ``product`` is $(2\cos\theta)^2 = 4\,b(v,w)^2/(v^2 w^2)$: values $1,2,3$
+    give $m=3,4,6$; $\geq 4$ means the mirrors do not meet in the interior —
+    parallel ($=4$) or divergent ($>4$) — so the bond is $\infty$ (Vinberg,
+    *Hyperbolic reflection groups*).
+    """
     if pairing == 0:
         return ZZ(2)
     product = QQ(4) * QQ(pairing) ** 2 / (QQ(left_norm) * QQ(right_norm))
+    if product >= 4:
+        return infinity
     exponent_by_product = {QQ(1): ZZ(3), QQ(2): ZZ(4), QQ(3): ZZ(6)}
     assert product in exponent_by_product, f"unsupported rank-two root angle; left_norm={left_norm}, right_norm={right_norm}, pairing={pairing}, product={product}"
     return exponent_by_product[product]
@@ -494,7 +543,12 @@ def _tikz_edge_style(left_norm: object, right_norm: object, pairing: object) -> 
         return "coxeter double"
     if exponent == 6:
         return "coxeter triple"
-    assert False, f"TikZ export only renders finite nontrivial Coxeter edges; exponent={exponent}"
+    if exponent == infinity:
+        # The Coxeter matrix collapses both to ∞; the drawing keeps Vinberg's
+        # distinction: thick = parallel mirrors, dashed = divergent mirrors.
+        product = QQ(4) * QQ(pairing) ** 2 / (QQ(left_norm) * QQ(right_norm))
+        return "coxeter parallel" if product == 4 else "coxeter divergent"
+    assert False, f"TikZ export does not render Coxeter bond m={exponent}"
 
 
 def _tikz_node_color(norm: object) -> str:

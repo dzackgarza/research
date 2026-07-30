@@ -12,6 +12,7 @@ morphisms delegate to their domain.
 from typing import Any
 
 from sage.categories.category import Category
+from sage.cpython.type import can_assign_class
 from sage.categories.modules import Modules
 from sage.matrix.constructor import matrix
 from sage.matrix.special import identity_matrix
@@ -41,33 +42,30 @@ class LatticeIsometries(Category):
             domain = self.domain()
             codomain = self.codomain()
 
-            with without_element_wrap():
-                if isinstance(x, dict):
-                    ordered = _hom_images_from_dict(domain, x)
-                    morphism = super().__call__(ordered, *args, **kwargs)  # type: ignore[misc]
-                elif isinstance(x, (list, tuple)) and x and not hasattr(x, "nrows"):
-                    morphism = super().__call__(  # type: ignore[misc]
-                        [unwrap(img) for img in x], *args, **kwargs
-                    )
-                elif hasattr(x, "nrows") and hasattr(x, "ncols"):
-                    # Matrix input (Sage matrices also have a misleading to_matrix).
-                    morphism = super().__call__(matrix(ZZ, x), *args, **kwargs)  # type: ignore[misc]
-                elif hasattr(x, "domain") and hasattr(x, "to_matrix") and callable(
-                    x.to_matrix
-                ):
-                    morphism = super().__call__(  # type: ignore[misc]
-                        matrix(ZZ, x.to_matrix()), *args, **kwargs
-                    )
-                elif (
-                    hasattr(x, "domain")
-                    and hasattr(x, "matrix")
-                    and callable(x.matrix)
-                ):
-                    morphism = super().__call__(  # type: ignore[misc]
-                        matrix(ZZ, x.matrix()), *args, **kwargs
-                    )
-                else:
-                    morphism = super().__call__(matrix(ZZ, x), *args, **kwargs)  # type: ignore[misc]
+            if isinstance(x, dict):
+                ordered = _hom_images_from_dict(domain, x)
+                morphism = super().__call__(ordered, *args, **kwargs)  # type: ignore[misc]
+            elif isinstance(x, (list, tuple)) and x and not hasattr(x, "nrows"):
+                morphism = super().__call__(list(x), *args, **kwargs)  # type: ignore[misc]
+            elif hasattr(x, "nrows") and hasattr(x, "ncols"):
+                # Matrix input (Sage matrices also have a misleading to_matrix).
+                morphism = super().__call__(matrix(ZZ, x), *args, **kwargs)  # type: ignore[misc]
+            elif hasattr(x, "domain") and hasattr(x, "to_matrix") and callable(
+                x.to_matrix
+            ):
+                morphism = super().__call__(  # type: ignore[misc]
+                    matrix(ZZ, x.to_matrix()), *args, **kwargs
+                )
+            elif (
+                hasattr(x, "domain")
+                and hasattr(x, "matrix")
+                and callable(x.matrix)
+            ):
+                morphism = super().__call__(  # type: ignore[misc]
+                    matrix(ZZ, x.matrix()), *args, **kwargs
+                )
+            else:
+                morphism = super().__call__(matrix(ZZ, x), *args, **kwargs)  # type: ignore[misc]
 
             mat = matrix(ZZ, morphism.matrix())
             assert mat.nrows() == domain.rank() and mat.ncols() == domain.rank(), (
@@ -86,14 +84,20 @@ class LatticeIsometries(Category):
                 assert mat.det() in (ZZ(1), ZZ(-1)), (
                     f"automorphism matrix must have determinant ±1, got {mat.det()}"
                 )
-            return morphism
+            # An isometry is a lattice morphism before it is anything else, so
+            # it gets that type; what distinguishes it is the MorphismMethods
+            # refine adds, not a second class.
+            assert can_assign_class(morphism), (
+                f"cannot own the type of {type(morphism).__name__}"
+            )
+            morphism.__class__ = LatticeMorphism
+            return refine(morphism, LatticeIsometries())
 
     class MorphismMethods:
         r"""Methods on isometries refined into this category.
 
-        Sage's ``Map.is_identity`` / composition on ``FreeModuleMorphism``
-        segfault once the domain lattice has been override-refined; own those
-        operations here via matrices.
+        ``to_matrix`` / ``is_identity`` / ``is_involution`` / composition are
+        the isometry vocabulary; application is Sage's native morphism call.
         """
 
         def to_matrix(self: Any) -> Any:
@@ -115,20 +119,6 @@ class LatticeIsometries(Category):
                 return NotImplemented
             other_mat = other.to_matrix() if hasattr(other, "to_matrix") else other.matrix()
             return self.parent()(self.to_matrix() * other_mat)
-
-        def __call__(self: Any, x: Any) -> Any:
-            """Apply the isometry on the owned element interface."""
-            # Row-vector action (Sage FreeModuleMorphism convention): c * A.
-            # Left-multiply by A would only accidentally work for square
-            # symmetric Aut matrices; embeddings need c * A.
-            domain = self.domain()
-            codomain = self.codomain()
-            coords = domain.coordinate_vector(x)
-            return codomain((coords * self.to_matrix()).list())
-
-        def _call_(self: Any, x: Any) -> Any:
-            """Sage Map dispatch entry; same as :meth:`__call__`."""
-            return self.__call__(x)
 
         def invariant_lattice(self: Any) -> Any:
             r"""Return $L^{+}=L^{\langle I\rangle}$ via the domain lattice."""

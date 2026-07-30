@@ -3,7 +3,7 @@ r"""``HyperbolicLattices`` — hyperbolic integral lattices supporting root enum
 Refine a hyperbolic (``n``, 1) integral lattice into this category to gain::
 
     vinberg_algorithm(v0, use_coxiter, output, max_roots, max_decompositions, verbose)
-    get_isotrop_type(isotropic_vector)   # classify by divisibility and $e^*\in A_L$
+    get_isotropic_type(isotropic_element)   # classify by divisibility and $e^*\in A_L$
 
 EXAMPLES::
 
@@ -15,19 +15,16 @@ EXAMPLES::
     True
 """
 
-from typing import Any, assert_never
+from typing import Any
 
-from sage.arith.misc import gcd
 from sage.categories.category import Category
-from sage.rings.integer_ring import ZZ
-from sage.rings.rational_field import QQ
-from sage.sets.set import Set
 
 class HyperbolicLattices(Category):
     r"""Category of hyperbolic integral lattices (signature ``(n, 1)``).
 
     Provides one Vinberg root enumeration implementation (via the vendored
-    ``vinal`` clone) and isotropic-vector classification via ``get_isotrop_type``.
+    ``vinal`` clone). Isotropic-element classification is inherited from
+    ``IntegralLattices``.
     """
 
     @classmethod
@@ -73,13 +70,17 @@ class HyperbolicLattices(Category):
             list
                 The enumerated root vectors.
             """
+            # ``vinal`` diagonalizes and asserts exactly one negative entry, so
+            # it wants signature (n, 1).  This repo's convention is negative
+            # definite, making its hyperbolic lattices (1, n) -- those are the
+            # ones needing the twist, and their roots come back negated.
             pos, neg = self.signature_pair()
             if neg == 1:
-                source = self.twist(-1)
-                negate_roots = True
-            elif pos == 1:
                 source = self
                 negate_roots = False
+            elif pos == 1:
+                source = self.twist(-1)
+                negate_roots = True
             else:
                 assert False, (
                     f"Vinberg's algorithm needs signature (1, n) or (n, 1); "
@@ -117,37 +118,6 @@ class HyperbolicLattices(Category):
                 )
             roots = list(algorithm.roots)
             return [-root for root in roots] if negate_roots else roots
-
-        def get_isotrop_type(self: Any, isotropic_vector: Any) -> str:
-            r"""Classify a primitive isotropic vector by the AE/Nikulin cusp type.
-
-            The definition is intrinsic to the vector in the 2-elementary
-            lattice.  The vector is ``"Odd"`` when its divisibility is 1.  When
-            its divisibility is 2, its divided class $e^* = e/2 \in A_L$
-            determines the two even cases: ``"Even ordinary"`` if $e^*$ is
-            ordinary and ``"Even characteristic"`` if $e^*$ is characteristic,
-            meaning $q(x) = b(x,e^*) \pmod{\mathbb Z}$ for every $x\in A_L$.
-            """
-            assert isotropic_vector in self, "get_isotrop_type expects an element of this lattice"
-            assert self.q(isotropic_vector) == 0, (
-                f"expected an isotropic vector, got square {self.q(isotropic_vector)}"
-            )
-
-            assert isotropic_vector.is_primitive(), "expected a primitive vector"
-
-            divisibility = self.div(isotropic_vector)
-            assert divisibility in Set({1, 2}), (
-                f"expected divisibility 1 or 2 in a 2-elementary lattice, "
-                f"got {divisibility}"
-            )
-            if divisibility == 1:
-                return "Odd"
-            if divisibility == 2:
-                divided_class = self.divided_discriminant_class(isotropic_vector)
-                if divided_class.is_characteristic():
-                    return "Even characteristic"
-                return "Even ordinary"
-            assert_never(divisibility)
 
         @staticmethod
         def _vinberg_progress(total: int | None) -> tuple[Any, Any]:

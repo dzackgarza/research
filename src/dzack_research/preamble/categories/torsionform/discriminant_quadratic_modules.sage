@@ -1,38 +1,67 @@
 r"""Discriminant quadratic modules.
 
-Refine a ``TorsionQuadraticModule`` into this category to gain::
+A sibling of :mod:`discriminant_bilinear_modules`, not a refinement of it.  A
+quadratic torsion module's data is $q$; $b_q$ is derived from it by
+polarization, which is a functor and not an inclusion -- distinct $q$ can share
+a $b$ (Peters--Sterk Sec. 12.5 [PS24]), so an object cannot be both.
 
-    gram_matrix()              # the form matrix for this category
-    associated_bilinear_form() # the bilinear form attached to a quadratic module
-    normal_form()              # new quadratic form in normal form
-    _latex_()                  # multi-line display
-    as_finitely_presented_group() # Sage-native FinitelyPresentedGroup
-    abelian_group()               # Sage AbelianGroup (invariant factors)
-    is_p_elementary(p)            # via abelian_group().permutation_group()
-
-Elements gain::
-
-    is_characteristic()        # q(x) = b(x, self) mod Z for all x
-
-EXAMPLES::
-
-    sage: from dzack_research.preamble import catalogue
-    sage: from dzack_research.preamble.categories import DiscriminantQuadraticModules
-    sage: A = Lattices.U.discriminant_group()
-    sage: A._refine_category_(DiscriminantQuadraticModules())
+Objects are :class:`TorsionQuadraticForm`, this package's own.  Sage's
+``TorsionQuadraticModule`` carries $b$ and $q$ together, distinguished by a pair
+of moduli, and is not refined into this category.
 """
 
 from typing import Any
 
 from sage.categories.category import Category
+from sage.groups.additive_abelian.qmodnz import QmodnZ, QmodnZ_Element
+from sage.matrix.matrix0 import Matrix
+from sage.modules.fg_pid.fgp_element import FGP_Element
+from sage.modules.fg_pid.fgp_morphism import FGP_Morphism
+from sage.modules.fg_pid.fgp_module import FGP_Module_class
+from sage.modules.free_module import FreeModule
+from sage.modules.free_module_element import FreeModuleElement
+from sage.modules.free_module_morphism import FreeModuleMorphism
+from sage.modules.free_quadratic_module_integer_symmetric import (
+    FreeQuadraticModule_integer_symmetric,
+)
 from sage.rings.rational_field import QQ
+
+
+class TorsionQuadraticFormElement(FGP_Element):
+    r"""A class $\bar x\in\operatorname{coker} c$ carrying $q$.
+
+    Its own type, distinct from the bilinear one: the two answer different
+    questions -- $q$ into $\mathbb Q/2\mathbb Z$ against $b$ into
+    $\mathbb Q/\mathbb Z$ -- and are not interchangeable.
+    """
+
+
+class TorsionQuadraticForm(FGP_Module_class):
+    r"""$(\operatorname{coker} c,\; q)$ for the correlation $c: L\to L^\vee$ of an even $L$.
+
+    The mirror of :func:`TorsionBilinearForm`, built the same way from the same
+    morphism; what differs is the form, and with it the value group and the
+    category.
+
+    Its own type rather than Sage's ``TorsionQuadraticModule``, which holds $b$
+    and $q$ at once and tells them apart by a pair of moduli.  Here the type
+    does that, so there is no ``modulus_qf`` to carry, no ``value_module_qf``,
+    and no accessor that answers a question this object does not have.
+
+    Carries no methods of its own -- they are :class:`DiscriminantQuadraticModules`'s.  The type exists
+    so the object has a name, for annotations and for ``isinstance``.
+    """
+
+    Element = TorsionQuadraticFormElement
+
 
 class DiscriminantQuadraticModules(Category):
     r"""Category of discriminant quadratic modules.
 
-    The category's ``gram_matrix`` is the quadratic Gram matrix. Its bilinear
-    matrix is obtained from the associated bilinear form, not by duplicating the
-    native method here.
+    Its objects carry $q:A\to\mathbb Q/2\mathbb Z$; the polarization
+    $b_q:A\times A\to\mathbb Q/\mathbb Z$ is reachable through
+    :meth:`~DiscriminantQuadraticModules.ParentMethods.associated_bilinear_form`,
+    which lands in the sibling category.
     """
 
     @classmethod
@@ -40,23 +69,60 @@ class DiscriminantQuadraticModules(Category):
         return "discriminant quadratic modules"
 
     def super_categories(self) -> list:
-        return [DiscriminantBilinearModules()]
+        return [TorsionModulesWithForm()]
+
+    def cokernel(self, morphism: LatticeMorphism) -> TorsionQuadraticForm:
+        r"""Return $\operatorname{coker}$ of ``morphism`` as an object of this category.
+
+        Which category is asked settles which form the answer carries, so the
+        construction belongs here rather than to a free function.
+        """
+        source_gram = morphism.domain().gram_matrix()
+        assert all(entry in 2 * ZZ for entry in source_gram.diagonal()), (
+            "q is well defined only when the relations have even norm; these do "
+            "not, so the cokernel carries b alone -- use discriminant_bilinear_form"
+        )
+        cover, relations = cokernel_of(morphism)
+        form = TorsionQuadraticForm(cover, relations)
+        form._morphism = morphism
+        refine(form, self)
+        subdivide_form_gram_matrix(form)
+        return form
 
     class ParentMethods:
         r"""Methods available on discriminant quadratic modules."""
 
-        def gram_matrix(self: Any) -> Any:
-            r"""Return the quadratic Gram matrix with induced block subdivisions."""
-            from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
+        def value_module(self: Any) -> QmodnZ:
+            r"""Return $\mathbb Q/2\mathbb Z$, where $q$ takes its values."""
+            return QmodnZ(2)
 
-            return TorsionQuadraticModule.gram_matrix_quadratic.f(self)
+        def gram_matrix(self: Any) -> Matrix:
+            r"""Return the matrix of $q$ on :meth:`gens`.
 
-        def associated_bilinear_form(self: Any) -> Any:
-            r"""Return this quadratic module's associated bilinear form."""
-            from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
+            Diagonal $q(g_i)$, off-diagonal $b_q(g_i,g_j)$: the quadratic form
+            is not determined by a symmetric matrix alone, so the two halves
+            report different things and live in different value groups.
+            """
+            generators = self.gens()
+            size = len(generators)
+            gram = matrix(QQ, size, size)
+            for i, left in enumerate(generators):
+                gram[i, i] = left.q().lift()
+                for j in range(i + 1, size):
+                    gram[i, j] = gram[j, i] = left.b(generators[j]).lift()
+            return gram
 
-            raw = TorsionQuadraticModule.gram_matrix_bilinear.f(self)
-            return DiscriminantBilinearForm(self.invariants(), self.source_lattice(), raw)
+        def associated_quadratic_form(self: Any) -> "TorsionQuadraticForm":
+            r"""Return this form: it is already the quadratic one."""
+            return self
+
+        def associated_bilinear_form(self: Any) -> "TorsionBilinearForm":
+            r"""Return $b_q$, the polarization -- an object of the sibling category.
+
+            Always defined, and it forgets: distinct $q$ on the same group can
+            polarize to isometric $b$ (Peters--Sterk Sec. 12.5).
+            """
+            return DiscriminantBilinearModules().cokernel(self.correlation())
 
         def _form_matrix_latex_label(self: Any) -> str:
             r"""Return the LaTeX label for the quadratic Gram matrix."""
@@ -66,49 +132,111 @@ class DiscriminantQuadraticModules(Category):
             r"""Return the LaTeX codomain for the quadratic Gram matrix entries."""
             return "\\mathbb{Q}/2\\mathbb{Z}"
 
-        def normal_form(self: Any) -> Any:
-            r"""Return this discriminant quadratic form in normal form."""
-            from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
+        def correlation(self: Any) -> LatticeMorphism:
+            r"""Return the $f$ this module is the cokernel of.
 
-            norm = TorsionQuadraticModule.normal_form(self)
-            norm.source_lattice = self.source_lattice
-            return norm
+            It settles the object: a morphism of lattices with generating sets has a
+            unique matrix, and $\operatorname{coker} f$ takes its generating set
+            from $f$'s codomain and its form from that codomain's Gram matrix.
+            """
+            return self._morphism
+
+        def projection(self: Any) -> FGP_Morphism:
+            r"""Return $\pi: B\to\operatorname{coker} f$, sending $g_i$ to $h_i$."""
+            return self.quotient_map()
+
+        def gens(self: Any) -> tuple[TorsionQuadraticFormElement, ...]:
+            r"""Return the generating set: the images of the codomain's generators.
+
+            Shadows ``FGP_Module_class.gens``, which hands back the Smith-form
+            generators -- a different generating set, so a different object.
+            """
+            return tuple(self(generator) for generator in self.V().gens())
+
+        def primary_part(self: Any, p: Any) -> Subobject:
+            r"""Return $A_p\hookrightarrow A$ as a subobject: the inclusion is the data.
+
+            $A_p$ is an object of this category in its own right -- the cokernel of
+            the correlation with codomain cut down to the preimage of $A_p$ -- and
+            the subobject is that object together with its inclusion, not a
+            predicate about which elements are $p$-primary.
+            """
+            multiplier = self.annihilator().gen().prime_to_m_part(p)
+            images = [multiplier * generator for generator in self.gens()]
+            part = DiscriminantQuadraticModules().cokernel(
+                regenerated_by(self, [multiplier * g.lift() for g in self.gens()])
+            )
+            return Subobject(form_morphism(part, images, self))
+
+        def invariant_factor_form(self: Any) -> "TorsionQuadraticForm":
+            r"""Return $q$ on generators from the invariant factor decomposition.
+
+            The change merges factors across summands -- $A_{A_2\oplus A_3}$ lands
+            on one generator as $\mathbb Z/12$ rather than on two as
+            $\mathbb Z/3\oplus\mathbb Z/4$ -- so no decomposition of $L$ survives
+            it, which is why it cannot be :meth:`discriminant_group`.
+            """
+            return DiscriminantQuadraticModules().cokernel(
+                regenerated_by(self, [g.lift() for g in self.smith_form_gens()])
+            )
+
+        def normal_form(self: Any) -> "TorsionQuadraticForm":
+            r"""Return $q$ on $p$-adic Jordan generators -- a different object.
+
+            For $p$ odd the blocks are those of Peters--Sterk Prop. 9.4.1; at $p=2$
+            the reduced normal form of Cor. C.3.2 applies, which is where the
+            quadratic side has a uniqueness statement the bilinear side lacks.
+            """
+            return DiscriminantQuadraticModules().cokernel(
+                regenerated_by(self, p_adic_jordan_generators(self))
+            )
+
+        def source_lattice(self: Any) -> FreeQuadraticModule_integer_symmetric:
+            r"""Return the lattice $L$ whose dual basis generates this form.
+
+            ``None`` unless the generating set is the one $c$ induces, which is what
+            the identity generating morphism says.  $L$ supplies a decomposition of
+            *its* dual basis and of nothing else.
+            """
+            return self._morphism.domain()
 
     class ElementMethods:
         r"""Methods available on elements of discriminant quadratic modules."""
 
-        def is_characteristic(self: Any) -> bool:
-            r"""Return whether this discriminant element is characteristic.
+        def q(self: Any) -> QmodnZ_Element:
+            r"""Return $q(\bar x)\in\mathbb Q/2\mathbb Z$.
 
-            An element \(v^*\in A_L\) is characteristic when
-            \(q(x)=b(x,v^*)\pmod{\mathbb Z}\) for every \(x\in A_L\).
-            Sage's torsion quadratic values may live in ``Q/2Z`` while
-            bilinear values live in ``Q/Z``, so the comparison is explicitly
-            reduced modulo \(\mathbb Z\).
+            Well defined because $L$ is even: moving a lift by $c(\ell)$ shifts
+            $\langle x,x\rangle$ by $2\langle x,\ell\rangle+\langle\ell,\ell\rangle$,
+            and both terms lie in $2\mathbb Z$.
+            """
+            lift = self.lift()
+            return self.parent().value_module()(lift.inner_product(lift))
+
+        def b(self: Any, other: "TorsionQuadraticFormElement") -> QmodnZ_Element:
+            r"""Return the polarization $b_q(\bar x,\bar y)\in\mathbb Q/\mathbb Z$."""
+            return QmodnZ(1)(self.lift().inner_product(other.lift()))
+
+        def __mul__(self: Any, other: Any) -> Any:
+            r"""``x * y`` -> the polarization; anything else -> native semantics."""
+            if isinstance(other, TorsionQuadraticFormElement):
+                return self.b(other)
+            return super().__mul__(other)
+
+        def __pow__(self: Any, exponent: Any, modulus: Any = None) -> QmodnZ_Element:
+            r"""``x ^ 2`` -> $q(x)$."""
+            assert exponent == 2, f"exponent {exponent} not supported"
+            return self.q()
+
+        def is_characteristic(self: Any) -> bool:
+            r"""Return whether this element is characteristic.
+
+            $v^*\in A_L$ is characteristic when $q(x)=b(x,v^*)\pmod{\mathbb Z}$
+            for every $x$.  $q$ is valued in $\mathbb Q/2\mathbb Z$ and $b$ in
+            $\mathbb Q/\mathbb Z$, so the comparison reduces both modulo
+            $\mathbb Z$.
             """
             for x in self.parent():
-                if not _equal_mod_integers(x.q(), x * self):
+                if QQ(x.q().lift() - x.b(self).lift()) not in ZZ:
                     return False
             return True
-
-# ---- internal helpers ----
-
-def _equal_mod_integers(left: Any, right: Any) -> bool:
-    r"""Return whether two torsion-form values agree modulo $\mathbb Z$."""
-    return QQ(left.lift() - right.lift()) in ZZ
-
-# ---- install: post-init hooks only ----
-
-_DISCRIMINANT_GROUPS_INSTALLED = False
-
-
-def install_discriminant_groups() -> None:
-    """Hook post-init on torsion quadratic modules."""
-    global _DISCRIMINANT_GROUPS_INSTALLED
-    if _DISCRIMINANT_GROUPS_INSTALLED:
-        return
-
-    from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
-
-    hook_post_init(TorsionQuadraticModule, DiscriminantQuadraticModules())
-    _DISCRIMINANT_GROUPS_INSTALLED = True

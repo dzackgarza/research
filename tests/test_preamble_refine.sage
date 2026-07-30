@@ -18,27 +18,8 @@ def _ensure_preamble():
     import dzack_research
 
     p = Path(dzack_research.__file__).resolve().parent / "preamble"
-    load(str(p / "vendor.sage"))
-    load(str(p / "refine.sage"))
-    load(str(p / "categories/gram_matrices.sage"))
-    load(str(p / "categories/group/groups.sage"))
-    load(str(p / "categories/group/finitely_presented_groups.sage"))
-    load(str(p / "categories/integrallattice/integral_lattices.sage"))
-    load(str(p / "categories/integrallattice/subobjects.sage"))
-    load(str(p / "categories/integrallattice/direct_sum_objects.sage"))
-    load(str(p / "categories/lattice_homomorphisms.sage"))
-    load(str(p / "categories/lattice_isometries.sage"))
-    load(str(p / "categories/coxeter_diagrams.sage"))
-    load(str(p / "categories/integrallattice/hyperbolic_lattices.sage"))
-    load(str(p / "categories/torsionform/torsion_modules_with_form.sage"))
-    load(str(p / "categories/torsionform/discriminant_bilinear_modules.sage"))
-    load(str(p / "categories/torsionform/discriminant_quadratic_modules.sage"))
-    install_integral_lattices()
-    install_finitely_presented_groups()
-    install_discriminant_groups()
-    activate()
+    load(str(p / "install.sage"))
     load(str(p / "utilities.py"))
-    load(str(p / "fixtures.sage"))
     load(str(p / "catalogue.sage"))
     load(str(p / "sterk.sage"))
     Lattices.install(globals())
@@ -109,20 +90,20 @@ def test_element_methods_come_from_refined_category():
     assert identity(element) == element
 
 
-def test_facade_compares_to_native_without_coercion_recursion():
-    """Cython Element.__richcmp__ used to ignore Python __eq__ and segfault.
+def test_refined_element_compares_without_coercion_recursion():
+    """Cython ``Element.__richcmp__`` used to ignore Python ``__eq__`` and segfault.
 
-    Facade-on-the-left uses ElementFacade.__richcmp__ (unwrap + richcmp).
-    Native-on-the-left still hits Cython same-parent cast of the facade —
-    compare via unwrap on that side, or put the facade on the left.
+    The element facade that worked around it is gone: elements are genuine
+    native vectors now, so comparison is the native one and needs no
+    unwrapping.  It still has to terminate, and it still has to tell distinct
+    elements apart rather than collapsing them.
     """
     lattice = _refined_lattice()
-    facade = lattice.gens()[0]
-    native = unwrap(facade)
-    assert facade == native
-    assert facade == facade
-    assert unwrap(facade) == native
-    assert facade != lattice.zero()
+    element = lattice.gens()[0]
+    assert element == element
+    assert element == lattice.gens()[0]
+    assert element != lattice.gens()[1]
+    assert element != lattice.zero()
 
 
 def test_unequal_rank_hom_from_generator_images():
@@ -142,19 +123,32 @@ def test_unequal_rank_hom_from_generator_images():
     assert phi(E.gens()[3]) == images[3]
 
 
-def test_cython_morphism_methods_come_from_refined_category():
-    _ensure_preamble()
-    from sage.rings.integer_ring import ZZ
-
-    with without_element_wrap():
-        native = ZZ.Hom(ZZ)([1])
-    morphism = refine(native, _sentinel_morphisms())
-    assert isinstance(morphism, MorphismFacade)
-    assert type(morphism).is_identity.__qualname__.endswith("MorphismMethods.is_identity")
-    assert type(morphism).preamble_only.__qualname__.endswith("MorphismMethods.preamble_only")
-    assert morphism.is_identity() == "from_refined_category"
-    assert morphism.preamble_only() == "from_refined_category"
-    assert morphism(7) == 7
+# Parked: refining Cython morphisms.
+#
+# Override-refine reassigns ``__class__``, which CPython allows only on heap
+# types.  Every morphism the preamble builds is one -- lattice homs are
+# ``FreeModuleMorphism``, and ``test_heap_morphism_methods_come_from_refined_category``
+# below covers them -- but Sage's ring morphisms are Cython extension types
+# (``RingHomomorphism_im_gens``) and cannot be reassigned.  ``MorphismFacade``
+# used to cover that case by wrapping instead of reassigning; it is gone, and
+# with it the capability.
+#
+# Nothing hides the gap: ``refine`` asserts "cannot assign __class__ on
+# RingHomomorphism_im_gens; override-refine requires a heap morphism type" the
+# moment it is asked.  Restore the wrapper and un-comment these two as soon as
+# preamble work needs to override methods on ring morphisms -- the module and
+# algebra directions will reach that.
+#
+# def test_cython_morphism_methods_come_from_refined_category():
+#     _ensure_preamble()
+#     from sage.rings.integer_ring import ZZ
+#
+#     morphism = refine(ZZ.Hom(ZZ)([1]), _sentinel_morphisms())
+#     assert type(morphism).is_identity.__qualname__.endswith("MorphismMethods.is_identity")
+#     assert type(morphism).preamble_only.__qualname__.endswith("MorphismMethods.preamble_only")
+#     assert morphism.is_identity() == "from_refined_category"
+#     assert morphism.preamble_only() == "from_refined_category"
+#     assert morphism(7) == 7
 
 
 def test_heap_morphism_methods_come_from_refined_category():
@@ -170,17 +164,20 @@ def test_heap_morphism_methods_come_from_refined_category():
     assert phi.is_identity() == "from_refined_category"
 
 
-def test_hom_refine_produces_morphisms_from_refined_category():
-    _ensure_preamble()
-    from sage.rings.integer_ring import ZZ
-
-    hom = ZZ.Hom(ZZ)
-    refine(hom, _sentinel_morphisms())
-    morphism = hom([1])
-    assert isinstance(morphism, MorphismFacade)
-    assert type(morphism).is_identity.__qualname__.endswith("MorphismMethods.is_identity")
-    assert morphism.is_identity() == "from_refined_category"
-    assert morphism.preamble_only() == "from_refined_category"
+# Parked with the test above: a refined homset can only hand its morphisms the
+# category's methods if those morphisms are reassignable, and ``ZZ.Hom(ZZ)``
+# builds Cython ones.
+#
+# def test_hom_refine_produces_morphisms_from_refined_category():
+#     _ensure_preamble()
+#     from sage.rings.integer_ring import ZZ
+#
+#     hom = ZZ.Hom(ZZ)
+#     refine(hom, _sentinel_morphisms())
+#     morphism = hom([1])
+#     assert type(morphism).is_identity.__qualname__.endswith("MorphismMethods.is_identity")
+#     assert morphism.is_identity() == "from_refined_category"
+#     assert morphism.preamble_only() == "from_refined_category"
 
 
 def test_install_hooks_refine_parents_and_elements():

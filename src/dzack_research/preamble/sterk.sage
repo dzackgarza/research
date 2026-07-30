@@ -114,37 +114,36 @@ class Sterk:
     def roots_18_2_0() -> dict[str, Any]:
         r"""Return the $22$ generating vectors $v_1,\ldots,v_{22}$ in $T_{\mathrm{dP}}$."""
         TdP = Lattices.TdP
-        with without_element_wrap():
-            b = _named_basis(TdP)
-            (
-                eb, fb, epb, fpb,
-                w1, w2, w3, w4, w5, w6, w7, w8,
-                w1t, w2t, w3t, w4t, w5t, w6t, w7t, w8t,
-            ) = TdP.dual_basis()
-            v = {
-                "v1": b["a8t"],
-                "v2": b["ep"] + b["fp"] + w1 + w8t,
-                "v3": b["a1"],
-                "v4": b["a3"],
-                "v5": b["a4"],
-                "v6": b["a5"],
-                "v7": b["a6"],
-                "v8": b["a7"],
-                "v9": b["a8"],
-                "v10": b["ep"] + b["fp"] + w8 + w1t,
-                "v11": b["a1t"],
-                "v12": b["a3t"],
-                "v13": b["a4t"],
-                "v14": b["a5t"],
-                "v15": b["a6t"],
-                "v16": b["a7t"],
-                "v17": b["ep"] + w8t,
-                "v18": b["a2"],
-                "v19": b["ep"] + w8,
-                "v20": b["a2t"],
-                "v21": b["fp"] - b["ep"],
-                "v22": 5 * b["ep"] + 3 * b["fp"] + 2 * w2 + 2 * w2t,
-            }
+        b = _named_basis(TdP)
+        (
+            eb, fb, epb, fpb,
+            w1, w2, w3, w4, w5, w6, w7, w8,
+            w1t, w2t, w3t, w4t, w5t, w6t, w7t, w8t,
+        ) = TdP.dual_basis()
+        v = {
+            "v1": b["a8t"],
+            "v2": b["ep"] + b["fp"] + w1 + w8t,
+            "v3": b["a1"],
+            "v4": b["a3"],
+            "v5": b["a4"],
+            "v6": b["a5"],
+            "v7": b["a6"],
+            "v8": b["a7"],
+            "v9": b["a8"],
+            "v10": b["ep"] + b["fp"] + w8 + w1t,
+            "v11": b["a1t"],
+            "v12": b["a3t"],
+            "v13": b["a4t"],
+            "v14": b["a5t"],
+            "v15": b["a6t"],
+            "v16": b["a7t"],
+            "v17": b["ep"] + w8t,
+            "v18": b["a2"],
+            "v19": b["ep"] + w8,
+            "v20": b["a2t"],
+            "v21": b["fp"] - b["ep"],
+            "v22": 5 * b["ep"] + 3 * b["fp"] + 2 * w2 + 2 * w2t,
+        }
         assert len(v) == 22
         return v
 
@@ -152,34 +151,33 @@ class Sterk:
     def roots_18_0_0() -> dict[str, Any]:
         r"""Return the $19$ generating vectors $w_1,\ldots,w_{19}$ in $T_{\mathrm{dP}}$."""
         TdP = Lattices.TdP
-        with without_element_wrap():
-            b = _named_basis(TdP)
-            (
-                eb, fb, epb, fpb,
-                w1, w2, w3, w4, w5, w6, w7, w8,
-                w1t, w2t, w3t, w4t, w5t, w6t, w7t, w8t,
-            ) = TdP.dual_basis()
-            w = {
-                "w1": b["a1"],
-                "w2": b["a3"],
-                "w3": b["a4"],
-                "w4": b["a5"],
-                "w5": b["a6"],
-                "w6": b["a7"],
-                "w7": b["a8"],
-                "w8": b["e"] + w8,
-                "w9": b["f"] - b["e"],
-                "w10": b["e"] + w8t,
-                "w11": b["a8t"],
-                "w12": b["a7t"],
-                "w13": b["a6t"],
-                "w14": b["a5t"],
-                "w15": b["a4t"],
-                "w16": b["a3t"],
-                "w17": b["a1t"],
-                "w18": b["a2"],
-                "w19": b["a2t"],
-            }
+        b = _named_basis(TdP)
+        (
+            eb, fb, epb, fpb,
+            w1, w2, w3, w4, w5, w6, w7, w8,
+            w1t, w2t, w3t, w4t, w5t, w6t, w7t, w8t,
+        ) = TdP.dual_basis()
+        w = {
+            "w1": b["a1"],
+            "w2": b["a3"],
+            "w3": b["a4"],
+            "w4": b["a5"],
+            "w5": b["a6"],
+            "w6": b["a7"],
+            "w7": b["a8"],
+            "w8": b["e"] + w8,
+            "w9": b["f"] - b["e"],
+            "w10": b["e"] + w8t,
+            "w11": b["a8t"],
+            "w12": b["a7t"],
+            "w13": b["a6t"],
+            "w14": b["a5t"],
+            "w15": b["a4t"],
+            "w16": b["a3t"],
+            "w17": b["a1t"],
+            "w18": b["a2"],
+            "w19": b["a2t"],
+        }
         assert len(w) == 19
         return w
 
@@ -203,78 +201,77 @@ class Sterk:
         def involute(x: Any) -> Any:
             return x + reflect(x)
 
-        with without_element_wrap():
-            configurations: dict[str, tuple[Any, ...]] = {
-                "Sterk_1": (
-                    v["v3"] + v["v11"],
-                    v["v4"] + v["v12"],
-                    v["v5"] + v["v13"],
-                    v["v6"] + v["v14"],
-                    v["v7"] + v["v15"],
-                    v["v8"] + v["v16"],
-                    v["v9"] + v["v1"],
-                    v["v10"] + v["v2"],
-                    v["v17"] + v["v19"],
-                    v["v21"],
-                    v["v22"],
-                    v["v18"] + v["v20"],
-                ),
-                "Sterk_2": (
-                    w["w1"] + w["w17"],
-                    w["w2"] + w["w16"],
-                    w["w3"] + w["w15"],
-                    w["w4"] + w["w14"],
-                    w["w5"] + w["w13"],
-                    w["w6"] + w["w12"],
-                    w["w7"] + w["w11"],
-                    w["w8"] + w["w10"],
-                    w["w9"],
-                    w["w18"] + w["w19"],
-                ),
-                "Sterk_3": (
-                    v["v13"],
-                    v["v14"] + v["v12"],
-                    v["v15"] + v["v11"],
-                    v["v16"] + v["v10"],
-                    v["v1"] + v["v9"],
-                    v["v2"] + v["v8"],
-                    v["v3"] + v["v7"],
-                    v["v4"] + v["v6"],
-                    v["v5"],
-                    v["v17"] + v["v19"],
-                    involute(v["v20"]),
-                    involute(v["v18"]),
-                ),
-                "Sterk_4": (
-                    v["v15"],
-                    v["v16"] + v["v14"],
-                    v["v1"] + v["v13"],
-                    v["v2"] + v["v12"],
-                    v["v3"] + v["v11"],
-                    v["v4"] + v["v10"],
-                    v["v5"] + v["v9"],
-                    v["v6"] + v["v8"],
-                    v["v7"],
-                    v["v17"] + v["v20"],
-                    v["v18"] + v["v19"],
-                ),
-                "Sterk_5": (
-                    v["v16"] + 2 * v["v1"] + v["v2"],
-                    v["v2"] + 2 * v["v3"] + v["v4"],
-                    v["v4"] + 2 * v["v5"] + v["v6"],
-                    v["v6"] + 2 * v["v7"] + v["v8"],
-                    v["v8"] + 2 * v["v9"] + v["v10"],
-                    v["v10"] + 2 * v["v11"] + v["v12"],
-                    v["v12"] + 2 * v["v13"] + v["v14"],
-                    v["v14"] + 2 * v["v15"] + v["v16"],
-                    v["v17"],
-                    v["v18"],
-                    v["v19"],
-                    v["v20"],
-                    v["v21"],
-                    v["v22"],
-                ),
-            }
+        configurations: dict[str, tuple[Any, ...]] = {
+            "Sterk_1": (
+                v["v3"] + v["v11"],
+                v["v4"] + v["v12"],
+                v["v5"] + v["v13"],
+                v["v6"] + v["v14"],
+                v["v7"] + v["v15"],
+                v["v8"] + v["v16"],
+                v["v9"] + v["v1"],
+                v["v10"] + v["v2"],
+                v["v17"] + v["v19"],
+                v["v21"],
+                v["v22"],
+                v["v18"] + v["v20"],
+            ),
+            "Sterk_2": (
+                w["w1"] + w["w17"],
+                w["w2"] + w["w16"],
+                w["w3"] + w["w15"],
+                w["w4"] + w["w14"],
+                w["w5"] + w["w13"],
+                w["w6"] + w["w12"],
+                w["w7"] + w["w11"],
+                w["w8"] + w["w10"],
+                w["w9"],
+                w["w18"] + w["w19"],
+            ),
+            "Sterk_3": (
+                v["v13"],
+                v["v14"] + v["v12"],
+                v["v15"] + v["v11"],
+                v["v16"] + v["v10"],
+                v["v1"] + v["v9"],
+                v["v2"] + v["v8"],
+                v["v3"] + v["v7"],
+                v["v4"] + v["v6"],
+                v["v5"],
+                v["v17"] + v["v19"],
+                involute(v["v20"]),
+                involute(v["v18"]),
+            ),
+            "Sterk_4": (
+                v["v15"],
+                v["v16"] + v["v14"],
+                v["v1"] + v["v13"],
+                v["v2"] + v["v12"],
+                v["v3"] + v["v11"],
+                v["v4"] + v["v10"],
+                v["v5"] + v["v9"],
+                v["v6"] + v["v8"],
+                v["v7"],
+                v["v17"] + v["v20"],
+                v["v18"] + v["v19"],
+            ),
+            "Sterk_5": (
+                v["v16"] + 2 * v["v1"] + v["v2"],
+                v["v2"] + 2 * v["v3"] + v["v4"],
+                v["v4"] + 2 * v["v5"] + v["v6"],
+                v["v6"] + 2 * v["v7"] + v["v8"],
+                v["v8"] + 2 * v["v9"] + v["v10"],
+                v["v10"] + 2 * v["v11"] + v["v12"],
+                v["v12"] + 2 * v["v13"] + v["v14"],
+                v["v14"] + 2 * v["v15"] + v["v16"],
+                v["v17"],
+                v["v18"],
+                v["v19"],
+                v["v20"],
+                v["v21"],
+                v["v22"],
+            ),
+        }
 
         for name, roots in configurations.items():
             for index, root in enumerate(roots, start=1):
@@ -290,21 +287,20 @@ class Sterk:
     def selected_isotropic_vectors() -> dict[str, Any]:
         r"""Return Sterk's five generating isotropic lines in $T_{\mathrm{En}}$."""
         TEn = Lattices.TEn
-        with without_element_wrap():
-            b = _named_basis(TEn)
-            ed, fd, epd, fpd, w1, w2, w3, w4, w5, w6, w7, w8 = TEn.dual_basis()
-            omega = 2 * w8
-            alpha = 2 * w1
-            assert abs(TEn.b(omega, omega)) == 4
-            assert abs(TEn.b(alpha, alpha)) == 8
-            e, f, ep, fp = b["e"], b["f"], b["ep"], b["fp"]
-            vectors = {
-                "Sterk_1": e,
-                "Sterk_2": ep,
-                "Sterk_3": ep + fp + omega,
-                "Sterk_4": ep + 2 * fp + alpha,
-                "Sterk_5": 2 * e + 2 * f + alpha,
-            }
+        b = _named_basis(TEn)
+        ed, fd, epd, fpd, w1, w2, w3, w4, w5, w6, w7, w8 = TEn.dual_basis()
+        omega = 2 * w8
+        alpha = 2 * w1
+        assert abs(TEn.b(omega, omega)) == 4
+        assert abs(TEn.b(alpha, alpha)) == 8
+        e, f, ep, fp = b["e"], b["f"], b["ep"], b["fp"]
+        vectors = {
+            "Sterk_1": e,
+            "Sterk_2": ep,
+            "Sterk_3": ep + fp + omega,
+            "Sterk_4": ep + 2 * fp + alpha,
+            "Sterk_5": 2 * e + 2 * f + alpha,
+        }
         for name, vector_ in vectors.items():
             assert TEn.b(vector_, vector_) == 0, name
         return vectors
@@ -321,28 +317,27 @@ class Sterk:
     def sterk5_in_U_E8_2() -> tuple[Any, tuple[Any, ...]]:
         r"""Return Sterk $5$'s $14$ roots inside $U\oplus E_8(2)$."""
         lattice = Lattices.U.direct_sum(Lattices.E8_2)
-        with without_element_wrap():
-            gens = list(lattice.gens())
-            e, f = gens[0], gens[1]
-            a = {i: gens[i + 1] for i in range(1, 9)}
-            dual = lattice.dual_basis()
-            ad = {i: dual[i + 1] for i in range(1, 9)}
-            vectors = (
-                a[2],
-                a[4],
-                a[5],
-                a[6],
-                a[7],
-                a[8],
-                2 * ad[8],
-                2 * e + 2 * (ad[2] - ad[3]),
-                f - e,
-                e + f + 2 * (ad[6] - ad[3]),
-                e + f + 2 * (ad[1] + ad[8] - ad[3]),
-                e + f + a[3],
-                a[1],
-                2 * e - a[1],
-            )
+        gens = list(lattice.gens())
+        e, f = gens[0], gens[1]
+        a = {i: gens[i + 1] for i in range(1, 9)}
+        dual = lattice.dual_basis()
+        ad = {i: dual[i + 1] for i in range(1, 9)}
+        vectors = (
+            a[2],
+            a[4],
+            a[5],
+            a[6],
+            a[7],
+            a[8],
+            2 * ad[8],
+            2 * e + 2 * (ad[2] - ad[3]),
+            f - e,
+            e + f + 2 * (ad[6] - ad[3]),
+            e + f + 2 * (ad[1] + ad[8] - ad[3]),
+            e + f + a[3],
+            a[1],
+            2 * e - a[1],
+        )
         assert len(vectors) == 14
         for index, v in enumerate(vectors, start=1):
             norm = lattice.b(v, v)
@@ -353,27 +348,26 @@ class Sterk:
     def sterks_in_ten() -> dict[str, tuple[Any, ...]]:
         r"""Return Sterk configurations $1$–$3$ in $T_{\mathrm{En}}$ coordinates."""
         TEn = Lattices.TEn
-        with without_element_wrap():
-            b = _named_basis(TEn)
-            e, f, ep, fp = b["e"], b["f"], b["ep"], b["fp"]
-            a = {i: b[f"a{i}"] for i in range(1, 9)}
-            dual = TEn.dual_basis()
-            ad2 = {i: 2 * dual[i + 3] for i in range(1, 9)}
-            ad1 = {i: dual[i + 3] for i in range(1, 9)}
-            sterks1 = tuple(a[i] for i in range(1, 9)) + (
-                fp - ep,
-                2 * ep + ad2[8],
-                2 * ep + 2 * fp + ad2[1] + ad2[8],
-                5 * ep + 3 * fp + 2 * ad2[2],
-            )
-            sterks2 = tuple(a[i] for i in range(1, 9)) + (2 * f + ad2[8], e - f)
-            sterks3 = tuple(a[i] for i in range(1, 8)) + (
-                f - e,
-                2 * fp + 2 * ad1[8],
-                2 * e - 2 * fp - 2 * ad1[8],
-                2 * e + 2 * (ad1[1] - ad1[8]),
-                (e + f) + (a[8] - fp),
-            )
+        b = _named_basis(TEn)
+        e, f, ep, fp = b["e"], b["f"], b["ep"], b["fp"]
+        a = {i: b[f"a{i}"] for i in range(1, 9)}
+        dual = TEn.dual_basis()
+        ad2 = {i: 2 * dual[i + 3] for i in range(1, 9)}
+        ad1 = {i: dual[i + 3] for i in range(1, 9)}
+        sterks1 = tuple(a[i] for i in range(1, 9)) + (
+            fp - ep,
+            2 * ep + ad2[8],
+            2 * ep + 2 * fp + ad2[1] + ad2[8],
+            5 * ep + 3 * fp + 2 * ad2[2],
+        )
+        sterks2 = tuple(a[i] for i in range(1, 9)) + (2 * f + ad2[8], e - f)
+        sterks3 = tuple(a[i] for i in range(1, 8)) + (
+            f - e,
+            2 * fp + 2 * ad1[8],
+            2 * e - 2 * fp - 2 * ad1[8],
+            2 * e + 2 * (ad1[1] - ad1[8]),
+            (e + f) + (a[8] - fp),
+        )
         assert len(sterks1) == 12 and len(sterks2) == 10 and len(sterks3) == 12
         return {"sterks1": sterks1, "sterks2": sterks2, "sterks3": sterks3}
 
@@ -382,8 +376,7 @@ class Sterk:
         r"""Return the recorded isotropic cusp $s_{4,12}=v_{22}+v_{21}$."""
         TdP = Lattices.TdP
         v = Sterk.roots_18_2_0()
-        with without_element_wrap():
-            s = v["v22"] + v["v21"]
+        s = v["v22"] + v["v21"]
         assert TdP.b(s, s) == 0
         return {"s4_12": s}
 
@@ -397,7 +390,9 @@ def _sterk_diagram(name: str, roots: tuple[Any, ...]) -> Any:
     }
     return FiniteCoxeterDiagram.from_roots(
         rooted,
-        names=tuple(f"r_{{{index + 1}}}" for index in range(len(rooted))),
+        # Identifier names; Sage derives the LaTeX form r_{i} itself
+        # (``latex_variable_names``) — brace-form names fail ``certify_names``.
+        names=tuple(f"r_{index + 1}" for index in range(len(rooted))),
         positions=positions,
     )
 

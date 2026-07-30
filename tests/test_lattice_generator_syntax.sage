@@ -20,8 +20,10 @@ Findings these tests encode, each verified against this Sage:
    ring with generators ``(x0, Ellipsis, x5)``. The constructor hook expands the
    ``Ellipsis`` slot.
 
-3. ``@`` and ``**`` are available via ``IntegralLattices.ParentMethods.__matmul__``
-   and ``__pow__``, applied through category refinement.
+3. ``**`` is available via ``IntegralLattices.ParentMethods.__pow__``, applied
+   through category refinement.  ``@`` is deliberately *not* the direct sum --
+   the operator is reserved for the tensor product -- so the orthogonal sum is
+   spelled ``+`` or ``direct_sum``.
 """
 
 # Category hooks: load mathematical preamble scripts (not notebook init.sage).
@@ -29,25 +31,7 @@ from pathlib import Path
 import dzack_research
 
 _p = Path(dzack_research.__file__).resolve().parent / "preamble"
-load(str(_p / "vendor.sage"))
-load(str(_p / "refine.sage"))
-load(str(_p / "categories/gram_matrices.sage"))
-load(str(_p / "categories/group/groups.sage"))
-load(str(_p / "categories/group/finitely_presented_groups.sage"))
-load(str(_p / "categories/integrallattice/integral_lattices.sage"))
-load(str(_p / "categories/integrallattice/subobjects.sage"))
-load(str(_p / "categories/integrallattice/direct_sum_objects.sage"))
-load(str(_p / "categories/lattice_homomorphisms.sage"))
-load(str(_p / "categories/lattice_isometries.sage"))
-load(str(_p / "categories/coxeter_diagrams.sage"))
-load(str(_p / "categories/integrallattice/hyperbolic_lattices.sage"))
-load(str(_p / "categories/torsionform/torsion_modules_with_form.sage"))
-load(str(_p / "categories/torsionform/discriminant_bilinear_modules.sage"))
-load(str(_p / "categories/torsionform/discriminant_quadratic_modules.sage"))
-install_integral_lattices()
-install_finitely_presented_groups()
-install_discriminant_groups()
-activate()
+load(str(_p / "install.sage"))
 
 
 def _lattice_constructor():
@@ -120,27 +104,20 @@ def test_variable_names_before_assignment_raises():
         raise AssertionError("variable_names() unexpectedly succeeded")
 
 
-def test_matmul_is_direct_sum():
-    """``U @ E8`` must be the orthogonal direct sum."""
-    combined = _lattice_constructor()("H") @ IntegralLattice("E8")
-    assert combined.rank() == 10, combined.rank()
-    expected = _lattice_constructor()("H").direct_sum(IntegralLattice("E8"))
-    assert combined.gram_matrix() == expected.gram_matrix()
-
-
 def test_pow_is_repeated_direct_sum():
-    """``U**3`` and the full ``U**3 @ E8**2`` from the old init.sage."""
+    """``U**3`` and the full ``U**3 + E8**2`` from the old init.sage."""
     IntegralLattice = _lattice_constructor()
     assert (IntegralLattice("H") ** 3).rank() == 6
 
     # Sage's E8 is POSITIVE definite; this repo's convention is negative definite,
     # so the K3 lattice must be built from the twisted E8 to get signature (3,19).
     # Rank alone would not have caught the flipped convention.
-    k3 = IntegralLattice("H") ** 3 @ Lattices.E8 ** 2
+    E8 = IntegralLattice("E8").twist(-1)
+    k3 = IntegralLattice("H") ** 3 + E8 ** 2
     assert k3.rank() == 22, k3.rank()
     assert k3.signature_pair() == (3, 19), k3.signature_pair()
 
-    raw = IntegralLattice("H") ** 3 @ IntegralLattice("E8") ** 2
+    raw = IntegralLattice("H") ** 3 + IntegralLattice("E8") ** 2
     assert raw.signature_pair() == (19, 3), raw.signature_pair()
 
 
