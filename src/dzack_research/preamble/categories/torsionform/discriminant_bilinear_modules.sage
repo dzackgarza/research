@@ -16,7 +16,7 @@ from sage.modules.free_quadratic_module_integer_symmetric import (
 )
 
 
-class TorsionBilinearFormElement(FGP_Element):
+class TorsionBilinearFormElement(FormModuleElement):
     r"""A class $\bar x\in\operatorname{coker} c$ carrying $b$.
 
     Its own type so that the category's methods have a domain to speak of: an
@@ -25,7 +25,7 @@ class TorsionBilinearFormElement(FGP_Element):
     """
 
 
-class TorsionBilinearForm(FGP_Module_class):
+class TorsionBilinearForm(FormModule):
     r"""$(\operatorname{coker} c,\; b)$ for the correlation $c: L\to L^\vee$.
 
     Everything comes from the morphism: its matrix gives the relations, its
@@ -66,11 +66,14 @@ class DiscriminantBilinearModules(Category):
     def cokernel(self, morphism: LatticeMorphism) -> TorsionBilinearForm:
         r"""Return $\operatorname{coker}$ of ``morphism`` as an object of this category.
 
-        Which category is asked settles which form the answer carries, so the
-        construction belongs here rather than to a free function.
+        Which category is asked settles which form the answer carries, and here
+        that is the value module: the same cokernel of the same $c$ with the
+        same Gram matrix is a bilinear form in $\mathbb Q/\mathbb Z$ and a
+        quadratic one in $\mathbb Q/2\mathbb Z$.
         """
-        cover, relations = cokernel_of(morphism)
-        form = TorsionBilinearForm(cover, relations)
+        form = TorsionBilinearForm(
+            Cokernel(morphism), QmodnZ(1), discriminant_gram(morphism)
+        )
         form._morphism = morphism
         refine(form, self)
         subdivide_form_gram_matrix(form)
@@ -80,18 +83,18 @@ class DiscriminantBilinearModules(Category):
         r"""Methods available on discriminant bilinear modules."""
 
         def gram_matrix(self: Any) -> Matrix:
-            r"""Return the matrix of $b$ on :meth:`gens`."""
-            generators = self.gens()
+            r"""Return $b$ on :meth:`gens`, reduced into $\mathbb Q/\mathbb Z$."""
+            gram = FormModule.gram_matrix(self)
             return matrix(
                 QQ,
-                [[(x * y).lift() for y in generators] for x in generators],
+                [[self.value_module()(entry).lift() for entry in row] for row in gram.rows()],
             )
 
-        def value_module(self: Any) -> QmodnZ:
+        def _unused_value_module(self: Any) -> QmodnZ:
             r"""Return $\mathbb Q/\mathbb Z$, where $b$ takes its values."""
             return QmodnZ(1)
 
-        def associated_quadratic_form(self: Any) -> "TorsionQuadraticForm":
+        def associated_quadratic_form(self: Any) -> Any:
             r"""Return the discriminant quadratic form on the same group.
 
             $b$ does not determine $q$: the refinement
@@ -117,17 +120,9 @@ class DiscriminantBilinearModules(Category):
             """
             return self._morphism
 
-        def projection(self: Any) -> FGP_Morphism:
-            r"""Return $\pi: B\to\operatorname{coker} f$, sending $g_i$ to $h_i$."""
-            return self.quotient_map()
-
-        def gens(self: Any) -> tuple[TorsionBilinearFormElement, ...]:
-            r"""Return the generating set: the images of the codomain's generators.
-
-            Shadows ``FGP_Module_class.gens``, which hands back the Smith-form
-            generators -- a different generating set, so a different object.
-            """
-            return tuple(self(generator) for generator in self.V().gens())
+        def gens(self: Any) -> tuple:
+            r"""Return the generating set: the images of $L^\vee$'s generators."""
+            return FormModule.gens(self)
 
         def primary_part(self: Any, p: Any) -> Subobject:
             r"""Return $A_p\hookrightarrow A$ as a subobject: the inclusion is the data.
@@ -142,7 +137,7 @@ class DiscriminantBilinearModules(Category):
             part = DiscriminantBilinearModules().cokernel(
                 regenerated_by(self, [multiplier * g.lift() for g in self.gens()])
             )
-            return Subobject(form_morphism(part, images, self))
+            return Subobject(FormMorphism(part, self, matrix(ZZ, [g.coordinates() for g in images])))
 
         def invariant_factor_form(self: Any) -> "TorsionBilinearForm":
             r"""Return $b$ on generators from the invariant factor decomposition.
@@ -193,23 +188,7 @@ class DiscriminantBilinearModules(Category):
         a lift by $f(\ell)$ shifts it by $b(\ell', \ell)\in\mathbb Z$.
         """
 
-        def b(self: Any, other: "TorsionBilinearFormElement") -> QmodnZ_Element:
-            r"""Return $b(\bar x,\bar y)\in\mathbb Q/\mathbb Z$.
+        def b(self: Any, other: Any) -> Any:
+            r"""Return $b(\bar x,\bar y)\in\mathbb Q/\mathbb Z$."""
+            return FormModuleElement.b(self, other)
 
-            A lift is a coordinate vector in $L^\vee$'s generators, so the
-            pairing is $L^\vee$'s own, reduced modulo $\mathbb Z$ -- moving a
-            lift by $c(\ell)$ shifts it by $\langle x,\ell\rangle\in\mathbb Z$.
-            """
-            return self.parent().value_module()(
-                self.lift().inner_product(other.lift())
-            )
-
-        def __mul__(self: Any, other: Any) -> Any:
-            r"""``x * y`` -> the pairing; anything else -> native semantics.
-
-            Elements subclass Sage's native element type, so scalars and
-            coercion keep its behaviour via ``super()``.
-            """
-            if isinstance(other, TorsionBilinearFormElement):
-                return self.b(other)
-            return super().__mul__(other)

@@ -27,7 +27,7 @@ from sage.modules.free_quadratic_module_integer_symmetric import (
 from sage.rings.rational_field import QQ
 
 
-class TorsionQuadraticFormElement(FGP_Element):
+class TorsionQuadraticFormElement(FormModuleElement):
     r"""A class $\bar x\in\operatorname{coker} c$ carrying $q$.
 
     Its own type, distinct from the bilinear one: the two answer different
@@ -36,7 +36,7 @@ class TorsionQuadraticFormElement(FGP_Element):
     """
 
 
-class TorsionQuadraticForm(FGP_Module_class):
+class TorsionQuadraticForm(FormModule):
     r"""$(\operatorname{coker} c,\; q)$ for the correlation $c: L\to L^\vee$ of an even $L$.
 
     The mirror of :func:`TorsionBilinearForm`, built the same way from the same
@@ -74,16 +74,19 @@ class DiscriminantQuadraticModules(Category):
     def cokernel(self, morphism: LatticeMorphism) -> TorsionQuadraticForm:
         r"""Return $\operatorname{coker}$ of ``morphism`` as an object of this category.
 
-        Which category is asked settles which form the answer carries, so the
-        construction belongs here rather than to a free function.
+        Which category is asked settles which form the answer carries, and here
+        that is the value module: the same cokernel of the same $c$ with the
+        same Gram matrix is a bilinear form in $\mathbb Q/\mathbb Z$ and a
+        quadratic one in $\mathbb Q/2\mathbb Z$.
         """
         source_gram = morphism.domain().gram_matrix()
         assert all(entry in 2 * ZZ for entry in source_gram.diagonal()), (
             "q is well defined only when the relations have even norm; these do "
             "not, so the cokernel carries b alone -- use discriminant_bilinear_form"
         )
-        cover, relations = cokernel_of(morphism)
-        form = TorsionQuadraticForm(cover, relations)
+        form = TorsionQuadraticForm(
+            Cokernel(morphism), QmodnZ(2), discriminant_gram(morphism)
+        )
         form._morphism = morphism
         refine(form, self)
         subdivide_form_gram_matrix(form)
@@ -92,17 +95,16 @@ class DiscriminantQuadraticModules(Category):
     class ParentMethods:
         r"""Methods available on discriminant quadratic modules."""
 
-        def value_module(self: Any) -> QmodnZ:
+        def _unused_value_module(self: Any) -> QmodnZ:
             r"""Return $\mathbb Q/2\mathbb Z$, where $q$ takes its values."""
             return QmodnZ(2)
 
         def gram_matrix(self: Any) -> Matrix:
-            r"""Return the matrix of $q$ on :meth:`gens`.
-
-            Diagonal $q(g_i)$, off-diagonal $b_q(g_i,g_j)$: the quadratic form
-            is not determined by a symmetric matrix alone, so the two halves
-            report different things and live in different value groups.
-            """
+            r"""Return the form in this object's generating set, in its value module."""
+            gram = FormModule.gram_matrix(self)
+            r"""Diagonal $q(g_i)$ in $\mathbb Q/2\mathbb Z$, off-diagonal
+            $b_q(g_i,g_j)$ in $\mathbb Q/\mathbb Z$: the two halves report
+            different things and live in different value groups."""
             generators = self.gens()
             size = len(generators)
             gram = matrix(QQ, size, size)
@@ -112,11 +114,11 @@ class DiscriminantQuadraticModules(Category):
                     gram[i, j] = gram[j, i] = left.b(generators[j]).lift()
             return gram
 
-        def associated_quadratic_form(self: Any) -> "TorsionQuadraticForm":
+        def associated_quadratic_form(self: Any) -> Any:
             r"""Return this form: it is already the quadratic one."""
             return self
 
-        def associated_bilinear_form(self: Any) -> "TorsionBilinearForm":
+        def associated_bilinear_form(self: Any) -> Any:
             r"""Return $b_q$, the polarization -- an object of the sibling category.
 
             Always defined, and it forgets: distinct $q$ on the same group can
@@ -141,17 +143,9 @@ class DiscriminantQuadraticModules(Category):
             """
             return self._morphism
 
-        def projection(self: Any) -> FGP_Morphism:
-            r"""Return $\pi: B\to\operatorname{coker} f$, sending $g_i$ to $h_i$."""
-            return self.quotient_map()
-
-        def gens(self: Any) -> tuple[TorsionQuadraticFormElement, ...]:
-            r"""Return the generating set: the images of the codomain's generators.
-
-            Shadows ``FGP_Module_class.gens``, which hands back the Smith-form
-            generators -- a different generating set, so a different object.
-            """
-            return tuple(self(generator) for generator in self.V().gens())
+        def gens(self: Any) -> tuple:
+            r"""Return the generating set: the images of $L^\vee$'s generators."""
+            return FormModule.gens(self)
 
         def primary_part(self: Any, p: Any) -> Subobject:
             r"""Return $A_p\hookrightarrow A$ as a subobject: the inclusion is the data.
@@ -166,7 +160,7 @@ class DiscriminantQuadraticModules(Category):
             part = DiscriminantQuadraticModules().cokernel(
                 regenerated_by(self, [multiplier * g.lift() for g in self.gens()])
             )
-            return Subobject(form_morphism(part, images, self))
+            return Subobject(FormMorphism(part, self, matrix(ZZ, [g.coordinates() for g in images])))
 
         def invariant_factor_form(self: Any) -> "TorsionQuadraticForm":
             r"""Return $q$ on generators from the invariant factor decomposition.
@@ -203,39 +197,30 @@ class DiscriminantQuadraticModules(Category):
     class ElementMethods:
         r"""Methods available on elements of discriminant quadratic modules."""
 
-        def q(self: Any) -> QmodnZ_Element:
-            r"""Return $q(\bar x)\in\mathbb Q/2\mathbb Z$.
+        def q(self: Any) -> Any:
+            r"""Return $q(\bar x)=\tilde b(x,x)\in\mathbb Q/2\mathbb Z$.
 
-            Well defined because $L$ is even: moving a lift by $c(\ell)$ shifts
-            $\langle x,x\rangle$ by $2\langle x,\ell\rangle+\langle\ell,\ell\rangle$,
-            and both terms lie in $2\mathbb Z$.
+            The same pairing the bilinear form reads modulo $\mathbb Z$, read
+            here modulo $2\mathbb Z$ instead -- Nikulin's convention, and the
+            reason $q$ and $b$ differ only in their value module.
             """
-            lift = self.lift()
-            return self.parent().value_module()(lift.inner_product(lift))
+            return FormModuleElement.b(self, self)
 
-        def b(self: Any, other: "TorsionQuadraticFormElement") -> QmodnZ_Element:
+        def b(self: Any, other: Any) -> Any:
             r"""Return the polarization $b_q(\bar x,\bar y)\in\mathbb Q/\mathbb Z$."""
-            return QmodnZ(1)(self.lift().inner_product(other.lift()))
+            return QmodnZ(1)(
+                self.coordinates()
+                * FormModule.gram_matrix(self.parent())
+                * other.coordinates()
+            )
 
-        def __mul__(self: Any, other: Any) -> Any:
-            r"""``x * y`` -> the polarization; anything else -> native semantics."""
-            if isinstance(other, TorsionQuadraticFormElement):
-                return self.b(other)
-            return super().__mul__(other)
-
-        def __pow__(self: Any, exponent: Any, modulus: Any = None) -> QmodnZ_Element:
+        def __pow__(self: Any, exponent: Any, modulus: Any = None) -> Any:
             r"""``x ^ 2`` -> $q(x)$."""
             assert exponent == 2, f"exponent {exponent} not supported"
             return self.q()
 
         def is_characteristic(self: Any) -> bool:
-            r"""Return whether this element is characteristic.
-
-            $v^*\in A_L$ is characteristic when $q(x)=b(x,v^*)\pmod{\mathbb Z}$
-            for every $x$.  $q$ is valued in $\mathbb Q/2\mathbb Z$ and $b$ in
-            $\mathbb Q/\mathbb Z$, so the comparison reduces both modulo
-            $\mathbb Z$.
-            """
+            r"""Return whether $q(x)=b(x,v^*)$ modulo $\mathbb Z$ for every $x$."""
             for x in self.parent():
                 if QQ(x.q().lift() - x.b(self).lift()) not in ZZ:
                     return False

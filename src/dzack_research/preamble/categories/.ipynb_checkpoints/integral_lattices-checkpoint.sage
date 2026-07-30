@@ -2,13 +2,14 @@ r"""``IntegralLattices`` — a category owning the lattice-specific API.
 
 Refine any integral lattice parent into this category to gain::
 
-    q(x), b(x, y), div(x), get_isotropic_type(element)
+    q(x), b(x, y), div(x)
     dual_basis(), I_perp_mod_I(vectors), is_isometric(other)
     with_names(spec), to_lin_comb_generators(element), sublattices
     _latex_()                   # multi-line Gram + discriminant display
     _first_ngens(count)         # generator sugar for ``L.<...> = ...``
     twist(*, names=...)         # twisted copy with optional naming
     __add__, __pow__, direct_sum      # orthogonal direct sums with subdivisions
+    summands()                  # block handles for direct-sum summands
     Aut(), invariant_lattice(action), coinvariant_lattice(action),
     coinvariant_inclusion(action)
 
@@ -31,18 +32,15 @@ EXAMPLES::
 """
 
 import re
-from typing import Any, assert_never
+from typing import Any
 
 from sage.arith.misc import gcd
 from sage.categories.category import Category
 from sage.categories.modules import Modules
 from sage.matrix.constructor import matrix
-from sage.matrix.matrix0 import Matrix
-from sage.modules.free_module_morphism import FreeModuleMorphism
 from sage.matrix.special import identity_matrix
 from sage.misc.latex import latex as _latex_fn
 from sage.modules.free_module import FreeModule
-from sage.modules.free_quadratic_module import FreeQuadraticModule_ambient_pid
 import sage.modules.free_quadratic_module_integer_symmetric as _sage_fqmis
 from sage.modules.free_quadratic_module_integer_symmetric import (
     FreeQuadraticModule_integer_symmetric,
@@ -50,9 +48,6 @@ from sage.modules.free_quadratic_module_integer_symmetric import (
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
-from sage.sets.set import Set
-from sage.modules.free_module_element import vector
-from sage.modules.vector_integer_dense import Vector_integer_dense
 from sage.structure.element import Vector
 
 SageIntegralLattice = _sage_fqmis.IntegralLattice
@@ -63,61 +58,194 @@ SageIntegralLattice = getattr(
 )
 IntegralLattice = SageIntegralLattice
 
+class SummandBlock:
+    r"""Handle for one orthogonal summand inside a direct-sum lattice.
 
-class LatticeElement(Vector_integer_dense):
-    r"""A vector of an integral lattice.
+    Indexing and :meth:`gens` return ambient elements of the sum.
+    As a Hom/Aut image of another equal-rank block, the handle expands to a
+    generator-wise map.  Equal-rank block sums place a domain block diagonally::
 
-    The category's owned element type.  Sage's lattices hand out plain integer
-    vectors; subclassing is how a parent claims its element type, and Sage
-    sanctions subclassing Cython element classes (:issue:`24715`), so instances
-    stay genuine native vectors for arithmetic, hashing and coercion.
+        {a1: b1, a2: b2 + b3}   # block columns of the Hom matrix
+
+    so ``b2 + b3`` is the sequence ``(b2[i] + b3[i])_i`` (the lattice map
+    \(N(2)\hookrightarrow N\oplus N\) when the forms match).
     """
 
+    __slots__ = ("_ambient", "_lattice", "_start", "_rank", "_name")
 
-class Lattice(FreeQuadraticModule_integer_symmetric):
-    r"""An integral lattice with a generating set and a Gram matrix.
+    def __init__(
+        self,
+        ambient: Any,
+        lattice: Any,
+        start: int,
+        rank: int,
+        name: str | None = None,
+    ) -> None:
+        self._ambient = ambient
+        self._lattice = lattice
+        self._start = int(start)
+        self._rank = int(rank)
+        self._name = name
 
-    The category's owned parent type.  It adds nothing to Sage's class -- the
-    behaviour is :class:`IntegralLattices`' -- but it is what the objects of
-    this category *are*, so morphisms and elements have something owned to be
-    annotated against, and the subcategories of lattices inherit it rather than
-    falling back to a bare Sage module.
-    """
+    @property
+    def lattice(self) -> Any:
+        """The abstract summand lattice."""
+        return self._lattice
 
-    Element = LatticeElement
+    @property
+    def ambient(self) -> Any:
+        """The direct-sum lattice containing this block."""
+        return self._ambient
 
+    @property
+    def inclusion(self) -> Any:
+        """The inclusion Hom ``summand → ambient``."""
+        gens = list(self._ambient.gens())[self._start : self._start + self._rank]
+        return self._lattice.Hom(self._ambient)(gens)
 
-class RationalLattice(FreeQuadraticModule_ambient_pid):
-    r"""A free $\mathbb Z$-module with a generating set and a $\mathbb Q$-valued Gram matrix.
+    def gens(self) -> tuple:
+        """Ambient generators spanning this block."""
+        return tuple(self._ambient.gens()[self._start : self._start + self._rank])
 
-    An object of the category of lattices with generating sets, in the case Sage
-    has no class for: its form takes rational values.  $L^\vee$ is one -- free
-    on $e_1^\vee,\dots,e_n^\vee$ with Gram $G^{-1}$ -- and so is the codomain of
-    every morphism a torsion form is the cokernel of, since the generating set
-    of the cokernel is the codomain's and its Gram is the codomain's descended.
+    def __getitem__(self, index: int) -> Any:
+        return self.gens()[index]
 
-    Sage's ``dual_lattice`` instead returns the *set of vectors*
-    $\{x\in L\otimes\mathbb Q : \langle x, L\rangle\subseteq\mathbb Z\}$, which
-    makes the correlation morphism look like an inclusion and the form look like
-    a property of a shared ambient.  Here there is no ambient: generators and a
-    Gram matrix are the whole of the data.
+    def __len__(self) -> int:
+        return self._rank
 
-    Built through the class and not the ``FreeQuadraticModule`` factory, which
-    coerces the Gram matrix into ``MatrixSpace(ZZ, n)`` and so rejects
-    $G^{-1}$.  A $\mathbb Z$-module may perfectly well carry a rational form;
-    only that one entry point insists otherwise.
-    """
+    def __neg__(self) -> tuple:
+        return tuple(-g for g in self.gens())
 
-    def __init__(self, gram_matrix: Any) -> None:
-        gram_matrix = matrix(QQ, gram_matrix)
-        assert gram_matrix.is_symmetric(), "a Gram matrix must be symmetric"
-        FreeQuadraticModule_ambient_pid.__init__(
-            self, ZZ, gram_matrix.nrows(), gram_matrix
+    def __add__(self, other: Any) -> Any:
+        """Equal-rank gen-wise sum of blocks (or of a prior sum sequence)."""
+        return _block_combine(self, other, 1)
+
+    def __radd__(self, other: Any) -> Any:
+        """Support ``(b1 + b2) + b3`` when the left operand is already a sequence."""
+        return _block_combine(other, self, 1)
+
+    def __sub__(self, other: Any) -> Any:
+        """Equal-rank gen-wise difference of blocks (or of a prior sum sequence)."""
+        return _block_combine(self, other, -1)
+
+    def __rsub__(self, other: Any) -> Any:
+        """Support ``seq - block`` when the left operand is already a sequence."""
+        return _block_combine(other, self, -1)
+
+    def __repr__(self) -> str:
+        label = self._name if self._name is not None else f"[{self._start}:{self._start + self._rank}]"
+        return f"SummandBlock({label}, rank={self._rank})"
+
+def _block_gens(part: Any) -> tuple:
+    """Ambient generators from a :class:`SummandBlock` or an equal-length sequence."""
+    if isinstance(part, SummandBlock):
+        return part.gens()
+    if isinstance(part, (list, tuple)) and not hasattr(part, "parent"):
+        return tuple(part)
+    raise TypeError(
+        f"block combination expects SummandBlock or sequence, got {type(part)!r}"
+    )
+
+def _block_combine(left: Any, right: Any, sign: int) -> Any:
+    """Gen-wise ``left[i] + sign * right[i]`` for equal-rank block images."""
+    if left is None or right is None:
+        return NotImplemented
+    try:
+        left_gens = _block_gens(left)
+        right_gens = _block_gens(right)
+    except TypeError:
+        return NotImplemented
+    assert len(left_gens) == len(right_gens), (
+        f"block ranks differ: {len(left_gens)} vs {len(right_gens)}"
+    )
+    return tuple(left_gens[i] + sign * right_gens[i] for i in range(len(left_gens)))
+
+def _summand_records(lattice: Any) -> list[dict[str, Any]]:
+    """Ordered summand metadata; a non-sum is a single full-rank record."""
+    existing = getattr(lattice, "_preamble_summands", None)
+    if existing is not None:
+        return [dict(rec) for rec in existing]
+    return [
+        {
+            "lattice": lattice,
+            "start": 0,
+            "rank": int(lattice.rank()),
+            "name": None,
+        }
+    ]
+
+def _attach_summand_records(
+    result: Any,
+    left: Any,
+    right: Any,
+    left_rank: int,
+    block_names: Any = None,
+) -> None:
+    """Store flattened summand records on ``result`` after ``left ⊕ right``."""
+    records = _summand_records(left)
+    for rec in _summand_records(right):
+        records.append(
+            {
+                "lattice": rec["lattice"],
+                "start": left_rank + int(rec["start"]),
+                "rank": int(rec["rank"]),
+                "name": rec.get("name"),
+            }
         )
+    if block_names is not None:
+        names = tuple(block_names)
+        assert len(names) == len(records), (
+            f"block_names length {len(names)} != number of summands {len(records)}"
+        )
+        for rec, name in zip(records, names):
+            rec["name"] = name
+    result._preamble_summands = records
 
-    def _repr_(self) -> str:
-        return f"Rational lattice of rank {self.rank()} over {self.base_ring()}"
+def expand_block_hom_dict(domain: Any, mapping: dict) -> list:
+    r"""Expand a Hom/Aut dict with block keys/values to ordered generator images.
 
+    Keys may be :class:`SummandBlock` handles or ambient generators.  Values may
+    be ambient elements, equal-rank blocks, equal-rank block sums
+    (``b2 + b3``), or sequences of ambient elements (including ``-block``).
+    """
+    images: dict[Any, Any] = {}
+    for key, val in mapping.items():
+        if isinstance(key, SummandBlock):
+            src_gens = key.gens()
+            if isinstance(val, SummandBlock):
+                dst_gens = val.gens()
+                assert len(src_gens) == len(dst_gens), (
+                    f"block ranks differ: {len(src_gens)} vs {len(dst_gens)}"
+                )
+                for src, dst in zip(src_gens, dst_gens):
+                    images[unwrap(src)] = unwrap(dst)
+            elif isinstance(val, (list, tuple)) and not hasattr(val, "parent"):
+                assert len(val) == len(src_gens), (
+                    f"image sequence length {len(val)} != block rank {len(src_gens)}"
+                )
+                for src, dst in zip(src_gens, val):
+                    images[unwrap(src)] = unwrap(dst)
+            else:
+                assert len(src_gens) == 1, (
+                    "non-block Hom image requires a rank-1 source block "
+                    f"(got rank {len(src_gens)})"
+                )
+                images[unwrap(src_gens[0])] = unwrap(val)
+        else:
+            if isinstance(val, SummandBlock):
+                assert len(val) == 1, (
+                    "generator key with block value requires a rank-1 block"
+                )
+                images[unwrap(key)] = unwrap(val[0])
+            else:
+                images[unwrap(key)] = unwrap(val)
+
+    ordered = []
+    for gen in domain.gens():
+        key = unwrap(gen)
+        assert key in images, f"missing image for generator {gen}"
+        ordered.append(images[key])
+    return ordered
 
 # Keep a reference to Sage's native direct_sum so we can call it from inside
 # the category without depending on any patches that may replace it.
@@ -154,44 +282,14 @@ class IntegralLattices(Category):
 
         def b(self: Any, x: Any, y: Any) -> Any:
             r"""Return the pairing $\langle x, y\rangle = x^T G y$."""
-            return (self.gram_matrix() * y).dot_product(x)
+            vx = _unwrap(x)
+            vy = _unwrap(y)
+            return (vx * self.gram_matrix()).dot_product(vy)
 
         def div(self: Any, x: Any) -> Any:
             r"""Return the positive generator of $\{\langle x, y\rangle : y \in L\}$."""
             pairings = [self.b(x, v) for v in self.basis()]
             return abs(gcd(pairings))
-
-        def gram_of(self: Any, vectors: Any) -> Any:
-            r"""Return the Gram matrix $[b(x_i, x_j)]$ of a finite family of vectors."""
-            vectors = tuple(vectors)
-            return matrix(ZZ, [[self.b(x, y) for y in vectors] for x in vectors])
-
-        def get_isotropic_type(self: Any, isotropic_element: Any) -> str:
-            r"""Classify a primitive isotropic element by its cusp type.
-
-            Divisibility 1 gives ``"Odd"``. Divisibility 2 is distinguished
-            by whether $e^* = e/2 \in A_L$ is characteristic.
-            """
-            assert getattr(isotropic_element, "parent", lambda: None)() is self, (
-                "get_isotropic_type expects an element of this lattice"
-            )
-            assert self.q(isotropic_element) == 0, (
-                f"expected an isotropic element, got square {self.q(isotropic_element)}"
-            )
-            assert isotropic_element.is_primitive(), "expected a primitive element"
-            divisibility = self.div(isotropic_element)
-            assert divisibility in Set({1, 2}), (
-                f"expected divisibility 1 or 2 in a 2-elementary lattice, "
-                f"got {divisibility}"
-            )
-            if divisibility == 1:
-                return "Odd"
-            if divisibility == 2:
-                divided_class = self.divided_discriminant_class(isotropic_element)
-                if divided_class.is_characteristic():
-                    return "Even characteristic"
-                return "Even ordinary"
-            assert_never(divisibility)
 
         # ---- dual basis ----
 
@@ -199,8 +297,7 @@ class IntegralLattices(Category):
             r"""Return the columns of $G^{-1}$ as the dual basis.
 
             These lie in $L\\otimes\\mathbb{Q}$, not necessarily in $L$, so they
-            are returned as vectors in the base-changed parent, not as
-            lattice-element facades.
+            are returned as ambient vectors (not lattice-element facades).
             """
             columns = self.gram_matrix().inverse().columns()
             for i, v in enumerate(self.basis()):
@@ -219,67 +316,64 @@ class IntegralLattices(Category):
                 IntegralLattice,
             )
 
-            coordinate_rows = [
-                self.coordinate_vector(v).change_ring(ZZ) for v in vectors
-            ]
-
-            gram = self.gram_matrix()
-            for i, left in enumerate(coordinate_rows):
-                for j, right in enumerate(coordinate_rows):
-                    pairing = (left * gram).dot_product(right)
-                    assert pairing == 0, (
-                        f"I must be isotropic: <v{i}, v{j}> = {pairing}, expected 0"
+            # FreeModule / Gram arithmetic must see native Cython vectors.
+            with without_element_wrap():
+                coordinate_rows = []
+                for v in vectors:
+                    coordinate_rows.append(
+                        self.coordinate_vector(_unwrap(v)).change_ring(ZZ)
                     )
 
-            free = FreeModule(ZZ, self.rank())
-            pairing_matrix = matrix(ZZ, [gram * row for row in coordinate_rows])
-            perp = free.submodule(pairing_matrix.right_kernel().basis())
-            isotropic = free.submodule(coordinate_rows)
-            quotient = perp / isotropic
+                gram = self.gram_matrix()
+                for i, left in enumerate(coordinate_rows):
+                    for j, right in enumerate(coordinate_rows):
+                        pairing = (left * gram).dot_product(right)
+                        assert pairing == 0, (
+                            f"I must be isotropic: <v{i}, v{j}> = {pairing}, expected 0"
+                        )
 
-            lifts = [gen.lift() for gen in quotient.gens()]
-            induced = matrix(
-                ZZ,
-                [[(u * gram * v) for v in lifts] for u in lifts],
-            )
-            assert induced.is_symmetric(), "induced form is not symmetric"
-            if induced.nrows() == 0:
-                return induced
-            lattice = IntegralLattice(induced)
+                free = FreeModule(ZZ, self.rank())
+                pairing_matrix = matrix(ZZ, [gram * row for row in coordinate_rows])
+                perp = free.submodule(pairing_matrix.right_kernel().basis())
+                isotropic = free.submodule(coordinate_rows)
+                quotient = perp / isotropic
+
+                lifts = [gen.lift() for gen in quotient.gens()]
+                induced = matrix(
+                    ZZ,
+                    [[(u * gram * v) for v in lifts] for u in lifts],
+                )
+                assert induced.is_symmetric(), "induced form is not symmetric"
+                if induced.nrows() == 0:
+                    return induced
+                lattice = IntegralLattice(induced)
+
             refine_one_lattice(lattice)
             return lattice
 
         # ---- overlattices ----
 
         def dual_lattice_element(self: Any, coordinates: Any) -> Any:
-            r"""Return the element of $L^\vee$ written in $L$'s basis by ``coordinates``.
+            r"""Return the element of $L^*$ with the displayed coordinates.
 
-            The catalogue displays glue vectors as rational coordinates in
-            $L$'s own basis, which is how they appear in the literature.  An
-            element of $L^\vee$ is written in the dual basis, and
-            $\sum_i a_i e_i^\vee = \sum_j v_j e_j$ gives $a = vG$ -- so the
-            conversion is by the Gram matrix, and the coordinates come out
-            integral exactly when the vector lies in $L^\vee$ at all.
+            The input is only a coordinate row.  The returned object is an
+            element of the actual Sage module ``self.dual_lattice()``; this is
+            the point where a raw vector is turned into a mathematical element
+            of $L^*$.
             """
-            in_dual_basis = vector(QQ, coordinates) * self.gram_matrix()
-            assert all(entry in ZZ for entry in in_dual_basis), (
-                f"{tuple(coordinates)} does not lie in L^v: it pairs to "
-                f"{tuple(in_dual_basis)} with L's basis, and L^v is where those "
-                "pairings are integral"
-            )
-            return self.dual()(in_dual_basis)
+            return self.discriminant_group()._dual_module(coordinates)
 
         def dual_lattice_generators(self: Any) -> tuple[Any, ...]:
             r"""Return the explicit module generators of $L^*$."""
-            return tuple(self.dual().gens())
+            return self.discriminant_group()._dual_generators
 
         def dual_embedding(self: Any) -> Any:
             r"""Return the inclusion morphism $L\to L^*$."""
-            return self.correlation()
+            return self.discriminant_group()._source_to_dual
 
         def discriminant_projection(self: Any) -> Any:
             r"""Return the quotient morphism $\pi: L^* \to A_L=L^*/L$."""
-            return self.discriminant_group().quotient_map()
+            return self.discriminant_group()._projection_from_dual
 
         def project_to_discriminant_group(self: Any, element: Any) -> Any:
             r"""Project an element of $L^*$ to its class in $A_L$.
@@ -295,15 +389,6 @@ class IntegralLattices(Category):
                 "dual_lattice_element(...)"
             )
             return projection(element)
-
-        def divided_discriminant_class(self: Any, element: Any) -> Any:
-            r"""Return the discriminant element represented by $e/\operatorname{div}(e)$."""
-            assert element in self, "divided_discriminant_class expects an element of this lattice"
-            divisibility = self.div(element)
-            dual_element = self.dual()(
-                self.correlation()(element) / QQ(divisibility)
-            )
-            return self.discriminant_projection()(dual_element)
 
         def glue(self: Any, *elements: Any) -> Any:
             r"""Return the even overlattice glued along discriminant elements.
@@ -380,123 +465,68 @@ class IntegralLattices(Category):
 
         # ---- Nikulin / signature predicates ----
 
-        def dual(self: Any) -> "FormModule":
-            r"""Return $L^\vee$: free on the dual generators, Gram $G^{-1}$.
+        def discriminant_group(self: Any, s: Any = 0) -> Any:
+            r"""Return $A_L=L^*/L$ with its source and projection data.
 
-            An object, not a set of vectors.  Sage's ``dual_lattice`` returns
-            $\{x\in L\otimes\mathbb Q:\langle x,L\rangle\subseteq\mathbb Z\}$,
-            which makes the correlation look like an inclusion and the form look
-            like a property of a shared ambient.
+            The Sage quotient module stores the cover ``V=L^*`` and relation
+            submodule ``W=L``.  We attach the source lattice and the honest
+            quotient morphism $\pi:L^*\to A_L$ so downstream constructions do
+            not confuse coordinate rows, elements of $L^*$, and elements of
+            $A_L$.
+
+            There are three distinct objects here.
+
+            * ``self.gens()`` are the basis vectors \(e_i\) of \(L\).
+            * ``dual_lattice_generators()`` are Sage's generators \(f_i\) of the
+              dual module \(L^*\).  These are elements of the dual parent, not
+              raw rational rows.
+            * ``dual_embedding()`` sends each \(e_i\) to the same vector in the
+              rational coordinate space, now constructed inside the dual
+              parent.  In the \(f_i\)-basis this map is generally not the
+              identity; for \(A_1(-1)^n\) it is \(2I\).
+
+            A displayed row in the catalogue is therefore first turned into an
+            element of the dual parent with :meth:`dual_lattice_element`, and
+            only then projected by the stored quotient map \(L^*\to A_L\).
             """
-            cached = getattr(self, "_preamble_dual", None)
-            if cached is None:
-                cached = free_form_module(self.gram_matrix().inverse(), QQ)
-                self._preamble_dual = cached
-            return cached
+            from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
 
-        def correlation(self: Any) -> "FormMorphism":
-            r"""Return $c: L\to L^\vee$, $v\mapsto\langle v,-\rangle$, matrix $G$.
+            if ZZ(s) == 0 and hasattr(self, "_preamble_discriminant_group"):
+                return self._preamble_discriminant_group
 
-            Nondegeneracy is injectivity of $c$, unimodularity is $c$ being an
-            isomorphism, and $A_L=\operatorname{coker} c$.
-            """
-            cached = getattr(self, "_preamble_correlation", None)
-            if cached is None:
-                # Built against the cached dual, so that elements of L^v have
-                # the same parent the projection speaks of.
-                cached = FormMorphism(
-                    free_form_module(self.gram_matrix(), ZZ),
-                    self.dual(),
-                    self.gram_matrix(),
-                )
-                self._preamble_correlation = cached
-            return cached
-
-        def discriminant_bilinear_form(self: Any) -> "TorsionBilinearForm":
-            r"""Return $(A_L, b)$ with $b: A_L\times A_L\to\mathbb Q/\mathbb Z$.
-
-            The always-defined discriminant form: $b$ needs nothing of $L$
-            beyond nondegeneracy, whereas $q$ needs $L$ even.  It is the
-            cokernel of :meth:`correlation`.
-            """
-            return DiscriminantBilinearModules().cokernel(self.correlation())
-
-        def discriminant_quadratic_form(self: Any) -> Any:
-            r"""Return $(A_L, q)$ with $q: A_L\to\mathbb Q/2\mathbb Z$.
-
-            Gated on evenness: moving a lift by $\ell\in L$ shifts
-            $b(\tilde x,\tilde x)$ by $b(\ell,\ell)$, which lies in
-            $2\mathbb Z$ exactly when $L$ is even.  For an odd $L$ there is no
-            such $q$, and :meth:`discriminant_bilinear_form` is all there is.
-            """
-            return DiscriminantQuadraticModules().cokernel(self.correlation())
-
-        def discriminant_group(
-            self: Any, s: Any = 0, *, reduce_trivial: bool = False
-        ) -> Any:
-            r"""Return $A_L=\operatorname{coker}(c: L\to L^\vee)$ with the form $L$ supports.
-
-            $q$ when $L$ is even, $b$ alone when it is odd -- two different
-            categories, so which one comes back is a fact about $L$ and not a
-            flag on the answer.
-
-            The generators are the dual basis and the relations are the ones
-            $c$ induces, so this is the cokernel on the nose.  A unimodular
-            summand of $L$ still contributes its generators; the relations kill
-            them, and they appear as trivial components and zero blocks rather
-            than vanishing.  ``reduce_trivial`` drops them, which is a
-            *different* object -- a different finitely presented group -- not
-            another view of this one.
-
-            The invariant-factor basis is likewise a different object, reached
-            by an isometry: see ``invariant_factor_form``, alongside
-            ``normal_form``.
-
-            Three distinct things are in play.
-
-            * ``self.gens()`` are the basis vectors $e_i$ of $L$.
-            * :meth:`dual_lattice_generators` are the $e_i^\vee$ of $L^\vee$.
-            * :meth:`dual_embedding` is $c$ itself, whose matrix is $G$ -- in
-              the $e_i^\vee$ basis it is generally not the identity; for
-              $A_1(-1)^n$ it is $2I$.
-
-            A displayed row in the catalogue is therefore turned into an element
-            of $L^\vee$ with :meth:`dual_lattice_element` first, and only then
-            projected.
-            """
-            cache = f"_preamble_discriminant_group_{bool(reduce_trivial)}"
-            if ZZ(s) == 0 and hasattr(self, cache):
-                return getattr(self, cache)
-
-            correlation = self.correlation()
-            # Which form A_L carries is a fact about L, not a flag on the answer.
-            category = (
-                DiscriminantQuadraticModules()
-                if self.is_even()
-                else DiscriminantBilinearModules()
-            )
-            form = category.cokernel(correlation)
-            if reduce_trivial:
-                # Keep the surviving generators as they are: regenerating on the
-                # Smith basis would be a different object again, not this one
-                # with the trivial components dropped.
-                surviving = [
-                    generator.lift()
-                    for generator in form.gens()
-                    if generator.order() != 1
-                ]
-                form = category.cokernel(regenerated_by(form, surviving))
+            dual = self.dual_lattice()
+            disc = TorsionQuadraticModule(dual, self)
             if ZZ(s) != 0:
-                return form.primary_part(s)
-            setattr(self, cache, form)
-            return form
+                d = disc.annihilator().gen()
+                primary_multiplier = d.prime_to_m_part(s)
+                disc = disc.submodule([primary_multiplier * gen for gen in disc.gens()])
+            disc._source_lattice = self
+            disc._dual_module = disc.V()
+            disc._dual_generators = tuple(disc._dual_module.gens())
+            rank = self.rank()
+            disc._source_to_dual = self.hom(
+                [
+                    disc._dual_module(
+                        [ZZ.one() if i == j else ZZ.zero() for j in range(rank)]
+                    )
+                    for i in range(rank)
+                ],
+                codomain=disc._dual_module,
+            )
+            disc._projection_from_dual = disc.quotient_map()
+            refine(disc, DiscriminantQuadraticModules())
+            if ZZ(s) == 0:
+                self._preamble_discriminant_group = disc
+            return disc
 
         def is_coeven(self: Any) -> bool:
             r"""Return whether the discriminant form is integer-valued ($\delta=0$)."""
             from sage.rings.infinity import Infinity
             from sage.rings.rational_field import QQ
 
-            disc = self.discriminant_group()
+            # keep native Cython vectors for that path.
+            with without_element_wrap():
+                disc = self.discriminant_group()
             assert disc.cardinality() < Infinity, (
                 "discriminant group is infinite; the lattice must be nondegenerate"
             )
@@ -516,7 +546,8 @@ class IntegralLattices(Category):
             Defers to :meth:`DiscriminantQuadraticModules.ParentMethods.is_p_elementary`
             on ``self.discriminant_group()``.
             """
-            disc = self.discriminant_group()
+            with without_element_wrap():
+                disc = self.discriminant_group()
             return bool(disc.is_p_elementary(p))
 
         def is_elliptic(self: Any) -> bool:
@@ -544,7 +575,7 @@ class IntegralLattices(Category):
         def to_lin_comb_generators(self: Any, element: Any) -> str:
             r"""Return an element as a linear combination of the named basis."""
             names = self.variable_names()
-            coords = self.coordinate_vector(element)
+            coords = self.coordinate_vector(_unwrap(element))
             terms = []
             for name, c in zip(names, coords, strict=True):
                 if c == 0:
@@ -566,24 +597,52 @@ class IntegralLattices(Category):
                 self._sublattices = existing
             return existing
 
-        # ---- generators (element_class instances at the output boundary) ----
+        # ---- generators (wrap Cython vectors at the API boundary) ----
 
         def gens(self: Any, *args: Any, **kwargs: Any) -> Any:
-            r"""Generators as ``element_class`` instances, immutable like Sage's own.
-
-            The stored basis predates refinement, so it has the plain native
-            element type; the parent hands out ``element_class`` elements.
-            """
             native = super(IntegralLattices.ParentMethods, self).gens(*args, **kwargs)
-            recast = [_recast_element(self, g) for g in native]
-            return type(native)(recast) if not isinstance(native, list) else recast
+            wrapped = [wrap_element(self, g) for g in native]
+            return type(native)(wrapped) if not isinstance(native, list) else wrapped
 
         def basis(self: Any, *args: Any, **kwargs: Any) -> Any:
             native = super(IntegralLattices.ParentMethods, self).basis(*args, **kwargs)
             # Preserve the native container type: Sage internals (e.g.
             # discriminant_group) concatenate ``basis()`` with lists.
-            recast = [_recast_element(self, g) for g in native]
-            return type(native)(recast) if not isinstance(native, list) else recast
+            wrapped = [wrap_element(self, g) for g in native]
+            return type(native)(wrapped) if not isinstance(native, list) else wrapped
+
+        def __call__(self: Any, *args: Any, **kwargs: Any) -> Any:
+            """Construct a lattice element on the owned facade interface."""
+            if _WRAP_DEPTH:
+                return super(IntegralLattices.ParentMethods, self).__call__(
+                    *args, **kwargs
+                )
+            facade_cls = getattr(self, "_preamble_element_class", None)
+            if facade_cls is not None and len(args) == 1 and not kwargs:
+                return facade_cls(self, unwrap(args[0]))
+            result = super(IntegralLattices.ParentMethods, self).__call__(
+                *args, **kwargs
+            )
+            return wrap_element(self, result)
+
+        def coordinate_vector(self: Any, v: Any, *args: Any, **kwargs: Any) -> Any:
+            r"""Return coordinates of ``v``; unwrap facades and suppress wrapping.
+
+            Sage's ``FreeModuleHomspace(list)`` builds the morphism matrix via
+            ``codomain.coordinates`` → ``coordinate_vector``.  That path compares
+            against ``basis()``; if basis elements are facades, Cython
+            ``Element.__richcmp__`` recurses through coercion and segfaults.
+            Run the native coordinate computation with wrapping suppressed so the
+            basis stays native for the duration of the call.
+            """
+            with without_element_wrap():
+                return super(IntegralLattices.ParentMethods, self).coordinate_vector(
+                    _unwrap(v), *args, **kwargs
+                )
+
+        def coordinates(self: Any, v: Any, *args: Any, **kwargs: Any) -> Any:
+            """Return ``coordinate_vector(v)`` as a list (Hom(list) entry point)."""
+            return self.coordinate_vector(v, *args, **kwargs).list()
 
         # ---- orthogonal direct sum / twist ----
 
@@ -591,54 +650,88 @@ class IntegralLattices(Category):
             self: Any,
             *others: Any,
             names: Any = None,
+            block_names: Any = None,
             **kwargs: Any,
         ) -> Any:
-            r"""Construct an orthogonal direct sum with its ordered subobjects."""
+            r"""Orthogonal direct sum preserving Gram subdivisions and summand blocks.
+
+            Nested sums flatten to a top-level ordered summand list.  Optional
+            ``block_names`` labels the resulting blocks for :meth:`summands`.
+            """
             if not others:
                 return self
 
             result = self
-            for other in others:
-                expected = _summand_ranks(result) + _summand_ranks(other)
-                result = _native_direct_sum(result, other, **kwargs)
+            n_others = len(others)
+            for index, other in enumerate(others):
+                left = result
+                left_subdivs = left.gram_matrix().subdivisions()[0] or ()
+                left_rank = left.rank()
+                right_subdivs = other.gram_matrix().subdivisions()[0] or ()
+
+                with without_element_wrap():
+                    result = _native_direct_sum(left, other, **kwargs)
                 refine_one_lattice(result)
-                # Both operands were split on their own construction, and the
-                # summed Gram is block diagonal across them, so the sum's
-                # components are exactly the two lists concatenated -- nothing
-                # to search for, only to check.
-                assert _summand_ranks(result) == expected, (
-                    "direct sum disagrees with its summands: "
-                    f"{_summand_ranks(result)} != {expected}"
+
+                combined = (
+                    list(left_subdivs)
+                    + [left_rank]
+                    + [left_rank + s for s in right_subdivs]
                 )
+                _subdivide_gram(result, combined)
+                names_here = block_names if index == n_others - 1 else None
+                _attach_summand_records(result, left, other, left_rank, names_here)
 
-            return _apply_names(result, names) if names is not None else result
-
-        def twist(self: Any, *args: Any, names: Any = None, **kwargs: Any) -> Any:
-            r"""Twisted lattice.
-
-            Scaling the Gram leaves the generators and their orthogonality
-            alone, so the twist splits exactly where ``self`` does; its own
-            construction finds that, and each summand comes back twisted.
-            """
-            result = _native_twist(self, *args, **kwargs)
-            refine_one_lattice(result)
-            assert _summand_ranks(result) == _summand_ranks(self), (
-                "twisting changed the decomposition: "
-                f"{_summand_ranks(result)} != {_summand_ranks(self)}"
-            )
             if names is not None:
                 result = _apply_names(result, names)
             return result
 
+        def summands(self: Any) -> tuple:
+            r"""Return ordered :class:`SummandBlock` handles for this direct sum.
+
+            A lattice that is not a recorded direct sum yields a single block
+            covering the whole lattice.
+            """
+            return tuple(
+                SummandBlock(
+                    self,
+                    rec["lattice"],
+                    rec["start"],
+                    rec["rank"],
+                    rec.get("name"),
+                )
+                for rec in _summand_records(self)
+            )
+
+        def twist(self: Any, *args: Any, names: Any = None, **kwargs: Any) -> Any:
+            r"""Twisted (sign-flipped) lattice, preserving Gram-matrix subdivisions."""
+            subdivs = self.gram_matrix().subdivisions()
+            with without_element_wrap():
+                result = _native_twist(self, *args, **kwargs)
+            refine_one_lattice(result)
+            if subdivs != ([], []):
+                _subdivide_gram(result, subdivs[0], subdivs[1])
+            if names is not None:
+                result = _apply_names(result, names)
+            return result
+
+        def _compute_lattice_gram_subdivisions(self: Any) -> list[int]:
+            r"""Detect and apply Gram-matrix block subdivisions from connected components."""
+            return compute_lattice_gram_subdivisions(self)
+
         # ---- morphisms / automorphisms ----
 
         def Hom(self: Any, *args: Any, **kwargs: Any) -> Any:
-            r"""Return $\mathrm{Hom}(L,M)$ with form-checked construction.
+            r"""Return $\mathrm{Hom}(L,M)$ with matrix-based morphism apply.
 
-            Construction is the usual list-of-images / matrix constructor;
-            the refined homset rejects non-form-preserving maps.
+            Construction is the usual list-of-images / matrix constructor.
+            Application bypasses Sage ``Map`` coercion (which SIGSEGVs once
+            lattices are facade-refined) and uses coordinates × matrix.
             """
-            hom = super(IntegralLattices.ParentMethods, self).Hom(*args, **kwargs)
+            with without_element_wrap():
+                hom = super(IntegralLattices.ParentMethods, self).Hom(
+                    *args, **kwargs
+                )
             return refine(hom, LatticeHomomorphisms())
 
         def Aut(self: Any) -> Any:
@@ -651,9 +744,10 @@ class IntegralLattices(Category):
             cached = self.__dict__.get("_preamble_Aut")
             if cached is not None:
                 return cached
-            # Hom already refines into LatticeHomomorphisms; Aut adds
-            # the isometry check on top.
-            hom = self.Hom(self)
+            with without_element_wrap():
+                # Hom already refines into LatticeHomomorphisms; Aut adds
+                # the isometry check on top.
+                hom = self.Hom(self)
             refined = refine(hom, LatticeIsometries())
             self._preamble_Aut = refined
             return refined
@@ -783,17 +877,8 @@ class IntegralLattices(Category):
                     f"\\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), "
                     f"\\quad \\mathrm{{disc}}(L) = {disc_latex} \\\\"
                 ),
+                f"G_L = {gram_latex} \\\\",
             ]
-
-            # Equality, not isometry: the summands are this lattice's own
-            # generators, partitioned.
-            decomposition = _decomposition_latex(self)
-            if decomposition is None and self not in DirectSumObjects():
-                decomposition = _summand_name(self)
-            if decomposition is not None:
-                header.append(f"L = {decomposition} \\\\")
-
-            header.append(f"G_L = {gram_latex} \\\\")
             return "\n".join(header + A_lines + [r"\end{gathered}"])
 
     class ElementMethods:
@@ -811,30 +896,52 @@ class IntegralLattices(Category):
             r"""Return the divisibility of this vector."""
             return self.parent().div(self)
 
-        def is_primitive(self: Any) -> bool:
-            r"""Return whether this vector is primitive in its lattice."""
-            return abs(gcd(list(self.parent().coordinate_vector(self)))) == 1
-
         def __mul__(self: Any, other: Any) -> Any:
-            r"""``v * w`` -> bilinear pairing; anything else -> native semantics.
+            r"""``v * w`` -> bilinear pairing; ``v * n`` -> scalar multiplication."""
+            from sage.structure.element import Element, Matrix
 
-            Elements are genuine native vectors (``element_class`` subclasses
-            the Cython type), so scalars, matrices, and coercion all keep
-            Sage's own behaviour via ``super()``.
-            """
+            if isinstance(other, (int, Integer)):
+                return self.parent()(Integer(other) * _unwrap(self))
+            if isinstance(other, Matrix):
+                return self.parent().b(self, other)
+            if isinstance(other, Element):
+                return self.parent().b(self, other)
             if isinstance(other, Vector):
                 return self.parent().b(self, other)
-            return super().__mul__(other)
+            return NotImplemented
+
+        def __rmul__(self: Any, other: Any) -> Any:
+            r"""``n * v`` -> scalar multiplication."""
+            if isinstance(other, (int, Integer)):
+                return self.parent()(Integer(other) * _unwrap(self))
+            return NotImplemented
+
+        def __add__(self: Any, other: Any) -> Any:
+            """Vector addition on the owned element interface."""
+            return _element_add(self, other, 1)
+
+        def __radd__(self: Any, other: Any) -> Any:
+            return _element_add(other, self, 1)
+
+        def __sub__(self: Any, other: Any) -> Any:
+            return _element_add(self, other, -1)
+
+        def __rsub__(self: Any, other: Any) -> Any:
+            return _element_add(other, self, -1)
+
+        def __neg__(self: Any) -> Any:
+            """``-v`` via the owned element interface."""
+            return self.parent()(-_unwrap(self))
 
         def __pow__(self: Any, exponent: Any, mod: Any = None) -> Any:
             r"""``v ^ 2`` -> $q(v)$."""
-            assert exponent == 2, f"exponent {exponent} not supported"
-            return self.q()
+            if exponent == 2:
+                return self.q()
+            raise NotImplementedError(f"exponent {exponent} not supported")
 
         def e_perp_mod_e(self: Any) -> Any:
             r"""$e^\perp / \langle e \rangle$ for a single isotropic $e$."""
             return self.parent().I_perp_mod_I([self])
-
 
 # ---- helper utilities ----
 
@@ -848,11 +955,9 @@ def set_zero_dots(enabled: bool = True) -> None:
 def _zero_dots() -> bool:
     return _ZERO_DOTS
 
-def _recast_element(parent: Any, g: Any) -> Any:
-    r"""Return ``g`` as an immutable ``element_class`` element of ``parent``."""
-    element = parent.element_class(parent, list(g))
-    element.set_immutable()
-    return element
+def _unwrap(x: Any) -> Any:
+    r"""Unwrap an element facade if present; otherwise return ``x``."""
+    return unwrap(x)
 
 def _discriminant_lift_row(element: Any, rank: int) -> list[Any]:
     r"""Return a representative row in $L^*$ for a discriminant-group element."""
@@ -866,6 +971,39 @@ def _discriminant_lift_row(element: Any, rank: int) -> list[Any]:
         f"discriminant element lift has rank {len(row)}, expected {rank}"
     )
     return row
+
+def _element_add(left: Any, right: Any, sign: int) -> Any:
+    """Add/subtract lattice elements coordinate-wise, returning a lattice element.
+
+    Arithmetic runs on native vectors; the parent constructor re-wraps.
+    """
+    from sage.modules.free_module_element import vector
+    from sage.rings.rational_field import QQ
+
+    if left is None:
+        return NotImplemented
+    try:
+        left_coords = vector(QQ, list(_unwrap(left)))
+    except (TypeError, ValueError, AttributeError):
+        return NotImplemented
+
+    if right is None:
+        result = sign * left_coords
+        parent = left.parent()
+    else:
+        try:
+            right_coords = vector(QQ, list(_unwrap(right)))
+        except (TypeError, ValueError, AttributeError):
+            return NotImplemented
+        result = left_coords + sign * right_coords
+        parent = left.parent() if hasattr(left, "parent") else right.parent()
+
+    if all(QQ(x).denominator() == 1 for x in result):
+        try:
+            return parent([ZZ(x) for x in result])
+        except (TypeError, ValueError, ArithmeticError):
+            pass
+    return result
 
 def _expand_names(spec: str, rank: int) -> tuple[str, ...]:
     r"""Expand indexed ranges in a basis-name specification."""
@@ -928,123 +1066,66 @@ def _subdivide_gram(L: Any, *cuts: Any) -> None:
         from copy import copy
 
         gram = copy(gram)
-        L._gram_matrix = gram
+        try:
+            L._gram_matrix = gram
+        except AttributeError:
+            pass
     gram.subdivide(*cuts)
 
-def _decompose_lattice(L: Any) -> None:
-    r"""Split \(L\) along its generators and record the summands.
+def _detect_matrix_connected_cuts(G: Any) -> list[int]:
+    r"""Detect connected-component cuts in a matrix graph for block subdivision.
 
-    Decomposability here is a property of the chosen generating set: \(L\)
-    *equals* a direct sum exactly when its Gram matrix is block diagonal in the
-    generators it was built with.  A splitting that would need the generators
-    permuted is a different object, and
-    :func:`_matrix_connected_component_cuts` declines it.
-
-    Every lattice passes through this on construction, so afterwards
-    membership in :class:`DirectSumObjects` *is* decomposability: a lattice
-    left in :class:`IntegralLattices` is indecomposable.  Callers rely on that
-    invariant instead of re-running the search.
+    Uses networkx (if available) to find connected components of the
+    adjacency graph defined by nonzero entries.
     """
-    if getattr(L, "_summands", None) is not None:
-        return
+    n = G.nrows()
+    if n <= 1:
+        return []
+    try:
+        import networkx as nx
+    except ImportError:
+        return []
+    adj = {i: [] for i in range(n)}
+    for i in range(n):
+        for j in range(i + 1, n):
+            if G[i, j] != 0:
+                adj[i].append(j)
+                adj[j].append(i)
+    graph = nx.Graph(adj)
+    comps = sorted(
+        [sorted(c) for c in nx.connected_components(graph)],
+        key=lambda c: c[0],
+    )
+    if [i for c in comps for i in c] != list(range(n)):
+        return []
+    cuts, cur = [], 0
+    for s in (len(c) for c in comps[:-1]):
+        cur += s
+        cuts.append(cur)
+    return [c for c in cuts if 0 < c < n]
 
+def compute_lattice_gram_subdivisions(L: Any) -> list[int]:
+    r"""Module-level helper: detect and apply Gram-matrix block subdivisions.
+
+    Can be called before a lattice is refined into a category, so it lives
+    at module level rather than in ``ParentMethods``.
+    """
     gram = L.gram_matrix()
-    cuts = _matrix_connected_component_cuts(gram)
-    if not cuts:
-        return
+    subdivs = gram.subdivisions()[0]
+    if subdivs:
+        return list(subdivs)
+    cuts = _detect_matrix_connected_cuts(gram)
+    if cuts:
+        if gram.is_immutable():
+            from copy import copy
 
-    bounds = list(zip([0] + cuts, cuts + [gram.nrows()]))
-    blocks = [
-        SageIntegralLattice(matrix(ZZ, gram.submatrix(start, start, end - start, end - start)))
-        for start, end in bounds
-    ]
-
-    _subdivide_gram(L, cuts, cuts)
-    generators = L.gens()
-    L._summands = tuple(
-        Subobject(block.Hom(L)(list(generators[start:end])))
-        for block, (start, end) in zip(blocks, bounds)
-    )
-    refine(L, [L.category(), DirectSumObjects()])
-
-
-def _summand_ranks(L: Any) -> tuple[int, ...]:
-    r"""Return the ranks of \(L\)'s summands, or its own rank when indecomposable."""
-    if L in DirectSumObjects():
-        return tuple(s.embedding().domain().rank() for s in L.summands())
-    return (L.rank(),)
-
-# ---- summand names ----
-
-#: Gram matrix -> LaTeX name, for the indecomposable lattices worth naming.
-#: ``catalogue.sage`` fills this in; the lookup is empty and harmless until then.
-_INDECOMPOSABLE_NAMES: dict[tuple, str] = {}
-
-
-def _gram_key(gram: Any) -> tuple:
-    r"""Return a hashable form of a Gram matrix, ignoring any subdivisions."""
-    return tuple(tuple(row) for row in gram.rows())
-
-
-def register_indecomposable(name: str, lattice: Any) -> None:
-    r"""Register *lattice*'s Gram matrix under the LaTeX *name*.
-
-    Matching is Gram equality, not isometry: a block **is** the named lattice
-    when the matrices agree, so nothing here asserts a theorem.  Decomposable
-    entries are refused -- they can never appear as a block, so registering one
-    would be dead weight that reads as if it could match.
-    """
-    assert lattice not in DirectSumObjects(), (
-        f"{name} is decomposable, so it can never be a summand; "
-        "name it by aggregating the summand list instead"
-    )
-    _INDECOMPOSABLE_NAMES.setdefault(_gram_key(lattice.gram_matrix()), name)
-
-
-def _summand_name(block: Any) -> str | None:
-    r"""Return the catalogue name for *block*, or ``None`` if unrecognized.
-
-    An exact match wins over a twisted one, and a positive scale over its
-    negative, so \(\langle-2\rangle\) reports as $I_{0,1}(2)$ rather than
-    $I_{1,0}(-2)$.
-    """
-    gram = block.gram_matrix()
-    exact = _INDECOMPOSABLE_NAMES.get(_gram_key(gram))
-    if exact is not None:
-        return exact
-
-    content = gcd(gram.list())
-    for scale in (content, -content):
-        if scale in (0, 1, -1):
-            continue
-        untwisted = _INDECOMPOSABLE_NAMES.get(
-            _gram_key((gram / scale).change_ring(ZZ))
-        )
-        if untwisted is not None:
-            return f"{untwisted}({scale})"
-
-    return None
-
-
-def _decomposition_latex(L: Any) -> str | None:
-    r"""Return ``N_1 \oplus N_2 \oplus ...`` for *L*, or ``None`` if it has no summands.
-
-    Unrecognized blocks fall back to a positional name; a lattice whose blocks
-    are all unrecognized has nothing to say beyond its Gram matrix.
-    """
-    if L not in DirectSumObjects():
-        return None
-    names = [
-        _summand_name(subobject.embedding().domain())
-        for subobject in L.summands()
-    ]
-    if all(name is None for name in names):
-        return None
-    return " \\oplus ".join(
-        name if name is not None else f"L_{{{i + 1}}}"
-        for i, name in enumerate(names)
-    )
-
+            gram = copy(gram)
+            try:
+                L._gram_matrix = gram
+            except AttributeError:
+                pass
+        gram.subdivide(cuts, cuts)
+    return cuts
 
 def _format_disc_latex(disc: int) -> str:
     r"""Format discriminant with prime factorization in LaTeX."""
@@ -1083,7 +1164,7 @@ def refine_one_lattice(lattice: Any) -> None:
         refine(lattice, HyperbolicLattices())
 
 def _after_lattice_init(lattice: Any) -> None:
-    _decompose_lattice(lattice)
+    compute_lattice_gram_subdivisions(lattice)
 
 def _is_hyperbolic(lattice: Any) -> bool:
     pos, neg = lattice.signature_pair()
@@ -1103,19 +1184,6 @@ def _integral_lattice_with_names(*args: Any, names: Any = None, **kwargs: Any) -
 _integral_lattice_with_names._preamble_native_integral_lattice = SageIntegralLattice
 
 
-def _own_lattice_types(lattice: Any) -> None:
-    r"""Claim the category's parent and element types before refine reads them."""
-    from sage.cpython.type import can_assign_class
-
-    if isinstance(lattice, Lattice):
-        return
-    assert can_assign_class(lattice), (
-        f"cannot own the type of {type(lattice).__name__}"
-    )
-    lattice.__class__ = Lattice
-    lattice.Element = LatticeElement
-
-
 def install_integral_lattices() -> None:
     """Hook post-init and shadow ``IntegralLattice`` with the preamble constructor."""
     global _INTEGRAL_LATTICES_INSTALLED
@@ -1125,7 +1193,6 @@ def install_integral_lattices() -> None:
     hook_post_init(
         FreeQuadraticModule_integer_symmetric,
         IntegralLattices(),
-        before=_own_lattice_types,
         after=_after_lattice_init,
     )
     hook_post_init(

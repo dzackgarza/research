@@ -84,7 +84,7 @@ class Cokernel(Parent):
         Parent.__init__(self, base=ZZ)
         self._morphism = morphism
         self._relations = relations
-        self._hermite = relations.hermite_form(include_zero_rows=False)
+        self._hermite = relations.hermite_form()
 
     def morphism(self) -> FreeModuleMorphism:
         r"""Return the $f$ this is the cokernel of."""
@@ -143,6 +143,34 @@ class Cokernel(Parent):
         bounds = [self._hermite[i, i] for i in range(size)]
         for point in cartesian_product_iterator([range(b) for b in bounds]):
             yield self(vector(ZZ, point))
+
+    def annihilator(self) -> Any:
+        r"""Return the ideal killing every element: $(\text{exponent})$."""
+        return ZZ.ideal(self.exponent())
+
+    def smith_form_gens(self) -> tuple[CokernelElement, ...]:
+        r"""Return generators realizing the invariant factor decomposition.
+
+        With $D=UMV$ the Smith form of the relations, $x\mapsto xV$ carries
+        $\operatorname{coker} M$ onto $\mathbb Z^m/\operatorname{row} D$, whose
+        standard generators pull back to the rows of $V^{-1}$.  Those with
+        $d_i=1$ die, so they are dropped.
+        """
+        smith, _, right = self._relations.smith_form()
+        inverse = right.inverse().change_ring(ZZ)
+        return tuple(
+            self(inverse.row(i))
+            for i, entry in enumerate(smith.diagonal())
+            if entry != ZZ.one()
+        )
+
+    def projection(self) -> Any:
+        r"""Return $\pi: B\to\operatorname{coker} f$, sending $g_i$ to its class."""
+        return lambda x: self(x)
+
+    def quotient_map(self) -> Any:
+        r"""Return :meth:`projection`, under Sage's name for it."""
+        return self.projection()
 
     def rank(self) -> Any:
         r"""Return 0: a cokernel of an injective map of free modules is torsion."""

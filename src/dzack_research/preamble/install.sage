@@ -65,6 +65,9 @@ else:
 
     load(str(_PREAMBLE / "refine.sage"))
     load(str(_PREAMBLE / "categories/gram_matrices.sage"))
+    load(str(_PREAMBLE / "categories/form_modules.sage"))
+    load(str(_PREAMBLE / "categories/cokernels.sage"))
+    load(str(_PREAMBLE / "categories/forms.sage"))
     load(str(_PREAMBLE / "categories/group/groups.sage"))
     load(str(_PREAMBLE / "categories/group/finitely_presented_groups.sage"))
     load(str(_PREAMBLE / "categories/integrallattice/integral_lattices.sage"))

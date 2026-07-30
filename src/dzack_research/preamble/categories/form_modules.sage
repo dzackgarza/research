@@ -26,6 +26,7 @@ is the point.
 
 from typing import Any
 
+from sage.groups.additive_abelian.qmodnz import QmodnZ
 from sage.matrix.matrix0 import Matrix
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -54,10 +55,23 @@ class FormModuleElement(Element):
         lift = getattr(self._underlying, "lift", None)
         return vector(lift() if lift is not None else self._underlying)
 
+    def lift(self) -> Any:
+        r"""Return the canonical representative in the generating set.
+
+        The same vector :meth:`coordinates` returns, under the name Sage's
+        quotient elements use for it.
+        """
+        return self.coordinates()
+
     def b(self, other: "FormModuleElement") -> Any:
         r"""Return the pairing, read in the value module."""
         parent = self.parent()
-        pairing = self.coordinates() * parent.gram_matrix() * other.coordinates()
+        # FormModule's stored Gram, not whatever a category reads off it: a
+        # quadratic module's ``gram_matrix`` is assembled *from* q and b, so
+        # going through it here would be circular.
+        pairing = (
+            self.coordinates() * FormModule.gram_matrix(parent) * other.coordinates()
+        )
         return parent.value_module()(pairing)
 
     def __mul__(self, other: Any) -> Any:
@@ -78,6 +92,14 @@ class FormModuleElement(Element):
         return self.parent()(factor * self._underlying)
 
     _rmul_ = _lmul_
+
+    def __truediv__(self, divisor: Any) -> "FormModuleElement":
+        r"""Return $x/n$, which exists when the coordinates stay integral."""
+        quotient = self.coordinates() / divisor
+        assert all(entry in ZZ for entry in quotient), (
+            f"{divisor} does not divide {self.coordinates()} in this module"
+        )
+        return self.parent()(quotient)
 
     def _richcmp_(self, other: Any, op: int) -> bool:
         return richcmp(self._underlying, other._underlying, op)
@@ -106,7 +128,8 @@ class FormModule(Parent):
     """
 
     def __init__(self, module: Any, value_module: Any, gram_matrix: Any) -> None:
-        gram_matrix = matrix(gram_matrix)
+        if not hasattr(gram_matrix, "subdivisions"):
+            gram_matrix = matrix(gram_matrix)
         assert gram_matrix.is_symmetric(), "a Gram matrix must be symmetric"
         assert gram_matrix.nrows() == len(tuple(module.gens())), (
             f"the Gram matrix is {gram_matrix.nrows()}x{gram_matrix.ncols()} but "
@@ -162,6 +185,22 @@ class FormModule(Parent):
         for element in self._module:
             yield self(element)
 
+    def annihilator(self) -> Any:
+        return self._module.annihilator()
+
+    def smith_form_gens(self) -> tuple:
+        return tuple(self(g) for g in self._module.smith_form_gens())
+
+    def projection(self) -> "FormProjection":
+        r"""Return $\pi: B\to A$, sending each generator to its class."""
+        return FormProjection(self)
+
+    def quotient_map(self) -> "FormProjection":
+        return self.projection()
+
+    def relation_matrix(self) -> Matrix:
+        return self._module.relation_matrix()
+
     def invariants(self) -> tuple:
         r"""Return the invariant factors of the underlying module."""
         return tuple(self._module.invariants())
@@ -197,10 +236,23 @@ class FormMorphism:
             f"got {matrix_.ncols()}"
         )
         transported = matrix_ * codomain.gram_matrix() * matrix_.transpose()
-        assert transported == domain.gram_matrix(), (
-            "not a morphism of form modules: M G_B M^T is "
-            f"{transported.list()}, not {domain.gram_matrix().list()}"
-        )
+        expected = domain.gram_matrix()
+        target = domain.value_module()
+        # Where the entries are compared is not uniform.  For a form valued in a
+        # quotient the Gram matrix is only a representative, so the identity
+        # M G_B M^T = G_A holds in the value module rather than on the nose --
+        # and for a quadratic form the diagonal is q, valued in Q/2Z, while the
+        # off-diagonal is the polarization, valued in Q/Z.  Comparing the whole
+        # matrix in one of them would reject honest morphisms.
+        polar = QmodnZ(1) if hasattr(target, "n") else target
+        for i in range(expected.nrows()):
+            for j in range(expected.ncols()):
+                where = target if i == j else polar
+                assert where(transported[i, j]) == where(expected[i, j]), (
+                    "not a morphism of form modules: at "
+                    f"({i}, {j}) M G_B M^T is {transported[i, j]}, not "
+                    f"{expected[i, j]} in {where}"
+                )
         self._domain = domain
         self._codomain = codomain
         self._matrix = matrix_
@@ -246,3 +298,22 @@ def correlation_of(gram_matrix: Any) -> FormMorphism:
     source = free_form_module(gram_matrix, ZZ)
     dual = free_form_module(gram_matrix.inverse(), QQ)
     return FormMorphism(source, dual, gram_matrix)
+
+
+class FormProjection:
+    r"""$\pi: B\to\operatorname{coker} f$, the map that comes with the quotient."""
+
+    def __init__(self, target: FormModule) -> None:
+        self._target = target
+
+    def domain(self) -> Any:
+        return self._target.module().morphism().codomain()
+
+    def codomain(self) -> FormModule:
+        return self._target
+
+    def __call__(self, x: Any) -> FormModuleElement:
+        return self._target(x)
+
+    def __repr__(self) -> str:
+        return f"Projection onto {self._target}"

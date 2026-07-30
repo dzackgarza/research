@@ -38,7 +38,7 @@ class TorsionModulesWithForm(Category):
 
         def relation_matrix(self: Any) -> Matrix:
             r"""Return the relations among :meth:`gens`, one per row."""
-            return relations_among(self, self.gens())
+            return self.module().relation_matrix()
 
         def as_finitely_presented_group(self: Any) -> FinitelyPresentedGroup:
             r"""Return a Sage-native ``FinitelyPresentedGroup`` representing $A_L$.
@@ -135,120 +135,35 @@ class TorsionModulesWithForm(Category):
 
 # ---- shared construction: a torsion form is a cokernel ----
 
-def cokernel_of(morphism: LatticeMorphism) -> tuple[Any, Any]:
-    r"""Return ``(codomain, relations)`` for $\operatorname{coker}$ of ``morphism``.
-
-    A morphism of lattices with generating sets has a unique matrix, and its
-    cokernel is settled by it: the generating set is the images of the
-    codomain's, and the Gram matrix is the codomain's read in the value group.
-    Nothing here is chosen.
-    """
-    domain, codomain = morphism.domain(), morphism.codomain()
-    relations = morphism.matrix()
-    assert relations.is_square(), (
-        f"f: A -> B must have equal ranks; got {relations.dimensions()}"
-    )
-    # A morphism of lattices with generating sets preserves the forms.  Not
-    # every free-module morphism does, and only the ones that do have a
-    # cokernel this category can carry.
-    transported = relations * codomain.gram_matrix() * relations.transpose()
-    assert transported == domain.gram_matrix(), (
-        "f must be a morphism of lattices with generating sets, but it does not "
-        f"preserve the form: M G_B M^T is {transported}, not {domain.gram_matrix()}"
-    )
-    assert relations.det() != 0, (
-        "f must be injective, or the cokernel is not torsion"
-    )
-    descent = relations * codomain.gram_matrix()
-    assert all(entry in ZZ for entry in descent.list()), (
-        "the form does not descend to the cokernel: the relations must pair "
-        f"integrally with the generators, but f's matrix times B's Gram is {descent}"
-    )
-    return codomain, codomain.span(
-        codomain.linear_combination_of_basis(row) for row in relations.rows()
-    )
+def discriminant_gram(morphism: Any) -> Any:
+    r"""Return the Gram matrix $A_L$ inherits: $L^\vee$'s, on its own generators."""
+    return morphism.codomain().gram_matrix()
 
 
-def cokernel_morphism(gram_matrix: Matrix, relations: Matrix) -> LatticeMorphism:
-    r"""Return the morphism whose cokernel has this Gram matrix and these relations.
-
-    The codomain is the lattice on the named generating set carrying
-    ``gram_matrix``; the domain is the one the relations span, whose Gram
-    $RBR^{\mathsf T}$ is forced by the morphism being form-preserving.  This is
-    how a torsion form on new generators is *built* -- as a new morphism, since
-    a different generating set is a different codomain and so a different
-    morphism.
-    """
-    gram_matrix = matrix(QQ, gram_matrix)
-    relations = matrix(ZZ, relations)
-    codomain = RationalLattice(gram_matrix)
-    domain = RationalLattice(relations * gram_matrix * relations.transpose())
-    # Through the refined homset, so the result is checked and owned: a bare
-    # ``domain.hom`` would hand back a FreeModuleMorphism with no form check,
-    # since a RationalLattice does not refine its own Hom.
-    homset = refine(domain.Hom(codomain), LatticeHomomorphisms())
-    return homset(
-        [codomain.linear_combination_of_basis(row) for row in relations.rows()]
-    )
-
-
-def regenerated_by(form: Any, lifts: Any) -> LatticeMorphism:
+def regenerated_by(form: Any, lifts: Any) -> Any:
     r"""Return the morphism presenting ``form`` on the generators these lifts name.
 
-    The lifts are elements of the current codomain; their pairings there give
-    the new codomain's Gram matrix, and the relations among their images give
-    its relations.  Both come out of the object, so the result is a morphism and
-    not a second piece of data hung off this one.
+    A different generating set is a different codomain, hence a different
+    morphism: the lifts' pairings give the new codomain's Gram, the relations
+    among their images give the new relations, and the domain's Gram
+    $RBR^{\mathsf T}$ is forced by the morphism preserving forms.
     """
-    lifts = list(lifts)
-    gram = form.V().gram_matrix()
-    new_gram = matrix(
-        QQ, [[left * gram * right for right in lifts] for left in lifts]
-    )
-    generators = [form(lift) for lift in lifts]
-    return cokernel_morphism(new_gram, relations_among(form, generators))
-
-
-def form_morphism(domain: Any, images: Any, codomain: Any) -> TorsionFormMorphism:
-    r"""Return the morphism of torsion forms with these images, typed by its category.
-
-    Sage's FGP machinery hardcodes ``FGP_Morphism`` when it builds a map, so the
-    class is reassigned afterwards -- the same ``__class__`` move override-refine
-    makes.  The morphism is checked to preserve the form, which is what makes it
-    a morphism of this category rather than of underlying groups.
-    """
-    from sage.cpython.type import can_assign_class
-
-    images = list(images)
-    morphism = domain.hom(images, codomain=codomain)
-    for i, left in enumerate(domain.gens()):
-        for j, right in enumerate(domain.gens()):
-            assert left.b(right) == morphism(left).b(morphism(right)), (
-                f"morphism does not preserve b at ({i}, {j})"
-            )
-    assert can_assign_class(morphism), (
-        f"cannot own the type of {type(morphism).__name__}"
-    )
-    morphism.__class__ = TorsionFormMorphism
-    return morphism
+    lifts = [vector(QQ, lift) for lift in lifts]
+    gram = discriminant_gram(form.correlation())
+    new_gram = matrix(QQ, [[left * gram * right for right in lifts] for left in lifts])
+    relations = relations_among(form, [form(lift) for lift in lifts])
+    codomain = free_form_module(new_gram, QQ)
+    domain = free_form_module(relations * new_gram * relations.transpose(), QQ)
+    return FormMorphism(domain, codomain, relations)
 
 
 def relations_among(form: Any, generators: Any) -> Matrix:
     r"""Return the relations among ``generators``: the kernel of $\mathbb Z^m\to A$."""
     generators = list(generators)
-    cover, relations = form.V(), form.W()
-    coordinates = cover.basis_matrix().solve_left
-    width = cover.rank()
-    # Sized explicitly: a trivial group has no generators, and an empty matrix
-    # with no columns cannot be stacked against the relations.
+    known = form.module().relation_matrix()
+    width = known.ncols()
     lifts = matrix(
-        ZZ, len(generators), width, [list(coordinates(g.lift())) for g in generators]
-    )
-    known = matrix(
-        ZZ,
-        relations.rank(),
-        width,
-        [list(coordinates(w)) for w in relations.basis_matrix().rows()],
+        ZZ, len(generators), width, [list(g.coordinates()) for g in generators]
     )
     kernel = lifts.stack(known).left_kernel().basis_matrix()
     return kernel[:, : lifts.nrows()]
@@ -257,23 +172,25 @@ def relations_among(form: Any, generators: Any) -> Matrix:
 def p_adic_jordan_generators(form: Any) -> list[Any]:
     r"""Return lifts of generators putting ``form`` in $p$-adic Jordan normal form.
 
-    The reduction is Sage's, run on a scratch realization built from this
-    object's own cover and relations and then discarded; only the generators it
-    chooses come back.  Nothing is told a value group it does not have: for an
-    even $L$ the scratch module carries $q$ and the reduction normalizes $q$;
-    for an odd $L$ it carries $b$ alone and normalizes $b$.
+    Sage's reduction is the engine and works on a realization, so one is built
+    from this object's own relations and Gram, run, and discarded; only the
+    generators it chooses come back, as coordinates in $L^\vee$.  Nothing is
+    told a value group it does not have -- an even $L$ gives the scratch module
+    a $q$ and the reduction normalizes $q$; an odd one gives it $b$ alone.
 
-    The even case serves the bilinear side too.  Peters--Sterk Prop. 11.2.3
-    puts normal forms for symmetric and quadratic torsion forms on the same
-    group in bijection, and $b_q$ is the polarization on the same generators --
-    so generators that make $q$ block-diagonal make $b$ block-diagonal in the
-    corresponding blocks.
+    The even case serves the bilinear side too: Peters--Sterk Prop. 11.2.3 puts
+    normal forms for symmetric and quadratic torsion forms on the same group in
+    bijection, and $b_q$ is the polarization on the same generators.
     """
+    from sage.modules.free_quadratic_module import FreeQuadraticModule
     from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
 
-    scratch = TorsionQuadraticModule(form.V(), form.W())
-    reduced = TorsionQuadraticModule.normal_form(scratch)
-    return [generator.lift() for generator in reduced.gens()]
+    relations = matrix(ZZ, form.module().relation_matrix())
+    realized = FreeQuadraticModule(ZZ, relations.nrows(), relations)
+    reduced = TorsionQuadraticModule.normal_form(
+        TorsionQuadraticModule(realized.span(relations.inverse().rows()), realized)
+    )
+    return [generator.lift() * relations for generator in reduced.gens()]
 
 
 def _format_cyclic_group_latex(orders: tuple[int, ...]) -> str:
@@ -337,22 +254,17 @@ def _form_gram_matrix_cuts(module: Any, raw: Any) -> list[int]:
     r"""Return the block cuts of ``module``'s form Gram matrix.
 
     The discriminant functor carries $L=\bigoplus L_i$ to $A=\bigoplus A_{L_i}$,
-    so when the morphism's domain is decomposed its cuts are $A$'s -- and they
-    have to be transported rather than recomputed, because a unimodular summand
-    contributes a block of zeroes that reading the matrix alone would split into
-    singletons.
-
-    A regenerated object has a domain synthesized from its own relations, which
-    carries no decomposition; there the blocks are whatever its Gram matrix
-    shows.
+    so when the correlation's domain is decomposed its cuts are $A$'s -- and
+    they have to be transported rather than recomputed, because a unimodular
+    summand contributes a block of zeroes that reading the matrix alone would
+    split into singletons.  A form on other generators has a synthesized domain
+    carrying no decomposition, and there the matrix is all there is.
     """
-    n = raw.nrows()
-    if n == 0:
+    if raw.nrows() == 0:
         return []
-
-    source = module.source_lattice()
-    if source is not None and n == source.rank():
-        transported = list(source.gram_matrix().subdivisions()[0])
-        if transported:
+    correlation = getattr(module, "_morphism", None)
+    if correlation is not None:
+        transported = list(correlation.domain().gram_matrix().subdivisions()[0])
+        if transported and max(transported) < raw.nrows():
             return transported
     return _matrix_connected_component_cuts(raw)
