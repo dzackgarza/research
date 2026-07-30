@@ -27,7 +27,70 @@ is the point.
 from typing import Any
 
 from sage.matrix.matrix0 import Matrix
+from sage.structure.element import Element
 from sage.structure.parent import Parent
+from sage.structure.richcmp import richcmp
+
+
+class FormModuleElement(Element):
+    r"""An element of a form module, held by its coordinates in the generating set.
+
+    The underlying module decides what the coordinates mean -- for a cokernel it
+    reduces them to a canonical representative -- and the form module adds the
+    pairing, which is why the element's parent is the form module and not the
+    module underneath it.
+    """
+
+    def __init__(self, parent: Any, x: Any) -> None:
+        Element.__init__(self, parent)
+        self._underlying = parent.module()(x)
+
+    def underlying(self) -> Any:
+        r"""Return this element of the module the form is carried on."""
+        return self._underlying
+
+    def coordinates(self) -> Any:
+        r"""Return the coordinates in the generating set the Gram matrix uses."""
+        lift = getattr(self._underlying, "lift", None)
+        return vector(lift() if lift is not None else self._underlying)
+
+    def b(self, other: "FormModuleElement") -> Any:
+        r"""Return the pairing, read in the value module."""
+        parent = self.parent()
+        pairing = self.coordinates() * parent.gram_matrix() * other.coordinates()
+        return parent.value_module()(pairing)
+
+    def __mul__(self, other: Any) -> Any:
+        if isinstance(other, FormModuleElement):
+            return self.b(other)
+        return self.parent()(other * self._underlying)
+
+    def _add_(self, other: Any) -> "FormModuleElement":
+        return self.parent()(self._underlying + other._underlying)
+
+    def _sub_(self, other: Any) -> "FormModuleElement":
+        return self.parent()(self._underlying - other._underlying)
+
+    def _neg_(self) -> "FormModuleElement":
+        return self.parent()(-self._underlying)
+
+    def _lmul_(self, factor: Any) -> "FormModuleElement":
+        return self.parent()(factor * self._underlying)
+
+    _rmul_ = _lmul_
+
+    def _richcmp_(self, other: Any, op: int) -> bool:
+        return richcmp(self._underlying, other._underlying, op)
+
+    def __hash__(self) -> int:
+        return hash(self._underlying)
+
+    def order(self) -> Any:
+        r"""Return the order of this element in the underlying module."""
+        return self._underlying.order()
+
+    def _repr_(self) -> str:
+        return repr(self._underlying)
 
 
 class FormModule(Parent):
@@ -82,10 +145,29 @@ class FormModule(Parent):
         return len(tuple(self._module.gens()))
 
     def rank(self) -> Any:
+        r"""Return the rank of the underlying module, when it has one.
+
+        A cokernel is torsion and has none; its size is :meth:`cardinality`.
+        """
         return self._module.rank()
 
-    def _element_constructor_(self, x: Any) -> Any:
-        return self._module(x)
+    Element = FormModuleElement
+
+    def _element_constructor_(self, x: Any) -> FormModuleElement:
+        if isinstance(x, FormModuleElement):
+            x = x.underlying()
+        return self.element_class(self, x)
+
+    def __iter__(self):
+        for element in self._module:
+            yield self(element)
+
+    def invariants(self) -> tuple:
+        r"""Return the invariant factors of the underlying module."""
+        return tuple(self._module.invariants())
+
+    def cardinality(self) -> Any:
+        return self._module.cardinality()
 
     def _repr_(self) -> str:
         return (

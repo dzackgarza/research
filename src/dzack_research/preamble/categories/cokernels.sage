@@ -144,5 +144,12 @@ class Cokernel(Parent):
         for point in cartesian_product_iterator([range(b) for b in bounds]):
             yield self(vector(ZZ, point))
 
+    def rank(self) -> Any:
+        r"""Return 0: a cokernel of an injective map of free modules is torsion."""
+        return ZZ.zero()
+
+    def ngens(self) -> int:
+        return self._relations.ncols()
+
     def _repr_(self) -> str:
         return f"Cokernel of {self._relations.nrows()} relations, order {self.cardinality()}"
