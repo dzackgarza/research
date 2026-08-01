@@ -1,0 +1,80 @@
+.cm-docstring-inline-code {
+  font-family: var(--jp-code-font-family, monospace);
+  font-size: var(--jp-code-font-size, 13px);
+  background-color: var(--jp-layout-color2, rgba(0, 0, 0, 0.05));
+  color: var(--jp-content-font-color1, #212121);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--jp-border-color2, rgba(0, 0, 0, 0.1));
+}
+
+.cm-docstring-inline-code .tok-keyword {
+  color: var(--jp-mirror-editor-keyword-color, #008000);
+}
+
+.cm-docstring-inline-code .tok-atom,
+.cm-docstring-inline-code .tok-bool {
+  color: var(--jp-mirror-editor-atom-color, #88f);
+}
+
+.cm-docstring-inline-code .tok-number {
+  color: var(--jp-mirror-editor-number-color, #008000);
+}
+
+.cm-docstring-inline-code .tok-string,
+.cm-docstring-inline-code .tok-string2 {
+  color: var(--jp-mirror-editor-string-color, #ba2121);
+}
+
+.cm-docstring-inline-code .tok-variableName,
+.cm-docstring-inline-code .tok-variableName2 {
+  color: var(--jp-mirror-editor-variable-color, #212121);
+}
+
+.cm-docstring-inline-code .tok-function {
+  color: var(--jp-mirror-editor-def-color, #1e88e5);
+}
+
+.cm-docstring-inline-code .tok-typeName,
+.cm-docstring-inline-code .tok-className,
+.cm-docstring-inline-code .tok-definition {
+  color: var(--jp-mirror-editor-def-color, #00f);
+}
+
+.cm-docstring-inline-code .tok-propertyName {
+  color: var(--jp-mirror-editor-property-color, #05a);
+}
+
+.cm-docstring-inline-code .tok-operator {
+  color: var(--jp-mirror-editor-operator-color, #7800c2);
+}
+
+.cm-docstring-inline-code .tok-comment {
+  color: var(--jp-mirror-editor-comment-color, #408080);
+}
+
+.cm-docstring-inline-code .tok-meta {
+  color: var(--jp-mirror-editor-meta-color, #a2f);
+}
+
+.cm-docstring-inline-code .tok-punctuation {
+  color: var(--jp-mirror-editor-punctuation-color, #05a);
+}
+
+.cm-docstring-inline-code .tok-invalid {
+  color: var(--jp-mirror-editor-error-color, #f00);
+}
+
+.cm-docstring-math-inline {
+  display: inline-block;
+}
+
+.cm-docstring-math-block {
+  display: block;
+  margin: 0.5em 0;
+  text-align: center;
+}
+
+.cm-docstring-math-hidden {
+  display: none !important;
+}

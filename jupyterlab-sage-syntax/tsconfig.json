@@ -1,18 +1,18 @@
 {
   "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "DOM"],
     "declaration": true,
-    "declarationMap": true,
-    "esModuleInterop": true,
-    "lib": ["es2022", "dom"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noEmitOnError": true,
+    "sourceMap": true,
     "outDir": "lib",
     "rootDir": "src",
-    "skipLibCheck": true,
-    "sourceMap": true,
     "strict": true,
-    "target": "es2022"
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/*"]
+  "include": ["src/**/*"]
 }
