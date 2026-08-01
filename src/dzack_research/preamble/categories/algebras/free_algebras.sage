@@ -13,6 +13,11 @@ class FreeAlgebras(Category_over_base_ring):
     def super_categories(self) -> list:
         return [Algebras(self.base_ring()), FreeModules(self.base_ring())]
 
+    class SubcategoryMethods:
+        def on(self, generating_set):
+            r"""Return the free algebra on ``generating_set``."""
+            return FreeAlgebraOn(self.base_ring(), generating_set)
+
     class ParentMethods:
         def is_free(self) -> bool:
             r"""Return whether this algebra is free."""

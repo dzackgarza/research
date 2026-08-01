@@ -20,6 +20,11 @@ class Algebras(Category_over_base_ring):
     def super_categories(self) -> list:
         return [SageAlgebras(self.base_ring())]
 
+    class SubcategoryMethods:
+        def Free(self):
+            r"""Return the free-algebra subcategory over this base ring."""
+            return FreeAlgebras(self.base_ring())
+
     class ParentMethods:
         def is_algebra(self) -> bool:
             r"""Return whether this parent is declared to be an (R)-algebra."""
