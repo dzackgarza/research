@@ -39,6 +39,7 @@ from typing import Any, Callable
 
 from sage.categories.morphism import Morphism
 from sage.cpython.type import can_assign_class
+from sage.misc.abstract_method import AbstractMethod
 from sage.structure.category_object import CategoryObject
 from sage.structure.dynamic_class import dynamic_class
 from sage.structure.element import Element
@@ -53,6 +54,38 @@ _HOOKS: dict[type, list[tuple[Any, Callable[[Any], bool] | None]]] = {}
 _ORIGINAL_INIT: dict[type, Any] = {}
 _AFTER: dict[type, list[Callable[[Any], None]]] = {}
 _BEFORE: dict[type, list[Callable[[Any], None]]] = {}
+_IMPLEMENTED_MIXINS: dict[type, type] = {}
+
+
+def _implemented_mixin(mixin: type) -> type:
+    r"""Return the concrete implementations declared by ``mixin``.
+
+    Sage abstract methods are category obligations.  They must not precede
+    the concrete parent methods that satisfy them when override-refining.
+    """
+    abstract_names = {
+        name
+        for name, value in vars(mixin).items()
+        if isinstance(value, AbstractMethod)
+    }
+    if not abstract_names:
+        return mixin
+    cached = _IMPLEMENTED_MIXINS.get(mixin)
+    if cached is not None:
+        return cached
+    implemented = {
+        name: value
+        for name, value in vars(mixin).items()
+        if name not in abstract_names
+        and name not in {"__dict__", "__weakref__"}
+    }
+    filtered = type(
+        f"{mixin.__name__}Implementations",
+        (),
+        implemented,
+    )
+    _IMPLEMENTED_MIXINS[mixin] = filtered
+    return filtered
 
 def _concrete_base(obj: Any) -> type:
     """Return the non-dynamic concrete class Sage would use as ``__base__``."""
@@ -142,14 +175,23 @@ def _preamble_mixins(category: Any, attr: str) -> tuple[type, ...]:
     """Collect preamble ``ParentMethods`` / ``ElementMethods`` / ``MorphismMethods``."""
     mixins: list[type] = []
     for cat in category.all_super_categories(proper=False):
-        name = type(cat).__name__
-        if not any(name == owned or name.startswith(owned + "_") for owned in _OWNED_CATEGORY_NAMES):
+        category_type = type(cat)
+        name = category_type.__name__
+        owned_spike_category = category_type.__module__.startswith(
+            "sage_lattice_category_spike."
+        )
+        owned_preamble_category = any(
+            name == owned or name.startswith(owned + "_")
+            for owned in _OWNED_CATEGORY_NAMES
+        )
+        if not owned_spike_category and not owned_preamble_category:
             continue
-        nested = getattr(type(cat), attr, None)
+        nested = getattr(category_type, attr, None)
         if nested is None:
             continue
-        if nested not in mixins:
-            mixins.append(nested)
+        implemented = _implemented_mixin(nested)
+        if implemented not in mixins:
+            mixins.append(implemented)
     return tuple(mixins)
 
 def _method_mixins(category: Any, attr: str) -> tuple[type, ...]:

@@ -96,15 +96,23 @@ else:
     load(str(_PREAMBLE / "categories/divisors/cartier_divisor_groups.sage"))
     load(str(_PREAMBLE / "categories/divisors/class_groups.sage"))
     load(str(_PREAMBLE / "categories/divisors/picard_groups.sage"))
+    load(str(_PREAMBLE / "categories/algebras/free_algebras.sage"))
+    load(str(_PREAMBLE / "categories/algebras/algebras.sage"))
+    load(str(_PREAMBLE / "categories/algebras/framed_free_algebras.sage"))
     load(str(_PREAMBLE / "categories/schemes/ringed_spaces.sage"))
     load(str(_PREAMBLE / "categories/schemes/schemes.sage"))
+    load(str(_PREAMBLE / "categories/schemes/scheme_morphisms.sage"))
+    load(str(_PREAMBLE / "categories/schemes/scheme_points.sage"))
     load(str(_PREAMBLE / "categories/schemes/ambient_spaces.sage"))
     load(str(_PREAMBLE / "categories/schemes/subschemes.sage"))
     load(str(_PREAMBLE / "categories/schemes/varieties.sage"))
     load(str(_PREAMBLE / "catalogue.sage"))
     install_finitely_presented_groups()
+    install_algebras()
     install_ringed_spaces()
     install_schemes()
+    install_scheme_morphisms()
+    install_scheme_points()
     install_ambient_spaces()
     install_subschemes()
     install_varieties()
@@ -132,7 +140,7 @@ else:
 
         def _route_ring_pow(self, exponent):
             match exponent:
-                case int() | _PreambleSageInteger() if exponent >= 0:
+                case int() | _PreambleSageInteger() if exponent >= int():
                     return _PreambleBasedFreeModule(self, exponent)
                 case _:
                     return _preamble_original_ring_pow(self, exponent)
