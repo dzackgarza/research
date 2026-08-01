@@ -219,7 +219,7 @@ class ModuleMorphism(Morphism):
             sum(
                 (
                     coefficient
-                    * self.generator_morphism()(element_of_S)
+                    * self._generator_image(element_of_S)
                     for coefficient, element_of_S in zip(
                         relation,
                         generating_set,
@@ -235,13 +235,17 @@ class ModuleMorphism(Morphism):
         r"""Return the set morphism whose linear extension is this morphism."""
         return self._generator_morphism
 
+    def _generator_image(self, element_of_S: Any) -> Any:
+        r"""Evaluate the generator map on an element already in its domain."""
+        return self.generator_morphism()._call_(element_of_S)
+
     def images(self) -> tuple:
         generating_set = self.domain().generating_set()
         assert generating_set in Sets().Finite(), (
             "listing all images requires a finite framing set"
         )
         return tuple(
-            self.generator_morphism()(element_of_S)
+            self._generator_image(element_of_S)
             for element_of_S in generating_set
         )
 
@@ -265,7 +269,7 @@ class ModuleMorphism(Morphism):
         return sum(
             (
                 coefficient
-                * self.generator_morphism()(element_of_S)
+                * self._generator_image(element_of_S)
                 for element_of_S, coefficient in _coefficients(element).items()
             ),
             self.codomain().zero(),
@@ -375,7 +379,7 @@ class ModuleMorphism(Morphism):
             return "the linear extension of a generator morphism"
         return "\n".join(
             f"{element_of_S!r} |--> "
-            f"{self.generator_morphism()(element_of_S)}"
+            f"{self._generator_image(element_of_S)}"
             for element_of_S in generating_set
         )
 
@@ -451,7 +455,7 @@ class ModuleAutomorphism(ModuleMorphism):
                     Sets(),
                 ),
                 lambda element_of_S: self(
-                    other.generator_morphism()(element_of_S)
+                    other.generator_morphism()._call_(element_of_S)
                 ),
             )
         )

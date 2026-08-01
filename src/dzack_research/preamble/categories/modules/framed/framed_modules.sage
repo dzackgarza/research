@@ -104,7 +104,7 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
 
         def generator(self, element_of_S: Any):
             r"""Return the distinguished generator associated to \(s\in S\)."""
-            return self.generator_morphism()(element_of_S)
+            return self.generator_morphism()._call_(element_of_S)
 
         def linear_combination(self: Any, coefficients: dict) -> Any:
             r"""Return the specified finite \(R\)-linear combination."""
