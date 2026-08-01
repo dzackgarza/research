@@ -16,11 +16,12 @@ from typing import Any
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets as SageSets
-from sage.sets.set import Set
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
+
+from sage_lattice_category_spike.objects.sets import Sets
+from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
 
 
 class FramedFreeModules(Category_over_base_ring):
@@ -40,7 +41,10 @@ class FramedFreeModules(Category_over_base_ring):
             assert isinstance(morphism, SetMorphism), (
                 "a framed free module stores its canonical generator morphism"
             )
-            assert morphism.codomain() is self, (
+            assert (
+                isinstance(morphism.codomain(), UnderlyingSet)
+                and morphism.codomain().structured_parent() is self
+            ), (
                 "the canonical generator morphism has the wrong codomain"
             )
             return morphism
@@ -68,7 +72,11 @@ class FramedFreeModules(Category_over_base_ring):
             r"""Extend a set morphism \(S\to U(N)\) \(R\)-linearly."""
             match images:
                 case SetMorphism():
-                    target = images.codomain()
+                    assert isinstance(images.codomain(), UnderlyingSet), (
+                        "a generator morphism lands in the underlying set of "
+                        "its module codomain"
+                    )
+                    target = images.codomain().structured_parent()
                 case dict():
                     assert images, (
                         "an empty assignment does not determine its codomain; "
@@ -178,8 +186,7 @@ class FreeModuleOnSet(Parent):
     Element = FreeModuleOnSetElement
 
     def __init__(self, base_ring: Any, generating_set: Any) -> None:
-        if not isinstance(generating_set, Parent):
-            generating_set = Set(generating_set)
+        generating_set = _as_set(generating_set)
         self._generating_set = generating_set
         Parent.__init__(
             self,
@@ -188,7 +195,7 @@ class FreeModuleOnSet(Parent):
         )
         refine(self, FramedFreeModules(base_ring))
         self._free_generator_morphism = SetMorphism(
-            Hom(generating_set, self, SageSets()),
+            Hom(generating_set, UnderlyingSet(self), Sets()),
             self._generator_element,
         )
         self._framing_morphism = framing_morphism(
@@ -240,12 +247,11 @@ class FreeModuleOnSet(Parent):
 
 def FreeModuleOn(base_ring: Any, generating_set: Any) -> FreeModuleOnSet:
     r"""Construct \(F_R(S)\) on the supplied set \(S\)."""
-    if not isinstance(generating_set, Parent):
-        generating_set = Set(generating_set)
+    generating_set = _as_set(generating_set)
     set_category = generating_set.category()
     match (
-        set_category.is_subcategory(SageSets().Finite()),
-        set_category.is_subcategory(OrderedSets().TotallyOrdered()),
+        set_category.is_subcategory(Sets().Finite()),
+        set_category.is_subcategory(Sets().TotallyOrdered()),
     ):
         case (True, True):
             return BasedFreeModule(base_ring, generating_set)

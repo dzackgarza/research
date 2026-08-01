@@ -64,7 +64,7 @@ else:
 
     load(str(_PREAMBLE / "refine.sage"))
     load(str(_PREAMBLE / "categories/forms/gram_matrices.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/ordered_sets.sage"))
+    load(str(_PREAMBLE / "categories/sets/sets.sage"))
     load(str(_PREAMBLE / "categories/modules/pure/finitely_generated/finitely_generated_modules.sage"))
     load(str(_PREAMBLE / "categories/modules/pure/free_modules.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/framed_modules.sage"))
@@ -142,8 +142,17 @@ else:
 
     # Only what the scripts added: re-exporting the caller's own names would
     # overwrite a later module's helpers with this one's.
-    _dzack_research._preamble_namespace = {
+    _preamble_namespace = {
         _name: _value
         for _name, _value in globals().items()
         if _name not in _exported_before and not _name.startswith("__")
     }
+    _preamble_namespace.update(
+        {
+            "ConditionSet": ConditionSet,
+            "ImageSet": ImageSet,
+            "Set": Set,
+            "Sets": Sets,
+        }
+    )
+    _dzack_research._preamble_namespace = _preamble_namespace

@@ -11,8 +11,9 @@ from sage.categories.category_with_axiom import (
     all_axioms,
     axiom,
 )
-from sage.categories.sets_cat import Sets
 from sage.rings.integer_ring import ZZ
+
+from sage_lattice_category_spike.objects.sets import Sets
 
 # Register LocallyRinged axiom in Sage's axiom registry if not already present
 if "LocallyRinged" not in all_axioms:

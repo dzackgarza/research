@@ -9,7 +9,6 @@ from typing import Any
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets as SageSets
 from sage.matrix.constructor import matrix
 from sage.matrix.matrix0 import Matrix
 from sage.modules.free_module_element import vector
@@ -17,6 +16,9 @@ from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
+
+from sage_lattice_category_spike.objects.sets import Sets
+from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
 
 
 class FinitelyPresentedModules(Category_over_base_ring):
@@ -112,8 +114,8 @@ class FinitelyPresentedModule(Parent):
         quotient_generator_morphism = SetMorphism(
             Hom(
                 source_generator_morphism.domain(),
-                self,
-                SageSets(),
+                UnderlyingSet(self),
+                Sets(),
             ),
             lambda element_of_S: self._from_coordinates(
                 _coordinate_vector(

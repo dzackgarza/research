@@ -4,16 +4,18 @@ from typing import Any
 
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
-from sage.categories.sets_cat import Sets as SageSets
 from sage.matrix.matrix0 import Matrix
 from sage.structure.parent import Parent
+
+from sage_lattice_category_spike.objects.sets import Sets
+
 
 class TensorSquare(Parent):
     r"""The formal tensor square \(M\otimes_R M\), as a morphism domain."""
 
     def __init__(self, module: Any) -> None:
         self._module = module
-        Parent.__init__(self, category=SageSets())
+        Parent.__init__(self, category=Sets())
 
     def module(self) -> Any:
         return self._module
@@ -37,7 +39,7 @@ class BilinearFormHomset(Homset):
             self,
             TensorSquare(module),
             value_module,
-            category=SageSets(),
+            category=Sets(),
             check=False,
         )
 
@@ -68,7 +70,7 @@ class QuadraticFormHomset(Homset):
             self,
             module,
             value_module,
-            category=SageSets(),
+            category=Sets(),
             check=False,
         )
 

@@ -44,8 +44,10 @@ from sage.misc.latex import latex as _latex_fn
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
-from sage.sets.set import Set
 from sage.modules.free_module_element import vector
+
+from sage_lattice_category_spike.objects.sets import Sets
+
 
 class IntegralLattices(Category):
     r"""Category of integral lattices with enriched computational methods.
@@ -127,7 +129,7 @@ class IntegralLattices(Category):
             )
             assert isotropic_element.is_primitive(), "expected a primitive element"
             divisibility = self.div(isotropic_element)
-            assert divisibility in Set({1, 2}), (
+            assert divisibility in (1, 2), (
                 f"expected divisibility 1 or 2 in a 2-elementary lattice, "
                 f"got {divisibility}"
             )

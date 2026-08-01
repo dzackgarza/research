@@ -28,6 +28,8 @@ from sage.categories.groups import Groups
 from sage.categories.modules import Modules
 from sage.matrix.special import diagonal_matrix
 
+from sage_lattice_category_spike.objects.sets import Sets
+
 
 def _is_additive(group: Any) -> bool:
     r"""Return whether ``group`` is written additively, asked of its category."""

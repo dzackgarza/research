@@ -10,9 +10,11 @@ from typing import Any
 
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism, SetMorphism
-from sage.categories.sets_cat import Sets as SageSets
 from sage.matrix.matrix0 import Matrix
 from sage.modules.free_module_element import FreeModuleElement, vector
+
+from sage_lattice_category_spike.objects.sets import Sets
+from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
 
 
 class ModuleHomset(Homset):
@@ -40,8 +42,8 @@ class ModuleHomset(Homset):
             SetMorphism(
                 Hom(
                     self.domain().generating_set(),
-                    self.codomain(),
-                    SageSets(),
+                    UnderlyingSet(self.codomain()),
+                    Sets(),
                 ),
                 lambda element_of_S: self.codomain().zero(),
             ),
@@ -161,7 +163,11 @@ class ModuleMorphism(Morphism):
     def __init__(self, parent: ModuleHomset, images: Any) -> None:
         Morphism.__init__(self, parent)
         generating_set = self._domain_generating_set()
-        set_homset = Hom(generating_set, parent.codomain(), SageSets())
+        set_homset = Hom(
+            generating_set,
+            UnderlyingSet(parent.codomain()),
+            Sets(),
+        )
         match images:
             case SetMorphism():
                 assert images.parent() is set_homset, (
@@ -170,7 +176,7 @@ class ModuleMorphism(Morphism):
                 )
                 generator_morphism = images
             case dict():
-                assert generating_set in SageSets().Finite(), (
+                assert generating_set in Sets().Finite(), (
                     "a dictionary specifies a morphism only for a finite "
                     "generating set; use a set morphism on the generating set"
                 )
@@ -219,7 +225,7 @@ class ModuleMorphism(Morphism):
 
     def images(self) -> tuple:
         generating_set = self.domain().generating_set()
-        assert generating_set in SageSets().Finite(), (
+        assert generating_set in Sets().Finite(), (
             "listing all images requires a finite framing set"
         )
         return tuple(
@@ -232,8 +238,8 @@ class ModuleMorphism(Morphism):
         domain_labels = self.domain().generating_set()
         codomain_labels = self.codomain().generating_set()
         assert (
-            domain_labels in SageSets().Finite()
-            and codomain_labels in SageSets().Finite()
+            domain_labels in Sets().Finite()
+            and codomain_labels in Sets().Finite()
         ), "a matrix requires finite ordered framings"
         images = self.images()
         if not images:
@@ -347,7 +353,7 @@ class ModuleMorphism(Morphism):
 
     def _repr_defn(self) -> str:
         generating_set = self.domain().generating_set()
-        if generating_set not in SageSets().Finite():
+        if generating_set not in Sets().Finite():
             return "the linear extension of a generator morphism"
         return "\n".join(
             f"{element_of_S!r} |--> "
@@ -359,14 +365,14 @@ class ModuleMorphism(Morphism):
         if not isinstance(other, ModuleMorphism) or self.parent() is not other.parent():
             return False
         generating_set = self.domain().generating_set()
-        assert generating_set in SageSets().Finite(), (
+        assert generating_set in Sets().Finite(), (
             "equality of maps on a nonenumerable framing needs an explicit theorem"
         )
         return self.images() == other.images()
 
     def __hash__(self) -> int:
         generating_set = self.domain().generating_set()
-        assert generating_set in SageSets().Finite(), (
+        assert generating_set in Sets().Finite(), (
             "a morphism on a nonenumerable framing is not hashable"
         )
         return hash((id(self.parent()), self.images()))
@@ -423,8 +429,8 @@ class ModuleAutomorphism(ModuleMorphism):
             SetMorphism(
                 Hom(
                     self.domain().generating_set(),
-                    self.codomain(),
-                    SageSets(),
+                    UnderlyingSet(self.codomain()),
+                    Sets(),
                 ),
                 lambda element_of_S: self(
                     other.generator_morphism()(element_of_S)

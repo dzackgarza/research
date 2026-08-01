@@ -3,7 +3,8 @@ r"""Form-preserving homomorphisms of integral lattices."""
 from typing import Any
 
 from sage.categories.category import Category
-from sage.categories.sets_cat import Sets
+
+from sage_lattice_category_spike.objects.sets import Sets
 
 
 class LatticeHomomorphisms(Category):

@@ -15,7 +15,6 @@ from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from sage.categories.category import Category
-from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
 from sage.matrix.constructor import matrix
@@ -28,6 +27,8 @@ from sage.graphs.graph import Graph
 from sage.structure.category_object import normalize_names
 from sage.structure.element_wrapper import ElementWrapper
 from sage.structure.parent import Parent
+
+from sage_lattice_category_spike.objects.sets import Sets
 
 COXETER_NEGATIVE_FOUR_NODE_COLOR = "#F8F9FE"
 COXETER_NEGATIVE_TWO_NODE_COLOR = "#BFC9CA"
@@ -60,7 +61,7 @@ class CoxeterDiagrams(Category):
         return "finite Coxeter diagrams"
 
     def super_categories(self) -> list[Category]:
-        return [FiniteEnumeratedSets()]
+        return [Sets().Finite()]
 
     @staticmethod
     def minimal_edge_lattices() -> dict[str, Any]:

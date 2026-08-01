@@ -3,8 +3,9 @@ r"""Objects equipped with a chosen ordered direct-sum decomposition."""
 from typing import Any
 
 from sage.categories.category import Category
-from sage.categories.sets_cat import Sets
 from sage.structure.parent import Parent
+
+from sage_lattice_category_spike.objects.sets import Sets
 
 
 class DirectSumObjects(Category):

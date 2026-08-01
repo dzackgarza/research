@@ -5,13 +5,15 @@ from typing import Any
 from sage.categories.category import Category
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets as SageSets
 from sage.matrix.matrix0 import Matrix
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
+
+from sage_lattice_category_spike.objects.sets import Sets
+from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
 
 
 class GroupModules(Category):
@@ -69,7 +71,11 @@ class GroupModules(Category):
         def hom(self: Any, images: Any, codomain: Any = None) -> Any:
             match images:
                 case SetMorphism():
-                    target = images.codomain()
+                    assert isinstance(images.codomain(), UnderlyingSet), (
+                        "a generator morphism lands in the underlying set of "
+                        "its module codomain"
+                    )
+                    target = images.codomain().structured_parent()
                     assignment = images
                 case dict() if images:
                     target = next(iter(images.values())).parent()
@@ -250,8 +256,8 @@ class GroupModule(Parent):
         group_generator_morphism = SetMorphism(
             Hom(
                 underlying_generator_morphism.domain(),
-                self,
-                SageSets(),
+                UnderlyingSet(self),
+                Sets(),
             ),
             lambda element_of_S: self._over(
                 underlying_generator_morphism(element_of_S)

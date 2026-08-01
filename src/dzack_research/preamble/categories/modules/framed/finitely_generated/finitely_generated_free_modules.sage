@@ -6,10 +6,11 @@ from sage.categories.category_types import Category_over_base_ring
 from sage.categories.morphism import SetMorphism
 from sage.modules.free_module_element import vector
 from sage.rings.integer import Integer as SageInteger
-from sage.sets.set import Set
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
+
+from sage_lattice_category_spike.objects.sets import Sets
 
 
 class FinitelyGeneratedFreeModules(Category_over_base_ring):
@@ -82,7 +83,11 @@ class FinitelyGeneratedFreeModules(Category_over_base_ring):
             r"""Construct the map specified on the finite generating set."""
             match images:
                 case SetMorphism():
-                    target = images.codomain()
+                    assert isinstance(images.codomain(), UnderlyingSet), (
+                        "a generator morphism lands in the underlying set of "
+                        "its module codomain"
+                    )
+                    target = images.codomain().structured_parent()
                     assignment = images
                 case dict() if images:
                     target = next(iter(images.values())).parent()
@@ -195,7 +200,7 @@ class BasedFreeModule(FreeModuleOnSet):
             case Parent():
                 pass
             case _:
-                generating_set = Set(generating_set)
+                generating_set = _as_set(generating_set)
         generating_set = finite_ordered_set(generating_set)
         FreeModuleOnSet.__init__(self, base_ring, generating_set)
         refine(self, FinitelyGeneratedFreeModules(base_ring))
