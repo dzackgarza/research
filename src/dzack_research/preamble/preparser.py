@@ -1,23 +1,34 @@
-r"""Sage preparser extension for mathematical set literals.
+r"""The research preamble's complete extension of Sage's preparser.
 
-Brace literals without a top-level ``:`` are set notation in the research
-notebooks, so ``{a, b}`` is preparsed as ``Set([a, b])``.  Dictionary literals
-remain dictionaries.  Image builders such as ``{f(x) | x in X}`` become Sage's
-lazy ``ImageSet``; domain-and-predicate builders become lazy ``ConditionSet``
-objects.  The transformation is token-based: strings, comments, and nested
-literals are not inspected as source text.
+The module composes Sage's native preparser with the research notation and owns
+installation into both Sage preprocessing entrypoints. Brace literals without a
+top-level ``:`` are sets, dictionaries remain dictionaries, and mathematical
+set builders become ``ImageSet`` or ``ConditionSet`` expressions.
+
+The transformation is token-based: strings and comments are never inspected as
+source text. Sage syntax is lowered first, so this layer never reconstructs
+Sage's generator-declaration grammar.
 """
 
 from __future__ import annotations
 
 import io
 import tokenize
-from types import ModuleType
 from typing import Any
+
+from sage.repl import interpreter as sage_interpreter
+from sage.repl import preparse as sage_preparse
+
+
+_native_preparse = sage_preparse.preparse
 
 
 def _tokens(source: str) -> list[tuple[int, str]]:
-    return [(token.type, token.string) for token in tokenize.generate_tokens(io.StringIO(source).readline) if token.type not in {tokenize.ENCODING, tokenize.ENDMARKER}]
+    return [
+        (token.type, token.string)
+        for token in tokenize.generate_tokens(io.StringIO(source).readline)
+        if token.type not in {tokenize.ENCODING, tokenize.ENDMARKER}
+    ]
 
 
 def _untokenize(tokens: list[tuple[int, str]]) -> str:
@@ -55,7 +66,9 @@ def _binder(
     return tokens[0][1], domain, condition or None
 
 
-def _condition_builder(variable: str, domain: str, condition: str) -> list[tuple[int, str]]:
+def _condition_builder(
+    variable: str, domain: str, condition: str
+) -> list[tuple[int, str]]:
     return _tokens(f"ConditionSet({domain}, lambda {variable}: {condition})")
 
 
@@ -63,7 +76,11 @@ def _implicit_products(tokens: list[tuple[int, str]]) -> list[tuple[int, str]]:
     """Insert the multiplication Sage's preparser cannot insert in lambdas."""
     result: list[tuple[int, str]] = []
     for token in tokens:
-        if result and result[-1][0] == tokenize.NUMBER and token[0] == tokenize.NAME:
+        if (
+            result
+            and result[-1][0] == tokenize.NUMBER
+            and token[0] == tokenize.NAME
+        ):
             result.append((tokenize.OP, "*"))
         result.append(token)
     return result
@@ -125,7 +142,9 @@ def _rewrite(tokens: list[tuple[int, str]]) -> list[tuple[int, str]]:
             left_binder = _binder(left)
             if left_binder is not None:
                 variable, domain, left_condition = left_binder
-                assert left_condition is None, "the predicate belongs to the right of the set-builder bar"
+                assert left_condition is None, (
+                    "the predicate belongs to the right of the set-builder bar"
+                )
                 condition = _untokenize(_implicit_products(right)).strip()
                 if not condition:
                     raise SyntaxError("a set-builder predicate cannot be empty")
@@ -134,7 +153,9 @@ def _rewrite(tokens: list[tuple[int, str]]) -> list[tuple[int, str]]:
                 # ``{f(x) | x in X}`` and ``{f(x) | x in X and P(x)}``.
                 right_binder = _binder(right)
                 if right_binder is None:
-                    raise SyntaxError("set-builder syntax must use x in X as its domain")
+                    raise SyntaxError(
+                        "set-builder syntax must use x in X as its domain"
+                    )
                 variable, domain, condition = right_binder
                 image = _untokenize(_implicit_products(left)).strip()
                 if condition is None:
@@ -143,11 +164,18 @@ def _rewrite(tokens: list[tuple[int, str]]) -> list[tuple[int, str]]:
                     restricted_domain = f"ConditionSet({domain}, lambda {variable}: {condition})"
                 if image == variable:
                     if condition is None:
-                        rewritten.extend(_condition_builder(variable, domain, "True"))
+                        rewritten.extend(
+                            _condition_builder(variable, domain, "True")
+                        )
                     else:
                         rewritten.extend(_tokens(restricted_domain))
                 else:
-                    rewritten.extend(_tokens(f"ImageSet(lambda {variable}: {image}, {restricted_domain})"))
+                    rewritten.extend(
+                        _tokens(
+                            f"ImageSet(lambda {variable}: {image}, "
+                            f"{restricted_domain})"
+                        )
+                    )
         elif not inner or has_top_level_colon or has_top_level_unpack:
             rewritten.extend([(tokenize.OP, "{"), *inner, (tokenize.OP, "}")])
         else:
@@ -157,20 +185,32 @@ def _rewrite(tokens: list[tuple[int, str]]) -> list[tuple[int, str]]:
     return rewritten
 
 
-def rewrite_set_literals(source: str) -> str:
+def _rewrite_set_literals(source: str) -> str:
     r"""Rewrite mathematical brace-set literals in one source fragment."""
     return _untokenize(_rewrite(_tokens(source)))
 
 
-def install_set_literal_preparser(preparse_module: ModuleType, interpreter_module: ModuleType) -> None:
-    r"""Install the wrapper once on Sage's preparser and IPython transformer."""
-    if getattr(preparse_module, "_dzack_set_literals_installed", False):
-        return
-    original = preparse_module.preparse
+def preparse(source: str, *args: Any, **kwargs: Any) -> str:
+    r"""Apply Sage's preparser and then the research notation."""
+    return _rewrite_set_literals(_native_preparse(source, *args, **kwargs))
 
-    def preparse_with_sets(line: str, *args: Any, **kwargs: Any) -> str:
-        return rewrite_set_literals(original(line, *args, **kwargs))
 
-    preparse_module.preparse = preparse_with_sets
-    interpreter_module.preparse = preparse_with_sets
-    preparse_module._dzack_set_literals_installed = True
+def install_preparser() -> None:
+    r"""Install the research preparser into Sage's two preprocessing surfaces."""
+    sage_preparse.implicit_multiplication(True)
+    match sage_preparse.preparse, sage_interpreter.preparse:
+        case module_preparse, interpreter_preparse if (
+            module_preparse is preparse and interpreter_preparse is preparse
+        ):
+            return
+        case module_preparse, interpreter_preparse if (
+            module_preparse is _native_preparse
+            and interpreter_preparse is _native_preparse
+        ):
+            sage_preparse.preparse = preparse
+            sage_interpreter.preparse = preparse
+        case unexpected:
+            raise RuntimeError(
+                "Sage's preparser entrypoints are not in an installable state: "
+                f"{unexpected!r}"
+            )

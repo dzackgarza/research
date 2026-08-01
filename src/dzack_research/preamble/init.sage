@@ -26,7 +26,6 @@ import os
 
 import IPython.core.ultratb
 from sage.libs.gap.libgap import libgap
-from sage.repl.preparse import implicit_multiplication
 
 Σ = sum
 Π = prod
@@ -39,19 +38,10 @@ from sage.repl.preparse import implicit_multiplication
 # This file *is* the startup file (via symlink). Sibling scripts live next to it.
 _PREAMBLE = Path(os.environ["SAGE_STARTUP_FILE"]).resolve().parent
 
-# Mathematical brace literals: ``{a, b}`` is a Sage ``Set`` in notebook and
-# REPL input; dictionaries remain dictionaries.
-load(str(_PREAMBLE / "preparse_sets.py"))
-from sage.sets.image_set import ImageSet
-from sage.sets.condition_set import ConditionSet
-from sage.repl import interpreter as _sage_interpreter
-from sage.repl import preparse as _sage_preparse
-
 # Vendor paths, the category scripts, and their install hooks -- shared with the
 # .sage tests so the two never drift apart.
 load(str(_PREAMBLE / "install.sage"))
 
-implicit_multiplication(True)
 libgap.LoadPackage("PackageManager")
 IPython.core.ultratb.VerboseTB._tb_highlight = "bg:ansired"
 
@@ -87,6 +77,8 @@ get_ipython().display_formatter.formatters["text/latex"].for_type(
     object, _latex_if_typesettable
 )
 
-# Install the interactive syntax only after every preamble source file has been
-# loaded: Sage routes ``load(...)`` through this same preparser.
-install_set_literal_preparser(_sage_preparse, _sage_interpreter)
+# Sage routes ``load(...)`` through its active preparser, so the interactive
+# extension is installed only after every authored preamble file has loaded.
+from dzack_research.preamble.preparser import install_preparser
+
+install_preparser()
