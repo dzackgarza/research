@@ -47,8 +47,6 @@ from sage.sets.condition_set import ConditionSet
 from sage.repl import interpreter as _sage_interpreter
 from sage.repl import preparse as _sage_preparse
 
-install_set_literal_preparser(_sage_preparse, _sage_interpreter)
-
 # Vendor paths, the category scripts, and their install hooks -- shared with the
 # .sage tests so the two never drift apart.
 load(str(_PREAMBLE / "install.sage"))
@@ -88,3 +86,7 @@ def _latex_if_typesettable(obj):
 get_ipython().display_formatter.formatters["text/latex"].for_type(
     object, _latex_if_typesettable
 )
+
+# Install the interactive syntax only after every preamble source file has been
+# loaded: Sage routes ``load(...)`` through this same preparser.
+install_set_literal_preparser(_sage_preparse, _sage_interpreter)
