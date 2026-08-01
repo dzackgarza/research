@@ -60,3 +60,99 @@ def test_preparser_composes_with_sage_generator_declarations():
     assert Set(tuple(namespace["quadrics"])) == Set(
         [namespace["x"]^2, namespace["y"]^2]
     )
+
+
+def test_direct_preparse_applies_implicit_multiplication_in_derivatives():
+    namespace = _execute("x = var('x'); result = diff(x^5 + 2x, x)")
+
+    assert namespace["result"] == 5 * namespace["x"]^4 + 2
+
+
+def test_direct_preparse_applies_implicit_multiplication_in_integrals():
+    namespace = _execute("x = var('x'); result = integral(3x^2, x)")
+
+    assert namespace["result"] == namespace["x"]^3
+
+
+def test_direct_preparse_applies_implicit_multiplication_in_matrices():
+    namespace = _execute(
+        "x = var('x'); result = matrix(SR, [[x, 2x], [3x, 4x]])"
+    )
+    x = namespace["x"]
+
+    assert namespace["result"] == matrix(SR, [[x, 2*x], [3*x, 4*x]])
+
+
+def test_direct_preparse_applies_implicit_multiplication_in_functions():
+    namespace = _execute(
+        "f(x, y) = x^2 + 2x*y + y^2; result = f(1, 2)"
+    )
+
+    assert namespace["result"] == 9
+
+
+def test_identity_builder_on_a_finite_range_is_the_extensional_set():
+    namespace = _execute("result = {x | x in [1..5]}")
+
+    assert namespace["result"] == Set([1, 2, 3, 4, 5])
+
+
+def test_identity_builder_on_nested_sets_is_the_extensional_set():
+    namespace = _execute("result = {x | x in {{1, 2}, {3, 4}}}")
+
+    assert namespace["result"] == Set([Set([1, 2]), Set([3, 4])])
+
+
+def test_fstring_replacement_fields_preserve_sage_expressions():
+    namespace = _execute("x = 7; result = f'{x}'")
+
+    assert namespace["result"] == "7"
+
+
+def test_fstring_escaped_braces_preserve_replacement_fields():
+    namespace = _execute("x = 7; result = f'{{{x}}}'")
+
+    assert namespace["result"] == "{7}"
+
+
+def test_fstring_dictionary_expressions_remain_dictionaries():
+    namespace = _execute("""result = f"{ {'a': 1} }" """)
+
+    assert namespace["result"] == "{'a': 1}"
+
+
+def test_multiline_identity_builder_preserves_its_domain():
+    namespace = _execute(
+        """
+result = {
+    x |
+    x in ZZ
+}
+"""
+    )
+
+    assert tuple(islice(namespace["result"], 5)) == (0, 1, -1, 2, -2)
+
+
+def test_bitwise_or_is_an_ordinary_set_element():
+    namespace = _execute("result = {1 | 2}")
+
+    assert namespace["result"] == Set([3])
+
+
+def test_bitwise_or_is_an_ordinary_dictionary_value():
+    namespace = _execute("result = {'a': 1 | 2}")
+
+    assert namespace["result"] == {"a": 3}
+
+
+def test_bitwise_or_is_preserved_in_set_comprehensions():
+    namespace = _execute("result = {x | 1 for x in range(3)}")
+
+    assert namespace["result"] == Set([1, 3])
+
+
+def test_bitwise_or_is_preserved_in_dictionary_comprehensions():
+    namespace = _execute("result = {x: x | 1 for x in range(3)}")
+
+    assert namespace["result"] == {0: 1, 1: 1, 2: 3}
