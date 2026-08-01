@@ -39,6 +39,16 @@ from sage.repl.preparse import implicit_multiplication
 # This file *is* the startup file (via symlink). Sibling scripts live next to it.
 _PREAMBLE = Path(os.environ["SAGE_STARTUP_FILE"]).resolve().parent
 
+# Mathematical brace literals: ``{a, b}`` is a Sage ``Set`` in notebook and
+# REPL input; dictionaries remain dictionaries.
+load(str(_PREAMBLE / "preparse_sets.py"))
+from sage.sets.image_set import ImageSet
+from sage.sets.condition_set import ConditionSet
+from sage.repl import interpreter as _sage_interpreter
+from sage.repl import preparse as _sage_preparse
+
+install_set_literal_preparser(_sage_preparse, _sage_interpreter)
+
 # Vendor paths, the category scripts, and their install hooks -- shared with the
 # .sage tests so the two never drift apart.
 load(str(_PREAMBLE / "install.sage"))

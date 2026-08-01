@@ -4,15 +4,14 @@ r"""Load and install the preamble's category layer into the calling namespace.
 categories, the ``install_*`` hooks they register, and the names the scripts
 export -- lands in the namespace that loaded this file.
 
-This sequence is order-sensitive (``install_integral_lattices`` needs
-``HyperbolicLattices``, which ``hyperbolic_lattices.sage`` defines), which is
-why it lives in one file: ``init.sage`` and every ``.sage`` test load it rather
-than each maintaining its own copy.
+This sequence is order-sensitive, which is why it lives in one file:
+``init.sage`` and every ``.sage`` test load it rather than each maintaining
+its own copy.
 
 Loading twice re-exports the *same* objects rather than re-running the scripts.
 Categories are compared by identity, and the post-init hooks patch the Sage
 classes once, process-wide: a second set of category classes would leave
-lattices refined into one ``DirectSumObjects`` and tested against another.
+objects refined into one ``DirectSumObjects`` and tested against another.
 
 Callers that also want the named specimens continue with ``utilities.py``,
 ``catalogue.sage``, ``sterk.sage``, and ``Lattices.install(globals())``.
@@ -64,25 +63,90 @@ else:
             _sys.path.append(_vendor_entry)
 
     load(str(_PREAMBLE / "refine.sage"))
-    load(str(_PREAMBLE / "categories/gram_matrices.sage"))
-    load(str(_PREAMBLE / "categories/form_modules.sage"))
-    load(str(_PREAMBLE / "categories/cokernels.sage"))
-    load(str(_PREAMBLE / "categories/forms.sage"))
+    load(str(_PREAMBLE / "categories/forms/gram_matrices.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/ordered_sets.sage"))
+    load(str(_PREAMBLE / "categories/modules/pure/finitely_generated/finitely_generated_modules.sage"))
+    load(str(_PREAMBLE / "categories/modules/pure/free_modules.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/framed_modules.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/finitely_generated/finitely_presented_modules.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/framed_free_modules.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage"))
+
+    load(str(_PREAMBLE / "categories/modules/direct_sum_objects.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/formed/form_modules.sage"))
+    load(str(_PREAMBLE / "categories/modules/module_morphisms/module_morphisms.sage"))
+    load(str(_PREAMBLE / "categories/modules/pure/torsion_modules.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage"))
+    load(str(_PREAMBLE / "categories/modules/group_modules/group_modules.sage"))
+    load(str(_PREAMBLE / "categories/forms/forms.sage"))
     load(str(_PREAMBLE / "categories/group/groups.sage"))
     load(str(_PREAMBLE / "categories/group/finitely_presented_groups.sage"))
-    load(str(_PREAMBLE / "categories/integrallattice/integral_lattices.sage"))
-    load(str(_PREAMBLE / "categories/integrallattice/subobjects.sage"))
-    load(str(_PREAMBLE / "categories/integrallattice/direct_sum_objects.sage"))
-    load(str(_PREAMBLE / "categories/lattice_homomorphisms.sage"))
-    load(str(_PREAMBLE / "categories/lattice_isometries.sage"))
-    load(str(_PREAMBLE / "categories/coxeter_diagrams.sage"))
-    load(str(_PREAMBLE / "categories/integrallattice/hyperbolic_lattices.sage"))
-    load(str(_PREAMBLE / "categories/torsionform/torsion_modules_with_form.sage"))
-    load(str(_PREAMBLE / "categories/torsionform/discriminant_bilinear_modules.sage"))
-    load(str(_PREAMBLE / "categories/torsionform/discriminant_quadratic_modules.sage"))
-
-    install_integral_lattices()
+    load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/integral_lattices.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/subobjects.sage"))
+    load(str(_PREAMBLE / "categories/modules/group_modules/group_lattices.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/lattice_isometries.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/formed/torsionform/discriminant_bilinear_modules.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/formed/torsionform/discriminant_quadratic_modules.sage"))
+    load(str(_PREAMBLE / "categories/divisors/divisor_groups.sage"))
+    load(str(_PREAMBLE / "categories/divisors/weil_divisor_groups.sage"))
+    load(str(_PREAMBLE / "categories/divisors/cartier_divisor_groups.sage"))
+    load(str(_PREAMBLE / "categories/divisors/class_groups.sage"))
+    load(str(_PREAMBLE / "categories/divisors/picard_groups.sage"))
+    load(str(_PREAMBLE / "categories/schemes/ringed_spaces.sage"))
+    load(str(_PREAMBLE / "categories/schemes/schemes.sage"))
+    load(str(_PREAMBLE / "categories/schemes/ambient_spaces.sage"))
+    load(str(_PREAMBLE / "categories/schemes/subschemes.sage"))
+    load(str(_PREAMBLE / "categories/schemes/varieties.sage"))
+    load(str(_PREAMBLE / "catalogue.sage"))
     install_finitely_presented_groups()
+    install_picard_groups()
+    install_divisor_groups()
+    install_weil_divisor_groups()
+    install_cartier_divisor_groups()
+    install_class_groups()
+    install_ringed_spaces()
+    install_schemes()
+    install_ambient_spaces()
+    install_subschemes()
+    install_varieties()
+
+    # Sage's ``R^n`` syntax is implemented by the parent class of ``Rings``.
+    # Install this after the preamble's own catalogue has loaded, since Sage's
+    # internal construction work still needs its native free modules while the
+    # layer is being initialized.
+    from sage.categories.rings import Rings as _SageRings
+
+    _preamble_ring_pow = _SageRings.ParentMethods.__pow__
+    if not getattr(_preamble_ring_pow, "_preamble_routed", False):
+        import types as _types
+
+        _preamble_original_ring_pow = _types.FunctionType(
+            _preamble_ring_pow.__code__,
+            _preamble_ring_pow.__globals__,
+            name="_preamble_original_ring_pow",
+        )
+        _preamble_ring_pow.__globals__["_preamble_original_ring_pow"] = (
+            _preamble_original_ring_pow
+        )
+        _preamble_ring_pow.__globals__["_PreambleSageInteger"] = SageInteger
+        _preamble_ring_pow.__globals__["_PreambleBasedFreeModule"] = BasedFreeModule
+        _preamble_ring_pow.__globals__["_PreambleStandardFramingSet"] = standard_framing_set
+
+        def _route_ring_pow(self, exponent):
+            match exponent:
+                case int() | _PreambleSageInteger():
+                    return _PreambleBasedFreeModule(
+                        self, _PreambleStandardFramingSet(exponent)
+                    )
+                case _:
+                    return _preamble_original_ring_pow(self, exponent)
+
+        _preamble_ring_pow.__code__ = _route_ring_pow.__code__
+        _preamble_ring_pow._preamble_routed = True
 
     # Only what the scripts added: re-exporting the caller's own names would
     # overwrite a later module's helpers with this one's.

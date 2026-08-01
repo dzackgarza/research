@@ -17,10 +17,8 @@ negative-definite quotient's own $(r,a,\delta)$ invariants.
 
 from sage.matrix.constructor import matrix
 from sage.matrix.special import diagonal_matrix
-from sage.modules.free_quadratic_module_integer_symmetric import (
-    FreeQuadraticModule_integer_symmetric,
-    IntegralLattice,
-)
+# The preamble's own constructor, installed over Sage's name.
+from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 from sage.rings.integer_ring import ZZ
 
 __all__ = [
@@ -41,61 +39,62 @@ class Lattices:
     notebook namespace and injects the named generators.
     """
 
-    Z = IntegralLattice(matrix(ZZ, [1]))
+    Zero = _integral_lattice_with_names(matrix(ZZ, 0, 0, []))
+    Z = _integral_lattice_with_names(matrix(ZZ, [1]))
     Z_2 = Z.twist(2)
 
-    H = IntegralLattice("H")
+    H = _integral_lattice_with_names("H")
     H_2 = H.twist(2)
     U = H
     U_2 = H_2
 
-    A1 = IntegralLattice("A1").twist(-1)
-    A2 = IntegralLattice("A2").twist(-1)
-    A3 = IntegralLattice("A3").twist(-1)
-    A4 = IntegralLattice("A4").twist(-1)
-    A5 = IntegralLattice("A5").twist(-1)
-    A6 = IntegralLattice("A6").twist(-1)
-    A7 = IntegralLattice("A7").twist(-1)
-    A8 = IntegralLattice("A8").twist(-1)
-    A9 = IntegralLattice("A9").twist(-1)
-    A10 = IntegralLattice("A10").twist(-1)
-    A11 = IntegralLattice("A11").twist(-1)
-    A12 = IntegralLattice("A12").twist(-1)
-    A13 = IntegralLattice("A13").twist(-1)
-    A14 = IntegralLattice("A14").twist(-1)
-    A15 = IntegralLattice("A15").twist(-1)
-    A16 = IntegralLattice("A16").twist(-1)
-    A17 = IntegralLattice("A17").twist(-1)
-    A18 = IntegralLattice("A18").twist(-1)
-    A19 = IntegralLattice("A19").twist(-1)
-    A20 = IntegralLattice("A20").twist(-1)
-    A21 = IntegralLattice("A21").twist(-1)
+    A1 = _integral_lattice_with_names("A1").twist(-1)
+    A2 = _integral_lattice_with_names("A2").twist(-1)
+    A3 = _integral_lattice_with_names("A3").twist(-1)
+    A4 = _integral_lattice_with_names("A4").twist(-1)
+    A5 = _integral_lattice_with_names("A5").twist(-1)
+    A6 = _integral_lattice_with_names("A6").twist(-1)
+    A7 = _integral_lattice_with_names("A7").twist(-1)
+    A8 = _integral_lattice_with_names("A8").twist(-1)
+    A9 = _integral_lattice_with_names("A9").twist(-1)
+    A10 = _integral_lattice_with_names("A10").twist(-1)
+    A11 = _integral_lattice_with_names("A11").twist(-1)
+    A12 = _integral_lattice_with_names("A12").twist(-1)
+    A13 = _integral_lattice_with_names("A13").twist(-1)
+    A14 = _integral_lattice_with_names("A14").twist(-1)
+    A15 = _integral_lattice_with_names("A15").twist(-1)
+    A16 = _integral_lattice_with_names("A16").twist(-1)
+    A17 = _integral_lattice_with_names("A17").twist(-1)
+    A18 = _integral_lattice_with_names("A18").twist(-1)
+    A19 = _integral_lattice_with_names("A19").twist(-1)
+    A20 = _integral_lattice_with_names("A20").twist(-1)
+    A21 = _integral_lattice_with_names("A21").twist(-1)
 
-    D2 = IntegralLattice("D2").twist(-1)
-    D3 = IntegralLattice("D3").twist(-1)
-    D4 = IntegralLattice("D4").twist(-1)
-    D5 = IntegralLattice("D5").twist(-1)
-    D6 = IntegralLattice("D6").twist(-1)
-    D7 = IntegralLattice("D7").twist(-1)
-    D8 = IntegralLattice("D8").twist(-1)
-    D9 = IntegralLattice("D9").twist(-1)
-    D10 = IntegralLattice("D10").twist(-1)
-    D11 = IntegralLattice("D11").twist(-1)
-    D12 = IntegralLattice("D12").twist(-1)
-    D13 = IntegralLattice("D13").twist(-1)
-    D14 = IntegralLattice("D14").twist(-1)
-    D15 = IntegralLattice("D15").twist(-1)
-    D16 = IntegralLattice("D16").twist(-1)
-    D17 = IntegralLattice("D17").twist(-1)
-    D18 = IntegralLattice("D18").twist(-1)
-    D19 = IntegralLattice("D19").twist(-1)
-    D20 = IntegralLattice("D20").twist(-1)
-    D21 = IntegralLattice("D21").twist(-1)
-    D22 = IntegralLattice("D22").twist(-1)
+    D2 = _integral_lattice_with_names("D2").twist(-1)
+    D3 = _integral_lattice_with_names("D3").twist(-1)
+    D4 = _integral_lattice_with_names("D4").twist(-1)
+    D5 = _integral_lattice_with_names("D5").twist(-1)
+    D6 = _integral_lattice_with_names("D6").twist(-1)
+    D7 = _integral_lattice_with_names("D7").twist(-1)
+    D8 = _integral_lattice_with_names("D8").twist(-1)
+    D9 = _integral_lattice_with_names("D9").twist(-1)
+    D10 = _integral_lattice_with_names("D10").twist(-1)
+    D11 = _integral_lattice_with_names("D11").twist(-1)
+    D12 = _integral_lattice_with_names("D12").twist(-1)
+    D13 = _integral_lattice_with_names("D13").twist(-1)
+    D14 = _integral_lattice_with_names("D14").twist(-1)
+    D15 = _integral_lattice_with_names("D15").twist(-1)
+    D16 = _integral_lattice_with_names("D16").twist(-1)
+    D17 = _integral_lattice_with_names("D17").twist(-1)
+    D18 = _integral_lattice_with_names("D18").twist(-1)
+    D19 = _integral_lattice_with_names("D19").twist(-1)
+    D20 = _integral_lattice_with_names("D20").twist(-1)
+    D21 = _integral_lattice_with_names("D21").twist(-1)
+    D22 = _integral_lattice_with_names("D22").twist(-1)
 
-    E6 = IntegralLattice("E6").twist(-1)
-    E7 = IntegralLattice("E7").twist(-1)
-    E8 = IntegralLattice("E8").twist(-1)
+    E6 = _integral_lattice_with_names("E6").twist(-1)
+    E7 = _integral_lattice_with_names("E7").twist(-1)
+    E8 = _integral_lattice_with_names("E8").twist(-1)
     E8_2 = E8.twist(2)
 
     E10 = U + E8
@@ -127,13 +126,13 @@ class Lattices:
         assert kind in {"A", "D", "E"}, f"unknown root system family {kind!r}"
         if names is None:
             return getattr(Lattices, f"{kind}{rank}")
-        return _apply_names(IntegralLattice(f"{kind}{rank}").twist(-1), names)
+        return _apply_names(_integral_lattice_with_names(f"{kind}{rank}").twist(-1), names)
 
     @staticmethod
     def IPQ(p, q):
         r"""Return the odd unimodular lattice $I_{p,q}$."""
         assert p >= 0 and q >= 0 and p + q > 0, f"empty signature ({p}, {q})"
-        return IntegralLattice(diagonal_matrix(ZZ, [1] * p + [-1] * q))
+        return _integral_lattice_with_names(diagonal_matrix(ZZ, [1] * p + [-1] * q))
 
     @staticmethod
     def LK3_2d(degree):
@@ -152,14 +151,14 @@ class Lattices:
         return {
             name: obj
             for name, obj in vars(cls).items()
-            if isinstance(obj, FreeQuadraticModule_integer_symmetric)
+            if obj in IntegralLattices()
         }
 
     @classmethod
     def install(cls, scope):
         r"""Bind catalogue specimens and named generators into *scope*."""
         for name, obj in vars(cls).items():
-            if isinstance(obj, FreeQuadraticModule_integer_symmetric):
+            if obj in IntegralLattices():
                 scope[name] = obj
 
         scope.update(
@@ -330,7 +329,7 @@ TwoElementary = {
 # below are one representative choice from that single isometry class; they
 # are not parsed from the AE labels.
 NegativeDefTwoElementary = {
-        (0, 0, 0): [IntegralLattice(matrix(ZZ, 0, 0, []))],
+        (0, 0, 0): [_integral_lattice_with_names(matrix(ZZ, 0, 0, []))],
         (1, 1, 1): [Lattices.A1],
         (2, 2, 1): [Lattices.A1^2],
         (3, 3, 1): [Lattices.A1^3],

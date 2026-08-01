@@ -103,6 +103,20 @@ def _named_basis(lattice: Any) -> dict[str, Any]:
     return dict(zip(lattice.variable_names(), lattice.gens(), strict=True))
 
 
+def _in_dual(lattice: Any) -> Any:
+    r"""Return $c: L\to L^\vee$, for writing a vector the way the literature does.
+
+    Sterk's vectors are written as sums of basis and dual-basis vectors --
+    $e'+f'+w_1+\tilde w_8$ -- which is arithmetic in $L\otimes\mathbb Q$ with
+    $L\subseteq L^\vee$ left understood.  Here that inclusion is $c$: the sum
+    happens in $L^\vee$, with the basis vectors carried over by $c$, and
+    ``c.lift`` names the element of $L$ it turns out to be.  When it is not one
+    -- when the sum is not in $c(L)$ -- there is no such element and the lift
+    says so instead of returning a rational vector nobody checked.
+    """
+    return lattice.correlation()
+
+
 class Sterk:
     r"""Sterk cusp root configurations recovered from the research log.
 
@@ -120,9 +134,10 @@ class Sterk:
             w1, w2, w3, w4, w5, w6, w7, w8,
             w1t, w2t, w3t, w4t, w5t, w6t, w7t, w8t,
         ) = TdP.dual_basis()
+        c = _in_dual(TdP)
         v = {
             "v1": b["a8t"],
-            "v2": b["ep"] + b["fp"] + w1 + w8t,
+            "v2": c.lift(c(b["ep"] + b["fp"]) + w1 + w8t),
             "v3": b["a1"],
             "v4": b["a3"],
             "v5": b["a4"],
@@ -130,19 +145,19 @@ class Sterk:
             "v7": b["a6"],
             "v8": b["a7"],
             "v9": b["a8"],
-            "v10": b["ep"] + b["fp"] + w8 + w1t,
+            "v10": c.lift(c(b["ep"] + b["fp"]) + w8 + w1t),
             "v11": b["a1t"],
             "v12": b["a3t"],
             "v13": b["a4t"],
             "v14": b["a5t"],
             "v15": b["a6t"],
             "v16": b["a7t"],
-            "v17": b["ep"] + w8t,
+            "v17": c.lift(c(b["ep"]) + w8t),
             "v18": b["a2"],
-            "v19": b["ep"] + w8,
+            "v19": c.lift(c(b["ep"]) + w8),
             "v20": b["a2t"],
             "v21": b["fp"] - b["ep"],
-            "v22": 5 * b["ep"] + 3 * b["fp"] + 2 * w2 + 2 * w2t,
+            "v22": c.lift(c(5 * b["ep"] + 3 * b["fp"]) + 2 * w2 + 2 * w2t),
         }
         assert len(v) == 22
         return v
@@ -157,6 +172,7 @@ class Sterk:
             w1, w2, w3, w4, w5, w6, w7, w8,
             w1t, w2t, w3t, w4t, w5t, w6t, w7t, w8t,
         ) = TdP.dual_basis()
+        c = _in_dual(TdP)
         w = {
             "w1": b["a1"],
             "w2": b["a3"],
@@ -165,9 +181,9 @@ class Sterk:
             "w5": b["a6"],
             "w6": b["a7"],
             "w7": b["a8"],
-            "w8": b["e"] + w8,
+            "w8": c.lift(c(b["e"]) + w8),
             "w9": b["f"] - b["e"],
-            "w10": b["e"] + w8t,
+            "w10": c.lift(c(b["e"]) + w8t),
             "w11": b["a8t"],
             "w12": b["a7t"],
             "w13": b["a6t"],
@@ -196,7 +212,12 @@ class Sterk:
         w = Sterk.roots_18_0_0()
 
         def reflect(x: Any) -> Any:
-            return x + QQ((1, 2)) * TdP.b(v["v22"], x) * v["v22"]
+            # The coefficient is $b(v_{22},x)/2$, and it has to be an integer
+            # for the result to be in the lattice at all -- which it is
+            # because $v_{22}$ has even pairings, and which ZZ() checks rather
+            # than assumes.
+            half = QQ(v["v22"].b(x)) / 2
+            return x + ZZ(half) * v["v22"]
 
         def involute(x: Any) -> Any:
             return x + reflect(x)
@@ -289,20 +310,21 @@ class Sterk:
         TEn = Lattices.TEn
         b = _named_basis(TEn)
         ed, fd, epd, fpd, w1, w2, w3, w4, w5, w6, w7, w8 = TEn.dual_basis()
+        c = _in_dual(TEn)
         omega = 2 * w8
         alpha = 2 * w1
-        assert abs(TEn.b(omega, omega)) == 4
-        assert abs(TEn.b(alpha, alpha)) == 8
+        assert abs(omega.b(omega)) == 4
+        assert abs(alpha.b(alpha)) == 8
         e, f, ep, fp = b["e"], b["f"], b["ep"], b["fp"]
         vectors = {
             "Sterk_1": e,
             "Sterk_2": ep,
-            "Sterk_3": ep + fp + omega,
-            "Sterk_4": ep + 2 * fp + alpha,
-            "Sterk_5": 2 * e + 2 * f + alpha,
+            "Sterk_3": c.lift(c(ep + fp) + omega),
+            "Sterk_4": c.lift(c(ep + 2 * fp) + alpha),
+            "Sterk_5": c.lift(c(2 * e + 2 * f) + alpha),
         }
         for name, vector_ in vectors.items():
-            assert TEn.b(vector_, vector_) == 0, name
+            assert vector_.q() == 0, name
         return vectors
 
     @staticmethod
@@ -322,6 +344,7 @@ class Sterk:
         a = {i: gens[i + 1] for i in range(1, 9)}
         dual = lattice.dual_basis()
         ad = {i: dual[i + 1] for i in range(1, 9)}
+        c = _in_dual(lattice)
         vectors = (
             a[2],
             a[4],
@@ -329,18 +352,18 @@ class Sterk:
             a[6],
             a[7],
             a[8],
-            2 * ad[8],
-            2 * e + 2 * (ad[2] - ad[3]),
+            c.lift(2 * ad[8]),
+            c.lift(c(2 * e) + 2 * (ad[2] - ad[3])),
             f - e,
-            e + f + 2 * (ad[6] - ad[3]),
-            e + f + 2 * (ad[1] + ad[8] - ad[3]),
+            c.lift(c(e + f) + 2 * (ad[6] - ad[3])),
+            c.lift(c(e + f) + 2 * (ad[1] + ad[8] - ad[3])),
             e + f + a[3],
             a[1],
             2 * e - a[1],
         )
         assert len(vectors) == 14
         for index, v in enumerate(vectors, start=1):
-            norm = lattice.b(v, v)
+            norm = v.q()
             assert norm in (-2, -4), f"Sterk5 vector {index} has norm {norm}"
         return lattice, vectors
 
@@ -354,18 +377,22 @@ class Sterk:
         dual = TEn.dual_basis()
         ad2 = {i: 2 * dual[i + 3] for i in range(1, 9)}
         ad1 = {i: dual[i + 3] for i in range(1, 9)}
+        c = _in_dual(TEn)
         sterks1 = tuple(a[i] for i in range(1, 9)) + (
             fp - ep,
-            2 * ep + ad2[8],
-            2 * ep + 2 * fp + ad2[1] + ad2[8],
-            5 * ep + 3 * fp + 2 * ad2[2],
+            c.lift(c(2 * ep) + ad2[8]),
+            c.lift(c(2 * ep + 2 * fp) + ad2[1] + ad2[8]),
+            c.lift(c(5 * ep + 3 * fp) + 2 * ad2[2]),
         )
-        sterks2 = tuple(a[i] for i in range(1, 9)) + (2 * f + ad2[8], e - f)
+        sterks2 = tuple(a[i] for i in range(1, 9)) + (
+            c.lift(c(2 * f) + ad2[8]),
+            e - f,
+        )
         sterks3 = tuple(a[i] for i in range(1, 8)) + (
             f - e,
-            2 * fp + 2 * ad1[8],
-            2 * e - 2 * fp - 2 * ad1[8],
-            2 * e + 2 * (ad1[1] - ad1[8]),
+            c.lift(c(2 * fp) + 2 * ad1[8]),
+            c.lift(c(2 * e - 2 * fp) - 2 * ad1[8]),
+            c.lift(c(2 * e) + 2 * (ad1[1] - ad1[8])),
             (e + f) + (a[8] - fp),
         )
         assert len(sterks1) == 12 and len(sterks2) == 10 and len(sterks3) == 12
@@ -383,7 +410,10 @@ class Sterk:
 
 def _sterk_diagram(name: str, roots: tuple[Any, ...]) -> Any:
     r"""Construct one named Sterk diagram from actual roots in ``Lattices.TdP``."""
-    rooted = tuple(Lattices.TdP(root) for root in roots)
+    # The roots are elements of TdP already: they were built from its
+    # generators.  Reading them as coordinates was a recast that only made
+    # sense while a lattice element was an integer vector.
+    rooted = tuple(roots)
     positions = {
         index: tuple(coordinates)
         for index, coordinates in _STERK_DIAGRAM_LAYOUTS[name].items()

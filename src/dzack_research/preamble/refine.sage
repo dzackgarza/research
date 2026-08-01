@@ -29,7 +29,7 @@ EXAMPLES::
     sage: from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
     sage: from sage.matrix.constructor import matrix
     sage: from sage.rings.integer_ring import ZZ
-    sage: L = IntegralLattice(matrix(ZZ, [[0, 1], [1, 0]]))
+    sage: L = _integral_lattice_with_names(matrix(ZZ, [[0, 1], [1, 0]]))
     sage: refine(L, IntegralLattices())
     sage: L.q(L.gens()[0])
     0
@@ -88,10 +88,49 @@ _OWNED_CATEGORY_NAMES = frozenset(
         "LatticeIsometries",
         "OwnedGroups",
         "OwnedFiniteGroups",
+        "FinitelyGeneratedModules",
+        "FramedModules",
+        "FinitelyPresentedModules",
+        "FreeModules",
+        "FramedFreeModules",
+        "FinitelyGeneratedFreeModules",
+        "TorsionModules",
+        "FinitelyPresentedTorsionModules",
+        "GroupModules",
+        "GroupLattices",
+        "FormModules",
+        "BilinearFormModules",
+        "QuadraticFormModules",
+        "Subobjects",
+        "FreeFormModules",
         "TorsionModulesWithForm",
         "DiscriminantBilinearModules",
         "DiscriminantQuadraticModules",
         "FinitelyPresentedGroups",
+        "PicardGroups",
+        "DivisorGroups",
+        "ClassGroups",
+        "WeilDivisorGroups",
+        "CartierDivisorGroups",
+        "RingedSpaces",
+        "LocallyRingedSpaces",
+        "Schemes",
+        "AffineSpaces",
+        "ProjectiveSpaces",
+        "ClosedSubschemes",
+        "OpenSubschemes",
+        "Varieties",
+        "Curves",
+        "Surfaces",
+        "AffineSpace",
+        "ProjectiveSpace",
+        "Subscheme",
+        "OpenSubscheme",
+        "ClosedSubscheme",
+        "QuasiScheme",
+        "ToricVariety",
+        "Curve",
+        "Surface",
     }
 )
 
@@ -124,6 +163,24 @@ def _is_homset(obj: Any) -> bool:
     from sage.categories.homset import Homset
 
     return isinstance(obj, Homset)
+
+def _is_morphism(obj: Any) -> bool:
+    """Return whether ``obj`` is a map rather than an object of a category.
+
+    Sage's own morphisms say so by their type, and an element of a homset says
+    so by its parent.  An owned morphism is neither: it is a plain object with
+    a domain and a codomain, which is what being a map consists of here, so
+    that is what is asked.
+    """
+    if isinstance(obj, Morphism):
+        return True
+    if isinstance(obj, Element) and _is_homset(obj.parent()):
+        return True
+    return (
+        not isinstance(obj, CategoryObject)
+        and hasattr(obj, "domain")
+        and hasattr(obj, "codomain")
+    )
 
 def _rebuild_parent_class(obj: Any, category: Any) -> None:
     # Only preamble/category ParentMethods mixins precede the concrete class —
@@ -161,7 +218,7 @@ def _rebuild_element_class(parent: Any, category: Any) -> None:
     if not mixins:
         return
 
-    native = parent.Element
+    native = getattr(parent, "Element", Element)
 
     for key in ("element_class", "_abstract_element_class"):
         parent.__dict__.pop(key, None)
@@ -210,9 +267,7 @@ def refine(obj: Any, category: Any) -> Any:
 
         category = Category.join(category)
 
-    if isinstance(obj, Morphism) or (
-        isinstance(obj, Element) and _is_homset(obj.parent())
-    ):
+    if _is_morphism(obj):
         return _refine_morphism(obj, category)
 
     from sage.structure.parent import Parent
