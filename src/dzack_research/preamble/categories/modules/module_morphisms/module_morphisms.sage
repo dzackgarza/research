@@ -1,9 +1,9 @@
 r"""Native homsets and morphisms for the owned module categories.
 
-A map from a framed module is declared on the labels of its framing set.  Its
-parent is the canonical homset of the named domain and codomain.  Construction
-checks every relation of a presented domain, so membership in a homset is
-parenthood and nothing else.
+A map from a framed module is declared by a set morphism from its generating
+set to the underlying set of the codomain.  Its parent is the canonical homset
+of the named domain and codomain.  Construction checks every relation of a
+presented domain, so membership in a homset is parenthood and nothing else.
 """
 
 from typing import Any
@@ -37,7 +37,14 @@ class ModuleHomset(Homset):
     def zero(self) -> "ModuleMorphism":
         return ModuleMorphism(
             self,
-            lambda label: self.codomain().zero(),
+            SetMorphism(
+                Hom(
+                    self.domain().generating_set(),
+                    self.codomain(),
+                    SageSets(),
+                ),
+                lambda element_of_S: self.codomain().zero(),
+            ),
         )
 
     def identity(self) -> "ModuleMorphism":
@@ -46,7 +53,7 @@ class ModuleHomset(Homset):
         )
         return ModuleMorphism(
             self,
-            lambda label: self.domain().generator(label),
+            self.domain().generator_morphism(),
         )
 
     def __contains__(self, morphism: Any) -> bool:
@@ -115,8 +122,8 @@ def _coefficients(element: Any) -> dict:
             return element.coefficients()
         case FinitelyPresentedModuleElement():
             return {
-                label: coefficient
-                for label, coefficient in zip(
+                element_of_S: coefficient
+                for element_of_S, coefficient in zip(
                     element.parent().generating_set(), element._lift()
                 )
                 if coefficient != 0
@@ -149,81 +156,76 @@ def _independent_generators(module: Any, generators: Any) -> list:
 
 
 class ModuleMorphism(Morphism):
-    r"""A module morphism determined on the labels of the domain framing."""
+    r"""The linear extension of a morphism \(S\to U(N)\)."""
 
     def __init__(self, parent: ModuleHomset, images: Any) -> None:
         Morphism.__init__(self, parent)
-        labels = self._domain_labels()
+        generating_set = self._domain_generating_set()
+        set_homset = Hom(generating_set, parent.codomain(), SageSets())
         match images:
-            case dict():
-                assert labels in SageSets().Finite(), (
-                    "a dictionary specifies a morphism only for a finite "
-                    "framing set; use a function on the framing set"
+            case SetMorphism():
+                assert images.parent() is set_homset, (
+                    "the generator morphism must belong to "
+                    f"{set_homset}, got {images.parent()}"
                 )
-                assert set(images) == set(labels), (
-                    "the assignment must name exactly every framing label"
+                generator_morphism = images
+            case dict():
+                assert generating_set in SageSets().Finite(), (
+                    "a dictionary specifies a morphism only for a finite "
+                    "generating set; use a set morphism on the generating set"
+                )
+                assert set(images) == set(generating_set), (
+                    "the assignment must name exactly every element of the "
+                    "generating set"
                 )
                 values = dict(images)
-                self._on_basis = values.__getitem__
-                self._basis_values = values
+                assert all(
+                    image.parent() is parent.codomain()
+                    for image in values.values()
+                ), "every specified generator image must belong to the codomain"
+                generator_morphism = SetMorphism(
+                    set_homset,
+                    values.__getitem__,
+                )
             case _ if callable(images):
-                self._on_basis = images
-                self._basis_values = None
+                generator_morphism = SetMorphism(set_homset, images)
             case _:
                 raise TypeError(
-                    "a module morphism is specified by a dictionary or "
-                    "function on the domain's framing set"
+                    "a module morphism is the linear extension of a set "
+                    "morphism from the domain's generating set"
                 )
-
-        if labels in SageSets().Finite():
-            for label in labels:
-                image = self._on_basis(label)
-                assert image.parent() is parent.codomain(), (
-                    f"the image of {label!r} does not belong to the codomain"
-                )
+        self._generator_morphism = generator_morphism
         self._check_relations()
 
-    def _domain_labels(self) -> Any:
+    def _domain_generating_set(self) -> Any:
         return self.domain().generating_set()
 
     def _check_relations(self) -> None:
         domain = _underlying_module(self.domain())
         if domain not in FinitelyPresentedModules(domain.base_ring()):
             return
-        labels = tuple(domain.generating_set())
+        generating_set = tuple(domain.generating_set())
         for relation in domain.relation_matrix().rows():
             value = self.codomain().zero()
-            for coefficient, label in zip(relation, labels):
-                value += coefficient * self.on_basis(label)
+            for coefficient, element_of_S in zip(relation, generating_set):
+                value += coefficient * self.generator_morphism()(element_of_S)
             assert value == self.codomain().zero(), (
                 f"the assignment does not kill the relation {relation}"
             )
 
-    def on_basis(self, label: Any) -> Any:
-        assert label in self.domain().generating_set(), (
-            f"{label!r} is not a framing label of {self.domain()}"
-        )
-        image = self._on_basis(label)
-        assert image.parent() is self.codomain(), (
-            f"the image of {label!r} does not belong to {self.codomain()}"
-        )
-        return image
-
-    def basis_map(self) -> SetMorphism:
-        r"""Return the restriction \(S\to N\) to basis labels."""
-        homset = Hom(
-            self.domain().generating_set(),
-            self.codomain(),
-            SageSets(),
-        )
-        return SetMorphism(homset, self.on_basis)
+    def generator_morphism(self) -> SetMorphism:
+        r"""Return the set morphism whose linear extension is this morphism."""
+        return self._generator_morphism
 
     def images(self) -> tuple:
-        labels = self.domain().generating_set()
-        assert labels in SageSets().Finite(), (
+        generating_set = self.domain().generating_set()
+        assert generating_set in SageSets().Finite(), (
             "listing all images requires a finite framing set"
         )
-        return tuple(self.on_basis(label) for label in labels)
+        return tuple(
+            self.generator_morphism()(element_of_S)
+            for element_of_S in generating_set
+        )
 
     def matrix(self) -> Matrix:
         r"""Return the matrix in the finite ordered framings."""
@@ -243,8 +245,11 @@ class ModuleMorphism(Morphism):
             f"{element} is not an element of {self.domain()}"
         )
         total = self.codomain().zero()
-        for label, coefficient in _coefficients(element).items():
-            total += coefficient * self.on_basis(label)
+        for element_of_S, coefficient in _coefficients(element).items():
+            total += (
+                coefficient
+                * self.generator_morphism()(element_of_S)
+            )
         return total
 
     def lift(self, element: Any) -> Any:
@@ -341,25 +346,27 @@ class ModuleMorphism(Morphism):
         return "Module"
 
     def _repr_defn(self) -> str:
-        labels = self.domain().generating_set()
-        if labels not in SageSets().Finite():
-            return "defined on the basis-indexing set"
+        generating_set = self.domain().generating_set()
+        if generating_set not in SageSets().Finite():
+            return "the linear extension of a generator morphism"
         return "\n".join(
-            f"{label!r} |--> {self.on_basis(label)}" for label in labels
+            f"{element_of_S!r} |--> "
+            f"{self.generator_morphism()(element_of_S)}"
+            for element_of_S in generating_set
         )
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ModuleMorphism) or self.parent() is not other.parent():
             return False
-        labels = self.domain().generating_set()
-        assert labels in SageSets().Finite(), (
+        generating_set = self.domain().generating_set()
+        assert generating_set in SageSets().Finite(), (
             "equality of maps on a nonenumerable framing needs an explicit theorem"
         )
         return self.images() == other.images()
 
     def __hash__(self) -> int:
-        labels = self.domain().generating_set()
-        assert labels in SageSets().Finite(), (
+        generating_set = self.domain().generating_set()
+        assert generating_set in SageSets().Finite(), (
             "a morphism on a nonenumerable framing is not hashable"
         )
         return hash((id(self.parent()), self.images()))
@@ -378,8 +385,8 @@ class FramingMorphism(ModuleMorphism):
         ), "the source of a framing is a free module on a specified set"
         ModuleMorphism.__init__(self, parent, images)
 
-    def _domain_labels(self) -> Any:
-        return self.domain().basis_index_set()
+    def _domain_generating_set(self) -> Any:
+        return self.domain().generator_morphism().domain()
 
     def is_surjective(self) -> bool:
         return True
@@ -413,10 +420,16 @@ class ModuleAutomorphism(ModuleMorphism):
             and other.parent() is self.parent()
         ), "composition here is internal to one automorphism group"
         return self.parent()(
-            {
-                label: self(other.on_basis(label))
-                for label in self.domain().generating_set()
-            }
+            SetMorphism(
+                Hom(
+                    self.domain().generating_set(),
+                    self.codomain(),
+                    SageSets(),
+                ),
+                lambda element_of_S: self(
+                    other.generator_morphism()(element_of_S)
+                ),
+            )
         )
 
     def inverse(self) -> "ModuleAutomorphism":
@@ -455,12 +468,7 @@ class ModuleAutomorphismGroup(ModuleHomset):
                 for generator in supplied
             ), "subgroup generators must be module automorphisms"
             self._generators = tuple(
-                self(
-                    {
-                        label: generator.on_basis(label)
-                        for label in module.generating_set()
-                    }
-                )
+                self(generator.generator_morphism())
                 for generator in supplied
             )
             self._elements = self._close()
@@ -472,12 +480,7 @@ class ModuleAutomorphismGroup(ModuleHomset):
         return self.domain()
 
     def one(self) -> ModuleAutomorphism:
-        return self(
-            {
-                label: self.module().monomial(label)
-                for label in self.module().generating_set()
-            }
-        )
+        return self(self.module().generator_morphism())
 
     def subgroup(self, generators: Any) -> "ModuleAutomorphismGroup":
         generators = tuple(generators)
@@ -690,16 +693,19 @@ def _combination(module: Any, coefficients: Any) -> Any:
         case dict():
             items = coefficients.items()
         case _:
-            labels = tuple(module.generating_set())
+            generating_set = tuple(module.generating_set())
             coefficients = tuple(coefficients)
-            assert len(coefficients) == len(labels), (
-                f"{module} has {len(labels)} framing labels, got "
+            assert len(coefficients) == len(generating_set), (
+                f"{module} has {len(generating_set)} distinguished generators, got "
                 f"{len(coefficients)} coefficients"
             )
-            items = zip(labels, coefficients)
+            items = zip(generating_set, coefficients)
     total = module.zero()
-    for label, coefficient in items:
-        total += module.base_ring()(coefficient) * module.generator(label)
+    for element_of_S, coefficient in items:
+        total += (
+            module.base_ring()(coefficient)
+            * module.generator_morphism()(element_of_S)
+        )
     return total
 
 

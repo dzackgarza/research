@@ -3,8 +3,8 @@ r"""Modules equipped with a bilinear or quadratic form."""
 from typing import Any
 
 from sage.categories.category_types import Category_over_base_ring
-from sage.categories.homset import Homset
-from sage.categories.morphism import Morphism
+from sage.categories.homset import Hom, Homset
+from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.matrix.matrix0 import Matrix
 from sage.structure.element import Element
@@ -46,7 +46,7 @@ class FormModules(Category_over_base_ring):
                 case _:
                     raise TypeError(
                         "a form module with an arbitrary framing accepts a "
-                        "finite dictionary of label-coefficient pairs"
+                        "finite coefficient function on its generating set"
                     )
 
         def Hom(self, codomain: Any) -> "FormHomset":
@@ -63,6 +63,9 @@ class FormModules(Category_over_base_ring):
 
         def hom(self: Any, images: Any, codomain: Any = None) -> "FormMorphism":
             match images:
+                case SetMorphism():
+                    target = images.codomain()
+                    assignment = images
                 case dict() if images:
                     target = next(iter(images.values())).parent()
                     assignment = images
@@ -201,9 +204,6 @@ class FreeFormModules(Category_over_base_ring):
         def basis(self: Any) -> Any:
             return self.gens()
 
-        def monomial(self: Any, label: Any) -> Any:
-            return self.generator(label)
-
         def subobject_on(self: Any, generators: Any) -> Any:
             generators = tuple(generators)
             assert all(generator.parent() is self for generator in generators), (
@@ -228,6 +228,11 @@ class FreeFormModules(Category_over_base_ring):
                 generating_set,
             )
             return BilinearForm(module, self.value_module(), gram)
+
+    class ElementMethods:
+        def underlying_set_element(self: Any) -> Any:
+            r"""Recover the element of \(S\) defining a canonical generator."""
+            return self.forget_form().underlying_set_element()
 
 
 class FinitelyGeneratedFormModules(Category_over_base_ring):
@@ -373,17 +378,24 @@ class FormModule(Parent):
             base=module.base_ring(),
             category=FormModules(module.base_ring()),
         )
-        labels = module.generating_set()
         source = module.framing_morphism().domain()
-        match labels in SageSets().Finite():
-            case True:
-                images = {
-                    label: self._over(module.generator(label))
-                    for label in labels
-                }
-            case False:
-                images = lambda label: self._over(module.generator(label))
-        self._framing_morphism = framing_morphism(source, self, images)
+        underlying_generator_morphism = module.generator_morphism()
+        formed_generator_morphism = SetMorphism(
+            Hom(
+                underlying_generator_morphism.domain(),
+                self,
+                SageSets(),
+            ),
+            lambda element_of_S: self._over(
+                underlying_generator_morphism(element_of_S)
+            ),
+        )
+        self._free_generator_morphism = formed_generator_morphism
+        self._framing_morphism = framing_morphism(
+            source,
+            self,
+            formed_generator_morphism,
+        )
         self._refine_from_form()
 
     def _refine_from_form(self) -> None:
@@ -521,9 +533,6 @@ class FormModule(Parent):
     def framing_morphism(self) -> FramingMorphism:
         return self._framing_morphism
 
-    def monomial(self, label: Any) -> FormModuleElement:
-        return self.generator(label)
-
     def _element_constructor_(self, element: Any) -> FormModuleElement:
         assert isinstance(element, FormModuleElement) and element.parent() is self, (
             f"{element} is not an element of {self}"
@@ -573,14 +582,13 @@ class FormHomset(Homset):
                 assert module_morphism.parent() is self._module_homset, (
                     "the module morphism belongs to a different homset"
                 )
-            case dict():
+            case SetMorphism() | dict():
                 module_morphism = self._module_homset(images)
             case _ if callable(images):
                 module_morphism = self._module_homset(images)
             case _:
                 raise TypeError(
-                    "a form morphism is specified by a dictionary or "
-                    "function on the domain framing"
+                    "a form morphism is specified by its generator morphism"
                 )
         return FormMorphism(self, module_morphism)
 
@@ -610,6 +618,9 @@ class FormMorphism(Morphism):
 
     def module_morphism(self) -> ModuleMorphism:
         return self._module_morphism
+
+    def generator_morphism(self) -> SetMorphism:
+        return self._module_morphism.generator_morphism()
 
     def matrix(self) -> Matrix:
         return self._module_morphism.matrix()
@@ -642,11 +653,18 @@ class FormMorphism(Morphism):
         assert other.domain() is self.codomain(), (
             "the codomain of the first map is not the domain of the second"
         )
+        generator_morphism = self.generator_morphism()
         return self.domain().Hom(other.codomain())(
-            {
-                label: other(self(self.domain().generator(label)))
-                for label in self.domain().generating_set()
-            }
+            SetMorphism(
+                Hom(
+                    generator_morphism.domain(),
+                    other.codomain(),
+                    SageSets(),
+                ),
+                lambda element_of_S: other(
+                    generator_morphism(element_of_S)
+                ),
+            )
         )
 
     def __mul__(self, other: Any) -> "FormMorphism":
@@ -654,11 +672,18 @@ class FormMorphism(Morphism):
             isinstance(other, FormMorphism)
             and other.parent() is self.parent()
         ), "composition here is internal to one automorphism homset"
+        generator_morphism = other.generator_morphism()
         return self.parent()(
-            {
-                label: self(other(self.domain().generator(label)))
-                for label in self.domain().generating_set()
-            }
+            SetMorphism(
+                Hom(
+                    generator_morphism.domain(),
+                    self.codomain(),
+                    SageSets(),
+                ),
+                lambda element_of_S: self(
+                    generator_morphism(element_of_S)
+                ),
+            )
         )
 
     def __eq__(self, other: Any) -> bool:
@@ -701,12 +726,7 @@ class FormAutomorphismGroup(FormHomset):
         return morphism
 
     def one(self) -> FormMorphism:
-        return self(
-            {
-                label: self.domain().generator(label)
-                for label in self.domain().generating_set()
-            }
-        )
+        return self(self.domain().generator_morphism())
 
     def __contains__(self, morphism: Any) -> bool:
         return (

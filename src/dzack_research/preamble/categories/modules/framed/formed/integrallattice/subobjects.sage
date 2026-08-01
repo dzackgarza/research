@@ -41,8 +41,11 @@ class Subobjects(Category):
         def generating_set(self: Any) -> Any:
             return self._underlying_object.generating_set()
 
-        def generator(self: Any, label: Any) -> Any:
-            return self._underlying_object.generator(label)
+        def generator_morphism(self: Any) -> Any:
+            return self._underlying_object.generator_morphism()
+
+        def generator(self: Any, element_of_S: Any) -> Any:
+            return self.generator_morphism()(element_of_S)
 
         def rank(self: Any) -> Any:
             return self._underlying_object.rank()

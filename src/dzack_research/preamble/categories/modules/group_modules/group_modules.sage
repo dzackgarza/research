@@ -3,6 +3,9 @@ r"""Finite-group representations on finitely generated free modules."""
 from typing import Any
 
 from sage.categories.category import Category
+from sage.categories.homset import Hom
+from sage.categories.morphism import SetMorphism
+from sage.categories.sets_cat import Sets as SageSets
 from sage.matrix.matrix0 import Matrix
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -65,6 +68,9 @@ class GroupModules(Category):
 
         def hom(self: Any, images: Any, codomain: Any = None) -> Any:
             match images:
+                case SetMorphism():
+                    target = images.codomain()
+                    assignment = images
                 case dict() if images:
                     target = next(iter(images.values())).parent()
                     assignment = images
@@ -146,8 +152,8 @@ class GroupModuleHomset(ModuleHomset):
             case _:
                 morphism = ModuleMorphism(self, images)
         for group_element in self.domain().group():
-            for label in self.domain().generating_set():
-                generator = self.domain().generator(label)
+            for element_of_S in self.domain().generating_set():
+                generator = self.domain().generator_morphism()(element_of_S)
                 assert morphism(
                     self.domain().act(group_element, generator)
                 ) == self.codomain().act(
@@ -188,6 +194,10 @@ class GroupModuleElement(ModuleElement):
 
     def coefficients(self) -> dict:
         return _coefficients(self._underlying)
+
+    def underlying_set_element(self) -> Any:
+        r"""Recover the element of \(S\) defining a canonical generator."""
+        return self._underlying.underlying_set_element()
 
     def _coordinates(self) -> Any:
         return _coordinate_vector(self._underlying)
@@ -236,22 +246,33 @@ class GroupModule(Parent):
         )
         refine(self, GroupModules(module.base_ring(), action.domain()))
         source = module.framing_morphism().domain()
+        underlying_generator_morphism = module.generator_morphism()
+        group_generator_morphism = SetMorphism(
+            Hom(
+                underlying_generator_morphism.domain(),
+                self,
+                SageSets(),
+            ),
+            lambda element_of_S: self._over(
+                underlying_generator_morphism(element_of_S)
+            ),
+        )
+        self._free_generator_morphism = group_generator_morphism
         self._framing_morphism = framing_morphism(
             source,
             self,
-            {
-                label: self._over(module.generator(label))
-                for label in module.generating_set()
-            },
+            group_generator_morphism,
         )
         automorphisms = self.Aut()
         values = {
             element: automorphisms(
                 {
-                    label: self._over(
-                        action(element)(module.generator(label))
+                    element_of_S: self._over(
+                        action(element)(
+                            underlying_generator_morphism(element_of_S)
+                        )
                     )
-                    for label in module.generating_set()
+                    for element_of_S in module.generating_set()
                 }
             )
             for element in action.domain()
@@ -263,9 +284,6 @@ class GroupModule(Parent):
 
     def forget_action(self) -> Any:
         return self._module
-
-    def monomial(self, label: Any) -> GroupModuleElement:
-        return self.generator(label)
 
     def rank(self) -> Any:
         return self._module.rank()

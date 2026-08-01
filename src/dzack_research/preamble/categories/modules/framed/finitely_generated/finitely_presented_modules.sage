@@ -7,6 +7,9 @@ declaring ``FinitelyGeneratedModules(R)`` in its supercategories.
 from typing import Any
 
 from sage.categories.category_types import Category_over_base_ring
+from sage.categories.homset import Hom
+from sage.categories.morphism import SetMorphism
+from sage.categories.sets_cat import Sets as SageSets
 from sage.matrix.constructor import matrix
 from sage.matrix.matrix0 import Matrix
 from sage.modules.free_module_element import vector
@@ -87,7 +90,7 @@ class FinitelyPresentedModule(Parent):
         relations = matrix(base_ring, presentation.matrix())
         assert relations.ncols() == codomain.generating_set().cardinality(), (
             "the presentation matrix does not have the codomain's number of "
-            "framing labels as its number of columns"
+            "distinguished generators as its number of columns"
         )
         Parent.__init__(
             self,
@@ -105,15 +108,23 @@ class FinitelyPresentedModule(Parent):
         if base_ring is ZZ and self.is_torsion():
             refine(self, FinitelyPresentedTorsionModules(base_ring))
         source = _underlying_module(codomain)
+        source_generator_morphism = source.generator_morphism()
+        quotient_generator_morphism = SetMorphism(
+            Hom(
+                source_generator_morphism.domain(),
+                self,
+                SageSets(),
+            ),
+            lambda element_of_S: self._from_coordinates(
+                _coordinate_vector(
+                    source_generator_morphism(element_of_S)
+                )
+            ),
+        )
         self._framing_morphism = framing_morphism(
             source,
             self,
-            {
-                label: self._from_coordinates(
-                    [self.base_ring()(i == j) for j in range(self.ngens())]
-                )
-                for i, label in enumerate(source.generating_set())
-            },
+            quotient_generator_morphism,
         )
 
     def framing_morphism(self) -> "FramingMorphism":
@@ -170,8 +181,8 @@ class FinitelyPresentedModule(Parent):
         match coefficients:
             case dict():
                 coefficients = tuple(
-                    coefficients.get(label, self.base_ring().zero())
-                    for label in self.generating_set()
+                    coefficients.get(element_of_S, self.base_ring().zero())
+                    for element_of_S in self.generating_set()
                 )
             case _:
                 coefficients = tuple(coefficients)

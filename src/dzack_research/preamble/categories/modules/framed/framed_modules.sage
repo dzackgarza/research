@@ -17,7 +17,6 @@ import sage.categories.category_with_axiom as cwa
 from sage.categories.category_types import Category_module
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 from sage.categories.modules import Modules
-from sage.categories.sets_cat import Sets as SageSets
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.sets.image_set import ImageSubobject
@@ -37,8 +36,9 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
         def framing_morphism(self) -> "FramingMorphism":
             r"""Return the framing morphism \(F_R(S)\to M\)."""
 
-        def generating_set(self):
-            r"""Return the set \(S\) on which the framing source is free."""
+        @cached_method
+        def generator_morphism(self):
+            r"""Return the set morphism \(S\to U(M)\) supplied by the framing."""
             framing = self.framing_morphism()
             assert isinstance(framing, FramingMorphism), (
                 "the Framed axiom is witnessed by a declared epimorphism"
@@ -53,34 +53,21 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             assert framing.parent() is module_homset(source, self), (
                 "the framing morphism belongs to a noncanonical homset"
             )
-            return source.basis_index_set()
+            return framing.generator_morphism()
 
-        def generator(self, label: Any):
-            r"""Return the image of the basis element indexed by ``label``."""
-            source = self.framing_morphism().domain()
-            return self.framing_morphism()(source.monomial(label))
+        def generating_set(self):
+            r"""Return the domain \(S\) of the distinguished-generator morphism."""
+            return self.generator_morphism().domain()
+
+        def generator(self, element_of_S: Any):
+            r"""Return the distinguished generator associated to \(s\in S\)."""
+            return self.generator_morphism()(element_of_S)
 
         @cached_method
         def gens(self):
-            r"""Return the actual image of \(S\) under the framing.
-
-            A finite image receives the transported order fixed by \(S\).
-            Otherwise Sage's lazy image-subobject is returned; it does not
-            presume that the image can be enumerated.
-            """
-            labels = self.generating_set()
-            if labels in SageSets().Finite():
-                return finite_ordered_set(
-                    tuple(
-                        dict.fromkeys(
-                            self.generator(label) for label in labels
-                        )
-                    )
-                )
-            return ImageSubobject(
-                self.framing_morphism().basis_map(),
-                labels,
-            )
+            r"""Return the image of \(S\to U(M)\) without enumerating \(S\)."""
+            morphism = self.generator_morphism()
+            return ImageSubobject(morphism, morphism.domain())
 
         def Hom(self, codomain: Any):
             r"""Return the canonical homset from this module to ``codomain``."""
