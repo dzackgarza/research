@@ -12,6 +12,7 @@ from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.matrix.matrix0 import Matrix
 from sage.modules.free_module_element import FreeModuleElement, vector
+from sage.structure.parent import Parent
 
 from sage_lattice_category_spike.objects.sets import Sets
 from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
@@ -91,8 +92,10 @@ def _underlying_module(module: Any) -> Any:
     match module:
         case FormModule():
             return module.forget_form()
-        case _:
+        case Parent():
             return module
+        case _:
+            raise TypeError(f"{module!r} is not a module parent")
 
 
 def _coordinate_vector(element: Any) -> FreeModuleElement:
@@ -686,16 +689,17 @@ class GroupAction(Morphism):
         frontier = [group.one()]
         while frontier:
             current = frontier.pop()
-            for generator, image in zip(generators, images):
+            for generator, image in zip(generators, images, strict=True):
                 product = current * generator
                 candidate = values[current] * image
-                if product in values:
-                    assert values[product] == candidate, (
-                        "the images do not respect the relations of the group"
-                    )
-                else:
-                    values[product] = candidate
-                    frontier.append(product)
+                match product in values:
+                    case True:
+                        assert values[product] == candidate, (
+                            "the images do not respect the relations of the group"
+                        )
+                    case False:
+                        values[product] = candidate
+                        frontier.append(product)
         return parent(values)
 
     def module(self) -> Any:

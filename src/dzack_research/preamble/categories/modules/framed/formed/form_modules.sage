@@ -6,6 +6,7 @@ from sage.categories.category_types import Category_over_base_ring
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.matrix.matrix0 import Matrix
+from sage.modules.free_module_element import FreeModuleElement
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
@@ -80,7 +81,8 @@ class FormModules(Category_over_base_ring):
                 case _:
                     raise TypeError(
                         "a map from an arbitrarily framed form module is "
-                        "specified by a dictionary or a function on its frame"
+                        "specified by a finite assignment or a function on "
+                        "its generating set"
                     )
             return self.Hom(target)(assignment)
 
@@ -112,12 +114,14 @@ class FormModules(Category_over_base_ring):
             match other:
                 case Element() if other.parent() is self.parent():
                     return self.b(other)
-                case _:
-                    assert other in self.parent().base_ring(), (
-                        f"{other} is not a scalar of {self.parent().base_ring()}"
-                    )
+                case scalar if scalar in self.parent().base_ring():
                     return self.parent()._over(
-                        other * _formed_element_representation(self)
+                        scalar * _formed_element_representation(self)
+                    )
+                case _:
+                    raise TypeError(
+                        f"{other} is neither an element of {self.parent()} nor "
+                        f"a scalar of {self.parent().base_ring()}"
                     )
 
         def __truediv__(self: Any, divisor: Any) -> Any:
@@ -255,20 +259,20 @@ class FinitelyGeneratedFormModules(Category_over_base_ring):
         def linear_combination(self: Any, coefficients: Any) -> Any:
             match coefficients:
                 case dict():
-                    return FramedModules.ParentMethods.linear_combination(
-                        self,
-                        coefficients,
+                    coefficient_function = coefficients
+                case list() | tuple() | FreeModuleElement():
+                    coefficient_function = _finite_coefficient_function(
+                        self, coefficients
                     )
                 case _:
-                    coefficients = tuple(coefficients)
-                    assert len(coefficients) == self.ngens(), (
-                        f"this module has {self.ngens()} generators, got "
-                        f"{len(coefficients)} coefficients"
+                    raise TypeError(
+                        "coefficients are a finite function or a coordinate "
+                        "vector in the ordered generating set"
                     )
-                    return FramedModules.ParentMethods.linear_combination(
-                        self,
-                        zip(self.generating_set(), coefficients),
-                    )
+            return FramedModules.ParentMethods.linear_combination(
+                self,
+                coefficient_function,
+            )
 
         def hom(self: Any, images: Any, codomain: Any = None) -> "FormMorphism":
             match images:
@@ -278,20 +282,19 @@ class FinitelyGeneratedFormModules(Category_over_base_ring):
                         images,
                         codomain,
                     )
-                case _:
-                    images = tuple(images)
-                    assert len(images) == self.ngens(), (
-                        "the number of images does not match the framing set"
+                case list() | tuple():
+                    target, assignment = _finite_generator_assignment(
+                        self,
+                        images,
+                        codomain,
                     )
-                    if images:
-                        target = images[0].parent()
-                    else:
-                        assert codomain is not None, (
-                            "an empty assignment requires its codomain"
-                        )
-                        target = codomain
                     return self.Hom(target)(
-                        dict(zip(self.generating_set(), images))
+                        assignment
+                    )
+                case _:
+                    raise TypeError(
+                        "a homomorphism is specified by a finite assignment "
+                        "or an ordered list of images"
                     )
 
 

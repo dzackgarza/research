@@ -119,8 +119,10 @@ def _forget_form_element(element: Any) -> Any:
     match element:
         case FormModuleElement():
             return element.forget_form()
-        case _:
+        case Element():
             return element
+        case _:
+            raise TypeError(f"{element!r} is not a module element")
 
 
 class BilinearFormMorphism(Morphism):

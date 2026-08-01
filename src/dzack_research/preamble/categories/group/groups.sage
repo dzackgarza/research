@@ -37,8 +37,8 @@ def own_group_types(group: Any) -> Any:
     # Sage caches ``element_class`` on the instance at construction; refine only
     # rebuilds it for categories that carry ``ElementMethods``, and this one has
     # none, so the cache is dropped here and Sage rebuilds it from ``Element``.
-    for cached in ("element_class", "_abstract_element_class"):
-        group.__dict__.pop(cached, None)
+    group.__dict__.pop("element_class", None)
+    group.__dict__.pop("_abstract_element_class", None)
     return group
 
 

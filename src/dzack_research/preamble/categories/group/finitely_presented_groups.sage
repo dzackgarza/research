@@ -86,12 +86,13 @@ def _fp_relation_syllables(group: Any, word: Any) -> tuple[tuple[int, int], ...]
         idx = abs(v) - 1
         assert 0 <= idx < nc, f"index out of range: idx={idx}, n_gens={nc}"
         exp = 1 if v > 0 else -1
-        if syl and syl[-1][0] == idx:
-            syl[-1] = (idx, syl[-1][1] + exp)
-            if syl[-1][1] == 0:
-                del syl[-1]
-        else:
-            syl.append((idx, exp))
+        match bool(syl and syl[-1][0] == idx):
+            case True:
+                syl[-1] = (idx, syl[-1][1] + exp)
+                if syl[-1][1] == 0:
+                    del syl[-1]
+            case False:
+                syl.append((idx, exp))
     return tuple(syl)
 
 
@@ -110,16 +111,17 @@ def _fp_format_word_latex(group: Any, word: Any) -> str:
         and syl[3] == (syl[1][0], -1)
     ):
         return f"[{gnames[syl[0][0]]}, {gnames[syl[1][0]]}]"
-    parts = []
-    for idx, exp in syl:
-        g = gnames[idx]
-        if exp == 1:
-            parts.append(g)
-        elif exp == -1:
-            parts.append(f"{g}^{{-1}}")
-        else:
-            parts.append(f"{g}^{{{exp}}}")
-    return "".join(parts) if parts else "1"
+    def syllable(idx: int, exponent: int) -> str:
+        generator = gnames[idx]
+        match exponent:
+            case 1:
+                return generator
+            case -1:
+                return f"{generator}^{{-1}}"
+            case value if value not in (1, -1):
+                return f"{generator}^{{{value}}}"
+
+    return "".join(syllable(idx, exponent) for idx, exponent in syl)
 
 
 def _fp_relation_word_rows(group: Any, rels: tuple[Any, ...]) -> tuple[str, ...]:

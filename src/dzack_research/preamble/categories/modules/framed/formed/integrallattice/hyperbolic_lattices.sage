@@ -75,17 +75,18 @@ class HyperbolicLattices(Category):
             # definite, making its hyperbolic lattices (1, n) -- those are the
             # ones needing the twist, and their roots come back negated.
             pos, neg = self.signature_pair()
-            if neg == 1:
-                source = self
-                negate_roots = False
-            elif pos == 1:
-                source = self.twist(-1)
-                negate_roots = True
-            else:
-                assert False, (
+            match pos, neg:
+                case _, 1:
+                    source = self
+                    negate_roots = False
+                case 1, _:
+                    source = self.twist(-1)
+                    negate_roots = True
+                case _:
+                    raise ValueError(
                     f"Vinberg's algorithm needs signature (1, n) or (n, 1); "
                     f"this lattice has ({pos}, {neg})"
-                )
+                    )
 
             from vinal import VinAl
 

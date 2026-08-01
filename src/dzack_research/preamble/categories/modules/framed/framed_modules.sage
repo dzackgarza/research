@@ -26,6 +26,49 @@ if "Framed" not in cwa.all_axioms:
     cwa.all_axioms.add("Framed")
 
 
+def _finite_coefficient_function(module: Any, coefficients: Any) -> dict:
+    r"""Pair a coordinate vector with the module's ordered generating set."""
+    coefficients = tuple(coefficients)
+    assert len(coefficients) == module.ngens(), (
+        f"{module} has {module.ngens()} generators, got "
+        f"{len(coefficients)} coefficients"
+    )
+    return dict(
+        zip(
+            module.generating_set(),
+            coefficients,
+            strict=True,
+        )
+    )
+
+
+def _finite_generator_assignment(
+    module: Any,
+    images: list | tuple,
+    codomain: Any,
+) -> tuple[Any, dict]:
+    r"""Return the codomain and finite generator assignment."""
+    images = tuple(images)
+    assert len(images) == module.ngens(), (
+        f"{module} has {module.ngens()} generators, got {len(images)} images"
+    )
+    match images:
+        case (first, *_):
+            target = first.parent()
+        case ():
+            assert codomain is not None, (
+                "an empty generator assignment requires its codomain"
+            )
+            target = codomain
+    return target, dict(
+        zip(
+            module.generating_set(),
+            images,
+            strict=True,
+        )
+    )
+
+
 class FramedModules(CategoryWithAxiom_over_base_ring):
     r"""Modules carrying a specified surjection \(F_R(S)\to M\)."""
 
@@ -63,18 +106,17 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             r"""Return the distinguished generator associated to \(s\in S\)."""
             return self.generator_morphism()(element_of_S)
 
-        def linear_combination(self: Any, terms: Any) -> Any:
+        def linear_combination(self: Any, coefficients: dict) -> Any:
             r"""Return the specified finite \(R\)-linear combination."""
-            match terms:
-                case dict():
-                    items = terms.items()
-                case _:
-                    items = terms
+            assert isinstance(coefficients, dict), (
+                "a finite linear combination is specified by its coefficient "
+                "function on the generating set"
+            )
             return sum(
                 (
                     self.base_ring()(coefficient)
                     * self.generator(element_of_S)
-                    for element_of_S, coefficient in items
+                    for element_of_S, coefficient in coefficients.items()
                 ),
                 self.zero(),
             )

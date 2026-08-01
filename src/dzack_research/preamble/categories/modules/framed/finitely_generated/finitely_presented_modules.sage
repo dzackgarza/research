@@ -12,7 +12,7 @@ from sage.categories.morphism import SetMorphism
 from sage.matrix.constructor import matrix
 from sage.matrix.matrix0 import Matrix
 from sage.misc.misc_c import prod
-from sage.modules.free_module_element import vector
+from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -102,11 +102,17 @@ class FinitelyPresentedModule(Parent):
         )
         self._presentation = presentation
         self._relations = relations
-        self._normal_form = (
-            relations.hermite_form(include_zero_rows=False)
-            if base_ring is ZZ
-            else relations.echelon_form()
-        )
+        match base_ring:
+            case ring if ring is ZZ:
+                self._normal_form = relations.hermite_form(
+                    include_zero_rows=False
+                )
+            case ring if ring.is_field():
+                self._normal_form = relations.echelon_form()
+            case _:
+                raise NotImplementedError(
+                    "finitely presented modules currently require ZZ or a field"
+                )
         refine(self, FinitelyPresentedModules(base_ring))
         if base_ring is ZZ and self.is_torsion():
             refine(self, FinitelyPresentedTorsionModules(base_ring))
@@ -180,18 +186,19 @@ class FinitelyPresentedModule(Parent):
     def linear_combination(self, coefficients: Any) -> FinitelyPresentedModuleElement:
         match coefficients:
             case dict():
-                return FramedModules.ParentMethods.linear_combination(
-                    self,
-                    coefficients,
+                coefficient_function = coefficients
+            case list() | tuple() | FreeModuleElement():
+                coefficient_function = _finite_coefficient_function(
+                    self, coefficients
                 )
             case _:
-                coefficients = tuple(coefficients)
-        assert len(coefficients) == self.ngens(), (
-            f"this module has {self.ngens()} generators, got {len(coefficients)}"
-        )
+                raise TypeError(
+                    "coefficients are a finite function or a coordinate "
+                    "vector in the ordered generating set"
+                )
         return FramedModules.ParentMethods.linear_combination(
             self,
-            zip(self.generating_set(), coefficients),
+            coefficient_function,
         )
 
     def _reduce(self, coordinates: Any) -> Any:
@@ -203,10 +210,15 @@ class FinitelyPresentedModule(Parent):
             pivot = next((i for i, entry in enumerate(row) if entry != 0), None)
             if pivot is None:
                 continue
-            if self.base_ring() is ZZ:
-                coefficient = result[pivot] // row[pivot]
-            else:
-                coefficient = result[pivot] / row[pivot]
+            match self.base_ring():
+                case ring if ring is ZZ:
+                    coefficient = result[pivot] // row[pivot]
+                case ring if ring.is_field():
+                    coefficient = result[pivot] / row[pivot]
+                case _:
+                    raise NotImplementedError(
+                        "normal-form reduction currently requires ZZ or a field"
+                    )
             result -= coefficient * row
         return result
 

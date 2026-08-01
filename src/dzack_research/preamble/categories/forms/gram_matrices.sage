@@ -1,5 +1,6 @@
 r"""Shared Gram-matrix operations."""
 
+from itertools import accumulate
 from typing import Any
 
 import networkx as nx
@@ -11,23 +12,20 @@ def _matrix_connected_component_cuts(G: Any) -> list[int]:
     if n <= 1:
         return []
 
-    adjacency = {i: [] for i in range(n)}
-    for i in range(n):
-        for j in range(i + 1, n):
-            if G[i, j] != 0:
-                adjacency[i].append(j)
-                adjacency[j].append(i)
+    graph = nx.Graph()
+    graph.add_nodes_from(range(n))
+    graph.add_edges_from(
+        (i, j)
+        for i in range(n)
+        for j in range(i + 1, n)
+        if G[i, j] != 0
+    )
 
     components = sorted(
-        (sorted(component) for component in nx.connected_components(nx.Graph(adjacency))),
+        (sorted(component) for component in nx.connected_components(graph)),
         key=lambda component: component[0],
     )
     if [i for component in components for i in component] != list(range(n)):
         return []
 
-    cuts = []
-    position = 0
-    for component in components[:-1]:
-        position += len(component)
-        cuts.append(position)
-    return cuts
+    return list(accumulate(len(component) for component in components[:-1]))

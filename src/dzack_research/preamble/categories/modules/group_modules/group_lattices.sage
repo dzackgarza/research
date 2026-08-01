@@ -3,6 +3,7 @@ r"""Integral lattices equipped with a finite-group action by isometries."""
 from typing import Any
 
 from sage.categories.category import Category
+from sage.categories.morphism import SetMorphism
 
 
 class GroupLattices(Category):
@@ -138,8 +139,15 @@ class GroupLatticeHomset(FormHomset):
                     "an existing group-lattice morphism belongs to its own homset"
                 )
                 return images
-            case _:
+            case ModuleMorphism() | SetMorphism() | dict():
                 morphism = FormHomset._element_constructor_(self, images)
+            case _ if callable(images):
+                morphism = FormHomset._element_constructor_(self, images)
+            case _:
+                raise TypeError(
+                    "a group-lattice morphism is specified by its generator "
+                    "morphism or finite generator assignment"
+                )
         assert all(
             morphism(
                 self.domain().act(

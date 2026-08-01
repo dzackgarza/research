@@ -86,20 +86,17 @@ class GroupModules(Category):
                     )
                     target = codomain
                     assignment = images
-                case _:
-                    images = tuple(images)
-                    assert len(images) == self.rank(), (
-                        "the number of images does not match the chosen basis"
+                case list() | tuple():
+                    target, assignment = _finite_generator_assignment(
+                        self,
+                        images,
+                        codomain,
                     )
-                    if images:
-                        target = images[0].parent()
-                    else:
-                        assert codomain is not None, (
-                            "an empty assignment requires its codomain"
-                        )
-                        target = codomain
-                    assignment = dict(
-                        zip(self.generating_set(), images)
+                case _:
+                    raise TypeError(
+                        "an equivariant homomorphism is specified by a "
+                        "generator morphism, a finite assignment, or an "
+                        "ordered list of images"
                     )
             assert target.group() is self.group(), (
                 "an equivariant map uses the same acting group on both sides"
@@ -155,8 +152,13 @@ class GroupModuleHomset(ModuleHomset):
                     "an existing equivariant morphism belongs to its own homset"
                 )
                 return images
-            case _:
+            case SetMorphism() | dict():
                 morphism = ModuleMorphism(self, images)
+            case _:
+                raise TypeError(
+                    "an equivariant morphism is specified by its generator "
+                    "morphism or finite generator assignment"
+                )
         assert all(
             morphism(
                 self.domain().act(
@@ -409,8 +411,7 @@ def _restricted_action_automorphisms(
         field,
         [_coordinate_vector(generator) for generator in generators],
     )
-    restricted = []
-    for group_element in module.group().gens():
+    def restricted_automorphism(group_element: Any) -> Any:
         images = matrix(
             field,
             [
@@ -429,31 +430,41 @@ def _restricted_action_automorphisms(
         assert all(
             entry in submodule.base_ring() for entry in coefficients.list()
         ), "the restricted action is not defined over the base ring"
-        restricted.append(
-            submodule.Aut()(
-                {
-                    label: submodule.linear_combination(row)
-                    for label, row in zip(
-                        submodule.generating_set(),
-                        coefficients.rows(),
-                    )
-                }
-            )
+        return submodule.Aut()(
+            {
+                label: submodule.linear_combination(row)
+                for label, row in zip(
+                    submodule.generating_set(),
+                    coefficients.rows(),
+                )
+            }
         )
-    return restricted
+
+    return [
+        restricted_automorphism(group_element)
+        for group_element in module.group().gens()
+    ]
 
 
 def _equivariant_hom(domain: Any, codomain: Any, images: Any) -> Any:
     match images:
         case dict():
             assignment = images
-        case _:
-            images = tuple(images)
+        case list() | tuple():
             assert len(images) == domain.ngens(), (
-                "the number of images does not match the framing set"
+                "the number of images does not match the generating set"
             )
             assignment = dict(
-                zip(domain.generating_set(), images)
+                zip(
+                    domain.generating_set(),
+                    images,
+                    strict=True,
+                )
+            )
+        case _:
+            raise TypeError(
+                "an equivariant homomorphism is specified by a finite "
+                "assignment or an ordered list of images"
             )
     return domain.Hom(codomain)(assignment)
 

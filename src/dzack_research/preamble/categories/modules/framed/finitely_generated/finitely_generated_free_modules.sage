@@ -1,10 +1,11 @@
 r"""Free modules on finite totally ordered sets."""
 
+from collections.abc import Iterable
 from typing import Any
 
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.morphism import SetMorphism
-from sage.modules.free_module_element import vector
+from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer import Integer as SageInteger
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
@@ -64,20 +65,20 @@ class FinitelyGeneratedFreeModules(Category_over_base_ring):
             r"""Read a finite coefficient vector in the chosen ordered basis."""
             match coefficients:
                 case dict():
-                    return FramedModules.ParentMethods.linear_combination(
-                        self,
-                        coefficients,
+                    coefficient_function = coefficients
+                case list() | tuple() | FreeModuleElement():
+                    coefficient_function = _finite_coefficient_function(
+                        self, coefficients
                     )
                 case _:
-                    coefficients = tuple(coefficients)
-                    assert len(coefficients) == self.ngens(), (
-                        f"this module has {self.ngens()} basis elements, got "
-                        f"{len(coefficients)} coefficients"
+                    raise TypeError(
+                        "coefficients are a finite function or a coordinate "
+                        "vector in the ordered generating set"
                     )
-                    return FramedModules.ParentMethods.linear_combination(
-                        self,
-                        zip(self.generating_set(), coefficients),
-                    )
+            return FramedModules.ParentMethods.linear_combination(
+                self,
+                coefficient_function,
+            )
 
         def hom(self: Any, images: Any, codomain: Any = None) -> Any:
             r"""Construct the map specified on the finite generating set."""
@@ -98,20 +99,17 @@ class FinitelyGeneratedFreeModules(Category_over_base_ring):
                     )
                     target = codomain
                     assignment = images
-                case _:
-                    images = tuple(images)
-                    assert len(images) == self.ngens(), (
-                        f"this module has {self.ngens()} basis elements, got "
-                        f"{len(images)} images"
+                case list() | tuple():
+                    target, assignment = _finite_generator_assignment(
+                        self,
+                        images,
+                        codomain,
                     )
-                    if images:
-                        target = images[0].parent()
-                    else:
-                        assert codomain is not None, (
-                            "the empty assignment requires an explicitly named codomain"
-                        )
-                        target = codomain
-                    assignment = dict(zip(self.generating_set(), images))
+                case _:
+                    raise TypeError(
+                        "a homomorphism is specified by a generator morphism, "
+                        "a finite assignment, or an ordered list of images"
+                    )
             return self.Hom(target)(assignment)
 
 
@@ -199,8 +197,13 @@ class BasedFreeModule(FreeModuleOnSet):
                 generating_set = Sets.Δ[generating_set - 1]
             case Parent():
                 pass
-            case _:
+            case Iterable():
                 generating_set = _as_set(generating_set)
+            case _:
+                raise TypeError(
+                    "a generating set is a finite set, a finite iterable, or "
+                    "a nonnegative cardinality"
+                )
         generating_set = finite_ordered_set(generating_set)
         FreeModuleOnSet.__init__(self, base_ring, generating_set)
         refine(self, FinitelyGeneratedFreeModules(base_ring))

@@ -232,10 +232,17 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         assert all(root.parent() is realization for root in roots), (
             "all diagram roots must belong to the same lattice"
         )
-        if index_set is None:
-            index_set = Sets.Δ[rank - 1]
-        else:
-            index_set = finite_ordered_set(index_set)
+        match index_set:
+            case None:
+                index_set = Sets.Δ[rank - 1]
+            case Sequence():
+                index_set = finite_ordered_set(index_set)
+            case Parent():
+                index_set = finite_ordered_set(index_set)
+            case _:
+                raise TypeError(
+                    "a Coxeter index set is a finite set or finite sequence"
+                )
         assert index_set.cardinality() == rank, f"index set must have one entry per root; index_set={index_set!r}, roots={rank}"
         if names is None:
             names = tuple(f"s_{i}" for i in index_set)
@@ -405,12 +412,26 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         graph = Graph(loops=True)
         graph_add = cast(Any, graph)
         graph_add.add_vertices(self._index_set)
-        for i, left in enumerate(self._index_set):
-            graph.add_edge(left, left, intersections[i, i])
-            for j in range(i + 1, len(self._index_set)):
-                pairing = intersections[i, j]
-                if pairing != 0:
-                    graph.add_edge(left, self._index_set[j], pairing)
+        graph_add.add_edges(
+            [
+                (
+                    left,
+                    left,
+                    intersections[i, i],
+                )
+                for i, left in enumerate(self._index_set)
+            ]
+            + [
+                (
+                    left,
+                    self._index_set[j],
+                    intersections[i, j],
+                )
+                for i, left in enumerate(self._index_set)
+                for j in range(i + 1, len(self._index_set))
+                if intersections[i, j] != 0
+            ]
+        )
         return graph
 
     def preferred_positions(self) -> dict[Hashable, tuple[Any, Any]]:
@@ -480,7 +501,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         selected_positions = _normalize_positions(self._index_set, positions) if positions is not None else self.preferred_positions()
         assert selected_positions is not None
         intersections = self.root_intersection_matrix()
-        lines = [
+        header = [
             rf"\begin{{tikzpicture}}[scale={scale}]",
             r"\definecolor{coxeterNegativeFour}{HTML}{F8F9FE}",
             r"\definecolor{coxeterNegativeTwo}{HTML}{BFC9CA}",
@@ -490,28 +511,44 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
             r"\tikzset{coxeter parallel/.style={line width=1.6pt}}",
             r"\tikzset{coxeter divergent/.style={dashed}}",
         ]
-        for i, left in enumerate(self._index_set):
-            for j in range(i + 1, len(self._index_set)):
-                pairing = intersections[i, j]
-                if pairing == 0:
-                    continue
-                right = self._index_set[j]
-                lines.append(
-                    rf"\draw[{_tikz_edge_style(intersections[i, i], intersections[j, j], pairing)}] "
-                    rf"({_tikz_node_name(left)}) -- ({_tikz_node_name(right)});"
-                )
-        for i, vertex in enumerate(self._index_set):
+
+        def edge(i: int, left: Any, j: int) -> str:
+            right = self._index_set[j]
+            return (
+                rf"\draw[{_tikz_edge_style(intersections[i, i], intersections[j, j], intersections[i, j])}] "
+                rf"({_tikz_node_name(left)}) -- ({_tikz_node_name(right)});"
+            )
+
+        edge_lines = [
+            edge(i, left, j)
+            for i, left in enumerate(self._index_set)
+            for j in range(i + 1, len(self._index_set))
+            if intersections[i, j] != 0
+        ]
+
+        def node(i: int, vertex: Any) -> str:
             x, y = selected_positions[vertex]
             norm = intersections[i, i]
             fill = _tikz_node_color(norm)
             text = "white" if norm == -2 else "black"
             label = self.variable_names()[i]
-            lines.append(
+            return (
                 rf"\node[coxeter node,fill={fill},text={text}] "
                 rf"({_tikz_node_name(vertex)}) at ({x},{y}) {{$ {label} $}};"
             )
-        lines.append(r"\end{tikzpicture}")
-        return "\n".join(lines)
+
+        node_lines = [
+            node(i, vertex)
+            for i, vertex in enumerate(self._index_set)
+        ]
+        return "\n".join(
+            [
+                *header,
+                *edge_lines,
+                *node_lines,
+                r"\end{tikzpicture}",
+            ]
+        )
 
     def _matrix_entries(self) -> tuple[tuple[object, ...], ...]:
         return tuple(tuple(self._coxeter_matrix[left, right] for right in self._index_set) for left in self._index_set)
@@ -524,11 +561,13 @@ def _normalize_positions(
     if positions is None:
         return None
     assert set(positions) == set(index_set), f"positions need one coordinate pair for every vertex; index_set={tuple(index_set)!r}, positions={tuple(positions)!r}"
-    normalized = {}
-    for vertex, coordinates in positions.items():
-        assert len(coordinates) == 2, f"a diagram position must be a coordinate pair; vertex={vertex!r}, coordinates={coordinates!r}"
-        normalized[vertex] = (coordinates[0], coordinates[1])
-    return normalized
+    assert all(len(coordinates) == 2 for coordinates in positions.values()), (
+        "every diagram position must be a coordinate pair"
+    )
+    return {
+        vertex: (coordinates[0], coordinates[1])
+        for vertex, coordinates in positions.items()
+    }
 
 
 def _coxeter_exponent(left_norm: object, right_norm: object, pairing: object) -> object:
@@ -620,14 +659,20 @@ class CoxeterDiagramMorphism(Morphism):
         Morphism.__init__(self, parent)
         domain = cast(FiniteCoxeterDiagram, parent.domain())
         codomain = cast(FiniteCoxeterDiagram, parent.codomain())
-        if isinstance(images, Mapping):
-            image_map = dict(images)
-            assert set(image_map) == set(domain.index_set()), (
-                f"a diagram morphism needs one image for every vertex; domain={domain.index_set()!r}, supplied={tuple(image_map)!r}"
-            )
-        else:
-            assert len(images) == domain.cardinality(), f"a diagram morphism needs one image for every vertex; expected={domain.cardinality()}, found={len(images)}"
-            image_map = dict(zip(domain.index_set(), images, strict=True))
+        match images:
+            case Mapping():
+                image_map = dict(images)
+                assert set(image_map) == set(domain.index_set()), (
+                    f"a diagram morphism needs one image for every vertex; domain={domain.index_set()!r}, supplied={tuple(image_map)!r}"
+                )
+            case Sequence():
+                assert len(images) == domain.cardinality(), f"a diagram morphism needs one image for every vertex; expected={domain.cardinality()}, found={len(images)}"
+                image_map = dict(zip(domain.index_set(), images, strict=True))
+            case _:
+                raise TypeError(
+                    "a diagram morphism is specified by a vertex map or an "
+                    "ordered sequence of images"
+                )
         assert all(image in codomain.index_set() for image in image_map.values()), (
             f"every image must be a vertex of the codomain; images={tuple(image_map.values())!r}, codomain={codomain.index_set()!r}"
         )

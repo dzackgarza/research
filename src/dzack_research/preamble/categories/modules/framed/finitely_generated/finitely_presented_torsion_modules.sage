@@ -19,6 +19,7 @@ which is decided by reducing against the Hermite form -- the same reduction
 that gives each class a canonical representative to print and hash.
 """
 
+from collections.abc import Iterable
 from typing import Any
 
 from sage.matrix.matrix0 import Matrix
@@ -27,6 +28,7 @@ from sage.categories.category_types import Category_over_base_ring
 from sage.categories.groups import Groups
 from sage.categories.modules import Modules
 from sage.matrix.special import diagonal_matrix
+from sage.structure.parent import Parent
 
 from sage_lattice_category_spike.objects.sets import Sets
 
@@ -174,10 +176,14 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
         match generating_set:
             case None:
                 generating_set = Sets.Δ[relations.ncols() - 1]
-            case _:
+            case Parent() | Iterable():
                 generating_set = finite_ordered_set(generating_set)
                 assert generating_set.cardinality() == relations.ncols(), (
                     "the generating set and presentation have different widths"
+                )
+            case _:
+                raise TypeError(
+                    "a generating set is a finite set or finite iterable"
                 )
         codomain = BasedFreeModule(ZZ, generating_set)
         return TorsionModule(
@@ -225,10 +231,18 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
             coordinates = self._coordinates()
             if coordinates.is_zero():
                 return ZZ.one()
-            for k in ZZ(parent.exponent()).divisors():
-                if parent.reduce(k * coordinates).is_zero():
-                    return k
-            assert False, "an element of a finite torsion module has finite order"
+            order = next(
+                (
+                    k
+                    for k in ZZ(parent.exponent()).divisors()
+                    if parent.reduce(k * coordinates).is_zero()
+                ),
+                None,
+            )
+            assert order is not None, (
+                "an element of a finite torsion module has finite order"
+            )
+            return order
 
     class ParentMethods:
         r"""What a torsion module is asked, none of which involves a form."""
@@ -261,11 +275,19 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
             An invariant of the isomorphism class, read off the invariant
             factors: $\mathbb Z/d\cong\bigoplus_p\mathbb Z/p^{v_p(d)}$.
             """
-            decomposition: dict = {}
-            for factor_ in self.invariants():
-                for prime, exponent in ZZ(factor_).factor():
-                    decomposition.setdefault(prime, []).append(prime ** exponent)
-            return {p: tuple(sorted(orders)) for p, orders in decomposition.items()}
+            prime_powers = tuple(
+                (prime, prime ** exponent)
+                for factor_ in self.invariants()
+                for prime, exponent in ZZ(factor_).factor()
+            )
+            return {
+                prime: tuple(
+                    power
+                    for term_prime, power in prime_powers
+                    if term_prime == prime
+                )
+                for prime in sorted({prime for prime, _ in prime_powers})
+            }
 
         def as_finitely_presented_group(self: Any) -> Any:
             r"""Return this module as a finitely presented abelian group."""

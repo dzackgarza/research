@@ -33,7 +33,7 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
             return True
 
         def is_zero(self) -> bool:
-            r"""Return whether every element in the chosen finite frame vanishes."""
+            r"""Return whether every element in the chosen generating set vanishes."""
             return all(
                 self.generator(label) == self.zero()
                 for label in self.generating_set()

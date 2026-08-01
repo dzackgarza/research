@@ -26,19 +26,21 @@ class LatticeHomomorphisms(Category):
                     )
                     return images
                 case dict():
-                    if any(source in Subobjects() for source in images):
-                        expanded = _expand_direct_sum_hom_dict(
-                            self.domain(),
-                            images,
-                        )
-                        assignment = dict(
-                            zip(
-                                self.domain().generating_set(),
-                                expanded,
+                    match any(source in Subobjects() for source in images):
+                        case True:
+                            expanded = _expand_direct_sum_hom_dict(
+                                self.domain(),
+                                images,
                             )
-                        )
-                    else:
-                        assignment = images
+                            assignment = dict(
+                                zip(
+                                    self.domain().generating_set(),
+                                    expanded,
+                                    strict=True,
+                                )
+                            )
+                        case False:
+                            assignment = images
                 case list() | tuple():
                     assert len(images) == self.domain().ngens(), (
                         "the number of images does not match the framing set"

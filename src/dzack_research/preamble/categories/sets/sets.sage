@@ -7,6 +7,7 @@ transports the order of a finite enumeration.  An arbitrary parent is not
 declared ordered merely because it can be iterated.
 """
 
+from collections.abc import Iterable
 from typing import Any
 
 from sage.rings.integer import Integer as SageInteger
@@ -24,8 +25,12 @@ def Set(source: Any) -> Parent:
     match source:
         case Parent():
             result = source
-        case _:
+        case Iterable():
             result = SageSet(source)
+        case _:
+            raise TypeError(
+                f"a set is constructed from a parent or iterable, got {source!r}"
+            )
     return refine(result, Sets())
 
 

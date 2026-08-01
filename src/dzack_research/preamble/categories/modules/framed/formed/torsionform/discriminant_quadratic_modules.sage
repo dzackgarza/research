@@ -186,7 +186,7 @@ class DiscriminantQuadraticModules(Category):
 
         def is_characteristic(self: Any) -> bool:
             r"""Return whether $q(x)=b(x,v^*)$ modulo $\mathbb Z$ for every $x$."""
-            for x in self.parent():
-                if QQ(x.q().lift() - x.b(self).lift()) not in ZZ:
-                    return False
-            return True
+            return all(
+                QQ(x.q().lift() - x.b(self).lift()) in ZZ
+                for x in self.parent()
+            )

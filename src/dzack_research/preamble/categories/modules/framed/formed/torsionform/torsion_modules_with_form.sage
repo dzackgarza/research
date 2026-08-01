@@ -115,8 +115,7 @@ class TorsionModulesWithForm(Category_over_base_ring):
 
         def __iter__(self: Any):
             r"""Iterate over the elements, of which there are finitely many."""
-            for element in self.forget_form():
-                yield self._over(element)
+            return map(self._over, self.forget_form())
 
 
         def primary_part(self: Any, p: Any) -> Subobject:
@@ -140,12 +139,22 @@ class TorsionModulesWithForm(Category_over_base_ring):
             decomposition standing apart from it.
             """
             p = ZZ(p)
-            generators = []
-            for generator in self.smith_form_gens():
+
+            def primary_generator(generator: Any) -> tuple:
                 order = generator.order()
                 primary = p ** order.valuation(p)
-                if primary != 1:
-                    generators.append((order // primary) * generator)
+                assert primary >= 1
+                match primary:
+                    case 1:
+                        return ()
+                    case value if value > 1:
+                        return ((order // value) * generator,)
+
+            generators = tuple(
+                primary_element
+                for generator in self.smith_form_gens()
+                for primary_element in primary_generator(generator)
+            )
             regenerated = self.regenerate(generators)
             return Subobject(
                 regenerated.Hom(self)(
@@ -424,11 +433,12 @@ def p_adic_jordan_generators(form: Any) -> list[Any]:
 
         # Degenerate directions are split off, normalized around, and put back.
         rank = engine.rank()
-        if rank == engine.ncols():
-            split = engine.parent().identity_matrix()
-        else:
-            integral = (engine * engine.denominator()).change_ring(ZZ)
-            split = integral.hermite_form(transformation=True)[1]
+        match rank == engine.ncols():
+            case True:
+                split = engine.parent().identity_matrix()
+            case False:
+                integral = (engine * engine.denominator()).change_ring(ZZ)
+                split = integral.hermite_form(transformation=True)[1]
         degenerate, nondegenerate = split[rank:, :], split[:rank, :]
         engine = nondegenerate * engine * nondegenerate.transpose()
 
@@ -478,12 +488,24 @@ def _p_adic_engine_matrix(form: Any) -> Matrix:
     )
     size = len(generators)
     modulus = QQ(form.value_module().n)
-    engine = matrix(QQ, size, size)
-    for i, left in enumerate(generators):
-        engine[i, i] = left.norm().lift() / modulus
-        for j in range(i + 1, size):
-            engine[i, j] = engine[j, i] = left.b(generators[j]).lift() / modulus
-    return engine
+
+    def entry(i: int, left: Any, j: int, right: Any) -> Any:
+        match i == j:
+            case True:
+                return left.norm().lift() / modulus
+            case False:
+                return left.b(right).lift() / modulus
+
+    return matrix(
+        QQ,
+        [
+            [
+                entry(i, left, j, right)
+                for j, right in enumerate(generators)
+            ]
+            for i, left in enumerate(generators)
+        ],
+    )
 
 
 def _format_cyclic_group_latex(orders: tuple[int, ...]) -> str:
@@ -493,14 +515,19 @@ def _format_cyclic_group_latex(orders: tuple[int, ...]) -> str:
     from collections import Counter
 
     counts = Counter(orders)
-    parts = []
-    for n in sorted(counts):
-        m = counts[n]
-        if m == 1:
-            parts.append(f"C_{{{n}}}")
-        else:
-            parts.append(f"C_{{{n}}}^{{{m}}}")
-    return " \\oplus ".join(parts)
+
+    def cyclic_factor(n: int, multiplicity: int) -> str:
+        assert multiplicity >= 1
+        match multiplicity:
+            case 1:
+                return f"C_{{{n}}}"
+            case _ if multiplicity > 1:
+                return f"C_{{{n}}}^{{{multiplicity}}}"
+
+    return " \\oplus ".join(
+        cyclic_factor(n, counts[n])
+        for n in sorted(counts)
+    )
 
 
 def _format_invariant_factor_latex(invariants: tuple[int, ...]) -> str:
@@ -512,10 +539,13 @@ def _format_primary_decomp_latex(invariants: tuple[int, ...]) -> str:
     r"""Format the primary decomposition implied by invariant factors."""
     if not invariants:
         return "0"
-    primary_orders: list[int] = []
-    for n in invariants:
-        primary_orders.extend(int(p) ** int(e) for p, e in factor(n))
-    return _format_cyclic_group_latex(tuple(primary_orders))
+    return _format_cyclic_group_latex(
+        tuple(
+            int(p) ** int(e)
+            for n in invariants
+            for p, e in factor(n)
+        )
+    )
 
 
 def _form_gram_matrix_latex(module: Any) -> str:
@@ -535,11 +565,12 @@ def subdivide_form_gram_matrix(module: Any) -> None:
     r"""Partition ``module``'s Gram matrix once and replace ``gram_matrix``."""
     raw = module.gram_matrix()
     cuts = _form_gram_matrix_cuts(module, raw)
-    if cuts:
-        G = raw.parent()(raw)
-        G.subdivide(cuts, cuts)
-    else:
-        G = raw
+    match cuts:
+        case []:
+            G = raw
+        case [_, *_]:
+            G = raw.parent()(raw)
+            G.subdivide(cuts, cuts)
     module.gram_matrix = lambda: G
 
 

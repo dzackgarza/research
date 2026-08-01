@@ -1,5 +1,6 @@
 r"""Objects equipped with a chosen ordered direct-sum decomposition."""
 
+from collections.abc import Iterable
 from typing import Any
 
 from sage.categories.category import Category
@@ -83,9 +84,13 @@ def DirectSum(
     match summand_index_set:
         case None:
             summand_index_set = Sets.Δ[len(summands) - 1]
-        case _:
+        case Parent() | Iterable():
             summand_index_set = finite_ordered_set(
                 summand_index_set
+            )
+        case _:
+            raise TypeError(
+                "a summand index set is a finite set or finite iterable"
             )
     return DirectSumObject(
         underlying_object,
@@ -94,30 +99,44 @@ def DirectSum(
     )
 
 
+def _direct_sum_assignment_pairs(source: Any, target: Any) -> tuple:
+    r"""Expand one declared summand assignment into generator-image pairs."""
+    match source in Subobjects(), target in Subobjects(), target:
+        case True, True, _:
+            source_images = source.embedded_gens()
+            target_images = target.embedded_gens()
+        case True, False, list() | tuple():
+            source_images = source.embedded_gens()
+            target_images = tuple(target)
+        case True, False, _:
+            source_images = source.embedded_gens()
+            assert len(source_images) == 1, (
+                "one target element requires a rank-one source"
+            )
+            target_images = (target,)
+        case False, True, _:
+            assert target.rank() == 1, (
+                "a target subobject must have rank one"
+            )
+            return ((source, target.embedded_gens()[0]),)
+        case False, False, list() | tuple():
+            raise TypeError(
+                "a list of target images requires a source subobject"
+            )
+        case False, False, _:
+            return ((source, target),)
+
+    assert len(source_images) == len(target_images), (
+        "source and target image counts differ"
+    )
+    return tuple(zip(source_images, target_images, strict=True))
+
+
 def _expand_direct_sum_hom_dict(domain: Any, mapping: dict) -> list:
     r"""Expand a summand-level assignment to the domain's framing labels."""
-    images = {}
-    for source, target in mapping.items():
-        if source in Subobjects():
-            source_images = source.embedded_gens()
-            if target in Subobjects():
-                target_images = target.embedded_gens()
-            elif isinstance(target, (list, tuple)):
-                target_images = tuple(target)
-            else:
-                assert len(source_images) == 1, (
-                    "one target element requires a rank-one source"
-                )
-                target_images = (target,)
-            assert len(source_images) == len(target_images), (
-                "source and target image counts differ"
-            )
-            images.update(zip(source_images, target_images))
-        else:
-            if target in Subobjects():
-                assert target.rank() == 1, (
-                    "a target subobject must have rank one"
-                )
-                target = target.embedded_gens()[0]
-            images[source] = target
+    images = dict(
+        pair
+        for source, target in mapping.items()
+        for pair in _direct_sum_assignment_pairs(source, target)
+    )
     return [images[generator] for generator in domain.gens()]

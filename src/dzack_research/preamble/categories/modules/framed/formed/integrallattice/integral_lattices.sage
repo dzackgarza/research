@@ -31,6 +31,7 @@ EXAMPLES::
 """
 
 import re
+from collections.abc import Iterable
 from functools import reduce
 from typing import Any, assert_never
 
@@ -450,7 +451,8 @@ class IntegralLattices(Category):
             An object, not a set of vectors.  Sage's ``dual_lattice`` returns
             $\{x\in L\otimes\mathbb Q:\langle x,L\rangle\subseteq\mathbb Z\}$,
             which makes the correlation look like an inclusion and the form look
-            like a property of a shared ambient.
+            like a property of the common realization in
+            $L\otimes\mathbb Q$.
             """
             assert self.is_nondegenerate(), (
                 f"{self} is degenerate, so it has no $L^\\vee$: the form on the "
@@ -609,17 +611,28 @@ class IntegralLattices(Category):
             r"""Return an element as a linear combination of the named basis."""
             names = self.variable_names()
             coords = element._coordinates()
-            terms = []
-            for name, c in zip(names, coords, strict=True):
-                if c == 0:
-                    continue
-                if c == 1:
-                    terms.append(name)
-                elif c == -1:
-                    terms.append(f"-{name}")
-                else:
-                    terms.append(f"{c}*{name}")
-            return " + ".join(terms).replace("+ -", "- ") if terms else "0"
+
+            def term(name: str, coefficient: Any) -> str | None:
+                match coefficient:
+                    case 0:
+                        return None
+                    case 1:
+                        return name
+                    case -1:
+                        return f"-{name}"
+                    case value if value not in (0, 1, -1):
+                        return f"{value}*{name}"
+
+            terms = tuple(
+                rendered
+                for name, coefficient in zip(names, coords, strict=True)
+                if (rendered := term(name, coefficient)) is not None
+            )
+            match terms:
+                case ():
+                    return "0"
+                case (_, *_):
+                    return " + ".join(terms).replace("+ -", "- ")
 
         @property
         def sublattices(self: Any) -> dict:
@@ -664,11 +677,7 @@ class IntegralLattices(Category):
                 return result
 
             result = reduce(orthogonal_sum, others, self)
-            match names:
-                case None:
-                    return result
-                case _:
-                    return _apply_names(result, names)
+            return _apply_optional_names(result, names)
 
         def twist(self: Any, scale: Any, names: Any = None) -> Any:
             r"""Return $L(n)$: the same module with the form scaled by ``scale``.
@@ -686,9 +695,7 @@ class IntegralLattices(Category):
                 "twisting changed the decomposition: "
                 f"{_summand_ranks(result)} != {_summand_ranks(self)}"
             )
-            if names is not None:
-                result = _apply_names(result, names)
-            return result
+            return _apply_optional_names(result, names)
 
         # ---- morphisms / automorphisms ----
 
@@ -949,10 +956,14 @@ def _lattice_with_gram(
     match generating_set:
         case None:
             generating_set = Sets.Δ[gram.nrows() - 1]
-        case _:
+        case Parent() | Iterable():
             generating_set = finite_ordered_set(generating_set)
             assert generating_set.cardinality() == gram.nrows(), (
                 "the framing set and Gram matrix have different cardinalities"
+            )
+        case _:
+            raise TypeError(
+                "a lattice generating set is a finite set or finite iterable"
             )
     lattice = BilinearForm(
         BasedFreeModule(
@@ -992,22 +1003,30 @@ def _discriminant_lift_row(element: Any, rank: int) -> list[Any]:
 
 def _expand_names(spec: str, rank: int) -> tuple[str, ...]:
     r"""Expand indexed ranges in a basis-name specification."""
-    names: list[str] = []
-    for piece in (p.strip() for p in spec.split(",")):
+    def expand(piece: str) -> tuple[str, ...]:
         assert piece, f"empty name in spec {spec!r}"
-        match = re.fullmatch(r"([A-Za-z_]+)(\d+)\.\.\1?(\d+)", piece)
-        if match:
-            stem, start, stop = match.group(1), int(match.group(2)), int(match.group(3))
-            names.extend(f"{stem}{i}" for i in range(start, stop + 1))
-        else:
-            assert re.fullmatch(r"[A-Za-z_]\w*", piece), f"invalid name: {piece!r}"
-            names.append(piece)
+        match re.fullmatch(r"([A-Za-z_]+)(\d+)\.\.\1?(\d+)", piece):
+            case re.Match() as indexed:
+                stem = indexed.group(1)
+                start = int(indexed.group(2))
+                stop = int(indexed.group(3))
+                return tuple(f"{stem}{i}" for i in range(start, stop + 1))
+            case None:
+                assert re.fullmatch(r"[A-Za-z_]\w*", piece), (
+                    f"invalid name: {piece!r}"
+                )
+                return (piece,)
 
+    names = tuple(
+        name
+        for piece in (part.strip() for part in spec.split(","))
+        for name in expand(piece)
+    )
     assert len(names) == rank, (
         f"spec {spec!r} gives {len(names)} names but rank is {rank}"
     )
     assert len(set(names)) == rank, f"duplicate names in {spec!r}"
-    return tuple(names)
+    return names
 
 def _expand_ellipsis_names(names: tuple[str, ...]) -> tuple[str, ...]:
     r"""Expand ``('a1','Ellipsis','a8')`` through ``'a8'``."""
@@ -1043,6 +1062,17 @@ def _apply_names(lattice: Any, names: Any) -> Any:
     lattice._assign_names(expanded)
     lattice._ellipsis_spec = declared
     return lattice
+
+
+def _apply_optional_names(lattice: Any, names: Any) -> Any:
+    r"""Apply an explicitly supplied finite name family."""
+    match names:
+        case None:
+            return lattice
+        case list() | tuple():
+            return _apply_names(lattice, names)
+        case _:
+            raise TypeError("lattice names are supplied as a finite tuple or list")
 
 def _subdivide_gram(L: Any, *cuts: Any) -> None:
     r"""Subdivide a lattice's Gram matrix, handling immutability."""
@@ -1138,16 +1168,25 @@ def _summand_name(block: Any) -> str | None:
         return exact
 
     content = gcd(gram.list())
-    for scale in (content, -content):
-        if scale in (0, 1, -1):
-            continue
-        untwisted = _INDECOMPOSABLE_NAMES.get(
-            _gram_key((gram / scale).change_ring(ZZ))
-        )
-        if untwisted is not None:
+    twisted_name = next(
+        (
+            (scale, untwisted)
+            for scale in (content, -content)
+            if scale not in (0, 1, -1)
+            if (
+                untwisted := _INDECOMPOSABLE_NAMES.get(
+                    _gram_key((gram / scale).change_ring(ZZ))
+                )
+            )
+            is not None
+        ),
+        None,
+    )
+    match twisted_name:
+        case None:
+            return None
+        case (scale, untwisted):
             return f"{untwisted}({scale})"
-
-    return None
 
 
 def _decomposition_latex(L: Any) -> str | None:
@@ -1235,9 +1274,9 @@ def _integral_lattice_with_names(
 
     A Gram matrix or a name, which is a matrix once it is read.  Nothing here
     passes through Sage's lattice class: that class is a submodule of a
-    rational ambient and imposes nondegeneracy, and neither is part of what a
-    lattice is here -- a Coxeter root span with an $m=\infty$ bond is
-    degenerate and is still one.
+    base-changed module over $\mathbb Q$ and imposes nondegeneracy, and neither
+    is part of what a lattice is here -- a Coxeter root span with an
+    $m=\infty$ bond is degenerate and is still one.
     """
     assert len(args) == 1 and not kwargs, (
         "a lattice is built from its Gram matrix, or from a name that stands "
