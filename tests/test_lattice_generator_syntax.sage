@@ -34,6 +34,28 @@ _p = Path(dzack_research.__file__).resolve().parent / "preamble"
 load(str(_p / "install.sage"))
 
 
+def test_set_literal_preparser_preserves_sage_generator_declarations():
+    r"""The notebook set extension must compose with Sage's ``R.<x> =`` syntax."""
+    from dzack_research.preamble.preparse_sets import install_set_literal_preparser
+    from sage.repl import interpreter as sage_interpreter
+    from sage.repl import preparse as sage_preparse
+
+    install_set_literal_preparser(sage_preparse, sage_interpreter)
+    namespace = dict(globals())
+    source = (
+        'A2.<alpha1, alpha2> = Lattices.root_lattice("A", 2); '
+        "simple_roots = {alpha1, alpha2}"
+    )
+    exec(sage_preparse.preparse(source), namespace)
+
+    lattice = namespace["A2"]
+    assert lattice.rank() == 2
+    assert namespace["alpha1"] == lattice.gens()[0]
+    assert namespace["alpha2"] == lattice.gens()[1]
+    expected_roots = Set([namespace["alpha1"], namespace["alpha2"]])
+    assert namespace["simple_roots"].equal_as_sets(expected_roots)
+
+
 def _lattice_constructor():
     from sage.all import IntegralLattice
 
