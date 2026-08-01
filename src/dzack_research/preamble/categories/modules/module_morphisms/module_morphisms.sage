@@ -154,7 +154,7 @@ def _independent_generators(module: Any, generators: Any) -> list:
             independent = tuple(
                 row for row in rows.echelon_form().rows() if not row.is_zero()
             )
-    return [_combination(module, row) for row in independent]
+    return [module.linear_combination(row) for row in independent]
 
 
 class ModuleMorphism(Morphism):
@@ -211,13 +211,22 @@ class ModuleMorphism(Morphism):
         if domain not in FinitelyPresentedModules(domain.base_ring()):
             return
         generating_set = tuple(domain.generating_set())
-        for relation in domain.relation_matrix().rows():
-            value = self.codomain().zero()
-            for coefficient, element_of_S in zip(relation, generating_set):
-                value += coefficient * self.generator_morphism()(element_of_S)
-            assert value == self.codomain().zero(), (
-                f"the assignment does not kill the relation {relation}"
+        zero = self.codomain().zero()
+        assert all(
+            sum(
+                (
+                    coefficient
+                    * self.generator_morphism()(element_of_S)
+                    for coefficient, element_of_S in zip(
+                        relation,
+                        generating_set,
+                    )
+                ),
+                zero,
             )
+            == zero
+            for relation in domain.relation_matrix().rows()
+        ), "the assignment does not kill every relation"
 
     def generator_morphism(self) -> SetMorphism:
         r"""Return the set morphism whose linear extension is this morphism."""
@@ -250,13 +259,14 @@ class ModuleMorphism(Morphism):
         assert element.parent() is self.domain(), (
             f"{element} is not an element of {self.domain()}"
         )
-        total = self.codomain().zero()
-        for element_of_S, coefficient in _coefficients(element).items():
-            total += (
+        return sum(
+            (
                 coefficient
                 * self.generator_morphism()(element_of_S)
-            )
-        return total
+                for element_of_S, coefficient in _coefficients(element).items()
+            ),
+            self.codomain().zero(),
+        )
 
     def lift(self, element: Any) -> Any:
         assert element.parent() is self.codomain(), (
@@ -268,7 +278,9 @@ class ModuleMorphism(Morphism):
             system.stack(relations) if relations.nrows() else system,
             _coordinate_vector(element),
         )
-        preimage = _combination(self.domain(), coefficients[: system.nrows()])
+        preimage = self.domain().linear_combination(
+            coefficients[: system.nrows()]
+        )
         assert self(preimage) == element, (
             f"{element} is not in the image of this morphism"
         )
@@ -280,7 +292,7 @@ class ModuleMorphism(Morphism):
         )
         basis = self.matrix().left_kernel_matrix().rows()
         return self.domain().subobject_on(
-            [_combination(self.domain(), row) for row in basis]
+            [self.domain().linear_combination(row) for row in basis]
         )
 
     def cokernel(self) -> Any:
@@ -333,7 +345,10 @@ class ModuleMorphism(Morphism):
         )
         pairing = matrix(codomain.gram_matrix()) * self.matrix().transpose()
         return codomain.subobject_on(
-            [_combination(codomain, row) for row in pairing.left_kernel().basis()]
+            [
+                codomain.linear_combination(row)
+                for row in pairing.left_kernel().basis()
+            ]
         )
 
     def _codomain_relations(self) -> Matrix:
@@ -647,11 +662,11 @@ class GroupAction(Morphism):
         assert values[group.one()] == automorphisms.one(), (
             "the identity must map to the identity automorphism"
         )
-        for left in group:
-            for right in group:
-                assert values[left * right] == values[left] * values[right], (
-                    "the supplied function is not a group homomorphism"
-                )
+        assert all(
+            values[left * right] == values[left] * values[right]
+            for left in group
+            for right in group
+        ), "the supplied function is not a group homomorphism"
         self._values = dict(values)
 
     @classmethod
@@ -691,28 +706,6 @@ class GroupAction(Morphism):
 
     def values(self) -> dict:
         return dict(self._values)
-
-
-def _combination(module: Any, coefficients: Any) -> Any:
-    r"""Return the finite linear combination in the declared framing."""
-    match coefficients:
-        case dict():
-            items = coefficients.items()
-        case _:
-            generating_set = tuple(module.generating_set())
-            coefficients = tuple(coefficients)
-            assert len(coefficients) == len(generating_set), (
-                f"{module} has {len(generating_set)} distinguished generators, got "
-                f"{len(coefficients)} coefficients"
-            )
-            items = zip(generating_set, coefficients)
-    total = module.zero()
-    for element_of_S, coefficient in items:
-        total += (
-            module.base_ring()(coefficient)
-            * module.generator_morphism()(element_of_S)
-        )
-    return total
 
 
 def _solve_left_integrally(system: Matrix, target: Any) -> Any:

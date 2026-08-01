@@ -63,6 +63,22 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             r"""Return the distinguished generator associated to \(s\in S\)."""
             return self.generator_morphism()(element_of_S)
 
+        def linear_combination(self: Any, terms: Any) -> Any:
+            r"""Return the specified finite \(R\)-linear combination."""
+            match terms:
+                case dict():
+                    items = terms.items()
+                case _:
+                    items = terms
+            return sum(
+                (
+                    self.base_ring()(coefficient)
+                    * self.generator(element_of_S)
+                    for element_of_S, coefficient in items
+                ),
+                self.zero(),
+            )
+
         @cached_method
         def gens(self):
             r"""Return the image of \(S\to U(M)\) without enumerating \(S\)."""

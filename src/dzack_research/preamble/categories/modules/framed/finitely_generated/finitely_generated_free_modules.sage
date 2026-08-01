@@ -64,20 +64,20 @@ class FinitelyGeneratedFreeModules(Category_over_base_ring):
             r"""Read a finite coefficient vector in the chosen ordered basis."""
             match coefficients:
                 case dict():
-                    total = self.zero()
-                    for element_of_S, coefficient in coefficients.items():
-                        total += (
-                            self.base_ring()(coefficient)
-                            * self.generator(element_of_S)
-                        )
-                    return total
+                    return FramedModules.ParentMethods.linear_combination(
+                        self,
+                        coefficients,
+                    )
                 case _:
                     coefficients = tuple(coefficients)
                     assert len(coefficients) == self.ngens(), (
                         f"this module has {self.ngens()} basis elements, got "
                         f"{len(coefficients)} coefficients"
                     )
-                    return self._from_coordinates(coefficients)
+                    return FramedModules.ParentMethods.linear_combination(
+                        self,
+                        zip(self.generating_set(), coefficients),
+                    )
 
         def hom(self: Any, images: Any, codomain: Any = None) -> Any:
             r"""Construct the map specified on the finite generating set."""

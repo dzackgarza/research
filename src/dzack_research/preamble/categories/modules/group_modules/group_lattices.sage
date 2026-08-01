@@ -140,15 +140,20 @@ class GroupLatticeHomset(FormHomset):
                 return images
             case _:
                 morphism = FormHomset._element_constructor_(self, images)
-        for group_element in self.domain().group():
-            for label in self.domain().generating_set():
-                generator = self.domain().generator(label)
-                assert morphism(
-                    self.domain().act(group_element, generator)
-                ) == self.codomain().act(
+        assert all(
+            morphism(
+                self.domain().act(
                     group_element,
-                    morphism(generator),
-                ), "the proposed lattice map is not equivariant"
+                    self.domain().generator(element_of_S),
+                )
+            )
+            == self.codomain().act(
+                group_element,
+                morphism(self.domain().generator(element_of_S)),
+            )
+            for group_element in self.domain().group()
+            for element_of_S in self.domain().generating_set()
+        ), "the proposed lattice map is not equivariant"
         return morphism
 
     def _repr_(self) -> str:

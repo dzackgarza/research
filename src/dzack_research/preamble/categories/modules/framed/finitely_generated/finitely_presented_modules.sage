@@ -11,6 +11,7 @@ from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.matrix.constructor import matrix
 from sage.matrix.matrix0 import Matrix
+from sage.misc.misc_c import prod
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
@@ -165,10 +166,7 @@ class FinitelyPresentedModule(Parent):
 
     def cardinality(self) -> Any:
         assert self.is_torsion(), "a module with positive rank is infinite"
-        result = ZZ.one()
-        for invariant in self.invariants():
-            result *= invariant
-        return result
+        return prod(self.invariants(), ZZ.one())
 
     def exponent(self) -> Any:
         invariants = self.invariants()
@@ -182,16 +180,19 @@ class FinitelyPresentedModule(Parent):
     def linear_combination(self, coefficients: Any) -> FinitelyPresentedModuleElement:
         match coefficients:
             case dict():
-                coefficients = tuple(
-                    coefficients.get(element_of_S, self.base_ring().zero())
-                    for element_of_S in self.generating_set()
+                return FramedModules.ParentMethods.linear_combination(
+                    self,
+                    coefficients,
                 )
             case _:
                 coefficients = tuple(coefficients)
         assert len(coefficients) == self.ngens(), (
             f"this module has {self.ngens()} generators, got {len(coefficients)}"
         )
-        return self._from_coordinates(coefficients)
+        return FramedModules.ParentMethods.linear_combination(
+            self,
+            zip(self.generating_set(), coefficients),
+        )
 
     def _reduce(self, coordinates: Any) -> Any:
         result = vector(self.base_ring(), list(coordinates))

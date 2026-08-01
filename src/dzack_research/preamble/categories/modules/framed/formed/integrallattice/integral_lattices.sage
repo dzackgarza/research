@@ -31,6 +31,7 @@ EXAMPLES::
 """
 
 import re
+from functools import reduce
 from typing import Any, assert_never
 
 from sage.arith.misc import gcd
@@ -157,12 +158,11 @@ class IntegralLattices(Category):
             dual = self.dual()
             correlation = self.correlation()
             generators = dual.gens()
-            for i, v in enumerate(self.gens()):
-                for j, w in enumerate(generators):
-                    expected = 1 if i == j else 0
-                    assert correlation(v).b(w) == expected, (
-                        f"dual basis is wrong at ({i}, {j})"
-                    )
+            assert all(
+                correlation(v).b(w) == (1 if i == j else 0)
+                for i, v in enumerate(self.gens())
+                for j, w in enumerate(generators)
+            ), "the proposed dual generators are not dual to the generators"
             return generators
 
         # ---- isotropic quotients ----
@@ -251,10 +251,17 @@ class IntegralLattices(Category):
                 _discriminant_lift_row(element, rank) for element in elements
             )
 
-            denominator = ZZ.one()
-            for row in rational_rows:
-                for coordinate in row:
-                    denominator = denominator.lcm(coordinate.denominator())
+            denominator = reduce(
+                lambda current, coordinate: current.lcm(
+                    coordinate.denominator()
+                ),
+                (
+                    coordinate
+                    for row in rational_rows
+                    for coordinate in row
+                ),
+                ZZ.one(),
+            )
 
             scaled = matrix(
                 ZZ,
@@ -637,16 +644,12 @@ class IntegralLattices(Category):
             construction: the sum is the lattice on that matrix, and its
             decomposition is found the way every lattice's is.
             """
-            if not others:
-                return self
-
-            result = self
-            for other in others:
-                expected = _summand_ranks(result) + _summand_ranks(other)
-                generating_set = _direct_sum_framing_set(result, other)
+            def orthogonal_sum(left: Any, right: Any) -> Any:
+                expected = _summand_ranks(left) + _summand_ranks(right)
+                generating_set = _direct_sum_framing_set(left, right)
                 result = _lattice_with_gram(
                     block_diagonal_matrix(
-                        [matrix(ZZ, result.gram_matrix()), matrix(ZZ, other.gram_matrix())]
+                        [matrix(ZZ, left.gram_matrix()), matrix(ZZ, right.gram_matrix())]
                     ),
                     generating_set,
                 )
@@ -658,8 +661,14 @@ class IntegralLattices(Category):
                     "direct sum disagrees with its summands: "
                     f"{_summand_ranks(result)} != {expected}"
                 )
+                return result
 
-            return _apply_names(result, names) if names is not None else result
+            result = reduce(orthogonal_sum, others, self)
+            match names:
+                case None:
+                    return result
+                case _:
+                    return _apply_names(result, names)
 
         def twist(self: Any, scale: Any, names: Any = None) -> Any:
             r"""Return $L(n)$: the same module with the form scaled by ``scale``.
@@ -825,12 +834,10 @@ class IntegralLattices(Category):
             r"""``L ^ n`` as the ``n``-fold orthogonal direct sum."""
             n = int(exponent)
             assert n >= 1, f"lattice power needs a positive exponent, got {exponent}"
-            result = self
-            for _ in range(n - 1):
-                result = result.direct_sum(self)
-            if names is not None:
-                result = _apply_names(result, names)
-            return result
+            return self.direct_sum(
+                *(self for _ in range(n - 1)),
+                names=names,
+            )
 
         def _repr_(self: Any) -> str:
             pos, neg = self.signature_pair()

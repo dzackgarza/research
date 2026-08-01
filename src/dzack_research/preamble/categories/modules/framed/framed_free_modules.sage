@@ -53,21 +53,6 @@ class FramedFreeModules(Category_over_base_ring):
             r"""Return the image of the canonical generator morphism."""
             return self.gens()
 
-        def linear_combination(self: Any, terms: Any) -> Any:
-            r"""Return the specified finite \(R\)-linear combination."""
-            match terms:
-                case dict():
-                    items = terms.items()
-                case _:
-                    items = terms
-            total = self.zero()
-            for element_of_S, coefficient in items:
-                total += (
-                    self.base_ring()(coefficient)
-                    * self.generator(element_of_S)
-                )
-            return total
-
         def hom(self: Any, images: Any, codomain: Any = None) -> Any:
             r"""Extend a set morphism \(S\to U(N)\) \(R\)-linearly."""
             match images:
@@ -104,29 +89,33 @@ class FreeModuleOnSetElement(ModuleElement):
 
     def __init__(self, parent: Any, coefficients: Any) -> None:
         ModuleElement.__init__(self, parent)
-        normalized = {}
-        for element_of_S, coefficient in dict(coefficients).items():
-            assert element_of_S in parent.generating_set(), (
-                f"{element_of_S!r} is not in {parent.generating_set()}"
-            )
-            coefficient = parent.base_ring()(coefficient)
-            if coefficient != 0:
-                normalized[element_of_S] = coefficient
-        self._coefficients = normalized
+        coefficients = dict(coefficients)
+        assert all(
+            element_of_S in parent.generating_set()
+            for element_of_S in coefficients
+        ), f"the coefficient function is not supported on {parent.generating_set()}"
+        self._coefficients = {
+            element_of_S: coefficient
+            for element_of_S, value in coefficients.items()
+            if (coefficient := parent.base_ring()(value)) != 0
+        }
 
     def coefficients(self) -> dict:
         return dict(self._coefficients)
 
     def _add_(self, other: Any) -> "FreeModuleOnSetElement":
-        result = self.coefficients()
-        for element_of_S, coefficient in other._coefficients.items():
-            result[element_of_S] = (
-                result.get(element_of_S, self.parent().base_ring().zero())
-                + coefficient
-            )
-            if result[element_of_S] == 0:
-                del result[element_of_S]
-        return self.parent().element_class(self.parent(), result)
+        zero = self.parent().base_ring().zero()
+        support = self._coefficients.keys() | other._coefficients.keys()
+        return self.parent().element_class(
+            self.parent(),
+            {
+                element_of_S: (
+                    self._coefficients.get(element_of_S, zero)
+                    + other._coefficients.get(element_of_S, zero)
+                )
+                for element_of_S in support
+            },
+        )
 
     def _sub_(self, other: Any) -> "FreeModuleOnSetElement":
         return self._add_(-other)

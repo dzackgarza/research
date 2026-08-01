@@ -41,16 +41,6 @@ class FormModules(Category_over_base_ring):
         def is_torsion(self: Any) -> bool:
             return self.forget_form().is_torsion()
 
-        def linear_combination(self: Any, coefficients: Any) -> Any:
-            match coefficients:
-                case dict():
-                    return _combination(self, coefficients)
-                case _:
-                    raise TypeError(
-                        "a form module with an arbitrary framing accepts a "
-                        "finite coefficient function on its generating set"
-                    )
-
         def Hom(self, codomain: Any) -> "FormHomset":
             cache = self.__dict__.setdefault("_form_module_homsets", {})
             homset = cache.get(codomain)
@@ -263,7 +253,22 @@ class FinitelyGeneratedFormModules(Category_over_base_ring):
             return int(self.generating_set().cardinality())
 
         def linear_combination(self: Any, coefficients: Any) -> Any:
-            return _combination(self, coefficients)
+            match coefficients:
+                case dict():
+                    return FramedModules.ParentMethods.linear_combination(
+                        self,
+                        coefficients,
+                    )
+                case _:
+                    coefficients = tuple(coefficients)
+                    assert len(coefficients) == self.ngens(), (
+                        f"this module has {self.ngens()} generators, got "
+                        f"{len(coefficients)} coefficients"
+                    )
+                    return FramedModules.ParentMethods.linear_combination(
+                        self,
+                        zip(self.generating_set(), coefficients),
+                    )
 
         def hom(self: Any, images: Any, codomain: Any = None) -> "FormMorphism":
             match images:

@@ -151,10 +151,10 @@ class BilinearFormMorphism(Morphism):
         return self._gram_matrix
 
     def __call__(self, left: Any, right: Any) -> Any:
-        for element in (left, right):
-            assert element.parent() is self.module(), (
-                f"{element} is not an element of {self.module()}"
-            )
+        assert all(
+            element.parent() is self.module()
+            for element in (left, right)
+        ), f"the form pairs elements of {self.module()}"
         return self.codomain()(
             _coordinate_vector(left)
             * self._gram_matrix
@@ -280,11 +280,20 @@ class QuadraticFormMorphism(Morphism):
 
     def gram_matrix(self) -> Matrix:
         size = self._lift_matrix.nrows()
-        upper = matrix(self._lift_matrix.base_ring(), size, size)
-        for row in range(size):
-            upper[row, row] = self._lift_matrix[row, row]
-            for column in range(row + 1, size):
-                upper[row, column] = 2 * self._lift_matrix[row, column]
+        upper = matrix(
+            self._lift_matrix.base_ring(),
+            [
+                [
+                    self._lift_matrix[row, column]
+                    if row == column
+                    else 2 * self._lift_matrix[row, column]
+                    if row < column
+                    else self._lift_matrix.base_ring().zero()
+                    for column in range(size)
+                ]
+                for row in range(size)
+            ],
+        )
         upper.subdivide(*self._lift_matrix.subdivisions())
         return upper
 

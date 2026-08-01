@@ -52,12 +52,10 @@ class DiscriminantQuadraticModules(Category):
             "the polarization is not defined on the classes: some relation "
             "does not pair integrally with the generators"
         )
-        for row in relations.rows():
-            norm = row * gram * row
-            assert norm in ZZ and ZZ(norm) % 2 == 0, (
-                f"q is not defined on the classes: the relation {row} has "
-                f"norm {norm}, which is not in 2Z"
-            )
+        assert all(
+            (norm := row * gram * row) in ZZ and ZZ(norm) % 2 == 0
+            for row in relations.rows()
+        ), "q is not defined on the classes: some relation has norm outside 2Z"
         form = QuadraticForm(module, QmodnZ(2), gram)
         refine(form, self)
         subdivide_form_gram_matrix(form)
