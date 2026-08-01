@@ -1,7 +1,8 @@
 r"""Framed algebras over a base ring R.
 
-A framed R-algebra carries a chosen surjection from a free R-algebra on a set S,
-exactly as a framed R-module carries a surjection from a free R-module on S.
+A framed R-algebra is equipped with a chosen surjection from a free R-algebra on
+a set S, exactly as a framed R-module is equipped with a surjection from a free
+R-module on S.
 """
 
 from sage.categories.category_types import Category_over_base_ring
