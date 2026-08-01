@@ -16,8 +16,13 @@ The set S is construction data.  It need not be finite, countable, or ordered.
 from typing import Any
 
 from sage.categories.category_types import Category_over_base_ring
+from sage.categories.homset import Hom
+from sage.categories.morphism import SetMorphism
 from sage.monoids.free_abelian_monoid import FreeAbelianMonoid
 from sage.structure.parent import Parent
+
+from sage_lattice_category_spike.objects.sets import Sets
+from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
 
 
 class FramedFreeAlgebras(Category_over_base_ring):
@@ -89,6 +94,42 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
     def product_on_generators(self, s: Any, t: Any) -> Any:
         r"""Return the product of algebra generators s and t."""
         return self.algebra_generator(s) * self.algebra_generator(t)
+
+    def induced_hom(self, set_morphism: SetMorphism, codomain: Any) -> Any:
+        r"""Induce the free-algebra map determined by ``set_morphism``.
+
+        A set map ``S -> S'`` first induces the map on monomials
+        ``Mon(S) -> Mon(S')``.  The existing
+        framed-module hom constructor then extends the resulting map on the
+        module generators ``Mon(S)`` linearly.
+        """
+        assert isinstance(codomain, FreeAlgebraOnSet), (
+            "the target of a free-algebra map is a free algebra on a set"
+        )
+        assert set_morphism.parent() is Hom(
+            self.algebra_generating_set(),
+            codomain.algebra_generating_set(),
+            Sets(),
+        ), "the map must have the two algebra generating sets as its endpoints"
+        target_monoid = codomain.generating_set()
+
+        def image_of_monomial(monomial: Any) -> Any:
+            target_monomial = target_monoid.one()
+            for generator, exponent in monomial.dict().items():
+                target_monomial *= (
+                    target_monoid.gen(set_morphism(generator)) ** exponent
+                )
+            return codomain.generator(target_monomial)
+
+        generator_morphism = SetMorphism(
+            Hom(
+                self.generating_set(),
+                UnderlyingSet(codomain),
+                Sets(),
+            ),
+            image_of_monomial,
+        )
+        return FramedFreeModules.ParentMethods.hom(self, generator_morphism)
 
     def one(self) -> Any:
         r"""Return the multiplicative identity (the empty monomial)."""
