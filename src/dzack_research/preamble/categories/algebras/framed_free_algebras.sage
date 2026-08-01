@@ -16,13 +16,8 @@ The set S is construction data.  It need not be finite, countable, or ordered.
 from typing import Any
 
 from sage.categories.category_types import Category_over_base_ring
-from sage.categories.homset import Hom
-from sage.categories.morphism import SetMorphism
+from sage.monoids.free_abelian_monoid import FreeAbelianMonoid
 from sage.structure.parent import Parent
-from sage.structure.unique_representation import UniqueRepresentation
-
-from sage_lattice_category_spike.objects.sets import Sets
-from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
 
 
 class FramedFreeAlgebras(Category_over_base_ring):
@@ -33,7 +28,31 @@ class FramedFreeAlgebras(Category_over_base_ring):
         return "framed free algebras"
 
     def super_categories(self) -> list:
-        return [FreeAlgebras(self.base_ring()), FramedAlgebras(self.base_ring())]
+        return [
+            FreeAlgebras(self.base_ring()),
+            FramedAlgebras(self.base_ring()),
+            FramedFreeModules(self.base_ring()),
+        ]
+
+
+class FreeAlgebraOnSetElement(FreeModuleOnSetElement):
+    r"""An element of ``FreeAlgebraOnSet`` with bilinear multiplication."""
+
+    def _mul_(self, other: Any) -> "FreeAlgebraOnSetElement":
+        assert (
+            isinstance(other, FreeAlgebraOnSetElement)
+            and other.parent() is self.parent()
+        ), "free-algebra multiplication requires elements of one parent"
+        parent = self.parent()
+        zero = parent.base_ring().zero()
+        coefficients = {}
+        for left_monomial, left_coefficient in self.coefficients().items():
+            for right_monomial, right_coefficient in other.coefficients().items():
+                monomial = left_monomial * right_monomial
+                coefficients[monomial] = coefficients.get(monomial, zero) + (
+                    left_coefficient * right_coefficient
+                )
+        return parent.element_class(parent, coefficients)
 
 
 class FreeAlgebraOnSet(FreeModuleOnSet):
@@ -47,9 +66,11 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
     and linear combination from ``FreeModuleOnSet``.
     """
 
+    Element = FreeAlgebraOnSetElement
+
     def __init__(self, base_ring: Any, generating_set: Any) -> None:
         self._algebra_generating_set = generating_set
-        monoid = FreeCommutativeMonoid(generating_set)
+        monoid = _as_set(FreeAbelianMonoid(generating_set))
         FreeModuleOnSet.__init__(self, base_ring, monoid)
         refine(self, FramedFreeAlgebras(base_ring))
 
@@ -62,7 +83,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         assert s in self._algebra_generating_set, (
             f"{s!r} is not in {self._algebra_generating_set}"
         )
-        monomial = self.generating_set().monomial(s)
+        monomial = self.generating_set().gen(s)
         return self.generator(monomial)
 
     def product_on_generators(self, s: Any, t: Any) -> Any:

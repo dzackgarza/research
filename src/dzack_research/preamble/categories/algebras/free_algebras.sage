@@ -11,7 +11,7 @@ class FreeAlgebras(Category_over_base_ring):
         return "free algebras"
 
     def super_categories(self) -> list:
-        return [FreeModules(self.base_ring())]
+        return [Algebras(self.base_ring()), FreeModules(self.base_ring())]
 
     class ParentMethods:
         def is_free(self) -> bool:

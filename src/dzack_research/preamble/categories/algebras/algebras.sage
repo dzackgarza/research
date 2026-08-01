@@ -5,7 +5,24 @@ exactly as a framed R-module carries a surjection from a free R-module on S.
 """
 
 from sage.categories.category_types import Category_over_base_ring
+from sage.categories.algebras import Algebras as SageAlgebras
 from sage.misc.abstract_method import abstract_method
+
+
+class Algebras(Category_over_base_ring):
+    r"""Associative unital algebras over a base ring (R)."""
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "algebras"
+
+    def super_categories(self) -> list:
+        return [SageAlgebras(self.base_ring())]
+
+    class ParentMethods:
+        def is_algebra(self) -> bool:
+            r"""Return whether this parent is declared to be an (R)-algebra."""
+            return True
 
 
 class FramedAlgebras(Category_over_base_ring):
@@ -16,7 +33,7 @@ class FramedAlgebras(Category_over_base_ring):
         return "framed algebras"
 
     def super_categories(self) -> list:
-        return [FramedModules(self.base_ring())]
+        return [Algebras(self.base_ring()), FramedModules(self.base_ring())]
 
     class ParentMethods:
 
