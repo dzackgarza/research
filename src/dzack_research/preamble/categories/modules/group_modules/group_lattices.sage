@@ -1,221 +1,261 @@
-r"""Lattices with a $G$-action: $\mathbb Z[(L,b)]$-modules.
-
-The same thing as an $R[G]$-module, with one condition: $\rho$ lands in $O(L)$
-rather than $\operatorname{GL}(L)$ -- which is $\operatorname{Aut}$ in the
-category of form modules, so it is not an extra check bolted on but where the
-homomorphism goes.
-
-Everything computed here is computed on the module.  The isotypic
-decomposition is a statement about $R[G]$-modules and knows nothing about
-forms, so the action is handed to the module layer, the components come back
-as submodules, and the lattice equips them with the restriction of $b$.  What
-the form contributes is not a different computation but two facts about the
-answer: the components are mutually orthogonal, so $L_G$ is expressible as
-$(L^G)^{\perp}$, and each of them is a lattice rather than a bare module.
-"""
+r"""Integral lattices equipped with a finite-group action by isometries."""
 
 from typing import Any
 
 from sage.categories.category import Category
-from sage.categories.sets_cat import Sets
-from sage.matrix.matrix0 import Matrix
-from sage.structure.parent import Parent
 
 
 class GroupLattices(Category):
-    r"""Category of $\mathbb Z[(L,b)]$-modules: a lattice and a $G$-action by isometries.
+    r"""The pullback of \(G\)-modules and integral lattices."""
 
-    Over lattices, not among them.  Two actions on one $L$ are two objects, so
-    the action cannot be attached to $L$; and $L$ is not rebuilt to carry one,
-    because $\rho$ lands in $O(L)$ -- the automorphism homset of $L$ in the form
-    modules -- so its values are isometries of $L$ itself and everything they
-    produce is already where it belongs.
-    """
+    def __init__(self, group: Any) -> None:
+        assert group.is_finite(), "this category currently requires a finite group"
+        self._group = group
+        Category.__init__(self)
 
-    @classmethod
-    def _repr_object_names(cls) -> str:
-        return "lattices with a group action"
+    def acting_group(self) -> Any:
+        return self._group
+
+    def _repr_object_names(self) -> str:
+        return f"integral lattices with an action of {self._group}"
 
     def super_categories(self) -> list:
-        return [Sets()]
+        return [
+            GroupModules(ZZ, self._group),
+            IntegralLattices(),
+        ]
 
     class ParentMethods:
-        r"""What the action adds, all of it about $L$."""
+        def Hom(self: Any, codomain: Any) -> Any:
+            return group_lattice_homset(self, codomain)
 
-        def forget_action(self: Any) -> Any:
-            r"""Return $L$: restriction of scalars along $\mathbb Z\to\mathbb Z[G]$."""
-            return self._lattice
+        def hom(self: Any, images: Any, codomain: Any = None) -> Any:
+            return FinitelyGeneratedFormModules.ParentMethods.hom(
+                self,
+                images,
+                codomain,
+            )
 
-        def group(self: Any) -> Any:
-            r"""Return $G$."""
-            return self._group
-
-        def action_of(self: Any, element: Any) -> Any:
-            r"""Return $\rho(g)\in O(L)$, an isometry of $L$."""
-            return self._isometries[element]
-
-        def act(self: Any, element: Any, x: Any) -> Any:
-            r"""Return $g\cdot x$, for $x$ an element of $L$."""
-            return self.action_of(element)(x)
-
-        def is_invariant(self: Any, x: Any) -> bool:
-            r"""Return whether $gx=x$ for every $g$."""
-            return all(self.act(g, x) == x for g in self.group())
+        def module_representation(self: Any) -> Any:
+            r"""Forget the form and retain the specified \(G\)-module."""
+            return self.forget_form()
 
         @cached_method
-        def module_representation(self: Any) -> Any:
-            r"""Return $\rho$ as a $\mathbb Z[G]$-module: the action, form forgotten.
+        def forget_action(self: Any) -> Any:
+            r"""Forget the action and retain the formed module."""
+            stored = self.__dict__.get("_action_forgotten_form")
+            if stored is not None:
+                return stored
+            module = self.forget_form().forget_action()
+            stored = FormModule(self.form().on_module(module))
+            self._action_forgotten_form = stored
+            return stored
 
-            Where the isotypic work happens.  A decomposition into isotypic
-            components is a statement about modules over a group algebra and
-            uses nothing about $b$, so it is asked there, of an object with no
-            form to be distracted by.
-            """
-            module = BasedFreeModule(
-                ZZ, standard_framing_set(self.forget_action().rank())
+        def action(self: Any) -> GroupAction:
+            return self._formed_action
+
+        def group(self: Any) -> Any:
+            return self._formed_action.domain()
+
+        def action_of(self: Any, element: Any) -> FormMorphism:
+            return self._formed_action(element)
+
+        def action_matrix(self: Any, element: Any) -> Any:
+            return self.action_of(element).matrix()
+
+        def act(self: Any, element: Any, vector_: Any) -> Any:
+            return self.action_of(element)(vector_)
+
+        def is_invariant(self: Any, vector_: Any) -> bool:
+            return all(
+                self.act(element, vector_) == vector_
+                for element in self.group()
             )
-            generator_images = [
-                module.Aut()(
-                    [
-                        module.linear_combination(_coordinate_vector(
-                            self.action_of(generator)(basis)
-                        ))
-                        for basis in self.forget_action().gens()
-                    ]
-                )
-                for generator in self.group().gens()
-            ]
-            return GroupModule(
-                module,
-                GroupAction.from_generators(self.group(), module, generator_images),
+
+        def subobject_on(self: Any, generators: Any) -> Any:
+            generators = tuple(generators)
+            assert all(generator.parent() is self for generator in generators), (
+                "a subobject is generated by elements of this group lattice"
             )
+            representation_subobject = self.module_representation().subobject_on(
+                [generator.forget_form() for generator in generators]
+            )
+            return _formed_group_subobject(self, representation_subobject)
 
         def isotypic_decomposition(self: Any) -> Any:
-            r"""Return the decomposition of the underlying $\mathbb Z[G]$-module."""
             return self.module_representation().isotypic_decomposition()
 
         def isotypic_lattice(self: Any, character: Any) -> Any:
-            r"""Return the $\chi$-component of $L$, with the restricted form.
-
-            The module computation, equipped: the component is a submodule of
-            $\mathbb Z^n$, its generators are read back as elements of $L$, and
-            ``subobject_on`` gives them the Gram matrix $b$ restricts to.  That
-            restriction may be degenerate -- nothing about being an isotypic
-            component prevents it.
-            """
-            component = self.isotypic_decomposition().component(character)
-            return self._equip(component)
+            return self._equip(
+                self.isotypic_decomposition().summand(character)
+            )
 
         @cached_method
         def invariant_lattice(self: Any) -> Any:
-            r"""Return $L^G\hookrightarrow L$: the trivial isotypic component, equipped.
-
-            $\{v: gv=v\ \forall g\}$, which is the $\chi=1$ component of the
-            $\mathbb Z[G]$-module and not a separate construction.  Saturated,
-            because $nv$ being fixed makes $v$ fixed.
-            """
             return self._equip(self.module_representation().invariants())
 
         @cached_method
         def coinvariant_lattice(self: Any) -> Any:
-            r"""Return the formed coinvariants $(L^G)^{\perp L}\hookrightarrow L$.
-
-            This compatibility name remains for the lattice-facing API.
-            """
-            return self.formed_coinvariants()
-
-        @cached_method
-        def formed_coinvariants(self: Any) -> Any:
-            r"""Return $(L^G)^{\perp L}\hookrightarrow L$.
-
-            The orthogonal complement is the definition here, so this remains
-            computable without choosing a splitting field.  When a semisimple
-            decomposition is available, it is the lattice-side realization
-            of the nontrivial isotypic summands, with any finite-index glue
-            retained in the inclusion.
-
-            $L^G\oplus L_G\subseteq L$ has finite index and is generally
-            proper; the quotient is the glue.
-            """
             return self.invariant_lattice().embedding().orthogonal_complement()
 
+        formed_coinvariants = coinvariant_lattice
+
         def _equip(self: Any, submodule: Any) -> Any:
-            r"""Return ``submodule``'s generators as a sublattice of $L$.
+            assert submodule.embedding_codomain() is self.module_representation(), (
+                "the group submodule belongs to a different representation"
+            )
+            return _formed_group_subobject(self, submodule)
 
-            The one step between the two layers: a submodule of $\mathbb Z^n$
-            comes back with coordinates, those name elements of $L$, and the
-            subobject built on them carries the form.
-            """
-            lattice = self.forget_action()
-            return lattice.subobject_on(
-                [
-                    lattice.linear_combination(generator._coordinates())
-                    for generator in submodule.embedded_gens()
-                ]
+    class ElementMethods:
+        def forget_action(self: Any) -> Any:
+            lattice = self.parent().forget_action()
+            return lattice._over(
+                self.forget_form().forget_action()
             )
 
 
-class GroupLattice(Parent):
-    r"""A lattice equipped with an action of a finite group by isometries.
+class GroupLatticeHomset(FormHomset):
+    r"""Form-preserving equivariant maps of two lattices for one \(G\)."""
 
-    Holds $L$, $G$ and $\rho$, and nothing else: $\rho$ takes its values in
-    $O(L)$, so every element it moves is an element of $L$ and every sublattice
-    it produces includes into $L$.  There is no second copy of $L$ here for
-    them to live in instead.
-    """
-
-    def __init__(self, lattice: Any, group: Any, generator_images: Any) -> None:
-        Parent.__init__(self, base=ZZ, category=Sets())
-        self._lattice = lattice
-        self._group = group
-        self._isometries = self._isometries_from(generator_images)
-        refine(self, GroupLattices())
-
-    def _isometries_from(self, generator_images: Any) -> dict:
-        r"""Return $\rho$ on all of $G$, as elements of $O(L)$.
-
-        Two conditions, neither checked by hand: that each image is an isometry
-        is membership in $O(L)$, which the automorphism homset asserts; and
-        that the assignment extends to a homomorphism is the module layer's
-        word closure, which is where a map out of a group is assembled from its
-        values on generators.
-        """
-        isometry_group = self._lattice.Aut()
-        isometries = [
-            image if hasattr(image, "domain") else isometry_group(image)
-            for image in generator_images
-        ]
-        module = BasedFreeModule(
-            ZZ, standard_framing_set(self._lattice.rank())
+    def __init__(self, domain: Any, codomain: Any) -> None:
+        assert codomain in GroupLattices(domain.group()), (
+            "the codomain is not a lattice for the stated group"
         )
-        generator_images = [
-            module.Aut()(
-                [
-                    module.linear_combination(_coordinate_vector(image(basis)))
-                    for basis in self._lattice.gens()
-                ]
-            )
-            for image in isometries
-        ]
-        action = GroupAction.from_generators(self._group, module, generator_images)
-        return {
-            element: isometry_group(
-                {
-                    basis: self._lattice.linear_combination(
-                        _coordinate_vector(action(element)(module_basis))
-                    )
-                    for basis, module_basis in zip(
-                        self._lattice.gens(), module.gens()
-                    )
-                }
-            )
-            for element in self._group
-        }
+        assert domain.group() is codomain.group(), (
+            "a group-lattice homset has one specified acting group"
+        )
+        FormHomset.__init__(
+            self,
+            domain,
+            codomain,
+            GroupLattices(domain.group()),
+        )
+
+    def _element_constructor_(self, images: Any) -> FormMorphism:
+        match images:
+            case FormMorphism():
+                assert images.parent() is self, (
+                    "an existing group-lattice morphism belongs to its own homset"
+                )
+                return images
+            case _:
+                morphism = FormHomset._element_constructor_(self, images)
+        for group_element in self.domain().group():
+            for label in self.domain().generating_set():
+                generator = self.domain().generator(label)
+                assert morphism(
+                    self.domain().act(group_element, generator)
+                ) == self.codomain().act(
+                    group_element,
+                    morphism(generator),
+                ), "the proposed lattice map is not equivariant"
+        return morphism
 
     def _repr_(self) -> str:
-        return f"{self._lattice} with an action of {self._group}"
+        return (
+            f"Isometric Hom_{self.domain().group()}("
+            f"{self.domain()}, {self.codomain()})"
+        )
 
 
-def group_lattice(lattice: Any, group: Any, generator_images: Any) -> GroupLattice:
-    r"""Return ``lattice`` equipped with the $G$-action ``generator_images`` generates."""
-    return GroupLattice(lattice, group, generator_images)
+def group_lattice_homset(domain: Any, codomain: Any) -> GroupLatticeHomset:
+    r"""Return the canonical form-preserving equivariant homset."""
+    cache = domain.__dict__.setdefault("_group_lattice_homsets", {})
+    homset = cache.get(codomain)
+    if homset is None:
+        homset = GroupLatticeHomset(domain, codomain)
+        cache[codomain] = homset
+    return homset
+
+
+def _action_preserves_form(formed_module: Any) -> bool:
+    module = formed_module.forget_form()
+    return all(
+        formed_module.form().pullback(module.action_of(element))
+        == formed_module.form()
+        for element in module.group()
+    )
+
+
+def _install_group_lattice_structure(formed_module: Any) -> None:
+    r"""Install the action on a formed \(G\)-module after invariance is known."""
+    module = formed_module.forget_form()
+    group = module.group()
+    isometries = formed_module.Aut()
+    values = {
+        element: isometries(
+            {
+                label: formed_module._over(
+                    module.action_of(element)(module.generator(label))
+                )
+                for label in module.generating_set()
+            }
+        )
+        for element in group
+    }
+    formed_module._formed_action = group_action_homset(
+        group,
+        formed_module,
+    )(values)
+
+
+def _formed_group_subobject(
+    group_lattice_: Any,
+    representation_subobject: Any,
+) -> Any:
+    r"""Equip a \(G\)-submodule with the pulled-back form and its inclusion."""
+    representation = representation_subobject.underlying_object()
+    module_embedding = representation_subobject.embedding()
+    restricted = FormModule(
+        group_lattice_.form().pullback(module_embedding)
+    )
+    assert restricted in GroupLattices(group_lattice_.group()), (
+        "a stable submodule of a group lattice must inherit the isometric action"
+    )
+    embedding = restricted.Hom(group_lattice_)(
+        {
+            label: group_lattice_._over(
+                module_embedding(representation.generator(label))
+            )
+            for label in representation.generating_set()
+        }
+    )
+    return Subobject(embedding)
+
+
+def group_lattice(lattice: Any, action: GroupAction) -> FormModule:
+    r"""Equip ``lattice`` with the specified action by isometries."""
+    assert lattice in IntegralLattices(), (
+        "a group lattice is constructed from an actual integral lattice"
+    )
+    assert (
+        isinstance(action, GroupAction)
+        and action.module() is lattice
+        and action.parent() is group_action_homset(action.domain(), lattice)
+    ), "the action must be an element of the lattice's action homset"
+
+    module = lattice.forget_form()
+    automorphisms = module.Aut()
+    values = {
+        element: automorphisms(
+            {
+                label: action(element)(
+                    lattice.generator(label)
+                ).forget_form()
+                for label in module.generating_set()
+            }
+        )
+        for element in action.domain()
+    }
+    representation = GroupModule(
+        module,
+        group_action_homset(action.domain(), module)(values),
+    )
+    formed_module = FormModule(
+        lattice.form().on_module(representation)
+    )
+    assert formed_module in GroupLattices(action.domain()), (
+        "the supplied action did not refine to isometries"
+    )
+    formed_module._action_forgotten_form = lattice
+    return formed_module

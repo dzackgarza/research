@@ -786,7 +786,10 @@ def test_source_claim_block_holds():
 
     assert TEn.I_perp_mod_I([e, ep]).is_isometric(catalogue.Lattices.E8_2)
 
-    vp = 2 * e + 2 * f + 2 * w1
+    # w1 is a dual generator: the sum is formed in TEn^v, with e and f carried
+    # there by c, and the lift names the element of TEn it turns out to be.
+    c = TEn.correlation()
+    vp = c.lift(c(2 * e + 2 * f) + 2 * w1)
     assert TEn.div(vp) == 2 and TEn.q(vp) == 0
 
 
@@ -795,9 +798,10 @@ def test_the_8_6_0_lattice_has_its_recorded_invariants():
     catalogue, _, _ = _preamble()
     TEn = catalogue.Lattices.TEn
     basis, dual = TEn.basis(), TEn.dual_basis()
+    c = TEn.correlation()
     quotient = TEn.I_perp_mod_I([
         basis[2],
-        2 * basis[0] + 2 * basis[1] + 2 * dual[4],
+        c.lift(c(2 * basis[0] + 2 * basis[1]) + 2 * dual[4]),
     ])
     assert quotient.rank() == 8
     assert quotient.signature_pair() == (0, 8)
@@ -873,11 +877,15 @@ def test_sterks1_and_sterks3_use_different_dual_scalings():
     dual = TEn.dual_basis()
     ep, fp = TEn.gens()[2], TEn.gens()[3]
     configs = sterk.sterks_in_ten()
+    c = TEn.correlation()
     # index 9 of sterks1 is 2*ep+ad2[8] with ad2 = 2*dual
-    assert configs["sterks1"][9] == 2 * ep + 2 * dual[11]
-    assert configs["sterks1"][9] != 2 * ep + dual[11]
+    assert configs["sterks1"][9] == c.lift(c(2 * ep) + 2 * dual[11])
+    # The negative control is stated in TEn^v, where both sides exist: the
+    # un-doubled dual generator gives a different vector, and it need not be
+    # in c(TEn) at all for that to be sayable.
+    assert c(configs["sterks1"][9]) != c(2 * ep) + dual[11]
     # index 8 of sterks3 is 2*fp+2*ad1[8] with ad1 = dual
-    assert configs["sterks3"][8] == 2 * fp + 2 * dual[11]
+    assert configs["sterks3"][8] == c.lift(c(2 * fp) + 2 * dual[11])
 
 
 def test_nothing_from_the_sterk_section_is_unported():

@@ -100,9 +100,12 @@ _OWNED_CATEGORY_NAMES = frozenset(
         "GroupLattices",
         "FormModules",
         "BilinearFormModules",
+        "SymmetricBilinearFormModules",
         "QuadraticFormModules",
         "Subobjects",
         "FreeFormModules",
+        "FinitelyGeneratedFormModules",
+        "FinitelyGeneratedFreeFormModules",
         "TorsionModulesWithForm",
         "DiscriminantBilinearModules",
         "DiscriminantQuadraticModules",
@@ -165,22 +168,8 @@ def _is_homset(obj: Any) -> bool:
     return isinstance(obj, Homset)
 
 def _is_morphism(obj: Any) -> bool:
-    """Return whether ``obj`` is a map rather than an object of a category.
-
-    Sage's own morphisms say so by their type, and an element of a homset says
-    so by its parent.  An owned morphism is neither: it is a plain object with
-    a domain and a codomain, which is what being a map consists of here, so
-    that is what is asked.
-    """
-    if isinstance(obj, Morphism):
-        return True
-    if isinstance(obj, Element) and _is_homset(obj.parent()):
-        return True
-    return (
-        not isinstance(obj, CategoryObject)
-        and hasattr(obj, "domain")
-        and hasattr(obj, "codomain")
-    )
+    r"""Return whether ``obj`` is a Sage morphism."""
+    return isinstance(obj, Morphism)
 
 def _rebuild_parent_class(obj: Any, category: Any) -> None:
     # Only preamble/category ParentMethods mixins precede the concrete class —

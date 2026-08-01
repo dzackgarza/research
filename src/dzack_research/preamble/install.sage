@@ -73,8 +73,8 @@ else:
     load(str(_PREAMBLE / "categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage"))
 
     load(str(_PREAMBLE / "categories/modules/direct_sum_objects.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/formed/form_modules.sage"))
     load(str(_PREAMBLE / "categories/modules/module_morphisms/module_morphisms.sage"))
+    load(str(_PREAMBLE / "categories/modules/framed/formed/form_modules.sage"))
     load(str(_PREAMBLE / "categories/modules/pure/torsion_modules.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage"))
     load(str(_PREAMBLE / "categories/modules/group_modules/group_modules.sage"))
@@ -103,11 +103,6 @@ else:
     load(str(_PREAMBLE / "categories/schemes/varieties.sage"))
     load(str(_PREAMBLE / "catalogue.sage"))
     install_finitely_presented_groups()
-    install_picard_groups()
-    install_divisor_groups()
-    install_weil_divisor_groups()
-    install_cartier_divisor_groups()
-    install_class_groups()
     install_ringed_spaces()
     install_schemes()
     install_ambient_spaces()
@@ -134,14 +129,11 @@ else:
         )
         _preamble_ring_pow.__globals__["_PreambleSageInteger"] = SageInteger
         _preamble_ring_pow.__globals__["_PreambleBasedFreeModule"] = BasedFreeModule
-        _preamble_ring_pow.__globals__["_PreambleStandardFramingSet"] = standard_framing_set
 
         def _route_ring_pow(self, exponent):
             match exponent:
-                case int() | _PreambleSageInteger():
-                    return _PreambleBasedFreeModule(
-                        self, _PreambleStandardFramingSet(exponent)
-                    )
+                case int() | _PreambleSageInteger() if exponent >= 0:
+                    return _PreambleBasedFreeModule(self, exponent)
                 case _:
                     return _preamble_original_ring_pow(self, exponent)
 

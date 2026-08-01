@@ -28,11 +28,35 @@ def _untokenize(tokens: list[tuple[int, str]]) -> str:
     return tokenize.untokenize(tokens)
 
 
-def _binder(tokens: list[tuple[int, str]]) -> tuple[str, str] | None:
-    """Extract ``x in X`` from a token fragment when it is the whole fragment."""
-    if len(tokens) >= 3 and tokens[0][0] == tokenize.NAME and tokens[1][1] == "in":
-        return tokens[0][1], _untokenize(tokens[2:]).strip()
-    return None
+def _binder(
+    tokens: list[tuple[int, str]],
+) -> tuple[str, str, str | None] | None:
+    r"""Parse ``x in X`` or ``x in X and P(x)`` at top level."""
+    if len(tokens) < 3 or tokens[0][0] != tokenize.NAME or tokens[1][1] != "in":
+        return None
+    depth = 0
+    separator = None
+    for position, (_, token) in enumerate(tokens[2:], start=2):
+        if token in {"(", "[", "{"}:
+            depth += 1
+        elif token in {")", "]", "}"}:
+            depth -= 1
+        elif depth == 0 and token == "and":
+            separator = position
+            break
+    match separator:
+        case None:
+            domain_tokens = tokens[2:]
+            condition_tokens = []
+        case int():
+            domain_tokens = tokens[2:separator]
+            condition_tokens = tokens[separator + 1 :]
+    domain = _untokenize(_implicit_products(domain_tokens)).strip()
+    assert domain, "a set-builder domain cannot be empty"
+    condition = _untokenize(_implicit_products(condition_tokens)).strip()
+    if separator is not None and not condition:
+        raise SyntaxError("a set-builder predicate cannot be empty")
+    return tokens[0][1], domain, condition or None
 
 
 def _condition_builder(
@@ -83,8 +107,8 @@ def _rewrite(tokens: list[tuple[int, str]]) -> list[tuple[int, str]]:
         nested_depth = 0
         has_top_level_colon = False
         has_top_level_unpack = False
-        has_top_level_bar = False
-        for inner_type, inner_string in original_inner:
+        top_level_bars = []
+        for position, (inner_type, inner_string) in enumerate(original_inner):
             if inner_string in {"(", "[", "{"}:
                 nested_depth += 1
             elif inner_string in {")",
@@ -97,52 +121,62 @@ def _rewrite(tokens: list[tuple[int, str]]) -> list[tuple[int, str]]:
             elif nested_depth == 0 and inner_string == "**":
                 has_top_level_unpack = True
             elif nested_depth == 0 and inner_string == "|":
-                has_top_level_bar = True
+                top_level_bars.append(position)
 
-        if has_top_level_bar:
-            bar = next(
-                position
-                for position, (_, inner_string) in enumerate(original_inner)
-                if inner_string == "|"
-            )
+        if top_level_bars:
+            if len(top_level_bars) != 1:
+                raise SyntaxError(
+                    "set-builder notation has exactly one top-level bar"
+                )
+            bar = top_level_bars[0]
             left = _rewrite(original_inner[:bar])
             right = _rewrite(original_inner[bar + 1 :])
 
             # ``{x in X | P(x)}`` — a predicate-defined subset.
             left_binder = _binder(left)
             if left_binder is not None:
-                variable, domain = left_binder
-                condition = _untokenize(right).strip()
+                variable, domain, left_condition = left_binder
+                assert left_condition is None, (
+                    "the predicate belongs to the right of the set-builder bar"
+                )
+                condition = _untokenize(_implicit_products(right)).strip()
                 if not condition:
                     raise SyntaxError("a set-builder predicate cannot be empty")
                 rewritten.extend(_condition_builder(variable, domain, condition))
             else:
-                # ``{f(x) | x in X}`` and ``{x | x in X and P(x)}``.
-                right_binder = _binder(right[:3])
+                # ``{f(x) | x in X}`` and ``{f(x) | x in X and P(x)}``.
+                right_binder = _binder(right)
                 if right_binder is None:
                     raise SyntaxError(
                         "set-builder syntax must use x in X as its domain"
                     )
-                variable, domain = right_binder
-                if len(right) > 3 and right[3][1] == "and":
-                    condition = _untokenize(right[4:]).strip()
-                    if not condition:
-                        raise SyntaxError("a set-builder predicate cannot be empty")
-                    rewritten.extend(_condition_builder(variable, domain, condition))
+                variable, domain, condition = right_binder
+                image = _untokenize(_implicit_products(left)).strip()
+                if condition is None:
+                    restricted_domain = domain
                 else:
-                    image = _untokenize(_implicit_products(left)).strip()
-                    if image == variable:
-                        rewritten.extend(_condition_builder(variable, domain, "True"))
-                    else:
+                    restricted_domain = (
+                        f"ConditionSet({domain}, "
+                        f"lambda {variable}: {condition})"
+                    )
+                if image == variable:
+                    if condition is None:
                         rewritten.extend(
-                            _tokens(
-                                f"ImageSet(lambda {variable}: {image}, {domain})"
-                            )
+                            _condition_builder(variable, domain, "True")
                         )
+                    else:
+                        rewritten.extend(_tokens(restricted_domain))
+                else:
+                    rewritten.extend(
+                        _tokens(
+                            f"ImageSet(lambda {variable}: {image}, "
+                            f"{restricted_domain})"
+                        )
+                    )
         elif not inner or has_top_level_colon or has_top_level_unpack:
             rewritten.extend([(tokenize.OP, "{"), *inner, (tokenize.OP, "}")])
         else:
-            replacement = _tokens("Set([" + _untokenize(inner) + "])" )
+            replacement = _tokens("Set([" + _untokenize(inner) + "])")
             rewritten.extend(replacement)
         index = close
     return rewritten

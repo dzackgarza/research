@@ -20,6 +20,10 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
 
     _base_category_class_and_axiom = (Modules, "FinitelyGenerated")
 
+    def extra_super_categories(self) -> list:
+        r"""Require the chosen finite generating morphism used by this preamble."""
+        return [Modules(self.base_ring()).Framed()]
+
     class ParentMethods:
         def is_finitely_generated(self) -> bool:
             r"""Return whether this module is finitely generated.
@@ -27,6 +31,13 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
             Always ``True`` for objects in this category.
             """
             return True
+
+        def is_zero(self) -> bool:
+            r"""Return whether every element in the chosen finite frame vanishes."""
+            return all(
+                self.generator(label) == self.zero()
+                for label in self.generating_set()
+            )
 
 
 @cached_method

@@ -1,23 +1,13 @@
-r"""``LatticeIsometries`` — morphisms of integral lattices that preserve the form.
-
-``L.Aut()`` is the isometry Homset.  Its element constructor takes a dict of
-generator images ``{e_i: image}`` (or a list of images / a matrix); isometry
-is checked on ``morphism.to_matrix()``.
-
-Invariant / coinvariant lattices live on the lattice
-(``L.invariant_lattice(action)``, ``L.coinvariant_lattice(action)``);
-morphisms delegate to their domain.
-"""
+r"""Isometries of integral lattices."""
 
 from typing import Any
 
 from sage.categories.category import Category
-from sage.matrix.constructor import matrix
 from sage.matrix.special import identity_matrix
-from sage.rings.integer_ring import ZZ
+
 
 class LatticeIsometries(Category):
-    r"""Isometries of integral lattices (as Hom morphisms / Aut elements)."""
+    r"""Invertible lattice homomorphisms."""
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -27,67 +17,134 @@ class LatticeIsometries(Category):
         return [LatticeHomomorphisms()]
 
     class ParentMethods:
-        r"""Homset methods: element construction is the isometry constructor."""
-
-        def __call__(self: Any, x: Any, *args: Any, **kwargs: Any) -> Any:
-            r"""Construct an isometry from images, a dictionary, or a matrix.
-
-            For a chosen direct sum, a dictionary may specify images of entire
-            summand subobjects.
-
-            An isometry is a morphism that is invertible, and over $\mathbb Z$
-            that is the determinant being a unit.  Preserving the form is the
-            morphism's own condition and is checked there.
-            """
-            domain = self.domain()
-            codomain = self.codomain()
-            morphism = LatticeHomomorphisms.ParentMethods.__call__(self, x)
-
-            mat = matrix(ZZ, morphism.matrix())
-            assert mat.nrows() == domain.rank() and mat.ncols() == codomain.rank(), (
-                f"isometry matrix shape {mat.nrows()}×{mat.ncols()} does not "
-                f"match ranks {domain.rank()}→{codomain.rank()}"
+        def __call__(self: Any, images: Any, *args: Any, **kwargs: Any) -> Any:
+            morphism = LatticeHomomorphisms.ParentMethods.__call__(
+                self,
+                images,
             )
-            assert mat.det() in (ZZ(1), ZZ(-1)), (
-                f"an isometry is invertible over Z, so its determinant is a "
-                f"unit; got {mat.det()}"
+            determinant = morphism.matrix().det()
+            assert determinant in (ZZ.one(), -ZZ.one()), (
+                f"an integral isometry has unit determinant, got {determinant}"
             )
             return refine(morphism, LatticeIsometries())
 
+        def one(self: Any) -> Any:
+            return self(
+                {
+                    label: self.domain().generator(label)
+                    for label in self.domain().generating_set()
+                }
+            )
+
+        def subgroup(self: Any, generators: Any) -> Any:
+            generators = tuple(generators)
+            assert all(generator in self for generator in generators), (
+                "each subgroup generator must belong to this isometry group"
+            )
+            return LatticeIsometrySubgroup(self, generators)
+
     class MorphismMethods:
-        r"""Methods on isometries refined into this category.
-
-        ``to_matrix`` / ``is_identity`` / ``is_involution`` / composition are
-        the isometry vocabulary; application is Sage's native morphism call.
-        """
-
         def to_matrix(self: Any) -> Any:
-            """Return the matrix of this isometry on the domain basis."""
             return self.matrix()
 
         def is_identity(self: Any) -> bool:
-            """Return whether this isometry is the identity (matrix test)."""
-            mat = self.to_matrix()
-            return bool(mat == identity_matrix(ZZ, mat.nrows()))
+            matrix_ = self.matrix()
+            return bool(
+                matrix_
+                == identity_matrix(ZZ, matrix_.nrows())
+            )
 
         def is_involution(self: Any) -> bool:
-            r"""Return whether $I^{2}=\mathrm{id}$."""
             return (self * self).is_identity()
 
         def __mul__(self: Any, other: Any) -> Any:
-            """Compose isometries by matrix product through the Homset."""
-            if not isinstance(other, FormMorphism):
-                return NotImplemented
-            return self.domain().Aut()(self.to_matrix() * other.matrix())
+            assert (
+                isinstance(other, FormMorphism)
+                and other.parent() is self.parent()
+            ), "composition is internal to one isometry group"
+            return self.parent()(
+                {
+                    label: self(other.domain().generator(label))
+                    for label in other.domain().generating_set()
+                }
+            )
 
-        def invariant_lattice(self: Any) -> Any:
-            r"""Return $L^{+}=L^{\langle I\rangle}$ via the domain lattice."""
-            return self.domain().invariant_lattice(self)
+        def inverse(self: Any) -> Any:
+            inverse_matrix = self.matrix().inverse()
+            return self.parent()(
+                {
+                    label: self.domain().linear_combination(row)
+                    for label, row in zip(
+                        self.domain().generating_set(),
+                        inverse_matrix.rows(),
+                    )
+                }
+            )
 
-        def coinvariant_lattice(self: Any) -> Any:
-            r"""Return the coinvariant lattice via the domain lattice."""
-            return self.domain().coinvariant_lattice(self)
+        def cyclic_subgroup(self: Any) -> Any:
+            return self.parent().subgroup([self])
 
-        def coinvariant_inclusion(self: Any) -> Any:
-            r"""Return the coinvariant inclusion via the domain lattice."""
-            return self.domain().coinvariant_inclusion(self)
+
+class LatticeIsometrySubgroup(FormAutomorphismGroup):
+    r"""A finite literal subgroup of \(O(L)\)."""
+
+    def __init__(self, supergroup: Any, generators: Any) -> None:
+        lattice = supergroup.domain()
+        assert supergroup.codomain() is lattice, (
+            "an isometry group is an endomorphism homset"
+        )
+        FormAutomorphismGroup.__init__(self, lattice)
+        refine(self, [LatticeHomomorphisms(), LatticeIsometries()])
+        supplied = tuple(generators)
+        assert supplied, "a generated subgroup needs a generator"
+        assert all(generator.parent() is supergroup for generator in supplied), (
+            "each subgroup generator must belong to the stated isometry group"
+        )
+        self._generators = tuple(
+            self(
+                {
+                    label: generator(lattice.generator(label))
+                    for label in lattice.generating_set()
+                }
+            )
+            for generator in supplied
+        )
+        self._elements = self._close()
+
+    def gens(self) -> tuple:
+        return self._generators
+
+    def is_finite(self) -> bool:
+        return True
+
+    def order(self) -> int:
+        return len(self._elements)
+
+    def __iter__(self):
+        return iter(self._elements)
+
+    def __contains__(self, element: Any) -> bool:
+        return isinstance(element, FormMorphism) and element.parent() is self
+
+    def _close(self) -> tuple:
+        identity = self.one()
+        elements = {identity}
+        frontier = [identity]
+        steps = 0
+        while frontier:
+            current = frontier.pop()
+            for generator in self._generators:
+                for factor in (generator, generator.inverse()):
+                    candidate = current * factor
+                    if candidate in elements:
+                        continue
+                    elements.add(candidate)
+                    frontier.append(candidate)
+                    steps += 1
+                    assert steps <= 100000, (
+                        "the proposed isometry subgroup did not close finitely"
+                    )
+        return tuple(elements)
+
+    def _repr_(self) -> str:
+        return f"Subgroup of O({self.domain()}) of order {self.order()}"

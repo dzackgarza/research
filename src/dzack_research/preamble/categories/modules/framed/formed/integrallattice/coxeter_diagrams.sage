@@ -183,19 +183,21 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         self,
         coxeter_matrix: CoxeterMatrix,
         names: Sequence[str] | str | None = None,
-        root_subobject: Subobject | None = None,
+        root_morphism: FormMorphism | None = None,
         positions: Mapping[Hashable, Sequence[object]] | None = None,
     ) -> None:
         self._coxeter_matrix = CoxeterMatrix(coxeter_matrix)
-        self._index_set = tuple(self._coxeter_matrix.index_set())
+        self._index_set = finite_ordered_set(
+            tuple(self._coxeter_matrix.index_set())
+        )
         rank = len(self._index_set)
         if names is None:
             names = tuple(f"s_{i}" for i in self._index_set)
-        if root_subobject is not None:
-            assert root_subobject.rank() == rank, (
+        if root_morphism is not None:
+            assert root_morphism.domain().rank() == rank, (
                 "a rooted Coxeter diagram needs one root for every vertex"
             )
-        self._root_subobject = root_subobject
+        self._root_morphism = root_morphism
         self._preferred_positions = _normalize_positions(self._index_set, positions)
         self._computed_positions: dict[Hashable, tuple[Any, Any]] | None = None
         Parent.__init__(
@@ -230,10 +232,10 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
             "all diagram roots must belong to the same lattice"
         )
         if index_set is None:
-            index_set = tuple(range(rank))
+            index_set = Sets.Δ[rank - 1]
         else:
-            index_set = tuple(index_set)
-        assert len(index_set) == rank, f"index set must have one entry per root; index_set={index_set!r}, roots={rank}"
+            index_set = finite_ordered_set(index_set)
+        assert index_set.cardinality() == rank, f"index set must have one entry per root; index_set={index_set!r}, roots={rank}"
         if names is None:
             names = tuple(f"s_{i}" for i in index_set)
         normalized_names = normalize_names(rank, names)
@@ -243,13 +245,17 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         # degenerate.  That is a fact about the form, not about what kind of
         # object this is: a lattice here is a free module with a Z-valued
         # form, and nothing in that asks the form to be nondegenerate.
-        root_module = _integral_lattice_with_names(gram, names=normalized_names)
+        root_module = _integral_lattice_with_names(
+            gram,
+            names=normalized_names,
+            generating_set=finite_ordered_set(roots),
+        )
         homset = root_module.Hom(realization)
-        root_subobject = Subobject(homset(roots))
+        root_morphism = homset({root: root for root in roots})
         return cls(
             CoxeterMatrix(entries, index_set=index_set),
             names=normalized_names,
-            root_subobject=root_subobject,
+            root_morphism=root_morphism,
             positions=positions,
         )
 
@@ -258,7 +264,18 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         codomain: FiniteCoxeterDiagram,
         category: Category | None = None,
     ) -> CoxeterDiagramHomset:
-        return CoxeterDiagramHomset(self, codomain, category=category)
+        hom_category = CoxeterDiagrams() if category is None else category
+        cache = self.__dict__.setdefault("_coxeter_homsets", {})
+        key = (codomain, hom_category)
+        homset = cache.get(key)
+        if homset is None:
+            homset = CoxeterDiagramHomset(
+                self,
+                codomain,
+                category=hom_category,
+            )
+            cache[key] = homset
+        return homset
 
     def hom(
         self,
@@ -277,7 +294,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
             and self._index_set == other._index_set
             and self._matrix_entries() == other._matrix_entries()
             and self.variable_names() == other.variable_names()
-            and self._root_subobject == other._root_subobject
+            and self._root_morphism == other._root_morphism
             and self._preferred_positions == other._preferred_positions
         )
 
@@ -287,7 +304,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
                 self._index_set,
                 self._matrix_entries(),
                 self.variable_names(),
-                self._root_subobject,
+                self._root_morphism,
                 None if self._preferred_positions is None else tuple(sorted(self._preferred_positions.items())),
             )
         )
@@ -316,7 +333,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
     def vertices(self) -> tuple[CoxeterVertex, ...]:
         return tuple(self)
 
-    def index_set(self) -> tuple[Hashable, ...]:
+    def index_set(self) -> Any:
         return self._index_set
 
     def coxeter_matrix(self) -> CoxeterMatrix:
@@ -342,28 +359,30 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         """
         return dict(COXETER_DRAWING_CONVENTIONS)
 
-    def root_subobject(self) -> Subobject:
-        r"""Return the root lattice together with its embedding."""
-        assert self._root_subobject is not None, (
+    def root_morphism(self) -> FormMorphism:
+        r"""Return the morphism sending the formal root generators to roots."""
+        assert self._root_morphism is not None, (
             "this Coxeter diagram is not realized by roots"
         )
-        return self._root_subobject
+        return self._root_morphism
 
     def root_lattice(self) -> Any:
         r"""Return the abstract lattice generated by the diagram roots."""
-        return self.root_subobject()
+        return self.root_morphism().domain()
 
-    def root_embedding(self) -> Any:
-        r"""Return the embedding of the root lattice into its realization."""
-        return self.root_subobject().embedding()
-
-    def embedding_codomain(self) -> Any:
+    def root_realization(self) -> Any:
         r"""Return the lattice in which the diagram roots are realized."""
-        return self.root_subobject().embedding_codomain()
+        return self.root_morphism().codomain()
 
-    def roots(self) -> tuple[Any, ...]:
+    def roots(self) -> Any:
         r"""Return the roots realizing the diagram vertices."""
-        return self.root_subobject().embedded_gens()
+        morphism = self.root_morphism()
+        return finite_ordered_set(
+            tuple(
+                morphism(morphism.domain().generator(label))
+                for label in morphism.domain().generating_set()
+            )
+        )
 
     def root(self, vertex: Hashable) -> Any:
         r"""Return the root element attached to ``vertex``."""
@@ -421,7 +440,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         entries = [[self._coxeter_matrix[left, right] for right in selected] for left in selected]
         names = tuple(self.variable_names()[self._index_set.index(vertex)] for vertex in selected)
         positions = None if self._preferred_positions is None else {vertex: self._preferred_positions[vertex] for vertex in selected}
-        if self._root_subobject is not None:
+        if self._root_morphism is not None:
             roots = tuple(
                 self.roots()[self._index_set.index(vertex)]
                 for vertex in selected
@@ -578,6 +597,12 @@ class CoxeterDiagramHomset(Homset):
     ) -> CoxeterDiagramMorphism:
         return CoxeterDiagramMorphism(self, images)
 
+    def __contains__(self, morphism: Any) -> bool:
+        return (
+            isinstance(morphism, CoxeterDiagramMorphism)
+            and morphism.parent() is self
+        )
+
 
 class CoxeterDiagramMorphism(Morphism):
     r"""A map of vertices preserving every Coxeter exponent."""
@@ -627,7 +652,7 @@ class CoxeterDiagramMorphism(Morphism):
 
     def __mul__(self, other: object) -> CoxeterDiagramMorphism:
         assert isinstance(other, CoxeterDiagramMorphism), f"morphism composition needs a CoxeterDiagramMorphism; found={type(other)}"
-        assert other.codomain() == self.domain(), "morphisms compose only when the inner codomain equals the outer domain"
+        assert other.codomain() is self.domain(), "morphisms compose only when the inner codomain is the outer domain"
         domain = cast(FiniteCoxeterDiagram, other.domain())
         codomain = cast(FiniteCoxeterDiagram, self.codomain())
         return domain.hom(

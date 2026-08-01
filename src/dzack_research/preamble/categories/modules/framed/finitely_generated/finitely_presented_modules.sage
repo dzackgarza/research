@@ -24,10 +24,7 @@ class FinitelyPresentedModules(Category_over_base_ring):
         return "finitely presented modules"
 
     def super_categories(self) -> list:
-        return [
-            FinitelyGeneratedModules(self.base_ring()),
-            Modules(self.base_ring()).Framed(),
-        ]
+        return [FinitelyGeneratedModules(self.base_ring())]
 
     class ParentMethods:
         def is_finitely_presented(self: Any) -> bool:
@@ -82,12 +79,15 @@ class FinitelyPresentedModule(Parent):
     Element = FinitelyPresentedModuleElement
 
     def __init__(self, presentation: Any) -> None:
+        assert isinstance(presentation, (ModuleMorphism, FormMorphism)), (
+            "a presentation is a morphism of framed modules"
+        )
         codomain = presentation.codomain()
         base_ring = codomain.base_ring()
         relations = matrix(base_ring, presentation.matrix())
-        assert relations.ncols() == len(tuple(codomain.gens())), (
+        assert relations.ncols() == codomain.generating_set().cardinality(), (
             "the presentation matrix does not have the codomain's number of "
-            "generators as its number of columns"
+            "framing labels as its number of columns"
         )
         Parent.__init__(
             self,
@@ -96,20 +96,28 @@ class FinitelyPresentedModule(Parent):
         )
         self._presentation = presentation
         self._relations = relations
-        self._generating_set = codomain.generating_set()
         self._normal_form = (
             relations.hermite_form(include_zero_rows=False)
             if base_ring is ZZ
             else relations.echelon_form()
         )
         refine(self, FinitelyPresentedModules(base_ring))
-        self._framing_map = {
-            e: self._from_coordinates(
-                [self.base_ring()(i == j) for j in range(self.ngens())]
-            )
-            for i, e in enumerate(self._generating_set)
-        }
-        self._gens = TotallyOrderedSet(tuple(self._framing_map.values()))
+        if base_ring is ZZ and self.is_torsion():
+            refine(self, FinitelyPresentedTorsionModules(base_ring))
+        source = _underlying_module(codomain)
+        self._framing_morphism = framing_morphism(
+            source,
+            self,
+            {
+                label: self._from_coordinates(
+                    [self.base_ring()(i == j) for j in range(self.ngens())]
+                )
+                for i, label in enumerate(source.generating_set())
+            },
+        )
+
+    def framing_morphism(self) -> "FramingMorphism":
+        return self._framing_morphism
 
     def presentation(self) -> Any:
         return self._presentation
@@ -153,16 +161,20 @@ class FinitelyPresentedModule(Parent):
         invariants = self.invariants()
         return invariants[-1] if invariants else ZZ.one()
 
-    def gens(self) -> TotallyOrderedFiniteSet:
-        return self._gens
-
     def zero(self) -> FinitelyPresentedModuleElement:
         return self._from_coordinates(
             [self.base_ring().zero()] * self.ngens()
         )
 
     def linear_combination(self, coefficients: Any) -> FinitelyPresentedModuleElement:
-        coefficients = tuple(coefficients)
+        match coefficients:
+            case dict():
+                coefficients = tuple(
+                    coefficients.get(label, self.base_ring().zero())
+                    for label in self.generating_set()
+                )
+            case _:
+                coefficients = tuple(coefficients)
         assert len(coefficients) == self.ngens(), (
             f"this module has {self.ngens()} generators, got {len(coefficients)}"
         )
@@ -183,6 +195,10 @@ class FinitelyPresentedModule(Parent):
                 coefficient = result[pivot] / row[pivot]
             result -= coefficient * row
         return result
+
+    def reduce(self, coordinates: Any) -> Any:
+        r"""Return the canonical representative modulo the presentation."""
+        return self._reduce(coordinates)
 
     def _from_coordinates(self, coordinates: Any) -> FinitelyPresentedModuleElement:
         return self.element_class(self, coordinates)

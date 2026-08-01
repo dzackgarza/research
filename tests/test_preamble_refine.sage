@@ -78,8 +78,11 @@ def test_element_methods_come_from_refined_category():
     lattice = _refined_lattice()
     element = lattice.gens()[0]
     assert type(element).q.__qualname__ == "IntegralLattices.ElementMethods.q"
-    assert type(element).__mul__.__qualname__ == "IntegralLattices.ElementMethods.__mul__"
     assert type(element).__pow__.__qualname__ == "IntegralLattices.ElementMethods.__pow__"
+    # v * w is the pairing in every fibre of U, so it is sited on the form
+    # modules and a lattice inherits it rather than restating it.
+    assert type(element).__mul__.__qualname__ == "FormModules.ElementMethods.__mul__"
+    assert type(element).b.__qualname__ == "FormModules.ElementMethods.b"
     assert element.q() == 0
     assert element * element == 0
     assert element ** 2 == 0
@@ -111,12 +114,8 @@ def test_unequal_rank_hom_from_generator_images():
     _ensure_preamble()
     E = Lattices.E8_2
     TdP = Lattices.TdP
-    images = []
-    for i in range(8):
-        coeffs = [0] * 20
-        coeffs[4 + i] = 1
-        coeffs[12 + i] = 1
-        images.append(TdP(coeffs))
+    generators = TdP.gens()
+    images = [generators[4 + i] + generators[12 + i] for i in range(8)]
     phi = E.Hom(TdP)(images)
     assert phi.matrix().dimensions() == (8, 20)
     assert phi(E.gens()[0]) == images[0]
@@ -185,4 +184,4 @@ def test_install_hooks_refine_parents_and_elements():
     lattice = Lattices.U
     assert type(lattice).direct_sum.__qualname__ == "IntegralLattices.ParentMethods.direct_sum"
     element = lattice.gens()[0]
-    assert type(element).__mul__.__qualname__ == "IntegralLattices.ElementMethods.__mul__"
+    assert type(element).__mul__.__qualname__ == "FormModules.ElementMethods.__mul__"

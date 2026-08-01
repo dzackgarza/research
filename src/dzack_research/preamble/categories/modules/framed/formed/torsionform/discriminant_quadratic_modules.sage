@@ -14,14 +14,8 @@ this category.
 from typing import Any
 
 from sage.categories.category import Category
-from sage.groups.additive_abelian.qmodnz import QmodnZ, QmodnZ_Element
+from sage.groups.additive_abelian.qmodnz import QmodnZ
 from sage.matrix.matrix0 import Matrix
-from sage.modules.free_module import FreeModule
-from sage.modules.free_module_element import FreeModuleElement
-from sage.modules.free_module_morphism import FreeModuleMorphism
-from sage.modules.free_quadratic_module_integer_symmetric import (
-    FreeQuadraticModule_integer_symmetric,
-)
 from sage.rings.rational_field import QQ
 
 
@@ -50,7 +44,24 @@ class DiscriminantQuadraticModules(Category):
         respect to that generating set.  Nothing else is needed and nothing
         else is consulted.
         """
-        return self.from_relations_and_gram(module.relation_matrix(), gram)
+        assert module in FinitelyPresentedTorsionModules(), (
+            "a discriminant form requires a finitely presented torsion module"
+        )
+        relations = matrix(ZZ, module.relation_matrix())
+        assert all(entry in ZZ for entry in (relations * gram).list()), (
+            "the polarization is not defined on the classes: some relation "
+            "does not pair integrally with the generators"
+        )
+        for row in relations.rows():
+            norm = row * gram * row
+            assert norm in ZZ and ZZ(norm) % 2 == 0, (
+                f"q is not defined on the classes: the relation {row} has "
+                f"norm {norm}, which is not in 2Z"
+            )
+        form = QuadraticForm(module, QmodnZ(2), gram)
+        refine(form, self)
+        subdivide_form_gram_matrix(form)
+        return form
 
     def from_relations_and_gram(self, relations: Matrix, gram: Matrix) -> "FormModule":
         r"""Return the torsion quadratic form $(G,q)$ built from data alone.
@@ -68,23 +79,7 @@ class DiscriminantQuadraticModules(Category):
         Q/2\\mathbb Z$ asks of the presentation.
         """
         module = FinitelyPresentedTorsionModules().from_relations(relations)
-        relations = matrix(ZZ, relations)
-        assert all(entry in ZZ for entry in (relations * gram).list()), (
-            "the polarization is not defined on the classes: some relation "
-            "does not pair integrally with the generators"
-        )
-        for row in relations.rows():
-            norm = row * gram * row
-            assert norm in ZZ and ZZ(norm) % 2 == 0, (
-                f"q is not defined on the classes: the relation {row} has "
-                f"norm {norm}, which is not in 2Z, so q would depend on the "
-                "lift -- this group carries b alone"
-            )
-        form = QuadraticForm(module, QmodnZ(2), gram)
-        refine(form, self)
-        form._initialize_framing()
-        subdivide_form_gram_matrix(form)
-        return form
+        return self.from_module(module, gram)
 
     def cokernel(self, morphism: Any) -> "FormModule":
         r"""Return $\operatorname{coker} f$ for $f$ of finite index, as an object here.
@@ -94,18 +89,22 @@ class DiscriminantQuadraticModules(Category):
         to be -- a map of lattices, or a correlation -- rather than about extra
         data being carried alongside.
         """
+        assert isinstance(morphism, FormMorphism), (
+            "a cokernel form is constructed from a form morphism"
+        )
         module = TorsionModule(morphism)
         gram = morphism.codomain().form().gram_matrix()
-        assert QuadraticForm(
-            morphism.codomain().forget_form(), QmodnZ(2), gram
-        ).form().descends_along(morphism), (
+        quadratic_form = QuadraticForms(
+            morphism.codomain().forget_form(),
+            QmodnZ(2),
+        )(gram)
+        assert quadratic_form.descends_along(morphism), (
             "q is well defined only when the relations have even norm; these "
             "do not, so the cokernel carries b alone -- use "
             "discriminant_bilinear_form"
         )
         form = QuadraticForm(module, QmodnZ(2), gram)
         refine(form, [self] + cokernel_categories(morphism))
-        form._initialize_framing()
         subdivide_form_gram_matrix(form)
         return form
 
@@ -119,7 +118,13 @@ class DiscriminantQuadraticModules(Category):
             so this is a construction and not a view: the same pairings, read
             on a new set, presented by the morphism that set induces.
             """
-            return DiscriminantQuadraticModules().from_relations_and_gram(*regenerating_data(self, generators))
+            generators = tuple(generators)
+            relations, gram = regenerating_data(self, generators)
+            module = FinitelyPresentedTorsionModules().from_relations(
+                relations,
+                finite_ordered_set(generators),
+            )
+            return DiscriminantQuadraticModules().from_module(module, gram)
 
         def associated_quadratic_form(self: Any) -> Any:
             r"""Return this form: it is already the quadratic one."""
@@ -131,7 +136,10 @@ class DiscriminantQuadraticModules(Category):
             Always defined, and it forgets: distinct $q$ on the same group can
             polarize to isometric $b$ (Peters--Sterk Sec. 12.5).
             """
-            return DiscriminantBilinearModules().from_relations_and_gram(self.relation_matrix(), self.form().polar_form().gram_matrix())
+            return DiscriminantBilinearModules().from_module(
+                self.forget_form(),
+                self.form().polar_form().gram_matrix(),
+            )
 
         def _form_matrix_latex_label(self: Any) -> str:
             r"""Return the LaTeX label for the quadratic Gram matrix."""
@@ -140,16 +148,6 @@ class DiscriminantQuadraticModules(Category):
         def _form_matrix_latex_codomain(self: Any) -> str:
             r"""Return the LaTeX codomain for the quadratic Gram matrix entries."""
             return "\\mathbb{Q}/2\\mathbb{Z}"
-
-
-        def gens(self):
-            r"""Return this object's own generators.
-
-            Abstract symbols of $A_L$, subject to $c$'s relations.  To speak of
-            a lift, ask the projection, which is the only thing that knows
-            which element of $L^\vee$ a class came from.
-            """
-            return FormModule.gens(self)
 
         def invariant_factor_form(self: Any) -> "FormModule":
             r"""Return $q$ on generators from the invariant factor decomposition.

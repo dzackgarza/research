@@ -44,8 +44,6 @@ from sage.misc.latex import latex as _latex_fn
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
-from sage.groups.matrix_gps.finitely_generated import MatrixGroup
-from sage.groups.matrix_gps.group_element_gap import MatrixGroupElement_gap
 from sage.sets.set import Set
 from sage.modules.free_module_element import vector
 
@@ -72,12 +70,29 @@ class IntegralLattices(Category):
         pairing, the norm, the rank, the basis, $v*w$ -- it has from there, and
         this category is only what integrality adds.
         """
-        return [FreeFormModules(), BilinearFormModules()]
+        return [
+            FinitelyGeneratedFreeFormModules(),
+            SymmetricBilinearFormModules(),
+        ]
 
     class ParentMethods:
         r"""Methods available on every integral lattice parent refined into this category."""
 
         # ---- bilinear / quadratic API ----
+
+        def decomposition(self: Any) -> Any:
+            r"""Return the chosen block decomposition, or ``None``."""
+            return self._orthogonal_decomposition
+
+        def summands(self: Any) -> tuple:
+            decomposition = self.decomposition()
+            assert decomposition is not None, (
+                "this lattice has no chosen nontrivial block decomposition"
+            )
+            return decomposition.summands()
+
+        def is_decomposable(self: Any) -> bool:
+            return self.decomposition() is not None
 
         def q(self: Any, x: Any) -> Any:
             r"""Return the quadratic form $q(x) = \langle x, x\rangle$."""
@@ -178,9 +193,9 @@ class IntegralLattices(Category):
             )
             return self.dual().linear_combination(in_dual_basis)
 
-        def dual_lattice_generators(self: Any) -> tuple[Any, ...]:
+        def dual_lattice_generators(self: Any) -> Any:
             r"""Return the explicit module generators of $L^*$."""
-            return tuple(self.dual().gens())
+            return self.dual().gens()
 
         def dual_embedding(self: Any) -> Any:
             r"""Return the inclusion morphism $L\to L^*$."""
@@ -253,7 +268,13 @@ class IntegralLattices(Category):
             ]
             basis = matrix(QQ, hermite_rows[:rank]) / denominator
             gram = basis * self.gram_matrix() * basis.transpose()
-            return _lattice_with_gram(matrix(ZZ, gram))
+            generating_set = finite_ordered_set(
+                tuple(tuple(row) for row in basis.rows())
+            )
+            return _lattice_with_gram(
+                matrix(ZZ, gram),
+                generating_set,
+            )
 
         # ---- isometry ----
 
@@ -288,13 +309,17 @@ class IntegralLattices(Category):
 
             return bool(self.genus() == other.genus())
 
-        def _sub_form_module(self: Any, gram: Matrix) -> Any:
+        def _sub_form_module(
+            self: Any,
+            gram: Matrix,
+            generating_set: Any,
+        ) -> Any:
             r"""Return the lattice on ``gram``: a sublattice of a lattice is one.
 
             The form restricted to a subobject is still $\mathbb Z$-valued, so
             what it makes is a lattice, refined and decomposed like any other.
             """
-            return _lattice_with_gram(gram)
+            return _lattice_with_gram(gram, generating_set)
 
         # ---- the radical, and the axioms defined by it ----
 
@@ -307,7 +332,7 @@ class IntegralLattices(Category):
             with no condition on the form.  It carries no form -- the one on
             $L^\vee$ is $G^{-1}$, and that is where nondegeneracy is needed.
             """
-            return BasedFreeModule(ZZ, standard_framing_set(self.rank()))
+            return BasedFreeModule(ZZ, self.generating_set())
 
         @cached_method
         def correlation_morphism(self: Any) -> Any:
@@ -322,15 +347,15 @@ class IntegralLattices(Category):
             dual_module = self.dual_module()
             assignment = dict(
                 zip(
-                    self.gens(),
-                    (dual_module(list(row)) for row in self.gram_matrix().rows()),
+                    self.generating_set(),
+                    (
+                        dual_module.linear_combination(row)
+                        for row in self.gram_matrix().rows()
+                    ),
                 )
             )
-            return (
-                ModuleMorphism.zero(self, dual_module)
-                if not assignment
-                else _module_morphism(assignment)
-            )
+            homset = module_homset(self, dual_module)
+            return homset.zero() if not assignment else homset(assignment)
 
         @cached_method
         def radical(self: Any) -> Subobject:
@@ -426,7 +451,9 @@ class IntegralLattices(Category):
             )
             gram = self.gram_matrix().inverse()
             return BilinearForm(
-                BasedFreeModule(ZZ, standard_framing_set(gram.nrows())), QQ, gram
+                BasedFreeModule(ZZ, self.generating_set()),
+                QQ,
+                gram,
             )
 
         @cached_method
@@ -513,7 +540,7 @@ class IntegralLattices(Category):
                 surviving = [
                     generator for generator in form.gens() if generator.order() != 1
                 ]
-                form = category.from_relations_and_gram(*regenerating_data(form, surviving))
+                form = form.regenerate(surviving)
             if ZZ(s) != 0:
                 return form.primary_part(s)
             setattr(self, cache, form)
@@ -614,10 +641,12 @@ class IntegralLattices(Category):
             result = self
             for other in others:
                 expected = _summand_ranks(result) + _summand_ranks(other)
+                generating_set = _direct_sum_framing_set(result, other)
                 result = _lattice_with_gram(
                     block_diagonal_matrix(
                         [matrix(ZZ, result.gram_matrix()), matrix(ZZ, other.gram_matrix())]
-                    )
+                    ),
+                    generating_set,
                 )
                 # Both operands were split on their own construction, and the
                 # summed Gram is block diagonal across them, so the sum's
@@ -637,7 +666,11 @@ class IntegralLattices(Category):
             alone, so the twist splits exactly where ``self`` does; its own
             construction finds that, and each summand comes back twisted.
             """
-            result = _lattice_with_gram(ZZ(scale) * matrix(ZZ, self.gram_matrix()))
+            result = BilinearForm(
+                self.forget_form(),
+                ZZ,
+                ZZ(scale) * matrix(ZZ, self.gram_matrix()),
+            )
             assert _summand_ranks(result) == _summand_ranks(self), (
                 "twisting changed the decomposition: "
                 f"{_summand_ranks(result)} != {_summand_ranks(self)}"
@@ -656,14 +689,12 @@ class IntegralLattices(Category):
             the homset's job is only to say which maps it is the set of, and to
             read the several ways a caller names one.
             """
-            return refine(FormHomset(self, codomain), LatticeHomomorphisms())
+            return lattice_homset(self, codomain)
 
         def Aut(self: Any) -> Any:
             r"""Return $\mathrm{Aut}(L)=O(L)$ as an endomorphism Homset.
 
-            Elements are constructed by generator images or matrix:
-            ``L.Aut()({e: image, ...})`` / ``L.Aut()([images...])`` /
-            ``L.Aut()(matrix)``.  Isometry is checked on ``morphism.to_matrix()``.
+            Elements are constructed by their images on the framing labels.
             """
             cached = self.__dict__.get("_preamble_Aut")
             if cached is not None:
@@ -672,7 +703,7 @@ class IntegralLattices(Category):
             # condition on its elements, so it is built the same way and
             # refined once more.
             refined = refine(
-                FormHomset(self, self),
+                FormAutomorphismGroup(self),
                 [LatticeHomomorphisms(), LatticeIsometries()],
             )
             self._preamble_Aut = refined
@@ -680,18 +711,38 @@ class IntegralLattices(Category):
 
         def with_action(self: Any, group: Any, generator_images: Any) -> Any:
             r"""Return this lattice carrying the $G$-action these isometries generate."""
-            return group_lattice(self, group, generator_images)
+            action = GroupAction.from_generators(
+                group,
+                self,
+                tuple(generator_images),
+            )
+            return group_lattice(self, action)
 
         def _acted_on_by(self: Any, action: Any) -> Any:
             r"""Return this lattice with the group ``action`` generates acting on it.
 
-            ``action`` is an isometry (morphism or matrix), or an iterable of
-            them.  What group they generate is not something a caller has to
-            supply and not something to guess: it is the matrix group they
-            generate, whose elements are the isometries themselves.
+            ``action`` is an isometry or a finite literal subgroup of \(O(L)\).
             """
-            matrices = _action_matrices(action)
-            return self.with_action(MatrixGroup(matrices), matrices)
+            match action:
+                case FormMorphism() if action in self.Aut():
+                    subgroup = action.cyclic_subgroup()
+                case LatticeIsometrySubgroup() if action.domain() is self:
+                    subgroup = action
+                case _:
+                    raise TypeError(
+                        "a lattice action is an isometry or a literal subgroup "
+                        "of its isometry homset"
+                    )
+            images = [
+                self.Aut()(
+                    {
+                        label: generator(self.generator(label))
+                        for label in self.generating_set()
+                    }
+                )
+                for generator in subgroup.gens()
+            ]
+            return self.with_action(subgroup, images)
 
         def invariant_lattice(self: Any, action: Any) -> Any:
             r"""Return $L^G\hookrightarrow L$, the fixed sublattice.
@@ -735,7 +786,14 @@ class IntegralLattices(Category):
             assert induced.is_symmetric(), (
                 "induced form on the sublattice is not symmetric"
             )
-            return _lattice_with_gram(induced)
+            generators = tuple(
+                self.linear_combination(row)
+                for row in basis
+            )
+            return _lattice_with_gram(
+                induced,
+                finite_ordered_set(generators),
+            )
 
         # ---- constructor sugar ----
 
@@ -811,7 +869,7 @@ class IntegralLattices(Category):
             # Equality, not isometry: the summands are this lattice's own
             # generators, partitioned.
             decomposition = _decomposition_latex(self)
-            if decomposition is None and self not in DirectSumObjects():
+            if decomposition is None and not self.is_decomposable():
                 decomposition = _summand_name(self)
             if decomposition is not None:
                 header.append(f"L = {decomposition} \\\\")
@@ -866,7 +924,10 @@ def set_zero_dots(enabled: bool = True) -> None:
 def _zero_dots() -> bool:
     return _ZERO_DOTS
 
-def _lattice_with_gram(gram: Any) -> "FormModule":
+def _lattice_with_gram(
+    gram: Any,
+    generating_set: Any = None,
+) -> "FormModule":
     r"""Return the integral lattice on ``gram``, refined and decomposed.
 
     The one construction: a Gram matrix becomes a form on $\mathbb Z^n$, the
@@ -876,16 +937,33 @@ def _lattice_with_gram(gram: Any) -> "FormModule":
     through here, so there is one place where a lattice is born.
     """
     gram = matrix(ZZ, gram)
+    match generating_set:
+        case None:
+            generating_set = Sets.Δ[gram.nrows() - 1]
+        case _:
+            generating_set = finite_ordered_set(generating_set)
+            assert generating_set.cardinality() == gram.nrows(), (
+                "the framing set and Gram matrix have different cardinalities"
+            )
     lattice = BilinearForm(
         BasedFreeModule(
             ZZ,
-            Sets.Δ[gram.nrows() - 1],
+            generating_set,
         ),
         ZZ,
         gram,
     )
-    _decompose_lattice(lattice)
     return lattice
+
+
+def _direct_sum_framing_set(left: Any, right: Any) -> Any:
+    r"""Return the ordered coproduct of two finite framing sets."""
+    labels = tuple(
+        (0, label) for label in left.generating_set()
+    ) + tuple(
+        (1, label) for label in right.generating_set()
+    )
+    return finite_ordered_set(labels)
 
 def _discriminant_lift_row(element: Any, rank: int) -> list[Any]:
     r"""Return a representative row in $L^*$ for a discriminant-group element."""
@@ -977,37 +1055,37 @@ def _decompose_lattice(L: Any) -> None:
     permuted is a different object, and
     :func:`_matrix_connected_component_cuts` declines it.
 
-    Every lattice passes through this on construction, so afterwards
-    membership in :class:`DirectSumObjects` *is* decomposability: a lattice
-    left in :class:`IntegralLattices` is indecomposable.  Callers rely on that
-    invariant instead of re-running the search.
+    The direct-sum structure is a separate object.  It is not grafted onto
+    \(L\), so another decomposition may coexist with this one.
     """
-    if getattr(L, "_summands", None) is not None:
-        return
-
     gram = L.gram_matrix()
     cuts = _matrix_connected_component_cuts(gram)
     if not cuts:
+        L._orthogonal_decomposition = None
         return
 
     bounds = list(zip([0] + cuts, cuts + [gram.nrows()]))
+    labels = tuple(L.generating_set())
     blocks = [
-        _lattice_with_gram(gram.submatrix(start, start, end - start, end - start))
+        _lattice_with_gram(
+            gram.submatrix(start, start, end - start, end - start),
+            finite_ordered_set(labels[start:end]),
+        )
         for start, end in bounds
     ]
 
     _subdivide_gram(L, cuts, cuts)
-    generators = L.gens()
-    L._summands = tuple(
-        Subobject(block.Hom(L)(list(generators[start:end])))
+    generators = tuple(L.gens())
+    summands = tuple(
+        Subobject(block.Hom(L)(generators[start:end]))
         for block, (start, end) in zip(blocks, bounds)
     )
-    refine(L, [L.category(), DirectSumObjects()])
+    L._orthogonal_decomposition = DirectSum(L, summands)
 
 
 def _summand_ranks(L: Any) -> tuple[int, ...]:
     r"""Return the ranks of \(L\)'s summands, or its own rank when indecomposable."""
-    if L in DirectSumObjects():
+    if L.is_decomposable():
         return tuple(summand.rank() for summand in L.summands())
     return (L.rank(),)
 
@@ -1031,7 +1109,7 @@ def register_indecomposable(name: str, lattice: Any) -> None:
     entries are refused -- they can never appear as a block, so registering one
     would be dead weight that reads as if it could match.
     """
-    assert lattice not in DirectSumObjects(), (
+    assert not lattice.is_decomposable(), (
         f"{name} is decomposable, so it can never be a summand; "
         "name it by aggregating the summand list instead"
     )
@@ -1069,7 +1147,7 @@ def _decomposition_latex(L: Any) -> str | None:
     Unrecognized blocks fall back to a positional name; a lattice whose blocks
     are all unrecognized has nothing to say beyond its Gram matrix.
     """
-    if L not in DirectSumObjects():
+    if not L.is_decomposable():
         return None
     names = [
         _summand_name(subobject)
@@ -1092,35 +1170,6 @@ def _format_disc_latex(disc: int) -> str:
     f = factor(disc)
     f_latex = str(_latex_fn(f))
     return f"{disc} = {f_latex}" if f_latex != str(disc) else str(disc)
-
-# ---- lattice-specific refinement lifecycle ----
-
-def _action_matrices(action: Any) -> list[Any]:
-    r"""Return the matrices of a group action: one per generator given.
-
-    Four owned cases and no fifth.  Asking what something *is* rather than what
-    it answers to is not a style preference here: Sage's ``Matrix`` has a
-    ``to_matrix`` of its own -- the matrix of *multiplication by* it, acting on
-    the $n^2$-dimensional matrix space -- so a cascade of ``hasattr`` probes
-    turns a $4\times4$ action into a $16\times16$ one, silently and with the
-    right type.
-    """
-    if isinstance(action, Matrix):
-        return [matrix(ZZ, action)]
-    if isinstance(action, MatrixGroupElement_gap):
-        return [matrix(ZZ, action.matrix())]
-    if isinstance(action, (FormMorphism, ModuleMorphism)):
-        return [matrix(ZZ, action.matrix())]
-    if isinstance(action, (list, tuple)):
-        matrices: list[Any] = []
-        for generator in action:
-            matrices.extend(_action_matrices(generator))
-        return matrices
-    assert False, (
-        f"{action!r} is a {type(action).__name__}, which is not an action of "
-        "anything on this lattice. An action is given by isometries -- "
-        "elements of L.Aut() -- or by their matrices, or by a list of either."
-    )
 
 def refine_one_lattice(lattice: Any) -> None:
     r"""Refine a single integral lattice into the appropriate categories.
@@ -1167,7 +1216,12 @@ def _gram_from_name(name: str) -> Matrix:
     return matrix(ZZ, CartanMatrix([match.group(1), ZZ(match.group(2))]))
 
 
-def _integral_lattice_with_names(*args: Any, names: Any = None, **kwargs: Any) -> Any:
+def _integral_lattice_with_names(
+    *args: Any,
+    names: Any = None,
+    generating_set: Any = None,
+    **kwargs: Any,
+) -> Any:
     r"""Return the integral lattice these arguments describe.
 
     A Gram matrix or a name, which is a matrix once it is read.  Nothing here
@@ -1182,7 +1236,7 @@ def _integral_lattice_with_names(*args: Any, names: Any = None, **kwargs: Any) -
     )
     described = args[0]
     gram = described if isinstance(described, Matrix) else _gram_from_name(described)
-    lattice = _lattice_with_gram(gram)
+    lattice = _lattice_with_gram(gram, generating_set)
     if names is not None:
         lattice = _apply_names(lattice, names)
     return lattice

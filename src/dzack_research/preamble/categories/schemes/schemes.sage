@@ -22,6 +22,7 @@ from sage.categories.category_with_axiom import (
     axiom,
 )
 from sage.matrix.constructor import matrix
+from sage.misc.cachefunc import cached_method
 from sage.schemes.toric.all import toric_varieties
 from sage.rings.integer_ring import ZZ
 
@@ -116,13 +117,15 @@ class AffineSpaces(Category_over_base_ring):
     class ParentMethods:
         r"""Parent methods for AffineSpaces category."""
 
+        @cached_method
         def picard_group(self):
-            r"""Return Pic(AA^n) = Lattices.Zero (rank-0 formed module)."""
-            return Lattices.Zero
+            r"""Return \(\operatorname{Pic}(\mathbb A^n)=0\)."""
+            return PicardGroup(Free_ZZ(Sets.Δ[-1]))
 
+        @cached_method
         def class_group(self):
-            r"""Return Cl(AA^n) = Lattices.Zero (rank-0 formed module)."""
-            return Lattices.Zero
+            r"""Return \(\operatorname{Cl}(\mathbb A^n)=0\)."""
+            return ClassGroup(Free_ZZ(Sets.Δ[-1]))
 
         def closed_subscheme(self, *equations):
             r"""Return V(f1,...,fk) subset AA^n refined into ClosedSubschemes(R)."""
@@ -153,13 +156,15 @@ class ProjectiveSpaces(Category_over_base_ring):
             r"""Return the rational polyhedral fan of PP^n."""
             return toric_varieties.P(int(self.dimension_relative())).fan()
 
+        @cached_method
         def picard_group(self):
-            r"""Return Pic(PP^n) = Lattices.Z (I_{1, 0})."""
-            return Lattices.Z
+            r"""Return \(\operatorname{Pic}(\mathbb P^n)\cong\mathbb Z\)."""
+            return PicardGroup(Free_ZZ(Sets.Δ[0]))
 
+        @cached_method
         def class_group(self):
-            r"""Return Cl(PP^n) = Lattices.Z (I_{1, 0})."""
-            return Lattices.Z
+            r"""Return \(\operatorname{Cl}(\mathbb P^n)\cong\mathbb Z\)."""
+            return ClassGroup(Free_ZZ(Sets.Δ[0]))
 
         def hyperplane(self, i=0):
             r"""Return the hyperplane H_i = (x_i = 0) subset PP^n as a ClosedSubschemes(R)."""

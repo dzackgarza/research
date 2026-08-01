@@ -2,7 +2,6 @@ r"""Free modules over a base ring."""
 
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.modules import Modules
-from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
 
 
 class FreeModules(Category_over_base_ring):

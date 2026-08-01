@@ -3,22 +3,32 @@ r"""Finite torsion modules equipped with a bilinear or quadratic form."""
 from typing import Any
 
 from sage.arith.misc import factor
-from sage.categories.category import Category
+from sage.categories.category_types import Category_over_base_ring
 from sage.matrix.matrix0 import Matrix
 from sage.misc.latex import latex as _latex_fn
-from sage.modules.free_module_element import FreeModuleElement
-from sage.modules.free_module_morphism import FreeModuleMorphism
 
 
-class TorsionModulesWithForm(Category):
+class TorsionModulesWithForm(Category_over_base_ring):
     r"""Category of finite torsion modules equipped with a form."""
+
+    @staticmethod
+    def __classcall_private__(cls, base_ring=None):
+        match base_ring:
+            case None:
+                return super().__classcall__(cls, ZZ)
+            case _ if base_ring is ZZ:
+                return super().__classcall__(cls, ZZ)
+            case _:
+                raise TypeError(
+                    "finite torsion-form algorithms here are over ZZ"
+                )
 
     @classmethod
     def _repr_object_names(cls) -> str:
         return "torsion modules with form"
 
     def super_categories(self) -> list:
-        r"""Return the form modules, of which these are the ones lying over torsion.
+        r"""Return the finite framed form modules lying over torsion modules.
 
         Not a category of groups: an element of $(G,b)$ is a module element
         that a form can be evaluated on, and its addition and its $\mathbb Z$
@@ -31,7 +41,10 @@ class TorsionModulesWithForm(Category):
         is what being *torsion* adds, which is finiteness and everything that
         follows from it.
         """
-        return [FormModules()]
+        return [
+            FinitelyGeneratedFormModules(self.base_ring()),
+            TorsionModules(self.base_ring()),
+        ]
 
     class ParentMethods:
         r"""Methods shared by bilinear and quadratic discriminant modules."""
@@ -44,8 +57,8 @@ class TorsionModulesWithForm(Category):
             This reduces each into the value module and takes the canonical
             representative back, so the same object is displayed the same way
             however it was built.  Which matrix it is, is the form's business:
-            $b$'s symmetric one for a bilinear module, $q$'s upper-triangular
-            one for a quadratic module.
+            $b$'s matrix for a bilinear module, $q$'s upper-triangular one for
+            a quadratic module.
             """
             form = self.form()
             target = form.value_module()
@@ -86,14 +99,19 @@ class TorsionModulesWithForm(Category):
             r"""Return $\operatorname{Ann}(A)\subseteq\mathbb Z$, which is nonzero here."""
             return self.forget_form().annihilator()
 
-        def smith_form_gens(self: Any) -> tuple:
+        def smith_form_gens(self: Any) -> Any:
             r"""Return generators realizing the invariant factor decomposition.
 
             The form is not written in them -- they are a different generating
             set, and a form written in one is a different object from the same
             form written in another, which is what ``regenerate`` builds.
             """
-            return tuple(self._over(g) for g in self.forget_form().smith_form_gens())
+            return finite_ordered_set(
+                tuple(
+                    self._over(generator)
+                    for generator in self.forget_form().smith_form_gens()
+                )
+            )
 
         def __iter__(self: Any):
             r"""Iterate over the elements, of which there are finitely many."""
@@ -130,8 +148,11 @@ class TorsionModulesWithForm(Category):
                     generators.append((order // primary) * generator)
             regenerated = self.regenerate(generators)
             return Subobject(
-                FormHomset(regenerated, self)(
-                    dict(zip(regenerated.gens(), generators))
+                regenerated.Hom(self)(
+                    {
+                        label: label
+                        for label in regenerated.generating_set()
+                    }
                 )
             )
 
@@ -265,7 +286,14 @@ class CokernelForms(Category):
             point of the refinement.
             """
             cover = self.cover()
-            return _module_morphism(dict(zip(cover.gens(), self.gens())))
+            return _module_morphism(
+                cover,
+                self,
+                {
+                    label: self.generator(label)
+                    for label in cover.generating_set()
+                },
+            )
 
 
 class DiscriminantForms(Category):
@@ -444,7 +472,10 @@ def _p_adic_engine_matrix(form: Any) -> Matrix:
     that is where the two categories differ, because $q$ is read modulo
     $2\mathbb Z$ before scaling and $b(x,x)$ modulo $\mathbb Z$.
     """
-    generators = form.gens()
+    generators = tuple(
+        form.generator(label)
+        for label in form.generating_set()
+    )
     size = len(generators)
     modulus = QQ(form.value_module().n)
     engine = matrix(QQ, size, size)

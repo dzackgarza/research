@@ -1,96 +1,200 @@
-r"""Free modules over a base ring with a chosen basis.
+r"""Free modules on arbitrary sets.
 
-The category of free modules equipped with a chosen basis.  No finite-generation
-hypothesis is assumed at this node.  Finitely generated free modules are refined
-in ``finitely_generated_free_modules.sage``.
+``FreeModuleOnSet(R, S)`` realizes
+
+\[
+    F_R(S)=\{a:S\to R\mid \operatorname{supp}(a)\text{ is finite}\}.
+\]
+
+The set \(S\) is construction data.  It need not be finite, countable, or
+ordered.  Finite ordered free modules are the specialization implemented by
+``BasedFreeModule``.
 """
 
 from typing import Any
 
 from sage.categories.category_types import Category_over_base_ring
-from sage.categories.modules import Modules
+from sage.categories.sets_cat import Sets as SageSets
+from sage.sets.set import Set
+from sage.structure.element import ModuleElement
+from sage.structure.parent import Parent
+from sage.structure.richcmp import richcmp
 
 
 class FramedFreeModules(Category_over_base_ring):
-    r"""Category of free modules over a base ring with a chosen basis."""
+    r"""Free modules with a specified basis-indexing set."""
 
     @classmethod
     def _repr_object_names(cls) -> str:
-        return "based free modules"
+        return "framed free modules"
 
     def super_categories(self) -> list:
         return [FreeModules(self.base_ring()), Modules(self.base_ring()).Framed()]
 
     class ParentMethods:
-        r"""What a chosen basis of a free module makes askable."""
-
         def basis(self):
-            r"""Return the chosen basis, namely the image of ``S`` in ``M``.
-
-            No finite, countable, or orderability hypothesis is attached to
-            this category.  Those are refinements of the framing witness and
-            its image.
-            """
+            r"""Return the basis as the image of the basis-indexing set."""
             return self.gens()
 
-        def linear_combination(self: Any, coefficients: Any) -> Any:
-            r"""Return $\sum_i a_ie_i$.
-
-            Shadows Sage's ``Modules.ParentMethods.linear_combination``, which
-            reads its argument as ``(element, coefficient)`` pairs.  Every
-            object in this universe reads a coefficient vector the way this one
-            does, and one name with two meanings is worse than either.
-            """
-            coefficients = tuple(coefficients)
-            generators = self.gens()
-            assert len(coefficients) == len(generators), (
-                f"this module has {len(generators)} basis elements, got "
-                f"{len(coefficients)} coefficients"
-            )
+        def linear_combination(self: Any, terms: Any) -> Any:
+            r"""Return the finite sum specified by ``label -> coefficient``."""
+            match terms:
+                case dict():
+                    items = terms.items()
+                case _:
+                    items = terms
             total = self.zero()
-            for coefficient, generator in zip(coefficients, generators):
-                total += self.base_ring()(coefficient) * generator
+            for label, coefficient in items:
+                total += self.base_ring()(coefficient) * self.monomial(label)
             return total
 
-        def subobject_on(self: Any, generators: Any) -> Any:
-            r"""Return the submodule these generate, as its inclusion."""
-            generators = _independent_generators(self, generators)
-            sub = BasedFreeModule(
-                self.base_ring(), standard_framing_set(len(generators))
-            )
-            return Subobject(
-                ModuleMorphism.zero(sub, self)
-                if not generators
-                else _module_morphism(dict(zip(sub.gens(), generators)))
-            )
+        def hom(self: Any, images: Any, codomain: Any = None) -> Any:
+            r"""Construct the map determined by its values on basis labels."""
+            match images:
+                case dict():
+                    assert images, (
+                        "an empty assignment does not determine its codomain; "
+                        "construct it through M.Hom(N)"
+                    )
+                    target = next(iter(images.values())).parent()
+                case _ if callable(images):
+                    assert codomain is not None, (
+                        "a basis-image function requires its codomain"
+                    )
+                    target = codomain
+                case _:
+                    raise TypeError(
+                        "a map from a general free module is specified by a "
+                        "dictionary or function on its basis-indexing set"
+                    )
+            return self.Hom(target)(images)
 
-        def is_torsionfree(self: Any) -> bool:
-            r"""Return whether this module is torsion-free."""
+        def is_torsion_free(self: Any) -> bool:
             return True
 
-        def is_torsion(self: Any) -> bool:
-            r"""Return whether this module is torsion."""
-            return self.is_zero()
 
-        def hom(self: Any, images: Any, codomain: Any = None) -> Any:
-            r"""Return the morphism sending this module's basis to ``images``."""
-            images = tuple(images)
-            generators = self.gens()
-            assert len(images) == len(generators), (
-                f"this module has {len(generators)} basis elements, got "
-                f"{len(images)} images"
+class FreeModuleOnSetElement(ModuleElement):
+    r"""A finitely supported function from the basis-indexing set to \(R\)."""
+
+    def __init__(self, parent: Any, coefficients: Any) -> None:
+        ModuleElement.__init__(self, parent)
+        normalized = {}
+        for label, coefficient in dict(coefficients).items():
+            assert label in parent.basis_index_set(), (
+                f"{label!r} does not index a basis element of {parent}"
             )
-            if not images:
-                assert codomain is not None, (
-                    "a morphism out of the zero module needs its codomain named"
-                )
-                return ModuleMorphism.zero(self, codomain)
-            return _module_morphism(dict(zip(generators, images)))
+            coefficient = parent.base_ring()(coefficient)
+            if coefficient != 0:
+                normalized[label] = coefficient
+        self._coefficients = normalized
 
-        def Aut(self: Any) -> Any:
-            r"""Return the homset of automorphisms of this module."""
-            cached = self.__dict__.get("_preamble_Aut")
-            if cached is None:
-                cached = ModuleAutomorphismGroup(self)
-                self._preamble_Aut = cached
-            return cached
+    def coefficients(self) -> dict:
+        return dict(self._coefficients)
+
+    def _add_(self, other: Any) -> "FreeModuleOnSetElement":
+        result = self.coefficients()
+        for label, coefficient in other._coefficients.items():
+            result[label] = result.get(label, self.parent().base_ring().zero()) + coefficient
+            if result[label] == 0:
+                del result[label]
+        return self.parent().element_class(self.parent(), result)
+
+    def _sub_(self, other: Any) -> "FreeModuleOnSetElement":
+        return self._add_(-other)
+
+    def _neg_(self) -> "FreeModuleOnSetElement":
+        return self.parent().element_class(
+            self.parent(),
+            {label: -coefficient for label, coefficient in self._coefficients.items()},
+        )
+
+    def _lmul_(self, factor: Any) -> "FreeModuleOnSetElement":
+        factor = self.parent().base_ring()(factor)
+        return self.parent().element_class(
+            self.parent(),
+            {label: factor * coefficient for label, coefficient in self._coefficients.items()},
+        )
+
+    _rmul_ = _lmul_
+
+    def _richcmp_(self, other: Any, op: int) -> bool:
+        return richcmp(self._coefficients, other._coefficients, op)
+
+    def __hash__(self) -> int:
+        return hash(frozenset(self._coefficients.items()))
+
+    def _repr_(self) -> str:
+        if not self._coefficients:
+            return "0"
+        return " + ".join(
+            f"{coefficient}*e[{label!r}]"
+            for label, coefficient in self._coefficients.items()
+        )
+
+
+class FreeModuleOnSet(Parent):
+    r"""The free \(R\)-module on the actual set ``basis_index_set``."""
+
+    Element = FreeModuleOnSetElement
+
+    def __init__(self, base_ring: Any, basis_index_set: Any) -> None:
+        if not isinstance(basis_index_set, Parent):
+            basis_index_set = Set(basis_index_set)
+        self._basis_index_set = basis_index_set
+        Parent.__init__(
+            self,
+            base=base_ring,
+            category=FramedFreeModules(base_ring),
+        )
+        refine(self, FramedFreeModules(base_ring))
+        self._framing_morphism = framing_morphism(
+            self,
+            self,
+            lambda label: self.monomial(label)
+        )
+
+    def basis_index_set(self) -> Parent:
+        return self._basis_index_set
+
+    def framing_morphism(self) -> "FramingMorphism":
+        return self._framing_morphism
+
+    def monomial(self, label: Any) -> FreeModuleOnSetElement:
+        assert label in self._basis_index_set, (
+            f"{label!r} is not in the basis-indexing set {self._basis_index_set}"
+        )
+        return self.element_class(self, {label: self.base_ring().one()})
+
+    def zero(self) -> FreeModuleOnSetElement:
+        return self.element_class(self, {})
+
+    def _element_constructor_(self, value: Any) -> FreeModuleOnSetElement:
+        assert isinstance(value, FreeModuleOnSetElement) and value.parent() is self, (
+            f"{value} is not an element of {self}"
+        )
+        return value
+
+    def __contains__(self, value: Any) -> bool:
+        return isinstance(value, FreeModuleOnSetElement) and value.parent() is self
+
+    def __eq__(self, other: Any) -> bool:
+        return (
+            isinstance(other, FreeModuleOnSet)
+            and self.base_ring() == other.base_ring()
+            and self._basis_index_set == other._basis_index_set
+        )
+
+    def __hash__(self) -> int:
+        return hash((type(self), self.base_ring(), self._basis_index_set))
+
+    def _repr_(self) -> str:
+        return f"Free {self.base_ring()}-module on {self._basis_index_set}"
+
+
+def FreeModuleOn(base_ring: Any, basis_index_set: Any) -> FreeModuleOnSet:
+    r"""Construct \(F_R(S)\), specializing to the finite ordered realization."""
+    if not isinstance(basis_index_set, Parent):
+        basis_index_set = Set(basis_index_set)
+    if basis_index_set in SageSets().Finite():
+        return BasedFreeModule(base_ring, finite_ordered_set(basis_index_set))
+    return FreeModuleOnSet(base_ring, basis_index_set)

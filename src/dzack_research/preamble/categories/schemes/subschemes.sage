@@ -49,17 +49,6 @@ class ClosedSubschemes(Category_over_base_ring):
             dim_amb = amb.dimension_relative()
             return dim_amb - self.dimension()
 
-        def as_divisor(self):
-            r"""Return [V] in Div(X) / Pic(X), gated on codimension == 1."""
-            assert self.codimension() == 1, (
-                f"{self} has codimension {self.codimension()}; "
-                "only codimension-1 subschemes define prime Weil divisors [V]"
-            )
-            amb = self.ambient_space()
-            pic = amb.picard_group()
-            return pic.gens()[0]
-
-
 class OpenSubschemes(Category_over_base_ring):
     r"""Category of open subschemes U -> X."""
 

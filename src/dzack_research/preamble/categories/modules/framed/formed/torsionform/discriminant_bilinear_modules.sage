@@ -3,14 +3,8 @@ r"""Discriminant bilinear modules."""
 from typing import Any
 
 from sage.categories.category import Category
-from sage.groups.additive_abelian.qmodnz import QmodnZ, QmodnZ_Element
+from sage.groups.additive_abelian.qmodnz import QmodnZ
 from sage.matrix.matrix0 import Matrix
-from sage.modules.free_module import FreeModule
-from sage.modules.free_module_element import FreeModuleElement
-from sage.modules.free_module_morphism import FreeModuleMorphism
-from sage.modules.free_quadratic_module_integer_symmetric import (
-    FreeQuadraticModule_integer_symmetric,
-)
 
 
 class DiscriminantBilinearModules(Category):
@@ -26,7 +20,10 @@ class DiscriminantBilinearModules(Category):
         return "discriminant bilinear modules"
 
     def super_categories(self) -> list:
-        return [TorsionModulesWithForm(), BilinearFormModules()]
+        return [
+            TorsionModulesWithForm(),
+            SymmetricBilinearFormModules(),
+        ]
 
     def from_module(self, module: Any, gram: Matrix) -> "FormModule":
         r"""Return the torsion form on ``module`` with Gram matrix ``gram``.
@@ -37,7 +34,21 @@ class DiscriminantBilinearModules(Category):
         respect to that generating set.  Nothing else is needed and nothing
         else is consulted.
         """
-        return self.from_relations_and_gram(module.relation_matrix(), gram)
+        assert module in FinitelyPresentedTorsionModules(), (
+            "a discriminant form requires a finitely presented torsion module"
+        )
+        assert gram.is_symmetric(), (
+            "a discriminant bilinear form is symmetric"
+        )
+        relations = matrix(ZZ, module.relation_matrix())
+        assert all(entry in ZZ for entry in (relations * gram).list()), (
+            "b is not defined on the classes: some relation does not pair "
+            "integrally with the generators"
+        )
+        form = BilinearForm(module, QmodnZ(1), gram)
+        refine(form, self)
+        subdivide_form_gram_matrix(form)
+        return form
 
     def from_relations_and_gram(self, relations: Matrix, gram: Matrix) -> "FormModule":
         r"""Return the torsion bilinear form $(G,b)$ built from data alone.
@@ -54,17 +65,7 @@ class DiscriminantBilinearModules(Category):
         classes exactly when a relation pairs integrally with every generator.
         """
         module = FinitelyPresentedTorsionModules().from_relations(relations)
-        relations = matrix(ZZ, relations)
-        assert all(entry in ZZ for entry in (relations * gram).list()), (
-            "b is not defined on the classes: some relation does not pair "
-            "integrally with the generators, so its value would depend on "
-            "the lift rather than on the class"
-        )
-        form = BilinearForm(module, QmodnZ(1), gram)
-        refine(form, self)
-        form._initialize_framing()
-        subdivide_form_gram_matrix(form)
-        return form
+        return self.from_module(module, gram)
 
     def cokernel(self, morphism: Any) -> "FormModule":
         r"""Return $\operatorname{coker} f$ for $f$ of finite index, as an object here.
@@ -74,6 +75,9 @@ class DiscriminantBilinearModules(Category):
         to be -- a map of lattices, or a correlation -- rather than about extra
         data being carried alongside.
         """
+        assert isinstance(morphism, FormMorphism), (
+            "a cokernel form is constructed from a form morphism"
+        )
         module = TorsionModule(morphism)
         gram = morphism.codomain().form().gram_matrix()
         assert morphism.codomain().form().descends_along(morphism), (
@@ -81,7 +85,6 @@ class DiscriminantBilinearModules(Category):
         )
         form = BilinearForm(module, QmodnZ(1), gram)
         refine(form, [self] + cokernel_categories(morphism))
-        form._initialize_framing()
         subdivide_form_gram_matrix(form)
         return form
 
@@ -95,7 +98,13 @@ class DiscriminantBilinearModules(Category):
             so this is a construction and not a view: the same pairings, read
             on a new set, presented by the morphism that set induces.
             """
-            return DiscriminantBilinearModules().from_relations_and_gram(*regenerating_data(self, generators))
+            generators = tuple(generators)
+            relations, gram = regenerating_data(self, generators)
+            module = FinitelyPresentedTorsionModules().from_relations(
+                relations,
+                finite_ordered_set(generators),
+            )
+            return DiscriminantBilinearModules().from_module(module, gram)
 
         def associated_quadratic_form(self: Any) -> Any:
             r"""Return the discriminant quadratic form on the same group.
@@ -108,21 +117,14 @@ class DiscriminantBilinearModules(Category):
             :meth:`~DiscriminantQuadraticModules.ParentMethods.associated_bilinear_form`,
             which polarizes $q$ and needs nothing else.
             """
-            return DiscriminantQuadraticModules().from_relations_and_gram(self.relation_matrix(), self.form().polar_form().gram_matrix())
+            return DiscriminantQuadraticModules().from_module(
+                self.forget_form(),
+                self.form().polar_form().gram_matrix(),
+            )
 
         def _form_matrix_latex_label(self: Any) -> str:
             r"""Return the LaTeX label for the bilinear Gram matrix."""
             return "G_{b_{A_L}}"
-
-
-        def gens(self):
-            r"""Return this object's own generators.
-
-            Abstract symbols of $A_L$, subject to $c$'s relations.  To speak of
-            a lift, ask the projection, which is the only thing that knows
-            which element of $L^\vee$ a class came from.
-            """
-            return FormModule.gens(self)
 
         def invariant_factor_form(self: Any) -> "FormModule":
             r"""Return $b$ on generators from the invariant factor decomposition.
