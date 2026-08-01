@@ -21,6 +21,12 @@ from sage.repl import preparse as sage_preparse
 
 
 _native_preparse = sage_preparse.preparse
+_layout_token_types = {
+    tokenize.INDENT,
+    tokenize.DEDENT,
+    tokenize.NEWLINE,
+    tokenize.NL,
+}
 
 
 def _tokens(source: str) -> list[tuple[int, str]]:
@@ -39,6 +45,11 @@ def _binder(
     tokens: list[tuple[int, str]],
 ) -> tuple[str, str, str | None] | None:
     r"""Parse ``x in X`` or ``x in X and P(x)`` at top level."""
+    tokens = [
+        token
+        for token in tokens
+        if token[0] not in _layout_token_types
+    ]
     if len(tokens) < 3 or tokens[0][0] != tokenize.NAME or tokens[1][1] != "in":
         return None
     depth = 0
@@ -91,6 +102,19 @@ def _rewrite(tokens: list[tuple[int, str]]) -> list[tuple[int, str]]:
     index = 0
     while index < len(tokens):
         token_type, token_string = tokens[index]
+        if token_type == tokenize.FSTRING_START:
+            fstring_depth = 1
+            rewritten.append((token_type, token_string))
+            index += 1
+            while index < len(tokens) and fstring_depth:
+                fstring_token = tokens[index]
+                if fstring_token[0] == tokenize.FSTRING_START:
+                    fstring_depth += 1
+                if fstring_token[0] == tokenize.FSTRING_END:
+                    fstring_depth -= 1
+                rewritten.append(fstring_token)
+                index += 1
+            continue
         if token_string != "{":
             rewritten.append((token_type, token_string))
             index += 1
@@ -126,57 +150,70 @@ def _rewrite(tokens: list[tuple[int, str]]) -> list[tuple[int, str]]:
                 nested_depth -= 1
             elif nested_depth == 0 and inner_string == ":":
                 has_top_level_colon = True
-            elif nested_depth == 0 and inner_string == "**":
+            elif (
+                nested_depth == 0
+                and inner_string == "**"
+                and (
+                    position == 0
+                    or original_inner[position - 1][1] == ","
+                )
+            ):
                 has_top_level_unpack = True
             elif nested_depth == 0 and inner_string == "|":
                 top_level_bars.append(position)
 
-        if top_level_bars:
-            if len(top_level_bars) != 1:
-                raise SyntaxError("set-builder notation has exactly one top-level bar")
+        if has_top_level_colon or has_top_level_unpack:
+            rewritten.extend([(tokenize.OP, "{"), *inner, (tokenize.OP, "}")])
+        elif len(top_level_bars) == 1:
             bar = top_level_bars[0]
             left = _rewrite(original_inner[:bar])
             right = _rewrite(original_inner[bar + 1 :])
 
-            # ``{x in X | P(x)}`` — a predicate-defined subset.
             left_binder = _binder(left)
-            if left_binder is not None:
-                variable, domain, left_condition = left_binder
-                assert left_condition is None, (
-                    "the predicate belongs to the right of the set-builder bar"
-                )
-                condition = _untokenize(_implicit_products(right)).strip()
-                if not condition:
-                    raise SyntaxError("a set-builder predicate cannot be empty")
-                rewritten.extend(_condition_builder(variable, domain, condition))
-            else:
-                # ``{f(x) | x in X}`` and ``{f(x) | x in X and P(x)}``.
-                right_binder = _binder(right)
-                if right_binder is None:
-                    raise SyntaxError(
-                        "set-builder syntax must use x in X as its domain"
+            right_binder = _binder(right)
+            match left_binder, right_binder:
+                # ``{x in X | P(x)}`` — a predicate-defined subset.
+                case (tuple() as left_binding), _:
+                    variable, domain, left_condition = left_binding
+                    assert left_condition is None, (
+                        "the predicate belongs to the right of the set-builder bar"
                     )
-                variable, domain, condition = right_binder
-                image = _untokenize(_implicit_products(left)).strip()
-                if condition is None:
-                    restricted_domain = domain
-                else:
-                    restricted_domain = f"ConditionSet({domain}, lambda {variable}: {condition})"
-                if image == variable:
-                    if condition is None:
-                        rewritten.extend(
-                            _condition_builder(variable, domain, "True")
-                        )
-                    else:
-                        rewritten.extend(_tokens(restricted_domain))
-                else:
+                    condition = _untokenize(_implicit_products(right)).strip()
+                    if not condition:
+                        raise SyntaxError("a set-builder predicate cannot be empty")
                     rewritten.extend(
-                        _tokens(
-                            f"ImageSet(lambda {variable}: {image}, "
-                            f"{restricted_domain})"
-                        )
+                        _condition_builder(variable, domain, condition)
                     )
-        elif not inner or has_top_level_colon or has_top_level_unpack:
+                # ``{f(x) | x in X}`` and
+                # ``{f(x) | x in X and P(x)}``.
+                case None, (tuple() as right_binding):
+                    variable, domain, condition = right_binding
+                    image = _untokenize(_implicit_products(left)).strip()
+                    if condition is None:
+                        restricted_domain = domain
+                    else:
+                        restricted_domain = (
+                            f"ConditionSet({domain}, "
+                            f"lambda {variable}: {condition})"
+                        )
+                    if image == variable:
+                        if condition is None:
+                            rewritten.extend(_tokens(f"Set({domain})"))
+                        else:
+                            rewritten.extend(_tokens(restricted_domain))
+                    else:
+                        rewritten.extend(
+                            _tokens(
+                                f"ImageSet(lambda {variable}: {image}, "
+                                f"{restricted_domain})"
+                            )
+                        )
+                # A non-builder bar is an ordinary expression.
+                case None, None:
+                    rewritten.extend(
+                        _tokens("Set([" + _untokenize(inner) + "])")
+                    )
+        elif not inner:
             rewritten.extend([(tokenize.OP, "{"), *inner, (tokenize.OP, "}")])
         else:
             replacement = _tokens("Set([" + _untokenize(inner) + "])")
@@ -192,12 +229,12 @@ def _rewrite_set_literals(source: str) -> str:
 
 def preparse(source: str, *args: Any, **kwargs: Any) -> str:
     r"""Apply Sage's preparser and then the research notation."""
+    sage_preparse.implicit_multiplication(True)
     return _rewrite_set_literals(_native_preparse(source, *args, **kwargs))
 
 
 def install_preparser() -> None:
     r"""Install the research preparser into Sage's two preprocessing surfaces."""
-    sage_preparse.implicit_multiplication(True)
     match sage_preparse.preparse, sage_interpreter.preparse:
         case module_preparse, interpreter_preparse if (
             module_preparse is preparse and interpreter_preparse is preparse
