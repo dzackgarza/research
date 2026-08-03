@@ -63,6 +63,13 @@ class UnderlyingSet(SageUniqueRepresentation, SageParent):
         self._structured = structured
         SageParent.__init__(self, facade=structured, category=_translated_placement(structured).Facade())
 
+    def cardinality(self) -> Any:
+        if hasattr(self._structured, "cardinality"):
+            return self._structured.cardinality()
+        if hasattr(self._structured, "generating_set"):
+            return self._structured.generating_set().cardinality()
+        raise NotImplementedError(f"{self} has no known cardinality")
+
     def _repr_(self) -> str:
         return f"Underlying set of {self._structured}"
 
