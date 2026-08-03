@@ -13,7 +13,7 @@ subcategory inclusion (a forgetful functor is faithful, not monic).
 from __future__ import annotations
 
 from collections.abc import Iterable, Iterator
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 from ..lexicon import SageParent, SageUniqueRepresentation
 from .sets import Sets
@@ -86,7 +86,7 @@ class UnderlyingSet(SageUniqueRepresentation, SageParent):
         the host's conversion. Without this, Sage's generic conversion
         discovery wanders into the structured parent's homset machinery
         (surfaced by the #197 route audit's morphism-action check)."""
-        return cast(Any, self._structured)(element)
+        return self._structured(element)
 
     def __iter__(self) -> Iterator[object]:
         # The structured parent's enumeration is its witness data, supplied
