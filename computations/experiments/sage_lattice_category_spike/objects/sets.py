@@ -210,7 +210,7 @@ class CountableSets(CatObject, CategoryWithAxiom):
             witness of countability. (The codomain is the underlying set of
             the naturals: the injection is a set map, so it forgets the
             semiring structure of its codomain.)"""
-            from sage.categories.homset import Hom
+            from sage.categories.homset import Hom  # type: ignore[attr-defined]
             from sage.categories.morphism import SetMorphism
 
             from .fundamental_sets import NonNegativeIntegers

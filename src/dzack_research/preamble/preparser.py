@@ -19,7 +19,6 @@ from typing import Any
 from sage.repl import interpreter as sage_interpreter
 from sage.repl import preparse as sage_preparse
 
-
 _native_preparse = sage_preparse.preparse
 _layout_token_types = {
     tokenize.INDENT,
@@ -293,34 +292,33 @@ def _rewrite(tokens: list[tuple[int, str]]) -> list[tuple[int, str]]:
                     assert left_condition is None, (
                         "the predicate belongs to the right of the set-builder bar"
                     )
-                    condition = _untokenize(_implicit_products(right)).strip()
-                    if not condition:
+                    cond_text = _untokenize(_implicit_products(right)).strip()
+                    if not cond_text:
                         raise SyntaxError("a set-builder predicate cannot be empty")
                     rewritten.extend(
-                        _condition_builder(variable, domain, condition)
+                        _condition_builder(variable, domain, cond_text)
                     )
                 # ``{f(x) | x in X}`` and
                 # ``{f(x) | x in X and P(x)}``.
                 case None, (tuple() as right_binding):
-                    variable, domain, condition = right_binding
+                    v_name, d_name, c_expr = right_binding
                     image = _untokenize(_implicit_products(left)).strip()
-                    if condition is None:
-                        restricted_domain = domain
+                    if c_expr is None:
+                        restricted_domain = d_name
                     else:
                         restricted_domain = (
-                            f"ConditionSet({domain}, "
-                            f"lambda {variable}: {condition})"
+                            f"ConditionSet({d_name}, "
+                            f"lambda {v_name}: {c_expr})"
                         )
-                    if image == variable:
-                        if condition is None:
-                            rewritten.extend(_tokens(f"Set({domain})"))
+                    if image == v_name:
+                        if c_expr is None:
+                            rewritten.extend(_tokens(f"Set({d_name})"))
                         else:
                             rewritten.extend(_tokens(restricted_domain))
                     else:
                         rewritten.extend(
                             _tokens(
-                                f"ImageSet(lambda {variable}: {image}, "
-                                f"{restricted_domain})"
+                                f"ImageSet(Lambda({v_name}, {image}), {restricted_domain})"
                             )
                         )
                 # A non-builder bar is an ordinary expression.

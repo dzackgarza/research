@@ -19,6 +19,8 @@ from ..lexicon import SageParent, SageUniqueRepresentation
 from .sets import Sets
 
 if TYPE_CHECKING:
+    from sage.categories.morphism import SetMorphism
+    from sage.structure.element import Element
     from .cardinals import Cardinal
 
 _SET_AXIOM_NAMES = ("Finite", "Infinite", "Countable", "Uncountable", "TotallyOrdered")
@@ -51,23 +53,24 @@ class UnderlyingSet(SageUniqueRepresentation, SageParent):
         # The generic set surface is injected by the owned Sets() axiom
         # categories at parent construction; every UnderlyingSet lives in
         # those axioms, so the surface is a real invariant of the class.
-        def cardinality(self) -> Cardinal: ...
         def is_finite(self) -> bool: ...
         def is_countable(self) -> bool: ...
         def is_uncountable(self) -> bool: ...
-        def index(self, element: object) -> int: ...
-        def __getitem__(self, n: int) -> object: ...
-        def enumeration_injection(self) -> object: ...
+        def index(self, element: Element) -> int: ...
+        def __getitem__(self, n: int) -> Element: ...
+        def enumeration_injection(self) -> SetMorphism: ...
 
     def __init__(self, structured: SageParent) -> None:
         self._structured = structured
         SageParent.__init__(self, facade=structured, category=_translated_placement(structured).Facade())
 
-    def cardinality(self) -> Any:
+    def cardinality(self) -> Cardinal:
         if hasattr(self._structured, "cardinality"):
-            return self._structured.cardinality()
+            return Cardinal(self._structured.cardinality())
+        if hasattr(self._structured, "module_generating_set"):
+            return Cardinal(self._structured.module_generating_set().cardinality())
         if hasattr(self._structured, "generating_set"):
-            return self._structured.generating_set().cardinality()
+            return Cardinal(self._structured.generating_set().cardinality())
         raise NotImplementedError(f"{self} has no known cardinality")
 
     def _repr_(self) -> str:

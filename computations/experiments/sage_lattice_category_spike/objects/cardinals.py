@@ -32,6 +32,7 @@ from ..lexicon import Integer
 
 if TYPE_CHECKING:
     from sage.rings.infinity import PlusInfinity
+    from sage.rings.ring import Ring
 
 
 class Cardinal:
@@ -80,16 +81,16 @@ class Cardinal:
         return ZZ(self._value)
 
     def __int__(self) -> int:
-        if not self.is_finite():
+        if not self.is_finite() or not isinstance(self._value, (int, Integer)):
             raise TypeError(f"cannot convert infinite cardinal {self} to integer")
         return int(self._value)
 
     def __index__(self) -> int:
-        if not self.is_finite():
+        if not self.is_finite() or not isinstance(self._value, (int, Integer)):
             raise TypeError(f"cannot convert infinite cardinal {self} to integer index")
         return int(self._value)
 
-    def _integer_(self, R=None) -> Integer:
+    def _integer_(self, R: Ring | None = None) -> Integer:
         if not self.is_finite():
             raise TypeError(f"cannot convert infinite cardinal {self} to Sage Integer")
         return ZZ(self._value)
