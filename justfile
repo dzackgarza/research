@@ -156,12 +156,15 @@ test-ci:
 review-calibration-packet:
     just -f review-calibration/justfile review-packet
 
+# Score a review calibration artifact
 review-calibration-score artifact:
     just -f review-calibration/justfile score "{{artifact}}"
 
+# Trigger general review on review-calibration
 review-calibration-general:
     gh workflow run "General Review" --repo dzackgarza/research-review-calibration
 
+# Trigger slop review on review-calibration
 review-calibration-slop:
     gh workflow run "Slop Review" --repo dzackgarza/research-review-calibration
 
