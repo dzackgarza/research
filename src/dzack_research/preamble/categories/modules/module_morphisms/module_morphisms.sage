@@ -175,10 +175,8 @@ def _expand_subobject_dict(parent: Any, images: dict) -> dict:
 
     expanded = {}
     for key, val in images.items():
-        if hasattr(key, "embedded_elements"):
-            s_set = tuple(key.embedded_elements())
-        elif hasattr(key, "embedded_gens"):
-            s_set = tuple(key.embedded_gens())
+        if hasattr(key, "module_generating_set"):
+            s_set = tuple(key.module_generating_set())
         elif hasattr(key, "generating_set"):
             s_set = tuple(key.generating_set())
         else:
@@ -200,11 +198,9 @@ def _expand_subobject_dict(parent: Any, images: dict) -> dict:
         )
         for s, y in zip(s_set, val_gens, strict=True):
             expanded[s] = y if (hasattr(y, "parent") and y.parent() is parent.codomain()) else parent.codomain()(y)
-        else:
-            expanded[key] = val if (hasattr(val, "parent") and val.parent() is parent.codomain()) else parent.codomain()(val)
 
     assert set(expanded) == set(generating_set), (
-        "the assignment must name exactly every element of the generating set"
+        f"the assignment must name exactly every element of the generating set; got {set(expanded)} vs {set(generating_set)}"
     )
     return expanded
 
