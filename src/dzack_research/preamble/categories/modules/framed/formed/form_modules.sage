@@ -217,9 +217,6 @@ class FreeFormModules(Category_over_base_ring):
         def rank(self: Any) -> Any:
             return self.forget_form().rank()
 
-        def basis(self: Any) -> Any:
-            return self.module_generators()
-
         def subobject_on(self: Any, generators: Any) -> Any:
             generators = tuple(generators)
             assert all(generator.parent() is self for generator in generators), (

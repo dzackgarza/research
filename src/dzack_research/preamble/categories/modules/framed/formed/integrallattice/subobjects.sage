@@ -51,8 +51,8 @@ class Subobjects(Category):
         def rank(self: Any) -> Any:
             return self._underlying_object.rank()
 
-        def basis(self: Any) -> Any:
-            return self._underlying_object.basis()
+        def module_generators(self: Any) -> Any:
+            return self._underlying_object.module_generators()
 
         def zero(self: Any) -> Any:
             return self._underlying_object.zero()

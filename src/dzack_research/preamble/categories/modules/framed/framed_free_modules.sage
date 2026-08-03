@@ -59,10 +59,6 @@ class FramedFreeModules(Category_over_base_ring):
             )
             return morphism
 
-        def basis(self):
-            r"""Return the image of the canonical generator morphism."""
-            return self.module_generators()
-
         def hom(self: Any, images: Any, codomain: Any = None) -> Any:
             r"""Extend a set morphism \(S\to U(N)\) \(R\)-linearly."""
             match images:
