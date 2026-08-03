@@ -98,9 +98,12 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             )
             return framing.generator_morphism()
 
-        def generating_set(self):
-            r"""Return the domain \(S\) of the distinguished-generator morphism."""
+        def module_generating_set(self):
+            r"""Return the domain \(S\) of the distinguished module-generator morphism."""
             return self.generator_morphism().domain()
+
+        generating_set = module_generating_set
+        framing_set = module_generating_set
 
         def module_generator(self, element_of_S: Any):
             r"""Return the distinguished module generator associated to \(s\in S\)."""

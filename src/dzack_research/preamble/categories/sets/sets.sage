@@ -70,6 +70,8 @@ def ImageSet(
 
 
 def _as_set(source: Any) -> Parent:
+    if source in Sets():
+        return source
     if isinstance(source, (list, tuple)):
         if len(source) != len(set(source)):
             raise ValueError(f"{source!r} contains duplicate elements; a framing set must be a set")

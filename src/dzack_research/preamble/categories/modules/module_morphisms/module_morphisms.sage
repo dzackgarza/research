@@ -199,9 +199,9 @@ def _expand_subobject_dict(parent: Any, images: dict) -> dict:
             f"subobject {key} has {len(s_set)} generators, but image has {len(val_gens)}"
         )
         for s, y in zip(s_set, val_gens, strict=True):
-            expanded[s] = y if y.parent() is parent.codomain() else parent.codomain()(y)
+            expanded[s] = y if (hasattr(y, "parent") and y.parent() is parent.codomain()) else parent.codomain()(y)
         else:
-            expanded[key] = val if val.parent() is parent.codomain() else parent.codomain()(val)
+            expanded[key] = val if (hasattr(val, "parent") and val.parent() is parent.codomain()) else parent.codomain()(val)
 
     assert set(expanded) == set(generating_set), (
         "the assignment must name exactly every element of the generating set"

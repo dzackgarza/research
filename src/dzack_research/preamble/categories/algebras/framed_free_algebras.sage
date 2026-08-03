@@ -202,9 +202,11 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         r"""Return the original set ``S`` (not ``Mon(S)``)."""
         return self._algebra_generating_set
 
-    def generating_set(self) -> Parent:
+    def algebra_generating_set(self) -> Parent:
         r"""Return the algebra generating set ``S``."""
         return self._algebra_generating_set
+
+    generating_set = algebra_generating_set
 
     def generator_morphism(self) -> SetMorphism:
         return self._algebra_generator_morphism
