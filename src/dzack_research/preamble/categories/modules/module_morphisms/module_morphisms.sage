@@ -179,6 +179,8 @@ def _expand_subobject_dict(parent: Any, images: dict) -> dict:
             s_set = tuple(key.generating_set())
             if hasattr(val, "embedded_elements"):
                 val_gens = tuple(val.embedded_elements())
+            elif hasattr(val, "embedded_gens"):
+                val_gens = tuple(val.embedded_gens())
             elif hasattr(val, "module_generators"):
                 val_gens = tuple(val.module_generators())
             elif isinstance(val, (tuple, list)):

@@ -26,6 +26,22 @@ if "Framed" not in cwa.all_axioms:
     cwa.all_axioms.add("Framed")
 
 
+def _finite_coefficient_function(module: Any, coefficients: Any) -> dict:
+    r"""Pair a coordinate vector with the module's ordered generating set."""
+    coefficients = tuple(coefficients)
+    assert len(coefficients) == module.ngens(), (
+        f"{module} has {module.ngens()} generators, got "
+        f"{len(coefficients)} coefficients"
+    )
+    return dict(
+        zip(
+            module.generating_set(),
+            coefficients,
+            strict=True,
+        )
+    )
+
+
 def _finite_generator_assignment(
     module: Any,
     images: list | tuple,
@@ -102,6 +118,27 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
                 self.generator_morphism(),
                 self.generating_set(),
             )
+
+        def linear_combination(self: Any, coefficients: dict) -> Any:
+            r"""Return the specified finite \(R\)-linear combination."""
+            assert isinstance(coefficients, dict), (
+                "a finite linear combination is specified by its coefficient "
+                "function on the generating set"
+            )
+            return sum(
+                (
+                    self.base_ring()(coefficient)
+                    * self.module_generator(element_of_S)
+                    for element_of_S, coefficient in coefficients.items()
+                ),
+                self.zero(),
+            )
+
+        @cached_method
+        def gens(self):
+            r"""Return the image of \(S\to U(M)\) without enumerating \(S\)."""
+            morphism = self.generator_morphism()
+            return ImageSubobject(morphism, morphism.domain())
 
         def Hom(self, codomain: Any, *args: Any, **kwargs: Any):
             r"""Return the canonical homset from this module to ``codomain``."""

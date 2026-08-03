@@ -193,6 +193,8 @@ class FreeModuleOnSet(Parent):
             category=FramedFreeModules(base_ring),
         )
         refine(self, FramedFreeModules(base_ring))
+        if generating_set in Sets().Finite():
+            refine(self, FinitelyGeneratedFreeModules(base_ring))
         self._framing_morphism = framing_morphism(
             self,
             self,

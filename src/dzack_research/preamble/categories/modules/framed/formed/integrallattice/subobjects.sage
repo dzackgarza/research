@@ -86,6 +86,8 @@ class Subobjects(Category):
                 )
             )
 
+        embedded_elements = embedded_gens
+
         def isotropic_reduction(self: Any) -> Any:
             assert self.gram_matrix().is_zero(), (
                 "isotropic reduction requires the form to vanish on the subobject"
