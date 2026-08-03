@@ -28,7 +28,7 @@ from sage_lattice_category_spike.objects.sets import Sets
 
 
 # The complete documented owned registration set: the form axioms from
-# objects/categories.py plus the two set axioms from objects/sets.py.
+# objects/categories.py plus the three set axioms from objects/sets.py.
 # Exactness is the contract — a new registration anywhere in the package
 # must consciously extend this list.
 _OWNED_REGISTRATIONS = {
@@ -47,6 +47,7 @@ _OWNED_REGISTRATIONS = {
     "WithSourceLattice",
     "Countable",
     "Uncountable",
+    "TotallyOrdered",
 }
 
 

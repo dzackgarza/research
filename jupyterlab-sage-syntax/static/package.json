@@ -44,7 +44,7 @@
     "extension": true,
     "outputDir": "static",
     "_build": {
-      "load": "static/remoteEntry.c823b04c6441e1a6.js",
+      "load": "static/remoteEntry.5910115bb00d02db.js",
       "extension": "./extension",
       "style": "./style"
     }

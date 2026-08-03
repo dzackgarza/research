@@ -177,12 +177,12 @@ def _expand_subobject_dict(parent: Any, images: dict) -> dict:
     for key, val in images.items():
         if hasattr(key, "generating_set"):
             s_set = tuple(key.generating_set())
-            if hasattr(val, "module_generators"):
+            if hasattr(val, "embedded_elements"):
+                val_gens = tuple(val.embedded_elements())
+            elif hasattr(val, "module_generators"):
                 val_gens = tuple(val.module_generators())
             elif isinstance(val, (tuple, list)):
                 val_gens = tuple(val)
-            elif hasattr(val, "generating_set"):
-                val_gens = tuple(val.module_generators())
             else:
                 raise TypeError(f"cannot map subobject {key} to {val}")
 
@@ -190,9 +190,9 @@ def _expand_subobject_dict(parent: Any, images: dict) -> dict:
                 f"subobject {key} has {len(s_set)} generators, but image has {len(val_gens)}"
             )
             for s, y in zip(s_set, val_gens, strict=True):
-                expanded[s] = parent.codomain()(y)
+                expanded[s] = y if y.parent() is parent.codomain() else parent.codomain()(y)
         else:
-            expanded[key] = parent.codomain()(val)
+            expanded[key] = val if val.parent() is parent.codomain() else parent.codomain()(val)
 
     assert set(expanded) == set(generating_set), (
         "the assignment must name exactly every element of the generating set"

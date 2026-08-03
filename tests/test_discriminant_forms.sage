@@ -171,7 +171,7 @@ def test_primary_parts_have_the_prime_power_orders_and_exhaust_the_group():
     assert order == 6, f"A_5 should have discriminant group of order 6, got {order}"
     total = ZZ.one()
     for p, exponent in ZZ(order).factor():
-        part = A.primary_part(p).embedding().domain()
+        part = A.primary_part(p).structure_morphism().domain()
         part_order = prod(part.invariants()) or ZZ.one()
         assert part_order == p ** exponent, (
             f"{p}-primary part has order {part_order}, expected {p ** exponent}"

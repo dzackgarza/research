@@ -156,6 +156,8 @@ This is the fourth graduation of one lesson (tests assert accomplishment, not de
 - **Mathematical questions get mathematical answers** — stated before any plan card, schema, or memory is touched.
   Artifact updates are exhaust around the answer, never the answer.
 
+- **Undecidability audit (always-on).** Before writing code, reflect explicitly on whether the requested operation or equality check relies on or attempts to resolve an **undecidable problem** (e.g. morphism equality in presented modules/groups, the Word Problem, general equivalence of infinite algebraic structures). Never invent hand-rolled or ground-up boolean checks (`==`, `is_zero()`, `is_isomorphic()`) for undecidable problems; state the exact decidability boundary, rely only on battle-tested decision algorithms where they exist, and keep axiomatic invariants as paper-proven category theory rather than pseudo-computable runtime booleans.
+
 - **A correction that removes machinery halts artifact production.** The rebuild's first act is the specimen, not the re-filed card; two machinery-removals on one proposal invalidate the frame (vault: `global/advice/corrections-update-the-model-not-the-artifact`).
 
 - **Turn audit.** What statement could now be falsified that could not before this turn?

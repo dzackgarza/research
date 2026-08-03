@@ -1,22 +1,23 @@
-r"""The owned ``Sets()`` root and its four axioms.
+r"""The owned ``Sets()`` root and its five axioms.
 
 The owned root sits over Sage's ``Sets()`` and reuses Sage's standard
-``Finite`` and ``Infinite`` axioms; project-owned ``Countable`` and
-``Uncountable`` enter Sage's global ``all_axioms`` registry through the
-exact idempotent adapter below — the only Sage mutation this module
-performs.
+``Finite`` and ``Infinite`` axioms; project-owned ``Countable``,
+``Uncountable``, and ``TotallyOrdered`` enter Sage's global ``all_axioms``
+registry through the exact idempotent adapter below — the only Sage mutation
+this module performs.
 
 The axiom lattice is mathematical fact: ``Finite`` refines ``Countable``
 (every finite set receives the enumeration contract), ``Uncountable``
 refines ``Infinite``, ``Countable`` and ``Uncountable`` are disjoint, and
-countably-infinite is the join ``Sets().Countable().Infinite()``, never a
-new named root. Membership is opt-in-with-trust: ``Countable`` forces the
-executable witness suite (exhaustive duplicate-free iteration, integer
+totally ordered sets are a trusted placement that says nothing about
+cardinality. Countably-infinite is the join ``Sets().Countable().Infinite()``,
+never a new named root. Membership is opt-in-with-trust: ``Countable`` forces
+the executable witness suite (exhaustive duplicate-free iteration, integer
 indexing, reverse lookup) through Sage ``abstract_method`` obligations;
 ``Uncountable`` is trusted placement carrying uniform consequences and no
 enumeration obligation. Generic infinite-set consequences (``is_finite``,
-``cardinality() == +Infinity``) are inherited from Sage's ``Infinite``
-axiom through the join and are never reimplemented here.
+``cardinality() == +Infinity``) are inherited from Sage's ``Infinite`` axiom
+through the join and are never reimplemented here.
 """
 
 from __future__ import annotations
@@ -40,11 +41,12 @@ if TYPE_CHECKING:
 else:
     from sage.misc.abstract_method import abstract_method
 
-_SET_AXIOMS = ("Countable", "Uncountable")
+_SET_AXIOMS = ("Countable", "Uncountable", "TotallyOrdered")
 
 
 def register_set_axioms() -> None:
-    r"""Register exactly ``Countable`` and ``Uncountable`` in Sage's global
+    r"""Register exactly ``Countable``, ``Uncountable``, and
+    ``TotallyOrdered`` in Sage's global
     axiom registry. Idempotent: after the first registration, repeated calls
     leave the registry unchanged."""
     for axiom_name in _SET_AXIOMS:
@@ -80,6 +82,11 @@ class CountabilitySubcategoryMethods:
         assert "Countable" not in category.axioms(), "Countable and Uncountable are disjoint"
         return category._with_axiom("Uncountable")
 
+    def TotallyOrdered(self) -> Category:
+        r"""Objects whose underlying set is equipped with a total order."""
+        category = cast(Category, self)
+        return category._with_axiom("TotallyOrdered")
+
 
 class Sets(CatObject, Category):
     r"""The owned category of sets: declaration owner of the generic
@@ -96,6 +103,7 @@ class Sets(CatObject, Category):
         # class-resolution shortcut and is runtime-only.
         def Countable(self) -> Sets: ...
         def Uncountable(self) -> Sets: ...
+        def TotallyOrdered(self) -> Sets: ...
         def Finite(self) -> Sets: ...
         def Infinite(self) -> Sets: ...
         def Facade(self) -> Sets: ...
@@ -260,6 +268,12 @@ class UncountableSets(CatObject, CategoryWithAxiom):
             return continuum
 
 
+class TotallyOrderedSets(CatObject, CategoryWithAxiom):
+    r"""Totally ordered sets."""
+
+    _base_category_class_and_axiom = (Sets, "TotallyOrdered")
+
+
 if not TYPE_CHECKING:
     # Sage's class-resolution shortcut: the axiom category class must be
     # reachable as `<BaseCategory>.<Axiom>` for `_base_category_class_and_axiom`
@@ -269,4 +283,5 @@ if not TYPE_CHECKING:
     Sets.Infinite = InfiniteSets
     Sets.Countable = CountableSets
     Sets.Uncountable = UncountableSets
+    Sets.TotallyOrdered = TotallyOrderedSets
     CountableSets.Infinite = CountablyInfiniteSets

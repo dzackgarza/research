@@ -1,3 +1,3 @@
-import type { JupyterFrontEndPlugin } from '@jupyterlab/application';
+import type { JupyterFrontEndPlugin } from "@jupyterlab/application";
 declare const _default: JupyterFrontEndPlugin<void>[];
 export default _default;

@@ -1,10 +1,15 @@
 r"""Isolated behavioral proofs for the notebook's mathematical preparser."""
 
 from itertools import islice
+import shutil
+import subprocess
+import tempfile
+from pathlib import Path
 
 from dzack_research.preamble.preparser import preparse
 from sage.sets.condition_set import ConditionSet
 from sage.sets.image_set import ImageSet
+import pytest
 
 
 def _execute(source):
@@ -119,6 +124,55 @@ def test_fstring_dictionary_expressions_remain_dictionaries():
     namespace = _execute("""result = f"{ {'a': 1} }" """)
 
     assert namespace["result"] == "{'a': 1}"
+
+
+def test_sage_command_preparse_compiles_match_case_with_integer_patterns():
+    """The `.sage` preparse command output must be repaired by the preparse wrapper."""
+    if shutil.which("sage") is None:
+        pytest.skip("Sage CLI unavailable for preparse regression check")
+
+    source = """
+def classify(x):
+    match x:
+        case 0:
+            return 0
+        case -1:
+            return -1
+        case 1:
+            return 1
+        case _:
+            return x
+""".strip()
+
+    with tempfile.TemporaryDirectory() as work_dir:
+        path = Path(work_dir) / "classify.sage"
+        path.write_text(source)
+        run = subprocess.run(
+            ["sage", "--preparse", str(path)],
+            cwd=work_dir,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        assert run.returncode == 0, run.stderr
+        generated = Path(f"{path}.py")
+        assert generated.exists(), f"expected generated file {generated}"
+
+        repaired = preparse(generated.read_text())
+        assert "case _sage_const_" not in repaired
+        compile(repaired, "<sage-preparse>", "exec")
+
+
+def test_native_sage_preparse_does_not_break_match_case_integers():
+    source = "def classify(x):\n    match x:\n        case 0:\n            return 0\n        case -1:\n            return -1\n        case 1:\n            return 1\n        case _:\n            return x\n"
+    repaired = preparse(source)
+    compile(repaired, "<preparsed>", "exec")
+
+    namespace = _execute(source)
+    assert namespace["classify"](0) == 0
+    assert namespace["classify"](-1) == -1
+    assert namespace["classify"](1) == 1
+    assert namespace["classify"](7) == 7
 
 
 def test_multiline_identity_builder_preserves_its_domain():

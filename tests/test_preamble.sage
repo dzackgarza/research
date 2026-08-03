@@ -645,11 +645,11 @@ def test_embedding_chain_TCo_TEn_TdP_LK3():
     assert E.TCo_into_TEn.codomain() is L.TEn
     assert E.TEn_into_TdP.domain() is L.TEn
     assert E.TEn_into_TdP.codomain() is L.TdP
-    assert E.TdP_into_LK3.codomain() is L.LK3
-    assert E.TEn_into_LK3.codomain() is L.LK3
+    assert E.TdP_into_LK3.structure_morphism().codomain() is L.LK3
+    assert E.TEn_into_LK3.structure_morphism().codomain() is L.LK3
     assert E.TCo_into_TEn.matrix().dimensions() == (11, 12)
     assert E.TEn_into_TdP.matrix().dimensions() == (12, 20)
-    assert E.TdP_into_LK3.matrix().dimensions() == (20, 22)
+    assert E.TdP_into_LK3.structure_morphism().matrix().dimensions() == (20, 22)
     assert E.E8_2_into_TdP.matrix().dimensions() == (8, 20)
     # Diagonal piece of TEn→TdP agrees with E8(2)↪TdP on the E8(2) summand.
     ten = list(L.TEn.gens())
@@ -667,7 +667,7 @@ def test_block_hom_Z2_U2_into_U_U2():
     codomain = Lcat.U + Lcat.U_2
     z1, z2 = domain.summands()
     w1, w2 = codomain.summands()
-    w1_gens = w1.embedded_gens()
+    w1_gens = w1.embedded_elements()
     phi = domain.Hom(codomain)({z1: w1_gens[0] + w1_gens[1], z2: w2})
     assert phi.matrix().dimensions() == (3, 4)
     e, f = codomain.gens()[0], codomain.gens()[1]
@@ -689,11 +689,11 @@ def test_block_hom_sum_of_blocks_diagonal():
     codomain = Lcat.U + Lcat.U + Lcat.U
     a1, a2 = domain.summands()
     b1, b2, b3 = codomain.summands()
-    a1_gens, a2_gens = a1.embedded_gens(), a2.embedded_gens()
+    a1_gens, a2_gens = a1.embedded_elements(), a2.embedded_elements()
     b1_gens, b2_gens, b3_gens = (
-        b1.embedded_gens(),
-        b2.embedded_gens(),
-        b3.embedded_gens(),
+        b1.embedded_elements(),
+        b2.embedded_elements(),
+        b3.embedded_elements(),
     )
     diagonal = [b2_gens[i] + b3_gens[i] for i in range(2)]
     phi = domain.Hom(codomain)({a1: b1, a2: diagonal})
@@ -727,6 +727,17 @@ def test_involutions_are_involutions_and_isometries():
         assert catalogue.Lattices.LK3.invariant_lattice(morphism).rank() == (
             morphism.invariant_lattice().rank()
         ), name
+
+
+def test_coinvariant_lattice_returns_subobject():
+    catalogue = _preamble()[0]
+    L = catalogue.Lattices
+    for name in ("I_dP", "I_En", "I_Nik"):
+        action = getattr(catalogue.Involutions, name)
+        expected = L.LK3.coinvariant_lattice(action)
+        actual = L.LK3.coinvariant_lattice(action)
+        assert actual is expected, name
+        assert actual.structure_morphism().is_injective(), name
 
 
 def test_eigenlattices_reproduce_the_named_lattices():

@@ -21,7 +21,7 @@ from .sets import Sets
 if TYPE_CHECKING:
     from .cardinals import Cardinal
 
-_SET_AXIOM_NAMES = ("Finite", "Infinite", "Countable", "Uncountable")
+_SET_AXIOM_NAMES = ("Finite", "Infinite", "Countable", "Uncountable", "TotallyOrdered")
 
 
 def _translated_placement(structured: SageParent) -> Sets:
@@ -31,13 +31,15 @@ def _translated_placement(structured: SageParent) -> Sets:
     declared = frozenset(structured.category().axioms()) & frozenset(_SET_AXIOM_NAMES)
     placement = Sets()
     if "Finite" in declared:
-        return placement.Finite()
-    if "Countable" in declared:
+        placement = placement.Finite()
+    elif "Countable" in declared:
         placement = placement.Countable()
     if "Uncountable" in declared:
         placement = placement.Uncountable()
     elif "Infinite" in declared:
         placement = placement.Infinite()
+    if "TotallyOrdered" in declared:
+        placement = placement.TotallyOrdered()
     return placement
 
 
