@@ -175,24 +175,31 @@ def _expand_subobject_dict(parent: Any, images: dict) -> dict:
 
     expanded = {}
     for key, val in images.items():
-        if hasattr(key, "generating_set"):
+        if hasattr(key, "embedded_elements"):
+            s_set = tuple(key.embedded_elements())
+        elif hasattr(key, "embedded_gens"):
+            s_set = tuple(key.embedded_gens())
+        elif hasattr(key, "generating_set"):
             s_set = tuple(key.generating_set())
-            if hasattr(val, "embedded_elements"):
-                val_gens = tuple(val.embedded_elements())
-            elif hasattr(val, "embedded_gens"):
-                val_gens = tuple(val.embedded_gens())
-            elif hasattr(val, "module_generators"):
-                val_gens = tuple(val.module_generators())
-            elif isinstance(val, (tuple, list)):
-                val_gens = tuple(val)
-            else:
-                raise TypeError(f"cannot map subobject {key} to {val}")
+        else:
+            s_set = (key,)
 
-            assert len(s_set) == len(val_gens), (
-                f"subobject {key} has {len(s_set)} generators, but image has {len(val_gens)}"
-            )
-            for s, y in zip(s_set, val_gens, strict=True):
-                expanded[s] = y if y.parent() is parent.codomain() else parent.codomain()(y)
+        if hasattr(val, "embedded_elements"):
+            val_gens = tuple(val.embedded_elements())
+        elif hasattr(val, "embedded_gens"):
+            val_gens = tuple(val.embedded_gens())
+        elif hasattr(val, "module_generators"):
+            val_gens = tuple(val.module_generators())
+        elif isinstance(val, (tuple, list)):
+            val_gens = tuple(val)
+        else:
+            raise TypeError(f"cannot map subobject {key} to {val}")
+
+        assert len(s_set) == len(val_gens), (
+            f"subobject {key} has {len(s_set)} generators, but image has {len(val_gens)}"
+        )
+        for s, y in zip(s_set, val_gens, strict=True):
+            expanded[s] = y if y.parent() is parent.codomain() else parent.codomain()(y)
         else:
             expanded[key] = val if val.parent() is parent.codomain() else parent.codomain()(val)
 
