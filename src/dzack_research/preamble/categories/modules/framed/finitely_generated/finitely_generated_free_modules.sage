@@ -230,10 +230,11 @@ class BasedFreeModule(FreeModuleOnSet):
                     "a generating set is a finite set, a finite iterable, or "
                     "a nonnegative cardinality"
                 )
-        generating_set = finite_ordered_set(generating_set)
-        FreeModuleOnSet.__init__(self, base_ring, generating_set)
         if generating_set in Sets().Finite():
-            refine(self, FinitelyGeneratedFreeModules(base_ring))
+            generating_set = finite_ordered_set(generating_set)
+        else:
+            generating_set = _as_set(generating_set)
+        FreeModuleOnSet.__init__(self, base_ring, generating_set)
 
     def _generator_element(self, element_of_S: Any) -> BasedFreeModuleElement:
         generating_set = self.__dict__.get("_generating_set")
