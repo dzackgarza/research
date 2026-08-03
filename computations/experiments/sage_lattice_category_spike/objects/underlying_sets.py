@@ -21,6 +21,7 @@ from .sets import Sets
 if TYPE_CHECKING:
     from sage.categories.morphism import SetMorphism
     from sage.structure.element import Element
+
     from .cardinals import Cardinal
 
 _SET_AXIOM_NAMES = ("Finite", "Infinite", "Countable", "Uncountable", "TotallyOrdered")
@@ -124,5 +125,5 @@ class ViaUnderlyingSet:
     def is_uncountable(self) -> bool:
         return self.underlying_set().is_uncountable()
 
-    def index(self, element: object) -> int:
+    def index(self, element: Element) -> int:
         return self.underlying_set().index(element)
