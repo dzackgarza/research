@@ -31,7 +31,7 @@ EXAMPLES::
     sage: from sage.rings.integer_ring import ZZ
     sage: L = _integral_lattice_with_names(matrix(ZZ, [[0, 1], [1, 0]]))
     sage: refine(L, IntegralLattices())
-    sage: L.q(L.gens()[0])
+    sage: L.q(L.module_generators()[0])
     0
 """
 
@@ -55,6 +55,7 @@ _ORIGINAL_INIT: dict[type, Any] = {}
 _AFTER: dict[type, list[Callable[[Any], None]]] = {}
 _BEFORE: dict[type, list[Callable[[Any], None]]] = {}
 _IMPLEMENTED_MIXINS: dict[type, type] = {}
+_PY_SET = set
 
 
 def _implemented_mixin(mixin: type) -> type:
@@ -63,11 +64,11 @@ def _implemented_mixin(mixin: type) -> type:
     Sage abstract methods are category obligations.  They must not precede
     the concrete parent methods that satisfy them when override-refining.
     """
-    abstract_names = {
+    abstract_names = _PY_SET(
         name
         for name, value in vars(mixin).items()
         if isinstance(value, AbstractMethod)
-    }
+    )
     if not abstract_names:
         return mixin
     cached = _IMPLEMENTED_MIXINS.get(mixin)
@@ -77,7 +78,7 @@ def _implemented_mixin(mixin: type) -> type:
         name: value
         for name, value in vars(mixin).items()
         if name not in abstract_names
-        and name not in {"__dict__", "__weakref__"}
+        and name not in _PY_SET(["__dict__", "__weakref__"])
     }
     filtered = type(
         f"{mixin.__name__}Implementations",
@@ -98,14 +99,14 @@ def _concrete_base(obj: Any) -> type:
         name = candidate.__name__
         if name.endswith("_with_category"):
             continue
-        if name in {
+        if name in _PY_SET((
             "parent_class",
             "element_class",
             "morphism_class",
             "ParentMethods",
             "ElementMethods",
             "MorphismMethods",
-        }:
+        )):
             continue
         if candidate is object:
             continue
@@ -113,7 +114,7 @@ def _concrete_base(obj: Any) -> type:
     assert False, f"cannot find concrete base for {cls!r}"  # noqa: B011
 
 _OWNED_CATEGORY_NAMES = frozenset(
-    {
+    (
         "IntegralLattices",
         "DirectSumObjects",
         "HyperbolicLattices",
@@ -143,6 +144,8 @@ _OWNED_CATEGORY_NAMES = frozenset(
         "DiscriminantBilinearModules",
         "DiscriminantQuadraticModules",
         "FinitelyPresentedGroups",
+        "FinitelyPresentedAlgebras",
+        "FramedFGAlgebras",
         "PicardGroups",
         "DivisorGroups",
         "ClassGroups",
@@ -171,7 +174,7 @@ _OWNED_CATEGORY_NAMES = frozenset(
         "ToricVariety",
         "Curve",
         "Surface",
-    }
+    )
 )
 
 

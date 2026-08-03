@@ -75,7 +75,7 @@ class FreeModules(Category_over_base_ring):
             Asked of the count rather than of the basis: building the basis
             builds elements, and an element checks its length against the rank.
             """
-            return ZZ(self.ngens())
+            return ZZ(self.num_module_generators())
 
         def basis(self: Any) -> tuple:
             r"""Return the basis, under the name that says it is independent."""
@@ -102,7 +102,7 @@ class FreeModules(Category_over_base_ring):
 
         def is_zero(self: Any) -> bool:
             r"""Return whether this is the zero module."""
-            return self.ngens() == 0
+            return self.num_module_generators() == 0
 
         def hom(self: Any, images: Any, codomain: Any = None) -> Any:
             r"""Return the morphism sending this module's basis to ``images``."""
@@ -150,8 +150,8 @@ class BasedFreeModuleElement(ModuleElement):
     def __init__(self, parent: Any, coordinates: Any) -> None:
         ModuleElement.__init__(self, parent)
         self._coordinates_ = vector(parent.base_ring(), list(coordinates))
-        assert len(self._coordinates_) == parent.ngens(), (
-            f"{parent} has rank {parent.ngens()}, got "
+        assert len(self._coordinates_) == parent.num_module_generators(), (
+            f"{parent} has rank {parent.num_module_generators()}, got "
             f"{len(self._coordinates_)} coordinates"
         )
 

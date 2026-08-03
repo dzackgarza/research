@@ -157,7 +157,14 @@ def _independent_generators(module: Any, generators: Any) -> list:
             independent = tuple(
                 row for row in rows.echelon_form().rows() if not row.is_zero()
             )
-    return [module.linear_combination(row) for row in independent]
+    return [
+        zipsum(
+            row,
+            module.module_generators(),
+            module.zero(),
+        )
+        for row in independent
+    ]
 
 
 class ModuleMorphism(Morphism):
@@ -216,17 +223,13 @@ class ModuleMorphism(Morphism):
         generating_set = tuple(domain.generating_set())
         zero = self.codomain().zero()
         assert all(
-            sum(
-                (
-                    coefficient
-                    * self._generator_image(element_of_S)
-                    for coefficient, element_of_S in zip(
-                        relation,
-                        generating_set,
-                    )
-                ),
-                zero,
-            )
+            zipsum(
+            relation,
+            generating_set,
+            zero,
+            term=lambda coefficient, element_of_S: coefficient
+                    * self._generator_image(element_of_S),
+        )
             == zero
             for relation in domain.relation_matrix().rows()
         ), "the assignment does not kill every relation"
@@ -259,7 +262,11 @@ class ModuleMorphism(Morphism):
         ), "a matrix requires finite ordered framings"
         images = self.images()
         if not images:
-            return matrix(self.codomain().base_ring(), 0, len(codomain_labels))
+            return matrix(
+                self.codomain().base_ring(),
+                0,
+                len(tuple(codomain_labels)),
+            )
         return matrix([_coordinate_vector(image) for image in images])
 
     def _call_(self, element: Any) -> Any:
@@ -285,8 +292,11 @@ class ModuleMorphism(Morphism):
             system.stack(relations) if relations.nrows() else system,
             _coordinate_vector(element),
         )
-        preimage = self.domain().linear_combination(
-            coefficients[: system.nrows()]
+        coefficients = coefficients[: system.nrows()]
+        preimage = zipsum(
+            coefficients,
+            self.domain().module_generators(),
+            self.domain().zero(),
         )
         assert self(preimage) == element, (
             f"{element} is not in the image of this morphism"
@@ -299,7 +309,14 @@ class ModuleMorphism(Morphism):
         )
         basis = self.matrix().left_kernel_matrix().rows()
         return self.domain().subobject_on(
-            [self.domain().linear_combination(row) for row in basis]
+            [
+                zipsum(
+            row,
+            self.domain().module_generators(),
+            self.domain().zero(),
+        )
+                for row in basis
+            ]
         )
 
     def cokernel(self) -> Any:
@@ -343,7 +360,7 @@ class ModuleMorphism(Morphism):
         assert image.rank() == width, (
             "the image does not have finite index in the codomain"
         )
-        return ZZ.one()
+        return 1
 
     def orthogonal_complement(self) -> Any:
         codomain = self.codomain()
@@ -353,9 +370,13 @@ class ModuleMorphism(Morphism):
         pairing = matrix(codomain.gram_matrix()) * self.matrix().transpose()
         return codomain.subobject_on(
             [
-                codomain.linear_combination(row)
-                for row in pairing.left_kernel().basis()
-            ]
+                zipsum(
+            row,
+            codomain.module_generators(),
+            codomain.zero(),
+        )
+            for row in pairing.left_kernel().basis()
+        ]
         )
 
     def _codomain_relations(self) -> Matrix:
@@ -463,7 +484,11 @@ class ModuleAutomorphism(ModuleMorphism):
     def inverse(self) -> "ModuleAutomorphism":
         inverse_matrix = self.matrix().inverse()
         images = [
-            self.domain().linear_combination(row)
+            zipsum(
+            row,
+            self.domain().module_generators(),
+            self.domain().zero(),
+        )
             for row in inverse_matrix.rows()
         ]
         return self.parent()(
@@ -517,7 +542,7 @@ class ModuleAutomorphismGroup(ModuleHomset):
         )
         return ModuleAutomorphismGroup(self.module(), generators)
 
-    def gens(self) -> tuple:
+    def group_generators(self) -> tuple:
         return () if self._generators is None else self._generators
 
     def is_finite(self) -> bool:
@@ -553,10 +578,10 @@ class ModuleAutomorphismGroup(ModuleHomset):
     def trivial_character(self) -> Any:
         return self.irreducible_characters()[0]
 
-    def _close(self) -> tuple:
-        identity = self.one()
-        elements = {identity}
-        frontier = [identity]
+        def _close(self) -> tuple:
+            identity = self.one()
+            elements = set((identity,))
+            frontier = [identity]
         steps = 0
         while frontier:
             current = frontier.pop()
@@ -585,7 +610,7 @@ class _AutomorphismCharacter:
     def __init__(self, group: ModuleAutomorphismGroup, index: int) -> None:
         self._group = group
         self._index = index
-        generator = group.gens()[0]
+        generator = group.group_generators()[0]
         current = group.one()
         self._powers = {}
         for power in range(group.order()):
@@ -599,7 +624,7 @@ class _AutomorphismCharacter:
         power = self._powers[element]
         order = self._group.order()
         if order <= 2:
-            return QQ.one() if self._index == 0 or power == 0 else QQ(-1)
+            return 1 if self._index == 0 or power == 0 else -1
         return CyclotomicField(order).gen() ** (self._index * power)
 
     def degree(self) -> int:
@@ -681,7 +706,7 @@ class GroupAction(Morphism):
         cls, group: Any, module: Any, generator_images: Any
     ) -> "GroupAction":
         parent = group_action_homset(group, module)
-        generators = tuple(group.gens())
+        generators = tuple(group.group_generators())
         images = tuple(generator_images)
         assert len(images) == len(generators), (
             f"{group} has {len(generators)} generators, got {len(images)} images"
@@ -721,9 +746,9 @@ def _solve_left_integrally(system: Matrix, target: Any) -> Any:
     smith, left, right = system.transpose().smith_form()
     shifted = left * vector(ZZ, target)
     width = smith.ncols()
-    solution = [ZZ.zero()] * width
+    solution = [0] * width
     for index, value in enumerate(shifted):
-        divisor = smith[index, index] if index < width else ZZ.zero()
+        divisor = smith[index, index] if index < width else 0
         assert divisor != 0 or value == 0, (
             f"no solution: row {index} is zero but asks for {value}"
         )

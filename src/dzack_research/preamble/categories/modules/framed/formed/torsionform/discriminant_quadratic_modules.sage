@@ -50,10 +50,10 @@ class DiscriminantQuadraticModules(Category):
         relations = matrix(ZZ, module.relation_matrix())
         assert all(entry in ZZ for entry in (relations * gram).list()), (
             "the polarization is not defined on the classes: some relation "
-            "does not pair integrally with the generators"
+            "does not pair integrally with the module_generators"
         )
         assert all(
-            (norm := row * gram * row) in ZZ and ZZ(norm) % 2 == 0
+            (norm := row * gram * row) in ZZ and norm % 2 == 0
             for row in relations.rows()
         ), "q is not defined on the classes: some relation has norm outside 2Z"
         form = QuadraticForm(module, QmodnZ(2), gram)
@@ -109,18 +109,18 @@ class DiscriminantQuadraticModules(Category):
     class ParentMethods:
         r"""Methods available on discriminant quadratic modules."""
 
-        def regenerate(self: Any, generators: Any) -> "FormModule":
-            r"""Return this form on the generating set ``generators``.
+        def regenerate(self: Any, module_generators: Any) -> "FormModule":
+            r"""Return this form on the generating set ``module_generators``.
 
             A different generating set is a different object of this category,
             so this is a construction and not a view: the same pairings, read
             on a new set, presented by the morphism that set induces.
             """
-            generators = tuple(generators)
-            relations, gram = regenerating_data(self, generators)
+            module_generators = tuple(module_generators)
+            relations, gram = regenerating_data(self, module_generators)
             module = FinitelyPresentedTorsionModules().from_relations(
                 relations,
-                finite_ordered_set(generators),
+                finite_ordered_set(module_generators),
             )
             return DiscriminantQuadraticModules().from_module(module, gram)
 
@@ -148,17 +148,17 @@ class DiscriminantQuadraticModules(Category):
             return "\\mathbb{Q}/2\\mathbb{Z}"
 
         def invariant_factor_form(self: Any) -> "FormModule":
-            r"""Return $q$ on generators from the invariant factor decomposition.
+            r"""Return $q$ on module_generators from the invariant factor decomposition.
 
             The change merges factors across summands -- $A_{A_2\oplus A_3}$ lands
             on one generator as $\mathbb Z/12$ rather than on two as
             $\mathbb Z/3\oplus\mathbb Z/4$ -- so no decomposition of $L$ survives
             it, which is why it cannot be :meth:`discriminant_group`.
             """
-            return self.regenerate(self.smith_form_gens())
+            return self.regenerate(self.smith_form_generators())
 
         def normal_form(self: Any) -> "FormModule":
-            r"""Return $q$ on $p$-adic Jordan generators -- a different object.
+            r"""Return $q$ on $p$-adic Jordan module_generators -- a different object.
 
             For $p$ odd the blocks are those of Peters--Sterk Prop. 9.4.1; at $p=2$
             the reduced normal form of Cor. C.3.2 applies, which is where the
@@ -187,6 +187,6 @@ class DiscriminantQuadraticModules(Category):
         def is_characteristic(self: Any) -> bool:
             r"""Return whether $q(x)=b(x,v^*)$ modulo $\mathbb Z$ for every $x$."""
             return all(
-                QQ(x.q().lift() - x.b(self).lift()) in ZZ
+                x.q().lift() - x.b(self).lift() in ZZ
                 for x in self.parent()
             )

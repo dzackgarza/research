@@ -138,7 +138,6 @@ class TorsionModulesWithForm(Category_over_base_ring):
             is what makes the images above elements of $A$ rather than of a
             decomposition standing apart from it.
             """
-            p = ZZ(p)
 
             def primary_generator(generator: Any) -> tuple:
                 order = generator.order()
@@ -365,6 +364,23 @@ def cokernel_categories(morphism: Any) -> list:
 
 
 
+def _coordinates_in_generators(
+    element: Any,
+    generating_set: Any,
+) -> tuple[Any, ...]:
+    r"""Return this element's coordinates in the requested generating set."""
+    if hasattr(element, "coefficients"):
+        coefficients = element.coefficients()
+        return tuple(
+            coefficients.get(generator, 0) for generator in generating_set
+        )
+    if hasattr(element, "_lift"):
+        return tuple(element._lift())
+    raise TypeError(
+        f"{element} has no coordinate extraction compatible with the generating set"
+    )
+
+
 # ---- shared construction: a torsion form is a cokernel ----
 
 def regenerating_data(form: Any, generators: Any) -> tuple:
@@ -386,7 +402,14 @@ def regenerating_data(form: Any, generators: Any) -> tuple:
         "a generating set for this object is made of its own elements; "
         "elements of another module reach it through a morphism"
     )
-    rows = matrix(QQ, [list(generator._coordinates()) for generator in generators])
+    underlying_set = tuple(form.forget_form().generating_set())
+    rows = matrix(
+        QQ,
+        [
+            list(_coordinates_in_generators(generator, underlying_set))
+            for generator in generators
+        ],
+    )
     # The symmetric matrix the object is built on, whichever form it carries:
     # for a bilinear one its own, for a quadratic one its polarization's lift.
     gram = form.form().polar_form().gram_matrix()
@@ -398,10 +421,17 @@ def relations_among(form: Any, generators: Any) -> Matrix:
     generators = list(generators)
     known = form.forget_form().relation_matrix()
     width = known.ncols()
+    underlying_set = tuple(form.forget_form().generating_set())
     lifts = matrix(
-        ZZ, len(generators), width, [list(g._coordinates()) for g in generators]
+        ZZ,
+        len(generators),
+        width,
+        [
+            list(_coordinates_in_generators(generator, underlying_set))
+            for generator in generators
+        ],
     )
-    kernel = lifts.stack(known).left_kernel().basis_matrix()
+    kernel = lifts.stack(known).left_kernel().generator_matrix()
     return kernel[:, : lifts.nrows()]
 
 
@@ -422,12 +452,12 @@ def p_adic_jordan_generators(form: Any) -> list[Any]:
     from sage.rings.padics.factory import Zp
 
     generators = []
-    exponent = ZZ(form.annihilator().gen())
+    exponent = form.annihilator().gen()
     for p in exponent.prime_divisors():
         # The primary decomposition is where the reduction can run: it is one
         # generator per $p$-primary cyclic factor, so the form written on it
         # has the rank the group has.
-        embedding = form.primary_part(p).embedding()
+        embedding = form.primary_part(p).structure_morphism()
         component = embedding.domain()
         engine = _p_adic_engine_matrix(component)
 
@@ -467,7 +497,14 @@ def p_adic_jordan_generators(form: Any) -> list[Any]:
         # generators, so it is that element's coordinate vector; the embedding
         # carries it back into the whole group.
         generators.extend(
-            embedding(component.linear_combination(row)) for row in transform.rows()
+            embedding(
+                zipsum(
+            row,
+            component.module_generators(),
+            component.zero(),
+        )
+            )
+            for row in transform.rows()
         )
     return generators
 
@@ -487,7 +524,7 @@ def _p_adic_engine_matrix(form: Any) -> Matrix:
         for label in form.generating_set()
     )
     size = len(generators)
-    modulus = QQ(form.value_module().n)
+    modulus = form.value_module().n
 
     def entry(i: int, left: Any, j: int, right: Any) -> Any:
         match i == j:

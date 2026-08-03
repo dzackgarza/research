@@ -9,6 +9,15 @@ from sage.structure.parent import Parent
 from sage_lattice_category_spike.objects.sets import Sets
 
 
+def _is_subobject(source: Any) -> bool:
+    """Return whether ``source`` is a stored subobject of its codomain."""
+    try:
+        structure_morphism = source.structure_morphism()
+    except AttributeError:
+        return False
+    return source in source.category().SubObject(structure_morphism.codomain())
+
+
 class DirectSumObjects(Category):
     r"""Pairs \((M,(M_i)_i)\) with a chosen ordered direct-sum structure."""
 
@@ -35,9 +44,6 @@ class DirectSumObjects(Category):
             )
             return self._summands[self._summand_index_set.index(label)]
 
-        def gens(self: Any) -> Any:
-            return self._underlying_object.gens()
-
         def generating_set(self: Any) -> Any:
             return self._underlying_object.generating_set()
 
@@ -46,9 +52,6 @@ class DirectSumObjects(Category):
 
         def group(self: Any) -> Any:
             return self._underlying_object.group()
-
-        def embedding(self: Any) -> Any:
-            return self._underlying_object.embedding()
 
 
 class DirectSumObject(Parent):
@@ -101,15 +104,18 @@ def DirectSum(
 
 def _direct_sum_assignment_pairs(source: Any, target: Any) -> tuple:
     r"""Expand one declared summand assignment into generator-image pairs."""
-    match source in Subobjects(), target in Subobjects(), target:
+    source_is_subobject = _is_subobject(source)
+    target_is_subobject = _is_subobject(target)
+
+    match source_is_subobject, target_is_subobject, target:
         case True, True, _:
-            source_images = source.embedded_gens()
-            target_images = target.embedded_gens()
+            source_images = source.embedded_elements()
+            target_images = target.embedded_elements()
         case True, False, list() | tuple():
-            source_images = source.embedded_gens()
+            source_images = source.embedded_elements()
             target_images = tuple(target)
         case True, False, _:
-            source_images = source.embedded_gens()
+            source_images = source.embedded_elements()
             assert len(source_images) == 1, (
                 "one target element requires a rank-one source"
             )
@@ -118,7 +124,7 @@ def _direct_sum_assignment_pairs(source: Any, target: Any) -> tuple:
             assert target.rank() == 1, (
                 "a target subobject must have rank one"
             )
-            return ((source, target.embedded_gens()[0]),)
+            return ((source, target.embedded_elements()[0]),)
         case False, False, list() | tuple():
             raise TypeError(
                 "a list of target images requires a source subobject"
@@ -139,4 +145,4 @@ def _expand_direct_sum_hom_dict(domain: Any, mapping: dict) -> list:
         for source, target in mapping.items()
         for pair in _direct_sum_assignment_pairs(source, target)
     )
-    return [images[generator] for generator in domain.gens()]
+    return [images[generator] for generator in domain.generating_set()]

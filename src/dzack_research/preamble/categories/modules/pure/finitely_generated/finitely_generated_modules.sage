@@ -10,6 +10,8 @@ from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 from sage.categories.modules import Modules
 from sage.misc.cachefunc import cached_method
 
+from sage_lattice_category_spike.objects.sets import Sets
+
 # Register FinitelyGenerated axiom string if not present in Sage's axiom container
 if "FinitelyGenerated" not in cwa.all_axioms:
     cwa.all_axioms.add("FinitelyGenerated")
@@ -25,6 +27,17 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
         return [Modules(self.base_ring()).Framed()]
 
     class ParentMethods:
+        def module_generators(self):
+            r"""Return the finite framed generators as a tuple."""
+            generating_set = self.generating_set()
+            assert generating_set in Sets().Finite(), (
+                "module_generators() is defined only for finitely generated modules"
+            )
+            return tuple(
+                self.generator(element_of_S)
+                for element_of_S in generating_set
+            )
+
         def is_finitely_generated(self) -> bool:
             r"""Return whether this module is finitely generated.
 
@@ -35,8 +48,8 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
         def is_zero(self) -> bool:
             r"""Return whether every element in the chosen generating set vanishes."""
             return all(
-                self.generator(label) == self.zero()
-                for label in self.generating_set()
+                generator == self.zero()
+                for generator in self.module_generators()
             )
 
 

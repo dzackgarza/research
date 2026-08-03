@@ -60,7 +60,7 @@ class FinitelyGeneratedFreeModules(Category_over_base_ring):
 
         def rank(self: Any) -> Any:
             r"""Return the number of basis elements, which is the finite rank."""
-            return ZZ(self.ngens())
+            return ZZ(self.num_module_generators())
 
 
 class BasedFreeModuleElement(ModuleElement):
@@ -69,8 +69,8 @@ class BasedFreeModuleElement(ModuleElement):
     def __init__(self, parent: Any, coordinates: Any) -> None:
         ModuleElement.__init__(self, parent)
         self._coordinates_ = vector(parent.base_ring(), list(coordinates))
-        assert len(self._coordinates_) == parent.ngens(), (
-            f"{parent} has rank {parent.ngens()}, got "
+        assert len(self._coordinates_) == parent.num_module_generators(), (
+            f"{parent} has rank {parent.num_module_generators()}, got "
             f"{len(self._coordinates_)} coordinates"
         )
 

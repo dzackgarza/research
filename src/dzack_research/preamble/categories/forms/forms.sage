@@ -2,12 +2,24 @@ r"""Bilinear and quadratic forms as native Sage morphisms."""
 
 from typing import Any
 
+from sage.rings.integer import Integer
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
 from sage.matrix.matrix0 import Matrix
 from sage.structure.parent import Parent
+from sage_lattice_category_spike.objects.cardinals import Cardinal
+from sage.rings.integer_ring import ZZ
 
 from sage_lattice_category_spike.objects.sets import Sets
+
+
+def _framing_rank(generating_set: Any) -> Integer:
+    size = generating_set.cardinality()
+    if isinstance(size, Cardinal):
+        assert size.is_finite(), "a Gram matrix requires a finite framing set"
+        return size.finite_value()
+    assert size in ZZ, "a Gram matrix requires a finite framing set"
+    return ZZ(size)
 
 
 class TensorSquare(Parent):
@@ -132,8 +144,7 @@ class BilinearFormMorphism(Morphism):
         Morphism.__init__(self, parent)
         gram = gram if isinstance(gram, Matrix) else matrix(gram)
         module = parent.module()
-        size = module.generating_set().cardinality()
-        assert size in ZZ, "a Gram matrix requires a finite framing set"
+        size = _framing_rank(module.generating_set())
         assert gram.nrows() == size and gram.ncols() == size, (
             f"the Gram matrix is {gram.nrows()}x{gram.ncols()} but the "
             f"framing set has cardinality {size}"
@@ -228,8 +239,7 @@ class QuadraticFormMorphism(Morphism):
     def __init__(self, parent: QuadraticFormHomset, gram: Any) -> None:
         Morphism.__init__(self, parent)
         gram = gram if isinstance(gram, Matrix) else matrix(gram)
-        size = parent.domain().generating_set().cardinality()
-        assert size in ZZ, "a Gram matrix requires a finite framing set"
+        size = _framing_rank(parent.domain().generating_set())
         assert gram.is_symmetric(), (
             "the diagonal lift of a quadratic form is symmetric"
         )
@@ -269,7 +279,7 @@ class QuadraticFormMorphism(Morphism):
         assert isinstance(self.codomain(), QmodnZ), (
             "halving the value modulus is defined here only for Q/nZ"
         )
-        return QmodnZ(QQ(self.codomain().n) / 2)
+        return QmodnZ(self.codomain().n / 2)
 
     def polar_form(self) -> BilinearFormMorphism:
         return BilinearForms(

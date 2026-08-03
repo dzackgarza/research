@@ -10,7 +10,11 @@ Refine any integral lattice parent into this category to gain::
     twist(*, names=...)         # twisted copy with optional naming
     __add__, __pow__, direct_sum      # orthogonal direct sums with subdivisions
     Aut(), invariant_lattice(action), formed_coinvariants(action),
-    coinvariant_lattice(action), coinvariant_inclusion(action)
+    coinvariant_lattice(action)
+
+Coordinate data are not themselves lattice elements. A tuple, list, or vector
+of coefficients is converted to an element only by choosing module generators and
+forming the explicit sum $\sum_i c_i\,g_i$ in that module's own free basis.
 
 Elements gain::
 
@@ -26,7 +30,7 @@ EXAMPLES::
     sage: from dzack_research.preamble.refine import refine
     sage: L = Lattices.U
     sage: refine(L, IntegralLattices())
-    sage: L.q(L.gens()[0])
+    sage: L.q(L.module_generators()[0])
     0
 """
 
@@ -46,7 +50,6 @@ from sage.misc.latex import latex as _latex_fn
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
-from sage.modules.free_module_element import vector
 
 from sage_lattice_category_spike.objects.sets import Sets
 
@@ -58,7 +61,7 @@ class IntegralLattices(Category):
 
         - quadratic and bilinear forms via ``q`` / ``b`` / ``div``
         - dual basis, isotropic quotients, isometry checking
-        - basis naming, linear-combination display, LaTeX with discriminant-group info
+        - basis naming, linear-combination display, LaTeX with discriminant-module info
         - orthogonal direct sums with automatic Gram-matrix subdivisions
         - lattice-element arithmetic: multiplication -> bilinear pairing, exponentiation -> q
     """
@@ -158,10 +161,10 @@ class IntegralLattices(Category):
             """
             dual = self.dual()
             correlation = self.correlation()
-            generators = dual.gens()
+            generators = tuple(dual.module_generators())
             assert all(
                 correlation(v).b(w) == (1 if i == j else 0)
-                for i, v in enumerate(self.gens())
+                for i, v in enumerate(self.module_generators())
                 for j, w in enumerate(generators)
             ), "the proposed dual generators are not dual to the generators"
             return generators
@@ -178,42 +181,30 @@ class IntegralLattices(Category):
 
         # ---- overlattices ----
 
-        def dual_lattice_element(self: Any, coordinates: Any) -> Any:
-            r"""Return the element of $L^\vee$ written in $L$'s basis by ``coordinates``.
-
-            The catalogue displays glue vectors as rational coordinates in
-            $L$'s own basis, which is how they appear in the literature.  An
-            element of $L^\vee$ is written in the dual basis, and
-            $\sum_i a_i e_i^\vee = \sum_j v_j e_j$ gives $a = vG$ -- so the
-            conversion is by the Gram matrix, and the coordinates come out
-            integral exactly when the vector lies in $L^\vee$ at all.
-            """
-            in_dual_basis = vector(QQ, coordinates) * self.gram_matrix()
-            assert all(entry in ZZ for entry in in_dual_basis), (
-                f"{tuple(coordinates)} does not lie in L^v: it pairs to "
-                f"{tuple(in_dual_basis)} with L's basis, and L^v is where those "
-                "pairings are integral"
-            )
-            return self.dual().linear_combination(in_dual_basis)
-
         def dual_lattice_generators(self: Any) -> Any:
             r"""Return the explicit module generators of $L^*$."""
-            return self.dual().gens()
+            return tuple(self.dual().module_generators())
 
         def dual_embedding(self: Any) -> Any:
             r"""Return the inclusion morphism $L\to L^*$."""
             return self.correlation()
 
         def discriminant_projection(self: Any) -> Any:
-            r"""Return the quotient morphism $\pi: L^* \to A_L=L^*/L$."""
+            r"""Return the quotient morphism $\pi: L^* \to A_L$.
+
+            The target $A_L$ carries the discriminant bilinear form for any
+            nondegenerate lattice and the discriminant quadratic form when $L$ is
+            even.
+            """
             return self.discriminant_group().projection()
 
-        def project_to_discriminant_group(self: Any, element: Any) -> Any:
-            r"""Project an element of $L^*$ to its class in $A_L$.
+        def project_to_discriminant_bilinear_form(self: Any, element: Any) -> Any:
+            r"""Project an element of $L^\vee$ to its class in the discriminant bilinear form $A_L$.
 
-            This method applies the stored quotient morphism
-            $\pi: L^*\to A_L$.  It does not accept coordinate rows; construct
-            elements of $L^*$ first with :meth:`dual_lattice_element`.
+            This applies the quotient morphism
+            $\pi: L^\vee\to A_L$. It does not accept coordinate rows; first
+            construct elements of $L^\vee$ with :meth:`correlation` applied to an
+            element of $L$.
             """
             projection = self.discriminant_projection()
             assert (
@@ -221,31 +212,38 @@ class IntegralLattices(Category):
                 and element.parent() is projection.domain()
             ), (
                 f"pi is defined on {projection.domain()}, and this is "
-                f"{element!r}. An element of L^v written in L's own basis is "
-                "built with dual_lattice_element(...), which converts by the "
-                "Gram matrix; a coordinate vector is named with the dual's "
-                "linear_combination."
+                f"{element!r}. An element of L^\vee is obtained as "
+                "correlation()(v) for some v in L."
             )
             return projection(element)
+
+        def project_to_discriminant_quadratic_form(self: Any, element: Any) -> Any:
+            r"""Project an element of $L^\vee$ to its class in $A_L$ with quadratic form.
+
+            This method is defined only for even lattices.
+            """
+            assert self.is_even(), "the discriminant quadratic form exists only for even lattices"
+            return self.project_to_discriminant_bilinear_form(element)
 
         def divided_discriminant_class(self: Any, element: Any) -> Any:
             r"""Return the discriminant element represented by $e/\operatorname{div}(e)$."""
             assert element in self, "divided_discriminant_class expects an element of this lattice"
             divisibility = self.div(element)
-            dual_element = self.correlation()(element) / QQ(divisibility)
+            dual_element = self.correlation()(element) / divisibility
             return self.discriminant_projection()(dual_element)
 
         def glue(self: Any, *elements: Any) -> Any:
             r"""Return the even overlattice glued along discriminant elements.
 
-            The inputs are elements of the discriminant group $A_L = L^\vee/L$.
+            The inputs are elements of the discriminant form $A_L = L^\vee/L$
+            (quadratic for even lattices, bilinear for odd).
             Their lifts in $L^\vee$ generate the overlattice together with the
             original lattice.  Catalogue entries should construct elements of
-            $L^*$ and project them to $A_L$ before calling this method.
+            $L^\vee$ and project them to $A_L$ before calling this method.
             """
             rank = self.rank()
             rational_rows = [
-                [QQ.one() if i == j else QQ.zero() for j in range(rank)]
+                [1 if i == j else 0 for j in range(rank)]
                 for i in range(rank)
             ]
             rational_rows.extend(
@@ -261,13 +259,13 @@ class IntegralLattices(Category):
                     for row in rational_rows
                     for coordinate in row
                 ),
-                ZZ.one(),
+                1,
             )
 
             scaled = matrix(
                 ZZ,
                 [
-                    [ZZ(denominator * coordinate) for coordinate in row]
+                    [denominator * coordinate for coordinate in row]
                     for row in rational_rows
                 ],
             )
@@ -359,7 +357,11 @@ class IntegralLattices(Category):
                 zip(
                     self.generating_set(),
                     (
-                        dual_module.linear_combination(row)
+                        zipsum(
+            row,
+            dual_module.module_generators(),
+            dual_module.zero(),
+        )
                         for row in self.gram_matrix().rows()
                     ),
                 )
@@ -423,7 +425,7 @@ class IntegralLattices(Category):
             the second sum is even whatever the lattice is, so $q$ is even
             exactly when every $q(e_i)$ is.
             """
-            return all(generator.q() % 2 == 0 for generator in self.gens())
+            return all(generator.q() % 2 == 0 for generator in self.module_generators())
 
         def genus(self: Any) -> Any:
             r"""Return the genus symbol: the local data of the form at every place.
@@ -521,19 +523,19 @@ class IntegralLattices(Category):
 
             Three distinct things are in play.
 
-            * ``self.gens()`` are the basis vectors $e_i$ of $L$.
+            * ``self.module_generators()`` are the basis vectors $e_i$ of $L$.
             * :meth:`dual_lattice_generators` are the $e_i^\vee$ of $L^\vee$.
             * :meth:`dual_embedding` is $c$ itself, whose matrix is $G$ -- in
               the $e_i^\vee$ basis it is generally not the identity; for
               $A_1(-1)^n$ it is $2I$.
 
             A displayed row in the catalogue is therefore turned into an element
-            of $L^\vee$ with :meth:`dual_lattice_element` first, and only then
+            of $L^\vee$ with :meth:`correlation` first, and only then
             projected.
             """
             cache = f"_preamble_discriminant_group_{bool(reduce_trivial)}"
             cached = self.__dict__.get(cache)
-            if ZZ(s) == 0 and cached is not None:
+            if s == 0 and cached is not None:
                 return cached
 
             correlation = self.correlation()
@@ -549,24 +551,21 @@ class IntegralLattices(Category):
                 # Smith basis would be a different object again, not this one
                 # with the trivial components dropped.
                 surviving = [
-                    generator for generator in form.gens() if generator.order() != 1
+                    generator for generator in form.module_generators() if generator.order() != 1
                 ]
                 form = form.regenerate(surviving)
-            if ZZ(s) != 0:
+            if s != 0:
                 return form.primary_part(s)
             setattr(self, cache, form)
             return form
 
         def is_coeven(self: Any) -> bool:
             r"""Return whether the discriminant form is integer-valued ($\delta=0$)."""
-            from sage.rings.infinity import Infinity
-            from sage.rings.rational_field import QQ
-
             disc = self.discriminant_group()
-            assert disc.cardinality() < Infinity, (
-                "discriminant group is infinite; the lattice must be nondegenerate"
+            assert disc.cardinality() < Sets.ℵ[0], (
+                "discriminant quadratic module is infinite; the lattice must be nondegenerate"
             )
-            return all(QQ(element.q()).denominator() == 1 for element in disc)
+            return all(element.q().denominator() == 1 for element in disc)
 
         def is_coodd(self: Any) -> bool:
             """Return the negation of :meth:`is_coeven`."""
@@ -577,7 +576,8 @@ class IntegralLattices(Category):
             return Integer(0) if self.is_coeven() else Integer(1)
 
         def is_p_elementary(self: Any, p: Any) -> bool:
-            r"""Return whether the discriminant group $A_L$ is elementary abelian of exponent $p$.
+            r"""Return whether the discriminant quadratic module $A_L$ is elementary
+            abelian of exponent $p$.
 
             Defers to :meth:`DiscriminantQuadraticModules.ParentMethods.is_p_elementary`
             on ``self.discriminant_group()``.
@@ -610,22 +610,21 @@ class IntegralLattices(Category):
         def to_lin_comb_generators(self: Any, element: Any) -> str:
             r"""Return an element as a linear combination of the named basis."""
             names = self.variable_names()
-            coords = element._coordinates()
+            coefficients = element.coefficients()
 
             def term(name: str, coefficient: Any) -> str | None:
-                match coefficient:
-                    case 0:
-                        return None
-                    case 1:
-                        return name
-                    case -1:
-                        return f"-{name}"
-                    case value if value not in (0, 1, -1):
-                        return f"{value}*{name}"
+                if coefficient == 0:
+                    return None
+                if coefficient == 1:
+                    return name
+                if coefficient == -1:
+                    return f"-{name}"
+                return f"{coefficient}*{name}"
 
             terms = tuple(
                 rendered
-                for name, coefficient in zip(names, coords, strict=True)
+                for name, generator in zip(names, self.generating_set(), strict=True)
+                for coefficient in (coefficients.get(generator, 0),)
                 if (rendered := term(name, coefficient)) is not None
             )
             match terms:
@@ -689,7 +688,7 @@ class IntegralLattices(Category):
             result = BilinearForm(
                 self.forget_form(),
                 ZZ,
-                ZZ(scale) * matrix(ZZ, self.gram_matrix()),
+                scale * matrix(ZZ, self.gram_matrix()),
             )
             assert _summand_ranks(result) == _summand_ranks(self), (
                 "twisting changed the decomposition: "
@@ -699,15 +698,10 @@ class IntegralLattices(Category):
 
         # ---- morphisms / automorphisms ----
 
-        def Hom(self: Any, codomain: Any) -> Any:
-            r"""Return $\mathrm{Hom}(L,M)$, whose elements are form-preserving.
-
-            A form morphism is one already: :class:`FormMorphism` is built from
-            where the generators go and checks $f^*b_M=b_L$ on construction, so
-            the homset's job is only to say which maps it is the set of, and to
-            read the several ways a caller names one.
-            """
-            return lattice_homset(self, codomain)
+        def Hom(self: Any, codomain: Any, *args: Any, **kwargs: Any) -> Any:
+            if hasattr(codomain, "base_ring") and getattr(codomain, "base_ring")() == self.base_ring() and hasattr(codomain, "form"):
+                return lattice_homset(self, codomain)
+            return Parent.Hom(self, codomain, *args, **kwargs)
 
         def Aut(self: Any) -> Any:
             r"""Return $\mathrm{Aut}(L)=O(L)$ as an endomorphism Homset.
@@ -758,7 +752,7 @@ class IntegralLattices(Category):
                         for label in self.generating_set()
                     }
                 )
-                for generator in subgroup.gens()
+                for generator in subgroup.group_generators()
             ]
             return self.with_action(subgroup, images)
 
@@ -782,15 +776,6 @@ class IntegralLattices(Category):
             r"""Return $(L^G)^{\perp L}\hookrightarrow L$."""
             return self._acted_on_by(action).formed_coinvariants()
 
-        def coinvariant_inclusion(self: Any, action: Any) -> Any:
-            r"""Return the primitive inclusion $(L^G)^{\perp}\hookrightarrow L$.
-
-            Which is the coinvariant subobject's own structure morphism: a
-            subobject is an object equipped with its inclusion, so there is
-            nothing here to build.
-            """
-            return self.coinvariant_lattice(action).embedding()
-
         def _induced_lattice(self: Any, coordinate_basis: Any) -> Any:
             """Return the integral lattice with Gram form induced on ``coordinate_basis``."""
             basis = list(coordinate_basis)
@@ -804,8 +789,13 @@ class IntegralLattices(Category):
             assert induced.is_symmetric(), (
                 "induced form on the sublattice is not symmetric"
             )
+            dual_generators = tuple(self.module_generators())
             generators = tuple(
-                self.linear_combination(row)
+                zipsum(
+            row,
+            dual_generators,
+            self.zero(),
+        )
                 for row in basis
             )
             return _lattice_with_gram(
@@ -817,7 +807,7 @@ class IntegralLattices(Category):
 
         def _first_ngens(self: Any, count: int) -> tuple[Any, ...]:
             r"""Return generators matching the declared name slots."""
-            generators = self.gens()
+            generators = self.module_generators()
             spec = getattr(self, "_ellipsis_spec", None)
             if spec is None or len(spec) != count:
                 return tuple(generators[:count])
@@ -856,7 +846,7 @@ class IntegralLattices(Category):
         # ---- LaTeX ----
 
         def _latex_(self: Any) -> str:
-            r"""Multi-line LaTeX with rank, signature, discriminant, Gram, discriminant group."""
+            r"""Multi-line LaTeX with rank, signature, discriminant, Gram, discriminant module."""
             rank = self.rank()
             pos, neg = self.signature_pair()
             disc = self.gram_matrix().det()
@@ -910,13 +900,47 @@ class IntegralLattices(Category):
             r"""Return the divisibility of this vector."""
             return self.parent().div(self)
 
+        def primitive_dual(self: Any) -> Any:
+            r"""Return the primitive dual lift ``v / div(v)`` in ``L^\\vee``."""
+            if self.is_zero():
+                return self.parent().correlation()(self)
+            divisibility = self.div()
+            assert divisibility > 0, f"nonzero element has nonnegative divisibility, got {divisibility}"
+            return self.parent().correlation()(self) / divisibility
+
+        def primitive_dual_in_discriminant_bilinear_form(self: Any) -> Any:
+            r"""Return the class of $v/\operatorname{div}(v)$ in the discriminant bilinear form $A_L$."""
+            return self.parent().project_to_discriminant_bilinear_form(
+                self.primitive_dual()
+            )
+
+        def primitive_dual_in_discriminant_quadratic_form(self: Any) -> Any:
+            r"""Return the class of $v/\operatorname{div}(v)$ in the discriminant quadratic form $A_L$.
+
+            Defined only for even lattices.
+            """
+            return self.parent().project_to_discriminant_quadratic_form(
+                self.primitive_dual()
+            )
+
         def is_primitive(self: Any) -> bool:
             r"""Return whether $L/\mathbb Zv$ is torsion free.
 
             Equivalently, whether the coordinates of $v$ have no common factor:
             $v=nw$ for some $w\in L$ exactly when $n$ divides all of them.
             """
-            return abs(gcd(list(self._coordinates()))) == 1
+            return self._content() == 1
+
+        def _content(self: Any) -> Integer:
+            r"""Return the coefficient content of this lattice element."""
+            return abs(
+                gcd(
+                    tuple(
+                        self.coefficients().get(generator, 0)
+                        for generator in self.parent().generating_set()
+                    )
+                )
+            )
 
         def __pow__(self: Any, exponent: Any, mod: Any = None) -> Any:
             r"""``v ^ 2`` -> $q(v)$."""
@@ -986,16 +1010,21 @@ def _direct_sum_framing_set(left: Any, right: Any) -> Any:
     return finite_ordered_set(labels)
 
 def _discriminant_lift_row(element: Any, rank: int) -> list[Any]:
-    r"""Return a representative row in $L^*$ for a discriminant-group element."""
+    r"""Return a representative row in $L^\vee$ for a discriminant form element.
+
+    The target is quadratic for even lattices and bilinear otherwise.
+    """
     assert isinstance(element, FormModuleElement), (
         f"glue is defined on classes in A_L, and this is {element!r}. Build an "
-        "element of L^v with dual_lattice_element(...), then project it with "
-        "project_to_discriminant_group(...); a coordinate vector is not a "
+        "element of L^\\vee with correlation(), then project it with "
+        "project_to_discriminant_bilinear_form(...); a coordinate vector is not a "
         "discriminant class until someone says which combination of generators "
         "it names."
     )
     lift = element.parent().projection().lift(element)
-    row = [QQ(coordinate) for coordinate in lift._coordinates()]
+    coefficients = lift.coefficients()
+    basis = tuple(lift.parent().generating_set())
+    row = [coefficients.get(generator, 0) for generator in basis]
     assert len(row) == rank, (
         f"discriminant element lift has rank {len(row)}, expected {rank}"
     )
@@ -1114,7 +1143,7 @@ def _decompose_lattice(L: Any) -> None:
     ]
 
     _subdivide_gram(L, cuts, cuts)
-    generators = tuple(L.gens())
+    generators = tuple(L.module_generators())
     summands = tuple(
         Subobject(block.Hom(L)(generators[start:end]))
         for block, (start, end) in zip(blocks, bounds)
@@ -1261,7 +1290,7 @@ def _gram_from_name(name: str) -> Matrix:
     )
     from sage.combinat.root_system.cartan_matrix import CartanMatrix
 
-    return matrix(ZZ, CartanMatrix([match.group(1), ZZ(match.group(2))]))
+    return matrix(ZZ, CartanMatrix([match.group(1), int(match.group(2))]))
 
 
 def _integral_lattice_with_names(

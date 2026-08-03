@@ -29,6 +29,15 @@ _layout_token_types = {
 }
 
 
+def _previous_nonlayout_token(
+    tokens: list[tuple[int, str]], position: int
+) -> tuple[int, str] | None:
+    pointer = position - 1
+    while pointer >= 0 and tokens[pointer][0] in _layout_token_types:
+        pointer -= 1
+    return None if pointer < 0 else tokens[pointer]
+
+
 def _tokens(source: str) -> list[tuple[int, str]]:
     return [
         (token.type, token.string)
@@ -39,6 +48,102 @@ def _tokens(source: str) -> list[tuple[int, str]]:
 
 def _untokenize(tokens: list[tuple[int, str]]) -> str:
     return tokenize.untokenize(tokens)
+
+
+def _repair_match_case_pattern_integers(tokens: list[tuple[int, str]]) -> list[tuple[int, str]]:
+    """Restore ``case Integer/N`` pattern constants to plain integer tokens.
+
+    Sage's preparse rewrites integer literals in match patterns as
+    ``Integer(<n>)`` (and ``-Integer(<n>)``), which is invalid pattern syntax.
+    """
+    repaired = []
+    index = 0
+    while index < len(tokens):
+        token_type, token_string = tokens[index]
+        if token_type != tokenize.NAME or token_string != "case":
+            repaired.append((token_type, token_string))
+            index += 1
+            continue
+
+        repaired.append((token_type, token_string))
+        index += 1
+        while index < len(tokens) and tokens[index][0] in _layout_token_types:
+            repaired.append(tokens[index])
+            index += 1
+
+        pattern_start = index
+        if index < len(tokens) and tokens[index] == (tokenize.OP, "*"):
+            index += 1
+            while index < len(tokens) and tokens[index][0] in _layout_token_types:
+                index += 1
+            pattern_start = index
+        sign = 1
+        if index < len(tokens) and tokens[index] == (tokenize.OP, "-"):
+            sign = -1
+            index += 1
+            while index < len(tokens) and tokens[index][0] in _layout_token_types:
+                index += 1
+            if index >= len(tokens):
+                break
+
+        if index < len(tokens) and tokens[index][0] == tokenize.NAME:
+            if tokens[index][1].startswith("_sage_const_"):
+                suffix = tokens[index][1][12:]
+                if suffix.isdigit():
+                    repaired.append((tokenize.NUMBER, str(int(suffix) * sign)))
+                    index += 1
+                    continue
+
+            if (
+                tokens[index] == (tokenize.NAME, "Integer")
+                and index + 3 < len(tokens)
+                and tokens[index + 1] == (tokenize.OP, "(")
+            ):
+                index += 2
+                while index < len(tokens) and tokens[index][0] in _layout_token_types:
+                    index += 1
+                if (
+                    index < len(tokens)
+                    and tokens[index][0] == tokenize.NUMBER
+                    and tokens[index][1].isdigit()
+                    and index + 1 < len(tokens)
+                    and tokens[index + 1] == (tokenize.OP, ")")
+                ):
+                    value = int(tokens[index][1]) * sign
+                    repaired.append((tokenize.NUMBER, str(value)))
+                    index += 2
+                    continue
+
+        # Not a recognized constant pattern: keep tokens verbatim.
+        repaired.extend(tokens[pattern_start:index])
+    return repaired
+
+
+def _repair_match_subject_multiplication(tokens: list[tuple[int, str]]) -> list[tuple[int, str]]:
+    """Drop implicit-multiplication stars in ``match`` subject positions.
+
+    ``match *foo(...)`` is produced by Sage's implicit-multiplication preparse
+    but is invalid Python.
+    """
+    repaired: list[tuple[int, str]] = []
+    index = 0
+    while index < len(tokens):
+        token_type, token_string = tokens[index]
+        repaired.append((token_type, token_string))
+        index += 1
+        if token_type != tokenize.NAME or token_string != "match":
+            continue
+
+        while index < len(tokens) and tokens[index][0] in _layout_token_types:
+            repaired.append(tokens[index])
+            index += 1
+
+        if index < len(tokens) and tokens[index] == (tokenize.OP, "*"):
+            index += 1
+            while index < len(tokens) and tokens[index][0] in _layout_token_types:
+                index += 1
+        continue
+    return repaired
 
 
 def _binder(
@@ -152,10 +257,20 @@ def _rewrite(tokens: list[tuple[int, str]]) -> list[tuple[int, str]]:
                 has_top_level_colon = True
             elif (
                 nested_depth == 0
-                and inner_string == "**"
+                and (
+                    inner_string == "**"
+                    or (
+                        inner_string == "*"
+                        and position + 1 < len(original_inner)
+                        and original_inner[position + 1][1] == "*"
+                    )
+                )
                 and (
                     position == 0
-                    or original_inner[position - 1][1] == ","
+                    or (
+                        (previous := _previous_nonlayout_token(original_inner, position))
+                        and previous[1] == ","
+                    )
                 )
             ):
                 has_top_level_unpack = True
@@ -230,7 +345,10 @@ def _rewrite_set_literals(source: str) -> str:
 def preparse(source: str, *args: Any, **kwargs: Any) -> str:
     r"""Apply Sage's preparser and then the research notation."""
     sage_preparse.implicit_multiplication(True)
-    return _rewrite_set_literals(_native_preparse(source, *args, **kwargs))
+    native = _native_preparse(source, *args, **kwargs)
+    repaired = _repair_match_case_pattern_integers(_tokens(native))
+    repaired = _repair_match_subject_multiplication(repaired)
+    return _rewrite_set_literals(_untokenize(repaired))
 
 
 def install_preparser() -> None:

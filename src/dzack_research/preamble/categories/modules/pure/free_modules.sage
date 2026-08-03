@@ -5,7 +5,7 @@ from sage.categories.modules import Modules
 
 
 class FreeModules(Category_over_base_ring):
-    r"""Category of free modules over a base ring, without a chosen basis."""
+    r"""Category of free modules over a base ring, without a chosen module_generators."""
 
     @classmethod
     def _repr_object_names(cls) -> str:

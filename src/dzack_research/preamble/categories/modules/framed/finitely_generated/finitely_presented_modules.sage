@@ -12,7 +12,7 @@ from sage.categories.morphism import SetMorphism
 from sage.matrix.constructor import matrix
 from sage.matrix.matrix0 import Matrix
 from sage.misc.misc_c import prod
-from sage.modules.free_module_element import FreeModuleElement, vector
+from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -149,7 +149,7 @@ class FinitelyPresentedModule(Parent):
         return self._relations.ncols()
 
     def rank(self) -> Any:
-        return ZZ(self.ngens() - self._relations.rank())
+        return self.ngens() - self._relations.rank()
 
     def is_torsion(self) -> bool:
         return self.base_ring() is ZZ and self.rank() == 0
@@ -161,7 +161,7 @@ class FinitelyPresentedModule(Parent):
         return all(abs(entry) == 1 for entry in smith.diagonal() if entry != 0)
 
     def is_zero(self) -> bool:
-        return all(generator == self.zero() for generator in self.gens())
+        return all(generator == self.zero() for generator in self.module_generators())
 
     def invariants(self) -> tuple:
         assert self.base_ring() is ZZ, "invariants are defined here over ZZ"
@@ -172,33 +172,15 @@ class FinitelyPresentedModule(Parent):
 
     def cardinality(self) -> Any:
         assert self.is_torsion(), "a module with positive rank is infinite"
-        return prod(self.invariants(), ZZ.one())
+        return prod(self.invariants(), 1)
 
     def exponent(self) -> Any:
         invariants = self.invariants()
-        return invariants[-1] if invariants else ZZ.one()
+        return invariants[-1] if invariants else 1
 
     def zero(self) -> FinitelyPresentedModuleElement:
         return self._from_coordinates(
             [self.base_ring().zero()] * self.ngens()
-        )
-
-    def linear_combination(self, coefficients: Any) -> FinitelyPresentedModuleElement:
-        match coefficients:
-            case dict():
-                coefficient_function = coefficients
-            case list() | tuple() | FreeModuleElement():
-                coefficient_function = _finite_coefficient_function(
-                    self, coefficients
-                )
-            case _:
-                raise TypeError(
-                    "coefficients are a finite function or a coordinate "
-                    "vector in the ordered generating set"
-                )
-        return FramedModules.ParentMethods.linear_combination(
-            self,
-            coefficient_function,
         )
 
     def _reduce(self, coordinates: Any) -> Any:
@@ -232,7 +214,7 @@ class FinitelyPresentedModule(Parent):
     def _element_constructor_(self, x: Any) -> FinitelyPresentedModuleElement:
         assert isinstance(x, FinitelyPresentedModuleElement) and x.parent() is self, (
             f"{x} is not an element of {self}; construct classes using this "
-            "module's generators or linear_combination"
+            "module's generators and explicit sums"
         )
         return x
 

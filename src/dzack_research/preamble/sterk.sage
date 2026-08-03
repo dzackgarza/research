@@ -2,7 +2,7 @@ r"""Sterk's five $0$-cusps for degree-$2$ polarized Enriques moduli.
 
 Sterk classifies the Baily--Borel $0$-cusps by $\mathrm{O}$-orbits of
 primitive isotropic vectors in $T_{\mathrm{En}}$.  Coordinates and dual
-generators are those of the named catalogue lattices
+module_generators are those of the named catalogue lattices
 (:attr:`~Lattices.TdP`, :attr:`~Lattices.TEn`); the
 embedding chain
 $T_{\mathrm{Co}}\hookrightarrow T_{\mathrm{En}}\hookrightarrow T_{\mathrm{dP}}
@@ -99,17 +99,20 @@ _STERK_DIAGRAM_LAYOUTS: dict[str, dict[int, list[float]]] = {
 }
 
 
-def _named_basis(lattice: Any) -> dict[str, Any]:
-    return dict(zip(lattice.variable_names(), lattice.gens(), strict=True))
+def _named_module_generators(lattice: Any) -> dict[str, Any]:
+    return dict(
+        zip(lattice.variable_names(), lattice.module_generators(), strict=True)
+    )
 
 
 def _in_dual(lattice: Any) -> Any:
     r"""Return $c: L\to L^\vee$, for writing a vector the way the literature does.
 
-    Sterk's vectors are written as sums of basis and dual-basis vectors --
+    Sterk's vectors are written as sums of module_generating sets and
+    dual module_generating sets --
     $e'+f'+w_1+\tilde w_8$ -- which is arithmetic in $L\otimes\mathbb Q$ with
     $L\subseteq L^\vee$ left understood.  Here that inclusion is $c$: the sum
-    happens in $L^\vee$, with the basis vectors carried over by $c$, and
+    happens in $L^\vee$, with the module_generating vectors carried over by $c$, and
     ``c.lift`` names the element of $L$ it turns out to be.  When it is not one
     -- when the sum is not in $c(L)$ -- there is no such element and the lift
     says so instead of returning a rational vector nobody checked.
@@ -128,12 +131,12 @@ class Sterk:
     def roots_18_2_0() -> dict[str, Any]:
         r"""Return the $22$ generating vectors $v_1,\ldots,v_{22}$ in $T_{\mathrm{dP}}$."""
         TdP = Lattices.TdP
-        b = _named_basis(TdP)
+        b = _named_module_generators(TdP)
         (
             eb, fb, epb, fpb,
             w1, w2, w3, w4, w5, w6, w7, w8,
             w1t, w2t, w3t, w4t, w5t, w6t, w7t, w8t,
-        ) = TdP.dual_basis()
+        ) = TdP.dual_lattice().module_generators()
         c = _in_dual(TdP)
         v = {
             "v1": b["a8t"],
@@ -166,12 +169,12 @@ class Sterk:
     def roots_18_0_0() -> dict[str, Any]:
         r"""Return the $19$ generating vectors $w_1,\ldots,w_{19}$ in $T_{\mathrm{dP}}$."""
         TdP = Lattices.TdP
-        b = _named_basis(TdP)
+        b = _named_module_generators(TdP)
         (
             eb, fb, epb, fpb,
             w1, w2, w3, w4, w5, w6, w7, w8,
             w1t, w2t, w3t, w4t, w5t, w6t, w7t, w8t,
-        ) = TdP.dual_basis()
+        ) = TdP.dual_lattice().module_generators()
         c = _in_dual(TdP)
         w = {
             "w1": b["a1"],
@@ -214,10 +217,9 @@ class Sterk:
         def reflect(x: Any) -> Any:
             # The coefficient is $b(v_{22},x)/2$, and it has to be an integer
             # for the result to be in the lattice at all -- which it is
-            # because $v_{22}$ has even pairings, and which ZZ() checks rather
-            # than assumes.
-            half = QQ(v["v22"].b(x)) / 2
-            return x + ZZ(half) * v["v22"]
+            # because $v_{22}$ has even pairings, and this checks it is integral.
+            half = v["v22"].b(x) / 2
+            return x + half * v["v22"]
 
         def involute(x: Any) -> Any:
             return x + reflect(x)
@@ -308,8 +310,10 @@ class Sterk:
     def selected_isotropic_vectors() -> dict[str, Any]:
         r"""Return Sterk's five generating isotropic lines in $T_{\mathrm{En}}$."""
         TEn = Lattices.TEn
-        b = _named_basis(TEn)
-        ed, fd, epd, fpd, w1, w2, w3, w4, w5, w6, w7, w8 = TEn.dual_basis()
+        b = _named_module_generators(TEn)
+        ed, fd, epd, fpd, w1, w2, w3, w4, w5, w6, w7, w8 = (
+            TEn.dual_lattice().module_generators()
+        )
         c = _in_dual(TEn)
         omega = 2 * w8
         alpha = 2 * w1
@@ -339,10 +343,10 @@ class Sterk:
     def sterk5_in_U_E8_2() -> tuple[Any, tuple[Any, ...]]:
         r"""Return Sterk $5$'s $14$ roots inside $U\oplus E_8(2)$."""
         lattice = Lattices.U.direct_sum(Lattices.E8_2)
-        gens = list(lattice.gens())
-        e, f = gens[0], gens[1]
-        a = {i: gens[i + 1] for i in range(1, 9)}
-        dual = lattice.dual_basis()
+        module_generators = list(lattice.module_generators())
+        e, f = module_generators[0], module_generators[1]
+        a = {i: module_generators[i + 1] for i in range(1, 9)}
+        dual = lattice.dual_lattice().module_generators()
         ad = {i: dual[i + 1] for i in range(1, 9)}
         c = _in_dual(lattice)
         vectors = (
@@ -371,10 +375,10 @@ class Sterk:
     def sterks_in_ten() -> dict[str, tuple[Any, ...]]:
         r"""Return Sterk configurations $1$–$3$ in $T_{\mathrm{En}}$ coordinates."""
         TEn = Lattices.TEn
-        b = _named_basis(TEn)
+        b = _named_module_generators(TEn)
         e, f, ep, fp = b["e"], b["f"], b["ep"], b["fp"]
         a = {i: b[f"a{i}"] for i in range(1, 9)}
-        dual = TEn.dual_basis()
+        dual = TEn.dual_lattice().module_generators()
         ad2 = {i: 2 * dual[i + 3] for i in range(1, 9)}
         ad1 = {i: dual[i + 3] for i in range(1, 9)}
         c = _in_dual(TEn)
@@ -411,7 +415,7 @@ class Sterk:
 def _sterk_diagram(name: str, roots: tuple[Any, ...]) -> Any:
     r"""Construct one named Sterk diagram from actual roots in ``Lattices.TdP``."""
     # The roots are elements of TdP already: they were built from its
-    # generators.  Reading them as coordinates was a recast that only made
+    # module_generators.  Reading them as coordinates was a recast that only made
     # sense while a lattice element was an integer vector.
     rooted = tuple(roots)
     positions = {

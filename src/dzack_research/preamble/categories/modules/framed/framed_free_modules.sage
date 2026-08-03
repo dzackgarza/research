@@ -37,13 +37,23 @@ class FramedFreeModules(Category_over_base_ring):
     class ParentMethods:
         def generator_morphism(self: Any) -> SetMorphism:
             r"""Return the canonical set morphism \(S\to U(F_R(S))\)."""
-            morphism = self._free_generator_morphism
+            morphism = self.__dict__.get("_free_generator_morphism")
+            if morphism is None:
+                generating_set = self.__dict__.get("_generating_set")
+                assert (
+                    generating_set is not None
+                ), "a framed free module stores its framing set"
+                morphism = SetMorphism(
+                    Hom(generating_set, UnderlyingSet(self), Sets()),
+                    self._generator_element,
+                )
+                self._free_generator_morphism = morphism
             assert isinstance(morphism, SetMorphism), (
                 "a framed free module stores its canonical generator morphism"
             )
             assert (
                 isinstance(morphism.codomain(), UnderlyingSet)
-                and morphism.codomain().structured_parent() is self
+                and morphism.codomain().structured_parent() == self
             ), (
                 "the canonical generator morphism has the wrong codomain"
             )
@@ -51,7 +61,7 @@ class FramedFreeModules(Category_over_base_ring):
 
         def basis(self):
             r"""Return the image of the canonical generator morphism."""
-            return self.gens()
+            return self.module_generators()
 
         def hom(self: Any, images: Any, codomain: Any = None) -> Any:
             r"""Extend a set morphism \(S\to U(N)\) \(R\)-linearly."""
@@ -183,14 +193,10 @@ class FreeModuleOnSet(Parent):
             category=FramedFreeModules(base_ring),
         )
         refine(self, FramedFreeModules(base_ring))
-        self._free_generator_morphism = SetMorphism(
-            Hom(generating_set, UnderlyingSet(self), Sets()),
-            self._generator_element,
-        )
         self._framing_morphism = framing_morphism(
             self,
             self,
-            self._free_generator_morphism,
+            self._generator_element,
         )
 
     def generating_set(self) -> Parent:

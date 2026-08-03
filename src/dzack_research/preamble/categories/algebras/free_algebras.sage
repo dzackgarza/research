@@ -4,7 +4,7 @@ from sage.categories.category_types import Category_over_base_ring
 
 
 class FreeAlgebras(Category_over_base_ring):
-    r"""Category of free commutative algebras over a base ring, without a chosen basis."""
+    r"""Category of free commutative algebras over a base ring, without a chosen algebra_generators."""
 
     @classmethod
     def _repr_object_names(cls) -> str:

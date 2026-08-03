@@ -43,7 +43,7 @@ class DiscriminantBilinearModules(Category):
         relations = matrix(ZZ, module.relation_matrix())
         assert all(entry in ZZ for entry in (relations * gram).list()), (
             "b is not defined on the classes: some relation does not pair "
-            "integrally with the generators"
+            "integrally with the module_generators"
         )
         form = BilinearForm(module, QmodnZ(1), gram)
         refine(form, self)
@@ -91,18 +91,18 @@ class DiscriminantBilinearModules(Category):
     class ParentMethods:
         r"""Methods available on discriminant bilinear modules."""
 
-        def regenerate(self: Any, generators: Any) -> "FormModule":
-            r"""Return this form on the generating set ``generators``.
+        def regenerate(self: Any, module_generators: Any) -> "FormModule":
+            r"""Return this form on the generating set ``module_generators``.
 
             A different generating set is a different object of this category,
             so this is a construction and not a view: the same pairings, read
             on a new set, presented by the morphism that set induces.
             """
-            generators = tuple(generators)
-            relations, gram = regenerating_data(self, generators)
+            module_generators = tuple(module_generators)
+            relations, gram = regenerating_data(self, module_generators)
             module = FinitelyPresentedTorsionModules().from_relations(
                 relations,
-                finite_ordered_set(generators),
+                finite_ordered_set(module_generators),
             )
             return DiscriminantBilinearModules().from_module(module, gram)
 
@@ -127,7 +127,7 @@ class DiscriminantBilinearModules(Category):
             return "G_{b_{A_L}}"
 
         def invariant_factor_form(self: Any) -> "FormModule":
-            r"""Return $b$ on generators from the invariant factor decomposition.
+            r"""Return $b$ on module_generators from the invariant factor decomposition.
 
             The same cokernel of the same $c$, so the same $b$; what changes is the
             generating set, and with it the object.  The change merges factors
@@ -135,12 +135,12 @@ class DiscriminantBilinearModules(Category):
             $\mathbb Z/12$ rather than on two as $\mathbb Z/3\oplus\mathbb Z/4$ --
             so no decomposition of $L$ survives it.
             """
-            return self.regenerate(self.smith_form_gens())
+            return self.regenerate(self.smith_form_generators())
 
         def normal_form(self: Any) -> "FormModule":
-            r"""Return $b$ on $p$-adic Jordan generators -- again a different object.
+            r"""Return $b$ on $p$-adic Jordan module_generators -- again a different object.
 
-            The generators are the Jordan ones prime by prime, cutting out their own
+            The module_generators are the Jordan ones prime by prime, cutting out their own
             orthogonal blocks (Peters--Sterk Def. 11.2.2, Prop. 11.2.3 [PS24]).  For
             odd $p$ they are unique: Prop. 11.1.3 makes the discriminant-form map a
             bijection onto $p$-primary symmetric torsion forms of that length, and

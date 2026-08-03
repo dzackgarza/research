@@ -33,8 +33,8 @@ from sage_lattice_category_spike.objects.sets import Sets
 COXETER_NEGATIVE_FOUR_NODE_COLOR = "#F8F9FE"
 COXETER_NEGATIVE_TWO_NODE_COLOR = "#BFC9CA"
 COXETER_NODE_COLORS = {
-    ZZ(-4): COXETER_NEGATIVE_FOUR_NODE_COLOR,
-    ZZ(-2): COXETER_NEGATIVE_TWO_NODE_COLOR,
+    -4: COXETER_NEGATIVE_FOUR_NODE_COLOR,
+    -2: COXETER_NEGATIVE_TWO_NODE_COLOR,
 }
 COXETER_DRAWING_CONVENTIONS = (
     ("square -4 root", f"white node, fill {COXETER_NEGATIVE_FOUR_NODE_COLOR}"),
@@ -248,7 +248,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
             names = tuple(f"s_{i}" for i in index_set)
         normalized_names = normalize_names(rank, names)
         gram = realization.gram_of(roots)
-        entries = [[ZZ.one() if i == j else _coxeter_exponent(gram[i, i], gram[j, j], gram[i, j]) for j in range(rank)] for i in range(rank)]
+        entries = [[1 if i == j else _coxeter_exponent(gram[i, i], gram[j, j], gram[i, j]) for j in range(rank)] for i in range(rank)]
         # Coxeter bonds m=∞ (parallel or divergent mirrors) make the root span
         # degenerate.  That is a fact about the form, not about what kind of
         # object this is: a lattice here is a free module with a Z-valued
@@ -333,7 +333,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         return (self(vertex) for vertex in self._index_set)
 
     def cardinality(self) -> Integer:
-        return ZZ(len(self._index_set))
+        return len(self._index_set)
 
     def vertex(self, index: int) -> CoxeterVertex:
         return self(self._index_set[index])
@@ -579,11 +579,11 @@ def _coxeter_exponent(left_norm: object, right_norm: object, pairing: object) ->
     *Hyperbolic reflection groups*).
     """
     if pairing == 0:
-        return ZZ(2)
-    product = QQ(4) * QQ(pairing) ** 2 / (QQ(left_norm) * QQ(right_norm))
+        return 2
+    product = 4 * pairing ** 2 / (left_norm * right_norm)
     if product >= 4:
         return infinity
-    exponent_by_product = {QQ(1): ZZ(3), QQ(2): ZZ(4), QQ(3): ZZ(6)}
+    exponent_by_product = {1: 3, 2: 4, 3: 6}
     assert product in exponent_by_product, f"unsupported rank-two root angle; left_norm={left_norm}, right_norm={right_norm}, pairing={pairing}, product={product}"
     return exponent_by_product[product]
 
@@ -599,13 +599,13 @@ def _tikz_edge_style(left_norm: object, right_norm: object, pairing: object) -> 
     if exponent == infinity:
         # The Coxeter matrix collapses both to ∞; the drawing keeps Vinberg's
         # distinction: thick = parallel mirrors, dashed = divergent mirrors.
-        product = QQ(4) * QQ(pairing) ** 2 / (QQ(left_norm) * QQ(right_norm))
+        product = 4 * pairing ** 2 / (left_norm * right_norm)
         return "coxeter parallel" if product == 4 else "coxeter divergent"
     assert False, f"TikZ export does not render Coxeter bond m={exponent}"
 
 
 def _tikz_node_color(norm: object) -> str:
-    norm = ZZ(norm)
+    norm = norm
     assert norm in COXETER_NODE_COLORS, f"no Coxeter node color is defined for square {norm}"
     if norm == -4:
         return "coxeterNegativeFour"

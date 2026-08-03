@@ -26,22 +26,6 @@ if "Framed" not in cwa.all_axioms:
     cwa.all_axioms.add("Framed")
 
 
-def _finite_coefficient_function(module: Any, coefficients: Any) -> dict:
-    r"""Pair a coordinate vector with the module's ordered generating set."""
-    coefficients = tuple(coefficients)
-    assert len(coefficients) == module.ngens(), (
-        f"{module} has {module.ngens()} generators, got "
-        f"{len(coefficients)} coefficients"
-    )
-    return dict(
-        zip(
-            module.generating_set(),
-            coefficients,
-            strict=True,
-        )
-    )
-
-
 def _finite_generator_assignment(
     module: Any,
     images: list | tuple,
@@ -102,34 +86,28 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             r"""Return the domain \(S\) of the distinguished-generator morphism."""
             return self.generator_morphism().domain()
 
-        def generator(self, element_of_S: Any):
-            r"""Return the distinguished generator associated to \(s\in S\)."""
+        def module_generator(self, element_of_S: Any):
+            r"""Return the distinguished module generator associated to \(s\in S\)."""
             return self.generator_morphism()._call_(element_of_S)
 
-        def linear_combination(self: Any, coefficients: dict) -> Any:
-            r"""Return the specified finite \(R\)-linear combination."""
-            assert isinstance(coefficients, dict), (
-                "a finite linear combination is specified by its coefficient "
-                "function on the generating set"
-            )
-            return sum(
-                (
-                    self.base_ring()(coefficient)
-                    * self.generator(element_of_S)
-                    for element_of_S, coefficient in coefficients.items()
-                ),
-                self.zero(),
+        generator = module_generator
+
+        def module_generators(self) -> tuple:
+            r"""Return the framed generators as an iterable set.
+
+            For general framed modules this may be infinite, so the result is not
+            coerced to a tuple.
+            """
+            return ImageSubobject(
+                self.generator_morphism(),
+                self.generating_set(),
             )
 
-        @cached_method
-        def gens(self):
-            r"""Return the image of \(S\to U(M)\) without enumerating \(S\)."""
-            morphism = self.generator_morphism()
-            return ImageSubobject(morphism, morphism.domain())
-
-        def Hom(self, codomain: Any):
+        def Hom(self, codomain: Any, *args: Any, **kwargs: Any):
             r"""Return the canonical homset from this module to ``codomain``."""
-            return module_homset(self, codomain)
+            if hasattr(codomain, "base_ring") and getattr(codomain, "base_ring")() == self.base_ring():
+                return module_homset(self, codomain)
+            return Parent.Hom(self, codomain, *args, **kwargs)
 
         def is_framed(self: Any) -> bool:
             return True

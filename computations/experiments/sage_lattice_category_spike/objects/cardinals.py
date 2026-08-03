@@ -79,6 +79,21 @@ class Cardinal:
         assert self.is_finite(), f"{self} is not a finite cardinal"
         return ZZ(self._value)
 
+    def __int__(self) -> int:
+        if not self.is_finite():
+            raise TypeError(f"cannot convert infinite cardinal {self} to integer")
+        return int(self._value)
+
+    def __index__(self) -> int:
+        if not self.is_finite():
+            raise TypeError(f"cannot convert infinite cardinal {self} to integer index")
+        return int(self._value)
+
+    def _integer_(self, R=None) -> Integer:
+        if not self.is_finite():
+            raise TypeError(f"cannot convert infinite cardinal {self} to Sage Integer")
+        return ZZ(self._value)
+
     def __repr__(self) -> str:
         if self.is_finite():
             return repr(self._value)
@@ -154,8 +169,10 @@ class Cardinal:
             return Cardinal(self.finite_value() * other_cardinal.finite_value())
         return max(self, other_cardinal)
 
-    def __rmul__(self, other: object) -> Cardinal:
-        return self * other
+    def __rmul__(self, other: object) -> object:
+        if isinstance(other, (Cardinal, Integer, int)) or other == Infinity:
+            return self * other
+        return NotImplemented
 
     def __pow__(self, exponent: object) -> Cardinal:
         r"""Cardinal exponentiation within the representable range.

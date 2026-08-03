@@ -120,7 +120,14 @@ class HyperbolicLattices(Category):
             # What comes back is coordinates: the algorithm was handed a Gram
             # matrix and knows nothing else, so reading its output as elements
             # of this lattice is a step someone has to take, and this is it.
-            roots = [self.linear_combination(root) for root in algorithm.roots]
+            roots = [
+                zipsum(
+            root,
+            self.module_generators(),
+            self.zero(),
+        )
+                for root in algorithm.roots
+            ]
             return [-root for root in roots] if negate_roots else roots
 
         @staticmethod

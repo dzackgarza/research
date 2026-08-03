@@ -27,8 +27,10 @@ class GroupLattices(Category):
         ]
 
     class ParentMethods:
-        def Hom(self: Any, codomain: Any) -> Any:
-            return group_lattice_homset(self, codomain)
+        def Hom(self: Any, codomain: Any, *args: Any, **kwargs: Any) -> Any:
+            if hasattr(codomain, "base_ring") and getattr(codomain, "base_ring")() == self.base_ring() and hasattr(codomain, "group"):
+                return group_lattice_homset(self, codomain)
+            return Parent.Hom(self, codomain, *args, **kwargs)
 
         def hom(self: Any, images: Any, codomain: Any = None) -> Any:
             return FinitelyGeneratedFormModules.ParentMethods.hom(
@@ -97,7 +99,7 @@ class GroupLattices(Category):
 
         @cached_method
         def coinvariant_lattice(self: Any) -> Any:
-            return self.invariant_lattice().embedding().orthogonal_complement()
+            return self.invariant_lattice().structure_morphism().orthogonal_complement()
 
         formed_coinvariants = coinvariant_lattice
 
@@ -217,8 +219,8 @@ def _formed_group_subobject(
     representation_subobject: Any,
 ) -> Any:
     r"""Equip a \(G\)-submodule with the pulled-back form and its inclusion."""
-    representation = representation_subobject.underlying_object()
-    module_embedding = representation_subobject.embedding()
+    representation = representation_subobject.structure_morphism().domain()
+    module_embedding = representation_subobject.structure_morphism()
     restricted = FormModule(
         group_lattice_.form().pullback(module_embedding)
     )

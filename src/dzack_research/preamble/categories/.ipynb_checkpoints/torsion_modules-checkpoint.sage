@@ -149,8 +149,12 @@ class FinitelyPresentedTorsionModules(Category):
         if _is_additive(group):
             identity = group.zero()
             return (
-                lambda gens, exps: sum(
-                    (ZZ(a) * g for a, g in zip(exps, gens)), identity
+                lambda gens, exps: zipsum(
+                    exps,
+                    gens,
+                    identity,
+                    strict=True,
+                    term=lambda exponent, generator: exponent * generator,
                 ),
                 identity,
             )
@@ -406,7 +410,7 @@ class TorsionModule(Parent):
         return self.element_class(self, coordinates)
 
     def zero(self) -> TorsionModuleElement:
-        return self._from_coordinates([ZZ.zero()] * self.ngens())
+        return self._from_coordinates([ZZ.zero()] * self.num_module_generators())
 
     def linear_combination(self, coefficients: Any) -> TorsionModuleElement:
         r"""Return $\sum_i a_i g_i$ for ``coefficients`` $=(a_i)$."""
@@ -516,6 +520,6 @@ class TorsionModule(Parent):
 
     def _repr_(self) -> str:
         return (
-            f"Torsion module on {self.ngens()} generators, "
+            f"Torsion module on {self.num_module_generators()} generators, "
             f"invariants {self.invariants()}"
         )

@@ -53,12 +53,16 @@ class OwnedGroups(Category):
         return [SageGroups()]
 
     class ParentMethods:
+        def group_generators(self) -> tuple[Any, ...]:
+            """Return the generating set as `group_generators`."""
+            return tuple(SageGroups().ParentMethods.group_generators(self))
+
         def _latex_(self: Any) -> str:
-            r"""Return the group displayed by its distinguished generators."""
-            generators = tuple(self.gens())
-            if not generators:
+            r"""Return the group displayed by its distinguished group_generators."""
+            group_generators = self.group_generators()
+            if not group_generators:
                 return r"\{1\}"
-            entries = ", ".join(str(latex(generator)) for generator in generators)
+            entries = ", ".join(str(latex(generator)) for generator in group_generators)
             return rf"\left\langle {entries} \right\rangle"
 
 

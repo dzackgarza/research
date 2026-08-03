@@ -26,7 +26,12 @@ class LatticeHomomorphisms(Category):
                     )
                     return images
                 case dict():
-                    match any(source in Subobjects() for source in images):
+                    match any(
+                        source in source.category().SubObject(source.structure_morphism().codomain())
+                        if callable(getattr(source, "structure_morphism", None))
+                        else False
+                        for source in images
+                    ):
                         case True:
                             expanded = _expand_direct_sum_hom_dict(
                                 self.domain(),

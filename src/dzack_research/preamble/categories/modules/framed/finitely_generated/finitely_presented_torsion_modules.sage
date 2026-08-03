@@ -73,7 +73,7 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
         isomorphic and are not equal, and which one this is matters to
         everything written on the generating set afterwards.
         """
-        orders = [ZZ(d) for d in orders]
+        orders = [d for d in orders]
         assert all(d > 1 for d in orders), (
             f"each summand needs an order greater than 1, got {orders}"
         )
@@ -104,13 +104,13 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
             or group.category().is_subcategory(Groups().Commutative())
             or group.is_abelian()
         ), f"{group} is not abelian, so it is not a torsion Z-module"
-        generators = tuple(group.gens())
+        generators = tuple(group.group_generators())
         if not generators:
             return self.from_relations(
                 matrix(ZZ, 0, 0),
                 Sets.Δ[-1],
             )
-        orders = [ZZ(generator.order()) for generator in generators]
+        orders = [generator.order() for generator in generators]
         size = prod(orders)
         assert size <= 10 ** 6, (
             f"{group}'s generators have orders {orders}, whose product {size} "
@@ -147,15 +147,18 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
         if _is_additive(group):
             identity = group.zero()
             return (
-                lambda gens, exps: sum(
-                    (ZZ(a) * g for a, g in zip(exps, gens)), identity
+                lambda gens, exps: zipsum(
+                    exps,
+                    gens,
+                    identity,
+                    term=lambda a, g: a * g,
                 ),
                 identity,
             )
         identity = group.one()
         return (
             lambda gens, exps: prod(
-                (g ** ZZ(a) for a, g in zip(exps, gens)), identity
+                (g ** a for a, g in zip(exps, gens)), identity
             ),
             identity,
         )
@@ -228,21 +231,17 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
             in the underlying group, and is not that statement.
             """
             parent = self.parent()
-            coordinates = self._coordinates()
-            if coordinates.is_zero():
-                return ZZ.one()
-            order = next(
-                (
-                    k
-                    for k in ZZ(parent.exponent()).divisors()
-                    if parent.reduce(k * coordinates).is_zero()
-                ),
-                None,
-            )
-            assert order is not None, (
+            if self == parent.zero():
+                return 1
+            exponent = parent.exponent()
+            multiple = 1
+            while multiple <= exponent:
+                if (multiple * self).is_zero():
+                    return multiple
+                multiple += 1
+            raise AssertionError(
                 "an element of a finite torsion module has finite order"
             )
-            return order
 
     class ParentMethods:
         r"""What a torsion module is asked, none of which involves a form."""
@@ -262,7 +261,7 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
 
         def is_p_elementary(self: Any, p: Any) -> bool:
             r"""Return whether this module is elementary abelian of exponent $p$."""
-            p = ZZ(p)
+            p = p
             assert p.is_prime(), f"p must be prime, got {p}"
             group = self.permutation_group()
             if not group.is_elementary_abelian():
@@ -278,7 +277,7 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
             prime_powers = tuple(
                 (prime, prime ** exponent)
                 for factor_ in self.invariants()
-                for prime, exponent in ZZ(factor_).factor()
+                for prime, exponent in factor_.factor()
             )
             return {
                 prime: tuple(
@@ -298,8 +297,9 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
             size = relations.ncols()
             if size == 0:
                 return FreeGroup(0, "e").quotient([])
+
             free = FreeGroup([f"e{i + 1}" for i in range(size)])
-            generators = free.gens()
+            generators = free.module_generators()
             words = [
                 generators[i]
                 * generators[j]
@@ -343,7 +343,7 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
                 tuple(
                     self._from_coordinates(inverse.row(i))
                     for i, entry in enumerate(smith.diagonal())
-                    if entry != ZZ.one()
+                    if entry != 1
                 )
             )
 

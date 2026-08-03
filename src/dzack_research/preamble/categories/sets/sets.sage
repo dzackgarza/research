@@ -24,13 +24,17 @@ def Set(source: Any) -> Parent:
     r"""Return ``source`` as an object of the owned category of sets."""
     match source:
         case Parent():
-            result = source
+            if source.category().is_subcategory(Sets()):
+                return source
+            result = SageSet(source)
         case Iterable():
             result = SageSet(source)
         case _:
             raise TypeError(
                 f"a set is constructed from a parent or iterable, got {source!r}"
             )
+    if result.category().is_subcategory(Sets()):
+        return result
     return refine(result, Sets())
 
 
@@ -66,6 +70,9 @@ def ImageSet(
 
 
 def _as_set(source: Any) -> Parent:
+    if isinstance(source, (list, tuple)):
+        if len(source) != len(set(source)):
+            raise ValueError(f"{source!r} contains duplicate elements; a framing set must be a set")
     return Set(source)
 
 
@@ -84,21 +91,23 @@ def finite_ordered_set(source: Any) -> TotallyOrderedFiniteSet:
         return source
     return refine(
         TotallyOrderedFiniteSet(tuple(source)),
-        Sets().TotallyOrdered(),
+        Sets().Finite().TotallyOrdered(),
     )
 
 
 class _Delta:
-    r"""The finite ordinals \(\Delta[n]=\{0<1<\cdots<n\}\)."""
+    r"""Finite and countable simplex indexing objects \(\Delta[n]\)."""
 
-    def __getitem__(self, n: Any) -> TotallyOrderedFiniteSet:
+    def __getitem__(self, n: Any) -> Parent:
         match n:
             case int() | SageInteger():
                 assert n >= -1, f"a simplex ordinal has dimension at least -1, got {n}"
                 return refine(
                     TotallyOrderedFiniteSet(range(int(n) + 1)),
-                    Sets().TotallyOrdered(),
+                    Sets().Finite().TotallyOrdered(),
                 )
+            case _ if n == _ALEPH[0]:
+                return NN
             case _:
                 raise TypeError(f"Δ expects an integer, got {n!r}")
 
@@ -108,3 +117,26 @@ class _Delta:
 
 _DELTA = _Delta()
 setattr(Sets, "Δ", _DELTA)
+
+
+class _Aleph:
+    r"""Selected aleph cardinal symbols used as ordinal indices."""
+
+    def __getitem__(self, n: Any) -> Any:
+        match n:
+            case int() | SageInteger():
+                if n == 0:
+                    return NN.cardinality()
+                if n == 1:
+                    return RR.cardinality()
+                raise ValueError("aleph index is only defined for 0 and 1")
+            case _:
+                raise TypeError(f"aleph expects an integer, got {n!r}")
+
+    def __repr__(self) -> str:
+        return "ℵ"
+
+
+_ALEPH = _Aleph()
+setattr(Sets, "ℵ", _ALEPH)
+setattr(Sets, "א", _ALEPH)

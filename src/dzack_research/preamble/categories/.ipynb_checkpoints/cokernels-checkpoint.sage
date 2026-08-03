@@ -141,7 +141,7 @@ class Cokernel(Parent):
         return self.element_class(self, coordinates)
 
     def zero(self) -> CokernelElement:
-        return self._from_coordinates([ZZ.zero()] * self.ngens())
+        return self._from_coordinates([ZZ.zero()] * self.num_module_generators())
 
     def linear_combination(self, coefficients: Any) -> CokernelElement:
         r"""Return $\sum_i a_i g_i$ for ``coefficients`` $=(a_i)$."""

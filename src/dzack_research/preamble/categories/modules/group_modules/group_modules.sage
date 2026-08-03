@@ -53,8 +53,10 @@ class GroupModules(Category):
         def action_matrix(self: Any, element: Any) -> Matrix:
             return self.action_of(element).matrix()
 
-        def Hom(self: Any, codomain: Any) -> Any:
-            return group_module_homset(self, codomain)
+        def Hom(self: Any, codomain: Any, *args: Any, **kwargs: Any) -> Any:
+            if hasattr(codomain, "base_ring") and getattr(codomain, "base_ring")() == self.base_ring() and hasattr(codomain, "group"):
+                return group_module_homset(self, codomain)
+            return Parent.Hom(self, codomain, *args, **kwargs)
 
         def act(self: Any, element: Any, vector_: Any) -> Any:
             return self.action_of(element)(vector_)
@@ -112,7 +114,7 @@ class GroupModules(Category):
 
         def multiplicity_space(self: Any, character: Any) -> Any:
             component = self.isotypic_component(character)
-            degree = ZZ(character(self.group().one()))
+            degree = character(self.group().one())
             assert component.rank() % degree == 0, (
                 "the component rank is not divisible by the character degree"
             )
@@ -301,9 +303,6 @@ class GroupModule(Parent):
     def rank(self) -> Any:
         return self._module.rank()
 
-    def linear_combination(self, coefficients: Any) -> GroupModuleElement:
-        return self._over(self._module.linear_combination(coefficients))
-
     def zero(self) -> GroupModuleElement:
         return self._over(self._module.zero())
 
@@ -339,7 +338,11 @@ def _invariant_generators(module: Any) -> list:
         ],
     )
     return [
-        module.linear_combination(row)
+        zipsum(
+            row,
+            module.module_generators(),
+            module.zero(),
+        )
         for row in constraints.right_kernel().basis()
     ]
 
@@ -350,7 +353,7 @@ def _module_coinvariants(module: Any) -> Any:
         [
         module.act(group_element, generator) - generator
         for group_element in module.group()
-        for generator in module.gens()
+        for generator in module.module_generators()
         ],
     )
     relation_module = BasedFreeModule(
@@ -392,7 +395,14 @@ def _isotypic_generators(module: Any, character: Any) -> list:
         return []
     if module.base_ring() is ZZ:
         rows = matrix(ZZ, rows * rows.denominator()).saturation()
-    return [module.linear_combination(row) for row in rows.rows()]
+    return [
+        zipsum(
+            row,
+            module.module_generators(),
+            module.zero(),
+        )
+        for row in rows.rows()
+    ]
 
 
 def _restricted_action_automorphisms(
@@ -401,7 +411,7 @@ def _restricted_action_automorphisms(
     generators: list,
 ) -> list:
     if not generators:
-        return [submodule.Aut().one() for _ in module.group().gens()]
+        return [submodule.Aut().one() for _ in module.group().group_generators()]
     field = (
         module.base_ring().fraction_field()
         if module.base_ring() is ZZ
@@ -432,7 +442,11 @@ def _restricted_action_automorphisms(
         ), "the restricted action is not defined over the base ring"
         return submodule.Aut()(
             {
-                label: submodule.linear_combination(row)
+                label: zipsum(
+            row,
+            submodule.module_generators(),
+            submodule.zero(),
+        )
                 for label, row in zip(
                     submodule.generating_set(),
                     coefficients.rows(),
@@ -442,7 +456,7 @@ def _restricted_action_automorphisms(
 
     return [
         restricted_automorphism(group_element)
-        for group_element in module.group().gens()
+        for group_element in module.group().group_generators()
     ]
 
 

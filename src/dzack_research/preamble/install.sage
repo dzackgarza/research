@@ -31,11 +31,14 @@ else:
 
     _PREAMBLE = _Path(_dzack_research.__file__).resolve().parent / "preamble"
     _VENDOR_DIR = _PREAMBLE.parents[2] / "computations" / "vendor"
+    from dzack_research.preamble.preparser import install_preparser
+
+    install_preparser()
 
     def _vendor_import_roots(vendor_dir):
         r"""Return the vendor subtrees that expose importable modules or packages."""
         assert vendor_dir.is_dir(), f"vendor directory is missing: {vendor_dir}"
-        roots = {vendor_dir}
+        roots = set((vendor_dir,))
         for path in vendor_dir.rglob("*"):
             if not path.is_dir():
                 continue
@@ -63,8 +66,26 @@ else:
             _sys.path.append(_vendor_entry)
 
     load(str(_PREAMBLE / "refine.sage"))
+    # Load the Sage-only implementation of ``refine``, but expose it as a
+    # standard importable module path so category scripts that use normal
+    # Python imports keep working during bootstrap.
+    import types as _types
+
+    if "dzack_research.preamble.refine" not in _sys.modules:
+        _pre_refine_module = _types.ModuleType("dzack_research.preamble.refine")
+        _pre_refine_module.__file__ = str(_PREAMBLE / "refine.sage")
+        _pre_refine_module.__package__ = "dzack_research.preamble"
+        _sys.modules["dzack_research.preamble.refine"] = _pre_refine_module
+    else:
+        _pre_refine_module = _sys.modules["dzack_research.preamble.refine"]
+
+    for _export in ("hook_post_init", "hooked_classes", "refine"):
+        _pre_refine_module.__dict__.setdefault(_export, globals()[_export])
+
+    load(str(_PREAMBLE / "utilities.py"))
     load(str(_PREAMBLE / "categories/forms/gram_matrices.sage"))
     load(str(_PREAMBLE / "categories/sets/sets.sage"))
+    load(str(_PREAMBLE / "categories/abstract_categories/slice_categories.sage"))
     load(str(_PREAMBLE / "categories/modules/pure/finitely_generated/finitely_generated_modules.sage"))
     load(str(_PREAMBLE / "categories/modules/pure/free_modules.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/framed_modules.sage"))
@@ -98,7 +119,53 @@ else:
     load(str(_PREAMBLE / "categories/divisors/picard_groups.sage"))
     load(str(_PREAMBLE / "categories/algebras/free_algebras.sage"))
     load(str(_PREAMBLE / "categories/algebras/algebras.sage"))
+    # Make ``from dzack_research.preamble.categories.algebras.algebras``
+    # importable during bootstrap even though the implementation is a ``.sage``
+    # file loaded via ``load()``.
+    if "dzack_research.preamble.categories" not in _sys.modules:
+        _pre_categories_module = _types.ModuleType(
+            "dzack_research.preamble.categories",
+        )
+        _pre_categories_module.__file__ = str(_PREAMBLE / "categories")
+        _pre_categories_module.__path__ = [str(_PREAMBLE / "categories")]
+        _pre_categories_module.__package__ = "dzack_research.preamble"
+        _sys.modules["dzack_research.preamble.categories"] = _pre_categories_module
+    else:
+        _pre_categories_module = _sys.modules["dzack_research.preamble.categories"]
+
+    if "dzack_research.preamble.categories.algebras" not in _sys.modules:
+        _pre_algebras_pkg = _types.ModuleType(
+            "dzack_research.preamble.categories.algebras",
+        )
+        _pre_algebras_pkg.__file__ = str(_PREAMBLE / "categories" / "algebras")
+        _pre_algebras_pkg.__path__ = [str(_PREAMBLE / "categories" / "algebras")]
+        _pre_algebras_pkg.__package__ = "dzack_research.preamble.categories"
+        _pre_algebras_pkg.__parent__ = _pre_categories_module
+        _sys.modules["dzack_research.preamble.categories.algebras"] = _pre_algebras_pkg
+    else:
+        _pre_algebras_pkg = _sys.modules["dzack_research.preamble.categories.algebras"]
+
+    _pre_algebras_module = _types.ModuleType(
+        "dzack_research.preamble.categories.algebras.algebras",
+    )
+    _pre_algebras_module.__file__ = str(_PREAMBLE / "categories" / "algebras" / "algebras.sage")
+    _pre_algebras_module.__package__ = "dzack_research.preamble.categories.algebras"
+    for _export in ("FramedAlgebras", "Algebras"):
+        _pre_algebras_module.__dict__.setdefault(_export, globals()[_export])
+    _sys.modules["dzack_research.preamble.categories.algebras.algebras"] = (
+        _pre_algebras_module
+    )
+    _pre_algebras_pkg.__dict__.setdefault(
+        "algebras",
+        _pre_algebras_module,
+    )
+    _pre_categories_module.__dict__.setdefault(
+        "algebras",
+        _pre_algebras_pkg,
+    )
+
     load(str(_PREAMBLE / "categories/algebras/framed_free_algebras.sage"))
+    load(str(_PREAMBLE / "categories/algebras/finitely_presented_algebras.sage"))
     load(str(_PREAMBLE / "categories/schemes/ringed_spaces.sage"))
     load(str(_PREAMBLE / "categories/schemes/schemes.sage"))
     load(str(_PREAMBLE / "categories/schemes/scheme_morphisms.sage"))
@@ -108,6 +175,7 @@ else:
     load(str(_PREAMBLE / "categories/schemes/varieties.sage"))
     load(str(_PREAMBLE / "catalogue.sage"))
     install_finitely_presented_groups()
+    install_finitely_presented_algebras()
     install_algebras()
     install_ringed_spaces()
     install_schemes()

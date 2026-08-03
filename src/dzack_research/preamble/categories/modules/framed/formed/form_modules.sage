@@ -6,13 +6,22 @@ from sage.categories.category_types import Category_over_base_ring
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.matrix.matrix0 import Matrix
-from sage.modules.free_module_element import FreeModuleElement
+from sage.rings.integer import Integer
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
+from sage_lattice_category_spike.objects.cardinals import Cardinal
 
 from sage_lattice_category_spike.objects.sets import Sets
 from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
+
+
+def _finite_rank(generating_set: Any) -> Integer:
+    size = generating_set.cardinality()
+    if isinstance(size, Cardinal):
+        assert size.is_finite(), "a finitely generated form module has finite rank"
+        return size.finite_value()
+    return Integer(size)
 
 
 class FormModules(Category_over_base_ring):
@@ -42,17 +51,19 @@ class FormModules(Category_over_base_ring):
         def is_torsion(self: Any) -> bool:
             return self.forget_form().is_torsion()
 
-        def Hom(self, codomain: Any) -> "FormHomset":
-            cache = self.__dict__.setdefault("_form_module_homsets", {})
-            homset = cache.get(codomain)
-            if homset is None:
-                homset = FormHomset(
-                    self,
-                    codomain,
-                    FormModules(self.base_ring()),
-                )
-                cache[codomain] = homset
-            return homset
+        def Hom(self, codomain: Any, *args: Any, **kwargs: Any) -> Any:
+            if hasattr(codomain, "base_ring") and getattr(codomain, "base_ring")() == self.base_ring() and hasattr(codomain, "form"):
+                cache = self.__dict__.setdefault("_form_module_homsets", {})
+                homset = cache.get(codomain)
+                if homset is None:
+                    homset = FormHomset(
+                        self,
+                        codomain,
+                        FormModules(self.base_ring()),
+                    )
+                    cache[codomain] = homset
+                return homset
+            return Parent.Hom(self, codomain, *args, **kwargs)
 
         def hom(self: Any, images: Any, codomain: Any = None) -> "FormMorphism":
             match images:
@@ -129,10 +140,15 @@ class FormModules(Category_over_base_ring):
                 "division is not single-valued in a torsion module"
             )
             coordinates = self._coordinates() / divisor
+            coefficient_ring = self.parent().base_ring()
             assert all(
-                entry in self.parent().base_ring() for entry in coordinates
+                entry in coefficient_ring for entry in coordinates
             ), "the quotient is not an element of this module"
-            return self.parent().linear_combination(coordinates)
+            return zipsum(
+            tuple(coefficient_ring(entry) for entry in coordinates),
+            self.parent().module_generators(),
+            self.parent().zero(),
+            )
 
 
 class BilinearFormModules(Category_over_base_ring):
@@ -202,7 +218,7 @@ class FreeFormModules(Category_over_base_ring):
             return self.forget_form().rank()
 
         def basis(self: Any) -> Any:
-            return self.gens()
+            return self.module_generators()
 
         def subobject_on(self: Any, generators: Any) -> Any:
             generators = tuple(generators)
@@ -254,25 +270,7 @@ class FinitelyGeneratedFormModules(Category_over_base_ring):
 
     class ParentMethods:
         def ngens(self: Any) -> int:
-            return int(self.generating_set().cardinality())
-
-        def linear_combination(self: Any, coefficients: Any) -> Any:
-            match coefficients:
-                case dict():
-                    coefficient_function = coefficients
-                case list() | tuple() | FreeModuleElement():
-                    coefficient_function = _finite_coefficient_function(
-                        self, coefficients
-                    )
-                case _:
-                    raise TypeError(
-                        "coefficients are a finite function or a coordinate "
-                        "vector in the ordered generating set"
-                    )
-            return FramedModules.ParentMethods.linear_combination(
-                self,
-                coefficient_function,
-            )
+            return _finite_rank(self.generating_set())
 
         def hom(self: Any, images: Any, codomain: Any = None) -> "FormMorphism":
             match images:
@@ -338,6 +336,9 @@ class FormModuleElement(Element):
     def forget_form(self) -> Any:
         return self._underlying
 
+    def coefficients(self) -> dict:
+        return self._underlying.coefficients()
+
     def _add_(self, other: Any) -> "FormModuleElement":
         return self.parent()._over(self._underlying + other._underlying)
 
@@ -401,7 +402,7 @@ class FormModule(Parent):
                 Sets(),
             ),
             lambda element_of_S: self._over(
-                underlying_generator_morphism(element_of_S)
+                underlying_generator_morphism._call_(element_of_S)
             ),
         )
         self._free_generator_morphism = formed_generator_morphism
@@ -625,6 +626,9 @@ class FormMorphism(Morphism):
     def __init__(self, parent: FormHomset, module_morphism: ModuleMorphism) -> None:
         Morphism.__init__(self, parent)
         pulled_back = parent.codomain().form().pullback(module_morphism)
+        expected_form = parent.domain().form()
+        if pulled_back.codomain() is not expected_form.codomain():
+            pulled_back = pulled_back.reduced(expected_form.codomain())
         assert parent.domain().form() == pulled_back, (
             "the module morphism does not preserve the stated form"
         )
@@ -676,7 +680,7 @@ class FormMorphism(Morphism):
                     Sets(),
                 ),
                 lambda element_of_S: other(
-                    generator_morphism(element_of_S)
+                    generator_morphism._call_(element_of_S)
                 ),
             )
         )
@@ -695,7 +699,7 @@ class FormMorphism(Morphism):
                     Sets(),
                 ),
                 lambda element_of_S: self(
-                    generator_morphism(element_of_S)
+                    generator_morphism._call_(element_of_S)
                 ),
             )
         )
@@ -754,7 +758,11 @@ def correlation_of(lattice: Any) -> FormMorphism:
     dual = lattice.dual()
     return lattice.Hom(dual)(
         {
-            label: dual.linear_combination(row)
+            label: zipsum(
+            row,
+            dual.module_generators(),
+            dual.zero(),
+        )
             for label, row in zip(
                 lattice.generating_set(),
                 lattice.gram_matrix().rows(),

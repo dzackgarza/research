@@ -23,7 +23,7 @@ class LatticeIsometries(Category):
                 images,
             )
             determinant = morphism.matrix().det()
-            assert determinant in (ZZ.one(), -ZZ.one()), (
+            assert determinant in (1, -1), (
                 f"an integral isometry has unit determinant, got {determinant}"
             )
             return refine(morphism, LatticeIsometries())
@@ -73,7 +73,11 @@ class LatticeIsometries(Category):
             inverse_matrix = self.matrix().inverse()
             return self.parent()(
                 {
-                    label: self.domain().linear_combination(row)
+                    label: zipsum(
+            row,
+            self.domain().module_generators(),
+            self.domain().zero(),
+        )
                     for label, row in zip(
                         self.domain().generating_set(),
                         inverse_matrix.rows(),
@@ -111,7 +115,7 @@ class LatticeIsometrySubgroup(FormAutomorphismGroup):
         )
         self._elements = self._close()
 
-    def gens(self) -> tuple:
+    def group_generators(self) -> tuple:
         return self._generators
 
     def is_finite(self) -> bool:
@@ -126,10 +130,10 @@ class LatticeIsometrySubgroup(FormAutomorphismGroup):
     def __contains__(self, element: Any) -> bool:
         return isinstance(element, FormMorphism) and element.parent() is self
 
-    def _close(self) -> tuple:
-        identity = self.one()
-        elements = {identity}
-        frontier = [identity]
+        def _close(self) -> tuple:
+            identity = self.one()
+            elements = set((identity,))
+            frontier = [identity]
         steps = 0
         while frontier:
             current = frontier.pop()
