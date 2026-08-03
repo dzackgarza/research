@@ -167,6 +167,39 @@ def _independent_generators(module: Any, generators: Any) -> list:
     ]
 
 
+def _expand_subobject_dict(parent: Any, images: dict) -> dict:
+    domain = parent.domain()
+    generating_set = domain.generating_set()
+    if set(images) == set(generating_set):
+        return dict(images)
+
+    expanded = {}
+    for key, val in images.items():
+        if hasattr(key, "generating_set"):
+            s_set = tuple(key.generating_set())
+            if hasattr(val, "module_generators"):
+                val_gens = tuple(val.module_generators())
+            elif isinstance(val, (tuple, list)):
+                val_gens = tuple(val)
+            elif hasattr(val, "generating_set"):
+                val_gens = tuple(val.module_generators())
+            else:
+                raise TypeError(f"cannot map subobject {key} to {val}")
+
+            assert len(s_set) == len(val_gens), (
+                f"subobject {key} has {len(s_set)} generators, but image has {len(val_gens)}"
+            )
+            for s, y in zip(s_set, val_gens, strict=True):
+                expanded[s] = parent.codomain()(y)
+        else:
+            expanded[key] = parent.codomain()(val)
+
+    assert set(expanded) == set(generating_set), (
+        "the assignment must name exactly every element of the generating set"
+    )
+    return expanded
+
+
 class ModuleMorphism(Morphism):
     r"""The linear extension of a morphism \(S\to U(N)\)."""
 
@@ -190,11 +223,7 @@ class ModuleMorphism(Morphism):
                     "a dictionary specifies a morphism only for a finite "
                     "generating set; use a set morphism on the generating set"
                 )
-                assert set(images) == set(generating_set), (
-                    "the assignment must name exactly every element of the "
-                    "generating set"
-                )
-                values = dict(images)
+                values = _expand_subobject_dict(parent, images)
                 assert all(
                     image.parent() is parent.codomain()
                     for image in values.values()
