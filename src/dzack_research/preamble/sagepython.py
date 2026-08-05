@@ -134,6 +134,27 @@ class SourceMap:
             cursor = end
         return len(self.original.encode("utf-8"))
 
+    def exact_at_generated(self, line: int, column: int) -> bool:
+        """Whether a 1-based generated position lies in verbatim source.
+
+        Diagnostics about generated (non-exact) text describe the
+        compiler's output, not the author's input; style checkers should
+        drop them.
+        """
+        generated = self.python.encode("utf-8")
+        line_starts = [0]
+        for index, byte in enumerate(generated):
+            if byte == 0x0A:
+                line_starts.append(index + 1)
+        offset = line_starts[min(line - 1, len(line_starts) - 1)] + column
+        cursor = 0
+        for segment in self.segments:
+            end = cursor + len(segment.text.encode("utf-8"))
+            if offset < end or segment is self.segments[-1]:
+                return segment.exact
+            cursor = end
+        return True
+
     def generated_offset(self, original_offset: int) -> int:
         generated_cursor = 0
         for segment in self.segments:

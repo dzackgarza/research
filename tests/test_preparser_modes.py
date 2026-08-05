@@ -193,6 +193,16 @@ def test_source_map_generated_position_anchors_rebuilt_constructs() -> None:
     assert result.source_map.generated_position(2, 8) == (2, 0)
 
 
+def test_source_map_distinguishes_generated_from_verbatim_text() -> None:
+    result = lower("R.<x, y> = QQ[]\nq = zz\n")
+
+    # Inside the rebuilt generator statement: generated text.
+    assert not result.source_map.exact_at_generated(1, 5)
+    # The untouched second line: verbatim author text.
+    generated_column = result.python.split("\n")[1].find("zz")
+    assert result.source_map.exact_at_generated(2, generated_column)
+
+
 def test_lint_sensitive_constructs_lower_to_ordinary_python() -> None:
     # The construct list sage-lsp monkey-patches into pycodestyle
     # (E201/E202/E225/E227/E231 suppressions around `R.<...>` and `^^`).
