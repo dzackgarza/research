@@ -690,7 +690,7 @@ def lower(
         )
         old_tree = previous._tree
     if old_tree is not None:
-        tree = _PARSER.parse(encoded, old_tree)  # type: ignore[arg-type]
+        tree = _PARSER.parse(encoded, old_tree)
     else:
         tree = _PARSER.parse(encoded)
     context = _Context(source=encoded, wrap_numbers=wrap_numbers)

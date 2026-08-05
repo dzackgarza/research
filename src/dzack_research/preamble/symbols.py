@@ -48,10 +48,12 @@ def import_statement_for(
             "SELECT statement FROM symbols WHERE name = ?", (name,)
         ).fetchone()
         if row is not None:
-            return row[0]
+            return str(row[0])
         if not hasattr(sage.all, name):
             return None
-        statement = import_statements(name, answer_as_str=True, verbose=False)
+        statement = str(
+            import_statements(name, answer_as_str=True, verbose=False)
+        )
         connection.execute(
             "INSERT OR REPLACE INTO symbols VALUES (?, ?)", (name, statement)
         )
