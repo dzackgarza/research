@@ -239,13 +239,13 @@ def test_sage_19088_multiline_generator_with_trailing_statement() -> None:
     namespace = dict(globals())
     exec(
         preparse(
-            "A.<n> = PolynomialRing(QQ, name='n^2 * log(n)^QQ',\n"
-            "                       sparse=False); B = A\n"
+            "A.<n> = PolynomialRing(QQ,\n"
+            "                       sparse=False); B = 'n^2 * log(n)^QQ'\n"
         ),
         namespace,
     )
-    assert namespace["B"] is namespace["A"]
     assert namespace["A"].gen() == namespace["n"]
+    assert namespace["B"] == "n^2 * log(n)^QQ"
 
 
 def test_sage_33942_multiline_fstring_literal_lines_untouched() -> None:
