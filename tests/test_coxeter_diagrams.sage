@@ -11,7 +11,7 @@ _p = Path(dzack_research.__file__).resolve().parent / "preamble"
 load(str(_p / "install.sage"))
 
 
-def test_cartan_type_constructs_its_diagram_as_a_sage_parent():
+def test_cartan_type_constructs_its_diagram_as_a_sage_parent() -> None:
     r"""The Cartan type $A_4$ constructs its Coxeter diagram as a Sage parent."""
     diagram = CoxeterDiagrams().from_cartan_type(["A", 4])
 
@@ -25,7 +25,7 @@ def test_cartan_type_constructs_its_diagram_as_a_sage_parent():
     TestSuite(diagram).run(raise_on_failure=True)
 
 
-def test_induced_subdiagram_recovers_the_standard_a3_diagram():
+def test_induced_subdiagram_recovers_the_standard_a3_diagram() -> None:
     r"""The first three simple roots of $A_4$ induce the $A_3$ diagram."""
     diagram = CoxeterDiagrams().from_cartan_type(["A", 4])
 
@@ -34,7 +34,7 @@ def test_induced_subdiagram_recovers_the_standard_a3_diagram():
     assert subdiagram.coxeter_matrix() == CoxeterMatrix(["A", 3])
 
 
-def test_parent_constructs_a_diagram_from_its_coxeter_matrix():
+def test_parent_constructs_a_diagram_from_its_coxeter_matrix() -> None:
     r"""The parent constructor preserves the standard $B_3$ exponents."""
     matrix = CoxeterMatrix(["B", 3])
 
@@ -44,7 +44,7 @@ def test_parent_constructs_a_diagram_from_its_coxeter_matrix():
     assert list(diagram.graph().edges(sort=True)) == [(1, 2, 3), (2, 3, 4)]
 
 
-def test_rooted_diagram_records_roots_intersections_layout_and_tikz():
+def test_rooted_diagram_records_roots_intersections_layout_and_tikz() -> None:
     r"""A rooted diagram stores the lattice roots behind a non-simply-laced edge."""
     lattice = IntegralLattice(matrix(ZZ, [[-4, 2], [2, -2]]), names=("r", "s"))
     r, s = lattice.gens()
@@ -57,7 +57,7 @@ def test_rooted_diagram_records_roots_intersections_layout_and_tikz():
 
     assert diagram.embedding_codomain() is lattice
     assert diagram.root_lattice().gram_matrix() == lattice.gram_matrix()
-    assert diagram.root_embedding()(diagram.root_lattice().gens()[0]) == r
+    assert diagram.root_embedding()(diagram.root_lattice().module_generators()[0]) == r
     assert diagram.roots() == (r, s)
     assert diagram.root_intersection_matrix() == matrix(ZZ, [[-4, 2], [2, -2]])
     assert diagram.coxeter_matrix() == CoxeterMatrix([[1, 4], [4, 1]], index_set=(0, 1))
@@ -88,7 +88,7 @@ def test_rooted_diagram_records_roots_intersections_layout_and_tikz():
     assert subdiagram.preferred_positions() == {1: (2, 0)}
 
 
-def test_morphisms_preserve_the_full_coxeter_matrix_and_compose():
+def test_morphisms_preserve_the_full_coxeter_matrix_and_compose() -> None:
     r"""Diagram morphisms preserve every exponent, including nonedges."""
     a2 = FiniteCoxeterDiagram.from_cartan_type(["A", 2])
     a3 = FiniteCoxeterDiagram.from_cartan_type(["A", 3])

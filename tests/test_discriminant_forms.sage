@@ -12,7 +12,7 @@ fact that an isometry preserves the multiset of form values.
 """
 
 
-def _ensure_preamble():
+def _ensure_preamble() -> None:
     if "Lattices" in globals():
         return
     from pathlib import Path
@@ -25,15 +25,15 @@ def _ensure_preamble():
     Lattices.install(globals())
 
 
-def _elementary_divisors(invariants):
+def _elementary_divisors(invariants: tuple) -> list:
     """Return the prime-power elementary divisors behind invariant factors."""
-    divisors = []
+    divisors: list = []
     for factor_ in invariants:
         divisors.extend(p ** e for p, e in ZZ(factor_).factor())
     return sorted(divisors)
 
 
-def test_discriminant_group_order_is_the_absolute_determinant():
+def test_discriminant_group_order_is_the_absolute_determinant() -> None:
     r"""$|A_L|=|\det G_L|$, for every named lattice in the catalogue.
 
     An oracle outside the construction: the order comes from the Gram matrix,
@@ -48,7 +48,7 @@ def test_discriminant_group_order_is_the_absolute_determinant():
         )
 
 
-def test_root_lattice_discriminant_groups_are_the_classical_ones():
+def test_root_lattice_discriminant_groups_are_the_classical_ones() -> None:
     r"""$A_{A_n}=\mathbb Z/(n+1)$, $A_{D_n}$ of order 4, $A_{E_n}$ of order $9-n$.
 
     Textbook values, independent of how the cokernel is presented.
@@ -68,7 +68,7 @@ def test_root_lattice_discriminant_groups_are_the_classical_ones():
         assert (prod(invariants) or ZZ.one()) == order, f"E_{rank}: got {invariants}"
 
 
-def test_polarization_relates_q_and_b_by_a_factor_of_two():
+def test_polarization_relates_q_and_b_by_a_factor_of_two() -> None:
     r"""$q(x+y)-q(x)-q(y)=2b(x,y)$, and $q(x)=b(x,x)$ modulo $\mathbb Z$.
 
     These two identities pin down which convention the discriminant form uses.
@@ -82,11 +82,11 @@ def test_polarization_relates_q_and_b_by_a_factor_of_two():
     _ensure_preamble()
     for name in ("A2", "D4", "E6", "U_2", "TEn"):
         A = getattr(Lattices, name).discriminant_group()
-        for x in A.gens():
+        for x in A.module_generators():
             assert QQ(x.q().lift() - x.b(x).lift()) in ZZ, (
                 f"{name}: q(x) and b(x,x) disagree mod Z"
             )
-            for y in A.gens():
+            for y in A.module_generators():
                 polarized = QQ((x + y).q().lift() - x.q().lift() - y.q().lift())
                 assert polarized - 2 * QQ(x.b(y).lift()) in 2 * ZZ, (
                     f"{name}: q(x+y)-q(x)-q(y) is {polarized}, not 2b(x,y) = "
@@ -94,11 +94,11 @@ def test_polarization_relates_q_and_b_by_a_factor_of_two():
                 )
 
 
-def test_q_is_quadratic_and_b_is_symmetric_bilinear():
+def test_q_is_quadratic_and_b_is_symmetric_bilinear() -> None:
     r"""$q(nx)=n^2q(x)$, $b(x,y)=b(y,x)$, and $b$ is additive in each slot."""
     _ensure_preamble()
     A = Lattices.TEn.discriminant_group()
-    x, y, z = A.gens()[0], A.gens()[1], A.gens()[4]
+    x, y, z = A.module_generators()[0], A.module_generators()[1], A.module_generators()[4]
     for n in (2, 3, 5):
         assert QQ((n * x).q().lift() - n ** 2 * x.q().lift()) in 2 * ZZ, (
             f"q({n}x) != {n}^2 q(x)"
@@ -109,7 +109,7 @@ def test_q_is_quadratic_and_b_is_symmetric_bilinear():
     )
 
 
-def test_discriminant_form_is_the_inverse_gram_modulo_one():
+def test_discriminant_form_is_the_inverse_gram_modulo_one() -> None:
     r"""$b$ on the induced generators is $G^{-1}\bmod\mathbb Z$.
 
     The defining computation, checked against the Gram matrix directly rather
@@ -119,7 +119,7 @@ def test_discriminant_form_is_the_inverse_gram_modulo_one():
     for name in ("A2", "D4", "E7", "U_2"):
         L = getattr(Lattices, name)
         inverse = L.gram_matrix().inverse()
-        generators = L.discriminant_bilinear_form().gens()
+        generators = L.discriminant_bilinear_form().module_generators()
         for i, x in enumerate(generators):
             for j, y in enumerate(generators):
                 assert QQ(x.b(y).lift() - inverse[i, j]) in ZZ, (
@@ -127,7 +127,7 @@ def test_discriminant_form_is_the_inverse_gram_modulo_one():
                 )
 
 
-def test_normal_form_is_an_isometry_onto_a_smaller_generating_set():
+def test_normal_form_is_an_isometry_onto_a_smaller_generating_set() -> None:
     r"""The normal form has the same group and the same multiset of $b(x,x)$.
 
     An isometry preserves the form, so the multiset of self-pairings over the
@@ -140,7 +140,7 @@ def test_normal_form_is_an_isometry_onto_a_smaller_generating_set():
         b = getattr(Lattices, name).discriminant_bilinear_form()
         normal = b.normal_form()
         assert normal.invariants() == b.invariants(), f"{name}: group changed"
-        assert len(normal.gens()) == len(normal.invariants()), (
+        assert len(normal.module_generators()) == len(normal.invariants()), (
             f"{name}: normal form should sit on a minimal generating set"
         )
         assert sorted(QQ(x.b(x).lift()) for x in b) == sorted(
@@ -148,18 +148,18 @@ def test_normal_form_is_an_isometry_onto_a_smaller_generating_set():
         ), f"{name}: normal form is not isometric"
 
 
-def test_invariant_factor_form_is_an_isometry_on_invariant_factor_generators():
+def test_invariant_factor_form_is_an_isometry_on_invariant_factor_generators() -> None:
     _ensure_preamble()
     b = Lattices.TEn.discriminant_bilinear_form()
     factored = b.invariant_factor_form()
     assert factored.invariants() == b.invariants()
-    assert len(factored.gens()) == len(factored.invariants())
+    assert len(factored.module_generators()) == len(factored.invariants())
     assert sorted(QQ(x.b(x).lift()) for x in b) == sorted(
         QQ(x.b(x).lift()) for x in factored
     )
 
 
-def test_primary_parts_have_the_prime_power_orders_and_exhaust_the_group():
+def test_primary_parts_have_the_prime_power_orders_and_exhaust_the_group() -> None:
     r"""$|A_p|$ is the $p$-part of $|A|$, and $\prod_p|A_p|=|A|$.
 
     The Sylow decomposition, checked on a group with two primes so the claim is
@@ -180,7 +180,7 @@ def test_primary_parts_have_the_prime_power_orders_and_exhaust_the_group():
     assert total == order, f"primary parts multiply to {total}, not {order}"
 
 
-def test_odd_lattices_have_no_quadratic_discriminant_form():
+def test_odd_lattices_have_no_quadratic_discriminant_form() -> None:
     r"""$q$ exists exactly when $L$ is even.
 
     Moving a lift by $\ell$ shifts $b(\tilde x,\tilde x)$ by $b(\ell,\ell)$,
@@ -199,7 +199,7 @@ def test_odd_lattices_have_no_quadratic_discriminant_form():
     assert prod(even.discriminant_quadratic_form().invariants()) == 4
 
 
-def test_correlation_is_the_gram_matrix_into_the_dual():
+def test_correlation_is_the_gram_matrix_into_the_dual() -> None:
     r"""$c: L\to L^\vee$ has matrix $G$, and $L^\vee$ has Gram $G^{-1}$.
 
     $c(e_i)=\sum_j G_{ij}e_j^\vee$ is what makes $c$ the map $v\mapsto b(v,-)$
@@ -214,7 +214,7 @@ def test_correlation_is_the_gram_matrix_into_the_dual():
         )
 
 
-def test_discriminant_group_of_a_direct_sum_is_the_direct_sum_of_the_groups():
+def test_discriminant_group_of_a_direct_sum_is_the_direct_sum_of_the_groups() -> None:
     r"""$A_{L\oplus M}\cong A_L\oplus A_M$, as elementary divisors."""
     _ensure_preamble()
     left, right = Lattices.A2, Lattices.root_lattice("A", 3)
@@ -225,7 +225,7 @@ def test_discriminant_group_of_a_direct_sum_is_the_direct_sum_of_the_groups():
     ), f"A_{{A2+A3}} is {combined.invariants()}"
 
 
-def test_discriminant_form_convention_is_nikulins_not_peters_sterks():
+def test_discriminant_form_convention_is_nikulins_not_peters_sterks() -> None:
     r"""Pin which of the two conventions this preamble uses.
 
     Peters--Sterk Remark 1.6.6 [PS24] names both: theirs is
@@ -251,7 +251,7 @@ def test_discriminant_form_convention_is_nikulins_not_peters_sterks():
     disc = L.discriminant_group()
     assert disc.invariants() == (12,), f"book says Z/12, got {disc.invariants()}"
 
-    third = disc.gens()[2]
+    third = disc.module_generators()[2]
     assert third.order() == 12, "e_3^* has order 12 in the book"
     assert third.b(third).lift() == QQ(7) / 12, (
         f"b(e_3^*, e_3^*) is {third.b(third).lift()}, book says 7/12"

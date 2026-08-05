@@ -16,7 +16,10 @@ they can *falsify* rather than for coverage:
 """
 
 
-def _ensure_preamble():
+import types
+
+
+def _ensure_preamble() -> None:
     """Load the mathematical preamble scripts (not notebook ``init.sage``)."""
     if "Lattices" in globals():
         return
@@ -36,10 +39,8 @@ def _ensure_preamble():
     Lattices.install(globals())
 
 
-def _preamble():
+def _preamble() -> tuple[types.SimpleNamespace, types.SimpleNamespace, type[Sterk]]:
     """Compatibility shim: (catalogue-ns, legacy-empty-ns, Sterk)."""
-    import types
-
     _ensure_preamble()
     catalogue = types.SimpleNamespace(
         Lattices=Lattices,
@@ -71,6 +72,9 @@ def _assert_latex_environments_balanced(rendered: str, name: str) -> None:
     assert not stack, f"{name} leaves LaTeX environments open: {stack!r}\n{rendered}"
 
 
+_mathjax_full_root_cached: str | None = None
+
+
 def _mathjax_full_root() -> str:
     import glob
     import os
@@ -78,9 +82,9 @@ def _mathjax_full_root() -> str:
     import subprocess
     from pathlib import Path
 
-    cached = getattr(_mathjax_full_root, "__cached__", None)
-    if cached is not None:
-        return cached
+    global _mathjax_full_root_cached
+    if _mathjax_full_root_cached is not None:
+        return _mathjax_full_root_cached
 
     candidates = []
     for env_key in ("MATHJAX_FULL_ROOT", "MATHJAX_PATH"):
@@ -114,7 +118,7 @@ def _mathjax_full_root() -> str:
         else:
             full_root = root / "mathjax-full"
         if full_root.is_dir() and (full_root / "js" / "mathjax.js").is_file():
-            _mathjax_full_root.__cached__ = str(full_root)
+            _mathjax_full_root_cached = str(full_root)
             return str(full_root)
 
     raise AssertionError(
@@ -177,9 +181,9 @@ def _configured_mathjax_max_buffer() -> int | None:
                     body = response.read().decode("utf-8", errors="replace")
             except (OSError, urllib.error.URLError, ValueError):
                 continue
-            value = _read_from_html_config(body)
-            if value is not None:
-                return value
+            html_value: int | None = _read_from_html_config(body)
+            if html_value is not None:
+                return html_value
 
     # Fallback to on-disk config if the lab server is not running.
     raw_paths = (
@@ -386,6 +390,7 @@ def _capture_show_latex_payloads(
     from sage.repl.interpreter import SageTestShell
     from sage.repl.rich_output import get_display_manager
     from sage.repl.rich_output.backend_ipython import BackendIPythonNotebook
+    from sage.repl.rich_output.output_basic import OutputBase
 
     named_lattices = list(named_lattices)
     display_manager = get_display_manager()
@@ -395,9 +400,10 @@ def _capture_show_latex_payloads(
     captured_outputs: list[tuple[dict[str, str], dict[str, str]]] = []
     original_displayhook = display_manager._backend.displayhook
 
-    def capture_displayhook(plain_text, rich_output):
-        payload = original_displayhook(plain_text, rich_output)
-        captured_outputs.append((payload[0], payload[1]))  # type: ignore[index]
+    def capture_displayhook(plain_text: OutputBase, rich_output: OutputBase) -> tuple[dict[str, str], dict[str, str]]:
+        raw = original_displayhook(plain_text, rich_output)
+        payload: tuple[dict[str, str], dict[str, str]] = (raw[0], raw[1])
+        captured_outputs.append(payload)
         return payload
 
     display_manager._backend.displayhook = capture_displayhook
@@ -433,7 +439,7 @@ def _capture_show_latex_payloads(
 # --------------------------------------------------------------------------
 
 
-def test_named_lattices_have_their_defining_invariants():
+def test_named_lattices_have_their_defining_invariants() -> None:
     catalogue = _preamble()[0]
     expected = {
         "U": (2, (1, 1)),
@@ -458,7 +464,7 @@ def test_named_lattices_have_their_defining_invariants():
         )
 
 
-def test_root_lattices_use_the_negative_definite_convention():
+def test_root_lattices_use_the_negative_definite_convention() -> None:
     """A_n, D_n, E_n are negative definite here; Sage's own are positive."""
     catalogue = _preamble()[0]
     for kind, rank in (("A", 2), ("D", 4), ("E", 8)):
@@ -468,7 +474,7 @@ def test_root_lattices_use_the_negative_definite_convention():
         )
 
 
-def test_k3_degree_2d_family():
+def test_k3_degree_2d_family() -> None:
     catalogue = _preamble()[0]
     for degree in (1, 2, 3):
         lattice = catalogue.Lattices.LK3_2d(degree)
@@ -477,7 +483,7 @@ def test_k3_degree_2d_family():
         assert lattice.gram_matrix().det() == -2 * degree
 
 
-def test_two_elementary_table_is_nikulins_75():
+def test_two_elementary_table_is_nikulins_75() -> None:
     catalogue = _preamble()[0]
     table = catalogue.TwoElementary
     assert len(table) == 75
@@ -492,7 +498,7 @@ def test_two_elementary_table_is_nikulins_75():
     assert filled == 75
 
 
-def test_two_elementary_filled_entries_match_nikulin_invariants():
+def test_two_elementary_filled_entries_match_nikulin_invariants() -> None:
     r"""Every constructed table entry is 2-elementary with the keyed $(r,a,\delta)$."""
     catalogue = _preamble()[0]
     for (rank, a, delta), lattice in catalogue.TwoElementary.items():
@@ -509,7 +515,7 @@ def test_two_elementary_filled_entries_match_nikulin_invariants():
         assert disc.is_p_elementary(2), key
 
 
-def test_discriminant_bilinear_form_elements_pair():
+def test_discriminant_bilinear_form_elements_pair() -> None:
     r"""Elements of $\operatorname{coker}(L\to L^\vee)$ pair in $\mathbb Q/\mathbb Z$.
 
     $A_{A_2}=\mathbb Z/3$ generated by the dual basis, on which $b$ is
@@ -541,7 +547,7 @@ def test_discriminant_bilinear_form_elements_pair():
     ), f"Gram matrix {G} disagrees with the pairing"
 
 
-def test_is_p_elementary_rejects_nearby_non_examples():
+def test_is_p_elementary_rejects_nearby_non_examples() -> None:
     catalogue = _preamble()[0]
     L = catalogue.Lattices
     assert L.U_2.is_p_elementary(2)
@@ -551,7 +557,7 @@ def test_is_p_elementary_rejects_nearby_non_examples():
     assert not L.Z.twist(4).is_p_elementary(2)
 
 
-def test_named_lattice_aliases_are_identical_objects():
+def test_named_lattice_aliases_are_identical_objects() -> None:
     """Aliases are the same parent, not separately constructed copies."""
     L = _preamble()[0].Lattices
     assert L.U is L.H
@@ -574,7 +580,7 @@ _STERK_PUBLISHED_NORM_COUNTS = {
 }
 
 
-def test_sterk_configurations_match_published_norm_breakdown():
+def test_sterk_configurations_match_published_norm_breakdown() -> None:
     """The external oracle: Sterk's counts *by norm*, not just totals."""
     catalogue, _, sterk = _preamble()
     TdP = catalogue.Lattices.TdP
@@ -588,7 +594,7 @@ def test_sterk_configurations_match_published_norm_breakdown():
         assert minus_two == published["norm_-2"], f"{name}: {minus_two} roots of norm -2"
 
 
-def test_every_sterk_vector_is_a_root():
+def test_every_sterk_vector_is_a_root() -> None:
     catalogue, _, sterk = _preamble()
     TdP = catalogue.Lattices.TdP
     for name, roots in sterk.sterk_roots().items():
@@ -597,7 +603,7 @@ def test_every_sterk_vector_is_a_root():
             assert norm in (-2, -4), f"{name} root {index}: norm {norm}"
 
 
-def test_s4_12_is_isotropic_not_a_root():
+def test_s4_12_is_isotropic_not_a_root() -> None:
     """The vector wrongly dropped as dead code: a cusp, norm 0."""
     catalogue, _, sterk = _preamble()
     vectors = sterk.isotropic_vectors()
@@ -605,7 +611,7 @@ def test_s4_12_is_isotropic_not_a_root():
     assert catalogue.Lattices.TdP.b(vectors["s4_12"], vectors["s4_12"]) == 0
 
 
-def test_five_selected_isotropic_vectors():
+def test_five_selected_isotropic_vectors() -> None:
     """Why there are five Sterk cases."""
     catalogue, _, sterk = _preamble()
     selected_vectors = sterk.selected_isotropic_vectors()
@@ -615,7 +621,7 @@ def test_five_selected_isotropic_vectors():
         assert TEn.b(vector_, vector_) == 0, f"{name} is not isotropic"
 
 
-def test_getsterk5_reproduces_sterk_5_from_a_different_lattice():
+def test_getsterk5_reproduces_sterk_5_from_a_different_lattice() -> None:
     """Rank 10 here versus rank 20 in ``sterk_roots`` -- independent presentations."""
     _, _, sterk = _preamble()
     lattice, vectors = sterk.sterk5_in_U_E8_2()
@@ -627,14 +633,14 @@ def test_getsterk5_reproduces_sterk_5_from_a_different_lattice():
     assert (minus_four, minus_two) == (published["norm_-4"], published["norm_-2"])
 
 
-def test_diagonal_embedding_is_e8_2_into_tdp():
+def test_diagonal_embedding_is_e8_2_into_tdp() -> None:
     catalogue, _, sterk = _preamble()
     phi = sterk.diagonal_embedding()
     assert phi is catalogue.Embeddings.E8_2_into_TdP
     assert phi.matrix().dimensions() == (8, 20)
 
 
-def test_embedding_chain_TCo_TEn_TdP_LK3():
+def test_embedding_chain_TCo_TEn_TdP_LK3() -> None:
     """$T_{Co}\\hookrightarrow T_{En}\\hookrightarrow T_{dP}\\hookrightarrow\\Lambda_{K3}$."""
     _ensure_preamble()
 
@@ -657,7 +663,7 @@ def test_embedding_chain_TCo_TEn_TdP_LK3():
         assert E.TEn_into_TdP(ten[4 + i]) == E.E8_2_into_TdP(gen)
 
 
-def test_block_hom_Z2_U2_into_U_U2():
+def test_block_hom_Z2_U2_into_U_U2() -> None:
     r"""Block Hom spelling: $\langle 2\rangle\oplus U(2)\to U\oplus U(2)$, $h\mapsto e+f$."""
     _ensure_preamble()
 
@@ -679,7 +685,7 @@ def test_block_hom_Z2_U2_into_U_U2():
     assert phi.matrix() == flat.matrix()
 
 
-def test_block_hom_sum_of_blocks_diagonal():
+def test_block_hom_sum_of_blocks_diagonal() -> None:
     r"""Block Hom columns: ``{a1: b1, a2: b2 + b3}`` is id ⊕ diagonal $U(2)\hookrightarrow U\oplus U$."""
     _ensure_preamble()
 
@@ -714,7 +720,7 @@ def test_block_hom_sum_of_blocks_diagonal():
 # --------------------------------------------------------------------------
 
 
-def test_involutions_are_involutions_and_isometries():
+def test_involutions_are_involutions_and_isometries() -> None:
     catalogue = _preamble()[0]
     named = {
         name: getattr(catalogue.Involutions, name)
@@ -729,7 +735,7 @@ def test_involutions_are_involutions_and_isometries():
         ), name
 
 
-def test_coinvariant_lattice_returns_subobject():
+def test_coinvariant_lattice_returns_subobject() -> None:
     catalogue = _preamble()[0]
     L = catalogue.Lattices
     for name in ("I_dP", "I_En", "I_Nik"):
@@ -740,7 +746,7 @@ def test_coinvariant_lattice_returns_subobject():
         assert actual.structure_morphism().is_injective(), name
 
 
-def test_eigenlattices_reproduce_the_named_lattices():
+def test_eigenlattices_reproduce_the_named_lattices() -> None:
     """Two independent constructions agreeing: direct sums versus signed basis images."""
     catalogue, _, _ = _preamble()
     L = catalogue.Lattices
@@ -761,7 +767,7 @@ def test_eigenlattices_reproduce_the_named_lattices():
         assert lattice.is_isometric(expected), f"{action} L{sign}"
 
 
-def test_eigenlattice_ranks_sum_to_22():
+def test_eigenlattice_ranks_sum_to_22() -> None:
     catalogue = _preamble()[0]
     L = catalogue.Lattices
     for name in ("I_dP", "I_En", "I_Nik"):
@@ -776,7 +782,7 @@ def test_eigenlattice_ranks_sum_to_22():
 # --------------------------------------------------------------------------
 
 
-def test_source_claim_block_holds():
+def test_source_claim_block_holds() -> None:
     """Eight assertions the source wrote behind ``do_tests = False`` and never ran."""
     catalogue, _, _ = _preamble()
     TEn = catalogue.Lattices.TEn
@@ -804,7 +810,7 @@ def test_source_claim_block_holds():
     assert TEn.div(vp) == 2 and TEn.q(vp) == 0
 
 
-def test_the_8_6_0_lattice_has_its_recorded_invariants():
+def test_the_8_6_0_lattice_has_its_recorded_invariants() -> None:
     """The entry recovered from the claim block; an index-2 overlattice of A1^8."""
     catalogue, _, _ = _preamble()
     TEn = catalogue.Lattices.TEn
@@ -824,7 +830,7 @@ def test_the_8_6_0_lattice_has_its_recorded_invariants():
 # --------------------------------------------------------------------------
 
 
-def test_delta_is_zero_on_the_two_elementary_lattices():
+def test_delta_is_zero_on_the_two_elementary_lattices() -> None:
     catalogue, _, _ = _preamble()
     for name in ("U", "U_2", "E8", "E8_2", "E10_2", "TEn"):
         lattice = getattr(catalogue.Lattices, name)
@@ -833,7 +839,7 @@ def test_delta_is_zero_on_the_two_elementary_lattices():
         assert type(lattice).delta.__qualname__ == "IntegralLattices.ParentMethods.delta"
 
 
-def test_definiteness_predicates():
+def test_definiteness_predicates() -> None:
     catalogue, _, _ = _preamble()
     assert catalogue.Lattices.E8.is_elliptic()
     assert catalogue.Lattices.E8.is_parabolic()
@@ -843,7 +849,7 @@ def test_definiteness_predicates():
     )
 
 
-def test_coxeter_diagram_uses_the_owned_sage_parent():
+def test_coxeter_diagram_uses_the_owned_sage_parent() -> None:
     """The diagram is a parent in the preamble's own category, not the spike's."""
     _preamble()
 
@@ -853,7 +859,7 @@ def test_coxeter_diagram_uses_the_owned_sage_parent():
     assert diagram.coxeter_matrix() == CoxeterMatrix(["E", 8])
 
 
-def test_diagram_layouts_match_root_counts():
+def test_diagram_layouts_match_root_counts() -> None:
     catalogue, _, _ = _preamble()
     assert len(catalogue.SterkDiagrams.Sterk_1.preferred_positions()) == 12
     assert len(catalogue.SterkDiagrams.Sterk_2.preferred_positions()) == 10
@@ -867,7 +873,7 @@ def test_diagram_layouts_match_root_counts():
 # --------------------------------------------------------------------------
 
 
-def test_sterks_in_ten_are_root_configurations():
+def test_sterks_in_ten_are_root_configurations() -> None:
     """The T_En-coordinate configurations, with their two different dual scalings."""
     catalogue, _, sterk = _preamble()
     configurations = sterk.sterks_in_ten()
@@ -881,7 +887,7 @@ def test_sterks_in_ten_are_root_configurations():
             assert norm in (-2, -4), f"{name} vector {index}: norm {norm}"
 
 
-def test_sterks1_and_sterks3_use_different_dual_scalings():
+def test_sterks1_and_sterks3_use_different_dual_scalings() -> None:
     """sterks1 uses $2G^{-1}$ duals; sterks3 uses $G^{-1}$."""
     catalogue, _, sterk = _preamble()
     TEn = catalogue.Lattices.TEn
@@ -899,13 +905,13 @@ def test_sterks1_and_sterks3_use_different_dual_scalings():
     assert configs["sterks3"][8] == c.lift(c(2 * fp) + 2 * dual[11])
 
 
-def test_nothing_from_the_sterk_section_is_unported():
+def test_nothing_from_the_sterk_section_is_unported() -> None:
     _ensure_preamble()
 
     assert NOT_PORTED == ()
 
 
-def test_to_lin_comb_generators_labels_elements():
+def test_to_lin_comb_generators_labels_elements() -> None:
     catalogue, _, _ = _preamble()
     lattice = catalogue.Lattices.U.direct_sum(catalogue.Lattices.E8).with_names("e, f, a1..a8")
     generators = lattice.gens()
@@ -914,7 +920,7 @@ def test_to_lin_comb_generators_labels_elements():
     assert "2*e" in label and "a2" in label, label
 
 
-def test_sublattices_is_a_usable_dict():
+def test_sublattices_is_a_usable_dict() -> None:
     """Old line 358 does ``TEn.sublattices.update({...})`` and needs it to exist."""
     catalogue, _, _ = _preamble()
     lattice = catalogue.Lattices.TEn
@@ -923,13 +929,13 @@ def test_sublattices_is_a_usable_dict():
     lattice.sublattices.clear()
 
 
-def test_twist_accepts_names():
+def test_twist_accepts_names() -> None:
     catalogue, _, _ = _preamble()
     twisted = catalogue.Lattices.E8.twist(2, names=tuple(f"b{i}" for i in range(1, 9)))
     assert twisted.variable_names() == tuple(f"b{i}" for i in range(1, 9))
 
 
-def test_lattice_latex_representation():
+def test_lattice_latex_representation() -> None:
     catalogue, _, _ = _preamble()
     _ensure_preamble()
     from sage.misc.latex import latex
@@ -981,7 +987,7 @@ def test_lattice_latex_representation():
     set_zero_dots(True)
 
 
-def test_catalogue_latex_fits_mathjax_and_has_balanced_environments():
+def test_catalogue_latex_fits_mathjax_and_has_balanced_environments() -> None:
     catalogue, _, _ = _preamble()
     from sage.misc.latex import latex
 
@@ -999,7 +1005,7 @@ def test_catalogue_latex_fits_mathjax_and_has_balanced_environments():
         _assert_latex_renders_in_browser_mathjax(rendered, name)
 
 
-def test_standard_lattice_show_pattern_renders_correctly_in_mathjax():
+def test_standard_lattice_show_pattern_renders_correctly_in_mathjax() -> None:
     catalogue, _, _ = _preamble()
     named_examples = {
         "U": catalogue.Lattices.U,
@@ -1015,7 +1021,7 @@ def test_standard_lattice_show_pattern_renders_correctly_in_mathjax():
     _assert_latex_sequence_renders_in_browser_mathjax(rendered, max_buffer=max_buffer)
 
 
-def test_direct_sum_subdivides_gram_matrix():
+def test_direct_sum_subdivides_gram_matrix() -> None:
     catalogue, _, _ = _preamble()
     direct_sum_lattice = catalogue.Lattices.U.direct_sum(catalogue.Lattices.E8)
     assert direct_sum_lattice.gram_matrix().subdivisions() == ([2], [2])
@@ -1023,7 +1029,7 @@ def test_direct_sum_subdivides_gram_matrix():
     assert catalogue.Lattices.LK3_2d(3).gram_matrix().subdivisions() == ([1, 3, 5, 13], [1, 3, 5, 13])
 
 
-def test_lattice_element_multiplication_and_exponentiation():
+def test_lattice_element_multiplication_and_exponentiation() -> None:
     catalogue, _, _ = _preamble()
     a2 = catalogue.Lattices.root_lattice("A", 2)
     alpha1, alpha2 = a2.gens()
@@ -1035,7 +1041,7 @@ def test_lattice_element_multiplication_and_exponentiation():
     assert (alpha1 + 2 * alpha2) * (alpha1 - alpha2) == 3
 
 
-def test_vinberg_algorithm_negates_roots_when_it_twists():
+def test_vinberg_algorithm_negates_roots_when_it_twists() -> None:
     """The source typo (``do_twist`` set, ``doTwist`` tested) disabled this branch."""
     _ensure_preamble()
 
@@ -1053,7 +1059,7 @@ def test_vinberg_algorithm_negates_roots_when_it_twists():
     assert any(name.startswith("-") for name in root_names), root_names
 
 
-def test_get_isotropic_type_classifies():
+def test_get_isotropic_type_classifies() -> None:
     _ensure_preamble()
     import pytest
 
@@ -1083,28 +1089,50 @@ def test_get_isotropic_type_classifies():
     ) == "Even characteristic"
 
 
-def test_install_hooks_are_idempotent():
+def test_install_hooks_are_idempotent() -> None:
     _ensure_preamble()
     install_integral_lattices()
     install_finitely_presented_groups()
     assert Lattices.U.rank() == 2
 
 
-def test_lattices_install_binds_specimens_and_lk3_generators():
+def test_lattices_install_binds_specimens_and_lk3_generators() -> None:
+    from sage_lattice_category_spike.algebra.domain_algebra import (
+        Lattice,
+        LatticeElement,
+        LatticeMorphism,
+    )
+
     _ensure_preamble()
-    ns = {}
+    ns: dict[str, Lattice | LatticeElement | LatticeMorphism] = {}
     Lattices.install(ns)
     assert ns["U"] is Lattices.U
     assert ns["LK3"] is Lattices.LK3
-    assert ns["v1"].parent() is Lattices.LK3
-    assert ns["I_En"].domain() is Lattices.LK3
-    assert ns["A2"].signature_pair() == (0, 2)
-    assert ns["D4"].rank() == 4
+
+    v1 = ns["v1"]
+    assert isinstance(v1, LatticeElement)
+    assert v1.parent() is Lattices.LK3
+
+    i_en = ns["I_En"]
+    assert isinstance(i_en, LatticeMorphism)
+    assert i_en.domain() is Lattices.LK3
+
+    a2 = ns["A2"]
+    assert isinstance(a2, Lattice)
+    assert a2.signature_pair() == (0, 2)
+
+    d4 = ns["D4"]
+    assert isinstance(d4, Lattice)
+    assert d4.rank() == 4
+
     assert ns["TdP"] is Lattices.TdP
-    assert ns["e"].parent() is Lattices.TdP
+
+    e = ns["e"]
+    assert isinstance(e, LatticeElement)
+    assert e.parent() is Lattices.TdP
 
 
-def test_julia_preamble_calls_oscar_with_a_sage_matrix():
+def test_julia_preamble_calls_oscar_with_a_sage_matrix() -> None:
     _ensure_preamble()
 
     # Any nondegenerate specimen proves the bridge; the Coxeter edge lattices

@@ -28,13 +28,17 @@ Findings these tests encode, each verified against this Sage:
 
 # Category hooks: load mathematical preamble scripts (not notebook init.sage).
 from pathlib import Path
+from typing import Callable, ParamSpec, cast
+
 import dzack_research
+
+_LatticeConstructorParams = ParamSpec("_LatticeConstructorParams")
 
 _p = Path(dzack_research.__file__).resolve().parent / "preamble"
 load(str(_p / "install.sage"))
 
 
-def test_set_literal_preparser_preserves_sage_generator_declarations():
+def test_set_literal_preparser_preserves_sage_generator_declarations() -> None:
     r"""The notebook set extension must compose with Sage's ``R.<x> =`` syntax."""
     from dzack_research.preamble.preparser import install_preparser
     from sage.repl import preparse as sage_preparse
@@ -50,27 +54,35 @@ def test_set_literal_preparser_preserves_sage_generator_declarations():
 
     lattice = namespace["A2"]
     assert lattice.rank() == 2
-    assert namespace["alpha1"] == lattice.gens()[0]
-    assert namespace["alpha2"] == lattice.gens()[1]
+    assert namespace["alpha1"] == lattice.module_generators()[0]
+    assert namespace["alpha2"] == lattice.module_generators()[1]
     expected_roots = Set([namespace["alpha1"], namespace["alpha2"]])
     assert namespace["simple_roots"].equal_as_sets(expected_roots)
     assert namespace["weight"] == 3 * namespace["alpha1"] + 2 * namespace["alpha2"]
 
 
-def _lattice_constructor():
+def _lattice_constructor() -> (
+    Callable[_LatticeConstructorParams, FreeQuadraticModule_integer_symmetric]
+):
     from sage.all import IntegralLattice
+    from sage.modules.free_quadratic_module_integer_symmetric import (
+        FreeQuadraticModule_integer_symmetric,
+    )
 
-    return IntegralLattice
+    return cast(
+        Callable[_LatticeConstructorParams, FreeQuadraticModule_integer_symmetric],
+        IntegralLattice,
+    )
 
 
-def test_explicit_generator_form_preparses_to_names_keyword():
+def test_explicit_generator_form_preparses_to_names_keyword() -> None:
     """The sugar becomes a ``names=`` kwarg plus ``_first_ngens``."""
     source = preparse('L.<e,f> = IntegralLattice("H")')
     assert "names=('e', 'f',)" in source, source
     assert "_first_ngens(2)" in source, source
 
 
-def test_ellipsis_form_expands_the_range():
+def test_ellipsis_form_expands_the_range() -> None:
     r"""``L.<a1, ..., a8>`` must give **eight** named generators.
 
     Sage's preparser emits three names with the middle one the literal string
@@ -86,7 +98,7 @@ def test_ellipsis_form_expands_the_range():
     assert a8 == L.gens()[7], a8
 
 
-def test_explicit_generator_form_binds_names():
+def test_explicit_generator_form_binds_names() -> None:
     """``L.<e,f> = IntegralLattice("H")`` works via the hooked ``names=``."""
     IntegralLattice = _lattice_constructor()
     L.<e,f> = IntegralLattice("H")
@@ -94,7 +106,7 @@ def test_explicit_generator_form_binds_names():
     assert e == L.gens()[0] and f == L.gens()[1]
 
 
-def test_generator_count_must_match_the_rank():
+def test_generator_count_must_match_the_rank() -> None:
     """A range whose length disagrees with the rank fails loudly, not silently."""
     try:
         IntegralLattice = _lattice_constructor()
@@ -105,7 +117,7 @@ def test_generator_count_must_match_the_rank():
         raise AssertionError("a 5-name range on a rank-8 lattice should fail")
 
 
-def test_assign_names_then_inject_works():
+def test_assign_names_then_inject_works() -> None:
     """The machinery the sugar needs is present on all lattices."""
     lattice = _lattice_constructor()("E8")
     names = tuple(f"a{i}" for i in range(1, 9))
@@ -116,7 +128,7 @@ def test_assign_names_then_inject_works():
     assert len(first_two) == 2
 
 
-def test_variable_names_before_assignment_raises():
+def test_variable_names_before_assignment_raises() -> None:
     """An unnamed lattice reports loudly rather than inventing names."""
     lattice = _lattice_constructor()("H")
     try:
@@ -127,7 +139,7 @@ def test_variable_names_before_assignment_raises():
         raise AssertionError("variable_names() unexpectedly succeeded")
 
 
-def test_pow_is_repeated_direct_sum():
+def test_pow_is_repeated_direct_sum() -> None:
     """``U**3`` and the full ``U**3 + E8**2`` from the old init.sage."""
     IntegralLattice = _lattice_constructor()
     assert (IntegralLattice("H") ** 3).rank() == 6
@@ -144,7 +156,7 @@ def test_pow_is_repeated_direct_sum():
     assert raw.signature_pair() == (19, 3), raw.signature_pair()
 
 
-def test_named_lattice_helper_gives_the_intended_sugar():
+def test_named_lattice_helper_gives_the_intended_sugar() -> None:
     """The ``with_names`` method works via category refinement."""
     lattice = _lattice_constructor()("E8")
     named = lattice.with_names("a1..a8")
@@ -155,7 +167,7 @@ def test_named_lattice_helper_gives_the_intended_sugar():
     assert explicit.variable_names() == ("e", "f")
 
 
-def test_named_lattice_helper_rejects_a_count_mismatch():
+def test_named_lattice_helper_rejects_a_count_mismatch() -> None:
     """A range whose length disagrees with the rank fails loudly, not silently."""
     try:
         _lattice_constructor()("E8").with_names("a1..a5")

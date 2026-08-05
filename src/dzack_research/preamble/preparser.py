@@ -16,12 +16,13 @@ from sage.repl import interpreter as sage_interpreter
 from sage.repl import preparse as sage_preparse
 from sage.repl.load import load_wrap
 
-from dzack_research.preamble.sagepython import (  # noqa: F401  (re-exports)
+from sagepython import (  # noqa: F401  (re-exports)
     LoweredSource,
     Segment,
     SourceMap,
     lower,
 )
+from sagepython.research import EXTENSION as _RESEARCH_NOTATION
 
 _native_preparse = sage_preparse.preparse
 _native_preparse_file = sage_preparse.preparse_file
@@ -77,7 +78,9 @@ def preparse(
     if do_time:
         line = _wrap_time_statements(line)
 
-    return lower(line, wrap_numbers=numeric_literals).python
+    return lower(
+        line, wrap_numbers=numeric_literals, extensions=(_RESEARCH_NOTATION,)
+    ).python
 
 
 def preparse_file(

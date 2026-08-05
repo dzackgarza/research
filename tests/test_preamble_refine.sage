@@ -11,7 +11,7 @@ construction, wrap at the API boundary in a facade whose MRO puts
 """
 
 
-def _ensure_preamble():
+def _ensure_preamble() -> None:
     if "Lattices" in globals():
         return
     from pathlib import Path
@@ -25,44 +25,44 @@ def _ensure_preamble():
     Lattices.install(globals())
 
 
-def _hyperbolic_lattice():
+def _hyperbolic_lattice() -> FreeQuadraticModule_integer_symmetric:
     from sage.matrix.constructor import matrix
-    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice, FreeQuadraticModule_integer_symmetric
     from sage.rings.integer_ring import ZZ
 
     return IntegralLattice(matrix(ZZ, [[0, 1], [1, 0]]))
 
 
-def _refined_lattice():
+def _refined_lattice() -> FreeQuadraticModule_integer_symmetric:
     _ensure_preamble()
     lattice = _hyperbolic_lattice()
     refine(lattice, IntegralLattices())
     return lattice
 
 
-def _sentinel_morphisms():
+def _sentinel_morphisms() -> Category:
     from sage.categories.category import Category
     from sage.categories.sets_cat import Sets
 
     class _SentinelMorphisms(Category):
         @classmethod
-        def _repr_object_names(cls):
+        def _repr_object_names(cls) -> str:
             return "sentinel morphisms"
 
-        def super_categories(self):
+        def super_categories(self) -> list:
             return [Sets()]
 
         class MorphismMethods:
-            def is_identity(self):
+            def is_identity(self) -> str:
                 return "from_refined_category"
 
-            def preamble_only(self):
+            def preamble_only(self) -> str:
                 return "from_refined_category"
 
     return _SentinelMorphisms()
 
 
-def test_parent_methods_come_from_refined_category():
+def test_parent_methods_come_from_refined_category() -> None:
     lattice = _refined_lattice()
     assert type(lattice).q.__qualname__ == "IntegralLattices.ParentMethods.q"
     assert type(lattice).direct_sum.__qualname__ == "IntegralLattices.ParentMethods.direct_sum"
@@ -74,7 +74,7 @@ def test_parent_methods_come_from_refined_category():
     assert not lattice.is_elliptic()
 
 
-def test_element_methods_come_from_refined_category():
+def test_element_methods_come_from_refined_category() -> None:
     lattice = _refined_lattice()
     element = lattice.gens()[0]
     assert type(element).q.__qualname__ == "IntegralLattices.ElementMethods.q"
@@ -93,7 +93,7 @@ def test_element_methods_come_from_refined_category():
     assert identity(element) == element
 
 
-def test_refined_element_compares_without_coercion_recursion():
+def test_refined_element_compares_without_coercion_recursion() -> None:
     """Cython ``Element.__richcmp__`` used to ignore Python ``__eq__`` and segfault.
 
     The element facade that worked around it is gone: elements are genuine
@@ -109,7 +109,7 @@ def test_refined_element_compares_without_coercion_recursion():
     assert element != lattice.zero()
 
 
-def test_unequal_rank_hom_from_generator_images():
+def test_unequal_rank_hom_from_generator_images() -> None:
     """An embedding is an m×n matrix; Hom(list-of-images) must build it."""
     _ensure_preamble()
     E = Lattices.E8_2
@@ -150,7 +150,7 @@ def test_unequal_rank_hom_from_generator_images():
 #     assert morphism(7) == 7
 
 
-def test_heap_morphism_methods_come_from_refined_category():
+def test_heap_morphism_methods_come_from_refined_category() -> None:
     _ensure_preamble()
     from sage.modules.free_module import FreeModule
     from sage.rings.integer_ring import ZZ
@@ -179,7 +179,7 @@ def test_heap_morphism_methods_come_from_refined_category():
 #     assert morphism.preamble_only() == "from_refined_category"
 
 
-def test_install_hooks_refine_parents_and_elements():
+def test_install_hooks_refine_parents_and_elements() -> None:
     _ensure_preamble()
     lattice = Lattices.U
     assert type(lattice).direct_sum.__qualname__ == "IntegralLattices.ParentMethods.direct_sum"
