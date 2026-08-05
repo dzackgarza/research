@@ -1,8 +1,14 @@
 [project]
 name = "dzack-research-preamble"
-version = "0.0.2"
+version = "0.0.3"
 description = "SageMath preamble: categorical foundations for lattice research"
 requires-python = ">=3.14"
+# sagepython (the compiler core) is sage-free and needs only these;
+# preparser (the Sage-session surface) additionally needs a Sage runtime.
+dependencies = [
+    "tree-sitter",
+    "tree-sitter-sage @ file:///home/dzack/gitclones/tree-sitter-sage",
+]
 
 # Requirements installed into the uvx mypy environment so static analysis can
 # resolve imports (see ai-review-ci justfiles/sage.just, _sage-mypy). The local
