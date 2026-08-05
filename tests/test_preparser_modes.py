@@ -24,6 +24,7 @@ from dzack_research.preamble.preparser import lower, preparse, preparse_file
 from sage.all import (  # noqa: F401  (names used by the executed source)
     ZZ,
     QQ,
+    PolynomialRing,
     Set,
     Integer,
     RealNumber,
@@ -215,6 +216,47 @@ def test_lint_sensitive_constructs_lower_to_ordinary_python() -> None:
         "w = 5r + 2.5R + 0xEAr",
     ):
         ast.parse(preparse(source))
+
+
+def test_sage_34678_match_case_repro_executes() -> None:
+    # Upstream: patterns became Integer(1) calls, a TypeError at runtime.
+    namespace = dict(globals())
+    buffer = io.StringIO()
+    with contextlib.redirect_stdout(buffer):
+        exec(
+            preparse(
+                "x = 2\nmatch x:\n    case 1: print('hello')\n"
+                "    case 2: print('world')\n"
+            ),
+            namespace,
+        )
+    assert buffer.getvalue() == "world\n"
+
+
+def test_sage_19088_multiline_generator_with_trailing_statement() -> None:
+    # Upstream: the regex generator rewrite broke on multiline
+    # constructors followed by `; A` (and carets inside string args).
+    namespace = dict(globals())
+    exec(
+        preparse(
+            "A.<n> = PolynomialRing(QQ, name='n^2 * log(n)^QQ',\n"
+            "                       sparse=False); B = A\n"
+        ),
+        namespace,
+    )
+    assert namespace["B"] is namespace["A"]
+    assert namespace["A"].gen() == namespace["n"]
+
+
+def test_sage_33942_multiline_fstring_literal_lines_untouched() -> None:
+    # Upstream: literal lines inside multiline f-strings were rewritten
+    # (a bare `2` became `_sage_const_2` / `Integer(2)`).
+    namespace = dict(globals())
+    exec(
+        preparse('value = f"""\na: {1:0.2f}\na: 2\na: 3\n"""'),
+        namespace,
+    )
+    assert namespace["value"] == "\na: 1.00\na: 2\na: 3\n"
 
 
 def test_backslash_operator_surfaces_as_syntax_error() -> None:
