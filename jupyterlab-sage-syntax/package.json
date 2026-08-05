@@ -12,7 +12,6 @@
   "files": [
     "lib/**/*",
     "package.json",
-    "resources/**/*",
     "schema/**/*",
     "static/**/*",
     "style/**/*"
@@ -20,7 +19,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsc -b && sage -python -m jupyter labextension build . && cp resources/*.wasm static/static/",
+    "build": "tsc -b && sage -python -m jupyter labextension build . && cp node_modules/tree-sitter-sage/tree-sitter-sage.wasm node_modules/web-tree-sitter/web-tree-sitter.wasm static/static/",
     "clean": "rimraf lib tsconfig.tsbuildinfo static",
     "test": "tsc -b && node --test lib/__tests__/*.test.js"
   },
@@ -32,7 +31,8 @@
     "@jupyterlab/codemirror": "^4.6.0",
     "@jupyterlab/coreutils": "^6.6.2",
     "@lezer/highlight": "^1.2.3",
-    "web-tree-sitter": "^0.26.11"
+    "web-tree-sitter": "^0.26.11",
+    "tree-sitter-sage": "github:dzackgarza/tree-sitter-sage"
   },
   "devDependencies": {
     "@jupyter/builder": "^1.0.0-beta.1",
