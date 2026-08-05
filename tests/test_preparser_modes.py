@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 import sage.repl.load  # noqa: F401  (the wrapped load directive references it)
-from dzack_research.preamble.preparser import preparse, preparse_file
+from dzack_research.preamble.preparser import lower, preparse, preparse_file
 
 from sage.all import (  # noqa: F401  (names used by the executed source)
     ZZ,
@@ -151,6 +151,31 @@ def test_preparse_file_wraps_bare_load_directives(tmp_path: Path) -> None:
 
     assert namespace["w"] == 1024
     assert namespace["after"] == 1028
+
+
+def test_source_map_translates_verbatim_positions_exactly() -> None:
+    result = lower("R.<x, y> = QQ[]\nq = 2^5 + zz\n")
+
+    generated_column = result.python.split("\n")[1].find("zz")
+    assert result.source_map.original_position(2, generated_column) == (2, 10)
+
+
+def test_source_map_points_rebuilt_constructs_at_their_origin() -> None:
+    result = lower("v = 1\nR.<x, y> = QQ[]\n")
+
+    assert result.python.split("\n")[1].startswith("R = QQ[")
+    assert result.source_map.original_position(2, 20) == (2, 0)
+
+
+def test_source_map_translates_a_real_syntax_error() -> None:
+    result = lower("R.<x> = QQ[]\ndef broken(:\n    pass\n")
+
+    with pytest.raises(SyntaxError) as excinfo:
+        compile(result.python, "<cell>", "exec")
+    line, column = result.source_map.original_position(
+        excinfo.value.lineno or 0, excinfo.value.offset or 0
+    )
+    assert line == 2 and column == 12
 
 
 def test_backslash_operator_surfaces_as_syntax_error() -> None:

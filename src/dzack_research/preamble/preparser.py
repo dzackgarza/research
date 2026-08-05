@@ -67,12 +67,132 @@ class _Context:
         return self.source[node.start_byte : node.end_byte].decode("utf-8")
 
 
+def _segments(node: Node, context: _Context) -> list["Segment"]:
+    """Lower ``node`` into source-mapped segments.
+
+    Nodes with a lowering rule become one rebuilt segment covering the
+    construct; other nodes interleave verbatim gaps with their children's
+    segments.
+    """
+    if node.type == "case_pattern" and not context.in_case_pattern:
+        context = replace(context, in_case_pattern=True)
+    rule = _LOWERINGS.get(node.type)
+    if rule is not None:
+        lowered = rule(node, context)
+        if lowered is not None:
+            return [
+                Segment(
+                    text=lowered,
+                    original_start=node.start_byte,
+                    original_end=node.end_byte,
+                    exact=False,
+                )
+            ]
+    segments: list[Segment] = []
+    cursor = node.start_byte
+    for child in node.children:
+        if cursor < child.start_byte:
+            segments.append(
+                Segment(
+                    text=context.source[cursor : child.start_byte].decode("utf-8"),
+                    original_start=cursor,
+                    original_end=child.start_byte,
+                    exact=True,
+                )
+            )
+        segments.extend(_segments(child, context))
+        cursor = child.end_byte
+    if cursor < node.end_byte:
+        segments.append(
+            Segment(
+                text=context.source[cursor : node.end_byte].decode("utf-8"),
+                original_start=cursor,
+                original_end=node.end_byte,
+                exact=True,
+            )
+        )
+    if not node.children and node.start_byte == node.end_byte:
+        return segments
+    if not segments:
+        segments.append(
+            Segment(
+                text=context.text(node),
+                original_start=node.start_byte,
+                original_end=node.end_byte,
+                exact=True,
+            )
+        )
+    return segments
+
+
+@dataclass(frozen=True)
+class Segment:
+    """One span of generated Python and the original span it came from.
+
+    ``exact`` segments are verbatim copies, so positions map one-to-one;
+    rebuilt segments map every inner position to the start of the
+    originating construct.
+    """
+
+    text: str
+    original_start: int
+    original_end: int
+    exact: bool
+
+
+@dataclass(frozen=True)
+class SourceMap:
+    """Maps positions in generated Python back to the Sage source."""
+
+    original: str
+    python: str
+    segments: tuple[Segment, ...]
+
+    def original_offset(self, generated_offset: int) -> int:
+        cursor = 0
+        for segment in self.segments:
+            end = cursor + len(segment.text.encode("utf-8"))
+            if generated_offset < end or segment is self.segments[-1]:
+                if segment.exact:
+                    return segment.original_start + max(
+                        0, min(generated_offset, end) - cursor
+                    )
+                return segment.original_start
+            cursor = end
+        return len(self.original.encode("utf-8"))
+
+    def original_position(self, line: int, column: int) -> tuple[int, int]:
+        """Translate a 1-based generated (line, column) to the original."""
+        generated = self.python.encode("utf-8")
+        line_starts = [0]
+        for index, byte in enumerate(generated):
+            if byte == 0x0A:
+                line_starts.append(index + 1)
+        offset = line_starts[min(line - 1, len(line_starts) - 1)] + column
+        original_offset = self.original_offset(offset)
+        prefix = self.original.encode("utf-8")[:original_offset]
+        original_line = prefix.count(b"\n") + 1
+        last_newline = prefix.rfind(b"\n")
+        original_column = original_offset - (last_newline + 1)
+        return original_line, original_column
+
+
+@dataclass(frozen=True)
+class LoweredSource:
+    """The compiler's output: ordinary Python plus its source map."""
+
+    python: str
+    source_map: SourceMap
+
+
 def _lower(node: Node, context: _Context) -> str:
     if node.type == "case_pattern" and not context.in_case_pattern:
         context = replace(context, in_case_pattern=True)
     rule = _LOWERINGS.get(node.type)
     if rule is not None:
-        return rule(node, context)
+        lowered = rule(node, context)
+        if lowered is not None:
+            return lowered
     return _splice(node, context)
 
 
@@ -100,10 +220,10 @@ def _integer_stem(text: str) -> str:
     return stripped if stripped else "0"
 
 
-def _lower_integer(node: Node, context: _Context) -> str:
+def _lower_integer(node: Node, context: _Context) -> str | None:
     text = context.text(node)
     if not context.wrap_numbers or context.in_case_pattern:
-        return text
+        return None
     if text[-1] in "jJ":
         return f"ComplexNumber(0, '{text[:-1]}')"
     if text[:2].lower() in {"0x", "0o", "0b"}:
@@ -114,10 +234,10 @@ def _lower_integer(node: Node, context: _Context) -> str:
     return f"Integer('{stem}')"
 
 
-def _lower_float(node: Node, context: _Context) -> str:
+def _lower_float(node: Node, context: _Context) -> str | None:
     text = context.text(node)
     if not context.wrap_numbers or context.in_case_pattern:
-        return text
+        return None
     if text[-1] in "jJ":
         return f"ComplexNumber(0, '{text[:-1]}')"
     return f"RealNumber('{text}')"
@@ -140,13 +260,13 @@ def _lower_raw_literal(node: Node, context: _Context) -> str:
 _CARET_OPERATORS = {"^": "**", "^^": "^", "^=": "**=", "^^=": "^="}
 
 
-def _lower_operator_node(node: Node, context: _Context) -> str:
+def _lower_operator_node(node: Node, context: _Context) -> str | None:
     operator = node.child_by_field_name("operator")
     if operator is None or operator.text is None:
-        return _splice(node, context)
+        return None
     replacement = _CARET_OPERATORS.get(operator.text.decode())
     if replacement is None:
-        return _splice(node, context)
+        return None
     pieces = []
     cursor = node.start_byte
     for child in node.children:
@@ -283,25 +403,25 @@ def _named_elements(node: Node) -> list[Node]:
     return [child for child in node.children if child.is_named]
 
 
-def _lower_list(node: Node, context: _Context) -> str:
+def _lower_list(node: Node, context: _Context) -> str | None:
     elements = _named_elements(node)
     if _has_ellipsis(elements):
         return f"(ellipsis_range({_ellipsis_arguments(elements, context)}))"
-    return _splice(node, context)
+    return None
 
 
-def _lower_parenthesized(node: Node, context: _Context) -> str:
+def _lower_parenthesized(node: Node, context: _Context) -> str | None:
     elements = _named_elements(node)
     if _has_ellipsis(elements):
         return f"(ellipsis_iter({_ellipsis_arguments(elements, context)}))"
-    return _splice(node, context)
+    return None
 
 
-def _lower_tuple(node: Node, context: _Context) -> str:
+def _lower_tuple(node: Node, context: _Context) -> str | None:
     elements = _named_elements(node)
     if _has_ellipsis(elements):
         return f"(ellipsis_iter({_ellipsis_arguments(elements, context)}))"
-    return _splice(node, context)
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -418,7 +538,7 @@ def _lower_set_comprehension(node: Node, context: _Context) -> str:
 # The lowering table and the preparser
 # ---------------------------------------------------------------------------
 
-_LOWERINGS: dict[str, Callable[[Node, _Context], str]] = {
+_LOWERINGS: dict[str, Callable[[Node, _Context], str | None]] = {
     "integer": _lower_integer,
     "float": _lower_float,
     "sage_raw_literal": _lower_raw_literal,
@@ -485,10 +605,20 @@ def preparse(
     if do_time:
         line = _wrap_time_statements(line)
 
-    source = line.encode("utf-8")
-    tree = _PARSER.parse(source)
-    context = _Context(source=source, wrap_numbers=numeric_literals)
-    return _lower(tree.root_node, context)
+    return lower(line, wrap_numbers=numeric_literals).python
+
+
+def lower(source: str, wrap_numbers: bool = True) -> LoweredSource:
+    r"""Compile SagePython source to ordinary Python plus a source map."""
+    encoded = source.encode("utf-8")
+    tree = _PARSER.parse(encoded)
+    context = _Context(source=encoded, wrap_numbers=wrap_numbers)
+    segments = tuple(_segments(tree.root_node, context))
+    python = "".join(segment.text for segment in segments)
+    return LoweredSource(
+        python=python,
+        source_map=SourceMap(original=source, python=python, segments=segments),
+    )
 
 
 def preparse_file(
