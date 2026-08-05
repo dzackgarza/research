@@ -115,21 +115,17 @@ def test_incomplete_generator_declaration_stays_invalid() -> None:
 
 
 def test_generator_declaration_keeps_ellipsis_as_a_name() -> None:
-    r"""``L.<a, ..., d>`` keeps the ellipsis as a third name slot.
+    r"""``L.<a, ..., d>`` expands to the full four-name declaration.
 
-    The range is not expanded here: the preparser emits the literal name
-    ``'Ellipsis'`` in the slot, and the constructor hook expands it against
-    the rank it knows (``integral_lattices.sage``, ``_expand_ellipsis_names``).
-    Dropping the slot is worse than refusing it — the declaration still
-    compiles and silently names the wrong number of generators.
+    The preparser owns the expansion; no constructor ever sees an
+    ellipsis.  Dropping the slot is worse than refusing it — the
+    declaration would still compile and silently name the wrong number
+    of generators.
     """
     out = preparse("L.<a, ..., d> = Lattice(4)")
 
-    assert "'Ellipsis'" in out, out
-    assert "names=('a', 'Ellipsis', 'd',)" in out, out
-    # Slot count, not expanded rank: _first_ngens receives the number of
-    # declared slots and matches them against the expanded names.
-    assert "_first_ngens(3)" in out, out
+    assert "names=('a', 'b', 'c', 'd',)" in out, out
+    assert "_first_ngens(4)" in out, out
 
 
 def test_generator_declaration_ellipsis_survives_repeated_ranges() -> None:
@@ -143,8 +139,13 @@ def test_generator_declaration_ellipsis_survives_repeated_ranges() -> None:
         " = (U^3).direct_sum(E8^2)"
     )
 
-    assert out.count("'Ellipsis'") == 2, out
-    assert "_first_ngens(12)" in out, out
+    e_names = ", ".join(f"'e{i}'" for i in range(1, 9))
+    ep_names = ", ".join(f"'ep{i}'" for i in range(1, 9))
+    assert (
+        f"names=('v1', 'v2', 'u1', 'u2', 'up1', 'up2', {e_names}, {ep_names},)"
+        in out
+    ), out
+    assert "_first_ngens(22)" in out, out
 
 
 def test_preparse_file_keeps_match_case_integer_patterns() -> None:
@@ -316,21 +317,23 @@ def test_version_literal_feature_executes() -> None:
     assert namespace["w"] == RealNumber("1.2")
 
 
-def test_generator_ellipsis_matches_stock_sage_emission() -> None:
-    # The compiler's job ends at stock Sage's exact shape: the middle
-    # slot stays the literal name Ellipsis, unexpanded.  The runtime
-    # expansion contract belongs to the constructor hook and is owned by
-    # tests/test_lattice_generator_syntax.sage.  The compiler once
-    # silently dropped the slot (shorter, wrong name list).
+def test_generator_ellipsis_expands_at_preparse() -> None:
+    # The preparser owns the string manipulation: the endpoints
+    # determine the range textually, so downstream code sees only real
+    # names and stays focused on the mathematics.  (The compiler once
+    # silently dropped the slot; stock Sage leaves a literal 'Ellipsis'
+    # for constructors to interpret.)
+    a_names = ", ".join(f"'a{i}'" for i in range(1, 9))
+    a_targets = ", ".join(f"a{i}" for i in range(1, 9))
     assert preparse("L.<a1,...,a8> = IntegralLattice('E8')") == (
-        "L = IntegralLattice('E8', names=('a1', 'Ellipsis', 'a8',)); "
-        "(a1, Ellipsis, a8,) = L._first_ngens(3)"
+        f"L = IntegralLattice('E8', names=({a_names},)); "
+        f"({a_targets},) = L._first_ngens(8)"
     )
-    assert preparse("M.<v1,v2,e1,...,e8,ep1,...,ep8> = X(22)") == (
-        "M = X(Integer(22), names=('v1', 'v2', 'e1', 'Ellipsis', 'e8', "
-        "'ep1', 'Ellipsis', 'ep8',)); "
-        "(v1, v2, e1, Ellipsis, e8, ep1, Ellipsis, ep8,) = M._first_ngens(8)"
-    )
+    out = preparse("M.<v1,v2,e1,...,e8,ep1,...,ep8> = X(22)")
+    e_names = ", ".join(f"'e{i}'" for i in range(1, 9))
+    ep_names = ", ".join(f"'ep{i}'" for i in range(1, 9))
+    assert f"names=('v1', 'v2', {e_names}, {ep_names},)" in out
+    assert "_first_ngens(18)" in out
 
 
 def test_backslash_operator_surfaces_as_syntax_error() -> None:
