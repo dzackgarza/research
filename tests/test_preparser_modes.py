@@ -115,7 +115,7 @@ def test_incomplete_generator_declaration_stays_invalid() -> None:
 
 
 def test_generator_declaration_keeps_ellipsis_as_a_name() -> None:
-    r"""``L.<a, ..., d>`` lowers to a *four*-name declaration.
+    r"""``L.<a, ..., d>`` keeps the ellipsis as a third name slot.
 
     The range is not expanded here: the preparser emits the literal name
     ``'Ellipsis'`` in the slot, and the constructor hook expands it against
@@ -127,7 +127,9 @@ def test_generator_declaration_keeps_ellipsis_as_a_name() -> None:
 
     assert "'Ellipsis'" in out, out
     assert "names=('a', 'Ellipsis', 'd',)" in out, out
-    assert "_first_ngens(4)" in out, out
+    # Slot count, not expanded rank: _first_ngens receives the number of
+    # declared slots and matches them against the expanded names.
+    assert "_first_ngens(3)" in out, out
 
 
 def test_generator_declaration_ellipsis_survives_repeated_ranges() -> None:
