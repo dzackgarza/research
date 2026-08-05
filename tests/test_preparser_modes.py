@@ -25,6 +25,9 @@ from sage.all import (  # noqa: F401  (names used by the executed source)
     ZZ,
     QQ,
     PolynomialRing,
+    RealNumber,
+    factorial,
+    matrix,
     Set,
     Integer,
     RealNumber,
@@ -257,6 +260,27 @@ def test_sage_33942_multiline_fstring_literal_lines_untouched() -> None:
         namespace,
     )
     assert namespace["value"] == "\na: 1.00\na: 2\na: 3\n"
+
+
+def test_factorial_feature_executes() -> None:
+    namespace = dict(globals())
+    exec(preparse("a = 5!\nb = 3!=3\n"), namespace)
+    assert namespace["a"] == 120
+    assert namespace["b"] is False
+
+
+def test_matrix_literal_feature_executes() -> None:
+    namespace = dict(globals())
+    exec(preparse("m = [1, 2; 3, 4]\nd = m.det()\n"), namespace)
+    assert namespace["m"] == matrix([[1, 2], [3, 4]])
+    assert namespace["d"] == -2
+
+
+def test_version_literal_feature_executes() -> None:
+    namespace = dict(globals())
+    exec(preparse("newer = 4.10.0 > 4.1.1\nw = 1.2\n"), namespace)
+    assert namespace["newer"] is True
+    assert namespace["w"] == RealNumber("1.2")
 
 
 def test_backslash_operator_surfaces_as_syntax_error() -> None:
