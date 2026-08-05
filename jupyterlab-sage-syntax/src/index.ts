@@ -9,9 +9,11 @@ import {
 } from "@jupyterlab/codemirror";
 import { Dialog, showDialog } from "@jupyterlab/apputils";
 import { python } from "@codemirror/lang-python";
+import { LanguageSupport } from "@codemirror/language";
 import { StateEffect } from "@codemirror/state";
 import { ILatexTypesetter } from "@jupyterlab/rendermime";
 import { createDocstringPreviewExtension } from "./docstringPreview";
+import { sageOverlay } from "./sageOverlay";
 
 /**
  * Register Sage source files with JupyterLab's CodeMirror language registry using @codemirror/lang-python.
@@ -33,7 +35,11 @@ const syntaxPlugin: JupyterFrontEndPlugin<void> = {
       mime: ["text/x-sage", "application/x-sage"],
       extensions: ["sage"],
       load: async () => {
-        return python();
+        const base = python();
+        return new LanguageSupport(base.language, [
+          base.support,
+          sageOverlay(),
+        ]);
       },
     });
   },

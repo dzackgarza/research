@@ -11,15 +11,16 @@
   ],
   "files": [
     "lib/**/*",
+    "package.json",
+    "resources/**/*",
     "schema/**/*",
-    "style/**/*",
     "static/**/*",
-    "package.json"
+    "style/**/*"
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsc -b && sage -python -m jupyter labextension build .",
+    "build": "tsc -b && sage -python -m jupyter labextension build . && cp resources/*.wasm static/static/",
     "clean": "rimraf lib tsconfig.tsbuildinfo static",
     "test": "tsc -b && node --test lib/__tests__/*.test.js"
   },
@@ -29,7 +30,9 @@
     "@jupyterlab/application": "^4.6.0",
     "@jupyterlab/apputils": "^4.6.0",
     "@jupyterlab/codemirror": "^4.6.0",
-    "@lezer/highlight": "^1.2.3"
+    "@jupyterlab/coreutils": "^6.6.2",
+    "@lezer/highlight": "^1.2.3",
+    "web-tree-sitter": "^0.26.11"
   },
   "devDependencies": {
     "@jupyter/builder": "^1.0.0-beta.1",
@@ -42,7 +45,8 @@
   },
   "jupyterlab": {
     "extension": true,
-    "outputDir": "static"
+    "outputDir": "static",
+    "webpackConfig": "./webpack.config.js"
   },
   "style": "style/index.css"
 }
