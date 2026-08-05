@@ -79,7 +79,9 @@ def preparse(
         line = _wrap_time_statements(line)
 
     return lower(
-        line, wrap_numbers=numeric_literals, extensions=(_RESEARCH_NOTATION,)
+        line,
+        numbers="wrapped" if numeric_literals else "raw",
+        extensions=(_RESEARCH_NOTATION,),
     ).python
 
 

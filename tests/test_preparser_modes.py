@@ -114,6 +114,37 @@ def test_incomplete_generator_declaration_stays_invalid() -> None:
         compile(preparse("R.<x> = "), "<cell>", "exec")
 
 
+def test_generator_declaration_keeps_ellipsis_as_a_name() -> None:
+    r"""``L.<a, ..., d>`` lowers to a *four*-name declaration.
+
+    The range is not expanded here: the preparser emits the literal name
+    ``'Ellipsis'`` in the slot, and the constructor hook expands it against
+    the rank it knows (``integral_lattices.sage``, ``_expand_ellipsis_names``).
+    Dropping the slot is worse than refusing it — the declaration still
+    compiles and silently names the wrong number of generators.
+    """
+    out = preparse("L.<a, ..., d> = Lattice(4)")
+
+    assert "'Ellipsis'" in out, out
+    assert "names=('a', 'Ellipsis', 'd',)" in out, out
+    assert "_first_ngens(4)" in out, out
+
+
+def test_generator_declaration_ellipsis_survives_repeated_ranges() -> None:
+    r"""Every ``...`` keeps its slot, so the rank check downstream can pass.
+
+    ``catalogue.sage``'s ``LK3`` is the specimen: ``U^3 + E8^2`` has rank 22,
+    and the declaration only reaches that count if both ranges survive.
+    """
+    out = preparse(
+        "LK3.<v1, v2, u1, u2, up1, up2, e1, ..., e8, ep1, ..., ep8>"
+        " = (U^3).direct_sum(E8^2)"
+    )
+
+    assert out.count("'Ellipsis'") == 2, out
+    assert "_first_ngens(12)" in out, out
+
+
 def test_preparse_file_keeps_match_case_integer_patterns() -> None:
     source = (
         "def classify(x):\n"
@@ -281,6 +312,23 @@ def test_version_literal_feature_executes() -> None:
     exec(preparse("newer = 4.10.0 > 4.1.1\nw = 1.2\n"), namespace)
     assert namespace["newer"] is True
     assert namespace["w"] == RealNumber("1.2")
+
+
+def test_generator_ellipsis_matches_stock_sage_emission() -> None:
+    # The compiler's job ends at stock Sage's exact shape: the middle
+    # slot stays the literal name Ellipsis, unexpanded.  The runtime
+    # expansion contract belongs to the constructor hook and is owned by
+    # tests/test_lattice_generator_syntax.sage.  The compiler once
+    # silently dropped the slot (shorter, wrong name list).
+    assert preparse("L.<a1,...,a8> = IntegralLattice('E8')") == (
+        "L = IntegralLattice('E8', names=('a1', 'Ellipsis', 'a8',)); "
+        "(a1, Ellipsis, a8,) = L._first_ngens(3)"
+    )
+    assert preparse("M.<v1,v2,e1,...,e8,ep1,...,ep8> = X(22)") == (
+        "M = X(Integer(22), names=('v1', 'v2', 'e1', 'Ellipsis', 'e8', "
+        "'ep1', 'Ellipsis', 'ep8',)); "
+        "(v1, v2, e1, Ellipsis, e8, ep1, Ellipsis, ep8,) = M._first_ngens(8)"
+    )
 
 
 def test_backslash_operator_surfaces_as_syntax_error() -> None:
