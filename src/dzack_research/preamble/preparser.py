@@ -37,7 +37,7 @@ core compiler.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field as dataclass_field, replace
 from typing import Callable
 
 import tree_sitter_sage
@@ -161,6 +161,32 @@ class SourceMap:
             cursor = end
         return len(self.original.encode("utf-8"))
 
+    def generated_offset(self, original_offset: int) -> int:
+        generated_cursor = 0
+        for segment in self.segments:
+            width = len(segment.text.encode("utf-8"))
+            if original_offset < segment.original_end or segment is self.segments[-1]:
+                if segment.exact:
+                    inner = max(0, original_offset - segment.original_start)
+                    return generated_cursor + min(inner, width)
+                return generated_cursor
+            generated_cursor += width
+        return len(self.python.encode("utf-8"))
+
+    def generated_position(self, line: int, column: int) -> tuple[int, int]:
+        """Translate a 1-based original (line, column) to the generated Python."""
+        original = self.original.encode("utf-8")
+        line_starts = [0]
+        for index, byte in enumerate(original):
+            if byte == 0x0A:
+                line_starts.append(index + 1)
+        offset = line_starts[min(line - 1, len(line_starts) - 1)] + column
+        generated_offset = self.generated_offset(offset)
+        prefix = self.python.encode("utf-8")[:generated_offset]
+        generated_line = prefix.count(b"\n") + 1
+        last_newline = prefix.rfind(b"\n")
+        return generated_line, generated_offset - (last_newline + 1)
+
     def original_position(self, line: int, column: int) -> tuple[int, int]:
         """Translate a 1-based generated (line, column) to the original."""
         generated = self.python.encode("utf-8")
@@ -179,10 +205,18 @@ class SourceMap:
 
 @dataclass(frozen=True)
 class LoweredSource:
-    """The compiler's output: ordinary Python plus its source map."""
+    """The compiler's output: ordinary Python plus its source map.
+
+    The parse tree is retained so a subsequent :func:`lower` call can
+    reuse it incrementally.  Passing this object as ``previous``
+    consumes it: the retained tree is edited in place, so keep only the
+    returned object for further edits.
+    """
 
     python: str
     source_map: SourceMap
+    _tree: object = dataclass_field(default=None, repr=False, compare=False)
+    _wrap_numbers: bool = dataclass_field(default=True, repr=False, compare=False)
 
 
 def _lower(node: Node, context: _Context) -> str:
@@ -608,16 +642,65 @@ def preparse(
     return lower(line, wrap_numbers=numeric_literals).python
 
 
-def lower(source: str, wrap_numbers: bool = True) -> LoweredSource:
-    r"""Compile SagePython source to ordinary Python plus a source map."""
+def _byte_point(encoded: bytes, offset: int) -> tuple[int, int]:
+    prefix = encoded[:offset]
+    return prefix.count(b"\n"), offset - (prefix.rfind(b"\n") + 1)
+
+
+def lower(
+    source: str,
+    wrap_numbers: bool = True,
+    previous: LoweredSource | None = None,
+) -> LoweredSource:
+    r"""Compile SagePython source to ordinary Python plus a source map.
+
+    With ``previous`` (the result of lowering an earlier revision of the
+    same document), the parse is incremental: the single contiguous
+    change between the revisions is computed as a common prefix/suffix
+    delta and applied to the retained tree.  The result is identical to
+    a fresh ``lower(source)``; ``previous`` is consumed.
+    """
     encoded = source.encode("utf-8")
-    tree = _PARSER.parse(encoded)
+    old_tree = None
+    if (
+        previous is not None
+        and previous._tree is not None
+        and previous._wrap_numbers == wrap_numbers
+    ):
+        old = previous.source_map.original.encode("utf-8")
+        prefix = 0
+        limit = min(len(old), len(encoded))
+        while prefix < limit and old[prefix] == encoded[prefix]:
+            prefix += 1
+        suffix = 0
+        while (
+            suffix < limit - prefix
+            and old[len(old) - 1 - suffix] == encoded[len(encoded) - 1 - suffix]
+        ):
+            suffix += 1
+        old_end = len(old) - suffix
+        new_end = len(encoded) - suffix
+        previous._tree.edit(  # type: ignore[attr-defined]
+            start_byte=prefix,
+            old_end_byte=old_end,
+            new_end_byte=new_end,
+            start_point=_byte_point(old, prefix),
+            old_end_point=_byte_point(old, old_end),
+            new_end_point=_byte_point(encoded, new_end),
+        )
+        old_tree = previous._tree
+    if old_tree is not None:
+        tree = _PARSER.parse(encoded, old_tree)  # type: ignore[arg-type]
+    else:
+        tree = _PARSER.parse(encoded)
     context = _Context(source=encoded, wrap_numbers=wrap_numbers)
     segments = tuple(_segments(tree.root_node, context))
     python = "".join(segment.text for segment in segments)
     return LoweredSource(
         python=python,
         source_map=SourceMap(original=source, python=python, segments=segments),
+        _tree=tree,
+        _wrap_numbers=wrap_numbers,
     )
 
 

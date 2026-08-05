@@ -11,6 +11,7 @@ Plain-Python test file: source strings below pass only through the research
 ``preparse`` under test.
 """
 
+import ast
 import contextlib
 import io
 from pathlib import Path
@@ -176,6 +177,34 @@ def test_source_map_translates_a_real_syntax_error() -> None:
         excinfo.value.lineno or 0, excinfo.value.offset or 0
     )
     assert line == 2 and column == 12
+
+
+def test_source_map_generated_position_round_trips_verbatim_spans() -> None:
+    result = lower("R.<x, y> = QQ[]\nq = 2^5 + zz\n")
+
+    line, column = result.source_map.generated_position(2, 10)
+    assert result.python.split("\n")[line - 1][column : column + 2] == "zz"
+    assert result.source_map.original_position(line, column) == (2, 10)
+
+
+def test_source_map_generated_position_anchors_rebuilt_constructs() -> None:
+    result = lower("v = 1\nR.<x, y> = QQ[]\n")
+
+    assert result.source_map.generated_position(2, 8) == (2, 0)
+
+
+def test_lint_sensitive_constructs_lower_to_ordinary_python() -> None:
+    # The construct list sage-lsp monkey-patches into pycodestyle
+    # (E201/E202/E225/E227/E231 suppressions around `R.<...>` and `^^`).
+    # Lowering removes the need for any of that: the output is ordinary
+    # Python that the stock toolchain parses.
+    for source in (
+        "R.<x, y> = QQ[]",
+        "R.< x , y > = QQ[]",
+        "b = 123 ^^ 123",
+        "w = 5r + 2.5R + 0xEAr",
+    ):
+        ast.parse(preparse(source))
 
 
 def test_backslash_operator_surfaces_as_syntax_error() -> None:
