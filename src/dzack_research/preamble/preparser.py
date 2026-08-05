@@ -1,47 +1,47 @@
-r"""The research preamble's Sage preparser, rebuilt on CPython's tokenizer.
+r"""The research preamble's Sage preparser: a compiler over tree-sitter-sage.
 
-The preamble owns the complete source-to-Python transformation: Sage's
-regex preparser is no longer consulted.  CPython's ``tokenize`` module is
-the grammar authority — every Sage construct (``2x``, ``R.<x>``, ``[1..5]``,
-``1.sqrt()``, ``f(x) = x^2``, ``^``) is token-level valid Python, so Sage's
-syntax delta lives entirely at the parse level, where a token-stream pass
-can lower it.  Strings, comments, f-strings (including nesting and format
-specifiers), indentation, and continuation lines are therefore handled by
-CPython itself, never by this module.
+The grammar (github.com/dzackgarza/tree-sitter-sage, a dialect fork of
+tree-sitter-python) owns recognition of the Sage language delta; this
+module owns only lowering to ordinary Python, which CPython then compiles
+as the semantic authority.
 
-Architecture: an ordered pipeline of lowering passes.  Each pass reads the
-freshly tokenized cell and returns :class:`Edit` objects — replacements of
-source spans — which are applied right-to-left; the cell is re-lexed
-between passes.  Untouched source (spacing, comments, f-string text) is
-preserved verbatim.
+Lowering is a recursive re-emission of the parse tree: nodes without a
+rule are spliced — verbatim source with lowered children — so untouched
+text (comments, spacing, f-string internals) survives exactly.  Nodes
+with a rule rebuild their text from lowered fields:
 
-Pipeline order:
+- ``sage_generator_assignment``   ``R.<x,y> = QQ[]`` → constructor call
+  with ``names=`` plus ``_first_ngens`` unpacking
+- ``sage_symbolic_function_assignment``   ``f(x) = x^2`` → ``var`` +
+  ``symbolic_expression(...).function(...)``
+- ``sage_generator_access``   ``R.0`` → ``R.gen(0)``
+- ``sage_ellipsis_span`` / ``sage_ellipsis`` inside brackets →
+  ``ellipsis_range`` / ``ellipsis_iter`` calls
+- ``sage_raw_literal``   ``5r``/``2.5R``/``10jr`` → raw Python literals
+- ``sage_implicit_product``   ``2x`` → ``2*x``
+- ``^``/``^^`` (and augmented forms) → ``**``/``^``
+- numeric literals → ``Integer``/``RealNumber``/``ComplexNumber``, except
+  inside ``case`` patterns, where literal equality already matches Sage
+  numbers
+- brace notation: ``{1, 2}`` → ``Set([...])``; the research set-builder
+  forms are canonical Python expression shapes (CPython precedence makes
+  ``{f(x) | x in D and P}`` parse as
+  ``and(comparison(f(x)|x, in, D), P)``) and lower to ``ImageSet`` /
+  ``ConditionSet`` / ``Set``; dictionaries stay dictionaries
 
-1. ``time`` statements (``do_time`` mode only)
-2. brace set literals and set builders (the preamble's notation)
-3. generator declarations  (``R.<x,y> = QQ[]``)
-4. calculus assignments    (``f(x) = x^2``)
-5. ellipsis ranges         (``[1..n]``, ``(a..b)``; runs to fixpoint)
-6. generator indexing      (``R.0``)
-7. caret operators         (``^`` power, ``^^`` xor, augmented forms)
-8. implicit multiplication (``2x``, ``(x+1)y``, ``a b``)
-9. numeric literals        (``Integer``/``RealNumber``/``ComplexNumber``
-   wrapping and ``2r``/``5jr`` raw suffixes)
-
-``case`` pattern positions are excluded from implicit multiplication and
-numeric wrapping: literal patterns match Sage numbers by equality, so
-``case 1 | 2:`` stays valid Python.
+``time``, prompt stripping, and ``load``/``attach`` are frontend text
+protocols, not SagePython grammar, and are handled textually around the
+core compiler.
 """
 
 from __future__ import annotations
 
-import bisect
-import io
-import keyword
 import re
-import tokenize
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Callable
+
+import tree_sitter_sage
+from tree_sitter import Language, Node, Parser
 
 from sage.repl import interpreter as sage_interpreter
 from sage.repl import preparse as sage_preparse
@@ -50,894 +50,412 @@ from sage.repl.load import load_wrap
 _native_preparse = sage_preparse.preparse
 _native_preparse_file = sage_preparse.preparse_file
 
-TokenInfo = tokenize.TokenInfo
-Pos = tuple[int, int]
+_LANGUAGE = Language(tree_sitter_sage.language())
+_PARSER = Parser(_LANGUAGE)
 
-_LAYOUT = {
-    tokenize.COMMENT,
-    tokenize.NL,
-    tokenize.NEWLINE,
-    tokenize.INDENT,
-    tokenize.DEDENT,
-    tokenize.ENCODING,
-    tokenize.ENDMARKER,
-}
-_LITERAL_TOKENS = {
-    tokenize.STRING,
-    tokenize.FSTRING_START,
-    tokenize.FSTRING_MIDDLE,
-    tokenize.FSTRING_END,
-    tokenize.COMMENT,
-}
-_OPENERS = frozenset("([{")
-_CLOSERS = frozenset(")]}")
-_RAW_SUFFIXES = frozenset({"R", "L", "RL", "LR", "RJ", "JR"})
-_NO_MULTIPLY_NAMES = frozenset({"print", "exec"})
-_SOFT_KEYWORD_HEADS = frozenset({"match", "case", "time", "type"})
-_NUMERIC_NAME_PREFIX = "_sage_const_"
 _HUGE_INTEGER_DIGITS = 4300
+_RAW_SUFFIX = re.compile(r"[rRlLjJ]+$")
 
 
 @dataclass(frozen=True)
-class Edit:
-    """Replace ``source[start:end]`` (tokenize row/column spans) with ``text``."""
+class _Context:
+    source: bytes
+    wrap_numbers: bool = True
+    in_case_pattern: bool = False
 
-    start: Pos
-    end: Pos
-    text: str
-
-
-class _Cell:
-    """One lexed cell: source, tokens, and position arithmetic."""
-
-    def __init__(self, source: str) -> None:
-        self.source = source
-        self.tokens = _lex(source)
-        self.offsets = [0]
-        for line in source.split("\n"):
-            self.offsets.append(self.offsets[-1] + len(line) + 1)
-        self.significant = [
-            index
-            for index, token in enumerate(self.tokens)
-            if token.type not in _LAYOUT
-        ]
-
-    def index(self, position: Pos) -> int:
-        row, column = position
-        return self.offsets[row - 1] + column
-
-    def position(self, index: int) -> Pos:
-        row = bisect.bisect_right(self.offsets, index)
-        return row, index - self.offsets[row - 1]
-
-    def text(self, start: Pos, end: Pos) -> str:
-        return self.source[self.index(start) : self.index(end)]
-
-    def statements(self) -> list[list[int]]:
-        """Significant-token index lists split at depth-0 boundaries.
-
-        Boundaries are logical newlines, depth-0 semicolons, and depth-0
-        comments — the same statement model Sage's preparser used.
-        """
-        result: list[list[int]] = []
-        current: list[int] = []
-        depth = 0
-        for index, token in enumerate(self.tokens):
-            if token.type == tokenize.OP and token.string in _OPENERS:
-                depth += 1
-            elif token.type == tokenize.OP and token.string in _CLOSERS:
-                depth -= 1
-            if (
-                token.type == tokenize.NEWLINE
-                or (token.type == tokenize.COMMENT and depth == 0)
-                or (token.type == tokenize.OP and token.string == ";" and depth == 0)
-            ):
-                if current:
-                    result.append(current)
-                    current = []
-            elif token.type not in _LAYOUT:
-                current.append(index)
-        if current:
-            result.append(current)
-        return result
+    def text(self, node: Node) -> str:
+        return self.source[node.start_byte : node.end_byte].decode("utf-8")
 
 
-def _lex(source: str) -> list[TokenInfo]:
-    # Boundary translation: tokenize's failure protocol is TokenError; the
-    # preparser's contract is SyntaxError.
-    try:
-        return list(tokenize.generate_tokens(io.StringIO(source).readline))
-    except tokenize.TokenError as error:
-        raise SyntaxError(f"invalid Sage input: {error}") from None
+def _lower(node: Node, context: _Context) -> str:
+    if node.type == "case_pattern" and not context.in_case_pattern:
+        context = replace(context, in_case_pattern=True)
+    rule = _LOWERINGS.get(node.type)
+    if rule is not None:
+        return rule(node, context)
+    return _splice(node, context)
 
 
-def _apply(cell: _Cell, edits: list[Edit]) -> str:
-    ordered = sorted(edits, key=lambda edit: cell.index(edit.start), reverse=True)
-    for later, earlier in zip(ordered, ordered[1:]):
-        assert cell.index(earlier.end) <= cell.index(later.start), (
-            "overlapping preparser edits"
-        )
-    source = cell.source
-    for edit in ordered:
-        source = source[: cell.index(edit.start)] + edit.text + source[cell.index(edit.end) :]
-    return source
-
-
-def _case_pattern_indices(cell: _Cell) -> set[int]:
-    """Token indices inside ``case`` patterns (subject to no literal wrapping)."""
-    banned: set[int] = set()
-    for statement in cell.statements():
-        head = cell.tokens[statement[0]]
-        if head.type != tokenize.NAME or head.string != "case":
-            continue
-        depth = 0
-        pattern: list[int] = []
-        is_case_statement = False
-        for index in statement[1:]:
-            token = cell.tokens[index]
-            if token.type == tokenize.OP and token.string in _OPENERS:
-                depth += 1
-            elif token.type == tokenize.OP and token.string in _CLOSERS:
-                depth -= 1
-            if depth == 0 and token.type == tokenize.OP and token.string in {"=", ":="}:
-                break
-            if depth == 0 and token.type == tokenize.OP and token.string == ":":
-                is_case_statement = True
-                break
-            if depth == 0 and token.type == tokenize.NAME and token.string == "if":
-                is_case_statement = True  # the guard is ordinary code
-                break
-            pattern.append(index)
-        if is_case_statement:
-            banned.update(pattern)
-    return banned
-
-
-# ---------------------------------------------------------------------------
-# Pass: time statements (preparse_file mode)
-# ---------------------------------------------------------------------------
-
-def _time_statements(cell: _Cell) -> list[Edit]:
-    edits = []
-    for statement in cell.statements():
-        head = cell.tokens[statement[0]]
-        if head.type != tokenize.NAME or head.string != "time" or len(statement) < 2:
-            continue
-        rest_first = cell.tokens[statement[1]]
-        if rest_first.start[0] != head.start[0]:
-            continue
-        last = cell.tokens[statement[-1]]
-        rest = cell.text(rest_first.start, last.end)
-        edits.append(
-            Edit(
-                head.start,
-                last.end,
-                "__time__ = cputime(); __wall__ = walltime(); "
-                f"{rest}; "
-                'print("Time: CPU {:.2f} s, Wall: {:.2f} s"'
-                ".format(cputime(__time__), walltime(__wall__)))",
-            )
-        )
-    return edits
-
-
-# ---------------------------------------------------------------------------
-# Pass: brace set literals and set builders
-# ---------------------------------------------------------------------------
-
-def _set_literals(cell: _Cell) -> list[Edit]:
-    edits = []
-    for open_index, close_index in _outermost_brace_spans(cell):
-        replacement = _brace_text(cell, open_index, close_index)
-        if replacement is not None:
-            edits.append(
-                Edit(
-                    cell.tokens[open_index].start,
-                    cell.tokens[close_index].end,
-                    replacement,
-                )
-            )
-    return edits
-
-
-def _outermost_brace_spans(cell: _Cell) -> list[tuple[int, int]]:
-    """Outermost ``{...}`` token spans, ignoring f-string interiors."""
-    spans = []
-    fstring_depth = 0
-    brace_depth = 0
-    open_index = -1
-    for index, token in enumerate(cell.tokens):
-        if token.type == tokenize.FSTRING_START:
-            fstring_depth += 1
-        elif token.type == tokenize.FSTRING_END:
-            fstring_depth -= 1
-        if fstring_depth or token.type != tokenize.OP:
-            continue
-        if token.string == "{":
-            if brace_depth == 0:
-                open_index = index
-            brace_depth += 1
-        elif token.string == "}" and brace_depth:
-            brace_depth -= 1
-            if brace_depth == 0:
-                spans.append((open_index, index))
-    return spans
-
-
-def _matching_brace(cell: _Cell, open_index: int, limit: int) -> int:
-    depth = 0
-    for index in range(open_index, limit):
-        token = cell.tokens[index]
-        if token.type != tokenize.OP:
-            continue
-        if token.string == "{":
-            depth += 1
-        elif token.string == "}":
-            depth -= 1
-            if depth == 0:
-                return index
-    raise AssertionError("unbalanced braces inside a matched span")
-
-
-def _region_text(cell: _Cell, indices: list[int]) -> str:
-    """Source text of a token range with nested brace literals rewritten."""
-    if not indices:
-        return ""
+def _splice(node: Node, context: _Context) -> str:
     pieces = []
-    cursor = cell.tokens[indices[0]].start
-    fstring_depth = 0
-    position = 0
-    while position < len(indices):
-        index = indices[position]
-        token = cell.tokens[index]
-        if token.type == tokenize.FSTRING_START:
-            fstring_depth += 1
-        elif token.type == tokenize.FSTRING_END:
-            fstring_depth -= 1
-        if (
-            fstring_depth == 0
-            and token.type == tokenize.OP
-            and token.string == "{"
-        ):
-            close_index = _matching_brace(cell, index, indices[-1] + 1)
-            replacement = _brace_text(cell, index, close_index)
-            if replacement is not None:
-                pieces.append(cell.text(cursor, token.start))
-                pieces.append(replacement)
-                cursor = cell.tokens[close_index].end
-            while position < len(indices) and indices[position] <= close_index:
-                position += 1
-            continue
-        position += 1
-    pieces.append(cell.text(cursor, cell.tokens[indices[-1]].end))
+    cursor = node.start_byte
+    for child in node.children:
+        pieces.append(context.source[cursor : child.start_byte].decode("utf-8"))
+        pieces.append(_lower(child, context))
+        cursor = child.end_byte
+    pieces.append(context.source[cursor : node.end_byte].decode("utf-8"))
     return "".join(pieces)
 
 
-def _binder(cell: _Cell, indices: list[int]) -> tuple[str, str, str | None] | None:
-    r"""Parse ``x in X`` or ``x in X and P(x)`` at the top level of a region."""
-    significant = [
-        index for index in indices if cell.tokens[index].type not in _LAYOUT
-    ]
-    if len(significant) < 3:
-        return None
-    first, second = cell.tokens[significant[0]], cell.tokens[significant[1]]
-    if first.type != tokenize.NAME or second.string != "in":
-        return None
-    depth = 0
-    separator = None
-    for position, index in enumerate(significant[2:], start=2):
-        token = cell.tokens[index]
-        if token.string in _OPENERS:
-            depth += 1
-        elif token.string in _CLOSERS:
-            depth -= 1
-        elif depth == 0 and token.type == tokenize.NAME and token.string == "and":
-            separator = position
-            break
-    if separator is None:
-        domain_indices = significant[2:]
-        condition_indices: list[int] = []
-    else:
-        domain_indices = significant[2:separator]
-        condition_indices = significant[separator + 1 :]
-    domain = _region_text(cell, domain_indices).strip()
-    assert domain, "a set-builder domain cannot be empty"
-    condition = _region_text(cell, condition_indices).strip()
-    if separator is not None and not condition:
-        raise SyntaxError("a set-builder predicate cannot be empty")
-    return first.string, domain, condition or None
-
-
-def _brace_text(cell: _Cell, open_index: int, close_index: int) -> str | None:
-    """Replacement text for one brace literal, or ``None`` to leave it alone."""
-    inner = [
-        index
-        for index in range(open_index + 1, close_index)
-        if cell.tokens[index].type not in _LAYOUT
-    ]
-    if not inner:
-        return None
-
-    depth = 0
-    fstring_depth = 0
-    has_colon = False
-    has_unpack = False
-    bars = []
-    for position, index in enumerate(inner):
-        token = cell.tokens[index]
-        if token.type == tokenize.FSTRING_START:
-            fstring_depth += 1
-        elif token.type == tokenize.FSTRING_END:
-            fstring_depth -= 1
-        if fstring_depth or token.type != tokenize.OP:
-            continue
-        if token.string in _OPENERS:
-            depth += 1
-        elif token.string in _CLOSERS:
-            depth -= 1
-        elif depth == 0 and token.string == ":":
-            has_colon = True
-        elif (
-            depth == 0
-            and token.string == "**"
-            and (position == 0 or cell.tokens[inner[position - 1]].string == ",")
-        ):
-            has_unpack = True
-        elif depth == 0 and token.string == "|":
-            bars.append(position)
-
-    if has_colon or has_unpack:
-        return "{" + _region_text(cell, inner) + "}"
-
-    if len(bars) == 1:
-        left = inner[: bars[0]]
-        right = inner[bars[0] + 1 :]
-        left_binder = _binder(cell, left)
-        right_binder = _binder(cell, right)
-        if left_binder is not None:
-            # ``{x in X | P(x)}`` — a predicate-defined subset.
-            variable, domain, condition = left_binder
-            assert condition is None, (
-                "the predicate belongs to the right of the set-builder bar"
-            )
-            predicate = _region_text(cell, right).strip()
-            if not predicate:
-                raise SyntaxError("a set-builder predicate cannot be empty")
-            return f"ConditionSet({domain}, lambda {variable}: {predicate})"
-        if right_binder is not None:
-            # ``{f(x) | x in X}`` and ``{f(x) | x in X and P(x)}``.
-            variable, domain, condition = right_binder
-            image = _region_text(cell, left).strip()
-            if condition is None:
-                restricted = domain
-            else:
-                restricted = f"ConditionSet({domain}, lambda {variable}: {condition})"
-            if image == variable:
-                return f"Set({domain})" if condition is None else restricted
-            return f"ImageSet(lambda {variable}: {image}, {restricted})"
-        # A non-builder bar is an ordinary expression.
-        return "Set([" + _region_text(cell, inner) + "])"
-
-    return "Set([" + _region_text(cell, inner) + "])"
+def _gap(left: Node, right: Node, context: _Context) -> str:
+    return context.source[left.end_byte : right.start_byte].decode("utf-8")
 
 
 # ---------------------------------------------------------------------------
-# Pass: generator declarations
-# ---------------------------------------------------------------------------
-
-def _generator_declarations(cell: _Cell) -> list[Edit]:
-    edits = []
-    for statement in cell.statements():
-        edit = _generator_statement(cell, statement)
-        if edit is not None:
-            edits.append(edit)
-    return edits
-
-
-def _generator_statement(cell: _Cell, statement: list[int]) -> Edit | None:
-    tokens = cell.tokens
-    if len(statement) < 6:
-        return None
-    head, dot, less = (tokens[index] for index in statement[:3])
-    if not (
-        head.type == tokenize.NAME
-        and not keyword.iskeyword(head.string)
-        and dot.type == tokenize.OP
-        and dot.string == "."
-        and less.type == tokenize.OP
-        and less.string == "<"
-        and head.end == dot.start
-        and dot.end == less.start
-    ):
-        return None
-
-    # Generator names up to '>'.  A spaceless declaration fuses the closing
-    # angle with the assignment into one '>=' token.
-    gens = []
-    cursor = 3
-    expect_name = True
-    fused_assignment = False
-    while cursor < len(statement):
-        token = tokens[statement[cursor]]
-        if expect_name and token.type == tokenize.NAME:
-            gens.append(token.string)
-            expect_name = False
-        elif not expect_name and token.string == ",":
-            expect_name = True
-        elif not expect_name and token.string == ">":
-            break
-        elif not expect_name and token.string == ">=":
-            fused_assignment = True
-            break
-        else:
-            return None
-        cursor += 1
-    if not gens or cursor >= len(statement):
-        return None
-    closer = tokens[statement[cursor]]
-    cursor += 1
-
-    # Optional extra assignment targets: ``F.<b>, f, g = ...``.
-    targets_end = closer.end
-    if not fused_assignment:
-        while cursor < len(statement) and tokens[statement[cursor]].string != "=":
-            token = tokens[statement[cursor]]
-            if not (token.type == tokenize.NAME or token.string == ","):
-                return None
-            targets_end = token.end
-            cursor += 1
-        if cursor >= len(statement) or tokens[statement[cursor]].string != "=":
-            return None
-        cursor += 1
-    targets = "" if fused_assignment else cell.text(closer.end, targets_end)
-    rhs = statement[cursor:]
-    if not rhs:
-        return None
-
-    constructor = _constructor_with_names(cell, rhs, gens)
-    last = tokens[rhs[-1]]
-    gens_tuple = ", ".join(gens)
-    replacement = (
-        f"{head.string}{targets} = {constructor}; "
-        f"({gens_tuple},) = {head.string}._first_ngens({len(gens)})"
-    )
-    return Edit(head.start, last.end, replacement)
-
-
-def _constructor_with_names(cell: _Cell, rhs: list[int], gens: list[str]) -> str:
-    tokens = cell.tokens
-    first, last = tokens[rhs[0]], tokens[rhs[-1]]
-    names = "('" + "', '".join(gens) + "',)"
-
-    if last.string == ")":
-        opener = _matching_opener(cell, rhs, "(", ")")
-        if opener is None:
-            return cell.text(first.start, last.end)
-        has_arguments = any(
-            tokens[index].type not in _LAYOUT
-            for index in rhs
-            if tokens[opener].end <= tokens[index].start
-            and tokens[index].end <= last.start
-        )
-        comma = ", " if has_arguments else ""
-        return cell.text(first.start, last.start) + f"{comma}names={names})"
-
-    if last.string == "]":
-        bracket_openers = [
-            index for index in rhs
-            if tokens[index].type == tokenize.OP and tokens[index].string == "["
-        ]
-        if not bracket_openers:
-            return cell.text(first.start, last.end)
-        opener = bracket_openers[-1]
-        closer = _matching_closer(cell, rhs, opener, "[", "]")
-        empty = not any(
-            tokens[index].type not in _LAYOUT
-            for index in rhs
-            if tokens[opener].end <= tokens[index].start
-            and tokens[index].end <= tokens[closer].start
-        )
-        if empty:
-            quoted = "'" + ", ".join(gens) + "'"
-            return (
-                cell.text(first.start, tokens[opener].end)
-                + quoted
-                + cell.text(tokens[closer].start, last.end)
-            )
-        return cell.text(first.start, last.end)
-
-    return cell.text(first.start, last.end)
-
-
-def _matching_opener(
-    cell: _Cell, indices: list[int], opening: str, closing: str
-) -> int | None:
-    """Index of the opener matching the final ``closing`` token of ``indices``."""
-    depth = 0
-    for index in reversed(indices):
-        token = cell.tokens[index]
-        if token.type != tokenize.OP:
-            continue
-        if token.string == closing:
-            depth += 1
-        elif token.string == opening:
-            depth -= 1
-            if depth == 0:
-                return index
-    return None
-
-
-def _matching_closer(
-    cell: _Cell, indices: list[int], opener: int, opening: str, closing: str
-) -> int:
-    depth = 0
-    for index in indices:
-        if index < opener:
-            continue
-        token = cell.tokens[index]
-        if token.string == opening:
-            depth += 1
-        elif token.string == closing:
-            depth -= 1
-            if depth == 0:
-                return index
-    raise AssertionError("unbalanced constructor brackets")
-
-
-# ---------------------------------------------------------------------------
-# Pass: calculus assignments
-# ---------------------------------------------------------------------------
-
-def _calculus_assignments(cell: _Cell) -> list[Edit]:
-    edits = []
-    for statement in cell.statements():
-        edit = _calculus_statement(cell, statement)
-        if edit is not None:
-            edits.append(edit)
-    return edits
-
-
-def _calculus_statement(cell: _Cell, statement: list[int]) -> Edit | None:
-    tokens = cell.tokens
-    if len(statement) < 5:
-        return None
-    head = tokens[statement[0]]
-    if (
-        head.type != tokenize.NAME
-        or keyword.iskeyword(head.string)
-        or head.string in _SOFT_KEYWORD_HEADS
-        or tokens[statement[1]].string != "("
-    ):
-        return None
-
-    parameters = []
-    cursor = 2
-    expect_name = True
-    while cursor < len(statement):
-        token = tokens[statement[cursor]]
-        if expect_name and token.type == tokenize.NAME:
-            parameters.append(token.string)
-            expect_name = False
-        elif not expect_name and token.string == ",":
-            expect_name = True
-        elif not expect_name and token.string == ")":
-            break
-        else:
-            return None
-        cursor += 1
-    if not parameters or cursor >= len(statement):
-        return None
-    cursor += 1
-    if cursor >= len(statement) or tokens[statement[cursor]].string != "=":
-        return None
-    expression = statement[cursor + 1 :]
-    if not expression:
-        return None
-
-    variables = ",".join(parameters)
-    body = cell.text(tokens[expression[0]].start, tokens[expression[-1]].end)
-    replacement = (
-        f'__tmp__=var("{variables}"); '
-        f"{head.string} = symbolic_expression({body}).function({variables})"
-    )
-    return Edit(head.start, tokens[expression[-1]].end, replacement)
-
-
-# ---------------------------------------------------------------------------
-# Pass: ellipsis ranges
-# ---------------------------------------------------------------------------
-
-def _masked_source(cell: _Cell) -> str:
-    """Source with string/f-string/comment payload characters blanked."""
-    masked = list(cell.source)
-    for token in cell.tokens:
-        if token.type not in _LITERAL_TOKENS:
-            continue
-        for index in range(cell.index(token.start), cell.index(token.end)):
-            if masked[index] != "\n":
-                masked[index] = " "
-    return "".join(masked)
-
-
-def _containing_block(code: str, index: int) -> tuple[int, int] | None:
-    """Bounds of the innermost ``()``/``[]`` block containing ``index``."""
-    openings, closings = "([", ")]"
-    levels = [0, 0]
-    start = index
-    kind = 0
-    while start >= 0:
-        if code[start] in openings:
-            kind = openings.index(code[start])
-            levels[kind] -= 1
-            if levels[kind] == -1:
-                break
-        elif code[start] in closings and start < index:
-            levels[closings.index(code[start])] += 1
-        start -= 1
-    if start == -1 or levels.count(0) != 1:
-        return None
-    end = index
-    while end < len(code):
-        if code[end] in closings:
-            found = closings.index(code[end])
-            levels[found] += 1
-            if found == kind and levels[found] == 0:
-                break
-        elif code[end] in openings and end > index:
-            levels[openings.index(code[end])] -= 1
-        end += 1
-    if levels != [0, 0]:
-        return None
-    return start, end + 1
-
-
-def _is_range_dots(masked: str, index: int) -> bool:
-    """A ``..`` at ``index`` that is not part of a ``...`` Ellipsis."""
-    if masked[index : index + 2] != "..":
-        return False
-    before = index > 0 and masked[index - 1] == "."
-    after = masked[index + 2 : index + 3] == "."
-    return not before and not after
-
-
-def _ellipsis_ranges(cell: _Cell) -> list[Edit]:
-    masked = _masked_source(cell)
-    index = masked.find("..")
-    while index != -1 and not _is_range_dots(masked, index):
-        index = masked.find("..", index + 1)
-    if index <= 0:
-        return []
-
-    block = _containing_block(masked, index)
-    if block is None:
-        return []
-    start, end = block
-    # Narrow to the innermost block whose ellipses must be lowered first.
-    probe = masked.find("..", index + 2, end)
-    while probe != -1:
-        if _is_range_dots(masked, probe):
-            inner = _containing_block(masked, probe)
-            if inner is None:
-                return []
-            start, end = inner
-        probe = masked.find("..", probe + 2, end)
-
-    arguments = _ellipsis_arguments(cell.source, masked, start + 1, end - 1)
-    kind = "range" if masked[start] == "[" else "iter"
-    return [
-        Edit(
-            cell.position(start),
-            cell.position(end),
-            f"(ellipsis_{kind}({arguments}))",
-        )
-    ]
-
-
-def _ellipsis_arguments(source: str, masked: str, start: int, end: int) -> str:
-    pieces: list[str] = []
-    index = start
-    while index < end:
-        if masked[index] == "." and masked[index + 1 : index + 2] == ".":
-            run = 3 if masked[index + 2 : index + 3] == "." else 2
-            # Absorb an adjacent separating comma on either side.
-            while pieces and pieces[-1] and pieces[-1][-1].isspace():
-                pieces[-1] = pieces[-1][:-1]
-            if pieces and pieces[-1] and pieces[-1][-1] == ",":
-                pieces[-1] = pieces[-1][:-1]
-            index += run
-            while index < end and masked[index].isspace():
-                index += 1
-            if index < end and masked[index] == ",":
-                index += 1
-            pieces.append(",Ellipsis,")
-            continue
-        pieces.append(source[index])
-        index += 1
-    return "".join(pieces)
-
-
-# ---------------------------------------------------------------------------
-# Pass: generator indexing (R.0)
-# ---------------------------------------------------------------------------
-
-def _generator_indexing(cell: _Cell) -> list[Edit]:
-    edits = []
-    tokens = cell.tokens
-    for left_index, right_index in zip(cell.significant, cell.significant[1:]):
-        left, right = tokens[left_index], tokens[right_index]
-        if (
-            right.type == tokenize.NUMBER
-            and right.string.startswith(".")
-            and right.string[1:].isdigit()
-            and left.end == right.start
-            and (
-                left.type == tokenize.NAME
-                or (left.type == tokenize.OP and left.string in {")", "]"})
-            )
-        ):
-            edits.append(Edit(right.start, right.end, f".gen({int(right.string[1:])})"))
-    return edits
-
-
-# ---------------------------------------------------------------------------
-# Pass: caret operators
-# ---------------------------------------------------------------------------
-
-def _caret_operators(cell: _Cell) -> list[Edit]:
-    edits = []
-    tokens = cell.tokens
-    significant = cell.significant
-    xor_pairs = {("^", "^"): "^", ("^", "^="): "^=", ("**", "**"): "^"}
-    position = 0
-    while position < len(significant):
-        token = tokens[significant[position]]
-        if position + 1 < len(significant):
-            following = tokens[significant[position + 1]]
-            if token.end == following.start:
-                replacement = xor_pairs.get((token.string, following.string))
-                if replacement is not None:
-                    edits.append(Edit(token.start, following.end, replacement))
-                    position += 2
-                    continue
-        if token.string == "^":
-            edits.append(Edit(token.start, token.end, "**"))
-        elif token.string == "^=":
-            edits.append(Edit(token.start, token.end, "**="))
-        position += 1
-    return edits
-
-
-# ---------------------------------------------------------------------------
-# Pass: implicit multiplication (level 5 semantics, always on)
-# ---------------------------------------------------------------------------
-
-def _is_raw_suffix_pair(left: TokenInfo, right: TokenInfo) -> bool:
-    return (
-        left.type == tokenize.NUMBER
-        and right.type == tokenize.NAME
-        and left.end == right.start
-        and right.string.upper() in _RAW_SUFFIXES
-    )
-
-
-def _implicit_multiplication(cell: _Cell) -> list[Edit]:
-    edits = []
-    tokens = cell.tokens
-    banned = _case_pattern_indices(cell)
-    statement_heads = {statement[0] for statement in cell.statements()}
-    for left_index, right_index in zip(cell.significant, cell.significant[1:]):
-        left, right = tokens[left_index], tokens[right_index]
-        if left.end[0] != right.start[0]:
-            continue  # multiplication never crosses a line
-        if left_index in banned or right_index in banned:
-            continue
-        if (
-            right.type != tokenize.NAME
-            or keyword.iskeyword(right.string)
-            or right.string in _NO_MULTIPLY_NAMES
-        ):
-            continue
-        if left.type == tokenize.NUMBER:
-            if _is_raw_suffix_pair(left, right):
-                continue
-            if left.string.endswith("."):
-                continue  # ``87.factor()``: a method call, not a product
-        elif left.type == tokenize.OP:
-            if left.string != ")":
-                continue
-        elif left.type == tokenize.NAME:
-            if keyword.iskeyword(left.string) or left.string in _NO_MULTIPLY_NAMES:
-                continue
-            if left_index in statement_heads and left.string in _SOFT_KEYWORD_HEADS:
-                continue
-            if not (
-                left.end < right.start
-                or left.string.startswith(_NUMERIC_NAME_PREFIX)
-            ):
-                continue
-        else:
-            continue
-        edits.append(Edit(left.end, left.end, "*"))
-    return edits
-
-
-# ---------------------------------------------------------------------------
-# Pass: numeric literals
+# Numeric literals
 # ---------------------------------------------------------------------------
 
 def _integer_stem(text: str) -> str:
-    """Decimal integer text with Sage's leading-zero tolerance applied."""
     stripped = text.lstrip("0")
     return stripped if stripped else "0"
 
 
-def _numeric_wrapping(cell: _Cell, wrap: bool) -> list[Edit]:
-    edits = []
-    tokens = cell.tokens
-    banned = _case_pattern_indices(cell)
-    significant = cell.significant
-    for position, index in enumerate(significant):
-        token = tokens[index]
-        if token.type != tokenize.NUMBER:
-            continue
-        following = (
-            tokens[significant[position + 1]]
-            if position + 1 < len(significant)
-            else None
-        )
+def _lower_integer(node: Node, context: _Context) -> str:
+    text = context.text(node)
+    if not context.wrap_numbers or context.in_case_pattern:
+        return text
+    if text[-1] in "jJ":
+        return f"ComplexNumber(0, '{text[:-1]}')"
+    if text[:2].lower() in {"0x", "0o", "0b"}:
+        return f"Integer({text})"
+    stem = _integer_stem(text)
+    if len(stem) <= _HUGE_INTEGER_DIGITS:
+        return f"Integer({stem})"
+    return f"Integer('{stem}')"
 
-        if following is not None and _is_raw_suffix_pair(token, following):
-            text = token.string
-            if "J" in following.string.upper():
-                base = text[:-1] if text[-1] in "jJ" else text
-                replacement = base + "J"
-            elif text[-1] in "jJ":
-                replacement = text[:-1] + "J"
-            else:
-                replacement = text
-            edits.append(Edit(token.start, following.end, replacement))
-            continue
 
-        if not wrap or index in banned:
-            continue
+def _lower_float(node: Node, context: _Context) -> str:
+    text = context.text(node)
+    if not context.wrap_numbers or context.in_case_pattern:
+        return text
+    if text[-1] in "jJ":
+        return f"ComplexNumber(0, '{text[:-1]}')"
+    return f"RealNumber('{text}')"
 
-        text = token.string
-        if text[-1] in "jJ":
-            edits.append(
-                Edit(token.start, token.end, f"ComplexNumber(0, '{text[:-1]}')")
-            )
-        elif text[:2].lower() in {"0x", "0o", "0b"}:
-            edits.append(Edit(token.start, token.end, f"Integer({text})"))
-        elif (
-            text.endswith(".")
-            and following is not None
-            and following.type == tokenize.NAME
-            and token.end == following.start
-        ):
-            # ``5.sqrt()``: the dot is a method call, not a decimal point.
-            edits.append(
-                Edit(token.start, token.end, f"Integer({_integer_stem(text[:-1])}).")
-            )
-        elif "." in text or "e" in text or "E" in text:
-            edits.append(Edit(token.start, token.end, f"RealNumber('{text}')"))
+
+def _lower_raw_literal(node: Node, context: _Context) -> str:
+    text = context.text(node)
+    suffix = _RAW_SUFFIX.search(text)
+    assert suffix is not None, f"raw literal without suffix: {text!r}"
+    base = text[: suffix.start()]
+    if "j" in suffix.group().lower():
+        return base + "J"
+    return base
+
+
+# ---------------------------------------------------------------------------
+# Operators
+# ---------------------------------------------------------------------------
+
+_CARET_OPERATORS = {"^": "**", "^^": "^", "^=": "**=", "^^=": "^="}
+
+
+def _lower_operator_node(node: Node, context: _Context) -> str:
+    operator = node.child_by_field_name("operator")
+    if operator is None or operator.text is None:
+        return _splice(node, context)
+    replacement = _CARET_OPERATORS.get(operator.text.decode())
+    if replacement is None:
+        return _splice(node, context)
+    pieces = []
+    cursor = node.start_byte
+    for child in node.children:
+        pieces.append(context.source[cursor : child.start_byte].decode("utf-8"))
+        if child.id == operator.id:
+            pieces.append(replacement)
         else:
-            stem = _integer_stem(text)
-            if len(stem) <= _HUGE_INTEGER_DIGITS:
-                edits.append(Edit(token.start, token.end, f"Integer({stem})"))
-            else:
-                edits.append(Edit(token.start, token.end, f"Integer('{stem}')"))
-    return edits
+            pieces.append(_lower(child, context))
+        cursor = child.end_byte
+    pieces.append(context.source[cursor : node.end_byte].decode("utf-8"))
+    return "".join(pieces)
+
+
+def _lower_implicit_product(node: Node, context: _Context) -> str:
+    left = node.child_by_field_name("left")
+    right = node.child_by_field_name("right")
+    assert left is not None and right is not None
+    return (
+        _lower(left, context)
+        + "*"
+        + _gap(left, right, context)
+        + _lower(right, context)
+    )
 
 
 # ---------------------------------------------------------------------------
-# The preparser
+# Generators and symbolic functions
 # ---------------------------------------------------------------------------
+
+def _lower_generator_assignment(node: Node, context: _Context) -> str:
+    name = node.child_by_field_name("name")
+    right = node.child_by_field_name("right")
+    assert name is not None and right is not None
+    generators = [
+        context.text(child)
+        for child in node.children_by_field_name("generator")
+    ]
+    others = [
+        context.text(child)
+        for child in node.children_by_field_name("other_target")
+    ]
+    constructor = _lower_constructor(right, generators, context)
+    obj = context.text(name)
+    targets = "".join(f", {other}" for other in others)
+    gens = ", ".join(generators)
+    return (
+        f"{obj}{targets} = {constructor}; "
+        f"({gens},) = {obj}._first_ngens({len(generators)})"
+    )
+
+
+def _lower_constructor(right: Node, generators: list[str], context: _Context) -> str:
+    names = "('" + "', '".join(generators) + "',)"
+    if right.type == "sage_empty_subscript":
+        value = right.child_by_field_name("value")
+        assert value is not None
+        quoted = "'" + ", ".join(generators) + "'"
+        return f"{_lower(value, context)}[{quoted}]"
+    if right.type == "call":
+        arguments = right.child_by_field_name("arguments")
+        assert arguments is not None
+        lowered = _lower(right, context)
+        has_arguments = any(
+            child.is_named for child in arguments.children
+        )
+        comma = ", " if has_arguments else ""
+        assert lowered.endswith(")")
+        return f"{lowered[:-1]}{comma}names={names})"
+    if right.type == "subscript":
+        # `S.<q> = QQ[[]]`: fill an empty innermost bracket with the names.
+        subscript = right.child_by_field_name("subscript")
+        if subscript is not None and subscript.type == "list" and not any(
+            child.is_named for child in subscript.children
+        ):
+            value = right.child_by_field_name("value")
+            assert value is not None
+            quoted = "'" + ", ".join(generators) + "'"
+            return f"{_lower(value, context)}[[{quoted}]]"
+    return _lower(right, context)
+
+
+def _lower_symbolic_function(node: Node, context: _Context) -> str:
+    name = node.child_by_field_name("name")
+    body = node.child_by_field_name("body")
+    assert name is not None and body is not None
+    parameters = ",".join(
+        context.text(child)
+        for child in node.children_by_field_name("parameter")
+    )
+    return (
+        f'__tmp__=var("{parameters}"); '
+        f"{context.text(name)} = "
+        f"symbolic_expression({_lower(body, context)}).function({parameters})"
+    )
+
+
+def _lower_generator_access(node: Node, context: _Context) -> str:
+    target = node.child_by_field_name("object")
+    index = node.child_by_field_name("index")
+    assert target is not None and index is not None
+    digits = context.text(index)[1:]
+    return f"{_lower(target, context)}.gen({int(digits)})"
+
+
+# ---------------------------------------------------------------------------
+# Ellipsis ranges
+# ---------------------------------------------------------------------------
+
+def _ellipsis_arguments(elements: list[Node], context: _Context) -> str:
+    pieces = []
+    for element in elements:
+        if element.type == "sage_ellipsis_span":
+            start = element.child_by_field_name("start")
+            end = element.child_by_field_name("end")
+            assert start is not None and end is not None
+            pieces.append(
+                f"{_lower(start, context)},Ellipsis,{_lower(end, context)}"
+            )
+        elif element.type == "sage_ellipsis":
+            pieces.append("Ellipsis")
+        else:
+            pieces.append(_lower(element, context))
+    return ",".join(pieces)
+
+
+def _has_ellipsis(elements: list[Node]) -> bool:
+    return any(
+        element.type in {"sage_ellipsis_span", "sage_ellipsis"}
+        for element in elements
+    )
+
+
+def _named_elements(node: Node) -> list[Node]:
+    return [child for child in node.children if child.is_named]
+
+
+def _lower_list(node: Node, context: _Context) -> str:
+    elements = _named_elements(node)
+    if _has_ellipsis(elements):
+        return f"(ellipsis_range({_ellipsis_arguments(elements, context)}))"
+    return _splice(node, context)
+
+
+def _lower_parenthesized(node: Node, context: _Context) -> str:
+    elements = _named_elements(node)
+    if _has_ellipsis(elements):
+        return f"(ellipsis_iter({_ellipsis_arguments(elements, context)}))"
+    return _splice(node, context)
+
+
+def _lower_tuple(node: Node, context: _Context) -> str:
+    elements = _named_elements(node)
+    if _has_ellipsis(elements):
+        return f"(ellipsis_iter({_ellipsis_arguments(elements, context)}))"
+    return _splice(node, context)
+
+
+# ---------------------------------------------------------------------------
+# Brace notation: sets and the research set-builder forms
+# ---------------------------------------------------------------------------
+
+def _and_chain(node: Node) -> list[Node]:
+    """Flatten a left-associated ``and`` chain into its operands."""
+    if node.type == "boolean_operator":
+        operator = node.child_by_field_name("operator")
+        if operator is not None and operator.text == b"and":
+            left = node.child_by_field_name("left")
+            right = node.child_by_field_name("right")
+            assert left is not None and right is not None
+            return _and_chain(left) + [right]
+    return [node]
+
+
+def _comparison_chain(node: Node) -> tuple[list[Node], list[str]] | None:
+    """Operands and operator spellings of a comparison chain."""
+    if node.type != "comparison_operator":
+        return None
+    operands = [child for child in node.children if child.is_named]
+    operators = [
+        operator.text.decode()
+        for operator in node.children_by_field_name("operators")
+        if operator.text is not None
+    ]
+    if len(operands) != len(operators) + 1:
+        return None
+    return operands, operators
+
+
+def _top_bitwise_or(node: Node) -> tuple[Node, Node] | None:
+    if node.type == "binary_operator":
+        operator = node.child_by_field_name("operator")
+        if operator is not None and operator.text == b"|":
+            left = node.child_by_field_name("left")
+            right = node.child_by_field_name("right")
+            assert left is not None and right is not None
+            return left, right
+    return None
+
+
+def _lower_builder(element: Node, context: _Context) -> str | None:
+    """Lower a one-element brace body if it is a set-builder form."""
+    chain = _and_chain(element)
+    head, conditions = chain[0], chain[1:]
+    comparison = _comparison_chain(head)
+    if comparison is None:
+        return None
+    operands, operators = comparison
+
+    condition_text = " and ".join(
+        _lower(condition, context) for condition in conditions
+    )
+
+    # Form A — `{image | x in domain [and P...]}`:
+    # comparison(bitor(image, x), in, domain) [wrapped in `and` chain].
+    if len(operands) == 2 and operators == ["in"]:
+        split = _top_bitwise_or(operands[0])
+        if split is not None and split[1].type == "identifier":
+            image, variable = split
+            domain = _lower(operands[1], context)
+            variable_text = variable.text.decode() if variable.text else ""
+            image_text = _lower(image, context)
+            if condition_text:
+                domain = f"ConditionSet({domain}, lambda {variable_text}: {condition_text})"
+            if context.text(image).strip() == variable_text:
+                return domain if condition_text else f"Set({domain})"
+            return f"ImageSet(lambda {variable_text}: {image_text}, {domain})"
+
+    # Form B — `{x in domain | P [and Q...]}`: the bar lands inside the
+    # second operand, and a predicate containing comparisons continues
+    # the chain: comparison(x, in, bitor(domain, P), op, rest...).
+    if operands[0].type == "identifier" and operators[0] == "in":
+        split = _top_bitwise_or(operands[1])
+        if split is not None:
+            domain, predicate_head = split
+            variable_text = (
+                operands[0].text.decode() if operands[0].text else ""
+            )
+            predicate = _lower(predicate_head, context)
+            for operator, operand in zip(operators[1:], operands[2:]):
+                predicate += f" {operator} {_lower(operand, context)}"
+            if condition_text:
+                predicate = f"{predicate} and {condition_text}"
+            return (
+                f"ConditionSet({_lower(domain, context)}, "
+                f"lambda {variable_text}: {predicate})"
+            )
+    return None
+
+
+def _lower_set(node: Node, context: _Context) -> str:
+    elements = _named_elements(node)
+    if len(elements) == 1:
+        builder = _lower_builder(elements[0], context)
+        if builder is not None:
+            return builder
+    if _has_ellipsis(elements):
+        return f"Set((ellipsis_range({_ellipsis_arguments(elements, context)})))"
+    inner = ", ".join(_lower(element, context) for element in elements)
+    return f"Set([{inner}])"
+
+
+def _lower_set_comprehension(node: Node, context: _Context) -> str:
+    inner = _splice(node, context)
+    assert inner.startswith("{") and inner.endswith("}")
+    return f"Set([{inner[1:-1]}])"
+
+
+# ---------------------------------------------------------------------------
+# The lowering table and the preparser
+# ---------------------------------------------------------------------------
+
+_LOWERINGS: dict[str, Callable[[Node, _Context], str]] = {
+    "integer": _lower_integer,
+    "float": _lower_float,
+    "sage_raw_literal": _lower_raw_literal,
+    "binary_operator": _lower_operator_node,
+    "augmented_assignment": _lower_operator_node,
+    "sage_implicit_product": _lower_implicit_product,
+    "sage_generator_assignment": _lower_generator_assignment,
+    "sage_symbolic_function_assignment": _lower_symbolic_function,
+    "sage_generator_access": _lower_generator_access,
+    "list": _lower_list,
+    "parenthesized_expression": _lower_parenthesized,
+    "tuple": _lower_tuple,
+    "set": _lower_set,
+    "set_comprehension": _lower_set_comprehension,
+}
+
+_TIME_STATEMENT = re.compile(r"^(\s*)time +(\S[^\n]*)$", re.MULTILINE)
+_LOAD_ATTACH = re.compile(r"^(\s*)(load|attach) ([^(].*)$", re.MULTILINE)
+
 
 def _strip_prompts(line: str) -> str:
     for prompt in ("sage:", ">>>"):
         if line.startswith(prompt):
             return line[len(prompt) :].lstrip()
     return line
+
+
+def _wrap_time_statements(source: str) -> str:
+    return _TIME_STATEMENT.sub(
+        lambda match: (
+            f"{match.group(1)}__time__ = cputime(); __wall__ = walltime(); "
+            f"{match.group(2)}; "
+            'print("Time: CPU {:.2f} s, Wall: {:.2f} s"'
+            ".format(cputime(__time__), walltime(__wall__)))"
+        ),
+        source,
+    )
 
 
 def preparse(
@@ -950,8 +468,8 @@ def preparse(
     r"""Transform one cell of Sage source into ordinary Python source.
 
     The signature matches ``sage.repl.preparse.preparse``; ``reset`` is
-    accepted for compatibility but unused — every call transforms a whole,
-    lexically complete cell.
+    accepted for compatibility but unused — every call transforms a
+    whole, lexically complete cell.
     """
     del reset
     if line.lstrip().startswith("..."):
@@ -964,35 +482,13 @@ def preparse(
         )
     if ignore_prompts:
         line = _strip_prompts(line)
-
-    passes: list[tuple[Callable[[_Cell], list[Edit]], bool]] = []
     if do_time:
-        passes.append((_time_statements, False))
-    passes += [
-        (_set_literals, False),
-        (_generator_declarations, False),
-        (_calculus_assignments, False),
-        (_ellipsis_ranges, True),
-        (_generator_indexing, False),
-        (_caret_operators, False),
-        (_implicit_multiplication, False),
-        (lambda cell: _numeric_wrapping(cell, wrap=numeric_literals), False),
-    ]
+        line = _wrap_time_statements(line)
 
-    source = line
-    for lowering, to_fixpoint in passes:
-        while True:
-            cell = _Cell(source)
-            edits = lowering(cell)
-            if not edits:
-                break
-            source = _apply(cell, edits)
-            if not to_fixpoint:
-                break
-    return source
-
-
-_LOAD_ATTACH = re.compile(r"^(\s*)(load|attach) ([^(].*)$", re.MULTILINE)
+    source = line.encode("utf-8")
+    tree = _PARSER.parse(source)
+    context = _Context(source=source, wrap_numbers=numeric_literals)
+    return _lower(tree.root_node, context)
 
 
 def preparse_file(
@@ -1003,11 +499,11 @@ def preparse_file(
     r"""Preparse the contents of a ``.sage`` file.
 
     The signature matches ``sage.repl.preparse.preparse_file``.  Bare
-    ``load``/``attach`` directives are wrapped exactly as Sage wraps them;
-    the ``time`` keyword is active.  Sage's ``_sage_const_`` hoisting was a
-    loop optimization, not parsing — inline wrapping is semantically
-    identical (and, unlike hoisting, keeps ``match`` patterns valid) — so
-    ``globals`` and ``numeric_literals`` are accepted but unused.
+    ``load``/``attach`` directives are wrapped exactly as Sage wraps
+    them; the ``time`` keyword is active.  Sage's ``_sage_const_``
+    hoisting was a loop optimization, not parsing — inline wrapping is
+    semantically identical — so ``globals`` and ``numeric_literals`` are
+    accepted but unused.
     """
     del globals, numeric_literals
     assert isinstance(contents, str), "preparse_file expects a string"

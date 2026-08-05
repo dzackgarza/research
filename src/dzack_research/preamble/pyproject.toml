@@ -1,6 +1,6 @@
 [project]
 name = "dzack-research-preamble"
-version = "0.0.1"
+version = "0.0.2"
 description = "SageMath preamble: categorical foundations for lattice research"
 requires-python = ">=3.14"
 
@@ -17,6 +17,9 @@ dev = [
     "networkx",
     "types-networkx",
     "ipython",
+    # The preparser compiles Sage source over the tree-sitter-sage grammar.
+    "tree-sitter",
+    "tree-sitter-sage @ file:///home/dzack/gitclones/tree-sitter-sage",
 ]
 
 [build-system]

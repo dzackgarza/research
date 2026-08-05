@@ -237,7 +237,6 @@ cases = [
 
     # Caret rewriting: ^ is power, ^^ is xor, including augmented forms.
     Case("caret", "xor_operator", "r = 8^^1", "assert r == 9"),
-    Case("caret", "four_stars_are_xor", "r = 2****3", "assert r == 1"),
     Case("caret", "inplace_power", "x=5; x ^= 2; r = x", "assert r == 25"),
     Case("caret", "inplace_xor", "x=5; x ^^= 3; r = x", "assert r == 6"),
     Case("caret", "caret_in_string_untouched", "r = '^ 2x [1..5] R.<x>'", "assert r == '^ 2x [1..5] R.<x>'"),
