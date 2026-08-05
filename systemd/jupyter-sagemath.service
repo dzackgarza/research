@@ -6,7 +6,7 @@ After=default.target
 Type=simple
 WorkingDirectory=/home/dzack/research/computations/notebooks
 ExecStartPre=/home/dzack/.config/systemd/user/check-port-8888.py
-ExecStart=/bin/direnv exec /home/dzack /home/dzack/gitclones/sage-dev-allopts/sage --notebook=jupyterlab --IdentityProvider.password_required=False --IdentityProvider.hashed_password='' --IdentityProvider.token='' --ip=0.0.0.0 --port=8888 --ServerApp.root_dir=/home/dzack/research/computations/notebooks --no-browser
+ExecStart=/bin/direnv exec /home/dzack /home/dzack/gitclones/sage-dev-allopts/sage --notebook=jupyterlab --IdentityProvider.password_required=False --IdentityProvider.hashed_password='' --IdentityProvider.token='' --ip=0.0.0.0 --port=8888 --no-browser
 Restart=on-failure
 RestartSec=5
 Environment=HOME=/home/dzack
