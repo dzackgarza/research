@@ -13,10 +13,12 @@ Plain-Python test file: source strings below pass only through the research
 
 import contextlib
 import io
+from pathlib import Path
 
 import pytest
 
-from dzack_research.preamble.preparser import preparse
+import sage.repl.load  # noqa: F401  (the wrapped load directive references it)
+from dzack_research.preamble.preparser import preparse, preparse_file
 
 from sage.all import (  # noqa: F401  (names used by the executed source)
     ZZ,
@@ -107,19 +109,55 @@ def test_incomplete_generator_declaration_stays_invalid() -> None:
         compile(preparse("R.<x> = "), "<cell>", "exec")
 
 
-@pytest.mark.xfail(
-    reason="composed sage preparser crashes with TokenError; rewrite red proof #308",
-    strict=True,
-)
+def test_preparse_file_keeps_match_case_integer_patterns() -> None:
+    source = (
+        "def classify(x):\n"
+        "    match x:\n"
+        "        case 0:\n"
+        "            return 0\n"
+        "        case -1:\n"
+        "            return -1\n"
+        "        case 1 | 2:\n"
+        "            return 12\n"
+        "        case _:\n"
+        "            return x\n"
+    )
+    transformed = preparse_file(source)
+
+    assert "_sage_const_" not in transformed
+    namespace = dict(globals())
+    exec(transformed, namespace)
+    classify = namespace["classify"]
+    assert (classify(0), classify(-1), classify(2), classify(7)) == (0, -1, 12, 7)
+
+
+def test_preparse_file_time_keyword_is_active() -> None:
+    namespace = dict(globals())
+    buffer = io.StringIO()
+    with contextlib.redirect_stdout(buffer):
+        exec(preparse_file("time r = 3^4"), namespace)
+
+    assert namespace["r"] == 81
+    assert "Time: CPU" in buffer.getvalue()
+
+
+def test_preparse_file_wraps_bare_load_directives(tmp_path: Path) -> None:
+    loaded = tmp_path / "loaded.sage"
+    loaded.write_text("w = 2^10\n")
+    contents = f"before = 2^2\nload {loaded}\nafter = before + w\n"
+
+    namespace = dict(globals())
+    exec(preparse_file(contents), namespace)
+
+    assert namespace["w"] == 1024
+    assert namespace["after"] == 1028
+
+
 def test_backslash_operator_surfaces_as_syntax_error() -> None:
     with pytest.raises(SyntaxError):
         compile(preparse("A \\ B"), "<cell>", "exec")
 
 
-@pytest.mark.xfail(
-    reason="composed sage preparser crashes with TokenError; rewrite red proof #308",
-    strict=True,
-)
 def test_unbalanced_bracket_surfaces_as_syntax_error() -> None:
     with pytest.raises(SyntaxError):
         compile(preparse("r = [1.."), "<cell>", "exec")

@@ -48,6 +48,7 @@ from sage.all import (  # noqa: F401
     O,
     Integer,
     RealNumber,
+    ComplexNumber,
     symbolic_expression,
     ellipsis_range,
     ellipsis_iter,
@@ -280,22 +281,19 @@ cases = [
     Case("blocks", "default_argument", "def f(a=2^2):\n    return a\nr = f()", "assert r == 4"),
     Case("blocks", "class_body", "class C:\n    v = 2^3\nr = C.v", "assert r == 8"),
     Case("blocks", "backslash_continuation_expression", "r = 1 + \\\n2", "assert r == 3"),
-]
 
-# Constructs the current composed preparser gets wrong; each is a red proof
-# for the rewrite tracked by issue #308 and must start passing (marker
-# removed) when the rewrite lands.
-rewrite_target_cases = [
-    Case("target", "raw_complex_literal", "r = 5jr", "assert type(r) is complex and r == 5j"),
-    Case("target", "exponent_with_plus_sign", "r = 1e+10", "assert r == 10^10"),
-    Case("target", "underscored_integer_parent", "r = 1_000_000", "assert r.parent() == ZZ"),
-    Case("target", "underscored_real_parent", "r = 1_000.5", "assert str(r.parent()).startswith('Real')"),
-    Case("target", "match_or_pattern", "def h(p):\n    match p:\n        case 1 | 2:\n            return 'small'\n        case _:\n            return 'big'\nr = h(2)", "assert r == 'small'"),
-    Case("target", "match_sequence_pattern", "def h(p):\n    match p:\n        case [1, *rest]:\n            return rest\nr = h([1,2,3])", "assert r == [2,3]"),
-    Case("target", "match_float_pattern", "def h(p):\n    match p:\n        case -1.5:\n            return 'neg'\n        case _:\n            return 0\nr = h(-1.5)", "assert r == 'neg'"),
-    Case("target", "match_mapping_integer_key", "def h(p):\n    match p:\n        case {1: v}:\n            return v\n    return 0\nr = h({1: 'one'})", "assert r == 'one'"),
-    Case("target", "brace_ellipsis_set", "r = {1..5}", "assert r == Set([1,2,3,4,5])"),
-    Case("target", "fstring_self_documenting", "x=7; r = f'{x=}'", "assert r == 'x=7'"),
+    # Regressions fixed by the #308 rewrite: defects of the retired
+    # compose-with-sage architecture that must never return.
+    Case("literals", "raw_complex_literal", "r = 5jr", "assert type(r) is complex and r == 5j"),
+    Case("literals", "exponent_with_plus_sign", "r = 1e+10", "assert r == 10^10"),
+    Case("literals", "underscored_integer_parent", "r = 1_000_000", "assert r.parent() == ZZ"),
+    Case("literals", "underscored_real_parent", "r = 1_000.5", "assert str(r.parent()).startswith('Real')"),
+    Case("match", "or_pattern", "def h(p):\n    match p:\n        case 1 | 2:\n            return 'small'\n        case _:\n            return 'big'\nr = h(2)", "assert r == 'small'"),
+    Case("match", "sequence_pattern", "def h(p):\n    match p:\n        case [1, *rest]:\n            return rest\nr = h([1,2,3])", "assert r == [2,3]"),
+    Case("match", "float_pattern", "def h(p):\n    match p:\n        case -1.5:\n            return 'neg'\n        case _:\n            return 0\nr = h(-1.5)", "assert r == 'neg'"),
+    Case("match", "mapping_integer_key", "def h(p):\n    match p:\n        case {1: v}:\n            return v\n    return 0\nr = h({1: 'one'})", "assert r == 'one'"),
+    Case("ranges", "brace_ellipsis_set", "r = {1..5}", "assert r == Set([1,2,3,4,5])"),
+    Case("lexical", "fstring_self_documenting", "x=7; r = f'{x=}'", "assert r == 'x=7'"),
 ]
 
 
@@ -310,23 +308,3 @@ def test_authored_expression_constructs_the_expected_sage_objects(case: Case) ->
     exec(sage_preparse(case.oracle), namespace)
     if case.group == "builders":
         assert namespace["r"] in Sets()
-
-
-@pytest.mark.parametrize(
-    "case",
-    [
-        pytest.param(
-            case,
-            marks=pytest.mark.xfail(
-                reason="composed sage preparser defect; rewrite red proof #308",
-                strict=True,
-            ),
-        )
-        for case in rewrite_target_cases
-    ],
-    ids=lambda case: f"{case.group}:{case.name}",
-)
-def test_rewrite_target_semantics(case: Case) -> None:
-    namespace = dict(globals())
-    exec(preparse(case.source), namespace)
-    exec(sage_preparse(case.oracle), namespace)
