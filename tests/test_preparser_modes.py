@@ -14,6 +14,8 @@ Plain-Python test file: source strings below pass only through the research
 import ast
 import contextlib
 import io
+import os
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -344,3 +346,45 @@ def test_backslash_operator_surfaces_as_syntax_error() -> None:
 def test_unbalanced_bracket_surfaces_as_syntax_error() -> None:
     with pytest.raises(SyntaxError):
         compile(preparse("r = [1.."), "<cell>", "exec")
+
+
+def test_sage_cli_preparse_is_the_research_preparser(tmp_path: Path) -> None:
+    r"""``sage --preparse`` compiles with this preparser, not Sage's own.
+
+    ``src/sitecustomize.py`` installs it into every process that can import
+    the package, and a Sage process can, so the CLI, the QC gates -- which
+    shell out to ``$SAGE_BIN --preparse`` -- and any editor tooling all lower
+    the same source the same way.
+
+    Nothing else would notice if that stopped holding: every ``.sage`` file
+    would still preparse, into a different language.  The two witnesses below
+    are the ones that differ.  ``QQ^3`` is research notation Sage does not
+    have, and ``case -1:`` is what Sage's own preparser rewrites into
+    ``case -_sage_const_1:``, which is not a valid pattern.
+    """
+    source = tmp_path / "probe.sage"
+    source.write_text(
+        "def classify(x):\n"
+        "    match x:\n"
+        "        case -1:\n"
+        "            return -1\n"
+        "        case _:\n"
+        "            return x\n"
+        "V = QQ^3\n"
+    )
+
+    subprocess.run(
+        [os.environ.get("SAGE_BIN", "sage"), "--preparse", source.name],
+        cwd=tmp_path,
+        check=True,
+        capture_output=True,
+    )
+    generated = (tmp_path / "probe.sage.py").read_text()
+
+    assert "research_pow(QQ, Integer(3))" in generated, (
+        "R^n is this preparser's notation; Sage's own emits QQ**Integer(3)"
+    )
+    assert "case -1:" in generated and "_sage_const_" not in generated, (
+        "Sage's own preparser rewrites integer patterns into invalid syntax"
+    )
+    ast.parse(generated)
