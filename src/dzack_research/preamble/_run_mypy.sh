@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Usage: _run_mypy.sh <file.sage> [cache-dir]
+#
+# One file's type pass while iterating.  It runs the same preparse and the
+# same mypy configuration the QC gates run; it is a narrower target, never a
+# different check.
 set -u
 cd /home/dzack/research/src/dzack_research/preamble
 TARGET="$1"
@@ -11,16 +15,11 @@ CACHE="${2:-/tmp/mypy-cache-$$}"
 # resolves to Any and the whole type pass checks nothing.
 export MYPYPATH=/home/dzack/research/computations/experiments/sage_lattice_category_spike/typings
 rm -f "$PY"
-# The project's own preparser, not `sage --preparse`. The native one is what
-# the repo's pinned regressions exist to work around -- it mangles integer
-# literals inside match/case patterns (`case -1:` -> `case -_sage_const_1:`,
-# invalid pattern syntax), so files using them cannot be checked at all.
-sage -python -c "
-import sys, pathlib
-from dzack_research.preamble.preparser import preparse_file
-source = pathlib.Path(sys.argv[1])
-pathlib.Path(sys.argv[2]).write_text(preparse_file(source.read_text()))
-" "$TARGET" "$PY" 2>/dev/null
+# `sage --preparse` is this project's preparser: src/sitecustomize.py installs
+# it into every Sage process, so the CLI, the QC gates and this script all
+# compile the same way. Hand-rolling the preparse here would be a second
+# compiler to keep in step.
+sage --preparse "$TARGET"
 timeout 600 uvx --python 3.14 \
   --with-editable . \
   --with 'sage-lattice-category-spike @ file:///home/dzack/research/computations/experiments/sage_lattice_category_spike' \
