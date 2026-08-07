@@ -185,3 +185,44 @@ def test_install_hooks_refine_parents_and_elements() -> None:
     assert type(lattice).direct_sum.__qualname__ == "IntegralLattices.ParentMethods.direct_sum"
     element = lattice.module_generators()[0]
     assert type(element).__mul__.__qualname__ == "FormModules.ElementMethods.__mul__"
+
+
+def test_cython_parents_refuse_refinement_and_so_keep_their_underlying_set() -> None:
+    r"""$U(X)$ is stable on a parent that cannot be refined.
+
+    ``UnderlyingSet`` is a ``UniqueRepresentation`` keyed on the parent, and
+    refining a parent moves that key -- which is why the answer is kept on
+    the parent itself.  A Cython parent cannot hold it: it has no instance
+    dictionary.  That branch is only sound because such a parent also cannot
+    be refined, so nothing ever moves its key, and this pins both halves
+    rather than leaving the second one asserted in a comment.
+    """
+    from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
+
+    cython_parent = PolynomialRing(QQ, 2, "x")
+
+    attribute_refused = False
+    try:
+        cython_parent._probe_attribute = 1
+    except AttributeError:
+        attribute_refused = True
+    assert attribute_refused, (
+        "the branch that skips storing U(X) on the parent exists for parents "
+        "with no instance dictionary"
+    )
+
+    refinement_refused = False
+    try:
+        cython_parent.__class__ = type(
+            "Refined", (type(cython_parent),), {}
+        )
+    except TypeError:
+        refinement_refused = True
+    assert refinement_refused, (
+        "refinement assigns __class__, and a parent that accepts it would "
+        "move its UniqueRepresentation key with no way to keep U(X)"
+    )
+
+    assert UnderlyingSet(cython_parent) is UnderlyingSet(cython_parent), (
+        "U is a functor, so U(X) is one object"
+    )
