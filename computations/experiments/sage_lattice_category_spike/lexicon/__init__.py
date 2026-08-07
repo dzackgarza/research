@@ -54,6 +54,7 @@ from ..algebra.domain_algebra import (
 )
 from .algebra import (
     AbelianGroup,
+    Element,
     BaseRing,
     Field,
     FiniteAbelianGroup,
@@ -75,16 +76,19 @@ from .algebra import (
 )
 from .foundations import (
     CartanType,
-    ExactScalar,
     GramMatrix,
     Integer,
     OrderedSet,
     Rational,
+    RealApproximation,
     RealNumber,
     Set,
     SignaturePair,
     SymbolicExpression,
 )
+from ..objects.cardinals import Cardinal
+from ..objects.characters import Character
+from ..objects.morphism_matrices import MorphismMatrix
 from .geometry import CoxeterMatrix, Graph, Polygon, Polyhedron
 from .interop import (
     SageCartanMatrix,
@@ -95,6 +99,7 @@ from .interop import (
     SageFunctor,
     SageGenus,
     SageInfinity,
+    SageIsometryGroup,
     SageLattice,
     SageLocalGenusSymbol,
     SageMorphism,
@@ -106,17 +111,20 @@ from .interop import (
 
 __all__ = [
     # foundations
+    "Cardinal",
     "CartanType",
-    "ExactScalar",
     "Integer",
     "OrderedSet",
     "Rational",
+    "RealApproximation",
     "RealNumber",
     "Set",
     "SignaturePair",
     "SymbolicExpression",
     # general algebra
     "AbelianGroup",
+    "Character",
+    "Element",
     "BaseRing",
     "Field",
     "FiniteAbelianGroup",
@@ -126,6 +134,7 @@ __all__ = [
     "GroupElement",
     "Matrix",
     "MatrixGroup",
+    "MorphismMatrix",
     "Module",
     "ModuleElement",
     "PermutationGroup",
@@ -195,6 +204,7 @@ __all__ = [
     "SageFunctor",
     "SageGenus",
     "SageInfinity",
+    "SageIsometryGroup",
     "SageLattice",
     "SageLocalGenusSymbol",
     "SageMorphism",

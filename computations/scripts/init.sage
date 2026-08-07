@@ -956,7 +956,7 @@ def run_vin(L):
     else:
         Lp.roots = [Lp(x) for x in A.roots]
     Lp._assign_names(L.variable_names())
-    Lp.root_names = [str( Lp.to_lin_comb_generators(x) ) for x in Lp.roots]
+    Lp.root_names = [str( Lp.to_lin_comb_module_generators(x) ) for x in Lp.roots]
     return Lp
 
 

@@ -796,7 +796,7 @@ def test_orthogonal_group_is_lazily_computed_for_definite_and_explicit_for_indef
     # O(L) generators are computed lazily for a definite lattice and actually
     # generate O(A2) (the dihedral group of order 12).
     O_A2 = A2.isometry_group()
-    gens = O_A2.gens()
+    gens = O_A2.group_generators()
     assert all(g.is_isometry() for g in gens)
     for g in gens:
         U = g.matrix()

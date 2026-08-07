@@ -41,7 +41,7 @@ from .discriminant import (
     SyntheticOrthogonalGroup,
     all_group_automorphisms,
     finite_all_subgroups,
-    finite_basis_from_generators,
+    finite_basis_from_module_generators,
     finite_p_torsion,
     finite_relations_among,
     form_matrix_on_images,
@@ -51,7 +51,42 @@ from .discriminant import (
 )
 
 
-def _presentation_radical_order(gram: Any, invariants: Any) -> Any:
+
+if TYPE_CHECKING:
+    from ..lexicon import (
+        BaseRing,
+        Cardinal,
+        CategoryMorphism,
+        CategoryObject,
+        DiscriminantAction,
+        DiscriminantForm,
+        DiscriminantFormElement,
+        DiscriminantOrthogonalGroup,
+        DiscriminantSubgroup,
+        FiniteAbelianGroup,
+        Genus,
+        GramMatrix,
+        Group,
+        Integer,
+        Lattice,
+        LatticeElement,
+        Module,
+        ModuleElement,
+        MorphismMatrix,
+        OrderedSet,
+        PermutationGroup,
+        Rational,
+        RawGramMatrix,
+        RawVectors,
+        SageCategory,
+        SageDiscriminantForm,
+        SageElement,
+        SignaturePair,
+        ValueModule,
+        Vector,
+    )
+
+def _presentation_radical_order(gram: "GramMatrix", invariants: "OrderedSet") -> "Integer":
     r"""``|radical(b)|`` decided from presentation data alone — needed BEFORE the
     parent exists, to attach the ``Nondegenerate`` axiom at construction.
     Computed by Sage: with ``e = lcm(invariants)``, the radical is the kernel of
@@ -89,15 +124,15 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
 
     Element = SyntheticDiscriminantGroupElement
 
-    def __init__(self, ambient_group: Any, relation_subgroup: Any) -> None:
+    def __init__(self, ambient_group: "Group", relation_subgroup: "DiscriminantSubgroup") -> None:
         assert isinstance(ambient_group, SyntheticDiscriminantForm), f"expected a synthetic finite discriminant parent as the quotient cover; found={type(ambient_group)}"
         relation_subgroup = ambient_group._subgroup(relation_subgroup)
         relation_rows = [list(row) for row in matrix.diagonal(ZZ, ambient_group.invariants()).rows()]
-        relation_rows.extend([list(ambient_group.coordinates(generator)) for generator in relation_subgroup.gens()])
+        relation_rows.extend([list(ambient_group.coordinates(generator)) for generator in relation_subgroup.group_generators()])
         presentation = matrix(ZZ, relation_rows) if relation_rows else matrix(ZZ, 0, 0)
         self._install(ambient_group, relation_subgroup, presentation)
 
-    def _install(self, cover: Any, relations: Any, presentation_matrix: Any) -> None:
+    def _install(self, cover: "Lattice", relations: "MorphismMatrix", presentation_matrix: "MorphismMatrix") -> None:
         r"""Take the Smith normal form of the presentation matrix and record
         the invariant factors.
 
@@ -125,14 +160,14 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
     # -- construction detail: how the cover's coordinates are read --
     # The subclass overrides these three for the lattice-quotient case; every
     # other method is shared verbatim.
-    def _cover_dim(self) -> Any:
+    def _cover_dim(self) -> "Integer":
         return self._cover.ngens()
 
-    def _cover_coordinates(self, element: Any) -> list[Any]:
+    def _cover_coordinates(self, element: "Element") -> list[Any]:
         element = self._cover(element)
         return list(self._cover.coordinates(element))
 
-    def _cover_element(self, coordinates: Any) -> Any:
+    def _cover_element(self, coordinates: "Vector") -> "LatticeElement":
         return self._cover(list(coordinates))
 
     def _repr_(self) -> str:
@@ -148,18 +183,18 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
     def __hash__(self) -> int:
         return hash((id(self.cover()), self.relations(), self.invariants()))
 
-    def _element_constructor_(self, coordinates: Any) -> Any:
+    def _element_constructor_(self, coordinates: "Vector") -> "DiscriminantFormElement":
         if isinstance(coordinates, SyntheticDiscriminantGroupElement) and coordinates.parent() is self:
             return coordinates
         return self.element_class(self, coordinates)
 
-    def cover(self) -> Any:
+    def cover(self) -> "Lattice":
         return self._cover
 
-    def relations(self) -> Any:
+    def relations(self) -> "MorphismMatrix":
         return self._relations
 
-    def underlying_abelian_group(self) -> Any:
+    def underlying_abelian_group(self) -> "FiniteAbelianGroup":
         return self
 
     def invariants(self) -> tuple[Any, ...]:
@@ -178,10 +213,10 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
                 divisors.append(ZZ(prime) ** ZZ(exponent))
         return tuple(sorted(divisors))
 
-    def annihilator(self) -> Any:
+    def annihilator(self) -> "Integer":
         return lcm(self.invariants() or (ZZ.one(),))
 
-    def exponent(self) -> Any:
+    def exponent(self) -> "Integer":
         return self.annihilator()
 
     def is_cyclic(self) -> bool:
@@ -195,7 +230,7 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
     def generator_orders(self) -> tuple[Any, ...]:
         return self.invariants()
 
-    def rank_p(self, p: Any) -> Any:
+    def rank_p(self, p: "Integer") -> "Integer":
         p = ZZ(p)
         assert p.is_prime(), f"p-rank requires a prime; found={p}"
         return ZZ(sum(1 for invariant in self.invariants() if ZZ(invariant) % p == 0))
@@ -214,16 +249,16 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
         raw = self.gens()
         return tuple(self.discrete_exp(transform.column(j), gens=raw) for j in range(transform.ncols()))
 
-    def gen(self, i: int) -> Any:
+    def gen(self, i: int) -> "DiscriminantFormElement":
         return self((ZZ ** self.ngens()).gen(i))
 
-    def invariant_factor_gen(self, i: int) -> Any:
+    def invariant_factor_gen(self, i: int) -> "DiscriminantFormElement":
         return self.invariant_factor_gens()[i]
 
-    def zero(self) -> Any:
+    def zero(self) -> "ModuleElement":
         return self([ZZ.zero()] * self.ngens())
 
-    def base_extend(self, base_ring: Any) -> Any:
+    def base_extend(self, base_ring: "BaseRing") -> "DiscriminantForm":
         r"""Base change ``D ⊗_R S`` for ``R → S``.
 
         For torsion D with invariants (n_i): ``D ⊗_R S = ⊕ S/(n_i)``.
@@ -238,17 +273,17 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
             return self._zero_localization()
         assert False, f"base_extend to {base_ring} with surviving torsion invariants {self.invariants()} is not yet implemented (issue #20)"
 
-    def _zero_localization(self) -> Any:
+    def _zero_localization(self) -> "DiscriminantSubgroup":
         r"""The zero form this presentation collapses to when every invariant
         becomes a unit under base extension."""
         return SyntheticBilinearDiscriminantForm(matrix(QQ, 0, 0))
 
-    def random_element(self) -> Any:
+    def random_element(self) -> "DiscriminantFormElement":
         from sage.misc.prandom import choice
 
         return choice(self.elements())
 
-    def order(self, element: Any = None) -> Any:
+    def order(self, element: "Element" = None) -> "Integer":
         if element is None:
             # The classical group order, as an Integer (the Cardinal answer
             # is cardinality(), the routed set question).
@@ -259,12 +294,12 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
             orders.append(ZZ.one() if coordinate == 0 else invariant // ZZ(coordinate).gcd(invariant))
         return lcm(orders) if orders else ZZ.one()
 
-    def coordinates(self, element: Any, gens: Any = None, reduce: bool = True) -> tuple[Any, ...]:
+    def coordinates(self, element: "Element", gens: "RawVectors" = None, reduce: bool = True) -> tuple[Any, ...]:
         if gens is None:
             return tuple(self(element).coefficient_vector())
         return self.discrete_log(element, gens=gens)
 
-    def discrete_exp(self, coefficients: Any, gens: Any = None) -> Any:
+    def discrete_exp(self, coefficients: "OrderedSet", gens: "RawVectors" = None) -> "DiscriminantFormElement":
         coefficients = tuple(coefficients)
         gens = self.gens() if gens is None else tuple(self(gen) for gen in gens)
         assert len(coefficients) == len(gens), f"coefficient vector length must match generator count; coefficients={coefficients}, gens={gens}"
@@ -273,7 +308,7 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
             value += ZZ(coefficient) * generator
         return value
 
-    def discrete_log(self, element: Any, gens: Any = None) -> tuple[Any, ...]:
+    def discrete_log(self, element: "Element", gens: "RawVectors" = None) -> tuple[Any, ...]:
         element = self(element)
         if gens is None:
             return tuple(element.coefficient_vector())
@@ -283,37 +318,37 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
                 return tuple(ZZ(coefficient) for coefficient in coefficients)
         assert False, f"element is not generated by the supplied generators: {element}"
 
-    def linear_combination_of_invariant_factor_gens(self, coefficients: Any) -> Any:
+    def linear_combination_of_invariant_factor_gens(self, coefficients: "OrderedSet") -> "DiscriminantFormElement":
         return self.discrete_exp(coefficients, gens=self.invariant_factor_gens())
 
-    def gens_to_invariant_factor_gens(self) -> Any:
+    def gens_to_invariant_factor_gens(self) -> "MorphismMatrix":
         return identity_matrix(ZZ, self.ngens())
 
-    def invariant_factor_gens_to_gens(self) -> Any:
+    def invariant_factor_gens_to_gens(self) -> "MorphismMatrix":
         return identity_matrix(ZZ, self.ngens())
 
-    def gens_vector(self, element: Any, reduce: bool = True) -> Any:
+    def gens_vector(self, element: "Element", reduce: bool = True) -> "Vector":
         return vector(ZZ, self.coordinates(element))
 
-    def generator_relations(self) -> Any:
+    def generator_relations(self) -> "MorphismMatrix":
         return matrix.diagonal(ZZ, self.invariants())
 
-    def subgroup_generated_by(self, gens: Any) -> Any:
-        return SyntheticDiscriminantSubgroup(self, gens)
+    def subgroup_generated_by(self, group_generators: "RawVectors") -> "DiscriminantSubgroup":
+        return SyntheticDiscriminantSubgroup(self, group_generators)
 
-    def _subgroup(self, subgroup_or_gens: Any) -> Any:
+    def _subgroup(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> "DiscriminantSubgroup":
         if isinstance(subgroup_or_gens, SyntheticDiscriminantSubgroup):
             assert subgroup_or_gens.ambient() is self, "subgroup belongs to a different finite quotient"
             return subgroup_or_gens
         return self.subgroup_generated_by(subgroup_or_gens)
 
-    def contains_subgroup(self, subgroup_or_gens: Any) -> bool:
+    def contains_subgroup(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> bool:
         return self._subgroup(subgroup_or_gens).ambient() is self
 
-    def quotient_group(self, subgroup_or_gens: Any) -> Any:
+    def quotient_group(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> "DiscriminantForm":
         return SyntheticDiscriminantForm(self, self._subgroup(subgroup_or_gens))
 
-    def permutation_group(self) -> Any:
+    def permutation_group(self) -> "PermutationGroup":
         r"""The GAP-backed permutation representation (spec 3.5/4: every finite quotient)."""
         from sage.groups.additive_abelian.additive_abelian_group import (
             AdditiveAbelianGroup,
@@ -321,16 +356,16 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
 
         return AdditiveAbelianGroup(list(self.invariants())).permutation_group()
 
-    def hom(self, images: Any) -> Any:
+    def hom(self, images: "OrderedSet") -> "CategoryMorphism":
         return SyntheticDiscriminantAction.from_images(self, images)
 
-    def quotient_map(self, subgroup_or_gens: Any = None) -> Callable[[Any], Any]:
+    def quotient_map(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors" = None) -> Callable[[Any], Any]:
         if subgroup_or_gens is None:
             return self.projection
         quotient = self.quotient_group(subgroup_or_gens)
         return lambda element: quotient.projection(element)
 
-    def cosets(self, subgroup_or_gens: Any) -> tuple[Any, ...]:
+    def cosets(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> tuple[Any, ...]:
         subgroup = self._subgroup(subgroup_or_gens)
         unseen = set(self.elements())
         cosets = []
@@ -341,7 +376,7 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
             unseen.difference_update(coset)
         return tuple(cosets)
 
-    def primary_part(self, p: Any) -> Any:
+    def primary_part(self, p: "Integer") -> "DiscriminantSubgroup":
         p = ZZ(p)
         assert p.is_prime(), f"primary part requires a prime; found={p}"
         exponent = ZZ(self.annihilator()).valuation(p)
@@ -350,22 +385,22 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
     def primary_decomposition(self) -> tuple[Any, ...]:
         return tuple(self.primary_part(p) for p in ZZ(self.annihilator()).prime_divisors())
 
-    def torsion_subgroup(self) -> Any:
+    def torsion_subgroup(self) -> "DiscriminantSubgroup":
         return self
 
     def all_submodules(self) -> tuple[Any, ...]:
         return finite_all_subgroups(self)
 
-    def p_torsion(self, p: Any, k: Any = 1) -> Any:
+    def p_torsion(self, p: "Integer", k: "Integer" = 1) -> "DiscriminantSubgroup":
         return finite_p_torsion(self, p, k=k)
 
-    def relations_among(self, gens: Any) -> Any:
-        return finite_relations_among(self, gens)
+    def relations_among(self, module_generators: "RawVectors") -> "MorphismMatrix":
+        return finite_relations_among(self, module_generators)
 
-    def basis_from_generators(self, gens: Any) -> tuple[Any, ...]:
-        return finite_basis_from_generators(self, gens)
+    def basis_from_module_generators(self, module_generators: "RawVectors") -> tuple[Any, ...]:
+        return finite_basis_from_module_generators(self, module_generators)
 
-    def automorphism_group(self) -> Any:
+    def automorphism_group(self) -> "DiscriminantOrthogonalGroup":
         return SyntheticOrthogonalGroup(self, all_group_automorphisms(self))
 
     def _invariant_factors(self) -> tuple[Any, ...]:
@@ -378,19 +413,19 @@ class SyntheticDiscriminantForm(FiniteAbelianGroup, DiscriminantElementParent):
 
         return tuple(AdditiveAbelianGroup(list(self.invariants())).invariants())
 
-    def is_isomorphic(self, other: Any) -> bool:
+    def is_isomorphic(self, other: object) -> bool:
         r"""Group isomorphism: finite abelian groups are classified by their
         invariant factors (the form kinds live on the form-carrying
         subcategories, which override with the ``kind`` selector)."""
         assert isinstance(other, SyntheticDiscriminantForm), f"expected a synthetic finite quotient; found={type(other)}"
         return self._invariant_factors() == other._invariant_factors()
 
-    def projection(self, element: Any) -> Any:
+    def projection(self, element: "Element") -> "CategoryMorphism":
         row = matrix(ZZ, 1, self._cover_dim(), self._cover_coordinates(element))
         smith_row = row * self._smith_right
         return self([ZZ(smith_row[0, position]) % invariant for position, invariant in zip(self._invariant_positions, self.invariants())])
 
-    def lift(self, element: Any) -> Any:
+    def lift(self, element: "Element") -> "ModuleElement":
         element = self(element)
         smith_row = matrix(ZZ, 1, self._cover_dim())
         for coordinate, position in zip(element.coefficient_vector(), self._invariant_positions):
@@ -407,7 +442,7 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
     ``coset_representative``/``hom``) that the group case does not.
     """
 
-    def __init__(self, cover_lattice: Any, relation_lattice: Any, inclusion: Any = None) -> None:
+    def __init__(self, cover_lattice: "Lattice", relation_lattice: "Lattice", inclusion: "CategoryMorphism" = None) -> None:
         from ..objects.parents import SyntheticLattice
 
         assert isinstance(cover_lattice, SyntheticLattice), f"expected SyntheticLattice cover; found={type(cover_lattice)}"
@@ -418,10 +453,10 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
         self._inclusion = inclusion if inclusion is not None else relation_inclusion_matrix(cover_lattice, relation_lattice)
         self._install(cover_lattice, relation_lattice, self._inclusion)
 
-    def _cover_dim(self) -> Any:
+    def _cover_dim(self) -> "Integer":
         return self._cover.rank()
 
-    def _cover_coordinates(self, element: Any) -> list[Any]:
+    def _cover_coordinates(self, element: "Element") -> list[Any]:
         cover = self._cover
         if isinstance(element, SyntheticLatticeElement):
             assert element.parent() == cover, f"projection expects an element of the quotient cover; expected={cover}, found={element.parent()}"
@@ -453,22 +488,22 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
             )
         )
 
-    def cover_lattice(self) -> Any:
+    def cover_lattice(self) -> "Lattice":
         return self._cover
 
-    def relation_lattice(self) -> Any:
+    def relation_lattice(self) -> "Lattice":
         return self._relations
 
-    def relation_inclusion(self) -> Any:
+    def relation_inclusion(self) -> "CategoryMorphism":
         r"""The carried witness: the inclusion morphism ``relation -> cover``
         this quotient is the cokernel of (the stored rows are the relation's
         generators in the cover's coordinates)."""
         return self._relations.embedding(matrix(ZZ, self._inclusion).transpose(), codomain=self._cover)
 
-    def coset_representative(self, element: Any) -> Any:
+    def coset_representative(self, element: "Element") -> "LatticeElement":
         return self.lift(element)
 
-    def preimage_lattice(self, subgroup_or_gens: Any, label: str = "preimage_lattice") -> Any:
+    def preimage_lattice(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors", label: str = "preimage_lattice") -> "Lattice":
         subgroup = self._subgroup(subgroup_or_gens)
         # pi^{-1}(cover/relation) = cover exactly; return the given cover lattice
         # rather than an isometric HNF overlattice representative.
@@ -480,7 +515,7 @@ class SyntheticLatticeQuotient(SyntheticDiscriminantForm):
         # consumes rows in the relation's basis, so re-express through the inclusion M
         # (relation-coords = cover-coords . M^{-1}).
         inclusion_inverse = self._inclusion.inverse()
-        lift_rows = [vector(QQ, self.lift(generator).coefficient_vector()) * inclusion_inverse for generator in subgroup.gens()]
+        lift_rows = [vector(QQ, self.lift(generator).coefficient_vector()) * inclusion_inverse for generator in subgroup.group_generators()]
         if not lift_rows:
             return self.relation_lattice()
         return self.relation_lattice().overlattice(lift_rows, check_integral=False, label=label).codomain()
@@ -490,11 +525,11 @@ class DiscriminantCharacter:
     r"""The character ``b(x, -) : A -> QQ/ZZ`` attached to an element of a
     nondegenerate bilinear discriminant form."""
 
-    def __init__(self, form: Any, element: Any) -> None:
+    def __init__(self, form: "DiscriminantForm", element: "Element") -> None:
         self._form = form
         self._element = form(element)
 
-    def __call__(self, other: Any) -> Any:
+    def __call__(self, other: object) -> "CategoryMorphism":
         return self._form.b(self._element, other)
 
     def __repr__(self) -> str:
@@ -505,13 +540,13 @@ class PontryaginDualIdentification:
     r"""The canonical identification ``A ~ Hom(A, QQ/ZZ)`` of a nondegenerate
     bilinear discriminant form (typed, dict-free)."""
 
-    def __init__(self, form: Any) -> None:
+    def __init__(self, form: "DiscriminantForm") -> None:
         self._form = form
 
-    def domain(self) -> Any:
+    def domain(self) -> "CategoryObject":
         return self._form
 
-    def __getitem__(self, element: Any) -> DiscriminantCharacter:
+    def __getitem__(self, element: "Element") -> DiscriminantCharacter:
         return DiscriminantCharacter(self._form, element)
 
     def __repr__(self) -> str:
@@ -533,7 +568,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
 
     Element = SyntheticDiscriminantGroupElement
 
-    def __init__(self, gram_matrix: Any, category: Any = None, invariants: Any = None) -> None:
+    def __init__(self, gram_matrix: "GramMatrix", category: "SageCategory" = None, invariants: "OrderedSet" = None) -> None:
         raw_gram = matrix(QQ, gram_matrix)
         assert raw_gram.is_square(), f"finite discriminant form Gram matrix must be square; found={raw_gram}"
         assert raw_gram == raw_gram.transpose(), f"finite discriminant form Gram matrix must be symmetric; found={raw_gram}"
@@ -561,7 +596,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
                 invariants.append(invariant)
         self._install_bilinear(raw_gram, active_indices, invariants, category)
 
-    def _install_bilinear(self, raw_gram: Any, active_indices: Any, invariants: Any, category: Any) -> None:
+    def _install_bilinear(self, raw_gram: "RawGramMatrix", active_indices: "OrderedSet", invariants: "OrderedSet", category: "SageCategory") -> None:
         gram = raw_gram.matrix_from_rows_and_columns(active_indices, active_indices) if active_indices else matrix(QQ, 0, 0)
         gram.set_immutable()
         self._gram_matrix = gram
@@ -588,27 +623,27 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
 
     # -- Gram-presented cover/relations: the form is its own cover, with no
     # relations, so lift/projection are the identity (no change-of-basis transport). --
-    def cover(self) -> Any:
+    def cover(self) -> "Lattice":
         return self
 
-    def relations(self) -> Any:
+    def relations(self) -> "MorphismMatrix":
         return self.subgroup_generated_by(())
 
-    def lift(self, element: Any) -> Any:
+    def lift(self, element: "Element") -> "ModuleElement":
         return self(element)
 
-    def projection(self, element: Any) -> Any:
+    def projection(self, element: "Element") -> "CategoryMorphism":
         return self(element)
 
-    def value_module(self) -> Any:
+    def value_module(self) -> "Module":
         return value_module(ZZ, ZZ.one())
 
-    def gram_matrix_bilinear(self) -> Any:
+    def gram_matrix_bilinear(self) -> "GramMatrix":
         form = self._gram_matrix.apply_map(lambda entry: rational_mod(entry, 1))
         form.set_immutable()
         return form
 
-    def b(self, left: Any, right: Any) -> Any:
+    def b(self, left: "Element", right: "Element") -> "Rational":
         left = self(left) if left.parent() is not self else left
         right = self(right) if right.parent() is not self else right
         return rational_mod(
@@ -616,13 +651,13 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
             1,
         )
 
-    def radical(self) -> Any:
+    def radical(self) -> "DiscriminantSubgroup":
         return self.subgroup_generated_by(element for element in self.elements() if all(self.b(element, other) == 0 for other in self.elements()))
 
     def is_nondegenerate(self) -> bool:
         return self in DiscriminantForms(ZZ).Nondegenerate()
 
-    def orthogonal_submodule_to(self, subgroup_or_gens: Any) -> Any:
+    def orthogonal_submodule_to(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> "DiscriminantSubgroup":
         r"""The subgroup orthogonal to ``subgroup_or_gens`` under ``b``, from the
         ephemeral Sage TorsionQuadraticModule (module arithmetic — element enumeration is
         infeasible at research scale, and handing every orthogonal element to
@@ -643,10 +678,10 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
         cover_basis = tuple(cover.basis())
         if len(cover_basis) == self.ngens() and all(sage_form(cover_basis[i]).order() == invariant for i, invariant in enumerate(self.invariants())):
 
-            def to_sage_element(element: Any) -> Any:
+            def to_sage_element(element: "Element") -> "SageElement":
                 return sage_form(cover.linear_combination_of_basis(list(element.coefficient_vector())))
 
-            def from_sage_element(element: Any) -> Any:
+            def from_sage_element(element: "Element") -> "DiscriminantFormElement":
                 return self([ZZ(coordinate) for coordinate in cover.coordinates(element.lift())])
         else:
             # Sourced lattice discriminant groups use an ambient-lattice cover in
@@ -659,42 +694,42 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
                 f"synthetic invariants={self.invariants()}, Sage invariants={tuple(sage_form.invariants())}"
             )
 
-            def to_sage_element(element: Any) -> Any:
+            def to_sage_element(element: "Element") -> "SageElement":
                 return sum(
                     (ZZ(coordinate) * sage_generators[i] for i, coordinate in enumerate(element.coefficient_vector())),
                     sage_form.zero(),
                 )
 
-            def from_sage_element(element: Any) -> Any:
+            def from_sage_element(element: "Element") -> "DiscriminantFormElement":
                 return self([ZZ(coordinate) for coordinate in sage_form(element.lift()).vector()])
 
-        images = [to_sage_element(generator) for generator in subgroup.gens()]
+        images = [to_sage_element(generator) for generator in subgroup.group_generators()]
         complement = sage_form.orthogonal_submodule_to(images)
         return self.subgroup_generated_by(from_sage_element(generator) for generator in complement.gens())
 
-    def orthogonal(self, subgroup_or_gens: Any) -> Any:
+    def orthogonal(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> "DiscriminantSubgroup":
         return self.orthogonal_submodule_to(subgroup_or_gens)
 
-    def is_isotropic_element(self, element: Any) -> bool:
+    def is_isotropic_element(self, element: "Element") -> bool:
         return bool(self.q(element) == 0)
 
     def isotropic_elements(self) -> tuple[Any, ...]:
         return tuple(element for element in self.elements() if self.is_isotropic_element(element))
 
-    def is_isotropic_subgroup(self, subgroup_or_gens: Any) -> bool:
+    def is_isotropic_subgroup(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> bool:
         return bool(self._subgroup(subgroup_or_gens).is_quadratic_isotropic())
 
     def isotropic_subgroups(self) -> tuple[Any, ...]:
         return tuple(subgroup for subgroup in self.all_submodules() if self.is_isotropic_subgroup(subgroup))
 
-    def is_lagrangian(self, subgroup_or_gens: Any) -> bool:
+    def is_lagrangian(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> bool:
         subgroup = self._subgroup(subgroup_or_gens)
         return self.is_isotropic_subgroup(subgroup) and subgroup.cardinality() ** 2 == self.cardinality()
 
     def lagrangian_subgroups(self) -> tuple[Any, ...]:
         return tuple(subgroup for subgroup in self.isotropic_subgroups() if self.is_lagrangian(subgroup))
 
-    def metabolizer(self) -> Any:
+    def metabolizer(self) -> "DiscriminantSubgroup":
         subgroups = self.lagrangian_subgroups()
         assert subgroups, "form is anisotropic; it admits no metabolizer (lagrangian)"
         return subgroups[0]
@@ -705,7 +740,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
     def is_anisotropic(self) -> bool:
         return all(element == self.zero() for element in self.isotropic_elements())
 
-    def is_maximal_isotropic(self, subgroup_or_gens: Any) -> bool:
+    def is_maximal_isotropic(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> bool:
         subgroup = self._subgroup(subgroup_or_gens)
         if not self.is_isotropic_subgroup(subgroup):
             return False
@@ -714,11 +749,11 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
     def maximal_isotropic_subgroups(self) -> tuple[Any, ...]:
         return tuple(subgroup for subgroup in self.isotropic_subgroups() if self.is_maximal_isotropic(subgroup))
 
-    def restricted_form(self, subgroup_or_gens: Any) -> Any:
+    def restricted_form(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> "DiscriminantForm":
         subgroup = self._subgroup(subgroup_or_gens)
-        return form_matrix_on_images(self, subgroup.gens())
+        return form_matrix_on_images(self, subgroup.group_generators())
 
-    def orthogonal_quotient(self, subgroup_or_gens: Any) -> Any:
+    def orthogonal_quotient(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> "DiscriminantForm":
         subgroup = self._subgroup(subgroup_or_gens)
         assert self.is_isotropic_subgroup(subgroup), "orthogonal quotient requires a quadratic-isotropic relation subgroup"
         # H trivial => H-perp/H is the whole form; return it directly rather than
@@ -728,7 +763,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
             return self
         return induced_subquotient_form(self, subgroup, self.orthogonal(subgroup))
 
-    def subquotient_form(self, subgroup_or_gens: Any, quotient_subgroup_or_gens: Any) -> Any:
+    def subquotient_form(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors", quotient_subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> "DiscriminantForm":
         subgroup = self._subgroup(subgroup_or_gens)
         quotient_subgroup = self._subgroup(quotient_subgroup_or_gens)
         assert subgroup._key() <= quotient_subgroup._key(), "subquotient form requires H contained in K"
@@ -736,16 +771,16 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
         assert quotient_subgroup._key() <= self.orthogonal(subgroup)._key(), "subquotient form requires K contained in the orthogonal complement of H"
         return induced_subquotient_form(self, subgroup, quotient_subgroup)
 
-    def pushforward_form(self, phi: Any) -> Any:
+    def pushforward_form(self, phi: "CategoryMorphism") -> "DiscriminantForm":
         assert phi.discriminant_form() is self, "pushforward requires an endomorphism of this finite quadratic form"
         inverse = phi.inverse()
         return form_matrix_on_images(self, [inverse(generator) for generator in self.gens()])
 
-    def pullback_form(self, phi: Any) -> Any:
+    def pullback_form(self, phi: "CategoryMorphism") -> "DiscriminantForm":
         assert phi.discriminant_form() is self, "pullback requires an endomorphism of this finite quadratic form"
         return form_matrix_on_images(self, [phi(generator) for generator in self.gens()])
 
-    def _sage_engine(self) -> Any:
+    def _sage_engine(self) -> "SageDiscriminantForm":
         r"""Ephemeral Sage torsion module carrying this form. The quadratic
         subcategory builds it from its quadratic Gram; a bilinear-only
         presented form has no implemented engine yet (every bilinear form
@@ -753,7 +788,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
         computational precondition is asserted with data (ADDD)."""
         assert False, f"no Sage engine is implemented for a bilinear-only presented form; invariants={self.invariants()}; construct through the quadratic subcategory"
 
-    def is_isomorphic(self, other: Any, kind: str = "quadratic") -> bool:
+    def is_isomorphic(self, other: object, kind: str = "quadratic") -> bool:
         assert kind in ("group", "bilinear", "quadratic"), f"isomorphism kind must be group, bilinear, or quadratic; found={kind}"
         assert isinstance(other, SyntheticBilinearDiscriminantForm), f"expected SyntheticBilinearDiscriminantForm; found={type(other)}"
         # finite abelian groups are classified by their invariant factors
@@ -770,7 +805,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
         )
         return bool(self.miranda_morrison_normal_form() == other.miranda_morrison_normal_form())
 
-    def _bilinear_normal_presentation(self) -> Any:
+    def _bilinear_normal_presentation(self) -> "GramMatrix":
         r"""The complete bilinear-isomorphism invariant computed by Sage: re-present
         the ephemeral Sage module at the bilinear modulus (``modulus_qf = modulus``, the
         same presentation ``_delegated_orthogonal_group`` uses for ``O(b)``) and take
@@ -796,7 +831,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
         gram.set_immutable()
         return (QQ(sage_form._modulus), tuple(normal.invariants()), gram)
 
-    def orthogonal_group(self, gens: Any = None, check: bool = False, kind: str = "quadratic") -> Any:
+    def orthogonal_group(self, gens: "RawVectors" = None, check: bool = False, kind: str = "quadratic") -> "DiscriminantOrthogonalGroup":
         assert kind in ("quadratic", "bilinear"), f"orthogonal group kind must be quadratic or bilinear; found={kind}"
         if gens is None:
             return self._delegated_orthogonal_group(kind)
@@ -806,7 +841,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
                 assert action.preserves_form(kind=kind), f"finite quadratic form action does not preserve the form; matrix={action.matrix()}"
         return SyntheticOrthogonalGroup(self, actions, close=True)
 
-    def _delegated_orthogonal_group(self, kind: str) -> Any:
+    def _delegated_orthogonal_group(self, kind: str) -> "DiscriminantOrthogonalGroup":
         r"""O(q) (or the larger O(b)) from an ephemeral Sage torsion quadratic module
         built from this form's own Gram, translated back onto the owned generators.
         Sage's invariant-factor presentation reproduces those generators, so a Sage
@@ -835,7 +870,7 @@ class SyntheticBilinearDiscriminantForm(BilinearDiscriminantForm, SyntheticDiscr
         actions = [SyntheticDiscriminantAction(self, matrix(ZZ, generator.matrix()).transpose()) for generator in sage_group.gens()]
         return SyntheticOrthogonalGroup(self, actions, close=True)
 
-    def q(self, element: Any) -> Any:
+    def q(self, element: "Element") -> "Rational":
         r"""The induced diagonal quadratic form ``q(x) := b(x, x)`` — defined
         for EVERY bilinear form (placement ruling 2026-07-03: only
         polarization needs 2 invertible), valued in the bilinear value module.
@@ -854,7 +889,7 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
     factory presents even forms with modulus ``2``.
     """
 
-    def __init__(self, gram_matrix: Any, quadratic_modulus: Any = 2, invariants: Any = None) -> None:
+    def __init__(self, gram_matrix: "GramMatrix", quadratic_modulus: "Rational" = 2, invariants: "OrderedSet" = None) -> None:
         self._quadratic_modulus_value = ZZ(quadratic_modulus)
         category = DiscriminantForms(ZZ).Quadratic()
         if self._quadratic_modulus_value == 2:
@@ -864,22 +899,22 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
     def _repr_(self) -> str:
         return f"Synthetic finite quadratic discriminant form with invariants {self.invariants()}"
 
-    def _zero_localization(self) -> Any:
+    def _zero_localization(self) -> "DiscriminantSubgroup":
         return SyntheticQuadraticDiscriminantForm(
             matrix(QQ, 0, 0),
             quadratic_modulus=self._quadratic_modulus(),
         )
 
-    def _quadratic_modulus(self) -> Any:
+    def _quadratic_modulus(self) -> "Rational":
         return self._quadratic_modulus_value
 
-    def value_module_qf(self) -> Any:
+    def value_module_qf(self) -> "ValueModule":
         return value_module(ZZ, self._quadratic_modulus() * ZZ.one())
 
-    def gram_matrix_quadratic(self) -> Any:
+    def gram_matrix_quadratic(self) -> "GramMatrix":
         return self._gram_matrix
 
-    def q(self, element: Any) -> Any:
+    def q(self, element: "Element") -> "Rational":
         element = self(element) if element.parent() is not self else element
         coordinates = vector(QQ, element.coefficient_vector())
         return rational_mod(
@@ -887,7 +922,7 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
             self._quadratic_modulus(),
         )
 
-    def primary_part(self, p: Any) -> Any:
+    def primary_part(self, p: "Integer") -> "DiscriminantSubgroup":
         p = ZZ(p)
         assert p.is_prime(), f"primary part requires a prime; found={p}"
         images = []
@@ -900,7 +935,7 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
             return SyntheticQuadraticDiscriminantForm(matrix(QQ, 0, 0), quadratic_modulus=modulus)
         return SyntheticQuadraticDiscriminantForm(form_matrix_on_images(self, images), quadratic_modulus=modulus)
 
-    def _sage_engine(self) -> Any:
+    def _sage_engine(self) -> "SageDiscriminantForm":
         r"""An ephemeral Sage torsion quadratic module built from this form's own
         quadratic Gram. Its invariant-factor presentation reproduces the owned generators, so
         Sage's per-generator results transfer back without a coordinate map."""
@@ -908,7 +943,7 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
 
         return TorsionQuadraticForm(self.gram_matrix_quadratic())
 
-    def _delegated_normal_form(self, return_isometry: bool) -> Any:
+    def _delegated_normal_form(self, return_isometry: bool) -> "GramMatrix":
         r"""Sage's torsion-module normal form, returned as the owned ``(invariants,
         Gram)`` pair. The change of generators (when asked) reads Sage's normal-form
         generators back in Sage's invariant-factor coordinates, which are the owned ones."""
@@ -927,14 +962,14 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
         images = [self(list(sage_form(generator.lift()).vector())) for generator in sage_normal.gens()]
         return normal, SyntheticDiscriminantAction.from_images(self, images)
 
-    def miranda_morrison_normal_form(self, return_isometry: bool = False) -> Any:
+    def miranda_morrison_normal_form(self, return_isometry: bool = False) -> "GramMatrix":
         r"""The Miranda-Morrison normal form of the finite quadratic form, as the
         owned ``(invariants, Gram)`` pair (MM09 IV Def. 2.2 for p odd; IV section 4
         for 2-groups). The normal form is a complete invariant: comparing normal
         forms decides isometry of finite quadratic forms."""
         return self._delegated_normal_form(return_isometry)
 
-    def brown_invariant(self) -> Any:
+    def brown_invariant(self) -> "Integer":
         r"""Return the Brown invariant in ``ZZ/8`` from the ephemeral Sage TorsionQuadraticModule."""
         return ZZ(self._sage_engine().brown_invariant())
 
@@ -965,7 +1000,7 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
                 blocks.append((ZZ(p), block, ring(brown_indecomposable(block, ZZ(p)))))
         return tuple(blocks)
 
-    def is_genus(self, signature_pair: Any) -> Any:
+    def is_genus(self, signature_pair: "SignaturePair") -> "bool":
         r"""Return whether this discriminant form and signature define an even genus,
         decided by the ephemeral Sage TorsionQuadraticModule. Parity is read from the
         form (an even genus has a quadratic form of value modulus 2), never passed in."""
@@ -985,12 +1020,12 @@ class SyntheticQuadraticDiscriminantForm(QuadraticDiscriminantForm, SyntheticBil
         )
         return self._sage_engine().is_genus((s_plus, s_minus), even=even)
 
-    def genus(self, signature_pair: Any) -> Any:
+    def genus(self, signature_pair: "SignaturePair") -> "Genus":
         r"""Return the synthetic genus determined by signature and discriminant form."""
         assert self.is_genus(signature_pair), "this discriminant form and signature do not define a genus in this spike"
         return SyntheticGenus(self, signature_pair)
 
-    def twist(self, scalar: Any) -> Any:
+    def twist(self, scalar: "Rational") -> "Lattice":
         r"""The form scaled by ``scalar`` on the SAME group (Sage
         round-trip: a non-unit twist can make the form integral on a
         generator without killing the group element, so the result carries
@@ -1027,7 +1062,7 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
 
     Element = SyntheticDiscriminantGroupElement
 
-    def __init__(self, source_lattice: Any, primary: Any) -> None:
+    def __init__(self, source_lattice: "Lattice", primary: "Integer") -> None:
         from ..objects.parents import SyntheticIntegralNondegenerateLattice
 
         assert isinstance(source_lattice, SyntheticIntegralNondegenerateLattice), (
@@ -1083,34 +1118,34 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
         return hash((lattice_key(self.source_lattice()), self._primary, self.invariants()))
 
     # -- source-aware part: cover = L#, relations = L --
-    def rank(self) -> Any:
+    def rank(self) -> "Cardinal":
         return self._source_lattice.rank()
 
-    def source_lattice(self) -> Any:
+    def source_lattice(self) -> "Lattice":
         return self._source_lattice
 
-    def cover(self) -> Any:
+    def cover(self) -> "Lattice":
         return self._source_lattice.dual()
 
-    def cover_lattice(self) -> Any:
+    def cover_lattice(self) -> "Lattice":
         return self.cover()
 
-    def relations(self) -> Any:
+    def relations(self) -> "MorphismMatrix":
         return self._source_lattice
 
-    def relation_lattice(self) -> Any:
+    def relation_lattice(self) -> "Lattice":
         return self.relations()
 
     def is_nondegenerate(self) -> bool:
         return bool(self.cardinality() == abs(self.source_lattice().determinant()))
 
-    def _quadratic_modulus(self) -> Any:
+    def _quadratic_modulus(self) -> "Rational":
         return ZZ(2) if self.source_lattice().is_even() else ZZ.one()
 
     # -- source-based form data: read the Gram on the invariant generators off
     # G^{-1} through the dual coordinates, never a stored Gram presentation. --
     @cached_method
-    def _raw_form_matrix(self) -> Any:
+    def _raw_form_matrix(self) -> "GramMatrix":
         if self.ngens() == 0:
             return matrix(QQ, 0, 0)
         columns = [self._old_dual_coordinates(self.gen(i)) for i in range(self.ngens())]
@@ -1120,14 +1155,14 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
         return form
 
     @cached_method
-    def gram_matrix_bilinear(self) -> Any:
+    def gram_matrix_bilinear(self) -> "GramMatrix":
         raw_form = self._raw_form_matrix()
         form = raw_form.apply_map(lambda entry: rational_mod(entry, 1))
         form.set_immutable()
         return form
 
     @cached_method
-    def gram_matrix_quadratic(self) -> Any:
+    def gram_matrix_quadratic(self) -> "GramMatrix":
         raw_form = self._raw_form_matrix()
         bilinear_form = self.gram_matrix_bilinear()
         form = bilinear_form + matrix.diagonal(
@@ -1137,7 +1172,7 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
         form.set_immutable()
         return form
 
-    def _old_dual_coordinates(self, element: Any) -> Any:
+    def _old_dual_coordinates(self, element: "Element") -> "Vector":
         full_coordinates = vector(ZZ, [ZZ.zero()] * self.rank())
         for coordinate, position, multiplier in zip(
             element.coefficient_vector(),
@@ -1148,14 +1183,14 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
         return self._smith_right_inverse_transpose * full_coordinates
 
     # -- change-of-basis lift/projection between L# and the invariant-factor coords --
-    def lift(self, element: Any) -> Any:
+    def lift(self, element: "Element") -> "ModuleElement":
         # cover = L# is a based lattice whose intrinsic basis IS the dual basis of L,
         # so the dual-coordinate column produced by the change-of-basis machinery is already the
         # lift's coordinate vector in the cover -- no ambient round-trip.
         z_coordinates = self._old_dual_coordinates(self(element))
         return self.cover()(z_coordinates)
 
-    def projection(self, element: Any) -> Any:
+    def projection(self, element: "Element") -> "CategoryMorphism":
         cover = self.cover()
         if isinstance(element, SyntheticLatticeElement):
             assert element.parent() == cover, f"projection expects an element of the dual cover; expected={cover}, found={element.parent()}"
@@ -1174,10 +1209,10 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
             projected.append((ZZ(smith_coordinates[position]) * ZZ(multiplier).inverse_mod(invariant)) % invariant)
         return self(projected)
 
-    def coset_representative(self, element: Any) -> Any:
+    def coset_representative(self, element: "Element") -> "LatticeElement":
         return self.lift(element)
 
-    def coset_representative_in_source(self, element: Any) -> Any:
+    def coset_representative_in_source(self, element: "Element") -> "LatticeElement":
         r"""Coset representative of ``element`` in the source lattice's rational hull.
 
         A lift lives in ``L# ⊇ L``; its dual-basis column ``z`` has source-basis
@@ -1187,37 +1222,37 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
         z_coordinates = self._old_dual_coordinates(self(element))
         return self.source_lattice().gram_matrix().inverse() * z_coordinates
 
-    def primary_part(self, p: Any) -> Any:
+    def primary_part(self, p: "Integer") -> "DiscriminantSubgroup":
         return SyntheticSourcedDiscriminantForm(self.source_lattice(), p)
 
     # -- overlattices and preimages in the source hull --
-    def overlattice_from_isotropic_subgroup(self, subgroup_or_gens: Any, label: str = "overlattice") -> Any:
+    def overlattice_from_isotropic_subgroup(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors", label: str = "overlattice") -> "Lattice":
         r"""The overlattice glued along a bilinear-isotropic subgroup, as the
         inclusion morphism ``L -> L_glued`` minted by the overlattice
         constructor (the identity for the trivial subgroup)."""
         subgroup = self._subgroup(subgroup_or_gens)
         assert subgroup.is_bilinear_isotropic(), "overlattice construction requires a bilinear-isotropic subgroup"
-        lift_rows = [self.coset_representative_in_source(generator) for generator in subgroup.gens()]
+        lift_rows = [self.coset_representative_in_source(generator) for generator in subgroup.group_generators()]
         if not lift_rows:
             return self.source_lattice().identity_morphism()
         return self.source_lattice().overlattice(lift_rows, check_integral=True, label=label)
 
-    def preimage_lattice(self, subgroup_or_gens: Any, label: str = "preimage_lattice") -> Any:
+    def preimage_lattice(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors", label: str = "preimage_lattice") -> "Lattice":
         subgroup = self._subgroup(subgroup_or_gens)
         # pi^{-1}(A_L) = L# exactly; return the canonical dual cover rather than an
         # isometric HNF overlattice representative.
         if subgroup.cardinality() == self.cardinality():
             return self.cover()
-        lift_rows = [self.coset_representative_in_source(generator) for generator in subgroup.gens()]
+        lift_rows = [self.coset_representative_in_source(generator) for generator in subgroup.group_generators()]
         if not lift_rows:
             return self.source_lattice()
         return self.source_lattice().overlattice(lift_rows, check_integral=False, label=label).codomain()
 
-    def discriminant_form_of_overlattice(self, subgroup_or_gens: Any) -> Any:
+    def discriminant_form_of_overlattice(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> "DiscriminantForm":
         return self.overlattice_from_isotropic_subgroup(subgroup_or_gens).codomain().discriminant_group()
 
     # -- the induced action of a lattice isometry, and its orbit vocabulary --
-    def action_of_isometry(self, isometry: Any) -> Any:
+    def action_of_isometry(self, isometry: "CategoryMorphism") -> "DiscriminantAction":
         if self.ngens() == 0:
             return SyntheticDiscriminantAction(self, identity_matrix(ZZ, 0))
         gram = matrix(QQ, self.source_lattice().gram_matrix())
@@ -1230,12 +1265,12 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
             induced_images.append(self.projection(self.cover()(new_coordinates)))
         return SyntheticDiscriminantAction.from_images(self, induced_images)
 
-    def orbit(self, element: Any, group: Any = None) -> Any:
+    def orbit(self, element: "Element", group: "Group" = None) -> "OrderedSet":
         element = self(element)
         group = self.orthogonal_group() if group is None else group
         return frozenset(action(element) for action in group)
 
-    def orbits(self, group: Any = None) -> tuple[Any, ...]:
+    def orbits(self, group: "Group" = None) -> tuple[Any, ...]:
         unseen = set(self.elements())
         orbits = []
         while unseen:
@@ -1245,7 +1280,7 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
             unseen.difference_update(orbit)
         return tuple(orbits)
 
-    def orbits_on_subgroups(self, group: Any = None) -> tuple[Any, ...]:
+    def orbits_on_subgroups(self, group: "Group" = None) -> tuple[Any, ...]:
         group = self.orthogonal_group() if group is None else group
         subgroups = set(self.all_submodules())
         orbits = []
@@ -1256,14 +1291,14 @@ class SyntheticSourcedDiscriminantForm(SourcedDiscriminantForm, SyntheticQuadrat
             subgroups.difference_update(orbit)
         return tuple(orbits)
 
-    def orbits_on_isotropic_subgroups(self, group: Any = None) -> tuple[Any, ...]:
+    def orbits_on_isotropic_subgroups(self, group: "Group" = None) -> tuple[Any, ...]:
         isotropic = set(self.isotropic_subgroups())
         return tuple(orbit for orbit in self.orbits_on_subgroups(group=group) if orbit & isotropic)
 
     # -- source-based Sage object: the ephemeral Sage object is the source lattice's own
     # discriminant group (its invariant-factor presentation reproduces the owned generators);
     # normal_form is inherited from the Gram subcategory's Sage call through it. --
-    def _sage_engine(self) -> Any:
+    def _sage_engine(self) -> "SageDiscriminantForm":
         from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 
         sage_disc = IntegralLattice(matrix(ZZ, self.source_lattice().gram_matrix())).discriminant_group()

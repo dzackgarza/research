@@ -83,7 +83,7 @@ def test_direct_sum_acts_on_morphisms_functorially():
     preserves identities and composition."""
     a2 = Lattice("A2")
     a1 = Lattice("A1")
-    first, second = a2.isometry_group().gens()[:2]
+    first, second = a2.isometry_group().group_generators()[:2]
     other = a1.identity_morphism()
 
     summed = constructions.direct_sum(first, other)
@@ -102,7 +102,7 @@ def test_direct_sum_of_morphisms_commutes_with_the_summand_embeddings():
     summand embedding is that summand's morphism followed by its embedding."""
     a2 = Lattice("A2")
     a1 = Lattice("A1")
-    isometry = a2.isometry_group().gens()[0]
+    isometry = a2.isometry_group().group_generators()[0]
     other = a1.identity_morphism()
 
     _, into_first, into_second = a2.direct_sum_with_embeddings(a1)
@@ -128,7 +128,7 @@ def test_the_lattice_direct_sum_is_the_module_theoretic_one():
 def test_the_morphism_direct_sum_spelling_delegates_to_the_construction():
     a2 = Lattice("A2")
     a1 = Lattice("A1")
-    isometry = a2.isometry_group().gens()[0]
+    isometry = a2.isometry_group().group_generators()[0]
     other = a1.identity_morphism()
     assert isometry.direct_sum(other) == constructions.direct_sum(isometry, other)
 

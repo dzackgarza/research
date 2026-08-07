@@ -20,8 +20,12 @@ module onto its coordinate description.
 
 from __future__ import annotations
 
+
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from ..lexicon import Element
 
 from sage.categories.category import Category
 from sage.categories.category_types import Category_over_base_ring
@@ -50,7 +54,7 @@ else:
 def _undispatched_modules(base_ring: BaseRing) -> Category:
     r"""The plain ``Modules(R)`` node, bypassing field dispatch — used by
     the nodes that sit above it in the owned spine."""
-    return cast(Category, Category_over_base_ring.__classcall__(Modules, base_ring))
+    return Category_over_base_ring.__classcall__(Modules, base_ring)
 
 
 def _coordinate_target(base_ring: BaseRing, rank: int) -> CartesianProduct:
@@ -64,7 +68,7 @@ def _coordinate_target(base_ring: BaseRing, rank: int) -> CartesianProduct:
 
     assert base_ring is ZZ or base_ring is QQ, f"coordinate targets are wired for the fundamental scalars; found {base_ring} (extend the fundamental sets first)"
     # underlying_set is injected by the forwarding roots at runtime.
-    scalar_set = cast(Any, Integers() if base_ring is ZZ else Rationals()).underlying_set()
+    scalar_set = Integers() if base_ring is ZZ else Rationals().underlying_set()
     return CartesianProduct(*([scalar_set] * rank))
 
 
@@ -76,8 +80,8 @@ class Modules(CatObject, Category_over_base_ring):
     @staticmethod
     def __classcall_private__(cls: type, base_ring: BaseRing) -> Category:
         if base_ring in SageFields():
-            return cast(Category, VectorSpaces(base_ring))
-        return cast(Category, Category_over_base_ring.__classcall__(cls, base_ring))
+            return VectorSpaces(base_ring)
+        return Category_over_base_ring.__classcall__(cls, base_ring)
 
     def super_categories(self) -> list[Category]:
         return [SageModules(self.base_ring()), AdditiveGroups().AdditiveCommutative()]
@@ -105,7 +109,7 @@ class FreeModules(CatObject, Category_over_base_ring):
     def super_categories(self) -> list[Category]:
         # Plain construction: over a field this correctly dispatches, since
         # a free module over a field IS a vector space.
-        return [cast(Category, Modules(self.base_ring()))]
+        return [Modules(self.base_ring())]
 
     class ParentMethods:
         def is_free(self) -> bool:
@@ -120,7 +124,7 @@ class FreeModules(CatObject, Category_over_base_ring):
             return False
 
         @abstract_method
-        def coordinate_vector(self, element: Any) -> Vector:
+        def coordinate_vector(self, element: "Element") -> Vector:
             r"""The element's vector of scalars in the module's distinguished
             presentation (Sage's own free-module spelling of this map) — the
             ONE boundary where an element presentation crosses into
@@ -138,12 +142,12 @@ class FreeModules(CatObject, Category_over_base_ring):
             ``coordinate_vector``. Non-coordinates (a vector outside the
             basis span over ``R``) fail loudly at the target's own
             membership boundary."""
-            parent = cast(SageParent, self)
+            parent = self
             base_ring = parent.category().base_ring()
-            coordinate_vector = cast(Any, self).coordinate_vector
+            coordinate_vector = self.coordinate_vector
             basis_matrix = matrix(base_ring, [coordinate_vector(b) for b in basis])
             target = _coordinate_target(base_ring, len(basis))
-            domain = cast(Any, self).underlying_set()
+            domain = self.underlying_set()
             return SetMorphism(Hom(domain, target, SageSets()), lambda element: target(tuple(basis_matrix.solve_left(coordinate_vector(element)))))
 
         def from_coordinates(self, basis: Sequence[Any]) -> SetMorphism:
@@ -151,13 +155,13 @@ class FreeModules(CatObject, Category_over_base_ring):
             tuples come back as elements of the module, never as bare
             tuples — enumeration through the isomorphism returns module
             elements."""
-            parent = cast(SageParent, self)
+            parent = self
             base_ring = parent.category().base_ring()
             target = _coordinate_target(base_ring, len(basis))
-            codomain = cast(Any, self).underlying_set()
+            codomain = self.underlying_set()
             # The sum starts at the module's zero so the empty basis (rank
             # zero) still returns a module element, never a bare scalar.
-            return SetMorphism(Hom(target, codomain, SageSets()), lambda point: sum((scalar * b for scalar, b in zip(point.value, basis)), cast(Any, self).zero()))
+            return SetMorphism(Hom(target, codomain, SageSets()), lambda point: sum((scalar * b for scalar, b in zip(point.value, basis)), self.zero()))
 
 
 class FiniteProjectiveModules(CatObject, Category_over_base_ring):
@@ -167,7 +171,7 @@ class FiniteProjectiveModules(CatObject, Category_over_base_ring):
     only its ordinary underlying-set route."""
 
     def super_categories(self) -> list[Category]:
-        return [cast(Category, Modules(self.base_ring()))]
+        return [Modules(self.base_ring())]
 
     class ParentMethods:
         def is_projective(self) -> bool:

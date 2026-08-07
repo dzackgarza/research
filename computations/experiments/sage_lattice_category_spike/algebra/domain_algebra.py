@@ -55,7 +55,10 @@ runtime realizations live in the concrete modules.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator, Sequence
-from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
+from typing import TYPE_CHECKING, Any, Literal, Protocol
+
+if TYPE_CHECKING:
+    from ..lexicon import Element
 
 if TYPE_CHECKING:
     # abstract_method ships untyped; use abc.abstractmethod for type-checking
@@ -76,7 +79,7 @@ if TYPE_CHECKING:
     )
     from ..lexicon.foundations import (
         CartanType,
-        ExactScalar,
+        Rational,
         GramMatrix,
         Integer,
         SignaturePair,
@@ -187,7 +190,7 @@ type RawVectors = Matrix | MatrixData | Sequence[Vector]
 sequences, or actual vectors) — the input payload of the subobject algebra
 (sublattice/span/overlattice generators)."""
 
-type MatrixData = Sequence[Sequence[ExactScalar | int]]
+type MatrixData = Sequence[Sequence[Rational]]
 """Structured matrix-shaped input accepted by overloads that route through
 `Matrix` (Python int literals are exact integers and enter freely)."""
 
@@ -199,10 +202,10 @@ class ValueModule(Protocol):
     """The form-value object K/(level*R): QQ/ZZ (bilinear) or QQ/2ZZ (even quadratic)."""
 
     @abstract_method
-    def level(self) -> ExactScalar: ...
+    def level(self) -> Rational: ...
 
     @abstract_method
-    def __call__(self, value: ExactScalar) -> ExactScalar: ...
+    def __call__(self, value: Rational) -> Rational: ...
 
 
 # ---------------------------------------------------------------------------
@@ -244,10 +247,10 @@ class LatticeElement:
         module structure), never a bare sequence."""
 
     @abstract_method
-    def b(self, other: LatticeElement) -> ExactScalar: ...
+    def b(self, other: LatticeElement) -> Rational: ...
 
     @abstract_method
-    def q(self) -> ExactScalar: ...
+    def q(self) -> Rational: ...
 
     def _richcmp_(self, other: LatticeElement, op: int) -> bool:
         r"""Compare as linear combinations of the generators: two elements agree
@@ -288,10 +291,10 @@ class DiscriminantFormElement:
     def parent(self) -> DiscriminantForm: ...
 
     @abstract_method
-    def b(self, other: DiscriminantFormElement) -> ExactScalar: ...
+    def b(self, other: DiscriminantFormElement) -> Rational: ...
 
     @abstract_method
-    def q(self) -> ExactScalar: ...
+    def q(self) -> Rational: ...
 
     @abstract_method
     def lift(self) -> LatticeElement:
@@ -322,13 +325,13 @@ class Lattice(CategoryObject):
     # the owned FreeModules node the lattice categories chain through.
     def _coordinate_trivialization(self) -> SetMorphism:
         r"""``U(R)^rank -> U(L)`` through the lattice's own basis."""
-        return cast("SetMorphism", cast(Any, self).from_coordinates(self.basis()))
+        return self.from_coordinates(self.basis())
 
     def cardinality(self) -> Cardinal:
         r"""``|L| = |U(R)^rank|`` — the rollup ``X.cardinality() :=
         F(X).cardinality()`` with ``F`` the coordinate trivialization (the
         rank-zero product is the singleton, so ``|L| = 1`` there)."""
-        return cast("Cardinal", cast(Any, self._coordinate_trivialization().domain()).cardinality())
+        return self._coordinate_trivialization().domain().cardinality()
 
     def is_finite(self) -> bool:
         return self.cardinality().is_finite()
@@ -347,19 +350,19 @@ class Lattice(CategoryObject):
         coordinate product, mapped back to lattice elements (the
         inverse-application law: never bare coordinate tuples)."""
         trivialization = self._coordinate_trivialization()
-        return (cast("LatticeElement", trivialization(point)) for point in cast(Iterable[Any], trivialization.domain()))
+        return (trivialization(point) for point in trivialization.domain())
 
     def __getitem__(self, n: int) -> LatticeElement:
         r"""The ``n``-th element of the enumeration, through the
         trivialization — the coordinate product's own indexing, mapped back."""
         trivialization = self._coordinate_trivialization()
-        return cast("LatticeElement", trivialization(cast(Any, trivialization.domain())[n]))
+        return trivialization(trivialization.domain()[n])
 
     def index(self, element: LatticeElement) -> int:
         r"""Reverse lookup: the element's position in the enumeration. The
         element's coefficient vector IS its chosen-basis coordinates — the
         element-side spelling of the same trivialization crossing."""
-        product = cast(Any, self._coordinate_trivialization().domain())
+        product = self._coordinate_trivialization().domain()
         return int(product.index(product(tuple(element.coefficient_vector()))))
 
     def coordinate_vector(self, element: LatticeElement) -> Vector:
@@ -374,14 +377,14 @@ class Lattice(CategoryObject):
         presentation-free)."""
         return element.coefficient_vector()
 
-    def _test_cardinality(self, **options: Any) -> None:
+    def _test_cardinality(self, **options: dict) -> None:
         r"""Replace Sage's coarse cardinality contract (Integer-or-Infinity)
         with the owned one: this graph's cardinality is a ``Cardinal``
         (ratified — never the two-valued infinity), coherent with the
         finiteness predicates."""
         from ..objects.cardinals import Cardinal as RuntimeCardinal
 
-        tester = cast(Any, self)._tester(**options)
+        tester = self._tester(**options)
         cardinality = self.cardinality()
         tester.assertTrue(isinstance(cardinality, RuntimeCardinal), f"cardinality must be a Cardinal; found {type(cardinality)}")
         tester.assertEqual(cardinality.is_finite(), self.is_finite())
@@ -398,16 +401,16 @@ class Lattice(CategoryObject):
     def base_ring(self) -> BaseRing: ...
 
     @abstract_method
-    def b(self, left: LatticeElement, right: LatticeElement) -> ExactScalar: ...
+    def b(self, left: LatticeElement, right: LatticeElement) -> Rational: ...
 
     @abstract_method
-    def q(self, element: LatticeElement) -> ExactScalar: ...
+    def q(self, element: LatticeElement) -> Rational: ...
 
     @abstract_method
-    def bilinear_form(self) -> Callable[[LatticeElement, LatticeElement], ExactScalar]: ...
+    def bilinear_form(self) -> Callable[[LatticeElement, LatticeElement], Rational]: ...
 
     @abstract_method
-    def quadratic_form(self) -> Callable[[LatticeElement], ExactScalar]: ...
+    def quadratic_form(self) -> Callable[[LatticeElement], Rational]: ...
 
     @abstract_method
     def basis(self) -> tuple[LatticeElement, ...]: ...
@@ -438,13 +441,13 @@ class Lattice(CategoryObject):
     def zero(self) -> LatticeElement: ...
 
     @abstract_method
-    def determinant(self) -> ExactScalar: ...
+    def determinant(self) -> Rational: ...
 
     @abstract_method
-    def discriminant(self) -> ExactScalar: ...
+    def discriminant(self) -> Rational: ...
 
     @abstract_method
-    def absolute_discriminant(self) -> ExactScalar: ...
+    def absolute_discriminant(self) -> Rational: ...
 
     @abstract_method
     def signature_pair(self) -> SignaturePair: ...
@@ -453,7 +456,7 @@ class Lattice(CategoryObject):
     def signature(self) -> SignaturePair: ...
 
     @abstract_method
-    def denominator(self) -> ExactScalar: ...
+    def denominator(self) -> Rational: ...
 
     @abstract_method
     def random_element(self) -> LatticeElement:
@@ -508,10 +511,10 @@ class Lattice(CategoryObject):
 
     # constructions
     @abstract_method
-    def twist(self, scalar: ExactScalar | int, label: str = "twist") -> Lattice: ...
+    def twist(self, scalar: Rational, label: str = "twist") -> Lattice: ...
 
     @abstract_method
-    def scale(self, scalar: ExactScalar | int, label: str = "scale") -> Lattice: ...
+    def scale(self, scalar: Rational, label: str = "scale") -> Lattice: ...
 
     @abstract_method
     def direct_sum(self, *others: Lattice, label: str = "direct_sum") -> Lattice: ...
@@ -527,13 +530,13 @@ class Lattice(CategoryObject):
 
     # subobject algebra (generator families enter as RawVectors payloads)
     @abstract_method
-    def sublattice(self, generators: RawVectors) -> Lattice: ...
+    def sublattice(self, module_generators: RawVectors) -> Lattice: ...
 
     @abstract_method
-    def lattice_in_rationalization(self, generators: RawVectors) -> Lattice: ...
+    def lattice_in_rationalization(self, module_generators: RawVectors) -> Lattice: ...
 
     @abstract_method
-    def span(self, generators: RawVectors) -> Lattice: ...
+    def span(self, module_generators: RawVectors) -> Lattice: ...
 
     @abstract_method
     def span_of_basis(self, basis: RawVectors) -> Lattice: ...
@@ -602,7 +605,7 @@ class Lattice(CategoryObject):
     def embedding(self, matrix: RawMorphismMatrix, codomain: Lattice) -> LatticeMorphism: ...
 
     @abstract_method
-    def similarity(self, matrix: RawMorphismMatrix, codomain: Lattice, scalar: ExactScalar) -> LatticeSimilarity: ...
+    def similarity(self, matrix: RawMorphismMatrix, codomain: Lattice, scalar: Rational) -> LatticeSimilarity: ...
 
     @abstract_method
     def reflection(self, vector: LatticeElement) -> LatticeMorphism: ...
@@ -668,12 +671,12 @@ class DefiniteLattice(Lattice):
     are gap-ledger item 4 (ratified interactively), not fixed by this stub."""
 
     @abstract_method
-    def minimum(self) -> ExactScalar | SageInfinity:
+    def minimum(self) -> Rational | SageInfinity:
         """Least nonzero norm; ``+Infinity`` on the rank-0 lattice (an infimum
         over the empty set), so the codomain honestly includes infinity."""
 
     @abstract_method
-    def maximum(self) -> ExactScalar | SageInfinity:
+    def maximum(self) -> Rational | SageInfinity:
         """Supremum of the norm form over nonzero vectors — ``+-Infinity`` for
         every positive-rank definite lattice."""
 
@@ -687,13 +690,13 @@ class DefiniteLattice(Lattice):
     def enumerate_short_vectors(self, bound: int | Integer) -> Iterator[LatticeElement]: ...
 
     @abstract_method
-    def vectors_of_square(self, square: ExactScalar | int) -> tuple[LatticeElement, ...]: ...
+    def vectors_of_square(self, square: Rational) -> tuple[LatticeElement, ...]: ...
 
     @abstract_method
     def roots(self) -> tuple[LatticeElement, ...]: ...
 
     @abstract_method
-    def volume(self) -> ExactScalar | SymbolicExpression:
+    def volume(self) -> Rational | SymbolicExpression:
         """Covolume ``sqrt(det G)`` — exact, but not rational in general, so the
         codomain includes exact symbolic values (never a float)."""
 
@@ -716,16 +719,16 @@ class PositiveDefiniteLattice(DefiniteLattice):
     def HKZ(self) -> PositiveDefiniteLattice: ...
 
     @abstract_method
-    def babai(self, target: Sequence[ExactScalar] | Vector | LatticeElement) -> LatticeElement: ...
+    def babai(self, target: Sequence[Rational] | Vector | LatticeElement) -> LatticeElement: ...
 
     @abstract_method
-    def approximate_closest_vector(self, target: Sequence[ExactScalar] | Vector | LatticeElement) -> LatticeElement: ...
+    def approximate_closest_vector(self, target: Sequence[Rational] | Vector | LatticeElement) -> LatticeElement: ...
 
     @abstract_method
-    def closest_vector(self, target: Sequence[ExactScalar] | Vector | LatticeElement) -> LatticeElement: ...
+    def closest_vector(self, target: Sequence[Rational] | Vector | LatticeElement) -> LatticeElement: ...
 
     @abstract_method
-    def enumerate_close_vectors(self, target: Sequence[ExactScalar] | Vector | LatticeElement, radius: ExactScalar) -> Sequence[LatticeElement]: ...
+    def enumerate_close_vectors(self, target: Sequence[Rational] | Vector | LatticeElement, radius: Rational) -> Sequence[LatticeElement]: ...
 
     @abstract_method
     def voronoi_cell(self, radius: int | Integer | None = None) -> Polyhedron: ...
@@ -770,7 +773,7 @@ class HyperbolicLattice(IndefiniteLattice):
     def is_reflective(self) -> bool: ...
 
     @abstract_method
-    def roots_up_to_height(self, height: ExactScalar) -> tuple[LatticeElement, ...]: ...
+    def roots_up_to_height(self, height: Rational) -> tuple[LatticeElement, ...]: ...
 
     @abstract_method
     def isotropic_rays(self) -> tuple[LatticeElement, ...]: ...
@@ -858,7 +861,7 @@ class LatticeMorphism(CategoryMorphism):
         group — total for every morphism by the abelian-category contract."""
 
     @abstract_method
-    def index(self) -> ExactScalar | SageInfinity:
+    def index(self) -> Rational | SageInfinity:
         """The index ``[codomain : image]`` — the cokernel's cardinality
         spelled in the EXTENDED scalars ``ZZ u {oo}``, where the
         determinant-scaling formulas are equations (Sage's infinity ring
@@ -928,7 +931,7 @@ class LatticeSimilarity:
     def matrix(self) -> Matrix: ...
 
     @abstract_method
-    def scalar(self) -> ExactScalar: ...
+    def scalar(self) -> Rational: ...
 
     @abstract_method
     def __call__(self, element: LatticeElement) -> LatticeElement: ...
@@ -991,7 +994,7 @@ class TwistFunctor(Functor[Lattice, Lattice, LatticeMorphism, LatticeMorphism]):
     every morphism matrix are unchanged (Nikulin's ``L(a)``)."""
 
     @abstract_method
-    def scalar(self) -> ExactScalar | int: ...
+    def scalar(self) -> Rational: ...
 
 
 class FunctorSpace:
@@ -1070,7 +1073,7 @@ class IsometryHomset:
     def __iter__(self) -> Iterator[LatticeMorphism]: ...
 
     @abstract_method
-    def __contains__(self, candidate: Any) -> bool: ...
+    def __contains__(self, candidate: object) -> bool: ...
 
 
 class EmbeddingHomset:
@@ -1100,7 +1103,7 @@ class EmbeddingHomset:
     def __iter__(self) -> Iterator[LatticeMorphism]: ...
 
     @abstract_method
-    def __contains__(self, candidate: Any) -> bool: ...
+    def __contains__(self, candidate: object) -> bool: ...
 
 
 # ---------------------------------------------------------------------------
@@ -1109,7 +1112,7 @@ class EmbeddingHomset:
 
 
 class IsometryGroup:
-    """O(L). Membership/construction/is_finite are total; gens/order/iteration
+    """O(L). Membership/construction/is_finite are total; group_generators/order/iteration
     are contracts implemented exactly where the group is finite."""
 
     def cardinality(self) -> Cardinal:
@@ -1126,7 +1129,7 @@ class IsometryGroup:
     def lattice(self) -> Lattice: ...
 
     @abstract_method
-    def __contains__(self, candidate: Any) -> bool: ...
+    def __contains__(self, candidate: object) -> bool: ...
 
     @abstract_method
     def _from_matrix(self, matrix: RawMorphismMatrix) -> LatticeMorphism:
@@ -1143,7 +1146,7 @@ class IsometryGroup:
     def is_finite(self) -> bool: ...
 
     @abstract_method
-    def gens(self) -> tuple[LatticeMorphism, ...]: ...
+    def group_generators(self) -> tuple[LatticeMorphism, ...]: ...
 
     @abstract_method
     def order(self) -> int: ...
@@ -1152,7 +1155,7 @@ class IsometryGroup:
     def __iter__(self) -> Iterator[LatticeMorphism]: ...
 
     @abstract_method
-    def subgroup(self, generators: Sequence[LatticeMorphism]) -> IsometrySubgroup: ...
+    def subgroup(self, group_generators: Sequence[LatticeMorphism]) -> IsometrySubgroup: ...
 
     @abstract_method
     def discriminant_action(self, isometry: LatticeMorphism) -> DiscriminantAction: ...
@@ -1189,7 +1192,7 @@ class IsometrySubgroup:
     def ambient(self) -> IsometryGroup: ...
 
     @abstract_method
-    def gens(self) -> tuple[LatticeMorphism, ...]: ...
+    def group_generators(self) -> tuple[LatticeMorphism, ...]: ...
 
     @abstract_method
     def preserves(self, subobject: Subobject) -> bool:
@@ -1228,13 +1231,13 @@ class DiscriminantOrthogonalGroup:
     def discriminant_form(self) -> DiscriminantForm: ...
 
     @abstract_method
-    def gens(self) -> tuple[DiscriminantAction, ...]: ...
+    def group_generators(self) -> tuple[DiscriminantAction, ...]: ...
 
     @abstract_method
     def order(self) -> int: ...
 
     @abstract_method
-    def __contains__(self, candidate: Any) -> bool: ...
+    def __contains__(self, candidate: object) -> bool: ...
 
     @abstract_method
     def __iter__(self) -> Iterator[DiscriminantAction]: ...
@@ -1310,18 +1313,18 @@ class FiniteAbelianGroup:
     # The invariant-factor decomposition D = prod Z/n_i is the group's
     # trivialization; these are its definitional consequences, computed at
     # this node once — leaf classes carry none of them.
-    def _cyclic_factor_product(self) -> Any:
+    def _cyclic_factor_product(self) -> "FiniteAbelianGroup":
         r"""``U(Z/n_1) x ... x U(Z/n_k)``: the coordinate description's home,
         built from the fundamental sets underlying the cyclic factors."""
         from ..objects.fundamental_sets import IntegerModRing
         from ..objects.set_constructions import CartesianProduct
 
-        return CartesianProduct(*[cast(Any, IntegerModRing(int(invariant))).underlying_set() for invariant in self.invariants()])
+        return CartesianProduct(*[IntegerModRing(int(invariant)).underlying_set() for invariant in self.invariants()])
 
     def cardinality(self) -> Cardinal:
         r"""``|D| = prod n_i`` as a Cardinal — the rollup through the
         cyclic-factor product (the empty decomposition is the singleton)."""
-        return cast("Cardinal", cast(Any, self._cyclic_factor_product()).cardinality())
+        return self._cyclic_factor_product().cardinality()
 
     def is_finite(self) -> bool:
         return self.cardinality().is_finite()
@@ -1329,7 +1332,7 @@ class FiniteAbelianGroup:
     def elements(self) -> tuple[DiscriminantFormElement, ...]:
         r"""All elements, through the cyclic-factor coordinates — group
         elements, never coordinate tuples."""
-        return tuple(cast(Any, self)(tuple(int(entry) for entry in cast(Any, point).value)) for point in self._cyclic_factor_product())
+        return tuple(self(tuple(int(entry) for entry in point.value)) for point in self._cyclic_factor_product())
 
     def list(self) -> tuple[DiscriminantFormElement, ...]:
         return self.elements()
@@ -1337,11 +1340,11 @@ class FiniteAbelianGroup:
     def __iter__(self) -> Iterator[DiscriminantFormElement]:
         return iter(self.elements())
 
-    def _test_cardinality(self, **options: Any) -> None:
+    def _test_cardinality(self, **options: dict) -> None:
         r"""Replace Sage's coarse cardinality contract (Integer-or-Infinity)
         with the owned one: cardinality is a ``Cardinal``, coherent with
         the finiteness predicate and the classical group order."""
-        tester = cast(Any, self)._tester(**options)
+        tester = self._tester(**options)
         cardinality = self.cardinality()
         from ..objects.cardinals import Cardinal as RuntimeCardinal
 
@@ -1365,7 +1368,7 @@ class FiniteAbelianGroup:
     def generator_orders(self) -> tuple[int, ...]: ...
 
     @abstract_method
-    def annihilator(self) -> ExactScalar: ...
+    def annihilator(self) -> Rational: ...
 
     @abstract_method
     def gens(self) -> tuple[DiscriminantFormElement, ...]: ...
@@ -1389,7 +1392,7 @@ class FiniteAbelianGroup:
     def discrete_log(self, element: DiscriminantFormElement) -> tuple[int, ...]: ...
 
     @abstract_method
-    def subgroup_generated_by(self, generators: Sequence[DiscriminantFormElement]) -> DiscriminantSubgroup: ...
+    def subgroup_generated_by(self, group_generators: Sequence[DiscriminantFormElement]) -> DiscriminantSubgroup: ...
 
     @abstract_method
     def quotient_group(self, subgroup: DiscriminantSubgroup) -> DiscriminantForm: ...
@@ -1440,10 +1443,10 @@ class FiniteAbelianGroup:
     def p_torsion(self, p: int, k: int = 1) -> DiscriminantSubgroup: ...
 
     @abstract_method
-    def relations_among(self, generators: Sequence[DiscriminantFormElement]) -> Matrix: ...
+    def relations_among(self, module_generators: Sequence[DiscriminantFormElement]) -> Matrix: ...
 
     @abstract_method
-    def basis_from_generators(self, generators: Sequence[DiscriminantFormElement]) -> tuple[DiscriminantFormElement, ...]: ...
+    def basis_from_module_generators(self, module_generators: Sequence[DiscriminantFormElement]) -> tuple[DiscriminantFormElement, ...]: ...
 
     @abstract_method
     def cosets(self, subgroup: DiscriminantSubgroup) -> tuple[tuple[DiscriminantFormElement, ...], ...]: ...
@@ -1480,7 +1483,7 @@ Quadratic deliberately, never a generic "form"."""
 
 class BilinearDiscriminantForm(FiniteAbelianGroup):
     @abstract_method
-    def q(self, element: DiscriminantFormElement) -> ExactScalar:
+    def q(self, element: DiscriminantFormElement) -> Rational:
         """The induced diagonal quadratic form q(x) := b(x, x) (placement
         ruling 2026-07-03): every bilinear form induces a quadratic form along
         the diagonal — only polarization needs 2 invertible — so q is DEFINED
@@ -1488,7 +1491,7 @@ class BilinearDiscriminantForm(FiniteAbelianGroup):
         Quadratic subcategory refines it (finer value module)."""
 
     @abstract_method
-    def b(self, left: DiscriminantFormElement, right: DiscriminantFormElement) -> ExactScalar: ...
+    def b(self, left: DiscriminantFormElement, right: DiscriminantFormElement) -> Rational: ...
 
     @abstract_method
     def gram_matrix(self) -> GramMatrix:
@@ -1552,7 +1555,7 @@ class BilinearDiscriminantForm(FiniteAbelianGroup):
 
 class QuadraticDiscriminantForm(BilinearDiscriminantForm):
     @abstract_method
-    def q(self, element: DiscriminantFormElement) -> ExactScalar: ...
+    def q(self, element: DiscriminantFormElement) -> Rational: ...
 
     @abstract_method
     def gram_matrix(self) -> GramMatrix:
@@ -1581,7 +1584,7 @@ class QuadraticDiscriminantForm(BilinearDiscriminantForm):
     def genus(self, signature_pair: SignaturePair) -> Genus: ...
 
     @abstract_method
-    def twist(self, scalar: ExactScalar) -> QuadraticDiscriminantForm: ...
+    def twist(self, scalar: Rational) -> QuadraticDiscriminantForm: ...
 
 
 class SourcedDiscriminantForm(QuadraticDiscriminantForm):
@@ -1606,7 +1609,7 @@ class SourcedDiscriminantForm(QuadraticDiscriminantForm):
     def lift(self, element: DiscriminantFormElement) -> LatticeElement: ...
 
     @abstract_method
-    def coset_representative_in_source(self, element: DiscriminantFormElement) -> Sequence[ExactScalar]: ...
+    def coset_representative_in_source(self, element: DiscriminantFormElement) -> Sequence[Rational]: ...
 
     @abstract_method
     def projection(self, element: LatticeElement) -> DiscriminantFormElement: ...
@@ -1646,7 +1649,7 @@ class DiscriminantSubgroup:
     def ambient(self) -> DiscriminantForm: ...
 
     @abstract_method
-    def gens(self) -> tuple[DiscriminantFormElement, ...]: ...
+    def group_generators(self) -> tuple[DiscriminantFormElement, ...]: ...
 
     @abstract_method
     def cardinality(self) -> Cardinal:
@@ -1654,7 +1657,7 @@ class DiscriminantSubgroup:
         contract."""
 
     @abstract_method
-    def __contains__(self, element: Any) -> bool: ...
+    def __contains__(self, element: "Element") -> bool: ...
 
     @abstract_method
     def is_bilinear_isotropic(self) -> bool:
@@ -1679,7 +1682,7 @@ class Genus:
     def signature(self) -> SignaturePair: ...
 
     @abstract_method
-    def det(self) -> ExactScalar: ...
+    def det(self) -> Rational: ...
 
     @abstract_method
     def dim(self) -> int: ...
@@ -1705,7 +1708,7 @@ class Genus:
     def local_symbol_tuples(self, p: int) -> tuple[tuple[int, ...], ...]: ...
 
     @abstract_method
-    def local_determinant(self, p: int) -> ExactScalar: ...
+    def local_determinant(self, p: int) -> Rational: ...
 
     @abstract_method
     def local_rank(self, p: int) -> int: ...
@@ -1748,11 +1751,11 @@ class Genus:
         r"""One representative lattice per isometry class."""
         return iter(self.representatives())
 
-    def _test_cardinality(self, **options: Any) -> None:
+    def _test_cardinality(self, **options: dict) -> None:
         r"""Replace Sage's coarse cardinality contract (Integer-or-Infinity)
         with the owned one: cardinality is a ``Cardinal``, equal to the
         class number."""
-        tester = cast(Any, self)._tester(**options)
+        tester = self._tester(**options)
         cardinality = self.cardinality()
         from ..objects.cardinals import Cardinal as RuntimeCardinal
 
@@ -1795,7 +1798,7 @@ def from_gram_matrix(gram: RawGramMatrix | LatticeName, base_ring: BaseRing | No
 def from_form_data(
     invariants: Sequence[int],
     bilinear: RawGramMatrix | None,
-    quadratic: Sequence[ExactScalar] | None,
+    quadratic: Sequence[Rational] | None,
     level: int,
 ) -> DiscriminantForm:
     """Entry into DiscriminantForms; axioms assigned from the data (T3 model)."""
@@ -1810,7 +1813,7 @@ def from_form_data(
 
 def in_nondegenerate(lattice: Lattice) -> NondegenerateLattice:
     assert lattice.is_nondegenerate(), f"nondegenerate lattice required; gram={lattice.gram_matrix()!r}; pass through radical_quotient() or fix the construction site"
-    return cast(NondegenerateLattice, lattice)
+    return lattice
 
 
 def in_integral_nondegenerate(lattice: Lattice) -> IntegralNondegenerateLattice:
@@ -1819,24 +1822,24 @@ def in_integral_nondegenerate(lattice: Lattice) -> IntegralNondegenerateLattice:
         f"integral={lattice.is_integral()}, nondegenerate={lattice.is_nondegenerate()}; "
         "fix the construction site"
     )
-    return cast(IntegralNondegenerateLattice, lattice)
+    return lattice
 
 
 def in_definite(lattice: Lattice) -> DefiniteLattice:
     assert lattice.is_definite(), f"definite lattice required; signature_pair={lattice.signature_pair()}; an indefinite lattice has no finite enumeration vocabulary"
-    return cast(DefiniteLattice, lattice)
+    return lattice
 
 
 def in_positive_definite(lattice: Lattice) -> PositiveDefiniteLattice:
     assert lattice.is_positive_definite(), f"positive-definite lattice required; signature_pair={lattice.signature_pair()}"
-    return cast(PositiveDefiniteLattice, lattice)
+    return lattice
 
 
 def in_indefinite(lattice: Lattice) -> IndefiniteLattice:
     assert lattice.is_indefinite(), f"indefinite lattice required; signature_pair={lattice.signature_pair()}"
-    return cast(IndefiniteLattice, lattice)
+    return lattice
 
 
 def in_hyperbolic(lattice: Lattice) -> HyperbolicLattice:
     assert lattice.is_hyperbolic(), f"hyperbolic lattice (signature (1, n-1)) required; signature_pair={lattice.signature_pair()}"
-    return cast(HyperbolicLattice, lattice)
+    return lattice

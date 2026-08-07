@@ -23,7 +23,7 @@ through the join and are never reimplemented here.
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import CategoryWithAxiom, all_axioms
@@ -69,7 +69,7 @@ class CountabilitySubcategoryMethods:
     def Countable(self) -> Category:
         r"""Objects whose underlying set has a chosen computable,
         exhaustive, duplicate-free enumeration."""
-        category = cast(Category, self)
+        category = self
         assert "Uncountable" not in category.axioms(), "Countable and Uncountable are disjoint"
         return category._with_axiom("Countable")
 
@@ -78,13 +78,13 @@ class CountabilitySubcategoryMethods:
         trusted declaration. (The reverse contradiction, ``Uncountable``
         then ``Finite``, is refused by Sage's native finite/infinite
         incompatibility because ``Uncountable`` implies ``Infinite``.)"""
-        category = cast(Category, self)
+        category = self
         assert "Countable" not in category.axioms(), "Countable and Uncountable are disjoint"
         return category._with_axiom("Uncountable")
 
     def TotallyOrdered(self) -> Category:
         r"""Objects whose underlying set is equipped with a total order."""
-        category = cast(Category, self)
+        category = self
         return category._with_axiom("TotallyOrdered")
 
 
@@ -134,7 +134,24 @@ class FiniteSets(CatObject, CategoryWithAxiom):
     _base_category_class_and_axiom = (Sets, "Finite")
 
     def extra_super_categories(self) -> list[Category]:
-        return [cast("Sets", self.base_category()).Countable()]
+        return [self.base_category().Countable()]
+
+    def __contains__(self, parent: object) -> bool:
+        r"""Return whether ``parent`` is a finite set.
+
+        Sage's default answers from category placement alone, so an object
+        that has *computed* its finiteness — and says so through
+        ``is_finite`` — is reported infinite merely because nothing refined
+        it afterwards. Finiteness is a property of the object, and this
+        category is the place that asks for it, so a caller writing the
+        membership question gets the object's own answer rather than a
+        record of how it was constructed.
+        """
+        from sage.structure.parent import Parent
+
+        if super().__contains__(parent):
+            return True
+        return isinstance(parent, Parent) and bool(parent.is_finite())
 
     class ParentMethods:
         def cardinality(self) -> Cardinal:
@@ -147,7 +164,7 @@ class FiniteSets(CatObject, CategoryWithAxiom):
 
             from .cardinals import Cardinal
 
-            members = cast(Iterable[object], self)
+            members = self
             return Cardinal(ZZ(sum(1 for _ in members)))
 
 
@@ -251,7 +268,7 @@ class UncountableSets(CatObject, CategoryWithAxiom):
     _base_category_class_and_axiom = (Sets, "Uncountable")
 
     def extra_super_categories(self) -> list[Category]:
-        return [cast("Sets", self.base_category()).Infinite()]
+        return [self.base_category().Infinite()]
 
     class ParentMethods:
         def is_countable(self) -> bool:

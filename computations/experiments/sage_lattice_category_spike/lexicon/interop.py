@@ -15,6 +15,9 @@ from sage.categories.functor import Functor as SageFunctor
 from sage.categories.morphism import Morphism as SageMorphism
 from sage.combinat.root_system.cartan_matrix import CartanMatrix as SageCartanMatrix
 from sage.groups.additive_abelian.qmodnz import QmodnZ as SageQmodnZ
+from sage.groups.matrix_gps.isometries import (
+    GroupOfIsometries as SageIsometryGroup,
+)
 from sage.modules.fg_pid.fgp_module import FGP_Module_class
 from sage.modules.free_module import FreeModule_generic
 from sage.modules.free_quadratic_module_integer_symmetric import (
@@ -46,6 +49,7 @@ __all__ = [
     "SageFunctor",
     "SageGenus",
     "SageInfinity",
+    "SageIsometryGroup",
     "SageLattice",
     "SageLocalGenusSymbol",
     "SageMorphism",

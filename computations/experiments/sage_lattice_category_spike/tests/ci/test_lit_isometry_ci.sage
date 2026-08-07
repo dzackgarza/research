@@ -60,4 +60,4 @@ def test_root_lattice_weyl_group_orders_rank_ge_7_match_conway_sloane_chapter_4(
         group = lattice.isometry_group()
         assert group.is_finite()
         assert group.order() == published_order                    # CS10 g_0 g_1
-        assert all(generator.is_isometry() for generator in group.gens())
+        assert all(generator.is_isometry() for generator in group.group_generators())

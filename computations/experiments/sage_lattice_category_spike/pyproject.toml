@@ -20,3 +20,9 @@ packages = [
     "sage_lattice_category_spike.objects",
     "sage_lattice_category_spike.sage_patches",
 ]
+
+[tool.setuptools.package-data]
+# PEP 561: ship the marker so mypy follows the spike's real annotations
+# (the preamble's _sage-mypy resolves it via --with <file://...>).
+sage_lattice_category_spike = ["py.typed"]
+

@@ -176,7 +176,7 @@ def test_a4_full_isometry_action_negates_cyclic_glue_group_and_has_cs99_orbits()
     generator = discriminant_form.gen(0)
 
     isometry_group = lattice.isometry_group()
-    discriminant_image = isometry_group.subgroup(isometry_group.gens()).discriminant_image()
+    discriminant_image = isometry_group.subgroup(isometry_group.group_generators()).discriminant_image()
     generator_images = {action(generator) for action in discriminant_image}
 
     assert isometry_group.order() == 2 * factorial(5)
@@ -251,7 +251,7 @@ def test_d4_reflections_generate_weyl_subgroup_and_full_isometries_act_by_triali
     )
 
     discriminant_form = lattice.discriminant_group()
-    full_discriminant_image = isometry_group.subgroup(isometry_group.gens()).discriminant_image()
+    full_discriminant_image = isometry_group.subgroup(isometry_group.group_generators()).discriminant_image()
     nonzero_glue_cosets = set(discriminant_form.elements()) - {discriminant_form.zero()}
     first_glue, second_glue = discriminant_form.gens()
     third_glue = first_glue + second_glue
@@ -271,7 +271,7 @@ def test_d4_reflections_generate_weyl_subgroup_and_full_isometries_act_by_triali
     assert discriminant_form.orthogonal_group(kind="bilinear").order() == factorial(3)
     assert sorted(
         _matrix_rows(isometry.induced_map_on_discriminant_group().matrix())
-        for isometry in isometry_group.gens()
+        for isometry in isometry_group.group_generators()
     ) == [
         ((0, 1), (1, 0)),
         ((1, 0), (0, 1)),

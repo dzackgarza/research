@@ -1,9 +1,9 @@
 # Repo-scoped stubs; see lexicon/README.md.
 from typing import Any
 
-from sage.structure.element import RingElement
+from sage.structure.element import CommutativeRingElement
 
-class Expression(RingElement):
+class Expression(CommutativeRingElement):
     def __add__(self, other: Any) -> Expression: ...
     def __radd__(self, other: Any) -> Expression: ...
     def __sub__(self, other: Any) -> Expression: ...

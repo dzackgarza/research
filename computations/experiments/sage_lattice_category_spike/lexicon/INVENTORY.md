@@ -64,7 +64,13 @@ The import-alias layer is unnecessary once the lexicon is the import surface: `f
 - `ExactScalar = NewType("ExactScalar", ExactScalarBase)` (`domain_algebra.py:152`) with `ExactScalarBase = int | Integer | Rational` under TYPE_CHECKING — `NewType` over a union is invalid (`[valid-newtype]`), and the runtime/`TYPE_CHECKING` fork means the checked type and the runtime type disagree.
 
 Superseded: with real stubs, `ExactScalar` is the plain union `Integer | Rational` (`foundations.py`) and `GramMatrix` is a `NewType` over the real (subclassable) `Matrix` class.
-`MorphismMatrix` is retired entirely (ratified 2026-07-08): a morphism and a matrix are different things — the matrix expressing a morphism in bases is an ordinary `Matrix`, and the validated-morphism witness is the `LatticeMorphism` object itself, so a "MorphismMatrix" type is a category error, not vocabulary.
+`MorphismMatrix` is a real noun and stays (correcting the 2026-07-08 ruling, which retired it on the grounds that "a morphism and a matrix are different things" — that is the reason to *keep* the distinction, not to erase it).
+A `MorphismMatrix` is the matrix **extracted from** a morphism of free R-modules with respect to chosen generating sets: its rows express $f(e_i)$ in the generators of the codomain.
+A `GramMatrix` is the array $[b(e_i,e_j)]$ of a form $M\otimes M\to W$ and represents *no* morphism.
+That the correlation $c:L\to L^\vee$ is represented by a matrix coinciding with the Gram matrix in dual generating sets is a coincidence of coordinates, not an identity of objects; the two types exist precisely to stop that conflation.
+Kernels are the seam: a **morphism** has a public `kernel()`; a `MorphismMatrix` keeps `left_kernel`/`right_kernel` private.
+`morphism.kernel()` computes the kernel matrix, builds an **abstract** module $S$, and returns the inclusion $S\hookrightarrow M$ — the kernel matrix never supplies $S$'s generators, it only records how those abstract generators are written in $M$'s.
+This is what Sage's matrices conflate: Sage says the submodule *is* spanned by a basis sitting inside an ambient module, which forces the ambient-module bookkeeping this repo eschews.
 
 ### I.5 Missing vocabulary forces `Any`
 
@@ -94,15 +100,15 @@ Representation vocabulary used below:
 | --- | --- | --- | --- |
 | `Integer` | element of ℤ, exact | alias | `sage.rings.integer.Integer` |
 | `Rational` | element of ℚ, exact | alias | `sage.rings.rational.Rational` |
-| `RealNumber` | element of ℝ (mpfr, *inexact*: display/plot boundaries only — never in exact arithmetic; repo policy bans floats in domain signatures) | alias | `sage.rings.real_mpfr.RealNumber` |
-| `ExactScalar` | exact scalar of a ℤ/ℚ computation | union `Integer \| Rational` | — |
+| `RealNumber` | element of ℝ, held **exactly** (√2 in `AA`, π symbolic) | union `AlgebraicReal \| SymbolicExpression` | `sage.rings.qqbar.AlgebraicReal` |
+| `RealApproximation` | an mpfr approximation *of* a real; display/plot boundaries only, extracted late from an exact value | alias | `sage.rings.real_mpfr.RealNumber` |
 | `SymbolicExpression` | exact symbolic value (π, e, Γ-expressions; e.g. `gaussian_heuristic`) | alias | `sage.symbolic.expression.Expression` |
 | `SignaturePair` | Sylvester pair (p, n) | `tuple[int, int]` | — |
 | `CartanType` | simply-laced Cartan datum | `tuple[Literal["A","D","E"], int]` | — |
-| `Set` | unordered mathematical set | alias `collections.abc.Set` | — |
-| `OrderedSet` | set with a distinguished linear order (bases, generator tuples) | alias `Sequence` (uniqueness is the constructor's contract, not the type's) | — |
+| `Set` | unordered mathematical set | **category** `Sets.ParentMethods` (not `collections.abc.Set`: a `frozenset` satisfies that and a Sage set parent need not) | — |
+| `OrderedSet` | set carrying a distinguished linear order | union `TotallyOrderedFiniteSet \| Sequence`; the Sage parent is what the repo *produces*, the `Sequence` arm is the input boundary only | `sage.sets.totally_ordered_finite_set.TotallyOrderedFiniteSet` |
 
-Superseded defects: `ExactScalar` NewType (I.4); the `int`-vs-`Integer` runtime fork.
+Superseded defects: `ExactScalar` entirely (retired 2026-08-06 — as mathematics `Integer | Rational` *is* ℚ since ℤ⊂ℚ, so the union was no distinction; and it marked the normal case, when every object here is exact and only the approximation needs an adjective; "scalar" also names a role, not an object — an element of a ring is a `RingElement`); the `int`-vs-`Integer` runtime fork, including `Rational | int` in `domain_algebra.py`.
 
 ### II.2 General algebra (`algebra.py`)
 
@@ -158,7 +164,12 @@ Finite forms: `DiscriminantForm`, `BilinearDiscriminantForm`, `QuadraticDiscrimi
 Genus: `Genus` — a category-backed parent in the `Genera` category: the finite set of isometry classes sharing a signature and discriminant form (Nikulin 1.10.1), so its cardinality is the class number.
 Parity is the `Even` axiom, acquired as output from the discriminant form, never a constructor input.
 
-Boundary codecs: `RawGramMatrix`, `RawMorphismMatrix` (raw matrix payloads: `Matrix | Sequence[Sequence[ExactScalar]]`), `RawVectors` (raw family of vectors in given coordinates — the subobject-algebra input: matrix rows, nested sequences, or actual `Vector`s), `LatticeName` (`str | CartanType` — a lattice designated by name; construction data, so an A/D/E name carries the RootGenerated provenance certificate while a raw Gram never does; ruling 2026-07-09: constructors live on `Lattice` itself, subcategory membership is output, never input), `GramMatrix` (in `foundations`), `FormKind`, `ValueModule`, narrowing functions `in_*`. (`MorphismMatrix` is retired — see I.4; `.matrix()` of a morphism is an ordinary `Matrix`. The `MatrixLike` protocol is retired 2026-07-09: it shadowed the real `Matrix` class — defect class I.2.)
+Boundary codecs: `RawGramMatrix`, `RawMorphismMatrix` (raw matrix payloads: `Matrix | Sequence[Sequence[ExactScalar]]`), `RawVectors` (raw family of vectors in given coordinates — the subobject-algebra input: matrix rows, nested sequences, or actual `Vector`s), `LatticeName` (`str | CartanType` — a lattice designated by name; construction data, so an A/D/E name carries the RootGenerated provenance certificate while a raw Gram never does; ruling 2026-07-09: constructors live on `Lattice` itself, subcategory membership is output, never input), `GramMatrix` (in `foundations`), `FormKind`, `ValueModule`, narrowing functions `in_*`. (`MorphismMatrix` is **reinstated** 2026-08-06 as an owned class — see I.4: it is the matrix *extracted from* a morphism of free R-modules in chosen generating sets, categorically distinct from a `GramMatrix`, which represents no morphism. The `MatrixLike` protocol is retired 2026-07-09: it shadowed the real `Matrix` class — defect class I.2.)
+
+Representation theory: `Character` (`objects/characters.py`, owned class, 2026-08-06) — the character of a finite-dimensional representation of a finite group, i.e. a class function $\chi:G\to K$ afforded by a representation.
+Owned for the same reason as `MorphismMatrix`: the noun is mathematics and the computation is not.
+GAP owns the conjugacy classes, the character table, the irreducible characters, the degrees, and the constituents; the class exposes exactly the questions a character answers — $\chi(g)$, $\chi(1)$, the values on the conjugacy classes, the absolutely irreducible constituents, and the sum of two characters — so that `ClassFunction` is never the public spelling of a character.
+A group of any presentation answers `irreducible_characters()`; a literal subgroup of $\operatorname{Aut}(M)$ answers it through the faithful matrix model of its generators, so an arbitrary finite group generated by given automorphisms is covered and no construction here is cyclic-only.
 
 Missing-but-named (declared contracts whose types the audit shows are wrong or placeholder): `HyperbolicLattice.fundamental_chamber` returns `FundamentalChamberLike` (a placeholder) — the lexicon type is `geometry.Polyhedron`. (`Genus.local_symbol` now returns the honest Conway–Sloane local symbol object `interop.SageLocalGenusSymbol`.)
 

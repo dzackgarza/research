@@ -3,9 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const codemirror_1 = require("@jupyterlab/codemirror");
 const apputils_1 = require("@jupyterlab/apputils");
 const lang_python_1 = require("@codemirror/lang-python");
+const language_1 = require("@codemirror/language");
 const state_1 = require("@codemirror/state");
 const rendermime_1 = require("@jupyterlab/rendermime");
 const docstringPreview_1 = require("./docstringPreview");
+const sageOverlay_1 = require("./sageOverlay");
 /**
  * Register Sage source files with JupyterLab's CodeMirror language registry using @codemirror/lang-python.
  */
@@ -24,7 +26,11 @@ const syntaxPlugin = {
             mime: ["text/x-sage", "application/x-sage"],
             extensions: ["sage"],
             load: async () => {
-                return (0, lang_python_1.python)();
+                const base = (0, lang_python_1.python)();
+                return new language_1.LanguageSupport(base.language, [
+                    base.support,
+                    (0, sageOverlay_1.sageOverlay)(),
+                ]);
             },
         });
     },

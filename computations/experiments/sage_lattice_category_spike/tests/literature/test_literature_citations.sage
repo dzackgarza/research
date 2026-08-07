@@ -139,7 +139,7 @@ def test_small_root_lattice_automorphism_orders_match_conway_sloane_chapter_4():
         group = lattice.isometry_group()
         assert group.is_finite()
         assert group.order() == order
-        assert all(generator.is_isometry() for generator in group.gens())
+        assert all(generator.is_isometry() for generator in group.group_generators())
 
 
 def test_nikulin_primary_decomposition_of_finite_quadratic_forms():

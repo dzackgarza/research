@@ -8,14 +8,14 @@ parallel element type exists. The definitional membership equation
 codebase: ``SyntheticIsometryGroup.__contains__``.
 
 Supplied generators NEVER stand in for the canonical group: they live only in
-``O(L).subgroup(gens)`` (IsometrySubgroup), which answers subgroup questions
+``O(L).subgroup(group_generators)`` (IsometrySubgroup), which answers subgroup questions
 and nothing at the O(L) level.
 """
 
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from sage.matrix.constructor import identity_matrix, matrix
 from sage.rings.integer_ring import ZZ
@@ -27,6 +27,17 @@ from ..objects.magmas import Groups
 from ..objects.parents import SyntheticIntegralNondegenerateLattice, SyntheticLattice
 from .homsets import LatticeMorphism
 
+
+
+if TYPE_CHECKING:
+    from ..lexicon import (
+        DiscriminantAction,
+        DiscriminantSubgroup,
+        Integer,
+        Lattice,
+        RawVectors,
+        SageIsometryGroup,
+    )
 
 class SyntheticIsometryGroup(IsometryGroup, Parent):
     r"""O(L) for a synthetic lattice L (identity of the object: the lattice)."""
@@ -63,7 +74,7 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
     def _repr_(self) -> str:
         return f"Isometry group O({self._lattice.label()})"
 
-    def lattice(self) -> Any:
+    def lattice(self) -> "Lattice":
         return self._lattice
 
     def __contains__(self, f: object) -> bool:
@@ -85,7 +96,7 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
         invertible_over_R = determinant in (1, -1) if base_ring is ZZ else determinant != 0
         return bool(invertible_over_R and A.transpose() * gram * A == gram)
 
-    def _from_matrix(self, matrix_data: object) -> Any:
+    def _from_matrix(self, matrix_data: object) -> "LatticeMorphism":
         r"""Construct the isometry element; asserts the isometry contract."""
         A = matrix(QQ, matrix_data)
         assert A in self, (
@@ -93,7 +104,7 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
         )
         return self._lattice.hom(matrix(self._lattice.base_ring(), A))
 
-    def one(self) -> Any:
+    def one(self) -> "LatticeMorphism":
         return self._lattice.hom(identity_matrix(self._lattice.base_ring(), self._lattice.rank()))
 
     def is_finite(self) -> bool:
@@ -103,20 +114,20 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
         self._assert_engine_grounded()
         return True
 
-    def gens(self) -> tuple[Any, ...]:
+    def group_generators(self) -> tuple[Any, ...]:
         r"""Generators from the ephemeral Sage orthogonal group (Sage's generators V
         satisfy V G V^T = G; the synthetic convention U^T G U = G is met by
         U = V^T), on the domain where Sage's computation applies."""
         self._assert_engine_grounded()
-        return tuple(self._from_matrix(g) for g in self._delegated_generator_matrices())
+        return tuple(self._from_matrix(g) for g in self._delegated_group_generator_matrices())
 
-    def order(self) -> Any:
+    def order(self) -> "Integer":
         self._assert_engine_grounded()
         if self._lattice.rank() == 0:
             return ZZ.one()
         return self._delegated_engine().order()
 
-    def _delegated_engine(self) -> Any:
+    def _delegated_engine(self) -> "SageIsometryGroup":
         from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 
         # Sign-normalize: Sage's orthogonal_group needs a definite lattice and
@@ -124,7 +135,7 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
         sign = -1 if self._lattice.is_negative_definite() else 1
         return IntegralLattice(sign * matrix(ZZ, self._lattice.gram_matrix())).orthogonal_group()
 
-    def _delegated_generator_matrices(self) -> tuple[Any, ...]:
+    def _delegated_group_generator_matrices(self) -> tuple[Any, ...]:
         if self._lattice.rank() == 0:
             return ()
         # integrality/definiteness proven by _assert_engine_grounded upstream
@@ -140,7 +151,7 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
         for element in self._delegated_engine():
             yield self._from_matrix(matrix(ZZ, element.matrix()).transpose())
 
-    def as_matrix_group(self) -> Any:
+    def as_matrix_group(self) -> "MatrixGroup":
         r"""GAP-backed matrix group — the point where Sage's MatrixGroup is
         called (spec 3.5); implemented exactly where the group is finite and
         generators are computed (the domain where Sage's computation applies)."""
@@ -152,9 +163,9 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
         )
         from sage.groups.matrix_gps.finitely_generated import MatrixGroup
 
-        return MatrixGroup([matrix(ZZ, generator.matrix()) for generator in self.gens()])
+        return MatrixGroup([matrix(ZZ, generator.matrix()) for generator in self.group_generators()])
 
-    def as_permutation_group(self) -> Any:
+    def as_permutation_group(self) -> "PermutationGroup":
         r"""GAP-backed permutation group (spec 3.5), on the domain where Sage's computation applies."""
         self._assert_engine_grounded()
         from sage.groups.perm_gps.permgroup import PermutationGroup
@@ -188,23 +199,23 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
         )
         return lattice
 
-    def discriminant_action(self, f: Any) -> Any:
+    def discriminant_action(self, f: "LatticeMorphism") -> "DiscriminantAction":
         r"""The induced action of the single verified isometry ``f`` on A_L.
         Per-element functor; NO group-level claim."""
         assert f in self, f"discriminant_action needs a verified element of O({self._lattice.label()}); got={f}"
         return self._discriminant_source().discriminant_group().action_of_isometry(f)
 
-    def discriminant_representation(self) -> Any:
+    def discriminant_representation(self) -> "DiscriminantAction":
         r"""The image of ``O(L) -> O(q_L)``: the subgroup of the finite O(q)
         generated by the generators' induced actions. Enumeration is grounded
-        exactly where ``gens()`` is (the definite integral engine); the
-        assertion inside ``gens`` localizes the computational limit."""
+        exactly where ``group_generators()`` is (the definite integral engine); the
+        assertion inside ``group_generators`` localizes the computational limit."""
         from ..forms.discriminant import SyntheticOrthogonalGroup
 
         form = self._discriminant_source().discriminant_group()
         return SyntheticOrthogonalGroup(
             form,
-            tuple(self.discriminant_action(g) for g in self.gens()),
+            tuple(self.discriminant_action(g) for g in self.group_generators()),
             close=True,
         )
 
@@ -214,8 +225,8 @@ class SyntheticIsometryGroup(IsometryGroup, Parent):
         grounded domain as ``__iter__``)."""
         return self.subgroup([f for f in self if self.discriminant_action(f).is_identity()])
 
-    def subgroup(self, gens: Any) -> SyntheticIsometrySubgroup:
-        return SyntheticIsometrySubgroup(self, gens)
+    def subgroup(self, group_generators: "RawVectors") -> SyntheticIsometrySubgroup:
+        return SyntheticIsometrySubgroup(self, group_generators)
 
     def __eq__(self, other: object) -> bool:
         return bool(isinstance(other, SyntheticIsometryGroup) and self._lattice == other._lattice)
@@ -230,30 +241,30 @@ class SyntheticIsometrySubgroup(IsometrySubgroup):
     and there is deliberately NO __contains__ (subgroup membership is not
     decidable in general and no partial claim is exposed)."""
 
-    def __init__(self, ambient: SyntheticIsometryGroup, gens: Any) -> None:
+    def __init__(self, ambient: SyntheticIsometryGroup, group_generators: "RawVectors") -> None:
         self._ambient = ambient
         validated = []
-        for gen in gens:
-            morphism = gen if isinstance(gen, LatticeMorphism) else ambient.lattice().hom(matrix(ambient.lattice().base_ring(), gen))
+        for generator in group_generators:
+            morphism = generator if isinstance(generator, LatticeMorphism) else ambient.lattice().hom(matrix(ambient.lattice().base_ring(), generator))
             assert morphism in ambient, f"subgroup generators must be isometries of the acting lattice; matrix={morphism.matrix()}, gram={ambient.lattice().gram_matrix()}"
             validated.append(morphism)
-        self._gens = tuple(validated)
+        self._group_generators = tuple(validated)
 
     def _repr_(self) -> str:
-        return f"Subgroup of O({self._ambient.lattice().label()}) on {len(self._gens)} generators"
+        return f"Subgroup of O({self._ambient.lattice().label()}) on {len(self._group_generators)} generators"
 
     __repr__ = _repr_
 
-    def gens(self) -> tuple[Any, ...]:
-        return self._gens
+    def group_generators(self) -> tuple[Any, ...]:
+        return self._group_generators
 
-    def lattice(self) -> Any:
+    def lattice(self) -> "Lattice":
         return self._ambient.lattice()
 
     def ambient(self) -> SyntheticIsometryGroup:
         return self._ambient
 
-    def preserves(self, subobject: Any) -> bool:
+    def preserves(self, subobject: "Subobject") -> bool:
         r"""Whether every generator maps the subobject into itself — the
         generator-wise morphism-sited factorization query (#100 ratified
         placement): ``g.preserves(subobject)`` for each generator ``g``."""
@@ -263,9 +274,9 @@ class SyntheticIsometrySubgroup(IsometrySubgroup):
         assert subobject.inclusion().codomain() == self.lattice(), (
             f"the subobject must live in the acting lattice; codomain={subobject.inclusion().codomain()}, acting={self.lattice()}"
         )
-        return all(generator.preserves(subobject) for generator in self._gens)
+        return all(generator.preserves(subobject) for generator in self._group_generators)
 
-    def discriminant_image(self) -> Any:
+    def discriminant_image(self) -> "DiscriminantSubgroup":
         r"""The subgroup of the finite O(q_L) generated by the generators'
         actions (spec 3.3, the typed group object — the successor of the
         deleted lattice-gens methods); defined when L is integral
@@ -275,19 +286,19 @@ class SyntheticIsometrySubgroup(IsometrySubgroup):
         form = self.lattice().discriminant_group()
         return SyntheticOrthogonalGroup(
             form,
-            (self._ambient.discriminant_action(gen) for gen in self._gens),
+            (self._ambient.discriminant_action(gen) for gen in self._group_generators),
             close=True,
         )
 
-    def order(self) -> Any:
+    def order(self) -> "Integer":
         assert self._ambient.is_finite(), f"subgroup order is computed only when the ambient O(L) is finite (closure computable); ambient={self._ambient}"
         from sage.groups.matrix_gps.finitely_generated import MatrixGroup
 
-        if not self._gens:
+        if not self._group_generators:
             return ZZ.one()
-        return MatrixGroup([g.matrix() for g in self._gens]).order()
+        return MatrixGroup([g.matrix() for g in self._group_generators]).order()
 
-    def as_matrix_group(self) -> Any:
+    def as_matrix_group(self) -> "MatrixGroup":
         r"""GAP-backed matrix group (spec 3.5); same finiteness condition
         as ``order``/``__iter__`` (ambient O(L) finite)."""
         assert self._ambient.is_finite(), (
@@ -300,11 +311,11 @@ class SyntheticIsometrySubgroup(IsometrySubgroup):
         )
         from sage.groups.matrix_gps.finitely_generated import MatrixGroup
 
-        if not self._gens:
+        if not self._group_generators:
             return MatrixGroup([identity_matrix(ZZ, self.lattice().rank())])
-        return MatrixGroup([matrix(ZZ, generator.matrix()) for generator in self._gens])
+        return MatrixGroup([matrix(ZZ, generator.matrix()) for generator in self._group_generators])
 
-    def as_permutation_group(self) -> Any:
+    def as_permutation_group(self) -> "PermutationGroup":
         r"""GAP-backed permutation group (spec 3.5), same finiteness condition."""
         assert self._ambient.is_finite(), (
             f"subgroup matrix and permutation groups are computed only when the ambient O(L) is finite (closure computable); ambient={self._ambient}"
@@ -319,7 +330,7 @@ class SyntheticIsometrySubgroup(IsometrySubgroup):
         r"""Closure enumeration through the Sage matrix group; implemented
         under the same finiteness condition as ``order`` (spec 3.3)."""
         assert self._ambient.is_finite(), f"subgroup enumeration is computed only when the ambient O(L) is finite (closure computable); ambient={self._ambient}"
-        if not self._gens:
+        if not self._group_generators:
             yield self._ambient.one()
             return
         for element in self.as_matrix_group():
@@ -328,7 +339,7 @@ class SyntheticIsometrySubgroup(IsometrySubgroup):
             yield morphism
 
     def __eq__(self, other: object) -> bool:
-        return bool(isinstance(other, SyntheticIsometrySubgroup) and self._ambient == other._ambient and self._gens == other._gens)
+        return bool(isinstance(other, SyntheticIsometrySubgroup) and self._ambient == other._ambient and self._group_generators == other._group_generators)
 
     def __hash__(self) -> int:
-        return hash((self._ambient, self._gens))
+        return hash((self._ambient, self._group_generators))
