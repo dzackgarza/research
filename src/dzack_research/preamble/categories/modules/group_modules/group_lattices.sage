@@ -108,6 +108,18 @@ class GroupLattices(Category):
 
         formed_coinvariants = coinvariant_lattice
 
+        def _over_forgotten(self: Self, element: "Element") -> "Element":
+            r"""Return the element of this \(G\)-lattice underlying ``element``.
+
+            The inverse of :meth:`ElementMethods.forget_action`: forgetting
+            the action does not change which elements there are, so the two
+            are a bijection and this is the other half of it.
+            """
+            assert element.parent() is self.forget_action(), (
+                f"{element} is not an element of {self.forget_action()}"
+            )
+            return self._over(self.forget_form()._over(element.forget_form()))
+
         def _equip(self: Self, submodule: "Module") -> "Module":
             assert submodule.embedding_codomain() is self.module_representation(), (
                 "the group submodule belongs to a different representation"

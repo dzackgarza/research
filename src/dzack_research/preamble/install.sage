@@ -109,6 +109,7 @@ else:
     load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/subobjects.sage"))
     load(str(_PREAMBLE / "categories/modules/group_modules/group_lattices.sage"))
     load(str(_PREAMBLE / "categories/modules/fractional_ideals.sage"))
+    load(str(_PREAMBLE / "categories/modules/functors/trivial_action.sage"))
     load(str(_PREAMBLE / "categories/modules/functors/free_forgetful_adjunction.sage"))
     load(str(_PREAMBLE / "categories/modules/functors/base_change_adjunction.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage"))

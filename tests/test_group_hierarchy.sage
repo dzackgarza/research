@@ -212,3 +212,102 @@ def test_a_torsion_module_and_its_group_carry_the_same_action():
                     f"{name}{rank}: no smaller scalar annihilates it, so the "
                     "recovered action has exactly the orders the group had"
                 )
+
+
+# --------------------------------------------------------------------------
+# $\varepsilon^*$: the trivial-action functor, and the adjunction that makes
+# the invariant lattice a value rather than a coincidence.
+# --------------------------------------------------------------------------
+
+
+def _swap_involution():
+    r"""$A_1\oplus A_1$ with the involution exchanging the two summands."""
+    L = IntegralLattice(matrix(ZZ, [[-2, 0], [0, -2]]))
+    G = own_group(CyclicPermutationGroup(2))
+    labels = tuple(L.module_generating_set())
+    e, f = L.module_generators()
+    swap = L.Aut()({labels[0]: f, labels[1]: e})
+    identity = L.Aut().one()
+    action = group_action_homset(G, L)(
+        {
+            element: (identity if element == G.one() else swap)
+            for element in G
+        }
+    )
+    return L, G, action
+
+
+def test_trivial_action_is_a_functor_into_group_lattices():
+    r"""$\varepsilon^*L$ is a $G$-lattice on which every $g$ acts as the identity."""
+    L, G, _ = _swap_involution()
+    trivial = trivial_action(G)(L)
+
+    assert trivial in GroupLattices(G), (
+        "restriction along the augmentation lands in G-lattices"
+    )
+    assert all(
+        trivial.act(element, vector_) == vector_
+        for element in G
+        for vector_ in trivial.module_generators()
+    ), "the trivial action fixes every element"
+    assert trivial.forget_action() is L, (
+        "forgetting the action returns the lattice it was put on"
+    )
+    assert trivial_action(G)(L) is trivial, (
+        "a functor is well defined on objects"
+    )
+
+
+def test_trivial_action_carries_lattice_maps_to_equivariant_ones():
+    r"""$\varepsilon^*$ acts on morphisms: the same map, now equivariant."""
+    L, G, _ = _swap_involution()
+    trivial = trivial_action(G)
+    e, f = L.module_generators()
+    labels = tuple(L.module_generating_set())
+    doubling = L.Hom(L)({labels[0]: f, labels[1]: e})
+
+    carried = trivial(doubling)
+    assert carried.domain() is trivial(L) and carried.codomain() is trivial(L), (
+        "the functor's morphism half runs between the functor's objects"
+    )
+    assert carried(trivial._over_lattice(e)) == trivial._over_lattice(f), (
+        "the map is unchanged; only the category it is read in is"
+    )
+
+
+def test_invariants_is_right_adjoint_to_the_trivial_action():
+    r"""$\operatorname{Hom}_{\mathrm{Lat}_G}(\varepsilon^*N,(L,\rho))=\operatorname{Hom}_{\mathrm{Lat}}(N,L^G)$.
+
+    An equivariant map out of a trivially-acted lattice has invariant image,
+    because $\varphi(n)=\varphi(g\cdot n)=\rho(g)\varphi(n)$.  So the homset
+    on the left is the homset on the right, and that is what makes $L^G$ the
+    value of the right adjoint rather than a sublattice that happens to be
+    fixed.
+    """
+    L, G, action = _swap_involution()
+    acted = L.with_action(action)
+    trivial = trivial_action(G)
+    e, f = L.module_generators()
+
+    invariant_source = IntegralLattice(matrix(ZZ, [[-4]]))
+    label = tuple(invariant_source.module_generating_set())[0]
+    phi = trivial(invariant_source).Hom(acted)(
+        {label: acted._over_forgotten(e + f)}
+    )
+    assert acted.is_invariant(phi(trivial._over_lattice(
+        invariant_source.module_generators()[0]
+    ))), "an equivariant map out of a trivial G-lattice has invariant image"
+
+    # $e$ has the right norm, so the refusal is about equivariance alone.
+    non_invariant_source = IntegralLattice(matrix(ZZ, [[-2]]))
+    bad_label = tuple(non_invariant_source.module_generating_set())[0]
+    refused = False
+    try:
+        trivial(non_invariant_source).Hom(acted)(
+            {bad_label: acted._over_forgotten(e)}
+        )
+    except AssertionError:
+        refused = True
+    assert refused, (
+        "the swap moves e, so no equivariant map sends a fixed generator to it"
+    )
