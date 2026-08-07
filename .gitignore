@@ -17,3 +17,7 @@ site/
 docs/_site/
 docs/.quarto/
 docs/references.bib
+
+# Per-run test timings: a log, not source.  A new line every run would
+# bury real diffs.
+tests/timings.jsonl
